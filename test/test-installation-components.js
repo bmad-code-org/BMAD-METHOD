@@ -2083,7 +2083,7 @@ async function runTests() {
       assert(maryEntry && maryEntry.icon === '📊', 'Agent entry carries icon field');
       assert(maryEntry && maryEntry.description.length > 0, 'Agent entry carries description field');
       assert(maryEntry && maryEntry.module === 'bmm', 'Agent entry module derives from owning module');
-      assert(maryEntry && maryEntry.team === 'bmm', 'Agent entry team defaults to module code');
+      assert(maryEntry && maryEntry.team === 'software-development', 'Agent entry carries explicit team from module.yaml');
 
       // writeCentralConfig produces the two root files
       const [teamPath, userPath] = await generator35.writeCentralConfig(tempBmadDir35, moduleConfigs);
@@ -2139,7 +2139,7 @@ async function runTests() {
       assert(teamContent.includes('[agents.bmad-agent-analyst]'), 'config.toml has [agents.bmad-agent-analyst] table');
       assert(teamContent.includes('[agents.bmad-agent-dev]'), 'config.toml has [agents.bmad-agent-dev] table');
       assert(teamContent.includes('module = "bmm"'), 'Agent entry serializes module field');
-      assert(teamContent.includes('team = "bmm"'), 'Agent entry serializes team field');
+      assert(teamContent.includes('team = "software-development"'), 'Agent entry serializes team field');
       assert(teamContent.includes('name = "Mary"'), 'Agent entry serializes name');
       assert(teamContent.includes('icon = "📊"'), 'Agent entry serializes icon');
       assert(!userContent.includes('[agents.'), '[agents.*] tables are never written to config.user.toml');
