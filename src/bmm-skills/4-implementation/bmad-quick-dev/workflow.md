@@ -1,7 +1,3 @@
----
-main_config: '{project-root}/_bmad/bmm/config.yaml'
----
-
 # Quick Dev New Preview Workflow
 
 **Goal:** Turn user intent into a hardened, reviewable artifact.
@@ -60,16 +56,16 @@ This uses **step-file architecture** for disciplined execution:
 
 ### 1. Configuration Loading
 
-Load and read full config from `{main_config}` and resolve:
+Load and read full config from `{{.main_config}}` and resolve:
 
 - `project_name`, `planning_artifacts`, `implementation_artifacts`, `user_name`
 - `communication_language`, `document_output_language`, `user_skill_level`
 - `date` as system-generated current datetime
-- `sprint_status` = `{implementation_artifacts}/sprint-status.yaml`
+- `sprint_status` = `{{.sprint_status}}`
 - `project_context` = `**/project-context.md` (load if exists)
 - CLAUDE.md / memory files (load if exist)
 
-YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`.
+YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{{.communication_language}}`.
 
 ### 2. First Step Execution
 
