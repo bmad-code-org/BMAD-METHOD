@@ -51,7 +51,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Required Inputs
 
-- `agent_roster` = resolved via `python3 {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key agents` (merges `_bmad/config.toml`, `_bmad/custom/config.toml`, and `_bmad/custom/config.user.toml`)
+- `agent_roster` = resolved via `python3 {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key agents` (merges four layers in order: `_bmad/config.toml`, `_bmad/config.user.toml`, `_bmad/custom/config.toml`, `_bmad/custom/config.user.toml`)
 
 ### Context
 

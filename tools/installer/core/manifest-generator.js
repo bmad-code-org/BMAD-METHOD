@@ -405,6 +405,9 @@ class ManifestGenerator {
 
     // Load each module's source module.yaml to determine scope per prompt key.
     // Default scope is 'team' when the prompt doesn't declare one.
+    // When a module.yaml is unreadable we warn — for known official modules
+    // this means user-scoped keys (e.g. user_name) could mis-file into the
+    // team config, so the operator should notice.
     const scopeByModuleKey = {};
     for (const moduleName of this.updatedModules) {
       const moduleYamlPath = path.join(getModulePath(moduleName), 'module.yaml');
@@ -418,8 +421,11 @@ class ManifestGenerator {
             scopeByModuleKey[moduleName][key] = value.scope === 'user' ? 'user' : 'team';
           }
         }
-      } catch {
-        // Silently skip unparseable module.yaml — default-team behavior applies
+      } catch (error) {
+        console.warn(
+          `[warn] writeCentralConfig: could not parse module.yaml for '${moduleName}' (${error.message}). ` +
+            `Answers from this module will default to team scope — user-scoped keys may mis-file into config.toml.`,
+        );
       }
     }
 
@@ -454,15 +460,12 @@ class ManifestGenerator {
 
     const teamHeader = [
       '# ─────────────────────────────────────────────────────────────────',
-      '# Installer-managed. Regenerated on every install.',
+      '# Installer-managed. Regenerated on every install — treat as read-only.',
       '#',
-      '# [core] and [modules.<code>] values: you CAN edit these directly.',
-      '# The installer reads current values as defaults on next install,',
-      '# so your edits persist.',
-      '#',
-      '# [agents.<code>] values: regenerated from each module.yaml on every',
-      '# install. DO NOT edit here — your changes will be wiped. To override',
-      '# an agent descriptor or add custom agents, use:',
+      '# Direct edits to this file will be overwritten on the next install.',
+      '# To change an install answer durably, re-run the installer (your prior',
+      '# answers are remembered as defaults). To pin a value regardless of',
+      '# install answers, or to add custom agents / override descriptors, use:',
       '#   _bmad/custom/config.toml       (team, committed)',
       '#   _bmad/custom/config.user.toml  (personal, gitignored)',
       '# Those files are never touched by the installer.',
@@ -472,15 +475,14 @@ class ManifestGenerator {
 
     const userHeader = [
       '# ─────────────────────────────────────────────────────────────────',
-      '# Installer-managed. Regenerated on every install.',
+      '# Installer-managed. Regenerated on every install — treat as read-only.',
       '# Holds install answers scoped to YOU personally.',
       '#',
-      '# You CAN edit values here directly. The installer reads current',
-      '# values as defaults on next install, so your edits persist.',
-      '#',
-      '# For custom agents or sections the installer does not know about,',
-      '# use _bmad/custom/config.user.toml — it is never touched by the',
-      '# installer.',
+      '# Direct edits to this file will be overwritten on the next install.',
+      '# To change an answer durably, re-run the installer (your prior answers',
+      '# are remembered as defaults). For pinned overrides or custom sections',
+      '# the installer does not know about, use _bmad/custom/config.user.toml',
+      '# — it is never touched by the installer.',
       '# ─────────────────────────────────────────────────────────────────',
       '',
     ];
@@ -533,7 +535,30 @@ class ManifestGenerator {
       }
     }
 
-    // [agents.<code>] — always team (agent roster is organizational)
+    // [agents.<code>] — always team (agent roster is organizational).
+    // Freshly collected agents come from module.yaml this run. If a module
+    // was preserved (e.g. during quickUpdate when its source isn't available),
+    // its module.yaml wasn't read — so its agents aren't in `this.agents` and
+    // would silently disappear from the roster. Preserve those existing
+    // [agents.*] blocks verbatim from the prior config.toml.
+    const freshAgentCodes = new Set(this.agents.map((a) => a.code));
+    const contributingModules = new Set(this.agents.map((a) => a.module));
+    const preservedModules = this.updatedModules.filter((m) => !contributingModules.has(m));
+    const preservedBlocks = [];
+    if (preservedModules.length > 0 && (await fs.pathExists(teamPath))) {
+      try {
+        const prev = await fs.readFile(teamPath, 'utf8');
+        for (const block of extractAgentBlocks(prev)) {
+          if (freshAgentCodes.has(block.code)) continue;
+          if (block.module && preservedModules.includes(block.module)) {
+            preservedBlocks.push(block.body);
+          }
+        }
+      } catch (error) {
+        console.warn(`[warn] writeCentralConfig: could not read prior config.toml to preserve agents: ${error.message}`);
+      }
+    }
+
     for (const agent of this.agents) {
       const agentLines = [`[agents.${agent.code}]`, `module = ${formatTomlValue(agent.module)}`, `team = ${formatTomlValue(agent.team)}`];
       if (agent.name) agentLines.push(`name = ${formatTomlValue(agent.name)}`);
@@ -542,6 +567,10 @@ class ManifestGenerator {
       if (agent.description) agentLines.push(`description = ${formatTomlValue(agent.description)}`);
       agentLines.push('');
       teamLines.push(...agentLines);
+    }
+
+    for (const body of preservedBlocks) {
+      teamLines.push(body, '');
     }
 
     const teamContent = teamLines.join('\n').replace(/\n+$/, '\n');
@@ -751,6 +780,41 @@ function formatTomlValue(value) {
     .replaceAll('\r', String.raw`\r`)
     .replaceAll('\t', String.raw`\t`);
   return `"${escaped}"`;
+}
+
+/**
+ * Extract [agents.<code>] blocks from a previously-emitted config.toml.
+ * We only need this for roster preservation — the file is our own controlled
+ * output, so a simple line scanner is safer than adding a TOML parser
+ * dependency. Each block runs from its `[agents.<code>]` header until the
+ * next `[` heading or EOF; the `module = "..."` line inside drives which
+ * entries we keep on the next write.
+ * @returns {Array<{code: string, module: string | null, body: string}>}
+ */
+function extractAgentBlocks(tomlContent) {
+  const blocks = [];
+  const lines = tomlContent.split('\n');
+  let i = 0;
+  while (i < lines.length) {
+    const header = lines[i].match(/^\[agents\.([^\]]+)]\s*$/);
+    if (!header) {
+      i++;
+      continue;
+    }
+    const code = header[1];
+    const blockLines = [lines[i]];
+    let moduleName = null;
+    i++;
+    while (i < lines.length && !lines[i].startsWith('[')) {
+      blockLines.push(lines[i]);
+      const m = lines[i].match(/^module\s*=\s*"((?:[^"\\]|\\.)*)"\s*$/);
+      if (m) moduleName = m[1];
+      i++;
+    }
+    while (blockLines.length > 1 && blockLines.at(-1) === '') blockLines.pop();
+    blocks.push({ code, module: moduleName, body: blockLines.join('\n') });
+  }
+  return blocks;
 }
 
 module.exports = { ManifestGenerator };

@@ -2145,7 +2145,7 @@ async function runTests() {
       assert(!userContent.includes('[agents.'), '[agents.*] tables are never written to config.user.toml');
 
       // Header comments present on both files
-      assert(teamContent.includes('Installer-managed. Regenerated on every install.'), 'config.toml has installer-managed header');
+      assert(teamContent.includes('Installer-managed. Regenerated on every install'), 'config.toml has installer-managed header');
       assert(userContent.includes('Holds install answers scoped to YOU personally.'), 'config.user.toml header clarifies user scope');
     } finally {
       await fs.remove(tempBmadDir35).catch(() => {});
@@ -2185,6 +2185,72 @@ async function runTests() {
       assert(preservedContent === userEdit, 'ensureCustomConfigStubs does not overwrite user-edited custom/config.user.toml');
     } finally {
       await fs.remove(tempBmadDir36).catch(() => {});
+    }
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 37: Agent Preservation for Non-Contributing Modules
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 37: Agent Preservation for Non-Contributing Modules${colors.reset}\n`);
+
+  {
+    // Scenario: quickUpdate preserves a module whose source isn't available
+    // (e.g. external/marketplace). Its module.yaml isn't read, so its agents
+    // aren't in this.agents. writeCentralConfig must read the prior config.toml
+    // and keep those [agents.*] blocks so the roster doesn't silently shrink.
+    const tempBmadDir37 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-agent-preserve-'));
+
+    try {
+      // Seed a prior config.toml with an agent from an external module
+      const priorToml = [
+        '# prior',
+        '',
+        '[agents.bmad-agent-analyst]',
+        'module = "bmm"',
+        'team = "bmm"',
+        'name = "Stale Mary"',
+        '',
+        '[agents.external-hero]',
+        'module = "external-mod"',
+        'team = "external-mod"',
+        'name = "Hero"',
+        'title = "External Agent"',
+        'icon = "🦸"',
+        'description = "Ships with the marketplace module."',
+        '',
+      ].join('\n');
+      await fs.writeFile(path.join(tempBmadDir37, 'config.toml'), priorToml);
+
+      const generator37 = new ManifestGenerator();
+      generator37.bmadDir = tempBmadDir37;
+      generator37.bmadFolderName = path.basename(tempBmadDir37);
+      generator37.updatedModules = ['core', 'bmm', 'external-mod'];
+
+      // bmm source is available; external-mod is not — it's a preserved module
+      await generator37.collectAgentsFromModuleYaml();
+      const freshModules = new Set(generator37.agents.map((a) => a.module));
+      assert(freshModules.has('bmm'), 'bmm contributes fresh agents from src module.yaml');
+      assert(!freshModules.has('external-mod'), 'external-mod source is unavailable (preserved-module scenario)');
+
+      await generator37.writeCentralConfig(tempBmadDir37, { core: {}, bmm: {}, 'external-mod': {} });
+
+      const teamContent = await fs.readFile(path.join(tempBmadDir37, 'config.toml'), 'utf8');
+
+      assert(
+        teamContent.includes('[agents.external-hero]'),
+        'Preserved [agents.external-hero] block survives rewrite even though external-mod source was unavailable',
+      );
+      assert(teamContent.includes('Ships with the marketplace module.'), 'Preserved block keeps its original description');
+      assert(teamContent.includes('module = "external-mod"'), 'Preserved block keeps its module field');
+
+      // Freshly collected agents win over stale entries with the same code
+      const maryMatches = teamContent.match(/\[agents\.bmad-agent-analyst\]/g) || [];
+      assert(maryMatches.length === 1, 'bmad-agent-analyst emitted exactly once (fresh wins; stale not duplicated)');
+      assert(!teamContent.includes('Stale Mary'), 'Stale name from prior config.toml is discarded when fresh module.yaml is read');
+    } finally {
+      await fs.remove(tempBmadDir37).catch(() => {});
     }
   }
 

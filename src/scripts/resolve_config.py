@@ -136,7 +136,7 @@ def extract_key(data, dotted_key: str):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Resolve BMad central config using three-layer TOML merge.",
+        description="Resolve BMad central config using four-layer TOML merge.",
     )
     parser.add_argument(
         "--project-root", "-p", required=True,

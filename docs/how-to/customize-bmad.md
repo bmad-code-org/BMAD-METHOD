@@ -289,8 +289,8 @@ The installer partitions answers by the `scope:` declared on each prompt in `mod
 
 ### Editing Rules
 
-- `_bmad/config.toml` and `_bmad/config.user.toml` are **regenerated every install**. You CAN edit `[core]` and `[modules.<code>]` values there; the installer reads them as defaults on next install, so your edits persist. **Do not edit `[agents.<code>]` in those files** — it's rebuilt from `module.yaml` on every install and your changes will be wiped.
-- `_bmad/custom/config.toml` and `_bmad/custom/config.user.toml` are **never touched** by the installer. Put custom agents, agent descriptor overrides, and team-enforced settings there.
+- `_bmad/config.toml` and `_bmad/config.user.toml` are **regenerated every install** from the answers collected during the installer flow. Treat them as read-only outputs — direct edits will be overwritten on the next install. To change an install answer durably, re-run the installer (it remembers your prior answers as defaults) or shadow the value in `_bmad/custom/config.toml`.
+- `_bmad/custom/config.toml` and `_bmad/custom/config.user.toml` are **never touched** by the installer. This is the correct surface for custom agents, agent descriptor overrides, team-enforced settings, and any value you want to pin regardless of install answers.
 
 ### Example — Rebrand an Agent
 
