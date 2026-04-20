@@ -51,7 +51,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ### Required Inputs
 
-- `agent_manifest` = `{project-root}/_bmad/_config/agent-manifest.csv`
+- `agent_roster` = resolved via `python3 {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key agents` (merges four layers in order: `_bmad/config.toml`, `_bmad/config.user.toml`, `_bmad/custom/config.toml`, `_bmad/custom/config.user.toml`)
 
 ### Context
 
@@ -478,7 +478,7 @@ Amelia (Developer): "No problem. We'll still do a thorough retro on Epic {{epic_
 
 <step n="5" goal="Initialize Retrospective with Rich Context">
 
-<action>Load agent configurations from {agent_manifest}</action>
+<action>Load agent roster from {agent_roster}</action>
 <action>Identify which agents participated in Epic {{epic_number}} based on story records</action>
 <action>Ensure key roles present: Product Owner, Developer (facilitating), Testing/QA, Architect</action>
 

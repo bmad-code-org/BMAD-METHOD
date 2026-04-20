@@ -53,11 +53,11 @@ When you invoke a named agent, eight steps run in order:
 7. **Execute append steps** — any post-greet setup the team configured
 8. **Dispatch or present the menu** — if your opening message maps to a menu item, go directly; otherwise render the menu and wait for input
 
-Step 8 is where the magic lands. "Hey Mary, let's brainstorm" skips rendering because `bmad-brainstorming` is an obvious match for `BP` on Mary's menu. If you say something ambiguous, she asks — once, briefly, not as a confirmation ritual. If nothing fits, she continues the conversation normally.
+Step 8 is where intent meets capability. "Hey Mary, let's brainstorm" skips rendering because `bmad-brainstorming` is an obvious match for `BP` on Mary's menu. If you say something ambiguous, she asks once, briefly, not as a confirmation ritual. If nothing fits, she continues the conversation normally.
 
 ## Why Not Just a Menu?
 
-Menus force the user to meet the tool halfway. You have to remember that brainstorming lives under code `BP` on the analyst agent, not the PM agent. You have to know which persona owns which capabilities. That's cognitive overhead the tool is making you carry.
+Menus force the user to meet the tool halfway. You have to remember that brainstorming lives under code `BP` on the analyst agent, not the PM agent, and know which persona owns which capabilities. That's cognitive overhead the tool is making you carry.
 
 Named agents invert it. You say what you want, to whom, in whatever words feel natural. The agent knows who they are and what they do. When your intent is clear enough, they just go.
 
@@ -65,25 +65,27 @@ The menu is still there as a fallback — show it when you're exploring, skip it
 
 ## Why Not Just a Blank Prompt?
 
-Blank prompts assume you know the magic words. "Help me brainstorm" might work; "let's ideate on my SaaS idea" might not. Results vary based on how you phrase the ask. You become responsible for prompt engineering.
+Blank prompts assume you know the magic words. "Help me brainstorm" might work, but "let's ideate on my SaaS idea" might not, and the results depend on how you phrased the ask. You become responsible for prompt engineering.
 
-Named agents bring structure without taking freedom. The persona is consistent, the capabilities are discoverable, the menu is always one `bmad-help` away. You don't have to guess what the agent can do — but you also don't have to consult a manual to do it.
+Named agents add structure without closing off freedom. The persona stays consistent, the capabilities are discoverable, and `bmad-help` is always one command away. You don't have to guess what the agent can do, and you don't need a manual to use it either.
 
 ## Customization as a First-Class Citizen
 
-The customization model is why this scales beyond a single developer.
+The customization model is what lets this scale beyond a single developer.
 
 Every agent ships a `customize.toml` with sensible defaults. Teams commit overrides to `_bmad/custom/bmad-agent-{role}.toml`. Individuals can layer personal preferences in `.user.toml` (gitignored). The resolver merges all three at activation time with predictable structural rules.
 
-Concrete example: a team commits a single file telling Amelia to always use the Context7 MCP tool for library docs and to fall back to Linear when a story isn't in the local epics list. Every dev workflow Amelia dispatches — dev-story, quick-dev, create-story, code-review — inherits that behavior. No source edits, no forks, no per-workflow duplication.
+Concrete example: a team commits a single file telling Amelia to always use the Context7 MCP tool for library docs and to fall back to Linear when a story isn't in the local epics list. Every dev workflow Amelia dispatches (dev-story, quick-dev, create-story, code-review) inherits that behavior, with no source edits or per-workflow duplication required.
+
+There's also a second customization surface for *cross-cutting* concerns: the central `_bmad/config.toml` and `_bmad/config.user.toml` (both installer-owned, rebuilt from each module's `module.yaml`) plus `_bmad/custom/config.toml` (team, committed) and `_bmad/custom/config.user.toml` (personal, gitignored) for overrides. This is where the **agent roster** lives — the lightweight descriptors that roster consumers like `bmad-party-mode`, `bmad-retrospective`, and `bmad-advanced-elicitation` read to know who's available and how to embody them. Rebrand an agent org-wide with a team override; add fictional voices (Kirk, Spock, a domain expert persona) as personal experiments via the `.user.toml` override — without touching any skill folder. The per-skill file shapes how Mary *behaves* when she activates; the central config shapes how other skills *see* her when they look at the field.
 
 For the full customization surface and worked examples, see:
 
 - [How to Customize BMad](../how-to/customize-bmad.md) — the reference for what's customizable and how merge works
-- [How to Expand BMad for Your Organization](../how-to/expand-bmad-for-your-org.md) — four worked recipes spanning agent-wide rules, workflow conventions, external publishing, and template swaps
+- [How to Expand BMad for Your Organization](../how-to/expand-bmad-for-your-org.md) — five worked recipes spanning agent-wide rules, workflow conventions, external publishing, template swaps, and agent roster customization
 
 ## The Bigger Idea
 
-Most AI assistants today are either menus or prompts. Both shift cognitive load onto the user. Named agents plus customizable skills do something different: they let you talk to a teammate who already knows the work, and let your organization shape that teammate without forking.
+Most AI assistants today are either menus or prompts, and both shift cognitive load onto the user. Named agents plus customizable skills let you talk to a teammate who already knows the work, and let your organization shape that teammate without forking.
 
-The next time you type "Hey Mary, let's brainstorm" and she just gets on with it — notice what didn't happen. No slash command. No menu navigation. No awkward reminder of what she can do. That absence is the design.
+The next time you type "Hey Mary, let's brainstorm" and she just gets on with it, notice what didn't happen. There was no slash command, no menu to navigate, no awkward reminder of what she can do. That absence is the design.

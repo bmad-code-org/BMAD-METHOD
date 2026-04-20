@@ -2,14 +2,8 @@ const path = require('node:path');
 const fs = require('../fs-native');
 const yaml = require('yaml');
 const crypto = require('node:crypto');
-const csv = require('csv-parse/sync');
-const { getSourcePath, getModulePath } = require('../project-root');
+const { getModulePath } = require('../project-root');
 const prompts = require('../prompts');
-const {
-  loadSkillManifest: loadSkillManifestShared,
-  getCanonicalId: getCanonicalIdShared,
-  getArtifactType: getArtifactTypeShared,
-} = require('../ide/shared/skill-manifest');
 
 // Load package.json for version info
 const packageJson = require('../../../package.json');
@@ -24,21 +18,6 @@ class ManifestGenerator {
     this.modules = [];
     this.files = [];
     this.selectedIdes = [];
-  }
-
-  /** Delegate to shared skill-manifest module */
-  async loadSkillManifest(dirPath) {
-    return loadSkillManifestShared(dirPath);
-  }
-
-  /** Delegate to shared skill-manifest module */
-  getCanonicalId(manifest, filename) {
-    return getCanonicalIdShared(manifest, filename);
-  }
-
-  /** Delegate to shared skill-manifest module */
-  getArtifactType(manifest, filename) {
-    return getArtifactTypeShared(manifest, filename);
   }
 
   /**
@@ -98,16 +77,20 @@ class ManifestGenerator {
     // Collect skills first (populates skillClaimedDirs before legacy collectors run)
     await this.collectSkills();
 
-    // Collect agent data - use updatedModules which includes all installed modules
-    await this.collectAgents(this.updatedModules);
+    // Collect agent essence from each module's source module.yaml `agents:` array
+    await this.collectAgentsFromModuleYaml();
 
     // Write manifest files and collect their paths
+    const [teamConfigPath, userConfigPath] = await this.writeCentralConfig(bmadDir, options.moduleConfigs || {});
     const manifestFiles = [
       await this.writeMainManifest(cfgDir),
       await this.writeSkillManifest(cfgDir),
-      await this.writeAgentManifest(cfgDir),
+      teamConfigPath,
+      userConfigPath,
       await this.writeFilesManifest(cfgDir),
     ];
+
+    await this.ensureCustomConfigStubs(bmadDir);
 
     return {
       skills: this.skills.length,
@@ -150,24 +133,13 @@ class ManifestGenerator {
         const skillMeta = await this.parseSkillMd(skillMdPath, dir, dirName, debug);
 
         if (skillMeta) {
-          // Load manifest when present (for agent metadata)
-          const manifest = await this.loadSkillManifest(dir);
-          const artifactType = this.getArtifactType(manifest, skillFile);
-
           // Build path relative from module root (points to SKILL.md — the permanent entrypoint)
           const relativePath = path.relative(modulePath, dir).split(path.sep).join('/');
           const installPath = relativePath
             ? `${this.bmadFolderName}/${moduleName}/${relativePath}/${skillFile}`
             : `${this.bmadFolderName}/${moduleName}/${skillFile}`;
 
-          // Native SKILL.md entrypoints derive canonicalId from directory name.
-          // Agent entrypoints may keep canonicalId metadata for compatibility, so
-          // only warn for non-agent SKILL.md directories.
-          if (manifest && manifest.__single && manifest.__single.canonicalId && artifactType !== 'agent') {
-            console.warn(
-              `Warning: Native entrypoint manifest at ${dir}/bmad-skill-manifest.yaml contains canonicalId — this field is ignored for SKILL.md directories (directory name is the canonical ID)`,
-            );
-          }
+          // Native SKILL.md entrypoints always derive canonicalId from directory name.
           const canonicalId = dirName;
 
           this.skills.push({
@@ -263,105 +235,49 @@ class ManifestGenerator {
   }
 
   /**
-   * Collect all agents from selected modules by walking their directory trees.
+   * Collect agents from each installed module's source module.yaml `agents:` array.
+   * Essence fields (code, name, title, icon, description) are authored in module.yaml;
+   * `team` defaults to module code when not set; `module` is always the owning module.
    */
-  async collectAgents(selectedModules) {
+  async collectAgentsFromModuleYaml() {
     this.agents = [];
     const debug = process.env.BMAD_DEBUG_MANIFEST === 'true';
 
-    // Walk each module's full directory tree looking for type:agent manifests
     for (const moduleName of this.updatedModules) {
-      const modulePath = path.join(this.bmadDir, moduleName);
-      if (!(await fs.pathExists(modulePath))) continue;
+      const moduleYamlPath = path.join(getModulePath(moduleName), 'module.yaml');
+      if (!(await fs.pathExists(moduleYamlPath))) continue;
 
-      const moduleAgents = await this.getAgentsFromDirRecursive(modulePath, moduleName, '', debug);
-      this.agents.push(...moduleAgents);
-    }
-
-    // Get standalone agents from bmad/agents/ directory
-    const standaloneAgentsDir = path.join(this.bmadDir, 'agents');
-    if (await fs.pathExists(standaloneAgentsDir)) {
-      const standaloneAgents = await this.getAgentsFromDirRecursive(standaloneAgentsDir, 'standalone', '', debug);
-      this.agents.push(...standaloneAgents);
-    }
-
-    if (debug) {
-      console.log(`[DEBUG] collectAgents: total agents found: ${this.agents.length}`);
-    }
-  }
-
-  /**
-   * Recursively walk a directory tree collecting agents.
-   * Discovers agents via directory with bmad-skill-manifest.yaml containing type: agent
-   *
-   * @param {string} dirPath - Current directory being scanned
-   * @param {string} moduleName - Module this directory belongs to
-   * @param {string} relativePath - Path relative to the module root (for install path construction)
-   * @param {boolean} debug - Emit debug messages
-   */
-  async getAgentsFromDirRecursive(dirPath, moduleName, relativePath = '', debug = false) {
-    const agents = [];
-    let entries;
-    try {
-      entries = await fs.readdir(dirPath, { withFileTypes: true });
-    } catch {
-      return agents;
-    }
-
-    for (const entry of entries) {
-      if (!entry.isDirectory()) continue;
-      if (entry.name.startsWith('.') || entry.name.startsWith('_')) continue;
-
-      const fullPath = path.join(dirPath, entry.name);
-
-      // Check for type:agent manifest BEFORE checking skillClaimedDirs —
-      // agent dirs may be claimed by collectSkills for IDE installation,
-      // but we still need them in agent-manifest.csv.
-      const dirManifest = await this.loadSkillManifest(fullPath);
-      if (dirManifest && dirManifest.__single && dirManifest.__single.type === 'agent') {
-        const m = dirManifest.__single;
-        const dirRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
-        const agentModule = m.module || moduleName;
-        const installPath = `${this.bmadFolderName}/${agentModule}/${dirRelativePath}`;
-
-        agents.push({
-          name: m.name || entry.name,
-          displayName: m.displayName || m.name || entry.name,
-          title: m.title || '',
-          icon: m.icon || '',
-          role: m.role ? this.cleanForCSV(m.role) : '',
-          identity: m.identity ? this.cleanForCSV(m.identity) : '',
-          communicationStyle: m.communicationStyle ? this.cleanForCSV(m.communicationStyle) : '',
-          principles: m.principles ? this.cleanForCSV(m.principles) : '',
-          module: agentModule,
-          path: installPath,
-          canonicalId: m.canonicalId || '',
-        });
-
-        this.files.push({
-          type: 'agent',
-          name: m.name || entry.name,
-          module: agentModule,
-          path: installPath,
-        });
-
-        if (debug) {
-          console.log(`[DEBUG] collectAgents: found type:agent "${m.name || entry.name}" at ${fullPath}`);
-        }
+      let moduleDef;
+      try {
+        moduleDef = yaml.parse(await fs.readFile(moduleYamlPath, 'utf8'));
+      } catch (error) {
+        if (debug) console.log(`[DEBUG] collectAgentsFromModuleYaml: failed to parse ${moduleYamlPath}: ${error.message}`);
         continue;
       }
 
-      // Skip directories claimed by collectSkills (non-agent type skills) —
-      // avoids recursing into skill trees that can't contain agents.
-      if (this.skillClaimedDirs && this.skillClaimedDirs.has(fullPath)) continue;
+      if (!moduleDef || !Array.isArray(moduleDef.agents)) continue;
 
-      // Recurse into subdirectories
-      const newRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
-      const subDirAgents = await this.getAgentsFromDirRecursive(fullPath, moduleName, newRelativePath, debug);
-      agents.push(...subDirAgents);
+      for (const entry of moduleDef.agents) {
+        if (!entry || typeof entry.code !== 'string') continue;
+        this.agents.push({
+          code: entry.code,
+          name: entry.name || '',
+          title: entry.title || '',
+          icon: entry.icon || '',
+          description: entry.description || '',
+          module: moduleName,
+          team: entry.team || moduleName,
+        });
+      }
+
+      if (debug) {
+        console.log(`[DEBUG] collectAgentsFromModuleYaml: ${moduleName} contributed ${moduleDef.agents.length} agents`);
+      }
     }
 
-    return agents;
+    if (debug) {
+      console.log(`[DEBUG] collectAgentsFromModuleYaml: total agents found: ${this.agents.length}`);
+    }
   }
 
   /**
@@ -477,75 +393,230 @@ class ManifestGenerator {
   }
 
   /**
-   * Write agent manifest CSV
-   * @returns {string} Path to the manifest file
+   * Write central _bmad/config.toml with [core], [modules.<code>], [agents.<code>] tables.
+   * Install-owned. Team-scope answers → config.toml; user-scope answers → config.user.toml.
+   * Both files are regenerated on every install. User overrides live in
+   * _bmad/custom/config.toml and _bmad/custom/config.user.toml (never touched by installer).
+   * @returns {string[]} Paths to the written config files
    */
-  async writeAgentManifest(cfgDir) {
-    const csvPath = path.join(cfgDir, 'agent-manifest.csv');
-    const escapeCsv = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
+  async writeCentralConfig(bmadDir, moduleConfigs) {
+    const teamPath = path.join(bmadDir, 'config.toml');
+    const userPath = path.join(bmadDir, 'config.user.toml');
 
-    // Read existing manifest to preserve entries
-    const existingEntries = new Map();
-    if (await fs.pathExists(csvPath)) {
-      const content = await fs.readFile(csvPath, 'utf8');
-      const records = csv.parse(content, {
-        columns: true,
-        skip_empty_lines: true,
-      });
-      for (const record of records) {
-        existingEntries.set(`${record.module}:${record.name}`, record);
+    // Load each module's source module.yaml to determine scope per prompt key.
+    // Default scope is 'team' when the prompt doesn't declare one.
+    // When a module.yaml is unreadable we warn — for known official modules
+    // this means user-scoped keys (e.g. user_name) could mis-file into the
+    // team config, so the operator should notice.
+    const scopeByModuleKey = {};
+    for (const moduleName of this.updatedModules) {
+      const moduleYamlPath = path.join(getModulePath(moduleName), 'module.yaml');
+      if (!(await fs.pathExists(moduleYamlPath))) continue;
+      try {
+        const parsed = yaml.parse(await fs.readFile(moduleYamlPath, 'utf8'));
+        if (!parsed || typeof parsed !== 'object') continue;
+        scopeByModuleKey[moduleName] = {};
+        for (const [key, value] of Object.entries(parsed)) {
+          if (value && typeof value === 'object' && 'prompt' in value) {
+            scopeByModuleKey[moduleName][key] = value.scope === 'user' ? 'user' : 'team';
+          }
+        }
+      } catch (error) {
+        console.warn(
+          `[warn] writeCentralConfig: could not parse module.yaml for '${moduleName}' (${error.message}). ` +
+            `Answers from this module will default to team scope — user-scoped keys may mis-file into config.toml.`,
+        );
       }
     }
 
-    // Create CSV header with persona fields and canonicalId
-    let csvContent = 'name,displayName,title,icon,role,identity,communicationStyle,principles,module,path,canonicalId\n';
+    // Core keys are always known (core module.yaml is built-in). These are
+    // the only keys allowed in [core]; they must be stripped from every
+    // non-core module bucket because legacy _bmad/{mod}/config.yaml files
+    // spread core values into each module. Core belongs in [core] only —
+    // workflows that need user_name/language/etc. read [core] directly.
+    const coreKeys = new Set(Object.keys(scopeByModuleKey.core || {}));
 
-    // Combine existing and new agents, preferring new data for duplicates
-    const allAgents = new Map();
+    // Partition a module's answered config into team vs user buckets.
+    // For non-core modules: strip core keys always; when we know the module's
+    // own schema, also drop keys it doesn't declare. Unknown-schema modules
+    // (external / marketplace) fall through with their remaining answers as
+    // team so they don't vanish from the config.
+    const partition = (moduleName, cfg, onlyDeclaredKeys = false) => {
+      const team = {};
+      const user = {};
+      const scopes = scopeByModuleKey[moduleName] || {};
+      const isCore = moduleName === 'core';
+      for (const [key, value] of Object.entries(cfg || {})) {
+        if (!isCore && coreKeys.has(key)) continue;
+        if (onlyDeclaredKeys && !(key in scopes)) continue;
+        if (scopes[key] === 'user') {
+          user[key] = value;
+        } else {
+          team[key] = value;
+        }
+      }
+      return { team, user };
+    };
 
-    // Add existing entries
-    for (const [key, value] of existingEntries) {
-      allAgents.set(key, value);
+    const teamHeader = [
+      '# ─────────────────────────────────────────────────────────────────',
+      '# Installer-managed. Regenerated on every install — treat as read-only.',
+      '#',
+      '# Direct edits to this file will be overwritten on the next install.',
+      '# To change an install answer durably, re-run the installer (your prior',
+      '# answers are remembered as defaults). To pin a value regardless of',
+      '# install answers, or to add custom agents / override descriptors, use:',
+      '#   _bmad/custom/config.toml       (team, committed)',
+      '#   _bmad/custom/config.user.toml  (personal, gitignored)',
+      '# Those files are never touched by the installer.',
+      '# ─────────────────────────────────────────────────────────────────',
+      '',
+    ];
+
+    const userHeader = [
+      '# ─────────────────────────────────────────────────────────────────',
+      '# Installer-managed. Regenerated on every install — treat as read-only.',
+      '# Holds install answers scoped to YOU personally.',
+      '#',
+      '# Direct edits to this file will be overwritten on the next install.',
+      '# To change an answer durably, re-run the installer (your prior answers',
+      '# are remembered as defaults). For pinned overrides or custom sections',
+      '# the installer does not know about, use _bmad/custom/config.user.toml',
+      '# — it is never touched by the installer.',
+      '# ─────────────────────────────────────────────────────────────────',
+      '',
+    ];
+
+    const teamLines = [...teamHeader];
+    const userLines = [...userHeader];
+
+    // [core] — split into team and user
+    const coreConfig = moduleConfigs.core || {};
+    const { team: coreTeam, user: coreUser } = partition('core', coreConfig);
+    if (Object.keys(coreTeam).length > 0) {
+      teamLines.push('[core]');
+      for (const [key, value] of Object.entries(coreTeam)) {
+        teamLines.push(`${key} = ${formatTomlValue(value)}`);
+      }
+      teamLines.push('');
+    }
+    if (Object.keys(coreUser).length > 0) {
+      userLines.push('[core]');
+      for (const [key, value] of Object.entries(coreUser)) {
+        userLines.push(`${key} = ${formatTomlValue(value)}`);
+      }
+      userLines.push('');
     }
 
-    // Add/update new agents
+    // [modules.<code>] — split per module
+    for (const moduleName of this.updatedModules) {
+      if (moduleName === 'core') continue;
+      const cfg = moduleConfigs[moduleName];
+      if (!cfg || Object.keys(cfg).length === 0) continue;
+      // Only filter out spread-from-core pollution when we actually know
+      // this module's prompt schema. For external/marketplace modules whose
+      // module.yaml isn't in the src tree, fall through as all-team so we
+      // don't drop their real answers.
+      const haveSchema = Object.keys(scopeByModuleKey[moduleName] || {}).length > 0;
+      const { team: modTeam, user: modUser } = partition(moduleName, cfg, haveSchema);
+      if (Object.keys(modTeam).length > 0) {
+        teamLines.push(`[modules.${moduleName}]`);
+        for (const [key, value] of Object.entries(modTeam)) {
+          teamLines.push(`${key} = ${formatTomlValue(value)}`);
+        }
+        teamLines.push('');
+      }
+      if (Object.keys(modUser).length > 0) {
+        userLines.push(`[modules.${moduleName}]`);
+        for (const [key, value] of Object.entries(modUser)) {
+          userLines.push(`${key} = ${formatTomlValue(value)}`);
+        }
+        userLines.push('');
+      }
+    }
+
+    // [agents.<code>] — always team (agent roster is organizational).
+    // Freshly collected agents come from module.yaml this run. If a module
+    // was preserved (e.g. during quickUpdate when its source isn't available),
+    // its module.yaml wasn't read — so its agents aren't in `this.agents` and
+    // would silently disappear from the roster. Preserve those existing
+    // [agents.*] blocks verbatim from the prior config.toml.
+    const freshAgentCodes = new Set(this.agents.map((a) => a.code));
+    const contributingModules = new Set(this.agents.map((a) => a.module));
+    const preservedModules = this.updatedModules.filter((m) => !contributingModules.has(m));
+    const preservedBlocks = [];
+    if (preservedModules.length > 0 && (await fs.pathExists(teamPath))) {
+      try {
+        const prev = await fs.readFile(teamPath, 'utf8');
+        for (const block of extractAgentBlocks(prev)) {
+          if (freshAgentCodes.has(block.code)) continue;
+          if (block.module && preservedModules.includes(block.module)) {
+            preservedBlocks.push(block.body);
+          }
+        }
+      } catch (error) {
+        console.warn(`[warn] writeCentralConfig: could not read prior config.toml to preserve agents: ${error.message}`);
+      }
+    }
+
     for (const agent of this.agents) {
-      const key = `${agent.module}:${agent.name}`;
-      allAgents.set(key, {
-        name: agent.name,
-        displayName: agent.displayName,
-        title: agent.title,
-        icon: agent.icon,
-        role: agent.role,
-        identity: agent.identity,
-        communicationStyle: agent.communicationStyle,
-        principles: agent.principles,
-        module: agent.module,
-        path: agent.path,
-        canonicalId: agent.canonicalId || '',
-      });
+      const agentLines = [`[agents.${agent.code}]`, `module = ${formatTomlValue(agent.module)}`, `team = ${formatTomlValue(agent.team)}`];
+      if (agent.name) agentLines.push(`name = ${formatTomlValue(agent.name)}`);
+      if (agent.title) agentLines.push(`title = ${formatTomlValue(agent.title)}`);
+      if (agent.icon) agentLines.push(`icon = ${formatTomlValue(agent.icon)}`);
+      if (agent.description) agentLines.push(`description = ${formatTomlValue(agent.description)}`);
+      agentLines.push('');
+      teamLines.push(...agentLines);
     }
 
-    // Write all agents
-    for (const [, record] of allAgents) {
-      const row = [
-        escapeCsv(record.name),
-        escapeCsv(record.displayName),
-        escapeCsv(record.title),
-        escapeCsv(record.icon),
-        escapeCsv(record.role),
-        escapeCsv(record.identity),
-        escapeCsv(record.communicationStyle),
-        escapeCsv(record.principles),
-        escapeCsv(record.module),
-        escapeCsv(record.path),
-        escapeCsv(record.canonicalId),
-      ].join(',');
-      csvContent += row + '\n';
+    for (const body of preservedBlocks) {
+      teamLines.push(body, '');
     }
 
-    await fs.writeFile(csvPath, csvContent);
-    return csvPath;
+    const teamContent = teamLines.join('\n').replace(/\n+$/, '\n');
+    const userContent = userLines.join('\n').replace(/\n+$/, '\n');
+    await fs.writeFile(teamPath, teamContent);
+    await fs.writeFile(userPath, userContent);
+    return [teamPath, userPath];
+  }
+
+  /**
+   * Create empty _bmad/custom/config.toml and _bmad/custom/config.user.toml stubs
+   * on first install only. Installer never touches these files again after creation.
+   */
+  async ensureCustomConfigStubs(bmadDir) {
+    const customDir = path.join(bmadDir, 'custom');
+    await fs.ensureDir(customDir);
+
+    const stubs = [
+      {
+        file: path.join(customDir, 'config.toml'),
+        header: [
+          '# Team / enterprise overrides for _bmad/config.toml.',
+          '# Committed to the repo — applies to every developer on the project.',
+          '# Tables deep-merge over base config; keyed entries merge by key.',
+          '# Example: override an agent descriptor, or add a new agent.',
+          '#',
+          '# [agents.bmad-agent-pm]',
+          '# description = "Prefers short, bulleted PRDs over narrative drafts."',
+          '',
+        ],
+      },
+      {
+        file: path.join(customDir, 'config.user.toml'),
+        header: [
+          '# Personal overrides for _bmad/config.toml.',
+          '# NOT committed (gitignored) — applies only to your local install.',
+          '# Wins over both base config and team overrides.',
+          '',
+        ],
+      },
+    ];
+
+    for (const { file, header } of stubs) {
+      if (await fs.pathExists(file)) continue;
+      await fs.writeFile(file, header.join('\n'));
+    }
   }
 
   /**
@@ -689,6 +760,61 @@ class ManifestGenerator {
 
     return false;
   }
+}
+
+/**
+ * Format a JS scalar as a TOML value literal.
+ * Handles strings (quoted + escaped), booleans, numbers, and arrays of scalars.
+ * Objects are not expected at this emit path.
+ */
+function formatTomlValue(value) {
+  if (value === null || value === undefined) return '""';
+  if (typeof value === 'boolean') return value ? 'true' : 'false';
+  if (typeof value === 'number' && Number.isFinite(value)) return String(value);
+  if (Array.isArray(value)) return `[${value.map((v) => formatTomlValue(v)).join(', ')}]`;
+  const str = String(value);
+  const escaped = str
+    .replaceAll('\\', '\\\\')
+    .replaceAll('"', String.raw`\"`)
+    .replaceAll('\n', String.raw`\n`)
+    .replaceAll('\r', String.raw`\r`)
+    .replaceAll('\t', String.raw`\t`);
+  return `"${escaped}"`;
+}
+
+/**
+ * Extract [agents.<code>] blocks from a previously-emitted config.toml.
+ * We only need this for roster preservation — the file is our own controlled
+ * output, so a simple line scanner is safer than adding a TOML parser
+ * dependency. Each block runs from its `[agents.<code>]` header until the
+ * next `[` heading or EOF; the `module = "..."` line inside drives which
+ * entries we keep on the next write.
+ * @returns {Array<{code: string, module: string | null, body: string}>}
+ */
+function extractAgentBlocks(tomlContent) {
+  const blocks = [];
+  const lines = tomlContent.split('\n');
+  let i = 0;
+  while (i < lines.length) {
+    const header = lines[i].match(/^\[agents\.([^\]]+)]\s*$/);
+    if (!header) {
+      i++;
+      continue;
+    }
+    const code = header[1];
+    const blockLines = [lines[i]];
+    let moduleName = null;
+    i++;
+    while (i < lines.length && !lines[i].startsWith('[')) {
+      blockLines.push(lines[i]);
+      const m = lines[i].match(/^module\s*=\s*"((?:[^"\\]|\\.)*)"\s*$/);
+      if (m) moduleName = m[1];
+      i++;
+    }
+    while (blockLines.length > 1 && blockLines.at(-1) === '') blockLines.pop();
+    blocks.push({ code, module: moduleName, body: blockLines.join('\n') });
+  }
+  return blocks;
 }
 
 module.exports = { ManifestGenerator };

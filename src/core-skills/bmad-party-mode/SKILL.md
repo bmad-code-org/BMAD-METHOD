@@ -26,7 +26,13 @@ Party mode accepts optional arguments when invoked:
   - Use `{user_name}` for greeting
   - Use `{communication_language}` for all communications
 
-3. **Read the agent manifest** at `{project-root}/_bmad/_config/agent-manifest.csv`. Build an internal roster of available agents with their displayName, title, icon, role, identity, communicationStyle, and principles.
+3. **Resolve the agent roster** by running:
+
+    ```bash
+    python3 {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key agents
+    ```
+
+    The resolver merges four layers in order: `_bmad/config.toml` (installer base, team-scoped), `_bmad/config.user.toml` (installer base, user-scoped), `_bmad/custom/config.toml` (team overrides), and `_bmad/custom/config.user.toml` (personal overrides). Each entry under `agents` is keyed by the agent's `code` and carries `name`, `title`, `icon`, `description`, `module`, and `team`. Build an internal roster of available agents from those fields.
 
 4. **Load project context** — search for `**/project-context.md`. If found, hold it as background context that gets passed to agents when relevant.
 
@@ -50,15 +56,12 @@ Choose 2-4 agents whose expertise is most relevant to what the user is asking. U
 
 For each selected agent, spawn a subagent using the Agent tool. Each subagent gets:
 
-**The agent prompt** (built from the manifest data):
+**The agent prompt** (built from the resolved roster entry):
 ```
-You are {displayName} ({title}), a BMAD agent in a collaborative roundtable discussion.
+You are {name} ({title}), a BMAD agent in a collaborative roundtable discussion.
 
 ## Your Persona
-- Icon: {icon}
-- Communication Style: {communicationStyle}
-- Principles: {principles}
-- Identity: {identity}
+{icon} {name} — {description}
 
 ## Discussion Context
 {summary of the conversation so far — keep under 400 words}
@@ -72,11 +75,11 @@ You are {displayName} ({title}), a BMAD agent in a collaborative roundtable disc
 {the user's actual message}
 
 ## Guidelines
-- Respond authentically as {displayName}. Your perspective should reflect your genuine expertise.
-- Start your response with: {icon} **{displayName}:**
+- Respond authentically as {name}. Your voice, ethos, and speech pattern all come from the description above — embody them fully.
+- Start your response with: {icon} **{name}:**
 - Speak in {communication_language}.
 - Scale your response to the substance — don't pad. If you have a brief point, make it briefly.
-- Disagree with other agents when your expertise tells you to. Don't hedge or be polite about it.
+- Disagree with other agents when your perspective tells you to. Don't hedge or be polite about it.
 - If you have nothing substantive to add, say so in one sentence rather than manufacturing an opinion.
 - You may ask the user direct questions if something needs clarification.
 - Do NOT use tools. Just respond with your perspective.

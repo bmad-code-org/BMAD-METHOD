@@ -54,8 +54,11 @@ class InstallPaths {
   manifestFile() {
     return path.join(this.configDir, 'manifest.yaml');
   }
-  agentManifest() {
-    return path.join(this.configDir, 'agent-manifest.csv');
+  centralConfig() {
+    return path.join(this.bmadDir, 'config.toml');
+  }
+  centralUserConfig() {
+    return path.join(this.bmadDir, 'config.user.toml');
   }
   filesManifest() {
     return path.join(this.configDir, 'files-manifest.csv');

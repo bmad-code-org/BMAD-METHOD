@@ -92,15 +92,6 @@ async function createSkillCollisionFixture() {
   await fs.ensureDir(configDir);
 
   await fs.writeFile(
-    path.join(configDir, 'agent-manifest.csv'),
-    [
-      'name,displayName,title,icon,capabilities,role,identity,communicationStyle,principles,module,path,canonicalId',
-      '"bmad-master","BMAD Master","","","","","","","","core","_bmad/core/agents/bmad-master.md","bmad-master"',
-      '',
-    ].join('\n'),
-  );
-
-  await fs.writeFile(
     path.join(configDir, 'skill-manifest.csv'),
     [
       'canonicalId,name,description,module,path',
@@ -1458,16 +1449,16 @@ async function runTests() {
     const taskSkillEntry29 = generator29.skills.find((s) => s.canonicalId === 'task-skill');
     assert(taskSkillEntry29 !== undefined, 'Skill in tasks/ dir appears in skills[]');
 
-    // Native agent entrypoint should be installed as a verbatim skill and also
-    // remain visible to the agent manifest pipeline.
+    // Native agent entrypoint should be installed as a verbatim skill.
+    // (Agent roster is now sourced from module.yaml's `agents:` block, not
+    // from per-skill bmad-skill-manifest.yaml sidecars, so this test no longer
+    // verifies agents[] membership — see collectAgentsFromModuleYaml tests.)
     const nativeAgentEntry29 = generator29.skills.find((s) => s.canonicalId === 'bmad-tea');
     assert(nativeAgentEntry29 !== undefined, 'Native type:agent SKILL.md dir appears in skills[]');
     assert(
       nativeAgentEntry29 && nativeAgentEntry29.path.includes('agents/bmad-tea/SKILL.md'),
       'Native type:agent SKILL.md path points to the agent directory entrypoint',
     );
-    const nativeAgentManifest29 = generator29.agents.find((a) => a.name === 'bmad-tea');
-    assert(nativeAgentManifest29 !== undefined, 'Native type:agent SKILL.md dir appears in agents[] for agent metadata');
 
     // Regular type:workflow should NOT appear in skills[]
     const regularInSkills29 = generator29.skills.find((s) => s.canonicalId === 'regular-wf');
@@ -2027,6 +2018,239 @@ async function runTests() {
 
       assert(Array.isArray(result.modules), 'fetchGitHubYaml parses YAML correctly');
       assert(result.modules[0].name === 'test', 'fetchGitHubYaml preserves YAML values');
+    }
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 35: Central Config Emission
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 35: Central Config Emission${colors.reset}\n`);
+
+  {
+    // Use the real src/ tree (core-skills + bmm-skills module.yaml are read via
+    // getModulePath). Only the destination bmadDir is a temp dir, which the
+    // installer writes config.toml / config.user.toml / custom/ into.
+    const tempBmadDir35 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-central-config-'));
+
+    try {
+      const moduleConfigs = {
+        core: {
+          user_name: 'TestUser',
+          communication_language: 'Spanish',
+          document_output_language: 'English',
+          output_folder: '_bmad-output',
+        },
+        bmm: {
+          project_name: 'demo-project',
+          user_skill_level: 'expert',
+          planning_artifacts: '{project-root}/_bmad-output/planning-artifacts',
+          implementation_artifacts: '{project-root}/_bmad-output/implementation-artifacts',
+          project_knowledge: '{project-root}/docs',
+          // Spread-from-core pollution: legacy per-module config.yaml merges
+          // core values into every module; writeCentralConfig must strip these
+          // from [modules.bmm] so core values only live in [core].
+          user_name: 'TestUser',
+          communication_language: 'Spanish',
+          document_output_language: 'English',
+          output_folder: '_bmad-output',
+        },
+        'external-mod': {
+          // No src/modules/external-mod/module.yaml exists; installer treats
+          // this as unknown-schema and falls through. Core-key stripping still
+          // applies, so user_name/language must NOT appear under this module.
+          custom_setting: 'external-value',
+          another_setting: 'another-value',
+          user_name: 'TestUser',
+          communication_language: 'Spanish',
+        },
+      };
+
+      const generator35 = new ManifestGenerator();
+      generator35.bmadDir = tempBmadDir35;
+      generator35.bmadFolderName = path.basename(tempBmadDir35);
+      generator35.updatedModules = ['core', 'bmm', 'external-mod'];
+
+      // collectAgentsFromModuleYaml reads from src/bmm-skills/module.yaml
+      await generator35.collectAgentsFromModuleYaml();
+      assert(generator35.agents.length >= 6, 'collectAgentsFromModuleYaml discovers bmm agents from module.yaml (>= 6 agents)');
+
+      const maryEntry = generator35.agents.find((a) => a.code === 'bmad-agent-analyst');
+      assert(maryEntry !== undefined, 'collectAgentsFromModuleYaml includes bmad-agent-analyst');
+      assert(maryEntry && maryEntry.name === 'Mary', 'Agent entry carries name field');
+      assert(maryEntry && maryEntry.title === 'Business Analyst', 'Agent entry carries title field');
+      assert(maryEntry && maryEntry.icon === '📊', 'Agent entry carries icon field');
+      assert(maryEntry && maryEntry.description.length > 0, 'Agent entry carries description field');
+      assert(maryEntry && maryEntry.module === 'bmm', 'Agent entry module derives from owning module');
+      assert(maryEntry && maryEntry.team === 'bmm', 'Agent entry team defaults to module code');
+
+      // writeCentralConfig produces the two root files
+      const [teamPath, userPath] = await generator35.writeCentralConfig(tempBmadDir35, moduleConfigs);
+      assert(teamPath === path.join(tempBmadDir35, 'config.toml'), 'writeCentralConfig returns team config path');
+      assert(userPath === path.join(tempBmadDir35, 'config.user.toml'), 'writeCentralConfig returns user config path');
+      assert(await fs.pathExists(teamPath), 'config.toml is written to disk');
+      assert(await fs.pathExists(userPath), 'config.user.toml is written to disk');
+
+      const teamContent = await fs.readFile(teamPath, 'utf8');
+      const userContent = await fs.readFile(userPath, 'utf8');
+
+      // [core] — team-scoped keys land in config.toml
+      assert(teamContent.includes('[core]'), 'config.toml has [core] section');
+      assert(teamContent.includes('document_output_language = "English"'), 'Team-scope core key lands in config.toml');
+      assert(teamContent.includes('output_folder = "_bmad-output"'), 'Team-scope output_folder lands in config.toml');
+      assert(!teamContent.includes('user_name'), 'user_name (scope: user) is absent from config.toml');
+      assert(!teamContent.includes('communication_language'), 'communication_language (scope: user) is absent from config.toml');
+
+      // [core] — user-scoped keys land in config.user.toml
+      assert(userContent.includes('[core]'), 'config.user.toml has [core] section');
+      assert(userContent.includes('user_name = "TestUser"'), 'user_name lands in config.user.toml');
+      assert(userContent.includes('communication_language = "Spanish"'), 'communication_language lands in config.user.toml');
+      assert(!userContent.includes('document_output_language'), 'Team-scope key is absent from config.user.toml');
+
+      // [modules.bmm] — core-key pollution stripped; own user-scope key routed to user file
+      const bmmTeamMatch = teamContent.match(/\[modules\.bmm\][\s\S]*?(?=\n\[|$)/);
+      assert(bmmTeamMatch !== null, 'config.toml has [modules.bmm] section');
+      if (bmmTeamMatch) {
+        const bmmTeamBlock = bmmTeamMatch[0];
+        assert(bmmTeamBlock.includes('project_name = "demo-project"'), 'bmm team-scope key lands under [modules.bmm]');
+        assert(!bmmTeamBlock.includes('user_name'), 'user_name stripped from [modules.bmm] (core-key pollution)');
+        assert(!bmmTeamBlock.includes('communication_language'), 'communication_language stripped from [modules.bmm]');
+        assert(!bmmTeamBlock.includes('user_skill_level'), 'user_skill_level (scope: user) absent from [modules.bmm] in config.toml');
+      }
+
+      const bmmUserMatch = userContent.match(/\[modules\.bmm\][\s\S]*?(?=\n\[|$)/);
+      assert(bmmUserMatch !== null, 'config.user.toml has [modules.bmm] section');
+      if (bmmUserMatch) {
+        assert(bmmUserMatch[0].includes('user_skill_level = "expert"'), 'user_skill_level lands in config.user.toml [modules.bmm]');
+      }
+
+      // [modules.external-mod] — unknown schema, falls through as team; core keys still stripped
+      const extMatch = teamContent.match(/\[modules\.external-mod\][\s\S]*?(?=\n\[|$)/);
+      assert(extMatch !== null, 'Unknown-schema module survives with its own [modules.*] section');
+      if (extMatch) {
+        const extBlock = extMatch[0];
+        assert(extBlock.includes('custom_setting = "external-value"'), 'Unknown-schema module retains its own keys');
+        assert(!extBlock.includes('user_name'), 'Core-key pollution stripped from unknown-schema module too');
+        assert(!extBlock.includes('communication_language'), 'All core-key pollution stripped from unknown-schema module');
+      }
+
+      // [agents.*] — agent roster from bmm module.yaml baked into config.toml (team-only)
+      assert(teamContent.includes('[agents.bmad-agent-analyst]'), 'config.toml has [agents.bmad-agent-analyst] table');
+      assert(teamContent.includes('[agents.bmad-agent-dev]'), 'config.toml has [agents.bmad-agent-dev] table');
+      assert(teamContent.includes('module = "bmm"'), 'Agent entry serializes module field');
+      assert(teamContent.includes('team = "bmm"'), 'Agent entry serializes team field');
+      assert(teamContent.includes('name = "Mary"'), 'Agent entry serializes name');
+      assert(teamContent.includes('icon = "📊"'), 'Agent entry serializes icon');
+      assert(!userContent.includes('[agents.'), '[agents.*] tables are never written to config.user.toml');
+
+      // Header comments present on both files
+      assert(teamContent.includes('Installer-managed. Regenerated on every install'), 'config.toml has installer-managed header');
+      assert(userContent.includes('Holds install answers scoped to YOU personally.'), 'config.user.toml header clarifies user scope');
+    } finally {
+      await fs.remove(tempBmadDir35).catch(() => {});
+    }
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 36: Custom Config Stubs
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 36: Custom Config Stubs${colors.reset}\n`);
+
+  {
+    const tempBmadDir36 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-custom-stubs-'));
+
+    try {
+      const generator36 = new ManifestGenerator();
+
+      // First install: both stubs are created
+      await generator36.ensureCustomConfigStubs(tempBmadDir36);
+
+      const teamStub = path.join(tempBmadDir36, 'custom', 'config.toml');
+      const userStub = path.join(tempBmadDir36, 'custom', 'config.user.toml');
+
+      assert(await fs.pathExists(teamStub), 'ensureCustomConfigStubs creates custom/config.toml');
+      assert(await fs.pathExists(userStub), 'ensureCustomConfigStubs creates custom/config.user.toml');
+
+      // User writes content into the stub
+      const userEdit = '# User edit\n[agents.kirk]\ndescription = "Enterprise captain"\n';
+      await fs.writeFile(userStub, userEdit);
+
+      // Second install: stubs are NOT overwritten
+      await generator36.ensureCustomConfigStubs(tempBmadDir36);
+
+      const preservedContent = await fs.readFile(userStub, 'utf8');
+      assert(preservedContent === userEdit, 'ensureCustomConfigStubs does not overwrite user-edited custom/config.user.toml');
+    } finally {
+      await fs.remove(tempBmadDir36).catch(() => {});
+    }
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 37: Agent Preservation for Non-Contributing Modules
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 37: Agent Preservation for Non-Contributing Modules${colors.reset}\n`);
+
+  {
+    // Scenario: quickUpdate preserves a module whose source isn't available
+    // (e.g. external/marketplace). Its module.yaml isn't read, so its agents
+    // aren't in this.agents. writeCentralConfig must read the prior config.toml
+    // and keep those [agents.*] blocks so the roster doesn't silently shrink.
+    const tempBmadDir37 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-agent-preserve-'));
+
+    try {
+      // Seed a prior config.toml with an agent from an external module
+      const priorToml = [
+        '# prior',
+        '',
+        '[agents.bmad-agent-analyst]',
+        'module = "bmm"',
+        'team = "bmm"',
+        'name = "Stale Mary"',
+        '',
+        '[agents.external-hero]',
+        'module = "external-mod"',
+        'team = "external-mod"',
+        'name = "Hero"',
+        'title = "External Agent"',
+        'icon = "🦸"',
+        'description = "Ships with the marketplace module."',
+        '',
+      ].join('\n');
+      await fs.writeFile(path.join(tempBmadDir37, 'config.toml'), priorToml);
+
+      const generator37 = new ManifestGenerator();
+      generator37.bmadDir = tempBmadDir37;
+      generator37.bmadFolderName = path.basename(tempBmadDir37);
+      generator37.updatedModules = ['core', 'bmm', 'external-mod'];
+
+      // bmm source is available; external-mod is not — it's a preserved module
+      await generator37.collectAgentsFromModuleYaml();
+      const freshModules = new Set(generator37.agents.map((a) => a.module));
+      assert(freshModules.has('bmm'), 'bmm contributes fresh agents from src module.yaml');
+      assert(!freshModules.has('external-mod'), 'external-mod source is unavailable (preserved-module scenario)');
+
+      await generator37.writeCentralConfig(tempBmadDir37, { core: {}, bmm: {}, 'external-mod': {} });
+
+      const teamContent = await fs.readFile(path.join(tempBmadDir37, 'config.toml'), 'utf8');
+
+      assert(
+        teamContent.includes('[agents.external-hero]'),
+        'Preserved [agents.external-hero] block survives rewrite even though external-mod source was unavailable',
+      );
+      assert(teamContent.includes('Ships with the marketplace module.'), 'Preserved block keeps its original description');
+      assert(teamContent.includes('module = "external-mod"'), 'Preserved block keeps its module field');
+
+      // Freshly collected agents win over stale entries with the same code
+      const maryMatches = teamContent.match(/\[agents\.bmad-agent-analyst\]/g) || [];
+      assert(maryMatches.length === 1, 'bmad-agent-analyst emitted exactly once (fresh wins; stale not duplicated)');
+      assert(!teamContent.includes('Stale Mary'), 'Stale name from prior config.toml is discarded when fresh module.yaml is read');
+    } finally {
+      await fs.remove(tempBmadDir37).catch(() => {});
     }
   }
 
