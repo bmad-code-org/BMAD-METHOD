@@ -1,5 +1,4 @@
 ---
-deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 specLoopIteration: 1
 ---
 
@@ -7,7 +6,7 @@ specLoopIteration: 1
 
 ## RULES
 
-- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
+- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{{.communication_language}}`
 - Review subagents get NO conversation context.
 - All review subagents must run at the same model capability as the current session.
 
@@ -23,7 +22,7 @@ Do NOT `git add` anything — this is read-only inspection.
 
 ### Review
 
-Launch three subagents without conversation context. If no sub-agents are available, generate three review prompt files in `{implementation_artifacts}` — one per reviewer role below — and HALT. Ask the human to run each in a separate session (ideally a different LLM) and paste back the findings.
+Launch three subagents without conversation context. If no sub-agents are available, generate three review prompt files in `{{.implementation_artifacts}}` — one per reviewer role below — and HALT. Ask the human to run each in a separate session (ideally a different LLM) and paste back the findings.
 
 - **Blind hunter** — receives `{diff_output}` only. No spec, no context docs, no project access. Invoke via the `bmad-review-adversarial-general` skill.
 - **Edge case hunter** — receives `{diff_output}` and read access to the project. Invoke via the `bmad-review-edge-case-hunter` skill.
@@ -42,7 +41,7 @@ Launch three subagents without conversation context. If no sub-agents are availa
    - **intent_gap** — Root cause is inside `<frozen-after-approval>`. Revert code changes. Loop back to the human to resolve. Once resolved, read fully and follow `./step-02-plan.md` to re-run steps 2–4.
    - **bad_spec** — Root cause is outside `<frozen-after-approval>`. Before reverting code: extract KEEP instructions for positive preservation (what worked well and must survive re-derivation). Revert code changes. Read the `## Spec Change Log` in `{spec_file}` and strictly respect all logged constraints when amending the non-frozen sections that contain the root cause. Append a new change-log entry recording: the triggering finding, what was amended, the known-bad state avoided, and the KEEP instructions. Read fully and follow `./step-03-implement.md` to re-derive the code, then this step will run again.
    - **patch** — Auto-fix. These are the only findings that survive loopbacks.
-   - **defer** — Append to `{deferred_work_file}`.
+   - **defer** — Append to `{{.deferred_work_file}}`.
    - **reject** — Drop silently.
 
 ## NEXT
