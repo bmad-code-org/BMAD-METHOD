@@ -411,6 +411,7 @@ Activation is complete. Begin the workflow below.
 
     **The developer now has everything needed for flawless implementation!**
   </output>
+  <action>Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete` — if the resolved value is non-empty, follow it as the final terminal instruction before exiting.</action>
 </step>
 
 </workflow>
