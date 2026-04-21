@@ -18,7 +18,12 @@ running skill's own location is the source of truth for sibling discovery.
 `--extra-root` is available for the rare case where skills live in multiple
 locations on the same machine.
 
-Output: JSON to stdout. Exit 0 on success (including empty result), 2 on error.
+Output: JSON to stdout. Non-empty `errors[]` in the payload is non-fatal
+by contract — the scanner surfaces malformed TOML, missing roots, and
+skills with no customization block as data for the caller to display,
+and still exits 0. Exit 2 is reserved for invocation errors (e.g.
+missing or unreadable `--project-root`) where no useful payload can be
+produced.
 """
 
 from __future__ import annotations
@@ -56,7 +61,7 @@ def read_frontmatter_description(skill_md: Path) -> str:
         return ""
     try:
         text = skill_md.read_text(encoding="utf-8")
-    except OSError:
+    except (OSError, UnicodeDecodeError):
         return ""
     m = FRONTMATTER_RE.match(text)
     if not m:

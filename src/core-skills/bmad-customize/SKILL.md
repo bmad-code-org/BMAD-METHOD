@@ -11,7 +11,7 @@ Translate a user's intent ("I want X to behave differently") into a correctly-pl
 
 **What customization means in BMad.** Every customizable skill ships a `customize.toml` that declares the knobs it exposes — scalars, arrays, and keyed tables under `[agent]` or `[workflow]`. Users never edit that file. Instead, they write sparse override files to `{project-root}/_bmad/custom/`, and the resolver merges base → team → user at activation. This skill's job is to help users author those override files correctly. Users typically arrive either with a specific skill and change in mind ("make bmad-create-prd require a brief first") or with a broader want ("the PM agent should speak more formally"); you handle both.
 
-Scope for this version: per-skill **agent** overrides (`bmad-agent-<role>.toml` / `.user.toml`) and per-skill **workflow** overrides (`bmad-<workflow>.toml` / `.user.toml`). Central config (`{project-root}/_bmad/custom/config.toml`) is out of scope — flag it and point the user at `docs/how-to/customize-bmad.md` if their ask lives there.
+Scope for this version: per-skill **agent** overrides (`bmad-agent-<role>.toml` / `.user.toml`) and per-skill **workflow** overrides (`bmad-<workflow>.toml` / `.user.toml`). Central config (`{project-root}/_bmad/custom/config.toml`) is out of scope — flag it and point the user at the **How to Customize BMad** guide (https://docs.bmad-method.org/how-to/customize-bmad/) if their ask lives there.
 
 ## Desired Outcomes
 
@@ -38,7 +38,7 @@ Before any other work, verify the project environment supports this skill:
 
 ### Config and greet
 
-Load available config from `{project-root}/_bmad/config.yaml` and `{project-root}/_bmad/config.user.yaml` (root level). Defaults if missing: `user_name` (BMad), `communication_language` (English). Greet the user and acknowledge the topic.
+Load available config from `{project-root}/_bmad/config.toml` and `{project-root}/_bmad/config.user.toml` (root level, installer-owned). Defaults if missing: `user_name` (BMad), `communication_language` (English). Greet the user and acknowledge the topic.
 
 Treat the user's invoking message as initial intent. Skip discovery if they already named a target skill AND a specific change — go straight to Step 3.
 
@@ -144,7 +144,7 @@ Default the choice based on the change's character (policy → team, personal �
 
    Display the merged output and point out the fields that changed so the user sees their override took effect.
 
-   **If the resolver is missing or fails**, fall back: read the three files (`<install-path>/customize.toml`, the written override, and any sibling `.user.toml`) directly, describe how the merge resolves for the fields the user just changed, and tell them the normal verify path is unavailable in this environment.
+   **If the resolver is missing or fails**, fall back: read whichever of the three merge layers exist — `<install-path>/customize.toml` (base), `{project-root}/_bmad/custom/{skill-name}.toml` (team), and `{project-root}/_bmad/custom/{skill-name}.user.toml` (user). Apply base → team → user in order using the same merge rules as the resolver (scalars override, tables deep-merge, `code`/`id`-keyed arrays of tables merge by key, all other arrays append). Describe how the fields the user just changed resolve, and tell them the normal verify path is unavailable in this environment.
 
    **If verification shows the override did not take effect** (field unchanged, resolver reports merge conflict, override file not picked up), do not declare success. Explain what the resolver showed, re-enter Step 4 with the verify output as new context — usually the fix is a field name, merge-mode mismatch (e.g. wrote a scalar where the base expects an array), or wrong placement scope.
 
@@ -164,7 +164,7 @@ If any of these is missing, the skill is not done — either finish the remainin
 
 Say so clearly:
 
-- **Central config** (`{project-root}/_bmad/custom/config.toml` — agent roster, install answers) is not covered by this version. Point the user at `docs/how-to/customize-bmad.md`.
+- **Central config** (`{project-root}/_bmad/custom/config.toml` — agent roster, install answers) is not covered by this version. Point the user at the **How to Customize BMad** guide (https://docs.bmad-method.org/how-to/customize-bmad/).
 - **Changes to step logic, step ordering, or behavior not exposed in `customize.toml`** require a customization feature request or using bmad builder to create a custom skill. Offer to help with either path.
 - **Skills without a `customize.toml`** are not customizable — fork is the only path.
 
@@ -172,4 +172,4 @@ Say so clearly:
 
 - Override files are sparse. Everything omitted inherits from the layer below (base → team → user).
 - The scanner does not hardcode IDE paths. It scans whichever directory this skill itself was loaded from — that's the same place the user's other skills live in this session. For mixed project-local + user-global setups, use `--extra-root`.
-- Full reference on the customization surface, merge rules, and central config lives in `docs/how-to/customize-bmad.md`.
+- Full reference on the customization surface, merge rules, and central config lives in the **How to Customize BMad** guide: https://docs.bmad-method.org/how-to/customize-bmad/.

@@ -8,7 +8,7 @@ sidebar:
 Tailor agent personas, inject domain context, add capabilities, and configure workflow behavior -- all without modifying installed files. Your customizations survive every update.
 
 :::tip[Don't want to hand-author TOML? Use `bmad-customize`]
-The `bmad-customize` skill is a guided authoring helper for the customization surface described in this doc. It scans what's customizable in your installation, helps you choose the right surface (agent vs workflow) for your intent, writes the override file for you, and verifies the merge landed. Run it whenever you want to make a change; this doc is the reference for *what* the surface exposes and how merging works.
+The `bmad-customize` skill is a guided authoring helper for the **per-skill agent/workflow override surface** described in this doc. It scans what's customizable in your installation, helps you choose the right surface (agent vs workflow) for your intent, writes the override file for you, and verifies the merge landed. Central-config overrides (`_bmad/custom/config.toml`) are out of scope for v1 — hand-author those per the Central Configuration section below. Run the skill whenever you want to make a per-skill change; this doc is the reference for *what* each surface exposes and how merging works.
 :::
 
 ## When to Use This

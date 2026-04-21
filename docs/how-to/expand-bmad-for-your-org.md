@@ -15,7 +15,7 @@ BMad's customization surface lets an organization reshape behavior without editi
 :::
 
 :::tip[Applying these recipes]
-Every recipe below can be applied by running the `bmad-customize` skill and describing the intent — it will pick the right surface, author the override file, and verify the merge. The recipes here are the source of truth for *what* to override; `bmad-customize` handles the *how*. Hand-authoring still works the same way if you prefer it or need a pattern the skill doesn't cover yet (currently: central-config overrides).
+The **per-skill recipes** below (Recipes 1–4) can be applied by running the `bmad-customize` skill and describing the intent — it will pick the right surface, author the override file, and verify the merge. Recipe 5 (central-config overrides to the agent roster) is out of scope for v1 of the skill and remains hand-authored. The recipes here are the source of truth for *what* to override; `bmad-customize` handles the *how* for the agent/workflow surface.
 :::
 
 ## The Three-Layer Mental Model
