@@ -1,6 +1,6 @@
 ---
 name: bmad-customize
-description: Help users author or update {project-root}/_bmad/custom overrides for customizable skills. Use when the user says 'customize bmad', 'override a skill', 'change agent behavior', 'customize a workflow', or asks how to change the behavior of a specific BMad skill.
+description: Help users author or update project level custom overrides for customizable skills. Use when the user says 'customize bmad', 'override a skill', 'change agent behavior', 'customize a workflow', or asks how to change the behavior of a specific BMad skill.
 ---
 
 # BMad Customize
