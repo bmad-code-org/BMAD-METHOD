@@ -61,12 +61,14 @@ Run:
 python3 {skill-root}/scripts/list_customizable_skills.py --project-root {project-root}
 ```
 
+The scanner derives its own skills directory from its install location — whichever directory `bmad-customize` itself was loaded from is where it looks for siblings. That's the same location the user's other skills are loaded from in this session. If the user mentions skills installed in another location as well (e.g. project-local plus a user-global install), re-run the scanner with one or more `--extra-root <path>` flags to include those.
+
 The scanner returns JSON with `agents`, `workflows`, `scanned_roots`, and `errors`.
 
 - **Present the list** grouped by type. For each entry show: skill name, one-line description, whether a team or user override already exists.
 - **For audit/iterate intents**, lead with entries where `has_team_override` or `has_user_override` is true.
 - **Surface any non-empty `errors[]`** — malformed `customize.toml` files and other scanner issues should be shown to the user, not swallowed.
-- **If the list is empty**, show `scanned_roots` so the user can see what was searched. If their IDE stores skills elsewhere, ask for the install path and include it when you read the target's `customize.toml` in Step 3. If the project genuinely has no customizable skills installed, say so and stop.
+- **If the list is empty**, show `scanned_roots` so the user can see what was searched. Ask whether they have skills installed in another location; if so, re-run with `--extra-root` pointing there. If they don't, say the project has no customizable skills installed and stop.
 
 Ask the user which one they want to customize. If their initial ask hints at a target, surface the likely match first.
 
@@ -169,5 +171,5 @@ Say so clearly:
 ## Notes
 
 - Override files are sparse. Everything omitted inherits from the layer below (base → team → user).
-- IDE install paths vary (`.claude/skills/`, `.cursor/skills/`, `.cline/skills/`, `.continue/skills/`). The scanner covers these; if a user's IDE stores skills elsewhere, Step 2 falls back to asking for the path.
+- The scanner does not hardcode IDE paths. It scans whichever directory this skill itself was loaded from — that's the same place the user's other skills live in this session. For mixed project-local + user-global setups, use `--extra-root`.
 - Full reference on the customization surface, merge rules, and central config lives in `docs/how-to/customize-bmad.md`.

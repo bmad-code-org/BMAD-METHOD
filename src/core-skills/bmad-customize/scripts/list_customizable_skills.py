@@ -2,13 +2,21 @@
 # /// script
 # requires-python = ">=3.11"
 # ///
-"""Enumerate customizable BMad skills installed in a project.
+"""Enumerate customizable BMad skills installed alongside this one.
 
-Scans the standard IDE skill install locations under a project root, finds
-every directory containing a `customize.toml`, classifies each as agent and/or
-workflow based on its top-level blocks, reads the skill's SKILL.md frontmatter
-description for a one-liner, and checks whether override files already exist
-in `{project-root}/_bmad/custom/`.
+Scans a skills directory (by default: the directory this script's own skill
+lives in, derived from __file__), finds every sibling directory containing a
+`customize.toml`, classifies each as agent and/or workflow based on its
+top-level blocks, reads the skill's SKILL.md frontmatter description for a
+one-liner, and checks whether override files already exist in
+`{project-root}/_bmad/custom/`.
+
+Skills in BMad are loaded either from a project-local location (e.g. the
+project's `.claude/skills/` or `.cursor/skills/`) or from a user-global
+location (e.g. `~/.claude/skills/`). We do not hardcode those paths — the
+running skill's own location is the source of truth for sibling discovery.
+`--extra-root` is available for the rare case where skills live in multiple
+locations on the same machine.
 
 Output: JSON to stdout. Exit 0 on success (including empty result), 2 on error.
 """
@@ -22,18 +30,19 @@ import sys
 import tomllib
 from pathlib import Path
 
-# IDE skill install locations, relative to project root.
-SKILL_ROOTS = (
-    ".claude/skills",
-    ".cursor/skills",
-    ".cline/skills",
-    ".continue/skills",
-)
-
 # Top-level TOML blocks that indicate a customization surface.
 SURFACE_KEYS = ("agent", "workflow")
 
 FRONTMATTER_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n", re.DOTALL)
+
+
+def default_skills_root() -> Path:
+    """Derive the skills root from this script's location.
+
+    Layout assumption: {skills_root}/bmad-customize/scripts/list_customizable_skills.py.
+    So the skills root is three parents up from this file.
+    """
+    return Path(__file__).resolve().parent.parent.parent
 
 
 def read_frontmatter_description(skill_md: Path) -> str:
@@ -74,17 +83,21 @@ def load_customize(toml_path: Path) -> dict | None:
         return None
 
 
-def scan_project(project_root: Path) -> dict:
-    """Walk the standard skill locations and collect customizable skills."""
+def scan_skills(
+    skills_roots: list[Path],
+    project_root: Path,
+) -> dict:
+    """Scan each skills root for directories that contain a customize.toml."""
     agents: list[dict] = []
     workflows: list[dict] = []
     errors: list[str] = []
     scanned_roots: list[str] = []
+    seen_names: set[str] = set()
     custom_dir = project_root / "_bmad" / "custom"
 
-    for rel_root in SKILL_ROOTS:
-        root = project_root / rel_root
+    for root in skills_roots:
         if not root.is_dir():
+            errors.append(f"skills root does not exist: {root}")
             continue
         scanned_roots.append(str(root))
 
@@ -99,6 +112,13 @@ def scan_project(project_root: Path) -> dict:
                 continue
 
             skill_name = skill_dir.name
+            # If a skill with this name was already found in an earlier
+            # root, skip it — roots are scanned in the order provided, so
+            # the first occurrence wins.
+            if skill_name in seen_names:
+                continue
+            seen_names.add(skill_name)
+
             description = read_frontmatter_description(skill_dir / "SKILL.md")
             team_override = custom_dir / f"{skill_name}.toml"
             user_override = custom_dir / f"{skill_name}.user.toml"
@@ -106,7 +126,7 @@ def scan_project(project_root: Path) -> dict:
             entry_base = {
                 "name": skill_name,
                 "install_path": str(skill_dir),
-                "ide_root": rel_root,
+                "skills_root": str(root),
                 "description": description,
                 "has_team_override": team_override.is_file(),
                 "has_user_override": user_override.is_file(),
@@ -143,14 +163,34 @@ def scan_project(project_root: Path) -> dict:
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "List customizable BMad skills installed under a project, grouped "
-            "by surface (agent vs workflow), with override status."
+            "List customizable BMad skills installed alongside this one, "
+            "grouped by surface (agent vs workflow), with override status "
+            "looked up against {project-root}/_bmad/custom/."
         )
     )
     parser.add_argument(
         "--project-root",
         required=True,
         help="Absolute path to the project root (the folder containing _bmad/).",
+    )
+    parser.add_argument(
+        "--skills-root",
+        default=None,
+        help=(
+            "Override the primary skills directory to scan. Defaults to the "
+            "directory this script's own skill lives in."
+        ),
+    )
+    parser.add_argument(
+        "--extra-root",
+        action="append",
+        default=[],
+        metavar="PATH",
+        help=(
+            "Additional skills directory to include (repeatable). Useful "
+            "when skills live in multiple locations on the same machine "
+            "(e.g. project-local plus a user-global install)."
+        ),
     )
     return parser.parse_args(argv)
 
@@ -164,7 +204,20 @@ def main(argv: list[str]) -> int:
             file=sys.stderr,
         )
         return 2
-    result = scan_project(project_root)
+
+    primary = (
+        Path(args.skills_root).expanduser().resolve()
+        if args.skills_root
+        else default_skills_root()
+    )
+    extras = [Path(p).expanduser().resolve() for p in args.extra_root]
+    # Deduplicate in order of appearance.
+    roots: list[Path] = []
+    for root in [primary, *extras]:
+        if root not in roots:
+            roots.append(root)
+
+    result = scan_skills(roots, project_root)
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0
 
