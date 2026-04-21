@@ -258,6 +258,27 @@ on_complete = "Summarize the brief in three bullets and offer to email it via th
 
 The same field conventions cross the agent/workflow boundary: `activation_steps_prepend`/`activation_steps_append`, `persistent_facts` (with `file:` refs), and menu-style `[[…]]` tables with `code`/`id` for keyed merge. The resolver applies the same four structural rules regardless of the top-level key. SKILL.md references follow the namespace: `{workflow.activation_steps_prepend}`, `{workflow.persistent_facts}`, `{workflow.on_complete}`. Any additional fields a workflow exposes (output paths, toggles, review settings, stage flags) follow the same shape-based merge rules. Read the workflow's `customize.toml` to see what's customizable.
 
+### Activation Order
+
+Customizable workflows run their activation in a fixed sequence so you know exactly when your hooks fire:
+
+1. Resolve the `[workflow]` block (base → team → user merge)
+2. Execute `activation_steps_prepend` in order
+3. Load `persistent_facts` as foundational context for the run
+4. Load config (`_bmad/bmm/config.yaml`) and resolve standard variables (project name, languages, paths, date)
+5. Greet the user
+6. Execute `activation_steps_append` in order
+
+After step 6 the workflow body begins. Use `activation_steps_prepend` when you need context loaded before the greeting can be personalized; use `activation_steps_append` when the setup is heavy and you'd rather the user sees the greeting first.
+
+### Scope of This Initial Pass
+
+Customization is rolling out incrementally. The fields documented above — `activation_steps_prepend`, `activation_steps_append`, `persistent_facts`, `on_complete` — are the **baseline surface** that every customizable workflow exposes, and they will remain stable across versions. They give you broad-stroke control today: inject pre/post steps, pin foundational context, trigger follow-up actions.
+
+Over time, individual workflows will expose **more targeted customization points** tailored to what that workflow actually does — things like step-specific toggles, stage flags, output template paths, or review gates. When those arrive, they stack on top of the baseline fields rather than replacing them, so customizations you author today keep working.
+
+If you need a fine-grained knob that isn't exposed yet, either use `activation_steps_*` and `persistent_facts` to steer behavior, or open an issue describing the specific customization point you want — those requests are what drive which targeted fields get added next.
+
 ## Central Configuration
 
 Per-skill `customize.toml` covers **deep behavior** (hooks, menus, persistent_facts, persona overrides for a single agent or workflow). A separate surface covers **cross-cutting state** — install answers and the agent roster that external skills like `bmad-party-mode`, `bmad-retrospective`, and `bmad-advanced-elicitation` consume. That surface lives in four TOML files at project root:
