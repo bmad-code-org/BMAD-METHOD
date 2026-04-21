@@ -169,3 +169,9 @@ This UX design workflow is now complete. The specification serves as the foundat
 - ✅ UX Design Specification: `{planning_artifacts}/ux-design-specification.md`
 - ✅ Color Themes Visualizer: `{planning_artifacts}/ux-color-themes.html`
 - ✅ Design Directions: `{planning_artifacts}/ux-design-directions.html`
+
+## On Complete
+
+Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete`
+
+If the resolved `workflow.on_complete` is non-empty, follow it as the final terminal instruction before exiting.
