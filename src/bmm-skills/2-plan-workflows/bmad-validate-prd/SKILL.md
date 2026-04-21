@@ -24,7 +24,7 @@ This uses **step-file architecture** for disciplined execution:
 
 ### Core Principles
 
-- **Micro-file Design**: Each step is a self contained instruction file that is a part of an overall workflow that must be followed exactly
+- **Micro-file Design**: Each step is a self-contained instruction file that is a part of an overall workflow that must be followed exactly
 - **Just-In-Time Loading**: Only the current step file is in memory - never load future step files until told to do so
 - **Sequential Enforcement**: Sequence within the step files must be completed in order, no skipping or optimization allowed
 - **State Tracking**: Document progress in output file frontmatter using `stepsCompleted` array when a workflow produces a document

@@ -250,8 +250,7 @@ Activation is complete. Begin the workflow below.
 
   <!-- Load all available content through discovery protocol -->
   <action>Read fully and follow `./discover-inputs.md` to load all input files</action>
-  <note>Available content: {epics_content}, {prd_content}, {architecture_content}, {ux_content},
-  {project_context}</note>
+  <note>Available content: {epics_content}, {prd_content}, {architecture_content}, {ux_content}, plus the project-context facts loaded during activation via `persistent_facts`.</note>
 
   <!-- Analyze epics file for story foundation -->
   <action>From {epics_content}, extract Epic {{epic_num}} complete context:</action> **EPIC ANALYSIS:** - Epic

@@ -111,11 +111,11 @@ Activation is complete. Begin the workflow below.
 <step n="1" goal="Initialize Change Navigation">
   <action>Confirm change trigger and gather user description of the issue</action>
   <action>Ask: "What specific issue or change has been identified that requires navigation?"</action>
-  <action>Verify access to required project documents:</action>
-    - PRD (Product Requirements Document)
-    - Current Epics and Stories
-    - Architecture documentation
-    - UI/UX specifications
+  <action>Verify access to project documents:</action>
+    - PRD (Product Requirements Document) — required
+    - Current Epics and Stories — required
+    - Architecture documentation — optional, load if available
+    - UI/UX specifications — optional, load if available
   <action>Ask user for mode preference:</action>
     - **Incremental** (recommended): Refine each edit collaboratively
     - **Batch**: Present all changes at once for review
@@ -123,7 +123,7 @@ Activation is complete. Begin the workflow below.
 
 <action if="change trigger is unclear">HALT: "Cannot navigate change without clear understanding of the triggering issue. Please provide specific details about what needs to change and why."</action>
 
-<action if="core documents are unavailable">HALT: "Need access to project documents (PRD, Epics, Architecture, UI/UX) to assess change impact. Please ensure these documents are accessible."</action>
+<action if="PRD or Epics are unavailable">HALT: "Need access to PRD and Epics to assess change impact. Please ensure these documents are accessible. Architecture and UI/UX will be used if available."</action>
 </step>
 
 <step n="2" goal="Execute Change Analysis Checklist">
