@@ -165,7 +165,7 @@ If any of these is missing, the skill is not done — either finish the remainin
 Say so clearly:
 
 - **Central config** (`{project-root}/_bmad/custom/config.toml` — agent roster, install answers) is not covered by this version. Point the user at `docs/how-to/customize-bmad.md`.
-- **Changes to step logic, step ordering, or behavior not exposed in `customize.toml`** require forking or a feature request.
+- **Changes to step logic, step ordering, or behavior not exposed in `customize.toml`** require a customization feature request or using bmad builder to create a custom skill. Offer to help with either path.
 - **Skills without a `customize.toml`** are not customizable — fork is the only path.
 
 ## Notes
