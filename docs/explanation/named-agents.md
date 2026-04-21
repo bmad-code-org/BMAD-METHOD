@@ -75,6 +75,8 @@ The customization model is what lets this scale beyond a single developer.
 
 Every agent ships a `customize.toml` with sensible defaults. Teams commit overrides to `_bmad/custom/bmad-agent-{role}.toml`. Individuals can layer personal preferences in `.user.toml` (gitignored). The resolver merges all three at activation time with predictable structural rules.
 
+Most users never hand-author these files. The `bmad-customize` skill walks through picking the target, choosing agent vs workflow scope, authoring the override, and verifying the merge — so the customization surface stays accessible to anyone who understands their intent, not just those fluent in TOML.
+
 Concrete example: a team commits a single file telling Amelia to always use the Context7 MCP tool for library docs and to fall back to Linear when a story isn't in the local epics list. Every dev workflow Amelia dispatches (dev-story, quick-dev, create-story, code-review) inherits that behavior, with no source edits or per-workflow duplication required.
 
 There's also a second customization surface for *cross-cutting* concerns: the central `_bmad/config.toml` and `_bmad/config.user.toml` (both installer-owned, rebuilt from each module's `module.yaml`) plus `_bmad/custom/config.toml` (team, committed) and `_bmad/custom/config.user.toml` (personal, gitignored) for overrides. This is where the **agent roster** lives — the lightweight descriptors that roster consumers like `bmad-party-mode`, `bmad-retrospective`, and `bmad-advanced-elicitation` read to know who's available and how to embody them. Rebrand an agent org-wide with a team override; add fictional voices (Kirk, Spock, a domain expert persona) as personal experiments via the `.user.toml` override — without touching any skill folder. The per-skill file shapes how Mary *behaves* when she activates; the central config shapes how other skills *see* her when they look at the field.
@@ -83,6 +85,7 @@ For the full customization surface and worked examples, see:
 
 - [How to Customize BMad](../how-to/customize-bmad.md) — the reference for what's customizable and how merge works
 - [How to Expand BMad for Your Organization](../how-to/expand-bmad-for-your-org.md) — five worked recipes spanning agent-wide rules, workflow conventions, external publishing, template swaps, and agent roster customization
+- `bmad-customize` skill — the guided authoring helper that turns intent into a correctly-placed, verified override file
 
 ## The Bigger Idea
 

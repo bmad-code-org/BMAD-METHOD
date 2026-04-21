@@ -14,6 +14,10 @@ BMad's customization surface lets an organization reshape behavior without editi
 - Python 3.11+ on PATH (for the resolver — stdlib only, no `pip install`)
 :::
 
+:::tip[Applying these recipes]
+The **per-skill recipes** below (Recipes 1–4) can be applied by running the `bmad-customize` skill and describing the intent — it will pick the right surface, author the override file, and verify the merge. Recipe 5 (central-config overrides to the agent roster) is out of scope for v1 of the skill and remains hand-authored. The recipes here are the source of truth for *what* to override; `bmad-customize` handles the *how* for the agent/workflow surface.
+:::
+
 ## The Three-Layer Mental Model
 
 Before picking a recipe, know where your override lands:
