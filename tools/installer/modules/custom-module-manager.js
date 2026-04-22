@@ -73,40 +73,95 @@ class CustomModuleManager {
       };
     }
 
-    // HTTPS URL: https://host/owner/repo[/tree/branch/subdir][.git]
-    const httpsMatch = trimmed.match(/^https?:\/\/([^/]+)\/([^/]+)\/([^/.]+?)(?:\.git)?(\/.*)?$/);
-    if (httpsMatch) {
-      const [, host, owner, repo, remainder] = httpsMatch;
-      const cloneUrl = `https://${host}/${owner}/${repo}`;
-      let subdir = null;
+    // HTTPS URL: generic handling for any Git host.
+    // We avoid host-specific parsing — `git clone` will accept whatever URL the
+    // user provides. We only need to (a) separate an optional browser-style
+    // subdir suffix from the clone URL, and (b) derive a cache key / display
+    // name from the path.
+    if (/^https?:\/\//i.test(trimmed)) {
+      let url;
+      try {
+        url = new URL(trimmed);
+      } catch {
+        url = null;
+      }
 
-      if (remainder) {
-        // Extract subdir from deep path patterns used by various Git hosts
+      if (url && url.host) {
+        const host = url.host;
+        let repoPath = url.pathname.replace(/^\/+/, '').replace(/\/+$/, '');
+        let subdir = null;
+
+        // Detect browser-style deep-path patterns that embed a subdirectory
+        // after a ref (branch/tag/commit). These appear across many hosts:
+        //   GitHub  /<repo>/tree|blob/<ref>/<subdir>
+        //   GitLab  /<repo>/-/tree|blob/<ref>/<subdir>
+        //   Gitea   /<repo>/src/<ref>/<subdir>
+        //   Gitea   /<repo>/src/(branch|commit|tag)/<ref>/<subdir>
+        // Group 1 = repo path prefix, Group 2 = subdir.
+        // Trailing subdir is optional: a URL like /<repo>/tree/<ref> with no
+        // further path still identifies a repo at a ref (no subdir).
         const deepPathPatterns = [
-          /^\/(?:-\/)?tree\/[^/]+\/(.+)$/, // GitHub /tree/branch/path, GitLab /-/tree/branch/path
-          /^\/(?:-\/)?blob\/[^/]+\/(.+)$/, // /blob/branch/path (treat same as tree)
-          /^\/src\/[^/]+\/(.+)$/, // Gitea/Forgejo /src/branch/path
+          /^(.+?)\/(?:-\/)?(?:tree|blob)\/[^/]+(?:\/(.+))?$/,
+          /^(.+?)\/src\/(?:branch\/|commit\/|tag\/)?[^/]+(?:\/(.+))?$/,
         ];
-
         for (const pattern of deepPathPatterns) {
-          const match = remainder.match(pattern);
+          const match = repoPath.match(pattern);
           if (match) {
-            subdir = match[1].replace(/\/$/, ''); // strip trailing slash
+            repoPath = match[1];
+            if (match[2]) {
+              const cleaned = match[2].replace(/\/+$/, '');
+              if (cleaned) subdir = cleaned;
+            }
             break;
           }
         }
-      }
 
-      return {
-        type: 'url',
-        cloneUrl,
-        subdir,
-        localPath: null,
-        cacheKey: `${host}/${owner}/${repo}`,
-        displayName: `${owner}/${repo}`,
-        isValid: true,
-        error: null,
-      };
+        // Some hosts use ?path=/subdir on browse links to point at a file or
+        // directory. Honor it when no deep-path marker matched above.
+        if (!subdir) {
+          const pathParam = url.searchParams.get('path');
+          if (pathParam) {
+            const cleaned = pathParam.replace(/^\/+/, '').replace(/\/+$/, '');
+            if (cleaned) subdir = cleaned;
+          }
+        }
+
+        // Strip a single trailing .git for a stable cacheKey/displayName.
+        const repoPathClean = repoPath.replace(/\.git$/i, '');
+        if (!repoPathClean) {
+          return {
+            type: null,
+            cloneUrl: null,
+            subdir: null,
+            localPath: null,
+            cacheKey: null,
+            displayName: null,
+            isValid: false,
+            error: 'Not a valid Git URL or local path',
+          };
+        }
+
+        const cloneUrl = `${url.protocol}//${host}/${repoPathClean}`;
+        const cacheKey = `${host}/${repoPathClean}`;
+
+        // Display name: prefer "<owner>/<repo>" using the last two meaningful
+        // path segments.
+        const segments = repoPathClean.split('/').filter(Boolean);
+        const repoSeg = segments.at(-1);
+        const ownerSeg = segments.at(-2);
+        const displayName = ownerSeg ? `${ownerSeg}/${repoSeg}` : repoSeg;
+
+        return {
+          type: 'url',
+          cloneUrl,
+          subdir,
+          localPath: null,
+          cacheKey,
+          displayName,
+          isValid: true,
+          error: null,
+        };
+      }
     }
 
     return {
