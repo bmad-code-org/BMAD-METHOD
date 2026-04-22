@@ -137,9 +137,9 @@ def main():
             continue
         src = posixpath.join(script_dir, fname)
         dst = posixpath.join(out_dir, fname)
-        with open(src, "r", encoding="utf-8") as fh:
+        with open(src, "r", encoding="utf-8", newline="") as fh:
             content = fh.read()
-        with open(dst, "w", encoding="utf-8") as fh:
+        with open(dst, "w", encoding="utf-8", newline="") as fh:
             fh.write(render_template(content, vars_))
         count += 1
 
