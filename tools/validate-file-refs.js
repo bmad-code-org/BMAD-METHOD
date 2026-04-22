@@ -80,7 +80,7 @@ function escapeTableCell(str) {
 }
 
 // Path prefixes/patterns that only exist in installed structure, not in source
-const INSTALL_ONLY_PATHS = ['_config/', 'custom/', 'render/'];
+const INSTALL_ONLY_PATHS = ['_config/', 'custom/', 'render/bmad-quick-dev/'];
 
 // Files that are generated at install time and don't exist in the source tree
 const INSTALL_GENERATED_FILES = ['config.yaml', 'config.user.yaml'];
