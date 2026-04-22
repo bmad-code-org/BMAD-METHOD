@@ -73,7 +73,7 @@ async function findPackageJsonPath(moduleName, moduleSourcePath) {
   const roots = await buildSearchRoots(moduleName, moduleSourcePath);
 
   for (const root of roots) {
-    const packageJsonPath = await findNearestUpwardFile(root, 'package.json');
+    const packageJsonPath = await findNearestUpwardFile(root.searchDir, 'package.json', { boundaryDir: root.boundaryDir });
     if (packageJsonPath) {
       return packageJsonPath;
     }
@@ -97,7 +97,9 @@ async function findMarketplaceVersion(moduleName, moduleSourcePath, marketplaceP
   const roots = await buildSearchRoots(moduleName, moduleSourcePath);
 
   for (const root of roots) {
-    const marketplacePath = await findNearestUpwardFile(root, path.join('.claude-plugin', 'marketplace.json'));
+    const marketplacePath = await findNearestUpwardFile(root.searchDir, path.join('.claude-plugin', 'marketplace.json'), {
+      boundaryDir: root.boundaryDir,
+    });
     if (!marketplacePath) {
       continue;
     }
@@ -131,7 +133,10 @@ async function buildSearchRoots(moduleName, moduleSourcePath) {
     }
 
     seen.add(normalized);
-    roots.push(normalized);
+    roots.push({
+      searchDir: normalized,
+      boundaryDir: await findSearchBoundary(normalized),
+    });
   };
 
   await addRoot(moduleSourcePath);
@@ -145,17 +150,23 @@ async function buildSearchRoots(moduleName, moduleSourcePath) {
   return roots;
 }
 
-async function findNearestUpwardFile(startDir, relativeFilePath, maxDepth = DEFAULT_PARENT_DEPTH) {
+async function findNearestUpwardFile(startDir, relativeFilePath, options = {}) {
   const normalizedStartDir = await normalizeExistingDirectory(startDir);
   if (!normalizedStartDir) {
     return null;
   }
 
+  const maxDepth = options.maxDepth ?? DEFAULT_PARENT_DEPTH;
+  const normalizedBoundaryDir = await normalizeDirectoryPath(options.boundaryDir);
   let currentDir = normalizedStartDir;
   for (let depth = 0; depth <= maxDepth; depth++) {
     const candidate = path.join(currentDir, relativeFilePath);
     if (await fs.pathExists(candidate)) {
       return candidate;
+    }
+
+    if (normalizedBoundaryDir && currentDir === normalizedBoundaryDir) {
+      break;
     }
 
     const parentDir = path.dirname(currentDir);
@@ -166,6 +177,32 @@ async function findNearestUpwardFile(startDir, relativeFilePath, maxDepth = DEFA
   }
 
   return null;
+}
+
+async function findSearchBoundary(startDir) {
+  const normalizedStartDir = await normalizeExistingDirectory(startDir);
+  if (!normalizedStartDir) {
+    return null;
+  }
+
+  let currentDir = normalizedStartDir;
+  for (let depth = 0; depth <= DEFAULT_PARENT_DEPTH; depth++) {
+    if (
+      (await fs.pathExists(path.join(currentDir, 'package.json'))) ||
+      (await fs.pathExists(path.join(currentDir, '.claude-plugin', 'marketplace.json'))) ||
+      (await fs.pathExists(path.join(currentDir, '.git')))
+    ) {
+      return currentDir;
+    }
+
+    const parentDir = path.dirname(currentDir);
+    if (parentDir === currentDir) {
+      break;
+    }
+    currentDir = parentDir;
+  }
+
+  return normalizedStartDir;
 }
 
 async function normalizeDirectoryPath(candidate) {

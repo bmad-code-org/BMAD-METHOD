@@ -2403,6 +2403,9 @@ async function runTests() {
   {
     const { resolveModuleVersion } = require('../tools/installer/modules/version-resolver');
     const tempRepo39 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-version-module-yaml-'));
+    const tempCacheDir39 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-version-module-yaml-cache-'));
+    const priorCacheEnv39 = process.env.BMAD_EXTERNAL_MODULES_CACHE;
+    process.env.BMAD_EXTERNAL_MODULES_CACHE = tempCacheDir39;
 
     try {
       const moduleDir = path.join(tempRepo39, 'src');
@@ -2419,7 +2422,13 @@ async function runTests() {
       assert(versionInfo.version === '2.4.0', 'resolver falls back to module.yaml when package.json is missing');
       assert(versionInfo.source === 'module.yaml', 'resolver reports module.yaml when it provides the selected version');
     } finally {
+      if (priorCacheEnv39 === undefined) {
+        delete process.env.BMAD_EXTERNAL_MODULES_CACHE;
+      } else {
+        process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv39;
+      }
       await fs.remove(tempRepo39).catch(() => {});
+      await fs.remove(tempCacheDir39).catch(() => {});
     }
   }
 
@@ -2427,6 +2436,9 @@ async function runTests() {
   {
     const { resolveModuleVersion } = require('../tools/installer/modules/version-resolver');
     const tempRepo39 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-version-marketplace-'));
+    const tempCacheDir39 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-version-marketplace-cache-'));
+    const priorCacheEnv39 = process.env.BMAD_EXTERNAL_MODULES_CACHE;
+    process.env.BMAD_EXTERNAL_MODULES_CACHE = tempCacheDir39;
 
     try {
       const moduleDir = path.join(tempRepo39, 'src');
@@ -2454,7 +2466,48 @@ async function runTests() {
       );
       assert(versionInfo.source === 'marketplace.json', 'resolver reports marketplace.json when it is the only usable metadata source');
     } finally {
+      if (priorCacheEnv39 === undefined) {
+        delete process.env.BMAD_EXTERNAL_MODULES_CACHE;
+      } else {
+        process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv39;
+      }
       await fs.remove(tempRepo39).catch(() => {});
+      await fs.remove(tempCacheDir39).catch(() => {});
+    }
+  }
+
+  // --- package.json lookup must not escape the module repo boundary ---
+  {
+    const { resolveModuleVersion } = require('../tools/installer/modules/version-resolver');
+    const tempHost39 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-version-boundary-host-'));
+    const tempCacheDir39 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-version-boundary-cache-'));
+    const priorCacheEnv39 = process.env.BMAD_EXTERNAL_MODULES_CACHE;
+    process.env.BMAD_EXTERNAL_MODULES_CACHE = tempCacheDir39;
+
+    try {
+      const moduleRoot = path.join(tempHost39, 'nested-module');
+      const moduleDir = path.join(moduleRoot, 'src');
+      await fs.ensureDir(path.join(moduleRoot, '.claude-plugin'));
+      await fs.ensureDir(moduleDir);
+
+      await fs.writeFile(path.join(tempHost39, 'package.json'), JSON.stringify({ name: 'host-project', version: '9.9.9' }, null, 2) + '\n');
+      await fs.writeFile(path.join(moduleDir, 'module.yaml'), ['code: sample-mod', 'module_version: 2.4.0', ''].join('\n'));
+      await fs.writeFile(
+        path.join(moduleRoot, '.claude-plugin', 'marketplace.json'),
+        JSON.stringify({ plugins: [{ name: 'sample-mod', version: '1.7.2' }] }, null, 2) + '\n',
+      );
+
+      const versionInfo = await resolveModuleVersion('sample-mod', { moduleSourcePath: moduleDir });
+      assert(versionInfo.version === '2.4.0', 'resolver does not read a host project package.json outside the module repo boundary');
+      assert(versionInfo.source === 'module.yaml', 'resolver stops at the module repo boundary before climbing into host project metadata');
+    } finally {
+      if (priorCacheEnv39 === undefined) {
+        delete process.env.BMAD_EXTERNAL_MODULES_CACHE;
+      } else {
+        process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv39;
+      }
+      await fs.remove(tempHost39).catch(() => {});
+      await fs.remove(tempCacheDir39).catch(() => {});
     }
   }
 
@@ -2538,6 +2591,31 @@ async function runTests() {
     try {
       const updates = await manifest39.checkForUpdates('/unused');
       assert(updates.length === 0, 'update check ignores older npm versions when installed source metadata is newer');
+    } finally {
+      manifest39.getAllModuleVersions = originalGetAllModuleVersions39;
+      manifest39.fetchNpmVersion = originalFetchNpmVersion39;
+    }
+  }
+
+  // --- Update checks ignore non-semver version strings instead of flagging false positives ---
+  {
+    const { Manifest } = require('../tools/installer/core/manifest');
+    const manifest39 = new Manifest();
+    const originalGetAllModuleVersions39 = manifest39.getAllModuleVersions.bind(manifest39);
+    const originalFetchNpmVersion39 = manifest39.fetchNpmVersion.bind(manifest39);
+
+    manifest39.getAllModuleVersions = async () => [
+      {
+        name: 'tea',
+        version: 'workspace-build',
+        npmPackage: 'bmad-method-test-architecture-enterprise',
+      },
+    ];
+    manifest39.fetchNpmVersion = async () => 'latest-build';
+
+    try {
+      const updates = await manifest39.checkForUpdates('/unused');
+      assert(updates.length === 0, 'update check ignores non-semver version strings instead of reporting misleading updates');
     } finally {
       manifest39.getAllModuleVersions = originalGetAllModuleVersions39;
       manifest39.fetchNpmVersion = originalFetchNpmVersion39;

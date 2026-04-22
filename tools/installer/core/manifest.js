@@ -396,7 +396,7 @@ class Manifest {
       const installedVersion = semver.valid(module.version) || semver.valid(semver.coerce(module.version || ''));
       const availableVersion = semver.valid(latestVersion) || semver.valid(semver.coerce(latestVersion));
 
-      if (!installedVersion || !availableVersion || semver.gt(availableVersion, installedVersion)) {
+      if (installedVersion && availableVersion && semver.gt(availableVersion, installedVersion)) {
         updates.push({
           name: module.name,
           installedVersion: module.version,
