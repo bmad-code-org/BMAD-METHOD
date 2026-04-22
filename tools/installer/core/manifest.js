@@ -1,7 +1,7 @@
 const path = require('node:path');
 const fs = require('../fs-native');
 const crypto = require('node:crypto');
-const { getProjectRoot } = require('../project-root');
+const { resolveModuleVersion } = require('../modules/version-resolver');
 const prompts = require('../prompts');
 
 class Manifest {
@@ -258,13 +258,11 @@ class Manifest {
    * @returns {Object} Version info object with version, source, npmPackage, repoUrl
    */
   async getModuleVersionInfo(moduleName, bmadDir, moduleSourcePath = null) {
-    const yaml = require('yaml');
-
     // Resolve source type first, then read version with the correct path context
     if (['core', 'bmm'].includes(moduleName)) {
-      const version = await this._readMarketplaceVersion(moduleName, moduleSourcePath);
+      const versionInfo = await resolveModuleVersion(moduleName, { moduleSourcePath });
       return {
-        version,
+        version: versionInfo.version,
         source: 'built-in',
         npmPackage: null,
         repoUrl: null,
@@ -277,10 +275,9 @@ class Manifest {
     const moduleInfo = await extMgr.getModuleByCode(moduleName);
 
     if (moduleInfo) {
-      // External module: use moduleSourcePath if provided, otherwise fall back to cache
-      const version = await this._readMarketplaceVersion(moduleName, moduleSourcePath);
+      const versionInfo = await resolveModuleVersion(moduleName, { moduleSourcePath });
       return {
-        version,
+        version: versionInfo.version,
         source: 'external',
         npmPackage: moduleInfo.npmPackage || null,
         repoUrl: moduleInfo.url || null,
@@ -292,9 +289,12 @@ class Manifest {
     const communityMgr = new CommunityModuleManager();
     const communityInfo = await communityMgr.getModuleByCode(moduleName);
     if (communityInfo) {
-      const communityVersion = await this._readMarketplaceVersion(moduleName, moduleSourcePath);
+      const versionInfo = await resolveModuleVersion(moduleName, {
+        moduleSourcePath,
+        fallbackVersion: communityInfo.version,
+      });
       return {
-        version: communityVersion || communityInfo.version,
+        version: versionInfo.version || communityInfo.version,
         source: 'community',
         npmPackage: communityInfo.npmPackage || null,
         repoUrl: communityInfo.url || null,
@@ -307,9 +307,13 @@ class Manifest {
     const resolved = customMgr.getResolution(moduleName);
     const customSource = await customMgr.findModuleSourceByCode(moduleName, { bmadDir });
     if (customSource || resolved) {
-      const customVersion = resolved?.version || (await this._readMarketplaceVersion(moduleName, moduleSourcePath));
+      const versionInfo = await resolveModuleVersion(moduleName, {
+        moduleSourcePath: moduleSourcePath || customSource,
+        fallbackVersion: resolved?.version,
+        marketplacePluginNames: resolved?.pluginName ? [resolved.pluginName] : [],
+      });
       return {
-        version: customVersion,
+        version: versionInfo.version,
         source: 'custom',
         npmPackage: null,
         repoUrl: resolved?.repoUrl || null,
@@ -318,62 +322,13 @@ class Manifest {
     }
 
     // Unknown module
-    const version = await this._readMarketplaceVersion(moduleName, moduleSourcePath);
+    const versionInfo = await resolveModuleVersion(moduleName, { moduleSourcePath });
     return {
-      version,
+      version: versionInfo.version,
       source: 'unknown',
       npmPackage: null,
       repoUrl: null,
     };
-  }
-
-  /**
-   * Read version from .claude-plugin/marketplace.json for a module
-   * @param {string} moduleName - Module code
-   * @returns {string|null} Version or null
-   */
-  async _readMarketplaceVersion(moduleName, moduleSourcePath = null) {
-    const os = require('node:os');
-    let marketplacePath;
-
-    if (['core', 'bmm'].includes(moduleName)) {
-      marketplacePath = path.join(getProjectRoot(), '.claude-plugin', 'marketplace.json');
-    } else if (moduleSourcePath) {
-      // Walk up from source path to find marketplace.json
-      let dir = moduleSourcePath;
-      for (let i = 0; i < 5; i++) {
-        const candidate = path.join(dir, '.claude-plugin', 'marketplace.json');
-        if (await fs.pathExists(candidate)) {
-          marketplacePath = candidate;
-          break;
-        }
-        const parent = path.dirname(dir);
-        if (parent === dir) break;
-        dir = parent;
-      }
-    }
-
-    // Fallback to external module cache
-    if (!marketplacePath) {
-      const cacheDir = path.join(os.homedir(), '.bmad', 'cache', 'external-modules', moduleName);
-      marketplacePath = path.join(cacheDir, '.claude-plugin', 'marketplace.json');
-    }
-
-    try {
-      if (await fs.pathExists(marketplacePath)) {
-        const data = JSON.parse(await fs.readFile(marketplacePath, 'utf8'));
-        const plugins = data?.plugins;
-        if (!Array.isArray(plugins) || plugins.length === 0) return null;
-        let best = null;
-        for (const p of plugins) {
-          if (p.version && (!best || p.version > best)) best = p.version;
-        }
-        return best;
-      }
-    } catch {
-      // ignore
-    }
-    return null;
   }
 
   /**
@@ -424,6 +379,7 @@ class Manifest {
    * @returns {Array} Array of update info objects
    */
   async checkForUpdates(bmadDir) {
+    const semver = require('semver');
     const modules = await this.getAllModuleVersions(bmadDir);
     const updates = [];
 
@@ -437,7 +393,10 @@ class Manifest {
         continue;
       }
 
-      if (module.version !== latestVersion) {
+      const installedVersion = semver.valid(module.version) || semver.valid(semver.coerce(module.version || ''));
+      const availableVersion = semver.valid(latestVersion) || semver.valid(semver.coerce(latestVersion));
+
+      if (installedVersion && availableVersion && semver.gt(availableVersion, installedVersion)) {
         updates.push({
           name: module.name,
           installedVersion: module.version,
