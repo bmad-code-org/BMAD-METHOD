@@ -131,6 +131,10 @@ def main():
     out_dir = posixpath.join(root, "_bmad", "render", skill_name)
     os.makedirs(out_dir, exist_ok=True)
 
+    for fname in os.listdir(out_dir):
+        if fname.endswith(".md"):
+            os.remove(posixpath.join(out_dir, fname))
+
     count = 0
     for fname in sorted(os.listdir(script_dir)):
         if not fname.endswith(".md") or fname == "SKILL.md":
