@@ -11,6 +11,7 @@ const prompts = require('../prompts');
 const { BMAD_FOLDER_NAME } = require('../ide/shared/path-utils');
 const { InstallPaths } = require('./install-paths');
 const { ExternalModuleManager } = require('../modules/external-manager');
+const { resolveModuleVersion } = require('../modules/version-resolver');
 
 const { ExistingInstall } = require('./existing-install');
 
@@ -22,44 +23,6 @@ class Installer {
     this.fileOps = new FileOps();
     this.installedFiles = new Set(); // Track all installed files
     this.bmadFolderName = BMAD_FOLDER_NAME;
-  }
-
-  /**
-   * Read the module version from .claude-plugin/marketplace.json
-   * Walks up from sourcePath looking for .claude-plugin/marketplace.json
-   * @param {string} sourcePath - Module source directory
-   * @returns {string} Version string or empty string
-   */
-  async _getMarketplaceVersion(sourcePath) {
-    let dir = sourcePath;
-    for (let i = 0; i < 5; i++) {
-      const marketplacePath = path.join(dir, '.claude-plugin', 'marketplace.json');
-      if (await fs.pathExists(marketplacePath)) {
-        try {
-          const data = JSON.parse(await fs.readFile(marketplacePath, 'utf8'));
-          return this._extractMarketplaceVersion(data);
-        } catch {
-          return '';
-        }
-      }
-      const parent = path.dirname(dir);
-      if (parent === dir) break;
-      dir = parent;
-    }
-    return '';
-  }
-
-  /**
-   * Extract the highest version from marketplace.json plugins array
-   */
-  _extractMarketplaceVersion(data) {
-    const plugins = data?.plugins;
-    if (!Array.isArray(plugins) || plugins.length === 0) return '';
-    let best = '';
-    for (const p of plugins) {
-      if (p.version && (!best || p.version > best)) best = p.version;
-    }
-    return best;
   }
 
   /**
@@ -641,15 +604,18 @@ class Installer {
         },
       );
 
-      // Get display name from source module.yaml; version from resolution cache or marketplace.json
+      // Get display name from source module.yaml and resolve the freshest version metadata we can find locally.
       const sourcePath = await officialModules.findModuleSource(moduleName, { silent: true });
       const moduleInfo = sourcePath ? await officialModules.getModuleInfo(sourcePath, moduleName, '') : null;
       const displayName = moduleInfo?.name || moduleName;
 
-      // Prefer version from resolution cache (accurate for custom/local modules),
-      // fall back to marketplace.json walk-up for official modules
       const cachedResolution = CustomModuleManager._resolutionCache.get(moduleName);
-      const version = cachedResolution?.version || (sourcePath ? await this._getMarketplaceVersion(sourcePath) : '');
+      const versionInfo = await resolveModuleVersion(moduleName, {
+        moduleSourcePath: sourcePath,
+        fallbackVersion: cachedResolution?.version,
+        marketplacePluginNames: cachedResolution?.pluginName ? [cachedResolution.pluginName] : [],
+      });
+      const version = versionInfo.version || '';
       addResult(displayName, 'ok', '', { moduleCode: moduleName, newVersion: version });
     }
   }
