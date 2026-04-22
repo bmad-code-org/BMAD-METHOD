@@ -5,22 +5,21 @@ Resolves compile-time {{.variable}} placeholders from BMad's central config,
 bakes absolute paths for {project-root} into derived values, and writes
 rendered .md files to {project-root}/_bmad/render/bmad-quick-dev/.
 
-Config sources, tried in order:
-  1. Central _bmad/config.toml + config.user.toml + custom/config.toml +
-     custom/config.user.toml (four-layer merge; post-#2285 installs).
-     Keys surface from [core] and [modules.bmm].
-  2. _bmad/bmm/config.yaml (flat-YAML fallback for pre-#2285 installs).
+Config: four-layer merge of _bmad/config.toml + config.user.toml +
+custom/config.toml + custom/config.user.toml (post-#2285 installs).
+Keys surface from [core] and [modules.bmm]. Missing config.toml → HALT.
 
 Runtime {variable} placeholders (single curly) pass through untouched for
 the LLM to resolve during workflow execution.
 
 Every invocation rebuilds from scratch — no hash, no cache.
-Python 3 stdlib only. UTF-8 I/O.
+Python 3.11+ stdlib only. UTF-8 I/O.
 """
 
 import os
 import re
 import sys
+import tomllib
 
 
 def find_project_root():
@@ -53,21 +52,16 @@ def _deep_merge(base, override):
 
 
 def load_central_config(root):
-    """Four-layer merge of _bmad/config.toml and its peers. Returns the merged
-    dict, or None if the base _bmad/config.toml is absent (pre-#2285 install)
-    or if tomllib is unavailable."""
+    """Four-layer merge of _bmad/config.toml and its peers. HALTs if the base
+    _bmad/config.toml is absent."""
     bmad_dir = os.path.join(root, "_bmad")
     base = os.path.join(bmad_dir, "config.toml")
     if not os.path.isfile(base):
-        return None
-    try:
-        import tomllib
-    except ImportError:
         print(
-            "render.py: Python 3.11+ required for central TOML config; falling back",
-            file=sys.stderr,
+            f"HALT and report to the user: central config not found at {base} — "
+            "ensure this is a post-#2285 BMAD install"
         )
-        return None
+        sys.exit(1)
 
     layers = [
         base,
@@ -106,41 +100,6 @@ def flatten_central_config(merged):
     return flat
 
 
-def load_flat_yaml(path):
-    """Parse a flat key: value YAML file. Quotes stripped; indented values ignored.
-    Returns {} if the file is missing (with a stderr warning)."""
-    result = {}
-    try:
-        with open(path, "r", encoding="utf-8") as fh:
-            lines = fh.readlines()
-    except FileNotFoundError:
-        print(
-            f"render.py: config not found at {path}; using smart defaults",
-            file=sys.stderr,
-        )
-        return result
-    for line in lines:
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#") or stripped.startswith("---"):
-            continue
-        if line.startswith(" ") or line.startswith("\t"):
-            continue
-        colon = stripped.find(":")
-        if colon < 0:
-            continue
-        key = stripped[:colon].strip()
-        value = stripped[colon + 1 :].strip().strip("'\"")
-        if not key or not value:
-            continue
-        # Skip YAML inline dict/list literals (balanced braces/brackets)
-        if (value.startswith("{") and value.endswith("}")) or (
-            value.startswith("[") and value.endswith("]")
-        ):
-            continue
-        result[key] = value
-    return result
-
-
 def render_template(content, vars_):
     """Resolve {{.var}} substitutions. Unresolved references emit an empty string
     (Go's missingkey=zero semantics)."""
@@ -153,29 +112,13 @@ def main():
     root = find_project_root()
     bmad_dir = os.path.join(root, "_bmad")
 
-    central = load_central_config(root)
-    if central is not None:
-        vars_ = flatten_central_config(central)
-        main_config_path = os.path.join(bmad_dir, "config.toml")
-    else:
-        legacy_path = os.path.join(bmad_dir, "bmm", "config.yaml")
-        vars_ = load_flat_yaml(legacy_path)
-        main_config_path = legacy_path
-
-    vars_.setdefault(
-        "planning_artifacts", "{project-root}/_bmad-output/planning-artifacts"
-    )
-    vars_.setdefault(
-        "implementation_artifacts",
-        "{project-root}/_bmad-output/implementation-artifacts",
-    )
-    vars_.setdefault("communication_language", "English")
+    vars_ = flatten_central_config(load_central_config(root))
 
     for key in list(vars_.keys()):
         vars_[key] = vars_[key].replace("{project-root}", root)
 
     vars_["project_root"] = root
-    vars_["main_config"] = main_config_path
+    vars_["main_config"] = os.path.join(bmad_dir, "config.toml")
     vars_["sprint_status"] = os.path.join(
         vars_["implementation_artifacts"], "sprint-status.yaml"
     )
