@@ -2,7 +2,7 @@ const path = require('node:path');
 const fs = require('../fs-native');
 const yaml = require('yaml');
 const crypto = require('node:crypto');
-const { getModulePath } = require('../project-root');
+const { resolveInstalledModuleYaml } = require('../project-root');
 const prompts = require('../prompts');
 
 // Load package.json for version info
@@ -244,8 +244,17 @@ class ManifestGenerator {
     const debug = process.env.BMAD_DEBUG_MANIFEST === 'true';
 
     for (const moduleName of this.updatedModules) {
-      const moduleYamlPath = path.join(getModulePath(moduleName), 'module.yaml');
-      if (!(await fs.pathExists(moduleYamlPath))) continue;
+      const moduleYamlPath = await resolveInstalledModuleYaml(moduleName);
+      if (!moduleYamlPath) {
+        // External modules live in ~/.bmad/cache/external-modules, not src/modules.
+        // Warn rather than silently skip so missing agent rosters don't vanish
+        // from config.toml without notice.
+        console.warn(
+          `[warn] collectAgentsFromModuleYaml: could not locate module.yaml for '${moduleName}'. ` +
+            `Agents declared by this module will not be written to config.toml.`,
+        );
+        continue;
+      }
 
       let moduleDef;
       try {
@@ -271,7 +280,9 @@ class ManifestGenerator {
       }
 
       if (debug) {
-        console.log(`[DEBUG] collectAgentsFromModuleYaml: ${moduleName} contributed ${moduleDef.agents.length} agents`);
+        console.log(
+          `[DEBUG] collectAgentsFromModuleYaml: ${moduleName} contributed ${moduleDef.agents.length} agents from ${moduleYamlPath}`,
+        );
       }
     }
 
@@ -410,8 +421,14 @@ class ManifestGenerator {
     // team config, so the operator should notice.
     const scopeByModuleKey = {};
     for (const moduleName of this.updatedModules) {
-      const moduleYamlPath = path.join(getModulePath(moduleName), 'module.yaml');
-      if (!(await fs.pathExists(moduleYamlPath))) continue;
+      const moduleYamlPath = await resolveInstalledModuleYaml(moduleName);
+      if (!moduleYamlPath) {
+        console.warn(
+          `[warn] writeCentralConfig: could not locate module.yaml for '${moduleName}'. ` +
+            `Answers from this module will default to team scope — user-scoped keys may mis-file into config.toml.`,
+        );
+        continue;
+      }
       try {
         const parsed = yaml.parse(await fs.readFile(moduleYamlPath, 'utf8'));
         if (!parsed || typeof parsed !== 'object') continue;

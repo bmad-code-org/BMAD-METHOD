@@ -2257,6 +2257,105 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test Suite 38: External-Module Agent Resolution
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 38: External-Module Agent Resolution${colors.reset}\n`);
+
+  {
+    // Scenario: external official modules (bmb, cis, gds, ...) are cloned into
+    // ~/.bmad/cache/external-modules/<name>/ — NOT copied into src/modules/.
+    // collectAgentsFromModuleYaml must resolve them from the cache or their
+    // agent roster silently vanishes from config.toml.
+    const tempCacheDir38 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-ext-cache-'));
+    const tempBmadDir38 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-ext-install-'));
+    const priorCacheEnv = process.env.BMAD_EXTERNAL_MODULES_CACHE;
+    process.env.BMAD_EXTERNAL_MODULES_CACHE = tempCacheDir38;
+
+    try {
+      // Seed a fake external module with agents at cache/<mod>/src/module.yaml —
+      // matches the real CIS layout.
+      const extSrcDir = path.join(tempCacheDir38, 'fake-ext', 'src');
+      await fs.ensureDir(extSrcDir);
+      await fs.writeFile(
+        path.join(extSrcDir, 'module.yaml'),
+        [
+          'code: fake-ext',
+          'name: "Fake External Module"',
+          'agents:',
+          '  - code: bmad-fake-ext-agent-one',
+          '    name: Ext-One',
+          '    title: External Agent One',
+          '    icon: "🧪"',
+          '    team: fake',
+          '    description: "First fake external agent."',
+          '  - code: bmad-fake-ext-agent-two',
+          '    name: Ext-Two',
+          '    title: External Agent Two',
+          '    icon: "🧬"',
+          '    team: fake',
+          '    description: "Second fake external agent."',
+          '',
+        ].join('\n'),
+      );
+
+      // Second fake module at cache/<mod>/skills/module.yaml — matches bmb layout.
+      const extSkillsDir = path.join(tempCacheDir38, 'fake-skills', 'skills');
+      await fs.ensureDir(extSkillsDir);
+      await fs.writeFile(
+        path.join(extSkillsDir, 'module.yaml'),
+        [
+          'code: fake-skills',
+          'name: "Fake Skills-Layout Module"',
+          'agents:',
+          '  - code: bmad-fake-skills-agent',
+          '    name: SkillsHero',
+          '    title: Skills Layout Agent',
+          '    icon: "🛠️"',
+          '    team: fake-skills',
+          '    description: "Lives under skills/ not src/."',
+          '',
+        ].join('\n'),
+      );
+
+      const generator38 = new ManifestGenerator();
+      generator38.bmadDir = tempBmadDir38;
+      generator38.bmadFolderName = path.basename(tempBmadDir38);
+      generator38.updatedModules = ['core', 'bmm', 'fake-ext', 'fake-skills'];
+
+      await generator38.collectAgentsFromModuleYaml();
+
+      const byCode = new Map(generator38.agents.map((a) => [a.code, a]));
+      assert(byCode.has('bmad-fake-ext-agent-one'), 'external module at cache/<name>/src resolves and contributes agent one');
+      assert(byCode.has('bmad-fake-ext-agent-two'), 'external module at cache/<name>/src resolves and contributes agent two');
+      assert(byCode.has('bmad-fake-skills-agent'), 'external module at cache/<name>/skills layout also resolves');
+      assert(byCode.get('bmad-fake-ext-agent-one').module === 'fake-ext', 'agent.module matches the owning external module name');
+      assert(byCode.get('bmad-fake-ext-agent-one').team === 'fake', 'explicit team from module.yaml is preserved');
+
+      await generator38.writeCentralConfig(tempBmadDir38, {
+        core: {},
+        bmm: {},
+        'fake-ext': {},
+        'fake-skills': {},
+      });
+
+      const teamContent = await fs.readFile(path.join(tempBmadDir38, 'config.toml'), 'utf8');
+      assert(teamContent.includes('[agents.bmad-fake-ext-agent-one]'), 'external-module agents land in config.toml [agents.*] section');
+      assert(teamContent.includes('[agents.bmad-fake-skills-agent]'), 'skills-layout external module agents also land in config.toml');
+      assert(teamContent.includes('First fake external agent.'), 'agent description from external module.yaml is written');
+    } finally {
+      if (priorCacheEnv === undefined) {
+        delete process.env.BMAD_EXTERNAL_MODULES_CACHE;
+      } else {
+        process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv;
+      }
+      await fs.remove(tempCacheDir38).catch(() => {});
+      await fs.remove(tempBmadDir38).catch(() => {});
+    }
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);
