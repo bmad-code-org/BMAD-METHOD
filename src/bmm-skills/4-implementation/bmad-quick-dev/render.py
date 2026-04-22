@@ -17,6 +17,7 @@ Python 3.11+ stdlib only. UTF-8 I/O.
 """
 
 import os
+import posixpath
 import re
 import sys
 import tomllib
@@ -54,8 +55,8 @@ def _deep_merge(base, override):
 def load_central_config(root):
     """Four-layer merge of _bmad/config.toml and its peers. HALTs if the base
     _bmad/config.toml is absent."""
-    bmad_dir = os.path.join(root, "_bmad")
-    base = os.path.join(bmad_dir, "config.toml")
+    bmad_dir = posixpath.join(root, "_bmad")
+    base = posixpath.join(bmad_dir, "config.toml")
     if not os.path.isfile(base):
         print(
             f"HALT and report to the user: central config not found at {base} — "
@@ -65,9 +66,9 @@ def load_central_config(root):
 
     layers = [
         base,
-        os.path.join(bmad_dir, "config.user.toml"),
-        os.path.join(bmad_dir, "custom", "config.toml"),
-        os.path.join(bmad_dir, "custom", "config.user.toml"),
+        posixpath.join(bmad_dir, "config.user.toml"),
+        posixpath.join(bmad_dir, "custom", "config.toml"),
+        posixpath.join(bmad_dir, "custom", "config.user.toml"),
     ]
     merged = {}
     for path in layers:
@@ -110,7 +111,8 @@ def main():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     skill_name = os.path.basename(script_dir)
     root = find_project_root()
-    bmad_dir = os.path.join(root, "_bmad")
+    root = root.replace(os.sep, "/")
+    bmad_dir = posixpath.join(root, "_bmad")
 
     vars_ = flatten_central_config(load_central_config(root))
 
@@ -118,23 +120,23 @@ def main():
         vars_[key] = vars_[key].replace("{project-root}", root)
 
     vars_["project_root"] = root
-    vars_["main_config"] = os.path.join(bmad_dir, "config.toml")
-    vars_["sprint_status"] = os.path.join(
+    vars_["main_config"] = posixpath.join(bmad_dir, "config.toml")
+    vars_["sprint_status"] = posixpath.join(
         vars_["implementation_artifacts"], "sprint-status.yaml"
     )
-    vars_["deferred_work_file"] = os.path.join(
+    vars_["deferred_work_file"] = posixpath.join(
         vars_["implementation_artifacts"], "deferred-work.md"
     )
 
-    out_dir = os.path.join(root, "_bmad", "render", skill_name)
+    out_dir = posixpath.join(root, "_bmad", "render", skill_name)
     os.makedirs(out_dir, exist_ok=True)
 
     count = 0
     for fname in sorted(os.listdir(script_dir)):
         if not fname.endswith(".md") or fname == "SKILL.md":
             continue
-        src = os.path.join(script_dir, fname)
-        dst = os.path.join(out_dir, fname)
+        src = posixpath.join(script_dir, fname)
+        dst = posixpath.join(out_dir, fname)
         with open(src, "r", encoding="utf-8") as fh:
             content = fh.read()
         with open(dst, "w", encoding="utf-8") as fh:
@@ -142,7 +144,7 @@ def main():
         count += 1
 
     print(f"render.py: rendered {count} files -> {out_dir}", file=sys.stderr)
-    workflow_md = os.path.join(out_dir, "workflow.md")
+    workflow_md = posixpath.join(out_dir, "workflow.md")
     print(f"read and follow {workflow_md}")
 
 
