@@ -92,15 +92,6 @@ async function createSkillCollisionFixture() {
   await fs.ensureDir(configDir);
 
   await fs.writeFile(
-    path.join(configDir, 'agent-manifest.csv'),
-    [
-      'name,displayName,title,icon,capabilities,role,identity,communicationStyle,principles,module,path,canonicalId',
-      '"bmad-master","BMAD Master","","","","","","","","core","_bmad/core/agents/bmad-master.md","bmad-master"',
-      '',
-    ].join('\n'),
-  );
-
-  await fs.writeFile(
     path.join(configDir, 'skill-manifest.csv'),
     [
       'canonicalId,name,description,module,path',
@@ -1458,16 +1449,16 @@ async function runTests() {
     const taskSkillEntry29 = generator29.skills.find((s) => s.canonicalId === 'task-skill');
     assert(taskSkillEntry29 !== undefined, 'Skill in tasks/ dir appears in skills[]');
 
-    // Native agent entrypoint should be installed as a verbatim skill and also
-    // remain visible to the agent manifest pipeline.
+    // Native agent entrypoint should be installed as a verbatim skill.
+    // (Agent roster is now sourced from module.yaml's `agents:` block, not
+    // from per-skill bmad-skill-manifest.yaml sidecars, so this test no longer
+    // verifies agents[] membership — see collectAgentsFromModuleYaml tests.)
     const nativeAgentEntry29 = generator29.skills.find((s) => s.canonicalId === 'bmad-tea');
     assert(nativeAgentEntry29 !== undefined, 'Native type:agent SKILL.md dir appears in skills[]');
     assert(
       nativeAgentEntry29 && nativeAgentEntry29.path.includes('agents/bmad-tea/SKILL.md'),
       'Native type:agent SKILL.md path points to the agent directory entrypoint',
     );
-    const nativeAgentManifest29 = generator29.agents.find((a) => a.name === 'bmad-tea');
-    assert(nativeAgentManifest29 !== undefined, 'Native type:agent SKILL.md dir appears in agents[] for agent metadata');
 
     // Regular type:workflow should NOT appear in skills[]
     const regularInSkills29 = generator29.skills.find((s) => s.canonicalId === 'regular-wf');
@@ -1922,6 +1913,713 @@ async function runTests() {
 
     const notFound = await mgr.getModuleByCode('xyz');
     assert(notFound === null, 'getModuleByCode returns null for unknown code');
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 34: RegistryClient GitHub API Cascade
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 34: RegistryClient GitHub API Cascade${colors.reset}\n`);
+
+  {
+    const { RegistryClient } = require('../tools/installer/modules/registry-client');
+
+    // Build a RegistryClient with stubbed fetch paths so we can assert on cascade behavior
+    // without making real network calls.
+    function createStubbedClient({ apiResult, rawResult }) {
+      const client = new RegistryClient();
+      const calls = [];
+
+      // Stub _fetchWithHeaders (GitHub API path)
+      client._fetchWithHeaders = async (url) => {
+        calls.push(`api:${url}`);
+        if (apiResult instanceof Error) throw apiResult;
+        return apiResult;
+      };
+
+      // Stub fetch (raw CDN path) — only intercept raw.githubusercontent.com calls
+      const originalFetch = client.fetch.bind(client);
+      client.fetch = async (url, timeout) => {
+        if (url.includes('raw.githubusercontent.com')) {
+          calls.push(`raw:${url}`);
+          if (rawResult instanceof Error) throw rawResult;
+          return rawResult;
+        }
+        return originalFetch(url, timeout);
+      };
+
+      return { client, calls };
+    }
+
+    // --- API success skips raw CDN ---
+    {
+      const { client, calls } = createStubbedClient({ apiResult: 'api-content', rawResult: 'raw-content' });
+      const result = await client.fetchGitHubFile('owner', 'repo', 'path/file.txt', 'main');
+
+      assert(result === 'api-content', 'RegistryClient API success returns API content');
+      assert(calls.length === 1, 'RegistryClient API success makes exactly one call');
+      assert(calls[0].startsWith('api:'), 'RegistryClient API success calls API endpoint');
+    }
+
+    // --- API failure falls back to raw CDN ---
+    {
+      const { client, calls } = createStubbedClient({ apiResult: new Error('HTTP 403'), rawResult: 'raw-content' });
+      const result = await client.fetchGitHubFile('owner', 'repo', 'path/file.txt', 'main');
+
+      assert(result === 'raw-content', 'RegistryClient API failure returns raw CDN content');
+      assert(calls.length === 2, 'RegistryClient API failure makes two calls');
+      assert(calls[0].startsWith('api:'), 'RegistryClient first call is to API');
+      assert(calls[1].startsWith('raw:'), 'RegistryClient second call is to raw CDN');
+    }
+
+    // --- Both endpoints failing throws ---
+    {
+      const { client } = createStubbedClient({ apiResult: new Error('HTTP 403'), rawResult: new Error('HTTP 404') });
+      let threw = false;
+      try {
+        await client.fetchGitHubFile('owner', 'repo', 'path/file.txt', 'main');
+      } catch {
+        threw = true;
+      }
+      assert(threw, 'RegistryClient both endpoints failing throws an error');
+    }
+
+    // --- API URL construction ---
+    {
+      const { client, calls } = createStubbedClient({ apiResult: 'content', rawResult: 'content' });
+      await client.fetchGitHubFile('bmad-code-org', 'bmad-plugins-marketplace', 'registry/official.yaml', 'main');
+
+      const apiCall = calls[0];
+      assert(
+        apiCall.includes('api.github.com/repos/bmad-code-org/bmad-plugins-marketplace/contents/registry/official.yaml'),
+        'RegistryClient API URL contains correct path',
+      );
+      assert(apiCall.includes('ref=main'), 'RegistryClient API URL contains ref parameter');
+    }
+
+    // --- Raw CDN URL construction ---
+    {
+      const { client, calls } = createStubbedClient({ apiResult: new Error('fail'), rawResult: 'content' });
+      await client.fetchGitHubFile('bmad-code-org', 'bmad-plugins-marketplace', 'registry/official.yaml', 'main');
+
+      const rawCall = calls[1];
+      assert(
+        rawCall.includes('raw.githubusercontent.com/bmad-code-org/bmad-plugins-marketplace/main/registry/official.yaml'),
+        'RegistryClient raw CDN URL contains correct path',
+      );
+    }
+
+    // --- fetchGitHubYaml parses YAML ---
+    {
+      const yamlContent = 'modules:\n  - name: test\n    description: A test module\n';
+      const { client } = createStubbedClient({ apiResult: yamlContent, rawResult: yamlContent });
+      const result = await client.fetchGitHubYaml('owner', 'repo', 'file.yaml', 'main');
+
+      assert(Array.isArray(result.modules), 'fetchGitHubYaml parses YAML correctly');
+      assert(result.modules[0].name === 'test', 'fetchGitHubYaml preserves YAML values');
+    }
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 35: Central Config Emission
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 35: Central Config Emission${colors.reset}\n`);
+
+  {
+    // Use the real src/ tree (core-skills + bmm-skills module.yaml are read via
+    // getModulePath). Only the destination bmadDir is a temp dir, which the
+    // installer writes config.toml / config.user.toml / custom/ into.
+    const tempBmadDir35 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-central-config-'));
+
+    try {
+      const moduleConfigs = {
+        core: {
+          user_name: 'TestUser',
+          communication_language: 'Spanish',
+          document_output_language: 'English',
+          output_folder: '_bmad-output',
+        },
+        bmm: {
+          project_name: 'demo-project',
+          user_skill_level: 'expert',
+          planning_artifacts: '{project-root}/_bmad-output/planning-artifacts',
+          implementation_artifacts: '{project-root}/_bmad-output/implementation-artifacts',
+          project_knowledge: '{project-root}/docs',
+          // Spread-from-core pollution: legacy per-module config.yaml merges
+          // core values into every module; writeCentralConfig must strip these
+          // from [modules.bmm] so core values only live in [core].
+          user_name: 'TestUser',
+          communication_language: 'Spanish',
+          document_output_language: 'English',
+          output_folder: '_bmad-output',
+        },
+        'external-mod': {
+          // No src/modules/external-mod/module.yaml exists; installer treats
+          // this as unknown-schema and falls through. Core-key stripping still
+          // applies, so user_name/language must NOT appear under this module.
+          custom_setting: 'external-value',
+          another_setting: 'another-value',
+          user_name: 'TestUser',
+          communication_language: 'Spanish',
+        },
+      };
+
+      const generator35 = new ManifestGenerator();
+      generator35.bmadDir = tempBmadDir35;
+      generator35.bmadFolderName = path.basename(tempBmadDir35);
+      generator35.updatedModules = ['core', 'bmm', 'external-mod'];
+
+      // collectAgentsFromModuleYaml reads from src/bmm-skills/module.yaml
+      await generator35.collectAgentsFromModuleYaml();
+      assert(generator35.agents.length >= 6, 'collectAgentsFromModuleYaml discovers bmm agents from module.yaml (>= 6 agents)');
+
+      const maryEntry = generator35.agents.find((a) => a.code === 'bmad-agent-analyst');
+      assert(maryEntry !== undefined, 'collectAgentsFromModuleYaml includes bmad-agent-analyst');
+      assert(maryEntry && maryEntry.name === 'Mary', 'Agent entry carries name field');
+      assert(maryEntry && maryEntry.title === 'Business Analyst', 'Agent entry carries title field');
+      assert(maryEntry && maryEntry.icon === '📊', 'Agent entry carries icon field');
+      assert(maryEntry && maryEntry.description.length > 0, 'Agent entry carries description field');
+      assert(maryEntry && maryEntry.module === 'bmm', 'Agent entry module derives from owning module');
+      assert(maryEntry && maryEntry.team === 'software-development', 'Agent entry carries explicit team from module.yaml');
+
+      // writeCentralConfig produces the two root files
+      const [teamPath, userPath] = await generator35.writeCentralConfig(tempBmadDir35, moduleConfigs);
+      assert(teamPath === path.join(tempBmadDir35, 'config.toml'), 'writeCentralConfig returns team config path');
+      assert(userPath === path.join(tempBmadDir35, 'config.user.toml'), 'writeCentralConfig returns user config path');
+      assert(await fs.pathExists(teamPath), 'config.toml is written to disk');
+      assert(await fs.pathExists(userPath), 'config.user.toml is written to disk');
+
+      const teamContent = await fs.readFile(teamPath, 'utf8');
+      const userContent = await fs.readFile(userPath, 'utf8');
+
+      // [core] — team-scoped keys land in config.toml
+      assert(teamContent.includes('[core]'), 'config.toml has [core] section');
+      assert(teamContent.includes('document_output_language = "English"'), 'Team-scope core key lands in config.toml');
+      assert(teamContent.includes('output_folder = "_bmad-output"'), 'Team-scope output_folder lands in config.toml');
+      assert(!teamContent.includes('user_name'), 'user_name (scope: user) is absent from config.toml');
+      assert(!teamContent.includes('communication_language'), 'communication_language (scope: user) is absent from config.toml');
+
+      // [core] — user-scoped keys land in config.user.toml
+      assert(userContent.includes('[core]'), 'config.user.toml has [core] section');
+      assert(userContent.includes('user_name = "TestUser"'), 'user_name lands in config.user.toml');
+      assert(userContent.includes('communication_language = "Spanish"'), 'communication_language lands in config.user.toml');
+      assert(!userContent.includes('document_output_language'), 'Team-scope key is absent from config.user.toml');
+
+      // [modules.bmm] — core-key pollution stripped; own user-scope key routed to user file
+      const bmmTeamMatch = teamContent.match(/\[modules\.bmm\][\s\S]*?(?=\n\[|$)/);
+      assert(bmmTeamMatch !== null, 'config.toml has [modules.bmm] section');
+      if (bmmTeamMatch) {
+        const bmmTeamBlock = bmmTeamMatch[0];
+        assert(bmmTeamBlock.includes('project_name = "demo-project"'), 'bmm team-scope key lands under [modules.bmm]');
+        assert(!bmmTeamBlock.includes('user_name'), 'user_name stripped from [modules.bmm] (core-key pollution)');
+        assert(!bmmTeamBlock.includes('communication_language'), 'communication_language stripped from [modules.bmm]');
+        assert(!bmmTeamBlock.includes('user_skill_level'), 'user_skill_level (scope: user) absent from [modules.bmm] in config.toml');
+      }
+
+      const bmmUserMatch = userContent.match(/\[modules\.bmm\][\s\S]*?(?=\n\[|$)/);
+      assert(bmmUserMatch !== null, 'config.user.toml has [modules.bmm] section');
+      if (bmmUserMatch) {
+        assert(bmmUserMatch[0].includes('user_skill_level = "expert"'), 'user_skill_level lands in config.user.toml [modules.bmm]');
+      }
+
+      // [modules.external-mod] — unknown schema, falls through as team; core keys still stripped
+      const extMatch = teamContent.match(/\[modules\.external-mod\][\s\S]*?(?=\n\[|$)/);
+      assert(extMatch !== null, 'Unknown-schema module survives with its own [modules.*] section');
+      if (extMatch) {
+        const extBlock = extMatch[0];
+        assert(extBlock.includes('custom_setting = "external-value"'), 'Unknown-schema module retains its own keys');
+        assert(!extBlock.includes('user_name'), 'Core-key pollution stripped from unknown-schema module too');
+        assert(!extBlock.includes('communication_language'), 'All core-key pollution stripped from unknown-schema module');
+      }
+
+      // [agents.*] — agent roster from bmm module.yaml baked into config.toml (team-only)
+      assert(teamContent.includes('[agents.bmad-agent-analyst]'), 'config.toml has [agents.bmad-agent-analyst] table');
+      assert(teamContent.includes('[agents.bmad-agent-dev]'), 'config.toml has [agents.bmad-agent-dev] table');
+      assert(teamContent.includes('module = "bmm"'), 'Agent entry serializes module field');
+      assert(teamContent.includes('team = "software-development"'), 'Agent entry serializes team field');
+      assert(teamContent.includes('name = "Mary"'), 'Agent entry serializes name');
+      assert(teamContent.includes('icon = "📊"'), 'Agent entry serializes icon');
+      assert(!userContent.includes('[agents.'), '[agents.*] tables are never written to config.user.toml');
+
+      // Header comments present on both files
+      assert(teamContent.includes('Installer-managed. Regenerated on every install'), 'config.toml has installer-managed header');
+      assert(userContent.includes('Holds install answers scoped to YOU personally.'), 'config.user.toml header clarifies user scope');
+    } finally {
+      await fs.remove(tempBmadDir35).catch(() => {});
+    }
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 36: Custom Config Stubs
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 36: Custom Config Stubs${colors.reset}\n`);
+
+  {
+    const tempBmadDir36 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-custom-stubs-'));
+
+    try {
+      const generator36 = new ManifestGenerator();
+
+      // First install: both stubs are created
+      await generator36.ensureCustomConfigStubs(tempBmadDir36);
+
+      const teamStub = path.join(tempBmadDir36, 'custom', 'config.toml');
+      const userStub = path.join(tempBmadDir36, 'custom', 'config.user.toml');
+
+      assert(await fs.pathExists(teamStub), 'ensureCustomConfigStubs creates custom/config.toml');
+      assert(await fs.pathExists(userStub), 'ensureCustomConfigStubs creates custom/config.user.toml');
+
+      // User writes content into the stub
+      const userEdit = '# User edit\n[agents.kirk]\ndescription = "Enterprise captain"\n';
+      await fs.writeFile(userStub, userEdit);
+
+      // Second install: stubs are NOT overwritten
+      await generator36.ensureCustomConfigStubs(tempBmadDir36);
+
+      const preservedContent = await fs.readFile(userStub, 'utf8');
+      assert(preservedContent === userEdit, 'ensureCustomConfigStubs does not overwrite user-edited custom/config.user.toml');
+    } finally {
+      await fs.remove(tempBmadDir36).catch(() => {});
+    }
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 37: Agent Preservation for Non-Contributing Modules
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 37: Agent Preservation for Non-Contributing Modules${colors.reset}\n`);
+
+  {
+    // Scenario: quickUpdate preserves a module whose source isn't available
+    // (e.g. external/marketplace). Its module.yaml isn't read, so its agents
+    // aren't in this.agents. writeCentralConfig must read the prior config.toml
+    // and keep those [agents.*] blocks so the roster doesn't silently shrink.
+    const tempBmadDir37 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-agent-preserve-'));
+
+    try {
+      // Seed a prior config.toml with an agent from an external module
+      const priorToml = [
+        '# prior',
+        '',
+        '[agents.bmad-agent-analyst]',
+        'module = "bmm"',
+        'team = "bmm"',
+        'name = "Stale Mary"',
+        '',
+        '[agents.external-hero]',
+        'module = "external-mod"',
+        'team = "external-mod"',
+        'name = "Hero"',
+        'title = "External Agent"',
+        'icon = "🦸"',
+        'description = "Ships with the marketplace module."',
+        '',
+      ].join('\n');
+      await fs.writeFile(path.join(tempBmadDir37, 'config.toml'), priorToml);
+
+      const generator37 = new ManifestGenerator();
+      generator37.bmadDir = tempBmadDir37;
+      generator37.bmadFolderName = path.basename(tempBmadDir37);
+      generator37.updatedModules = ['core', 'bmm', 'external-mod'];
+
+      // bmm source is available; external-mod is not — it's a preserved module
+      await generator37.collectAgentsFromModuleYaml();
+      const freshModules = new Set(generator37.agents.map((a) => a.module));
+      assert(freshModules.has('bmm'), 'bmm contributes fresh agents from src module.yaml');
+      assert(!freshModules.has('external-mod'), 'external-mod source is unavailable (preserved-module scenario)');
+
+      await generator37.writeCentralConfig(tempBmadDir37, { core: {}, bmm: {}, 'external-mod': {} });
+
+      const teamContent = await fs.readFile(path.join(tempBmadDir37, 'config.toml'), 'utf8');
+
+      assert(
+        teamContent.includes('[agents.external-hero]'),
+        'Preserved [agents.external-hero] block survives rewrite even though external-mod source was unavailable',
+      );
+      assert(teamContent.includes('Ships with the marketplace module.'), 'Preserved block keeps its original description');
+      assert(teamContent.includes('module = "external-mod"'), 'Preserved block keeps its module field');
+
+      // Freshly collected agents win over stale entries with the same code
+      const maryMatches = teamContent.match(/\[agents\.bmad-agent-analyst\]/g) || [];
+      assert(maryMatches.length === 1, 'bmad-agent-analyst emitted exactly once (fresh wins; stale not duplicated)');
+      assert(!teamContent.includes('Stale Mary'), 'Stale name from prior config.toml is discarded when fresh module.yaml is read');
+    } finally {
+      await fs.remove(tempBmadDir37).catch(() => {});
+    }
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 38: External-Module Agent Resolution
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 38: External-Module Agent Resolution${colors.reset}\n`);
+
+  {
+    // Scenario: external official modules (bmb, cis, gds, ...) are cloned into
+    // ~/.bmad/cache/external-modules/<name>/ — NOT copied into src/modules/.
+    // collectAgentsFromModuleYaml must resolve them from the cache or their
+    // agent roster silently vanishes from config.toml.
+    const tempCacheDir38 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-ext-cache-'));
+    const tempBmadDir38 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-ext-install-'));
+    const priorCacheEnv = process.env.BMAD_EXTERNAL_MODULES_CACHE;
+    process.env.BMAD_EXTERNAL_MODULES_CACHE = tempCacheDir38;
+
+    try {
+      // Seed a fake external module with agents at cache/<mod>/src/module.yaml —
+      // matches the real CIS layout.
+      const extSrcDir = path.join(tempCacheDir38, 'fake-ext', 'src');
+      await fs.ensureDir(extSrcDir);
+      await fs.writeFile(
+        path.join(extSrcDir, 'module.yaml'),
+        [
+          'code: fake-ext',
+          'name: "Fake External Module"',
+          'agents:',
+          '  - code: bmad-fake-ext-agent-one',
+          '    name: Ext-One',
+          '    title: External Agent One',
+          '    icon: "🧪"',
+          '    team: fake',
+          '    description: "First fake external agent."',
+          '  - code: bmad-fake-ext-agent-two',
+          '    name: Ext-Two',
+          '    title: External Agent Two',
+          '    icon: "🧬"',
+          '    team: fake',
+          '    description: "Second fake external agent."',
+          '',
+        ].join('\n'),
+      );
+
+      // Second fake module at cache/<mod>/skills/module.yaml — matches bmb layout.
+      const extSkillsDir = path.join(tempCacheDir38, 'fake-skills', 'skills');
+      await fs.ensureDir(extSkillsDir);
+      await fs.writeFile(
+        path.join(extSkillsDir, 'module.yaml'),
+        [
+          'code: fake-skills',
+          'name: "Fake Skills-Layout Module"',
+          'agents:',
+          '  - code: bmad-fake-skills-agent',
+          '    name: SkillsHero',
+          '    title: Skills Layout Agent',
+          '    icon: "🛠️"',
+          '    team: fake-skills',
+          '    description: "Lives under skills/ not src/."',
+          '',
+        ].join('\n'),
+      );
+
+      const generator38 = new ManifestGenerator();
+      generator38.bmadDir = tempBmadDir38;
+      generator38.bmadFolderName = path.basename(tempBmadDir38);
+      generator38.updatedModules = ['core', 'bmm', 'fake-ext', 'fake-skills'];
+
+      await generator38.collectAgentsFromModuleYaml();
+
+      const byCode = new Map(generator38.agents.map((a) => [a.code, a]));
+      assert(byCode.has('bmad-fake-ext-agent-one'), 'external module at cache/<name>/src resolves and contributes agent one');
+      assert(byCode.has('bmad-fake-ext-agent-two'), 'external module at cache/<name>/src resolves and contributes agent two');
+      assert(byCode.has('bmad-fake-skills-agent'), 'external module at cache/<name>/skills layout also resolves');
+      assert(byCode.get('bmad-fake-ext-agent-one').module === 'fake-ext', 'agent.module matches the owning external module name');
+      assert(byCode.get('bmad-fake-ext-agent-one').team === 'fake', 'explicit team from module.yaml is preserved');
+
+      await generator38.writeCentralConfig(tempBmadDir38, {
+        core: {},
+        bmm: {},
+        'fake-ext': {},
+        'fake-skills': {},
+      });
+
+      const teamContent = await fs.readFile(path.join(tempBmadDir38, 'config.toml'), 'utf8');
+      assert(teamContent.includes('[agents.bmad-fake-ext-agent-one]'), 'external-module agents land in config.toml [agents.*] section');
+      assert(teamContent.includes('[agents.bmad-fake-skills-agent]'), 'skills-layout external module agents also land in config.toml');
+      assert(teamContent.includes('First fake external agent.'), 'agent description from external module.yaml is written');
+    } finally {
+      if (priorCacheEnv === undefined) {
+        delete process.env.BMAD_EXTERNAL_MODULES_CACHE;
+      } else {
+        process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv;
+      }
+      await fs.remove(tempCacheDir38).catch(() => {});
+      await fs.remove(tempBmadDir38).catch(() => {});
+    }
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 39: Module Version Resolution
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 39: Module Version Resolution${colors.reset}\n`);
+
+  // --- package.json beats module.yaml and marketplace.json for cached external modules ---
+  {
+    const { resolveModuleVersion } = require('../tools/installer/modules/version-resolver');
+    const tempCacheDir39 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-version-cache-'));
+    const priorCacheEnv39 = process.env.BMAD_EXTERNAL_MODULES_CACHE;
+    process.env.BMAD_EXTERNAL_MODULES_CACHE = tempCacheDir39;
+
+    try {
+      const moduleRoot = path.join(tempCacheDir39, 'tea');
+      const moduleSrc = path.join(moduleRoot, 'src');
+      await fs.ensureDir(path.join(moduleRoot, '.claude-plugin'));
+      await fs.ensureDir(moduleSrc);
+
+      await fs.writeFile(
+        path.join(moduleRoot, 'package.json'),
+        JSON.stringify({ name: 'bmad-method-test-architecture-enterprise', version: '1.12.3' }, null, 2) + '\n',
+      );
+      await fs.writeFile(
+        path.join(moduleSrc, 'module.yaml'),
+        ['code: tea', 'name: Test Architect', 'module_version: 1.11.0', ''].join('\n'),
+      );
+      await fs.writeFile(
+        path.join(moduleRoot, '.claude-plugin', 'marketplace.json'),
+        JSON.stringify({ plugins: [{ name: 'tea', version: '1.7.2' }] }, null, 2) + '\n',
+      );
+
+      const versionInfo = await resolveModuleVersion('tea');
+      assert(versionInfo.version === '1.12.3', 'resolver prefers cached package.json over stale marketplace metadata for external modules');
+      assert(versionInfo.source === 'package.json', 'resolver reports package.json as the winning metadata source');
+    } finally {
+      if (priorCacheEnv39 === undefined) {
+        delete process.env.BMAD_EXTERNAL_MODULES_CACHE;
+      } else {
+        process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv39;
+      }
+      await fs.remove(tempCacheDir39).catch(() => {});
+    }
+  }
+
+  // --- module.yaml is used when package.json is absent ---
+  {
+    const { resolveModuleVersion } = require('../tools/installer/modules/version-resolver');
+    const tempRepo39 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-version-module-yaml-'));
+    const tempCacheDir39 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-version-module-yaml-cache-'));
+    const priorCacheEnv39 = process.env.BMAD_EXTERNAL_MODULES_CACHE;
+    process.env.BMAD_EXTERNAL_MODULES_CACHE = tempCacheDir39;
+
+    try {
+      const moduleDir = path.join(tempRepo39, 'src');
+      await fs.ensureDir(path.join(tempRepo39, '.claude-plugin'));
+      await fs.ensureDir(moduleDir);
+
+      await fs.writeFile(path.join(moduleDir, 'module.yaml'), ['code: sample-mod', 'module_version: 2.4.0', ''].join('\n'));
+      await fs.writeFile(
+        path.join(tempRepo39, '.claude-plugin', 'marketplace.json'),
+        JSON.stringify({ plugins: [{ name: 'sample-mod', version: '1.7.2' }] }, null, 2) + '\n',
+      );
+
+      const versionInfo = await resolveModuleVersion('sample-mod', { moduleSourcePath: moduleDir });
+      assert(versionInfo.version === '2.4.0', 'resolver falls back to module.yaml when package.json is missing');
+      assert(versionInfo.source === 'module.yaml', 'resolver reports module.yaml when it provides the selected version');
+    } finally {
+      if (priorCacheEnv39 === undefined) {
+        delete process.env.BMAD_EXTERNAL_MODULES_CACHE;
+      } else {
+        process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv39;
+      }
+      await fs.remove(tempRepo39).catch(() => {});
+      await fs.remove(tempCacheDir39).catch(() => {});
+    }
+  }
+
+  // --- marketplace fallback uses semver-aware comparison ---
+  {
+    const { resolveModuleVersion } = require('../tools/installer/modules/version-resolver');
+    const tempRepo39 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-version-marketplace-'));
+    const tempCacheDir39 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-version-marketplace-cache-'));
+    const priorCacheEnv39 = process.env.BMAD_EXTERNAL_MODULES_CACHE;
+    process.env.BMAD_EXTERNAL_MODULES_CACHE = tempCacheDir39;
+
+    try {
+      const moduleDir = path.join(tempRepo39, 'src');
+      await fs.ensureDir(path.join(tempRepo39, '.claude-plugin'));
+      await fs.ensureDir(moduleDir);
+
+      await fs.writeFile(
+        path.join(tempRepo39, '.claude-plugin', 'marketplace.json'),
+        JSON.stringify(
+          {
+            plugins: [
+              { name: 'older-plugin', version: '1.7.2' },
+              { name: 'newer-plugin', version: '1.12.3' },
+            ],
+          },
+          null,
+          2,
+        ) + '\n',
+      );
+
+      const versionInfo = await resolveModuleVersion('missing-plugin', { moduleSourcePath: moduleDir });
+      assert(
+        versionInfo.version === '1.12.3',
+        'resolver picks the highest marketplace fallback version using semver instead of string comparison',
+      );
+      assert(versionInfo.source === 'marketplace.json', 'resolver reports marketplace.json when it is the only usable metadata source');
+    } finally {
+      if (priorCacheEnv39 === undefined) {
+        delete process.env.BMAD_EXTERNAL_MODULES_CACHE;
+      } else {
+        process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv39;
+      }
+      await fs.remove(tempRepo39).catch(() => {});
+      await fs.remove(tempCacheDir39).catch(() => {});
+    }
+  }
+
+  // --- package.json lookup must not escape the module repo boundary ---
+  {
+    const { resolveModuleVersion } = require('../tools/installer/modules/version-resolver');
+    const tempHost39 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-version-boundary-host-'));
+    const tempCacheDir39 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-version-boundary-cache-'));
+    const priorCacheEnv39 = process.env.BMAD_EXTERNAL_MODULES_CACHE;
+    process.env.BMAD_EXTERNAL_MODULES_CACHE = tempCacheDir39;
+
+    try {
+      const moduleRoot = path.join(tempHost39, 'nested-module');
+      const moduleDir = path.join(moduleRoot, 'src');
+      await fs.ensureDir(path.join(moduleRoot, '.claude-plugin'));
+      await fs.ensureDir(moduleDir);
+
+      await fs.writeFile(path.join(tempHost39, 'package.json'), JSON.stringify({ name: 'host-project', version: '9.9.9' }, null, 2) + '\n');
+      await fs.writeFile(path.join(moduleDir, 'module.yaml'), ['code: sample-mod', 'module_version: 2.4.0', ''].join('\n'));
+      await fs.writeFile(
+        path.join(moduleRoot, '.claude-plugin', 'marketplace.json'),
+        JSON.stringify({ plugins: [{ name: 'sample-mod', version: '1.7.2' }] }, null, 2) + '\n',
+      );
+
+      const versionInfo = await resolveModuleVersion('sample-mod', { moduleSourcePath: moduleDir });
+      assert(versionInfo.version === '2.4.0', 'resolver does not read a host project package.json outside the module repo boundary');
+      assert(versionInfo.source === 'module.yaml', 'resolver stops at the module repo boundary before climbing into host project metadata');
+    } finally {
+      if (priorCacheEnv39 === undefined) {
+        delete process.env.BMAD_EXTERNAL_MODULES_CACHE;
+      } else {
+        process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv39;
+      }
+      await fs.remove(tempHost39).catch(() => {});
+      await fs.remove(tempCacheDir39).catch(() => {});
+    }
+  }
+
+  // --- Manifest uses the shared resolver for external modules ---
+  {
+    const { Manifest } = require('../tools/installer/core/manifest');
+    const { ExternalModuleManager } = require('../tools/installer/modules/external-manager');
+    const tempCacheDir39 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-manifest-version-cache-'));
+    const tempBmadDir39 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-manifest-version-install-'));
+    const priorCacheEnv39 = process.env.BMAD_EXTERNAL_MODULES_CACHE;
+    const originalLoadConfig39 = ExternalModuleManager.prototype.loadExternalModulesConfig;
+    process.env.BMAD_EXTERNAL_MODULES_CACHE = tempCacheDir39;
+
+    ExternalModuleManager.prototype.loadExternalModulesConfig = async function () {
+      return {
+        modules: [
+          {
+            code: 'tea',
+            name: 'Test Architect',
+            repository: 'https://example.com/tea.git',
+            module_definition: 'src/module.yaml',
+            npm_package: 'bmad-method-test-architecture-enterprise',
+          },
+        ],
+      };
+    };
+
+    try {
+      const moduleRoot = path.join(tempCacheDir39, 'tea');
+      const moduleSrc = path.join(moduleRoot, 'src');
+      await fs.ensureDir(path.join(moduleRoot, '.claude-plugin'));
+      await fs.ensureDir(moduleSrc);
+
+      await fs.writeFile(
+        path.join(moduleRoot, 'package.json'),
+        JSON.stringify({ name: 'bmad-method-test-architecture-enterprise', version: '1.12.3' }, null, 2) + '\n',
+      );
+      await fs.writeFile(path.join(moduleSrc, 'module.yaml'), ['code: tea', 'module_version: 1.11.0', ''].join('\n'));
+      await fs.writeFile(
+        path.join(moduleRoot, '.claude-plugin', 'marketplace.json'),
+        JSON.stringify({ plugins: [{ name: 'tea', version: '1.7.2' }] }, null, 2) + '\n',
+      );
+
+      const manifest39 = new Manifest();
+      const versionInfo = await manifest39.getModuleVersionInfo('tea', tempBmadDir39, moduleSrc);
+
+      assert(versionInfo.version === '1.12.3', 'manifest version info prefers external package.json over stale marketplace metadata');
+      assert(versionInfo.source === 'external', 'manifest preserves external source classification while using the shared resolver');
+      assert(
+        versionInfo.npmPackage === 'bmad-method-test-architecture-enterprise',
+        'manifest preserves npm package metadata for external modules',
+      );
+    } finally {
+      ExternalModuleManager.prototype.loadExternalModulesConfig = originalLoadConfig39;
+      if (priorCacheEnv39 === undefined) {
+        delete process.env.BMAD_EXTERNAL_MODULES_CACHE;
+      } else {
+        process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv39;
+      }
+      await fs.remove(tempCacheDir39).catch(() => {});
+      await fs.remove(tempBmadDir39).catch(() => {});
+    }
+  }
+
+  // --- Update checks should not advertise npm downgrades when source installs are newer ---
+  {
+    const { Manifest } = require('../tools/installer/core/manifest');
+    const manifest39 = new Manifest();
+    const originalGetAllModuleVersions39 = manifest39.getAllModuleVersions.bind(manifest39);
+    const originalFetchNpmVersion39 = manifest39.fetchNpmVersion.bind(manifest39);
+
+    manifest39.getAllModuleVersions = async () => [
+      {
+        name: 'tea',
+        version: '1.12.3',
+        npmPackage: 'bmad-method-test-architecture-enterprise',
+      },
+    ];
+    manifest39.fetchNpmVersion = async () => '1.7.2';
+
+    try {
+      const updates = await manifest39.checkForUpdates('/unused');
+      assert(updates.length === 0, 'update check ignores older npm versions when installed source metadata is newer');
+    } finally {
+      manifest39.getAllModuleVersions = originalGetAllModuleVersions39;
+      manifest39.fetchNpmVersion = originalFetchNpmVersion39;
+    }
+  }
+
+  // --- Update checks ignore non-semver version strings instead of flagging false positives ---
+  {
+    const { Manifest } = require('../tools/installer/core/manifest');
+    const manifest39 = new Manifest();
+    const originalGetAllModuleVersions39 = manifest39.getAllModuleVersions.bind(manifest39);
+    const originalFetchNpmVersion39 = manifest39.fetchNpmVersion.bind(manifest39);
+
+    manifest39.getAllModuleVersions = async () => [
+      {
+        name: 'tea',
+        version: 'workspace-build',
+        npmPackage: 'bmad-method-test-architecture-enterprise',
+      },
+    ];
+    manifest39.fetchNpmVersion = async () => 'latest-build';
+
+    try {
+      const updates = await manifest39.checkForUpdates('/unused');
+      assert(updates.length === 0, 'update check ignores non-semver version strings instead of reporting misleading updates');
+    } finally {
+      manifest39.getAllModuleVersions = originalGetAllModuleVersions39;
+      manifest39.fetchNpmVersion = originalFetchNpmVersion39;
+    }
   }
 
   console.log('');

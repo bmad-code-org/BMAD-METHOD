@@ -11,6 +11,7 @@ const prompts = require('../prompts');
 const { BMAD_FOLDER_NAME } = require('../ide/shared/path-utils');
 const { InstallPaths } = require('./install-paths');
 const { ExternalModuleManager } = require('../modules/external-manager');
+const { resolveModuleVersion } = require('../modules/version-resolver');
 
 const { ExistingInstall } = require('./existing-install');
 
@@ -22,44 +23,6 @@ class Installer {
     this.fileOps = new FileOps();
     this.installedFiles = new Set(); // Track all installed files
     this.bmadFolderName = BMAD_FOLDER_NAME;
-  }
-
-  /**
-   * Read the module version from .claude-plugin/marketplace.json
-   * Walks up from sourcePath looking for .claude-plugin/marketplace.json
-   * @param {string} sourcePath - Module source directory
-   * @returns {string} Version string or empty string
-   */
-  async _getMarketplaceVersion(sourcePath) {
-    let dir = sourcePath;
-    for (let i = 0; i < 5; i++) {
-      const marketplacePath = path.join(dir, '.claude-plugin', 'marketplace.json');
-      if (await fs.pathExists(marketplacePath)) {
-        try {
-          const data = JSON.parse(await fs.readFile(marketplacePath, 'utf8'));
-          return this._extractMarketplaceVersion(data);
-        } catch {
-          return '';
-        }
-      }
-      const parent = path.dirname(dir);
-      if (parent === dir) break;
-      dir = parent;
-    }
-    return '';
-  }
-
-  /**
-   * Extract the highest version from marketplace.json plugins array
-   */
-  _extractMarketplaceVersion(data) {
-    const plugins = data?.plugins;
-    if (!Array.isArray(plugins) || plugins.length === 0) return '';
-    let best = '';
-    for (const p of plugins) {
-      if (p.version && (!best || p.version > best)) best = p.version;
-    }
-    return best;
   }
 
   /**
@@ -244,6 +207,15 @@ class Installer {
 
     const installTasks = [];
 
+    installTasks.push({
+      title: 'Installing shared scripts',
+      task: async () => {
+        await this._installSharedScripts(paths);
+        addResult('Shared scripts', 'ok');
+        return 'Shared scripts installed';
+      },
+    });
+
     if (allModules.length > 0) {
       installTasks.push({
         title: isQuickUpdate ? `Updating ${allModules.length} module(s)` : `Installing ${allModules.length} module(s)`,
@@ -301,7 +273,8 @@ class Installer {
         addResult('Configurations', 'ok', 'generated');
 
         this.installedFiles.add(paths.manifestFile());
-        this.installedFiles.add(paths.agentManifest());
+        this.installedFiles.add(paths.centralConfig());
+        this.installedFiles.add(paths.centralUserConfig());
 
         message('Generating manifests...');
         const manifestGen = new ManifestGenerator();
@@ -322,10 +295,11 @@ class Installer {
         await manifestGen.generateManifests(paths.bmadDir, allModulesForManifest, [...this.installedFiles], {
           ides: config.ides || [],
           preservedModules: modulesForCsvPreserve,
+          moduleConfigs,
         });
 
         message('Generating help catalog...');
-        await this.mergeModuleHelpCatalogs(paths.bmadDir);
+        await this.mergeModuleHelpCatalogs(paths.bmadDir, manifestGen.agents);
         addResult('Help catalog', 'ok');
 
         return 'Configurations generated';
@@ -559,6 +533,44 @@ class Installer {
   }
 
   /**
+   * Sync src/scripts/* → _bmad/scripts/ so shared Python scripts
+   * (e.g. resolve_customization.py) are available at install time.
+   * Wipes the destination first so files removed or renamed in source
+   * don't linger and get recorded as installed. Also seeds
+   * _bmad/custom/.gitignore on fresh installs so *.user.toml overrides
+   * stay out of version control.
+   */
+  async _installSharedScripts(paths) {
+    const srcScriptsDir = path.join(paths.srcDir, 'src', 'scripts');
+    if (!(await fs.pathExists(srcScriptsDir))) {
+      throw new Error(`Shared scripts source directory not found: ${srcScriptsDir}`);
+    }
+
+    await fs.remove(paths.scriptsDir);
+    await fs.ensureDir(paths.scriptsDir);
+    await fs.copy(srcScriptsDir, paths.scriptsDir, { overwrite: true });
+    await this._trackFilesRecursive(paths.scriptsDir);
+
+    const customGitignore = path.join(paths.customDir, '.gitignore');
+    if (!(await fs.pathExists(customGitignore))) {
+      await fs.writeFile(customGitignore, '*.user.toml\n', 'utf8');
+      this.installedFiles.add(customGitignore);
+    }
+  }
+
+  async _trackFilesRecursive(dir) {
+    const entries = await fs.readdir(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        await this._trackFilesRecursive(full);
+      } else if (entry.isFile()) {
+        this.installedFiles.add(full);
+      }
+    }
+  }
+
+  /**
    * Install official (non-custom) modules.
    * @param {Object} config - Installation configuration
    * @param {Object} paths - InstallPaths instance
@@ -592,15 +604,18 @@ class Installer {
         },
       );
 
-      // Get display name from source module.yaml; version from resolution cache or marketplace.json
+      // Get display name from source module.yaml and resolve the freshest version metadata we can find locally.
       const sourcePath = await officialModules.findModuleSource(moduleName, { silent: true });
       const moduleInfo = sourcePath ? await officialModules.getModuleInfo(sourcePath, moduleName, '') : null;
       const displayName = moduleInfo?.name || moduleName;
 
-      // Prefer version from resolution cache (accurate for custom/local modules),
-      // fall back to marketplace.json walk-up for official modules
       const cachedResolution = CustomModuleManager._resolutionCache.get(moduleName);
-      const version = cachedResolution?.version || (sourcePath ? await this._getMarketplaceVersion(sourcePath) : '');
+      const versionInfo = await resolveModuleVersion(moduleName, {
+        moduleSourcePath: sourcePath,
+        fallbackVersion: cachedResolution?.version,
+        marketplacePluginNames: cachedResolution?.pluginName ? [cachedResolution.pluginName] : [],
+      });
+      const version = versionInfo.version || '';
       addResult(displayName, 'ok', '', { moduleCode: moduleName, newVersion: version });
     }
   }
@@ -671,8 +686,11 @@ class Installer {
     const customFiles = [];
     const modifiedFiles = [];
 
-    // Memory is always in _bmad/_memory
-    const bmadMemoryPath = '_memory';
+    // Memory subtrees (v6.1: _bmad/_memory, current: _bmad/memory) hold
+    // per-user runtime data generated by agents with sidecars. These files
+    // aren't installer-managed and must never be reported as "custom" or
+    // "modified" — they're user state, not user overrides.
+    const bmadMemoryPaths = ['_memory', 'memory'];
 
     // Check if the manifest has hashes - if not, we can't detect modifications
     let manifestHasHashes = false;
@@ -738,7 +756,7 @@ class Installer {
               continue;
             }
 
-            if (relativePath.startsWith(bmadMemoryPath + '/') && path.dirname(relativePath).includes('-sidecar')) {
+            if (bmadMemoryPaths.some((mp) => relativePath === mp || relativePath.startsWith(mp + '/'))) {
               continue;
             }
 
@@ -789,9 +807,8 @@ class Installer {
 
     // Get all installed module directories
     const entries = await fs.readdir(bmadDir, { withFileTypes: true });
-    const installedModules = entries
-      .filter((entry) => entry.isDirectory() && entry.name !== '_config' && entry.name !== 'docs')
-      .map((entry) => entry.name);
+    const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom']);
+    const installedModules = entries.filter((entry) => entry.isDirectory() && !nonModuleDirs.has(entry.name)).map((entry) => entry.name);
 
     // Generate config.yaml for each installed module
     for (const moduleName of installedModules) {
@@ -873,53 +890,36 @@ class Installer {
   }
 
   /**
-   * Merge all module-help.csv files into a single bmad-help.csv
-   * Scans all installed modules for module-help.csv and merges them
-   * Enriches agent info from agent-manifest.csv
-   * Output is written to _bmad/_config/bmad-help.csv
+   * Merge all module-help.csv files into a single bmad-help.csv.
+   * Scans all installed modules for module-help.csv and merges them.
+   * Enriches agent info from the in-memory agent list produced by ManifestGenerator.
+   * Output is written to _bmad/_config/bmad-help.csv.
    * @param {string} bmadDir - BMAD installation directory
+   * @param {Array<Object>} agentEntries - Agents collected from module.yaml (code, name, title, icon, module, ...)
    */
-  async mergeModuleHelpCatalogs(bmadDir) {
+  async mergeModuleHelpCatalogs(bmadDir, agentEntries = []) {
     const allRows = [];
     const headerRow =
       'module,phase,name,code,sequence,workflow-file,command,required,agent-name,agent-command,agent-display-name,agent-title,options,description,output-location,outputs';
 
-    // Load agent manifest for agent info lookup
-    const agentManifestPath = path.join(bmadDir, '_config', 'agent-manifest.csv');
-    const agentInfo = new Map(); // agent-name -> {command, displayName, title+icon}
-
-    if (await fs.pathExists(agentManifestPath)) {
-      const manifestContent = await fs.readFile(agentManifestPath, 'utf8');
-      const lines = manifestContent.split('\n').filter((line) => line.trim());
-
-      for (const line of lines) {
-        if (line.startsWith('name,')) continue; // Skip header
-
-        const cols = line.split(',');
-        if (cols.length >= 4) {
-          const agentName = cols[0].replaceAll('"', '').trim();
-          const displayName = cols[1].replaceAll('"', '').trim();
-          const title = cols[2].replaceAll('"', '').trim();
-          const icon = cols[3].replaceAll('"', '').trim();
-          const module = cols[10] ? cols[10].replaceAll('"', '').trim() : '';
-
-          // Build agent command: bmad:module:agent:name
-          const agentCommand = module ? `bmad:${module}:agent:${agentName}` : `bmad:agent:${agentName}`;
-
-          agentInfo.set(agentName, {
-            command: agentCommand,
-            displayName: displayName || agentName,
-            title: icon && title ? `${icon} ${title}` : title || agentName,
-          });
-        }
-      }
+    // Build agent lookup from the in-memory list (agent code → command + display fields).
+    const agentInfo = new Map();
+    for (const agent of agentEntries) {
+      if (!agent || !agent.code) continue;
+      const agentCommand = agent.module ? `bmad:${agent.module}:agent:${agent.code}` : `bmad:agent:${agent.code}`;
+      const displayName = agent.name || agent.code;
+      const titleCombined = agent.icon && agent.title ? `${agent.icon} ${agent.title}` : agent.title || agent.code;
+      agentInfo.set(agent.code, {
+        command: agentCommand,
+        displayName,
+        title: titleCombined,
+      });
     }
 
     // Get all installed module directories
     const entries = await fs.readdir(bmadDir, { withFileTypes: true });
-    const installedModules = entries
-      .filter((entry) => entry.isDirectory() && entry.name !== '_config' && entry.name !== 'docs' && entry.name !== '_memory')
-      .map((entry) => entry.name);
+    const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom']);
+    const installedModules = entries.filter((entry) => entry.isDirectory() && !nonModuleDirs.has(entry.name)).map((entry) => entry.name);
 
     // Add core module to scan (it's installed at root level as _config, but we check src/core-skills)
     const coreModulePath = getSourcePath('core-skills');

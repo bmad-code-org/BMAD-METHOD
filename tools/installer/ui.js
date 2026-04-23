@@ -3,48 +3,17 @@ const os = require('node:os');
 const fs = require('./fs-native');
 const { CLIUtils } = require('./cli-utils');
 const { ExternalModuleManager } = require('./modules/external-manager');
-const { getProjectRoot } = require('./project-root');
+const { resolveModuleVersion } = require('./modules/version-resolver');
 const prompts = require('./prompts');
 
 /**
- * Read module version from .claude-plugin/marketplace.json
+ * Read a module version from the freshest local metadata available.
  * @param {string} moduleCode - Module code (e.g., 'core', 'bmm', 'cis')
  * @returns {string} Version string or empty string
  */
-async function getMarketplaceVersion(moduleCode) {
-  let marketplacePath;
-  if (moduleCode === 'core' || moduleCode === 'bmm') {
-    marketplacePath = path.join(getProjectRoot(), '.claude-plugin', 'marketplace.json');
-  } else {
-    const cacheDir = path.join(os.homedir(), '.bmad', 'cache', 'external-modules', moduleCode);
-    marketplacePath = path.join(cacheDir, '.claude-plugin', 'marketplace.json');
-  }
-  try {
-    if (await fs.pathExists(marketplacePath)) {
-      const data = JSON.parse(await fs.readFile(marketplacePath, 'utf8'));
-      return _extractMarketplaceVersion(data);
-    }
-  } catch {
-    // ignore
-  }
-  return '';
-}
-
-/**
- * Extract the highest version from marketplace.json plugins array.
- * Handles multiple plugins per file safely.
- * @param {Object} data - Parsed marketplace.json
- * @returns {string} Version string or empty string
- */
-function _extractMarketplaceVersion(data) {
-  const plugins = data?.plugins;
-  if (!Array.isArray(plugins) || plugins.length === 0) return '';
-  // Use the highest version across all plugins in the file
-  let best = '';
-  for (const p of plugins) {
-    if (p.version && (!best || p.version > best)) best = p.version;
-  }
-  return best;
+async function getModuleVersion(moduleCode) {
+  const versionInfo = await resolveModuleVersion(moduleCode);
+  return versionInfo.version || '';
 }
 
 /**
@@ -644,7 +613,7 @@ class UI {
 
     const buildModuleEntry = async (code, name, description, isDefault) => {
       const isInstalled = installedModuleIds.has(code);
-      const version = await getMarketplaceVersion(code);
+      const version = await getModuleVersion(code);
       const label = version ? `${name} (v${version})` : name;
       return {
         label,
