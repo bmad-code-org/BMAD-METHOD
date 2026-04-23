@@ -103,6 +103,12 @@ platforms:
     category: ide
     description: "AI coding platform"
 
+  kimi-code:
+    name: "Kimi Code"
+    preferred: false
+    category: cli
+    description: "Moonshot AI's Kimi Code CLI"
+
   crush:
     name: "Crush"
     preferred: false
