@@ -1,20 +1,107 @@
 const path = require('node:path');
 const os = require('node:os');
+const semver = require('semver');
 const fs = require('./fs-native');
 const { CLIUtils } = require('./cli-utils');
 const { ExternalModuleManager } = require('./modules/external-manager');
 const { resolveModuleVersion } = require('./modules/version-resolver');
-const { parseChannelOptions, buildPlan, orphanPinWarnings, bundledTargetWarnings } = require('./modules/channel-plan');
+const { Manifest } = require('./core/manifest');
+const {
+  parseChannelOptions,
+  buildPlan,
+  decideChannelForModule,
+  orphanPinWarnings,
+  bundledTargetWarnings,
+} = require('./modules/channel-plan');
+const channelResolver = require('./modules/channel-resolver');
 const prompts = require('./prompts');
 
+const manifest = new Manifest();
+
 /**
- * Read a module version from the freshest local metadata available.
- * @param {string} moduleCode - Module code (e.g., 'core', 'bmm', 'cis')
- * @returns {string} Version string or empty string
+ * Format a resolved version for display in installer labels.
+ * Semver-like values are normalized to a single leading "v".
+ * @param {string|null|undefined} version
+ * @returns {string}
  */
-async function getModuleVersion(moduleCode) {
+function formatDisplayVersion(version) {
+  const trimmed = typeof version === 'string' ? version.trim() : '';
+  if (!trimmed) return '';
+
+  const normalized = semver.valid(semver.coerce(trimmed));
+  if (normalized) {
+    return `v${normalized}`;
+  }
+
+  return trimmed;
+}
+
+/**
+ * Build the display label for a module, showing an upgrade arrow when an
+ * installed semver differs from the latest resolvable semver.
+ * @param {string} name
+ * @param {string} latestVersion
+ * @param {string} installedVersion
+ * @returns {string}
+ */
+function buildModuleLabel(name, latestVersion, installedVersion = '') {
+  const latestDisplay = formatDisplayVersion(latestVersion);
+  if (!latestDisplay) return name;
+
+  const installedDisplay = formatDisplayVersion(installedVersion);
+  const latestSemver = semver.valid(semver.coerce(latestVersion || ''));
+  const installedSemver = semver.valid(semver.coerce(installedVersion || ''));
+
+  if (installedDisplay && latestSemver && installedSemver && semver.neq(installedSemver, latestSemver)) {
+    return `${name} (${installedDisplay} → ${latestDisplay})`;
+  }
+
+  return `${name} (${latestDisplay})`;
+}
+
+/**
+ * Resolve the version to show for a module picker entry. External modules use
+ * the same channel/tag resolver as installs; bundled modules fall back to local
+ * source metadata.
+ * @param {string} moduleCode - Module code (e.g., 'core', 'bmm', 'cis')
+ * @param {Object} options
+ * @param {string|null} [options.repoUrl] - Module repository URL for tag resolution
+ * @param {string|null} [options.registryDefault] - Registry default channel
+ * @param {Object|null} [options.channelOptions] - Parsed installer channel options
+ * @returns {Promise<{version: string, lookupAttempted: boolean, lookupSucceeded: boolean}>}
+ */
+async function getModuleVersion(moduleCode, { repoUrl = null, registryDefault = null, channelOptions = null } = {}) {
+  if (repoUrl) {
+    const plan = decideChannelForModule({
+      code: moduleCode,
+      channelOptions,
+      registryDefault,
+    });
+
+    try {
+      const resolved = await channelResolver.resolveChannel({
+        channel: plan.channel,
+        pin: plan.pin,
+        repoUrl,
+      });
+      if (resolved?.version) {
+        return {
+          version: resolved.version,
+          lookupAttempted: plan.channel === 'stable',
+          lookupSucceeded: true,
+        };
+      }
+    } catch {
+      // Fall back to local metadata when tag resolution is unavailable.
+    }
+  }
+
   const versionInfo = await resolveModuleVersion(moduleCode);
-  return versionInfo.version || '';
+  return {
+    version: versionInfo.version || '',
+    lookupAttempted: !!repoUrl,
+    lookupSucceeded: false,
+  };
 }
 
 /**
@@ -122,7 +209,7 @@ class UI {
       // Return early with modify configuration
       if (actionType === 'update') {
         // Get existing installation info
-        const { installedModuleIds } = await this.getExistingInstallation(confirmedDirectory);
+        const { installedModuleIds, installedModuleVersions } = await this.getExistingInstallation(confirmedDirectory);
 
         await prompts.log.message(`Found existing modules: ${[...installedModuleIds].join(', ')}`);
 
@@ -144,7 +231,7 @@ class UI {
             `Non-interactive mode (--yes): using default modules (installed + defaults): ${selectedModules.join(', ')}`,
           );
         } else {
-          selectedModules = await this.selectAllModules(installedModuleIds);
+          selectedModules = await this.selectAllModules(installedModuleIds, installedModuleVersions, channelOptions);
         }
 
         // Resolve custom sources from --custom-source flag
@@ -208,7 +295,7 @@ class UI {
     }
 
     // This section is only for new installations (update returns early above)
-    const { installedModuleIds } = await this.getExistingInstallation(confirmedDirectory);
+    const { installedModuleIds, installedModuleVersions } = await this.getExistingInstallation(confirmedDirectory);
 
     // Unified module selection - all modules in one grouped multiselect
     let selectedModules;
@@ -227,7 +314,7 @@ class UI {
       selectedModules = await this.getDefaultModules(installedModuleIds);
       await prompts.log.info(`Using default modules (--yes flag): ${selectedModules.join(', ')}`);
     } else {
-      selectedModules = await this.selectAllModules(installedModuleIds);
+      selectedModules = await this.selectAllModules(installedModuleIds, installedModuleVersions, channelOptions);
     }
 
     // Resolve custom sources from --custom-source flag
@@ -526,7 +613,7 @@ class UI {
   /**
    * Get existing installation info and installed modules
    * @param {string} directory - Installation directory
-   * @returns {Object} Object with existingInstall, installedModuleIds, and bmadDir
+   * @returns {Object} Object with existingInstall, installedModuleIds, installedModuleVersions, and bmadDir
    */
   async getExistingInstallation(directory) {
     const { ExistingInstall } = require('./core/existing-install');
@@ -535,8 +622,26 @@ class UI {
     const { bmadDir } = await installer.findBmadDir(directory);
     const existingInstall = await ExistingInstall.detect(bmadDir);
     const installedModuleIds = new Set(existingInstall.moduleIds);
+    const installedModuleVersions = new Map();
+    const manifestModules = await manifest.getAllModuleVersions(bmadDir);
 
-    return { existingInstall, installedModuleIds, bmadDir };
+    for (const module of manifestModules) {
+      if (module?.name && module.version) {
+        installedModuleVersions.set(module.name, module.version);
+      }
+    }
+
+    for (const module of existingInstall.modules) {
+      if (module?.id && module.version && module.version !== 'unknown' && !installedModuleVersions.has(module.id)) {
+        installedModuleVersions.set(module.id, module.version);
+      }
+    }
+
+    if (existingInstall.hasCore && existingInstall.version && !installedModuleVersions.has('core')) {
+      installedModuleVersions.set('core', existingInstall.version);
+    }
+
+    return { existingInstall, installedModuleIds, installedModuleVersions, bmadDir };
   }
 
   /**
@@ -617,11 +722,13 @@ class UI {
   /**
    * Select all modules across three tiers: official, community, and custom URL.
    * @param {Set} installedModuleIds - Currently installed module IDs
+   * @param {Map<string, string>} installedModuleVersions - Installed module versions from the local manifest
+   * @param {Object|null} channelOptions - Parsed installer channel options
    * @returns {Array} Selected module codes (excluding core)
    */
-  async selectAllModules(installedModuleIds = new Set()) {
+  async selectAllModules(installedModuleIds = new Set(), installedModuleVersions = new Map(), channelOptions = null) {
     // Phase 1: Official modules
-    const officialSelected = await this._selectOfficialModules(installedModuleIds);
+    const officialSelected = await this._selectOfficialModules(installedModuleIds, installedModuleVersions, channelOptions);
 
     // Determine which installed modules are NOT official (community or custom).
     // These must be preserved even if the user declines to browse community/custom.
@@ -657,9 +764,11 @@ class UI {
    * Select official modules using autocompleteMultiselect.
    * Extracted from the original selectAllModules - unchanged behavior.
    * @param {Set} installedModuleIds - Currently installed module IDs
+   * @param {Map<string, string>} installedModuleVersions - Installed module versions from the local manifest
+   * @param {Object|null} channelOptions - Parsed installer channel options
    * @returns {Array} Selected official module codes
    */
-  async _selectOfficialModules(installedModuleIds = new Set()) {
+  async _selectOfficialModules(installedModuleIds = new Set(), installedModuleVersions = new Map(), channelOptions = null) {
     // Built-in modules (core, bmm) come from local source, not the registry
     const { OfficialModules } = require('./modules/official-modules');
     const builtInModules = (await new OfficialModules().listAvailable()).modules || [];
@@ -672,15 +781,18 @@ class UI {
     const initialValues = [];
     const lockedValues = ['core'];
 
-    const buildModuleEntry = async (code, name, description, isDefault) => {
+    const buildModuleEntry = async (code, name, description, isDefault, repoUrl = null, registryDefault = null) => {
       const isInstalled = installedModuleIds.has(code);
-      const version = await getModuleVersion(code);
-      const label = version ? `${name} (v${version})` : name;
+      const installedVersion = installedModuleVersions.get(code) || '';
+      const versionState = await getModuleVersion(code, { repoUrl, registryDefault, channelOptions });
+      const label = buildModuleLabel(name, versionState.version, installedVersion);
       return {
         label,
         value: code,
         hint: description,
         selected: isInstalled || isDefault,
+        lookupAttempted: versionState.lookupAttempted,
+        lookupSucceeded: versionState.lookupSucceeded,
       };
     };
 
@@ -697,12 +809,38 @@ class UI {
     }
 
     // Add external registry modules (skip built-in duplicates)
-    for (const mod of registryModules) {
-      if (mod.builtIn || builtInCodes.has(mod.code)) continue;
-      const entry = await buildModuleEntry(mod.code, mod.name, mod.description, mod.defaultSelected);
+    const externalRegistryModules = registryModules.filter((mod) => !mod.builtIn && !builtInCodes.has(mod.code));
+    let externalRegistryEntries = [];
+    if (externalRegistryModules.length > 0) {
+      const spinner = await prompts.spinner();
+      spinner.start('Checking latest module versions...');
+
+      externalRegistryEntries = await Promise.all(
+        externalRegistryModules.map(async (mod) => ({
+          code: mod.code,
+          entry: await buildModuleEntry(
+            mod.code,
+            mod.name,
+            mod.description,
+            mod.defaultSelected,
+            mod.url || null,
+            mod.defaultChannel || null,
+          ),
+        })),
+      );
+
+      spinner.stop('Checked latest module versions.');
+
+      const attemptedLookups = externalRegistryEntries.filter(({ entry }) => entry.lookupAttempted).length;
+      const successfulLookups = externalRegistryEntries.filter(({ entry }) => entry.lookupSucceeded).length;
+      if (attemptedLookups > 0 && successfulLookups === 0) {
+        await prompts.log.warn('Could not check latest module versions; showing cached/local versions.');
+      }
+    }
+    for (const { code, entry } of externalRegistryEntries) {
       allOptions.push({ label: entry.label, value: entry.value, hint: entry.hint });
       if (entry.selected) {
-        initialValues.push(mod.code);
+        initialValues.push(code);
       }
     }
 

@@ -2622,6 +2622,229 @@ async function runTests() {
     }
   }
 
+  // --- Official module picker uses git tags for external module labels ---
+  {
+    const { UI } = require('../tools/installer/ui');
+    const prompts = require('../tools/installer/prompts');
+    const channelResolver = require('../tools/installer/modules/channel-resolver');
+    const { ExternalModuleManager } = require('../tools/installer/modules/external-manager');
+
+    const ui = new UI();
+    const originalOfficialListAvailable39 = OfficialModules.prototype.listAvailable;
+    const originalExternalListAvailable39 = ExternalModuleManager.prototype.listAvailable;
+    const originalAutocomplete39 = prompts.autocompleteMultiselect;
+    const originalSpinner39 = prompts.spinner;
+    const originalWarn39 = prompts.log.warn;
+    const originalMessage39 = prompts.log.message;
+    const originalResolveChannel39 = channelResolver.resolveChannel;
+
+    const seenLabels39 = [];
+    const spinnerStarts39 = [];
+    const spinnerStops39 = [];
+    const warnings39 = [];
+
+    OfficialModules.prototype.listAvailable = async function () {
+      return {
+        modules: [
+          {
+            id: 'core',
+            name: 'BMad Core Module',
+            description: 'always installed',
+            defaultSelected: true,
+          },
+        ],
+      };
+    };
+
+    ExternalModuleManager.prototype.listAvailable = async function () {
+      return [
+        {
+          code: 'bmb',
+          name: 'BMad Builder',
+          description: 'Builder module',
+          defaultSelected: false,
+          builtIn: false,
+          url: 'https://github.com/bmad-code-org/bmad-builder',
+          defaultChannel: 'stable',
+        },
+        {
+          code: 'tea',
+          name: 'Test Architect',
+          description: 'Test architecture module',
+          defaultSelected: false,
+          builtIn: false,
+          url: 'https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise',
+          defaultChannel: 'stable',
+        },
+      ];
+    };
+
+    channelResolver.resolveChannel = async function ({ repoUrl, channel }) {
+      if (channel !== 'stable') {
+        return { channel, version: channel === 'next' ? 'main' : 'unknown' };
+      }
+      if (repoUrl.includes('bmad-builder')) {
+        return { channel: 'stable', version: 'v1.7.0', ref: 'v1.7.0', resolvedFallback: false };
+      }
+      if (repoUrl.includes('bmad-method-test-architecture-enterprise')) {
+        return { channel: 'stable', version: 'v1.15.0', ref: 'v1.15.0', resolvedFallback: false };
+      }
+      throw new Error(`unexpected repo ${repoUrl}`);
+    };
+
+    prompts.autocompleteMultiselect = async (options) => {
+      seenLabels39.push(...options.options.map((opt) => opt.label));
+      return ['core'];
+    };
+    prompts.spinner = async () => ({
+      start(message) {
+        spinnerStarts39.push(message);
+      },
+      stop(message) {
+        spinnerStops39.push(message);
+      },
+      error(message) {
+        spinnerStops39.push(`error:${message}`);
+      },
+    });
+    prompts.log.warn = async (message) => {
+      warnings39.push(message);
+    };
+    prompts.log.message = async () => {};
+
+    try {
+      await ui._selectOfficialModules(
+        new Set(['bmb']),
+        new Map([
+          ['bmb', '1.1.0'],
+          ['core', '6.2.0'],
+        ]),
+        { global: null, nextSet: new Set(), pins: new Map(), warnings: [] },
+      );
+
+      assert(
+        seenLabels39.includes('BMad Builder (v1.1.0 → v1.7.0)'),
+        'official module picker shows installed-to-latest arrow from git tags',
+      );
+      assert(seenLabels39.includes('Test Architect (v1.15.0)'), 'official module picker shows latest git-tag version for fresh installs');
+      assert(
+        spinnerStarts39.includes('Checking latest module versions...'),
+        'official module picker wraps external lookups in a single spinner',
+      );
+      assert(spinnerStops39.includes('Checked latest module versions.'), 'official module picker stops the version-check spinner');
+      assert(warnings39.length === 0, 'official module picker does not warn when tag lookups succeed');
+    } finally {
+      OfficialModules.prototype.listAvailable = originalOfficialListAvailable39;
+      ExternalModuleManager.prototype.listAvailable = originalExternalListAvailable39;
+      prompts.autocompleteMultiselect = originalAutocomplete39;
+      prompts.spinner = originalSpinner39;
+      prompts.log.warn = originalWarn39;
+      prompts.log.message = originalMessage39;
+      channelResolver.resolveChannel = originalResolveChannel39;
+    }
+  }
+
+  // --- Official module picker warns and falls back to cached versions when tag lookups fail ---
+  {
+    const { UI } = require('../tools/installer/ui');
+    const prompts = require('../tools/installer/prompts');
+    const channelResolver = require('../tools/installer/modules/channel-resolver');
+    const { ExternalModuleManager } = require('../tools/installer/modules/external-manager');
+
+    const ui = new UI();
+    const tempCacheDir39 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-picker-cache-'));
+    const priorCacheEnv39 = process.env.BMAD_EXTERNAL_MODULES_CACHE;
+    const originalOfficialListAvailable39 = OfficialModules.prototype.listAvailable;
+    const originalExternalListAvailable39 = ExternalModuleManager.prototype.listAvailable;
+    const originalAutocomplete39 = prompts.autocompleteMultiselect;
+    const originalSpinner39 = prompts.spinner;
+    const originalWarn39 = prompts.log.warn;
+    const originalMessage39 = prompts.log.message;
+    const originalResolveChannel39 = channelResolver.resolveChannel;
+
+    const seenLabels39 = [];
+    const warnings39 = [];
+
+    process.env.BMAD_EXTERNAL_MODULES_CACHE = tempCacheDir39;
+    await fs.ensureDir(path.join(tempCacheDir39, 'bmb'));
+    await fs.writeFile(
+      path.join(tempCacheDir39, 'bmb', 'package.json'),
+      JSON.stringify({ name: 'bmad-builder', version: '1.7.0' }, null, 2) + '\n',
+    );
+
+    OfficialModules.prototype.listAvailable = async function () {
+      return {
+        modules: [
+          {
+            id: 'core',
+            name: 'BMad Core Module',
+            description: 'always installed',
+            defaultSelected: true,
+          },
+        ],
+      };
+    };
+
+    ExternalModuleManager.prototype.listAvailable = async function () {
+      return [
+        {
+          code: 'bmb',
+          name: 'BMad Builder',
+          description: 'Builder module',
+          defaultSelected: false,
+          builtIn: false,
+          url: 'https://github.com/bmad-code-org/bmad-builder',
+          defaultChannel: 'stable',
+        },
+      ];
+    };
+
+    channelResolver.resolveChannel = async function () {
+      throw new Error('tag lookup unavailable');
+    };
+
+    prompts.autocompleteMultiselect = async (options) => {
+      seenLabels39.push(...options.options.map((opt) => opt.label));
+      return ['core'];
+    };
+    prompts.spinner = async () => ({
+      start() {},
+      stop() {},
+      error() {},
+    });
+    prompts.log.warn = async (message) => {
+      warnings39.push(message);
+    };
+    prompts.log.message = async () => {};
+
+    try {
+      await ui._selectOfficialModules(new Set(), new Map(), { global: null, nextSet: new Set(), pins: new Map(), warnings: [] });
+
+      assert(
+        seenLabels39.includes('BMad Builder (v1.7.0)'),
+        'official module picker falls back to cached/local versions when tag lookup fails',
+      );
+      assert(
+        warnings39.includes('Could not check latest module versions; showing cached/local versions.'),
+        'official module picker warns once when all latest-version lookups fail',
+      );
+    } finally {
+      OfficialModules.prototype.listAvailable = originalOfficialListAvailable39;
+      ExternalModuleManager.prototype.listAvailable = originalExternalListAvailable39;
+      prompts.autocompleteMultiselect = originalAutocomplete39;
+      prompts.spinner = originalSpinner39;
+      prompts.log.warn = originalWarn39;
+      prompts.log.message = originalMessage39;
+      channelResolver.resolveChannel = originalResolveChannel39;
+      if (priorCacheEnv39 === undefined) {
+        delete process.env.BMAD_EXTERNAL_MODULES_CACHE;
+      } else {
+        process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv39;
+      }
+      await fs.remove(tempCacheDir39).catch(() => {});
+    }
+  }
+
   console.log('');
 
   // ============================================================
