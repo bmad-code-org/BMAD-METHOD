@@ -63,3 +63,9 @@ If version control is available and the tree is dirty, create a local commit wit
 HALT and wait for human input.
 
 Workflow complete.
+
+## On Complete
+
+Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete`
+
+If the resolved `workflow.on_complete` is non-empty, follow it as the final terminal instruction before exiting.

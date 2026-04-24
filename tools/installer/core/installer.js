@@ -11,6 +11,7 @@ const prompts = require('../prompts');
 const { BMAD_FOLDER_NAME } = require('../ide/shared/path-utils');
 const { InstallPaths } = require('./install-paths');
 const { ExternalModuleManager } = require('../modules/external-manager');
+const { resolveModuleVersion } = require('../modules/version-resolver');
 
 const { ExistingInstall } = require('./existing-install');
 
@@ -22,44 +23,6 @@ class Installer {
     this.fileOps = new FileOps();
     this.installedFiles = new Set(); // Track all installed files
     this.bmadFolderName = BMAD_FOLDER_NAME;
-  }
-
-  /**
-   * Read the module version from .claude-plugin/marketplace.json
-   * Walks up from sourcePath looking for .claude-plugin/marketplace.json
-   * @param {string} sourcePath - Module source directory
-   * @returns {string} Version string or empty string
-   */
-  async _getMarketplaceVersion(sourcePath) {
-    let dir = sourcePath;
-    for (let i = 0; i < 5; i++) {
-      const marketplacePath = path.join(dir, '.claude-plugin', 'marketplace.json');
-      if (await fs.pathExists(marketplacePath)) {
-        try {
-          const data = JSON.parse(await fs.readFile(marketplacePath, 'utf8'));
-          return this._extractMarketplaceVersion(data);
-        } catch {
-          return '';
-        }
-      }
-      const parent = path.dirname(dir);
-      if (parent === dir) break;
-      dir = parent;
-    }
-    return '';
-  }
-
-  /**
-   * Extract the highest version from marketplace.json plugins array
-   */
-  _extractMarketplaceVersion(data) {
-    const plugins = data?.plugins;
-    if (!Array.isArray(plugins) || plugins.length === 0) return '';
-    let best = '';
-    for (const p of plugins) {
-      if (p.version && (!best || p.version > best)) best = p.version;
-    }
-    return best;
   }
 
   /**
@@ -244,6 +207,15 @@ class Installer {
 
     const installTasks = [];
 
+    installTasks.push({
+      title: 'Installing shared scripts',
+      task: async () => {
+        await this._installSharedScripts(paths);
+        addResult('Shared scripts', 'ok');
+        return 'Shared scripts installed';
+      },
+    });
+
     if (allModules.length > 0) {
       installTasks.push({
         title: isQuickUpdate ? `Updating ${allModules.length} module(s)` : `Installing ${allModules.length} module(s)`,
@@ -301,7 +273,8 @@ class Installer {
         addResult('Configurations', 'ok', 'generated');
 
         this.installedFiles.add(paths.manifestFile());
-        this.installedFiles.add(paths.agentManifest());
+        this.installedFiles.add(paths.centralConfig());
+        this.installedFiles.add(paths.centralUserConfig());
 
         message('Generating manifests...');
         const manifestGen = new ManifestGenerator();
@@ -322,10 +295,11 @@ class Installer {
         await manifestGen.generateManifests(paths.bmadDir, allModulesForManifest, [...this.installedFiles], {
           ides: config.ides || [],
           preservedModules: modulesForCsvPreserve,
+          moduleConfigs,
         });
 
         message('Generating help catalog...');
-        await this.mergeModuleHelpCatalogs(paths.bmadDir);
+        await this.mergeModuleHelpCatalogs(paths.bmadDir, manifestGen.agents);
         addResult('Help catalog', 'ok');
 
         return 'Configurations generated';
@@ -559,6 +533,44 @@ class Installer {
   }
 
   /**
+   * Sync src/scripts/* → _bmad/scripts/ so shared Python scripts
+   * (e.g. resolve_customization.py) are available at install time.
+   * Wipes the destination first so files removed or renamed in source
+   * don't linger and get recorded as installed. Also seeds
+   * _bmad/custom/.gitignore on fresh installs so *.user.toml overrides
+   * stay out of version control.
+   */
+  async _installSharedScripts(paths) {
+    const srcScriptsDir = path.join(paths.srcDir, 'src', 'scripts');
+    if (!(await fs.pathExists(srcScriptsDir))) {
+      throw new Error(`Shared scripts source directory not found: ${srcScriptsDir}`);
+    }
+
+    await fs.remove(paths.scriptsDir);
+    await fs.ensureDir(paths.scriptsDir);
+    await fs.copy(srcScriptsDir, paths.scriptsDir, { overwrite: true });
+    await this._trackFilesRecursive(paths.scriptsDir);
+
+    const customGitignore = path.join(paths.customDir, '.gitignore');
+    if (!(await fs.pathExists(customGitignore))) {
+      await fs.writeFile(customGitignore, '*.user.toml\n', 'utf8');
+      this.installedFiles.add(customGitignore);
+    }
+  }
+
+  async _trackFilesRecursive(dir) {
+    const entries = await fs.readdir(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        await this._trackFilesRecursive(full);
+      } else if (entry.isFile()) {
+        this.installedFiles.add(full);
+      }
+    }
+  }
+
+  /**
    * Install official (non-custom) modules.
    * @param {Object} config - Installation configuration
    * @param {Object} paths - InstallPaths instance
@@ -589,19 +601,40 @@ class Installer {
           moduleConfig: moduleConfig,
           installer: this,
           silent: true,
+          channelOptions: config.channelOptions,
         },
       );
 
-      // Get display name from source module.yaml; version from resolution cache or marketplace.json
-      const sourcePath = await officialModules.findModuleSource(moduleName, { silent: true });
+      // Get display name from source module.yaml and resolve the freshest version metadata we can find locally.
+      const sourcePath = await officialModules.findModuleSource(moduleName, {
+        silent: true,
+        channelOptions: config.channelOptions,
+      });
       const moduleInfo = sourcePath ? await officialModules.getModuleInfo(sourcePath, moduleName, '') : null;
       const displayName = moduleInfo?.name || moduleName;
 
-      // Prefer version from resolution cache (accurate for custom/local modules),
-      // fall back to marketplace.json walk-up for official modules
+      const externalResolution = officialModules.externalModuleManager.getResolution(moduleName);
+      let communityResolution = null;
+      if (!externalResolution) {
+        const { CommunityModuleManager } = require('../modules/community-manager');
+        communityResolution = new CommunityModuleManager().getResolution(moduleName);
+      }
+      const resolution = externalResolution || communityResolution;
       const cachedResolution = CustomModuleManager._resolutionCache.get(moduleName);
-      const version = cachedResolution?.version || (sourcePath ? await this._getMarketplaceVersion(sourcePath) : '');
-      addResult(displayName, 'ok', '', { moduleCode: moduleName, newVersion: version });
+      const versionInfo = await resolveModuleVersion(moduleName, {
+        moduleSourcePath: sourcePath,
+        fallbackVersion: resolution?.version || cachedResolution?.version,
+        marketplacePluginNames: cachedResolution?.pluginName ? [cachedResolution.pluginName] : [],
+      });
+      // Prefer the git tag recorded by the resolution (e.g. "v1.7.0") over
+      // the on-disk package.json (which may be ahead of the released tag).
+      const version = resolution?.version || versionInfo.version || '';
+      addResult(displayName, 'ok', '', {
+        moduleCode: moduleName,
+        newVersion: version,
+        newChannel: resolution?.channel || null,
+        newSha: resolution?.sha || null,
+      });
     }
   }
 
@@ -671,8 +704,11 @@ class Installer {
     const customFiles = [];
     const modifiedFiles = [];
 
-    // Memory is always in _bmad/_memory
-    const bmadMemoryPath = '_memory';
+    // Memory subtrees (v6.1: _bmad/_memory, current: _bmad/memory) hold
+    // per-user runtime data generated by agents with sidecars. These files
+    // aren't installer-managed and must never be reported as "custom" or
+    // "modified" — they're user state, not user overrides.
+    const bmadMemoryPaths = ['_memory', 'memory'];
 
     // Check if the manifest has hashes - if not, we can't detect modifications
     let manifestHasHashes = false;
@@ -738,7 +774,7 @@ class Installer {
               continue;
             }
 
-            if (relativePath.startsWith(bmadMemoryPath + '/') && path.dirname(relativePath).includes('-sidecar')) {
+            if (bmadMemoryPaths.some((mp) => relativePath === mp || relativePath.startsWith(mp + '/'))) {
               continue;
             }
 
@@ -789,9 +825,8 @@ class Installer {
 
     // Get all installed module directories
     const entries = await fs.readdir(bmadDir, { withFileTypes: true });
-    const installedModules = entries
-      .filter((entry) => entry.isDirectory() && entry.name !== '_config' && entry.name !== 'docs')
-      .map((entry) => entry.name);
+    const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom']);
+    const installedModules = entries.filter((entry) => entry.isDirectory() && !nonModuleDirs.has(entry.name)).map((entry) => entry.name);
 
     // Generate config.yaml for each installed module
     for (const moduleName of installedModules) {
@@ -873,53 +908,36 @@ class Installer {
   }
 
   /**
-   * Merge all module-help.csv files into a single bmad-help.csv
-   * Scans all installed modules for module-help.csv and merges them
-   * Enriches agent info from agent-manifest.csv
-   * Output is written to _bmad/_config/bmad-help.csv
+   * Merge all module-help.csv files into a single bmad-help.csv.
+   * Scans all installed modules for module-help.csv and merges them.
+   * Enriches agent info from the in-memory agent list produced by ManifestGenerator.
+   * Output is written to _bmad/_config/bmad-help.csv.
    * @param {string} bmadDir - BMAD installation directory
+   * @param {Array<Object>} agentEntries - Agents collected from module.yaml (code, name, title, icon, module, ...)
    */
-  async mergeModuleHelpCatalogs(bmadDir) {
+  async mergeModuleHelpCatalogs(bmadDir, agentEntries = []) {
     const allRows = [];
     const headerRow =
       'module,phase,name,code,sequence,workflow-file,command,required,agent-name,agent-command,agent-display-name,agent-title,options,description,output-location,outputs';
 
-    // Load agent manifest for agent info lookup
-    const agentManifestPath = path.join(bmadDir, '_config', 'agent-manifest.csv');
-    const agentInfo = new Map(); // agent-name -> {command, displayName, title+icon}
-
-    if (await fs.pathExists(agentManifestPath)) {
-      const manifestContent = await fs.readFile(agentManifestPath, 'utf8');
-      const lines = manifestContent.split('\n').filter((line) => line.trim());
-
-      for (const line of lines) {
-        if (line.startsWith('name,')) continue; // Skip header
-
-        const cols = line.split(',');
-        if (cols.length >= 4) {
-          const agentName = cols[0].replaceAll('"', '').trim();
-          const displayName = cols[1].replaceAll('"', '').trim();
-          const title = cols[2].replaceAll('"', '').trim();
-          const icon = cols[3].replaceAll('"', '').trim();
-          const module = cols[10] ? cols[10].replaceAll('"', '').trim() : '';
-
-          // Build agent command: bmad:module:agent:name
-          const agentCommand = module ? `bmad:${module}:agent:${agentName}` : `bmad:agent:${agentName}`;
-
-          agentInfo.set(agentName, {
-            command: agentCommand,
-            displayName: displayName || agentName,
-            title: icon && title ? `${icon} ${title}` : title || agentName,
-          });
-        }
-      }
+    // Build agent lookup from the in-memory list (agent code → command + display fields).
+    const agentInfo = new Map();
+    for (const agent of agentEntries) {
+      if (!agent || !agent.code) continue;
+      const agentCommand = agent.module ? `bmad:${agent.module}:agent:${agent.code}` : `bmad:agent:${agent.code}`;
+      const displayName = agent.name || agent.code;
+      const titleCombined = agent.icon && agent.title ? `${agent.icon} ${agent.title}` : agent.title || agent.code;
+      agentInfo.set(agent.code, {
+        command: agentCommand,
+        displayName,
+        title: titleCombined,
+      });
     }
 
     // Get all installed module directories
     const entries = await fs.readdir(bmadDir, { withFileTypes: true });
-    const installedModules = entries
-      .filter((entry) => entry.isDirectory() && entry.name !== '_config' && entry.name !== 'docs' && entry.name !== '_memory')
-      .map((entry) => entry.name);
+    const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom']);
+    const installedModules = entries.filter((entry) => entry.isDirectory() && !nonModuleDirs.has(entry.name)).map((entry) => entry.name);
 
     // Add core module to scan (it's installed at root level as _config, but we check src/core-skills)
     const coreModulePath = getSourcePath('core-skills');
@@ -1091,12 +1109,30 @@ class Installer {
       let detail = '';
       if (r.moduleCode && r.newVersion) {
         const oldVersion = preVersions.get(r.moduleCode);
-        if (oldVersion && oldVersion === r.newVersion) {
-          detail = ` (v${r.newVersion}, no change)`;
+        // Format a version label for display:
+        //   "main" → "main @ <short-sha>" (next channel shows what SHA landed)
+        //   "v1.7.0" or "1.7.0" → "v1.7.0" (prefix 'v' when missing)
+        //   anything else (legacy strings) → as-is
+        const fmt = (v, sha) => {
+          if (typeof v !== 'string' || !v) return '';
+          if (v === 'main' || v === 'HEAD') return sha ? `main @ ${sha.slice(0, 7)}` : 'main';
+          if (/^v?\d+\.\d+\.\d+/.test(v)) return v.startsWith('v') ? v : `v${v}`;
+          return v;
+        };
+        const newV = fmt(r.newVersion, r.newSha);
+        // 'main'/'HEAD' strings only identify the channel, not the commit, so
+        // we can't assert "no change" without comparing SHAs — and preVersions
+        // doesn't carry the old SHA. Render these as a refresh instead of a
+        // false-negative "no change".
+        const isMainLike = oldVersion === 'main' || oldVersion === 'HEAD';
+        if (oldVersion && oldVersion === r.newVersion && !isMainLike) {
+          detail = ` (${newV}, no change)`;
+        } else if (oldVersion && isMainLike) {
+          detail = ` (${newV}, refreshed)`;
         } else if (oldVersion) {
-          detail = ` (v${oldVersion} → v${r.newVersion})`;
+          detail = ` (${fmt(oldVersion, r.newSha)} → ${newV})`;
         } else {
-          detail = ` (v${r.newVersion}, installed)`;
+          detail = ` (${newV}, installed)`;
         }
       } else if (r.detail) {
         detail = ` (${r.detail})`;
@@ -1216,9 +1252,59 @@ class Installer {
       await prompts.log.warn(`Skipping ${skippedModules.length} module(s) - no source available: ${skippedModules.join(', ')}`);
     }
 
+    // Build channel options from the existing manifest FIRST so the config
+    // collector below (which triggers external-module clones via
+    // findModuleSource) knows each module's recorded channel and doesn't
+    // silently redecide it. Without this, modules previously on 'next' or
+    // 'pinned' would trigger a stable-channel tag lookup at config-collection
+    // time, burning GitHub API quota and potentially failing.
+    const manifestData = await this.manifest.read(bmadDir);
+    const channelOptions = { global: null, nextSet: new Set(), pins: new Map(), warnings: [] };
+    if (manifestData?.modulesDetailed) {
+      const { fetchStableTags, classifyUpgrade, parseGitHubRepo } = require('../modules/channel-resolver');
+      for (const entry of manifestData.modulesDetailed) {
+        if (!entry?.name || !entry?.channel) continue;
+        if (entry.channel === 'pinned' && entry.version) {
+          channelOptions.pins.set(entry.name, entry.version);
+          continue;
+        }
+        if (entry.channel === 'next') {
+          channelOptions.nextSet.add(entry.name);
+          continue;
+        }
+        // Stable: classify the available upgrade. Patches and minors fall
+        // through (stable default picks up the top tag). A major upgrade
+        // requires opt-in, so under quick-update's non-interactive semantics
+        // we pin to the current version to prevent a silent breaking jump.
+        if (entry.channel === 'stable' && entry.version && entry.repoUrl) {
+          const parsed = parseGitHubRepo(entry.repoUrl);
+          if (!parsed) continue;
+          try {
+            const tags = await fetchStableTags(parsed.owner, parsed.repo);
+            if (tags.length === 0) continue;
+            const topTag = tags[0].tag;
+            const cls = classifyUpgrade(entry.version, topTag);
+            if (cls === 'major') {
+              channelOptions.pins.set(entry.name, entry.version);
+              await prompts.log.warn(
+                `${entry.name} ${entry.version} → ${topTag} is a new major release; staying on ${entry.version}. ` +
+                  `Run \`bmad install\` (Modify) with \`--pin ${entry.name}=${topTag}\` to accept.`,
+              );
+            }
+          } catch (error) {
+            // Tag lookup failed (offline, rate-limited). Stay on the current
+            // version rather than guessing — the existing cache is already
+            // at that ref, so re-using it keeps the install stable.
+            channelOptions.pins.set(entry.name, entry.version);
+            await prompts.log.warn(`Could not check ${entry.name} for updates (${error.message}); staying on ${entry.version}.`);
+          }
+        }
+      }
+    }
+
     // Load existing configs and collect new fields (if any)
     await prompts.log.info('Checking for new configuration options...');
-    const quickModules = new OfficialModules();
+    const quickModules = new OfficialModules({ channelOptions });
     await quickModules.loadExistingConfig(projectDir);
 
     let promptedForNewFields = false;
@@ -1257,6 +1343,7 @@ class Installer {
       _quickUpdate: true,
       _preserveModules: skippedModules,
       _existingModules: installedModules,
+      channelOptions,
     };
 
     await this.install(installConfig);

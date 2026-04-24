@@ -1,4 +1,5 @@
 const path = require('node:path');
+const os = require('node:os');
 const fs = require('./fs-native');
 
 /**
@@ -69,9 +70,62 @@ function getModulePath(moduleName, ...segments) {
   return getSourcePath('modules', moduleName, ...segments);
 }
 
+/**
+ * Path to the local external-module clone cache.
+ * External official modules (bmb, cis, gds, tea, wds, etc.) are cloned here
+ * by ExternalModuleManager during install and are not copied into <src>/modules/.
+ */
+function getExternalModuleCachePath(moduleName, ...segments) {
+  const base = process.env.BMAD_EXTERNAL_MODULES_CACHE || path.join(os.homedir(), '.bmad', 'cache', 'external-modules');
+  return path.join(base, moduleName, ...segments);
+}
+
+/**
+ * Locate an installed module's `module.yaml` by filesystem lookup only.
+ *
+ * Built-in modules (core, bmm) live under <src>. External official modules are
+ * cloned into ~/.bmad/cache/external-modules/<name>/ with varying internal
+ * layouts (some at src/module.yaml, some at skills/module.yaml, some nested).
+ * This mirrors the candidate-path search in
+ * ExternalModuleManager.findExternalModuleSource but performs no git/network
+ * work, which keeps it safe to call during manifest writing.
+ *
+ * @param {string} moduleName
+ * @returns {Promise<string|null>} Absolute path to module.yaml, or null if not found.
+ */
+async function resolveInstalledModuleYaml(moduleName) {
+  const builtIn = path.join(getModulePath(moduleName), 'module.yaml');
+  if (await fs.pathExists(builtIn)) return builtIn;
+
+  const cacheRoot = getExternalModuleCachePath(moduleName);
+  if (!(await fs.pathExists(cacheRoot))) return null;
+
+  for (const dir of ['skills', 'src']) {
+    const direct = path.join(cacheRoot, dir, 'module.yaml');
+    if (await fs.pathExists(direct)) return direct;
+
+    const dirPath = path.join(cacheRoot, dir);
+    if (await fs.pathExists(dirPath)) {
+      const entries = await fs.readdir(dirPath, { withFileTypes: true });
+      for (const entry of entries) {
+        if (!entry.isDirectory()) continue;
+        const nested = path.join(dirPath, entry.name, 'module.yaml');
+        if (await fs.pathExists(nested)) return nested;
+      }
+    }
+  }
+
+  const atRoot = path.join(cacheRoot, 'module.yaml');
+  if (await fs.pathExists(atRoot)) return atRoot;
+
+  return null;
+}
+
 module.exports = {
   getProjectRoot,
   getSourcePath,
   getModulePath,
+  getExternalModuleCachePath,
+  resolveInstalledModuleYaml,
   findProjectRoot,
 };

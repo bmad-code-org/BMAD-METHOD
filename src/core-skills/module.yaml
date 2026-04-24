@@ -7,11 +7,13 @@ subheader: "Configure the core settings for your BMad installation.\nThese setti
 
 user_name:
   prompt: "What should agents call you? (Use your name or a team name)"
+  scope: user
   default: "BMad"
   result: "{value}"
 
 communication_language:
   prompt: "What language should agents use when chatting with you?"
+  scope: user
   default: "English"
   result: "{value}"
 
