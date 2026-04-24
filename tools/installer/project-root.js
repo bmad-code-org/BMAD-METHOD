@@ -86,6 +86,8 @@ function getExternalModuleCachePath(moduleName, ...segments) {
  * Built-in modules (core, bmm) live under <src>. External official modules are
  * cloned into ~/.bmad/cache/external-modules/<name>/ with varying internal
  * layouts (some at src/module.yaml, some at skills/module.yaml, some nested).
+ * Local custom-source modules are not cached; their path is read from the
+ * CustomModuleManager resolution cache set during the same install run.
  * This mirrors the candidate-path search in
  * ExternalModuleManager.findExternalModuleSource but performs no git/network
  * work, which keeps it safe to call during manifest writing.
@@ -97,26 +99,56 @@ async function resolveInstalledModuleYaml(moduleName) {
   const builtIn = path.join(getModulePath(moduleName), 'module.yaml');
   if (await fs.pathExists(builtIn)) return builtIn;
 
-  const cacheRoot = getExternalModuleCachePath(moduleName);
-  if (!(await fs.pathExists(cacheRoot))) return null;
+  // Search a resolved root directory using the same candidate-path pattern.
+  async function searchRoot(root) {
+    for (const dir of ['skills', 'src']) {
+      const direct = path.join(root, dir, 'module.yaml');
+      if (await fs.pathExists(direct)) return direct;
 
-  for (const dir of ['skills', 'src']) {
-    const direct = path.join(cacheRoot, dir, 'module.yaml');
-    if (await fs.pathExists(direct)) return direct;
-
-    const dirPath = path.join(cacheRoot, dir);
-    if (await fs.pathExists(dirPath)) {
-      const entries = await fs.readdir(dirPath, { withFileTypes: true });
-      for (const entry of entries) {
-        if (!entry.isDirectory()) continue;
-        const nested = path.join(dirPath, entry.name, 'module.yaml');
-        if (await fs.pathExists(nested)) return nested;
+      const dirPath = path.join(root, dir);
+      if (await fs.pathExists(dirPath)) {
+        const entries = await fs.readdir(dirPath, { withFileTypes: true });
+        for (const entry of entries) {
+          if (!entry.isDirectory()) continue;
+          const nested = path.join(dirPath, entry.name, 'module.yaml');
+          if (await fs.pathExists(nested)) return nested;
+        }
       }
     }
+
+    // BMB standard: {setup-skill}/assets/module.yaml (setup skill is any *-setup directory)
+    const rootEntries = await fs.readdir(root, { withFileTypes: true });
+    for (const entry of rootEntries) {
+      if (!entry.isDirectory() || !entry.name.endsWith('-setup')) continue;
+      const setupAssets = path.join(root, entry.name, 'assets', 'module.yaml');
+      if (await fs.pathExists(setupAssets)) return setupAssets;
+    }
+
+    const atRoot = path.join(root, 'module.yaml');
+    if (await fs.pathExists(atRoot)) return atRoot;
+    return null;
   }
 
-  const atRoot = path.join(cacheRoot, 'module.yaml');
-  if (await fs.pathExists(atRoot)) return atRoot;
+  const cacheRoot = getExternalModuleCachePath(moduleName);
+  if (await fs.pathExists(cacheRoot)) {
+    const found = await searchRoot(cacheRoot);
+    if (found) return found;
+  }
+
+  // Fallback: local custom-source modules store their source path in the
+  // CustomModuleManager resolution cache populated during the same install run.
+  // Match by code OR name since callers may use either form.
+  try {
+    const { CustomModuleManager } = require('./modules/custom-module-manager');
+    for (const [, mod] of CustomModuleManager._resolutionCache) {
+      if ((mod.code === moduleName || mod.name === moduleName) && mod.localPath) {
+        const found = await searchRoot(mod.localPath);
+        if (found) return found;
+      }
+    }
+  } catch {
+    // Resolution cache unavailable — continue
+  }
 
   return null;
 }
