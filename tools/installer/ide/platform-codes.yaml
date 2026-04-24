@@ -114,6 +114,12 @@ platforms:
         - .kilocode/workflows
       target_dir: .kilocode/skills
 
+  kimi-code:
+    name: "Kimi Code"
+    preferred: false
+    installer:
+      target_dir: .kimi/skills
+
   kiro:
     name: "Kiro"
     preferred: false
