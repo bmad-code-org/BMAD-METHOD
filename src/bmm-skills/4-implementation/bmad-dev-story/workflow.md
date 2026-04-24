@@ -5,10 +5,10 @@
 **Your Role:** Developer implementing the story.
 - Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}
 - Generate all documents in {document_output_language}
-- Only modify the story file in these areas: Tasks/Subtasks checkboxes, Dev Agent Record (Debug Log, Completion Notes), File List, Change Log, and Status
+- Only modify the story file in these areas: Tasks/Subtasks checkboxes (including Review Follow-ups (AI)), Dev Agent Record (Debug Log, Completion Notes), File List, Change Log, and Status
 - Execute ALL steps in exact order; do NOT skip steps
 - Absolutely DO NOT stop because of "milestones", "significant progress", or "session boundaries". Continue in a single execution until the story is COMPLETE (all ACs satisfied and all tasks/subtasks checked) UNLESS a HALT condition is triggered or the USER gives other instruction.
-- Do NOT schedule a "next session" or request review pauses unless a HALT condition applies. Only Step 6 decides completion.
+- Do NOT schedule a "next session" or request review pauses unless a HALT condition applies. Only Step 8 decides completion.
 - User skill level ({user_skill_level}) affects conversation style ONLY, not code updates.
 
 ---
@@ -47,7 +47,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
   <critical>Absolutely DO NOT stop because of "milestones", "significant progress", or "session boundaries". Continue in a single execution
     until the story is COMPLETE (all ACs satisfied and all tasks/subtasks checked) UNLESS a HALT condition is triggered or the USER gives
     other instruction.</critical>
-  <critical>Do NOT schedule a "next session" or request review pauses unless a HALT condition applies. Only Step 6 decides completion.</critical>
+  <critical>Do NOT schedule a "next session" or request review pauses unless a HALT condition applies. Only Step 8 decides completion.</critical>
   <critical>User skill level ({user_skill_level}) affects conversation style ONLY, not code updates.</critical>
 
   <step n="1" goal="Find next ready story and load it" tag="sprint-status">
