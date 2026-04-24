@@ -4,15 +4,31 @@ const fs = require('./fs-native');
 const { CLIUtils } = require('./cli-utils');
 const { ExternalModuleManager } = require('./modules/external-manager');
 const { resolveModuleVersion } = require('./modules/version-resolver');
+const { Manifest } = require('./core/manifest');
 const { parseChannelOptions, buildPlan, orphanPinWarnings, bundledTargetWarnings } = require('./modules/channel-plan');
 const prompts = require('./prompts');
 
+const manifest = new Manifest();
+
 /**
- * Read a module version from the freshest local metadata available.
+ * Read a module version, preferring live npm metadata when a package name is
+ * available and falling back to local metadata otherwise.
  * @param {string} moduleCode - Module code (e.g., 'core', 'bmm', 'cis')
+ * @param {string|null} npmPackage - npm package name for live version lookup
  * @returns {string} Version string or empty string
  */
-async function getModuleVersion(moduleCode) {
+async function getModuleVersion(moduleCode, npmPackage = null) {
+  if (npmPackage) {
+    try {
+      const npmVersion = await manifest.fetchNpmVersion(npmPackage);
+      if (npmVersion) {
+        return npmVersion;
+      }
+    } catch {
+      // Fall back to local metadata when npm is unreachable.
+    }
+  }
+
   const versionInfo = await resolveModuleVersion(moduleCode);
   return versionInfo.version || '';
 }
@@ -672,9 +688,9 @@ class UI {
     const initialValues = [];
     const lockedValues = ['core'];
 
-    const buildModuleEntry = async (code, name, description, isDefault) => {
+    const buildModuleEntry = async (code, name, description, isDefault, npmPackage = null) => {
       const isInstalled = installedModuleIds.has(code);
-      const version = await getModuleVersion(code);
+      const version = await getModuleVersion(code, npmPackage);
       const label = version ? `${name} (v${version})` : name;
       return {
         label,
@@ -689,7 +705,7 @@ class UI {
     for (const mod of builtInModules) {
       const code = mod.id;
       builtInCodes.add(code);
-      const entry = await buildModuleEntry(code, mod.name, mod.description, mod.defaultSelected);
+      const entry = await buildModuleEntry(code, mod.name, mod.description, mod.defaultSelected, mod.npmPackage || null);
       allOptions.push({ label: entry.label, value: entry.value, hint: entry.hint });
       if (entry.selected) {
         initialValues.push(code);
@@ -697,12 +713,17 @@ class UI {
     }
 
     // Add external registry modules (skip built-in duplicates)
-    for (const mod of registryModules) {
-      if (mod.builtIn || builtInCodes.has(mod.code)) continue;
-      const entry = await buildModuleEntry(mod.code, mod.name, mod.description, mod.defaultSelected);
+    const externalRegistryModules = registryModules.filter((mod) => !mod.builtIn && !builtInCodes.has(mod.code));
+    const externalRegistryEntries = await Promise.all(
+      externalRegistryModules.map(async (mod) => ({
+        code: mod.code,
+        entry: await buildModuleEntry(mod.code, mod.name, mod.description, mod.defaultSelected, mod.npmPackage || null),
+      })),
+    );
+    for (const { code, entry } of externalRegistryEntries) {
       allOptions.push({ label: entry.label, value: entry.value, hint: entry.hint });
       if (entry.selected) {
-        initialValues.push(mod.code);
+        initialValues.push(code);
       }
     }
 
