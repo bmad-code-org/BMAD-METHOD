@@ -72,7 +72,11 @@ function parseChannelOptions(options = {}) {
     pins.set(parsed.code, parsed.tag);
   }
 
-  return { global, nextSet, pins, warnings };
+  // --yes auto-confirms the community-module curator-bypass prompt so
+  // headless installs with --next=/--pin for a community module don't hang.
+  const acceptBypass = options.yes === true || options.acceptBypass === true;
+
+  return { global, nextSet, pins, warnings, acceptBypass };
 }
 
 function normalizeChannel(raw, warnings, flagName) {

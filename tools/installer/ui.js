@@ -1681,7 +1681,7 @@ class UI {
     if (fastPath) return; // stable for all, registry default applies
 
     // Customize path: per-module picker.
-    const { fetchStableTags } = require('./modules/channel-resolver');
+    const { fetchStableTags, parseGitHubRepo } = require('./modules/channel-resolver');
 
     for (const code of channelSelectable) {
       const info = externalByCode.get(code) || communityByCode.get(code);
@@ -1690,7 +1690,7 @@ class UI {
       // Try to pre-resolve the top stable tag so we can surface it in the picker.
       let stableLabel = 'stable (released version)';
       try {
-        const parsed = repoUrl ? parseGitHubRepoFromUrl(repoUrl) : null;
+        const parsed = repoUrl ? parseGitHubRepo(repoUrl) : null;
         if (parsed) {
           const tags = await fetchStableTags(parsed.owner, parsed.repo);
           if (tags.length > 0) {

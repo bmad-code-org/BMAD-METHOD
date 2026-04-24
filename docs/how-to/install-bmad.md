@@ -113,7 +113,7 @@ Under `--yes`, patch and minor upgrades apply automatically. Majors stay frozen 
 
 **Via flags:** the recipes in the next section cover the common cases.
 
-## Headless / CI installs
+## Headless CI installs
 
 ### Flag reference
 

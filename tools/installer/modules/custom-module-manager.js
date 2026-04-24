@@ -59,8 +59,10 @@ class CustomModuleManager {
       };
     }
 
-    // Extract optional @<tag-or-sha> suffix from the end of the input.
-    // Semver-valid characters: letters, digits, dot, hyphen, underscore, plus, slash
+    // Extract optional @<tag-or-branch> suffix from the end of the input.
+    // Semver-valid characters: letters, digits, dot, hyphen, underscore, plus, slash.
+    // Raw commit SHAs are NOT supported here — `git clone --branch` can't take
+    // them; use --pin at the module level or check out the SHA manually.
     // Only strip when the tail looks like a ref, so we don't disturb
     // URLs without a version spec or the SSH protocol's `git@host:...` prefix.
     let trimmed = trimmedRaw;
@@ -364,7 +366,10 @@ class CustomModuleManager {
           env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
         });
         if (effectiveVersion) {
-          execSync(`git fetch --depth 1 origin tag ${quoteCustomRef(effectiveVersion)} --no-tags`, {
+          // Fetch the ref as either a tag or a branch — `origin <ref>` works
+          // for both, whereas `origin tag <ref>` fails for branch refs parsed
+          // out of /tree/<branch>/... URLs.
+          execSync(`git fetch --depth 1 origin ${quoteCustomRef(effectiveVersion)} --no-tags`, {
             cwd: repoCacheDir,
             stdio: ['ignore', 'pipe', 'pipe'],
             env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },

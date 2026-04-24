@@ -253,8 +253,10 @@ class CommunityModuleManager {
     let wasNewClone = false;
 
     if (await fs.pathExists(moduleCacheDir)) {
-      // Already cloned — refresh to current origin/HEAD before we decide the
-      // final ref. We may still check out a tag or approved SHA after this.
+      // Already cloned — refresh to the correct ref for the resolved channel.
+      // A pinned install must not reset to origin/HEAD (it would silently drift
+      // to main on every re-install). Stable + approvedSha is handled below
+      // by the curator-SHA checkout logic.
       const fetchSpinner = await createSpinner();
       fetchSpinner.start(`Checking ${moduleInfo.displayName}...`);
       try {
@@ -264,10 +266,24 @@ class CommunityModuleManager {
           stdio: ['ignore', 'pipe', 'pipe'],
           env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
         });
-        execSync('git reset --hard origin/HEAD', {
-          cwd: moduleCacheDir,
-          stdio: ['ignore', 'pipe', 'pipe'],
-        });
+        if (planEntry.channel === 'pinned') {
+          // Fetch the pin tag specifically and check it out.
+          execSync(`git fetch --depth 1 origin ${quoteShellRef(planEntry.pin)} --no-tags`, {
+            cwd: moduleCacheDir,
+            stdio: ['ignore', 'pipe', 'pipe'],
+            env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+          });
+          execSync('git checkout --quiet FETCH_HEAD', {
+            cwd: moduleCacheDir,
+            stdio: ['ignore', 'pipe', 'pipe'],
+          });
+        } else {
+          // stable (approvedSha path re-checks out below) and next: track main.
+          execSync('git reset --hard origin/HEAD', {
+            cwd: moduleCacheDir,
+            stdio: ['ignore', 'pipe', 'pipe'],
+          });
+        }
         const newRef = execSync('git rev-parse HEAD', { cwd: moduleCacheDir, stdio: 'pipe' }).toString().trim();
         if (currentRef !== newRef) needsDependencyInstall = true;
         fetchSpinner.stop(`Verified ${moduleInfo.displayName}`);
@@ -343,11 +359,7 @@ class CommunityModuleManager {
     // Record the resolution so the manifest writer can pick up channel/version/sha.
     const installedSha = execSync('git rev-parse HEAD', { cwd: moduleCacheDir, stdio: 'pipe' }).toString().trim();
     const recordedVersion =
-      planEntry.channel === 'pinned'
-        ? planEntry.pin
-        : planEntry.channel === 'next'
-          ? 'main'
-          : approvedTag || (installedSha === approvedSha ? approvedTag : installedSha.slice(0, 7));
+      planEntry.channel === 'pinned' ? planEntry.pin : planEntry.channel === 'next' ? 'main' : approvedTag || installedSha.slice(0, 7);
     CommunityModuleManager._resolutions.set(moduleCode, {
       channel: planEntry.channel,
       version: recordedVersion,
