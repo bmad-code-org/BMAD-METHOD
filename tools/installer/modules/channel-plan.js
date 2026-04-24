@@ -166,10 +166,34 @@ function orphanPinWarnings(channelOptions, selectedCodes) {
   return warnings;
 }
 
+/**
+ * Warn when --pin / --next targets a bundled module (core, bmm). Those are
+ * shipped inside the installer binary — there's no git clone to override, so
+ * the flag has no effect. Users who actually want a prerelease core/bmm
+ * should use `npx bmad-method@next install`.
+ */
+function bundledTargetWarnings(channelOptions, bundledCodes) {
+  const warnings = [];
+  const bundled = new Set(bundledCodes || []);
+  const hint = '(bundled module; use `npx bmad-method@next install` for a prerelease)';
+  for (const code of channelOptions?.pins?.keys() || []) {
+    if (bundled.has(code)) {
+      warnings.push(`--pin for '${code}' has no effect ${hint}.`);
+    }
+  }
+  for (const code of channelOptions?.nextSet || []) {
+    if (bundled.has(code)) {
+      warnings.push(`--next for '${code}' has no effect ${hint}.`);
+    }
+  }
+  return warnings;
+}
+
 module.exports = {
   parseChannelOptions,
   decideChannelForModule,
   buildPlan,
   orphanPinWarnings,
+  bundledTargetWarnings,
   parsePinSpec,
 };

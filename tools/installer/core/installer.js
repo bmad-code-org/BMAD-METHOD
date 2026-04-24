@@ -623,7 +623,12 @@ class Installer {
       // Prefer the git tag recorded by the external resolution (e.g. "v1.7.0") over
       // the on-disk package.json (which may be ahead of the released tag).
       const version = externalResolution?.version || versionInfo.version || '';
-      addResult(displayName, 'ok', '', { moduleCode: moduleName, newVersion: version });
+      addResult(displayName, 'ok', '', {
+        moduleCode: moduleName,
+        newVersion: version,
+        newChannel: externalResolution?.channel || null,
+        newSha: externalResolution?.sha || null,
+      });
     }
   }
 
@@ -1098,15 +1103,21 @@ class Installer {
       let detail = '';
       if (r.moduleCode && r.newVersion) {
         const oldVersion = preVersions.get(r.moduleCode);
-        // External/community modules record the git tag (e.g. "v1.7.0") while
-        // core/bmm carry the package.json string ("6.3.0"). Prepend 'v' only
-        // when the value doesn't already start with 'v'.
-        const fmt = (v) => (typeof v === 'string' && v.startsWith('v') ? v : `v${v}`);
-        const newV = fmt(r.newVersion);
+        // Format a version label for display:
+        //   "main" → "main @ <short-sha>" (next channel shows what SHA landed)
+        //   "v1.7.0" or "1.7.0" → "v1.7.0" (prefix 'v' when missing)
+        //   anything else (legacy strings) → as-is
+        const fmt = (v, sha) => {
+          if (typeof v !== 'string' || !v) return '';
+          if (v === 'main' || v === 'HEAD') return sha ? `main @ ${sha.slice(0, 7)}` : 'main';
+          if (/^v?\d+\.\d+\.\d+/.test(v)) return v.startsWith('v') ? v : `v${v}`;
+          return v;
+        };
+        const newV = fmt(r.newVersion, r.newSha);
         if (oldVersion && oldVersion === r.newVersion) {
           detail = ` (${newV}, no change)`;
         } else if (oldVersion) {
-          detail = ` (${fmt(oldVersion)} → ${newV})`;
+          detail = ` (${fmt(oldVersion, r.newSha)} → ${newV})`;
         } else {
           detail = ` (${newV}, installed)`;
         }
@@ -1228,9 +1239,59 @@ class Installer {
       await prompts.log.warn(`Skipping ${skippedModules.length} module(s) - no source available: ${skippedModules.join(', ')}`);
     }
 
+    // Build channel options from the existing manifest FIRST so the config
+    // collector below (which triggers external-module clones via
+    // findModuleSource) knows each module's recorded channel and doesn't
+    // silently redecide it. Without this, modules previously on 'next' or
+    // 'pinned' would trigger a stable-channel tag lookup at config-collection
+    // time, burning GitHub API quota and potentially failing.
+    const manifestData = await this.manifest.read(bmadDir);
+    const channelOptions = { global: null, nextSet: new Set(), pins: new Map(), warnings: [] };
+    if (manifestData?.modulesDetailed) {
+      const { fetchStableTags, classifyUpgrade, parseGitHubRepo } = require('../modules/channel-resolver');
+      for (const entry of manifestData.modulesDetailed) {
+        if (!entry?.name || !entry?.channel) continue;
+        if (entry.channel === 'pinned' && entry.version) {
+          channelOptions.pins.set(entry.name, entry.version);
+          continue;
+        }
+        if (entry.channel === 'next') {
+          channelOptions.nextSet.add(entry.name);
+          continue;
+        }
+        // Stable: classify the available upgrade. Patches and minors fall
+        // through (stable default picks up the top tag). A major upgrade
+        // requires opt-in, so under quick-update's non-interactive semantics
+        // we pin to the current version to prevent a silent breaking jump.
+        if (entry.channel === 'stable' && entry.version && entry.repoUrl) {
+          const parsed = parseGitHubRepo(entry.repoUrl);
+          if (!parsed) continue;
+          try {
+            const tags = await fetchStableTags(parsed.owner, parsed.repo);
+            if (tags.length === 0) continue;
+            const topTag = tags[0].tag;
+            const cls = classifyUpgrade(entry.version, topTag);
+            if (cls === 'major') {
+              channelOptions.pins.set(entry.name, entry.version);
+              await prompts.log.warn(
+                `${entry.name} ${entry.version} → ${topTag} is a new major release; staying on ${entry.version}. ` +
+                  `Run \`bmad install\` (Modify) with \`--pin ${entry.name}=${topTag}\` to accept.`,
+              );
+            }
+          } catch (error) {
+            // Tag lookup failed (offline, rate-limited). Stay on the current
+            // version rather than guessing — the existing cache is already
+            // at that ref, so re-using it keeps the install stable.
+            channelOptions.pins.set(entry.name, entry.version);
+            await prompts.log.warn(`Could not check ${entry.name} for updates (${error.message}); staying on ${entry.version}.`);
+          }
+        }
+      }
+    }
+
     // Load existing configs and collect new fields (if any)
     await prompts.log.info('Checking for new configuration options...');
-    const quickModules = new OfficialModules();
+    const quickModules = new OfficialModules({ channelOptions });
     await quickModules.loadExistingConfig(projectDir);
 
     let promptedForNewFields = false;
@@ -1257,26 +1318,6 @@ class Installer {
       installDate: new Date().toISOString(),
       lastModified: new Date().toISOString(),
     };
-
-    // Build channel options from the existing manifest so the quick update
-    // re-clones each module at its recorded ref (pinned/next stays put;
-    // stable modules pick up new stable tags — same semver-class behavior
-    // the update flow uses, here with --yes semantics since quick-update is
-    // non-interactive by definition: patches/minors apply, majors stay frozen).
-    const manifestData = await this.manifest.read(bmadDir);
-    const channelOptions = { global: null, nextSet: new Set(), pins: new Map(), warnings: [] };
-    if (manifestData?.modulesDetailed) {
-      for (const entry of manifestData.modulesDetailed) {
-        if (!entry?.name || !entry?.channel) continue;
-        if (entry.channel === 'pinned' && entry.version) {
-          channelOptions.pins.set(entry.name, entry.version);
-        } else if (entry.channel === 'next') {
-          channelOptions.nextSet.add(entry.name);
-        }
-        // stable modules fall through — stable is the default, and the
-        // update-channel resolver will handle upgrade classification.
-      }
-    }
 
     // Build config and delegate to install()
     const installConfig = {

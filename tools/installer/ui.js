@@ -4,7 +4,7 @@ const fs = require('./fs-native');
 const { CLIUtils } = require('./cli-utils');
 const { ExternalModuleManager } = require('./modules/external-manager');
 const { resolveModuleVersion } = require('./modules/version-resolver');
-const { parseChannelOptions, buildPlan, orphanPinWarnings } = require('./modules/channel-plan');
+const { parseChannelOptions, buildPlan, orphanPinWarnings, bundledTargetWarnings } = require('./modules/channel-plan');
 const prompts = require('./prompts');
 
 /**
@@ -180,9 +180,17 @@ class UI {
           channelOptions,
         });
 
-        // Warn about --pin/--next flags that refer to modules the user didn't select.
-        for (const warning of orphanPinWarnings(channelOptions, selectedModules)) {
-          await prompts.log.warn(warning);
+        // Warn about --pin/--next flags that refer to modules the user didn't
+        // select, or that target bundled modules (core/bmm) where channel
+        // flags don't apply.
+        {
+          const bundledCodes = await this._bundledModuleCodes();
+          for (const warning of [
+            ...orphanPinWarnings(channelOptions, selectedModules),
+            ...bundledTargetWarnings(channelOptions, bundledCodes),
+          ]) {
+            await prompts.log.warn(warning);
+          }
         }
 
         return {
@@ -247,9 +255,17 @@ class UI {
       channelOptions,
     });
 
-    // Warn about --pin/--next flags that refer to modules the user didn't select.
-    for (const warning of orphanPinWarnings(channelOptions, selectedModules)) {
-      await prompts.log.warn(warning);
+    // Warn about --pin/--next flags that refer to modules the user didn't
+    // select, or that target bundled modules (core/bmm) where channel
+    // flags don't apply.
+    {
+      const bundledCodes = await this._bundledModuleCodes();
+      for (const warning of [
+        ...orphanPinWarnings(channelOptions, selectedModules),
+        ...bundledTargetWarnings(channelOptions, bundledCodes),
+      ]) {
+        await prompts.log.warn(warning);
+      }
     }
 
     return {
@@ -1610,6 +1626,21 @@ class UI {
   }
 
   /**
+   * Return the set of module codes the registry marks as built-in (core, bmm).
+   * These ship with the installer binary and have no per-module channel.
+   */
+  async _bundledModuleCodes() {
+    const externalManager = new ExternalModuleManager();
+    try {
+      const modules = await externalManager.listAvailable();
+      return modules.filter((m) => m.builtIn).map((m) => m.code);
+    } catch {
+      // Registry unreachable — fall back to the known bundled codes.
+      return ['core', 'bmm'];
+    }
+  }
+
+  /**
    * Fast-path channel gate: confirm "all stable" or open the per-module picker.
    *
    * Skipped when:
@@ -1637,7 +1668,10 @@ class UI {
     const community = await communityMgr.listAll();
     const communityByCode = new Map(community.map((m) => [m.code, m]));
 
-    const channelSelectable = selectedModules.filter((code) => externalByCode.has(code) || communityByCode.has(code));
+    const channelSelectable = selectedModules.filter((code) => {
+      const info = externalByCode.get(code) || communityByCode.get(code);
+      return info && !info.builtIn;
+    });
     if (channelSelectable.length === 0) return;
 
     const fastPath = await prompts.confirm({
@@ -1733,12 +1767,35 @@ class UI {
     const { fetchStableTags, classifyUpgrade, releaseNotesUrl } = require('./modules/channel-resolver');
     const { parseGitHubRepo } = require('./modules/channel-resolver');
 
+    // Interactive-only: offer a one-time gate to review / switch channels for
+    // selected modules that are already installed. Default N so normal Modify
+    // flows (add/remove modules) aren't interrupted.
+    let reviewChannels = false;
+    if (!yes) {
+      const existingWithChannel = selectedModules.filter((code) => {
+        const prev = existingByName.get(code);
+        if (!prev) return false;
+        const info = externalByCode.get(code) || communityByCode.get(code);
+        return info && !info.builtIn;
+      });
+      if (existingWithChannel.length > 0) {
+        reviewChannels = await prompts.confirm({
+          message: 'Review channel assignments (stable / next / pin) for your existing modules?',
+          default: false,
+        });
+      }
+    }
+
     for (const code of selectedModules) {
       const prev = existingByName.get(code);
       if (!prev) continue;
 
       const info = externalByCode.get(code) || communityByCode.get(code);
       if (!info) continue;
+      // Bundled modules (core/bmm) ship with the installer binary itself —
+      // their version is stapled to the CLI version, not a git tag. Skip
+      // tag-API lookups for them; the "upgrade" mechanism is `npx bmad@X install`.
+      if (info.builtIn) continue;
 
       const repoUrl = info.url;
       const parsed = repoUrl ? parseGitHubRepo(repoUrl) : null;
@@ -1764,14 +1821,78 @@ class UI {
         continue;
       }
 
-      if (recordedChannel === 'pinned' || recordedChannel === 'next') {
-        // Pinned: nothing to prompt — cloneExternalModule re-clones at the
-        // recorded ref. Next: always pulls HEAD.
-        if (recordedChannel === 'pinned' && prev.version) {
-          // Re-assert the pin so subsequent channel decisions honor it.
-          if (!channelOptions.pins.has(code)) channelOptions.pins.set(code, prev.version);
-        } else if (recordedChannel === 'next') {
+      // Optional channel-switch offer. Fires only when the user opted in via
+      // the gate above. 'keep' falls through to the existing per-channel
+      // logic (which runs upgrade classification for stable). Any switch
+      // records the new intent into channelOptions and skips upgrade prompts.
+      if (reviewChannels && recordedChannel) {
+        const switchChoices = [
+          {
+            name: `Keep on '${recordedChannel}'${prev.version ? ` @ ${prev.version}` : ''}`,
+            value: 'keep',
+          },
+        ];
+        if (recordedChannel !== 'stable') {
+          switchChoices.push({ name: 'Switch to stable (released version)', value: 'stable' });
+        }
+        if (recordedChannel !== 'next') {
+          switchChoices.push({ name: 'Switch to next (main HEAD)', value: 'next' });
+        }
+        switchChoices.push({ name: 'Pin to a specific version tag', value: 'pin' });
+
+        const choice = await prompts.select({
+          message: `${code} channel:`,
+          choices: switchChoices,
+          default: 'keep',
+        });
+
+        if (choice === 'next') {
           channelOptions.nextSet.add(code);
+          continue;
+        }
+        if (choice === 'pin') {
+          const pinValue = await prompts.text({
+            message: `Enter a version tag for '${code}' (e.g. v1.6.0):`,
+            validate: (value) => {
+              if (!value || !/^[\w.\-+/]+$/.test(String(value).trim())) {
+                return 'Must be a non-empty tag name (letters, digits, dots, hyphens).';
+              }
+            },
+          });
+          channelOptions.pins.set(code, String(pinValue).trim());
+          continue;
+        }
+        if (choice === 'stable') {
+          // Switch to stable: install at the top stable tag without an
+          // upgrade-classification prompt (the user explicitly opted in).
+          // Also warm the tag cache here so the actual clone step doesn't
+          // need a second GitHub API call (can hit rate limits).
+          if (parsed) {
+            try {
+              await fetchStableTags(parsed.owner, parsed.repo);
+            } catch {
+              // best effort; clone step will surface any failure
+            }
+          }
+          continue;
+        }
+        // 'keep' → fall through with recordedChannel below.
+      }
+
+      if (recordedChannel === 'pinned' || recordedChannel === 'next') {
+        // Respect any explicit channel intent the user already expressed via
+        // CLI flags (--channel / --all-* / --next=CODE / --pin CODE=TAG) or
+        // via the interactive review gate above. Only auto-re-assert the
+        // recorded channel when the user hasn't opted into anything else —
+        // otherwise --all-stable (or a review "switch to stable") would be
+        // silently clobbered by the prior channel.
+        const alreadyDecided = channelOptions.global || channelOptions.nextSet.has(code) || channelOptions.pins.has(code);
+        if (!alreadyDecided) {
+          if (recordedChannel === 'pinned' && prev.version) {
+            channelOptions.pins.set(code, prev.version);
+          } else if (recordedChannel === 'next') {
+            channelOptions.nextSet.add(code);
+          }
         }
         continue;
       }

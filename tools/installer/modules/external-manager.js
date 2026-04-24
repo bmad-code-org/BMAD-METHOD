@@ -257,8 +257,38 @@ class ExternalModuleManager {
         repoUrl: moduleInfo.url,
       });
     } catch (error) {
-      if (!silent) await prompts.log.warn(`${error.message} — falling back to main HEAD.`);
-      resolved = { channel: 'next', ref: null, version: 'main', resolvedFallback: true, reason: 'api-failure' };
+      // Tag-API failure (rate limit, transient network). If we already have
+      // a usable cache at a recorded ref, treat this as "couldn't check for
+      // updates" and re-use the cached version silently — that's the right
+      // call for an update/quick-update, since the semantics don't change
+      // and the user isn't worse off than before they ran this command.
+      const cachedMarker = await readChannelMarker(path.join(moduleCacheDir, '.bmad-channel.json'));
+      if (cachedMarker?.channel && (await fs.pathExists(moduleCacheDir))) {
+        if (!silent) {
+          await prompts.log.warn(
+            `Could not check for updates to ${moduleInfo.name} (${error.message}); using cached ${cachedMarker.version || cachedMarker.channel}.`,
+          );
+        }
+        ExternalModuleManager._resolutions.set(moduleCode, {
+          channel: cachedMarker.channel,
+          version: cachedMarker.version || 'main',
+          ref: cachedMarker.version && cachedMarker.version !== 'main' ? cachedMarker.version : null,
+          sha: cachedMarker.sha,
+          repoUrl: moduleInfo.url,
+          resolvedFallback: false,
+          planSource: 'cached',
+        });
+        return moduleCacheDir;
+      }
+      // No cache to fall back on — this is effectively a fresh install with
+      // no offline safety net. Surface a clear error with actionable guidance.
+      const isRateLimited = /rate limit/i.test(error.message);
+      const hint = isRateLimited
+        ? process.env.GITHUB_TOKEN
+          ? 'Your GITHUB_TOKEN may have expired or been rate-limited on its own budget. Try a different token or wait for the reset.'
+          : 'Set a GITHUB_TOKEN env var (any personal access token with public-repo read) to raise the 60-req/hour anonymous limit.'
+        : `Check your network connection, or rerun with \`--next=${moduleCode}\` / \`--pin ${moduleCode}=<tag>\` to skip the tag lookup.`;
+      throw new Error(`Could not resolve stable tag for '${moduleCode}' (${error.message}). ${hint}`);
     }
 
     if (resolved.resolvedFallback && !silent) {
