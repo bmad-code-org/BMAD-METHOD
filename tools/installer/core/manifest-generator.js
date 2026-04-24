@@ -349,7 +349,22 @@ class ManifestGenerator {
         npmPackage: versionInfo.npmPackage,
         repoUrl: versionInfo.repoUrl,
       };
-      if (versionInfo.localPath) moduleEntry.localPath = versionInfo.localPath;
+      // Preserve channel/sha from the resolution (external/community/custom)
+      // or from the existing entry if this is a no-change rewrite.
+      const channel = versionInfo.channel ?? existing?.channel;
+      const sha = versionInfo.sha ?? existing?.sha;
+      if (channel) moduleEntry.channel = channel;
+      if (sha) moduleEntry.sha = sha;
+      if (versionInfo.localPath || existing?.localPath) {
+        moduleEntry.localPath = versionInfo.localPath || existing.localPath;
+      }
+      if (versionInfo.rawSource || existing?.rawSource) {
+        moduleEntry.rawSource = versionInfo.rawSource || existing.rawSource;
+      }
+      const regTag = versionInfo.registryApprovedTag ?? existing?.registryApprovedTag;
+      const regSha = versionInfo.registryApprovedSha ?? existing?.registryApprovedSha;
+      if (regTag) moduleEntry.registryApprovedTag = regTag;
+      if (regSha) moduleEntry.registryApprovedSha = regSha;
       updatedModules.push(moduleEntry);
     }
 

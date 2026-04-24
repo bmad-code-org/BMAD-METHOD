@@ -3,7 +3,7 @@
  * User input comes from either UI answers or headless CLI flags.
  */
 class Config {
-  constructor({ directory, modules, ides, skipPrompts, verbose, actionType, coreConfig, moduleConfigs, quickUpdate }) {
+  constructor({ directory, modules, ides, skipPrompts, verbose, actionType, coreConfig, moduleConfigs, quickUpdate, channelOptions }) {
     this.directory = directory;
     this.modules = Object.freeze([...modules]);
     this.ides = Object.freeze([...ides]);
@@ -13,6 +13,8 @@ class Config {
     this.coreConfig = coreConfig;
     this.moduleConfigs = moduleConfigs;
     this._quickUpdate = quickUpdate;
+    // channelOptions carry a Map + Set; don't deep-freeze.
+    this.channelOptions = channelOptions || null;
     Object.freeze(this);
   }
 
@@ -37,6 +39,7 @@ class Config {
       coreConfig: userInput.coreConfig || {},
       moduleConfigs: userInput.moduleConfigs || null,
       quickUpdate: userInput._quickUpdate || false,
+      channelOptions: userInput.channelOptions || null,
     });
   }
 

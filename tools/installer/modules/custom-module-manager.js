@@ -4,6 +4,13 @@ const path = require('node:path');
 const { execSync } = require('node:child_process');
 const prompts = require('../prompts');
 
+function quoteCustomRef(ref) {
+  if (typeof ref !== 'string' || !/^[\w.\-+/]+$/.test(ref)) {
+    throw new Error(`Unsafe ref name: ${JSON.stringify(ref)}`);
+  }
+  return `"${ref}"`;
+}
+
 /**
  * Manages custom modules installed from user-provided sources.
  * Supports any Git host (GitHub, GitLab, Bitbucket, self-hosted) and local file paths.
@@ -38,8 +45,8 @@ class CustomModuleManager {
       };
     }
 
-    const trimmed = input.trim();
-    if (!trimmed) {
+    const trimmedRaw = input.trim();
+    if (!trimmedRaw) {
       return {
         type: null,
         cloneUrl: null,
@@ -52,8 +59,53 @@ class CustomModuleManager {
       };
     }
 
+    // Extract optional @<tag-or-branch> suffix from the end of the input.
+    // Semver-valid characters: letters, digits, dot, hyphen, underscore, plus, slash.
+    // Raw commit SHAs are NOT supported here — `git clone --branch` can't take
+    // them; use --pin at the module level or check out the SHA manually.
+    // Only strip when the tail looks like a ref, so we don't disturb
+    // URLs without a version spec or the SSH protocol's `git@host:...` prefix.
+    let trimmed = trimmedRaw;
+    let versionSuffix = null;
+    const lastAt = trimmedRaw.lastIndexOf('@');
+    // Skip if @ is part of git@github.com:... (first char cannot be stripped as version)
+    // and skip if @ appears before the path rather than after a ref-shaped tail.
+    if (lastAt > 0) {
+      const candidate = trimmedRaw.slice(lastAt + 1);
+      const before = trimmedRaw.slice(0, lastAt);
+      // candidate must be ref-shaped and must not itself look like a URL / SSH host
+      if (/^[\w.\-+/]+$/.test(candidate) && !candidate.includes(':')) {
+        // Avoid consuming the @ in `git@host:owner/repo` — `before` wouldn't end with a path separator
+        // in that case. Require that the @ comes after the host/path, not inside the auth segment.
+        // Rule: the @ is a version suffix only if `before` looks like a complete URL or local path.
+        const beforeLooksLikeRepo =
+          before.startsWith('/') ||
+          before.startsWith('./') ||
+          before.startsWith('../') ||
+          before.startsWith('~') ||
+          /^https?:\/\//i.test(before) ||
+          /^git@[^:]+:.+/.test(before);
+        if (beforeLooksLikeRepo) {
+          versionSuffix = candidate;
+          trimmed = before;
+        }
+      }
+    }
+
     // Local path detection: starts with /, ./, ../, or ~
     if (trimmed.startsWith('/') || trimmed.startsWith('./') || trimmed.startsWith('../') || trimmed.startsWith('~')) {
+      if (versionSuffix) {
+        return {
+          type: 'local',
+          cloneUrl: null,
+          subdir: null,
+          localPath: null,
+          cacheKey: null,
+          displayName: null,
+          isValid: false,
+          error: 'Local paths do not support @version suffixes',
+        };
+      }
       return this._parseLocalPath(trimmed);
     }
 
@@ -66,6 +118,8 @@ class CustomModuleManager {
         cloneUrl: trimmed,
         subdir: null,
         localPath: null,
+        version: versionSuffix || null,
+        rawInput: trimmedRaw,
         cacheKey: `${host}/${owner}/${repo}`,
         displayName: `${owner}/${repo}`,
         isValid: true,
@@ -79,29 +133,47 @@ class CustomModuleManager {
       const [, host, owner, repo, remainder] = httpsMatch;
       const cloneUrl = `https://${host}/${owner}/${repo}`;
       let subdir = null;
+      let urlRef = null; // branch/tag extracted from /tree/<ref>/subdir
 
       if (remainder) {
         // Extract subdir from deep path patterns used by various Git hosts
         const deepPathPatterns = [
-          /^\/(?:-\/)?tree\/[^/]+\/(.+)$/, // GitHub /tree/branch/path, GitLab /-/tree/branch/path
-          /^\/(?:-\/)?blob\/[^/]+\/(.+)$/, // /blob/branch/path (treat same as tree)
-          /^\/src\/[^/]+\/(.+)$/, // Gitea/Forgejo /src/branch/path
+          { regex: /^\/(?:-\/)?tree\/([^/]+)\/(.+)$/, refIdx: 1, pathIdx: 2 }, // GitHub, GitLab
+          { regex: /^\/(?:-\/)?blob\/([^/]+)\/(.+)$/, refIdx: 1, pathIdx: 2 },
+          { regex: /^\/src\/([^/]+)\/(.+)$/, refIdx: 1, pathIdx: 2 }, // Gitea/Forgejo
         ];
+        // Also match `/tree/<ref>` with no subdir
+        const refOnlyPatterns = [/^\/(?:-\/)?tree\/([^/]+?)\/?$/, /^\/(?:-\/)?blob\/([^/]+?)\/?$/, /^\/src\/([^/]+?)\/?$/];
 
-        for (const pattern of deepPathPatterns) {
-          const match = remainder.match(pattern);
+        for (const p of deepPathPatterns) {
+          const match = remainder.match(p.regex);
           if (match) {
-            subdir = match[1].replace(/\/$/, ''); // strip trailing slash
+            urlRef = match[p.refIdx];
+            subdir = match[p.pathIdx].replace(/\/$/, '');
             break;
           }
         }
+        if (!subdir) {
+          for (const r of refOnlyPatterns) {
+            const match = remainder.match(r);
+            if (match) {
+              urlRef = match[1];
+              break;
+            }
+          }
+        }
       }
+
+      // Precedence: explicit @version suffix > URL /tree/<ref> path segment.
+      const version = versionSuffix || urlRef || null;
 
       return {
         type: 'url',
         cloneUrl,
         subdir,
         localPath: null,
+        version,
+        rawInput: trimmedRaw,
         cacheKey: `${host}/${owner}/${repo}`,
         displayName: `${owner}/${repo}`,
         isValid: true,
@@ -255,6 +327,10 @@ class CustomModuleManager {
     const silent = options.silent || false;
     const displayName = parsed.displayName;
 
+    // Pin override: --pin CODE=TAG resolved at module-selection time overrides
+    // any @version suffix present in the URL.
+    const effectiveVersion = options.pinOverride || parsed.version || null;
+
     await fs.ensureDir(path.dirname(repoCacheDir));
 
     const createSpinner = async () => {
@@ -264,8 +340,23 @@ class CustomModuleManager {
       return await prompts.spinner();
     };
 
+    // If an existing cache exists but was cloned at a different version, re-clone.
+    // Tracked via .bmad-source.json's recorded version.
     if (await fs.pathExists(repoCacheDir)) {
-      // Update existing clone
+      let cachedVersion = null;
+      try {
+        const existing = await fs.readJson(path.join(repoCacheDir, '.bmad-source.json'));
+        cachedVersion = existing?.version || null;
+      } catch {
+        // no metadata; treat as mismatched to be safe if a version was requested
+      }
+      if ((effectiveVersion || null) !== (cachedVersion || null)) {
+        await fs.remove(repoCacheDir);
+      }
+    }
+
+    if (await fs.pathExists(repoCacheDir)) {
+      // Update existing clone (same version as before)
       const fetchSpinner = await createSpinner();
       fetchSpinner.start(`Updating ${displayName}...`);
       try {
@@ -274,10 +365,25 @@ class CustomModuleManager {
           stdio: ['ignore', 'pipe', 'pipe'],
           env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
         });
-        execSync('git reset --hard origin/HEAD', {
-          cwd: repoCacheDir,
-          stdio: ['ignore', 'pipe', 'pipe'],
-        });
+        if (effectiveVersion) {
+          // Fetch the ref as either a tag or a branch — `origin <ref>` works
+          // for both, whereas `origin tag <ref>` fails for branch refs parsed
+          // out of /tree/<branch>/... URLs.
+          execSync(`git fetch --depth 1 origin ${quoteCustomRef(effectiveVersion)} --no-tags`, {
+            cwd: repoCacheDir,
+            stdio: ['ignore', 'pipe', 'pipe'],
+            env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+          });
+          execSync(`git checkout --quiet FETCH_HEAD`, {
+            cwd: repoCacheDir,
+            stdio: ['ignore', 'pipe', 'pipe'],
+          });
+        } else {
+          execSync('git reset --hard origin/HEAD', {
+            cwd: repoCacheDir,
+            stdio: ['ignore', 'pipe', 'pipe'],
+          });
+        }
         fetchSpinner.stop(`Updated ${displayName}`);
       } catch {
         fetchSpinner.error(`Update failed, re-downloading ${displayName}`);
@@ -287,17 +393,33 @@ class CustomModuleManager {
 
     if (!(await fs.pathExists(repoCacheDir))) {
       const fetchSpinner = await createSpinner();
-      fetchSpinner.start(`Cloning ${displayName}...`);
+      fetchSpinner.start(`Cloning ${displayName}${effectiveVersion ? ` @ ${effectiveVersion}` : ''}...`);
       try {
-        execSync(`git clone --depth 1 "${parsed.cloneUrl}" "${repoCacheDir}"`, {
-          stdio: ['ignore', 'pipe', 'pipe'],
-          env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
-        });
+        if (effectiveVersion) {
+          execSync(`git clone --depth 1 --branch ${quoteCustomRef(effectiveVersion)} "${parsed.cloneUrl}" "${repoCacheDir}"`, {
+            stdio: ['ignore', 'pipe', 'pipe'],
+            env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+          });
+        } else {
+          execSync(`git clone --depth 1 "${parsed.cloneUrl}" "${repoCacheDir}"`, {
+            stdio: ['ignore', 'pipe', 'pipe'],
+            env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+          });
+        }
         fetchSpinner.stop(`Cloned ${displayName}`);
       } catch (error_) {
         fetchSpinner.error(`Failed to clone ${displayName}`);
-        throw new Error(`Failed to clone ${parsed.cloneUrl}: ${error_.message}`);
+        const refSuffix = effectiveVersion ? `@${effectiveVersion}` : '';
+        throw new Error(`Failed to clone ${parsed.cloneUrl}${refSuffix}: ${error_.message}`);
       }
+    }
+
+    // Record the resolved SHA for the manifest writer.
+    let resolvedSha = null;
+    try {
+      resolvedSha = execSync('git rev-parse HEAD', { cwd: repoCacheDir, stdio: 'pipe' }).toString().trim();
+    } catch {
+      // swallow — a non-git repo (local path) wouldn't reach here anyway
     }
 
     // Write source metadata for later URL reconstruction
@@ -306,6 +428,9 @@ class CustomModuleManager {
       cloneUrl: parsed.cloneUrl,
       cacheKey: parsed.cacheKey,
       displayName: parsed.displayName,
+      version: effectiveVersion || null,
+      rawInput: parsed.rawInput || sourceInput,
+      sha: resolvedSha,
       clonedAt: new Date().toISOString(),
     });
 
@@ -346,10 +471,26 @@ class CustomModuleManager {
     const resolver = new PluginResolver();
     const resolved = await resolver.resolve(repoPath, plugin);
 
+    // Read clone metadata (written by cloneRepo) so we can pick up the
+    // resolved git ref + SHA for manifest recording.
+    let cloneMetadata = null;
+    if (sourceUrl) {
+      try {
+        cloneMetadata = await fs.readJson(path.join(repoPath, '.bmad-source.json'));
+      } catch {
+        // no metadata — local-source or legacy cache
+      }
+    }
+
     // Stamp source info onto each resolved module for manifest tracking
     for (const mod of resolved) {
       if (sourceUrl) mod.repoUrl = sourceUrl;
       if (localPath) mod.localPath = localPath;
+      if (cloneMetadata) {
+        mod.cloneRef = cloneMetadata.version || null;
+        mod.cloneSha = cloneMetadata.sha || null;
+        mod.rawInput = cloneMetadata.rawInput || null;
+      }
       CustomModuleManager._resolutionCache.set(mod.code, mod);
     }
 
