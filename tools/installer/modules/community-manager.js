@@ -4,6 +4,8 @@ const path = require('node:path');
 const { execSync } = require('node:child_process');
 const prompts = require('../prompts');
 const { RegistryClient } = require('./registry-client');
+const { decideChannelForModule } = require('./channel-plan');
+const { parseGitHubRepo, tagExists } = require('./channel-resolver');
 
 const MARKETPLACE_OWNER = 'bmad-code-org';
 const MARKETPLACE_REPO = 'bmad-plugins-marketplace';
@@ -15,11 +17,27 @@ const MARKETPLACE_REF = 'main';
  * Returns empty results when the registry is unreachable.
  * Community modules are pinned to approved SHA when set; uses HEAD otherwise.
  */
+function quoteShellRef(ref) {
+  if (typeof ref !== 'string' || !/^[\w.\-+/]+$/.test(ref)) {
+    throw new Error(`Unsafe ref name: ${JSON.stringify(ref)}`);
+  }
+  return `"${ref}"`;
+}
+
 class CommunityModuleManager {
+  // moduleCode → { channel, version, sha, registryApprovedTag, registryApprovedSha, repoUrl, bypassedCurator }
+  // Shared across all instances; the manifest writer often uses a fresh instance.
+  static _resolutions = new Map();
+
   constructor() {
     this._client = new RegistryClient();
     this._cachedIndex = null;
     this._cachedCategories = null;
+  }
+
+  /** Get the most recent channel resolution for a community module. */
+  getResolution(moduleCode) {
+    return CommunityModuleManager._resolutions.get(moduleCode) || null;
   }
 
   // ─── Data Loading ──────────────────────────────────────────────────────────
@@ -196,12 +214,49 @@ class CommunityModuleManager {
       return await prompts.spinner();
     };
 
-    const sha = moduleInfo.approvedSha;
+    // ─── Resolve channel plan ──────────────────────────────────────────────
+    // Default community behavior (stable channel) honors the curator's
+    // approved SHA. --next=CODE and --pin CODE=TAG override the curator; we
+    // warn the user before bypassing the approved version.
+    const planEntry = decideChannelForModule({
+      code: moduleCode,
+      channelOptions: options.channelOptions,
+      registryDefault: 'stable',
+    });
+
+    const approvedSha = moduleInfo.approvedSha;
+    const approvedTag = moduleInfo.approvedTag;
+
+    let bypassedCurator = false;
+    if (planEntry.channel !== 'stable') {
+      bypassedCurator = true;
+      if (!silent) {
+        const approvedLabel = approvedTag || approvedSha || 'curator-approved version';
+        await prompts.log.warn(
+          `WARNING: Installing '${moduleCode}' from ${
+            planEntry.channel === 'pinned' ? `tag ${planEntry.pin}` : 'main HEAD'
+          } bypasses the curator-approved ${approvedLabel}. Proceed only if you trust this source.`,
+        );
+        if (!options.channelOptions?.acceptBypass) {
+          const proceed = await prompts.confirm({
+            message: `Continue installing '${moduleCode}' with curator bypass?`,
+            default: false,
+          });
+          if (!proceed) {
+            throw new Error(`Install of community module '${moduleCode}' cancelled by user.`);
+          }
+        }
+      }
+    }
+
     let needsDependencyInstall = false;
     let wasNewClone = false;
 
     if (await fs.pathExists(moduleCacheDir)) {
-      // Already cloned - update to latest HEAD
+      // Already cloned — refresh to the correct ref for the resolved channel.
+      // A pinned install must not reset to origin/HEAD (it would silently drift
+      // to main on every re-install). Stable + approvedSha is handled below
+      // by the curator-SHA checkout logic.
       const fetchSpinner = await createSpinner();
       fetchSpinner.start(`Checking ${moduleInfo.displayName}...`);
       try {
@@ -211,10 +266,24 @@ class CommunityModuleManager {
           stdio: ['ignore', 'pipe', 'pipe'],
           env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
         });
-        execSync('git reset --hard origin/HEAD', {
-          cwd: moduleCacheDir,
-          stdio: ['ignore', 'pipe', 'pipe'],
-        });
+        if (planEntry.channel === 'pinned') {
+          // Fetch the pin tag specifically and check it out.
+          execSync(`git fetch --depth 1 origin ${quoteShellRef(planEntry.pin)} --no-tags`, {
+            cwd: moduleCacheDir,
+            stdio: ['ignore', 'pipe', 'pipe'],
+            env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+          });
+          execSync('git checkout --quiet FETCH_HEAD', {
+            cwd: moduleCacheDir,
+            stdio: ['ignore', 'pipe', 'pipe'],
+          });
+        } else {
+          // stable (approvedSha path re-checks out below) and next: track main.
+          execSync('git reset --hard origin/HEAD', {
+            cwd: moduleCacheDir,
+            stdio: ['ignore', 'pipe', 'pipe'],
+          });
+        }
         const newRef = execSync('git rev-parse HEAD', { cwd: moduleCacheDir, stdio: 'pipe' }).toString().trim();
         if (currentRef !== newRef) needsDependencyInstall = true;
         fetchSpinner.stop(`Verified ${moduleInfo.displayName}`);
@@ -231,10 +300,17 @@ class CommunityModuleManager {
       const fetchSpinner = await createSpinner();
       fetchSpinner.start(`Fetching ${moduleInfo.displayName}...`);
       try {
-        execSync(`git clone --depth 1 "${moduleInfo.url}" "${moduleCacheDir}"`, {
-          stdio: ['ignore', 'pipe', 'pipe'],
-          env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
-        });
+        if (planEntry.channel === 'pinned') {
+          execSync(`git clone --depth 1 --branch ${quoteShellRef(planEntry.pin)} "${moduleInfo.url}" "${moduleCacheDir}"`, {
+            stdio: ['ignore', 'pipe', 'pipe'],
+            env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+          });
+        } else {
+          execSync(`git clone --depth 1 "${moduleInfo.url}" "${moduleCacheDir}"`, {
+            stdio: ['ignore', 'pipe', 'pipe'],
+            env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+          });
+        }
         fetchSpinner.stop(`Fetched ${moduleInfo.displayName}`);
         needsDependencyInstall = true;
       } catch (error) {
@@ -243,18 +319,19 @@ class CommunityModuleManager {
       }
     }
 
-    // If pinned to a specific SHA, check out that exact commit.
-    // Refuse to install if the approved SHA cannot be reached - security requirement.
-    if (sha) {
+    // ─── Check out the resolved ref per channel ──────────────────────────
+    if (planEntry.channel === 'stable' && approvedSha) {
+      // Default path: pin to the curator-approved SHA. Refuse install if the SHA
+      // is unreachable (tag may have been deleted or rewritten) — security requirement.
       const headSha = execSync('git rev-parse HEAD', { cwd: moduleCacheDir, stdio: 'pipe' }).toString().trim();
-      if (headSha !== sha) {
+      if (headSha !== approvedSha) {
         try {
-          execSync(`git fetch --depth 1 origin ${sha}`, {
+          execSync(`git fetch --depth 1 origin ${quoteShellRef(approvedSha)}`, {
             cwd: moduleCacheDir,
             stdio: ['ignore', 'pipe', 'pipe'],
             env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
           });
-          execSync(`git checkout ${sha}`, {
+          execSync(`git checkout ${quoteShellRef(approvedSha)}`, {
             cwd: moduleCacheDir,
             stdio: ['ignore', 'pipe', 'pipe'],
           });
@@ -262,12 +339,37 @@ class CommunityModuleManager {
         } catch {
           await fs.remove(moduleCacheDir);
           throw new Error(
-            `Community module '${moduleCode}' could not be pinned to its approved commit (${sha}). ` +
-              `Installation refused for security. The module registry entry may need updating.`,
+            `Community module '${moduleCode}' could not be pinned to its approved commit (${approvedSha}). ` +
+              `Installation refused for security. The module registry entry may need updating, ` +
+              `or use --next=${moduleCode} / --pin ${moduleCode}=<tag> to explicitly bypass.`,
           );
         }
       }
+    } else if (planEntry.channel === 'stable' && !approvedSha) {
+      // Registry data gap: tag or SHA missing. Warn but proceed at HEAD (pre-existing behavior).
+      if (!silent) {
+        await prompts.log.warn(`Community module '${moduleCode}' has no curator-approved SHA in the registry; installing from main HEAD.`);
+      }
+    } else if (planEntry.channel === 'pinned') {
+      // We cloned the tag directly above (via --branch), but ensure HEAD matches.
+      // No additional checkout needed.
     }
+    // else: 'next' channel — already at origin/HEAD from the fetch/reset above.
+
+    // Record the resolution so the manifest writer can pick up channel/version/sha.
+    const installedSha = execSync('git rev-parse HEAD', { cwd: moduleCacheDir, stdio: 'pipe' }).toString().trim();
+    const recordedVersion =
+      planEntry.channel === 'pinned' ? planEntry.pin : planEntry.channel === 'next' ? 'main' : approvedTag || installedSha.slice(0, 7);
+    CommunityModuleManager._resolutions.set(moduleCode, {
+      channel: planEntry.channel,
+      version: recordedVersion,
+      sha: installedSha,
+      registryApprovedTag: approvedTag || null,
+      registryApprovedSha: approvedSha || null,
+      repoUrl: moduleInfo.url,
+      bypassedCurator,
+      planSource: planEntry.source,
+    });
 
     // Install dependencies if needed
     const packageJsonPath = path.join(moduleCacheDir, 'package.json');

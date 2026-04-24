@@ -180,7 +180,12 @@ class Manifest {
         npmPackage: options.npmPackage || null,
         repoUrl: options.repoUrl || null,
       };
+      if (options.channel) entry.channel = options.channel;
+      if (options.sha) entry.sha = options.sha;
       if (options.localPath) entry.localPath = options.localPath;
+      if (options.rawSource) entry.rawSource = options.rawSource;
+      if (options.registryApprovedTag) entry.registryApprovedTag = options.registryApprovedTag;
+      if (options.registryApprovedSha) entry.registryApprovedSha = options.registryApprovedSha;
       manifest.modules.push(entry);
     } else {
       // Module exists, update its version info
@@ -192,6 +197,11 @@ class Manifest {
         npmPackage: options.npmPackage === undefined ? existing.npmPackage : options.npmPackage,
         repoUrl: options.repoUrl === undefined ? existing.repoUrl : options.repoUrl,
         localPath: options.localPath === undefined ? existing.localPath : options.localPath,
+        channel: options.channel === undefined ? existing.channel : options.channel,
+        sha: options.sha === undefined ? existing.sha : options.sha,
+        rawSource: options.rawSource === undefined ? existing.rawSource : options.rawSource,
+        registryApprovedTag: options.registryApprovedTag === undefined ? existing.registryApprovedTag : options.registryApprovedTag,
+        registryApprovedSha: options.registryApprovedSha === undefined ? existing.registryApprovedSha : options.registryApprovedSha,
         lastUpdated: new Date().toISOString(),
       };
     }
@@ -275,12 +285,17 @@ class Manifest {
     const moduleInfo = await extMgr.getModuleByCode(moduleName);
 
     if (moduleInfo) {
+      const externalResolution = extMgr.getResolution(moduleName);
       const versionInfo = await resolveModuleVersion(moduleName, { moduleSourcePath });
       return {
-        version: versionInfo.version,
+        // Git tag recorded during install trumps the on-disk package.json
+        // version, so the manifest carries "v1.7.0" instead of "1.7.0".
+        version: externalResolution?.version || versionInfo.version,
         source: 'external',
         npmPackage: moduleInfo.npmPackage || null,
         repoUrl: moduleInfo.url || null,
+        channel: externalResolution?.channel || null,
+        sha: externalResolution?.sha || null,
       };
     }
 
@@ -289,15 +304,20 @@ class Manifest {
     const communityMgr = new CommunityModuleManager();
     const communityInfo = await communityMgr.getModuleByCode(moduleName);
     if (communityInfo) {
+      const communityResolution = communityMgr.getResolution(moduleName);
       const versionInfo = await resolveModuleVersion(moduleName, {
         moduleSourcePath,
         fallbackVersion: communityInfo.version,
       });
       return {
-        version: versionInfo.version || communityInfo.version,
+        version: communityResolution?.version || versionInfo.version || communityInfo.version,
         source: 'community',
         npmPackage: communityInfo.npmPackage || null,
         repoUrl: communityInfo.url || null,
+        channel: communityResolution?.channel || null,
+        sha: communityResolution?.sha || null,
+        registryApprovedTag: communityResolution?.registryApprovedTag || null,
+        registryApprovedSha: communityResolution?.registryApprovedSha || null,
       };
     }
 
@@ -312,12 +332,17 @@ class Manifest {
         fallbackVersion: resolved?.version,
         marketplacePluginNames: resolved?.pluginName ? [resolved.pluginName] : [],
       });
+      const hasGitClone = !!resolved?.repoUrl;
       return {
-        version: versionInfo.version,
+        // Prefer the git ref we actually cloned over the package.json version.
+        version: resolved?.cloneRef || (hasGitClone ? 'main' : versionInfo.version),
         source: 'custom',
         npmPackage: null,
         repoUrl: resolved?.repoUrl || null,
         localPath: resolved?.localPath || null,
+        channel: hasGitClone ? (resolved?.cloneRef ? 'pinned' : 'next') : null,
+        sha: resolved?.cloneSha || null,
+        rawSource: resolved?.rawInput || null,
       };
     }
 
