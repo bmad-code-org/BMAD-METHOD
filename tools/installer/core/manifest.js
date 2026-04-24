@@ -1,8 +1,19 @@
 const path = require('node:path');
+const https = require('node:https');
+const { execFile } = require('node:child_process');
+const { promisify } = require('node:util');
 const fs = require('../fs-native');
 const crypto = require('node:crypto');
 const { resolveModuleVersion } = require('../modules/version-resolver');
 const prompts = require('../prompts');
+
+const execFileAsync = promisify(execFile);
+const NPM_LOOKUP_TIMEOUT_MS = 10_000;
+const NPM_PACKAGE_NAME_PATTERN = /^(?:@[a-z0-9][a-z0-9._~-]*\/)?[a-z0-9][a-z0-9._~-]*$/;
+
+function isValidNpmPackageName(packageName) {
+  return typeof packageName === 'string' && NPM_PACKAGE_NAME_PATTERN.test(packageName);
+}
 
 class Manifest {
   /**
@@ -362,35 +373,40 @@ class Manifest {
    * @returns {string|null} Latest version or null
    */
   async fetchNpmVersion(packageName) {
-    try {
-      const https = require('node:https');
-      const { execSync } = require('node:child_process');
+    if (!isValidNpmPackageName(packageName)) {
+      return null;
+    }
 
+    try {
       // Try using npm view first (more reliable)
       try {
-        const result = execSync(`npm view ${packageName} version`, {
+        const { stdout } = await execFileAsync('npm', ['view', packageName, 'version'], {
           encoding: 'utf8',
-          stdio: 'pipe',
-          timeout: 10_000,
+          timeout: NPM_LOOKUP_TIMEOUT_MS,
         });
-        return result.trim();
+        return stdout.trim();
       } catch {
         // Fallback to npm registry API
-        return new Promise((resolve, reject) => {
-          https
-            .get(`https://registry.npmjs.org/${packageName}`, (res) => {
-              let data = '';
-              res.on('data', (chunk) => (data += chunk));
-              res.on('end', () => {
-                try {
-                  const pkg = JSON.parse(data);
-                  resolve(pkg['dist-tags']?.latest || pkg.version || null);
-                } catch {
-                  resolve(null);
-                }
-              });
-            })
-            .on('error', () => resolve(null));
+        return new Promise((resolve) => {
+          const request = https.get(`https://registry.npmjs.org/${encodeURIComponent(packageName)}`, (res) => {
+            let data = '';
+            res.on('data', (chunk) => (data += chunk));
+            res.on('end', () => {
+              try {
+                const pkg = JSON.parse(data);
+                resolve(pkg['dist-tags']?.latest || pkg.version || null);
+              } catch {
+                resolve(null);
+              }
+            });
+          });
+
+          request.setTimeout(NPM_LOOKUP_TIMEOUT_MS, () => {
+            request.destroy();
+            resolve(null);
+          });
+
+          request.on('error', () => resolve(null));
         });
       }
     } catch {
