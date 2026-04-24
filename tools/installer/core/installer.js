@@ -614,20 +614,26 @@ class Installer {
       const displayName = moduleInfo?.name || moduleName;
 
       const externalResolution = officialModules.externalModuleManager.getResolution(moduleName);
+      let communityResolution = null;
+      if (!externalResolution) {
+        const { CommunityModuleManager } = require('../modules/community-manager');
+        communityResolution = new CommunityModuleManager().getResolution(moduleName);
+      }
+      const resolution = externalResolution || communityResolution;
       const cachedResolution = CustomModuleManager._resolutionCache.get(moduleName);
       const versionInfo = await resolveModuleVersion(moduleName, {
         moduleSourcePath: sourcePath,
-        fallbackVersion: externalResolution?.version || cachedResolution?.version,
+        fallbackVersion: resolution?.version || cachedResolution?.version,
         marketplacePluginNames: cachedResolution?.pluginName ? [cachedResolution.pluginName] : [],
       });
-      // Prefer the git tag recorded by the external resolution (e.g. "v1.7.0") over
+      // Prefer the git tag recorded by the resolution (e.g. "v1.7.0") over
       // the on-disk package.json (which may be ahead of the released tag).
-      const version = externalResolution?.version || versionInfo.version || '';
+      const version = resolution?.version || versionInfo.version || '';
       addResult(displayName, 'ok', '', {
         moduleCode: moduleName,
         newVersion: version,
-        newChannel: externalResolution?.channel || null,
-        newSha: externalResolution?.sha || null,
+        newChannel: resolution?.channel || null,
+        newSha: resolution?.sha || null,
       });
     }
   }
@@ -1114,8 +1120,15 @@ class Installer {
           return v;
         };
         const newV = fmt(r.newVersion, r.newSha);
-        if (oldVersion && oldVersion === r.newVersion) {
+        // 'main'/'HEAD' strings only identify the channel, not the commit, so
+        // we can't assert "no change" without comparing SHAs — and preVersions
+        // doesn't carry the old SHA. Render these as a refresh instead of a
+        // false-negative "no change".
+        const isMainLike = oldVersion === 'main' || oldVersion === 'HEAD';
+        if (oldVersion && oldVersion === r.newVersion && !isMainLike) {
           detail = ` (${newV}, no change)`;
+        } else if (oldVersion && isMainLike) {
+          detail = ` (${newV}, refreshed)`;
         } else if (oldVersion) {
           detail = ` (${fmt(oldVersion, r.newSha)} → ${newV})`;
         } else {

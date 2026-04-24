@@ -386,7 +386,10 @@ class OfficialModules {
       success: true,
       module: resolved.code,
       path: targetPath,
-      versionInfo: { version: resolved.cloneRef || resolved.version || '' },
+      // Match the manifestEntry.version expression above so downstream summary
+      // lines show the cloned ref (tag or 'main') instead of the on-disk
+      // package.json version for git-backed custom installs.
+      versionInfo: { version: resolved.cloneRef || (hasGitClone ? 'main' : resolved.version || '') },
     };
   }
 

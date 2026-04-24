@@ -249,6 +249,17 @@ class ExternalModuleManager {
       registryDefault: moduleInfo.defaultChannel,
     });
 
+    // Same-plan short-circuit: a single install calls cloneExternalModule
+    // several times (config collection, directory setup, help-catalog rebuild)
+    // with the same channelOptions. The first call resolves + clones; later
+    // calls with an identical plan and a valid cache should return immediately
+    // instead of re-running resolveChannel() and `git fetch` (slow; can fail
+    // on flaky networks even though the tagCache dedupes the GitHub API hit).
+    if (existingResolution && haveUsableCache && existingResolution.channel === planEntry.channel) {
+      const samePin = planEntry.channel !== 'pinned' || existingResolution.version === planEntry.pin;
+      if (samePin) return moduleCacheDir;
+    }
+
     let resolved;
     try {
       resolved = await resolveChannel({

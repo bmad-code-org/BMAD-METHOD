@@ -55,11 +55,11 @@ Two independent axes control what ends up on disk.
 
 Every external module — bmb, cis, gds, tea, and any community module — installs on one of three channels:
 
-| Channel | What gets installed | Who picks this |
-| --- | --- | --- |
-| `stable` (default) | Highest released semver tag. Prereleases like `v2.0.0-alpha.1` are excluded. | Most users |
-| `next` | Main branch HEAD at install time | Contributors, early adopters |
-| `pinned` | A specific tag you name | Enterprise installs, CI reproducibility |
+| Channel            | What gets installed                                                          | Who picks this                          |
+| ------------------ | ---------------------------------------------------------------------------- | --------------------------------------- |
+| `stable` (default) | Highest released semver tag. Prereleases like `v2.0.0-alpha.1` are excluded. | Most users                              |
+| `next`             | Main branch HEAD at install time                                             | Contributors, early adopters            |
+| `pinned`           | A specific tag you name                                                      | Enterprise installs, CI reproducibility |
 
 Channels are per-module. You can run bmb on `next` while leaving cis on `stable` — the flags below let you mix freely.
 
@@ -67,10 +67,10 @@ Channels are per-module. You can run bmb on `next` while leaving cis on `stable`
 
 The `bmad-method` npm package itself has two dist-tags:
 
-| Command | What you get |
-| --- | --- |
-| `npx bmad-method install` (`@latest`) | Latest stable installer release |
-| `npx bmad-method@next install` | Latest prerelease installer, auto-published on every push to main |
+| Command                               | What you get                                                      |
+| ------------------------------------- | ----------------------------------------------------------------- |
+| `npx bmad-method install` (`@latest`) | Latest stable installer release                                   |
+| `npx bmad-method@next install`        | Latest prerelease installer, auto-published on every push to main |
 
 **The installer binary determines your core and bmm versions.** Those two modules ship bundled inside the installer package rather than being cloned from separate repos.
 
@@ -88,20 +88,20 @@ They're stapled to the installer binary you ran:
 
 Running `npx bmad-method install` in a directory that already contains `_bmad/` gives you a menu:
 
-| Choice | What it does |
-| --- | --- |
-| **Quick Update** | Re-runs the install with your existing settings. Refreshes files, applies patches and minor stable upgrades, refuses major upgrades. Fast, non-interactive. |
-| **Modify Install** | Full interactive flow. Add or remove modules, reconfigure settings, optionally review and switch channels for existing modules. |
+| Choice             | What it does                                                                                                                                                |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Quick Update**   | Re-runs the install with your existing settings. Refreshes files, applies patches and minor stable upgrades, refuses major upgrades. Fast, non-interactive. |
+| **Modify Install** | Full interactive flow. Add or remove modules, reconfigure settings, optionally review and switch channels for existing modules.                             |
 
 ### Upgrade prompts
 
 When Modify detects a newer stable tag for a module you've installed on `stable`, it classifies the diff and prompts accordingly:
 
-| Upgrade type | Example | Default |
-| --- | --- | --- |
-| Patch | v1.7.0 → v1.7.1 | Y |
-| Minor | v1.7.0 → v1.8.0 | Y |
-| Major | v1.7.0 → v2.0.0 | **N** |
+| Upgrade type | Example         | Default |
+| ------------ | --------------- | ------- |
+| Patch        | v1.7.0 → v1.7.1 | Y       |
+| Minor        | v1.7.0 → v1.8.0 | Y       |
+| Major        | v1.7.0 → v2.0.0 | **N**   |
 
 Major defaults to N because breaking changes frequently surface as "instability" when they weren't expected. The prompt includes a GitHub release-notes URL so you can read what changed before accepting.
 
@@ -117,20 +117,20 @@ Under `--yes`, patch and minor upgrades apply automatically. Majors stay frozen 
 
 ### Flag reference
 
-| Flag | Purpose |
-| --- | --- |
-| `--yes`, `-y` | Skip all prompts; accept flag values + defaults |
-| `--directory <path>` | Install into this directory (default: current working dir) |
-| `--modules <a,b,c>` | Exact module set. Core is auto-added. Not a delta — list everything you want kept. |
-| `--tools <a,b>` or `--tools none` | IDE/tool selection. `none` skips tool config entirely. |
-| `--action <type>` | `install`, `update`, or `quick-update`. Defaults based on existing install state. |
-| `--custom-source <urls>` | Install custom modules from Git URLs or local paths |
-| `--channel <stable\|next>` | Apply to all externals (aliased as `--all-stable` / `--all-next`) |
-| `--all-stable` | Alias for `--channel=stable` |
-| `--all-next` | Alias for `--channel=next` |
-| `--next=<code>` | Put one module on next. Repeatable. |
-| `--pin <code>=<tag>` | Pin one module to a specific tag. Repeatable. |
-| `--user-name`, `--communication-language`, `--document-output-language`, `--output-folder` | Override per-user config defaults |
+| Flag                                                                                       | Purpose                                                                            |
+| ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| `--yes`, `-y`                                                                              | Skip all prompts; accept flag values + defaults                                    |
+| `--directory <path>`                                                                       | Install into this directory (default: current working dir)                         |
+| `--modules <a,b,c>`                                                                        | Exact module set. Core is auto-added. Not a delta — list everything you want kept. |
+| `--tools <a,b>` or `--tools none`                                                          | IDE/tool selection. `none` skips tool config entirely.                             |
+| `--action <type>`                                                                          | `install`, `update`, or `quick-update`. Defaults based on existing install state.  |
+| `--custom-source <urls>`                                                                   | Install custom modules from Git URLs or local paths                                |
+| `--channel <stable\|next>`                                                                 | Apply to all externals (aliased as `--all-stable` / `--all-next`)                  |
+| `--all-stable`                                                                             | Alias for `--channel=stable`                                                       |
+| `--all-next`                                                                               | Alias for `--channel=next`                                                         |
+| `--next=<code>`                                                                            | Put one module on next. Repeatable.                                                |
+| `--pin <code>=<tag>`                                                                       | Pin one module to a specific tag. Repeatable.                                      |
+| `--user-name`, `--communication-language`, `--document-output-language`, `--output-folder` | Override per-user config defaults                                                  |
 
 Precedence when flags overlap: `--pin` beats `--next=` beats `--channel` / `--all-*` beats the registry default (`stable`).
 
@@ -191,14 +191,21 @@ After any install, `_bmad/_config/manifest.yaml` records exactly what's on disk:
 ```yaml
 modules:
   - name: bmb
-    version: v1.7.0                       # the tag, or "main" for next
-    channel: stable                       # stable | next | pinned
+    version: v1.7.0 # the tag, or "main" for next
+    channel: stable # stable | next | pinned
     sha: 86033fc9aeae2ca6d52c7cdb675c1f4bf17fc1c1
     source: external
     repoUrl: https://github.com/bmad-code-org/bmad-builder
 ```
 
-The `sha` field is always populated. For reproducible installs, pass the same `--modules` + `--pin` / `--next=` combination on a fresh machine and you'll land on the same commits.
+The `sha` field is written for git-backed modules (external, community, and URL-based custom). Bundled modules (core, bmm) and local-path custom modules don't have one — their code travels with the installer binary or your filesystem, not a cloneable ref.
+
+For cross-machine reproducibility, don't rely on rerunning the same `--modules` command. Stable-channel installs resolve to the highest released tag **at install time**, so a later rerun lands on whatever has been released since. Convert the recorded tags from `manifest.yaml` into explicit `--pin` flags on the target machine, e.g.:
+
+```bash
+npx bmad-method install --yes --modules bmb,cis \
+  --pin bmb=v1.7.0 --pin cis=v0.4.2 --tools none
+```
 
 ## Troubleshooting
 

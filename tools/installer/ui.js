@@ -1899,6 +1899,13 @@ class UI {
 
       // Stable channel: check for a newer released tag.
       if (!parsed) continue;
+      // Respect explicit CLI intent (--pin / --next=CODE / --all-*) and any
+      // choice the user already made in the earlier review gate. Without this
+      // guard the upgrade classifier below would unconditionally call
+      // `channelOptions.pins.set(code, prev.version)` on decline/major-refuse/
+      // fetch-error, silently clobbering the user's override.
+      const alreadyDecided = channelOptions.global || channelOptions.nextSet.has(code) || channelOptions.pins.has(code);
+      if (alreadyDecided) continue;
       let tags;
       try {
         tags = await fetchStableTags(parsed.owner, parsed.repo);
