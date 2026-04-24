@@ -200,7 +200,7 @@ Activation is complete. Begin the workflow below.
     <action>Identify first incomplete task (unchecked [ ]) in Tasks/Subtasks</action>
 
     <action if="no incomplete tasks">
-      <goto step="6">Completion sequence</goto>
+      <goto step="9">Completion sequence</goto>
     </action>
     <action if="story file inaccessible">HALT: "Cannot develop story without access to story file"</action>
     <action if="incomplete task or subtask requirements ambiguous">ASK user to clarify or HALT</action>
