@@ -601,21 +601,28 @@ class Installer {
           moduleConfig: moduleConfig,
           installer: this,
           silent: true,
+          channelOptions: config.channelOptions,
         },
       );
 
       // Get display name from source module.yaml and resolve the freshest version metadata we can find locally.
-      const sourcePath = await officialModules.findModuleSource(moduleName, { silent: true });
+      const sourcePath = await officialModules.findModuleSource(moduleName, {
+        silent: true,
+        channelOptions: config.channelOptions,
+      });
       const moduleInfo = sourcePath ? await officialModules.getModuleInfo(sourcePath, moduleName, '') : null;
       const displayName = moduleInfo?.name || moduleName;
 
+      const externalResolution = officialModules.externalModuleManager.getResolution(moduleName);
       const cachedResolution = CustomModuleManager._resolutionCache.get(moduleName);
       const versionInfo = await resolveModuleVersion(moduleName, {
         moduleSourcePath: sourcePath,
-        fallbackVersion: cachedResolution?.version,
+        fallbackVersion: externalResolution?.version || cachedResolution?.version,
         marketplacePluginNames: cachedResolution?.pluginName ? [cachedResolution.pluginName] : [],
       });
-      const version = versionInfo.version || '';
+      // Prefer the git tag recorded by the external resolution (e.g. "v1.7.0") over
+      // the on-disk package.json (which may be ahead of the released tag).
+      const version = externalResolution?.version || versionInfo.version || '';
       addResult(displayName, 'ok', '', { moduleCode: moduleName, newVersion: version });
     }
   }
@@ -1091,12 +1098,17 @@ class Installer {
       let detail = '';
       if (r.moduleCode && r.newVersion) {
         const oldVersion = preVersions.get(r.moduleCode);
+        // External/community modules record the git tag (e.g. "v1.7.0") while
+        // core/bmm carry the package.json string ("6.3.0"). Prepend 'v' only
+        // when the value doesn't already start with 'v'.
+        const fmt = (v) => (typeof v === 'string' && v.startsWith('v') ? v : `v${v}`);
+        const newV = fmt(r.newVersion);
         if (oldVersion && oldVersion === r.newVersion) {
-          detail = ` (v${r.newVersion}, no change)`;
+          detail = ` (${newV}, no change)`;
         } else if (oldVersion) {
-          detail = ` (v${oldVersion} → v${r.newVersion})`;
+          detail = ` (${fmt(oldVersion)} → ${newV})`;
         } else {
-          detail = ` (v${r.newVersion}, installed)`;
+          detail = ` (${newV}, installed)`;
         }
       } else if (r.detail) {
         detail = ` (${r.detail})`;
@@ -1246,6 +1258,26 @@ class Installer {
       lastModified: new Date().toISOString(),
     };
 
+    // Build channel options from the existing manifest so the quick update
+    // re-clones each module at its recorded ref (pinned/next stays put;
+    // stable modules pick up new stable tags — same semver-class behavior
+    // the update flow uses, here with --yes semantics since quick-update is
+    // non-interactive by definition: patches/minors apply, majors stay frozen).
+    const manifestData = await this.manifest.read(bmadDir);
+    const channelOptions = { global: null, nextSet: new Set(), pins: new Map(), warnings: [] };
+    if (manifestData?.modulesDetailed) {
+      for (const entry of manifestData.modulesDetailed) {
+        if (!entry?.name || !entry?.channel) continue;
+        if (entry.channel === 'pinned' && entry.version) {
+          channelOptions.pins.set(entry.name, entry.version);
+        } else if (entry.channel === 'next') {
+          channelOptions.nextSet.add(entry.name);
+        }
+        // stable modules fall through — stable is the default, and the
+        // update-channel resolver will handle upgrade classification.
+      }
+    }
+
     // Build config and delegate to install()
     const installConfig = {
       directory: projectDir,
@@ -1257,6 +1289,7 @@ class Installer {
       _quickUpdate: true,
       _preserveModules: skippedModules,
       _existingModules: installedModules,
+      channelOptions,
     };
 
     await this.install(installConfig);

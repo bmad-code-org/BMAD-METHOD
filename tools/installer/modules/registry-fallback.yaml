@@ -1,6 +1,10 @@
 # Fallback module registry — used only when the BMad Marketplace repo
 # (bmad-code-org/bmad-plugins-marketplace) is unreachable.
 # The remote registry/official.yaml is the source of truth.
+#
+# default_channel (optional) — the install channel when the user does not
+# override with --channel/--pin/--next. Valid values: stable | next.
+# Omit to inherit the installer's hardcoded default (stable).
 
 modules:
   bmad-builder:
@@ -12,6 +16,7 @@ modules:
     defaultSelected: false
     type: bmad-org
     npmPackage: bmad-builder
+    default_channel: stable
 
   bmad-creative-intelligence-suite:
     url: https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite
@@ -22,6 +27,7 @@ modules:
     defaultSelected: false
     type: bmad-org
     npmPackage: bmad-creative-intelligence-suite
+    default_channel: stable
 
   bmad-game-dev-studio:
     url: https://github.com/bmad-code-org/bmad-module-game-dev-studio.git
@@ -32,6 +38,7 @@ modules:
     defaultSelected: false
     type: bmad-org
     npmPackage: bmad-game-dev-studio
+    default_channel: stable
 
   bmad-method-test-architecture-enterprise:
     url: https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise
@@ -42,3 +49,4 @@ modules:
     defaultSelected: false
     type: bmad-org
     npmPackage: bmad-method-test-architecture-enterprise
+    default_channel: stable
