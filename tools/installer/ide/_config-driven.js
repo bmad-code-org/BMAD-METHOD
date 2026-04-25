@@ -1,4 +1,3 @@
-const os = require('node:os');
 const path = require('node:path');
 const fs = require('../fs-native');
 const yaml = require('yaml');
@@ -16,7 +15,7 @@ const { BMAD_FOLDER_NAME } = require('./shared/path-utils');
  * Features:
  * - Config-driven from platform-codes.yaml
  * - Verbatim skill installation from skill-manifest.csv
- * - Legacy directory cleanup and IDE-specific marker removal
+ * - IDE-specific marker removal (copilot-instructions, kilo modes, rovodev prompts)
  */
 class ConfigDrivenIdeSetup {
   constructor(platformCode, platformConfig) {
@@ -222,27 +221,6 @@ class ConfigDrivenIdeSetup {
       removalSet = new Set();
     }
 
-    // Migrate legacy target directories (e.g. .opencode/agent → .opencode/agents)
-    // Legacy dirs are abandoned entirely, so use prefix matching (null removalSet)
-    if (this.installerConfig?.legacy_targets) {
-      const legacyDirsExist = await Promise.all(
-        this.installerConfig.legacy_targets.map((d) =>
-          this.isGlobalPath(d) ? fs.pathExists(d.replace(/^~/, os.homedir())) : fs.pathExists(path.join(projectDir, d)),
-        ),
-      );
-      if (legacyDirsExist.some(Boolean)) {
-        if (!options.silent) await prompts.log.message('  Migrating legacy directories...');
-        for (const legacyDir of this.installerConfig.legacy_targets) {
-          if (this.isGlobalPath(legacyDir)) {
-            await this.warnGlobalLegacy(legacyDir, options);
-          } else {
-            await this.cleanupTarget(projectDir, legacyDir, options, null);
-            await this.removeEmptyParents(projectDir, legacyDir);
-          }
-        }
-      }
-    }
-
     // Strip BMAD markers from copilot-instructions.md if present
     if (this.name === 'github-copilot') {
       await this.cleanupCopilotInstructions(projectDir, options);
@@ -261,41 +239,6 @@ class ConfigDrivenIdeSetup {
     // Clean current target directory
     if (this.installerConfig?.target_dir) {
       await this.cleanupTarget(projectDir, this.installerConfig.target_dir, options, removalSet);
-    }
-  }
-
-  /**
-   * Check if a path is global (starts with ~ or is absolute)
-   * @param {string} p - Path to check
-   * @returns {boolean}
-   */
-  isGlobalPath(p) {
-    return p.startsWith('~') || path.isAbsolute(p);
-  }
-
-  /**
-   * Warn about stale BMAD files in a global legacy directory (never auto-deletes)
-   * @param {string} legacyDir - Legacy directory path (may start with ~)
-   * @param {Object} options - Options (silent, etc.)
-   */
-  async warnGlobalLegacy(legacyDir, options = {}) {
-    try {
-      const expanded = legacyDir.startsWith('~/')
-        ? path.join(os.homedir(), legacyDir.slice(2))
-        : legacyDir === '~'
-          ? os.homedir()
-          : legacyDir;
-
-      if (!(await fs.pathExists(expanded))) return;
-
-      const entries = await fs.readdir(expanded);
-      const bmadFiles = entries.filter((e) => typeof e === 'string' && e.startsWith('bmad'));
-
-      if (bmadFiles.length > 0 && !options.silent) {
-        await prompts.log.warn(`Found ${bmadFiles.length} stale BMAD file(s) in ${expanded}. Remove manually: rm ${expanded}/bmad-*`);
-      }
-    } catch {
-      // Errors reading global paths are silently ignored
     }
   }
 
@@ -604,43 +547,6 @@ class ConfigDrivenIdeSetup {
     }
 
     return null;
-  }
-
-  /**
-   * Walk up ancestor directories from relativeDir toward projectDir, removing each if empty
-   * Stops at projectDir boundary — never removes projectDir itself
-   * @param {string} projectDir - Project root (boundary)
-   * @param {string} relativeDir - Relative directory to start from
-   */
-  async removeEmptyParents(projectDir, relativeDir) {
-    const resolvedProject = path.resolve(projectDir);
-    let current = relativeDir;
-    let last = null;
-    while (current && current !== '.' && current !== last) {
-      last = current;
-      const fullPath = path.resolve(projectDir, current);
-      // Boundary guard: never traverse outside projectDir
-      if (!fullPath.startsWith(resolvedProject + path.sep) && fullPath !== resolvedProject) break;
-      try {
-        if (!(await fs.pathExists(fullPath))) {
-          // Dir already gone — advance current; last is reset at top of next iteration
-          current = path.dirname(current);
-          continue;
-        }
-        const remaining = await fs.readdir(fullPath);
-        if (remaining.length > 0) break;
-        await fs.rmdir(fullPath);
-      } catch (error) {
-        // ENOTEMPTY: TOCTOU race (file added between readdir and rmdir) — skip level, continue upward
-        // ENOENT: dir removed by another process between pathExists and rmdir — skip level, continue upward
-        if (error.code === 'ENOTEMPTY' || error.code === 'ENOENT') {
-          current = path.dirname(current);
-          continue;
-        }
-        break; // fatal error (e.g. EACCES) — stop upward walk
-      }
-      current = path.dirname(current);
-    }
   }
 }
 

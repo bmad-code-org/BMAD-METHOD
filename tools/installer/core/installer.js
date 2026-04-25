@@ -14,6 +14,7 @@ const { ExternalModuleManager } = require('../modules/external-manager');
 const { resolveModuleVersion } = require('../modules/version-resolver');
 
 const { ExistingInstall } = require('./existing-install');
+const { warnPreNativeSkillsLegacy } = require('./legacy-warnings');
 
 class Installer {
   constructor() {
@@ -40,6 +41,11 @@ class Installer {
       const paths = await InstallPaths.create(config);
       const officialModules = await OfficialModules.build(config, paths);
       const existingInstall = await ExistingInstall.detect(paths.bmadDir);
+
+      await warnPreNativeSkillsLegacy({
+        projectRoot: paths.projectRoot,
+        existingVersion: existingInstall.installed ? existingInstall.version : null,
+      });
 
       if (existingInstall.installed) {
         await this._removeDeselectedModules(existingInstall, config, paths);
