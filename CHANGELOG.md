@@ -1,5 +1,67 @@
 # Changelog
 
+## v6.4.0 - 2026-04-24
+
+### ✨ Headline
+
+**Full agent and workflow customization across the entire BMad Method.** Every agent and workflow in BMM, Core, CIS, GDS, and TEA can now be customized via TOML overrides in `_bmad/custom/`. Customize agents to apply tooling, version control, or behavior changes across whole groups of workflows. Drop in fine-grained per-workflow overrides where you need them. Built for power users who want BMad to fit their stack without forking.
+
+**Stable and bleeding-edge release channels, standardized across all modules.** Pick `stable` or `next` per module, pin specific versions, and switch channels interactively or via CLI flags (`--channel`, `--all-stable`, `--all-next`, `--next=CODE`, `--pin CODE=TAG`). Same model across BMM, Core, and every external module.
+
+### 💥 Breaking Changes
+
+* Customization is now TOML-based; the briefly introduced YAML-based customization is no longer supported (#2284, #2283)
+
+### 🎁 Features
+
+**Customization framework**
+
+* TOML-based agent and workflow customization with flat schema, structural merge rules (scalars, tables, code-keyed arrays, append arrays), and `persistent_facts` unification (#2284)
+* Central `_bmad/config.toml` surface with four-file architecture (`config.toml`, `config.user.toml`, `custom/config.toml`, `custom/config.user.toml`) for agent roster and scope-partitioned install answers (#2285)
+* `customize.toml` support extended to 17 bmm-skills workflows with flattened SKILL.md architecture and standardized `[workflow]` block (#2287)
+* `customize.toml` extended to all six developer-execution workflows: bmad-dev-story, bmad-code-review, bmad-sprint-planning, bmad-sprint-status, bmad-quick-dev, bmad-checkpoint-preview (#2308)
+* `bmad-customize` skill — guided authoring of TOML overrides in `_bmad/custom/` with stdlib-only resolver verification (#2289)
+* Wire `on_complete` hook into all 23 workflow terminal steps with full customize.toml documentation (#2290)
+
+**Release channels & installer**
+
+* Channel-based version resolution for external modules with interactive channel management (`stable` / `next` / `pinned`) and CLI flags (`--channel`, `--all-stable`, `--all-next`, `--next=CODE`, `--pin CODE=TAG`) (#2305)
+* GitHub API as primary fetch with raw CDN fallback in installer registry client to support corporate proxies (#2248)
+
+**Other**
+
+* Kimi Code CLI support for installing BMM skills in `.kimi/skills/` (#2302)
+* `bmad-create-story` now reads every UPDATE-marked file before generating dev notes so brownfield stories preserve current behavior instead of improvising at implementation time (#2274)
+* Sync `sprint-status.yaml` from quick-dev on epic-story implementation with idempotent writes tracking `in-progress` and `review` transitions (#2234)
+* Enforce model parity for all code review subagents to match orchestrator session capability for improved rare-event detection (#2236)
+* Set `team: software-development` on all six BMM agents for unified grouping in party-mode and retrospective skills (#2286)
+
+### 🐛 Bug Fixes
+
+* PRD workflow no longer silently de-scopes user requirements or invents MVP/Growth/Vision phasing; requires explicit confirmation before any scope reduction (#1927)
+* Installer shows live npm version for external modules instead of stale cached metadata (#2307)
+* Resolve external-module agents from cache during manifest write so agents land in `config.toml` (#2295)
+* Fix installer version resolution for external modules with shared resolver preferring package.json > module.yaml > marketplace.json (#2298)
+* Replace fs-extra with native `node:fs` to prevent file loss during multi-module installs from deferred retry-queue races (#2253)
+* Add `move()` and overwrite support to fs-native wrapper for directory migrations during upgrades (#2253)
+* Stop skill scanner from recursing into discovered skills to prevent spurious errors on nested template files (#2255)
+* Source built-in modules locally in installer UI to preserve core and bmm in module list when registry is unreachable (#2251)
+* Remove dead Batch-apply option from code-review patch menu and rename apply options for clarity (#2225)
+
+### ♻️ Refactoring
+
+* Remove 1,683 lines of dead code: three entirely dead files (agent-command-generator.js, bmad-artifacts.js, module-injections.js) and ~50 unused exports across installer modules (#2247)
+* Remove dead template and agent-command pipeline from installer; SKILL.md directory copying is the sole installation path (#2244)
+
+### 📚 Documentation
+
+* Sync and update Vietnamese (vi-VN) docs with missing pages and refreshed translations (#2291, #2222)
+* Sync French (fr-FR) translations with upstream, restore Amelia as dev agent, fix sidebar ordering (#2231)
+* Add Czech (cs-CZ) `analysis-phase.md` translation; normalize typographic quotes (#2240, #2241, #2242)
+* Add missing Chinese (zh-CN) translations for 3 documents (#2254)
+* Update stale Analyst agent triggers and add PRFAQ link (#2238)
+* Remove Bob from workflow map diagrams reflecting consolidation into Amelia in v6.3.0 (#2252)
+
 ## v6.3.0 - 2026-04-09
 
 ### 💥 Breaking Changes
