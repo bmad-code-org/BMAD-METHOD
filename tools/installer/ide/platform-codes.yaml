@@ -5,8 +5,13 @@
 #   preferred: Whether shown as a recommended option on install
 #   suspended: (optional) Message explaining why install is blocked
 #   installer:
-#     target_dir: Directory where skill directories are installed
+#     target_dir: Directory where skill directories are installed (project/workspace)
+#     global_target_dir: (optional) User-home directory for global install
 #     ancestor_conflict_check: (optional) Refuse install when ancestor dir has BMAD files
+#
+# Multiple platforms may share the same target_dir or global_target_dir — many tools
+# read from the shared `.agents/skills/` and `~/.agents/skills/` cross-tool standard.
+# Paths verified against each tool's primary docs as of 2026-04-25.
 
 platforms:
   antigravity:
@@ -14,90 +19,105 @@ platforms:
     preferred: false
     installer:
       target_dir: .agent/skills
+      global_target_dir: ~/.gemini/antigravity/skills
 
   auggie:
     name: "Auggie"
     preferred: false
     installer:
-      target_dir: .augment/skills
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
 
   claude-code:
     name: "Claude Code"
     preferred: true
     installer:
       target_dir: .claude/skills
+      global_target_dir: ~/.claude/skills
 
   cline:
     name: "Cline"
     preferred: false
     installer:
       target_dir: .cline/skills
+      global_target_dir: ~/.cline/skills
 
   codex:
     name: "Codex"
     preferred: false
     installer:
       target_dir: .agents/skills
+      global_target_dir: ~/.codex/skills
 
   codebuddy:
     name: "CodeBuddy"
     preferred: false
     installer:
       target_dir: .codebuddy/skills
+      global_target_dir: ~/.codebuddy/skills
 
   crush:
     name: "Crush"
     preferred: false
     installer:
-      target_dir: .crush/skills
+      target_dir: .agents/skills
+      global_target_dir: ~/.config/agents/skills
 
   cursor:
     name: "Cursor"
     preferred: true
     installer:
-      target_dir: .cursor/skills
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
 
   gemini:
     name: "Gemini CLI"
     preferred: false
     installer:
-      target_dir: .gemini/skills
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
 
   github-copilot:
     name: "GitHub Copilot"
     preferred: false
     installer:
-      target_dir: .github/skills
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
 
   iflow:
     name: "iFlow"
     preferred: false
     installer:
       target_dir: .iflow/skills
+      global_target_dir: ~/.iflow/skills
 
   junie:
     name: "Junie"
     preferred: false
     installer:
-      target_dir: .agents/skills
+      target_dir: .junie/skills
+      global_target_dir: ~/.junie/skills
 
   kilo:
     name: "KiloCoder"
     preferred: false
     installer:
-      target_dir: .kilocode/skills
+      target_dir: .agents/skills
+      global_target_dir: ~/.kilocode/skills
 
   kimi-code:
     name: "Kimi Code"
     preferred: false
     installer:
-      target_dir: .kimi/skills
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
 
   kiro:
     name: "Kiro"
     preferred: false
     installer:
       target_dir: .kiro/skills
+      global_target_dir: ~/.kiro/skills
 
   ona:
     name: "Ona"
@@ -109,37 +129,43 @@ platforms:
     name: "OpenCode"
     preferred: false
     installer:
-      target_dir: .opencode/skills
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
 
   pi:
     name: "Pi"
     preferred: false
     installer:
-      target_dir: .pi/skills
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
 
   qoder:
     name: "Qoder"
     preferred: false
     installer:
       target_dir: .qoder/skills
+      global_target_dir: ~/.qoder/skills
 
   qwen:
     name: "QwenCoder"
     preferred: false
     installer:
       target_dir: .qwen/skills
+      global_target_dir: ~/.qwen/skills
 
   roo:
     name: "Roo Code"
     preferred: false
     installer:
-      target_dir: .roo/skills
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
 
   rovo-dev:
     name: "Rovo Dev"
     preferred: false
     installer:
-      target_dir: .rovodev/skills
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
 
   trae:
     name: "Trae"
@@ -151,4 +177,5 @@ platforms:
     name: "Windsurf"
     preferred: false
     installer:
-      target_dir: .windsurf/skills
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills

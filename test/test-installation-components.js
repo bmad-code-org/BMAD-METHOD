@@ -139,7 +139,7 @@ async function runTests() {
     const platformCodes = await loadPlatformCodes();
     const windsurfInstaller = platformCodes.platforms.windsurf?.installer;
 
-    assert(windsurfInstaller?.target_dir === '.windsurf/skills', 'Windsurf target_dir uses native skills path');
+    assert(windsurfInstaller?.target_dir === '.agents/skills', 'Windsurf target_dir uses native skills path');
 
     const tempProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-windsurf-test-'));
     const installedBmadDir = await createTestBmadFixture();
@@ -153,7 +153,7 @@ async function runTests() {
 
     assert(result.success === true, 'Windsurf setup succeeds against temp project');
 
-    const skillFile = path.join(tempProjectDir, '.windsurf', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile = path.join(tempProjectDir, '.agents', 'skills', 'bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile), 'Windsurf install writes SKILL.md directory output');
 
     await fs.remove(tempProjectDir);
@@ -244,7 +244,7 @@ async function runTests() {
     const platformCodes = await loadPlatformCodes();
     const auggieInstaller = platformCodes.platforms.auggie?.installer;
 
-    assert(auggieInstaller?.target_dir === '.augment/skills', 'Auggie target_dir uses native skills path');
+    assert(auggieInstaller?.target_dir === '.agents/skills', 'Auggie target_dir uses native skills path');
 
     assert(
       auggieInstaller?.ancestor_conflict_check !== true,
@@ -263,7 +263,7 @@ async function runTests() {
 
     assert(result.success === true, 'Auggie setup succeeds against temp project');
 
-    const skillFile = path.join(tempProjectDir, '.augment', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile = path.join(tempProjectDir, '.agents', 'skills', 'bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile), 'Auggie install writes SKILL.md directory output');
 
     await fs.remove(tempProjectDir);
@@ -284,7 +284,7 @@ async function runTests() {
     const platformCodes = await loadPlatformCodes();
     const opencodeInstaller = platformCodes.platforms.opencode?.installer;
 
-    assert(opencodeInstaller?.target_dir === '.opencode/skills', 'OpenCode target_dir uses native skills path');
+    assert(opencodeInstaller?.target_dir === '.agents/skills', 'OpenCode target_dir uses native skills path');
 
     const tempProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-opencode-test-'));
     const installedBmadDir = await createTestBmadFixture();
@@ -298,7 +298,7 @@ async function runTests() {
 
     assert(result.success === true, 'OpenCode setup succeeds against temp project');
 
-    const skillFile = path.join(tempProjectDir, '.opencode', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile = path.join(tempProjectDir, '.agents', 'skills', 'bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile), 'OpenCode install writes SKILL.md directory output');
 
     await fs.remove(tempProjectDir);
@@ -403,7 +403,7 @@ async function runTests() {
     const platformCodes13 = await loadPlatformCodes();
     const cursorInstaller = platformCodes13.platforms.cursor?.installer;
 
-    assert(cursorInstaller?.target_dir === '.cursor/skills', 'Cursor target_dir uses native skills path');
+    assert(cursorInstaller?.target_dir === '.agents/skills', 'Cursor target_dir uses native skills path');
 
     assert(!cursorInstaller?.ancestor_conflict_check, 'Cursor installer does not enable ancestor conflict checks');
 
@@ -419,7 +419,7 @@ async function runTests() {
 
     assert(result13c.success === true, 'Cursor setup succeeds against temp project');
 
-    const skillFile13c = path.join(tempProjectDir13c, '.cursor', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile13c = path.join(tempProjectDir13c, '.agents', 'skills', 'bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile13c), 'Cursor install writes SKILL.md directory output');
 
     // Verify name frontmatter matches directory name
@@ -445,7 +445,7 @@ async function runTests() {
     const platformCodes13 = await loadPlatformCodes();
     const rooInstaller = platformCodes13.platforms.roo?.installer;
 
-    assert(rooInstaller?.target_dir === '.roo/skills', 'Roo target_dir uses native skills path');
+    assert(rooInstaller?.target_dir === '.agents/skills', 'Roo target_dir uses native skills path');
 
     const tempProjectDir13 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-roo-test-'));
     const installedBmadDir13 = await createTestBmadFixture();
@@ -459,7 +459,7 @@ async function runTests() {
 
     assert(result13.success === true, 'Roo setup succeeds against temp project');
 
-    const skillFile13 = path.join(tempProjectDir13, '.roo', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile13 = path.join(tempProjectDir13, '.agents', 'skills', 'bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile13), 'Roo install writes SKILL.md directory output');
 
     // Verify name frontmatter matches directory name (Roo constraint: lowercase alphanumeric + hyphens)
@@ -503,7 +503,7 @@ async function runTests() {
     const platformCodes17 = await loadPlatformCodes();
     const copilotInstaller = platformCodes17.platforms['github-copilot']?.installer;
 
-    assert(copilotInstaller?.target_dir === '.github/skills', 'GitHub Copilot target_dir uses native skills path');
+    assert(copilotInstaller?.target_dir === '.agents/skills', 'GitHub Copilot target_dir uses native skills path');
 
     const tempProjectDir17 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-copilot-test-'));
     const installedBmadDir17 = await createTestBmadFixture();
@@ -524,7 +524,7 @@ async function runTests() {
 
     assert(result17.success === true, 'GitHub Copilot setup succeeds against temp project');
 
-    const skillFile17 = path.join(tempProjectDir17, '.github', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile17 = path.join(tempProjectDir17, '.agents', 'skills', 'bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile17), 'GitHub Copilot install writes SKILL.md directory output');
 
     // Verify name frontmatter matches directory name
@@ -657,7 +657,7 @@ async function runTests() {
     const platformCodes20 = await loadPlatformCodes();
     const crushInstaller = platformCodes20.platforms.crush?.installer;
 
-    assert(crushInstaller?.target_dir === '.crush/skills', 'Crush target_dir uses native skills path');
+    assert(crushInstaller?.target_dir === '.agents/skills', 'Crush target_dir uses native skills path');
 
     const tempProjectDir20 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-crush-test-'));
     const installedBmadDir20 = await createTestBmadFixture();
@@ -671,7 +671,7 @@ async function runTests() {
 
     assert(result20.success === true, 'Crush setup succeeds against temp project');
 
-    const skillFile20 = path.join(tempProjectDir20, '.crush', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile20 = path.join(tempProjectDir20, '.agents', 'skills', 'bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile20), 'Crush install writes SKILL.md directory output');
 
     const skillContent20 = await fs.readFile(skillFile20, 'utf8');
@@ -753,7 +753,7 @@ async function runTests() {
 
     assert(!kiloConfig22?.suspended, 'KiloCoder is not suspended');
 
-    assert(kiloConfig22?.installer?.target_dir === '.kilocode/skills', 'KiloCoder target_dir uses native skills path');
+    assert(kiloConfig22?.installer?.target_dir === '.agents/skills', 'KiloCoder target_dir uses native skills path');
 
     const ideManager22 = new IdeManager();
     await ideManager22.ensureInitialized();
@@ -775,7 +775,7 @@ async function runTests() {
 
     assert(result22.success === true, 'KiloCoder setup succeeds against temp project');
 
-    const skillFile22 = path.join(tempProjectDir22, '.kilocode', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile22 = path.join(tempProjectDir22, '.agents', 'skills', 'bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile22), 'KiloCoder install writes SKILL.md directory output');
 
     const skillContent22 = await fs.readFile(skillFile22, 'utf8');
@@ -808,7 +808,7 @@ async function runTests() {
     const platformCodes23 = await loadPlatformCodes();
     const geminiInstaller = platformCodes23.platforms.gemini?.installer;
 
-    assert(geminiInstaller?.target_dir === '.gemini/skills', 'Gemini target_dir uses native skills path');
+    assert(geminiInstaller?.target_dir === '.agents/skills', 'Gemini target_dir uses native skills path');
 
     const tempProjectDir23 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-gemini-test-'));
     const installedBmadDir23 = await createTestBmadFixture();
@@ -822,7 +822,7 @@ async function runTests() {
 
     assert(result23.success === true, 'Gemini setup succeeds against temp project');
 
-    const skillFile23 = path.join(tempProjectDir23, '.gemini', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile23 = path.join(tempProjectDir23, '.agents', 'skills', 'bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile23), 'Gemini install writes SKILL.md directory output');
 
     const skillContent23 = await fs.readFile(skillFile23, 'utf8');
@@ -935,7 +935,7 @@ async function runTests() {
     const platformCodes26 = await loadPlatformCodes();
     const rovoInstaller = platformCodes26.platforms['rovo-dev']?.installer;
 
-    assert(rovoInstaller?.target_dir === '.rovodev/skills', 'Rovo Dev target_dir uses native skills path');
+    assert(rovoInstaller?.target_dir === '.agents/skills', 'Rovo Dev target_dir uses native skills path');
 
     const tempProjectDir26 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-rovodev-test-'));
     const installedBmadDir26 = await createTestBmadFixture();
@@ -961,7 +961,7 @@ async function runTests() {
 
     assert(result26.success === true, 'Rovo Dev setup succeeds against temp project');
 
-    const skillFile26 = path.join(tempProjectDir26, '.rovodev', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile26 = path.join(tempProjectDir26, '.agents', 'skills', 'bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile26), 'Rovo Dev install writes SKILL.md directory output');
 
     // Verify name frontmatter matches directory name
@@ -1070,7 +1070,7 @@ async function runTests() {
     const platformCodes28 = await loadPlatformCodes();
     const piInstaller = platformCodes28.platforms.pi?.installer;
 
-    assert(piInstaller?.target_dir === '.pi/skills', 'Pi target_dir uses native skills path');
+    assert(piInstaller?.target_dir === '.agents/skills', 'Pi target_dir uses native skills path');
 
     tempProjectDir28 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-pi-test-'));
     installedBmadDir28 = await createTestBmadFixture();
@@ -1100,7 +1100,7 @@ async function runTests() {
     const detectedAfter28 = await ideManager28.detectInstalledIdes(tempProjectDir28);
     assert(detectedAfter28.includes('pi'), 'Pi is detected after install');
 
-    const skillFile28 = path.join(tempProjectDir28, '.pi', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile28 = path.join(tempProjectDir28, '.agents', 'skills', 'bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile28), 'Pi install writes SKILL.md directory output');
 
     // Parse YAML frontmatter between --- markers
