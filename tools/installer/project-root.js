@@ -103,11 +103,14 @@ async function resolveInstalledModuleYaml(moduleName) {
   const builtIn = path.join(getModulePath(moduleName), 'module.yaml');
   if (await fs.pathExists(builtIn)) return builtIn;
 
-  // Search a resolved root directory using the same candidate-path pattern.
-  async function searchRoot(root) {
+  // Collect every module.yaml under a root using the standard candidate paths.
+  // Url-source repos can host multiple plugins (discovery mode), so we need all
+  // matches, not just the first. Returned in priority order.
+  async function searchRootAll(root) {
+    const results = [];
     for (const dir of ['skills', 'src']) {
       const direct = path.join(root, dir, 'module.yaml');
-      if (await fs.pathExists(direct)) return direct;
+      if (await fs.pathExists(direct)) results.push(direct);
 
       const dirPath = path.join(root, dir);
       if (await fs.pathExists(dirPath)) {
@@ -115,7 +118,7 @@ async function resolveInstalledModuleYaml(moduleName) {
         for (const entry of entries) {
           if (!entry.isDirectory()) continue;
           const nested = path.join(dirPath, entry.name, 'module.yaml');
-          if (await fs.pathExists(nested)) return nested;
+          if (await fs.pathExists(nested)) results.push(nested);
         }
       }
     }
@@ -125,12 +128,19 @@ async function resolveInstalledModuleYaml(moduleName) {
     for (const entry of rootEntries) {
       if (!entry.isDirectory() || !entry.name.endsWith('-setup')) continue;
       const setupAssets = path.join(root, entry.name, 'assets', 'module.yaml');
-      if (await fs.pathExists(setupAssets)) return setupAssets;
+      if (await fs.pathExists(setupAssets)) results.push(setupAssets);
     }
 
     const atRoot = path.join(root, 'module.yaml');
-    if (await fs.pathExists(atRoot)) return atRoot;
-    return null;
+    if (await fs.pathExists(atRoot)) results.push(atRoot);
+    return results;
+  }
+
+  // Backwards-compatible single-result variant for the existing external-cache
+  // and resolution-cache fallbacks (one module per root by construction).
+  async function searchRoot(root) {
+    const all = await searchRootAll(root);
+    return all.length > 0 ? all[0] : null;
   }
 
   const cacheRoot = getExternalModuleCachePath(moduleName);
@@ -155,7 +165,8 @@ async function resolveInstalledModuleYaml(moduleName) {
   }
 
   // Fallback: url-source custom modules cloned to ~/.bmad/cache/custom-modules/.
-  // Walk every cached repo, locate its module.yaml via searchRoot, and match by
+  // Walk every cached repo, enumerate ALL module.yaml files via searchRootAll
+  // (a single repo can host multiple plugins in discovery mode), and match by
   // the yaml's `code` or `name` field. This works on re-install runs where
   // _resolutionCache is empty and covers both discovery-mode (with marketplace.json)
   // and direct-mode modules, since we identify repo roots by .bmad-source.json
@@ -167,15 +178,16 @@ async function resolveInstalledModuleYaml(moduleName) {
       const customMgr = new CustomModuleManager();
       const repoRoots = await customMgr._findCacheRepoRoots(customCacheDir);
       for (const { repoPath } of repoRoots) {
-        const candidate = await searchRoot(repoPath);
-        if (!candidate) continue;
-        try {
-          const parsed = yaml.parse(await fs.readFile(candidate, 'utf8'));
-          if (parsed && (parsed.code === moduleName || parsed.name === moduleName)) {
-            return candidate;
+        const candidates = await searchRootAll(repoPath);
+        for (const candidate of candidates) {
+          try {
+            const parsed = yaml.parse(await fs.readFile(candidate, 'utf8'));
+            if (parsed && (parsed.code === moduleName || parsed.name === moduleName)) {
+              return candidate;
+            }
+          } catch {
+            // Malformed yaml — skip
           }
-        } catch {
-          // Malformed yaml — skip
         }
       }
     }
