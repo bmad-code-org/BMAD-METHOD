@@ -339,6 +339,21 @@ async function runTests() {
     const refreshed = await fs.readFile(commandFile, 'utf8');
     assert(refreshed.includes('UPDATED description'), 'Generator-shaped pointer is refreshed when manifest description changes');
 
+    // Hand-edit preservation across the production install flow. The
+    // installer passes previousSkillIds — without the cleanup-side spare,
+    // hand edits would be wiped here.
+    const SENTINEL = 'HAND_EDITED_BY_USER_SHOULD_SURVIVE';
+    const handEditedBody = `---\ndescription: my custom description\n---\n\n${SENTINEL}\n`;
+    await fs.writeFile(commandFile, handEditedBody);
+    const result4 = await ideManager.setup('opencode', tempProjectDir, installedBmadDir, {
+      silent: true,
+      selectedModules: ['bmm'],
+      previousSkillIds: new Set(['bmad-master']),
+    });
+    assert(result4.success === true, 'Fourth OpenCode install succeeds with hand-edited pointer present');
+    const afterReinstall = await fs.readFile(commandFile, 'utf8');
+    assert(afterReinstall.includes(SENTINEL), 'Hand-edited pointer survives a routine reinstall (cleanup spares active-manifest IDs)');
+
     await fs.remove(tempProjectDir);
     await fs.remove(path.dirname(installedBmadDir));
   } catch (error) {

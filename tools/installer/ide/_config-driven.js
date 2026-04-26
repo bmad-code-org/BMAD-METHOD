@@ -274,7 +274,10 @@ class ConfigDrivenIdeSetup {
         continue;
       }
 
-      if (RESERVED_OPENCODE_COMMANDS.has(canonicalId)) {
+      // Reserved-name guard is OpenCode-specific. Other adapters that opt
+      // into commands_target_dir later should declare their own reserved
+      // set rather than inheriting OpenCode's.
+      if (this.name === 'opencode' && RESERVED_OPENCODE_COMMANDS.has(canonicalId)) {
         result.skippedCollision++;
         continue;
       }
@@ -412,6 +415,18 @@ class ConfigDrivenIdeSetup {
     if (count > 0) {
       await prompts.log.success(`${this.name} configured: ${count} skills → ${targetDir}`);
     }
+    const cmd = results.commands;
+    if (cmd && (cmd.created > 0 || cmd.updated > 0) && this.installerConfig?.commands_target_dir) {
+      const total = cmd.created + cmd.updated;
+      const detail = cmd.updated > 0 ? `${cmd.created} new, ${cmd.updated} refreshed` : `${total}`;
+      await prompts.log.success(`${this.name} commands: ${detail} → ${this.installerConfig.commands_target_dir}`);
+      if (cmd.skippedCollision > 0) {
+        await prompts.log.message(`  (${cmd.skippedCollision} skipped — name collides with reserved slash command)`);
+      }
+      if (cmd.writeFailures > 0) {
+        await prompts.log.warn(`  (${cmd.writeFailures} pointer writes failed — see warnings above)`);
+      }
+    }
   }
 
   /**
@@ -458,9 +473,20 @@ class ConfigDrivenIdeSetup {
     // Runs regardless of skipTarget — command pointers live in a per-IDE
     // directory and are not deduped across peers, so a peer-owned shared
     // skills directory does not protect this IDE's command pointers from
-    // cleanup.
+    // cleanup. The "currently active" set is passed so install-flow cleanup
+    // (where removalSet contains skills that will be re-added moments later)
+    // doesn't trample hand-edited pointers; install-flow cleanup will only
+    // delete pointers for skills that are not in the new manifest.
     if (this.installerConfig?.commands_target_dir) {
-      await this.cleanupCommandPointers(projectDir, this.installerConfig.commands_target_dir, options, removalSet);
+      // In the install/update flow (signal: previousSkillIds was passed),
+      // spare pointers whose canonicalId is still in the manifest so hand
+      // edits survive a routine reinstall. In the uninstall flow (no
+      // previousSkillIds — full uninstall or per-IDE removal via
+      // cleanupByList), don't spare anything; the IDE itself is going away,
+      // so its pointers should go with it.
+      const isInstallFlow = options.previousSkillIds && options.previousSkillIds.size > 0;
+      const activeSkillIds = isInstallFlow ? await this._readActiveSkillIds(resolvedBmadDir) : new Set();
+      await this.cleanupCommandPointers(projectDir, this.installerConfig.commands_target_dir, options, removalSet, activeSkillIds);
     }
 
     // Skip target_dir cleanup when a peer platform owns this directory
@@ -571,8 +597,14 @@ class ConfigDrivenIdeSetup {
    * @param {string} commandsTargetDir - Relative dir (e.g. .opencode/commands)
    * @param {Object} options
    * @param {Set<string>} removalSet - canonicalIds whose pointer files to remove
+   * @param {Set<string>} [activeSkillIds] - canonicalIds present in the
+   *   current manifest. Pointers for IDs in this set are spared so an
+   *   install-flow cleanup (where removalSet === previousSkillIds and the
+   *   same skills are about to be re-installed) doesn't wipe hand-edited
+   *   pointer files. Pass an empty set or omit to delete every match in
+   *   removalSet (uninstall flow).
    */
-  async cleanupCommandPointers(projectDir, commandsTargetDir, options = {}, removalSet = new Set()) {
+  async cleanupCommandPointers(projectDir, commandsTargetDir, options = {}, removalSet = new Set(), activeSkillIds = new Set()) {
     if (!removalSet || removalSet.size === 0) return;
 
     const commandsPath = path.join(projectDir, commandsTargetDir);
@@ -586,9 +618,13 @@ class ConfigDrivenIdeSetup {
     }
 
     for (const entry of entries) {
-      if (typeof entry !== 'string' || !entry.endsWith('.md')) continue;
+      if (!entry.endsWith('.md')) continue;
       const canonicalId = entry.slice(0, -3);
       if (!removalSet.has(canonicalId)) continue;
+      // Spare pointers for skills that are still in the manifest; the
+      // install pass will refresh them in place if their content has gone
+      // stale, while preserving hand edits.
+      if (activeSkillIds.has(canonicalId)) continue;
       try {
         await fs.remove(path.join(commandsPath, entry));
       } catch {
@@ -605,6 +641,31 @@ class ConfigDrivenIdeSetup {
     } catch {
       // Directory may already be gone.
     }
+  }
+
+  /**
+   * Read the canonicalIds currently present in the skill-manifest.csv.
+   * Used by cleanup to distinguish "re-install of an existing skill"
+   * (preserve pointer) from "skill truly being removed" (delete pointer).
+   * @param {string|null} bmadDir
+   * @returns {Promise<Set<string>>}
+   */
+  async _readActiveSkillIds(bmadDir) {
+    const ids = new Set();
+    if (!bmadDir) return ids;
+    const csvPath = path.join(bmadDir, '_config', 'skill-manifest.csv');
+    if (!(await fs.pathExists(csvPath))) return ids;
+    try {
+      const content = await fs.readFile(csvPath, 'utf8');
+      const records = csv.parse(content, { columns: true, skip_empty_lines: true });
+      for (const record of records) {
+        if (record.canonicalId) ids.add(record.canonicalId);
+      }
+    } catch {
+      // Manifest unreadable — return an empty set so cleanup falls back to
+      // the conservative "delete what removalSet says" behavior.
+    }
+    return ids;
   }
 
   /**
