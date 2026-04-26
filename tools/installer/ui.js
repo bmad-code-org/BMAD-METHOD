@@ -2,6 +2,7 @@ const path = require('node:path');
 const os = require('node:os');
 const semver = require('semver');
 const fs = require('./fs-native');
+const installerPackageJson = require('../../package.json');
 const { CLIUtils } = require('./cli-utils');
 const { ExternalModuleManager } = require('./modules/external-manager');
 const { resolveModuleVersion } = require('./modules/version-resolver');
@@ -126,6 +127,24 @@ class UI {
     const channelOptions = parseChannelOptions(options);
     for (const warning of channelOptions.warnings) {
       await prompts.log.warn(warning);
+    }
+
+    // When the user launched the installer from a prerelease (npx bmad-method@next),
+    // mirror that intent for external modules: seed the global channel to 'next' so
+    // the module picker's version labels resolve from main HEAD (matching what
+    // actually gets installed) and the interactive channel gate skips — the user
+    // already declared "next" intent by typing @next. Explicit channel flags
+    // override this seed.
+    if (
+      semver.prerelease(installerPackageJson.version) !== null &&
+      !channelOptions.global &&
+      channelOptions.nextSet.size === 0 &&
+      channelOptions.pins.size === 0
+    ) {
+      channelOptions.global = 'next';
+      await prompts.log.info(
+        'Launched from a prerelease — installing all external modules from main HEAD (next channel). Pass --all-stable or --pin to override.',
+      );
     }
 
     // Get directory from options or prompt
@@ -332,8 +351,10 @@ class UI {
 
     // Interactive channel gate: "Ready to install (all stable)? [Y/n]"
     // Only shown for fresh installs with no channel flags and an external module
-    // selected. Non-interactive installs skip this and fall through to the
-    // registry default (stable) or whatever flags were supplied.
+    // selected. Skipped for prerelease launches because channelOptions.global
+    // was already seeded to 'next' upstream. Non-interactive installs skip this
+    // and fall through to the registry default (stable) or whatever flags were
+    // supplied.
     await this._interactiveChannelGate({ options, channelOptions, selectedModules });
 
     let toolSelection = await this.promptToolSelection(confirmedDirectory, options);
@@ -1783,7 +1804,9 @@ class UI {
    *
    * Skipped when:
    *   - running non-interactively (--yes)
-   *   - the user already passed channel flags (--channel / --pin / --next)
+   *   - the user already passed channel flags (--channel / --pin / --next), OR
+   *     the installer was launched from a prerelease (which seeds
+   *     channelOptions.global = 'next' upstream in promptInstall)
    *   - no externals/community modules are selected
    *
    * Mutates channelOptions.pins and channelOptions.nextSet to reflect picker choices.
