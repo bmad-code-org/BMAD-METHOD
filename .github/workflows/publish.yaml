@@ -135,6 +135,17 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Advance @next dist-tag to stable
+        if: github.event_name == 'workflow_dispatch' && inputs.channel == 'latest'
+        run: |
+          # Without this, @latest can leapfrog @next (e.g. latest=6.5.0 while
+          # next=6.4.1-next.0) and `npx bmad-method@next install` silently
+          # downgrades users. Point @next at the just-published stable so
+          # @next >= @latest always holds; the next push-driven prerelease will
+          # bump from this base via the existing derive step above.
+          VERSION=$(node -p 'require("./package.json").version')
+          npm dist-tag add "bmad-method@${VERSION}" next
+
       - name: Notify Discord
         if: github.event_name == 'workflow_dispatch' && inputs.channel == 'latest'
         continue-on-error: true
