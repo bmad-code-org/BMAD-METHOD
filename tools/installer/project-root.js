@@ -1,5 +1,6 @@
 const path = require('node:path');
 const os = require('node:os');
+const yaml = require('yaml');
 const fs = require('./fs-native');
 
 /**
@@ -86,8 +87,11 @@ function getExternalModuleCachePath(moduleName, ...segments) {
  * Built-in modules (core, bmm) live under <src>. External official modules are
  * cloned into ~/.bmad/cache/external-modules/<name>/ with varying internal
  * layouts (some at src/module.yaml, some at skills/module.yaml, some nested).
- * Local custom-source modules are not cached; their path is read from the
- * CustomModuleManager resolution cache set during the same install run.
+ * Url-source custom modules are cloned into ~/.bmad/cache/custom-modules/<host>/<owner>/<repo>/
+ * and are resolved by walking the cache and matching `code` or `name` from the
+ * discovered module.yaml. Local custom-source modules are not cached; their
+ * path is read from the CustomModuleManager resolution cache set during the
+ * same install run.
  * This mirrors the candidate-path search in
  * ExternalModuleManager.findExternalModuleSource but performs no git/network
  * work, which keeps it safe to call during manifest writing.
@@ -148,6 +152,35 @@ async function resolveInstalledModuleYaml(moduleName) {
     }
   } catch {
     // Resolution cache unavailable — continue
+  }
+
+  // Fallback: url-source custom modules cloned to ~/.bmad/cache/custom-modules/.
+  // Walk every cached repo, locate its module.yaml via searchRoot, and match by
+  // the yaml's `code` or `name` field. This works on re-install runs where
+  // _resolutionCache is empty and covers both discovery-mode (with marketplace.json)
+  // and direct-mode modules, since we identify repo roots by .bmad-source.json
+  // (written by cloneRepo) or .claude-plugin/ rather than by marketplace.json.
+  try {
+    const customCacheDir = path.join(os.homedir(), '.bmad', 'cache', 'custom-modules');
+    if (await fs.pathExists(customCacheDir)) {
+      const { CustomModuleManager } = require('./modules/custom-module-manager');
+      const customMgr = new CustomModuleManager();
+      const repoRoots = await customMgr._findCacheRepoRoots(customCacheDir);
+      for (const { repoPath } of repoRoots) {
+        const candidate = await searchRoot(repoPath);
+        if (!candidate) continue;
+        try {
+          const parsed = yaml.parse(await fs.readFile(candidate, 'utf8'));
+          if (parsed && (parsed.code === moduleName || parsed.name === moduleName)) {
+            return candidate;
+          }
+        } catch {
+          // Malformed yaml — skip
+        }
+      }
+    }
+  } catch {
+    // Custom-modules cache walk failed — continue
   }
 
   return null;
