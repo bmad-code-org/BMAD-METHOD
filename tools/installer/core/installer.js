@@ -14,6 +14,7 @@ const { ExternalModuleManager } = require('../modules/external-manager');
 const { resolveModuleVersion } = require('../modules/version-resolver');
 
 const { ExistingInstall } = require('./existing-install');
+const { warnPreNativeSkillsLegacy } = require('./legacy-warnings');
 
 class Installer {
   constructor() {
@@ -40,6 +41,16 @@ class Installer {
       const paths = await InstallPaths.create(config);
       const officialModules = await OfficialModules.build(config, paths);
       const existingInstall = await ExistingInstall.detect(paths.bmadDir);
+
+      try {
+        await warnPreNativeSkillsLegacy({
+          projectRoot: paths.projectRoot,
+          existingVersion: existingInstall.installed ? existingInstall.version : null,
+        });
+      } catch (error) {
+        // Legacy-dir scan is informational; never let it abort install.
+        await prompts.log.warn(`Warning: Could not check for legacy BMAD entries: ${error.message}`);
+      }
 
       if (existingInstall.installed) {
         await this._removeDeselectedModules(existingInstall, config, paths);
@@ -183,15 +194,16 @@ class Installer {
 
     if (toRemove.length === 0) return;
 
-    await this.ideManager.ensureInitialized();
-    for (const ide of toRemove) {
-      try {
-        const handler = this.ideManager.handlers.get(ide);
-        if (handler) {
-          await handler.cleanup(paths.projectRoot);
-        }
-      } catch (error) {
-        await prompts.log.warn(`Warning: Failed to remove ${ide}: ${error.message}`);
+    // Pass the newly-selected list as remainingIdes so cleanupByList skips
+    // target_dir wipes for IDEs whose directory is still owned by a peer
+    // (e.g. removing 'cursor' while 'gemini' remains — both share .agents/skills).
+    const results = await this.ideManager.cleanupByList(paths.projectRoot, toRemove, {
+      remainingIdes: [...newlySelected],
+    });
+
+    for (const result of results || []) {
+      if (result && result.success === false) {
+        await prompts.log.warn(`Warning: Failed to remove ${result.ide}: ${result.error || 'unknown error'}`);
       }
     }
   }
@@ -342,13 +354,14 @@ class Installer {
       return;
     }
 
-    for (const ide of validIdes) {
-      const setupResult = await this.ideManager.setup(ide, paths.projectRoot, paths.bmadDir, {
-        selectedModules: allModules || [],
-        verbose: config.verbose,
-        previousSkillIds,
-      });
+    const setupResults = await this.ideManager.setupBatch(validIdes, paths.projectRoot, paths.bmadDir, {
+      selectedModules: allModules || [],
+      verbose: config.verbose,
+      previousSkillIds,
+    });
 
+    for (const setupResult of setupResults) {
+      const ide = setupResult.ide;
       if (setupResult.success) {
         addResult(ide, 'ok', setupResult.detail || '');
       } else {

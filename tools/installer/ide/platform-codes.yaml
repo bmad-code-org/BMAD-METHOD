@@ -5,128 +5,203 @@
 #   preferred: Whether shown as a recommended option on install
 #   suspended: (optional) Message explaining why install is blocked
 #   installer:
-#     target_dir: Directory where skill directories are installed
-#     legacy_targets: (optional) Old target dirs to clean up on reinstall
+#     target_dir: Directory where skill directories are installed (project/workspace)
+#     global_target_dir: (optional) User-home directory for global install
 #     ancestor_conflict_check: (optional) Refuse install when ancestor dir has BMAD files
+#
+# Multiple platforms may share the same target_dir or global_target_dir — many tools
+# read from the shared `.agents/skills/` and `~/.agents/skills/` cross-tool standard.
+# Paths verified against each tool's primary docs as of 2026-04-25.
 
 platforms:
+  adal:
+    name: "AdaL"
+    preferred: false
+    installer:
+      target_dir: .adal/skills
+      global_target_dir: ~/.adal/skills
+
+  amp:
+    name: "Sourcegraph Amp"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.config/agents/skills
+
   antigravity:
     name: "Google Antigravity"
     preferred: false
     installer:
-      legacy_targets:
-        - .agent/workflows
       target_dir: .agent/skills
+      global_target_dir: ~/.gemini/antigravity/skills
 
   auggie:
     name: "Auggie"
     preferred: false
     installer:
-      legacy_targets:
-        - .augment/commands
-      target_dir: .augment/skills
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
+  bob:
+    name: "IBM Bob"
+    preferred: false
+    installer:
+      target_dir: .bob/skills
+      global_target_dir: ~/.bob/skills
 
   claude-code:
     name: "Claude Code"
     preferred: true
     installer:
-      legacy_targets:
-        - .claude/commands
       target_dir: .claude/skills
+      global_target_dir: ~/.claude/skills
 
   cline:
     name: "Cline"
     preferred: false
     installer:
-      legacy_targets:
-        - .clinerules/workflows
       target_dir: .cline/skills
+      global_target_dir: ~/.cline/skills
 
   codex:
     name: "Codex"
-    preferred: false
+    preferred: true
     installer:
-      legacy_targets:
-        - .codex/prompts
-        - ~/.codex/prompts
       target_dir: .agents/skills
+      global_target_dir: ~/.codex/skills
 
   codebuddy:
     name: "CodeBuddy"
     preferred: false
     installer:
-      legacy_targets:
-        - .codebuddy/commands
       target_dir: .codebuddy/skills
+      global_target_dir: ~/.codebuddy/skills
+
+  command-code:
+    name: "Command Code"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
+  cortex:
+    name: "Snowflake Cortex Code"
+    preferred: false
+    installer:
+      target_dir: .cortex/skills
+      global_target_dir: ~/.snowflake/cortex/skills
 
   crush:
     name: "Crush"
     preferred: false
     installer:
-      legacy_targets:
-        - .crush/commands
-      target_dir: .crush/skills
+      target_dir: .agents/skills
+      global_target_dir: ~/.config/agents/skills
 
   cursor:
     name: "Cursor"
     preferred: true
     installer:
-      legacy_targets:
-        - .cursor/commands
-      target_dir: .cursor/skills
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
+  droid:
+    name: "Factory Droid"
+    preferred: false
+    installer:
+      target_dir: .factory/skills
+      global_target_dir: ~/.factory/skills
+
+  firebender:
+    name: "Firebender"
+    preferred: false
+    installer:
+      target_dir: .firebender/skills
+      global_target_dir: ~/.agents/skills
 
   gemini:
     name: "Gemini CLI"
     preferred: false
     installer:
-      legacy_targets:
-        - .gemini/commands
-      target_dir: .gemini/skills
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
 
   github-copilot:
     name: "GitHub Copilot"
+    preferred: true
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
+  goose:
+    name: "Block Goose"
     preferred: false
     installer:
-      legacy_targets:
-        - .github/agents
-        - .github/prompts
-      target_dir: .github/skills
+      target_dir: .agents/skills
+      global_target_dir: ~/.config/agents/skills
 
   iflow:
     name: "iFlow"
     preferred: false
     installer:
-      legacy_targets:
-        - .iflow/commands
       target_dir: .iflow/skills
+      global_target_dir: ~/.iflow/skills
 
   junie:
     name: "Junie"
     preferred: false
     installer:
-      target_dir: .agents/skills
+      target_dir: .junie/skills
+      global_target_dir: ~/.junie/skills
 
   kilo:
     name: "KiloCoder"
     preferred: false
     installer:
-      legacy_targets:
-        - .kilocode/workflows
-      target_dir: .kilocode/skills
+      target_dir: .agents/skills
+      global_target_dir: ~/.kilocode/skills
 
   kimi-code:
     name: "Kimi Code"
     preferred: false
     installer:
-      target_dir: .kimi/skills
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
 
   kiro:
     name: "Kiro"
     preferred: false
     installer:
-      legacy_targets:
-        - .kiro/steering
       target_dir: .kiro/skills
+      global_target_dir: ~/.kiro/skills
+
+  kode:
+    name: "Kode"
+    preferred: false
+    installer:
+      target_dir: .kode/skills
+      global_target_dir: ~/.kode/skills
+
+  mistral-vibe:
+    name: "Mistral Vibe"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.vibe/skills
+
+  mux:
+    name: "Mux"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
+  neovate:
+    name: "Neovate"
+    preferred: false
+    installer:
+      target_dir: .neovate/skills
+      global_target_dir: ~/.neovate/skills
 
   ona:
     name: "Ona"
@@ -134,65 +209,98 @@ platforms:
     installer:
       target_dir: .ona/skills
 
+  openclaw:
+    name: "OpenClaw"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
   opencode:
     name: "OpenCode"
     preferred: false
     installer:
-      legacy_targets:
-        - .opencode/agents
-        - .opencode/commands
-        - .opencode/agent
-        - .opencode/command
-      target_dir: .opencode/skills
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
+  openhands:
+    name: "OpenHands"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
 
   pi:
     name: "Pi"
     preferred: false
     installer:
-      target_dir: .pi/skills
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
+  pochi:
+    name: "Pochi"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
 
   qoder:
     name: "Qoder"
     preferred: false
     installer:
       target_dir: .qoder/skills
+      global_target_dir: ~/.qoder/skills
 
   qwen:
     name: "QwenCoder"
     preferred: false
     installer:
-      legacy_targets:
-        - .qwen/commands
       target_dir: .qwen/skills
+      global_target_dir: ~/.qwen/skills
+
+  replit:
+    name: "Replit Agent"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
 
   roo:
     name: "Roo Code"
     preferred: false
     installer:
-      legacy_targets:
-        - .roo/commands
-      target_dir: .roo/skills
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
 
   rovo-dev:
     name: "Rovo Dev"
     preferred: false
     installer:
-      legacy_targets:
-        - .rovodev/workflows
-      target_dir: .rovodev/skills
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
 
   trae:
     name: "Trae"
     preferred: false
     installer:
-      legacy_targets:
-        - .trae/rules
       target_dir: .trae/skills
+
+  warp:
+    name: "Warp"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
 
   windsurf:
     name: "Windsurf"
     preferred: false
     installer:
-      legacy_targets:
-        - .windsurf/workflows
-      target_dir: .windsurf/skills
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
+  zencoder:
+    name: "Zencoder"
+    preferred: false
+    installer:
+      target_dir: .zencoder/skills
+      global_target_dir: ~/.zencoder/skills

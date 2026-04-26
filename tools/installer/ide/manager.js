@@ -160,8 +160,18 @@ class IdeManager {
       let detail = '';
       if (handlerResult && handlerResult.results) {
         const r = handlerResult.results;
-        const count = r.skillDirectories || r.skills || 0;
-        if (count > 0) detail = `${count} skills`;
+        let count = r.skillDirectories || r.skills || 0;
+        // Dedup'd platform: report the count its peer wrote so the user sees
+        // a consistent picture across all platforms sharing the dir.
+        if (count === 0 && r.sharedTargetHandledByPeer && options.sharedSkillCount) {
+          count = options.sharedSkillCount;
+        }
+        const targetDir = handler.installerConfig?.target_dir || null;
+        if (count > 0 && targetDir) {
+          detail = `${count} skills → ${targetDir}`;
+        } else if (count > 0) {
+          detail = `${count} skills`;
+        }
       }
       // Propagate handler's success status (default true for backward compat)
       const success = handlerResult?.success !== false;
@@ -170,6 +180,57 @@ class IdeManager {
       await prompts.log.error(`Failed to setup ${ideName}: ${error.message}`);
       return { success: false, ide: ideName, error: error.message };
     }
+  }
+
+  /**
+   * Run setup for multiple IDEs as a single batch.
+   * Dedupes work when several selected platforms share the same target_dir:
+   * the first platform owns the directory write, peers skip it.
+   * @param {Array<string>} ideList - IDE names to set up
+   * @param {string} projectDir
+   * @param {string} bmadDir
+   * @param {Object} [options] - Forwarded to each handler.setup
+   * @returns {Promise<Array>} Per-IDE results
+   */
+  async setupBatch(ideList, projectDir, bmadDir, options = {}) {
+    await this.ensureInitialized();
+    const results = [];
+    // target_dir → { firstIde, skillCount } from the platform that actually wrote it
+    const claimedTargets = new Map();
+
+    for (const ideName of ideList) {
+      const handler = this.handlers.get(ideName.toLowerCase());
+      if (!handler) {
+        results.push(await this.setup(ideName, projectDir, bmadDir, options));
+        continue;
+      }
+
+      const target = handler.installerConfig?.target_dir || null;
+      const claim = target ? claimedTargets.get(target) : null;
+      const skipTarget = !!claim;
+
+      const result = await this.setup(ideName, projectDir, bmadDir, {
+        ...options,
+        skipTarget,
+        sharedWith: claim?.firstIde || null,
+        sharedTarget: target,
+        sharedSkillCount: claim?.skillCount || 0,
+      });
+
+      if (target && !claim) {
+        const writtenCount = result.handlerResult?.results?.skillDirectories || result.handlerResult?.results?.skills || 0;
+        // Only claim the target when the install actually succeeded and wrote skills.
+        // If the first platform fails (ancestor conflict, exception, etc.), leave the
+        // dir unclaimed so the next peer becomes the new first writer instead of
+        // silently skipping into a broken/empty target_dir.
+        if (result.success && writtenCount > 0) {
+          claimedTargets.set(target, { firstIde: ideName, skillCount: writtenCount });
+        }
+      }
+      results.push(result);
+    }
+
+    return results;
   }
 
   /**
@@ -198,6 +259,8 @@ class IdeManager {
    * @param {string} projectDir - Project directory
    * @param {Array<string>} ideList - List of IDE names to clean up
    * @param {Object} [options] - Cleanup options passed through to handlers
+   *   options.remainingIdes - IDE names still installed after this cleanup; used
+   *     to skip target_dir wipe when a co-installed platform shares the dir.
    * @returns {Array} Results array
    */
   async cleanupByList(projectDir, ideList, options = {}) {
@@ -211,13 +274,27 @@ class IdeManager {
     // Build lowercase lookup for case-insensitive matching
     const lowercaseHandlers = new Map([...this.handlers.entries()].map(([k, v]) => [k.toLowerCase(), v]));
 
+    // Resolve target_dirs for IDEs that will remain installed after this cleanup
+    const remainingTargets = new Set();
+    if (Array.isArray(options.remainingIdes)) {
+      for (const remaining of options.remainingIdes) {
+        const h = lowercaseHandlers.get(String(remaining).toLowerCase());
+        const t = h?.installerConfig?.target_dir;
+        if (t) remainingTargets.add(t);
+      }
+    }
+
     for (const ideName of ideList) {
       const handler = lowercaseHandlers.get(ideName.toLowerCase());
       if (!handler) continue;
 
+      const target = handler.installerConfig?.target_dir || null;
+      const skipTarget = target && remainingTargets.has(target);
+      const cleanupOptions = skipTarget ? { ...options, skipTarget: true } : options;
+
       try {
-        await handler.cleanup(projectDir, options);
-        results.push({ ide: ideName, success: true });
+        await handler.cleanup(projectDir, cleanupOptions);
+        results.push({ ide: ideName, success: true, skippedTarget: !!skipTarget });
       } catch (error) {
         results.push({ ide: ideName, success: false, error: error.message });
       }
