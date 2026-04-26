@@ -14,6 +14,20 @@
 # Paths verified against each tool's primary docs as of 2026-04-25.
 
 platforms:
+  adal:
+    name: "AdaL"
+    preferred: false
+    installer:
+      target_dir: .adal/skills
+      global_target_dir: ~/.adal/skills
+
+  amp:
+    name: "Sourcegraph Amp"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.config/agents/skills
+
   antigravity:
     name: "Google Antigravity"
     preferred: false
@@ -27,6 +41,13 @@ platforms:
     installer:
       target_dir: .agents/skills
       global_target_dir: ~/.agents/skills
+
+  bob:
+    name: "IBM Bob"
+    preferred: false
+    installer:
+      target_dir: .bob/skills
+      global_target_dir: ~/.bob/skills
 
   claude-code:
     name: "Claude Code"
@@ -44,7 +65,7 @@ platforms:
 
   codex:
     name: "Codex"
-    preferred: false
+    preferred: true
     installer:
       target_dir: .agents/skills
       global_target_dir: ~/.codex/skills
@@ -55,6 +76,20 @@ platforms:
     installer:
       target_dir: .codebuddy/skills
       global_target_dir: ~/.codebuddy/skills
+
+  command-code:
+    name: "Command Code"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
+  cortex:
+    name: "Snowflake Cortex Code"
+    preferred: false
+    installer:
+      target_dir: .cortex/skills
+      global_target_dir: ~/.snowflake/cortex/skills
 
   crush:
     name: "Crush"
@@ -70,6 +105,20 @@ platforms:
       target_dir: .agents/skills
       global_target_dir: ~/.agents/skills
 
+  droid:
+    name: "Factory Droid"
+    preferred: false
+    installer:
+      target_dir: .factory/skills
+      global_target_dir: ~/.factory/skills
+
+  firebender:
+    name: "Firebender"
+    preferred: false
+    installer:
+      target_dir: .firebender/skills
+      global_target_dir: ~/.agents/skills
+
   gemini:
     name: "Gemini CLI"
     preferred: false
@@ -79,10 +128,17 @@ platforms:
 
   github-copilot:
     name: "GitHub Copilot"
-    preferred: false
+    preferred: true
     installer:
       target_dir: .agents/skills
       global_target_dir: ~/.agents/skills
+
+  goose:
+    name: "Block Goose"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.config/agents/skills
 
   iflow:
     name: "iFlow"
@@ -119,11 +175,46 @@ platforms:
       target_dir: .kiro/skills
       global_target_dir: ~/.kiro/skills
 
+  kode:
+    name: "Kode"
+    preferred: false
+    installer:
+      target_dir: .kode/skills
+      global_target_dir: ~/.kode/skills
+
+  mistral-vibe:
+    name: "Mistral Vibe"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.vibe/skills
+
+  mux:
+    name: "Mux"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
+  neovate:
+    name: "Neovate"
+    preferred: false
+    installer:
+      target_dir: .neovate/skills
+      global_target_dir: ~/.neovate/skills
+
   ona:
     name: "Ona"
     preferred: false
     installer:
       target_dir: .ona/skills
+
+  openclaw:
+    name: "OpenClaw"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
 
   opencode:
     name: "OpenCode"
@@ -132,8 +223,22 @@ platforms:
       target_dir: .agents/skills
       global_target_dir: ~/.agents/skills
 
+  openhands:
+    name: "OpenHands"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
   pi:
     name: "Pi"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
+  pochi:
+    name: "Pochi"
     preferred: false
     installer:
       target_dir: .agents/skills
@@ -152,6 +257,12 @@ platforms:
     installer:
       target_dir: .qwen/skills
       global_target_dir: ~/.qwen/skills
+
+  replit:
+    name: "Replit Agent"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
 
   roo:
     name: "Roo Code"
@@ -173,9 +284,23 @@ platforms:
     installer:
       target_dir: .trae/skills
 
+  warp:
+    name: "Warp"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
   windsurf:
     name: "Windsurf"
     preferred: false
     installer:
       target_dir: .agents/skills
       global_target_dir: ~/.agents/skills
+
+  zencoder:
+    name: "Zencoder"
+    preferred: false
+    installer:
+      target_dir: .zencoder/skills
+      global_target_dir: ~/.zencoder/skills

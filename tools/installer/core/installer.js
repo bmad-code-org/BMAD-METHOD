@@ -189,17 +189,12 @@ class Installer {
 
     if (toRemove.length === 0) return;
 
-    await this.ideManager.ensureInitialized();
-    for (const ide of toRemove) {
-      try {
-        const handler = this.ideManager.handlers.get(ide);
-        if (handler) {
-          await handler.cleanup(paths.projectRoot);
-        }
-      } catch (error) {
-        await prompts.log.warn(`Warning: Failed to remove ${ide}: ${error.message}`);
-      }
-    }
+    // Pass the newly-selected list as remainingIdes so cleanupByList skips
+    // target_dir wipes for IDEs whose directory is still owned by a peer
+    // (e.g. removing 'cursor' while 'gemini' remains — both share .agents/skills).
+    await this.ideManager.cleanupByList(paths.projectRoot, toRemove, {
+      remainingIdes: [...newlySelected],
+    });
   }
 
   /**
@@ -348,13 +343,14 @@ class Installer {
       return;
     }
 
-    for (const ide of validIdes) {
-      const setupResult = await this.ideManager.setup(ide, paths.projectRoot, paths.bmadDir, {
-        selectedModules: allModules || [],
-        verbose: config.verbose,
-        previousSkillIds,
-      });
+    const setupResults = await this.ideManager.setupBatch(validIdes, paths.projectRoot, paths.bmadDir, {
+      selectedModules: allModules || [],
+      verbose: config.verbose,
+      previousSkillIds,
+    });
 
+    for (const setupResult of setupResults) {
+      const ide = setupResult.ide;
       if (setupResult.success) {
         addResult(ide, 'ok', setupResult.detail || '');
       } else {

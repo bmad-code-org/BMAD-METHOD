@@ -4,6 +4,7 @@ const yaml = require('yaml');
 const prompts = require('../prompts');
 const csv = require('csv-parse/sync');
 const { BMAD_FOLDER_NAME } = require('./shared/path-utils');
+const { getInstalledCanonicalIds, isBmadOwnedEntry } = require('./shared/installed-skills');
 
 /**
  * Config-driven IDE setup handler
@@ -43,16 +44,20 @@ class ConfigDrivenIdeSetup {
   async detect(projectDir) {
     if (!this.configDir) return false;
 
-    const dir = path.join(projectDir || process.cwd(), this.configDir);
-    if (await fs.pathExists(dir)) {
-      try {
-        const entries = await fs.readdir(dir);
-        return entries.some((e) => typeof e === 'string' && e.startsWith('bmad'));
-      } catch {
-        return false;
-      }
+    const root = projectDir || process.cwd();
+    const dir = path.join(root, this.configDir);
+    if (!(await fs.pathExists(dir))) return false;
+
+    let entries;
+    try {
+      entries = await fs.readdir(dir);
+    } catch {
+      return false;
     }
-    return false;
+
+    const bmadDir = await this._findBmadDir(root);
+    const canonicalIds = await getInstalledCanonicalIds(bmadDir);
+    return entries.some((e) => isBmadOwnedEntry(e, canonicalIds));
   }
 
   /**
@@ -89,6 +94,12 @@ class ConfigDrivenIdeSetup {
 
     if (!this.installerConfig) {
       return { success: false, reason: 'no-config' };
+    }
+
+    // When a peer platform in the same install batch owns this target_dir,
+    // skip the skill write — the peer has already populated it.
+    if (options.skipTarget) {
+      return { success: true, results: { skills: 0, sharedTargetHandledByPeer: true } };
     }
 
     if (this.installerConfig.target_dir) {
@@ -236,6 +247,11 @@ class ConfigDrivenIdeSetup {
       await this.cleanupRovoDevPrompts(projectDir, options);
     }
 
+    // Skip target_dir cleanup when a peer platform owns this directory
+    // (set during dedup'd install or when uninstalling one of several
+    // platforms that share the same target_dir).
+    if (options.skipTarget) return;
+
     // Clean current target directory
     if (this.installerConfig?.target_dir) {
       await this.cleanupTarget(projectDir, this.installerConfig.target_dir, options, removalSet);
@@ -369,8 +385,8 @@ class ConfigDrivenIdeSetup {
       // Always preserve bmad-os-* utility skills regardless of cleanup mode
       if (entry.startsWith('bmad-os-')) continue;
 
-      // Surgical removal from set, or legacy prefix matching when set is null
-      const shouldRemove = removalSet ? removalSet.has(entry) : entry.startsWith('bmad');
+      // Surgical removal from set, or fallback to manifest+prefix detection when null
+      const shouldRemove = removalSet ? removalSet.has(entry) : isBmadOwnedEntry(entry, null);
 
       if (shouldRemove) {
         try {
@@ -533,10 +549,9 @@ class ConfigDrivenIdeSetup {
       try {
         if (await fs.pathExists(candidatePath)) {
           const entries = await fs.readdir(candidatePath);
-          const hasBmad = entries.some(
-            (e) => typeof e === 'string' && e.toLowerCase().startsWith('bmad') && !e.toLowerCase().startsWith('bmad-os-'),
-          );
-          if (hasBmad) {
+          const ancestorBmadDir = await this._findBmadDir(current);
+          const canonicalIds = await getInstalledCanonicalIds(ancestorBmadDir);
+          if (entries.some((e) => isBmadOwnedEntry(e, canonicalIds))) {
             return candidatePath;
           }
         }

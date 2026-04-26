@@ -1382,7 +1382,7 @@ async function runTests() {
     });
 
     assert(result.success === true, 'Antigravity setup succeeds with overlapping skill names');
-    assert(result.detail === '1 skills', 'Installer detail reports skill count');
+    assert(result.detail === '1 skills → .agent/skills', 'Installer detail reports skill count and target dir');
     assert(result.handlerResult.results.skillDirectories === 1, 'Result exposes unique skill directory count');
     assert(result.handlerResult.results.skills === 1, 'Result retains verbatim skill count');
     assert(
@@ -2618,6 +2618,109 @@ async function runTests() {
       }
       await fs.remove(tempCacheDir39).catch(() => {});
     }
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 40: Shared target_dir coordination
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 40: Shared target_dir coordination${colors.reset}\n`);
+
+  try {
+    // Cursor and Gemini both use .agents/skills — verify they coordinate.
+    clearCache();
+    const platformCodes40 = await loadPlatformCodes();
+    const cursorTarget = platformCodes40.platforms.cursor?.installer?.target_dir;
+    const geminiTarget = platformCodes40.platforms.gemini?.installer?.target_dir;
+    assert(cursorTarget === '.agents/skills' && geminiTarget === '.agents/skills', 'Cursor and Gemini share .agents/skills target_dir');
+
+    const tempProjectDir40 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-shared-target-'));
+    const installedBmadDir40 = await createTestBmadFixture();
+
+    const ideManager40 = new IdeManager();
+    await ideManager40.ensureInitialized();
+
+    // Run setupBatch with both platforms — second should skip skill write.
+    const batchResults = await ideManager40.setupBatch(['cursor', 'gemini'], tempProjectDir40, installedBmadDir40, {
+      silent: true,
+      selectedModules: ['core'],
+    });
+
+    assert(batchResults.length === 2, 'setupBatch returns one result per IDE');
+    assert(batchResults[0].success === true, 'First platform (cursor) succeeds');
+    assert(batchResults[1].success === true, 'Second platform (gemini) succeeds');
+    assert(
+      batchResults[1].handlerResult?.results?.sharedTargetHandledByPeer === true,
+      'Second platform marked sharedTargetHandledByPeer (skipped redundant write)',
+    );
+
+    // Skill should be present in the shared dir after batch.
+    const sharedDir = path.join(tempProjectDir40, '.agents', 'skills');
+    const sharedDirEntries = await fs.readdir(sharedDir);
+    assert(sharedDirEntries.includes('bmad-master'), 'Shared .agents/skills/ contains bmad-master after batched install');
+
+    // Now uninstall just cursor while gemini remains. Skills must survive.
+    const cleanupResults = await ideManager40.cleanupByList(tempProjectDir40, ['cursor'], {
+      silent: true,
+      remainingIdes: ['gemini'],
+    });
+    assert(cleanupResults[0].skippedTarget === true, 'Cursor cleanup skips target_dir wipe when Gemini remains');
+    const stillThere = await fs.readdir(sharedDir);
+    assert(stillThere.includes('bmad-master'), 'bmad-master still present after partial uninstall (gemini still installed)');
+
+    // (Cleanup of the last sharing platform requires bmadDir to be inside
+    //  projectDir to compute removalSet; that's the production layout. The
+    //  fixture above keeps bmad in a separate temp dir, so test 41 below
+    //  exercises the in-project layout instead.)
+
+    await fs.remove(tempProjectDir40).catch(() => {});
+    await fs.remove(path.dirname(installedBmadDir40)).catch(() => {});
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 40 setup failed: ${error.message}${colors.reset}`);
+    failed++;
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 41: Custom-module skill ownership (non-bmad prefix)
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 41: Custom-module skill ownership${colors.reset}\n`);
+
+  try {
+    // A custom module can ship a skill with any canonicalId (e.g. "fred-cool-skill").
+    // detect() must recognize it as BMAD-owned via the manifest, not the bmad- prefix.
+    const fixtureRoot41 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-custom-prefix-'));
+    const bmadDir41 = path.join(fixtureRoot41, '_bmad');
+    await fs.ensureDir(path.join(bmadDir41, '_config'));
+    await fs.writeFile(
+      path.join(bmadDir41, '_config', 'skill-manifest.csv'),
+      [
+        'canonicalId,name,description,module,path',
+        '"fred-cool-skill","fred-cool-skill","Custom module skill","fred","_bmad/fred/skills/fred-cool-skill/SKILL.md"',
+        '',
+      ].join('\n'),
+    );
+    const fredSkill = path.join(bmadDir41, 'fred', 'skills', 'fred-cool-skill');
+    await fs.ensureDir(fredSkill);
+    await fs.writeFile(
+      path.join(fredSkill, 'SKILL.md'),
+      ['---', 'name: fred-cool-skill', 'description: Custom module skill', '---', '', 'A custom module skill.'].join('\n'),
+    );
+
+    const ideManager41 = new IdeManager();
+    await ideManager41.ensureInitialized();
+    await ideManager41.setup('cursor', fixtureRoot41, bmadDir41, { silent: true, selectedModules: ['fred'] });
+
+    const cursorHandler = ideManager41.handlers.get('cursor');
+    const detected = await cursorHandler.detect(fixtureRoot41);
+    assert(detected === true, 'detect() recognizes non-bmad-prefixed skill as BMAD-owned via skill-manifest.csv');
+
+    await fs.remove(fixtureRoot41).catch(() => {});
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 41 setup failed: ${error.message}${colors.reset}`);
+    failed++;
   }
 
   console.log('');
