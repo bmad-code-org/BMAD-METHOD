@@ -150,3 +150,29 @@ jobs:
           jq -n --arg content "$MSG" '{content: $content}' | curl -sf --retry 2 -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
         env:
           WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+
+      # After cutting a stable release, also publish a follow-on prerelease
+      # so the @next dist-tag never lags behind @latest. Without this, a
+      # stable that leapfrogs the current @next head leaves @next pointing at
+      # an older version, and `npx bmad-method@next install` becomes a
+      # downgrade. Reuses the proven `npm publish --provenance` flow rather
+      # than mutating dist-tags directly. Runs last so the GitHub Release and
+      # Discord notify steps above still see the stable version in package.json.
+      - name: Cut follow-on prerelease so @next stays ahead of @latest
+        if: github.event_name == 'workflow_dispatch' && inputs.channel == 'latest'
+        run: |
+          NEXT_VER=$(npm view bmad-method@next version 2>/dev/null || echo "")
+          LATEST_VER=$(node -p 'require("./package.json").version')
+
+          BASE=$(node -e "
+            const semver = require('semver');
+            const next = process.argv[1] || null;
+            const latest = process.argv[2];
+            if (!next) { console.log(latest); process.exit(0); }
+            const nextBase = next.replace(/-next\.\d+$/, '');
+            console.log(semver.gt(latest, nextBase) ? latest : next);
+          " "$NEXT_VER" "$LATEST_VER")
+
+          npm version "$BASE" --no-git-tag-version --allow-same-version
+          npm version prerelease --preid=next --no-git-tag-version
+          npm publish --tag next --provenance
