@@ -6,6 +6,43 @@ const csv = require('csv-parse/sync');
 const { BMAD_FOLDER_NAME } = require('./shared/path-utils');
 const { getInstalledCanonicalIds, isBmadOwnedEntry } = require('./shared/installed-skills');
 
+// Reserved OpenCode slash commands. A skill whose canonicalId collides with
+// one of these is skipped during command-pointer generation so it doesn't
+// shadow a built-in.
+const RESERVED_OPENCODE_COMMANDS = new Set([
+  'review',
+  'commit',
+  'init',
+  'help',
+  'skills',
+  'fast',
+  'compact',
+  'clear',
+  'undo',
+  'redo',
+  'edit',
+  'editor',
+  'exit',
+  'quit',
+  'theme',
+  'config',
+  'model',
+  'session',
+]);
+
+// Wrap a description for safe insertion into single-line YAML frontmatter.
+// Leaves plain values untouched; double-quotes (and escapes) anything that
+// could break YAML parsing or span multiple lines.
+function yamlSafeSingleLine(value) {
+  const collapsed = String(value)
+    .replaceAll(/[\r\n]+/g, ' ')
+    .trim();
+  const needsQuoting = /[:#'"\\]/.test(collapsed) || /^[!&*?|>%@`]/.test(collapsed);
+  if (!needsQuoting) return collapsed;
+  const escaped = collapsed.replaceAll('\\', '\\\\').replaceAll('"', String.raw`\"`);
+  return `"${escaped}"`;
+}
+
 /**
  * Config-driven IDE setup handler
  *
@@ -128,9 +165,74 @@ class ConfigDrivenIdeSetup {
     results.skills = await this.installVerbatimSkills(projectDir, bmadDir, targetPath, config);
     results.skillDirectories = this.skillWriteTracker.size;
 
+    if (config.commands_target_dir) {
+      results.commands = await this.installCommandPointers(projectDir, bmadDir, config, options);
+    }
+
     await this.printSummary(results, target_dir, options);
     this.skillWriteTracker = null;
     return { success: true, results };
+  }
+
+  /**
+   * Generate per-skill command pointer files for IDEs that surface commands
+   * separately from skills (e.g. OpenCode's `.opencode/commands/<name>.md`).
+   *
+   * Each pointer is a tiny markdown file whose body is `@skills/<canonicalId>`
+   * so invoking `/<canonicalId>` routes the user straight to the skill instead
+   * of forcing them through a `/skills` menu.
+   *
+   * Skips:
+   *  - Names that collide with reserved built-in slash commands.
+   *  - Existing files (treated as hand-tuned) unless options.forceCommands.
+   *
+   * @param {string} projectDir
+   * @param {string} bmadDir
+   * @param {Object} config - Installer config; reads commands_target_dir.
+   * @param {Object} options - Setup options. forceCommands overwrites existing files.
+   * @returns {Promise<Object>} { created, skippedExisting, skippedCollision, fallbackDescription }
+   */
+  async installCommandPointers(projectDir, bmadDir, config, options = {}) {
+    const result = { created: 0, skippedExisting: 0, skippedCollision: 0, fallbackDescription: 0 };
+
+    const csvPath = path.join(bmadDir, '_config', 'skill-manifest.csv');
+    if (!(await fs.pathExists(csvPath))) return result;
+
+    const commandsPath = path.join(projectDir, config.commands_target_dir);
+    await fs.ensureDir(commandsPath);
+
+    const csvContent = await fs.readFile(csvPath, 'utf8');
+    const records = csv.parse(csvContent, { columns: true, skip_empty_lines: true });
+
+    for (const record of records) {
+      const canonicalId = record.canonicalId;
+      if (!canonicalId) continue;
+
+      if (RESERVED_OPENCODE_COMMANDS.has(canonicalId)) {
+        result.skippedCollision++;
+        continue;
+      }
+
+      const commandFile = path.join(commandsPath, `${canonicalId}.md`);
+
+      if ((await fs.pathExists(commandFile)) && !options.forceCommands) {
+        result.skippedExisting++;
+        continue;
+      }
+
+      let description = (record.description || '').trim();
+      if (!description) {
+        description = `Run the ${canonicalId} skill`;
+        result.fallbackDescription++;
+      }
+
+      const body = `---\ndescription: ${yamlSafeSingleLine(description)}\n---\n\n@skills/${canonicalId}\n`;
+
+      await fs.writeFile(commandFile, body, 'utf8');
+      result.created++;
+    }
+
+    return result;
   }
 
   /**
@@ -256,6 +358,13 @@ class ConfigDrivenIdeSetup {
     if (this.installerConfig?.target_dir) {
       await this.cleanupTarget(projectDir, this.installerConfig.target_dir, options, removalSet);
     }
+
+    // Clean generated command pointer files in commands_target_dir.
+    // Mirrors target_dir cleanup so uninstalls and skill removals don't
+    // leave dangling /<canonicalId> commands pointing at missing skills.
+    if (this.installerConfig?.commands_target_dir) {
+      await this.cleanupCommandPointers(projectDir, this.installerConfig.commands_target_dir, options, removalSet);
+    }
   }
 
   /**
@@ -343,6 +452,51 @@ class ConfigDrivenIdeSetup {
       }
     } catch {
       // Optional file — ignore errors
+    }
+  }
+
+  /**
+   * Cleanup generated command pointer files for entries in removalSet.
+   * Symmetric counterpart to installCommandPointers — removes <canonicalId>.md
+   * files whose canonicalId is in the set. Removes the commands directory
+   * entirely if it ends up empty.
+   * @param {string} projectDir
+   * @param {string} commandsTargetDir - Relative dir (e.g. .opencode/commands)
+   * @param {Object} options
+   * @param {Set<string>} removalSet - canonicalIds whose pointer files to remove
+   */
+  async cleanupCommandPointers(projectDir, commandsTargetDir, options = {}, removalSet = new Set()) {
+    if (!removalSet || removalSet.size === 0) return;
+
+    const commandsPath = path.join(projectDir, commandsTargetDir);
+    if (!(await fs.pathExists(commandsPath))) return;
+
+    let entries;
+    try {
+      entries = await fs.readdir(commandsPath);
+    } catch {
+      return;
+    }
+
+    for (const entry of entries) {
+      if (typeof entry !== 'string' || !entry.endsWith('.md')) continue;
+      const canonicalId = entry.slice(0, -3);
+      if (!removalSet.has(canonicalId)) continue;
+      try {
+        await fs.remove(path.join(commandsPath, entry));
+      } catch {
+        // Skip files we can't remove.
+      }
+    }
+
+    // Remove the commands directory if we emptied it.
+    try {
+      const remaining = await fs.readdir(commandsPath);
+      if (remaining.length === 0) {
+        await fs.remove(commandsPath);
+      }
+    } catch {
+      // Directory may already be gone.
     }
   }
 

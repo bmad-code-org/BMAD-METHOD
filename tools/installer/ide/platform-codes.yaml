@@ -222,6 +222,7 @@ platforms:
     installer:
       target_dir: .agents/skills
       global_target_dir: ~/.agents/skills
+      commands_target_dir: .opencode/commands
 
   openhands:
     name: "OpenHands"

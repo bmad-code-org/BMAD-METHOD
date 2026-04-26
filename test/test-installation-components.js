@@ -285,6 +285,10 @@ async function runTests() {
     const opencodeInstaller = platformCodes.platforms.opencode?.installer;
 
     assert(opencodeInstaller?.target_dir === '.agents/skills', 'OpenCode target_dir uses native skills path');
+    assert(
+      opencodeInstaller?.commands_target_dir === '.opencode/commands',
+      'OpenCode commands_target_dir is configured for /<skill> slash commands',
+    );
 
     const tempProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-opencode-test-'));
     const installedBmadDir = await createTestBmadFixture();
@@ -300,6 +304,24 @@ async function runTests() {
 
     const skillFile = path.join(tempProjectDir, '.agents', 'skills', 'bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile), 'OpenCode install writes SKILL.md directory output');
+
+    // Command pointer assertions: a /<canonicalId> slash command should exist
+    // for each installed skill so users can invoke skills directly without
+    // going through the /skills menu.
+    const commandFile = path.join(tempProjectDir, '.opencode', 'commands', 'bmad-master.md');
+    assert(await fs.pathExists(commandFile), 'OpenCode install writes per-skill command pointer file');
+
+    const commandContent = await fs.readFile(commandFile, 'utf8');
+    assert(commandContent.includes('@skills/bmad-master'), 'Command pointer body references the skill via @skills/<canonicalId>');
+    assert(commandContent.includes('description:'), 'Command pointer carries a description in YAML frontmatter');
+
+    // Idempotency: re-running install must not duplicate or rewrite pointers.
+    const result2 = await ideManager.setup('opencode', tempProjectDir, installedBmadDir, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+    assert(result2.success === true, 'Second OpenCode install succeeds (idempotent)');
+    assert(await fs.pathExists(commandFile), 'Command pointer survives a second install pass');
 
     await fs.remove(tempProjectDir);
     await fs.remove(path.dirname(installedBmadDir));
