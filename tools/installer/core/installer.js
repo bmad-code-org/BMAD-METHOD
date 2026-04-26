@@ -42,10 +42,15 @@ class Installer {
       const officialModules = await OfficialModules.build(config, paths);
       const existingInstall = await ExistingInstall.detect(paths.bmadDir);
 
-      await warnPreNativeSkillsLegacy({
-        projectRoot: paths.projectRoot,
-        existingVersion: existingInstall.installed ? existingInstall.version : null,
-      });
+      try {
+        await warnPreNativeSkillsLegacy({
+          projectRoot: paths.projectRoot,
+          existingVersion: existingInstall.installed ? existingInstall.version : null,
+        });
+      } catch (error) {
+        // Legacy-dir scan is informational; never let it abort install.
+        await prompts.log.warn(`Warning: Could not check for legacy BMAD entries: ${error.message}`);
+      }
 
       if (existingInstall.installed) {
         await this._removeDeselectedModules(existingInstall, config, paths);
@@ -192,9 +197,15 @@ class Installer {
     // Pass the newly-selected list as remainingIdes so cleanupByList skips
     // target_dir wipes for IDEs whose directory is still owned by a peer
     // (e.g. removing 'cursor' while 'gemini' remains — both share .agents/skills).
-    await this.ideManager.cleanupByList(paths.projectRoot, toRemove, {
+    const results = await this.ideManager.cleanupByList(paths.projectRoot, toRemove, {
       remainingIdes: [...newlySelected],
     });
+
+    for (const result of results || []) {
+      if (result && result.success === false) {
+        await prompts.log.warn(`Warning: Failed to remove ${result.ide}: ${result.error || 'unknown error'}`);
+      }
+    }
   }
 
   /**

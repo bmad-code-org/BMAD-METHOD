@@ -92,7 +92,7 @@ async function findStaleLegacyDirs(projectRoot) {
       const entries = await fs.readdir(resolved);
       const bmadEntries = entries.filter((e) => isBmadOwnedEntry(e, canonicalIds));
       if (bmadEntries.length > 0) {
-        findings.push({ path: resolved, displayPath: legacyPath, count: bmadEntries.length });
+        findings.push({ path: resolved, displayPath: legacyPath, count: bmadEntries.length, entries: bmadEntries });
       }
     } catch {
       // Unreadable dir — skip
@@ -127,7 +127,13 @@ async function warnPreNativeSkillsLegacy({ projectRoot, existingVersion } = {}) 
         `Your AI tool may load these alongside the new skills, causing duplicates. Remove them manually:`,
     );
     for (const finding of staleDirs) {
-      await prompts.log.message(`    rm -rf "${finding.path}"/bmad*    # ${finding.count} stale entr${finding.count === 1 ? 'y' : 'ies'}`);
+      // Print each entry by exact name. A `bmad*` glob would (a) miss
+      // custom-module skills the canonicalId scan now picks up, and
+      // (b) match bmad-os-* utility skills the user should keep.
+      const entries = finding.entries || [];
+      for (const entry of entries) {
+        await prompts.log.message(`    rm -rf "${path.join(finding.path, entry)}"`);
+      }
     }
   } else if (versionTriggered) {
     await prompts.log.message(
