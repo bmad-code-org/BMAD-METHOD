@@ -2,9 +2,15 @@
 
 ## Installing external repo BMad official modules
 
-For external official modules to be discoverable during install, ensure an entry for the external repo is added to external-official-modules.yaml.
+For external official modules to be discoverable during install, ensure an entry for the external repo is added to the marketplace `registry/official.yaml` source of truth. Add the same entry to `modules/registry-fallback.yaml` only when BMAD-METHOD needs a bundled fallback or a staged registry supplement.
 
-For community modules - this will be handled in a different way. This file is only for registration of modules under the bmad-code-org.
+For community modules - this is handled through the marketplace community registry.
+
+Use `module-definition` for conventional module repos with `module.yaml`.
+Use `source-root` for pure skill bundles that should be copied directly into `_bmad/<module-code>/`.
+This keeps the external repo as the source of truth and avoids vendoring generated skill payloads into BMAD-METHOD.
+
+Experimental modules can set `type: experimental` and `install-targets` to limit which IDE integrations receive their skills.
 
 ## Post-Install Notes
 

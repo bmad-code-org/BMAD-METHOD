@@ -124,16 +124,32 @@ class ExternalModuleManager {
       key: key || mod.name,
       url: mod.repository || mod.url,
       moduleDefinition: mod.module_definition || mod['module-definition'],
+      sourceRoot: mod.source_root || mod['source-root'] || mod.sourceRoot || null,
       code: mod.code,
       name: mod.display_name || mod.name,
       description: mod.description || '',
       defaultSelected: mod.default_selected === true || mod.defaultSelected === true,
       type: mod.type || 'bmad-org',
       npmPackage: mod.npm_package || mod.npmPackage || null,
+      installTargets: mod.install_targets || mod['install-targets'] || mod.installTargets || null,
+      workerTargets: mod.worker_targets || mod['worker-targets'] || mod.workerTargets || [],
+      requirements: mod.requirements || [],
+      installNote: mod.install_note || mod['install-note'] || mod.installNote || null,
       defaultChannel: normalizeChannelName(mod.default_channel || mod.defaultChannel) || 'stable',
       builtIn: mod.built_in === true,
       isExternal: mod.built_in !== true,
     };
+  }
+
+  async _loadFallbackModules() {
+    try {
+      const content = await fs.readFile(FALLBACK_CONFIG_PATH, 'utf8');
+      const config = yaml.parse(content);
+      if (Array.isArray(config.modules)) return config.modules.map((mod) => this._normalizeModule(mod));
+      return Object.entries(config.modules || {}).map(([key, mod]) => this._normalizeModule(mod, key));
+    } catch {
+      return [];
+    }
   }
 
   /**
@@ -145,7 +161,14 @@ class ExternalModuleManager {
 
     // Remote format: modules is an array
     if (Array.isArray(config.modules)) {
-      return config.modules.map((mod) => this._normalizeModule(mod));
+      const modules = config.modules.map((mod) => this._normalizeModule(mod));
+      const seenCodes = new Set(modules.map((mod) => mod.code));
+      for (const fallbackMod of await this._loadFallbackModules()) {
+        if (!seenCodes.has(fallbackMod.code)) {
+          modules.push(fallbackMod);
+        }
+      }
+      return modules;
     }
 
     // Legacy bundled format: modules is an object map
@@ -488,6 +511,14 @@ class ExternalModuleManager {
 
     // Clone the external module repo
     const cloneDir = await this.cloneExternalModule(moduleCode, options);
+
+    if (moduleInfo.sourceRoot) {
+      const sourceRoot = path.join(cloneDir, moduleInfo.sourceRoot);
+      if (!(await fs.pathExists(sourceRoot))) {
+        throw new Error(`External module '${moduleCode}' source-root not found: ${moduleInfo.sourceRoot}`);
+      }
+      return sourceRoot;
+    }
 
     // The module-definition specifies the path to module.yaml relative to repo root
     // We need to return the directory containing module.yaml
