@@ -1,5 +1,12 @@
 # Changelog
 
+## v6.5.0 - 2026-04-26
+
+### 🎁 Features
+
+* Support for 18 new agent platforms: AdaL, Sourcegraph Amp, IBM Bob, Command Code, Snowflake Cortex Code, Factory Droid, Firebender, Block Goose, Kode, Mistral Vibe, Mux, Neovate, OpenClaw, OpenHands, Pochi, Replit Agent, Warp, Zencoder — bringing total supported platforms to 42 (#2313)
+* All platforms that support the cross-tool `.agents/skills/` standard now use it (#2313)
+
 ## v6.4.0 - 2026-04-24
 
 ### ✨ Headline
