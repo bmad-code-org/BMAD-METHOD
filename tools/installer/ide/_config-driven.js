@@ -37,10 +37,45 @@ function yamlSafeSingleLine(value) {
   const collapsed = String(value)
     .replaceAll(/[\r\n]+/g, ' ')
     .trim();
-  const needsQuoting = /[:#'"\\]/.test(collapsed) || /^[!&*?|>%@`]/.test(collapsed);
+  const needsQuoting = /[:#'"\\]/.test(collapsed) || /^[!&*?|>%@`[{]/.test(collapsed);
   if (!needsQuoting) return collapsed;
   const escaped = collapsed.replaceAll('\\', '\\\\').replaceAll('"', String.raw`\"`);
   return `"${escaped}"`;
+}
+
+// Validate that a canonicalId is a safe basename — no path separators, no
+// parent-dir traversal, no leading dots, only the character set we expect.
+// Defense-in-depth: the manifest is trusted today, but the value flows
+// directly into a file path and a malformed entry should not write outside
+// the commands directory.
+function isSafeCanonicalId(value) {
+  return typeof value === 'string' && /^[a-zA-Z0-9][a-zA-Z0-9_.-]*$/.test(value) && !value.includes('..');
+}
+
+// The exact body the installer would generate for a given description and
+// canonicalId. Centralised so both the write and the freshness-check paths
+// agree on the canonical form.
+function buildCommandPointerBody(description, canonicalId) {
+  return `---\ndescription: ${yamlSafeSingleLine(description)}\n---\n\n@skills/${canonicalId}\n`;
+}
+
+// Heuristic: does an existing pointer file look like our generator's output
+// (and therefore safe to refresh) versus a user-modified file (which we
+// preserve)? We check the body shape rather than full equality so that
+// description-only edits in the manifest can propagate without trampling
+// hand edits to the body.
+function looksLikeGeneratorOutput(content, canonicalId) {
+  if (typeof content !== 'string') return false;
+  const trimmed = content.trim();
+  // Must end with the exact reference line our generator writes.
+  if (!trimmed.endsWith(`@skills/${canonicalId}`)) return false;
+  // Must start with frontmatter containing exactly one description: line.
+  const fmMatch = trimmed.match(/^---\n([\S\s]*?)\n---\n/);
+  if (!fmMatch) return false;
+  const fmLines = fmMatch[1].split('\n').filter((l) => l.length > 0);
+  if (fmLines.length !== 1) return false;
+  if (!fmLines[0].startsWith('description:')) return false;
+  return true;
 }
 
 /**
@@ -134,9 +169,15 @@ class ConfigDrivenIdeSetup {
     }
 
     // When a peer platform in the same install batch owns this target_dir,
-    // skip the skill write — the peer has already populated it.
+    // skip the skill write — the peer has already populated it. Command
+    // pointers, however, write to a separate per-IDE directory and must
+    // still be generated for this IDE; they are not deduped across peers.
     if (options.skipTarget) {
-      return { success: true, results: { skills: 0, sharedTargetHandledByPeer: true } };
+      const results = { skills: 0, sharedTargetHandledByPeer: true };
+      if (this.installerConfig.commands_target_dir) {
+        results.commands = await this.installCommandPointers(projectDir, bmadDir, this.installerConfig, options);
+      }
+      return { success: true, results };
     }
 
     if (this.installerConfig.target_dir) {
@@ -184,16 +225,33 @@ class ConfigDrivenIdeSetup {
    *
    * Skips:
    *  - Names that collide with reserved built-in slash commands.
-   *  - Existing files (treated as hand-tuned) unless options.forceCommands.
+   *  - canonicalIds that aren't safe basename-only identifiers (defense
+   *    against path traversal even though the manifest is currently trusted).
+   *  - Existing files whose body looks user-modified (preserves hand edits);
+   *    pointer files matching the generator pattern get overwritten so that
+   *    description changes in skill-manifest.csv propagate on re-install.
+   *
+   * Per-file write failures are recorded and reported but do not abort the
+   * rest of the install — pointer files are a non-essential adjunct to the
+   * skill copy that already succeeded.
    *
    * @param {string} projectDir
    * @param {string} bmadDir
    * @param {Object} config - Installer config; reads commands_target_dir.
-   * @param {Object} options - Setup options. forceCommands overwrites existing files.
-   * @returns {Promise<Object>} { created, skippedExisting, skippedCollision, fallbackDescription }
+   * @param {Object} options - Setup options. forceCommands overwrites existing
+   *   files unconditionally (including hand-modified ones).
+   * @returns {Promise<Object>} { created, updated, skippedExisting, skippedCollision, skippedInvalidId, writeFailures, fallbackDescription }
    */
   async installCommandPointers(projectDir, bmadDir, config, options = {}) {
-    const result = { created: 0, skippedExisting: 0, skippedCollision: 0, fallbackDescription: 0 };
+    const result = {
+      created: 0,
+      updated: 0,
+      skippedExisting: 0,
+      skippedCollision: 0,
+      skippedInvalidId: 0,
+      writeFailures: 0,
+      fallbackDescription: 0,
+    };
 
     const csvPath = path.join(bmadDir, '_config', 'skill-manifest.csv');
     if (!(await fs.pathExists(csvPath))) return result;
@@ -208,15 +266,16 @@ class ConfigDrivenIdeSetup {
       const canonicalId = record.canonicalId;
       if (!canonicalId) continue;
 
-      if (RESERVED_OPENCODE_COMMANDS.has(canonicalId)) {
-        result.skippedCollision++;
+      // Defensive basename validation. canonicalId comes from a trusted
+      // manifest today, but the value flows directly into a file path —
+      // reject anything that could escape commands_target_dir.
+      if (!isSafeCanonicalId(canonicalId)) {
+        result.skippedInvalidId++;
         continue;
       }
 
-      const commandFile = path.join(commandsPath, `${canonicalId}.md`);
-
-      if ((await fs.pathExists(commandFile)) && !options.forceCommands) {
-        result.skippedExisting++;
+      if (RESERVED_OPENCODE_COMMANDS.has(canonicalId)) {
+        result.skippedCollision++;
         continue;
       }
 
@@ -226,10 +285,54 @@ class ConfigDrivenIdeSetup {
         result.fallbackDescription++;
       }
 
-      const body = `---\ndescription: ${yamlSafeSingleLine(description)}\n---\n\n@skills/${canonicalId}\n`;
+      const body = buildCommandPointerBody(description, canonicalId);
+      const commandFile = path.join(commandsPath, `${canonicalId}.md`);
 
-      await fs.writeFile(commandFile, body, 'utf8');
-      result.created++;
+      // If a pointer file already exists, decide whether to overwrite based
+      // on whether it looks like generator output (description-only diff) or
+      // a user-modified file. forceCommands overrides this protection.
+      if (!options.forceCommands && (await fs.pathExists(commandFile))) {
+        let existing;
+        try {
+          existing = await fs.readFile(commandFile, 'utf8');
+        } catch {
+          // Treat unreadable as user-owned and skip — safer than overwriting.
+          result.skippedExisting++;
+          continue;
+        }
+
+        if (existing === body) {
+          // No-op idempotent re-run.
+          result.skippedExisting++;
+          continue;
+        }
+        if (looksLikeGeneratorOutput(existing, canonicalId)) {
+          // Description (or other generated bit) has changed; refresh in place.
+          try {
+            await fs.writeFile(commandFile, body, 'utf8');
+            result.updated++;
+          } catch (error) {
+            result.writeFailures++;
+            if (!options.silent) {
+              await prompts.log.warn(`Failed to update command pointer ${canonicalId}.md: ${error.message}`);
+            }
+          }
+          continue;
+        }
+        // Hand-modified pointer — preserve it.
+        result.skippedExisting++;
+        continue;
+      }
+
+      try {
+        await fs.writeFile(commandFile, body, 'utf8');
+        result.created++;
+      } catch (error) {
+        result.writeFailures++;
+        if (!options.silent) {
+          await prompts.log.warn(`Failed to write command pointer ${canonicalId}.md: ${error.message}`);
+        }
+      }
     }
 
     return result;
@@ -349,6 +452,17 @@ class ConfigDrivenIdeSetup {
       await this.cleanupRovoDevPrompts(projectDir, options);
     }
 
+    // Clean generated command pointer files in commands_target_dir.
+    // Mirrors target_dir cleanup so uninstalls and skill removals don't
+    // leave dangling /<canonicalId> commands pointing at missing skills.
+    // Runs regardless of skipTarget — command pointers live in a per-IDE
+    // directory and are not deduped across peers, so a peer-owned shared
+    // skills directory does not protect this IDE's command pointers from
+    // cleanup.
+    if (this.installerConfig?.commands_target_dir) {
+      await this.cleanupCommandPointers(projectDir, this.installerConfig.commands_target_dir, options, removalSet);
+    }
+
     // Skip target_dir cleanup when a peer platform owns this directory
     // (set during dedup'd install or when uninstalling one of several
     // platforms that share the same target_dir).
@@ -357,13 +471,6 @@ class ConfigDrivenIdeSetup {
     // Clean current target directory
     if (this.installerConfig?.target_dir) {
       await this.cleanupTarget(projectDir, this.installerConfig.target_dir, options, removalSet);
-    }
-
-    // Clean generated command pointer files in commands_target_dir.
-    // Mirrors target_dir cleanup so uninstalls and skill removals don't
-    // leave dangling /<canonicalId> commands pointing at missing skills.
-    if (this.installerConfig?.commands_target_dir) {
-      await this.cleanupCommandPointers(projectDir, this.installerConfig.commands_target_dir, options, removalSet);
     }
   }
 

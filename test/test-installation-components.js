@@ -323,6 +323,22 @@ async function runTests() {
     assert(result2.success === true, 'Second OpenCode install succeeds (idempotent)');
     assert(await fs.pathExists(commandFile), 'Command pointer survives a second install pass');
 
+    // Description-update propagation: when the manifest description changes
+    // and the on-disk pointer still matches the generator pattern, refresh
+    // the file so users see the updated description.
+    const csvPath = path.join(installedBmadDir, '_config', 'skill-manifest.csv');
+    const updatedCsv =
+      'canonicalId,name,description,module,path\n' +
+      '"bmad-master","bmad-master","UPDATED description for the test agent","core","_bmad/core/bmad-master/SKILL.md"\n';
+    await fs.writeFile(csvPath, updatedCsv);
+    const result3 = await ideManager.setup('opencode', tempProjectDir, installedBmadDir, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+    assert(result3.success === true, 'Third OpenCode install succeeds after description update');
+    const refreshed = await fs.readFile(commandFile, 'utf8');
+    assert(refreshed.includes('UPDATED description'), 'Generator-shaped pointer is refreshed when manifest description changes');
+
     await fs.remove(tempProjectDir);
     await fs.remove(path.dirname(installedBmadDir));
   } catch (error) {
@@ -2748,6 +2764,113 @@ async function runTests() {
     await fs.remove(path.dirname(installedBmadDir40b)).catch(() => {});
   } catch (error) {
     console.log(`${colors.red}Test Suite 40b setup failed: ${error.message}${colors.reset}`);
+    failed++;
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 40c: OpenCode command pointers in multi-IDE batches
+  // ============================================================
+  // Regression: when OpenCode is the *peer* in a setupBatch sharing
+  // .agents/skills (e.g. with openhands), the skill write is dedup-skipped
+  // but the per-IDE .opencode/commands/ pointers must still be generated.
+  // Symmetrically, partial uninstall while a peer remains must still clean
+  // up OpenCode's own command pointers.
+  console.log(`${colors.yellow}Test Suite 40c: OpenCode command pointers in shared-target batches${colors.reset}\n`);
+
+  try {
+    clearCache();
+    const platformCodes40c = await loadPlatformCodes();
+    const opencodeTarget40c = platformCodes40c.platforms.opencode?.installer?.target_dir;
+    const openhandsTarget40c = platformCodes40c.platforms.openhands?.installer?.target_dir;
+    assert(
+      opencodeTarget40c === '.agents/skills' && openhandsTarget40c === '.agents/skills',
+      'OpenCode and OpenHands share .agents/skills target_dir',
+    );
+
+    // Order A: opencode first → opencode is the writer.
+    const projA = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-opencode-batch-a-'));
+    const bmadA = await createTestBmadFixture();
+    const mgrA = new IdeManager();
+    await mgrA.ensureInitialized();
+    const resultsA = await mgrA.setupBatch(['opencode', 'openhands'], projA, bmadA, {
+      silent: true,
+      selectedModules: ['core'],
+    });
+    const cmdA = path.join(projA, '.opencode', 'commands', 'bmad-master.md');
+    assert(
+      resultsA.every((r) => r.success === true),
+      'opencode-first batch: all platforms succeed',
+    );
+    assert(await fs.pathExists(cmdA), 'opencode-first batch: command pointer is created');
+
+    // Order B: openhands first → opencode is the peer (skipTarget=true).
+    // Without the fix, the early-return would bypass installCommandPointers.
+    const projB = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-opencode-batch-b-'));
+    const bmadB = await createTestBmadFixture();
+    const mgrB = new IdeManager();
+    await mgrB.ensureInitialized();
+    const resultsB = await mgrB.setupBatch(['openhands', 'opencode'], projB, bmadB, {
+      silent: true,
+      selectedModules: ['core'],
+    });
+    const cmdB = path.join(projB, '.opencode', 'commands', 'bmad-master.md');
+    const opencodeResultB = resultsB.find((r) => r.ide === 'opencode');
+    assert(
+      resultsB.every((r) => r.success === true),
+      'openhands-first batch: all platforms succeed',
+    );
+    assert(
+      opencodeResultB?.handlerResult?.results?.sharedTargetHandledByPeer === true,
+      'openhands-first batch: opencode is marked sharedTargetHandledByPeer (skill write deduped)',
+    );
+    assert(await fs.pathExists(cmdB), 'openhands-first batch: command pointer is generated even when skill write is deduped');
+
+    // Cleanup symmetry: uninstall opencode while openhands remains.
+    // Uses an in-project bmadDir so the cleanup path can compute removalSet
+    // from the manifest (the production layout). The cross-temp-dir fixture
+    // above can't exercise this — same constraint Test Suite 40 documents.
+    const projC = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-opencode-batch-c-'));
+    const bmadC = path.join(projC, '_bmad');
+    await fs.ensureDir(path.join(bmadC, '_config'));
+    await fs.writeFile(
+      path.join(bmadC, '_config', 'skill-manifest.csv'),
+      'canonicalId,name,description,module,path\n' +
+        '"bmad-master","bmad-master","Minimal test agent fixture","core","_bmad/core/bmad-master/SKILL.md"\n',
+    );
+    const skillC = path.join(bmadC, 'core', 'bmad-master');
+    await fs.ensureDir(skillC);
+    await fs.writeFile(
+      path.join(skillC, 'SKILL.md'),
+      ['---', 'name: bmad-master', 'description: Minimal test agent fixture', '---', '', 'You are a test agent.'].join('\n'),
+    );
+
+    const mgrC = new IdeManager();
+    await mgrC.ensureInitialized();
+    await mgrC.setupBatch(['openhands', 'opencode'], projC, bmadC, {
+      silent: true,
+      selectedModules: ['core'],
+    });
+    const cmdC = path.join(projC, '.opencode', 'commands', 'bmad-master.md');
+    assert(await fs.pathExists(cmdC), 'in-project fixture: pointer is generated for opencode peer');
+
+    const cleanupResultsC = await mgrC.cleanupByList(projC, ['opencode'], {
+      silent: true,
+      remainingIdes: ['openhands'],
+    });
+    assert(cleanupResultsC[0].success !== false, 'opencode partial-uninstall reports success');
+    const sharedSurvivesC = await fs.pathExists(path.join(projC, '.agents', 'skills', 'bmad-master', 'SKILL.md'));
+    assert(sharedSurvivesC, 'shared .agents/skills/ survives partial uninstall (peer still uses it)');
+    assert(!(await fs.pathExists(cmdC)), 'opencode command pointer is removed on partial uninstall even when peer remains');
+
+    await fs.remove(projA).catch(() => {});
+    await fs.remove(path.dirname(bmadA)).catch(() => {});
+    await fs.remove(projB).catch(() => {});
+    await fs.remove(path.dirname(bmadB)).catch(() => {});
+    await fs.remove(projC).catch(() => {});
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 40c setup failed: ${error.message}${colors.reset}`);
     failed++;
   }
 
