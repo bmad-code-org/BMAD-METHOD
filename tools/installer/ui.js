@@ -2,6 +2,7 @@ const path = require('node:path');
 const os = require('node:os');
 const semver = require('semver');
 const fs = require('./fs-native');
+const installerPackageJson = require('../../package.json');
 const { CLIUtils } = require('./cli-utils');
 const { ExternalModuleManager } = require('./modules/external-manager');
 const { resolveModuleVersion } = require('./modules/version-resolver');
@@ -330,10 +331,12 @@ class UI {
       selectedModules.unshift('core');
     }
 
-    // Interactive channel gate: "Ready to install (all stable)? [Y/n]"
-    // Only shown for fresh installs with no channel flags and an external module
-    // selected. Non-interactive installs skip this and fall through to the
-    // registry default (stable) or whatever flags were supplied.
+    // Interactive channel gate: "Ready to install (all stable)? [Y/n]" — or
+    // "(all next)" when the installer was launched from a prerelease
+    // (npx bmad-method@next). Only shown for fresh installs with no channel
+    // flags and an external module selected. Non-interactive installs skip this
+    // and fall through to the registry default (stable) or whatever flags were
+    // supplied.
     await this._interactiveChannelGate({ options, channelOptions, selectedModules });
 
     let toolSelection = await this.promptToolSelection(confirmedDirectory, options);
@@ -1779,14 +1782,17 @@ class UI {
   }
 
   /**
-   * Fast-path channel gate: confirm "all stable" or open the per-module picker.
+   * Fast-path channel gate: confirm "all stable" / "all next" or open the
+   * per-module picker. The default channel mirrors the installer's launch tag —
+   * a prerelease bmad-method (npx bmad-method@next) defaults the gate to "all
+   * next"; a stable launch keeps the original "all stable" default.
    *
    * Skipped when:
    *   - running non-interactively (--yes)
    *   - the user already passed channel flags (--channel / --pin / --next)
    *   - no externals/community modules are selected
    *
-   * Mutates channelOptions.pins and channelOptions.nextSet to reflect picker choices.
+   * Mutates channelOptions.global / .pins / .nextSet to reflect gate + picker choices.
    */
   async _interactiveChannelGate({ options, channelOptions, selectedModules }) {
     if (options.yes) return;
@@ -1812,11 +1818,24 @@ class UI {
     });
     if (channelSelectable.length === 0) return;
 
+    // When the user launched the installer from a prerelease (npx bmad-method@next),
+    // mirror that intent for external modules: default the gate to "all next" so the
+    // bleeding-edge launch flows end-to-end. Stable launches keep the original
+    // "all stable" default.
+    const launchedFromPrerelease = semver.prerelease(installerPackageJson.version) !== null;
+    const fastPathChannel = launchedFromPrerelease ? 'next' : 'stable';
+
     const fastPath = await prompts.confirm({
-      message: `Ready to install (all stable)? Pick "n" to customize channels or pin versions.`,
+      message: `Ready to install (all ${fastPathChannel})? Pick "n" to customize channels or pin versions.`,
       default: true,
     });
-    if (fastPath) return; // stable for all, registry default applies
+    if (fastPath) {
+      if (fastPathChannel === 'next') {
+        channelOptions.global = 'next';
+      }
+      // stable: leave channelOptions untouched; registry default applies.
+      return;
+    }
 
     // Customize path: per-module picker.
     const { fetchStableTags, parseGitHubRepo } = require('./modules/channel-resolver');
@@ -1846,7 +1865,7 @@ class UI {
           { name: 'next   (main HEAD \u2014 current development)', value: 'next' },
           { name: 'pin    (specific version)', value: 'pin' },
         ],
-        default: 'stable',
+        default: fastPathChannel,
       });
 
       if (choice === 'next') {
