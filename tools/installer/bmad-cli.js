@@ -23,27 +23,37 @@ checkForUpdate().catch(() => {
 
 async function checkForUpdate() {
   try {
-    // For beta versions, check the beta tag; otherwise check latest
-    const isBeta =
-      packageJson.version.includes('Beta') ||
-      packageJson.version.includes('beta') ||
-      packageJson.version.includes('alpha') ||
-      packageJson.version.includes('rc');
-    const tag = isBeta ? 'beta' : 'latest';
+    // Prereleases are tracked under @next; stable releases under @latest.
+    // Check both for prerelease users so they're prompted to switch tracks
+    // if @latest has surpassed their current prerelease.
+    const isPrerelease = semver.prerelease(packageJson.version) !== null;
+    const tagsToCheck = isPrerelease ? ['next', 'latest'] : ['latest'];
 
-    const result = execSync(`npm view ${packageName}@${tag} version`, {
-      encoding: 'utf8',
-      stdio: 'pipe',
-      timeout: 5000,
-    }).trim();
+    let bestVersion = null;
+    let bestTag = null;
+    for (const tag of tagsToCheck) {
+      try {
+        const v = execSync(`npm view ${packageName}@${tag} version`, {
+          encoding: 'utf8',
+          stdio: 'pipe',
+          timeout: 5000,
+        }).trim();
+        if (v && (!bestVersion || semver.gt(v, bestVersion))) {
+          bestVersion = v;
+          bestTag = tag;
+        }
+      } catch {
+        // Skip this tag — registry may not have it or network may be flaky.
+      }
+    }
 
-    if (result && semver.gt(result, packageJson.version)) {
+    if (bestVersion && semver.gt(bestVersion, packageJson.version)) {
       const color = await prompts.getColor();
       const updateMsg = [
-        `You are using version ${packageJson.version} but ${result} is available.`,
+        `You are using version ${packageJson.version} but ${bestVersion} is available.`,
         '',
         'To update, exit and first run:',
-        `  npm cache clean --force && npx bmad-method@${tag} install`,
+        `  npm cache clean --force && npx bmad-method@${bestTag} install`,
       ].join('\n');
       await prompts.box(updateMsg, 'Update Available', {
         rounded: true,
