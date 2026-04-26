@@ -2684,6 +2684,54 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test Suite 40b: setupBatch — failed first writer does not poison peers
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 40b: setupBatch resilience to first-writer failure${colors.reset}\n`);
+
+  try {
+    const tempProjectDir40b = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-batch-fail-'));
+    const installedBmadDir40b = await createTestBmadFixture();
+
+    const ideManager40b = new IdeManager();
+    await ideManager40b.ensureInitialized();
+
+    // Force cursor's setup() to fail. With the bug, gemini would see the
+    // claimed target and skip — leaving .agents/skills/ empty.
+    const cursorHandler40b = ideManager40b.handlers.get('cursor');
+    const originalSetup = cursorHandler40b.setup.bind(cursorHandler40b);
+    cursorHandler40b.setup = async () => {
+      throw new Error('Simulated cursor failure');
+    };
+
+    const batchResults40b = await ideManager40b.setupBatch(['cursor', 'gemini'], tempProjectDir40b, installedBmadDir40b, {
+      silent: true,
+      selectedModules: ['core'],
+    });
+
+    // Restore so other tests aren't affected.
+    cursorHandler40b.setup = originalSetup;
+
+    assert(batchResults40b[0].success === false, 'Cursor reports failure');
+    assert(batchResults40b[1].success === true, 'Gemini still succeeds despite cursor failure');
+    assert(
+      batchResults40b[1].handlerResult?.results?.sharedTargetHandledByPeer !== true,
+      'Gemini does NOT skip its own write — it becomes the new first writer',
+    );
+
+    const sharedDir40b = path.join(tempProjectDir40b, '.agents', 'skills');
+    const entries40b = await fs.readdir(sharedDir40b);
+    assert(entries40b.includes('bmad-master'), 'Shared dir is populated by gemini after cursor failure');
+
+    await fs.remove(tempProjectDir40b).catch(() => {});
+    await fs.remove(path.dirname(installedBmadDir40b)).catch(() => {});
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 40b setup failed: ${error.message}${colors.reset}`);
+    failed++;
+  }
+
+  console.log('');
+
+  // ============================================================
   // Test Suite 41: Custom-module skill ownership (non-bmad prefix)
   // ============================================================
   console.log(`${colors.yellow}Test Suite 41: Custom-module skill ownership${colors.reset}\n`);

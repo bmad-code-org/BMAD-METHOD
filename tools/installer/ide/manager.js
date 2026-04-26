@@ -219,7 +219,13 @@ class IdeManager {
 
       if (target && !claim) {
         const writtenCount = result.handlerResult?.results?.skillDirectories || result.handlerResult?.results?.skills || 0;
-        claimedTargets.set(target, { firstIde: ideName, skillCount: writtenCount });
+        // Only claim the target when the install actually succeeded and wrote skills.
+        // If the first platform fails (ancestor conflict, exception, etc.), leave the
+        // dir unclaimed so the next peer becomes the new first writer instead of
+        // silently skipping into a broken/empty target_dir.
+        if (result.success && writtenCount > 0) {
+          claimedTargets.set(target, { firstIde: ideName, skillCount: writtenCount });
+        }
       }
       results.push(result);
     }
