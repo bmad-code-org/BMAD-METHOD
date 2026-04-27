@@ -40,7 +40,7 @@ Treat every entry in `{workflow.persistent_facts}` as foundational context you c
 
 ### Step 4: Load Config
 
-Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
+Load config by running `python3 {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}` (requires Python 3.11+). If the command fails, read the merge logic in `{project-root}/_bmad/scripts/resolve_config.py` and apply it yourself to resolve the config variables. Resolve:
 
 - `implementation_artifacts`
 - `planning_artifacts`
@@ -63,6 +63,18 @@ Activation is complete. Begin the workflow below.
 - **Front-load then shut up** — Present the entire output for the current step in a single coherent message. Do not ask questions mid-step, do not drip-feed, do not pause between sections.
 - **Language** — Speak in `{communication_language}`. Write any file output in `{document_output_language}`.
 
+<<<<<<< HEAD
+=======
+## INITIALIZATION
+
+Load config by running `python3 {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}` (requires Python 3.11+). If the command fails, read the merge logic in `{project-root}/_bmad/scripts/resolve_config.py` and apply it yourself to resolve the config variables. Resolve:
+
+- `implementation_artifacts`
+- `planning_artifacts`
+- `communication_language`
+- `document_output_language`
+
+>>>>>>> 3846e184 (fix(skills): use resolve_config.py instead of reading config.yaml directly)
 ## FIRST STEP
 
 Read fully and follow `./step-01-orientation.md` to begin.
