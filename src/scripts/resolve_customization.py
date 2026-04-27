@@ -5,8 +5,8 @@ Resolve customization for a BMad skill using four-layer TOML merge.
 Reads customization from four layers (highest priority first):
   1. {project-root}/_bmad/custom/{name}.user.toml  (personal, gitignored)
   2. {project-root}/_bmad/custom/{name}.toml        (team/org, committed)
-  3. {skill-root}/customize.toml                    (skill defaults)
-  4. ~/.bmad/config/{name}.user.toml                (global user defaults)
+  3. ~/.bmad/config/{name}.user.toml                (global user preferences)
+  4. {skill-root}/customize.toml                    (skill defaults)
 
 Skill name is derived from the basename of the skill directory.
 
@@ -215,7 +215,7 @@ def main():
 
     global_user = load_toml(GLOBAL_DIR / f"{skill_name}.user.toml")
 
-    merged = deep_merge(global_user, defaults)
+    merged = deep_merge(defaults, global_user)
     merged = deep_merge(merged, team)
     merged = deep_merge(merged, user)
 
