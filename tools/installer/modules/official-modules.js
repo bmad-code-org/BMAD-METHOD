@@ -270,9 +270,16 @@ class OfficialModules {
     }
 
     // Community modules whose cloned repo ships marketplace.json get the same
-    // skill-level install treatment as custom-source installs.
+    // skill-level install treatment as custom-source installs. If the in-process
+    // cache wasn't populated (e.g. caller skipped the pre-clone phase), fall
+    // back to resolving directly from `~/.bmad/cache/community-modules/<name>/`
+    // so we don't silently regress to the legacy half-install path.
     const { CommunityModuleManager } = require('./community-manager');
-    const communityResolved = new CommunityModuleManager().getPluginResolution(moduleName);
+    const communityMgr = new CommunityModuleManager();
+    let communityResolved = communityMgr.getPluginResolution(moduleName);
+    if (!communityResolved) {
+      communityResolved = await communityMgr.resolveFromCache(moduleName);
+    }
     if (communityResolved) {
       return this.installFromResolution(communityResolved, bmadDir, fileTrackingCallback, options);
     }
@@ -400,10 +407,13 @@ class OfficialModules {
       success: true,
       module: resolved.code,
       path: targetPath,
-      // Match the manifestEntry.version expression above so downstream summary
-      // lines show the cloned ref (tag or 'main') instead of the on-disk
-      // package.json version for git-backed custom installs.
-      versionInfo: { version: resolved.cloneRef || (hasGitClone ? 'main' : resolved.version || '') },
+      // Mirror the manifestEntry.version precedence above so downstream summary
+      // lines show the same string we just wrote to disk (community installs
+      // use the registry-approved tag via `communityVersion`; custom git-backed
+      // installs show the cloned ref or 'main').
+      versionInfo: {
+        version: resolved.communityVersion || resolved.cloneRef || (hasGitClone ? 'main' : resolved.version || ''),
+      },
     };
   }
 
