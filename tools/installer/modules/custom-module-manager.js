@@ -312,7 +312,7 @@ class CustomModuleManager {
   /**
    * Clone a custom module repository to cache.
    * Supports any Git host (GitHub, GitLab, Bitbucket, self-hosted, etc.).
-   * `@param` {string} sourceInput - Git URL (HTTPS, HTTP, or SSH)
+   * @param {string} sourceInput - Git URL (HTTPS, HTTP, or SSH)
    * @param {Object} [options] - Clone options
    * @param {boolean} [options.silent] - Suppress spinner output
    * @param {boolean} [options.skipInstall] - Skip npm install (for browsing before user confirms)
