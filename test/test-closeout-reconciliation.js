@@ -44,22 +44,51 @@ assert(
 );
 
 assert(
-  codeReview.includes('If either artifact does not match, HALT with a closeout reconciliation failure instead of reporting completion.'),
+  codeReview.includes(
+    'If the story file does not match `{new_status}`, or if `{sprint_status}` was verified and `development_status[{story_key}]` does not match `{new_status}`, HALT with a closeout reconciliation failure instead of reporting completion.',
+  ),
   'code-review halts when closeout reconciliation fails',
 );
 
 assert(codeReview.includes('development_status[{story_key}]'), 'code-review verifies the sprint tracker entry during reconciliation');
 
 assert(
-  codeReview.includes('story markdown and sprint tracker agree on `{new_status}`'),
-  'code-review reports successful reconciliation in the completion summary',
+  codeReview.includes('Set `{reconciliation_result}` = `story file verified; sprint tracker verification skipped`.'),
+  'code-review records when sprint tracker verification is skipped',
 );
 
-assert(sprintStatus.includes('story/tracker status drift detected'), 'sprint-status warns about story/tracker drift');
+assert(
+  codeReview.includes(
+    'If the live journey release-gate closeout above found missing evidence, red gates, skipped gates, blocked gates, environment-blocked gates, or incomplete/expired product-owner deferrals: keep `{new_status}` = `in-progress` regardless of resolved findings.',
+  ),
+  'code-review keeps live-gate blockers from being overwritten during final status selection',
+);
 
 assert(
-  sprintStatus.includes('use `story_location` to open the matching story markdown file'),
-  'sprint-status validate mode uses story_location when checking story files against tracker state',
+  codeReview.includes('> **Reconciled:** `{reconciliation_result}`'),
+  'code-review reports reconciliation status conditionally in the completion summary',
+);
+
+assert(
+  sprintStatus.includes('Resolve the story path from `story_location` using `{project-root}` as the base for relative paths.'),
+  'sprint-status defines how story_location is resolved during validate mode',
+);
+
+assert(
+  sprintStatus.includes(
+    'If the file is missing, unreadable, or the top-level `Status:` value is missing, record a drift entry with the path and reason.',
+  ),
+  'sprint-status treats missing story artifacts or missing Status values as validation failures',
+);
+
+assert(
+  sprintStatus.includes('any drift_entries were recorded for review/done stories'),
+  'sprint-status fails validate mode on any recorded reconciliation drift entries',
+);
+
+assert(
+  sprintStatus.includes('story markdown Status fields with sprint-status.yaml before closeout'),
+  'sprint-status reports reconciliation guidance when drift is detected',
 );
 
 console.log(`\n${passed} passed, ${failed} failed\n`);

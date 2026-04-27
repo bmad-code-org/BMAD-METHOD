@@ -290,8 +290,14 @@ If the command targets a story, set `story_key={{next_story_id}}` when prompted.
   <action>Return</action>
   </check>
 
-<action>For each story entry in development_status, use `story_location` to open the matching story markdown file and compare its top-level `Status:` value with the tracker status when the tracker status is `review` or `done`</action>
-<check if="any story markdown status does not match its tracker status for review/done stories">
+<action>For each story entry in development_status where the tracker status is `review` or `done`:</action>
+
+- Resolve the story path from `story_location` using `{project-root}` as the base for relative paths.
+- Open the matching story markdown file and read the top-level `Status:` value.
+- If the file is missing, unreadable, or the top-level `Status:` value is missing, record a drift entry with the path and reason.
+- Compare the markdown `Status:` value with the tracker status and record mismatches as drift entries.
+
+<check if="any drift_entries were recorded for review/done stories">
 <template-output>is_valid = false</template-output>
 <template-output>error = "Story/tracker status drift detected: {{drift_entries}}"</template-output>
 <template-output>suggestion = "Reconcile story markdown Status fields with sprint-status.yaml before closeout"</template-output>

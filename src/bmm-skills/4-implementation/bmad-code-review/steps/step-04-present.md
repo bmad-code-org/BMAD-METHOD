@@ -86,7 +86,8 @@ Skip this section if `{spec_file}` is not set.
 
 #### Determine new status based on review outcome
 
-- If all `decision-needed` and `patch` findings were resolved (fixed or dismissed) AND no unresolved HIGH/MEDIUM issues remain: set `{new_status}` = `done`. Update the story file Status section to `done`.
+- If the live journey release-gate closeout above found missing evidence, red gates, skipped gates, blocked gates, environment-blocked gates, or incomplete/expired product-owner deferrals: keep `{new_status}` = `in-progress` regardless of resolved findings. Update the story file Status section to `in-progress` and record the blocker in the story file.
+- If all `decision-needed` and `patch` findings were resolved (fixed or dismissed) AND no unresolved HIGH/MEDIUM issues remain AND live-gate blockers are cleared (or have complete, unexpired product-owner deferral): set `{new_status}` = `done`. Update the story file Status section to `done`.
 - If `patch` findings were left as action items, or unresolved issues remain: set `{new_status}` = `in-progress`. Update the story file Status section to `in-progress`.
 
 Save the story file.
@@ -108,9 +109,11 @@ If `{sprint_status}` file does not exist, note that story status was updated in 
 
 Re-open the story file after saving and verify the top-level `Status:` field equals `{new_status}`.
 
-If `{sprint_status}` exists and `{story_key}` was found, re-open `{sprint_status}` after saving and verify `development_status[{story_key}]` also equals `{new_status}`.
+Set `{reconciliation_result}` = `story file verified; sprint tracker verification skipped`.
 
-If either artifact does not match, HALT with a closeout reconciliation failure instead of reporting completion.
+If `{sprint_status}` exists and `{story_key}` was found, re-open `{sprint_status}` after saving and verify `development_status[{story_key}]` also equals `{new_status}`. If it matches, set `{reconciliation_result}` = `story markdown and sprint tracker agree on {new_status}`.
+
+If the story file does not match `{new_status}`, or if `{sprint_status}` was verified and `development_status[{story_key}]` does not match `{new_status}`, HALT with a closeout reconciliation failure instead of reporting completion.
 
 #### Completion summary
 
@@ -121,7 +124,7 @@ If either artifact does not match, HALT with a closeout reconciliation failure i
 > **Action Items Created:** <action_count>
 > **Deferred:** <W>
 > **Dismissed:** <R>
-> **Reconciled:** story markdown and sprint tracker agree on `{new_status}`
+> **Reconciled:** `{reconciliation_result}`
 
 ### 7. Next steps
 
