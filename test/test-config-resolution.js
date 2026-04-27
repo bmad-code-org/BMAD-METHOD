@@ -65,7 +65,7 @@ async function withTempDir(fn) {
 async function testResolveConfig() {
   console.log('\n--- resolve_config.py ---\n');
 
-  // Test 1: global user layer is loaded
+  // Test 1: global user overrides installer defaults
   await withTempDir(async (tmpDir) => {
     const globalDir = path.join(tmpDir, '.bmad', 'config');
     await fs.mkdir(globalDir, { recursive: true });
@@ -79,7 +79,10 @@ async function testResolveConfig() {
     await fs.mkdir(path.join(bmadDir, 'custom'), { recursive: true });
     await writeToml(path.join(bmadDir, 'config.toml'), {
       project_name: 'TestProject',
-      user_name: 'ProjectAlice',
+      user_name: 'InstallerDefault',
+    });
+    await writeToml(path.join(bmadDir, 'config.user.toml'), {
+      user_name: 'InstallerUserDefault',
     });
 
     const origHome = process.env.HOME;
@@ -88,18 +91,18 @@ async function testResolveConfig() {
       const result = JSON.parse(execSync(`python3 ${SCRIPTS_DIR}/resolve_config.py --project-root ${projectDir}`, { encoding: 'utf-8' }));
 
       assert(
-        result.user_name === 'ProjectAlice',
-        'project config.user overrides global user_name',
-        `Expected "ProjectAlice", got "${result.user_name}"`,
+        result.user_name === 'GlobalAlice',
+        'global user overrides installer defaults',
+        `Expected "GlobalAlice", got "${result.user_name}"`,
       );
       assert(
         result.communication_language === 'en',
-        'global communication_language preserved when project has no override',
+        'global communication_language preserved when installer has no override',
         `Expected "en", got "${result.communication_language}"`,
       );
       assert(
         result.project_name === 'TestProject',
-        'project config values preserved',
+        'installer team config values preserved',
         `Expected "TestProject", got "${result.project_name}"`,
       );
     } finally {
@@ -131,19 +134,19 @@ async function testResolveConfig() {
     }
   });
 
-  // Test 3: full priority chain — global < base_team < base_user < custom_team < custom_user
+  // Test 3: full priority chain — base_team < base_user < global < custom_team < custom_user
   await withTempDir(async (tmpDir) => {
     const globalDir = path.join(tmpDir, '.bmad', 'config');
     await fs.mkdir(globalDir, { recursive: true });
     await writeToml(path.join(globalDir, 'config.user.toml'), {
-      user_name: 'L0-Global',
+      user_name: 'L2-Global',
     });
 
     const projectDir = path.join(tmpDir, 'project');
     const bmadDir = path.join(projectDir, '_bmad');
     await fs.mkdir(path.join(bmadDir, 'custom'), { recursive: true });
-    await writeToml(path.join(bmadDir, 'config.toml'), { user_name: 'L1-BaseTeam' });
-    await writeToml(path.join(bmadDir, 'config.user.toml'), { user_name: 'L2-BaseUser' });
+    await writeToml(path.join(bmadDir, 'config.toml'), { user_name: 'L0-BaseTeam' });
+    await writeToml(path.join(bmadDir, 'config.user.toml'), { user_name: 'L1-BaseUser' });
     await writeToml(path.join(bmadDir, 'custom', 'config.toml'), { user_name: 'L3-CustomTeam' });
     await writeToml(path.join(bmadDir, 'custom', 'config.user.toml'), { user_name: 'L4-CustomUser' });
 
@@ -211,7 +214,7 @@ async function testResolveConfig() {
 async function testResolveCustomization() {
   console.log('\n--- resolve_customization.py ---\n');
 
-  // Test 1: global skill user layer is loaded
+  // Test 1: global skill user overrides skill defaults
   await withTempDir(async (tmpDir) => {
     const globalDir = path.join(tmpDir, '.bmad', 'config');
     await fs.mkdir(globalDir, { recursive: true });
@@ -232,9 +235,9 @@ async function testResolveCustomization() {
       const result = JSON.parse(execSync(`python3 ${SCRIPTS_DIR}/resolve_customization.py --skill ${skillDir}`, { encoding: 'utf-8' }));
 
       assert(
-        result.agent === 'default-agent-prompt',
-        'skill defaults override global user layer',
-        `Expected "default-agent-prompt", got "${result.agent}"`,
+        result.agent === 'global-agent-prompt',
+        'global user overrides skill defaults',
+        `Expected "global-agent-prompt", got "${result.agent}"`,
       );
       assert(result.version === '1.0.0', 'skill default values preserved', `Expected "1.0.0", got "${result.version}"`);
     } finally {
@@ -291,17 +294,17 @@ async function testResolveCustomization() {
     }
   });
 
-  // Test 4: full priority chain — global < defaults < team < user
+  // Test 4: full priority chain — defaults < global < team < user
   await withTempDir(async (tmpDir) => {
     const globalDir = path.join(tmpDir, '.bmad', 'config');
     await fs.mkdir(globalDir, { recursive: true });
     await writeToml(path.join(globalDir, 'test-skill.user.toml'), {
-      agent: 'L0-Global',
+      agent: 'L1-Global',
     });
 
     const skillDir = path.join(tmpDir, 'project', '_bmad', 'skills', 'test-skill');
     await fs.mkdir(skillDir, { recursive: true });
-    await writeToml(path.join(skillDir, 'customize.toml'), { agent: 'L1-Defaults' });
+    await writeToml(path.join(skillDir, 'customize.toml'), { agent: 'L0-Defaults' });
 
     const customDir = path.join(tmpDir, 'project', '_bmad', 'custom');
     await fs.mkdir(customDir, { recursive: true });
