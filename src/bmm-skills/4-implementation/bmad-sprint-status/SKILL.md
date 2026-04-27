@@ -64,9 +64,9 @@ Activation is complete. Begin the workflow below.
 
 ## Input Files
 
-| Input | Path | Load Strategy |
-|-------|------|---------------|
-| Sprint status | `{sprint_status_file}` | FULL_LOAD |
+| Input         | Path                   | Load Strategy |
+| ------------- | ---------------------- | ------------- |
+| Sprint status | `{sprint_status_file}` | FULL_LOAD     |
 
 ## Execution
 
@@ -148,6 +148,7 @@ Enter corrections (e.g., "1=in-progress, 2=backlog") or "skip" to continue witho
 
 - IF any story has status "review": suggest `/bmad:bmm:workflows:code-review`
 - IF any story has status "in-progress" AND no stories have status "ready-for-dev": recommend staying focused on active story
+- IF any story markdown file top-level `Status:` does not match its `development_status` entry: warn "story/tracker status drift detected"
 - IF all epics have status "backlog" AND no stories have status "ready-for-dev": prompt `/bmad:bmm:workflows:create-story`
 - IF `last_updated` timestamp is more than 7 days old (or `last_updated` is missing, fall back to `generated`): warn "sprint-status.yaml may be stale"
 - IF any story key doesn't match an epic pattern (e.g., story "5-1-..." but no "epic-5"): warn "orphaned story detected"
@@ -288,6 +289,14 @@ If the command targets a story, set `story_key={{next_story_id}}` when prompted.
   <template-output>suggestion = "Fix invalid statuses in sprint-status.yaml"</template-output>
   <action>Return</action>
   </check>
+
+<action>For each story entry in development_status, use `story_location` to open the matching story markdown file and compare its top-level `Status:` value with the tracker status when the tracker status is `review` or `done`</action>
+<check if="any story markdown status does not match its tracker status for review/done stories">
+<template-output>is_valid = false</template-output>
+<template-output>error = "Story/tracker status drift detected: {{drift_entries}}"</template-output>
+<template-output>suggestion = "Reconcile story markdown Status fields with sprint-status.yaml before closeout"</template-output>
+<action>Return</action>
+</check>
 
 <template-output>is_valid = true</template-output>
 <template-output>message = "sprint-status.yaml valid: metadata complete, all statuses recognized"</template-output>

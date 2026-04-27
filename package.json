@@ -44,7 +44,7 @@
     "test": "npm run test:refs && npm run test:install && npm run test:channels && npm run lint && npm run lint:md && npm run format:check",
     "test:channels": "node test/test-installer-channels.js",
     "test:install": "node test/test-installation-components.js",
-    "test:refs": "node test/test-file-refs-csv.js",
+    "test:refs": "node test/test-file-refs-csv.js && node test/test-closeout-reconciliation.js",
     "validate:refs": "node tools/validate-file-refs.js --strict",
     "validate:skills": "node tools/validate-skills.js --strict"
   },

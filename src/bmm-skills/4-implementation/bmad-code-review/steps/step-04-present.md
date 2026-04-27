@@ -104,6 +104,14 @@ If `{sprint_status}` file exists:
 
 If `{sprint_status}` file does not exist, note that story status was updated in the story file only.
 
+#### Final reconciliation
+
+Re-open the story file after saving and verify the top-level `Status:` field equals `{new_status}`.
+
+If `{sprint_status}` exists and `{story_key}` was found, re-open `{sprint_status}` after saving and verify `development_status[{story_key}]` also equals `{new_status}`.
+
+If either artifact does not match, HALT with a closeout reconciliation failure instead of reporting completion.
+
 #### Completion summary
 
 > **Review Complete!**
@@ -113,12 +121,14 @@ If `{sprint_status}` file does not exist, note that story status was updated in 
 > **Action Items Created:** <action_count>
 > **Deferred:** <W>
 > **Dismissed:** <R>
+> **Reconciled:** story markdown and sprint tracker agree on `{new_status}`
 
 ### 7. Next steps
 
 Present the user with follow-up options:
 
 > **What would you like to do next?**
+>
 > 1. **Start the next story** — run `dev-story` to pick up the next `ready-for-dev` story
 > 2. **Re-run code review** — address findings and review again
 > 3. **Done** — end the workflow
