@@ -94,7 +94,7 @@ class UI {
         }
         const hasQuickUpdate = choices.some((c) => c.value === 'quick-update');
         const needsFullUpdate = !!options.customSource;
-        actionType = hasQuickUpdate && !needsFullUpdate ? 'quick-update' : choices.find((c) => c.value === 'update') || choices[0].value;
+        actionType = hasQuickUpdate && !needsFullUpdate ? 'quick-update' : (choices.find((c) => c.value === 'update') || choices[0]).value;
         await prompts.log.info(`Non-interactive mode (--yes): defaulting to ${actionType}`);
       } else {
         actionType = await prompts.select({
@@ -132,7 +132,7 @@ class UI {
           await prompts.log.info(`Using modules from command-line: ${selectedModules.join(', ')}`);
         } else if (options.customSource && !options.yes) {
           // Custom source without --modules or --yes: start with empty list
-          // (user will be prompted to select modules interactively; core added below).
+          // (only custom source modules + core will be installed).
           // When --yes is also set, fall through to the --yes branch so all
           // installed modules are included alongside the custom source modules.
           selectedModules = [];
