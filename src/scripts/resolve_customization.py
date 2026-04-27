@@ -181,7 +181,7 @@ def extract_key(data, dotted_key: str):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Resolve customization for a BMad skill using three-layer TOML merge.",
+        description="Resolve customization for a BMad skill using four-layer TOML merge.",
         add_help=True,
     )
     parser.add_argument(
