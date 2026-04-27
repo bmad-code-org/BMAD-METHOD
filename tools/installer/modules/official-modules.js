@@ -269,6 +269,14 @@ class OfficialModules {
       return this.installFromResolution(resolved, bmadDir, fileTrackingCallback, options);
     }
 
+    // Community modules whose cloned repo ships marketplace.json get the same
+    // skill-level install treatment as custom-source installs.
+    const { CommunityModuleManager } = require('./community-manager');
+    const communityResolved = new CommunityModuleManager().getPluginResolution(moduleName);
+    if (communityResolved) {
+      return this.installFromResolution(communityResolved, bmadDir, fileTrackingCallback, options);
+    }
+
     const sourcePath = await this.findModuleSource(moduleName, {
       silent: options.silent,
       channelOptions: options.channelOptions,
@@ -360,21 +368,27 @@ class OfficialModules {
       await this.createModuleDirectories(resolved.code, bmadDir, options);
     }
 
-    // Update manifest. For custom modules, derive channel from the git ref:
-    //   cloneRef present → pinned at that ref
-    //   cloneRef absent  → next (main HEAD)
-    //   local path       → no channel concept
+    // Update manifest. For community installs we honor the channel resolved by
+    // CommunityModuleManager (stable/next/pinned) and propagate the registry's
+    // approved tag/sha. For custom-source installs we derive channel from the
+    // cloneRef (present → pinned, absent → next; local paths have no channel).
     const { Manifest } = require('../core/manifest');
     const manifestObj = new Manifest();
 
     const hasGitClone = !!resolved.repoUrl;
+    const isCommunity = resolved.communitySource === true;
     const manifestEntry = {
-      version: resolved.cloneRef || (hasGitClone ? 'main' : resolved.version || null),
-      source: 'custom',
+      version: resolved.communityVersion || resolved.cloneRef || (hasGitClone ? 'main' : resolved.version || null),
+      source: isCommunity ? 'community' : 'custom',
       npmPackage: null,
       repoUrl: resolved.repoUrl || null,
     };
-    if (hasGitClone) {
+    if (isCommunity) {
+      if (resolved.communityChannel) manifestEntry.channel = resolved.communityChannel;
+      if (resolved.cloneSha) manifestEntry.sha = resolved.cloneSha;
+      if (resolved.registryApprovedTag) manifestEntry.registryApprovedTag = resolved.registryApprovedTag;
+      if (resolved.registryApprovedSha) manifestEntry.registryApprovedSha = resolved.registryApprovedSha;
+    } else if (hasGitClone) {
       manifestEntry.channel = resolved.cloneRef ? 'pinned' : 'next';
       if (resolved.cloneSha) manifestEntry.sha = resolved.cloneSha;
       if (resolved.rawInput) manifestEntry.rawSource = resolved.rawInput;

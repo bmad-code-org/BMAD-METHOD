@@ -123,12 +123,18 @@ async function resolveInstalledModuleYaml(moduleName) {
       }
     }
 
-    // BMB standard: {setup-skill}/assets/module.yaml (setup skill is any *-setup directory)
-    const rootEntries = await fs.readdir(root, { withFileTypes: true });
-    for (const entry of rootEntries) {
-      if (!entry.isDirectory() || !entry.name.endsWith('-setup')) continue;
-      const setupAssets = path.join(root, entry.name, 'assets', 'module.yaml');
-      if (await fs.pathExists(setupAssets)) results.push(setupAssets);
+    // BMB standard: {setup-skill}/assets/module.yaml (setup skill is any *-setup directory).
+    // Check at the repo root, and also under src/skills/ and skills/ since
+    // marketplace plugins commonly nest skills under src/skills/<name>/.
+    const setupSearchRoots = [root, path.join(root, 'src', 'skills'), path.join(root, 'skills')];
+    for (const setupRoot of setupSearchRoots) {
+      if (!(await fs.pathExists(setupRoot))) continue;
+      const entries = await fs.readdir(setupRoot, { withFileTypes: true });
+      for (const entry of entries) {
+        if (!entry.isDirectory() || !entry.name.endsWith('-setup')) continue;
+        const setupAssets = path.join(setupRoot, entry.name, 'assets', 'module.yaml');
+        if (await fs.pathExists(setupAssets)) results.push(setupAssets);
+      }
     }
 
     const atRoot = path.join(root, 'module.yaml');
@@ -146,6 +152,16 @@ async function resolveInstalledModuleYaml(moduleName) {
   const cacheRoot = getExternalModuleCachePath(moduleName);
   if (await fs.pathExists(cacheRoot)) {
     const found = await searchRoot(cacheRoot);
+    if (found) return found;
+  }
+
+  // Community modules are cloned to ~/.bmad/cache/community-modules/<name>/
+  // (parallel to the external-modules cache used above). Search there too so
+  // collectAgentsFromModuleYaml and writeCentralConfig can locate community
+  // module.yaml files regardless of how nested the layout is.
+  const communityCacheRoot = path.join(os.homedir(), '.bmad', 'cache', 'community-modules', moduleName);
+  if (await fs.pathExists(communityCacheRoot)) {
+    const found = await searchRoot(communityCacheRoot);
     if (found) return found;
   }
 

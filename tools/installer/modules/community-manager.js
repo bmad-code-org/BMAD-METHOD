@@ -29,6 +29,11 @@ class CommunityModuleManager {
   // Shared across all instances; the manifest writer often uses a fresh instance.
   static _resolutions = new Map();
 
+  // moduleCode → ResolvedModule (from PluginResolver) when the cloned repo ships
+  // a `.claude-plugin/marketplace.json`. Lets community installs reuse the same
+  // skill-level install pipeline as custom-source installs (installFromResolution).
+  static _pluginResolutions = new Map();
+
   constructor() {
     this._client = new RegistryClient();
     this._cachedIndex = null;
@@ -38,6 +43,11 @@ class CommunityModuleManager {
   /** Get the most recent channel resolution for a community module. */
   getResolution(moduleCode) {
     return CommunityModuleManager._resolutions.get(moduleCode) || null;
+  }
+
+  /** Get the marketplace.json-derived plugin resolution for a community module, if any. */
+  getPluginResolution(moduleCode) {
+    return CommunityModuleManager._pluginResolutions.get(moduleCode) || null;
   }
 
   // ─── Data Loading ──────────────────────────────────────────────────────────
@@ -371,6 +381,18 @@ class CommunityModuleManager {
       planSource: planEntry.source,
     });
 
+    // If the repo ships a marketplace.json, route through PluginResolver so the
+    // skill-level install pipeline (installFromResolution) handles the copy.
+    // Repos without marketplace.json fall through to the legacy findModuleSource
+    // path unchanged.
+    await this._tryResolveMarketplacePlugin(moduleCacheDir, moduleInfo, {
+      channel: planEntry.channel,
+      version: recordedVersion,
+      sha: installedSha,
+      approvedTag,
+      approvedSha,
+    });
+
     // Install dependencies if needed
     const packageJsonPath = path.join(moduleCacheDir, 'package.json');
     if ((needsDependencyInstall || wasNewClone) && (await fs.pathExists(packageJsonPath))) {
@@ -390,6 +412,107 @@ class CommunityModuleManager {
     }
 
     return moduleCacheDir;
+  }
+
+  // ─── Marketplace.json Resolution ──────────────────────────────────────────
+
+  /**
+   * Detect `.claude-plugin/marketplace.json` in a cloned community repo and
+   * route through PluginResolver. When successful, caches the resolution so
+   * OfficialModulesManager.install() can route the copy through
+   * installFromResolution() — the same path used by custom-source installs.
+   *
+   * Silent no-op when marketplace.json is absent or the resolver returns no
+   * matches; the legacy findModuleSource path then handles the install.
+   *
+   * @param {string} repoPath - Absolute path to the cloned repo
+   * @param {Object} moduleInfo - Normalized community module info
+   * @param {Object} resolution - Resolution metadata from cloneModule
+   * @param {string} resolution.channel - Channel ('stable' | 'next' | 'pinned')
+   * @param {string} resolution.version - Recorded version string
+   * @param {string} resolution.sha - Resolved git SHA
+   * @param {string|null} resolution.approvedTag - Registry approved tag
+   * @param {string|null} resolution.approvedSha - Registry approved SHA
+   */
+  async _tryResolveMarketplacePlugin(repoPath, moduleInfo, resolution) {
+    const marketplacePath = path.join(repoPath, '.claude-plugin', 'marketplace.json');
+    if (!(await fs.pathExists(marketplacePath))) return;
+
+    let marketplaceData;
+    try {
+      marketplaceData = JSON.parse(await fs.readFile(marketplacePath, 'utf8'));
+    } catch {
+      // Malformed marketplace.json — fall through to legacy path.
+      return;
+    }
+
+    const plugins = Array.isArray(marketplaceData?.plugins) ? marketplaceData.plugins : [];
+    if (plugins.length === 0) return;
+
+    const plugin = this._selectPluginForModule(plugins, moduleInfo);
+    if (!plugin) {
+      await prompts.log
+        .warn?.(
+          `Community module '${moduleInfo.code}' ships marketplace.json but no plugin entry matches the registry code. ` +
+            `Falling back to legacy install path.`,
+        )
+        .catch(() => {});
+      return;
+    }
+
+    const { PluginResolver } = require('./plugin-resolver');
+    const resolver = new PluginResolver();
+    const resolved = await resolver.resolve(repoPath, plugin);
+    if (!resolved || resolved.length === 0) return;
+
+    // The registry registers a single code per module. If the resolver returns
+    // multiple modules (Strategy 4: multiple standalone skills), accept only
+    // the entry whose code matches the registry. Other entries are ignored —
+    // they belong to plugins not registered in the community catalog.
+    const matched = resolved.find((mod) => mod.code === moduleInfo.code) || (resolved.length === 1 ? resolved[0] : null);
+    if (!matched) return;
+
+    // Stamp registry/clone provenance so installFromResolution and downstream
+    // manifest writers see the same channel/sha/tag as the legacy path.
+    matched.code = moduleInfo.code;
+    matched.repoUrl = moduleInfo.url;
+    matched.cloneRef = resolution.channel === 'pinned' ? resolution.version : resolution.approvedTag || null;
+    matched.cloneSha = resolution.sha;
+    matched.communitySource = true;
+    matched.communityChannel = resolution.channel;
+    matched.communityVersion = resolution.version;
+    matched.registryApprovedTag = resolution.approvedTag;
+    matched.registryApprovedSha = resolution.approvedSha;
+
+    CommunityModuleManager._pluginResolutions.set(moduleInfo.code, matched);
+  }
+
+  /**
+   * Pick which plugin entry from marketplace.json represents this community module.
+   * Precedence:
+   *   1. Exact match on `plugin.name === moduleInfo.code`
+   *   2. Trailing directory of `module_definition` matches `plugin.name`
+   *   3. Single plugin in marketplace.json — use it
+   *   Otherwise null (caller falls back to legacy path).
+   */
+  _selectPluginForModule(plugins, moduleInfo) {
+    const byCode = plugins.find((p) => p && p.name === moduleInfo.code);
+    if (byCode) return byCode;
+
+    if (moduleInfo.moduleDefinition) {
+      // module_definition like "src/skills/suno-setup/assets/module.yaml" →
+      // hint segment "suno-setup". Match that against plugin names.
+      const segments = moduleInfo.moduleDefinition.split('/').filter(Boolean);
+      const setupIdx = segments.findIndex((s) => s.endsWith('-setup'));
+      if (setupIdx !== -1) {
+        const hint = segments[setupIdx];
+        const byHint = plugins.find((p) => p && p.name === hint);
+        if (byHint) return byHint;
+      }
+    }
+
+    if (plugins.length === 1) return plugins[0];
+    return null;
   }
 
   // ─── Source Finding ───────────────────────────────────────────────────────
