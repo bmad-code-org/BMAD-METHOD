@@ -11,7 +11,7 @@
 
 ### Configuration Loading
 
-Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
+Load config by running `python3 {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}` (requires Python 3.11+). If the command fails, read the merge logic in `{project-root}/_bmad/scripts/resolve_config.py` and apply it yourself to resolve the config variables. Resolve:
 
 - `project_knowledge`
 - `user_name`

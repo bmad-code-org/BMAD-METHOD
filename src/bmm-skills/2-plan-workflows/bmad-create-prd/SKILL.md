@@ -11,7 +11,7 @@ This skill was consolidated into `bmad-prd`. It is retained as a thin compatibil
 
 1. Resolve customization: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`. This picks up any `{project-root}/_bmad/custom/bmad-create-prd.toml` and `bmad-create-prd.user.toml` overrides for the legacy fields (`activation_steps_prepend`, `activation_steps_append`, `persistent_facts`, `on_complete`).
 
-2. Load `{project-root}/_bmad/bmm/config.yaml` (and `config.user.yaml` if present) to resolve `{user_name}` and `{communication_language}`.
+2. Load config by running `python3 {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}` (requires Python 3.11+). If the command fails, read the merge logic in `{project-root}/_bmad/scripts/resolve_config.py` and apply it yourself to resolve the config variables. Resolve `{user_name}` and `{communication_language}`.
 
 3. Emit a deprecation notice to the user in `{communication_language}`:
 

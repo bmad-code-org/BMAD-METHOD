@@ -19,7 +19,7 @@ At the opening greeting, let the user know they can invoke `bmad-party-mode` for
 2. Execute each entry in `{workflow.activation_steps_prepend}` in order.
 3. Treat every entry in `{workflow.persistent_facts}` as foundational context for the rest of the run. Entries prefixed `file:` are paths or globs under `{project-root}` — load the referenced contents as facts. All other entries are facts verbatim.
 4. `{workflow.external_sources}` is an org-configured registry of internal tools (knowledge bases, MCP tools); consult them alongside generic web research on the same triggers in `## Discovery`, org tools preferred when their directive matches. If a named tool is unavailable at runtime, fall back to standard behavior and note the gap when relevant.
-5. Load `{project-root}/_bmad/bmm/config.yaml` (and `config.user.yaml` if present). Resolve `{user_name}`, `{communication_language}`, `{document_output_language}`, `{planning_artifacts}`, `{project_name}`, `{date}`.
+5. Load config by running `python3 {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}` (requires Python 3.11+). If the command fails, read the merge logic in `{project-root}/_bmad/scripts/resolve_config.py` and apply it yourself to resolve the config variables. Resolve `{user_name}`, `{communication_language}`, `{document_output_language}`, `{planning_artifacts}`, `{project_name}`, `{date}`.
 6. Greet `{user_name}` in `{communication_language}` — and stay in `{communication_language}` for every turn for the entire run, not just the greeting. Detect intent (create / update / validate). If interactive and intent is unclear, ask; for headless behavior see `## Headless Mode`.
 7. Execute each entry in `{workflow.activation_steps_append}` in order.
 
@@ -58,6 +58,13 @@ When invoked headless, do not ask. Complete the intent using what is provided, w
 ```
 
 Omit keys for artifacts that were not produced.
+
+Load config by running `python3 {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}` (requires Python 3.11+). If the command fails, read the merge logic in `{project-root}/_bmad/scripts/resolve_config.py` and apply it yourself to resolve the config variables. Resolve:
+- Use `{user_name}` for greeting
+- Use `{communication_language}` for all communications
+- Use `{document_output_language}` for output documents
+- Use `{planning_artifacts}` for output location and artifact scanning
+- Use `{project_knowledge}` for additional context scanning
 
 ## Discovery
 

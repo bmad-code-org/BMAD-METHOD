@@ -32,7 +32,7 @@ This uses **micro-file architecture** for disciplined execution:
 
 ### Configuration Loading
 
-Load config from `{project-root}/_bmad/core/config.yaml` and resolve:
+Load config by running `python3 {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}` (requires Python 3.11+). If the command fails, read the merge logic in `{project-root}/_bmad/scripts/resolve_config.py` and apply it yourself to resolve the config variables. Resolve:
 
 - `project_name`, `output_folder`, `user_name`
 - `communication_language`, `document_output_language`, `user_skill_level`
