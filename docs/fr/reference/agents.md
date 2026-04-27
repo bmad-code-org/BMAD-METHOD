@@ -23,6 +23,7 @@ Cette page liste les agents BMM (suite Agile) par défaut installés avec la mé
 | Développeur (Amelia)        | `bmad-agent-dev`     | `DS`, `QD`, `QA`, `CR`, `SP`, `CS`, `ER` | Dev Story, Quick Dev, Génération de Tests QA, Code Review, Sprint Planning, Créer Story, Rétrospective d’Epic                                                  |
 | Designer UX (Sally)         | `bmad-ux-designer`   | `CU`                                     | Création du design UX[^2]                                                                                                                                      |
 | Rédacteur Technique (Paige) | `bmad-tech-writer`   | `DP`, `WD`, `US`, `MG`, `VD`, `EC`       | Documentation du projet, Rédaction de documents, Mise à jour des standards, Génération de diagrammes Mermaid, Validation de documents, Explication de concepts |
+| Enquêteur (Tracy)           | `bmad-agent-investigator` | `IN`, `CX`                          | Enquête de cas (analyse de preuves citées), Archéologie de code                                                                                                |
 
 ## Types de déclencheurs
 

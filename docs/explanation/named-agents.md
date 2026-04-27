@@ -27,7 +27,7 @@ Pull any leg away and the experience collapses:
 
 ## What Named Agents Buy You
 
-BMad ships six named agents, each anchored to a phase of the BMad Method:
+BMad ships a roster of named agents, each anchored to a phase of the BMad Method:
 
 | Agent | Phase | Module |
 |---|---|---|
@@ -37,6 +37,7 @@ BMad ships six named agents, each anchored to a phase of the BMad Method:
 | 🎨 **Sally**, UX Designer | Planning | UX design specifications |
 | 🏗️ **Winston**, System Architect | Solutioning | technical architecture, alignment checks |
 | 💻 **Amelia**, Senior Engineer | Implementation | story execution, quick-dev, code review, sprint planning |
+| 🔎 **Tracy**, Forensic Code Investigator | Implementation | evidence-graded bug investigation, code archaeology |
 
 They each have a hardcoded identity (name, title, domain) and a customizable layer (role, principles, communication style, icon, menu). You can rewrite Mary's principles or add menu items; you can't rename her — that's deliberate. Brand recognition survives customization so "hey Mary" always activates the analyst, regardless of how a team has shaped her behavior.
 

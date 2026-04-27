@@ -62,18 +62,23 @@ Build it, one story at a time. Coming soon, full phase 4 automation!
 | `bmad-correct-course`  | Handle significant mid-sprint changes                                    | Updated plan or re-routing    |
 | `bmad-sprint-status`   | Track sprint progress and story status                                   | Sprint status update          |
 | `bmad-retrospective`   | Review after epic completion                                             | Lessons learned               |
+| `bmad-investigate`     | Forensic case investigation. Evidence-graded analysis of bugs, incidents, and unfamiliar behavior | `{slug}-investigation.md`     |
+| `bmad-code-archaeology` | Deep source-code tracing to understand how a code area works without a specific bug              | `{slug}-archaeology.md`       |
 
 ## Quick Flow (Parallel Track)
 
-Skip phases 1-3 for small, well-understood work.
+Skip phases 1-3 for small, well-understood work, or jump straight to investigation when something is broken.
 
-| Workflow           | Purpose                                                                     | Produces               |
-| ------------------ | --------------------------------------------------------------------------- | ---------------------- |
-| `bmad-quick-dev`   | Unified quick flow — clarify intent, plan, implement, review, and present   | `spec-*.md` + code  |
+| Workflow             | Purpose                                                                       | Produces                              |
+| -------------------- | ----------------------------------------------------------------------------- | ------------------------------------- |
+| `bmad-investigate`   | Forensic case investigation. Produces a fix direction quick-dev can act on.   | `{slug}-investigation.md` →           |
+| `bmad-quick-dev`     | Unified quick flow. Clarify intent, plan, implement, review, and present.     | `spec-*.md` + code                    |
 
 ## Context Management
 
 Each document becomes context for the next phase. The PRD tells the architect what constraints matter. The architecture tells the dev agent which patterns to follow. Story files give focused, complete context for implementation. Without this structure, agents make inconsistent decisions.
+
+The investigation file is implementation-ready context: when `bmad-investigate` finalizes a fix direction, `bmad-quick-dev` (or `bmad-dev-story`) consumes it as the intent input.
 
 ### Project Context
 

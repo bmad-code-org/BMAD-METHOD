@@ -94,6 +94,7 @@
         .agent-icon.sally { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #000; }
         .agent-icon.winston { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
         .agent-icon.amelia { background: linear-gradient(135deg, #fb7185, #ef4444); }
+        .agent-icon.tracy { background: linear-gradient(135deg, #38bdf8, #0ea5e9); }
 
         .agent-name { font-size: 0.65rem; }
         .output { color: var(--success); font-family: monospace; font-size: 0.6rem; }
@@ -322,6 +323,26 @@
                         <span class="output">lessons</span>
                     </div>
                 </div>
+                <div class="workflow">
+                    <div class="workflow-header">
+                        <span class="workflow-name">investigate</span>
+                        <span class="badge opt">opt</span>
+                    </div>
+                    <div class="workflow-meta">
+                        <div class="agent"><div class="agent-icon tracy">T</div><span class="agent-name">Tracy</span></div>
+                        <span class="output">investigation.md</span>
+                    </div>
+                </div>
+                <div class="workflow">
+                    <div class="workflow-header">
+                        <span class="workflow-name">code-archaeology</span>
+                        <span class="badge opt">opt</span>
+                    </div>
+                    <div class="workflow-meta">
+                        <div class="agent"><div class="agent-icon tracy">T</div><span class="agent-name">Tracy</span></div>
+                        <span class="output">archaeology.md</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -331,10 +352,16 @@
             <span>⚡</span>
             <div>
                 <h2>Quick Flow (Parallel Track)</h2>
-                <span>For small, well-understood changes — skip phases 1-3</span>
+                <span>For small changes or known bugs. Skip phases 1-3, or investigate first then implement.</span>
             </div>
         </div>
         <div class="quickflow-body">
+            <div class="quickflow-item">
+                <div class="agent"><div class="agent-icon tracy">T</div><span class="agent-name">Tracy</span></div>
+                <code>investigate</code>
+                <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 4px;">evidence → case file → fix direction</div>
+            </div>
+            <div class="arrow">→</div>
             <div class="quickflow-item">
                 <div class="agent"><div class="agent-icon amelia">A</div><span class="agent-name">Amelia</span></div>
                 <code>quick-dev</code>
@@ -350,6 +377,7 @@
             <span><code>create-story</code> <span>loads epics, PRD, architecture, UX</span></span>
             <span><code>dev-story</code> <span>loads story file</span></span>
             <span><code>code-review</code> <span>loads architecture, story</span></span>
+            <span><code>investigate</code> <span>produces case file consumed by quick-dev or dev-story</span></span>
             <span><code>quick-dev</code> <span>clarify, plan, implement, review</span></span>
         </div>
     </div>

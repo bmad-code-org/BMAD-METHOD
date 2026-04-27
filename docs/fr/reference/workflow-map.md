@@ -62,18 +62,23 @@ Construisez, une story à la fois. Bientôt disponible : automatisation complèt
 | `bmad-correct-course`  | Gérez les changements significatifs en cours de sprint                              | Plan mis à jour ou réorientation |
 | `bmad-sprint-status`   | Suivez la progression du sprint et le statut des stories                            | Mise à jour du statut du sprint  |
 | `bmad-retrospective`   | Revue après complétion d'un epic                                                    | Leçons apprises                  |
+| `bmad-investigate`     | Enquête de cas. Analyse à preuves graduées des bugs, incidents et comportements inattendus | `{slug}-investigation.md`        |
+| `bmad-code-archaeology` | Traçage approfondi du code source pour comprendre comment fonctionne une zone, sans bug ciblé | `{slug}-archaeology.md`          |
 
 ## Quick Dev (Parcours Parallèle)
 
-Sautez les phases 1-3 pour les travaux de faible envergure et bien compris.
+Sautez les phases 1-3 pour les travaux de faible envergure et bien compris, ou démarrez par une investigation quand quelque chose est cassé.
 
-| Workflow         | Objectif                                                                            | Produit               |
-|------------------|-------------------------------------------------------------------------------------|-----------------------|
-| `bmad-quick-dev` | Flux rapide unifié — clarifie l'intention, planifie, implémente, révise et présente | `spec-*.md` + code |
+| Workflow             | Objectif                                                                            | Produit                       |
+|----------------------|-------------------------------------------------------------------------------------|-------------------------------|
+| `bmad-investigate`   | Enquête de cas. Produit une direction de correction que quick-dev peut exécuter.    | `{slug}-investigation.md` →   |
+| `bmad-quick-dev`     | Flux rapide unifié. Clarifie l'intention, planifie, implémente, révise et présente. | `spec-*.md` + code            |
 
 ## Gestion du Contexte
 
 Chaque document devient le contexte de la phase suivante. Le PRD[^2] indique à l'architecte quelles contraintes sont importantes. L'architecture indique à l'agent de développement quels modèles suivre. Les fichiers de story fournissent un contexte focalisé et complet pour l'implémentation. Sans cette structure, les agents prennent des décisions incohérentes.
+
+Le fichier d'investigation est un contexte prêt pour l'implémentation : quand `bmad-investigate` finalise une direction de correction, `bmad-quick-dev` (ou `bmad-dev-story`) le consomme comme entrée d'intention.
 
 ### Contexte du Projet
 
