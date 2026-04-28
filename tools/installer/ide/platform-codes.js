@@ -32,24 +32,24 @@ function clearCache() {
 }
 
 /**
- * Format the platform list for human-readable output (used by --list-tools).
+ * Format the installable platform list for human-readable output (used by --list-tools).
+ * Sourced from IdeManager so this view matches what --tools accepts at install time
+ * (suspended platforms excluded).
  * @returns {Promise<string>} Formatted multi-line string with id, name, target_dir, preferred flag.
  */
 async function formatPlatformList() {
-  const config = await loadPlatformCodes();
-  const platforms = config.platforms || {};
+  const { IdeManager } = require('./manager');
+  const ideManager = new IdeManager();
+  await ideManager.ensureInitialized();
 
-  const entries = Object.entries(platforms).map(([id, p]) => ({
-    id,
-    name: p.name || id,
-    targetDir: p.installer?.target_dir || '',
-    preferred: p.preferred === true,
-    suspended: typeof p.suspended === 'string' ? p.suspended : null,
-  }));
-
-  entries.sort((a, b) => {
-    if (a.preferred !== b.preferred) return a.preferred ? -1 : 1;
-    return a.id.localeCompare(b.id);
+  const entries = ideManager.getAvailableIdes().map((ide) => {
+    const handler = ideManager.handlers.get(ide.value);
+    return {
+      id: ide.value,
+      name: ide.name,
+      targetDir: handler?.installerConfig?.target_dir || '',
+      preferred: ide.preferred,
+    };
   });
 
   const idWidth = Math.max(...entries.map((e) => e.id.length), 'ID'.length);
@@ -65,8 +65,7 @@ async function formatPlatformList() {
 
   for (const e of entries) {
     const star = e.preferred ? ' *' : '  ';
-    const suffix = e.suspended ? `  [suspended: ${e.suspended}]` : '';
-    lines.push(`${star}${pad(e.id, idWidth)}  ${pad(e.name, nameWidth)}  ${e.targetDir}${suffix}`);
+    lines.push(`${star}${pad(e.id, idWidth)}  ${pad(e.name, nameWidth)}  ${e.targetDir}`);
   }
 
   lines.push('', '* = recommended / preferred', '', 'Example: bmad-method install --modules bmm --tools claude-code');
@@ -74,20 +73,8 @@ async function formatPlatformList() {
   return lines.join('\n');
 }
 
-/**
- * @returns {Promise<string[]>} List of valid platform IDs (suspended ones excluded).
- */
-async function getValidPlatformIds() {
-  const config = await loadPlatformCodes();
-  const platforms = config.platforms || {};
-  return Object.entries(platforms)
-    .filter(([, p]) => !p.suspended)
-    .map(([id]) => id);
-}
-
 module.exports = {
   loadPlatformCodes,
   clearCache,
   formatPlatformList,
-  getValidPlatformIds,
 };

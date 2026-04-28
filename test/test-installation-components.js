@@ -2774,6 +2774,94 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test Suite 42: --tools flag parsing & validation (#2326)
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 42: --tools flag parsing & validation${colors.reset}\n`);
+  try {
+    const { UI } = require('../tools/installer/ui');
+    const ui = new UI();
+    const known = new Set(['claude-code', 'cursor', 'windsurf']);
+
+    assert(
+      JSON.stringify(ui._parseToolsFlag('claude-code', known)) === JSON.stringify(['claude-code']),
+      'parseToolsFlag returns single ID',
+    );
+
+    assert(
+      JSON.stringify(ui._parseToolsFlag('claude-code,cursor', known)) === JSON.stringify(['claude-code', 'cursor']),
+      'parseToolsFlag returns multiple IDs',
+    );
+
+    assert(
+      JSON.stringify(ui._parseToolsFlag(' claude-code , cursor ', known)) === JSON.stringify(['claude-code', 'cursor']),
+      'parseToolsFlag trims whitespace',
+    );
+
+    let emptyErr;
+    try {
+      ui._parseToolsFlag('', known);
+    } catch (error) {
+      emptyErr = error;
+    }
+    assert(
+      emptyErr && emptyErr.expected === true && /empty/i.test(emptyErr.message),
+      'parseToolsFlag rejects empty string with expected=true',
+    );
+
+    let commasOnlyErr;
+    try {
+      ui._parseToolsFlag(' , , ', known);
+    } catch (error) {
+      commasOnlyErr = error;
+    }
+    assert(commasOnlyErr && commasOnlyErr.expected === true, 'parseToolsFlag rejects whitespace/comma-only input');
+
+    let noneErr;
+    try {
+      ui._parseToolsFlag('none', known);
+    } catch (error) {
+      noneErr = error;
+    }
+    assert(noneErr && noneErr.expected === true && /Unknown tool ID/.test(noneErr.message), 'parseToolsFlag rejects "none" as unknown ID');
+
+    let typoErr;
+    try {
+      ui._parseToolsFlag('claude-code,claude-cdoe', known);
+    } catch (error) {
+      typoErr = error;
+    }
+    const typoHeader = typoErr ? typoErr.message.split('\n')[0] : '';
+    assert(
+      typoErr && typoErr.expected === true && /claude-cdoe/.test(typoHeader) && !/claude-code/.test(typoHeader),
+      'parseToolsFlag reports only the unknown ID in error header (valid ones not listed as unknown)',
+    );
+
+    // --list-tools and --tools validation must agree on what counts as a valid ID.
+    const { formatPlatformList } = require('../tools/installer/ide/platform-codes');
+    const { IdeManager } = require('../tools/installer/ide/manager');
+    const ideManager42 = new IdeManager();
+    await ideManager42.ensureInitialized();
+    const validIds = new Set(ideManager42.getAvailableIdes().map((i) => i.value));
+    const listed = await formatPlatformList();
+    // Each entry line starts with ' *' (preferred) or '  ' (other), followed by the ID, then padding.
+    const entryLines = listed.split('\n').filter((l) => /^( \*| {2})[a-z]/.test(l));
+    const listedIds = entryLines.map((l) => l.trim().replace(/^\*/, '').split(/\s+/)[0]);
+    const missingFromList = [...validIds].filter((id) => !listedIds.includes(id));
+    const extraInList = listedIds.filter((id) => !validIds.has(id));
+    assert(
+      missingFromList.length === 0 && extraInList.length === 0,
+      '--list-tools output matches the IDs that --tools accepts',
+      `Missing from list: ${missingFromList.join(',') || '(none)'}; Extra in list: ${extraInList.join(',') || '(none)'}`,
+    );
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 42 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);

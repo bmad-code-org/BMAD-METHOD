@@ -405,7 +405,7 @@ class UI {
    * @returns {Object} Tool configuration
    */
   _parseToolsFlag(toolsArg, allKnownValues) {
-    const selectedIdes = String(toolsArg)
+    const selectedIdes = toolsArg
       .split(',')
       .map((t) => t.trim())
       .filter(Boolean);
@@ -559,20 +559,18 @@ class UI {
         await this.displaySelectedTools(configuredIdes, preferredIdes, allTools);
         return { ides: configuredIdes, skipIde: false };
       } else {
-        {
-          const err = new Error(
-            [
-              '--tools is required for non-interactive install (--yes / -y) when no tools are previously configured.',
-              '',
-              'Common: claude-code, cursor, copilot, windsurf, cline',
-              'See all supported tools: bmad-method install --list-tools',
-              '',
-              'Example: bmad-method install --modules bmm --tools claude-code -y',
-            ].join('\n'),
-          );
-          err.expected = true;
-          throw err;
-        }
+        const err = new Error(
+          [
+            '--tools is required for non-interactive install (--yes / -y) when no tools are previously configured.',
+            '',
+            'Common: claude-code, cursor, copilot, windsurf, cline',
+            'See all supported tools: bmad-method install --list-tools',
+            '',
+            'Example: bmad-method install --modules bmm --tools claude-code -y',
+          ].join('\n'),
+        );
+        err.expected = true;
+        throw err;
       }
     }
 
