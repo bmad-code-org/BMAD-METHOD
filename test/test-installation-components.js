@@ -3030,6 +3030,25 @@ async function runTests() {
     const empty = parseSetEntries();
     assert(empty && Object.keys(empty).length === 0, 'parseSetEntries() returns empty object when called without args');
 
+    // parseSetEntries — prototype-pollution guard. `--set __proto__.x=1` would
+    // otherwise reach `overrides.__proto__[x] = 1` and pollute Object.prototype.
+    const polluteProbe = {};
+    let pollutionThrown = false;
+    try {
+      parseSetEntries(['__proto__.polluted=1']);
+    } catch {
+      pollutionThrown = true;
+    }
+    assert(pollutionThrown, 'parseSetEntries rejects __proto__ as a module name');
+    assert(polluteProbe.polluted === undefined, 'Object.prototype is not polluted by __proto__ in --set entries');
+    let constructorThrown = false;
+    try {
+      parseSetEntries(['bmm.constructor=evil']);
+    } catch {
+      constructorThrown = true;
+    }
+    assert(constructorThrown, 'parseSetEntries rejects "constructor" as a key name');
+
     // discoverOfficialModuleYamls + formatOptionsList read the on-disk
     // external-module cache. Point that env at a temp dir so test results
     // don't depend on whatever the developer / CI runner has cached.

@@ -175,6 +175,11 @@ async function formatOptionsList(moduleCode) {
   }
 
   const sections = [];
+  // Track when a module-scoped lookup couldn't actually be rendered (yaml
+  // unparseable or empty after parse). The full `--list-options` output is
+  // tolerant of one bad entry, but `--list-options <module>` against a single
+  // unreadable module should still fail tooling so a CI script catches it.
+  let moduleScopedFailure = false;
   sections.push('Available --set keys', 'Format: --set <module>.<key>=<value> (repeatable)', '');
   for (const { code, yamlPath, source } of filtered) {
     let parsed;
@@ -182,9 +187,13 @@ async function formatOptionsList(moduleCode) {
       parsed = yaml.parse(await fs.readFile(yamlPath, 'utf8'));
     } catch {
       sections.push(`${code} (${source}): could not parse module.yaml`, '');
+      if (moduleCode) moduleScopedFailure = true;
       continue;
     }
-    if (!parsed || typeof parsed !== 'object') continue;
+    if (!parsed || typeof parsed !== 'object') {
+      if (moduleCode) moduleScopedFailure = true;
+      continue;
+    }
     sections.push(formatModuleOptions(code, parsed, source));
   }
 
@@ -194,7 +203,7 @@ async function formatOptionsList(moduleCode) {
     );
   }
 
-  return { text: sections.join('\n'), ok: true };
+  return { text: sections.join('\n'), ok: !moduleScopedFailure };
 }
 
 module.exports = { formatOptionsList, discoverOfficialModuleYamls };

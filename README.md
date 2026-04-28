@@ -52,7 +52,7 @@ Follow the installer prompts, then open your AI IDE (Claude Code, Cursor, etc.) 
 npx bmad-method install --directory /path/to/project --modules bmm --tools claude-code --yes
 ```
 
-Override any module config option with `--set <module>.<key>=<value>` (repeatable). Run `--list-options` to see every available key:
+Override any module config option with `--set <module>.<key>=<value>` (repeatable). Run `--list-options [module]` to see locally-known official keys (built-in modules plus any external officials cached on this machine):
 
 ```bash
 npx bmad-method install --yes \

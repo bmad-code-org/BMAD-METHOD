@@ -19,8 +19,8 @@ module.exports = {
     ],
     ['--list-tools', 'Print all supported tool/IDE IDs (with target directories) and exit.'],
     [
-      '--set <module.key=value>',
-      'Set a module config option non-interactively (e.g. --set bmm.project_knowledge=research). Repeatable. Run --list-options to see available keys.',
+      '--set <spec>',
+      'Set a module config option non-interactively. Spec format: <module>.<key>=<value> (e.g. bmm.project_knowledge=research). Repeatable. Run --list-options to see available keys.',
       (value, prev) => [...(prev || []), value],
       [],
     ],

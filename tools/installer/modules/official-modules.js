@@ -56,26 +56,28 @@ class OfficialModules {
       this.collectedConfig[moduleName][key] = value;
     }
 
-    // Load schema so we can flag unknown keys. If the schema can't be loaded,
-    // we skip key-existence validation but still apply overrides + carry-forward.
+    if (!this.setOverrideKeys) this.setOverrideKeys = {};
+    if (!this.setOverrideKeys[moduleName]) this.setOverrideKeys[moduleName] = new Set();
+
+    // Try to load the module's schema. When available we can distinguish
+    // declared keys from unknown ones; when not (built-in is missing or
+    // unparseable — rare for `core`), we treat every prior + override key as
+    // unknown so carry-forward still runs and writeCentralConfig keeps them.
     let schema = null;
     const schemaPath = path.join(getModulePath(moduleName), 'module.yaml');
     if (await fs.pathExists(schemaPath)) {
       try {
         schema = yaml.parse(await fs.readFile(schemaPath, 'utf8'));
       } catch {
-        // schema unparseable — skip key-existence validation
+        // schema unparseable — fall through to no-schema behavior
       }
     }
-    if (!schema || typeof schema !== 'object') return;
-
     const declaredKeys = new Set();
-    for (const [key, decl] of Object.entries(schema)) {
-      if (decl && typeof decl === 'object' && 'prompt' in decl) declaredKeys.add(key);
+    if (schema && typeof schema === 'object') {
+      for (const [key, decl] of Object.entries(schema)) {
+        if (decl && typeof decl === 'object' && 'prompt' in decl) declaredKeys.add(key);
+      }
     }
-
-    if (!this.setOverrideKeys) this.setOverrideKeys = {};
-    if (!this.setOverrideKeys[moduleName]) this.setOverrideKeys[moduleName] = new Set();
 
     // Warn + track unknown keys from this run's --set entries.
     for (const key of Object.keys(overrides)) {
@@ -1633,6 +1635,19 @@ class OfficialModules {
     let allAnswers = { ...staticAnswers };
     for (const key of seededOverrideKeys) {
       allAnswers[`${moduleName}_${key}`] = moduleOverrides[key];
+    }
+    // Pre-write raw override values into collectedConfig so dynamic-default
+    // resolvers (`buildQuestion`'s function default) can see them when a
+    // sibling key uses a `{other_key}` placeholder. The fallback chain in
+    // that closure is: current prompt batch → `this.collectedConfig[mod]`,
+    // and overridden keys are removed from the prompt batch — without this
+    // pre-write the placeholder lookup would miss them. The raw value is
+    // overwritten with the template-rendered version after prompts complete.
+    if (seededOverrideKeys.size > 0) {
+      if (!this.collectedConfig[moduleName]) this.collectedConfig[moduleName] = {};
+      for (const key of seededOverrideKeys) {
+        this.collectedConfig[moduleName][key] = moduleOverrides[key];
+      }
     }
     // Drop pre-seeded questions so the user is not re-prompted and so
     // skipPrompts mode doesn't overwrite the override with the default.
