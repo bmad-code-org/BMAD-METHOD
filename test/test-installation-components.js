@@ -557,6 +557,15 @@ async function runTests() {
     const copilotInstaller = platformCodes17.platforms['github-copilot']?.installer;
 
     assert(copilotInstaller?.target_dir === '.agents/skills', 'GitHub Copilot target_dir uses native skills path');
+    assert(
+      copilotInstaller?.commands_target_dir === '.github/agents',
+      'GitHub Copilot commands_target_dir is configured for the Custom Agents picker',
+    );
+    assert(copilotInstaller?.commands_extension === '.agent.md', 'GitHub Copilot uses .agent.md extension for Custom Agents files');
+    assert(
+      typeof copilotInstaller?.commands_body_template === 'string' && copilotInstaller.commands_body_template.includes('{canonicalId}'),
+      'GitHub Copilot defines a commands_body_template with {canonicalId} placeholder',
+    );
 
     const tempProjectDir17 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-copilot-test-'));
     const installedBmadDir17 = await createTestBmadFixture();
@@ -595,6 +604,32 @@ async function runTests() {
       cleanedInstructions17.includes('User content before') && cleanedInstructions17.includes('User content after'),
       'GitHub Copilot setup preserves user content in copilot-instructions.md',
     );
+
+    // Custom Agents picker integration: a per-skill .agent.md file should be
+    // generated under .github/agents/ so the skill appears in Copilot's
+    // Custom Agents picker. Body uses the LOAD-{project-root}/... pattern
+    // (Copilot's body has no @skills/<id> resolver, so the agent file
+    // instructs the model to load the SKILL.md directly).
+    const agentFile17 = path.join(tempProjectDir17, '.github', 'agents', 'bmad-master.agent.md');
+    assert(await fs.pathExists(agentFile17), 'GitHub Copilot install writes per-skill .agent.md pointer file');
+    const agentContent17 = await fs.readFile(agentFile17, 'utf8');
+    assert(
+      agentContent17.includes('description:'),
+      'Copilot agent pointer carries a description in YAML frontmatter (drives the agents picker label)',
+    );
+    assert(
+      agentContent17.includes('{project-root}/.agents/skills/bmad-master/SKILL.md'),
+      'Copilot agent pointer body resolves to the skill via LOAD {project-root}/<target_dir>/<id>/SKILL.md',
+    );
+
+    // Idempotency: re-running setup must not duplicate or rewrite the agent
+    // pointer when the source manifest is unchanged.
+    const result17b = await ideManager17.setup('github-copilot', tempProjectDir17, installedBmadDir17, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+    assert(result17b.success === true, 'Second GitHub Copilot install succeeds (idempotent)');
+    assert(await fs.pathExists(agentFile17), 'Copilot agent pointer survives a second install pass');
 
     await fs.remove(tempProjectDir17);
     await fs.remove(path.dirname(installedBmadDir17));

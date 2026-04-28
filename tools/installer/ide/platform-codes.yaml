@@ -132,6 +132,9 @@ platforms:
     installer:
       target_dir: .agents/skills
       global_target_dir: ~/.agents/skills
+      commands_target_dir: .github/agents
+      commands_extension: .agent.md
+      commands_body_template: "LOAD the FULL {project-root}/{target_dir}/{canonicalId}/SKILL.md, READ its entire contents and follow its directions exactly!"
 
   goose:
     name: "Block Goose"

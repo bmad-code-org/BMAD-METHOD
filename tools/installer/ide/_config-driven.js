@@ -52,11 +52,26 @@ function isSafeCanonicalId(value) {
   return typeof value === 'string' && /^[a-zA-Z0-9][a-zA-Z0-9_.-]*$/.test(value) && !value.includes('..');
 }
 
+// Default body template for command pointer files. Used when a platform's
+// installer config doesn't override `commands_body_template`. Matches
+// OpenCode's native `@skills/<id>` skill-reference syntax.
+const DEFAULT_COMMANDS_BODY_TEMPLATE = '@skills/{canonicalId}';
+
+// Resolve placeholders in a body template. Supported placeholders:
+//   {canonicalId}   — the skill's canonical id
+//   {target_dir}    — the platform's skill install directory (e.g. .agents/skills)
+//   {project-root}  — left as a literal placeholder for the model/tool to expand
+//                     at runtime; consistent with PR #1769's templates.
+function expandBodyTemplate(template, { canonicalId, targetDir }) {
+  return template.replaceAll('{canonicalId}', canonicalId).replaceAll('{target_dir}', targetDir);
+}
+
 // The exact body the installer would generate for a given description and
-// canonicalId. Centralised so both the write and the freshness-check paths
-// agree on the canonical form.
-function buildCommandPointerBody(description, canonicalId) {
-  return `---\ndescription: ${yamlSafeSingleLine(description)}\n---\n\n@skills/${canonicalId}\n`;
+// canonicalId, given the platform's body template. Centralised so both the
+// write and the freshness-check paths agree on the canonical form.
+function buildCommandPointerBody(description, canonicalId, { template, targetDir }) {
+  const bodyText = expandBodyTemplate(template, { canonicalId, targetDir });
+  return `---\ndescription: ${yamlSafeSingleLine(description)}\n---\n\n${bodyText}\n`;
 }
 
 // Heuristic: does an existing pointer file look like our generator's output
@@ -64,11 +79,12 @@ function buildCommandPointerBody(description, canonicalId) {
 // preserve)? We check the body shape rather than full equality so that
 // description-only edits in the manifest can propagate without trampling
 // hand edits to the body.
-function looksLikeGeneratorOutput(content, canonicalId) {
+function looksLikeGeneratorOutput(content, canonicalId, { template, targetDir }) {
   if (typeof content !== 'string') return false;
   const trimmed = content.trim();
-  // Must end with the exact reference line our generator writes.
-  if (!trimmed.endsWith(`@skills/${canonicalId}`)) return false;
+  const expectedTail = expandBodyTemplate(template, { canonicalId, targetDir }).trim();
+  // Must end with the exact body our generator writes (post-expansion).
+  if (!trimmed.endsWith(expectedTail)) return false;
   // Must start with frontmatter containing exactly one description: line.
   const fmMatch = trimmed.match(/^---\n([\S\s]*?)\n---\n/);
   if (!fmMatch) return false;
@@ -259,6 +275,11 @@ class ConfigDrivenIdeSetup {
     const commandsPath = path.join(projectDir, config.commands_target_dir);
     await fs.ensureDir(commandsPath);
 
+    // Per-platform pointer-file shape, all overrideable in platform-codes.yaml.
+    const extension = config.commands_extension || '.md';
+    const template = config.commands_body_template || DEFAULT_COMMANDS_BODY_TEMPLATE;
+    const targetDir = config.target_dir;
+
     const csvContent = await fs.readFile(csvPath, 'utf8');
     const records = csv.parse(csvContent, { columns: true, skip_empty_lines: true });
 
@@ -288,8 +309,8 @@ class ConfigDrivenIdeSetup {
         result.fallbackDescription++;
       }
 
-      const body = buildCommandPointerBody(description, canonicalId);
-      const commandFile = path.join(commandsPath, `${canonicalId}.md`);
+      const body = buildCommandPointerBody(description, canonicalId, { template, targetDir });
+      const commandFile = path.join(commandsPath, `${canonicalId}${extension}`);
 
       // If a pointer file already exists, decide whether to overwrite based
       // on whether it looks like generator output (description-only diff) or
@@ -309,7 +330,7 @@ class ConfigDrivenIdeSetup {
           result.skippedExisting++;
           continue;
         }
-        if (looksLikeGeneratorOutput(existing, canonicalId)) {
+        if (looksLikeGeneratorOutput(existing, canonicalId, { template, targetDir })) {
           // Description (or other generated bit) has changed; refresh in place.
           try {
             await fs.writeFile(commandFile, body, 'utf8');
@@ -317,7 +338,7 @@ class ConfigDrivenIdeSetup {
           } catch (error) {
             result.writeFailures++;
             if (!options.silent) {
-              await prompts.log.warn(`Failed to update command pointer ${canonicalId}.md: ${error.message}`);
+              await prompts.log.warn(`Failed to update command pointer ${canonicalId}${extension}: ${error.message}`);
             }
           }
           continue;
@@ -333,7 +354,7 @@ class ConfigDrivenIdeSetup {
       } catch (error) {
         result.writeFailures++;
         if (!options.silent) {
-          await prompts.log.warn(`Failed to write command pointer ${canonicalId}.md: ${error.message}`);
+          await prompts.log.warn(`Failed to write command pointer ${canonicalId}${extension}: ${error.message}`);
         }
       }
     }
@@ -486,7 +507,15 @@ class ConfigDrivenIdeSetup {
       // so its pointers should go with it.
       const isInstallFlow = options.previousSkillIds && options.previousSkillIds.size > 0;
       const activeSkillIds = isInstallFlow ? await this._readActiveSkillIds(resolvedBmadDir) : new Set();
-      await this.cleanupCommandPointers(projectDir, this.installerConfig.commands_target_dir, options, removalSet, activeSkillIds);
+      const extension = this.installerConfig.commands_extension || '.md';
+      await this.cleanupCommandPointers(
+        projectDir,
+        this.installerConfig.commands_target_dir,
+        options,
+        removalSet,
+        activeSkillIds,
+        extension,
+      );
     }
 
     // Skip target_dir cleanup when a peer platform owns this directory
@@ -590,9 +619,9 @@ class ConfigDrivenIdeSetup {
 
   /**
    * Cleanup generated command pointer files for entries in removalSet.
-   * Symmetric counterpart to installCommandPointers — removes <canonicalId>.md
-   * files whose canonicalId is in the set. Removes the commands directory
-   * entirely if it ends up empty.
+   * Symmetric counterpart to installCommandPointers — removes
+   * `<canonicalId><extension>` files whose canonicalId is in the set. Removes
+   * the commands directory entirely if it ends up empty.
    * @param {string} projectDir
    * @param {string} commandsTargetDir - Relative dir (e.g. .opencode/commands)
    * @param {Object} options
@@ -603,8 +632,19 @@ class ConfigDrivenIdeSetup {
    *   same skills are about to be re-installed) doesn't wipe hand-edited
    *   pointer files. Pass an empty set or omit to delete every match in
    *   removalSet (uninstall flow).
+   * @param {string} [extension] - Pointer file extension (default '.md');
+   *   matches the platform's commands_extension config value so cleanup
+   *   correctly identifies pointer files for IDEs whose convention isn't .md
+   *   (e.g. Copilot's `.agent.md`).
    */
-  async cleanupCommandPointers(projectDir, commandsTargetDir, options = {}, removalSet = new Set(), activeSkillIds = new Set()) {
+  async cleanupCommandPointers(
+    projectDir,
+    commandsTargetDir,
+    options = {},
+    removalSet = new Set(),
+    activeSkillIds = new Set(),
+    extension = '.md',
+  ) {
     if (!removalSet || removalSet.size === 0) return;
 
     const commandsPath = path.join(projectDir, commandsTargetDir);
@@ -618,8 +658,8 @@ class ConfigDrivenIdeSetup {
     }
 
     for (const entry of entries) {
-      if (!entry.endsWith('.md')) continue;
-      const canonicalId = entry.slice(0, -3);
+      if (!entry.endsWith(extension)) continue;
+      const canonicalId = entry.slice(0, -extension.length);
       if (!removalSet.has(canonicalId)) continue;
       // Spare pointers for skills that are still in the manifest; the
       // install pass will refresh them in place if their content has gone
