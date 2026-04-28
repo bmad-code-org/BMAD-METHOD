@@ -1,8 +1,8 @@
 ---
-title: "Quick Fixes"
+title: 'Quick Fixes'
 description: How to make quick fixes and ad-hoc changes
 sidebar:
-  order: 5
+  order: 6
 ---
 
 Use **Quick Dev** for bug fixes, refactorings, or small targeted changes that don't require the full BMad Method.
@@ -15,9 +15,10 @@ Use **Quick Dev** for bug fixes, refactorings, or small targeted changes that do
 - Dependency updates
 
 :::note[Prerequisites]
+
 - BMad Method installed (`npx bmad-method install`)
 - An AI-powered IDE (Claude Code, Cursor, or similar)
-:::
+  :::
 
 ## Steps
 

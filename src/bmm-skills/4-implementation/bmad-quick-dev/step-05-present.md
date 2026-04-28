@@ -48,16 +48,31 @@ Format each stop as framing first, link on the next indented line:
 
 When there is only one concern, omit the bold label — just list the stops directly.
 
-### Commit and Present
+### Mark Spec Done
 
-1. Change `{spec_file}` status to `done` in the frontmatter.
-2. If version control is available and the tree is dirty, create a local commit with a conventional message derived from the spec title.
-3. Open the spec in the user's editor so they can click through the Suggested Review Order:
+Change `{spec_file}` status to `done` in the frontmatter.
+
+Follow `./sync-sprint-status.md` with `{target_status}` = `review`.
+
+### Commit and Open
+
+1. If version control is available and the tree is dirty, create a local commit with a conventional message derived from the spec title.
+2. Open the spec in the user's editor so they can click through the Suggested Review Order:
    - Resolve two absolute paths: (1) the repository root (`git rev-parse --show-toplevel` — returns the worktree root when in a worktree, project root otherwise; if this fails, fall back to the current working directory), (2) `{spec_file}`. Run `code -r "{absolute-root}" "{absolute-spec-file}"` — the root first so VS Code opens in the right context, then the spec file. Always double-quote paths to handle spaces and special characters.
    - If `code` is not available (command fails), skip gracefully and tell the user the spec file path instead.
-4. Display summary of your work to the user, including the commit hash if one was created. Any file paths shown in conversation/terminal output must use CWD-relative format (no leading `/`) with `:line` notation (e.g., `src/path/file.ts:42`) for terminal clickability — the goal is to make paths clickable in terminal emulators. Include:
-   - A note that the spec is open in their editor (or the file path if it couldn't be opened). Mention that `{spec_file}` now contains a Suggested Review Order.
-   - **Navigation tip:** "Ctrl+click (Cmd+click on macOS) the links in the Suggested Review Order to jump to each stop."
-   - Offer to push and/or create a pull request.
+
+### Display Summary
+
+Display summary of your work to the user, including the commit hash if one was created. Any file paths shown in conversation/terminal output must use CWD-relative format (no leading `/`) with `:line` notation (e.g., `src/path/file.ts:42`) for terminal clickability — the goal is to make paths clickable in terminal emulators. Include:
+
+- A note that the spec is open in their editor (or the file path if it couldn't be opened). Mention that `{spec_file}` now contains a Suggested Review Order.
+- **Navigation tip:** "Ctrl+click (Cmd+click on macOS) the links in the Suggested Review Order to jump to each stop."
+- Offer to push and/or create a pull request.
 
 Workflow complete.
+
+## On Complete
+
+Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete`
+
+If the resolved `workflow.on_complete` is non-empty, follow it as the final terminal instruction before exiting.

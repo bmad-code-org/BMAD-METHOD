@@ -1,5 +1,125 @@
 # Changelog
 
+## v6.5.0 - 2026-04-26
+
+### 🎁 Features
+
+* Support for 18 new agent platforms: AdaL, Sourcegraph Amp, IBM Bob, Command Code, Snowflake Cortex Code, Factory Droid, Firebender, Block Goose, Kode, Mistral Vibe, Mux, Neovate, OpenClaw, OpenHands, Pochi, Replit Agent, Warp, Zencoder — bringing total supported platforms to 42 (#2313)
+* All platforms that support the cross-tool `.agents/skills/` standard now use it (#2313)
+
+## v6.4.0 - 2026-04-24
+
+### ✨ Headline
+
+**Full agent and workflow customization across the entire BMad Method.** Every agent and workflow in BMM, Core, CIS, GDS, and TEA can now be customized via TOML overrides in `_bmad/custom/`. Customize agents to apply tooling, version control, or behavior changes across whole groups of workflows. Drop in fine-grained per-workflow overrides where you need them. Built for power users who want BMad to fit their stack without forking.
+
+**Stable and bleeding-edge release channels, standardized across all modules.** Pick `stable` or `next` per module, pin specific versions, and switch channels interactively or via CLI flags (`--channel`, `--all-stable`, `--all-next`, `--next=CODE`, `--pin CODE=TAG`). Same model across BMM, Core, and every external module.
+
+### 💥 Breaking Changes
+
+* Customization is now TOML-based; the briefly introduced YAML-based customization is no longer supported (#2284, #2283)
+
+### 🎁 Features
+
+**Customization framework**
+
+* TOML-based agent and workflow customization with flat schema, structural merge rules (scalars, tables, code-keyed arrays, append arrays), and `persistent_facts` unification (#2284)
+* Central `_bmad/config.toml` surface with four-file architecture (`config.toml`, `config.user.toml`, `custom/config.toml`, `custom/config.user.toml`) for agent roster and scope-partitioned install answers (#2285)
+* `customize.toml` support extended to 17 bmm-skills workflows with flattened SKILL.md architecture and standardized `[workflow]` block (#2287)
+* `customize.toml` extended to all six developer-execution workflows: bmad-dev-story, bmad-code-review, bmad-sprint-planning, bmad-sprint-status, bmad-quick-dev, bmad-checkpoint-preview (#2308)
+* `bmad-customize` skill — guided authoring of TOML overrides in `_bmad/custom/` with stdlib-only resolver verification (#2289)
+* Wire `on_complete` hook into all 23 workflow terminal steps with full customize.toml documentation (#2290)
+
+**Release channels & installer**
+
+* Channel-based version resolution for external modules with interactive channel management (`stable` / `next` / `pinned`) and CLI flags (`--channel`, `--all-stable`, `--all-next`, `--next=CODE`, `--pin CODE=TAG`) (#2305)
+* GitHub API as primary fetch with raw CDN fallback in installer registry client to support corporate proxies (#2248)
+
+**Other**
+
+* Kimi Code CLI support for installing BMM skills in `.kimi/skills/` (#2302)
+* `bmad-create-story` now reads every UPDATE-marked file before generating dev notes so brownfield stories preserve current behavior instead of improvising at implementation time (#2274)
+* Sync `sprint-status.yaml` from quick-dev on epic-story implementation with idempotent writes tracking `in-progress` and `review` transitions (#2234)
+* Enforce model parity for all code review subagents to match orchestrator session capability for improved rare-event detection (#2236)
+* Set `team: software-development` on all six BMM agents for unified grouping in party-mode and retrospective skills (#2286)
+
+### 🐛 Bug Fixes
+
+* PRD workflow no longer silently de-scopes user requirements or invents MVP/Growth/Vision phasing; requires explicit confirmation before any scope reduction (#1927)
+* Installer shows live npm version for external modules instead of stale cached metadata (#2307)
+* Resolve external-module agents from cache during manifest write so agents land in `config.toml` (#2295)
+* Fix installer version resolution for external modules with shared resolver preferring package.json > module.yaml > marketplace.json (#2298)
+* Replace fs-extra with native `node:fs` to prevent file loss during multi-module installs from deferred retry-queue races (#2253)
+* Add `move()` and overwrite support to fs-native wrapper for directory migrations during upgrades (#2253)
+* Stop skill scanner from recursing into discovered skills to prevent spurious errors on nested template files (#2255)
+* Source built-in modules locally in installer UI to preserve core and bmm in module list when registry is unreachable (#2251)
+* Remove dead Batch-apply option from code-review patch menu and rename apply options for clarity (#2225)
+
+### ♻️ Refactoring
+
+* Remove 1,683 lines of dead code: three entirely dead files (agent-command-generator.js, bmad-artifacts.js, module-injections.js) and ~50 unused exports across installer modules (#2247)
+* Remove dead template and agent-command pipeline from installer; SKILL.md directory copying is the sole installation path (#2244)
+
+### 📚 Documentation
+
+* Sync and update Vietnamese (vi-VN) docs with missing pages and refreshed translations (#2291, #2222)
+* Sync French (fr-FR) translations with upstream, restore Amelia as dev agent, fix sidebar ordering (#2231)
+* Add Czech (cs-CZ) `analysis-phase.md` translation; normalize typographic quotes (#2240, #2241, #2242)
+* Add missing Chinese (zh-CN) translations for 3 documents (#2254)
+* Update stale Analyst agent triggers and add PRFAQ link (#2238)
+* Remove Bob from workflow map diagrams reflecting consolidation into Amelia in v6.3.0 (#2252)
+
+## v6.3.0 - 2026-04-09
+
+### 💥 Breaking Changes
+
+* Remove custom content installation feature; use marketplace-based plugin installation instead (#2227)
+* Remove bmad-init skill; all agents and skills now load config directly from `{project-root}/_bmad/bmm/config.yaml` (#2159)
+* Remove spec-wip.md singleton; quick-dev now writes directly to `spec-{slug}.md` with status field, enabling parallel sessions (#2214)
+* Consolidate three agent personas into Developer agent (Amelia): remove Barry quick-flow-solo-dev (#2177), Quinn QA agent (#2179), and Bob Scrum Master agent (#2186)
+
+### 🎁 Features
+
+* Universal source support for custom module installs with 5-strategy PluginResolver cascade supporting any Git host (GitHub, GitLab, Bitbucket, self-hosted) and local file paths (#2233)
+* Community module browser with three-tier selection: official, community (category drill-down from marketplace index), and custom URL with unverified source warning (#2229)
+* Switch module source of truth from bundled config to remote marketplace registry with network-failure fallback (#2228)
+* Add bmad-prfaq skill implementing Amazon's Working Backwards methodology as alternative Phase 1 analysis path with 5-stage coached workflow and subagent architecture (#2157)
+* Add bmad-checkpoint-preview skill for guided, concern-ordered human review of commits, branches, or PRs (#2145)
+* Epic context compilation for quick-dev step-01: sub-agent compiles planning docs into cached `epic-{N}-context.md` for story implementation (#2218)
+* Previous story continuity in quick-dev: load completed spec from same epic as implementation context (#2201)
+* Planning artifact awareness in quick-dev: selectively load PRD, architecture, UX, and epics docs for context-informed specs (#2185)
+* One-shot route now generates lightweight spec trace file for consistent artifact tracking (#2121)
+* Improve checkpoint-preview UX with clickable spec paths, external edit detection, and missing-file halt (#2217)
+* Add Junie (JetBrains AI) platform support (#2142)
+* Restore KiloCoder support with native-skills installation (#2151)
+* Add bmad-help support for llms.txt general questions (#2230)
+
+### ♻️ Refactoring
+
+* Consolidate party-mode into single SKILL.md with real subagent spawning via Agent tool, replacing multi-file workflow architecture (#2160)
+
+### 🐛 Bug Fixes
+
+* Fix version display bug where marketplace.json walk-up reported wrong version (#2233)
+* Fix checkpoint-preview step-05 advancing without user confirmation by adding explicit HALT (#2184)
+* Address adversarial triage findings: clarify review_mode transitions, label walkthrough branches, fix terse commit handling (#2180)
+* Preserve local custom module sources during quick update (#2172)
+* Support skills/ folder as fallback module source location for bmb compatibility (#2149)
+
+### 🔧 Maintenance
+
+* Overhaul installer branding with responsive BMAD METHOD logo, blue color scheme, unified version sourcing from marketplace.json, and surgical manifest-based skill cleanup (#2223)
+* Stop copying skill prompts to _bmad by default (#2182)
+* Add Python 3.10+ and uv as documented prerequisites (#2221)
+
+### 📚 Documentation
+
+* Complete Czech (cs-CZ) documentation translation (#2134)
+* Complete Vietnamese (vi-VN) documentation translation (#2110, #2192)
+* Rewrite get-answers-about-bmad as 1-2-3 escalation flow, remove deprecated references (#2213)
+* Add checkpoint-preview explainer page and workflow diagram (#2183)
+* Update docs theme to match bmadcode.com with responsive logo and blue color scheme (#2176)
+
 ## v6.2.2 - 2026-03-25
 
 ### ♻️ Refactoring

@@ -1,5 +1,5 @@
 ---
-title: "Party Mode"
+title: "Chế độ Party"
 description: Cộng tác đa agent - đưa tất cả agent AI vào cùng một cuộc trò chuyện
 sidebar:
   order: 7

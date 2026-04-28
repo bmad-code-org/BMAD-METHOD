@@ -113,3 +113,9 @@ PRD complete. Invoke the `bmad-help` skill.
 The polished PRD serves as the foundation for all subsequent product development activities. All design, architecture, and development work should trace back to the requirements and vision documented in this PRD - update it also as needed as you continue planning.
 
 **Congratulations on completing the Product Requirements Document for {{project_name}}!** 🎉
+
+## On Complete
+
+Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete`
+
+If the resolved `workflow.on_complete` is non-empty, follow it as the final terminal instruction before exiting.

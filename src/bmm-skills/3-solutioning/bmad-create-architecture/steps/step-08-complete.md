@@ -74,3 +74,9 @@ Upon Completion of task output: offer to answer any questions about the Architec
 This is the final step of the Architecture workflow. The user now has a complete, validated architecture document ready for AI agent implementation.
 
 The architecture will serve as the single source of truth for all technical decisions, ensuring consistent implementation across the entire project development lifecycle.
+
+## On Complete
+
+Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete`
+
+If the resolved `workflow.on_complete` is non-empty, follow it as the final terminal instruction before exiting.

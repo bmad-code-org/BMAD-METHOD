@@ -2,7 +2,7 @@
 title: "Quick Dev"
 description: Réduire la friction de l’interaction humaine sans renoncer aux points de contrôle qui protègent la qualité des résultats
 sidebar:
-  order: 2
+  order: 3
 ---
 
 Intention en entrée, modifications de code en sortie, avec aussi peu d'interactions humaines dans la boucle que possible — sans sacrifier la qualité.

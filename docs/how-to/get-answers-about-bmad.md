@@ -1,84 +1,31 @@
 ---
-title: "How to Get Answers About BMad"
+title: 'How to Get Answers About BMad'
 description: Use an LLM to quickly answer your own BMad questions
 sidebar:
-  order: 4
+  order: 5
 ---
 
-## Start Here: BMad-Help
+Use BMad's built-in help, source docs, or the community to get answers — from quickest to most thorough.
 
-**The fastest way to get answers about BMad is the `bmad-help` skill.** This intelligent guide will answer upwards of 80% of all questions and is available to you directly in your IDE as you work.
+## 1. Ask BMad-Help
 
-BMad-Help is more than a lookup tool — it:
-- **Inspects your project** to see what's already been completed
-- **Understands natural language** — ask questions in plain English
-- **Varies based on your installed modules** — shows relevant options
-- **Auto-runs after workflows** — tells you exactly what to do next
-- **Recommends the first required task** — no guessing where to start
-
-### How to Use BMad-Help
-
-Call it by name in your AI session:
+The fastest way to get answers. The `bmad-help` skill is available directly in your AI session and handles over 80% of questions — it inspects your project, sees what you've completed, and tells you what to do next.
 
 ```
-bmad-help
+bmad-help I have a SaaS idea and know all the features. Where do I start?
+bmad-help What are my options for UX design?
+bmad-help I'm stuck on the PRD workflow
 ```
 
 :::tip
 You can also use `/bmad-help` or `$bmad-help` depending on your platform, but just `bmad-help` should work everywhere.
 :::
 
-Combine it with a natural language query:
+## 2. Go Deeper with Source
 
-```
-bmad-help I have a SaaS idea and know all the features. Where do I start?
-bmad-help What are my options for UX design?
-bmad-help I'm stuck on the PRD workflow
-bmad-help Show me what's been done so far
-```
+BMad-Help draws on your installed configuration. For questions about BMad's internals, history, or architecture — or if you're researching BMad before installing — point your AI at the source directly.
 
-BMad-Help responds with:
-- What's recommended for your situation
-- What the first required task is
-- What the rest of the process looks like
-
-## When to Use This Guide
-
-Use this section when:
-- You want to understand BMad's architecture or internals
-- You need answers outside of what BMad-Help provides
-- You're researching BMad before installing
-- You want to explore the source code directly
-
-## Steps
-
-### 1. Choose Your Source
-
-| Source               | Best For                                  | Examples                     |
-| -------------------- | ----------------------------------------- | ---------------------------- |
-| **`_bmad` folder**   | How BMad works—agents, workflows, prompts | "What does the PM agent do?" |
-| **Full GitHub repo** | History, installer, architecture          | "What changed in v6?"        |
-| **`llms-full.txt`**  | Quick overview from docs                  | "Explain BMad's four phases" |
-
-The `_bmad` folder is created when you install BMad. If you don't have it yet, clone the repo instead.
-
-### 2. Point Your AI at the Source
-
-**If your AI can read files (Claude Code, Cursor, etc.):**
-
-- **BMad installed:** Point at the `_bmad` folder and ask directly
-- **Want deeper context:** Clone the [full repo](https://github.com/bmad-code-org/BMAD-METHOD)
-
-**If you use ChatGPT or Claude.ai:**
-
-Fetch `llms-full.txt` into your session:
-
-```text
-https://bmad-code-org.github.io/BMAD-METHOD/llms-full.txt
-```
-
-
-### 3. Ask Your Question
+Clone or open the [BMAD-METHOD repo](https://github.com/bmad-code-org/BMAD-METHOD) and ask your AI about it. Any agent-capable tool (Claude Code, Cursor, Windsurf, etc.) can read the source and answer questions directly.
 
 :::note[Example]
 **Q:** "Tell me the fastest way to build something with BMad"
@@ -86,51 +33,48 @@ https://bmad-code-org.github.io/BMAD-METHOD/llms-full.txt
 **A:** Use Quick Flow: Run `bmad-quick-dev` — it clarifies your intent, plans, implements, reviews, and presents results in a single workflow, skipping the full planning phases.
 :::
 
-## What You Get
+**Tips for better answers:**
 
-Direct answers about BMad—how agents work, what workflows do, why things are structured the way they are—without waiting for someone else to respond.
-
-## Tips
-
-- **Verify surprising answers** — LLMs occasionally get things wrong. Check the source file or ask on Discord.
 - **Be specific** — "What does step 3 of the PRD workflow do?" beats "How does PRD work?"
+- **Verify surprising claims** — LLMs occasionally get things wrong. Check the source file or ask on Discord.
 
-## Still Stuck?
+### Not using an agent? Use the docs site
 
-Tried the LLM approach and still need help? You now have a much better question to ask.
+If your AI can't read local files (ChatGPT, Claude.ai, etc.), fetch [llms-full.txt](https://bmad-code-org.github.io/BMAD-METHOD/llms-full.txt) into your session — it's a single-file snapshot of the BMad documentation.
 
-| Channel                   | Use For                                     |
-| ------------------------- | ------------------------------------------- |
-| `#bmad-method-help`       | Quick questions (real-time chat)            |
-| `help-requests` forum     | Detailed questions (searchable, persistent) |
-| `#suggestions-feedback`   | Ideas and feature requests                  |
-| `#report-bugs-and-issues` | Bug reports                                 |
+## 3. Ask Someone
+
+If neither BMad-Help nor the source answered your question, you now have a much better question to ask.
+
+| Channel                 | Use For                    |
+| ----------------------- | -------------------------- |
+| `help-requests` forum   | Questions                  |
+| `#suggestions-feedback` | Ideas and feature requests |
 
 **Discord:** [discord.gg/gk8jAdXWmj](https://discord.gg/gk8jAdXWmj)
 
-**GitHub Issues:** [github.com/bmad-code-org/BMAD-METHOD/issues](https://github.com/bmad-code-org/BMAD-METHOD/issues) (for clear bugs)
+**GitHub Issues:** [github.com/bmad-code-org/BMAD-METHOD/issues](https://github.com/bmad-code-org/BMAD-METHOD/issues)
+_You!_
+_Stuck_
+_in the queue—_
+_waiting_
+_for who?_
 
-*You!*
-        *Stuck*
-             *in the queue—*
-                      *waiting*
-                              *for who?*
+_The source_
+_is there,_
+_plain to see!_
 
-*The source*
-        *is there,*
-                *plain to see!*
+_Point_
+_your machine._
+_Set it free._
 
-*Point*
-     *your machine.*
-              *Set it free.*
+_It reads._
+_It speaks._
+_Ask away—_
 
-*It reads.*
-        *It speaks.*
-                *Ask away—*
+_Why wait_
+_for tomorrow_
+_when you have_
+_today?_
 
-*Why wait*
-        *for tomorrow*
-                *when you have*
-                        *today?*
-
-*—Claude*
+_—Claude_

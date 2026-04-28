@@ -174,7 +174,7 @@ parts: 1
 ## Current Installer (migration context)
 - Entry: `tools/installer/bmad-cli.js` (Commander.js) → `tools/installer/core/installer.js`
 - Platforms: `platform-codes.yaml` (~20 platforms with target dirs, legacy dirs, template types, special flags)
-- Manifests: CSV files (skill/workflow/agent-manifest.csv) are current source of truth, not JSON
+- Manifests: skill-manifest.csv is the current source of truth; agent essence lives in `_bmad/config.toml` (generated from each module.yaml's `agents:` block)
 - External modules: `external-official-modules.yaml` (CIS, GDS, TEA, WDS) from npm with semver
 - Dependencies: 4-pass resolver (collect → parse → resolve → transitive); YAML-declared only
 - Config: prompts for name, communication language, document output language, output folder

@@ -1,23 +1,109 @@
 const path = require('node:path');
 const os = require('node:os');
-const fs = require('fs-extra');
+const semver = require('semver');
+const fs = require('./fs-native');
+const installerPackageJson = require('../../package.json');
 const { CLIUtils } = require('./cli-utils');
-const { CustomHandler } = require('./custom-handler');
 const { ExternalModuleManager } = require('./modules/external-manager');
+const { resolveModuleVersion } = require('./modules/version-resolver');
+const { Manifest } = require('./core/manifest');
+const {
+  parseChannelOptions,
+  buildPlan,
+  decideChannelForModule,
+  orphanPinWarnings,
+  bundledTargetWarnings,
+} = require('./modules/channel-plan');
+const channelResolver = require('./modules/channel-resolver');
 const prompts = require('./prompts');
 
-// Separator class for visual grouping in select/multiselect prompts
-// Note: @clack/prompts doesn't support separators natively, they are filtered out
-class Separator {
-  constructor(text = '────────') {
-    this.line = text;
-    this.name = text;
+const manifest = new Manifest();
+
+/**
+ * Format a resolved version for display in installer labels.
+ * Semver-like values are normalized to a single leading "v".
+ * @param {string|null|undefined} version
+ * @returns {string}
+ */
+function formatDisplayVersion(version) {
+  const trimmed = typeof version === 'string' ? version.trim() : '';
+  if (!trimmed) return '';
+
+  const normalized = semver.valid(semver.coerce(trimmed));
+  if (normalized) {
+    return `v${normalized}`;
   }
-  type = 'separator';
+
+  return trimmed;
 }
 
-// Separator for choice lists (compatible interface)
-const choiceUtils = { Separator };
+/**
+ * Build the display label for a module, showing an upgrade arrow when an
+ * installed semver differs from the latest resolvable semver.
+ * @param {string} name
+ * @param {string} latestVersion
+ * @param {string} installedVersion
+ * @returns {string}
+ */
+function buildModuleLabel(name, latestVersion, installedVersion = '') {
+  const latestDisplay = formatDisplayVersion(latestVersion);
+  if (!latestDisplay) return name;
+
+  const installedDisplay = formatDisplayVersion(installedVersion);
+  const latestSemver = semver.valid(semver.coerce(latestVersion || ''));
+  const installedSemver = semver.valid(semver.coerce(installedVersion || ''));
+
+  if (installedDisplay && latestSemver && installedSemver && semver.neq(installedSemver, latestSemver)) {
+    return `${name} (${installedDisplay} → ${latestDisplay})`;
+  }
+
+  return `${name} (${latestDisplay})`;
+}
+
+/**
+ * Resolve the version to show for a module picker entry. External modules use
+ * the same channel/tag resolver as installs; bundled modules fall back to local
+ * source metadata.
+ * @param {string} moduleCode - Module code (e.g., 'core', 'bmm', 'cis')
+ * @param {Object} options
+ * @param {string|null} [options.repoUrl] - Module repository URL for tag resolution
+ * @param {string|null} [options.registryDefault] - Registry default channel
+ * @param {Object|null} [options.channelOptions] - Parsed installer channel options
+ * @returns {Promise<{version: string, lookupAttempted: boolean, lookupSucceeded: boolean}>}
+ */
+async function getModuleVersion(moduleCode, { repoUrl = null, registryDefault = null, channelOptions = null } = {}) {
+  if (repoUrl) {
+    const plan = decideChannelForModule({
+      code: moduleCode,
+      channelOptions,
+      registryDefault,
+    });
+
+    try {
+      const resolved = await channelResolver.resolveChannel({
+        channel: plan.channel,
+        pin: plan.pin,
+        repoUrl,
+      });
+      if (resolved?.version) {
+        return {
+          version: resolved.version,
+          lookupAttempted: plan.channel === 'stable',
+          lookupSucceeded: true,
+        };
+      }
+    } catch {
+      // Fall back to local metadata when tag resolution is unavailable.
+    }
+  }
+
+  const versionInfo = await resolveModuleVersion(moduleCode);
+  return {
+    version: versionInfo.version || '',
+    lookupAttempted: !!repoUrl,
+    lookupSucceeded: false,
+  };
+}
 
 /**
  * UI utilities for the installer
@@ -35,6 +121,31 @@ class UI {
     const { MessageLoader } = require('./message-loader');
     const messageLoader = new MessageLoader();
     await messageLoader.displayStartMessage();
+
+    // Parse channel flags (--channel/--all-*/--next=/--pin) once. Warnings
+    // are surfaced immediately so the user sees them before any git ops run.
+    const channelOptions = parseChannelOptions(options);
+    for (const warning of channelOptions.warnings) {
+      await prompts.log.warn(warning);
+    }
+
+    // When the user launched the installer from a prerelease (npx bmad-method@next),
+    // mirror that intent for external modules: seed the global channel to 'next' so
+    // the module picker's version labels resolve from main HEAD (matching what
+    // actually gets installed) and the interactive channel gate skips — the user
+    // already declared "next" intent by typing @next. Explicit channel flags
+    // override this seed.
+    if (
+      semver.prerelease(installerPackageJson.version) !== null &&
+      !channelOptions.global &&
+      channelOptions.nextSet.size === 0 &&
+      channelOptions.pins.size === 0
+    ) {
+      channelOptions.global = 'next';
+      await prompts.log.info(
+        'Launched from a prerelease — installing all external modules from main HEAD (next channel). Pass --all-stable or --pin to override.',
+      );
+    }
 
     // Get directory from options or prompt
     let confirmedDirectory;
@@ -58,11 +169,6 @@ class UI {
     // Check if there's an existing BMAD installation
     const hasExistingInstall = await fs.pathExists(bmadDir);
 
-    let customContentConfig = { hasCustomContent: false };
-    if (!hasExistingInstall) {
-      customContentConfig._shouldAsk = true;
-    }
-
     // Track action type (only set if there's an existing installation)
     let actionType;
 
@@ -70,17 +176,14 @@ class UI {
     if (hasExistingInstall) {
       // Get version information
       const { existingInstall, bmadDir } = await this.getExistingInstallation(confirmedDirectory);
-      const packageJsonPath = path.join(__dirname, '../../package.json');
-      const currentVersion = require(packageJsonPath).version;
-      const installedVersion = existingInstall.installed ? existingInstall.version || 'unknown' : 'unknown';
 
       // Build menu choices dynamically
       const choices = [];
 
       // Always show Quick Update first (allows refreshing installation even on same version)
-      if (installedVersion !== 'unknown') {
+      if (existingInstall.installed) {
         choices.push({
-          name: `Quick Update (v${installedVersion} → v${currentVersion})`,
+          name: 'Quick Update',
           value: 'quick-update',
         });
       }
@@ -97,12 +200,15 @@ class UI {
         actionType = options.action;
         await prompts.log.info(`Using action from command-line: ${actionType}`);
       } else if (options.yes) {
-        // Default to quick-update if available, otherwise first available choice
+        // Default to quick-update if available, unless flags that require the
+        // full update path are present (e.g. --custom-source which re-clones
+        // modules at a new version — quick-update skips that entirely).
         if (choices.length === 0) {
           throw new Error('No valid actions available for this installation');
         }
         const hasQuickUpdate = choices.some((c) => c.value === 'quick-update');
-        actionType = hasQuickUpdate ? 'quick-update' : choices[0].value;
+        const needsFullUpdate = !!options.customSource;
+        actionType = hasQuickUpdate && !needsFullUpdate ? 'quick-update' : (choices.find((c) => c.value === 'update') || choices[0]).value;
         await prompts.log.info(`Non-interactive mode (--yes): defaulting to ${actionType}`);
       } else {
         actionType = await prompts.select({
@@ -114,48 +220,9 @@ class UI {
 
       // Handle quick update separately
       if (actionType === 'quick-update') {
-        // Pass --custom-content through so installer can re-cache if cache is missing
-        let customContentForQuickUpdate = { hasCustomContent: false };
-        if (options.customContent) {
-          const paths = options.customContent
-            .split(',')
-            .map((p) => p.trim())
-            .filter(Boolean);
-          if (paths.length > 0) {
-            const customPaths = [];
-            const selectedModuleIds = [];
-            const sources = [];
-            for (const customPath of paths) {
-              const expandedPath = this.expandUserPath(customPath);
-              const validation = this.validateCustomContentPathSync(expandedPath);
-              if (validation) continue;
-              let moduleMeta;
-              try {
-                const moduleYamlPath = path.join(expandedPath, 'module.yaml');
-                moduleMeta = require('yaml').parse(await fs.readFile(moduleYamlPath, 'utf-8'));
-              } catch {
-                continue;
-              }
-              if (!moduleMeta?.code) continue;
-              customPaths.push(expandedPath);
-              selectedModuleIds.push(moduleMeta.code);
-              sources.push({ path: expandedPath, id: moduleMeta.code, name: moduleMeta.name || moduleMeta.code });
-            }
-            if (customPaths.length > 0) {
-              customContentForQuickUpdate = {
-                hasCustomContent: true,
-                selected: true,
-                sources,
-                selectedFiles: customPaths.map((p) => path.join(p, 'module.yaml')),
-                selectedModuleIds,
-              };
-            }
-          }
-        }
         return {
           actionType: 'quick-update',
           directory: confirmedDirectory,
-          customContent: customContentForQuickUpdate,
           skipPrompts: options.yes || false,
         };
       }
@@ -164,7 +231,7 @@ class UI {
       // Return early with modify configuration
       if (actionType === 'update') {
         // Get existing installation info
-        const { installedModuleIds } = await this.getExistingInstallation(confirmedDirectory);
+        const { installedModuleIds, installedModuleVersions } = await this.getExistingInstallation(confirmedDirectory);
 
         await prompts.log.message(`Found existing modules: ${[...installedModuleIds].join(', ')}`);
 
@@ -177,127 +244,27 @@ class UI {
             .map((m) => m.trim())
             .filter(Boolean);
           await prompts.log.info(`Using modules from command-line: ${selectedModules.join(', ')}`);
+        } else if (options.customSource && !options.yes) {
+          // Custom source without --modules or --yes: start with empty list
+          // (only custom source modules + core will be installed).
+          // When --yes is also set, fall through to the --yes branch so all
+          // installed modules are included alongside the custom source modules.
+          selectedModules = [];
         } else if (options.yes) {
           selectedModules = await this.getDefaultModules(installedModuleIds);
           await prompts.log.info(
             `Non-interactive mode (--yes): using default modules (installed + defaults): ${selectedModules.join(', ')}`,
           );
         } else {
-          selectedModules = await this.selectAllModules(installedModuleIds);
+          selectedModules = await this.selectAllModules(installedModuleIds, installedModuleVersions, channelOptions);
         }
 
-        // After module selection, ask about custom modules
-        let customModuleResult = { selectedCustomModules: [], customContentConfig: { hasCustomContent: false } };
-
-        if (options.customContent) {
-          // Use custom content from command-line
-          const paths = options.customContent
-            .split(',')
-            .map((p) => p.trim())
-            .filter(Boolean);
-          await prompts.log.info(`Using custom content from command-line: ${paths.join(', ')}`);
-
-          // Build custom content config similar to promptCustomContentSource
-          const customPaths = [];
-          const selectedModuleIds = [];
-          const sources = [];
-
-          for (const customPath of paths) {
-            const expandedPath = this.expandUserPath(customPath);
-            const validation = this.validateCustomContentPathSync(expandedPath);
-            if (validation) {
-              await prompts.log.warn(`Skipping invalid custom content path: ${customPath} - ${validation}`);
-              continue;
-            }
-
-            // Read module metadata
-            let moduleMeta;
-            try {
-              const moduleYamlPath = path.join(expandedPath, 'module.yaml');
-              const moduleYaml = await fs.readFile(moduleYamlPath, 'utf-8');
-              const yaml = require('yaml');
-              moduleMeta = yaml.parse(moduleYaml);
-            } catch (error) {
-              await prompts.log.warn(`Skipping custom content path: ${customPath} - failed to read module.yaml: ${error.message}`);
-              continue;
-            }
-
-            if (!moduleMeta) {
-              await prompts.log.warn(`Skipping custom content path: ${customPath} - module.yaml is empty`);
-              continue;
-            }
-
-            if (!moduleMeta.code) {
-              await prompts.log.warn(`Skipping custom content path: ${customPath} - module.yaml missing 'code' field`);
-              continue;
-            }
-
-            customPaths.push(expandedPath);
-            selectedModuleIds.push(moduleMeta.code);
-            sources.push({
-              path: expandedPath,
-              id: moduleMeta.code,
-              name: moduleMeta.name || moduleMeta.code,
-            });
+        // Resolve custom sources from --custom-source flag
+        if (options.customSource) {
+          const customCodes = await this._resolveCustomSourcesCli(options.customSource);
+          for (const code of customCodes) {
+            if (!selectedModules.includes(code)) selectedModules.push(code);
           }
-
-          if (customPaths.length > 0) {
-            customModuleResult = {
-              selectedCustomModules: selectedModuleIds,
-              customContentConfig: {
-                hasCustomContent: true,
-                selected: true,
-                sources,
-                selectedFiles: customPaths.map((p) => path.join(p, 'module.yaml')),
-                selectedModuleIds: selectedModuleIds,
-              },
-            };
-          }
-        } else if (options.yes) {
-          // Non-interactive mode: preserve existing custom modules (matches default: false)
-          const cacheDir = path.join(bmadDir, '_config', 'custom');
-          if (await fs.pathExists(cacheDir)) {
-            const entries = await fs.readdir(cacheDir, { withFileTypes: true });
-            for (const entry of entries) {
-              if (entry.isDirectory()) {
-                customModuleResult.selectedCustomModules.push(entry.name);
-              }
-            }
-            await prompts.log.info(
-              `Non-interactive mode (--yes): preserving ${customModuleResult.selectedCustomModules.length} existing custom module(s)`,
-            );
-          } else {
-            await prompts.log.info('Non-interactive mode (--yes): no existing custom modules found');
-          }
-        } else {
-          const changeCustomModules = await prompts.confirm({
-            message: 'Modify custom modules, agents, or workflows?',
-            default: false,
-          });
-
-          if (changeCustomModules) {
-            customModuleResult = await this.handleCustomModulesInModifyFlow(confirmedDirectory, selectedModules);
-          } else {
-            // Preserve existing custom modules if user doesn't want to modify them
-            const { Installer } = require('./core/installer');
-            const installer = new Installer();
-            const { bmadDir } = await installer.findBmadDir(confirmedDirectory);
-
-            const cacheDir = path.join(bmadDir, '_config', 'custom');
-            if (await fs.pathExists(cacheDir)) {
-              const entries = await fs.readdir(cacheDir, { withFileTypes: true });
-              for (const entry of entries) {
-                if (entry.isDirectory()) {
-                  customModuleResult.selectedCustomModules.push(entry.name);
-                }
-              }
-            }
-          }
-        }
-
-        // Merge any selected custom modules
-        if (customModuleResult.selectedCustomModules.length > 0) {
-          selectedModules.push(...customModuleResult.selectedCustomModules);
         }
 
         // Ensure core is in the modules list
@@ -305,10 +272,38 @@ class UI {
           selectedModules.unshift('core');
         }
 
+        // For existing installs, resolve per-module update decisions BEFORE
+        // we clone anything. Reads the existing manifest's recorded channel
+        // per module and prompts the user on available upgrades (patch/minor
+        // default Y, major default N). Legacy entries with no channel are
+        // migrated here too. Mutates channelOptions.pins to lock rejections.
+        await this._resolveUpdateChannels({
+          bmadDir,
+          selectedModules,
+          channelOptions,
+          yes: options.yes || false,
+        });
+
         // Get tool selection
         const toolSelection = await this.promptToolSelection(confirmedDirectory, options);
 
-        const moduleConfigs = await this.collectModuleConfigs(confirmedDirectory, selectedModules, options);
+        const moduleConfigs = await this.collectModuleConfigs(confirmedDirectory, selectedModules, {
+          ...options,
+          channelOptions,
+        });
+
+        // Warn about --pin/--next flags that refer to modules the user didn't
+        // select, or that target bundled modules (core/bmm) where channel
+        // flags don't apply.
+        {
+          const bundledCodes = await this._bundledModuleCodes();
+          for (const warning of [
+            ...orphanPinWarnings(channelOptions, selectedModules),
+            ...bundledTargetWarnings(channelOptions, bundledCodes),
+          ]) {
+            await prompts.log.warn(warning);
+          }
+        }
 
         return {
           actionType: 'update',
@@ -318,14 +313,14 @@ class UI {
           skipIde: toolSelection.skipIde,
           coreConfig: moduleConfigs.core || {},
           moduleConfigs: moduleConfigs,
-          customContent: customModuleResult.customContentConfig,
           skipPrompts: options.yes || false,
+          channelOptions,
         };
       }
     }
 
     // This section is only for new installations (update returns early above)
-    const { installedModuleIds } = await this.getExistingInstallation(confirmedDirectory);
+    const { installedModuleIds, installedModuleVersions } = await this.getExistingInstallation(confirmedDirectory);
 
     // Unified module selection - all modules in one grouped multiselect
     let selectedModules;
@@ -336,98 +331,56 @@ class UI {
         .map((m) => m.trim())
         .filter(Boolean);
       await prompts.log.info(`Using modules from command-line: ${selectedModules.join(', ')}`);
+    } else if (options.customSource) {
+      // Custom source without --modules: start with empty list (core added below)
+      selectedModules = [];
     } else if (options.yes) {
       // Use default modules when --yes flag is set
       selectedModules = await this.getDefaultModules(installedModuleIds);
       await prompts.log.info(`Using default modules (--yes flag): ${selectedModules.join(', ')}`);
     } else {
-      selectedModules = await this.selectAllModules(installedModuleIds);
+      selectedModules = await this.selectAllModules(installedModuleIds, installedModuleVersions, channelOptions);
     }
 
-    // Ask about custom content (local modules/agents/workflows)
-    if (options.customContent) {
-      // Use custom content from command-line
-      const paths = options.customContent
-        .split(',')
-        .map((p) => p.trim())
-        .filter(Boolean);
-      await prompts.log.info(`Using custom content from command-line: ${paths.join(', ')}`);
-
-      // Build custom content config similar to promptCustomContentSource
-      const customPaths = [];
-      const selectedModuleIds = [];
-      const sources = [];
-
-      for (const customPath of paths) {
-        const expandedPath = this.expandUserPath(customPath);
-        const validation = this.validateCustomContentPathSync(expandedPath);
-        if (validation) {
-          await prompts.log.warn(`Skipping invalid custom content path: ${customPath} - ${validation}`);
-          continue;
-        }
-
-        // Read module metadata
-        let moduleMeta;
-        try {
-          const moduleYamlPath = path.join(expandedPath, 'module.yaml');
-          const moduleYaml = await fs.readFile(moduleYamlPath, 'utf-8');
-          const yaml = require('yaml');
-          moduleMeta = yaml.parse(moduleYaml);
-        } catch (error) {
-          await prompts.log.warn(`Skipping custom content path: ${customPath} - failed to read module.yaml: ${error.message}`);
-          continue;
-        }
-
-        if (!moduleMeta) {
-          await prompts.log.warn(`Skipping custom content path: ${customPath} - module.yaml is empty`);
-          continue;
-        }
-
-        if (!moduleMeta.code) {
-          await prompts.log.warn(`Skipping custom content path: ${customPath} - module.yaml missing 'code' field`);
-          continue;
-        }
-
-        customPaths.push(expandedPath);
-        selectedModuleIds.push(moduleMeta.code);
-        sources.push({
-          path: expandedPath,
-          id: moduleMeta.code,
-          name: moduleMeta.name || moduleMeta.code,
-        });
+    // Resolve custom sources from --custom-source flag
+    if (options.customSource) {
+      const customCodes = await this._resolveCustomSourcesCli(options.customSource);
+      for (const code of customCodes) {
+        if (!selectedModules.includes(code)) selectedModules.push(code);
       }
-
-      if (customPaths.length > 0) {
-        customContentConfig = {
-          hasCustomContent: true,
-          selected: true,
-          sources,
-          selectedFiles: customPaths.map((p) => path.join(p, 'module.yaml')),
-          selectedModuleIds: selectedModuleIds,
-        };
-      }
-    } else if (!options.yes) {
-      const wantsCustomContent = await prompts.confirm({
-        message: 'Add custom modules, agents, or workflows from your computer?',
-        default: false,
-      });
-
-      if (wantsCustomContent) {
-        customContentConfig = await this.promptCustomContentSource();
-      }
-    }
-
-    // Add custom content modules if any were selected
-    if (customContentConfig && customContentConfig.selectedModuleIds) {
-      selectedModules.push(...customContentConfig.selectedModuleIds);
     }
 
     // Ensure core is in the modules list
     if (!selectedModules.includes('core')) {
       selectedModules.unshift('core');
     }
+
+    // Interactive channel gate: "Ready to install (all stable)? [Y/n]"
+    // Only shown for fresh installs with no channel flags and an external module
+    // selected. Skipped for prerelease launches because channelOptions.global
+    // was already seeded to 'next' upstream. Non-interactive installs skip this
+    // and fall through to the registry default (stable) or whatever flags were
+    // supplied.
+    await this._interactiveChannelGate({ options, channelOptions, selectedModules });
+
     let toolSelection = await this.promptToolSelection(confirmedDirectory, options);
-    const moduleConfigs = await this.collectModuleConfigs(confirmedDirectory, selectedModules, options);
+    const moduleConfigs = await this.collectModuleConfigs(confirmedDirectory, selectedModules, {
+      ...options,
+      channelOptions,
+    });
+
+    // Warn about --pin/--next flags that refer to modules the user didn't
+    // select, or that target bundled modules (core/bmm) where channel
+    // flags don't apply.
+    {
+      const bundledCodes = await this._bundledModuleCodes();
+      for (const warning of [
+        ...orphanPinWarnings(channelOptions, selectedModules),
+        ...bundledTargetWarnings(channelOptions, bundledCodes),
+      ]) {
+        await prompts.log.warn(warning);
+      }
+    }
 
     return {
       actionType: 'install',
@@ -437,8 +390,8 @@ class UI {
       skipIde: toolSelection.skipIde,
       coreConfig: moduleConfigs.core || {},
       moduleConfigs: moduleConfigs,
-      customContent: customContentConfig,
       skipPrompts: options.yes || false,
+      channelOptions,
     };
   }
 
@@ -687,7 +640,7 @@ class UI {
   /**
    * Get existing installation info and installed modules
    * @param {string} directory - Installation directory
-   * @returns {Object} Object with existingInstall, installedModuleIds, and bmadDir
+   * @returns {Object} Object with existingInstall, installedModuleIds, installedModuleVersions, and bmadDir
    */
   async getExistingInstallation(directory) {
     const { ExistingInstall } = require('./core/existing-install');
@@ -696,8 +649,26 @@ class UI {
     const { bmadDir } = await installer.findBmadDir(directory);
     const existingInstall = await ExistingInstall.detect(bmadDir);
     const installedModuleIds = new Set(existingInstall.moduleIds);
+    const installedModuleVersions = new Map();
+    const manifestModules = await manifest.getAllModuleVersions(bmadDir);
 
-    return { existingInstall, installedModuleIds, bmadDir };
+    for (const module of manifestModules) {
+      if (module?.name && module.version) {
+        installedModuleVersions.set(module.name, module.version);
+      }
+    }
+
+    for (const module of existingInstall.modules) {
+      if (module?.id && module.version && module.version !== 'unknown' && !installedModuleVersions.has(module.id)) {
+        installedModuleVersions.set(module.id, module.version);
+      }
+    }
+
+    if (existingInstall.hasCore && existingInstall.version && !installedModuleVersions.has('core')) {
+      installedModuleVersions.set('core', existingInstall.version);
+    }
+
+    return { existingInstall, installedModuleIds, installedModuleVersions, bmadDir };
   }
 
   /**
@@ -710,7 +681,7 @@ class UI {
    */
   async collectModuleConfigs(directory, modules, options = {}) {
     const { OfficialModules } = require('./modules/official-modules');
-    const configCollector = new OfficialModules();
+    const configCollector = new OfficialModules({ channelOptions: options.channelOptions });
 
     // Seed core config from CLI options if provided
     if (options.userName || options.communicationLanguage || options.documentOutputLanguage || options.outputFolder) {
@@ -776,166 +747,132 @@ class UI {
   }
 
   /**
-   * Get module choices for selection
+   * Select all modules across three tiers: official, community, and custom URL.
    * @param {Set} installedModuleIds - Currently installed module IDs
-   * @param {Object} customContentConfig - Custom content configuration
-   * @returns {Array} Module choices for prompt
+   * @param {Map<string, string>} installedModuleVersions - Installed module versions from the local manifest
+   * @param {Object|null} channelOptions - Parsed installer channel options
+   * @returns {Array} Selected module codes (excluding core)
    */
-  async getModuleChoices(installedModuleIds, customContentConfig = null) {
-    const color = await prompts.getColor();
-    const moduleChoices = [];
-    const isNewInstallation = installedModuleIds.size === 0;
+  async selectAllModules(installedModuleIds = new Set(), installedModuleVersions = new Map(), channelOptions = null) {
+    // Phase 1: Official modules
+    const officialSelected = await this._selectOfficialModules(installedModuleIds, installedModuleVersions, channelOptions);
 
-    const customContentItems = [];
+    // Determine which installed modules are NOT official (community or custom).
+    // These must be preserved even if the user declines to browse community/custom.
+    const officialCodes = new Set(officialSelected);
+    const externalManager = new ExternalModuleManager();
+    const registryModules = await externalManager.listAvailable();
+    const officialRegistryCodes = new Set(['core', 'bmm', ...registryModules.map((m) => m.code)]);
+    const installedNonOfficial = [...installedModuleIds].filter((id) => !officialRegistryCodes.has(id));
 
-    // Add custom content items
-    if (customContentConfig && customContentConfig.hasCustomContent && customContentConfig.customPath) {
-      // Existing installation - show from directory
-      const customHandler = new CustomHandler();
-      const customFiles = await customHandler.findCustomContent(customContentConfig.customPath);
+    // Phase 2: Community modules (category drill-down)
+    // Returns { codes, didBrowse } so we know if the user entered the flow
+    const communityResult = await this._browseCommunityModules(installedModuleIds);
 
-      for (const customFile of customFiles) {
-        const customInfo = await customHandler.getCustomInfo(customFile);
-        if (customInfo) {
-          customContentItems.push({
-            name: `${color.cyan('\u2713')} ${customInfo.name} ${color.dim(`(${customInfo.relativePath})`)}`,
-            value: `__CUSTOM_CONTENT__${customFile}`, // Unique value for each custom content
-            checked: true, // Default to selected since user chose to provide custom content
-            path: customInfo.path, // Track path to avoid duplicates
-            hint: customInfo.description || undefined,
-          });
-        }
+    // Phase 3: Custom URL modules
+    const customSelected = await this._addCustomUrlModules(installedModuleIds);
+
+    // Merge all selections
+    const allSelected = new Set([...officialSelected, ...communityResult.codes, ...customSelected]);
+
+    // Auto-include installed non-official modules that the user didn't get
+    // a chance to manage (they declined to browse). If they did browse,
+    // trust their selections - they could have deselected intentionally.
+    if (!communityResult.didBrowse) {
+      for (const code of installedNonOfficial) {
+        allSelected.add(code);
       }
     }
 
-    // Add official modules
-    const { OfficialModules } = require('./modules/official-modules');
-    const officialModules = new OfficialModules();
-    const { modules: availableModules, customModules: customModulesFromCache } = await officialModules.listAvailable();
-
-    // First, add all items to appropriate sections
-    const allCustomModules = [];
-
-    // Add custom content items from directory
-    allCustomModules.push(...customContentItems);
-
-    // Add custom modules from cache
-    for (const mod of customModulesFromCache) {
-      // Skip if this module is already in customContentItems (by path)
-      const isDuplicate = allCustomModules.some((item) => item.path && mod.path && path.resolve(item.path) === path.resolve(mod.path));
-
-      if (!isDuplicate) {
-        allCustomModules.push({
-          name: `${color.cyan('\u2713')} ${mod.name} ${color.dim('(cached)')}`,
-          value: mod.id,
-          checked: isNewInstallation ? mod.defaultSelected || false : installedModuleIds.has(mod.id),
-          hint: mod.description || undefined,
-        });
-      }
-    }
-
-    // Add separators and modules in correct order
-    if (allCustomModules.length > 0) {
-      // Add separator for custom content, all custom modules, and official content separator
-      moduleChoices.push(
-        new choiceUtils.Separator('── Custom Content ──'),
-        ...allCustomModules,
-        new choiceUtils.Separator('── Official Content ──'),
-      );
-    }
-
-    // Add official modules (only non-custom ones)
-    for (const mod of availableModules) {
-      if (!mod.isCustom) {
-        moduleChoices.push({
-          name: mod.name,
-          value: mod.id,
-          checked: isNewInstallation ? mod.defaultSelected || false : installedModuleIds.has(mod.id),
-          hint: mod.description || undefined,
-        });
-      }
-    }
-
-    return moduleChoices;
+    return [...allSelected];
   }
 
   /**
-   * Select all modules (official + community) using grouped multiselect.
-   * Core is shown as locked but filtered from the result since it's always installed separately.
+   * Select official modules using autocompleteMultiselect.
+   * Extracted from the original selectAllModules - unchanged behavior.
    * @param {Set} installedModuleIds - Currently installed module IDs
-   * @returns {Array} Selected module codes (excluding core)
+   * @param {Map<string, string>} installedModuleVersions - Installed module versions from the local manifest
+   * @param {Object|null} channelOptions - Parsed installer channel options
+   * @returns {Array} Selected official module codes
    */
-  async selectAllModules(installedModuleIds = new Set()) {
+  async _selectOfficialModules(installedModuleIds = new Set(), installedModuleVersions = new Map(), channelOptions = null) {
+    // Built-in modules (core, bmm) come from local source, not the registry
     const { OfficialModules } = require('./modules/official-modules');
-    const officialModulesSource = new OfficialModules();
-    const { modules: localModules } = await officialModulesSource.listAvailable();
+    const builtInModules = (await new OfficialModules().listAvailable()).modules || [];
 
-    // Get external modules
+    // External modules come from the registry (with fallback)
     const externalManager = new ExternalModuleManager();
-    const externalModules = await externalManager.listAvailable();
+    const registryModules = await externalManager.listAvailable();
 
-    // Build flat options list with group hints for autocompleteMultiselect
     const allOptions = [];
     const initialValues = [];
     const lockedValues = ['core'];
 
-    // Core module is always installed — show it locked at the top
-    allOptions.push({ label: 'BMad Core Module', value: 'core', hint: 'Core configuration and shared resources' });
-    initialValues.push('core');
-
-    // Helper to build module entry with proper sorting and selection
-    const buildModuleEntry = (mod, value, group) => {
-      const isInstalled = installedModuleIds.has(value);
+    const buildModuleEntry = async (code, name, description, isDefault, repoUrl = null, registryDefault = null) => {
+      const isInstalled = installedModuleIds.has(code);
+      const installedVersion = installedModuleVersions.get(code) || '';
+      const versionState = await getModuleVersion(code, { repoUrl, registryDefault, channelOptions });
+      const label = buildModuleLabel(name, versionState.version, installedVersion);
       return {
-        label: mod.name,
-        value,
-        hint: mod.description || group,
-        // Pre-select only if already installed (not on fresh install)
-        selected: isInstalled,
+        label,
+        value: code,
+        hint: description,
+        selected: isInstalled || isDefault,
+        lookupAttempted: versionState.lookupAttempted,
+        lookupSucceeded: versionState.lookupSucceeded,
       };
     };
 
-    // Local modules (BMM, BMB, etc.)
-    const localEntries = [];
-    for (const mod of localModules) {
-      if (!mod.isCustom && mod.id !== 'core') {
-        const entry = buildModuleEntry(mod, mod.id, 'Local');
-        localEntries.push(entry);
-        if (entry.selected) {
-          initialValues.push(mod.id);
-        }
+    // Add built-in modules first (always available regardless of network)
+    const builtInCodes = new Set();
+    for (const mod of builtInModules) {
+      const code = mod.id;
+      builtInCodes.add(code);
+      const entry = await buildModuleEntry(code, mod.name, mod.description, mod.defaultSelected);
+      allOptions.push({ label: entry.label, value: entry.value, hint: entry.hint });
+      if (entry.selected) {
+        initialValues.push(code);
       }
     }
-    allOptions.push(...localEntries.map(({ label, value, hint }) => ({ label, value, hint })));
 
-    // Group 2: BMad Official Modules (type: bmad-org)
-    const officialModules = [];
-    for (const mod of externalModules) {
-      if (mod.type === 'bmad-org') {
-        const entry = buildModuleEntry(mod, mod.code, 'Official');
-        officialModules.push(entry);
-        if (entry.selected) {
-          initialValues.push(mod.code);
-        }
-      }
-    }
-    allOptions.push(...officialModules.map(({ label, value, hint }) => ({ label, value, hint })));
+    // Add external registry modules (skip built-in duplicates)
+    const externalRegistryModules = registryModules.filter((mod) => !mod.builtIn && !builtInCodes.has(mod.code));
+    let externalRegistryEntries = [];
+    if (externalRegistryModules.length > 0) {
+      const spinner = await prompts.spinner();
+      spinner.start('Checking latest module versions...');
 
-    // Group 3: Community Modules (type: community)
-    const communityModules = [];
-    for (const mod of externalModules) {
-      if (mod.type === 'community') {
-        const entry = buildModuleEntry(mod, mod.code, 'Community');
-        communityModules.push(entry);
-        if (entry.selected) {
-          initialValues.push(mod.code);
-        }
+      externalRegistryEntries = await Promise.all(
+        externalRegistryModules.map(async (mod) => ({
+          code: mod.code,
+          entry: await buildModuleEntry(
+            mod.code,
+            mod.name,
+            mod.description,
+            mod.defaultSelected,
+            mod.url || null,
+            mod.defaultChannel || null,
+          ),
+        })),
+      );
+
+      spinner.stop('Checked latest module versions.');
+
+      const attemptedLookups = externalRegistryEntries.filter(({ entry }) => entry.lookupAttempted).length;
+      const successfulLookups = externalRegistryEntries.filter(({ entry }) => entry.lookupSucceeded).length;
+      if (attemptedLookups > 0 && successfulLookups === 0) {
+        await prompts.log.warn('Could not check latest module versions; showing cached/local versions.');
       }
     }
-    allOptions.push(...communityModules.map(({ label, value, hint }) => ({ label, value, hint })));
+    for (const { code, entry } of externalRegistryEntries) {
+      allOptions.push({ label: entry.label, value: entry.value, hint: entry.hint });
+      if (entry.selected) {
+        initialValues.push(code);
+      }
+    }
 
     const selected = await prompts.autocompleteMultiselect({
-      message: 'Select modules to install:',
+      message: 'Select official modules to install:',
       options: allOptions,
       initialValues: initialValues.length > 0 ? initialValues : undefined,
       lockedValues,
@@ -945,16 +882,452 @@ class UI {
 
     const result = selected ? [...selected] : [];
 
-    // Display selected modules as bulleted list
     if (result.length > 0) {
       const moduleLines = result.map((moduleId) => {
         const opt = allOptions.find((o) => o.value === moduleId);
         return `  \u2022 ${opt?.label || moduleId}`;
       });
-      await prompts.log.message('Selected modules:\n' + moduleLines.join('\n'));
+      await prompts.log.message('Selected official modules:\n' + moduleLines.join('\n'));
     }
 
     return result;
+  }
+
+  /**
+   * Browse and select community modules using category drill-down.
+   * Featured/promoted modules appear at the top.
+   * @param {Set} installedModuleIds - Currently installed module IDs
+   * @returns {Object} { codes: string[], didBrowse: boolean }
+   */
+  async _browseCommunityModules(installedModuleIds = new Set()) {
+    const browseCommunity = await prompts.confirm({
+      message: 'Would you like to browse community modules?',
+      default: false,
+    });
+    if (!browseCommunity) return { codes: [], didBrowse: false };
+
+    const { CommunityModuleManager } = require('./modules/community-manager');
+    const communityMgr = new CommunityModuleManager();
+
+    const s = await prompts.spinner();
+    s.start('Loading community module catalog...');
+
+    let categories, featured, allCommunity;
+    try {
+      [categories, featured, allCommunity] = await Promise.all([
+        communityMgr.getCategoryList(),
+        communityMgr.listFeatured(),
+        communityMgr.listAll(),
+      ]);
+      s.stop(`Community catalog loaded (${allCommunity.length} modules)`);
+    } catch (error) {
+      s.error('Failed to load community catalog');
+      await prompts.log.warn(`  ${error.message}`);
+      return { codes: [], didBrowse: false };
+    }
+
+    if (allCommunity.length === 0) {
+      await prompts.log.info('No community modules are currently available.');
+      return { codes: [], didBrowse: false };
+    }
+
+    const selectedCodes = new Set();
+    let browsing = true;
+
+    while (browsing) {
+      const categoryChoices = [];
+
+      // Featured section at top
+      if (featured.length > 0) {
+        categoryChoices.push({
+          value: '__featured__',
+          label: `\u2605 Featured (${featured.length} module${featured.length === 1 ? '' : 's'})`,
+        });
+      }
+
+      // Categories with module counts
+      for (const cat of categories) {
+        categoryChoices.push({
+          value: cat.slug,
+          label: `${cat.name} (${cat.moduleCount} module${cat.moduleCount === 1 ? '' : 's'})`,
+        });
+      }
+
+      // Special actions at bottom
+      categoryChoices.push(
+        { value: '__all__', label: '\u25CE View all community modules' },
+        { value: '__search__', label: '\u25CE Search by keyword' },
+        { value: '__done__', label: '\u2713 Done browsing' },
+      );
+
+      const selectedCount = selectedCodes.size;
+      const categoryChoice = await prompts.select({
+        message: `Browse community modules${selectedCount > 0 ? ` (${selectedCount} selected)` : ''}:`,
+        choices: categoryChoices,
+      });
+
+      if (categoryChoice === '__done__') {
+        browsing = false;
+        continue;
+      }
+
+      let modulesToShow;
+      switch (categoryChoice) {
+        case '__featured__': {
+          modulesToShow = featured;
+
+          break;
+        }
+        case '__all__': {
+          modulesToShow = allCommunity;
+
+          break;
+        }
+        case '__search__': {
+          const query = await prompts.text({
+            message: 'Search community modules:',
+            placeholder: 'e.g., design, testing, game',
+          });
+          if (!query || query.trim() === '') continue;
+          modulesToShow = await communityMgr.searchByKeyword(query.trim());
+          if (modulesToShow.length === 0) {
+            await prompts.log.warn('No matching modules found.');
+            continue;
+          }
+
+          break;
+        }
+        default: {
+          modulesToShow = await communityMgr.listByCategory(categoryChoice);
+        }
+      }
+
+      // Build options for autocompleteMultiselect
+      const trustBadge = (tier) => {
+        if (tier === 'bmad-certified') return '\u2713';
+        if (tier === 'community-reviewed') return '\u25CB';
+        return '\u26A0';
+      };
+
+      const options = modulesToShow.map((mod) => {
+        const versionStr = mod.version ? ` (v${mod.version})` : '';
+        const badge = trustBadge(mod.trustTier);
+        return {
+          label: `${mod.displayName}${versionStr} [${badge}]`,
+          value: mod.code,
+          hint: mod.description,
+        };
+      });
+
+      // Pre-check modules that are already selected or installed
+      const initialValues = modulesToShow.filter((m) => selectedCodes.has(m.code) || installedModuleIds.has(m.code)).map((m) => m.code);
+
+      const selected = await prompts.autocompleteMultiselect({
+        message: 'Select community modules:',
+        options,
+        initialValues: initialValues.length > 0 ? initialValues : undefined,
+        required: false,
+        maxItems: Math.min(options.length, 10),
+      });
+
+      // Update accumulated selections: sync with what user selected in this view
+      const shownCodes = new Set(modulesToShow.map((m) => m.code));
+      for (const code of shownCodes) {
+        if (selected && selected.includes(code)) {
+          selectedCodes.add(code);
+        } else {
+          selectedCodes.delete(code);
+        }
+      }
+    }
+
+    if (selectedCodes.size > 0) {
+      const moduleLines = [];
+      for (const code of selectedCodes) {
+        const mod = await communityMgr.getModuleByCode(code);
+        moduleLines.push(`  \u2022 ${mod?.displayName || code}`);
+      }
+      await prompts.log.message('Selected community modules:\n' + moduleLines.join('\n'));
+    }
+
+    return { codes: [...selectedCodes], didBrowse: true };
+  }
+
+  /**
+   * Prompt user to install modules from custom sources (Git URLs or local paths).
+   * @param {Set} installedModuleIds - Currently installed module IDs
+   * @returns {Array} Selected custom module code strings
+   */
+  async _addCustomUrlModules(installedModuleIds = new Set()) {
+    const addCustom = await prompts.confirm({
+      message: 'Would you like to install from a custom source (Git URL or local path)?',
+      default: false,
+    });
+    if (!addCustom) return [];
+
+    const { CustomModuleManager } = require('./modules/custom-module-manager');
+    const customMgr = new CustomModuleManager();
+    const selectedModules = [];
+
+    let addMore = true;
+    while (addMore) {
+      const sourceInput = await prompts.text({
+        message: 'Git URL or local path:',
+        placeholder: 'https://github.com/owner/repo or /path/to/module',
+        validate: (input) => {
+          if (!input || input.trim() === '') return 'Source is required';
+          const result = customMgr.parseSource(input.trim());
+          return result.isValid ? undefined : result.error;
+        },
+      });
+
+      const s = await prompts.spinner();
+      s.start('Resolving source...');
+
+      let sourceResult;
+      try {
+        sourceResult = await customMgr.resolveSource(sourceInput.trim(), { skipInstall: true, silent: true });
+        s.stop(sourceResult.parsed.type === 'local' ? 'Local source resolved' : 'Repository cloned');
+      } catch (error) {
+        s.error('Failed to resolve source');
+        await prompts.log.error(`  ${error.message}`);
+        addMore = await prompts.confirm({ message: 'Try another source?', default: false });
+        continue;
+      }
+
+      if (sourceResult.parsed.type === 'local') {
+        await prompts.log.info('LOCAL MODULE: Pointing directly at local source (changes take effect on reinstall).');
+      } else {
+        await prompts.log.warn(
+          'UNVERIFIED MODULE: This module has not been reviewed by the BMad team.\n' + '  Only install modules from sources you trust.',
+        );
+      }
+
+      // Resolve plugins based on discovery mode vs direct mode
+      s.start('Analyzing plugin structure...');
+      const allResolved = [];
+      const localPath = sourceResult.parsed.type === 'local' ? sourceResult.rootDir : null;
+
+      if (sourceResult.mode === 'discovery') {
+        // Discovery mode: marketplace.json found, list available plugins
+        let plugins;
+        try {
+          plugins = await customMgr.discoverModules(sourceResult.marketplace, sourceResult.sourceUrl);
+        } catch (discoverError) {
+          s.error('Failed to discover modules');
+          await prompts.log.error(`  ${discoverError.message}`);
+          addMore = await prompts.confirm({ message: 'Try another source?', default: false });
+          continue;
+        }
+
+        const effectiveRepoPath = sourceResult.repoPath || sourceResult.rootDir;
+        for (const plugin of plugins) {
+          try {
+            const resolved = await customMgr.resolvePlugin(effectiveRepoPath, plugin.rawPlugin, sourceResult.sourceUrl, localPath);
+            if (resolved.length > 0) {
+              allResolved.push(...resolved);
+            } else {
+              // No skills array or empty - use plugin metadata as-is (legacy)
+              allResolved.push({
+                code: plugin.code,
+                name: plugin.displayName || plugin.name,
+                version: plugin.version,
+                description: plugin.description,
+                strategy: 0,
+                pluginName: plugin.name,
+                skillPaths: [],
+              });
+            }
+          } catch (resolveError) {
+            await prompts.log.warn(`  Could not resolve ${plugin.name}: ${resolveError.message}`);
+          }
+        }
+      } else {
+        // Direct mode: no marketplace.json, scan directory for skills and resolve
+        const directPlugin = {
+          name: sourceResult.parsed.displayName || path.basename(sourceResult.rootDir),
+          source: '.',
+          skills: [],
+        };
+
+        // Scan for SKILL.md directories to populate skills array
+        try {
+          const entries = await fs.readdir(sourceResult.rootDir, { withFileTypes: true });
+          for (const entry of entries) {
+            if (entry.isDirectory()) {
+              const skillMd = path.join(sourceResult.rootDir, entry.name, 'SKILL.md');
+              if (await fs.pathExists(skillMd)) {
+                directPlugin.skills.push(entry.name);
+              }
+            }
+          }
+        } catch (scanError) {
+          s.error('Failed to scan directory');
+          await prompts.log.error(`  ${scanError.message}`);
+          addMore = await prompts.confirm({ message: 'Try another source?', default: false });
+          continue;
+        }
+
+        if (directPlugin.skills.length > 0) {
+          try {
+            const resolved = await customMgr.resolvePlugin(sourceResult.rootDir, directPlugin, sourceResult.sourceUrl, localPath);
+            allResolved.push(...resolved);
+          } catch (resolveError) {
+            await prompts.log.warn(`  Could not resolve: ${resolveError.message}`);
+          }
+        }
+      }
+      s.stop(`Found ${allResolved.length} installable module${allResolved.length === 1 ? '' : 's'}`);
+
+      if (allResolved.length === 0) {
+        await prompts.log.warn('No installable modules found in this source.');
+        addMore = await prompts.confirm({ message: 'Try another source?', default: false });
+        continue;
+      }
+
+      // Build multiselect choices
+      // Already-installed modules are pre-checked (update). New modules are unchecked (opt-in).
+      // Unchecking an installed module means "skip update" - removal is handled elsewhere.
+      const choices = allResolved.map((mod) => {
+        const versionStr = mod.version ? ` v${mod.version}` : '';
+        const skillCount = mod.skillPaths ? mod.skillPaths.length : 0;
+        const skillStr = skillCount > 0 ? ` (${skillCount} skill${skillCount === 1 ? '' : 's'})` : '';
+        const alreadyInstalled = installedModuleIds.has(mod.code);
+        const hint = alreadyInstalled ? 'update' : undefined;
+
+        return {
+          name: `${mod.name}${versionStr}${skillStr}`,
+          value: mod.code,
+          hint,
+          checked: alreadyInstalled,
+        };
+      });
+
+      // Show descriptions before the multiselect
+      for (const mod of allResolved) {
+        const versionStr = mod.version ? ` v${mod.version}` : '';
+        await prompts.log.info(`  ${mod.name}${versionStr}\n  ${mod.description}`);
+      }
+
+      const selected = await prompts.multiselect({
+        message: 'Select modules to install:',
+        choices,
+        required: false,
+      });
+
+      if (selected && selected.length > 0) {
+        for (const code of selected) {
+          selectedModules.push(code);
+        }
+      }
+
+      addMore = await prompts.confirm({
+        message: 'Add another custom source?',
+        default: false,
+      });
+    }
+
+    if (selectedModules.length > 0) {
+      await prompts.log.message('Selected custom modules:\n' + selectedModules.map((c) => `  \u2022 ${c}`).join('\n'));
+    }
+
+    return selectedModules;
+  }
+
+  /**
+   * Resolve custom sources from --custom-source CLI flag (non-interactive).
+   * Auto-selects all discovered modules from each source.
+   * @param {string} sourcesArg - Comma-separated Git URLs or local paths
+   * @returns {Array} Module codes from all resolved sources
+   */
+  async _resolveCustomSourcesCli(sourcesArg) {
+    const { CustomModuleManager } = require('./modules/custom-module-manager');
+    const customMgr = new CustomModuleManager();
+    const allCodes = [];
+
+    const sources = sourcesArg
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    for (const source of sources) {
+      const s = await prompts.spinner();
+      s.start(`Resolving ${source}...`);
+
+      let sourceResult;
+      try {
+        sourceResult = await customMgr.resolveSource(source, { skipInstall: true, silent: true });
+        s.stop(sourceResult.parsed.type === 'local' ? 'Local source resolved' : 'Repository cloned');
+      } catch (error) {
+        s.error(`Failed to resolve ${source}`);
+        await prompts.log.error(`  ${error.message}`);
+        continue;
+      }
+
+      const s2 = await prompts.spinner();
+      s2.start('Analyzing plugin structure...');
+      const allResolved = [];
+      const localPath = sourceResult.parsed.type === 'local' ? sourceResult.rootDir : null;
+
+      if (sourceResult.mode === 'discovery') {
+        try {
+          const plugins = await customMgr.discoverModules(sourceResult.marketplace, sourceResult.sourceUrl);
+          const effectiveRepoPath = sourceResult.repoPath || sourceResult.rootDir;
+          for (const plugin of plugins) {
+            try {
+              const resolved = await customMgr.resolvePlugin(effectiveRepoPath, plugin.rawPlugin, sourceResult.sourceUrl, localPath);
+              if (resolved.length > 0) {
+                allResolved.push(...resolved);
+              }
+            } catch {
+              // Skip unresolvable plugins
+            }
+          }
+        } catch (discoverError) {
+          s2.error('Failed to discover modules');
+          await prompts.log.error(`  ${discoverError.message}`);
+          continue;
+        }
+      } else {
+        // Direct mode: scan for SKILL.md directories
+        const directPlugin = {
+          name: sourceResult.parsed.displayName || path.basename(sourceResult.rootDir),
+          source: '.',
+          skills: [],
+        };
+        try {
+          const entries = await fs.readdir(sourceResult.rootDir, { withFileTypes: true });
+          for (const entry of entries) {
+            if (entry.isDirectory()) {
+              const skillMd = path.join(sourceResult.rootDir, entry.name, 'SKILL.md');
+              if (await fs.pathExists(skillMd)) {
+                directPlugin.skills.push(entry.name);
+              }
+            }
+          }
+        } catch {
+          // Skip unreadable directories
+        }
+
+        if (directPlugin.skills.length > 0) {
+          try {
+            const resolved = await customMgr.resolvePlugin(sourceResult.rootDir, directPlugin, sourceResult.sourceUrl, localPath);
+            allResolved.push(...resolved);
+          } catch {
+            // Skip unresolvable
+          }
+        }
+      }
+      s2.stop(`Found ${allResolved.length} module${allResolved.length === 1 ? '' : 's'}`);
+
+      for (const mod of allResolved) {
+        allCodes.push(mod.code);
+        const versionStr = mod.version ? ` v${mod.version}` : '';
+        await prompts.log.info(`  Custom module: ${mod.name}${versionStr}`);
+      }
+    }
+
+    return allCodes;
   }
 
   /**
@@ -963,16 +1336,28 @@ class UI {
    * @returns {Array} Default module codes
    */
   async getDefaultModules(installedModuleIds = new Set()) {
+    // Built-in modules with default_selected come from local source
     const { OfficialModules } = require('./modules/official-modules');
-    const officialModules = new OfficialModules();
-    const { modules: localModules } = await officialModules.listAvailable();
+    const builtInModules = (await new OfficialModules().listAvailable()).modules || [];
 
     const defaultModules = [];
+    const seen = new Set();
 
-    // Add default-selected local modules (typically BMM)
-    for (const mod of localModules) {
-      if (mod.defaultSelected === true || installedModuleIds.has(mod.id)) {
+    for (const mod of builtInModules) {
+      if (mod.defaultSelected || installedModuleIds.has(mod.id)) {
         defaultModules.push(mod.id);
+        seen.add(mod.id);
+      }
+    }
+
+    // Add external registry defaults
+    const externalManager = new ExternalModuleManager();
+    const registryModules = await externalManager.listAvailable();
+
+    for (const mod of registryModules) {
+      if (mod.builtIn || seen.has(mod.code)) continue;
+      if (mod.defaultSelected || installedModuleIds.has(mod.code)) {
+        defaultModules.push(mod.code);
       }
     }
 
@@ -1274,282 +1659,6 @@ class UI {
   }
 
   /**
-   * Validate custom content path synchronously
-   * @param {string} input - User input path
-   * @returns {string|undefined} Error message or undefined if valid
-   */
-  validateCustomContentPathSync(input) {
-    // Allow empty input to cancel
-    if (!input || input.trim() === '') {
-      return; // Allow empty to exit
-    }
-
-    try {
-      // Expand the path
-      const expandedPath = this.expandUserPath(input.trim());
-
-      // Check if path exists
-      if (!fs.pathExistsSync(expandedPath)) {
-        return 'Path does not exist';
-      }
-
-      // Check if it's a directory
-      const stat = fs.statSync(expandedPath);
-      if (!stat.isDirectory()) {
-        return 'Path must be a directory';
-      }
-
-      // Check for module.yaml in the root
-      const moduleYamlPath = path.join(expandedPath, 'module.yaml');
-      if (!fs.pathExistsSync(moduleYamlPath)) {
-        return 'Directory must contain a module.yaml file in the root';
-      }
-
-      // Try to parse the module.yaml to get the module ID
-      try {
-        const yaml = require('yaml');
-        const content = fs.readFileSync(moduleYamlPath, 'utf8');
-        const moduleData = yaml.parse(content);
-        if (!moduleData.code) {
-          return 'module.yaml must contain a "code" field for the module ID';
-        }
-      } catch (error) {
-        return 'Invalid module.yaml file: ' + error.message;
-      }
-
-      return; // Valid
-    } catch (error) {
-      return 'Error validating path: ' + error.message;
-    }
-  }
-
-  /**
-   * Prompt user for custom content source location
-   * @returns {Object} Custom content configuration
-   */
-  async promptCustomContentSource() {
-    const customContentConfig = { hasCustomContent: true, sources: [] };
-
-    // Keep asking for more sources until user is done
-    while (true) {
-      // First ask if user wants to add another module or continue
-      if (customContentConfig.sources.length > 0) {
-        const action = await prompts.select({
-          message: 'Would you like to:',
-          choices: [
-            { name: 'Add another custom module', value: 'add' },
-            { name: 'Continue with installation', value: 'continue' },
-          ],
-          default: 'continue',
-        });
-
-        if (action === 'continue') {
-          break;
-        }
-      }
-
-      let sourcePath;
-      let isValid = false;
-
-      while (!isValid) {
-        // Use sync validation because @clack/prompts doesn't support async validate
-        const inputPath = await prompts.text({
-          message: 'Path to custom module folder (press Enter to skip):',
-          validate: (input) => this.validateCustomContentPathSync(input),
-        });
-
-        // If user pressed Enter without typing anything, exit the loop
-        if (!inputPath || inputPath.trim() === '') {
-          // If we have no modules yet, return false for no custom content
-          if (customContentConfig.sources.length === 0) {
-            return { hasCustomContent: false };
-          }
-          return customContentConfig;
-        }
-
-        sourcePath = this.expandUserPath(inputPath);
-        isValid = true;
-      }
-
-      // Read module.yaml to get module info
-      const yaml = require('yaml');
-      const moduleYamlPath = path.join(sourcePath, 'module.yaml');
-      const moduleContent = await fs.readFile(moduleYamlPath, 'utf8');
-      const moduleData = yaml.parse(moduleContent);
-
-      // Add to sources
-      customContentConfig.sources.push({
-        path: sourcePath,
-        id: moduleData.code,
-        name: moduleData.name || moduleData.code,
-      });
-
-      await prompts.log.success(`Confirmed local custom module: ${moduleData.name || moduleData.code}`);
-    }
-
-    // Ask if user wants to add these to the installation
-    const shouldInstall = await prompts.confirm({
-      message: `Install these ${customContentConfig.sources.length} custom modules?`,
-      default: true,
-    });
-
-    if (shouldInstall) {
-      customContentConfig.selected = true;
-      // Store paths to module.yaml files, not directories
-      customContentConfig.selectedFiles = customContentConfig.sources.map((s) => path.join(s.path, 'module.yaml'));
-      // Also include module IDs for installation
-      customContentConfig.selectedModuleIds = customContentConfig.sources.map((s) => s.id);
-    }
-
-    return customContentConfig;
-  }
-
-  /**
-   * Handle custom modules in the modify flow
-   * @param {string} directory - Installation directory
-   * @param {Array} selectedModules - Currently selected modules
-   * @returns {Object} Result with selected custom modules and custom content config
-   */
-  async handleCustomModulesInModifyFlow(directory, selectedModules) {
-    // Get existing installation to find custom modules
-    const { existingInstall } = await this.getExistingInstallation(directory);
-
-    // Check if there are any custom modules in cache
-    const { Installer } = require('./core/installer');
-    const installer = new Installer();
-    const { bmadDir } = await installer.findBmadDir(directory);
-
-    const cacheDir = path.join(bmadDir, '_config', 'custom');
-    const cachedCustomModules = [];
-
-    if (await fs.pathExists(cacheDir)) {
-      const entries = await fs.readdir(cacheDir, { withFileTypes: true });
-      for (const entry of entries) {
-        if (entry.isDirectory()) {
-          const moduleYamlPath = path.join(cacheDir, entry.name, 'module.yaml');
-          if (await fs.pathExists(moduleYamlPath)) {
-            const yaml = require('yaml');
-            const content = await fs.readFile(moduleYamlPath, 'utf8');
-            const moduleData = yaml.parse(content);
-
-            cachedCustomModules.push({
-              id: entry.name,
-              name: moduleData.name || entry.name,
-              description: moduleData.description || 'Custom module from cache',
-              checked: selectedModules.includes(entry.name),
-              fromCache: true,
-            });
-          }
-        }
-      }
-    }
-
-    const result = {
-      selectedCustomModules: [],
-      customContentConfig: { hasCustomContent: false },
-    };
-
-    // Ask user about custom modules
-    await prompts.log.info('Custom Modules');
-    if (cachedCustomModules.length > 0) {
-      await prompts.log.message('Found custom modules in your installation:');
-    } else {
-      await prompts.log.message('No custom modules currently installed.');
-    }
-
-    // Build choices dynamically based on whether we have existing modules
-    const choices = [];
-    if (cachedCustomModules.length > 0) {
-      choices.push(
-        { name: 'Keep all existing custom modules', value: 'keep' },
-        { name: 'Select which custom modules to keep', value: 'select' },
-        { name: 'Add new custom modules', value: 'add' },
-        { name: 'Remove all custom modules', value: 'remove' },
-      );
-    } else {
-      choices.push({ name: 'Add new custom modules', value: 'add' }, { name: 'Cancel (no custom modules)', value: 'cancel' });
-    }
-
-    const customAction = await prompts.select({
-      message: cachedCustomModules.length > 0 ? 'Manage custom modules?' : 'Add custom modules?',
-      choices: choices,
-      default: cachedCustomModules.length > 0 ? 'keep' : 'add',
-    });
-
-    switch (customAction) {
-      case 'keep': {
-        // Keep all existing custom modules
-        result.selectedCustomModules = cachedCustomModules.map((m) => m.id);
-        await prompts.log.message(`Keeping ${result.selectedCustomModules.length} custom module(s)`);
-        break;
-      }
-
-      case 'select': {
-        // Let user choose which to keep
-        const selectChoices = cachedCustomModules.map((m) => ({
-          name: `${m.name} (${m.id})`,
-          value: m.id,
-          checked: m.checked,
-        }));
-
-        // Add "None / I changed my mind" option at the end
-        const choicesWithSkip = [
-          ...selectChoices,
-          {
-            name: '⚠ None / I changed my mind - keep no custom modules',
-            value: '__NONE__',
-            checked: false,
-          },
-        ];
-
-        const keepModules = await prompts.multiselect({
-          message: 'Select custom modules to keep (use arrow keys, space to toggle):',
-          choices: choicesWithSkip,
-          required: true,
-        });
-
-        // If user selected both "__NONE__" and other modules, honor the "None" choice
-        if (keepModules && keepModules.includes('__NONE__') && keepModules.length > 1) {
-          await prompts.log.warn('"None / I changed my mind" was selected, so no custom modules will be kept.');
-          result.selectedCustomModules = [];
-        } else {
-          // Filter out the special '__NONE__' value
-          result.selectedCustomModules = keepModules ? keepModules.filter((m) => m !== '__NONE__') : [];
-        }
-        break;
-      }
-
-      case 'add': {
-        // By default, keep existing modules when adding new ones
-        // User chose "Add new" not "Replace", so we assume they want to keep existing
-        result.selectedCustomModules = cachedCustomModules.map((m) => m.id);
-
-        // Then prompt for new ones (reuse existing method)
-        const newCustomContent = await this.promptCustomContentSource();
-        if (newCustomContent.hasCustomContent && newCustomContent.selected) {
-          result.selectedCustomModules.push(...newCustomContent.selectedModuleIds);
-          result.customContentConfig = newCustomContent;
-        }
-        break;
-      }
-
-      case 'remove': {
-        // Remove all custom modules
-        await prompts.log.warn('All custom modules will be removed from the installation');
-        break;
-      }
-
-      case 'cancel': {
-        // User cancelled - no custom modules
-        await prompts.log.message('No custom modules will be added');
-        break;
-      }
-    }
-
-    return result;
-  }
-
-  /**
    * Display module versions with update availability
    * @param {Array} modules - Array of module info objects with version info
    * @param {Array} availableUpdates - Array of available updates
@@ -1558,6 +1667,7 @@ class UI {
     // Group modules by source
     const builtIn = modules.filter((m) => m.source === 'built-in');
     const external = modules.filter((m) => m.source === 'external');
+    const community = modules.filter((m) => m.source === 'community');
     const custom = modules.filter((m) => m.source === 'custom');
     const unknown = modules.filter((m) => m.source === 'unknown');
 
@@ -1578,6 +1688,7 @@ class UI {
 
     formatGroup(builtIn, 'Built-in Modules');
     formatGroup(external, 'External Modules (Official)');
+    formatGroup(community, 'Community Modules');
     formatGroup(custom, 'Custom Modules');
     formatGroup(unknown, 'Other Modules');
 
@@ -1677,6 +1788,351 @@ class UI {
       return `  \u2022 ${name}${marker}`;
     });
     await prompts.log.message('Selected tools:\n' + toolLines.join('\n'));
+  }
+
+  /**
+   * Return the set of module codes the registry marks as built-in (core, bmm).
+   * These ship with the installer binary and have no per-module channel.
+   */
+  async _bundledModuleCodes() {
+    const externalManager = new ExternalModuleManager();
+    try {
+      const modules = await externalManager.listAvailable();
+      return modules.filter((m) => m.builtIn).map((m) => m.code);
+    } catch {
+      // Registry unreachable — fall back to the known bundled codes.
+      return ['core', 'bmm'];
+    }
+  }
+
+  /**
+   * Fast-path channel gate: confirm "all stable" or open the per-module picker.
+   *
+   * Skipped when:
+   *   - running non-interactively (--yes)
+   *   - the user already passed channel flags (--channel / --pin / --next), OR
+   *     the installer was launched from a prerelease (which seeds
+   *     channelOptions.global = 'next' upstream in promptInstall)
+   *   - no externals/community modules are selected
+   *
+   * Mutates channelOptions.pins and channelOptions.nextSet to reflect picker choices.
+   */
+  async _interactiveChannelGate({ options, channelOptions, selectedModules }) {
+    if (options.yes) return;
+    // If the user already declared their channel intent via flags, trust them
+    // and skip the gate.
+    const haveFlagIntent = channelOptions.global || channelOptions.nextSet.size > 0 || channelOptions.pins.size > 0;
+    if (haveFlagIntent) return;
+
+    // Figure out which selected modules actually get a channel (externals +
+    // community modules). Bundled core/bmm and custom modules skip the picker.
+    const externalManager = new ExternalModuleManager();
+    const externals = await externalManager.listAvailable();
+    const externalByCode = new Map(externals.map((m) => [m.code, m]));
+
+    const { CommunityModuleManager } = require('./modules/community-manager');
+    const communityMgr = new CommunityModuleManager();
+    const community = await communityMgr.listAll();
+    const communityByCode = new Map(community.map((m) => [m.code, m]));
+
+    const channelSelectable = selectedModules.filter((code) => {
+      const info = externalByCode.get(code) || communityByCode.get(code);
+      return info && !info.builtIn;
+    });
+    if (channelSelectable.length === 0) return;
+
+    const fastPath = await prompts.confirm({
+      message: `Ready to install (all stable)? Pick "n" to customize channels or pin versions.`,
+      default: true,
+    });
+    if (fastPath) return; // stable for all, registry default applies
+
+    // Customize path: per-module picker.
+    const { fetchStableTags, parseGitHubRepo } = require('./modules/channel-resolver');
+
+    for (const code of channelSelectable) {
+      const info = externalByCode.get(code) || communityByCode.get(code);
+      const repoUrl = info.url;
+
+      // Try to pre-resolve the top stable tag so we can surface it in the picker.
+      let stableLabel = 'stable (released version)';
+      try {
+        const parsed = repoUrl ? parseGitHubRepo(repoUrl) : null;
+        if (parsed) {
+          const tags = await fetchStableTags(parsed.owner, parsed.repo);
+          if (tags.length > 0) {
+            stableLabel = `stable  ${tags[0].tag}  (released version)`;
+          }
+        }
+      } catch {
+        // fall through with the generic label
+      }
+
+      const choice = await prompts.select({
+        message: `${code}: choose a channel`,
+        choices: [
+          { name: stableLabel, value: 'stable' },
+          { name: 'next   (main HEAD \u2014 current development)', value: 'next' },
+          { name: 'pin    (specific version)', value: 'pin' },
+        ],
+        default: 'stable',
+      });
+
+      if (choice === 'next') {
+        channelOptions.nextSet.add(code);
+      } else if (choice === 'pin') {
+        const pinValue = await prompts.text({
+          message: `Enter a version tag for '${code}' (e.g. v1.6.0):`,
+          validate: (value) => {
+            if (!value || !/^[\w.\-+/]+$/.test(String(value).trim())) {
+              return 'Must be a non-empty tag name (letters, digits, dots, hyphens).';
+            }
+          },
+        });
+        channelOptions.pins.set(code, String(pinValue).trim());
+      }
+      // 'stable' is the default; nothing to record.
+    }
+  }
+
+  /**
+   * Resolve channel decisions for an update over an existing install.
+   *
+   * For each selected external/community module:
+   *   - Read the recorded channel from the existing manifest.
+   *   - On `stable`: query tags; if a newer stable exists, classify the diff
+   *     and prompt. Patch/minor default Y; major defaults N. `--yes` accepts
+   *     defaults (patches/minors) but NOT majors — a major under --yes stays
+   *     frozen unless the user also passes `--pin CODE=NEW_TAG`.
+   *   - On `next`: no prompt (pull HEAD).
+   *   - On `pinned`: no prompt (stays pinned).
+   *   - No channel recorded and `version: null`: one-time migration prompt
+   *     ("Switch to stable / Keep on next").
+   *
+   * Decisions that freeze the current version are applied by adding a pin to
+   * `channelOptions.pins` so downstream clone logic honors them.
+   */
+  async _resolveUpdateChannels({ bmadDir, selectedModules, channelOptions, yes }) {
+    const { Manifest } = require('./core/manifest');
+    const manifestObj = new Manifest();
+    const manifest = await manifestObj.read(bmadDir);
+    const existingByName = new Map();
+    for (const m of manifest?.modulesDetailed || []) {
+      if (m?.name) existingByName.set(m.name, m);
+    }
+    if (existingByName.size === 0) return;
+
+    const externalManager = new ExternalModuleManager();
+    const externals = await externalManager.listAvailable();
+    const externalByCode = new Map(externals.map((m) => [m.code, m]));
+
+    const { CommunityModuleManager } = require('./modules/community-manager');
+    const communityMgr = new CommunityModuleManager();
+    const community = await communityMgr.listAll();
+    const communityByCode = new Map(community.map((m) => [m.code, m]));
+
+    const { fetchStableTags, classifyUpgrade, releaseNotesUrl } = require('./modules/channel-resolver');
+    const { parseGitHubRepo } = require('./modules/channel-resolver');
+
+    // Interactive-only: offer a one-time gate to review / switch channels for
+    // selected modules that are already installed. Default N so normal Modify
+    // flows (add/remove modules) aren't interrupted.
+    let reviewChannels = false;
+    if (!yes) {
+      const existingWithChannel = selectedModules.filter((code) => {
+        const prev = existingByName.get(code);
+        if (!prev) return false;
+        const info = externalByCode.get(code) || communityByCode.get(code);
+        return info && !info.builtIn;
+      });
+      if (existingWithChannel.length > 0) {
+        reviewChannels = await prompts.confirm({
+          message: 'Review channel assignments (stable / next / pin) for your existing modules?',
+          default: false,
+        });
+      }
+    }
+
+    for (const code of selectedModules) {
+      const prev = existingByName.get(code);
+      if (!prev) continue;
+
+      const info = externalByCode.get(code) || communityByCode.get(code);
+      if (!info) continue;
+      // Bundled modules (core/bmm) ship with the installer binary itself —
+      // their version is stapled to the CLI version, not a git tag. Skip
+      // tag-API lookups for them; the "upgrade" mechanism is `npx bmad@X install`.
+      if (info.builtIn) continue;
+
+      const repoUrl = info.url;
+      const parsed = repoUrl ? parseGitHubRepo(repoUrl) : null;
+
+      // Legacy migration: manifest carries no channel and a null/empty
+      // version. Offer the one-time pick between stable and next.
+      const recordedChannel = prev.channel || null;
+      const needsMigration = !recordedChannel && (prev.version == null || prev.version === '');
+      if (needsMigration) {
+        if (yes) {
+          // Conservative headless default: stable.
+          continue;
+        }
+        const chosen = await prompts.select({
+          message: `${code}: your existing install tracks the main branch. Switch to stable releases (recommended for production), or keep on main?`,
+          choices: [
+            { name: 'Switch to stable', value: 'stable' },
+            { name: 'Keep on main (next)', value: 'next' },
+          ],
+          default: 'stable',
+        });
+        if (chosen === 'next') channelOptions.nextSet.add(code);
+        continue;
+      }
+
+      // Optional channel-switch offer. Fires only when the user opted in via
+      // the gate above. 'keep' falls through to the existing per-channel
+      // logic (which runs upgrade classification for stable). Any switch
+      // records the new intent into channelOptions and skips upgrade prompts.
+      if (reviewChannels && recordedChannel) {
+        const switchChoices = [
+          {
+            name: `Keep on '${recordedChannel}'${prev.version ? ` @ ${prev.version}` : ''}`,
+            value: 'keep',
+          },
+        ];
+        if (recordedChannel !== 'stable') {
+          switchChoices.push({ name: 'Switch to stable (released version)', value: 'stable' });
+        }
+        if (recordedChannel !== 'next') {
+          switchChoices.push({ name: 'Switch to next (main HEAD)', value: 'next' });
+        }
+        switchChoices.push({ name: 'Pin to a specific version tag', value: 'pin' });
+
+        const choice = await prompts.select({
+          message: `${code} channel:`,
+          choices: switchChoices,
+          default: 'keep',
+        });
+
+        if (choice === 'next') {
+          channelOptions.nextSet.add(code);
+          continue;
+        }
+        if (choice === 'pin') {
+          const pinValue = await prompts.text({
+            message: `Enter a version tag for '${code}' (e.g. v1.6.0):`,
+            validate: (value) => {
+              if (!value || !/^[\w.\-+/]+$/.test(String(value).trim())) {
+                return 'Must be a non-empty tag name (letters, digits, dots, hyphens).';
+              }
+            },
+          });
+          channelOptions.pins.set(code, String(pinValue).trim());
+          continue;
+        }
+        if (choice === 'stable') {
+          // Switch to stable: install at the top stable tag without an
+          // upgrade-classification prompt (the user explicitly opted in).
+          // Also warm the tag cache here so the actual clone step doesn't
+          // need a second GitHub API call (can hit rate limits).
+          if (parsed) {
+            try {
+              await fetchStableTags(parsed.owner, parsed.repo);
+            } catch {
+              // best effort; clone step will surface any failure
+            }
+          }
+          continue;
+        }
+        // 'keep' → fall through with recordedChannel below.
+      }
+
+      if (recordedChannel === 'pinned' || recordedChannel === 'next') {
+        // Respect any explicit channel intent the user already expressed via
+        // CLI flags (--channel / --all-* / --next=CODE / --pin CODE=TAG) or
+        // via the interactive review gate above. Only auto-re-assert the
+        // recorded channel when the user hasn't opted into anything else —
+        // otherwise --all-stable (or a review "switch to stable") would be
+        // silently clobbered by the prior channel.
+        const alreadyDecided = channelOptions.global || channelOptions.nextSet.has(code) || channelOptions.pins.has(code);
+        if (!alreadyDecided) {
+          if (recordedChannel === 'pinned' && prev.version) {
+            channelOptions.pins.set(code, prev.version);
+          } else if (recordedChannel === 'next') {
+            channelOptions.nextSet.add(code);
+          }
+        }
+        continue;
+      }
+
+      // Stable channel: check for a newer released tag.
+      if (!parsed) continue;
+      // Respect explicit CLI intent (--pin / --next=CODE / --all-*) and any
+      // choice the user already made in the earlier review gate. Without this
+      // guard the upgrade classifier below would unconditionally call
+      // `channelOptions.pins.set(code, prev.version)` on decline/major-refuse/
+      // fetch-error, silently clobbering the user's override.
+      const alreadyDecided = channelOptions.global || channelOptions.nextSet.has(code) || channelOptions.pins.has(code);
+      if (alreadyDecided) continue;
+      let tags;
+      try {
+        tags = await fetchStableTags(parsed.owner, parsed.repo);
+      } catch (error) {
+        await prompts.log.warn(`Could not check for updates on ${code} (${error.message}). Leaving at ${prev.version}.`);
+        if (prev.version) channelOptions.pins.set(code, prev.version);
+        continue;
+      }
+      if (!tags || tags.length === 0) continue;
+      const topTag = tags[0].tag; // e.g. "v1.7.0"
+      const currentTag = prev.version || '';
+      const diffClass = classifyUpgrade(currentTag, topTag);
+
+      if (diffClass === 'none') continue; // already at or above top tag
+
+      const notes = releaseNotesUrl(repoUrl, topTag);
+      let accept;
+      if (diffClass === 'major') {
+        if (yes) {
+          // Major under --yes is refused by design.
+          await prompts.log.warn(
+            `${code} ${currentTag} → ${topTag} is a new major release; staying on ${currentTag}. ` +
+              `To accept, rerun with --pin ${code}=${topTag}.`,
+          );
+          channelOptions.pins.set(code, currentTag);
+          continue;
+        }
+        accept = await prompts.confirm({
+          message:
+            `${code} ${topTag} available — new major release (may change behavior).` +
+            (notes ? ` Release notes: ${notes}.` : '') +
+            ' Upgrade?',
+          default: false,
+        });
+      } else if (diffClass === 'minor') {
+        if (yes) {
+          accept = true;
+        } else {
+          accept = await prompts.confirm({
+            message: `${code} ${topTag} available (new features).` + (notes ? ` Release notes: ${notes}.` : '') + ' Upgrade?',
+            default: true,
+          });
+        }
+      } else {
+        // patch
+        if (yes) {
+          accept = true;
+        } else {
+          accept = await prompts.confirm({
+            message: `${code} ${topTag} available. Upgrade?`,
+            default: true,
+          });
+        }
+      }
+
+      if (!accept && currentTag) {
+        // Freeze the current version by pinning it for this run.
+        channelOptions.pins.set(code, currentTag);
+      }
+    }
   }
 }
 

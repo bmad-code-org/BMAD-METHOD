@@ -61,8 +61,8 @@ Si vous avez des stories[^3] créées ou implémentées :
 
 1. Terminez l'installation v6
 2. Placez `epics.md` ou `epics/epic*.md`[^2] dans `_bmad-output/planning-artifacts/`
-3. Lancez le workflow `bmad-sprint-planning`[^4]
-4. Indiquez quels epics/stories sont déjà terminés
+3. Lancez le workflow Développeur `bmad-sprint-planning`[^4]
+4. Indiquez à l’agent quels epics/stories sont déjà terminés
 
 ## Ce que vous obtenez
 

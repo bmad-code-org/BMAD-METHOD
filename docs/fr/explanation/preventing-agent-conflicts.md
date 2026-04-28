@@ -2,7 +2,7 @@
 title: "Prévention des conflits entre agents"
 description: Comment l'architecture empêche les conflits lorsque plusieurs agents implémentent un système
 sidebar:
-  order: 4
+  order: 6
 ---
 
 Lorsque plusieurs agents IA implémentent différentes parties d'un système, ils peuvent prendre des décisions techniques contradictoires. La documentation d'architecture prévient cela en établissant des standards partagés.

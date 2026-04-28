@@ -1,5 +1,5 @@
 const path = require('node:path');
-const fs = require('fs-extra');
+const fs = require('../fs-native');
 const yaml = require('yaml');
 const prompts = require('../prompts');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../project-root');
@@ -12,7 +12,14 @@ class OfficialModules {
     // Config collection state (merged from ConfigCollector)
     this.collectedConfig = {};
     this._existingConfig = null;
+    // Tracked during interactive config collection so {directory_name}
+    // placeholder defaults can be resolved in buildQuestion().
     this.currentProjectDir = null;
+    // Install-time channel flag state. Set by Config.build once, then used as
+    // the default for every findModuleSource/cloneExternalModule call so that
+    // pre-install config collection and the install step agree on which ref
+    // to clone.
+    this.channelOptions = options.channelOptions || null;
   }
 
   /**
@@ -36,7 +43,7 @@ class OfficialModules {
    * @returns {OfficialModules}
    */
   static async build(config, paths) {
-    const instance = new OfficialModules();
+    const instance = new OfficialModules({ channelOptions: config.channelOptions });
 
     // Pre-collected by UI or quickUpdate — store and load existing for path-change detection
     if (config.moduleConfigs) {
@@ -98,11 +105,10 @@ class OfficialModules {
   /**
    * List all available built-in modules (core and bmm).
    * All other modules come from external-official-modules.yaml
-   * @returns {Object} Object with modules array and customModules array
+   * @returns {Object} Object with modules array
    */
   async listAvailable() {
     const modules = [];
-    const customModules = [];
 
     // Add built-in core module (directly under src/core-skills)
     const corePath = getSourcePath('core-skills');
@@ -122,7 +128,7 @@ class OfficialModules {
       }
     }
 
-    return { modules, customModules };
+    return { modules };
   }
 
   /**
@@ -133,25 +139,28 @@ class OfficialModules {
    * @returns {Object|null} Module info or null if not a valid module
    */
   async getModuleInfo(modulePath, defaultName, sourceDescription) {
-    // Check for module structure (module.yaml OR custom.yaml)
     const moduleConfigPath = path.join(modulePath, 'module.yaml');
-    const rootCustomConfigPath = path.join(modulePath, 'custom.yaml');
-    let configPath = null;
 
-    if (await fs.pathExists(moduleConfigPath)) {
-      configPath = moduleConfigPath;
-    } else if (await fs.pathExists(rootCustomConfigPath)) {
-      configPath = rootCustomConfigPath;
-    }
-
-    // Skip if this doesn't look like a module
-    if (!configPath) {
+    if (!(await fs.pathExists(moduleConfigPath))) {
+      // Check resolution cache for strategy 5 modules (no module.yaml on disk)
+      const { CustomModuleManager } = require('./custom-module-manager');
+      const customMgr = new CustomModuleManager();
+      const resolved = customMgr.getResolution(defaultName);
+      if (resolved && resolved.synthesizedModuleYaml) {
+        return {
+          id: resolved.code,
+          path: modulePath,
+          name: resolved.name,
+          description: resolved.description,
+          version: resolved.version || '1.0.0',
+          source: sourceDescription,
+          dependencies: [],
+          defaultSelected: false,
+        };
+      }
       return null;
     }
 
-    // Mark as custom if it's using custom.yaml OR if it's outside src/bmm or src/core
-    const isCustomSource =
-      sourceDescription !== 'src/bmm-skills' && sourceDescription !== 'src/core-skills' && sourceDescription !== 'src/modules';
     const moduleInfo = {
       id: defaultName,
       path: modulePath,
@@ -162,12 +171,11 @@ class OfficialModules {
       description: 'BMAD Module',
       version: '5.0.0',
       source: sourceDescription,
-      isCustom: configPath === rootCustomConfigPath || isCustomSource,
     };
 
     // Read module config for metadata
     try {
-      const configContent = await fs.readFile(configPath, 'utf8');
+      const configContent = await fs.readFile(moduleConfigPath, 'utf8');
       const config = yaml.parse(configContent);
 
       // Use the code property as the id if available
@@ -193,6 +201,12 @@ class OfficialModules {
    * @returns {string|null} Path to the module source or null if not found
    */
   async findModuleSource(moduleCode, options = {}) {
+    // Inherit channelOptions from the install-scoped instance when the caller
+    // didn't pass one explicitly. Keeps pre-install config collection and the
+    // actual install step looking at the same git ref.
+    if (options.channelOptions === undefined && this.channelOptions) {
+      options = { ...options, channelOptions: this.channelOptions };
+    }
     const projectRoot = getProjectRoot();
 
     // Check for core module (directly under src/core-skills)
@@ -211,10 +225,26 @@ class OfficialModules {
       }
     }
 
-    // Check external official modules
+    // Check external official modules (pass channelOptions so channel plan applies)
     const externalSource = await this.externalModuleManager.findExternalModuleSource(moduleCode, options);
     if (externalSource) {
       return externalSource;
+    }
+
+    // Check community modules (pass channelOptions for --next/--pin overrides)
+    const { CommunityModuleManager } = require('./community-manager');
+    const communityMgr = new CommunityModuleManager();
+    const communitySource = await communityMgr.findModuleSource(moduleCode, options);
+    if (communitySource) {
+      return communitySource;
+    }
+
+    // Check custom modules (from user-provided URLs, already cloned to cache)
+    const { CustomModuleManager } = require('./custom-module-manager');
+    const customMgr = new CustomModuleManager();
+    const customSource = await customMgr.findModuleSourceByCode(moduleCode, options);
+    if (customSource) {
+      return customSource;
     }
 
     return null;
@@ -231,7 +261,33 @@ class OfficialModules {
    * @param {Object} options.logger - Logger instance for output
    */
   async install(moduleName, bmadDir, fileTrackingCallback = null, options = {}) {
-    const sourcePath = await this.findModuleSource(moduleName, { silent: options.silent });
+    // Check if this module has a plugin resolution (custom marketplace install)
+    const { CustomModuleManager } = require('./custom-module-manager');
+    const customMgr = new CustomModuleManager();
+    const resolved = customMgr.getResolution(moduleName);
+    if (resolved) {
+      return this.installFromResolution(resolved, bmadDir, fileTrackingCallback, options);
+    }
+
+    // Community modules whose cloned repo ships marketplace.json get the same
+    // skill-level install treatment as custom-source installs. If the in-process
+    // cache wasn't populated (e.g. caller skipped the pre-clone phase), fall
+    // back to resolving directly from `~/.bmad/cache/community-modules/<name>/`
+    // so we don't silently regress to the legacy half-install path.
+    const { CommunityModuleManager } = require('./community-manager');
+    const communityMgr = new CommunityModuleManager();
+    let communityResolved = communityMgr.getPluginResolution(moduleName);
+    if (!communityResolved) {
+      communityResolved = await communityMgr.resolveFromCache(moduleName);
+    }
+    if (communityResolved) {
+      return this.installFromResolution(communityResolved, bmadDir, fileTrackingCallback, options);
+    }
+
+    const sourcePath = await this.findModuleSource(moduleName, {
+      silent: options.silent,
+      channelOptions: options.channelOptions,
+    });
     const targetPath = path.join(bmadDir, moduleName);
 
     if (!sourcePath) {
@@ -254,14 +310,111 @@ class OfficialModules {
     const manifestObj = new Manifest();
     const versionInfo = await manifestObj.getModuleVersionInfo(moduleName, bmadDir, sourcePath);
 
+    // Pick up channel resolution recorded by whichever manager did the clone.
+    const externalResolution = this.externalModuleManager.getResolution(moduleName);
+    let communityResolution = null;
+    if (!externalResolution) {
+      const { CommunityModuleManager } = require('./community-manager');
+      communityResolution = new CommunityModuleManager().getResolution(moduleName);
+    }
+    const resolution = externalResolution || communityResolution;
+
     await manifestObj.addModule(bmadDir, moduleName, {
-      version: versionInfo.version,
+      version: resolution?.version || versionInfo.version,
       source: versionInfo.source,
       npmPackage: versionInfo.npmPackage,
       repoUrl: versionInfo.repoUrl,
+      channel: resolution?.channel,
+      sha: resolution?.sha,
+      registryApprovedTag: communityResolution?.registryApprovedTag,
+      registryApprovedSha: communityResolution?.registryApprovedSha,
     });
 
     return { success: true, module: moduleName, path: targetPath, versionInfo };
+  }
+
+  /**
+   * Install a module from a PluginResolver resolution result.
+   * Copies specific skill directories and places module-help.csv at the target root.
+   * @param {Object} resolved - ResolvedModule from PluginResolver
+   * @param {string} bmadDir - Target bmad directory
+   * @param {Function} fileTrackingCallback - Optional callback to track installed files
+   * @param {Object} options - Installation options
+   */
+  async installFromResolution(resolved, bmadDir, fileTrackingCallback = null, options = {}) {
+    const targetPath = path.join(bmadDir, resolved.code);
+
+    if (await fs.pathExists(targetPath)) {
+      await fs.remove(targetPath);
+    }
+
+    await fs.ensureDir(targetPath);
+
+    // Copy each skill directory, flattened by leaf name
+    for (const skillPath of resolved.skillPaths) {
+      const skillDirName = path.basename(skillPath);
+      const skillTarget = path.join(targetPath, skillDirName);
+      await this.copyModuleWithFiltering(skillPath, skillTarget, fileTrackingCallback, options.moduleConfig);
+    }
+
+    // Place module-help.csv at the module root
+    if (resolved.moduleHelpCsvPath) {
+      // Strategies 1-4: copy the existing file
+      const helpTarget = path.join(targetPath, 'module-help.csv');
+      await fs.copy(resolved.moduleHelpCsvPath, helpTarget, { overwrite: true });
+      if (fileTrackingCallback) fileTrackingCallback(helpTarget);
+    } else if (resolved.synthesizedHelpCsv) {
+      // Strategy 5: write synthesized content
+      const helpTarget = path.join(targetPath, 'module-help.csv');
+      await fs.writeFile(helpTarget, resolved.synthesizedHelpCsv, 'utf8');
+      if (fileTrackingCallback) fileTrackingCallback(helpTarget);
+    }
+
+    // Create directories declared in module.yaml (strategies 1-4 may have these)
+    if (!options.skipModuleInstaller) {
+      await this.createModuleDirectories(resolved.code, bmadDir, options);
+    }
+
+    // Update manifest. For community installs we honor the channel resolved by
+    // CommunityModuleManager (stable/next/pinned) and propagate the registry's
+    // approved tag/sha. For custom-source installs we derive channel from the
+    // cloneRef (present → pinned, absent → next; local paths have no channel).
+    const { Manifest } = require('../core/manifest');
+    const manifestObj = new Manifest();
+
+    const hasGitClone = !!resolved.repoUrl;
+    const isCommunity = resolved.communitySource === true;
+    const manifestEntry = {
+      version: resolved.communityVersion || resolved.cloneRef || (hasGitClone ? 'main' : resolved.version || null),
+      source: isCommunity ? 'community' : 'custom',
+      npmPackage: null,
+      repoUrl: resolved.repoUrl || null,
+    };
+    if (isCommunity) {
+      if (resolved.communityChannel) manifestEntry.channel = resolved.communityChannel;
+      if (resolved.cloneSha) manifestEntry.sha = resolved.cloneSha;
+      if (resolved.registryApprovedTag) manifestEntry.registryApprovedTag = resolved.registryApprovedTag;
+      if (resolved.registryApprovedSha) manifestEntry.registryApprovedSha = resolved.registryApprovedSha;
+    } else if (hasGitClone) {
+      manifestEntry.channel = resolved.cloneRef ? 'pinned' : 'next';
+      if (resolved.cloneSha) manifestEntry.sha = resolved.cloneSha;
+      if (resolved.rawInput) manifestEntry.rawSource = resolved.rawInput;
+    }
+    if (resolved.localPath) manifestEntry.localPath = resolved.localPath;
+    await manifestObj.addModule(bmadDir, resolved.code, manifestEntry);
+
+    return {
+      success: true,
+      module: resolved.code,
+      path: targetPath,
+      // Mirror the manifestEntry.version precedence above so downstream summary
+      // lines show the same string we just wrote to disk (community installs
+      // use the registry-approved tag via `communityVersion`; custom git-backed
+      // installs show the cloned ref or 'main').
+      versionInfo: {
+        version: resolved.communityVersion || resolved.cloneRef || (hasGitClone ? 'main' : resolved.version || ''),
+      },
+    };
   }
 
   /**
@@ -417,32 +570,6 @@ class OfficialModules {
         fileTrackingCallback(targetFile);
       }
     }
-  }
-
-  /**
-   * Find all .md agent files recursively in a directory
-   * @param {string} dir - Directory to search
-   * @returns {Array} List of .md agent file paths
-   */
-  async findAgentMdFiles(dir) {
-    const agentFiles = [];
-
-    async function searchDirectory(searchDir) {
-      const entries = await fs.readdir(searchDir, { withFileTypes: true });
-
-      for (const entry of entries) {
-        const fullPath = path.join(searchDir, entry.name);
-
-        if (entry.isFile() && entry.name.endsWith('.md')) {
-          agentFiles.push(fullPath);
-        } else if (entry.isDirectory()) {
-          await searchDirectory(fullPath);
-        }
-      }
-    }
-
-    await searchDirectory(dir);
-    return agentFiles;
   }
 
   /**
@@ -619,29 +746,6 @@ class OfficialModules {
   }
 
   /**
-   * Private: Process module configuration
-   * @param {string} modulePath - Path to installed module
-   * @param {string} moduleName - Module name
-   */
-  async processModuleConfig(modulePath, moduleName) {
-    const configPath = path.join(modulePath, 'config.yaml');
-
-    if (await fs.pathExists(configPath)) {
-      try {
-        let configContent = await fs.readFile(configPath, 'utf8');
-
-        // Replace path placeholders
-        configContent = configContent.replaceAll('{project-root}', `bmad/${moduleName}`);
-        configContent = configContent.replaceAll('{module}', moduleName);
-
-        await fs.writeFile(configPath, configContent, 'utf8');
-      } catch (error) {
-        await prompts.log.warn(`Failed to process module config: ${error.message}`);
-      }
-    }
-  }
-
-  /**
    * Private: Sync module files (preserving user modifications)
    * @param {string} sourcePath - Source module path
    * @param {string} targetPath - Target module path
@@ -786,10 +890,10 @@ class OfficialModules {
     let foundAny = false;
     const entries = await fs.readdir(bmadDir, { withFileTypes: true });
 
+    const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom']);
     for (const entry of entries) {
       if (entry.isDirectory()) {
-        // Skip the _config directory - it's for system use
-        if (entry.name === '_config' || entry.name === '_memory') {
+        if (nonModuleDirs.has(entry.name)) {
           continue;
         }
 
@@ -824,20 +928,15 @@ class OfficialModules {
     const results = [];
 
     for (const moduleName of modules) {
-      // Resolve module.yaml path - custom paths first, then standard location, then OfficialModules search
+      // Resolve module.yaml path - standard location first, then OfficialModules search
       let moduleConfigPath = null;
-      const customPath = this.customModulePaths?.get(moduleName);
-      if (customPath) {
-        moduleConfigPath = path.join(customPath, 'module.yaml');
+      const standardPath = path.join(getModulePath(moduleName), 'module.yaml');
+      if (await fs.pathExists(standardPath)) {
+        moduleConfigPath = standardPath;
       } else {
-        const standardPath = path.join(getModulePath(moduleName), 'module.yaml');
-        if (await fs.pathExists(standardPath)) {
-          moduleConfigPath = standardPath;
-        } else {
-          const moduleSourcePath = await this.findModuleSource(moduleName, { silent: true });
-          if (moduleSourcePath) {
-            moduleConfigPath = path.join(moduleSourcePath, 'module.yaml');
-          }
+        const moduleSourcePath = await this.findModuleSource(moduleName, { silent: true });
+        if (moduleSourcePath) {
+          moduleConfigPath = path.join(moduleSourcePath, 'module.yaml');
         }
       }
 
@@ -882,12 +981,9 @@ class OfficialModules {
    * @param {Array} modules - List of modules to configure (including 'core')
    * @param {string} projectDir - Target project directory
    * @param {Object} options - Additional options
-   * @param {Map} options.customModulePaths - Map of module ID to source path for custom modules
    * @param {boolean} options.skipPrompts - Skip prompts and use defaults (for --yes flag)
    */
   async collectAllConfigurations(modules, projectDir, options = {}) {
-    // Store custom module paths for use in collectModuleConfig
-    this.customModulePaths = options.customModulePaths || new Map();
     this.skipPrompts = options.skipPrompts || false;
     this.modulesToCustomize = undefined;
     await this.loadExistingConfig(projectDir);
@@ -1018,7 +1114,6 @@ class OfficialModules {
    */
   async collectModuleConfigQuick(moduleName, projectDir, silentMode = true) {
     this.currentProjectDir = projectDir;
-
     // Load existing config if not already loaded
     if (!this._existingConfig) {
       await this.loadExistingConfig(projectDir);
@@ -1042,25 +1137,7 @@ class OfficialModules {
       }
     }
 
-    let configPath = null;
-    let isCustomModule = false;
-
-    if (await fs.pathExists(moduleConfigPath)) {
-      configPath = moduleConfigPath;
-    } else {
-      // Check if this is a custom module with custom.yaml
-      const moduleSourcePath = await this.findModuleSource(moduleName, { silent: true });
-
-      if (moduleSourcePath) {
-        const rootCustomConfigPath = path.join(moduleSourcePath, 'custom.yaml');
-
-        if (await fs.pathExists(rootCustomConfigPath)) {
-          isCustomModule = true;
-          // For custom modules, we don't have an install-config schema, so just use existing values
-          // The custom.yaml values will be loaded and merged during installation
-        }
-      }
-
+    if (!(await fs.pathExists(moduleConfigPath))) {
       // No config schema for this module - use existing values
       if (this._existingConfig && this._existingConfig[moduleName]) {
         if (!this.collectedConfig[moduleName]) {
@@ -1071,7 +1148,7 @@ class OfficialModules {
       return false;
     }
 
-    const configContent = await fs.readFile(configPath, 'utf8');
+    const configContent = await fs.readFile(moduleConfigPath, 'utf8');
     const moduleConfig = yaml.parse(configContent);
 
     if (!moduleConfig) {
@@ -1172,7 +1249,13 @@ class OfficialModules {
       // Collect all answers (static + prompted)
       let allAnswers = { ...staticAnswers };
 
-      if (questions.length > 0) {
+      if (questions.length > 0 && silentMode) {
+        // In silent mode (quick update), use defaults for new fields instead of prompting
+        for (const q of questions) {
+          allAnswers[q.name] = typeof q.default === 'function' ? q.default({}) : q.default;
+        }
+        await prompts.log.message(`  \u2713 ${moduleName.toUpperCase()} module configured with defaults`);
+      } else if (questions.length > 0) {
         // Only show header if we actually have questions
         await CLIUtils.displayModuleConfigHeader(moduleName, moduleConfig.header, moduleConfig.subheader);
         await prompts.log.message('');
@@ -1332,16 +1415,7 @@ class OfficialModules {
       this.allAnswers = {};
     }
     // Load module's config
-    // First, check if we have a custom module path for this module
-    let moduleConfigPath = null;
-
-    if (this.customModulePaths && this.customModulePaths.has(moduleName)) {
-      const customPath = this.customModulePaths.get(moduleName);
-      moduleConfigPath = path.join(customPath, 'module.yaml');
-    } else {
-      // Try the standard src/modules location
-      moduleConfigPath = path.join(getModulePath(moduleName), 'module.yaml');
-    }
+    let moduleConfigPath = path.join(getModulePath(moduleName), 'module.yaml');
 
     // If not found in src/modules or custom paths, search the project
     if (!(await fs.pathExists(moduleConfigPath))) {

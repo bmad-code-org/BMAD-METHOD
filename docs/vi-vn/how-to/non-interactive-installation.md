@@ -27,8 +27,8 @@ Yêu cầu [Node.js](https://nodejs.org) v20+ và `npx` (đi kèm với npm).
 | `--directory <path>` | Thư mục cài đặt | `--directory ~/projects/myapp` |
 | `--modules <modules>` | Danh sách ID module, cách nhau bởi dấu phẩy | `--modules bmm,bmb` |
 | `--tools <tools>` | Danh sách ID công cụ/IDE, cách nhau bởi dấu phẩy (dùng `none` để bỏ qua) | `--tools claude-code,cursor` hoặc `--tools none` |
-| `--custom-content <paths>` | Danh sách đường dẫn đến module tùy chỉnh, cách nhau bởi dấu phẩy | `--custom-content ~/my-module,~/another-module` |
 | `--action <type>` | Hành động cho bản cài đặt hiện có: `install` (mặc định), `update`, hoặc `quick-update` | `--action quick-update` |
+| `--custom-source <sources>` | Danh sách Git URL hoặc đường dẫn cục bộ cho module tùy chỉnh, cách nhau bởi dấu phẩy | `--custom-source /path/to/module` |
 
 ### Cấu hình cốt lõi
 
@@ -82,6 +82,7 @@ Chạy `npx bmad-method install` một lần ở chế độ tương tác để 
 | Hoàn toàn không tương tác | Cung cấp đầy đủ cờ để bỏ qua tất cả prompt | `npx bmad-method install --directory . --modules bmm --tools claude-code --yes` |
 | Bán tương tác | Cung cấp một số cờ, BMad hỏi thêm phần còn lại | `npx bmad-method install --directory . --modules bmm` |
 | Chỉ dùng mặc định | Chấp nhận tất cả giá trị mặc định với `-y` | `npx bmad-method install --yes` |
+| Chỉ dùng custom source | Chỉ cài core và module tùy chỉnh | `npx bmad-method install --directory . --custom-source /path/to/module --tools claude-code --yes` |
 | Không cấu hình công cụ | Bỏ qua cấu hình công cụ/IDE | `npx bmad-method install --modules bmm --tools none` |
 
 ## Ví dụ
@@ -120,15 +121,32 @@ npx bmad-method install \
   --action quick-update
 ```
 
-### Cài đặt với nội dung tùy chỉnh
+### Cài từ custom source
+
+Cài một module từ đường dẫn cục bộ hoặc từ bất kỳ Git host nào:
 
 ```bash
 npx bmad-method install \
-  --directory ~/projects/myapp \
-  --modules bmm \
-  --custom-content ~/my-custom-module,~/another-module \
-  --tools claude-code
+  --directory . \
+  --custom-source /path/to/my-module \
+  --tools claude-code \
+  --yes
 ```
+
+Kết hợp cùng module chính thức:
+
+```bash
+npx bmad-method install \
+  --directory . \
+  --modules bmm \
+  --custom-source https://gitlab.com/myorg/my-module \
+  --tools claude-code \
+  --yes
+```
+
+:::note[Hành vi của `custom-source`]
+Khi dùng `--custom-source` mà không kèm `--modules`, hệ thống chỉ cài core và các module tùy chỉnh. Nếu muốn cài cả module chính thức, hãy thêm `--modules`. Xem thêm [Cài đặt module tùy chỉnh và module cộng đồng](./install-custom-modules.md) để biết chi tiết.
+:::
 
 ## Bạn nhận được gì
 
@@ -143,12 +161,11 @@ BMad sẽ kiểm tra tất cả các cờ được cung cấp:
 - **Directory** - Phải là đường dẫn hợp lệ và có quyền ghi
 - **Modules** - Cảnh báo nếu ID module không hợp lệ (nhưng không thất bại)
 - **Tools** - Cảnh báo nếu ID công cụ không hợp lệ (nhưng không thất bại)
-- **Custom Content** - Mỗi đường dẫn phải chứa tệp `module.yaml` hợp lệ
 - **Action** - Phải là một trong: `install`, `update`, `quick-update`
 
 Giá trị không hợp lệ sẽ dẫn đến một trong các trường hợp sau:
 1. Hiện lỗi và thoát (với các tùy chọn quan trọng như directory)
-2. Hiện cảnh báo và bỏ qua (với mục tùy chọn như custom content)
+2. Hiện cảnh báo và bỏ qua (với mục tùy chọn)
 3. Quay lại hỏi interactive (với giá trị bắt buộc bị thiếu)
 
 :::tip[Thực hành tốt]
@@ -171,13 +188,6 @@ Giá trị không hợp lệ sẽ dẫn đến một trong các trường hợp 
 
 - Xác minh ID module có đúng không
 - Module bên ngoài phải có sẵn trong registry
-
-### Đường dẫn custom content không hợp lệ
-
-Đảm bảo mỗi đường dẫn custom content:
-- Trỏ tới một thư mục
-- Chứa tệp `module.yaml` ở cấp gốc
-- Có trường `code` trong tệp `module.yaml`
 
 :::note[Vẫn bị mắc?]
 Chạy với `--debug` để xem output chi tiết, thử chế độ interactive để cô lập vấn đề, hoặc báo cáo tại <https://github.com/bmad-code-org/BMAD-METHOD/issues>.

@@ -27,6 +27,10 @@ export const locales = {
     label: 'Français',
     lang: 'fr-FR',
   },
+  cs: {
+    label: 'Čeština',
+    lang: 'cs-CZ',
+  },
 };
 
 /**

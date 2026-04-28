@@ -1103,5 +1103,6 @@ When ready to plan new features, run the PRD workflow and provide this index as 
   </action>
 
 <action>Display: "State file saved: {{project_knowledge}}/project-scan-report.json"</action>
+<action>Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete` — if the resolved value is non-empty, follow it as the final terminal instruction before exiting.</action>
 
 </workflow>

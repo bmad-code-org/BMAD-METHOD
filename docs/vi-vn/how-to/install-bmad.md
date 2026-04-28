@@ -72,7 +72,7 @@ Trình cài đặt sẽ hiện các module có sẵn. Chọn những module bạ
 
 ### 5. Làm theo các prompt
 
-Trình cài đặt sẽ hướng dẫn các bước còn lại - nội dung tùy chỉnh, cài đặt, và các tùy chọn khác.
+Trình cài đặt sẽ hướng dẫn các bước còn lại - cài đặt, tích hợp công cụ, và các tùy chọn khác.
 
 ## Bạn nhận được gì
 

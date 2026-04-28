@@ -90,6 +90,12 @@ Review the complete epic and story breakdown to ensure EVERY FR is covered:
 - Dependencies flow naturally
 - Foundation stories only setup what's needed
 - No big upfront technical work
+- **File Churn Check:** Do multiple epics repeatedly modify the same core files?
+  - Assess whether the overlap pattern suggests unnecessary churn or is incidental
+  - If overlap is significant: Validate that splitting provides genuine value (risk mitigation, feedback loops, context size limits)
+  - If no justification for the split: Recommend consolidation into fewer epics
+  - ❌ WRONG: Multiple epics each modify the same core files with no feedback loop between them
+  - ✅ RIGHT: Epics target distinct files/components, OR consolidation was explicitly considered and rejected with rationale
 
 ### 5. Dependency Validation (CRITICAL)
 
@@ -129,3 +135,9 @@ When C is selected, the workflow is complete and the epics.md is ready for devel
 Epics and Stories complete. Invoke the `bmad-help` skill.
 
 Upon Completion of task output: offer to answer any questions about the Epics and Stories.
+
+## On Complete
+
+Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete`
+
+If the resolved `workflow.on_complete` is non-empty, follow it as the final terminal instruction before exiting.

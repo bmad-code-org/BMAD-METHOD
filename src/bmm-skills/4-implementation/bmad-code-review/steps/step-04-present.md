@@ -46,35 +46,32 @@ If `decision_needed` findings exist, present each one with its detail and the op
 
 If the user chooses to defer, ask: Quick one-line reason for deferring this item? (helps future reviews): — then append that reason to both the story file bullet and the `{deferred_work_file}` entry.
 
-**HALT** — I am waiting for your numbered choice. Reply with only the number (or "0" for batch). Do not proceed until you select an option.
+**HALT** — I am waiting for your numbered choice. Reply with only the number. Do not proceed until you select an option.
 
 ### 5. Handle `patch` findings
 
 If `patch` findings exist (including any resolved from step 4), HALT. Ask the user:
 
-If `{spec_file}` is set, present all three options (if >3 `patch` findings exist, also show option 0):
+If `{spec_file}` is set, present all three options:
 
-> **How would you like to handle the <Z> `patch` findings?**
-> 0. **Batch-apply all** — automatically fix every non-controversial patch (recommended when there are many)
-> 1. **Fix them automatically** — I will apply fixes now
+> **How would you like to handle the `<P>` `patch` findings?**
+> 1. **Apply every patch** — fix all of them now, no per-finding confirmation. Defer and decision-needed items are not touched.
 > 2. **Leave as action items** — they are already in the story file
-> 3. **Walk through each** — let me show details before deciding
+> 3. **Walk through each patch** — show details for each before deciding
 
-If `{spec_file}` is **not** set, present only options 1 and 3 (omit option 2 — findings were not written to a file). If >3 `patch` findings exist, also show option 0:
+If `{spec_file}` is **not** set, present only options 1 and 2 (omit "Leave as action items" — findings were not written to a file):
 
-> **How would you like to handle the <Z> `patch` findings?**
-> 0. **Batch-apply all** — automatically fix every non-controversial patch (recommended when there are many)
-> 1. **Fix them automatically** — I will apply fixes now
-> 2. **Walk through each** — let me show details before deciding
+> **How would you like to handle the `<P>` `patch` findings?**
+> 1. **Apply every patch** — fix all of them now, no per-finding confirmation. Defer and decision-needed items are not touched.
+> 2. **Walk through each patch** — show details for each before deciding
 
-**HALT** — I am waiting for your numbered choice. Reply with only the number (or "0" for batch). Do not proceed until you select an option.
+**HALT** — I am waiting for your numbered choice. Reply with only the number. Do not proceed until you select an option.
 
-- **Option 0** (only when >3 findings): Apply all non-controversial patches without per-finding confirmation. Skip any finding that requires judgment. Present a summary of changes made and any skipped findings.
-- **Option 1**: Apply each fix. After all patches are applied, present a summary of changes made. If `{spec_file}` is set, check off the items in the story file.
-- **Option 2** (only when `{spec_file}` is set): Done — findings are already written to the story.
-- **Walk through each**: Present each finding with full detail, diff context, and suggested fix. After walkthrough, re-offer the applicable options above.
+- **Apply every patch**: Apply every patch finding without per-finding confirmation. Do not modify defer or decision-needed items. After all patches are applied, present a summary of changes made. If `{spec_file}` is set, check off the patch items in the story file (leave defer items as-is).
+- **Leave as action items** (only when `{spec_file}` is set): Done — findings are already written to the story.
+- **Walk through each patch**: Present each finding with full detail, diff context, and suggested fix. After walkthrough, re-offer the applicable options above.
 
-  **HALT** — I am waiting for your numbered choice. Reply with only the number (or "0" for batch). Do not proceed until you select an option.
+  **HALT** — I am waiting for your numbered choice. Do not proceed until you select an option.
 
 **✅ Code review actions complete**
 
@@ -127,3 +124,9 @@ Present the user with follow-up options:
 > 3. **Done** — end the workflow
 
 **HALT** — I am waiting for your choice. Do not proceed until the user selects an option.
+
+## On Complete
+
+Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete`
+
+If the resolved `workflow.on_complete` is non-empty, follow it as the final terminal instruction before exiting.
