@@ -469,7 +469,9 @@ class UI {
       const allTools = [...preferredIdes, ...otherIdes];
 
       // Non-interactive: handle --tools and --yes flags before interactive prompt
-      if (options.tools) {
+      // Use !== undefined so an explicit --tools "" falls through to _parseToolsFlag and
+      // gets a specific "passed empty" error instead of being silently ignored.
+      if (options.tools !== undefined) {
         const selectedIdes = this._parseToolsFlag(options.tools, allKnownValues);
         await prompts.log.info(`Using tools from command-line: ${selectedIdes.join(', ')}`);
         await this.displaySelectedTools(selectedIdes, preferredIdes, allTools);
@@ -546,8 +548,9 @@ class UI {
 
     let selectedIdes = [];
 
-    // Check if tools are provided via command-line
-    if (options.tools) {
+    // Check if tools are provided via command-line.
+    // Use !== undefined so an explicit --tools "" still hits _parseToolsFlag's empty-value error.
+    if (options.tools !== undefined) {
       selectedIdes = this._parseToolsFlag(options.tools, allKnownValues);
       await prompts.log.info(`Using tools from command-line: ${selectedIdes.join(', ')}`);
       await this.displaySelectedTools(selectedIdes, preferredIdes, allTools);
