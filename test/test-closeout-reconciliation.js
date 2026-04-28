@@ -45,16 +45,32 @@ assert(
 
 assert(
   codeReview.includes(
-    'If the story file does not match `{new_status}`, or if `{sprint_status}` was verified and `development_status[{story_key}]` does not match `{new_status}`, HALT with a closeout reconciliation failure instead of reporting completion.',
+    'If the story file does not match `{new_status}`, HALT with a closeout reconciliation failure instead of reporting completion.',
   ),
-  'code-review halts when closeout reconciliation fails',
+  'code-review halts when story markdown reconciliation fails',
 );
 
 assert(codeReview.includes('development_status[{story_key}]'), 'code-review verifies the sprint tracker entry during reconciliation');
 
 assert(
-  codeReview.includes('Set `{reconciliation_result}` = `story file verified; sprint tracker verification skipped`.'),
-  'code-review records when sprint tracker verification is skipped',
+  codeReview.includes(
+    'If `development_status[{story_key}]` is missing, unreadable, or cannot be verified, HALT with a closeout reconciliation failure instead of reporting completion.',
+  ),
+  'code-review halts when the sprint tracker entry cannot be verified',
+);
+
+assert(
+  codeReview.includes(
+    'If `development_status[{story_key}]` does not match `{new_status}`, HALT with a closeout reconciliation failure instead of reporting completion.',
+  ),
+  'code-review halts when sprint tracker reconciliation fails',
+);
+
+assert(
+  codeReview.includes(
+    'If `{sprint_status}` file does not exist, set `{reconciliation_result}` = `story file verified; sprint tracker not applicable`.',
+  ),
+  'code-review treats skipped reconciliation as not applicable only when no sprint tracker exists',
 );
 
 assert(

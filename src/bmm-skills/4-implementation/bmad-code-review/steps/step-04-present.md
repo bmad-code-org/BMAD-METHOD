@@ -109,11 +109,19 @@ If `{sprint_status}` file does not exist, note that story status was updated in 
 
 Re-open the story file after saving and verify the top-level `Status:` field equals `{new_status}`.
 
-Set `{reconciliation_result}` = `story file verified; sprint tracker verification skipped`.
+If the story file does not match `{new_status}`, HALT with a closeout reconciliation failure instead of reporting completion.
 
-If `{sprint_status}` exists and `{story_key}` was found, re-open `{sprint_status}` after saving and verify `development_status[{story_key}]` also equals `{new_status}`. If it matches, set `{reconciliation_result}` = `story markdown and sprint tracker agree on {new_status}`.
+If `{sprint_status}` file does not exist, set `{reconciliation_result}` = `story file verified; sprint tracker not applicable`.
 
-If the story file does not match `{new_status}`, or if `{sprint_status}` was verified and `development_status[{story_key}]` does not match `{new_status}`, HALT with a closeout reconciliation failure instead of reporting completion.
+If `{sprint_status}` exists but `{story_key}` was not found during sprint-status sync, HALT with a closeout reconciliation failure instead of reporting completion.
+
+If `{sprint_status}` exists and `{story_key}` was found, re-open `{sprint_status}` after saving and verify `development_status[{story_key}]` also equals `{new_status}`.
+
+If `development_status[{story_key}]` is missing, unreadable, or cannot be verified, HALT with a closeout reconciliation failure instead of reporting completion.
+
+If `development_status[{story_key}]` matches `{new_status}`, set `{reconciliation_result}` = `story markdown and sprint tracker agree on {new_status}`.
+
+If `development_status[{story_key}]` does not match `{new_status}`, HALT with a closeout reconciliation failure instead of reporting completion.
 
 #### Completion summary
 
