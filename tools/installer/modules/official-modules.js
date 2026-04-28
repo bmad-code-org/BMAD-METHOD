@@ -46,13 +46,18 @@ class OfficialModules {
    */
   async applyOverridesAfterSeeding(moduleName) {
     const overrides = this.setOverrides[moduleName] || {};
-    if (Object.keys(overrides).length === 0) return;
+    const priorConfig = this._existingConfig?.[moduleName];
+    const hasPrior = priorConfig && typeof priorConfig === 'object' && !Array.isArray(priorConfig);
+
+    if (Object.keys(overrides).length === 0 && !hasPrior) return;
 
     if (!this.collectedConfig[moduleName]) this.collectedConfig[moduleName] = {};
     for (const [key, value] of Object.entries(overrides)) {
       this.collectedConfig[moduleName][key] = value;
     }
 
+    // Load schema so we can flag unknown keys. If the schema can't be loaded,
+    // we skip key-existence validation but still apply overrides + carry-forward.
     let schema = null;
     const schemaPath = path.join(getModulePath(moduleName), 'module.yaml');
     if (await fs.pathExists(schemaPath)) {
@@ -64,15 +69,34 @@ class OfficialModules {
     }
     if (!schema || typeof schema !== 'object') return;
 
+    const declaredKeys = new Set();
+    for (const [key, decl] of Object.entries(schema)) {
+      if (decl && typeof decl === 'object' && 'prompt' in decl) declaredKeys.add(key);
+    }
+
     if (!this.setOverrideKeys) this.setOverrideKeys = {};
     if (!this.setOverrideKeys[moduleName]) this.setOverrideKeys[moduleName] = new Set();
+
+    // Warn + track unknown keys from this run's --set entries.
     for (const key of Object.keys(overrides)) {
-      const decl = schema[key];
-      const isDeclared = decl && typeof decl === 'object' && 'prompt' in decl;
-      if (!isDeclared) {
+      if (!declaredKeys.has(key)) {
         await prompts.log.warn(
           `--set ${moduleName}.${key} — '${key}' is not a declared config key for module '${moduleName}'; persisted but unused by current install.`,
         );
+        this.setOverrideKeys[moduleName].add(key);
+      }
+    }
+
+    // Carry forward any non-schema keys persisted by a prior install. Mirrors
+    // the carry-forward logic in `collectModuleConfig` so the skip-collection
+    // path (e.g. core under --yes) doesn't drop unknown keys on subsequent
+    // runs. Without this, `--set core.future=x` lands in config.toml on run #1
+    // and would silently disappear on the next install. (#1663 forward-compat)
+    if (hasPrior) {
+      for (const [key, value] of Object.entries(priorConfig)) {
+        if (declaredKeys.has(key)) continue;
+        if (key in this.collectedConfig[moduleName]) continue; // already set this run
+        this.collectedConfig[moduleName][key] = value;
         this.setOverrideKeys[moduleName].add(key);
       }
     }

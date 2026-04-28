@@ -143,16 +143,23 @@ function formatModuleOptions(code, parsed, source) {
 
 /**
  * Render `--list-options` output.
+ *
+ * Returns `{ text, ok }` so callers can surface a non-zero exit code on
+ * a typo'd module-code lookup. Discovery dedupes case-insensitively, so
+ * the lookup is also case-insensitive — typing `--list-options BMM` and
+ * `--list-options bmm` both find the bmm built-in.
+ *
  * @param {string|null} moduleCode - if non-null, restrict to this module
- * @returns {Promise<string>}
+ * @returns {Promise<{text: string, ok: boolean}>}
  */
 async function formatOptionsList(moduleCode) {
   const discovered = await discoverOfficialModuleYamls();
-  const filtered = moduleCode ? discovered.filter((d) => d.code === moduleCode) : discovered;
+  const needle = moduleCode ? moduleCode.toLowerCase() : null;
+  const filtered = needle ? discovered.filter((d) => d.code.toLowerCase() === needle) : discovered;
 
   if (filtered.length === 0) {
     if (moduleCode) {
-      return [
+      const text = [
         `No locally-known module.yaml for '${moduleCode}'.`,
         '',
         'Built-in modules (core, bmm) are always available. External officials',
@@ -162,8 +169,9 @@ async function formatOptionsList(moduleCode) {
         'For community or custom modules, read the module.yaml file in that',
         "module's source repository directly.",
       ].join('\n');
+      return { text, ok: false };
     }
-    return 'No modules found.';
+    return { text: 'No modules found.', ok: false };
   }
 
   const sections = [];
@@ -186,7 +194,7 @@ async function formatOptionsList(moduleCode) {
     );
   }
 
-  return sections.join('\n');
+  return { text: sections.join('\n'), ok: true };
 }
 
 module.exports = { formatOptionsList, discoverOfficialModuleYamls };

@@ -3030,25 +3030,48 @@ async function runTests() {
     const empty = parseSetEntries();
     assert(empty && Object.keys(empty).length === 0, 'parseSetEntries() returns empty object when called without args');
 
-    // discoverOfficialModuleYamls includes core and bmm built-ins.
-    const discovered = await discoverOfficialModuleYamls();
-    const codes = new Set(discovered.map((d) => d.code));
-    assert(codes.has('core') && codes.has('bmm'), 'discoverOfficialModuleYamls finds core and bmm built-ins');
-    const coreEntry = discovered.find((d) => d.code === 'core');
-    assert(coreEntry && coreEntry.source === 'built-in', 'core is reported with source="built-in"');
+    // discoverOfficialModuleYamls + formatOptionsList read the on-disk
+    // external-module cache. Point that env at a temp dir so test results
+    // don't depend on whatever the developer / CI runner has cached.
+    const priorCacheEnv44 = process.env.BMAD_EXTERNAL_MODULES_CACHE;
+    const tempCacheDir44 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-list-options-cache-'));
+    process.env.BMAD_EXTERNAL_MODULES_CACHE = tempCacheDir44;
+    try {
+      // discoverOfficialModuleYamls includes core and bmm built-ins.
+      const discovered = await discoverOfficialModuleYamls();
+      const codes = new Set(discovered.map((d) => d.code));
+      assert(codes.has('core') && codes.has('bmm'), 'discoverOfficialModuleYamls finds core and bmm built-ins');
+      const coreEntry = discovered.find((d) => d.code === 'core');
+      assert(coreEntry && coreEntry.source === 'built-in', 'core is reported with source="built-in"');
 
-    // formatOptionsList rendering: bmm-only filter shows the project_knowledge key from issue #1663.
-    const bmmListing = await formatOptionsList('bmm');
-    assert(bmmListing.includes('bmm.project_knowledge'), '--list-options bmm renders bmm.project_knowledge');
-    assert(bmmListing.includes('bmm.user_skill_level'), '--list-options bmm renders bmm.user_skill_level');
-    assert(bmmListing.includes('beginner | intermediate | expert'), '--list-options renders single-select choices');
+      // formatOptionsList rendering: bmm-only filter shows the project_knowledge key from issue #1663.
+      const bmmListing = await formatOptionsList('bmm');
+      assert(bmmListing.ok === true, '--list-options bmm reports ok: true');
+      assert(bmmListing.text.includes('bmm.project_knowledge'), '--list-options bmm renders bmm.project_knowledge');
+      assert(bmmListing.text.includes('bmm.user_skill_level'), '--list-options bmm renders bmm.user_skill_level');
+      assert(bmmListing.text.includes('beginner | intermediate | expert'), '--list-options renders single-select choices');
 
-    // formatOptionsList for an unknown module gives a helpful message, not "No modules found".
-    const unknownListing = await formatOptionsList('definitely-not-a-module');
-    assert(
-      unknownListing.includes("No locally-known module.yaml for 'definitely-not-a-module'"),
-      '--list-options handles unknown module gracefully',
-    );
+      // Case-insensitive match: `--list-options BMM` and `bmm` resolve to the same entry.
+      const bmmUpperListing = await formatOptionsList('BMM');
+      assert(bmmUpperListing.ok === true, '--list-options BMM (uppercase) finds the bmm built-in');
+      assert(bmmUpperListing.text.includes('bmm.project_knowledge'), '--list-options BMM renders bmm.project_knowledge');
+
+      // formatOptionsList for an unknown module gives a helpful message AND ok: false
+      // so install.js can exit non-zero (CI scripts can detect typos).
+      const unknownListing = await formatOptionsList('definitely-not-a-module');
+      assert(unknownListing.ok === false, '--list-options <unknown> reports ok: false (non-zero exit signal)');
+      assert(
+        unknownListing.text.includes("No locally-known module.yaml for 'definitely-not-a-module'"),
+        '--list-options handles unknown module gracefully',
+      );
+    } finally {
+      if (priorCacheEnv44 === undefined) {
+        delete process.env.BMAD_EXTERNAL_MODULES_CACHE;
+      } else {
+        process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv44;
+      }
+      await fs.remove(tempCacheDir44).catch(() => {});
+    }
 
     // partition() in writeCentralConfig respects setOverrideKeys: an unknown key
     // for a known schema must survive when the user asserted it via --set.
@@ -3150,6 +3173,32 @@ async function runTests() {
       failed++;
     }
     await fs.remove(tmp44d).catch(() => {});
+
+    // applyOverridesAfterSeeding mirrors the carry-forward behavior for the
+    // skip-collection path used by `core` (when seeded by --yes / legacy
+    // shortcuts) so unknown core keys persisted on a prior run survive
+    // subsequent installs even without re-passing --set.
+    try {
+      const om = new OfficialModules({
+        // No new --set entries this run — only prior persisted unknown.
+        setOverrides: {},
+      });
+      om._existingConfig = { core: { future_core_thing: 'persisted-from-run-1' } };
+      // Simulate the seeded-core state ui.js leaves behind under --yes.
+      om.collectedConfig.core = { user_name: 'Brian', project_name: 'demo' };
+      await om.applyOverridesAfterSeeding('core');
+
+      assert(
+        om.collectedConfig.core?.future_core_thing === 'persisted-from-run-1',
+        'applyOverridesAfterSeeding carries unknown core key forward from _existingConfig',
+      );
+      assert(om.setOverrideKeys?.core?.has('future_core_thing'), 'carried-forward core keys are tracked in setOverrideKeys');
+      assert(!om.setOverrideKeys?.core?.has('user_name'), 'declared core keys (user_name) are not flagged as overrides');
+    } catch (error) {
+      console.log(`${colors.red}  applyOverridesAfterSeeding carry-forward failed: ${error.message}${colors.reset}`);
+      console.log(error.stack);
+      failed++;
+    }
   } catch (error) {
     console.log(`${colors.red}Test Suite 44 setup failed: ${error.message}${colors.reset}`);
     console.log(error.stack);

@@ -60,8 +60,12 @@ module.exports = {
       if (options.listOptions !== undefined) {
         const { formatOptionsList } = require('../list-options');
         const moduleArg = options.listOptions === true ? null : options.listOptions;
-        process.stdout.write((await formatOptionsList(moduleArg)) + '\n');
-        process.exit(0);
+        const { text, ok } = await formatOptionsList(moduleArg);
+        const stream = ok ? process.stdout : process.stderr;
+        stream.write(text + '\n');
+        // Non-zero exit when a single-module lookup misses so a CI typo like
+        // `--list-options bmn` doesn't look successful in scripts.
+        process.exit(ok ? 0 : 1);
       }
 
       // Set debug flag as environment variable for all components
