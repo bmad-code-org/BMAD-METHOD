@@ -81,7 +81,11 @@ class ManifestGenerator {
     await this.collectAgentsFromModuleYaml();
 
     // Write manifest files and collect their paths
-    const [teamConfigPath, userConfigPath] = await this.writeCentralConfig(bmadDir, options.moduleConfigs || {});
+    const [teamConfigPath, userConfigPath] = await this.writeCentralConfig(
+      bmadDir,
+      options.moduleConfigs || {},
+      options.setOverrideKeys || {},
+    );
     const manifestFiles = [
       await this.writeMainManifest(cfgDir),
       await this.writeSkillManifest(cfgDir),
@@ -425,7 +429,7 @@ class ManifestGenerator {
    * _bmad/custom/config.toml and _bmad/custom/config.user.toml (never touched by installer).
    * @returns {string[]} Paths to the written config files
    */
-  async writeCentralConfig(bmadDir, moduleConfigs) {
+  async writeCentralConfig(bmadDir, moduleConfigs, setOverrideKeys = {}) {
     const teamPath = path.join(bmadDir, 'config.toml');
     const userPath = path.join(bmadDir, 'config.user.toml');
 
@@ -474,17 +478,20 @@ class ManifestGenerator {
 
     // Partition a module's answered config into team vs user buckets.
     // For non-core modules: strip core keys always; when we know the module's
-    // own schema, also drop keys it doesn't declare. Unknown-schema modules
-    // (external / marketplace) fall through with their remaining answers as
-    // team so they don't vanish from the config.
+    // own schema, also drop keys it doesn't declare — unless the user
+    // asserted them via `--set <module>.<key>=<value>`, in which case we
+    // keep them (warn-and-write semantics from issue #1663). Unknown-schema
+    // modules (external / marketplace) fall through with their remaining
+    // answers as team so they don't vanish from the config.
     const partition = (moduleName, cfg, onlyDeclaredKeys = false) => {
       const team = {};
       const user = {};
       const scopes = scopeByModuleKey[moduleName] || {};
       const isCore = moduleName === 'core';
+      const overrideKeys = new Set(setOverrideKeys[moduleName] || []);
       for (const [key, value] of Object.entries(cfg || {})) {
         if (!isCore && coreKeys.has(key)) continue;
-        if (onlyDeclaredKeys && !(key in scopes)) continue;
+        if (onlyDeclaredKeys && !(key in scopes) && !overrideKeys.has(key)) continue;
         if (scopes[key] === 'user') {
           user[key] = value;
         } else {

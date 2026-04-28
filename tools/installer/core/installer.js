@@ -308,6 +308,7 @@ class Installer {
           ides: config.ides || [],
           preservedModules: modulesForCsvPreserve,
           moduleConfigs,
+          setOverrideKeys: config.setOverrideKeys || {},
         });
 
         message('Generating help catalog...');

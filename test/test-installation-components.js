@@ -2984,6 +2984,115 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test Suite 44: --set <module>.<key>=<value> CLI overrides (#1663)
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 44: --set CLI overrides${colors.reset}\n`);
+  try {
+    const { parseSetEntry, parseSetEntries } = require('../tools/installer/set-overrides');
+    const { discoverOfficialModuleYamls, formatOptionsList } = require('../tools/installer/list-options');
+
+    // parseSetEntry — happy path
+    const ok = parseSetEntry('bmm.project_knowledge=research');
+    assert(
+      ok.module === 'bmm' && ok.key === 'project_knowledge' && ok.value === 'research',
+      'parseSetEntry splits <module>.<key>=<value> correctly',
+    );
+
+    // parseSetEntry — value containing '='
+    const okEq = parseSetEntry('bmm.weird=a=b=c');
+    assert(okEq.value === 'a=b=c', 'parseSetEntry preserves additional "=" inside the value');
+
+    // parseSetEntry — malformed inputs
+    const badInputs = ['no-equals', 'no-dot=value', '=value', '.=value', 'foo.=value', '.bar=value', ''];
+    let allBadThrow = true;
+    for (const bad of badInputs) {
+      try {
+        parseSetEntry(bad);
+        allBadThrow = false;
+      } catch {
+        /* expected */
+      }
+    }
+    assert(allBadThrow, `parseSetEntry rejects malformed inputs (${badInputs.length} cases)`);
+
+    // parseSetEntries — multiple entries collapse into a {module: {key: value}} map
+    const multi = parseSetEntries(['bmm.project_knowledge=research', 'bmm.user_skill_level=expert', 'core.user_name=Brian']);
+    assert(
+      multi.bmm.project_knowledge === 'research' && multi.bmm.user_skill_level === 'expert' && multi.core.user_name === 'Brian',
+      'parseSetEntries groups by module',
+    );
+
+    // parseSetEntries — later entry wins for the same key
+    const later = parseSetEntries(['bmm.x=first', 'bmm.x=second']);
+    assert(later.bmm.x === 'second', 'parseSetEntries: later --set entry overrides earlier');
+
+    // parseSetEntries — non-array / missing input → empty object
+    const empty = parseSetEntries();
+    assert(empty && Object.keys(empty).length === 0, 'parseSetEntries() returns empty object when called without args');
+
+    // discoverOfficialModuleYamls includes core and bmm built-ins.
+    const discovered = await discoverOfficialModuleYamls();
+    const codes = new Set(discovered.map((d) => d.code));
+    assert(codes.has('core') && codes.has('bmm'), 'discoverOfficialModuleYamls finds core and bmm built-ins');
+    const coreEntry = discovered.find((d) => d.code === 'core');
+    assert(coreEntry && coreEntry.source === 'built-in', 'core is reported with source="built-in"');
+
+    // formatOptionsList rendering: bmm-only filter shows the project_knowledge key from issue #1663.
+    const bmmListing = await formatOptionsList('bmm');
+    assert(bmmListing.includes('bmm.project_knowledge'), '--list-options bmm renders bmm.project_knowledge');
+    assert(bmmListing.includes('bmm.user_skill_level'), '--list-options bmm renders bmm.user_skill_level');
+    assert(bmmListing.includes('beginner | intermediate | expert'), '--list-options renders single-select choices');
+
+    // formatOptionsList for an unknown module gives a helpful message, not "No modules found".
+    const unknownListing = await formatOptionsList('definitely-not-a-module');
+    assert(
+      unknownListing.includes("No locally-known module.yaml for 'definitely-not-a-module'"),
+      '--list-options handles unknown module gracefully',
+    );
+
+    // partition() in writeCentralConfig respects setOverrideKeys: an unknown key
+    // for a known schema must survive when the user asserted it via --set.
+    const tmp44 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-44-'));
+    const bmadDir44 = path.join(tmp44, '_bmad');
+    await fs.ensureDir(bmadDir44);
+    const mg = new ManifestGenerator({ ides: [] });
+    mg.updatedModules = ['core', 'bmm'];
+
+    const moduleConfigsForWrite = {
+      core: { user_name: 'Brian' },
+      bmm: { project_knowledge: '/proj/research', future_thing: 'pre-seeded' },
+    };
+    const setOverrideKeys = { bmm: ['future_thing'] };
+
+    await mg.writeCentralConfig(bmadDir44, moduleConfigsForWrite, setOverrideKeys);
+    const teamToml = await fs.readFile(path.join(bmadDir44, 'config.toml'), 'utf8');
+    assert(teamToml.includes('project_knowledge = "/proj/research"'), 'writeCentralConfig writes a known schema key');
+    assert(teamToml.includes('future_thing = "pre-seeded"'), 'writeCentralConfig keeps an unknown key listed in setOverrideKeys');
+
+    // Same fixture, no override → unknown key is dropped (control case).
+    const tmp44b = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-44b-'));
+    const bmadDir44b = path.join(tmp44b, '_bmad');
+    await fs.ensureDir(bmadDir44b);
+    const mg2 = new ManifestGenerator({ ides: [] });
+    mg2.updatedModules = ['core', 'bmm'];
+    await mg2.writeCentralConfig(bmadDir44b, moduleConfigsForWrite, {});
+    const teamToml2 = await fs.readFile(path.join(bmadDir44b, 'config.toml'), 'utf8');
+    assert(
+      !teamToml2.includes('future_thing'),
+      'writeCentralConfig drops an unknown key when not asserted via --set (schema-strict default holds)',
+    );
+
+    await fs.remove(tmp44).catch(() => {});
+    await fs.remove(tmp44b).catch(() => {});
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 44 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);

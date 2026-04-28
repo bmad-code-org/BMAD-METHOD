@@ -20,6 +20,11 @@ class OfficialModules {
     // pre-install config collection and the install step agree on which ref
     // to clone.
     this.channelOptions = options.channelOptions || null;
+    // Per-module CLI overrides from `--set <module>.<key>=<value>`.
+    // Shape: { moduleCode: { key: rawStringValue } }. Keys matching a
+    // declared prompt skip the prompt; unknown keys are persisted with
+    // a warning so future / community modules can opt in.
+    this.setOverrides = options.setOverrides || {};
   }
 
   /**
@@ -1497,6 +1502,7 @@ class OfficialModules {
     const questions = [];
     const staticAnswers = {};
     const configKeys = Object.keys(moduleConfig).filter((key) => key !== 'prompt');
+    const declaredPromptKeys = new Set();
 
     for (const key of configKeys) {
       const item = moduleConfig[key];
@@ -1515,6 +1521,7 @@ class OfficialModules {
 
       // Handle interactive values (with prompt)
       if (item.prompt) {
+        declaredPromptKeys.add(key);
         const question = await this.buildQuestion(moduleName, key, item, moduleConfig);
         if (question) {
           questions.push(question);
@@ -1522,8 +1529,49 @@ class OfficialModules {
       }
     }
 
-    // Collect all answers (static + prompted)
+    // Apply --set <module>.<key>=<value> overrides for this module.
+    //   - Known prompt key   → answer pre-filled, prompt skipped (interactive + --yes).
+    //   - Unknown prompt key → warn, then write directly to collectedConfig at end of
+    //     this method. The corresponding key is also tracked on this.setOverrideKeys
+    //     so writeCentralConfig knows to keep it through the schema-strict partition.
+    const moduleOverrides = this.setOverrides[moduleName] || {};
+    const seededOverrideKeys = new Set();
+    const unknownOverrideKeys = [];
+    for (const [overrideKey, overrideValue] of Object.entries(moduleOverrides)) {
+      if (declaredPromptKeys.has(overrideKey)) {
+        seededOverrideKeys.add(overrideKey);
+      } else {
+        unknownOverrideKeys.push([overrideKey, overrideValue]);
+      }
+    }
+
+    if (unknownOverrideKeys.length > 0) {
+      for (const [overrideKey] of unknownOverrideKeys) {
+        await prompts.log.warn(
+          `--set ${moduleName}.${overrideKey} — '${overrideKey}' is not a declared config key for module '${moduleName}'; persisted but unused by current install.`,
+        );
+      }
+    }
+
+    // Collect all answers (static + prompted). Pre-seed override answers
+    // so the prompt loop and skipPrompts path both see them as already-set.
     let allAnswers = { ...staticAnswers };
+    for (const key of seededOverrideKeys) {
+      allAnswers[`${moduleName}_${key}`] = moduleOverrides[key];
+    }
+    // Drop pre-seeded questions so the user is not re-prompted and so
+    // skipPrompts mode doesn't overwrite the override with the default.
+    const remainingQuestions = questions.filter((q) => {
+      const key = q.name.replace(`${moduleName}_`, '');
+      return !seededOverrideKeys.has(key);
+    });
+    questions.length = 0;
+    questions.push(...remainingQuestions);
+
+    if (seededOverrideKeys.size > 0 && !this._silentConfig) {
+      const list = [...seededOverrideKeys].map((k) => `${moduleName}.${k}`).join(', ');
+      await prompts.log.info(`Applying --set overrides: ${list}`);
+    }
 
     // If there are questions to ask, prompt for accepting defaults vs customizing
     if (questions.length > 0) {
@@ -1727,6 +1775,19 @@ class OfficialModules {
             }
           }
         }
+      }
+    }
+
+    // Persist any unknown --set keys for this module (warn-and-write semantics).
+    // The keys are also tracked so writeCentralConfig keeps them through the
+    // schema-strict partition for officials.
+    if (unknownOverrideKeys.length > 0) {
+      if (!this.collectedConfig[moduleName]) this.collectedConfig[moduleName] = {};
+      if (!this.setOverrideKeys) this.setOverrideKeys = {};
+      if (!this.setOverrideKeys[moduleName]) this.setOverrideKeys[moduleName] = new Set();
+      for (const [overrideKey, overrideValue] of unknownOverrideKeys) {
+        this.collectedConfig[moduleName][overrideKey] = overrideValue;
+        this.setOverrideKeys[moduleName].add(overrideKey);
       }
     }
 

@@ -16,6 +16,7 @@ const {
 } = require('./modules/channel-plan');
 const channelResolver = require('./modules/channel-resolver');
 const prompts = require('./prompts');
+const { parseSetEntries } = require('./set-overrides');
 
 const manifest = new Manifest();
 
@@ -287,7 +288,7 @@ class UI {
         // Get tool selection
         const toolSelection = await this.promptToolSelection(confirmedDirectory, options);
 
-        const moduleConfigs = await this.collectModuleConfigs(confirmedDirectory, selectedModules, {
+        const { moduleConfigs, setOverrideKeys } = await this.collectModuleConfigs(confirmedDirectory, selectedModules, {
           ...options,
           channelOptions,
         });
@@ -313,6 +314,7 @@ class UI {
           skipIde: toolSelection.skipIde,
           coreConfig: moduleConfigs.core || {},
           moduleConfigs: moduleConfigs,
+          setOverrideKeys,
           skipPrompts: options.yes || false,
           channelOptions,
         };
@@ -364,7 +366,7 @@ class UI {
     await this._interactiveChannelGate({ options, channelOptions, selectedModules });
 
     let toolSelection = await this.promptToolSelection(confirmedDirectory, options);
-    const moduleConfigs = await this.collectModuleConfigs(confirmedDirectory, selectedModules, {
+    const { moduleConfigs, setOverrideKeys } = await this.collectModuleConfigs(confirmedDirectory, selectedModules, {
       ...options,
       channelOptions,
     });
@@ -390,6 +392,7 @@ class UI {
       skipIde: toolSelection.skipIde,
       coreConfig: moduleConfigs.core || {},
       moduleConfigs: moduleConfigs,
+      setOverrideKeys,
       skipPrompts: options.yes || false,
       channelOptions,
     };
@@ -709,7 +712,27 @@ class UI {
    */
   async collectModuleConfigs(directory, modules, options = {}) {
     const { OfficialModules } = require('./modules/official-modules');
-    const configCollector = new OfficialModules({ channelOptions: options.channelOptions });
+
+    // Parse --set entries up front so we can both (a) hand them to the config
+    // collector to skip prompts, and (b) warn about modules referenced in --set
+    // that aren't part of this install (those values are dropped, not persisted).
+    let setOverrides = {};
+    try {
+      setOverrides = parseSetEntries(options.set || []);
+    } catch (error) {
+      // install.js validated already; rethrow as-is for the user.
+      throw error;
+    }
+    const selectedModuleSet = new Set(['core', ...modules]);
+    for (const moduleCode of Object.keys(setOverrides)) {
+      if (!selectedModuleSet.has(moduleCode)) {
+        await prompts.log.warn(
+          `--set ${moduleCode}.* — module '${moduleCode}' is not in the install set; values will be ignored. Add it to --modules to apply.`,
+        );
+      }
+    }
+
+    const configCollector = new OfficialModules({ channelOptions: options.channelOptions, setOverrides });
 
     // Seed core config from CLI options if provided
     if (options.userName || options.communicationLanguage || options.documentOutputLanguage || options.outputFolder) {
@@ -774,7 +797,52 @@ class UI {
       skipPrompts: options.yes || false,
     });
 
-    return configCollector.collectedConfig;
+    // Apply --set overrides for `core` AFTER collectAllConfigurations, since
+    // core is skipped when its config was seeded by `--yes` defaults or by
+    // legacy core-shortcut flags (--user-name/--output-folder/etc.). Without
+    // this step those override values would be silently dropped. Core
+    // result templates are all `{value}` (or `{project-root}/{value}` for
+    // output_folder, which the existing flag handling also writes raw),
+    // so writing the raw value matches the legacy shortcut semantics.
+    const coreOverrides = setOverrides.core || {};
+    if (Object.keys(coreOverrides).length > 0) {
+      if (!configCollector.collectedConfig.core) configCollector.collectedConfig.core = {};
+      for (const [key, value] of Object.entries(coreOverrides)) {
+        configCollector.collectedConfig.core[key] = value;
+      }
+      const yaml = require('yaml');
+      const { getProjectRoot } = require('./project-root');
+      const coreSchemaPath = path.join(getProjectRoot(), 'src', 'core-skills', 'module.yaml');
+      let coreSchema = null;
+      try {
+        coreSchema = yaml.parse(await fs.readFile(coreSchemaPath, 'utf8'));
+      } catch {
+        // schema unavailable — skip key-existence validation
+      }
+      if (coreSchema) {
+        if (!configCollector.setOverrideKeys) configCollector.setOverrideKeys = {};
+        if (!configCollector.setOverrideKeys.core) configCollector.setOverrideKeys.core = new Set();
+        for (const key of Object.keys(coreOverrides)) {
+          if (!(key in coreSchema)) {
+            await prompts.log.warn(
+              `--set core.${key} — '${key}' is not a declared config key for module 'core'; persisted but unused by current install.`,
+            );
+            configCollector.setOverrideKeys.core.add(key);
+          }
+        }
+      }
+    }
+
+    // Convert per-module override-key Sets to plain string arrays so the value
+    // round-trips cleanly through Config.build / freezing.
+    const setOverrideKeys = {};
+    if (configCollector.setOverrideKeys) {
+      for (const [moduleCode, keys] of Object.entries(configCollector.setOverrideKeys)) {
+        setOverrideKeys[moduleCode] = [...keys];
+      }
+    }
+
+    return { moduleConfigs: configCollector.collectedConfig, setOverrideKeys };
   }
 
   /**

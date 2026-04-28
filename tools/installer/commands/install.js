@@ -18,6 +18,16 @@ module.exports = {
       'Comma-separated list of tool/IDE IDs to configure (e.g., "claude-code,cursor"). Required for fresh non-interactive (--yes) installs. Run with --list-tools to see all valid IDs.',
     ],
     ['--list-tools', 'Print all supported tool/IDE IDs (with target directories) and exit.'],
+    [
+      '--set <key=value>',
+      'Set a module config option non-interactively. Format: <module>.<key>=<value> (e.g. bmm.project_knowledge=research). Repeatable. Run --list-options to see available keys.',
+      (value, prev) => [...(prev || []), value],
+      [],
+    ],
+    [
+      '--list-options [module]',
+      'List available --set keys for all locally-known official modules, or for a single module by code, then exit.',
+    ],
     ['--action <type>', 'Action type for existing installations: install, update, or quick-update'],
     ['--user-name <name>', 'Name for agents to use (default: system username)'],
     ['--communication-language <lang>', 'Language for agent communication (default: English)'],
@@ -47,10 +57,30 @@ module.exports = {
         process.exit(0);
       }
 
+      if (options.listOptions !== undefined) {
+        const { formatOptionsList } = require('../list-options');
+        const moduleArg = options.listOptions === true ? null : options.listOptions;
+        process.stdout.write((await formatOptionsList(moduleArg)) + '\n');
+        process.exit(0);
+      }
+
       // Set debug flag as environment variable for all components
       if (options.debug) {
         process.env.BMAD_DEBUG_MANIFEST = 'true';
         await prompts.log.info('Debug mode enabled');
+      }
+
+      // Validate --set syntax up-front so malformed entries fail fast,
+      // before we touch the network or filesystem. Parsed entries are
+      // re-derived inside ui.js where overrides are seeded.
+      if (options.set && options.set.length > 0) {
+        const { parseSetEntries } = require('../set-overrides');
+        try {
+          parseSetEntries(options.set);
+        } catch (error) {
+          await prompts.log.error(error.message);
+          process.exit(1);
+        }
       }
 
       const config = await ui.promptInstall(options);
@@ -63,6 +93,11 @@ module.exports = {
 
       // Handle quick update separately
       if (config.actionType === 'quick-update') {
+        if (options.set && options.set.length > 0) {
+          await prompts.log.warn(
+            '--set flags are ignored under quick-update (it preserves existing answers). Re-run with --action update to apply them.',
+          );
+        }
         const result = await installer.quickUpdate(config);
         await prompts.log.success('Quick update complete!');
         await prompts.log.info(`Updated ${result.moduleCount} modules with preserved settings (${result.modules.join(', ')})`);

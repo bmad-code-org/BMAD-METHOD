@@ -3,7 +3,19 @@
  * User input comes from either UI answers or headless CLI flags.
  */
 class Config {
-  constructor({ directory, modules, ides, skipPrompts, verbose, actionType, coreConfig, moduleConfigs, quickUpdate, channelOptions }) {
+  constructor({
+    directory,
+    modules,
+    ides,
+    skipPrompts,
+    verbose,
+    actionType,
+    coreConfig,
+    moduleConfigs,
+    quickUpdate,
+    channelOptions,
+    setOverrideKeys,
+  }) {
     this.directory = directory;
     this.modules = Object.freeze([...modules]);
     this.ides = Object.freeze([...ides]);
@@ -15,6 +27,11 @@ class Config {
     this._quickUpdate = quickUpdate;
     // channelOptions carry a Map + Set; don't deep-freeze.
     this.channelOptions = channelOptions || null;
+    // Per-module list of keys originating from `--set <module>.<key>=<value>`
+    // that are NOT in the module's prompt schema. The manifest writer keeps
+    // these through the schema-strict partition so user-asserted overrides
+    // survive into config.toml even when the schema doesn't declare them.
+    this.setOverrideKeys = setOverrideKeys || {};
     Object.freeze(this);
   }
 
@@ -40,6 +57,7 @@ class Config {
       moduleConfigs: userInput.moduleConfigs || null,
       quickUpdate: userInput._quickUpdate || false,
       channelOptions: userInput.channelOptions || null,
+      setOverrideKeys: userInput.setOverrideKeys || {},
     });
   }
 

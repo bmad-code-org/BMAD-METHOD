@@ -131,7 +131,9 @@ Under `--yes`, patch and minor upgrades apply automatically. Majors stay frozen 
 | `--all-next`                                                                               | Alias for `--channel=next`                                                         |
 | `--next=<code>`                                                                            | Put one module on next. Repeatable.                                                |
 | `--pin <code>=<tag>`                                                                       | Pin one module to a specific tag. Repeatable.                                      |
-| `--user-name`, `--communication-language`, `--document-output-language`, `--output-folder` | Override per-user config defaults                                                  |
+| `--set <module>.<key>=<value>`                                                             | Set any module config option non-interactively (preferred — see [Module config overrides](#module-config-overrides)). Repeatable. |
+| `--list-options [module]`                                                                  | Print every `--set` key for built-in and locally-cached official modules, then exit. Pass a module code to scope to one module. |
+| `--user-name`, `--communication-language`, `--document-output-language`, `--output-folder` | Legacy shortcuts equivalent to `--set core.<key>=<value>` (still supported)                                                       |
 
 Precedence when flags overlap: `--pin` beats `--next=` beats `--channel` / `--all-*` beats the registry default (`stable`).
 
@@ -178,6 +180,40 @@ npx bmad-method install --yes --action update \
   --modules bmm,bmb,cis,gds \
   --next=bmb
 ```
+
+### Module config overrides
+
+`--set <module>.<key>=<value>` is the preferred way to provide answers that would otherwise be asked interactively. It's repeatable, scales to every module, and survives across upgrades because the values land in `_bmad/config.toml` next to the rest of your install state.
+
+**Example — install bmm without using `docs/` for project knowledge:**
+
+```bash
+npx bmad-method install --yes \
+  --modules bmm \
+  --tools claude-code \
+  --set bmm.project_knowledge=research \
+  --set bmm.user_skill_level=expert
+```
+
+**Discover available keys for a module:**
+
+```bash
+npx bmad-method install --list-options bmm
+```
+
+`--list-options` (no argument) lists every key the installer can find locally — built-in modules (`core`, `bmm`) plus any external officials that have been installed at least once on this machine. Community and custom modules aren't enumerated here; read the module's `module.yaml` directly to see what keys it declares.
+
+**Validation rules:**
+
+- `<module>` must be in `--modules` (or core, which is always installed). Setting a value for a module you didn't include prints a warning and the value is ignored.
+- `<key>` is matched against the module's `module.yaml` declarations. An unknown key prints a warning but still gets persisted to `config.toml` — useful for forward-compatibility or for community modules whose schema isn't validated here.
+- `single-select` values are not validated against the allowed choices. The value lands in config as-is, even if it falls outside the module's enumeration.
+
+The legacy core shortcuts (`--user-name`, `--output-folder`, etc.) still work and remain documented for backward compatibility, but `--set core.user_name=...` is equivalent and uses the same code path.
+
+:::note[Quick-update is unaffected]
+`bmad install --action quick-update` preserves the existing `config.toml` answers as-is. `--set` flags passed alongside `--action quick-update` are silently ignored. To change a stored value, run `bmad install --action update` (or just `bmad install`) instead.
+:::
 
 :::caution[Rate limit on shared IPs]
 Anonymous GitHub API calls are capped at 60/hour per IP. A single install hits the API once per external module to resolve the stable tag. Offices behind NAT, CI runner pools, and VPNs can collectively exhaust this.
