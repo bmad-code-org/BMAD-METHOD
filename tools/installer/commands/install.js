@@ -15,8 +15,9 @@ module.exports = {
     ['--modules <modules>', 'Comma-separated list of module IDs to install (e.g., "bmm,bmb")'],
     [
       '--tools <tools>',
-      'Comma-separated list of tool/IDE IDs to configure (e.g., "claude-code,cursor"). Use "none" to skip tool configuration.',
+      'Comma-separated list of tool/IDE IDs to configure (e.g., "claude-code,cursor"). Required for fresh non-interactive (--yes) installs. Run with --list-tools to see all valid IDs.',
     ],
+    ['--list-tools', 'Print all supported tool/IDE IDs (with target directories) and exit.'],
     ['--action <type>', 'Action type for existing installations: install, update, or quick-update'],
     ['--user-name <name>', 'Name for agents to use (default: system username)'],
     ['--communication-language <lang>', 'Language for agent communication (default: English)'],
@@ -40,6 +41,12 @@ module.exports = {
   ],
   action: async (options) => {
     try {
+      if (options.listTools) {
+        const { formatPlatformList } = require('../ide/platform-codes');
+        process.stdout.write((await formatPlatformList()) + '\n');
+        process.exit(0);
+      }
+
       // Set debug flag as environment variable for all components
       if (options.debug) {
         process.env.BMAD_DEBUG_MANIFEST = 'true';
@@ -81,7 +88,7 @@ module.exports = {
         } else {
           await prompts.log.error(`Installation failed: ${error.message}`);
         }
-        if (error.stack) {
+        if (error.stack && !error.expected) {
           await prompts.log.message(error.stack);
         }
       } catch {
