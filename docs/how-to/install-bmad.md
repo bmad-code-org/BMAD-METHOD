@@ -18,7 +18,7 @@ Use `npx bmad-method install` to set up BMad in your project. One command handle
 
 - **Node.js** 20+ (the installer requires it)
 - **Git** (for cloning external modules)
-- **An AI tool** such as Claude Code or Cursor — or install without one using `--tools none`
+- **An AI tool** such as Claude Code or Cursor (run `npx bmad-method install --list-tools` to see all supported tools)
 
 :::
 
@@ -122,7 +122,8 @@ Under `--yes`, patch and minor upgrades apply automatically. Majors stay frozen 
 | `--yes`, `-y`                                                                              | Skip all prompts; accept flag values + defaults                                    |
 | `--directory <path>`                                                                       | Install into this directory (default: current working dir)                         |
 | `--modules <a,b,c>`                                                                        | Exact module set. Core is auto-added. Not a delta — list everything you want kept. |
-| `--tools <a,b>` or `--tools none`                                                          | IDE/tool selection. `none` skips tool config entirely.                             |
+| `--tools <a,b>`                                                                            | IDE/tool selection. Required for fresh `--yes` installs. Run `--list-tools` for valid IDs. |
+| `--list-tools`                                                                             | Print all supported tool/IDE IDs (with target directories) and exit.               |
 | `--action <type>`                                                                          | `install`, `update`, or `quick-update`. Defaults based on existing install state.  |
 | `--custom-source <urls>`                                                                   | Install custom modules from Git URLs or local paths                                |
 | `--channel <stable\|next>`                                                                 | Apply to all externals (aliased as `--all-stable` / `--all-next`)                  |
@@ -165,17 +166,17 @@ npx bmad-method install --yes --modules bmm,bmb --all-next --tools claude-code
 
 ```bash
 npx bmad-method install --yes --action update \
-  --modules bmm,bmb,gds \
-  --tools none
+  --modules bmm,bmb,gds
 ```
+
+`--tools` is omitted intentionally — `--action update` reuses the tools configured during the first install.
 
 **Mix channels — bmb on next, gds on stable:**
 
 ```bash
 npx bmad-method install --yes --action update \
   --modules bmm,bmb,cis,gds \
-  --next=bmb \
-  --tools none
+  --next=bmb
 ```
 
 :::caution[Rate limit on shared IPs]
@@ -204,7 +205,7 @@ For cross-machine reproducibility, don't rely on rerunning the same `--modules` 
 
 ```bash
 npx bmad-method install --yes --modules bmb,cis \
-  --pin bmb=v1.7.0 --pin cis=v0.4.2 --tools none
+  --pin bmb=v1.7.0 --pin cis=v0.4.2 --tools claude-code
 ```
 
 ## Troubleshooting
