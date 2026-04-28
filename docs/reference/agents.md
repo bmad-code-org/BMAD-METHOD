@@ -23,6 +23,7 @@ This page lists the default BMM (Agile suite) agents that install with BMad Meth
 | Developer (Amelia)          | `bmad-agent-dev`     | `DS`, `QD`, `QA`, `CR`, `SP`, `CS`, `ER` | Dev Story, Quick Dev, QA Test Generation, Code Review, Sprint Planning, Create Story, Epic Retrospective |
 | UX Designer (Sally)         | `bmad-ux-designer`   | `CU`                               | Create UX Design                                                                                    |
 | Technical Writer (Paige)    | `bmad-tech-writer`   | `DP`, `WD`, `US`, `MG`, `VD`, `EC` | Document Project, Write Document, Update Standards, Mermaid Generate, Validate Doc, Explain Concept |
+| Investigator (Tracy)        | `bmad-agent-investigator` | `IN`, `CX`                    | Investigate (forensic case investigation), Code Archaeology                                          |
 
 ## Trigger Types
 
