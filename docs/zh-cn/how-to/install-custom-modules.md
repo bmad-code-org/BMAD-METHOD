@@ -68,6 +68,7 @@ Would you like to install from a custom source (Git URL or local path)?
 | 输入类型 | 示例 |
 | -------- | ---- |
 | HTTPS URL（任意主机） | `https://github.com/org/repo` |
+| HTTP URL（任意主机） | `http://host/org/repo` |
 | 带子目录的 HTTPS URL | `https://github.com/org/repo/tree/main/my-module` |
 | SSH URL | `git@github.com:org/repo.git` |
 | 本地路径 | `/Users/me/projects/my-module` |

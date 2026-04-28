@@ -24,8 +24,9 @@ class CustomModuleManager {
 
   /**
    * Parse a user-provided source input into a structured descriptor.
-   * Accepts local file paths, HTTPS Git URLs, and SSH Git URLs.
-   * For HTTPS URLs with deep paths (e.g., /tree/main/subdir), extracts the subdir.
+   * Accepts local file paths, HTTPS Git URLs, HTTP Git URLs, and SSH Git URLs.
+   * For HTTPS/HTTP URLs with deep paths (e.g., /tree/main/subdir), extracts the subdir.
+   * The original protocol (http or https) is preserved in the returned cloneUrl.
    *
    * @param {string} input - URL or local file path
    * @returns {Object} Parsed source descriptor:
@@ -127,11 +128,11 @@ class CustomModuleManager {
       };
     }
 
-    // HTTPS URL: https://host/owner/repo[/tree/branch/subdir][.git]
-    const httpsMatch = trimmed.match(/^https?:\/\/([^/]+)\/([^/]+)\/([^/.]+?)(?:\.git)?(\/.*)?$/);
+    // HTTPS/HTTP URL: https://host/owner/repo[/tree/branch/subdir][.git]
+    const httpsMatch = trimmed.match(/^(https?):\/\/([^/]+)\/([^/]+)\/([^/.]+?)(?:\.git)?(\/.*)?$/);
     if (httpsMatch) {
-      const [, host, owner, repo, remainder] = httpsMatch;
-      const cloneUrl = `https://${host}/${owner}/${repo}`;
+      const [, protocol, host, owner, repo, remainder] = httpsMatch;
+      const cloneUrl = `${protocol}://${host}/${owner}/${repo}`;
       let subdir = null;
       let urlRef = null; // branch/tag extracted from /tree/<ref>/subdir
 
@@ -311,7 +312,7 @@ class CustomModuleManager {
   /**
    * Clone a custom module repository to cache.
    * Supports any Git host (GitHub, GitLab, Bitbucket, self-hosted, etc.).
-   * @param {string} sourceInput - Git URL (HTTPS or SSH)
+   * @param {string} sourceInput - Git URL (HTTPS, HTTP, or SSH)
    * @param {Object} [options] - Clone options
    * @param {boolean} [options.silent] - Suppress spinner output
    * @param {boolean} [options.skipInstall] - Skip npm install (for browsing before user confirms)
@@ -335,7 +336,7 @@ class CustomModuleManager {
 
     const createSpinner = async () => {
       if (silent) {
-        return { start() {}, stop() {}, error() {} };
+        return { start() { }, stop() { }, error() { } };
       }
       return await prompts.spinner();
     };
