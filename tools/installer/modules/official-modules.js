@@ -903,7 +903,10 @@ class OfficialModules {
           try {
             const content = await fs.readFile(moduleConfigPath, 'utf8');
             const moduleConfig = yaml.parse(content);
-            if (moduleConfig) {
+            // Only keep plain object parses. A corrupt config.yaml that parses
+            // to a scalar or array would crash later code that does `key in cfg`
+            // / `Object.keys(cfg)`; treat it the same as a parse error.
+            if (moduleConfig && typeof moduleConfig === 'object' && !Array.isArray(moduleConfig)) {
               this._existingConfig[entry.name] = moduleConfig;
               foundAny = true;
             }
@@ -947,9 +950,15 @@ class OfficialModules {
     );
     if (coreKeys.size === 0) return;
 
-    this._existingConfig.core = this._existingConfig.core || {};
+    // Belt-and-suspenders: loadExistingConfig already filters non-object parses,
+    // but anyone calling _hoistCoreKeysFromLegacyModuleConfigs in isolation (or
+    // future code paths populating _existingConfig directly) shouldn't be able
+    // to crash this with a scalar / array.
+    const existingCore = this._existingConfig.core;
+    this._existingConfig.core = existingCore && typeof existingCore === 'object' && !Array.isArray(existingCore) ? existingCore : {};
+
     for (const [moduleName, cfg] of Object.entries(this._existingConfig)) {
-      if (moduleName === 'core' || !cfg || typeof cfg !== 'object') continue;
+      if (moduleName === 'core' || !cfg || typeof cfg !== 'object' || Array.isArray(cfg)) continue;
       for (const key of Object.keys(cfg)) {
         if (!coreKeys.has(key)) continue;
         if (!(key in this._existingConfig.core)) {

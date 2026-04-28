@@ -2943,8 +2943,38 @@ async function runTests() {
       'hoist still strips the duplicate from bmm so writeCentralConfig partition stays clean',
     );
 
+    // Malformed config.yaml (parses to a scalar) must not crash loadExistingConfig
+    // or the hoist pass — they should treat it as "no config for that module"
+    // and continue. Regression for augment review on PR #2348.
+    const fixtureRoot43c = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-43c-'));
+    const bmadDir43c = path.join(fixtureRoot43c, '_bmad');
+    await fs.ensureDir(path.join(bmadDir43c, '_config'));
+    await fs.writeFile(path.join(bmadDir43c, '_config', 'manifest.yaml'), 'modules: []\n', 'utf8');
+    await fs.ensureDir(path.join(bmadDir43c, 'core'));
+    await fs.ensureDir(path.join(bmadDir43c, 'bmm'));
+    // Scalar YAML — yaml.parse returns the literal 42 (truthy non-object).
+    // Pre-fix this crashed _hoistCoreKeysFromLegacyModuleConfigs with
+    // "Cannot use 'in' operator to search for 'project_name' in 42".
+    await fs.writeFile(path.join(bmadDir43c, 'core', 'config.yaml'), '42\n', 'utf8');
+    await fs.writeFile(path.join(bmadDir43c, 'bmm', 'config.yaml'), 'project_name: rescued\n', 'utf8');
+
+    const officialModules43c = new OfficialModules();
+    let crashErr;
+    try {
+      await officialModules43c.loadExistingConfig(fixtureRoot43c);
+    } catch (error) {
+      crashErr = error;
+    }
+    assert(!crashErr, 'loadExistingConfig does not crash on a scalar core/config.yaml', crashErr?.stack);
+
+    assert(
+      officialModules43c.existingConfig.core?.project_name === 'rescued',
+      'scalar core gets replaced with {} and bmm.project_name still hoists in',
+    );
+
     await fs.remove(fixtureRoot43).catch(() => {});
     await fs.remove(fixtureRoot43b).catch(() => {});
+    await fs.remove(fixtureRoot43c).catch(() => {});
   } catch (error) {
     console.log(`${colors.red}Test Suite 43 setup failed: ${error.message}${colors.reset}`);
     console.log(error.stack);
