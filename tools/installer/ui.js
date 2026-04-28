@@ -1,19 +1,108 @@
 const path = require('node:path');
 const os = require('node:os');
+const semver = require('semver');
 const fs = require('./fs-native');
+const installerPackageJson = require('../../package.json');
 const { CLIUtils } = require('./cli-utils');
 const { ExternalModuleManager } = require('./modules/external-manager');
 const { resolveModuleVersion } = require('./modules/version-resolver');
+const { Manifest } = require('./core/manifest');
+const {
+  parseChannelOptions,
+  buildPlan,
+  decideChannelForModule,
+  orphanPinWarnings,
+  bundledTargetWarnings,
+} = require('./modules/channel-plan');
+const channelResolver = require('./modules/channel-resolver');
 const prompts = require('./prompts');
 
+const manifest = new Manifest();
+
 /**
- * Read a module version from the freshest local metadata available.
- * @param {string} moduleCode - Module code (e.g., 'core', 'bmm', 'cis')
- * @returns {string} Version string or empty string
+ * Format a resolved version for display in installer labels.
+ * Semver-like values are normalized to a single leading "v".
+ * @param {string|null|undefined} version
+ * @returns {string}
  */
-async function getModuleVersion(moduleCode) {
+function formatDisplayVersion(version) {
+  const trimmed = typeof version === 'string' ? version.trim() : '';
+  if (!trimmed) return '';
+
+  const normalized = semver.valid(semver.coerce(trimmed));
+  if (normalized) {
+    return `v${normalized}`;
+  }
+
+  return trimmed;
+}
+
+/**
+ * Build the display label for a module, showing an upgrade arrow when an
+ * installed semver differs from the latest resolvable semver.
+ * @param {string} name
+ * @param {string} latestVersion
+ * @param {string} installedVersion
+ * @returns {string}
+ */
+function buildModuleLabel(name, latestVersion, installedVersion = '') {
+  const latestDisplay = formatDisplayVersion(latestVersion);
+  if (!latestDisplay) return name;
+
+  const installedDisplay = formatDisplayVersion(installedVersion);
+  const latestSemver = semver.valid(semver.coerce(latestVersion || ''));
+  const installedSemver = semver.valid(semver.coerce(installedVersion || ''));
+
+  if (installedDisplay && latestSemver && installedSemver && semver.neq(installedSemver, latestSemver)) {
+    return `${name} (${installedDisplay} → ${latestDisplay})`;
+  }
+
+  return `${name} (${latestDisplay})`;
+}
+
+/**
+ * Resolve the version to show for a module picker entry. External modules use
+ * the same channel/tag resolver as installs; bundled modules fall back to local
+ * source metadata.
+ * @param {string} moduleCode - Module code (e.g., 'core', 'bmm', 'cis')
+ * @param {Object} options
+ * @param {string|null} [options.repoUrl] - Module repository URL for tag resolution
+ * @param {string|null} [options.registryDefault] - Registry default channel
+ * @param {Object|null} [options.channelOptions] - Parsed installer channel options
+ * @returns {Promise<{version: string, lookupAttempted: boolean, lookupSucceeded: boolean}>}
+ */
+async function getModuleVersion(moduleCode, { repoUrl = null, registryDefault = null, channelOptions = null } = {}) {
+  if (repoUrl) {
+    const plan = decideChannelForModule({
+      code: moduleCode,
+      channelOptions,
+      registryDefault,
+    });
+
+    try {
+      const resolved = await channelResolver.resolveChannel({
+        channel: plan.channel,
+        pin: plan.pin,
+        repoUrl,
+      });
+      if (resolved?.version) {
+        return {
+          version: resolved.version,
+          lookupAttempted: plan.channel === 'stable',
+          lookupSucceeded: true,
+        };
+      }
+    } catch {
+      // Fall back to local metadata when tag resolution is unavailable.
+    }
+  }
+
   const versionInfo = await resolveModuleVersion(moduleCode);
-  return versionInfo.version || '';
+  return {
+    version: versionInfo.version || '',
+    lookupAttempted: !!repoUrl,
+    lookupSucceeded: false,
+  };
 }
 
 /**
@@ -32,6 +121,31 @@ class UI {
     const { MessageLoader } = require('./message-loader');
     const messageLoader = new MessageLoader();
     await messageLoader.displayStartMessage();
+
+    // Parse channel flags (--channel/--all-*/--next=/--pin) once. Warnings
+    // are surfaced immediately so the user sees them before any git ops run.
+    const channelOptions = parseChannelOptions(options);
+    for (const warning of channelOptions.warnings) {
+      await prompts.log.warn(warning);
+    }
+
+    // When the user launched the installer from a prerelease (npx bmad-method@next),
+    // mirror that intent for external modules: seed the global channel to 'next' so
+    // the module picker's version labels resolve from main HEAD (matching what
+    // actually gets installed) and the interactive channel gate skips — the user
+    // already declared "next" intent by typing @next. Explicit channel flags
+    // override this seed.
+    if (
+      semver.prerelease(installerPackageJson.version) !== null &&
+      !channelOptions.global &&
+      channelOptions.nextSet.size === 0 &&
+      channelOptions.pins.size === 0
+    ) {
+      channelOptions.global = 'next';
+      await prompts.log.info(
+        'Launched from a prerelease — installing all external modules from main HEAD (next channel). Pass --all-stable or --pin to override.',
+      );
+    }
 
     // Get directory from options or prompt
     let confirmedDirectory;
@@ -86,12 +200,15 @@ class UI {
         actionType = options.action;
         await prompts.log.info(`Using action from command-line: ${actionType}`);
       } else if (options.yes) {
-        // Default to quick-update if available, otherwise first available choice
+        // Default to quick-update if available, unless flags that require the
+        // full update path are present (e.g. --custom-source which re-clones
+        // modules at a new version — quick-update skips that entirely).
         if (choices.length === 0) {
           throw new Error('No valid actions available for this installation');
         }
         const hasQuickUpdate = choices.some((c) => c.value === 'quick-update');
-        actionType = hasQuickUpdate ? 'quick-update' : choices[0].value;
+        const needsFullUpdate = !!options.customSource;
+        actionType = hasQuickUpdate && !needsFullUpdate ? 'quick-update' : (choices.find((c) => c.value === 'update') || choices[0]).value;
         await prompts.log.info(`Non-interactive mode (--yes): defaulting to ${actionType}`);
       } else {
         actionType = await prompts.select({
@@ -114,7 +231,7 @@ class UI {
       // Return early with modify configuration
       if (actionType === 'update') {
         // Get existing installation info
-        const { installedModuleIds } = await this.getExistingInstallation(confirmedDirectory);
+        const { installedModuleIds, installedModuleVersions } = await this.getExistingInstallation(confirmedDirectory);
 
         await prompts.log.message(`Found existing modules: ${[...installedModuleIds].join(', ')}`);
 
@@ -127,8 +244,11 @@ class UI {
             .map((m) => m.trim())
             .filter(Boolean);
           await prompts.log.info(`Using modules from command-line: ${selectedModules.join(', ')}`);
-        } else if (options.customSource) {
-          // Custom source without --modules: start with empty list (core added below)
+        } else if (options.customSource && !options.yes) {
+          // Custom source without --modules or --yes: start with empty list
+          // (only custom source modules + core will be installed).
+          // When --yes is also set, fall through to the --yes branch so all
+          // installed modules are included alongside the custom source modules.
           selectedModules = [];
         } else if (options.yes) {
           selectedModules = await this.getDefaultModules(installedModuleIds);
@@ -136,7 +256,7 @@ class UI {
             `Non-interactive mode (--yes): using default modules (installed + defaults): ${selectedModules.join(', ')}`,
           );
         } else {
-          selectedModules = await this.selectAllModules(installedModuleIds);
+          selectedModules = await this.selectAllModules(installedModuleIds, installedModuleVersions, channelOptions);
         }
 
         // Resolve custom sources from --custom-source flag
@@ -152,10 +272,38 @@ class UI {
           selectedModules.unshift('core');
         }
 
+        // For existing installs, resolve per-module update decisions BEFORE
+        // we clone anything. Reads the existing manifest's recorded channel
+        // per module and prompts the user on available upgrades (patch/minor
+        // default Y, major default N). Legacy entries with no channel are
+        // migrated here too. Mutates channelOptions.pins to lock rejections.
+        await this._resolveUpdateChannels({
+          bmadDir,
+          selectedModules,
+          channelOptions,
+          yes: options.yes || false,
+        });
+
         // Get tool selection
         const toolSelection = await this.promptToolSelection(confirmedDirectory, options);
 
-        const moduleConfigs = await this.collectModuleConfigs(confirmedDirectory, selectedModules, options);
+        const moduleConfigs = await this.collectModuleConfigs(confirmedDirectory, selectedModules, {
+          ...options,
+          channelOptions,
+        });
+
+        // Warn about --pin/--next flags that refer to modules the user didn't
+        // select, or that target bundled modules (core/bmm) where channel
+        // flags don't apply.
+        {
+          const bundledCodes = await this._bundledModuleCodes();
+          for (const warning of [
+            ...orphanPinWarnings(channelOptions, selectedModules),
+            ...bundledTargetWarnings(channelOptions, bundledCodes),
+          ]) {
+            await prompts.log.warn(warning);
+          }
+        }
 
         return {
           actionType: 'update',
@@ -166,12 +314,13 @@ class UI {
           coreConfig: moduleConfigs.core || {},
           moduleConfigs: moduleConfigs,
           skipPrompts: options.yes || false,
+          channelOptions,
         };
       }
     }
 
     // This section is only for new installations (update returns early above)
-    const { installedModuleIds } = await this.getExistingInstallation(confirmedDirectory);
+    const { installedModuleIds, installedModuleVersions } = await this.getExistingInstallation(confirmedDirectory);
 
     // Unified module selection - all modules in one grouped multiselect
     let selectedModules;
@@ -190,7 +339,7 @@ class UI {
       selectedModules = await this.getDefaultModules(installedModuleIds);
       await prompts.log.info(`Using default modules (--yes flag): ${selectedModules.join(', ')}`);
     } else {
-      selectedModules = await this.selectAllModules(installedModuleIds);
+      selectedModules = await this.selectAllModules(installedModuleIds, installedModuleVersions, channelOptions);
     }
 
     // Resolve custom sources from --custom-source flag
@@ -205,8 +354,33 @@ class UI {
     if (!selectedModules.includes('core')) {
       selectedModules.unshift('core');
     }
+
+    // Interactive channel gate: "Ready to install (all stable)? [Y/n]"
+    // Only shown for fresh installs with no channel flags and an external module
+    // selected. Skipped for prerelease launches because channelOptions.global
+    // was already seeded to 'next' upstream. Non-interactive installs skip this
+    // and fall through to the registry default (stable) or whatever flags were
+    // supplied.
+    await this._interactiveChannelGate({ options, channelOptions, selectedModules });
+
     let toolSelection = await this.promptToolSelection(confirmedDirectory, options);
-    const moduleConfigs = await this.collectModuleConfigs(confirmedDirectory, selectedModules, options);
+    const moduleConfigs = await this.collectModuleConfigs(confirmedDirectory, selectedModules, {
+      ...options,
+      channelOptions,
+    });
+
+    // Warn about --pin/--next flags that refer to modules the user didn't
+    // select, or that target bundled modules (core/bmm) where channel
+    // flags don't apply.
+    {
+      const bundledCodes = await this._bundledModuleCodes();
+      for (const warning of [
+        ...orphanPinWarnings(channelOptions, selectedModules),
+        ...bundledTargetWarnings(channelOptions, bundledCodes),
+      ]) {
+        await prompts.log.warn(warning);
+      }
+    }
 
     return {
       actionType: 'install',
@@ -217,6 +391,7 @@ class UI {
       coreConfig: moduleConfigs.core || {},
       moduleConfigs: moduleConfigs,
       skipPrompts: options.yes || false,
+      channelOptions,
     };
   }
 
@@ -229,6 +404,37 @@ class UI {
    * @param {Object} options - Command-line options
    * @returns {Object} Tool configuration
    */
+  _parseToolsFlag(toolsArg, allKnownValues) {
+    const selectedIdes = toolsArg
+      .split(',')
+      .map((t) => t.trim())
+      .filter(Boolean);
+
+    if (selectedIdes.length === 0) {
+      const err = new Error(
+        '--tools was passed empty. Provide at least one tool ID (e.g. --tools claude-code) or run with --list-tools to see valid IDs.',
+      );
+      err.expected = true;
+      throw err;
+    }
+
+    const unknown = selectedIdes.filter((id) => !allKnownValues.has(id));
+    if (unknown.length > 0) {
+      const err = new Error(
+        [
+          `Unknown tool ID${unknown.length === 1 ? '' : 's'}: ${unknown.join(', ')}`,
+          '',
+          'Run with --list-tools to see all valid IDs.',
+          'Common: claude-code, cursor, copilot, windsurf, cline',
+        ].join('\n'),
+      );
+      err.expected = true;
+      throw err;
+    }
+
+    return selectedIdes;
+  }
+
   async promptToolSelection(projectDir, options = {}) {
     const { ExistingInstall } = require('./core/existing-install');
     const { Installer } = require('./core/installer');
@@ -263,15 +469,10 @@ class UI {
       const allTools = [...preferredIdes, ...otherIdes];
 
       // Non-interactive: handle --tools and --yes flags before interactive prompt
-      if (options.tools) {
-        if (options.tools.toLowerCase() === 'none') {
-          await prompts.log.info('Skipping tool configuration (--tools none)');
-          return { ides: [], skipIde: true };
-        }
-        const selectedIdes = options.tools
-          .split(',')
-          .map((t) => t.trim())
-          .filter(Boolean);
+      // Use !== undefined so an explicit --tools "" falls through to _parseToolsFlag and
+      // gets a specific "passed empty" error instead of being silently ignored.
+      if (options.tools !== undefined) {
+        const selectedIdes = this._parseToolsFlag(options.tools, allKnownValues);
         await prompts.log.info(`Using tools from command-line: ${selectedIdes.join(', ')}`);
         await this.displaySelectedTools(selectedIdes, preferredIdes, allTools);
         return { ides: selectedIdes, skipIde: false };
@@ -347,21 +548,13 @@ class UI {
 
     let selectedIdes = [];
 
-    // Check if tools are provided via command-line
-    if (options.tools) {
-      // Check for explicit "none" value to skip tool installation
-      if (options.tools.toLowerCase() === 'none') {
-        await prompts.log.info('Skipping tool configuration (--tools none)');
-        return { ides: [], skipIde: true };
-      } else {
-        selectedIdes = options.tools
-          .split(',')
-          .map((t) => t.trim())
-          .filter(Boolean);
-        await prompts.log.info(`Using tools from command-line: ${selectedIdes.join(', ')}`);
-        await this.displaySelectedTools(selectedIdes, preferredIdes, allTools);
-        return { ides: selectedIdes, skipIde: false };
-      }
+    // Check if tools are provided via command-line.
+    // Use !== undefined so an explicit --tools "" still hits _parseToolsFlag's empty-value error.
+    if (options.tools !== undefined) {
+      selectedIdes = this._parseToolsFlag(options.tools, allKnownValues);
+      await prompts.log.info(`Using tools from command-line: ${selectedIdes.join(', ')}`);
+      await this.displaySelectedTools(selectedIdes, preferredIdes, allTools);
+      return { ides: selectedIdes, skipIde: false };
     } else if (options.yes) {
       // If --yes flag is set, skip tool prompt and use previously configured tools or empty
       if (configuredIdes.length > 0) {
@@ -369,8 +562,18 @@ class UI {
         await this.displaySelectedTools(configuredIdes, preferredIdes, allTools);
         return { ides: configuredIdes, skipIde: false };
       } else {
-        await prompts.log.info('Skipping tool configuration (--yes flag, no previous tools)');
-        return { ides: [], skipIde: true };
+        const err = new Error(
+          [
+            '--tools is required for non-interactive install (--yes / -y) when no tools are previously configured.',
+            '',
+            'Common: claude-code, cursor, copilot, windsurf, cline',
+            'See all supported tools: bmad-method install --list-tools',
+            '',
+            'Example: bmad-method install --modules bmm --tools claude-code -y',
+          ].join('\n'),
+        );
+        err.expected = true;
+        throw err;
       }
     }
 
@@ -465,7 +668,7 @@ class UI {
   /**
    * Get existing installation info and installed modules
    * @param {string} directory - Installation directory
-   * @returns {Object} Object with existingInstall, installedModuleIds, and bmadDir
+   * @returns {Object} Object with existingInstall, installedModuleIds, installedModuleVersions, and bmadDir
    */
   async getExistingInstallation(directory) {
     const { ExistingInstall } = require('./core/existing-install');
@@ -474,8 +677,26 @@ class UI {
     const { bmadDir } = await installer.findBmadDir(directory);
     const existingInstall = await ExistingInstall.detect(bmadDir);
     const installedModuleIds = new Set(existingInstall.moduleIds);
+    const installedModuleVersions = new Map();
+    const manifestModules = await manifest.getAllModuleVersions(bmadDir);
 
-    return { existingInstall, installedModuleIds, bmadDir };
+    for (const module of manifestModules) {
+      if (module?.name && module.version) {
+        installedModuleVersions.set(module.name, module.version);
+      }
+    }
+
+    for (const module of existingInstall.modules) {
+      if (module?.id && module.version && module.version !== 'unknown' && !installedModuleVersions.has(module.id)) {
+        installedModuleVersions.set(module.id, module.version);
+      }
+    }
+
+    if (existingInstall.hasCore && existingInstall.version && !installedModuleVersions.has('core')) {
+      installedModuleVersions.set('core', existingInstall.version);
+    }
+
+    return { existingInstall, installedModuleIds, installedModuleVersions, bmadDir };
   }
 
   /**
@@ -488,7 +709,7 @@ class UI {
    */
   async collectModuleConfigs(directory, modules, options = {}) {
     const { OfficialModules } = require('./modules/official-modules');
-    const configCollector = new OfficialModules();
+    const configCollector = new OfficialModules({ channelOptions: options.channelOptions });
 
     // Seed core config from CLI options if provided
     if (options.userName || options.communicationLanguage || options.documentOutputLanguage || options.outputFolder) {
@@ -537,6 +758,9 @@ class UI {
         const defaultUsername = safeUsername.charAt(0).toUpperCase() + safeUsername.slice(1);
         configCollector.collectedConfig.core = {
           user_name: defaultUsername,
+          // {directory_name} default per src/core-skills/module.yaml — matches what the
+          // interactive flow resolves via buildQuestion()'s {directory_name} placeholder.
+          project_name: path.basename(directory),
           communication_language: 'English',
           document_output_language: 'English',
           output_folder: '_bmad-output',
@@ -556,11 +780,13 @@ class UI {
   /**
    * Select all modules across three tiers: official, community, and custom URL.
    * @param {Set} installedModuleIds - Currently installed module IDs
+   * @param {Map<string, string>} installedModuleVersions - Installed module versions from the local manifest
+   * @param {Object|null} channelOptions - Parsed installer channel options
    * @returns {Array} Selected module codes (excluding core)
    */
-  async selectAllModules(installedModuleIds = new Set()) {
+  async selectAllModules(installedModuleIds = new Set(), installedModuleVersions = new Map(), channelOptions = null) {
     // Phase 1: Official modules
-    const officialSelected = await this._selectOfficialModules(installedModuleIds);
+    const officialSelected = await this._selectOfficialModules(installedModuleIds, installedModuleVersions, channelOptions);
 
     // Determine which installed modules are NOT official (community or custom).
     // These must be preserved even if the user declines to browse community/custom.
@@ -596,9 +822,11 @@ class UI {
    * Select official modules using autocompleteMultiselect.
    * Extracted from the original selectAllModules - unchanged behavior.
    * @param {Set} installedModuleIds - Currently installed module IDs
+   * @param {Map<string, string>} installedModuleVersions - Installed module versions from the local manifest
+   * @param {Object|null} channelOptions - Parsed installer channel options
    * @returns {Array} Selected official module codes
    */
-  async _selectOfficialModules(installedModuleIds = new Set()) {
+  async _selectOfficialModules(installedModuleIds = new Set(), installedModuleVersions = new Map(), channelOptions = null) {
     // Built-in modules (core, bmm) come from local source, not the registry
     const { OfficialModules } = require('./modules/official-modules');
     const builtInModules = (await new OfficialModules().listAvailable()).modules || [];
@@ -611,15 +839,18 @@ class UI {
     const initialValues = [];
     const lockedValues = ['core'];
 
-    const buildModuleEntry = async (code, name, description, isDefault) => {
+    const buildModuleEntry = async (code, name, description, isDefault, repoUrl = null, registryDefault = null) => {
       const isInstalled = installedModuleIds.has(code);
-      const version = await getModuleVersion(code);
-      const label = version ? `${name} (v${version})` : name;
+      const installedVersion = installedModuleVersions.get(code) || '';
+      const versionState = await getModuleVersion(code, { repoUrl, registryDefault, channelOptions });
+      const label = buildModuleLabel(name, versionState.version, installedVersion);
       return {
         label,
         value: code,
         hint: description,
         selected: isInstalled || isDefault,
+        lookupAttempted: versionState.lookupAttempted,
+        lookupSucceeded: versionState.lookupSucceeded,
       };
     };
 
@@ -636,12 +867,38 @@ class UI {
     }
 
     // Add external registry modules (skip built-in duplicates)
-    for (const mod of registryModules) {
-      if (mod.builtIn || builtInCodes.has(mod.code)) continue;
-      const entry = await buildModuleEntry(mod.code, mod.name, mod.description, mod.defaultSelected);
+    const externalRegistryModules = registryModules.filter((mod) => !mod.builtIn && !builtInCodes.has(mod.code));
+    let externalRegistryEntries = [];
+    if (externalRegistryModules.length > 0) {
+      const spinner = await prompts.spinner();
+      spinner.start('Checking latest module versions...');
+
+      externalRegistryEntries = await Promise.all(
+        externalRegistryModules.map(async (mod) => ({
+          code: mod.code,
+          entry: await buildModuleEntry(
+            mod.code,
+            mod.name,
+            mod.description,
+            mod.defaultSelected,
+            mod.url || null,
+            mod.defaultChannel || null,
+          ),
+        })),
+      );
+
+      spinner.stop('Checked latest module versions.');
+
+      const attemptedLookups = externalRegistryEntries.filter(({ entry }) => entry.lookupAttempted).length;
+      const successfulLookups = externalRegistryEntries.filter(({ entry }) => entry.lookupSucceeded).length;
+      if (attemptedLookups > 0 && successfulLookups === 0) {
+        await prompts.log.warn('Could not check latest module versions; showing cached/local versions.');
+      }
+    }
+    for (const { code, entry } of externalRegistryEntries) {
       allOptions.push({ label: entry.label, value: entry.value, hint: entry.hint });
       if (entry.selected) {
-        initialValues.push(mod.code);
+        initialValues.push(code);
       }
     }
 
@@ -1562,6 +1819,351 @@ class UI {
       return `  \u2022 ${name}${marker}`;
     });
     await prompts.log.message('Selected tools:\n' + toolLines.join('\n'));
+  }
+
+  /**
+   * Return the set of module codes the registry marks as built-in (core, bmm).
+   * These ship with the installer binary and have no per-module channel.
+   */
+  async _bundledModuleCodes() {
+    const externalManager = new ExternalModuleManager();
+    try {
+      const modules = await externalManager.listAvailable();
+      return modules.filter((m) => m.builtIn).map((m) => m.code);
+    } catch {
+      // Registry unreachable — fall back to the known bundled codes.
+      return ['core', 'bmm'];
+    }
+  }
+
+  /**
+   * Fast-path channel gate: confirm "all stable" or open the per-module picker.
+   *
+   * Skipped when:
+   *   - running non-interactively (--yes)
+   *   - the user already passed channel flags (--channel / --pin / --next), OR
+   *     the installer was launched from a prerelease (which seeds
+   *     channelOptions.global = 'next' upstream in promptInstall)
+   *   - no externals/community modules are selected
+   *
+   * Mutates channelOptions.pins and channelOptions.nextSet to reflect picker choices.
+   */
+  async _interactiveChannelGate({ options, channelOptions, selectedModules }) {
+    if (options.yes) return;
+    // If the user already declared their channel intent via flags, trust them
+    // and skip the gate.
+    const haveFlagIntent = channelOptions.global || channelOptions.nextSet.size > 0 || channelOptions.pins.size > 0;
+    if (haveFlagIntent) return;
+
+    // Figure out which selected modules actually get a channel (externals +
+    // community modules). Bundled core/bmm and custom modules skip the picker.
+    const externalManager = new ExternalModuleManager();
+    const externals = await externalManager.listAvailable();
+    const externalByCode = new Map(externals.map((m) => [m.code, m]));
+
+    const { CommunityModuleManager } = require('./modules/community-manager');
+    const communityMgr = new CommunityModuleManager();
+    const community = await communityMgr.listAll();
+    const communityByCode = new Map(community.map((m) => [m.code, m]));
+
+    const channelSelectable = selectedModules.filter((code) => {
+      const info = externalByCode.get(code) || communityByCode.get(code);
+      return info && !info.builtIn;
+    });
+    if (channelSelectable.length === 0) return;
+
+    const fastPath = await prompts.confirm({
+      message: `Ready to install (all stable)? Pick "n" to customize channels or pin versions.`,
+      default: true,
+    });
+    if (fastPath) return; // stable for all, registry default applies
+
+    // Customize path: per-module picker.
+    const { fetchStableTags, parseGitHubRepo } = require('./modules/channel-resolver');
+
+    for (const code of channelSelectable) {
+      const info = externalByCode.get(code) || communityByCode.get(code);
+      const repoUrl = info.url;
+
+      // Try to pre-resolve the top stable tag so we can surface it in the picker.
+      let stableLabel = 'stable (released version)';
+      try {
+        const parsed = repoUrl ? parseGitHubRepo(repoUrl) : null;
+        if (parsed) {
+          const tags = await fetchStableTags(parsed.owner, parsed.repo);
+          if (tags.length > 0) {
+            stableLabel = `stable  ${tags[0].tag}  (released version)`;
+          }
+        }
+      } catch {
+        // fall through with the generic label
+      }
+
+      const choice = await prompts.select({
+        message: `${code}: choose a channel`,
+        choices: [
+          { name: stableLabel, value: 'stable' },
+          { name: 'next   (main HEAD \u2014 current development)', value: 'next' },
+          { name: 'pin    (specific version)', value: 'pin' },
+        ],
+        default: 'stable',
+      });
+
+      if (choice === 'next') {
+        channelOptions.nextSet.add(code);
+      } else if (choice === 'pin') {
+        const pinValue = await prompts.text({
+          message: `Enter a version tag for '${code}' (e.g. v1.6.0):`,
+          validate: (value) => {
+            if (!value || !/^[\w.\-+/]+$/.test(String(value).trim())) {
+              return 'Must be a non-empty tag name (letters, digits, dots, hyphens).';
+            }
+          },
+        });
+        channelOptions.pins.set(code, String(pinValue).trim());
+      }
+      // 'stable' is the default; nothing to record.
+    }
+  }
+
+  /**
+   * Resolve channel decisions for an update over an existing install.
+   *
+   * For each selected external/community module:
+   *   - Read the recorded channel from the existing manifest.
+   *   - On `stable`: query tags; if a newer stable exists, classify the diff
+   *     and prompt. Patch/minor default Y; major defaults N. `--yes` accepts
+   *     defaults (patches/minors) but NOT majors — a major under --yes stays
+   *     frozen unless the user also passes `--pin CODE=NEW_TAG`.
+   *   - On `next`: no prompt (pull HEAD).
+   *   - On `pinned`: no prompt (stays pinned).
+   *   - No channel recorded and `version: null`: one-time migration prompt
+   *     ("Switch to stable / Keep on next").
+   *
+   * Decisions that freeze the current version are applied by adding a pin to
+   * `channelOptions.pins` so downstream clone logic honors them.
+   */
+  async _resolveUpdateChannels({ bmadDir, selectedModules, channelOptions, yes }) {
+    const { Manifest } = require('./core/manifest');
+    const manifestObj = new Manifest();
+    const manifest = await manifestObj.read(bmadDir);
+    const existingByName = new Map();
+    for (const m of manifest?.modulesDetailed || []) {
+      if (m?.name) existingByName.set(m.name, m);
+    }
+    if (existingByName.size === 0) return;
+
+    const externalManager = new ExternalModuleManager();
+    const externals = await externalManager.listAvailable();
+    const externalByCode = new Map(externals.map((m) => [m.code, m]));
+
+    const { CommunityModuleManager } = require('./modules/community-manager');
+    const communityMgr = new CommunityModuleManager();
+    const community = await communityMgr.listAll();
+    const communityByCode = new Map(community.map((m) => [m.code, m]));
+
+    const { fetchStableTags, classifyUpgrade, releaseNotesUrl } = require('./modules/channel-resolver');
+    const { parseGitHubRepo } = require('./modules/channel-resolver');
+
+    // Interactive-only: offer a one-time gate to review / switch channels for
+    // selected modules that are already installed. Default N so normal Modify
+    // flows (add/remove modules) aren't interrupted.
+    let reviewChannels = false;
+    if (!yes) {
+      const existingWithChannel = selectedModules.filter((code) => {
+        const prev = existingByName.get(code);
+        if (!prev) return false;
+        const info = externalByCode.get(code) || communityByCode.get(code);
+        return info && !info.builtIn;
+      });
+      if (existingWithChannel.length > 0) {
+        reviewChannels = await prompts.confirm({
+          message: 'Review channel assignments (stable / next / pin) for your existing modules?',
+          default: false,
+        });
+      }
+    }
+
+    for (const code of selectedModules) {
+      const prev = existingByName.get(code);
+      if (!prev) continue;
+
+      const info = externalByCode.get(code) || communityByCode.get(code);
+      if (!info) continue;
+      // Bundled modules (core/bmm) ship with the installer binary itself —
+      // their version is stapled to the CLI version, not a git tag. Skip
+      // tag-API lookups for them; the "upgrade" mechanism is `npx bmad@X install`.
+      if (info.builtIn) continue;
+
+      const repoUrl = info.url;
+      const parsed = repoUrl ? parseGitHubRepo(repoUrl) : null;
+
+      // Legacy migration: manifest carries no channel and a null/empty
+      // version. Offer the one-time pick between stable and next.
+      const recordedChannel = prev.channel || null;
+      const needsMigration = !recordedChannel && (prev.version == null || prev.version === '');
+      if (needsMigration) {
+        if (yes) {
+          // Conservative headless default: stable.
+          continue;
+        }
+        const chosen = await prompts.select({
+          message: `${code}: your existing install tracks the main branch. Switch to stable releases (recommended for production), or keep on main?`,
+          choices: [
+            { name: 'Switch to stable', value: 'stable' },
+            { name: 'Keep on main (next)', value: 'next' },
+          ],
+          default: 'stable',
+        });
+        if (chosen === 'next') channelOptions.nextSet.add(code);
+        continue;
+      }
+
+      // Optional channel-switch offer. Fires only when the user opted in via
+      // the gate above. 'keep' falls through to the existing per-channel
+      // logic (which runs upgrade classification for stable). Any switch
+      // records the new intent into channelOptions and skips upgrade prompts.
+      if (reviewChannels && recordedChannel) {
+        const switchChoices = [
+          {
+            name: `Keep on '${recordedChannel}'${prev.version ? ` @ ${prev.version}` : ''}`,
+            value: 'keep',
+          },
+        ];
+        if (recordedChannel !== 'stable') {
+          switchChoices.push({ name: 'Switch to stable (released version)', value: 'stable' });
+        }
+        if (recordedChannel !== 'next') {
+          switchChoices.push({ name: 'Switch to next (main HEAD)', value: 'next' });
+        }
+        switchChoices.push({ name: 'Pin to a specific version tag', value: 'pin' });
+
+        const choice = await prompts.select({
+          message: `${code} channel:`,
+          choices: switchChoices,
+          default: 'keep',
+        });
+
+        if (choice === 'next') {
+          channelOptions.nextSet.add(code);
+          continue;
+        }
+        if (choice === 'pin') {
+          const pinValue = await prompts.text({
+            message: `Enter a version tag for '${code}' (e.g. v1.6.0):`,
+            validate: (value) => {
+              if (!value || !/^[\w.\-+/]+$/.test(String(value).trim())) {
+                return 'Must be a non-empty tag name (letters, digits, dots, hyphens).';
+              }
+            },
+          });
+          channelOptions.pins.set(code, String(pinValue).trim());
+          continue;
+        }
+        if (choice === 'stable') {
+          // Switch to stable: install at the top stable tag without an
+          // upgrade-classification prompt (the user explicitly opted in).
+          // Also warm the tag cache here so the actual clone step doesn't
+          // need a second GitHub API call (can hit rate limits).
+          if (parsed) {
+            try {
+              await fetchStableTags(parsed.owner, parsed.repo);
+            } catch {
+              // best effort; clone step will surface any failure
+            }
+          }
+          continue;
+        }
+        // 'keep' → fall through with recordedChannel below.
+      }
+
+      if (recordedChannel === 'pinned' || recordedChannel === 'next') {
+        // Respect any explicit channel intent the user already expressed via
+        // CLI flags (--channel / --all-* / --next=CODE / --pin CODE=TAG) or
+        // via the interactive review gate above. Only auto-re-assert the
+        // recorded channel when the user hasn't opted into anything else —
+        // otherwise --all-stable (or a review "switch to stable") would be
+        // silently clobbered by the prior channel.
+        const alreadyDecided = channelOptions.global || channelOptions.nextSet.has(code) || channelOptions.pins.has(code);
+        if (!alreadyDecided) {
+          if (recordedChannel === 'pinned' && prev.version) {
+            channelOptions.pins.set(code, prev.version);
+          } else if (recordedChannel === 'next') {
+            channelOptions.nextSet.add(code);
+          }
+        }
+        continue;
+      }
+
+      // Stable channel: check for a newer released tag.
+      if (!parsed) continue;
+      // Respect explicit CLI intent (--pin / --next=CODE / --all-*) and any
+      // choice the user already made in the earlier review gate. Without this
+      // guard the upgrade classifier below would unconditionally call
+      // `channelOptions.pins.set(code, prev.version)` on decline/major-refuse/
+      // fetch-error, silently clobbering the user's override.
+      const alreadyDecided = channelOptions.global || channelOptions.nextSet.has(code) || channelOptions.pins.has(code);
+      if (alreadyDecided) continue;
+      let tags;
+      try {
+        tags = await fetchStableTags(parsed.owner, parsed.repo);
+      } catch (error) {
+        await prompts.log.warn(`Could not check for updates on ${code} (${error.message}). Leaving at ${prev.version}.`);
+        if (prev.version) channelOptions.pins.set(code, prev.version);
+        continue;
+      }
+      if (!tags || tags.length === 0) continue;
+      const topTag = tags[0].tag; // e.g. "v1.7.0"
+      const currentTag = prev.version || '';
+      const diffClass = classifyUpgrade(currentTag, topTag);
+
+      if (diffClass === 'none') continue; // already at or above top tag
+
+      const notes = releaseNotesUrl(repoUrl, topTag);
+      let accept;
+      if (diffClass === 'major') {
+        if (yes) {
+          // Major under --yes is refused by design.
+          await prompts.log.warn(
+            `${code} ${currentTag} → ${topTag} is a new major release; staying on ${currentTag}. ` +
+              `To accept, rerun with --pin ${code}=${topTag}.`,
+          );
+          channelOptions.pins.set(code, currentTag);
+          continue;
+        }
+        accept = await prompts.confirm({
+          message:
+            `${code} ${topTag} available — new major release (may change behavior).` +
+            (notes ? ` Release notes: ${notes}.` : '') +
+            ' Upgrade?',
+          default: false,
+        });
+      } else if (diffClass === 'minor') {
+        if (yes) {
+          accept = true;
+        } else {
+          accept = await prompts.confirm({
+            message: `${code} ${topTag} available (new features).` + (notes ? ` Release notes: ${notes}.` : '') + ' Upgrade?',
+            default: true,
+          });
+        }
+      } else {
+        // patch
+        if (yes) {
+          accept = true;
+        } else {
+          accept = await prompts.confirm({
+            message: `${code} ${topTag} available. Upgrade?`,
+            default: true,
+          });
+        }
+      }
+
+      if (!accept && currentTag) {
+        // Freeze the current version by pinning it for this run.
+        channelOptions.pins.set(code, currentTag);
+      }
+    }
   }
 }
 

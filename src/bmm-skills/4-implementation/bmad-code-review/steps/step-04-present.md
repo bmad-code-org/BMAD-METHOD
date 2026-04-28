@@ -124,3 +124,9 @@ Present the user with follow-up options:
 > 3. **Done** — end the workflow
 
 **HALT** — I am waiting for your choice. Do not proceed until the user selects an option.
+
+## On Complete
+
+Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete`
+
+If the resolved `workflow.on_complete` is non-empty, follow it as the final terminal instruction before exiting.

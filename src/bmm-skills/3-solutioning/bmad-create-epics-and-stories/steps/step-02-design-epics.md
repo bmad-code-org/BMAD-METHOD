@@ -55,7 +55,8 @@ Load {planning_artifacts}/epics.md and review:
 2. **Requirements Grouping**: Group related FRs that deliver cohesive user outcomes
 3. **Incremental Delivery**: Each epic should deliver value independently
 4. **Logical Flow**: Natural progression from user's perspective
-5. **🔗 Dependency-Free Within Epic**: Stories within an epic must NOT depend on future stories
+5. **Dependency-Free Within Epic**: Stories within an epic must NOT depend on future stories
+6. **Implementation Efficiency**: Consider consolidating epics that all modify the same core files into fewer epics
 
 **⚠️ CRITICAL PRINCIPLE:**
 Organize by USER VALUE, not technical layers:
@@ -74,6 +75,18 @@ Organize by USER VALUE, not technical layers:
 - Epic 3: Frontend Components (creates reusable components) - **No user value**
 - Epic 4: Deployment Pipeline (CI/CD setup) - **No user value**
 
+**❌ WRONG Epic Examples (File Churn on Same Component):**
+
+- Epic 1: File Upload (modifies model, controller, web form, web API)
+- Epic 2: File Status (modifies model, controller, web form, web API)
+- Epic 3: File Access permissions (modifies model, controller, web form, web API)
+- All three epics touch the same files — consolidate into one epic with ordered stories
+
+**✅ CORRECT Alternative:**
+
+- Epic 1: File Management Enhancement (upload, status, permissions as stories within one epic)
+- Rationale: Single component, fully pre-designed, no feedback loop between epics
+
 **🔗 DEPENDENCY RULES:**
 
 - Each epic must deliver COMPLETE functionality for its domain
@@ -82,21 +95,38 @@ Organize by USER VALUE, not technical layers:
 
 ### 3. Design Epic Structure Collaboratively
 
-**Step A: Identify User Value Themes**
+**Step A: Assess Context and Identify Themes**
+
+First, assess how much of the solution design is already validated (Architecture, UX, Test Design).
+When the outcome is certain and direction changes between epics are unlikely, prefer fewer but larger epics.
+Split into multiple epics when there is a genuine risk boundary or when early feedback could change direction
+of following epics.
+
+Then, identify user value themes:
 
 - Look for natural groupings in the FRs
 - Identify user journeys or workflows
 - Consider user types and their goals
 
 **Step B: Propose Epic Structure**
-For each proposed epic:
+
+For each proposed epic (considering whether epics share the same core files):
 
 1. **Epic Title**: User-centric, value-focused
 2. **User Outcome**: What users can accomplish after this epic
 3. **FR Coverage**: Which FR numbers this epic addresses
 4. **Implementation Notes**: Any technical or UX considerations
 
-**Step C: Create the epics_list**
+**Step C: Review for File Overlap**
+
+Assess whether multiple proposed epics repeatedly target the same core files. If overlap is significant:
+
+- Distinguish meaningful overlap (same component end-to-end) from incidental sharing
+- Ask whether to consolidate into one epic with ordered stories
+- If confirmed, merge the epic FRs into a single epic, preserving dependency flow: each story must still fit within
+  a single dev agent's context
+
+**Step D: Create the epics_list**
 
 Format the epics_list as:
 

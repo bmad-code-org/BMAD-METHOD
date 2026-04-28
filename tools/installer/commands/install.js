@@ -15,8 +15,9 @@ module.exports = {
     ['--modules <modules>', 'Comma-separated list of module IDs to install (e.g., "bmm,bmb")'],
     [
       '--tools <tools>',
-      'Comma-separated list of tool/IDE IDs to configure (e.g., "claude-code,cursor"). Use "none" to skip tool configuration.',
+      'Comma-separated list of tool/IDE IDs to configure (e.g., "claude-code,cursor"). Required for fresh non-interactive (--yes) installs. Run with --list-tools to see all valid IDs.',
     ],
+    ['--list-tools', 'Print all supported tool/IDE IDs (with target directories) and exit.'],
     ['--action <type>', 'Action type for existing installations: install, update, or quick-update'],
     ['--user-name <name>', 'Name for agents to use (default: system username)'],
     ['--communication-language <lang>', 'Language for agent communication (default: English)'],
@@ -24,9 +25,28 @@ module.exports = {
     ['--output-folder <path>', 'Output folder path relative to project root (default: _bmad-output)'],
     ['--custom-source <sources>', 'Comma-separated Git URLs or local paths to install custom modules from'],
     ['-y, --yes', 'Accept all defaults and skip prompts where possible'],
+    [
+      '--channel <channel>',
+      'Apply channel (stable|next) to all external modules being installed. --all-stable and --all-next are aliases.',
+    ],
+    ['--all-stable', 'Alias for --channel=stable. Resolves externals to the highest stable release tag.'],
+    ['--all-next', 'Alias for --channel=next. Resolves externals to main HEAD.'],
+    ['--next <code>', 'Install module <code> from main HEAD (next channel). Repeatable.', (value, prev) => [...(prev || []), value], []],
+    [
+      '--pin <spec>',
+      'Pin module to a specific tag: --pin CODE=TAG (e.g. --pin bmb=v1.7.0). Repeatable.',
+      (value, prev) => [...(prev || []), value],
+      [],
+    ],
   ],
   action: async (options) => {
     try {
+      if (options.listTools) {
+        const { formatPlatformList } = require('../ide/platform-codes');
+        process.stdout.write((await formatPlatformList()) + '\n');
+        process.exit(0);
+      }
+
       // Set debug flag as environment variable for all components
       if (options.debug) {
         process.env.BMAD_DEBUG_MANIFEST = 'true';
@@ -68,7 +88,7 @@ module.exports = {
         } else {
           await prompts.log.error(`Installation failed: ${error.message}`);
         }
-        if (error.stack) {
+        if (error.stack && !error.expected) {
           await prompts.log.message(error.stack);
         }
       } catch {

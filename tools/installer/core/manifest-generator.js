@@ -349,7 +349,22 @@ class ManifestGenerator {
         npmPackage: versionInfo.npmPackage,
         repoUrl: versionInfo.repoUrl,
       };
-      if (versionInfo.localPath) moduleEntry.localPath = versionInfo.localPath;
+      // Preserve channel/sha from the resolution (external/community/custom)
+      // or from the existing entry if this is a no-change rewrite.
+      const channel = versionInfo.channel ?? existing?.channel;
+      const sha = versionInfo.sha ?? existing?.sha;
+      if (channel) moduleEntry.channel = channel;
+      if (sha) moduleEntry.sha = sha;
+      if (versionInfo.localPath || existing?.localPath) {
+        moduleEntry.localPath = versionInfo.localPath || existing.localPath;
+      }
+      if (versionInfo.rawSource || existing?.rawSource) {
+        moduleEntry.rawSource = versionInfo.rawSource || existing.rawSource;
+      }
+      const regTag = versionInfo.registryApprovedTag ?? existing?.registryApprovedTag;
+      const regSha = versionInfo.registryApprovedSha ?? existing?.registryApprovedSha;
+      if (regTag) moduleEntry.registryApprovedTag = regTag;
+      if (regSha) moduleEntry.registryApprovedSha = regSha;
       updatedModules.push(moduleEntry);
     }
 
@@ -420,6 +435,9 @@ class ManifestGenerator {
     // this means user-scoped keys (e.g. user_name) could mis-file into the
     // team config, so the operator should notice.
     const scopeByModuleKey = {};
+    // Maps installer moduleName (may be full display name) → module code field
+    // from module.yaml, so TOML sections use [modules.<code>] not [modules.<name>].
+    const codeByModuleName = {};
     for (const moduleName of this.updatedModules) {
       const moduleYamlPath = await resolveInstalledModuleYaml(moduleName);
       if (!moduleYamlPath) {
@@ -432,6 +450,7 @@ class ManifestGenerator {
       try {
         const parsed = yaml.parse(await fs.readFile(moduleYamlPath, 'utf8'));
         if (!parsed || typeof parsed !== 'object') continue;
+        if (parsed.code) codeByModuleName[moduleName] = parsed.code;
         scopeByModuleKey[moduleName] = {};
         for (const [key, value] of Object.entries(parsed)) {
           if (value && typeof value === 'object' && 'prompt' in value) {
@@ -530,6 +549,9 @@ class ManifestGenerator {
       if (moduleName === 'core') continue;
       const cfg = moduleConfigs[moduleName];
       if (!cfg || Object.keys(cfg).length === 0) continue;
+      // Use the module's code field from module.yaml as the TOML key so the
+      // section is [modules.mdo] not [modules.MDO: Maxio DevOps Operations].
+      const sectionKey = codeByModuleName[moduleName] || moduleName;
       // Only filter out spread-from-core pollution when we actually know
       // this module's prompt schema. For external/marketplace modules whose
       // module.yaml isn't in the src tree, fall through as all-team so we
@@ -537,14 +559,14 @@ class ManifestGenerator {
       const haveSchema = Object.keys(scopeByModuleKey[moduleName] || {}).length > 0;
       const { team: modTeam, user: modUser } = partition(moduleName, cfg, haveSchema);
       if (Object.keys(modTeam).length > 0) {
-        teamLines.push(`[modules.${moduleName}]`);
+        teamLines.push(`[modules.${sectionKey}]`);
         for (const [key, value] of Object.entries(modTeam)) {
           teamLines.push(`${key} = ${formatTomlValue(value)}`);
         }
         teamLines.push('');
       }
       if (Object.keys(modUser).length > 0) {
-        userLines.push(`[modules.${moduleName}]`);
+        userLines.push(`[modules.${sectionKey}]`);
         for (const [key, value] of Object.entries(modUser)) {
           userLines.push(`${key} = ${formatTomlValue(value)}`);
         }

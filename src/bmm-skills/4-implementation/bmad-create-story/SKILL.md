@@ -302,6 +302,18 @@ Activation is complete. Begin the workflow below.
   processes - **Integration Patterns:** External service integrations, data flows <action>Extract any story-specific requirements that the
   developer MUST follow</action>
   <action>Identify any architectural decisions that override previous patterns</action>
+
+  <!-- Read existing code being modified — non-negotiable -->
+  <critical>📂 READ FILES BEING MODIFIED — skipping this is the primary cause of implementation failures and review cycles</critical>
+  <action>From the architecture directory structure, identify every file marked UPDATE (not NEW) that this story will touch</action>
+  <action>Read each relevant UPDATE file completely. For each one, document in dev notes:
+    - Current state: what it does today (state machine, API calls, data shapes, existing behaviors)
+    - What this story changes: the specific sections or behaviors being modified
+    - What must be preserved: existing interactions and behaviors the story must not break
+  </action>
+  <critical>A story implementation must leave the system working end-to-end — not just satisfy its stated ACs.
+  If a behavior is required for the feature to work correctly in the existing system, it is a requirement
+  whether or not it is explicitly written in the story. The dev agent owns this.</critical>
 </step>
 
 <step n="4" goal="Web research for latest technical specifics">

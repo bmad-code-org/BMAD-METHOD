@@ -5,14 +5,10 @@ default_selected: true # This module will be selected by default for new install
 
 # Variables from Core Config inserted:
 ## user_name
+## project_name
 ## communication_language
 ## document_output_language
 ## output_folder
-
-project_name:
-  prompt: "What is your project called?"
-  default: "{directory_name}"
-  result: "{value}"
 
 user_skill_level:
   prompt:
