@@ -14,6 +14,7 @@ const { ExternalModuleManager } = require('../modules/external-manager');
 const { resolveModuleVersion } = require('../modules/version-resolver');
 
 const { ExistingInstall } = require('./existing-install');
+const { warnPreNativeSkillsLegacy } = require('./legacy-warnings');
 
 class Installer {
   constructor() {
@@ -40,6 +41,16 @@ class Installer {
       const paths = await InstallPaths.create(config);
       const officialModules = await OfficialModules.build(config, paths);
       const existingInstall = await ExistingInstall.detect(paths.bmadDir);
+
+      try {
+        await warnPreNativeSkillsLegacy({
+          projectRoot: paths.projectRoot,
+          existingVersion: existingInstall.installed ? existingInstall.version : null,
+        });
+      } catch (error) {
+        // Legacy-dir scan is informational; never let it abort install.
+        await prompts.log.warn(`Warning: Could not check for legacy BMAD entries: ${error.message}`);
+      }
 
       if (existingInstall.installed) {
         await this._removeDeselectedModules(existingInstall, config, paths);
@@ -183,15 +194,16 @@ class Installer {
 
     if (toRemove.length === 0) return;
 
-    await this.ideManager.ensureInitialized();
-    for (const ide of toRemove) {
-      try {
-        const handler = this.ideManager.handlers.get(ide);
-        if (handler) {
-          await handler.cleanup(paths.projectRoot);
-        }
-      } catch (error) {
-        await prompts.log.warn(`Warning: Failed to remove ${ide}: ${error.message}`);
+    // Pass the newly-selected list as remainingIdes so cleanupByList skips
+    // target_dir wipes for IDEs whose directory is still owned by a peer
+    // (e.g. removing 'cursor' while 'gemini' remains — both share .agents/skills).
+    const results = await this.ideManager.cleanupByList(paths.projectRoot, toRemove, {
+      remainingIdes: [...newlySelected],
+    });
+
+    for (const result of results || []) {
+      if (result && result.success === false) {
+        await prompts.log.warn(`Warning: Failed to remove ${result.ide}: ${result.error || 'unknown error'}`);
       }
     }
   }
@@ -342,13 +354,14 @@ class Installer {
       return;
     }
 
-    for (const ide of validIdes) {
-      const setupResult = await this.ideManager.setup(ide, paths.projectRoot, paths.bmadDir, {
-        selectedModules: allModules || [],
-        verbose: config.verbose,
-        previousSkillIds,
-      });
+    const setupResults = await this.ideManager.setupBatch(validIdes, paths.projectRoot, paths.bmadDir, {
+      selectedModules: allModules || [],
+      verbose: config.verbose,
+      previousSkillIds,
+    });
 
+    for (const setupResult of setupResults) {
+      const ide = setupResult.ide;
       if (setupResult.success) {
         addResult(ide, 'ok', setupResult.detail || '');
       } else {
@@ -601,22 +614,40 @@ class Installer {
           moduleConfig: moduleConfig,
           installer: this,
           silent: true,
+          channelOptions: config.channelOptions,
         },
       );
 
       // Get display name from source module.yaml and resolve the freshest version metadata we can find locally.
-      const sourcePath = await officialModules.findModuleSource(moduleName, { silent: true });
+      const sourcePath = await officialModules.findModuleSource(moduleName, {
+        silent: true,
+        channelOptions: config.channelOptions,
+      });
       const moduleInfo = sourcePath ? await officialModules.getModuleInfo(sourcePath, moduleName, '') : null;
       const displayName = moduleInfo?.name || moduleName;
 
+      const externalResolution = officialModules.externalModuleManager.getResolution(moduleName);
+      let communityResolution = null;
+      if (!externalResolution) {
+        const { CommunityModuleManager } = require('../modules/community-manager');
+        communityResolution = new CommunityModuleManager().getResolution(moduleName);
+      }
+      const resolution = externalResolution || communityResolution;
       const cachedResolution = CustomModuleManager._resolutionCache.get(moduleName);
       const versionInfo = await resolveModuleVersion(moduleName, {
         moduleSourcePath: sourcePath,
-        fallbackVersion: cachedResolution?.version,
+        fallbackVersion: resolution?.version || cachedResolution?.version,
         marketplacePluginNames: cachedResolution?.pluginName ? [cachedResolution.pluginName] : [],
       });
-      const version = versionInfo.version || '';
-      addResult(displayName, 'ok', '', { moduleCode: moduleName, newVersion: version });
+      // Prefer the git tag recorded by the resolution (e.g. "v1.7.0") over
+      // the on-disk package.json (which may be ahead of the released tag).
+      const version = resolution?.version || versionInfo.version || '';
+      addResult(displayName, 'ok', '', {
+        moduleCode: moduleName,
+        newVersion: version,
+        newChannel: resolution?.channel || null,
+        newSha: resolution?.sha || null,
+      });
     }
   }
 
@@ -1091,12 +1122,30 @@ class Installer {
       let detail = '';
       if (r.moduleCode && r.newVersion) {
         const oldVersion = preVersions.get(r.moduleCode);
-        if (oldVersion && oldVersion === r.newVersion) {
-          detail = ` (v${r.newVersion}, no change)`;
+        // Format a version label for display:
+        //   "main" → "main @ <short-sha>" (next channel shows what SHA landed)
+        //   "v1.7.0" or "1.7.0" → "v1.7.0" (prefix 'v' when missing)
+        //   anything else (legacy strings) → as-is
+        const fmt = (v, sha) => {
+          if (typeof v !== 'string' || !v) return '';
+          if (v === 'main' || v === 'HEAD') return sha ? `main @ ${sha.slice(0, 7)}` : 'main';
+          if (/^v?\d+\.\d+\.\d+/.test(v)) return v.startsWith('v') ? v : `v${v}`;
+          return v;
+        };
+        const newV = fmt(r.newVersion, r.newSha);
+        // 'main'/'HEAD' strings only identify the channel, not the commit, so
+        // we can't assert "no change" without comparing SHAs — and preVersions
+        // doesn't carry the old SHA. Render these as a refresh instead of a
+        // false-negative "no change".
+        const isMainLike = oldVersion === 'main' || oldVersion === 'HEAD';
+        if (oldVersion && oldVersion === r.newVersion && !isMainLike) {
+          detail = ` (${newV}, no change)`;
+        } else if (oldVersion && isMainLike) {
+          detail = ` (${newV}, refreshed)`;
         } else if (oldVersion) {
-          detail = ` (v${oldVersion} → v${r.newVersion})`;
+          detail = ` (${fmt(oldVersion, r.newSha)} → ${newV})`;
         } else {
-          detail = ` (v${r.newVersion}, installed)`;
+          detail = ` (${newV}, installed)`;
         }
       } else if (r.detail) {
         detail = ` (${r.detail})`;
@@ -1216,9 +1265,59 @@ class Installer {
       await prompts.log.warn(`Skipping ${skippedModules.length} module(s) - no source available: ${skippedModules.join(', ')}`);
     }
 
+    // Build channel options from the existing manifest FIRST so the config
+    // collector below (which triggers external-module clones via
+    // findModuleSource) knows each module's recorded channel and doesn't
+    // silently redecide it. Without this, modules previously on 'next' or
+    // 'pinned' would trigger a stable-channel tag lookup at config-collection
+    // time, burning GitHub API quota and potentially failing.
+    const manifestData = await this.manifest.read(bmadDir);
+    const channelOptions = { global: null, nextSet: new Set(), pins: new Map(), warnings: [] };
+    if (manifestData?.modulesDetailed) {
+      const { fetchStableTags, classifyUpgrade, parseGitHubRepo } = require('../modules/channel-resolver');
+      for (const entry of manifestData.modulesDetailed) {
+        if (!entry?.name || !entry?.channel) continue;
+        if (entry.channel === 'pinned' && entry.version) {
+          channelOptions.pins.set(entry.name, entry.version);
+          continue;
+        }
+        if (entry.channel === 'next') {
+          channelOptions.nextSet.add(entry.name);
+          continue;
+        }
+        // Stable: classify the available upgrade. Patches and minors fall
+        // through (stable default picks up the top tag). A major upgrade
+        // requires opt-in, so under quick-update's non-interactive semantics
+        // we pin to the current version to prevent a silent breaking jump.
+        if (entry.channel === 'stable' && entry.version && entry.repoUrl) {
+          const parsed = parseGitHubRepo(entry.repoUrl);
+          if (!parsed) continue;
+          try {
+            const tags = await fetchStableTags(parsed.owner, parsed.repo);
+            if (tags.length === 0) continue;
+            const topTag = tags[0].tag;
+            const cls = classifyUpgrade(entry.version, topTag);
+            if (cls === 'major') {
+              channelOptions.pins.set(entry.name, entry.version);
+              await prompts.log.warn(
+                `${entry.name} ${entry.version} → ${topTag} is a new major release; staying on ${entry.version}. ` +
+                  `Run \`bmad install\` (Modify) with \`--pin ${entry.name}=${topTag}\` to accept.`,
+              );
+            }
+          } catch (error) {
+            // Tag lookup failed (offline, rate-limited). Stay on the current
+            // version rather than guessing — the existing cache is already
+            // at that ref, so re-using it keeps the install stable.
+            channelOptions.pins.set(entry.name, entry.version);
+            await prompts.log.warn(`Could not check ${entry.name} for updates (${error.message}); staying on ${entry.version}.`);
+          }
+        }
+      }
+    }
+
     // Load existing configs and collect new fields (if any)
     await prompts.log.info('Checking for new configuration options...');
-    const quickModules = new OfficialModules();
+    const quickModules = new OfficialModules({ channelOptions });
     await quickModules.loadExistingConfig(projectDir);
 
     let promptedForNewFields = false;
@@ -1257,6 +1356,7 @@ class Installer {
       _quickUpdate: true,
       _preserveModules: skippedModules,
       _existingModules: installedModules,
+      channelOptions,
     };
 
     await this.install(installConfig);

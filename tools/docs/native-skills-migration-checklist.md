@@ -222,7 +222,6 @@ Support assumption: full Agent Skills support. Gemini CLI docs confirm workspace
 
 - [x] Confirm Gemini CLI native skills path is `.gemini/skills/{skill-name}/SKILL.md` (per [geminicli.com/docs/cli/skills](https://geminicli.com/docs/cli/skills/))
 - [x] Implement native skills output — target_dir `.gemini/skills`, skill_format true, template_type default (replaces TOML templates)
-- [x] Add legacy cleanup for `.gemini/commands` (via `legacy_targets`)
 - [x] Test fresh install — skills written to `.gemini/skills/bmad-master/SKILL.md` with correct frontmatter
 - [x] Test reinstall/upgrade from legacy TOML command output — legacy dir removed, skills installed
 - [x] Confirm no ancestor conflict protection is needed — Gemini CLI uses workspace > user > extension precedence, no ancestor directory inheritance
@@ -236,7 +235,6 @@ Support assumption: full Agent Skills support. iFlow docs confirm workspace skil
 
 - [x] Confirm iFlow native skills path is `.iflow/skills/{skill-name}/SKILL.md`
 - [x] Implement native skills output — target_dir `.iflow/skills`, skill_format true, template_type default
-- [x] Add legacy cleanup for `.iflow/commands` (via `legacy_targets`)
 - [x] Test fresh install — skills written to `.iflow/skills/bmad-master/SKILL.md`
 - [x] Test legacy cleanup — legacy commands dir removed
 - [x] Implement/extend automated tests — 6 assertions in test suite 24
@@ -249,7 +247,6 @@ Support assumption: full Agent Skills support. Qwen Code supports workspace skil
 
 - [x] Confirm QwenCoder native skills path is `.qwen/skills/{skill-name}/SKILL.md`
 - [x] Implement native skills output — target_dir `.qwen/skills`, skill_format true, template_type default
-- [x] Add legacy cleanup for `.qwen/commands` (via `legacy_targets`)
 - [x] Test fresh install — skills written to `.qwen/skills/bmad-master/SKILL.md`
 - [x] Test legacy cleanup — legacy commands dir removed
 - [x] Implement/extend automated tests — 6 assertions in test suite 25
@@ -262,7 +259,6 @@ Support assumption: full Agent Skills support. Rovo Dev now supports workspace s
 
 - [x] Confirm Rovo Dev native skills path is `.rovodev/skills/{skill-name}/SKILL.md` (per Atlassian blog)
 - [x] Replace 257-line custom `rovodev.js` with config-driven entry in `platform-codes.yaml`
-- [x] Add legacy cleanup for `.rovodev/workflows` (via `legacy_targets`) and BMAD entries in `prompts.yml` (via `cleanupRovoDevPrompts()` in `_config-driven.js`)
 - [x] Test fresh install — skills written to `.rovodev/skills/bmad-master/SKILL.md`
 - [x] Test legacy cleanup — legacy workflows dir removed, `prompts.yml` BMAD entries stripped while preserving user entries
 - [x] Implement/extend automated tests — 8 assertions in test suite 26

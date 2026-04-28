@@ -1,10 +1,10 @@
-const os = require('node:os');
 const path = require('node:path');
 const fs = require('../fs-native');
 const yaml = require('yaml');
 const prompts = require('../prompts');
 const csv = require('csv-parse/sync');
 const { BMAD_FOLDER_NAME } = require('./shared/path-utils');
+const { getInstalledCanonicalIds, isBmadOwnedEntry } = require('./shared/installed-skills');
 
 /**
  * Config-driven IDE setup handler
@@ -16,7 +16,7 @@ const { BMAD_FOLDER_NAME } = require('./shared/path-utils');
  * Features:
  * - Config-driven from platform-codes.yaml
  * - Verbatim skill installation from skill-manifest.csv
- * - Legacy directory cleanup and IDE-specific marker removal
+ * - IDE-specific marker removal (copilot-instructions, kilo modes, rovodev prompts)
  */
 class ConfigDrivenIdeSetup {
   constructor(platformCode, platformConfig) {
@@ -44,16 +44,20 @@ class ConfigDrivenIdeSetup {
   async detect(projectDir) {
     if (!this.configDir) return false;
 
-    const dir = path.join(projectDir || process.cwd(), this.configDir);
-    if (await fs.pathExists(dir)) {
-      try {
-        const entries = await fs.readdir(dir);
-        return entries.some((e) => typeof e === 'string' && e.startsWith('bmad'));
-      } catch {
-        return false;
-      }
+    const root = projectDir || process.cwd();
+    const dir = path.join(root, this.configDir);
+    if (!(await fs.pathExists(dir))) return false;
+
+    let entries;
+    try {
+      entries = await fs.readdir(dir);
+    } catch {
+      return false;
     }
-    return false;
+
+    const bmadDir = await this._findBmadDir(root);
+    const canonicalIds = await getInstalledCanonicalIds(bmadDir);
+    return entries.some((e) => isBmadOwnedEntry(e, canonicalIds));
   }
 
   /**
@@ -90,6 +94,12 @@ class ConfigDrivenIdeSetup {
 
     if (!this.installerConfig) {
       return { success: false, reason: 'no-config' };
+    }
+
+    // When a peer platform in the same install batch owns this target_dir,
+    // skip the skill write — the peer has already populated it.
+    if (options.skipTarget) {
+      return { success: true, results: { skills: 0, sharedTargetHandledByPeer: true } };
     }
 
     if (this.installerConfig.target_dir) {
@@ -222,27 +232,6 @@ class ConfigDrivenIdeSetup {
       removalSet = new Set();
     }
 
-    // Migrate legacy target directories (e.g. .opencode/agent → .opencode/agents)
-    // Legacy dirs are abandoned entirely, so use prefix matching (null removalSet)
-    if (this.installerConfig?.legacy_targets) {
-      const legacyDirsExist = await Promise.all(
-        this.installerConfig.legacy_targets.map((d) =>
-          this.isGlobalPath(d) ? fs.pathExists(d.replace(/^~/, os.homedir())) : fs.pathExists(path.join(projectDir, d)),
-        ),
-      );
-      if (legacyDirsExist.some(Boolean)) {
-        if (!options.silent) await prompts.log.message('  Migrating legacy directories...');
-        for (const legacyDir of this.installerConfig.legacy_targets) {
-          if (this.isGlobalPath(legacyDir)) {
-            await this.warnGlobalLegacy(legacyDir, options);
-          } else {
-            await this.cleanupTarget(projectDir, legacyDir, options, null);
-            await this.removeEmptyParents(projectDir, legacyDir);
-          }
-        }
-      }
-    }
-
     // Strip BMAD markers from copilot-instructions.md if present
     if (this.name === 'github-copilot') {
       await this.cleanupCopilotInstructions(projectDir, options);
@@ -258,44 +247,14 @@ class ConfigDrivenIdeSetup {
       await this.cleanupRovoDevPrompts(projectDir, options);
     }
 
+    // Skip target_dir cleanup when a peer platform owns this directory
+    // (set during dedup'd install or when uninstalling one of several
+    // platforms that share the same target_dir).
+    if (options.skipTarget) return;
+
     // Clean current target directory
     if (this.installerConfig?.target_dir) {
       await this.cleanupTarget(projectDir, this.installerConfig.target_dir, options, removalSet);
-    }
-  }
-
-  /**
-   * Check if a path is global (starts with ~ or is absolute)
-   * @param {string} p - Path to check
-   * @returns {boolean}
-   */
-  isGlobalPath(p) {
-    return p.startsWith('~') || path.isAbsolute(p);
-  }
-
-  /**
-   * Warn about stale BMAD files in a global legacy directory (never auto-deletes)
-   * @param {string} legacyDir - Legacy directory path (may start with ~)
-   * @param {Object} options - Options (silent, etc.)
-   */
-  async warnGlobalLegacy(legacyDir, options = {}) {
-    try {
-      const expanded = legacyDir.startsWith('~/')
-        ? path.join(os.homedir(), legacyDir.slice(2))
-        : legacyDir === '~'
-          ? os.homedir()
-          : legacyDir;
-
-      if (!(await fs.pathExists(expanded))) return;
-
-      const entries = await fs.readdir(expanded);
-      const bmadFiles = entries.filter((e) => typeof e === 'string' && e.startsWith('bmad'));
-
-      if (bmadFiles.length > 0 && !options.silent) {
-        await prompts.log.warn(`Found ${bmadFiles.length} stale BMAD file(s) in ${expanded}. Remove manually: rm ${expanded}/bmad-*`);
-      }
-    } catch {
-      // Errors reading global paths are silently ignored
     }
   }
 
@@ -426,8 +385,8 @@ class ConfigDrivenIdeSetup {
       // Always preserve bmad-os-* utility skills regardless of cleanup mode
       if (entry.startsWith('bmad-os-')) continue;
 
-      // Surgical removal from set, or legacy prefix matching when set is null
-      const shouldRemove = removalSet ? removalSet.has(entry) : entry.startsWith('bmad');
+      // Surgical removal from set, or fallback to manifest+prefix detection when null
+      const shouldRemove = removalSet ? removalSet.has(entry) : isBmadOwnedEntry(entry, null);
 
       if (shouldRemove) {
         try {
@@ -590,10 +549,9 @@ class ConfigDrivenIdeSetup {
       try {
         if (await fs.pathExists(candidatePath)) {
           const entries = await fs.readdir(candidatePath);
-          const hasBmad = entries.some(
-            (e) => typeof e === 'string' && e.toLowerCase().startsWith('bmad') && !e.toLowerCase().startsWith('bmad-os-'),
-          );
-          if (hasBmad) {
+          const ancestorBmadDir = await this._findBmadDir(current);
+          const canonicalIds = await getInstalledCanonicalIds(ancestorBmadDir);
+          if (entries.some((e) => isBmadOwnedEntry(e, canonicalIds))) {
             return candidatePath;
           }
         }
@@ -604,43 +562,6 @@ class ConfigDrivenIdeSetup {
     }
 
     return null;
-  }
-
-  /**
-   * Walk up ancestor directories from relativeDir toward projectDir, removing each if empty
-   * Stops at projectDir boundary — never removes projectDir itself
-   * @param {string} projectDir - Project root (boundary)
-   * @param {string} relativeDir - Relative directory to start from
-   */
-  async removeEmptyParents(projectDir, relativeDir) {
-    const resolvedProject = path.resolve(projectDir);
-    let current = relativeDir;
-    let last = null;
-    while (current && current !== '.' && current !== last) {
-      last = current;
-      const fullPath = path.resolve(projectDir, current);
-      // Boundary guard: never traverse outside projectDir
-      if (!fullPath.startsWith(resolvedProject + path.sep) && fullPath !== resolvedProject) break;
-      try {
-        if (!(await fs.pathExists(fullPath))) {
-          // Dir already gone — advance current; last is reset at top of next iteration
-          current = path.dirname(current);
-          continue;
-        }
-        const remaining = await fs.readdir(fullPath);
-        if (remaining.length > 0) break;
-        await fs.rmdir(fullPath);
-      } catch (error) {
-        // ENOTEMPTY: TOCTOU race (file added between readdir and rmdir) — skip level, continue upward
-        // ENOENT: dir removed by another process between pathExists and rmdir — skip level, continue upward
-        if (error.code === 'ENOTEMPTY' || error.code === 'ENOENT') {
-          current = path.dirname(current);
-          continue;
-        }
-        break; // fatal error (e.g. EACCES) — stop upward walk
-      }
-      current = path.dirname(current);
-    }
   }
 }
 
