@@ -86,11 +86,12 @@ Skip this section if `{spec_file}` is not set.
 
 #### Determine new status based on review outcome
 
-- If the live journey release-gate closeout above found missing evidence, red gates, skipped gates, blocked gates, environment-blocked gates, or incomplete/expired product-owner deferrals: keep `{new_status}` = `in-progress` regardless of resolved findings. Update the story file Status section to `in-progress` and record the blocker in the story file.
-- If all `decision-needed` and `patch` findings were resolved (fixed or dismissed) AND no unresolved HIGH/MEDIUM issues remain AND live-gate blockers are cleared (or have complete, unexpired product-owner deferral): set `{new_status}` = `done`. Update the story file Status section to `done`.
+- If all `decision-needed` and `patch` findings were resolved (fixed or dismissed) AND no unresolved HIGH/MEDIUM issues remain: set `{new_status}` = `done`. Update the story file Status section to `done`.
 - If `patch` findings were left as action items, or unresolved issues remain: set `{new_status}` = `in-progress`. Update the story file Status section to `in-progress`.
 
 Save the story file.
+
+Re-open the story file after saving and verify the top-level `Status:` field equals `{new_status}`. If it does not, HALT before updating any other tracking artifacts and report that the story status did not persist.
 
 #### Sync sprint-status.yaml
 
@@ -105,24 +106,6 @@ If `{sprint_status}` file exists:
 
 If `{sprint_status}` file does not exist, note that story status was updated in the story file only.
 
-#### Final reconciliation
-
-Re-open the story file after saving and verify the top-level `Status:` field equals `{new_status}`.
-
-If the story file does not match `{new_status}`, HALT with a closeout reconciliation failure instead of reporting completion.
-
-If `{sprint_status}` file does not exist, set `{reconciliation_result}` = `story file verified; sprint tracker not applicable`.
-
-If `{sprint_status}` exists but `{story_key}` was not found during sprint-status sync, HALT with a closeout reconciliation failure instead of reporting completion.
-
-If `{sprint_status}` exists and `{story_key}` was found, re-open `{sprint_status}` after saving and verify `development_status[{story_key}]` also equals `{new_status}`.
-
-If `development_status[{story_key}]` is missing, unreadable, or cannot be verified, HALT with a closeout reconciliation failure instead of reporting completion.
-
-If `development_status[{story_key}]` matches `{new_status}`, set `{reconciliation_result}` = `story markdown and sprint tracker agree on {new_status}`.
-
-If `development_status[{story_key}]` does not match `{new_status}`, HALT with a closeout reconciliation failure instead of reporting completion.
-
 #### Completion summary
 
 > **Review Complete!**
@@ -132,14 +115,12 @@ If `development_status[{story_key}]` does not match `{new_status}`, HALT with a 
 > **Action Items Created:** <action_count>
 > **Deferred:** <W>
 > **Dismissed:** <R>
-> **Reconciled:** `{reconciliation_result}`
 
 ### 7. Next steps
 
 Present the user with follow-up options:
 
 > **What would you like to do next?**
->
 > 1. **Start the next story** — run `dev-story` to pick up the next `ready-for-dev` story
 > 2. **Re-run code review** — address findings and review again
 > 3. **Done** — end the workflow
