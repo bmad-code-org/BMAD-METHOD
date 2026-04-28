@@ -797,41 +797,13 @@ class UI {
       skipPrompts: options.yes || false,
     });
 
-    // Apply --set overrides for `core` AFTER collectAllConfigurations, since
-    // core is skipped when its config was seeded by `--yes` defaults or by
-    // legacy core-shortcut flags (--user-name/--output-folder/etc.). Without
-    // this step those override values would be silently dropped. Core
-    // result templates are all `{value}` (or `{project-root}/{value}` for
-    // output_folder, which the existing flag handling also writes raw),
-    // so writing the raw value matches the legacy shortcut semantics.
-    const coreOverrides = setOverrides.core || {};
-    if (Object.keys(coreOverrides).length > 0) {
-      if (!configCollector.collectedConfig.core) configCollector.collectedConfig.core = {};
-      for (const [key, value] of Object.entries(coreOverrides)) {
-        configCollector.collectedConfig.core[key] = value;
-      }
-      const yaml = require('yaml');
-      const { getProjectRoot } = require('./project-root');
-      const coreSchemaPath = path.join(getProjectRoot(), 'src', 'core-skills', 'module.yaml');
-      let coreSchema = null;
-      try {
-        coreSchema = yaml.parse(await fs.readFile(coreSchemaPath, 'utf8'));
-      } catch {
-        // schema unavailable — skip key-existence validation
-      }
-      if (coreSchema) {
-        if (!configCollector.setOverrideKeys) configCollector.setOverrideKeys = {};
-        if (!configCollector.setOverrideKeys.core) configCollector.setOverrideKeys.core = new Set();
-        for (const key of Object.keys(coreOverrides)) {
-          if (!(key in coreSchema)) {
-            await prompts.log.warn(
-              `--set core.${key} — '${key}' is not a declared config key for module 'core'; persisted but unused by current install.`,
-            );
-            configCollector.setOverrideKeys.core.add(key);
-          }
-        }
-      }
-    }
+    // Apply --set overrides for `core` AFTER collectAllConfigurations.
+    // Core is skipped inside collectAllConfigurations when its config was
+    // seeded by `--yes` defaults or by legacy core-shortcut flags
+    // (--user-name/--output-folder/etc.), so its overrides need a separate
+    // application path. Non-core modules apply overrides inside their own
+    // collectModuleConfig run.
+    await configCollector.applyOverridesAfterSeeding('core');
 
     // Convert per-module override-key Sets to plain string arrays so the value
     // round-trips cleanly through Config.build / freezing.

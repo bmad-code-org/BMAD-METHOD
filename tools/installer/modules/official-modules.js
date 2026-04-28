@@ -28,6 +28,57 @@ class OfficialModules {
   }
 
   /**
+   * Apply `--set <module>.<key>=<value>` overrides AFTER normal collection.
+   *
+   * Used for modules whose `collectModuleConfig` was skipped — currently only
+   * `core`, when its config was seeded by `--yes` defaults or by legacy
+   * core-shortcut flags (--user-name/--output-folder/etc.). For all other
+   * modules, override handling is integrated into `collectModuleConfig`.
+   *
+   * Validates known keys against the module's `module.yaml` schema (located
+   * via `getModulePath`); unknown keys are warned but persisted, mirroring
+   * the schema-handling for non-core modules. Core's `result:` templates are
+   * all `{value}` (or `{project-root}/{value}` for `output_folder`, which the
+   * legacy flag handlers also write raw), so writing the raw override value
+   * preserves parity with the `--user-name` / `--output-folder` shortcuts.
+   *
+   * @param {string} moduleName
+   */
+  async applyOverridesAfterSeeding(moduleName) {
+    const overrides = this.setOverrides[moduleName] || {};
+    if (Object.keys(overrides).length === 0) return;
+
+    if (!this.collectedConfig[moduleName]) this.collectedConfig[moduleName] = {};
+    for (const [key, value] of Object.entries(overrides)) {
+      this.collectedConfig[moduleName][key] = value;
+    }
+
+    let schema = null;
+    const schemaPath = path.join(getModulePath(moduleName), 'module.yaml');
+    if (await fs.pathExists(schemaPath)) {
+      try {
+        schema = yaml.parse(await fs.readFile(schemaPath, 'utf8'));
+      } catch {
+        // schema unparseable — skip key-existence validation
+      }
+    }
+    if (!schema || typeof schema !== 'object') return;
+
+    if (!this.setOverrideKeys) this.setOverrideKeys = {};
+    if (!this.setOverrideKeys[moduleName]) this.setOverrideKeys[moduleName] = new Set();
+    for (const key of Object.keys(overrides)) {
+      const decl = schema[key];
+      const isDeclared = decl && typeof decl === 'object' && 'prompt' in decl;
+      if (!isDeclared) {
+        await prompts.log.warn(
+          `--set ${moduleName}.${key} — '${key}' is not a declared config key for module '${moduleName}'; persisted but unused by current install.`,
+        );
+        this.setOverrideKeys[moduleName].add(key);
+      }
+    }
+  }
+
+  /**
    * Module configurations collected during install.
    */
   get moduleConfigs() {
@@ -1561,12 +1612,13 @@ class OfficialModules {
     }
     // Drop pre-seeded questions so the user is not re-prompted and so
     // skipPrompts mode doesn't overwrite the override with the default.
-    const remainingQuestions = questions.filter((q) => {
-      const key = q.name.replace(`${moduleName}_`, '');
-      return !seededOverrideKeys.has(key);
-    });
-    questions.length = 0;
-    questions.push(...remainingQuestions);
+    // In-place mutation keeps the rest of this method's `questions` references
+    // pointing at the filtered list without renaming a local through 100+ lines.
+    if (seededOverrideKeys.size > 0) {
+      const remaining = questions.filter((q) => !seededOverrideKeys.has(q.name.replace(`${moduleName}_`, '')));
+      questions.length = 0;
+      questions.push(...remaining);
+    }
 
     if (seededOverrideKeys.size > 0 && !this._silentConfig) {
       const list = [...seededOverrideKeys].map((k) => `${moduleName}.${k}`).join(', ');
@@ -1788,6 +1840,34 @@ class OfficialModules {
       for (const [overrideKey, overrideValue] of unknownOverrideKeys) {
         this.collectedConfig[moduleName][overrideKey] = overrideValue;
         this.setOverrideKeys[moduleName].add(overrideKey);
+      }
+    }
+
+    // Carry forward unknown keys persisted by a prior install. Without this,
+    // a value originally set via `--set <module>.future_thing=...` lands in
+    // `_bmad/<module>/config.yaml` on run #1, but the next collectModuleConfig
+    // rebuilds collectedConfig from prompt answers only — the unknown key
+    // would be silently dropped from the regenerated config.toml. Tracking
+    // the carried keys in setOverrideKeys ensures the schema-strict partition
+    // in writeCentralConfig keeps them. (#1663 forward-compat contract)
+    const priorConfig = this._existingConfig?.[moduleName];
+    if (priorConfig && typeof priorConfig === 'object' && !Array.isArray(priorConfig)) {
+      const declaredAndStaticKeys = new Set(declaredPromptKeys);
+      for (const key of configKeys) {
+        const item = moduleConfig[key];
+        if (item && typeof item === 'object' && item.result && !item.prompt) {
+          declaredAndStaticKeys.add(key);
+        }
+      }
+      for (const [key, value] of Object.entries(priorConfig)) {
+        if (declaredAndStaticKeys.has(key)) continue;
+        // Already written by this run (e.g. via unknown --set above): leave alone.
+        if (this.collectedConfig[moduleName] && key in this.collectedConfig[moduleName]) continue;
+        if (!this.collectedConfig[moduleName]) this.collectedConfig[moduleName] = {};
+        if (!this.setOverrideKeys) this.setOverrideKeys = {};
+        if (!this.setOverrideKeys[moduleName]) this.setOverrideKeys[moduleName] = new Set();
+        this.collectedConfig[moduleName][key] = value;
+        this.setOverrideKeys[moduleName].add(key);
       }
     }
 

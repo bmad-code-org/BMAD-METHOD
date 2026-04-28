@@ -3084,6 +3084,72 @@ async function runTests() {
 
     await fs.remove(tmp44).catch(() => {});
     await fs.remove(tmp44b).catch(() => {});
+
+    // Integration: --set actually applies through collectModuleConfig with skipPrompts.
+    // Constructs OfficialModules directly (no UI), runs the bmm collector, asserts
+    // the override value lands in collectedConfig with the result template rendered.
+    const tmp44c = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-44c-'));
+    try {
+      const om = new OfficialModules({
+        setOverrides: { bmm: { project_knowledge: 'research', user_skill_level: 'expert' } },
+      });
+      om.skipPrompts = true;
+      om._silentConfig = true;
+      om.modulesToCustomize = new Set();
+      om.allAnswers = {};
+      om._existingConfig = {};
+      await om.collectModuleConfig('bmm', tmp44c, true, true);
+
+      assert(
+        om.collectedConfig.bmm?.project_knowledge === '{project-root}/research',
+        'collectModuleConfig pre-fills bmm.project_knowledge from --set and renders {project-root}/{value}',
+      );
+      assert(
+        om.collectedConfig.bmm?.user_skill_level === 'expert',
+        'collectModuleConfig pre-fills bmm.user_skill_level from --set ({value} template)',
+      );
+      // Unrelated bmm keys still get their schema defaults applied.
+      assert(
+        typeof om.collectedConfig.bmm?.planning_artifacts === 'string',
+        'collectModuleConfig still fills non-overridden bmm keys with schema defaults under skipPrompts',
+      );
+    } catch (error) {
+      console.log(`${colors.red}  collectModuleConfig --set integration failed: ${error.message}${colors.reset}`);
+      console.log(error.stack);
+      failed++;
+    }
+    await fs.remove(tmp44c).catch(() => {});
+
+    // Carry-forward: an unknown key persisted by a prior install survives the
+    // next collectModuleConfig even when --set isn't repeated. This is the
+    // "persist across upgrades" contract from #1663 (CodeRabbit major fix).
+    const tmp44d = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-44d-'));
+    try {
+      const om = new OfficialModules();
+      om.skipPrompts = true;
+      om._silentConfig = true;
+      om.modulesToCustomize = new Set();
+      om.allAnswers = {};
+      // Simulate prior install: future_thing was --set on run #1, persisted to
+      // _bmad/bmm/config.yaml, and is now loaded as _existingConfig.
+      om._existingConfig = { bmm: { future_thing: 'pre-seeded', user_skill_level: 'beginner' } };
+      await om.collectModuleConfig('bmm', tmp44d, true, true);
+
+      assert(om.collectedConfig.bmm?.future_thing === 'pre-seeded', 'collectModuleConfig carries unknown key forward from _existingConfig');
+      assert(
+        om.setOverrideKeys?.bmm?.has('future_thing'),
+        'carried-forward keys are tracked in setOverrideKeys so writeCentralConfig keeps them',
+      );
+      // Declared keys from _existingConfig are NOT carried forward by this
+      // mechanism — they go through normal prompt processing and would be
+      // seeded as defaults via buildQuestion's existingValue lookup.
+      assert(!om.setOverrideKeys?.bmm?.has('user_skill_level'), 'carry-forward leaves declared keys to the normal prompt path');
+    } catch (error) {
+      console.log(`${colors.red}  collectModuleConfig carry-forward failed: ${error.message}${colors.reset}`);
+      console.log(error.stack);
+      failed++;
+    }
+    await fs.remove(tmp44d).catch(() => {});
   } catch (error) {
     console.log(`${colors.red}Test Suite 44 setup failed: ${error.message}${colors.reset}`);
     console.log(error.stack);

@@ -1,8 +1,3 @@
-const path = require('node:path');
-const fs = require('./fs-native');
-const yaml = require('yaml');
-const { getModulePath, getExternalModuleCachePath } = require('./project-root');
-
 /**
  * Parse a single `--set <module>.<key>=<value>` entry.
  * @param {string} entry - raw flag value
@@ -18,6 +13,9 @@ function parseSetEntry(entry) {
     throw new Error(`--set "${entry}": missing '='. Expected <module>.<key>=<value>`);
   }
   const lhs = entry.slice(0, eq);
+  // Note: only the LHS is trimmed. Values may legitimately contain leading
+  // or trailing whitespace (paths with spaces, quoted strings); module / key
+  // names cannot, so it's safe to be strict on the left.
   const value = entry.slice(eq + 1);
   const dot = lhs.indexOf('.');
   if (dot === -1) {
@@ -48,48 +46,4 @@ function parseSetEntries(entries) {
   return overrides;
 }
 
-/**
- * Find a module's source `module.yaml` for officials only.
- * Returns null for community/custom; we don't validate those.
- * @param {string} moduleCode
- * @returns {Promise<string|null>}
- */
-async function findOfficialModuleYaml(moduleCode) {
-  const builtIn = path.join(getModulePath(moduleCode), 'module.yaml');
-  if (await fs.pathExists(builtIn)) return builtIn;
-
-  const externalRoot = getExternalModuleCachePath(moduleCode);
-  if (!(await fs.pathExists(externalRoot))) return null;
-
-  const candidates = [
-    path.join(externalRoot, 'module.yaml'),
-    path.join(externalRoot, 'src', 'module.yaml'),
-    path.join(externalRoot, 'skills', 'module.yaml'),
-  ];
-  for (const candidate of candidates) {
-    if (await fs.pathExists(candidate)) return candidate;
-  }
-  return null;
-}
-
-/**
- * Read declared config keys (those with a `prompt:`) from a module.yaml.
- * Returns a Set of key names, or null if the file can't be read.
- */
-async function readDeclaredKeys(moduleYamlPath) {
-  try {
-    const parsed = yaml.parse(await fs.readFile(moduleYamlPath, 'utf8'));
-    if (!parsed || typeof parsed !== 'object') return null;
-    const keys = new Set();
-    for (const [key, value] of Object.entries(parsed)) {
-      if (value && typeof value === 'object' && 'prompt' in value) {
-        keys.add(key);
-      }
-    }
-    return keys;
-  } catch {
-    return null;
-  }
-}
-
-module.exports = { parseSetEntry, parseSetEntries, findOfficialModuleYaml, readDeclaredKeys };
+module.exports = { parseSetEntry, parseSetEntries };

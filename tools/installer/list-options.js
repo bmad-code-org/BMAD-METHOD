@@ -33,6 +33,14 @@ async function readModuleCode(yamlPath) {
  */
 async function discoverOfficialModuleYamls() {
   const found = [];
+  // Dedupe is case-insensitive because module caches occasionally retain a
+  // legacy UPPERCASE-named directory alongside the canonical lowercase one
+  // (same module, different cache key from an older schema). We pick whichever
+  // entry we see first and skip the alternate-case duplicate. NOTE: `--set`
+  // matching itself is case-sensitive (it keys on `moduleName` from the install
+  // flow's selected list, which is always lowercase short codes), so the
+  // surfaced `code` here is what users should type. Don't change to
+  // case-sensitive dedupe without revisiting that contract.
   const seenCodes = new Set();
 
   const addFound = async (yamlPath, source, fallbackCode) => {
@@ -120,7 +128,7 @@ function formatModuleOptions(code, parsed, source) {
     lines.push(`  ${code}.${key}    (${type}${scope})  default: ${defaultStr}`);
     const promptText = formatPromptText(item);
     if (promptText) lines.push(`    ${promptText}`);
-    if (item['single-select']) {
+    if (Array.isArray(item['single-select'])) {
       const values = item['single-select'].map((v) => (typeof v === 'object' ? v.value : v)).filter((v) => v !== undefined);
       if (values.length > 0) lines.push(`    values: ${values.join(' | ')}`);
     }

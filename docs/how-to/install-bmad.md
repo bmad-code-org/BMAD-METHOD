@@ -212,7 +212,7 @@ npx bmad-method install --list-options bmm
 The legacy core shortcuts (`--user-name`, `--output-folder`, etc.) still work and remain documented for backward compatibility, but `--set core.user_name=...` is equivalent and uses the same code path.
 
 :::note[Quick-update is unaffected]
-`bmad install --action quick-update` preserves the existing `config.toml` answers as-is. `--set` flags passed alongside `--action quick-update` are silently ignored. To change a stored value, run `bmad install --action update` (or just `bmad install`) instead.
+`bmad install --action quick-update` preserves the existing `config.toml` answers as-is. `--set` flags passed alongside `--action quick-update` are ignored — the installer prints a warning so scripted runs surface the mismatch in CI logs. To change a stored value, run `bmad install --action update` (or just `bmad install`) instead.
 :::
 
 :::caution[Rate limit on shared IPs]
