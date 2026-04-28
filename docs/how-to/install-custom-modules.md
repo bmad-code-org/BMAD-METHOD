@@ -68,6 +68,7 @@ Select **Yes**, then provide a source:
 | Input Type            | Example                                           |
 | --------------------- | ------------------------------------------------- |
 | HTTPS URL (any host)  | `https://github.com/org/repo`                     |
+| HTTP URL (any host)   | `http://host/org/repo`                    |
 | HTTPS URL with subdir | `https://github.com/org/repo/tree/main/my-module` |
 | SSH URL               | `git@github.com:org/repo.git`                     |
 | Local path            | `/Users/me/projects/my-module`                    |

@@ -923,29 +923,15 @@ class Installer {
   /**
    * Merge all module-help.csv files into a single bmad-help.csv.
    * Scans all installed modules for module-help.csv and merges them.
-   * Enriches agent info from the in-memory agent list produced by ManifestGenerator.
-   * Output is written to _bmad/_config/bmad-help.csv.
+   * Output preserves the source schema verbatim — see schema below.
    * @param {string} bmadDir - BMAD installation directory
-   * @param {Array<Object>} agentEntries - Agents collected from module.yaml (code, name, title, icon, module, ...)
+   * @param {Array<Object>} _agentEntries - Unused; retained for call-site compatibility
    */
-  async mergeModuleHelpCatalogs(bmadDir, agentEntries = []) {
+  async mergeModuleHelpCatalogs(bmadDir, _agentEntries = []) {
     const allRows = [];
-    const headerRow =
-      'module,phase,name,code,sequence,workflow-file,command,required,agent-name,agent-command,agent-display-name,agent-title,options,description,output-location,outputs';
-
-    // Build agent lookup from the in-memory list (agent code → command + display fields).
-    const agentInfo = new Map();
-    for (const agent of agentEntries) {
-      if (!agent || !agent.code) continue;
-      const agentCommand = agent.module ? `bmad:${agent.module}:agent:${agent.code}` : `bmad:agent:${agent.code}`;
-      const displayName = agent.name || agent.code;
-      const titleCombined = agent.icon && agent.title ? `${agent.icon} ${agent.title}` : agent.title || agent.code;
-      agentInfo.set(agent.code, {
-        command: agentCommand,
-        displayName,
-        title: titleCombined,
-      });
-    }
+    const headerRow = 'module,skill,display-name,menu-code,description,action,args,phase,after,before,required,output-location,outputs';
+    const COLUMN_COUNT = 13;
+    const PHASE_INDEX = 7;
 
     // Get all installed module directories
     const entries = await fs.readdir(bmadDir, { withFileTypes: true });
@@ -984,64 +970,19 @@ class Installer {
 
             // Parse the line - handle quoted fields with commas
             const columns = this.parseCSVLine(line);
-            if (columns.length >= 12) {
-              // Map old schema to new schema
-              // Old: module,phase,name,code,sequence,workflow-file,command,required,agent,options,description,output-location,outputs
-              // New: module,phase,name,code,sequence,workflow-file,command,required,agent-name,agent-command,agent-display-name,agent-title,options,description,output-location,outputs
+            if (columns.length < COLUMN_COUNT - 1) continue;
 
-              const [
-                module,
-                phase,
-                name,
-                code,
-                sequence,
-                workflowFile,
-                command,
-                required,
-                agentName,
-                options,
-                description,
-                outputLocation,
-                outputs,
-              ] = columns;
+            // Pad short rows; truncate over-long rows
+            const padded = columns.slice(0, COLUMN_COUNT);
+            while (padded.length < COLUMN_COUNT) padded.push('');
 
-              // Pass through _meta rows as-is (module metadata, not a skill)
-              if (phase === '_meta') {
-                const finalModule = (!module || module.trim() === '') && moduleName !== 'core' ? moduleName : module || '';
-                const metaRow = [finalModule, '_meta', '', '', '', '', '', 'false', '', '', '', '', '', '', outputLocation || '', ''];
-                allRows.push(metaRow.map((c) => this.escapeCSVField(c)).join(','));
-                continue;
-              }
-
-              // If module column is empty, set it to this module's name (except for core which stays empty for universal tools)
-              const finalModule = (!module || module.trim() === '') && moduleName !== 'core' ? moduleName : module || '';
-
-              // Lookup agent info
-              const cleanAgentName = agentName ? agentName.trim() : '';
-              const agentData = agentInfo.get(cleanAgentName) || { command: '', displayName: '', title: '' };
-
-              // Build new row with agent info
-              const newRow = [
-                finalModule,
-                phase || '',
-                name || '',
-                code || '',
-                sequence || '',
-                workflowFile || '',
-                command || '',
-                required || 'false',
-                cleanAgentName,
-                agentData.command,
-                agentData.displayName,
-                agentData.title,
-                options || '',
-                description || '',
-                outputLocation || '',
-                outputs || '',
-              ];
-
-              allRows.push(newRow.map((c) => this.escapeCSVField(c)).join(','));
+            // If module column is empty, fill with this module's name
+            // (core stays empty so its rows render as universal tools)
+            if ((!padded[0] || padded[0].trim() === '') && moduleName !== 'core') {
+              padded[0] = moduleName;
             }
+
+            allRows.push(padded.map((c) => this.escapeCSVField(c)).join(','));
           }
 
           if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
@@ -1053,44 +994,34 @@ class Installer {
       }
     }
 
-    // Sort by module, then phase, then sequence
-    allRows.sort((a, b) => {
-      const colsA = this.parseCSVLine(a);
-      const colsB = this.parseCSVLine(b);
+    // Sort by module, then phase. Stable sort preserves authored order within a phase.
+    const decorated = allRows.map((row, index) => ({ row, index, cols: this.parseCSVLine(row) }));
+    decorated.sort((a, b) => {
+      const moduleA = (a.cols[0] || '').toLowerCase();
+      const moduleB = (b.cols[0] || '').toLowerCase();
+      if (moduleA !== moduleB) return moduleA.localeCompare(moduleB);
 
-      // Module comparison (empty module/universal tools come first)
-      const moduleA = (colsA[0] || '').toLowerCase();
-      const moduleB = (colsB[0] || '').toLowerCase();
-      if (moduleA !== moduleB) {
-        return moduleA.localeCompare(moduleB);
-      }
+      const phaseA = a.cols[PHASE_INDEX] || '';
+      const phaseB = b.cols[PHASE_INDEX] || '';
+      if (phaseA !== phaseB) return phaseA.localeCompare(phaseB);
 
-      // Phase comparison
-      const phaseA = colsA[1] || '';
-      const phaseB = colsB[1] || '';
-      if (phaseA !== phaseB) {
-        return phaseA.localeCompare(phaseB);
-      }
-
-      // Sequence comparison
-      const seqA = parseInt(colsA[4] || '0', 10);
-      const seqB = parseInt(colsB[4] || '0', 10);
-      return seqA - seqB;
+      return a.index - b.index;
     });
+    const sortedRows = decorated.map((d) => d.row);
 
     // Write merged catalog
     const outputDir = path.join(bmadDir, '_config');
     await fs.ensureDir(outputDir);
     const outputPath = path.join(outputDir, 'bmad-help.csv');
 
-    const mergedContent = [headerRow, ...allRows].join('\n');
+    const mergedContent = [headerRow, ...sortedRows].join('\n');
     await fs.writeFile(outputPath, mergedContent, 'utf8');
 
     // Track the installed file
     this.installedFiles.add(outputPath);
 
     if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
-      await prompts.log.message(`  Generated bmad-help.csv: ${allRows.length} workflows`);
+      await prompts.log.message(`  Generated bmad-help.csv: ${sortedRows.length} workflows`);
     }
   }
 

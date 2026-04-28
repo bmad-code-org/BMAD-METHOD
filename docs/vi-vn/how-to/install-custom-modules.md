@@ -68,6 +68,7 @@ Chọn **Yes**, rồi nhập nguồn:
 | Loại đầu vào | Ví dụ |
 | --------------------- | ------------------------------------------------- |
 | HTTPS URL trên bất kỳ host nào | `https://github.com/org/repo` |
+| HTTP URL trên bất kỳ host nào | `http://host/org/repo` |
 | HTTPS URL trỏ vào một thư mục con | `https://github.com/org/repo/tree/main/my-module` |
 | SSH URL | `git@github.com:org/repo.git` |
 | Đường dẫn cục bộ | `/Users/me/projects/my-module` |
