@@ -914,7 +914,50 @@ class OfficialModules {
       }
     }
 
+    if (foundAny) {
+      await this._hoistCoreKeysFromLegacyModuleConfigs();
+    }
+
     return foundAny;
+  }
+
+  /**
+   * Migrate prior answers when a key has moved from a non-core module to core
+   * (e.g. project_name moving from bmm to core in #2279). Without this, the
+   * partition logic in writeCentralConfig drops the value from the bmm bucket
+   * (because it's now a core key) without re-homing it under [core], so the
+   * user's prior answer silently disappears on the next install/quick-update.
+   */
+  async _hoistCoreKeysFromLegacyModuleConfigs() {
+    const coreSchemaPath = path.join(getSourcePath(), 'core-skills', 'module.yaml');
+    if (!(await fs.pathExists(coreSchemaPath))) return;
+
+    let coreSchema;
+    try {
+      coreSchema = yaml.parse(await fs.readFile(coreSchemaPath, 'utf8'));
+    } catch {
+      return;
+    }
+    if (!coreSchema || typeof coreSchema !== 'object') return;
+
+    const coreKeys = new Set(
+      Object.entries(coreSchema)
+        .filter(([, v]) => v && typeof v === 'object' && 'prompt' in v)
+        .map(([k]) => k),
+    );
+    if (coreKeys.size === 0) return;
+
+    this._existingConfig.core = this._existingConfig.core || {};
+    for (const [moduleName, cfg] of Object.entries(this._existingConfig)) {
+      if (moduleName === 'core' || !cfg || typeof cfg !== 'object') continue;
+      for (const key of Object.keys(cfg)) {
+        if (!coreKeys.has(key)) continue;
+        if (!(key in this._existingConfig.core)) {
+          this._existingConfig.core[key] = cfg[key];
+        }
+        delete cfg[key];
+      }
+    }
   }
 
   /**

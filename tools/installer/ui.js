@@ -758,6 +758,9 @@ class UI {
         const defaultUsername = safeUsername.charAt(0).toUpperCase() + safeUsername.slice(1);
         configCollector.collectedConfig.core = {
           user_name: defaultUsername,
+          // {directory_name} default per src/core-skills/module.yaml — matches what the
+          // interactive flow resolves via buildQuestion()'s {directory_name} placeholder.
+          project_name: path.basename(directory),
           communication_language: 'English',
           document_output_language: 'English',
           output_folder: '_bmad-output',
