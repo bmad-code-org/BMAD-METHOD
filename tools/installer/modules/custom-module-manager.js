@@ -336,7 +336,7 @@ class CustomModuleManager {
 
     const createSpinner = async () => {
       if (silent) {
-        return { start() { }, stop() { }, error() { } };
+        return { start() {}, stop() {}, error() {} };
       }
       return await prompts.spinner();
     };
