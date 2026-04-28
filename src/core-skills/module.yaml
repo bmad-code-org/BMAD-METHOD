@@ -11,6 +11,11 @@ user_name:
   default: "BMad"
   result: "{value}"
 
+project_name:
+  prompt: "What is your project called?"
+  default: "{directory_name}"
+  result: "{value}"
+
 communication_language:
   prompt: "What language should agents use when chatting with you?"
   scope: user

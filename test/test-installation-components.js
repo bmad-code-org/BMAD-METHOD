@@ -1813,12 +1813,12 @@ async function runTests() {
       const moduleConfigs = {
         core: {
           user_name: 'TestUser',
+          project_name: 'demo-project',
           communication_language: 'Spanish',
           document_output_language: 'English',
           output_folder: '_bmad-output',
         },
         bmm: {
-          project_name: 'demo-project',
           user_skill_level: 'expert',
           planning_artifacts: '{project-root}/_bmad-output/planning-artifacts',
           implementation_artifacts: '{project-root}/_bmad-output/implementation-artifacts',
@@ -1826,7 +1826,10 @@ async function runTests() {
           // Spread-from-core pollution: legacy per-module config.yaml merges
           // core values into every module; writeCentralConfig must strip these
           // from [modules.bmm] so core values only live in [core].
+          // project_name is now a core key (#2279), so it joins user_name etc.
+          // as a spread-from-core key that must be stripped.
           user_name: 'TestUser',
+          project_name: 'stale-bmm-copy',
           communication_language: 'Spanish',
           document_output_language: 'English',
           output_folder: '_bmad-output',
@@ -1874,6 +1877,7 @@ async function runTests() {
       assert(teamContent.includes('[core]'), 'config.toml has [core] section');
       assert(teamContent.includes('document_output_language = "English"'), 'Team-scope core key lands in config.toml');
       assert(teamContent.includes('output_folder = "_bmad-output"'), 'Team-scope output_folder lands in config.toml');
+      assert(teamContent.includes('project_name = "demo-project"'), 'project_name lands in [core] (core key as of #2279)');
       assert(!teamContent.includes('user_name'), 'user_name (scope: user) is absent from config.toml');
       assert(!teamContent.includes('communication_language'), 'communication_language (scope: user) is absent from config.toml');
 
@@ -1888,7 +1892,9 @@ async function runTests() {
       assert(bmmTeamMatch !== null, 'config.toml has [modules.bmm] section');
       if (bmmTeamMatch) {
         const bmmTeamBlock = bmmTeamMatch[0];
-        assert(bmmTeamBlock.includes('project_name = "demo-project"'), 'bmm team-scope key lands under [modules.bmm]');
+        assert(bmmTeamBlock.includes('planning_artifacts'), 'bmm-owned team-scope key (planning_artifacts) lands under [modules.bmm]');
+        assert(!bmmTeamBlock.includes('project_name'), 'project_name stripped from [modules.bmm] (now a core key, #2279)');
+        assert(!bmmTeamBlock.includes('stale-bmm-copy'), 'stale bmm-copy of project_name not leaked into config.toml');
         assert(!bmmTeamBlock.includes('user_name'), 'user_name stripped from [modules.bmm] (core-key pollution)');
         assert(!bmmTeamBlock.includes('communication_language'), 'communication_language stripped from [modules.bmm]');
         assert(!bmmTeamBlock.includes('user_skill_level'), 'user_skill_level (scope: user) absent from [modules.bmm] in config.toml');
@@ -2855,6 +2861,122 @@ async function runTests() {
     );
   } catch (error) {
     console.log(`${colors.red}Test Suite 42 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 43: project_name promoted to core + hoist migration (#2279)
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 43: project_name in core + hoist migration${colors.reset}\n`);
+  try {
+    const yamlLib = require('yaml');
+    const coreSchemaPath = path.join(__dirname, '..', 'src', 'core-skills', 'module.yaml');
+    const bmmSchemaPath = path.join(__dirname, '..', 'src', 'bmm-skills', 'module.yaml');
+    const coreSchema = yamlLib.parse(await fs.readFile(coreSchemaPath, 'utf8'));
+    const bmmSchema = yamlLib.parse(await fs.readFile(bmmSchemaPath, 'utf8'));
+
+    assert(
+      coreSchema.project_name && coreSchema.project_name.prompt && coreSchema.project_name.default === '{directory_name}',
+      'core/module.yaml declares project_name with {directory_name} default',
+    );
+
+    assert(coreSchema.project_name.scope === undefined, 'project_name has no user scope (project-scoped, not user-scoped)');
+
+    assert(bmmSchema.project_name === undefined, 'bmm/module.yaml no longer declares project_name (now inherited from core)');
+
+    // Set up a mock existing install: bmm directory has project_name (legacy),
+    // core has user_name but not project_name. After hoist, project_name should
+    // move to core, leaving bmm with only its own keys.
+    const fixtureRoot43 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-43-'));
+    const bmadDir43 = path.join(fixtureRoot43, '_bmad');
+    await fs.ensureDir(path.join(bmadDir43, '_config'));
+    await fs.writeFile(path.join(bmadDir43, '_config', 'manifest.yaml'), 'modules: []\n', 'utf8');
+    await fs.ensureDir(path.join(bmadDir43, 'core'));
+    await fs.ensureDir(path.join(bmadDir43, 'bmm'));
+    await fs.writeFile(path.join(bmadDir43, 'core', 'config.yaml'), 'user_name: alice\n', 'utf8');
+    await fs.writeFile(
+      path.join(bmadDir43, 'bmm', 'config.yaml'),
+      'project_name: legacy-from-bmm\nuser_skill_level: intermediate\n',
+      'utf8',
+    );
+
+    const officialModules43 = new OfficialModules();
+    await officialModules43.loadExistingConfig(fixtureRoot43);
+
+    assert(
+      officialModules43.existingConfig.core?.project_name === 'legacy-from-bmm',
+      'loadExistingConfig hoists bmm.project_name to core on existing-install upgrade',
+    );
+
+    assert(
+      !('project_name' in (officialModules43.existingConfig.bmm || {})),
+      'loadExistingConfig removes project_name from bmm after hoisting',
+    );
+
+    assert(
+      officialModules43.existingConfig.bmm?.user_skill_level === 'intermediate',
+      'loadExistingConfig leaves non-core bmm keys (user_skill_level) untouched',
+    );
+
+    assert(officialModules43.existingConfig.core?.user_name === 'alice', 'loadExistingConfig preserves pre-existing core values');
+
+    // Precedence: if core already has the key, hoist must NOT overwrite it.
+    const fixtureRoot43b = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-43b-'));
+    const bmadDir43b = path.join(fixtureRoot43b, '_bmad');
+    await fs.ensureDir(path.join(bmadDir43b, '_config'));
+    await fs.writeFile(path.join(bmadDir43b, '_config', 'manifest.yaml'), 'modules: []\n', 'utf8');
+    await fs.ensureDir(path.join(bmadDir43b, 'core'));
+    await fs.ensureDir(path.join(bmadDir43b, 'bmm'));
+    await fs.writeFile(path.join(bmadDir43b, 'core', 'config.yaml'), 'project_name: from-core\n', 'utf8');
+    await fs.writeFile(path.join(bmadDir43b, 'bmm', 'config.yaml'), 'project_name: stale-from-bmm\n', 'utf8');
+
+    const officialModules43b = new OfficialModules();
+    await officialModules43b.loadExistingConfig(fixtureRoot43b);
+
+    assert(officialModules43b.existingConfig.core?.project_name === 'from-core', 'hoist does not overwrite an existing core value');
+
+    assert(
+      !('project_name' in (officialModules43b.existingConfig.bmm || {})),
+      'hoist still strips the duplicate from bmm so writeCentralConfig partition stays clean',
+    );
+
+    // Malformed config.yaml (parses to a scalar) must not crash loadExistingConfig
+    // or the hoist pass — they should treat it as "no config for that module"
+    // and continue. Regression for augment review on PR #2348.
+    const fixtureRoot43c = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-43c-'));
+    const bmadDir43c = path.join(fixtureRoot43c, '_bmad');
+    await fs.ensureDir(path.join(bmadDir43c, '_config'));
+    await fs.writeFile(path.join(bmadDir43c, '_config', 'manifest.yaml'), 'modules: []\n', 'utf8');
+    await fs.ensureDir(path.join(bmadDir43c, 'core'));
+    await fs.ensureDir(path.join(bmadDir43c, 'bmm'));
+    // Scalar YAML — yaml.parse returns the literal 42 (truthy non-object).
+    // Pre-fix this crashed _hoistCoreKeysFromLegacyModuleConfigs with
+    // "Cannot use 'in' operator to search for 'project_name' in 42".
+    await fs.writeFile(path.join(bmadDir43c, 'core', 'config.yaml'), '42\n', 'utf8');
+    await fs.writeFile(path.join(bmadDir43c, 'bmm', 'config.yaml'), 'project_name: rescued\n', 'utf8');
+
+    const officialModules43c = new OfficialModules();
+    let crashErr;
+    try {
+      await officialModules43c.loadExistingConfig(fixtureRoot43c);
+    } catch (error) {
+      crashErr = error;
+    }
+    assert(!crashErr, 'loadExistingConfig does not crash on a scalar core/config.yaml', crashErr?.stack);
+
+    assert(
+      officialModules43c.existingConfig.core?.project_name === 'rescued',
+      'scalar core gets replaced with {} and bmm.project_name still hoists in',
+    );
+
+    await fs.remove(fixtureRoot43).catch(() => {});
+    await fs.remove(fixtureRoot43b).catch(() => {});
+    await fs.remove(fixtureRoot43c).catch(() => {});
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 43 setup failed: ${error.message}${colors.reset}`);
     console.log(error.stack);
     failed++;
   }
