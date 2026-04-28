@@ -190,7 +190,8 @@ async function formatOptionsList(moduleCode) {
       if (moduleCode) moduleScopedFailure = true;
       continue;
     }
-    if (!parsed || typeof parsed !== 'object') {
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      sections.push(`${code} (${source}): module.yaml is not a valid object (got ${Array.isArray(parsed) ? 'array' : typeof parsed})`, '');
       if (moduleCode) moduleScopedFailure = true;
       continue;
     }

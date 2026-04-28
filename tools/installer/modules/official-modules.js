@@ -125,7 +125,15 @@ class OfficialModules {
    * @returns {OfficialModules}
    */
   static async build(config, paths) {
-    const instance = new OfficialModules({ channelOptions: config.channelOptions });
+    // setOverrides flows through Config so the non-UI / direct-call path
+    // (`installer.install({ ..., setOverrides })` without going through
+    // `ui.collectModuleConfigs`) can still apply `--set` values when this
+    // helper drives headless collection itself. The UI path takes the
+    // early-return below because `moduleConfigs` is already populated.
+    const instance = new OfficialModules({
+      channelOptions: config.channelOptions,
+      setOverrides: config.setOverrides,
+    });
 
     // Pre-collected by UI or quickUpdate — store and load existing for path-change detection
     if (config.moduleConfigs) {
@@ -145,9 +153,21 @@ class OfficialModules {
 
     const toCollect = config.hasCoreConfig() ? config.modules.filter((m) => m !== 'core') : [...config.modules];
 
+    // Load existing config so applyOverridesAfterSeeding (called below for
+    // core, and inside collectModuleConfig for the rest) can carry forward
+    // previously persisted unknown keys.
+    await instance.loadExistingConfig(paths.projectRoot);
+
     await instance.collectAllConfigurations(toCollect, paths.projectRoot, {
       skipPrompts: config.skipPrompts,
     });
+
+    // Mirror the UI path: when core was seeded by config (legacy core-shortcut
+    // flags or `--yes` defaults), `collectAllConfigurations` skips it, so its
+    // `--set core.<key>=<value>` overrides need a separate application pass.
+    if (config.hasCoreConfig()) {
+      await instance.applyOverridesAfterSeeding('core');
+    }
 
     return instance;
   }
@@ -1580,6 +1600,12 @@ class OfficialModules {
     const staticAnswers = {};
     const configKeys = Object.keys(moduleConfig).filter((key) => key !== 'prompt');
     const declaredPromptKeys = new Set();
+    // Schema-declared keys that have a `result` template but no `prompt`. These
+    // are computed at install time from the answer bag (e.g. `{value}` /
+    // `{other_key}` substitution) rather than asked. A `--set` for one of
+    // these is a real override of the *output* — pre-seed it as an answer so
+    // the existing result-template loop renders the user-supplied value.
+    const declaredResultKeys = new Set();
 
     for (const key of configKeys) {
       const item = moduleConfig[key];
@@ -1593,6 +1619,7 @@ class OfficialModules {
       if (!item.prompt && item.result) {
         // Add to static answers with a marker value
         staticAnswers[`${moduleName}_${key}`] = undefined;
+        declaredResultKeys.add(key);
         continue;
       }
 
@@ -1608,14 +1635,19 @@ class OfficialModules {
 
     // Apply --set <module>.<key>=<value> overrides for this module.
     //   - Known prompt key   → answer pre-filled, prompt skipped (interactive + --yes).
-    //   - Unknown prompt key → warn, then write directly to collectedConfig at end of
-    //     this method. The corresponding key is also tracked on this.setOverrideKeys
-    //     so writeCentralConfig knows to keep it through the schema-strict partition.
+    //   - Known result-only  → pre-seeded as the answer for the result template
+    //     (raw value substitutes into `{value}` so `result:` placeholders still
+    //     render). Treated as schema-declared, so no warning and no need to
+    //     exempt from the manifest writer's schema-strict partition.
+    //   - Unknown            → warn, then write directly to collectedConfig at
+    //     end of this method. The corresponding key is also tracked on
+    //     this.setOverrideKeys so writeCentralConfig keeps it through the
+    //     partition.
     const moduleOverrides = this.setOverrides[moduleName] || {};
     const seededOverrideKeys = new Set();
     const unknownOverrideKeys = [];
     for (const [overrideKey, overrideValue] of Object.entries(moduleOverrides)) {
-      if (declaredPromptKeys.has(overrideKey)) {
+      if (declaredPromptKeys.has(overrideKey) || declaredResultKeys.has(overrideKey)) {
         seededOverrideKeys.add(overrideKey);
       } else {
         unknownOverrideKeys.push([overrideKey, overrideValue]);
@@ -1671,11 +1703,25 @@ class OfficialModules {
       // Skip prompts mode: use all defaults without asking
       if (this.skipPrompts) {
         await prompts.log.info(`Using default configuration for ${moduleDisplayName}`);
-        // Use defaults for all questions
+        // Two passes: write static defaults first so dynamic-default functions
+        // can resolve sibling `{other_key}` placeholders against a populated
+        // answer bag. Without this second pass, function defaults are dropped
+        // entirely under --yes, even though the interactive prompt UI would
+        // have evaluated them — headless installs would silently lose
+        // same-module computed defaults.
         for (const question of questions) {
           const hasDefault = question.default !== undefined && question.default !== null && question.default !== '';
           if (hasDefault && typeof question.default !== 'function') {
             allAnswers[question.name] = question.default;
+          }
+        }
+        for (const question of questions) {
+          if (typeof question.default === 'function') {
+            try {
+              allAnswers[question.name] = question.default(allAnswers);
+            } catch (error) {
+              await prompts.log.warn(`Could not evaluate dynamic default for ${question.name} under --yes: ${error.message}`);
+            }
           }
         }
       } else {
@@ -1709,14 +1755,24 @@ class OfficialModules {
             Object.assign(allAnswers, promptedAnswers);
           }
 
-          // For questions with defaults that weren't asked, we need to process them with their default values
+          // For questions with defaults that weren't asked, we need to process them with their default values.
+          // Same two-pass treatment as the skipPrompts branch: write static
+          // defaults first, then evaluate function defaults against the
+          // populated answer bag so sibling-dependent placeholders resolve.
           const questionsWithDefaults = questions.filter((q) => q.default !== undefined && q.default !== null && q.default !== '');
           for (const question of questionsWithDefaults) {
-            // Skip function defaults - these are dynamic and will be evaluated later
-            if (typeof question.default === 'function') {
-              continue;
+            if (typeof question.default !== 'function') {
+              allAnswers[question.name] = question.default;
             }
-            allAnswers[question.name] = question.default;
+          }
+          for (const question of questionsWithDefaults) {
+            if (typeof question.default === 'function') {
+              try {
+                allAnswers[question.name] = question.default(allAnswers);
+              } catch (error) {
+                await prompts.log.warn(`Could not evaluate dynamic default for ${question.name}: ${error.message}`);
+              }
+            }
           }
         } else {
           const promptedAnswers = await prompts.prompt(questions);
@@ -1891,13 +1947,7 @@ class OfficialModules {
     // in writeCentralConfig keeps them. (#1663 forward-compat contract)
     const priorConfig = this._existingConfig?.[moduleName];
     if (priorConfig && typeof priorConfig === 'object' && !Array.isArray(priorConfig)) {
-      const declaredAndStaticKeys = new Set(declaredPromptKeys);
-      for (const key of configKeys) {
-        const item = moduleConfig[key];
-        if (item && typeof item === 'object' && item.result && !item.prompt) {
-          declaredAndStaticKeys.add(key);
-        }
-      }
+      const declaredAndStaticKeys = new Set([...declaredPromptKeys, ...declaredResultKeys]);
       for (const [key, value] of Object.entries(priorConfig)) {
         if (declaredAndStaticKeys.has(key)) continue;
         // Already written by this run (e.g. via unknown --set above): leave alone.

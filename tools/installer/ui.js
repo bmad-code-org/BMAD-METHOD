@@ -288,7 +288,7 @@ class UI {
         // Get tool selection
         const toolSelection = await this.promptToolSelection(confirmedDirectory, options);
 
-        const { moduleConfigs, setOverrideKeys } = await this.collectModuleConfigs(confirmedDirectory, selectedModules, {
+        const { moduleConfigs, setOverrideKeys, setOverrides } = await this.collectModuleConfigs(confirmedDirectory, selectedModules, {
           ...options,
           channelOptions,
         });
@@ -315,6 +315,7 @@ class UI {
           coreConfig: moduleConfigs.core || {},
           moduleConfigs: moduleConfigs,
           setOverrideKeys,
+          setOverrides,
           skipPrompts: options.yes || false,
           channelOptions,
         };
@@ -366,7 +367,7 @@ class UI {
     await this._interactiveChannelGate({ options, channelOptions, selectedModules });
 
     let toolSelection = await this.promptToolSelection(confirmedDirectory, options);
-    const { moduleConfigs, setOverrideKeys } = await this.collectModuleConfigs(confirmedDirectory, selectedModules, {
+    const { moduleConfigs, setOverrideKeys, setOverrides } = await this.collectModuleConfigs(confirmedDirectory, selectedModules, {
       ...options,
       channelOptions,
     });
@@ -393,6 +394,7 @@ class UI {
       coreConfig: moduleConfigs.core || {},
       moduleConfigs: moduleConfigs,
       setOverrideKeys,
+      setOverrides,
       skipPrompts: options.yes || false,
       channelOptions,
     };
@@ -814,7 +816,7 @@ class UI {
       }
     }
 
-    return { moduleConfigs: configCollector.collectedConfig, setOverrideKeys };
+    return { moduleConfigs: configCollector.collectedConfig, setOverrideKeys, setOverrides };
   }
 
   /**

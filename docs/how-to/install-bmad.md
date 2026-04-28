@@ -201,7 +201,7 @@ npx bmad-method install --yes \
 npx bmad-method install --list-options bmm
 ```
 
-`--list-options` (no argument) lists every key the installer can find locally — built-in modules (`core`, `bmm`) plus any external officials that have been installed at least once on this machine. Community and custom modules aren't enumerated here; read the module's `module.yaml` directly to see what keys it declares.
+`--list-options` (no argument) lists every key the installer can find locally — built-in modules (`core`, `bmm`) plus any currently cached official modules. The cache is per-machine and can be cleared, so previously installed officials won't appear on a fresh checkout or an ephemeral CI worker until they're installed again. Community and custom modules aren't enumerated here; read the module's `module.yaml` directly to see what keys it declares.
 
 **Validation rules:**
 

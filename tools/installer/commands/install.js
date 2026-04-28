@@ -62,10 +62,17 @@ module.exports = {
         const moduleArg = options.listOptions === true ? null : options.listOptions;
         const { text, ok } = await formatOptionsList(moduleArg);
         const stream = ok ? process.stdout : process.stderr;
-        stream.write(text + '\n');
-        // Non-zero exit when a single-module lookup misses so a CI typo like
-        // `--list-options bmn` doesn't look successful in scripts.
-        process.exit(ok ? 0 : 1);
+        // process.exit() forces immediate termination and can truncate the
+        // buffered write when stdout/stderr is piped or captured by CI. Wait
+        // for the write to flush, then set process.exitCode and return so the
+        // event loop drains naturally. Non-zero exit when a single-module
+        // lookup misses so a CI typo like `--list-options bmn` doesn't look
+        // successful in scripts.
+        await new Promise((resolve, reject) => {
+          stream.write(text + '\n', (error) => (error ? reject(error) : resolve()));
+        });
+        process.exitCode = ok ? 0 : 1;
+        return;
       }
 
       // Set debug flag as environment variable for all components

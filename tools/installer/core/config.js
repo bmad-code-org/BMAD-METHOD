@@ -15,6 +15,7 @@ class Config {
     quickUpdate,
     channelOptions,
     setOverrideKeys,
+    setOverrides,
   }) {
     this.directory = directory;
     this.modules = Object.freeze([...modules]);
@@ -32,6 +33,12 @@ class Config {
     // these through the schema-strict partition so user-asserted overrides
     // survive into config.toml even when the schema doesn't declare them.
     this.setOverrideKeys = setOverrideKeys || {};
+    // Raw `--set` values keyed by module/key. The UI flow applies these in
+    // `collectModuleConfigs` and populates `moduleConfigs`, so this field is
+    // primarily for the non-UI path where `OfficialModules.build` runs
+    // headless collection itself and needs the raw values to pre-seed
+    // answers and skip prompts.
+    this.setOverrides = setOverrides || {};
     Object.freeze(this);
   }
 
@@ -58,6 +65,7 @@ class Config {
       quickUpdate: userInput._quickUpdate || false,
       channelOptions: userInput.channelOptions || null,
       setOverrideKeys: userInput.setOverrideKeys || {},
+      setOverrides: userInput.setOverrides || {},
     });
   }
 
