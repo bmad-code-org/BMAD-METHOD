@@ -200,12 +200,15 @@ class UI {
         actionType = options.action;
         await prompts.log.info(`Using action from command-line: ${actionType}`);
       } else if (options.yes) {
-        // Default to quick-update if available, otherwise first available choice
+        // Default to quick-update if available, unless flags that require the
+        // full update path are present (e.g. --custom-source which re-clones
+        // modules at a new version — quick-update skips that entirely).
         if (choices.length === 0) {
           throw new Error('No valid actions available for this installation');
         }
         const hasQuickUpdate = choices.some((c) => c.value === 'quick-update');
-        actionType = hasQuickUpdate ? 'quick-update' : choices[0].value;
+        const needsFullUpdate = !!options.customSource;
+        actionType = hasQuickUpdate && !needsFullUpdate ? 'quick-update' : (choices.find((c) => c.value === 'update') || choices[0]).value;
         await prompts.log.info(`Non-interactive mode (--yes): defaulting to ${actionType}`);
       } else {
         actionType = await prompts.select({
@@ -241,8 +244,11 @@ class UI {
             .map((m) => m.trim())
             .filter(Boolean);
           await prompts.log.info(`Using modules from command-line: ${selectedModules.join(', ')}`);
-        } else if (options.customSource) {
-          // Custom source without --modules: start with empty list (core added below)
+        } else if (options.customSource && !options.yes) {
+          // Custom source without --modules or --yes: start with empty list
+          // (only custom source modules + core will be installed).
+          // When --yes is also set, fall through to the --yes branch so all
+          // installed modules are included alongside the custom source modules.
           selectedModules = [];
         } else if (options.yes) {
           selectedModules = await this.getDefaultModules(installedModuleIds);
