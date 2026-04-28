@@ -404,6 +404,37 @@ class UI {
    * @param {Object} options - Command-line options
    * @returns {Object} Tool configuration
    */
+  _parseToolsFlag(toolsArg, allKnownValues) {
+    const selectedIdes = String(toolsArg)
+      .split(',')
+      .map((t) => t.trim())
+      .filter(Boolean);
+
+    if (selectedIdes.length === 0) {
+      const err = new Error(
+        '--tools was passed empty. Provide at least one tool ID (e.g. --tools claude-code) or run with --list-tools to see valid IDs.',
+      );
+      err.expected = true;
+      throw err;
+    }
+
+    const unknown = selectedIdes.filter((id) => !allKnownValues.has(id));
+    if (unknown.length > 0) {
+      const err = new Error(
+        [
+          `Unknown tool ID${unknown.length === 1 ? '' : 's'}: ${unknown.join(', ')}`,
+          '',
+          'Run with --list-tools to see all valid IDs.',
+          'Common: claude-code, cursor, copilot, windsurf, cline',
+        ].join('\n'),
+      );
+      err.expected = true;
+      throw err;
+    }
+
+    return selectedIdes;
+  }
+
   async promptToolSelection(projectDir, options = {}) {
     const { ExistingInstall } = require('./core/existing-install');
     const { Installer } = require('./core/installer');
@@ -439,14 +470,7 @@ class UI {
 
       // Non-interactive: handle --tools and --yes flags before interactive prompt
       if (options.tools) {
-        if (options.tools.toLowerCase() === 'none') {
-          await prompts.log.info('Skipping tool configuration (--tools none)');
-          return { ides: [], skipIde: true };
-        }
-        const selectedIdes = options.tools
-          .split(',')
-          .map((t) => t.trim())
-          .filter(Boolean);
+        const selectedIdes = this._parseToolsFlag(options.tools, allKnownValues);
         await prompts.log.info(`Using tools from command-line: ${selectedIdes.join(', ')}`);
         await this.displaySelectedTools(selectedIdes, preferredIdes, allTools);
         return { ides: selectedIdes, skipIde: false };
@@ -524,19 +548,10 @@ class UI {
 
     // Check if tools are provided via command-line
     if (options.tools) {
-      // Check for explicit "none" value to skip tool installation
-      if (options.tools.toLowerCase() === 'none') {
-        await prompts.log.info('Skipping tool configuration (--tools none)');
-        return { ides: [], skipIde: true };
-      } else {
-        selectedIdes = options.tools
-          .split(',')
-          .map((t) => t.trim())
-          .filter(Boolean);
-        await prompts.log.info(`Using tools from command-line: ${selectedIdes.join(', ')}`);
-        await this.displaySelectedTools(selectedIdes, preferredIdes, allTools);
-        return { ides: selectedIdes, skipIde: false };
-      }
+      selectedIdes = this._parseToolsFlag(options.tools, allKnownValues);
+      await prompts.log.info(`Using tools from command-line: ${selectedIdes.join(', ')}`);
+      await this.displaySelectedTools(selectedIdes, preferredIdes, allTools);
+      return { ides: selectedIdes, skipIde: false };
     } else if (options.yes) {
       // If --yes flag is set, skip tool prompt and use previously configured tools or empty
       if (configuredIdes.length > 0) {
@@ -544,8 +559,20 @@ class UI {
         await this.displaySelectedTools(configuredIdes, preferredIdes, allTools);
         return { ides: configuredIdes, skipIde: false };
       } else {
-        await prompts.log.info('Skipping tool configuration (--yes flag, no previous tools)');
-        return { ides: [], skipIde: true };
+        {
+          const err = new Error(
+            [
+              '--tools is required for non-interactive install (--yes / -y) when no tools are previously configured.',
+              '',
+              'Common: claude-code, cursor, copilot, windsurf, cline',
+              'See all supported tools: bmad-method install --list-tools',
+              '',
+              'Example: bmad-method install --modules bmm --tools claude-code -y',
+            ].join('\n'),
+          );
+          err.expected = true;
+          throw err;
+        }
       }
     }
 

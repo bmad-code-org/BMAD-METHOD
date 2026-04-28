@@ -31,7 +31,63 @@ function clearCache() {
   _cachedPlatformCodes = null;
 }
 
+/**
+ * Format the platform list for human-readable output (used by --list-tools).
+ * @returns {Promise<string>} Formatted multi-line string with id, name, target_dir, preferred flag.
+ */
+async function formatPlatformList() {
+  const config = await loadPlatformCodes();
+  const platforms = config.platforms || {};
+
+  const entries = Object.entries(platforms).map(([id, p]) => ({
+    id,
+    name: p.name || id,
+    targetDir: p.installer?.target_dir || '',
+    preferred: p.preferred === true,
+    suspended: typeof p.suspended === 'string' ? p.suspended : null,
+  }));
+
+  entries.sort((a, b) => {
+    if (a.preferred !== b.preferred) return a.preferred ? -1 : 1;
+    return a.id.localeCompare(b.id);
+  });
+
+  const idWidth = Math.max(...entries.map((e) => e.id.length), 'ID'.length);
+  const nameWidth = Math.max(...entries.map((e) => e.name.length), 'Name'.length);
+
+  const pad = (s, w) => s + ' '.repeat(Math.max(0, w - s.length));
+  const lines = [
+    `Supported tool IDs (pass via --tools <id>[,<id>...]):`,
+    '',
+    `  ${pad('ID', idWidth)}  ${pad('Name', nameWidth)}  Target dir`,
+    `  ${pad('-'.repeat(idWidth), idWidth)}  ${pad('-'.repeat(nameWidth), nameWidth)}  ${'-'.repeat(10)}`,
+  ];
+
+  for (const e of entries) {
+    const star = e.preferred ? ' *' : '  ';
+    const suffix = e.suspended ? `  [suspended: ${e.suspended}]` : '';
+    lines.push(`${star}${pad(e.id, idWidth)}  ${pad(e.name, nameWidth)}  ${e.targetDir}${suffix}`);
+  }
+
+  lines.push('', '* = recommended / preferred', '', 'Example: bmad-method install --modules bmm --tools claude-code');
+
+  return lines.join('\n');
+}
+
+/**
+ * @returns {Promise<string[]>} List of valid platform IDs (suspended ones excluded).
+ */
+async function getValidPlatformIds() {
+  const config = await loadPlatformCodes();
+  const platforms = config.platforms || {};
+  return Object.entries(platforms)
+    .filter(([, p]) => !p.suspended)
+    .map(([id]) => id);
+}
+
 module.exports = {
   loadPlatformCodes,
   clearCache,
+  formatPlatformList,
+  getValidPlatformIds,
 };
