@@ -566,9 +566,29 @@ async function runTests() {
       typeof copilotInstaller?.commands_body_template === 'string' && copilotInstaller.commands_body_template.includes('{canonicalId}'),
       'GitHub Copilot defines a commands_body_template with {canonicalId} placeholder',
     );
+    assert(
+      copilotInstaller?.commands_filter === 'agents-only',
+      'GitHub Copilot filters Custom Agents picker to persona agents only (agents-only)',
+    );
 
     const tempProjectDir17 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-copilot-test-'));
     const installedBmadDir17 = await createTestBmadFixture();
+
+    // Extend the fixture: add a persona-style agent skill (`-agent-` in id)
+    // and the `bmad-tea` non-conventional agent so we can verify that the
+    // agents-only filter routes them to .github/agents/ while leaving the
+    // workflow-style `bmad-master` out.
+    const fixtureCsvPath17 = path.join(installedBmadDir17, '_config', 'skill-manifest.csv');
+    await fs.writeFile(
+      fixtureCsvPath17,
+      [
+        'canonicalId,name,description,module,path',
+        '"bmad-master","bmad-master","Workflow-style fixture (no -agent- in id, should NOT appear in Copilot agents picker)","core","_bmad/core/bmad-master/SKILL.md"',
+        '"bmad-agent-fixture","bmad-agent-fixture","Persona agent fixture (-agent- in id, SHOULD appear in Copilot agents picker)","core","_bmad/core/bmad-agent-fixture/SKILL.md"',
+        '"bmad-tea","bmad-tea","Non-conventional persona agent fixture (Murat-style, SHOULD appear despite no -agent- segment)","core","_bmad/core/bmad-tea/SKILL.md"',
+        '',
+      ].join('\n'),
+    );
 
     const copilotInstructionsPath17 = path.join(tempProjectDir17, '.github', 'copilot-instructions.md');
     await fs.ensureDir(path.dirname(copilotInstructionsPath17));
@@ -605,31 +625,43 @@ async function runTests() {
       'GitHub Copilot setup preserves user content in copilot-instructions.md',
     );
 
-    // Custom Agents picker integration: a per-skill .agent.md file should be
-    // generated under .github/agents/ so the skill appears in Copilot's
-    // Custom Agents picker. Body uses the LOAD-{project-root}/... pattern
-    // (Copilot's body has no @skills/<id> resolver, so the agent file
-    // instructs the model to load the SKILL.md directly).
-    const agentFile17 = path.join(tempProjectDir17, '.github', 'agents', 'bmad-master.agent.md');
-    assert(await fs.pathExists(agentFile17), 'GitHub Copilot install writes per-skill .agent.md pointer file');
-    const agentContent17 = await fs.readFile(agentFile17, 'utf8');
+    // Custom Agents picker integration: persona agents (and bmad-tea) get
+    // .agent.md files in .github/agents/. Workflows do NOT — the
+    // agents-only filter keeps the picker uncluttered.
+    const agentsDir17 = path.join(tempProjectDir17, '.github', 'agents');
+    const agentFileForPersona17 = path.join(agentsDir17, 'bmad-agent-fixture.agent.md');
+    const agentFileForTea17 = path.join(agentsDir17, 'bmad-tea.agent.md');
+    const agentFileForWorkflow17 = path.join(agentsDir17, 'bmad-master.agent.md');
+
+    assert(await fs.pathExists(agentFileForPersona17), 'Persona agent (-agent- in id) gets a .agent.md file in .github/agents/');
+    assert(await fs.pathExists(agentFileForTea17), 'bmad-tea persona (non-conventional id) is allowlisted into .github/agents/');
     assert(
-      agentContent17.includes('description:'),
+      !(await fs.pathExists(agentFileForWorkflow17)),
+      'Workflow skill (no -agent- in id, not in allowlist) is FILTERED OUT of .github/agents/',
+    );
+
+    // Body content of the persona agent file: frontmatter description +
+    // LOAD pattern referencing the skill's SKILL.md path under target_dir.
+    const personaAgentContent17 = await fs.readFile(agentFileForPersona17, 'utf8');
+    assert(
+      personaAgentContent17.includes('description:'),
       'Copilot agent pointer carries a description in YAML frontmatter (drives the agents picker label)',
     );
     assert(
-      agentContent17.includes('{project-root}/.agents/skills/bmad-master/SKILL.md'),
+      personaAgentContent17.includes('{project-root}/.agents/skills/bmad-agent-fixture/SKILL.md'),
       'Copilot agent pointer body resolves to the skill via LOAD {project-root}/<target_dir>/<id>/SKILL.md',
     );
 
     // Idempotency: re-running setup must not duplicate or rewrite the agent
-    // pointer when the source manifest is unchanged.
+    // pointer when the source manifest is unchanged, AND must not start
+    // emitting workflow-skill agent files.
     const result17b = await ideManager17.setup('github-copilot', tempProjectDir17, installedBmadDir17, {
       silent: true,
       selectedModules: ['bmm'],
     });
     assert(result17b.success === true, 'Second GitHub Copilot install succeeds (idempotent)');
-    assert(await fs.pathExists(agentFile17), 'Copilot agent pointer survives a second install pass');
+    assert(await fs.pathExists(agentFileForPersona17), 'Persona agent pointer survives a second install pass');
+    assert(!(await fs.pathExists(agentFileForWorkflow17)), 'Workflow skill remains filtered out of agents picker on second install');
 
     await fs.remove(tempProjectDir17);
     await fs.remove(path.dirname(installedBmadDir17));

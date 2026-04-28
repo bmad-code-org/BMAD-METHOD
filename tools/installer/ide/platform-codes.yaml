@@ -135,6 +135,14 @@ platforms:
       commands_target_dir: .github/agents
       commands_extension: .agent.md
       commands_body_template: "LOAD the FULL {project-root}/{target_dir}/{canonicalId}/SKILL.md, READ its entire contents and follow its directions exactly!"
+      # The Custom Agents picker should only show persona agents (not
+      # workflows/tools). BMAD's persona agents are conventionally named
+      # with an `-agent-` segment in their canonical id (e.g.
+      # `bmad-agent-pm`, `gds-agent-game-dev`, `wds-agent-freya-ux`,
+      # `bmad-cis-agent-storyteller`). The one exception is `bmad-tea` —
+      # TEA's Murat persona uses the module code as its id rather than the
+      # `-agent-` convention. This filter keeps the picker uncluttered.
+      commands_filter: agents-only
 
   goose:
     name: "Block Goose"

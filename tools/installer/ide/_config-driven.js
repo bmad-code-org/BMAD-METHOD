@@ -57,6 +57,24 @@ function isSafeCanonicalId(value) {
 // OpenCode's native `@skills/<id>` skill-reference syntax.
 const DEFAULT_COMMANDS_BODY_TEMPLATE = '@skills/{canonicalId}';
 
+// Persona-agent id outside the `-agent-` naming convention.
+// TEA's Murat is the only persona whose canonical id is the bare module code
+// rather than `<module>-agent-<role>`. Listed here so platforms that filter
+// for "agents only" (e.g. GitHub Copilot's Custom Agents picker) include it.
+const NON_CONVENTIONAL_AGENT_IDS = new Set(['bmad-tea']);
+
+// Is this skill a persona agent (vs. a workflow/tool/standalone skill)?
+// Used by platforms that surface only persona agents (e.g. Copilot's Custom
+// Agents picker). Rule: canonical id contains `-agent-` OR is in the
+// known non-conventional allowlist. Tested against the full installed
+// manifest — catches all 20 description-confirmed personas across BMM,
+// CIS, GDS, WDS, TEA without false positives.
+function isAgentSkill(canonicalId) {
+  if (typeof canonicalId !== 'string') return false;
+  if (NON_CONVENTIONAL_AGENT_IDS.has(canonicalId)) return true;
+  return canonicalId.includes('-agent-');
+}
+
 // Resolve placeholders in a body template. Supported placeholders:
 //   {canonicalId}   — the skill's canonical id
 //   {target_dir}    — the platform's skill install directory (e.g. .agents/skills)
@@ -265,6 +283,7 @@ class ConfigDrivenIdeSetup {
       skippedExisting: 0,
       skippedCollision: 0,
       skippedInvalidId: 0,
+      skippedFiltered: 0,
       writeFailures: 0,
       fallbackDescription: 0,
     };
@@ -279,6 +298,7 @@ class ConfigDrivenIdeSetup {
     const extension = config.commands_extension || '.md';
     const template = config.commands_body_template || DEFAULT_COMMANDS_BODY_TEMPLATE;
     const targetDir = config.target_dir;
+    const filter = config.commands_filter || null;
 
     const csvContent = await fs.readFile(csvPath, 'utf8');
     const records = csv.parse(csvContent, { columns: true, skip_empty_lines: true });
@@ -292,6 +312,15 @@ class ConfigDrivenIdeSetup {
       // reject anything that could escape commands_target_dir.
       if (!isSafeCanonicalId(canonicalId)) {
         result.skippedInvalidId++;
+        continue;
+      }
+
+      // Optional per-platform filter: surfaces that should only show
+      // persona agents (e.g. Copilot's Custom Agents picker) skip
+      // workflow/tool skills here so the picker isn't cluttered with
+      // 90+ unrelated entries.
+      if (filter === 'agents-only' && !isAgentSkill(canonicalId)) {
+        result.skippedFiltered++;
         continue;
       }
 
