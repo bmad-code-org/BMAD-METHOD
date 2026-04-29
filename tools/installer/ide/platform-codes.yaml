@@ -136,12 +136,16 @@ platforms:
       commands_extension: .agent.md
       commands_body_template: "LOAD the FULL {project-root}/{target_dir}/{canonicalId}/SKILL.md, READ its entire contents and follow its directions exactly!"
       # The Custom Agents picker should only show persona agents (not
-      # workflows/tools). BMAD's persona agents are conventionally named
-      # with an `-agent-` segment in their canonical id (e.g.
-      # `bmad-agent-pm`, `gds-agent-game-dev`, `wds-agent-freya-ux`,
-      # `bmad-cis-agent-storyteller`). The one exception is `bmad-tea` —
-      # TEA's Murat persona uses the module code as its id rather than the
-      # `-agent-` convention. This filter keeps the picker uncluttered.
+      # workflows/tools). Detected by reading each skill's source
+      # `customize.toml` and checking for an `[agent]` section — that's
+      # the actual configuration source of truth: every BMAD persona is
+      # configured under `[agent]`, every workflow under `[workflow]`,
+      # every standalone skill has no customize.toml. This signal is
+      # naming-independent, so personas like `bmad-tea` (which doesn't
+      # follow the `-agent-` convention) are still included, and
+      # meta-skills like `bmad-agent-builder` (which contains `-agent-`
+      # but is a skill-builder workflow, not a persona) are correctly
+      # excluded.
       commands_filter: agents-only
 
   goose:

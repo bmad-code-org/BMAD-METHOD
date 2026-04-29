@@ -57,22 +57,35 @@ function isSafeCanonicalId(value) {
 // OpenCode's native `@skills/<id>` skill-reference syntax.
 const DEFAULT_COMMANDS_BODY_TEMPLATE = '@skills/{canonicalId}';
 
-// Persona-agent id outside the `-agent-` naming convention.
-// TEA's Murat is the only persona whose canonical id is the bare module code
-// rather than `<module>-agent-<role>`. Listed here so platforms that filter
-// for "agents only" (e.g. GitHub Copilot's Custom Agents picker) include it.
-const NON_CONVENTIONAL_AGENT_IDS = new Set(['bmad-tea']);
-
 // Is this skill a persona agent (vs. a workflow/tool/standalone skill)?
 // Used by platforms that surface only persona agents (e.g. Copilot's Custom
-// Agents picker). Rule: canonical id contains `-agent-` OR is in the
-// known non-conventional allowlist. Tested against the full installed
-// manifest — catches all 20 description-confirmed personas across BMM,
-// CIS, GDS, WDS, TEA without false positives.
-function isAgentSkill(canonicalId) {
-  if (typeof canonicalId !== 'string') return false;
-  if (NON_CONVENTIONAL_AGENT_IDS.has(canonicalId)) return true;
-  return canonicalId.includes('-agent-');
+// Agents picker). Signal: the skill's source `customize.toml` has an
+// `[agent]` section. This is the actual configuration source of truth —
+// every BMAD persona is configured via [agent] in its customize.toml,
+// every workflow uses [workflow], every standalone skill has no
+// customize.toml at all. Verified against the full installed manifest:
+// catches exactly the 20 description-confirmed personas across BMM, CIS,
+// GDS, WDS, TEA, and correctly excludes meta-skills like
+// `bmad-agent-builder` (a skill-builder workflow whose canonical id
+// contains `-agent-` but which has no [agent] section because it isn't a
+// persona itself).
+//
+// Reading the source toml — at install time the source skill directory
+// (resolved from manifest record.path) still exists; cleanup runs later
+// in the install flow.
+async function isAgentSkill(record, bmadDir) {
+  if (!record?.path || !bmadDir) return false;
+  const bmadFolderName = path.basename(bmadDir);
+  const bmadPrefix = bmadFolderName + '/';
+  const relativePath = record.path.startsWith(bmadPrefix) ? record.path.slice(bmadPrefix.length) : record.path;
+  const tomlPath = path.join(bmadDir, path.dirname(relativePath), 'customize.toml');
+  if (!(await fs.pathExists(tomlPath))) return false;
+  try {
+    const content = await fs.readFile(tomlPath, 'utf8');
+    return /^\[agent\]/m.test(content);
+  } catch {
+    return false;
+  }
 }
 
 // Resolve placeholders in a body template. Supported placeholders:
@@ -319,7 +332,7 @@ class ConfigDrivenIdeSetup {
       // persona agents (e.g. Copilot's Custom Agents picker) skip
       // workflow/tool skills here so the picker isn't cluttered with
       // 90+ unrelated entries.
-      if (filter === 'agents-only' && !isAgentSkill(canonicalId)) {
+      if (filter === 'agents-only' && !(await isAgentSkill(record, bmadDir))) {
         result.skippedFiltered++;
         continue;
       }

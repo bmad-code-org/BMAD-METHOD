@@ -574,20 +574,57 @@ async function runTests() {
     const tempProjectDir17 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-copilot-test-'));
     const installedBmadDir17 = await createTestBmadFixture();
 
-    // Extend the fixture: add a persona-style agent skill (`-agent-` in id)
-    // and the `bmad-tea` non-conventional agent so we can verify that the
-    // agents-only filter routes them to .github/agents/ while leaving the
-    // workflow-style `bmad-master` out.
+    // Extend the fixture to exercise the agents-only filter, which detects
+    // persona agents by the `[agent]` section in each skill's source
+    // customize.toml. Three skill types covered:
+    //
+    //   1. Persona agent — has customize.toml with [agent]      → INCLUDED
+    //   2. Persona with non-conventional id — also has [agent]   → INCLUDED
+    //      (verifies the filter doesn't depend on `-agent-` naming)
+    //   3. Meta-skill whose id contains `-agent-` but isn't a
+    //      persona — has customize.toml with [workflow]          → EXCLUDED
+    //      (mirrors `bmad-agent-builder` in the real manifest)
+    //   4. Workflow skill — no customize.toml at all             → EXCLUDED
     const fixtureCsvPath17 = path.join(installedBmadDir17, '_config', 'skill-manifest.csv');
     await fs.writeFile(
       fixtureCsvPath17,
       [
         'canonicalId,name,description,module,path',
-        '"bmad-master","bmad-master","Workflow-style fixture (no -agent- in id, should NOT appear in Copilot agents picker)","core","_bmad/core/bmad-master/SKILL.md"',
-        '"bmad-agent-fixture","bmad-agent-fixture","Persona agent fixture (-agent- in id, SHOULD appear in Copilot agents picker)","core","_bmad/core/bmad-agent-fixture/SKILL.md"',
-        '"bmad-tea","bmad-tea","Non-conventional persona agent fixture (Murat-style, SHOULD appear despite no -agent- segment)","core","_bmad/core/bmad-tea/SKILL.md"',
+        '"bmad-master","bmad-master","Workflow with no customize.toml — should NOT appear in Copilot agents picker","core","_bmad/core/bmad-master/SKILL.md"',
+        '"bmad-agent-fixture","bmad-agent-fixture","Persona agent — customize.toml has [agent], SHOULD appear","core","_bmad/core/bmad-agent-fixture/SKILL.md"',
+        '"bmad-tea","bmad-tea","Non-conventional id but [agent] in customize.toml — SHOULD appear","core","_bmad/core/bmad-tea/SKILL.md"',
+        '"bmad-agent-builder","bmad-agent-builder","Skill-builder workflow — id contains -agent- but customize.toml has [workflow] — should NOT appear","core","_bmad/core/bmad-agent-builder/SKILL.md"',
         '',
       ].join('\n'),
+    );
+
+    // Materialise the source skill directories so the agents-only filter
+    // can read their customize.toml. The bmad-master and bmad-agent-builder
+    // SKILL.md files were already populated by createTestBmadFixture (they
+    // share the bmad-master target_dir layout); only the customize.toml
+    // and the new agent fixtures need to be created here.
+    for (const id of ['bmad-agent-fixture', 'bmad-tea', 'bmad-agent-builder']) {
+      const dir17 = path.join(installedBmadDir17, 'core', id);
+      await fs.ensureDir(dir17);
+      await fs.writeFile(
+        path.join(dir17, 'SKILL.md'),
+        ['---', `name: ${id}`, `description: fixture for ${id}`, '---', '', `Body of ${id}.`].join('\n'),
+      );
+    }
+    // [agent] customize.toml for the two persona fixtures.
+    await fs.writeFile(
+      path.join(installedBmadDir17, 'core', 'bmad-agent-fixture', 'customize.toml'),
+      ['[agent]', 'name = "Fixture Agent"', 'title = "Test Persona"', ''].join('\n'),
+    );
+    await fs.writeFile(
+      path.join(installedBmadDir17, 'core', 'bmad-tea', 'customize.toml'),
+      ['[agent]', 'name = "Murat"', 'title = "Test Architect"', ''].join('\n'),
+    );
+    // [workflow] customize.toml for the meta-skill — its id contains `-agent-`
+    // but it is NOT a persona (mirrors bmad-agent-builder in production).
+    await fs.writeFile(
+      path.join(installedBmadDir17, 'core', 'bmad-agent-builder', 'customize.toml'),
+      ['[workflow]', '', '# Meta-skill that builds agents but is not itself a persona.', ''].join('\n'),
     );
 
     const copilotInstructionsPath17 = path.join(tempProjectDir17, '.github', 'copilot-instructions.md');
@@ -625,19 +662,26 @@ async function runTests() {
       'GitHub Copilot setup preserves user content in copilot-instructions.md',
     );
 
-    // Custom Agents picker integration: persona agents (and bmad-tea) get
-    // .agent.md files in .github/agents/. Workflows do NOT — the
-    // agents-only filter keeps the picker uncluttered.
+    // Custom Agents picker integration: persona agents (those with [agent]
+    // in their source customize.toml) get .agent.md files in
+    // .github/agents/. Workflows and meta-skills with [workflow] (or no
+    // customize.toml at all) do NOT — the agents-only filter keeps the
+    // picker uncluttered and the signal is naming-independent.
     const agentsDir17 = path.join(tempProjectDir17, '.github', 'agents');
     const agentFileForPersona17 = path.join(agentsDir17, 'bmad-agent-fixture.agent.md');
     const agentFileForTea17 = path.join(agentsDir17, 'bmad-tea.agent.md');
     const agentFileForWorkflow17 = path.join(agentsDir17, 'bmad-master.agent.md');
+    const agentFileForMetaSkill17 = path.join(agentsDir17, 'bmad-agent-builder.agent.md');
 
-    assert(await fs.pathExists(agentFileForPersona17), 'Persona agent (-agent- in id) gets a .agent.md file in .github/agents/');
-    assert(await fs.pathExists(agentFileForTea17), 'bmad-tea persona (non-conventional id) is allowlisted into .github/agents/');
     assert(
-      !(await fs.pathExists(agentFileForWorkflow17)),
-      'Workflow skill (no -agent- in id, not in allowlist) is FILTERED OUT of .github/agents/',
+      await fs.pathExists(agentFileForPersona17),
+      'Persona agent ([agent] in customize.toml) gets a .agent.md file in .github/agents/',
+    );
+    assert(await fs.pathExists(agentFileForTea17), 'Non-conventional id with [agent] in customize.toml is included (no allowlist needed)');
+    assert(!(await fs.pathExists(agentFileForWorkflow17)), 'Workflow skill (no customize.toml) is FILTERED OUT of .github/agents/');
+    assert(
+      !(await fs.pathExists(agentFileForMetaSkill17)),
+      'Meta-skill with -agent- in id but [workflow] in customize.toml is FILTERED OUT (signal is behavior, not naming)',
     );
 
     // Body content of the persona agent file: frontmatter description +
