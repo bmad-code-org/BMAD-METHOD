@@ -129,13 +129,45 @@ export default defineConfig({
         // TEA docs moved to standalone module site; keep BMM sidebar focused.
         {
           label: 'BMad Ecosystem',
+          translations: { 'vi-VN': 'Hệ sinh thái BMad', 'zh-CN': 'BMad 生态系统', 'fr-FR': 'Écosystème BMad', 'cs-CZ': 'Ekosystém BMad' },
           collapsed: false,
           items: [
-            { label: 'BMad Builder', link: 'https://bmad-builder-docs.bmad-method.org/', attrs: { target: '_blank' } },
-            { label: 'Creative Intelligence Suite', link: 'https://cis-docs.bmad-method.org/', attrs: { target: '_blank' } },
-            { label: 'Game Dev Studio', link: 'https://game-dev-studio-docs.bmad-method.org/', attrs: { target: '_blank' } },
+            {
+              label: 'BMad Builder',
+              translations: { 'vi-VN': 'BMad Builder', 'zh-CN': 'BMad 构建器', 'fr-FR': 'BMad Builder', 'cs-CZ': 'BMad Builder' },
+              link: 'https://bmad-builder-docs.bmad-method.org/',
+              attrs: { target: '_blank' },
+            },
+            {
+              label: 'Creative Intelligence Suite',
+              translations: {
+                'vi-VN': 'Bộ công cụ Trí tuệ Sáng tạo',
+                'zh-CN': '创意智能套件',
+                'fr-FR': "Suite d'Intelligence Créative",
+                'cs-CZ': 'Sada kreativní inteligence',
+              },
+              link: 'https://cis-docs.bmad-method.org/',
+              attrs: { target: '_blank' },
+            },
+            {
+              label: 'Game Dev Studio',
+              translations: {
+                'vi-VN': 'Xưởng phát triển Game',
+                'zh-CN': '游戏开发工作室',
+                'fr-FR': 'Studio de Développement de Jeux',
+                'cs-CZ': 'Herní vývojové studio',
+              },
+              link: 'https://game-dev-studio-docs.bmad-method.org/',
+              attrs: { target: '_blank' },
+            },
             {
               label: 'Test Architect (TEA)',
+              translations: {
+                'vi-VN': 'Kiến trúc sư Kiểm thử (TEA)',
+                'zh-CN': '测试架构师 (TEA)',
+                'fr-FR': 'Architecte de Tests (TEA)',
+                'cs-CZ': 'Testovací architekt (TEA)',
+              },
               link: 'https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/',
               attrs: { target: '_blank' },
             },
