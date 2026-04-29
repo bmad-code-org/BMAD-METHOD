@@ -26,6 +26,8 @@ class ConfigDrivenIdeSetup {
     this.platformConfig = platformConfig;
     this.installerConfig = platformConfig.installer || null;
     this.bmadFolderName = BMAD_FOLDER_NAME;
+    this.externalModuleManager = null;
+    this.moduleTargetCache = new Map();
 
     // Set configDir from target_dir so detect() works
     this.configDir = this.installerConfig?.target_dir || null;
@@ -123,13 +125,16 @@ class ConfigDrivenIdeSetup {
     await fs.ensureDir(targetPath);
 
     this.skillWriteTracker = new Set();
+    this.skippedUnsupported = 0;
     const results = { skills: 0 };
 
     results.skills = await this.installVerbatimSkills(projectDir, bmadDir, targetPath, config);
+    results.skippedUnsupported = this.skippedUnsupported || 0;
     results.skillDirectories = this.skillWriteTracker.size;
 
     await this.printSummary(results, target_dir, options);
     this.skillWriteTracker = null;
+    this.skippedUnsupported = 0;
     return { success: true, results };
   }
 
@@ -161,6 +166,11 @@ class ConfigDrivenIdeSetup {
     for (const record of records) {
       const canonicalId = record.canonicalId;
       if (!canonicalId) continue;
+
+      if (!(await this.shouldInstallSkillRecord(record))) {
+        this.skippedUnsupported = (this.skippedUnsupported || 0) + 1;
+        continue;
+      }
 
       // Derive source directory from path column
       // path is like "_bmad/bmm/workflows/bmad-quick-flow/bmad-quick-dev-new-preview/SKILL.md"
@@ -196,6 +206,24 @@ class ConfigDrivenIdeSetup {
     return count;
   }
 
+  async shouldInstallSkillRecord(record) {
+    const moduleName = record.module;
+    if (!moduleName) return true;
+
+    if (this.moduleTargetCache.has(moduleName)) {
+      const targets = this.moduleTargetCache.get(moduleName);
+      return !targets || targets.includes(this.name);
+    }
+
+    const { ExternalModuleManager } = require('../modules/external-manager');
+    this.externalModuleManager = this.externalModuleManager || new ExternalModuleManager();
+    const moduleInfo = await this.externalModuleManager.getModuleByCode(moduleName);
+    const targets = moduleInfo?.installTargets?.length ? moduleInfo.installTargets : null;
+    this.moduleTargetCache.set(moduleName, targets);
+
+    return !targets || targets.includes(this.name);
+  }
+
   /**
    * Print installation summary
    * @param {Object} results - Installation results
@@ -206,6 +234,9 @@ class ConfigDrivenIdeSetup {
     const count = results.skillDirectories || results.skills || 0;
     if (count > 0) {
       await prompts.log.success(`${this.name} configured: ${count} skills → ${targetDir}`);
+    }
+    if (results.skippedUnsupported > 0) {
+      await prompts.log.warn(`${this.name}: skipped ${results.skippedUnsupported} skill(s) that do not support this IDE`);
     }
   }
 
