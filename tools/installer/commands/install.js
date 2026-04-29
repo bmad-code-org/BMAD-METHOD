@@ -102,13 +102,13 @@ module.exports = {
         process.exit(0);
       }
 
-      // Handle quick update separately
+      // Handle quick update separately. --set is a post-install TOML patch so
+      // it works the same way for quick-update as for a regular install — the
+      // installer runs, then `applySetOverrides` patches the central config
+      // files. Pass the parsed overrides through.
       if (config.actionType === 'quick-update') {
-        if (options.set && options.set.length > 0) {
-          await prompts.log.warn(
-            '--set flags are ignored under quick-update (it preserves existing answers). Re-run with --action update to apply them.',
-          );
-        }
+        const { parseSetEntries } = require('../set-overrides');
+        config.setOverrides = parseSetEntries(options.set || []);
         const result = await installer.quickUpdate(config);
         await prompts.log.success('Quick update complete!');
         await prompts.log.info(`Updated ${result.moduleCount} modules with preserved settings (${result.modules.join(', ')})`);

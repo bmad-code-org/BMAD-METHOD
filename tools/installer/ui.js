@@ -288,7 +288,7 @@ class UI {
         // Get tool selection
         const toolSelection = await this.promptToolSelection(confirmedDirectory, options);
 
-        const { moduleConfigs, setOverrideKeys, setOverrides } = await this.collectModuleConfigs(confirmedDirectory, selectedModules, {
+        const { moduleConfigs, setOverrides } = await this.collectModuleConfigs(confirmedDirectory, selectedModules, {
           ...options,
           channelOptions,
         });
@@ -314,7 +314,6 @@ class UI {
           skipIde: toolSelection.skipIde,
           coreConfig: moduleConfigs.core || {},
           moduleConfigs: moduleConfigs,
-          setOverrideKeys,
           setOverrides,
           skipPrompts: options.yes || false,
           channelOptions,
@@ -367,7 +366,7 @@ class UI {
     await this._interactiveChannelGate({ options, channelOptions, selectedModules });
 
     let toolSelection = await this.promptToolSelection(confirmedDirectory, options);
-    const { moduleConfigs, setOverrideKeys, setOverrides } = await this.collectModuleConfigs(confirmedDirectory, selectedModules, {
+    const { moduleConfigs, setOverrides } = await this.collectModuleConfigs(confirmedDirectory, selectedModules, {
       ...options,
       channelOptions,
     });
@@ -393,7 +392,6 @@ class UI {
       skipIde: toolSelection.skipIde,
       coreConfig: moduleConfigs.core || {},
       moduleConfigs: moduleConfigs,
-      setOverrideKeys,
       setOverrides,
       skipPrompts: options.yes || false,
       channelOptions,
@@ -715,9 +713,12 @@ class UI {
   async collectModuleConfigs(directory, modules, options = {}) {
     const { OfficialModules } = require('./modules/official-modules');
 
-    // Parse --set entries up front so we can both (a) hand them to the config
-    // collector to skip prompts, and (b) warn about modules referenced in --set
-    // that aren't part of this install (those values are dropped, not persisted).
+    // Parse --set up front purely to surface user-error before the install
+    // burns time on the network / filesystem. The actual application happens
+    // in installer.install() as a post-write TOML patch — see
+    // `tools/installer/set-overrides.js`. We also warn about overrides
+    // targeting modules the user didn't include, since those will silently
+    // miss the file the patch step looks for.
     let setOverrides = {};
     try {
       setOverrides = parseSetEntries(options.set || []);
@@ -725,16 +726,20 @@ class UI {
       // install.js validated already; rethrow as-is for the user.
       throw error;
     }
+    // Drop overrides for modules that aren't in the install set so the
+    // post-install patch step doesn't create orphan sections in config.toml
+    // for modules that were never installed.
     const selectedModuleSet = new Set(['core', ...modules]);
     for (const moduleCode of Object.keys(setOverrides)) {
       if (!selectedModuleSet.has(moduleCode)) {
         await prompts.log.warn(
           `--set ${moduleCode}.* — module '${moduleCode}' is not in the install set; values will be ignored. Add it to --modules to apply.`,
         );
+        delete setOverrides[moduleCode];
       }
     }
 
-    const configCollector = new OfficialModules({ channelOptions: options.channelOptions, setOverrides });
+    const configCollector = new OfficialModules({ channelOptions: options.channelOptions });
 
     // Seed core config from CLI options if provided
     if (options.userName || options.communicationLanguage || options.documentOutputLanguage || options.outputFolder) {
@@ -799,24 +804,7 @@ class UI {
       skipPrompts: options.yes || false,
     });
 
-    // Apply --set overrides for `core` AFTER collectAllConfigurations.
-    // Core is skipped inside collectAllConfigurations when its config was
-    // seeded by `--yes` defaults or by legacy core-shortcut flags
-    // (--user-name/--output-folder/etc.), so its overrides need a separate
-    // application path. Non-core modules apply overrides inside their own
-    // collectModuleConfig run.
-    await configCollector.applyOverridesAfterSeeding('core');
-
-    // Convert per-module override-key Sets to plain string arrays so the value
-    // round-trips cleanly through Config.build / freezing.
-    const setOverrideKeys = {};
-    if (configCollector.setOverrideKeys) {
-      for (const [moduleCode, keys] of Object.entries(configCollector.setOverrideKeys)) {
-        setOverrideKeys[moduleCode] = [...keys];
-      }
-    }
-
-    return { moduleConfigs: configCollector.collectedConfig, setOverrideKeys, setOverrides };
+    return { moduleConfigs: configCollector.collectedConfig, setOverrides };
   }
 
   /**

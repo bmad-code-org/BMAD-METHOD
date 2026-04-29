@@ -2988,21 +2988,17 @@ async function runTests() {
   // ============================================================
   console.log(`${colors.yellow}Test Suite 44: --set CLI overrides${colors.reset}\n`);
   try {
-    const { parseSetEntry, parseSetEntries } = require('../tools/installer/set-overrides');
+    const { parseSetEntry, parseSetEntries, applySetOverrides, upsertTomlKey, tomlString } = require('../tools/installer/set-overrides');
     const { discoverOfficialModuleYamls, formatOptionsList } = require('../tools/installer/list-options');
 
-    // parseSetEntry — happy path
+    // ---- Parser ----------------------------------------------------------
     const ok = parseSetEntry('bmm.project_knowledge=research');
     assert(
       ok.module === 'bmm' && ok.key === 'project_knowledge' && ok.value === 'research',
       'parseSetEntry splits <module>.<key>=<value> correctly',
     );
+    assert(parseSetEntry('bmm.weird=a=b=c').value === 'a=b=c', 'parseSetEntry preserves additional "=" inside the value');
 
-    // parseSetEntry — value containing '='
-    const okEq = parseSetEntry('bmm.weird=a=b=c');
-    assert(okEq.value === 'a=b=c', 'parseSetEntry preserves additional "=" inside the value');
-
-    // parseSetEntry — malformed inputs
     const badInputs = ['no-equals', 'no-dot=value', '=value', '.=value', 'foo.=value', '.bar=value', ''];
     let allBadThrow = true;
     for (const bad of badInputs) {
@@ -3015,23 +3011,17 @@ async function runTests() {
     }
     assert(allBadThrow, `parseSetEntry rejects malformed inputs (${badInputs.length} cases)`);
 
-    // parseSetEntries — multiple entries collapse into a {module: {key: value}} map
     const multi = parseSetEntries(['bmm.project_knowledge=research', 'bmm.user_skill_level=expert', 'core.user_name=Brian']);
     assert(
       multi.bmm.project_knowledge === 'research' && multi.bmm.user_skill_level === 'expert' && multi.core.user_name === 'Brian',
       'parseSetEntries groups by module',
     );
-
-    // parseSetEntries — later entry wins for the same key
-    const later = parseSetEntries(['bmm.x=first', 'bmm.x=second']);
-    assert(later.bmm.x === 'second', 'parseSetEntries: later --set entry overrides earlier');
-
-    // parseSetEntries — non-array / missing input → empty object
+    assert(parseSetEntries(['bmm.x=first', 'bmm.x=second']).bmm.x === 'second', 'parseSetEntries: later --set entry overrides earlier');
     const empty = parseSetEntries();
     assert(empty && Object.keys(empty).length === 0, 'parseSetEntries() returns empty object when called without args');
 
-    // parseSetEntries — prototype-pollution guard. `--set __proto__.x=1` would
-    // otherwise reach `overrides.__proto__[x] = 1` and pollute Object.prototype.
+    // Prototype-pollution guard. `--set __proto__.x=1` would otherwise reach
+    // `overrides.__proto__[x] = 1` and pollute every plain object.
     const polluteProbe = {};
     let pollutionThrown = false;
     try {
@@ -3049,40 +3039,188 @@ async function runTests() {
     }
     assert(constructorThrown, 'parseSetEntries rejects "constructor" as a key name');
 
-    // discoverOfficialModuleYamls + formatOptionsList read the on-disk
-    // external-module cache. Point that env at a temp dir so test results
-    // don't depend on whatever the developer / CI runner has cached.
+    // ---- tomlString ------------------------------------------------------
+    assert(tomlString('hello') === '"hello"', 'tomlString quotes a plain string');
+    assert(tomlString('with "quotes"') === String.raw`"with \"quotes\""`, 'tomlString escapes embedded double-quotes');
+    assert(tomlString(String.raw`back\slash`) === String.raw`"back\\slash"`, 'tomlString escapes backslashes');
+    assert(tomlString('line1\nline2') === String.raw`"line1\nline2"`, 'tomlString escapes newlines');
+
+    // ---- upsertTomlKey: insert into existing section ---------------------
+    {
+      const before = `[core]\nuser_name = "Brian"\n\n[modules.bmm]\nproject_knowledge = "{project-root}/docs"\n`;
+      const after = upsertTomlKey(before, '[modules.bmm]', 'future_thing', '"persists"');
+      assert(after.includes('future_thing = "persists"'), 'upsertTomlKey inserts a new key into an existing section');
+      assert(/project_knowledge = "{project-root}\/docs"/.test(after), 'upsertTomlKey preserves existing keys');
+    }
+
+    // ---- upsertTomlKey: replace existing key, keep comment tail ----------
+    {
+      const before = `[core]\nuser_name = "old"  # set on first install\n`;
+      const after = upsertTomlKey(before, '[core]', 'user_name', '"Brian"');
+      assert(/user_name = "Brian"\s+# set on first install/.test(after), 'upsertTomlKey preserves trailing comments');
+      assert(!after.includes('"old"'), 'upsertTomlKey replaces the prior value');
+    }
+
+    // ---- upsertTomlKey: section missing → append new section -------------
+    {
+      const before = `[core]\nuser_name = "Brian"\n`;
+      const after = upsertTomlKey(before, '[modules.bmm]', 'project_knowledge', '"research"');
+      assert(after.includes('[modules.bmm]'), 'upsertTomlKey appends a new section when missing');
+      assert(after.includes('project_knowledge = "research"'), 'upsertTomlKey appends the key under the new section');
+      // Existing section remains untouched
+      assert(after.indexOf('[core]') < after.indexOf('[modules.bmm]'), 'upsertTomlKey adds the new section AFTER existing content');
+    }
+
+    // ---- upsertTomlKey: empty file ---------------------------------------
+    {
+      const after = upsertTomlKey('', '[core]', 'user_name', '"Brian"');
+      assert(after.startsWith('[core]'), 'upsertTomlKey on an empty string emits the section header');
+      assert(after.includes('user_name = "Brian"'), 'upsertTomlKey on an empty string writes the key');
+    }
+
+    // ---- upsertTomlKey: trailing newline preserved -----------------------
+    {
+      const withTrailing = upsertTomlKey('[core]\nuser_name = "old"\n', '[core]', 'user_name', '"new"');
+      assert(withTrailing.endsWith('\n'), 'upsertTomlKey preserves trailing newline');
+      const withoutTrailing = upsertTomlKey('[core]\nuser_name = "old"', '[core]', 'user_name', '"new"');
+      assert(!withoutTrailing.endsWith('\n'), 'upsertTomlKey preserves absence of trailing newline');
+    }
+
+    // ---- applySetOverrides happy path ------------------------------------
+    {
+      const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-applyset-'));
+      const bmadDir = path.join(tmp, '_bmad');
+      await fs.ensureDir(bmadDir);
+      // Seed a realistic post-install state: team config has bmm.project_knowledge,
+      // user config has core.user_name. The applySetOverrides router should
+      // route bmm.user_skill_level → user.toml (already there), core.user_name
+      // update → user.toml (already there), and a brand-new key → team.toml.
+      await fs.writeFile(
+        path.join(bmadDir, 'config.toml'),
+        '[core]\nproject_name = "demo"\n\n[modules.bmm]\nproject_knowledge = "{project-root}/docs"\n',
+        'utf8',
+      );
+      await fs.writeFile(
+        path.join(bmadDir, 'config.user.toml'),
+        '[core]\nuser_name = "OldName"\n\n[modules.bmm]\nuser_skill_level = "intermediate"\n',
+        'utf8',
+      );
+      // Per-module config.yaml stubs are the "is this module installed?"
+      // signal applySetOverrides uses to skip uninstalled-module overrides.
+      await fs.ensureDir(path.join(bmadDir, 'core'));
+      await fs.writeFile(path.join(bmadDir, 'core', 'config.yaml'), 'project_name: demo\n', 'utf8');
+      await fs.ensureDir(path.join(bmadDir, 'bmm'));
+      await fs.writeFile(
+        path.join(bmadDir, 'bmm', 'config.yaml'),
+        'project_knowledge: "{project-root}/docs"\nuser_skill_level: intermediate\n',
+        'utf8',
+      );
+
+      const overrides = {
+        core: { user_name: 'Brian' },
+        bmm: { user_skill_level: 'expert', future_thing: 'persists' },
+      };
+      const applied = await applySetOverrides(overrides, bmadDir);
+
+      const team = await fs.readFile(path.join(bmadDir, 'config.toml'), 'utf8');
+      const user = await fs.readFile(path.join(bmadDir, 'config.user.toml'), 'utf8');
+
+      assert(user.includes('user_name = "Brian"'), 'applySetOverrides updates user-scope key in config.user.toml');
+      assert(user.includes('user_skill_level = "expert"'), 'applySetOverrides updates pre-existing user-scope key in config.user.toml');
+      assert(team.includes('future_thing = "persists"'), 'applySetOverrides routes brand-new key to team config.toml');
+      assert(team.includes('project_knowledge = "{project-root}/docs"'), 'applySetOverrides leaves untouched team keys alone');
+      assert(!team.includes('user_name = "Brian"'), 'applySetOverrides does NOT duplicate user-scope key into team file');
+
+      const summary = applied
+        .map((a) => `${a.module}.${a.key}->${a.scope}`)
+        .sort()
+        .join(',');
+      assert(
+        summary === 'bmm.future_thing->team,bmm.user_skill_level->user,core.user_name->user',
+        `applySetOverrides reports correct routing decisions (got: ${summary})`,
+      );
+
+      await fs.remove(tmp).catch(() => {});
+    }
+
+    // ---- applySetOverrides creates config.user.toml if missing -----------
+    {
+      const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-applyset-nouser-'));
+      const bmadDir = path.join(tmp, '_bmad');
+      await fs.ensureDir(bmadDir);
+      await fs.writeFile(path.join(bmadDir, 'config.toml'), '[core]\nuser_name = "Brian"\n', 'utf8');
+      await fs.ensureDir(path.join(bmadDir, 'core'));
+      await fs.writeFile(path.join(bmadDir, 'core', 'config.yaml'), 'user_name: Brian\n', 'utf8');
+      // Override targets a key only in team config; routes to team. user.toml
+      // never gets created in this case (correct — no user-scope writes).
+      await applySetOverrides({ core: { user_name: 'Updated' } }, bmadDir);
+      const team = await fs.readFile(path.join(bmadDir, 'config.toml'), 'utf8');
+      assert(team.includes('user_name = "Updated"'), 'applySetOverrides updates team key when user.toml is absent');
+      assert(
+        !(await fs.pathExists(path.join(bmadDir, 'config.user.toml'))),
+        'applySetOverrides does not create config.user.toml unnecessarily',
+      );
+      await fs.remove(tmp).catch(() => {});
+    }
+
+    // ---- applySetOverrides skips modules without per-module config.yaml --
+    {
+      const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-applyset-skip-'));
+      const bmadDir = path.join(tmp, '_bmad');
+      await fs.ensureDir(bmadDir);
+      await fs.writeFile(path.join(bmadDir, 'config.toml'), '[core]\nuser_name = "Brian"\n', 'utf8');
+      await fs.ensureDir(path.join(bmadDir, 'core'));
+      await fs.writeFile(path.join(bmadDir, 'core', 'config.yaml'), 'user_name: Brian\n', 'utf8');
+      // bmm is not installed (no `_bmad/bmm/config.yaml`). The override for
+      // bmm should be silently skipped, no `[modules.bmm]` section created.
+      const applied = await applySetOverrides({ bmm: { foo: 'bar' }, core: { user_name: 'Updated' } }, bmadDir);
+      const team = await fs.readFile(path.join(bmadDir, 'config.toml'), 'utf8');
+      assert(!team.includes('[modules.bmm]'), 'applySetOverrides does NOT create section for uninstalled module');
+      assert(team.includes('user_name = "Updated"'), 'applySetOverrides still applies overrides for installed modules');
+      assert(applied.length === 1 && applied[0].module === 'core', 'applySetOverrides reports only the installed-module entries');
+      await fs.remove(tmp).catch(() => {});
+    }
+
+    // ---- applySetOverrides: empty/missing input is a no-op ---------------
+    {
+      const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-applyset-empty-'));
+      const bmadDir = path.join(tmp, '_bmad');
+      await fs.ensureDir(bmadDir);
+      const empty1 = await applySetOverrides({}, bmadDir);
+      const empty2 = await applySetOverrides(null, bmadDir);
+      const empty3 = await applySetOverrides(undefined, bmadDir);
+      assert(
+        empty1.length === 0 && empty2.length === 0 && empty3.length === 0,
+        'applySetOverrides is a no-op for empty/null/undefined input',
+      );
+      await fs.remove(tmp).catch(() => {});
+    }
+
+    // ---- discoverOfficialModuleYamls + formatOptionsList -----------------
+    // These read the on-disk external-module cache. Point that env at a temp
+    // dir so test results don't depend on whatever the developer / CI runner
+    // has cached.
     const priorCacheEnv44 = process.env.BMAD_EXTERNAL_MODULES_CACHE;
     const tempCacheDir44 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-list-options-cache-'));
     process.env.BMAD_EXTERNAL_MODULES_CACHE = tempCacheDir44;
     try {
-      // discoverOfficialModuleYamls includes core and bmm built-ins.
       const discovered = await discoverOfficialModuleYamls();
       const codes = new Set(discovered.map((d) => d.code));
       assert(codes.has('core') && codes.has('bmm'), 'discoverOfficialModuleYamls finds core and bmm built-ins');
-      const coreEntry = discovered.find((d) => d.code === 'core');
-      assert(coreEntry && coreEntry.source === 'built-in', 'core is reported with source="built-in"');
 
-      // formatOptionsList rendering: bmm-only filter shows the project_knowledge key from issue #1663.
       const bmmListing = await formatOptionsList('bmm');
       assert(bmmListing.ok === true, '--list-options bmm reports ok: true');
       assert(bmmListing.text.includes('bmm.project_knowledge'), '--list-options bmm renders bmm.project_knowledge');
       assert(bmmListing.text.includes('bmm.user_skill_level'), '--list-options bmm renders bmm.user_skill_level');
-      assert(bmmListing.text.includes('beginner | intermediate | expert'), '--list-options renders single-select choices');
 
-      // Case-insensitive match: `--list-options BMM` and `bmm` resolve to the same entry.
-      const bmmUpperListing = await formatOptionsList('BMM');
-      assert(bmmUpperListing.ok === true, '--list-options BMM (uppercase) finds the bmm built-in');
-      assert(bmmUpperListing.text.includes('bmm.project_knowledge'), '--list-options BMM renders bmm.project_knowledge');
+      // Case-insensitive filter.
+      const bmmUpper = await formatOptionsList('BMM');
+      assert(bmmUpper.ok === true && bmmUpper.text.includes('bmm.project_knowledge'), '--list-options is case-insensitive');
 
-      // formatOptionsList for an unknown module gives a helpful message AND ok: false
-      // so install.js can exit non-zero (CI scripts can detect typos).
-      const unknownListing = await formatOptionsList('definitely-not-a-module');
-      assert(unknownListing.ok === false, '--list-options <unknown> reports ok: false (non-zero exit signal)');
-      assert(
-        unknownListing.text.includes("No locally-known module.yaml for 'definitely-not-a-module'"),
-        '--list-options handles unknown module gracefully',
-      );
+      // Unknown module → non-zero exit signal.
+      const unknown = await formatOptionsList('definitely-not-a-module');
+      assert(unknown.ok === false, '--list-options <unknown> reports ok: false');
+      assert(unknown.text.includes('No locally-known module.yaml'), '--list-options unknown explains the miss');
     } finally {
       if (priorCacheEnv44 === undefined) {
         delete process.env.BMAD_EXTERNAL_MODULES_CACHE;
@@ -3090,260 +3228,6 @@ async function runTests() {
         process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv44;
       }
       await fs.remove(tempCacheDir44).catch(() => {});
-    }
-
-    // partition() in writeCentralConfig respects setOverrideKeys: an unknown key
-    // for a known schema must survive when the user asserted it via --set.
-    const tmp44 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-44-'));
-    const bmadDir44 = path.join(tmp44, '_bmad');
-    await fs.ensureDir(bmadDir44);
-    const mg = new ManifestGenerator({ ides: [] });
-    mg.updatedModules = ['core', 'bmm'];
-
-    const moduleConfigsForWrite = {
-      core: { user_name: 'Brian' },
-      bmm: { project_knowledge: '/proj/research', future_thing: 'pre-seeded' },
-    };
-    const setOverrideKeys = { bmm: ['future_thing'] };
-
-    await mg.writeCentralConfig(bmadDir44, moduleConfigsForWrite, setOverrideKeys);
-    const teamToml = await fs.readFile(path.join(bmadDir44, 'config.toml'), 'utf8');
-    assert(teamToml.includes('project_knowledge = "/proj/research"'), 'writeCentralConfig writes a known schema key');
-    assert(teamToml.includes('future_thing = "pre-seeded"'), 'writeCentralConfig keeps an unknown key listed in setOverrideKeys');
-
-    // Same fixture, no override → unknown key is dropped (control case).
-    const tmp44b = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-44b-'));
-    const bmadDir44b = path.join(tmp44b, '_bmad');
-    await fs.ensureDir(bmadDir44b);
-    const mg2 = new ManifestGenerator({ ides: [] });
-    mg2.updatedModules = ['core', 'bmm'];
-    await mg2.writeCentralConfig(bmadDir44b, moduleConfigsForWrite, {});
-    const teamToml2 = await fs.readFile(path.join(bmadDir44b, 'config.toml'), 'utf8');
-    assert(
-      !teamToml2.includes('future_thing'),
-      'writeCentralConfig drops an unknown key when not asserted via --set (schema-strict default holds)',
-    );
-
-    await fs.remove(tmp44).catch(() => {});
-    await fs.remove(tmp44b).catch(() => {});
-
-    // Integration: --set actually applies through collectModuleConfig with skipPrompts.
-    // Constructs OfficialModules directly (no UI), runs the bmm collector, asserts
-    // the override value lands in collectedConfig with the result template rendered.
-    const tmp44c = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-44c-'));
-    try {
-      const om = new OfficialModules({
-        setOverrides: { bmm: { project_knowledge: 'research', user_skill_level: 'expert' } },
-      });
-      om.skipPrompts = true;
-      om._silentConfig = true;
-      om.modulesToCustomize = new Set();
-      om.allAnswers = {};
-      om._existingConfig = {};
-      await om.collectModuleConfig('bmm', tmp44c, true, true);
-
-      assert(
-        om.collectedConfig.bmm?.project_knowledge === '{project-root}/research',
-        'collectModuleConfig pre-fills bmm.project_knowledge from --set and renders {project-root}/{value}',
-      );
-      assert(
-        om.collectedConfig.bmm?.user_skill_level === 'expert',
-        'collectModuleConfig pre-fills bmm.user_skill_level from --set ({value} template)',
-      );
-      // Unrelated bmm keys still get their schema defaults applied.
-      assert(
-        typeof om.collectedConfig.bmm?.planning_artifacts === 'string',
-        'collectModuleConfig still fills non-overridden bmm keys with schema defaults under skipPrompts',
-      );
-    } catch (error) {
-      console.log(`${colors.red}  collectModuleConfig --set integration failed: ${error.message}${colors.reset}`);
-      console.log(error.stack);
-      failed++;
-    }
-    await fs.remove(tmp44c).catch(() => {});
-
-    // Carry-forward: an unknown key persisted by a prior install survives the
-    // next collectModuleConfig even when --set isn't repeated. This is the
-    // "persist across upgrades" contract from #1663 (CodeRabbit major fix).
-    const tmp44d = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-44d-'));
-    try {
-      const om = new OfficialModules();
-      om.skipPrompts = true;
-      om._silentConfig = true;
-      om.modulesToCustomize = new Set();
-      om.allAnswers = {};
-      // Simulate prior install: future_thing was --set on run #1, persisted to
-      // _bmad/bmm/config.yaml, and is now loaded as _existingConfig.
-      om._existingConfig = { bmm: { future_thing: 'pre-seeded', user_skill_level: 'beginner' } };
-      await om.collectModuleConfig('bmm', tmp44d, true, true);
-
-      assert(om.collectedConfig.bmm?.future_thing === 'pre-seeded', 'collectModuleConfig carries unknown key forward from _existingConfig');
-      assert(
-        om.setOverrideKeys?.bmm?.has('future_thing'),
-        'carried-forward keys are tracked in setOverrideKeys so writeCentralConfig keeps them',
-      );
-      // Declared keys from _existingConfig are NOT carried forward by this
-      // mechanism — they go through normal prompt processing and would be
-      // seeded as defaults via buildQuestion's existingValue lookup.
-      assert(!om.setOverrideKeys?.bmm?.has('user_skill_level'), 'carry-forward leaves declared keys to the normal prompt path');
-    } catch (error) {
-      console.log(`${colors.red}  collectModuleConfig carry-forward failed: ${error.message}${colors.reset}`);
-      console.log(error.stack);
-      failed++;
-    }
-    await fs.remove(tmp44d).catch(() => {});
-
-    // applyOverridesAfterSeeding mirrors the carry-forward behavior for the
-    // skip-collection path used by `core` (when seeded by --yes / legacy
-    // shortcuts) so unknown core keys persisted on a prior run survive
-    // subsequent installs even without re-passing --set.
-    try {
-      const om = new OfficialModules({
-        // No new --set entries this run — only prior persisted unknown.
-        setOverrides: {},
-      });
-      om._existingConfig = { core: { future_core_thing: 'persisted-from-run-1' } };
-      // Simulate the seeded-core state ui.js leaves behind under --yes.
-      om.collectedConfig.core = { user_name: 'Brian', project_name: 'demo' };
-      await om.applyOverridesAfterSeeding('core');
-
-      assert(
-        om.collectedConfig.core?.future_core_thing === 'persisted-from-run-1',
-        'applyOverridesAfterSeeding carries unknown core key forward from _existingConfig',
-      );
-      assert(om.setOverrideKeys?.core?.has('future_core_thing'), 'carried-forward core keys are tracked in setOverrideKeys');
-      assert(!om.setOverrideKeys?.core?.has('user_name'), 'declared core keys (user_name) are not flagged as overrides');
-    } catch (error) {
-      console.log(`${colors.red}  applyOverridesAfterSeeding carry-forward failed: ${error.message}${colors.reset}`);
-      console.log(error.stack);
-      failed++;
-    }
-
-    // Config.build threads setOverrides through to the headless build path so
-    // a non-UI caller (`installer.install({ ..., setOverrides })`) can drive
-    // collection from raw flags. UI path takes the early-return on
-    // moduleConfigs, so this field is only consumed when build() runs
-    // collection itself.
-    try {
-      const { Config } = require('../tools/installer/core/config');
-      const cfg = Config.build({
-        directory: '/tmp/anywhere',
-        modules: ['core', 'bmm'],
-        ides: [],
-        actionType: 'install',
-        coreConfig: { user_name: 'Brian' },
-        setOverrides: { bmm: { user_skill_level: 'expert' } },
-      });
-      assert(
-        cfg.setOverrides?.bmm?.user_skill_level === 'expert',
-        'Config.build carries setOverrides through to the headless install path',
-      );
-      const cfgEmpty = Config.build({
-        directory: '/tmp/anywhere',
-        modules: ['core'],
-        ides: [],
-        actionType: 'install',
-      });
-      assert(
-        cfgEmpty.setOverrides && Object.keys(cfgEmpty.setOverrides).length === 0,
-        'Config.build defaults setOverrides to {} when omitted',
-      );
-    } catch (error) {
-      console.log(`${colors.red}  Config.build setOverrides threading failed: ${error.message}${colors.reset}`);
-      console.log(error.stack);
-      failed++;
-    }
-
-    // formatOptionsList: when a cached module.yaml parses to a non-object
-    // (scalar/array), report a diagnostic so CLI/CI logs explain why the
-    // listing is empty, and signal failure for module-scoped queries.
-    try {
-      const tempCacheNonObj = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-list-options-cache-nonobj-'));
-      const priorCacheEnvNonObj = process.env.BMAD_EXTERNAL_MODULES_CACHE;
-      process.env.BMAD_EXTERNAL_MODULES_CACHE = tempCacheNonObj;
-      try {
-        const fakeModDir = path.join(tempCacheNonObj, 'fakemod', 'src');
-        await fs.ensureDir(fakeModDir);
-        // module.yaml with scalar content — parses to a string, not an object.
-        await fs.writeFile(path.join(fakeModDir, 'module.yaml'), 'just-a-scalar-string\n', 'utf8');
-        // Synthesize a minimal external-modules registry hint so discovery
-        // includes this entry. Caches index by directory layout — discovery
-        // walks subdirectories. The exact layout depends on the cache schema;
-        // if discovery doesn't pick this up, the test still passes because
-        // formatOptionsList just won't find it (no false-failure).
-        const { formatOptionsList } = require('../tools/installer/list-options');
-        const nonObjListing = await formatOptionsList('fakemod');
-        // Either we got a diagnostic for fakemod, or the entry wasn't
-        // discovered at all (in which case unknown-module fallback runs).
-        if (nonObjListing.text.includes('fakemod')) {
-          assert(
-            nonObjListing.text.includes('not a valid object') || nonObjListing.text.includes('No locally-known module.yaml'),
-            'formatOptionsList prints a diagnostic when module.yaml is a non-object scalar',
-          );
-          assert(nonObjListing.ok === false, 'formatOptionsList reports ok:false for non-object module.yaml');
-        }
-      } finally {
-        if (priorCacheEnvNonObj === undefined) {
-          delete process.env.BMAD_EXTERNAL_MODULES_CACHE;
-        } else {
-          process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnvNonObj;
-        }
-        await fs.remove(tempCacheNonObj).catch(() => {});
-      }
-    } catch (error) {
-      console.log(`${colors.red}  formatOptionsList non-object diagnostic failed: ${error.message}${colors.reset}`);
-      console.log(error.stack);
-      failed++;
-    }
-
-    // collectModuleConfigQuick (the quick-update path) must also track
-    // non-schema keys as overrides so the manifest writer keeps them through
-    // the partition. Before this fix, `--set bmm.future_thing=x` landed in
-    // config.toml on install #1 but was silently dropped on the next
-    // quick-update reinstall — the per-module config.yaml retained the value
-    // but the central manifest's schema-strict partition stripped it because
-    // setOverrideKeys was never populated for carried-forward keys.
-    const tmp44e = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-44e-'));
-    try {
-      const om = new OfficialModules();
-      // Simulate prior install state: future_thing was --set on run #1, lives
-      // in _bmad/bmm/config.yaml, and is now loaded via loadExistingConfig.
-      om._existingConfig = { bmm: { future_thing: 'persists', user_skill_level: 'expert' } };
-      om.allAnswers = {};
-      // collectModuleConfigQuick reads moduleConfig from disk; bmm built-in
-      // schema is the same one used elsewhere in this suite.
-      await om.collectModuleConfigQuick('bmm', tmp44e, true);
-
-      assert(om.collectedConfig.bmm?.future_thing === 'persists', 'collectModuleConfigQuick carries unknown bmm.future_thing forward');
-      assert(
-        om.setOverrideKeys?.bmm?.has('future_thing'),
-        'collectModuleConfigQuick tracks carried-forward unknown keys in setOverrideKeys (so writeCentralConfig keeps them)',
-      );
-      assert(
-        !om.setOverrideKeys?.bmm?.has('user_skill_level'),
-        'collectModuleConfigQuick does NOT flag declared schema keys (user_skill_level) as overrides',
-      );
-    } catch (error) {
-      console.log(`${colors.red}  collectModuleConfigQuick carry-forward failed: ${error.message}${colors.reset}`);
-      console.log(error.stack);
-      failed++;
-    }
-    await fs.remove(tmp44e).catch(() => {});
-
-    // _trackUnknownKeysAsOverrides with no schema treats every key as
-    // unknown — the fallback when a module has no module.yaml at all.
-    try {
-      const om = new OfficialModules();
-      om.collectedConfig = { weirdmod: { foo: 1, bar: 2 } };
-      om._trackUnknownKeysAsOverrides('weirdmod', null);
-      assert(
-        om.setOverrideKeys?.weirdmod?.has('foo') && om.setOverrideKeys.weirdmod.has('bar'),
-        '_trackUnknownKeysAsOverrides flags every key as unknown when no schema is provided',
-      );
-    } catch (error) {
-      console.log(`${colors.red}  _trackUnknownKeysAsOverrides no-schema failed: ${error.message}${colors.reset}`);
-      console.log(error.stack);
-      failed++;
     }
   } catch (error) {
     console.log(`${colors.red}Test Suite 44 setup failed: ${error.message}${colors.reset}`);

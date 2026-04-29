@@ -14,7 +14,6 @@ class Config {
     moduleConfigs,
     quickUpdate,
     channelOptions,
-    setOverrideKeys,
     setOverrides,
   }) {
     this.directory = directory;
@@ -28,16 +27,10 @@ class Config {
     this._quickUpdate = quickUpdate;
     // channelOptions carry a Map + Set; don't deep-freeze.
     this.channelOptions = channelOptions || null;
-    // Per-module list of keys originating from `--set <module>.<key>=<value>`
-    // that are NOT in the module's prompt schema. The manifest writer keeps
-    // these through the schema-strict partition so user-asserted overrides
-    // survive into config.toml even when the schema doesn't declare them.
-    this.setOverrideKeys = setOverrideKeys || {};
-    // Raw `--set` values keyed by module/key. The UI flow applies these in
-    // `collectModuleConfigs` and populates `moduleConfigs`, so this field is
-    // primarily for the non-UI path where `OfficialModules.build` runs
-    // headless collection itself and needs the raw values to pre-seed
-    // answers and skip prompts.
+    // Parsed `--set <module>.<key>=<value>` overrides, applied as a TOML
+    // patch AFTER the install finishes. Shape: { moduleCode: { key: value } }.
+    // Intentionally NOT integrated with the prompt/template/schema flow; see
+    // `tools/installer/set-overrides.js` for the rationale and tradeoffs.
     this.setOverrides = setOverrides || {};
     Object.freeze(this);
   }
@@ -64,7 +57,6 @@ class Config {
       moduleConfigs: userInput.moduleConfigs || null,
       quickUpdate: userInput._quickUpdate || false,
       channelOptions: userInput.channelOptions || null,
-      setOverrideKeys: userInput.setOverrideKeys || {},
       setOverrides: userInput.setOverrides || {},
     });
   }
