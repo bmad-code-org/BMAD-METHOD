@@ -1277,6 +1277,19 @@ class Installer {
       lastModified: new Date().toISOString(),
     };
 
+    // Convert per-module override-key Sets to plain string arrays so the
+    // value round-trips cleanly through Config.build / Object.freeze. Mirrors
+    // ui.collectModuleConfigs's return shape so quick-update's central
+    // manifest writer applies the same schema-strict partition exemption,
+    // letting prior `--set <module>.<key>=<value>` forward-compat keys
+    // survive subsequent quick-updates without re-passing the flag.
+    const setOverrideKeys = {};
+    if (quickModules.setOverrideKeys) {
+      for (const [moduleCode, keys] of Object.entries(quickModules.setOverrideKeys)) {
+        setOverrideKeys[moduleCode] = [...keys];
+      }
+    }
+
     // Build config and delegate to install()
     const installConfig = {
       directory: projectDir,
@@ -1284,6 +1297,7 @@ class Installer {
       ides: configuredIdes,
       coreConfig: quickModules.collectedConfig.core,
       moduleConfigs: quickModules.collectedConfig,
+      setOverrideKeys,
       actionType: 'install',
       _quickUpdate: true,
       _preserveModules: skippedModules,

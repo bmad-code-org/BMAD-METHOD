@@ -1266,6 +1266,42 @@ class OfficialModules {
    * @param {boolean} silentMode - If true, only prompt for new/missing fields
    * @returns {boolean} True if new fields were prompted, false if all fields existed
    */
+  /**
+   * Track keys carried over from `_existingConfig` (or merged in from elsewhere)
+   * that are NOT declared in the module's `module.yaml` schema. The manifest
+   * writer's schema-strict partition would otherwise drop these on the next
+   * write, silently undoing the user's prior `--set <module>.<key>=<value>`
+   * forward-compat assertion. Used by both `collectModuleConfig` and
+   * `collectModuleConfigQuick` so the persistence contract holds across
+   * regular updates and quick-updates alike.
+   *
+   * Without a schema (`moduleSchema = null`), every key is treated as unknown
+   * since we can't tell what's declared.
+   */
+  _trackUnknownKeysAsOverrides(moduleName, moduleSchema) {
+    const moduleData = this.collectedConfig?.[moduleName];
+    if (!moduleData || typeof moduleData !== 'object') return;
+
+    const declaredKeys = new Set();
+    if (moduleSchema && typeof moduleSchema === 'object') {
+      for (const [key, decl] of Object.entries(moduleSchema)) {
+        if (key === 'prompt') continue;
+        if (decl && typeof decl === 'object' && (decl.prompt !== undefined || decl.result !== undefined)) {
+          declaredKeys.add(key);
+        }
+      }
+    }
+
+    if (!this.setOverrideKeys) this.setOverrideKeys = {};
+    if (!this.setOverrideKeys[moduleName]) this.setOverrideKeys[moduleName] = new Set();
+
+    for (const key of Object.keys(moduleData)) {
+      if (!declaredKeys.has(key)) {
+        this.setOverrideKeys[moduleName].add(key);
+      }
+    }
+  }
+
   async collectModuleConfigQuick(moduleName, projectDir, silentMode = true) {
     this.currentProjectDir = projectDir;
     // Load existing config if not already loaded
@@ -1299,6 +1335,10 @@ class OfficialModules {
         }
         this.collectedConfig[moduleName] = { ...this._existingConfig[moduleName] };
       }
+      // Without a schema we can't tell declared from undeclared, so every
+      // carried-forward key gets the override exemption to survive
+      // writeCentralConfig's schema-strict partition.
+      this._trackUnknownKeysAsOverrides(moduleName, null);
       return false;
     }
 
@@ -1306,6 +1346,8 @@ class OfficialModules {
     const moduleConfig = yaml.parse(configContent);
 
     if (!moduleConfig) {
+      // Schema unparseable — same fallback as missing schema.
+      this._trackUnknownKeysAsOverrides(moduleName, null);
       return false;
     }
 
@@ -1324,6 +1366,7 @@ class OfficialModules {
       const moduleDisplayName = moduleConfig.header || `${moduleName.toUpperCase()} Module`;
       await prompts.log.step(moduleDisplayName);
       await prompts.log.message(`  \u2713 ${moduleConfig.subheader}`);
+      this._trackUnknownKeysAsOverrides(moduleName, moduleConfig);
       return false; // No new fields
     }
 
@@ -1378,6 +1421,9 @@ class OfficialModules {
 
       // Show "no config" message for modules with no new questions (that have config keys)
       await prompts.log.message(`  \u2713 ${moduleName.toUpperCase()} module already up to date`);
+      // Track non-schema keys so the manifest writer keeps prior `--set`
+      // assertions through quick-update's schema-strict partition.
+      this._trackUnknownKeysAsOverrides(moduleName, moduleConfig);
       return false; // No new fields
     }
 
@@ -1464,6 +1510,11 @@ class OfficialModules {
         }
       }
     }
+
+    // Track non-schema keys carried over so writeCentralConfig keeps them
+    // through the partition (forward-compat contract: a `--set` from a prior
+    // run survives quick-update reinstalls without re-passing the flag).
+    this._trackUnknownKeysAsOverrides(moduleName, moduleConfig);
 
     await this.displayModulePostConfigNotes(moduleName, moduleConfig);
 

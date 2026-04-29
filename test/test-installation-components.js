@@ -3295,6 +3295,56 @@ async function runTests() {
       console.log(error.stack);
       failed++;
     }
+
+    // collectModuleConfigQuick (the quick-update path) must also track
+    // non-schema keys as overrides so the manifest writer keeps them through
+    // the partition. Before this fix, `--set bmm.future_thing=x` landed in
+    // config.toml on install #1 but was silently dropped on the next
+    // quick-update reinstall — the per-module config.yaml retained the value
+    // but the central manifest's schema-strict partition stripped it because
+    // setOverrideKeys was never populated for carried-forward keys.
+    const tmp44e = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-44e-'));
+    try {
+      const om = new OfficialModules();
+      // Simulate prior install state: future_thing was --set on run #1, lives
+      // in _bmad/bmm/config.yaml, and is now loaded via loadExistingConfig.
+      om._existingConfig = { bmm: { future_thing: 'persists', user_skill_level: 'expert' } };
+      om.allAnswers = {};
+      // collectModuleConfigQuick reads moduleConfig from disk; bmm built-in
+      // schema is the same one used elsewhere in this suite.
+      await om.collectModuleConfigQuick('bmm', tmp44e, true);
+
+      assert(om.collectedConfig.bmm?.future_thing === 'persists', 'collectModuleConfigQuick carries unknown bmm.future_thing forward');
+      assert(
+        om.setOverrideKeys?.bmm?.has('future_thing'),
+        'collectModuleConfigQuick tracks carried-forward unknown keys in setOverrideKeys (so writeCentralConfig keeps them)',
+      );
+      assert(
+        !om.setOverrideKeys?.bmm?.has('user_skill_level'),
+        'collectModuleConfigQuick does NOT flag declared schema keys (user_skill_level) as overrides',
+      );
+    } catch (error) {
+      console.log(`${colors.red}  collectModuleConfigQuick carry-forward failed: ${error.message}${colors.reset}`);
+      console.log(error.stack);
+      failed++;
+    }
+    await fs.remove(tmp44e).catch(() => {});
+
+    // _trackUnknownKeysAsOverrides with no schema treats every key as
+    // unknown — the fallback when a module has no module.yaml at all.
+    try {
+      const om = new OfficialModules();
+      om.collectedConfig = { weirdmod: { foo: 1, bar: 2 } };
+      om._trackUnknownKeysAsOverrides('weirdmod', null);
+      assert(
+        om.setOverrideKeys?.weirdmod?.has('foo') && om.setOverrideKeys.weirdmod.has('bar'),
+        '_trackUnknownKeysAsOverrides flags every key as unknown when no schema is provided',
+      );
+    } catch (error) {
+      console.log(`${colors.red}  _trackUnknownKeysAsOverrides no-schema failed: ${error.message}${colors.reset}`);
+      console.log(error.stack);
+      failed++;
+    }
   } catch (error) {
     console.log(`${colors.red}Test Suite 44 setup failed: ${error.message}${colors.reset}`);
     console.log(error.stack);
