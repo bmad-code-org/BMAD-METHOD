@@ -16,6 +16,7 @@ const {
 } = require('./modules/channel-plan');
 const channelResolver = require('./modules/channel-resolver');
 const prompts = require('./prompts');
+const { parseSetEntries } = require('./set-overrides');
 
 const manifest = new Manifest();
 
@@ -287,7 +288,7 @@ class UI {
         // Get tool selection
         const toolSelection = await this.promptToolSelection(confirmedDirectory, options);
 
-        const moduleConfigs = await this.collectModuleConfigs(confirmedDirectory, selectedModules, {
+        const { moduleConfigs, setOverrides } = await this.collectModuleConfigs(confirmedDirectory, selectedModules, {
           ...options,
           channelOptions,
         });
@@ -313,6 +314,7 @@ class UI {
           skipIde: toolSelection.skipIde,
           coreConfig: moduleConfigs.core || {},
           moduleConfigs: moduleConfigs,
+          setOverrides,
           skipPrompts: options.yes || false,
           channelOptions,
         };
@@ -364,7 +366,7 @@ class UI {
     await this._interactiveChannelGate({ options, channelOptions, selectedModules });
 
     let toolSelection = await this.promptToolSelection(confirmedDirectory, options);
-    const moduleConfigs = await this.collectModuleConfigs(confirmedDirectory, selectedModules, {
+    const { moduleConfigs, setOverrides } = await this.collectModuleConfigs(confirmedDirectory, selectedModules, {
       ...options,
       channelOptions,
     });
@@ -390,6 +392,7 @@ class UI {
       skipIde: toolSelection.skipIde,
       coreConfig: moduleConfigs.core || {},
       moduleConfigs: moduleConfigs,
+      setOverrides,
       skipPrompts: options.yes || false,
       channelOptions,
     };
@@ -709,6 +712,33 @@ class UI {
    */
   async collectModuleConfigs(directory, modules, options = {}) {
     const { OfficialModules } = require('./modules/official-modules');
+
+    // Parse --set up front purely to surface user-error before the install
+    // burns time on the network / filesystem. The actual application happens
+    // in installer.install() as a post-write TOML patch — see
+    // `tools/installer/set-overrides.js`. We also warn about overrides
+    // targeting modules the user didn't include, since those will silently
+    // miss the file the patch step looks for.
+    let setOverrides = {};
+    try {
+      setOverrides = parseSetEntries(options.set || []);
+    } catch (error) {
+      // install.js validated already; rethrow as-is for the user.
+      throw error;
+    }
+    // Drop overrides for modules that aren't in the install set so the
+    // post-install patch step doesn't create orphan sections in config.toml
+    // for modules that were never installed.
+    const selectedModuleSet = new Set(['core', ...modules]);
+    for (const moduleCode of Object.keys(setOverrides)) {
+      if (!selectedModuleSet.has(moduleCode)) {
+        await prompts.log.warn(
+          `--set ${moduleCode}.* — module '${moduleCode}' is not in the install set; values will be ignored. Add it to --modules to apply.`,
+        );
+        delete setOverrides[moduleCode];
+      }
+    }
+
     const configCollector = new OfficialModules({ channelOptions: options.channelOptions });
 
     // Seed core config from CLI options if provided
@@ -774,7 +804,7 @@ class UI {
       skipPrompts: options.yes || false,
     });
 
-    return configCollector.collectedConfig;
+    return { moduleConfigs: configCollector.collectedConfig, setOverrides };
   }
 
   /**
