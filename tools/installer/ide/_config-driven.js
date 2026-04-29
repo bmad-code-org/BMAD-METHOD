@@ -57,6 +57,15 @@ function isSafeCanonicalId(value) {
 // OpenCode's native `@skills/<id>` skill-reference syntax.
 const DEFAULT_COMMANDS_BODY_TEMPLATE = '@skills/{canonicalId}';
 
+// `bmad-help` is the structural meta-skill across BMAD: the orientation
+// helper that points users at every other skill. It is invoked
+// persona-style ("ask the helper") even though it has no [agent]
+// customize.toml of its own (it isn't a configurable persona). Surfacing
+// it in agents-picker contexts mirrors how users actually reach for it,
+// and the inclusion is unique and stable — there is no second meta-help
+// skill to encourage growth of this exception.
+const ALWAYS_AGENT_IDS = new Set(['bmad-help']);
+
 // Is this skill a persona agent (vs. a workflow/tool/standalone skill)?
 // Used by platforms that surface only persona agents (e.g. Copilot's Custom
 // Agents picker). Signal: the skill's source `customize.toml` has an
@@ -68,13 +77,15 @@ const DEFAULT_COMMANDS_BODY_TEMPLATE = '@skills/{canonicalId}';
 // GDS, WDS, TEA, and correctly excludes meta-skills like
 // `bmad-agent-builder` (a skill-builder workflow whose canonical id
 // contains `-agent-` but which has no [agent] section because it isn't a
-// persona itself).
+// persona itself). Plus the explicit `ALWAYS_AGENT_IDS` set for the one
+// structural exception (`bmad-help`).
 //
 // Reading the source toml — at install time the source skill directory
 // (resolved from manifest record.path) still exists; cleanup runs later
 // in the install flow.
 async function isAgentSkill(record, bmadDir) {
   if (!record?.path || !bmadDir) return false;
+  if (record.canonicalId && ALWAYS_AGENT_IDS.has(record.canonicalId)) return true;
   const bmadFolderName = path.basename(bmadDir);
   const bmadPrefix = bmadFolderName + '/';
   const relativePath = record.path.startsWith(bmadPrefix) ? record.path.slice(bmadPrefix.length) : record.path;
