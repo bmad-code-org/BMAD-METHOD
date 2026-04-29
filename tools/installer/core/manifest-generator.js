@@ -810,7 +810,21 @@ class ManifestGenerator {
     const modulePath = path.join(this.bmadDir, moduleName);
     if (!(await fs.pathExists(modulePath))) return false;
     if (await fs.pathExists(path.join(modulePath, 'module.yaml'))) return false;
+    if (!(await this._moduleUsesSourceRoot(moduleName))) return false;
     return this._hasSkillMdRecursive(modulePath);
+  }
+
+  async _moduleUsesSourceRoot(moduleName) {
+    if (!this.sourceRootModuleCodes) {
+      try {
+        const { ExternalModuleManager } = require('../modules/external-manager');
+        const externalModules = await new ExternalModuleManager().listAvailable();
+        this.sourceRootModuleCodes = new Set(externalModules.filter((mod) => mod.sourceRoot).map((mod) => mod.code));
+      } catch {
+        this.sourceRootModuleCodes = new Set();
+      }
+    }
+    return this.sourceRootModuleCodes.has(moduleName);
   }
 }
 

@@ -16,6 +16,15 @@ function normalizeChannelName(raw) {
   return VALID_CHANNELS.has(lower) ? lower : null;
 }
 
+function normalizeStringList(raw) {
+  if (raw == null || raw === '') return [];
+  const values = Array.isArray(raw) ? raw : [raw];
+  return values
+    .filter((value) => ['string', 'number', 'boolean'].includes(typeof value))
+    .map((value) => String(value).trim())
+    .filter(Boolean);
+}
+
 /**
  * Conservative quoting for tag names passed to git commands. Tags are
  * user-typed (--pin) or come from the GitHub API. Only allow the semver
@@ -120,6 +129,9 @@ class ExternalModuleManager {
    * @returns {Object} Normalized module info
    */
   _normalizeModule(mod, key) {
+    const installTargets = mod.install_targets ?? mod['install-targets'] ?? mod.installTargets;
+    const workerTargets = mod.worker_targets ?? mod['worker-targets'] ?? mod.workerTargets;
+
     return {
       key: key || mod.name,
       url: mod.repository || mod.url,
@@ -131,9 +143,9 @@ class ExternalModuleManager {
       defaultSelected: mod.default_selected === true || mod.defaultSelected === true,
       type: mod.type || 'bmad-org',
       npmPackage: mod.npm_package || mod.npmPackage || null,
-      installTargets: mod.install_targets || mod['install-targets'] || mod.installTargets || null,
-      workerTargets: mod.worker_targets || mod['worker-targets'] || mod.workerTargets || [],
-      requirements: mod.requirements || [],
+      installTargets: normalizeStringList(installTargets),
+      workerTargets: normalizeStringList(workerTargets),
+      requirements: normalizeStringList(mod.requirements),
       installNote: mod.install_note || mod['install-note'] || mod.installNote || null,
       defaultChannel: normalizeChannelName(mod.default_channel || mod.defaultChannel) || 'stable',
       builtIn: mod.built_in === true,
@@ -513,7 +525,12 @@ class ExternalModuleManager {
     const cloneDir = await this.cloneExternalModule(moduleCode, options);
 
     if (moduleInfo.sourceRoot) {
-      const sourceRoot = path.join(cloneDir, moduleInfo.sourceRoot);
+      const repoRoot = path.resolve(cloneDir);
+      const sourceRoot = path.resolve(repoRoot, moduleInfo.sourceRoot);
+      const relativeSourceRoot = path.relative(repoRoot, sourceRoot);
+      if (relativeSourceRoot === '..' || relativeSourceRoot.startsWith(`..${path.sep}`) || path.isAbsolute(relativeSourceRoot)) {
+        throw new Error(`External module '${moduleCode}' source-root escapes repository: ${moduleInfo.sourceRoot}`);
+      }
       if (!(await fs.pathExists(sourceRoot))) {
         throw new Error(`External module '${moduleCode}' source-root not found: ${moduleInfo.sourceRoot}`);
       }

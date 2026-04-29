@@ -116,6 +116,7 @@ async function createAutomatorBmadFixture() {
       path.join(skillDir, 'SKILL.md'),
       ['---', `name: ${skillName}`, 'description: Automator skill', '---', '', 'Automator body.'].join('\n'),
     );
+    await fs.writeFile(path.join(skillDir, 'workflow.md'), `# ${skillName}\n\nAutomator workflow body.\n`);
   }
 
   return fixtureDir;
@@ -3573,6 +3574,28 @@ async function runTests() {
       automatorInfo42.installTargets.length === 1 && automatorInfo42.installTargets.includes('claude-code'),
       'BMad Automator is limited to Claude Code skill installation',
     );
+    const normalizedInfo42 = externalManager42._normalizeModule({
+      name: 'bad-shapes',
+      code: 'bad',
+      repository: 'https://example.com/bad.git',
+      install_targets: 'claude-code',
+      worker_targets: { bad: true },
+      requirements: ['tmux', { bad: true }, false],
+    });
+    assert(
+      Array.isArray(normalizedInfo42.installTargets) && normalizedInfo42.installTargets.includes('claude-code'),
+      'External module install targets normalize scalar values to arrays',
+    );
+    assert(
+      Array.isArray(normalizedInfo42.workerTargets) && normalizedInfo42.workerTargets.length === 0,
+      'External module worker targets drop invalid shapes',
+    );
+    assert(
+      normalizedInfo42.requirements.length === 2 &&
+        normalizedInfo42.requirements.includes('tmux') &&
+        normalizedInfo42.requirements.includes('false'),
+      'External module requirements normalize scalar array entries',
+    );
 
     tempProjectDir42 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-automator-target-'));
     installedBmadDir42 = await createAutomatorBmadFixture();
@@ -3593,6 +3616,30 @@ async function runTests() {
       !(await fs.pathExists(path.join(tempProjectDir42, '.agents', 'skills', 'bmad-story-automator', 'SKILL.md'))),
       'Codex setup skips Claude Code-only automator skill',
     );
+    assert(
+      !(await fs.pathExists(path.join(tempProjectDir42, '.agents', 'skills', 'bmad-story-automator-review', 'SKILL.md'))),
+      'Codex setup skips Claude Code-only automator review skill',
+    );
+
+    const escapeRoot42 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-source-root-'));
+    const escapeRepo42 = path.join(escapeRoot42, 'repo');
+    await fs.ensureDir(escapeRepo42);
+    const escapeManager42 = new ExternalModuleManager();
+    escapeManager42.getModuleByCode = async () => ({
+      code: 'escape',
+      builtIn: false,
+      sourceRoot: '../outside',
+    });
+    escapeManager42.cloneExternalModule = async () => escapeRepo42;
+    let rejectedEscapingSourceRoot42 = false;
+    try {
+      await escapeManager42.findExternalModuleSource('escape');
+    } catch (error) {
+      rejectedEscapingSourceRoot42 = error.message.includes('source-root escapes repository');
+    } finally {
+      await fs.remove(escapeRoot42).catch(() => {});
+    }
+    assert(rejectedEscapingSourceRoot42, 'External module source-root cannot escape cloned repository');
 
     const claudeResult42 = await ideManager42.setup('claude-code', tempProjectDir42, installedBmadDir42, {
       silent: true,
@@ -3607,8 +3654,12 @@ async function runTests() {
       await fs.pathExists(path.join(tempProjectDir42, '.claude', 'skills', 'bmad-story-automator-review', 'SKILL.md')),
       'Claude Code setup installs automator review skill',
     );
+    assert(
+      await fs.pathExists(path.join(tempProjectDir42, '.claude', 'skills', 'bmad-story-automator-review', 'workflow.md')),
+      'Claude Code setup copies automator workflow files',
+    );
   } catch (error) {
-    assert(false, 'Automator external skill-only module test succeeds', error.message);
+    assert(false, `Automator external skill-only module test succeeds: ${error.message}`);
   } finally {
     if (tempProjectDir42) await fs.remove(tempProjectDir42).catch(() => {});
     if (installedBmadDir42) await fs.remove(path.dirname(installedBmadDir42)).catch(() => {});
