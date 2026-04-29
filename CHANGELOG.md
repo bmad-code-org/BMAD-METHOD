@@ -1,5 +1,31 @@
 # Changelog
 
+## v6.6.0 - 2026-04-28
+
+### 💥 Breaking Changes
+
+* `--tools none` is no longer accepted; fresh `--yes` installs now require an explicit `--tools <id>`. Existing-install flows are unchanged. Run `npx bmad-method --list-tools` to see supported IDs (#2346)
+* `project_name` has moved from `[modules.bmm]` to `[core]` in `config.toml`. Existing installs are auto-migrated on next install/update — no manual action required (#2348)
+
+### 🎁 Features
+
+* **Non-interactive config for CI/Docker** — new `--set <module>.<key>=<value>` (repeatable) and `--list-options [module]` flags allow installer configuration without prompts. Routes values to the correct config file with prototype-pollution defenses (#2354)
+* **Brownfield epic scoping** — Create Epics and Stories workflow now detects file-overlap between epics and applies an Implementation Efficiency principle plus a design completeness gate, reducing unnecessary file churn (#1826)
+
+### 🐛 Fixes
+
+* **Custom module installer** — Azure DevOps URLs now parse correctly with multi-segment paths and `_git` prefixes (#2269); HTTP (non-HTTPS) Git URLs are preserved for self-hosted servers (#2344); community installs route through `PluginResolver` so marketplace plugins with nested `module.yaml` install all skills (#2331); URL-source modules resolve from disk cache on re-install instead of warning (#2323); local `--custom-content` modules resolve correctly and `[modules.<code>]` TOML keys use the module code rather than display name (#2316); `--yes` with `--custom-source` now runs the full update path so version tags are respected (#2336)
+* **Installer safety** — `--list-tools` flag added; empty/typo'd tool IDs rejected with specific errors (#2346)
+* **Channel and dist-tag handling** — installer launched from a prerelease (e.g. `@next`) now defaults external module channels to `next` instead of silently downgrading to stable (#2321); stable publishes advance the `@next` dist-tag so prerelease users no longer leapfrog or miss update notifications (#2320)
+* **Architecture validation gate** — step-07 validation template no longer ships pre-checked; status field is now templated against actual checklist completion (#2347)
+* **bmad-help data integrity** — `bmad-help.csv` is no longer transformed at merge time and is emitted in its documented schema; 31 misaligned rows in core/bmm `module-help.csv` repaired (#2349)
+* **Config robustness** — malformed `module.yaml` (scalars, arrays) is now rejected before crash (#2348)
+* **Legacy cleanup** — pre-v6.2.0 wrapper skills (`bmad-bmm-*`, `bmad-agent-bmm-*`) are removed automatically on upgrade so they no longer error with missing-file warnings (#2315)
+
+### 📚 Docs
+
+* Complete Chinese (zh-CN) translations for `named-agents.md` and `expand-bmad-for-your-org.md`; localized BMad Ecosystem sidebar (CIS, BMB, TEA, WDS) across zh-cn, vi-vn, fr-fr, cs-cz (#2355)
+
 ## v6.5.0 - 2026-04-26
 
 ### 🎁 Features
