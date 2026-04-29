@@ -128,58 +128,102 @@ class CustomModuleManager {
       };
     }
 
-    // HTTPS/HTTP URL: https://host/owner/repo[/tree/branch/subdir][.git]
-    const httpsMatch = trimmed.match(/^(https?):\/\/([^/]+)\/([^/]+)\/([^/.]+?)(?:\.git)?(\/.*)?$/);
-    if (httpsMatch) {
-      const [, protocol, host, owner, repo, remainder] = httpsMatch;
-      const cloneUrl = `${protocol}://${host}/${owner}/${repo}`;
-      let subdir = null;
-      let urlRef = null; // branch/tag extracted from /tree/<ref>/subdir
+    // HTTPS/HTTP URL: generic handling for any Git host.
+    // We avoid host-specific parsing — `git clone` will accept whatever URL the
+    // user provides. We only need to (a) separate an optional browser-style
+    // subdir suffix from the clone URL, (b) extract any embedded ref
+    // (branch/tag) from deep-path URLs, and (c) derive a cache key / display
+    // name from the path. The original protocol (http or https) is preserved.
+    if (/^https?:\/\//i.test(trimmed)) {
+      let url;
+      try {
+        url = new URL(trimmed);
+      } catch {
+        url = null;
+      }
 
-      if (remainder) {
-        // Extract subdir from deep path patterns used by various Git hosts
+      if (url && url.host) {
+        const host = url.host;
+        let repoPath = url.pathname.replace(/^\/+/, '').replace(/\/+$/, '');
+        let subdir = null;
+        let urlRef = null; // branch/tag/commit extracted from deep-path URLs
+
+        // Detect browser-style deep-path patterns that embed a ref
+        // (branch/tag/commit) and optional subdirectory. These appear
+        // across many hosts:
+        //   GitHub  /<repo>/tree|blob/<ref>[/<subdir>]
+        //   GitLab  /<repo>/-/tree|blob/<ref>[/<subdir>]
+        //   Gitea   /<repo>/src/<ref>[/<subdir>]
+        //   Gitea   /<repo>/src/(branch|commit|tag)/<ref>[/<subdir>]
+        // Group 1 = repo path prefix, Group 2 = ref, Group 3 = subdir (optional).
         const deepPathPatterns = [
-          { regex: /^\/(?:-\/)?tree\/([^/]+)\/(.+)$/, refIdx: 1, pathIdx: 2 }, // GitHub, GitLab
-          { regex: /^\/(?:-\/)?blob\/([^/]+)\/(.+)$/, refIdx: 1, pathIdx: 2 },
-          { regex: /^\/src\/([^/]+)\/(.+)$/, refIdx: 1, pathIdx: 2 }, // Gitea/Forgejo
+          /^(.+?)\/(?:-\/)?(?:tree|blob)\/([^/]+)(?:\/(.+))?$/,
+          /^(.+?)\/src\/(?:branch\/|commit\/|tag\/)?([^/]+)(?:\/(.+))?$/,
         ];
-        // Also match `/tree/<ref>` with no subdir
-        const refOnlyPatterns = [/^\/(?:-\/)?tree\/([^/]+?)\/?$/, /^\/(?:-\/)?blob\/([^/]+?)\/?$/, /^\/src\/([^/]+?)\/?$/];
-
-        for (const p of deepPathPatterns) {
-          const match = remainder.match(p.regex);
+        for (const pattern of deepPathPatterns) {
+          const match = repoPath.match(pattern);
           if (match) {
-            urlRef = match[p.refIdx];
-            subdir = match[p.pathIdx].replace(/\/$/, '');
+            repoPath = match[1];
+            if (match[2]) urlRef = match[2];
+            if (match[3]) {
+              const cleaned = match[3].replace(/\/+$/, '');
+              if (cleaned) subdir = cleaned;
+            }
             break;
           }
         }
+
+        // Some hosts use ?path=/subdir on browse links to point at a file or
+        // directory. Honor it when no deep-path marker matched above.
         if (!subdir) {
-          for (const r of refOnlyPatterns) {
-            const match = remainder.match(r);
-            if (match) {
-              urlRef = match[1];
-              break;
-            }
+          const pathParam = url.searchParams.get('path');
+          if (pathParam) {
+            const cleaned = pathParam.replace(/^\/+/, '').replace(/\/+$/, '');
+            if (cleaned) subdir = cleaned;
           }
         }
+
+        // Strip a single trailing .git for a stable cacheKey/displayName.
+        const repoPathClean = repoPath.replace(/\.git$/i, '');
+        if (!repoPathClean) {
+          return {
+            type: null,
+            cloneUrl: null,
+            subdir: null,
+            localPath: null,
+            cacheKey: null,
+            displayName: null,
+            isValid: false,
+            error: 'Not a valid Git URL or local path',
+          };
+        }
+
+        const cloneUrl = `${url.protocol}//${host}/${repoPathClean}`;
+        const cacheKey = `${host}/${repoPathClean}`;
+
+        // Display name: prefer "<owner>/<repo>" using the last two meaningful
+        // path segments.
+        const segments = repoPathClean.split('/').filter(Boolean);
+        const repoSeg = segments.at(-1);
+        const ownerSeg = segments.at(-2);
+        const displayName = ownerSeg ? `${ownerSeg}/${repoSeg}` : repoSeg;
+
+        // Precedence: explicit @version suffix > URL /tree/<ref> path segment.
+        const version = versionSuffix || urlRef || null;
+
+        return {
+          type: 'url',
+          cloneUrl,
+          subdir,
+          localPath: null,
+          version,
+          rawInput: trimmedRaw,
+          cacheKey,
+          displayName,
+          isValid: true,
+          error: null,
+        };
       }
-
-      // Precedence: explicit @version suffix > URL /tree/<ref> path segment.
-      const version = versionSuffix || urlRef || null;
-
-      return {
-        type: 'url',
-        cloneUrl,
-        subdir,
-        localPath: null,
-        version,
-        rawInput: trimmedRaw,
-        cacheKey: `${host}/${owner}/${repo}`,
-        displayName: `${owner}/${repo}`,
-        isValid: true,
-        error: null,
-      };
     }
 
     return {
