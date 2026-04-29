@@ -3,7 +3,19 @@
  * User input comes from either UI answers or headless CLI flags.
  */
 class Config {
-  constructor({ directory, modules, ides, skipPrompts, verbose, actionType, coreConfig, moduleConfigs, quickUpdate, channelOptions }) {
+  constructor({
+    directory,
+    modules,
+    ides,
+    skipPrompts,
+    verbose,
+    actionType,
+    coreConfig,
+    moduleConfigs,
+    quickUpdate,
+    channelOptions,
+    setOverrides,
+  }) {
     this.directory = directory;
     this.modules = Object.freeze([...modules]);
     this.ides = Object.freeze([...ides]);
@@ -15,6 +27,11 @@ class Config {
     this._quickUpdate = quickUpdate;
     // channelOptions carry a Map + Set; don't deep-freeze.
     this.channelOptions = channelOptions || null;
+    // Parsed `--set <module>.<key>=<value>` overrides, applied as a TOML
+    // patch AFTER the install finishes. Shape: { moduleCode: { key: value } }.
+    // Intentionally NOT integrated with the prompt/template/schema flow; see
+    // `tools/installer/set-overrides.js` for the rationale and tradeoffs.
+    this.setOverrides = setOverrides || {};
     Object.freeze(this);
   }
 
@@ -40,6 +57,7 @@ class Config {
       moduleConfigs: userInput.moduleConfigs || null,
       quickUpdate: userInput._quickUpdate || false,
       channelOptions: userInput.channelOptions || null,
+      setOverrides: userInput.setOverrides || {},
     });
   }
 

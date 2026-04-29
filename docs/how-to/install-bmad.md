@@ -117,21 +117,23 @@ Under `--yes`, patch and minor upgrades apply automatically. Majors stay frozen 
 
 ### Flag reference
 
-| Flag                                                                                       | Purpose                                                                            |
-| ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| `--yes`, `-y`                                                                              | Skip all prompts; accept flag values + defaults                                    |
-| `--directory <path>`                                                                       | Install into this directory (default: current working dir)                         |
-| `--modules <a,b,c>`                                                                        | Exact module set. Core is auto-added. Not a delta — list everything you want kept. |
-| `--tools <a,b>`                                                                            | IDE/tool selection. Required for fresh `--yes` installs. Run `--list-tools` for valid IDs. |
-| `--list-tools`                                                                             | Print all supported tool/IDE IDs (with target directories) and exit.               |
-| `--action <type>`                                                                          | `install`, `update`, or `quick-update`. Defaults based on existing install state.  |
-| `--custom-source <urls>`                                                                   | Install custom modules from Git URLs or local paths                                |
-| `--channel <stable\|next>`                                                                 | Apply to all externals (aliased as `--all-stable` / `--all-next`)                  |
-| `--all-stable`                                                                             | Alias for `--channel=stable`                                                       |
-| `--all-next`                                                                               | Alias for `--channel=next`                                                         |
-| `--next=<code>`                                                                            | Put one module on next. Repeatable.                                                |
-| `--pin <code>=<tag>`                                                                       | Pin one module to a specific tag. Repeatable.                                      |
-| `--user-name`, `--communication-language`, `--document-output-language`, `--output-folder` | Override per-user config defaults                                                  |
+| Flag                                                                                       | Purpose                                                                                                                           |
+| ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| `--yes`, `-y`                                                                              | Skip all prompts; accept flag values + defaults                                                                                   |
+| `--directory <path>`                                                                       | Install into this directory (default: current working dir)                                                                        |
+| `--modules <a,b,c>`                                                                        | Exact module set. Core is auto-added. Not a delta — list everything you want kept.                                                |
+| `--tools <a,b>`                                                                            | IDE/tool selection. Required for fresh `--yes` installs. Run `--list-tools` for valid IDs.                                        |
+| `--list-tools`                                                                             | Print all supported tool/IDE IDs (with target directories) and exit.                                                              |
+| `--action <type>`                                                                          | `install`, `update`, or `quick-update`. Defaults based on existing install state.                                                 |
+| `--custom-source <urls>`                                                                   | Install custom modules from Git URLs or local paths                                                                               |
+| `--channel <stable\|next>`                                                                 | Apply to all externals (aliased as `--all-stable` / `--all-next`)                                                                 |
+| `--all-stable`                                                                             | Alias for `--channel=stable`                                                                                                      |
+| `--all-next`                                                                               | Alias for `--channel=next`                                                                                                        |
+| `--next=<code>`                                                                            | Put one module on next. Repeatable.                                                                                               |
+| `--pin <code>=<tag>`                                                                       | Pin one module to a specific tag. Repeatable.                                                                                     |
+| `--set <module>.<key>=<value>`                                                             | Set any module config option non-interactively (preferred — see [Module config overrides](#module-config-overrides)). Repeatable. |
+| `--list-options [module]`                                                                  | Print every `--set` key for built-in and locally-cached official modules, then exit. Pass a module code to scope to one module.   |
+| `--user-name`, `--communication-language`, `--document-output-language`, `--output-folder` | Legacy shortcuts equivalent to `--set core.<key>=<value>` (still supported)                                                       |
 
 Precedence when flags overlap: `--pin` beats `--next=` beats `--channel` / `--all-*` beats the registry default (`stable`).
 
@@ -178,6 +180,43 @@ npx bmad-method install --yes --action update \
   --modules bmm,bmb,cis,gds \
   --next=bmb
 ```
+
+### Module config overrides
+
+`--set <module>.<key>=<value>` lets you set any module config option non-interactively. It's repeatable and scales to every module — present and future. The flag is applied as a post-install patch: the installer runs its normal flow first, then `--set` upserts each value into `_bmad/config.toml` (team scope) or `_bmad/config.user.toml` (user scope), and into `_bmad/<module>/config.yaml` so declared values carry forward to the next install.
+
+**Example — install bmm with explicit project knowledge and skill level:**
+
+```bash
+npx bmad-method install --yes \
+  --modules bmm \
+  --tools claude-code \
+  --set bmm.project_knowledge=research \
+  --set bmm.user_skill_level=expert
+```
+
+**Discover available keys for a module:**
+
+```bash
+npx bmad-method install --list-options bmm
+```
+
+`--list-options` (no argument) lists every key the installer can find locally — built-in modules (`core`, `bmm`) plus any currently cached official modules. The cache is per-machine and can be cleared, so previously installed officials won't appear on a fresh checkout or an ephemeral CI worker until they're installed again. Community and custom modules aren't enumerated here; read the module's `module.yaml` directly to see what keys it declares.
+
+**How it works:**
+
+- **Routing.** The patch step looks for `[modules.<module>] <key>` (or `[core] <key>`) in `config.user.toml` first; if found there, it updates that file. Otherwise it writes to the team-scope `config.toml`. So user-scope keys (e.g. `core.user_name`, `bmm.user_skill_level`) end up in `config.user.toml` and team-scope keys end up in `config.toml`, matching the partition the installer uses.
+- **Verbatim values.** The value is written exactly as you provided it — no `result:` template rendering. To get the rendered form (e.g. `{project-root}/research`), pass it explicitly: `--set bmm.project_knowledge='{project-root}/research'`.
+- **Carry-forward, declared keys.** Values for keys declared in `module.yaml` survive subsequent installs because they're also written to `_bmad/<module>/config.yaml`, which the installer reads as the prompt default on the next run.
+- **Carry-forward, undeclared keys.** A value for a key the module's schema doesn't declare lands in `config.toml` for the current install but won't be re-emitted on the next install (the manifest writer's schema-strict partition drops unknown keys). Re-pass `--set` if you need it sticky, or edit `_bmad/config.toml` directly.
+- **No validation.** `single-select` values aren't checked against the allowed choices, and unknown keys aren't rejected — whatever you assert is written.
+- **Modules not in `--modules`.** Setting a value for a module you didn't include prints a warning and the value is dropped (no file gets created for an uninstalled module).
+
+The legacy core shortcuts (`--user-name`, `--output-folder`, etc.) still work and remain documented for backward compatibility, but `--set core.user_name=...` is equivalent.
+
+:::note[Works with quick-update]
+`--set` is a post-install patch, so it applies the same way regardless of action type. Under `bmad install --action quick-update` (or `--yes` against an existing install, where quick-update is the default), `--set` patches the central config files at the end just like a regular install.
+:::
 
 :::caution[Rate limit on shared IPs]
 Anonymous GitHub API calls are capped at 60/hour per IP. A single install hits the API once per external module to resolve the stable tag. Offices behind NAT, CI runner pools, and VPNs can collectively exhaust this.
