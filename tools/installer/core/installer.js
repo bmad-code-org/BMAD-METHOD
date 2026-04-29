@@ -310,6 +310,19 @@ class Installer {
           moduleConfigs,
         });
 
+        // Apply post-install --set TOML patches. Runs after writeCentralConfig
+        // (inside generateManifests above) so the patch operates on the
+        // freshly written `_bmad/config.toml` / `_bmad/config.user.toml`.
+        // See `tools/installer/set-overrides.js` for routing rules.
+        if (config.setOverrides && Object.keys(config.setOverrides).length > 0) {
+          const { applySetOverrides } = require('../set-overrides');
+          const applied = await applySetOverrides(config.setOverrides, paths.bmadDir);
+          if (applied.length > 0) {
+            const summary = applied.map((a) => `${a.module}.${a.key} → ${a.file}`).join(', ');
+            await prompts.log.info(`Applied --set overrides: ${summary}`);
+          }
+        }
+
         message('Generating help catalog...');
         await this.mergeModuleHelpCatalogs(paths.bmadDir, manifestGen.agents);
         addResult('Help catalog', 'ok');
@@ -1283,6 +1296,10 @@ class Installer {
       ides: configuredIdes,
       coreConfig: quickModules.collectedConfig.core,
       moduleConfigs: quickModules.collectedConfig,
+      // Forward `--set` overrides so the post-install patch step
+      // (`applySetOverrides`) runs at the end of quick-update too. The
+      // installer.install path applies them after writeCentralConfig.
+      setOverrides: config.setOverrides || {},
       actionType: 'install',
       _quickUpdate: true,
       _preserveModules: skippedModules,

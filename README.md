@@ -52,6 +52,15 @@ Follow the installer prompts, then open your AI IDE (Claude Code, Cursor, etc.) 
 npx bmad-method install --directory /path/to/project --modules bmm --tools claude-code --yes
 ```
 
+Override any module config option with `--set <module>.<key>=<value>` (repeatable). Run `--list-options [module]` to see locally-known official keys (built-in modules plus any external officials cached on this machine):
+
+```bash
+npx bmad-method install --yes \
+  --modules bmm --tools claude-code \
+  --set bmm.project_knowledge=research \
+  --set bmm.user_skill_level=expert
+```
+
 [See all installation options](https://docs.bmad-method.org/how-to/non-interactive-installation/)
 
 > **Not sure what to do?** Ask `bmad-help` — it tells you exactly what's next and what's optional. You can also ask questions like `bmad-help I just finished the architecture, what do I do next?`
