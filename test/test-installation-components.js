@@ -616,8 +616,8 @@ async function runTests() {
       );
     }
     // Note: bmad-help intentionally has NO customize.toml — it exercises
-    // the toml-driven filter's exclusion path (a skill with no [agent]
-    // section is correctly kept out of the Copilot agents picker).
+    // the toml-driven filter's exclusion path (a skill with no
+    // customize.toml is correctly kept out of the Copilot agents picker).
     // [agent] customize.toml for the two persona fixtures.
     await fs.writeFile(
       path.join(installedBmadDir17, 'core', 'bmad-agent-fixture', 'customize.toml'),
