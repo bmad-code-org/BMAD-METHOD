@@ -12,18 +12,24 @@ Checks (strict mode):
   5. Cross-epic depends_on graph is acyclic.
   6. Within-epic story numbering is sequential starting at 01.
   7. Sizing sanity (warnings only): a story body >3x the epic mean is flagged.
-
-Coverage of FR/NFR/UX-DR codes is NOT enforced here — the inventory lives in the LLM's
-working memory, not on disk. The summary's `mentioned_requirements` field exposes every
-code mentioned in any story body so the calling prompt can cross-check against its
-inventory (see `prompts/validate.md`).
+  8. Coverage (only when --inventory FILE is provided): every requirement code listed
+     in the inventory must appear textually in at least one story body.
 
 Output (stdout, JSON): {"findings": [...], "summary": {...}}
+  --summary-only emits a structured tree block instead, used by edit-mode and finalize.
+  --tree emits a plain-text tree to stdout, used by Stage 6.
 Exit codes: 0 if no errors (warnings ok), 1 if any error finding, 2 on internal error.
 
 Flags:
-  --lax       skip sizing warnings; never relaxes schema or dep checks
-  --epic NN-kebab   limit walks to a single epic folder (still resolves cross-epic refs against the whole tree)
+  --lax              skip sizing warnings; never relaxes schema or dep checks
+  --epic NN-kebab    limit walks to a single epic folder (still resolves cross-epic refs)
+  --inventory FILE   path to inventory.json (or .bmad-cache/inventory.json); when present,
+                     missing requirement codes are reported. Default level is warning;
+                     pair with --coverage-strict to escalate to error.
+  --coverage-strict  upgrade coverage-missing findings from warning to error
+  --summary-only     emit tree-shaped summary JSON only (no schema findings); intended for
+                     prompts that need to see what's there without re-reading every file
+  --tree             emit a plain-text tree (epic folders, story files, statuses) and exit 0
 """
 
 from __future__ import annotations
@@ -169,7 +175,35 @@ def _find_cycles(graph: dict[str, list[str]]) -> list[list[str]]:
     return cycles
 
 
-def validate(initiative_store: Path, lax: bool, only_epic: str | None) -> tuple[list[dict], dict]:
+def _inventory_codes(inventory: dict) -> list[tuple[str, str]]:
+    """Return a flat (code, text) list across every category in an inventory dict.
+
+    Accepts either a `requirements` map keyed by category, or a flat list of
+    {code, text} entries under `codes`. Tolerates missing fields.
+    """
+    out: list[tuple[str, str]] = []
+    reqs = inventory.get("requirements") or {}
+    if isinstance(reqs, dict):
+        for entries in reqs.values():
+            if not isinstance(entries, list):
+                continue
+            for e in entries:
+                if isinstance(e, dict) and "code" in e:
+                    out.append((str(e["code"]), str(e.get("text", ""))))
+    for legacy_key in ("codes", "additional_codes"):
+        for e in inventory.get(legacy_key, []) or []:
+            if isinstance(e, dict) and "code" in e:
+                out.append((str(e["code"]), str(e.get("text", ""))))
+    return out
+
+
+def validate(
+    initiative_store: Path,
+    lax: bool,
+    only_epic: str | None,
+    inventory_codes: list[tuple[str, str]] | None = None,
+    coverage_strict: bool = False,
+) -> tuple[list[dict], dict]:
     findings: list[dict] = []
     epics_dir = initiative_store / "epics"
     if not epics_dir.is_dir():
@@ -223,7 +257,14 @@ def validate(initiative_store: Path, lax: bool, only_epic: str | None) -> tuple[
                 findings.append({"level": "error", "code": "epic-deps-not-list", "message": "depends_on must be a list", "path": str(epic_md)})
             deps = []
 
-        epic_meta[ed.name] = {"nn": nn, "depends_on": [str(d) for d in deps], "path": ed, "in_walk": in_walk}
+        epic_meta[ed.name] = {
+            "nn": nn,
+            "title": str(fm.get("title", "")),
+            "status": fm.get("status"),
+            "depends_on": [str(d) for d in deps],
+            "path": ed,
+            "in_walk": in_walk,
+        }
 
         story_files = sorted(p for p in ed.iterdir() if p.is_file() and p.suffix == ".md" and p.name != "epic.md" and re.match(r"^\d+-", p.name))
         seen_nns: list[int] = []
@@ -264,8 +305,11 @@ def validate(initiative_store: Path, lax: bool, only_epic: str | None) -> tuple[
             story_index[f"{ed.name}/{sf.stem}"] = {
                 "depends_on": [str(d) for d in sdeps],
                 "path": sf,
+                "basename": sf.stem,
                 "epic": ed.name,
                 "nn": snn,
+                "title": str(sfm.get("title", "")),
+                "type": sfm.get("type"),
                 "status": sfm.get("status"),
                 "body_len": len(stext),
                 "in_walk": in_walk,
@@ -322,18 +366,78 @@ def validate(initiative_store: Path, lax: bool, only_epic: str | None) -> tuple[
                         "path": str(smeta["path"]),
                     })
 
+    coverage_missing: list[str] = []
+    if inventory_codes is not None:
+        level = "error" if coverage_strict else "warning"
+        for code, text in inventory_codes:
+            if code in mentioned_codes:
+                continue
+            coverage_missing.append(code)
+            findings.append({
+                "level": level,
+                "code": "coverage-missing",
+                "message": f"requirement {code!r} ({text[:60]}...) not referenced by any story body" if text else f"requirement {code!r} not referenced by any story body",
+                "path": str(initiative_store / "epics"),
+            })
+
+    epics_summary: list[dict] = []
+    for name, meta in epic_meta.items():
+        if not meta["in_walk"]:
+            continue
+        own_stories = [s for s in story_index.values() if s["epic"] == name and s["in_walk"]]
+        epics_summary.append({
+            "folder": name,
+            "nn": meta["nn"],
+            "title": meta["title"],
+            "status": meta["status"],
+            "depends_on": meta["depends_on"],
+            "story_count": len(own_stories),
+            "story_status_counts": dict(Counter(s["status"] for s in own_stories)),
+            "stories": [
+                {
+                    "basename": s["basename"],
+                    "nn": f"{s['nn']:02d}",
+                    "title": s["title"],
+                    "type": s["type"],
+                    "status": s["status"],
+                    "depends_on": s["depends_on"],
+                    "body_len": s["body_len"],
+                }
+                for s in sorted(own_stories, key=lambda s: s["nn"])
+            ],
+        })
+
     summary = {
-        "epics": [
-            {"folder": name, "nn": meta["nn"], "depends_on": meta["depends_on"]}
-            for name, meta in epic_meta.items() if meta["in_walk"]
-        ],
+        "epics": epics_summary,
         "story_count": sum(1 for s in story_index.values() if s["in_walk"]),
         "story_status_counts": dict(Counter(s["status"] for s in story_index.values() if s["in_walk"])),
+        "story_type_counts": dict(Counter(s["type"] for s in story_index.values() if s["in_walk"])),
         "errors": sum(1 for f in findings if f["level"] == "error"),
         "warnings": sum(1 for f in findings if f["level"] == "warning"),
         "mentioned_requirements": sorted(mentioned_codes),
+        "coverage_missing": sorted(coverage_missing),
     }
     return findings, summary
+
+
+def render_tree(initiative_store: Path, summary: dict) -> str:
+    """Plain-text tree for direct printing in Stage 6 / edit-mode summary."""
+    lines = [f"{initiative_store}/epics/"]
+    epics = summary.get("epics", [])
+    for ei, epic in enumerate(epics):
+        is_last_epic = ei == len(epics) - 1
+        epic_branch = "└── " if is_last_epic else "├── "
+        lines.append(f"{epic_branch}{epic['folder']}/  (epic, {epic.get('status', '?')})")
+        epic_indent = "    " if is_last_epic else "│   "
+        stories = epic.get("stories", [])
+        for si, story in enumerate(stories):
+            is_last_story = si == len(stories) - 1
+            story_branch = "└── " if is_last_story else "├── "
+            lines.append(
+                f"{epic_indent}{story_branch}{story['basename']}.md  "
+                f"({story.get('type', '?')}, {story.get('status', '?')})"
+            )
+    return "\n".join(lines)
 
 
 def main() -> int:
@@ -341,9 +445,38 @@ def main() -> int:
     ap.add_argument("--initiative-store", required=True, type=Path)
     ap.add_argument("--lax", action="store_true", help="Skip sizing warnings; never relaxes schema/dep checks")
     ap.add_argument("--epic", help="Limit reporting to a single epic folder name")
+    ap.add_argument("--inventory", type=Path, help="inventory.json with requirement codes; enables coverage check")
+    ap.add_argument("--coverage-strict", action="store_true", help="Escalate coverage-missing findings from warning to error")
+    ap.add_argument("--summary-only", action="store_true", help="Emit summary block with full epic/story tree (no findings)")
+    ap.add_argument("--tree", action="store_true", help="Emit a plain-text tree to stdout and exit")
     args = ap.parse_args()
 
-    findings, summary = validate(args.initiative_store, args.lax, args.epic)
+    inventory_codes: list[tuple[str, str]] | None = None
+    if args.inventory is not None:
+        if not args.inventory.is_file():
+            print(f"inventory file not found: {args.inventory}", file=sys.stderr)
+            return 1
+        try:
+            inventory = json.loads(args.inventory.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            print(f"could not parse {args.inventory}: {exc}", file=sys.stderr)
+            return 1
+        inventory_codes = _inventory_codes(inventory)
+
+    findings, summary = validate(
+        args.initiative_store,
+        args.lax,
+        args.epic,
+        inventory_codes=inventory_codes,
+        coverage_strict=args.coverage_strict,
+    )
+
+    if args.tree:
+        print(render_tree(args.initiative_store, summary))
+        return 0
+    if args.summary_only:
+        print(json.dumps({"summary": summary}))
+        return 0
     print(json.dumps({"findings": findings, "summary": summary}))
     return 1 if any(f["level"] == "error" for f in findings) else 0
 

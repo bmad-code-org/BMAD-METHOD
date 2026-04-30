@@ -33,6 +33,7 @@ activation_steps_append = []
 
 persistent_facts = [
   "file:{project-root}/**/project-context.md",
+  "file:{skill-root}/resources/sizing-heuristics.md",
 ]
 
 # Scalar: executed when Stage 6 (Finalize) completes -- after the tree is

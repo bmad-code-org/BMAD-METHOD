@@ -93,6 +93,67 @@ class TestValidateInitiative(unittest.TestCase):
             codes = {f["code"] for f in json.loads(r.stdout)["findings"]}
             self.assertIn("story-numbering-gaps", codes)
 
+    def test_inventory_coverage_warning_then_strict_error(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Path(tmp)
+            _build_clean_tree(store)
+            inv = store / "inventory.json"
+            inv.write_text(json.dumps({
+                "requirements": {
+                    "functional": [{"code": "FR1", "text": "Users can register"}, {"code": "FR99", "text": "Uncovered"}],
+                }
+            }), encoding="utf-8")
+            schema = store / "epics" / "01-auth" / "01-schema.md"
+            schema.write_text(schema.read_text(encoding="utf-8") + "\n## Coverage\n- AC1: FR1\n", encoding="utf-8")
+
+            r = _run(VALIDATE, "--initiative-store", str(store), "--inventory", str(inv))
+            self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+            data = json.loads(r.stdout)
+            warnings = [f for f in data["findings"] if f["code"] == "coverage-missing"]
+            self.assertEqual(len(warnings), 1)
+            self.assertEqual(warnings[0]["level"], "warning")
+            self.assertEqual(data["summary"]["coverage_missing"], ["FR99"])
+
+            r = _run(VALIDATE, "--initiative-store", str(store), "--inventory", str(inv), "--coverage-strict")
+            self.assertEqual(r.returncode, 1)
+            data = json.loads(r.stdout)
+            errors = [f for f in data["findings"] if f["code"] == "coverage-missing"]
+            self.assertEqual(errors[0]["level"], "error")
+
+    def test_summary_only_emits_per_story_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Path(tmp)
+            _build_clean_tree(store)
+            r = _run(VALIDATE, "--initiative-store", str(store), "--summary-only")
+            self.assertEqual(r.returncode, 0)
+            data = json.loads(r.stdout)
+            self.assertIn("summary", data)
+            epics = data["summary"]["epics"]
+            self.assertEqual(len(epics), 2)
+            self.assertEqual(epics[0]["story_count"], 2)
+            story_titles = {s["title"] for s in epics[0]["stories"]}
+            self.assertEqual(story_titles, {"Schema", "Register"})
+            self.assertIn("type", epics[0]["stories"][0])
+
+    def test_tree_emits_plain_text(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Path(tmp)
+            _build_clean_tree(store)
+            r = _run(VALIDATE, "--initiative-store", str(store), "--tree")
+            self.assertEqual(r.returncode, 0)
+            self.assertIn("01-auth/", r.stdout)
+            self.assertIn("01-schema.md", r.stdout)
+            self.assertIn("(task, draft)", r.stdout)
+            self.assertIn("└──", r.stdout)
+
+    def test_inventory_missing_file_fails_cleanly(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Path(tmp)
+            _build_clean_tree(store)
+            r = _run(VALIDATE, "--initiative-store", str(store), "--inventory", str(store / "nope.json"))
+            self.assertEqual(r.returncode, 1)
+            self.assertIn("not found", r.stderr)
+
     def test_lax_skips_sizing_warnings(self) -> None:
         # Sizing warnings fire when one body exceeds 3x the epic mean. With 5 normal
         # stories and one massively-padded outlier, the mean stays low enough for

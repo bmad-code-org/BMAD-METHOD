@@ -1,6 +1,6 @@
 ---
 name: bmad-create-epics-and-stories
-description: 'Create, edit, and validate the v7 epic-and-story tree for an initiative. Use when the user says "create the epics and stories", "add an epic", "split an epic", "refine a story", or "re-validate the initiative".'
+description: 'Create, edit, and validate the v7 epic-and-story tree for an initiative. Use when the user says "create the epics and stories", "add an epic", "split an epic", "merge epics", "rename an epic", "refine a story", "re-derive deps", or "re-validate the initiative".'
 ---
 
 # Create Epics and Stories (v7)
@@ -11,15 +11,26 @@ This skill produces and maintains the **v7 epic-first folder tree** for an initi
 
 **Acts as:** a product strategist and technical specifications writer collaborating with the user as a peer. The user owns product vision and priorities; this skill brings requirements decomposition, sizing judgment, and the v7 schema. Conversational throughout — soft gates ("ready to move on?") rather than rigid menus.
 
-**One skill, three modes:**
+**One skill, three modes × three interaction styles:**
 
 - **Create** — no `epics/` tree yet. Walks intent → discovery → epic design → per-epic authoring → validate → finalize.
-- **Edit** — the tree exists. Routes by user phrasing or flag to add-epic, split-epic, refine-story, re-derive-deps, or re-validate. Never re-walks intent or discovery.
-- **Migrate** — a v6 monolithic `epics.md` exists but no v7 tree. Offers leave-alone, run-canonical-helper, or walk-through-manually.
+- **Edit** — the tree exists. Routes by user phrasing or flag to add-epic, split-epic, merge-epics, rename-epic, refine-story, re-derive-deps, or re-validate. Never re-walks intent or discovery.
+- **Migrate** — a v6 monolithic `epics.md` (or sharded directory) exists but no v7 tree. Offers leave-alone, run-canonical-helper, or walk-through-manually.
 
-**Headless surface:** `--re-validate` (alias `--headless` / `-H`) runs strict validation only and emits JSON. This is the CI invocation. All other modes are interactive.
+Interaction style is orthogonal:
 
-**Owns:** front-matter schemas (`resources/`), bootstrap and validation scripts (`scripts/`), and the only writers of the epic tree. **Does not own:** `governance.md` or `initiative-context.md` authoring, `initiative_store` config plumbing, downstream status transitions beyond `draft`.
+- **Guided** (default) — conversational dialog with soft gates and per-epic checkpoints. Right for first-timers and complex initiatives.
+- **YOLO** (`--yolo`) — same flow, but discovery summary, the soft gate dialog at each stage, and the per-epic checkpoint are skipped. The skill proposes the full epic list in one shot, authors every epic end-to-end, then surfaces a single batched recap before validation. Right for experts on their third initiative this quarter.
+- **From-spec** (`--from-spec <path>`) — Stages 1–3 skipped entirely. A structured spec drives Stages 4 and 5 deterministically. Right for pipelines and pre-drafted plans.
+
+**Headless surfaces:**
+
+- `--re-validate` (alias `--headless` / `-H`) runs strict validation only and emits JSON. Pair with `--coverage-strict` to fail CI on uncovered requirements.
+- `--from-spec <path>` runs end-to-end authoring + validation deterministically and emits JSON. Implicitly headless; pass `--coverage-strict` to fail on uncovered requirements.
+
+All other modes are interactive (Guided and YOLO).
+
+**Owns:** front-matter schemas (`resources/`), bootstrap and validation scripts (`scripts/`), the inventory cache at `{initiative_store}/.bmad-cache/inventory.json`, and the only writers of the epic tree. **Does not own:** `governance.md` or `initiative-context.md` authoring, `initiative_store` config plumbing, downstream status transitions beyond `draft`.
 
 ## Conventions
 
@@ -59,7 +70,7 @@ Resolve and use throughout:
 
 ### Step 5: Greet the User
 
-Greet `{user_name}` in `{communication_language}`. Skip the greeting in headless mode — no conversational output should precede the JSON.
+Greet `{user_name}` in `{communication_language}`. Skip the greeting in headless mode (including `--from-spec`) — no conversational output should precede the JSON.
 
 ### Step 6: Execute Append Steps
 
@@ -69,55 +80,72 @@ Activation is complete. Proceed to Mode Detection.
 
 ## Stage 0: Mode Detection
 
-Detect the operating mode before doing anything else. Filesystem state is the source of truth.
+Detect the operating mode and interaction style before doing anything else. Filesystem state and CLI flags are the source of truth.
 
-**1. Headless / re-validate surface.** If the user passed `--re-validate`, `--headless`, or `-H` (or said "re-validate" / "validate the initiative" with no edit intent), set `{mode}=headless`. Skip Stages 1–4, jump straight to `prompts/validate.md`, and emit JSON only.
+### 1. Headless / re-validate surface
 
-**2. Mode by filesystem state:**
+If the user passed `--re-validate`, `--headless`, or `-H` (or said "re-validate" / "validate the initiative" with no edit intent), set `{mode}=headless`. Skip Stages 1–4, jump straight to `prompts/validate.md`, and emit JSON only.
+
+### 2. From-spec surface
+
+If the user passed `--from-spec <path>`, set `{mode}=from-spec` and `{spec_path}=<path>`. Set `{headless_mode}=true` by default (override only if the user is interactive). Skip Stages 1–3, route directly to `prompts/from-spec.md`.
+
+### 3. YOLO interaction style
+
+If the user passed `--yolo` (or said "yolo this", "go fast", "don't ask me", or similar in their opening message), set `{yolo}=true`. Otherwise `{yolo}=false`. YOLO is orthogonal to the mode — both create and migrate flows respect it. Edit-mode sub-flows ignore `{yolo}` because they are inherently interactive graph reasoning.
+
+### 4. Mode by filesystem state
 
 - If `{initiative_store}/epics/` does not exist OR exists but contains no epic folders → `{mode}=create`.
 - If `{initiative_store}/epics/` contains v7 epic folders (any folder matching `NN-*` with an `epic.md` inside) → `{mode}=edit`.
-- If `{initiative_store}/epics/` is absent BUT a v6 monolithic file exists at `{initiative_store}/epics.md` or `{planning_artifacts}/epics.md` → `{mode}=migrate`.
+- If `{initiative_store}/epics/` is absent BUT a v6 monolithic file exists at `{initiative_store}/epics.md` or `{planning_artifacts}/epics.md`, OR a sharded v6 directory exists at the same locations → `{mode}=migrate`.
 
-If both v7 folders and a v6 file exist, prefer `edit` and surface the v6 file in Stage 1 as a one-line note ("there's still a legacy `epics.md` here — leave it alone or delete it after you've confirmed the v7 tree").
+If both v7 folders and a v6 file exist, prefer `edit` and surface the v6 file in Stage 1 as a one-line note.
 
-**3. Edit sub-mode dispatch (only when `{mode}=edit`).** Detect from the user's opening message:
+### 5. Edit sub-mode dispatch (only when `{mode}=edit`)
 
-| User signal | Sub-mode |
-|---|---|
-| "add an epic", "new epic for X" | `add-epic` |
-| "split epic NN", "split the auth epic" | `split-epic` |
-| "merge epics NN and MM" | `merge-epics` |
-| "refine story X", "rewrite story 1.3", "fix story foo" | `refine-story` |
-| "re-derive deps", "rebuild the dependency graph" | `re-derive-deps` |
-| "re-validate", "check the tree" | `re-validate` |
-| Anything else | ask which of the above they intend |
+Detect from the user's opening message:
+
+| User signal                                         | Sub-mode         |
+| --------------------------------------------------- | ---------------- |
+| "add an epic", "new epic for X"                     | `add-epic`       |
+| "split epic NN", "split the auth epic"              | `split-epic`     |
+| "merge epics NN and MM"                             | `merge-epics`    |
+| "rename epic NN", "rename the auth epic"            | `rename-epic`    |
+| "refine story X", "rewrite story 1.3", "fix story"  | `refine-story`   |
+| "re-derive deps", "rebuild the dependency graph"    | `re-derive-deps` |
+| "re-validate", "check the tree"                     | `re-validate`    |
+| "fix coverage", "missing coverage"                  | `coverage-fix`   |
+| Anything else                                       | route to `prompts/edit-mode.md` (it presents an enumerated menu) |
 
 Set `{edit_submode}` to the matched value before routing.
 
-**4. Route:**
+### 6. Route
 
 - `create` → `prompts/intent.md`
 - `migrate` → `prompts/intent.md` (it offers the migrate three-options branch when `{mode}=migrate`)
 - `edit` → `prompts/edit-mode.md`
 - `headless` → `prompts/validate.md`
+- `from-spec` → `prompts/from-spec.md`
 
-Carry `{mode}` (and `{edit_submode}` when set) into the routed prompt.
+Carry `{mode}`, `{yolo}`, `{spec_path}` (when set), and `{edit_submode}` (when set) into the routed prompt.
 
 ## Stages
 
-| # | Stage | Purpose | Prompt |
-|---|-------|---------|--------|
-| 0 | Mode Detection | Filesystem-driven create / edit / migrate / headless dispatch | SKILL.md (above) |
-| 1 | Intent | Capture initiative title and primary intent; confirm scope of edit; offer migrate options | `prompts/intent.md` |
-| 2 | Discovery | Fan-out artifact scan; build a working-memory requirements inventory | `prompts/discovery.md` |
-| 3 | Epic Design | Collaboratively shape the epic list and cross-epic dependency graph | `prompts/epic-design.md` |
-| 4 | Per-Epic Authoring | Write `epic.md` and story files for each epic, in approved order | `prompts/epic-authoring.md` |
-| 5 | Validation | Strict schema, deps, coverage, and sizing checks | `prompts/validate.md` |
-| 6 | Finalize | Print tree, confirm initial statuses, hand off | `prompts/finalize.md` |
+| #   | Stage              | Purpose                                                                       | Prompt                    |
+| --- | ------------------ | ----------------------------------------------------------------------------- | ------------------------- |
+| 0   | Mode Detection     | Filesystem-driven create / edit / migrate / headless / from-spec dispatch     | SKILL.md (above)          |
+| 1   | Intent             | Capture initiative title and primary intent; confirm scope; offer migrate     | `prompts/intent.md`       |
+| 2   | Discovery          | Fan-out artifact scan; persist a requirements inventory at `.bmad-cache/`     | `prompts/discovery.md`    |
+| 3   | Epic Design        | Collaboratively shape the epic list and cross-epic dependency graph           | `prompts/epic-design.md`  |
+| 4   | Per-Epic Authoring | Write `epic.md` and story files for each epic, in approved order              | `prompts/epic-authoring.md` |
+| 5   | Validation         | Strict schema, deps, coverage, and sizing checks                              | `prompts/validate.md`     |
+| 6   | Finalize           | Print tree, confirm initial statuses, hand off, clean up cache                | `prompts/finalize.md`     |
 
-Edit-mode flows are dispatched from `prompts/edit-mode.md`, which re-enters the relevant subset of stages above without re-walking 1 and 2.
+Edit-mode flows are dispatched from `prompts/edit-mode.md`, which re-enters the relevant subset of stages above without re-walking 1 and 2. From-spec flows skip Stages 1–3 entirely via `prompts/from-spec.md`.
 
 ## Conventions for Downstream Skills (stability commitment)
 
 Future v7 versions of `bmad-create-story`, `bmad-dev-story`, `bmad-code-review`, `bmad-retrospective`, and `bmad-initiative-status` adopt the schemas in `resources/epic-frontmatter-schema.md` and `resources/story-frontmatter-schema.md` **verbatim**. Status transitions beyond `draft` are owned by those downstream skills — this skill only writes `draft`. The folder name `NN-kebab` is the canonical identifier; the `epic:` field exists for portability and the validator flags any drift between them.
+
+The inventory cache at `{initiative_store}/.bmad-cache/inventory.json` is **internal** — its schema may change between minor versions. Downstream skills should not depend on it. The `from_spec.py` spec schema and the validator's `--inventory` JSON schema are stable across minor versions.

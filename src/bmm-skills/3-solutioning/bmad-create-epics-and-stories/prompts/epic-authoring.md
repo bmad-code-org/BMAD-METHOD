@@ -4,9 +4,19 @@
 
 # Stage 4: Per-Epic Authoring
 
-**Goal:** Write `epic.md` and the story files for every approved epic, in order, conversationally. This is the **only stage that writes files**. Every write goes through `scripts/init_epic.py` or `scripts/init_story.py` so paths and front matter are derived consistently.
+**Goal:** Write `epic.md` and the story files for every approved epic, in order. This is the **only stage that writes files**. Every write goes through `scripts/init_epic.py` or `scripts/init_story.py` so paths and front matter are derived consistently. The Stage 2 inventory at `{initiative_store}/.bmad-cache/inventory.json` is the source of truth for which FR / NFR / UX-DR / debt-item codes you allocate to which AC.
 
-Load `resources/sizing-heuristics.md` as a fact (if not already loaded in Stage 3). Optionally load `resources/examples/epic-feature-example.md` and `resources/examples/epic-techdebt-example.md` as shape primers if you want concrete reference for the body density and Coverage section format.
+`resources/sizing-heuristics.md` should already be in your context as a persistent fact (loaded once via the customize.toml `persistent_facts` mechanism). Before authoring the first epic, load `resources/examples/epic-feature-example.md` and `resources/examples/epic-techdebt-example.md` to anchor body density and Coverage section format.
+
+## Inventory recovery
+
+Re-read `{initiative_store}/.bmad-cache/inventory.json` at the start of each per-epic loop iteration. If the file is missing (manual deletion, a fresh session resuming mid-flow, or compaction since Stage 2):
+
+1. Tell the user the inventory cache is missing and you're rebuilding it.
+2. Re-launch `agents/artifact-analyzer.md` with the same inputs Stage 2 used (initiative intent, scan paths). Merge any user-volunteered details from the conversation.
+3. Write the rebuilt inventory back to the same path.
+
+Never proceed with an empty inventory — the Stage 5 coverage gate depends on it.
 
 ## Per-epic loop
 
@@ -14,19 +24,12 @@ For each approved epic, in order:
 
 ### 1. Bootstrap the epic folder
 
-Run:
-
 ```
-python3 scripts/init_epic.py \
-  --initiative-store {initiative_store} \
-  --epic-nn <NN> \
-  --title "<title>" \
-  --depends-on <comma-separated NNs from Stage 3>
+python3 scripts/init_epic.py --initiative-store {initiative_store} \
+  --epic-nn <NN> --title "<title>" --depends-on <comma-NNs>
 ```
 
-The script creates `{initiative_store}/epics/NN-kebab/epic.md` with locked front matter and a body skeleton. Take its JSON output (`epic`, `epic_nn`, `path`) — the `epic` field is the canonical folder name you pass to every subsequent `init_story.py` call.
-
-**Never compose the folder name yourself in prose.** Always read it back from the script's JSON output.
+Take its JSON output (`epic`, `epic_nn`, `path`) — `epic` is the canonical folder name you pass to every subsequent `init_story.py` call. **Never compose the folder name yourself in prose.**
 
 ### 2. Fill the epic body conversationally
 
@@ -51,42 +54,38 @@ Confirm the story list with the user before any write. The list is: ordered NN, 
 
 ### 4. Bootstrap each story file
 
-For each story in the approved list:
-
 ```
-python3 scripts/init_story.py \
-  --initiative-store {initiative_store} \
-  --epic <epic-folder-from-step-1> \
-  --story-nn <NN> \
-  --title "<title>" \
-  --type <feature|bug|task|spike> \
-  --depends-on <comma-separated refs>
+python3 scripts/init_story.py --initiative-store {initiative_store} \
+  --epic <folder-from-step-1> --story-nn <NN> --title "<title>" \
+  --type <feature|bug|task|spike> --depends-on <comma-refs>
 ```
 
-`--depends-on` entries are bare basenames for within-epic refs (e.g. `01-define-schema`) or `<epic-folder>/<basename>` for cross-epic refs (e.g. `02-auth-migration/04-session-management`).
+Within-epic refs are bare basenames (`01-define-schema`); cross-epic refs use the form `<epic-folder>/<basename>` (`02-auth-migration/04-session-management`).
 
 ### 5. Fill the story body conversationally
 
-Read the file the script just wrote. The skeleton matches `resources/story-md-template.md`:
+Read the file the script just wrote. Sections, in order:
 
-- **User-story stanza** — present for `feature` (required), `bug`/`spike` (optional), absent for `task`. Fill or remove as appropriate.
-- **Acceptance Criteria** — Given/When/Then form. Each AC stands alone, specific and testable. Cover happy path, key edge cases, at least one failure mode where applicable. Aim for ≤6 ACs; if you need more, the story may be over-sized — pause and consider splitting.
+- **User-story stanza** — required for `feature`, optional for `bug`/`spike`, absent for `task`. Fill or remove as appropriate.
+- **Acceptance Criteria** — Given/When/Then. Each AC stands alone, specific, testable. Cover happy path, key edge cases, at least one failure mode where applicable. Aim for ≤6 ACs; if you need more, the story may be over-sized — pause and consider splitting.
 - **Technical Notes** — implementation hints, file paths, API contracts. Not a full design.
-- **Coverage** — one line per AC mapping to the FR / NFR / UX-DR / debt-item codes from the Stage 2 inventory. This is what Stage 5 reads to verify nothing was dropped.
+- **Coverage** — one line per AC mapping to the FR / NFR / UX-DR / debt-item codes from `inventory.json`. The format `AC1: FR1, NFR3.2` is what `scripts/extract_coverage.py` and the validator both parse.
 
 ### 6. Per-epic non-strict validation
 
 After all stories for the current epic are drafted, run:
 
 ```
-python3 scripts/validate_initiative.py --initiative-store {initiative_store} --lax --epic <epic-folder>
+python3 scripts/validate_initiative.py --initiative-store {initiative_store} --lax --epic <folder>
 ```
 
-`--lax` skips sizing warnings (still mid-flow). Schema and dep checks always run. If errors come back, fix them before moving to the next epic. Common issues at this stage: a within-epic dep typo, a forgotten `epic:` field mismatch (the script catches both).
+`--lax` skips sizing warnings (still mid-flow). Schema and dep checks always run. Fix any errors before moving on.
 
 ### 7. User checkpoint
 
 Before starting the next epic, confirm with the user that this epic is complete. The next epic does not begin until the current is approved.
+
+In `{yolo}=true`, **skip the per-epic checkpoint** entirely — author the full epic list end-to-end, then surface a single batched recap before routing to validation.
 
 ## After all epics are authored
 
@@ -97,12 +96,14 @@ Route to `prompts/validate.md` for full-tree strict validation.
 When this stage is entered from `prompts/edit-mode.md`:
 
 - **add-epic:** run steps 1–6 for the single new epic, then route to `prompts/validate.md` strict.
-- **split-epic / merge-epics:** for each affected epic, run step 1 (if a new folder is needed), step 2 (re-author the `epic.md`), and use `scripts/move_story.py` for any story file that changes its epic. The skill never copy-pastes a story across folders — always move.
-- **refine-story:** narrow to step 5 for the single story file. If the story title changed, use `scripts/rename_story.py` first to rename and update sibling refs. Skip steps 1–4.
-- **re-derive-deps:** within-epic dep updates only here; the cross-epic dep updates were already settled in Stage 3. Walk story files in each affected epic and edit the `depends_on` line directly.
+- **split-epic / merge-epics:** for each affected epic, run step 1 (if a new folder is needed), step 2 (re-author the `epic.md`), and use `scripts/move_story.py` for any story file that changes its epic. Never copy-paste a story across folders — always move.
+- **rename-epic:** invoke `scripts/rename_epic.py --epic <folder> [--to-title "<text>"] [--to-nn <int>]`. The script renames the folder, updates the renamed `epic.md`'s `title:` and `epic:` fields, rewrites every story's `epic:` field, and propagates cross-epic depends_on references and other epics' NN-based deps. After it returns, route directly to `prompts/validate.md` strict — no body re-authoring is required.
+- **refine-story:** narrow to step 5 for the single story file. If the title changed, run `scripts/rename_story.py --to-title "<new title>"` first. If the NN changed, also pass `--to-nn`.
+- **re-derive-deps:** within-epic dep updates only here; cross-epic was settled in Stage 3. Walk story files in each affected epic and edit the `depends_on` line directly.
+- **coverage-fix:** Stage 5 routes here when a requirement code is missing from coverage. Identify the right story (existing or new), then either run step 5 against the existing story to extend its Coverage section, or run steps 4–5 to add a new story under the right epic. After the fix, route to `prompts/validate.md` strict.
 
 After any edit-mode flow finishes, route to `prompts/validate.md` strict.
 
 ## Stage Complete
 
-Stage 4 ends when every approved epic has its `epic.md` and all its story files written, the per-epic non-strict validation passes for each, and the user has confirmed completion of the last epic.
+Stage 4 ends when every approved epic has its `epic.md` and all its story files written, the per-epic non-strict validation passes for each, and the user has confirmed completion (or `{yolo}=true` auto-confirmed after the batch recap).

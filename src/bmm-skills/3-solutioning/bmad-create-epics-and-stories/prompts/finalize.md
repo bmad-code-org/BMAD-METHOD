@@ -4,27 +4,47 @@
 
 # Stage 6: Finalize
 
-**Goal:** Hand off cleanly. Show the user what was produced, confirm initial statuses, point them at the next workflow, and run any user-defined post-completion hook.
+**Goal:** Hand off cleanly. Show the user what was produced, confirm initial statuses, point them at the most useful next workflow, and run any user-defined post-completion hook.
 
 ## Step 1: Print the produced tree
 
-Walk `{initiative_store}/epics/` and present a concise tree — epic folders in order, story files under each. For each line, include the file's `status` from front matter. Something like:
+Use the validator's `--tree` mode rather than re-reading every file:
+
+```
+python3 scripts/validate_initiative.py --initiative-store {initiative_store} --tree
+```
+
+Print the output verbatim. It already includes types and statuses for every node:
 
 ```
 {initiative_store}/epics/
 ├── 01-user-authentication/  (epic, draft)
 │   ├── 01-define-user-and-session-models.md  (task, draft)
 │   ├── 02-register-with-email.md  (feature, draft)
-│   ├── 03-sign-in-with-email.md  (feature, draft)
-│   └── 04-password-reset-via-email.md  (feature, draft)
+│   └── 03-sign-in-with-email.md  (feature, draft)
 └── 02-billing-stripe/  (epic, draft)
     ├── 01-customer-and-subscription-models.md  (task, draft)
     └── 02-checkout-session.md  (feature, draft)
 ```
 
-Numbers, types, and statuses come from each file's front matter — re-read if you don't already have them in working memory.
+## Step 2: Print an initiative stats block
 
-## Step 2: Confirm initial statuses
+Run summary mode and emit a compact stats line so the user has a satisfying signal of completeness:
+
+```
+python3 scripts/validate_initiative.py --initiative-store {initiative_store} --summary-only
+```
+
+From the JSON, surface a 3-line block such as:
+
+```
+2 epics, 5 stories: 3 features, 2 tasks. Coverage: 100% (8/8 inventory codes mentioned).
+Median story body: ~600 chars. No oversized stories.
+```
+
+Pull the coverage number from `summary.mentioned_requirements` vs the inventory at `{initiative_store}/.bmad-cache/inventory.json` (if present); skip the coverage line when no inventory exists.
+
+## Step 3: Confirm initial statuses
 
 Every story and epic starts at `draft`. Promotion is owned by downstream skills (`bmad-dev-story` etc.) — this skill never auto-promotes. Two normal next steps from here:
 
@@ -33,19 +53,24 @@ Every story and epic starts at `draft`. Promotion is owned by downstream skills 
 
 Ask: "Want to leave these all as draft, or promote a small first batch to ready for immediate dev handoff?"
 
-## Step 3: Point forward
+## Step 4: Named hand-offs
 
-Tell the user what they have and what comes next:
+Tell the user what they have and what's most likely next, naming the specific skills:
 
-- **Per-story dev handoff:** `bmad-dev-story` reads any story by path and implements it.
-- **Epic-context cache:** `bmad-quick-dev`, when v7'd, will read the `epic.md` Shared Context block instead of re-deriving per story.
-- **Status rollup:** the future `bmad-initiative-status` reads `status:` from every file to summarize the initiative.
+- **Implement a story.** `bmad-dev-story` reads any story file by path and implements it end-to-end.
+- **Plan a sprint.** `bmad-sprint-planning` reads the tree and proposes a sprint slice based on dependencies and statuses.
+- **Status rollup.** The future `bmad-initiative-status` reads `status:` from every file to summarize the initiative.
+- **Quick fixes.** `bmad-quick-dev` (when v7'd) reads the `epic.md` Shared Context block instead of re-deriving per story.
 
-Then invoke `bmad-help` so the user sees the broader BMad surface available to them.
+If you're unsure which the user needs, point them at `bmad-help` to surface the broader BMad surface.
 
-## Step 4: Run on_complete
+## Step 5: Clean up the cache
 
-Run:
+Delete `{initiative_store}/.bmad-cache/inventory.json`. The cache exists to bridge working memory across stages; once Stage 5 has accepted coverage and Stage 6 is finalizing, it has served its purpose. Keep the parent `.bmad-cache/` directory for future runs.
+
+If a fresh edit-mode session needs the inventory back, Stage 4's recovery path will rebuild it.
+
+## Step 6: Run on_complete
 
 ```
 python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete

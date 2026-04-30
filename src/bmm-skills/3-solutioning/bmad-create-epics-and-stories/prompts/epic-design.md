@@ -4,9 +4,9 @@
 
 # Stage 3: Epic Design
 
-**Goal:** Produce an approved epic list — for each epic an NN, a kebab title, an intent statement, a `depends_on` list (cross-epic), and a default story-type theme. Validate the cross-epic graph for cycles before leaving the stage. No files are written here; the list lives in working memory until Stage 4 calls `init_epic.py`.
+**Goal:** Produce an approved epic list — for each epic an NN, a kebab title, an intent statement, a `depends_on` list (cross-epic), and a default story-type theme. Validate the cross-epic graph for cycles before leaving the stage. No files are written here; the list lives in working memory until Stage 4 calls `init_epic.py`. Re-read `{initiative_store}/.bmad-cache/inventory.json` for the requirements inventory you'll allocate against.
 
-Load `resources/sizing-heuristics.md` as a fact for the rest of the workflow — it shapes how stories will be sized in Stage 4 and informs how big each epic should be.
+`resources/sizing-heuristics.md` should already be loaded as a persistent fact via the workflow's `customize.toml`. If you don't see it in your context, load it now (and only now — Stage 4 reads the same file via the same persistent-facts mechanism).
 
 ## Principles to apply (carry into the conversation, do not lecture)
 
@@ -15,7 +15,7 @@ Load `resources/sizing-heuristics.md` as a fact for the rest of the workflow —
 - **Dependency-free within an epic.** Stories within an epic must not depend on later stories in the same epic. (The validator enforces this in Stage 5 via `depends_on` resolution.)
 - **File-churn check.** If multiple proposed epics repeatedly modify the same core files, ask whether they should consolidate into one epic with ordered stories. Distinguish meaningful overlap (same component end-to-end) from incidental sharing. Consolidate when the split provides no risk-mitigation or feedback-loop value.
 - **Implementation efficiency over taxonomy.** When the outcome is certain and direction changes between epics are unlikely, prefer fewer larger epics. Split into more epics when there's a genuine risk boundary or where early feedback could change direction.
-- **Starter template (if Stage 2 flagged one).** Epic 1's first story must be "set up the project from the starter template." Plan for it now.
+- **Starter template (if Stage 2 flagged one in the inventory).** Epic 1's first story must be "set up the project from the starter template." Plan for it now.
 
 ## The conversation
 
@@ -29,15 +29,19 @@ Walk through these collaboratively, not as a script:
 
 ## Cycle check before exit
 
-Before leaving the stage, mentally compute the cross-epic dependency graph. If you find any cycle (Epic A depends on B which depends on A, directly or transitively), surface it and have the user resolve before proceeding. Stage 5 will catch cycles too, but catching them now avoids re-walking Stage 4.
+Mentally compute the cross-epic dependency graph. If you find any cycle (Epic A depends on B which depends on A, directly or transitively), surface it and have the user resolve before proceeding. **Stage 5's validator is the deterministic source of truth for cycles** — this check is best-effort and exists only to avoid re-walking Stage 4 if an obvious loop slipped in.
 
 ## Optional deeper review
 
 If the user wants to pressure-test the epic shape, they may invoke `bmad-advanced-elicitation` (deeper critique methods) or `bmad-party-mode` (multi-agent perspectives) explicitly. **Do not present these as a menu** — only invoke when the user asks.
 
+## YOLO mode
+
+When `{yolo}=true`, propose the entire epic list in one message — title, intent, `depends_on`, theme, and FR/UX-DR allocations for every epic — and ask the user once whether to lock it in or revise. Skip the per-step dialog; rely on the cycle check and Stage 5 to catch problems.
+
 ## Soft gate
 
-"Does this epic list capture the initiative? Anything missing, anything overlapping that should be consolidated?" When the user is satisfied, the list is approved and Stage 3 is complete.
+"Does this epic list capture the initiative? Anything missing, anything overlapping that should be consolidated?" When the user is satisfied, the list is approved and Stage 3 is complete. Skip in `{yolo}=true` after the one-shot proposal is approved.
 
 ## Edit-mode flows
 
@@ -46,6 +50,7 @@ When this stage is entered from `prompts/edit-mode.md`:
 - **add-epic:** ask only about the new epic. Existing epic NNs are fixed; the new one gets the next-available NN. Capture title, intent, `depends_on`, theme. Validate the new edges don't introduce a cycle.
 - **split-epic:** discuss how to split the target epic. Define the new epic NNs, titles, intents, and `depends_on` edges (typically the new sibling depends on the original where the split is downstream). Decide which existing stories move (Stage 4 will use `move_story.py`) and which stay.
 - **merge-epics:** decide which is the surviving epic. Define how the merged depends_on collapses. Plan the story renumbering (Stage 4 will use `move_story.py` for the moves, then `rename_story.py` for any renumber).
+- **rename-epic:** discuss the new title (and optionally a new NN). Stage 4 invokes `scripts/rename_epic.py` to perform the rename atomically; no other epics are touched.
 - **re-derive-deps:** with the existing epic list, walk the cross-epic graph from scratch and update `depends_on` lists where the user agrees. (Within-epic dep updates happen in Stage 4.)
 
 After the relevant edit-mode flow finishes here, route to `prompts/epic-authoring.md` with the focused scope.
