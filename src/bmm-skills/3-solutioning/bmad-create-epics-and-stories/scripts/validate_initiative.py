@@ -48,7 +48,7 @@ STORY_REQUIRED = {"title", "type", "status", "epic", "depends_on"}
 EPIC_KEYS = {"title", "epic", "status", "depends_on", "metadata"}
 EPIC_REQUIRED = {"title", "epic", "status", "depends_on"}
 
-REQUIREMENT_CODE_RE = re.compile(r"\b(?:UX-DR|NFR|FR)\d+(?:\.\d+)?\b")
+REQUIREMENT_CODE_RE = re.compile(r"\b(?:UX-DR|NFR|FR|D|R)\d+(?:\.\d+)?\b")
 
 
 def parse_frontmatter(text: str) -> tuple[dict | None, str | None]:

@@ -68,7 +68,7 @@ def main() -> int:
         return 1
 
     text = src_path.read_text(encoding="utf-8")
-    text = re.sub(r"^epic:.*$", f"epic: {yaml_quote(args.to_epic)}", text, count=1, flags=re.MULTILINE)
+    text = re.sub(r"^epic:.*$", f"epic: {args.to_epic}", text, count=1, flags=re.MULTILINE)
     # The moved story's own depends_on may carry bare basenames that referenced
     # within-epic siblings in src_epic; those refs now need cross-epic form.
     new_text_lines: list[str] = []

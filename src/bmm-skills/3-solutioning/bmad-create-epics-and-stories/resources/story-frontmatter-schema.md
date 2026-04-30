@@ -21,7 +21,7 @@ metadata:                                  # OPTIONAL — free-form table; BMad 
 - **title** — Always emitted with double quotes by `init_story.py`. Inner double quotes escaped with `\`.
 - **type** — Drives body-skeleton generation: `task` omits the As-a/I-want/So-that stanza by default; `bug` and `spike` make it optional; `feature` requires it.
 - **status** — `init_story.py` always writes `draft`. Promotion to any other value is owned by downstream skills (`bmad-dev-story` etc.). This skill never auto-promotes.
-- **epic** — The enclosing folder name (e.g. `01-billing-stripe`), not just the NN. The folder name wins on conflict; the validator flags drift.
+- **epic** — The enclosing folder name (e.g. `01-billing-stripe`), not just the NN. Emitted unquoted (the dash makes it unambiguously a string in YAML). The folder name wins on conflict; the validator flags drift.
 - **depends_on** — Inline YAML list. Two reference forms:
   - **Within-epic:** the sibling story's basename without `.md` — e.g. `04-define-schema`.
   - **Cross-epic:** `<epic-folder>/<story-basename>` — e.g. `02-auth-migration/04-session-management`.

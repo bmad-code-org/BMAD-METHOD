@@ -35,7 +35,7 @@ class TestMoveStory(unittest.TestCase):
             data = json.loads(r.stdout)
             self.assertEqual(data["new"], "02-mig/01-register")
             moved = (store / "epics" / "02-mig" / "01-register.md").read_text(encoding="utf-8")
-            self.assertIn('epic: "02-mig"', moved)
+            self.assertIn("epic: 02-mig", moved)
             self.assertIn('"01-auth/01-schema"', moved)
             self.assertNotIn('depends_on: ["01-schema"]', moved)
             self.assertFalse((store / "epics" / "01-auth" / "02-register.md").exists())

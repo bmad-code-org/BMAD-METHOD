@@ -60,7 +60,7 @@ USER_STORY_RE = re.compile(
 )
 AC_RE = re.compile(r"\*\*Acceptance Criteria\*\*:?\s*\n+", re.IGNORECASE)
 GIVEN_WHEN_THEN_RE = re.compile(r"^[-*]\s+(?:Given|When|Then|And|But)\b.*$", re.MULTILINE | re.IGNORECASE)
-REQUIREMENT_CODE_RE = re.compile(r"\b(?:UX-DR|NFR|FR)\d+(?:\.\d+)?\b")
+REQUIREMENT_CODE_RE = re.compile(r"\b(?:UX-DR|NFR|FR|D|R)\d+(?:\.\d+)?\b")
 REQUIREMENT_LINE_RE = re.compile(r"^[-*]\s+(?:\*\*)?(FR\d+(?:\.\d+)?|NFR\d+(?:\.\d+)?|UX-DR\d+(?:\.\d+)?)(?:\*\*)?:?\s*(.*)$", re.MULTILINE)
 
 

@@ -102,7 +102,7 @@ def main() -> int:
         if sf.name == "epic.md":
             continue
         t = sf.read_text(encoding="utf-8")
-        new = re.sub(r"^epic:.*$", f"epic: {yaml_quote(new_folder)}", t, count=1, flags=re.MULTILINE)
+        new = re.sub(r"^epic:.*$", f"epic: {new_folder}", t, count=1, flags=re.MULTILINE)
         if new != t:
             sf.write_text(new, encoding="utf-8")
             refs_updated += 1

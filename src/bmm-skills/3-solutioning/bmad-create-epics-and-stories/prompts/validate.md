@@ -37,15 +37,13 @@ If `{mode}=headless`:
 
 ### 1. Surface failures conversationally
 
-For each error in `findings`, explain it in one sentence and offer to fix. Group by file when several errors land on the same path. Common patterns and the right next step:
+For each error in `findings`, explain it in one sentence and offer to fix. Group by file when several errors land on the same path. The full code → meaning → fix lookup lives at `resources/validation-error-codes.md` — load it when surfacing failures so the explanation and fix are accurate. Common shortcuts to the right next step:
 
 - **Schema errors** (`*-extra-keys`, `*-missing-keys`, `*-bad-status`, `*-bad-type`) → loop back to `prompts/epic-authoring.md` for that one file, edit the front matter, re-validate.
 - **`epic-nn-mismatch` / `story-epic-mismatch`** → likely a hand-edit of the front matter; the folder name is canonical, so update the front matter to match.
 - **`story-dep-unresolved`** → either the dep was a typo (fix the depends_on entry) or the target was renamed (`scripts/rename_story.py`) or moved (`scripts/move_story.py`) without updating refs. Use the move/rename scripts going forward — they update refs atomically.
 - **`epic-dep-cycle`** → cross-epic graph has a loop. Loop back to `prompts/epic-design.md` (re-derive-deps flow) to fix it.
 - **`story-numbering-gaps`** → use `scripts/rename_story.py --to-nn` to fill the gap or renumber the survivors.
-
-If the failure-pattern set ever grows past ~10 entries, extract this list to `resources/validation-error-codes.md` to keep this prompt tight.
 
 ### 2. Coverage check
 

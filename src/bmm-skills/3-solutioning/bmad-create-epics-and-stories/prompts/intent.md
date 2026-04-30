@@ -52,8 +52,6 @@ After the user picks:
 
 This stage is conversational. Confirm with a soft prompt rather than a menu — "Anything else to add about the initiative, or should we move on to scanning the project?" Users almost always remember one more thing when given a graceful exit ramp.
 
-In `{yolo}=true` skip the soft gate entirely once the three items are settled.
-
 ## Stage Complete
 
 Stage 1 ends when the chosen mode's exit conditions above are met. Carry the initiative title, primary intent, story-type mix, and any volunteered details into the next stage in working memory — none of this is written to disk yet (Stage 2 writes the inventory to `.bmad-cache/inventory.json`).

@@ -90,7 +90,7 @@ def main() -> int:
         f"title: {yaml_quote(args.title)}\n"
         f"type: {args.type}\n"
         "status: draft\n"
-        f"epic: {yaml_quote(args.epic)}\n"
+        f"epic: {args.epic}\n"
         f"depends_on: {deps_yaml}\n"
         "---\n\n"
     )

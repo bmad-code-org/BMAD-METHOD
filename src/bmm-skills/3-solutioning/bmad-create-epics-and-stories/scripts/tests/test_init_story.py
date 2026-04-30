@@ -36,7 +36,8 @@ class TestInitStory(unittest.TestCase):
             content = Path(json.loads(r.stdout)["path"]).read_text(encoding="utf-8")
             self.assertIn("As a {{user_type}}", content)
             self.assertIn("type: feature", content)
-            self.assertIn(f'epic: "{epic}"', content)
+            self.assertIn(f"epic: {epic}", content)
+            self.assertNotIn(f'epic: "{epic}"', content)
             self.assertIn("status: draft", content)
             # The user-story marker comments stay so the LLM can locate the block.
             self.assertIn("USER_STORY_START", content)

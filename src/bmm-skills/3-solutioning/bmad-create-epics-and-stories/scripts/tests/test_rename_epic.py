@@ -36,7 +36,7 @@ class TestRenameEpic(unittest.TestCase):
             self.assertEqual(data["new"], "01-user-authentication")
             self.assertTrue((store / "epics" / "01-user-authentication" / "epic.md").is_file())
             schema = (store / "epics" / "01-user-authentication" / "01-schema.md").read_text(encoding="utf-8")
-            self.assertIn('epic: "01-user-authentication"', schema)
+            self.assertIn("epic: 01-user-authentication", schema)
             mailer = (store / "epics" / "02-migration" / "01-mailer.md").read_text(encoding="utf-8")
             self.assertIn('"01-user-authentication/01-schema"', mailer)
             v = _run(VALIDATE, "--initiative-store", str(store))

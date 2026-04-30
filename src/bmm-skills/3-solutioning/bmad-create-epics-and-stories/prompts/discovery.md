@@ -8,7 +8,7 @@
 
 ## Pre-flight
 
-Before launching the artifact-analyzer, tell the user (in 3–5 lines) what you're about to scan: the resolved `{planning_artifacts}` path, the resolved `{project_knowledge}` path, and any user-pointed paths from Stage 1. This lets a misconfigured path surface immediately rather than as an empty result. Skip the pre-flight in `{yolo}=true` and `{mode}=headless`.
+Before launching the artifact-analyzer, tell the user (in 3–5 lines) what you're about to scan: the resolved `{planning_artifacts}` path, the resolved `{project_knowledge}` path, and any user-pointed paths from Stage 1. This lets a misconfigured path surface immediately rather than as an empty result. Skip the pre-flight in `{mode}=headless`.
 
 ## Subagent fan-out
 
@@ -59,12 +59,10 @@ Lists may be empty. Each requirement entry must have a unique `code`.
 
 Tell the user in 4–8 lines: counts (FRs, NFRs, UX-DRs, debt items), the starter-template note if any, governance constraints if any, and any gaps. Do not dump the full inventory — they have the source documents. Mention the cache path so they know where the inventory lives.
 
-In `{yolo}=true` collapse to a single line: "Inventory: N FRs, M NFRs, K UX-DRs (cached at `.bmad-cache/inventory.json`)."
-
 In `{mode}=headless` skip the summary entirely.
 
 Soft gate (interactive only): "Anything missing or wrong here, or shall we move on to designing the epic list?"
 
 ## Stage Complete
 
-When the user confirms (or `{yolo}=true` auto-confirms), route to `prompts/epic-design.md`. The inventory remains on disk; later stages re-read it rather than relying on working memory.
+When the user confirms, route to `prompts/epic-design.md`. The inventory remains on disk; later stages re-read it rather than relying on working memory.

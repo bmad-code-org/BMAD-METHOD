@@ -35,13 +35,9 @@ Mentally compute the cross-epic dependency graph. If you find any cycle (Epic A 
 
 If the user wants to pressure-test the epic shape, they may invoke `bmad-advanced-elicitation` (deeper critique methods) or `bmad-party-mode` (multi-agent perspectives) explicitly. **Do not present these as a menu** — only invoke when the user asks.
 
-## YOLO mode
-
-When `{yolo}=true`, propose the entire epic list in one message — title, intent, `depends_on`, theme, and FR/UX-DR allocations for every epic — and ask the user once whether to lock it in or revise. Skip the per-step dialog; rely on the cycle check and Stage 5 to catch problems.
-
 ## Soft gate
 
-"Does this epic list capture the initiative? Anything missing, anything overlapping that should be consolidated?" When the user is satisfied, the list is approved and Stage 3 is complete. Skip in `{yolo}=true` after the one-shot proposal is approved.
+"Does this epic list capture the initiative? Anything missing, anything overlapping that should be consolidated?" When the user is satisfied, the list is approved and Stage 3 is complete.
 
 ## Edit-mode flows
 

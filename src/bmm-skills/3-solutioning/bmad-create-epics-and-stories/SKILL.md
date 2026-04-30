@@ -11,16 +11,14 @@ This skill produces and maintains the **v7 epic-first folder tree** for an initi
 
 **Acts as:** a product strategist and technical specifications writer collaborating with the user as a peer. The user owns product vision and priorities; this skill brings requirements decomposition, sizing judgment, and the v7 schema. Conversational throughout — soft gates ("ready to move on?") rather than rigid menus.
 
-**One skill, three modes × three interaction styles:**
+**One skill, three modes:**
 
 - **Create** — no `epics/` tree yet. Walks intent → discovery → epic design → per-epic authoring → validate → finalize.
 - **Edit** — the tree exists. Routes by user phrasing or flag to add-epic, split-epic, merge-epics, rename-epic, refine-story, re-derive-deps, or re-validate. Never re-walks intent or discovery.
 - **Migrate** — a v6 monolithic `epics.md` (or sharded directory) exists but no v7 tree. Offers leave-alone, run-canonical-helper, or walk-through-manually.
 
-Interaction style is orthogonal:
+Plus a **deterministic surface** for pipelines:
 
-- **Guided** (default) — conversational dialog with soft gates and per-epic checkpoints. Right for first-timers and complex initiatives.
-- **YOLO** (`--yolo`) — same flow, but discovery summary, the soft gate dialog at each stage, and the per-epic checkpoint are skipped. The skill proposes the full epic list in one shot, authors every epic end-to-end, then surfaces a single batched recap before validation. Right for experts on their third initiative this quarter.
 - **From-spec** (`--from-spec <path>`) — Stages 1–3 skipped entirely. A structured spec drives Stages 4 and 5 deterministically. Right for pipelines and pre-drafted plans.
 
 **Headless surfaces:**
@@ -28,7 +26,7 @@ Interaction style is orthogonal:
 - `--re-validate` (alias `--headless` / `-H`) runs strict validation only and emits JSON. Pair with `--coverage-strict` to fail CI on uncovered requirements.
 - `--from-spec <path>` runs end-to-end authoring + validation deterministically and emits JSON. Implicitly headless; pass `--coverage-strict` to fail on uncovered requirements.
 
-All other modes are interactive (Guided and YOLO).
+Create, edit, and migrate are interactive.
 
 **Owns:** front-matter schemas (`resources/`), bootstrap and validation scripts (`scripts/`), the inventory cache at `{initiative_store}/.bmad-cache/inventory.json`, and the only writers of the epic tree. **Does not own:** `governance.md` or `initiative-context.md` authoring, `initiative_store` config plumbing, downstream status transitions beyond `draft`.
 
@@ -90,11 +88,7 @@ If the user passed `--re-validate`, `--headless`, or `-H` (or said "re-validate"
 
 If the user passed `--from-spec <path>`, set `{mode}=from-spec` and `{spec_path}=<path>`. Set `{headless_mode}=true` by default (override only if the user is interactive). Skip Stages 1–3, route directly to `prompts/from-spec.md`.
 
-### 3. YOLO interaction style
-
-If the user passed `--yolo` (or said "yolo this", "go fast", "don't ask me", or similar in their opening message), set `{yolo}=true`. Otherwise `{yolo}=false`. YOLO is orthogonal to the mode — both create and migrate flows respect it. Edit-mode sub-flows ignore `{yolo}` because they are inherently interactive graph reasoning.
-
-### 4. Mode by filesystem state
+### 3. Mode by filesystem state
 
 - If `{initiative_store}/epics/` does not exist OR exists but contains no epic folders → `{mode}=create`.
 - If `{initiative_store}/epics/` contains v7 epic folders (any folder matching `NN-*` with an `epic.md` inside) → `{mode}=edit`.
@@ -102,7 +96,7 @@ If the user passed `--yolo` (or said "yolo this", "go fast", "don't ask me", or 
 
 If both v7 folders and a v6 file exist, prefer `edit` and surface the v6 file in Stage 1 as a one-line note.
 
-### 5. Edit sub-mode dispatch (only when `{mode}=edit`)
+### 4. Edit sub-mode dispatch (only when `{mode}=edit`)
 
 Detect from the user's opening message:
 
@@ -120,7 +114,7 @@ Detect from the user's opening message:
 
 Set `{edit_submode}` to the matched value before routing.
 
-### 6. Route
+### 5. Route
 
 - `create` → `prompts/intent.md`
 - `migrate` → `prompts/intent.md` (it offers the migrate three-options branch when `{mode}=migrate`)
@@ -128,7 +122,7 @@ Set `{edit_submode}` to the matched value before routing.
 - `headless` → `prompts/validate.md`
 - `from-spec` → `prompts/from-spec.md`
 
-Carry `{mode}`, `{yolo}`, `{spec_path}` (when set), and `{edit_submode}` (when set) into the routed prompt.
+Carry `{mode}`, `{spec_path}` (when set), and `{edit_submode}` (when set) into the routed prompt.
 
 ## Stages
 

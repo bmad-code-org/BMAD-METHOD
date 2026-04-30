@@ -85,8 +85,6 @@ python3 scripts/validate_initiative.py --initiative-store {initiative_store} --l
 
 Before starting the next epic, confirm with the user that this epic is complete. The next epic does not begin until the current is approved.
 
-In `{yolo}=true`, **skip the per-epic checkpoint** entirely — author the full epic list end-to-end, then surface a single batched recap before routing to validation.
-
 ## After all epics are authored
 
 Route to `prompts/validate.md` for full-tree strict validation.
@@ -106,4 +104,4 @@ After any edit-mode flow finishes, route to `prompts/validate.md` strict.
 
 ## Stage Complete
 
-Stage 4 ends when every approved epic has its `epic.md` and all its story files written, the per-epic non-strict validation passes for each, and the user has confirmed completion (or `{yolo}=true` auto-confirmed after the batch recap).
+Stage 4 ends when every approved epic has its `epic.md` and all its story files written, the per-epic non-strict validation passes for each, and the user has confirmed completion.

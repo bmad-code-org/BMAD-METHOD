@@ -120,6 +120,33 @@ class TestValidateInitiative(unittest.TestCase):
             errors = [f for f in data["findings"] if f["code"] == "coverage-missing"]
             self.assertEqual(errors[0]["level"], "error")
 
+    def test_inventory_coverage_recognizes_debt_and_research_codes(self) -> None:
+        # The validator's mentioned-codes regex must include D (debt) and R (research)
+        # in addition to FR/NFR/UX-DR. Otherwise tech-debt and research initiatives
+        # always report spurious coverage-missing on inventory codes the stories
+        # actually reference.
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Path(tmp)
+            _build_clean_tree(store)
+            inv = store / "inventory.json"
+            inv.write_text(json.dumps({
+                "requirements": {
+                    "debt":     [{"code": "D1", "text": "Remove legacy /charge endpoint"}],
+                    "research": [{"code": "R1", "text": "Investigate webhook ordering"}],
+                }
+            }), encoding="utf-8")
+            schema = store / "epics" / "01-auth" / "01-schema.md"
+            schema.write_text(
+                schema.read_text(encoding="utf-8") + "\n## Coverage\n- AC1: D1, R1\n",
+                encoding="utf-8",
+            )
+            r = _run(VALIDATE, "--initiative-store", str(store), "--inventory", str(inv))
+            self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+            data = json.loads(r.stdout)
+            self.assertEqual(data["summary"]["coverage_missing"], [])
+            self.assertIn("D1", data["summary"]["mentioned_requirements"])
+            self.assertIn("R1", data["summary"]["mentioned_requirements"])
+
     def test_summary_only_emits_per_story_metadata(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             store = Path(tmp)
