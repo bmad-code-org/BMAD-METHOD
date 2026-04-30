@@ -585,9 +585,9 @@ async function runTests() {
     //      persona — has customize.toml with [workflow]          → EXCLUDED
     //      (mirrors `bmad-agent-builder` in the real manifest)
     //   4. Workflow skill — no customize.toml at all             → EXCLUDED
-    //   5. `bmad-help` — structural exception via ALWAYS_AGENT_IDS;
-    //      has no customize.toml of its own but surfaces in the
-    //      agents picker because it's the meta-help skill            → INCLUDED
+    //   5. `bmad-help` — meta-help skill with no customize.toml;
+    //      every persona agent's activation already advertises it,
+    //      so it's correctly excluded from the picker as redundant    → EXCLUDED
     const fixtureCsvPath17 = path.join(installedBmadDir17, '_config', 'skill-manifest.csv');
     await fs.writeFile(
       fixtureCsvPath17,
@@ -597,7 +597,7 @@ async function runTests() {
         '"bmad-agent-fixture","bmad-agent-fixture","Persona agent — customize.toml has [agent], SHOULD appear","core","_bmad/core/bmad-agent-fixture/SKILL.md"',
         '"bmad-tea","bmad-tea","Non-conventional id but [agent] in customize.toml — SHOULD appear","core","_bmad/core/bmad-tea/SKILL.md"',
         '"bmad-agent-builder","bmad-agent-builder","Skill-builder workflow — id contains -agent- but customize.toml has [workflow] — should NOT appear","core","_bmad/core/bmad-agent-builder/SKILL.md"',
-        '"bmad-help","bmad-help","Meta-help skill — no customize.toml but ALWAYS_AGENT_IDS exception; SHOULD appear in agents picker","core","_bmad/core/bmad-help/SKILL.md"',
+        '"bmad-help","bmad-help","Meta-help skill — no customize.toml; SHOULD NOT appear in agents picker (toml-driven filter)","core","_bmad/core/bmad-help/SKILL.md"',
         '',
       ].join('\n'),
     );
@@ -615,9 +615,9 @@ async function runTests() {
         ['---', `name: ${id}`, `description: fixture for ${id}`, '---', '', `Body of ${id}.`].join('\n'),
       );
     }
-    // Note: bmad-help intentionally has NO customize.toml — it's the
-    // structural exception for which the ALWAYS_AGENT_IDS allowlist
-    // exists.
+    // Note: bmad-help intentionally has NO customize.toml — it exercises
+    // the toml-driven filter's exclusion path (a skill with no
+    // customize.toml is correctly kept out of the Copilot agents picker).
     // [agent] customize.toml for the two persona fixtures.
     await fs.writeFile(
       path.join(installedBmadDir17, 'core', 'bmad-agent-fixture', 'customize.toml'),
@@ -688,8 +688,8 @@ async function runTests() {
     assert(await fs.pathExists(agentFileForTea17), 'Non-conventional id with [agent] in customize.toml is included (no allowlist needed)');
     assert(!(await fs.pathExists(agentFileForWorkflow17)), 'Workflow skill (no customize.toml) is FILTERED OUT of .github/agents/');
     assert(
-      await fs.pathExists(agentFileForBmadHelp17),
-      'bmad-help is INCLUDED in agents picker via ALWAYS_AGENT_IDS exception (structural meta-skill, no customize.toml)',
+      !(await fs.pathExists(agentFileForBmadHelp17)),
+      'bmad-help is excluded from Copilot agents picker (no customize.toml; allowlist removed per maintainer feedback)',
     );
     assert(
       !(await fs.pathExists(agentFileForMetaSkill17)),
