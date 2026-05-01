@@ -139,6 +139,20 @@ module.exports = {
         s.start(`Removing BMAD modules & data (${installer.bmadFolderName}/)...`);
         await installer.uninstallModules(projectDir);
         s.stop('Modules & data removed');
+
+        // Remove BMAD badge from README (best-effort)
+        try {
+          const badge = require('../core/badge');
+          const readmePath = await badge.findReadme(projectDir);
+          if (readmePath) {
+            const content = await fs.readFile(readmePath, 'utf8');
+            if (badge.hasBadge(content)) {
+              await fs.writeFile(readmePath, badge.removeBadge(content), 'utf8');
+            }
+          }
+        } catch (error) {
+          await prompts.log.warn(`Badge cleanup skipped: ${error.message}`);
+        }
       }
 
       const summary = [];

@@ -35,6 +35,7 @@ module.exports = {
     ['--output-folder <path>', 'Output folder path relative to project root (default: _bmad-output)'],
     ['--custom-source <sources>', 'Comma-separated Git URLs or local paths to install custom modules from'],
     ['-y, --yes', 'Accept all defaults and skip prompts where possible'],
+    ['--no-badge', 'Skip adding BMAD badge to README'],
     [
       '--channel <channel>',
       'Apply channel (stable|next) to all external modules being installed. --all-stable and --all-next are aliases.',
@@ -95,6 +96,41 @@ module.exports = {
       }
 
       const config = await ui.promptInstall(options);
+
+      // Ask about badge unless --no-badge or --yes
+      if (options.badge === false) {
+        config.noBadge = true;
+      } else if (options.yes) {
+        config.noBadge = false;
+      } else {
+        config.noBadge = !(await prompts.confirm({
+          message: 'Add BMAD badge to your README?',
+          default: true,
+        }));
+      }
+
+      // Resolve owner/repo for badge (git remote → prompt fallback)
+      if (!config.noBadge) {
+        const badge = require('../core/badge');
+        let remote = badge.resolveGitRemote(config.directory);
+        if (!remote) {
+          const input = await prompts.text({
+            message: 'Enter your GitHub owner/repo for the badge (e.g., nick/my-project):',
+            placeholder: 'owner/repo',
+            validate: (v) => (!v || !v.includes('/') ? 'Format: owner/repo' : undefined),
+          });
+          if (input) {
+            const [owner, repo] = input.split('/');
+            remote = { owner, repo };
+          }
+        }
+        if (remote) {
+          config.badgeOwner = remote.owner;
+          config.badgeRepo = remote.repo;
+        } else {
+          config.noBadge = true;
+        }
+      }
 
       // Handle cancel
       if (config.actionType === 'cancel') {

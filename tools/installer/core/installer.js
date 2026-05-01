@@ -103,6 +103,15 @@ class Installer {
 
       const restoreResult = await this._restoreUserFiles(paths, updateState);
 
+      // Inject BMAD badge into README if applicable
+      if (!config.noBadge) {
+        try {
+          await this._injectBadgeIfNeeded(paths.projectRoot, addResult, config);
+        } catch (error) {
+          addResult('Badge', 'warn', `skipped: ${error.message}`);
+        }
+      }
+
       // Render consolidated summary
       await this.renderInstallSummary(results, {
         bmadDir: paths.bmadDir,
@@ -1039,6 +1048,48 @@ class Installer {
   }
 
   /**
+   * Inject BMAD version badge into project README.
+   * Uses owner/repo from config (resolved in UI layer).
+   * @param {string} projectDir - Project root directory
+   * @param {Function} addResult - Callback to record results
+   * @param {Object} config - Installation config with badgeOwner/badgeRepo
+   */
+  async _injectBadgeIfNeeded(projectDir, addResult, config) {
+    const badge = require('../core/badge');
+
+    const owner = config.badgeOwner;
+    const repo = config.badgeRepo;
+    if (!owner || !repo) {
+      addResult('Badge', 'warn', 'no owner/repo provided');
+      return;
+    }
+
+    const readmePath = await badge.findReadme(projectDir);
+    if (!readmePath) {
+      const projectName = path.basename(projectDir);
+      const content = badge.createReadmeWithBadge(owner, repo, projectName);
+      const newReadmePath = path.join(projectDir, 'README.md');
+      await fs.writeFile(newReadmePath, content, 'utf8');
+      addResult('Badge', 'ok', 'created README.md with badge');
+      return;
+    }
+
+    const content = await fs.readFile(readmePath, 'utf8');
+    if (badge.hasBadge(content)) {
+      // Update badge if owner/repo changed
+      const updated = badge.removeBadge(content);
+      const injected = badge.injectBadge(updated, owner, repo);
+      await fs.writeFile(readmePath, injected, 'utf8');
+      addResult('Badge', 'ok', `updated in ${path.basename(readmePath)}`);
+      return;
+    }
+
+    const updated = badge.injectBadge(content, owner, repo);
+    await fs.writeFile(readmePath, updated, 'utf8');
+    addResult('Badge', 'ok', `added to ${path.basename(readmePath)}`);
+  }
+
+  /**
    * Render a consolidated install summary using prompts.note()
    * @param {Array} results - Array of {step, status: 'ok'|'error'|'warn', detail}
    * @param {Object} context - {bmadDir, modules, ides, customFiles, modifiedFiles}
@@ -1294,6 +1345,9 @@ class Installer {
       directory: projectDir,
       modules: modulesToUpdate,
       ides: configuredIdes,
+      noBadge: config.noBadge,
+      badgeOwner: config.badgeOwner,
+      badgeRepo: config.badgeRepo,
       coreConfig: quickModules.collectedConfig.core,
       moduleConfigs: quickModules.collectedConfig,
       // Forward `--set` overrides so the post-install patch step

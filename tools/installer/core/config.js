@@ -15,6 +15,9 @@ class Config {
     quickUpdate,
     channelOptions,
     setOverrides,
+    noBadge,
+    badgeOwner,
+    badgeRepo,
   }) {
     this.directory = directory;
     this.modules = Object.freeze([...modules]);
@@ -32,6 +35,9 @@ class Config {
     // Intentionally NOT integrated with the prompt/template/schema flow; see
     // `tools/installer/set-overrides.js` for the rationale and tradeoffs.
     this.setOverrides = setOverrides || {};
+    this.noBadge = noBadge || false;
+    this.badgeOwner = badgeOwner || null;
+    this.badgeRepo = badgeRepo || null;
     Object.freeze(this);
   }
 
@@ -58,6 +64,9 @@ class Config {
       quickUpdate: userInput._quickUpdate || false,
       channelOptions: userInput.channelOptions || null,
       setOverrides: userInput.setOverrides || {},
+      noBadge: userInput.noBadge || false,
+      badgeOwner: userInput.badgeOwner || null,
+      badgeRepo: userInput.badgeRepo || null,
     });
   }
 
