@@ -338,7 +338,7 @@ class PluginResolver {
    * @returns {string} CSV content
    */
   _buildSynthesizedHelpCsv(moduleName, skillInfos) {
-    const header = 'module,skill,display-name,menu-code,description,action,args,phase,after,before,required,output-location,outputs';
+    const header = 'module,skill,display-name,menu-code,description,action,args,phase,preceded-by,followed-by,required,output-location,outputs';
     const rows = [header];
 
     for (const info of skillInfos) {

@@ -7,8 +7,8 @@
       "description": "Produces battle-tested PRFAQ document and optional LLM distillate for PRD input.",
       "supports-headless": true,
       "phase-name": "1-analysis",
-      "after": ["brainstorming", "perform-research"],
-      "before": ["create-prd"],
+      "preceded-by": ["brainstorming", "perform-research"],
+      "followed-by": ["create-prd"],
       "is-required": false,
       "output-location": "{planning_artifacts}"
     }
