@@ -942,7 +942,8 @@ class Installer {
    */
   async mergeModuleHelpCatalogs(bmadDir, _agentEntries = []) {
     const allRows = [];
-    const headerRow = 'module,skill,display-name,menu-code,description,action,args,phase,preceded-by,followed-by,required,output-location,outputs';
+    const headerRow =
+      'module,skill,display-name,menu-code,description,action,args,phase,preceded-by,followed-by,required,output-location,outputs';
     const COLUMN_COUNT = 13;
     const PHASE_INDEX = 7;
 
