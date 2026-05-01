@@ -1,6 +1,7 @@
 const fs = require('../fs-native');
 const path = require('node:path');
 const yaml = require('yaml');
+const { MODULE_HELP_CSV_HEADER } = require('./module-help-schema');
 
 /**
  * Resolves how to install a plugin from marketplace.json by analyzing
@@ -338,8 +339,7 @@ class PluginResolver {
    * @returns {string} CSV content
    */
   _buildSynthesizedHelpCsv(moduleName, skillInfos) {
-    const header = 'module,skill,display-name,menu-code,description,action,args,phase,after,before,required,output-location,outputs';
-    const rows = [header];
+    const rows = [MODULE_HELP_CSV_HEADER];
 
     for (const info of skillInfos) {
       const displayName = this._formatDisplayName(info.name || info.dirName);

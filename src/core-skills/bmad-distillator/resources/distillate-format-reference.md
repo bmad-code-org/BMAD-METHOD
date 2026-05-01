@@ -139,7 +139,7 @@ parts: 1
 
 ## Solution Architecture
 - Plugins: skill bundles with Anthropic plugin standard as base format + bmad-manifest.json extending for BMAD-specific metadata (installer options, capabilities, help integration, phase ordering, dependencies)
-- Existing manifest example: `{"module-code":"bmm","replaces-skill":"bmad-create-product-brief","capabilities":[{"name":"create-brief","menu-code":"CB","supports-headless":true,"phase-name":"1-analysis","after":["brainstorming"],"before":["create-prd"],"is-required":true}]}`
+- Existing manifest example: `{"module-code":"bmm","replaces-skill":"bmad-create-product-brief","capabilities":[{"name":"create-brief","menu-code":"CB","supports-headless":true,"phase-name":"1-analysis","preceded-by":["brainstorming"],"followed-by":["create-prd"],"is-required":true}]}`
 - Vercel skills CLI handles platform translation; integration pattern (wrap/fork/call) is PRD decision
 - bmad-setup: global skill scanning installed bmad-manifest.json files, registering capabilities, configuring project settings; always included as base skill in every bundle (solves bootstrapping)
 - bmad-update: plugin update path without full reinstall; technical approach (diff/replace/preserve customizations) is PRD decision
