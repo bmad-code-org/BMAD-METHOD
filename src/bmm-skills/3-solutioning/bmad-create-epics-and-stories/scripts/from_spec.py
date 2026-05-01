@@ -4,7 +4,7 @@
 # ///
 """Generate a complete v7 epic-and-story tree from a structured spec, then validate.
 
-Spec schema (JSON or YAML-equivalent JSON):
+Spec schema (JSON):
 {
   "title": "...",                          # initiative name (informational)
   "intent": "...",                         # one-line intent (informational)
@@ -75,7 +75,7 @@ def _load_spec(path: Path) -> dict:
     try:
         return json.loads(text)
     except json.JSONDecodeError as exc:
-        raise SystemExit(f"could not parse spec as JSON: {exc}")
+        raise SystemExit(f"could not parse spec as JSON: {exc}") from exc
 
 
 def _run(cmd: list[str]) -> tuple[int, str, str]:
@@ -148,6 +148,26 @@ def _validate_spec(spec: dict) -> list[str]:
                     errs.append(f"epic[{i}].stories[{j}] missing `{k}`")
             if story.get("type") not in {"feature", "task", "bug", "spike"}:
                 errs.append(f"epic[{i}].stories[{j}].type invalid: {story.get('type')!r}")
+
+    inv = spec.get("inventory")
+    if inv is not None:
+        if not isinstance(inv, dict):
+            errs.append("inventory must be an object")
+        else:
+            reqs = inv.get("requirements")
+            if reqs is not None:
+                if not isinstance(reqs, dict):
+                    errs.append("inventory.requirements must be an object keyed by category")
+                else:
+                    for cat, entries in reqs.items():
+                        if not isinstance(entries, list):
+                            errs.append(f"inventory.requirements.{cat} must be a list")
+                            continue
+                        for k_idx, entry in enumerate(entries):
+                            if not isinstance(entry, dict):
+                                errs.append(f"inventory.requirements.{cat}[{k_idx}] must be an object")
+                            elif "code" not in entry:
+                                errs.append(f"inventory.requirements.{cat}[{k_idx}] missing `code`")
     return errs
 
 

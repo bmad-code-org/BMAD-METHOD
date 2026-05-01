@@ -49,13 +49,24 @@ AC_LINE_RE = re.compile(r"\bAC\d+\b", re.IGNORECASE)
 
 
 def extract_coverage_section(text: str) -> str | None:
-    m = COVERAGE_HEADING_RE.search(text)
-    if not m:
+    """Return the concatenated body of every ``## Coverage`` block in ``text``.
+
+    Both authoring flows are tolerated: replacing the template's placeholder
+    Coverage block in-place (the intended flow), or appending a new
+    ``## Coverage`` block at the end of the file (a common LLM/human mistake
+    that we don't want to silently flip into "uncovered").
+    Returns ``None`` only when no ``## Coverage`` heading exists at all.
+    """
+    matches = list(COVERAGE_HEADING_RE.finditer(text))
+    if not matches:
         return None
-    start = m.end()
-    nxt = NEXT_HEADING_RE.search(text, start)
-    end = nxt.start() if nxt else len(text)
-    return text[start:end]
+    parts: list[str] = []
+    for m in matches:
+        start = m.end()
+        nxt = NEXT_HEADING_RE.search(text, start)
+        end = nxt.start() if nxt else len(text)
+        parts.append(text[start:end])
+    return "\n".join(parts)
 
 
 def parse_coverage_section(section: str) -> dict[str, list[str]]:

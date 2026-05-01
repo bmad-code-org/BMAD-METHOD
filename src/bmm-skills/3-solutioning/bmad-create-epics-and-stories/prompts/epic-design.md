@@ -12,7 +12,7 @@
 
 - **User-value first.** Each epic must enable users to accomplish something meaningful, or — for tech-debt epics — leave a measurably better engineering state. Epics organized by technical layers ("database setup," "API endpoints," "frontend components") are wrong; reshape them.
 - **Standalone within the dependency graph.** Each epic delivers complete functionality for its domain. Epic 2 must not require Epic 3 to function. Epic 3 may build on 1 and 2 but must stand alone.
-- **Dependency-free within an epic.** Stories within an epic must not depend on later stories in the same epic. (The validator enforces this in Stage 5 via `depends_on` resolution.)
+- **Dependency-free within an epic.** Stories within an epic must not depend on later stories in the same epic. (The validator enforces this in Stage 5: `story-dep-forward` rejects within-epic deps that point at later siblings, and `story-dep-cycle` rejects loops in the story-level graph.)
 - **File-churn check.** If multiple proposed epics repeatedly modify the same core files, ask whether they should consolidate into one epic with ordered stories. Distinguish meaningful overlap (same component end-to-end) from incidental sharing. Consolidate when the split provides no risk-mitigation or feedback-loop value.
 - **Implementation efficiency over taxonomy.** When the outcome is certain and direction changes between epics are unlikely, prefer fewer larger epics. Split into more epics when there's a genuine risk boundary or where early feedback could change direction.
 - **Starter template (if Stage 2 flagged one in the inventory).** Epic 1's first story must be "set up the project from the starter template." Plan for it now.

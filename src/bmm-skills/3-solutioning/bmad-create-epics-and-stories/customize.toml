@@ -28,8 +28,12 @@ activation_steps_append = []
 #
 # Each entry is either:
 #   - a literal sentence, e.g. "Stories must reference at least one FR or UX-DR."
-#   - a file reference prefixed with `file:`, e.g. "file:{project-root}/docs/standards.md"
-#     (glob patterns are supported; the file's contents are loaded and treated as facts).
+#   - a file reference prefixed with `file:`. The path may use either
+#     `{project-root}` (project-local docs) or `{skill-root}` (skill-shipped
+#     resources). Glob patterns are honored; the file's contents are loaded
+#     and treated as facts. Examples:
+#       "file:{project-root}/docs/standards.md"
+#       "file:{skill-root}/resources/sizing-heuristics.md"
 
 persistent_facts = [
   "file:{project-root}/**/project-context.md",

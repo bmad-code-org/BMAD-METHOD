@@ -15,14 +15,14 @@ python3 scripts/validate_initiative.py --initiative-store {initiative_store} \
   --inventory {initiative_store}/.bmad-cache/inventory.json
 ```
 
-Without `--inventory`, the validator only checks schema/deps/cycles/numbering and emits the regex-extracted `mentioned_requirements` set; coverage findings will not be generated.
+Without `--inventory`, the validator only checks schema/deps/cycles/numbering and emits the Coverage-section codes as `mentioned_requirements`; coverage findings will not be generated.
 
 The JSON contract:
 
-- `findings[]` — every error and warning. New code: `coverage-missing` for inventory codes that don't appear textually in any story body. Default level is `warning`; pass `--coverage-strict` to escalate to `error`.
+- `findings[]` — every error and warning. `coverage-missing` fires for inventory codes that no story's `## Coverage` section claims (mentions in prose elsewhere do not count). Default level is `warning`; pass `--coverage-strict` to escalate to `error`. Other dependency-shape codes: `story-dep-forward` (within-epic dep on a later sibling), `story-dep-cycle` (loop in the story-level depends_on graph), `epic-dep-cycle` (loop in the epic-level graph).
 - `summary.epics[]` — full per-epic summary including story-level metadata (basename, title, type, status, depends_on, body_len). Use this instead of re-reading every file.
-- `summary.mentioned_requirements` — deduplicated set of codes the regex found.
-- `summary.coverage_missing` — codes from the inventory not found in any story body (only populated when `--inventory` was passed).
+- `summary.mentioned_requirements` — deduplicated set of codes the validator found in any story's `## Coverage` section. The strict source for the coverage gate.
+- `summary.coverage_missing` — codes from the inventory not claimed by any story's `## Coverage` section (only populated when `--inventory` was passed).
 
 ## Headless mode
 
@@ -43,13 +43,16 @@ For each error in `findings`, explain it in one sentence and offer to fix. Group
 - **`epic-nn-mismatch` / `story-epic-mismatch`** → likely a hand-edit of the front matter; the folder name is canonical, so update the front matter to match.
 - **`story-dep-unresolved`** → either the dep was a typo (fix the depends_on entry) or the target was renamed (`scripts/rename_story.py`) or moved (`scripts/move_story.py`) without updating refs. Use the move/rename scripts going forward — they update refs atomically.
 - **`epic-dep-cycle`** → cross-epic graph has a loop. Loop back to `prompts/epic-design.md` (re-derive-deps flow) to fix it.
-- **`story-numbering-gaps`** → use `scripts/rename_story.py --to-nn` to fill the gap or renumber the survivors.
+- **`story-dep-forward`** → a within-epic dep points at a later sibling. Either reorder the stories with `rename_story.py --to-nn` so the dep points backward, or move the dep target into an upstream epic and use the cross-epic ref form.
+- **`story-dep-cycle`** → loop in the story-level graph. Loop back to `prompts/edit-mode.md` re-derive-deps. Often a sign two stories should be merged.
+- **`story-numbering-gaps`** / **`story-numbering-duplicates`** → use `scripts/rename_story.py --to-nn` to fill the gap or break the duplicate.
+- **`epic-filter-not-found`** → the `--epic` flag named a folder that doesn't exist. Spell-check the folder name (including the `NN-` prefix), or drop the flag.
 
 ### 2. Coverage check
 
 When `--inventory` was passed, the validator already produced `coverage_missing` deterministically — surface those codes conversationally and route into the **coverage-fix** edit-mode entry point in `prompts/epic-authoring.md`.
 
-For each missing code: ask whether it should be added to an existing story's AC mapping or whether a new story is needed. The validator does not distinguish between "code not mentioned anywhere" and "code mentioned in prose without the literal token" — when you suspect the latter, fan out `agents/coverage-auditor.md` to do a fuzzy semantic check.
+For each missing code: ask whether it should be added to an existing story's AC mapping or whether a new story is needed. A code mentioned in Technical Notes (or any prose outside the `## Coverage` section) is treated as uncovered — that's by design, since the AC→codes contract is what downstream skills like `bmad-code-review` rely on. If you suspect the requirement *is* implicitly covered but no story claims its code, fan out `agents/coverage-auditor.md` to do a fuzzy semantic check before adding new stories.
 
 #### Speeding up the auditor with a deterministic pre-pass
 

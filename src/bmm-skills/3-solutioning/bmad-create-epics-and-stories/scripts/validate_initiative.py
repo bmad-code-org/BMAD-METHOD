@@ -10,10 +10,12 @@ Checks (strict mode):
   3. Story `epic:` field equals the enclosing folder name; epic `epic:` field equals the folder NN.
   4. depends_on entries resolve (within-epic basenames or <epic-folder>/<basename> cross-epic).
   5. Cross-epic depends_on graph is acyclic.
-  6. Within-epic story numbering is sequential starting at 01.
-  7. Sizing sanity (warnings only): a story body >3x the epic mean is flagged.
-  8. Coverage (only when --inventory FILE is provided): every requirement code listed
-     in the inventory must appear textually in at least one story body.
+  6. Story-level depends_on graph is acyclic; within-epic deps must point at earlier siblings.
+  7. Within-epic story numbering is sequential starting at 01, with no duplicates.
+  8. Sizing sanity (warnings only): a story body >3x the epic mean is flagged.
+  9. Coverage (only when --inventory FILE is provided): every requirement code listed in
+     the inventory must appear in at least one story's `## Coverage` section. Codes
+     mentioned elsewhere in the body (Technical Notes etc.) do NOT count as covered.
 
 Output (stdout, JSON): {"findings": [...], "summary": {...}}
   --summary-only emits a structured tree block instead, used by edit-mode and finalize.
@@ -22,7 +24,8 @@ Exit codes: 0 if no errors (warnings ok), 1 if any error finding, 2 on internal 
 
 Flags:
   --lax              skip sizing warnings; never relaxes schema or dep checks
-  --epic NN-kebab    limit walks to a single epic folder (still resolves cross-epic refs)
+  --epic NN-kebab    limit walks to a single epic folder (still resolves cross-epic refs).
+                     Errors if the named folder doesn't exist.
   --inventory FILE   path to inventory.json (or .bmad-cache/inventory.json); when present,
                      missing requirement codes are reported. Default level is warning;
                      pair with --coverage-strict to escalate to error.
@@ -41,6 +44,10 @@ import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
+# Same directory; both files are shipped together as the skill's scripts/.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from extract_coverage import extract_coverage_section, parse_coverage_section  # noqa: E402
+
 STORY_TYPES = {"feature", "bug", "task", "spike"}
 STATUSES = {"draft", "ready", "in-progress", "review", "done", "blocked"}
 STORY_KEYS = {"title", "type", "status", "epic", "depends_on", "metadata"}
@@ -48,7 +55,13 @@ STORY_REQUIRED = {"title", "type", "status", "epic", "depends_on"}
 EPIC_KEYS = {"title", "epic", "status", "depends_on", "metadata"}
 EPIC_REQUIRED = {"title", "epic", "status", "depends_on"}
 
-REQUIREMENT_CODE_RE = re.compile(r"\b(?:UX-DR|NFR|FR|D|R)\d+(?:\.\d+)?\b")
+def _story_coverage_codes(stext: str) -> set[str]:
+    """Codes claimed by a story's ``## Coverage`` section. Empty if no section."""
+    section = extract_coverage_section(stext)
+    if section is None:
+        return set()
+    ac_map = parse_coverage_section(section)
+    return {c for codes in ac_map.values() for c in codes}
 
 
 def parse_frontmatter(text: str) -> tuple[dict | None, str | None]:
@@ -211,6 +224,23 @@ def validate(
         return findings, {}
 
     all_epic_folders = sorted(p for p in epics_dir.iterdir() if p.is_dir() and re.match(r"^\d+-", p.name))
+    if only_epic is not None and not any(p.name == only_epic for p in all_epic_folders):
+        findings.append({
+            "level": "error",
+            "code": "epic-filter-not-found",
+            "message": f"--epic {only_epic!r} does not match any folder under {epics_dir}",
+            "path": str(epics_dir),
+        })
+        return findings, {
+            "epics": [],
+            "story_count": 0,
+            "story_status_counts": {},
+            "story_type_counts": {},
+            "errors": 1,
+            "warnings": 0,
+            "mentioned_requirements": [],
+            "coverage_missing": [],
+        }
     walk_folders = [p for p in all_epic_folders if (only_epic is None or p.name == only_epic)]
 
     epic_meta: dict[str, dict] = {}
@@ -301,7 +331,7 @@ def validate(
                 if in_walk:
                     findings.append({"level": "error", "code": "story-deps-not-list", "message": "depends_on must be a list", "path": str(sf)})
                 sdeps = []
-            mentioned_codes.update(REQUIREMENT_CODE_RE.findall(stext))
+            mentioned_codes.update(_story_coverage_codes(stext))
             story_index[f"{ed.name}/{sf.stem}"] = {
                 "depends_on": [str(d) for d in sdeps],
                 "path": sf,
@@ -316,9 +346,20 @@ def validate(
             }
 
         if in_walk and seen_nns:
-            expected = list(range(1, len(seen_nns) + 1))
-            if sorted(seen_nns) != expected:
-                findings.append({"level": "error", "code": "story-numbering-gaps", "message": f"story NNs {sorted(seen_nns)} expected {expected}", "path": str(ed)})
+            counts = Counter(seen_nns)
+            duplicates = sorted(n for n, c in counts.items() if c > 1)
+            if duplicates:
+                findings.append({
+                    "level": "error",
+                    "code": "story-numbering-duplicates",
+                    "message": f"duplicate story NNs in {ed.name}: {duplicates}",
+                    "path": str(ed),
+                })
+            else:
+                unique_sorted = sorted(set(seen_nns))
+                expected = list(range(1, len(unique_sorted) + 1))
+                if unique_sorted != expected:
+                    findings.append({"level": "error", "code": "story-numbering-gaps", "message": f"story NNs {unique_sorted} expected {expected}", "path": str(ed)})
 
     # depends_on resolution
     epic_nns = {meta["nn"]: name for name, meta in epic_meta.items()}
@@ -330,22 +371,56 @@ def validate(
             if d2 not in epic_nns:
                 findings.append({"level": "error", "code": "epic-dep-unresolved", "message": f"epic {name} depends on NN {d!r} which has no folder", "path": str(meta["path"])})
 
+    # Story dep resolution + within-epic forward-ref check.
+    # Build the story dependency graph on the whole tree so cycle detection
+    # catches loops that span epics, even when the run is filtered to one.
+    story_graph: dict[str, list[str]] = {}
     for skey, smeta in story_index.items():
-        if not smeta["in_walk"]:
-            continue
+        targets: list[str] = []
         for d in smeta["depends_on"]:
-            if "/" in d:
-                if f"{d.split('/', 1)[0]}/{d.split('/', 1)[1]}" not in story_index:
-                    findings.append({"level": "error", "code": "story-dep-unresolved", "message": f"cross-epic dep {d!r} references missing story", "path": str(smeta["path"])})
-            else:
-                if f"{smeta['epic']}/{d}" not in story_index:
-                    findings.append({"level": "error", "code": "story-dep-unresolved", "message": f"within-epic dep {d!r} not found in {smeta['epic']}", "path": str(smeta["path"])})
+            target_key = d if "/" in d else f"{smeta['epic']}/{d}"
+            if target_key not in story_index:
+                if smeta["in_walk"]:
+                    if "/" in d:
+                        findings.append({"level": "error", "code": "story-dep-unresolved", "message": f"cross-epic dep {d!r} references missing story", "path": str(smeta["path"])})
+                    else:
+                        findings.append({"level": "error", "code": "story-dep-unresolved", "message": f"within-epic dep {d!r} not found in {smeta['epic']}", "path": str(smeta["path"])})
+                continue
+            targets.append(target_key)
+            if smeta["in_walk"]:
+                tgt = story_index[target_key]
+                if tgt["epic"] == smeta["epic"] and tgt["nn"] >= smeta["nn"]:
+                    findings.append({
+                        "level": "error",
+                        "code": "story-dep-forward",
+                        "message": f"depends on later sibling {d!r} (NN {tgt['nn']:02d} ≥ self NN {smeta['nn']:02d}); within-epic deps must point at earlier stories",
+                        "path": str(smeta["path"]),
+                    })
+        story_graph[skey] = targets
 
     # epic dep cycles (compute on whole tree; report once)
     if walk_set:
         cycle_graph = {meta["nn"]: [d.zfill(2) for d in meta["depends_on"]] for meta in epic_meta.values()}
         for cyc in _find_cycles(cycle_graph):
             findings.append({"level": "error", "code": "epic-dep-cycle", "message": "cycle in epic depends_on: " + " -> ".join(cyc), "path": str(epics_dir)})
+
+        seen_cycle_keys: set[frozenset[str]] = set()
+        for cyc in _find_cycles(story_graph):
+            # report only once per distinct cycle, and only when at least one
+            # node lies in the walk (so --epic filtering still hides loops in
+            # untouched parts of the tree).
+            if not any(story_index.get(n, {}).get("in_walk") for n in cyc):
+                continue
+            key = frozenset(cyc)
+            if key in seen_cycle_keys:
+                continue
+            seen_cycle_keys.add(key)
+            findings.append({
+                "level": "error",
+                "code": "story-dep-cycle",
+                "message": "cycle in story depends_on: " + " -> ".join(cyc),
+                "path": str(epics_dir),
+            })
 
     # sizing warnings
     if not lax:
@@ -376,7 +451,7 @@ def validate(
             findings.append({
                 "level": level,
                 "code": "coverage-missing",
-                "message": f"requirement {code!r} ({text[:60]}...) not referenced by any story body" if text else f"requirement {code!r} not referenced by any story body",
+                "message": f"requirement {code!r} ({text[:60]}...) not referenced in any story's ## Coverage section" if text else f"requirement {code!r} not referenced in any story's ## Coverage section",
                 "path": str(initiative_store / "epics"),
             })
 

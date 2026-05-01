@@ -18,6 +18,14 @@ python3 scripts/validate_initiative.py --initiative-store {initiative_store} --s
 
 The JSON's `summary.epics[]` already contains, per epic: folder, NN, title, status, depends_on, story_count, and per-story metadata (basename, title, type, status, depends_on). Use this — do not read every `epic.md` and every story file.
 
+### Refuse to dispatch when the tree is broken
+
+`--summary-only` suppresses the detailed `findings[]` list, but it still includes `summary.errors` and `summary.warnings` counts. **If `summary.errors > 0`, do not proceed into any sub-mode.** Re-run the validator without `--summary-only` to surface the findings, route to `prompts/validate.md` to fix them, and only return to this prompt once the tree validates clean. Edit-mode flows like `split-epic` and `re-derive-deps` rewrite many files; running them on top of a parse or schema error compounds the damage.
+
+### Surface a stale v6 file (one-line note)
+
+If a v6 monolithic file exists alongside the v7 tree (at `{initiative_store}/epics.md` or `{planning_artifacts}/epics.md`), surface it once before dispatch as a single line: `"there's still a v6 epics.md at <path> — leave it, archive it, or migrate it via a fresh create flow"`. The v7 tree is canonical; the v6 file is treated as inert. Do not stop or branch — continue to the sub-mode the user asked for.
+
 ## Ambiguous-intent menu
 
 If the user's opening message did not match any sub-mode, ask:

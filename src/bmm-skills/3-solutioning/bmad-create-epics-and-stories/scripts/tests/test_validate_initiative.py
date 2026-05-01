@@ -181,6 +181,87 @@ class TestValidateInitiative(unittest.TestCase):
             self.assertEqual(r.returncode, 1)
             self.assertIn("not found", r.stderr)
 
+    def test_within_epic_forward_ref_rejected(self) -> None:
+        # 01-schema must not depend on 02-register; forward-deps within the same
+        # epic violate the "stories build on earlier siblings" invariant.
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Path(tmp)
+            _build_clean_tree(store)
+            sp = store / "epics" / "01-auth" / "01-schema.md"
+            sp.write_text(sp.read_text(encoding="utf-8").replace("depends_on: []", 'depends_on: ["02-register"]', 1), encoding="utf-8")
+            r = _run(VALIDATE, "--initiative-store", str(store))
+            self.assertEqual(r.returncode, 1)
+            codes = {f["code"] for f in json.loads(r.stdout)["findings"]}
+            self.assertIn("story-dep-forward", codes)
+
+    def test_story_dep_cycle_detected(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Path(tmp)
+            _build_clean_tree(store)
+            schema = store / "epics" / "01-auth" / "01-schema.md"
+            register = store / "epics" / "01-auth" / "02-register.md"
+            schema.write_text(schema.read_text(encoding="utf-8").replace("depends_on: []", 'depends_on: ["02-register"]', 1), encoding="utf-8")
+            # 02-register already depends on 01-schema; adding the reverse edge
+            # closes the loop.
+            r = _run(VALIDATE, "--initiative-store", str(store))
+            self.assertEqual(r.returncode, 1)
+            codes = {f["code"] for f in json.loads(r.stdout)["findings"]}
+            self.assertIn("story-dep-cycle", codes)
+
+    def test_story_numbering_duplicates_distinct_from_gaps(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Path(tmp)
+            _build_clean_tree(store)
+            # Force a duplicate by hand-placing a second NN=01 file in 01-auth.
+            dup = store / "epics" / "01-auth" / "01-second.md"
+            dup.write_text(
+                "---\ntitle: \"Second\"\ntype: task\nstatus: draft\nepic: 01-auth\ndepends_on: []\n---\n\n# Second\n",
+                encoding="utf-8",
+            )
+            r = _run(VALIDATE, "--initiative-store", str(store))
+            self.assertEqual(r.returncode, 1)
+            codes = {f["code"] for f in json.loads(r.stdout)["findings"]}
+            self.assertIn("story-numbering-duplicates", codes)
+            self.assertNotIn("story-numbering-gaps", codes)
+
+    def test_epic_filter_missing_folder_errors(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Path(tmp)
+            _build_clean_tree(store)
+            r = _run(VALIDATE, "--initiative-store", str(store), "--epic", "99-nope")
+            self.assertEqual(r.returncode, 1)
+            codes = {f["code"] for f in json.loads(r.stdout)["findings"]}
+            self.assertIn("epic-filter-not-found", codes)
+
+    def test_coverage_gate_only_counts_coverage_section(self) -> None:
+        # FR99 mentioned only in Technical Notes must NOT count as covered, even
+        # though the body-wide regex would match it.
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Path(tmp)
+            _build_clean_tree(store)
+            inv = store / "inventory.json"
+            inv.write_text(json.dumps({
+                "requirements": {
+                    "functional": [{"code": "FR1", "text": "Login"}, {"code": "FR99", "text": "Hidden"}],
+                }
+            }), encoding="utf-8")
+            schema = store / "epics" / "01-auth" / "01-schema.md"
+            text = schema.read_text(encoding="utf-8")
+            text = text.replace(
+                "- AC1 → <list of FR / NFR / UX-DR codes>",
+                "- AC1 → FR1",
+            )
+            text = text.replace(
+                "<Implementation hints — file paths, API contracts, gotchas, references into the epic's Shared Context. Not a full design; just what saves the implementer a lookup.>",
+                "We rely on FR99 here.",
+            )
+            schema.write_text(text, encoding="utf-8")
+            r = _run(VALIDATE, "--initiative-store", str(store), "--inventory", str(inv), "--coverage-strict")
+            self.assertEqual(r.returncode, 1, r.stdout)
+            data = json.loads(r.stdout)
+            self.assertEqual(data["summary"]["coverage_missing"], ["FR99"])
+            self.assertNotIn("FR99", data["summary"]["mentioned_requirements"])
+
     def test_lax_skips_sizing_warnings(self) -> None:
         # Sizing warnings fire when one body exceeds 3x the epic mean. With 5 normal
         # stories and one massively-padded outlier, the mean stays low enough for

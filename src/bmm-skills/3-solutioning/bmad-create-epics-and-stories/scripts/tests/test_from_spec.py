@@ -88,6 +88,22 @@ class TestFromSpec(unittest.TestCase):
             data = json.loads(r.stdout)
             self.assertTrue(any("type invalid" in msg for msg in data["details"]))
 
+    def test_invalid_inventory_shape_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Path(tmp) / "store"
+            spec_data = json.loads(json.dumps(BASE_SPEC))
+            # Drop the `code` from one entry; spec validator should reject before authoring.
+            spec_data["inventory"]["requirements"]["functional"] = [{"text": "Missing code"}]
+            spec = Path(tmp) / "spec.json"
+            spec.write_text(json.dumps(spec_data), encoding="utf-8")
+            r = _run("--initiative-store", str(store), "--spec", str(spec))
+            self.assertEqual(r.returncode, 1)
+            data = json.loads(r.stdout)
+            self.assertEqual(data["error"], "invalid spec")
+            self.assertTrue(any("missing `code`" in msg for msg in data["details"]))
+            # Tree must not have been created on a rejected spec.
+            self.assertFalse((store / "epics").exists())
+
     def test_coverage_strict_fails_when_missing(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             store = Path(tmp) / "store"

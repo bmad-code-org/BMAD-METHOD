@@ -51,7 +51,7 @@ Execute each entry in `{workflow.activation_steps_prepend}` in order before proc
 
 ### Step 3: Load Persistent Facts
 
-Treat every entry in `{workflow.persistent_facts}` as foundational context for the whole run. Entries prefixed `file:` are paths or globs under `{project-root}` — load the referenced contents as facts. All other entries are facts verbatim.
+Treat every entry in `{workflow.persistent_facts}` as foundational context for the whole run. Entries prefixed `file:` are paths or globs and may use `{project-root}` (project-local files) or `{skill-root}` (skill-shipped resources); resolve the placeholder, then load the referenced contents as facts. Glob patterns are honored. All other entries are facts verbatim.
 
 ### Step 4: Load Config
 
@@ -94,7 +94,7 @@ If the user passed `--from-spec <path>`, set `{mode}=from-spec` and `{spec_path}
 - If `{initiative_store}/epics/` contains v7 epic folders (any folder matching `NN-*` with an `epic.md` inside) → `{mode}=edit`.
 - If `{initiative_store}/epics/` is absent BUT a v6 monolithic file exists at `{initiative_store}/epics.md` or `{planning_artifacts}/epics.md`, OR a sharded v6 directory exists at the same locations → `{mode}=migrate`.
 
-If both v7 folders and a v6 file exist, prefer `edit` and surface the v6 file in Stage 1 as a one-line note.
+If both v7 folders and a v6 file exist, prefer `edit`. The edit-mode prompt surfaces the leftover v6 file as a one-line note before any sub-mode dispatches.
 
 ### 4. Edit sub-mode dispatch (only when `{mode}=edit`)
 

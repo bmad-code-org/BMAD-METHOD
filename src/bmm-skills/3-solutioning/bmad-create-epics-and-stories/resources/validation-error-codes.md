@@ -40,6 +40,8 @@ These fire when references don't resolve.
 | `epic-dep-unresolved` | An epic's `depends_on` references an NN that has no corresponding folder in the tree. | Either fix the typo, or remove the dep, or create the missing epic. |
 | `epic-dep-cycle` | The cross-epic depends_on graph has a cycle (Epic A → B → A, directly or transitively). The message lists the cycle. | Break the cycle. If the cycle reflects a real bidirectional dependency, the epics should probably be merged or the seam reconsidered. |
 | `story-dep-unresolved` | A story's `depends_on` entry doesn't resolve — either as a within-epic basename or as a cross-epic `<folder>/<basename>` ref. | Fix the typo, or use `move_story.py` / `rename_story.py` going forward (they update refs atomically). For after-the-fact fixes, edit `depends_on:` directly and re-validate. |
+| `story-dep-forward` | A story's within-epic `depends_on` references a sibling whose NN is greater than or equal to its own. Within an epic, stories must build on earlier ones. | Reorder (re-NN) the stories with `rename_story.py --to-nn` so the dependency points backward, or move the dep target to an upstream epic and use the cross-epic ref form. |
+| `story-dep-cycle` | The story-level `depends_on` graph (across the whole tree) has a cycle. The message lists the cycle in `<epic>/<basename>` form. | Break the cycle. Often a symptom of stories that should be merged, or of a missed seam where one of them should split off into an earlier epic. |
 
 ## Structural errors
 
@@ -48,12 +50,14 @@ These fire when references don't resolve.
 | `no-epics-dir` | `{initiative_store}/epics/` doesn't exist. | Either you have the wrong `--initiative-store`, or no tree has been generated yet. Run the skill in create mode. |
 | `missing-epic-md` | A folder matches `NN-*` but has no `epic.md` inside. | Either the folder is bogus (delete it) or the `epic.md` was lost (regenerate with `init_epic.py` and re-fill). |
 | `story-numbering-gaps` | Story NNs in an epic are not sequential `01..N`. The message lists what was found vs expected. | Use `rename_story.py --to-nn` to fill the gap or renumber the survivors. |
+| `story-numbering-duplicates` | Two or more stories in the same epic share an NN. The message lists the duplicated NNs. | Renumber one of them with `rename_story.py --to-nn`. Don't try to renumber the survivors with `move_story.py` — moving across epics is a different operation. |
+| `epic-filter-not-found` | `--epic <name>` was passed but no folder under `{initiative_store}/epics/` matches. | Spell-check the folder name (including the `NN-` prefix), or drop the flag to scan the whole tree. |
 
 ## Coverage findings
 
 | Code | Meaning | Fix |
 | --- | --- | --- |
-| `coverage-missing` | An inventory code from `--inventory <file>` does not appear textually in any story body. **Warning** by default; **error** under `--coverage-strict`. | Use the `coverage-fix` edit-mode entry point in `prompts/edit-mode.md` — extend an existing story's `## Coverage` section, or add a new story for the missing code. |
+| `coverage-missing` | An inventory code from `--inventory <file>` does not appear in any story's `## Coverage` section. Mentions in prose elsewhere in the body (Technical Notes, Goal, etc.) do **not** count — coverage is the AC→codes contract, not free-form description. **Warning** by default; **error** under `--coverage-strict`. | Use the `coverage-fix` edit-mode entry point in `prompts/edit-mode.md` — extend an existing story's `## Coverage` section, or add a new story for the missing code. |
 
 ## Sizing warnings
 

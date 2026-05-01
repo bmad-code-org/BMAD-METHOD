@@ -38,11 +38,11 @@ python3 scripts/validate_initiative.py --initiative-store {initiative_store} --s
 From the JSON, surface a 3-line block such as:
 
 ```
-2 epics, 5 stories: 3 features, 2 tasks. Coverage: 100% (8/8 inventory codes mentioned).
+2 epics, 5 stories: 3 features, 2 tasks. Coverage: 100% (8/8 inventory codes claimed by some story's ## Coverage section).
 Median story body: ~600 chars. No oversized stories.
 ```
 
-Pull the coverage number from `summary.mentioned_requirements` vs the inventory at `{initiative_store}/.bmad-cache/inventory.json` (if present); skip the coverage line when no inventory exists.
+Pull the coverage number from `summary.mentioned_requirements` (the strict Coverage-section set) vs the inventory at `{initiative_store}/.bmad-cache/inventory.json` (if present); skip the coverage line when no inventory exists.
 
 ## Step 3: Confirm initial statuses
 
