@@ -246,6 +246,9 @@ class ManifestGenerator {
     for (const moduleName of this.updatedModules) {
       const moduleYamlPath = await resolveInstalledModuleYaml(moduleName);
       if (!moduleYamlPath) {
+        if (await this._isSkillOnlyModule(moduleName)) {
+          continue;
+        }
         // External modules live in ~/.bmad/cache/external-modules, not src/modules.
         // Warn rather than silently skip so missing agent rosters don't vanish
         // from config.toml without notice.
@@ -441,6 +444,9 @@ class ManifestGenerator {
     for (const moduleName of this.updatedModules) {
       const moduleYamlPath = await resolveInstalledModuleYaml(moduleName);
       if (!moduleYamlPath) {
+        if (await this._isSkillOnlyModule(moduleName)) {
+          continue;
+        }
         console.warn(
           `[warn] writeCentralConfig: could not locate module.yaml for '${moduleName}'. ` +
             `Answers from this module will default to team scope — user-scoped keys may mis-file into config.toml.`,
@@ -798,6 +804,27 @@ class ManifestGenerator {
     }
 
     return false;
+  }
+
+  async _isSkillOnlyModule(moduleName) {
+    const modulePath = path.join(this.bmadDir, moduleName);
+    if (!(await fs.pathExists(modulePath))) return false;
+    if (await fs.pathExists(path.join(modulePath, 'module.yaml'))) return false;
+    if (!(await this._moduleUsesSourceRoot(moduleName))) return false;
+    return this._hasSkillMdRecursive(modulePath);
+  }
+
+  async _moduleUsesSourceRoot(moduleName) {
+    if (!this.sourceRootModuleCodes) {
+      try {
+        const { ExternalModuleManager } = require('../modules/external-manager');
+        const externalModules = await new ExternalModuleManager().listAvailable();
+        this.sourceRootModuleCodes = new Set(externalModules.filter((mod) => mod.sourceRoot).map((mod) => mod.code));
+      } catch {
+        this.sourceRootModuleCodes = new Set();
+      }
+    }
+    return this.sourceRootModuleCodes.has(moduleName);
   }
 }
 

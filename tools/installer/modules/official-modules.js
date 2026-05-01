@@ -5,6 +5,7 @@ const prompts = require('../prompts');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../project-root');
 const { CLIUtils } = require('../cli-utils');
 const { ExternalModuleManager } = require('./external-manager');
+const { installBmaRuntimePackage } = require('./bma-runtime-package');
 
 class OfficialModules {
   constructor(options = {}) {
@@ -301,6 +302,7 @@ class OfficialModules {
     }
 
     await this.copyModuleWithFiltering(sourcePath, targetPath, fileTrackingCallback, options.moduleConfig);
+    await installBmaRuntimePackage(moduleName, sourcePath, targetPath, fileTrackingCallback);
 
     if (!options.skipModuleInstaller) {
       await this.createModuleDirectories(moduleName, bmadDir, options);

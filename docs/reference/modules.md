@@ -71,6 +71,24 @@ Enterprise-grade test strategy, automation guidance, and release gate decisions 
 - NFR assessment, CI setup, and framework scaffolding
 - P0-P3 prioritization with optional Playwright Utils and MCP integrations
 
+## BMad Automator (Experimental)
+
+Automates the BMad story build loop with a skill bundle sourced from the separate Automator repository.
+
+- **Code:** `bma`
+- **npm:** [`bmad-story-automator`](https://www.npmjs.com/package/bmad-story-automator)
+- **GitHub:** [bmad-code-org/bmad-automator](https://github.com/bmad-code-org/bmad-automator)
+
+:::caution[Experimental runtime boundary]
+BMad Automator runtime behavior is owned by `bmad-automator`. BMAD-METHOD only registers and packages the module for installer targets. Claude Code remains the supported orchestration path; Codex orchestration is experimental while completion-level validation settles upstream.
+:::
+
+**Provides:**
+
+- Story build-cycle automation across story creation, development, QA automation, review, and retrospective
+- Resumable tmux orchestration state
+- Claude Code plus experimental Codex runtime packaging from the Automator source repo
+
 ## Community Modules
 
 Community modules and a module marketplace are coming. Check the [BMad GitHub organization](https://github.com/bmad-code-org) for updates.

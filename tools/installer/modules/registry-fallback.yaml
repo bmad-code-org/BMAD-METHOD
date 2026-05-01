@@ -50,3 +50,27 @@ modules:
     type: bmad-org
     npmPackage: bmad-method-test-architecture-enterprise
     default_channel: stable
+
+  bmad-automator:
+    url: https://github.com/bmad-code-org/bmad-automator
+    source-root: payload/.claude/skills
+    code: bma
+    name: "BMad Automator (Experimental)"
+    description: "Experimental pure-skill story automation. Claude Code remains the supported orchestrator; Codex orchestration is limited to create/dev/review validation while support settles upstream."
+    defaultSelected: false
+    type: experimental
+    npmPackage: bmad-story-automator
+    default_channel: stable
+    install-targets:
+      - claude-code
+      - codex
+    worker-targets:
+      - claude-code
+      - codex
+    requirements:
+      - Claude Code entrypoint for supported orchestration and retrospectives
+      - Codex entrypoint for experimental create/dev/review validation
+      - Claude Code or Codex worker sessions
+      - tmux
+      - macOS
+    install-note: "Experimental: Automator runtime support lives in bmad-automator. Codex orchestration should be treated as create/dev/review validation until completion-level behavior is proven."

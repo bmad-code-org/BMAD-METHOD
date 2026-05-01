@@ -18,6 +18,8 @@ const { Installer } = require('../tools/installer/core/installer');
 const { ManifestGenerator } = require('../tools/installer/core/manifest-generator');
 const { OfficialModules } = require('../tools/installer/modules/official-modules');
 const { IdeManager } = require('../tools/installer/ide/manager');
+const { ExternalModuleManager } = require('../tools/installer/modules/external-manager');
+const { installBmaRuntimePackage } = require('../tools/installer/modules/bma-runtime-package');
 const { clearCache, loadPlatformCodes } = require('../tools/installer/ide/platform-codes');
 
 // ANSI colors
@@ -81,6 +83,42 @@ async function createTestBmadFixture() {
     ].join('\n'),
   );
   await fs.writeFile(path.join(skillDir, 'workflow.md'), '# Test Workflow\nStep 1: Do the thing.\n');
+
+  return fixtureDir;
+}
+
+async function createAutomatorBmadFixture() {
+  const fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-automator-fixture-'));
+  const fixtureDir = path.join(fixtureRoot, '_bmad');
+  await fs.ensureDir(path.join(fixtureDir, '_config'));
+
+  await fs.writeFile(
+    path.join(fixtureDir, '_config', 'skill-manifest.csv'),
+    [
+      'canonicalId,name,description,module,path',
+      '"bmad-master","bmad-master","Minimal core skill","core","_bmad/core/bmad-master/SKILL.md"',
+      '"bmad-story-automator","bmad-story-automator","Automator skill","bma","_bmad/bma/bmad-story-automator/SKILL.md"',
+      '"bmad-story-automator-review","bmad-story-automator-review","Automator review skill","bma","_bmad/bma/bmad-story-automator-review/SKILL.md"',
+      '',
+    ].join('\n'),
+  );
+
+  const coreSkillDir = path.join(fixtureDir, 'core', 'bmad-master');
+  await fs.ensureDir(coreSkillDir);
+  await fs.writeFile(
+    path.join(coreSkillDir, 'SKILL.md'),
+    ['---', 'name: bmad-master', 'description: Minimal core skill', '---', '', 'Core skill body.'].join('\n'),
+  );
+
+  for (const skillName of ['bmad-story-automator', 'bmad-story-automator-review']) {
+    const skillDir = path.join(fixtureDir, 'bma', skillName);
+    await fs.ensureDir(skillDir);
+    await fs.writeFile(
+      path.join(skillDir, 'SKILL.md'),
+      ['---', `name: ${skillName}`, 'description: Automator skill', '---', '', 'Automator body.'].join('\n'),
+    );
+    await fs.writeFile(path.join(skillDir, 'workflow.md'), `# ${skillName}\n\nAutomator workflow body.\n`);
+  }
 
   return fixtureDir;
 }
@@ -3516,6 +3554,144 @@ async function runTests() {
     console.log(`${colors.red}Test Suite 44 setup failed: ${error.message}${colors.reset}`);
     console.log(error.stack);
     failed++;
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 45: Automator External Skill-Only Module
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 45: Automator External Skill-Only Module${colors.reset}\n`);
+
+  let tempProjectDir45;
+  let installedBmadDir45;
+  let originalLoadExternalModules45;
+  try {
+    const yaml45 = require('yaml');
+    const fallbackConfig45 = yaml45.parse(
+      await fs.readFile(path.join(__dirname, '..', 'tools', 'installer', 'modules', 'registry-fallback.yaml'), 'utf8'),
+    );
+    originalLoadExternalModules45 = ExternalModuleManager.prototype.loadExternalModulesConfig;
+    ExternalModuleManager.prototype.loadExternalModulesConfig = async function loadFallbackOnlyForTest() {
+      return fallbackConfig45;
+    };
+
+    const externalManager45 = new ExternalModuleManager();
+    const automatorInfo45 = await externalManager45.getModuleByCode('bma');
+    assert(automatorInfo45 !== null, 'BMad Automator is registered as an external module');
+    assert(automatorInfo45.type === 'experimental', 'BMad Automator is marked experimental');
+    assert(automatorInfo45.sourceRoot === 'payload/.claude/skills', 'BMad Automator uses source-root for pure skill payload');
+    assert(
+      automatorInfo45.installTargets.includes('claude-code') && automatorInfo45.installTargets.includes('codex'),
+      'BMad Automator declares Claude Code and Codex install targets',
+    );
+
+    const normalizedInfo45 = externalManager45._normalizeModule({
+      name: 'bad-shapes',
+      code: 'bad',
+      repository: 'https://example.com/bad.git',
+      install_targets: 'claude-code',
+      worker_targets: { bad: true },
+      requirements: ['tmux', { bad: true }, false],
+    });
+    assert(
+      Array.isArray(normalizedInfo45.installTargets) && normalizedInfo45.installTargets.includes('claude-code'),
+      'External module install targets normalize scalar values to arrays',
+    );
+    assert(
+      Array.isArray(normalizedInfo45.workerTargets) && normalizedInfo45.workerTargets.length === 0,
+      'External module worker targets drop invalid shapes',
+    );
+    assert(
+      normalizedInfo45.requirements.length === 2 &&
+        normalizedInfo45.requirements.includes('tmux') &&
+        normalizedInfo45.requirements.includes('false'),
+      'External module requirements normalize scalar array entries',
+    );
+
+    tempProjectDir45 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-automator-target-'));
+    installedBmadDir45 = await createAutomatorBmadFixture();
+
+    const ideManager45 = new IdeManager();
+    await ideManager45.ensureInitialized();
+
+    const codexResult45 = await ideManager45.setup('codex', tempProjectDir45, installedBmadDir45, {
+      silent: true,
+      selectedModules: ['core', 'bma'],
+    });
+    assert(codexResult45.success === true, 'Codex setup succeeds with automator module selected');
+    assert(
+      await fs.pathExists(path.join(tempProjectDir45, '.agents', 'skills', 'bmad-master', 'SKILL.md')),
+      'Codex setup installs supported core skills',
+    );
+    assert(
+      await fs.pathExists(path.join(tempProjectDir45, '.agents', 'skills', 'bmad-story-automator', 'SKILL.md')),
+      'Codex setup installs automator skill because Codex is an explicit target',
+    );
+
+    const escapeRoot45 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-source-root-'));
+    const escapeRepo45 = path.join(escapeRoot45, 'repo');
+    await fs.ensureDir(escapeRepo45);
+    const escapeManager45 = new ExternalModuleManager();
+    escapeManager45.getModuleByCode = async () => ({
+      code: 'escape',
+      builtIn: false,
+      sourceRoot: '../outside',
+    });
+    escapeManager45.cloneExternalModule = async () => escapeRepo45;
+    let rejectedEscapingSourceRoot45 = false;
+    try {
+      await escapeManager45.findExternalModuleSource('escape');
+    } catch (error) {
+      rejectedEscapingSourceRoot45 = error.message.includes('source-root escapes repository');
+    } finally {
+      await fs.remove(escapeRoot45).catch(() => {});
+    }
+    assert(rejectedEscapingSourceRoot45, 'External module source-root cannot escape cloned repository');
+
+    const fakeRepo45 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-runtime-package-'));
+    const fakePayload45 = path.join(fakeRepo45, 'payload', '.claude', 'skills');
+    const fakeStoryPayload45 = path.join(fakePayload45, 'bmad-story-automator');
+    const fakeReviewPayload45 = path.join(fakePayload45, 'bmad-story-automator-review');
+    const fakeSource45 = path.join(fakeRepo45, 'source');
+    await fs.ensureDir(fakeStoryPayload45);
+    await fs.ensureDir(fakeReviewPayload45);
+    await fs.ensureDir(fakeSource45);
+    await fs.writeFile(path.join(fakeStoryPayload45, 'SKILL.md'), '# bmad-story-automator\n');
+    await fs.writeFile(path.join(fakeReviewPayload45, 'SKILL.md'), '# bmad-story-automator-review\n');
+    await fs.writeFile(path.join(fakeSource45, 'pyproject.toml'), '[project]\nname = "story-automator"\n');
+    await fs.writeFile(path.join(fakeSource45, 'README.md'), '# Automator\n');
+    await fs.writeFile(path.join(fakeSource45, 'LICENSE'), 'MIT\n');
+    await fs.ensureDir(path.join(fakeSource45, 'scripts'));
+    await fs.writeFile(path.join(fakeSource45, 'scripts', 'story-automator'), '#!/usr/bin/env bash\n');
+    await fs.ensureDir(path.join(fakeSource45, 'src', 'story_automator', 'core'));
+    await fs.writeFile(path.join(fakeSource45, 'src', 'story_automator', 'core', 'runtime_layout.py'), '# canonical runtime layout\n');
+
+    const fakeTarget45 = path.join(fakeRepo45, 'installed', 'bma');
+    await fs.copy(fakePayload45, fakeTarget45);
+    const tracked45 = [];
+    const packaged45 = await installBmaRuntimePackage('bma', fakePayload45, fakeTarget45, (file) => tracked45.push(file));
+    assert(packaged45 === true, 'BMA runtime package hook runs for bma module');
+    assert(
+      (await fs.readFile(
+        path.join(fakeTarget45, 'bmad-story-automator', 'src', 'story_automator', 'core', 'runtime_layout.py'),
+        'utf8',
+      )) === '# canonical runtime layout\n',
+      'BMA runtime package copies Automator runtime source without patching it',
+    );
+    assert(
+      tracked45.some((file) => file.endsWith(path.join('scripts', 'story-automator'))),
+      'BMA runtime package tracks copied helper files',
+    );
+    await fs.remove(fakeRepo45).catch(() => {});
+  } catch (error) {
+    assert(false, `Automator external skill-only module test succeeds: ${error.message}`);
+  } finally {
+    if (originalLoadExternalModules45) {
+      ExternalModuleManager.prototype.loadExternalModulesConfig = originalLoadExternalModules45;
+    }
+    if (tempProjectDir45) await fs.remove(tempProjectDir45).catch(() => {});
+    if (installedBmadDir45) await fs.remove(path.dirname(installedBmadDir45)).catch(() => {});
   }
 
   console.log('');
