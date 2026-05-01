@@ -47,7 +47,7 @@ If running headless: draft the complete press release based on available inputs 
 
 ## Updating the Document
 
-After each section is refined, append it to the output document at `{planning_artifacts}/prfaq-{project_name}.md`. Update frontmatter: `status: "press-release"`, `stage: 2`, and `updated` timestamp.
+After each section is refined, append it to `{prfaq_output_file}`. Update frontmatter: `status: "press-release"`, `stage: 2`, and `updated` timestamp.
 
 ## Coaching Notes Capture
 

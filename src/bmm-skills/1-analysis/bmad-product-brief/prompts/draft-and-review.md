@@ -18,7 +18,7 @@ Use the template at `{workflow.brief_template}` as a guide — adapt structure t
 - **Confident voice** — this is a pitch, not a hedge
 - Write in `{document_output_language}`
 
-**Create the output document at:** `{planning_artifacts}/product-brief-{project_name}.md`
+Resolve `brief_output_file` before drafting: keep the existing value if it is already set; otherwise set `brief_output_file` = `{planning_artifacts}/product-brief.md`. Create the output document at `{brief_output_file}`.
 
 Include YAML frontmatter:
 ```yaml
