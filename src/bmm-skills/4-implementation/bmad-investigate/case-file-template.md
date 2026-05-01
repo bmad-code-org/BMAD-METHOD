@@ -1,12 +1,7 @@
-# Case File Template
+<!-- Case file template. Copy this structure into a new case file at the start of an investigation.
+     Update sections as evidence accumulates. Never delete a hypothesis: update its Status and add a Resolution.
+     Append follow-up sessions under dated `## Follow-up: {date}` blocks instead of overwriting earlier reasoning. -->
 
-The output file uses the structure below. Initialize it once at the start of the case, then update sections as evidence
-accumulates. Never delete a hypothesis. Update its Status and add a Resolution. Append follow-up sessions under dated
-`## Follow-up: {date}` blocks instead of overwriting earlier reasoning.
-
----
-
-```markdown
 # Investigation: {title}
 
 ## Case Info
@@ -161,4 +156,3 @@ overwrite earlier blocks.
 ### Updated Conclusion
 
 {Revised assessment incorporating new evidence.}
-```

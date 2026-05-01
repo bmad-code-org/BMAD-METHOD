@@ -87,7 +87,7 @@ Try to discover the following:
 - Research Documents (`/*research*.md`)
 - Project Documentation (generally multiple documents might be found for this in the `{project_knowledge}` or `docs` folder.)
 - Project Context (`**/project-context.md`)
-- Investigation Files (`{implementation_artifacts}/investigations/*.md`) — `bmad-investigate` case files when the PRD is being driven by a forensic investigation rather than greenfield ideation. Captures both `*-investigation.md` and `*-archaeology.md`.
+- Investigation Files (`{implementation_artifacts}/investigations/*-investigation.md`) — `bmad-investigate` case files when the PRD is being driven by a forensic investigation rather than greenfield ideation.
 
 <critical>Confirm what you have found with the user, along with asking if the user wants to provide anything else. Only after this confirmation will you proceed to follow the loading rules</critical>
 
