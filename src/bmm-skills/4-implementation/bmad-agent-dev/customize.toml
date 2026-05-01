@@ -88,3 +88,8 @@ skill = "bmad-create-story"
 code = "ER"
 description = "Party mode review of all work completed across an epic"
 skill = "bmad-retrospective"
+
+[[agent.menu]]
+code = "IN"
+description = "Forensic case investigation with evidence-graded findings, calibrated to the input"
+skill = "bmad-investigate"
