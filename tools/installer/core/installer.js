@@ -12,6 +12,7 @@ const { BMAD_FOLDER_NAME } = require('../ide/shared/path-utils');
 const { InstallPaths } = require('./install-paths');
 const { ExternalModuleManager } = require('../modules/external-manager');
 const { resolveModuleVersion } = require('../modules/version-resolver');
+const { MODULE_HELP_CSV_HEADER } = require('../modules/module-help-schema');
 
 const { ExistingInstall } = require('./existing-install');
 const { warnPreNativeSkillsLegacy } = require('./legacy-warnings');
@@ -951,7 +952,7 @@ class Installer {
    */
   async mergeModuleHelpCatalogs(bmadDir, _agentEntries = []) {
     const allRows = [];
-    const headerRow = 'module,skill,display-name,menu-code,description,action,args,phase,after,before,required,output-location,outputs';
+    const headerRow = MODULE_HELP_CSV_HEADER;
     const COLUMN_COUNT = 13;
     const PHASE_INDEX = 7;
 
@@ -984,9 +985,19 @@ class Installer {
           const content = await fs.readFile(helpFilePath, 'utf8');
           const lines = content.split('\n').filter((line) => line.trim() && !line.startsWith('#'));
 
+          let headerWarned = false;
           for (const line of lines) {
-            // Skip header row
+            // Header row: warn on drift from canonical schema, then skip.
+            // Data rows are loaded positionally regardless, so the warning
+            // is advisory — the maintainer should rename their columns.
             if (line.startsWith('module,')) {
+              if (!headerWarned && line.trim() !== headerRow) {
+                await prompts.log.warn(
+                  `  ${moduleName}/module-help.csv header does not match canonical schema. ` +
+                    `Expected: ${headerRow} | Found: ${line.trim()} | Data loaded positionally.`,
+                );
+                headerWarned = true;
+              }
               continue;
             }
 
