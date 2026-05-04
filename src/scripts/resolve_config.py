@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
-Resolve BMad's central config using four-layer TOML merge.
+Resolve BMad's central config using five-layer TOML merge.
 
-Reads from four layers (highest priority last):
+Reads from five layers (highest priority last):
   1. {project-root}/_bmad/config.toml              (installer-owned team)
   2. {project-root}/_bmad/config.user.toml         (installer-owned user)
-  3. {project-root}/_bmad/custom/config.toml       (human-authored team, committed)
-  4. {project-root}/_bmad/custom/config.user.toml  (human-authored user, gitignored)
+  3. ~/.bmad/config/config.user.toml               (global user preferences)
+  4. {project-root}/_bmad/custom/config.toml       (human-authored team, committed)
+  5. {project-root}/_bmad/custom/config.user.toml  (human-authored user, gitignored)
 
 Outputs merged JSON to stdout. Errors go to stderr.
 
@@ -40,6 +41,7 @@ except ImportError:
 
 _MISSING = object()
 _KEYED_MERGE_FIELDS = ("code", "id")
+GLOBAL_DIR = Path.home() / ".bmad" / "config"
 
 
 def load_toml(file_path: Path, required: bool = False) -> dict:
@@ -136,7 +138,7 @@ def extract_key(data, dotted_key: str):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Resolve BMad central config using four-layer TOML merge.",
+        description="Resolve BMad central config using five-layer TOML merge.",
     )
     parser.add_argument(
         "--project-root", "-p", required=True,
@@ -153,10 +155,12 @@ def main():
 
     base_team = load_toml(bmad_dir / "config.toml", required=True)
     base_user = load_toml(bmad_dir / "config.user.toml")
+    global_user = load_toml(GLOBAL_DIR / "config.user.toml")
     custom_team = load_toml(bmad_dir / "custom" / "config.toml")
     custom_user = load_toml(bmad_dir / "custom" / "config.user.toml")
 
     merged = deep_merge(base_team, base_user)
+    merged = deep_merge(merged, global_user)
     merged = deep_merge(merged, custom_team)
     merged = deep_merge(merged, custom_user)
 

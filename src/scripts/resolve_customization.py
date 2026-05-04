@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """
-Resolve customization for a BMad skill using three-layer TOML merge.
+Resolve customization for a BMad skill using four-layer TOML merge.
 
-Reads customization from three layers (highest priority first):
+Reads customization from four layers (highest priority first):
   1. {project-root}/_bmad/custom/{name}.user.toml  (personal, gitignored)
   2. {project-root}/_bmad/custom/{name}.toml        (team/org, committed)
-  3. {skill-root}/customize.toml                    (skill defaults)
+  3. ~/.bmad/config/{name}.user.toml                (global user preferences)
+  4. {skill-root}/customize.toml                    (skill defaults)
 
 Skill name is derived from the basename of the skill directory.
 
@@ -51,6 +52,7 @@ except ImportError:
 
 _MISSING = object()
 _KEYED_MERGE_FIELDS = ("code", "id")
+GLOBAL_DIR = Path.home() / ".bmad" / "config"
 
 
 def find_project_root(start: Path):
@@ -179,7 +181,7 @@ def extract_key(data, dotted_key: str):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Resolve customization for a BMad skill using three-layer TOML merge.",
+        description="Resolve customization for a BMad skill using four-layer TOML merge.",
         add_help=True,
     )
     parser.add_argument(
@@ -211,7 +213,10 @@ def main():
         team = load_toml(custom_dir / f"{skill_name}.toml")
         user = load_toml(custom_dir / f"{skill_name}.user.toml")
 
-    merged = deep_merge(defaults, team)
+    global_user = load_toml(GLOBAL_DIR / f"{skill_name}.user.toml")
+
+    merged = deep_merge(defaults, global_user)
+    merged = deep_merge(merged, team)
     merged = deep_merge(merged, user)
 
     if args.key:
