@@ -10,7 +10,7 @@ Before running inference-based validation, run the deterministic validator:
 node tools/validate-skills.js --json path/to/skill-dir
 ```
 
-This checks 14 rules deterministically: SKILL-01, SKILL-02, SKILL-03, SKILL-04, SKILL-05, SKILL-06, SKILL-07, WF-01, WF-02, PATH-02, STEP-01, STEP-06, STEP-07, SEQ-02.
+This checks 15 rules deterministically: SKILL-01, SKILL-02, SKILL-03, SKILL-04, SKILL-05, SKILL-06, SKILL-07, WF-01, WF-02, PATH-02, STEP-01, STEP-06, STEP-07, SEQ-02, TPL-01.
 
 Review its JSON output. For any rule that produced **zero findings** in the first pass, **skip it** during inference-based validation below — it has already been verified. If a rule produced any findings, the inference validator should still review that rule (some rules like SKILL-04 and SKILL-06 have sub-checks that benefit from judgment). Focus your inference effort on the remaining rules that require judgment (PATH-01, PATH-03, PATH-04, PATH-05, WF-03, STEP-02, STEP-03, STEP-04, STEP-05, SEQ-01, REF-01, REF-02, REF-03).
 
@@ -268,6 +268,16 @@ If no findings are generated (from either pass), the skill passes validation.
 - **Rule:** Workflow files should not include time estimates. AI execution speed varies too much for estimates to be meaningful.
 - **Detection:** Scan for patterns like "takes X minutes", "~N min", "estimated time", "ETA".
 - **Fix:** Remove time estimates.
+
+---
+
+### TPL-01 — Template Files Must Not Contain Compile-Time Substitutions
+
+- **Severity:** HIGH
+- **Applies to:** `.md` files whose name contains `template` (case-insensitive)
+- **Rule:** Template files seed durable, version-controlled artifacts (e.g. spec files) that execute on other machines. A `{{.var}}` compile-time substitution would be baked at render time and freeze a machine-local value into every artifact produced from the template.
+- **Detection:** Regex `\{\{\.\w+\}\}` match anywhere in a file whose basename matches `/template/i`.
+- **Fix:** Remove the `{{.var}}` reference. Use single-curly `{var}` if the value should be resolved at LLM runtime by the consumer of the generated artifact.
 
 ---
 

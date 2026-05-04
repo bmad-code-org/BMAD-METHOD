@@ -19,6 +19,7 @@
  * - STEP-06: step frontmatter has no name/description
  * - STEP-07: step count 2-10
  * - SEQ-02: no time estimates
+ * - TPL-01: template files must not contain compile-time {{.var}} substitutions
  *
  * Usage:
  *   node tools/validate-skills.js                    # All skills, human-readable
@@ -45,6 +46,8 @@ const positionalArgs = args.filter((a) => !a.startsWith('--'));
 const NAME_REGEX = /^bmad-[a-z0-9]+(-[a-z0-9]+)*$/;
 const STEP_FILENAME_REGEX = /^step-\d{2}[a-z]?-[a-z0-9-]+\.md$/;
 const TIME_ESTIMATE_PATTERNS = [/takes?\s+\d+\s*min/i, /~\s*\d+\s*min/i, /estimated\s+time/i, /\bETA\b/];
+const TEMPLATE_FILENAME_REGEX = /template/i;
+const COMPILE_TIME_SUB_REGEX = /\{\{\.\w+\}\}/;
 
 const SEVERITY_ORDER = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, LOW: 3 };
 
@@ -565,6 +568,36 @@ function validateSkill(skillDir) {
           });
           break; // Only report once per line
         }
+      }
+    }
+  }
+
+  // --- TPL-01: template files must not contain compile-time {{.var}} substitutions ---
+  // Template files seed durable, version-controlled artifacts (spec files) that
+  // execute on other machines. Baking a {{.var}} at render time would freeze a
+  // machine-local value into every downstream artifact.
+  for (const filePath of allFiles) {
+    if (path.extname(filePath) !== '.md') continue;
+    const base = path.basename(filePath);
+    if (!TEMPLATE_FILENAME_REGEX.test(base)) continue;
+
+    const relFile = path.relative(skillDir, filePath);
+    const content = safeReadFile(filePath, findings, relFile);
+    if (content === null) continue;
+
+    const lines = content.split('\n');
+    for (const [i, line] of lines.entries()) {
+      const match = line.match(COMPILE_TIME_SUB_REGEX);
+      if (match) {
+        findings.push({
+          rule: 'TPL-01',
+          title: 'Template files must not contain compile-time substitutions',
+          severity: 'HIGH',
+          file: relFile,
+          line: i + 1,
+          detail: `Template file contains compile-time substitution \`${match[0]}\` — this would be baked at render time and leak a machine-local value into every spec produced from the template.`,
+          fix: 'Remove the `{{.var}}` reference. Use single-curly `{var}` if the value should be resolved at LLM runtime by the consumer of the generated spec.',
+        });
       }
     }
   }
