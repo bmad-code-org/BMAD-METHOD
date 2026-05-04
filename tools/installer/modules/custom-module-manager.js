@@ -424,7 +424,27 @@ class CustomModuleManager {
             stdio: ['ignore', 'pipe', 'pipe'],
           });
         } else {
-          execSync('git reset --hard origin/HEAD', {
+          // Resolve the default branch (origin/HEAD) and fetch it explicitly.
+          // With shallow clones, `origin/HEAD` is stale and `git reset --hard
+          // origin/HEAD` never picks up new commits on the default branch.
+          let defaultBranch = 'main';
+          try {
+            defaultBranch = execSync('git symbolic-ref refs/remotes/origin/HEAD --short', {
+              cwd: repoCacheDir,
+              stdio: 'pipe',
+            })
+              .toString()
+              .trim()
+              .replace('origin/', '');
+          } catch {
+            // Fallback if origin/HEAD is not set
+          }
+          execSync(`git fetch --depth 1 origin ${quoteCustomRef(defaultBranch)}`, {
+            cwd: repoCacheDir,
+            stdio: ['ignore', 'pipe', 'pipe'],
+            env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+          });
+          execSync(`git reset --hard origin/${quoteCustomRef(defaultBranch)}`, {
             cwd: repoCacheDir,
             stdio: ['ignore', 'pipe', 'pipe'],
           });
