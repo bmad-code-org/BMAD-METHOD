@@ -73,7 +73,25 @@ const DEFAULT_COMMANDS_BODY_TEMPLATE = '@skills/{canonicalId}';
 // Reading the source toml — at install time the source skill directory
 // (resolved from manifest record.path) still exists; cleanup runs later
 // in the install flow.
-async function isAgentSkill(record, bmadDir) {
+async function isAgentSkill(record, bmadDir, options = {}) {
+  const canonicalId = record?.canonicalId;
+  if (!canonicalId) return false;
+
+  // Prefer checking the already-installed skill directory in target_dir.
+  // This path is stable during setup and works even when _bmad skill sources
+  // are absent or cleaned up on previous installs.
+  if (options.projectDir && options.targetDir) {
+    const installedTomlPath = path.join(options.projectDir, options.targetDir, canonicalId, 'customize.toml');
+    if (await fs.pathExists(installedTomlPath)) {
+      try {
+        const content = await fs.readFile(installedTomlPath, 'utf8');
+        if (/^\[agent\]/m.test(content)) return true;
+      } catch {
+        // Fall through to source-path check.
+      }
+    }
+  }
+
   if (!record?.path || !bmadDir) return false;
   const bmadFolderName = path.basename(bmadDir);
   const bmadPrefix = bmadFolderName + '/';
@@ -332,7 +350,7 @@ class ConfigDrivenIdeSetup {
       // persona agents (e.g. Copilot's Custom Agents picker) skip
       // workflow/tool skills here so the picker isn't cluttered with
       // 90+ unrelated entries.
-      if (filter === 'agents-only' && !(await isAgentSkill(record, bmadDir))) {
+      if (filter === 'agents-only' && !(await isAgentSkill(record, bmadDir, { projectDir, targetDir: config.target_dir }))) {
         result.skippedFiltered++;
         continue;
       }
