@@ -961,7 +961,14 @@ class UI {
   async showSelectedExternalModuleNotes(selectedModuleIds, externalModules = null) {
     if (!externalModules) {
       const externalManager = new ExternalModuleManager();
-      externalModules = await externalManager.listAvailable();
+      try {
+        externalModules = await externalManager.listAvailable();
+      } catch (error) {
+        await prompts.log.warn(
+          `ExternalModuleManager.listAvailable failed while loading module notes; continuing without external module notes. ${error.message}`,
+        );
+        externalModules = [];
+      }
     }
 
     const notes = externalModules
@@ -975,7 +982,14 @@ class UI {
 
   async showSelectedModuleIdeWarnings(selectedModuleIds, selectedIdes = []) {
     const externalManager = new ExternalModuleManager();
-    const externalModules = await externalManager.listAvailable();
+    let externalModules = [];
+    try {
+      externalModules = await externalManager.listAvailable();
+    } catch (error) {
+      await prompts.log.warn(
+        `ExternalModuleManager.listAvailable failed while loading IDE compatibility warnings; continuing without external module warnings. ${error.message}`,
+      );
+    }
 
     for (const mod of externalModules) {
       if (!selectedModuleIds.includes(mod.code) || !mod.installTargets || mod.installTargets.length === 0) {

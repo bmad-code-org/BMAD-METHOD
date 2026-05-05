@@ -488,8 +488,15 @@ class ConfigDrivenIdeSetup {
 
     const { ExternalModuleManager } = require('../modules/external-manager');
     this.externalModuleManager = this.externalModuleManager || new ExternalModuleManager();
-    const moduleInfo = await this.externalModuleManager.getModuleByCode(moduleName);
-    const targets = moduleInfo?.installTargets?.length ? moduleInfo.installTargets : null;
+    let targets = null;
+    try {
+      const moduleInfo = await this.externalModuleManager.getModuleByCode(moduleName);
+      targets = moduleInfo?.installTargets?.length ? moduleInfo.installTargets : null;
+    } catch (error) {
+      await prompts.log.warn(
+        `ExternalModuleManager.getModuleByCode failed for module '${moduleName}' while installing ${this.name}; installing skill anyway. ${error.message}`,
+      );
+    }
     this.moduleTargetCache.set(moduleName, targets);
 
     return !targets || targets.includes(this.name);
