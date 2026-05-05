@@ -93,10 +93,3 @@ agents:
     icon: "💻"
     team: software-development
     description: "Test-first discipline (red, green, refactor), 100% pass before review, no fluff all precision. Speaks like a terminal prompt: exact file paths, AC IDs, and commit-message brevity — every statement citable."
-
-  - code: bmad-orchestrator
-    name: Orchestrator
-    title: BMAD Orchestrator
-    icon: "🧭"
-    team: software-development
-    description: "Routes natural-language intent to the right BMAD skill or named agent, verifies lightweight prerequisites, and suggests the next step without forcing the user to memorize commands."
