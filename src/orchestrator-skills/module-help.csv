@@ -1,2 +1,0 @@
-module,skill,display-name,menu-code,description,action,args,phase,preceded-by,followed-by,required,output-location,outputs
-BMAD Orchestrator,bmad-orchestrator,Orchestrator,OR,Routes user intent to the right BMAD skill or agent without memorization.,,,,anytime,,,false,,
