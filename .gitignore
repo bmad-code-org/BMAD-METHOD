@@ -81,3 +81,7 @@ _bmad/custom/*.user.toml
 website/.astro/
 website/dist/
 build/
+
+
+# Local development files
+orchestrator/

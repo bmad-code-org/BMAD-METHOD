@@ -2,6 +2,7 @@ module,skill,display-name,menu-code,description,action,args,phase,preceded-by,fo
 BMad Method,_meta,,,,,,,,,false,https://docs.bmad-method.org/llms.txt,
 BMad Method,bmad-document-project,Document Project,DP,Analyze an existing project to produce useful documentation.,,,anytime,,,false,project-knowledge,*
 BMad Method,bmad-generate-project-context,Generate Project Context,GPC,Scan existing codebase to generate a lean LLM-optimized project-context.md. Essential for brownfield projects.,,,anytime,,,false,output_folder,project context
+BMad Method,bmad-orchestrator,Orchestrator,OR,Routeur d'intentions BMAD pour diriger l'utilisateur vers le bon skill ou agent sans passer par un fichier d'instructions global.,,,anytime,,,false,,
 BMad Method,bmad-quick-dev,Quick Dev,QQ,Unified intent-in code-out workflow: clarify plan implement review and present.,,,anytime,,,false,implementation_artifacts,spec and project implementation
 BMad Method,bmad-correct-course,Correct Course,CC,Navigate significant changes. May recommend start over update PRD redo architecture sprint planning or correct epics and stories.,,,anytime,,,false,planning_artifacts,change proposal
 BMad Method,bmad-agent-tech-writer,Write Document,WD,"Describe in detail what you want, and the agent will follow documentation best practices. Multi-turn conversation with subprocess for research/review.",write,,anytime,,,false,project-knowledge,document
