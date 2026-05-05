@@ -68,6 +68,9 @@ function getModulePath(moduleName, ...segments) {
   if (moduleName === 'bmm') {
     return getSourcePath('bmm-skills', ...segments);
   }
+  if (moduleName === 'bmo') {
+    return getSourcePath('orchestrator-skills', ...segments);
+  }
   return getSourcePath('modules', moduleName, ...segments);
 }
 

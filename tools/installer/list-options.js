@@ -54,7 +54,7 @@ async function discoverOfficialModuleYamls() {
   };
 
   // Built-ins.
-  for (const code of ['core', 'bmm']) {
+  for (const code of ['core', 'bmm', 'bmo']) {
     const yamlPath = path.join(getModulePath(code), 'module.yaml');
     if (await fs.pathExists(yamlPath)) {
       // Built-ins use their well-known short codes regardless of what the
