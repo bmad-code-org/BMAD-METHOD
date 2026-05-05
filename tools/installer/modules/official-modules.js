@@ -128,15 +128,6 @@ class OfficialModules {
       }
     }
 
-    // Add built-in bmo module (directly under src/orchestrator-skills)
-    const bmoPath = getSourcePath('orchestrator-skills');
-    if (await fs.pathExists(bmoPath)) {
-      const bmoInfo = await this.getModuleInfo(bmoPath, 'bmo', 'src/orchestrator-skills');
-      if (bmoInfo) {
-        modules.push(bmoInfo);
-      }
-    }
-
     return { modules };
   }
 
@@ -231,14 +222,6 @@ class OfficialModules {
       const bmmPath = getSourcePath('bmm-skills');
       if (await fs.pathExists(bmmPath)) {
         return bmmPath;
-      }
-    }
-
-    // Check for built-in bmo module (directly under src/orchestrator-skills)
-    if (moduleCode === 'bmo') {
-      const bmoPath = getSourcePath('orchestrator-skills');
-      if (await fs.pathExists(bmoPath)) {
-        return bmoPath;
       }
     }
 
