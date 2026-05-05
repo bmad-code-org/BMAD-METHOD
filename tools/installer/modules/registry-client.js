@@ -1,3 +1,4 @@
+const crypto = require('node:crypto');
 const https = require('node:https');
 const yaml = require('yaml');
 
@@ -103,21 +104,29 @@ class RegistryClient {
    * @param {number} [timeout] - Timeout in ms (overrides default)
    * @returns {Promise<string>} Raw file content
    */
-  async fetchGitHubFile(owner, repo, filePath, ref, timeout) {
+  async fetchGitHubFile(owner, repo, filePath, ref, timeout, expectedSha256) {
     const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}?ref=${ref}`;
     const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${ref}/${filePath}`;
 
+    let content;
     // Try GitHub Contents API first (with raw content accept header)
     try {
-      return await this._fetchWithHeaders(apiUrl, { Accept: 'application/vnd.github.raw+json' }, timeout);
+      content = await this._fetchWithHeaders(apiUrl, { Accept: 'application/vnd.github.raw+json' }, timeout);
     } catch (apiError) {
       // API failed — fall back to raw CDN
       try {
-        return await this.fetch(rawUrl, timeout);
+        content = await this.fetch(rawUrl, timeout);
       } catch (cdnError) {
         throw new AggregateError([apiError, cdnError], `Both GitHub API and raw CDN failed for ${filePath}`);
       }
     }
+    if (expectedSha256) {
+      const actual = crypto.createHash('sha256').update(content).digest('hex');
+      if (actual !== expectedSha256) {
+        throw new Error(`Integrity check failed for ${filePath}: expected ${expectedSha256}, got ${actual}`);
+      }
+    }
+    return content;
   }
 
   /**
