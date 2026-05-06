@@ -122,6 +122,27 @@ async function createAutomatorBmadFixture() {
   return fixtureDir;
 }
 
+async function createAutomatorSourceRootFixture() {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-automator-source-'));
+  const sourceRoot = path.join(repoRoot, 'payload', '.claude', 'skills');
+
+  for (const skillName of ['bmad-story-automator', 'bmad-story-automator-review']) {
+    const skillDir = path.join(sourceRoot, skillName);
+    await fs.ensureDir(skillDir);
+    await fs.writeFile(
+      path.join(skillDir, 'SKILL.md'),
+      ['---', `name: ${skillName}`, 'description: Automator skill', '---', '', 'Automator body.'].join('\n'),
+    );
+  }
+
+  await fs.ensureDir(path.join(repoRoot, 'source', 'scripts'));
+  await fs.writeFile(path.join(repoRoot, 'source', 'scripts', 'story-automator'), '#!/usr/bin/env bash\n');
+  await fs.ensureDir(path.join(repoRoot, 'source', 'src', 'story_automator'));
+  await fs.writeFile(path.join(repoRoot, 'source', 'src', 'story_automator', 'cli.py'), 'def main():\n    return 0\n');
+
+  return { repoRoot, sourceRoot };
+}
+
 async function createSkillCollisionFixture() {
   const fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-skill-collision-'));
   const fixtureDir = path.join(fixtureRoot, '_bmad');
@@ -3564,6 +3585,8 @@ async function runTests() {
 
   let tempProjectDir42;
   let installedBmadDir42;
+  let automatorSourceFixture42;
+  let runtimeTargetRoot42;
   try {
     const externalManager42 = new ExternalModuleManager();
     const automatorInfo42 = await externalManager42.getModuleByCode('bma');
@@ -3596,6 +3619,23 @@ async function runTests() {
         normalizedInfo42.requirements.includes('false'),
       'External module requirements normalize scalar array entries',
     );
+
+    automatorSourceFixture42 = await createAutomatorSourceRootFixture();
+    runtimeTargetRoot42 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-automator-runtime-target-'));
+    const runtimeBmadDir42 = path.join(runtimeTargetRoot42, '_bmad');
+    const officialModules42 = new OfficialModules();
+    officialModules42.findModuleSource = async () => automatorSourceFixture42.sourceRoot;
+    await officialModules42.install('bma', runtimeBmadDir42, null, { skipModuleInstaller: true, silent: true });
+    assert(
+      await fs.pathExists(path.join(runtimeBmadDir42, 'bma', 'bmad-story-automator', 'scripts', 'story-automator')),
+      'BMad Automator source-root install includes runtime helper',
+    );
+    assert(
+      await fs.pathExists(path.join(runtimeBmadDir42, 'bma', 'bmad-story-automator', 'src', 'story_automator', 'cli.py')),
+      'BMad Automator source-root install includes Python runtime source',
+    );
+    await fs.remove(runtimeTargetRoot42).catch(() => {});
+    runtimeTargetRoot42 = null;
 
     tempProjectDir42 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-automator-target-'));
     installedBmadDir42 = await createAutomatorBmadFixture();
@@ -3663,6 +3703,8 @@ async function runTests() {
   } finally {
     if (tempProjectDir42) await fs.remove(tempProjectDir42).catch(() => {});
     if (installedBmadDir42) await fs.remove(path.dirname(installedBmadDir42)).catch(() => {});
+    if (automatorSourceFixture42) await fs.remove(automatorSourceFixture42.repoRoot).catch(() => {});
+    if (runtimeTargetRoot42) await fs.remove(runtimeTargetRoot42).catch(() => {});
   }
 
   console.log('');
