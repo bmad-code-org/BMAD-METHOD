@@ -60,7 +60,7 @@ modules:
     defaultSelected: false
     type: experimental
     npmPackage: bmad-story-automator
-    default_channel: stable
+    default_channel: next
     install-targets:
       - claude-code
     worker-targets:

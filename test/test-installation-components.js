@@ -3593,6 +3593,7 @@ async function runTests() {
     assert(automatorInfo42 !== null, 'BMad Automator is registered as an external module');
     assert(automatorInfo42.type === 'experimental', 'BMad Automator is marked experimental');
     assert(automatorInfo42.sourceRoot === 'payload/.claude/skills', 'BMad Automator uses source-root for pure skill payload');
+    assert(automatorInfo42.defaultChannel === 'next', 'BMad Automator defaults to next for latest payload compatibility fixes');
     assert(
       automatorInfo42.installTargets.length === 1 && automatorInfo42.installTargets.includes('claude-code'),
       'BMad Automator is limited to Claude Code skill installation',

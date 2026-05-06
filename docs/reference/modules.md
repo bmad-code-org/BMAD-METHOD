@@ -78,6 +78,7 @@ Automates the BMad story build loop with a pure skill bundle sourced from the se
 - **Code:** `bma`
 - **npm:** [`bmad-story-automator`](https://www.npmjs.com/package/bmad-story-automator)
 - **GitHub:** [bmad-code-org/bmad-automator](https://github.com/bmad-code-org/bmad-automator)
+- **Default channel:** `next` while experimental, so installs receive the latest Automator payload compatibility fixes.
 
 :::caution[Experimental Claude Code-only entrypoint]
 BMad Automator only runs from Claude Code. It currently supports Claude Code and Codex worker sessions, and requires tmux on macOS.
