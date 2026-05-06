@@ -259,6 +259,7 @@ class UI {
         } else {
           selectedModules = await this.selectAllModules(installedModuleIds, installedModuleVersions, channelOptions);
         }
+        await this.showSelectedExternalModuleNotes(selectedModules);
 
         // Resolve custom sources from --custom-source flag
         if (options.customSource) {
@@ -287,6 +288,7 @@ class UI {
 
         // Get tool selection
         const toolSelection = await this.promptToolSelection(confirmedDirectory, options);
+        await this.showSelectedModuleIdeWarnings(selectedModules, toolSelection.ides);
 
         const { moduleConfigs, setOverrides } = await this.collectModuleConfigs(confirmedDirectory, selectedModules, {
           ...options,
@@ -343,6 +345,7 @@ class UI {
     } else {
       selectedModules = await this.selectAllModules(installedModuleIds, installedModuleVersions, channelOptions);
     }
+    await this.showSelectedExternalModuleNotes(selectedModules);
 
     // Resolve custom sources from --custom-source flag
     if (options.customSource) {
@@ -366,6 +369,7 @@ class UI {
     await this._interactiveChannelGate({ options, channelOptions, selectedModules });
 
     let toolSelection = await this.promptToolSelection(confirmedDirectory, options);
+    await this.showSelectedModuleIdeWarnings(selectedModules, toolSelection.ides);
     const { moduleConfigs, setOverrides } = await this.collectModuleConfigs(confirmedDirectory, selectedModules, {
       ...options,
       channelOptions,
@@ -952,6 +956,55 @@ class UI {
     }
 
     return result;
+  }
+
+  async showSelectedExternalModuleNotes(selectedModuleIds, externalModules = null) {
+    if (!externalModules) {
+      const externalManager = new ExternalModuleManager();
+      try {
+        externalModules = await externalManager.listAvailable();
+      } catch (error) {
+        await prompts.log.warn(
+          `ExternalModuleManager.listAvailable failed while loading module notes; continuing without external module notes. ${error.message}`,
+        );
+        externalModules = [];
+      }
+    }
+
+    const notes = externalModules
+      .filter((mod) => selectedModuleIds.includes(mod.code) && mod.installNote)
+      .map((mod) => `${mod.name}: ${mod.installNote}`);
+
+    for (const note of notes) {
+      await prompts.log.warn(note);
+    }
+  }
+
+  async showSelectedModuleIdeWarnings(selectedModuleIds, selectedIdes = []) {
+    const externalManager = new ExternalModuleManager();
+    let externalModules = [];
+    try {
+      externalModules = await externalManager.listAvailable();
+    } catch (error) {
+      await prompts.log.warn(
+        `ExternalModuleManager.listAvailable failed while loading IDE compatibility warnings; continuing without external module warnings. ${error.message}`,
+      );
+    }
+
+    for (const mod of externalModules) {
+      if (!selectedModuleIds.includes(mod.code) || !mod.installTargets || mod.installTargets.length === 0) {
+        continue;
+      }
+
+      const hasInstallTarget = mod.installTargets.some((target) => selectedIdes.includes(target));
+      if (!hasInstallTarget) {
+        await prompts.log.warn(
+          `${mod.name}: runnable skills are installed only for ${mod.installTargets.join(
+            ', ',
+          )}. Add that tool selection to use this module.`,
+        );
+      }
+    }
   }
 
   /**
