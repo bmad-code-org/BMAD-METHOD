@@ -69,10 +69,10 @@ Activation is complete. Continue below.
 
 ## Pre-workflow Setup
 
-1. **Resume detection:** Check if `{planning_artifacts}/prfaq-{project_name}.md` already exists. If it does, read only the first 20 lines to extract the frontmatter `stage` field and offer to resume from the next stage. Do not read the full document. If the user confirms, route directly to that stage's reference file.
+1. **Output file resolution:** Set `prfaq_output_file` = `{planning_artifacts}/prfaq.md` and `prfaq_distillate_file` = `{planning_artifacts}/prfaq-distillate.md` by default. For resume detection, check whether `{planning_artifacts}/prfaq.md` exists. If it does not, check the legacy path `{planning_artifacts}/prfaq-{project_name}.md`; if the legacy file exists, set `prfaq_output_file` to that path and set `prfaq_distillate_file` to `{planning_artifacts}/prfaq-{project_name}-distillate.md` for the rest of the workflow. If either file exists, read only the first 20 lines to extract the frontmatter `stage` field and offer to resume from the next stage. Do not read the full document. If the user confirms, route directly to that stage's reference file.
 
 2. **Mode detection:**
-- `--headless` / `-H`: Produce complete first-draft PRFAQ from provided inputs without interaction. Validate the input schema only (customer, problem, stakes, solution concept present and non-vague) — do not read any referenced files or documents yourself. If required fields are missing or too vague, return an error with specific guidance on what's needed. Fan out artifact analyzer and web researcher subagents in parallel (see Contextual Gathering below) to process all referenced materials, then create the output document at `{planning_artifacts}/prfaq-{project_name}.md` using `./assets/prfaq-template.md` and route to `./references/press-release.md`.
+- `--headless` / `-H`: Produce complete first-draft PRFAQ from provided inputs without interaction. Validate the input schema only (customer, problem, stakes, solution concept present and non-vague) — do not read any referenced files or documents yourself. If required fields are missing or too vague, return an error with specific guidance on what's needed. Fan out artifact analyzer and web researcher subagents in parallel (see Contextual Gathering below) to process all referenced materials, then create the output document at `{prfaq_output_file}` using `./assets/prfaq-template.md` and route to `./references/press-release.md`.
 - Default: Full interactive coaching — the gauntlet.
 
 **Headless input schema:**
@@ -118,7 +118,7 @@ When the user gets stuck, offer concrete suggestions based on what they've share
 3. **Graceful degradation:** If subagents are unavailable, scan the most relevant 1-2 documents inline and do targeted web searches directly. Never block the workflow.
 4. **Merge findings** with what the user shared. Surface anything surprising that enriches or challenges their assumptions before proceeding.
 
-**Create the output document** at `{planning_artifacts}/prfaq-{project_name}.md` using `./assets/prfaq-template.md`. Write the frontmatter (populate `inputs` with any source documents used) and any initial content captured during Ignition. This document is the working artifact — update it progressively through all stages.
+**Create the output document** at `{prfaq_output_file}` using `./assets/prfaq-template.md`. Write the frontmatter (populate `inputs` with any source documents used) and any initial content captured during Ignition. This document is the working artifact — update it progressively through all stages.
 
 **Coaching Notes Capture:** Before moving on, append a `<!-- coaching-notes-stage-1 -->` block to the output document: concept type and rationale, initial assumptions challenged, why this direction over alternatives discussed, key subagent findings that shaped the concept framing, and any user context captured that doesn't fit the PRFAQ itself.
 
