@@ -70,6 +70,16 @@
         "./src/bmm-skills/4-implementation/bmad-retrospective",
         "./src/bmm-skills/4-implementation/bmad-qa-generate-e2e-tests"
       ]
+    },
+    {
+      "name": "bmad-orchestrator-module",
+      "source": "./",
+      "description": "Standalone BMAD orchestrator module for custom installs.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Alex"
+      },
+      "skills": ["./orchestrator/bmad-orchestrator"]
     }
   ]
 }
