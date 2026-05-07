@@ -105,24 +105,6 @@ Multiple sources can be comma-separated:
 --custom-source /path/one,https://github.com/org/repo,/path/two
 ```
 
-### Fork BMAD with bmad-orchestrator in BMM
-
-If your fork ships `bmad-orchestrator` inside `src/bmm-skills`, install from your fork as a custom source and include `bmm` in module selection.
-
-```bash
-npx bmad-method install \
-  --directory . \
-  --modules bmm \
-  --custom-source https://github.com/your-org/your-bmad-fork \
-  --tools github-copilot \
-  --yes
-```
-
-Notes:
-
-- `bmad-orchestrator` must exist as a native BMM skill source with a valid `[agent]` block in `customize.toml`.
-- Copilot Custom Agents generation depends on the installer version consuming your fork. If your installer build predates the current agent-discovery behavior, the skill may install correctly while the Copilot agent pointer is not generated yet.
-
 ## How Module Discovery Works
 
 The installer uses two modes to find installable modules in a source:
