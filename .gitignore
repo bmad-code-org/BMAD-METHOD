@@ -50,6 +50,7 @@ z*/
 
 _bmad
 _bmad-output
+skills/
 
 # Personal customization files (team files are committed, personal files are not)
 _bmad/custom/*.user.toml
@@ -84,4 +85,5 @@ build/
 
 
 # Local development files
-orchestrator/
+orchestrator/SKILL.md
+orchestrator/copilot-instructions.md

@@ -1,0 +1,8 @@
+code: bmo
+name: "BMAD Orchestrator"
+description: "Standalone BMAD orchestrator agent module"
+module_version: 1.0.0
+default_selected: false
+module_greeting: >
+  BMAD Orchestrator est installe.
+  Vous pouvez maintenant router vos intentions BMAD en langage naturel.

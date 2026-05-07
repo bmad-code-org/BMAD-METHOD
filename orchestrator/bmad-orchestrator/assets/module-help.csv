@@ -1,0 +1,2 @@
+module,skill,display-name,menu-code,description,action,args,phase,after,before,required,output-location,outputs
+BMAD Orchestrator,bmad-orchestrator,BMAD Orchestrator,OR,"Route natural-language intent to the right BMAD skill or named agent and suggests the next step.",orchestrate,"{freeform intent in natural language}",anytime,,,false,{project-root}/_bmad,_config/skill-manifest.csv
