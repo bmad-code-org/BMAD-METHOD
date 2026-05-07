@@ -2,11 +2,9 @@
 # Committed to the repo — applies to every developer on the project.
 # Tables deep-merge over base config; keyed entries merge by key.
 
-# Orchestrator agent — enable in custom installs
-[agents.bmad-orchestrator]
-name = "Orchestrator"
-title = "BMAD Orchestrator"
-icon = "🧭"
-team = "software-development"
-module = "bmm"
-description = "Routes natural-language intent to the right BMAD skill or named agent, verifies lightweight prerequisites, and suggests the next step without forcing the user to memorize commands."
+# NOTE: Do not declare bmad-orchestrator here to "enable" Copilot agent generation.
+# Copilot Custom Agents files are generated from installed skill sources
+# (skill-manifest + skill customize.toml [agent]), not from _bmad/custom overrides.
+# Keep orchestrator source-of-truth in:
+#   - src/bmm-skills/module.yaml
+#   - src/bmm-skills/4-implementation/bmad-orchestrator/customize.toml

@@ -596,6 +596,7 @@ async function runTests() {
         '"bmad-master","bmad-master","Workflow with no customize.toml — should NOT appear in Copilot agents picker","core","_bmad/core/bmad-master/SKILL.md"',
         '"bmad-agent-fixture","bmad-agent-fixture","Persona agent — customize.toml has [agent], SHOULD appear","core","_bmad/core/bmad-agent-fixture/SKILL.md"',
         '"bmad-tea","bmad-tea","Non-conventional id but [agent] in customize.toml — SHOULD appear","core","_bmad/core/bmad-tea/SKILL.md"',
+        '"bmad-orchestrator","bmad-orchestrator","BMM orchestrator persona with [agent] in customize.toml — SHOULD appear","bmm","_bmad/bmm/4-implementation/bmad-orchestrator/SKILL.md"',
         '"bmad-agent-builder","bmad-agent-builder","Skill-builder workflow — id contains -agent- but customize.toml has [workflow] — should NOT appear","core","_bmad/core/bmad-agent-builder/SKILL.md"',
         '"bmad-help","bmad-help","Meta-help skill — no customize.toml; SHOULD NOT appear in agents picker (toml-driven filter)","core","_bmad/core/bmad-help/SKILL.md"',
         '',
@@ -626,6 +627,15 @@ async function runTests() {
     await fs.writeFile(
       path.join(installedBmadDir17, 'core', 'bmad-tea', 'customize.toml'),
       ['[agent]', 'name = "Murat"', 'title = "Test Architect"', ''].join('\n'),
+    );
+    await fs.ensureDir(path.join(installedBmadDir17, 'bmm', '4-implementation', 'bmad-orchestrator'));
+    await fs.writeFile(
+      path.join(installedBmadDir17, 'bmm', '4-implementation', 'bmad-orchestrator', 'SKILL.md'),
+      ['---', 'name: bmad-orchestrator', 'description: fixture for bmad-orchestrator', '---', '', 'Body of bmad-orchestrator.'].join('\n'),
+    );
+    await fs.writeFile(
+      path.join(installedBmadDir17, 'bmm', '4-implementation', 'bmad-orchestrator', 'customize.toml'),
+      ['[agent]', 'name = "Orchestrator"', 'title = "BMAD Orchestrator"', ''].join('\n'),
     );
     // [workflow] customize.toml for the meta-skill — its id contains `-agent-`
     // but it is NOT a persona (mirrors bmad-agent-builder in production).
@@ -677,6 +687,7 @@ async function runTests() {
     const agentsDir17 = path.join(tempProjectDir17, '.github', 'agents');
     const agentFileForPersona17 = path.join(agentsDir17, 'bmad-agent-fixture.agent.md');
     const agentFileForTea17 = path.join(agentsDir17, 'bmad-tea.agent.md');
+    const agentFileForOrchestrator17 = path.join(agentsDir17, 'bmad-orchestrator.agent.md');
     const agentFileForWorkflow17 = path.join(agentsDir17, 'bmad-master.agent.md');
     const agentFileForMetaSkill17 = path.join(agentsDir17, 'bmad-agent-builder.agent.md');
     const agentFileForBmadHelp17 = path.join(agentsDir17, 'bmad-help.agent.md');
@@ -686,6 +697,10 @@ async function runTests() {
       'Persona agent ([agent] in customize.toml) gets a .agent.md file in .github/agents/',
     );
     assert(await fs.pathExists(agentFileForTea17), 'Non-conventional id with [agent] in customize.toml is included (no allowlist needed)');
+    assert(
+      await fs.pathExists(agentFileForOrchestrator17),
+      'BMM orchestrator with [agent] customize.toml is included in Copilot agents picker',
+    );
     assert(!(await fs.pathExists(agentFileForWorkflow17)), 'Workflow skill (no customize.toml) is FILTERED OUT of .github/agents/');
     assert(
       !(await fs.pathExists(agentFileForBmadHelp17)),
@@ -1316,8 +1331,8 @@ async function runTests() {
   } catch (error) {
     assert(false, 'Pi native skills test succeeds', error.message);
   } finally {
-    if (tempProjectDir28) await fs.remove(tempProjectDir28).catch(() => {});
-    if (installedBmadDir28) await fs.remove(path.dirname(installedBmadDir28)).catch(() => {});
+    if (tempProjectDir28) await fs.remove(tempProjectDir28).catch(() => { });
+    if (installedBmadDir28) await fs.remove(path.dirname(installedBmadDir28)).catch(() => { });
   }
 
   console.log('');
@@ -1464,7 +1479,7 @@ async function runTests() {
   } catch (error) {
     assert(false, 'Unified skill scanner test succeeds', error.message);
   } finally {
-    if (tempFixture29) await fs.remove(tempFixture29).catch(() => {});
+    if (tempFixture29) await fs.remove(tempFixture29).catch(() => { });
   }
 
   console.log('');
@@ -1531,7 +1546,7 @@ async function runTests() {
   } catch (error) {
     assert(false, 'parseSkillMd validation test succeeds', error.message);
   } finally {
-    if (tempFixture30) await fs.remove(tempFixture30).catch(() => {});
+    if (tempFixture30) await fs.remove(tempFixture30).catch(() => { });
   }
 
   console.log('');
@@ -1568,8 +1583,8 @@ async function runTests() {
   } catch (error) {
     assert(false, 'Skill-format unique count test succeeds', error.message);
   } finally {
-    if (collisionProjectDir) await fs.remove(collisionProjectDir).catch(() => {});
-    if (collisionFixtureRoot) await fs.remove(collisionFixtureRoot).catch(() => {});
+    if (collisionProjectDir) await fs.remove(collisionProjectDir).catch(() => { });
+    if (collisionFixtureRoot) await fs.remove(collisionFixtureRoot).catch(() => { });
   }
 
   console.log('');
@@ -1659,8 +1674,8 @@ async function runTests() {
   } catch (error) {
     assert(false, 'Ona native skills test succeeds', error.message);
   } finally {
-    if (tempProjectDir32) await fs.remove(tempProjectDir32).catch(() => {});
-    if (installedBmadDir32) await fs.remove(path.dirname(installedBmadDir32)).catch(() => {});
+    if (tempProjectDir32) await fs.remove(tempProjectDir32).catch(() => { });
+    if (installedBmadDir32) await fs.remove(path.dirname(installedBmadDir32)).catch(() => { });
   }
 
   console.log('');
@@ -2105,7 +2120,7 @@ async function runTests() {
       assert(teamContent.includes('Installer-managed. Regenerated on every install'), 'config.toml has installer-managed header');
       assert(userContent.includes('Holds install answers scoped to YOU personally.'), 'config.user.toml header clarifies user scope');
     } finally {
-      await fs.remove(tempBmadDir35).catch(() => {});
+      await fs.remove(tempBmadDir35).catch(() => { });
     }
   }
 
@@ -2141,7 +2156,7 @@ async function runTests() {
       const preservedContent = await fs.readFile(userStub, 'utf8');
       assert(preservedContent === userEdit, 'ensureCustomConfigStubs does not overwrite user-edited custom/config.user.toml');
     } finally {
-      await fs.remove(tempBmadDir36).catch(() => {});
+      await fs.remove(tempBmadDir36).catch(() => { });
     }
   }
 
@@ -2207,7 +2222,7 @@ async function runTests() {
       assert(maryMatches.length === 1, 'bmad-agent-analyst emitted exactly once (fresh wins; stale not duplicated)');
       assert(!teamContent.includes('Stale Mary'), 'Stale name from prior config.toml is discarded when fresh module.yaml is read');
     } finally {
-      await fs.remove(tempBmadDir37).catch(() => {});
+      await fs.remove(tempBmadDir37).catch(() => { });
     }
   }
 
@@ -2305,8 +2320,8 @@ async function runTests() {
       } else {
         process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv;
       }
-      await fs.remove(tempCacheDir38).catch(() => {});
-      await fs.remove(tempBmadDir38).catch(() => {});
+      await fs.remove(tempCacheDir38).catch(() => { });
+      await fs.remove(tempBmadDir38).catch(() => { });
     }
   }
 
@@ -2352,7 +2367,7 @@ async function runTests() {
       } else {
         process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv39;
       }
-      await fs.remove(tempCacheDir39).catch(() => {});
+      await fs.remove(tempCacheDir39).catch(() => { });
     }
   }
 
@@ -2384,8 +2399,8 @@ async function runTests() {
       } else {
         process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv39;
       }
-      await fs.remove(tempRepo39).catch(() => {});
-      await fs.remove(tempCacheDir39).catch(() => {});
+      await fs.remove(tempRepo39).catch(() => { });
+      await fs.remove(tempCacheDir39).catch(() => { });
     }
   }
 
@@ -2428,8 +2443,8 @@ async function runTests() {
       } else {
         process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv39;
       }
-      await fs.remove(tempRepo39).catch(() => {});
-      await fs.remove(tempCacheDir39).catch(() => {});
+      await fs.remove(tempRepo39).catch(() => { });
+      await fs.remove(tempCacheDir39).catch(() => { });
     }
   }
 
@@ -2463,8 +2478,8 @@ async function runTests() {
       } else {
         process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv39;
       }
-      await fs.remove(tempHost39).catch(() => {});
-      await fs.remove(tempCacheDir39).catch(() => {});
+      await fs.remove(tempHost39).catch(() => { });
+      await fs.remove(tempCacheDir39).catch(() => { });
     }
   }
 
@@ -2524,8 +2539,8 @@ async function runTests() {
       } else {
         process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv39;
       }
-      await fs.remove(tempCacheDir39).catch(() => {});
-      await fs.remove(tempBmadDir39).catch(() => {});
+      await fs.remove(tempCacheDir39).catch(() => { });
+      await fs.remove(tempBmadDir39).catch(() => { });
     }
   }
 
@@ -2667,7 +2682,7 @@ async function runTests() {
     prompts.log.warn = async (message) => {
       warnings39.push(message);
     };
-    prompts.log.message = async () => {};
+    prompts.log.message = async () => { };
 
     try {
       await ui._selectOfficialModules(
@@ -2765,14 +2780,14 @@ async function runTests() {
       return ['core'];
     };
     prompts.spinner = async () => ({
-      start() {},
-      stop() {},
-      error() {},
+      start() { },
+      stop() { },
+      error() { },
     });
     prompts.log.warn = async (message) => {
       warnings39.push(message);
     };
-    prompts.log.message = async () => {};
+    prompts.log.message = async () => { };
 
     try {
       await ui._selectOfficialModules(new Set(), new Map(), { global: null, nextSet: new Set(), pins: new Map(), warnings: [] });
@@ -2798,7 +2813,7 @@ async function runTests() {
       } else {
         process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv39;
       }
-      await fs.remove(tempCacheDir39).catch(() => {});
+      await fs.remove(tempCacheDir39).catch(() => { });
     }
   }
 
@@ -2856,8 +2871,8 @@ async function runTests() {
     //  fixture above keeps bmad in a separate temp dir, so test 41 below
     //  exercises the in-project layout instead.)
 
-    await fs.remove(tempProjectDir40).catch(() => {});
-    await fs.remove(path.dirname(installedBmadDir40)).catch(() => {});
+    await fs.remove(tempProjectDir40).catch(() => { });
+    await fs.remove(path.dirname(installedBmadDir40)).catch(() => { });
   } catch (error) {
     console.log(`${colors.red}Test Suite 40 setup failed: ${error.message}${colors.reset}`);
     failed++;
@@ -2904,8 +2919,8 @@ async function runTests() {
     const entries40b = await fs.readdir(sharedDir40b);
     assert(entries40b.includes('bmad-master'), 'Shared dir is populated by gemini after cursor failure');
 
-    await fs.remove(tempProjectDir40b).catch(() => {});
-    await fs.remove(path.dirname(installedBmadDir40b)).catch(() => {});
+    await fs.remove(tempProjectDir40b).catch(() => { });
+    await fs.remove(path.dirname(installedBmadDir40b)).catch(() => { });
   } catch (error) {
     console.log(`${colors.red}Test Suite 40b setup failed: ${error.message}${colors.reset}`);
     failed++;
@@ -2981,7 +2996,7 @@ async function runTests() {
     await fs.writeFile(
       path.join(bmadC, '_config', 'skill-manifest.csv'),
       'canonicalId,name,description,module,path\n' +
-        '"bmad-master","bmad-master","Minimal test agent fixture","core","_bmad/core/bmad-master/SKILL.md"\n',
+      '"bmad-master","bmad-master","Minimal test agent fixture","core","_bmad/core/bmad-master/SKILL.md"\n',
     );
     const skillC = path.join(bmadC, 'core', 'bmad-master');
     await fs.ensureDir(skillC);
@@ -3008,11 +3023,11 @@ async function runTests() {
     assert(sharedSurvivesC, 'shared .agents/skills/ survives partial uninstall (peer still uses it)');
     assert(!(await fs.pathExists(cmdC)), 'opencode command pointer is removed on partial uninstall even when peer remains');
 
-    await fs.remove(projA).catch(() => {});
-    await fs.remove(path.dirname(bmadA)).catch(() => {});
-    await fs.remove(projB).catch(() => {});
-    await fs.remove(path.dirname(bmadB)).catch(() => {});
-    await fs.remove(projC).catch(() => {});
+    await fs.remove(projA).catch(() => { });
+    await fs.remove(path.dirname(bmadA)).catch(() => { });
+    await fs.remove(projB).catch(() => { });
+    await fs.remove(path.dirname(bmadB)).catch(() => { });
+    await fs.remove(projC).catch(() => { });
   } catch (error) {
     console.log(`${colors.red}Test Suite 40c setup failed: ${error.message}${colors.reset}`);
     failed++;
@@ -3054,7 +3069,7 @@ async function runTests() {
     const detected = await cursorHandler.detect(fixtureRoot41);
     assert(detected === true, 'detect() recognizes non-bmad-prefixed skill as BMAD-owned via skill-manifest.csv');
 
-    await fs.remove(fixtureRoot41).catch(() => {});
+    await fs.remove(fixtureRoot41).catch(() => { });
   } catch (error) {
     console.log(`${colors.red}Test Suite 41 setup failed: ${error.message}${colors.reset}`);
     failed++;
@@ -3255,9 +3270,9 @@ async function runTests() {
       'scalar core gets replaced with {} and bmm.project_name still hoists in',
     );
 
-    await fs.remove(fixtureRoot43).catch(() => {});
-    await fs.remove(fixtureRoot43b).catch(() => {});
-    await fs.remove(fixtureRoot43c).catch(() => {});
+    await fs.remove(fixtureRoot43).catch(() => { });
+    await fs.remove(fixtureRoot43b).catch(() => { });
+    await fs.remove(fixtureRoot43c).catch(() => { });
   } catch (error) {
     console.log(`${colors.red}Test Suite 43 setup failed: ${error.message}${colors.reset}`);
     console.log(error.stack);
@@ -3423,7 +3438,7 @@ async function runTests() {
         `applySetOverrides reports correct routing decisions (got: ${summary})`,
       );
 
-      await fs.remove(tmp).catch(() => {});
+      await fs.remove(tmp).catch(() => { });
     }
 
     // ---- applySetOverrides creates config.user.toml if missing -----------
@@ -3443,7 +3458,7 @@ async function runTests() {
         !(await fs.pathExists(path.join(bmadDir, 'config.user.toml'))),
         'applySetOverrides does not create config.user.toml unnecessarily',
       );
-      await fs.remove(tmp).catch(() => {});
+      await fs.remove(tmp).catch(() => { });
     }
 
     // ---- applySetOverrides skips modules without per-module config.yaml --
@@ -3461,7 +3476,7 @@ async function runTests() {
       assert(!team.includes('[modules.bmm]'), 'applySetOverrides does NOT create section for uninstalled module');
       assert(team.includes('user_name = "Updated"'), 'applySetOverrides still applies overrides for installed modules');
       assert(applied.length === 1 && applied[0].module === 'core', 'applySetOverrides reports only the installed-module entries');
-      await fs.remove(tmp).catch(() => {});
+      await fs.remove(tmp).catch(() => { });
     }
 
     // ---- applySetOverrides: empty/missing input is a no-op ---------------
@@ -3476,7 +3491,7 @@ async function runTests() {
         empty1.length === 0 && empty2.length === 0 && empty3.length === 0,
         'applySetOverrides is a no-op for empty/null/undefined input',
       );
-      await fs.remove(tmp).catch(() => {});
+      await fs.remove(tmp).catch(() => { });
     }
 
     // ---- discoverOfficialModuleYamls + formatOptionsList -----------------
@@ -3510,7 +3525,7 @@ async function runTests() {
       } else {
         process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv44;
       }
-      await fs.remove(tempCacheDir44).catch(() => {});
+      await fs.remove(tempCacheDir44).catch(() => { });
     }
   } catch (error) {
     console.log(`${colors.red}Test Suite 44 setup failed: ${error.message}${colors.reset}`);
