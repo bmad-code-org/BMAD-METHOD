@@ -19,7 +19,8 @@ Build software faster using AI-powered workflows with specialized agents that gu
 - **Git** — Recommended for version control
 - **AI-powered IDE** — Claude Code, Cursor, or similar
 - **A project idea** — Even a simple one works for learning
-  :::
+
+:::
 
 :::tip[The Easiest Path]
 **Install** → `npx bmad-method install`
@@ -285,6 +286,7 @@ BMad-Help inspects your project, detects what you've completed, and tells you ex
 - **Always use fresh chats** — Start a new chat for each workflow
 - **Track matters** — Quick Flow uses `bmad-quick-dev`; Method/Enterprise need PRD and architecture
 - **BMad-Help runs automatically** — Every workflow ends with guidance on what's next
-  :::
+
+:::
 
 Ready to start? Install BMad, invoke `bmad-help`, and let your intelligent guide lead the way.

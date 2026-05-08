@@ -86,10 +86,15 @@ function validate() {
     return { ok: false, fatal: `marketplace.json is not valid JSON: ${error.message}` };
   }
 
+  if (!fs.existsSync(SRC_DIR)) {
+    return { ok: false, fatal: `src directory not found at ${SRC_DIR}` };
+  }
+
   const plugins = Array.isArray(marketplace.plugins) ? marketplace.plugins : [];
   const declaredBy = new Map(); // skillPath -> [pluginName]
   for (const plugin of plugins) {
-    for (const skillPath of plugin.skills || []) {
+    const skills = Array.isArray(plugin.skills) ? plugin.skills : [];
+    for (const skillPath of skills) {
       if (!declaredBy.has(skillPath)) declaredBy.set(skillPath, []);
       declaredBy.get(skillPath).push(plugin.name);
     }
@@ -111,9 +116,16 @@ function validate() {
     }
   }
 
-  const duplicates = []; // same path declared by multiple plugins
+  const duplicates = []; // same path declared more than once (within or across plugins)
   for (const [skillPath, names] of declaredBy) {
-    if (names.length > 1) duplicates.push({ path: skillPath, declaredBy: names });
+    if (names.length > 1) {
+      const uniquePlugins = [...new Set(names)];
+      duplicates.push({
+        path: skillPath,
+        declaredBy: uniquePlugins,
+        withinSamePlugin: uniquePlugins.length === 1,
+      });
+    }
   }
 
   return {
@@ -149,9 +161,12 @@ function reportHuman(result) {
   }
 
   if (duplicates.length > 0) {
-    console.log(`\n✗ ${duplicates.length} skill path(s) declared by multiple plugins:`);
+    console.log(`\n✗ ${duplicates.length} skill path(s) declared more than once:`);
     for (const d of duplicates) {
-      console.log(`    ${d.path}  (in: ${d.declaredBy.join(', ')})`);
+      const where = d.withinSamePlugin
+        ? `listed multiple times in "${d.declaredBy[0]}"`
+        : `in multiple plugins: ${d.declaredBy.join(', ')}`;
+      console.log(`    ${d.path}  (${where})`);
     }
   }
 

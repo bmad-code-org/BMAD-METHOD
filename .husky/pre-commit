@@ -6,6 +6,17 @@ npx --no-install lint-staged
 # Validate everything
 npm test
 
+# Validate marketplace manifest when skills or manifest change
+if command -v rg >/dev/null 2>&1; then
+  if git diff --cached --name-only | rg -q 'SKILL\.md|\.claude-plugin/marketplace\.json'; then
+    npm run validate:marketplace
+  fi
+else
+  if git diff --cached --name-only | grep -Eq 'SKILL\.md|\.claude-plugin/marketplace\.json'; then
+    npm run validate:marketplace
+  fi
+fi
+
 # Validate docs links only when docs change
 if command -v rg >/dev/null 2>&1; then
   if git diff --cached --name-only | rg -q '^docs/'; then
