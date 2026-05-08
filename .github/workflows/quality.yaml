@@ -111,3 +111,6 @@ jobs:
 
       - name: Validate skills
         run: npm run validate:skills
+
+      - name: Validate marketplace manifest
+        run: npm run validate:marketplace
