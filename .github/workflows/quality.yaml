@@ -114,3 +114,6 @@ jobs:
 
       - name: Validate marketplace manifest
         run: npm run validate:marketplace
+
+      - name: Validate cowork-plugin tree is current
+        run: node tools/build-cowork-plugin.js --check

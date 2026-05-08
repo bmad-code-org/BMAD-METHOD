@@ -1,47 +1,43 @@
 ---
 title: 'How to Install BMad in Claude Cowork'
-description: Install BMad in Claude Cowork using the Claude Code plugin marketplace.
+description: Install BMad in Claude Cowork using the Customize menu.
 sidebar:
   order: 11
 ---
 
-Claude.ai web and the Claude desktop chat have no access to your project files, so `npx bmad-method install` can't reach them. [Claude Cowork](https://www.claude.com/product/claude-code) does — it sandboxes your project in a VM and exposes a plugin manager. The `npx` installer still can't write into that sandbox, but Cowork accepts plugins via its marketplace API, which BMad's `.claude-plugin/marketplace.json` ships with.
+Claude.ai web and the Claude desktop chat have no access to your project files, so `npx bmad-method install` can't reach them. [Claude Cowork](https://www.claude.com/product/claude-code) is different — it runs your project in a sandboxed VM and supports a plugin marketplace. BMad ships a `.claude-plugin/marketplace.json` at the repo root that Cowork can consume directly.
 
 ## Install
 
-Two steps — register the marketplace, then install the plugins:
+In the Cowork desktop app, open **Customize → Browse plugins → Add marketplace** and enter:
 
 ```
-/plugin marketplace add bmad-code-org/BMAD-METHOD
-/plugin install bmad-pro-skills@bmad-method
-/plugin install bmad-method-lifecycle@bmad-method
+bmad-code-org/BMAD-METHOD
 ```
 
-Restart the Cowork session, then `/bmad-pro-skills:*` and `/bmad-method-lifecycle:*` slash commands appear.
+Cowork pulls the marketplace, surfaces two plugins to install:
+
+- **`bmad-pro-skills`** — brainstorming, editorial review, party mode, document sharding, and more
+- **`bmad-method-lifecycle`** — full agile lifecycle: analyst, PM, architect, dev, sprint planning, code review, …
+
+Accept both, restart the session, and `/bmad-pro-skills:*` and `/bmad-method-lifecycle:*` slash commands appear.
 
 ## Update
 
-```
-/plugin marketplace update bmad-method
-```
+Re-open **Customize**, find the marketplace, and sync/refresh it. Cowork pulls the latest committed tree.
 
-The marketplace name is `bmad-method`, not the GitHub slug.
+## Pairing With TEA
 
-## Uninstall
+To install the Test Architect module alongside BMad, add its marketplace the same way:
 
 ```
-/plugin uninstall bmad-pro-skills@bmad-method
-/plugin uninstall bmad-method-lifecycle@bmad-method
+bmad-code-org/bmad-method-test-architecture-enterprise
 ```
 
 ## Known issue
 
-Cowork's plugin reconciler currently has open bugs ([anthropics/claude-code#38429](https://github.com/anthropics/claude-code/issues/38429), [#39274](https://github.com/anthropics/claude-code/issues/39274)) that can purge third-party marketplace plugins on session sync. If your slash commands disappear, re-run the `/plugin install` lines.
-
-## Pairing With TEA
-
-To install TEA alongside BMad, register and install its marketplace too. See the [TEA README](https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise#claude-cowork) for the exact commands.
+Cowork's personal plugin install has a [known persistence bug](https://github.com/anthropics/claude-code/issues/38429) — plugins may disappear after an app restart. The org-level install (Organisation settings → Plugins → Add plugin) is more reliable for teams.
 
 ## Related
 
-- [How to Install BMad](./install-bmad.md) — the standard `npx bmad-method install` flow for non-Cowork tools.
+- [How to Install BMad](./install-bmad.md) — the standard `npx bmad-method install` flow for other IDEs.

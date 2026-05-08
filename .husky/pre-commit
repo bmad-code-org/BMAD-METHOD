@@ -6,14 +6,18 @@ npx --no-install lint-staged
 # Validate everything
 npm test
 
-# Validate marketplace manifest when skills or manifest change
+# Validate marketplace manifest and rebuild cowork-plugin tree when skills or manifest change
 if command -v rg >/dev/null 2>&1; then
   if git diff --cached --name-only | rg -q 'SKILL\.md|\.claude-plugin/marketplace\.json'; then
     npm run validate:marketplace
+    npm run build:cowork-plugin
+    git add cowork-plugin/
   fi
 else
   if git diff --cached --name-only | grep -Eq 'SKILL\.md|\.claude-plugin/marketplace\.json'; then
     npm run validate:marketplace
+    npm run build:cowork-plugin
+    git add cowork-plugin/
   fi
 fi
 
