@@ -1,0 +1,18 @@
+[
+  { "query": "Help me write a product brief for my new app idea", "should_trigger": true },
+  { "query": "I need to draft a brief for a feature we're scoping", "should_trigger": true },
+  { "query": "Update this product brief — we changed the target audience", "should_trigger": true },
+  { "query": "Review my brief and tell me if it's investor-ready", "should_trigger": true },
+  { "query": "Validate this brief before our board meeting Monday", "should_trigger": true },
+  { "query": "Pressure-test my product brief for weak assumptions", "should_trigger": true },
+  { "query": "Help me put together a one-page summary of my product idea for stakeholders", "should_trigger": true },
+
+  { "query": "Help me brainstorm ideas for a new feature", "should_trigger": false },
+  { "query": "Write me a PRD for our checkout flow redesign", "should_trigger": false },
+  { "query": "Run a working backwards exercise for my product idea", "should_trigger": false },
+  { "query": "Document this existing codebase for AI agents", "should_trigger": false },
+  { "query": "Help me write user stories for the next sprint", "should_trigger": false },
+  { "query": "Generate a system architecture for my app", "should_trigger": false },
+  { "query": "Write code to parse JSON in Python", "should_trigger": false },
+  { "query": "Create a marketing landing page for my product", "should_trigger": false }
+]

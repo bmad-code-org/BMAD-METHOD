@@ -55,6 +55,7 @@ Conversationally surface what the user brings, why this brief exists, and the do
 - **Right-size to purpose.** A passion project does not need investor-grade rigor. A VC pitch input does. Read the room.
 - **Persistence is real-time.** Once Create intent is confirmed, the workspace (run folder, `brief.md` skeleton with `status: draft`, `decision-log.md`) exists on disk and the user knows the path. The decision log is canonical memory — what the user has shared is preserved on disk, not stored in the conversation.
 - **Continuity across sessions.** If a prior in-progress draft for this project exists, the user is offered to resume.
+- **Extract, don't ingest.** Source artifacts (provided by the user or discovered during the run — transcripts, brainstorms, research reports, code, web results, prior briefs) enter the parent conversation as relevance-filtered extracts, not loaded wholesale. Subagents do the extraction against the user's stated focus; the parent context stays lean.
 - **Length and coherence.** Aim for 1-2 pages — if it is longer, the detail belongs in the addendum or distillate. Structure in service of the product; downstream consumers (PRD workflow, etc.) read this, so coherent shape matters.
 
 ## Finalize

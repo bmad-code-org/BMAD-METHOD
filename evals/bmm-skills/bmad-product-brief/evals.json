@@ -1,0 +1,122 @@
+{
+  "skill_name": "bmad-product-brief",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I want to create a product brief for InsuLens — a smartphone app that pairs with off-the-shelf $200 thermal imaging accessories to give homeowners professional-grade insulation audits in under 20 minutes. Target is suburban homeowners aged 35-65 with houses built before 2000 (poor insulation, rising energy bills). We've validated demand through 50 user interviews. We're prepping a Series A pitch — investors will read this brief as the primary input for their first call. Help me put this together.",
+      "expected_output": "A run folder containing brief.md (with YAML frontmatter), decision-log.md, and likely a distillate. Brief is 1-2 pages, addresses the InsuLens value prop, target audience, validation evidence, and reads as ready for an investor-pitch input.",
+      "files": [],
+      "expectations": [
+        "A run folder is created under the configured output_dir matching the configured output_folder_name pattern",
+        "brief.md exists in the run folder with YAML frontmatter containing title, status, created, updated",
+        "brief.md frontmatter status is 'draft' or 'final' (not missing or empty)",
+        "decision-log.md exists in the run folder",
+        "brief.md word count is between 250 and 1500",
+        "brief.md identifies the target audience for InsuLens",
+        "brief.md references the thermal-imaging hardware dependency",
+        "brief.md surfaces what is unknown or unvalidated alongside what is known",
+        "Either distillate.md exists in the run folder or the output explains why it was skipped"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Create a brief from this memo. It's from our last working group on a new microcredential program at Branfield Community College. Use what's there; ask only what's missing.",
+      "expected_output": "Brief reflects content from the memo without re-asking the user for facts already present in it.",
+      "files": ["evals/bmm-skills/bmad-product-brief/files/branfield-memo.md"],
+      "expectations": [
+        "A run folder is created with brief.md and decision-log.md",
+        "brief.md incorporates at least 3 distinct facts or decisions present in the input memo",
+        "decision-log.md references having ingested the memo as source material",
+        "The output does not ask the user to re-state the program name, target student, or core curriculum focus if those are present in the memo"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Update this brief — we've decided to add catering services for corporate events, in addition to the direct-to-consumer delivery model.",
+      "expected_output": "brief.md is updated to reflect the catering service; decision-log.md captures the new decision; distillate.md is regenerated; the `updated` frontmatter timestamp is bumped; the prior 'rejected B2B catering for MVP' decision is surfaced as a contradiction before applying changes.",
+      "files": [
+        "evals/bmm-skills/bmad-product-brief/files/forkbird-brief/brief.md",
+        "evals/bmm-skills/bmad-product-brief/files/forkbird-brief/addendum.md",
+        "evals/bmm-skills/bmad-product-brief/files/forkbird-brief/decision-log.md",
+        "evals/bmm-skills/bmad-product-brief/files/forkbird-brief/distillate.md"
+      ],
+      "expectations": [
+        "brief.md mentions the new corporate catering service in the relevant section",
+        "brief.md frontmatter 'updated' field is later than the original 'created' timestamp",
+        "decision-log.md contains a new entry referencing the catering decision",
+        "distillate.md was regenerated (modification timestamp is newer than the input fixture)",
+        "The output surfaces the contradiction with the prior 'rejected B2B catering for MVP' decision before applying changes"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Validate this brief — the Mossridge Public Library board meets Monday and we need this to land. Is it ready?",
+      "expected_output": "Inline critique citing specific lines, identifying weaknesses, caveating what cannot be evaluated. No separate validation file is written.",
+      "files": [
+        "evals/bmm-skills/bmad-product-brief/files/mossridge-brief/brief.md",
+        "evals/bmm-skills/bmad-product-brief/files/mossridge-brief/addendum.md",
+        "evals/bmm-skills/bmad-product-brief/files/mossridge-brief/decision-log.md"
+      ],
+      "expectations": [
+        "The output cites specific line numbers or section names from the input brief",
+        "No new files are created in the mossridge-brief directory or its parent run folder",
+        "The output identifies at least one specific weakness or area for improvement",
+        "The output explicitly caveats at least one claim that cannot be evaluated from the brief alone (e.g., community demand, funding feasibility, volunteer sustainability)",
+        "The output offers to roll the findings into an Update"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Run headless. Create a brief for: a weekend-project iOS app called Sproutkeeper that reminds houseplant owners when to water their plants based on plant type and indoor humidity sensor data. Target is hobbyist plant owners. MVP scope only, single-developer side project.",
+      "expected_output": "JSON response listing status, intent, and artifact paths. No clarifying questions asked.",
+      "files": [],
+      "expectations": [
+        "The final output is valid JSON",
+        "The JSON contains keys 'status', 'intent', and at least one artifact path (brief)",
+        "The JSON 'intent' value is 'create'",
+        "brief.md exists at the path referenced in the JSON output",
+        "brief.md is right-sized for a side project (closer to 250-500 words than 1500)",
+        "The transcript contains no clarifying questions to the user"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Create a brief for our neighborhood compost coordinator app idea — we're moving forward with it. I've attached our full Q2 brainstorming session notes; use what's relevant from there.",
+      "expected_output": "Brief focuses tightly on the compost coordinator concept; ignores the unrelated ideas in the brainstorm. The skill extracts the relevant section rather than treating the entire document as canonical input.",
+      "files": ["evals/bmm-skills/bmad-product-brief/files/q2-brainstorm.md"],
+      "expectations": [
+        "brief.md addresses the neighborhood compost coordinator concept",
+        "brief.md does not introduce content from unrelated brainstorm ideas (weather + mood, meditation chime, podcasting tool, craft beer subscription, AI sommelier, office plants, ride coordinator, cookbook app, AR home staging)",
+        "brief.md word count is between 250 and 1500",
+        "brief.md incorporates at least 2 specific details from the compost deep-dive section (e.g., two-sided market with apartment dwellers and home compost-pile owners, hyperlocal neighborhood-level scope, free-at-launch with eventual Side B subscription, Portland Sunnyside/Hawthorne pilot)",
+        "decision-log.md indicates the brainstorm was filtered for relevance rather than ingested whole"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Create a brief for Brightway — our smart bike helmet with crash detection, turn signals, and braking lights. We had Meridian Insights produce a market research report on e-mobility — attached. Use what's relevant from there for the safety helmet category specifically.",
+      "expected_output": "Brief focuses on the smart bike helmet concept; pulls relevant findings from the helmet section of the report and ignores the unrelated mobility segments. The report's whole-document content does not bloat the brief or the parent context.",
+      "files": ["evals/bmm-skills/bmad-product-brief/files/meridian-mobility-report.md"],
+      "expectations": [
+        "brief.md addresses the Brightway smart bike helmet concept",
+        "brief.md does not introduce content from unrelated mobility segments (e-scooters, charging infrastructure, bike-share, vehicle-to-grid)",
+        "brief.md word count is between 250 and 1500",
+        "brief.md incorporates at least 2 specific findings from the smart helmet section of the report (e.g., market sizing, key players, crash detection technology trends, regulatory or insurance landscape)",
+        "decision-log.md indicates the report was filtered to the helmet category rather than ingested whole"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Create a brief for Pantry Bridge — a meal-kit subscription targeted at adults 65+ who live alone and want fresh meals without grocery shopping. I've attached transcripts from our recent customer research; pull what's relevant from the older-adult interviews.",
+      "expected_output": "Brief focuses on the older-adult target persona, drawing insights from Eleanor's interview specifically. Other personas in the transcript document do not pollute the brief.",
+      "files": ["evals/bmm-skills/bmad-product-brief/files/pantry-bridge-interviews.md"],
+      "expectations": [
+        "brief.md addresses the Pantry Bridge older-adult meal-kit concept",
+        "brief.md does not conflate insights from non-target personas (working parent Susan, college student Marcus, corporate cafeteria buyer Dimitri)",
+        "brief.md word count is between 250 and 1500",
+        "brief.md incorporates at least 2 specific insights from Eleanor's interview (e.g., grocery-trip difficulty, portion sizing, dietary restrictions, social aspects of meals, trust concerns)",
+        "decision-log.md notes which interviews were used and which were excluded"
+      ]
+    }
+  ]
+}
