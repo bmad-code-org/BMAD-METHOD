@@ -23,9 +23,11 @@ activation_steps_append = []
 # (standards, compliance constraints, stylistic guardrails).
 # Each entry is either a literal sentence, or a `file:`-prefixed path/glob
 # whose contents are loaded as facts.
-persistent_facts = [
-  "file:{project-root}/**/project-context.md",
-]
+# Default is empty. Common opt-ins (set in your team/user override TOML):
+#   "file:{project-root}/_bmad-output/planning-artifacts/project-context.md"  # bmad-generate-project-context output
+#   "file:{project-root}/CLAUDE.md"      # Claude Code instructions
+#   "file:{project-root}/AGENTS.md"      # generic agent instructions
+persistent_facts = []
 
 # Executed when the workflow completes (after the user has been told the
 # brief is ready). Accepts either a string scalar (single instruction)
@@ -42,10 +44,23 @@ brief_template = "assets/brief-template.md"
 output_dir = "{planning_artifacts}/briefs"
 output_folder_name = "brief-{project_name}-{date}"
 
-# Skills that polish human-consumed docs at finalize. Run sequentially against
-# each target doc (parallel runs collide on inline edits). Override the array
-# in team/user TOML to swap, add, or remove skills.
-polish_skills = [
-  "bmad-editorial-review-prose",
-  "bmad-editorial-review-structure",
+# Polish passes applied to human-consumed docs at finalize. The parent LLM
+# applies their findings before the user sees the draft. Polish encodes
+# standards, not options.
+#
+# Examples:
+#   "skill:bmad-editorial-review-prose"
+#   "file:{project-root}/_bmad/style-guides/company-voice.md"
+#   "Convert all dates to ISO 8601 format."
+#
+# Suggested order (broader passes first, narrower last):
+#   1. Structural (cuts, reorganization, section sizing)
+#   2. Content/voice/conventions (org standards, tone, terminology, compliance)
+#   3. Prose mechanics (grammar, clarity, typos)
+#
+# Override the array in team/user TOML to add additional passes. Append-only:
+# base entries cannot be removed or replaced (resolver has no removal mechanism).
+polish_passes = [
+  "skill:bmad-editorial-review-structure",
+  "skill:bmad-editorial-review-prose",
 ]
