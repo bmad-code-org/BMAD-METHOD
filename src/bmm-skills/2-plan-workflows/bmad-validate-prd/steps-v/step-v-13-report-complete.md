@@ -196,6 +196,7 @@ Display:
   - Display: "**Validation Report Saved:** {validationReportPath}"
   - Display: "**Summary:** {overall status} - {recommendation}"
   - PRD Validation complete. Invoke the `bmad-help` skill.
+  - Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete` — if the resolved value is non-empty, follow it as the final terminal instruction before exiting.
 
 - **IF Any other:** Help user, then redisplay menu
 

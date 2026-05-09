@@ -7,6 +7,7 @@ on:
       - "src/**"
       - "tools/installer/**"
       - "package.json"
+      - "removals.txt"
   workflow_dispatch:
     inputs:
       channel:
@@ -134,6 +135,22 @@ jobs:
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Advance @next dist-tag to stable
+        if: github.event_name == 'workflow_dispatch' && inputs.channel == 'latest'
+        # Failure here leaves @next stale until the next push-driven prerelease
+        # republishes — annoying but not release-breaking. Don't fail the job
+        # after a successful stable publish + tag + GH release.
+        continue-on-error: true
+        run: |
+          # Without this, @latest can leapfrog @next (e.g. latest=6.5.0 while
+          # next=6.4.1-next.0) and `npx bmad-method@next install` silently
+          # downgrades users. Point @next at the just-published stable so
+          # @next >= @latest always holds; the next push-driven prerelease will
+          # bump from this base via the existing derive step above.
+          VERSION=$(node -p 'require("./package.json").version')
+          npm dist-tag add "bmad-method@${VERSION}" next
+          echo "Advanced @next dist-tag to ${VERSION}"
 
       - name: Notify Discord
         if: github.event_name == 'workflow_dispatch' && inputs.channel == 'latest'

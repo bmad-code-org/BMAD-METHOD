@@ -33,7 +33,7 @@ These docs are organized into four sections based on what you're trying to do:
 | **Explanation**   | Understanding-oriented. Deep dives into concepts and architecture. Read when you want to know *why*.       |
 | **Reference**     | Information-oriented. Technical specifications for agents, workflows, and configuration.                   |
 
-## Extend and Customize
+## Expand and Customize
 
 Want to expand BMad with your own agents, workflows, or modules? The **[BMad Builder](https://bmad-builder-docs.bmad-method.org/)** provides the framework and tools for creating custom extensions, whether you're adding new capabilities to BMad or building entirely new modules from scratch.
 

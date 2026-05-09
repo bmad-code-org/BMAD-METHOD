@@ -23,13 +23,10 @@ checkForUpdate().catch(() => {
 
 async function checkForUpdate() {
   try {
-    // For beta versions, check the beta tag; otherwise check latest
-    const isBeta =
-      packageJson.version.includes('Beta') ||
-      packageJson.version.includes('beta') ||
-      packageJson.version.includes('alpha') ||
-      packageJson.version.includes('rc');
-    const tag = isBeta ? 'beta' : 'latest';
+    // Prereleases (e.g. 6.5.1-next.0) live on the `next` dist-tag; stable
+    // releases live on `latest`. semver.prerelease() returns null for stable,
+    // so this correctly routes pre-1.0-next/rc/etc. without string matching.
+    const tag = semver.prerelease(packageJson.version) ? 'next' : 'latest';
 
     const result = execSync(`npm view ${packageName}@${tag} version`, {
       encoding: 'utf8',

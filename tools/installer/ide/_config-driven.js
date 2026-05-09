@@ -1,10 +1,129 @@
-const os = require('node:os');
 const path = require('node:path');
 const fs = require('../fs-native');
 const yaml = require('yaml');
 const prompts = require('../prompts');
 const csv = require('csv-parse/sync');
 const { BMAD_FOLDER_NAME } = require('./shared/path-utils');
+const { getInstalledCanonicalIds, isBmadOwnedEntry } = require('./shared/installed-skills');
+
+// Reserved OpenCode slash commands. A skill whose canonicalId collides with
+// one of these is skipped during command-pointer generation so it doesn't
+// shadow a built-in.
+const RESERVED_OPENCODE_COMMANDS = new Set([
+  'review',
+  'commit',
+  'init',
+  'help',
+  'skills',
+  'fast',
+  'compact',
+  'clear',
+  'undo',
+  'redo',
+  'edit',
+  'editor',
+  'exit',
+  'quit',
+  'theme',
+  'config',
+  'model',
+  'session',
+]);
+
+// Wrap a description for safe insertion into single-line YAML frontmatter.
+// Leaves plain values untouched; double-quotes (and escapes) anything that
+// could break YAML parsing or span multiple lines.
+function yamlSafeSingleLine(value) {
+  const collapsed = String(value)
+    .replaceAll(/[\r\n]+/g, ' ')
+    .trim();
+  const needsQuoting = /[:#'"\\]/.test(collapsed) || /^[!&*?|>%@`[{]/.test(collapsed);
+  if (!needsQuoting) return collapsed;
+  const escaped = collapsed.replaceAll('\\', '\\\\').replaceAll('"', String.raw`\"`);
+  return `"${escaped}"`;
+}
+
+// Validate that a canonicalId is a safe basename — no path separators, no
+// parent-dir traversal, no leading dots, only the character set we expect.
+// Defense-in-depth: the manifest is trusted today, but the value flows
+// directly into a file path and a malformed entry should not write outside
+// the commands directory.
+function isSafeCanonicalId(value) {
+  return typeof value === 'string' && /^[a-zA-Z0-9][a-zA-Z0-9_.-]*$/.test(value) && !value.includes('..');
+}
+
+// Default body template for command pointer files. Used when a platform's
+// installer config doesn't override `commands_body_template`. Matches
+// OpenCode's native `@skills/<id>` skill-reference syntax.
+const DEFAULT_COMMANDS_BODY_TEMPLATE = '@skills/{canonicalId}';
+
+// Is this skill a persona agent (vs. a workflow/tool/standalone skill)?
+// Used by platforms that surface only persona agents (e.g. Copilot's Custom
+// Agents picker). Signal: the skill's source `customize.toml` has an
+// `[agent]` section. This is the actual configuration source of truth —
+// every BMAD persona is configured via [agent] in its customize.toml,
+// every workflow uses [workflow], every standalone skill has no
+// customize.toml at all. Verified against the full installed manifest:
+// catches exactly the 20 description-confirmed personas across BMM, CIS,
+// GDS, WDS, TEA, and correctly excludes meta-skills like
+// `bmad-agent-builder` (a skill-builder workflow whose canonical id
+// contains `-agent-` but which has no [agent] section because it isn't a
+// persona itself).
+//
+// Reading the source toml — at install time the source skill directory
+// (resolved from manifest record.path) still exists; cleanup runs later
+// in the install flow.
+async function isAgentSkill(record, bmadDir) {
+  if (!record?.path || !bmadDir) return false;
+  const bmadFolderName = path.basename(bmadDir);
+  const bmadPrefix = bmadFolderName + '/';
+  const relativePath = record.path.startsWith(bmadPrefix) ? record.path.slice(bmadPrefix.length) : record.path;
+  const tomlPath = path.join(bmadDir, path.dirname(relativePath), 'customize.toml');
+  if (!(await fs.pathExists(tomlPath))) return false;
+  try {
+    const content = await fs.readFile(tomlPath, 'utf8');
+    return /^\[agent\]/m.test(content);
+  } catch {
+    return false;
+  }
+}
+
+// Resolve placeholders in a body template. Supported placeholders:
+//   {canonicalId}   — the skill's canonical id
+//   {target_dir}    — the platform's skill install directory (e.g. .agents/skills)
+//   {project-root}  — left as a literal placeholder for the model/tool to expand
+//                     at runtime; consistent with PR #1769's templates.
+function expandBodyTemplate(template, { canonicalId, targetDir }) {
+  return template.replaceAll('{canonicalId}', canonicalId).replaceAll('{target_dir}', targetDir);
+}
+
+// The exact body the installer would generate for a given description and
+// canonicalId, given the platform's body template. Centralised so both the
+// write and the freshness-check paths agree on the canonical form.
+function buildCommandPointerBody(description, canonicalId, { template, targetDir }) {
+  const bodyText = expandBodyTemplate(template, { canonicalId, targetDir });
+  return `---\ndescription: ${yamlSafeSingleLine(description)}\n---\n\n${bodyText}\n`;
+}
+
+// Heuristic: does an existing pointer file look like our generator's output
+// (and therefore safe to refresh) versus a user-modified file (which we
+// preserve)? We check the body shape rather than full equality so that
+// description-only edits in the manifest can propagate without trampling
+// hand edits to the body.
+function looksLikeGeneratorOutput(content, canonicalId, { template, targetDir }) {
+  if (typeof content !== 'string') return false;
+  const trimmed = content.trim();
+  const expectedTail = expandBodyTemplate(template, { canonicalId, targetDir }).trim();
+  // Must end with the exact body our generator writes (post-expansion).
+  if (!trimmed.endsWith(expectedTail)) return false;
+  // Must start with frontmatter containing exactly one description: line.
+  const fmMatch = trimmed.match(/^---\n([\S\s]*?)\n---\n/);
+  if (!fmMatch) return false;
+  const fmLines = fmMatch[1].split('\n').filter((l) => l.length > 0);
+  if (fmLines.length !== 1) return false;
+  if (!fmLines[0].startsWith('description:')) return false;
+  return true;
+}
 
 /**
  * Config-driven IDE setup handler
@@ -16,7 +135,7 @@ const { BMAD_FOLDER_NAME } = require('./shared/path-utils');
  * Features:
  * - Config-driven from platform-codes.yaml
  * - Verbatim skill installation from skill-manifest.csv
- * - Legacy directory cleanup and IDE-specific marker removal
+ * - IDE-specific marker removal (copilot-instructions, kilo modes, rovodev prompts)
  */
 class ConfigDrivenIdeSetup {
   constructor(platformCode, platformConfig) {
@@ -44,16 +163,20 @@ class ConfigDrivenIdeSetup {
   async detect(projectDir) {
     if (!this.configDir) return false;
 
-    const dir = path.join(projectDir || process.cwd(), this.configDir);
-    if (await fs.pathExists(dir)) {
-      try {
-        const entries = await fs.readdir(dir);
-        return entries.some((e) => typeof e === 'string' && e.startsWith('bmad'));
-      } catch {
-        return false;
-      }
+    const root = projectDir || process.cwd();
+    const dir = path.join(root, this.configDir);
+    if (!(await fs.pathExists(dir))) return false;
+
+    let entries;
+    try {
+      entries = await fs.readdir(dir);
+    } catch {
+      return false;
     }
-    return false;
+
+    const bmadDir = await this._findBmadDir(root);
+    const canonicalIds = await getInstalledCanonicalIds(bmadDir);
+    return entries.some((e) => isBmadOwnedEntry(e, canonicalIds));
   }
 
   /**
@@ -92,6 +215,18 @@ class ConfigDrivenIdeSetup {
       return { success: false, reason: 'no-config' };
     }
 
+    // When a peer platform in the same install batch owns this target_dir,
+    // skip the skill write — the peer has already populated it. Command
+    // pointers, however, write to a separate per-IDE directory and must
+    // still be generated for this IDE; they are not deduped across peers.
+    if (options.skipTarget) {
+      const results = { skills: 0, sharedTargetHandledByPeer: true };
+      if (this.installerConfig.commands_target_dir) {
+        results.commands = await this.installCommandPointers(projectDir, bmadDir, this.installerConfig, options);
+      }
+      return { success: true, results };
+    }
+
     if (this.installerConfig.target_dir) {
       return this.installToTarget(projectDir, bmadDir, this.installerConfig, options);
     }
@@ -118,9 +253,155 @@ class ConfigDrivenIdeSetup {
     results.skills = await this.installVerbatimSkills(projectDir, bmadDir, targetPath, config);
     results.skillDirectories = this.skillWriteTracker.size;
 
+    if (config.commands_target_dir) {
+      results.commands = await this.installCommandPointers(projectDir, bmadDir, config, options);
+    }
+
     await this.printSummary(results, target_dir, options);
     this.skillWriteTracker = null;
     return { success: true, results };
+  }
+
+  /**
+   * Generate per-skill command pointer files for IDEs that surface commands
+   * separately from skills (e.g. OpenCode's `.opencode/commands/<name>.md`).
+   *
+   * Each pointer is a tiny markdown file whose body is `@skills/<canonicalId>`
+   * so invoking `/<canonicalId>` routes the user straight to the skill instead
+   * of forcing them through a `/skills` menu.
+   *
+   * Skips:
+   *  - Names that collide with reserved built-in slash commands.
+   *  - canonicalIds that aren't safe basename-only identifiers (defense
+   *    against path traversal even though the manifest is currently trusted).
+   *  - Existing files whose body looks user-modified (preserves hand edits);
+   *    pointer files matching the generator pattern get overwritten so that
+   *    description changes in skill-manifest.csv propagate on re-install.
+   *
+   * Per-file write failures are recorded and reported but do not abort the
+   * rest of the install — pointer files are a non-essential adjunct to the
+   * skill copy that already succeeded.
+   *
+   * @param {string} projectDir
+   * @param {string} bmadDir
+   * @param {Object} config - Installer config; reads commands_target_dir.
+   * @param {Object} options - Setup options. forceCommands overwrites existing
+   *   files unconditionally (including hand-modified ones).
+   * @returns {Promise<Object>} { created, updated, skippedExisting, skippedCollision, skippedInvalidId, writeFailures, fallbackDescription }
+   */
+  async installCommandPointers(projectDir, bmadDir, config, options = {}) {
+    const result = {
+      created: 0,
+      updated: 0,
+      skippedExisting: 0,
+      skippedCollision: 0,
+      skippedInvalidId: 0,
+      skippedFiltered: 0,
+      writeFailures: 0,
+      fallbackDescription: 0,
+    };
+
+    const csvPath = path.join(bmadDir, '_config', 'skill-manifest.csv');
+    if (!(await fs.pathExists(csvPath))) return result;
+
+    const commandsPath = path.join(projectDir, config.commands_target_dir);
+    await fs.ensureDir(commandsPath);
+
+    // Per-platform pointer-file shape, all overrideable in platform-codes.yaml.
+    const extension = config.commands_extension || '.md';
+    const template = config.commands_body_template || DEFAULT_COMMANDS_BODY_TEMPLATE;
+    const targetDir = config.target_dir;
+    const filter = config.commands_filter || null;
+
+    const csvContent = await fs.readFile(csvPath, 'utf8');
+    const records = csv.parse(csvContent, { columns: true, skip_empty_lines: true });
+
+    for (const record of records) {
+      const canonicalId = record.canonicalId;
+      if (!canonicalId) continue;
+
+      // Defensive basename validation. canonicalId comes from a trusted
+      // manifest today, but the value flows directly into a file path —
+      // reject anything that could escape commands_target_dir.
+      if (!isSafeCanonicalId(canonicalId)) {
+        result.skippedInvalidId++;
+        continue;
+      }
+
+      // Optional per-platform filter: surfaces that should only show
+      // persona agents (e.g. Copilot's Custom Agents picker) skip
+      // workflow/tool skills here so the picker isn't cluttered with
+      // 90+ unrelated entries.
+      if (filter === 'agents-only' && !(await isAgentSkill(record, bmadDir))) {
+        result.skippedFiltered++;
+        continue;
+      }
+
+      // Reserved-name guard is OpenCode-specific. Other adapters that opt
+      // into commands_target_dir later should declare their own reserved
+      // set rather than inheriting OpenCode's.
+      if (this.name === 'opencode' && RESERVED_OPENCODE_COMMANDS.has(canonicalId)) {
+        result.skippedCollision++;
+        continue;
+      }
+
+      let description = (record.description || '').trim();
+      if (!description) {
+        description = `Run the ${canonicalId} skill`;
+        result.fallbackDescription++;
+      }
+
+      const body = buildCommandPointerBody(description, canonicalId, { template, targetDir });
+      const commandFile = path.join(commandsPath, `${canonicalId}${extension}`);
+
+      // If a pointer file already exists, decide whether to overwrite based
+      // on whether it looks like generator output (description-only diff) or
+      // a user-modified file. forceCommands overrides this protection.
+      if (!options.forceCommands && (await fs.pathExists(commandFile))) {
+        let existing;
+        try {
+          existing = await fs.readFile(commandFile, 'utf8');
+        } catch {
+          // Treat unreadable as user-owned and skip — safer than overwriting.
+          result.skippedExisting++;
+          continue;
+        }
+
+        if (existing === body) {
+          // No-op idempotent re-run.
+          result.skippedExisting++;
+          continue;
+        }
+        if (looksLikeGeneratorOutput(existing, canonicalId, { template, targetDir })) {
+          // Description (or other generated bit) has changed; refresh in place.
+          try {
+            await fs.writeFile(commandFile, body, 'utf8');
+            result.updated++;
+          } catch (error) {
+            result.writeFailures++;
+            if (!options.silent) {
+              await prompts.log.warn(`Failed to update command pointer ${canonicalId}${extension}: ${error.message}`);
+            }
+          }
+          continue;
+        }
+        // Hand-modified pointer — preserve it.
+        result.skippedExisting++;
+        continue;
+      }
+
+      try {
+        await fs.writeFile(commandFile, body, 'utf8');
+        result.created++;
+      } catch (error) {
+        result.writeFailures++;
+        if (!options.silent) {
+          await prompts.log.warn(`Failed to write command pointer ${canonicalId}${extension}: ${error.message}`);
+        }
+      }
+    }
+
+    return result;
   }
 
   /**
@@ -197,6 +478,18 @@ class ConfigDrivenIdeSetup {
     if (count > 0) {
       await prompts.log.success(`${this.name} configured: ${count} skills → ${targetDir}`);
     }
+    const cmd = results.commands;
+    if (cmd && (cmd.created > 0 || cmd.updated > 0) && this.installerConfig?.commands_target_dir) {
+      const total = cmd.created + cmd.updated;
+      const detail = cmd.updated > 0 ? `${cmd.created} new, ${cmd.updated} refreshed` : `${total}`;
+      await prompts.log.success(`${this.name} commands: ${detail} → ${this.installerConfig.commands_target_dir}`);
+      if (cmd.skippedCollision > 0) {
+        await prompts.log.message(`  (${cmd.skippedCollision} skipped — name collides with reserved slash command)`);
+      }
+      if (cmd.writeFailures > 0) {
+        await prompts.log.warn(`  (${cmd.writeFailures} pointer writes failed — see warnings above)`);
+      }
+    }
   }
 
   /**
@@ -222,27 +515,6 @@ class ConfigDrivenIdeSetup {
       removalSet = new Set();
     }
 
-    // Migrate legacy target directories (e.g. .opencode/agent → .opencode/agents)
-    // Legacy dirs are abandoned entirely, so use prefix matching (null removalSet)
-    if (this.installerConfig?.legacy_targets) {
-      const legacyDirsExist = await Promise.all(
-        this.installerConfig.legacy_targets.map((d) =>
-          this.isGlobalPath(d) ? fs.pathExists(d.replace(/^~/, os.homedir())) : fs.pathExists(path.join(projectDir, d)),
-        ),
-      );
-      if (legacyDirsExist.some(Boolean)) {
-        if (!options.silent) await prompts.log.message('  Migrating legacy directories...');
-        for (const legacyDir of this.installerConfig.legacy_targets) {
-          if (this.isGlobalPath(legacyDir)) {
-            await this.warnGlobalLegacy(legacyDir, options);
-          } else {
-            await this.cleanupTarget(projectDir, legacyDir, options, null);
-            await this.removeEmptyParents(projectDir, legacyDir);
-          }
-        }
-      }
-    }
-
     // Strip BMAD markers from copilot-instructions.md if present
     if (this.name === 'github-copilot') {
       await this.cleanupCopilotInstructions(projectDir, options);
@@ -258,44 +530,44 @@ class ConfigDrivenIdeSetup {
       await this.cleanupRovoDevPrompts(projectDir, options);
     }
 
+    // Clean generated command pointer files in commands_target_dir.
+    // Mirrors target_dir cleanup so uninstalls and skill removals don't
+    // leave dangling /<canonicalId> commands pointing at missing skills.
+    // Runs regardless of skipTarget — command pointers live in a per-IDE
+    // directory and are not deduped across peers, so a peer-owned shared
+    // skills directory does not protect this IDE's command pointers from
+    // cleanup. The "currently active" set is passed so install-flow cleanup
+    // (where removalSet contains skills that will be re-added moments later)
+    // doesn't trample hand-edited pointers; install-flow cleanup will only
+    // delete pointers for skills that are not in the new manifest.
+    if (this.installerConfig?.commands_target_dir) {
+      // In the install/update flow (signal: previousSkillIds was passed),
+      // spare pointers whose canonicalId is still in the manifest so hand
+      // edits survive a routine reinstall. In the uninstall flow (no
+      // previousSkillIds — full uninstall or per-IDE removal via
+      // cleanupByList), don't spare anything; the IDE itself is going away,
+      // so its pointers should go with it.
+      const isInstallFlow = options.previousSkillIds && options.previousSkillIds.size > 0;
+      const activeSkillIds = isInstallFlow ? await this._readActiveSkillIds(resolvedBmadDir) : new Set();
+      const extension = this.installerConfig.commands_extension || '.md';
+      await this.cleanupCommandPointers(
+        projectDir,
+        this.installerConfig.commands_target_dir,
+        options,
+        removalSet,
+        activeSkillIds,
+        extension,
+      );
+    }
+
+    // Skip target_dir cleanup when a peer platform owns this directory
+    // (set during dedup'd install or when uninstalling one of several
+    // platforms that share the same target_dir).
+    if (options.skipTarget) return;
+
     // Clean current target directory
     if (this.installerConfig?.target_dir) {
       await this.cleanupTarget(projectDir, this.installerConfig.target_dir, options, removalSet);
-    }
-  }
-
-  /**
-   * Check if a path is global (starts with ~ or is absolute)
-   * @param {string} p - Path to check
-   * @returns {boolean}
-   */
-  isGlobalPath(p) {
-    return p.startsWith('~') || path.isAbsolute(p);
-  }
-
-  /**
-   * Warn about stale BMAD files in a global legacy directory (never auto-deletes)
-   * @param {string} legacyDir - Legacy directory path (may start with ~)
-   * @param {Object} options - Options (silent, etc.)
-   */
-  async warnGlobalLegacy(legacyDir, options = {}) {
-    try {
-      const expanded = legacyDir.startsWith('~/')
-        ? path.join(os.homedir(), legacyDir.slice(2))
-        : legacyDir === '~'
-          ? os.homedir()
-          : legacyDir;
-
-      if (!(await fs.pathExists(expanded))) return;
-
-      const entries = await fs.readdir(expanded);
-      const bmadFiles = entries.filter((e) => typeof e === 'string' && e.startsWith('bmad'));
-
-      if (bmadFiles.length > 0 && !options.silent) {
-        await prompts.log.warn(`Found ${bmadFiles.length} stale BMAD file(s) in ${expanded}. Remove manually: rm ${expanded}/bmad-*`);
-      }
-    } catch {
-      // Errors reading global paths are silently ignored
     }
   }
 
@@ -388,6 +660,97 @@ class ConfigDrivenIdeSetup {
   }
 
   /**
+   * Cleanup generated command pointer files for entries in removalSet.
+   * Symmetric counterpart to installCommandPointers — removes
+   * `<canonicalId><extension>` files whose canonicalId is in the set. Removes
+   * the commands directory entirely if it ends up empty.
+   * @param {string} projectDir
+   * @param {string} commandsTargetDir - Relative dir (e.g. .opencode/commands)
+   * @param {Object} options
+   * @param {Set<string>} removalSet - canonicalIds whose pointer files to remove
+   * @param {Set<string>} [activeSkillIds] - canonicalIds present in the
+   *   current manifest. Pointers for IDs in this set are spared so an
+   *   install-flow cleanup (where removalSet === previousSkillIds and the
+   *   same skills are about to be re-installed) doesn't wipe hand-edited
+   *   pointer files. Pass an empty set or omit to delete every match in
+   *   removalSet (uninstall flow).
+   * @param {string} [extension] - Pointer file extension (default '.md');
+   *   matches the platform's commands_extension config value so cleanup
+   *   correctly identifies pointer files for IDEs whose convention isn't .md
+   *   (e.g. Copilot's `.agent.md`).
+   */
+  async cleanupCommandPointers(
+    projectDir,
+    commandsTargetDir,
+    options = {},
+    removalSet = new Set(),
+    activeSkillIds = new Set(),
+    extension = '.md',
+  ) {
+    if (!removalSet || removalSet.size === 0) return;
+
+    const commandsPath = path.join(projectDir, commandsTargetDir);
+    if (!(await fs.pathExists(commandsPath))) return;
+
+    let entries;
+    try {
+      entries = await fs.readdir(commandsPath);
+    } catch {
+      return;
+    }
+
+    for (const entry of entries) {
+      if (!entry.endsWith(extension)) continue;
+      const canonicalId = entry.slice(0, -extension.length);
+      if (!removalSet.has(canonicalId)) continue;
+      // Spare pointers for skills that are still in the manifest; the
+      // install pass will refresh them in place if their content has gone
+      // stale, while preserving hand edits.
+      if (activeSkillIds.has(canonicalId)) continue;
+      try {
+        await fs.remove(path.join(commandsPath, entry));
+      } catch {
+        // Skip files we can't remove.
+      }
+    }
+
+    // Remove the commands directory if we emptied it.
+    try {
+      const remaining = await fs.readdir(commandsPath);
+      if (remaining.length === 0) {
+        await fs.remove(commandsPath);
+      }
+    } catch {
+      // Directory may already be gone.
+    }
+  }
+
+  /**
+   * Read the canonicalIds currently present in the skill-manifest.csv.
+   * Used by cleanup to distinguish "re-install of an existing skill"
+   * (preserve pointer) from "skill truly being removed" (delete pointer).
+   * @param {string|null} bmadDir
+   * @returns {Promise<Set<string>>}
+   */
+  async _readActiveSkillIds(bmadDir) {
+    const ids = new Set();
+    if (!bmadDir) return ids;
+    const csvPath = path.join(bmadDir, '_config', 'skill-manifest.csv');
+    if (!(await fs.pathExists(csvPath))) return ids;
+    try {
+      const content = await fs.readFile(csvPath, 'utf8');
+      const records = csv.parse(content, { columns: true, skip_empty_lines: true });
+      for (const record of records) {
+        if (record.canonicalId) ids.add(record.canonicalId);
+      }
+    } catch {
+      // Manifest unreadable — return an empty set so cleanup falls back to
+      // the conservative "delete what removalSet says" behavior.
+    }
+    return ids;
+  }
+
+  /**
    * Cleanup a specific target directory.
    * When removalSet is provided, only removes entries in that set.
    * When removalSet is null (legacy dirs), removes all bmad-prefixed entries.
@@ -426,8 +789,8 @@ class ConfigDrivenIdeSetup {
       // Always preserve bmad-os-* utility skills regardless of cleanup mode
       if (entry.startsWith('bmad-os-')) continue;
 
-      // Surgical removal from set, or legacy prefix matching when set is null
-      const shouldRemove = removalSet ? removalSet.has(entry) : entry.startsWith('bmad');
+      // Surgical removal from set, or fallback to manifest+prefix detection when null
+      const shouldRemove = removalSet ? removalSet.has(entry) : isBmadOwnedEntry(entry, null);
 
       if (shouldRemove) {
         try {
@@ -590,10 +953,9 @@ class ConfigDrivenIdeSetup {
       try {
         if (await fs.pathExists(candidatePath)) {
           const entries = await fs.readdir(candidatePath);
-          const hasBmad = entries.some(
-            (e) => typeof e === 'string' && e.toLowerCase().startsWith('bmad') && !e.toLowerCase().startsWith('bmad-os-'),
-          );
-          if (hasBmad) {
+          const ancestorBmadDir = await this._findBmadDir(current);
+          const canonicalIds = await getInstalledCanonicalIds(ancestorBmadDir);
+          if (entries.some((e) => isBmadOwnedEntry(e, canonicalIds))) {
             return candidatePath;
           }
         }
@@ -604,43 +966,6 @@ class ConfigDrivenIdeSetup {
     }
 
     return null;
-  }
-
-  /**
-   * Walk up ancestor directories from relativeDir toward projectDir, removing each if empty
-   * Stops at projectDir boundary — never removes projectDir itself
-   * @param {string} projectDir - Project root (boundary)
-   * @param {string} relativeDir - Relative directory to start from
-   */
-  async removeEmptyParents(projectDir, relativeDir) {
-    const resolvedProject = path.resolve(projectDir);
-    let current = relativeDir;
-    let last = null;
-    while (current && current !== '.' && current !== last) {
-      last = current;
-      const fullPath = path.resolve(projectDir, current);
-      // Boundary guard: never traverse outside projectDir
-      if (!fullPath.startsWith(resolvedProject + path.sep) && fullPath !== resolvedProject) break;
-      try {
-        if (!(await fs.pathExists(fullPath))) {
-          // Dir already gone — advance current; last is reset at top of next iteration
-          current = path.dirname(current);
-          continue;
-        }
-        const remaining = await fs.readdir(fullPath);
-        if (remaining.length > 0) break;
-        await fs.rmdir(fullPath);
-      } catch (error) {
-        // ENOTEMPTY: TOCTOU race (file added between readdir and rmdir) — skip level, continue upward
-        // ENOENT: dir removed by another process between pathExists and rmdir — skip level, continue upward
-        if (error.code === 'ENOTEMPTY' || error.code === 'ENOENT') {
-          current = path.dirname(current);
-          continue;
-        }
-        break; // fatal error (e.g. EACCES) — stop upward walk
-      }
-      current = path.dirname(current);
-    }
   }
 }
 

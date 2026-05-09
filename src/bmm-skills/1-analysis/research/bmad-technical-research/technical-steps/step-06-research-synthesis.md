@@ -484,4 +484,10 @@ Complete authoritative technical research document on {{research_topic}} that:
 - Serves as technical reference document for continued use
 - Maintains highest technical research quality standards with current verification
 
+## On Complete
+
+Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete`
+
+If the resolved `workflow.on_complete` is non-empty, follow it as the final terminal instruction before exiting.
+
 Congratulations on completing comprehensive technical research with professional documentation! 🎉

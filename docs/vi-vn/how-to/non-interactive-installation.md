@@ -28,6 +28,7 @@ Yêu cầu [Node.js](https://nodejs.org) v20+ và `npx` (đi kèm với npm).
 | `--modules <modules>` | Danh sách ID module, cách nhau bởi dấu phẩy | `--modules bmm,bmb` |
 | `--tools <tools>` | Danh sách ID công cụ/IDE, cách nhau bởi dấu phẩy (dùng `none` để bỏ qua) | `--tools claude-code,cursor` hoặc `--tools none` |
 | `--action <type>` | Hành động cho bản cài đặt hiện có: `install` (mặc định), `update`, hoặc `quick-update` | `--action quick-update` |
+| `--custom-source <sources>` | Danh sách Git URL hoặc đường dẫn cục bộ cho module tùy chỉnh, cách nhau bởi dấu phẩy | `--custom-source /path/to/module` |
 
 ### Cấu hình cốt lõi
 
@@ -81,6 +82,7 @@ Chạy `npx bmad-method install` một lần ở chế độ tương tác để 
 | Hoàn toàn không tương tác | Cung cấp đầy đủ cờ để bỏ qua tất cả prompt | `npx bmad-method install --directory . --modules bmm --tools claude-code --yes` |
 | Bán tương tác | Cung cấp một số cờ, BMad hỏi thêm phần còn lại | `npx bmad-method install --directory . --modules bmm` |
 | Chỉ dùng mặc định | Chấp nhận tất cả giá trị mặc định với `-y` | `npx bmad-method install --yes` |
+| Chỉ dùng custom source | Chỉ cài core và module tùy chỉnh | `npx bmad-method install --directory . --custom-source /path/to/module --tools claude-code --yes` |
 | Không cấu hình công cụ | Bỏ qua cấu hình công cụ/IDE | `npx bmad-method install --modules bmm --tools none` |
 
 ## Ví dụ
@@ -118,6 +120,33 @@ npx bmad-method install \
   --directory ~/projects/myapp \
   --action quick-update
 ```
+
+### Cài từ custom source
+
+Cài một module từ đường dẫn cục bộ hoặc từ bất kỳ Git host nào:
+
+```bash
+npx bmad-method install \
+  --directory . \
+  --custom-source /path/to/my-module \
+  --tools claude-code \
+  --yes
+```
+
+Kết hợp cùng module chính thức:
+
+```bash
+npx bmad-method install \
+  --directory . \
+  --modules bmm \
+  --custom-source https://gitlab.com/myorg/my-module \
+  --tools claude-code \
+  --yes
+```
+
+:::note[Hành vi của `custom-source`]
+Khi dùng `--custom-source` mà không kèm `--modules`, hệ thống chỉ cài core và các module tùy chỉnh. Nếu muốn cài cả module chính thức, hãy thêm `--modules`. Xem thêm [Cài đặt module tùy chỉnh và module cộng đồng](./install-custom-modules.md) để biết chi tiết.
+:::
 
 ## Bạn nhận được gì
 

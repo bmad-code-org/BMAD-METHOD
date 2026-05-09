@@ -50,6 +50,9 @@ z*/
 
 _bmad
 _bmad-output
+
+# Personal customization files (team files are committed, personal files are not)
+_bmad/custom/*.user.toml
 .clinerules
 # .augment/ is gitignored except tracked config files — add exceptions explicitly
 .augment/*

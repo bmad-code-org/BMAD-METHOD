@@ -139,7 +139,7 @@ parts: 1
 
 ## Solution Architecture
 - Plugins: skill bundles with Anthropic plugin standard as base format + bmad-manifest.json extending for BMAD-specific metadata (installer options, capabilities, help integration, phase ordering, dependencies)
-- Existing manifest example: `{"module-code":"bmm","replaces-skill":"bmad-create-product-brief","capabilities":[{"name":"create-brief","menu-code":"CB","supports-headless":true,"phase-name":"1-analysis","after":["brainstorming"],"before":["create-prd"],"is-required":true}]}`
+- Existing manifest example: `{"module-code":"bmm","replaces-skill":"bmad-create-product-brief","capabilities":[{"name":"create-brief","menu-code":"CB","supports-headless":true,"phase-name":"1-analysis","preceded-by":["brainstorming"],"followed-by":["create-prd"],"is-required":true}]}`
 - Vercel skills CLI handles platform translation; integration pattern (wrap/fork/call) is PRD decision
 - bmad-setup: global skill scanning installed bmad-manifest.json files, registering capabilities, configuring project settings; always included as base skill in every bundle (solves bootstrapping)
 - bmad-update: plugin update path without full reinstall; technical approach (diff/replace/preserve customizations) is PRD decision
@@ -174,7 +174,7 @@ parts: 1
 ## Current Installer (migration context)
 - Entry: `tools/installer/bmad-cli.js` (Commander.js) → `tools/installer/core/installer.js`
 - Platforms: `platform-codes.yaml` (~20 platforms with target dirs, legacy dirs, template types, special flags)
-- Manifests: CSV files (skill/workflow/agent-manifest.csv) are current source of truth, not JSON
+- Manifests: skill-manifest.csv is the current source of truth; agent essence lives in `_bmad/config.toml` (generated from each module.yaml's `agents:` block)
 - External modules: `external-official-modules.yaml` (CIS, GDS, TEA, WDS) from npm with semver
 - Dependencies: 4-pass resolver (collect → parse → resolve → transitive); YAML-declared only
 - Config: prompts for name, communication language, document output language, output folder

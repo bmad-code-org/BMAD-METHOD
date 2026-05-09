@@ -4,6 +4,8 @@ const path = require('node:path');
 const { execSync } = require('node:child_process');
 const prompts = require('../prompts');
 const { RegistryClient } = require('./registry-client');
+const { decideChannelForModule } = require('./channel-plan');
+const { parseGitHubRepo, tagExists } = require('./channel-resolver');
 
 const MARKETPLACE_OWNER = 'bmad-code-org';
 const MARKETPLACE_REPO = 'bmad-plugins-marketplace';
@@ -15,11 +17,37 @@ const MARKETPLACE_REF = 'main';
  * Returns empty results when the registry is unreachable.
  * Community modules are pinned to approved SHA when set; uses HEAD otherwise.
  */
+function quoteShellRef(ref) {
+  if (typeof ref !== 'string' || !/^[\w.\-+/]+$/.test(ref)) {
+    throw new Error(`Unsafe ref name: ${JSON.stringify(ref)}`);
+  }
+  return `"${ref}"`;
+}
+
 class CommunityModuleManager {
+  // moduleCode → { channel, version, sha, registryApprovedTag, registryApprovedSha, repoUrl, bypassedCurator }
+  // Shared across all instances; the manifest writer often uses a fresh instance.
+  static _resolutions = new Map();
+
+  // moduleCode → ResolvedModule (from PluginResolver) when the cloned repo ships
+  // a `.claude-plugin/marketplace.json`. Lets community installs reuse the same
+  // skill-level install pipeline as custom-source installs (installFromResolution).
+  static _pluginResolutions = new Map();
+
   constructor() {
     this._client = new RegistryClient();
     this._cachedIndex = null;
     this._cachedCategories = null;
+  }
+
+  /** Get the most recent channel resolution for a community module. */
+  getResolution(moduleCode) {
+    return CommunityModuleManager._resolutions.get(moduleCode) || null;
+  }
+
+  /** Get the marketplace.json-derived plugin resolution for a community module, if any. */
+  getPluginResolution(moduleCode) {
+    return CommunityModuleManager._pluginResolutions.get(moduleCode) || null;
   }
 
   // ─── Data Loading ──────────────────────────────────────────────────────────
@@ -196,12 +224,49 @@ class CommunityModuleManager {
       return await prompts.spinner();
     };
 
-    const sha = moduleInfo.approvedSha;
+    // ─── Resolve channel plan ──────────────────────────────────────────────
+    // Default community behavior (stable channel) honors the curator's
+    // approved SHA. --next=CODE and --pin CODE=TAG override the curator; we
+    // warn the user before bypassing the approved version.
+    const planEntry = decideChannelForModule({
+      code: moduleCode,
+      channelOptions: options.channelOptions,
+      registryDefault: 'stable',
+    });
+
+    const approvedSha = moduleInfo.approvedSha;
+    const approvedTag = moduleInfo.approvedTag;
+
+    let bypassedCurator = false;
+    if (planEntry.channel !== 'stable') {
+      bypassedCurator = true;
+      if (!silent) {
+        const approvedLabel = approvedTag || approvedSha || 'curator-approved version';
+        await prompts.log.warn(
+          `WARNING: Installing '${moduleCode}' from ${
+            planEntry.channel === 'pinned' ? `tag ${planEntry.pin}` : 'main HEAD'
+          } bypasses the curator-approved ${approvedLabel}. Proceed only if you trust this source.`,
+        );
+        if (!options.channelOptions?.acceptBypass) {
+          const proceed = await prompts.confirm({
+            message: `Continue installing '${moduleCode}' with curator bypass?`,
+            default: false,
+          });
+          if (!proceed) {
+            throw new Error(`Install of community module '${moduleCode}' cancelled by user.`);
+          }
+        }
+      }
+    }
+
     let needsDependencyInstall = false;
     let wasNewClone = false;
 
     if (await fs.pathExists(moduleCacheDir)) {
-      // Already cloned - update to latest HEAD
+      // Already cloned — refresh to the correct ref for the resolved channel.
+      // A pinned install must not reset to origin/HEAD (it would silently drift
+      // to main on every re-install). Stable + approvedSha is handled below
+      // by the curator-SHA checkout logic.
       const fetchSpinner = await createSpinner();
       fetchSpinner.start(`Checking ${moduleInfo.displayName}...`);
       try {
@@ -211,10 +276,24 @@ class CommunityModuleManager {
           stdio: ['ignore', 'pipe', 'pipe'],
           env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
         });
-        execSync('git reset --hard origin/HEAD', {
-          cwd: moduleCacheDir,
-          stdio: ['ignore', 'pipe', 'pipe'],
-        });
+        if (planEntry.channel === 'pinned') {
+          // Fetch the pin tag specifically and check it out.
+          execSync(`git fetch --depth 1 origin ${quoteShellRef(planEntry.pin)} --no-tags`, {
+            cwd: moduleCacheDir,
+            stdio: ['ignore', 'pipe', 'pipe'],
+            env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+          });
+          execSync('git checkout --quiet FETCH_HEAD', {
+            cwd: moduleCacheDir,
+            stdio: ['ignore', 'pipe', 'pipe'],
+          });
+        } else {
+          // stable (approvedSha path re-checks out below) and next: track main.
+          execSync('git reset --hard origin/HEAD', {
+            cwd: moduleCacheDir,
+            stdio: ['ignore', 'pipe', 'pipe'],
+          });
+        }
         const newRef = execSync('git rev-parse HEAD', { cwd: moduleCacheDir, stdio: 'pipe' }).toString().trim();
         if (currentRef !== newRef) needsDependencyInstall = true;
         fetchSpinner.stop(`Verified ${moduleInfo.displayName}`);
@@ -231,10 +310,17 @@ class CommunityModuleManager {
       const fetchSpinner = await createSpinner();
       fetchSpinner.start(`Fetching ${moduleInfo.displayName}...`);
       try {
-        execSync(`git clone --depth 1 "${moduleInfo.url}" "${moduleCacheDir}"`, {
-          stdio: ['ignore', 'pipe', 'pipe'],
-          env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
-        });
+        if (planEntry.channel === 'pinned') {
+          execSync(`git clone --depth 1 --branch ${quoteShellRef(planEntry.pin)} "${moduleInfo.url}" "${moduleCacheDir}"`, {
+            stdio: ['ignore', 'pipe', 'pipe'],
+            env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+          });
+        } else {
+          execSync(`git clone --depth 1 "${moduleInfo.url}" "${moduleCacheDir}"`, {
+            stdio: ['ignore', 'pipe', 'pipe'],
+            env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+          });
+        }
         fetchSpinner.stop(`Fetched ${moduleInfo.displayName}`);
         needsDependencyInstall = true;
       } catch (error) {
@@ -243,18 +329,19 @@ class CommunityModuleManager {
       }
     }
 
-    // If pinned to a specific SHA, check out that exact commit.
-    // Refuse to install if the approved SHA cannot be reached - security requirement.
-    if (sha) {
+    // ─── Check out the resolved ref per channel ──────────────────────────
+    if (planEntry.channel === 'stable' && approvedSha) {
+      // Default path: pin to the curator-approved SHA. Refuse install if the SHA
+      // is unreachable (tag may have been deleted or rewritten) — security requirement.
       const headSha = execSync('git rev-parse HEAD', { cwd: moduleCacheDir, stdio: 'pipe' }).toString().trim();
-      if (headSha !== sha) {
+      if (headSha !== approvedSha) {
         try {
-          execSync(`git fetch --depth 1 origin ${sha}`, {
+          execSync(`git fetch --depth 1 origin ${quoteShellRef(approvedSha)}`, {
             cwd: moduleCacheDir,
             stdio: ['ignore', 'pipe', 'pipe'],
             env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
           });
-          execSync(`git checkout ${sha}`, {
+          execSync(`git checkout ${quoteShellRef(approvedSha)}`, {
             cwd: moduleCacheDir,
             stdio: ['ignore', 'pipe', 'pipe'],
           });
@@ -262,12 +349,49 @@ class CommunityModuleManager {
         } catch {
           await fs.remove(moduleCacheDir);
           throw new Error(
-            `Community module '${moduleCode}' could not be pinned to its approved commit (${sha}). ` +
-              `Installation refused for security. The module registry entry may need updating.`,
+            `Community module '${moduleCode}' could not be pinned to its approved commit (${approvedSha}). ` +
+              `Installation refused for security. The module registry entry may need updating, ` +
+              `or use --next=${moduleCode} / --pin ${moduleCode}=<tag> to explicitly bypass.`,
           );
         }
       }
+    } else if (planEntry.channel === 'stable' && !approvedSha) {
+      // Registry data gap: tag or SHA missing. Warn but proceed at HEAD (pre-existing behavior).
+      if (!silent) {
+        await prompts.log.warn(`Community module '${moduleCode}' has no curator-approved SHA in the registry; installing from main HEAD.`);
+      }
+    } else if (planEntry.channel === 'pinned') {
+      // We cloned the tag directly above (via --branch), but ensure HEAD matches.
+      // No additional checkout needed.
     }
+    // else: 'next' channel — already at origin/HEAD from the fetch/reset above.
+
+    // Record the resolution so the manifest writer can pick up channel/version/sha.
+    const installedSha = execSync('git rev-parse HEAD', { cwd: moduleCacheDir, stdio: 'pipe' }).toString().trim();
+    const recordedVersion =
+      planEntry.channel === 'pinned' ? planEntry.pin : planEntry.channel === 'next' ? 'main' : approvedTag || installedSha.slice(0, 7);
+    CommunityModuleManager._resolutions.set(moduleCode, {
+      channel: planEntry.channel,
+      version: recordedVersion,
+      sha: installedSha,
+      registryApprovedTag: approvedTag || null,
+      registryApprovedSha: approvedSha || null,
+      repoUrl: moduleInfo.url,
+      bypassedCurator,
+      planSource: planEntry.source,
+    });
+
+    // If the repo ships a marketplace.json, route through PluginResolver so the
+    // skill-level install pipeline (installFromResolution) handles the copy.
+    // Repos without marketplace.json fall through to the legacy findModuleSource
+    // path unchanged.
+    await this._tryResolveMarketplacePlugin(moduleCacheDir, moduleInfo, {
+      channel: planEntry.channel,
+      version: recordedVersion,
+      sha: installedSha,
+      approvedTag,
+      approvedSha,
+    });
 
     // Install dependencies if needed
     const packageJsonPath = path.join(moduleCacheDir, 'package.json');
@@ -288,6 +412,204 @@ class CommunityModuleManager {
     }
 
     return moduleCacheDir;
+  }
+
+  // ─── Marketplace.json Resolution ──────────────────────────────────────────
+
+  /**
+   * Detect `.claude-plugin/marketplace.json` in a cloned community repo and
+   * route through PluginResolver. When successful, caches the resolution so
+   * OfficialModulesManager.install() can route the copy through
+   * installFromResolution() — the same path used by custom-source installs.
+   *
+   * Silent no-op when marketplace.json is absent or the resolver returns no
+   * matches; the legacy findModuleSource path then handles the install.
+   *
+   * @param {string} repoPath - Absolute path to the cloned repo
+   * @param {Object} moduleInfo - Normalized community module info
+   * @param {Object} resolution - Resolution metadata from cloneModule
+   * @param {string} resolution.channel - Channel ('stable' | 'next' | 'pinned')
+   * @param {string} resolution.version - Recorded version string
+   * @param {string} resolution.sha - Resolved git SHA
+   * @param {string|null} resolution.approvedTag - Registry approved tag
+   * @param {string|null} resolution.approvedSha - Registry approved SHA
+   */
+  async _tryResolveMarketplacePlugin(repoPath, moduleInfo, resolution) {
+    const marketplacePath = path.join(repoPath, '.claude-plugin', 'marketplace.json');
+    if (!(await fs.pathExists(marketplacePath))) return;
+
+    let marketplaceData;
+    try {
+      marketplaceData = JSON.parse(await fs.readFile(marketplacePath, 'utf8'));
+    } catch {
+      // Malformed marketplace.json — fall through to legacy path.
+      return;
+    }
+
+    const plugins = Array.isArray(marketplaceData?.plugins) ? marketplaceData.plugins : [];
+    if (plugins.length === 0) return;
+
+    const selection = this._selectPluginForModule(plugins, moduleInfo);
+    if (!selection) {
+      await this._safeWarn(
+        `Community module '${moduleInfo.code}' ships marketplace.json but no plugin entry matches the registry code. ` +
+          `Falling back to legacy install path.`,
+      );
+      return;
+    }
+
+    if (selection.source === 'single-fallback') {
+      // Single-entry marketplace.json whose plugin name doesn't match the registry
+      // code or the module_definition hint. Most likely correct, but worth surfacing
+      // in case marketplace.json is misconfigured and we'd install the wrong plugin.
+      await this._safeWarn(
+        `Community module '${moduleInfo.code}' picked the only plugin in marketplace.json ('${selection.plugin?.name}') ` +
+          `because no name or module_definition match was found. Verify marketplace.json if the install looks wrong.`,
+      );
+    }
+
+    const { PluginResolver } = require('./plugin-resolver');
+    const resolver = new PluginResolver();
+    let resolved;
+    try {
+      resolved = await resolver.resolve(repoPath, selection.plugin);
+    } catch (error) {
+      // PluginResolver threw (malformed plugin entry, missing files, etc.).
+      // Honor the silent-fallthrough contract — warn and let the legacy
+      // findModuleSource path handle the install.
+      await this._safeWarn(
+        `PluginResolver failed for community module '${moduleInfo.code}': ${error.message}. ` + `Falling back to legacy install path.`,
+      );
+      return;
+    }
+    if (!resolved || resolved.length === 0) return;
+
+    // The registry registers a single code per module. If the resolver returns
+    // multiple modules (Strategy 4: multiple standalone skills), accept only
+    // the entry whose code matches the registry. Other entries are ignored —
+    // they belong to plugins not registered in the community catalog.
+    const matched = resolved.find((mod) => mod.code === moduleInfo.code) || (resolved.length === 1 ? resolved[0] : null);
+    if (!matched) return;
+
+    // Shallow-clone before stamping provenance — the resolver may cache or reuse
+    // its return objects, and we don't want install-specific fields leaking back.
+    const stamped = {
+      ...matched,
+      code: moduleInfo.code,
+      repoUrl: moduleInfo.url,
+      cloneRef: resolution.channel === 'pinned' ? resolution.version : resolution.approvedTag || null,
+      cloneSha: resolution.sha,
+      communitySource: true,
+      communityChannel: resolution.channel,
+      communityVersion: resolution.version,
+      registryApprovedTag: resolution.approvedTag,
+      registryApprovedSha: resolution.approvedSha,
+    };
+
+    CommunityModuleManager._pluginResolutions.set(moduleInfo.code, stamped);
+  }
+
+  /**
+   * Lazy fallback: resolve marketplace.json straight from the on-disk cache
+   * when `_pluginResolutions` is empty (e.g. callers that reach `install()`
+   * without `cloneModule` having populated the cache earlier in this process).
+   *
+   * Reuses an existing channel resolution if present; otherwise synthesizes a
+   * minimal stable-channel stub from the registry entry + the cached repo's
+   * current HEAD. Returns the cached plugin resolution if one is produced,
+   * otherwise null (caller falls back to the legacy path).
+   *
+   * @param {string} moduleCode
+   * @returns {Promise<Object|null>}
+   */
+  async resolveFromCache(moduleCode) {
+    const existing = this.getPluginResolution(moduleCode);
+    if (existing) return existing;
+
+    const cacheRepoDir = path.join(this.getCacheDir(), moduleCode);
+    const marketplacePath = path.join(cacheRepoDir, '.claude-plugin', 'marketplace.json');
+    if (!(await fs.pathExists(marketplacePath))) return null;
+
+    let moduleInfo;
+    try {
+      moduleInfo = await this.getModuleByCode(moduleCode);
+    } catch {
+      return null;
+    }
+    if (!moduleInfo) return null;
+
+    let channelResolution = this.getResolution(moduleCode);
+    if (!channelResolution) {
+      let sha = '';
+      try {
+        sha = execSync('git rev-parse HEAD', { cwd: cacheRepoDir, stdio: 'pipe' }).toString().trim();
+      } catch {
+        // Not a git repo or unreadable — give up and let the legacy path run.
+        return null;
+      }
+      channelResolution = {
+        channel: 'stable',
+        version: moduleInfo.approvedTag || sha.slice(0, 7),
+        sha,
+        registryApprovedTag: moduleInfo.approvedTag || null,
+        registryApprovedSha: moduleInfo.approvedSha || null,
+      };
+    }
+
+    await this._tryResolveMarketplacePlugin(cacheRepoDir, moduleInfo, {
+      channel: channelResolution.channel,
+      version: channelResolution.version,
+      sha: channelResolution.sha,
+      approvedTag: channelResolution.registryApprovedTag,
+      approvedSha: channelResolution.registryApprovedSha,
+    });
+
+    return this.getPluginResolution(moduleCode);
+  }
+
+  /**
+   * Best-effort warning emitter. `prompts.log.warn` may be undefined in some
+   * harnesses and may return a rejected promise — swallow both cases so a
+   * fallthrough warning can never crash the install.
+   */
+  async _safeWarn(message) {
+    try {
+      const result = prompts.log?.warn?.(message);
+      if (result && typeof result.then === 'function') await result;
+    } catch {
+      /* ignore */
+    }
+  }
+
+  /**
+   * Pick which plugin entry from marketplace.json represents this community module.
+   * Precedence:
+   *   1. Exact match on `plugin.name === moduleInfo.code`
+   *   2. Trailing directory of `module_definition` matches `plugin.name`
+   *   3. Single plugin in marketplace.json — accepted with a warning so a
+   *      mismatched-but-uniquely-named plugin doesn't install silently.
+   *   Otherwise null (caller falls back to legacy path).
+   *
+   * @returns {{plugin: Object, source: 'name'|'hint'|'single-fallback'}|null}
+   */
+  _selectPluginForModule(plugins, moduleInfo) {
+    const byCode = plugins.find((p) => p && p.name === moduleInfo.code);
+    if (byCode) return { plugin: byCode, source: 'name' };
+
+    if (moduleInfo.moduleDefinition) {
+      // module_definition like "src/skills/suno-setup/assets/module.yaml" →
+      // hint segment "suno-setup". Match that against plugin names.
+      const segments = moduleInfo.moduleDefinition.split('/').filter(Boolean);
+      const setupIdx = segments.findIndex((s) => s.endsWith('-setup'));
+      if (setupIdx !== -1) {
+        const hint = segments[setupIdx];
+        const byHint = plugins.find((p) => p && p.name === hint);
+        if (byHint) return { plugin: byHint, source: 'hint' };
+      }
+    }
+
+    if (plugins.length === 1) return { plugin: plugins[0], source: 'single-fallback' };
+    return null;
   }
 
   // ─── Source Finding ───────────────────────────────────────────────────────

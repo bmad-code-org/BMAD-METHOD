@@ -15,3 +15,40 @@ bmad-quick-spec
 bmad-quick-flow
 bmad-quick-dev-new-preview
 bmad-init
+
+# Pre-v6.2.0 wrapper skills (module-prefixed naming, dropped in v6.2.0).
+# Users upgrading from v6.0.x / v6.1.x had these installed and the cleanup
+# never knew to remove them; they remained alongside the new self-contained
+# skills causing duplicates and broken-file errors. See issue #2309.
+bmad-agent-bmm-analyst
+bmad-agent-bmm-architect
+bmad-agent-bmm-dev
+bmad-agent-bmm-pm
+bmad-agent-bmm-qa
+bmad-agent-bmm-quick-flow-solo-dev
+bmad-agent-bmm-sm
+bmad-agent-bmm-tech-writer
+bmad-agent-bmm-ux-designer
+bmad-bmm-check-implementation-readiness
+bmad-bmm-code-review
+bmad-bmm-correct-course
+bmad-bmm-create-architecture
+bmad-bmm-create-epics-and-stories
+bmad-bmm-create-prd
+bmad-bmm-create-product-brief
+bmad-bmm-create-story
+bmad-bmm-create-ux-design
+bmad-bmm-dev-story
+bmad-bmm-document-project
+bmad-bmm-domain-research
+bmad-bmm-edit-prd
+bmad-bmm-generate-project-context
+bmad-bmm-market-research
+bmad-bmm-qa-generate-e2e-tests
+bmad-bmm-quick-dev
+bmad-bmm-quick-spec
+bmad-bmm-retrospective
+bmad-bmm-sprint-planning
+bmad-bmm-sprint-status
+bmad-bmm-technical-research
+bmad-bmm-validate-prd
