@@ -77,6 +77,7 @@ Discover and load context documents using smart discovery. Documents can be in t
 - {planning_artifacts}/**
 - {output_folder}/**
 - {project_knowledge}/**
+- {implementation_artifacts}/investigations/**
 - docs/**
 
 Also - when searching - documents can be a single markdown file, or a folder with an index and multiple files. For Example, if searching for `*foo*.md` and not found, also search for a folder called *foo*/index.md (which indicates sharded content)
@@ -86,6 +87,8 @@ Try to discover the following:
 - Research Documents (`/*research*.md`)
 - Project Documentation (generally multiple documents might be found for this in the `{project_knowledge}` or `docs` folder.)
 - Project Context (`**/project-context.md`)
+- Investigation Files (`{implementation_artifacts}/investigations/*-investigation.md`) — `bmad-investigate` case files
+  when the PRD is being driven by a forensic investigation rather than greenfield ideation.
 
 <critical>Confirm what you have found with the user, along with asking if the user wants to provide anything else. Only after this confirmation will you proceed to follow the loading rules</critical>
 
@@ -120,12 +123,17 @@ Try to discover the following:
 - Product briefs: {{briefCount}} files {if briefCount > 0}✓ loaded{else}(none found){/if}
 - Research: {{researchCount}} files {if researchCount > 0}✓ loaded{else}(none found){/if}
 - Brainstorming: {{brainstormingCount}} files {if brainstormingCount > 0}✓ loaded{else}(none found){/if}
+- Investigations: {{investigationCount}} files {if investigationCount > 0}✓ loaded{else}(none found){/if}
 - Project docs: {{projectDocsCount}} files {if projectDocsCount > 0}✓ loaded (brownfield project){else}(none found - greenfield project){/if}
 
 **Files loaded:** {list of specific file names or "No additional documents found"}
 
 {if projectDocsCount > 0}
 📋 **Note:** This is a **brownfield project**. Your existing project documentation has been loaded. In the next step, I'll ask specifically about what new features or changes you want to add to your existing system.
+{/if}
+
+{if investigationCount > 0}
+🔎 **Note:** Investigation files have been loaded. The evidence-graded findings (Confirmed / Deduced / Hypothesized), timeline, and fix direction are available as context while we scope requirements.
 {/if}
 
 Do you have any other documents you'd like me to include, or shall we continue to the next step?"

@@ -63,6 +63,7 @@ Read the frontmatter from `{outputFile}` to get document counts:
 - `briefCount` - Product briefs available
 - `researchCount` - Research documents available
 - `brainstormingCount` - Brainstorming docs available
+- `investigationCount` - bmad-investigate case files available
 - `projectDocsCount` - Existing project documentation
 
 **Announce your understanding:**
@@ -71,6 +72,7 @@ Read the frontmatter from `{outputFile}` to get document counts:
 - Product briefs: {{briefCount}}
 - Research: {{researchCount}}
 - Brainstorming: {{brainstormingCount}}
+- Investigations: {{investigationCount}}
 - Project docs: {{projectDocsCount}}
 
 {{if projectDocsCount > 0}}This is a brownfield project - I'll focus on understanding what you want to add or change.{{else}}This is a greenfield project - I'll help you define the full product vision.{{/if}}"
