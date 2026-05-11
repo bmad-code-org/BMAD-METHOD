@@ -1,10 +1,10 @@
 # DO NOT EDIT -- overwritten on every update.
 #
-# Workflow customization surface for bmad-product-brief.
+# Workflow customization surface for bmad-prd.
 #
 # Override files (not edited here):
-#   {project-root}/_bmad/custom/bmad-product-brief.toml         (team)
-#   {project-root}/_bmad/custom/bmad-product-brief.user.toml    (personal)
+#   {project-root}/_bmad/custom/bmad-prd.toml         (team)
+#   {project-root}/_bmad/custom/bmad-prd.user.toml    (personal)
 
 [workflow]
 
@@ -23,26 +23,31 @@ activation_steps_append = []
 # (standards, compliance constraints, stylistic guardrails).
 # Each entry is either a literal sentence, a skill prefixed with `skill:`, or a `file:`-prefixed path/glob
 # whose contents are loaded as facts.
-# Default is empty. Common opt-ins (set in your team/user override TOML):
-#   "file:{project-root}/_bmad-output/planning-artifacts/project-context.md"  # bmad-generate-project-context output
-#   "skill:acme-co:terms-and-conditions"                                      # a skill that contains some relevant info to the documents that may be generated
-#   "Elvis has left the building"                                             # generic agent instructions
-persistent_facts = []
+#
+# Default loads project-context.md if bmad-generate-project-context has produced one — this gives
+# the facilitator persistent awareness of the project's tech, domain, and constraints without
+# re-asking. Common opt-ins (set in team/user override TOML):
+#   "skill:acme-co:terms-and-conditions"                                      # a skill that contains some relevant info
+#   "Investor PRDs must include a market sizing section."                    # generic agent instruction
+persistent_facts = [
+  "file:{project-root}/**/project-context.md",
+]
 
 # Executed when the workflow completes (after the user has been told the
-# brief is ready). Accepts either a string scalar (single instruction)
+# PRD is ready). Accepts either a string scalar (single instruction)
 # or an array of instructions executed in order. Empty for none.
 on_complete = ""
 
-# Default brief structure. Treated as a starting point — the LLM adapts it
-# to the product, purpose, and domain. Override the path in team/user TOML
-# to enforce a different structure (e.g. regulated-industry, investor-deck).
-brief_template = "assets/brief-template.md"
+# Default PRD structure. Treated as a starting point — the LLM adapts it
+# to the product, project type, and domain. Override the path in team/user TOML
+# to enforce a different structure (e.g. regulated-industry, internal-tool, investor-input).
+prd_template = "assets/prd-template.md"
 
-# Run folder location. The brief, optional addendum, and optional distillate
-# all land inside `{output_dir}/{output_folder_name}/`.
-output_dir = "{planning_artifacts}/briefs"
-output_folder_name = "brief-{project_name}-{date}"
+# Run folder location. The PRD, optional addendum, optional distillate,
+# decision log, and optional validation report all land inside
+# `{output_dir}/{output_folder_name}/`.
+output_dir = "{planning_artifacts}/prds"
+output_folder_name = "prd-{project_name}-{date}"
 
 # Document standards applied to human-consumed docs at finalize. Each entry is
 # a `skill:`, `file:`, or plain-text directive; the parent LLM applies the
@@ -75,8 +80,8 @@ doc_standards = [
 #
 # Examples (set in team/user override TOML):
 #   "When researching internal product context, consult corp:kb_search (database='product-docs') before web search."
-#   "For voice-of-customer signal during Discovery, query corp:feedback_search with project={project_name}."
-#   "When validating domain-compliance claims for a healthcare brief, cross-check against corp:hipaa_reference."
+#   "For competitive landscape during Discovery, query corp:competitive_db with category={project_name}."
+#   "When validating domain-compliance claims, cross-check against corp:hipaa_reference for healthcare or corp:pci_reference for fintech."
 external_sources = []
 
 # External-handoff routing. Natural-language directives the LLM applies at
@@ -90,7 +95,7 @@ external_sources = []
 # can opt out in their prompt for a specific run. Empty by default.
 #
 # Examples (set in team/user override TOML):
-#   "After finalize, upload brief.md and addendum.md to Confluence via corp:confluence_upload (space_key='PROD', parent_page='Product Briefs', label='brief', author={user_name})."
-#   "Mirror the distillate to Notion via notion:create_page (database_id='abc123', title='Brief: '+{project_name})."
-#   "Post a ready-for-review ping to Slack via corp:slack_post (channel='#product', text='New brief: '+{confluence_url})."
+#   "After finalize, upload prd.md and addendum.md to Confluence via corp:confluence_upload (space_key='PROD', parent_page='PRDs', label='prd', author={user_name})."
+#   "Mirror the distillate to Notion via notion:create_page (database_id='abc123', title='PRD: '+{project_name})."
+#   "When the PRD references a parent initiative, link via corp:jira_link on the epic key in frontmatter."
 external_handoffs = []
