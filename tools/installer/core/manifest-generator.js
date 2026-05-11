@@ -244,7 +244,7 @@ class ManifestGenerator {
     const debug = process.env.BMAD_DEBUG_MANIFEST === 'true';
 
     for (const moduleName of this.updatedModules) {
-      const moduleYamlPath = await resolveInstalledModuleYaml(moduleName);
+      const moduleYamlPath = await resolveInstalledModuleYaml(moduleName, this.bmadDir);
       if (!moduleYamlPath) {
         // External modules live in ~/.bmad/cache/external-modules, not src/modules.
         // Warn rather than silently skip so missing agent rosters don't vanish
@@ -439,7 +439,7 @@ class ManifestGenerator {
     // from module.yaml, so TOML sections use [modules.<code>] not [modules.<name>].
     const codeByModuleName = {};
     for (const moduleName of this.updatedModules) {
-      const moduleYamlPath = await resolveInstalledModuleYaml(moduleName);
+      const moduleYamlPath = await resolveInstalledModuleYaml(moduleName, this.bmadDir);
       if (!moduleYamlPath) {
         console.warn(
           `[warn] writeCentralConfig: could not locate module.yaml for '${moduleName}'. ` +

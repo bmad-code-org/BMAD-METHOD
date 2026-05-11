@@ -99,7 +99,15 @@ function getExternalModuleCachePath(moduleName, ...segments) {
  * @param {string} moduleName
  * @returns {Promise<string|null>} Absolute path to module.yaml, or null if not found.
  */
-async function resolveInstalledModuleYaml(moduleName) {
+async function resolveInstalledModuleYaml(moduleName, bmadDir = null) {
+  // First: check _bmad/<moduleName>/module.yaml (installed location)
+  // This is written by installFromResolution during install, so check it
+  // before caches to find freshly-installed custom/community modules.
+  if (bmadDir) {
+    const installedPath = path.join(bmadDir, moduleName, 'module.yaml');
+    if (await fs.pathExists(installedPath)) return installedPath;
+  }
+
   const builtIn = path.join(getModulePath(moduleName), 'module.yaml');
   if (await fs.pathExists(builtIn)) return builtIn;
 
