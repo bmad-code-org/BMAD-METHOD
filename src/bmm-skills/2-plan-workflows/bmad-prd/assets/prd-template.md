@@ -9,7 +9,6 @@ This is a menu of sections the facilitator picks from based on what the product,
 ```markdown
 ---
 title: {Product Name}
-status: draft
 created: {YYYY-MM-DD}
 updated: {YYYY-MM-DD}
 ---

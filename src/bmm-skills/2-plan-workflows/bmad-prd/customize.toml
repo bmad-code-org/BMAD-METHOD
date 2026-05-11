@@ -43,9 +43,8 @@ on_complete = ""
 # to enforce a different structure (e.g. regulated-industry, internal-tool, investor-input).
 prd_template = "assets/prd-template.md"
 
-# Run folder location. The PRD, optional addendum, optional distillate,
-# decision log, and optional validation report all land inside
-# `{output_dir}/{output_folder_name}/`.
+# Run folder location. The PRD, optional addendum, decision log, and optional
+# validation report all land inside `{output_dir}/{output_folder_name}/`.
 output_dir = "{planning_artifacts}/prds"
 output_folder_name = "prd-{project_name}-{date}"
 
@@ -96,6 +95,6 @@ external_sources = []
 #
 # Examples (set in team/user override TOML):
 #   "After finalize, upload prd.md and addendum.md to Confluence via corp:confluence_upload (space_key='PROD', parent_page='PRDs', label='prd', author={user_name})."
-#   "Mirror the distillate to Notion via notion:create_page (database_id='abc123', title='PRD: '+{project_name})."
+#   "Mirror the PRD to Notion via notion:create_page (database_id='abc123', title='PRD: '+{project_name})."
 #   "When the PRD references a parent initiative, link via corp:jira_link on the epic key in frontmatter."
 external_handoffs = []
