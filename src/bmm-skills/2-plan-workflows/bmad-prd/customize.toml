@@ -43,6 +43,19 @@ on_complete = ""
 # to enforce a different structure (e.g. regulated-industry, internal-tool, investor-input).
 prd_template = "assets/prd-template.md"
 
+# Validation checklist used at the Validate intent and at Finalize step 3.
+# A subagent walks the checklist against prd.md and returns structured findings.
+# Override the path in team/user TOML to enforce an org-specific checklist
+# (regulated-industry compliance, investor-pitch standards, etc.).
+validation_checklist = "assets/prd-validation-checklist.md"
+
+# HTML template used to render validation findings into a styled, scannable
+# report. The renderer (scripts/render-validation-html.py) substitutes
+# structured findings + summary stats into this template; the template is
+# fully overridable to match org branding. The default uses inline CSS, no
+# external dependencies, and native HTML <details> for collapse — no JS.
+validation_report_template = "assets/validation-report-template.html"
+
 # Run folder location. The PRD, optional addendum, decision log, and optional
 # validation report all land inside `{output_dir}/{output_folder_name}/`.
 output_dir = "{planning_artifacts}/prds"

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PRD Validation: $prd_name</title>
+<style>
+  :root {
+    --bg: #fafaf9;
+    --surface: #ffffff;
+    --border: #e7e5e4;
+    --text: #1c1917;
+    --muted: #78716c;
+    --pass: #22c55e;
+    --warn: #eab308;
+    --fail: #ef4444;
+    --na: #94a3b8;
+    --sev-low: #64748b;
+    --sev-medium: #ca8a04;
+    --sev-high: #ea580c;
+    --sev-critical: #dc2626;
+    --grade-exc: #16a34a;
+    --grade-good: #65a30d;
+    --grade-fair: #d97706;
+    --grade-poor: #dc2626;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    font-size: 15px;
+  }
+  .container { max-width: 960px; margin: 0 auto; padding: 32px 24px 64px; }
+
+  header.report-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+  .title h1 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+  .title .subtitle { color: var(--muted); font-size: 13px; margin-top: 4px; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .grade {
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    color: white;
+    font-size: 15px;
+    white-space: nowrap;
+  }
+  .grade-excellent { background: var(--grade-exc); }
+  .grade-good { background: var(--grade-good); }
+  .grade-fair { background: var(--grade-fair); }
+  .grade-poor { background: var(--grade-poor); }
+
+  .synthesis {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--muted);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    color: var(--text);
+    font-size: 15px;
+  }
+  .synthesis:empty { display: none; }
+
+  .scoreboard {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+    margin-bottom: 24px;
+  }
+  .score-bar { margin: 0 0 14px; line-height: 0; }
+  .score-stats { display: flex; gap: 22px; font-size: 14px; flex-wrap: wrap; }
+  .score-stats span { display: inline-flex; align-items: center; gap: 6px; }
+  .score-stats .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .dot-pass { background: var(--pass); }
+  .dot-warn { background: var(--warn); }
+  .dot-fail { background: var(--fail); }
+  .dot-na { background: var(--na); }
+  .total-count { margin-left: auto; color: var(--muted); }
+
+  section.category { margin-bottom: 16px; }
+  section.category details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  section.category summary {
+    padding: 14px 20px;
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+  }
+  section.category summary::-webkit-details-marker { display: none; }
+  section.category summary::before {
+    content: "▸";
+    display: inline-block;
+    margin-right: 10px;
+    color: var(--muted);
+    transition: transform 0.15s ease;
+  }
+  section.category details[open] summary::before { transform: rotate(90deg); }
+  section.category summary h2 { display: inline; margin: 0; font-size: 16px; font-weight: 600; letter-spacing: -0.005em; }
+  section.category .count { color: var(--muted); font-weight: 400; margin-left: 6px; font-size: 14px; }
+
+  article.finding { padding: 16px 20px; border-top: 1px solid var(--border); }
+  article.finding-fail { background: rgba(239, 68, 68, 0.025); }
+  article.finding header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .badge {
+    font-size: 10.5px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+  }
+  .badge-pass { background: rgba(34, 197, 94, 0.12); color: #15803d; }
+  .badge-warn { background: rgba(234, 179, 8, 0.14); color: #854d0e; }
+  .badge-fail { background: rgba(239, 68, 68, 0.12); color: #b91c1c; }
+  .badge-na { background: rgba(148, 163, 184, 0.16); color: #475569; }
+  .badge-sev-low { background: rgba(100, 116, 139, 0.12); color: var(--sev-low); }
+  .badge-sev-medium { background: rgba(202, 138, 4, 0.14); color: var(--sev-medium); }
+  .badge-sev-high { background: rgba(234, 88, 12, 0.14); color: var(--sev-high); }
+  .badge-sev-critical { background: rgba(220, 38, 38, 0.14); color: var(--sev-critical); }
+  .finding-id { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; color: var(--muted); }
+  .finding-title { margin: 0; font-size: 15px; font-weight: 500; flex: 1; min-width: 200px; }
+  .finding-location, .finding-note, .finding-fix { margin-top: 6px; font-size: 14px; color: var(--text); }
+  .finding-location strong, .finding-fix strong { color: var(--muted); font-weight: 500; }
+
+  footer.report-footer {
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  footer .meta { display: flex; gap: 24px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+  <div class="container">
+    <header class="report-header">
+      <div class="title">
+        <h1>$prd_name — Validation Report</h1>
+        <div class="subtitle">$prd_path</div>
+      </div>
+      <div class="grade $grade_class">$grade</div>
+    </header>
+
+    <div class="synthesis">$overall_synthesis</div>
+
+    <div class="scoreboard">
+      <div class="score-bar">$score_svg</div>
+      <div class="score-stats">
+        <span><span class="dot dot-pass"></span>$passed pass</span>
+        <span><span class="dot dot-warn"></span>$warned warn</span>
+        <span><span class="dot dot-fail"></span>$failed fail</span>
+        <span><span class="dot dot-na"></span>$na n/a</span>
+        <span class="total-count">$total items checked</span>
+      </div>
+    </div>
+
+    $categories_html
+
+    <footer class="report-footer">
+      <div class="meta">
+        <span>Checklist: $checklist_path</span>
+        <span>Generated: $timestamp</span>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
