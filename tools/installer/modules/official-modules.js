@@ -370,6 +370,18 @@ class OfficialModules {
       if (fileTrackingCallback) fileTrackingCallback(helpTarget);
     }
 
+    // Place module.yaml at the module root so manifest generation can
+    // collect module-level agent metadata and settings scope.
+    if (resolved.moduleYamlPath) {
+      const moduleYamlTarget = path.join(targetPath, 'module.yaml');
+      await fs.copy(resolved.moduleYamlPath, moduleYamlTarget, { overwrite: true });
+      if (fileTrackingCallback) fileTrackingCallback(moduleYamlTarget);
+    } else if (resolved.synthesizedModuleYaml) {
+      const moduleYamlTarget = path.join(targetPath, 'module.yaml');
+      await fs.writeFile(moduleYamlTarget, resolved.synthesizedModuleYaml, 'utf8');
+      if (fileTrackingCallback) fileTrackingCallback(moduleYamlTarget);
+    }
+
     // Create directories declared in module.yaml (strategies 1-4 may have these)
     if (!options.skipModuleInstaller) {
       await this.createModuleDirectories(resolved.code, bmadDir, options);
