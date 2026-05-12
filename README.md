@@ -52,6 +52,16 @@ Follow the installer prompts, then open your AI IDE (Claude Code, Cursor, etc.) 
 npx bmad-method install --directory /path/to/project --modules bmm --tools claude-code --yes
 ```
 
+**Run Installer From Your Fork (uses current directory):**
+
+```bash
+# Uses installer code from this fork
+npm exec --yes --package=git+https://github.com/AlexandreAZOURI/BMAD-METHOD-Orchestrated.git -- \
+bmad-method install \
+  --directory . \
+  --custom-source https://github.com/AlexandreAZOURI/BMAD-METHOD-Orchestrated.git \
+```
+
 Override any module config option with `--set <module>.<key>=<value>` (repeatable). Run `--list-options [module]` to see locally-known official keys (built-in modules plus any external officials cached on this machine):
 
 ```bash
