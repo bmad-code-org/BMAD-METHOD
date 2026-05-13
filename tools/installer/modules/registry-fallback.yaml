@@ -18,6 +18,17 @@ modules:
     npmPackage: bmad-builder
     default_channel: stable
 
+  bmad-automator:
+    url: https://github.com/bmad-code-org/bmad-automator
+    module-definition: skills/module.yaml
+    code: baut
+    name: "BMad Automator"
+    description: "Story automation skills"
+    defaultSelected: false
+    type: experimental
+    npmPackage: bmad-story-automator
+    default_channel: next
+
   bmad-creative-intelligence-suite:
     url: https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite
     module-definition: src/module.yaml

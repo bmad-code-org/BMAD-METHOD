@@ -524,8 +524,20 @@ class ExternalModuleManager {
       return path.dirname(rootCandidate);
     }
 
-    // Nothing found: return configured path (preserves old behavior for error messaging)
-    return path.dirname(configuredPath);
+    // Nothing found: the cloned ref does not contain a recognizable module structure.
+    // This happens when a stable tag predates a module restructure (e.g. the repo
+    // moved files from payload/ to skills/ after the tag was cut). Returning a
+    // non-existent path silently causes a confusing ENOENT deep inside copyModuleWithFiltering;
+    // throw a descriptive error here instead so the user knows what happened and how to recover.
+    const resolution = ExternalModuleManager._resolutions.get(moduleCode);
+    const versionHint = resolution?.version ? `version ${resolution.version}` : 'the cloned version';
+    const channelHint =
+      resolution?.channel === 'stable' ? ` Try reinstalling with \`--next=${moduleCode}\` to use the latest main branch instead.` : '';
+    throw new Error(
+      `Module '${moduleCode}' was downloaded but its module definition was not found. ` +
+        `Expected '${moduleDefinitionPath}' to exist in ${versionHint}, but it is missing. ` +
+        `The repository may have been restructured after this release was tagged.${channelHint}`,
+    );
   }
   cachedModules = null;
 }
