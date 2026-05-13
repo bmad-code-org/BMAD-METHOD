@@ -46,7 +46,7 @@ def compute_stats(findings: list[dict]) -> dict:
     failed_critical = 0
     failed_high = 0
     for f in findings:
-        status = f.get("status", "n/a")
+        status = (f.get("status") or "n/a").lower()
         if status in by_status:
             by_status[status] += 1
         if status == "fail":
@@ -219,8 +219,19 @@ def main(argv: list[str]) -> int:
     template_path = Path(args.template)
     output_path = Path(args.output)
 
-    data = json.loads(findings_path.read_text())
-    template = template_path.read_text()
+    try:
+        data = json.loads(findings_path.read_text())
+    except FileNotFoundError:
+        print(f"error: findings file not found: {findings_path}", file=sys.stderr)
+        return 1
+    except json.JSONDecodeError as e:
+        print(f"error: findings file is not valid JSON ({findings_path}): {e}", file=sys.stderr)
+        return 1
+    try:
+        template = template_path.read_text()
+    except FileNotFoundError:
+        print(f"error: template file not found: {template_path}", file=sys.stderr)
+        return 1
 
     findings = data.get("findings", []) or []
 
