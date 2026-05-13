@@ -49,6 +49,13 @@ Surface these honestly and let the user choose; if they prefer this skill anyway
 
 Coach, do not quiz. Push hardest where PRD Discipline is at risk — unexamined assumptions, capability-vs-implementation confusion, term drift, silent scope creep, ambiguity for downstream readers. Drill into specifics only after the broad shape is on the table; premature granular questions interrupt the dump. Suggest research only when the stakes warrant it.
 
+**Working mode.** Once the situational read is complete, offer the user a choice before proceeding — one sentence per option:
+
+- **Express:** resolve any remaining critical gaps in a short batch, then draft the full PRD at once.
+- **Facilitative:** work through the sections that require PM thinking before drafting, using the techniques in `references/facilitation-guide.md`. Draft after the key sections are walked. The goal is that the PM has authored the thinking — not just answered intake questions.
+
+In both modes, resolve decisions conversationally rather than silently deferring them into `[ASSUMPTION]` tags. Only use `[ASSUMPTION]` when the answer requires research or external input the PM cannot provide in the moment.
+
 ## PRD Discipline
 
 Patterns that hold the PRD together across every shape.
@@ -73,7 +80,7 @@ Patterns that hold the PRD together across every shape.
 
 ## Constraints
 
-- **Persistence is real-time.** Once Create intent is confirmed, the workspace (run folder, `prd.md` skeleton, `decision-log.md`) exists on disk and the user knows the path.
+- **Persistence is near real-time.** Once Create intent is confirmed, the workspace (run folder, `prd.md` skeleton, `decision-log.md`) must be created on disk and the user let know of the path.
 - **File roles.** `decision-log.md` is canonical memory and audit trail — every decision, change, override, and version/state transition recorded as the conversation unfolds. `addendum.md` preserves user-contributed depth that belongs downstream or earned a place but does not fit the PRD shape (rejected alternatives, options matrices, deep technical detail, ops/cost mechanics, deep competitive analysis). When the user volunteers technical-how detail, capture it to addendum in real time. Audit and override information never goes there.
 - **Continuity across sessions.** If a prior in-progress draft for this project exists in `{workflow.output_dir}`, the user is offered to resume. On resume, surface the open items (Open Questions, `[ASSUMPTION]` tags, `[NOTE FOR PM]` callouts) first — they orient both the user and the agent to what was deferred.
 - **Extract, don't ingest.** Source artifacts never enter the parent conversation wholesale. Whenever a source document is consulted — Discovery setup, Update/Validate orientation, Finalize input reconciliation — delegate to a source-extractor subagent that returns `{summary, key_decisions, open_items, conflicts_with_focus, citations: [{section, line_range, quote}]}` against the user's stated focus. Run one subagent per document in parallel when there are multiple. The parent assembles from extracts; it never re-opens the source.
@@ -85,7 +92,11 @@ Patterns that hold the PRD together across every shape.
 1. Decision log audit + addendum review: walk `decision-log.md` with the user and account for each meaningful entry — captured in the PRD, captured in `addendum.md` (see `## Constraints` for what belongs there), or set aside as process noise.
 2. Input reconciliation: fan out one source-extractor subagent per user-supplied input, each handed the current `prd.md` + `addendum.md` to compare against, returning `{coverage, gaps, soft_ideas_not_landed}`. Aggregate and present — especially soft or qualitative ideas (tone, voice, feel) the feature-and-FR shape silently drops. Ask whether any should be incorporated. Must happen before polish.
 3. Discipline pass: spawn the validator subagent against `prd.md` with `{workflow.validation_checklist}`; produce findings + HTML report per `references/validation-render.md`. Surface failures and warnings conversationally; resolve before polish.
-4. Open-items review: count Open Questions, `[ASSUMPTION]` tags, and `[NOTE FOR PM]` callouts. Summarize totals to the user and walk them by category. For each: resolve now, accept-and-ship (log rationale to `decision-log.md`), or escalate. Flag high density relative to the agreed stakes as a red flag before continuing.
+4. Open-items review: triage all Open Questions, `[ASSUMPTION]` tags, and `[NOTE FOR PM]` callouts into three buckets before presenting anything to the user:
+   - **Phase-blocking** — the next BMad workflow (UX, architecture) cannot start without this decision. Surface these explicitly and conversationally, one at a time. Resolve before calling the PRD ready.
+   - **Resolvable now** — answerable in under a minute. Offer to close them; do not force it.
+   - **Safely deferred** — will surface naturally in a downstream phase (architecture, UX, post-launch) or is a v2 decision. Log to `decision-log.md` as accepted-at-draft with a one-line note on where they belong. Do not make the user walk these.
+   Never recite the full list. Lead with: "There are N things to decide before [next phase] can start" — then work through only those. If phase-blocking count is high relative to agreed stakes, flag it as a red flag before continuing.
 5. Polish: apply each entry in `{workflow.doc_standards}` (a `skill:`, `file:`, or plain-text directive) to `prd.md` (and `addendum.md` if it exists). Run passes as parallel subagents — apply all doc standards to `prd.md` first, then to `addendum.md`.
 6. External handoffs: execute each entry in `{workflow.external_handoffs}` — each directive names the MCP tool and the fields it needs. Invoke, capture any URLs or IDs returned, surface them. If a named tool is unavailable, skip and flag (graceful degradation); local files always exist.
 7. Record finalization to `decision-log.md` (version label, accepted-at-ship open items, external destinations). Tell the user it is ready, share artifact paths (PRD, addendum, decision log, external destinations, validation report). Invoke the `bmad-help` skill to surface BMad-ecosystem next steps.

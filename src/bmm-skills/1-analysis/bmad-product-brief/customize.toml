@@ -39,8 +39,7 @@ on_complete = ""
 # to enforce a different structure (e.g. regulated-industry, investor-deck).
 brief_template = "assets/brief-template.md"
 
-# Run folder location. The brief, optional addendum, and optional distillate
-# all land inside `{output_dir}/{output_folder_name}/`.
+# Run folder location. The brief and optional addendum land inside `{output_dir}/{output_folder_name}/`.
 output_dir = "{planning_artifacts}/briefs"
 output_folder_name = "brief-{project_name}-{date}"
 
@@ -91,6 +90,5 @@ external_sources = []
 #
 # Examples (set in team/user override TOML):
 #   "After finalize, upload brief.md and addendum.md to Confluence via corp:confluence_upload (space_key='PROD', parent_page='Product Briefs', label='brief', author={user_name})."
-#   "Mirror the distillate to Notion via notion:create_page (database_id='abc123', title='Brief: '+{project_name})."
 #   "Post a ready-for-review ping to Slack via corp:slack_post (channel='#product', text='New brief: '+{confluence_url})."
 external_handoffs = []
