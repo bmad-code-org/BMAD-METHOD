@@ -537,8 +537,8 @@ class ExternalModuleManager {
         : '';
     throw new Error(
       `Module '${moduleCode}' was downloaded but its module definition was not found. ` +
-        `Expected '${moduleDefinitionPath}' to exist in ${versionHint}, but it is missing. ` +
-        `The repository may have been restructured after this release was tagged.${channelHint}`,
+      `Expected '${moduleDefinitionPath}' to exist in ${versionHint}, but it is missing. ` +
+      `The repository may have been restructured after this release was tagged.${channelHint}`,
     );
   }
   cachedModules = null;
