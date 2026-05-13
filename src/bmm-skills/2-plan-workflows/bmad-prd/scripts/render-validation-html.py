@@ -2,12 +2,13 @@
 # /// script
 # requires-python = ">=3.10"
 # ///
-"""Render a PRD validation findings JSON into a styled HTML report.
+"""Render a PRD validation findings JSON into HTML + markdown reports.
 
 Reads structured findings produced by the validator subagent, groups them by
 category (explicit `category` field, else derived from ID prefix), computes a
 pass/warn/fail summary and grade, substitutes into the configured HTML
-template, and optionally opens the result in the default browser.
+template, writes a markdown companion at the same path with `.md` extension,
+and optionally opens the HTML in the default browser.
 """
 
 import argparse
@@ -134,6 +135,78 @@ def render_category(name: str, findings: list[dict]) -> str:
     )
 
 
+SEVERITY_ORDER = ["critical", "high", "medium", "low"]
+
+
+def render_finding_md(f: dict) -> str:
+    status = (f.get("status") or "n/a").upper()
+    severity = (f.get("severity") or "low").lower()
+    fid = f.get("id") or ""
+    title = f.get("title") or fid
+    location = f.get("location") or ""
+    note = f.get("note") or ""
+    fix = f.get("suggested_fix") or ""
+
+    lines = [f"### [{status}] {fid} — {title} _(severity: {severity})_"]
+    if location:
+        lines.append(f"- **Location:** {location}")
+    if note:
+        lines.append(f"- **Finding:** {note}")
+    if fix:
+        lines.append(f"- **Suggested fix:** {fix}")
+    return "\n".join(lines)
+
+
+def render_markdown_report(data: dict, findings: list[dict], stats: dict, grade: str) -> str:
+    prd_name = data.get("prd_name") or "PRD"
+    prd_path = data.get("prd_path") or ""
+    checklist_path = data.get("checklist_path") or ""
+    timestamp = data.get("timestamp") or datetime.now().isoformat(timespec="seconds")
+    synthesis = data.get("overall_synthesis") or ""
+
+    out = [
+        f"# Validation Report — {prd_name}",
+        "",
+        f"- **PRD:** `{prd_path}`",
+        f"- **Checklist:** `{checklist_path}`",
+        f"- **Run at:** {timestamp}",
+        f"- **Grade:** {grade}",
+        "",
+        f"**Summary:** {stats['passed']} pass · {stats['warned']} warn · {stats['failed']} fail · {stats['na']} n/a "
+        f"(total {stats['total']}; critical fails: {stats['failed_critical']}, high fails: {stats['failed_high']})",
+    ]
+    if synthesis:
+        out += ["", "## Overall synthesis", "", synthesis]
+
+    # Group by severity then status: failed criticals first, then highs, etc.
+    by_sev: dict[str, list[dict]] = {s: [] for s in SEVERITY_ORDER}
+    other: list[dict] = []
+    for f in findings:
+        sev = (f.get("severity") or "low").lower()
+        if sev in by_sev:
+            by_sev[sev].append(f)
+        else:
+            other.append(f)
+
+    out += ["", "## Findings by severity"]
+    any_findings = False
+    for sev in SEVERITY_ORDER:
+        items = by_sev[sev]
+        if not items:
+            continue
+        any_findings = True
+        out += ["", f"### {sev.capitalize()} ({len(items)})", ""]
+        out += [render_finding_md(f) for f in items]
+    if other:
+        any_findings = True
+        out += ["", f"### Other ({len(other)})", ""]
+        out += [render_finding_md(f) for f in other]
+    if not any_findings:
+        out += ["", "_No findings._"]
+
+    return "\n".join(out) + "\n"
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Render PRD validation findings to HTML.")
     parser.add_argument("--findings", required=True, help="Path to validation-findings.json")
@@ -186,7 +259,15 @@ def main(argv: list[str]) -> int:
     rendered = string.Template(template).safe_substitute(substitutions)
     output_path.write_text(rendered)
 
-    print(json.dumps({"output": str(output_path), "grade": grade, "stats": stats}))
+    md_path = output_path.with_suffix(".md")
+    md_path.write_text(render_markdown_report(data, findings, stats, grade))
+
+    print(json.dumps({
+        "output": str(output_path),
+        "markdown": str(md_path),
+        "grade": grade,
+        "stats": stats,
+    }))
 
     if args.open:
         webbrowser.open(output_path.resolve().as_uri())

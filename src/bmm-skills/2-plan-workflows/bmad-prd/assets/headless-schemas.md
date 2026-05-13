@@ -58,7 +58,7 @@ Every headless run ends with one of these payloads. Omit keys for artifacts not 
 }
 ```
 
-`validation_report` is omitted for runs with no substantive findings (fewer than ~5 issues, none Critical, interactive mode); findings surface inline only.
+`validation_report` is always written for Validate intent — the path here is required, not optional.
 
 ## Blocked
 

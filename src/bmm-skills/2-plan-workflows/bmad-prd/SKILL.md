@@ -26,7 +26,7 @@ At the opening greeting, let the user know they can invoke the skills `bmad-part
 
 **Update.** Reconcile an existing PRD with a change signal. Orient via source extractors (see `## Constraints` → Extract, don't ingest) against the PRD, addendum, `decision-log.md`, and original inputs — then run the `## Discovery` posture against the change signal. Surface conflicts with prior decisions before changing. If the change is fundamental, offer Create instead of patching. When changes are applied, proceed to `## Finalize`.
 
-**Validate** (or *analyze*). Critique an existing PRD against `{workflow.validation_checklist}`. Standalone — does NOT enter `## Finalize`. Orient via source extractors against `decision-log.md` and any original inputs to give the validator context. Spawn the validator subagent against `prd.md` (and `addendum.md` if present); produce findings + HTML report per `references/validation-render.md`. Always offer to roll findings into an Update.
+**Validate** (or *analyze*). Critique an existing PRD against `{workflow.validation_checklist}`. Standalone — does NOT enter `## Finalize`. Orient via source extractors against `decision-log.md` and any original inputs to give the validator context. Spawn the validator subagent against `prd.md` (and `addendum.md` if present); produce findings and a validation report per `references/validation-render.md`. Always offer to roll findings into an Update.
 
 ## Discovery
 
@@ -82,7 +82,7 @@ In both modes, resolve decisions conversationally rather than silently deferring
 
 1. Decision log audit: walk `decision-log.md` with the user — each entry captured in PRD, in addendum, or set aside.
 2. Input reconciliation: subagent per user-supplied input against `prd.md` + `addendum.md`; surface gaps, especially qualitative ideas (tone, voice, feel) the FR structure silently drops. Must happen before polish.
-3. Discipline pass: validator subagent against `prd.md` with `{workflow.validation_checklist}`; findings + HTML report per `references/validation-render.md`. Resolve before polish.
+3. Discipline pass: validator subagent against `prd.md` with `{workflow.validation_checklist}`. Findings stay in-conversation — autofix obvious issues, ask on ambiguous ones. No report file is written. Resolve before polish.
 4. Open-items review: triage all Open Questions, `[ASSUMPTION]` tags, and `[NOTE FOR PM]` callouts. Surface only phase-blockers one at a time; resolve before calling the PRD ready. Log deferred items to `decision-log.md`. If phase-blocking count is high, flag it.
 5. Polish: apply `{workflow.doc_standards}` to `prd.md` and `addendum.md` via parallel subagents.
 6. External handoffs: execute `{workflow.external_handoffs}` entries; surface returned URLs/IDs. Skip and flag unavailable tools.

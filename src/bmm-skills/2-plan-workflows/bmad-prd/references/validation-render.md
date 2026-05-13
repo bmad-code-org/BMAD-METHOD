@@ -1,6 +1,6 @@
 # Validation Rendering
 
-How the validator subagent's findings become the HTML report. Loaded by the parent on any Validate or Finalize-step-3 invocation.
+How the validator subagent's findings become a validation report. Loaded only when the user has explicitly asked for analysis — either Validate intent or a mid-session report request. The Finalize discipline pass during Create/Update does NOT render a report; its findings stay in-conversation.
 
 ## Validator subagent output contract
 
@@ -53,8 +53,6 @@ python3 {skill-root}/scripts/render-validation-html.py \
 
 Include `--open` for interactive runs (auto-opens in default browser). Omit `--open` in headless runs.
 
-The script computes pass/warn/fail/na counts, derives a grade (Excellent / Good / Fair / Poor) from critical-fail and total-fail counts, renders an inline SVG score bar, groups findings by category, and substitutes into the template. Returns a one-line JSON summary on stdout: `{"output": "...", "grade": "...", "stats": {...}}`.
+The script writes two artifacts side-by-side: the HTML report at `--output`, and a markdown companion at the same path with `.md` extension (e.g. `validation-report.md`). Both are always produced when the script runs — trigger gating happens upstream (the script is only invoked when the user has asked for analysis). It computes pass/warn/fail/na counts, derives a grade (Excellent / Good / Fair / Poor) from critical-fail and total-fail counts, renders an inline SVG score bar in the HTML, groups findings by category, and returns a one-line JSON summary on stdout: `{"output": "...", "markdown": "...", "grade": "...", "stats": {...}}`.
 
-## Markdown companion
-
-When findings include any Critical-severity item or >5 total fail/warn items, also write `{doc_workspace}/validation-report.md` — a markdown rendering of the same findings, grouped by severity, with PRD line references. Update mode consumes the markdown form cleanly when rolling findings into a revision.
+Re-running validation overwrites the existing report files in place. Markdown form is what Update mode reads when rolling findings into a revision.
