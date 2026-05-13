@@ -220,7 +220,7 @@ def main(argv: list[str]) -> int:
     output_path = Path(args.output)
 
     try:
-        data = json.loads(findings_path.read_text())
+        data = json.loads(findings_path.read_text(encoding="utf-8"))
     except FileNotFoundError:
         print(f"error: findings file not found: {findings_path}", file=sys.stderr)
         return 1
@@ -228,7 +228,7 @@ def main(argv: list[str]) -> int:
         print(f"error: findings file is not valid JSON ({findings_path}): {e}", file=sys.stderr)
         return 1
     try:
-        template = template_path.read_text()
+        template = template_path.read_text(encoding="utf-8")
     except FileNotFoundError:
         print(f"error: template file not found: {template_path}", file=sys.stderr)
         return 1
@@ -268,10 +268,10 @@ def main(argv: list[str]) -> int:
     }
 
     rendered = string.Template(template).safe_substitute(substitutions)
-    output_path.write_text(rendered)
+    output_path.write_text(rendered, encoding="utf-8")
 
     md_path = output_path.with_suffix(".md")
-    md_path.write_text(render_markdown_report(data, findings, stats, grade))
+    md_path.write_text(render_markdown_report(data, findings, stats, grade), encoding="utf-8")
 
     print(json.dumps({
         "output": str(output_path),

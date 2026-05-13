@@ -46,7 +46,7 @@ Define what to build and for whom.
 
 | Workflow                | Purpose                                                                             | Produces                                          |
 |-------------------------|-------------------------------------------------------------------------------------|---------------------------------------------------|
-| `bmad-prd`              | Create, update, or validate a PRD — facilitated discovery, three intents in one skill | `prd.md`, `addendum.md`, `decision-log.md`        |
+| `bmad-prd`              | Create, update, or validate a PRD — facilitated discovery, three intents in one skill | Create/Update: `prd.md`, `addendum.md`, `decision-log.md`; Validate: `validation-report.html` + `.md` |
 | `bmad-create-ux-design` | Design user experience (when UX matters)                                            | `ux-spec.md`                                      |
 
 :::tip[Three intents in one skill]
