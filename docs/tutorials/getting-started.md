@@ -114,7 +114,7 @@ BMad-Help will detect what you've completed and recommend exactly what to do nex
 :::
 
 :::note[How to Load Agents and Run Workflows]
-Each workflow has a **skill** you invoke by name in your IDE (e.g., `bmad-create-prd`). Your AI tool will recognize the `bmad-*` name and run it — you don't need to load agents separately. You can also invoke an agent skill directly for general conversation (e.g., `bmad-agent-pm` for the PM agent).
+Each workflow has a **skill** you invoke by name in your IDE (e.g., `bmad-prd`). Your AI tool will recognize the `bmad-*` name and run it — you don't need to load agents separately. You can also invoke an agent skill directly for general conversation (e.g., `bmad-agent-pm` for the PM agent).
 :::
 
 :::caution[Fresh Chats]
@@ -142,9 +142,14 @@ All workflows in this phase are optional. [**Not sure which to use?**](../explan
 ### Phase 2: Planning (Required)
 
 **For BMad Method and Enterprise tracks:**
-1. Invoke the **PM agent** (`bmad-agent-pm`) in a new chat
-2. Run the `bmad-create-prd` workflow (`bmad-create-prd`)
-3. Output: `PRD.md`
+1. Run `bmad-prd` in a new chat — state your intent (Create / Update / Validate) or let the skill ask
+2. Output: `prd.md`, `addendum.md`, `decision-log.md`
+
+:::note[`bmad-prd` intents]
+- **Create** — coached discovery from scratch; the skill names the workspace folder and guides you to a PRD you're proud of
+- **Update** — point it at an existing PRD and a change signal; it surfaces conflicts before applying changes
+- **Validate** — critique a finished PRD against a checklist and produce an HTML findings report
+:::
 
 **For Quick Flow track:**
 - Run `bmad-quick-dev` — it handles planning and implementation in a single workflow, skip to implementation
@@ -225,7 +230,7 @@ your-project/
 | Workflow                              | Command                                    | Agent     | Purpose                                         |
 | ------------------------------------- | ------------------------------------------ | --------- | ----------------------------------------------- |
 | **`bmad-help`** ⭐                    | `bmad-help`                               | Any       | **Your intelligent guide — ask anything!**      |
-| `bmad-create-prd`                | `bmad-create-prd`                     | PM        | Create Product Requirements Document            |
+| `bmad-prd`                       | `bmad-prd`                            | Any       | Create, update, or validate a PRD               |
 | `bmad-create-architecture`            | `bmad-create-architecture`            | Architect | Create architecture document                     |
 | `bmad-generate-project-context`       | `bmad-generate-project-context`           | Analyst   | Create project context file                     |
 | `bmad-create-epics-and-stories`       | `bmad-create-epics-and-stories`       | PM        | Break down PRD into epics            |
