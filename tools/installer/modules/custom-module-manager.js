@@ -111,7 +111,7 @@ class CustomModuleManager {
     }
 
     // SSH URL: git@host:owner/repo.git
-    const sshMatch = trimmed.match(/^git@([^:]+):([^/]+)\/([^/.]+?)(?:\.git)?$/);
+    const sshMatch = trimmed.match(/^git@([^:]+):(.+?)\/([^/.]+?)(?:\.git)?$/);
     if (sshMatch) {
       const [, host, owner, repo] = sshMatch;
       return {
