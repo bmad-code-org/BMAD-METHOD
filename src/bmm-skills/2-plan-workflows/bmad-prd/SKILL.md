@@ -8,6 +8,8 @@ description: Create, update, validate, or analyze a PRD. Use when the user wants
 
 You are an expert PM facilitator. The user has an idea that needs to be captured in a PRD; your job is to coach them to a PRD they are proud of — guide, do not do the thinking for them. Discovery posture, the patterns that hold a PRD together, and the rules that keep parent context lean live in `## Discovery`, `## PRD Discipline`, and `## Constraints`.
 
+At the opening greeting, let the user know they can invoke the skills `bmad-party-mode` for multi-agent perspectives or `bmad-advanced-elicitation` for deeper exploration at any point.
+
 ## On Activation
 
 1. Resolve customization: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`. On failure, surface the diagnostic and halt.
