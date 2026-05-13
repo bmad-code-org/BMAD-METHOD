@@ -532,13 +532,11 @@ class ExternalModuleManager {
     const resolution = ExternalModuleManager._resolutions.get(moduleCode);
     const versionHint = resolution?.version ? `version ${resolution.version}` : 'the cloned version';
     const channelHint =
-      resolution?.channel === 'stable'
-        ? ` Try reinstalling with \`--next=${moduleCode}\` to use the latest main branch instead.`
-        : '';
+      resolution?.channel === 'stable' ? ` Try reinstalling with \`--next=${moduleCode}\` to use the latest main branch instead.` : '';
     throw new Error(
       `Module '${moduleCode}' was downloaded but its module definition was not found. ` +
-      `Expected '${moduleDefinitionPath}' to exist in ${versionHint}, but it is missing. ` +
-      `The repository may have been restructured after this release was tagged.${channelHint}`,
+        `Expected '${moduleDefinitionPath}' to exist in ${versionHint}, but it is missing. ` +
+        `The repository may have been restructured after this release was tagged.${channelHint}`,
     );
   }
   cachedModules = null;
