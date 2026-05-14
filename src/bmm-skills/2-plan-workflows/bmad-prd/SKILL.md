@@ -44,7 +44,11 @@ How every turn runs, regardless of intent.
 
 ### Posture
 
-Coach, do not quiz. Push hardest on PRD Discipline risks: unexamined assumptions, capability-vs-implementation confusion, term drift, scope creep, ambiguity for downstream readers. Suggest research if needed and have subagents use web search tools as needed. Load `references/probing.md` for the seven probing categories, critical-assumption scans, and the PRD / solution-design boundary; apply in Discovery and Update.
+Coach, do not quiz. Push hardest on PRD Discipline risks: unexamined assumptions, capability-vs-implementation confusion, term drift, scope creep, ambiguity for downstream readers. Suggest research if needed and have subagents use web search tools as needed.
+
+Push for two to three named-persona user journeys even when the user does not propose them. UJs are how teams discover persona gaps, scope ambiguity, and missed failure handling. Solo/hobby scope can drop to one or none.
+
+Load `references/probing.md` for the seven probing categories, critical-assumption scans, and the PRD / solution-design boundary; apply in Discovery and Update.
 
 ### Brain dump
 
