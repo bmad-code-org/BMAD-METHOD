@@ -8,21 +8,21 @@ The subagent walks `{workflow.validation_checklist}` against `prd.md` (and `adde
 
 ```json
 {
-  "prd_name": "Plantsona",
+  "prd_name": "Example Product",
   "prd_path": "{doc_workspace}/prd.md",
   "checklist_path": "{workflow.validation_checklist}",
-  "timestamp": "2026-05-11T09:14:00",
+  "timestamp": "2026-01-15T09:14:00",
   "overall_synthesis": "2-3 sentences of judgment about the PRD's overall state — what holds up, what's at risk. Written by the subagent, not the parent.",
   "findings": [
     {
-      "id": "Q-2",
+      "id": "Q-7",
       "category": "Quality",
-      "title": "Measurability",
+      "title": "FR testability",
       "status": "warn",
       "severity": "medium",
-      "location": "§16 Success Metrics, lines 408-422",
-      "note": "Success Metrics list is measurable but counter-metrics are named only for premium conversion. Other metrics lack paired counter-metrics.",
-      "suggested_fix": "Add counter-metrics for engagement (e.g., DAU/MAU) and seasonal cadence."
+      "location": "§4.2 Feature Name, FR-3",
+      "note": "FR-3's consequences include 'system handles errors gracefully' which is not testable.",
+      "suggested_fix": "Replace with a specific testable condition, e.g. 'System returns HTTP 4xx for invalid input within 200ms.'"
     }
   ]
 }
