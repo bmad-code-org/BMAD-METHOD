@@ -2,6 +2,8 @@
 
 Per-section conversation techniques for facilitative mode. Each entry names the coaching move that makes the section's conversation productive — not a checklist, a posture. Skip sections the PM has already resolved; spend more time where thinking is thin.
 
+For symptom-based probes that apply across sections, load `references/probing.md` alongside this guide.
+
 ---
 
 ## Users and Personas
