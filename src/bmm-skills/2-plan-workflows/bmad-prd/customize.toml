@@ -47,7 +47,7 @@ prd_template = "assets/prd-template.md"
 # A subagent walks the checklist against prd.md and returns structured findings.
 # Override the path in team/user TOML to enforce an org-specific checklist
 # (regulated-industry compliance, investor-pitch standards, etc.).
-validation_checklist = "assets/prd-validation-checklist.md"
+validation_checklist_template = "assets/prd-validation-checklist.md"
 
 # HTML template used to render validation findings into a styled, scannable
 # report. The renderer (scripts/render-validation-html.py) substitutes
@@ -57,9 +57,10 @@ validation_checklist = "assets/prd-validation-checklist.md"
 validation_report_template = "assets/validation-report-template.html"
 
 # Run folder location. The PRD, optional addendum, decision log, and optional
-# validation report all land inside `{output_dir}/{output_folder_name}/`.
-output_dir = "{planning_artifacts}/prds"
-output_folder_name = "prd-{project_name}-{date}"
+# validation report all land inside `{prd_output_path}/{run_folder_pattern}/`.
+# Resume-check scans `{prd_output_path}` for prior unfinished runs.
+prd_output_path = "{planning_artifacts}/prds"
+run_folder_pattern = "prd-{project_name}-{date}"
 
 # Document standards applied to human-consumed docs at finalize. Each entry is
 # a `skill:`, `file:`, or plain-text directive; the parent LLM applies the
@@ -90,6 +91,11 @@ doc_standards = [
 # tool needs. If a named MCP tool is unavailable at runtime, the LLM falls
 # back to standard behavior and notes the gap. Empty by default.
 #
+# Lifecycle note: distinct from persistent_facts. persistent_facts are loaded
+# once at activation and kept in mind for the whole run; external_sources are
+# a registry consulted on demand and only when the conversation surfaces a
+# matching need.
+#
 # Examples (set in team/user override TOML):
 #   "When researching internal product context, consult corp:kb_search (database='product-docs') before web search."
 #   "For competitive landscape during Discovery, query corp:competitive_db with category={project_name}."
@@ -105,6 +111,9 @@ external_sources = []
 # unavailable at runtime, the handoff is skipped and flagged in the JSON
 # status; local files always exist regardless. Fires automatically — users
 # can opt out in their prompt for a specific run. Empty by default.
+#
+# Lifecycle note: distinct from persistent_facts and external_sources.
+# Fired once at Finalize step 6, never during Discovery or drafting.
 #
 # Examples (set in team/user override TOML):
 #   "After finalize, upload prd.md and addendum.md to Confluence via corp:confluence_upload (space_key='PROD', parent_page='PRDs', label='prd', author={user_name})."
