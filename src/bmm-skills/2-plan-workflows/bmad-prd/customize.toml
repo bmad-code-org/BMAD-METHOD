@@ -111,3 +111,26 @@ external_sources = []
 #   "Mirror the PRD to Notion via notion:create_page (database_id='abc123', title='PRD: '+{project_name})."
 #   "When the PRD references a parent initiative, link via corp:jira_link on the epic key in frontmatter."
 external_handoffs = []
+
+# --- Finalize reviewers ---
+# Reviewers spawned at Finalize step 3 (and at the Validate intent) alongside
+# the structural checklist validator. The authoring skill assembles the gate
+# menu (validator + these reviewers + any ad-hoc reviewers it judges warranted
+# by the artifact content) and lets the user pick all, a subset, or skip. Gate
+# UX is stakes-calibrated: hobby/solo scope may run defaults quietly or skip;
+# higher stakes get the explicit menu.
+#
+# Entries follow the standard prefix convention (same as persistent_facts and
+# doc_standards):
+#   "skill:NAME"   invoke the named review skill as a subagent against prd.md
+#   "file:PATH"    load the file as a review prompt; spawn an adversarial
+#                  subagent applying that prompt to prd.md
+#   plain text     use the text directly as the subagent's review prompt
+#
+# Override TOML may append additional reviewers. Arrays append per BMad rules.
+#
+# Resolved on-demand by the authoring skill (not pulled at activation): only
+# when entering the Validate intent or assembling the gate at Finalize step 3.
+finalize_reviewers = [
+  "skill:bmad-review-adversarial-general",
+]

@@ -34,11 +34,11 @@ How every turn runs, regardless of intent.
 
 ## Intent Operating Modes
 
-**Create.** A PRD the user is proud of, drawn out through real conversation. Discovery first, drafting second. Bind `{doc_workspace}` to a fresh folder at `{workflow.output_dir}/{workflow.output_folder_name}/` and write `prd.md` there with YAML frontmatter (title, created, updated); tell the user the workspace path. Version and state transitions live in `decision-log.md`. For Update and Validate, `{doc_workspace}` is the existing folder of the PRD being targeted. When drafting is complete, proceed to `## Finalize`.
+**Create.** A PRD the user is proud of, drawn out through real conversation. Discovery first, drafting second. Bind `{doc_workspace}` to a fresh folder at `{workflow.output_dir}/{workflow.output_folder_name}/` and write `prd.md` there with YAML frontmatter (title, created, updated); tell the user the workspace path. Version and state transitions live in `decision-log.md`. When drafting is complete, proceed to `## Finalize`.
 
-**Update.** Reconcile an existing PRD with a change signal. Orient via source extractors (see `## Constraints` → Extract, don't ingest) against the PRD, addendum, `decision-log.md`, and original inputs, then run the `## Discovery` posture against the change signal. Surface conflicts with prior decisions before changing: read `decision-log.md`, identify decisions touching the same area as the change, and for each, check whether the change reverses it, contradicts a stated assumption, or removes a non-goal; if so, raise it to the user before applying. If the change is fundamental (revises Vision or Target User), offer Create instead of patching. When changes are applied, proceed to `## Finalize`.
+**Update.** Reconcile an existing PRD with a change signal. Orient via source extractors (see `## Constraints` → Extract, don't ingest) against the PRD, addendum, `decision-log.md`, and original inputs, then run the `## Discovery` posture against the change signal. Surface conflicts with prior decisions before changing: read `decision-log.md`, identify decisions touching the same area as the change, and for each, check whether the change reverses it, contradicts a stated assumption, or removes a non-goal; if so, raise it to the user before applying. Once changes are applied, proceed to `## Finalize`.
 
-**Validate** (or *analyze*). Critique an existing PRD against `{workflow.validation_checklist}`. Standalone; does NOT enter `## Finalize`. Orient via source extractors against `decision-log.md` and any original inputs to give the validator context. Spawn the validator subagent against `prd.md` (and `addendum.md` if present); produce findings and a validation report per `references/validation-render.md`. Always offer to roll findings into an Update.
+**Validate** (or *analyze*). Critique an existing PRD. Standalone; does NOT enter `## Finalize`. Orient via source extractors against `decision-log.md` and any original inputs. Assemble the reviewer gate menu: structural checklist validator (against `{workflow.validation_checklist}`) + each entry in `{finalize_reviewers}` (resolved on-demand from `customize.toml`) + any ad-hoc reviewers warranted by the PRD content (composed as plain-text entries on the fly). Present the menu; user picks all, a subset, or skip. Spawn the selection as parallel subagents against `prd.md` (and `addendum.md` if present), dispatching by prefix: `skill:NAME` invokes the named skill; `file:PATH` spawns an adversarial subagent applying the loaded file as the review prompt; plain-text entries are used directly as the subagent's prompt. **Subagent contract:** each reviewer writes its full review to `{doc_workspace}/review-{slug}.md` and returns ONLY a compact summary (verdict, top 2-3 findings as one-liners, file path); the parent never holds full review text in context. The structural validator additionally produces a validation report per `references/validation-render.md`. List all artifact paths and summaries to the user; offer a section-by-section walk through findings if they want it. Always offer to roll findings into an Update.
 
 ## Discovery
 
@@ -47,6 +47,8 @@ How every turn runs, regardless of intent.
 Coach, do not quiz. Push hardest on PRD Discipline risks: unexamined assumptions, capability-vs-implementation confusion, term drift, scope creep, ambiguity for downstream readers. Suggest research if needed and have subagents use web search tools as needed.
 
 Push for two to three named-persona user journeys even when the user does not propose them. UJs are how teams discover persona gaps, scope ambiguity, and missed failure handling. Solo/hobby scope can drop to one or none.
+
+Facilitation moves to keep handy. For User Journeys, walk the story shape: opening scene, rising action, climax (the moment value is delivered), resolution; real edge cases surface at the climax, not as invented error states. For MVP scope, ask which kind of MVP this is before listing in/out: problem-solving (proves the problem is solved), experience (proves the interaction model), platform (proves the base others build on), or revenue (proves willingness to pay); each implies different scope logic. For feature decisions, state the inference and invite correction rather than quizzing the user ("I'm assuming X works like Y, is that right?" beats "should X work like Y or Z?").
 
 Load `references/probing.md` for the seven probing categories, critical-assumption scans, and the PRD / solution-design boundary; apply in Discovery and Update.
 
@@ -78,7 +80,7 @@ Surface these honestly and let the user choose; if they prefer this skill anyway
 Once the situational read is complete, offer the user a choice before proceeding (one sentence per option):
 
 - **Express:** resolve any remaining critical gaps in a short batch, then draft the full PRD at once.
-- **Facilitative:** work through the sections that require PM thinking before drafting, using the techniques in `references/facilitation-guide.md`. Capture all decisions in the log, section to section. Draft after the key sections are walked. The goal is that the user has authored the thinking, not just answered intake questions.
+- **Facilitative:** work through the sections that require PM thinking before drafting. Capture all decisions in the log, section to section. Draft after the key sections are walked. The goal is that the user has authored the thinking, not just answered intake questions.
 
 In both modes, resolve decisions conversationally rather than silently deferring them into `[ASSUMPTION]` tags. Only use `[ASSUMPTION]` when the answer requires research or external input the PM cannot provide in the moment.
 
@@ -88,7 +90,7 @@ In both modes, resolve decisions conversationally rather than silently deferring
 
 - **Features grouped, FRs nested.** Features open with behavioral description; FRs nested and numbered globally for stable IDs. Cross-cutting NFRs in their own section; skip traceability matrices.
 - **Capabilities, not implementation.** FRs describe what users or systems can do, not how. Tech choices go in addendum.
-- **Right-size to purpose.** Section depth and adapt-in clusters follow project type and stakes; the template's adapt-in menu names the standard clusters.
+- **Right-size to purpose.** Load `{workflow.prd_template}` as the shape menu. Treat it as a menu, not a skeleton: drop, reorder, combine, or rename sections as the PRD needs; never include a section just because it appears. The essential spine is the floor, not the ceiling — hobby keeps it short, enterprise layers in clusters from the template's adapt-in menu.
 - **Counter-metrics named.** When Success Metrics is present, name what NOT to optimize.
 
 ### Substance
@@ -113,9 +115,11 @@ In both modes, resolve decisions conversationally rather than silently deferring
 
 ## Finalize
 
+At entry, name the sequence for the user in one sentence: walk the decision log, reconcile inputs, run the reviewer pass, resolve open items, then polish over the final content. Polish goes last so it does not have to redo work after reviewer fixes.
+
 1. Decision log audit: walk `decision-log.md` with the user; each entry captured in PRD, in addendum, or set aside.
 2. Input reconciliation: subagent per user-supplied input against `prd.md` + `addendum.md`; surface gaps, especially qualitative ideas (tone, voice, feel) the FR structure silently drops. Must happen before polish.
-3. Discipline pass: validator subagent against `prd.md` with `{workflow.validation_checklist}`. Findings stay in-conversation; autofix obvious issues, ask on ambiguous ones. No report file is written. Resolve before polish.
+3. Reviewer pass. Assemble the gate menu: structural checklist validator (against `{workflow.validation_checklist}`) + each entry in `{finalize_reviewers}` (resolved on-demand from `customize.toml`) + any ad-hoc reviewers warranted by the PRD content (composed as plain-text entries on the fly). Gate UX is stakes-calibrated: hobby/solo scope may run defaults quietly or skip; higher stakes get the explicit menu with all, subset, or skip. Spawn the selection as parallel subagents against `prd.md`, dispatching by prefix: `skill:NAME` invokes the named skill; `file:PATH` spawns an adversarial subagent applying the loaded file as the review prompt; plain-text entries are used directly. **Subagent contract:** each reviewer writes its full review to `{doc_workspace}/review-{slug}.md` and returns ONLY a compact summary to the parent (verdict, top 2-3 findings as one-liners, file path). The parent never holds full review text in context. **Walk-through:** the parent groups findings by PRD section using each finding's location field (or by reviewer when section mapping is unclear); walks the user section by section, offering to open the full review document for any reviewer. Per finding, user picks autofix, discuss, defer to open items, or ignore. Hobby/solo scope can skip the walk and just print summaries. Resolve before polish.
 4. Open-items review: triage all Open Questions, `[ASSUMPTION]` tags, and `[NOTE FOR PM]` callouts. A phase-blocker is an open item that would make the PRD unsafe for the next phase of work (UX, architecture, epics); a non-blocker is deferrable to a later cycle with an owner and revisit condition. Surface only phase-blockers one at a time; resolve before calling the PRD ready. Log deferred items to `decision-log.md`. If phase-blocker count is high, flag it.
 5. Polish: apply `{workflow.doc_standards}` to `prd.md` and `addendum.md` via parallel subagents.
 6. External handoffs: execute `{workflow.external_handoffs}` entries; surface returned URLs/IDs. Skip and flag unavailable tools.

@@ -1,8 +1,4 @@
-# PRD Template — A Menu, Not a Skeleton
-
-This is a menu of sections the facilitator picks from based on what the product, the stakes, the audience, and the existing inputs actually need. Hobby projects use the essential spine and stop. Enterprise initiatives, regulated submissions, and consumer launches add clusters from the adapt-in menu below. **Never include a section just because it appears here.** Drop, reorder, rename, combine — whatever the PRD needs.
-
----
+# PRD Template
 
 ## Essential Spine *(almost always present)*
 
@@ -169,17 +165,3 @@ updated: {YYYY-MM-DD}
 ### Small-scope all-inclusive *(use when scope is 1-2 stories' worth and the user wants a single captured artifact — chosen during the Right-skill check in Discovery)*
 - **Stories** — story-level specs listed inline at the end of the doc. Each story: *"As a [persona], I can [action] [under conditions]. Acceptance: [testable criteria]."* Numbered Story-1, Story-2, ... for reference. Pair with very lean §1 Vision, §2 Target User (often just JTBD + one UJ), §3 Glossary (handful of terms), §4 Features (often a single feature), §6 MVP Scope (in/out very tight). The whole doc fits on a page or two and captures intent + implementable stories in one place. If the user doesn't want the captured artifact at all, `bmad-quick-dev` is the better path — this cluster is only for "I want a doc *and* the stories."
 
----
-
-## Notes for the facilitator
-
-- **The essential spine is the floor, not the ceiling.** A hobby PRD might keep all ten sections short. An enterprise PRD layers many clusters from the adapt-in menu.
-- **§3 Glossary before §4 Features.** Mechanics never introduce a new domain noun without adding it to the Glossary in the same pass. Persona, JTBD, and Journeys may use Glossary terms before §3 formally defines them — context is inferable; the Glossary is for downstream anchoring.
-- **§2.4 Key User Journeys carry signal.** Default shape is named-persona mini-flow (persona, 3-5 steps, edge cases, optional capability surfacing). PMs can go deeper, including full UX-level detail, if they choose. Hobby/solo scope can collapse to one-liners. UJs are how teams discover persona gaps, scope ambiguity, and missed failure handling — push for two to three in any non-trivial scope.
-- **§4 Features pattern at every scale.** Description → FRs nested (each as `#### FR-N: Name` with testable consequences and optional per-FR Out of Scope) → optional feature-specific NFRs → optional notes. Hobby PRD: one short paragraph and three FRs per feature. Enterprise feature: multi-paragraph description, fifteen FRs, several feature-specific NFRs, open questions. Same shape, different depth.
-- **`[ASSUMPTION]`, `[NON-GOAL]`, `[v2 — out of MVP]`, `[NOTE FOR PM]` callouts are first-class.** They signal to downstream readers and the next session of work. Every `[ASSUMPTION]` lands in §9 Assumptions Index.
-- **When UX is *input* to the PRD** (journeys already designed elsewhere): §2.4 mirrors the UX UJ IDs and points to the source doc. The PRD references, does not duplicate. Personas in §2.1 also mirror what the UX doc defined.
-- **When UX is *output* of the PRD** (no UX work yet, may go to `bmad-create-ux-design` later): §2.4 carries the PM's understanding of the journeys with enough flow detail to be extractable downstream. UX elaboration adds screens, IA, and micro-interactions on top.
-- **§7 Success Metrics scales with stakes** but is always present. Counter-metrics matter as much as primary metrics — they shape what NOT to optimize.
-- **Small-scope all-inclusive option.** When scope is genuinely 1-2 stories and the user wants a single artifact instead of running a separate `bmad-create-story` workflow, add the adapt-in *Stories* cluster: lean §1-§6 plus inline §Stories at the end. The whole doc fits on a page or two. This is a valid PRD shape for tiny work — don't apologize for it.
-- **Adapt the section numbering.** The spine uses 0-9; adapt-in additions slot in wherever they read best (e.g., Aesthetic & Tone before §3 if branding is foundational, Compliance after §5 Non-Goals, Constraints & Guardrails between Features and Non-Goals, Stories at the very end after Assumptions Index).
