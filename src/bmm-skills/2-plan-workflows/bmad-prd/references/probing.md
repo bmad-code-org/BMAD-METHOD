@@ -1,6 +1,6 @@
 # Probing
 
-Loaded on entry to Discovery or Update. Symptom-based; `facilitation-guide.md` is section-based. Both apply.
+Loaded on entry to Discovery or Update.
 
 One probe per turn. When multiple gaps surface, pick the most load-bearing; record the others as Open Questions.
 

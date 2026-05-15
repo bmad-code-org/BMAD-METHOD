@@ -30,26 +30,27 @@ updated: {YYYY-MM-DD}
 [Who this is explicitly not for in v1.]
 
 ### 2.4 Key User Journeys
-*Named-persona flows the product enables. Numbered globally as UJ-1 through UJ-N. FRs reference journeys by ID inline ("realizes UJ-3"); SMs may also cross-reference. Depth is the team's call — the default below carries enough detail for downstream extraction; PMs may go deeper, including full UX-level detail with screens and micro-interactions, if they choose. If a UX doc already exists, mirror its UJ IDs here and point to the source.*
+*Named-persona narratives the product enables. Numbered globally as UJ-1 through UJ-N. FRs reference journeys by ID inline ("realizes UJ-3"); SMs may also cross-reference. If a UX doc already exists, mirror its UJ IDs here and point to the source.*
 
-#### UJ-1: {Persona doing the thing}
+**Default shape:** a named scene with entry state, path, climax, and resolution. Each beat forces specificity the team would otherwise leave implicit — auth assumptions, screen order, what tells the user value landed. Read together as a short narrative; the example below shows the form.
 
-**Persona:** {Name from §2.1, e.g. "Merchant Admin"}
+- **UJ-1. {One-line title — persona doing the thing.}**
+  - **Persona + context:** one line, grounded enough to explain the *why*.
+  - **Entry state:** authenticated? which surface? coming from where?
+  - **Path:** 3-5 concrete beats — taps, screens, decisions.
+  - **Climax:** the moment value is delivered and how the user knows.
+  - **Resolution:** state they're left in, what's next.
+  - **Edge case** *(optional)*: one real failure mode and what the user does next.
 
-**Flow:**
-1. {step}
-2. {step}
-3. {step}
+  *Written out, that becomes:*
+  > **UJ-3. Priya checks the trip damage before she's even home.**
+  > Priya, budgeting on a single income with a new baby, finishes a grocery run and gets in the car. Already authenticated via biometric on a previous session. She opens the app, taps the FAB camera, and scans the receipt. The app OCRs the total and shows a single-screen overlay: this trip $84.20, weekly cap $250, $172.10 remaining, three days left in the week. She closes the app and drives home. **Edge case:** if she scanned a receipt earlier today, the app asks whether this replaces or adds to that trip before counting it against the cap.
 
-**Edge cases:**
-- {real failure mode and what the user does next}
+- **UJ-2. ...**
 
-**Capabilities surfaced:** *(optional)*
-- The system must {capability}. → FR-N
-
-#### UJ-2: ...
-
-[Hobby/solo scope can collapse each UJ to a one-liner ("UJ-1 — short flow description"). For complex products with onboarding, checkout, multi-step approvals, etc., expand further. For libraries/CLIs with minimal flow, reduce to a single line or collapse into §2.2 JTBD.]
+**Scope dial:**
+- **Lighter** — hobby/solo, library/CLI, or when the UJ is essentially a JTBD restated: a single sentence works (`{Persona}, {context}, {what they do and why}.`).
+- **Heavier** — auth, multi-device handoff, complex navigation, or anything feeding downstream UX/architecture: add a numbered Flow, an Edge cases list, and a capability → FR mapping (`The system must {capability}. → FR-N`).
 
 ## 3. Glossary
 *Downstream workflows and readers must use these terms exactly. FRs, UJs, and SMs use Glossary terms verbatim; introducing a synonym anywhere in the PRD is a discipline violation. If §4 introduces a new domain noun, add it to the Glossary in the same pass.*
