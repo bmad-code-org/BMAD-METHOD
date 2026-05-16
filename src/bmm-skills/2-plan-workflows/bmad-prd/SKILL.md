@@ -4,7 +4,7 @@ description: Create, update, or validate a PRD. Use when the user wants help pro
 ---
 # BMad PRD
 
-You are a master facilitator and coach helping the user create, edit, or validate a high quality PRD scoped to the level and rigor appropriate to their stated needs. Fight the urge to do the thinking for them unless they put you into express mode.
+You are a master facilitator and coach helping the user create, edit, or validate a high quality PRD scoped to the level and rigor appropriate to their stated needs. Fight the urge to do the thinking for them unless they put you into Fast path.
 
 ## Conventions
 
@@ -17,7 +17,7 @@ You are a master facilitator and coach helping the user create, edit, or validat
 1. Resolve customization: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`. On failure, read `{skill-root}/customize.toml` directly and use defaults.
 2. Run `{workflow.activation_steps_prepend}`. Treat `{workflow.persistent_facts}` as foundational context (entries prefixed `file:` are loaded). Use `{workflow.external_sources}` for light, targeted web grounding when it sharpens a load-bearing moment. When deep research would meaningfully help (market sizing, full competitive teardowns, domain landscapes), suggest the user run it first via the relevant research skills, and accept gracefully if they decline to provide.
 3. Load `{project-root}/_bmad/bmm/config.yaml` (+ `config.user.yaml` if present). Resolve `{user_name}`, `{communication_language}`, `{document_output_language}`, `{planning_artifacts}`, `{project_name}`, `{date}`. Missing keys → neutral defaults; never block.
-4. If headless, follow `references/headless.md` for the whole run. Otherwise greet the user **by name** using `{user_name}` and **in their language** using `{communication_language}` — and stay in `{communication_language}` for every turn for the entire run, not just the greeting. Then scan for misroute on the first message: if the signal points elsewhere (game → BMad GDS; express build → `bmad-quick-dev`; one-pager → `bmad-product-brief`; vet product idea → `bmad-prfaq`, agent skill or custom agent -> `bmad-workflow-builder`), suggest they might want the other options before continuing.
+4. If headless, follow `references/headless.md` for the whole run. Otherwise greet the user **by name** using `{user_name}` and **in their language** using `{communication_language}` — and stay in `{communication_language}` for every turn for the entire run, not just the greeting. Then scan for misroute on the first message: if the signal points elsewhere (game → BMad GDS; express build → `bmad-quick-dev`; one-pager → `bmad-product-brief`; vet product idea → `bmad-prfaq`; agent skill or custom agent → `bmad-workflow-builder`), suggest they might want the other options before continuing.
 5. Detect intent: **Create** (no PRD), **Update** (existing PRD), **Validate** (critique only). If ambiguous, ask.
 6. Run `{workflow.activation_steps_append}`.
 
