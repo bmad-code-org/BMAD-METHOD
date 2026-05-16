@@ -43,17 +43,21 @@ on_complete = ""
 # to enforce a different structure (e.g. regulated-industry, internal-tool, investor-input).
 prd_template = "assets/prd-template.md"
 
-# Validation checklist used at the Validate intent and at Finalize step 3.
-# A subagent walks the checklist against prd.md and returns structured findings.
-# Override the path in team/user TOML to enforce an org-specific checklist
-# (regulated-industry compliance, investor-pitch standards, etc.).
+# PRD quality rubric used at the Validate intent and at Finalize step 3.
+# A subagent walks the rubric against prd.md and writes a substantive review
+# organized by quality dimensions (decision-readiness, substance, strategic
+# coherence, etc.). Override the path in team/user TOML to enforce an
+# org-specific rubric (regulated-industry compliance, investor-pitch standards,
+# etc.). The filename "checklist" is retained for back-compat with override
+# files; the content is a judgment rubric, not a boolean checklist.
 validation_checklist_template = "assets/prd-validation-checklist.md"
 
-# HTML template used to render validation findings into a styled, scannable
-# report. The renderer (scripts/render-validation-html.py) substitutes
-# structured findings + summary stats into this template; the template is
-# fully overridable to match org branding. The default uses inline CSS, no
-# external dependencies, and native HTML <details> for collapse — no JS.
+# HTML skeleton the synthesis pass fills directly when consolidating reviewer
+# outputs into a validation report. No substitution engine — the parent LLM
+# reads every {doc_workspace}/review-*.md, fills the skeleton's TEMPLATE_*
+# placeholders, and writes the result. Fully overridable to match org branding.
+# Uses inline CSS, no external dependencies, and native HTML <details> for
+# collapse — no JS.
 validation_report_template = "assets/validation-report-template.html"
 
 # Run folder location. The PRD, optional addendum, decision log, and optional
@@ -140,6 +144,4 @@ external_handoffs = []
 #
 # Resolved on-demand by the authoring skill (not pulled at activation): only
 # when entering the Validate intent or assembling the gate at Finalize step 3.
-finalize_reviewers = [
-  "skill:bmad-review-adversarial-general",
-]
+finalize_reviewers = []

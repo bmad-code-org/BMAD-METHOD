@@ -36,4 +36,4 @@ End with the JSON response (full schemas with examples in `assets/headless-schem
 
 **Update.** Apply the change, log to `.decision-log.md` with rationale, and surface any conflict-with-prior-decision in `conflicts_with_prior_decisions[]` in the JSON status. Halt `blocked` if intent is ambiguous.
 
-**Validate.** Always write `validation-report.md` to `{doc_workspace}` regardless of finding count. Always include `"offer_to_update": true` in the JSON status. Run the renderer without `--open`.
+**Validate.** Always write both `validation-report.html` and `validation-report.md` to `{doc_workspace}` regardless of finding count. Always include `"offer_to_update": true` in the JSON status. Skip the browser-open step in `references/validate.md` — write the artifacts and return.

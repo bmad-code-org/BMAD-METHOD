@@ -1,33 +1,135 @@
-# PRD Validation Checklist
+# PRD Quality Rubric
 
-Loaded by the PRD validator subagent. For each item, return `{id, status: pass|fail|warn|n/a, severity: low|medium|high|critical, location, note}`. Skip items not applicable to the agreed stakes. Cite specific PRD locations — never abstract criticism.
+A judgment rubric for the validator subagent. Walk the PRD with these dimensions in mind and write substantive findings — not box-ticking. The goal is a review that tells the user whether this PRD is *good*, not whether it has the right section headers.
 
-## Quality
+Most PRDs do not need every dimension scrutinized equally. Calibrate to the agreed stakes, the PRD's shape (consumer product, internal tool, regulatory update, technical capability spec), and what the PRD itself is trying to do. Be specific — cite locations, quote phrases, name what's missing. Abstract criticism is failure of nerve.
 
-- **Q-1. Information density.** Sentences carry weight. Flag filler, hedging, and conversational padding.
-- **Q-2. Measurability.** Where measurement matters, FRs and Success Metrics are measurable; subjective adjectives flagged. Counter-metrics named when Success Metrics exist.
-- **Q-3. Traceability.** Every FR includes `Realizes UJ-X` referencing a UJ in §2.4. Every SM includes `Validates FR-X` referencing one or more FRs. Cross-references resolve.
-- **Q-4. Vision and JTBDs concrete.** Vision is specific and stands alone — not a generic feature list. JTBDs are audience-grounded, not abstract.
-- **Q-5. Non-Goals explicit.** A Non-Goals section is present where it would do real work; inline `[NON-GOAL]` and `[v2]` callouts where omissions would otherwise be silently assumed.
-- **Q-6. Dual-audience and self-contained.** Each section makes sense pulled out alone (cross-references via Glossary terms, not "see above"); the PRD is readable by humans and structured cleanly for downstream source-extraction by UX, architecture, and story-creation workflows.
-- **Q-7. FR testability.** Every FR has at least one testable consequence (verifiable condition with measurable outcome). Flag hand-waves like "system handles X gracefully" or "reasonable performance."
+## How to use this rubric
 
-## Discipline
+1. Read the full PRD (and addendum.md if present) before writing anything.
+2. For each of the seven dimensions below, form a judgment — *strong / adequate / thin / broken* — backed by specifics from the PRD.
+3. Write findings only where they add information. A `strong` dimension may need no findings; a `broken` one needs concrete, fixable ones.
+4. Severity ranks impact on the PRD's usefulness, not how easy the fix is. A vague Vision statement is *critical* even though it's a one-paragraph fix; a glossary drift might be *low* even though it appears in many places.
+5. The overall verdict is your synthesis — 2–3 sentences that name what holds up and what's at risk. Earn it with the dimension judgments.
 
-- **D-1. Capabilities, not implementation.** FRs describe what users/systems can do, not how. Flag technology names, library choices, architecture decisions.
-- **D-2. Input fidelity.** Requirements from input documents (brief, research, prior PRD) are still in scope or explicitly handled via Non-Goals or `[ASSUMPTION]`.
-- **D-3. Personas grounded.** If personas exist, they are research-grounded or marked `[ILLUSTRATIVE]`. Each persona drives at least one decision.
-- **D-4. No innovation theater.** Novelty claims are real, not invented.
+## Output format
 
-## Structural integrity
+Write findings to `{doc_workspace}/review-rubric.md`:
 
-- **S-1. Glossary integrity.** Every domain noun is defined in the Glossary and used identically throughout — including in FR descriptions, consequences, UJ flows, and SM definitions. Flag drift (case, plural, synonyms) and candidate missing-term entries.
-- **S-2. ID continuity.** FR / UJ / SM / Story IDs are contiguous, unique, and cross-references resolve.
-- **S-3. Assumptions Index.** Every inline `[ASSUMPTION: ...]` appears in the Assumptions Index and vice versa.
-- **S-4. Open-items density.** Count Open Questions + `[ASSUMPTION]` + `[NOTE FOR PM]`. Red flag if density is high relative to the agreed stakes.
-- **S-5. UJ persona linkage.** Every UJ names a persona from §2 by exact label. Flag floating UJs that don't tie to a defined persona.
+```markdown
+# PRD Quality Review — {prd_name}
 
-## Stakes-gated
+## Overall verdict
+[2–3 sentences. What holds up, what's at risk. Earned by the dimension judgments below.]
 
-- **STK-1. Required sections.** The PRD includes the sections the agreed stakes and product type warrant.
-- **STK-2. UJ density.** For non-hobby/non-solo scope, at least two named-persona UJs present in §2.4. Hobby/solo scope is exempt.
+## Decision-readiness — [strong | adequate | thin | broken]
+[1–3 paragraphs of judgment with specific PRD locations.]
+
+### Findings
+- **[critical|high|medium|low]** [Title] (§ location) — [Note]. *Fix:* [suggested fix].
+
+## Substance over theater — [verdict]
+...
+
+(repeat for each dimension)
+
+## Mechanical notes
+[Glossary drift, ID continuity, broken cross-refs, Assumptions Index roundtrip. Lighter weight — these matter for downstream but don't drive the overall verdict.]
+```
+
+## The seven dimensions
+
+### 1. Decision-readiness
+
+Can a decision-maker act on this PRD? Are the trade-offs surfaced honestly, or has the PRD smoothed everything to neutral? Would someone pushing back find their objection acknowledged or dodged?
+
+Look for:
+- Decisions that are stated as decisions, not buried as "considerations."
+- Trade-offs named with what was given up, not just what was chosen.
+- Open Questions that are actually open — not rhetorical questions with an answer in the next sentence.
+- `[NOTE FOR PM]` callouts at real tensions, not at safe checkpoints.
+
+Red flag: a PRD where every choice "balances" everything, every NFR is "important," every persona "values" the product.
+
+### 2. Substance over theater
+
+Is the content earned, or is it furniture? Distinguish:
+
+- **Persona theater** — invented persona detail unmarked as `[ILLUSTRATIVE]`. Personas that don't drive a single decision in the PRD. More than four personas. Personas whose only function is to make the PRD look thorough.
+- **Innovation theater** — claimed novelty that isn't novel. Differentiation sections written because the template had one, not because Discovery surfaced something.
+- **NFR theater** — copied boilerplate ("system must be scalable / secure / reliable") without product-specific thresholds.
+- **Vision theater** — a Vision statement that could swap into any PRD in this category without change.
+
+Flag what reads like furniture, even if it's well-written furniture.
+
+### 3. Strategic coherence
+
+Does the PRD have a thesis? Do the features serve a unified arc, or is it a list of capabilities someone wanted?
+
+Look for:
+- A stated thesis the PRD bets on (problem framing, user insight, market move).
+- Feature prioritization that follows from the thesis — not from "what's easy first."
+- Success Metrics that validate the thesis, not metrics that just measure activity (DAU/MAU when the thesis is about engagement quality is a tell).
+- Counter-metrics named when SMs exist.
+- Coherent MVP scope kind — problem-solving, experience, platform, or revenue — with scope logic that matches.
+
+Red flag: a PRD that reads as a backlog with section headings.
+
+### 4. Done-ness clarity
+
+Would an engineer reading this PRD know what "done" looks like for each FR?
+
+Look for:
+- FRs with at least one testable consequence per FR — verifiable condition, measurable outcome.
+- "System handles X gracefully," "reasonable performance," "user-friendly" — flag every one.
+- Acceptance criteria implied or explicit. Sometimes the FR's consequences carry this; sometimes the PRD genuinely needs an Acceptance section.
+- For non-functional sections (UX, performance, security): bounds, not adjectives.
+
+This is the dimension downstream story creation will lean on hardest. Be unforgiving here.
+
+### 5. Scope honesty
+
+Are omissions explicit, or is the reader meant to infer them?
+
+Look for:
+- A Non-Goals section where it would do real work — and `[NON-GOAL for MVP]` / `[v2 — out of MVP]` callouts where omissions could be silently assumed.
+- `[ASSUMPTION: …]` tags on inferences the user didn't directly confirm, indexed at the end.
+- `[NOTE FOR PM]` callouts at deferred decisions and unresolved tensions.
+- De-scoping proposed honestly, not done silently.
+
+Open-items density: count Open Questions + `[ASSUMPTION]` + `[NOTE FOR PM]` callouts relative to stakes. High counts on a low-stakes PRD is fine; high counts on a green-light-to-build PRD is a blocker.
+
+### 6. Downstream usability
+
+If this PRD feeds UX, architecture, or story creation, can those workflows source-extract from it cleanly?
+
+Look for:
+- Glossary present; every domain noun used identically across FRs, UJs, SM definitions.
+- FR / UJ / SM IDs contiguous, unique, and cross-references that resolve.
+- Each section makes sense pulled out alone — cross-references via Glossary terms, not "see above."
+- UJs each name a persona from §2 by exact label; no floating UJs.
+
+For standalone PRDs (no downstream), this dimension matters less — say so.
+
+### 7. Shape fit
+
+Has the PRD been forced into a shape that doesn't match the product?
+
+- Consumer product / multi-stakeholder B2B / meaningful UX → UJs and personas are load-bearing.
+- Internal tool, single-operator role → capability spec shape; UJs may be overhead; SMs may be operational rather than user-facing.
+- Regulatory or compliance update → constraint traceability is non-negotiable; UJs may be irrelevant.
+- Hobby / solo → rigor light, substance bar still applies.
+- Brownfield → existing-code references must be accurate; new UJs and existing UJs must be distinguished.
+- Chain-top (feeds UX → architecture → stories) → downstream usability matters more; standalone PRDs can be lighter on traceability.
+
+Flag PRDs that are over-formalized (UJ density for a single-operator tool) or under-formalized (consumer product with no personas or UJs).
+
+## Mechanical notes
+
+Cover these as a tail section, not a primary dimension. They matter for downstream but don't drive the verdict on whether the PRD is good.
+
+- Glossary drift (case, plural, synonyms across the PRD).
+- ID continuity (gaps, duplicates, unresolved cross-references).
+- Assumptions Index roundtrip (every inline `[ASSUMPTION]` indexed; index entries all appear inline).
+- UJ persona linkage (each UJ names a defined persona by exact label).
+- Required sections present for the agreed stakes and product type.

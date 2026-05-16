@@ -1,6 +1,6 @@
 ---
 name: bmad-prd
-description: Create, update, or validate a PRD. Use when the user wants help producing, editing, validating, or analyzing a PRD.
+description: Create, update, or validate a PRD. Use when the user wants help producing, editing, or validating a PRD.
 ---
 # BMad PRD
 
@@ -62,13 +62,13 @@ Decisions, assumptions, open questions, and out-of-scope volunteers land in `.de
 
 Used by the Validate intent and at Finalize step 3.
 
-Assemble the menu: structural validator against `{workflow.validation_checklist_template}` + each entry in `{workflow.finalize_reviewers}` + any ad-hoc reviewers the artifact warrants. Stakes-calibrated — hobby/solo may run quietly or skip; higher stakes get the explicit all/subset/skip menu.
+Assemble the menu: rubric walker against `{workflow.validation_checklist_template}` (the PRD quality rubric) + each entry in `{workflow.finalize_reviewers}` + any ad-hoc reviewers the artifact warrants. Stakes-calibrated — hobby/solo may run quietly or skip; higher stakes get the explicit all/subset/skip menu.
 
-Dispatch entries as parallel subagents against `prd.md` (and `addendum.md` if present) using the standard prefix convention (`skill:` / `file:` / plain text). Each writes its full review to `{doc_workspace}/review-{slug}.md` and returns ONLY a compact summary (verdict, top 2-5 findings, file path) — the parent never holds full review text. If subagents are unavailable, run sequentially: write the file *before* anything else, then flush the review from working context.
+Dispatch entries as parallel subagents against `prd.md` (and `addendum.md` if present) using the standard prefix convention (`skill:` / `file:` / plain text). Each writes its full review to `{doc_workspace}/review-{slug}.md` and returns ONLY a compact summary (verdict, top 2-5 findings, file path) — the parent never holds full review text. The rubric walker uses the prompt and output format in `references/validate.md`. If subagents are unavailable, run sequentially: write the file *before* anything else, then flush the review from working context.
 
 Surface findings tiered, never dumped. Lead with a one-sentence gate verdict, then walk critical + high findings; medium/low roll into a single tail ("plus N more in {file}"). Read the full `review-{slug}.md` only when the user drills into a specific finding. Per finding: autofix, discuss, defer to open items, or ignore.
 
-Under Validate intent, the structural validator additionally runs the rendering pipeline in `references/validate.md`.
+Under Validate intent, the parent additionally runs the synthesis pipeline in `references/validate.md` — folding every selected reviewer's output into a single HTML + markdown report and opening the HTML.
 
 ## Finalize
 
