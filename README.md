@@ -2,7 +2,7 @@
 
 [![Version](https://img.shields.io/npm/v/bmad-method?color=blue&label=version)](https://www.npmjs.com/package/bmad-method)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.12.0-brightgreen)](https://nodejs.org)
 [![Python Version](https://img.shields.io/badge/python-%3E%3D3.10-blue?logo=python&logoColor=white)](https://www.python.org)
 [![uv](https://img.shields.io/badge/uv-package%20manager-blueviolet?logo=uv)](https://docs.astral.sh/uv/)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Community-7289da?logo=discord&logoColor=white)](https://discord.gg/gk8jAdXWmj)
@@ -36,7 +36,7 @@ Traditional AI tools do the thinking for you, producing average results. BMad ag
 
 ## Quick Start
 
-**Prerequisites**: [Node.js](https://nodejs.org) v20+ · [Python](https://www.python.org) 3.10+ · [uv](https://docs.astral.sh/uv/)
+**Prerequisites**: [Node.js](https://nodejs.org) v20.12+ · [Python](https://www.python.org) 3.10+ · [uv](https://docs.astral.sh/uv/)
 
 ```bash
 npx bmad-method install
@@ -82,10 +82,10 @@ BMad Method extends with official modules for specialized domains. Available dur
 [BMad Method Docs Site](https://docs.bmad-method.org) — Tutorials, guides, concepts, and reference
 
 **Quick links:**
+
 - [Getting Started Tutorial](https://docs.bmad-method.org/tutorials/getting-started/)
 - [Upgrading from Previous Versions](https://docs.bmad-method.org/how-to/upgrade-to-v6/)
 - [Test Architect Documentation](https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/)
-
 
 ## Community
 

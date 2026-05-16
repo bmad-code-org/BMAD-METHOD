@@ -15,7 +15,7 @@ Use the BMad installer to add modules from the community registry, third-party G
 - Installing modules from a private or self-hosted Git server
 
 :::note[Prerequisites]
-Requires [Node.js](https://nodejs.org) v20+ and `npx` (included with npm). Custom and community modules can be selected during a fresh install or added to an existing installation.
+Requires [Node.js](https://nodejs.org) v20.12+ and `npx` (included with npm). Custom and community modules can be selected during a fresh install or added to an existing installation.
 :::
 
 ## Community Modules
@@ -68,7 +68,7 @@ Select **Yes**, then provide a source:
 | Input Type            | Example                                           |
 | --------------------- | ------------------------------------------------- |
 | HTTPS URL (any host)  | `https://github.com/org/repo`                     |
-| HTTP URL (any host)   | `http://host/org/repo`                    |
+| HTTP URL (any host)   | `http://host/org/repo`                            |
 | HTTPS URL with subdir | `https://github.com/org/repo/tree/main/my-module` |
 | SSH URL               | `git@github.com:org/repo.git`                     |
 | Local path            | `/Users/me/projects/my-module`                    |
