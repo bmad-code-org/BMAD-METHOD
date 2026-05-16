@@ -1436,7 +1436,7 @@ class UI {
    */
   async promptForDirectory() {
     // Use sync validation because @clack/prompts doesn't support async validate
-    const directory = await prompts.text({
+    const directory = await prompts.directory({
       message: 'Installation directory:',
       default: process.cwd(),
       placeholder: process.cwd(),

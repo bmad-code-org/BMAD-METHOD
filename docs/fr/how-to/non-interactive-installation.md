@@ -15,7 +15,7 @@ Utilisez les options de ligne de commande pour installer BMad de manière non-in
 - Installations rapides avec des configurations connues
 
 :::note[Prérequis]
-Nécessite [Node.js](https://nodejs.org) v20+ et `npx` (inclus avec npm).
+Nécessite [Node.js](https://nodejs.org) v20.12+ et `npx` (inclus avec npm).
 :::
 
 ## Options disponibles

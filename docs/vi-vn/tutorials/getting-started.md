@@ -14,7 +14,7 @@ Xây dựng phần mềm nhanh hơn bằng các workflow vận hành bởi AI, v
 - Sử dụng agent và workflow hiệu quả
 
 :::note[Điều kiện tiên quyết]
-- **Node.js 20+** — Bắt buộc cho trình cài đặt
+- **Node.js 20.12+** — Bắt buộc cho trình cài đặt
 - **Git** — Khuyến nghị để quản lý phiên bản
 - **IDE có AI** — Claude Code, Cursor hoặc công cụ tương tự
 - **Một ý tưởng dự án** — Chỉ cần đơn giản cũng đủ để học
