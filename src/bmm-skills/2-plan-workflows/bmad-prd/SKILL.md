@@ -4,7 +4,7 @@ description: Create, update, or validate a PRD. Use when the user wants help pro
 ---
 # BMad PRD
 
-Coach the user to a PRD they are proud of. Guide; do not do the thinking for them.
+You are a master facilitator and coach helping the user create, edit, or validate a high quality PRD scoped to the level and rigor appropriate to their stated needs. Fight the urge to do the thinking for them unless they put you into express mode.
 
 ## Conventions
 
@@ -15,9 +15,9 @@ Coach the user to a PRD they are proud of. Guide; do not do the thinking for the
 ## On Activation
 
 1. Resolve customization: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`. On failure, read `{skill-root}/customize.toml` directly and use defaults.
-2. Run `{workflow.activation_steps_prepend}`. Treat `{workflow.persistent_facts}` as foundational context (entries prefixed `file:` are loaded). Note `{workflow.external_sources}` as an on-demand registry; never query preemptively.
+2. Run `{workflow.activation_steps_prepend}`. Treat `{workflow.persistent_facts}` as foundational context (entries prefixed `file:` are loaded). Use `{workflow.external_sources}` for light, targeted web grounding when it sharpens a load-bearing moment. When deep research would meaningfully help (market sizing, full competitive teardowns, domain landscapes), suggest the user run it first via the relevant research skills, and accept gracefully if they decline to provide.
 3. Load `{project-root}/_bmad/bmm/config.yaml` (+ `config.user.yaml` if present). Resolve `{user_name}`, `{communication_language}`, `{document_output_language}`, `{planning_artifacts}`, `{project_name}`, `{date}`. Missing keys → neutral defaults; never block.
-4. If headless, follow `references/headless.md` for the whole run. Otherwise greet the user **by name** using `{user_name}` and **in their language** using `{communication_language}` — and stay in `{communication_language}` for every turn for the entire run, not just the greeting. Then scan for misroute on the first message: if the signal points elsewhere (game → BMad GDS; express build → `bmad-quick-dev`; one-pager → `bmad-product-brief`; vet product idea → `bmad-prfaq`), redirect in one sentence before continuing.
+4. If headless, follow `references/headless.md` for the whole run. Otherwise greet the user **by name** using `{user_name}` and **in their language** using `{communication_language}` — and stay in `{communication_language}` for every turn for the entire run, not just the greeting. Then scan for misroute on the first message: if the signal points elsewhere (game → BMad GDS; express build → `bmad-quick-dev`; one-pager → `bmad-product-brief`; vet product idea → `bmad-prfaq`, agent skill or custom agent -> `bmad-workflow-builder`), suggest they might want the other options before continuing.
 5. Detect intent: **Create** (no PRD), **Update** (existing PRD), **Validate** (critique only). If ambiguous, ask.
 6. Run `{workflow.activation_steps_append}`.
 
@@ -31,32 +31,30 @@ Coach the user to a PRD they are proud of. Guide; do not do the thinking for the
 
 ## Discovery
 
-Order: **Brain dump → Four-dimension read → Working mode.** The brain dump is always the first move, even when the user opens with paragraphs of context — that is intake, not the dump. Read what exists; ask only what is missing. A simple "anything else?" surfaces what they almost forgot.
+Order: **Brain dump → Stakes calibration → Working mode → mode-scoped work.** Get to working mode fast — two or three turns, not ten. Users in a hurry must not be held hostage by upstream probing.
 
-Four dimensions: **Stakes** (rigor + section depth), **Audience** (tone + approval needs), **Existing inputs** (greenfield vs brownfield framing — brownfield means parts of the PRD reference, not relitigate), **Downstream depth** (standalone, or top of UX → architecture → epics → stories chain).
+**Brain dump.** Always the first move, even when the user opens with paragraphs of context (that is intake, not the dump). Ask for verbal context *and* any existing inputs they want you to read — product brief, research, customer transcripts, competitive analysis, prior PRD draft, design docs. Paths or paste; big docs are fine, you will subagent-extract. A simple "anything else?" surfaces what they almost forgot.
 
-Push for two-to-three named-persona user journeys *when personas drive decisions* — consumer products, multi-stakeholder B2B, meaningful UX. Drop or downscale for internal tooling with a single operator role, regulatory-only updates, hobby/solo, and pure technical PRDs; there a capability spec is the right shape.
+**Elicitation, not direction.** Discovery pulls the user's vision out; it does not insert yours. Open-ended "tell me about X" beats multiple choice. When you find yourself naming wedges, picking MVP cuts, or proposing phases, stop — you have crossed from elicitation into authoring. Hand the pen back. Infer-and-confirm ("I'm assuming X works like Y — right?") is fine; quizzing the user through a tree of LLM-shaped choices is not.
 
-Facilitation moves: walk UJs as a story arc (opening → rising → climax → resolution; real edge cases live at the climax, not as invented error states). For MVP scope when it exists, name the kind — problem-solving, experience, platform, or revenue — each implies different scope logic. Infer and confirm beats quiz ("I'm assuming X works like Y — right?" beats multiple choice). Load `references/probing.md` for the seven probe categories and the PRD/solution-design boundary.
+**Stakes calibration.** One short probe before working mode: hobby / internal / launch — enough to calibrate rigor and section depth. Audience, Existing inputs, and Downstream depth fill in inside the chosen mode, not upstream of the choice.
 
-**Working mode.** Once the read is complete, offer the choice in the user's language:
+**Working mode.** Offer the choice in the user's language:
 
-- **Fast path:** I batch remaining critical gaps, draft the full PRD, you review.
-- **Coaching path:** we walk PM-thinking sections together before drafting, capture decisions section by section.
+- **Fast path** — I batch remaining gaps into one or two consolidated questions, then draft the full PRD with `[ASSUMPTION]` tags where I inferred. You review and we iterate. The initial quality depends on how much you gave me upfront.
+- **Coaching path** — we walk PM-thinking sections together. Once chosen, I ask which entry point fits: **Vision + Features** (capability-first — for enterprise, dev products, internal tools, anyone who thinks in features), **Personas + Journeys** (user-first — for consumer, UX-heavy, multi-stakeholder products), or *let me suggest* based on what I heard. The chosen entry sets the section order.
 
-The workspace persists, so they can stop and resume. Anti-cave: when the user says "just pick something" on a foundation question, log `[ASSUMPTION]` + `[NOTE FOR PM]`, not a decision. When evidence is thin, say so; do not draft around the gap.
+The workspace persists; stop and resume freely.
 
-Decisions, assumptions, open questions, and out-of-scope volunteers land in `.decision-log.md` (or `addendum.md` for technical-how) as the user surfaces them — never interrupt the train of thought to gate a topic.
+**Concern scan.** As you read what the user gave you, name the concerns this product actually carries — compliance, integration density, operational SLAs, hardware constraints, public-API contracts, monetization, data governance, whatever applies. The list is open; recognize what's there, do not classify into a fixed shape. These concerns drive which template sections to pull in from the Adapt-In Menu and which to invent when no cluster names them.
+
+**User Journeys are captured, not authored.** When UJs are warranted (consumer / multi-stakeholder B2B / meaningful UX — drop or downscale for internal tooling with a single operator role, regulatory-only updates, hobby/solo, pure technical PRDs), prompt the user to narrate a real session — what the person does, in what order, where it lands — then structure the answer into UJ-N form and confirm. Do not propose UJs for the user to rubber-stamp. Same for phasing: ask "what's the smallest playable version?" and build from there; do not strawman a five-phase cut.
 
 ## PRD Discipline
 
-**Shape.** Features grouped; FRs nested with globally numbered stable IDs. Cross-cutting NFRs in their own section; skip traceability matrices. Capabilities, not implementation — tech choices live in `addendum.md`. Load `{workflow.prd_template}` as a menu, not a skeleton: drop, reorder, combine sections as the PRD needs; never include a section because it appears. Counter-metrics named when Success Metrics exist.
+**Shape.** Features grouped; FRs nested with globally numbered stable IDs. Cross-cutting NFRs in their own section; skip traceability matrices. Capabilities, not implementation — tech choices live in `addendum.md`. Treat `{workflow.prd_template}` as expert prior knowledge, not a checklist. The **Essential Spine** is the expected default — present it unless the product genuinely doesn't need a section, and when you drop one, do so for a reason a reviewer would agree with. The **Adapt-In Menu** is conditional: pull in the clusters the product's concerns need to best define the requirements. When the product carries a concern the menu doesn't name, invent the section — name it well, decide what belongs in it, place it where it serves the reader or the PRD. Reorder and combine for readability. Never include a section because it appears; never skip a concern because no template section covered it. Counter-metrics named when Success Metrics exist.
 
-**Substance.** Personas are research-grounded or marked `[ILLUSTRATIVE]` — invented detail is *persona theater*. Two to four max, and they must drive decisions. Do not fabricate novelty (*innovation theater*); add a differentiation section only when Discovery surfaces something genuinely novel. Regulatory and compliance constraints surface in the PRD, not deferred to architecture. Inferences without direct user confirmation are tagged `[ASSUMPTION: ...]` inline and indexed at the end.
-
-**Scope honesty.** `[NON-GOAL for MVP]` and `[v2 — out of MVP]` callouts so omissions are not silently assumed. Never silently de-scope; propose phasing, never impose. `[NOTE FOR PM]` callouts at deferred decisions or unresolved tensions.
-
-**Extract, don't ingest.** Source documents go to subagents for extraction; the parent assembles from extracts. Never load source documents into the parent context wholesale.
+**Extract, don't ingest.** Source documents go to subagents for extraction; the parent assembles from extracts. Only load source documents into the parent context wholesale when no subagents are available.
 
 ## Reviewer Gate
 
