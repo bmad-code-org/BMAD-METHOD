@@ -23,11 +23,15 @@ activation_steps_append = []
 # (standards, compliance constraints, stylistic guardrails).
 # Each entry is either a literal sentence, a skill prefixed with `skill:`, or a `file:`-prefixed path/glob
 # whose contents are loaded as facts.
-# Default is empty. Common opt-ins (set in your team/user override TOML):
-#   "file:{project-root}/_bmad-output/planning-artifacts/project-context.md"  # bmad-generate-project-context output
-#   "skill:acme-co:terms-and-conditions"                                      # a skill that contains some relevant info to the documents that may be generated
-#   "Elvis has left the building"                                             # generic agent instructions
-persistent_facts = []
+#
+# Default loads project-context.md if bmad-generate-project-context has produced one — this gives
+# the facilitator persistent awareness of the project's tech, domain, and constraints without
+# re-asking. Common opt-ins (set in team/user override TOML):
+#   "skill:acme-co:terms-and-conditions"                                      # a skill that contains some relevant info
+#   "Elvis has left the building"                                             # generic agent instruction
+persistent_facts = [
+  "file:{project-root}/**/project-context.md",
+]
 
 # Executed when the workflow completes (after the user has been told the
 # brief is ready). Accepts either a string scalar (single instruction)
@@ -39,9 +43,10 @@ on_complete = ""
 # to enforce a different structure (e.g. regulated-industry, investor-deck).
 brief_template = "assets/brief-template.md"
 
-# Run folder location. The brief and optional addendum land inside `{output_dir}/{output_folder_name}/`.
-output_dir = "{planning_artifacts}/briefs"
-output_folder_name = "brief-{project_name}-{date}"
+# Run folder location. The brief and optional addendum land inside `{brief_output_path}/{run_folder_pattern}/`.
+# Resume-check scans `{brief_output_path}` for prior unfinished runs.
+brief_output_path = "{planning_artifacts}/briefs"
+run_folder_pattern = "brief-{project_name}-{date}"
 
 # Document standards applied to human-consumed docs at finalize. Each entry is
 # a `skill:`, `file:`, or plain-text directive; the parent LLM applies the
