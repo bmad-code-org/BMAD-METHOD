@@ -2,13 +2,102 @@
 import { getSiteUrl } from '../lib/site-url.mjs';
 
 const llmsFullUrl = `${getSiteUrl()}/llms-full.txt`;
+const bannerCopy = {
+  root: {
+    aiLabel: 'AI documentation notice',
+    aiPrefix: 'Consolidated, AI-optimized BMAD docs:',
+    aiLinkGap: ' ',
+    aiSuffix: 'Fetch this plain text file for complete context.',
+    announceLabel: 'BMad Builder announcement',
+    announcePrefix: 'Build your own BMad modules and share them with the community!',
+    announceLinkGap: ' ',
+    getStarted: 'Get started',
+    connectorBefore: ' ',
+    connector: 'or',
+    connectorAfter: ' ',
+    submit: 'submit to the marketplace',
+  },
+  'ko-kr': {
+    aiLabel: 'AI 문서 안내',
+    aiPrefix: 'AI에 최적화된 통합 BMAD 문서:',
+    aiLinkGap: ' ',
+    aiSuffix: '전체 컨텍스트가 필요하면 이 일반 텍스트 파일을 가져오세요.',
+    announceLabel: 'BMad Builder 공지',
+    announcePrefix: '나만의 BMad 모듈을 만들고 커뮤니티와 공유하세요!',
+    announceLinkGap: ' ',
+    getStarted: '시작하기',
+    connectorBefore: ' ',
+    connector: '또는',
+    connectorAfter: ' ',
+    submit: '마켓플레이스에 제출하기',
+  },
+  'vi-vn': {
+    aiLabel: 'Thông báo tài liệu AI',
+    aiPrefix: 'Tài liệu BMAD hợp nhất, tối ưu cho AI:',
+    aiLinkGap: ' ',
+    aiSuffix: 'Lấy tệp văn bản thuần này để có đầy đủ ngữ cảnh.',
+    announceLabel: 'Thông báo BMad Builder',
+    announcePrefix: 'Xây dựng các mô-đun BMad của riêng bạn và chia sẻ với cộng đồng!',
+    announceLinkGap: ' ',
+    getStarted: 'Bắt đầu',
+    connectorBefore: ' ',
+    connector: 'hoặc',
+    connectorAfter: ' ',
+    submit: 'gửi lên marketplace',
+  },
+  'zh-cn': {
+    aiLabel: 'AI 文档提示',
+    aiPrefix: '整合的 AI 优化 BMAD 文档：',
+    aiLinkGap: '',
+    aiSuffix: '获取此纯文本文件以获得完整上下文。',
+    announceLabel: 'BMad Builder 公告',
+    announcePrefix: '构建你自己的 BMad 模块并与社区分享！',
+    announceLinkGap: '',
+    getStarted: '开始使用',
+    connectorBefore: '',
+    connector: '或',
+    connectorAfter: '',
+    submit: '提交到 marketplace',
+  },
+  fr: {
+    aiLabel: 'Avis sur la documentation IA',
+    aiPrefix: 'Documentation BMAD consolidée et optimisée pour l’IA :',
+    aiLinkGap: ' ',
+    aiSuffix: 'Récupérez ce fichier texte brut pour obtenir le contexte complet.',
+    announceLabel: 'Annonce BMad Builder',
+    announcePrefix: 'Créez vos propres modules BMad et partagez-les avec la communauté !',
+    announceLinkGap: ' ',
+    getStarted: 'Commencer',
+    connectorBefore: ' ',
+    connector: 'ou',
+    connectorAfter: ' ',
+    submit: 'soumettre au marketplace',
+  },
+  cs: {
+    aiLabel: 'Upozornění k dokumentaci pro AI',
+    aiPrefix: 'Konsolidovaná dokumentace BMAD optimalizovaná pro AI:',
+    aiLinkGap: ' ',
+    aiSuffix: 'Stáhněte si tento prostý textový soubor pro úplný kontext.',
+    announceLabel: 'Oznámení BMad Builder',
+    announcePrefix: 'Vytvářejte vlastní moduly BMad a sdílejte je s komunitou!',
+    announceLinkGap: ' ',
+    getStarted: 'Začít',
+    connectorBefore: ' ',
+    connector: 'nebo',
+    connectorAfter: ' ',
+    submit: 'odeslat na marketplace',
+  },
+};
+const pathSegments = Astro.url.pathname.split('/').filter(Boolean);
+const locale = pathSegments.find((segment) => segment in bannerCopy) ?? 'root';
+const copy = bannerCopy[locale] ?? bannerCopy.root;
 ---
 
-<div class="ai-banner" role="note" aria-label="AI documentation notice">
-  <span>🤖 Consolidated, AI-optimized BMAD docs: <a href={llmsFullUrl}>llms-full.txt</a>. Fetch this plain text file for complete context.</span>
+<div class="ai-banner" role="note" aria-label={copy.aiLabel}>
+  <span>🤖 {copy.aiPrefix}{copy.aiLinkGap}<a href={llmsFullUrl}>llms-full.txt</a>. {copy.aiSuffix}</span>
 </div>
-<div class="announce-banner" role="note" aria-label="BMad Builder announcement">
-  <span>🚀 Build your own BMad modules and share them with the community! <a href="https://bmad-builder-docs.bmad-method.org/tutorials/build-your-first-module/">Get started</a> or <a href="https://bmad-builder-docs.bmad-method.org/how-to/distribute-your-module/">submit to the marketplace</a>.</span>
+<div class="announce-banner" role="note" aria-label={copy.announceLabel}>
+  <span>🚀 {copy.announcePrefix}{copy.announceLinkGap}<a href="https://bmad-builder-docs.bmad-method.org/tutorials/build-your-first-module/">{copy.getStarted}</a>{copy.connectorBefore}{copy.connector}{copy.connectorAfter}<a href="https://bmad-builder-docs.bmad-method.org/how-to/distribute-your-module/">{copy.submit}</a>.</span>
 </div>
 
 <style>
