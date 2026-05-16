@@ -11,6 +11,7 @@ let _clack = null;
 let _clackCore = null;
 let _picocolors = null;
 const fs = require('node:fs');
+const os = require('node:os');
 const path = require('node:path');
 
 /**
@@ -581,6 +582,15 @@ function hasPathSeparator(value) {
   return value.endsWith('/') || value.endsWith('\\');
 }
 
+function expandHome(input) {
+  if (!input) return input;
+  if (input === '~') return os.homedir();
+  if (input.startsWith('~/') || input.startsWith('~\\')) {
+    return path.join(os.homedir(), input.slice(2));
+  }
+  return input;
+}
+
 function toDirectoryOption(value, label = value, synthetic = false) {
   return { value, label, synthetic };
 }
@@ -596,14 +606,15 @@ function isExistingDirectory(value) {
 function listDirectoryOptions(input, options) {
   const cwd = options.cwd || process.cwd();
   const rawInput = input.trim();
-  const resolvedInput = rawInput ? path.resolve(cwd, rawInput) : cwd;
-  const browseDir =
-    rawInput && !hasPathSeparator(rawInput) && !isExistingDirectory(resolvedInput) ? path.dirname(resolvedInput) : resolvedInput;
-  const prefix = rawInput && browseDir !== resolvedInput ? path.basename(resolvedInput).toLowerCase() : '';
+  const expandedInput = expandHome(rawInput);
+  const trailingSep = hasPathSeparator(rawInput) || hasPathSeparator(expandedInput);
+  const resolvedInput = expandedInput ? path.resolve(cwd, expandedInput) : cwd;
+  const browseDir = expandedInput && !trailingSep && !isExistingDirectory(resolvedInput) ? path.dirname(resolvedInput) : resolvedInput;
+  const prefix = expandedInput && browseDir !== resolvedInput ? path.basename(resolvedInput).toLowerCase() : '';
   const results = [];
 
-  if (!hasPathSeparator(rawInput) && isExistingDirectory(resolvedInput)) {
-    results.push(toDirectoryOption(resolvedInput));
+  if (!trailingSep && isExistingDirectory(resolvedInput)) {
+    results.push(toDirectoryOption(resolvedInput, `. (use this directory)`));
   }
 
   if (isExistingDirectory(browseDir)) {
@@ -622,9 +633,9 @@ function listDirectoryOptions(input, options) {
   }
 
   const validation = options.validate?.(rawInput);
-  const hasMatchingOption = results.some((option) => option.value === rawInput || option.value === resolvedInput);
-  if (rawInput && !validation && !hasMatchingOption) {
-    results.unshift(toDirectoryOption(rawInput, `Create/use: ${rawInput}`, true));
+  const hasMatchingOption = results.some((option) => option.value === resolvedInput);
+  if (expandedInput && !validation && !hasMatchingOption) {
+    results.unshift(toDirectoryOption(resolvedInput, `Create/use: ${resolvedInput}`, true));
   }
 
   return results;
@@ -680,8 +691,12 @@ async function directory(options) {
     },
   });
 
+  const hasSetUserInput = typeof prompt._setUserInput === 'function';
+  const hasClearUserInput = typeof prompt._clearUserInput === 'function';
+
   prompt.on('key', (_, key) => {
     if (key?.name !== 'tab') return;
+    if (!hasSetUserInput) return; // @clack/core API surface changed — skip Tab silently.
     const currentInput = prompt.userInput;
     const isContinuingCycle = tabCompletion.lastValue && currentInput === tabCompletion.lastValue;
     const completionOptions = isContinuingCycle ? tabCompletion.options : prompt.filteredOptions.filter((option) => !option.synthetic);
@@ -699,7 +714,7 @@ async function directory(options) {
     if (!focusedOption) return;
     const completedValue = focusedOption.value;
     tabCompletion.lastValue = completedValue;
-    prompt._clearUserInput();
+    if (hasClearUserInput) prompt._clearUserInput();
     prompt._setUserInput(completedValue, true);
   });
 
