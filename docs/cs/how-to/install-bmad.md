@@ -16,7 +16,7 @@ Pokud chcete použít neinteraktivní instalátor a zadat všechny možnosti na 
 - Aktualizujete stávající instalaci BMad
 
 :::note[Předpoklady]
-- **Node.js** 20+ (vyžadováno pro instalátor)
+- **Node.js** 20.12+ (vyžadováno pro instalátor)
 - **Git** (doporučeno)
 - **AI nástroj** (Claude Code, Cursor nebo podobný)
 :::

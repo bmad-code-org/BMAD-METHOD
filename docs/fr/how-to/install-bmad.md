@@ -16,7 +16,7 @@ Si vous souhaitez utiliser un installateur non interactif et fournir toutes les 
 - Mettre à jour une installation BMad existante
 
 :::note[Prérequis]
-- **Node.js** 20+ (requis pour l'installateur)
+- **Node.js** 20.12+ (requis pour l'installateur)
 - **Git** (recommandé)
 - **Outil d'IA** (Claude Code, Cursor, ou similaire)
 :::
