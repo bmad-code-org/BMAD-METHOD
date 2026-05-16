@@ -10,6 +10,8 @@
 let _clack = null;
 let _clackCore = null;
 let _picocolors = null;
+const fs = require('node:fs');
+const path = require('node:path');
 
 /**
  * Lazy-load @clack/prompts (ESM module)
@@ -575,6 +577,137 @@ async function autocomplete(options) {
   return result;
 }
 
+function hasPathSeparator(value) {
+  return value.endsWith('/') || value.endsWith('\\');
+}
+
+function toDirectoryOption(value, label = value, synthetic = false) {
+  return { value, label, synthetic };
+}
+
+function isExistingDirectory(value) {
+  try {
+    return fs.existsSync(value) && fs.statSync(value).isDirectory();
+  } catch {
+    return false;
+  }
+}
+
+function listDirectoryOptions(input, options) {
+  const cwd = options.cwd || process.cwd();
+  const rawInput = input.trim();
+  const resolvedInput = rawInput ? path.resolve(cwd, rawInput) : cwd;
+  const browseDir =
+    rawInput && !hasPathSeparator(rawInput) && !isExistingDirectory(resolvedInput) ? path.dirname(resolvedInput) : resolvedInput;
+  const prefix = rawInput && browseDir !== resolvedInput ? path.basename(resolvedInput).toLowerCase() : '';
+  const results = [];
+
+  if (!hasPathSeparator(rawInput) && isExistingDirectory(resolvedInput)) {
+    results.push(toDirectoryOption(resolvedInput));
+  }
+
+  if (isExistingDirectory(browseDir)) {
+    try {
+      for (const entry of fs.readdirSync(browseDir, { withFileTypes: true })) {
+        if (!entry.isDirectory()) continue;
+        if (prefix && !entry.name.toLowerCase().startsWith(prefix)) continue;
+        const fullPath = path.join(browseDir, entry.name);
+        if (!results.some((option) => option.value === fullPath)) {
+          results.push(toDirectoryOption(fullPath));
+        }
+      }
+    } catch {
+      // Skip unreadable directories; validation still reports path issues.
+    }
+  }
+
+  const validation = options.validate?.(rawInput);
+  const hasMatchingOption = results.some((option) => option.value === rawInput || option.value === resolvedInput);
+  if (rawInput && !validation && !hasMatchingOption) {
+    results.unshift(toDirectoryOption(rawInput, `Create/use: ${rawInput}`, true));
+  }
+
+  return results;
+}
+
+/**
+ * Directory prompt with autocomplete candidates and create-directory support.
+ * Uses @clack/core directly so typed paths that do not exist yet can still be
+ * submitted when validation allows creating them.
+ * @param {Object} options - Prompt options
+ * @param {string} options.message - Prompt message
+ * @param {string} [options.default] - Default directory
+ * @param {string} [options.placeholder] - Placeholder text
+ * @param {Function} [options.validate] - Sync validation function
+ * @returns {Promise<string>} Selected or typed directory path
+ */
+async function directory(options) {
+  const core = await getClackCore();
+  const color = await getPicocolors();
+  const tabCompletion = {
+    prefix: '',
+    index: -1,
+    options: [],
+    lastValue: '',
+  };
+
+  let prompt;
+  prompt = new core.AutocompletePrompt({
+    initialValue: options.default,
+    options: () => listDirectoryOptions(prompt?.userInput || '', options),
+    filter: () => true,
+    validate: (value) => options.validate?.(value ?? prompt.userInput),
+    render() {
+      const title = `${color.gray('◆')}  ${options.message}`;
+      const bar = color.gray('│');
+      const barEnd = color.gray('└');
+      const userInput = this.userInput;
+      const placeholder = options.placeholder || options.default;
+      const inputDisplay = userInput ? this.userInputWithCursor : `${color.inverse(color.hidden('_'))}${color.dim(placeholder || '')}`;
+      const errorLine = this.state === 'error' ? [`${color.yellow('│')}  ${color.yellow(this.error)}`] : [];
+
+      switch (this.state) {
+        case 'submit': {
+          return `${color.gray('◇')}  ${options.message}\n${bar}  ${color.dim(this.value || '')}`;
+        }
+        case 'cancel': {
+          return `${color.gray('◇')}  ${options.message}\n${bar}  ${color.strikethrough(color.dim(userInput || ''))}`;
+        }
+        default: {
+          return [title, `${bar}  ${inputDisplay}`, ...errorLine, barEnd].join('\n');
+        }
+      }
+    },
+  });
+
+  prompt.on('key', (_, key) => {
+    if (key?.name !== 'tab') return;
+    const currentInput = prompt.userInput;
+    const isContinuingCycle = tabCompletion.lastValue && currentInput === tabCompletion.lastValue;
+    const completionOptions = isContinuingCycle ? tabCompletion.options : prompt.filteredOptions.filter((option) => !option.synthetic);
+    if (completionOptions.length === 0) return;
+
+    if (isContinuingCycle) {
+      tabCompletion.index = (tabCompletion.index + 1) % completionOptions.length;
+    } else {
+      tabCompletion.prefix = currentInput;
+      tabCompletion.options = completionOptions;
+      tabCompletion.index = 0;
+    }
+
+    const focusedOption = completionOptions[tabCompletion.index];
+    if (!focusedOption) return;
+    const completedValue = focusedOption.value;
+    tabCompletion.lastValue = completedValue;
+    prompt._clearUserInput();
+    prompt._setUserInput(completedValue, true);
+  });
+
+  const result = await prompt.prompt();
+  await handleCancel(result);
+  return result;
+}
+
 /**
  * Get the color utility (picocolors instance from @clack/prompts)
  * @returns {Promise<Object>} The color utility (picocolors)
@@ -694,6 +827,7 @@ module.exports = {
   multiselect,
   autocompleteMultiselect,
   autocomplete,
+  directory,
   confirm,
   text,
   password,
