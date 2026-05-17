@@ -593,6 +593,11 @@ class CommunityModuleManager {
    * @returns {{plugin: Object, source: 'name'|'hint'|'single-fallback'}|null}
    */
   _selectPluginForModule(plugins, moduleInfo) {
+    if (moduleInfo.pluginName) {
+      const byPluginName = plugins.find((p) => p && p.name === moduleInfo.pluginName);
+      if (byPluginName) return { plugin: byPluginName, source: 'plugin-name' };
+    }
+
     const byCode = plugins.find((p) => p && p.name === moduleInfo.code);
     if (byCode) return { plugin: byCode, source: 'name' };
 
