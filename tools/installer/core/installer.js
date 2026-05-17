@@ -640,13 +640,7 @@ class Installer {
       const moduleInfo = sourcePath ? await officialModules.getModuleInfo(sourcePath, moduleName, '') : null;
       const displayName = moduleInfo?.name || moduleName;
 
-      const externalResolution = officialModules.externalModuleManager.getResolution(moduleName);
-      let communityResolution = null;
-      if (!externalResolution) {
-        const { CommunityModuleManager } = require('../modules/community-manager');
-        communityResolution = new CommunityModuleManager().getResolution(moduleName);
-      }
-      const resolution = externalResolution || communityResolution;
+      const resolution = officialModules.externalModuleManager.getResolution(moduleName);
       const cachedResolution = CustomModuleManager._resolutionCache.get(moduleName);
       const versionInfo = await resolveModuleVersion(moduleName, {
         moduleSourcePath: sourcePath,
@@ -1174,21 +1168,6 @@ class Installer {
           name: externalModule.name,
           isExternal: true,
           fromExternal: true,
-        });
-      }
-    }
-
-    // Add installed community modules to available modules
-    const { CommunityModuleManager } = require('../modules/community-manager');
-    const communityMgr = new CommunityModuleManager();
-    const communityModules = await communityMgr.listAll();
-    for (const communityModule of communityModules) {
-      if (installedModules.includes(communityModule.code) && !availableModules.some((m) => m.id === communityModule.code)) {
-        availableModules.push({
-          id: communityModule.code,
-          name: communityModule.displayName,
-          isExternal: true,
-          fromCommunity: true,
         });
       }
     }

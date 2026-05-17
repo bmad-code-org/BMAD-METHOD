@@ -1711,19 +1711,14 @@ class UI {
     const haveFlagIntent = channelOptions.global || channelOptions.nextSet.size > 0 || channelOptions.pins.size > 0;
     if (haveFlagIntent) return;
 
-    // Figure out which selected modules actually get a channel (externals +
-    // community modules). Bundled core/bmm and custom modules skip the picker.
+    // Figure out which selected modules actually get a channel (externals only).
+    // Bundled core/bmm and custom modules skip the picker.
     const externalManager = new ExternalModuleManager();
     const externals = await externalManager.listAvailable();
     const externalByCode = new Map(externals.map((m) => [m.code, m]));
 
-    const { CommunityModuleManager } = require('./modules/community-manager');
-    const communityMgr = new CommunityModuleManager();
-    const community = await communityMgr.listAll();
-    const communityByCode = new Map(community.map((m) => [m.code, m]));
-
     const channelSelectable = selectedModules.filter((code) => {
-      const info = externalByCode.get(code) || communityByCode.get(code);
+      const info = externalByCode.get(code);
       return info && !info.builtIn;
     });
     if (channelSelectable.length === 0) return;
@@ -1738,7 +1733,7 @@ class UI {
     const { fetchStableTags, parseGitHubRepo } = require('./modules/channel-resolver');
 
     for (const code of channelSelectable) {
-      const info = externalByCode.get(code) || communityByCode.get(code);
+      const info = externalByCode.get(code);
       const repoUrl = info.url;
 
       // Try to pre-resolve the top stable tag so we can surface it in the picker.
@@ -1813,11 +1808,6 @@ class UI {
     const externals = await externalManager.listAvailable();
     const externalByCode = new Map(externals.map((m) => [m.code, m]));
 
-    const { CommunityModuleManager } = require('./modules/community-manager');
-    const communityMgr = new CommunityModuleManager();
-    const community = await communityMgr.listAll();
-    const communityByCode = new Map(community.map((m) => [m.code, m]));
-
     const { fetchStableTags, classifyUpgrade, releaseNotesUrl } = require('./modules/channel-resolver');
     const { parseGitHubRepo } = require('./modules/channel-resolver');
 
@@ -1829,7 +1819,7 @@ class UI {
       const existingWithChannel = selectedModules.filter((code) => {
         const prev = existingByName.get(code);
         if (!prev) return false;
-        const info = externalByCode.get(code) || communityByCode.get(code);
+        const info = externalByCode.get(code);
         return info && !info.builtIn;
       });
       if (existingWithChannel.length > 0) {
@@ -1844,7 +1834,7 @@ class UI {
       const prev = existingByName.get(code);
       if (!prev) continue;
 
-      const info = externalByCode.get(code) || communityByCode.get(code);
+      const info = externalByCode.get(code);
       if (!info) continue;
       // Bundled modules (core/bmm) ship with the installer binary itself —
       // their version is stapled to the CLI version, not a git tag. Skip

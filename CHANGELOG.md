@@ -15,7 +15,7 @@ The shape of the toml customizations is still the same, so if you make them for 
 ### 💥 Breaking Changes
 
 * **Community modules picker removed from the interactive installer.** Previously installed community modules are preserved on update. Install community modules headlessly with `--custom-source <git-url-or-path>`, or wait for the forthcoming dedicated community installer.
-* **Remote marketplace registry retired.** The installer no longer fetches `registry/official.yaml` from `bmad-code-org/bmad-plugins-marketplace`. The bundled module list, now at `bmad-modules.yaml` in the repo root (renamed from `tools/installer/modules/registry-fallback.yaml`), is the single source of truth for which official modules appear in the picker. Per-module version bumps continue to happen in each module's own repo.
+* **Remote marketplace registry fully retired.** The installer makes zero network calls to `bmad-code-org/bmad-plugins-marketplace`. Both the official-registry fetch (`registry/official.yaml`) and the community-catalog fetch (`registry/community-index.yaml`, `categories.yaml`) are gone. `CommunityModuleManager` and `RegistryClient` are deleted. The bundled `bmad-modules.yaml` at the repo root is the single source of truth for which official modules appear in the picker. Per-module version bumps continue to happen in each module's own repo. **Migration note:** users with previously installed community modules will see them preserved in their manifest, but updates must be handled via `--custom-source <url>` going forward (a dedicated community installer is planned separately).
 
 ### 🎁 Features
 
