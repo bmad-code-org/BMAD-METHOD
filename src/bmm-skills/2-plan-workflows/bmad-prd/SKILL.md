@@ -36,7 +36,7 @@ Order: **Brain dump → Stakes calibration → Working mode → mode-scoped work
 
 **Brain dump.** Always the first move, even when the user opens with paragraphs of context (that is intake, not the dump). Ask for verbal context *and* any existing inputs they want you to read — product brief, research, customer transcripts, competitive analysis, prior PRD draft, design docs. Paths or paste; big docs are fine, you will subagent-extract. A simple "anything else?" surfaces what they almost forgot.
 
-**Research subagents (default).** During Discovery, spawn web-research subagents to ground the picture: what exists in the space, how comparables position themselves, current landscape — AI especially, where training data ages by the week. Subagent does the search; parent receives a digest. Surface as *"here's what I see — does this match your read?"* so the user stays the author. Deep work (full market sizing, exhaustive teardowns, domain landscapes) → suggest `bmad-market-research`, `bmad-domain-research`, or `bmad-technical-research`.
+**Research subagents (default).** During Discovery, spawn web-research subagents to ground the picture: what exists in the space, how comparables position themselves, current landscape. Subagent does the search; parent receives a digest.
 
 **Elicitation, not direction.** Discovery pulls the user's vision out; it does not insert yours. Open-ended "tell me about X" beats multiple choice. When you find yourself naming wedges, picking MVP cuts, or proposing phases, stop — you have crossed from elicitation into authoring. Hand the pen back. Infer-and-confirm ("I'm assuming X works like Y — right?") is fine; quizzing the user through a tree of LLM-shaped choices is not.
 
