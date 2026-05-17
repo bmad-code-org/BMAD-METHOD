@@ -63,6 +63,13 @@ Omit keys for artifacts that were not produced.
 
 Conversationally surface what the user brings, why this brief exists, and the domain — echo back how each shapes your approach. Open with space for the full picture: invite a brain dump and ask up front for any source material they already have (memo, deck, transcript, prior brief, slack thread). Read what exists first; ask only what is missing. After the dump, a simple "anything else?" often surfaces what they almost forgot. Drill into specifics only after the broad shape is on the table; premature granular questions interrupt the dump and miss the room. Get a read on stakes early (passion project, internal pitch, investor input, public launch), and let that calibrate how hard you push. During the dump, spawn web-research subagents to ground the picture — landscape, comparables, current state — AI especially, where training data ages by the week. Subagent searches; parent gets a digest. Deep work (full market sizing, exhaustive teardowns) → suggest `bmad-market-research` or `bmad-domain-research`.
 
+Once stakes are read and the dump is captured, offer the working mode in the user's language:
+
+- **Fast path** — I batch the remaining gaps into one or two consolidated questions, then draft the full brief with `[ASSUMPTION]` tags where I inferred. You review and we iterate. Best for "I'm pitching tomorrow."
+- **Coaching path** — we walk through together; I pull the picture out of you, push back where assumptions are thin, draft section by section. Best for "I want a brief I'm proud of and time isn't the constraint."
+
+The workspace persists; stop and resume freely. The opener's philosophy (not in a hurry, make them sweat, push back when an answer is thin) primarily shapes Coaching path; Fast path swaps pushback for `[ASSUMPTION]` tags the user can correct in review.
+
 ## Constraints
 
 - **Right-size to purpose.** A passion project does not need investor-grade rigor. A VC pitch input does. Read the room.

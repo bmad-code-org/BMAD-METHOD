@@ -55,7 +55,7 @@ Red flag: a PRD where every choice "balances" everything, every NFR is "importan
 
 Is the content earned, or is it furniture? Distinguish:
 
-- **Persona theater** — invented persona detail unmarked as `[ILLUSTRATIVE]`. Personas that don't drive a single decision in the PRD. More than four personas. Personas whose only function is to make the PRD look thorough.
+- **Persona theater** — Personas that don't drive a single decision in the PRD. More than four personas. Personas whose only function is to make the PRD look thorough.
 - **Innovation theater** — claimed novelty that isn't novel. Differentiation sections written because the template had one, not because Discovery surfaced something.
 - **NFR theater** — copied boilerplate ("system must be scalable / secure / reliable") without product-specific thresholds.
 - **Vision theater** — a Vision statement that could swap into any PRD in this category without change.
@@ -92,7 +92,7 @@ This is the dimension downstream story creation will lean on hardest. Be unforgi
 Are omissions explicit, or is the reader meant to infer them?
 
 Look for:
-- A Non-Goals section where it would do real work — and `[NON-GOAL for MVP]` / `[v2 — out of MVP]` callouts where omissions could be silently assumed.
+- A Non-Goals section where it would do real work — and `[NON-GOAL for MVP]` callouts where omissions could be silently assumed.
 - `[ASSUMPTION: …]` tags on inferences the user didn't directly confirm, indexed at the end.
 - `[NOTE FOR PM]` callouts at deferred decisions and unresolved tensions.
 - De-scoping proposed honestly, not done silently.
