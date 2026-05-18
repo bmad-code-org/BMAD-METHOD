@@ -7,7 +7,6 @@ const { CLIUtils } = require('./cli-utils');
 const { ExternalModuleManager } = require('./modules/external-manager');
 const { resolveModuleVersion } = require('./modules/version-resolver');
 const { Manifest } = require('./core/manifest');
-const { resolveInstalledModuleYaml } = require('./project-root');
 const {
   parseChannelOptions,
   buildPlan,
@@ -111,21 +110,42 @@ async function getModuleVersion(moduleCode, { repoUrl = null, registryDefault = 
  * UI utilities for the installer
  */
 class UI {
-  async _findUnavailableInstalledModules(installedModuleIds = new Set(), bmadDir) {
-    const unavailable = [];
-    for (const moduleId of installedModuleIds) {
-      if (moduleId === 'core' || moduleId === 'bmm') continue;
-      const moduleYamlPath = await resolveInstalledModuleYaml(moduleId);
-      if (moduleYamlPath) continue;
+  async _retainUnavailableInstalledModules(selectedModules, installedModuleIds, bmadDir, options = {}) {
+    const { OfficialModules } = require('./modules/official-modules');
+    const officialCodes = new Set(['core']);
 
-      const { CustomModuleManager } = require('./modules/custom-module-manager');
-      const customMgr = new CustomModuleManager();
-      const localSource = await customMgr.findModuleSourceByCode(moduleId, { bmadDir });
-      if (localSource) continue;
-
-      unavailable.push(moduleId);
+    const builtInModules = (await new OfficialModules().listAvailable()).modules || [];
+    for (const mod of builtInModules) {
+      officialCodes.add(mod.id);
     }
-    return unavailable;
+
+    const externalManager = new ExternalModuleManager();
+    const registryModules = await externalManager.listAvailable();
+    for (const mod of registryModules) {
+      officialCodes.add(mod.code);
+    }
+
+    const { CustomModuleManager } = require('./modules/custom-module-manager');
+    const customMgr = new CustomModuleManager();
+    const selectedSet = new Set(selectedModules);
+    const preserveModules = [];
+
+    for (const moduleId of installedModuleIds) {
+      if (moduleId === 'core') continue;
+      if (!selectedSet.has(moduleId) && !options.preserveUnselected) continue;
+      if (officialCodes.has(moduleId)) continue;
+
+      const customSource = await customMgr.findModuleSourceByCode(moduleId, { bmadDir });
+      if (!customSource) {
+        preserveModules.push(moduleId);
+      }
+    }
+
+    const preservedSet = new Set(preserveModules);
+    return {
+      selectedModules: selectedModules.filter((moduleId) => !preservedSet.has(moduleId)),
+      preserveModules,
+    };
   }
 
   /**
@@ -291,12 +311,15 @@ class UI {
           selectedModules.unshift('core');
         }
 
-        const preservedModules = await this._findUnavailableInstalledModules(installedModuleIds, bmadDir);
+        const retainedModuleResult = await this._retainUnavailableInstalledModules(selectedModules, installedModuleIds, bmadDir, {
+          preserveUnselected: options.yes && !options.modules,
+        });
+        selectedModules = retainedModuleResult.selectedModules;
+        const preservedModules = retainedModuleResult.preserveModules;
+
         if (preservedModules.length > 0) {
-          const preservedSet = new Set(preservedModules);
-          selectedModules = selectedModules.filter((moduleName) => !preservedSet.has(moduleName));
           await prompts.log.warn(
-            `Retaining ${preservedModules.length} installed module(s) with no source available: ${preservedModules.join(', ')}`,
+            `Retaining ${preservedModules.length} installed module(s) with no available source: ${preservedModules.join(', ')}`,
           );
         }
 
@@ -319,14 +342,6 @@ class UI {
           ...options,
           channelOptions,
         });
-        if (preservedModules.length > 0) {
-          const preservedConfigLoader = new (require('./modules/official-modules').OfficialModules)({ channelOptions });
-          await preservedConfigLoader.loadExistingConfig(confirmedDirectory);
-          for (const moduleName of preservedModules) {
-            if (moduleConfigs[moduleName] || !preservedConfigLoader.existingConfig?.[moduleName]) continue;
-            moduleConfigs[moduleName] = { ...preservedConfigLoader.existingConfig[moduleName] };
-          }
-        }
 
         // Warn about --pin/--next flags that refer to modules the user didn't
         // select, or that target bundled modules (core/bmm) where channel
