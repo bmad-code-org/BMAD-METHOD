@@ -435,12 +435,14 @@ class ManifestGenerator {
     // this means user-scoped keys (e.g. user_name) could mis-file into the
     // team config, so the operator should notice.
     const scopeByModuleKey = {};
+    const unresolvedModuleNames = new Set();
     // Maps installer moduleName (may be full display name) → module code field
     // from module.yaml, so TOML sections use [modules.<code>] not [modules.<name>].
     const codeByModuleName = {};
     for (const moduleName of this.updatedModules) {
       const moduleYamlPath = await resolveInstalledModuleYaml(moduleName);
       if (!moduleYamlPath) {
+        unresolvedModuleNames.add(moduleName);
         console.warn(
           `[warn] writeCentralConfig: could not locate module.yaml for '${moduleName}'. ` +
             `Answers from this module will default to team scope — user-scoped keys may mis-file into config.toml.`,
@@ -458,6 +460,7 @@ class ManifestGenerator {
           }
         }
       } catch (error) {
+        unresolvedModuleNames.add(moduleName);
         console.warn(
           `[warn] writeCentralConfig: could not parse module.yaml for '${moduleName}' (${error.message}). ` +
             `Answers from this module will default to team scope — user-scoped keys may mis-file into config.toml.`,
@@ -546,6 +549,7 @@ class ManifestGenerator {
 
     const updatedModuleSet = new Set(this.updatedModules);
     const preservedModuleBlocks = { team: [], user: [] };
+    const preservedModuleCodes = new Set();
     if (updatedModuleSet.size > 0) {
       const collectPreservedModuleBlocks = async (filePath, target) => {
         if (!(await fs.pathExists(filePath))) return;
@@ -553,7 +557,9 @@ class ManifestGenerator {
           const prev = await fs.readFile(filePath, 'utf8');
           for (const block of extractModuleBlocks(prev)) {
             if (!updatedModuleSet.has(block.code)) continue;
-            if (moduleConfigs[block.code] && Object.keys(moduleConfigs[block.code]).length > 0) continue;
+            if (!unresolvedModuleNames.has(block.code) && moduleConfigs[block.code] && Object.keys(moduleConfigs[block.code]).length > 0)
+              continue;
+            preservedModuleCodes.add(block.code);
             target.push(block.body);
           }
         } catch (error) {
@@ -569,6 +575,7 @@ class ManifestGenerator {
     // [modules.<code>] — split per module
     for (const moduleName of this.updatedModules) {
       if (moduleName === 'core') continue;
+      if (unresolvedModuleNames.has(moduleName) && preservedModuleCodes.has(moduleName)) continue;
       const cfg = moduleConfigs[moduleName];
       if (!cfg || Object.keys(cfg).length === 0) continue;
       // Use the module's code field from module.yaml as the TOML key so the
