@@ -85,6 +85,23 @@ async function createTestBmadFixture() {
   return fixtureDir;
 }
 
+async function createSourceRootModuleFixture() {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-source-root-module-'));
+  const sourceRoot = path.join(repoRoot, 'skills');
+  const skillNames = ['bmad-story-automator', 'bmad-story-automator-review'];
+
+  for (const skillName of skillNames) {
+    const skillDir = path.join(sourceRoot, skillName);
+    await fs.ensureDir(skillDir);
+    await fs.writeFile(
+      path.join(skillDir, 'SKILL.md'),
+      ['---', `name: ${skillName}`, `description: ${skillName} description`, '---', '', `${skillName} body`].join('\n'),
+    );
+  }
+
+  return { repoRoot, sourceRoot, skillNames };
+}
+
 async function createSkillCollisionFixture() {
   const fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-skill-collision-'));
   const fixtureDir = path.join(fixtureRoot, '_bmad');
@@ -160,6 +177,70 @@ async function runTests() {
     await fs.remove(path.dirname(installedBmadDir));
   } catch (error) {
     assert(false, 'Windsurf native skills migration test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 4b: Source-root external modules
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 4b: Source-Root External Modules${colors.reset}\n`);
+
+  {
+    let sourceRootFixture;
+    let tempProjectDir;
+    try {
+      const { ExternalModuleManager } = require('../tools/installer/modules/external-manager');
+      const manager = new ExternalModuleManager();
+
+      const normalizedModule = manager._normalizeModule({
+        name: 'bmad-automator',
+        code: 'baut',
+        repository: 'https://github.com/bmad-code-org/bmad-automator',
+        source_root: 'skills',
+        type: 'experimental',
+      });
+      assert(normalizedModule.sourceRoot === 'skills', 'External module normalization preserves source_root');
+
+      sourceRootFixture = await createSourceRootModuleFixture();
+      tempProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-source-root-project-'));
+
+      manager.getModuleByCode = async () => normalizedModule;
+      manager.cloneExternalModule = async () => sourceRootFixture.repoRoot;
+
+      const resolvedSourceRoot = await manager.findExternalModuleSource('baut');
+      assert(resolvedSourceRoot === sourceRootFixture.sourceRoot, 'External module source_root resolves to the configured directory');
+
+      const officialModules = new OfficialModules();
+      officialModules.findModuleSource = async () => sourceRootFixture.sourceRoot;
+      await officialModules.install('baut', path.join(tempProjectDir, '_bmad'), null, {
+        skipModuleInstaller: true,
+        silent: true,
+      });
+
+      for (const skillName of sourceRootFixture.skillNames) {
+        assert(
+          await fs.pathExists(path.join(tempProjectDir, '_bmad', 'baut', skillName, 'SKILL.md')),
+          `Source-root install copies ${skillName}`,
+        );
+      }
+
+      manager.getModuleByCode = async () => ({
+        code: 'escape',
+        sourceRoot: '../outside',
+        builtIn: false,
+      });
+      let rejectedEscapingSourceRoot = false;
+      try {
+        await manager.findExternalModuleSource('escape');
+      } catch (error) {
+        rejectedEscapingSourceRoot = error.message.includes('source-root escapes repository');
+      }
+      assert(rejectedEscapingSourceRoot, 'External module source-root cannot escape cloned repository');
+    } finally {
+      if (sourceRootFixture) await fs.remove(sourceRootFixture.repoRoot).catch(() => {});
+      if (tempProjectDir) await fs.remove(tempProjectDir).catch(() => {});
+    }
   }
 
   console.log('');
