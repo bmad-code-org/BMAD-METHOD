@@ -1,5 +1,11 @@
 # Changelog
 
+## v6.7.1 - 2026-05-18
+
+### 🐛 Fixes
+
+* **Installer no longer errors when a previously installed module's source can no longer be found** — In v6.7.0 the experimental BMad Automator module's installer code (the value used for its `_bmad/<code>/` folder and manifest entry) was renamed from `baut` to `automator`. Anyone who had installed it under the old `baut` code saw `quick-update` fail with `Source for module 'baut' is not available` and risked having the existing install removed. The installer now detects installed modules that can no longer be resolved from any source, leaves them in place untouched, and continues the update. If you previously installed it as `baut` and want the renamed `automator` version, run `npx bmad-method install`, choose **Modify BMAD Installation**, and reselect **BMad Automator**; the old `_bmad/baut/` directory can then be deleted manually
+
 ## v6.7.0 - 2026-05-17
 
 ### ✨ Headline
