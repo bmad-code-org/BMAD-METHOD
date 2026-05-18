@@ -544,6 +544,28 @@ class ManifestGenerator {
       userLines.push('');
     }
 
+    const updatedModuleSet = new Set(this.updatedModules);
+    const preservedModuleBlocks = { team: [], user: [] };
+    if (updatedModuleSet.size > 0) {
+      const collectPreservedModuleBlocks = async (filePath, target) => {
+        if (!(await fs.pathExists(filePath))) return;
+        try {
+          const prev = await fs.readFile(filePath, 'utf8');
+          for (const block of extractModuleBlocks(prev)) {
+            if (!updatedModuleSet.has(block.code)) continue;
+            if (moduleConfigs[block.code] && Object.keys(moduleConfigs[block.code]).length > 0) continue;
+            target.push(block.body);
+          }
+        } catch (error) {
+          console.warn(
+            `[warn] writeCentralConfig: could not read prior ${path.basename(filePath)} to preserve module config: ${error.message}`,
+          );
+        }
+      };
+      await collectPreservedModuleBlocks(teamPath, preservedModuleBlocks.team);
+      await collectPreservedModuleBlocks(userPath, preservedModuleBlocks.user);
+    }
+
     // [modules.<code>] — split per module
     for (const moduleName of this.updatedModules) {
       if (moduleName === 'core') continue;
@@ -572,6 +594,13 @@ class ManifestGenerator {
         }
         userLines.push('');
       }
+    }
+
+    for (const body of preservedModuleBlocks.team) {
+      teamLines.push(body, '');
+    }
+    for (const body of preservedModuleBlocks.user) {
+      userLines.push(body, '');
     }
 
     // [agents.<code>] — always team (agent roster is organizational).
@@ -852,6 +881,28 @@ function extractAgentBlocks(tomlContent) {
     }
     while (blockLines.length > 1 && blockLines.at(-1) === '') blockLines.pop();
     blocks.push({ code, module: moduleName, body: blockLines.join('\n') });
+  }
+  return blocks;
+}
+
+function extractModuleBlocks(tomlContent) {
+  const lines = tomlContent.split(/\r?\n/);
+  const blocks = [];
+  for (let i = 0; i < lines.length; i++) {
+    const startMatch = lines[i].match(/^\[modules\.([^\]]+)\]\s*$/);
+    if (!startMatch) continue;
+    const code = startMatch[1];
+    const bodyLines = [lines[i]];
+    i++;
+    while (i < lines.length && !/^\[[^\]]+\]\s*$/.test(lines[i])) {
+      bodyLines.push(lines[i]);
+      i++;
+    }
+    i--;
+    while (bodyLines.length > 0 && bodyLines.at(-1).trim() === '') {
+      bodyLines.pop();
+    }
+    blocks.push({ code, body: bodyLines.join('\n') });
   }
   return blocks;
 }
