@@ -19,6 +19,10 @@ const prompts = require('./prompts');
 const { parseSetEntries } = require('./set-overrides');
 
 const manifest = new Manifest();
+const MODULE_CODE_ALIASES = new Map([
+  ['automator', 'baut'],
+  ['bmad-automator', 'baut'],
+]);
 
 /**
  * Format a resolved version for display in installer labels.
@@ -110,6 +114,51 @@ async function getModuleVersion(moduleCode, { repoUrl = null, registryDefault = 
  * UI utilities for the installer
  */
 class UI {
+  _normalizeModuleTokens(tokens = []) {
+    const normalized = [];
+    const seen = new Set();
+    for (const token of tokens) {
+      const trimmed = typeof token === 'string' ? token.trim() : '';
+      if (!trimmed) continue;
+      const canonical = MODULE_CODE_ALIASES.get(trimmed) || trimmed;
+      if (seen.has(canonical)) continue;
+      seen.add(canonical);
+      normalized.push(canonical);
+    }
+    return normalized;
+  }
+
+  _applyModuleAliasesToChannelOptions(channelOptions) {
+    if (!channelOptions) return channelOptions;
+
+    const nextSet = new Set();
+    for (const code of channelOptions.nextSet || []) {
+      nextSet.add(MODULE_CODE_ALIASES.get(code) || code);
+    }
+    channelOptions.nextSet = nextSet;
+
+    const pins = new Map();
+    for (const [code, tag] of channelOptions.pins || []) {
+      pins.set(MODULE_CODE_ALIASES.get(code) || code, tag);
+    }
+    channelOptions.pins = pins;
+
+    return channelOptions;
+  }
+
+  _hasExplicitUpdateIntent(options = {}) {
+    return !!(
+      options.customSource ||
+      options.modules ||
+      options.tools !== undefined ||
+      options.channel ||
+      options.allStable ||
+      options.allNext ||
+      (options.next && options.next.length > 0) ||
+      (options.pin && options.pin.length > 0)
+    );
+  }
+
   /**
    * Prompt for installation configuration
    * @param {Object} options - Command-line options from install command
@@ -126,6 +175,7 @@ class UI {
     // Parse channel flags (--channel/--all-*/--next=/--pin) once. Warnings
     // are surfaced immediately so the user sees them before any git ops run.
     const channelOptions = parseChannelOptions(options);
+    this._applyModuleAliasesToChannelOptions(channelOptions);
     for (const warning of channelOptions.warnings) {
       await prompts.log.warn(warning);
     }
@@ -208,7 +258,7 @@ class UI {
           throw new Error('No valid actions available for this installation');
         }
         const hasQuickUpdate = choices.some((c) => c.value === 'quick-update');
-        const needsFullUpdate = !!options.customSource;
+        const needsFullUpdate = this._hasExplicitUpdateIntent(options);
         actionType = hasQuickUpdate && !needsFullUpdate ? 'quick-update' : (choices.find((c) => c.value === 'update') || choices[0]).value;
         await prompts.log.info(`Non-interactive mode (--yes): defaulting to ${actionType}`);
       } else {
@@ -240,10 +290,12 @@ class UI {
         let selectedModules;
         if (options.modules) {
           // Use modules from command-line
-          selectedModules = options.modules
-            .split(',')
-            .map((m) => m.trim())
-            .filter(Boolean);
+          selectedModules = this._normalizeModuleTokens(
+            options.modules
+              .split(',')
+              .map((m) => m.trim())
+              .filter(Boolean),
+          );
           await prompts.log.info(`Using modules from command-line: ${selectedModules.join(', ')}`);
         } else if (options.customSource && !options.yes) {
           // Custom source without --modules or --yes: start with empty list
@@ -328,10 +380,12 @@ class UI {
     let selectedModules;
     if (options.modules) {
       // Use modules from command-line
-      selectedModules = options.modules
-        .split(',')
-        .map((m) => m.trim())
-        .filter(Boolean);
+      selectedModules = this._normalizeModuleTokens(
+        options.modules
+          .split(',')
+          .map((m) => m.trim())
+          .filter(Boolean),
+      );
       await prompts.log.info(`Using modules from command-line: ${selectedModules.join(', ')}`);
     } else if (options.customSource) {
       // Custom source without --modules: start with empty list (core added below)

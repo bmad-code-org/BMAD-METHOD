@@ -33,10 +33,10 @@ modules:
 
   bmad-automator:
     url: https://github.com/bmad-code-org/bmad-automator
-    module-definition: skills/module.yaml
-    code: automator
-    name: "BMad Automator Epic Builder Experimental"
-    description: "EXPERIMENTAL: only supports claude and codex currently"
+    source-root: payload/.claude/skills
+    code: baut
+    name: "BMad Automator (Experimental)"
+    description: "BMAD story automation skills for create/dev/QA/review/retro orchestration"
     defaultSelected: false
     type: experimental
     npmPackage: bmad-story-automator

@@ -85,6 +85,27 @@ async function createTestBmadFixture() {
   return fixtureDir;
 }
 
+async function createAutomatorSourceRootFixture() {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-automator-source-'));
+  const sourceRoot = path.join(repoRoot, 'payload', '.claude', 'skills');
+
+  for (const skillName of ['bmad-story-automator', 'bmad-story-automator-review']) {
+    const skillDir = path.join(sourceRoot, skillName);
+    await fs.ensureDir(skillDir);
+    await fs.writeFile(
+      path.join(skillDir, 'SKILL.md'),
+      ['---', `name: ${skillName}`, `description: ${skillName} description`, '---', '', `${skillName} body`].join('\n'),
+    );
+  }
+
+  await fs.ensureDir(path.join(repoRoot, 'source', 'scripts'));
+  await fs.writeFile(path.join(repoRoot, 'source', 'scripts', 'story-automator'), '#!/usr/bin/env bash\n');
+  await fs.ensureDir(path.join(repoRoot, 'source', 'src', 'story_automator'));
+  await fs.writeFile(path.join(repoRoot, 'source', 'src', 'story_automator', 'cli.py'), 'def main():\n    return 0\n');
+
+  return { repoRoot, sourceRoot };
+}
+
 async function createSkillCollisionFixture() {
   const fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-skill-collision-'));
   const fixtureDir = path.join(fixtureRoot, '_bmad');
@@ -160,6 +181,76 @@ async function runTests() {
     await fs.remove(path.dirname(installedBmadDir));
   } catch (error) {
     assert(false, 'Windsurf native skills migration test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 4b: Automator source-root install compatibility
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 4b: Automator Source Root${colors.reset}\n`);
+
+  let automatorSourceFixture;
+  let runtimeTargetRoot;
+  try {
+    const externalManager = new (require('../tools/installer/modules/external-manager').ExternalModuleManager)();
+    const automatorInfo = externalManager._normalizeModule({
+      name: 'bmad-automator',
+      code: 'baut',
+      repository: 'https://github.com/bmad-code-org/bmad-automator',
+      source_root: 'payload/.claude/skills',
+      type: 'experimental',
+    });
+    assert(automatorInfo.sourceRoot === 'payload/.claude/skills', 'External module normalization preserves source_root');
+
+    automatorSourceFixture = await createAutomatorSourceRootFixture();
+    runtimeTargetRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-automator-runtime-target-'));
+    const runtimeBmadDir = path.join(runtimeTargetRoot, '_bmad');
+    const officialModules = new OfficialModules();
+    officialModules.findModuleSource = async () => automatorSourceFixture.sourceRoot;
+    await officialModules.install('baut', runtimeBmadDir, null, { skipModuleInstaller: true, silent: true });
+    assert(
+      await fs.pathExists(path.join(runtimeBmadDir, 'baut', 'bmad-story-automator', 'scripts', 'story-automator')),
+      'Automator source-root install includes runtime helper script',
+    );
+    assert(
+      await fs.pathExists(path.join(runtimeBmadDir, 'baut', 'bmad-story-automator', 'src', 'story_automator', 'cli.py')),
+      'Automator source-root install includes Python runtime source',
+    );
+
+    const escapeRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-source-root-'));
+    const escapeRepo = path.join(escapeRoot, 'repo');
+    await fs.ensureDir(escapeRepo);
+    const escapeManager = new (require('../tools/installer/modules/external-manager').ExternalModuleManager)();
+    escapeManager.getModuleByCode = async () => ({
+      code: 'escape',
+      builtIn: false,
+      sourceRoot: '../outside',
+    });
+    escapeManager.cloneExternalModule = async () => escapeRepo;
+    let rejectedEscapingSourceRoot = false;
+    try {
+      await escapeManager.findExternalModuleSource('escape');
+    } catch (error) {
+      rejectedEscapingSourceRoot = error.message.includes('source-root escapes repository');
+    } finally {
+      await fs.remove(escapeRoot).catch(() => {});
+    }
+    assert(rejectedEscapingSourceRoot, 'External module source-root cannot escape cloned repository');
+
+    const ui = new (require('../tools/installer/ui').UI)();
+    const normalizedModules = ui._normalizeModuleTokens(['automator', 'baut', 'bmad-automator']);
+    assert(normalizedModules.length === 1 && normalizedModules[0] === 'baut', 'CLI module aliases normalize automator requests to baut');
+    const aliasChannelOptions = { nextSet: new Set(['automator']), pins: new Map([['bmad-automator', 'v1.2.3']]) };
+    ui._applyModuleAliasesToChannelOptions(aliasChannelOptions);
+    assert(aliasChannelOptions.nextSet.has('baut'), 'CLI channel aliases normalize --next automator to baut');
+    assert(aliasChannelOptions.pins.has('baut'), 'CLI channel aliases normalize --pin bmad-automator=TAG to baut');
+    assert(ui._hasExplicitUpdateIntent({ modules: 'automator', yes: true }) === true, 'Explicit module flags force full update path');
+  } catch (error) {
+    assert(false, 'Automator source-root compatibility test succeeds', error.message);
+  } finally {
+    if (automatorSourceFixture) await fs.remove(automatorSourceFixture.repoRoot).catch(() => {});
+    if (runtimeTargetRoot) await fs.remove(runtimeTargetRoot).catch(() => {});
   }
 
   console.log('');

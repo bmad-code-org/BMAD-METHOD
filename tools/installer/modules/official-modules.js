@@ -278,6 +278,7 @@ class OfficialModules {
     }
 
     await this.copyModuleWithFiltering(sourcePath, targetPath, fileTrackingCallback, options.moduleConfig);
+    await this.copyAutomatorRuntimeIfNeeded(moduleName, sourcePath, targetPath, fileTrackingCallback);
 
     if (!options.skipModuleInstaller) {
       await this.createModuleDirectories(moduleName, bmadDir, options);
@@ -301,6 +302,29 @@ class OfficialModules {
     });
 
     return { success: true, module: moduleName, path: targetPath, versionInfo };
+  }
+
+  async copyAutomatorRuntimeIfNeeded(moduleName, sourcePath, targetPath, fileTrackingCallback = null) {
+    if (moduleName !== 'baut') return;
+
+    const storyTarget = path.join(targetPath, 'bmad-story-automator');
+    if (!(await fs.pathExists(path.join(storyTarget, 'SKILL.md')))) return;
+
+    const repoRoot = path.resolve(sourcePath, '..', '..', '..');
+    const runtimeRoot = path.join(repoRoot, 'source');
+    const runtimeParts = [
+      ['scripts', 'scripts'],
+      ['src', 'src'],
+    ];
+
+    for (const [sourceRel, targetRel] of runtimeParts) {
+      const sourceDir = path.join(runtimeRoot, sourceRel);
+      const targetDir = path.join(storyTarget, targetRel);
+      if (!(await fs.pathExists(sourceDir))) {
+        throw new Error(`BMad Automator runtime source missing: source/${sourceRel}`);
+      }
+      await this.copyModuleWithFiltering(sourceDir, targetDir, fileTrackingCallback);
+    }
   }
 
   /**

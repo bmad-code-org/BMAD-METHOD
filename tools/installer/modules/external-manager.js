@@ -105,6 +105,7 @@ class ExternalModuleManager {
       key: key || mod.name,
       url: mod.repository || mod.url,
       moduleDefinition: mod.module_definition || mod['module-definition'],
+      sourceRoot: mod.source_root || mod['source-root'] || null,
       code: mod.code,
       name: mod.display_name || mod.name,
       description: mod.description || '',
@@ -470,6 +471,19 @@ class ExternalModuleManager {
 
     // Clone the external module repo
     const cloneDir = await this.cloneExternalModule(moduleCode, options);
+
+    if (moduleInfo.sourceRoot) {
+      const repoRoot = path.resolve(cloneDir);
+      const sourceRoot = path.resolve(repoRoot, moduleInfo.sourceRoot);
+      const relativeSourceRoot = path.relative(repoRoot, sourceRoot);
+      if (relativeSourceRoot === '..' || relativeSourceRoot.startsWith(`..${path.sep}`) || path.isAbsolute(relativeSourceRoot)) {
+        throw new Error(`External module '${moduleCode}' source-root escapes repository: ${moduleInfo.sourceRoot}`);
+      }
+      if (!(await fs.pathExists(sourceRoot))) {
+        throw new Error(`External module '${moduleCode}' source-root not found: ${moduleInfo.sourceRoot}`);
+      }
+      return sourceRoot;
+    }
 
     // The module-definition specifies the path to module.yaml relative to repo root
     // We need to return the directory containing module.yaml
