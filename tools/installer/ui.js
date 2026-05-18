@@ -7,6 +7,7 @@ const { CLIUtils } = require('./cli-utils');
 const { ExternalModuleManager } = require('./modules/external-manager');
 const { resolveModuleVersion } = require('./modules/version-resolver');
 const { Manifest } = require('./core/manifest');
+const { resolveInstalledModuleYaml } = require('./project-root');
 const {
   parseChannelOptions,
   buildPlan,
@@ -111,41 +112,20 @@ async function getModuleVersion(moduleCode, { repoUrl = null, registryDefault = 
  */
 class UI {
   async _findUnavailableInstalledModules(installedModuleIds = new Set(), bmadDir) {
-    const { OfficialModules } = require('./modules/official-modules');
-    const availableModulesData = await new OfficialModules().listAvailable();
-    const availableModules = [...availableModulesData.modules];
-
-    const externalManager = new ExternalModuleManager();
-    const externalModules = await externalManager.listAvailable();
-    for (const externalModule of externalModules) {
-      if (installedModuleIds.has(externalModule.code) && !availableModules.some((m) => m.id === externalModule.code)) {
-        availableModules.push({
-          id: externalModule.code,
-          name: externalModule.name,
-          isExternal: true,
-          fromExternal: true,
-        });
-      }
-    }
-
-    const { CustomModuleManager } = require('./modules/custom-module-manager');
-    const customMgr = new CustomModuleManager();
+    const unavailable = [];
     for (const moduleId of installedModuleIds) {
-      if (!availableModules.some((m) => m.id === moduleId)) {
-        const customSource = await customMgr.findModuleSourceByCode(moduleId, { bmadDir });
-        if (customSource) {
-          availableModules.push({
-            id: moduleId,
-            name: moduleId,
-            isExternal: true,
-            fromCustom: true,
-          });
-        }
-      }
-    }
+      if (moduleId === 'core' || moduleId === 'bmm') continue;
+      const moduleYamlPath = await resolveInstalledModuleYaml(moduleId);
+      if (moduleYamlPath) continue;
 
-    const availableModuleIds = new Set(availableModules.map((m) => m.id));
-    return [...installedModuleIds].filter((id) => !availableModuleIds.has(id));
+      const { CustomModuleManager } = require('./modules/custom-module-manager');
+      const customMgr = new CustomModuleManager();
+      const localSource = await customMgr.findModuleSourceByCode(moduleId, { bmadDir });
+      if (localSource) continue;
+
+      unavailable.push(moduleId);
+    }
+    return unavailable;
   }
 
   /**
@@ -339,6 +319,14 @@ class UI {
           ...options,
           channelOptions,
         });
+        if (preservedModules.length > 0) {
+          const preservedConfigLoader = new (require('./modules/official-modules').OfficialModules)({ channelOptions });
+          await preservedConfigLoader.loadExistingConfig(confirmedDirectory);
+          for (const moduleName of preservedModules) {
+            if (moduleConfigs[moduleName] || !preservedConfigLoader.existingConfig?.[moduleName]) continue;
+            moduleConfigs[moduleName] = { ...preservedConfigLoader.existingConfig[moduleName] };
+          }
+        }
 
         // Warn about --pin/--next flags that refer to modules the user didn't
         // select, or that target bundled modules (core/bmm) where channel
