@@ -110,6 +110,44 @@ async function getModuleVersion(moduleCode, { repoUrl = null, registryDefault = 
  * UI utilities for the installer
  */
 class UI {
+  async _findUnavailableInstalledModules(installedModuleIds = new Set(), bmadDir) {
+    const { OfficialModules } = require('./modules/official-modules');
+    const availableModulesData = await new OfficialModules().listAvailable();
+    const availableModules = [...availableModulesData.modules];
+
+    const externalManager = new ExternalModuleManager();
+    const externalModules = await externalManager.listAvailable();
+    for (const externalModule of externalModules) {
+      if (installedModuleIds.has(externalModule.code) && !availableModules.some((m) => m.id === externalModule.code)) {
+        availableModules.push({
+          id: externalModule.code,
+          name: externalModule.name,
+          isExternal: true,
+          fromExternal: true,
+        });
+      }
+    }
+
+    const { CustomModuleManager } = require('./modules/custom-module-manager');
+    const customMgr = new CustomModuleManager();
+    for (const moduleId of installedModuleIds) {
+      if (!availableModules.some((m) => m.id === moduleId)) {
+        const customSource = await customMgr.findModuleSourceByCode(moduleId, { bmadDir });
+        if (customSource) {
+          availableModules.push({
+            id: moduleId,
+            name: moduleId,
+            isExternal: true,
+            fromCustom: true,
+          });
+        }
+      }
+    }
+
+    const availableModuleIds = new Set(availableModules.map((m) => m.id));
+    return [...installedModuleIds].filter((id) => !availableModuleIds.has(id));
+  }
+
   /**
    * Prompt for installation configuration
    * @param {Object} options - Command-line options from install command
@@ -273,6 +311,15 @@ class UI {
           selectedModules.unshift('core');
         }
 
+        const preservedModules = await this._findUnavailableInstalledModules(installedModuleIds, bmadDir);
+        if (preservedModules.length > 0) {
+          const preservedSet = new Set(preservedModules);
+          selectedModules = selectedModules.filter((moduleName) => !preservedSet.has(moduleName));
+          await prompts.log.warn(
+            `Retaining ${preservedModules.length} installed module(s) with no source available: ${preservedModules.join(', ')}`,
+          );
+        }
+
         // For existing installs, resolve per-module update decisions BEFORE
         // we clone anything. Reads the existing manifest's recorded channel
         // per module and prompts the user on available upgrades (patch/minor
@@ -317,6 +364,7 @@ class UI {
           setOverrides,
           skipPrompts: options.yes || false,
           channelOptions,
+          _preserveModules: preservedModules,
         };
       }
     }

@@ -54,7 +54,7 @@ class Installer {
       }
 
       if (existingInstall.installed) {
-        await this._removeDeselectedModules(existingInstall, config, paths);
+        await this._removeDeselectedModules(existingInstall, config, paths, originalConfig._preserveModules || []);
         updateState = await this._prepareUpdateState(paths, config, existingInstall, officialModules);
         await this._removeDeselectedIdes(existingInstall, config, paths);
       }
@@ -144,10 +144,11 @@ class Installer {
    * Remove modules that were previously installed but are no longer selected.
    * No confirmation — the user's module selection is the decision.
    */
-  async _removeDeselectedModules(existingInstall, config, paths) {
+  async _removeDeselectedModules(existingInstall, config, paths, preservedModules = []) {
     const previouslyInstalled = new Set(existingInstall.moduleIds);
     const newlySelected = new Set(config.modules || []);
-    const toRemove = [...previouslyInstalled].filter((m) => !newlySelected.has(m) && m !== 'core');
+    const preserved = new Set(preservedModules);
+    const toRemove = [...previouslyInstalled].filter((m) => !newlySelected.has(m) && m !== 'core' && !preserved.has(m));
 
     for (const moduleId of toRemove) {
       const modulePath = paths.moduleDir(moduleId);

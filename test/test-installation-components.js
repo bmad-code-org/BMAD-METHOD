@@ -165,6 +165,39 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test 4b: Preserve installed modules with no source
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 4b: Preserve Installed Modules Without Source${colors.reset}\n`);
+
+  let staleInstallRoot;
+  try {
+    staleInstallRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-stale-module-'));
+    const staleBmadDir = path.join(staleInstallRoot, '_bmad');
+    const staleModuleDir = path.join(staleBmadDir, 'baut');
+    await fs.ensureDir(staleModuleDir);
+    await fs.writeFile(path.join(staleModuleDir, 'marker.txt'), 'keep me\n', 'utf8');
+
+    const ui = new (require('../tools/installer/ui').UI)();
+    const unavailable = await ui._findUnavailableInstalledModules(new Set(['core', 'bmm', 'baut']), staleBmadDir);
+    assert(unavailable.length === 1 && unavailable[0] === 'baut', 'UI detects stale installed modules with no current source');
+
+    const installer = new Installer();
+    await installer._removeDeselectedModules(
+      { moduleIds: ['core', 'bmm', 'baut'] },
+      { modules: ['core', 'bmm'] },
+      { moduleDir: (moduleId) => path.join(staleBmadDir, moduleId) },
+      ['baut'],
+    );
+    assert(await fs.pathExists(path.join(staleModuleDir, 'marker.txt')), 'Preserved modules are not removed during modify/update installs');
+  } catch (error) {
+    assert(false, 'Installed modules with no source are preserved during update', error.message);
+  } finally {
+    if (staleInstallRoot) await fs.remove(staleInstallRoot).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
   // Test 5: Kiro Native Skills Install
   // ============================================================
   console.log(`${colors.yellow}Test Suite 5: Kiro Native Skills${colors.reset}\n`);
