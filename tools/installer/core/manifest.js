@@ -310,28 +310,6 @@ class Manifest {
       };
     }
 
-    // Check if this is a community module
-    const { CommunityModuleManager } = require('../modules/community-manager');
-    const communityMgr = new CommunityModuleManager();
-    const communityInfo = await communityMgr.getModuleByCode(moduleName);
-    if (communityInfo) {
-      const communityResolution = communityMgr.getResolution(moduleName);
-      const versionInfo = await resolveModuleVersion(moduleName, {
-        moduleSourcePath,
-        fallbackVersion: communityInfo.version,
-      });
-      return {
-        version: communityResolution?.version || versionInfo.version || communityInfo.version,
-        source: 'community',
-        npmPackage: communityInfo.npmPackage || null,
-        repoUrl: communityInfo.url || null,
-        channel: communityResolution?.channel || null,
-        sha: communityResolution?.sha || null,
-        registryApprovedTag: communityResolution?.registryApprovedTag || null,
-        registryApprovedSha: communityResolution?.registryApprovedSha || null,
-      };
-    }
-
     // Check if this is a custom module (from user-provided URL or local path)
     const { CustomModuleManager } = require('../modules/custom-module-manager');
     const customMgr = new CustomModuleManager();

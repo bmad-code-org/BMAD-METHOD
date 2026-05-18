@@ -14,7 +14,7 @@ Sử dụng trình cài đặt BMad để nâng cấp từ v4 lên v6, bao gồm
 - Bạn có các planning artifact hiện có cần giữ lại
 
 :::note[Điều kiện tiên quyết]
-- Node.js 20+
+- Node.js 20.12+
 - Bản cài đặt BMad v4 hiện có
 :::
 

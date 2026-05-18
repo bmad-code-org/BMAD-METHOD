@@ -48,7 +48,7 @@ If a team or user override already exists, read it first and summarize what's al
 
 **Cross-cutting intent — walk both surfaces with the user:**
 - Every workflow a given agent runs → agent surface (e.g. `bmad-agent-pm.toml` with `persistent_facts`, `principles`).
-- One workflow only → workflow surface (e.g. `bmad-create-prd.toml` with `activation_steps_prepend`).
+- One workflow only → workflow surface (e.g. `bmad-prd.toml` with `activation_steps_prepend`).
 - Several specific workflows → multiple workflow overrides in sequence, not an agent override.
 
 **Single-surface heuristic:**

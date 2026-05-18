@@ -44,10 +44,22 @@ it**](../explanation/analysis-phase.md).
 
 Define what to build and for whom.
 
-| Workflow                | Purpose                                  | Produces     |
-|-------------------------|------------------------------------------|--------------|
-| `bmad-create-prd`       | Define requirements (FRs/NFRs)           | `PRD.md`     |
-| `bmad-create-ux-design` | Design user experience (when UX matters) | `ux-spec.md` |
+| Workflow                | Purpose                                                                             | Produces                                          |
+|-------------------------|-------------------------------------------------------------------------------------|---------------------------------------------------|
+| `bmad-prd`              | Create, update, or validate a PRD — facilitated discovery, three intents in one skill | Create/Update: `prd.md`, `addendum.md`, `decision-log.md`; Validate: `validation-report.html` + `.md` |
+| `bmad-create-ux-design` | Design user experience (when UX matters)                                            | `ux-spec.md`                                      |
+
+:::tip[Three intents in one skill]
+`bmad-prd` handles the full PRD lifecycle. State your intent when invoking or the skill will ask:
+
+- **Create** — new PRD from scratch via coached discovery; produces `prd.md`, `addendum.md`, and `decision-log.md`
+- **Update** — reconcile an existing PRD with a change signal, surfacing conflicts before applying changes
+- **Validate** — critique a PRD against a configurable checklist and produce a structured HTML findings report
+:::
+
+:::tip[Upstream: `bmad-product-brief`]
+`bmad-product-brief` (Phase 1) produces a `product-brief.md` that `bmad-prd` can source-extract during Discovery, reducing re-explanation and keeping the two documents aligned. Neither skill requires the other — start with `bmad-prd` directly if you already know what you're building.
+:::
 
 ## Phase 3: Solutioning
 

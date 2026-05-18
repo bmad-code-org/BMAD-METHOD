@@ -14,7 +14,7 @@ Construisez des logiciels plus rapidement en utilisant des workflows propulsés 
 - Utiliser efficacement les agents et les workflows
 
 :::note[Prérequis]
-- **Node.js 20+** — Requis pour l'installateur
+- **Node.js 20.12+** — Requis pour l'installateur
 - **Git** — Recommandé pour le contrôle de version
 - **IDE IA** — Claude Code, Cursor, ou similaire
 - **Une idée de projet** — Même simple, elle fonctionne pour apprendre

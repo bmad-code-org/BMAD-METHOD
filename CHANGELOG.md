@@ -1,5 +1,49 @@
 # Changelog
 
+## v6.7.0 - 2026-05-17
+
+### ✨ Headline
+
+**PRD and Product Brief rebuilt as lean, outcome-driven facilitators called bmad-prd and bmad-brief.** Both flagship planning skills now ship three first-class intents (Create / Update / Validate), support express and guided modes, drive elicitation rather than LLM-suggested filler, and adapt output to your needs. New PRD validation pipeline replaces the adversarial reviewer with a quality-rubric synthesis pass that emits both HTML and markdown reports. New **bmad-investigate** skill brings forensic, evidence-graded case files for bug triage, incident RCA, and unfamiliar-code exploration.
+
+A new .decision-log pattern is implemented in this release that will track through workflows all decisions made from the start, allowing for easier continuation or later modifications, where memory of what was decided and why will be remembered.
+
+The existing create, edit and validate prd skills still exist but internally will route to the single prd skill with the proper intent. These shims will be removed with the 7.0.0 release when similar updates are completed across all of v6.
+
+The shape of the toml customizations is still the same, so if you make them for create already, it will still work. There are new fields supported also that can improve your experience with the new bmad-prd skill.
+
+### 💥 Breaking Changes
+
+* **Community modules picker removed from the interactive installer.** Previously installed community modules are preserved on update. Install community modules headlessly with `--custom-source <git-url-or-path>`, or wait for the forthcoming dedicated community installer.
+* **Remote marketplace registry fully retired.** The installer makes zero network calls to `bmad-code-org/bmad-plugins-marketplace`. Both the official-registry fetch (`registry/official.yaml`) and the community-catalog fetch (`registry/community-index.yaml`, `categories.yaml`) are gone. `CommunityModuleManager` and `RegistryClient` are deleted. The bundled `bmad-modules.yaml` at the repo root is the single source of truth for which official modules appear in the picker. Per-module version bumps continue to happen in each module's own repo. **Migration note:** users with previously installed community modules will see them preserved in their manifest, but updates must be handled via `--custom-source <url>` going forward (a dedicated community installer is planned separately).
+
+### 🎁 Features
+
+* **WDS (Whiteport Design Studio) now bundled in the official module picker.** Selectable alongside BMM, BMB, BMA, CIS, GDS, and TEA without needing `--custom-source`.
+* **Refreshed display names and hints across all bundled modules.** Shorter, clearer names; hints now describe what each module provides. TEA repositioned to sit directly after BMM in the picker.
+* **Registry entries can declare a `plugin_name` override.** When a module's `.claude-plugin/marketplace.json` declares the plugin under a name different from the module's installer code (e.g., WDS uses `bmad-wds`), set `plugin_name: <name>` on the registry entry to match the marketplace plugin without falling back to the single-plugin heuristic.
+
+* **bmad-prd overhaul** — Three intents (Create / Update / Validate); new Discovery shape (Brain dump → Stakes calibration → Working mode → mode-scoped work); capability-first or user-first modes; Essential Spine template plus Adapt-In Menu with authorized section invention for compliance, integration, hardware, SLAs, monetization, data governance; subagent web research default-on; rebuilt validation via PRD Quality Rubric → synthesis pass → HTML + markdown reports; cross-skill parity with `bmad-product-brief` (variable names, `.decision-log.md`, `persistent_facts` auto-loads `project-context.md`); headless mode with per-intent inputs and `partial` status (#2385, #2378)
+* **bmad-product-brief refactor** — Streamlined from a five-stage scripted workflow to a single outcome-driven SKILL.md with Create / Update / Validate intents; inline discovery, elicitation, and review (no more scripted agent fan-outs); new `assets/brief-template.md` with adapt-aggressively guidance; finalize chain through `bmad-distillator` and `bmad-help`; JSON headless responses (#2370, #2371)
+* **New bmad-investigate skill** — Forensic case investigation with evidence-graded findings (Confirmed / Deduced / Hypothesized), delegation discipline for large codebases, resume-on-collision logic; supports both defect-chasing and area-exploration modes (#2345 and follow-ups)
+* **Interactive directory prompt in installer** — `@clack/core` AutocompletePrompt for install-path selection: Tab-cycles existing child dirs, accepts not-yet-created paths, validates raw input (#2387)
+* **OpenCode and GitHub Copilot pointer files** — Generic `installCommandPointers()` mechanism driven by per-platform YAML. OpenCode gets `.opencode/commands/<id>.md` for every skill; Copilot gets `.github/agents/<id>.agent.md` for persona agents only (plus `bmad-tea` allowlist), keeping the Custom Agents picker uncluttered. Works for external modules automatically via `skill-manifest.csv` (#2324)
+* **BMad Automator (`bma`) registered** — Bundled registry fallback gains source-root external-module support, enabling `--modules bma` (#2345)
+
+### 🐛 Fixes
+
+* **Clear installer error on missing module definition** — `findExternalModuleSource()` throws an actionable error naming the module, missing path, and channel, with a suggested `--next=<code>` recovery path, replacing a silent ENOENT in `getFileList` (#2377)
+* **bmad-product-brief Update/Validate discipline** — Headless Update now requires decision-log entry + addendum before modifying `brief.md`; distillate regeneration is mandatory; Validate always returns `"offer_to_update": true`; eval expectations tightened (#2371)
+* **Module help catalog directional clarity** — Renamed `after`/`before` columns (and JSON manifest keys) to `preceded-by`/`followed-by` to eliminate ambiguity that was causing dependency-direction flips; `required` retains hard-gate semantics (#2360)
+* **bmad-help removed from Copilot Custom Agents picker** — Not a true agent; every persona already advertises it on activation (#2359)
+* **bmad-investigate robustness** — Collapsed multi-line description, unwrapped case-file template, tightened PRD discovery glob (review follow-ups)
+* **Dependency security audit** — Lockfile-only fixes closed 12 of 14 open Dependabot alerts (`vite`, `postcss`, `h3`, `yaml`, `brace-expansion`, `picomatch`, `astro`, others). Two `astro <6.1.10` alerts and one `markdown-it` (via `markdownlint-cli2`) deferred pending major bumps (#2382)
+
+### 📚 Docs
+
+* New `docs/explanation/forensic-investigation.md` (EN + FR) explaining the bmad-investigate workflow and evidence-grading discipline; workflow maps updated in both languages
+* Installer prerequisite docs updated across README, install/upgrade/non-interactive/tutorial guides and FR / CS / ZH-CN / VI-VN translations to advertise Node.js 20.12+ (#2387)
+
 ## v6.6.0 - 2026-04-28
 
 ### 💥 Breaking Changes

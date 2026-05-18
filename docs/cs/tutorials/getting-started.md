@@ -14,7 +14,7 @@ Vytvářejte software rychleji pomocí pracovních postupů řízených AI se sp
 - Efektivně používat agenty a pracovní postupy
 
 :::note[Předpoklady]
-- **Node.js 20+** — Vyžadováno pro instalátor
+- **Node.js 20.12+** — Vyžadováno pro instalátor
 - **Git** — Doporučeno pro správu verzí
 - **AI-powered IDE** — Claude Code, Cursor nebo podobné
 - **Nápad na projekt** — I jednoduchý stačí pro učení

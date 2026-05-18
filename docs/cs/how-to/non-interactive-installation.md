@@ -15,7 +15,7 @@ Použijte příznaky příkazové řádky k neinteraktivní instalaci BMad. To j
 - Rychlé instalace se známými konfiguracemi
 
 :::note[Předpoklady]
-Vyžaduje [Node.js](https://nodejs.org) v20+ a `npx` (součástí npm).
+Vyžaduje [Node.js](https://nodejs.org) v20.12+ a `npx` (součástí npm).
 :::
 
 ## Dostupné příznaky

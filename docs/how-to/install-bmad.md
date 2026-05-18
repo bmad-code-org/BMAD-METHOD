@@ -16,7 +16,7 @@ Use `npx bmad-method install` to set up BMad in your project. One command handle
 
 :::note[Prerequisites]
 
-- **Node.js** 20+ (the installer requires it)
+- **Node.js** 20.12+ (the installer requires it)
 - **Git** (for cloning external modules)
 - **An AI tool** such as Claude Code or Cursor (run `npx bmad-method install --list-tools` to see all supported tools)
 
