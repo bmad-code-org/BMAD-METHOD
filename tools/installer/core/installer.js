@@ -1270,6 +1270,11 @@ class Installer {
       }
     }
 
+    for (const moduleName of skippedModules) {
+      if (quickModules.collectedConfig[moduleName] || !quickModules.existingConfig?.[moduleName]) continue;
+      quickModules.collectedConfig[moduleName] = { ...quickModules.existingConfig[moduleName] };
+    }
+
     if (!promptedForNewFields) {
       await prompts.log.success('All configuration is up to date, no new options to configure');
     }
