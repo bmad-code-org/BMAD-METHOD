@@ -307,32 +307,30 @@ Activation is complete. Begin the workflow below.
       <action>HALT: "Memtrace MCP server is not available. Structural blast radius verification cannot be performed. Please start the Memtrace server or explicitly override this safety check."</action>
     </check>
 
-    <!-- Calculate blast radius via adapter -->
-    <action>For each target symbol, call the memtrace-adapter: `node _bmad/scripts/memtrace/memtrace-adapter.mjs --target <symbol> --query get_impact`. Process targets SEQUENTIALLY using `for...of` with `await` — NEVER use `Promise.all`. If the adapter exits with code 1 → HALT with timeout/unavailable message.</action>
-    <action>Parse the adapter's STDOUT JSON for each target. Extract `risk_level`, `affected_symbols` (array of {name, file, depth}), and `affected_files` from the JSON output.</action>
+    <!-- Calculate blast radius via adapter with summarization -->
+    <action>For each target symbol, call the memtrace-adapter: `node _bmad/scripts/memtrace/memtrace-adapter.mjs --target <symbol> --query get_impact --summarize`. Process targets SEQUENTIALLY using `for...of` with `await` — NEVER use `Promise.all`. If the adapter exits with code 1 → HALT with timeout/unavailable message.</action>
+    <action>Parse the adapter's STDOUT JSON for each target. Extract the `summarized` field for the Confidence Report (guaranteed ≤2000 tokens by the adapter). The `summarized` field contains: `total_affected`, `critical_dependents` (depth 1-2 symbols), `module_impact` (grouped by directory prefix with `count` and optional `top_symbols`), and `token_estimate`. Also extract `affected_symbols` (raw array) for qa-memtrace.mjs consumption.</action>
 
-    <!-- Summarize to stay under token budget -->
-    <action>Apply hierarchical summarization to keep the final report under 2000 tokens:
-      - Collapse depth &gt; 3 into module-level counts only
-      - Deduplicate shared dependencies (show once under highest-depth occurrence)
-      - Report only top 20 most-critical symbols by risk
-      - Use concise bullet format, no prose paragraphs
-    </action>
-
-    <!-- Present Confidence Report -->
+    <!-- Present Confidence Report using summarized data -->
     <action>Present the Blast Radius Confidence Report in this format:
 
       ## Blast Radius Confidence Report
 
       **Target:** [symbol/file]
       **Risk Level:** [Low/Medium/High/Critical]
-      **Affected Symbols:** N downstream dependents across M files
+      **Affected Symbols:** {{summarized.total_affected}} downstream dependents across {{count of module_impact entries}} modules
 
       ### Critical Dependents (Depth 1-2)
-      - `symbol` in `file` — relationship
+      From `summarized.critical_dependents`:
+      {{for each symbol in summarized.critical_dependents}}
+      - `{{symbol.name}}` in `{{symbol.file}}`
+      {{end}}
 
       ### Module Impact Summary
-      - module: N symbols (High/Med/Low risk)
+      From `summarized.module_impact`:
+      {{for each [prefix, mod] in summarized.module_impact}}
+      - `{{prefix}}`: {{mod.count}} symbols{{if mod.top_symbols}} (top: {{mod.top_symbols.map(s => s.name).join(', ')}}){{end}}
+      {{end}}
 
       ### Recommended Pre-Flight Checks
       - Review test coverage for: top modules

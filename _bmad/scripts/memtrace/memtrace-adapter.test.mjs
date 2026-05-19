@@ -80,6 +80,88 @@ describe('memtrace-adapter.mjs', () => {
       assert.equal(r.code, 1);
       assert.ok(r.stderr.includes('Unknown argument'));
     });
+
+    it('should accept --summarize as a valid flag', async () => {
+      const r = await runAdapter(['--target', 'foo', '--query', 'get_impact', '--summarize']);
+      assert.ok(!r.stderr.includes('Unknown argument'), '--summarize should not cause unknown argument error');
+    });
+  });
+
+  describe('Summarization (--summarize)', () => {
+
+    it('--help output should mention --summarize', async () => {
+      const r = await runAdapter(['--help']);
+      assert.equal(r.code, 0);
+      assert.ok(r.stdout.includes('--summarize'), 'Help text must document --summarize');
+    });
+
+    it('--summarize with find_dead_code should emit warning on STDERR, no summarized field', { timeout: 30000 }, async () => {
+      const r = await runAdapter(['--target', 'src', '--query', 'find_dead_code', '--repo', 'Repos', '--summarize']);
+      assert.ok(r.stderr.includes('WARNING'), 'STDERR must contain warning');
+      assert.ok(r.stderr.includes('--summarize'), 'STDERR must reference --summarize');
+      if (r.code === 0) {
+        const parsed = JSON.parse(r.stdout);
+        assert.equal(parsed.summarized, undefined, 'STDOUT must not have summarized field for find_dead_code');
+      }
+    });
+
+    it('--summarize with list_repos should emit warning on STDERR, no summarized field', { timeout: 20000 }, async () => {
+      const r = await runAdapter(['--query', 'list_repos', '--summarize']);
+      assert.ok(r.stderr.includes('WARNING'), 'STDERR must contain warning');
+      if (r.code === 0) {
+        const parsed = JSON.parse(r.stdout);
+        assert.equal(parsed.summarized, undefined, 'STDOUT must not have summarized field for list_repos');
+      }
+    });
+
+    it('get_impact WITH --summarize should include summarized field', { timeout: 30000 }, async () => {
+      const r = await runAdapter(['--target', 'bmad-dev-story', '--query', 'get_impact', '--repo', 'Repos', '--summarize']);
+      if (r.code === 0) {
+        let parsed;
+        try {
+          parsed = JSON.parse(r.stdout);
+        } catch (e) {
+          assert.fail(`STDOUT is not valid JSON: ${r.stdout.slice(0, 200)}`);
+        }
+        assert.ok(typeof parsed.summarized === 'object', 'summarized field must be an object');
+        assert.ok(typeof parsed.summarized.total_affected === 'number');
+        assert.ok(Array.isArray(parsed.summarized.critical_dependents));
+        assert.ok(typeof parsed.summarized.module_impact === 'object');
+        assert.ok(typeof parsed.summarized.token_estimate === 'number');
+        assert.ok(parsed.summarized.token_estimate <= 2000, `token_estimate ${parsed.summarized.token_estimate} must be ≤ 2000`);
+
+        parsed.summarized.critical_dependents.forEach(s => {
+          assert.ok(s.depth <= 2, `critical_dependent ${s.name} must have depth ≤ 2`);
+          assert.ok(typeof s.name === 'string');
+          assert.ok(typeof s.file === 'string');
+        });
+        assert.ok(parsed.summarized.critical_dependents.length <= 20);
+
+        for (const [prefix, mod] of Object.entries(parsed.summarized.module_impact)) {
+          assert.ok(typeof mod.count === 'number');
+          if (mod.top_symbols) {
+            assert.ok(Array.isArray(mod.top_symbols));
+            assert.ok(mod.top_symbols.length <= 3);
+          }
+        }
+      } else {
+        assert.ok(r.stdout.includes('MEMTRACE_MCP_ERROR_TIMEOUT'),
+          `Expected MEMTRACE_MCP_ERROR_TIMEOUT. Exit code: ${r.code}, stderr: ${r.stderr.slice(0, 200)}`);
+      }
+    });
+
+    it('get_impact WITHOUT --summarize should NOT have summarized field', { timeout: 30000 }, async () => {
+      const r = await runAdapter(['--target', 'bmad-dev-story', '--query', 'get_impact', '--repo', 'Repos']);
+      if (r.code === 0) {
+        const parsed = JSON.parse(r.stdout);
+        assert.equal(parsed.summarized, undefined, 'Without --summarize, output must NOT have summarized field');
+        assert.ok(typeof parsed.target === 'string');
+        assert.ok(Array.isArray(parsed.affected_symbols));
+        assert.ok(typeof parsed.total_count === 'number');
+      } else {
+        assert.ok(r.stdout.includes('MEMTRACE_MCP_ERROR_TIMEOUT'));
+      }
+    });
   });
 
   describe('MCP queries', () => {

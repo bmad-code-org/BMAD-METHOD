@@ -6,32 +6,35 @@ import { resolve } from 'node:path';
 
 const TIMEOUT_MS = parseInt(process.env.MEMTRACE_TIMEOUT_MS || '10000', 10);
 const TIMEOUT_TOKEN = 'MEMTRACE_MCP_ERROR_TIMEOUT';
+const SUMMARIZE_TOKEN_LIMIT = 2000;
 
 function parseArgs() {
   const args = process.argv.slice(2);
 
   if (args.length === 0 || args.includes('--help') || args.includes('-h')) {
-    console.log(`Usage: node memtrace-adapter.mjs --target <symbol> --query <type> [--repo <repo_id>]
+    console.log(`Usage: node memtrace-adapter.mjs --target <symbol> --query <type> [--repo <repo_id>] [--summarize]
 
 Arguments:
   --target <symbol>   Symbol name or file path to query (required for get_impact, find_dead_code)
   --query <type>      Query type: get_impact, find_dead_code, list_repos (required)
   --repo <repo_id>    Repository ID (optional — auto-detected from .memtrace-workspace if omitted)
+  --summarize         (Optional) Apply token-budgeted hierarchical summarization for --query get_impact (output ≤ 2000 tokens)
 
 Query types:
   get_impact          Fetch structural blast radius for a target symbol
-  find_dead_code      Find dead code in a target module (stub — full impl in Story 3.2)
+  find_dead_code      Find dead code in a target module
   list_repos          List indexed repositories with freshness timestamps
 
 Examples:
   node memtrace-adapter.mjs --target "validateToken" --query get_impact
+  node memtrace-adapter.mjs --target "validateToken" --query get_impact --summarize
   node memtrace-adapter.mjs --query list_repos
   node memtrace-adapter.mjs --target "src/auth" --query find_dead_code
   node memtrace-adapter.mjs --help`);
     process.exit(0);
   }
 
-  const result = { target: null, query: null, repo: null };
+  const result = { target: null, query: null, repo: null, summarize: false };
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--target' && i + 1 < args.length) {
       result.target = args[++i];
@@ -39,6 +42,8 @@ Examples:
       result.query = args[++i];
     } else if (args[i] === '--repo' && i + 1 < args.length) {
       result.repo = args[++i];
+    } else if (args[i] === '--summarize') {
+      result.summarize = true;
     } else {
       fail(`Unknown argument: ${args[i]}`);
       process.exit(1);
@@ -265,6 +270,84 @@ async function queryListRepos(client) {
   };
 }
 
+function estimateTokens(obj) {
+  try {
+    return Math.ceil(JSON.stringify(obj).length / 4 * 1.15);
+  } catch {
+    return Infinity;
+  }
+}
+
+function summarizeBlastRadius(result) {
+  const raw = result.affected_symbols;
+  const symbols = Array.isArray(raw) ? raw : [];
+
+  const modules = new Map();
+  for (const s of symbols) {
+    if (typeof s !== 'object' || s === null) continue;
+    const file = s.file || '';
+    const parts = file.split(/[\\/]/);
+    const dir = parts.slice(0, -1).join('/');
+    const prefix = dir ? dir.split('/').slice(0, 2).join('/') + '/' : '/';
+    if (!modules.has(prefix)) modules.set(prefix, []);
+    modules.get(prefix).push(s);
+  }
+
+  const isFiniteDepth = (s) => typeof s.depth === 'number' && isFinite(s.depth);
+
+  const crit = symbols
+    .filter(s => typeof s === 'object' && s !== null && isFiniteDepth(s) && s.depth <= 2)
+    .sort((a, b) => (a.depth ?? 99) - (b.depth ?? 99) || (a.name || '').localeCompare(b.name || ''))
+    .slice(0, 20)
+    .map(s => ({ name: s.name, file: s.file || '', depth: s.depth }));
+
+  const moduleImpact = {};
+  for (const [prefix, syms] of modules) {
+    const valid = syms.filter(s => typeof s === 'object' && s !== null);
+    const sorted = [...valid].sort((a, b) => (a.depth ?? 99) - (b.depth ?? 99) || (a.name || '').localeCompare(b.name || ''));
+    moduleImpact[prefix] = {
+      count: syms.length,
+      top_symbols: sorted.slice(0, 3).map(s => ({ name: s.name, file: s.file || '', depth: s.depth }))
+    };
+  }
+
+  const MAX_CRITICAL = 20;
+  const STAGE_CRITICAL = 10;
+  const MIN_CRITICAL = 5;
+  const MAX_MODULES = 50;
+
+  let summarized = {
+    total_affected: symbols.length,
+    total_critical: crit.length,
+    critical_dependents: crit,
+    module_impact: moduleImpact
+  };
+  summarized.token_estimate = estimateTokens(summarized);
+
+  while (summarized.token_estimate > SUMMARIZE_TOKEN_LIMIT) {
+    const cur = summarized.critical_dependents.length;
+    if (cur > STAGE_CRITICAL) {
+      summarized.critical_dependents = summarized.critical_dependents.slice(0, STAGE_CRITICAL);
+      summarized.total_critical = summarized.critical_dependents.length;
+    } else if (cur > MIN_CRITICAL) {
+      summarized.critical_dependents = summarized.critical_dependents.slice(0, MIN_CRITICAL);
+      summarized.total_critical = summarized.critical_dependents.length;
+    } else if (Object.keys(summarized.module_impact).some(k => summarized.module_impact[k].top_symbols)) {
+      for (const key of Object.keys(summarized.module_impact)) {
+        delete summarized.module_impact[key].top_symbols;
+      }
+    } else {
+      const entries = Object.entries(summarized.module_impact)
+        .sort((a, b) => b[1].count - a[1].count)
+        .slice(0, MAX_MODULES);
+      summarized.module_impact = Object.fromEntries(entries);
+    }
+    summarized.token_estimate = estimateTokens(summarized);
+  }
+
+  return summarized;
+}
+
 function withTimeout(promise, ms) {
   let timer;
   const timeout = new Promise((_, reject) => {
@@ -285,6 +368,11 @@ class TimeoutError extends Error {
 async function main() {
   const args = parseArgs();
   const start = Date.now();
+
+  if (args.summarize && args.query !== 'get_impact') {
+    console.error('WARNING: --summarize is only applicable to --query get_impact. Ignored.');
+    args.summarize = false;
+  }
 
   const repoId = resolveRepoId(args);
   const client = new McpClient();
@@ -307,9 +395,18 @@ async function main() {
     let result = await withTimeout(queryFn, TIMEOUT_MS);
     result.elapsed_ms = Date.now() - start;
 
+    if (args.summarize && args.query === 'get_impact') {
+      result.summarized = summarizeBlastRadius(result);
+    }
+
     await withTimeout(client.shutdown(), 5000);
 
-    console.log(JSON.stringify(result, null, 2));
+    try {
+      console.log(JSON.stringify(result, null, 2));
+    } catch (serializeErr) {
+      fail(`Failed to serialize result: ${serializeErr.message}`);
+      process.exit(1);
+    }
     process.exit(0);
   } catch (err) {
     client.kill();

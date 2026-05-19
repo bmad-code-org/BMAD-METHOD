@@ -24,13 +24,9 @@ Verify `{spec_file}` resolves to a non-empty path and the file exists on disk. I
 
 2. **Verify Memtrace availability**: Check if the Memtrace MCP server is reachable by calling the adapter: `node _bmad/scripts/memtrace/memtrace-adapter.mjs --query list_repos`. If exit 0 — server is reachable (parse STDOUT JSON for repository list). If exit 1 — HALT: "Memtrace MCP server is not available. Structural blast radius verification cannot be performed. Please start the Memtrace server or explicitly override this safety check."
 
-3. **Calculate blast radius**: For each target symbol, call the memtrace-adapter: `node _bmad/scripts/memtrace/memtrace-adapter.mjs --target <symbol> --query get_impact`. Process targets SEQUENTIALLY using `for...of` — NEVER use `Promise.all`. If adapter exits with code 1 → HALT (timeout or unavailable). Parse the STDOUT JSON extracting `risk_level`, `affected_symbols`, and `affected_files`.
+3. **Calculate blast radius with built-in summarization**: For each target symbol, call the memtrace-adapter: `node _bmad/scripts/memtrace/memtrace-adapter.mjs --target <symbol> --query get_impact --summarize`. Process targets SEQUENTIALLY using `for...of` — NEVER use `Promise.all`. If adapter exits with code 1 → HALT (timeout or unavailable). Parse the STDOUT JSON: use `summarized.critical_dependents`, `summarized.module_impact`, `summarized.total_affected`, and `summarized.token_estimate` for the Confidence Report (guaranteed ≤2000 tokens). Extract `affected_symbols` (raw) for qa-memtrace.mjs.
 
-4. **Summarize for token budget**: Keep the final report under 2000 tokens:
-   - Collapse depth &gt; 3 into module-level counts only
-   - Deduplicate shared dependencies (show once under highest-depth occurrence)
-   - Report only top 20 most-critical symbols by risk
-   - Use concise bullet format, no prose paragraphs
+4. **Token budget already satisfied**: The adapter's `--summarize` flag guarantees the `summarized` field is under 2000 tokens. No manual summarization needed. Use `summarized.token_estimate` to confirm compliance.
 
 5. **Present Blast Radius Confidence Report**:
    ```
