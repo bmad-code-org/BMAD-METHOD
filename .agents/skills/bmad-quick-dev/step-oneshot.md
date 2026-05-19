@@ -72,7 +72,16 @@ deferred_work_file: '{implementation_artifacts}/deferred-work.md'
    - Read the script's STDOUT and capture its exit code
    - **If exit 0**: log the output to `{spec_file}` completion notes under "Mathematical Quality Gate Output" and continue
    - **If exit 1**: persist the output to `{spec_file}` completion notes, present the uncovered nodes, then HALT: "Mathematical quality gate failed. N of M required nodes are not covered by tests. Agent must write/update tests before proceeding."
-   - The qa-memtrace.mjs exit code is the FINAL authority. Exit 1 is a HARD BLOCK on implementation.
+    - The qa-memtrace.mjs exit code is the FINAL authority. Exit 1 is a HARD BLOCK on implementation.
+
+5c. **Dead Code Pitfall Validation**: If the story involves dead-code removal (find_dead_code usage):
+   - Call `memtrace_find_dead_code` via MCP. Process sequentially — NEVER use `Promise.all`.
+   - Serialize candidates to a temp JSON file.
+   - Run: `node _bmad/scripts/memtrace/validate-dead-code.mjs --candidates <temp-file>`
+   - If exit 0: log output to `{spec_file}` completion notes as "Dead Code Pitfall Validation Report". Present SUSPECT entries for manual review. Ignore FALSE_POS and GHOST.
+   - If exit 1: log error and proceed (error is logged, not a hard block).
+   - Clean up temp files.
+   - If story does NOT involve dead-code removal, skip this step entirely.
 
 6. **HALT for decision**: Ask user: "[A] Approve — proceed | [R] Reject — halt"
    - Approve → continue to Implement below

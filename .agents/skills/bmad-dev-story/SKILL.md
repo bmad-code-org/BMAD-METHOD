@@ -422,6 +422,65 @@ Activation is complete. Begin the workflow below.
 
     <anchor id="quality_gate_done" />
 
+    <!-- DEAD CODE PITFALL VALIDATION -->
+    <critical>If the story involves dead-code removal, validate candidates against pitfalls-catalog.json before proceeding.</critical>
+
+    <check if="story involves dead-code removal (look for find_dead_code usage in story context or tasks)">
+      <action>Call `memtrace_find_dead_code` via MCP to retrieve dead-code candidates for the target module(s). Process sequentially using `for...of` with `await`.</action>
+      <action>Serialize the dead-code candidates to a temporary JSON file in the system temp directory.</action>
+      <action>Execute: `node _bmad/scripts/memtrace/validate-dead-code.mjs --candidates <temp-file>`</action>
+      <action>Read the script's STDOUT (JSON output) and capture the exit code.</action>
+
+      <check if="script exits with code 0 (classification completed)">
+        <action>Log the script output to the story file's Dev Agent Record → Completion Notes as "Dead Code Pitfall Validation Report".</action>
+        <action>Append to the report:
+          "Dead Code Pitfall Validation: PASSED
+          - SUSPECT (truly dead): N entries — review required
+          - FALSE_POS (matched catalog): N entries — ignored
+          - GHOST (file deleted): N entries — ignored"
+        </action>
+        <check if="script output has suspects.length > 0">
+          <action>Present the SUSPECT list for manual review before the Approve/Reject prompt:
+            "**SUSPECT Entries (truly dead code — review before removal):**
+            {{for each suspect in script output.suspects}}
+            - `{{suspect.name}}` in `{{suspect.file}}` (line {{suspect.line}})"
+          </action>
+        </check>
+
+        <action>Also render the "Ignored" section with FALSE_POS and GHOST entries with their reasons (AC #4):
+          "**Ignored (safe to skip):**
+          {{if script output has false_positives}}
+          **FALSE_POS (matched pitfalls catalog):**
+          {{for each fp in script output.false_positives}}
+          - `{{fp.name}}` — {{fp.reason}} (pitfall: {{fp.pitfall_id}})
+          {{end}}
+          {{end}}
+          {{if script output has ghosts}}
+          **GHOST (source file deleted):**
+          {{for each ghost in script output.ghosts}}
+          - `{{ghost.name}}` — {{ghost.reason}}
+          {{end}}
+          {{end}}"
+        </action>
+
+        <check if="script output has suspects.length == 0">
+          <output>✅ No SUSPECT dead-code entries found. All candidates are FALSE_POS (safe) or GHOST (already deleted).</output>
+        </check>
+      </check>
+
+      <check if="script exits with code 1 (error or timeout)">
+        <action>Log the error to the story file's Dev Agent Record → Completion Notes as "Dead Code Pitfall Validation Error".</action>
+        <action>Append to the report: "Dead Code Pitfall Validation: ERROR — classification failed ({{error}}). Proceeding without pitfall validation."</action>
+        <output>⚠️ Dead Code Pitfall Validation encountered an error. Proceeding without pitfall validation. See story file for details.</output>
+      </check>
+
+      <action>Clean up temporary JSON files.</action>
+    </check>
+
+    <check if="story does NOT involve dead-code removal">
+      <action>Skip this substep entirely.</action>
+    </check>
+
     <!-- HALT for user decision -->
     <ask>Decision: Proceed with modification? [A] Approve — proceed to implementation | [R] Reject — halt execution</ask>
 
