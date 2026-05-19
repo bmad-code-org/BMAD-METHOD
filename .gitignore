@@ -43,13 +43,22 @@ CLAUDE.local.md
 .serena/
 .claude/settings.local.json
 .junie/
-.agents/
+.agents/*
+!.agents/skills/
+!.agents/skills/**
 
 z*/
 !docs/zh-cn/
 
-_bmad
+_bmad/*
+!_bmad/scripts/
+!_bmad/scripts/memtrace/
+!_bmad/scripts/memtrace/**
 _bmad-output
+
+# Memtrace local database
+.memdb/
+.memtrace/
 
 # Personal customization files (team files are committed, personal files are not)
 _bmad/custom/*.user.toml
