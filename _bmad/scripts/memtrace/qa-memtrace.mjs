@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
-import { readFileSync, existsSync } from 'fs';
+import { existsSync } from 'fs';
+import { readFile } from 'fs/promises';
 import { resolve } from 'path';
 
 const TIMEOUT_MS = 10000;
@@ -54,16 +55,16 @@ function fail(msg) {
   console.log(TIMEOUT_TOKEN);
 }
 
-function readJsonFile(filePath) {
+async function readJsonFile(filePath) {
   const resolved = resolve(filePath);
   if (!existsSync(resolved)) {
     throw new Error(`File not found: ${resolved}`);
   }
-  return JSON.parse(readFileSync(resolved, 'utf-8'));
+  return JSON.parse(await readFile(resolved, 'utf-8'));
 }
 
 function compute(blastData, coverageData, threshold) {
-  if (!Array.isArray(blastData.affected_symbols) || blastData.total_count === 0) {
+  if (!Array.isArray(blastData.affected_symbols) || blastData.affected_symbols.length === 0) {
     return {
       status: 'pass',
       blast_radius_total: 0,
@@ -95,7 +96,7 @@ function compute(blastData, coverageData, threshold) {
           coveredSet.add(`${modPath}:${sym}`);
         }
       }
-    } else if (cov.startsWith('Partial:')) {
+    } else if ((mod.coverage || '').startsWith('Partial:')) {
       const n = parseInt(cov.split(':')[1], 10) || 0;
       const covered = (mod.symbols_covered || []).slice(0, n);
       for (const sym of covered) {
@@ -136,7 +137,7 @@ async function main() {
   const args = parseArgs();
   const start = Date.now();
 
-  const blastData = readJsonFile(args.blastRadius);
+  const blastData = await readJsonFile(args.blastRadius);
   if (!Array.isArray(blastData.affected_symbols)) {
     throw new Error('Invalid blast-radius data: "affected_symbols" must be an array');
   }
@@ -144,7 +145,7 @@ async function main() {
     throw new Error('Invalid blast-radius data: "total_count" must be a number');
   }
 
-  const coverageData = readJsonFile(args.testCoverage);
+  const coverageData = await readJsonFile(args.testCoverage);
   if (!Array.isArray(coverageData.modules)) {
     throw new Error('Invalid test-coverage data: "modules" must be an array');
   }
