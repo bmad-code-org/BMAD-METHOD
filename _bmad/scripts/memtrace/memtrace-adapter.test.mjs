@@ -85,6 +85,16 @@ describe('memtrace-adapter.mjs', () => {
       const r = await runAdapter(['--target', 'foo', '--query', 'get_impact', '--summarize']);
       assert.ok(!r.stderr.includes('Unknown argument'), '--summarize should not cause unknown argument error');
     });
+
+    it('should accept --check-freshness as a valid flag', async () => {
+      const r = await runAdapter(['--target', 'foo', '--query', 'get_impact', '--check-freshness']);
+      assert.ok(!r.stderr.includes('Unknown argument'), '--check-freshness should not cause unknown argument error');
+    });
+
+    it('should accept --batch as a valid flag', async () => {
+      const r = await runAdapter(['--target', 'foo', '--query', 'get_impact', '--batch']);
+      assert.ok(!r.stderr.includes('Unknown argument'), '--batch should not cause unknown argument error');
+    });
   });
 
   describe('Summarization (--summarize)', () => {
@@ -93,6 +103,18 @@ describe('memtrace-adapter.mjs', () => {
       const r = await runAdapter(['--help']);
       assert.equal(r.code, 0);
       assert.ok(r.stdout.includes('--summarize'), 'Help text must document --summarize');
+    });
+
+    it('--help output should mention --check-freshness', async () => {
+      const r = await runAdapter(['--help']);
+      assert.equal(r.code, 0);
+      assert.ok(r.stdout.includes('--check-freshness'), 'Help text must document --check-freshness');
+    });
+
+    it('--help output should mention --batch', async () => {
+      const r = await runAdapter(['--help']);
+      assert.equal(r.code, 0);
+      assert.ok(r.stdout.includes('--batch'), 'Help text must document --batch');
     });
 
     it('--summarize with find_dead_code should emit warning on STDERR, no summarized field', { timeout: 30000 }, async () => {
@@ -164,6 +186,60 @@ describe('memtrace-adapter.mjs', () => {
     });
   });
 
+  describe('Freshness (--check-freshness)', () => {
+
+    it('--help output should mention --check-freshness', async () => {
+      const r = await runAdapter(['--help']);
+      assert.equal(r.code, 0);
+      assert.ok(r.stdout.includes('--check-freshness'));
+    });
+
+    it('--check-freshness with list_repos should emit [FRESHNESS] on STDERR', { timeout: 30000 }, async () => {
+      const r = await runAdapter(['--query', 'list_repos', '--check-freshness']);
+      if (r.code === 0) {
+        assert.ok(r.stderr.includes('[FRESHNESS]'), 'STDERR must contain [FRESHNESS] line');
+      } else if (r.code === 1) {
+        assert.ok(r.stderr.includes('[FRESHNESS]'), 'STDERR must contain [FRESHNESS] line even on stale index');
+      }
+    });
+  });
+
+  describe('Batch mode (--batch)', () => {
+
+    it('--batch with comma-separated targets should produce results array', { timeout: 30000 }, async () => {
+      const r = await runAdapter(['--target', 'bmad-dev-story,parseArgs', '--query', 'get_impact', '--repo', 'Repos', '--batch']);
+      if (r.code === 0) {
+        const parsed = JSON.parse(r.stdout);
+        assert.equal(parsed.query, 'get_impact');
+        assert.ok(Array.isArray(parsed.targets));
+        assert.ok(Array.isArray(parsed.results));
+        assert.ok(typeof parsed.total_succeeded === 'number');
+        assert.ok(typeof parsed.total_failed === 'number');
+        assert.ok(parsed.results.length >= 1);
+        assert.ok(parsed.results[0].target);
+      } else if (r.code === 1) {
+        const parsed = JSON.parse(r.stdout);
+        assert.ok(Array.isArray(parsed.results));
+      } else {
+        assert.ok(r.stdout.includes('MEMTRACE_MCP_ERROR_TIMEOUT'));
+      }
+    });
+
+    it('--batch with --summarize should give each result summarized field', { timeout: 30000 }, async () => {
+      const r = await runAdapter(['--target', 'bmad-dev-story,parseArgs', '--query', 'get_impact', '--repo', 'Repos', '--batch', '--summarize']);
+      if (r.code === 0) {
+        const parsed = JSON.parse(r.stdout);
+        assert.ok(Array.isArray(parsed.results));
+        for (const res of parsed.results) {
+          if (res.risk_level) { // succeeded
+            assert.ok(res.summarized, 'Each successful target should have summarized field');
+            assert.ok(typeof res.summarized.total_affected === 'number');
+          }
+        }
+      }
+    });
+  });
+
   describe('MCP queries', () => {
 
     it('should list repositories and return valid JSON with repos array', { timeout: 20000 }, async () => {
@@ -178,6 +254,12 @@ describe('memtrace-adapter.mjs', () => {
       assert.equal(parsed.query, 'list_repos');
       assert.ok(Array.isArray(parsed.repositories));
       assert.ok(typeof parsed.elapsed_ms === 'number');
+      // Verify freshness is always computed (AC #3)
+      for (const repo of parsed.repositories) {
+        assert.ok(repo.freshness, 'Each repo must have freshness field');
+        assert.ok(typeof repo.freshness.age_minutes === 'number' || repo.freshness.age_minutes === null);
+        assert.equal(typeof repo.freshness.is_fresh, 'boolean');
+      }
     });
 
     it('should query get_impact and return structured JSON on exit 0 (or error with MEMTRACE_MCP_ERROR_TIMEOUT on exit 1)', { timeout: 30000 }, async () => {

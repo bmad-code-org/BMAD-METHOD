@@ -17,9 +17,7 @@ deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 
 1. **Identify targets**: Derive the symbols/files being modified from the clarified user intent. If ambiguous, ask the user for explicit targets.
 
-2. **Verify Memtrace availability**: Check if the Memtrace MCP server is reachable by calling the adapter: `node _bmad/scripts/memtrace/memtrace-adapter.mjs --query list_repos`. If exit 0 — server is reachable (parse STDOUT JSON for repository list). If exit 1 — HALT: "Memtrace MCP server is not available. Structural blast radius verification cannot be performed. Please start the Memtrace server or explicitly override this safety check."
-
-3. **Calculate blast radius with built-in summarization**: For each target symbol, call the memtrace-adapter: `node _bmad/scripts/memtrace/memtrace-adapter.mjs --target <symbol> --query get_impact --summarize`. Process targets SEQUENTIALLY — NEVER use `Promise.all`. If adapter exits with code 1 → HALT (timeout or unavailable). Parse the STDOUT JSON: use `summarized.critical_dependents`, `summarized.module_impact`, `summarized.total_affected`, and `summarized.token_estimate` for the Confidence Report. Extract `affected_symbols` (raw) for qa-memtrace.mjs.
+2. **Calculate blast radius with built-in summarization and freshness check**: For each target symbol, call the memtrace-adapter: `node _bmad/scripts/memtrace/memtrace-adapter.mjs --target <symbol> --query get_impact --check-freshness --summarize`. The adapter verifies index freshness before the blast radius query — no separate `list_repos` call needed. Process targets SEQUENTIALLY — NEVER use `Promise.all`. On exit code 0: parse STDOUT JSON; use `summarized.critical_dependents`, `summarized.module_impact`, `summarized.total_affected`, and `summarized.token_estimate` for the Confidence Report. Extract `affected_symbols` (raw) for qa-memtrace.mjs. On exit code 1: check STDERR for `[FRESHNESS]` (stale/missing index) vs `MEMTRACE_MCP_ERROR_TIMEOUT` (MCP unreachable) → HALT.
 
 4. **Token budget already satisfied**: The adapter's `--summarize` flag guarantees ≤2000 tokens. No manual summarization needed.
 

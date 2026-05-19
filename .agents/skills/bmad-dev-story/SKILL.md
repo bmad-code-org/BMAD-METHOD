@@ -301,14 +301,12 @@ Activation is complete. Begin the workflow below.
     <action>Extract target symbols and files from the story's Dev Notes and Tasks/Subtasks sections. Identify every file that this story will modify or create.</action>
     <action if="no explicit targets found in story Dev Notes">ASK user: "Which symbols or files are you modifying? The story doesn't specify explicit targets for blast radius analysis."</action>
 
-    <!-- Memtrace availability check via adapter -->
-    <action>Verify Memtrace MCP tools are available by calling the adapter: `node _bmad/scripts/memtrace/memtrace-adapter.mjs --query list_repos`. If exit 0 — Memtrace is reachable; parse the STDOUT JSON for repository list and index freshness timestamps. If exit 1 — Memtrace is unavailable.</action>
-    <check if="Memtrace adapter exit code is 1 (MCP server not reachable or timeout)">
-      <action>HALT: "Memtrace MCP server is not available. Structural blast radius verification cannot be performed. Please start the Memtrace server or explicitly override this safety check."</action>
+    <!-- Memtrace availability + freshness check via adapter (merged with blast radius query) -->
+    <action>For each target symbol, call the memtrace-adapter with `--check-freshness` which verifies index freshness before the blast radius query: `node _bmad/scripts/memtrace/memtrace-adapter.mjs --target <symbol> --query get_impact --check-freshness --summarize`. The adapter checks freshness first (separate MCP session), then runs the main query. Process targets SEQUENTIALLY using `for...of` with `await` — NEVER use `Promise.all`.</action>
+    <action>On exit code 0 — freshness OK; parse STDOUT JSON for the `summarized` field and `affected_symbols`. On exit code 1 — check STDERR: if `[FRESHNESS]` line present, treat as "Index stale or missing — re-index before proceeding"; if `MEMTRACE_MCP_ERROR_TIMEOUT` in STDOUT, treat as "MCP server unreachable." Both cases → HALT.</action>
+    <check if="adapter exit code is 1">
+      <action>HALT: "Memtrace query failed. See STDERR for details: [FRESHNESS] = stale/missing index; MEMTRACE_MCP_ERROR_TIMEOUT = MCP server unreachable."</action>
     </check>
-
-    <!-- Calculate blast radius via adapter with summarization -->
-    <action>For each target symbol, call the memtrace-adapter: `node _bmad/scripts/memtrace/memtrace-adapter.mjs --target <symbol> --query get_impact --summarize`. Process targets SEQUENTIALLY using `for...of` with `await` — NEVER use `Promise.all`. If the adapter exits with code 1 → HALT with timeout/unavailable message.</action>
     <action>Parse the adapter's STDOUT JSON for each target. Extract the `summarized` field for the Confidence Report (guaranteed ≤2000 tokens by the adapter). The `summarized` field contains: `total_affected`, `critical_dependents` (depth 1-2 symbols), `module_impact` (grouped by directory prefix with `count` and optional `top_symbols`), and `token_estimate`. Also extract `affected_symbols` (raw array) for qa-memtrace.mjs consumption.</action>
 
     <!-- Present Confidence Report using summarized data -->
