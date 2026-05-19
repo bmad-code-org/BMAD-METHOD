@@ -22,9 +22,9 @@ Verify `{spec_file}` resolves to a non-empty path and the file exists on disk. I
 
 1. **Identify targets**: Extract the symbols and files being modified from `{spec_file}` — the `## Code Map` section lists target files and their roles.
 
-2. **Verify Memtrace availability**: Check if Memtrace MCP tools are reachable (call `list_indexed_repositories` or equivalent). If unavailable, HALT: "Memtrace MCP server is not available. Structural blast radius verification cannot be performed. Please start the Memtrace server or explicitly override this safety check."
+2. **Verify Memtrace availability**: Check if the Memtrace MCP server is reachable by calling the adapter: `node _bmad/scripts/memtrace/memtrace-adapter.mjs --query list_repos`. If exit 0 — server is reachable (parse STDOUT JSON for repository list). If exit 1 — HALT: "Memtrace MCP server is not available. Structural blast radius verification cannot be performed. Please start the Memtrace server or explicitly override this safety check."
 
-3. **Calculate blast radius**: For each target symbol, call `memtrace_get_impact`. Process targets SEQUENTIALLY using `for...of` — NEVER use `Promise.all`. Extract `risk_level`, `affected_symbols`, and `affected_files`.
+3. **Calculate blast radius**: For each target symbol, call the memtrace-adapter: `node _bmad/scripts/memtrace/memtrace-adapter.mjs --target <symbol> --query get_impact`. Process targets SEQUENTIALLY using `for...of` — NEVER use `Promise.all`. If adapter exits with code 1 → HALT (timeout or unavailable). Parse the STDOUT JSON extracting `risk_level`, `affected_symbols`, and `affected_files`.
 
 4. **Summarize for token budget**: Keep the final report under 2000 tokens:
    - Collapse depth &gt; 3 into module-level counts only
@@ -91,7 +91,7 @@ Verify `{spec_file}` resolves to a non-empty path and the file exists on disk. I
        - The qa-memtrace.mjs exit code is the FINAL authority. Exit 1 is a HARD BLOCK on implementation.
 
 5c. **Dead Code Pitfall Validation**: If the story involves dead-code removal (find_dead_code usage in context or tasks):
-   - Call `memtrace_find_dead_code` via MCP for the target module(s). Process sequentially — NEVER use `Promise.all`.
+   - Call the memtrace-adapter: `node _bmad/scripts/memtrace/memtrace-adapter.mjs --target <module_path> --query find_dead_code [--repo <repo_id>]`. Process sequentially — NEVER use `Promise.all`. Parse the adapter's STDOUT JSON for the `symbols` array.
    - Serialize candidates to a temp JSON file.
    - Run: `node _bmad/scripts/memtrace/validate-dead-code.mjs --candidates <temp-file>`
    - If exit 0: log output to `{spec_file}` completion notes as "Dead Code Pitfall Validation Report". Present SUSPECT entries for manual review. FALSE_POS and GHOST are ignored.

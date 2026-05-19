@@ -301,15 +301,15 @@ Activation is complete. Begin the workflow below.
     <action>Extract target symbols and files from the story's Dev Notes and Tasks/Subtasks sections. Identify every file that this story will modify or create.</action>
     <action if="no explicit targets found in story Dev Notes">ASK user: "Which symbols or files are you modifying? The story doesn't specify explicit targets for blast radius analysis."</action>
 
-    <!-- Memtrace availability check -->
-    <action>Verify Memtrace MCP tools are available. Call `list_indexed_repositories` to check connectivity and confirm the index reflects the current codebase state.</action>
-    <check if="Memtrace MCP tools are NOT available or return errors">
+    <!-- Memtrace availability check via adapter -->
+    <action>Verify Memtrace MCP tools are available by calling the adapter: `node _bmad/scripts/memtrace/memtrace-adapter.mjs --query list_repos`. If exit 0 — Memtrace is reachable; parse the STDOUT JSON for repository list and index freshness timestamps. If exit 1 — Memtrace is unavailable.</action>
+    <check if="Memtrace adapter exit code is 1 (MCP server not reachable or timeout)">
       <action>HALT: "Memtrace MCP server is not available. Structural blast radius verification cannot be performed. Please start the Memtrace server or explicitly override this safety check."</action>
     </check>
 
-    <!-- Calculate blast radius -->
-    <action>For each target symbol, call `memtrace_get_impact` with the symbol as the target. Process targets SEQUENTIALLY using `for...of` with `await` — NEVER use `Promise.all`.</action>
-    <action>Collate the results: extract `risk_level`, `affected_symbols`, `affected_files` from each response.</action>
+    <!-- Calculate blast radius via adapter -->
+    <action>For each target symbol, call the memtrace-adapter: `node _bmad/scripts/memtrace/memtrace-adapter.mjs --target <symbol> --query get_impact`. Process targets SEQUENTIALLY using `for...of` with `await` — NEVER use `Promise.all`. If the adapter exits with code 1 → HALT with timeout/unavailable message.</action>
+    <action>Parse the adapter's STDOUT JSON for each target. Extract `risk_level`, `affected_symbols` (array of {name, file, depth}), and `affected_files` from the JSON output.</action>
 
     <!-- Summarize to stay under token budget -->
     <action>Apply hierarchical summarization to keep the final report under 2000 tokens:
@@ -376,7 +376,7 @@ Activation is complete. Begin the workflow below.
       - `module-C`: Partial coverage — `test/module-c.test.ts` covers 3 of 5 impacted functions
     </action>
     <action>Enforce the combined token budget: the blast radius report + test coverage justification together must not exceed 2000 tokens. If the combined output exceeds this limit, prioritize: (1) uncovered modules, (2) high-risk modules, (3) covered modules. Keep the table concise (one line per module).</action>
-    <action>If the blast radius report has zero affected modules (empty result from `memtrace_get_impact`), skip the Test Coverage Justification and append a note: "No affected modules to map — blast radius is empty."</action>
+    <action>If the blast radius report has zero affected modules (empty result from `memtrace-adapter.mjs --query get_impact`), skip the Test Coverage Justification and append a note: "No affected modules to map — blast radius is empty."</action>
     <action>Ask the user for their coverage threshold: "Review threshold: block if N% of modules are uncovered? (0 = never block, 100 = block if any uncovered)":</action>
     <check if="user provides a percentage threshold">
       <action>Store the threshold. During the code-review phase, the Acceptance Auditor will block changes exceeding this threshold.</action>
@@ -426,7 +426,11 @@ Activation is complete. Begin the workflow below.
     <critical>If the story involves dead-code removal, validate candidates against pitfalls-catalog.json before proceeding.</critical>
 
     <check if="story involves dead-code removal (look for find_dead_code usage in story context or tasks)">
-      <action>Call `memtrace_find_dead_code` via MCP to retrieve dead-code candidates for the target module(s). Process sequentially using `for...of` with `await`.</action>
+      <action>For each target module, call the memtrace-adapter: `node _bmad/scripts/memtrace/memtrace-adapter.mjs --target <module_path> --query find_dead_code [--repo <repo_id>]`. Process sequentially using `for...of` with `await`. Parse the adapter's STDOUT JSON for the `symbols` array.</action>
+      <check if="symbols array is empty (total_count === 0)">
+        <output>✅ No dead-code candidates found in target module. Pitfall validation skipped.</output>
+        <goto anchor="dead_code_done" />
+      </check>
       <action>Serialize the dead-code candidates to a temporary JSON file in the system temp directory.</action>
       <action>Execute: `node _bmad/scripts/memtrace/validate-dead-code.mjs --candidates <temp-file>`</action>
       <action>Read the script's STDOUT (JSON output) and capture the exit code.</action>
@@ -476,6 +480,8 @@ Activation is complete. Begin the workflow below.
 
       <action>Clean up temporary JSON files.</action>
     </check>
+
+    <anchor id="dead_code_done" />
 
     <check if="story does NOT involve dead-code removal">
       <action>Skip this substep entirely.</action>
