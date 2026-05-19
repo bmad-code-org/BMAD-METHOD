@@ -1,0 +1,73 @@
+{
+  "version": "1.0.0",
+  "description": "Catalog of known false-positive patterns for Memtrace find_dead_code. Used by validate-dead-code.mjs to classify dead-code candidates before approving removal.",
+  "last_updated": "2026-05-20",
+  "categories": [
+    {
+      "name": "Record/Map Dynamic Dispatch",
+      "entries": [
+        {
+          "id": "record-dispatch-001",
+          "pattern": "(dispatchByType|executeRule|BUILDERS|HANDLERS|RESOLVERS)",
+          "reason": "Called via Record/Map lookup — resolution is runtime, not AST",
+          "examples": ["buildGenreJustification", "buildLocalSaturationJustification"]
+        }
+      ]
+    },
+    {
+      "name": "Function Passed as Value",
+      "entries": [
+        {
+          "id": "func-as-value-001",
+          "pattern": "^[A-Z][a-zA-Z]*(Icon|Logo|Badge|Button|Card)$",
+          "reason": "Component or value passed as reference (e.g., useState(MyComponent))",
+          "examples": ["CopyIcon", "CheckIcon"]
+        }
+      ]
+    },
+    {
+      "name": "Framework Entry Points",
+      "entries": [
+        {
+          "id": "framework-entry-001",
+          "pattern": "^(handler|middleware|globalSetup|globalTeardown|setup|teardown)$",
+          "reason": "Framework runtime entry point (Next.js, Playwright, Vitest, etc.)",
+          "examples": ["handler in route.ts", "middleware in middleware.ts", "globalSetup in playwright config"]
+        }
+      ]
+    },
+    {
+      "name": "MSW Handlers",
+      "entries": [
+        {
+          "id": "msw-handler-001",
+          "pattern": "^(GET|POST|PUT|DELETE|PATCH)_",
+          "reason": "MSW (Mock Service Worker) HTTP handler — function wrapping an HTTP verb for mock setup",
+          "examples": ["GET_https_api_example_com_users", "POST_graphql"]
+        }
+      ]
+    },
+    {
+      "name": "Vitest Mocks",
+      "entries": [
+        {
+          "id": "vitest-mock-001",
+          "pattern": "^(observe|unobserve|disconnect|IntersectionObserver|ResizeObserver)$",
+          "reason": "Vitest mock setup (IntersectionObserver, ResizeObserver, etc.)",
+          "examples": ["observe in vitest.setup.ts"]
+        }
+      ]
+    },
+    {
+      "name": "Dependency Injection / Provider Registration",
+      "entries": [
+        {
+          "id": "di-provider-001",
+          "pattern": "^(provide[A-Z]|useClass|useFactory|useExisting|useValue)$",
+          "reason": "Dependency injection provider registration (Angular, NestJS) — invoked by DI container, not directly",
+          "examples": ["provideAuth", "useFactory in app.module.ts"]
+        }
+      ]
+    }
+  ]
+}
