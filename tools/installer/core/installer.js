@@ -54,7 +54,7 @@ class Installer {
       }
 
       if (existingInstall.installed) {
-        await this._removeDeselectedModules(existingInstall, config, paths);
+        await this._removeDeselectedModules(existingInstall, config, paths, originalConfig._preserveModules || []);
         updateState = await this._prepareUpdateState(paths, config, existingInstall, officialModules);
         await this._removeDeselectedIdes(existingInstall, config, paths);
       }
@@ -76,25 +76,23 @@ class Installer {
       const results = [];
       const addResult = (step, status, detail = '', meta = {}) => results.push({ step, status, detail, ...meta });
 
-      // Capture previously installed skill IDs before they get overwritten
-      const previousSkillIds = new Set();
-      const prevCsvPath = path.join(paths.bmadDir, '_config', 'skill-manifest.csv');
-      if (await fs.pathExists(prevCsvPath)) {
-        try {
-          const csvParse = require('csv-parse/sync');
-          const content = await fs.readFile(prevCsvPath, 'utf8');
-          const records = csvParse.parse(content, { columns: true, skip_empty_lines: true });
-          for (const r of records) {
-            if (r.canonicalId) previousSkillIds.add(r.canonicalId);
-          }
-        } catch (error) {
-          await prompts.log.warn(`Failed to parse skill-manifest.csv: ${error.message}`);
-        }
-      }
+      // Capture previously installed skill rows before they get overwritten
+      const preservedModules = originalConfig._preserveModules || [];
+      const previousSkillManifestRows = await this._readSkillManifestRows(paths.bmadDir);
+      const previousSkillIds = this._getPreviousSkillIdsForCleanup(previousSkillManifestRows, preservedModules);
 
       const allModules = config.modules || [];
 
-      await this._installAndConfigure(config, originalConfig, paths, allModules, allModules, addResult, officialModules);
+      await this._installAndConfigure(
+        config,
+        originalConfig,
+        paths,
+        allModules,
+        allModules,
+        addResult,
+        officialModules,
+        previousSkillManifestRows,
+      );
 
       await this._setupIdes(config, allModules, paths, addResult, previousSkillIds);
 
@@ -144,10 +142,11 @@ class Installer {
    * Remove modules that were previously installed but are no longer selected.
    * No confirmation — the user's module selection is the decision.
    */
-  async _removeDeselectedModules(existingInstall, config, paths) {
+  async _removeDeselectedModules(existingInstall, config, paths, preservedModules = []) {
     const previouslyInstalled = new Set(existingInstall.moduleIds);
     const newlySelected = new Set(config.modules || []);
-    const toRemove = [...previouslyInstalled].filter((m) => !newlySelected.has(m) && m !== 'core');
+    const preserved = new Set(preservedModules);
+    const toRemove = [...previouslyInstalled].filter((m) => !newlySelected.has(m) && m !== 'core' && !preserved.has(m));
 
     for (const moduleId of toRemove) {
       const modulePath = paths.moduleDir(moduleId);
@@ -212,7 +211,16 @@ class Installer {
   /**
    * Install modules, create directories, generate configs and manifests.
    */
-  async _installAndConfigure(config, originalConfig, paths, officialModuleIds, allModules, addResult, officialModules) {
+  async _installAndConfigure(
+    config,
+    originalConfig,
+    paths,
+    officialModuleIds,
+    allModules,
+    addResult,
+    officialModules,
+    previousSkillManifestRows = [],
+  ) {
     const isQuickUpdate = config.isQuickUpdate();
     const moduleConfigs = officialModules.moduleConfigs;
 
@@ -291,25 +299,29 @@ class Installer {
 
         message('Generating manifests...');
         const manifestGen = new ManifestGenerator();
+        const preservedModules = originalConfig._preserveModules || [];
 
         const allModulesForManifest = config.isQuickUpdate()
           ? originalConfig._existingModules || allModules || []
-          : originalConfig._preserveModules
-            ? [...allModules, ...originalConfig._preserveModules]
+          : preservedModules.length > 0
+            ? [...allModules, ...preservedModules]
             : allModules || [];
 
         let modulesForCsvPreserve;
         if (config.isQuickUpdate()) {
           modulesForCsvPreserve = originalConfig._existingModules || allModules || [];
         } else {
-          modulesForCsvPreserve = originalConfig._preserveModules ? [...allModules, ...originalConfig._preserveModules] : allModules;
+          modulesForCsvPreserve = preservedModules.length > 0 ? [...allModules, ...preservedModules] : allModules;
         }
+
+        await this._trackPreservedModuleFiles(paths.bmadDir, preservedModules);
 
         await manifestGen.generateManifests(paths.bmadDir, allModulesForManifest, [...this.installedFiles], {
           ides: config.ides || [],
           preservedModules: modulesForCsvPreserve,
           moduleConfigs,
         });
+        await this._appendPreservedSkillManifestRows(paths.bmadDir, previousSkillManifestRows, preservedModules);
 
         // Apply post-install --set TOML patches. Runs after writeCentralConfig
         // (inside generateManifests above) so the patch operates on the
@@ -409,6 +421,62 @@ class Installer {
         await fs.remove(sourceDir);
       }
     }
+  }
+
+  async _readSkillManifestRows(bmadDir) {
+    const csvPath = path.join(bmadDir, '_config', 'skill-manifest.csv');
+    if (!(await fs.pathExists(csvPath))) return [];
+
+    try {
+      const csvParse = require('csv-parse/sync');
+      const content = await fs.readFile(csvPath, 'utf8');
+      return csvParse.parse(content, { columns: true, skip_empty_lines: true });
+    } catch (error) {
+      await prompts.log.warn(`Failed to parse skill-manifest.csv: ${error.message}`);
+      return [];
+    }
+  }
+
+  _getPreviousSkillIdsForCleanup(previousRows, preservedModules = []) {
+    const preservedModuleSet = new Set(preservedModules || []);
+    const ids = new Set();
+    for (const row of previousRows || []) {
+      if (row.canonicalId && !preservedModuleSet.has(row.module)) {
+        ids.add(row.canonicalId);
+      }
+    }
+    return ids;
+  }
+
+  async _appendPreservedSkillManifestRows(bmadDir, previousRows, preservedModules = []) {
+    if (!previousRows || previousRows.length === 0 || preservedModules.length === 0) return;
+
+    const preservedModuleSet = new Set(preservedModules);
+    const rowsToPreserve = previousRows.filter((row) => row.canonicalId && row.module && preservedModuleSet.has(row.module));
+    if (rowsToPreserve.length === 0) return;
+
+    const csvPath = path.join(bmadDir, '_config', 'skill-manifest.csv');
+    if (!(await fs.pathExists(csvPath))) return;
+
+    const currentRows = await this._readSkillManifestRows(bmadDir);
+    const activeIds = new Set(currentRows.map((row) => row.canonicalId).filter(Boolean));
+    const appendedRows = [];
+
+    for (const row of rowsToPreserve) {
+      if (activeIds.has(row.canonicalId)) continue;
+      activeIds.add(row.canonicalId);
+      appendedRows.push(
+        [row.canonicalId, row.name || row.canonicalId, row.description || '', row.module, row.path || '']
+          .map((field) => this.escapeCSVField(field))
+          .join(','),
+      );
+    }
+
+    if (appendedRows.length === 0) return;
+
+    const currentContent = await fs.readFile(csvPath, 'utf8');
+    const prefix = currentContent.endsWith('\n') ? currentContent : `${currentContent}\n`;
+    await fs.writeFile(csvPath, prefix + appendedRows.join('\n') + '\n', 'utf8');
   }
 
   /**
@@ -593,6 +661,15 @@ class Installer {
         await this._trackFilesRecursive(full);
       } else if (entry.isFile()) {
         this.installedFiles.add(full);
+      }
+    }
+  }
+
+  async _trackPreservedModuleFiles(bmadDir, preservedModules = []) {
+    for (const moduleName of preservedModules) {
+      const modulePath = path.join(bmadDir, moduleName);
+      if (await fs.pathExists(modulePath)) {
+        await this._trackFilesRecursive(modulePath);
       }
     }
   }
