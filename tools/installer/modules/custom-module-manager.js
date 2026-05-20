@@ -19,6 +19,8 @@ function quoteCustomRef(ref) {
 class CustomModuleManager {
   /** @type {Map<string, Object>} Shared across all instances: module code -> ResolvedModule */
   static _resolutionCache = new Map();
+  /** @type {Set<string>} Repo roots refreshed in the current process (dedupe quick-update fetches). */
+  static _refreshedRepoPaths = new Set();
 
   // ─── Source Parsing ───────────────────────────────────────────────────────
 
@@ -478,6 +480,15 @@ class CustomModuleManager {
       sha: resolvedSha,
       clonedAt: new Date().toISOString(),
     });
+    // Keep a channel marker in custom cache too so update paths that rely on
+    // channel metadata (same as official-module cache) can treat this clone as
+    // refreshable. URL + no explicit ref => next, explicit ref => pinned.
+    await fs.writeJson(path.join(repoCacheDir, '.bmad-channel.json'), {
+      channel: effectiveVersion ? 'pinned' : 'next',
+      version: effectiveVersion || 'main',
+      sha: resolvedSha,
+      writtenAt: new Date().toISOString(),
+    });
 
     // Install dependencies if package.json exists (skip during browsing/analysis)
     const packageJsonPath = path.join(repoCacheDir, 'package.json');
@@ -642,6 +653,22 @@ class CustomModuleManager {
       const repoRoots = await this._findCacheRepoRoots(cacheDir);
 
       for (const { repoPath, metadata } of repoRoots) {
+        // Quick-update path: refresh URL-backed cached repos before reading
+        // files from them so re-deploy uses latest commits for `next` and
+        // the pinned ref for `pinned`.
+        if (options.bmadDir && metadata?.rawInput && !CustomModuleManager._refreshedRepoPaths.has(repoPath)) {
+          try {
+            await this.cloneRepo(metadata.rawInput, {
+              silent: true,
+              pinOverride: metadata.version || undefined,
+            });
+            CustomModuleManager._refreshedRepoPaths.add(repoPath);
+          } catch {
+            // Keep existing cache on refresh failure; caller may still resolve
+            // module source from the previous clone.
+          }
+        }
+
         // Check marketplace.json for matching module code
         const marketplacePath = path.join(repoPath, '.claude-plugin', 'marketplace.json');
         if (!(await fs.pathExists(marketplacePath))) continue;
