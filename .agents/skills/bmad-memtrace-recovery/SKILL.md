@@ -34,7 +34,7 @@ npm run memtrace:restart
 - The server could not be recovered
 - Halt the current task immediately
 - Notify the Human Developer: "Memtrace MCP server recovery failed. Manual intervention required."
-- The Human Developer may invoke Story 4.3 fallback to proceed with legacy text-search heuristics.
+- Check that the file `.agents/skills/bmad-memtrace-fallback/SKILL.md` exists. If it does, load the `bmad-memtrace-fallback` skill and follow its Permission Protocol (Steps 1-3: Halt → Wait → Permission/Abandon). If the file does not exist, the fallback skill is missing — notify the developer: "Fallback skill file not found. Cannot proceed with legacy mode without the approved protocol."
 
 ### Step 3: Verify Index Freshness
 
