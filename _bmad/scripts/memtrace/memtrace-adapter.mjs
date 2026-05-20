@@ -239,7 +239,7 @@ function resolveRepoId(args) {
   for (let i = parts.length; i > 0; i--) {
     const dir = parts.slice(0, i).join('/');
     const candidate = process.platform === 'win32'
-      ? resolve(dir || parts[0], '.memtrace-workspace')
+      ? resolve(dir.endsWith(':') ? dir + '\\' : (dir || parts[0]), '.memtrace-workspace')
       : resolve('/', dir, '.memtrace-workspace');
     if (existsSync(candidate)) {
       return parts[i - 1] || 'project';
@@ -247,7 +247,11 @@ function resolveRepoId(args) {
   }
 
   // Fallback: use CWD basename
-  return parts[parts.length - 1] || 'project';
+  const fallback = parts[parts.length - 1] || 'project';
+  if (fallback === 'project' && !args.repo) {
+    console.error('WARNING: Could not detect repo ID from CWD or .memtrace-workspace. Using "project".');
+  }
+  return fallback;
 }
 
 async function checkIndexFreshness(client, repoId) {
@@ -266,6 +270,9 @@ async function checkIndexFreshness(client, repoId) {
 
   const ageMinutes = Math.round((Date.now() - Date.parse(lastIndexed)) / 60000 * 10) / 10;
   const valid = Number.isFinite(ageMinutes);
+  if (!valid) {
+    console.error(`WARNING: Unparseable last_indexed timestamp for repo "${repoId}": "${lastIndexed}"`);
+  }
   const isFresh = valid && ageMinutes <= FRESHNESS_MAX_AGE_MINUTES;
 
   return { found: true, repo_id: repoId, last_indexed: lastIndexed, age_minutes: valid ? ageMinutes : null, is_fresh: isFresh };
@@ -320,6 +327,9 @@ async function queryListRepos(client) {
       let isFresh = false;
       if (lastIndexed) {
         ageMinutes = Math.round((Date.now() - Date.parse(lastIndexed)) / 60000 * 10) / 10;
+        if (!Number.isFinite(ageMinutes)) {
+          console.error(`WARNING: Unparseable last_indexed timestamp for repo "${repoId}": "${lastIndexed}"`);
+        }
         isFresh = ageMinutes <= FRESHNESS_MAX_AGE_MINUTES;
       }
       return {
@@ -567,6 +577,12 @@ async function main() {
 
   const repoId = resolveRepoId(args);
 
+  // Pre-flight: batch mode only supports get_impact and find_dead_code
+  if (args.batch && !['get_impact', 'find_dead_code'].includes(args.query)) {
+    fail(`--batch does not support --query ${args.query}. Supported: get_impact, find_dead_code. See --help.`);
+    process.exit(1);
+  }
+
   // Pre-flight freshness check (before main MCP session)
   if (args.checkFreshness) {
     const freshness = await runFreshnessCheck(repoId);
@@ -585,7 +601,10 @@ async function main() {
         } catch (diagErr) {
           diagClient.kill();
           fail(`Failed to emit diagnostic: ${diagErr.message}`);
+          process.exit(1);
         }
+      } else {
+        console.log(JSON.stringify({ error: 'index_stale', freshness }));
       }
       process.exit(1);
     }
@@ -594,7 +613,7 @@ async function main() {
   // Batch mode: process targets sequentially
   if (args.batch) {
     if (!args.targets || args.targets.length === 0) {
-      fail('--batch requires at least one --target value');
+      fail('--batch requires at least one --target value. Use --target "sym1,sym2" or repeated --target flags.');
       process.exit(1);
     }
     await runBatchQuery(args, repoId, start);

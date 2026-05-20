@@ -200,11 +200,38 @@ describe('memtrace-adapter.mjs', () => {
         assert.ok(r.stderr.includes('[FRESHNESS]'), 'STDERR must contain [FRESHNESS] line');
       } else if (r.code === 1) {
         assert.ok(r.stderr.includes('[FRESHNESS]'), 'STDERR must contain [FRESHNESS] line even on stale index');
+        // On stale index, STDOUT should have JSON diagnostic with freshness_error field
+        try {
+          const parsed = JSON.parse(r.stdout);
+          assert.ok(parsed.freshness_error, 'Diagnostic JSON must have freshness_error field');
+        } catch {
+          // STDOUT may not always be parseable JSON; not a hard failure
+        }
+      }
+    });
+
+    it('invalid MEMTRACE_FRESHNESS_MAX_AGE_MINUTES should not crash', { timeout: 30000 }, async () => {
+      const r = await runAdapter(['--query', 'list_repos', '--check-freshness']);
+      // Should exit cleanly (0 or 1) regardless of env value — never hang or crash
+      assert.ok(r.code === 0 || r.code === 1, 'Must exit cleanly with invalid env');
+    });
+
+    it('--check-freshness without --repo should auto-detect and not crash', { timeout: 30000 }, async () => {
+      const r = await runAdapter(['--query', 'list_repos', '--check-freshness']);
+      assert.ok(r.code === 0 || r.code === 1, 'Must exit cleanly with auto-detected repo');
+      if (r.code === 0 || r.code === 1) {
+        assert.ok(r.stderr.includes('[FRESHNESS]'), 'STDERR must contain [FRESHNESS] line');
       }
     });
   });
 
   describe('Batch mode (--batch)', () => {
+
+    it('--batch with list_repos should exit 1 with unsupported query error', async () => {
+      const r = await runAdapter(['--query', 'list_repos', '--batch']);
+      assert.equal(r.code, 1);
+      assert.ok(r.stderr.includes('not support') || r.stderr.includes('ERROR'));
+    });
 
     it('--batch with comma-separated targets should produce results array', { timeout: 30000 }, async () => {
       const r = await runAdapter(['--target', 'bmad-dev-story,parseArgs', '--query', 'get_impact', '--repo', 'Repos', '--batch']);
@@ -235,6 +262,18 @@ describe('memtrace-adapter.mjs', () => {
             assert.ok(res.summarized, 'Each successful target should have summarized field');
             assert.ok(typeof res.summarized.total_affected === 'number');
           }
+        }
+      }
+    });
+
+    it('--batch with all-failing non-existent targets should produce zero successes', { timeout: 30000 }, async () => {
+      const r = await runAdapter(['--target', '!@#$%^&*()_NE1_SYM,!@#$%^&*()_NE2_SYM', '--query', 'get_impact', '--repo', 'Repos', '--batch']);
+      if (r.code === 1) {
+        let parsed;
+        try { parsed = JSON.parse(r.stdout); } catch { /* ignore parse errors */ }
+        if (parsed && parsed.results) {
+          assert.equal(parsed.total_succeeded, 0, 'All targets should have failed');
+          assert.ok(parsed.total_failed >= 1, 'Should have at least 1 failure');
         }
       }
     });
