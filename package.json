@@ -36,6 +36,7 @@
     "format:fix:staged": "prettier --write",
     "install:bmad": "node tools/installer/bmad-cli.js install",
     "lint": "eslint . --ext .js,.cjs,.mjs,.yaml --max-warnings=0",
+    "memtrace:restart": "node _bmad/scripts/memtrace/memtrace-restart.mjs",
     "lint:fix": "eslint . --ext .js,.cjs,.mjs,.yaml --fix",
     "lint:md": "markdownlint-cli2 \"**/*.md\"",
     "prepare": "command -v husky >/dev/null 2>&1 && husky || exit 0",
