@@ -75,9 +75,11 @@ BMad Method có thể được mở rộng bằng các mô-đun chính thức ch
 | ----------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
 | **[BMad Method (BMM)](https://github.com/bmad-code-org/BMAD-METHOD)**                                             | Khung lõi với hơn 34 quy trình                     |
 | **[BMad Builder (BMB)](https://github.com/bmad-code-org/bmad-builder)**                                           | Tạo agent và quy trình BMad tùy chỉnh             |
+| **[BMad Automator](https://github.com/bmad-code-org/bmad-automator)**                                             | Tự động hóa story epic thử nghiệm cho Claude và Codex |
 | **[Test Architect (TEA)](https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise)**             | Chiến lược kiểm thử và tự động hóa dựa trên rủi ro |
-| **[Game Dev Studio (BMGD)](https://github.com/bmad-code-org/bmad-module-game-dev-studio)**                        | Quy trình phát triển game (Unity, Unreal, Godot)   |
+| **[Game Dev Studio (GDS)](https://github.com/bmad-code-org/bmad-module-game-dev-studio)**                         | Quy trình phát triển game (Unity, Unreal, Godot)   |
 | **[Creative Intelligence Suite (CIS)](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite)** | Đổi mới, động não ý tưởng, tư duy thiết kế         |
+| **[Whiteport Design Studio (WDS)](https://github.com/bmad-code-org/bmad-method-wds-expansion)**                   | UX chiến lược và lập kế hoạch design-first         |
 
 ## Tài liệu
 

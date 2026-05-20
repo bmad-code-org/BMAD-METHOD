@@ -41,6 +41,22 @@ Bộ công cụ vận hành bởi AI dành cho sáng tạo có cấu trúc, phá
 - Storyteller và Presentation Master cho kể chuyện và pitching
 - Các framework phát ý tưởng như SCAMPER, Reverse Brainstorming và problem reframing
 
+## BMad Automator
+
+Module tự động hóa thử nghiệm để tạo epic/story sẵn sàng cho triển khai và chạy các workflow BMAD được hỗ trợ với ít thao tác thủ công hơn. Hiện module này tập trung vào Claude và Codex.
+
+- **Mã:** `automator`
+- **npm:** [`bmad-story-automator`](https://www.npmjs.com/package/bmad-story-automator)
+- **GitHub:** [bmad-code-org/bmad-automator](https://github.com/bmad-code-org/bmad-automator)
+- **Kênh mặc định:** `next`
+
+**Cung cấp:**
+
+- Tự động hóa xây epic cho quy trình giao hàng theo story
+- Hỗ trợ workflow thử nghiệm cho người dùng Claude và Codex
+- Đường tắt từ artifact kế hoạch sang công việc triển khai cụ thể
+- Tính năng early-access có thể thay đổi nhanh hơn các module stable
+
 ## Game Dev Studio
 
 Các workflow phát triển game có cấu trúc, được điều chỉnh cho Unity, Unreal, Godot và các engine tùy chỉnh. Hỗ trợ làm prototype nhanh qua Quick Flow và sản xuất toàn diện bằng sprint theo epic.
@@ -55,6 +71,21 @@ Các workflow phát triển game có cấu trúc, được điều chỉnh cho U
 - Chế độ Quick Dev cho làm prototype nhanh
 - Hỗ trợ thiết kế narrative cho nhân vật, hội thoại và world-building
 - Bao phủ hơn 21 thể loại game cùng hướng dẫn kiến trúc theo engine
+
+## Whiteport Design Studio
+
+Module UX chiến lược và design-first planning cho các nhóm cần định hình trải nghiệm sản phẩm chắc hơn trước khi triển khai. WDS mở rộng BMAD bằng discovery UX và workflow lập kế hoạch thiết kế có cấu trúc.
+
+- **Mã:** `wds`
+- **npm:** [`bmad-wds`](https://www.npmjs.com/package/bmad-wds)
+- **GitHub:** [bmad-code-org/bmad-method-wds-expansion](https://github.com/bmad-code-org/bmad-method-wds-expansion)
+
+**Cung cấp:**
+
+- Phương pháp design-first planning cho sản phẩm và UX
+- Discovery UX có cấu trúc trước solutioning và implementation
+- Workflow thiết kế chiến lược bổ trợ luồng product planning của BMAD
+- Các skill Whiteport Design Studio được hiển thị qua module picker của installer
 
 ## Test Architect (TEA)
 
@@ -71,6 +102,6 @@ Chiến lược kiểm thử cấp doanh nghiệp, hướng dẫn tự động h
 - Đánh giá NFR, thiết lập CI và dựng sườn framework kiểm thử
 - Ưu tiên P0-P3 cùng tích hợp tùy chọn với Playwright Utils và MCP
 
-## Community Modules
+## Module cộng đồng và tùy chỉnh
 
-Các module cộng đồng và một chợ module đang được chuẩn bị. Hãy theo dõi [tổ chức BMad trên GitHub](https://github.com/bmad-code-org) để cập nhật.
+Module picker cho community module trong luồng tương tác đã được gỡ. Hãy cài module cộng đồng hoặc bên thứ ba bằng `--custom-source <git-url-or-path>` từ Git repository hoặc đường dẫn cục bộ. Xem [Cài đặt module tùy chỉnh và module cộng đồng](../how-to/install-custom-modules.md).

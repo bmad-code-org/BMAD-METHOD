@@ -31,7 +31,7 @@ npx bmad-method install
 The interactive flow asks you five things:
 
 1. Installation directory (defaults to the current working directory)
-2. Which modules to install (checkboxes for core, bmm, bmb, cis, gds, tea)
+2. Which modules to install (checkboxes for core, bmm, bmb, automator, cis, gds, wds, tea)
 3. **"Ready to install (all stable)?"** — Yes accepts the latest released tag for every external module
 4. Which AI tools/IDEs to integrate with (claude-code, cursor, and others)
 5. Per-module config (name, language, output folder)
@@ -53,7 +53,7 @@ Two independent axes control what ends up on disk.
 
 ### Axis 1: external module channels
 
-Every external module — bmb, cis, gds, tea, and any community module — installs on one of three channels:
+Every external module — bmb, automator, cis, gds, wds, tea, and any community module — installs on one of three channels:
 
 | Channel            | What gets installed                                                          | Who picks this                          |
 | ------------------ | ---------------------------------------------------------------------------- | --------------------------------------- |
@@ -138,7 +138,7 @@ Under `--yes`, patch and minor upgrades apply automatically. Majors stay frozen 
 Precedence when flags overlap: `--pin` beats `--next=` beats `--channel` / `--all-*` beats the registry default (`stable`).
 
 :::note[Example resolution]
-`--all-next --pin cis=v0.2.0` puts bmb, gds, and tea on next while pinning cis to v0.2.0.
+`--all-next --pin cis=v0.2.0` puts bmb, automator, gds, wds, and tea on next while pinning cis to v0.2.0.
 :::
 
 ### Recipes

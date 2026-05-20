@@ -85,9 +85,9 @@ your-project/
 
 | v4 Module                     | v6 Status                                 |
 | ----------------------------- | ----------------------------------------- |
-| `.bmad-2d-phaser-game-dev`    | Integrated into BMGD Module               |
-| `.bmad-2d-unity-game-dev`     | Integrated into BMGD Module               |
-| `.bmad-godot-game-dev`        | Integrated into BMGD Module               |
+| `.bmad-2d-phaser-game-dev`    | Integrated into GDS module                |
+| `.bmad-2d-unity-game-dev`     | Integrated into GDS module                |
+| `.bmad-godot-game-dev`        | Integrated into GDS module                |
 | `.bmad-infrastructure-devops` | Deprecated — new DevOps agent coming soon |
 | `.bmad-creative-writing`      | Not adapted — new v6 module coming soon   |
 

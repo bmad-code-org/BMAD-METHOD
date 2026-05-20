@@ -31,7 +31,7 @@ npx bmad-method install
 Luồng tương tác sẽ hỏi bạn năm thứ:
 
 1. Thư mục cài đặt (mặc định là thư mục làm việc hiện tại)
-2. Module cần cài (checkbox cho core, bmm, bmb, cis, gds, tea)
+2. Module cần cài (checkbox cho core, bmm, bmb, automator, cis, gds, wds, tea)
 3. **"Ready to install (all stable)?"** — chọn Yes để nhận tag phát hành mới nhất cho mọi module bên ngoài
 4. Công cụ AI/IDE cần tích hợp (claude-code, cursor và các công cụ khác)
 5. Cấu hình theo từng module (tên, ngôn ngữ, thư mục output)
@@ -53,7 +53,7 @@ Có hai trục độc lập quyết định thứ gì được ghi xuống đĩa
 
 ### Trục 1: channel của module bên ngoài
 
-Mọi module bên ngoài như bmb, cis, gds, tea và các module cộng đồng đều được cài trên một trong ba channel:
+Mọi module bên ngoài như bmb, automator, cis, gds, wds, tea và các module cộng đồng đều được cài trên một trong ba channel:
 
 | Channel | Nội dung được cài | Ai nên chọn |
 | ------------------ | ---------------------------------------------------------------------------- | --------------------------------------- |
@@ -138,7 +138,7 @@ Khi dùng `--yes`, nâng cấp patch và minor được áp dụng tự động.
 Độ ưu tiên khi các cờ chồng nhau: `--pin` thắng `--next=`, thắng `--channel` / `--all-*`, thắng mặc định registry (`stable`).
 
 :::note[Ví dụ resolve]
-`--all-next --pin cis=v0.2.0` đặt bmb, gds và tea lên next, đồng thời ghim cis vào v0.2.0.
+`--all-next --pin cis=v0.2.0` đặt bmb, automator, gds, wds và tea lên next, đồng thời ghim cis vào v0.2.0.
 :::
 
 ### Recipe

@@ -84,9 +84,9 @@ du-an-cua-ban/
 
 | Module v4 | Trạng thái trong v6 |
 | --- | --- |
-| `.bmad-2d-phaser-game-dev` | Đã được tích hợp vào module BMGD |
-| `.bmad-2d-unity-game-dev` | Đã được tích hợp vào module BMGD |
-| `.bmad-godot-game-dev` | Đã được tích hợp vào module BMGD |
+| `.bmad-2d-phaser-game-dev` | Đã được tích hợp vào module GDS |
+| `.bmad-2d-unity-game-dev` | Đã được tích hợp vào module GDS |
+| `.bmad-godot-game-dev` | Đã được tích hợp vào module GDS |
 | `.bmad-infrastructure-devops` | Đã bị ngừng hỗ trợ - agent DevOps mới sắp ra mắt |
 | `.bmad-creative-writing` | Chưa được điều chỉnh - module v6 mới sắp ra mắt |
 
