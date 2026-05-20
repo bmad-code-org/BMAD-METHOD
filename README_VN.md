@@ -2,14 +2,14 @@
 
 [![Version](https://img.shields.io/npm/v/bmad-method?color=blue&label=version)](https://www.npmjs.com/package/bmad-method)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.12.0-brightgreen)](https://nodejs.org)
 [![Python Version](https://img.shields.io/badge/python-%3E%3D3.10-blue?logo=python&logoColor=white)](https://www.python.org)
 [![uv](https://img.shields.io/badge/uv-package%20manager-blueviolet?logo=uv)](https://docs.astral.sh/uv/)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Community-7289da?logo=discord&logoColor=white)](https://discord.gg/gk8jAdXWmj)
 
 [English](README.md) | [简体中文](README_CN.md) | Tiếng Việt
 
-**Build More Architect Dreams** - một mô-đun khung phát triển hướng AI trong hệ sinh thái BMad, có khả năng thích ứng theo quy mô từ sửa lỗi nhỏ đến các hệ thống doanh nghiệp.
+**Build More Architect Dreams** - một mô-đun phát triển agile hướng AI trong hệ sinh thái module BMad Method, framework phát triển Agile AI Driven tốt nhất và toàn diện nhất, với trí thông minh thích ứng thật sự theo quy mô từ sửa lỗi nhỏ đến các hệ thống doanh nghiệp.
 
 **100% miễn phí và mã nguồn mở.** Không có tường phí. Không có nội dung bị khóa. Không có Discord giới hạn quyền truy cập. Chúng tôi tin vào việc trao quyền cho mọi người, không chỉ cho những ai có thể trả tiền để vào một cộng đồng hay khóa học khép kín.
 
@@ -20,7 +20,7 @@ Các công cụ AI truyền thống thường làm thay phần suy nghĩ của b
 - **Trợ giúp AI thông minh** - Gọi skill `bmad-help` bất kỳ lúc nào để biết bước tiếp theo
 - **Thích ứng theo quy mô và miền bài toán** - Tự động điều chỉnh độ sâu lập kế hoạch theo độ phức tạp của dự án
 - **Quy trình có cấu trúc** - Dựa trên các thực hành tốt nhất của agile xuyên suốt phân tích, lập kế hoạch, kiến trúc và triển khai
-- **Agent chuyên biệt** - Hơn 12 chuyên gia theo vai trò như PM, Architect, Developer, UX, Scrum Master và nhiều vai trò khác
+- **Agent chuyên biệt** - Hơn 12 chuyên gia theo vai trò như PM, Architect, Developer, UX và nhiều vai trò khác
 - **Party Mode** - Đưa nhiều persona agent vào cùng một phiên để cộng tác và thảo luận
 - **Vòng đời hoàn chỉnh** - Từ động não ý tưởng cho đến triển khai
 
@@ -38,7 +38,7 @@ Các công cụ AI truyền thống thường làm thay phần suy nghĩ của b
 
 ## Bắt đầu nhanh
 
-**Điều kiện tiên quyết**: [Node.js](https://nodejs.org) v20+ · [Python](https://www.python.org) 3.10+ · [uv](https://docs.astral.sh/uv/)
+**Điều kiện tiên quyết**: [Node.js](https://nodejs.org) v20.12+ · [Python](https://www.python.org) 3.10+ · [uv](https://docs.astral.sh/uv/)
 
 ```bash
 npx bmad-method install
@@ -52,6 +52,15 @@ Làm theo các lời nhắc của trình cài đặt, sau đó mở AI IDE của
 
 ```bash
 npx bmad-method install --directory /path/to/project --modules bmm --tools claude-code --yes
+```
+
+Ghi đè bất kỳ tùy chọn cấu hình module nào bằng `--set <module>.<key>=<value>` (có thể lặp lại). Chạy `--list-options [module]` để xem các key chính thức mà máy hiện biết (module tích hợp sẵn cộng với mọi module chính thức bên ngoài đã được cache trên máy này):
+
+```bash
+npx bmad-method install --yes \
+  --modules bmm --tools claude-code \
+  --set bmm.project_knowledge=research \
+  --set bmm.user_skill_level=expert
 ```
 
 [Xem toàn bộ tùy chọn cài đặt](https://docs.bmad-method.org/vi-vn/how-to/non-interactive-installation/)

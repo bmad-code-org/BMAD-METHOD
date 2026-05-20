@@ -1,11 +1,11 @@
 ---
 title: 'Cách mở rộng BMad cho tổ chức của bạn'
-description: Năm mẫu tùy chỉnh giúp thay đổi BMad mà không cần fork, gồm quy tắc ở cấp agent, quy ước workflow, xuất bản ra hệ thống ngoài, thay template và điều chỉnh danh sách agent
+description: Sáu mẫu tùy chỉnh giúp thay đổi BMad mà không cần fork, gồm quy tắc ở cấp agent, quy ước workflow, xuất bản ra hệ thống ngoài, thay template, điều chỉnh danh sách agent và các mẫu tích hợp nâng cao
 sidebar:
   order: 9
 ---
 
-Bề mặt tùy chỉnh của BMad cho phép một tổ chức định hình lại hành vi mà không phải sửa file đã cài hay fork skill. Hướng dẫn này trình bày năm công thức mẫu (recipe) bao phủ phần lớn nhu cầu ở môi trường doanh nghiệp.
+Bề mặt tùy chỉnh của BMad cho phép một tổ chức định hình lại hành vi mà không phải sửa file đã cài hay fork skill. Hướng dẫn này trình bày sáu công thức mẫu (recipe) bao phủ phần lớn nhu cầu ở môi trường doanh nghiệp.
 
 :::note[Điều kiện tiên quyết]
 
@@ -235,9 +235,79 @@ Chỉ một câu, nhưng được nạp ở mọi phiên. Nó kết hợp với 
 
 Hãy giữ file hướng dẫn của IDE **ngắn gọn**. Một tá dòng được chọn kỹ sẽ hiệu quả hơn một danh sách dài lê thê. Model phải đọc file đó ở mọi lượt, và càng nhiều nhiễu thì càng ít tín hiệu.
 
+## Recipe 6: mẫu tích hợp nâng cao
+
+Một số workflow BMad mở ra bề mặt cấu hình phong phú hơn các phần cơ bản trong Recipe 1-5. Những mẫu này, gồm nguồn tri thức theo nhu cầu, tự động publish output, chuẩn tài liệu lúc finalize và template có thể thay thế, xuất hiện trong nhiều workflow. Hãy kiểm tra `customize.toml` của workflow để biết nó expose những field nào; các ví dụ dưới đây dùng `bmad-prd` vì workflow này expose đủ các field, nhưng cùng pattern áp dụng ở mọi nơi có field tương ứng.
+
+### Nguồn tri thức theo nhu cầu (`external_sources`)
+
+Kết nối workflow với knowledge base nội bộ, cơ sở dữ liệu cạnh tranh hoặc tài liệu compliance. Agent chỉ tham khảo các nguồn này khi cuộc trò chuyện chạm tới nhu cầu phù hợp, không gọi trước một cách vô điều kiện.
+
+```toml
+# _bmad/custom/bmad-prd.toml  (cùng pattern áp dụng cho mọi workflow expose external_sources)
+
+[workflow]
+external_sources = [
+  "Khi người dùng nhắc tới đối thủ hoặc phân khúc thị trường, hãy query corp:competitive_db (category={project_name}) trước khi viết phần differentiation.",
+  "Với domain có yếu tố pháp lý như healthcare, fintech, education, hãy tham khảo corp:compliance_reference trước khi viết các phần domain-specific.",
+]
+```
+
+Mỗi entry là một chỉ dẫn ngôn ngữ tự nhiên nêu tên MCP tool, điều kiện kích hoạt và các field tool cần. Nếu tool không có sẵn lúc chạy, workflow fallback về hành vi chuẩn và ghi nhận khoảng trống đó.
+
+### Tự động publish output (`external_handoffs`)
+
+Đưa artifact đã hoàn tất sang các hệ thống nguồn sự thật bên ngoài sau khi workflow finalize. Khác với `on_complete` ở Recipe 3, `external_handoffs` là một mảng append chuyên dụng: entry của team được chồng thêm, và từng handoff chạy độc lập với graceful degradation nếu tool không có sẵn.
+
+```toml
+# _bmad/custom/bmad-prd.toml  (cùng pattern áp dụng cho mọi workflow expose external_handoffs)
+
+[workflow]
+external_handoffs = [
+  "Sau khi finalize, upload prd.md và addendum.md lên Confluence qua corp:confluence_upload (space_key='PROD', parent_page='PRDs', label='prd', author={user_name}). Lưu và hiển thị URL trang được trả về.",
+  "Mirror sang Notion qua notion:create_page (database_id='abc123', title='PRD: ' + {project_name}).",
+]
+```
+
+Nếu một tool được nêu tên không có sẵn, handoff đó bị bỏ qua và được đánh dấu; các file local vẫn luôn tồn tại.
+
+### Chuẩn tài liệu lúc finalize (`doc_standards`)
+
+Áp dụng chuẩn viết của tổ chức cho tài liệu dành cho con người ở thời điểm finalize, sau khi nội dung đã hoàn tất nhưng trước khi người dùng nhìn thấy output. Mỗi entry là một chỉ dẫn `skill:`, `file:` hoặc plain-text; các lượt kiểm tra chạy bằng subagent song song.
+
+```toml
+# _bmad/custom/bmad-prd.toml  (cùng pattern áp dụng cho mọi workflow expose doc_standards)
+
+[workflow]
+doc_standards = [
+  "file:{project-root}/docs/enterprise/voice-and-tone.md",
+  "Mọi ngày tháng phải dùng định dạng ISO 8601 (YYYY-MM-DD).",
+  "Thay mọi lần dùng 'leverage' bằng 'use'.",
+]
+```
+
+`doc_standards` là mảng append; entry của team chồng lên mọi mặc định mà workflow đi kèm. Các lượt kiểm tra cấu trúc rộng nên chạy trước các lượt chỉnh văn phong hẹp.
+
+### Template và checklist có thể thay thế
+
+Các workflow tạo tài liệu có cấu trúc thường expose đường dẫn template và checklist dưới dạng scalar có thể override. Trỏ chúng tới file do tổ chức sở hữu dưới `{project-root}` để ép cấu trúc khác mà không phải sửa source.
+
+```toml
+# _bmad/custom/bmad-prd.toml
+
+[workflow]
+# Cấu trúc PRD cho ngành chịu quản lý
+prd_template = "{project-root}/docs/enterprise/prd-template-hipaa.md"
+
+# Tiêu chí validation riêng của tổ chức
+validation_checklist = "{project-root}/docs/enterprise/prd-checklist-regulated.md"
+```
+
+Agent thích ứng với bất kỳ cấu trúc nào template định nghĩa. Hãy giữ template trong `{project-root}/docs/` hoặc `{project-root}/_bmad/custom/templates/` để chúng được version cùng file override. Với repo đa tổ chức, dùng `.user.toml` để từng team có thể trỏ tới template riêng mà không đụng vào file dùng chung.
+
 ## Kết hợp các recipe
 
-Cả năm recipe này có thể kết hợp song song. Một cấu hình doanh nghiệp thực tế cho `bmad-product-brief` hoàn toàn có thể đặt `persistent_facts` theo Recipe 2, `on_complete` theo Recipe 3 và `brief_template` theo Recipe 4 trong cùng một file. Quy tắc ở cấp agent theo Recipe 1 sẽ nằm trong file của agent tương ứng, còn cấu hình trung tâm theo Recipe 5 thì ghim roster và thiết lập chung. Tất cả cùng hoạt động đồng thời.
+Cả sáu recipe này có thể kết hợp song song. Một cấu hình doanh nghiệp thực tế cho `bmad-product-brief` hoàn toàn có thể đặt `persistent_facts` theo Recipe 2, `on_complete` theo Recipe 3 và `brief_template` theo Recipe 4 trong cùng một file. Quy tắc ở cấp agent theo Recipe 1 sẽ nằm trong file của agent tương ứng, cấu hình trung tâm theo Recipe 5 thì ghim roster và thiết lập chung, còn các mẫu tích hợp nâng cao theo Recipe 6 cấu hình external sources và handoff. Tất cả cùng hoạt động đồng thời.
 
 ```toml
 # _bmad/custom/bmad-product-brief.toml (cấp workflow)

@@ -84,7 +84,7 @@ Ngoài ra còn có một bề mặt tùy chỉnh thứ hai cho các mối quan t
 Để xem toàn bộ bề mặt tùy chỉnh và ví dụ thực tế:
 
 - [Cách tùy chỉnh BMad](../how-to/customize-bmad.md): tài liệu tham chiếu cho những gì có thể tùy chỉnh và merge diễn ra thế nào
-- [Cách mở rộng BMad cho tổ chức của bạn](../how-to/expand-bmad-for-your-org.md): năm recipe hoàn chỉnh trải từ quy tắc ở cấp agent, convention workflow, publish ra hệ thống ngoài, thay template đầu ra đến tùy chỉnh roster agent
+- [Cách mở rộng BMad cho tổ chức của bạn](../how-to/expand-bmad-for-your-org.md): sáu recipe hoàn chỉnh trải từ quy tắc ở cấp agent, convention workflow, publish ra hệ thống ngoài, thay template đầu ra, tùy chỉnh roster agent đến các mẫu tích hợp nâng cao
 - Skill `bmad-customize`: trợ lý soạn cấu hình (authoring helper) có hướng dẫn để biến ý định thành một file override đúng chỗ và đã được kiểm chứng
 
 ## Ý tưởng lớn hơn phía sau
