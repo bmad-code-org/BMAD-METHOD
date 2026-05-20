@@ -2,7 +2,7 @@
 title: "Comment obtenir des réponses à propos de BMad"
 description: Utiliser un LLM pour répondre rapidement à vos questions sur BMad
 sidebar:
-  order: 4
+  order: 5
 ---
 
 Utilisez l'aide intégrée de BMad, la documentation source ou la communauté pour obtenir des réponses — du plus rapide au plus approfondi.

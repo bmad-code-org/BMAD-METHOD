@@ -2,7 +2,7 @@
 title: "Gérer le contexte du projet"
 description: Créer et maintenir project-context.md pour guider les agents IA
 sidebar:
-  order: 8
+  order: 9
 ---
 
 Utilisez le fichier `project-context.md` pour garantir que les agents IA respectent les préférences techniques et les règles d'implémentation de votre projet tout au long des workflows. Pour vous assurer qu'il est toujours disponible, vous pouvez également ajouter la ligne `Le contexte et les conventions importantes du projet se trouvent dans [chemin vers le contexte du projet]/project-context.md` à votre fichier de contexte ou de règles permanentes (comme `AGENTS.md`).

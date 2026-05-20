@@ -2,7 +2,7 @@
 title: "Projets existants"
 description: Comment utiliser la méthode BMad sur des bases de code existantes
 sidebar:
-  order: 6
+  order: 7
 ---
 
 Utilisez la méthode BMad efficacement lorsque vous travaillez sur des projets existants et des bases de code legacy.

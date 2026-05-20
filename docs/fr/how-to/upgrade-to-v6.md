@@ -2,7 +2,7 @@
 title: "Comment passer à la v6"
 description: Migrer de BMad v4 vers v6
 sidebar:
-  order: 3
+  order: 4
 ---
 
 Utilisez l'installateur BMad pour passer de la v4 à la v6, qui inclut une détection automatique des installations existantes et une assistance à la migration.

@@ -22,21 +22,22 @@ Nécessite [Node.js](https://nodejs.org) v20.12+ et `npx` (inclus avec npm).
 
 ### Options d'installation
 
-| Option | Description | Exemple |
-|------|-------------|---------|
-| `--directory <chemin>` | Répertoire d'installation | `--directory ~/projects/myapp` |
-| `--modules <modules>` | IDs de modules séparés par des virgules | `--modules bmm,bmb` |
-| `--tools <outils>` | IDs d'outils/IDE séparés par des virgules (utilisez `none` pour ignorer) | `--tools claude-code,cursor` ou `--tools none` |
-| `--action <type>` | Action pour les installations existantes : `install` (par défaut), `update`, ou `quick-update` | `--action quick-update` |
+| Option                      | Description                                                                                    | Exemple                                        |
+|-----------------------------|------------------------------------------------------------------------------------------------|------------------------------------------------|
+| `--directory <chemin>`      | Répertoire d'installation                                                                      | `--directory ~/projects/myapp`                 |
+| `--modules <modules>`       | IDs de modules séparés par des virgules                                                        | `--modules bmm,bmb`                            |
+| `--tools <outils>`          | IDs d'outils/IDE séparés par des virgules (utilisez `none` pour ignorer)                       | `--tools claude-code,cursor` ou `--tools none` |
+| `--action <type>`           | Action pour les installations existantes : `install` (par défaut), `update`, ou `quick-update` | `--action quick-update`                        |
+| `--custom-source <sources>` | URLs Git ou chemins locaux séparés par des virgules pour les modules personnalisés             | `--custom-source /path/to/module`              |
 
 ### Configuration principale
 
-| Option | Description | Par défaut |
-|------|-------------|---------|
-| `--user-name <nom>` | Nom à utiliser par les agents | Nom d'utilisateur système |
-| `--communication-language <langue>` | Langue de communication des agents | Anglais |
-| `--document-output-language <langue>` | Langue de sortie des documents | Anglais |
-| `--output-folder <chemin>` | Chemin du dossier de sortie (voir les règles de résolution ci-dessous) | `_bmad-output` |
+| Option                                | Description                                                            | Par défaut                |
+|---------------------------------------|------------------------------------------------------------------------|---------------------------|
+| `--user-name <nom>`                   | Nom à utiliser par les agents                                          | Nom d'utilisateur système |
+| `--communication-language <langue>`   | Langue de communication des agents                                     | Anglais                   |
+| `--document-output-language <langue>` | Langue de sortie des documents                                         | Anglais                   |
+| `--output-folder <chemin>`            | Chemin du dossier de sortie (voir les règles de résolution ci-dessous) | `_bmad-output`            |
 
 #### Résolution du chemin du dossier de sortie
 
@@ -45,17 +46,17 @@ La valeur passée à `--output-folder` (ou saisie de manière interactive) est r
 | Type d'entrée                 | Exemple                    | Résolu comme                                                 |
 |-------------------------------|----------------------------|--------------------------------------------------------------|
 | Chemin relatif (par défaut)   | `_bmad-output`             | `<racine-du-projet>/_bmad-output`                            |
-| Chemin relatif avec traversée | `../../shared-outputs`     | Chemin absolu normalisé — ex. `/Users/me/shared-outputs`     |
+| Chemin relatif avec traversée | `../../shared-outputs`     | Chemin absolu normalisé — example : `/Users/me/shared-outputs`     |
 | Chemin absolu                 | `/Users/me/shared-outputs` | Utilisé tel quel — la racine du projet n'est **pas** ajoutée |
 
 Le chemin résolu est ce que les agents et les workflows vont utiliser lors de l'écriture des fichiers de sortie. L'utilisation d'un chemin absolu ou d'un chemin relatif avec traversée vous permet de diriger tous les artefacts générés vers un répertoire en dehors de l'arborescence de votre projet — utile pour les configurations partagées ou les monorepos.
 
 ### Autres options
 
-| Option | Description |
-|------|-------------|
-| `-y, --yes` | Accepter tous les paramètres par défaut et ignorer les invites |
-| `-d, --debug` | Activer la sortie de débogage pour la génération du manifeste |
+| Option        | Description                                                    |
+|---------------|----------------------------------------------------------------|
+| `-y, --yes`   | Accepter tous les paramètres par défaut et ignorer les invites |
+| `-d, --debug` | Activer la sortie de débogage pour la génération du manifeste  |
 
 ## IDs de modules
 
@@ -76,12 +77,13 @@ Exécutez `npx bmad-method install` de manière interactive une fois pour voir l
 
 ## Modes d'installation
 
-| Mode | Description | Exemple |
-|------|-------------|---------|
-| Entièrement non-interactif | Fournir toutes les options pour ignorer toutes les invites | `npx bmad-method install --directory . --modules bmm --tools claude-code --yes` |
-| Semi-interactif | Fournir certains options ; BMad demande les autres | `npx bmad-method install --directory . --modules bmm` |
-| Paramètres par défaut uniquement | Accepter tous les paramètres par défaut avec `-y` | `npx bmad-method install --yes` |
-| Sans outils | Ignorer la configuration des outils/IDE | `npx bmad-method install --modules bmm --tools none` |
+| Mode                             | Description                                                | Exemple                                                                                           |
+|----------------------------------|------------------------------------------------------------|---------------------------------------------------------------------------------------------------|
+| Entièrement non-interactif       | Fournir toutes les options pour ignorer toutes les invites | `npx bmad-method install --directory . --modules bmm --tools claude-code --yes`                   |
+| Semi-interactif                  | Fournir certains options ; BMad demande les autres         | `npx bmad-method install --directory . --modules bmm`                                             |
+| Paramètres par défaut uniquement | Accepter tous les paramètres par défaut avec `-y`          | `npx bmad-method install --yes`                                                                   |
+| Source personnalisée uniquement  | Installer le cœur + les modules personnalisés              | `npx bmad-method install --directory . --custom-source /path/to/module --tools claude-code --yes` |
+| Sans outils                      | Ignorer la configuration des outils/IDE                    | `npx bmad-method install --modules bmm --tools none`                                              |
 
 ## Exemples
 
@@ -118,6 +120,33 @@ npx bmad-method install \
   --directory ~/projects/myapp \
   --action quick-update
 ```
+
+### Installer depuis une source personnalisée
+
+Installez un module depuis un chemin local ou tout hôte Git :
+
+```bash
+npx bmad-method install \
+  --directory . \
+  --custom-source /path/to/my-module \
+  --tools claude-code \
+  --yes
+```
+
+Combinez avec des modules officiels :
+
+```bash
+npx bmad-method install \
+  --directory . \
+  --modules bmm \
+  --custom-source https://gitlab.com/myorg/my-module \
+  --tools claude-code \
+  --yes
+```
+
+:::note[Comportement des sources personnalisées]
+Quand `--custom-source` est utilisé sans `--modules`, seuls le cœur et les modules personnalisés sont installés. Ajoutez `--modules` pour inclure également les modules officiels. Consultez [Installer des modules personnalisés et communautaires](./install-custom-modules.md) pour plus de détails.
+:::
 
 ## Ce que vous obtenez
 
