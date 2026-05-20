@@ -101,7 +101,6 @@ Examples:
 
 function fail(msg) {
   console.error(`ERROR: ${msg}`);
-  console.log(TIMEOUT_TOKEN);
 }
 
 class McpClient {
@@ -112,7 +111,7 @@ class McpClient {
   }
 
   spawn() {
-    return new Promise((resolvePromise, reject) => {
+    const spawnPromise = new Promise((resolvePromise, reject) => {
       try {
         this.child = spawn('memtrace', ['mcp'], {
           stdio: ['pipe', 'pipe', 'pipe'],
@@ -159,12 +158,13 @@ class McpClient {
 
       resolvePromise();
     });
+    return withTimeout(spawnPromise, TIMEOUT_MS);
   }
 
   sendRequest(method, params = {}) {
     const id = ++this.requestId;
     const request = JSON.stringify({ jsonrpc: '2.0', id, method, params }) + '\n';
-    return new Promise((resolvePromise, reject) => {
+    const requestPromise = new Promise((resolvePromise, reject) => {
       const listener = (data) => {
         this.stdoutBuffer += data.toString();
         const lines = this.stdoutBuffer.split('\n');
@@ -195,6 +195,7 @@ class McpClient {
       this.child.stdout.on('data', listener);
       this.child.stdin.write(request);
     });
+    return withTimeout(requestPromise, TIMEOUT_MS);
   }
 
   async handshake() {
@@ -503,7 +504,7 @@ async function runSingleQuery(args, repoId, start) {
       console.log(TIMEOUT_TOKEN);
       console.error(`ERROR: Query timed out after ${elapsed}ms`);
     } else {
-      fail(err.message);
+      console.error(`ERROR: ${err.message}`);
     }
     process.exit(1);
   }
