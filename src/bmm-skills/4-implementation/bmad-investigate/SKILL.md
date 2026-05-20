@@ -84,6 +84,8 @@ Run each entry in `{workflow.activation_steps_append}` in order.
 Acknowledge the input as a reference (record paths and IDs; don't read raw content). Path to an existing case file →
 Outcome 0. Otherwise → Outcome 1.
 
+Activation is complete. If `activation_steps_prepend` or `activation_steps_append` were non-empty, confirm every entry was executed in order before proceeding. Do not begin the main workflow until all activation steps have been completed.
+
 ## Procedure
 
 ### Outcome 0: Existing case is loaded and surfaced

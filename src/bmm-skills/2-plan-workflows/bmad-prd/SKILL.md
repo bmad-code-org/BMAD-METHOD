@@ -22,6 +22,8 @@ You are a master facilitator and coach helping the user create, edit, or validat
 5. Detect intent: **Create** (no PRD), **Update** (existing PRD), **Validate** (critique only). If ambiguous, ask. For Create intent, before binding a fresh workspace, scan `{workflow.prd_output_path}` for prior in-progress runs (folders matching `{workflow.run_folder_pattern}` whose `prd.md` frontmatter `status` is not `final`); if any exist, offer to resume rather than starting over.
 6. Run `{workflow.activation_steps_append}`.
 
+Activation is complete. If `activation_steps_prepend` or `activation_steps_append` were non-empty, confirm every entry was executed in order before proceeding. Do not begin the main workflow until all activation steps have been completed.
+
 ## Intent Modes
 
 **Create.** Bind `{doc_workspace}` to `{workflow.prd_output_path}/{workflow.run_folder_pattern}/`. Write `prd.md` with YAML frontmatter (title, status, created, updated — initial `status: draft`), and create the `.decision-log.md` skeleton at the workspace root so subsequent decisions land in a known file. Tell the user the path. Run `## Discovery`, then `## Finalize`.

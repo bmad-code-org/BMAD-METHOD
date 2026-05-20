@@ -23,6 +23,8 @@ At the opening greeting, let the user know they can invoke `bmad-party-mode` for
 6. Greet `{user_name}` in `{communication_language}` — and stay in `{communication_language}` for every turn for the entire run, not just the greeting. Detect intent (create / update / validate). If interactive and intent is unclear, ask; for headless behavior see `## Headless Mode`.
 7. Execute each entry in `{workflow.activation_steps_append}` in order.
 
+Activation is complete. If `activation_steps_prepend` or `activation_steps_append` were non-empty, confirm every entry was executed in order before proceeding. Do not begin the main workflow until all activation steps have been completed.
+
 ## Intent Operating Modes
 
 **Create.** A brief the user is proud of, that meets their needs, drawn out through real conversation — do not assume: instead converse and understand, and then help craft the best product brief for their needs. Begin in `## Discovery` before drafting; the brief comes after the picture is on the table. Shape follows the product and need. Treat `{workflow.brief_template}` as a starting structure, not a contract: drop sections that do not earn their place, add sections the product needs, reorder freely - create sections for specialized domains or concerns also as needed. The brief serves the product's story, not the template's shape. Bind `{doc_workspace}` to a fresh folder at `{workflow.brief_output_path}/{workflow.run_folder_pattern}/` and write `brief.md` there with YAML frontmatter (title, status, created, updated). For Update and Validate, `{doc_workspace}` is the existing folder of the brief being targeted.
