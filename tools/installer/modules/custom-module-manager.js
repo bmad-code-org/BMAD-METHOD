@@ -21,6 +21,8 @@ class CustomModuleManager {
   static _resolutionCache = new Map();
   /** @type {Set<string>} Repo roots refreshed in the current process (dedupe quick-update fetches). */
   static _refreshedRepoPaths = new Set();
+  /** @type {Map<string, Promise<void>>} In-flight refresh operations keyed by repo path. */
+  static _refreshInFlight = new Map();
 
   // ─── Source Parsing ───────────────────────────────────────────────────────
 
@@ -468,6 +470,32 @@ class CustomModuleManager {
     } catch {
       // swallow — a non-git repo (local path) wouldn't reach here anyway
     }
+    // Best-effort: capture the remote default branch name so channel marker
+    // metadata for "next" reflects the actual tracked ref (not always "main").
+    let defaultRef = 'main';
+    if (!effectiveVersion) {
+      try {
+        const symbolic = execSync('git symbolic-ref --short refs/remotes/origin/HEAD', {
+          cwd: repoCacheDir,
+          stdio: 'pipe',
+        })
+          .toString()
+          .trim();
+        if (symbolic.startsWith('origin/')) {
+          defaultRef = symbolic.slice('origin/'.length) || defaultRef;
+        }
+      } catch {
+        // Fallback to previous marker value when symbolic ref is unavailable.
+        try {
+          const existingMarker = await fs.readJson(path.join(repoCacheDir, '.bmad-channel.json'));
+          if (existingMarker?.channel === 'next' && typeof existingMarker.version === 'string' && existingMarker.version.trim()) {
+            defaultRef = existingMarker.version.trim();
+          }
+        } catch {
+          // Keep default fallback.
+        }
+      }
+    }
 
     // Write source metadata for later URL reconstruction
     const metadataPath = path.join(repoCacheDir, '.bmad-source.json');
@@ -485,7 +513,7 @@ class CustomModuleManager {
     // refreshable. URL + no explicit ref => next, explicit ref => pinned.
     await fs.writeJson(path.join(repoCacheDir, '.bmad-channel.json'), {
       channel: effectiveVersion ? 'pinned' : 'next',
-      version: effectiveVersion || 'main',
+      version: effectiveVersion || defaultRef,
       sha: resolvedSha,
       writtenAt: new Date().toISOString(),
     });
@@ -656,17 +684,8 @@ class CustomModuleManager {
         // Quick-update path: refresh URL-backed cached repos before reading
         // files from them so re-deploy uses latest commits for `next` and
         // the pinned ref for `pinned`.
-        if (options.bmadDir && metadata?.rawInput && !CustomModuleManager._refreshedRepoPaths.has(repoPath)) {
-          try {
-            await this.cloneRepo(metadata.rawInput, {
-              silent: true,
-              pinOverride: metadata.version || undefined,
-            });
-            CustomModuleManager._refreshedRepoPaths.add(repoPath);
-          } catch {
-            // Keep existing cache on refresh failure; caller may still resolve
-            // module source from the previous clone.
-          }
+        if (options.bmadDir && metadata?.rawInput) {
+          await this._refreshRepoCacheOnce(repoPath, metadata);
         }
 
         // Check marketplace.json for matching module code
@@ -717,6 +736,40 @@ class CustomModuleManager {
 
     // Fallback: check manifest for localPath (local-source modules not in cache)
     return this._findLocalSourceFromManifest(moduleCode, options);
+  }
+
+  /**
+   * Refresh one cached repo at most once per process with in-flight dedupe.
+   * Prevents concurrent quick-update callers from racing the same cache path.
+   * @param {string} repoPath - Absolute cache repo path
+   * @param {Object} metadata - Parsed .bmad-source.json metadata
+   */
+  async _refreshRepoCacheOnce(repoPath, metadata) {
+    if (CustomModuleManager._refreshedRepoPaths.has(repoPath)) return;
+
+    const existing = CustomModuleManager._refreshInFlight.get(repoPath);
+    if (existing) {
+      await existing;
+      return;
+    }
+
+    const refreshPromise = (async () => {
+      try {
+        await this.cloneRepo(metadata.rawInput, {
+          silent: true,
+          pinOverride: metadata.version || undefined,
+        });
+        CustomModuleManager._refreshedRepoPaths.add(repoPath);
+      } catch {
+        // Keep existing cache on refresh failure; caller may still resolve
+        // module source from the previous clone.
+      } finally {
+        CustomModuleManager._refreshInFlight.delete(repoPath);
+      }
+    })();
+
+    CustomModuleManager._refreshInFlight.set(repoPath, refreshPromise);
+    await refreshPromise;
   }
 
   /**
