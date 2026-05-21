@@ -3,6 +3,8 @@ diff_output: '' # set at runtime
 spec_file: '' # set at runtime (path or empty)
 review_mode: '' # set at runtime: "full" or "no-spec"
 story_key: '' # set at runtime when discovered from sprint status
+memtrace_blast_radius: '' # set at runtime: structured blast radius data or "unavailable"/"partial"
+memtrace_dead_code: '' # set at runtime: structured dead code data or "unavailable"/"partial"
 ---
 
 # Step 1: Gather Context
@@ -75,9 +77,45 @@ story_key: '' # set at runtime when discovered from sprint status
    - If the user opts to chunk: agree on the first group, narrow `{diff_output}` accordingly, and list the remaining groups for the user to note for follow-up runs.
    - If the user declines: proceed as-is with the full diff.
 
+7. **Run structural deep audit queries (Memtrace).** If the repository is indexed by Memtrace, independently verify the diff's structural impact. This step is DIAGNOSTIC — the review continues regardless of availability.
+
+   **Check Availability:**
+   - Use `list_indexed_repositories` to confirm the project repo is indexed
+   - Check the `last_indexed_at` value — if older than 30 minutes, flag as stale and skip graph queries
+   - If not indexed or stale, set `{memtrace_blast_radius}` = `"unavailable"` and `{memtrace_dead_code}` = `"unavailable"`, then skip to CHECKPOINT
+
+   **Extract modified symbols from the diff:**
+   - Parse `{diff_output}` to identify modified functions, methods, classes, and exported variables
+   - Extract symbol names from changed lines (lines starting with `+` or `-` in function/class/method declarations)
+   - De-duplicate and limit to at most 15 symbols (prioritize: exported > internal, functions > variables)
+   - For each symbol, note its containing file path
+   - If no modified symbols are extracted (e.g., only config files, comments, or whitespace changes), skip both blast radius and dead code queries — set `{memtrace_blast_radius}` = `"empty"` and `{memtrace_dead_code}` = `"empty"`
+
+   **Run blast radius audit (`get_impact`):**
+   - For each extracted symbol, call the adapter:
+     `node _bmad/scripts/memtrace/memtrace-adapter.mjs --target <symbol> --query get_impact --check-freshness --summarize`
+   - Process STRICTLY SEQUENTIALLY using `for...of` with `await` — NEVER `Promise.all`
+   - On exit 0: collect `summarized.critical_dependents`, `summarized.module_impact`, `summarized.total_affected`
+   - On exit 1 with `[FRESHNESS]` in STDERR: note "Index stale — skipping blast radius for <symbol>" and continue
+   - On exit 1 with `MEMTRACE_MCP_ERROR_TIMEOUT`: note "MCP timeout — skipping blast radius for <symbol>" and continue
+   - Set `{memtrace_blast_radius}` to the structured results (or `"partial"` if some queries failed, or `"unavailable"` if ALL queries failed)
+
+   **Run dead code audit (`find_dead_code`):**
+   - For each UNIQUE modified file (not per-symbol), call the adapter:
+     `node _bmad/scripts/memtrace/memtrace-adapter.mjs --target <file-path> --query find_dead_code --check-freshness`
+   - Process STRICTLY SEQUENTIALLY using `for...of` with `await`
+   - On exit 0: collect the list of dead code symbols in that file
+   - On failure: note the failure and continue with remaining files
+   - Set `{memtrace_dead_code}` to the structured results (or `"partial"` if some queries failed, or `"unavailable"` if ALL queries failed)
+
+   **Graceful Degradation:**
+   - If `list_indexed_repositories` returns empty or the project repo is not indexed: skip ALL queries, set both variables to `"unavailable"`
+   - If any individual query times out or fails: skip that query only, mark results as `"partial"`, continue with remaining symbols/files
+   - NEVER block or halt the review on Memtrace availability — the structural audit is supplemental intelligence
+
 ### CHECKPOINT
 
-Present a summary before proceeding: diff stats (files changed, lines added/removed), `{review_mode}`, and loaded spec/context docs (if any). HALT and wait for user confirmation to proceed.
+Present a summary before proceeding: diff stats (files changed, lines added/removed), `{review_mode}`, loaded spec/context docs (if any), and structural audit status (if `{memtrace_blast_radius}` is not empty/unavailable: if `"partial"`, note "structural audit partially complete — {partial_count}/{total_count} symbol queries failed"; if fully available, include "blast radius queried for {count} symbols, dead code checked in {count} files"). HALT and wait for user confirmation to proceed.
 
 
 ## NEXT

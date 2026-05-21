@@ -50,6 +50,32 @@ failed_layers: '' # set at runtime: comma-separated list of layers that failed o
         > - **If the story involves dead-code removal (find_dead_code, dead-code in tasks) BUT no "Dead Code Pitfall Validation Report" exists in the spec file** → raise a `patch` finding: "Missing Dead Code Pitfall Validation Report — story involved dead-code removal but no pitfall validation was performed via validate-dead-code.mjs."
         > - **If neither dead-code removal nor a pitfall validation report exists**: skip this gate (story does not involve dead-code).
         >
+        > **Structural Deep Audit — Memtrace Verification:**
+        >
+        > If `{memtrace_blast_radius}` and `{memtrace_dead_code}` are available (not `"unavailable"` or empty), you have access to independently-computed structural data. Use this to verify the diff's claims against the actual codebase graph.
+        >
+        > **Blast Radius Verification:**
+        > - Cross-reference each modified symbol in the diff against `{memtrace_blast_radius}` results.
+        > - If a symbol has `critical_dependents` (any depth) that are NOT modified in the diff → raise a `decision_needed` finding: **"Unhandled downstream dependency: `<dependent-name>` depends on modified `<symbol>` — diff does not include test or mitigation."**
+        >   - Evidence: list the specific dependent name(s) and the blast radius data
+        > - If the blast radius `total_affected` for any symbol exceeds 20 → raise a `patch` finding: **"High blast radius: `<symbol>` affects `<count>` dependents (depth `<N>`) — consider narrower refactor scope or expanded test coverage."**
+        > - If the diff or commit message claims "no downstream impact" but blast radius shows dependents → raise a `decision_needed` finding: **"Downstream impact claim falsified: diff claims no impact but blast radius shows `<count>` affected symbols at depth 1+."**
+        > - If a blast radius query returned `"partial"` for some symbols: note which symbols were not verified and proceed with available data only.
+        >
+        > **Dead Code Audit:**
+        > - Check whether any `{memtrace_dead_code}` findings overlap with lines ADDED in modified files (new code in `+` lines).
+        > - If a modified file introduces a NEW function/method/class that also appears in the dead code results → raise a `patch` finding: **"New dead code introduced: `<symbol>` in `<file>` — added but has zero callers in the codebase graph."**
+        > - If a modified file (`+` or `-` lines) contains EXISTING dead code symbols that were NOT removed → raise a `patch` finding: **"Pre-existing dead code unaddressed: `<symbol>` in `<file>` — appears in dead code results but was not cleaned up in this change."**
+        > - Do NOT flag dead code in files that the diff did not touch.
+        >
+        > **If `{memtrace_blast_radius}` or `{memtrace_dead_code}` is `"unavailable"` or empty:**
+        > - Note in the review output: "Structural deep audit unavailable — Memtrace not indexed or queries failed. Proceeding with text-based review only."
+        > - DO NOT raise any structural-audit-specific findings (no blast radius or dead code flags).
+        >
+        > **If `{memtrace_blast_radius}` or `{memtrace_dead_code}` is `"partial"`:**
+        > - Apply the blast radius rules ONLY if `{memtrace_blast_radius}` has complete data; apply dead code rules ONLY if `{memtrace_dead_code}` has complete data.
+        > - Note which symbols were not verified due to query failures.
+        >
         > Output findings as a Markdown list. Each finding: one-line title, which quality gate rule it violates, and evidence from the diff/story file.
 
 3. **Subagent failure handling**: If any subagent fails, times out, or returns empty results, append the layer name to `{failed_layers}` (comma-separated) and proceed with findings from the remaining layers.
