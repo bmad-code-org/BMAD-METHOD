@@ -58,7 +58,7 @@ async function ensureDir(filePath) {
   const dir = path.dirname(filePath);
   try {
     await fs.mkdir(dir, { recursive: true });
-  } catch (err) {}
+  } catch { /* directory may already exist */ }
 }
 
 async function runVerification() {
@@ -116,20 +116,32 @@ async function runVerification() {
           const possibleBash1 = path.join(gitParent, 'bin', 'bash.exe');
           const possibleBash2 = path.join(gitParent, 'bin', 'sh.exe');
 
-          if (await fs.access(possibleBash1).then(() => true).catch(() => false)) {
+          if (
+            await fs
+              .access(possibleBash1)
+              .then(() => true)
+              .catch(() => false)
+          ) {
             command = `"${possibleBash1}" install-bmad-memtrace.sh`;
-          } else if (await fs.access(possibleBash2).then(() => true).catch(() => false)) {
+          } else if (
+            await fs
+              .access(possibleBash2)
+              .then(() => true)
+              .catch(() => false)
+          ) {
             command = `"${possibleBash2}" install-bmad-memtrace.sh`;
           }
         }
-      } catch (e) {
+      } catch {
         // Fallback
-        const paths = [
-          'C:\\Program Files\\Git\\bin\\bash.exe',
-          'C:\\Program Files (x86)\\Git\\bin\\bash.exe',
-        ];
+        const paths = [String.raw`C:\Program Files\Git\bin\bash.exe`, String.raw`C:\Program Files (x86)\Git\bin\bash.exe`];
         for (const p of paths) {
-          if (await fs.access(p).then(() => true).catch(() => false)) {
+          if (
+            await fs
+              .access(p)
+              .then(() => true)
+              .catch(() => false)
+          ) {
             command = `"${p}" install-bmad-memtrace.sh`;
             break;
           }
@@ -150,23 +162,38 @@ async function runVerification() {
     // 5. Assertions
 
     // AC 1: .memtrace-workspace exists
-    const anchorExists = await fs.access(path.join(tempDir, '.memtrace-workspace')).then(() => true).catch(() => false);
+    const anchorExists = await fs
+      .access(path.join(tempDir, '.memtrace-workspace'))
+      .then(() => true)
+      .catch(() => false);
     assert(anchorExists, 'AC 1: .memtrace-workspace anchor file successfully created in project root');
 
     // Legacy cleanup: README.md is deleted
-    const readmeExists = await fs.access(dummyClonedFile).then(() => true).catch(() => false);
+    const readmeExists = await fs
+      .access(dummyClonedFile)
+      .then(() => true)
+      .catch(() => false);
     assert(!readmeExists, 'Legacy cleanup: Tracked clone files (README.md) successfully deleted');
 
     // Git removal: .git is deleted
-    const gitExists = await fs.access(path.join(tempDir, '.git')).then(() => true).catch(() => false);
+    const gitExists = await fs
+      .access(path.join(tempDir, '.git'))
+      .then(() => true)
+      .catch(() => false);
     assert(!gitExists, 'Security/Standalone: .git directory completely removed');
 
     // Staging cleanup: bmad-install is deleted
-    const stagingExists = await fs.access(path.join(tempDir, 'bmad-install')).then(() => true).catch(() => false);
+    const stagingExists = await fs
+      .access(path.join(tempDir, 'bmad-install'))
+      .then(() => true)
+      .catch(() => false);
     assert(!stagingExists, 'Runtime cleanup: bmad-install staging directory successfully removed');
 
     // BMad preservation: _bmad directory remains
-    const bmadExists = await fs.access(path.join(tempDir, '_bmad')).then(() => true).catch(() => false);
+    const bmadExists = await fs
+      .access(path.join(tempDir, '_bmad'))
+      .then(() => true)
+      .catch(() => false);
     assert(bmadExists, 'Core preservation: _bmad directory preserved post-cleanup');
 
     // AC 2: Claude Desktop configuration successfully injected
@@ -174,7 +201,7 @@ async function runVerification() {
     const claudeConfig = JSON.parse(claudeContent);
     assert(
       claudeConfig.mcpServers && claudeConfig.mcpServers.memtrace && claudeConfig.mcpServers.memtrace.command === 'memtrace',
-      'AC 2: Claude Desktop config correctly created and populated with memtrace MCP server'
+      'AC 2: Claude Desktop config correctly created and populated with memtrace MCP server',
     );
 
     // AC 3: OpenCode configuration successfully injected
@@ -182,20 +209,19 @@ async function runVerification() {
     const opencodeConfig = JSON.parse(opencodeContent);
     assert(
       opencodeConfig.mcp && opencodeConfig.mcp.memtrace && opencodeConfig.mcp.memtrace.type === 'local',
-      'AC 3: OpenCode config correctly created and populated with memtrace local definition'
+      'AC 3: OpenCode config correctly created and populated with memtrace local definition',
     );
-
-  } catch (err) {
-    console.error('Verification failed with error:', err);
-    if (err.stdout) console.error('stdout:', err.stdout);
-    if (err.stderr) console.error('stderr:', err.stderr);
+  } catch (error) {
+    console.error('Verification failed with error:', error);
+    if (error.stdout) console.error('stdout:', error.stdout);
+    if (error.stderr) console.error('stderr:', error.stderr);
     failed++;
   }
 
   // Clean up
   try {
     await fs.rm(tempDir, { recursive: true, force: true });
-  } catch (err) {}
+  } catch { /* cleanup errors are non-fatal */ }
 
   console.log(`\n${colors.cyan}========================================`);
   console.log(`Verification Summary: Passed: ${passed}, Failed: ${failed}`);
@@ -208,7 +234,7 @@ async function runVerification() {
   }
 }
 
-runVerification().catch(err => {
-  console.error('Fatal verification error:', err);
+runVerification().catch((error) => {
+  console.error('Fatal verification error:', error);
   process.exit(1);
 });

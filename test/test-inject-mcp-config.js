@@ -43,15 +43,19 @@ function runInjector(mode, envOverrides = {}) {
     const scriptPath = path.resolve(__dirname, '../_bmad/scripts/memtrace/inject-mcp-config.mjs');
     const command = `node "${scriptPath}" --mode ${mode}`;
 
-    exec(command, {
-      env: { ...process.env, ...envOverrides }
-    }, (error, stdout, stderr) => {
-      if (error) {
-        reject({ error, stdout, stderr });
-      } else {
-        resolve({ stdout, stderr });
-      }
-    });
+    exec(
+      command,
+      {
+        env: { ...process.env, ...envOverrides },
+      },
+      (error, stdout, stderr) => {
+        if (error) {
+          reject({ error, stdout, stderr });
+        } else {
+          resolve({ stdout, stderr });
+        }
+      },
+    );
   });
 }
 
@@ -77,14 +81,14 @@ async function runTests() {
 
     assert(
       config.mcpServers !== undefined && config.mcpServers.memtrace !== undefined,
-      'Test 1.1: Creates new Claude config file and injects memtrace server skeleton'
+      'Test 1.1: Creates new Claude config file and injects memtrace server skeleton',
     );
     assert(
       config.mcpServers.memtrace.command === 'memtrace' && config.mcpServers.memtrace.args[0] === 'mcp',
-      'Test 1.1: Injected server details match expected schema format'
+      'Test 1.1: Injected server details match expected schema format',
     );
-  } catch (err) {
-    assert(false, 'Test 1.1 Failed with error', err.message || JSON.stringify(err));
+  } catch (error) {
+    assert(false, 'Test 1.1 Failed with error', error.message || JSON.stringify(error));
   }
 
   // Test 1.2: File exists with other servers (preserves other servers)
@@ -93,9 +97,9 @@ async function runTests() {
       mcpServers: {
         otherServer: {
           command: 'node',
-          args: ['other-path/server.js']
-        }
-      }
+          args: ['other-path/server.js'],
+        },
+      },
     };
     await fs.writeFile(claudeTestFile, JSON.stringify(preExistingConfig, null, 2), 'utf8');
 
@@ -105,14 +109,14 @@ async function runTests() {
 
     assert(
       config.mcpServers.otherServer !== undefined && config.mcpServers.otherServer.command === 'node',
-      'Test 1.2: Preserves pre-existing mcpServers in Claude config'
+      'Test 1.2: Preserves pre-existing mcpServers in Claude config',
     );
     assert(
       config.mcpServers.memtrace !== undefined && config.mcpServers.memtrace.command === 'memtrace',
-      'Test 1.2: Correctly appends memtrace server configuration alongside existing ones'
+      'Test 1.2: Correctly appends memtrace server configuration alongside existing ones',
     );
-  } catch (err) {
-    assert(false, 'Test 1.2 Failed with error', err.message || JSON.stringify(err));
+  } catch (error) {
+    assert(false, 'Test 1.2 Failed with error', error.message || JSON.stringify(error));
   }
 
   // Test 1.3: File exists and memtrace key already exists (overwrites memtrace key only)
@@ -121,13 +125,13 @@ async function runTests() {
       mcpServers: {
         otherServer: {
           command: 'node',
-          args: ['other-path/server.js']
+          args: ['other-path/server.js'],
         },
         memtrace: {
           command: 'old-command',
-          args: ['old-arg']
-        }
-      }
+          args: ['old-arg'],
+        },
+      },
     };
     await fs.writeFile(claudeTestFile, JSON.stringify(preExistingConfig, null, 2), 'utf8');
 
@@ -137,14 +141,14 @@ async function runTests() {
 
     assert(
       config.mcpServers.otherServer !== undefined && config.mcpServers.otherServer.command === 'node',
-      'Test 1.3: Overwriting preserves other servers'
+      'Test 1.3: Overwriting preserves other servers',
     );
     assert(
       config.mcpServers.memtrace.command === 'memtrace' && config.mcpServers.memtrace.args[0] === 'mcp',
-      'Test 1.3: Correctly overwrites only the memtrace key'
+      'Test 1.3: Correctly overwrites only the memtrace key',
     );
-  } catch (err) {
-    assert(false, 'Test 1.3 Failed with error', err.message || JSON.stringify(err));
+  } catch (error) {
+    assert(false, 'Test 1.3 Failed with error', error.message || JSON.stringify(error));
   }
 
   console.log('');
@@ -164,14 +168,14 @@ async function runTests() {
 
     assert(
       config.mcp !== undefined && config.mcp.memtrace !== undefined,
-      'Test 2.1: Creates new OpenCode config file and injects memtrace server skeleton'
+      'Test 2.1: Creates new OpenCode config file and injects memtrace server skeleton',
     );
     assert(
       config.mcp.memtrace.type === 'local' && config.mcp.memtrace.command[0] === 'memtrace' && config.mcp.memtrace.command[1] === 'mcp',
-      'Test 2.1: Injected server details match expected OpenCode schema format'
+      'Test 2.1: Injected server details match expected OpenCode schema format',
     );
-  } catch (err) {
-    assert(false, 'Test 2.1 Failed with error', err.message || JSON.stringify(err));
+  } catch (error) {
+    assert(false, 'Test 2.1 Failed with error', error.message || JSON.stringify(error));
   }
 
   // Test 2.2: File exists with other keys (preserves other keys)
@@ -180,9 +184,9 @@ async function runTests() {
       mcp: {
         otherServer: {
           type: 'local',
-          command: ['other-server']
-        }
-      }
+          command: ['other-server'],
+        },
+      },
     };
     await fs.writeFile(opencodeTestFile, JSON.stringify(preExistingConfig, null, 2), 'utf8');
 
@@ -192,14 +196,14 @@ async function runTests() {
 
     assert(
       config.mcp.otherServer !== undefined && config.mcp.otherServer.type === 'local',
-      'Test 2.2: Preserves pre-existing mcp in OpenCode config'
+      'Test 2.2: Preserves pre-existing mcp in OpenCode config',
     );
     assert(
       config.mcp.memtrace !== undefined && config.mcp.memtrace.type === 'local',
-      'Test 2.2: Correctly appends memtrace server configuration alongside existing ones'
+      'Test 2.2: Correctly appends memtrace server configuration alongside existing ones',
     );
-  } catch (err) {
-    assert(false, 'Test 2.2 Failed with error', err.message || JSON.stringify(err));
+  } catch (error) {
+    assert(false, 'Test 2.2 Failed with error', error.message || JSON.stringify(error));
   }
 
   // Test 2.3: File exists and memtrace key already exists (overwrites memtrace key only)
@@ -208,13 +212,13 @@ async function runTests() {
       mcp: {
         otherServer: {
           type: 'local',
-          command: ['other-server']
+          command: ['other-server'],
         },
         memtrace: {
           type: 'remote',
-          command: ['old-memtrace']
-        }
-      }
+          command: ['old-memtrace'],
+        },
+      },
     };
     await fs.writeFile(opencodeTestFile, JSON.stringify(preExistingConfig, null, 2), 'utf8');
 
@@ -224,20 +228,20 @@ async function runTests() {
 
     assert(
       config.mcp.otherServer !== undefined && config.mcp.otherServer.type === 'local',
-      'Test 2.3: Overwriting preserves other OpenCode servers'
+      'Test 2.3: Overwriting preserves other OpenCode servers',
     );
     assert(
       config.mcp.memtrace.type === 'local' && config.mcp.memtrace.command[0] === 'memtrace',
-      'Test 2.3: Correctly overwrites only the memtrace key in OpenCode config'
+      'Test 2.3: Correctly overwrites only the memtrace key in OpenCode config',
     );
-  } catch (err) {
-    assert(false, 'Test 2.3 Failed with error', err.message || JSON.stringify(err));
+  } catch (error) {
+    assert(false, 'Test 2.3 Failed with error', error.message || JSON.stringify(error));
   }
 
   // Clean up
   try {
     await fs.rm(tempDir, { recursive: true, force: true });
-  } catch (err) {
+  } catch {
     // Ignore cleanup errors
   }
 
@@ -252,7 +256,7 @@ async function runTests() {
   }
 }
 
-runTests().catch(err => {
-  console.error('Fatal test error:', err);
+runTests().catch((error) => {
+  console.error('Fatal test error:', error);
   process.exit(1);
 });
