@@ -2,7 +2,7 @@
 title: "Enquête de code"
 description: Comment bmad-investigate traite chaque problème comme une scène de crime, classe les preuves et produit un dossier structuré sur lequel les ingénieurs peuvent agir
 sidebar:
-  order: 6
+  order: 10
 ---
 
 Vous confiez à `bmad-investigate` un journal de plantage, une stack trace, ou simplement un « ça marchait avant, plus
