@@ -7,17 +7,17 @@ Ce projet suit le [Guide de style de documentation pour développeurs Google](ht
 
 ## Règles spécifiques au projet
 
-| Règle                                   | Spécification                                          |
-| --------------------------------------- | ------------------------------------------------------ |
-| Pas de règles horizontales (`---`)      | Perturbe le flux de lecture des fragments              |
-| Pas de titres `####`                    | Utiliser du texte en gras ou des admonitions           |
-| Pas de sections « Related » ou « Next : »    | La barre latérale gère la navigation                   |
-| Pas de listes profondément imbriquées   | Diviser en sections à la place                         |
-| Pas de blocs de code pour non-code      | Utiliser des admonitions pour les exemples de dialogue |
-| Pas de paragraphes en gras pour les appels | Utiliser des admonitions à la place                 |
-| 1-2 admonitions max par section         | Les tutoriels permettent 3-4 par section majeure       |
-| Cellules de tableau / éléments de liste | 1-2 phrases maximum                                    |
-| Budget de titres                        | 8-12 `##` par doc ; 2-3 `###` par section              |
+| Règle                                      | Spécification                                          |
+|--------------------------------------------|--------------------------------------------------------|
+| Pas de règles horizontales (`---`)         | Perturbe le flux de lecture des fragments              |
+| Pas de titres `####`                       | Utiliser du texte en gras ou des admonitions           |
+| Pas de sections « Related » ou « Next »    | La barre latérale gère la navigation                   |
+| Pas de listes profondément imbriquées      | Diviser en sections à la place                         |
+| Pas de blocs de code pour non-code         | Utiliser des admonitions pour les exemples de dialogue |
+| Pas de paragraphes en gras pour les appels | Utiliser des admonitions à la place                    |
+| 1-2 admonitions max par section            | Les tutoriels permettent 3-4 par section majeure       |
+| Cellules de tableau / éléments de liste    | 1-2 phrases maximum                                    |
+| Budget de titres                           | 8-12 `##` par doc ; 2-3 `###` par section              |
 
 ## Admonitions (Syntaxe Starlight)
 
@@ -41,31 +41,31 @@ Avertissements critiques uniquement — perte de données, problèmes de sécuri
 
 ### Utilisations standards
 
-| Admonition                 | Usage                                    |
-| -------------------------- | ---------------------------------------- |
-| `:::note[Pré-requis]`   | Dépendances avant de commencer           |
-| `:::tip[Chemin rapide]`       | Résumé TL;DR en haut du document         |
-| `:::caution[Important]`    | Mises en garde critiques                 |
-| `:::note[Exemple]`         | Exemples de commandes/réponses           |
+| Admonition              | Usage                            |
+|-------------------------|----------------------------------|
+| `:::note[Pré-requis]`   | Dépendances avant de commencer   |
+| `:::tip[Chemin rapide]` | Résumé TL;DR en haut du document |
+| `:::caution[Important]` | Mises en garde critiques         |
+| `:::note[Exemple]`      | Exemples de commandes/réponses   |
 
 ## Formats de tableau standards
 
 **Phases :**
 
 ```md
-| Phase | Nom        | Ce qui se passe                                     |
-| ----- | ---------- | --------------------------------------------------- |
-| 1     | Analyse    | Brainstorm, recherche *(optionnel)*                 |
-| 2     | Planification | Exigences — PRD ou spécification technique *(requis)*          |
+| Phase | Nom           | Ce qui se passe                                       |
+|-------|---------------|-------------------------------------------------------|
+| 1     | Analyse       | Brainstorm, recherche *(optionnel)*                   |
+| 2     | Planification | Exigences — PRD ou spécification technique *(requis)* |
 ```
 
 **Skills :**
 
 ```md
-| Skill               | Agent   | Objectif                                        |
-| ------------------- | ------- | ----------------------------------------------- |
-| `bmad-brainstorming` | Analyste | Brainstorming pour un nouveau projet                    |
-| `bmad-create-prd`    | PM      | Créer un document d'exigences produit           |
+| Skill                | Agent    | Objectif                              |
+|----------------------|----------|---------------------------------------|
+| `bmad-brainstorming` | Analyste | Brainstorming pour un nouveau projet  |
+| `bmad-create-prd`    | PM       | Créer un document d'exigences produit |
 ```
 
 ## Blocs de structure de dossiers
@@ -144,13 +144,13 @@ votre-projet/
 
 ### Types
 
-| Type                    | Exemple                              |
-| ----------------------- | ------------------------------------ |
-| **Index/Page d’accueil** | `core-concepts/index.md`            |
-| **Concept**             | `what-are-agents.md`                 |
-| **Fonctionnalité**      | `quick-dev.md`                       |
-| **Philosophie**         | `why-solutioning-matters.md`         |
-| **FAQ**                 | `established-projects-faq.md`        |
+| Type                     | Exemple                       |
+|--------------------------|-------------------------------|
+| **Index/Page d’accueil** | `core-concepts/index.md`      |
+| **Concept**              | `what-are-agents.md`          |
+| **Fonctionnalité**       | `quick-dev.md`                |
+| **Philosophie**          | `why-solutioning-matters.md`  |
+| **FAQ**                  | `established-projects-faq.md` |
 
 ### Modèle général
 
@@ -220,14 +220,14 @@ votre-projet/
 
 ### Types
 
-| Type                    | Exemple               |
-| ----------------------- | --------------------- |
-| **Index/Page d’accueil** | `workflows/index.md` |
-| **Catalogue**           | `agents/index.md`     |
-| **Approfondissement**   | `document-project.md` |
-| **Configuration**       | `core-tasks.md`       |
-| **Glossaire**           | `glossary/index.md`   |
-| **Complet**             | `bmgd-workflows.md`   |
+| Type                     | Exemple               |
+|--------------------------|-----------------------|
+| **Index/Page d’accueil** | `workflows/index.md`  |
+| **Catalogue**            | `agents/index.md`     |
+| **Approfondissement**    | `document-project.md` |
+| **Configuration**        | `core-tasks.md`       |
+| **Glossaire**            | `glossary/index.md`   |
+| **Complet**              | `bmgd-workflows.md`   |
 
 ### Pages d’index de référence
 
@@ -303,22 +303,23 @@ Starlight génère la navigation « Sur cette page » à droite à partir de
 
 ### Format de tableau
 
-```md
+
 ## Nom de catégorie
 
-| Terme        | Définition                                                                                    |
-| ------------ | --------------------------------------------------------------------------------------------- |
-| **Agent**    | Personnalité IA spécialisée avec une expertise spécifique qui guide les utilisateurs dans les workflows. |
+```md
+| Terme        | Définition                                                                                                 |
+|--------------|------------------------------------------------------------------------------------------------------------|
+| **Agent**    | Personnalité IA spécialisée avec une expertise spécifique qui guide les utilisateurs dans les workflows.   |
 | **Workflow** | Processus guidé en plusieurs étapes qui orchestre les activités des agents IA pour produire des livrables. |
 ```
 
 ### Règles de définition
 
-| À faire                           | À ne pas faire                                |
-| --------------------------------- | --------------------------------------------- |
+| À faire                                        | À ne pas faire                                      |
+|------------------------------------------------|-----------------------------------------------------|
 | Commencer par ce que c’est ou ce que cela fait | Commencer par « C’est... » ou « Un [terme] est... » |
-| Se limiter à 1-2 phrases          | Écrire des explications de plusieurs paragraphes |
-| Mettre le nom du terme en gras dans la cellule | Utiliser du texte simple pour les termes      |
+| Se limiter à 1-2 phrases                       | Écrire des explications de plusieurs paragraphes    |
+| Mettre le nom du terme en gras dans la cellule | Utiliser du texte simple pour les termes            |
 
 ### Marqueurs de contexte
 
