@@ -1,0 +1,8 @@
+{
+  "requiredKeys": ["status", "summary", "next_action"],
+  "schema": {
+    "status": "SUCCESS|FAILURE|AMBIGUOUS",
+    "summary": "brief description",
+    "next_action": "proceed|retry|escalate"
+  }
+}

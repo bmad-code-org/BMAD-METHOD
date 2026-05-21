@@ -1,0 +1,10 @@
+{
+  "requiredKeys": ["status", "tests_passed", "build_passed", "summary", "next_action"],
+  "schema": {
+    "status": "SUCCESS|FAILURE|AMBIGUOUS",
+    "tests_passed": "true|false",
+    "build_passed": "true|false",
+    "summary": "brief description",
+    "next_action": "proceed|retry|escalate"
+  }
+}

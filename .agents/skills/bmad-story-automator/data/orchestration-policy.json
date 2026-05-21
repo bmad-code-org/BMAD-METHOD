@@ -1,0 +1,146 @@
+{
+  "version": 1,
+  "snapshot": {
+    "relativeDir": "_bmad-output/story-automator/policy-snapshots"
+  },
+  "runtime": {
+    "parser": {
+      "provider": "claude",
+      "model": "haiku",
+      "timeoutSeconds": 120
+    },
+    "merge": {
+      "maps": "deep",
+      "arrays": "replace"
+    }
+  },
+  "workflow": {
+    "sequence": ["create", "dev", "auto", "review", "retro"],
+    "repeat": {
+      "review": {
+        "maxCycles": 5,
+        "successVerifier": "review_completion",
+        "onIncomplete": "retry",
+        "onExhausted": "escalate"
+      }
+    },
+    "crash": {
+      "maxRetries": 2,
+      "onExhausted": "escalate"
+    }
+  },
+  "steps": {
+    "create": {
+      "label": "create-story",
+      "assets": {
+        "skillName": "bmad-create-story",
+        "workflowCandidates": ["workflow.md", "workflow.yaml"],
+        "instructionsCandidates": ["discover-inputs.md"],
+        "checklistCandidates": ["checklist.md"],
+        "templateCandidates": ["template.md"],
+        "required": ["skill"]
+      },
+      "prompt": {
+        "templateFile": "data/prompts/create.md",
+        "interactionMode": "autonomous"
+      },
+      "parse": {
+        "schemaFile": "data/parse/create.json"
+      },
+      "success": {
+        "verifier": "create_story_artifact",
+        "config": {
+          "glob": "_bmad-output/implementation-artifacts/{story_prefix}-*.md",
+          "expectedMatches": 1
+        }
+      }
+    },
+    "dev": {
+      "label": "dev-story",
+      "assets": {
+        "skillName": "bmad-dev-story",
+        "workflowCandidates": ["workflow.md", "workflow.yaml"],
+        "instructionsCandidates": [],
+        "checklistCandidates": ["checklist.md"],
+        "templateCandidates": [],
+        "required": ["skill"]
+      },
+      "prompt": {
+        "templateFile": "data/prompts/dev.md",
+        "interactionMode": "autonomous"
+      },
+      "parse": {
+        "schemaFile": "data/parse/dev.json"
+      },
+      "success": {
+        "verifier": "session_exit"
+      }
+    },
+    "auto": {
+      "label": "qa-generate-e2e-tests",
+      "assets": {
+        "skillName": "bmad-qa-generate-e2e-tests",
+        "workflowCandidates": ["workflow.md", "workflow.yaml"],
+        "instructionsCandidates": [],
+        "checklistCandidates": ["checklist.md"],
+        "templateCandidates": [],
+        "required": []
+      },
+      "prompt": {
+        "templateFile": "data/prompts/auto.md",
+        "interactionMode": "autonomous"
+      },
+      "parse": {
+        "schemaFile": "data/parse/auto.json"
+      },
+      "success": {
+        "verifier": "session_exit"
+      }
+    },
+    "review": {
+      "label": "code-review",
+      "assets": {
+        "skillName": "bmad-story-automator-review",
+        "workflowCandidates": ["workflow.yaml", "workflow.md"],
+        "instructionsCandidates": ["instructions.xml"],
+        "checklistCandidates": ["checklist.md"],
+        "templateCandidates": [],
+        "required": ["skill"]
+      },
+      "prompt": {
+        "templateFile": "data/prompts/review.md",
+        "interactionMode": "autonomous",
+        "acceptExtraInstruction": true,
+        "defaultExtraInstruction": "auto-fix all issues without prompting"
+      },
+      "parse": {
+        "schemaFile": "data/parse/review.json"
+      },
+      "success": {
+        "verifier": "review_completion",
+        "contractFile": "<skills-root>/bmad-story-automator-review/contract.json"
+      }
+    },
+    "retro": {
+      "label": "retrospective",
+      "assets": {
+        "skillName": "bmad-retrospective",
+        "workflowCandidates": ["workflow.md", "workflow.yaml"],
+        "instructionsCandidates": [],
+        "checklistCandidates": [],
+        "templateCandidates": [],
+        "required": ["skill"]
+      },
+      "prompt": {
+        "templateFile": "data/prompts/retro.md",
+        "interactionMode": "autonomous"
+      },
+      "parse": {
+        "schemaFile": "data/parse/retro.json"
+      },
+      "success": {
+        "verifier": "epic_complete"
+      }
+    }
+  }
+}

@@ -1,0 +1,246 @@
+{
+  "version": "2.0",
+  "thresholds": {
+    "low_max": 3,
+    "medium_max": 7
+  },
+  "structural_rules": {
+    "ac_count_medium": 6,
+    "ac_count_high": 10,
+    "ac_count_medium_score": 1,
+    "ac_count_high_score": 2,
+    "dependency_score": 1,
+    "large_story_word_threshold": 400,
+    "large_story_score": 1
+  },
+  "rules": [
+    {
+      "id": "external_api",
+      "label": "External API integration",
+      "pattern": "whatsapp|oauth|stripe|payment|third[- ]party|external api|twilio|sendgrid|mailgun|slack api|discord api|shopify|salesforce|hubspot|zapier|plaid|aws sdk|gcp sdk|azure sdk",
+      "score": 2
+    },
+    {
+      "id": "webhook_async",
+      "label": "Webhook/async processing",
+      "pattern": "webhook|async handler|asynchronous|message queue|queue worker|background job|event listener|pub.?sub|kafka|rabbitmq|sqs|nats|event.?driven|callback url",
+      "score": 2
+    },
+    {
+      "id": "realtime",
+      "label": "Real-time communication",
+      "pattern": "websocket|web socket|socket\\.io|sse|server.sent events|real.?time update|live update|push notification|long polling",
+      "score": 2
+    },
+    {
+      "id": "db_migration",
+      "label": "Database schema changes",
+      "pattern": "migration|schema change|new table|alter table|add column|database table|create index|foreign key|database schema|modify schema",
+      "score": 1
+    },
+    {
+      "id": "db_complex_query",
+      "label": "Complex database operations",
+      "pattern": "complex quer|join.*join|subquer|aggregate|group by|window function|recursive.*query|materialized view|stored procedure|database transaction|deadlock|connection pool",
+      "score": 2
+    },
+    {
+      "id": "data_transform",
+      "label": "Data transformation/ETL",
+      "pattern": "data transform|etl|data pipeline|data migration|bulk import|bulk export|csv.*(import|export|parse)|data mapping|data sync|batch process|normalize data|denormalize",
+      "score": 2
+    },
+    {
+      "id": "caching",
+      "label": "Caching layer",
+      "pattern": "cache|redis|memcache|cdn|invalidat|cache.?bust|stale.?while|cache.?strategy|in.?memory store|session store",
+      "score": 1
+    },
+    {
+      "id": "search_index",
+      "label": "Search/indexing",
+      "pattern": "elasticsearch|full.?text search|search index|algolia|typesense|meilisearch|solr|vector search|semantic search|fuzzy search|search engine",
+      "score": 2
+    },
+    {
+      "id": "file_storage",
+      "label": "File upload/storage",
+      "pattern": "file upload|s3|blob storage|image upload|media upload|file processing|pdf generat|csv generat|document generat|file download|cloud storage|presigned url",
+      "score": 1
+    },
+    {
+      "id": "auth_system",
+      "label": "Authentication system",
+      "pattern": "authenticat|login flow|sign.?up flow|session management|jwt|token refresh|password reset|magic link|sso|single sign|two.?factor|2fa|mfa|social login|auth middleware|auth guard",
+      "score": 2
+    },
+    {
+      "id": "authorization",
+      "label": "Authorization/permissions",
+      "pattern": "authori[zs]|rbac|role.?based|permission|access control|acl|policy engine|guard|middleware.*auth|protect.*route|tenant.*isol|multi.?tenant|row.?level security",
+      "score": 2
+    },
+    {
+      "id": "encryption",
+      "label": "Encryption/security",
+      "pattern": "encrypt|decrypt|hash|bcrypt|argon|hmac|digital signature|certificate|ssl|tls|secret.*management|vault|key.*rotation|sanitiz|xss|csrf|sql injection|security header|cors config",
+      "score": 1
+    },
+    {
+      "id": "state_management",
+      "label": "Complex state management",
+      "pattern": "state management|redux|zustand|recoil|jotai|context.*provider|global state|state machine|finite state|xstate|event sourc|cqrs|saga pattern|optimistic update",
+      "score": 1
+    },
+    {
+      "id": "backend_frontend",
+      "label": "Backend + Frontend combined",
+      "pattern": "backend.*frontend|frontend.*backend|full.?stack|api.*and.*ui|server.*and.*client|both.*api.*and|endpoint.*and.*page|controller.*and.*component",
+      "score": 2
+    },
+    {
+      "id": "microservice",
+      "label": "Service communication",
+      "pattern": "microservice|service.to.service|grpc|inter.?service|api gateway|service mesh|service discover|distributed|cross.?service|orchestrat.*service",
+      "score": 2
+    },
+    {
+      "id": "infrastructure",
+      "label": "Infrastructure changes",
+      "pattern": "docker|kubernetes|k8s|terraform|ci.?cd|pipeline|deploy|nginx|caddy|load balanc|auto.?scal|infrastructure|server config|environment variable|env config|systemd|reverse proxy",
+      "score": 2
+    },
+    {
+      "id": "error_handling",
+      "label": "Complex error handling",
+      "pattern": "error handling|error boundar|retry logic|circuit.?break|graceful.?degrad|fallback.*strateg|dead.?letter|error recover|exception handling|rollback|compensat.*transaction|idempoten",
+      "score": 1
+    },
+    {
+      "id": "transaction",
+      "label": "Transaction management",
+      "pattern": "transaction|atomic.*operation|two.?phase|eventual.?consisten|distributed.*lock|optimistic.*lock|pessimistic.*lock|conflict.*resolut|concurren.*control|race condition",
+      "score": 2
+    },
+    {
+      "id": "performance",
+      "label": "Performance optimization",
+      "pattern": "performance|optimiz|pagination|infinite scroll|virtual.*list|lazy load|code split|bundle.*size|lighthouse|core web vital|throttl|debounc|memoiz|profil",
+      "score": 1
+    },
+    {
+      "id": "rate_limiting",
+      "label": "Rate limiting/throttling",
+      "pattern": "rate limit|throttl|quota|usage.*limit|api.*limit|request.*limit|cooldown|backoff|exponential.*back",
+      "score": 1
+    },
+    {
+      "id": "batch_processing",
+      "label": "Batch/bulk operations",
+      "pattern": "batch.*process|bulk.*operat|mass.*update|bulk.*insert|batch.*job|scheduled.*task|cron|periodic.*task|bulk.*delete|queue.*process",
+      "score": 1
+    },
+    {
+      "id": "complex_form",
+      "label": "Complex forms",
+      "pattern": "multi.?step form|form wizard|dynamic form|form validation|conditional field|nested form|form builder|file.*input.*form|complex.*form|form.*state",
+      "score": 1
+    },
+    {
+      "id": "visualization",
+      "label": "Charts/visualization",
+      "pattern": "chart|graph|d3|visualization|dashboard.*widget|data.*viz|sparkline|heatmap|treemap|pie.*chart|bar.*chart|line.*chart|recharts|plotly|canvas.*draw",
+      "score": 1
+    },
+    {
+      "id": "drag_drop",
+      "label": "Drag and drop",
+      "pattern": "drag.?and.?drop|dnd|sortable|reorder|draggable|droppable|kanban.*board|drag.*handle",
+      "score": 1
+    },
+    {
+      "id": "accessibility",
+      "label": "Accessibility requirements",
+      "pattern": "accessib|a11y|screen reader|aria|wcag|keyboard.*navigat|focus.*management|tab.*order|assistive|color.*contrast",
+      "score": 1
+    },
+    {
+      "id": "i18n",
+      "label": "Internationalization",
+      "pattern": "i18n|internationali[zs]|locali[zs]|translat|multi.?language|rtl|right.?to.?left|locale|plural.*form|number.*format|date.*format.*locale",
+      "score": 1
+    },
+    {
+      "id": "integration_test",
+      "label": "Integration testing required",
+      "pattern": "integration test|e2e test|end.to.end|playwright|cypress|selenium|test.*api.*endpoint|test.*database|test.*external|contract.*test|smoke.*test",
+      "score": 1
+    },
+    {
+      "id": "test_fixtures",
+      "label": "Complex test setup",
+      "pattern": "test fixture|mock.*service|stub.*api|seed.*data|test.*factory|test.*database|test.*container|docker.*test|test.*environment|test.*isolation",
+      "score": 1
+    },
+    {
+      "id": "email_notification",
+      "label": "Email/notification system",
+      "pattern": "email.*send|notification.*system|push.*notif|sms.*send|in.?app.*notif|notification.*preference|email.*template|mailer|notification.*queue|alert.*system",
+      "score": 1
+    },
+    {
+      "id": "logging_monitoring",
+      "label": "Logging/monitoring/observability",
+      "pattern": "logging.*system|monitoring|observab|telemetry|tracing|distributed.*trace|log.*aggregat|metrics.*collect|health.*check|alerting|sentry|datadog|newrelic",
+      "score": 1
+    },
+    {
+      "id": "config_system",
+      "label": "Configuration/feature flags",
+      "pattern": "feature.*flag|feature.*toggle|config.*system|dynamic.*config|a.?b.*test|experiment|remote.*config|launch.*darkly|unleash|posthog.*flag",
+      "score": 1
+    },
+    {
+      "id": "frontend_only",
+      "label": "Frontend only (no backend)",
+      "pattern": "frontend only|ui only|css only|layout only|style only|cosmetic|visual.*only|markup.*only|static.*page|presentation.*only",
+      "score": -1
+    },
+    {
+      "id": "simple_crud",
+      "label": "Simple CRUD operations",
+      "pattern": "simple crud|basic crud|create read update delete|simple.*list|basic.*form|standard.*rest|straightforward|simple.*endpoint|basic.*page|simple.*component",
+      "score": -1
+    },
+    {
+      "id": "documentation_only",
+      "label": "Documentation/config only",
+      "pattern": "documentation only|readme|config.*change only|env.*update only|update.*docs|comment.*only|rename only|typo|text.*change only",
+      "score": -2
+    },
+    {
+      "id": "refactor_only",
+      "label": "Pure refactor (no behavior change)",
+      "pattern": "refactor only|code.*cleanup|rename|extract.*method|move.*file|reorgani[zs]e|restructure|no.*behavior.*change|no.*functional.*change",
+      "score": -1
+    },
+    {
+      "id": "simple_bugfix",
+      "label": "Simple/isolated bug fix",
+      "pattern": "simple.*fix|minor.*bug|typo.*fix|off.?by.?one|null.*check|missing.*import|syntax.*error|small.*patch|hotfix|one.?line.*fix",
+      "score": -1
+    },
+    {
+      "id": "uncertainty",
+      "label": "Uncertain/research-heavy scope",
+      "pattern": "research|investigate|spike|prototype|proof of concept|poc|tbd|to be determined|unclear|explore|experiment.*with|evaluate.*option|might.*need|may.*require",
+      "score": 1
+    },
+    {
+      "id": "breaking_change",
+      "label": "Breaking/migration change",
+      "pattern": "breaking.*change|backward.*compat|deprecat|migration.*guide|version.*bump.*major|api.*v\\d|legacy.*support|upgrade.*path",
+      "score": 2
+    }
+  ]
+}

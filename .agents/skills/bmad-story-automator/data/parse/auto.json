@@ -1,0 +1,10 @@
+{
+  "requiredKeys": ["status", "tests_added", "coverage_improved", "summary", "next_action"],
+  "schema": {
+    "status": "SUCCESS|FAILURE|AMBIGUOUS",
+    "tests_added": "integer",
+    "coverage_improved": "true|false",
+    "summary": "brief description",
+    "next_action": "proceed|retry|escalate"
+  }
+}

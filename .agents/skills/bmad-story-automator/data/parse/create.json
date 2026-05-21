@@ -1,0 +1,10 @@
+{
+  "requiredKeys": ["status", "story_created", "story_file", "summary", "next_action"],
+  "schema": {
+    "status": "SUCCESS|FAILURE|AMBIGUOUS",
+    "story_created": "true|false",
+    "story_file": "path or null",
+    "summary": "brief description",
+    "next_action": "proceed|retry|escalate"
+  }
+}

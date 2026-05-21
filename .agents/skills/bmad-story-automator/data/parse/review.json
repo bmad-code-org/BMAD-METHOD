@@ -1,0 +1,15 @@
+{
+  "requiredKeys": ["status", "issues_found", "all_fixed", "summary", "next_action"],
+  "schema": {
+    "status": "SUCCESS|FAILURE|AMBIGUOUS",
+    "issues_found": {
+      "critical": "integer",
+      "high": "integer",
+      "medium": "integer",
+      "low": "integer"
+    },
+    "all_fixed": "true|false",
+    "summary": "brief description",
+    "next_action": "proceed|retry|escalate"
+  }
+}
