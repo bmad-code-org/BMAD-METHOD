@@ -5,6 +5,40 @@ epicsFile: '{planning_artifacts}/*epic*.md' # Will be resolved to actual file
 
 # Step 2: PRD Analysis
 
+## 🧠 Memtrace Context (Self-Contained)
+
+Memtrace graph queries are available for structural dependency discovery.
+If activation failed to load persistent_facts, this context is sufficient:
+
+**Available MCP tools (direct usage):**
+- `list_indexed_repositories` — check index availability
+- `get_codebase_briefing` (summary mode) — repository scale, modules, risk
+- `list_communities` — logical module boundaries
+- `find_central_symbols` (limit 10) — load-bearing code (PageRank)
+- `find_bridge_symbols` (limit 10) — architectural chokepoints
+- `find_dependency_path` — verify actual call direction between modules
+- `find_api_endpoints` — check for endpoint overlap
+
+**For blast radius (use adapter):**
+`node _bmad/scripts/memtrace/memtrace-adapter.mjs --target <symbol> --query get_impact --check-freshness --summarize`
+
+> **Complete Memtrace MCP tool catalog:**
+> **Navigation:** find_code, find_symbol, get_source_window, get_directory_tree
+> **Architecture:** get_codebase_briefing, list_communities, list_processes, get_process_flow
+> **Dependencies:** get_symbol_context, analyze_relationships, get_impact, find_dependency_path, get_api_topology
+> **Quality:** find_dead_code, find_most_complex_functions, find_bridge_symbols, find_central_symbols
+> **Temporal:** get_evolution, get_changes_since, get_timeline, get_episode_replay
+> **Index:** index_directory, list_indexed_repositories, watch_directory, delete_repository
+
+**Rules:**
+- All queries are ADVISORY — NEVER block the readiness workflow
+- Process STRICTLY SEQUENTIALLY with `for...of` + `await`
+- NEVER use `Promise.all` for Memtrace queries
+- Check index freshness before trusting graph output
+- Use `--summarize` for any call that could exceed 2000 tokens
+
+---
+
 ## STEP GOAL:
 
 To fully read and analyze the PRD document (whole or sharded) to extract all Functional Requirements (FRs) and Non-Functional Requirements (NFRs) for validation against epics coverage.

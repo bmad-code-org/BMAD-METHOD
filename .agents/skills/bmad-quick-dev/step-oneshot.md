@@ -4,6 +4,40 @@ deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 
 # Step One-Shot: Implement, Review, Present
 
+## 🧠 Memtrace Context (Self-Contained)
+
+Memtrace structural analysis is available for blast radius and dead code detection.
+If activation failed to load persistent_facts, this context is sufficient:
+
+**Blast radius query:**
+`node _bmad/scripts/memtrace/memtrace-adapter.mjs --target <symbol> --query get_impact --check-freshness --summarize`
+
+**Dead code detection:**
+`node _bmad/scripts/memtrace/memtrace-adapter.mjs --target <file> --query find_dead_code --check-freshness`
+
+**Quality gate validation:**
+`node _bmad/scripts/memtrace/qa-memtrace.mjs --blast-radius <file> --test-coverage <file> --threshold <N>`
+
+**Dead code pitfall validation:**
+`node _bmad/scripts/memtrace/validate-dead-code.mjs --candidates <file>`
+
+> **Complete Memtrace MCP tool catalog:**
+> **Navigation:** find_code, find_symbol, get_source_window, get_directory_tree
+> **Architecture:** get_codebase_briefing, list_communities, list_processes, get_process_flow
+> **Dependencies:** get_symbol_context, analyze_relationships, get_impact, find_dependency_path, get_api_topology
+> **Quality:** find_dead_code, find_most_complex_functions, find_bridge_symbols, find_central_symbols
+> **Temporal:** get_evolution, get_changes_since, get_timeline, get_episode_replay
+> **Index:** index_directory, list_indexed_repositories, watch_directory, delete_repository
+
+**Rules:**
+- All Memtrace queries are ADVISORY — skip gracefully if unavailable
+- Process STRICTLY SEQUENTIALLY with `for...of` + `await`
+- NEVER use `Promise.all` for Memtrace queries
+- `--check-freshness` before every graph query
+- `--summarize` on blast radius to stay under 2000 tokens
+
+---
+
 ## RULES
 
 - YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`

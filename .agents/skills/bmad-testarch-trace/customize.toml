@@ -1,0 +1,41 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# Workflow customization surface for bmad-testarch-trace. Mirrors the
+# agent customization shape under the [workflow] namespace.
+
+[workflow]
+
+# --- Configurable below. Overrides merge per BMad structural rules: ---
+#   scalars: override wins • arrays (persistent_facts, activation_steps_*): append
+
+# Steps to run before the standard activation (config load, greet).
+# Overrides append. Use for pre-flight loads, compliance checks, etc.
+
+activation_steps_prepend = []
+
+# Steps to run after greet but before the workflow begins.
+# Overrides append. Use for context-heavy setup that should happen
+# once the user has been acknowledged.
+
+activation_steps_append = []
+
+# Persistent facts the workflow keeps in mind for the whole run
+# (testing standards, framework conventions, compliance constraints).
+# Distinct from the runtime memory sidecar — these are static context
+# loaded on activation. Overrides append.
+#
+# Each entry is either:
+#   - a literal sentence, e.g. "Every test must run deterministically in CI."
+#   - a file reference prefixed with `file:`, e.g. "file:{project-root}/docs/test-standards.md"
+#     (glob patterns are supported; matching files load in lexical path order as facts).
+
+persistent_facts = [
+  "file:{project-root}/**/project-context.md",
+  "Memtrace structural coverage analysis capabilities are available during coverage traceability. Query the Memtrace graph to discover exported functional symbols in target modules (using find_symbol with kind=Function/Method/Class), build a structural-to-test coverage matrix, and identify uncovered code for gap analysis. Use list_indexed_repositories to check index freshness before querying. All graph queries MUST use sequential for...of with await — NEVER Promise.all. Structural coverage is advisory and augments (not replaces) requirements-based coverage analysis. Skip gracefully if Memtrace is unavailable — never block the trace workflow on structural analysis.",
+]
+
+# Scalar: executed when the workflow reaches its terminal step in any
+# mode (create, validate, edit), after the final outputs are produced.
+# Override wins. Leave empty for no custom post-completion behavior.
+
+on_complete = ""

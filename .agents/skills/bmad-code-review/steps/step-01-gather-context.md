@@ -9,6 +9,39 @@ memtrace_dead_code: '' # set at runtime: structured dead code data or "unavailab
 
 # Step 1: Gather Context
 
+## 🧠 Memtrace Context (Self-Contained)
+
+Memtrace structural deep audit is available for independent code review verification.
+If activation failed to load persistent_facts, this context is sufficient:
+
+**Blast radius audit:**
+`node _bmad/scripts/memtrace/memtrace-adapter.mjs --target <symbol> --query get_impact --check-freshness --summarize`
+- Exit 0 → parse `summarized.critical_dependents`, `summarized.module_impact`, `summarized.total_affected`
+- Exit 1 + `[FRESHNESS]` in STDERR → stale index, skip
+- Exit 1 + `MEMTRACE_MCP_ERROR_TIMEOUT` → server unreachable, skip
+
+**Dead code audit:**
+`node _bmad/scripts/memtrace/memtrace-adapter.mjs --target <file> --query find_dead_code --check-freshness`
+- Exit 0 → list of dead symbols in that file
+- Exit 1 → skip, continue with remaining files
+
+> **Complete Memtrace MCP tool catalog:**
+> **Navigation:** find_code, find_symbol, get_source_window, get_directory_tree
+> **Architecture:** get_codebase_briefing, list_communities, list_processes, get_process_flow
+> **Dependencies:** get_symbol_context, analyze_relationships, get_impact, find_dependency_path, get_api_topology
+> **Quality:** find_dead_code, find_most_complex_functions, find_bridge_symbols, find_central_symbols
+> **Temporal:** get_evolution, get_changes_since, get_timeline, get_episode_replay
+> **Index:** index_directory, list_indexed_repositories, watch_directory, delete_repository
+
+**Rules:**
+- All queries are ADVISORY — NEVER block the review on Memtrace availability
+- Process STRICTLY SEQUENTIALLY with `for...of` + `await`
+- NEVER use `Promise.all` for Memtrace queries
+- `--check-freshness` flag is mandatory
+- `--summarize` flag required for blast radius to stay under 2000 tokens
+
+---
+
 ## RULES
 
 - YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
