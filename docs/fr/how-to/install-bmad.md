@@ -113,7 +113,7 @@ Avec `--yes`, les mises à niveau patch et mineure s'appliquent automatiquement.
 
 **En ligne de commande :** les recettes dans la section suivante couvrent les cas courants.
 
-## Installations CI sans interaction
+## Installations CI non interactives
 
 ### Référence des options
 
