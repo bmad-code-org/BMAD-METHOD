@@ -31,11 +31,11 @@ Quand v4 est détecté, vous pouvez :
 - Autoriser l'installateur à sauvegarder et supprimer `.bmad-method`
 - Quitter et gérer le nettoyage manuellement
 
-Si vous avez nommé votre dossier de méthode bmad autrement, vous devrez supprimer le dossier vous-même manuellement.
+Si votre dossier de méthode BMad porte un nom différent, vous devrez le supprimer manuellement.
 
 ### 3. Nettoyer les skills IDE
 
-Supprimez manuellement les commandes/skills IDE v4 existants - par exemple si vous avez Claude Code, recherchez tous les dossiers imbriqués qui commencent par bmad et supprimez-les :
+Supprimez manuellement les commandes/skills IDE v4 existants - par exemple si vous utilisez Claude Code, recherchez tous les dossiers imbriqués qui commencent par bmad et supprimez-les :
 
 - `.claude/commands/`
 
@@ -51,9 +51,9 @@ Déplacez-les dans `_bmad-output/planning-artifacts/` avec des noms descriptifs 
 
 - Incluez `PRD` dans le nom de fichier pour les documents PRD[^1]
 - Incluez `brief`, `architecture`, ou `ux-design` selon le cas
-- Les documents divisés peuvent être dans des sous-dossiers nommés
+- Les documents divisés peuvent être dans des sous-dossiers au nom descriptif
 
-**Si vous êtes en cours de planification :** Envisagez de redémarrer avec les workflows v6. Utilisez vos documents existants comme entrées - les nouveaux workflows de découverte progressive avec recherche web et mode plan IDE produisent de meilleurs résultats.
+**Si vous êtes en cours de planification :** Envisagez de recommencer avec les workflows v6. Utilisez vos documents existants comme entrées — les nouveaux workflows de découverte progressive avec recherche web et le mode plan de l'IDE produisent de meilleurs résultats.
 
 ### 5. Migrer le développement en cours
 
@@ -64,7 +64,7 @@ Si vous avez des stories[^3] créées ou implémentées :
 3. Lancez le workflow Développeur `bmad-sprint-planning`[^4]
 4. Indiquez à l’agent quels epics/stories sont déjà terminés
 
-## Ce que vous obtenez
+## Résultat de la migration
 
 **Structure unifiée v6 :**
 
@@ -77,27 +77,28 @@ votre-projet/
 │   ├── bmm/             # Module BMad Method
 │   ├── bmb/             # BMad Builder
 │   └── cis/             # Creative Intelligence Suite
-└── _bmad-output/        # Dossier de sortie (était le dossier doc en v4)
+└── _bmad-output/        # Dossier de sortie (remplace le dossier doc de la v4)
 ```
 
 ## Migration des modules
 
-| Module v4                     | Statut v6                                 |
-| ----------------------------- | ----------------------------------------- |
-| `.bmad-2d-phaser-game-dev`    | Intégré dans le Module BMGD               |
-| `.bmad-2d-unity-game-dev`     | Intégré dans le Module BMGD               |
-| `.bmad-godot-game-dev`        | Intégré dans le Module BMGD               |
-| `.bmad-infrastructure-devops` | Déprécié - nouvel agent DevOps bientôt disponible |
-| `.bmad-creative-writing`      | Non adapté - nouveau module v6 bientôt disponible   |
+| Module v4                     | Statut v6                                              |
+| ----------------------------- | ------------------------------------------------------ |
+| `.bmad-2d-phaser-game-dev`    | Intégré dans le Module BMGD                            |
+| `.bmad-2d-unity-game-dev`     | Intégré dans le Module BMGD                            |
+| `.bmad-godot-game-dev`        | Intégré dans le Module BMGD                            |
+| `.bmad-infrastructure-devops` | Obsolète — nouvel agent DevOps bientôt disponible      |
+| `.bmad-creative-writing`      | Non migré — nouveau module v6 bientôt disponible       |
 
 ## Changements clés
 
 | Concept       | v4                                    | v6                                   |
 | ------------- | ------------------------------------- | ------------------------------------ |
-| **Core**      | `_bmad-core` était en fait la méthode BMad | `_bmad/core/` est le framework universel |
+| **Core**      | `_bmad-core` correspondait en réalité à la méthode BMad | `_bmad/core/` est le framework universel |
 | **Method**    | `_bmad-method`                        | `_bmad/bmm/`                         |
 | **Config**    | Fichiers modifiés directement         | `config.yaml` par module             |
-| **Documents** | Division ou non division requise | Entièrement flexible, scan automatique         |
+| **Documents** | Division en fragments obligatoire ou optionnelle | Totalement flexible, analyse automatique |
+
 
 ## Glossaire
 [^1]: PRD (Product Requirements Document) : document de référence qui décrit les objectifs du produit, les besoins utilisateurs, les fonctionnalités attendues, les contraintes et les critères de succès, afin d'aligner les équipes sur ce qui doit être construit et pourquoi.
