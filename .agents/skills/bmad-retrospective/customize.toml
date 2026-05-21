@@ -1,0 +1,42 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# Workflow customization surface for bmad-retrospective. Mirrors the
+# agent customization shape under the [workflow] namespace.
+
+[workflow]
+
+# --- Configurable below. Overrides merge per BMad structural rules: ---
+#   scalars: override wins • arrays (persistent_facts, activation_steps_*): append
+#   arrays-of-tables with `code`/`id`: replace matching items, append new ones.
+
+# Steps to run before the standard activation (config load, greet).
+# Overrides append. Use for pre-flight loads, compliance checks, etc.
+
+activation_steps_prepend = []
+
+# Steps to run after greet but before the workflow begins.
+# Overrides append. Use for context-heavy setup that should happen
+# once the user has been acknowledged.
+
+activation_steps_append = []
+
+# Persistent facts the workflow keeps in mind for the whole run
+# (standards, compliance constraints, stylistic guardrails).
+# Distinct from the runtime memory sidecar — these are static context
+# loaded on activation. Overrides append.
+#
+# Each entry is either:
+#   - a literal sentence, e.g. "All retrospectives must produce SMART action items with named owners."
+#   - a file reference prefixed with `file:`, e.g. "file:{project-root}/docs/standards.md"
+#     (glob patterns are supported; the file's contents are loaded and treated as facts).
+
+persistent_facts = [
+  "file:{project-root}/**/project-context.md",
+  "Memtrace structural analysis capabilities are available during sprint retrospectives to provide objective, data-driven technical debt assessment. Use Memtrace MCP tools to enrich the retrospective with structural evidence: get_evolution (mode=compound, from/to=epic time window) to discover all symbols/files changed during the sprint, get_impact on top-changed symbols to compute blast radius and coupling impact, find_most_complex_functions (top_n=15) to detect complexity hotspots in modified modules, find_bridge_symbols (limit=15) and find_central_symbols (limit=20) to identify architectural stress (chokepoints and load-bearing code that changed), list_communities (min_size=3) to detect cross-module coupling increases, and find_dead_code (include_tests=false) to surface orphaned symbols from sprint refactors. Use list_indexed_repositories to check index freshness before EVERY query. All graph queries MUST use sequential for...of with await — NEVER Promise.all. Memtrace graph data is ADVISORY ENRICHMENT that informs but does not dictate the team discussion and action items. Fall back to heuristic story-file analysis when Memtrace is unavailable. NEVER block the retrospective on Memtrace availability. Prefer summarized output to stay under 2000 token limit. Cap symbol batches at 200. The structural data is presented to the team as evidence for discussion — final priorities are decided by the team and {user_name}.",
+]
+
+# Scalar: executed when the workflow reaches Step 12 (Final Summary and Handoff),
+# after the retrospective document is saved and sprint-status is updated. Override wins.
+# Leave empty for no custom post-completion behavior.
+
+on_complete = ""
