@@ -12,12 +12,12 @@ Cette page liste les agents BMM (suite Agile) par défaut installés avec la mé
 ## Notes
 
 - Chaque agent est disponible en tant que skill, généré par l’installateur. L’identifiant de skill (par exemple, `bmad-dev`) est utilisé pour invoquer l’agent.
-- Les déclencheurs sont les codes courts de menu (par exemple, `BP`) et les correspondances approximatives affichés dans chaque menu d’agent.
-- La génération de tests QA est gérée par le skill de workflow `bmad-qa-generate-e2e-tests`, disponible par l’agent Développeur. L’architecte de tests complet (TEA) se trouve dans son propre module.
+- Les déclencheurs sont les codes courts affichés dans le menu de chaque agent (par exemple, `CP`) et les correspondances approximatives présentées dans chaque menu.
+- La génération de tests QA est gérée par le skill de workflow `bmad-qa-generate-e2e-tests`, disponible via l’agent Développeur. L’architecte de tests complet (TEA) se trouve dans son propre module.
 
 | Agent                       | Identifiant de skill | Déclencheurs                             | Workflows principaux                                                                                                                                           |
 |-----------------------------|----------------------|------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Analyste (Mary)             | `bmad-analyst`       | `BP`, `MR`, `DR`, `TR`, `CB`, `WB`, `DP` | Brainstorming du projet, Recherche marché/domaine/technique, Création du brief[^1], Défi PRFAQ, Documentation du projet                                        |
+| Analyste (Mary)             | `bmad-analyst`       | `BP`, `MR`, `DR`, `TR`, `CB`, `WB`, `DP` | Brainstorming, Recherche marché, Recherche domaine, Recherche technique, Création du brief[^1], Défi PRFAQ, Documentation du projet                            |
 | Product Manager (John)      | `bmad-pm`            | `CP`, `VP`, `EP`, `CE`, `IR`, `CC`       | Créer/Valider/Éditer un PRD, Créer des Epics et Stories, vérifier l’état de préparation à l’Implémentation, Corriger le Cours                                 |
 | Architecte (Winston)        | `bmad-architect`     | `CA`, `IR`                               | Créer l’architecture, Préparation à l’implémentation                                                                                                           |
 | Développeur (Amelia)        | `bmad-agent-dev`     | `DS`, `QD`, `QA`, `CR`, `SP`, `CS`, `ER` | Dev Story, Quick Dev, Génération de Tests QA, Code Review, Sprint Planning, Créer Story, Rétrospective d’Epic                                                  |
