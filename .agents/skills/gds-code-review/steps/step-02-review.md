@@ -35,6 +35,12 @@ If activation failed to load persistent_facts, this context is sufficient:
 - `--check-freshness` flag is mandatory
 - `--summarize` flag required for blast radius to stay under 2000 tokens
 
+**Graceful degradation:**
+- Memtrace unavailable or times out → skip blast radius/dead code audit, continue with heuristic review
+- Stale index (`[FRESHNESS]` in STDERR) → skip graph queries, proceed with existing review logic
+- Partial failure → note diagnostic, apply available data, do not halt the review
+- NEVER block the code review workflow on Memtrace availability
+
 ---
 
 ## RULES

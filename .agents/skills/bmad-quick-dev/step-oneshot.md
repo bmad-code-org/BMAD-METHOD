@@ -36,6 +36,12 @@ If activation failed to load persistent_facts, this context is sufficient:
 - `--check-freshness` before every graph query
 - `--summarize` on blast radius to stay under 2000 tokens
 
+**Graceful degradation:**
+- Memtrace unavailable or times out → skip blast radius/dead code analysis, continue with heuristic approach
+- Stale index → skip graph queries, proceed with existing logic
+- Quality gate failure → write missing tests, do not skip
+- NEVER halt the dev workflow on Memtrace availability
+
 ---
 
 ## RULES

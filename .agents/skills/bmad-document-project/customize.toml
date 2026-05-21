@@ -1,0 +1,42 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# Workflow customization surface for bmad-document-project. Mirrors the
+# agent customization shape under the [workflow] namespace.
+
+[workflow]
+
+# --- Configurable below. Overrides merge per BMad structural rules: ---
+#   scalars: override wins • arrays (persistent_facts, activation_steps_*): append
+#   arrays-of-tables with `code`/`id`: replace matching items, append new ones.
+
+# Steps to run before the standard activation (config load, greet).
+# Overrides append. Use for pre-flight loads, compliance checks, etc.
+
+activation_steps_prepend = []
+
+# Steps to run after greet but before the workflow begins.
+# Overrides append. Use for context-heavy setup that should happen
+# once the user has been acknowledged.
+
+activation_steps_append = []
+
+# Persistent facts the workflow keeps in mind for the whole run
+# (standards, compliance constraints, stylistic guardrails).
+# Distinct from the runtime memory sidecar — these are static context
+# loaded on activation. Overrides append.
+#
+# Each entry is either:
+#   - a literal sentence, e.g. "All briefs must include a regulatory-risk section."
+#   - a file reference prefixed with `file:`, e.g. "file:{project-root}/docs/standards.md"
+#     (glob patterns are supported; the file's contents are loaded and treated as facts).
+
+persistent_facts = [
+  "file:{project-root}/**/project-context.md",
+  "Memtrace structural documentation capabilities are available during brownfield project documentation. Use Memtrace MCP tools as the primary discovery mechanism: get_directory_tree (mode=compact/verbose, max_depth=6) for directory structure, list_communities (min_size=3) for logical module boundaries, find_api_endpoints (limit=200) for API surface mapping, get_api_topology (include_external=false, min_confidence=0.7) for cross-service call topology, find_symbol (kind=Function/Method/Class/Interface, limit=200) for exported symbol discovery, get_symbol_context for caller/callee/type/community/process data per symbol, analyze_relationships (query_type=find_callers/find_callees/imports/exporters) for dependency graphs, find_dependency_path for execution path tracing, find_central_symbols (limit=20) and find_bridge_symbols (limit=15) for architectural significance. Use list_indexed_repositories to check index freshness before EVERY query. All graph queries MUST use sequential for...of with await — NEVER Promise.all. Memtrace graph data is the PRIMARY discovery source when available; fall back to heuristic file-reading when Memtrace is unavailable. NEVER block the documentation workflow on Memtrace availability. Prefer summarized output to stay under 2000 token limit. Cap symbol batches at 200. Graph data enriches — does not replace — the existing file-reading logic.",
+]
+
+# Scalar: executed when the workflow reaches its terminal stage, after
+# the main output has been delivered. Override wins. Leave empty for
+# no custom post-completion behavior.
+
+on_complete = ""
