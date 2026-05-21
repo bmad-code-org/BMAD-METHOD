@@ -68,7 +68,7 @@ Les revues agentiques[^2] échouent souvent de deux manières :
 
 Quick Dev aborde ces deux problèmes en traitant la revue comme un triage[^3].
 
-Lorsqu’une observation est fortuite plutôt que directement liée au travail en cours, le processus peut la mettre de côté au lieu d’obliger la personne à s’en occuper immédiatement. Cela permet de rester concentré sur l’exécution et d’éviter que des digressions aléatoires ne viennent épuiser le capital d’attention.
+Certaines observations concernent le changement en cours, d’autres non. Si une observation est incidente plutôt que directement liée au travail en cours, le workflow peut la différer au lieu d’obliger la personne à la traiter immédiatement. Cela permet de rester concentré sur l’exécution et d’éviter que des digressions aléatoires ne viennent épuiser le capital d’attention.
 
 Ce triage sera parfois imparfait. C’est acceptable. Il est généralement préférable de mal juger certaines observations plutôt que d’inonder la personne de milliers de commentaires de revue à faible valeur. Le système optimise la qualité du rapport, pas d’être exhaustif.
 
