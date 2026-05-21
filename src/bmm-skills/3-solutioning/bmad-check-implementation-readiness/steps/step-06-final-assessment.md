@@ -59,6 +59,7 @@ Check the {outputFile} for sections added by previous steps:
 - File and FR Validation findings
 - UX Alignment issues
 - Epic Quality violations
+- PRD Structural Verification findings (from Step 2)
 
 ### 3. Add Final Assessment Section
 
@@ -70,6 +71,7 @@ Append to {outputFile}:
 ### Overall Readiness Status
 
 [READY/NEEDS WORK/NOT READY]
+**Structural Verification:** {Available and consistent / Available with warnings / Partial / Unavailable}
 
 ### Critical Issues Requiring Immediate Action
 
@@ -80,6 +82,8 @@ Append to {outputFile}:
 1. [Specific action item 1]
 2. [Specific action item 2]
 3. [Specific action item 3]
+{If structural warnings exist:}
+- Review PRD assumptions flagged by structural verification — {contradicted_count} of {total} PRD claims contradicted by actual codebase graph (see PRD Structural Verification section)
 
 ### Final Note
 

@@ -115,6 +115,64 @@ Look for:
 - Business constraints
 - Integration requirements
 
+### 5.5: Structural Assumptions Verification (Memtrace)
+
+If the repository is indexed by Memtrace, verify architectural claims in the PRD against the actual codebase graph. This step is ADVISORY.
+
+**Check Availability:**
+- Call `list_indexed_repositories` (Memtrace MCP tool, direct call) to confirm the project repo is indexed
+- Check the `last_indexed_at` value — if older than 30 minutes, flag as stale and skip graph queries
+- If not indexed, skip and note "Structural verification unavailable"
+
+**Verify PRD Claims:**
+
+Scan the PRD for architectural claims (dependency relationships, centrality assertions, module boundaries, or scope claims). If the PRD contains no explicit architectural claims, note "No structural claims to verify" and skip this section.
+
+For each architectural claim found (e.g., "module X depends on module Y", "component Z is central to the system"), verify against the graph:
+
+1. **Dependency Claims:** For each stated dependency between modules/components, resolve module names to symbols by searching for key exports, classes, or entry points within each module. Then use `find_dependency_path` (Memtrace MCP tool, direct call) with the resolved source and target symbols to confirm the actual path exists. Flag claims where no path exists or the direction is reversed.
+
+2. **Centrality Claims:** For modules/components described as "core" or "central", use `find_central_symbols` (Memtrace MCP tool, direct call) to verify their actual PageRank position.
+
+3. **Module Boundary Claims:** If the PRD describes module/component boundaries, compare against `list_communities` to verify those boundaries align with the actual graph communities.
+
+4. **Scope Claims:** If the PRD claims specific scope (e.g., "this change affects only module X"), use `get_impact` on the target symbols to verify the actual blast radius. If the PRD doesn't name specific symbols, note "Cannot verify scope claims — no target symbols specified in PRD" as a warning rather than attempting arbitrary queries.
+
+**Document Findings:**
+
+Include in the PRD Analysis section under "PRD Structural Verification":
+
+```markdown
+### PRD Structural Verification {✅/⚠️/—}
+
+{If verified — all claims confirmed:}
+✅ **PRD claims verified against codebase graph:**
+- {count} dependency claims confirmed out of {total} verified
+- Centrality claims match actual graph structure
+- Module boundaries align with graph communities
+
+{If mismatches found — some claims contradicted:}
+⚠️ **PRD claims contradicted by codebase graph ({contradicted_count} of {total}):**
+- {claim 1} — Actual graph shows {reality}
+- {claim 2} — Actual graph shows {reality}
+- Flag these mismatches for human review — the agent cannot determine whether the PRD or the graph is correct.
+
+{If no claims found in PRD:}
+— No architectural claims found in PRD to verify against codebase graph.
+
+{If no target symbols for scope claims:}
+— Cannot verify scope claims — no target symbols specified in PRD.
+
+{If unavailable (no indexed repo or stale index):}
+— Structural verification unavailable — no indexed repository found (or index is stale).
+  PRD claims could not be verified against actual codebase structure.
+```
+
+**Graceful Degradation:**
+- Memtrace unavailability does NOT block the step — proceed with document-based analysis
+- Structural mismatches are WARNINGS, not errors — flag for human review
+- PRDs with no architectural claims skip cleanly with a note
+
 ### 6. Add to Assessment Report
 
 Append to {outputFile}:
@@ -133,6 +191,10 @@ Append to {outputFile}:
 ### Additional Requirements
 
 [Any other requirements or constraints found]
+
+### PRD Structural Verification
+
+[Findings from section 5.5]
 
 ### PRD Completeness Assessment
 
@@ -156,6 +218,7 @@ PRD analysis complete. Read fully and follow: `./step-03-epic-coverage-validatio
 - PRD loaded and read completely
 - All FRs extracted with full text
 - All NFRs identified and documented
+- PRD structural assumptions verified against codebase graph (if repository indexed)
 - Findings added to assessment report
 
 ### ❌ SYSTEM FAILURE:

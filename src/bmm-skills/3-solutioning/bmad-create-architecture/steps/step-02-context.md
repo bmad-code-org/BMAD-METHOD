@@ -77,6 +77,56 @@ Fully read and Analyze the loaded project documents to understand architectural 
   - Offline capability requirements
   - Performance expectations (load times, interaction responsiveness)
 
+### 1.5: Gather Structural Context (Memtrace)
+
+If the project repository is indexed by Memtrace, query the graph to ground the architecture in actual codebase structure. This step is ADVISORY — skip if Memtrace is unavailable.
+
+**Check Availability:**
+- Call `list_indexed_repositories` (Memtrace MCP tool — callable directly through the agent's tool interface, no adapter needed for this lightweight query)
+- Check the `last_indexed_at` value in the response: if older than 30 minutes, note that the index may be stale and skip graph queries
+- If no indexed repo matches the project root, skip this sub-section and note "Structural context unavailable — no indexed repository found" in the analysis
+
+**If Available — Query Structural Facts:**
+
+1. **Get Codebase Briefing:** Call `get_codebase_briefing` (Memtrace MCP tool, direct call) to understand scale, module count, endpoint coverage, and high-risk symbols. Map response fields to the template as follows: `briefing.total_symbols` → `{node_count}`, `briefing.community_count` → `{community_count}`.
+
+2. **Discover Module Boundaries:** Call `list_communities` (Memtrace MCP tool, direct call) to identify actual logical modules (community clusters). These represent real bounded contexts that may differ from the directory structure.
+
+3. **For Brownfield Projects — Map Existing Architecture:**
+   - Call `find_central_symbols` (limit 10) to identify load-bearing code
+   - Call `find_bridge_symbols` (limit 10) to find architectural chokepoints
+   - If the PRD mentions specific modules or components, use `find_dependency_path` to verify actual relationships
+
+**Document Findings:**
+
+Include in the "Project Context Analysis" section under a new "Existing Codebase Structure" subsection:
+
+```markdown
+### Existing Codebase Structure (Memtrace)
+
+{If available and all queries succeeded:}
+- **Repository scale:** {node_count} symbols across {community_count} logical modules
+- **Central symbols (highest PageRank):** {list of top symbols}
+- **Bridge/chokepoint symbols:** {list of bridge symbols}
+- **Community clusters:** {summary of major communities and their sizes}
+- **Brownfield integration points:** {key modules the new work must integrate with}
+
+{If partial: some queries succeeded, some failed:}
+- **Partial structural context (some queries failed):** {what was successfully retrieved}
+- **Failed queries:** {list of queries that failed}
+- Structural context is incomplete — note which aspects could not be determined.
+
+{If unavailable (no indexed repo or index is stale):}
+- Structural context unavailable — no indexed repository found (or index is stale). Architectural decisions will be based on documented requirements only.
+```
+
+**Graceful Degradation:**
+- If `list_indexed_repositories` returns empty or the project repo is not indexed: skip
+- If the repository is indexed but no communities are found (greenfield project): skip community-level queries, note "Empty graph — project has no existing codebase structure to analyze"
+- If some queries succeed and others fail: document partial results (see "Partial" template above)
+- If all queries time out or fail: note the failure and skip remaining queries
+- NEVER block the workflow on Memtrace availability — this is advisory context
+
 ### 2. Project Scale Assessment
 
 Calculate and present project complexity:
@@ -203,6 +253,7 @@ When user selects 'C', append the content directly to the document using the str
 ✅ User confirmation of project understanding
 ✅ A/P/C menu presented and handled correctly
 ✅ Content properly appended to document when C selected
+✅ Structural context gathered from Memtrace graph (if repository is indexed)
 
 ## FAILURE MODES:
 
@@ -212,6 +263,7 @@ When user selects 'C', append the content directly to the document using the str
 ❌ Underestimating complexity indicators
 ❌ Generating content without real analysis of loaded documents
 ❌ Not presenting A/P/C menu after content generation
+❌ Failing to gracefully skip Memtrace queries when repository is not indexed
 
 ❌ **CRITICAL**: Reading only partial step file - leads to incomplete understanding and poor decisions
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file

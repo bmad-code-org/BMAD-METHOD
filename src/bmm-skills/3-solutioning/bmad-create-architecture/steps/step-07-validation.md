@@ -125,6 +125,68 @@ Assess if AI agents can implement consistently:
 - Are communication patterns fully specified?
 - Are process patterns (error handling, etc.) complete?
 
+### 3.5: Structural Coherence Validation (Memtrace)
+
+If the project has an indexed repository, validate that the proposed architecture aligns with the actual codebase graph. This step is ADVISORY.
+
+**Check Availability:**
+- Call `list_indexed_repositories` (Memtrace MCP tool, direct call) to confirm the project repo is indexed
+- Check the `last_indexed_at` value — if older than 30 minutes, flag as stale and skip graph queries
+- If not indexed, skip and note "Structural coherence validation unavailable"
+- If the project is greenfield (no existing codebase), skip structural validation — `list_communities` will return empty and all dependency checks would produce false positives
+
+**Validate Proposed Structure Against Graph:**
+
+1. **Module Boundary Verification:**
+   - Compare the proposed directory structure (from Step 6) against `list_communities` output
+   - A "match" is when the majority of symbols in a proposed directory belong to a single graph community (heuristic: >50% of directory's symbols share the same community ID)
+   - Flag any proposed module that splits a natural graph community across directories
+   - Flag any proposed module that merges two distinct graph communities
+
+2. **Dependency Direction Check:**
+   - For each proposed integration point or dependency in the architecture, use `find_dependency_path` to verify the actual call direction. Resolve module names to symbols by searching for key exports, classes, or entry points within each module.
+   - Flag reversed dependencies (architecture says A→B but graph shows B→A)
+   - Flag missing dependencies (architecture says A→B but no path exists in graph)
+
+3. **Brownfield Conflict Detection:**
+   - Check proposed new modules against `find_central_symbols` — flag if a proposed module would duplicate or conflict with existing central code
+   - Check proposed new API patterns against `find_api_endpoints` — flag if the proposed API surface overlaps with existing endpoints. "Overlap" means: same HTTP method + same URL path template. Flag for human review if overlap is detected.
+
+**Document in Validation Results:**
+
+Add to the "Architecture Validation Results" section under "Structural Coherence Validation":
+
+```markdown
+### Structural Coherence Validation {✅/⚠️/—}
+
+{If available and all checks pass:}
+✅ **Structural Coherence: CONFIRMED**
+- Proposed module boundaries match {match_count}/{total_count} graph communities
+- All {dep_count} proposed dependency directions verified against actual call graph
+- No conflicts detected between proposed and existing architecture
+
+{If available with warnings:}
+⚠️ **Structural Coherence: WARNINGS**
+- {warning_summary}
+- See Gap Analysis for details
+
+{If partial checks (some queries failed):}
+⚠️ **Structural Coherence: PARTIAL**
+- {What was verified successfully}
+- {What could not be verified due to query failures}
+- See Gap Analysis for details
+
+{If unavailable (no indexed repo, stale index, or greenfield):}
+— Structural coherence validation unavailable — no indexed repository found (or project is greenfield).
+  Architecture coherence is assessed on documentation alone.
+```
+
+**Graceful Degradation:**
+- Memtrace unavailability does NOT affect the overall readiness assessment
+- Warnings from structural validation appear in Gap Analysis as "Important Gaps"
+- Partial results are still useful — document what succeeded and what failed
+- NEVER downgrade the architecture readiness status solely due to structural validation unavailability
+
 ### 4. Gap Analysis
 
 Identify and document any missing elements:
@@ -257,9 +319,15 @@ Mark each item `[x]` only if validation confirms it; leave `[ ]` if it is missin
 - [ ] Integration points mapped
 - [ ] Requirements to structure mapping complete
 
+**Structural Validation (advisory — does not block READY FOR IMPLEMENTATION)**
+
+- [ ] Module boundaries verified against graph communities
+- [ ] Dependency directions confirmed against call graph
+- [ ] Brownfield conflicts checked (if applicable)
+
 ### Architecture Readiness Assessment
 
-**Overall Status:** {{READY FOR IMPLEMENTATION | READY WITH MINOR GAPS | NOT READY}} (choose READY FOR IMPLEMENTATION only when all 16 checklist items are `[x]` and no Critical Gaps remain; choose NOT READY when any Critical Gap is open or any Requirements Analysis or Architectural Decisions item is unchecked; otherwise READY WITH MINOR GAPS)
+**Overall Status:** {{READY FOR IMPLEMENTATION | READY WITH MINOR GAPS | NOT READY}} (choose READY FOR IMPLEMENTATION only when all 16 standard checklist items are `[x]` (Structural Validation items are advisory) and no Critical Gaps remain; choose NOT READY when any Critical Gap is open or any Requirements Analysis or Architectural Decisions item is unchecked; otherwise READY WITH MINOR GAPS. Structural Validation items are advisory — unchecked structural items do NOT block READY FOR IMPLEMENTATION.)
 
 **Confidence Level:** {{high/medium/low}} based on validation results
 
@@ -338,6 +406,7 @@ When user selects 'C', append the content directly to the document using the str
 ✅ Implementation readiness confirmed
 ✅ All gaps identified and addressed
 ✅ Comprehensive validation checklist completed
+✅ Structural coherence validated against real codebase graph (if repository indexed)
 ✅ A/P/C menu presented and handled correctly
 ✅ Content properly appended to document when C selected
 

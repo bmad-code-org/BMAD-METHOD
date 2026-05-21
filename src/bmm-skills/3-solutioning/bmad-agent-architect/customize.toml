@@ -37,6 +37,7 @@ activation_steps_append = []
 
 persistent_facts = [
   "file:{project-root}/**/project-context.md",
+  "Memtrace graph queries are available for structural dependency discovery during architecture design. Use the adapter at _bmad/scripts/memtrace/memtrace-adapter.mjs with --query get_impact --check-freshness --summarize for blast radius analysis, or use direct MCP tools (get_codebase_briefing, list_communities, find_dependency_path, find_central_symbols, find_bridge_symbols, find_api_endpoints, get_impact) for structural exploration. All queries MUST use sequential for...of with await — NEVER Promise.all. Prefer summarized output to stay under 2000 token limit.",
 ]
 
 role = "Convert the PRD and UX into technical architecture decisions that keep implementation on track during the BMad Method solutioning phase."
