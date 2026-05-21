@@ -52,7 +52,7 @@ Chaque skill est un répertoire contenant un fichier `SKILL.md`. Par exemple, un
 .claude/skills/
 ├── bmad-help/
 │   └── SKILL.md
-├── bmad-create-prd/
+├── bmad-prd/
 │   └── SKILL.md
 ├── bmad-agent-dev/
 │   └── SKILL.md
@@ -91,9 +91,9 @@ Les skills de workflow exécutent un processus structuré en plusieurs étapes s
 
 | Exemple de skill | Objectif |
 | --- | --- |
-| `bmad-product-brief` | Créer un product brief[^3] — découverte guidée lorsque votre concept est clair |
+| `bmad-product-brief` | Créer ou mettre à jour un product brief[^3] — découverte guidée lorsque votre concept est clair |
 | `bmad-prfaq` | Défi [PRFAQ Working Backwards](../explanation/analysis-phase.md#prfaq-working-backwards) pour éprouver votre concept produit |
-| `bmad-create-prd` | Créer un PRD[^1] |
+| `bmad-prd` | Créer, mettre à jour ou valider un PRD[^1] |
 | `bmad-create-architecture` | Concevoir l'architecture système |
 | `bmad-create-epics-and-stories` | Créer des epics et des stories |
 | `bmad-dev-story` | Implémenter une story |
@@ -124,7 +124,7 @@ Le module principal inclut 11 outils intégrés — revues, compression, brainst
 
 ## Convention de nommage
 
-Tous les skills utilisent le préfixe `bmad-` suivi d'un nom descriptif (ex. `bmad-agent-dev`, `bmad-create-prd`, `bmad-help`). Consultez [Modules](./modules.md) pour les modules disponibles.
+Tous les skills utilisent le préfixe `bmad-` suivi d'un nom descriptif (ex. `bmad-agent-dev`, `bmad-prd`, `bmad-help`). Consultez [Modules](./modules.md) pour les modules disponibles.
 
 ## Dépannage
 
