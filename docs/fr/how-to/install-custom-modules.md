@@ -15,7 +15,7 @@ Utilisez l'installateur BMad pour ajouter des modules depuis le registre communa
 - Installer des modules depuis un serveur Git privé ou auto-hébergé
 
 :::note[Prérequis]
-Nécessite [Node.js](https://nodejs.org) v20+ et `npx` (inclus avec npm). Les modules personnalisés et communautaires peuvent être sélectionnés lors d'une nouvelle installation ou ajoutés à une installation existante.
+Nécessite [Node.js](https://nodejs.org) v20.12+ et `npx` (inclus avec npm). Les modules personnalisés et communautaires peuvent être sélectionnés lors d'une nouvelle installation ou ajoutés à une installation existante.
 :::
 
 ## Modules communautaires
@@ -68,6 +68,7 @@ Sélectionnez **Yes**, puis indiquez une source :
 | Type d'entrée             | Exemple                                           |
 | ------------------------- | ------------------------------------------------- |
 | URL HTTPS (tout hôte)     | `https://github.com/org/repo`                     |
+| URL HTTP (tout hôte)      | `http://host/org/repo`                            |
 | URL HTTPS avec sous-rép.  | `https://github.com/org/repo/tree/main/my-module` |
 | URL SSH                   | `git@github.com:org/repo.git`                     |
 | Chemin local              | `/Users/me/projects/my-module`                    |
