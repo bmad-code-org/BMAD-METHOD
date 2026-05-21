@@ -1,0 +1,80 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# Workflow customization surface for bmad-ux.
+# Overrides:
+#   {project-root}/_bmad/custom/bmad-ux.toml         (team)
+#   {project-root}/_bmad/custom/bmad-ux.user.toml    (personal)
+# Merge rules: scalars override, arrays append.
+
+[workflow]
+
+# Steps to run before/after standard activation. Append-only.
+activation_steps_prepend = []
+activation_steps_append = []
+
+# Persistent facts loaded at activation and kept in mind for the run.
+# Entries: literal sentence, `skill:NAME`, or `file:PATH` (glob ok).
+persistent_facts = [
+  "file:{project-root}/**/project-context.md",
+]
+
+# Runs at workflow completion. String or array of instructions.
+on_complete = ""
+
+# Reference spines the distillation subagent reads to anchor shape and lean
+# discipline. Multiple examples show the spine adapting to product type
+# (single-surface mobile vs. multi-surface web, consumer vs. internal).
+# Append entries via override TOML to seed an org-specific canonical shape.
+# Each entry: `file:PATH` (or bare relative path, resolved skill-relative).
+spine_examples = [
+  "assets/spine-example-mobile.md",
+  "assets/spine-example-web.md",
+]
+
+# HTML skeleton filled in by the validation synthesis pass.
+validation_report_template = "assets/validation-report-template.html"
+
+# Run folder. design.md, .decision-log.md, .working/ (creative-tool artifacts),
+# imports/ (user-supplied screens / brand decks / Figma exports / sketches),
+# optional mockups/ and wireframes/ (promoted artifacts), optional
+# validation-report.* all land inside {ux_output_path}/{run_folder_pattern}/.
+ux_output_path = "{planning_artifacts}/ux-designs"
+run_folder_pattern = "ux-{project_name}-{date}"
+
+# Creative tools registry. Collaborative renderers invoked on demand during
+# Discovery and at Finalize. Entry forms: `file:PATH`, `skill:NAME`,
+# `tool:MCP_TOOL: <directive>`, or plain text. Defaults ship for HTML color
+# themes, HTML design directions, Excalidraw wireframes (Discovery), and
+# 1:1 HTML key-screen mockups (Finalize). Working artifacts land in
+# {doc_workspace}/.working/; finalize promotes those with lasting reference
+# value to mockups/ or wireframes/. See references/creative-tools.md.
+creative_tools = [
+  "file:assets/color-themes.md",
+  "file:assets/design-directions.md",
+  "file:assets/excalidraw-wireframe.md",
+  "file:assets/key-screens.md",
+]
+
+# Polish passes applied to design.md at finalize.
+# Entries: `skill:NAME`, `file:PATH`, or plain text directive.
+# Suggested order: structural → content/voice → prose mechanics.
+doc_standards = [
+  "skill:bmad-editorial-review-structure",
+  "skill:bmad-editorial-review-prose",
+]
+
+# Information retrieval registry. Consulted on demand when the conversation
+# surfaces a matching need. Distinct from creative_tools (artifact production).
+# Example: "When researching component patterns, consult corp:design_system_search."
+external_sources = []
+
+# Routes outputs beyond local files at Finalize. Returned URLs/IDs surfaced
+# to the user. Unavailable tools skipped and flagged.
+# Example: "Upload design.md to Confluence via corp:confluence_upload (space_key='DESIGN')."
+external_handoffs = []
+
+# Reviewers spawned at Finalize step 4 and at Validate intent, alongside
+# the rubric walker. Entries: `skill:NAME`, `file:PATH`, or plain text.
+# Common ad-hoc add (judged by the skill): accessibility-focused reviewer
+# for consumer / regulated work.
+finalize_reviewers = []
