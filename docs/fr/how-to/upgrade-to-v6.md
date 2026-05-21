@@ -5,7 +5,7 @@ sidebar:
   order: 4
 ---
 
-Utilisez l'installateur BMad pour passer de la v4 à la v6, qui inclut une détection automatique des installations existantes et une assistance à la migration.
+Utilisez l’installateur BMad pour passer de la v4 à la v6, qui inclut une détection automatique des installations existantes et une assistance à la migration.
 
 ## Quand utiliser ce guide
 
@@ -20,15 +20,15 @@ Utilisez l'installateur BMad pour passer de la v4 à la v6, qui inclut une déte
 
 ## Étapes
 
-### 1. Lancer l'installateur
+### 1. Lancer l’installateur
 
-Suivez les [Instructions d'installation](./install-bmad.md).
+Suivez les [Instructions d’installation](./install-bmad.md).
 
-### 2. Gérer l'installation existante
+### 2. Gérer l’installation existante
 
 Quand v4 est détecté, vous pouvez :
 
-- Autoriser l'installateur à sauvegarder et supprimer `.bmad-method`
+- Autoriser l’installateur à sauvegarder et supprimer `.bmad-method`
 - Quitter et gérer le nettoyage manuellement
 
 Si votre dossier de méthode BMad porte un nom différent, vous devrez le supprimer manuellement.
@@ -53,13 +53,13 @@ Déplacez-les dans `_bmad-output/planning-artifacts/` avec des noms descriptifs 
 - Incluez `brief`, `architecture`, ou `ux-design` selon le cas
 - Les documents divisés peuvent être dans des sous-dossiers au nom descriptif
 
-**Si vous êtes en cours de planification :** Envisagez de recommencer avec les workflows v6. Utilisez vos documents existants comme entrées — les nouveaux workflows de découverte progressive avec recherche web et le mode plan de l'IDE produisent de meilleurs résultats.
+**Si vous êtes en cours de planification :** Envisagez de recommencer avec les workflows v6. Utilisez vos documents existants comme entrées — les nouveaux workflows de découverte progressive avec recherche web et le mode plan de l’IDE produisent de meilleurs résultats.
 
 ### 5. Migrer le développement en cours
 
 Si vous avez des stories[^3] créées ou implémentées :
 
-1. Terminez l'installation v6
+1. Terminez l’installation v6
 2. Placez `epics.md` ou `epics/epic*.md`[^2] dans `_bmad-output/planning-artifacts/`
 3. Lancez le workflow Développeur `bmad-sprint-planning`[^4]
 4. Indiquez à l’agent quels epics/stories sont déjà terminés
@@ -101,7 +101,7 @@ votre-projet/
 
 
 ## Glossaire
-[^1]: PRD (Product Requirements Document) : document de référence qui décrit les objectifs du produit, les besoins utilisateurs, les fonctionnalités attendues, les contraintes et les critères de succès, afin d'aligner les équipes sur ce qui doit être construit et pourquoi.
+[^1]: PRD (Product Requirements Document) : document de référence qui décrit les objectifs du produit, les besoins utilisateurs, les fonctionnalités attendues, les contraintes et les critères de succès, afin d’aligner les équipes sur ce qui doit être construit et pourquoi.
 [^2]: Epic : dans les méthodologies agiles, une grande unité de travail qui peut être décomposée en plusieurs stories. Un epic représente généralement une fonctionnalité majeure ou un ensemble de capacités livrable sur plusieurs sprints.
-[^3]: Story (User Story) : une description courte et simple d'une fonctionnalité du point de vue de l'utilisateur. Les stories sont des unités de travail suffisamment petites pour être complétées en un sprint.
-[^4]: Sprint : dans Scrum, une période de temps fixe (généralement 1 à 4 semaines) pendant laquelle l'équipe travaille à livrer un incrément de produit potentiellement libérable.
+[^3]: Story (User Story) : une description courte et simple d’une fonctionnalité du point de vue de l’utilisateur. Les stories sont des unités de travail suffisamment petites pour être complétées en un sprint.
+[^4]: Sprint : dans Scrum, une période de temps fixe (généralement 1 à 4 semaines) pendant laquelle l’équipe travaille à livrer un incrément de produit potentiellement libérable.

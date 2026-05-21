@@ -1,14 +1,14 @@
 ---
 title: Modules Officiels
-description: Modules additionnels pour créer des agents personnalisés, de l'intelligence créative, du développement de jeux et des tests
+description: Modules additionnels pour créer des agents personnalisés, de l’intelligence créative, du développement de jeux et des tests
 sidebar:
   order: 5
 ---
 
-BMad s'étend via des modules officiels que vous sélectionnez lors de l'installation. Ces modules additionnels fournissent des agents, des workflows et des tâches spécialisés pour des domaines spécifiques, au-delà du noyau intégré et de BMM (suite Agile).
+BMad s’étend via des modules officiels que vous sélectionnez lors de l’installation. Ces modules additionnels fournissent des agents, des workflows et des tâches spécialisés pour des domaines spécifiques, au-delà du noyau intégré et de BMM (suite Agile).
 
 :::tip[Installer des Modules]
-Exécutez `npx bmad-method install` et sélectionnez les modules souhaités. L'installateur gère automatiquement le téléchargement, la configuration et l'intégration IDE.
+Exécutez `npx bmad-method install` et sélectionnez les modules souhaités. L’installateur gère automatiquement le téléchargement, la configuration et l’intégration IDE.
 :::
 
 ## BMad Builder
@@ -28,7 +28,7 @@ Créez des agents personnalisés, des workflows et des modules spécifiques à u
 
 ## Creative Intelligence Suite
 
-Outils basés sur l'IA pour la créativité structurée, l'idéation et l'innovation pendant le développement en phase amont. La suite fournit plusieurs agents qui facilitent le brainstorming, le design thinking et la résolution de problèmes en utilisant des cadres éprouvés.
+Outils basés sur l’IA pour la créativité structurée, l’idéation et l’innovation pendant le développement en phase amont. La suite fournit plusieurs agents qui facilitent le brainstorming, le design thinking et la résolution de problèmes en utilisant des cadres éprouvés.
 
 - **Code :** `cis`
 - **npm :** [`bmad-creative-intelligence-suite`](https://www.npmjs.com/package/bmad-creative-intelligence-suite)
@@ -39,7 +39,7 @@ Outils basés sur l'IA pour la créativité structurée, l'idéation et l'innova
 - Agents Innovation Strategist, Design Thinking Coach et Brainstorming Coach
 - Problem Solver et Creative Problem Solver pour la pensée systématique et latérale
 - Storyteller et Presentation Master pour les récits et les présentations
-- Cadres d'idéation incluant SCAMPER[^1], Brainstorming inversé et reformulation de problèmes
+- Cadres d’idéation incluant SCAMPER[^1], Brainstorming inversé et reformulation de problèmes
 
 ## Game Dev Studio
 
@@ -54,11 +54,11 @@ Workflows de développement de jeux structurés adaptés pour Unity, Unreal, God
 - Workflow de génération de Document de Design de Jeu (GDD[^3])
 - Mode Quick Dev pour le prototypage rapide
 - Support de design narratif pour les personnages, dialogues et construction de monde
-- Couverture de plus de 21 types de jeux avec des conseils d'architecture spécifiques au moteur
+- Couverture de plus de 21 types de jeux avec des conseils d’architecture spécifiques au moteur
 
 ## Test Architect (TEA)
 
-Stratégie de test de niveau entreprise, conseils d'automatisation et décisions de porte de release via un agent expert et neuf workflows structurés. TEA va bien au-delà du workflow QA intégré avec une priorisation basée sur les risques et une traçabilité des exigences.
+Stratégie de test de niveau entreprise, conseils d’automatisation et décisions de porte de release via un agent expert et neuf workflows structurés. TEA va bien au-delà du workflow QA intégré avec une priorisation basée sur les risques et une traçabilité des exigences.
 
 - **Code :** `tea`
 - **npm :** [`bmad-method-test-architecture-enterprise`](https://www.npmjs.com/package/bmad-method-test-architecture-enterprise)
@@ -67,7 +67,7 @@ Stratégie de test de niveau entreprise, conseils d'automatisation et décisions
 **Fournit :**
 
 - Agent Murat (Master Test Architect and Quality Advisor)
-- Workflows pour la conception de tests, ATDD, l'automatisation, la revue de tests et la traçabilité
+- Workflows pour la conception de tests, ATDD, l’automatisation, la revue de tests et la traçabilité
 - Évaluation NFR[^2], configuration CI et scaffolding de framework
 - Priorisation P0-P3 avec Playwright Utils et intégrations MCP optionnelles
 
@@ -77,6 +77,6 @@ Les modules communautaires et une marketplace de modules sont à venir. Consulte
 
 ## Glossaire
 
-[^1]: SCAMPER : acronyme anglais pour une technique de créativité structurée (Substitute, Combine, Adapt, Modify, Put to another use, Eliminate, Reverse) qui permet d'explorer systématiquement les modifications possibles d'un produit ou d'une idée pour générer des innovations.
+[^1]: SCAMPER : acronyme anglais pour une technique de créativité structurée (Substitute, Combine, Adapt, Modify, Put to another use, Eliminate, Reverse) qui permet d’explorer systématiquement les modifications possibles d’un produit ou d’une idée pour générer des innovations.
 [^2]: NFR (Non-Functional Requirement) : exigence décrivant les contraintes de qualité du système (performance, sécurité, fiabilité, ergonomie) plutôt que ses fonctionnalités.
-[^3]: GDD (Game Design Document) : document de conception de jeu qui décrit en détail les mécaniques, l'univers, les personnages, les niveaux et tous les aspects du jeu à développer.
+[^3]: GDD (Game Design Document) : document de conception de jeu qui décrit en détail les mécaniques, l’univers, les personnages, les niveaux et tous les aspects du jeu à développer.
