@@ -23,6 +23,13 @@ const DOCS_ROOT = path.resolve(__dirname, '../docs');
 const FRONTMATTER_REGEX = /^---\r?\n([\s\S]*?)\r?\n---/;
 const SIDEBAR_ORDER_REGEX = /sidebar:\s*\r?\n(?:(?:[ \t]+.*\r?\n)|(?:\r?\n))*?[ \t]+order:\s*(\d+)/;
 const HAS_SIDEBAR_REGEX = /^sidebar:/m;
+const LOCALE_PATTERN = /^[a-z]{2}(?:-[a-zA-Z]{2})?$/;
+
+/**
+ * Extract sidebar.order from YAML frontmatter.
+ * @param {string} content - Full file contents of a markdown file.
+ * @returns {{ hasSidebar: boolean, order?: number|null }} Whether a sidebar block exists and its order value.
+ */
 function extractSidebarOrder(content) {
   const match = content.match(FRONTMATTER_REGEX);
   if (!match) return { hasSidebar: false };
@@ -41,29 +48,33 @@ function extractSidebarOrder(content) {
   return { hasSidebar: true, order: parseInt(orderMatch[1], 10) };
 }
 
+/**
+ * Detect translation language directories under docs/ by matching locale-code names.
+ * @returns {string[]} Directory names matching locale patterns (e.g. "cs", "zh-cn").
+ */
 function detectLanguageDirs() {
-  const dirs = [];
   const entries = fs.readdirSync(DOCS_ROOT, { withFileTypes: true });
-
-  for (const entry of entries) {
-    if (!entry.isDirectory() || entry.name.startsWith('_')) continue;
-
-    const subPath = path.join(DOCS_ROOT, entry.name);
-    const subEntries = fs.readdirSync(subPath, { withFileTypes: true });
-    const hasSubdirs = subEntries.some((e) => e.isDirectory() && !e.name.startsWith('_'));
-
-    if (hasSubdirs) {
-      dirs.push(entry.name);
-    }
-  }
-  return dirs;
+  return entries
+    .filter((e) => e.isDirectory() && !e.name.startsWith('_'))
+    .map((e) => e.name)
+    .filter((name) => LOCALE_PATTERN.test(name));
 }
 
+/**
+ * List all top-level content directories under docs/ (excludes _-prefixed dirs).
+ * @returns {string[]} Directory names for English content sections.
+ */
 function getEnglishSections() {
   const entries = fs.readdirSync(DOCS_ROOT, { withFileTypes: true });
   return entries.filter((e) => e.isDirectory() && !e.name.startsWith('_')).map((e) => e.name);
 }
 
+/**
+ * Validate sidebar.order values for all markdown files in a directory.
+ * @param {string} dirPath - Absolute path to the directory to scan.
+ * @param {Array<{level:string,type:string,file?:string,order?:number,directory?:string,missing?:number,message:string}>} issues - Array to push errors into.
+ * @returns {Map<number,string[]>} Map of order values to the files that hold them.
+ */
 function checkDirectory(dirPath, issues) {
   const entries = fs.readdirSync(dirPath, { withFileTypes: true });
   const mdFiles = entries.filter((e) => e.isFile() && (e.name.endsWith('.md') || e.name.endsWith('.mdx')));
@@ -132,6 +143,13 @@ function checkDirectory(dirPath, issues) {
   return orderMap;
 }
 
+/**
+ * Compare translated sidebar orders against English counterparts and warn on drift.
+ * @param {string} lang - Language directory name (e.g. "cs").
+ * @param {string[]} langSections - Section subdirectories within the language folder.
+ * @param {Map<string,Map<number,string[]>>} englishOrderMaps - English order maps keyed by section name.
+ * @param {Array<{level:string,type:string,file:string,englishFile:string,langOrder:number,englishOrder:number,message:string}>} warnings - Array to push drift warnings into.
+ */
 function checkTranslationDrift(lang, langSections, englishOrderMaps, warnings) {
   for (const section of langSections) {
     const sectionDir = path.join(DOCS_ROOT, lang, section);
@@ -155,7 +173,7 @@ function checkTranslationDrift(lang, langSections, englishOrderMaps, warnings) {
       const langResult = extractSidebarOrder(langContent);
       const engResult = extractSidebarOrder(engContent);
 
-      if (langResult.order !== null && engResult.order !== null && langResult.order !== engResult.order) {
+      if (typeof langResult.order === 'number' && typeof engResult.order === 'number' && langResult.order !== engResult.order) {
         warnings.push({
           level: 'warning',
           type: 'order-drift',
@@ -170,6 +188,11 @@ function checkTranslationDrift(lang, langSections, englishOrderMaps, warnings) {
   }
 }
 
+/**
+ * Convert an absolute path to one relative to DOCS_ROOT.
+ * @param {string} filePath - Absolute file path.
+ * @returns {string} Relative path from docs root.
+ */
 function relativePath(filePath) {
   return path.relative(DOCS_ROOT, filePath);
 }
