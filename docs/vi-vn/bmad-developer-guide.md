@@ -192,7 +192,7 @@ PRD bao gồm: mục tiêu sản phẩm, functional requirements (FR), non-funct
 **Thiết kế UX** — UX Designer Agent (Tùy chọn)
 ```
 Trigger: CU
-Đầu ra: ux-spec.md
+Đầu ra: ux-design-specification.md
 ```
 Dùng khi UX/UI là yếu tố quan trọng. Bao gồm user flows, component specs, interaction patterns.
 
@@ -491,7 +491,7 @@ Ngày 1-2: Analysis
 Ngày 2-3: Planning  
   ├── bmad-pm → CP → PRD.md
   ├── bmad-pm → VP (validate)
-  └── (nếu có UI) bmad-ux-designer → CU → ux-spec.md
+  └── (nếu có UI) bmad-ux-designer → CU → ux-design-specification.md
 
 Ngày 3-4: Solutioning
   ├── bmad-architect → CA → architecture.md
@@ -727,7 +727,7 @@ your-project/
 │   ├── planning-artifacts/
 │   │   ├── product-brief.md            # Giai đoạn 1 output
 │   │   ├── PRD.md                      # Giai đoạn 2 output
-│   │   ├── ux-spec.md                  # Giai đoạn 2 output (nếu có)
+│   │   ├── ux-design-specification.md  # Giai đoạn 2 output (nếu có)
 │   │   ├── architecture.md             # Giai đoạn 3 output
 │   │   └── epics/                      # Giai đoạn 3 output
 │   │       ├── epic-1-auth/
