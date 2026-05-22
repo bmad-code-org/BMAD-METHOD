@@ -1,0 +1,5 @@
+{
+  "name": "fixture-missing-fields",
+  "version": "0.1.0",
+  "description": "Negative fixture — missing the entire bmad object, so install-time validation fails."
+}

@@ -1,0 +1,11 @@
+{
+  "name": "fixture-bad-traversal",
+  "version": "0.1.0",
+  "description": "Negative fixture — declares a skill path that escapes the module root via '..'.",
+  "skills": ["../escape"],
+  "bmad": {
+    "specVersion": "1.0.0",
+    "code": "badpath",
+    "compatibility": { "bmadMethod": ">=6.6.0" }
+  }
+}

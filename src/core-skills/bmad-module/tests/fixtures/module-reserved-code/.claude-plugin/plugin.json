@@ -1,0 +1,11 @@
+{
+  "name": "fixture-reserved-code",
+  "version": "0.1.0",
+  "description": "Negative fixture — declares bmad.code that collides with the reserved BMAD module 'bmm'.",
+  "skills": ["./skills/skill-a"],
+  "bmad": {
+    "specVersion": "1.0.0",
+    "code": "bmm",
+    "compatibility": { "bmadMethod": ">=6.6.0" }
+  }
+}

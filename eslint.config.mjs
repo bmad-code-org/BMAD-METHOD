@@ -117,6 +117,29 @@ export default [
     },
   },
 
+  // bmad-module core skill: self-contained ESM CLI support scripts.
+  // Same internal-script relaxations as tools/** and src/scripts/** above,
+  // plus a few cosmetic rules. The code is reviewed and integration-tested
+  // as-is (the exit-code contract relies on process.exit).
+  {
+    files: ['src/core-skills/bmad-module/scripts/**/*.mjs', 'src/core-skills/bmad-module/scripts/**/*.js'],
+    rules: {
+      'n/hashbang': 'off',
+      'n/no-process-exit': 'off',
+      'unicorn/no-process-exit': 'off',
+      'unicorn/prefer-top-level-await': 'off',
+      'no-unused-vars': 'off',
+      'unicorn/no-array-reduce': 'off',
+      'unicorn/no-array-callback-reference': 'off',
+      'unicorn/no-array-for-each': 'off',
+      'unicorn/catch-error-name': 'off',
+      'unicorn/switch-case-braces': 'off',
+      'unicorn/explicit-length-check': 'off',
+      'unicorn/prefer-string-replace-all': 'off',
+      'unicorn/prefer-string-raw': 'off',
+    },
+  },
+
   // ESLint config file should not be checked for publish-related Node rules
   {
     files: ['eslint.config.mjs'],
