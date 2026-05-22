@@ -65,7 +65,7 @@ Avertissements critiques uniquement — perte de données, problèmes de sécuri
 | Skill                | Agent    | Objectif                              |
 |----------------------|----------|---------------------------------------|
 | `bmad-brainstorming` | Analyste | Brainstorming pour un nouveau projet  |
-| `bmad-create-prd`    | PM       | Créer un document d'exigences produit |
+| `bmad-prd`           | PM       | Créer un document d'exigences produit |
 ```
 
 ## Blocs de structure de dossiers

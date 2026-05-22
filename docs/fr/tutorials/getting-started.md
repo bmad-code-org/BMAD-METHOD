@@ -286,7 +286,7 @@ BMad-Help inspecte votre projet, détecte ce que vous avez accompli et vous indi
 - **Utilisez toujours de nouveaux chats** — Démarrez un nouveau chat pour chaque workflow
 - **Le choix de la voie est important** — Quick Dev utilise `bmad-quick-dev` ; BMad Method/Enterprise nécessitent un PRD et une architecture
 - **BMad-Help se lance automatiquement** — Chaque workflow se termine par des conseils sur la prochaine étape
-  :::
+:::
 
 Prêt à commencer ? Installez BMad, invoquez `bmad-help`, et laissez votre guide intelligent vous accompagner.
 

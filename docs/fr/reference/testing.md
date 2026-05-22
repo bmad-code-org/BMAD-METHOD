@@ -35,7 +35,7 @@ Le workflow QA exécute un processus unique (Automate) qui parcourt cinq étapes
 1. **Détecte le framework de test** — analyse `package.json` et les fichiers de test existants pour identifier votre framework (Jest, Vitest, Playwright, Cypress, ou tout runner standard). Si aucun n’existe, analyse la pile technologique du projet et en suggère un.
 2. **Identifie les fonctionnalités** — demande ce qu’il faut tester ou découvre automatiquement les fonctionnalités dans le codebase.
 3. **Génère les tests API** — couvre les codes de statut, la structure des réponses, le chemin nominal, et 1-2 cas d’erreur.
-4. **Génére les tests E2E** — couvre les parcours utilisateur avec des localisateurs sémantiques et des assertions sur les résultats visibles.
+4. **Génère les tests E2E** — couvre les parcours utilisateur avec des localisateurs sémantiques et des assertions sur les résultats visibles.
 5. **Exécute et vérifie** — lance les tests générés et corrige immédiatement les échecs.
 
 Le workflow QA produit un résumé de test sauvegardé dans le dossier des artefacts d’implémentation de votre projet.
