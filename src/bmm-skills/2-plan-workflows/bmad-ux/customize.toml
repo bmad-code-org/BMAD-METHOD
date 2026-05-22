@@ -21,23 +21,43 @@ persistent_facts = [
 # Runs at workflow completion. String or array of instructions.
 on_complete = ""
 
-# Reference spines the distillation subagent reads to anchor shape and lean
-# discipline. Multiple examples show the spine adapting to product type
-# (single-surface mobile vs. multi-surface web, consumer vs. internal).
-# Append entries via override TOML to seed an org-specific canonical shape.
+# Reference DESIGN.md spines the distillation subagent reads to anchor shape
+# and editorial richness. Convention-compliant with the Google Labs DESIGN.md
+# spec (https://github.com/google-labs-code/design.md). Append entries via
+# override TOML to seed an org-specific canonical aesthetic.
 # Each entry: `file:PATH` (or bare relative path, resolved skill-relative).
-spine_examples = [
-  "assets/spine-example-mobile.md",
-  "assets/spine-example-web.md",
+design_md_examples = [
+  "assets/design-example-mobile.md",
+  "assets/design-example-shadcn.md",
+  "assets/design-example-editorial.md",
+]
+
+# Reference EXPERIENCE.md spines for the behavioral/flow/IA layer. Each entry:
+# `file:PATH` (or bare relative path, resolved skill-relative).
+experience_md_examples = [
+  "assets/experience-example-mobile.md",
+  "assets/experience-example-shadcn.md",
+]
+
+# Design handoff targets — external tools that can take over the design /
+# visual identity work. The user runs the tool externally and saves outputs
+# (whatever the tool produces — DESIGN.md, Figma files, React components,
+# HTML mocks) to {doc_workspace}.
+# Each entry: `tool:NAME: <directive>`, `skill:NAME`, or plain-text descriptor.
+# Default: Google Stitch (emits DESIGN.md + per-screen HTML). Other producers:
+# Vercel v0, Figma, Galileo, Anima, internal generators.
+design_handoffs = [
+  "Google Stitch (https://stitch.withgoogle.com) — emits DESIGN.md + per-screen HTML. Paste assembled prompt; save outputs to {doc_workspace}.",
 ]
 
 # HTML skeleton filled in by the validation synthesis pass.
 validation_report_template = "assets/validation-report-template.html"
 
-# Run folder. design.md, .decision-log.md, .working/ (creative-tool artifacts),
-# imports/ (user-supplied screens / brand decks / Figma exports / sketches),
-# optional mockups/ and wireframes/ (promoted artifacts), optional
-# validation-report.* all land inside {ux_output_path}/{run_folder_pattern}/.
+# Run folder. DESIGN.md, EXPERIENCE.md, .decision-log.md, .working/
+# (creative-tool artifacts), imports/ (user-supplied screens / brand decks /
+# Figma exports / sketches), optional mockups/ and wireframes/ (promoted
+# artifacts), optional validation-report.* all land inside
+# {ux_output_path}/{run_folder_pattern}/.
 ux_output_path = "{planning_artifacts}/ux-designs"
 run_folder_pattern = "ux-{project_name}-{date}"
 
@@ -55,7 +75,7 @@ creative_tools = [
   "file:assets/key-screens.md",
 ]
 
-# Polish passes applied to design.md at finalize.
+# Polish passes applied to DESIGN.md and EXPERIENCE.md at finalize.
 # Entries: `skill:NAME`, `file:PATH`, or plain text directive.
 # Suggested order: structural → content/voice → prose mechanics.
 doc_standards = [
@@ -70,7 +90,7 @@ external_sources = []
 
 # Routes outputs beyond local files at Finalize. Returned URLs/IDs surfaced
 # to the user. Unavailable tools skipped and flagged.
-# Example: "Upload design.md to Confluence via corp:confluence_upload (space_key='DESIGN')."
+# Example: "Upload DESIGN.md to Confluence via corp:confluence_upload (space_key='DESIGN')."
 external_handoffs = []
 
 # Reviewers spawned at Finalize step 4 and at Validate intent, alongside

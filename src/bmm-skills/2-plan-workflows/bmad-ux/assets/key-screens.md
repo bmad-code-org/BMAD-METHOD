@@ -4,7 +4,7 @@ Subagent prompt. Fired at Finalize (or during late Discovery once layout decisio
 
 ## Inputs
 
-`.decision-log.md`, the current draft `design.md`, `.working/` (especially the chosen color-theme and direction mocks), source PRD. The user names which surfaces to render — typically 2-4: the canonical entry surface, the most complex flow's hero screen, any load-bearing overlay/modal, and (when present) the Week / list / dashboard view.
+`.decision-log.md`, the current drafts `DESIGN.md` and `EXPERIENCE.md`, `.working/` (especially the chosen color-theme and direction mocks), source PRD. The user names which surfaces to render — typically 2-4: the canonical entry surface, the most complex flow's hero screen, any load-bearing overlay/modal, and (when present) the Week / list / dashboard view.
 
 ## What to render
 

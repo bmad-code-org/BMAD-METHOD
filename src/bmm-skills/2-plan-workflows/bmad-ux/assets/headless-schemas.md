@@ -16,7 +16,8 @@ Every headless run ends with one of these payloads. Omit keys for artifacts not 
 {
   "status": "complete",
   "intent": "create",
-  "design": "{doc_workspace}/design.md",
+  "design": "{doc_workspace}/DESIGN.md",
+  "experience": "{doc_workspace}/EXPERIENCE.md",
   "decision_log": "{doc_workspace}/.decision-log.md",
   "working_artifacts": ["{doc_workspace}/.working/color-themes-1.html"],
   "promoted_artifacts": {
@@ -39,7 +40,8 @@ The `working_artifacts` and `promoted_artifacts` keys are optional and omitted e
 {
   "status": "complete",
   "intent": "update",
-  "design": "{doc_workspace}/design.md",
+  "design": "{doc_workspace}/DESIGN.md",
+  "experience": "{doc_workspace}/EXPERIENCE.md",
   "decision_log": "{doc_workspace}/.decision-log.md",
   "changes_summary": "1-3 sentences describing what changed and why",
   "conflicts_with_prior_decisions": [],

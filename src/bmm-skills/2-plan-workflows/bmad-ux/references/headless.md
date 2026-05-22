@@ -12,8 +12,8 @@ Free-form structured payload in the first message:
 
 - `intent` — `"create"`, `"update"`, or `"validate"`. If absent, infer from the artifact set.
 - **Create**: any source spec (PRD, brief, requirements list, design-thinking output, prior UX — text, path, or URL) plus brand / platform / accessibility notes; `doc_workspace` if a specific run folder is required.
-- **Update**: existing `design.md` path (or workspace containing one) + change signal.
-- **Validate**: existing `design.md` path (or workspace). Workspace defaults to the spine's containing directory.
+- **Update**: existing workspace containing `DESIGN.md` + `EXPERIENCE.md` (or path to either) + change signal.
+- **Validate**: existing workspace containing `DESIGN.md` + `EXPERIENCE.md` (or path to either). Workspace defaults to the spines' containing directory.
 
 Inferences → `assumptions[]`. Gaps needing a human decision → `open_questions[]`. Do not invent persona, brand, accessibility, or scope detail.
 

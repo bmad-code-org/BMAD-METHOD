@@ -2,17 +2,17 @@
 name: Quill
 status: final
 sources:
-  - ../prds/quill-2025-08-15/prd.md
+  - {planning_artifacts}/prds/quill-2025-08-15/prd.md
 updated: 2025-09-02
 ---
 
-# Quill — Design Spine
+# Quill — Experience Spine
 
-> Illustrative example. Single-surface mobile (iOS + Android parity). Consumer posture, calm by default. Demonstrates: Voice and Tone as gating discipline, Inspiration & Anti-patterns earning its place, Responsive & Platform omitted (single-surface).
+> Illustrative example. Single-surface mobile (iOS + Android parity). Consumer posture, calm by default. Paired with `design-example-mobile.md` (Quill DESIGN.md). Demonstrates: microcopy as gating discipline, Inspiration & Anti-patterns earning its place, Responsive & Platform omitted (single-surface).
 
 ## Foundation
 
-Native UIKit + Swift on iOS; Jetpack Compose on Android. Both follow platform conventions for navigation, system gestures, dynamic type. Brand layer (typography pairing, color palette) sits on top of native components. Dark mode is the default surface; light is a setting.
+Single-surface mobile, iOS + Android with parity. No UI system named — inherits platform conventions for navigation, system gestures, dynamic type. `DESIGN.md` is the visual identity reference; this spine is the experience. Dark mode is the default surface; light is a setting.
 
 ## Information Architecture
 
@@ -29,6 +29,8 @@ Bottom tab bar (Today / Library / Settings). No drawer. Modal stacks one level d
 
 ## Voice and Tone
 
+Microcopy. Brand voice and aesthetic posture live in `DESIGN.md`.
+
 | Do | Don't |
 |---|---|
 | "Today's prompt." | "Time to write!" |
@@ -36,36 +38,17 @@ Bottom tab bar (Today / Library / Settings). No drawer. Modal stacks one level d
 | "We couldn't reach the cloud — your work is on this device." | "Network error" |
 | Short, complete sentences. | Streak counters, encouragement, exclamation marks. |
 
-## Design Tokens
-
-This table is the spec. Dev mirrors values into platform theme modules; the spine wins on any conflict.
-
-| Token | Role | Value (light / dark) |
-|---|---|---|
-| `surface/base` | Default background | `#FAF9F7` / `#1A1B1F` |
-| `surface/raised` | Card / composer background | `#FFFFFF` / `#23252B` |
-| `ink/primary` | Body text | `#1A1B1F` / `#F0EDE8` |
-| `ink/secondary` | Metadata, timestamps | `#6B655A` / `#A39E94` |
-| `ink/disabled` | Inactive controls | `#B5AFA5` / `#5E5A53` |
-| `accent` | Save, send, primary action | `#A87434` / `#D4A574` |
-| `border/hairline` | List separators | `#E8E4DD` / `#2E3036` |
-| `space/1..6` | Spacing scale (pixels) | 4 / 8 / 12 / 16 / 24 / 32 |
-| `radius/sm`, `radius/md` | Corners (pixels) | 6, 12 |
-| `type/title` | Prompt / section heading | iOS Title 1 · Android Headline Small *(platform convention)* |
-| `type/body` | Body text | iOS Body · Android Body Large *(platform convention)* |
-| `type/meta` | Timestamps, captions | iOS Footnote · Android Body Small *(platform convention)* |
-
-Contrast: `ink/primary` on `surface/base` ≥ 7:1 in both modes. `accent` on `surface/base` ≥ 4.5:1. Focus indicators ≥ 3:1 against adjacent.
-
 ## Component Patterns
 
-| Component | Use | Rules |
+Behavioral. Visual specs live in `DESIGN.md.Components`.
+
+| Component | Use | Behavioral rules |
 |---|---|---|
-| Prompt card | Today | One per day. `surface/raised`. Prompt text in `type/title`. Composer entry point below. |
-| Composer | Today + entry detail | Full-screen text view. No formatting toolbar in v1. Autosave on pause ≥ 600ms. |
-| Entry row | Library list | Date in `type/meta`, first line of body in `type/body` (1 line, truncated). Tap → entry detail. |
-| Save indicator | Composer header | Cycles `Editing…` → `Saved.` (≥ 800ms visible). Text only — no icons. |
-| Settings row | Settings list | Label left, value or chevron right. Tap → detail or toggle. |
+| Prompt card | Today | One per day. Tap opens composer. |
+| Composer | Today + entry detail | No formatting toolbar in v1. Autosave on pause ≥ 600ms. |
+| Entry row | Library list | Tap → entry detail. Long-press reserved for system text selection. |
+| Save indicator | Composer header | Cycles `Editing…` → `Saved.` (≥ 800ms visible). |
+| Settings row | Settings list | Tap → detail or toggle. |
 
 ## State Patterns
 
@@ -87,8 +70,10 @@ Contrast: `ink/primary` on `surface/base` ≥ 7:1 in both modes. `accent` on `su
 
 ## Accessibility Floor
 
+Behavioral. Visual contrast lives in `DESIGN.md`.
+
 - VoiceOver / TalkBack: every interactive element labeled with role + state. Save indicator announces `Saved` on transition.
-- Dynamic type honored through `type/*` tokens. UI must remain legible at largest setting — no truncated controls.
+- Dynamic type honored through `DESIGN.md` typography tokens. UI must remain legible at largest setting — no truncated controls.
 - Reduce Motion: skip the save-indicator fade; show `Saved.` immediately.
 - Tap targets ≥ 44pt (iOS) / 48dp (Android).
 - Focus traversal follows reading order on every surface.
@@ -102,26 +87,26 @@ Contrast: `ink/primary` on `surface/base` ≥ 7:1 in both modes. `accent` on `su
 
 ## Key Flows
 
-### Flow 1 — Daily write
+### Flow 1 — Daily write (Mira, late evening, after work)
 
-1. User opens app.
+1. Mira opens app.
 2. Today surface shows today's prompt (cached if offline).
-3. User taps composer entry point.
+3. She taps the composer entry point.
 4. Composer opens, keyboard active.
-5. User writes; autosave fires on pause.
-6. User taps Back.
+5. She writes; autosave fires on pause.
+6. She taps Back.
 7. **Climax:** Today surface shows `Saved.` and the entry's first line below the prompt — proof the day is captured.
 
-Failure: cold prompt fetch fails → composer still opens with cached generic prompt; banner on Today only after user returns.
+Failure: cold prompt fetch fails → composer still opens with cached generic prompt; banner on Today only after Mira returns.
 
-### Flow 2 — Recall past entry
+### Flow 2 — Recall past entry (Mira, three weeks later, looking for what she wrote about her mother)
 
-1. User taps Library.
+1. Mira taps Library.
 2. Scrolls or searches.
 3. Taps entry row.
 4. Entry detail opens in read mode.
-5. User taps anywhere to enter edit mode (cursor at tap point).
+5. She taps anywhere to enter edit mode (cursor at tap point).
 6. Edits autosave.
-7. **Climax:** `Saved.` visible in entry header.
+7. **Climax:** `Saved.` visible in entry header — the older self and the present self are in continuous conversation.
 
 Empty state: no entries → message routes back to Today.

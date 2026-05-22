@@ -45,13 +45,15 @@ Order: **Brain dump → Stakes calibration → Working mode → mode-scoped work
 **Working mode.** Offer the choice in the user's language:
 
 - **Fast path** — I batch remaining gaps into one or two consolidated questions, then draft the full PRD with `[ASSUMPTION]` tags where I inferred. You review and we iterate. The initial quality depends on how much you gave me upfront.
-- **Coaching path** — we walk PM-thinking sections together. Once chosen, I ask which entry point fits: **Vision + Features** (capability-first — for enterprise, dev products, internal tools, anyone who thinks in features), **Personas + Journeys** (user-first — for consumer, UX-heavy, multi-stakeholder products), or *let me suggest* based on what I heard. The chosen entry sets the section order.
+- **Coaching path** — we walk PM-thinking sections together. Once chosen, I ask which entry point fits: **Vision + Features** (capability-first — for enterprise, dev products, internal tools, anyone who thinks in features), **Journey-led** (user-first — for consumer, UX-heavy, multi-stakeholder products; journeys with named protagonists carry persona context inline, no standalone persona section), or *let me suggest* based on what I heard. The chosen entry sets the section order.
 
 The workspace persists; stop and resume freely.
 
 **Concern scan.** As you read what the user gave you, name the concerns this product actually carries — compliance, integration density, operational SLAs, hardware constraints, public-API contracts, monetization, data governance, whatever applies. The list is open; recognize what's there, do not classify into a fixed shape. These concerns drive which template sections to pull in from the Adapt-In Menu and which to invent when no cluster names them.
 
-**User Journeys are captured, not authored.** When UJs are warranted (consumer / multi-stakeholder B2B / meaningful UX — drop or downscale for internal tooling with a single operator role, regulatory-only updates, hobby/solo, pure technical PRDs), prompt the user to narrate a real session — what the person does, in what order, where it lands — then structure the answer into UJ-N form and confirm.
+**Form-factor.** If not stated in sources, probe — mobile / web / desktop / multi-surface / hardware / API.
+
+**User Journeys are captured, not authored.** When UJs are warranted (consumer / multi-stakeholder B2B / meaningful UX — drop or downscale for internal tooling with a single operator role, regulatory-only updates, hobby/solo, pure technical PRDs), prompt the user to narrate a real session with a named protagonist (Mary, mom of three — not "the user") — what the person does, in what order, where it lands — then structure the answer into UJ-N form and confirm. Persona context lives inline at the moments that matter; no standalone persona section.
 
 ## PRD Discipline
 
