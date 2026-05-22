@@ -80,8 +80,8 @@ Agent skills nạp một persona AI chuyên biệt với vai trò, phong cách g
 | Ví dụ skill | Agent | Vai trò |
 | --- | --- | --- |
 | `bmad-agent-dev` | Amelia (Developer) | Triển khai story với mức tuân thủ đặc tả nghiêm ngặt |
-| `bmad-pm` | John (Product Manager) | Tạo và kiểm tra PRD |
-| `bmad-architect` | Winston (Architect) | Thiết kế kiến trúc hệ thống |
+| `bmad-agent-pm` | John (Product Manager) | Tạo và kiểm tra PRD |
+| `bmad-agent-architect` | Winston (Architect) | Thiết kế kiến trúc hệ thống |
 
 Xem [Agents](./agents.md) để biết danh sách đầy đủ các agent mặc định và trigger của chúng.
 

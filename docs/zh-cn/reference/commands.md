@@ -74,8 +74,8 @@ skill 目录名就是调用名，例如 `bmad-agent-dev/` 对应 skill `bmad-age
 | 示例 skill | 角色 | 用途 |
 | --- | --- | --- |
 | `bmad-agent-dev` | Developer（Amelia） | 按规范实现 story |
-| `bmad-pm` | Product Manager（John） | 创建与校验 PRD |
-| `bmad-architect` | Architect（Winston） | 架构设计与约束定义 |
+| `bmad-agent-pm` | Product Manager（John） | 创建与校验 PRD |
+| `bmad-agent-architect` | Architect（Winston） | 架构设计与约束定义 |
 
 完整列表见 [智能体参考](./agents.md)。
 

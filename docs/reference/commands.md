@@ -80,8 +80,8 @@ Agent skills load a specialized AI persona with a defined role, communication st
 | Example skill | Agent | Role |
 | --- | --- | --- |
 | `bmad-agent-dev` | Amelia (Developer) | Implements stories with strict adherence to specs |
-| `bmad-pm` | John (Product Manager) | Creates and validates PRDs |
-| `bmad-architect` | Winston (Architect) | Designs system architecture |
+| `bmad-agent-pm` | John (Product Manager) | Creates and validates PRDs |
+| `bmad-agent-architect` | Winston (Architect) | Designs system architecture |
 
 See [Agents](./agents.md) for the full list of default agents and their triggers.
 

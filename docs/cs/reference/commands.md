@@ -80,8 +80,8 @@ Agentní skills načítají specializovanou AI personu s definovanou rolí, komu
 | Příklad skillu | Agent | Role |
 | --- | --- | --- |
 | `bmad-agent-dev` | Amelia (Developer) | Implementuje stories s přísným dodržováním specifikací |
-| `bmad-pm` | John (Product Manager) | Vytváří a validuje PRD |
-| `bmad-architect` | Winston (Architect) | Navrhuje systémovou architekturu |
+| `bmad-agent-pm` | John (Product Manager) | Vytváří a validuje PRD |
+| `bmad-agent-architect` | Winston (Architect) | Navrhuje systémovou architekturu |
 
 Viz [Agenti](./agents.md) pro úplný seznam výchozích agentů a jejich spouštěčů.
 
@@ -124,7 +124,7 @@ Základní modul zahrnuje 11 vestavěných nástrojů — revize, komprese, brai
 
 ## Konvence pojmenování
 
-Všechny skills používají prefix `bmad-` následovaný popisným názvem (např. `bmad-dev`, `bmad-create-prd`, `bmad-help`). Viz [Moduly](./modules.md) pro dostupné moduly.
+Všechny skills používají prefix `bmad-` následovaný popisným názvem (např. `bmad-agent-dev`, `bmad-create-prd`, `bmad-help`). Viz [Moduly](./modules.md) pro dostupné moduly.
 
 ## Řešení problémů
 

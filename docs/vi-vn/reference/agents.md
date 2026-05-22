@@ -11,18 +11,18 @@ Trang này liệt kê các agent mặc định của BMM (bộ Agile suite) đư
 
 ## Ghi Chú
 
-- Mỗi agent đều có sẵn dưới dạng một skill do trình cài đặt tạo ra. Skill ID, ví dụ `bmad-dev`, được dùng để gọi agent.
+- Mỗi agent đều có sẵn dưới dạng một skill do trình cài đặt tạo ra. Skill ID, ví dụ `bmad-agent-dev`, được dùng để gọi agent.
 - Trigger là các mã menu ngắn, ví dụ `CP`, cùng với các fuzzy match hiển thị trong menu của từng agent.
 - Việc tạo test QA do workflow skill `bmad-qa-generate-e2e-tests` đảm nhận, khả dụng thông qua Developer agent. Module Test Architect (TEA) đầy đủ nằm trong một module riêng.
 
 | Agent | Skill ID | Trigger | Workflow chính |
 | --------------------------- | -------------------- | ---------------------------------- | --------------------------------------------------------------------------------------------------- |
-| Analyst (Mary) | `bmad-analyst` | `BP`, `MR`, `DR`, `TR`, `CB`, `WB`, `DP` | Brainstorm, Market Research, Domain Research, Technical Research, Create Brief, PRFAQ Challenge, Document Project |
-| Product Manager (John) | `bmad-pm` | `CP`, `VP`, `EP`, `CE`, `IR`, `CC` | Create/Validate/Edit PRD, Create Epics and Stories, Implementation Readiness, Correct Course |
-| Architect (Winston) | `bmad-architect` | `CA`, `IR` | Create Architecture, Implementation Readiness |
+| Analyst (Mary) | `bmad-agent-analyst` | `BP`, `MR`, `DR`, `TR`, `CB`, `WB`, `DP` | Brainstorm, Market Research, Domain Research, Technical Research, Create Brief, PRFAQ Challenge, Document Project |
+| Product Manager (John) | `bmad-agent-pm` | `CP`, `VP`, `EP`, `CE`, `IR`, `CC` | Create/Validate/Edit PRD, Create Epics and Stories, Implementation Readiness, Correct Course |
+| Architect (Winston) | `bmad-agent-architect` | `CA`, `IR` | Create Architecture, Implementation Readiness |
 | Developer (Amelia) | `bmad-agent-dev` | `DS`, `QD`, `QA`, `CR`, `SP`, `CS`, `ER` | Dev Story, Quick Dev, QA Test Generation, Code Review, Sprint Planning, Create Story, Epic Retrospective |
-| UX Designer (Sally) | `bmad-ux-designer` | `CU` | Create UX Design |
-| Technical Writer (Paige) | `bmad-tech-writer` | `DP`, `WD`, `US`, `MG`, `VD`, `EC` | Document Project, Write Document, Update Standards, Mermaid Generate, Validate Doc, Explain Concept |
+| UX Designer (Sally) | `bmad-agent-ux-designer` | `CU` | Create UX Design |
+| Technical Writer (Paige) | `bmad-agent-tech-writer` | `DP`, `WD`, `US`, `MG`, `VD`, `EC` | Document Project, Write Document, Update Standards, Mermaid Generate, Validate Doc, Explain Concept |
 
 ## Các Loại Trigger
 
