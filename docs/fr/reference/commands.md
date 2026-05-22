@@ -77,11 +77,11 @@ Les répertoires de skills générés dans votre projet sont la liste de référ
 
 Les skills d’agent chargent un persona[^2] IA spécialisé avec un rôle défini, un style de communication et un menu de workflows. Une fois chargé, l’agent reste en caractère et répond aux déclencheurs du menu.
 
-| Exemple de skill | Agent                  | Rôle                                                        |
-|------------------|------------------------|-------------------------------------------------------------|
-| `bmad-agent-dev` | Amelia (Développeur)   | Implémente les stories avec une adhérence stricte aux specs |
-| `bmad-pm`        | John (Product Manager) | Crée et valide les PRDs[^1]                                 |
-| `bmad-architect` | Winston (Architecte)   | Conçoit l’architecture système                              |
+| Exemple de skill       | Agent                  | Rôle                                                        |
+|------------------------|------------------------|-------------------------------------------------------------|
+| `bmad-agent-dev`       | Amelia (Développeur)   | Implémente les stories avec une adhérence stricte aux specs |
+| `bmad-agent-pm`        | John (Product Manager) | Crée et valide les PRDs[^1]                                 |
+| `bmad-agent-architect` | Winston (Architecte)   | Conçoit l’architecture système                              |
 
 Consultez [Agents](./agents.md) pour la liste complète des agents par défaut et leurs déclencheurs.
 
