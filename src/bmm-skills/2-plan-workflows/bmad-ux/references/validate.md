@@ -1,12 +1,16 @@
 # Validate
 
-Critique an existing spine pair (`DESIGN.md` + `EXPERIENCE.md`) without changing it. The synthesis pipeline below is also used at the Reviewer Gate during Create / Update Finalize.
+Critique an existing spine pair (`DESIGN.md` + `EXPERIENCE.md`) or any format of UX the user provides, without changing it. The synthesis pipeline below is also used at the Reviewer Gate during Create / Update Finalize.
 
 ## Orient
 
 Subagent-extract from `.decision-log.md`, sources in frontmatter, `imports/`, `mockups/`, `wireframes/`, `DESIGN.md`, `EXPERIENCE.md`. Parent assembles from extracts.
 
 ## Reviewer Gate
+
+**Opt-in.** Reviewers are costly. At Finalize, ask first if the user wants to run UX validation with multiple subagent lenses. Default offered, easy skip. At Validate intent, skip that question, the user already invoked it.
+
+**Lens menu.** UNLESS HEADLESS MODE: Always present the lens picks before dispatching. Build the menu from: rubric walker (this file) + `{workflow.finalize_reviewers}` + ad-hoc reviewers the skill judges relevant. The user picks all, a subset, or none. Only picked lenses dispatch.
 
 Rubric walker prompt:
 
@@ -62,7 +66,7 @@ The gate may dispatch `{workflow.finalize_reviewers}` and ad-hoc reviewers (acce
 Under Validate intent, after every reviewer returns, render one consolidated report. Don't skip.
 
 1. Read every `{doc_workspace}/review-*.md`.
-2. Fill `{workflow.validation_report_template}`. Grade: *Excellent* = all strong / adequate, no high / critical · *Good* = ≤1 thin, no critical · *Fair* = multiple thin or any high · *Poor* = any broken or critical. Set matching `grade-*` class. Synthesis paragraph lifts the rubric's overall verdict; add a second if extra reviewers shift the picture. One section per rubric category (open if thin / broken), one per extra reviewer (closed, adversarial voice preserved).
+2. Fill `{workflow.validation_report_template}`. No overall grade — the per-category verdicts and severity counts already say what's true. Synthesis paragraph lifts the rubric's overall verdict; add a second if extra reviewers shift the picture. One section per rubric category (open if thin / broken), one per extra reviewer (closed, adversarial voice preserved).
 3. Write `{doc_workspace}/validation-report.html`.
 4. Write the markdown twin `{doc_workspace}/validation-report.md` — same content grouped by severity.
 5. Open HTML: `python3 -c "import webbrowser, pathlib; webbrowser.open(pathlib.Path('{doc_workspace}/validation-report.html').resolve().as_uri())"`. Skip headless.
@@ -77,7 +81,6 @@ Re-running overwrites the consolidated report; individual `review-*.md` files pe
 - **DESIGN.md:** `{design_path}`
 - **EXPERIENCE.md:** `{experience_path}`
 - **Run at:** {ISO timestamp}
-- **Grade:** {Excellent | Good | Fair | Poor}
 
 ## Overall verdict
 {synthesis paragraphs}

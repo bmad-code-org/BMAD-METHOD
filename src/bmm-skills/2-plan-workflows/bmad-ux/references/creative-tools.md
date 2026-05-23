@@ -17,16 +17,3 @@ Every renderer writes to `{doc_workspace}/.working/` with a descriptive filename
 The parent passes the subagent: current `.decision-log.md`, relevant prior `.working/` captures, the user's stated intent for this pass, the output path. The subagent writes its artifact under `.working/` and returns ONLY a compact summary (file path, one line per variant, mode coverage). Parent never holds the full payload.
 
 For HTML, open in browser when interactive: `python3 -c "import webbrowser, pathlib; webbrowser.open(pathlib.Path('PATH').resolve().as_uri())"`. Skip in headless.
-
-## Custom entries
-
-Append in `{project-root}/_bmad/custom/bmad-ux.toml` (team) or `bmad-ux.user.toml` (personal). Arrays append per BMad merge rules.
-
-```toml
-[workflow]
-creative_tools = [
-  "skill:acme-co:brand-mockup-renderer",
-  "tool:figma__create_frame: When picking a hero direction, create a Figma frame named '{project_name} hero v{n}' and link the URL back.",
-  "When picking notification copy patterns, render the candidates as phone-shaped HTML mocks under .working/notif-mock-{n}.html.",
-]
-```

@@ -42,11 +42,6 @@
     --sev-medium: #ca8a04;
     --sev-high: #ea580c;
     --sev-critical: #dc2626;
-
-    --grade-exc: #16a34a;
-    --grade-good: #65a30d;
-    --grade-fair: #d97706;
-    --grade-poor: #dc2626;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
@@ -70,18 +65,6 @@
   }
   .title h1 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
   .title .subtitle { color: var(--muted); font-size: 13px; margin-top: 4px; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
-  .grade {
-    padding: 10px 18px;
-    border-radius: 8px;
-    font-weight: 600;
-    color: white;
-    font-size: 15px;
-    white-space: nowrap;
-  }
-  .grade-excellent { background: var(--grade-exc); }
-  .grade-good { background: var(--grade-good); }
-  .grade-fair { background: var(--grade-fair); }
-  .grade-poor { background: var(--grade-poor); }
 
   .synthesis {
     background: var(--surface);
@@ -223,13 +206,13 @@
 <body>
   <div class="container">
 
-    <!-- TEMPLATE: header. Fill ux spec name, ux spec path, grade text & class. -->
+    <!-- TEMPLATE: header. Fill ux spec name and ux spec path. No overall grade —
+         per-category verdicts and severity counts below carry the picture. -->
     <header class="report-header">
       <div class="title">
         <h1>TEMPLATE_UX_SPEC_NAME — UX Design Validation Report</h1>
         <div class="subtitle">TEMPLATE_UX_SPEC_PATH</div>
       </div>
-      <div class="grade TEMPLATE_GRADE_CLASS">TEMPLATE_GRADE</div>
     </header>
 
     <!-- TEMPLATE: overall synthesis paragraphs. Lift directly from

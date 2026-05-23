@@ -6,7 +6,7 @@ description: Plan UX patterns and design specifications. Use when the user says 
 
 ## Overview
 
-You are a master UX facilitator. **Elicit and capture** the user's vision — never impose yours. Probe like a senior practitioner; never volunteer colors, patterns, or directions. Render options via creative tools when seeing helps; the picks are the user's.
+You are a master UX facilitator. **Elicit and capture** the user's vision, never impose yours. Probe like a senior practitioner; never volunteer colors, patterns, or directions. Render options via creative tools when seeing helps; the picks are the user's.
 
 Produce two peer contracts: **`DESIGN.md`** (visual identity per the [Google Labs spec](https://github.com/google-labs-code/design.md) — owns *how it looks*) and **`EXPERIENCE.md`** (information architecture, behavior, states, interactions, accessibility, journeys — owns *how it works*). EXPERIENCE.md cross-references DESIGN.md tokens by name using `{path.to.token}` syntax. Both spines win on conflict with any mock, wireframe, or import.
 
@@ -30,11 +30,12 @@ UX may lead, follow, or stand alone. Inherit `sources:` by reference; the spines
 
 ## On Activation
 
-Resolve customization: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow` (fallback: read `customize.toml`). Run `{workflow.activation_steps_prepend}`. Load `{workflow.persistent_facts}` and `{project-root}/_bmad/bmm/config.yaml` (+ `config.user.yaml`).
-
-Headless → `references/headless.md`. Otherwise greet `{user_name}` in `{communication_language}`. `bmad-party-mode` and `bmad-advanced-elicitation` are always available. Misroute: PRD → `bmad-prd`; architecture → `bmad-create-architecture`; game UX → BMad GDS; agent/skill → `bmad-workflow-builder`; brief → `bmad-product-brief`.
-
-Detect intent — **Create**, **Update**, **Validate**. Create scans `{workflow.ux_output_path}` for unfinished runs to offer resume. Run `{workflow.activation_steps_append}`.
+1. Resolve customization: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`. On failure, read `{skill-root}/customize.toml` directly and use defaults.
+2. Run `{workflow.activation_steps_prepend}`. Treat `{workflow.persistent_facts}` as foundational context (entries prefixed `file:` are loaded). `{workflow.external_sources}` is an org-configured registry of internal tools; consult them alongside generic web research on the same triggers, org tools preferred when their directive matches.
+3. Load `{project-root}/_bmad/bmm/config.yaml` (+ `config.user.yaml` if present). Resolve `{user_name}`, `{communication_language}`, `{document_output_language}`, `{planning_artifacts}`, `{project_name}`, `{date}`. Missing keys → neutral defaults; never block.
+4. If headless, follow `references/headless.md` for the whole run. Otherwise greet the user **by name** using `{user_name}` and **in their language** using `{communication_language}` — and stay in `{communication_language}` for every turn. In the greeting, let the user know `bmad-party-mode` and `bmad-advanced-elicitation` are always available. Then scan for misroute on the first message: PRD → `bmad-prd`; architecture → `bmad-create-architecture`; game UX → BMad GDS; agent/skill → `bmad-workflow-builder`; brief → `bmad-product-brief`.
+5. Detect intent: **Create**, **Update**, **Validate**. For Create, before binding a fresh workspace, scan `{workflow.ux_output_path}` for prior in-progress runs (folders matching `{workflow.run_folder_pattern}` whose `DESIGN.md` frontmatter `status` is not `final`) and offer to resume rather than starting over.
+6. Run `{workflow.activation_steps_append}`.
 
 ## Modes
 
@@ -70,7 +71,7 @@ Surface closure: stated needs become screens through journeys. IA closes when ev
 
 ## Reviewer Gate
 
-Used by Validate and Finalize. Menu: rubric walker (`references/validate.md`) + `{workflow.finalize_reviewers}` + ad-hoc (accessibility for consumer / regulated). Stakes-calibrated. Parallel subagents → each writes `review-{slug}.md`, returns compact summary. Validate then runs the synthesis pipeline in `references/validate.md`.
+Used by Validate and Finalize. **Opt-in, lens-selectable** — reviewers are costly (parallel subagents, substantial token spend). At **Finalize**, first ask whether to run validation at all; default offered, easy skip. At **Validate** intent the user already opted in — skip that question. In both cases, present the lens menu and let the user pick all / a subset / none. Menu: rubric walker (`references/validate.md`) + `{workflow.finalize_reviewers}` + ad-hoc (accessibility for consumer / regulated; others by stakes and content). Picked lenses dispatch as parallel subagents → each writes `review-{slug}.md`, returns a compact summary. If any lens ran, run the synthesis pipeline in `references/validate.md`.
 
 ## Finalize
 
@@ -78,7 +79,7 @@ Outcomes, in order:
 
 - **Spines distilled.** Subagent reads `.decision-log.md`, `.working/`, `imports/`, sources; produces `DESIGN.md` against `## The DESIGN.md spine` + `{workflow.design_md_examples}` and `EXPERIENCE.md` against `## The EXPERIENCE.md spine` + `{workflow.experience_md_examples}`. Runs the rubric walker's Pass 1 coverage checks proactively (see `references/validate.md`). Surface gaps; never invent.
 - **Inputs reconciled.** Subagent per user-supplied input → `reconcile-{slug}.md`. Surface dropped qualitative ideas.
-- **Reviewer Gate passed.** Resolve before polish.
+- **Reviewer Gate offered.** Ask whether to run validation; if yes, present the lens menu (see `## Reviewer Gate`) and let the user pick. If any lens ran, resolve findings before polish; otherwise proceed.
 - **Open items triaged.** Open Questions, `[ASSUMPTION]`, `[NOTE FOR UX]`. Phase-blockers one at a time; non-blockers → log.
 - **Key-screen mocks rendered.** Key-screens tool → `.working/` for surfaces where layout drives behavior or anchors visual language.
 - **Mock coverage confirmed.** Walk every IA surface; classify *mocked* vs *spine-only*. Ask: *"These will be built from spine tables alone — any need a visual reference?"* Render more if named; log spine-only choices.
