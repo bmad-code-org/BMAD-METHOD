@@ -150,7 +150,7 @@ Tất cả workflow trong phase này đều là tùy chọn. [**Chưa chắc nê
 - Chạy `bmad-quick-dev` — workflow này gộp cả planning và implementation trong một lần, nên bạn có thể chuyển thẳng sang triển khai
 
 :::note[Thiết kế UX (Tùy chọn)]
-Nếu dự án của bạn có giao diện người dùng, hãy gọi **UX-Designer agent** (`bmad-agent-ux-designer`) và chạy workflow thiết kế UX (`bmad-create-ux-design`) sau khi tạo PRD.
+Nếu dự án của bạn có giao diện người dùng, hãy gọi **UX-Designer agent** (`bmad-agent-ux-designer`) và chạy workflow thiết kế UX (`bmad-ux`) sau khi tạo PRD.
 :::
 
 ### Phase 3: Solutioning (BMad Method/Enterprise)

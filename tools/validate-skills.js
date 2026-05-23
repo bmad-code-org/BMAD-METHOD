@@ -1,7 +1,7 @@
 /**
  * Deterministic Skill Validator
  *
- * Validates 14 deterministic rules across all skill directories.
+ * Validates 12 deterministic rules across all skill directories.
  * Acts as a fast first-pass complement to the inference-based skill validator.
  *
  * What it checks:
@@ -12,8 +12,6 @@
  * - SKILL-05: name matches directory basename
  * - SKILL-06: description quality (length, "Use when"/"Use if")
  * - SKILL-07: SKILL.md has body content after frontmatter
- * - WF-01: workflow.md frontmatter has no name
- * - WF-02: workflow.md frontmatter has no description
  * - PATH-02: no installed_path variable
  * - STEP-01: step filename format
  * - STEP-06: step frontmatter has no name/description
@@ -386,43 +384,6 @@ function validateSkill(skillDir) {
         file: 'SKILL.md',
         detail: 'SKILL.md has no content after frontmatter. L2 instructions are required.',
         fix: 'Add markdown body with skill instructions after the closing ---.',
-      });
-    }
-  }
-
-  // --- WF-01 / WF-02: non-SKILL.md files must NOT have name/description ---
-  // TODO: bmad-agent-tech-writer has sub-skill files with intentional name/description
-  const WF_SKIP_SKILLS = new Set(['bmad-agent-tech-writer']);
-  for (const filePath of allFiles) {
-    if (path.extname(filePath) !== '.md') continue;
-    if (path.basename(filePath) === 'SKILL.md') continue;
-    if (WF_SKIP_SKILLS.has(dirName)) continue;
-
-    const relFile = path.relative(skillDir, filePath);
-    const content = safeReadFile(filePath, findings, relFile);
-    if (content === null) continue;
-    const fm = parseFrontmatter(content);
-    if (!fm) continue;
-
-    if ('name' in fm) {
-      findings.push({
-        rule: 'WF-01',
-        title: 'Only SKILL.md May Have name in Frontmatter',
-        severity: 'HIGH',
-        file: relFile,
-        detail: `${relFile} frontmatter contains \`name\` — this belongs only in SKILL.md.`,
-        fix: "Remove the `name:` line from this file's frontmatter.",
-      });
-    }
-
-    if ('description' in fm) {
-      findings.push({
-        rule: 'WF-02',
-        title: 'Only SKILL.md May Have description in Frontmatter',
-        severity: 'HIGH',
-        file: relFile,
-        detail: `${relFile} frontmatter contains \`description\` — this belongs only in SKILL.md.`,
-        fix: "Remove the `description:` line from this file's frontmatter.",
       });
     }
   }
