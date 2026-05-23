@@ -31,18 +31,3 @@ on_complete = ""
 # team/user TOML to enforce a different shape (e.g. a hypothesis field
 # for research initiatives, or a mechanics field for games).
 spec_template = "assets/spec-template.md"
-
-# Fallback output path used when the input is a brain dump (no source
-# artifact to co-locate next to). When the input IS a ceremony artifact
-# inside an existing run folder under {planning_artifacts}, the Spec
-# is written as a sibling of that artifact instead and this path is
-# unused.
-spec_output_path = "{planning_artifacts}/spec"
-
-# Run folder pattern for the brain-dump fallback path. Resolved against
-# {project_name} and {date} at activation.
-run_folder_pattern = "spec-{project_name}-{date}"
-
-# The primary artifact filename. Override if a team prefers `kernel.md`
-# or any other convention.
-spec_filename = "spec.md"
