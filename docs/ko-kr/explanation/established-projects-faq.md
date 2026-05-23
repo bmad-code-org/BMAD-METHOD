@@ -2,7 +2,7 @@
 title: "기존 프로젝트 FAQ"
 description: 기존 프로젝트에서 BMad Method를 사용할 때의 일반 질문
 sidebar:
-  order: 8
+  order: 13
 ---
 
 BMad Method(BMM)로 기존 프로젝트에서 작업할 때 자주 묻는 질문에 빠르게 답합니다.

@@ -2,7 +2,7 @@
 title: "프로젝트 컨텍스트"
 description: project-context.md가 프로젝트 규칙과 선호도로 AI 에이전트를 안내하는 방법
 sidebar:
-  order: 7
+  order: 12
 ---
 
 `project-context.md` 파일은 AI 에이전트를 위한 프로젝트 구현 가이드입니다. 다른 개발 체계의 "헌장"처럼 모든 워크플로에서 일관된 코드 생성을 보장하는 규칙, 패턴, 선호 사항을 포착합니다.

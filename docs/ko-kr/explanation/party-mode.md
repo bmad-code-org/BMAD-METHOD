@@ -2,7 +2,7 @@
 title: "파티 모드"
 description: 다중 에이전트 협업 - 모든 AI 에이전트를 하나의 대화에 모읍니다
 sidebar:
-  order: 7
+  order: 11
 ---
 
 모든 AI 에이전트를 하나의 대화에 모으세요.
