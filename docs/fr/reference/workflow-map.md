@@ -45,10 +45,10 @@ chaque outil et quand l’utiliser**](../explanation/analysis-phase.md).
 
 Définissez ce qu’il faut construire et pour qui.
 
-| Workflow                | Objectif                                                                                               | Livrable                                                                                                          |
-|-------------------------|--------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
-| `bmad-prd`              | Créez, mettez à jour ou validez un PRD[^1] — découverte accompagnée, trois intentions en un seul skill | Création/Mise à jour : `prd.md`, `addendum.md`, `decision-log.md` ; Validation : `validation-report.html` + `.md` |
-| `bmad-create-ux-design` | Concevez l’expérience utilisateur (lorsque l’UX compte)                                                | `ux-spec.md`                                                                                                      |
+| Workflow   | Objectif                                                                                               | Livrable                                                                                                          |
+|------------|--------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
+| `bmad-prd` | Créez, mettez à jour ou validez un PRD[^1] — découverte accompagnée, trois intentions en un seul skill | Création/Mise à jour : `prd.md`, `addendum.md`, `decision-log.md` ; Validation : `validation-report.html` + `.md` |
+| `bmad-ux`  | Concevez l’expérience utilisateur (lorsque l’UX compte)                                                | `DESIGN.md`, `EXPERIENCE.md`                                                                                      |
 
 :::tip[Trois intentions en un seul skill]
 `bmad-prd` couvre l’intégralité du cycle de vie du PRD. Précisez votre intention lors de l’appel, sinon le skill vous la demandera :
