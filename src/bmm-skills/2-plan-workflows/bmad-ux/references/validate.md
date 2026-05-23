@@ -68,7 +68,7 @@ Under Validate intent, after every reviewer returns, render one consolidated rep
 1. Read every `{doc_workspace}/review-*.md`.
 2. Fill `{workflow.validation_report_template}`. No overall grade — the per-category verdicts and severity counts already say what's true. Synthesis paragraph lifts the rubric's overall verdict; add a second if extra reviewers shift the picture. One section per rubric category (open if thin / broken), one per extra reviewer (closed, adversarial voice preserved).
 3. Write `{doc_workspace}/validation-report.html`.
-4. Write the markdown twin `{doc_workspace}/validation-report.md` — same content grouped by severity.
+4. Write the Markdown twin `{doc_workspace}/validation-report.md` — same content grouped by severity.
 5. Open HTML: `python3 -c "import webbrowser, pathlib; webbrowser.open(pathlib.Path('{doc_workspace}/validation-report.html').resolve().as_uri())"`. Skip headless.
 
 Re-running overwrites the consolidated report; individual `review-*.md` files persist.
