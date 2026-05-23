@@ -223,24 +223,33 @@
       <p>TEMPLATE_SYNTHESIS_PARAGRAPH</p>
     </div>
 
-    <!-- TEMPLATE: dimension summary cards. One per rubric dimension. The
-         dim-verdict text uses one of: strong | adequate | thin | broken. -->
+    <!-- TEMPLATE: dimension summary cards. One per rubric category, in this
+         canonical order (from references/validate.md):
+           1. Flow coverage
+           2. Token completeness
+           3. Component coverage
+           4. State coverage
+           5. Visual reference coverage
+           6. Bloat & overspecification
+           7. Inheritance discipline
+           8. Shape fit
+         The dim-verdict text uses one of: strong | adequate | thin | broken. -->
     <div class="dimension-summary">
       <div class="dim-card">
-        <div class="dim-name">Decision-readiness</div>
+        <div class="dim-name">TEMPLATE_CATEGORY_NAME</div>
         <div class="dim-verdict" style="color: var(--verdict-TEMPLATE_VERDICT)">TEMPLATE_VERDICT_TEXT</div>
       </div>
-      <!-- repeat for each of the seven dimensions -->
+      <!-- repeat for each of the eight rubric categories -->
     </div>
 
-    <!-- TEMPLATE: one section per rubric dimension. Skip a dimension entirely
-         if the rubric review marked it n/a for this UX spec (e.g. downstream
-         usability for a single-screen standalone utility). Open the section
-         by default if verdict is thin or broken. -->
+    <!-- TEMPLATE: one section per rubric category, same canonical order as the
+         summary cards above. Skip a category entirely if the rubric review
+         marked it n/a for this UX spec. Open the section by default if verdict
+         is thin or broken. -->
     <section class="dimension">
       <details open>
         <summary>
-          <h2>Decision-readiness</h2>
+          <h2>TEMPLATE_CATEGORY_NAME</h2>
           <span class="verdict-pill verdict-TEMPLATE_VERDICT">TEMPLATE_VERDICT_TEXT</span>
         </summary>
         <div class="dim-body">
