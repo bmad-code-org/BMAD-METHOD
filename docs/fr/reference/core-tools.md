@@ -13,19 +13,19 @@ Exécutez n’importe quel outil principal en tapant son nom de compétence (par
 
 ## Vue d’ensemble
 
-| Outil                                                                 | Type     | Objectif                                                                     |
-|-----------------------------------------------------------------------|----------|------------------------------------------------------------------------------|
-| [`bmad-help`](#bmad-help)                                             | Tâche    | Obtenir des conseils contextuels sur la prochaine étape                      |
-| [`bmad-brainstorming`](#bmad-brainstorming)                           | Workflow | Faciliter des sessions de brainstorming interactives                         |
-| [`bmad-party-mode`](#bmad-party-mode)                                 | Workflow | Orchestrer des discussions de groupe multi-agents                            |
-| [`bmad-spec`](#bmad-spec)                                             | Workflow | Distill any intent input into a SPEC kernel and companions (translation pending)                   |
-| [`bmad-advanced-elicitation`](#bmad-advanced-elicitation)             | Tâche    | Pousser la sortie LLM à travers des méthodes de raffinement itératives       |
-| [`bmad-review-adversarial-general`](#bmad-review-adversarial-general) | Tâche    | Revue cynique qui trouve ce qui manque et ce qui ne va pas                   |
-| [`bmad-review-edge-case-hunter`](#bmad-review-edge-case-hunter)       | Tâche    | Analyse exhaustive des chemins de branchement pour les cas limites non gérés |
-| [`bmad-editorial-review-prose`](#bmad-editorial-review-prose)         | Tâche    | Révision de copie clinique pour la clarté de communication                   |
-| [`bmad-editorial-review-structure`](#bmad-editorial-review-structure) | Tâche    | Édition structurelle — coupes, fusions et réorganisation                     |
-| [`bmad-shard-doc`](#bmad-shard-doc)                                   | Tâche    | Diviser les fichiers markdown volumineux en sections organisées              |
-| [`bmad-index-docs`](#bmad-index-docs)                                 | Tâche    | Générer ou mettre à jour un index de tous les documents dans un dossier      |
+| Outil                                                                 | Type     | Objectif                                                                      |
+|-----------------------------------------------------------------------|----------|-------------------------------------------------------------------------------|
+| [`bmad-help`](#bmad-help)                                             | Tâche    | Obtenir des conseils contextuels sur la prochaine étape                       |
+| [`bmad-brainstorming`](#bmad-brainstorming)                           | Workflow | Faciliter des sessions de brainstorming interactives                          |
+| [`bmad-party-mode`](#bmad-party-mode)                                 | Workflow | Orchestrer des discussions de groupe multi-agents                             |
+| [`bmad-spec`](#bmad-spec)                                             | Workflow | Distiller toute formulation d’intention en un noyau SPEC et fichiers associés |
+| [`bmad-advanced-elicitation`](#bmad-advanced-elicitation)             | Tâche    | Soumettre la sortie LLM à des méthodes de raffinement itératives              |
+| [`bmad-review-adversarial-general`](#bmad-review-adversarial-general) | Tâche    | Revue cynique qui traque ce qui manque et ce qui ne va pas                    |
+| [`bmad-review-edge-case-hunter`](#bmad-review-edge-case-hunter)       | Tâche    | Analyse exhaustive des chemins de branchement pour les cas limites non gérés  |
+| [`bmad-editorial-review-prose`](#bmad-editorial-review-prose)         | Tâche    | Correction éditoriale clinique pour la clarté de communication                |
+| [`bmad-editorial-review-structure`](#bmad-editorial-review-structure) | Tâche    | Édition structurelle — coupes, fusions et réorganisation                      |
+| [`bmad-shard-doc`](#bmad-shard-doc)                                   | Tâche    | Diviser les fichiers markdown volumineux en sections organisées               |
+| [`bmad-index-docs`](#bmad-index-docs)                                 | Tâche    | Générer ou mettre à jour un index de tous les documents dans un dossier       |
 
 ## bmad-help
 
@@ -95,7 +95,39 @@ La magie se produit dans les idées 50–100. Le workflow encourage la générat
 
 **Entrée :** Sujet de discussion ou question, ainsi que la spécification des personas que vous souhaitez faire participer (optionnel)
 
-**Sortie :** Conversation multi-agents en temps réel avec des personnalités d’agents maintenues
+**Sortie :** Conversation multi-agents en temps réel conservant la personnalité de chaque agent
+
+## bmad-spec
+
+**Distille toute formulation d’intention en un contrat SPEC canonique pour le travail en aval.** — Accepte un brief, un PRD, un GDD, un RFC, un brain dump, une transcription, un dossier UX ou une entrée multi-source mixte et produit un `SPEC.md` structuré autour d’un noyau de cinq champs (Pourquoi, Capacités, Contraintes, Non-objectifs, Signal de succès) ainsi que des fichiers compagnons pour le contenu essentiel qui ne trouve pas sa place dans le noyau.
+
+**À utiliser quand :**
+
+- Vous devez verrouiller le QUOI avant le COMMENT pour tout type de travail (logiciel, game design, recherche, éditorial, politique, entreprise)
+- Vous souhaitez un contrat succinct optimisé pour les LLM, sans fioritures, que les compétences en aval peuvent consommer sans relire chaque artefact en amont
+- Vous voulez valider ou mettre à jour une spécification existante
+
+**Fonctionnement :**
+
+1. Lit l’entrée et tout document annexe lié
+2. Distille en un noyau à cinq champs via un modèle configurable ; redirige l’excédent vers des fichiers compagnons correctement nommés
+3. Exécute une auto-validation en deux passes (règles de cohérence, puis préservation de chaque affirmation essentielle de la source)
+4. Écrit `SPEC.md`, les compagnons associés, et un `.decision-log.md` sous `{output_folder}/specs/spec-{slug}/`
+
+La loi Spec impose huit règles : les capacités expriment à la fois l’intention et le critère de succès ; les intentions décrivent le QUOI, pas le COMMENT ; les contraintes guident réellement les décisions ; les non-objectifs sont explicites ; les signaux de succès sont concrets ; les identifiants de capacité sont stables ; chaque affirmation essentielle de la source est préservée ; la rédaction est concise.
+
+**Entrée :**
+
+- `input` (requis) — Chemin ou texte fourni directement. Idée vague, brain dump, PRD, GDD, RFC, brief, transcription, dossier de maquettes, multi-source mixte
+- `slug` (optionnel) — Requis uniquement lorsque l’entrée est succincte et qu’aucun slug ne peut être dérivé du nom de fichier source
+- `target_spec_path` (optionnel) — Définir pour mettre à jour une spécification existante au lieu d’en créer une nouvelle
+
+**Sortie :** Dossier de spécification contenant `SPEC.md`, les éventuels fichiers compagnons, et un `.decision-log.md`. Les appelants en mode headless reçoivent une réponse JSON avec le statut du résultat et la liste des fichiers écrits ou modifiés.
+
+:::note[Contrat de mutation]
+`bmad-spec` est le seul outil autorisé à écrire `SPEC.md` et les fichiers compagnons de la spécification. Les autres compétences produisent leurs propres artefacts natifs et invoquent `bmad-spec` en mode headless lorsqu’elles ont besoin d’exprimer une intention sous forme de contrat canonique ou de proposer des mises à jour.
+:::
+
 
 ## bmad-advanced-elicitation
 
