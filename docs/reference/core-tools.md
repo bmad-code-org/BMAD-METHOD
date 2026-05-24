@@ -18,7 +18,6 @@ Run any core tool by typing its skill name (e.g., `bmad-help`) in your IDE. No a
 | [`bmad-help`](#bmad-help) | Task | Get context-aware guidance on what to do next |
 | [`bmad-brainstorming`](#bmad-brainstorming) | Workflow | Facilitate interactive brainstorming sessions |
 | [`bmad-party-mode`](#bmad-party-mode) | Workflow | Orchestrate multi-agent group discussions |
-| [`bmad-distillator`](#bmad-distillator) | Task | Lossless LLM-optimized compression of documents |
 | [`bmad-advanced-elicitation`](#bmad-advanced-elicitation) | Task | Push LLM output through iterative refinement methods |
 | [`bmad-review-adversarial-general`](#bmad-review-adversarial-general) | Task | Cynical review that finds what's missing and what's wrong |
 | [`bmad-review-edge-case-hunter`](#bmad-review-edge-case-hunter) | Task | Exhaustive branching-path analysis for unhandled edge cases |
@@ -96,33 +95,6 @@ The magic happens in ideas 50–100. The workflow encourages generating 100+ ide
 **Input:** Discussion topic or question, along with specification of personas you would like to participate (optional)
 
 **Output:** Real-time multi-agent conversation with maintained agent personalities
-
-## bmad-distillator
-
-**Lossless LLM-optimized compression of source documents.** — Produces dense, token-efficient distillates that preserve all information for downstream LLM consumption. Verifiable through round-trip reconstruction.
-
-**Use it when:**
-
-- A document is too large for an LLM's context window
-- You need token-efficient versions of research, specs, or planning artifacts
-- You want to verify no information is lost during compression
-- Agents will need to frequently reference and find information in it
-
-**How it works:**
-
-1. **Analyze** — Reads source documents, identifies information density and structure
-2. **Compress** — Converts prose to dense bullet-point format, strips decorative formatting
-3. **Verify** — Checks completeness to ensure all original information is preserved
-4. **Validate** (optional) — Round-trip reconstruction test proves lossless compression
-
-**Input:**
-
-- `source_documents` (required) — File paths, folder paths, or glob patterns
-- `downstream_consumer` (optional) — What consumes this (e.g., "PRD creation")
-- `token_budget` (optional) — Approximate target size
-- `--validate` (flag) — Run round-trip reconstruction test
-
-**Output:** Distillate markdown file(s) with compression ratio report (e.g., "3.2:1")
 
 ## bmad-advanced-elicitation
 
