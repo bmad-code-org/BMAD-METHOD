@@ -18,7 +18,7 @@ sidebar:
 | [`bmad-help`](#bmad-help) | Task | 基于项目上下文推荐下一步 |
 | [`bmad-brainstorming`](#bmad-brainstorming) | Workflow | 引导式头脑风暴与想法扩展 |
 | [`bmad-party-mode`](#bmad-party-mode) | Workflow | 多智能体协作讨论 |
-| [`bmad-distillator`](#bmad-distillator) | Task | 无损压缩文档，提升 LLM 消费效率 |
+| [`bmad-spec`](#bmad-spec) | Workflow | Distill any intent input into a SPEC kernel and companions, the canonical contract for downstream work (translation pending) |
 | [`bmad-advanced-elicitation`](#bmad-advanced-elicitation) | Task | 通过多轮技法增强 LLM 输出 |
 | [`bmad-review-adversarial-general`](#bmad-review-adversarial-general) | Task | 对抗式问题发现审查 |
 | [`bmad-review-edge-case-hunter`](#bmad-review-edge-case-hunter) | Task | 边界与分支路径穷举审查 |
@@ -79,29 +79,6 @@ sidebar:
 
 **输入：** 讨论主题（可指定希望参与的角色）  
 **输出：** 多智能体实时对话过程
-
-## bmad-distillator
-
-**定位：** 在不丢失信息前提下压缩文档，降低 token 成本。
-
-**适用场景：**
-- 源文档超过上下文窗口
-- 需要把研究/规格材料转成高密度引用版本
-- 想验证压缩结果是否可逆
-
-**工作机制：**
-1. 分析源文档结构与信息密度
-2. 压缩为高密度结构化表达
-3. 校验信息完整性
-4. 可选执行往返重构验证（round-trip）
-
-**输入：**
-- `source_documents`（必填）
-- `downstream_consumer`（可选）
-- `token_budget`（可选）
-- `--validate`（可选标志）
-
-**输出：** 精馏文档 + 压缩比报告
 
 ## bmad-advanced-elicitation
 

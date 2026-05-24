@@ -48,7 +48,7 @@ Définissez ce qu'il faut construire et pour qui.
 | Workflow                | Objectif                                                | Produit      |
 |-------------------------|---------------------------------------------------------|--------------|
 | `bmad-create-prd`       | Définissez les exigences (FRs/NFRs)[^1]                 | `PRD.md`[^2] |
-| `bmad-create-ux-design` | Concevez l'expérience utilisateur (lorsque l'UX compte) | `ux-spec.md` |
+| `bmad-ux`            | Concevez l'expérience utilisateur (lorsque l'UX compte) | `DESIGN.md`, `EXPERIENCE.md` |
 
 ## Phase 3 : Solutioning
 
