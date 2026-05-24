@@ -18,6 +18,7 @@ Exécutez n'importe quel outil principal en tapant son nom de compétence (par e
 | [`bmad-help`](#bmad-help)                                             | Tâche    | Obtenir des conseils contextuels sur la prochaine étape                      |
 | [`bmad-brainstorming`](#bmad-brainstorming)                           | Workflow | Faciliter des sessions de brainstorming interactives                         |
 | [`bmad-party-mode`](#bmad-party-mode)                                 | Workflow | Orchestrer des discussions de groupe multi-agents                            |
+| [`bmad-spec`](#bmad-spec)                                             | Workflow | Distill any intent input into a SPEC kernel and companions (translation pending)                   |
 | [`bmad-advanced-elicitation`](#bmad-advanced-elicitation)             | Tâche    | Pousser la sortie LLM à travers des méthodes de raffinement itératives       |
 | [`bmad-review-adversarial-general`](#bmad-review-adversarial-general) | Tâche    | Revue cynique qui trouve ce qui manque et ce qui ne va pas                   |
 | [`bmad-review-edge-case-hunter`](#bmad-review-edge-case-hunter)       | Tâche    | Analyse exhaustive des chemins de branchement pour les cas limites non gérés |

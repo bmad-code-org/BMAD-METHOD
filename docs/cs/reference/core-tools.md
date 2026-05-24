@@ -18,6 +18,7 @@ Spusťte jakýkoli základní nástroj zadáním jeho názvu skillu (např. `bma
 | [`bmad-help`](#bmad-help) | Task | Kontextové poradenství, co dělat dál |
 | [`bmad-brainstorming`](#bmad-brainstorming) | Workflow | Facilitace interaktivních brainstormingových sezení |
 | [`bmad-party-mode`](#bmad-party-mode) | Workflow | Orchestrace skupinových diskuzí více agentů |
+| [`bmad-spec`](#bmad-spec) | Workflow | Distill any intent input into a SPEC kernel and companions, the canonical contract for downstream work (translation pending) |
 | [`bmad-advanced-elicitation`](#bmad-advanced-elicitation) | Task | Iterativní zdokonalování LLM výstupu |
 | [`bmad-review-adversarial-general`](#bmad-review-adversarial-general) | Task | Cynická revize hledající chybějící a chybné |
 | [`bmad-review-edge-case-hunter`](#bmad-review-edge-case-hunter) | Task | Vyčerpávající analýza větvících cest pro neošetřené hraniční případy |

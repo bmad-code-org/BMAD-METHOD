@@ -15,7 +15,6 @@ Multiple skills may call to update the same spec over time.
 - Bare paths (e.g. `assets/spec-template.md`) resolve from the skill root.
 - `{skill-root}` is this skill's install dir; `{project-root}` is the working dir.
 - `{workflow.<name>}` resolves to fields in `customize.toml`.
-- `{doc_workspace}` is the bound spec folder for this run.
 
 ## On Activation
 
@@ -32,10 +31,10 @@ The spec is **always a folder** named `{workflow.spec_output_path}/{workflow.run
 `{slug}` describes the thing being specced, not the input shape:
 
 - Source artifact already carries a slug (e.g., `prd-foo-bar-2026-05-23/`): inherit (`foo-bar`).
-- Sparse, in-chat, or multi-source input: interactive asks; headless caller provides.
+- Sparse, in-chat, or multi-source input: interactive asks; headless caller provides it as part of the input. If absent and underivable, headless blocks with `error_code: "missing_slug"`.
 - Same slug = same folder. A second invocation with the same `{slug}` lands at the existing spec folder and updates in place, preserving capability IDs.
 
-**No input.** Interactive: ask the user to share a file path, paste content, explain the idea in detail, or point to a source. Headless: respond with JSON containing error code `insufficient_intent`.
+**No input.** Interactive: ask the user to share a file path, paste content, explain the idea in detail, or point to a source. Headless: respond with JSON containing `error_code: "insufficient_intent"`.
 
 Inside the spec folder:
 
@@ -102,7 +101,7 @@ After every create or update, sweep the resulting artifact in **two passes** bef
 
 **Pass 2 — Preservation.** Walk the source claim by claim. Confirm each load-bearing claim landed in SPEC.md or a companion. Wrapper-ceremony drops are logged under "Wrapper-only content" so the drop is on the record, not silent.
 
-Append a one-paragraph verdict to `.decision-log.md` covering both passes, review with user.
+Append a one-paragraph verdict to `.decision-log.md` covering both passes. In interactive mode, review the verdict with the user. In headless mode, `.decision-log.md` is one of the files returned, so the caller (or its downstream LLM) reads the verdict there.
 
 ## Spec with no change signal
 

@@ -20,8 +20,10 @@ activation_steps_append = []
 # Persistent facts the workflow keeps in mind for the whole run.
 # Each entry is either a literal sentence, a skill prefixed with `skill:`,
 # or a `file:`-prefixed path/glob whose contents are loaded as facts.
+# Default points to a single top-level file; override in team/user TOML
+# to widen the scope (e.g. `_bmad/**/project-context.md`) if needed.
 persistent_facts = [
-  "file:{project-root}/**/project-context.md",
+  "file:{project-root}/project-context.md",
 ]
 
 # Executed when the workflow completes. Scalar or array of instructions.

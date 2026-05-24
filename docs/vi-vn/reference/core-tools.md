@@ -18,6 +18,7 @@ Chạy bất kỳ công cụ cốt lõi nào bằng cách gõ tên skill của n
 | [`bmad-help`](#bmad-help) | Tác vụ | Nhận hướng dẫn có ngữ cảnh về việc nên làm gì tiếp theo |
 | [`bmad-brainstorming`](#bmad-brainstorming) | Quy trình | Tổ chức các phiên brainstorming có tương tác |
 | [`bmad-party-mode`](#bmad-party-mode) | Quy trình | Điều phối thảo luận nhóm nhiều agent |
+| [`bmad-spec`](#bmad-spec) | Quy trình | Distill any intent input into a SPEC kernel and companions, the canonical contract for downstream work (translation pending) |
 | [`bmad-advanced-elicitation`](#bmad-advanced-elicitation) | Tác vụ | Đẩy đầu ra của LLM qua các vòng tinh luyện lặp |
 | [`bmad-review-adversarial-general`](#bmad-review-adversarial-general) | Tác vụ | Rà soát hoài nghi để tìm chỗ thiếu và chỗ sai |
 | [`bmad-review-edge-case-hunter`](#bmad-review-edge-case-hunter) | Tác vụ | Phân tích toàn bộ nhánh rẽ để tìm trường hợp biên chưa được xử lý |
