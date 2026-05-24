@@ -27,7 +27,22 @@ persistent_facts = [
 # Executed when the workflow completes. Scalar or array of instructions.
 on_complete = ""
 
-# Spec template — the five-field kernel skeleton. Override the path in
+# Spec template. The five-field kernel skeleton. Override the path in
 # team/user TOML to enforce a different shape (e.g. a hypothesis field
 # for research initiatives, or a mechanics field for games).
 spec_template = "assets/spec-template.md"
+
+# Canonical filename for the kernel artifact inside the spec folder.
+# Uppercase by convention to signal "the central source of truth."
+spec_filename = "SPEC.md"
+
+# Output path for spec folders. Mirrors the BMad convention for PRDs
+# (`prds/`) and UX runs (`ux-designs/`): one predictable location for
+# downstream skills, regardless of input shape.
+spec_output_path = "{planning_artifacts}/specs"
+
+# Run-folder pattern inside spec_output_path. Resolved against the
+# input-derived slug and date at activation. A second run on the same
+# slug is an update; date in the pattern keeps fresh dated folders
+# only when the user explicitly intends a new spec.
+run_folder_pattern = "spec-{slug}-{date}"
