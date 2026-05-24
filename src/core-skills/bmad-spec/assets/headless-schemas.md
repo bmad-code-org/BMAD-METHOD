@@ -16,10 +16,10 @@ The default invocation is headless: input goes in, JSON comes out. Omit keys for
 {
   "status": "complete",
   "intent": "create",
-  "spec_path": "_bmad-output/planning-artifacts/specs/spec-quarter-drop/",
-  "decision_log_path": "_bmad-output/planning-artifacts/specs/spec-quarter-drop/.decision-log.md",
+  "spec_path": "_bmad-output/specs/spec-quarter-drop/",
+  "decision_log_path": "_bmad-output/specs/spec-quarter-drop/.decision-log.md",
   "sources": ["_bmad-output/planning-artifacts/prds/prd-quarter-drop-2026-05-22/prd.md"],
-  "companions": ["glossary.md", "../../ux-designs/ux-quarter-drop-2026-05-22/DESIGN.md"],
+  "companions": ["glossary.md", "../planning-artifacts/ux-designs/ux-quarter-drop-2026-05-22/DESIGN.md"],
   "capabilities": [
     {"id": "CAP-1", "intent": "User can record a voice memo pinned to current GPS coords."},
     {"id": "CAP-2", "intent": "User hears memos auto-trigger when walking within range of a drop."}
@@ -30,9 +30,9 @@ The default invocation is headless: input goes in, JSON comes out. Omit keys for
 }
 ```
 
-- `spec_path` is the **spec folder**, per Workspace rules in `SKILL.md` (default: `{planning_artifacts}/specs/spec-{slug}/`). The kernel file inside is named per `customize.toml.spec_filename` (default `SPEC.md`).
+- `spec_path` is the **spec folder**, per Workspace rules in `SKILL.md` (default: `{output_folder}/specs/spec-{slug}/`). The kernel file inside is named per `customize.toml.spec_filename` (default `SPEC.md`).
 - `sources` is the array of files fully absorbed into the SPEC; audit-only, downstream does NOT read these. Empty when input had no fully-absorbed source (e.g., a UX-folder-only input).
-- `companions` is the array of `.md` files downstream MUST read alongside SPEC.md. Sibling-relative for spec-authored (e.g., `glossary.md`); outside-folder-relative for adopted (e.g., `../../ux-designs/{run}/DESIGN.md`).
+- `companions` is the array of `.md` files downstream MUST read alongside SPEC.md. Sibling-relative for spec-authored (e.g., `glossary.md`); outside-folder-relative for adopted (e.g., `../planning-artifacts/ux-designs/{run}/DESIGN.md`).
 - `capabilities` carries IDs and one-line intents only — enough for downstream consumers to address them without re-reading the spec.
 - `verdict` is the one-paragraph self-validate result. When `status` is `"partial"`, the verdict explains what is blocking "ready for downstream."
 
@@ -42,8 +42,8 @@ The default invocation is headless: input goes in, JSON comes out. Omit keys for
 {
   "status": "complete",
   "intent": "validate",
-  "spec_path": "_bmad-output/planning-artifacts/specs/spec-quarter-drop/",
-  "decision_log_path": "_bmad-output/planning-artifacts/specs/spec-quarter-drop/.decision-log.md",
+  "spec_path": "_bmad-output/specs/spec-quarter-drop/",
+  "decision_log_path": "_bmad-output/specs/spec-quarter-drop/.decision-log.md",
   "verdict": "Two rules weak: success signal is decorative; non-goals section empty.",
   "findings": [
     {"rule": "Success signal is concrete", "note": "Currently reads 'users love it' — not testable."},
