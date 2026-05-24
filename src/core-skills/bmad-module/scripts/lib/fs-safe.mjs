@@ -64,13 +64,33 @@ export async function copyDir(srcDir, destDir, shouldSkip = () => false) {
   return copied;
 }
 
-// Atomically replace `targetDir` with `stagedDir` contents. If `targetDir`
-// exists it's removed first; then `stagedDir` is renamed in. Best effort —
-// not truly atomic across filesystems but minimizes the inconsistent window.
+// Atomically replace `targetDir` with `stagedDir` contents. Best effort —
+// not truly atomic, but minimizes the inconsistent window.
+//
+// `stagedDir` usually lives under the OS temp dir, which is frequently a
+// separate filesystem (e.g. tmpfs on /tmp) from the target. rename() cannot
+// move across filesystems and throws EXDEV there, so we first land the staged
+// tree onto the target's own filesystem as a sibling — by rename when they
+// already share a filesystem, by copy when they don't — and then rename that
+// sibling into place, which is always an intra-filesystem atomic swap.
 export async function atomicSwapDir(stagedDir, targetDir) {
-  await fsp.rm(targetDir, { recursive: true, force: true });
-  await fsp.mkdir(path.dirname(targetDir), { recursive: true });
-  await fsp.rename(stagedDir, targetDir);
+  const parent = path.dirname(targetDir);
+  await fsp.mkdir(parent, { recursive: true });
+  const sibling = path.join(parent, `.${path.basename(targetDir)}.bmad-tmp-${crypto.randomBytes(6).toString('hex')}`);
+  try {
+    try {
+      await fsp.rename(stagedDir, sibling);
+    } catch (e) {
+      if (e.code !== 'EXDEV') throw e;
+      await copyDir(stagedDir, sibling);
+      await fsp.rm(stagedDir, { recursive: true, force: true });
+    }
+    await fsp.rm(targetDir, { recursive: true, force: true });
+    await fsp.rename(sibling, targetDir);
+  } catch (e) {
+    await fsp.rm(sibling, { recursive: true, force: true });
+    throw e;
+  }
 }
 
 // Remove empty parent directories upward until a non-empty one is hit,
