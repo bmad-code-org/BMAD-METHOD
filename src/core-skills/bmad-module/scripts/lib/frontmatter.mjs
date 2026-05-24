@@ -1,4 +1,4 @@
-import { parse as parseYaml } from 'yaml';
+import { parse as parseYaml } from './vendor/yaml.mjs';
 
 // Parse YAML frontmatter from a markdown string. Returns the parsed object,
 // or null if no frontmatter block is present / it failed to parse.

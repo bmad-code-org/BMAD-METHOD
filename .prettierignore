@@ -10,3 +10,6 @@ _bmad*/
 
 # IDE integration folders (user-specific, not in repo)
 .junie/
+
+# Generated vendored bundles in the bmad-module skill (not authored source)
+src/core-skills/bmad-module/scripts/lib/vendor/**

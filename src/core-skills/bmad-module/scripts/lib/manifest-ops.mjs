@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { parse as parseYaml, stringify as stringifyYaml } from 'yaml';
+import { parse as parseYaml, stringify as stringifyYaml } from './vendor/yaml.mjs';
 import { parseFrontmatter } from './frontmatter.mjs';
 import { sha256File } from './fs-safe.mjs';
 import { EXIT, BmadModuleError } from './exit.mjs';

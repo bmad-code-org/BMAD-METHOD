@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import semver from 'semver';
+import { valid as semverValid, validRange as semverValidRange } from './semver-lite.mjs';
 import { EXIT, BmadModuleError } from './exit.mjs';
 
 // Reserved bmad.code values — must match docs/spec.md §7.1 and the
@@ -63,7 +63,7 @@ export async function readAndValidateManifest(sourceDir) {
   if (!NAME_REGEX.test(m.name) || m.name.length < 3 || m.name.length > 64) {
     throw new BmadModuleError(EXIT.BAD_MANIFEST, `plugin.json#name "${m.name}" must match ${NAME_REGEX} and be 3–64 chars`);
   }
-  if (!semver.valid(m.version)) {
+  if (!semverValid(m.version)) {
     throw new BmadModuleError(EXIT.BAD_MANIFEST, `plugin.json#version "${m.version}" is not valid semver`);
   }
   if (!CODE_REGEX.test(m.bmad.code)) {
@@ -72,7 +72,7 @@ export async function readAndValidateManifest(sourceDir) {
   if (RESERVED_CODES.has(m.bmad.code)) {
     throw new BmadModuleError(EXIT.RESERVED_PREFIX, `plugin.json#bmad.code "${m.bmad.code}" is reserved (spec §7.1)`);
   }
-  if (!semver.validRange(m.bmad.compatibility.bmadMethod)) {
+  if (!semverValidRange(m.bmad.compatibility.bmadMethod)) {
     throw new BmadModuleError(
       EXIT.BAD_MANIFEST,
       `plugin.json#bmad.compatibility.bmadMethod "${m.bmad.compatibility.bmadMethod}" is not a valid semver range`,

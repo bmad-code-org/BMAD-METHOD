@@ -22,7 +22,10 @@ plugin via its `.claude-plugin/plugin.json` manifest.
   module during install. The install copies files; activation is a separate
   step the user opts into via Claude Code's plugin manager.
 - If the script exits non-zero, report the exit code and stderr verbatim and
-  stop. Do NOT retry, do NOT try a different verb.
+  stop. Do NOT retry, do NOT try a different verb. The one exception is exit
+  code 5 (the skill's own bundled runtime files are missing/corrupt): that's a
+  fixable setup/packaging problem, not a module rejection — relay the script's
+  "reinstall the skill" guidance instead of reporting a failed install.
 
 ## EXECUTION
 
@@ -97,6 +100,7 @@ suggest workarounds beyond what the script's message itself suggests
 |---|---|
 | 0   | success |
 | 2   | usage error (bad/missing args or flags) |
+| 5   | skill runtime files missing/corrupt — reinstall the skill (a setup/packaging problem, NOT a module rejection) |
 | 10  | no `_bmad/` directory in project — run `bmad install` first |
 | 20  | missing or invalid `.claude-plugin/plugin.json` in source |
 | 21  | module uses a reserved `bmad.code` |

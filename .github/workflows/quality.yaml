@@ -103,6 +103,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Vendor bundle freshness (bmad-module yaml)
+        run: npm run vendor:check
+
       - name: Test agent compilation components
         run: npm run test:install
 
