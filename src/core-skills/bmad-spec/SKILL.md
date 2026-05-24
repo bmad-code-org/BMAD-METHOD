@@ -55,6 +55,8 @@ When the input is structured and pre-sorted (a PRD with an addendum, a GDD, a br
 
 Distill the input into the five-field kernel using `{workflow.spec_template}` as the skeleton. When input is rich, extract directly — no elicitation. When input is sparse, choose: **express** (best-effort distill, every gap becomes an `open_questions[]` entry) or **guided** (walk the five fields with the user one at a time). Headless defaults to express and logs the choice. Interactive asks.
 
+Write lean from the first pass: every sentence must earn its place. Decoration costs tokens and dilutes downstream readers.
+
 If the input is genuinely too thin to distill (e.g. "an app for hikers" with no surrounding context), stop and suggest `bmad-prd` (or sibling ceremony skill). This skill distills; it does not coach.
 
 ## Load-bearing
@@ -63,7 +65,7 @@ A claim is **load-bearing** if any consumer (downstream skill, implementing agen
 
 ## Companions
 
-When load-bearing content does not fit the five-field kernel, it lives in a companion. The kernel cites it; the companion holds it. Companions are part of the contract; every consumer reads `companions:` in SPEC.md frontmatter to discover them.
+When load-bearing content does not fit the five-field kernel, it lives in a companion. The kernel cites it; the companion holds it. Companions are part of the contract; every consumer reads `companions:` in SPEC.md frontmatter to discover them. Companions follow the same lean discipline as SPEC.md (Spec Law rule 8).
 
 **Spawn a companion when the content needs more than one kernel-shape line:** multi-item catalogs (per-entity matrices like archetypes, drinks, modes, routes), tables, diagrams (always), editorial voice rules, long-form reference material the kernel cites by name (glossary, brownfield notes, project conventions). Single-line decision-benders stay in Constraints; intent+success pairs stay in Capabilities. If a kernel field is starting to bullet into sub-bullets, the content has outgrown the kernel and wants a companion.
 
@@ -81,7 +83,7 @@ Pre-existing project-wide docs (e.g. `project-context.md`) that downstream needs
 
 ## Spec Law
 
-Every spec must satisfy these seven rules. The operation aims for them; the self-validate sweep enforces them.
+Every spec must satisfy these eight rules. The operation aims for them; the self-validate sweep enforces them.
 
 1. **Each capability has both `intent` and `success`.** Missing either = not a capability.
 2. **Intents describe WHAT, not HOW.** Implementation prescription belongs in a companion (stack, conventions)..
@@ -90,12 +92,13 @@ Every spec must satisfy these seven rules. The operation aims for them; the self
 5. **Success signal is concrete enough to test or demonstrate against.** "Users love it" doesn't qualify.
 6. **Capability IDs are stable and unique.** Never reused, never renumbered.
 7. **Preservation.** Every load-bearing source claim lands in SPEC.md or a companion. Wrapper ceremony does not.
+8. **Lean prose.** Every sentence carries load-bearing content. Cut decoration, hedges, backstory, throat-clearing. Applies to SPEC.md, companions, and `.decision-log.md`.
 
 ## Self-Validate
 
 After every create or update, sweep the resulting artifact in **two passes** before presenting.
 
-**Pass 1 — Coherence.** Judge the spec against Spec Law rules 1–6. For anything that fails or feels weak, attempt to fix it without inventing content the input did not support. Calls made without direct confirmation become `assumptions[]`; gaps that could not be filled become `open_questions[]`.
+**Pass 1 — Coherence.** Judge the spec against Spec Law rules 1–6 and 8. For anything that fails or feels weak, attempt to fix it without inventing content the input did not support. Calls made without direct confirmation become `assumptions[]`; gaps that could not be filled become `open_questions[]`.
 
 **Pass 2 — Preservation.** Walk the source claim by claim. Confirm each load-bearing claim landed in SPEC.md or a companion. Wrapper-ceremony drops are logged under "Wrapper-only content" so the drop is on the record, not silent.
 
