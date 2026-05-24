@@ -20,7 +20,7 @@
       "skills": [
         "./src/core-skills/bmad-help",
         "./src/core-skills/bmad-brainstorming",
-        "./src/core-skills/bmad-distillator",
+        "./src/core-skills/bmad-spec",
         "./src/core-skills/bmad-party-mode",
         "./src/core-skills/bmad-shard-doc",
         "./src/core-skills/bmad-advanced-elicitation",
