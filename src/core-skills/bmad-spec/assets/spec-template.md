@@ -32,7 +32,7 @@ Name which (or which combination) applies, who is affected, and the backdrop tha
 
 - {Explicit out-of-scope item. At least one. Stops downstream from filling the vacuum.}
 
-## Success signals
+## Success signal
 
 - {One or two sentences. World-change moment, not dashboard. Concrete enough to write a test or run a demonstration against.}
 

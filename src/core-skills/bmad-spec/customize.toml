@@ -42,7 +42,8 @@ spec_filename = "SPEC.md"
 spec_output_path = "{planning_artifacts}/specs"
 
 # Run-folder pattern inside spec_output_path. Resolved against the
-# input-derived slug and date at activation. A second run on the same
-# slug is an update; date in the pattern keeps fresh dated folders
-# only when the user explicitly intends a new spec.
-run_folder_pattern = "spec-{slug}-{date}"
+# input-derived slug at activation. Same slug = same folder, so a
+# second invocation updates the existing spec in place (capability
+# IDs preserved). Override to add {date} or other components if a
+# fresh dated history is preferred.
+run_folder_pattern = "spec-{slug}"

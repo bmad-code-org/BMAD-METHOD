@@ -6,7 +6,7 @@ description: Distill any intent input into the SPEC kernel + companions — the 
 # BMad Spec
 ## Overview
 
-Canonical transformer for the BMad spec-kernel ecosystem. Takes any intent input — vague idea, brain dump, PRD, GDD, RFC, brief, Slack thread, customer email, meeting transcript, mockups, mixed multi-source — and produces **SPEC.md** carrying the five-field kernel (Why, Capabilities, Constraints, Non-goals, Success signal) plus companion files for load-bearing content that does not fit or would bloat with expansive line item details the kernel. Together they are the machine contract every downstream BMad skill consumes (UX, architecture, ticketing, quick-dev).
+Canonical transformer for the BMad spec-kernel ecosystem. Takes any intent input — vague idea, brain dump, PRD, GDD, RFC, brief, Slack thread, customer email, meeting transcript, mockups, mixed multi-source — and produces **SPEC.md** carrying the five-field kernel (Why, Capabilities, Constraints, Non-goals, Success signal) plus companion files for load-bearing content that does not fit or would bloat the kernel with expansive line-item detail. Together they are the machine contract every downstream BMad skill consumes.
 
 Multiple skills may call to update the same spec over time.
 
@@ -21,19 +21,19 @@ Multiple skills may call to update the same spec over time.
 
 1. Resolve customization: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`. On failure, read `{skill-root}/customize.toml` directly.
 2. Run `{workflow.activation_steps_prepend}`. Treat `{workflow.persistent_facts}` as foundational context (`file:` entries are loaded).
-3. Load `{project-root}/_bmad/config.yaml` (and `config.user.yaml` if present), root level and `bmm` section. Resolve `{user_name}`, `{communication_language}`, `{document_output_language}`, `{planning_artifacts}`, `{project_name}`, `{date}`.
+3. Load `{project-root}/_bmad/core/config.yaml` (and `config.user.yaml` if present), root level and `bmm` section. Resolve `{user_name}`, `{communication_language}`, `{document_output_language}`, `{planning_artifacts}`, `{project_name}`, `{date}`.
 4. Detect mode. **Headless** when any of: no TTY, programmatic caller (another skill or non-interactive runner), or the first message pre-supplies all inputs and asks for an artifact path back. **Interactive** otherwise. In interactive mode, greet by `{user_name}` in `{communication_language}`, stay in that language, and mention that `bmad-party-mode` and `bmad-advanced-elicitation` are available for deeper exploration on any field.
 5. Run `{workflow.activation_steps_append}`.
 
 ## Workspace
 
-The spec is **always a folder** named `{workflow.spec_output_path}/{workflow.run_folder_pattern}`, resolving by default to `{planning_artifacts}/specs/spec-{slug}-{date}/`.
+The spec is **always a folder** named `{workflow.spec_output_path}/{workflow.run_folder_pattern}`, resolving by default to `{planning_artifacts}/specs/spec-{slug}/`.
 
 `{slug}` describes the thing being specced, not the input shape:
 
 - Source artifact already carries a slug (e.g., `prd-foo-bar-2026-05-23/`): inherit (`foo-bar`).
 - Sparse, in-chat, or multi-source input: interactive asks; headless caller provides.
-- A second run on the same `{slug}` is an update: re-read the existing spec, preserve capability IDs.
+- Same slug = same folder. A second invocation with the same `{slug}` lands at the existing spec folder and updates in place, preserving capability IDs.
 
 **No input.** Interactive: ask the user to share a file path, paste content, explain the idea in detail, or point to a source. Headless: respond with JSON containing error code `insufficient_intent`.
 
@@ -86,7 +86,7 @@ Pre-existing project-wide docs (e.g. `project-context.md`) that downstream needs
 Every spec must satisfy these eight rules. The operation aims for them; the self-validate sweep enforces them.
 
 1. **Each capability has both `intent` and `success`.** Missing either = not a capability.
-2. **Intents describe WHAT, not HOW.** Implementation prescription belongs in a companion (stack, conventions)..
+2. **Intents describe WHAT, not HOW.** Implementation prescription belongs in a companion (stack, conventions).
 3. **Constraints actually bend design decisions.** A "constraint" that rules nothing out is decoration.
 4. **Non-goals are explicit.** At least one. Absence means downstream skills fill the vacuum.
 5. **Success signal is concrete enough to test or demonstrate against.** "Users love it" doesn't qualify.
@@ -122,6 +122,6 @@ Any update to spec regarding assumptions, open questions, or other changes shoul
 
 ## Frontmatter conventions
 
-- `companions:` array of `.md` files downstream MUST read alongside SPEC.md to have the full contract. Paths may point inside the spec folder (spec-authored companions like `glossary.md`) or outside it (adopted companions like `_bmad-output/ux-designs/foo-ux/DESIGN.md`). The split between spec-authored and adopted is implicit by path; downstream treats both the same.
+- `companions:` array of `.md` files downstream MUST read alongside SPEC.md to have the full contract. Paths may point inside the spec folder (spec-authored companions like `glossary.md`) or outside it (adopted companions like `../../ux-designs/ux-foo-bar-2026-05-23/DESIGN.md`). The split between spec-authored and adopted is implicit by path; downstream treats both the same.
 - `sources:` array of paths to files that were **fully absorbed** into the SPEC, with no remaining downstream value (e.g., a PRD whose every load-bearing claim is now in the kernel). Listed for audit and for bmad-spec to re-read on update. Downstream does NOT read these. Files that downstream still needs to read belong in `companions:`, not here.
 - **Do not list** decision logs, README files, organizational artifacts, or any operational record of how upstream skills produced their artifacts. Those are not source content; they are process metadata that downstream consumers don't need.

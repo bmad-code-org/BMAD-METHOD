@@ -16,23 +16,24 @@ The default invocation is headless: input goes in, JSON comes out. Omit keys for
 {
   "status": "complete",
   "intent": "create",
-  "spec_path": "{run_folder}/prd-spec-20260518-1432.md",
-  "decision_log_path": "{run_folder}/.decision-log.md",
-  "source_artifact": "{run_folder}/prd.md",
+  "spec_path": "_bmad-output/planning-artifacts/specs/spec-quarter-drop/",
+  "decision_log_path": "_bmad-output/planning-artifacts/specs/spec-quarter-drop/.decision-log.md",
+  "sources": ["_bmad-output/planning-artifacts/prds/prd-quarter-drop-2026-05-22/prd.md"],
+  "companions": ["glossary.md", "../../ux-designs/ux-quarter-drop-2026-05-22/DESIGN.md"],
   "capabilities": [
     {"id": "CAP-1", "intent": "User can record a voice memo pinned to current GPS coords."},
     {"id": "CAP-2", "intent": "User hears memos auto-trigger when walking within range of a drop."}
   ],
-  "verdict": "Ready for downstream. All six Spec Law rules pass.",
+  "verdict": "Ready for downstream. All eight Spec Law rules pass.",
   "assumptions": [],
   "open_questions": []
 }
 ```
 
-- `spec_path` follows the **Workspace** rules in `SKILL.md`: sibling of the source file (`{input-basename}-spec-{datetime}.md`) when input is a local file, or `{planning_artifacts}/specs/{slug}-spec-{datetime}.md` when input is chat-only or remote.
-- `source_artifact` is the path consumed when distilling a ceremony doc; `null` for pure brain-dump or chat-only runs.
-- `decision_log_path` is included only when a `.decision-log.md` was actually written to (the source's folder already had one). Omit the key entirely otherwise.
-- `capabilities` carries IDs and one-line intents only — enough for downstream consumers to address them without re-reading the Spec.
+- `spec_path` is the **spec folder**, per Workspace rules in `SKILL.md` (default: `{planning_artifacts}/specs/spec-{slug}/`). The kernel file inside is named per `customize.toml.spec_filename` (default `SPEC.md`).
+- `sources` is the array of files fully absorbed into the SPEC; audit-only, downstream does NOT read these. Empty when input had no fully-absorbed source (e.g., a UX-folder-only input).
+- `companions` is the array of `.md` files downstream MUST read alongside SPEC.md. Sibling-relative for spec-authored (e.g., `glossary.md`); outside-folder-relative for adopted (e.g., `../../ux-designs/{run}/DESIGN.md`).
+- `capabilities` carries IDs and one-line intents only — enough for downstream consumers to address them without re-reading the spec.
 - `verdict` is the one-paragraph self-validate result. When `status` is `"partial"`, the verdict explains what is blocking "ready for downstream."
 
 ## Validate-only
@@ -41,8 +42,8 @@ The default invocation is headless: input goes in, JSON comes out. Omit keys for
 {
   "status": "complete",
   "intent": "validate",
-  "spec_path": "{run_folder}/prd-spec-20260518-1432.md",
-  "decision_log_path": "{run_folder}/.decision-log.md",
+  "spec_path": "_bmad-output/planning-artifacts/specs/spec-quarter-drop/",
+  "decision_log_path": "_bmad-output/planning-artifacts/specs/spec-quarter-drop/.decision-log.md",
   "verdict": "Two rules weak: success signal is decorative; non-goals section empty.",
   "findings": [
     {"rule": "Success signal is concrete", "note": "Currently reads 'users love it' — not testable."},
@@ -62,4 +63,4 @@ The default invocation is headless: input goes in, JSON comes out. Omit keys for
 }
 ```
 
-Always include the intent (best-guess if not certain) and a one-sentence `reason`.
+Always include `intent` (best-guess if not certain). When `status` is `"blocked"`, include a one-sentence `reason`.
