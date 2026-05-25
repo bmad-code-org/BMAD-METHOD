@@ -1,0 +1,140 @@
+{
+  "schemaVersion": "1.0",
+  "releaseTag": "web-bundles-v1.0.0",
+  "releasedAt": "2026-05-25",
+  "downloadUrlPattern": "https://github.com/bmad-code-org/BMAD-METHOD/releases/download/web-bundles-v1.0.0/{slug}.zip",
+  "bundles": [
+    {
+      "slug": "brainstorming-coach",
+      "name": "Brainstorming Coach",
+      "tagline": "Facilitated ideation across 60+ techniques",
+      "description": "Unlock creativity through guided exploration. The coach walks you through proven brainstorming methods — divergent, convergent, lateral — and helps you converge to a decision worth acting on.",
+      "defaultPersona": {
+        "name": "Carson",
+        "title": "Elite Brainstorming Specialist",
+        "lineage": "Osborn lineage"
+      },
+      "swapPersona": {
+        "name": "Mary",
+        "title": "Strategic Business Analyst",
+        "lineage": "BMad analyst — research-first rigor"
+      },
+      "accentColor": "#3b82f6",
+      "motif": "constellation",
+      "knowledgeFiles": ["SKILL.md", "brain-methods.csv"],
+      "needsWebBrowsing": true,
+      "needsDeepResearch": false,
+      "stitchIntegration": false
+    },
+    {
+      "slug": "product-brief-coach",
+      "name": "Product Brief Coach",
+      "tagline": "Build a one-page product brief through guided discovery",
+      "description": "Shape a raw idea, evolve an existing brief, or pressure-test a draft before it goes downstream. The coach mirrors before pushing, names the assumption hiding under your confident sentence, and refuses to write the brief for you.",
+      "defaultPersona": {
+        "name": "Mary",
+        "title": "Strategic Business Analyst",
+        "lineage": "BMad analyst"
+      },
+      "swapPersona": {
+        "name": "Iris",
+        "title": "Senior Product Strategist",
+        "lineage": "Mirror-then-push, unhurried thinking-partner voice"
+      },
+      "accentColor": "#d4a853",
+      "motif": "single-page",
+      "knowledgeFiles": ["SKILL.md"],
+      "needsWebBrowsing": true,
+      "needsDeepResearch": false,
+      "stitchIntegration": false
+    },
+    {
+      "slug": "prfaq-coach",
+      "name": "PRFAQ Coach",
+      "tagline": "Working Backwards challenge to forge product concepts",
+      "description": "Write the press release first. Stress-test a product concept against the customer who will actually buy it, before any building begins. Customer-first by force of method.",
+      "defaultPersona": {
+        "name": "Mary",
+        "title": "Strategic Business Analyst",
+        "lineage": "BMad analyst"
+      },
+      "swapPersona": {
+        "name": "Bezos",
+        "title": "Working Backwards Coach",
+        "lineage": "Amazon discipline — direct, dry, customer-first"
+      },
+      "accentColor": "#dc2626",
+      "motif": "document-ribbon",
+      "knowledgeFiles": ["SKILL.md"],
+      "needsWebBrowsing": true,
+      "needsDeepResearch": false,
+      "stitchIntegration": false
+    },
+    {
+      "slug": "prd-coach",
+      "name": "PRD Coach",
+      "tagline": "Product Requirements with built-in validation",
+      "description": "Coach a PRD that engineering can actually build from. Capabilities go in the PRD, mechanism in the Addendum. Validation pass surfaces the gap between what you said and what you meant.",
+      "defaultPersona": {
+        "name": "John",
+        "title": "Product Manager",
+        "lineage": "BMad PM — Cagan lineage"
+      },
+      "swapPersona": {
+        "name": "Ezra",
+        "title": "Principal Product Manager",
+        "lineage": "Calmer, slower-tempo coaching"
+      },
+      "accentColor": "#6366f1",
+      "motif": "section-stack",
+      "knowledgeFiles": ["SKILL.md", "prd-template.md", "prd-validation-checklist.md"],
+      "needsWebBrowsing": true,
+      "needsDeepResearch": false,
+      "stitchIntegration": false
+    },
+    {
+      "slug": "ux-coach",
+      "name": "UX Coach",
+      "tagline": "UX patterns, flows, and design specifications",
+      "description": "Build spines engineering can take and ship. Pressure-test hierarchy, behavior, and visual logic. Hand-off-ready specs with optional Stitch integration for editable mockups.",
+      "defaultPersona": {
+        "name": "Sally",
+        "title": "UX Designer",
+        "lineage": "BMad UX designer"
+      },
+      "swapPersona": {
+        "name": "Kenji",
+        "title": "Principal Product Designer",
+        "lineage": "Rams restraint + Zhuo systems discipline"
+      },
+      "accentColor": "#10b981",
+      "motif": "nested-layers",
+      "knowledgeFiles": ["SKILL.md", "ux-validation.md"],
+      "needsWebBrowsing": true,
+      "needsDeepResearch": false,
+      "stitchIntegration": true
+    },
+    {
+      "slug": "market-and-industry-research",
+      "name": "Market & Industry Research",
+      "tagline": "Competitive landscape, JTBD, segments — Deep Research integrated",
+      "description": "Market research that drives a positioning decision, not a deliverable. Segments, competitive alternatives, regulatory and technical lenses. Uses Deep Research for the heavy lift.",
+      "defaultPersona": {
+        "name": "Mary",
+        "title": "Strategic Business Analyst",
+        "lineage": "BMad analyst"
+      },
+      "swapPersona": {
+        "name": "Geoff",
+        "title": "Market Strategist",
+        "lineage": "Geoffrey Moore + April Dunford lineage"
+      },
+      "accentColor": "#f59e0b",
+      "motif": "positioning-rings",
+      "knowledgeFiles": ["SKILL.md"],
+      "needsWebBrowsing": true,
+      "needsDeepResearch": true,
+      "stitchIntegration": false
+    }
+  ]
+}
