@@ -2,7 +2,7 @@
 title: "检查点预览"
 description: LLM 辅助的人机协作审查，引导你从目的到细节逐步走过一个变更
 sidebar:
-  order: 3
+  order: 8
 ---
 
 `bmad-checkpoint-preview` 是一个交互式的、LLM 辅助的人机协作审查工作流。它带你逐步走过一个代码变更——从目的和上下文到细节——让你能做出知情决策：是发布、返工，还是深入挖掘。

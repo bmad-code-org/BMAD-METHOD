@@ -13,14 +13,14 @@
       "name": "bmad-pro-skills",
       "source": "./",
       "description": "Next level skills for power users — advanced prompting techniques, agent management, and more.",
-      "version": "6.3.0",
+      "version": "6.6.0",
       "author": {
         "name": "Brian (BMad) Madison"
       },
       "skills": [
         "./src/core-skills/bmad-help",
         "./src/core-skills/bmad-brainstorming",
-        "./src/core-skills/bmad-distillator",
+        "./src/core-skills/bmad-spec",
         "./src/core-skills/bmad-party-mode",
         "./src/core-skills/bmad-shard-doc",
         "./src/core-skills/bmad-advanced-elicitation",
@@ -35,7 +35,7 @@
       "name": "bmad-method-lifecycle",
       "source": "./",
       "description": "Full-lifecycle AI development framework — agents and workflows for product analysis, planning, architecture, and implementation.",
-      "version": "6.3.0",
+      "version": "6.6.0",
       "author": {
         "name": "Brian (BMad) Madison"
       },

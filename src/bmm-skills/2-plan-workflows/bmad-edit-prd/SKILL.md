@@ -1,102 +1,30 @@
 ---
 name: bmad-edit-prd
-description: 'Edit an existing PRD. Use when the user says "edit this PRD".'
+description: 'DEPRECATED — consolidated into bmad-prd update intent - this skill will be removed in v7 in favor of `bmad-prd`.'
 ---
 
-# PRD Edit Workflow
+# DEPRECATED — forwards to bmad-prd (update intent)
 
-**Goal:** Edit and improve existing PRDs through structured enhancement workflow.
-
-**Your Role:** PRD improvement specialist.
-
-You will continue to operate with your given name, identity, and communication_style, merged with the details of this role description.
-
-## Conventions
-
-- Bare paths (e.g. `steps-e/step-e-01-discovery.md`) resolve from the skill root.
-- `{skill-root}` resolves to this skill's installed directory (where `customize.toml` lives).
-- `{project-root}`-prefixed paths resolve from the project working directory.
-- `{skill-name}` resolves to the skill directory's basename.
-
-## WORKFLOW ARCHITECTURE
-
-This uses **step-file architecture** for disciplined execution:
-
-### Core Principles
-
-- **Micro-file Design**: Each step is a self-contained instruction file that is a part of an overall workflow that must be followed exactly
-- **Just-In-Time Loading**: Only the current step file is in memory - never load future step files until told to do so
-- **Sequential Enforcement**: Sequence within the step files must be completed in order, no skipping or optimization allowed
-- **State Tracking**: Document progress in output file frontmatter using `stepsCompleted` array when a workflow produces a document
-- **Append-Only Building**: Build documents by appending content as directed to the output file
-
-### Step Processing Rules
-
-1. **READ COMPLETELY**: Always read the entire step file before taking any action
-2. **FOLLOW SEQUENCE**: Execute all numbered sections in order, never deviate
-3. **WAIT FOR INPUT**: If a menu is presented, halt and wait for user selection
-4. **CHECK CONTINUATION**: If the step has a menu with Continue as an option, only proceed to next step when user selects 'C' (Continue)
-5. **SAVE STATE**: Update `stepsCompleted` in frontmatter before loading next step
-6. **LOAD NEXT**: When directed, read fully and follow the next step file
-
-### Critical Rules (NO EXCEPTIONS)
-
-- 🛑 **NEVER** load multiple step files simultaneously
-- 📖 **ALWAYS** read entire step file before execution
-- 🚫 **NEVER** skip steps or optimize the sequence
-- 💾 **ALWAYS** update frontmatter of output files when writing the final output for a specific step
-- 🎯 **ALWAYS** follow the exact instructions in the step file
-- ⏸️ **ALWAYS** halt at menus and wait for user input
-- 📋 **NEVER** create mental todo lists from future steps
+This skill was consolidated into `bmad-prd`. It is retained as a thin compatibility shim so existing invocations by name and `_bmad/custom/bmad-edit-prd.toml` override files keep working. New work should invoke `bmad-prd` directly — it detects create / update / validate intent from the conversation.
 
 ## On Activation
 
-### Step 1: Resolve the Workflow Block
+1. Resolve customization: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`. This picks up any `{project-root}/_bmad/custom/bmad-edit-prd.toml` and `bmad-edit-prd.user.toml` overrides for the legacy fields (`activation_steps_prepend`, `activation_steps_append`, `persistent_facts`, `on_complete`).
 
-Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`
+2. Load `{project-root}/_bmad/bmm/config.yaml` (and `config.user.yaml` if present) to resolve `{user_name}` and `{communication_language}`.
 
-**If the script fails**, resolve the `workflow` block yourself by reading these three files in base → team → user order and applying the same structural merge rules as the resolver:
+3. Emit a deprecation notice to the user in `{communication_language}`:
 
-1. `{skill-root}/customize.toml` — defaults
-2. `{project-root}/_bmad/custom/{skill-name}.toml` — team overrides
-3. `{project-root}/_bmad/custom/{skill-name}.user.toml` — personal overrides
+   > Notice: `bmad-edit-prd` is deprecated and will be removed in a future release. It now forwards to `bmad-prd` with update intent. To silence this notice and access the full new customization surface (`prd_template`, `validation_checklist`, `doc_standards`, `external_sources`, `external_handoffs`, `output_dir`, `output_folder_name`), migrate `_bmad/custom/bmad-edit-prd.toml` to `_bmad/custom/bmad-prd.toml` and invoke `bmad-prd` directly next time. Customization fields that were in this version still remain in the new version and will be respected if present in `_bmad/custom/bmad-prd.toml`, but the new version also supports additional fields that you can take advantage of by migrating.
 
-Any missing file is skipped. Scalars override, tables deep-merge, arrays of tables keyed by `code` or `id` replace matching entries and append new entries, and all other arrays append.
+4. Invoke `bmad-prd` with the following context. Pass these as the activating context so `bmad-prd` honors them instead of resolving its own customization from scratch:
 
-### Step 2: Execute Prepend Steps
+   - **Intent:** `update` — skip `bmad-prd`'s usual intent detection step.
+   - **Pre-resolved legacy customization** — use these in place of resolving from `bmad-prd`'s own `customize.toml` for the four legacy fields. For everything else (`prd_template`, `validation_checklist`, `validation_report_template`, `doc_standards`, `output_dir`, `output_folder_name`, `external_sources`, `external_handoffs`), use `bmad-prd`'s own defaults and overrides as normal:
+     - `activation_steps_prepend` = the resolved value from step 1
+     - `activation_steps_append` = the resolved value from step 1
+     - `persistent_facts` = the resolved value from step 1
+     - `on_complete` = the resolved value from step 1
+   - **Original user input:** forward whatever the user said when invoking this skill verbatim (the target PRD path, the change signal, etc.).
 
-Execute each entry in `{workflow.activation_steps_prepend}` in order before proceeding.
-
-### Step 3: Load Persistent Facts
-
-Treat every entry in `{workflow.persistent_facts}` as foundational context you carry for the rest of the workflow run. Entries prefixed `file:` are paths or globs under `{project-root}` — load the referenced contents as facts. All other entries are facts verbatim.
-
-### Step 4: Load Config
-
-Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
-- Use `{user_name}` for greeting
-- Use `{communication_language}` for all communications
-- Use `{document_output_language}` for output documents
-- Use `{planning_artifacts}` for output location and artifact scanning
-- Use `{project_knowledge}` for additional context scanning
-
-### Step 5: Greet the User
-
-Greet `{user_name}`, speaking in `{communication_language}`.
-
-### Step 6: Execute Append Steps
-
-Execute each entry in `{workflow.activation_steps_append}` in order.
-
-Activation is complete. Begin the workflow below.
-
-## Execution
-
-✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the configured `{communication_language}`.
-✅ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_language}`.
-
-**Edit Mode: Improving an existing PRD.**
-
-Prompt for PRD path: "Which PRD would you like to edit? Please provide the path to the PRD.md file."
-
-Then read fully and follow: `./steps-e/step-e-01-discovery.md`
+   `bmad-prd` takes the workflow from here. Do not execute any further steps in this shim.

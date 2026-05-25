@@ -285,6 +285,10 @@ async function runTests() {
     const opencodeInstaller = platformCodes.platforms.opencode?.installer;
 
     assert(opencodeInstaller?.target_dir === '.agents/skills', 'OpenCode target_dir uses native skills path');
+    assert(
+      opencodeInstaller?.commands_target_dir === '.opencode/commands',
+      'OpenCode commands_target_dir is configured for /<skill> slash commands',
+    );
 
     const tempProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-opencode-test-'));
     const installedBmadDir = await createTestBmadFixture();
@@ -300,6 +304,55 @@ async function runTests() {
 
     const skillFile = path.join(tempProjectDir, '.agents', 'skills', 'bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile), 'OpenCode install writes SKILL.md directory output');
+
+    // Command pointer assertions: a /<canonicalId> slash command should exist
+    // for each installed skill so users can invoke skills directly without
+    // going through the /skills menu.
+    const commandFile = path.join(tempProjectDir, '.opencode', 'commands', 'bmad-master.md');
+    assert(await fs.pathExists(commandFile), 'OpenCode install writes per-skill command pointer file');
+
+    const commandContent = await fs.readFile(commandFile, 'utf8');
+    assert(commandContent.includes('@skills/bmad-master'), 'Command pointer body references the skill via @skills/<canonicalId>');
+    assert(commandContent.includes('description:'), 'Command pointer carries a description in YAML frontmatter');
+
+    // Idempotency: re-running install must not duplicate or rewrite pointers.
+    const result2 = await ideManager.setup('opencode', tempProjectDir, installedBmadDir, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+    assert(result2.success === true, 'Second OpenCode install succeeds (idempotent)');
+    assert(await fs.pathExists(commandFile), 'Command pointer survives a second install pass');
+
+    // Description-update propagation: when the manifest description changes
+    // and the on-disk pointer still matches the generator pattern, refresh
+    // the file so users see the updated description.
+    const csvPath = path.join(installedBmadDir, '_config', 'skill-manifest.csv');
+    const updatedCsv =
+      'canonicalId,name,description,module,path\n' +
+      '"bmad-master","bmad-master","UPDATED description for the test agent","core","_bmad/core/bmad-master/SKILL.md"\n';
+    await fs.writeFile(csvPath, updatedCsv);
+    const result3 = await ideManager.setup('opencode', tempProjectDir, installedBmadDir, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+    assert(result3.success === true, 'Third OpenCode install succeeds after description update');
+    const refreshed = await fs.readFile(commandFile, 'utf8');
+    assert(refreshed.includes('UPDATED description'), 'Generator-shaped pointer is refreshed when manifest description changes');
+
+    // Hand-edit preservation across the production install flow. The
+    // installer passes previousSkillIds — without the cleanup-side spare,
+    // hand edits would be wiped here.
+    const SENTINEL = 'HAND_EDITED_BY_USER_SHOULD_SURVIVE';
+    const handEditedBody = `---\ndescription: my custom description\n---\n\n${SENTINEL}\n`;
+    await fs.writeFile(commandFile, handEditedBody);
+    const result4 = await ideManager.setup('opencode', tempProjectDir, installedBmadDir, {
+      silent: true,
+      selectedModules: ['bmm'],
+      previousSkillIds: new Set(['bmad-master']),
+    });
+    assert(result4.success === true, 'Fourth OpenCode install succeeds with hand-edited pointer present');
+    const afterReinstall = await fs.readFile(commandFile, 'utf8');
+    assert(afterReinstall.includes(SENTINEL), 'Hand-edited pointer survives a routine reinstall (cleanup spares active-manifest IDs)');
 
     await fs.remove(tempProjectDir);
     await fs.remove(path.dirname(installedBmadDir));
@@ -504,9 +557,82 @@ async function runTests() {
     const copilotInstaller = platformCodes17.platforms['github-copilot']?.installer;
 
     assert(copilotInstaller?.target_dir === '.agents/skills', 'GitHub Copilot target_dir uses native skills path');
+    assert(
+      copilotInstaller?.commands_target_dir === '.github/agents',
+      'GitHub Copilot commands_target_dir is configured for the Custom Agents picker',
+    );
+    assert(copilotInstaller?.commands_extension === '.agent.md', 'GitHub Copilot uses .agent.md extension for Custom Agents files');
+    assert(
+      typeof copilotInstaller?.commands_body_template === 'string' && copilotInstaller.commands_body_template.includes('{canonicalId}'),
+      'GitHub Copilot defines a commands_body_template with {canonicalId} placeholder',
+    );
+    assert(
+      copilotInstaller?.commands_filter === 'agents-only',
+      'GitHub Copilot filters Custom Agents picker to persona agents only (agents-only)',
+    );
 
     const tempProjectDir17 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-copilot-test-'));
     const installedBmadDir17 = await createTestBmadFixture();
+
+    // Extend the fixture to exercise the agents-only filter, which detects
+    // persona agents by the `[agent]` section in each skill's source
+    // customize.toml. Five skill types covered:
+    //
+    //   1. Persona agent — has customize.toml with [agent]      → INCLUDED
+    //   2. Persona with non-conventional id — also has [agent]   → INCLUDED
+    //      (verifies the filter doesn't depend on `-agent-` naming)
+    //   3. Meta-skill whose id contains `-agent-` but isn't a
+    //      persona — has customize.toml with [workflow]          → EXCLUDED
+    //      (mirrors `bmad-agent-builder` in the real manifest)
+    //   4. Workflow skill — no customize.toml at all             → EXCLUDED
+    //   5. `bmad-help` — meta-help skill with no customize.toml;
+    //      every persona agent's activation already advertises it,
+    //      so it's correctly excluded from the picker as redundant    → EXCLUDED
+    const fixtureCsvPath17 = path.join(installedBmadDir17, '_config', 'skill-manifest.csv');
+    await fs.writeFile(
+      fixtureCsvPath17,
+      [
+        'canonicalId,name,description,module,path',
+        '"bmad-master","bmad-master","Workflow with no customize.toml — should NOT appear in Copilot agents picker","core","_bmad/core/bmad-master/SKILL.md"',
+        '"bmad-agent-fixture","bmad-agent-fixture","Persona agent — customize.toml has [agent], SHOULD appear","core","_bmad/core/bmad-agent-fixture/SKILL.md"',
+        '"bmad-tea","bmad-tea","Non-conventional id but [agent] in customize.toml — SHOULD appear","core","_bmad/core/bmad-tea/SKILL.md"',
+        '"bmad-agent-builder","bmad-agent-builder","Skill-builder workflow — id contains -agent- but customize.toml has [workflow] — should NOT appear","core","_bmad/core/bmad-agent-builder/SKILL.md"',
+        '"bmad-help","bmad-help","Meta-help skill — no customize.toml; SHOULD NOT appear in agents picker (toml-driven filter)","core","_bmad/core/bmad-help/SKILL.md"',
+        '',
+      ].join('\n'),
+    );
+
+    // Materialise the source skill directories so the agents-only filter
+    // can read their customize.toml. The bmad-master and bmad-agent-builder
+    // SKILL.md files were already populated by createTestBmadFixture (they
+    // share the bmad-master target_dir layout); only the customize.toml
+    // and the new agent fixtures need to be created here.
+    for (const id of ['bmad-agent-fixture', 'bmad-tea', 'bmad-agent-builder', 'bmad-help']) {
+      const dir17 = path.join(installedBmadDir17, 'core', id);
+      await fs.ensureDir(dir17);
+      await fs.writeFile(
+        path.join(dir17, 'SKILL.md'),
+        ['---', `name: ${id}`, `description: fixture for ${id}`, '---', '', `Body of ${id}.`].join('\n'),
+      );
+    }
+    // Note: bmad-help intentionally has NO customize.toml — it exercises
+    // the toml-driven filter's exclusion path (a skill with no
+    // customize.toml is correctly kept out of the Copilot agents picker).
+    // [agent] customize.toml for the two persona fixtures.
+    await fs.writeFile(
+      path.join(installedBmadDir17, 'core', 'bmad-agent-fixture', 'customize.toml'),
+      ['[agent]', 'name = "Fixture Agent"', 'title = "Test Persona"', ''].join('\n'),
+    );
+    await fs.writeFile(
+      path.join(installedBmadDir17, 'core', 'bmad-tea', 'customize.toml'),
+      ['[agent]', 'name = "Murat"', 'title = "Test Architect"', ''].join('\n'),
+    );
+    // [workflow] customize.toml for the meta-skill — its id contains `-agent-`
+    // but it is NOT a persona (mirrors bmad-agent-builder in production).
+    await fs.writeFile(
+      path.join(installedBmadDir17, 'core', 'bmad-agent-builder', 'customize.toml'),
+      ['[workflow]', '', '# Meta-skill that builds agents but is not itself a persona.', ''].join('\n'),
+    );
 
     const copilotInstructionsPath17 = path.join(tempProjectDir17, '.github', 'copilot-instructions.md');
     await fs.ensureDir(path.dirname(copilotInstructionsPath17));
@@ -542,6 +668,56 @@ async function runTests() {
       cleanedInstructions17.includes('User content before') && cleanedInstructions17.includes('User content after'),
       'GitHub Copilot setup preserves user content in copilot-instructions.md',
     );
+
+    // Custom Agents picker integration: persona agents (those with [agent]
+    // in their source customize.toml) get .agent.md files in
+    // .github/agents/. Workflows and meta-skills with [workflow] (or no
+    // customize.toml at all) do NOT — the agents-only filter keeps the
+    // picker uncluttered and the signal is naming-independent.
+    const agentsDir17 = path.join(tempProjectDir17, '.github', 'agents');
+    const agentFileForPersona17 = path.join(agentsDir17, 'bmad-agent-fixture.agent.md');
+    const agentFileForTea17 = path.join(agentsDir17, 'bmad-tea.agent.md');
+    const agentFileForWorkflow17 = path.join(agentsDir17, 'bmad-master.agent.md');
+    const agentFileForMetaSkill17 = path.join(agentsDir17, 'bmad-agent-builder.agent.md');
+    const agentFileForBmadHelp17 = path.join(agentsDir17, 'bmad-help.agent.md');
+
+    assert(
+      await fs.pathExists(agentFileForPersona17),
+      'Persona agent ([agent] in customize.toml) gets a .agent.md file in .github/agents/',
+    );
+    assert(await fs.pathExists(agentFileForTea17), 'Non-conventional id with [agent] in customize.toml is included (no allowlist needed)');
+    assert(!(await fs.pathExists(agentFileForWorkflow17)), 'Workflow skill (no customize.toml) is FILTERED OUT of .github/agents/');
+    assert(
+      !(await fs.pathExists(agentFileForBmadHelp17)),
+      'bmad-help is excluded from Copilot agents picker (no customize.toml; allowlist removed per maintainer feedback)',
+    );
+    assert(
+      !(await fs.pathExists(agentFileForMetaSkill17)),
+      'Meta-skill with -agent- in id but [workflow] in customize.toml is FILTERED OUT (signal is behavior, not naming)',
+    );
+
+    // Body content of the persona agent file: frontmatter description +
+    // LOAD pattern referencing the skill's SKILL.md path under target_dir.
+    const personaAgentContent17 = await fs.readFile(agentFileForPersona17, 'utf8');
+    assert(
+      personaAgentContent17.includes('description:'),
+      'Copilot agent pointer carries a description in YAML frontmatter (drives the agents picker label)',
+    );
+    assert(
+      personaAgentContent17.includes('{project-root}/.agents/skills/bmad-agent-fixture/SKILL.md'),
+      'Copilot agent pointer body resolves to the skill via LOAD {project-root}/<target_dir>/<id>/SKILL.md',
+    );
+
+    // Idempotency: re-running setup must not duplicate or rewrite the agent
+    // pointer when the source manifest is unchanged, AND must not start
+    // emitting workflow-skill agent files.
+    const result17b = await ideManager17.setup('github-copilot', tempProjectDir17, installedBmadDir17, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+    assert(result17b.success === true, 'Second GitHub Copilot install succeeds (idempotent)');
+    assert(await fs.pathExists(agentFileForPersona17), 'Persona agent pointer survives a second install pass');
+    assert(!(await fs.pathExists(agentFileForWorkflow17)), 'Workflow skill remains filtered out of agents picker on second install');
 
     await fs.remove(tempProjectDir17);
     await fs.remove(path.dirname(installedBmadDir17));
@@ -1490,9 +1666,9 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Test Suite 33: Community & Custom Module Managers
+  // Test Suite 33: Custom Module Managers
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 33: Community & Custom Module Managers${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 33: Custom Module Managers${colors.reset}\n`);
 
   // --- CustomModuleManager._normalizeCustomModule ---
   {
@@ -1514,288 +1690,6 @@ async function runTests() {
     assert(result2.author === 'Fallback Owner', 'normalizeCustomModule falls back to data.owner');
   }
 
-  // --- CommunityModuleManager._normalizeCommunityModule ---
-  {
-    const { CommunityModuleManager } = require('../tools/installer/modules/community-manager');
-    const mgr = new CommunityModuleManager();
-
-    const mod = {
-      name: 'test-mod',
-      display_name: 'Test Module',
-      code: 'tm',
-      description: 'desc',
-      repository: 'https://github.com/o/r',
-      module_definition: 'src/module.yaml',
-      category: 'software-development',
-      subcategory: 'dev-tools',
-      trust_tier: 'bmad-certified',
-      version: '2.0.0',
-      approved_sha: 'abc123',
-      promoted: true,
-      promoted_rank: 1,
-      keywords: ['test', 'module'],
-    };
-    const result = mgr._normalizeCommunityModule(mod);
-
-    assert(result.code === 'tm', 'normalizeCommunityModule sets code');
-    assert(result.displayName === 'Test Module', 'normalizeCommunityModule sets displayName from display_name');
-    assert(result.type === 'community', 'normalizeCommunityModule sets type to community');
-    assert(result.category === 'software-development', 'normalizeCommunityModule preserves category');
-    assert(result.trustTier === 'bmad-certified', 'normalizeCommunityModule maps trust_tier');
-    assert(result.approvedSha === 'abc123', 'normalizeCommunityModule maps approved_sha');
-    assert(result.promoted === true, 'normalizeCommunityModule maps promoted');
-    assert(result.promotedRank === 1, 'normalizeCommunityModule maps promoted_rank');
-    assert(result.builtIn === false, 'normalizeCommunityModule sets builtIn false');
-  }
-
-  // --- CommunityModuleManager.searchByKeyword (with injected cache) ---
-  {
-    const { CommunityModuleManager } = require('../tools/installer/modules/community-manager');
-    const mgr = new CommunityModuleManager();
-
-    // Inject cached index to avoid network call
-    mgr._cachedIndex = {
-      modules: [
-        { name: 'mod-a', display_name: 'Alpha', code: 'a', description: 'testing tools', category: 'dev', keywords: ['test'] },
-        { name: 'mod-b', display_name: 'Beta', code: 'b', description: 'design suite', category: 'design', keywords: ['ux'] },
-        { name: 'mod-c', display_name: 'Gamma', code: 'c', description: 'game engine', category: 'game', keywords: ['unity'] },
-      ],
-    };
-
-    const r1 = await mgr.searchByKeyword('test');
-    assert(r1.length === 1 && r1[0].code === 'a', 'searchByKeyword matches keyword');
-
-    const r2 = await mgr.searchByKeyword('design');
-    assert(r2.length === 1 && r2[0].code === 'b', 'searchByKeyword matches description');
-
-    const r3 = await mgr.searchByKeyword('alpha');
-    assert(r3.length === 1 && r3[0].code === 'a', 'searchByKeyword matches display name');
-
-    const r4 = await mgr.searchByKeyword('xyz');
-    assert(r4.length === 0, 'searchByKeyword returns empty for no match');
-
-    const r5 = await mgr.searchByKeyword('UNITY');
-    assert(r5.length === 1 && r5[0].code === 'c', 'searchByKeyword is case-insensitive');
-  }
-
-  // --- CommunityModuleManager.listFeatured (with injected cache) ---
-  {
-    const { CommunityModuleManager } = require('../tools/installer/modules/community-manager');
-    const mgr = new CommunityModuleManager();
-
-    mgr._cachedIndex = {
-      modules: [
-        { name: 'a', code: 'a', promoted: true, promoted_rank: 3 },
-        { name: 'b', code: 'b', promoted: false },
-        { name: 'c', code: 'c', promoted: true, promoted_rank: 1 },
-      ],
-    };
-
-    const featured = await mgr.listFeatured();
-    assert(featured.length === 2, 'listFeatured returns only promoted modules');
-    assert(featured[0].code === 'c' && featured[1].code === 'a', 'listFeatured sorts by promoted_rank ascending');
-  }
-
-  // --- CommunityModuleManager.getCategoryList (with injected cache) ---
-  {
-    const { CommunityModuleManager } = require('../tools/installer/modules/community-manager');
-    const mgr = new CommunityModuleManager();
-
-    mgr._cachedIndex = {
-      modules: [
-        { name: 'a', code: 'a', category: 'software-development' },
-        { name: 'b', code: 'b', category: 'design-and-creative' },
-        { name: 'c', code: 'c', category: 'software-development' },
-      ],
-    };
-    mgr._cachedCategories = {
-      categories: {
-        'software-development': { name: 'Software Development' },
-        'design-and-creative': { name: 'Design & Creative' },
-      },
-    };
-
-    const cats = await mgr.getCategoryList();
-    assert(cats.length === 2, 'getCategoryList returns categories with modules');
-    const swDev = cats.find((c) => c.slug === 'software-development');
-    assert(swDev && swDev.moduleCount === 2, 'getCategoryList counts modules per category');
-    assert(cats[0].name === 'Design & Creative', 'getCategoryList sorts alphabetically');
-  }
-
-  // --- CommunityModuleManager SHA pinning normalization ---
-  {
-    const { CommunityModuleManager } = require('../tools/installer/modules/community-manager');
-    const mgr = new CommunityModuleManager();
-
-    // Module with SHA set
-    const withSha = mgr._normalizeCommunityModule({
-      name: 'pinned-mod',
-      code: 'pm',
-      approved_sha: 'abc123def456',
-      approved_tag: 'v1.0.0',
-    });
-    assert(withSha.approvedSha === 'abc123def456', 'SHA is preserved when set');
-    assert(withSha.approvedTag === 'v1.0.0', 'Tag is preserved as metadata');
-
-    // Module with null SHA (trusted contributor)
-    const noSha = mgr._normalizeCommunityModule({
-      name: 'trusted-mod',
-      code: 'tm',
-      approved_sha: null,
-    });
-    assert(noSha.approvedSha === null, 'Null SHA means no pinning (trusted contributor)');
-  }
-
-  // --- CommunityModuleManager.listByCategory (with injected cache) ---
-  {
-    const { CommunityModuleManager } = require('../tools/installer/modules/community-manager');
-    const mgr = new CommunityModuleManager();
-
-    mgr._cachedIndex = {
-      modules: [
-        { name: 'a', code: 'a', category: 'design-and-creative' },
-        { name: 'b', code: 'b', category: 'software-development' },
-        { name: 'c', code: 'c', category: 'design-and-creative' },
-        { name: 'd', code: 'd', category: 'game-development' },
-      ],
-    };
-
-    const design = await mgr.listByCategory('design-and-creative');
-    assert(design.length === 2, 'listByCategory filters to matching category');
-    assert(
-      design.every((m) => m.category === 'design-and-creative'),
-      'listByCategory returns only matching modules',
-    );
-
-    const empty = await mgr.listByCategory('nonexistent');
-    assert(empty.length === 0, 'listByCategory returns empty for unknown category');
-  }
-
-  // --- CommunityModuleManager.getModuleByCode (with injected cache) ---
-  {
-    const { CommunityModuleManager } = require('../tools/installer/modules/community-manager');
-    const mgr = new CommunityModuleManager();
-
-    mgr._cachedIndex = {
-      modules: [
-        { name: 'test-mod', code: 'tm', display_name: 'Test Module' },
-        { name: 'other-mod', code: 'om', display_name: 'Other Module' },
-      ],
-    };
-
-    const found = await mgr.getModuleByCode('tm');
-    assert(found !== null && found.code === 'tm', 'getModuleByCode finds existing module');
-
-    const notFound = await mgr.getModuleByCode('xyz');
-    assert(notFound === null, 'getModuleByCode returns null for unknown code');
-  }
-
-  console.log('');
-
-  // ============================================================
-  // Test Suite 34: RegistryClient GitHub API Cascade
-  // ============================================================
-  console.log(`${colors.yellow}Test Suite 34: RegistryClient GitHub API Cascade${colors.reset}\n`);
-
-  {
-    const { RegistryClient } = require('../tools/installer/modules/registry-client');
-
-    // Build a RegistryClient with stubbed fetch paths so we can assert on cascade behavior
-    // without making real network calls.
-    function createStubbedClient({ apiResult, rawResult }) {
-      const client = new RegistryClient();
-      const calls = [];
-
-      // Stub _fetchWithHeaders (GitHub API path)
-      client._fetchWithHeaders = async (url) => {
-        calls.push(`api:${url}`);
-        if (apiResult instanceof Error) throw apiResult;
-        return apiResult;
-      };
-
-      // Stub fetch (raw CDN path) — only intercept raw.githubusercontent.com calls
-      const originalFetch = client.fetch.bind(client);
-      client.fetch = async (url, timeout) => {
-        if (url.includes('raw.githubusercontent.com')) {
-          calls.push(`raw:${url}`);
-          if (rawResult instanceof Error) throw rawResult;
-          return rawResult;
-        }
-        return originalFetch(url, timeout);
-      };
-
-      return { client, calls };
-    }
-
-    // --- API success skips raw CDN ---
-    {
-      const { client, calls } = createStubbedClient({ apiResult: 'api-content', rawResult: 'raw-content' });
-      const result = await client.fetchGitHubFile('owner', 'repo', 'path/file.txt', 'main');
-
-      assert(result === 'api-content', 'RegistryClient API success returns API content');
-      assert(calls.length === 1, 'RegistryClient API success makes exactly one call');
-      assert(calls[0].startsWith('api:'), 'RegistryClient API success calls API endpoint');
-    }
-
-    // --- API failure falls back to raw CDN ---
-    {
-      const { client, calls } = createStubbedClient({ apiResult: new Error('HTTP 403'), rawResult: 'raw-content' });
-      const result = await client.fetchGitHubFile('owner', 'repo', 'path/file.txt', 'main');
-
-      assert(result === 'raw-content', 'RegistryClient API failure returns raw CDN content');
-      assert(calls.length === 2, 'RegistryClient API failure makes two calls');
-      assert(calls[0].startsWith('api:'), 'RegistryClient first call is to API');
-      assert(calls[1].startsWith('raw:'), 'RegistryClient second call is to raw CDN');
-    }
-
-    // --- Both endpoints failing throws ---
-    {
-      const { client } = createStubbedClient({ apiResult: new Error('HTTP 403'), rawResult: new Error('HTTP 404') });
-      let threw = false;
-      try {
-        await client.fetchGitHubFile('owner', 'repo', 'path/file.txt', 'main');
-      } catch {
-        threw = true;
-      }
-      assert(threw, 'RegistryClient both endpoints failing throws an error');
-    }
-
-    // --- API URL construction ---
-    {
-      const { client, calls } = createStubbedClient({ apiResult: 'content', rawResult: 'content' });
-      await client.fetchGitHubFile('bmad-code-org', 'bmad-plugins-marketplace', 'registry/official.yaml', 'main');
-
-      const apiCall = calls[0];
-      assert(
-        apiCall.includes('api.github.com/repos/bmad-code-org/bmad-plugins-marketplace/contents/registry/official.yaml'),
-        'RegistryClient API URL contains correct path',
-      );
-      assert(apiCall.includes('ref=main'), 'RegistryClient API URL contains ref parameter');
-    }
-
-    // --- Raw CDN URL construction ---
-    {
-      const { client, calls } = createStubbedClient({ apiResult: new Error('fail'), rawResult: 'content' });
-      await client.fetchGitHubFile('bmad-code-org', 'bmad-plugins-marketplace', 'registry/official.yaml', 'main');
-
-      const rawCall = calls[1];
-      assert(
-        rawCall.includes('raw.githubusercontent.com/bmad-code-org/bmad-plugins-marketplace/main/registry/official.yaml'),
-        'RegistryClient raw CDN URL contains correct path',
-      );
-    }
-
-    // --- fetchGitHubYaml parses YAML ---
-    {
-      const yamlContent = 'modules:\n  - name: test\n    description: A test module\n';
-      const { client } = createStubbedClient({ apiResult: yamlContent, rawResult: yamlContent });
-      const result = await client.fetchGitHubYaml('owner', 'repo', 'file.yaml', 'main');
-
-      assert(Array.isArray(result.modules), 'fetchGitHubYaml parses YAML correctly');
-      assert(result.modules[0].name === 'test', 'fetchGitHubYaml preserves YAML values');
-    }
-  }
-
   console.log('');
 
   // ============================================================
@@ -1813,12 +1707,12 @@ async function runTests() {
       const moduleConfigs = {
         core: {
           user_name: 'TestUser',
+          project_name: 'demo-project',
           communication_language: 'Spanish',
           document_output_language: 'English',
           output_folder: '_bmad-output',
         },
         bmm: {
-          project_name: 'demo-project',
           user_skill_level: 'expert',
           planning_artifacts: '{project-root}/_bmad-output/planning-artifacts',
           implementation_artifacts: '{project-root}/_bmad-output/implementation-artifacts',
@@ -1826,7 +1720,10 @@ async function runTests() {
           // Spread-from-core pollution: legacy per-module config.yaml merges
           // core values into every module; writeCentralConfig must strip these
           // from [modules.bmm] so core values only live in [core].
+          // project_name is now a core key (#2279), so it joins user_name etc.
+          // as a spread-from-core key that must be stripped.
           user_name: 'TestUser',
+          project_name: 'stale-bmm-copy',
           communication_language: 'Spanish',
           document_output_language: 'English',
           output_folder: '_bmad-output',
@@ -1874,6 +1771,7 @@ async function runTests() {
       assert(teamContent.includes('[core]'), 'config.toml has [core] section');
       assert(teamContent.includes('document_output_language = "English"'), 'Team-scope core key lands in config.toml');
       assert(teamContent.includes('output_folder = "_bmad-output"'), 'Team-scope output_folder lands in config.toml');
+      assert(teamContent.includes('project_name = "demo-project"'), 'project_name lands in [core] (core key as of #2279)');
       assert(!teamContent.includes('user_name'), 'user_name (scope: user) is absent from config.toml');
       assert(!teamContent.includes('communication_language'), 'communication_language (scope: user) is absent from config.toml');
 
@@ -1888,7 +1786,9 @@ async function runTests() {
       assert(bmmTeamMatch !== null, 'config.toml has [modules.bmm] section');
       if (bmmTeamMatch) {
         const bmmTeamBlock = bmmTeamMatch[0];
-        assert(bmmTeamBlock.includes('project_name = "demo-project"'), 'bmm team-scope key lands under [modules.bmm]');
+        assert(bmmTeamBlock.includes('planning_artifacts'), 'bmm-owned team-scope key (planning_artifacts) lands under [modules.bmm]');
+        assert(!bmmTeamBlock.includes('project_name'), 'project_name stripped from [modules.bmm] (now a core key, #2279)');
+        assert(!bmmTeamBlock.includes('stale-bmm-copy'), 'stale bmm-copy of project_name not leaked into config.toml');
         assert(!bmmTeamBlock.includes('user_name'), 'user_name stripped from [modules.bmm] (core-key pollution)');
         assert(!bmmTeamBlock.includes('communication_language'), 'communication_language stripped from [modules.bmm]');
         assert(!bmmTeamBlock.includes('user_skill_level'), 'user_skill_level (scope: user) absent from [modules.bmm] in config.toml');
@@ -2732,6 +2632,113 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test Suite 40c: OpenCode command pointers in multi-IDE batches
+  // ============================================================
+  // Regression: when OpenCode is the *peer* in a setupBatch sharing
+  // .agents/skills (e.g. with openhands), the skill write is dedup-skipped
+  // but the per-IDE .opencode/commands/ pointers must still be generated.
+  // Symmetrically, partial uninstall while a peer remains must still clean
+  // up OpenCode's own command pointers.
+  console.log(`${colors.yellow}Test Suite 40c: OpenCode command pointers in shared-target batches${colors.reset}\n`);
+
+  try {
+    clearCache();
+    const platformCodes40c = await loadPlatformCodes();
+    const opencodeTarget40c = platformCodes40c.platforms.opencode?.installer?.target_dir;
+    const openhandsTarget40c = platformCodes40c.platforms.openhands?.installer?.target_dir;
+    assert(
+      opencodeTarget40c === '.agents/skills' && openhandsTarget40c === '.agents/skills',
+      'OpenCode and OpenHands share .agents/skills target_dir',
+    );
+
+    // Order A: opencode first → opencode is the writer.
+    const projA = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-opencode-batch-a-'));
+    const bmadA = await createTestBmadFixture();
+    const mgrA = new IdeManager();
+    await mgrA.ensureInitialized();
+    const resultsA = await mgrA.setupBatch(['opencode', 'openhands'], projA, bmadA, {
+      silent: true,
+      selectedModules: ['core'],
+    });
+    const cmdA = path.join(projA, '.opencode', 'commands', 'bmad-master.md');
+    assert(
+      resultsA.every((r) => r.success === true),
+      'opencode-first batch: all platforms succeed',
+    );
+    assert(await fs.pathExists(cmdA), 'opencode-first batch: command pointer is created');
+
+    // Order B: openhands first → opencode is the peer (skipTarget=true).
+    // Without the fix, the early-return would bypass installCommandPointers.
+    const projB = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-opencode-batch-b-'));
+    const bmadB = await createTestBmadFixture();
+    const mgrB = new IdeManager();
+    await mgrB.ensureInitialized();
+    const resultsB = await mgrB.setupBatch(['openhands', 'opencode'], projB, bmadB, {
+      silent: true,
+      selectedModules: ['core'],
+    });
+    const cmdB = path.join(projB, '.opencode', 'commands', 'bmad-master.md');
+    const opencodeResultB = resultsB.find((r) => r.ide === 'opencode');
+    assert(
+      resultsB.every((r) => r.success === true),
+      'openhands-first batch: all platforms succeed',
+    );
+    assert(
+      opencodeResultB?.handlerResult?.results?.sharedTargetHandledByPeer === true,
+      'openhands-first batch: opencode is marked sharedTargetHandledByPeer (skill write deduped)',
+    );
+    assert(await fs.pathExists(cmdB), 'openhands-first batch: command pointer is generated even when skill write is deduped');
+
+    // Cleanup symmetry: uninstall opencode while openhands remains.
+    // Uses an in-project bmadDir so the cleanup path can compute removalSet
+    // from the manifest (the production layout). The cross-temp-dir fixture
+    // above can't exercise this — same constraint Test Suite 40 documents.
+    const projC = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-opencode-batch-c-'));
+    const bmadC = path.join(projC, '_bmad');
+    await fs.ensureDir(path.join(bmadC, '_config'));
+    await fs.writeFile(
+      path.join(bmadC, '_config', 'skill-manifest.csv'),
+      'canonicalId,name,description,module,path\n' +
+        '"bmad-master","bmad-master","Minimal test agent fixture","core","_bmad/core/bmad-master/SKILL.md"\n',
+    );
+    const skillC = path.join(bmadC, 'core', 'bmad-master');
+    await fs.ensureDir(skillC);
+    await fs.writeFile(
+      path.join(skillC, 'SKILL.md'),
+      ['---', 'name: bmad-master', 'description: Minimal test agent fixture', '---', '', 'You are a test agent.'].join('\n'),
+    );
+
+    const mgrC = new IdeManager();
+    await mgrC.ensureInitialized();
+    await mgrC.setupBatch(['openhands', 'opencode'], projC, bmadC, {
+      silent: true,
+      selectedModules: ['core'],
+    });
+    const cmdC = path.join(projC, '.opencode', 'commands', 'bmad-master.md');
+    assert(await fs.pathExists(cmdC), 'in-project fixture: pointer is generated for opencode peer');
+
+    const cleanupResultsC = await mgrC.cleanupByList(projC, ['opencode'], {
+      silent: true,
+      remainingIdes: ['openhands'],
+    });
+    assert(cleanupResultsC[0].success !== false, 'opencode partial-uninstall reports success');
+    const sharedSurvivesC = await fs.pathExists(path.join(projC, '.agents', 'skills', 'bmad-master', 'SKILL.md'));
+    assert(sharedSurvivesC, 'shared .agents/skills/ survives partial uninstall (peer still uses it)');
+    assert(!(await fs.pathExists(cmdC)), 'opencode command pointer is removed on partial uninstall even when peer remains');
+
+    await fs.remove(projA).catch(() => {});
+    await fs.remove(path.dirname(bmadA)).catch(() => {});
+    await fs.remove(projB).catch(() => {});
+    await fs.remove(path.dirname(bmadB)).catch(() => {});
+    await fs.remove(projC).catch(() => {});
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 40c setup failed: ${error.message}${colors.reset}`);
+    failed++;
+  }
+
+  console.log('');
+
+  // ============================================================
   // Test Suite 41: Custom-module skill ownership (non-bmad prefix)
   // ============================================================
   console.log(`${colors.yellow}Test Suite 41: Custom-module skill ownership${colors.reset}\n`);
@@ -2768,6 +2775,464 @@ async function runTests() {
     await fs.remove(fixtureRoot41).catch(() => {});
   } catch (error) {
     console.log(`${colors.red}Test Suite 41 setup failed: ${error.message}${colors.reset}`);
+    failed++;
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 42: --tools flag parsing & validation (#2326)
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 42: --tools flag parsing & validation${colors.reset}\n`);
+  try {
+    const { UI } = require('../tools/installer/ui');
+    const ui = new UI();
+    const known = new Set(['claude-code', 'cursor', 'windsurf']);
+
+    assert(
+      JSON.stringify(ui._parseToolsFlag('claude-code', known)) === JSON.stringify(['claude-code']),
+      'parseToolsFlag returns single ID',
+    );
+
+    assert(
+      JSON.stringify(ui._parseToolsFlag('claude-code,cursor', known)) === JSON.stringify(['claude-code', 'cursor']),
+      'parseToolsFlag returns multiple IDs',
+    );
+
+    assert(
+      JSON.stringify(ui._parseToolsFlag(' claude-code , cursor ', known)) === JSON.stringify(['claude-code', 'cursor']),
+      'parseToolsFlag trims whitespace',
+    );
+
+    let emptyErr;
+    try {
+      ui._parseToolsFlag('', known);
+    } catch (error) {
+      emptyErr = error;
+    }
+    assert(
+      emptyErr && emptyErr.expected === true && /empty/i.test(emptyErr.message),
+      'parseToolsFlag rejects empty string with expected=true',
+    );
+
+    let commasOnlyErr;
+    try {
+      ui._parseToolsFlag(' , , ', known);
+    } catch (error) {
+      commasOnlyErr = error;
+    }
+    assert(commasOnlyErr && commasOnlyErr.expected === true, 'parseToolsFlag rejects whitespace/comma-only input');
+
+    let noneErr;
+    try {
+      ui._parseToolsFlag('none', known);
+    } catch (error) {
+      noneErr = error;
+    }
+    assert(noneErr && noneErr.expected === true && /Unknown tool ID/.test(noneErr.message), 'parseToolsFlag rejects "none" as unknown ID');
+
+    let typoErr;
+    try {
+      ui._parseToolsFlag('claude-code,claude-cdoe', known);
+    } catch (error) {
+      typoErr = error;
+    }
+    const typoHeader = typoErr ? typoErr.message.split('\n')[0] : '';
+    assert(
+      typoErr && typoErr.expected === true && /claude-cdoe/.test(typoHeader) && !/claude-code/.test(typoHeader),
+      'parseToolsFlag reports only the unknown ID in error header (valid ones not listed as unknown)',
+    );
+
+    // --list-tools and --tools validation must agree on what counts as a valid ID.
+    const { formatPlatformList } = require('../tools/installer/ide/platform-codes');
+    const { IdeManager } = require('../tools/installer/ide/manager');
+    const ideManager42 = new IdeManager();
+    await ideManager42.ensureInitialized();
+    const validIds = new Set(ideManager42.getAvailableIdes().map((i) => i.value));
+    const listed = await formatPlatformList();
+    // Each entry line starts with ' *' (preferred) or '  ' (other), followed by the ID, then padding.
+    const entryLines = listed.split('\n').filter((l) => /^( \*| {2})[a-z]/.test(l));
+    const listedIds = entryLines.map((l) => l.trim().replace(/^\*/, '').split(/\s+/)[0]);
+    const missingFromList = [...validIds].filter((id) => !listedIds.includes(id));
+    const extraInList = listedIds.filter((id) => !validIds.has(id));
+    assert(
+      missingFromList.length === 0 && extraInList.length === 0,
+      '--list-tools output matches the IDs that --tools accepts',
+      `Missing from list: ${missingFromList.join(',') || '(none)'}; Extra in list: ${extraInList.join(',') || '(none)'}`,
+    );
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 42 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 43: project_name promoted to core + hoist migration (#2279)
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 43: project_name in core + hoist migration${colors.reset}\n`);
+  try {
+    const yamlLib = require('yaml');
+    const coreSchemaPath = path.join(__dirname, '..', 'src', 'core-skills', 'module.yaml');
+    const bmmSchemaPath = path.join(__dirname, '..', 'src', 'bmm-skills', 'module.yaml');
+    const coreSchema = yamlLib.parse(await fs.readFile(coreSchemaPath, 'utf8'));
+    const bmmSchema = yamlLib.parse(await fs.readFile(bmmSchemaPath, 'utf8'));
+
+    assert(
+      coreSchema.project_name && coreSchema.project_name.prompt && coreSchema.project_name.default === '{directory_name}',
+      'core/module.yaml declares project_name with {directory_name} default',
+    );
+
+    assert(coreSchema.project_name.scope === undefined, 'project_name has no user scope (project-scoped, not user-scoped)');
+
+    assert(bmmSchema.project_name === undefined, 'bmm/module.yaml no longer declares project_name (now inherited from core)');
+
+    // Set up a mock existing install: bmm directory has project_name (legacy),
+    // core has user_name but not project_name. After hoist, project_name should
+    // move to core, leaving bmm with only its own keys.
+    const fixtureRoot43 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-43-'));
+    const bmadDir43 = path.join(fixtureRoot43, '_bmad');
+    await fs.ensureDir(path.join(bmadDir43, '_config'));
+    await fs.writeFile(path.join(bmadDir43, '_config', 'manifest.yaml'), 'modules: []\n', 'utf8');
+    await fs.ensureDir(path.join(bmadDir43, 'core'));
+    await fs.ensureDir(path.join(bmadDir43, 'bmm'));
+    await fs.writeFile(path.join(bmadDir43, 'core', 'config.yaml'), 'user_name: alice\n', 'utf8');
+    await fs.writeFile(
+      path.join(bmadDir43, 'bmm', 'config.yaml'),
+      'project_name: legacy-from-bmm\nuser_skill_level: intermediate\n',
+      'utf8',
+    );
+
+    const officialModules43 = new OfficialModules();
+    await officialModules43.loadExistingConfig(fixtureRoot43);
+
+    assert(
+      officialModules43.existingConfig.core?.project_name === 'legacy-from-bmm',
+      'loadExistingConfig hoists bmm.project_name to core on existing-install upgrade',
+    );
+
+    assert(
+      !('project_name' in (officialModules43.existingConfig.bmm || {})),
+      'loadExistingConfig removes project_name from bmm after hoisting',
+    );
+
+    assert(
+      officialModules43.existingConfig.bmm?.user_skill_level === 'intermediate',
+      'loadExistingConfig leaves non-core bmm keys (user_skill_level) untouched',
+    );
+
+    assert(officialModules43.existingConfig.core?.user_name === 'alice', 'loadExistingConfig preserves pre-existing core values');
+
+    // Precedence: if core already has the key, hoist must NOT overwrite it.
+    const fixtureRoot43b = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-43b-'));
+    const bmadDir43b = path.join(fixtureRoot43b, '_bmad');
+    await fs.ensureDir(path.join(bmadDir43b, '_config'));
+    await fs.writeFile(path.join(bmadDir43b, '_config', 'manifest.yaml'), 'modules: []\n', 'utf8');
+    await fs.ensureDir(path.join(bmadDir43b, 'core'));
+    await fs.ensureDir(path.join(bmadDir43b, 'bmm'));
+    await fs.writeFile(path.join(bmadDir43b, 'core', 'config.yaml'), 'project_name: from-core\n', 'utf8');
+    await fs.writeFile(path.join(bmadDir43b, 'bmm', 'config.yaml'), 'project_name: stale-from-bmm\n', 'utf8');
+
+    const officialModules43b = new OfficialModules();
+    await officialModules43b.loadExistingConfig(fixtureRoot43b);
+
+    assert(officialModules43b.existingConfig.core?.project_name === 'from-core', 'hoist does not overwrite an existing core value');
+
+    assert(
+      !('project_name' in (officialModules43b.existingConfig.bmm || {})),
+      'hoist still strips the duplicate from bmm so writeCentralConfig partition stays clean',
+    );
+
+    // Malformed config.yaml (parses to a scalar) must not crash loadExistingConfig
+    // or the hoist pass — they should treat it as "no config for that module"
+    // and continue. Regression for augment review on PR #2348.
+    const fixtureRoot43c = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-43c-'));
+    const bmadDir43c = path.join(fixtureRoot43c, '_bmad');
+    await fs.ensureDir(path.join(bmadDir43c, '_config'));
+    await fs.writeFile(path.join(bmadDir43c, '_config', 'manifest.yaml'), 'modules: []\n', 'utf8');
+    await fs.ensureDir(path.join(bmadDir43c, 'core'));
+    await fs.ensureDir(path.join(bmadDir43c, 'bmm'));
+    // Scalar YAML — yaml.parse returns the literal 42 (truthy non-object).
+    // Pre-fix this crashed _hoistCoreKeysFromLegacyModuleConfigs with
+    // "Cannot use 'in' operator to search for 'project_name' in 42".
+    await fs.writeFile(path.join(bmadDir43c, 'core', 'config.yaml'), '42\n', 'utf8');
+    await fs.writeFile(path.join(bmadDir43c, 'bmm', 'config.yaml'), 'project_name: rescued\n', 'utf8');
+
+    const officialModules43c = new OfficialModules();
+    let crashErr;
+    try {
+      await officialModules43c.loadExistingConfig(fixtureRoot43c);
+    } catch (error) {
+      crashErr = error;
+    }
+    assert(!crashErr, 'loadExistingConfig does not crash on a scalar core/config.yaml', crashErr?.stack);
+
+    assert(
+      officialModules43c.existingConfig.core?.project_name === 'rescued',
+      'scalar core gets replaced with {} and bmm.project_name still hoists in',
+    );
+
+    await fs.remove(fixtureRoot43).catch(() => {});
+    await fs.remove(fixtureRoot43b).catch(() => {});
+    await fs.remove(fixtureRoot43c).catch(() => {});
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 43 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 44: --set <module>.<key>=<value> CLI overrides (#1663)
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 44: --set CLI overrides${colors.reset}\n`);
+  try {
+    const { parseSetEntry, parseSetEntries, applySetOverrides, upsertTomlKey, tomlString } = require('../tools/installer/set-overrides');
+    const { discoverOfficialModuleYamls, formatOptionsList } = require('../tools/installer/list-options');
+
+    // ---- Parser ----------------------------------------------------------
+    const ok = parseSetEntry('bmm.project_knowledge=research');
+    assert(
+      ok.module === 'bmm' && ok.key === 'project_knowledge' && ok.value === 'research',
+      'parseSetEntry splits <module>.<key>=<value> correctly',
+    );
+    assert(parseSetEntry('bmm.weird=a=b=c').value === 'a=b=c', 'parseSetEntry preserves additional "=" inside the value');
+
+    const badInputs = ['no-equals', 'no-dot=value', '=value', '.=value', 'foo.=value', '.bar=value', ''];
+    let allBadThrow = true;
+    for (const bad of badInputs) {
+      try {
+        parseSetEntry(bad);
+        allBadThrow = false;
+      } catch {
+        /* expected */
+      }
+    }
+    assert(allBadThrow, `parseSetEntry rejects malformed inputs (${badInputs.length} cases)`);
+
+    const multi = parseSetEntries(['bmm.project_knowledge=research', 'bmm.user_skill_level=expert', 'core.user_name=Brian']);
+    assert(
+      multi.bmm.project_knowledge === 'research' && multi.bmm.user_skill_level === 'expert' && multi.core.user_name === 'Brian',
+      'parseSetEntries groups by module',
+    );
+    assert(parseSetEntries(['bmm.x=first', 'bmm.x=second']).bmm.x === 'second', 'parseSetEntries: later --set entry overrides earlier');
+    const empty = parseSetEntries();
+    assert(empty && Object.keys(empty).length === 0, 'parseSetEntries() returns empty object when called without args');
+
+    // Prototype-pollution guard. `--set __proto__.x=1` would otherwise reach
+    // `overrides.__proto__[x] = 1` and pollute every plain object.
+    const polluteProbe = {};
+    let pollutionThrown = false;
+    try {
+      parseSetEntries(['__proto__.polluted=1']);
+    } catch {
+      pollutionThrown = true;
+    }
+    assert(pollutionThrown, 'parseSetEntries rejects __proto__ as a module name');
+    assert(polluteProbe.polluted === undefined, 'Object.prototype is not polluted by __proto__ in --set entries');
+    let constructorThrown = false;
+    try {
+      parseSetEntries(['bmm.constructor=evil']);
+    } catch {
+      constructorThrown = true;
+    }
+    assert(constructorThrown, 'parseSetEntries rejects "constructor" as a key name');
+
+    // ---- tomlString ------------------------------------------------------
+    assert(tomlString('hello') === '"hello"', 'tomlString quotes a plain string');
+    assert(tomlString('with "quotes"') === String.raw`"with \"quotes\""`, 'tomlString escapes embedded double-quotes');
+    assert(tomlString(String.raw`back\slash`) === String.raw`"back\\slash"`, 'tomlString escapes backslashes');
+    assert(tomlString('line1\nline2') === String.raw`"line1\nline2"`, 'tomlString escapes newlines');
+
+    // ---- upsertTomlKey: insert into existing section ---------------------
+    {
+      const before = `[core]\nuser_name = "Brian"\n\n[modules.bmm]\nproject_knowledge = "{project-root}/docs"\n`;
+      const after = upsertTomlKey(before, '[modules.bmm]', 'future_thing', '"persists"');
+      assert(after.includes('future_thing = "persists"'), 'upsertTomlKey inserts a new key into an existing section');
+      assert(/project_knowledge = "{project-root}\/docs"/.test(after), 'upsertTomlKey preserves existing keys');
+    }
+
+    // ---- upsertTomlKey: replace existing key, keep comment tail ----------
+    {
+      const before = `[core]\nuser_name = "old"  # set on first install\n`;
+      const after = upsertTomlKey(before, '[core]', 'user_name', '"Brian"');
+      assert(/user_name = "Brian"\s+# set on first install/.test(after), 'upsertTomlKey preserves trailing comments');
+      assert(!after.includes('"old"'), 'upsertTomlKey replaces the prior value');
+    }
+
+    // ---- upsertTomlKey: section missing → append new section -------------
+    {
+      const before = `[core]\nuser_name = "Brian"\n`;
+      const after = upsertTomlKey(before, '[modules.bmm]', 'project_knowledge', '"research"');
+      assert(after.includes('[modules.bmm]'), 'upsertTomlKey appends a new section when missing');
+      assert(after.includes('project_knowledge = "research"'), 'upsertTomlKey appends the key under the new section');
+      // Existing section remains untouched
+      assert(after.indexOf('[core]') < after.indexOf('[modules.bmm]'), 'upsertTomlKey adds the new section AFTER existing content');
+    }
+
+    // ---- upsertTomlKey: empty file ---------------------------------------
+    {
+      const after = upsertTomlKey('', '[core]', 'user_name', '"Brian"');
+      assert(after.startsWith('[core]'), 'upsertTomlKey on an empty string emits the section header');
+      assert(after.includes('user_name = "Brian"'), 'upsertTomlKey on an empty string writes the key');
+    }
+
+    // ---- upsertTomlKey: trailing newline preserved -----------------------
+    {
+      const withTrailing = upsertTomlKey('[core]\nuser_name = "old"\n', '[core]', 'user_name', '"new"');
+      assert(withTrailing.endsWith('\n'), 'upsertTomlKey preserves trailing newline');
+      const withoutTrailing = upsertTomlKey('[core]\nuser_name = "old"', '[core]', 'user_name', '"new"');
+      assert(!withoutTrailing.endsWith('\n'), 'upsertTomlKey preserves absence of trailing newline');
+    }
+
+    // ---- applySetOverrides happy path ------------------------------------
+    {
+      const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-applyset-'));
+      const bmadDir = path.join(tmp, '_bmad');
+      await fs.ensureDir(bmadDir);
+      // Seed a realistic post-install state: team config has bmm.project_knowledge,
+      // user config has core.user_name. The applySetOverrides router should
+      // route bmm.user_skill_level → user.toml (already there), core.user_name
+      // update → user.toml (already there), and a brand-new key → team.toml.
+      await fs.writeFile(
+        path.join(bmadDir, 'config.toml'),
+        '[core]\nproject_name = "demo"\n\n[modules.bmm]\nproject_knowledge = "{project-root}/docs"\n',
+        'utf8',
+      );
+      await fs.writeFile(
+        path.join(bmadDir, 'config.user.toml'),
+        '[core]\nuser_name = "OldName"\n\n[modules.bmm]\nuser_skill_level = "intermediate"\n',
+        'utf8',
+      );
+      // Per-module config.yaml stubs are the "is this module installed?"
+      // signal applySetOverrides uses to skip uninstalled-module overrides.
+      await fs.ensureDir(path.join(bmadDir, 'core'));
+      await fs.writeFile(path.join(bmadDir, 'core', 'config.yaml'), 'project_name: demo\n', 'utf8');
+      await fs.ensureDir(path.join(bmadDir, 'bmm'));
+      await fs.writeFile(
+        path.join(bmadDir, 'bmm', 'config.yaml'),
+        'project_knowledge: "{project-root}/docs"\nuser_skill_level: intermediate\n',
+        'utf8',
+      );
+
+      const overrides = {
+        core: { user_name: 'Brian' },
+        bmm: { user_skill_level: 'expert', future_thing: 'persists' },
+      };
+      const applied = await applySetOverrides(overrides, bmadDir);
+
+      const team = await fs.readFile(path.join(bmadDir, 'config.toml'), 'utf8');
+      const user = await fs.readFile(path.join(bmadDir, 'config.user.toml'), 'utf8');
+
+      assert(user.includes('user_name = "Brian"'), 'applySetOverrides updates user-scope key in config.user.toml');
+      assert(user.includes('user_skill_level = "expert"'), 'applySetOverrides updates pre-existing user-scope key in config.user.toml');
+      assert(team.includes('future_thing = "persists"'), 'applySetOverrides routes brand-new key to team config.toml');
+      assert(team.includes('project_knowledge = "{project-root}/docs"'), 'applySetOverrides leaves untouched team keys alone');
+      assert(!team.includes('user_name = "Brian"'), 'applySetOverrides does NOT duplicate user-scope key into team file');
+
+      const summary = applied
+        .map((a) => `${a.module}.${a.key}->${a.scope}`)
+        .sort()
+        .join(',');
+      assert(
+        summary === 'bmm.future_thing->team,bmm.user_skill_level->user,core.user_name->user',
+        `applySetOverrides reports correct routing decisions (got: ${summary})`,
+      );
+
+      await fs.remove(tmp).catch(() => {});
+    }
+
+    // ---- applySetOverrides creates config.user.toml if missing -----------
+    {
+      const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-applyset-nouser-'));
+      const bmadDir = path.join(tmp, '_bmad');
+      await fs.ensureDir(bmadDir);
+      await fs.writeFile(path.join(bmadDir, 'config.toml'), '[core]\nuser_name = "Brian"\n', 'utf8');
+      await fs.ensureDir(path.join(bmadDir, 'core'));
+      await fs.writeFile(path.join(bmadDir, 'core', 'config.yaml'), 'user_name: Brian\n', 'utf8');
+      // Override targets a key only in team config; routes to team. user.toml
+      // never gets created in this case (correct — no user-scope writes).
+      await applySetOverrides({ core: { user_name: 'Updated' } }, bmadDir);
+      const team = await fs.readFile(path.join(bmadDir, 'config.toml'), 'utf8');
+      assert(team.includes('user_name = "Updated"'), 'applySetOverrides updates team key when user.toml is absent');
+      assert(
+        !(await fs.pathExists(path.join(bmadDir, 'config.user.toml'))),
+        'applySetOverrides does not create config.user.toml unnecessarily',
+      );
+      await fs.remove(tmp).catch(() => {});
+    }
+
+    // ---- applySetOverrides skips modules without per-module config.yaml --
+    {
+      const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-applyset-skip-'));
+      const bmadDir = path.join(tmp, '_bmad');
+      await fs.ensureDir(bmadDir);
+      await fs.writeFile(path.join(bmadDir, 'config.toml'), '[core]\nuser_name = "Brian"\n', 'utf8');
+      await fs.ensureDir(path.join(bmadDir, 'core'));
+      await fs.writeFile(path.join(bmadDir, 'core', 'config.yaml'), 'user_name: Brian\n', 'utf8');
+      // bmm is not installed (no `_bmad/bmm/config.yaml`). The override for
+      // bmm should be silently skipped, no `[modules.bmm]` section created.
+      const applied = await applySetOverrides({ bmm: { foo: 'bar' }, core: { user_name: 'Updated' } }, bmadDir);
+      const team = await fs.readFile(path.join(bmadDir, 'config.toml'), 'utf8');
+      assert(!team.includes('[modules.bmm]'), 'applySetOverrides does NOT create section for uninstalled module');
+      assert(team.includes('user_name = "Updated"'), 'applySetOverrides still applies overrides for installed modules');
+      assert(applied.length === 1 && applied[0].module === 'core', 'applySetOverrides reports only the installed-module entries');
+      await fs.remove(tmp).catch(() => {});
+    }
+
+    // ---- applySetOverrides: empty/missing input is a no-op ---------------
+    {
+      const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-applyset-empty-'));
+      const bmadDir = path.join(tmp, '_bmad');
+      await fs.ensureDir(bmadDir);
+      const empty1 = await applySetOverrides({}, bmadDir);
+      const empty2 = await applySetOverrides(null, bmadDir);
+      const empty3 = await applySetOverrides(undefined, bmadDir);
+      assert(
+        empty1.length === 0 && empty2.length === 0 && empty3.length === 0,
+        'applySetOverrides is a no-op for empty/null/undefined input',
+      );
+      await fs.remove(tmp).catch(() => {});
+    }
+
+    // ---- discoverOfficialModuleYamls + formatOptionsList -----------------
+    // These read the on-disk external-module cache. Point that env at a temp
+    // dir so test results don't depend on whatever the developer / CI runner
+    // has cached.
+    const priorCacheEnv44 = process.env.BMAD_EXTERNAL_MODULES_CACHE;
+    const tempCacheDir44 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-list-options-cache-'));
+    process.env.BMAD_EXTERNAL_MODULES_CACHE = tempCacheDir44;
+    try {
+      const discovered = await discoverOfficialModuleYamls();
+      const codes = new Set(discovered.map((d) => d.code));
+      assert(codes.has('core') && codes.has('bmm'), 'discoverOfficialModuleYamls finds core and bmm built-ins');
+
+      const bmmListing = await formatOptionsList('bmm');
+      assert(bmmListing.ok === true, '--list-options bmm reports ok: true');
+      assert(bmmListing.text.includes('bmm.project_knowledge'), '--list-options bmm renders bmm.project_knowledge');
+      assert(bmmListing.text.includes('bmm.user_skill_level'), '--list-options bmm renders bmm.user_skill_level');
+
+      // Case-insensitive filter.
+      const bmmUpper = await formatOptionsList('BMM');
+      assert(bmmUpper.ok === true && bmmUpper.text.includes('bmm.project_knowledge'), '--list-options is case-insensitive');
+
+      // Unknown module → non-zero exit signal.
+      const unknown = await formatOptionsList('definitely-not-a-module');
+      assert(unknown.ok === false, '--list-options <unknown> reports ok: false');
+      assert(unknown.text.includes('No locally-known module.yaml'), '--list-options unknown explains the miss');
+    } finally {
+      if (priorCacheEnv44 === undefined) {
+        delete process.env.BMAD_EXTERNAL_MODULES_CACHE;
+      } else {
+        process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv44;
+      }
+      await fs.remove(tempCacheDir44).catch(() => {});
+    }
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 44 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
     failed++;
   }
 

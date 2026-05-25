@@ -7,7 +7,7 @@
  * We build the plan from:
  *   1. CLI flags (--channel / --all-* / --next=CODE / --pin CODE=TAG)
  *   2. Interactive answers (the "all stable?" gate + per-module picker)
- *   3. Registry defaults (default_channel from registry-fallback.yaml / official.yaml)
+ *   3. Registry defaults (default_channel from bmad-modules.yaml)
  *   4. Hardcoded fallback 'stable'
  *
  * Precedence: --pin > --next=CODE > --channel (global) > registry default > 'stable'.

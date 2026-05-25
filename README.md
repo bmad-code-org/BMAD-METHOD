@@ -2,7 +2,7 @@
 
 [![Version](https://img.shields.io/npm/v/bmad-method?color=blue&label=version)](https://www.npmjs.com/package/bmad-method)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.12.0-brightgreen)](https://nodejs.org)
 [![Python Version](https://img.shields.io/badge/python-%3E%3D3.10-blue?logo=python&logoColor=white)](https://www.python.org)
 [![uv](https://img.shields.io/badge/uv-package%20manager-blueviolet?logo=uv)](https://docs.astral.sh/uv/)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Community-7289da?logo=discord&logoColor=white)](https://discord.gg/gk8jAdXWmj)
@@ -36,7 +36,7 @@ Traditional AI tools do the thinking for you, producing average results. BMad ag
 
 ## Quick Start
 
-**Prerequisites**: [Node.js](https://nodejs.org) v20+ · [Python](https://www.python.org) 3.10+ · [uv](https://docs.astral.sh/uv/)
+**Prerequisites**: [Node.js](https://nodejs.org) v20.12+ · [Python](https://www.python.org) 3.10+ · [uv](https://docs.astral.sh/uv/)
 
 ```bash
 npx bmad-method install
@@ -50,6 +50,15 @@ Follow the installer prompts, then open your AI IDE (Claude Code, Cursor, etc.) 
 
 ```bash
 npx bmad-method install --directory /path/to/project --modules bmm --tools claude-code --yes
+```
+
+Override any module config option with `--set <module>.<key>=<value>` (repeatable). Run `--list-options [module]` to see locally-known official keys (built-in modules plus any external officials cached on this machine):
+
+```bash
+npx bmad-method install --yes \
+  --modules bmm --tools claude-code \
+  --set bmm.project_knowledge=research \
+  --set bmm.user_skill_level=expert
 ```
 
 [See all installation options](https://docs.bmad-method.org/how-to/non-interactive-installation/)
@@ -68,15 +77,25 @@ BMad Method extends with official modules for specialized domains. Available dur
 | **[Game Dev Studio (BMGD)](https://github.com/bmad-code-org/bmad-module-game-dev-studio)**                        | Game development workflows (Unity, Unreal, Godot) |
 | **[Creative Intelligence Suite (CIS)](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite)** | Innovation, brainstorming, design thinking        |
 
+## Web Bundles
+
+V4 shipped web bundles. V6 brings them back, new and improved.
+
+Web bundles package selected BMad skills for installation as **Google Gemini Gems** and **ChatGPT Custom GPTs**. Use them to do the upfront planning work (brainstorming, product briefs, PRDs, PRFAQs, UX specs, market and industry research) in your web LLM subscription, then bring the polished artifacts into your IDE for implementation. Planning runs on a flat-rate subscription instead of metered IDE tokens, which is a meaningful cost saver on longer engagements. Choose the best model available to you in Gemini or ChatGPT.
+
+Current shelf: brainstorming, product brief, PRFAQ, PRD, UX, market & industry research.
+
+**Browse and install at [bmadcode.com/web-bundles](https://bmadcode.com/web-bundles/)**. One card per bundle, inline install steps for Gemini and ChatGPT, one-click ZIP download. See [the web bundles guide](https://docs.bmad-method.org/explanation/web-bundles/) for the concept.
+
 ## Documentation
 
 [BMad Method Docs Site](https://docs.bmad-method.org) — Tutorials, guides, concepts, and reference
 
 **Quick links:**
+
 - [Getting Started Tutorial](https://docs.bmad-method.org/tutorials/getting-started/)
 - [Upgrading from Previous Versions](https://docs.bmad-method.org/how-to/upgrade-to-v6/)
 - [Test Architect Documentation](https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/)
-
 
 ## Community
 

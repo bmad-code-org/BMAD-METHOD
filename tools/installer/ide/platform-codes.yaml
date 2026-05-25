@@ -132,6 +132,21 @@ platforms:
     installer:
       target_dir: .agents/skills
       global_target_dir: ~/.agents/skills
+      commands_target_dir: .github/agents
+      commands_extension: .agent.md
+      commands_body_template: "LOAD the FULL {project-root}/{target_dir}/{canonicalId}/SKILL.md, READ its entire contents and follow its directions exactly!"
+      # The Custom Agents picker should only show persona agents (not
+      # workflows/tools). Detected by reading each skill's source
+      # `customize.toml` and checking for an `[agent]` section — that's
+      # the actual configuration source of truth: every BMAD persona is
+      # configured under `[agent]`, every workflow under `[workflow]`,
+      # every standalone skill has no customize.toml. This signal is
+      # naming-independent, so personas like `bmad-tea` (which doesn't
+      # follow the `-agent-` convention) are still included, and
+      # meta-skills like `bmad-agent-builder` (which contains `-agent-`
+      # but is a skill-builder workflow, not a persona) are correctly
+      # excluded.
+      commands_filter: agents-only
 
   goose:
     name: "Block Goose"
@@ -222,6 +237,7 @@ platforms:
     installer:
       target_dir: .agents/skills
       global_target_dir: ~/.agents/skills
+      commands_target_dir: .opencode/commands
 
   openhands:
     name: "OpenHands"

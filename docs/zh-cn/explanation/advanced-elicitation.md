@@ -2,7 +2,7 @@
 title: "高级启发"
 description: 使用结构化推理方法推动 LLM 重新思考其工作
 sidebar:
-  order: 6
+  order: 4
 ---
 
 高级启发（advanced elicitation）是“第二轮思考”机制：不是笼统地让模型“再来一次”，而是让它按指定推理方法重审自己的输出。

@@ -14,7 +14,7 @@ Vytvářejte software rychleji pomocí pracovních postupů řízených AI se sp
 - Efektivně používat agenty a pracovní postupy
 
 :::note[Předpoklady]
-- **Node.js 20+** — Vyžadováno pro instalátor
+- **Node.js 20.12+** — Vyžadováno pro instalátor
 - **Git** — Doporučeno pro správu verzí
 - **AI-powered IDE** — Claude Code, Cursor nebo podobné
 - **Nápad na projekt** — I jednoduchý stačí pro učení
@@ -150,7 +150,7 @@ Všechny workflow v této fázi jsou volitelné:
 - Spusťte `bmad-quick-dev` — zvládne plánování i implementaci v jednom workflow, přeskočte k implementaci
 
 :::note[UX Design (volitelné)]
-Pokud má váš projekt uživatelské rozhraní, vyvolejte **UX-Designer agenta** (`bmad-agent-ux-designer`) a spusťte UX design workflow (`bmad-create-ux-design`) po vytvoření PRD.
+Pokud má váš projekt uživatelské rozhraní, vyvolejte **UX-Designer agenta** (`bmad-agent-ux-designer`) a spusťte UX design workflow (`bmad-ux`) po vytvoření PRD.
 :::
 
 ### Fáze 3: Solutioning (BMad Method/Enterprise)

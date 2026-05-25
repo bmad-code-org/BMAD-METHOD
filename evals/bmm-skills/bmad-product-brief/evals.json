@@ -1,0 +1,237 @@
+{
+  "skill_name": "bmad-product-brief",
+  "_design_notes": "Single-shot evals across two patterns. Pattern A (A1-A8) tests artifact correctness given complete inputs in headless mode. Pattern B tests process discipline (decision log fidelity, polish execution, intent boundaries) by inspecting transcript and side-artifacts. Facilitation/conversation-quality evals are deferred to a future multi-turn simulator.",
+  "evals": [
+    {
+      "id": "A1",
+      "_pattern": "artifact-correctness",
+      "prompt": "Run headless. Create a product brief for InsuLens.\n\nContext (use exactly this — do not invent):\n- Product: a smartphone app that pairs with off-the-shelf $200 thermal imaging accessories (FLIR ONE Pro and Seek Compact Pro). The app guides homeowners through a structured walkthrough and produces a professional-grade insulation audit in under 20 minutes.\n- Target: suburban homeowners aged 35-65 with houses built before 2000 (poor original insulation, rising energy bills).\n- Validation evidence: 50 user interviews completed in Q4 2025; 78% expressed willingness to pay $49 for a one-time audit if results were credible.\n- Stakes: this brief is the primary input investors will read before our first Series A pitch call.\n- Hardware dependency: requires a thermal imaging accessory (we do not manufacture hardware).\n- Known unknowns: insurance/warranty implications of homeowner-driven audits; whether the 78% intent translates to paid conversion at scale.\nRight-size for investor-stage rigor. Output a JSON status block at the end with status, intent, and artifact paths.",
+      "expected_output": "A run folder containing brief.md (with valid YAML frontmatter) and decision-log.md. Brief is 1-2 pages, addresses target audience, hardware dependency, validation evidence, and surfaces unknowns alongside knowns. Final assistant message includes JSON with status='complete', intent='create', and artifact paths.",
+      "files": [],
+      "expectations": [
+        "A run folder is created with brief.md and decision-log.md",
+        "brief.md has YAML frontmatter containing all four required fields: title, status, created (ISO 8601), updated (ISO 8601)",
+        "brief.md frontmatter status is 'draft' or 'final' (not missing or empty)",
+        "brief.md word count is between 250 and 1500",
+        "brief.md identifies the suburban-homeowner-aged-35-65 target audience",
+        "brief.md references the thermal imaging hardware dependency (FLIR ONE Pro / Seek Compact Pro or equivalent)",
+        "brief.md references the 50-user interview validation OR the 78% willingness-to-pay finding",
+        "brief.md surfaces at least one explicit unknown or unvalidated assumption",
+        "brief.md does not introduce facts absent from the input prompt (no invented competitors, fabricated metrics, or unstated partnerships)",
+        "The final assistant message contains a JSON object with keys 'status', 'intent', and at least one artifact path",
+        "The JSON 'intent' value is 'create'"
+      ]
+    },
+    {
+      "id": "A2",
+      "_pattern": "artifact-correctness",
+      "prompt": "Run headless. Create a brief for our app idea.",
+      "expected_output": "Headless mode with insufficient context should halt with status='blocked' and a reason field. No (or only skeleton) brief should be written. The skill must not invent a product to draft against.",
+      "files": [],
+      "expectations": [
+        "The final assistant message contains a JSON object with key 'status' set to 'blocked'",
+        "The JSON output includes a 'reason' field explaining what context is missing",
+        "If brief.md exists at all, its body content (excluding frontmatter) is fewer than 100 words OR is a placeholder skeleton — the skill did not invent a product",
+        "The transcript contains no clarifying questions sent back to the user (headless mode honored)"
+      ]
+    },
+    {
+      "id": "A3",
+      "_pattern": "artifact-correctness",
+      "prompt": "Run headless. Create a brief for our neighborhood compost coordinator app idea — we are moving forward with it. Q2 brainstorming session notes are at evals/bmm-skills/bmad-product-brief/files/q2-brainstorm.md; pull only what is relevant to the compost concept.",
+      "expected_output": "Brief focuses tightly on the compost coordinator concept. Source brainstorm is filtered, not ingested wholesale. Decision-log records that filtering occurred.",
+      "files": ["evals/bmm-skills/bmad-product-brief/files/q2-brainstorm.md"],
+      "expectations": [
+        "brief.md addresses the neighborhood compost coordinator concept",
+        "brief.md does not introduce content from unrelated brainstorm topics (weather + mood, meditation chime, podcasting tool, craft beer subscription, AI sommelier, office plants, ride coordinator, cookbook app, AR home staging)",
+        "brief.md word count is between 250 and 1500",
+        "brief.md incorporates at least 2 specific details from the compost section of the brainstorm (e.g., two-sided market with apartment dwellers and home compost-pile owners, hyperlocal neighborhood scope, free-at-launch with eventual subscription, Portland Sunnyside/Hawthorne pilot)",
+        "decision-log.md indicates the brainstorm was filtered for relevance, not ingested whole"
+      ]
+    },
+    {
+      "id": "A4",
+      "_pattern": "artifact-correctness",
+      "prompt": "Run headless. Validate the brief at evals/bmm-skills/bmad-product-brief/files/mossridge-brief/brief.md — the Mossridge Public Library board meets Monday and we need this to land. Read the addendum and decision-log in the same folder first. Cite specific sections, identify weaknesses, caveat what cannot be evaluated. Return inline only — no separate validation file.",
+      "expected_output": "Inline critique citing specific sections from the input brief. No new files. Caveats at least one claim that cannot be evaluated from the brief alone. Offers to roll findings into an Update.",
+      "files": [
+        "evals/bmm-skills/bmad-product-brief/files/mossridge-brief/brief.md",
+        "evals/bmm-skills/bmad-product-brief/files/mossridge-brief/addendum.md",
+        "evals/bmm-skills/bmad-product-brief/files/mossridge-brief/decision-log.md"
+      ],
+      "expectations": [
+        "The final output cites specific section names or line content from the input brief (not generic feedback)",
+        "The output identifies at least one specific weakness or area for improvement in the input brief",
+        "The output explicitly caveats at least one claim that cannot be evaluated from the brief alone (e.g., community demand, funding feasibility, volunteer sustainability)",
+        "The output offers to roll findings into an Update (or equivalent next-step proposal)",
+        "The final assistant message contains a JSON object with intent='validate'"
+      ]
+    },
+    {
+      "id": "A5",
+      "_pattern": "artifact-correctness",
+      "prompt": "Run headless. Create a brief for: a weekend-project iOS app called Sproutkeeper that reminds houseplant owners when to water their plants based on plant type and indoor humidity sensor data. Target is hobbyist plant owners. MVP scope only, single-developer side project, no investors, no team, just personal evening project.",
+      "expected_output": "Lightweight brief right-sized to a side project. Low rigor. No investor-grade framing.",
+      "files": [],
+      "expectations": [
+        "The final assistant message contains a JSON object with intent='create'",
+        "brief.md exists at the path referenced in the JSON output",
+        "brief.md is right-sized for a side project (closer to 250-500 words than 1500)",
+        "brief.md does not include investor-grade framing (no 'Series A inputs', 'TAM/SAM/SOM', 'go-to-market strategy' boilerplate when the user said this is a personal evening project)",
+        "The transcript contains no clarifying questions to the user",
+        "Sections that do not earn their place for a side project are dropped or kept minimal (e.g., no extensive Risk or Success Criteria padding)"
+      ]
+    },
+    {
+      "id": "A6",
+      "_pattern": "artifact-correctness",
+      "prompt": "Run headless. Create a brief from this memo. It is from our last working group on a new microcredential program at Branfield Community College. Memo is at evals/bmm-skills/bmad-product-brief/files/branfield-memo.md. Use what is there; do not re-elicit facts already present.",
+      "expected_output": "Brief reflects content from the memo. No re-asking for facts already present. Decision-log notes ingestion of the memo.",
+      "files": ["evals/bmm-skills/bmad-product-brief/files/branfield-memo.md"],
+      "expectations": [
+        "brief.md incorporates at least 3 distinct facts or decisions present in the input memo",
+        "decision-log.md references having used the memo as source material",
+        "The transcript does not ask the user to re-state the program name, target student, or core curriculum focus if those are present in the memo",
+        "brief.md does not invent program details not present in the memo"
+      ]
+    },
+    {
+      "id": "A7",
+      "_pattern": "artifact-correctness",
+      "prompt": "Run headless. Create a brief for Brightway — our smart bike helmet with crash detection, turn signals, and braking lights. Meridian Insights produced a market research report on e-mobility at evals/bmm-skills/bmad-product-brief/files/meridian-mobility-report.md. Use only what is relevant to the safety helmet category — do not let the e-scooter, charging-infrastructure, or bike-share segments bleed into the brief.",
+      "expected_output": "Brief focuses on the smart bike helmet concept. Pulls relevant findings from the helmet section. Other mobility segments do not appear.",
+      "files": ["evals/bmm-skills/bmad-product-brief/files/meridian-mobility-report.md"],
+      "expectations": [
+        "brief.md addresses the Brightway smart bike helmet concept",
+        "brief.md does not introduce content from unrelated mobility segments (e-scooters, charging infrastructure, bike-share, vehicle-to-grid)",
+        "brief.md word count is between 250 and 1500",
+        "brief.md incorporates at least 2 specific findings from the smart helmet section of the report (e.g., market sizing, key players, crash detection technology trends, regulatory or insurance landscape)",
+        "decision-log.md indicates the report was filtered to the helmet category rather than ingested whole"
+      ]
+    },
+    {
+      "id": "A8",
+      "_pattern": "artifact-correctness",
+      "prompt": "Run headless. Create a brief for Pantry Bridge — a meal-kit subscription targeted at adults 65+ who live alone and want fresh meals without grocery shopping. Customer research transcripts are at evals/bmm-skills/bmad-product-brief/files/pantry-bridge-interviews.md. Pull what is relevant from the older-adult interviews; do not conflate insights from the working-parent, student, or corporate-buyer personas.",
+      "expected_output": "Brief focuses on the older-adult target persona. Eleanor's interview drives the insights. Other personas do not pollute the brief.",
+      "files": ["evals/bmm-skills/bmad-product-brief/files/pantry-bridge-interviews.md"],
+      "expectations": [
+        "brief.md addresses the Pantry Bridge older-adult meal-kit concept",
+        "brief.md does not conflate insights from non-target personas (working parent Susan, college student Marcus, corporate cafeteria buyer Dimitri)",
+        "brief.md word count is between 250 and 1500",
+        "brief.md incorporates at least 2 specific insights from Eleanor's interview (e.g., grocery-trip difficulty, portion sizing, dietary restrictions, social aspects of meals, trust concerns)",
+        "decision-log.md notes which interviews were used and which were excluded"
+      ]
+    },
+    {
+      "id": "B1",
+      "_pattern": "process-discipline",
+      "prompt": "Run headless. Create a brief for HelmStack — an open-source observability platform for distributed systems.\n\nWe have made these specific decisions and want each captured in the decision log with rationale:\n\n1. Pricing: Free open-source core; paid SaaS at $29/seat/month. Rejected paid-one-shot-license model because it would limit network effects in the OSS community.\n2. Launch: Invite-only beta for 6 weeks before public launch. Rejected open public launch — operational risk too high before stability is proven on real workloads.\n3. Stack: TypeScript + Postgres for the backend. Rejected Go + MongoDB — TypeScript aligned better with our team's existing skills and the frontend codebase.\n4. ICP: 5-50 person engineering teams for MVP. Rejected enterprise-first focus because the sales cycle is too long for our capital runway.\n5. Self-host: SaaS-only at launch; self-host arrives in v2. Rejected concurrent self-host because it would slow shipping velocity past our funding window.\n\nProduce brief.md and decision-log.md.",
+      "expected_output": "Decision log contains all five named decisions with rationale captured. Brief reflects the decisions but the decision log is the canonical record.",
+      "files": [],
+      "expectations": [
+        "decision-log.md exists in the run folder",
+        "decision-log.md captures the pricing decision (free OSS + $29/seat SaaS) with the rejected alternative (paid one-shot license) and rationale (network effects)",
+        "decision-log.md captures the invite-only-beta decision with the rejected alternative (open public launch) and rationale (operational risk before stability)",
+        "decision-log.md captures the platform-stack decision (TypeScript + Postgres) with the rejected alternative (Go + MongoDB) and rationale (team skills / frontend alignment)",
+        "decision-log.md captures the ICP decision (5-50 person eng teams) with rationale referencing sales cycle / runway",
+        "decision-log.md captures the self-host-timing decision (SaaS-only at launch, self-host v2) with rationale (shipping velocity / funding window)"
+      ]
+    },
+    {
+      "id": "B2",
+      "_pattern": "process-discipline",
+      "prompt": "Run headless. Create a brief for HelmStack — an open-source observability platform for distributed systems.\n\nWe have made these specific decisions and want each captured in the decision log with rationale:\n\n1. Pricing: Free open-source core; paid SaaS at $29/seat/month. Rejected paid-one-shot-license model because it would limit network effects in the OSS community.\n2. Launch: Invite-only beta for 6 weeks before public launch. Rejected open public launch — operational risk too high before stability is proven on real workloads.\n3. Stack: TypeScript + Postgres for the backend. Rejected Go + MongoDB — TypeScript aligned better with our team's existing skills and the frontend codebase.\n4. ICP: 5-50 person engineering teams for MVP. Rejected enterprise-first focus because the sales cycle is too long for our capital runway.\n5. Self-host: SaaS-only at launch; self-host arrives in v2. Rejected concurrent self-host because it would slow shipping velocity past our funding window.\n\nProduce brief.md and decision-log.md.",
+      "expected_output": "Brief is consistent with the decision log: every decision in the log is reflected in the brief, and no claim in the brief is absent from the input prompt or the log. Tests bidirectional fidelity.",
+      "files": [],
+      "expectations": [
+        "brief.md mentions the OSS-core + paid-SaaS pricing structure",
+        "brief.md references the invite-only-beta launch sequencing OR identifies the launch model consistent with the decision log",
+        "brief.md references the platform-stack choice (TypeScript + Postgres) OR is silent on stack — but does not contradict it (no mention of Go, MongoDB, etc.)",
+        "brief.md identifies 5-50 person eng teams as the ICP (or equivalent — small-to-mid-size eng teams)",
+        "brief.md does not introduce decisions, competitors, partnerships, metrics, or product features absent from both the input prompt and decision-log.md (no invented facts)",
+        "Each substantive decision in decision-log.md has a corresponding reflection in brief.md (no log-to-brief drops)"
+      ]
+    },
+    {
+      "id": "B3",
+      "_pattern": "process-discipline",
+      "prompt": "Run headless. Create a product brief for InsuLens.\n\nContext (use exactly this — do not invent):\n- Product: a smartphone app that pairs with off-the-shelf $200 thermal imaging accessories (FLIR ONE Pro and Seek Compact Pro). The app guides homeowners through a structured walkthrough and produces a professional-grade insulation audit in under 20 minutes.\n- Target: suburban homeowners aged 35-65 with houses built before 2000.\n- Validation: 50 user interviews completed in Q4 2025; 78% willingness to pay $49 for a one-time audit.\n- Stakes: Series A pitch input.\n- Hardware: requires a thermal accessory (we do not manufacture hardware).\n\nProduce brief.md and decision-log.md. Run the polish phase before presenting.",
+      "expected_output": "The transcript shows the polish phase executing — the skill invokes bmad-editorial-review-structure and bmad-editorial-review-prose, either via the Skill tool directly or via Agent tool calls whose description or prompt targets those editorial skills. Both passes must occur after the initial draft is written and before the final JSON status block.",
+      "files": [],
+      "expectations": [
+        "The transcript contains either a Skill tool call invoking bmad-editorial-review-structure, OR an Agent tool call whose description or prompt references structural review or bmad-editorial-review-structure",
+        "The transcript contains either a Skill tool call invoking bmad-editorial-review-prose, OR an Agent tool call whose description or prompt references prose review or bmad-editorial-review-prose",
+        "Both editorial-pass dispatches (Skill or Agent) occur after the first Write tool call that creates brief.md",
+        "Both editorial-pass dispatches (Skill or Agent) occur before the final assistant message containing the JSON status block"
+      ]
+    },
+    {
+      "id": "B5",
+      "_pattern": "process-discipline",
+      "prompt": "Run headless. Update the brief at evals/bmm-skills/bmad-product-brief/files/forkbird-brief/brief.md — we have decided to add B2B catering services for corporate events, in addition to the direct-to-consumer delivery model. Read the existing decision-log.md and addendum.md in the same folder first.",
+      "expected_output": "The skill MUST detect the contradiction with the prior 'rejected B2B catering for MVP' decision (in decision-log.md) before applying the change. Acceptable resolutions: (a) halt with blocked status surfacing the conflict, or (b) apply the change with addendum.md capturing the override and rationale. Brief must not silently flip without acknowledging the prior decision.",
+      "files": [
+        "evals/bmm-skills/bmad-product-brief/files/forkbird-brief/brief.md",
+        "evals/bmm-skills/bmad-product-brief/files/forkbird-brief/addendum.md",
+        "evals/bmm-skills/bmad-product-brief/files/forkbird-brief/decision-log.md"
+      ],
+      "expectations": [
+        "The transcript or output explicitly references the prior 'rejected B2B catering for MVP' decision from decision-log.md",
+        "The contradiction is surfaced before the brief body is modified (a Read of decision-log.md occurs before the Edit/Write to brief.md, AND the conflict is named in the assistant output)",
+        "Either the JSON status is 'blocked' with the conflict in the reason field, OR addendum.md is updated with an override entry capturing the rationale for reversing the prior decision",
+        "If the brief is updated, decision-log.md gains a new entry referencing the catering reversal",
+        "If the brief is updated, the YAML frontmatter 'updated' field is later than the original 'created' field"
+      ]
+    },
+    {
+      "id": "B6",
+      "_pattern": "process-discipline",
+      "prompt": "Run headless. Update the brief at evals/bmm-skills/bmad-product-brief/files/forkbird-brief/brief.md — we have signed our fifth chef partner (Chicago metro). Add this to the existing operating-model and what's-known sections. Read the existing decision-log.md first.",
+      "expected_output": "Clean update — does not contradict any prior decision. Brief gets updated, decision-log gains a new entry, YAML 'updated' bumps but 'created' stays the same. No spurious addendum since this is a status update, not an override.",
+      "files": [
+        "evals/bmm-skills/bmad-product-brief/files/forkbird-brief/brief.md",
+        "evals/bmm-skills/bmad-product-brief/files/forkbird-brief/addendum.md",
+        "evals/bmm-skills/bmad-product-brief/files/forkbird-brief/decision-log.md"
+      ],
+      "expectations": [
+        "brief.md is updated to reflect the signed fifth chef partner in Chicago",
+        "brief.md frontmatter 'updated' field is later than the original 'created' timestamp; 'created' is unchanged",
+        "decision-log.md contains a new entry referencing the fifth chef signing",
+        "The transcript does not surface a fictional contradiction — this is a clean update, not an override of a prior decision"
+      ]
+    },
+    {
+      "id": "B7",
+      "_pattern": "process-discipline",
+      "prompt": "Run headless. Validate the brief at evals/bmm-skills/bmad-product-brief/files/mossridge-brief/brief.md — we are presenting to the library board Monday. Read the addendum and decision-log in the same folder. Cite specific sections. Return inline only.",
+      "expected_output": "Validate is read-only. No new files created. No existing files modified. Critique returned inline in the assistant output.",
+      "files": [
+        "evals/bmm-skills/bmad-product-brief/files/mossridge-brief/brief.md",
+        "evals/bmm-skills/bmad-product-brief/files/mossridge-brief/addendum.md",
+        "evals/bmm-skills/bmad-product-brief/files/mossridge-brief/decision-log.md"
+      ],
+      "expectations": [
+        "No new files appear in the mossridge-brief artifacts directory after the run (only the three input files)",
+        "The input brief.md, addendum.md, and decision-log.md are byte-identical to the staged fixtures (no Edit/Write tool calls modified them)",
+        "The transcript contains no Write tool calls and no Edit tool calls targeting the mossridge-brief folder",
+        "The final assistant message contains a JSON object with intent='validate'"
+      ]
+    },
+    {
+      "id": "C1",
+      "_pattern": "config-compliance",
+      "prompt": "Run headless. Create a product brief for TaskFlow — a lightweight daily planning app for freelancers who juggle multiple clients. Core idea: a single daily view that pulls together tasks, time blocks, and client context so the freelancer always knows what to work on next. Target is independent freelancers, 1-3 clients at a time, who currently manage their day across sticky notes, calendar apps, and spreadsheets. MVP is mobile-first. No investors — the founder is bootstrapping.",
+      "expected_output": "Brief written in Spanish (document_output_language=Spanish). Assistant's conversational output reflects the configured British-accent communication style. Brief lands at the custom output path (test-output/artifacts/briefs/...) rather than the default _bmad-output path. Brief is right-sized for a bootstrapped solo project.",
+      "files": [],
+      "expectations": [
+        "brief.md exists under test-output/artifacts/briefs/ (the custom planning_artifacts path), not under _bmad-output/",
+        "The final JSON status block artifact paths reference test-output/ rather than _bmad-output/",
+        "brief.md body is written in Spanish — the majority of prose content (headings, section bodies) is in Spanish, not English",
+        "brief.md covers the TaskFlow concept: freelancer daily planning, multi-client context, the sticky-notes-plus-calendar-plus-spreadsheet problem",
+        "brief.md is right-sized for a bootstrapped side project — appropriate depth and scope for a solo-founder app with no investor audience, no TAM/SAM/SOM framing, no Series A language, and no sections that pad for enterprise credibility",
+        "The assistant's non-document output (transcript text content outside of brief.md) contains at least one marker of British informal register (e.g., 'mate', 'cheers', 'brilliant', 'sorted', 'innit', 'blimey', 'proper', 'right then', or equivalent pub-idiom phrasing)"
+      ]
+    }
+  ]
+}

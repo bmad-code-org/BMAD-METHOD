@@ -2,7 +2,7 @@
 title: Skills
 description: Reference BMad skills — co to je, jak fungují a kde je najít.
 sidebar:
-  order: 3
+  order: 4
 ---
 
 Skills jsou předpřipravené prompty, které načítají agenty, spouštějí workflow nebo provádějí úkoly ve vašem IDE. Instalátor BMad je generuje z vašich nainstalovaných modulů při instalaci. Pokud později přidáte, odeberete nebo změníte moduly, přeinstalujte pro synchronizaci skills (viz [Řešení problémů](#řešení-problémů)).

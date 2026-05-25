@@ -14,7 +14,7 @@ Construisez des logiciels plus rapidement en utilisant des workflows propulsés 
 - Utiliser efficacement les agents et les workflows
 
 :::note[Prérequis]
-- **Node.js 20+** — Requis pour l'installateur
+- **Node.js 20.12+** — Requis pour l'installateur
 - **Git** — Recommandé pour le contrôle de version
 - **IDE IA** — Claude Code, Cursor, ou similaire
 - **Une idée de projet** — Même simple, elle fonctionne pour apprendre
@@ -150,7 +150,7 @@ Tous les workflows de cette phase sont optionnels. [**Pas sûr de quel outil uti
 - Exécutez `bmad-quick-dev` — il gère la planification et l'implémentation dans un seul workflow, passez directement à l'implémentation
 
 :::note[Design UX (Optionnel)]
-Si votre projet a une interface utilisateur, invoquez l'**agent Designer UX** (`bmad-agent-ux-designer`) et exécutez le workflow de design UX (`bmad-create-ux-design`) après avoir créé votre PRD.
+Si votre projet a une interface utilisateur, invoquez l'**agent Designer UX** (`bmad-agent-ux-designer`) et exécutez le workflow de design UX (`bmad-ux`) après avoir créé votre PRD.
 :::
 
 ### Phase 3 : Solutioning (méthode BMad/Enterprise)

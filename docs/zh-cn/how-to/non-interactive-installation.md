@@ -15,7 +15,7 @@ sidebar:
 - 使用已知配置的快速安装
 
 :::note[前置条件]
-需要 [Node.js](https://nodejs.org) v20+ 和 `npx`（随 npm 附带）。
+需要 [Node.js](https://nodejs.org) v20.12+ 和 `npx`（随 npm 附带）。
 :::
 
 ## 可用参数（Flags）

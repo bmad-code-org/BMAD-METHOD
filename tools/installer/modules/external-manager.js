@@ -4,9 +4,9 @@ const path = require('node:path');
 const { execSync } = require('node:child_process');
 const yaml = require('yaml');
 const prompts = require('../prompts');
-const { RegistryClient } = require('./registry-client');
 const { resolveChannel, tagExists, parseGitHubRepo } = require('./channel-resolver');
 const { decideChannelForModule } = require('./channel-plan');
+const { getProjectRoot } = require('../project-root');
 
 const VALID_CHANNELS = new Set(['stable', 'next', 'pinned']);
 
@@ -46,15 +46,12 @@ async function writeChannelMarker(markerPath, data) {
   }
 }
 
-const MARKETPLACE_OWNER = 'bmad-code-org';
-const MARKETPLACE_REPO = 'bmad-plugins-marketplace';
-const MARKETPLACE_REF = 'main';
-const FALLBACK_CONFIG_PATH = path.join(__dirname, 'registry-fallback.yaml');
+const REGISTRY_CONFIG_PATH = path.join(getProjectRoot(), 'bmad-modules.yaml');
 
 /**
- * Manages official modules from the remote BMad marketplace registry.
- * Fetches registry/official.yaml from GitHub; falls back to the bundled
- * external-official-modules.yaml when the network is unavailable.
+ * Manages official modules from the bundled registry file. The remote
+ * marketplace fetch has been retired; this repo is the single source of truth
+ * for which official modules exist and how they are displayed.
  *
  * @class ExternalModuleManager
  */
@@ -65,9 +62,7 @@ class ExternalModuleManager {
   // ExternalModuleManager) sees resolutions made during install.
   static _resolutions = new Map();
 
-  constructor() {
-    this._client = new RegistryClient();
-  }
+  constructor() {}
 
   /**
    * Get the most recent channel resolution for a module (if any).
@@ -79,8 +74,7 @@ class ExternalModuleManager {
   }
 
   /**
-   * Load the official modules registry from GitHub, falling back to the
-   * bundled YAML file if the fetch fails.
+   * Load the official modules registry from the bundled YAML file.
    * @returns {Object} Parsed YAML content with modules array
    */
   async loadExternalModulesConfig() {
@@ -88,23 +82,10 @@ class ExternalModuleManager {
       return this.cachedModules;
     }
 
-    // Try remote registry first
     try {
-      const config = await this._client.fetchGitHubYaml(MARKETPLACE_OWNER, MARKETPLACE_REPO, 'registry/official.yaml', MARKETPLACE_REF);
-      if (config?.modules?.length) {
-        this.cachedModules = config;
-        return config;
-      }
-    } catch {
-      // Fall through to local fallback
-    }
-
-    // Fallback to bundled file
-    try {
-      const content = await fs.readFile(FALLBACK_CONFIG_PATH, 'utf8');
+      const content = await fs.readFile(REGISTRY_CONFIG_PATH, 'utf8');
       const config = yaml.parse(content);
       this.cachedModules = config;
-      await prompts.log.warn('Could not reach BMad registry; using bundled module list.');
       return config;
     } catch (error) {
       await prompts.log.warn(`Failed to load modules config: ${error.message}`);
@@ -130,6 +111,7 @@ class ExternalModuleManager {
       defaultSelected: mod.default_selected === true || mod.defaultSelected === true,
       type: mod.type || 'bmad-org',
       npmPackage: mod.npm_package || mod.npmPackage || null,
+      pluginName: mod.plugin_name || mod.pluginName || null,
       defaultChannel: normalizeChannelName(mod.default_channel || mod.defaultChannel) || 'stable',
       builtIn: mod.built_in === true,
       isExternal: mod.built_in !== true,
@@ -524,8 +506,20 @@ class ExternalModuleManager {
       return path.dirname(rootCandidate);
     }
 
-    // Nothing found: return configured path (preserves old behavior for error messaging)
-    return path.dirname(configuredPath);
+    // Nothing found: the cloned ref does not contain a recognizable module structure.
+    // This happens when a stable tag predates a module restructure (e.g. the repo
+    // moved files from payload/ to skills/ after the tag was cut). Returning a
+    // non-existent path silently causes a confusing ENOENT deep inside copyModuleWithFiltering;
+    // throw a descriptive error here instead so the user knows what happened and how to recover.
+    const resolution = ExternalModuleManager._resolutions.get(moduleCode);
+    const versionHint = resolution?.version ? `version ${resolution.version}` : 'the cloned version';
+    const channelHint =
+      resolution?.channel === 'stable' ? ` Try reinstalling with \`--next=${moduleCode}\` to use the latest main branch instead.` : '';
+    throw new Error(
+      `Module '${moduleCode}' was downloaded but its module definition was not found. ` +
+        `Expected '${moduleDefinitionPath}' to exist in ${versionHint}, but it is missing. ` +
+        `The repository may have been restructured after this release was tagged.${channelHint}`,
+    );
   }
   cachedModules = null;
 }

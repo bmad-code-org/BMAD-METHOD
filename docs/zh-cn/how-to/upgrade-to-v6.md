@@ -2,7 +2,7 @@
 title: "如何升级到 v6"
 description: 从 BMad v4 迁移到 v6
 sidebar:
-  order: 3
+  order: 4
 ---
 
 使用 BMad 安装程序把 v4 升级到 v6。安装程序会自动识别旧安装，并提供迁移辅助，帮助你在已有项目中平滑过渡。
@@ -14,7 +14,7 @@ sidebar:
 - 你有要保留的规划产物或进行中的开发工作
 
 :::note[前置条件]
-- Node.js 20+
+- Node.js 20.12+
 - 现有 BMad v4 安装
 :::
 
