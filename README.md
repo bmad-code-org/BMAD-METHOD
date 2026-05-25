@@ -77,6 +77,16 @@ BMad Method extends with official modules for specialized domains. Available dur
 | **[Game Dev Studio (BMGD)](https://github.com/bmad-code-org/bmad-module-game-dev-studio)**                        | Game development workflows (Unity, Unreal, Godot) |
 | **[Creative Intelligence Suite (CIS)](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite)** | Innovation, brainstorming, design thinking        |
 
+## Web Bundles
+
+V4 shipped web bundles. V6 brings them back, new and improved.
+
+Web bundles package selected BMad skills for installation as **Google Gemini Gems** and **ChatGPT Custom GPTs**. Use them to do the upfront planning work (brainstorming, product briefs, PRDs, PRFAQs, UX specs, market and industry research) in your web LLM subscription, then bring the polished artifacts into your IDE for implementation. Planning runs on a flat-rate subscription instead of metered IDE tokens, which is a meaningful cost saver on longer engagements. Choose the best model available to you in Gemini or ChatGPT.
+
+Current shelf: brainstorming, product brief, PRFAQ, PRD, UX, market & industry research.
+
+**Browse and install at [bmadcode.com/web-bundles](https://bmadcode.com/web-bundles/)**. One card per bundle, inline install steps for Gemini and ChatGPT, one-click ZIP download. See [the web bundles guide](https://docs.bmad-method.org/explanation/web-bundles/) for the concept.
+
 ## Documentation
 
 [BMad Method Docs Site](https://docs.bmad-method.org) — Tutorials, guides, concepts, and reference

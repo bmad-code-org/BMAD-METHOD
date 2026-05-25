@@ -2,7 +2,7 @@
 title: "Adversariální revize"
 description: Technika vynuceného uvažování, která zabraňuje líným „vypadá dobře“ revizím
 sidebar:
-  order: 5
+  order: 7
 ---
 
 Vynuťte hlubší analýzu tím, že budete vyžadovat nalezení problémů.

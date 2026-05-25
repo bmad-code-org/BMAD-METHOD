@@ -2,7 +2,7 @@
 title: "Vì sao solutioning quan trọng"
 description: Hiểu vì sao giai đoạn solutioning là tối quan trọng đối với dự án nhiều epic
 sidebar:
-  order: 3
+  order: 5
 ---
 
 Giai đoạn 3 (Solutioning) biến **xây gì** (từ giai đoạn Planning) thành **xây như thế nào** (thiết kế kỹ thuật). Giai đoạn này ngăn xung đột giữa các agent trong dự án nhiều epic bằng cách ghi lại các quyết định kiến trúc trước khi bắt đầu triển khai.

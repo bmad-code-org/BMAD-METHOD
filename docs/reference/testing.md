@@ -2,7 +2,7 @@
 title: Testing Options
 description: Comparing the built-in QA workflow with the Test Architect (TEA) module for test automation.
 sidebar:
-  order: 5
+  order: 6
 ---
 
 BMad provides two testing paths: a built-in QA workflow for fast test generation and an installable Test Architect module for enterprise-grade test strategy.

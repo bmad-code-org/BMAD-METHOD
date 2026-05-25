@@ -47,7 +47,7 @@ Define what to build and for whom.
 | Workflow                | Purpose                                                                             | Produces                                          |
 |-------------------------|-------------------------------------------------------------------------------------|---------------------------------------------------|
 | `bmad-prd`              | Create, update, or validate a PRD — facilitated discovery, three intents in one skill | Create/Update: `prd.md`, `addendum.md`, `decision-log.md`; Validate: `validation-report.html` + `.md` |
-| `bmad-create-ux-design` | Design user experience (when UX matters)                                            | `ux-spec.md`                                      |
+| `bmad-ux`               | Design user experience (when UX matters) — DESIGN.md (visual) + EXPERIENCE.md (behavioral) spine pair | `DESIGN.md`, `EXPERIENCE.md`, `.decision-log.md`  |
 
 :::tip[Three intents in one skill]
 `bmad-prd` handles the full PRD lifecycle. State your intent when invoking or the skill will ask:
