@@ -1,10 +1,16 @@
 /**
  * Smoke test for bmad-quick-dev render.py
  *
- * Sets up a temp project with a base _bmad/config.toml and an override
- * _bmad/custom/config.user.toml, runs render.py, and asserts:
- *   1. The override wins (workflow.md contains "Japanese").
+ * Sets up a temp project with base + override config layers and a
+ * _bmad/custom/bmad-quick-dev.user.toml [workflow] override, runs render.py,
+ * and asserts:
+ *   1. The central-config override wins (workflow.md contains "Japanese").
  *   2. sprint_status is an absolute path rooted at the temp project dir.
+ *   3. [workflow] customization is self-resolved and inlined: prepend bullet,
+ *      persistent_facts append (base kept), empty list -> _None._, on_complete
+ *      scalar baked into step-05/step-oneshot.
+ *   4. No {workflow.*} placeholder or resolve_customization.py call survives
+ *      in any rendered file.
  *
  * Usage: node test/test-quick-dev-renderer.js
  * Exit codes: 0 = all tests pass, 1 = test failures
@@ -97,6 +103,21 @@ try {
     'utf-8',
   );
 
+  // _bmad/custom/bmad-quick-dev.user.toml — [workflow] customization override.
+  // Exercises render.py's self-resolution: array append (persistent_facts),
+  // list inlining (activation_steps_prepend), and scalar override (on_complete),
+  // all baked into the rendered output with no runtime resolve_customization.py.
+  fs.writeFileSync(
+    path.join(tmpDir, '_bmad', 'custom', 'bmad-quick-dev.user.toml'),
+    [
+      '[workflow]',
+      'activation_steps_prepend = ["TEST_PREPEND_STEP"]',
+      'persistent_facts = ["TEST_EXTRA_FACT"]',
+      'on_complete = "TEST_ON_COMPLETE_INSTRUCTION"',
+    ].join('\n'),
+    'utf-8',
+  );
+
   // Copy skill dir into <tmpDir>/bmad-quick-dev/ so find_project_root() walks
   // up and finds <tmpDir>/_bmad/, and os.path.basename(script_dir) resolves
   // to the real skill name so the render output lands at
@@ -114,6 +135,10 @@ try {
     cwd: skillDst,
     encoding: 'utf-8',
   });
+
+  const renderDir = path.join(tmpDir, '_bmad', 'render', 'bmad-quick-dev');
+  const readRendered = (name) => fs.readFileSync(path.join(renderDir, name), 'utf-8');
+  const renderedMdFiles = () => fs.readdirSync(renderDir).filter((f) => f.endsWith('.md'));
 
   // ---------------------------------------------------------------------------
   // Tests
@@ -146,6 +171,38 @@ try {
       `sprint_status path not found.\nExpected substring: ${expected}\n` +
         `workflow.md excerpt (first 2000 chars):\n${content.slice(0, 2000)}`,
     );
+  });
+
+  test('workflow override — prepend step inlined as a bullet', () => {
+    const content = readRendered('workflow.md');
+    assert(content.includes('- TEST_PREPEND_STEP'), 'activation_steps_prepend not inlined as a bullet');
+  });
+
+  test('workflow override — persistent_facts append (base kept, override added)', () => {
+    const content = readRendered('workflow.md');
+    assert(content.includes('- TEST_EXTRA_FACT'), 'override persistent_fact not inlined');
+    assert(content.includes('project-context.md'), 'base persistent_fact dropped — append semantics broken');
+  });
+
+  test('empty activation_steps_append renders the _None._ sentinel', () => {
+    const content = readRendered('workflow.md');
+    assert(content.includes('_None._'), '_None._ sentinel missing for empty list');
+  });
+
+  test('on_complete scalar inlined into step-05 and step-oneshot', () => {
+    for (const file of ['step-05-present.md', 'step-oneshot.md']) {
+      assert(readRendered(file).includes('TEST_ON_COMPLETE_INSTRUCTION'), `on_complete not inlined into ${file}`);
+    }
+  });
+
+  test('no {workflow.*} placeholder survives in any rendered file', () => {
+    const leaks = renderedMdFiles().filter((f) => readRendered(f).includes('{workflow.'));
+    assert(leaks.length === 0, `{workflow.*} leaked in: ${leaks.join(', ')}`);
+  });
+
+  test('no resolve_customization.py reference survives in any rendered file', () => {
+    const leaks = renderedMdFiles().filter((f) => readRendered(f).includes('resolve_customization.py'));
+    assert(leaks.length === 0, `resolve_customization.py still referenced in: ${leaks.join(', ')}`);
   });
 } finally {
   fs.rmSync(tmpDir, { recursive: true, force: true });
