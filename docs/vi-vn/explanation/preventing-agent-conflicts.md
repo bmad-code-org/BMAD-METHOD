@@ -2,7 +2,7 @@
 title: "Ngăn xung đột giữa các agent"
 description: Cách kiến trúc ngăn xung đột khi nhiều agent cùng triển khai một hệ thống
 sidebar:
-     order: 4
+     order: 6
 ---
 
 Khi nhiều agent AI cùng triển khai các phần khác nhau của hệ thống, chúng có thể đưa ra các quyết định kỹ thuật mâu thuẫn nhau. Tài liệu kiến trúc ngăn điều đó bằng cách thiết lập các tiêu chuẩn dùng chung.

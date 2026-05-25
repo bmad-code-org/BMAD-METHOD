@@ -2,7 +2,7 @@
 title: "项目上下文"
 description: project-context.md 如何使用项目规则和偏好指导 AI 智能体
 sidebar:
-  order: 7
+  order: 11
 ---
 
 `project-context.md` 是面向 AI 智能体的项目级上下文文件。它的定位不是教程步骤，而是“实现约束说明”：把你的技术偏好、架构边界和工程约定沉淀成可复用规则，让不同工作流、不同智能体在多个 `story` 中做出一致决策。

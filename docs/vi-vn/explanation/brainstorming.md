@@ -2,7 +2,7 @@
 title: "Động não ý tưởng"
 description: Các phiên sáng tạo tương tác sử dụng hơn 60 kỹ thuật khơi ý đã được kiểm chứng
 sidebar:
-  order: 2
+  order: 3
 ---
 
 Mở khóa sự sáng tạo của bạn thông qua quá trình khám phá có hướng dẫn.

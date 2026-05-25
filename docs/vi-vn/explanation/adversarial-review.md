@@ -2,7 +2,7 @@
 title: "Đánh giá đối kháng"
 description: Kỹ thuật lập luận ép buộc giúp tránh các bản review lười kiểu "nhìn ổn"
 sidebar:
-  order: 5
+  order: 9
 ---
 
 Buộc quá trình phân tích đi sâu hơn bằng cách ép phải tìm ra vấn đề.

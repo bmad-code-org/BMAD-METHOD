@@ -2,7 +2,7 @@
 title: Core Tools
 description: Reference for all built-in tasks and workflows available in every BMad installation without additional modules.
 sidebar:
-  order: 2
+  order: 3
 ---
 
 Every BMad installation includes a set of core skills that can be used in conjunction with any anything you are doing — standalone tasks and workflows that work across all projects, all modules, and all phases. These are always available regardless of which optional modules you install.

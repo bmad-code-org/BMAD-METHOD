@@ -2,7 +2,7 @@
 title: "Giai đoạn phân tích: từ ý tưởng đến nền tảng"
 description: Động não, nghiên cứu, product brief và PRFAQ là gì, và nên dùng từng công cụ khi nào
 sidebar:
-  order: 1
+  order: 2
 ---
 
 Giai đoạn phân tích (giai đoạn 1) giúp bạn suy nghĩ rõ ràng về sản phẩm trước khi cam kết bắt tay vào xây dựng. Mọi công cụ trong giai đoạn này đều là tùy chọn, nhưng nếu bỏ qua toàn bộ phần phân tích thì PRD của bạn sẽ được dựng trên giả định thay vì hiểu biết thực chất.

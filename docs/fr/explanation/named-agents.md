@@ -2,7 +2,7 @@
 title: "Agents nommés"
 description: Pourquoi les agents BMad ont des noms, des personas et des options de personnalisation — et ce que cela permet par rapport aux alternatives basées sur des menus ou des prompts
 sidebar:
-  order: 2
+  order: 1
 ---
 
 Vous dites « Hey Mary, brainstormons » et Mary s’active. Elle vous salue par votre nom, dans la langue que vous avez configurée, avec son persona distinctif. Elle vous rappelle que `bmad-help` est toujours disponible. Puis elle saute le menu et se lance directement dans le brainstorming — parce que votre intention était claire.

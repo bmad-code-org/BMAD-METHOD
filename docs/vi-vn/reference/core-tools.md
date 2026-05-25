@@ -2,7 +2,7 @@
 title: Công cụ cốt lõi
 description: Tài liệu tham chiếu cho mọi tác vụ và quy trình tích hợp sẵn có trong mọi bản cài BMad mà không cần module bổ sung.
 sidebar:
-  order: 2
+  order: 3
 ---
 
 Mọi bản cài BMad đều bao gồm một tập skill cốt lõi có thể dùng cùng với bất cứ việc gì bạn đang làm, các tác vụ và quy trình độc lập hoạt động xuyên suốt mọi dự án, mọi module và mọi giai đoạn. Chúng luôn có sẵn bất kể bạn cài những module tùy chọn nào.

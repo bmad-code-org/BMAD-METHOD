@@ -2,7 +2,7 @@
 title: "Phase d’analyse : de l’Idée aux Fondations"
 description: Ce que sont le brainstorming, la recherche, les product briefs et les PRFAQs — et quand les utiliser
 sidebar:
-  order: 1
+  order: 2
 ---
 
 La phase d’Analyse (Phase 1) vous aide à penser clairement à votre produit avant de vous engager à le construire. Chaque outil de cette phase est optionnel, mais sauter l’analyse entièrement signifie que votre PRD sera construit sur des suppositions plutôt que sur des connaissances approfondies.

@@ -846,11 +846,35 @@ class OfficialModules {
       return false;
     }
 
-    // Dynamically discover all installed modules by scanning bmad directory
-    // A directory is a module ONLY if it contains a config.yaml file
+    // Primary source: installer-written config.toml + config.user.toml (v6+).
+    // Both files together hold all install answers; config.user.toml carries
+    // user-scoped keys like user_name that would otherwise be re-prompted on
+    // every reinstall.
     let foundAny = false;
-    const entries = await fs.readdir(bmadDir, { withFileTypes: true });
+    for (const fileName of ['config.toml', 'config.user.toml']) {
+      const tomlPath = path.join(bmadDir, fileName);
+      if (!(await fs.pathExists(tomlPath))) continue;
+      try {
+        const content = await fs.readFile(tomlPath, 'utf8');
+        const parsed = parseCentralToml(content);
+        for (const [section, values] of Object.entries(parsed)) {
+          if (values && typeof values === 'object' && !Array.isArray(values)) {
+            if (!this._existingConfig[section]) this._existingConfig[section] = {};
+            Object.assign(this._existingConfig[section], values);
+            foundAny = true;
+          }
+        }
+      } catch {
+        // Ignore parse errors
+      }
+    }
 
+    if (foundAny) {
+      return true;
+    }
+
+    // Fallback: legacy per-module config.yaml files (pre-v6 installations).
+    const entries = await fs.readdir(bmadDir, { withFileTypes: true });
     const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom']);
     for (const entry of entries) {
       if (entry.isDirectory()) {
@@ -2125,6 +2149,62 @@ class OfficialModules {
 
     return result;
   }
+}
+
+/**
+ * Parse a config.toml or config.user.toml written by writeCentralConfig.
+ * Only handles the subset of TOML the installer produces: [core],
+ * [modules.<code>], string/bool/number scalar values. [agents.*] and other
+ * sections are ignored. Returns a plain object keyed by section name where
+ * module sections use the bare code (e.g. "bmm"), not the full "modules.bmm".
+ */
+function parseCentralToml(content) {
+  const result = {};
+  let currentSection = null;
+
+  for (const rawLine of content.split('\n')) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith('#')) continue;
+
+    const sectionMatch = line.match(/^\[([^\]]+)\]\s*$/);
+    if (sectionMatch) {
+      const name = sectionMatch[1];
+      if (name === 'core') {
+        currentSection = 'core';
+      } else if (name.startsWith('modules.')) {
+        currentSection = name.slice('modules.'.length);
+      } else {
+        currentSection = null;
+      }
+      if (currentSection && !result[currentSection]) {
+        result[currentSection] = {};
+      }
+      continue;
+    }
+
+    if (!currentSection) continue;
+
+    const kvMatch = line.match(/^([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.+)$/);
+    if (!kvMatch) continue;
+
+    const key = kvMatch[1];
+    const raw = kvMatch[2].trim();
+    let value;
+    if (raw.startsWith('"') && raw.endsWith('"')) {
+      value = raw.slice(1, -1).replaceAll(/\\(["\\nrbt])/g, (_, c) => ({ '"': '"', '\\': '\\', n: '\n', r: '\r', b: '\b', t: '\t' })[c]);
+    } else if (raw === 'true') {
+      value = true;
+    } else if (raw === 'false') {
+      value = false;
+    } else if (raw !== '' && !isNaN(raw)) {
+      value = Number(raw);
+    } else {
+      value = raw;
+    }
+    result[currentSection][key] = value;
+  }
+
+  return result;
 }
 
 module.exports = { OfficialModules };

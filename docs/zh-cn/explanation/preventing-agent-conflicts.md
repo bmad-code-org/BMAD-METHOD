@@ -2,7 +2,7 @@
 title: "防止智能体冲突"
 description: 架构如何在多个智能体实现系统时防止冲突
 sidebar:
-  order: 4
+  order: 6
 ---
 
 当多个 AI 智能体并行实现系统时，冲突并不罕见。`architecture` 的作用，就是在 `solutioning` 阶段先统一关键决策，避免到 `epic/story` 实施时才暴露分歧。

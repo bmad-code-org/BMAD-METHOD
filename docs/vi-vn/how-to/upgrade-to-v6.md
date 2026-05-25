@@ -2,7 +2,7 @@
 title: "Cách nâng cấp lên v6"
 description: Di chuyển từ BMad v4 sang v6
 sidebar:
-  order: 3
+  order: 4
 ---
 
 Sử dụng trình cài đặt BMad để nâng cấp từ v4 lên v6, bao gồm khả năng tự động phát hiện bản cài đặt cũ và hỗ trợ di chuyển.

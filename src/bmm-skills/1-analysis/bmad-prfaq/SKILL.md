@@ -65,7 +65,7 @@ Greet `{user_name}`, speaking in `{communication_language}`. Be warm but efficie
 
 Execute each entry in `{workflow.activation_steps_append}` in order.
 
-Activation is complete. Continue below.
+Activation is complete. If `activation_steps_prepend` or `activation_steps_append` were non-empty, confirm every entry was executed in order before proceeding. Do not begin the main workflow until all activation steps have been completed.
 
 ## Pre-workflow Setup
 

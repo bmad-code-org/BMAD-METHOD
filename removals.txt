@@ -57,3 +57,6 @@ bmad-bmm-validate-prd
 # bmad-distillator: superseded by bmad-spec (universal intent distiller with
 # preservation-validated contract for downstream skills).
 bmad-distillator
+# bmad-create-ux-design: renamed to bmad-ux (spine-based skill with separate
+# DESIGN.md and EXPERIENCE.md outputs).
+bmad-create-ux-design

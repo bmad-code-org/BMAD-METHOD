@@ -2,7 +2,7 @@
 title: "Proč je solutioning důležitý"
 description: Pochopení toho, proč je fáze solutioningu klíčová pro projekty s více epicy
 sidebar:
-  order: 3
+  order: 4
 ---
 
 Fáze 3 (Solutioning) překládá **co** budovat (z plánování) na **jak** to budovat (technický návrh). Tato fáze zabraňuje konfliktům agentů v projektech s více epicy tím, že dokumentuje architektonická rozhodnutí před zahájením implementace.

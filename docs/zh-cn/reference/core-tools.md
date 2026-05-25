@@ -2,7 +2,7 @@
 title: "核心工具"
 description: 每个 BMad 安装默认可用的任务与 workflow 参考。
 sidebar:
-  order: 2
+  order: 3
 ---
 
 核心工具是跨模块可复用的一组通用能力：不依赖特定业务项目，也不要求先进入某个智能体角色。只要安装了 BMad，你就可以直接调用它们。

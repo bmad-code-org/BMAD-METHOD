@@ -2,7 +2,7 @@
 title: Základní nástroje
 description: Reference všech vestavěných úkolů a workflow dostupných v každé instalaci BMad bez dalších modulů.
 sidebar:
-  order: 2
+  order: 3
 ---
 
 Každá instalace BMad zahrnuje sadu základních skills, které lze použít v kombinaci s čímkoli — samostatné úkoly a workflow, které fungují napříč všemi projekty, všemi moduly a všemi fázemi. Ty jsou vždy dostupné bez ohledu na to, které volitelné moduly nainstalujete.

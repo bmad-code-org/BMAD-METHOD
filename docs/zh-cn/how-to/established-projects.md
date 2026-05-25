@@ -2,7 +2,7 @@
 title: "既有项目"
 description: 如何在现有代码库中使用 BMad Method
 sidebar:
-  order: 6
+  order: 7
 ---
 
 当你在现有项目或遗留代码库上工作时，本指南帮助你更稳妥地使用 BMad Method。
