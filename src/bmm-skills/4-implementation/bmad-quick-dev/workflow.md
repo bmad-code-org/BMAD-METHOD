@@ -35,27 +35,19 @@ A specification should target a **single user-facing goal** within **900–1600 
 
 ## On Activation
 
-### Step 1: Resolve the Workflow Block
+### Step 1: Execute Prepend Steps
 
-Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`
+Execute each of these steps in order before proceeding (`_None._` means skip):
 
-**If the script fails**, resolve the `workflow` block yourself by reading these three files in base → team → user order and applying the same structural merge rules as the resolver:
+{workflow.activation_steps_prepend}
 
-1. `{skill-root}/customize.toml` — defaults
-2. `{project-root}/_bmad/custom/{skill-name}.toml` — team overrides
-3. `{project-root}/_bmad/custom/{skill-name}.user.toml` — personal overrides
+### Step 2: Load Persistent Facts
 
-Any missing file is skipped. Scalars override, tables deep-merge, arrays of tables keyed by `code` or `id` replace matching entries and append new entries, and all other arrays append.
+Treat every entry below as foundational context you carry for the rest of the workflow run. Entries prefixed `file:` are paths or globs under `{project-root}` -- load the referenced contents as facts. All other entries are facts verbatim (`_None._` means none):
 
-### Step 2: Execute Prepend Steps
+{workflow.persistent_facts}
 
-Execute each entry in `{workflow.activation_steps_prepend}` in order before proceeding.
-
-### Step 3: Load Persistent Facts
-
-Treat every entry in `{workflow.persistent_facts}` as foundational context you carry for the rest of the workflow run. Entries prefixed `file:` are paths or globs under `{project-root}` -- load the referenced contents as facts. All other entries are facts verbatim.
-
-### Step 4: Load Config
+### Step 3: Load Config
 
 Load config from `{{.main_config}}` and resolve:
 
@@ -69,13 +61,15 @@ Load config from `{{.main_config}}` and resolve:
 - Language MUST be tailored to `{{.user_skill_level}}`
 - Generate all documents in `{{.document_output_language}}`
 
-### Step 5: Greet the User
+### Step 4: Greet the User
 
 Greet `{{.user_name}}`, speaking in `{{.communication_language}}`.
 
-### Step 6: Execute Append Steps
+### Step 5: Execute Append Steps
 
-Execute each entry in `{workflow.activation_steps_append}` in order.
+Execute each of these steps in order (`_None._` means skip):
+
+{workflow.activation_steps_append}
 
 Activation is complete. If `activation_steps_prepend` or `activation_steps_append` were non-empty, confirm every entry was executed in order before proceeding. Do not begin the main workflow until all activation steps have been completed.
 

@@ -2,16 +2,21 @@
 """render.py — bmad-quick-dev template renderer.
 
 Resolves compile-time {{.variable}} placeholders from BMad's central config,
-bakes absolute paths for {project-root} into derived values, and writes
-rendered .md files to {project-root}/_bmad/render/bmad-quick-dev/.
+bakes absolute paths for {project-root} into derived values, resolves and
+inlines the skill's [workflow] customization block, and writes rendered .md
+files to {project-root}/_bmad/render/bmad-quick-dev/.
 
 Config: four-layer merge of _bmad/config.toml + config.user.toml +
 custom/config.toml + custom/config.user.toml (post-#2285 installs).
 Keys surface from [core] and [modules.bmm]. Missing or unparseable
 config.toml → HALT.
 
-Runtime {variable} placeholders (single curly) pass through untouched for
-the LLM to resolve during workflow execution.
+Customization: three-layer merge of {skill}/customize.toml +
+_bmad/custom/bmad-quick-dev.toml + .user.toml (same structural rules as
+resolve_customization.py). The resolved [workflow] values fill {workflow.*}
+placeholders, so this skill needs no runtime resolve_customization.py call.
+Other single-curly placeholders ({project-root}, {spec_file}, {skill-root},
+...) pass through untouched for the LLM to resolve during workflow execution.
 
 Every invocation rebuilds from scratch — no hash, no cache.
 Python 3.11+ stdlib only. UTF-8 I/O.
@@ -86,6 +91,83 @@ def _deep_merge(base, override):
     return override
 
 
+def _detect_keyed_merge_field(items):
+    """Return 'code' or 'id' if every table item carries that same field.
+    Mixed or partial arrays return None and fall through to append."""
+    if not items or not all(isinstance(item, dict) for item in items):
+        return None
+    for candidate in ("code", "id"):
+        if all(item.get(candidate) is not None for item in items):
+            return candidate
+    return None
+
+
+def _merge_by_key(base, override, key_name):
+    result = []
+    index_by_key = {}
+    for item in base:
+        if not isinstance(item, dict):
+            continue
+        if item.get(key_name) is not None:
+            index_by_key[item[key_name]] = len(result)
+        result.append(dict(item))
+    for item in override:
+        if not isinstance(item, dict):
+            result.append(item)
+            continue
+        key = item.get(key_name)
+        if key is not None and key in index_by_key:
+            result[index_by_key[key]] = dict(item)
+        else:
+            if key is not None:
+                index_by_key[key] = len(result)
+            result.append(dict(item))
+    return result
+
+
+def _merge_arrays(base, override):
+    """Shape-aware array merge: keyed merge if every item has code/id, else append."""
+    base_arr = base if isinstance(base, list) else []
+    override_arr = override if isinstance(override, list) else []
+    keyed_field = _detect_keyed_merge_field(base_arr + override_arr)
+    if keyed_field:
+        return _merge_by_key(base_arr, override_arr, keyed_field)
+    return base_arr + override_arr
+
+
+def _structural_merge(base, override):
+    """Faithful port of resolve_customization.py's deep_merge: tables deep-merge,
+    arrays-of-tables keyed by code/id replace-then-append (other arrays append),
+    scalars override. Used only for the [workflow] customization layers — the
+    central-config path keeps its own simpler _deep_merge. Duplicated rather than
+    imported to keep this skill self-contained."""
+    if isinstance(base, dict) and isinstance(override, dict):
+        result = dict(base)
+        for key, over_val in override.items():
+            result[key] = (
+                _structural_merge(result[key], over_val) if key in result else over_val
+            )
+        return result
+    if isinstance(base, list) and isinstance(override, list):
+        return _merge_arrays(base, override)
+    return override
+
+
+def resolve_workflow(root, skill_dir, skill_name):
+    """Resolve the [workflow] customization block via the three-layer merge
+    (skill defaults -> team -> user), highest priority last. Same structural
+    rules as resolve_customization.py. All three layers are optional: a missing
+    or unparseable file warns (via load_toml) and is skipped."""
+    defaults = load_toml(posixpath.join(skill_dir, "customize.toml"))
+    custom_dir = posixpath.join(root, "_bmad", "custom")
+    team = load_toml(posixpath.join(custom_dir, f"{skill_name}.toml"))
+    user = load_toml(posixpath.join(custom_dir, f"{skill_name}.user.toml"))
+    merged = _structural_merge(defaults, team)
+    merged = _structural_merge(merged, user)
+    workflow = merged.get("workflow")
+    return workflow if isinstance(workflow, dict) else {}
+
+
 def load_central_config(root):
     """Four-layer merge of _bmad/config.toml and its peers (highest priority
     last). HALTs if the base _bmad/config.toml is missing or unparseable."""
@@ -123,6 +205,41 @@ def render_template(content, vars_):
     return re.sub(r"\{\{\.(\w+)\}\}", lambda m: vars_.get(m.group(1), ""), content)
 
 
+def _scalar_str(value):
+    """Stringify a scalar for inline rendering: booleans lowercase (matching
+    BMad config conventions), None as empty, everything else via str()."""
+    if value is None:
+        return ""
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    return str(value)
+
+
+def _render_workflow_value(value):
+    """Format a resolved [workflow] value for inline substitution. Lists render
+    as markdown bullets (empty -> '_None._'); scalars render verbatim. Each list
+    item uses the same scalar formatting so booleans stay consistent. Entries are
+    emitted as-is so runtime placeholders like {project-root} survive for the LLM
+    to resolve."""
+    if isinstance(value, list):
+        if not value:
+            return "_None._"
+        return "\n".join(f"- {_scalar_str(item)}" for item in value)
+    return _scalar_str(value)
+
+
+def render_workflow(content, workflow):
+    """Resolve {workflow.<key>} placeholders from the resolved [workflow] block.
+    Unknown keys emit an empty string (missingkey=zero, matching render_template).
+    Distinct regex from render_template so single-curly runtime placeholders
+    elsewhere are untouched."""
+    return re.sub(
+        r"\{workflow\.(\w+)\}",
+        lambda m: _render_workflow_value(workflow.get(m.group(1))),
+        content,
+    )
+
+
 def main():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     skill_name = os.path.basename(script_dir)
@@ -144,6 +261,8 @@ def main():
         vars_["implementation_artifacts"], "deferred-work.md"
     )
 
+    workflow = resolve_workflow(root, script_dir.replace(os.sep, "/"), skill_name)
+
     out_dir = posixpath.join(root, "_bmad", "render", skill_name)
     os.makedirs(out_dir, exist_ok=True)
 
@@ -160,7 +279,7 @@ def main():
         with open(src, "r", encoding="utf-8", newline="") as fh:
             content = fh.read()
         with open(dst, "w", encoding="utf-8", newline="") as fh:
-            fh.write(render_template(content, vars_))
+            fh.write(render_workflow(render_template(content, vars_), workflow))
         count += 1
 
     print(f"render.py: rendered {count} files -> {out_dir}", file=sys.stderr)
