@@ -21,7 +21,7 @@ Use a **web bundle** to run BMad planning work in your Gemini or ChatGPT subscri
 - **For Gemini Gems**: Gemini Advanced subscription.
 - **For ChatGPT Custom GPTs**: Plus, Pro, Business, or Enterprise plan. Some bundles use Deep Research, which has its own plan availability.
 - A bundle from [`web-bundles/`](https://github.com/bmad-code-org/BMAD-METHOD/tree/main/web-bundles).
-  :::
+:::
 
 ## Steps
 
