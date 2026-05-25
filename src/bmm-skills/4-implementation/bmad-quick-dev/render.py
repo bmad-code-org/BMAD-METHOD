@@ -7,7 +7,8 @@ rendered .md files to {project-root}/_bmad/render/bmad-quick-dev/.
 
 Config: four-layer merge of _bmad/config.toml + config.user.toml +
 custom/config.toml + custom/config.user.toml (post-#2285 installs).
-Keys surface from [core] and [modules.bmm]. Missing config.toml → HALT.
+Keys surface from [core] and [modules.bmm]. Missing or unparseable
+config.toml → HALT.
 
 Runtime {variable} placeholders (single curly) pass through untouched for
 the LLM to resolve during workflow execution.
@@ -40,6 +41,39 @@ def find_project_root():
         current = parent
 
 
+def load_toml(path, required=False):
+    """Load a TOML file. For required files, HALT (stdout) on missing/parse
+    error so the LLM-driven workflow stops — stdout is how this script signals
+    workflow halts to its LLM caller. For optional files, write a stderr
+    warning and return {}."""
+    if not os.path.isfile(path):
+        if required:
+            print(
+                f"HALT and report to the user: required config file not found: {path} — "
+                "ensure this is a post-#2285 BMAD install"
+            )
+            sys.exit(1)
+        return {}
+    try:
+        with open(path, "rb") as fh:
+            parsed = tomllib.load(fh)
+    except tomllib.TOMLDecodeError as error:
+        if required:
+            print(f"HALT and report to the user: failed to parse {path}: {error}")
+            sys.exit(1)
+        print(f"render.py: warning: failed to parse {path}: {error}", file=sys.stderr)
+        return {}
+    except OSError as error:
+        if required:
+            print(f"HALT and report to the user: failed to read {path}: {error}")
+            sys.exit(1)
+        print(f"render.py: warning: failed to read {path}: {error}", file=sys.stderr)
+        return {}
+    if not isinstance(parsed, dict):
+        return {}
+    return parsed
+
+
 def _deep_merge(base, override):
     """Dict-aware deep merge. Lists and scalars: override wins (we don't need
     the full keyed-merge semantics of resolve_config.py — quick-dev only reads
@@ -53,35 +87,17 @@ def _deep_merge(base, override):
 
 
 def load_central_config(root):
-    """Four-layer merge of _bmad/config.toml and its peers. HALTs if the base
-    _bmad/config.toml is absent."""
+    """Four-layer merge of _bmad/config.toml and its peers (highest priority
+    last). HALTs if the base _bmad/config.toml is missing or unparseable."""
     bmad_dir = posixpath.join(root, "_bmad")
-    base = posixpath.join(bmad_dir, "config.toml")
-    if not os.path.isfile(base):
-        print(
-            f"HALT and report to the user: central config not found at {base} — "
-            "ensure this is a post-#2285 BMAD install"
-        )
-        sys.exit(1)
+    base_team = load_toml(posixpath.join(bmad_dir, "config.toml"), required=True)
+    base_user = load_toml(posixpath.join(bmad_dir, "config.user.toml"))
+    custom_team = load_toml(posixpath.join(bmad_dir, "custom", "config.toml"))
+    custom_user = load_toml(posixpath.join(bmad_dir, "custom", "config.user.toml"))
 
-    layers = [
-        base,
-        posixpath.join(bmad_dir, "config.user.toml"),
-        posixpath.join(bmad_dir, "custom", "config.toml"),
-        posixpath.join(bmad_dir, "custom", "config.user.toml"),
-    ]
-    merged = {}
-    for path in layers:
-        if not os.path.isfile(path):
-            continue
-        try:
-            with open(path, "rb") as fh:
-                data = tomllib.load(fh)
-        except (tomllib.TOMLDecodeError, OSError) as error:
-            print(f"render.py: skipping {path}: {error}", file=sys.stderr)
-            continue
-        if isinstance(data, dict):
-            merged = _deep_merge(merged, data)
+    merged = _deep_merge(base_team, base_user)
+    merged = _deep_merge(merged, custom_team)
+    merged = _deep_merge(merged, custom_user)
     return merged
 
 
