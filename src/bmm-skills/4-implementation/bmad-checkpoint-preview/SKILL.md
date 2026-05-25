@@ -55,7 +55,7 @@ Greet the user, speaking in `{communication_language}`.
 
 Execute each entry in `{workflow.activation_steps_append}` in order.
 
-Activation is complete. Begin the workflow below.
+Activation is complete. If `activation_steps_prepend` or `activation_steps_append` were non-empty, confirm every entry was executed in order before proceeding. Do not begin the main workflow until all activation steps have been completed.
 
 ## Global Step Rules (apply to every step)
 

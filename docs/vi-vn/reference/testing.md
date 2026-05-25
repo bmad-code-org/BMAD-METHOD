@@ -2,7 +2,7 @@
 title: Các Tùy Chọn Kiểm Thử
 description: So sánh workflow QA tích hợp sẵn với module Test Architect (TEA) cho tự động hóa kiểm thử.
 sidebar:
-  order: 5
+  order: 6
 ---
 
 BMad cung cấp hai hướng kiểm thử: workflow QA tích hợp sẵn để tạo test nhanh và module Test Architect có thể cài thêm cho chiến lược kiểm thử c��p doanh nghiệp.

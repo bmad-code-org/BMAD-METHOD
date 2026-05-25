@@ -37,7 +37,7 @@ Xác định cần xây gì và xây cho ai.
 | Quy trình | Mục đích | Tạo ra |
 | --------------------------- | ---------------------------------------- | ------------ |
 | `bmad-create-prd` | Xác định yêu cầu (FR/NFR) | `PRD.md` |
-| `bmad-create-ux-design` | Thiết kế trải nghiệm người dùng khi UX là yếu tố quan trọng | `ux-spec.md` |
+| `bmad-ux`            | Thiết kế trải nghiệm người dùng khi UX là yếu tố quan trọng | `DESIGN.md`, `EXPERIENCE.md` |
 
 ## Giai đoạn 3: Định hình giải pháp
 

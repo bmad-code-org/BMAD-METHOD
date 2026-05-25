@@ -2,7 +2,7 @@
 title: Core Tools
 description: Reference for all built-in tasks and workflows available in every BMad installation without additional modules.
 sidebar:
-  order: 2
+  order: 3
 ---
 
 Every BMad installation includes a set of core skills that can be used in conjunction with any anything you are doing — standalone tasks and workflows that work across all projects, all modules, and all phases. These are always available regardless of which optional modules you install.
@@ -18,7 +18,7 @@ Run any core tool by typing its skill name (e.g., `bmad-help`) in your IDE. No a
 | [`bmad-help`](#bmad-help) | Task | Get context-aware guidance on what to do next |
 | [`bmad-brainstorming`](#bmad-brainstorming) | Workflow | Facilitate interactive brainstorming sessions |
 | [`bmad-party-mode`](#bmad-party-mode) | Workflow | Orchestrate multi-agent group discussions |
-| [`bmad-distillator`](#bmad-distillator) | Task | Lossless LLM-optimized compression of documents |
+| [`bmad-spec`](#bmad-spec) | Workflow | Distill any intent input into a SPEC kernel and companions, the canonical contract for downstream work |
 | [`bmad-advanced-elicitation`](#bmad-advanced-elicitation) | Task | Push LLM output through iterative refinement methods |
 | [`bmad-review-adversarial-general`](#bmad-review-adversarial-general) | Task | Cynical review that finds what's missing and what's wrong |
 | [`bmad-review-edge-case-hunter`](#bmad-review-edge-case-hunter) | Task | Exhaustive branching-path analysis for unhandled edge cases |
@@ -97,32 +97,36 @@ The magic happens in ideas 50–100. The workflow encourages generating 100+ ide
 
 **Output:** Real-time multi-agent conversation with maintained agent personalities
 
-## bmad-distillator
+## bmad-spec
 
-**Lossless LLM-optimized compression of source documents.** — Produces dense, token-efficient distillates that preserve all information for downstream LLM consumption. Verifiable through round-trip reconstruction.
+**Distill any intent input into the canonical SPEC contract for downstream work.** Takes a brief, PRD, GDD, RFC, brain dump, transcript, UX folder, or mixed multi-source input and produces a `SPEC.md` carrying the five-field kernel (Why, Capabilities, Constraints, Non-goals, Success signal) plus companion files for load-bearing content that does not fit the kernel.
 
 **Use it when:**
 
-- A document is too large for an LLM's context window
-- You need token-efficient versions of research, specs, or planning artifacts
-- You want to verify no information is lost during compression
-- Agents will need to frequently reference and find information in it
+- You need to lock the WHAT before the HOW for any kind of work (software, game design, research, editorial, policy, business).
+- You want a LLM Optimized succinct, no-fluff contract that downstream skills can consume without re-reading every upstream artifact.
+- You want to validate or update an existing spec.
 
 **How it works:**
 
-1. **Analyze** — Reads source documents, identifies information density and structure
-2. **Compress** — Converts prose to dense bullet-point format, strips decorative formatting
-3. **Verify** — Checks completeness to ensure all original information is preserved
-4. **Validate** (optional) — Round-trip reconstruction test proves lossless compression
+1. Reads the input and any ancillary linked materials.
+2. Distills into the five-field kernel using a configurable template; routes overflow into appropriately-named companions.
+3. Runs a two-pass self-validate (coherence rules, then preservation of every load-bearing source claim).
+4. Writes `SPEC.md`, sibling companions, and a `.decision-log.md` under `{output_folder}/specs/spec-{slug}/`.
+
+Spec Law enforces eight rules: capabilities carry both intent and success; intents are WHAT not HOW; constraints actually bend decisions; non-goals are explicit; success signals are concrete; capability IDs are stable; every load-bearing source claim is preserved; prose is lean.
 
 **Input:**
 
-- `source_documents` (required) — File paths, folder paths, or glob patterns
-- `downstream_consumer` (optional) — What consumes this (e.g., "PRD creation")
-- `token_budget` (optional) — Approximate target size
-- `--validate` (flag) — Run round-trip reconstruction test
+- `input` (required) — path or inline text. Vague idea, brain dump, PRD, GDD, RFC, brief, transcript, mockup folder, mixed multi-source.
+- `slug` (optional) — required only when input is sparse and no slug is derivable from a source filename.
+- `target_spec_path` (optional) — set to update an existing spec instead of creating a new one.
 
-**Output:** Distillate markdown file(s) with compression ratio report (e.g., "3.2:1")
+**Output:** Spec folder containing `SPEC.md`, any companion files, and a `.decision-log.md`. Headless callers receive a JSON response with the result status and the list of files written or modified.
+
+:::note[Mutation contract]
+`bmad-spec` is the only writer of `SPEC.md` and of spec-authored companions. Other skills produce their own native artifacts and invoke `bmad-spec` headless when they need to express intent as the canonical contract or propose updates.
+:::
 
 ## bmad-advanced-elicitation
 

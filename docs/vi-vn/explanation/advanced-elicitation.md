@@ -2,7 +2,7 @@
 title: "Khai thác nâng cao"
 description: Buộc LLM xem xét lại kết quả của nó bằng các phương pháp lập luận có cấu trúc
 sidebar:
-  order: 6
+  order: 4
 ---
 
 Buộc LLM xem xét lại những gì nó vừa tạo ra. Bạn chọn một phương pháp lập luận, nó áp dụng phương pháp đó lên chính output của mình, rồi bạn quyết định có giữ các cải tiến hay không.

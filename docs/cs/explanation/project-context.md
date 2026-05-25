@@ -2,7 +2,7 @@
 title: "Kontext projektu"
 description: Jak project-context.md vede AI agenty s pravidly a preferencemi vašeho projektu
 sidebar:
-  order: 7
+  order: 9
 ---
 
 Soubor `project-context.md` je implementační průvodce vašeho projektu pro AI agenty. Podobně jako „ústava“ v jiných vývojových systémech zachycuje pravidla, vzory a preference, které zajišťují konzistentní generování kódu napříč všemi workflow.

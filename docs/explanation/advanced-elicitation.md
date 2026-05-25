@@ -2,7 +2,7 @@
 title: "Advanced Elicitation"
 description: Push the LLM to rethink its work using structured reasoning methods
 sidebar:
-  order: 6
+  order: 4
 ---
 
 Make the LLM reconsider what it just generated. You pick a reasoning method, it applies that method to its own output, you decide whether to keep the improvements.

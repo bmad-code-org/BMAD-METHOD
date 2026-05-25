@@ -2,7 +2,7 @@
 title: "派对模式"
 description: 多智能体协作——将所有 AI 智能体汇聚到一次对话中
 sidebar:
-  order: 7
+  order: 10
 ---
 
 `bmad-party-mode` 用于多角色协作讨论：把 PM、架构、开发、UX 等视角放到同一轮对话里，快速暴露分歧、对齐取舍。

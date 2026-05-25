@@ -2,7 +2,7 @@
 title: "Quản lý bối cảnh dự án"
 description: Tạo và duy trì project-context.md để định hướng cho các agent AI
 sidebar:
-  order: 8
+  order: 9
 ---
 
 Sử dụng tệp `project-context.md` để đảm bảo các agent AI tuân theo ưu tiên kỹ thuật và quy tắc triển khai của dự án trong suốt mọi workflow. Để đảm bảo tệp này luôn sẵn có, bạn cũng có thể thêm dòng `Important project context and conventions are located in [path to project context]/project-context.md` vào file context của công cụ hoặc file always rules của bạn (như `AGENTS.md`).
