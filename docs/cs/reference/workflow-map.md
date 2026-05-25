@@ -37,7 +37,7 @@ Definujte, co budovat a pro koho.
 | Workflow                    | Účel                                     | Produkuje    |
 | --------------------------- | ---------------------------------------- | ------------ |
 | `bmad-create-prd`           | Definice požadavků (FR/NFR)              | `PRD.md`     |
-| `bmad-create-ux-design`     | Návrh uživatelského zážitku (když záleží na UX) | `ux-spec.md` |
+| `bmad-ux`                | Návrh uživatelského zážitku (když záleží na UX) | `DESIGN.md`, `EXPERIENCE.md` |
 
 ## Fáze 3: Solutioning
 

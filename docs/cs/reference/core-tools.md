@@ -18,7 +18,7 @@ Spusťte jakýkoli základní nástroj zadáním jeho názvu skillu (např. `bma
 | [`bmad-help`](#bmad-help) | Task | Kontextové poradenství, co dělat dál |
 | [`bmad-brainstorming`](#bmad-brainstorming) | Workflow | Facilitace interaktivních brainstormingových sezení |
 | [`bmad-party-mode`](#bmad-party-mode) | Workflow | Orchestrace skupinových diskuzí více agentů |
-| [`bmad-distillator`](#bmad-distillator) | Task | Bezeztrátová LLM-optimalizovaná komprese dokumentů |
+| [`bmad-spec`](#bmad-spec) | Workflow | Distill any intent input into a SPEC kernel and companions, the canonical contract for downstream work (translation pending) |
 | [`bmad-advanced-elicitation`](#bmad-advanced-elicitation) | Task | Iterativní zdokonalování LLM výstupu |
 | [`bmad-review-adversarial-general`](#bmad-review-adversarial-general) | Task | Cynická revize hledající chybějící a chybné |
 | [`bmad-review-edge-case-hunter`](#bmad-review-edge-case-hunter) | Task | Vyčerpávající analýza větvících cest pro neošetřené hraniční případy |
@@ -96,32 +96,6 @@ Kouzlo se děje v nápadech 50–100. Workflow povzbuzuje generování 100+ náp
 **Vstup:** Diskuzní téma nebo otázka, s volitelnou specifikací person
 
 **Výstup:** Real-time multi-agentní konverzace s udržovanými osobnostmi agentů
-
-## bmad-distillator
-
-**Bezeztrátová LLM-optimalizovaná komprese zdrojových dokumentů.** — Produkuje husté, tokenově efektivní destiláty, které zachovávají všechny informace pro následné LLM zpracování. Ověřitelné prostřednictvím round-trip rekonstrukce.
-
-**Použijte když:**
-
-- Dokument je příliš velký pro kontextové okno LLM
-- Potřebujete tokenově efektivní verze výzkumů, specifikací nebo plánovacích artefaktů
-- Chcete ověřit, že během komprese nebyly ztraceny žádné informace
-
-**Jak to funguje:**
-
-1. **Analýza** — Čte zdrojové dokumenty, identifikuje hustotu informací a strukturu
-2. **Komprese** — Převádí prózu na hustý odrážkový formát, odstraňuje dekorativní formátování
-3. **Ověření** — Kontroluje úplnost pro zajištění zachování všech informací
-4. **Validace** (volitelné) — Round-trip rekonstrukční test dokazuje bezeztrátovou kompresi
-
-**Vstup:**
-
-- `source_documents` (povinné) — Cesty k souborům, složkám nebo glob vzory
-- `downstream_consumer` (volitelné) — Co to konzumuje (např. „tvorba PRD“)
-- `token_budget` (volitelné) — Přibližná cílová velikost
-- `--validate` (příznak) — Spuštění round-trip rekonstrukčního testu
-
-**Výstup:** Destilátové markdown soubory s reportem kompresního poměru (např. „3.2:1“)
 
 ## bmad-advanced-elicitation
 

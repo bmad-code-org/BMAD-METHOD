@@ -107,7 +107,7 @@ Look for:
 - Glossary present; every domain noun used identically across FRs, UJs, SM definitions.
 - FR / UJ / SM IDs contiguous, unique, and cross-references that resolve.
 - Each section makes sense pulled out alone — cross-references via Glossary terms, not "see above."
-- UJs each name a persona from §2 by exact label; no floating UJs.
+- UJs each have a named protagonist; no floating UJs.
 
 For standalone PRDs (no downstream), this dimension matters less — say so.
 
@@ -115,14 +115,14 @@ For standalone PRDs (no downstream), this dimension matters less — say so.
 
 Has the PRD been forced into a shape that doesn't match the product?
 
-- Consumer product / multi-stakeholder B2B / meaningful UX → UJs and personas are load-bearing.
+- Consumer product / multi-stakeholder B2B / meaningful UX → UJs with named protagonists are load-bearing.
 - Internal tool, single-operator role → capability spec shape; UJs may be overhead; SMs may be operational rather than user-facing.
 - Regulatory or compliance update → constraint traceability is non-negotiable; UJs may be irrelevant.
 - Hobby / solo → rigor light, substance bar still applies.
 - Brownfield → existing-code references must be accurate; new UJs and existing UJs must be distinguished.
 - Chain-top (feeds UX → architecture → stories) → downstream usability matters more; standalone PRDs can be lighter on traceability.
 
-Flag PRDs that are over-formalized (UJ density for a single-operator tool) or under-formalized (consumer product with no personas or UJs).
+Flag PRDs that are over-formalized (UJ density for a single-operator tool) or under-formalized (consumer product with no UJs).
 
 ## Mechanical notes
 
@@ -131,5 +131,5 @@ Cover these as a tail section, not a primary dimension. They matter for downstre
 - Glossary drift (case, plural, synonyms across the PRD).
 - ID continuity (gaps, duplicates, unresolved cross-references).
 - Assumptions Index roundtrip (every inline `[ASSUMPTION]` indexed; index entries all appear inline).
-- UJ persona linkage (each UJ names a defined persona by exact label).
+- UJ protagonist naming (each UJ has a named protagonist carrying context inline).
 - Required sections present for the agreed stakes and product type.

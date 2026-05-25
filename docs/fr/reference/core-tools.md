@@ -18,7 +18,7 @@ Exécutez n'importe quel outil principal en tapant son nom de compétence (par e
 | [`bmad-help`](#bmad-help)                                             | Tâche    | Obtenir des conseils contextuels sur la prochaine étape                      |
 | [`bmad-brainstorming`](#bmad-brainstorming)                           | Workflow | Faciliter des sessions de brainstorming interactives                         |
 | [`bmad-party-mode`](#bmad-party-mode)                                 | Workflow | Orchestrer des discussions de groupe multi-agents                            |
-| [`bmad-distillator`](#bmad-distillator)                               | Tâche    | Compression sans perte optimisée pour LLM de documents                       |
+| [`bmad-spec`](#bmad-spec)                                             | Workflow | Distill any intent input into a SPEC kernel and companions (translation pending)                   |
 | [`bmad-advanced-elicitation`](#bmad-advanced-elicitation)             | Tâche    | Pousser la sortie LLM à travers des méthodes de raffinement itératives       |
 | [`bmad-review-adversarial-general`](#bmad-review-adversarial-general) | Tâche    | Revue cynique qui trouve ce qui manque et ce qui ne va pas                   |
 | [`bmad-review-edge-case-hunter`](#bmad-review-edge-case-hunter)       | Tâche    | Analyse exhaustive des chemins de branchement pour les cas limites non gérés |
@@ -96,33 +96,6 @@ La magie se produit dans les idées 50–100. Le workflow encourage la générat
 **Entrée :** Sujet de discussion ou question, ainsi que la spécification des personas que vous souhaitez faire participer (optionnel)
 
 **Sortie :** Conversation multi-agents en temps réel avec des personnalités d'agents maintenues
-
-## bmad-distillator
-
-**Compression sans perte optimisée pour LLM de documents sources.** — Produit des distillats denses et efficaces en tokens qui préservent toute l'information pour la consommation par des LLM en aval. Vérifiable par reconstruction aller-retour.
-
-**Utilisez-le quand :**
-
-- Un document est trop volumineux pour la fenêtre de contexte d'un LLM
-- Vous avez besoin de versions économes en tokens de recherches, spécifications ou artefacts de planification
-- Vous voulez vérifier qu'aucune information n'est perdue pendant la compression
-- Les agents auront besoin de référencer et de trouver fréquemment des informations dedans
-
-**Fonctionnement :**
-
-1. **Analyser** — Lit les documents sources, identifie la densité d'information et la structure
-2. **Compresser** — Convertit la prose en format dense de liste de points, supprime le formatage décoratif
-3. **Vérifier** — Vérifie l'exhaustivité pour s'assurer que toute l'information originale est préservée
-4. **Valider** (optionnel) — Le test de reconstruction aller-retour prouve la compression sans perte
-
-**Entrée :**
-
-- `source_documents` (requis) — Chemins de fichiers, chemins de dossiers ou motifs glob
-- `downstream_consumer` (optionnel) — Ce qui va le consommer (par ex., "création de PRD")
-- `token_budget` (optionnel) — Taille cible approximative
-- `--validate` (drapeau) — Exécuter le test de reconstruction aller-retour
-
-**Sortie :** Fichier(s) markdown distillé(s) avec rapport de ratio de compression (par ex., "3.2:1")
 
 ## bmad-advanced-elicitation
 

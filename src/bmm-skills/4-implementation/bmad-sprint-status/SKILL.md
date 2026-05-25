@@ -46,6 +46,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 - `communication_language`, `document_output_language`
 - `implementation_artifacts`
 - `date` as system-generated current datetime
+- `project_context` = `**/project-context.md` (load if exists)
 - YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
 
 ### Step 5: Greet the User

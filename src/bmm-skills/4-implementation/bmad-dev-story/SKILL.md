@@ -54,6 +54,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 - `user_skill_level`
 - `implementation_artifacts`
 - `date` as system-generated current datetime
+- `project_context` = `**/project-context.md` (load if exists)
 
 ### Step 5: Greet the User
 
