@@ -15,7 +15,7 @@ Sử dụng các cờ dòng lệnh để cài đặt BMad mà không cần tươ
 - Cài đặt nhanh với cấu hình đã biết trước
 
 :::note[Điều kiện tiên quyết]
-Yêu cầu [Node.js](https://nodejs.org) v20+ và `npx` (đi kèm với npm).
+Yêu cầu [Node.js](https://nodejs.org) v20.12+ và `npx` (đi kèm với npm).
 :::
 
 ## Các cờ khả dụng

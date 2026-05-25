@@ -2,7 +2,7 @@
 title: Oficiální moduly
 description: Doplňkové moduly pro tvorbu vlastních agentů, kreativní inteligenci, vývoj her a testování
 sidebar:
-  order: 4
+  order: 5
 ---
 
 BMad se rozšiřuje prostřednictvím oficiálních modulů, které vyberete během instalace. Tyto doplňkové moduly poskytují specializované agenty, workflow a úkoly pro specifické domény nad rámec vestavěného jádra a BMM (Agile suite).

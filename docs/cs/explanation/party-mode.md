@@ -2,7 +2,7 @@
 title: "Party Mode"
 description: Spolupráce více agentů — všichni vaši AI agenti v jedné konverzaci
 sidebar:
-  order: 7
+  order: 8
 ---
 
 Všichni vaši AI agenti v jedné konverzaci.

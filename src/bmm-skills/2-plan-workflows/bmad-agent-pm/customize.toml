@@ -55,19 +55,9 @@ principles = [
 # registered skill by name) or `prompt` (executes the prompt text directly).
 
 [[agent.menu]]
-code = "CP"
-description = "Expert led facilitation to produce your Product Requirements Document"
-skill = "bmad-create-prd"
-
-[[agent.menu]]
-code = "VP"
-description = "Validate a PRD is comprehensive, lean, well organized and cohesive"
-skill = "bmad-validate-prd"
-
-[[agent.menu]]
-code = "EP"
-description = "Update an existing Product Requirements Document"
-skill = "bmad-edit-prd"
+code = "PRD"
+description = "Create, update, or validate a PRD — state your intent or the skill will ask"
+skill = "bmad-prd"
 
 [[agent.menu]]
 code = "CE"

@@ -16,7 +16,7 @@ Nếu bạn muốn dùng trình cài đặt không tương tác và cung cấp t
 - Cập nhật bản cài đặt BMad hiện tại
 
 :::note[Điều kiện tiên quyết]
-- **Node.js** 20+ (bắt buộc cho trình cài đặt)
+- **Node.js** 20.12+ (bắt buộc cho trình cài đặt)
 - **Git** (khuyến nghị)
 - **Công cụ AI** (Claude Code, Cursor, hoặc tương tự)
 :::

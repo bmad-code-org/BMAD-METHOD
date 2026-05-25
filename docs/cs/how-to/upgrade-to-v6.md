@@ -14,7 +14,7 @@ Použijte instalátor BMad pro upgrade z v4 na v6, který zahrnuje automatickou 
 - Máte existující plánovací artefakty k zachování
 
 :::note[Předpoklady]
-- Node.js 20+
+- Node.js 20.12+
 - Existující instalace BMad v4
 :::
 

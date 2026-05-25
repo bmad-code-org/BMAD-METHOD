@@ -15,7 +15,7 @@ Use the BMad installer to upgrade from v4 to v6, which includes automatic detect
 
 :::note[Prerequisites]
 
-- Node.js 20+
+- Node.js 20.12+
 - Existing BMad v4 installation
   :::
 
