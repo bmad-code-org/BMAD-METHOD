@@ -7,7 +7,9 @@ Run the planning side of BMad in your web LLM subscription, then bring the artif
 
 ## What is a Web Bundle?
 
-A web bundle is a BMad skill repackaged as a one-click install for **Google Gemini Gems** and **ChatGPT Custom GPTs**. Each bundle is two files (sometimes three): a `SKILL.md` protocol you upload as a knowledge file, and an `INSTRUCTIONS.md` block you paste into the Gem or GPT instructions. The persona lives in the pasted instructions; the protocol lives in the knowledge file. Swap personas without touching the protocol.
+A web bundle is a BMad skill repackaged for installation as a **Google Gemini Gem** or **ChatGPT Custom GPT**. Each bundle includes a `SKILL.md` protocol you upload as a knowledge file, an `INSTRUCTIONS.md` block you paste into the Gem or GPT instructions, and any data files the skill needs (CSVs, templates, validation checklists, additionally progressively disclosed content). The persona lives in the pasted instructions; the protocol lives in the knowledge file. Swap personas without touching the protocol.
+
+Setup is not one-click; you create the Gem or GPT, upload the knowledge files, paste the instructions, and save. The pattern is the same across the shelf, so once you've installed one bundle the next one is mechanical. Follow each bundle's `INSTRUCTIONS.md` for the platform-specific details.
 
 V4 of BMad shipped web bundles. V6 brings them back, rewritten for the current Gem and Custom GPT platforms with Canvas, Deep Research, and image generation in mind.
 
@@ -62,6 +64,16 @@ For bundles that integrate Deep Research (currently Market & Industry Research),
 - The work needs to read or modify code in your repo.
 - You're already mid-implementation and want to keep context.
 - You don't have a Gemini Advanced or ChatGPT Plus subscription.
+
+## Updating and customizing
+
+Bundles evolve. When you pull a newer version of a bundle, the typical update is to its knowledge files (the `SKILL.md` protocol and any attached templates, CSVs, or validation checklists). Re-upload those into your Gem or Custom GPT to take the update. The instructions block usually does not change.
+
+If you want to customize a bundle for your team or your voice, do it in the **instructions block** you pasted into the Gem or GPT, not in the knowledge files. The instructions block is where the persona, preferences, and any local overrides live; the knowledge files are the protocol the bundle ships with. Keeping customization in the instructions block means future updates are a swap-the-attachments operation, not a merge-your-edits-back-in operation.
+
+:::tip[Customize the instructions, attach the knowledge]
+Persona swaps, default user name, team-specific guardrails, preferred phrasing: all of that belongs in the pasted instructions block. The knowledge files stay stock so you can refresh them without losing your changes.
+:::
 
 ## Building your own
 
