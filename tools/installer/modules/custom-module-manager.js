@@ -19,6 +19,10 @@ function quoteCustomRef(ref) {
 class CustomModuleManager {
   /** @type {Map<string, Object>} Shared across all instances: module code -> ResolvedModule */
   static _resolutionCache = new Map();
+  /** @type {Set<string>} Repo roots refreshed in the current process (dedupe quick-update fetches). */
+  static _refreshedRepoPaths = new Set();
+  /** @type {Map<string, Promise<void>>} In-flight refresh operations keyed by repo path. */
+  static _refreshInFlight = new Map();
 
   // ─── Source Parsing ───────────────────────────────────────────────────────
 
@@ -431,8 +435,12 @@ class CustomModuleManager {
         }
         fetchSpinner.stop(`Updated ${displayName}`);
       } catch {
-        fetchSpinner.error(`Update failed, re-downloading ${displayName}`);
-        await fs.remove(repoCacheDir);
+        // Fetch failed against an existing cache — most often the remote is
+        // unreachable (network down, repo deleted/moved, auth revoked).
+        // Preserve the previous clone so re-deploy still works from cached
+        // content; surface a warning so the user knows the cache is stale.
+        fetchSpinner.error(`Could not refresh ${displayName} — keeping cached copy`);
+        await prompts.log.warn(`Custom module ${displayName} was not refreshed (remote unreachable). Using cached copy.`);
       }
     }
 
@@ -466,6 +474,32 @@ class CustomModuleManager {
     } catch {
       // swallow — a non-git repo (local path) wouldn't reach here anyway
     }
+    // Best-effort: capture the remote default branch name so channel marker
+    // metadata for "next" reflects the actual tracked ref (not always "main").
+    let defaultRef = 'main';
+    if (!effectiveVersion) {
+      try {
+        const symbolic = execSync('git symbolic-ref --short refs/remotes/origin/HEAD', {
+          cwd: repoCacheDir,
+          stdio: 'pipe',
+        })
+          .toString()
+          .trim();
+        if (symbolic.startsWith('origin/')) {
+          defaultRef = symbolic.slice('origin/'.length) || defaultRef;
+        }
+      } catch {
+        // Fallback to previous marker value when symbolic ref is unavailable.
+        try {
+          const existingMarker = await fs.readJson(path.join(repoCacheDir, '.bmad-channel.json'));
+          if (existingMarker?.channel === 'next' && typeof existingMarker.version === 'string' && existingMarker.version.trim()) {
+            defaultRef = existingMarker.version.trim();
+          }
+        } catch {
+          // Keep default fallback.
+        }
+      }
+    }
 
     // Write source metadata for later URL reconstruction
     const metadataPath = path.join(repoCacheDir, '.bmad-source.json');
@@ -477,6 +511,15 @@ class CustomModuleManager {
       rawInput: parsed.rawInput || sourceInput,
       sha: resolvedSha,
       clonedAt: new Date().toISOString(),
+    });
+    // Keep a channel marker in custom cache too so update paths that rely on
+    // channel metadata (same as official-module cache) can treat this clone as
+    // refreshable. URL + no explicit ref => next, explicit ref => pinned.
+    await fs.writeJson(path.join(repoCacheDir, '.bmad-channel.json'), {
+      channel: effectiveVersion ? 'pinned' : 'next',
+      version: effectiveVersion || defaultRef,
+      sha: resolvedSha,
+      writtenAt: new Date().toISOString(),
     });
 
     // Install dependencies if package.json exists (skip during browsing/analysis)
@@ -642,6 +685,13 @@ class CustomModuleManager {
       const repoRoots = await this._findCacheRepoRoots(cacheDir);
 
       for (const { repoPath, metadata } of repoRoots) {
+        // Quick-update path: refresh URL-backed cached repos before reading
+        // files from them so re-deploy uses latest commits for `next` and
+        // the pinned ref for `pinned`.
+        if (options.bmadDir && metadata?.rawInput) {
+          await this._refreshRepoCacheOnce(repoPath, metadata);
+        }
+
         // Check marketplace.json for matching module code
         const marketplacePath = path.join(repoPath, '.claude-plugin', 'marketplace.json');
         if (!(await fs.pathExists(marketplacePath))) continue;
@@ -690,6 +740,45 @@ class CustomModuleManager {
 
     // Fallback: check manifest for localPath (local-source modules not in cache)
     return this._findLocalSourceFromManifest(moduleCode, options);
+  }
+
+  /**
+   * Refresh one cached repo at most once per process with in-flight dedupe.
+   * Prevents concurrent quick-update callers from racing the same cache path.
+   * @param {string} repoPath - Absolute cache repo path
+   * @param {Object} metadata - Parsed .bmad-source.json metadata
+   */
+  async _refreshRepoCacheOnce(repoPath, metadata) {
+    if (CustomModuleManager._refreshedRepoPaths.has(repoPath)) return;
+
+    const existing = CustomModuleManager._refreshInFlight.get(repoPath);
+    if (existing) {
+      await existing;
+      return;
+    }
+
+    const refreshPromise = (async () => {
+      try {
+        await this.cloneRepo(metadata.rawInput, {
+          silent: true,
+          pinOverride: metadata.version || undefined,
+        });
+        CustomModuleManager._refreshedRepoPaths.add(repoPath);
+      } catch (error_) {
+        // cloneRepo only throws here for unrecoverable cases (no cache present
+        // and a fresh clone failed, or an unexpected internal error). The
+        // common "remote unreachable but cache exists" case is handled inside
+        // cloneRepo, which preserves the clone and returns normally. Reaching
+        // this catch means we have no usable cache — surface a warning so the
+        // failure isn't silent.
+        await prompts.log.warn(`Refresh of cached custom module at ${path.basename(repoPath)} failed: ${error_?.message || error_}`);
+      } finally {
+        CustomModuleManager._refreshInFlight.delete(repoPath);
+      }
+    })();
+
+    CustomModuleManager._refreshInFlight.set(repoPath, refreshPromise);
+    await refreshPromise;
   }
 
   /**

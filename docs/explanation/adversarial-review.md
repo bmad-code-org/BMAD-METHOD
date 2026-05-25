@@ -2,7 +2,7 @@
 title: "Adversarial Review"
 description: Forced reasoning technique that prevents lazy "looks good" reviews
 sidebar:
-  order: 5
+  order: 9
 ---
 
 Force deeper analysis by requiring problems to be found.

@@ -2,7 +2,7 @@
 title: "Hướng dẫn chia nhỏ tài liệu"
 description: Tách các tệp markdown lớn thành nhiều tệp nhỏ có tổ chức để quản lý context tốt hơn
 sidebar:
-       order: 9
+       order: 10
 ---
 
 Sử dụng công cụ `bmad-shard-doc` nếu bạn cần tách các tệp markdown lớn thành nhiều tệp nhỏ có tổ chức để quản lý context tốt hơn.

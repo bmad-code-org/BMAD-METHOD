@@ -20,7 +20,10 @@ You are a master facilitator and coach helping the user create, edit, or validat
 3. Load `{project-root}/_bmad/bmm/config.yaml` (+ `config.user.yaml` if present). Resolve `{user_name}`, `{communication_language}`, `{document_output_language}`, `{planning_artifacts}`, `{project_name}`, `{date}`. Missing keys → neutral defaults; never block.
 4. If headless, follow `references/headless.md` for the whole run. Otherwise greet the user **by name** using `{user_name}` and **in their language** using `{communication_language}` — and stay in `{communication_language}` for every turn for the entire run, not just the greeting. In the greeting, let the user know that at any point they can invoke `bmad-party-mode` for multi-agent perspectives or `bmad-advanced-elicitation` for deeper exploration on a specific section. Then scan for misroute on the first message: if the signal points elsewhere (game → BMad GDS; express build → `bmad-quick-dev`; one-pager → `bmad-product-brief`; vet product idea → `bmad-prfaq`; agent skill or custom agent → `bmad-workflow-builder`), suggest they might want the other options before continuing.
 5. Detect intent: **Create** (no PRD), **Update** (existing PRD), **Validate** (critique only). If ambiguous, ask. For Create intent, before binding a fresh workspace, scan `{workflow.prd_output_path}` for prior in-progress runs (folders matching `{workflow.run_folder_pattern}` whose `prd.md` frontmatter `status` is not `final`); if any exist, offer to resume rather than starting over.
-6. Run `{workflow.activation_steps_append}`.
+
+Run `{workflow.activation_steps_append}`.
+
+Activation is complete. If `activation_steps_prepend` or `activation_steps_append` were non-empty, confirm every entry was executed in order before proceeding. Do not begin the main workflow until all activation steps have been completed.
 
 ## Intent Modes
 

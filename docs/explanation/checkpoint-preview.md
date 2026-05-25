@@ -2,7 +2,7 @@
 title: "Checkpoint Preview"
 description: LLM-assisted human-in-the-loop review that guides you through a change from purpose to details
 sidebar:
-  order: 3
+  order: 8
 ---
 
 `bmad-checkpoint-preview` is an interactive, LLM-assisted human-in-the-loop review workflow. It walks you through a code change — from purpose and context into details — so you can make an informed decision about whether to ship, rework, or dig deeper.

@@ -2,7 +2,7 @@
 title: "Pokročilá elicitace"
 description: Přimějte LLM přehodnotit svou práci pomocí strukturovaných metod uvažování
 sidebar:
-  order: 6
+  order: 3
 ---
 
 Přimějte LLM přehodnotit, co právě vygeneroval. Vyberete metodu uvažování, LLM ji aplikuje na svůj vlastní výstup, a vy rozhodnete, zda si vylepšení ponecháte.

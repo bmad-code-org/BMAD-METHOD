@@ -2,7 +2,7 @@
 title: "既有项目常见问题"
 description: 关于在既有项目上使用 BMad Method 的常见问题
 sidebar:
-  order: 8
+  order: 12
 ---
 关于在 established projects（既有项目）中使用 BMad Method 的高频问题，快速说明如下。
 

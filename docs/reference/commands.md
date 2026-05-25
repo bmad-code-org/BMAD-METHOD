@@ -2,7 +2,7 @@
 title: Skills
 description: Reference for BMad skills — what they are, how they work, and where to find them.
 sidebar:
-  order: 3
+  order: 4
 ---
 
 Skills are pre-built prompts that load agents, run workflows, or execute tasks inside your IDE. The BMad installer generates them from your installed modules at install time. If you later add, remove, or change modules, re-run the installer to keep skills in sync (see [Troubleshooting](#troubleshooting)).

@@ -2,7 +2,7 @@
 title: "Party Mode"
 description: Multi-agent collaboration - get all your AI agents in one conversation
 sidebar:
-  order: 7
+  order: 11
 ---
 
 Get all your AI agents in one conversation.

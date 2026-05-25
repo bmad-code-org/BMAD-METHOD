@@ -2,7 +2,7 @@
 title: Các Module Chính Thức
 description: Các module bổ sung để xây agent tùy chỉnh, tăng cường sáng tạo, phát triển game và kiểm thử
 sidebar:
-  order: 4
+  order: 5
 ---
 
 BMad được mở rộng thông qua các module chính thức mà bạn chọn trong quá trình cài đặt. Những module bổ sung này cung cấp agent, workflow và task chuyên biệt cho các lĩnh vực cụ thể, vượt ra ngoài phần lõi tích hợp sẵn và BMM (Agile suite).

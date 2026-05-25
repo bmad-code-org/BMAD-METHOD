@@ -2,7 +2,7 @@
 title: "头脑风暴"
 description: 使用 60+ 种经过验证的构思技术进行互动创意会议
 sidebar:
-  order: 2
+  order: 3
 ---
 
 `bmad-brainstorming` 是一个“思考引导”工作流：它不替你拍脑袋给答案，而是用结构化提问把你的想法挖出来、扩展开、再收敛成可执行方向。
