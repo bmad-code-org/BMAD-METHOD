@@ -2,7 +2,7 @@
 title: "对抗性评审"
 description: 防止懒惰“看起来不错”评审的强制推理技术
 sidebar:
-  order: 5
+  order: 9
 ---
 
 对抗性评审（adversarial review）是一种“强制找问题”的评审方法：不允许直接“Looks good”，必须给出可验证发现，或者明确解释为什么没有发现。

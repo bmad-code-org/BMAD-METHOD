@@ -2,7 +2,7 @@
 title: 'How to Expand BMad for Your Organization'
 description: Six customization patterns that reshape BMad without forking — agent-wide rules, workflow conventions, external publishing, template swaps, agent roster changes, and advanced integration patterns
 sidebar:
-  order: 9
+  order: 11
 ---
 
 BMad's customization surface lets an organization reshape behavior without editing installed files or forking skills. This guide walks through six recipes that cover most enterprise needs.

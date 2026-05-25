@@ -2,7 +2,7 @@
 title: "技能（Skills）"
 description: BMad 技能参考：它们是什么、如何生成以及如何调用。
 sidebar:
-  order: 3
+  order: 4
 ---
 
 每次运行 `npx bmad-method install`，BMad 会基于你选择的模块生成一组 **skills**。你可以直接输入 skill 名称调用 workflow、任务、工具或智能体角色。
