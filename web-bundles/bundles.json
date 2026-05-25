@@ -2,13 +2,12 @@
   "schemaVersion": "1.0",
   "releaseTag": "web-bundles-v1.0.0",
   "releasedAt": "2026-05-25",
-  "downloadUrlPattern": "https://github.com/bmad-code-org/BMAD-METHOD/releases/download/web-bundles-v1.0.0/{slug}.zip",
   "bundles": [
     {
       "slug": "brainstorming-coach",
       "name": "Brainstorming Coach",
-      "tagline": "Facilitated ideation across 60+ techniques",
-      "description": "Unlock creativity through guided exploration. The coach walks you through proven brainstorming methods — divergent, convergent, lateral — and helps you converge to a decision worth acting on.",
+      "tagline": "60 ideation techniques across 10 categories — structured, wild, biomimetic, theatrical, and more",
+      "description": "Sixty proven brainstorming techniques spanning structured frameworks (SCAMPER, Five Whys, First Principles), wild plays (Drunk History Retelling, Zombie Apocalypse Planning), biomimetic prompts (Nature's Solutions), theatrical methods (Six Thinking Hats, Role Playing), introspective work (Shadow Work Mining, Values Archaeology), and quantum-flavored framings (Superposition Collapse, Observer Effect). The coach picks the right one for your problem and walks you through it.",
       "defaultPersona": {
         "name": "Carson",
         "title": "Elite Brainstorming Specialist",
@@ -29,8 +28,8 @@
     {
       "slug": "product-brief-coach",
       "name": "Product Brief Coach",
-      "tagline": "Build a one-page product brief through guided discovery",
-      "description": "Shape a raw idea, evolve an existing brief, or pressure-test a draft before it goes downstream. The coach mirrors before pushing, names the assumption hiding under your confident sentence, and refuses to write the brief for you.",
+      "tagline": "Shape, evolve, or pressure-test a product brief through guided discovery",
+      "description": "Shape a raw idea, evolve an existing brief, or pressure-test a draft before it goes downstream. Brief length is whatever the product earns — focused for early-stage, longer for complex products. The coach mirrors before pushing, names the assumption hiding under your confident sentence, and refuses to write the brief for you.",
       "defaultPersona": {
         "name": "Mary",
         "title": "Strategic Business Analyst",
