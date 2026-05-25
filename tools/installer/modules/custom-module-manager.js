@@ -435,8 +435,12 @@ class CustomModuleManager {
         }
         fetchSpinner.stop(`Updated ${displayName}`);
       } catch {
-        fetchSpinner.error(`Update failed, re-downloading ${displayName}`);
-        await fs.remove(repoCacheDir);
+        // Fetch failed against an existing cache — most often the remote is
+        // unreachable (network down, repo deleted/moved, auth revoked).
+        // Preserve the previous clone so re-deploy still works from cached
+        // content; surface a warning so the user knows the cache is stale.
+        fetchSpinner.error(`Could not refresh ${displayName} — keeping cached copy`);
+        await prompts.log.warn(`Custom module ${displayName} was not refreshed (remote unreachable). Using cached copy.`);
       }
     }
 
@@ -760,9 +764,14 @@ class CustomModuleManager {
           pinOverride: metadata.version || undefined,
         });
         CustomModuleManager._refreshedRepoPaths.add(repoPath);
-      } catch {
-        // Keep existing cache on refresh failure; caller may still resolve
-        // module source from the previous clone.
+      } catch (error_) {
+        // cloneRepo only throws here for unrecoverable cases (no cache present
+        // and a fresh clone failed, or an unexpected internal error). The
+        // common "remote unreachable but cache exists" case is handled inside
+        // cloneRepo, which preserves the clone and returns normally. Reaching
+        // this catch means we have no usable cache — surface a warning so the
+        // failure isn't silent.
+        await prompts.log.warn(`Refresh of cached custom module at ${path.basename(repoPath)} failed: ${error_?.message || error_}`);
       } finally {
         CustomModuleManager._refreshInFlight.delete(repoPath);
       }
