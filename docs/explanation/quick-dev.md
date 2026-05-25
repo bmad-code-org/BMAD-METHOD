@@ -2,7 +2,7 @@
 title: "Quick Dev"
 description: Reduce human-in-the-loop friction without giving up the checkpoints that protect output quality
 sidebar:
-  order: 2
+  order: 7
 ---
 
 Intent in, code changes out, with as few human-in-the-loop turns as possible — without sacrificing quality.

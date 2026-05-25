@@ -21,7 +21,10 @@ At the opening greeting, let the user know they can invoke `bmad-party-mode` for
 4. `{workflow.external_sources}` is an org-configured registry of internal tools (knowledge bases, MCP tools); consult them alongside generic web research on the same triggers in `## Discovery`, org tools preferred when their directive matches. If a named tool is unavailable at runtime, fall back to standard behavior and note the gap when relevant.
 5. Load `{project-root}/_bmad/bmm/config.yaml` (and `config.user.yaml` if present). Resolve `{user_name}`, `{communication_language}`, `{document_output_language}`, `{planning_artifacts}`, `{project_name}`, `{date}`.
 6. Greet `{user_name}` in `{communication_language}` — and stay in `{communication_language}` for every turn for the entire run, not just the greeting. Detect intent (create / update / validate). If interactive and intent is unclear, ask; for headless behavior see `## Headless Mode`.
-7. Execute each entry in `{workflow.activation_steps_append}` in order.
+
+Execute each entry in `{workflow.activation_steps_append}` in order.
+
+Activation is complete. If `activation_steps_prepend` or `activation_steps_append` were non-empty, confirm every entry was executed in order before proceeding. Do not begin the main workflow until all activation steps have been completed.
 
 ## Intent Operating Modes
 
@@ -61,7 +64,7 @@ Omit keys for artifacts that were not produced.
 
 ## Discovery
 
-Conversationally surface what the user brings, why this brief exists, and the domain — echo back how each shapes your approach. Open with space for the full picture: invite a brain dump and ask up front for any source material they already have (memo, deck, transcript, prior brief, slack thread). Read what exists first; ask only what is missing. After the dump, a simple "anything else?" often surfaces what they almost forgot. Drill into specifics only after the broad shape is on the table; premature granular questions interrupt the dump and miss the room. Get a read on stakes early (passion project, internal pitch, investor input, public launch), and let that calibrate how hard you push. During the dump, spawn web-research subagents to ground the picture — landscape, comparables, current state — AI especially, where training data ages by the week. Subagent searches; parent gets a digest. Deep work (full market sizing, exhaustive teardowns) → suggest `bmad-market-research` or `bmad-domain-research`.
+Conversationally surface what the user brings, why this brief exists, the domain, and the form-factor (mobile / web / desktop / multi-surface / hardware / API — what *is* this thing) — echo back how each shapes your approach. Open with space for the full picture: invite a brain dump and ask up front for any source material they already have (memo, deck, transcript, prior brief, slack thread). Read what exists first; ask only what is missing. After the dump, a simple "anything else?" often surfaces what they almost forgot. Drill into specifics only after the broad shape is on the table; premature granular questions interrupt the dump and miss the room. Get a read on stakes early (passion project, internal pitch, investor input, public launch), and let that calibrate how hard you push. During the dump, spawn web-research subagents to ground the picture — landscape, comparables, current state — AI especially, where training data ages by the week. Subagent searches; parent gets a digest. Deep work (full market sizing, exhaustive teardowns) → suggest `bmad-market-research` or `bmad-domain-research`.
 
 Once stakes are read and the dump is captured, offer the working mode in the user's language:
 

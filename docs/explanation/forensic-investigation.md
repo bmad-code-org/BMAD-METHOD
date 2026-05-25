@@ -2,7 +2,7 @@
 title: "Forensic Investigation"
 description: How bmad-investigate treats every issue like a crime scene, grades evidence, and produces a structured case file engineers can act on
 sidebar:
-  order: 6
+  order: 10
 ---
 
 You hand `bmad-investigate` a crash log, a stack trace, or just a "this used to work, now it doesn't". The skill takes

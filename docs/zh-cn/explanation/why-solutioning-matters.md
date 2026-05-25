@@ -2,7 +2,7 @@
 title: "为什么解决方案阶段很重要"
 description: 理解为什么解决方案阶段对于多史诗项目至关重要
 sidebar:
-  order: 3
+  order: 5
 ---
 
 Phase 3（solutioning）把“要做什么”（planning 产出）转成“如何实现”（`architecture` 设计 + 工作拆分）。它的核心价值是：在开发前先把跨 `epic` 的关键技术决策写清楚，让后续 `story` 实施保持一致。

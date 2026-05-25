@@ -162,7 +162,7 @@ All workflows in this phase are optional. [**Not sure which to use?**](../explan
 - Run `bmad-quick-dev` — it handles planning and implementation in a single workflow, skip to implementation
 
 :::note[UX Design (Optional)]
-If your project has a user interface, invoke the **UX-Designer agent** (`bmad-agent-ux-designer`) and run the UX design workflow (`bmad-create-ux-design`) after creating your PRD.
+If your project has a user interface, invoke the **UX-Designer agent** (`bmad-agent-ux-designer`) and run the UX design workflow (`bmad-ux`) after creating your PRD.
 :::
 
 ### Phase 3: Solutioning (BMad Method/Enterprise)
