@@ -18,7 +18,7 @@ Chạy bất kỳ công cụ cốt lõi nào bằng cách gõ tên skill của n
 | [`bmad-help`](#bmad-help) | Tác vụ | Nhận hướng dẫn có ngữ cảnh về việc nên làm gì tiếp theo |
 | [`bmad-brainstorming`](#bmad-brainstorming) | Quy trình | Tổ chức các phiên brainstorming có tương tác |
 | [`bmad-party-mode`](#bmad-party-mode) | Quy trình | Điều phối thảo luận nhóm nhiều agent |
-| [`bmad-distillator`](#bmad-distillator) | Tác vụ | Nén tài liệu tối ưu cho LLM mà không mất thông tin |
+| [`bmad-spec`](#bmad-spec) | Quy trình | Distill any intent input into a SPEC kernel and companions, the canonical contract for downstream work (translation pending) |
 | [`bmad-advanced-elicitation`](#bmad-advanced-elicitation) | Tác vụ | Đẩy đầu ra của LLM qua các vòng tinh luyện lặp |
 | [`bmad-review-adversarial-general`](#bmad-review-adversarial-general) | Tác vụ | Rà soát hoài nghi để tìm chỗ thiếu và chỗ sai |
 | [`bmad-review-edge-case-hunter`](#bmad-review-edge-case-hunter) | Tác vụ | Phân tích toàn bộ nhánh rẽ để tìm trường hợp biên chưa được xử lý |
@@ -96,33 +96,6 @@ Chạy bất kỳ công cụ cốt lõi nào bằng cách gõ tên skill của n
 **Đầu vào:** Chủ đề hoặc câu hỏi thảo luận, cùng thông tin về các persona bạn muốn tham gia nếu có
 
 **Đầu ra:** Cuộc hội thoại nhiều agent theo thời gian thực, vẫn giữ nguyên cá tính từng agent
-
-## bmad-distillator
-
-**Nén tài liệu nguồn tối ưu cho LLM mà không mất thông tin.** Công cụ này tạo ra các bản chưng cất dày đặc, tiết kiệm token nhưng vẫn giữ nguyên toàn bộ thông tin cho LLM dùng về sau. Có thể xác minh bằng tái dựng hai chiều.
-
-**Dùng khi:**
-
-- Một tài liệu quá lớn so với context window của LLM
-- Bạn cần phiên bản tiết kiệm token của tài liệu nghiên cứu, đặc tả hoặc artifact lập kế hoạch
-- Bạn muốn xác minh rằng không có thông tin nào bị mất trong quá trình nén
-- Các agent sẽ cần tham chiếu và tìm thông tin trong đó thường xuyên
-
-**Cách hoạt động:**
-
-1. **Analyze** — Đọc tài liệu nguồn, nhận diện mật độ thông tin và cấu trúc
-2. **Compress** — Chuyển văn xuôi thành dạng bullet dày đặc, bỏ trang trí không cần thiết
-3. **Verify** — Kiểm tra tính đầy đủ để đảm bảo mọi thông tin gốc còn nguyên
-4. **Validate** *(tùy chọn)* — Tái dựng hai chiều để chứng minh nén không mất mát
-
-**Đầu vào:**
-
-- `source_documents` *(bắt buộc)* — Đường dẫn file, thư mục hoặc mẫu glob
-- `downstream_consumer` *(tùy chọn)* — Thành phần sẽ dùng đầu ra này, ví dụ "PRD creation"
-- `token_budget` *(tùy chọn)* — Kích thước mục tiêu gần đúng
-- `--validate` *(cờ)* — Chạy kiểm tra tái dựng hai chiều
-
-**Đầu ra:** Một hoặc nhiều file markdown distillate kèm báo cáo tỷ lệ nén, ví dụ `3.2:1`
 
 ## bmad-advanced-elicitation
 

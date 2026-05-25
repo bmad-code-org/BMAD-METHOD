@@ -20,7 +20,7 @@ This page lists the default BMM (Agile suite) agents that install with BMad Meth
 | Analyst (Mary)              | `bmad-agent-analyst`       | `BP`, `MR`, `DR`, `TR`, `CB`, `WB`, `DP` | Brainstorm, Market Research, Domain Research, Technical Research, Create Brief, PRFAQ Challenge, Document Project |
 | Product Manager (John)      | `bmad-agent-pm`            | `CP`, `VP`, `EP`, `CE`, `IR`, `CC` | Create/Validate/Edit PRD, Create Epics and Stories, Implementation Readiness, Correct Course        |
 | Architect (Winston)         | `bmad-agent-architect`     | `CA`, `IR`                         | Create Architecture, Implementation Readiness                                                       |
-| Developer (Amelia)          | `bmad-agent-dev`     | `DS`, `QD`, `QA`, `CR`, `SP`, `CS`, `ER` | Dev Story, Quick Dev, QA Test Generation, Code Review, Sprint Planning, Create Story, Epic Retrospective |
+| Developer (Amelia)          | `bmad-agent-dev`     | `DS`, `QD`, `QA`, `CR`, `SP`, `CS`, `ER`, `IN` | Dev Story, Quick Dev, QA Test Generation, Code Review, Sprint Planning, Create Story, Epic Retrospective, [Forensic Investigation](../explanation/forensic-investigation.md) |
 | UX Designer (Sally)         | `bmad-agent-ux-designer`   | `CU`                               | Create UX Design                                                                                    |
 | Technical Writer (Paige)    | `bmad-agent-tech-writer`   | `DP`, `WD`, `US`, `MG`, `VD`, `EC` | Document Project, Write Document, Update Standards, Mermaid Generate, Validate Doc, Explain Concept |
 
