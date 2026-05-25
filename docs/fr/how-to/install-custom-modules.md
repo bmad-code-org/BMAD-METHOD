@@ -109,10 +109,10 @@ Plusieurs sources peuvent être séparées par des virgules :
 
 L’installateur utilise deux modes pour trouver les modules installables dans une source :
 
-| Mode        | Déclencheur                                       | Comportement                                                                                 |
-| ----------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| Découverte  | La source contient `.claude-plugin/marketplace.json` | Liste tous les plugins du manifeste ; vous choisissez lesquels installer                    |
-| Direct      | Aucun `marketplace.json` trouvé                   | Analyse le répertoire pour trouver des skills (sous-répertoires avec `SKILL.md`), les résout en un module unique |
+| Mode       | Déclencheur                                          | Comportement                                                                                                     |
+|------------|------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|
+| Découverte | La source contient `.claude-plugin/marketplace.json` | Liste tous les plugins du manifeste ; vous choisissez lesquels installer                                         |
+| Direct     | Aucun `marketplace.json` trouvé                      | Analyse le répertoire pour trouver des skills (sous-répertoires avec `SKILL.md`), les résout en un module unique |
 
 Le mode découverte est typique des modules publiés. Le mode direct est pratique pour pointer vers un répertoire de skills pendant le développement local.
 
@@ -162,8 +162,8 @@ Le manifeste enregistre la source de chaque module personnalisé (`repoUrl` pour
 
 Les modules personnalisés participent au flux de mise à jour normal :
 
-- **Mise à jour rapide** (`--action quick-update`) : Rafraîchit tous les modules depuis leurs sources d’origine. Les modules Git sont re-téléchargés ; les modules locaux sont relus depuis leur chemin source.
-- **Mise à jour complète** : Relance la sélection de modules pour que vous puissiez ajouter ou retirer des modules personnalisés.
+- **Mise à jour rapide** (`--action quick-update`) : Rafraîchit tous les modules depuis leurs sources d’origine. Les modules Git sont re-téléchargés ; les modules locaux sont relus depuis leur chemin source.
+- **Mise à jour complète** : Relance la sélection de modules pour que vous puissiez ajouter ou retirer des modules personnalisés.
 
 ## Créer vos propres modules
 

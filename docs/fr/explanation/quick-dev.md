@@ -15,7 +15,7 @@ Il permet au modèle de s’exécuter plus longtemps entre les points de contrô
 
 Les interactions humaines dans la boucle sont nécessaires et coûteuses.
 
-Les LLM actuels échouent encore de manière prévisible : ils interprètent mal l’intention, comblent les lacunes avec des suppositions assurées, dérivent vers du travail non lié, et génèrent des résultats à réviser bruyants. En même temps, l’intervention humaine constante limite la fluidité du développement. L’attention humaine est le goulot d’étranglement.
+Les LLM actuels échouent encore de manière prévisible : ils interprètent mal l’intention, comblent les lacunes avec des suppositions assurées, dérivent vers du travail non lié, et génèrent des résultats à réviser bruyants. En même temps, l’intervention humaine constante limite la fluidité du développement. L’attention humaine est le goulot d’étranglement.
 
 `bmad-quick-dev` rééquilibre ce compromis. Il fait confiance au modèle pour s’exécuter sans surveillance sur de plus longues périodes, mais seulement après que le workflow ait créé une frontière suffisamment solide pour rendre cela sûr.
 
@@ -25,7 +25,7 @@ Les LLM actuels échouent encore de manière prévisible : ils interprètent mal
 
 Le workflow commence par compresser l’interaction de la personne et du modèle à partir de la requête en un objectif cohérent. L’entrée peut commencer sous forme d’une expression grossière de l’intention, mais avant que le workflow ne s’exécute de manière autonome, elle doit devenir suffisamment petite, claire et sans contradiction pour être exécutable.
 
-L’intention peut prendre plusieurs formes : quelques phrases, un lien vers un outil de suivi de bugs, une sortie du mode planification, du texte copié depuis une session de chat, ou même un numéro de story depuis un fichier `epics.md` de BMAD. Dans ce dernier cas, le workflow ne comprendra pas la sémantique de suivi des stories de BMAD, mais il peut quand même prendre la story elle-même et l’exécuter.
+L’intention peut prendre plusieurs formes : quelques phrases, un lien vers un outil de suivi de bugs, une sortie du mode planification, du texte copié depuis une session de chat, ou même un numéro de story depuis un fichier `epics.md` de BMAD. Dans ce dernier cas, le workflow ne comprendra pas la sémantique de suivi des stories de BMAD, mais il peut quand même prendre la story elle-même et l’exécuter.
 
 Ce workflow n’élimine pas le contrôle humain. Il le déplace vers un nombre réduit d’étapes à forte valeur :
 

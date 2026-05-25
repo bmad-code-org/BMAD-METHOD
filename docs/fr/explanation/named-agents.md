@@ -31,12 +31,12 @@ BMad embarque six agents nommés, chacun ancré à une phase de la méthode BMad
 
 | Agent                              | Phase          | Module                                                                                                                  |
 |------------------------------------|----------------|-------------------------------------------------------------------------------------------------------------------------|
-| 📊 **Mary**, Analyste d’affaires   | Analyse        | étude de marché, brainstorming, product briefs, PRFAQs                                                                  |
-| 📚 **Paige**, Rédactrice technique | Analyse        | documentation de projet, diagrammes, validation de docs                                                                 |
-| 📋 **John**, Chef de produit       | Planification  | création de PRD, décomposition epic/story, vérification de la préparation à l’implémentation                            |
-| 🎨 **Sally**, Designer UX          | Planification  | spécifications de design UX                                                                                             |
-| 🏗️ **Winston**, Architecte système  | Solutioning    | architecture technique, vérifications d’alignement                                                                      |
-| 💻 **Amelia**, Ingénieure senior   | Implémentation | exécution de stories, quick-dev, revue de code, planification de sprint, [enquête de code](./forensic-investigation.md) |
+| 📊 **Mary**, Analyste d’affaires   | Analyse        | étude de marché, brainstorming, product briefs, PRFAQs                                                                   |
+| 📚 **Paige**, Rédactrice technique | Analyse        | documentation de projet, diagrammes, validation de docs                                                                  |
+| 📋 **John**, Chef de produit       | Planification  | création de PRD, décomposition epic/story, vérification de la préparation à l’implémentation                             |
+| 🎨 **Sally**, Designer UX          | Planification  | spécifications de design UX                                                                                              |
+| 🏗️ **Winston**, Architecte système  | Solutioning    | architecture technique, vérifications d’alignement                                                                     |
+| 💻 **Amelia**, Ingénieure senior   | Implémentation | exécution de stories, quick-dev, revue de code, planification de sprint, [enquête de code](./forensic-investigation.md)  |
 
 Chacun possède une identité codée en dur (nom, titre, domaine) et une couche personnalisable (rôle, principes, style de communication, icône, menu). Vous pouvez réécrire les principes de Mary ou ajouter des éléments de menu ; vous ne pouvez pas la renommer — c’est délibéré. La reconnaissance de marque persiste après personnalisation pour que « hey Mary » active toujours l’analyste, indépendamment de la façon dont une équipe a façonné son comportement.
 

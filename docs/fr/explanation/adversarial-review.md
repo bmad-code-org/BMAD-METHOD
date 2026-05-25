@@ -13,7 +13,7 @@ Une technique de revue où le réviseur *doit* trouver des problèmes. Pas de «
 
 Il ne s’agit pas d’être négatif. Il s’agit de forcer une analyse authentique au lieu d’un coup d’œil superficiel qui valide automatiquement ce qui a été soumis.
 
-**La règle fondamentale :** Il doit trouver des problèmes. Zéro constatation déclenche un arrêt - réanalyse ou explique pourquoi.
+**La règle fondamentale :** Il doit trouver des problèmes. Zéro constatation déclenche un arrêt - réanalyse ou explique pourquoi.
 
 ## Pourquoi Cela Fonctionne
 
@@ -30,7 +30,7 @@ La revue contradictoire apparaît dans tous les workflows BMad - revue de code, 
 
 ## Filtrage Humain Requis
 
-Parce que l’IA est *instruite* de trouver des problèmes, elle trouvera des problèmes - même lorsqu’ils n’existent pas. Attendez-vous à des faux positifs : des détails présentés comme des problèmes, des malentendus sur l’intention, ou des préoccupations purement hallucinées[^3].
+Parce que l’IA est *instruite* de trouver des problèmes, elle trouvera des problèmes - même lorsqu’ils n’existent pas. Attendez-vous à des faux positifs : des détails présentés comme des problèmes, des malentendus sur l’intention, ou des préoccupations purement hallucinées[^3].
 
 **C’est vous qui décidez ce qui est réel.** Examinez chaque constatation, ignorez le bruit, corrigez ce qui compte.
 

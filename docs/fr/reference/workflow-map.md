@@ -20,7 +20,7 @@ la méthode BMad. Par ailleurs, si vous utilisez des modules ayant étendu la m�
 complémentaires non extensibles, `bmad-help` s’adapte automatiquement pour couvrir tout ce qui est disponible et vous
 fournir les meilleurs conseils en temps réel.
 
-Note importante : chaque workflow ci-dessous peut être exécuté directement via un skill avec l’outil de votre choix, ou
+Note importante : chaque workflow ci-dessous peut être exécuté directement via un skill avec l’outil de votre choix, ou
 en chargeant d’abord un agent depuis le menu des agents.
 
 <iframe src="/workflow-map-diagram-fr.html" title="Diagramme de la carte des workflows de la méthode BMad" width="100%" height="100%" style="border-radius: 8px; border: 1px solid #334155; min-height: 900px;"></iframe>
@@ -29,7 +29,7 @@ en chargeant d’abord un agent depuis le menu des agents.
   <a href="/workflow-map-diagram-fr.html" target="_blank" rel="noopener noreferrer">Ouvrir le diagramme dans un nouvel onglet ↗</a>
 </p>
 
-## Phase 1 : Analyse (Optionnelle)
+## Phase 1 : Analyse (Optionnelle)
 
 Explorez l’espace problème et validez vos idées avant de vous lancer dans la planification. [**Découvrez ce que fait
 chaque outil et quand l’utiliser**](../explanation/analysis-phase.md).
@@ -41,13 +41,13 @@ chaque outil et quand l’utiliser**](../explanation/analysis-phase.md).
 | `bmad-product-brief`                                                      | Formalisez la vision stratégique — idéal lorsque votre concept est bien défini | `product-brief.md`        |
 | `bmad-prfaq`                                                              | Working Backwards — mettez à l’épreuve et affinez votre concept produit        | `prfaq-{project}.md`      |
 
-## Phase 2 : Planification
+## Phase 2 : Planification
 
 Définissez ce qu’il faut construire et pour qui.
 
 | Workflow   | Objectif                                                                                               | Livrable                                                                                                          |
 |------------|--------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
-| `bmad-prd` | Créez, mettez à jour ou validez un PRD[^1] — découverte accompagnée, trois intentions en un seul skill | Création/Mise à jour : `prd.md`, `addendum.md`, `decision-log.md` ; Validation : `validation-report.html` + `.md` |
+| `bmad-prd` | Créez, mettez à jour ou validez un PRD[^1] — découverte accompagnée, trois intentions en un seul skill | Création/Mise à jour : `prd.md`, `addendum.md`, `decision-log.md` ; Validation : `validation-report.html` + `.md` |
 | `bmad-ux`  | Concevez l’expérience utilisateur (lorsque l’UX compte)                                                | `DESIGN.md`, `EXPERIENCE.md`                                                                                      |
 
 :::tip[Trois intentions en un seul skill]
@@ -58,21 +58,21 @@ Définissez ce qu’il faut construire et pour qui.
 - **Valider** — évalue un PRD à l’aide d’une liste de contrôle configurable et produit un rapport de constats structuré au format HTML
 :::
 
-:::tip[En amont : `bmad-product-brief`]
+:::tip[En amont : `bmad-product-brief`]
 `bmad-product-brief` (Phase 1) produit un `product-brief.md` que `bmad-prd` peut exploiter lors de la découverte, réduisant les redondances et gardant les deux documents alignés. Aucun des deux skills ne nécessite l’autre — commencez directement par `bmad-prd` si vous savez déjà ce que vous construisez.
 :::
 
-## Phase 3 : Conception de la Solution
+## Phase 3 : Conception de la Solution
 
 Décidez comment le construire et décomposez le travail en stories.
 
-| Workflow                              | Objectif                                          | Livrable                       |
-|---------------------------------------|---------------------------------------------------|--------------------------------|
-| `bmad-create-architecture`            | Rendez explicites les décisions techniques        | `architecture.md` avec ADRs[^2]    |
-| `bmad-create-epics-and-stories`       | Décomposez les exigences en tâches implémentables | Fichiers d’epic avec stories   |
-| `bmad-check-implementation-readiness` | Jalon de validation avant implémentation          | Décision OK / RÉSERVES / ÉCHEC |
+| Workflow                              | Objectif                                          | Livrable                        |
+|---------------------------------------|---------------------------------------------------|---------------------------------|
+| `bmad-create-architecture`            | Rendez explicites les décisions techniques        | `architecture.md` avec ADRs[^2] |
+| `bmad-create-epics-and-stories`       | Décomposez les exigences en tâches implémentables | Fichiers d’epic avec stories    |
+| `bmad-check-implementation-readiness` | Jalon de validation avant implémentation          | Décision OK / RÉSERVES / ÉCHEC  |
 
-## Phase 4 : Implémentation
+## Phase 4 : Implémentation
 
 Construisez, une story à la fois. L’automatisation complète de la phase 4 arrive bientôt !
 
@@ -110,7 +110,7 @@ optionnel peut être généré à la fin de la création de l’architecture, ou
 éléments clés et les garder alignés avec les conventions en vigueur.
 :::
 
-**Comment le créer :**
+**Comment le créer :**
 
 - **Manuellement** — Créez `_bmad-output/project-context.md` avec votre stack technique et vos règles d’implémentation
 - **Générez-le** — Exécutez `bmad-generate-project-context` pour l’auto-générer à partir de votre architecture ou de votre codebase

@@ -19,7 +19,7 @@ Utilisez le fichier `project-context.md` pour garantir que les agents IA respect
 - Vous travaillez sur une base de code existante avec des patterns établis
 - Vous remarquez que les agents prennent des décisions incohérentes entre les stories
 
-## Étape 1 : Choisissez votre approche
+## Étape 1 : Choisissez votre approche
 
 **Création manuelle** — Idéal lorsque vous savez exactement quelles règles vous souhaitez documenter
 
@@ -27,9 +27,9 @@ Utilisez le fichier `project-context.md` pour garantir que les agents IA respect
 
 **Génération pour les projets existants** — Idéal pour découvrir les patterns dans les bases de code existantes
 
-## Étape 2 : Créez le fichier
+## Étape 2 : Créez le fichier
 
-### Option A : Création manuelle
+### Option A : Création manuelle
 
 Créez le fichier à l’emplacement `_bmad-output/project-context.md` :
 
@@ -72,7 +72,7 @@ sections_completed: ['technology_stack', 'critical_rules']
 - Tests d'intégration utilisent MSW pour le mock API
 ```
 
-### Option B : Génération après l’architecture
+### Option B : Génération après l’architecture
 
 Exécutez le workflow dans une nouvelle conversation :
 
@@ -82,7 +82,7 @@ bmad-generate-project-context
 
 Le workflow analyse votre document d’architecture et vos fichiers projet pour générer un fichier de contexte qui capture les décisions prises.
 
-### Option C : Génération pour les projets existants
+### Option C : Génération pour les projets existants
 
 Pour les projets existants, exécutez :
 
@@ -92,7 +92,7 @@ bmad-generate-project-context
 
 Le workflow analyse votre base de code pour identifier les conventions, puis génère un fichier de contexte que vous pouvez réviser et affiner.
 
-## Étape 3 : Vérifiez le contenu
+## Étape 3 : Vérifiez le contenu
 
 Révisez le fichier généré et assurez-vous qu’il capture :
 

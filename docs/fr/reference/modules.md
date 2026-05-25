@@ -15,11 +15,11 @@ Exécutez `npx bmad-method install` et sélectionnez les modules souhaités. L�
 
 Créez des agents personnalisés, des workflows et des modules spécifiques à un domaine avec une assistance guidée. BMad Builder est le méta-module pour étendre le framework lui-même.
 
-- **Code :** `bmb`
-- **npm :** [`bmad-builder`](https://www.npmjs.com/package/bmad-builder)
-- **GitHub :** [bmad-code-org/bmad-builder](https://github.com/bmad-code-org/bmad-builder)
+- **Code :** `bmb`
+- **npm :** [`bmad-builder`](https://www.npmjs.com/package/bmad-builder)
+- **GitHub :** [bmad-code-org/bmad-builder](https://github.com/bmad-code-org/bmad-builder)
 
-**Fournit :**
+**Fournit :**
 
 - Agent Builder — créez des agents IA spécialisés avec une expertise et un accès aux outils personnalisés
 - Workflow Builder — concevez des processus structurés avec des étapes et des points de décision
@@ -30,11 +30,11 @@ Créez des agents personnalisés, des workflows et des modules spécifiques à u
 
 Outils basés sur l’IA pour la créativité structurée, l’idéation et l’innovation pendant le développement en phase amont. La suite fournit plusieurs agents qui facilitent le brainstorming, le design thinking et la résolution de problèmes en utilisant des cadres éprouvés.
 
-- **Code :** `cis`
-- **npm :** [`bmad-creative-intelligence-suite`](https://www.npmjs.com/package/bmad-creative-intelligence-suite)
-- **GitHub :** [bmad-code-org/bmad-module-creative-intelligence-suite](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite)
+- **Code :** `cis`
+- **npm :** [`bmad-creative-intelligence-suite`](https://www.npmjs.com/package/bmad-creative-intelligence-suite)
+- **GitHub :** [bmad-code-org/bmad-module-creative-intelligence-suite](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite)
 
-**Fournit :**
+**Fournit :**
 
 - Agents Innovation Strategist, Design Thinking Coach et Brainstorming Coach
 - Problem Solver et Creative Problem Solver pour la pensée systématique et latérale
@@ -45,11 +45,11 @@ Outils basés sur l’IA pour la créativité structurée, l’idéation et l’
 
 Workflows de développement de jeux structurés adaptés pour Unity, Unreal, Godot et moteurs personnalisés. Supporte le prototypage rapide via Quick Dev et la production à grande échelle avec des sprints propulsés par epics.
 
-- **Code :** `gds`
-- **npm :** [`bmad-game-dev-studio`](https://www.npmjs.com/package/bmad-game-dev-studio)
-- **GitHub :** [bmad-code-org/bmad-module-game-dev-studio](https://github.com/bmad-code-org/bmad-module-game-dev-studio)
+- **Code :** `gds`
+- **npm :** [`bmad-game-dev-studio`](https://www.npmjs.com/package/bmad-game-dev-studio)
+- **GitHub :** [bmad-code-org/bmad-module-game-dev-studio](https://github.com/bmad-code-org/bmad-module-game-dev-studio)
 
-**Fournit :**
+**Fournit :**
 
 - Workflow de génération de Document de Design de Jeu (GDD[^3])
 - Mode Quick Dev pour le prototypage rapide
@@ -60,11 +60,11 @@ Workflows de développement de jeux structurés adaptés pour Unity, Unreal, God
 
 Stratégie de test de niveau entreprise, conseils d’automatisation et décisions de porte de release via un agent expert et neuf workflows structurés. TEA va bien au-delà du workflow QA intégré avec une priorisation basée sur les risques et une traçabilité des exigences.
 
-- **Code :** `tea`
-- **npm :** [`bmad-method-test-architecture-enterprise`](https://www.npmjs.com/package/bmad-method-test-architecture-enterprise)
-- **GitHub :** [bmad-code-org/bmad-method-test-architecture-enterprise](https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise)
+- **Code :** `tea`
+- **npm :** [`bmad-method-test-architecture-enterprise`](https://www.npmjs.com/package/bmad-method-test-architecture-enterprise)
+- **GitHub :** [bmad-code-org/bmad-method-test-architecture-enterprise](https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise)
 
-**Fournit :**
+**Fournit :**
 
 - Agent Murat (Master Test Architect and Quality Advisor)
 - Workflows pour la conception de tests, ATDD, l’automatisation, la revue de tests et la traçabilité

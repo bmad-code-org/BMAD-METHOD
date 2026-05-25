@@ -20,7 +20,7 @@ Le fichier `project-context.md` résout ce problème en documentant ce que les a
 
 Chaque workflow d’implémentation charge automatiquement `project-context.md` s’il existe. Le workflow architecte le charge également pour respecter vos préférences techniques lors de la conception de l’architecture.
 
-**Chargé par ces workflows :**
+**Chargé par ces workflows :**
 - `bmad-create-architecture` — respecte les préférences techniques pendant la phase de solutioning
 - `bmad-create-story` — informe la création de stories avec les patterns du projet
 - `bmad-dev-story` — guide les décisions d’implémentation

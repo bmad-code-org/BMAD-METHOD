@@ -45,7 +45,7 @@ Les nouveaux skills v6 sont installés dans :
 
 ### 4. Migrer les artefacts de planification
 
-**Si vous avez des documents de planification (Brief/PRD/UX/Architecture) :**
+**Si vous avez des documents de planification (Brief/PRD/UX/Architecture) :**
 
 Déplacez-les dans `_bmad-output/planning-artifacts/` avec des noms descriptifs :
 
@@ -53,7 +53,7 @@ Déplacez-les dans `_bmad-output/planning-artifacts/` avec des noms descriptifs 
 - Incluez `brief`, `architecture`, ou `ux-design` selon le cas
 - Les documents divisés peuvent être dans des sous-dossiers au nom descriptif
 
-**Si vous êtes en cours de planification :** Envisagez de recommencer avec les workflows v6. Utilisez vos documents existants comme entrées — les nouveaux workflows de découverte progressive avec recherche web et le mode plan de l’IDE produisent de meilleurs résultats.
+**Si vous êtes en cours de planification :** Envisagez de recommencer avec les workflows v6. Utilisez vos documents existants comme entrées — les nouveaux workflows de découverte progressive avec recherche web et le mode plan de l’IDE produisent de meilleurs résultats.
 
 ### 5. Migrer le développement en cours
 
@@ -66,7 +66,7 @@ Si vous avez des stories[^3] créées ou implémentées :
 
 ## Résultat de la migration
 
-**Structure unifiée v6 :**
+**Structure unifiée v6 :**
 
 ```text
 votre-projet/
@@ -82,22 +82,22 @@ votre-projet/
 
 ## Migration des modules
 
-| Module v4                     | Statut v6                                              |
-| ----------------------------- | ------------------------------------------------------ |
-| `.bmad-2d-phaser-game-dev`    | Intégré dans le Module BMGD                            |
-| `.bmad-2d-unity-game-dev`     | Intégré dans le Module BMGD                            |
-| `.bmad-godot-game-dev`        | Intégré dans le Module BMGD                            |
-| `.bmad-infrastructure-devops` | Obsolète — nouvel agent DevOps bientôt disponible      |
-| `.bmad-creative-writing`      | Non migré — nouveau module v6 bientôt disponible       |
+| Module v4                     | Statut v6                                         |
+|-------------------------------|---------------------------------------------------|
+| `.bmad-2d-phaser-game-dev`    | Intégré dans le Module BMGD                       |
+| `.bmad-2d-unity-game-dev`     | Intégré dans le Module BMGD                       |
+| `.bmad-godot-game-dev`        | Intégré dans le Module BMGD                       |
+| `.bmad-infrastructure-devops` | Obsolète — nouvel agent DevOps bientôt disponible |
+| `.bmad-creative-writing`      | Non migré — nouveau module v6 bientôt disponible  |
 
 ## Changements clés
 
-| Concept       | v4                                    | v6                                   |
-| ------------- | ------------------------------------- | ------------------------------------ |
+| Concept       | v4                                                      | v6                                       |
+|---------------|---------------------------------------------------------|------------------------------------------|
 | **Core**      | `_bmad-core` correspondait en réalité à la méthode BMad | `_bmad/core/` est le framework universel |
-| **Method**    | `_bmad-method`                        | `_bmad/bmm/`                         |
-| **Config**    | Fichiers modifiés directement         | `config.yaml` par module             |
-| **Documents** | Division en fragments obligatoire ou optionnelle | Totalement flexible, analyse automatique |
+| **Method**    | `_bmad-method`                                          | `_bmad/bmm/`                             |
+| **Config**    | Fichiers modifiés directement                           | `config.yaml` par module                 |
+| **Documents** | Division en fragments obligatoire ou optionnelle        | Totalement flexible, analyse automatique |
 
 
 ## Glossaire

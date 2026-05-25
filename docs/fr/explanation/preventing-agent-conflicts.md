@@ -14,10 +14,10 @@ Lorsque plusieurs agents IA implémentent différentes parties d’un système, 
 Sans architecture :
 - L’agent A utilise REST avec `/users/{id}`
 - L’agent B utilise des mutations GraphQL
-- Résultat : Patterns d’API incohérents, consommateurs confus
+- Résultat : Patterns d’API incohérents, consommateurs confus
 
 Avec architecture :
-- L’ADR[^1] spécifie : « Utiliser GraphQL pour toute communication client-serveur »
+- L’ADR[^1] spécifie : « Utiliser GraphQL pour toute communication client-serveur »
 - Tous les agents suivent le même pattern
 
 ### Conflits de conception de base de données
@@ -25,7 +25,7 @@ Avec architecture :
 Sans architecture :
 - L’agent A utilise des noms de colonnes en snake_case
 - L’agent B utilise des noms de colonnes en camelCase
-- Résultat : Schéma incohérent, requêtes illisibles
+- Résultat : Schéma incohérent, requêtes illisibles
 
 Avec architecture :
 - Un document de standards spécifie les conventions de nommage
@@ -36,7 +36,7 @@ Avec architecture :
 Sans architecture :
 - L’agent A utilise Redux pour l’état global
 - L’agent B utilise React Context
-- Résultat : Multiples approches de gestion d’état, complexité
+- Résultat : Multiples approches de gestion d’état, complexité
 
 Avec architecture :
 - L’ADR spécifie l’approche de gestion d’état
@@ -56,8 +56,8 @@ Chaque choix technologique significatif est documenté avec :
 ### 2. Guidance spécifique aux FR/NFR[^2]
 
 L’architecture associe chaque exigence fonctionnelle à une approche technique :
-- FR-001 : Gestion des utilisateurs → Mutations GraphQL
-- FR-002 : Application mobile → Requêtes optimisées
+- FR-001 : Gestion des utilisateurs → Mutations GraphQL
+- FR-002 : Application mobile → Requêtes optimisées
 
 ### 3. Standards et conventions
 

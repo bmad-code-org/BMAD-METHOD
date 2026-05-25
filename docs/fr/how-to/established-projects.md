@@ -15,7 +15,7 @@ Ce guide couvre le flux de travail essentiel pour l’intégration à des projet
 - Accès à un IDE IA (Claude Code ou Cursor)
 :::
 
-## Étape 1 : Nettoyer les artefacts de planification terminés
+## Étape 1 : Nettoyer les artefacts de planification terminés
 
 Si vous avez terminé tous les epics et stories du PRD[^1] via le processus BMad, nettoyez ces fichiers. Archivez-les, supprimez-les, ou appuyez-vous sur l’historique des versions si nécessaire. Ne conservez pas ces fichiers dans :
 
@@ -23,7 +23,7 @@ Si vous avez terminé tous les epics et stories du PRD[^1] via le processus BMad
 - `_bmad-output/planning-artifacts/`
 - `_bmad-output/implementation-artifacts/`
 
-## Étape 2 : Créer le contexte du projet
+## Étape 2 : Créer le contexte du projet
 
 :::tip[Recommandé pour les projets existants]
 Générez `project-context.md` pour capturer les patterns et conventions de votre base de code existante. Cela garantit que les agents IA suivent vos pratiques établies lors de l’implémentation des modifications.
@@ -46,7 +46,7 @@ Vous pouvez examiner et affiner le fichier généré, ou le créer manuellement 
 
 [En savoir plus sur le contexte du projet](../explanation/project-context.md)
 
-## Étape 3 : Maintenir une documentation de projet de qualité
+## Étape 3 : Maintenir une documentation de projet de qualité
 
 Votre dossier `docs/` doit contenir une documentation succincte et bien organisée qui représente fidèlement votre projet :
 
@@ -57,9 +57,9 @@ Votre dossier `docs/` doit contenir une documentation succincte et bien organis�
 
 Pour les projets complexes, envisagez d’utiliser le workflow `bmad-document-project`. Il offre des variantes d’exécution qui analyseront l’ensemble de votre projet et documenteront son état actuel réel.
 
-## Étape 4 : Obtenir de l’aide
+## Étape 4 : Obtenir de l’aide
 
-### BMad-Help : Votre point de départ
+### BMad-Help : Votre point de départ
 
 **Exécutez `bmad-help` chaque fois que vous n’êtes pas sûr de la prochaine étape.** Ce guide intelligent :
 
@@ -79,10 +79,10 @@ BMad-Help s’exécute également **automatiquement à la fin de chaque workflow
 
 Vous avez deux options principales selon l’ampleur des modifications :
 
-| Portée                                    | Approche recommandée                                                                                                                    |
-| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| **Petites mises à jour ou ajouts**        | Exécutez `bmad-quick-dev` pour clarifier l’intention, planifier, implémenter et réviser dans un seul workflow. La méthode BMad complète en quatre phases est probablement excessive. |
-| **Modifications ou ajouts majeurs**       | Commencez avec la méthode BMad, en appliquant autant ou aussi peu de rigueur que nécessaire.                                            |
+| Portée                              | Approche recommandée                                                                                                                                                                 |
+|-------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Petites mises à jour ou ajouts**  | Exécutez `bmad-quick-dev` pour clarifier l’intention, planifier, implémenter et réviser dans un seul workflow. La méthode BMad complète en quatre phases est probablement excessive. |
+| **Modifications ou ajouts majeurs** | Commencez avec la méthode BMad, en appliquant autant ou aussi peu de rigueur que nécessaire.                                                                                         |
 
 ### Pendant la création du PRD
 

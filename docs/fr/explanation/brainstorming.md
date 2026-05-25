@@ -11,7 +11,7 @@ Libérez votre créativité grâce à une exploration guidée.
 
 Lancez `bmad-brainstorming` et vous obtenez un facilitateur créatif qui fait émerger vos idées - pas qui les génère pour vous. L’IA agit comme coach et guide, utilisant des techniques éprouvées pour créer les conditions où votre meilleure réflexion émerge.
 
-**Idéal pour :**
+**Idéal pour :**
 
 - Surmonter les blocages créatifs
 - Générer des idées de produits ou de fonctionnalités

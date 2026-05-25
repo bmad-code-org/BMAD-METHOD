@@ -28,12 +28,12 @@ BMad-Help s’appuie sur votre configuration installée. Pour les questions sur 
 Clonez ou ouvrez le [dépôt BMAD-METHOD](https://github.com/bmad-code-org/BMAD-METHOD) et posez vos questions à votre IA. Tout outil capable d’utiliser des agents (Claude Code, Cursor, Windsurf, etc.) peut lire les sources et répondre directement à vos questions.
 
 :::note[Exemple]
-**Q :** « Quel est le moyen le plus rapide de construire quelque chose avec BMad ? »
+**Q :** « Quel est le moyen le plus rapide de construire quelque chose avec BMad ? »
 
-**R :** Utilisez le flux rapide : Lancez `bmad-quick-dev` — il clarifie votre intention, planifie, implémente, révise et présente les résultats dans un seul workflow, en sautant les phases de planification complètes.
+**R :** Utilisez le flux rapide : Lancez `bmad-quick-dev` — il clarifie votre intention, planifie, implémente, révise et présente les résultats dans un seul workflow, en sautant les phases de planification complètes.
 :::
 
-**Conseils pour de meilleures réponses :**
+**Conseils pour de meilleures réponses :**
 
 - **Soyez précis** — « Que fait l’étape 3 du workflow PRD ? » est mieux que « Comment fonctionne le PRD ? »
 - **Vérifiez les affirmations surprenantes** — Les LLM font parfois des erreurs. Consultez le fichier source ou posez la question sur Discord.
@@ -46,14 +46,14 @@ Si votre IA ne peut pas lire des fichiers locaux (ChatGPT, Claude.ai, etc.), imp
 
 Si ni BMad-Help ni la source n’ont répondu à votre question, vous avez maintenant une bien meilleure question à poser.
 
-| Canal                   | Utilisé pour                                     |
-| ------------------------- | ------------------------------------------- |
-| Forum `help-requests`     | Questions                                   |
-| `#suggestions-feedback`   | Idées et demandes de fonctionnalités                  |
+| Canal                   | Utilisé pour                         |
+|-------------------------|--------------------------------------|
+| Forum `help-requests`   | Questions                            |
+| `#suggestions-feedback` | Idées et demandes de fonctionnalités |
 
-**Discord :** [discord.gg/gk8jAdXWmj](https://discord.gg/gk8jAdXWmj)
+**Discord :** [discord.gg/gk8jAdXWmj](https://discord.gg/gk8jAdXWmj)
 
-**GitHub Issues :** [github.com/bmad-code-org/BMAD-METHOD/issues](https://github.com/bmad-code-org/BMAD-METHOD/issues)
+**GitHub Issues :** [github.com/bmad-code-org/BMAD-METHOD/issues](https://github.com/bmad-code-org/BMAD-METHOD/issues)
 *Toi !*
 *Bloqué*
 *dans la file d’attente—*

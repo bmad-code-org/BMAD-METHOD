@@ -32,21 +32,21 @@ Les déclencheurs de menu d’agent utilisent deux types d’invocation différe
 
 La plupart des déclencheurs chargent un fichier de workflow structuré. Tapez le code du déclencheur et l’agent démarre le workflow, vous demandant de saisir les informations à chaque étape.
 
-Exemples : `CP` (Create PRD), `DS` (Dev Story), `CA` (Create Architecture), `QD` (Quick Dev)
+Exemples : `CP` (Create PRD), `DS` (Dev Story), `CA` (Create Architecture), `QD` (Quick Dev)
 
 ### Déclencheurs conversationnels (arguments requis)
 
 Certains déclencheurs lancent une conversation libre au lieu d’un workflow structuré. Ils s’attendent à ce que vous décriviez ce dont vous avez besoin à côté du code du déclencheur.
 
-| Agent | Déclencheur | Ce qu’il faut fournir |
-| --- | --- | --- |
-| Rédacteur Technique (Paige) | `WD` | Description du document à rédiger |
-| Rédacteur Technique (Paige) | `US` | Préférences ou conventions à ajouter aux standards |
-| Rédacteur Technique (Paige) | `MG` | Description et type de diagramme (séquence, organigramme, etc.) |
-| Rédacteur Technique (Paige) | `VD` | Document à valider et domaines à examiner |
-| Rédacteur Technique (Paige) | `EC` | Nom du concept à expliquer |
+| Agent                       | Déclencheur | Ce qu’il faut fournir                                           |
+|-----------------------------|-------------|-----------------------------------------------------------------|
+| Rédacteur Technique (Paige) | `WD`        | Description du document à rédiger                               |
+| Rédacteur Technique (Paige) | `US`        | Préférences ou conventions à ajouter aux standards              |
+| Rédacteur Technique (Paige) | `MG`        | Description et type de diagramme (séquence, organigramme, etc.) |
+| Rédacteur Technique (Paige) | `VD`        | Document à valider et domaines à examiner                       |
+| Rédacteur Technique (Paige) | `EC`        | Nom du concept à expliquer                                      |
 
-**Exemple :**
+**Exemple :**
 
 ```text
 WD Rédige un guide de déploiement pour notre configuration Docker

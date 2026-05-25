@@ -28,13 +28,13 @@ Avant de choisir une recette, comprenez où votre override se situe :
 | **Workflow** (ex. product-brief, create-prd) | Section `[workflow]` de `_bmad/custom/{workflow-name}.toml`           | S’applique uniquement à l’exécution de ce workflow                                                                                              |
 | **Configuration centrale**                   | `[agents.*]`, `[core]`, `[modules.*]` dans `_bmad/custom/config.toml` | Registre des agents (qui est disponible pour party-mode, retrospective, elicitation), paramètres d’installation figés pour toute l’organisation |
 
-En règle générale : si la règle doit s’appliquer partout où un ingénieur travaille sur le développement, personnalisez l'**agent dev**. Si elle s’applique uniquement quand quelqu’un rédige un product brief, personnalisez le **workflow product-brief**. Si elle change *qui participe* (renommer un agent, ajouter une voix personnalisée, imposer un chemin d’artefact partagé), modifiez la **configuration centrale**.
+En règle générale : si la règle doit s’appliquer partout où un ingénieur travaille sur le développement, personnalisez l'**agent dev**. Si elle s’applique uniquement quand quelqu’un rédige un product brief, personnalisez le **workflow product-brief**. Si elle change *qui participe* (renommer un agent, ajouter une voix personnalisée, imposer un chemin d’artefact partagé), modifiez la **configuration centrale**.
 
-## Recette 1 : Façonner un agent à travers tous les workflows qu’il dispatche
+## Recette 1 : Façonner un agent à travers tous les workflows qu’il dispatche
 
-**Cas d’usage :** Standardiser l’utilisation des outils et les intégrations avec les systèmes externes pour que chaque workflow dispatché par un agent hérite du comportement. C’est le pattern le plus impactant.
+**Cas d’usage :** Standardiser l’utilisation des outils et les intégrations avec les systèmes externes pour que chaque workflow dispatché par un agent hérite du comportement. C’est le pattern le plus impactant.
 
-**Exemple : Amelia (agent dev) utilise toujours Context7 pour la documentation des bibliothèques, et se rabat sur Linear quand une story n’est pas trouvée dans la liste des epics.**
+**Exemple : Amelia (agent dev) utilise toujours Context7 pour la documentation des bibliothèques, et se rabat sur Linear quand une story n’est pas trouvée dans la liste des epics.**
 
 ```toml
 # _bmad/custom/bmad-agent-dev.toml
@@ -49,17 +49,17 @@ persistent_facts = [
 ]
 ```
 
-**Pourquoi ça marche :** Deux phrases suffisent à reconfigurer tous les workflows de dev de l’organisation, sans duplication par workflow ni modification du code source. Chaque nouvel ingénieur qui clone le dépôt hérite automatiquement des conventions.
+**Pourquoi ça marche :** Deux phrases suffisent à reconfigurer tous les workflows de dev de l’organisation, sans duplication par workflow ni modification du code source. Chaque nouvel ingénieur qui clone le dépôt hérite automatiquement des conventions.
 
-**Fichier d’équipe vs fichier personnel :**
-- `bmad-agent-dev.toml` : versionné dans git ; s’applique à toute l’équipe
-- `bmad-agent-dev.user.toml` : ignoré par git ; préférences personnelles ajoutées par-dessus
+**Fichier d’équipe vs fichier personnel :**
+- `bmad-agent-dev.toml` : versionné dans git ; s’applique à toute l’équipe
+- `bmad-agent-dev.user.toml` : ignoré par git ; préférences personnelles ajoutées par-dessus
 
-## Recette 2 : Imposer les conventions de l’organisation dans un workflow spécifique
+## Recette 2 : Imposer les conventions de l’organisation dans un workflow spécifique
 
-**Cas d’usage :** Façonner le *contenu* de la sortie d’un workflow pour qu’il réponde aux exigences de conformité, d’audit ou des consommateurs en aval.
+**Cas d’usage :** Façonner le *contenu* de la sortie d’un workflow pour qu’il réponde aux exigences de conformité, d’audit ou des consommateurs en aval.
 
-**Exemple : chaque product brief doit inclure des champs de conformité, et l’agent connaît les conventions de publication de l’organisation.**
+**Exemple : chaque product brief doit inclure des champs de conformité, et l’agent connaît les conventions de publication de l’organisation.**
 
 ```toml
 # _bmad/custom/bmad-product-brief.toml
@@ -73,13 +73,13 @@ persistent_facts = [
 ]
 ```
 
-**Ce qui se passe :** Les faits sont chargés durant l’étape 3 de l’activation du workflow. Quand l’agent rédige le brief, il connaît les champs requis et le document de conventions enterprise. La valeur par défaut livrée (`file:{project-root}/**/project-context.md`) se charge toujours, car il s’agit d’un ajout.
+**Ce qui se passe :** Les faits sont chargés durant l’étape 3 de l’activation du workflow. Quand l’agent rédige le brief, il connaît les champs requis et le document de conventions enterprise. La valeur par défaut livrée (`file:{project-root}/**/project-context.md`) se charge toujours, car il s’agit d’un ajout.
 
-## Recette 3 : Publier les livrables finis vers des systèmes externes
+## Recette 3 : Publier les livrables finis vers des systèmes externes
 
-**Cas d’usage :** Une fois le livrable produit, le publier automatiquement vers les systèmes de référence de l’entreprise (Confluence, Notion, SharePoint) et créer des tickets de suivi (Jira, Linear, Asana).
+**Cas d’usage :** Une fois le livrable produit, le publier automatiquement vers les systèmes de référence de l’entreprise (Confluence, Notion, SharePoint) et créer des tickets de suivi (Jira, Linear, Asana).
 
-**Exemple : les briefs sont automatiquement publiés vers Confluence et proposent la création facultative d’un epic Jira.**
+**Exemple : les briefs sont automatiquement publiés vers Confluence et proposent la création facultative d’un epic Jira.**
 
 ```toml
 # _bmad/custom/bmad-product-brief.toml
@@ -112,18 +112,18 @@ et demander à l'utilisateur de publier manuellement.
 """
 ```
 
-**Pourquoi `on_complete` et pas `activation_steps_append` :** `on_complete` s’exécute exactement une fois, au stade terminal, après que le workflow a écrit sa sortie principale. C’est le bon moment pour publier des artefacts. `activation_steps_append` s’exécute à chaque activation, avant que le workflow ne fasse son travail.
+**Pourquoi `on_complete` et pas `activation_steps_append` :** `on_complete` s’exécute exactement une fois, au stade terminal, après que le workflow a écrit sa sortie principale. C’est le bon moment pour publier des artefacts. `activation_steps_append` s’exécute à chaque activation, avant que le workflow ne fasse son travail.
 
-**Arbitrages :**
+**Arbitrages :**
 - **La publication Confluence est non-destructive** et s’exécute toujours à la fin
 - **La création d’epic Jira est visible par toute l’équipe** et déclenche un processus de planification de sprint, conditionnez-la donc à la confirmation de l’utilisateur
-- **Dégradation gracieuse :** si les outils MCP échouent, passer la main à l’utilisateur plutôt que de silencieusement abandonner le livrable
+- **Dégradation gracieuse :** si les outils MCP échouent, passer la main à l’utilisateur plutôt que de silencieusement abandonner le livrable
 
-## Recette 4 : Remplacer le template de sortie par le vôtre
+## Recette 4 : Remplacer le template de sortie par le vôtre
 
-**Cas d’usage :** La structure de sortie par défaut ne correspond pas au format attendu par votre organisation, ou différentes organisations dans le même dépôt ont besoin de templates différents.
+**Cas d’usage :** La structure de sortie par défaut ne correspond pas au format attendu par votre organisation, ou différentes organisations dans le même dépôt ont besoin de templates différents.
 
-**Exemple : pointer le workflow product-brief vers un template appartenant à l’entreprise.**
+**Exemple : pointer le workflow product-brief vers un template appartenant à l’entreprise.**
 
 ```toml
 # _bmad/custom/bmad-product-brief.toml
@@ -132,16 +132,16 @@ et demander à l'utilisateur de publier manuellement.
 brief_template = "{project-root}/docs/enterprise/brief-template.md"
 ```
 
-**Comment ça marche :** Le `customize.toml` du workflow est fourni avec `brief_template = "resources/brief-template.md"` (chemin relatif, résolu depuis la racine du skill). Votre override pointe vers un fichier sous `{project-root}`, donc l’agent lit votre template à l’étape 4 au lieu de celui livré par défaut.
+**Comment ça marche :** Le `customize.toml` du workflow est fourni avec `brief_template = "resources/brief-template.md"` (chemin relatif, résolu depuis la racine du skill). Votre override pointe vers un fichier sous `{project-root}`, donc l’agent lit votre template à l’étape 4 au lieu de celui livré par défaut.
 
-**Conseils pour la rédaction de templates :**
+**Conseils pour la rédaction de templates :**
 - Gardez les templates dans `{project-root}/docs/` ou `{project-root}/_bmad/custom/templates/` pour qu’ils soient versionnés avec le fichier d’override
 - Utilisez les mêmes conventions structurelles que le template livré (titres de sections, frontmatter) ; l’agent s’adapte à ce qu’il trouve
 - Pour les dépôts multi-organisations, utilisez `.user.toml` pour permettre à chaque équipe de pointer vers ses propres templates sans toucher au fichier d’équipe versionné dans git
 
-## Recette 5 : Personnaliser le registre des agents
+## Recette 5 : Personnaliser le registre des agents
 
-**Cas d’usage :** Changer *qui sera présent dans la pièce* pour les skills basés sur le registre comme `bmad-party-mode`, `bmad-retrospective` et `bmad-advanced-elicitation`, sans modifier le code source ni forker. Voici trois variantes courantes.
+**Cas d’usage :** Changer *qui sera présent dans la pièce* pour les skills basés sur le registre comme `bmad-party-mode`, `bmad-retrospective` et `bmad-advanced-elicitation`, sans modifier le code source ni forker. Voici trois variantes courantes.
 
 ### 5a. Renommer un agent BMad pour toute l’organisation
 
@@ -197,18 +197,18 @@ document_output_language = "English"
 
 Les paramètres personnels comme `user_name`, `communication_language` ou `user_skill_level` restent dans leur propre fichier `_bmad/config.user.toml` de chaque développeur. Le fichier d’équipe ne doit pas les modifier.
 
-**Pourquoi la configuration centrale vs le customize.toml par agent :** Les fichiers par agent façonnent la façon dont *un seul* agent se comporte quand il s’active. La configuration centrale façonne ce que les consommateurs du registre *voient* : quels agents existent, comment ils s’appellent, à quelle équipe ils appartiennent, et les paramètres d’installation partagés sur lesquels tout le dépôt s’accorde. Deux surfaces, des rôles différents.
+**Pourquoi la configuration centrale vs le customize.toml par agent :** Les fichiers par agent façonnent la façon dont *un seul* agent se comporte quand il s’active. La configuration centrale façonne ce que les consommateurs du registre *voient* : quels agents existent, comment ils s’appellent, à quelle équipe ils appartiennent, et les paramètres d’installation partagés sur lesquels tout le dépôt s’accorde. Deux surfaces, des rôles différents.
 
 ## Renforcer les règles globales dans le fichier de session de votre IDE
 
 Les personnalisations BMad se chargent quand un skill est activé. Beaucoup d’outils IDE chargent aussi un fichier d’instructions global au **début de chaque session**, avant tout skill (`CLAUDE.md`, `AGENTS.md`, `.cursor/rules/`, `.github/copilot-instructions.md`, etc.). Pour les règles qui doivent s’appliquer même en dehors des skills BMad, reproduisez-y les plus critiques.
 
-**Quand les utiliser ensemble :**
+**Quand les utiliser ensemble :**
 - Une règle est suffisamment importante pour qu’une conversation simple (sans skill actif) doive la respecter
 - Vous voulez une double sécurisation parce que les défauts des données d’entraînement pourraient autrement détourner le modèle
 - La règle est assez concise pour être répétée sans alourdir le fichier de session
 
-**Exemple : une ligne dans le `CLAUDE.md` du dépôt renforçant la règle de l’agent dev de la Recette 1.**
+**Exemple : une ligne dans le `CLAUDE.md` du dépôt renforçant la règle de l’agent dev de la Recette 1.**
 
 ```markdown
 <!-- Toute lecture de documentation de bibliothèque passe par l'outil MCP context7
@@ -227,7 +227,7 @@ Une phrase, chargée à chaque session. Elle s’associe à la personnalisation 
 
 Gardez le fichier IDE **concis**. Une douzaine de lignes bien choisies sont plus efficaces qu’une liste étendue. Les modèles le lisent à chaque tour, et le superflu noie l’information utile.
 
-## Recette 6 : Patterns d’intégration avancés
+## Recette 6 : Patterns d’intégration avancés
 
 Plusieurs workflows BMad exposent une surface de configuration plus riche au-delà des bases couvertes dans les Recettes 1–5. Ces patterns — sources de connaissance à la demande, publication automatique des livrables, standards de documentation à la finalisation et templates interchangeables — apparaissent dans plusieurs workflows. Consultez le `customize.toml` d’un workflow pour voir quels champs il expose ; les exemples ci-dessous utilisent `bmad-prd` car il les expose tous, mais les mêmes patterns s’appliquent partout où le champ apparaît.
 
@@ -317,7 +317,7 @@ on_complete = """ ... """
 persistent_facts = ["Toujours inclure une section 'Revue réglementaire' quand le domaine implique la santé, la finance ou les données d'enfants."]
 ```
 
-Résultat : Mary charge la règle de revue réglementaire à l’activation de son persona. Quand l’utilisateur choisit le product brief dans le menu, le workflow charge ses propres conventions par-dessus, écrit avec le template enterprise et publie vers Confluence à la fin. Chaque couche contribue, et aucune n’a nécessité de modifier le code source de BMad.
+Résultat : Mary charge la règle de revue réglementaire à l’activation de son persona. Quand l’utilisateur choisit le product brief dans le menu, le workflow charge ses propres conventions par-dessus, écrit avec le template enterprise et publie vers Confluence à la fin. Chaque couche contribue, et aucune n’a nécessité de modifier le code source de BMad.
 
 ## Dépannage
 

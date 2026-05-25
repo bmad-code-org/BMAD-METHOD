@@ -44,12 +44,12 @@ Le dossier `_bmad/custom/` est initialement vide. Les fichiers n’apparaissent 
 
 Le résolveur applique quatre règles structurelles. Les noms de champ n’ont pas de traitement particulier — le comportement est déterminé uniquement par la forme de la valeur :
 
-| Forme | Règle |
-|---|---|
-| Scalaire (chaîne, entier, booléen, flottant) | L’override prévaut |
-| Table | Fusion profonde (application récursive des mêmes règles) |
+| Forme                                                                                                                         | Règle                                                                                                          |
+|-------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------|
+| Scalaire (chaîne, entier, booléen, flottant)                                                                                  | L’override prévaut                                                                                             |
+| Table                                                                                                                         | Fusion profonde (application récursive des mêmes règles)                                                       |
 | Tableau de tables où chaque élément partage le **même** champ identifiant (chaque élément a `code`, ou chaque élément a `id`) | Fusionner par cette clé — les clés correspondantes **remplacent sur place**, les nouvelles clés **s’ajoutent** |
-| Tout autre tableau (scalaires ; tables sans identifiant ; tableaux qui mélangent `code` et `id` entre les éléments) | **Ajouter** — éléments de base en premier, puis éléments d’équipe, puis éléments utilisateur |
+| Tout autre tableau (scalaires ; tables sans identifiant ; tableaux qui mélangent `code` et `id` entre les éléments)           | **Ajouter** — éléments de base en premier, puis éléments d’équipe, puis éléments utilisateur                   |
 
 **Pas de mécanisme de suppression.** Les overrides ne peuvent pas effacer les éléments de base. Si vous devez supprimer un élément de menu par défaut, surchargez-le via son `code` avec une description ou un prompt sans effet. Si vous devez restructurer un tableau plus en profondeur, forkez le skill.
 
@@ -86,10 +86,10 @@ _bmad/custom/
 :::caution[Ne copiez PAS le `customize.toml` complet]
 Les fichiers d’override sont **allégés**. Incluez uniquement les champs que vous modifiez — rien d’autre. Chaque champ omis est hérité automatiquement de la couche inférieure (l’équipe hérite des valeurs par défaut, l’utilisateur de l’équipe ou des valeurs par défaut).
 
-Copier le `customize.toml` complet dans un override est contre-productif : la prochaine mise à jour livrera de nouvelles valeurs par défaut, mais votre fichier d’override figera les anciennes valeurs. Votre configuration s’éloignera silencieusement des valeurs par défaut à chaque mise à jour.
+Copier le `customize.toml` complet dans un override est contre-productif : la prochaine mise à jour livrera de nouvelles valeurs par défaut, mais votre fichier d’override figera les anciennes valeurs. Votre configuration s’éloignera silencieusement des valeurs par défaut à chaque mise à jour.
 :::
 
-**Exemple — changer l’icône et ajouter un principe :**
+**Exemple — changer l’icône et ajouter un principe :**
 
 ```toml
 # _bmad/custom/bmad-agent-pm.toml
@@ -158,7 +158,7 @@ activation_steps_append = [
 
 **Pourquoi deux hooks ?** Le préfixe s’exécute avant la salutation pour que l’agent puisse charger le contexte dont il a besoin pour personnaliser la salutation elle-même. Le suffixe s’exécute après la salutation pour que l’utilisateur ne reste pas devant un terminal vide pendant les scans lourds.
 
-**Personnalisation du menu (fusion par `code`).** Le menu est un tableau de tables. Chaque élément possède un champ `code` (convention BMad). Le résolveur fusionne donc par code : les codes correspondants remplacent sur place, les nouveaux codes s’ajoutent.
+**Personnalisation du menu (fusion par `code`).** Le menu est un tableau de tables. Chaque élément possède un champ `code` (convention BMad). Le résolveur fusionne donc par code : les codes correspondants remplacent sur place, les nouveaux codes s’ajoutent.
 
 La syntaxe TOML pour les tableaux de tables utilise `[[agent.menu]]` pour chaque élément :
 
@@ -182,13 +182,13 @@ Signaler tout écart et citer la section réglementaire pertinente.
 
 Chaque élément de menu possède exactement un `skill` (invoque un skill enregistré) ou `prompt` (exécute le texte directement). Les éléments non listés dans votre override conservent leurs valeurs par défaut.
 
-**Référencer des fichiers.** Quand le texte d’un champ doit pointer vers un fichier (dans `persistent_facts`, `activation_steps_prepend`/`activation_steps_append`, ou le `prompt` d’un élément de menu), utilisez un chemin complet partant de `{project-root}`. Même si le fichier se trouve à côté de votre override dans `_bmad/custom/`, écrivez le chemin complet : `{project-root}/_bmad/custom/info.md`. L’agent résout `{project-root}` à l’exécution.
+**Référencer des fichiers.** Quand le texte d’un champ doit pointer vers un fichier (dans `persistent_facts`, `activation_steps_prepend`/`activation_steps_append`, ou le `prompt` d’un élément de menu), utilisez un chemin complet partant de `{project-root}`. Même si le fichier se trouve à côté de votre override dans `_bmad/custom/`, écrivez le chemin complet : `{project-root}/_bmad/custom/info.md`. L’agent résout `{project-root}` à l’exécution.
 
 ### 4. Personnel vs Équipe
 
-**Fichier d’équipe** (`bmad-agent-pm.toml`) : Versionné dans git. Partagé au sein de l’organisation. À utiliser pour les règles de conformité, le persona de l’entreprise, les capacités personnalisées.
+**Fichier d’équipe** (`bmad-agent-pm.toml`) : Versionné dans git. Partagé au sein de l’organisation. À utiliser pour les règles de conformité, le persona de l’entreprise, les capacités personnalisées.
 
-**Fichier personnel** (`bmad-agent-pm.user.toml`) : Automatiquement ignoré par git. À utiliser pour les ajustements de ton, les préférences de workflow personnelles et les faits privés que l’agent doit garder en tête.
+**Fichier personnel** (`bmad-agent-pm.user.toml`) : Automatiquement ignoré par git. À utiliser pour les ajustements de ton, les préférences de workflow personnelles et les faits privés que l’agent doit garder en tête.
 
 ```toml
 # _bmad/custom/bmad-agent-pm.user.toml
@@ -209,7 +209,7 @@ python3 {project-root}/_bmad/scripts/resolve_customization.py \
   --key agent
 ```
 
-**Prérequis** : Python 3.11+ (les versions antérieures n’incluent pas `tomllib`). Pas de `pip install`, pas de `uv`, pas de virtualenv. Vérifiez avec `python3 --version`. Certaines plateformes (macOS sans Homebrew, Ubuntu 22.04) ont `python3` par défaut en 3.10 ou antérieur, vous devrez peut-être installer 3.11+ séparément.
+**Prérequis** : Python 3.11+ (les versions antérieures n’incluent pas `tomllib`). Pas de `pip install`, pas de `uv`, pas de virtualenv. Vérifiez avec `python3 --version`. Certaines plateformes (macOS sans Homebrew, Ubuntu 22.04) ont `python3` par défaut en 3.10 ou antérieur, vous devrez peut-être installer 3.11+ séparément.
 
 `--skill` pointe vers le répertoire installé du skill (où se trouve `customize.toml`). Le nom du skill est déduit du basename du répertoire, et le script cherche automatiquement `_bmad/custom/{skill-name}.toml` et `{skill-name}.user.toml`.
 
@@ -260,7 +260,7 @@ persistent_facts = [
 on_complete = "Résumer le brief en trois points et proposer de l'envoyer par email via le skill gws-gmail-send."
 ```
 
-Les mêmes conventions de champs s’appliquent indifféremment aux agents et aux workflows : `activation_steps_prepend`/`activation_steps_append`, `persistent_facts` (avec refs `file:`) et les tables `[[…]]` de style menu avec `code`/`id` pour la fusion par clé. Le résolveur applique les mêmes quatre règles structurelles quelle que soit la clé de premier niveau. Les références dans SKILL.md suivent l’espace de noms : `{workflow.activation_steps_prepend}`, `{workflow.persistent_facts}`, `{workflow.on_complete}`. Tout champ supplémentaire qu’un workflow expose (chemins de sortie, bascules, paramètres de revue, drapeaux d’étape) suit les mêmes règles de fusion basées sur la forme. Lisez le `customize.toml` du workflow pour voir ce qui est personnalisable.
+Les mêmes conventions de champs s’appliquent indifféremment aux agents et aux workflows : `activation_steps_prepend`/`activation_steps_append`, `persistent_facts` (avec refs `file:`) et les tables `[[…]]` de style menu avec `code`/`id` pour la fusion par clé. Le résolveur applique les mêmes quatre règles structurelles quelle que soit la clé de premier niveau. Les références dans SKILL.md suivent l’espace de noms : `{workflow.activation_steps_prepend}`, `{workflow.persistent_facts}`, `{workflow.on_complete}`. Tout champ supplémentaire qu’un workflow expose (chemins de sortie, bascules, paramètres de revue, drapeaux d’étape) suit les mêmes règles de fusion basées sur la forme. Lisez le `customize.toml` du workflow pour voir ce qui est personnalisable.
 
 ### Ordre d’activation
 
@@ -277,7 +277,7 @@ Après l’étape 6, le corps du workflow commence. Utilisez `activation_steps_p
 
 ### Périmètre de cette première passe
 
-La personnalisation est déployée de manière incrémentale. Les champs documentés ci-dessus — `activation_steps_prepend`, `activation_steps_append`, `persistent_facts`, `on_complete` — sont la **surface de base** que chaque workflow personnalisable expose, et ils resteront stables d’une version à l’autre. Ils vous donnent un contrôle à grands traits dès aujourd’hui : injecter des étapes pré/post, épingler du contexte fondamental, déclencher des actions de suivi.
+La personnalisation est déployée de manière incrémentale. Les champs documentés ci-dessus — `activation_steps_prepend`, `activation_steps_append`, `persistent_facts`, `on_complete` — sont la **surface de base** que chaque workflow personnalisable expose, et ils resteront stables d’une version à l’autre. Ils vous donnent un contrôle à grands traits dès aujourd’hui : injecter des étapes pré/post, épingler du contexte fondamental, déclencher des actions de suivi.
 
 Au fil du temps, les workflows individuels exposeront des **points de personnalisation plus ciblés** adaptés à ce que le workflow fait réellement — par exemple des bascules par étape, des drapeaux d’étape, des chemins de templates de sortie ou des jalons de revue. Quand ils arriveront, ils viendront s’ajouter aux champs de base plutôt que de les remplacer, pour que les personnalisations que vous rédigez aujourd’hui continuent de fonctionner.
 
@@ -359,12 +359,12 @@ L’override prévaut sur ce que chaque développeur a répondu lors de son inst
 
 | Besoin                                                   | Utiliser                                                                      |
 |----------------------------------------------------------|-------------------------------------------------------------------------------|
-| Ajouter des appels d’outils MCP à chaque workflow de dev | Par skill : `_bmad/custom/bmad-agent-dev.toml` `persistent_facts`             |
-| Ajouter un élément de menu à un agent                    | Par skill : `_bmad/custom/bmad-agent-{role}.toml` `[[agent.menu]]`            |
-| Remplacer le template de sortie d’un workflow            | Par skill : `_bmad/custom/{workflow}.toml` override scalaire                  |
-| Renommer le descripteur public d’un agent                | **Centrale** : `_bmad/custom/config.toml` `[agents.<code>]`                   |
-| Ajouter un agent personnalisé ou fictif au registre      | **Centrale** : `_bmad/custom/config.*.toml` nouvelle entrée `[agents.<code>]` |
-| Figer les paramètres d’installation pour l’équipe        | **Centrale** : `_bmad/custom/config.toml` `[modules.<code>]` ou `[core]`      |
+| Ajouter des appels d’outils MCP à chaque workflow de dev | Par skill : `_bmad/custom/bmad-agent-dev.toml` `persistent_facts`             |
+| Ajouter un élément de menu à un agent                    | Par skill : `_bmad/custom/bmad-agent-{role}.toml` `[[agent.menu]]`            |
+| Remplacer le template de sortie d’un workflow            | Par skill : `_bmad/custom/{workflow}.toml` override scalaire                  |
+| Renommer le descripteur public d’un agent                | **Centrale** : `_bmad/custom/config.toml` `[agents.<code>]`                   |
+| Ajouter un agent personnalisé ou fictif au registre      | **Centrale** : `_bmad/custom/config.*.toml` nouvelle entrée `[agents.<code>]` |
+| Figer les paramètres d’installation pour l’équipe        | **Centrale** : `_bmad/custom/config.toml` `[modules.<code>]` ou `[core]`      |
 
 Utilisez les deux espaces dans le même projet selon vos besoins.
 
@@ -377,7 +377,7 @@ Pour des recettes orientées entreprise (façonner un agent à travers tous les 
 **La personnalisation n’apparaît pas ?**
 
 - Vérifiez que votre fichier se trouve dans `_bmad/custom/` avec le nom de skill correct
-- Vérifiez la syntaxe TOML : les chaînes doivent être entre guillemets, les en-têtes de table utilisent `[section]`, les tableaux de tables utilisent `[[section]]`, et toute clé scalaire ou de tableau pour une table doit apparaître *avant* toute `[[sous-table]]` de cette table dans le fichier
+- Vérifiez la syntaxe TOML : les chaînes doivent être entre guillemets, les en-têtes de table utilisent `[section]`, les tableaux de tables utilisent `[[section]]`, et toute clé scalaire ou de tableau pour une table doit apparaître *avant* toute `[[sous-table]]` de cette table dans le fichier
 - Pour les agents, la personnalisation se trouve sous `[agent]` — les champs écrits sous cet en-tête appartiennent à `agent` jusqu’à ce qu’un autre en-tête de table commence
 - Rappelez-vous que `agent.name` et `agent.title` sont en lecture seule ; les overrides n’ont aucun effet
 

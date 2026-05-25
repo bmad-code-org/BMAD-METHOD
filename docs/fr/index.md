@@ -45,7 +45,7 @@ BMad fonctionne avec tout assistant de codage IA qui prend en charge les prompts
 - **[Cursor](https://cursor.sh)** — Éditeur de code propulsé par l’IA
 - **[Codex CLI](https://github.com/openai/codex)** — Agent de codage en ligne de commande d’OpenAI
 
-Vous devriez être à l’aise avec les concepts de base du développement logiciel : gestion de versions, structure de projet et méthodologies agiles. Aucune expérience préalable des systèmes d’agents de type BMad n’est requise — c’est précisément l’objet de cette documentation.
+Vous devriez être à l’aise avec les concepts de base du développement logiciel : gestion de versions, structure de projet et méthodologies agiles. Aucune expérience préalable des systèmes d’agents de type BMad n’est requise — c’est précisément l’objet de cette documentation.
 
 ## Rejoindre la communauté
 

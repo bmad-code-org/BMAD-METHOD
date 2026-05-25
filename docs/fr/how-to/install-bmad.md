@@ -51,7 +51,7 @@ Exécute l’installateur de préversion, qui fournit un snapshot plus récent d
 
 Deux axes indépendants contrôlent ce qui se retrouve sur le disque.
 
-### Axe 1 : canaux des modules externes
+### Axe 1 : canaux des modules externes
 
 Chaque module externe — bmb, cis, gds, tea, et tout module communautaire — s’installe via l’un des trois canaux suivants :
 
@@ -63,7 +63,7 @@ Chaque module externe — bmb, cis, gds, tea, et tout module communautaire — s
 
 Les canaux sont définis module par module. Vous pouvez exécuter bmb sur `next` tout en laissant cis sur `stable` — les options ci-dessous permettent de les combiner librement.
 
-### Axe 2 : version du binaire de l’installateur
+### Axe 2 : version du binaire de l’installateur
 
 Le paquet npm `bmad-method` lui-même a deux dist-tags :
 
@@ -88,10 +88,10 @@ Ils sont liés au binaire de l’installateur que vous avez exécuté :
 
 Exécuter `npx bmad-method install` dans un répertoire contenant déjà `_bmad/` affiche un menu :
 
-| Choix                       | Ce qu’il fait                                                                                                                                                                |
-| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Quick Update**            | Réexécute l’installation avec vos paramètres existants. Rafraîchit les fichiers, applique les correctifs et les mises à niveau mineures du canal stable, refuse les mises à niveau majeures. Rapide, non interactif. |
-| **Modify Install**          | Flux interactif complet. Ajoutez ou retirez des modules, reconfigurez les paramètres, examinez et, si besoin, modifiez les canaux des modules existants.                 |
+| Choix              | Ce qu’il fait                                                                                                                                                                                                        |
+|--------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Quick Update**   | Réexécute l’installation avec vos paramètres existants. Rafraîchit les fichiers, applique les correctifs et les mises à niveau mineures du canal stable, refuse les mises à niveau majeures. Rapide, non interactif. |
+| **Modify Install** | Flux interactif complet. Ajoutez ou retirez des modules, reconfigurez les paramètres, examinez et, si besoin, modifiez les canaux des modules existants.                                                             |
 
 ### Invites de mise à niveau
 
@@ -109,9 +109,9 @@ Avec `--yes`, les mises à niveau patch et mineure s’appliquent automatiquemen
 
 ### Changer le canal d’un module
 
-**En mode interactif :** choisissez Modify → répondez **Oui** à « Review channel assignments? » → chaque module externe offre Conserver, Basculer vers stable, Basculer vers next, ou Épingler à un tag.
+**En mode interactif :** choisissez Modify → répondez **Oui** à « Review channel assignments? » → chaque module externe offre Conserver, Basculer vers stable, Basculer vers next, ou Épingler à un tag.
 
-**En ligne de commande :** les recettes dans la section suivante couvrent les cas courants.
+**En ligne de commande :** les recettes dans la section suivante couvrent les cas courants.
 
 ## Installations CI non interactives
 
@@ -120,7 +120,7 @@ Avec `--yes`, les mises à niveau patch et mineure s’appliquent automatiquemen
 | Option                                                                                     | Objectif                                                                                                                                                                    |
 |--------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `--yes`, `-y`                                                                              | Ignorer toutes les invites ; accepter les valeurs des options + les défauts                                                                                                 |
-| `--directory <chemin>`                                                                     | Installer dans ce répertoire (défaut : répertoire de travail courant)                                                                                                       |
+| `--directory <chemin>`                                                                     | Installer dans ce répertoire (défaut : répertoire de travail courant)                                                                                                       |
 | `--modules <a,b,c>`                                                                        | Ensemble exact de modules. Core est ajouté automatiquement. Ce n’est pas un delta — listez tout ce que vous voulez conserver.                                               |
 | `--tools <a,b>`                                                                            | Sélection d’IDE/outil. Requis pour les nouvelles installations `--yes`. Exécutez `--list-tools` pour les IDs valides.                                                       |
 | `--list-tools`                                                                             | Afficher tous les IDs d’outils/IDE supportés (avec les répertoires cibles) et quitter.                                                                                      |
@@ -135,7 +135,7 @@ Avec `--yes`, les mises à niveau patch et mineure s’appliquent automatiquemen
 | `--list-options [module]`                                                                  | Afficher chaque clé `--set` pour les modules intégrés et officiels en cache local, puis quitter. Passez un code de module pour limiter à un seul module.                    |
 | `--user-name`, `--communication-language`, `--document-output-language`, `--output-folder` | Raccourcis historiques équivalents à `--set core.<clé>=<valeur>` (toujours supportés)                                                                                       |
 
-Priorité en cas de chevauchement des options : `--pin` bat `--next=` bat `--channel` / `--all-*` bat le défaut du registre (`stable`).
+Priorité en cas de chevauchement des options : `--pin` bat `--next=` bat `--channel` / `--all-*` bat le défaut du registre (`stable`).
 
 :::note[Exemple de résolution]
 `--all-next --pin cis=v0.2.0` met bmb, gds et tea sur next tout en épinglant cis à v0.2.0.
@@ -143,13 +143,13 @@ Priorité en cas de chevauchement des options : `--pin` bat `--next=` bat `--cha
 
 ### Recettes
 
-**Installation par défaut — dernière version stable pour tout :**
+**Installation par défaut — dernière version stable pour tout :**
 
 ```bash
 npx bmad-method install --yes --modules bmm,bmb,cis --tools claude-code
 ```
 
-**Installation entreprise verrouillée — reproductible à l’octet près :**
+**Installation entreprise verrouillée — reproductible à l’octet près :**
 
 ```bash
 npx bmad-method install --yes \
@@ -158,7 +158,7 @@ npx bmad-method install --yes \
   --tools claude-code
 ```
 
-**Bleeding edge — externes sur le HEAD de main :**
+**Bleeding edge — externes sur le HEAD de main :**
 
 ```bash
 npx bmad-method install --yes --modules bmm,bmb --all-next --tools claude-code
@@ -173,7 +173,7 @@ npx bmad-method install --yes --action update \
 
 `--tools` est omis intentionnellement — `--action update` réutilise les outils configurés lors de la première installation.
 
-**Mixer les canaux — bmb sur next, gds sur stable :**
+**Mixer les canaux — bmb sur next, gds sur stable :**
 
 ```bash
 npx bmad-method install --yes --action update \
@@ -183,9 +183,9 @@ npx bmad-method install --yes --action update \
 
 ### Substitutions de config de module
 
-`--set <module>.<clé>=<valeur>` vous permet de définir toute option de config de module de manière non interactive. Cette option est répétable et s’adapte à chaque module — présent et futur. L’option est appliquée comme un correctif post-installation : l’installateur exécute d’abord son flux normal, puis `--set` insère ou met à jour chaque valeur dans `_bmad/config.toml` (portée équipe) ou `_bmad/config.user.toml` (portée utilisateur), et dans `_bmad/<module>/config.yaml` pour que les valeurs déclarées soient conservées à la prochaine installation.
+`--set <module>.<clé>=<valeur>` vous permet de définir toute option de config de module de manière non interactive. Cette option est répétable et s’adapte à chaque module — présent et futur. L’option est appliquée comme un correctif post-installation : l’installateur exécute d’abord son flux normal, puis `--set` insère ou met à jour chaque valeur dans `_bmad/config.toml` (portée équipe) ou `_bmad/config.user.toml` (portée utilisateur), et dans `_bmad/<module>/config.yaml` pour que les valeurs déclarées soient conservées à la prochaine installation.
 
-**Exemple — installer bmm avec des connaissances projet et un niveau de compétence explicites :**
+**Exemple — installer bmm avec des connaissances projet et un niveau de compétence explicites :**
 
 ```bash
 npx bmad-method install --yes \
@@ -195,7 +195,7 @@ npx bmad-method install --yes \
   --set bmm.user_skill_level=expert
 ```
 
-**Découvrir les clés disponibles pour un module :**
+**Découvrir les clés disponibles pour un module :**
 
 ```bash
 npx bmad-method install --list-options bmm
@@ -203,10 +203,10 @@ npx bmad-method install --list-options bmm
 
 `--list-options` (sans argument) liste chaque clé que l’installateur peut trouver localement — modules intégrés (`core`, `bmm`) plus tous les modules officiels actuellement en cache. Le cache est par machine et peut être vidé, donc les modules officiels précédemment installés n’apparaîtront pas sur un nouveau checkout ou un worker CI éphémère tant qu’ils ne sont pas réinstallés. Les modules communautaires et personnalisés ne sont pas énumérés ici ; lisez directement le `module.yaml` du module pour voir les clés qu’il déclare.
 
-**Comment ça fonctionne :**
+**Comment ça fonctionne :**
 
 - **Routage.** L’étape de correctif cherche `[modules.<module>] <clé>` (ou `[core] <clé>`) dans `config.user.toml` en premier ; si elle y est trouvée, elle met à jour ce fichier. Sinon elle écrit dans le `config.toml` de portée équipe. Ainsi, les clés de portée utilisateur (ex. `core.user_name`, `bmm.user_skill_level`) finissent dans `config.user.toml` et les clés de portée équipe dans `config.toml`, correspondant à la partition utilisée par l’installateur.
-- **Valeurs littérales.** La valeur est écrite exactement comme vous l’avez fournie — aucun rendu de template `result:`. Pour obtenir la valeur résolue (ex. `{project-root}/research`), passez-la explicitement : `--set bmm.project_knowledge='{project-root}/research'`.
+- **Valeurs littérales.** La valeur est écrite exactement comme vous l’avez fournie — aucun rendu de template `result:`. Pour obtenir la valeur résolue (ex. `{project-root}/research`), passez-la explicitement : `--set bmm.project_knowledge='{project-root}/research'`.
 - **Persistance, clés déclarées.** Les valeurs pour les clés déclarées dans `module.yaml` sont conservées entre les installations car elles sont aussi écrites dans `_bmad/<module>/config.yaml`, que l’installateur lit comme valeur par défaut de l’invite lors de la prochaine exécution.
 - **Persistance, clés non déclarées.** Une valeur pour une clé que le schéma du module ne déclare pas est enregistrée dans `config.toml` pour l’installation courante mais ne sera pas réécrite à la prochaine installation (le partitionneur strict au schéma du manifeste ignore les clés inconnues). Repassez `--set` pour qu’elle soit persistante, ou éditez `_bmad/config.toml` directement.
 - **Pas de validation.** Les valeurs `single-select` ne sont pas vérifiées contre les choix autorisés, et les clés inconnues ne sont pas rejetées — la valeur fournie est écrite telle quelle.
@@ -221,7 +221,7 @@ Les raccourcis historiques de core (`--user-name`, `--output-folder`, etc.) fonc
 :::caution[Limitation de débit sur les IPs partagées]
 Les appels anonymes à l’API GitHub sont limités à 60/heure par IP. Une seule installation fait un appel API par module externe pour résoudre le tag stable. Les bureaux derrière NAT, les pools de runners CI et les VPN peuvent collectivement épuiser cette limite.
 
-Définissez `GITHUB_TOKEN=<personal access token>` dans l’environnement pour augmenter la limite à 5000/heure par compte. Tout PAT avec accès en lecture aux dépôts publics fonctionne ; aucune portée spécifique n’est requise.
+Définissez `GITHUB_TOKEN=<personal access token>` dans l’environnement pour augmenter la limite à 5 000/heure par compte. Tout PAT avec accès en lecture aux dépôts publics fonctionne ; aucune portée spécifique n’est requise.
 :::
 
 ## Ce qui a été installé

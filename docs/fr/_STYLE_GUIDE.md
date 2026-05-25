@@ -50,7 +50,7 @@ Avertissements critiques uniquement — perte de données, problèmes de sécuri
 
 ## Formats de tableau standards
 
-**Phases :**
+**Phases :**
 
 ```md
 | Phase | Nom           | Ce qui se passe                                       |
@@ -59,7 +59,7 @@ Avertissements critiques uniquement — perte de données, problèmes de sécuri
 | 2     | Planification | Exigences — PRD ou spécification technique *(requis)* |
 ```
 
-**Skills :**
+**Skills :**
 
 ```md
 | Skill                | Agent    | Objectif                              |
@@ -243,7 +243,7 @@ votre-projet/
 1. Titre + Accroche
 2. Éléments (## pour chaque élément)
    - Brève description (une phrase)
-   - **Skills :** ou **Infos clés :** sous forme de liste simple
+   - **Skills :** ou **Infos clés :** sous forme de liste simple
 3. Universel/Partagé (## section) (optionnel)
 ```
 
@@ -304,9 +304,9 @@ Starlight génère la navigation « Sur cette page » à droite à partir de
 ### Format de tableau
 
 
+```md
 ## Nom de catégorie
 
-```md
 | Terme        | Définition                                                                                                 |
 |--------------|------------------------------------------------------------------------------------------------------------|
 | **Agent**    | Personnalité IA spécialisée avec une expertise spécifique qui guide les utilisateurs dans les workflows.   |
