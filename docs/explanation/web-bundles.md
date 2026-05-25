@@ -9,7 +9,7 @@ Run the planning side of BMad in your web LLM subscription, then bring the artif
 
 A web bundle is a BMad skill repackaged for installation as a **Google Gemini Gem** or **ChatGPT Custom GPT**. Each bundle includes a `SKILL.md` protocol you upload as a knowledge file, an `INSTRUCTIONS.md` block you paste into the Gem or GPT instructions, and any data files the skill needs (CSVs, templates, validation checklists, additionally progressively disclosed content). The persona lives in the pasted instructions; the protocol lives in the knowledge file. Swap personas without touching the protocol.
 
-Setup is not one-click; you create the Gem or GPT, upload the knowledge files, paste the instructions, and save. The pattern is the same across the shelf, so once you've installed one bundle the next one is mechanical. Follow each bundle's `INSTRUCTIONS.md` for the platform-specific details.
+Setup is not one-click, but the steps are guided. **Install from [bmadcode.com/web-bundles](https://bmadcode.com/web-bundles/)**. The site lists every bundle in a card grid, shows you the Gemini and ChatGPT install steps inline, and hands you the ZIP download. That is the supported install path; the pattern is the same across the shelf, so once you've installed one the next one is mechanical.
 
 V4 of BMad shipped web bundles. V6 brings them back, rewritten for the current Gem and Custom GPT platforms with Canvas, Deep Research, and image generation in mind.
 
@@ -79,4 +79,4 @@ Persona swaps, default user name, team-specific guardrails, preferred phrasing: 
 
 Web bundles are generated from BMad skills using the `bmad-os-skill-to-bundle` utility skill. Point it at any BMad skill folder and it produces the bundle files with persona inheritance from the owning agent.
 
-See the [how-to guide](../how-to/use-web-bundles.md) for installation steps.
+Install any bundle from [bmadcode.com/web-bundles](https://bmadcode.com/web-bundles/).
