@@ -270,7 +270,6 @@ def main():
         if fname.endswith(".md"):
             os.remove(posixpath.join(out_dir, fname))
 
-    count = 0
     for fname in sorted(os.listdir(script_dir)):
         if not fname.endswith(".md") or fname == "SKILL.md":
             continue
@@ -280,9 +279,7 @@ def main():
             content = fh.read()
         with open(dst, "w", encoding="utf-8", newline="") as fh:
             fh.write(render_workflow(render_template(content, vars_), workflow))
-        count += 1
 
-    print(f"render.py: rendered {count} files -> {out_dir}", file=sys.stderr)
     workflow_md = posixpath.join(out_dir, "workflow.md")
     print(f"read and follow {workflow_md}")
 
