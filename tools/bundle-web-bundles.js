@@ -13,12 +13,13 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
-const { execSync } = require('node:child_process');
+const { execSync, execFileSync } = require('node:child_process');
 
 const REPO_ROOT = path.resolve(__dirname, '..');
 const BUNDLES_DIR = path.join(REPO_ROOT, 'web-bundles');
 const DIST_DIR = path.join(REPO_ROOT, 'dist', 'web-bundles');
 const MANIFEST = path.join(BUNDLES_DIR, 'bundles.json');
+const SLUG_RE = /^[a-z0-9][a-z0-9-]*$/;
 
 function fail(msg) {
   console.error(`[ERROR] ${msg}`);
@@ -62,14 +63,18 @@ function main() {
   console.log(`Packaging ${manifest.bundles.length} bundles for release ${releaseTag}\n`);
 
   const zipped = [];
+  const missing = [];
+  const invalid = [];
   for (const bundle of manifest.bundles) {
-    if (!bundle.slug) {
-      console.warn(`  [SKIP] bundle entry missing slug — ${JSON.stringify(bundle).slice(0, 80)}`);
+    if (!bundle.slug || !SLUG_RE.test(bundle.slug)) {
+      invalid.push(bundle.slug || '(no slug)');
+      console.error(`  [INVALID] slug must match ${SLUG_RE} — got: ${bundle.slug}`);
       continue;
     }
     const src = path.join(BUNDLES_DIR, bundle.slug);
     if (!fs.existsSync(src)) {
-      console.warn(`  [SKIP] ${bundle.slug} — directory not found`);
+      missing.push(bundle.slug);
+      console.error(`  [MISSING] ${bundle.slug} — directory not found`);
       continue;
     }
 
@@ -77,7 +82,7 @@ function main() {
     if (fs.existsSync(out)) fs.unlinkSync(out);
 
     try {
-      execSync(`zip -r -X -q "${out}" "${bundle.slug}" -x "*.DS_Store"`, {
+      execFileSync('zip', ['-r', '-X', '-q', out, bundle.slug, '-x', '*.DS_Store'], {
         cwd: BUNDLES_DIR,
         stdio: 'inherit',
       });
@@ -90,8 +95,14 @@ function main() {
     zipped.push(bundle.slug);
   }
 
+  if (invalid.length > 0) {
+    fail(`Refusing to publish: ${invalid.length} bundle(s) have invalid slugs: ${invalid.join(', ')}`);
+  }
+  if (missing.length > 0) {
+    fail(`Refusing to publish an incomplete release: missing directories for ${missing.join(', ')}`);
+  }
   if (zipped.length === 0) {
-    fail('No bundles were packaged. Check bundles.json slugs against web-bundles/ subdirectories.');
+    fail('No bundles were packaged. Check bundles.json against web-bundles/ subdirectories.');
   }
 
   console.log(`\nWrote ${zipped.length} bundles to ${path.relative(REPO_ROOT, DIST_DIR)}/`);
