@@ -51,7 +51,7 @@ function getMarkdownFiles(dir) {
 
       if (entry.isDirectory()) {
         walk(fullPath);
-      } else if (entry.isFile() && entry.name.endsWith('.md')) {
+      } else if (entry.isFile() && (entry.name.endsWith('.md') || entry.name.endsWith('.mdx'))) {
         files.push(fullPath);
       }
     }
@@ -120,10 +120,13 @@ function resolveLink(siteRelativePath, sourceFile) {
     if (!resolved.startsWith(DOCS_ROOT + path.sep) && resolved !== DOCS_ROOT) return null;
     if (fs.existsSync(resolved) && fs.statSync(resolved).isFile()) return resolved;
     if (fs.existsSync(resolved + '.md')) return resolved + '.md';
-    // Directory: check for index.md
+    if (fs.existsSync(resolved + '.mdx')) return resolved + '.mdx';
+    // Directory: check for index.md or index.mdx
     if (fs.existsSync(resolved) && fs.statSync(resolved).isDirectory()) {
       const indexFile = path.join(resolved, 'index.md');
+      const indexMdxFile = path.join(resolved, 'index.mdx');
       if (fs.existsSync(indexFile)) return indexFile;
+      if (fs.existsSync(indexMdxFile)) return indexMdxFile;
     }
     return null;
   }
@@ -134,12 +137,17 @@ function resolveLink(siteRelativePath, sourceFile) {
   }
 
   if (checkPath.endsWith('/')) {
-    // Could be file.md or directory/index.md
-    const asFile = path.join(DOCS_ROOT, checkPath.slice(0, -1) + '.md');
+    // Could be file.md, file.mdx, or directory/index.md/mdx
+    const baseName = checkPath.slice(0, -1);
+    const asMd = path.join(DOCS_ROOT, baseName + '.md');
+    const asMdx = path.join(DOCS_ROOT, baseName + '.mdx');
     const asIndex = path.join(DOCS_ROOT, checkPath, 'index.md');
+    const asIndexMdx = path.join(DOCS_ROOT, checkPath, 'index.mdx');
 
-    if (fs.existsSync(asFile)) return asFile;
+    if (fs.existsSync(asMd)) return asMd;
+    if (fs.existsSync(asMdx)) return asMdx;
     if (fs.existsSync(asIndex)) return asIndex;
+    if (fs.existsSync(asIndexMdx)) return asIndexMdx;
     return null;
   }
 
@@ -151,10 +159,16 @@ function resolveLink(siteRelativePath, sourceFile) {
   const withMd = direct + '.md';
   if (fs.existsSync(withMd)) return withMd;
 
-  // Directory without trailing slash: check for index.md
+  // Try with .mdx extension
+  const withMdx = direct + '.mdx';
+  if (fs.existsSync(withMdx)) return withMdx;
+
+  // Directory without trailing slash: check for index.md or index.mdx
   if (fs.existsSync(direct) && fs.statSync(direct).isDirectory()) {
     const indexFile = path.join(direct, 'index.md');
+    const indexMdxFile = path.join(direct, 'index.mdx');
     if (fs.existsSync(indexFile)) return indexFile;
+    if (fs.existsSync(indexMdxFile)) return indexMdxFile;
   }
 
   return null;

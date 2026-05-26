@@ -32,6 +32,9 @@ export default [
       'tools/template-test-generator/test-scenarios/**',
       'src/modules/*/sub-modules/**',
       '.bundler-temp/**',
+      // Lock files — generated, gitignored, not project code
+      'pnpm-lock.yaml',
+      'bun.lock',
       // Augment vendor config — not project code, naming conventions
       // are dictated by Augment and can't be changed, so exclude
       // the entire directory from linting
@@ -81,9 +84,9 @@ export default [
     },
   },
 
-  // CLI scripts under tools/** and test/**
+  // CLI scripts under tools/**, test/**, and src/scripts/**
   {
-    files: ['tools/**/*.js', 'tools/**/*.mjs', 'test/**/*.js', 'test/**/*.mjs'],
+    files: ['tools/**/*.js', 'tools/**/*.mjs', 'test/**/*.js', 'test/**/*.mjs', 'src/scripts/**/*.js', 'src/scripts/**/*.mjs'],
     rules: {
       // Allow CommonJS patterns for Node CLI scripts
       'unicorn/prefer-module': 'off',

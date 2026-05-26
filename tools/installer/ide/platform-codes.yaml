@@ -1,0 +1,322 @@
+# BMAD Platform Codes Configuration
+#
+# Each platform entry has:
+#   name: Display name shown to users
+#   preferred: Whether shown as a recommended option on install
+#   suspended: (optional) Message explaining why install is blocked
+#   installer:
+#     target_dir: Directory where skill directories are installed (project/workspace)
+#     global_target_dir: (optional) User-home directory for global install
+#     ancestor_conflict_check: (optional) Refuse install when ancestor dir has BMAD files
+#
+# Multiple platforms may share the same target_dir or global_target_dir — many tools
+# read from the shared `.agents/skills/` and `~/.agents/skills/` cross-tool standard.
+# Paths verified against each tool's primary docs as of 2026-04-25.
+
+platforms:
+  adal:
+    name: "AdaL"
+    preferred: false
+    installer:
+      target_dir: .adal/skills
+      global_target_dir: ~/.adal/skills
+
+  amp:
+    name: "Sourcegraph Amp"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.config/agents/skills
+
+  antigravity:
+    name: "Google Antigravity"
+    preferred: false
+    installer:
+      target_dir: .agent/skills
+      global_target_dir: ~/.gemini/antigravity/skills
+
+  auggie:
+    name: "Auggie"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
+  bob:
+    name: "IBM Bob"
+    preferred: false
+    installer:
+      target_dir: .bob/skills
+      global_target_dir: ~/.bob/skills
+
+  claude-code:
+    name: "Claude Code"
+    preferred: true
+    installer:
+      target_dir: .claude/skills
+      global_target_dir: ~/.claude/skills
+
+  cline:
+    name: "Cline"
+    preferred: false
+    installer:
+      target_dir: .cline/skills
+      global_target_dir: ~/.cline/skills
+
+  codex:
+    name: "Codex"
+    preferred: true
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.codex/skills
+
+  codebuddy:
+    name: "CodeBuddy"
+    preferred: false
+    installer:
+      target_dir: .codebuddy/skills
+      global_target_dir: ~/.codebuddy/skills
+
+  command-code:
+    name: "Command Code"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
+  cortex:
+    name: "Snowflake Cortex Code"
+    preferred: false
+    installer:
+      target_dir: .cortex/skills
+      global_target_dir: ~/.snowflake/cortex/skills
+
+  crush:
+    name: "Crush"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.config/agents/skills
+
+  cursor:
+    name: "Cursor"
+    preferred: true
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
+  droid:
+    name: "Factory Droid"
+    preferred: false
+    installer:
+      target_dir: .factory/skills
+      global_target_dir: ~/.factory/skills
+
+  firebender:
+    name: "Firebender"
+    preferred: false
+    installer:
+      target_dir: .firebender/skills
+      global_target_dir: ~/.agents/skills
+
+  gemini:
+    name: "Gemini CLI"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
+  github-copilot:
+    name: "GitHub Copilot"
+    preferred: true
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+      commands_target_dir: .github/agents
+      commands_extension: .agent.md
+      commands_body_template: "LOAD the FULL {project-root}/{target_dir}/{canonicalId}/SKILL.md, READ its entire contents and follow its directions exactly!"
+      # The Custom Agents picker should only show persona agents (not
+      # workflows/tools). Detected by reading each skill's source
+      # `customize.toml` and checking for an `[agent]` section — that's
+      # the actual configuration source of truth: every BMAD persona is
+      # configured under `[agent]`, every workflow under `[workflow]`,
+      # every standalone skill has no customize.toml. This signal is
+      # naming-independent, so personas like `bmad-tea` (which doesn't
+      # follow the `-agent-` convention) are still included, and
+      # meta-skills like `bmad-agent-builder` (which contains `-agent-`
+      # but is a skill-builder workflow, not a persona) are correctly
+      # excluded.
+      commands_filter: agents-only
+
+  goose:
+    name: "Block Goose"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.config/agents/skills
+
+  iflow:
+    name: "iFlow"
+    preferred: false
+    installer:
+      target_dir: .iflow/skills
+      global_target_dir: ~/.iflow/skills
+
+  junie:
+    name: "Junie"
+    preferred: false
+    installer:
+      target_dir: .junie/skills
+      global_target_dir: ~/.junie/skills
+
+  kilo:
+    name: "KiloCoder"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.kilocode/skills
+
+  kimi-code:
+    name: "Kimi Code"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
+  kiro:
+    name: "Kiro"
+    preferred: false
+    installer:
+      target_dir: .kiro/skills
+      global_target_dir: ~/.kiro/skills
+
+  kode:
+    name: "Kode"
+    preferred: false
+    installer:
+      target_dir: .kode/skills
+      global_target_dir: ~/.kode/skills
+
+  mistral-vibe:
+    name: "Mistral Vibe"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.vibe/skills
+
+  mux:
+    name: "Mux"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
+  neovate:
+    name: "Neovate"
+    preferred: false
+    installer:
+      target_dir: .neovate/skills
+      global_target_dir: ~/.neovate/skills
+
+  ona:
+    name: "Ona"
+    preferred: false
+    installer:
+      target_dir: .ona/skills
+
+  openclaw:
+    name: "OpenClaw"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
+  opencode:
+    name: "OpenCode"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+      commands_target_dir: .opencode/commands
+
+  openhands:
+    name: "OpenHands"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
+  pi:
+    name: "Pi"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
+  pochi:
+    name: "Pochi"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
+  qoder:
+    name: "Qoder"
+    preferred: false
+    installer:
+      target_dir: .qoder/skills
+      global_target_dir: ~/.qoder/skills
+
+  qwen:
+    name: "QwenCoder"
+    preferred: false
+    installer:
+      target_dir: .qwen/skills
+      global_target_dir: ~/.qwen/skills
+
+  replit:
+    name: "Replit Agent"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+
+  roo:
+    name: "Roo Code"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
+  rovo-dev:
+    name: "Rovo Dev"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
+  trae:
+    name: "Trae"
+    preferred: false
+    installer:
+      target_dir: .trae/skills
+
+  warp:
+    name: "Warp"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
+  windsurf:
+    name: "Windsurf"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.agents/skills
+
+  zencoder:
+    name: "Zencoder"
+    preferred: false
+    installer:
+      target_dir: .zencoder/skills
+      global_target_dir: ~/.zencoder/skills

@@ -5,13 +5,22 @@ sidebar:
   order: 1
 ---
 
-The BMad Method (BMM) is a module in the BMad Ecosystem, targeted at following the best practices of context engineering and planning. AI agents work best with clear, structured context. The BMM system builds that context progressively across 4 distinct phases - each phase, and multiple workflows optionally within each phase, produce documents that inform the next, so agents always know what to build and why.
+The BMad Method (BMM) is a module in the BMad Ecosystem, targeted at following the best practices of context engineering
+and planning. AI agents work best with clear, structured context. The BMM system builds that context progressively
+across 4 distinct phases - each phase, and multiple workflows optionally within each phase, produce documents that
+inform the next, so agents always know what to build and why.
 
-The rationale and concepts come from agile methodologies that have been used across the industry with great success as a mental framework.
+The rationale and concepts come from agile methodologies that have been used across the industry with great success as a
+mental framework.
 
-If at any time you are unsure what to do, the `/bmad-help` command will help you stay on track or know what to do next. You can always refer to this for reference also - but /bmad-help is fully interactive and much quicker if you have already installed the BMad Method. Additionally, if you are using different modules that have extended the BMad Method or added other complementary non-extension modules - the /bmad-help evolves to know all that is available to give you the best in-the-moment advice.
+If at any time you are unsure what to do, the `bmad-help` skill will help you stay on track or know what to do next. You
+can always refer to this for reference also - but `bmad-help` is fully interactive and much quicker if you have already
+installed the BMad Method. Additionally, if you are using different modules that have extended the BMad Method or added
+other complementary non-extension modules - `bmad-help` evolves to know all that is available to give you the best
+in-the-moment advice.
 
-Final important note: Every workflow below can be run directly with your tool of choice via slash command or by loading an agent first and using the entry from the agents menu.
+Final important note: Every workflow below can be run directly with your tool of choice via skill or by loading an agent
+first and using the entry from the agents menu.
 
 <iframe src="/workflow-map-diagram.html" title="BMad Method Workflow Map Diagram" width="100%" height="100%" style="border-radius: 8px; border: 1px solid #334155; min-height: 900px;"></iframe>
 
@@ -21,91 +30,88 @@ Final important note: Every workflow below can be run directly with your tool of
 
 ## Phase 1: Analysis (Optional)
 
-Explore the problem space and validate ideas before committing to planning.
+Explore the problem space and validate ideas before committing to planning. [**Learn what each tool does and when to use
+it**](../explanation/analysis-phase.md).
 
-| Workflow               | Purpose                                                                    | Produces                  |
-| ---------------------- | -------------------------------------------------------------------------- | ------------------------- |
-| `brainstorming`        | Brainstorm Project Ideas with guided facilitation of a brainstorming coach | `brainstorming-report.md` |
-| `research`             | Validate market, technical, or domain assumptions                          | Research findings         |
-| `create-product-brief` | Capture strategic vision                                                   | `product-brief.md`        |
+| Workflow                                                                  | Purpose                                                                    | Produces                  |
+|---------------------------------------------------------------------------|----------------------------------------------------------------------------|---------------------------|
+| `bmad-brainstorming`                                                      | Brainstorm Project Ideas with guided facilitation of a brainstorming coach | `brainstorming-report.md` |
+| `bmad-domain-research`, `bmad-market-research`, `bmad-technical-research` | Validate market, technical, or domain assumptions                          | Research findings         |
+| `bmad-product-brief`                                                      | Capture strategic vision — best when your concept is clear                 | `product-brief.md`        |
+| `bmad-prfaq`                                                              | Working Backwards — stress-test and forge your product concept             | `prfaq-{project}.md`      |
 
 ## Phase 2: Planning
 
 Define what to build and for whom.
 
-| Workflow           | Purpose                                  | Produces     |
-| ------------------ | ---------------------------------------- | ------------ |
-| `create-prd`       | Define requirements (FRs/NFRs)           | `PRD.md`     |
-| `create-ux-design` | Design user experience (when UX matters) | `ux-spec.md` |
+| Workflow                | Purpose                                                                             | Produces                                          |
+|-------------------------|-------------------------------------------------------------------------------------|---------------------------------------------------|
+| `bmad-prd`              | Create, update, or validate a PRD — facilitated discovery, three intents in one skill | Create/Update: `prd.md`, `addendum.md`, `decision-log.md`; Validate: `validation-report.html` + `.md` |
+| `bmad-ux`               | Design user experience (when UX matters) — DESIGN.md (visual) + EXPERIENCE.md (behavioral) spine pair | `DESIGN.md`, `EXPERIENCE.md`, `.decision-log.md`  |
+
+:::tip[Three intents in one skill]
+`bmad-prd` handles the full PRD lifecycle. State your intent when invoking or the skill will ask:
+
+- **Create** — new PRD from scratch via coached discovery; produces `prd.md`, `addendum.md`, and `decision-log.md`
+- **Update** — reconcile an existing PRD with a change signal, surfacing conflicts before applying changes
+- **Validate** — critique a PRD against a configurable checklist and produce a structured HTML findings report
+:::
+
+:::tip[Upstream: `bmad-product-brief`]
+`bmad-product-brief` (Phase 1) produces a `product-brief.md` that `bmad-prd` can source-extract during Discovery, reducing re-explanation and keeping the two documents aligned. Neither skill requires the other — start with `bmad-prd` directly if you already know what you're building.
+:::
 
 ## Phase 3: Solutioning
 
 Decide how to build it and break work into stories.
 
-| Workflow                         | Purpose                                    | Produces                    |
-| -------------------------------- | ------------------------------------------ | --------------------------- |
-| `create-architecture`            | Make technical decisions explicit          | `architecture.md` with ADRs |
-| `create-epics-and-stories`       | Break requirements into implementable work | Epic files with stories     |
-| `check-implementation-readiness` | Gate check before implementation           | PASS/CONCERNS/FAIL decision |
+| Workflow                              | Purpose                                    | Produces                    |
+|---------------------------------------|--------------------------------------------|-----------------------------|
+| `bmad-create-architecture`            | Make technical decisions explicit          | `architecture.md` with ADRs |
+| `bmad-create-epics-and-stories`       | Break requirements into implementable work | Epic files with stories     |
+| `bmad-check-implementation-readiness` | Gate check before implementation           | PASS/CONCERNS/FAIL decision |
 
 ## Phase 4: Implementation
 
-Build it, one story at a time.
+Build it, one story at a time. Coming soon, full phase 4 automation!
 
-| Workflow          | Purpose                                | Produces                      |
-| ----------------- | -------------------------------------- | ----------------------------- |
-| `sprint-planning` | Initialize tracking (once per project) | `sprint-status.yaml`          |
-| `create-story`    | Prepare next story for implementation  | `story-[slug].md`             |
-| `dev-story`       | Implement the story                    | Working code + tests          |
-| `automate` (QA)   | Generate tests for existing features   | Test suite                    |
-| `code-review`     | Validate implementation quality        | Approved or changes requested |
-| `correct-course`  | Handle significant mid-sprint changes  | Updated plan or re-routing    |
-| `retrospective`   | Review after epic completion           | Lessons learned               |
-
-**Quinn (QA Agent):** Built-in QA agent for test automation. Trigger with `QA` or `bmad-bmm-qa-automate`. Generates standard API and E2E tests using your project's test framework. Beginner-friendly, no configuration needed. For advanced test strategy, install [Test Architect (TEA)](https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/) module.
+| Workflow               | Purpose                                                                       | Produces                                             |
+|------------------------|-------------------------------------------------------------------------------|------------------------------------------------------|
+| `bmad-sprint-planning` | Initialize tracking (once per project to sequence the dev cycle)              | `sprint-status.yaml`                                 |
+| `bmad-create-story`    | Prepare next story for implementation                                         | `story-[slug].md`                                    |
+| `bmad-dev-story`       | Implement the story                                                           | Working code + tests                                 |
+| `bmad-code-review`     | Validate implementation quality                                               | Approved or changes requested                        |
+| `bmad-correct-course`  | Handle significant mid-sprint changes                                         | Updated plan or re-routing                           |
+| `bmad-sprint-status`   | Track sprint progress and story status                                        | Sprint status update                                 |
+| `bmad-retrospective`   | Review after epic completion                                                  | Lessons learned                                      |
+| `bmad-investigate`     | Forensic case investigation with evidence-graded findings, calibrated to the input | `{slug}-investigation.md` |
 
 ## Quick Flow (Parallel Track)
 
 Skip phases 1-3 for small, well-understood work.
 
-| Workflow     | Purpose                                    | Produces                                      |
-| ------------ | ------------------------------------------ | --------------------------------------------- |
-| `quick-spec` | Define an ad-hoc change                    | `tech-spec.md` (story file for small changes) |
-| `quick-dev`  | Implement from spec or direct instructions | Working code + tests                          |
+| Workflow         | Purpose                                                                   | Produces           |
+|------------------|---------------------------------------------------------------------------|--------------------|
+| `bmad-quick-dev` | Unified quick flow — clarify intent, plan, implement, review, and present | `spec-*.md` + code |
 
 ## Context Management
 
-Each document becomes context for the next phase. The PRD tells the architect what constraints matter. The architecture tells the dev agent which patterns to follow. Story files give focused, complete context for implementation. Without this structure, agents make inconsistent decisions.
+Each document becomes context for the next phase. The PRD tells the architect what constraints matter. The architecture
+tells the dev agent which patterns to follow. Story files give focused, complete context for implementation. Without
+this structure, agents make inconsistent decisions.
 
-### Creating Project Context
+### Project Context
 
-Before Phase 4 implementation, **especially for established projects**, create `project-context.md` to ensure AI agents follow your codebase conventions:
+:::tip[Recommended]
+Create `project-context.md` to ensure AI agents follow your project's rules and preferences. This file works like a
+constitution for your project — it guides implementation decisions across all workflows. This optional file can be
+generated at the end of Architecture Creation, or in an existing project it can be generated also to capture whats
+important to keep aligned with current conventions.
+:::
 
-| Workflow                     | Purpose                                                          | Best For                        |
-| ---------------------------- | ---------------------------------------------------------------- | ------------------------------- |
-| `generate-project-context`   | Lean, LLM-optimized implementation rules, patterns, constraints  | Most projects (quick and focused) |
-| `document-project`           | Comprehensive project scan including `project-context.md`        | Thorough documentation needs    |
+**How to create it:**
 
-Run again when significant changes occur — structure, architecture, or implementation rules. You can also edit `project-context.md` by hand. For greenfield projects, this is optional — create it when patterns emerge.
+- **Manually** — Create `_bmad-output/project-context.md` with your technology stack and implementation rules
+- **Generate it** — Run `bmad-generate-project-context` to auto-generate from your architecture or codebase
 
-All implementation workflows load `project-context.md` if it exists. Additional context per workflow:
-
-| Workflow       | Also Loads                   |
-| -------------- | ---------------------------- |
-| `create-story` | epics, PRD, architecture, UX |
-| `dev-story`    | story file                   |
-| `code-review`  | architecture, story file     |
-| `quick-spec`   | planning docs (if exist)     |
-| `quick-dev`    | tech-spec                    |
-
-### Artifact Locations
-
-The installer creates three output areas. All paths are configurable during installation.
-
-| Folder | Default Path | Contains | Version Control |
-| ------ | ------------ | -------- | --------------- |
-| **Planning Artifacts** | `_bmad-output/planning-artifacts/` | PRDs, architecture docs, UX specs, epics | Gitignored (copy to `docs/` when finalized) |
-| **Implementation Artifacts** | `_bmad-output/implementation-artifacts/` | Sprint status, stories, reviews, retrospectives | Gitignored |
-| **Project Knowledge** | `docs/` | Research, project documentation, finalized references | Committed |
-
-Both `_bmad/` (configuration) and `_bmad-output/` (artifacts) are added to `.gitignore` by default. Long-term project knowledge goes in `docs/`, which is version-controlled.
+[**Learn more about project-context.md**](../explanation/project-context.md)

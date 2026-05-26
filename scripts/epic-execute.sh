@@ -151,23 +151,21 @@ FINAL_LOG_FILE=""
 
 # Source workflow files from the BMAD-METHOD repository
 BMAD_SRC_DIR="$SCRIPT_DIR/.."
-WORKFLOWS_DIR="$BMAD_SRC_DIR/src/bmm/workflows/4-implementation"
-CORE_TASKS_DIR="$BMAD_SRC_DIR/src/core/tasks"
 
-# Dev Story Workflow
-DEV_WORKFLOW_DIR="$WORKFLOWS_DIR/dev-story"
-DEV_WORKFLOW_YAML="$DEV_WORKFLOW_DIR/workflow.yaml"
-DEV_WORKFLOW_INSTRUCTIONS="$DEV_WORKFLOW_DIR/instructions.xml"
+# Our automation workflows (epic-execute, epic-chain, uat-validate) under src/bmm/workflows/
+WORKFLOWS_DIR="$BMAD_SRC_DIR/src/bmm/workflows/4-implementation"
+
+# Upstream BMM skills (post-v6.0 architecture) under src/bmm-skills/
+SKILLS_DIR="$BMAD_SRC_DIR/src/bmm-skills/4-implementation"
+
+# Dev Story Skill (upstream)
+DEV_WORKFLOW_DIR="$SKILLS_DIR/bmad-dev-story"
+DEV_WORKFLOW_SKILL="$DEV_WORKFLOW_DIR/SKILL.md"
 DEV_WORKFLOW_CHECKLIST="$DEV_WORKFLOW_DIR/checklist.md"
 
-# Code Review Workflow
-REVIEW_WORKFLOW_DIR="$WORKFLOWS_DIR/code-review"
-REVIEW_WORKFLOW_YAML="$REVIEW_WORKFLOW_DIR/workflow.yaml"
-REVIEW_WORKFLOW_INSTRUCTIONS="$REVIEW_WORKFLOW_DIR/instructions.xml"
-REVIEW_WORKFLOW_CHECKLIST="$REVIEW_WORKFLOW_DIR/checklist.md"
-
-# Core workflow executor
-WORKFLOW_EXECUTOR="$CORE_TASKS_DIR/workflow.xml"
+# Code Review Skill (upstream)
+REVIEW_WORKFLOW_DIR="$SKILLS_DIR/bmad-code-review"
+REVIEW_WORKFLOW_SKILL="$REVIEW_WORKFLOW_DIR/SKILL.md"
 
 # UAT Generation (from epic-execute workflow)
 UAT_STEP_TEMPLATE="$WORKFLOWS_DIR/epic-execute/steps/step-04-generate-uat.md"
@@ -1145,62 +1143,25 @@ validate_workflows() {
 
     log "Validating BMAD workflow files..."
 
-    # Core workflow executor
-    if [ ! -f "$WORKFLOW_EXECUTOR" ]; then
-        log_error "Missing: Core workflow executor at $WORKFLOW_EXECUTOR"
+    # Dev-story skill
+    if [ ! -f "$DEV_WORKFLOW_SKILL" ]; then
+        log_error "Missing: Dev SKILL.md at $DEV_WORKFLOW_SKILL"
         ((missing++))
     else
-        # L5: Validate XML content
         if type validate_workflow_content >/dev/null 2>&1; then
-            if ! validate_workflow_content "$WORKFLOW_EXECUTOR"; then
+            if ! validate_workflow_content "$DEV_WORKFLOW_SKILL"; then
                 ((invalid++))
             fi
         fi
     fi
 
-    # Dev-story workflow
-    if [ ! -f "$DEV_WORKFLOW_YAML" ]; then
-        log_error "Missing: Dev workflow.yaml at $DEV_WORKFLOW_YAML"
+    # Code-review skill
+    if [ ! -f "$REVIEW_WORKFLOW_SKILL" ]; then
+        log_error "Missing: Review SKILL.md at $REVIEW_WORKFLOW_SKILL"
         ((missing++))
     else
-        # L5: Validate YAML content
         if type validate_workflow_content >/dev/null 2>&1; then
-            if ! validate_workflow_content "$DEV_WORKFLOW_YAML"; then
-                ((invalid++))
-            fi
-        fi
-    fi
-    if [ ! -f "$DEV_WORKFLOW_INSTRUCTIONS" ]; then
-        log_error "Missing: Dev instructions.xml at $DEV_WORKFLOW_INSTRUCTIONS"
-        ((missing++))
-    else
-        # L5: Validate XML content
-        if type validate_workflow_content >/dev/null 2>&1; then
-            if ! validate_workflow_content "$DEV_WORKFLOW_INSTRUCTIONS"; then
-                ((invalid++))
-            fi
-        fi
-    fi
-
-    # Code-review workflow
-    if [ ! -f "$REVIEW_WORKFLOW_YAML" ]; then
-        log_error "Missing: Review workflow.yaml at $REVIEW_WORKFLOW_YAML"
-        ((missing++))
-    else
-        # L5: Validate YAML content
-        if type validate_workflow_content >/dev/null 2>&1; then
-            if ! validate_workflow_content "$REVIEW_WORKFLOW_YAML"; then
-                ((invalid++))
-            fi
-        fi
-    fi
-    if [ ! -f "$REVIEW_WORKFLOW_INSTRUCTIONS" ]; then
-        log_error "Missing: Review instructions.xml at $REVIEW_WORKFLOW_INSTRUCTIONS"
-        ((missing++))
-    else
-        # L5: Validate XML content
-        if type validate_workflow_content >/dev/null 2>&1; then
-            if ! validate_workflow_content "$REVIEW_WORKFLOW_INSTRUCTIONS"; then
+            if ! validate_workflow_content "$REVIEW_WORKFLOW_SKILL"; then
                 ((invalid++))
             fi
         fi
@@ -1209,7 +1170,7 @@ validate_workflows() {
     if [ $missing -gt 0 ]; then
         log_error "Missing $missing required BMAD workflow files"
         log_error "Ensure you are running from the BMAD-METHOD repository"
-        log_error "Workflows expected at: $WORKFLOWS_DIR"
+        log_error "Skills expected at: $SKILLS_DIR"
         exit 1
     fi
 
@@ -1220,9 +1181,8 @@ validate_workflows() {
     log_success "All BMAD workflow files validated"
 
     if [ "$VERBOSE" = true ]; then
-        echo "  Dev workflow:    $DEV_WORKFLOW_DIR"
-        echo "  Review workflow: $REVIEW_WORKFLOW_DIR"
-        echo "  Executor:        $WORKFLOW_EXECUTOR"
+        echo "  Dev skill:    $DEV_WORKFLOW_DIR"
+        echo "  Review skill: $REVIEW_WORKFLOW_DIR"
     fi
 }
 

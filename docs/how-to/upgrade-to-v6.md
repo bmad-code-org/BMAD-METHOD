@@ -1,8 +1,8 @@
 ---
-title: "How to Upgrade to v6"
+title: 'How to Upgrade to v6'
 description: Migrate from BMad v4 to v6
 sidebar:
-  order: 3
+  order: 4
 ---
 
 Use the BMad installer to upgrade from v4 to v6, which includes automatic detection of legacy installations and migration assistance.
@@ -14,9 +14,10 @@ Use the BMad installer to upgrade from v4 to v6, which includes automatic detect
 - You have existing planning artifacts to preserve
 
 :::note[Prerequisites]
-- Node.js 20+
+
+- Node.js 20.12+
 - Existing BMad v4 installation
-:::
+  :::
 
 ## Steps
 
@@ -33,12 +34,15 @@ When v4 is detected, you can:
 
 If you named your bmad method folder something else - you will need to manually remove the folder yourself.
 
-### 3. Clean Up IDE Commands
+### 3. Clean Up IDE Skills
 
-Manually remove legacy v4 IDE commands - for example if you have claude, look for any nested folders that start with bmad and remove them:
+Manually remove legacy v4 IDE commands/skills - for example if you have Claude Code, look for any nested folders that start with bmad and remove them:
 
-- `.claude/commands/BMad/agents`
-- `.claude/commands/BMad/tasks`
+- `.claude/commands/`
+
+The new v6 skills are installed to:
+
+- `.claude/skills/`
 
 ### 4. Migrate Planning Artifacts
 
@@ -58,8 +62,8 @@ If you have stories created or implemented:
 
 1. Complete the v6 installation
 2. Place `epics.md` or `epics/epic*.md` in `_bmad-output/planning-artifacts/`
-3. Run the Scrum Master's `sprint-planning` workflow
-4. Tell the SM which epics/stories are already complete
+3. Run the Developer's `bmad-sprint-planning` workflow
+4. Tell the agent which epics/stories are already complete
 
 ## What You Get
 
