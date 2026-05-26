@@ -3,6 +3,7 @@ const fs = require('../fs-native');
 const yaml = require('yaml');
 const crypto = require('node:crypto');
 const { resolveInstalledModuleYaml } = require('../project-root');
+const { globalUserConfigPath, loadGlobalConfig, parseSimpleToml } = require('../global-config');
 const prompts = require('../prompts');
 
 // Load package.json for version info
@@ -82,11 +83,20 @@ class ManifestGenerator {
 
     // Write manifest files and collect their paths
     const [teamConfigPath, userConfigPath] = await this.writeCentralConfig(bmadDir, options.moduleConfigs || {});
+    // Per-module module.toml floor — shipped defaults + agent roster, read
+    // by resolve_config.py as the lowest-priority layer. Independent of the
+    // central config.toml; remains stable across user customizations.
+    const moduleTomlPaths = await this.writeModuleTomls(bmadDir);
+    // Task D: route scope:user core answers to ~/.bmad/config.user.toml.
+    // Identity persists across projects on this machine, so re-installs in
+    // other directories don't re-prompt for the same name/language.
+    await this.writeGlobalUserCore(options.moduleConfigs || {});
     const manifestFiles = [
       await this.writeMainManifest(cfgDir),
       await this.writeSkillManifest(cfgDir),
       teamConfigPath,
       userConfigPath,
+      ...moduleTomlPaths,
       await this.writeFilesManifest(cfgDir),
     ];
 
@@ -419,25 +429,39 @@ class ManifestGenerator {
   }
 
   /**
-   * Write central _bmad/config.toml with [core], [modules.<code>], [agents.<code>] tables.
-   * Install-owned. Team-scope answers → config.toml; user-scope answers → config.user.toml.
-   * Both files are regenerated on every install. User overrides live in
-   * _bmad/custom/config.toml and _bmad/custom/config.user.toml (never touched by installer).
+   * Write central _bmad/config.toml as a LEAN OVERRIDE FILE — only values
+   * the user actually changed from defaults land here. Defaults flow through
+   * the module.toml floor (written by writeModuleTomls) and the global
+   * config layer (~/.bmad/...).
+   *
+   * Specifically (Phase 1 — tasks D + F):
+   *   - [core] team-scope: emit only keys whose value differs from BOTH the
+   *     module.yaml default AND the global value (if any). Identity that
+   *     equals the global wins via the resolver chain regardless.
+   *   - [core] user-scope (user_name, communication_language): NEVER written
+   *     here. Routed to ~/.bmad/config.user.toml via writeGlobalUserCore.
+   *   - [modules.X]: emit only keys whose value differs from the module's
+   *     processed default. Skip the section entirely if all keys are default.
+   *   - [agents.X]: NEVER emitted. The roster lives in module.toml floor;
+   *     custom agents go in _bmad/custom/config.toml (never touched by us).
+   *
+   * Install-owned: both files are regenerated on every install. User
+   * overrides live in _bmad/custom/config.toml and _bmad/custom/config.user.toml
+   * (never touched by installer).
+   *
    * @returns {string[]} Paths to the written config files
    */
   async writeCentralConfig(bmadDir, moduleConfigs) {
     const teamPath = path.join(bmadDir, 'config.toml');
     const userPath = path.join(bmadDir, 'config.user.toml');
 
-    // Load each module's source module.yaml to determine scope per prompt key.
-    // Default scope is 'team' when the prompt doesn't declare one.
-    // When a module.yaml is unreadable we warn — for known official modules
-    // this means user-scoped keys (e.g. user_name) could mis-file into the
-    // team config, so the operator should notice.
+    // Load each module's source module.yaml to determine:
+    //   1. scope per prompt key (team vs user)
+    //   2. the canonical module code (for [modules.{code}] section names)
+    //   3. processed defaults per key (for delta detection)
     const scopeByModuleKey = {};
-    // Maps installer moduleName (may be full display name) → module code field
-    // from module.yaml, so TOML sections use [modules.<code>] not [modules.<name>].
     const codeByModuleName = {};
+    const defaultsByModuleKey = {};
     for (const moduleName of this.updatedModules) {
       const moduleYamlPath = await resolveInstalledModuleYaml(moduleName);
       if (!moduleYamlPath) {
@@ -452,9 +476,13 @@ class ManifestGenerator {
         if (!parsed || typeof parsed !== 'object') continue;
         if (parsed.code) codeByModuleName[moduleName] = parsed.code;
         scopeByModuleKey[moduleName] = {};
+        defaultsByModuleKey[moduleName] = {};
         for (const [key, value] of Object.entries(parsed)) {
-          if (value && typeof value === 'object' && 'prompt' in value) {
-            scopeByModuleKey[moduleName][key] = value.scope === 'user' ? 'user' : 'team';
+          if (!value || typeof value !== 'object' || !('prompt' in value)) continue;
+          scopeByModuleKey[moduleName][key] = value.scope === 'user' ? 'user' : 'team';
+          const processedDefault = computeProcessedDefault(value, moduleConfigs);
+          if (processedDefault !== undefined) {
+            defaultsByModuleKey[moduleName][key] = processedDefault;
           }
         }
       } catch (error) {
@@ -464,6 +492,12 @@ class ManifestGenerator {
         );
       }
     }
+
+    // Load the global config snapshot for [core] delta detection. If a key's
+    // current value equals the global value, no need to duplicate it into the
+    // project file — the resolver finds it globally.
+    const globalSnapshot = await loadGlobalConfig().catch(() => ({ merged: {} }));
+    const globalCore = (globalSnapshot.merged && globalSnapshot.merged.core) || {};
 
     // Core keys are always known (core module.yaml is built-in). These are
     // the only keys allowed in [core]; they must be stripped from every
@@ -492,6 +526,23 @@ class ManifestGenerator {
         }
       }
       return { team, user };
+    };
+
+    // Drop entries whose value equals an already-known default. Tasks F + D
+    // both want config.toml to be a *delta* file — anything that matches
+    // either the module.yaml default or the global config gets resolved
+    // through the layer chain at read time, so writing it here is dead weight.
+    const stripDefaults = (entries, perKeyDefaults = {}, fallbackDefaults = {}) => {
+      const result = {};
+      for (const [key, value] of Object.entries(entries)) {
+        const moduleDefault = perKeyDefaults[key];
+        const fallbackDefault = fallbackDefaults[key];
+        const isDefault =
+          (moduleDefault !== undefined && deepEqualScalar(moduleDefault, value)) ||
+          (fallbackDefault !== undefined && deepEqualScalar(fallbackDefault, value));
+        if (!isDefault) result[key] = value;
+      }
+      return result;
     };
 
     const teamHeader = [
@@ -526,9 +577,10 @@ class ManifestGenerator {
     const teamLines = [...teamHeader];
     const userLines = [...userHeader];
 
-    // [core] — split into team and user
+    // [core] team — emit only deltas from module.yaml default AND global value.
     const coreConfig = moduleConfigs.core || {};
-    const { team: coreTeam, user: coreUser } = partition('core', coreConfig);
+    const { team: coreTeamRaw } = partition('core', coreConfig);
+    const coreTeam = stripDefaults(coreTeamRaw, defaultsByModuleKey.core || {}, globalCore);
     if (Object.keys(coreTeam).length > 0) {
       teamLines.push('[core]');
       for (const [key, value] of Object.entries(coreTeam)) {
@@ -536,28 +588,24 @@ class ManifestGenerator {
       }
       teamLines.push('');
     }
-    if (Object.keys(coreUser).length > 0) {
-      userLines.push('[core]');
-      for (const [key, value] of Object.entries(coreUser)) {
-        userLines.push(`${key} = ${formatTomlValue(value)}`);
-      }
-      userLines.push('');
-    }
+    // [core] user-scope: never written to the project user.toml. Task D routes
+    // these to ~/.bmad/config.user.toml via writeGlobalUserCore (called by
+    // generateManifests after this method returns). config.user.toml stays
+    // empty unless the user has manually pinned a per-project override.
 
-    // [modules.<code>] — split per module
+    // [modules.<code>] — emit only deltas; skip section if no deltas.
     for (const moduleName of this.updatedModules) {
       if (moduleName === 'core') continue;
       const cfg = moduleConfigs[moduleName];
       if (!cfg || Object.keys(cfg).length === 0) continue;
-      // Use the module's code field from module.yaml as the TOML key so the
-      // section is [modules.mdo] not [modules.MDO: Maxio DevOps Operations].
       const sectionKey = codeByModuleName[moduleName] || moduleName;
-      // Only filter out spread-from-core pollution when we actually know
-      // this module's prompt schema. For external/marketplace modules whose
-      // module.yaml isn't in the src tree, fall through as all-team so we
-      // don't drop their real answers.
       const haveSchema = Object.keys(scopeByModuleKey[moduleName] || {}).length > 0;
-      const { team: modTeam, user: modUser } = partition(moduleName, cfg, haveSchema);
+      const { team: modTeamRaw, user: modUserRaw } = partition(moduleName, cfg, haveSchema);
+
+      const moduleDefaults = defaultsByModuleKey[moduleName] || {};
+      const modTeam = stripDefaults(modTeamRaw, moduleDefaults);
+      const modUser = stripDefaults(modUserRaw, moduleDefaults);
+
       if (Object.keys(modTeam).length > 0) {
         teamLines.push(`[modules.${sectionKey}]`);
         for (const [key, value] of Object.entries(modTeam)) {
@@ -574,49 +622,213 @@ class ManifestGenerator {
       }
     }
 
-    // [agents.<code>] — always team (agent roster is organizational).
-    // Freshly collected agents come from module.yaml this run. If a module
-    // was preserved (e.g. during quickUpdate when its source isn't available),
-    // its module.yaml wasn't read — so its agents aren't in `this.agents` and
-    // would silently disappear from the roster. Preserve those existing
-    // [agents.*] blocks verbatim from the prior config.toml.
-    const freshAgentCodes = new Set(this.agents.map((a) => a.code));
-    const contributingModules = new Set(this.agents.map((a) => a.module));
-    const preservedModules = this.updatedModules.filter((m) => !contributingModules.has(m));
-    const preservedBlocks = [];
-    if (preservedModules.length > 0 && (await fs.pathExists(teamPath))) {
-      try {
-        const prev = await fs.readFile(teamPath, 'utf8');
-        for (const block of extractAgentBlocks(prev)) {
-          if (freshAgentCodes.has(block.code)) continue;
-          if (block.module && preservedModules.includes(block.module)) {
-            preservedBlocks.push(block.body);
-          }
-        }
-      } catch (error) {
-        console.warn(`[warn] writeCentralConfig: could not read prior config.toml to preserve agents: ${error.message}`);
-      }
-    }
-
-    for (const agent of this.agents) {
-      const agentLines = [`[agents.${agent.code}]`, `module = ${formatTomlValue(agent.module)}`, `team = ${formatTomlValue(agent.team)}`];
-      if (agent.name) agentLines.push(`name = ${formatTomlValue(agent.name)}`);
-      if (agent.title) agentLines.push(`title = ${formatTomlValue(agent.title)}`);
-      if (agent.icon) agentLines.push(`icon = ${formatTomlValue(agent.icon)}`);
-      if (agent.description) agentLines.push(`description = ${formatTomlValue(agent.description)}`);
-      agentLines.push('');
-      teamLines.push(...agentLines);
-    }
-
-    for (const body of preservedBlocks) {
-      teamLines.push(body, '');
-    }
+    // [agents.<code>] — intentionally NOT emitted (Task F). The roster lives
+    // in the per-module module.toml floor. Users who want to override or
+    // add agents per-project edit _bmad/custom/config.toml; that file is
+    // never touched by the installer.
 
     const teamContent = teamLines.join('\n').replace(/\n+$/, '\n');
     const userContent = userLines.join('\n').replace(/\n+$/, '\n');
     await fs.writeFile(teamPath, teamContent);
     await fs.writeFile(userPath, userContent);
     return [teamPath, userPath];
+  }
+
+  /**
+   * Write scope:user core values to ~/.bmad/config.user.toml (Task D).
+   * Merge-preserves any existing global content the user hand-edited.
+   *
+   * Why a global write step at all? Identity values (user_name,
+   * communication_language) are properties of the human, not the project.
+   * Asking them at every install is friction. Phase 1 stores them globally
+   * so they're answered once per machine.
+   *
+   * @param {object} moduleConfigs - the fully-resolved moduleConfigs map
+   * @returns {Promise<string|null>} the path written, or null if no values
+   */
+  async writeGlobalUserCore(moduleConfigs) {
+    const coreScopes = {};
+    // We need core's module.yaml scope map. Build it lazily here so this
+    // method is callable without re-doing the writeCentralConfig setup.
+    const coreYamlPath = await resolveInstalledModuleYaml('core');
+    if (!coreYamlPath) return null;
+    try {
+      const parsed = yaml.parse(await fs.readFile(coreYamlPath, 'utf8'));
+      if (parsed && typeof parsed === 'object') {
+        for (const [key, value] of Object.entries(parsed)) {
+          if (value && typeof value === 'object' && 'prompt' in value) {
+            coreScopes[key] = value.scope === 'user' ? 'user' : 'team';
+          }
+        }
+      }
+    } catch {
+      return null;
+    }
+
+    const userScopeValues = {};
+    for (const [key, value] of Object.entries(moduleConfigs.core || {})) {
+      if (coreScopes[key] === 'user' && value !== undefined && value !== null && value !== '') {
+        userScopeValues[key] = value;
+      }
+    }
+    if (Object.keys(userScopeValues).length === 0) return null;
+
+    const globalPath = globalUserConfigPath();
+    await fs.ensureDir(path.dirname(globalPath));
+
+    // Read-merge-write so we don't trample any pre-existing scopes / sections
+    // the user might have written to ~/.bmad/config.user.toml by hand or via
+    // another tool.
+    let existing = {};
+    if (await fs.pathExists(globalPath)) {
+      try {
+        existing = parseSimpleToml(await fs.readFile(globalPath, 'utf8'));
+      } catch {
+        existing = {};
+      }
+    }
+    const mergedCore = { ...existing.core, ...userScopeValues };
+    const mergedConfig = { ...existing, core: mergedCore };
+
+    const lines = [
+      '# ─────────────────────────────────────────────────────────────────',
+      '# Global personal BMad config — values tied to YOU as a user, not',
+      '# any specific project. Installer writes scope:user identity here',
+      '# (user_name, communication_language) so re-installs across projects',
+      "# don't re-ask the same questions.",
+      '#',
+      '# Location precedence: $BMAD_HOME if set, else ~/.bmad',
+      '# Resolver tier: lower than project-level _bmad/*.toml.',
+      '# ─────────────────────────────────────────────────────────────────',
+      '',
+    ];
+    for (const [section, table] of Object.entries(mergedConfig)) {
+      if (!table || typeof table !== 'object' || Array.isArray(table)) continue;
+      lines.push(`[${section}]`);
+      for (const [key, value] of Object.entries(table)) {
+        if (value === undefined || value === null || value === '') continue;
+        lines.push(`${key} = ${formatTomlValue(value)}`);
+      }
+      lines.push('');
+    }
+    const content = lines.join('\n').replace(/\n+$/, '\n');
+    await fs.writeFile(globalPath, content);
+    return globalPath;
+  }
+
+  /**
+   * Write per-module `_bmad/{module}/module.toml` files — the "module floor"
+   * read by resolve_config.py as the lowest-priority layer.
+   *
+   * Each file contains the shipped defaults for one module:
+   *   [modules.{code}]       paths and other module-shape values (from
+   *                          module.yaml question defaults, with `result:`
+   *                          template applied + cross-key placeholders like
+   *                          `{output_folder}` resolved against other modules'
+   *                          defaults at install time)
+   *   [agents.{agent-code}]  one block per agent owned by this module
+   *
+   * `{project-root}` is preserved literally — runtime substitution by skills.
+   * Other cross-key references resolve against module.yaml DEFAULTS only,
+   * not the user's actual answers. This keeps module.toml stable as a "what
+   * the module ships" snapshot independent of per-project customization.
+   * User overrides land in _bmad/config.toml above the floor.
+   *
+   * Source of truth is the authored module.yaml. This file is a build artifact
+   * — regenerated on every install, never hand-edited.
+   *
+   * @param {string} bmadDir
+   * @returns {Promise<string[]>} Paths to all written module.toml files
+   */
+  async writeModuleTomls(bmadDir) {
+    // Pass 1: parse every installed module.yaml, extract its raw defaults
+    // (just `{value}` substituted; cross-key placeholders left literal).
+    const moduleData = [];
+    for (const moduleName of this.updatedModules) {
+      const moduleYamlPath = await resolveInstalledModuleYaml(moduleName);
+      if (!moduleYamlPath) continue;
+
+      let moduleDef;
+      try {
+        moduleDef = yaml.parse(await fs.readFile(moduleYamlPath, 'utf8'));
+      } catch (error) {
+        console.warn(
+          `[warn] writeModuleTomls: could not parse module.yaml for '${moduleName}' (${error.message}). ` +
+            `Skipping module.toml for this module.`,
+        );
+        continue;
+      }
+      if (!moduleDef || typeof moduleDef !== 'object') continue;
+
+      const moduleDir = path.join(bmadDir, moduleName);
+      if (!(await fs.pathExists(moduleDir))) continue;
+
+      const moduleCode = typeof moduleDef.code === 'string' ? moduleDef.code : moduleName;
+      const rawDefaults = extractModuleDefaults(moduleDef);
+      moduleData.push({ moduleName, moduleCode, moduleDir, rawDefaults });
+    }
+
+    // Build a flat cross-key lookup map from every module's raw defaults.
+    // First-define wins (deterministic given sorted updatedModules input).
+    // Values are stripped of a leading `{project-root}/` so substitutions
+    // re-compose cleanly when consumed in a `{project-root}/{key}/...` slot
+    // — matches the installer's processResultTemplate convention.
+    const crossKeyMap = {};
+    for (const { rawDefaults } of moduleData) {
+      for (const [key, value] of Object.entries(rawDefaults)) {
+        if (crossKeyMap[key] !== undefined) continue;
+        let stripped = value;
+        if (typeof stripped === 'string' && stripped.startsWith('{project-root}/')) {
+          stripped = stripped.slice('{project-root}/'.length);
+        }
+        crossKeyMap[key] = stripped;
+      }
+    }
+
+    // Pass 2: resolve cross-key placeholders in each module's defaults and
+    // write the final module.toml file.
+    const written = [];
+    for (const { moduleName, moduleCode, moduleDir, rawDefaults } of moduleData) {
+      const resolvedDefaults = {};
+      for (const [key, value] of Object.entries(rawDefaults)) {
+        resolvedDefaults[key] = resolveCrossKeyPlaceholders(value, crossKeyMap);
+      }
+
+      const lines = [
+        '# Module-shipped defaults. Build artifact — do not edit by hand.',
+        "# Source: this module's module.yaml (authored at source).",
+        '# Regenerated on every install.',
+        '#',
+        '# Read by _bmad/scripts/resolve_config.py as the lowest-priority',
+        '# floor of the config layer chain. Project _bmad/config.toml and',
+        '# user overrides in _bmad/custom/ sit above this and win.',
+        '',
+      ];
+
+      if (Object.keys(resolvedDefaults).length > 0) {
+        lines.push(`[modules.${moduleCode}]`);
+        for (const [key, value] of Object.entries(resolvedDefaults)) {
+          lines.push(`${key} = ${formatTomlValue(value)}`);
+        }
+        lines.push('');
+      }
+
+      const moduleAgents = this.agents.filter((a) => a.module === moduleName);
+      for (const agent of moduleAgents) {
+        lines.push(`[agents.${agent.code}]`, `module = ${formatTomlValue(agent.module)}`, `team = ${formatTomlValue(agent.team)}`);
+        if (agent.name) lines.push(`name = ${formatTomlValue(agent.name)}`);
+        if (agent.title) lines.push(`title = ${formatTomlValue(agent.title)}`);
+        if (agent.icon) lines.push(`icon = ${formatTomlValue(agent.icon)}`);
+        if (agent.description) lines.push(`description = ${formatTomlValue(agent.description)}`);
+        lines.push('');
+      }
+
+      const outputPath = path.join(moduleDir, 'module.toml');
+      const content = lines.join('\n').replace(/\n+$/, '\n');
+      await fs.writeFile(outputPath, content);
+      written.push(outputPath);
+    }
+    return written;
   }
 
   /**
@@ -806,6 +1018,136 @@ class ManifestGenerator {
  * Handles strings (quoted + escaped), booleans, numbers, and arrays of scalars.
  * Objects are not expected at this emit path.
  */
+/**
+ * Compute the processed default value for a module.yaml question item, using
+ * the already-resolved moduleConfigs map for cross-key references like
+ * `{output_folder}`. Used by writeCentralConfig to detect default-equal
+ * values that should NOT be re-emitted into the lean config.toml.
+ *
+ * Steps:
+ *   1. Substitute {key} references against any module's already-collected
+ *      value (with leading "{project-root}/" stripped, matching the
+ *      installer's processResultTemplate behavior).
+ *   2. Apply the result: template with {value} substituted.
+ *
+ * Returns undefined for items without a default, leaving the caller's delta
+ * check to fall through unchanged.
+ *
+ * @param {object} item - one module.yaml question schema
+ * @param {object} moduleConfigs - already-resolved per-module configs
+ * @returns {*} processed default value (string/scalar) or undefined
+ */
+function computeProcessedDefault(item, moduleConfigs) {
+  if (!item || item.default === undefined || item.default === null) return;
+  let value = item.default;
+  if (typeof value === 'string') {
+    value = value.replaceAll(/{([^}]+)}/g, (match, refKey) => {
+      if (refKey === 'project-root' || refKey === 'value' || refKey === 'directory_name') {
+        return match;
+      }
+      for (const mod of Object.values(moduleConfigs || {})) {
+        if (mod && typeof mod === 'object' && mod[refKey] !== undefined) {
+          let resolved = mod[refKey];
+          if (typeof resolved === 'string' && resolved.startsWith('{project-root}/')) {
+            resolved = resolved.slice('{project-root}/'.length);
+          }
+          return resolved;
+        }
+      }
+      return match;
+    });
+  }
+  if (typeof item.result === 'string' && value !== undefined) {
+    return item.result.replaceAll('{value}', String(value));
+  }
+  return value;
+}
+
+/**
+ * Resolve `{key}` cross-references in a string value against a flat
+ * `{key: value}` lookup map. `{project-root}` and `{directory_name}` are
+ * preserved literal — they're runtime placeholders, substituted by the skill
+ * or resolver when the value is consumed. Unknown keys are left literal too.
+ *
+ * Used by writeModuleTomls so that module.toml's [modules.X] keys carry the
+ * same shape as the installer's resolved config (e.g.
+ * `"{project-root}/_bmad-output/planning-artifacts"`) — making the floor a
+ * drop-in for the central config when the latter omits a value as default.
+ *
+ * @param {*} value - typically a string; non-strings returned unchanged
+ * @param {Record<string, *>} crossKeyMap
+ * @returns {*}
+ */
+function resolveCrossKeyPlaceholders(value, crossKeyMap) {
+  if (typeof value !== 'string') return value;
+  return value.replaceAll(/{([^}]+)}/g, (match, key) => {
+    if (key === 'project-root' || key === 'directory_name' || key === 'value') {
+      return match;
+    }
+    const replacement = crossKeyMap[key];
+    return replacement === undefined ? match : String(replacement);
+  });
+}
+
+/**
+ * Scalar / shallow equality for delta detection. Handles strings, numbers,
+ * booleans, and arrays of scalars (the only shapes module.yaml defaults
+ * produce). Different types compare unequal.
+ */
+function deepEqualScalar(a, b) {
+  if (a === b) return true;
+  if (Array.isArray(a) && Array.isArray(b)) {
+    if (a.length !== b.length) return false;
+    return a.every((item, i) => deepEqualScalar(item, b[i]));
+  }
+  return false;
+}
+
+/**
+ * Module.yaml top-level keys that are metadata, not question knobs. These
+ * never appear in a module's [modules.{code}] floor section.
+ */
+const MODULE_DEFAULTS_SKIP = new Set([
+  'code',
+  'name',
+  'description',
+  'default_selected',
+  'header',
+  'subheader',
+  'agents',
+  'directories',
+  'dependencies',
+  'prompt',
+]);
+
+/**
+ * Extract shipped defaults from a parsed module.yaml. For each question-style
+ * key (object with a `default` field), capture the default and apply its
+ * `result:` template with `{value}` substituted. Cross-key placeholders like
+ * `{output_folder}` are left as literal strings — see writeModuleTomls() doc
+ * for why and how that's handled in phase 1.
+ *
+ * @param {object} moduleDef - parsed module.yaml content
+ * @returns {Record<string, string|number|boolean|Array<*>>}
+ */
+function extractModuleDefaults(moduleDef) {
+  const defaults = {};
+  for (const [key, value] of Object.entries(moduleDef)) {
+    if (MODULE_DEFAULTS_SKIP.has(key)) continue;
+    if (!value || typeof value !== 'object' || Array.isArray(value)) continue;
+    if (!('default' in value)) continue;
+
+    let resolved = value.default;
+    if (typeof value.result === 'string' && resolved !== undefined) {
+      // Apply `result:` template with `{value}` substituted by default. Leave
+      // other placeholders (`{project-root}`, `{output_folder}`, ...) literal.
+      resolved = value.result.replaceAll('{value}', String(resolved));
+    }
+    defaults[key] = resolved;
+  }
+  return defaults;
+}
+
 function formatTomlValue(value) {
   if (value === null || value === undefined) return '""';
   if (typeof value === 'boolean') return value ? 'true' : 'false';

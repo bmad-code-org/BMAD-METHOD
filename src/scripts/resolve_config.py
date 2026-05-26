@@ -1,12 +1,30 @@
 #!/usr/bin/env python3
 """
-Resolve BMad's central config using four-layer TOML merge.
+Resolve BMad's central config using a layered TOML merge.
 
-Reads from four layers (highest priority last):
-  1. {project-root}/_bmad/config.toml              (installer-owned team)
-  2. {project-root}/_bmad/config.user.toml         (installer-owned user)
-  3. {project-root}/_bmad/custom/config.toml       (human-authored team, committed)
-  4. {project-root}/_bmad/custom/config.user.toml  (human-authored user, gitignored)
+Reads from up to seven tiers (highest priority last):
+  0. {project-root}/_bmad/{module}/module.toml     (shipped module defaults — floor)
+  1. {global-dir}/config.toml                      (global team / machine defaults)
+  2. {global-dir}/config.user.toml                 (global personal defaults)
+  3. {project-root}/_bmad/config.toml              (installer-owned team)
+  4. {project-root}/_bmad/config.user.toml         (installer-owned user)
+  5. {project-root}/_bmad/custom/config.toml       (human-authored team, committed)
+  6. {project-root}/_bmad/custom/config.user.toml  (human-authored user, gitignored)
+
+Tier 0 ("module floor") carries each installed module's shipped defaults:
+its [modules.X] paths and [agents.X] roster. Authors write module.yaml at
+source; the installer converts to module.toml at install-time, giving the
+resolver a TOML-only read path (no PyYAML dependency). Discovery is by
+glob: any subdirectory of _bmad/ containing a module.toml counts.
+
+All layers are optional. If a file is missing it is silently skipped.
+If no file is found anywhere, an empty object is emitted.
+
+{global-dir} resolves to $BMAD_HOME if set, otherwise ~/.bmad. Path.home()
+gives the right answer on macOS, Linux, WSL, and Windows.
+
+--project-root is optional. With no project root, only the global layers
+are consulted (useful for standalone skill invocations).
 
 Outputs merged JSON to stdout. Errors go to stderr.
 
@@ -16,6 +34,7 @@ no virtualenv — plain `python3` is sufficient.
   python3 resolve_config.py --project-root /abs/path/to/project
   python3 resolve_config.py --project-root ... --key core
   python3 resolve_config.py --project-root ... --key agents
+  python3 resolve_config.py                              # global only
 
 Merge rules (same as resolve_customization.py):
   - Scalars: override wins
@@ -26,6 +45,7 @@ Merge rules (same as resolve_customization.py):
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -123,6 +143,61 @@ def deep_merge(base, override):
     return override
 
 
+def resolve_global_dir() -> Path:
+    """Locate the cross-platform global BMad config directory.
+
+    Honors $BMAD_HOME (useful for CI, multi-account setups, or relocating
+    config off a slow network home). Otherwise ~/.bmad — Path.home() does
+    the right thing on macOS, Linux, WSL, and Windows.
+    """
+    override = os.environ.get("BMAD_HOME")
+    if override:
+        return Path(override).expanduser().resolve()
+    return Path.home() / ".bmad"
+
+
+def collect_module_layers(project_root: Path | None) -> list[Path]:
+    """Return per-module module.toml paths discovered in this project.
+
+    Floor of the resolver chain — these are the shipped module defaults
+    that the installer realizes from source module.yaml on install. Authors
+    don't edit module.toml directly; it's a build artifact.
+
+    Discovery is purely file-system based: any direct subdirectory of
+    _bmad/ that contains a module.toml is treated as an installed module.
+    Returned in sorted order for deterministic merge order (irrelevant
+    in practice because modules don't share keys — each writes its own
+    [modules.{code}] and own [agents.{agent-code}] entries — but
+    determinism is cheap).
+    """
+    if project_root is None:
+        return []
+    bmad_dir = project_root / "_bmad"
+    if not bmad_dir.is_dir():
+        return []
+    return sorted(bmad_dir.glob("*/module.toml"))
+
+
+def collect_config_layers(project_root: Path | None, global_dir: Path) -> list[tuple[str, Path]]:
+    """Return (label, path) pairs in lowest→highest priority order.
+
+    All layers are optional; load_toml returns {} for any missing file.
+    """
+    layers: list[tuple[str, Path]] = [
+        ("global team", global_dir / "config.toml"),
+        ("global user", global_dir / "config.user.toml"),
+    ]
+    if project_root is not None:
+        bmad_dir = project_root / "_bmad"
+        layers.extend([
+            ("project team", bmad_dir / "config.toml"),
+            ("project user", bmad_dir / "config.user.toml"),
+            ("project custom team", bmad_dir / "custom" / "config.toml"),
+            ("project custom user", bmad_dir / "custom" / "config.user.toml"),
+        ])
+    return layers
+
+
 def extract_key(data, dotted_key: str):
     parts = dotted_key.split(".")
     current = data
@@ -136,11 +211,12 @@ def extract_key(data, dotted_key: str):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Resolve BMad central config using four-layer TOML merge.",
+        description="Resolve BMad central config using a layered TOML merge.",
     )
     parser.add_argument(
-        "--project-root", "-p", required=True,
-        help="Absolute path to the project root (contains _bmad/)",
+        "--project-root", "-p", required=False, default=None,
+        help="Absolute path to the project root (contains _bmad/). Optional — "
+             "if omitted, only global layers ($BMAD_HOME or ~/.bmad) are read.",
     )
     parser.add_argument(
         "--key", "-k", action="append", default=[],
@@ -148,17 +224,16 @@ def main():
     )
     args = parser.parse_args()
 
-    project_root = Path(args.project_root).resolve()
-    bmad_dir = project_root / "_bmad"
+    project_root = Path(args.project_root).resolve() if args.project_root else None
+    global_dir = resolve_global_dir()
 
-    base_team = load_toml(bmad_dir / "config.toml", required=True)
-    base_user = load_toml(bmad_dir / "config.user.toml")
-    custom_team = load_toml(bmad_dir / "custom" / "config.toml")
-    custom_user = load_toml(bmad_dir / "custom" / "config.user.toml")
-
-    merged = deep_merge(base_team, base_user)
-    merged = deep_merge(merged, custom_team)
-    merged = deep_merge(merged, custom_user)
+    merged: dict = {}
+    # Floor: per-module shipped defaults (lowest priority).
+    for module_toml in collect_module_layers(project_root):
+        merged = deep_merge(merged, load_toml(module_toml))
+    # Then global → project → custom config layers on top.
+    for _label, path in collect_config_layers(project_root, global_dir):
+        merged = deep_merge(merged, load_toml(path))
 
     if args.key:
         output = {}

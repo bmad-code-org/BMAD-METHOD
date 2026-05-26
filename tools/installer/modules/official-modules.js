@@ -5,6 +5,7 @@ const prompts = require('../prompts');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../project-root');
 const { CLIUtils } = require('../cli-utils');
 const { ExternalModuleManager } = require('./external-manager');
+const { loadGlobalConfig } = require('../global-config');
 
 class OfficialModules {
   constructor(options = {}) {
@@ -1019,11 +1020,26 @@ class OfficialModules {
    * @param {string} projectDir - Target project directory
    * @param {Object} options - Additional options
    * @param {boolean} options.skipPrompts - Skip prompts and use defaults (for --yes flag)
+   *
+   * Non-core modules are always silent: they accept module.yaml defaults
+   * without prompting. Users adjust values later via the `bmad-customize`
+   * skill or direct edits to _bmad/custom/config.toml / customize.toml.
+   * Core is still fully prompted (identity questions live there) — though
+   * scope:user core values that are already in ~/.bmad/config.user.toml
+   * are silently reused (see below).
    */
   async collectAllConfigurations(modules, projectDir, options = {}) {
     this.skipPrompts = options.skipPrompts || false;
     this.modulesToCustomize = undefined;
     await this.loadExistingConfig(projectDir);
+    // Read the cross-platform global config (~/.bmad or $BMAD_HOME). Used to:
+    //   - Skip core scope:user questions whose value is already known globally
+    //     (task D — ask identity once per machine, not once per project).
+    //   - Seed defaults for non-user-scope core questions (task E — let users
+    //     pre-pin default project_name/output_folder/etc. globally if they want).
+    // Project-installed values still beat global at resolve time; this is
+    // purely about what we ASK during install.
+    this.globalConfig = await loadGlobalConfig();
 
     // Check if core was already collected (e.g., in early collection phase)
     const coreAlreadyCollected = this.collectedConfig.core && Object.keys(this.collectedConfig.core).length > 0;
@@ -1045,44 +1061,17 @@ class OfficialModules {
       await this.collectModuleConfig(moduleName, projectDir);
     }
 
-    // Show batch configuration gateway for non-core modules
-    // Scan all non-core module schemas for display names and config metadata
+    // Non-core modules are always silent: accept module.yaml defaults without
+    // prompting. Users adjust via `bmad-customize` later or by editing
+    // _bmad/custom/{config,customize}.toml. Setting modulesToCustomize to an
+    // empty Set bypasses the legacy per-module "Accept Defaults?" confirm
+    // (collectModuleConfig only fires that when modulesToCustomize is
+    // undefined). scanModuleSchemas is still called so the spinner can show
+    // friendly display names while applying defaults.
     let scannedModules = [];
     if (!this.skipPrompts && nonCoreModules.length > 0) {
+      this.modulesToCustomize = new Set();
       scannedModules = await this.scanModuleSchemas(nonCoreModules);
-      const customizableModules = scannedModules.filter((m) => m.questionCount > 0);
-
-      if (customizableModules.length > 0) {
-        const configMode = await prompts.select({
-          message: 'Module configuration',
-          choices: [
-            { name: 'Express Setup', value: 'express', hint: 'accept all defaults (recommended)' },
-            { name: 'Customize', value: 'customize', hint: 'choose modules to configure' },
-          ],
-          default: 'express',
-        });
-
-        if (configMode === 'customize') {
-          const choices = customizableModules.map((m) => ({
-            name: `${m.displayName} (${m.questionCount} option${m.questionCount === 1 ? '' : 's'})`,
-            value: m.moduleName,
-            hint: m.hasFieldsWithoutDefaults ? 'has fields without defaults' : undefined,
-            checked: m.hasFieldsWithoutDefaults,
-          }));
-          const selected = await prompts.multiselect({
-            message: 'Select modules to customize:',
-            choices,
-            required: false,
-          });
-          this.modulesToCustomize = new Set(selected);
-        } else {
-          // Express mode: no modules to customize
-          this.modulesToCustomize = new Set();
-        }
-      } else {
-        // All non-core modules have zero config - no gateway needed
-        this.modulesToCustomize = new Set();
-      }
     }
 
     // Collect remaining non-core modules
@@ -1505,6 +1494,79 @@ class OfficialModules {
           questions.push(question);
         }
       }
+    }
+
+    // Tasks D + E: for the core module, consult the global config (~/.bmad).
+    //   D — scope:user keys (user_name, communication_language): if already
+    //       known globally, accept silently. Don't prompt; store the final
+    //       form directly in collectedConfig so cross-references still work.
+    //   E — non-user-scope keys (project_name, output_folder, ...): if known
+    //       globally, seed the prompt default from there. User can still
+    //       change it per-project.
+    // Track silently-reused keys so the user knows where the values came from
+    // (otherwise they'd see questions they previously answered just disappear).
+    const reusedFromGlobal = [];
+    const seededFromGlobal = [];
+    if (moduleName === 'core' && this.globalConfig && this.globalConfig.merged && this.globalConfig.merged.core) {
+      const globalCore = this.globalConfig.merged.core;
+      const remaining = [];
+
+      for (const question of questions) {
+        const key = question.name.replace(`${moduleName}_`, '');
+        const item = moduleConfig[key];
+        const globalValue = globalCore[key];
+
+        if (globalValue === undefined || globalValue === null || globalValue === '') {
+          remaining.push(question);
+          continue;
+        }
+
+        if (item && item.scope === 'user') {
+          // D: silent reuse. Stash final form into collectedConfig and skip
+          // adding this question to the prompt list. The post-answer
+          // result-template loop never sees this key.
+          this.collectedConfig[moduleName] = this.collectedConfig[moduleName] || {};
+          this.collectedConfig[moduleName][key] = globalValue;
+          reusedFromGlobal.push({ key, value: globalValue });
+          continue;
+        }
+
+        // E: pre-seed the prompt default. Strip {project-root}/ for clean
+        // display — the result: template will add it back after the user
+        // accepts or edits.
+        question.default = this.cleanPromptValue(globalValue);
+        seededFromGlobal.push({ key, value: question.default });
+        remaining.push(question);
+      }
+
+      questions.length = 0;
+      questions.push(...remaining);
+    }
+
+    // Tell the user when global values are in play. Silent reuse (D) is the
+    // important one — otherwise a question that fired on a prior install
+    // would just vanish, leaving the user wondering what happened. Seeded
+    // defaults (E) get a softer mention since the user still sees the value
+    // in the prompt.
+    if (!this.skipPrompts && (reusedFromGlobal.length > 0 || seededFromGlobal.length > 0)) {
+      const { globalUserConfigPath } = require('../global-config');
+      const globalPath = globalUserConfigPath();
+      const lines = [];
+      if (reusedFromGlobal.length > 0) {
+        lines.push('Using values from your global BMad config:');
+        for (const { key, value } of reusedFromGlobal) {
+          lines.push(`  ${key} = ${JSON.stringify(value)}`);
+        }
+      }
+      if (seededFromGlobal.length > 0) {
+        if (lines.length > 0) lines.push('');
+        lines.push('Defaults pre-filled from your global BMad config:');
+        for (const { key, value } of seededFromGlobal) {
+          lines.push(`  ${key} = ${JSON.stringify(value)}`);
+        }
+      }
+      lines.push('', `To change these, edit ${globalPath}`, '(or unset them there to be prompted on the next install).');
+      await prompts.log.info(lines.join('\n'));
     }
 
     // Collect all answers (static + prompted)

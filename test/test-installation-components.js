@@ -1693,7 +1693,7 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Test Suite 35: Central Config Emission
+  // Test Suite 35: Central Config Emission (lean overrides + global routing)
   // ============================================================
   console.log(`${colors.yellow}Test Suite 35: Central Config Emission${colors.reset}\n`);
 
@@ -1702,6 +1702,12 @@ async function runTests() {
     // getModulePath). Only the destination bmadDir is a temp dir, which the
     // installer writes config.toml / config.user.toml / custom/ into.
     const tempBmadDir35 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-central-config-'));
+    // Phase 1: writeCentralConfig now writes scope:user core values to
+    // ~/.bmad/config.user.toml. Isolate via BMAD_HOME so we don't pollute
+    // the developer's real global config.
+    const tempGlobalDir35 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-global-'));
+    const priorBmadHome35 = process.env.BMAD_HOME;
+    process.env.BMAD_HOME = tempGlobalDir35;
 
     try {
       const moduleConfigs = {
@@ -1764,43 +1770,54 @@ async function runTests() {
       assert(await fs.pathExists(teamPath), 'config.toml is written to disk');
       assert(await fs.pathExists(userPath), 'config.user.toml is written to disk');
 
+      // generateManifests would call writeGlobalUserCore right after this; we
+      // call it directly here to test the full contract.
+      const globalCorePath = await generator35.writeGlobalUserCore(moduleConfigs);
+      assert(globalCorePath !== null, 'writeGlobalUserCore writes a file when scope:user values exist');
+      assert(globalCorePath.startsWith(tempGlobalDir35), 'writeGlobalUserCore targets $BMAD_HOME');
+      assert(await fs.pathExists(globalCorePath), '~/.bmad/config.user.toml is written to disk');
+
       const teamContent = await fs.readFile(teamPath, 'utf8');
       const userContent = await fs.readFile(userPath, 'utf8');
+      const globalContent = await fs.readFile(globalCorePath, 'utf8');
 
-      // [core] — team-scoped keys land in config.toml
-      assert(teamContent.includes('[core]'), 'config.toml has [core] section');
-      assert(teamContent.includes('document_output_language = "English"'), 'Team-scope core key lands in config.toml');
-      assert(teamContent.includes('output_folder = "_bmad-output"'), 'Team-scope output_folder lands in config.toml');
-      assert(teamContent.includes('project_name = "demo-project"'), 'project_name lands in [core] (core key as of #2279)');
+      // [core] — lean: only deltas from module.yaml defaults remain.
+      // project_name = "demo-project" differs from default ({directory_name}).
+      // document_output_language = "English" EQUALS default — stripped.
+      // output_folder = "_bmad-output" EQUALS default — stripped.
+      assert(teamContent.includes('[core]'), 'config.toml has [core] section (carries project_name delta)');
+      assert(teamContent.includes('project_name = "demo-project"'), 'Delta core key (project_name) lands in config.toml');
+      assert(!teamContent.includes('document_output_language'), 'Default core values are stripped from config.toml (Task F)');
       assert(!teamContent.includes('user_name'), 'user_name (scope: user) is absent from config.toml');
       assert(!teamContent.includes('communication_language'), 'communication_language (scope: user) is absent from config.toml');
 
-      // [core] — user-scoped keys land in config.user.toml
-      assert(userContent.includes('[core]'), 'config.user.toml has [core] section');
-      assert(userContent.includes('user_name = "TestUser"'), 'user_name lands in config.user.toml');
-      assert(userContent.includes('communication_language = "Spanish"'), 'communication_language lands in config.user.toml');
-      assert(!userContent.includes('document_output_language'), 'Team-scope key is absent from config.user.toml');
+      // [core] user-scope no longer goes to project user file — it's routed
+      // to ~/.bmad/config.user.toml (Task D).
+      assert(!userContent.includes('user_name'), 'config.user.toml does NOT contain user_name (Task D: routed to global)');
+      assert(
+        !userContent.includes('communication_language'),
+        'config.user.toml does NOT contain communication_language (Task D: routed to global)',
+      );
 
-      // [modules.bmm] — core-key pollution stripped; own user-scope key routed to user file
-      const bmmTeamMatch = teamContent.match(/\[modules\.bmm\][\s\S]*?(?=\n\[|$)/);
-      assert(bmmTeamMatch !== null, 'config.toml has [modules.bmm] section');
-      if (bmmTeamMatch) {
-        const bmmTeamBlock = bmmTeamMatch[0];
-        assert(bmmTeamBlock.includes('planning_artifacts'), 'bmm-owned team-scope key (planning_artifacts) lands under [modules.bmm]');
-        assert(!bmmTeamBlock.includes('project_name'), 'project_name stripped from [modules.bmm] (now a core key, #2279)');
-        assert(!bmmTeamBlock.includes('stale-bmm-copy'), 'stale bmm-copy of project_name not leaked into config.toml');
-        assert(!bmmTeamBlock.includes('user_name'), 'user_name stripped from [modules.bmm] (core-key pollution)');
-        assert(!bmmTeamBlock.includes('communication_language'), 'communication_language stripped from [modules.bmm]');
-        assert(!bmmTeamBlock.includes('user_skill_level'), 'user_skill_level (scope: user) absent from [modules.bmm] in config.toml');
-      }
+      // Global file at ~/.bmad/config.user.toml carries the scope:user core values
+      assert(globalContent.includes('[core]'), '~/.bmad/config.user.toml has [core] section');
+      assert(globalContent.includes('user_name = "TestUser"'), 'user_name lands in ~/.bmad/config.user.toml');
+      assert(globalContent.includes('communication_language = "Spanish"'), 'communication_language lands in ~/.bmad/config.user.toml');
 
+      // [modules.bmm] — bmm answers in this fixture are ALL defaults (the test
+      // intentionally seeds the same values module.yaml defaults to). With
+      // Task F, an all-defaults section is omitted entirely.
+      // user_skill_level = "expert" IS a delta from default "intermediate"
+      // → that one key remains in [modules.bmm] in config.user.toml.
+      assert(!teamContent.includes('[modules.bmm]'), 'config.toml has NO [modules.bmm] section when all values equal defaults (Task F)');
       const bmmUserMatch = userContent.match(/\[modules\.bmm\][\s\S]*?(?=\n\[|$)/);
-      assert(bmmUserMatch !== null, 'config.user.toml has [modules.bmm] section');
+      assert(bmmUserMatch !== null, 'config.user.toml has [modules.bmm] section (carries the user_skill_level delta)');
       if (bmmUserMatch) {
-        assert(bmmUserMatch[0].includes('user_skill_level = "expert"'), 'user_skill_level lands in config.user.toml [modules.bmm]');
+        assert(bmmUserMatch[0].includes('user_skill_level = "expert"'), 'user_skill_level delta lands in config.user.toml');
       }
 
-      // [modules.external-mod] — unknown schema, falls through as team; core keys still stripped
+      // [modules.external-mod] — unknown schema, no defaults to compare. Falls
+      // through as team; core-key pollution still stripped.
       const extMatch = teamContent.match(/\[modules\.external-mod\][\s\S]*?(?=\n\[|$)/);
       assert(extMatch !== null, 'Unknown-schema module survives with its own [modules.*] section');
       if (extMatch) {
@@ -1810,20 +1827,23 @@ async function runTests() {
         assert(!extBlock.includes('communication_language'), 'All core-key pollution stripped from unknown-schema module');
       }
 
-      // [agents.*] — agent roster from bmm module.yaml baked into config.toml (team-only)
-      assert(teamContent.includes('[agents.bmad-agent-analyst]'), 'config.toml has [agents.bmad-agent-analyst] table');
-      assert(teamContent.includes('[agents.bmad-agent-dev]'), 'config.toml has [agents.bmad-agent-dev] table');
-      assert(teamContent.includes('module = "bmm"'), 'Agent entry serializes module field');
-      assert(teamContent.includes('team = "software-development"'), 'Agent entry serializes team field');
-      assert(teamContent.includes('name = "Mary"'), 'Agent entry serializes name');
-      assert(teamContent.includes('icon = "📊"'), 'Agent entry serializes icon');
+      // [agents.*] — Task F: NEVER emitted to config.toml. Roster lives in
+      // _bmad/{module}/module.toml floor (written by writeModuleTomls).
+      assert(!teamContent.includes('[agents.'), 'config.toml has NO [agents.*] sections (Task F)');
       assert(!userContent.includes('[agents.'), '[agents.*] tables are never written to config.user.toml');
 
-      // Header comments present on both files
+      // Header comments present on both project files
       assert(teamContent.includes('Installer-managed. Regenerated on every install'), 'config.toml has installer-managed header');
       assert(userContent.includes('Holds install answers scoped to YOU personally.'), 'config.user.toml header clarifies user scope');
+      assert(globalContent.includes('Global personal BMad config'), '~/.bmad/config.user.toml has global-personal header');
     } finally {
       await fs.remove(tempBmadDir35).catch(() => {});
+      await fs.remove(tempGlobalDir35).catch(() => {});
+      if (priorBmadHome35 === undefined) {
+        delete process.env.BMAD_HOME;
+      } else {
+        process.env.BMAD_HOME = priorBmadHome35;
+      }
     }
   }
 
@@ -1866,66 +1886,56 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Test Suite 37: Agent Preservation for Non-Contributing Modules
+  // Test Suite 37: Agent roster routes through module.toml, not config.toml
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 37: Agent Preservation for Non-Contributing Modules${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 37: Agent roster routes through module.toml${colors.reset}\n`);
 
   {
-    // Scenario: quickUpdate preserves a module whose source isn't available
-    // (e.g. external/marketplace). Its module.yaml isn't read, so its agents
-    // aren't in this.agents. writeCentralConfig must read the prior config.toml
-    // and keep those [agents.*] blocks so the roster doesn't silently shrink.
-    const tempBmadDir37 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-agent-preserve-'));
+    // Phase 1 (Task F): writeCentralConfig no longer emits [agents.*] blocks.
+    // The roster lives in _bmad/{module}/module.toml (the resolver floor).
+    // This suite verifies the relocation — same data, different home.
+    //
+    // Preservation across reinstalls (the OLD concern of this suite) is now
+    // a non-issue: writeModuleTomls always reads the source module.yaml at
+    // install time and rewrites module.toml from scratch. There's no "stale
+    // entry" to preserve because the file gets fully regenerated.
+    const tempBmadDir37 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-agents-floor-'));
+    const tempGlobalDir37 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-global-37-'));
+    const priorBmadHome37 = process.env.BMAD_HOME;
+    process.env.BMAD_HOME = tempGlobalDir37;
 
     try {
-      // Seed a prior config.toml with an agent from an external module
-      const priorToml = [
-        '# prior',
-        '',
-        '[agents.bmad-agent-analyst]',
-        'module = "bmm"',
-        'team = "bmm"',
-        'name = "Stale Mary"',
-        '',
-        '[agents.external-hero]',
-        'module = "external-mod"',
-        'team = "external-mod"',
-        'name = "Hero"',
-        'title = "External Agent"',
-        'icon = "🦸"',
-        'description = "Ships with the marketplace module."',
-        '',
-      ].join('\n');
-      await fs.writeFile(path.join(tempBmadDir37, 'config.toml'), priorToml);
+      // Set up bmm/ directory so writeModuleTomls has a place to write
+      await fs.ensureDir(path.join(tempBmadDir37, 'bmm'));
 
       const generator37 = new ManifestGenerator();
       generator37.bmadDir = tempBmadDir37;
       generator37.bmadFolderName = path.basename(tempBmadDir37);
-      generator37.updatedModules = ['core', 'bmm', 'external-mod'];
+      generator37.updatedModules = ['core', 'bmm'];
 
-      // bmm source is available; external-mod is not — it's a preserved module
       await generator37.collectAgentsFromModuleYaml();
-      const freshModules = new Set(generator37.agents.map((a) => a.module));
-      assert(freshModules.has('bmm'), 'bmm contributes fresh agents from src module.yaml');
-      assert(!freshModules.has('external-mod'), 'external-mod source is unavailable (preserved-module scenario)');
-
-      await generator37.writeCentralConfig(tempBmadDir37, { core: {}, bmm: {}, 'external-mod': {} });
+      await generator37.writeCentralConfig(tempBmadDir37, { core: {}, bmm: {} });
+      await generator37.writeModuleTomls(tempBmadDir37);
 
       const teamContent = await fs.readFile(path.join(tempBmadDir37, 'config.toml'), 'utf8');
+      const bmmTomlContent = await fs.readFile(path.join(tempBmadDir37, 'bmm', 'module.toml'), 'utf8');
 
-      assert(
-        teamContent.includes('[agents.external-hero]'),
-        'Preserved [agents.external-hero] block survives rewrite even though external-mod source was unavailable',
-      );
-      assert(teamContent.includes('Ships with the marketplace module.'), 'Preserved block keeps its original description');
-      assert(teamContent.includes('module = "external-mod"'), 'Preserved block keeps its module field');
+      // Task F: config.toml carries no [agents.*] sections
+      assert(!teamContent.includes('[agents.'), 'config.toml has no [agents.*] sections (Task F)');
 
-      // Freshly collected agents win over stale entries with the same code
-      const maryMatches = teamContent.match(/\[agents\.bmad-agent-analyst\]/g) || [];
-      assert(maryMatches.length === 1, 'bmad-agent-analyst emitted exactly once (fresh wins; stale not duplicated)');
-      assert(!teamContent.includes('Stale Mary'), 'Stale name from prior config.toml is discarded when fresh module.yaml is read');
+      // The roster lives in module.toml instead
+      assert(bmmTomlContent.includes('[agents.bmad-agent-analyst]'), 'bmm/module.toml carries [agents.bmad-agent-analyst]');
+      assert(bmmTomlContent.includes('[agents.bmad-agent-dev]'), 'bmm/module.toml carries [agents.bmad-agent-dev]');
+      assert(bmmTomlContent.includes('module = "bmm"'), 'Agent block in module.toml has module field');
+      assert(bmmTomlContent.includes('name = "Mary"'), 'Agent block in module.toml has name');
     } finally {
       await fs.remove(tempBmadDir37).catch(() => {});
+      await fs.remove(tempGlobalDir37).catch(() => {});
+      if (priorBmadHome37 === undefined) {
+        delete process.env.BMAD_HOME;
+      } else {
+        process.env.BMAD_HOME = priorBmadHome37;
+      }
     }
   }
 
@@ -2006,17 +2016,46 @@ async function runTests() {
       assert(byCode.get('bmad-fake-ext-agent-one').module === 'fake-ext', 'agent.module matches the owning external module name');
       assert(byCode.get('bmad-fake-ext-agent-one').team === 'fake', 'explicit team from module.yaml is preserved');
 
-      await generator38.writeCentralConfig(tempBmadDir38, {
-        core: {},
-        bmm: {},
-        'fake-ext': {},
-        'fake-skills': {},
-      });
+      // Set up per-module dirs so writeModuleTomls has somewhere to write
+      await fs.ensureDir(path.join(tempBmadDir38, 'fake-ext'));
+      await fs.ensureDir(path.join(tempBmadDir38, 'fake-skills'));
 
-      const teamContent = await fs.readFile(path.join(tempBmadDir38, 'config.toml'), 'utf8');
-      assert(teamContent.includes('[agents.bmad-fake-ext-agent-one]'), 'external-module agents land in config.toml [agents.*] section');
-      assert(teamContent.includes('[agents.bmad-fake-skills-agent]'), 'skills-layout external module agents also land in config.toml');
-      assert(teamContent.includes('First fake external agent.'), 'agent description from external module.yaml is written');
+      // Isolate BMAD_HOME for the global-config write step
+      const tempGlobalDir38 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-global-38-'));
+      const priorBmadHome38 = process.env.BMAD_HOME;
+      process.env.BMAD_HOME = tempGlobalDir38;
+
+      try {
+        await generator38.writeCentralConfig(tempBmadDir38, {
+          core: {},
+          bmm: {},
+          'fake-ext': {},
+          'fake-skills': {},
+        });
+        await generator38.writeModuleTomls(tempBmadDir38);
+
+        const teamContent = await fs.readFile(path.join(tempBmadDir38, 'config.toml'), 'utf8');
+        // Task F: agents NEVER land in config.toml anymore
+        assert(!teamContent.includes('[agents.'), 'External module agents are NOT in config.toml (Task F)');
+
+        // Instead, each external module gets its own _bmad/{module}/module.toml floor
+        const fakeExtToml = await fs.readFile(path.join(tempBmadDir38, 'fake-ext', 'module.toml'), 'utf8');
+        const fakeSkillsToml = await fs.readFile(path.join(tempBmadDir38, 'fake-skills', 'module.toml'), 'utf8');
+
+        assert(fakeExtToml.includes('[agents.bmad-fake-ext-agent-one]'), 'external-module agents land in their own module.toml floor');
+        assert(
+          fakeSkillsToml.includes('[agents.bmad-fake-skills-agent]'),
+          'skills-layout external module agents land in their own module.toml floor',
+        );
+        assert(fakeExtToml.includes('First fake external agent.'), 'agent description from external module.yaml lands in module.toml');
+      } finally {
+        await fs.remove(tempGlobalDir38).catch(() => {});
+        if (priorBmadHome38 === undefined) {
+          delete process.env.BMAD_HOME;
+        } else {
+          process.env.BMAD_HOME = priorBmadHome38;
+        }
+      }
     } finally {
       if (priorCacheEnv === undefined) {
         delete process.env.BMAD_EXTERNAL_MODULES_CACHE;
@@ -3232,6 +3271,254 @@ async function runTests() {
     }
   } catch (error) {
     console.log(`${colors.red}Test Suite 44 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 45: Per-module module.toml floor (writeModuleTomls)
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 45: Per-module module.toml floor${colors.reset}\n`);
+
+  try {
+    const tempBmadDir45 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-module-toml-'));
+
+    try {
+      // Real bmm src tree provides module.yaml. Installer expects each
+      // installed module directory to exist before writeModuleTomls runs.
+      await fs.ensureDir(path.join(tempBmadDir45, 'bmm'));
+      await fs.ensureDir(path.join(tempBmadDir45, 'core'));
+
+      const generator45 = new ManifestGenerator();
+      generator45.bmadDir = tempBmadDir45;
+      generator45.bmadFolderName = path.basename(tempBmadDir45);
+      generator45.updatedModules = ['core', 'bmm'];
+
+      // Collect agents (needed for [agents.X] blocks per module)
+      await generator45.collectAgentsFromModuleYaml();
+      assert(generator45.agents.length >= 6, 'agents collected before writeModuleTomls');
+
+      const written = await generator45.writeModuleTomls(tempBmadDir45);
+      assert(Array.isArray(written), 'writeModuleTomls returns array of written paths');
+      assert(written.length > 0, 'writeModuleTomls writes at least one module.toml');
+
+      const bmmTomlPath = path.join(tempBmadDir45, 'bmm', 'module.toml');
+      assert(await fs.pathExists(bmmTomlPath), 'bmm/module.toml is written to disk');
+
+      const bmmContent = await fs.readFile(bmmTomlPath, 'utf8');
+
+      // Header comment present
+      assert(bmmContent.includes('Module-shipped defaults'), 'module.toml has header comment');
+      assert(bmmContent.includes('Build artifact'), 'module.toml warns against hand-editing');
+
+      // [modules.bmm] section with defaults from module.yaml
+      assert(bmmContent.includes('[modules.bmm]'), 'bmm/module.toml has [modules.bmm] section');
+      assert(/planning_artifacts\s*=\s*"[^"]+"/.test(bmmContent), '[modules.bmm] carries planning_artifacts default');
+      // {project-root} preserved literal (runtime substitution); {output_folder}
+      // resolved at install time against core's default output_folder. Final
+      // shape matches the legacy config.yaml convention.
+      assert(
+        bmmContent.includes('{project-root}/_bmad-output/planning-artifacts'),
+        'Cross-key placeholders resolved at install time ({output_folder} → "_bmad-output"); {project-root} preserved',
+      );
+      assert(!bmmContent.includes('{output_folder}'), '{output_folder} placeholder is NOT left literal — resolved against module defaults');
+
+      // [agents.X] blocks for module-owned agents
+      assert(bmmContent.includes('[agents.bmad-agent-analyst]'), 'bmm/module.toml has [agents.bmad-agent-analyst]');
+      assert(bmmContent.includes('[agents.bmad-agent-dev]'), 'bmm/module.toml has [agents.bmad-agent-dev]');
+      assert(bmmContent.includes('module = "bmm"'), 'Agent block carries module field');
+      assert(bmmContent.includes('name = "Mary"'), 'Agent block carries name');
+      assert(bmmContent.includes('icon = "📊"'), 'Agent block carries emoji icon');
+
+      // module.toml is SCOPED to one module — bmm should not carry core's agents
+      // (core/module.yaml ships no agents today, but the principle stands)
+      const coreTomlPath = path.join(tempBmadDir45, 'core', 'module.toml');
+      assert(await fs.pathExists(coreTomlPath), 'core/module.toml is written even without agents');
+
+      const coreContent = await fs.readFile(coreTomlPath, 'utf8');
+      // bmm agents must NOT appear in core/module.toml
+      assert(!coreContent.includes('[agents.bmad-agent-analyst]'), 'bmm-owned agents do NOT leak into core/module.toml');
+
+      // [core] questions (user_name, project_name, etc.) are core's defaults
+      assert(coreContent.includes('[modules.core]'), 'core/module.toml has [modules.core] section');
+      assert(coreContent.includes('user_name = "BMad"'), 'core/module.toml carries user_name default ("BMad" from module.yaml)');
+      assert(coreContent.includes('document_output_language = "English"'), 'core/module.toml carries document_output_language default');
+
+      // Question UI machinery NEVER appears as a TOML key in module.toml
+      // (Match on line-start "key =" so we don't catch the word "prompt" inside
+      // a description string — e.g. "Speaks like a terminal prompt".)
+      assert(!/^prompt\s*=/m.test(bmmContent), 'No prompt key in module.toml');
+      assert(!/^scope\s*=/m.test(bmmContent), 'No scope key in module.toml');
+      assert(!bmmContent.includes('single-select'), 'No single-select machinery in module.toml');
+    } finally {
+      await fs.remove(tempBmadDir45).catch(() => {});
+    }
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 45 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 46: Phase 1 end-to-end — fresh machine + second project
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 46: Phase 1 end-to-end (fresh machine + second project)${colors.reset}\n`);
+
+  try {
+    const tempGlobalDir46 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-e2e-global-'));
+    const priorBmadHome46 = process.env.BMAD_HOME;
+    process.env.BMAD_HOME = tempGlobalDir46;
+
+    try {
+      // ────────────────────────────────────────────────────────────
+      // Part A: Fresh-machine install, project #1
+      // ────────────────────────────────────────────────────────────
+      const project1 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-e2e-proj1-'));
+      const bmad1 = path.join(project1, '_bmad');
+      await fs.ensureDir(path.join(bmad1, 'core'));
+      await fs.ensureDir(path.join(bmad1, 'bmm'));
+
+      // Simulated installer output for project #1: user kept defaults for
+      // every core key EXCEPT project_name, which is per-project.
+      const project1Configs = {
+        core: {
+          user_name: 'Brian',
+          project_name: 'first-project',
+          communication_language: 'English',
+          document_output_language: 'English',
+          output_folder: '{project-root}/_bmad-output',
+        },
+        bmm: {
+          user_skill_level: 'intermediate',
+          planning_artifacts: '{project-root}/_bmad-output/planning-artifacts',
+          implementation_artifacts: '{project-root}/_bmad-output/implementation-artifacts',
+          project_knowledge: '{project-root}/docs',
+        },
+      };
+
+      const gen1 = new ManifestGenerator();
+      gen1.bmadDir = bmad1;
+      gen1.bmadFolderName = path.basename(bmad1);
+      gen1.updatedModules = ['core', 'bmm'];
+      await gen1.collectAgentsFromModuleYaml();
+      await gen1.writeCentralConfig(bmad1, project1Configs);
+      await gen1.writeModuleTomls(bmad1);
+      await gen1.writeGlobalUserCore(project1Configs);
+
+      // Project #1: config.toml is lean — only project_name (the one delta)
+      const team1 = await fs.readFile(path.join(bmad1, 'config.toml'), 'utf8');
+      assert(team1.includes('project_name = "first-project"'), 'P1 config.toml carries project_name delta');
+      assert(!team1.includes('user_name'), 'P1 config.toml has no user_name (scope:user routed to global)');
+      assert(!team1.includes('document_output_language'), 'P1 config.toml strips default document_output_language');
+      assert(!team1.includes('[agents.'), 'P1 config.toml has NO [agents.*] sections');
+      assert(!team1.includes('[modules.bmm]'), 'P1 config.toml has NO [modules.bmm] section (all defaults)');
+
+      // Project #1: config.user.toml is just the header
+      const user1 = await fs.readFile(path.join(bmad1, 'config.user.toml'), 'utf8');
+      assert(!user1.includes('user_name'), 'P1 config.user.toml has no user_name');
+      assert(!user1.includes('[modules.bmm]'), 'P1 config.user.toml has no [modules.bmm]');
+
+      // Global file populated with scope:user core values from project #1
+      const globalPath = path.join(tempGlobalDir46, 'config.user.toml');
+      assert(await fs.pathExists(globalPath), 'Global ~/.bmad/config.user.toml created on first install');
+      const global1 = await fs.readFile(globalPath, 'utf8');
+      assert(global1.includes('user_name = "Brian"'), 'Global identity carries Brian after P1');
+      assert(global1.includes('communication_language = "English"'), 'Global identity carries language after P1');
+
+      // module.toml floor: cross-key placeholders resolved at install time
+      const bmm1 = await fs.readFile(path.join(bmad1, 'bmm', 'module.toml'), 'utf8');
+      assert(
+        bmm1.includes('planning_artifacts = "{project-root}/_bmad-output/planning-artifacts"'),
+        'P1 bmm/module.toml has cross-key-resolved planning_artifacts',
+      );
+      assert(bmm1.includes('[agents.bmad-agent-analyst]'), 'P1 bmm/module.toml carries agent roster');
+
+      // ────────────────────────────────────────────────────────────
+      // Part B: Second project install on the same machine
+      //   - Global identity from P1 should be picked up by the OfficialModules
+      //     loader (loadGlobalConfig) as a silent default-source for scope:user
+      //     core questions (D) and a seed for non-user-scope ones (E).
+      //   - Resolver chain at runtime: global.core.user_name → reaches skills
+      //     even though P2 never wrote it locally.
+      // ────────────────────────────────────────────────────────────
+      const { OfficialModules } = require('../tools/installer/modules/official-modules');
+
+      const project2 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-e2e-proj2-'));
+      const bmad2 = path.join(project2, '_bmad');
+      await fs.ensureDir(bmad2);
+
+      const om = new OfficialModules();
+      // Simulate what collectAllConfigurations does on entry: load global.
+      om.globalConfig = await require('../tools/installer/global-config').loadGlobalConfig();
+      assert(om.globalConfig.merged.core, 'OfficialModules.loadGlobalConfig returns populated [core]');
+      assert(om.globalConfig.merged.core.user_name === 'Brian', 'Global config from P1 visible to OfficialModules on P2 install');
+      assert(om.globalConfig.merged.core.communication_language === 'English', 'Global identity round-trips through TOML correctly');
+
+      // ────────────────────────────────────────────────────────────
+      // Part C: Python resolver sees identity via global even when P2's
+      // project _bmad has no [core] user_name. Validates the full layered
+      // resolver chain end-to-end.
+      // ────────────────────────────────────────────────────────────
+      // Write a minimal P2 install (just project_name in config.toml)
+      const gen2 = new ManifestGenerator();
+      gen2.bmadDir = bmad2;
+      gen2.bmadFolderName = path.basename(bmad2);
+      gen2.updatedModules = ['core', 'bmm'];
+      await fs.ensureDir(path.join(bmad2, 'core'));
+      await fs.ensureDir(path.join(bmad2, 'bmm'));
+      const project2Configs = {
+        core: {
+          user_name: 'Brian', // Reused from global silently (D) — would normally bypass write
+          project_name: 'second-project',
+          communication_language: 'English',
+          document_output_language: 'English',
+          output_folder: '{project-root}/_bmad-output',
+        },
+        bmm: {
+          user_skill_level: 'intermediate',
+          planning_artifacts: '{project-root}/_bmad-output/planning-artifacts',
+          implementation_artifacts: '{project-root}/_bmad-output/implementation-artifacts',
+          project_knowledge: '{project-root}/docs',
+        },
+      };
+      await gen2.collectAgentsFromModuleYaml();
+      await gen2.writeCentralConfig(bmad2, project2Configs);
+      await gen2.writeModuleTomls(bmad2);
+      // Note: do NOT call writeGlobalUserCore again — values would be a no-op
+      // merge, but in the real install they'd silently skip.
+
+      const { execSync } = require('node:child_process');
+      const resolverPath = path.resolve(__dirname, '..', 'src/scripts/resolve_config.py');
+      const resolved = JSON.parse(
+        execSync(
+          `python3 ${resolverPath} --project-root ${project2} ` +
+            `--key core.user_name --key core.project_name --key agents.bmad-agent-analyst.name`,
+          { encoding: 'utf8', env: { ...process.env, BMAD_HOME: tempGlobalDir46 } },
+        ),
+      );
+      assert(resolved['core.user_name'] === 'Brian', 'Resolver returns user_name from global layer (P2 lean config.toml omitted it)');
+      assert(
+        resolved['core.project_name'] === 'second-project',
+        'Resolver returns project_name from P2 config.toml (project layer beats global)',
+      );
+      assert(resolved['agents.bmad-agent-analyst.name'] === 'Mary', 'Resolver returns agent name from P2 module.toml floor');
+
+      await fs.remove(project1).catch(() => {});
+      await fs.remove(project2).catch(() => {});
+    } finally {
+      await fs.remove(tempGlobalDir46).catch(() => {});
+      if (priorBmadHome46 === undefined) {
+        delete process.env.BMAD_HOME;
+      } else {
+        process.env.BMAD_HOME = priorBmadHome46;
+      }
+    }
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 46 setup failed: ${error.message}${colors.reset}`);
     console.log(error.stack);
     failed++;
   }
