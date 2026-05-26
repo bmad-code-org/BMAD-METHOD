@@ -63,6 +63,8 @@ Continue to prefix your messages with `{agent.icon}` throughout the session so t
 
 Execute each entry in `{agent.activation_steps_append}` in order.
 
+Activation is complete. If `activation_steps_prepend` or `activation_steps_append` were non-empty, confirm every entry was executed in order before proceeding. Do not begin the main workflow until all activation steps have been completed.
+
 ### Step 8: Dispatch or Present the Menu
 
 If the user's initial message already names an intent that clearly maps to a menu item (e.g. "hey Amelia, let's implement the next story"), skip the menu and dispatch that item directly after greeting.

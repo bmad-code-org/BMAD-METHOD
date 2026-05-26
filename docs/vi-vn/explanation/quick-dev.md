@@ -2,7 +2,7 @@
 title: "Phát triển nhanh"
 description: Giảm ma sát có người trong vòng lặp mà vẫn giữ các điểm kiểm tra bảo vệ chất lượng đầu ra
 sidebar:
-  order: 2
+  order: 7
 ---
 
 Đưa ý định vào, nhận thay đổi mã nguồn ra, với số lần cần con người nhảy vào giữa quy trình ít nhất có thể - nhưng không đánh đổi chất lượng.

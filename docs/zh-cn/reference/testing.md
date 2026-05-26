@@ -2,7 +2,7 @@
 title: "测试选项"
 description: 内置 QA workflow 与 TEA 模块对比：何时用哪个、各自边界是什么
 sidebar:
-  order: 5
+  order: 6
 ---
 
 BMad 有两条测试路径：

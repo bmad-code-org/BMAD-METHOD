@@ -1,0 +1,77 @@
+# Official module registry — the single source of truth for which modules
+# the BMad installer offers and how they are displayed.
+#
+# Order here determines display order in the installer picker (after the
+# built-in core and bmm entries, which are loaded from local module.yaml).
+#
+# default_channel (optional) — the install channel when the user does not
+# override with --channel/--pin/--next. Valid values: stable | next.
+# Omit to inherit the installer's hardcoded default (stable).
+
+modules:
+  bmad-method-test-architecture-enterprise:
+    url: https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise
+    module-definition: src/module.yaml
+    code: tea
+    name: "BMad Test Architect"
+    description: "Quality strategy, test automation, and release gates for enterprise teams"
+    defaultSelected: false
+    type: bmad-org
+    npmPackage: bmad-method-test-architecture-enterprise
+    default_channel: stable
+
+  bmad-builder:
+    url: https://github.com/bmad-code-org/bmad-builder
+    module-definition: skills/module.yaml
+    code: bmb
+    name: "BMad Builder"
+    description: "Build AI agents, workflows, and modules from a conversation"
+    defaultSelected: false
+    type: bmad-org
+    npmPackage: bmad-builder
+    default_channel: stable
+
+  bmad-automator:
+    url: https://github.com/bmad-code-org/bmad-automator
+    module-definition: skills/module.yaml
+    code: automator
+    name: "BMad Automator Epic Builder Experimental"
+    description: "EXPERIMENTAL: only supports claude and codex currently"
+    defaultSelected: false
+    type: experimental
+    npmPackage: bmad-story-automator
+    default_channel: next
+
+  bmad-creative-intelligence-suite:
+    url: https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite
+    module-definition: src/module.yaml
+    code: cis
+    name: "BMad Creative Intelligence Suite"
+    description: "Brainstorming, ideation, storytelling, design thinking, and problem-solving"
+    defaultSelected: false
+    type: bmad-org
+    npmPackage: bmad-creative-intelligence-suite
+    default_channel: stable
+
+  bmad-game-dev-studio:
+    url: https://github.com/bmad-code-org/bmad-module-game-dev-studio.git
+    module-definition: src/module.yaml
+    code: gds
+    name: "BMad Game Dev Studio"
+    description: "Game design and development for Unity, Unreal, Godot, and Phaser."
+    defaultSelected: false
+    type: bmad-org
+    npmPackage: bmad-game-dev-studio
+    default_channel: stable
+
+  bmad-method-wds-expansion:
+    url: https://github.com/bmad-code-org/bmad-method-wds-expansion
+    module-definition: src/module.yaml
+    code: wds
+    plugin_name: bmad-wds # WDS marketplace.json declares the plugin under this name
+    name: "Whiteport Design Studio"
+    description: "Strategic UX and Design first planning methodology"
+    defaultSelected: false
+    type: bmad-org
+    npmPackage: bmad-wds
+    default_channel: stable

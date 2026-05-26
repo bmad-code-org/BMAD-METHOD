@@ -57,4 +57,4 @@ principles = [
 [[agent.menu]]
 code = "CU"
 description = "Guidance through realizing the plan for your UX to inform architecture and implementation"
-skill = "bmad-create-ux-design"
+skill = "bmad-ux"

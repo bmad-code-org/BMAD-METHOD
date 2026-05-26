@@ -2,7 +2,7 @@
 title: "Předcházení konfliktům agentů"
 description: Jak architektura zabraňuje konfliktům, když více agentů implementuje systém
 sidebar:
-  order: 4
+  order: 5
 ---
 
 Když více AI agentů implementuje různé části systému, mohou dělat protichůdná technická rozhodnutí. Dokumentace architektury tomu zabraňuje stanovením sdílených standardů.

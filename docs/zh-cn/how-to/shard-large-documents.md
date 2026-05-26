@@ -2,7 +2,7 @@
 title: "文档分片指南"
 description: 将大型 Markdown 文件拆分为更小的组织化文件，以更好地管理上下文
 sidebar:
-  order: 9
+  order: 10
 ---
 
 当单个 Markdown 文档过大、影响模型读取时，可使用 `bmad-shard-doc` 工作流把文档拆成按章节组织的小文件，降低上下文压力。

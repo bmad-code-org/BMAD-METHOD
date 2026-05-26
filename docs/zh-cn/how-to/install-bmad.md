@@ -16,7 +16,7 @@ sidebar:
 - 更新现有的 BMad 安装
 
 :::note[前置条件]
-- **Node.js** 20+（安装程序必需）
+- **Node.js** 20.12+（安装程序必需）
 - **Git**（推荐）
 - **AI 工具**（Claude Code、Cursor 或类似工具）
 :::

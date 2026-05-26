@@ -14,7 +14,7 @@ Utilisez l'installateur BMad pour passer de la v4 à la v6, qui inclut une déte
 - Vous avez des artefacts de planification existants à préserver
 
 :::note[Prérequis]
-- Node.js 20+
+- Node.js 20.12+
 - Installation BMad v4 existante
 :::
 

@@ -2,7 +2,7 @@
 title: "Xem trước Checkpoint"
 description: Review có người trong vòng lặp với hỗ trợ của LLM, dẫn bạn đi qua thay đổi từ mục đích đến chi tiết
 sidebar:
-  order: 3
+  order: 8
 ---
 
 `bmad-checkpoint-preview` là một workflow review tương tác có người trong vòng lặp với hỗ trợ của LLM. Nó dẫn bạn đi qua một thay đổi mã nguồn, từ mục đích và bối cảnh đến các chi tiết quan trọng, để bạn có thể quyết định có nên phát hành, làm lại, hay đào sâu thêm.

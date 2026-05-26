@@ -2,7 +2,7 @@
 title: Skills
 description: Reference for BMad skills — what they are, how they work, and where to find them.
 sidebar:
-  order: 3
+  order: 4
 ---
 
 Skills are pre-built prompts that load agents, run workflows, or execute tasks inside your IDE. The BMad installer generates them from your installed modules at install time. If you later add, remove, or change modules, re-run the installer to keep skills in sync (see [Troubleshooting](#troubleshooting)).
@@ -52,7 +52,7 @@ Each skill is a directory containing a `SKILL.md` file. For example, a Claude Co
 .claude/skills/
 ├── bmad-help/
 │   └── SKILL.md
-├── bmad-create-prd/
+├── bmad-prd/
 │   └── SKILL.md
 ├── bmad-agent-dev/
 │   └── SKILL.md
@@ -91,9 +91,9 @@ Workflow skills run a structured, multi-step process without loading an agent pe
 
 | Example skill | Purpose |
 | --- | --- |
-| `bmad-product-brief` | Create a product brief — guided discovery when your concept is clear |
+| `bmad-product-brief` | Create or update a product brief — guided discovery when your concept is clear |
 | `bmad-prfaq` | [Working Backwards PRFAQ](../explanation/analysis-phase.md#prfaq-working-backwards) challenge to stress-test your product concept |
-| `bmad-create-prd` | Create a Product Requirements Document |
+| `bmad-prd` | Create, update, or validate a Product Requirements Document |
 | `bmad-create-architecture` | Design system architecture |
 | `bmad-create-epics-and-stories` | Create epics and stories |
 | `bmad-dev-story` | Implement a story |
@@ -124,7 +124,7 @@ The core module includes 11 built-in tools — reviews, compression, brainstormi
 
 ## Naming Convention
 
-All skills use the `bmad-` prefix followed by a descriptive name (e.g., `bmad-agent-dev`, `bmad-create-prd`, `bmad-help`). See [Modules](./modules.md) for available modules.
+All skills use the `bmad-` prefix followed by a descriptive name (e.g., `bmad-agent-dev`, `bmad-prd`, `bmad-help`). See [Modules](./modules.md) for available modules.
 
 ## Troubleshooting
 

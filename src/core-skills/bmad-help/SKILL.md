@@ -59,8 +59,8 @@ module,skill,display-name,menu-code,description,action,args,phase,preceded-by,fo
 ## Response Format
 
 For each recommended item, present:
-- `[menu-code]` **Display name** — e.g., "[CP] Create PRD"
-- Skill name in backticks — e.g., `bmad-create-prd`
+- `[menu-code]` **Display name** — e.g., "[PR] PRD"
+- Skill name in backticks — e.g., `bmad-prd`
 - For multi-action skills: action invocation context — e.g., "tech-writer lets create a mermaid diagram!"
 - Description if present in CSV; otherwise your existing knowledge of the skill suffices
 - Args if available
