@@ -1836,6 +1836,37 @@ async function runTests() {
       assert(teamContent.includes('Installer-managed. Regenerated on every install'), 'config.toml has installer-managed header');
       assert(userContent.includes('Holds install answers scoped to YOU personally.'), 'config.user.toml header clarifies user scope');
       assert(globalContent.includes('Global personal BMad config'), '~/.bmad/config.user.toml has global-personal header');
+
+      // writeGlobalUserCore must preserve hand-edits in shapes the old
+      // round-trip parser silently dropped — arrays, single-quoted strings,
+      // dotted/quoted keys, \uXXXX escapes, custom sections.
+      const handEdited = [
+        '# user-authored — should survive installer rewrites',
+        '[core]',
+        'user_name = "WillBeOverwritten"',
+        'nickname = "blank-on-purpose"',
+        '',
+        '[custom_section]',
+        "literal = 'single-quoted string'",
+        'tags = ["a", "b", "c"]',
+        String.raw`unicode = "Märy"`,
+        '"weird.key" = "quoted-dotted key"',
+        '',
+      ].join('\n');
+      await fs.writeFile(globalCorePath, handEdited, 'utf8');
+      await generator35.writeGlobalUserCore({ core: { user_name: 'Updated', communication_language: 'Italian' } });
+      const afterReplay = await fs.readFile(globalCorePath, 'utf8');
+      assert(afterReplay.includes('user_name = "Updated"'), 'writeGlobalUserCore updates the key we own');
+      assert(afterReplay.includes('communication_language = "Italian"'), 'writeGlobalUserCore writes new scope:user key');
+      assert(afterReplay.includes("literal = 'single-quoted string'"), 'writeGlobalUserCore preserves single-quoted string values');
+      assert(afterReplay.includes('tags = ["a", "b", "c"]'), 'writeGlobalUserCore preserves array values');
+      assert(afterReplay.includes(String.raw`unicode = "Märy"`), String.raw`writeGlobalUserCore preserves \uXXXX escapes verbatim`);
+      assert(afterReplay.includes('"weird.key" = "quoted-dotted key"'), 'writeGlobalUserCore preserves quoted/dotted keys');
+      assert(afterReplay.includes('[custom_section]'), 'writeGlobalUserCore preserves user-authored sections');
+      assert(
+        afterReplay.includes('nickname = "blank-on-purpose"'),
+        'writeGlobalUserCore preserves hand-written keys outside the installer schema',
+      );
     } finally {
       await fs.remove(tempBmadDir35).catch(() => {});
       await fs.remove(tempGlobalDir35).catch(() => {});
@@ -3091,6 +3122,17 @@ async function runTests() {
     assert(tomlString(String.raw`back\slash`) === String.raw`"back\\slash"`, 'tomlString escapes backslashes');
     assert(tomlString('line1\nline2') === String.raw`"line1\nline2"`, 'tomlString escapes newlines');
 
+    // ---- tomlString: type inference (--set bmm.workers=4 must be int) ----
+    assert(tomlString('true') === 'true', 'tomlString emits bare bool for "true"');
+    assert(tomlString('false') === 'false', 'tomlString emits bare bool for "false"');
+    assert(tomlString('4') === '4', 'tomlString emits bare integer for digit string');
+    assert(tomlString('-17') === '-17', 'tomlString emits bare integer for negative');
+    assert(tomlString('3.14') === '3.14', 'tomlString emits bare float for decimal');
+    assert(tomlString('-0.5') === '-0.5', 'tomlString emits bare float for negative decimal');
+    assert(tomlString('1e10') === '"1e10"', 'tomlString quotes scientific notation (not in inferred set)');
+    assert(tomlString('4.') === '"4."', 'tomlString quotes incomplete float (preserves as string)');
+    assert(tomlString('"true"') === String.raw`"\"true\""`, 'tomlString preserves explicitly-quoted "true" as string');
+
     // ---- upsertTomlKey: insert into existing section ---------------------
     {
       const before = `[core]\nuser_name = "Brian"\n\n[modules.bmm]\nproject_knowledge = "{project-root}/docs"\n`;
@@ -3130,6 +3172,26 @@ async function runTests() {
       assert(withTrailing.endsWith('\n'), 'upsertTomlKey preserves trailing newline');
       const withoutTrailing = upsertTomlKey('[core]\nuser_name = "old"', '[core]', 'user_name', '"new"');
       assert(!withoutTrailing.endsWith('\n'), 'upsertTomlKey preserves absence of trailing newline');
+    }
+
+    // ---- upsertTomlKey: `#` inside string value is NOT a comment ---------
+    // Per TOML spec, basic strings may contain unescaped `#`. The previous
+    // /\s+#/ scanner truncated such values, producing malformed TOML.
+    {
+      const before = `[core]\nproject_name = "hello # world"\n`;
+      const after = upsertTomlKey(before, '[core]', 'project_name', '"updated # value"');
+      assert(after.includes('project_name = "updated # value"'), 'upsertTomlKey writes value containing # intact');
+      assert(!after.includes('# world'), 'upsertTomlKey does not preserve a fake comment that lived inside the old string');
+    }
+
+    // ---- upsertTomlKey: section header with inline comment is found -----
+    {
+      const before = `[core]  # personal identity\nuser_name = "old"\n`;
+      const after = upsertTomlKey(before, '[core]', 'user_name', '"Brian"');
+      assert(after.includes('user_name = "Brian"'), 'upsertTomlKey updates key under header with inline comment');
+      // Should not have appended a duplicate [core] block at EOF.
+      const headerOccurrences = (after.match(/^\[core]/gm) || []).length;
+      assert(headerOccurrences === 1, `upsertTomlKey reuses existing [core] header (got ${headerOccurrences} headers)`);
     }
 
     // ---- applySetOverrides happy path ------------------------------------
@@ -3370,7 +3432,10 @@ async function runTests() {
       assert(!coreContent.includes('[agents.bmad-agent-analyst]'), 'bmm-owned agents do NOT leak into core/module.toml');
 
       // [core] questions (user_name, project_name, etc.) are core's defaults
-      assert(coreContent.includes('[modules.core]'), 'core/module.toml has [modules.core] section');
+      // and must live at top-level [core] — resolvers + consumers read core.*
+      // from that namespace, not from a nested [modules.core] subtree.
+      assert(coreContent.includes('[core]'), 'core/module.toml has top-level [core] section');
+      assert(!coreContent.includes('[modules.core]'), 'core defaults do NOT live under [modules.core]');
       assert(coreContent.includes('user_name = "BMad"'), 'core/module.toml carries user_name default ("BMad" from module.yaml)');
       assert(coreContent.includes('document_output_language = "English"'), 'core/module.toml carries document_output_language default');
 

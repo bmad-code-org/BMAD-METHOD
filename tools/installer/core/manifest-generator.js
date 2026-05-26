@@ -3,7 +3,8 @@ const fs = require('../fs-native');
 const yaml = require('yaml');
 const crypto = require('node:crypto');
 const { resolveInstalledModuleYaml } = require('../project-root');
-const { globalUserConfigPath, loadGlobalConfig, parseSimpleToml } = require('../global-config');
+const { globalUserConfigPath, loadGlobalConfig } = require('../global-config');
+const { upsertTomlKey } = require('../set-overrides');
 const prompts = require('../prompts');
 
 // Load package.json for version info
@@ -704,37 +705,32 @@ class ManifestGenerator {
     const globalPath = globalUserConfigPath();
     await fs.ensureDir(path.dirname(globalPath));
 
-    // Read-merge-write so we don't trample any pre-existing scopes / sections
-    // the user might have written to ~/.bmad/config.user.toml by hand or via
-    // another tool.
-    let existing = {};
+    // Line-surgery upsert into the existing file (or a fresh one with the
+    // installer header). We only touch the [core] keys we own. Every other
+    // section, comment, and value passes through byte-for-byte — including
+    // shapes the previous round-trip parser quietly dropped (arrays,
+    // single-quoted strings, dotted/quoted keys, \uXXXX escapes, etc.).
+    let content;
     if (await fs.pathExists(globalPath)) {
-      try {
-        existing = parseSimpleToml(await fs.readFile(globalPath, 'utf8'));
-      } catch {
-        existing = {};
-      }
+      content = await fs.readFile(globalPath, 'utf8');
+    } else {
+      content =
+        [
+          '# ─────────────────────────────────────────────────────────────────',
+          '# Global personal BMad config — values tied to YOU as a user, not',
+          '# any specific project. Installer writes scope:user identity here',
+          '# (user_name, communication_language) so re-installs across projects',
+          "# don't re-ask the same questions.",
+          '#',
+          '# Location precedence: $BMAD_HOME if set, else ~/.bmad',
+          '# Resolver tier: lower than project-level _bmad/*.toml.',
+          '# ─────────────────────────────────────────────────────────────────',
+          '',
+        ].join('\n') + '\n';
     }
-    const mergedCore = { ...existing.core, ...userScopeValues };
-    const mergedConfig = { ...existing, core: mergedCore };
-
-    const lines = [
-      '# ─────────────────────────────────────────────────────────────────',
-      '# Global personal BMad config — values tied to YOU as a user, not',
-      '# any specific project. Installer writes scope:user identity here',
-      '# (user_name, communication_language) so re-installs across projects',
-      "# don't re-ask the same questions.",
-      '#',
-      '# Location precedence: $BMAD_HOME if set, else ~/.bmad',
-      '# Resolver tier: lower than project-level _bmad/*.toml.',
-      '# ─────────────────────────────────────────────────────────────────',
-      '',
-    ];
-    // Emit sections recursively so nested tables (e.g. [modules.bmm] reachable
-    // via dotted parseSimpleToml output) round-trip as proper sub-tables
-    // instead of being stringified as "[object Object]" inside their parent.
-    emitTomlSections(mergedConfig, [], lines);
-    const content = lines.join('\n').replace(/\n+$/, '\n');
+    for (const [key, value] of Object.entries(userScopeValues)) {
+      content = upsertTomlKey(content, '[core]', key, formatTomlValue(value));
+    }
     await fs.writeFile(globalPath, content);
     return globalPath;
   }
@@ -829,7 +825,12 @@ class ManifestGenerator {
       ];
 
       if (Object.keys(resolvedDefaults).length > 0) {
-        lines.push(`[modules.${moduleCode}]`);
+        // Core's defaults belong under top-level [core] — that's where
+        // writeCentralConfig emits core deltas and where resolve_config.py
+        // consumers read core.* from. Everything else gets the per-module
+        // [modules.<code>] namespace.
+        const sectionHeader = moduleCode === 'core' ? '[core]' : `[modules.${moduleCode}]`;
+        lines.push(sectionHeader);
         for (const [key, value] of Object.entries(resolvedDefaults)) {
           lines.push(`${key} = ${formatTomlValue(value)}`);
         }
@@ -1178,28 +1179,6 @@ function formatTomlValue(value) {
     .replaceAll('\r', String.raw`\r`)
     .replaceAll('\t', String.raw`\t`);
   return `"${escaped}"`;
-}
-
-// Recursively serialize a parsed TOML object back to text. Scalar entries
-// are written under the current section header; nested objects are emitted
-// as dotted sub-tables. Skips null/undefined/'' values.
-function emitTomlSections(node, sectionPath, lines) {
-  const scalars = [];
-  const nested = [];
-  for (const [key, value] of Object.entries(node)) {
-    if (value === null || value === undefined || value === '') continue;
-    if (value && typeof value === 'object' && !Array.isArray(value)) {
-      nested.push([key, value]);
-    } else {
-      scalars.push([key, value]);
-    }
-  }
-  if (scalars.length > 0) {
-    if (sectionPath.length > 0) lines.push(`[${sectionPath.join('.')}]`);
-    for (const [key, value] of scalars) lines.push(`${key} = ${formatTomlValue(value)}`);
-    lines.push('');
-  }
-  for (const [key, value] of nested) emitTomlSections(value, [...sectionPath, key], lines);
 }
 
 module.exports = { ManifestGenerator };

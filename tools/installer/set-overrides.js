@@ -85,11 +85,25 @@ function parseSetEntries(entries) {
 }
 
 /**
- * Encode a JS string as a TOML basic string (double-quoted with escapes).
- * @param {string} value
+ * Encode a `--set` value as a TOML literal. Types are inferred from the value
+ * so `--set bmm.workers=4` writes `workers = 4` (integer), not `"4"` (string).
+ *
+ * Rules (mirror how TOML would interpret the literal hand-typed in a config):
+ *   - `true` / `false`  → boolean
+ *   - `-?\d+`           → integer
+ *   - `-?\d+\.\d+`      → float
+ *   - everything else   → quoted basic string
+ *
+ * To force a string that looks like a bool/number, wrap in literal quotes:
+ *   --set foo.x='"true"'   →  x = "true"
+ *
+ * @param {string} value raw value as received from the --set flag
  */
 function tomlString(value) {
   const s = String(value);
+  if (s === 'true' || s === 'false') return s;
+  if (/^-?\d+$/.test(s)) return s;
+  if (/^-?\d+\.\d+$/.test(s)) return s;
   // Per the TOML spec, basic strings escape `\`, `"`, and control characters.
   return (
     '"' +
@@ -144,8 +158,10 @@ function upsertTomlKey(content, section, key, valueToml) {
   const hadTrailingNewline = lines.length > 0 && lines.at(-1) === '';
   if (hadTrailingNewline) lines.pop();
 
-  // Locate the target section.
-  const sectionStart = lines.findIndex((line) => line.trim() === section);
+  // Locate the target section. Tolerates a trailing inline comment on the
+  // header (`[core]  # personal`) and a header line with non-newline
+  // trailing whitespace — `line.trim() === section` would miss both.
+  const sectionStart = lines.findIndex((line) => isSectionHeader(line, section));
   if (sectionStart === -1) {
     // Section doesn't exist — append a new block. Pad with a blank line if
     // the file is non-empty so sections stay visually separated.
@@ -170,11 +186,12 @@ function upsertTomlKey(content, section, key, valueToml) {
     const match = lines[i].match(keyPattern);
     if (match) {
       const indent = match[1];
-      // Preserve trailing comment if present. We split on the first `#` that
-      // is preceded by whitespace — TOML strings can't contain unescaped `#`
-      // in basic-string form so this is safe for the values we emit.
+      // Preserve trailing comment if present. `findInlineCommentStart` tracks
+      // double-quoted string state so a `#` inside a value like
+      // `"path with # hash"` isn't mistaken for a comment marker (per TOML
+      // spec, basic strings may contain unescaped `#`).
       const tail = match[2];
-      const commentIdx = tail.search(/\s+#/);
+      const commentIdx = findInlineCommentStart(tail);
       const commentSuffix = commentIdx === -1 ? '' : tail.slice(commentIdx);
       lines[i] = `${indent}${key} = ${valueToml}${commentSuffix}`;
       return lines.join('\n') + (hadTrailingNewline ? '\n' : '');
@@ -197,6 +214,51 @@ function escapeRegExp(s) {
 }
 
 /**
+ * Match a TOML section header line against a target like `[core]`. Tolerates
+ * leading/trailing whitespace and a trailing inline comment, which the
+ * previous `line.trim() === section` check missed.
+ */
+function isSectionHeader(line, target) {
+  const trimmed = line.trimStart();
+  if (!trimmed.startsWith(target)) return false;
+  const after = trimmed.slice(target.length);
+  return /^\s*(?:#.*)?$/.test(after);
+}
+
+/**
+ * Find the start index of an inline `# comment` in a TOML value tail,
+ * tracking double-quoted string state so a `#` inside a string literal is
+ * not treated as a comment. Returns the index of the whitespace run that
+ * precedes the `#` (matching the contract of the old `/\s+#/` regex), or
+ * -1 if there's no inline comment.
+ */
+function findInlineCommentStart(text) {
+  let inString = false;
+  let escaped = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (escaped) {
+      escaped = false;
+      continue;
+    }
+    if (ch === '\\') {
+      escaped = true;
+      continue;
+    }
+    if (ch === '"') {
+      inString = !inString;
+      continue;
+    }
+    if (ch === '#' && !inString) {
+      let j = i;
+      while (j > 0 && /\s/.test(text[j - 1])) j--;
+      if (j < i) return j;
+    }
+  }
+  return -1;
+}
+
+/**
  * Look up `[section] key` in a TOML file. Returns true if the file exists,
  * the section is present, and `key` is set within it. Used by
  * `applySetOverrides` to route an override to the file that already owns
@@ -207,12 +269,19 @@ async function tomlHasKey(filePath, section, key) {
   if (!(await fs.pathExists(filePath))) return false;
   const content = await fs.readFile(filePath, 'utf8');
   const lines = content.split('\n');
-  const sectionStart = lines.findIndex((line) => line.trim() === section);
-  if (sectionStart === -1) return false;
   const keyPattern = new RegExp(`^\\s*${escapeRegExp(key)}\\s*=`);
-  for (let i = sectionStart + 1; i < lines.length; i++) {
-    if (/^\s*\[/.test(lines[i])) return false;
-    if (keyPattern.test(lines[i])) return true;
+  // Walk every line tracking whether we're inside the target section. This
+  // both tolerates inline-commented headers (`[core]  # personal`) and
+  // handles the edge case where the same section appears more than once
+  // (legal in TOML — tomllib merges them — but the previous `findIndex`
+  // only checked the first block, misrouting `--set`).
+  let inTargetSection = false;
+  for (const line of lines) {
+    if (/^\s*\[/.test(line)) {
+      inTargetSection = isSectionHeader(line, section);
+      continue;
+    }
+    if (inTargetSection && keyPattern.test(line)) return true;
   }
   return false;
 }

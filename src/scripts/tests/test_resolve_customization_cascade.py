@@ -25,7 +25,10 @@ def make_skill(parent: Path, name: str, defaults_toml: str, module: str | None =
 
 def run(skill_dir: Path, key=None, env_overrides=None):
     env = os.environ.copy()
-    env.setdefault("BMAD_HOME", "/nonexistent-bmad-home-default")
+    # Force BMAD_HOME to a guaranteed-missing path so the developer's real
+    # ~/.bmad never leaks into a test expecting an empty global. Tests that
+    # need a populated global override via env_overrides below.
+    env["BMAD_HOME"] = "/nonexistent-bmad-home-default"
     if env_overrides:
         env.update(env_overrides)
     args = [sys.executable, str(SCRIPT), "--skill", str(skill_dir)]

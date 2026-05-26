@@ -14,7 +14,11 @@ def run_raw(args, env_overrides=None):
     """Run resolver, return CompletedProcess-like object with decoded streams.
     Use this when the test expects a non-zero exit (e.g. fail-fast checks)."""
     env = os.environ.copy()
-    env["BMAD_HOME"] = env.get("BMAD_HOME", "/nonexistent-bmad-home-default")
+    # Force BMAD_HOME to a guaranteed-missing path so any value the developer
+    # has set in their shell can't leak the real ~/.bmad into a test that
+    # expected an empty global. Tests that need a populated global pass it via
+    # env_overrides below.
+    env["BMAD_HOME"] = "/nonexistent-bmad-home-default"
     if env_overrides:
         env.update(env_overrides)
     result = subprocess.run(
