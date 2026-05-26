@@ -227,6 +227,17 @@ def main():
     project_root = Path(args.project_root).resolve() if args.project_root else None
     global_dir = resolve_global_dir()
 
+    # If the caller explicitly named a project root, that's a promise it exists
+    # and has been installed. Fail loudly on a missing _bmad/ rather than
+    # silently returning {} — that masked broken installs in the old required=
+    # True behavior. Global-only mode (no --project-root) stays permissive.
+    if project_root is not None and not (project_root / "_bmad").is_dir():
+        sys.stderr.write(
+            f"error: --project-root {project_root} has no _bmad/ directory "
+            f"(install not present, or wrong path)\n"
+        )
+        sys.exit(1)
+
     merged: dict = {}
     # Floor: per-module shipped defaults (lowest priority).
     for module_toml in collect_module_layers(project_root):

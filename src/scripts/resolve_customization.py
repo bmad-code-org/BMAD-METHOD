@@ -197,7 +197,7 @@ def deep_merge(base, override):
     return override
 
 
-_MODULE_SKILLS_RE = re.compile(r"^(?P<module>[A-Za-z0-9_]+)-skills$")
+_MODULE_SKILLS_RE = re.compile(r"^(?P<module>[A-Za-z0-9_-]+)-skills$")
 
 
 def detect_skill_module(skill_dir: Path) -> str | None:

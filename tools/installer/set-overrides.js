@@ -25,6 +25,8 @@ const PROTOTYPE_POLLUTING_NAMES = new Set(['__proto__', 'prototype', 'constructo
 const path = require('node:path');
 const fs = require('./fs-native');
 const yaml = require('yaml');
+const { globalUserConfigPath } = require('./global-config');
+const { resolveInstalledModuleYaml } = require('./project-root');
 
 /**
  * Parse a single `--set <module>.<key>=<value>` entry.
@@ -216,18 +218,48 @@ async function tomlHasKey(filePath, section, key) {
 }
 
 /**
+ * Look up which prompt keys in `core/module.yaml` are declared `scope: user`.
+ * Used so `--set` routes core scope:user keys (user_name, communication_language)
+ * to the global identity file the installer's writeGlobalUserCore writes to,
+ * rather than polluting project config.toml as a team-scope key.
+ * Returns an empty set if core isn't installed or the schema can't be parsed.
+ */
+async function loadCoreUserScopeKeys() {
+  const result = new Set();
+  try {
+    const corePath = await resolveInstalledModuleYaml('core');
+    if (!corePath) return result;
+    const parsed = yaml.parse(await fs.readFile(corePath, 'utf8'));
+    if (!parsed || typeof parsed !== 'object') return result;
+    for (const [key, value] of Object.entries(parsed)) {
+      if (value && typeof value === 'object' && 'prompt' in value && value.scope === 'user') {
+        result.add(key);
+      }
+    }
+  } catch {
+    // Schema unavailable — fall back to two-tier routing.
+  }
+  return result;
+}
+
+/**
  * Apply parsed `--set` overrides to the central TOML files written by the
  * installer. Called at the end of an install / quick-update.
  *
  * Routing per (module, key):
- *   1. If `_bmad/config.user.toml` already has `[section] key`, update there
- *      (user-scope key like `core.user_name`, `bmm.user_skill_level`).
- *   2. Otherwise update `_bmad/config.toml` (team scope, the default).
+ *   1. If `~/.bmad/config.user.toml` already has `[section] key`, update there
+ *      (global identity store — same place writeGlobalUserCore writes to).
+ *   2. Else if `_bmad/config.user.toml` already has `[section] key`, update
+ *      there (project-scoped personal override).
+ *   3. Else if the key is a known core scope:user key (user_name,
+ *      communication_language per core/module.yaml), route to global. Otherwise
+ *      writeCentralConfig's next-install partition would strip the value out
+ *      of project files.
+ *   4. Otherwise update `_bmad/config.toml` (team scope, the default).
  *
- * The schema-correct user/team partition lives in `manifest-generator`. We
- * intentionally don't re-read module schemas here — the only goal is to
- * match the file the installer just wrote the key to. For brand-new keys
- * (not in either file yet), team scope is the safe default.
+ * The schema-correct partition lives in `manifest-generator`. We only reach
+ * for the core schema (small, always present) so the first-run case for
+ * `--set core.user_name=...` doesn't land in the wrong file.
  *
  * @param {Object<string, Object<string, string>>} overrides
  * @param {string} bmadDir absolute path to `_bmad/`
@@ -240,6 +272,8 @@ async function applySetOverrides(overrides, bmadDir) {
 
   const teamPath = path.join(bmadDir, 'config.toml');
   const userPath = path.join(bmadDir, 'config.user.toml');
+  const globalPath = globalUserConfigPath();
+  const coreUserKeys = await loadCoreUserScopeKeys();
 
   for (const moduleCode of Object.keys(overrides)) {
     // Skip overrides for modules not actually installed. The installer writes
@@ -258,16 +292,35 @@ async function applySetOverrides(overrides, bmadDir) {
       const value = moduleOverrides[key];
       const valueToml = tomlString(value);
 
-      const userOwnsIt = await tomlHasKey(userPath, section, key);
-      const targetPath = userOwnsIt ? userPath : teamPath;
+      // 3-tier routing: prefer the file that already owns the key; otherwise
+      // honor core's user-scope partition (so `--set core.user_name` lands in
+      // ~/.bmad on a fresh install, not in project team config).
+      const globalOwnsIt = moduleCode === 'core' && (await tomlHasKey(globalPath, section, key));
+      const userOwnsIt = !globalOwnsIt && (await tomlHasKey(userPath, section, key));
+      const isCoreUserScope = moduleCode === 'core' && coreUserKeys.has(key) && !userOwnsIt;
+      let targetPath;
+      let scope;
+      if (globalOwnsIt || isCoreUserScope) {
+        targetPath = globalPath;
+        scope = 'user';
+      } else if (userOwnsIt) {
+        targetPath = userPath;
+        scope = 'user';
+      } else {
+        targetPath = teamPath;
+        scope = 'team';
+      }
 
-      // The team file always exists post-install; the user file only exists
-      // if the install wrote at least one user-scope key. If we're routing to
-      // it but it doesn't exist yet, create it with a minimal header so it
-      // has the same shape as installer-written user toml.
+      // The team file always exists post-install; the user/global files only
+      // exist once the installer has reason to write to them. If we're routing
+      // to one that doesn't exist yet, create it with a minimal header so it
+      // has the same shape as installer-written files.
       let content = '';
       if (await fs.pathExists(targetPath)) {
         content = await fs.readFile(targetPath, 'utf8');
+      } else if (targetPath === globalPath) {
+        await fs.ensureDir(path.dirname(globalPath));
+        content = '# Global personal BMad config (see ~/.bmad).\n';
       } else {
         content = '# Personal overrides for _bmad/config.toml.\n';
       }
@@ -277,8 +330,8 @@ async function applySetOverrides(overrides, bmadDir) {
       applied.push({
         module: moduleCode,
         key,
-        scope: userOwnsIt ? 'user' : 'team',
-        file: path.basename(targetPath),
+        scope,
+        file: targetPath === globalPath ? '~/.bmad/config.user.toml' : path.basename(targetPath),
       });
     }
 

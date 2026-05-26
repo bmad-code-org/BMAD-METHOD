@@ -22,9 +22,20 @@ const fs = require('./fs-native');
 function resolveGlobalDir() {
   const override = process.env.BMAD_HOME;
   if (override && override.trim()) {
-    return path.resolve(override.trim());
+    return path.resolve(expandTilde(override.trim()));
   }
   return path.join(os.homedir(), '.bmad');
+}
+
+// JS counterpart to Python's Path.expanduser() — keeps installer/resolver
+// agreement when BMAD_HOME is set in non-shell contexts (Docker, .env files,
+// Windows env var GUI) where the shell never expands `~`.
+function expandTilde(input) {
+  if (input === '~') return os.homedir();
+  if (input.startsWith('~/') || input.startsWith('~\\')) {
+    return path.join(os.homedir(), input.slice(2));
+  }
+  return input;
 }
 
 function globalTeamConfigPath() {
@@ -111,13 +122,11 @@ function stripInlineComment(line) {
 
 function parseTomlScalar(raw) {
   if (raw.startsWith('"') && raw.endsWith('"') && raw.length >= 2) {
-    return raw
-      .slice(1, -1)
-      .replaceAll(String.raw`\"`, '"')
-      .replaceAll(String.raw`\\`, '\\')
-      .replaceAll(String.raw`\n`, '\n')
-      .replaceAll(String.raw`\r`, '\r')
-      .replaceAll(String.raw`\t`, '\t');
+    // Single-pass unescape — sequential replaceAll lets `\\n` (backslash + n)
+    // collapse into a newline because the second pass sees the just-produced
+    // `\n` and treats it as the escape sequence. One regex avoids that.
+    const escapes = { '\\\\': '\\', '\\"': '"', '\\n': '\n', '\\r': '\r', '\\t': '\t' };
+    return raw.slice(1, -1).replaceAll(/\\["\\nrt]/g, (m) => escapes[m] ?? m);
   }
   if (raw === 'true') return true;
   if (raw === 'false') return false;

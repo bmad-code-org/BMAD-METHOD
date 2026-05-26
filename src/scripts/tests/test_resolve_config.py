@@ -10,7 +10,9 @@ from pathlib import Path
 SCRIPT = Path(__file__).resolve().parents[1] / "resolve_config.py"
 
 
-def run(args, env_overrides=None):
+def run_raw(args, env_overrides=None):
+    """Run resolver, return CompletedProcess-like object with decoded streams.
+    Use this when the test expects a non-zero exit (e.g. fail-fast checks)."""
     env = os.environ.copy()
     env["BMAD_HOME"] = env.get("BMAD_HOME", "/nonexistent-bmad-home-default")
     if env_overrides:
@@ -22,10 +24,16 @@ def run(args, env_overrides=None):
         env=env,
         check=False,
     )
-    stderr = result.stderr.decode("utf-8", errors="replace")
+    result.stdout = result.stdout.decode("utf-8", errors="replace")
+    result.stderr = result.stderr.decode("utf-8", errors="replace")
+    return result
+
+
+def run(args, env_overrides=None):
+    result = run_raw(args, env_overrides=env_overrides)
     if result.returncode != 0:
-        raise AssertionError(f"resolve_config failed ({result.returncode}): {stderr}")
-    return json.loads(result.stdout.decode("utf-8"))
+        raise AssertionError(f"resolve_config failed ({result.returncode}): {result.stderr}")
+    return json.loads(result.stdout)
 
 
 class ResolveConfigTests(unittest.TestCase):
@@ -79,10 +87,22 @@ class ResolveConfigTests(unittest.TestCase):
         self.assertEqual(data["core"]["user_name"], "Pinned")
 
     def test_project_config_optional(self):
-        # No _bmad/config.toml; should not error
+        # _bmad/ exists (installed project) but no config.toml inside — that's
+        # the lean / global-only case and must not error.
         with tempfile.TemporaryDirectory() as proj:
+            (Path(proj) / "_bmad").mkdir()
             data = run(["--project-root", proj])
         self.assertEqual(data, {})
+
+    def test_project_root_without_bmad_dir_errors(self):
+        # --project-root pointing at a directory with no _bmad/ is treated
+        # as a broken install (typo, wiped install) — resolver exits non-zero
+        # rather than silently returning {}. Global-only mode (no
+        # --project-root) keeps the permissive behavior.
+        with tempfile.TemporaryDirectory() as proj:
+            result = run_raw(["--project-root", proj])
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("no _bmad/ directory", result.stderr)
 
     def test_module_floor_contributes_when_no_overrides(self):
         # Module-shipped defaults from _bmad/{module}/module.toml should

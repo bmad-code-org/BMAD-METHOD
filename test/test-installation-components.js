@@ -3027,6 +3027,12 @@ async function runTests() {
   // Test Suite 44: --set <module>.<key>=<value> CLI overrides (#1663)
   // ============================================================
   console.log(`${colors.yellow}Test Suite 44: --set CLI overrides${colors.reset}\n`);
+  // Isolate $BMAD_HOME for the whole suite — applySetOverrides now consults
+  // ~/.bmad/config.user.toml for routing decisions, and we don't want tests
+  // touching the developer's actual global identity.
+  const tempGlobalDir44 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-applyset-global-'));
+  const priorBmadHome44 = process.env.BMAD_HOME;
+  process.env.BMAD_HOME = tempGlobalDir44;
   try {
     const { parseSetEntry, parseSetEntries, applySetOverrides, upsertTomlKey, tomlString } = require('../tools/installer/set-overrides');
     const { discoverOfficialModuleYamls, formatOptionsList } = require('../tools/installer/list-options');
@@ -3191,15 +3197,24 @@ async function runTests() {
       await fs.writeFile(path.join(bmadDir, 'config.toml'), '[core]\nuser_name = "Brian"\n', 'utf8');
       await fs.ensureDir(path.join(bmadDir, 'core'));
       await fs.writeFile(path.join(bmadDir, 'core', 'config.yaml'), 'user_name: Brian\n', 'utf8');
-      // Override targets a key only in team config; routes to team. user.toml
-      // never gets created in this case (correct — no user-scope writes).
+      // Override targets a core scope:user key. Per Task D's 3-tier routing,
+      // core.user_name lands in ~/.bmad/config.user.toml regardless of whether
+      // project user.toml exists — that's where the resolver picks it up.
+      // Project files (team and user) are left untouched.
       await applySetOverrides({ core: { user_name: 'Updated' } }, bmadDir);
       const team = await fs.readFile(path.join(bmadDir, 'config.toml'), 'utf8');
-      assert(team.includes('user_name = "Updated"'), 'applySetOverrides updates team key when user.toml is absent');
+      const globalContent = await fs.readFile(path.join(tempGlobalDir44, 'config.user.toml'), 'utf8');
+      assert(
+        globalContent.includes('user_name = "Updated"'),
+        'applySetOverrides routes core.user_name to global when project user.toml is absent',
+      );
+      assert(!team.includes('user_name = "Updated"'), 'applySetOverrides does not write core scope:user keys to project team config');
       assert(
         !(await fs.pathExists(path.join(bmadDir, 'config.user.toml'))),
-        'applySetOverrides does not create config.user.toml unnecessarily',
+        'applySetOverrides does not create project config.user.toml for scope:user core keys',
       );
+      // Reset global file for the next test block.
+      await fs.remove(path.join(tempGlobalDir44, 'config.user.toml')).catch(() => {});
       await fs.remove(tmp).catch(() => {});
     }
 
@@ -3213,11 +3228,17 @@ async function runTests() {
       await fs.writeFile(path.join(bmadDir, 'core', 'config.yaml'), 'user_name: Brian\n', 'utf8');
       // bmm is not installed (no `_bmad/bmm/config.yaml`). The override for
       // bmm should be silently skipped, no `[modules.bmm]` section created.
+      // core.user_name is scope:user → routed to global (~/.bmad).
       const applied = await applySetOverrides({ bmm: { foo: 'bar' }, core: { user_name: 'Updated' } }, bmadDir);
       const team = await fs.readFile(path.join(bmadDir, 'config.toml'), 'utf8');
+      const globalContent = await fs.readFile(path.join(tempGlobalDir44, 'config.user.toml'), 'utf8');
       assert(!team.includes('[modules.bmm]'), 'applySetOverrides does NOT create section for uninstalled module');
-      assert(team.includes('user_name = "Updated"'), 'applySetOverrides still applies overrides for installed modules');
+      assert(
+        globalContent.includes('user_name = "Updated"'),
+        'applySetOverrides still applies overrides for installed modules (routed to global for scope:user core)',
+      );
       assert(applied.length === 1 && applied[0].module === 'core', 'applySetOverrides reports only the installed-module entries');
+      await fs.remove(path.join(tempGlobalDir44, 'config.user.toml')).catch(() => {});
       await fs.remove(tmp).catch(() => {});
     }
 
@@ -3273,6 +3294,13 @@ async function runTests() {
     console.log(`${colors.red}Test Suite 44 setup failed: ${error.message}${colors.reset}`);
     console.log(error.stack);
     failed++;
+  } finally {
+    if (priorBmadHome44 === undefined) {
+      delete process.env.BMAD_HOME;
+    } else {
+      process.env.BMAD_HOME = priorBmadHome44;
+    }
+    await fs.remove(tempGlobalDir44).catch(() => {});
   }
 
   console.log('');

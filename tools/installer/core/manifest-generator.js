@@ -459,9 +459,17 @@ class ManifestGenerator {
     //   1. scope per prompt key (team vs user)
     //   2. the canonical module code (for [modules.{code}] section names)
     //   3. processed defaults per key (for delta detection)
+    //
+    // Pass 1: parse every module.yaml and capture its raw shipped defaults.
+    // We use those — NOT the user's answered moduleConfigs — to resolve
+    // cross-key placeholders like `{output_folder}`. Otherwise a user override
+    // of output_folder would make every derived default (e.g. planning_artifacts)
+    // match the user's value and get stripped from config.toml as "default",
+    // even though module.toml's floor still carries the shipped path.
     const scopeByModuleKey = {};
     const codeByModuleName = {};
     const defaultsByModuleKey = {};
+    const parsedByModule = {};
     for (const moduleName of this.updatedModules) {
       const moduleYamlPath = await resolveInstalledModuleYaml(moduleName);
       if (!moduleYamlPath) {
@@ -474,22 +482,42 @@ class ManifestGenerator {
       try {
         const parsed = yaml.parse(await fs.readFile(moduleYamlPath, 'utf8'));
         if (!parsed || typeof parsed !== 'object') continue;
+        parsedByModule[moduleName] = parsed;
         if (parsed.code) codeByModuleName[moduleName] = parsed.code;
-        scopeByModuleKey[moduleName] = {};
-        defaultsByModuleKey[moduleName] = {};
-        for (const [key, value] of Object.entries(parsed)) {
-          if (!value || typeof value !== 'object' || !('prompt' in value)) continue;
-          scopeByModuleKey[moduleName][key] = value.scope === 'user' ? 'user' : 'team';
-          const processedDefault = computeProcessedDefault(value, moduleConfigs);
-          if (processedDefault !== undefined) {
-            defaultsByModuleKey[moduleName][key] = processedDefault;
-          }
-        }
       } catch (error) {
         console.warn(
           `[warn] writeCentralConfig: could not parse module.yaml for '${moduleName}' (${error.message}). ` +
             `Answers from this module will default to team scope — user-scoped keys may mis-file into config.toml.`,
         );
+      }
+    }
+
+    // Build the cross-key defaults map (same logic writeModuleTomls uses).
+    // Shipped defaults only — never user answers.
+    const crossKeyDefaults = {};
+    for (const parsed of Object.values(parsedByModule)) {
+      const raw = extractModuleDefaults(parsed);
+      for (const [key, value] of Object.entries(raw)) {
+        if (crossKeyDefaults[key] !== undefined) continue;
+        let stripped = value;
+        if (typeof stripped === 'string' && stripped.startsWith('{project-root}/')) {
+          stripped = stripped.slice('{project-root}/'.length);
+        }
+        crossKeyDefaults[key] = stripped;
+      }
+    }
+
+    // Pass 2: compute scopes and processed defaults using the symmetric map.
+    for (const [moduleName, parsed] of Object.entries(parsedByModule)) {
+      scopeByModuleKey[moduleName] = {};
+      defaultsByModuleKey[moduleName] = {};
+      for (const [key, value] of Object.entries(parsed)) {
+        if (!value || typeof value !== 'object' || !('prompt' in value)) continue;
+        scopeByModuleKey[moduleName][key] = value.scope === 'user' ? 'user' : 'team';
+        const processedDefault = computeProcessedDefault(value, crossKeyDefaults);
+        if (processedDefault !== undefined) {
+          defaultsByModuleKey[moduleName][key] = processedDefault;
+        }
       }
     }
 
@@ -702,15 +730,10 @@ class ManifestGenerator {
       '# ─────────────────────────────────────────────────────────────────',
       '',
     ];
-    for (const [section, table] of Object.entries(mergedConfig)) {
-      if (!table || typeof table !== 'object' || Array.isArray(table)) continue;
-      lines.push(`[${section}]`);
-      for (const [key, value] of Object.entries(table)) {
-        if (value === undefined || value === null || value === '') continue;
-        lines.push(`${key} = ${formatTomlValue(value)}`);
-      }
-      lines.push('');
-    }
+    // Emit sections recursively so nested tables (e.g. [modules.bmm] reachable
+    // via dotted parseSimpleToml output) round-trip as proper sub-tables
+    // instead of being stringified as "[object Object]" inside their parent.
+    emitTomlSections(mergedConfig, [], lines);
     const content = lines.join('\n').replace(/\n+$/, '\n');
     await fs.writeFile(globalPath, content);
     return globalPath;
@@ -1019,25 +1042,27 @@ class ManifestGenerator {
  * Objects are not expected at this emit path.
  */
 /**
- * Compute the processed default value for a module.yaml question item, using
- * the already-resolved moduleConfigs map for cross-key references like
- * `{output_folder}`. Used by writeCentralConfig to detect default-equal
- * values that should NOT be re-emitted into the lean config.toml.
+ * Compute the processed default value for a module.yaml question item.
+ * Resolves `{key}` cross-references against the flat `crossKeyDefaults` lookup
+ * (shipped defaults, never user answers — see writeCentralConfig comment).
+ * Used by writeCentralConfig to detect default-equal values that should NOT
+ * be re-emitted into the lean config.toml. Matches the lookup table that
+ * writeModuleTomls uses, so module.toml's floor and config.toml's delta
+ * detection agree on what "default" means.
  *
  * Steps:
- *   1. Substitute {key} references against any module's already-collected
- *      value (with leading "{project-root}/" stripped, matching the
- *      installer's processResultTemplate behavior).
+ *   1. Substitute {key} references against crossKeyDefaults (with leading
+ *      "{project-root}/" stripped, matching the installer's
+ *      processResultTemplate behavior).
  *   2. Apply the result: template with {value} substituted.
  *
- * Returns undefined for items without a default, leaving the caller's delta
- * check to fall through unchanged.
+ * Returns undefined for items without a default.
  *
  * @param {object} item - one module.yaml question schema
- * @param {object} moduleConfigs - already-resolved per-module configs
+ * @param {Record<string, *>} crossKeyDefaults - flat shipped-defaults lookup
  * @returns {*} processed default value (string/scalar) or undefined
  */
-function computeProcessedDefault(item, moduleConfigs) {
+function computeProcessedDefault(item, crossKeyDefaults) {
   if (!item || item.default === undefined || item.default === null) return;
   let value = item.default;
   if (typeof value === 'string') {
@@ -1045,16 +1070,8 @@ function computeProcessedDefault(item, moduleConfigs) {
       if (refKey === 'project-root' || refKey === 'value' || refKey === 'directory_name') {
         return match;
       }
-      for (const mod of Object.values(moduleConfigs || {})) {
-        if (mod && typeof mod === 'object' && mod[refKey] !== undefined) {
-          let resolved = mod[refKey];
-          if (typeof resolved === 'string' && resolved.startsWith('{project-root}/')) {
-            resolved = resolved.slice('{project-root}/'.length);
-          }
-          return resolved;
-        }
-      }
-      return match;
+      const replacement = (crossKeyDefaults || {})[refKey];
+      return replacement === undefined ? match : String(replacement);
     });
   }
   if (typeof item.result === 'string' && value !== undefined) {
@@ -1163,39 +1180,26 @@ function formatTomlValue(value) {
   return `"${escaped}"`;
 }
 
-/**
- * Extract [agents.<code>] blocks from a previously-emitted config.toml.
- * We only need this for roster preservation — the file is our own controlled
- * output, so a simple line scanner is safer than adding a TOML parser
- * dependency. Each block runs from its `[agents.<code>]` header until the
- * next `[` heading or EOF; the `module = "..."` line inside drives which
- * entries we keep on the next write.
- * @returns {Array<{code: string, module: string | null, body: string}>}
- */
-function extractAgentBlocks(tomlContent) {
-  const blocks = [];
-  const lines = tomlContent.split('\n');
-  let i = 0;
-  while (i < lines.length) {
-    const header = lines[i].match(/^\[agents\.([^\]]+)]\s*$/);
-    if (!header) {
-      i++;
-      continue;
+// Recursively serialize a parsed TOML object back to text. Scalar entries
+// are written under the current section header; nested objects are emitted
+// as dotted sub-tables. Skips null/undefined/'' values.
+function emitTomlSections(node, sectionPath, lines) {
+  const scalars = [];
+  const nested = [];
+  for (const [key, value] of Object.entries(node)) {
+    if (value === null || value === undefined || value === '') continue;
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      nested.push([key, value]);
+    } else {
+      scalars.push([key, value]);
     }
-    const code = header[1];
-    const blockLines = [lines[i]];
-    let moduleName = null;
-    i++;
-    while (i < lines.length && !lines[i].startsWith('[')) {
-      blockLines.push(lines[i]);
-      const m = lines[i].match(/^module\s*=\s*"((?:[^"\\]|\\.)*)"\s*$/);
-      if (m) moduleName = m[1];
-      i++;
-    }
-    while (blockLines.length > 1 && blockLines.at(-1) === '') blockLines.pop();
-    blocks.push({ code, module: moduleName, body: blockLines.join('\n') });
   }
-  return blocks;
+  if (scalars.length > 0) {
+    if (sectionPath.length > 0) lines.push(`[${sectionPath.join('.')}]`);
+    for (const [key, value] of scalars) lines.push(`${key} = ${formatTomlValue(value)}`);
+    lines.push('');
+  }
+  for (const [key, value] of nested) emitTomlSections(value, [...sectionPath, key], lines);
 }
 
 module.exports = { ManifestGenerator };

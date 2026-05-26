@@ -1144,6 +1144,18 @@ class OfficialModules {
     if (!this._existingConfig) {
       await this.loadExistingConfig(projectDir);
     }
+    // Lazy-load global config so identity fallbacks below can consult
+    // ~/.bmad/config.user.toml. quickUpdate doesn't go through
+    // collectAllConfigurations, so this.globalConfig would otherwise be unset
+    // and user_name would silently default to the OS username — overwriting
+    // the value the user previously committed to global.
+    if (!this.globalConfig) {
+      try {
+        this.globalConfig = await loadGlobalConfig();
+      } catch {
+        this.globalConfig = { merged: {} };
+      }
+    }
 
     // Initialize allAnswers if not already initialized
     if (!this.allAnswers) {
@@ -1220,12 +1232,14 @@ class OfficialModules {
         }
         this.collectedConfig[moduleName] = { ...this._existingConfig[moduleName] };
 
-        // Special handling for user_name: ensure it has a value
+        // Special handling for user_name: ensure it has a value. Prefer the
+        // global value (~/.bmad/config.user.toml) before the OS username, or
+        // we'll silently overwrite the user's prior global identity.
         if (
           moduleName === 'core' &&
           (!this.collectedConfig[moduleName].user_name || this.collectedConfig[moduleName].user_name === '[USER_NAME]')
         ) {
-          this.collectedConfig[moduleName].user_name = this.getDefaultUsername();
+          this.collectedConfig[moduleName].user_name = this._identityFallback('user_name');
         }
 
         // Also populate allAnswers for cross-referencing
@@ -1233,18 +1247,20 @@ class OfficialModules {
           // Ensure user_name is properly set in allAnswers too
           let finalValue = value;
           if (moduleName === 'core' && key === 'user_name' && (!value || value === '[USER_NAME]')) {
-            finalValue = this.getDefaultUsername();
+            finalValue = this._identityFallback('user_name');
           }
           this.allAnswers[`${moduleName}_${key}`] = finalValue;
         }
       } else if (moduleName === 'core') {
-        // No existing core config - ensure we at least have user_name
+        // No existing core config - ensure we at least have user_name.
+        // Same global-first preference as above.
         if (!this.collectedConfig[moduleName]) {
           this.collectedConfig[moduleName] = {};
         }
         if (!this.collectedConfig[moduleName].user_name) {
-          this.collectedConfig[moduleName].user_name = this.getDefaultUsername();
-          this.allAnswers[`${moduleName}_user_name`] = this.getDefaultUsername();
+          const fallback = this._identityFallback('user_name');
+          this.collectedConfig[moduleName].user_name = fallback;
+          this.allAnswers[`${moduleName}_user_name`] = fallback;
         }
       }
 
@@ -1420,6 +1436,22 @@ class OfficialModules {
       // Do nothing, just return 'BMad'
     }
     return result;
+  }
+
+  /**
+   * Fall back through identity sources for a core scope:user key. Prefers the
+   * global value (~/.bmad/config.user.toml) so quickUpdate / re-install never
+   * silently overwrites a previously-set identity with the OS username.
+   * Only user_name has an OS-derived ultimate fallback; other keys return
+   * undefined so the caller can decide.
+   */
+  _identityFallback(key) {
+    const globalCore = (this.globalConfig && this.globalConfig.merged && this.globalConfig.merged.core) || {};
+    if (globalCore[key] !== undefined && globalCore[key] !== '' && globalCore[key] !== null) {
+      return globalCore[key];
+    }
+    if (key === 'user_name') return this.getDefaultUsername();
+    return;
   }
 
   /**
@@ -1932,9 +1964,10 @@ class OfficialModules {
       existingValue = this.normalizeExistingValueForPrompt(existingValue, moduleName, item, moduleConfig);
     }
 
-    // Special handling for user_name: default to system user
+    // Special handling for user_name: prefer global identity (~/.bmad) over
+    // OS username so the prompt's default reflects what the user already chose.
     if (moduleName === 'core' && key === 'user_name' && !existingValue) {
-      item.default = this.getDefaultUsername();
+      item.default = this._identityFallback('user_name');
     }
 
     // Determine question type and default value
