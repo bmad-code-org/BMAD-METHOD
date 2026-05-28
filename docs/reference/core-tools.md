@@ -317,3 +317,5 @@ Run both `bmad-review-adversarial-general` and `bmad-review-edge-case-hunter` to
 **Input:** Natural language description of the customization you want
 
 **Output:** TOML override files under `_bmad/custom/`
+
+For a detailed guide on customizing BMad, see [How to Customize BMad](../how-to/customize-bmad.md).
