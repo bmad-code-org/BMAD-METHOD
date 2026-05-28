@@ -9,7 +9,7 @@ Regroupez tous vos agents IA dans une seule conversation.
 
 ## Qu’est-ce que le Party Mode ?
 
-Lancez `bmad-party-mode` et vous avez toute votre équipe IA dans une même pièce - PM, Architecte, Développeur, Designer UX, selon vos besoins. BMad Master orchestre, en sélectionnant les agents pertinents à chaque message. Les agents répondent en personnage, sont en accord ou désaccord, et construisent sur les idées des autres.
+Lancez `bmad-party-mode` et vous avez toute votre équipe IA dans une même pièce - PM, Architecte, Développeur, Designer UX, selon vos besoins. Le Party Mode orchestre la discussion en sélectionnant, à chaque message, les agents pertinents parmi ceux installés. Les agents répondent en personnage, sont en accord ou désaccord, et construisent sur les idées des autres.
 
 La conversation continue aussi longtemps que vous le souhaitez. Posez des questions de suivi, remettez en question les réponses, redirigez la discussion - c’est un véritable échange avec vos agents jusqu’à ce que vous ayez terminé.
 

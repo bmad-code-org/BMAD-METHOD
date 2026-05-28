@@ -42,8 +42,8 @@ L’installateur écrit les fichiers de skill dans un répertoire spécifique à
 | IDE / CLI   | Répertoire des skills                                      |
 |-------------|------------------------------------------------------------|
 | Claude Code | `.claude/skills/`                                          |
-| Cursor      | `.cursor/skills/`                                          |
-| Windsurf    | `.windsurf/skills/`                                        |
+| Cursor      | `.agents/skills/`                                          |
+| Windsurf    | `.agents/skills/`                                          |
 | Autres IDE  | Consultez la sortie de l’installateur pour le chemin cible |
 
 Chaque skill est un répertoire contenant un fichier `SKILL.md`. Par exemple, une installation Claude Code ressemble à :
@@ -80,7 +80,7 @@ Les skills d’agent chargent un persona[^2] IA spécialisé avec un rôle défi
 | Exemple de skill       | Agent                  | Rôle                                                        |
 |------------------------|------------------------|-------------------------------------------------------------|
 | `bmad-agent-dev`       | Amelia (Développeur)   | Implémente les stories avec une adhérence stricte aux specs |
-| `bmad-agent-pm`        | John (Product Manager) | Crée et valide les PRDs[^1]                                 |
+| `bmad-agent-pm`        | John (Product Manager) | Crée, met à jour et valide les PRDs[^1]                     |
 | `bmad-agent-architect` | Winston (Architecte)   | Conçoit l’architecture système                              |
 
 Consultez [Agents](./agents.md) pour la liste complète des agents par défaut et leurs déclencheurs.
@@ -120,7 +120,7 @@ bmad-help Quelles sont mes options pour le design UX ?
 
 **Autres tâches et outils principaux**
 
-Le module principal inclut 11 outils intégrés — revues, compression, brainstorming, gestion de documents, et plus. Consultez [Outils principaux](./core-tools.md) pour la référence complète.
+Le module principal inclut 12 outils intégrés — specs, revues, brainstorming, personnalisation, gestion de documents, et plus. Consultez [Outils principaux](./core-tools.md) pour la référence complète.
 
 ## Convention de nommage
 

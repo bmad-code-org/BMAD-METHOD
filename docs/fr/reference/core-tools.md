@@ -26,6 +26,7 @@ Exécutez n’importe quel outil principal en tapant son nom de compétence (par
 | [`bmad-editorial-review-structure`](#bmad-editorial-review-structure) | Tâche    | Édition structurelle — coupes, fusions et réorganisation                      |
 | [`bmad-shard-doc`](#bmad-shard-doc)                                   | Tâche    | Diviser les fichiers markdown volumineux en sections organisées               |
 | [`bmad-index-docs`](#bmad-index-docs)                                 | Tâche    | Générer ou mettre à jour un index de tous les documents dans un dossier       |
+| [`bmad-customize`](#bmad-customize)                                   | Tâche    | Créer et vérifier des personnalisations BMad                                  |
 
 ## bmad-help
 
@@ -296,6 +297,29 @@ Exécutez à la fois `bmad-review-adversarial-general` et `bmad-review-edge-case
 **Entrée :** Chemin du dossier cible
 
 **Sortie :** `index.md` avec listes de fichiers organisées, liens relatifs et brèves descriptions
+
+## bmad-customize
+
+**Créer et vérifier des personnalisations.** — Vous aide à modifier le comportement d’un agent ou d’un workflow BMad installé sans avoir à écrire de TOML manuellement.
+
+**À utiliser quand :**
+
+- Vous souhaitez modifier le comportement d’un agent ou d’un workflow
+- Vous devez ajouter des faits persistants, des hooks d’activation ou des éléments de menu personnalisés
+- Vous voulez que le bon périmètre de surcharge soit sélectionné et vérifié automatiquement
+
+**Fonctionnement :**
+
+1. Analyse les skills BMad installés pour identifier les surfaces personnalisables
+2. Sélectionne le bon périmètre pour le changement demandé
+3. Écrit les fichiers de surcharge sous `_bmad/custom/`
+4. Vérifie la configuration fusionnée
+
+**Entrée :** Description en langage naturel de la personnalisation souhaitée
+
+**Sortie :** Fichiers de surcharge TOML sous `_bmad/custom/`
+
+Pour un guide détaillé sur la personnalisation de BMad, consultez [Comment personnaliser BMad](../how-to/customize-bmad.md).
 
 ## Glossaire
 
