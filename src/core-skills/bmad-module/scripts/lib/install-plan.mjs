@@ -248,8 +248,18 @@ export async function buildCopyPlan(sourceDir, manifest, ignoreMatch) {
       const srcRel = stripDotSlash(declared);
       if (!srcRel) continue;
       const destRel = `${destPrefix}/${path.posix.basename(srcRel)}`;
-      await addDirRecursive(srcRel, destRel);
-      if (destPrefix === 'skills') skillDestDirs.push(destRel);
+      // Entries may be directories (skills, agent packs) or single files
+      // (e.g. a subagent declared as `./agents/foo.md`). Stat to branch;
+      // rewriteManifestPaths() remaps both to `<destPrefix>/<basename>`.
+      try {
+        const stat = await fs.stat(path.join(sourceDir, srcRel));
+        if (stat.isDirectory()) {
+          await addDirRecursive(srcRel, destRel);
+          if (destPrefix === 'skills') skillDestDirs.push(destRel);
+        } else if (stat.isFile() && (!ignoreMatch || !ignoreMatch(srcRel))) addFile(srcRel, destRel);
+      } catch {
+        /* missing — validateDeclaredPaths surfaces declared misses */
+      }
     }
   }
 
