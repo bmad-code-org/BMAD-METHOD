@@ -1,0 +1,41 @@
+code: devlog
+name: "Devlog"
+description: "Daily engineering devlog: write entries, summarize history, and consult Clio the Historian."
+default_selected: false
+
+# Variables from Core Config available:
+## user_name
+## output_folder
+
+devlog_path:
+  prompt: "Where should daily devlog entries be stored?"
+  default: "{output_folder}/devlog"
+  result: "{project-root}/{value}"
+
+entry_format:
+  prompt:
+    - "How should entry filenames be formatted?"
+    - "Affects how the summarize skill walks history."
+  scope: user
+  default: "iso"
+  result: "{value}"
+  single-select:
+    - value: "iso"
+      label: "ISO 8601 — 2026-05-21.md"
+    - value: "weekly"
+      label: "ISO week — 2026-W21.md (one file per week)"
+    - value: "monthly"
+      label: "Year-month — 2026-05.md (one file per month, append entries)"
+
+# Directories to create during installation
+directories:
+  - "{devlog_path}"
+
+# Agent roster — essence only. Persona and behavior live in customize.toml.
+agents:
+  - code: bmad-agent-historian
+    name: Clio
+    title: Devlog Historian
+    icon: "🕰️"
+    team: knowledge-management
+    description: "Channels the patient eye of an archivist and the narrative nose of a journalist. Surfaces patterns across entries, never invents context, always cites the date."

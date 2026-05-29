@@ -1,0 +1,15 @@
+{
+  "description": "Surface today's (or most recent) devlog entry at session start.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/fetch-git-history.sh\""
+          }
+        ]
+      }
+    ]
+  }
+}

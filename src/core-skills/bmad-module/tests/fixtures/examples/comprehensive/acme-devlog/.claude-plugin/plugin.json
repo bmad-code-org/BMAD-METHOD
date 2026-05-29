@@ -1,0 +1,48 @@
+{
+  "name": "acme-devlog",
+  "version": "0.4.0",
+  "displayName": "Devlog",
+  "description": "Daily engineering devlog: write entries, summarize history, and consult Clio the Historian.",
+  "author": {
+    "name": "Acme Corp",
+    "email": "team@acme.example",
+    "url": "https://acme.example"
+  },
+  "repository": "https://github.com/acme/acme-devlog",
+  "license": "MIT",
+  "homepage": "https://acme.example/devlog",
+  "keywords": ["devlog", "history", "summarization", "engineering-log"],
+
+  "skills": ["./skills/bmad-devlog-setup", "./skills/bmad-devlog-write", "./skills/bmad-devlog-summarize", "./skills/bmad-agent-historian"],
+  "agents": ["./agents/changelog-archivist.md"],
+  "hooks": "./hooks/hooks.json",
+  "mcpServers": "./.mcp.json",
+
+  "bmad": {
+    "specVersion": "1.0.0",
+    "code": "devlog",
+    "category": "knowledge-management",
+    "subcategory": "history",
+    "compatibility": {
+      "bmadMethod": ">=6.6.0 <7.0.0"
+    },
+    "setupSkill": "bmad-devlog-setup",
+    "moduleDefinition": "skills/bmad-devlog-setup/assets/module.yaml",
+    "moduleHelpCsv": "skills/bmad-devlog-setup/assets/module-help.csv",
+    "customize": {
+      "schemas": ["./skills/bmad-agent-historian/customize.toml"]
+    },
+    "dependencies": {
+      "modules": [{ "code": "bmm", "version": ">=6.6.0" }]
+    },
+    "install": {
+      "ignore": ["docs/**", "tests/**", "*.test.*", "README.md", "CHANGELOG.md"],
+      "postInstallSkill": "bmad-devlog-setup"
+    },
+    "docs": {
+      "readme": "./README.md",
+      "changelog": "./CHANGELOG.md",
+      "homepage": "./docs/index.md"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# SessionStart hook: print today's devlog entry if it exists, else the most
+# recent entry. Reads devlog_path from _bmad/devlog/config.yaml.
+#
+# Bound by Claude Code's SessionStart event via hooks/hooks.json. Exits 0
+# silently when there's nothing useful to surface.
+
+set -eu
+
+config="${PWD}/_bmad/devlog/config.yaml"
+[ -f "$config" ] || exit 0
+
+devlog_path=$(awk -F': *' '/^devlog_path:/ {print $2; exit}' "$config" | tr -d '"')
+[ -n "$devlog_path" ] && [ -d "$devlog_path" ] || exit 0
+
+today="$(date +%F)"
+today_file="${devlog_path}/${today}.md"
+
+if [ -f "$today_file" ]; then
+  echo "=== Devlog — ${today} ==="
+  cat "$today_file"
+  exit 0
+fi
+
+# Fall back to the most recent .md by mtime.
+latest=$(ls -t "${devlog_path}"/*.md 2>/dev/null | head -n 1 || true)
+if [ -n "$latest" ]; then
+  echo "=== Most recent devlog ($(basename "$latest" .md)) ==="
+  cat "$latest"
+fi
+
+exit 0

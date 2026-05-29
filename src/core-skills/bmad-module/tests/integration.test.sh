@@ -2,9 +2,9 @@
 # integration.test.sh — end-to-end smoke test for the bmad-module skill.
 #
 # Hermetic: fabricates a minimal _bmad/_config/manifest.yaml skeleton in a
-# tmp dir and exercises every verb against the local reference modules and
-# negative fixtures. Does NOT require BMAD-METHOD's installer; the upstream
-# patch (§5) is verified separately.
+# tmp dir and exercises every verb against the vendored reference modules
+# (tests/fixtures/examples/) and negative fixtures. Does NOT require
+# BMAD-METHOD's installer; the upstream patch (§5) is verified separately.
 #
 # Run from anywhere:
 #   bash src/core-skills/bmad-module/tests/integration.test.sh
@@ -15,9 +15,10 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SKILL_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
-REPO_DIR="$(cd "${SKILL_DIR}/../../.." && pwd)"
 MODULE_JS="${SKILL_DIR}/scripts/bmad-module.mjs"
-EXAMPLES="${REPO_DIR}/examples"
+# Reference modules are vendored under tests/fixtures/examples/ so the suite is
+# self-contained — it does not depend on a sibling bmad-marketplace checkout.
+EXAMPLES="${SCRIPT_DIR}/fixtures/examples"
 FIXTURES="${SCRIPT_DIR}/fixtures"
 
 WORKDIR="$(mktemp -d)"
@@ -166,7 +167,8 @@ assert_exit 0 "install comprehensive"
 assert_path_exists "_bmad/devlog/skills/bmad-devlog-write/SKILL.md"
 assert_path_exists "_bmad/devlog/skills/bmad-devlog-setup/SKILL.md"
 assert_path_exists "_bmad/devlog/agents/changelog-archivist.md"
-assert_path_exists "_bmad/devlog/hooks/hooks.json"
+# hooks/mcpServers are flattened to canonical root slots (see rewriteManifestPaths)
+assert_path_exists "_bmad/devlog/hooks.json"
 assert_path_exists "_bmad/devlog/.mcp.json"
 # install.ignore excludes docs/ and tests/ and README.md / CHANGELOG.md
 assert_path_absent "_bmad/devlog/docs"
