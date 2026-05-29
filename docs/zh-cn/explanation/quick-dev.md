@@ -2,7 +2,7 @@
 title: "快速开发"
 description: 在不牺牲输出质量检查点的情况下减少人机交互的摩擦
 sidebar:
-  order: 2
+  order: 7
 ---
 
 `bmad-quick-dev` 的目标很直接：在保证质量边界的前提下，把“意图到代码”的人机往返轮次降到最低。

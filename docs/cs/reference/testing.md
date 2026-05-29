@@ -2,7 +2,7 @@
 title: Možnosti testování
 description: Srovnání vestavěného QA agenta (Quinn) s modulem Test Architect (TEA) pro automatizaci testů.
 sidebar:
-  order: 5
+  order: 6
 ---
 
 BMad poskytuje dvě testovací cesty: vestavěného QA agenta pro rychlé generování testů a instalovatelný modul Test Architect pro podnikovou testovací strategii.

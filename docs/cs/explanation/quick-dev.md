@@ -2,7 +2,7 @@
 title: "Quick Dev"
 description: Snižte tření human-in-the-loop bez ztráty kontrolních bodů chránících kvalitu výstupu
 sidebar:
-  order: 2
+  order: 6
 ---
 
 Záměr na vstupu, změny kódu na výstupu, s co nejmenším počtem human-in-the-loop kroků — bez obětování kvality.

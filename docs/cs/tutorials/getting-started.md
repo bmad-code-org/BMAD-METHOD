@@ -150,7 +150,7 @@ Všechny workflow v této fázi jsou volitelné:
 - Spusťte `bmad-quick-dev` — zvládne plánování i implementaci v jednom workflow, přeskočte k implementaci
 
 :::note[UX Design (volitelné)]
-Pokud má váš projekt uživatelské rozhraní, vyvolejte **UX-Designer agenta** (`bmad-agent-ux-designer`) a spusťte UX design workflow (`bmad-create-ux-design`) po vytvoření PRD.
+Pokud má váš projekt uživatelské rozhraní, vyvolejte **UX-Designer agenta** (`bmad-agent-ux-designer`) a spusťte UX design workflow (`bmad-ux`) po vytvoření PRD.
 :::
 
 ### Fáze 3: Solutioning (BMad Method/Enterprise)

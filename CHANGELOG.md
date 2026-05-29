@@ -1,5 +1,46 @@
 # Changelog
 
+## v6.8.0 - 2026-05-25
+
+### ✨ Headline
+
+**New planning shapes lead this release.** **bmad-ux** replaces the old single-spine UX skill with a two-spine contract: **DESIGN.md** (visual identity, Google Labs spec) and **EXPERIENCE.md** (behavior, flow, IA). **bmad-spec** distills any messy intent (brain dump, PRD, transcript, brief) into a tight five-field SPEC.md kernel that any downstream skill can consume. Both extend the streamlined Create/Update/Validate + Fast/Coaching template that **bmad-prd** and **bmad-product-brief** set in v6.7.0. The handoff from design into engineering is now a sealed file contract, not a translation layer.
+
+**Also shipping:** **Web Bundles** for Gemini Gems and ChatGPT Custom GPTs ([bmadcode.com/web-bundles](https://bmadcode.com/web-bundles/)) bring six planning bundles to non-IDE users with full IDE schema parity. **bmad-automator** (story automation) lands on the `next` channel. **bmad-method-ui** ships a community-alpha VS Code dashboard + standalone Next.js web UI. 19 new elicitation techniques arrive. Plus a long tail of installer and activation fixes.
+
+### 💥 Breaking Changes
+
+* **`bmad-create-ux-design` replaced by `bmad-ux`.** Single `design.md` spine is gone. New skill emits **DESIGN.md** (visual tokens per the Google Labs spec) and **EXPERIENCE.md** (behavior, flow, IA, states, a11y), with EXPERIENCE.md referencing DESIGN.md tokens via `{path.to.token}` syntax. Adds named-protagonist journeys, surface-closure validation, opt-in reviewer gate, and an extensible producer-handoff registry (default: Stitch). Installer auto-removes the legacy skill. PRD and brief templates aligned (form-factor probe, named-protagonist UJs, no standalone Primary Persona) (#2413)
+* **`bmad-distillator` retired, superseded by `bmad-spec`.** Promoted to core because the kernel pattern is domain-agnostic. Installer cleans up automatically. No internal pipelines called it, but custom workflows must switch to `bmad-spec`.
+
+### 🎁 Features
+
+* **Web Bundles v6 shelf**: Six bundles purpose-built for Gemini Gems and ChatGPT Custom GPTs. Brainstorming (60 techniques, 10 categories), Product Brief (Create/Update/Validate, Fast/Coaching paths), PRFAQ (Working Backwards, 4 stages, weasel-word challenge), PRD (Vision- or Journey-led, 7-dimension validation), UX (two-spine, Don Norman framing, Stitch handoff), Market & Industry Research (Deep Research + Porter + Christensen). Full schema parity with IDE skills so Gem ↔ IDE handoffs do not break. [bmadcode.com/web-bundles](https://bmadcode.com/web-bundles/) is the single supported install path (#2421, #2423, #2425)
+* **Web Bundle release packager**: `tools/bundle-web-bundles.js` zips each bundle into `dist/web-bundles/{slug}.zip` for GitHub Release attachment. `web-bundles/bundles.json` carries persona, copy, accent color, knowledge files, and platform feature flags (web-browsing, deep-research, Stitch). Zero deps; `execFileSync` + strict slug regex (`^[a-z0-9][a-z0-9-]*$`) eliminates shell-injection surface (#2424)
+* **`bmad-spec`, new core skill**: Distills any intent (brain dump, PRD, transcript, brief) into `SPEC.md` with a five-field kernel (Problem, Capabilities, Constraints, Non-goals, Success signal). Catalogs, tables, diagrams, and editorial-voice content go to named companions; absorbed inputs land in a `sources:` list downstream skips. Eight-rule Spec Law with lean-prose discipline. Outputs to `{output_folder}/specs/spec-{slug}/`, works without bmm installed. Headless callers get JSON; interactive runs close conversationally (#2417)
+* **`bmad-ux`, spine-based UX skill**: Rewrite around DESIGN.md (visual identity, Google Labs spec) + EXPERIENCE.md (behavior, flow, IA). Six-step activation matches `bmad-prd` and `bmad-product-brief`. Fast/Coaching modes. Opt-in reviewer gate (no auto-spend on parallel reviewers for hobby work). Per-category verdicts, no misleading headline grade. Ships three DESIGN.md examples (editorial/Linen & Logic, native mobile/Quill, web SaaS/Drift), two paired EXPERIENCE.md examples, one unpaired DESIGN.md modeling the pure Stitch handoff (#2413)
+* **19 new advanced-elicitation techniques**: New `framing` category plus additions across 7 categories (all 50 existing methods preserved). Highlights: Chain-of-Thought Scaffolding, Six Thinking Hats, Delphi Method, Inversion Analysis, Steelmanning, Morphological Analysis, Abstraction Laddering, Cascading Failure Simulation, Boundary & Edge Case Sweep (#2062)
+* **Docs sidebar-order validator**: `tools/validate-sidebar-order.js` flags duplicates, gaps, missing fields, and translation drift across English and translated docs. Wired into `docs:validate-sidebar`. Locale-pattern detection prevents nested English subfolders from being silently excluded (#2409)
+
+### 🐛 Fixes
+
+* **Skill activation guardrails strengthened across 23+ skills**: LLM agents were short-circuiting activation sequences (INCLUDE → READ → RUN → CHECK → FILTER → CD) by guessing variables instead of executing in order, silently skipping append steps and `on_complete` hooks. New guardrail names prepend/append steps explicitly and requires confirmation. Applied to all BMM planning + execution skills, all persona agents (analyst, tech-writer, pm, ux-designer, architect, dev), and new skills (bmad-spec, bmad-ux) (#2398)
+* **Installer reads `config.toml` on re-run**: `loadExistingConfig` only read legacy `_bmad/<module>/config.yaml`, so user-scoped answers (`user_name`, `communication_language`) written to `_bmad/config.user.toml` were ignored and users got re-prompted. Adds `parseCentralToml`; central toml read first, legacy yaml as fallback (#2411)
+* **Stale custom-source caches refreshed on quick-update**: Quick-update now calls `cloneRepo` for every cached custom module, persists the real `next` ref, and atomically dedupes the refresh. When `git fetch` fails (network, deleted repo, revoked auth), the previous clone is preserved with a warning instead of being wiped (#2399)
+* **Shallow-clone default branch resolution**: `--depth 1` clones leave `origin/HEAD` stale, so `git reset --hard origin/HEAD` never pulled new commits. Now resolves the default branch via `git symbolic-ref` and resets against `origin/<branch>` explicitly, falling back to `main` (#2332)
+* **SSH Git URLs with nested group paths**: Custom module installer parses GitLab subgroup and Gitea nested-team SSH URLs correctly (#2379)
+* **`project_context` defined in dev-story, sprint-planning, sprint-status**: Skills referenced the variable without resolving it, producing unresolved expansions at activation in some configurations (#2422)
+* **Dev story baseline commits captured**: Baselining records the commit set the story was scoped against, so reviews compare against a stable reference (#2403)
+* **Customization JSON written as UTF-8**: Non-ASCII team names, product names, and editorial overrides survive a round trip through `_bmad/custom/` (#2414)
+* **Brainstorming idea-flow stays collaborative**: Agent was prematurely converging on its own preferred ideas instead of mirroring and expanding the user's. Collaborative posture restored (#2402)
+
+### 📚 Docs
+
+* **bmad-investigate added to agent trigger tables**: `agents.md` and `named-agents.md` now show the `IN` trigger and forensic-investigation capability on Amelia's row, closing a v6.7.0 gap (#2410)
+* **Web Bundles install framing and update/customize guidance**: Drops misleading "one-click install" and "two files" claims; adds explicit Gem/GPT setup pattern and an "Updating and customizing" section: custom changes belong in the pasted instructions block, not the knowledge files, so updates do not clobber team customizations (#2423)
+* **Web-bundles install traffic centralized at bmadcode.com/web-bundles**: README, web-bundles README, explanation, and how-to pages all point at the site as the single supported install path (#2425)
+* **Reference docs for bmad-spec**: Full entry in `docs/reference/core-tools.md` (en); table-row stubs in cs/fr/vi-vn/zh-cn pending full translation
+
 ## v6.7.1 - 2026-05-18
 
 ### 🐛 Fixes

@@ -694,15 +694,7 @@ Review kiểu "devil's advocate" — giả định vấn đề luôn tồn tại
 - Tìm những gì **còn thiếu**, không chỉ những gì sai
 - Trực giao với Edge Case Hunter
 
-### 8.4. Distillator — Nén tài liệu cho LLM
-
-```bash
-bmad-distillator
-```
-
-Khi tài liệu quá lớn (PRD dài, Architecture phức tạp), Distillator nén nội dung tối ưu cho LLM mà không mất thông tin quan trọng.
-
-### 8.5. Shard Large Documents — Tách file lớn
+### 8.4. Shard Large Documents — Tách file lớn
 
 ```bash
 bmad-shard-doc

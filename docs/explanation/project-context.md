@@ -2,7 +2,7 @@
 title: "Project Context"
 description: How project-context.md guides AI agents with your project's rules and preferences
 sidebar:
-  order: 7
+  order: 12
 ---
 
 The `project-context.md` file is your project's implementation guide for AI agents. Similar to a "constitution" in other development systems, it captures the rules, patterns, and preferences that ensure consistent code generation across all workflows.

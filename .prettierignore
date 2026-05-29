@@ -13,3 +13,8 @@ _bmad*/
 
 # Generated vendored bundles in the bmad-module skill (not authored source)
 src/core-skills/bmad-module/scripts/lib/vendor/**
+
+# Quality scan artifacts produced by bmad-workflow-builder
+# (per-skill .analysis/ folders contain JSON/HTML reports that should
+# not block commits with formatting checks)
+**/.analysis/

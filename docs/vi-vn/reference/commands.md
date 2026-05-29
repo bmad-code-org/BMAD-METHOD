@@ -2,7 +2,7 @@
 title: Các skill
 description: Tài liệu tham chiếu cho skill của BMad — skill là gì, hoạt động ra sao và tìm ở đâu.
 sidebar:
-  order: 3
+  order: 4
 ---
 
 Skills là các prompt dựng sẵn để nạp agent, chạy workflow hoặc thực thi task bên trong IDE của bạn. Trình cài đặt BMad sinh chúng từ các module bạn đã chọn tại thời điểm cài đặt. Nếu sau này bạn thêm, xóa hoặc thay đổi module, hãy chạy lại trình cài đặt để đồng bộ skills (xem [Khắc phục sự cố](#khắc-phục-sự-cố)).

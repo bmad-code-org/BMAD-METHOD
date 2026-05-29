@@ -2,7 +2,7 @@
 title: "Sửa nhanh"
 description: Cách thực hiện các sửa nhanh và thay đổi ad-hoc
 sidebar:
-  order: 5
+  order: 6
 ---
 
 Sử dụng **Quick Dev** cho sửa lỗi, refactor, hoặc các thay đổi nhỏ có mục tiêu rõ ràng mà không cần quy trình BMad Method đầy đủ.

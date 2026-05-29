@@ -1,0 +1,139 @@
+{
+  "schemaVersion": "1.0",
+  "releaseTag": "web-bundles-v1.0.0",
+  "releasedAt": "2026-05-25",
+  "bundles": [
+    {
+      "slug": "brainstorming-coach",
+      "name": "Brainstorming Coach",
+      "tagline": "60 ideation techniques across 10 categories — from SCAMPER to Zombie Apocalypse Planning",
+      "description": "Sixty proven brainstorming techniques spanning structured frameworks (SCAMPER, Five Whys, First Principles), wild plays (Drunk History Retelling, Zombie Apocalypse Planning), biomimetic prompts (Nature's Solutions), introspective work (Shadow Work Mining, Values Archaeology), and quantum-flavored framings (Superposition Collapse). Pick a route — browse the library, get a recommendation, take a random surprise, or run a progressive divergence-to-action flow. The coach asks; you generate every idea. Targets ~100 ideas before organizing (the breakthroughs live past idea 20), then promotes the session into themes, a 2×2 prioritization, and a breakthrough collage in Canvas.",
+      "defaultPersona": {
+        "name": "Carson",
+        "title": "Elite Brainstorming Specialist",
+        "lineage": "Osborn lineage"
+      },
+      "swapPersona": {
+        "name": "Mary",
+        "title": "Strategic Business Analyst",
+        "lineage": "BMad analyst — research-first rigor"
+      },
+      "accentColor": "#3b82f6",
+      "motif": "constellation",
+      "knowledgeFiles": ["SKILL.md", "brain-methods.csv"],
+      "needsWebBrowsing": true,
+      "needsDeepResearch": false,
+      "stitchIntegration": false
+    },
+    {
+      "slug": "product-brief-coach",
+      "name": "Product Brief Coach",
+      "tagline": "Three modes (Create / Update / Validate), two paths (Fast / Coaching), one brief you're proud of",
+      "description": "Create a brief drawn out through real conversation. Update an existing brief against a change signal. Or Validate — honest critique against the brief's own purpose. Two working modes: Fast path batches the gaps into one or two consolidated questions and tags assumptions for you to fix in review (best for pitching tomorrow); Coaching path walks section by section, mirrors before pushing, names the assumption hiding under your confident sentence (best for the brief you want to be proud of). The coach refuses to invent moats, traction, or differentiation you didn't give it. Depth that doesn't fit the brief lands in an Addendum so nothing valuable gets lost. Length is whatever the product earns.",
+      "defaultPersona": {
+        "name": "Mary",
+        "title": "Strategic Business Analyst",
+        "lineage": "BMad analyst"
+      },
+      "swapPersona": {
+        "name": "Iris",
+        "title": "Senior Product Strategist",
+        "lineage": "Mirror-then-push, unhurried thinking-partner voice"
+      },
+      "accentColor": "#d4a853",
+      "motif": "single-page",
+      "knowledgeFiles": ["SKILL.md"],
+      "needsWebBrowsing": true,
+      "needsDeepResearch": false,
+      "stitchIntegration": false
+    },
+    {
+      "slug": "prfaq-coach",
+      "name": "PRFAQ Coach",
+      "tagline": "Amazon's Working Backwards as a forcing function — write the press release before you build",
+      "description": "Four stages of customer-first pressure: Ignition (specific customer, concrete problem, real stakes), Press Release (9 sections, each forcing a different clarity — headline, problem paragraph, solution paragraph, leader quote, customer quote, getting started), Customer FAQ (validate the value proposition from outside in), and Internal FAQ + Verdict (feasibility, trade-offs, what survived). Hardcore mode: weasel words like 'best-in-class', 'seamless', and 'revolutionary' get challenged on sight; if you lead with technology, the coach redirects to the customer's actual problem. Generates a hero image for the press release. Works for commercial products, internal tools, open source, and community initiatives — the structure stays, the language adapts.",
+      "defaultPersona": {
+        "name": "Mary",
+        "title": "Strategic Business Analyst",
+        "lineage": "BMad analyst"
+      },
+      "swapPersona": {
+        "name": "Bezos",
+        "title": "Working Backwards Coach",
+        "lineage": "Amazon discipline — direct, dry, customer-first"
+      },
+      "accentColor": "#dc2626",
+      "motif": "document-ribbon",
+      "knowledgeFiles": ["SKILL.md"],
+      "needsWebBrowsing": true,
+      "needsDeepResearch": false,
+      "stitchIntegration": false
+    },
+    {
+      "slug": "prd-coach",
+      "name": "PRD Coach",
+      "tagline": "PRD coaching with built-in validation — capabilities in the PRD, mechanism in the Addendum",
+      "description": "Three modes (Create / Update / Validate), two entry points (Vision + Features for enterprise and dev products, Journey-led for consumer and UX-heavy products). Captures named-protagonist user journeys ('Mary, mom of three, kids finally asleep') instead of abstract personas. Enforces glossary discipline: every domain noun defined once, used verbatim across FRs, UJs, and SMs. Maintains stable IDs (FR-1..N globally, success metrics paired with counter-metrics SM-C1..N). The 7-dimension validation rubric grades decision-readiness, substance over theater, strategic coherence, done-ness clarity, scope honesty, downstream usability, and shape fit, with each finding cited to a specific PRD location. Length scales with stakes — hobby PRDs hit two pages; launch PRDs run as long as the FRs require.",
+      "defaultPersona": {
+        "name": "John",
+        "title": "Product Manager",
+        "lineage": "BMad PM — Cagan lineage"
+      },
+      "swapPersona": {
+        "name": "Ezra",
+        "title": "Principal Product Manager",
+        "lineage": "Calmer, slower-tempo coaching"
+      },
+      "accentColor": "#6366f1",
+      "motif": "section-stack",
+      "knowledgeFiles": ["SKILL.md", "prd-template.md", "prd-validation-checklist.md"],
+      "needsWebBrowsing": true,
+      "needsDeepResearch": false,
+      "stitchIntegration": false
+    },
+    {
+      "slug": "ux-coach",
+      "name": "UX Coach",
+      "tagline": "Two spines engineering can build from — DESIGN.md + EXPERIENCE.md as the contract",
+      "description": "Don Norman's human-centered design as the operating method. The coach elicits your vision and never imposes its own — no colors, fonts, or layouts you didn't put on the table. Captures named-protagonist journeys ('Mary on her couch after the kids are asleep') as the unit of design thinking. Produces two spines: DESIGN.md for visual identity (tokens in YAML frontmatter), EXPERIENCE.md for information architecture, behavior, states, and accessibility. Spines win on conflict with any mock, wireframe, or Stitch output. Surface closure is the test: every stated need has a surface, every surface has a journey. Pairs with Google Stitch — the handoff produces a Stitch prompt you copy straight from Canvas to generate editable mockups.",
+      "defaultPersona": {
+        "name": "Sally",
+        "title": "UX Designer",
+        "lineage": "BMad UX designer"
+      },
+      "swapPersona": {
+        "name": "Kenji",
+        "title": "Principal Product Designer",
+        "lineage": "Rams restraint + Zhuo systems discipline"
+      },
+      "accentColor": "#10b981",
+      "motif": "nested-layers",
+      "knowledgeFiles": ["SKILL.md", "ux-validation.md"],
+      "needsWebBrowsing": true,
+      "needsDeepResearch": false,
+      "stitchIntegration": true
+    },
+    {
+      "slug": "market-and-industry-research",
+      "name": "Market & Industry Research",
+      "tagline": "Deep Research wrapped in a sharp brief — research as input to a decision, not a deliverable",
+      "description": "Built around platform Deep Research mode. The coach handles the conversation: scopes what you actually need, drafts a sharp Deep Research brief you copy directly into Gemini or ChatGPT, then ingests the report and shapes the deliverable around your decision or learning goal. Methodology anchors when they help: Michael Porter for competitive structure, Clayton Christensen for Jobs-to-be-Done. Six sections to mix and match — market dynamics, customer insights, competitive landscape, regulatory & compliance, technical & technology trends, strategic synthesis. Validates every numeric, regulatory, or competitive claim against a source and a date. Generic findings ('the market is growing') get pushed back to specifics ('which segment, what rate, citing whom'). The deliverable is the synthesis against your decision, not the research dump.",
+      "defaultPersona": {
+        "name": "Mary",
+        "title": "Strategic Business Analyst",
+        "lineage": "BMad analyst"
+      },
+      "swapPersona": {
+        "name": "Geoff",
+        "title": "Market Strategist",
+        "lineage": "Geoffrey Moore + April Dunford lineage"
+      },
+      "accentColor": "#f59e0b",
+      "motif": "positioning-rings",
+      "knowledgeFiles": ["SKILL.md"],
+      "needsWebBrowsing": true,
+      "needsDeepResearch": true,
+      "stitchIntegration": false
+    }
+  ]
+}

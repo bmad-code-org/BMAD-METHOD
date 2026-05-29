@@ -2,7 +2,7 @@
 title: "Bối cảnh dự án"
 description: Cách project-context.md định hướng các agent AI theo quy tắc và ưu tiên của dự án
 sidebar:
-  order: 7
+  order: 11
 ---
 
 Tệp `project-context.md` là kim chỉ nam cho việc triển khai của các agent AI trong dự án của bạn. Tương tự như một "bản hiến pháp" trong các hệ thống phát triển khác, nó ghi lại các quy tắc, pattern và ưu tiên giúp việc sinh mã được nhất quán trong mọi workflow.

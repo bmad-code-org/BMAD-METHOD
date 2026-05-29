@@ -2,7 +2,7 @@
 title: "如何自定义 BMad"
 description: 自定义智能体、工作流和模块，同时保持更新兼容性
 sidebar:
-  order: 7
+  order: 8
 ---
 
 使用 `.customize.yaml` 文件，自定义智能体（agent）的行为、角色（persona）和菜单，同时在后续更新中保留你的改动。
