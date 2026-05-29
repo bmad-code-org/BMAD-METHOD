@@ -36,7 +36,7 @@ bmad-module list    [--json]
 - **`remove`** without `--purge` preserves `_bmad/custom/<code>/` so a
   re-install picks the customizations back up. `--purge` deletes them.
 - **Hooks / MCP / LSP / Claude subagents** declared in the module manifest
-  are *copied* but NOT auto-activated by this skill. Use Claude Code's
+  are _copied_ but NOT auto-activated by this skill. Use Claude Code's
   plugin manager to wire them up.
 
 ## Implementation

@@ -33,11 +33,11 @@ plugin via its `.claude-plugin/plugin.json` manifest.
 
 The user's request maps to exactly one of:
 
-| Verb | Phrasing |
-|---|---|
-| `install` | "install module X", "add the X module", "set up X" |
-| `update`  | "update module X", "upgrade X", "pull the latest X" |
-| `remove`  | "remove module X", "uninstall X", "delete X module" |
+| Verb      | Phrasing                                                               |
+| --------- | ---------------------------------------------------------------------- |
+| `install` | "install module X", "add the X module", "set up X"                     |
+| `update`  | "update module X", "upgrade X", "pull the latest X"                    |
+| `remove`  | "remove module X", "uninstall X", "delete X module"                    |
 | `list`    | "list modules", "what modules are installed", "show installed modules" |
 
 If the verb is ambiguous (e.g. the user says "manage modules"), ASK which
@@ -96,27 +96,27 @@ suggest workarounds beyond what the script's message itself suggests
 
 ## EXIT CODES
 
-| Code | Meaning |
-|---|---|
-| 0   | success |
-| 2   | usage error (bad/missing args or flags) |
-| 5   | skill runtime files missing/corrupt — reinstall the skill (a setup/packaging problem, NOT a module rejection) |
-| 10  | no `_bmad/` directory in project — run `bmad install` first |
-| 20  | missing or invalid `.claude-plugin/plugin.json` in source |
-| 21  | module uses a reserved `bmad.code` |
-| 30  | prefix collision with an already-installed module |
-| 40  | module would write outside its `_bmad/<code>/` root |
-| 50  | filesystem commit (atomic swap) failed |
-| 60  | network or `git clone` failed |
-| 70  | path traversal detected in manifest |
-| 80  | update aborted: locally modified files would be overwritten |
-| 90  | no such installed module (for `update`/`remove`) |
+| Code | Meaning                                                                                                       |
+| ---- | ------------------------------------------------------------------------------------------------------------- |
+| 0    | success                                                                                                       |
+| 2    | usage error (bad/missing args or flags)                                                                       |
+| 5    | skill runtime files missing/corrupt — reinstall the skill (a setup/packaging problem, NOT a module rejection) |
+| 10   | no `_bmad/` directory in project — run `bmad install` first                                                   |
+| 20   | missing or invalid `.claude-plugin/plugin.json` in source                                                     |
+| 21   | module uses a reserved `bmad.code`                                                                            |
+| 30   | prefix collision with an already-installed module                                                             |
+| 40   | module would write outside its `_bmad/<code>/` root                                                           |
+| 50   | filesystem commit (atomic swap) failed                                                                        |
+| 60   | network or `git clone` failed                                                                                 |
+| 70   | path traversal detected in manifest                                                                           |
+| 80   | update aborted: locally modified files would be overwritten                                                   |
+| 90   | no such installed module (for `update`/`remove`)                                                              |
 
 ## EXAMPLES
 
 User: "Install the devlog module from acme/acme-devlog"
 → Confirm, then run:
-  `node …/scripts/bmad-module.mjs install acme/acme-devlog`
+`node …/scripts/bmad-module.mjs install acme/acme-devlog`
 
 User: "Try installing examples/minimal/acme-md-lint first as a dry-run"
 → Run with `--dry-run`, show the plan, then ask whether to proceed for real.
