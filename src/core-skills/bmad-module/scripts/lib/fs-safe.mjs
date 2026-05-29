@@ -64,6 +64,29 @@ export async function copyDir(srcDir, destDir, shouldSkip = () => false) {
   return copied;
 }
 
+// Stage a copy plan into `destDir`: each plan entry copies one file from
+// `srcRoot/srcRel` to `destDir/destRel`. `extras` is an optional map of
+// `destRel → string content` for synthesized files (e.g. a rewritten plugin.json)
+// that have no source-tree counterpart. Returns the union of destRels written.
+export async function stageCopyPlan(srcRoot, destDir, plan, extras = {}) {
+  await fsp.mkdir(destDir, { recursive: true });
+  const written = [];
+  for (const { srcRel, destRel } of plan) {
+    const absSrc = path.join(srcRoot, srcRel);
+    const absDest = path.join(destDir, destRel);
+    await fsp.mkdir(path.dirname(absDest), { recursive: true });
+    await fsp.copyFile(absSrc, absDest);
+    written.push(destRel);
+  }
+  for (const [destRel, content] of Object.entries(extras)) {
+    const absDest = path.join(destDir, destRel);
+    await fsp.mkdir(path.dirname(absDest), { recursive: true });
+    await fsp.writeFile(absDest, content, 'utf8');
+    written.push(destRel);
+  }
+  return written;
+}
+
 // Atomically replace `targetDir` with `stagedDir` contents. Best effort —
 // not truly atomic, but minimizes the inconsistent window.
 //

@@ -1,11 +1,10 @@
-import fs from 'node:fs/promises';
 import path from 'node:path';
 import { EXIT, BmadModuleError } from './lib/exit.mjs';
 import { findBmadDir } from './lib/bmad-dir.mjs';
 import { parseSource, materializeSource } from './lib/source.mjs';
 import { readAndValidateManifest } from './lib/plugin-json.mjs';
-import { readUserIgnores, buildIgnoreMatcher, buildCopyList, validateDeclaredPaths } from './lib/install-plan.mjs';
-import { copyDir, atomicSwapDir, sha256File, pruneEmptyDirs } from './lib/fs-safe.mjs';
+import { readUserIgnores, buildIgnoreMatcher, buildCopyPlan, rewriteManifestPaths, validateDeclaredPaths } from './lib/install-plan.mjs';
+import { stageCopyPlan, atomicSwapDir, sha256File, pruneEmptyDirs } from './lib/fs-safe.mjs';
 import {
   readManifestYaml,
   addModuleToManifest,
@@ -88,14 +87,17 @@ async function updateOne(bmadDir, projectDir, entry, opts) {
       );
     }
 
-    // Build new copy list, stage, swap.
+    // Build new copy plan, stage, swap.
     validateDeclaredPaths(materialized.dir, manifest);
     const userIgnores = await readUserIgnores(materialized.dir, manifest);
     const matchIgnore = buildIgnoreMatcher(userIgnores);
-    const copyList = await buildCopyList(materialized.dir, matchIgnore);
+    const { plan, skillDestDirs } = await buildCopyPlan(materialized.dir, manifest, matchIgnore);
+    const rewrittenManifestJson = rewriteManifestPaths(manifest);
 
     const stagedDir = path.join(path.dirname(materialized.dir), 'staged-out');
-    await copyDir(materialized.dir, stagedDir, (rel) => !copyList.includes(rel) && !isAncestorOfAny(rel, copyList));
+    await stageCopyPlan(materialized.dir, stagedDir, plan, {
+      '.claude-plugin/plugin.json': rewrittenManifestJson,
+    });
     const targetDir = path.join(bmadDir, code);
     try {
       await atomicSwapDir(stagedDir, targetDir);
@@ -115,9 +117,9 @@ async function updateOne(bmadDir, projectDir, entry, opts) {
       rawSource: descriptor.rawInput,
       moduleName: manifest.name,
     });
-    const skillDirs = Array.isArray(manifest.skills) ? manifest.skills.map((s) => (s.startsWith('./') ? s.slice(2) : s)) : [];
-    await appendSkillManifestRows(bmadDir, code, skillDirs);
-    await appendFilesManifestRows(bmadDir, code, copyList);
+    const destPaths = ['.claude-plugin/plugin.json', ...plan.map((p) => p.destRel)];
+    await appendSkillManifestRows(bmadDir, code, skillDestDirs);
+    await appendFilesManifestRows(bmadDir, code, destPaths);
 
     // Prune empty dirs left behind from removed files. (The atomic swap of
     // the module root already replaced everything; this is a no-op guard for
@@ -127,14 +129,8 @@ async function updateOne(bmadDir, projectDir, entry, opts) {
     process.stdout.write(
       `[bmad-module] updated ${code} (${manifest.name} ${manifest.version})${materialized.sha ? ` @ ${materialized.sha.slice(0, 7)}` : ''}\n`,
     );
-    process.stdout.write(`[bmad-module] previous ${oldEntries.length} file(s) → new ${copyList.length} file(s)\n`);
+    process.stdout.write(`[bmad-module] previous ${oldEntries.length} file(s) → new ${destPaths.length} file(s)\n`);
   } finally {
     await materialized.cleanup();
   }
-}
-
-function isAncestorOfAny(rel, list) {
-  const prefix = rel + '/';
-  for (const p of list) if (p.startsWith(prefix)) return true;
-  return false;
 }

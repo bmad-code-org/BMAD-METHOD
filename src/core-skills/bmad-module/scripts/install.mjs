@@ -1,11 +1,10 @@
-import fs from 'node:fs/promises';
 import path from 'node:path';
 import { EXIT, BmadModuleError } from './lib/exit.mjs';
 import { findBmadDir, ensureConfigDir } from './lib/bmad-dir.mjs';
 import { parseSource, materializeSource } from './lib/source.mjs';
 import { readAndValidateManifest } from './lib/plugin-json.mjs';
-import { readUserIgnores, buildIgnoreMatcher, buildCopyList, validateDeclaredPaths } from './lib/install-plan.mjs';
-import { copyDir, atomicSwapDir } from './lib/fs-safe.mjs';
+import { readUserIgnores, buildIgnoreMatcher, buildCopyPlan, rewriteManifestPaths, validateDeclaredPaths } from './lib/install-plan.mjs';
+import { stageCopyPlan, atomicSwapDir } from './lib/fs-safe.mjs';
 import { readManifestYaml, addModuleToManifest, appendSkillManifestRows, appendFilesManifestRows } from './lib/manifest-ops.mjs';
 
 // Run the install verb. `opts` shape:
@@ -62,19 +61,25 @@ export async function runInstall(opts) {
     validateDeclaredPaths(materialized.dir, manifest);
     const userIgnores = await readUserIgnores(materialized.dir, manifest);
     const matchIgnore = buildIgnoreMatcher(userIgnores);
-    const copyList = await buildCopyList(materialized.dir, matchIgnore);
+    const { plan, skillDestDirs } = await buildCopyPlan(materialized.dir, manifest, matchIgnore);
+    const rewrittenManifestJson = rewriteManifestPaths(manifest);
 
     if (opts.dryRun) {
       process.stdout.write(`[bmad-module] dry-run: would install ${code} (${manifest.name} ${manifest.version})\n`);
       process.stdout.write(`[bmad-module] target: ${path.join(bmadDir, code)}\n`);
-      process.stdout.write(`[bmad-module] files (${copyList.length}):\n`);
-      for (const rel of copyList) process.stdout.write(`  ${rel}\n`);
+      process.stdout.write(`[bmad-module] files (${plan.length + 1}):\n`);
+      process.stdout.write(`  .claude-plugin/plugin.json (rewritten to canonical paths)\n`);
+      for (const { srcRel, destRel } of plan) {
+        process.stdout.write(srcRel === destRel ? `  ${destRel}\n` : `  ${destRel}  (from ${srcRel})\n`);
+      }
       return;
     }
 
     // §6. Stage to tmp/staged-out, then atomic swap.
     const stagedDir = path.join(path.dirname(materialized.dir), 'staged-out');
-    await copyDir(materialized.dir, stagedDir, (rel) => !copyList.includes(rel) && !isAncestorOfAny(rel, copyList));
+    await stageCopyPlan(materialized.dir, stagedDir, plan, {
+      '.claude-plugin/plugin.json': rewrittenManifestJson,
+    });
     const targetDir = path.join(bmadDir, code);
     try {
       await atomicSwapDir(stagedDir, targetDir);
@@ -93,9 +98,9 @@ export async function runInstall(opts) {
       moduleName: manifest.name,
     });
 
-    const skillDirs = Array.isArray(manifest.skills) ? manifest.skills.map((s) => normalizeSkillDirRelToCode(s)) : [];
-    await appendSkillManifestRows(bmadDir, code, skillDirs);
-    await appendFilesManifestRows(bmadDir, code, copyList);
+    const destPaths = ['.claude-plugin/plugin.json', ...plan.map((p) => p.destRel)];
+    await appendSkillManifestRows(bmadDir, code, skillDestDirs);
+    await appendFilesManifestRows(bmadDir, code, destPaths);
 
     // §8. Warn about Claude-only surfaces.
     const claudeOnly = [];
@@ -108,7 +113,7 @@ export async function runInstall(opts) {
     process.stdout.write(
       `[bmad-module] installed ${code} (${manifest.name} ${manifest.version})${materialized.sha ? ` @ ${materialized.sha.slice(0, 7)}` : ''}\n`,
     );
-    process.stdout.write(`[bmad-module] copied ${copyList.length} file(s) to ${path.relative(projectDir, targetDir)}\n`);
+    process.stdout.write(`[bmad-module] copied ${destPaths.length} file(s) to ${path.relative(projectDir, targetDir)}\n`);
     if (claudeOnly.length) {
       process.stdout.write(
         `[bmad-module] note: ${claudeOnly.join(', ')} were copied but NOT auto-activated. ` +
@@ -121,23 +126,4 @@ export async function runInstall(opts) {
   } finally {
     await materialized.cleanup();
   }
-}
-
-// Strip leading `./` and split the declared skill path. Modules use paths
-// relative to the module root (e.g. `./skills/bmad-devlog-write`). Within
-// `_bmad/<code>/` the same relative layout is preserved, so we just strip
-// the dot-slash.
-function normalizeSkillDirRelToCode(skillPath) {
-  let p = String(skillPath);
-  if (p.startsWith('./')) p = p.slice(2);
-  return p;
-}
-
-// During staging we filter the source tree to just the files we plan to copy.
-// `copyList` is a list of files; we also need to allow their ancestor dirs to
-// be walked. This returns true iff `rel` is a prefix of some path in list.
-function isAncestorOfAny(rel, list) {
-  const prefix = rel + '/';
-  for (const p of list) if (p.startsWith(prefix)) return true;
-  return false;
 }
