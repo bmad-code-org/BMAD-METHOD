@@ -13,7 +13,9 @@ import {
   removeSkillManifestRows,
   removeFilesManifestRows,
   readFileEntriesForModule,
+  readSkillCanonicalIdsForModule,
 } from './lib/manifest-ops.mjs';
+import { distributeToIdes } from './lib/ide-sync.mjs';
 
 // Update one installed module (or all when opts.all is true). v1 semantics:
 //   - Re-resolves the original source (or new --ref) and re-clones.
@@ -67,6 +69,11 @@ async function updateOne(bmadDir, projectDir, entry, opts) {
         `source manifest declares bmad.code "${manifest.bmad.code}" but installed code is "${code}"`,
       );
     }
+
+    // Capture the currently-distributed skill ids before we rewrite the
+    // manifest, so any skill dropped between versions is pruned from the IDE
+    // directories (and re-distributed ones are refreshed).
+    const oldSkillIds = await readSkillCanonicalIdsForModule(bmadDir, code);
 
     // Modified-file check: any tracked file whose on-disk hash diverges from
     // the recorded one is treated as user-modified. Abort rather than clobber.
@@ -130,6 +137,13 @@ async function updateOne(bmadDir, projectDir, entry, opts) {
       `[bmad-module] updated ${code} (${manifest.name} ${manifest.version})${materialized.sha ? ` @ ${materialized.sha.slice(0, 7)}` : ''}\n`,
     );
     process.stdout.write(`[bmad-module] previous ${oldEntries.length} file(s) → new ${destPaths.length} file(s)\n`);
+
+    // Re-distribute to the configured coding assistants: prune skills that no
+    // longer exist in this version, refresh the rest.
+    const ideResult = await distributeToIdes({ projectDir, bmadDir, prune: oldSkillIds });
+    if (!ideResult.skipped && !ideResult.ok) {
+      process.stderr.write(`[bmad-module] warning: ${ideResult.hint}\n`);
+    }
   } finally {
     await materialized.cleanup();
   }

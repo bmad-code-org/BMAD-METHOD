@@ -6,6 +6,7 @@ import { readAndValidateManifest } from './lib/plugin-json.mjs';
 import { readUserIgnores, buildIgnoreMatcher, buildCopyPlan, rewriteManifestPaths, validateDeclaredPaths } from './lib/install-plan.mjs';
 import { stageCopyPlan, atomicSwapDir } from './lib/fs-safe.mjs';
 import { readManifestYaml, addModuleToManifest, appendSkillManifestRows, appendFilesManifestRows } from './lib/manifest-ops.mjs';
+import { distributeToIdes } from './lib/ide-sync.mjs';
 
 // Run the install verb. `opts` shape:
 //   { source, ref, sha, channel, dryRun, projectDir }
@@ -102,22 +103,36 @@ export async function runInstall(opts) {
     await appendSkillManifestRows(bmadDir, code, skillDestDirs);
     await appendFilesManifestRows(bmadDir, code, destPaths);
 
-    // §8. Warn about Claude-only surfaces.
+    process.stdout.write(
+      `[bmad-module] installed ${code} (${manifest.name} ${manifest.version})${materialized.sha ? ` @ ${materialized.sha.slice(0, 7)}` : ''}\n`,
+    );
+    process.stdout.write(`[bmad-module] copied ${destPaths.length} file(s) to ${path.relative(projectDir, targetDir)}\n`);
+
+    // §8. Distribute the module's skills to the coding assistants the user chose
+    // at `bmad install` time (read from _bmad/_config/manifest.yaml). This is the
+    // same distribution the full installer performs; without it the skills would
+    // sit in _bmad/ and never reach Claude Code / Cursor / Copilot / etc.
+    const ideResult = await distributeToIdes({ projectDir, bmadDir });
+    if (ideResult.skipped) {
+      process.stdout.write(
+        `[bmad-module] note: no coding assistants are configured in _bmad/_config/manifest.yaml — ` +
+          `skills are in _bmad/${code}/ only. Run \`bmad install\` to choose your IDEs.\n`,
+      );
+    } else if (!ideResult.ok) {
+      process.stderr.write(`[bmad-module] warning: ${ideResult.hint}\n`);
+    }
+
+    // §9. Warn about Claude-plugin-only surfaces (not distributed as skills).
     const claudeOnly = [];
     if (manifest.hooks) claudeOnly.push('hooks');
     if (manifest.mcpServers) claudeOnly.push('mcpServers');
     if (manifest.lspServers) claudeOnly.push('lspServers');
     if (Array.isArray(manifest.agents) && manifest.agents.length) claudeOnly.push('agents');
     if (Array.isArray(manifest.commands) && manifest.commands.length) claudeOnly.push('commands');
-
-    process.stdout.write(
-      `[bmad-module] installed ${code} (${manifest.name} ${manifest.version})${materialized.sha ? ` @ ${materialized.sha.slice(0, 7)}` : ''}\n`,
-    );
-    process.stdout.write(`[bmad-module] copied ${destPaths.length} file(s) to ${path.relative(projectDir, targetDir)}\n`);
     if (claudeOnly.length) {
       process.stdout.write(
-        `[bmad-module] note: ${claudeOnly.join(', ')} were copied but NOT auto-activated. ` +
-          `Use Claude Code's plugin manager to wire them up.\n`,
+        `[bmad-module] note: ${claudeOnly.join(', ')} are Claude Code plugin surfaces and were copied but ` +
+          `NOT auto-activated. Use Claude Code's plugin manager to wire them up.\n`,
       );
     }
     if (manifest.bmad?.install?.postInstallSkill) {

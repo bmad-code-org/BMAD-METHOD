@@ -207,6 +207,44 @@ note "remove unknown code"
 run remove nope
 assert_exit 90 "remove unknown"
 
+# ─── 13. IDE distribution into the user's chosen coding assistants ───────────
+# Uses a SEPARATE project whose manifest lists two IDEs, so install/remove must
+# push skills to (and prune them from) those IDE dirs via the vendored ide-sync
+# bundle. Fully offline — no npx, no network, no node_modules.
+note "IDE distribution: install/remove sync to configured assistants"
+IDEPROJ="${WORKDIR}/ideproj"
+mkdir -p "${IDEPROJ}/_bmad/_config"
+cat > "${IDEPROJ}/_bmad/_config/manifest.yaml" <<'YAML'
+installation:
+  version: "v6.7.1"
+  installDate: "2026-05-21T00:00:00.000Z"
+  lastUpdated: "2026-05-21T00:00:00.000Z"
+modules: []
+ides:
+  - claude-code
+  - cursor
+YAML
+printf 'canonicalId,name,description,module,path\n' > "${IDEPROJ}/_bmad/_config/skill-manifest.csv"
+printf 'type,name,module,path,hash\n' > "${IDEPROJ}/_bmad/_config/files-manifest.csv"
+
+run install "${EXAMPLES}/minimal/acme-md-lint" --project-dir "${IDEPROJ}"
+assert_exit 0 "install into IDE project"
+assert_path_exists "${IDEPROJ}/.claude/skills/acme-md-lint/SKILL.md"
+assert_path_exists "${IDEPROJ}/.agents/skills/acme-md-lint/SKILL.md"
+[[ "${STDOUT}" == *"claude-code"* ]] && ok "stdout reports claude-code distribution" \
+  || ko "expected claude-code in stdout: ${STDOUT}"
+# Canonical end-state: skill source dirs removed from _bmad/ after distribution.
+if find "${IDEPROJ}/_bmad" -name SKILL.md | grep -q .; then
+  ko "SKILL.md still under _bmad after distribution"
+else
+  ok "_bmad skill dirs cleaned after distribution"
+fi
+
+run remove mdlint --project-dir "${IDEPROJ}"
+assert_exit 0 "remove from IDE project"
+assert_path_absent "${IDEPROJ}/.claude/skills/acme-md-lint"
+assert_path_absent "${IDEPROJ}/.agents/skills/acme-md-lint"
+
 # ─── Summary ─────────────────────────────────────────────────────────────────
 echo
 echo "──────────────────────────────────────────────────────────────────────"

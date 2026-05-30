@@ -2,9 +2,19 @@ const fs = require('../fs-native');
 const path = require('node:path');
 const yaml = require('yaml');
 
-const PLATFORM_CODES_PATH = path.join(__dirname, 'platform-codes.yaml');
-
 let _cachedPlatformCodes = null;
+
+/**
+ * Resolve the platform-codes.yaml path. Defaults to the copy beside this file,
+ * but honors BMAD_IDE_PLATFORM_CODES so the self-contained bundle the
+ * bmad-module skill ships can point at the YAML beside it (esbuild output does
+ * not preserve this file's original __dirname). Resolved lazily so the env var
+ * can be set before the first load.
+ * @returns {string}
+ */
+function resolvePlatformCodesPath() {
+  return process.env.BMAD_IDE_PLATFORM_CODES || path.join(__dirname, 'platform-codes.yaml');
+}
 
 /**
  * Load the platform codes configuration from YAML
@@ -15,6 +25,7 @@ async function loadPlatformCodes() {
     return _cachedPlatformCodes;
   }
 
+  const PLATFORM_CODES_PATH = resolvePlatformCodesPath();
   if (!(await fs.pathExists(PLATFORM_CODES_PATH))) {
     throw new Error(`Platform codes configuration not found at: ${PLATFORM_CODES_PATH}`);
   }

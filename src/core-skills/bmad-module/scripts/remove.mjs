@@ -9,7 +9,9 @@ import {
   removeSkillManifestRows,
   removeFilesManifestRows,
   readFileEntriesForModule,
+  readSkillCanonicalIdsForModule,
 } from './lib/manifest-ops.mjs';
+import { distributeToIdes } from './lib/ide-sync.mjs';
 
 // Remove a module's installed files and manifest entries. With `--purge` also
 // deletes `_bmad/custom/<code>/` (user customization dir). Without it, customs
@@ -36,6 +38,10 @@ export async function runRemove(opts) {
         `Use the appropriate uninstaller (e.g. \`bmad-method uninstall\`).`,
     );
   }
+
+  // Capture the module's distributed skill ids before dropping its manifest
+  // rows, so we can prune them from the IDE directories afterward.
+  const removedSkillIds = await readSkillCanonicalIdsForModule(bmadDir, code);
 
   // Delete each file tracked in files-manifest.csv; prune empty dirs after.
   const fileEntries = await readFileEntriesForModule(bmadDir, code);
@@ -64,6 +70,14 @@ export async function runRemove(opts) {
   await removeFilesManifestRows(bmadDir, code);
   await removeSkillManifestRows(bmadDir, code);
   await removeModuleFromManifest(bmadDir, code);
+
+  // Prune the module's skills from every configured coding assistant. The
+  // manifest no longer lists the module, so ide-sync removes its skill dirs +
+  // command pointers and re-syncs the rest.
+  const ideResult = await distributeToIdes({ projectDir, bmadDir, prune: removedSkillIds });
+  if (!ideResult.skipped && !ideResult.ok) {
+    process.stderr.write(`[bmad-module] warning: ${ideResult.hint}\n`);
+  }
 
   process.stdout.write(`[bmad-module] removed ${code} (${fileEntries.length} file(s))\n`);
   if (opts.purge) {

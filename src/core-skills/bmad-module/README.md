@@ -5,7 +5,7 @@ The core BMAD skill for installing, updating, removing, and listing community BM
 ## How it fits
 
 - **Authors** publish a single repo with `.claude-plugin/plugin.json` that works in both Claude Code's plugin marketplace and BMAD-METHOD.
-- **Users** install via this skill — no CLI required. Modules land in `_bmad/<bmad.code>/` alongside the official modules.
+- **Users** install via this skill — no CLI required. Modules are staged under `_bmad/<bmad.code>/`, then their skills are distributed to the coding assistants the user chose at `bmad install` time (the `ides:` list in `_bmad/_config/manifest.yaml`), exactly like official modules.
 - **BMAD-METHOD** treats community-installed modules as a new `source: 'community'` row in `manifest.yaml`; re-running `bmad install` preserves them (with the paired `manifest-generator.js` patch).
 
 ## Verbs
@@ -23,8 +23,9 @@ bmad-module list    [--json]
 
 - **Source of truth** for what was installed is `_bmad/_config/files-manifest.csv` (per-file hashes) and `_bmad/_config/skill-manifest.csv` (one row per shipped skill). `manifest.yaml` carries the source/version/sha tuple.
 - **`update`** refuses to overwrite locally-modified files (hash mismatch against the recorded hash). Move overrides into `_bmad/custom/<code>/` and retry.
-- **`remove`** without `--purge` preserves `_bmad/custom/<code>/` so a re-install picks the customizations back up. `--purge` deletes them.
-- **Hooks / MCP / LSP / Claude subagents** declared in the module manifest are _copied_ but NOT auto-activated by this skill. Use Claude Code's plugin manager to wire them up.
+- **`remove`** without `--purge` preserves `_bmad/custom/<code>/` so a re-install picks the customizations back up. `--purge` deletes them. Remove also prunes the module's skills from every configured IDE.
+- **IDE distribution** runs after every install/update/remove via a self-contained bundle of BMAD's real IDE engine, shipped at `lib/vendor/ide-sync.mjs` (built from `tools/installer/ide/*` by `lib/vendor/build-ide-sync.mjs`, gated by `vendor:check`). The skill execs it locally — no npx, no network. The same engine also backs the `bmad ide-sync` CLI command and the full installer's IDE setup, so all three stay in lockstep. If the bundle is unreachable on an older install, the skill says so and points the user at `bmad ide-sync`.
+- **Hooks / MCP / LSP / Claude subagents** declared in the module manifest are _copied_ but NOT auto-activated by this skill (they are Claude Code plugin surfaces, not skills). Use Claude Code's plugin manager to wire them up.
 
 ## Implementation
 

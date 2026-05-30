@@ -222,6 +222,20 @@ export async function appendSkillManifestRows(bmadDir, code, skillDirs) {
   await fs.writeFile(csvPath, rowsToCsv(SKILL_HEADER, rows), 'utf8');
 }
 
+// Return the canonicalIds of a module's skills currently recorded in
+// skill-manifest.csv. Used by update/remove to tell ide-sync which skill
+// directories to prune from the IDE targets.
+export async function readSkillCanonicalIdsForModule(bmadDir, code) {
+  const csvPath = path.join(bmadDir, '_config', 'skill-manifest.csv');
+  const rows = await readCsvRows(csvPath);
+  if (!rows || rows.length < 2) return [];
+  return rows
+    .slice(1)
+    .filter((r) => r[3] === code)
+    .map((r) => r[0])
+    .filter(Boolean);
+}
+
 export async function removeSkillManifestRows(bmadDir, code) {
   const csvPath = path.join(bmadDir, '_config', 'skill-manifest.csv');
   const existingRaw = await readCsvRows(csvPath);

@@ -5,11 +5,11 @@ description: Install, update, remove, or list community BMAD modules. Use when t
 
 # bmad-module
 
-Manage community BMAD modules — installable packages of skills, agents, and supporting assets that ship as standalone GitHub repos. Modules land in `_bmad/<bmad.code>/` alongside official modules and are tracked in the existing manifests. The same artifact is also loadable as a Claude Code plugin via its `.claude-plugin/plugin.json` manifest.
+Manage community BMAD modules — installable packages of skills, agents, and supporting assets that ship as standalone GitHub repos. Modules are staged under `_bmad/<bmad.code>/` and tracked in the existing manifests. On `install`, `update`, and `remove`, the script then distributes (or prunes) the module's skills to **every coding assistant the user selected when they ran `bmad install`** — read from the `ides:` list in `_bmad/_config/manifest.yaml` — so a community module lands in Claude Code, Cursor, Copilot, etc. exactly like an official module. As with official modules, the canonical end state is skills living in the IDE directories (e.g. `.claude/skills/<id>/`), not in `_bmad/`. The same artifact is also loadable as a Claude Code plugin via its `.claude-plugin/plugin.json` manifest.
 
 ## CRITICAL RULES
 
-- NEVER write directly to files under `_bmad/`. All filesystem changes go through the Node script at `scripts/bmad-module.mjs` — it handles staging, atomic swaps, manifest updates, and rollback on failure.
+- NEVER write directly to files under `_bmad/` or into IDE directories (`.claude/skills/`, `.agents/skills/`, etc.). All filesystem changes go through the Node script at `scripts/bmad-module.mjs` — it handles staging, atomic swaps, manifest updates, IDE distribution, and rollback on failure.
 - HALT and report cleanly if `_bmad/` is not present in the current working directory (exit code 10 from the script).
 - DO NOT execute hooks, MCP server commands, or any code shipped inside the module during install. The install copies files; activation is a separate step the user opts into via Claude Code's plugin manager.
 - If the script exits non-zero, report the exit code and stderr verbatim and stop. Do NOT retry, do NOT try a different verb. The one exception is exit code 5 (the skill's own bundled runtime files are missing/corrupt): that's a fixable setup/packaging problem, not a module rejection — relay the script's "reinstall the skill" guidance instead of reporting a failed install.
@@ -63,7 +63,12 @@ Stream stdout and stderr verbatim. Do NOT silence or rewrite them — the script
 
 ### Step 5 — Report
 
-On exit 0: paraphrase the script's final line(s) and note any next-step hint (e.g. "next: run the `bmad-devlog-setup` skill to finish setup").
+On exit 0: paraphrase the script's final line(s) and note any next-step hint (e.g. "next: run the `bmad-devlog-setup` skill to finish setup"). The script also prints `[ide-sync]` lines naming each coding assistant the skills were synced to — relay them so the user knows where the module landed.
+
+Note two non-fatal cases the script reports on exit 0:
+
+- If the script prints `[bmad-module] note: no coding assistants are configured…`, the module is staged under `_bmad/` but no IDEs were selected at `bmad install` time — tell the user to run `bmad install` to choose their assistants.
+- If it prints `[bmad-module] warning:` about IDE distribution, the module installed fine but skills may not have reached every assistant — relay the script's suggestion to run `bmad ide-sync`. Do NOT treat this as a failed install.
 
 On non-zero exit: print the exit code, the stderr message, and stop. Do not suggest workarounds beyond what the script's message itself suggests (e.g. "use `update` instead", "move changes into `_bmad/custom/<code>/`").
 

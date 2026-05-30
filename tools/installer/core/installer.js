@@ -372,21 +372,27 @@ class Installer {
   async _setupIdes(config, allModules, paths, addResult, previousSkillIds = new Set()) {
     if (config.skipIde || !config.ides || config.ides.length === 0) return;
 
-    await this.ideManager.ensureInitialized();
     const validIdes = config.ides.filter((ide) => ide && typeof ide === 'string');
-
     if (validIdes.length === 0) {
       addResult('IDE configuration', 'warn', 'no valid IDEs selected');
       return;
     }
 
-    const setupResults = await this.ideManager.setupBatch(validIdes, paths.projectRoot, paths.bmadDir, {
-      selectedModules: allModules || [],
+    // Route through the shared distribution primitive so the interactive
+    // installer and the standalone `bmad ide-sync` command can never diverge.
+    // cleanup:false — the install flow runs its own unconditional
+    // _cleanupSkillDirs afterward (it must run even when no IDEs are selected).
+    const { syncIdes } = require('./ide-sync');
+    const { results } = await syncIdes({
+      projectRoot: paths.projectRoot,
+      bmadDir: paths.bmadDir,
+      ides: validIdes,
+      previousSkillIds: [...previousSkillIds],
       verbose: config.verbose,
-      previousSkillIds,
+      cleanup: false,
     });
 
-    for (const setupResult of setupResults) {
+    for (const setupResult of results) {
       const ide = setupResult.ide;
       if (setupResult.success) {
         addResult(ide, 'ok', setupResult.detail || '');
@@ -401,26 +407,12 @@ class Installer {
    * Skills are self-contained in IDE directories, so _bmad/ only needs
    * module-level files (config.yaml, _config/, etc.).
    * Also cleans up skill dirs left by older installer versions.
+   * Delegates to the shared implementation so there is one copy of this logic.
    * @param {string} bmadDir - BMAD installation directory
    */
   async _cleanupSkillDirs(bmadDir) {
-    const csv = require('csv-parse/sync');
-    const csvPath = path.join(bmadDir, '_config', 'skill-manifest.csv');
-    if (!(await fs.pathExists(csvPath))) return;
-
-    const csvContent = await fs.readFile(csvPath, 'utf8');
-    const records = csv.parse(csvContent, { columns: true, skip_empty_lines: true });
-    const bmadFolderName = path.basename(bmadDir);
-    const bmadPrefix = bmadFolderName + '/';
-
-    for (const record of records) {
-      if (!record.path) continue;
-      const relativePath = record.path.startsWith(bmadPrefix) ? record.path.slice(bmadPrefix.length) : record.path;
-      const sourceDir = path.dirname(path.join(bmadDir, relativePath));
-      if (await fs.pathExists(sourceDir)) {
-        await fs.remove(sourceDir);
-      }
-    }
+    const { cleanupBmadSkillDirs } = require('./ide-sync');
+    await cleanupBmadSkillDirs(bmadDir);
   }
 
   async _readSkillManifestRows(bmadDir) {
