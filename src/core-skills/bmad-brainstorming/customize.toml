@@ -50,7 +50,8 @@ favorite_techniques = []
 # the library's shape (category, technique_name, description); a new category is
 # just a category value the CSV doesn't have. Entries append, so teams and users
 # can each grow the library. The facilitator treats these as first-class
-# alongside brain_methods for proposing, browsing, random, and progressive flows.
+# alongside brain_methods across every flow — facilitator-chosen, browse,
+# category draws, and inventive.
 #
 # Example (set in team/user override TOML):
 #   [[workflow.additional_techniques]]

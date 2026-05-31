@@ -95,6 +95,20 @@ def test_list_filtered_text(lib, capsys):
     assert len(out) == 1 and out[0].startswith("structured\tSCAMPER Method\t")
 
 
+def test_list_bare_is_refused(lib, capsys):
+    # the footgun: bare `list` must NOT dump the catalog into context
+    assert brain.main(["--file", str(lib), "list"]) == 2
+    captured = capsys.readouterr()
+    assert captured.out == ""  # nothing leaked to stdout
+    assert "--category" in captured.err and "--all" in captured.err
+
+
+def test_list_all_dumps_everything(lib, capsys):
+    assert brain.main(["--file", str(lib), "list", "--all"]) == 0
+    out = capsys.readouterr().out.strip().splitlines()
+    assert len(out) == 4  # the deliberate full-catalog escape hatch
+
+
 def test_json_output(lib, capsys):
     import json
     brain.main(["--file", str(lib), "--json", "categories"])

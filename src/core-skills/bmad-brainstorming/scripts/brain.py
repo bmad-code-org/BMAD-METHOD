@@ -11,10 +11,14 @@ complex enough to warrant one. Only `show` resolves detail files, and only for t
 technique asked for — so the heavy material never enters context until it is run.
 
 Commands:
-  categories                 list category names + counts (the cheap entry point)
-  list [--category C ...]     the index: category / name / gist, optionally filtered
-  show NAME [NAME ...]        full gist for each, inlining its detail file if it has one
+  categories                  list category names + counts (the cheap entry point)
+  list --category C [...]      the index (name + gist) for those categories
+  list --all                  the whole index at once — deliberate; large, avoid interactively
+  show NAME [NAME ...]         full gist for each, inlining its detail file if it has one
   random [--category C] [-n N]  pick N at random (optionally within categories)
+
+`list` refuses to run with neither --category nor --all: dumping the full catalog
+into context is a footgun, so it must be an explicit choice.
 
 Default output is lean text for an LLM to read; pass --json for structured output.
 """
@@ -111,8 +115,9 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--json", action="store_true", help="emit structured JSON instead of lean text")
     sub = p.add_subparsers(dest="cmd", required=True)
     sub.add_parser("categories", help="list category names + counts")
-    pl = sub.add_parser("list", help="the index: category/name/gist")
+    pl = sub.add_parser("list", help="the index: category/name/gist (needs --category or --all)")
     pl.add_argument("--category", action="append", help="filter to a category (repeatable)")
+    pl.add_argument("--all", action="store_true", help="dump the entire catalog (deliberate; large)")
     ps = sub.add_parser("show", help="full gist + detail file for named techniques")
     ps.add_argument("names", nargs="+")
     pr = sub.add_parser("random", help="pick techniques at random")
@@ -129,6 +134,13 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "categories":
         print(fmt_categories(categories(rows), args.json))
     elif args.cmd == "list":
+        if not args.category and not args.all:
+            print(
+                "error: `list` needs --category (one or more) — or --all to dump the whole "
+                "catalog on purpose. Use `categories` for the cheap map, or `random` to draw blind.",
+                file=sys.stderr,
+            )
+            return 2
         print(fmt_list(filter_cats(rows, args.category), args.json))
     elif args.cmd == "show":
         found, missing = find(rows, args.names)
