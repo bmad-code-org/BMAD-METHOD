@@ -31,7 +31,9 @@ persistent_facts = [
 
 # The technique library loaded on demand during the session. Swap the path in
 # team/user TOML to ship a different or extended catalog of creative methods.
-brain_methods = "assets/brain-methods.csv"
+# Kept `{skill-root}`-anchored so it resolves regardless of the working directory
+# (brain.py is always invoked with `--file {workflow.brain_methods}`).
+brain_methods = "{skill-root}/assets/brain-methods.csv"
 
 # Techniques the facilitator should reach for first. When proposing a method
 # (the AI-led default), it prefers these where they fit the goal before ranging
@@ -58,8 +60,9 @@ favorite_techniques = []
 additional_techniques = []
 
 # Session output location. The running log and any final artifacts land inside
-# `{output_dir}/{output_folder_name}/`. The resume check scans `{output_dir}`
-# for prior in-progress sessions.
+# `{output_dir}/{output_folder_name}/`. The resume check globs
+# `{output_dir}/*/session.md` (each session has its own subfolder) for prior
+# in-progress sessions.
 output_dir = "{output_folder}/brainstorming"
 output_folder_name = "brainstorm-{project_name}-{date}"
 
