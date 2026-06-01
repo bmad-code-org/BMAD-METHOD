@@ -3239,6 +3239,126 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test Suite 45: New module system (plugin.json#bmad) in the installer
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 45: New module system + legacy detection in custom-module install${colors.reset}\n`);
+  try {
+    const { PluginResolver } = require('../tools/installer/modules/plugin-resolver');
+    const { CustomModuleManager } = require('../tools/installer/modules/custom-module-manager');
+    const { readPluginManifest } = require('../tools/installer/modules/bmad-module-lib');
+    const acmeDevlog = path.resolve(__dirname, '../src/core-skills/bmad-module/tests/fixtures/examples/comprehensive/acme-devlog');
+
+    // ---- readPluginManifest: detects bmad block, ignores non-bmad plugin.json ----
+    {
+      const m = await readPluginManifest(acmeDevlog);
+      assert(m && m.bmad && m.bmad.code === 'devlog', 'readPluginManifest reads .claude-plugin/plugin.json#bmad');
+
+      const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-nobmad-'));
+      await fs.ensureDir(path.join(tmp, '.claude-plugin'));
+      await fs.writeFile(path.join(tmp, '.claude-plugin', 'plugin.json'), JSON.stringify({ name: 'x' }), 'utf8');
+      const none = await readPluginManifest(tmp);
+      assert(none === null, 'readPluginManifest returns null for plugin.json without a bmad block');
+      await fs.remove(tmp).catch(() => {});
+    }
+
+    // ---- Strategy 0: plugin.json#bmad resolves as format 'plugin-json' ----
+    {
+      const resolved = await new PluginResolver().resolve(acmeDevlog, { name: 'acme-devlog', source: '.', skills: [] });
+      assert(resolved.length === 1, 'Strategy 0 resolves a single new-system module');
+      const r = resolved[0];
+      assert(r.format === 'plugin-json', 'new-system module carries format: plugin-json');
+      assert(r.code === 'devlog', 'new-system module code comes from bmad.code (not plugin name)');
+      assert(r.version === '0.4.0' && !!r.manifest && !!r.sourceDir, 'new-system module carries version + manifest + sourceDir');
+      assert(!!r.moduleYamlPath && r.moduleYamlPath.endsWith('assets/module.yaml'), 'moduleYamlPath points at source moduleDefinition');
+    }
+
+    // ---- Legacy structure still resolves as format 'legacy' ----
+    {
+      const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-legacy-'));
+      const skill = path.join(tmp, 'skills', 'foo-setup');
+      await fs.ensureDir(path.join(skill, 'assets'));
+      await fs.writeFile(path.join(skill, 'SKILL.md'), '---\nname: foo-setup\ndescription: x\n---\n', 'utf8');
+      await fs.writeFile(path.join(skill, 'assets', 'module.yaml'), 'code: foo\nname: Foo\ndescription: legacy\n', 'utf8');
+      await fs.writeFile(
+        path.join(skill, 'assets', 'module-help.csv'),
+        'module,skill,display-name,menu-code,description,action,args,phase,preceded-by,followed-by,required,output-location,outputs\n',
+        'utf8',
+      );
+      const resolved = await new PluginResolver().resolve(tmp, { name: 'foo', skills: ['./skills/foo-setup'] });
+      assert(
+        resolved.length === 1 && resolved[0].format === 'legacy' && resolved[0].strategy === 2,
+        'legacy setup-skill resolves as format: legacy (strategy 2)',
+      );
+
+      // A plugin.json WITHOUT a bmad block must NOT hijack legacy detection.
+      await fs.ensureDir(path.join(tmp, '.claude-plugin'));
+      await fs.writeFile(
+        path.join(tmp, '.claude-plugin', 'plugin.json'),
+        JSON.stringify({ name: 'foo', skills: ['./skills/foo-setup'] }),
+        'utf8',
+      );
+      const resolved2 = await new PluginResolver().resolve(tmp, { name: 'foo', source: '.', skills: ['./skills/foo-setup'] });
+      assert(resolved2[0].format === 'legacy', 'plugin.json without bmad block falls through to legacy strategies');
+      await fs.remove(tmp).catch(() => {});
+    }
+
+    // ---- End-to-end install of a new-system module via OfficialModules ----
+    {
+      const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-pj-install-'));
+      const bmadDir = path.join(tmp, '_bmad');
+      await fs.ensureDir(path.join(bmadDir, '_config'));
+      await fs.writeFile(path.join(bmadDir, '_config', 'manifest.yaml'), 'modules: []\n', 'utf8');
+
+      const [resolved] = await new PluginResolver().resolve(acmeDevlog, { name: 'acme-devlog', source: '.', skills: [] });
+      resolved.localPath = acmeDevlog;
+      CustomModuleManager._resolutionCache.set(resolved.code, resolved);
+
+      const om = new OfficialModules();
+      const tracked = [];
+      const result = await om.install('devlog', bmadDir, (p) => tracked.push(p), { skipModuleInstaller: true, moduleConfig: {} });
+      CustomModuleManager._resolutionCache.delete('devlog');
+
+      assert(result.success === true && result.module === 'devlog', 'install() routes plugin-json resolution and succeeds');
+      assert(
+        await fs.pathExists(path.join(bmadDir, 'devlog', 'module.yaml')),
+        'install flattens moduleDefinition → _bmad/devlog/module.yaml',
+      );
+      assert(
+        await fs.pathExists(path.join(bmadDir, 'devlog', 'module-help.csv')),
+        'install flattens moduleHelpCsv → _bmad/devlog/module-help.csv',
+      );
+      assert(
+        await fs.pathExists(path.join(bmadDir, 'devlog', '.claude-plugin', 'plugin.json')),
+        'install keeps .claude-plugin/plugin.json',
+      );
+      assert(
+        await fs.pathExists(path.join(bmadDir, 'devlog', 'skills', 'bmad-devlog-setup', 'SKILL.md')),
+        'install copies declared skills under skills/',
+      );
+      assert(!(await fs.pathExists(path.join(bmadDir, 'devlog', 'tests'))), 'install honors bmad.install.ignore (tests/ excluded)');
+
+      const rewritten = JSON.parse(await fs.readFile(path.join(bmadDir, 'devlog', '.claude-plugin', 'plugin.json'), 'utf8'));
+      assert(rewritten.bmad.moduleDefinition === './module.yaml', 'plugin.json is rewritten to canonical paths');
+      assert(tracked.some((p) => p.endsWith('plugin.json')) && tracked.length > 5, 'install tracks copied files for the files manifest');
+
+      const yamlLib = require('yaml');
+      const mani = yamlLib.parse(await fs.readFile(path.join(bmadDir, '_config', 'manifest.yaml'), 'utf8'));
+      const entry = mani.modules.find((m) => m.name === 'devlog');
+      assert(
+        entry && entry.source === 'custom' && entry.localPath === acmeDevlog,
+        'install registers the module in manifest.yaml (source: custom)',
+      );
+      await fs.remove(tmp).catch(() => {});
+    }
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 45 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);

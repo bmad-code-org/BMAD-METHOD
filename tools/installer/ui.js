@@ -17,6 +17,7 @@ const {
 const channelResolver = require('./modules/channel-resolver');
 const prompts = require('./prompts');
 const { parseSetEntries } = require('./set-overrides');
+const { readPluginManifest } = require('./modules/bmad-module-lib');
 
 const manifest = new Manifest();
 
@@ -1071,6 +1072,7 @@ class UI {
                 name: plugin.displayName || plugin.name,
                 version: plugin.version,
                 description: plugin.description,
+                format: 'legacy',
                 strategy: 0,
                 pluginName: plugin.name,
                 skillPaths: [],
@@ -1081,32 +1083,39 @@ class UI {
           }
         }
       } else {
-        // Direct mode: no marketplace.json, scan directory for skills and resolve
+        // Direct mode: no marketplace.json. Prefer a new-system module manifest
+        // at the root (.claude-plugin/plugin.json#bmad); otherwise scan for
+        // SKILL.md directories (legacy direct mode).
+        const rootManifest = await readPluginManifest(sourceResult.rootDir);
         const directPlugin = {
-          name: sourceResult.parsed.displayName || path.basename(sourceResult.rootDir),
+          name: rootManifest?.name || sourceResult.parsed.displayName || path.basename(sourceResult.rootDir),
           source: '.',
           skills: [],
         };
 
-        // Scan for SKILL.md directories to populate skills array
-        try {
-          const entries = await fs.readdir(sourceResult.rootDir, { withFileTypes: true });
-          for (const entry of entries) {
-            if (entry.isDirectory()) {
-              const skillMd = path.join(sourceResult.rootDir, entry.name, 'SKILL.md');
-              if (await fs.pathExists(skillMd)) {
-                directPlugin.skills.push(entry.name);
+        if (!rootManifest) {
+          // Scan for SKILL.md directories to populate skills array
+          try {
+            const entries = await fs.readdir(sourceResult.rootDir, { withFileTypes: true });
+            for (const entry of entries) {
+              if (entry.isDirectory()) {
+                const skillMd = path.join(sourceResult.rootDir, entry.name, 'SKILL.md');
+                if (await fs.pathExists(skillMd)) {
+                  directPlugin.skills.push(entry.name);
+                }
               }
             }
+          } catch (scanError) {
+            s.error('Failed to scan directory');
+            await prompts.log.error(`  ${scanError.message}`);
+            addMore = await prompts.confirm({ message: 'Try another source?', default: false });
+            continue;
           }
-        } catch (scanError) {
-          s.error('Failed to scan directory');
-          await prompts.log.error(`  ${scanError.message}`);
-          addMore = await prompts.confirm({ message: 'Try another source?', default: false });
-          continue;
         }
 
-        if (directPlugin.skills.length > 0) {
+        // New-system modules resolve from plugin.json (skills declared inside it,
+        // so an empty skills[] here is expected); legacy modules need ≥1 skill.
+        if (rootManifest || directPlugin.skills.length > 0) {
           try {
             const resolved = await customMgr.resolvePlugin(sourceResult.rootDir, directPlugin, sourceResult.sourceUrl, localPath);
             allResolved.push(...resolved);
@@ -1227,32 +1236,36 @@ class UI {
           continue;
         }
       } else {
-        // Direct mode: scan for SKILL.md directories
+        // Direct mode: prefer a new-system manifest at the root, else scan for
+        // SKILL.md directories (legacy direct mode).
+        const rootManifest = await readPluginManifest(sourceResult.rootDir);
         const directPlugin = {
-          name: sourceResult.parsed.displayName || path.basename(sourceResult.rootDir),
+          name: rootManifest?.name || sourceResult.parsed.displayName || path.basename(sourceResult.rootDir),
           source: '.',
           skills: [],
         };
-        try {
-          const entries = await fs.readdir(sourceResult.rootDir, { withFileTypes: true });
-          for (const entry of entries) {
-            if (entry.isDirectory()) {
-              const skillMd = path.join(sourceResult.rootDir, entry.name, 'SKILL.md');
-              if (await fs.pathExists(skillMd)) {
-                directPlugin.skills.push(entry.name);
+        if (!rootManifest) {
+          try {
+            const entries = await fs.readdir(sourceResult.rootDir, { withFileTypes: true });
+            for (const entry of entries) {
+              if (entry.isDirectory()) {
+                const skillMd = path.join(sourceResult.rootDir, entry.name, 'SKILL.md');
+                if (await fs.pathExists(skillMd)) {
+                  directPlugin.skills.push(entry.name);
+                }
               }
             }
+          } catch {
+            // Skip unreadable directories
           }
-        } catch {
-          // Skip unreadable directories
         }
 
-        if (directPlugin.skills.length > 0) {
+        if (rootManifest || directPlugin.skills.length > 0) {
           try {
             const resolved = await customMgr.resolvePlugin(sourceResult.rootDir, directPlugin, sourceResult.sourceUrl, localPath);
             allResolved.push(...resolved);
-          } catch {
-            // Skip unresolvable
+          } catch (resolveError) {
+            await prompts.log.warn(`  Could not resolve ${source}: ${resolveError.message}`);
           }
         }
       }

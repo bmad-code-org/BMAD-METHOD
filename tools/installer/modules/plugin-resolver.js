@@ -2,17 +2,25 @@ const fs = require('../fs-native');
 const path = require('node:path');
 const yaml = require('yaml');
 const { MODULE_HELP_CSV_HEADER } = require('./module-help-schema');
+const { loadBmadModuleLib, readPluginManifest } = require('./bmad-module-lib');
 
 /**
- * Resolves how to install a plugin from marketplace.json by analyzing
- * where module.yaml and module-help.csv live relative to the listed skills.
+ * Resolves how to install a plugin by analyzing its on-disk shape.
  *
- * Five strategies, tried in order:
+ * Strategy 0 (new module system), tried first:
+ *   0. A `.claude-plugin/plugin.json` carrying a `bmad{}` block at the module
+ *      root. Resolved + validated via the bmad-module skill's own libs so the
+ *      installer and the runtime skill agree on what a module is.
+ *
+ * Legacy strategies (marketplace.json + module.yaml), tried in order:
  *   1. Root module files at the common parent of all skills
  *   2. A -setup skill with assets/module.yaml + assets/module-help.csv
  *   3. Single standalone skill with both files in its assets/
  *   4. Multiple standalone skills, each with both files in assets/
  *   5. Fallback: synthesize from marketplace.json + SKILL.md frontmatter
+ *
+ * Every resolved module carries a `format` discriminator ('plugin-json' or
+ * 'legacy') so the installer can pick the matching install path.
  */
 class PluginResolver {
   /**
@@ -27,6 +35,13 @@ class PluginResolver {
    * @returns {Promise<ResolvedModule[]>} Array of resolved module definitions
    */
   async resolve(repoPath, plugin) {
+    // Strategy 0: new module system. Tried before everything else — and before
+    // the no-skills early return below — because new-system modules declare
+    // their skills inside plugin.json rather than via marketplace.json's
+    // skills[] array.
+    const pluginJsonResult = await this._tryPluginJson(repoPath, plugin);
+    if (pluginJsonResult) return pluginJsonResult;
+
     const skillRelPaths = plugin.skills || [];
 
     // No skills array: legacy behavior - caller should use existing findModuleSource
@@ -64,6 +79,84 @@ class PluginResolver {
     return result;
   }
 
+  // ─── Strategy 0: New Module System (plugin.json#bmad) ───────────────────────
+
+  /**
+   * Detect a `.claude-plugin/plugin.json` carrying a `bmad{}` block at the
+   * module root and resolve it via the bmad-module skill's own validator.
+   *
+   * The module root is `plugin.source` (relative to the repo) when given, else
+   * the repo root. Returns a single-element array of a new-format ResolvedModule
+   * on success, or null to fall through to the legacy strategies. Throws when a
+   * plugin.json#bmad is present but invalid — a malformed new-system manifest
+   * should surface, not silently install via the legacy synthesizer.
+   */
+  async _tryPluginJson(repoPath, plugin) {
+    const repoRoot = path.resolve(repoPath);
+    let moduleRoot = repoRoot;
+    if (plugin.source) {
+      const normalized = String(plugin.source).replace(/^\.\//, '');
+      const abs = path.resolve(repoPath, normalized);
+      // Guard against path traversal out of the repo root.
+      if (abs !== repoRoot && !abs.startsWith(repoRoot + path.sep)) {
+        return null;
+      }
+      moduleRoot = abs;
+    }
+
+    const rawManifest = await readPluginManifest(moduleRoot);
+    if (!rawManifest) return null;
+
+    // Validate with the skill's install-time validator (throws BmadModuleError
+    // with a descriptive .message on a bad manifest).
+    const { readAndValidateManifest } = await loadBmadModuleLib();
+    const manifest = await readAndValidateManifest(moduleRoot);
+
+    // Resolve declared skill dirs to absolute existing paths for display only;
+    // the install copy is plan-driven (buildCopyPlan), not skillPaths-driven.
+    const skillPaths = [];
+    if (Array.isArray(manifest.skills)) {
+      for (const rel of manifest.skills) {
+        if (typeof rel !== 'string') continue;
+        const abs = path.resolve(moduleRoot, rel.replace(/^\.\//, ''));
+        if (abs.startsWith(moduleRoot + path.sep) && (await fs.pathExists(abs))) {
+          skillPaths.push(abs);
+        }
+      }
+    }
+
+    // Point moduleYamlPath at the source moduleDefinition so the installer's
+    // source-resolution helpers (findModuleSourceByCode → createModuleDirectories,
+    // resolveInstalledModuleYaml) can read the module's declared `directories`.
+    // Install itself flattens this to `_bmad/<code>/module.yaml` via buildCopyPlan.
+    let moduleYamlPath = null;
+    if (typeof manifest.bmad?.moduleDefinition === 'string') {
+      const abs = path.resolve(moduleRoot, manifest.bmad.moduleDefinition.replace(/^\.\//, ''));
+      if (abs.startsWith(moduleRoot + path.sep) && (await fs.pathExists(abs))) {
+        moduleYamlPath = abs;
+      }
+    }
+
+    return [
+      {
+        code: manifest.bmad.code,
+        name: manifest.displayName || manifest.name,
+        version: manifest.bmad.moduleVersion || manifest.version || null,
+        description: manifest.description || plugin.description || '',
+        format: 'plugin-json',
+        strategy: 'plugin-json',
+        pluginName: plugin.name,
+        sourceDir: moduleRoot,
+        manifest,
+        skillPaths,
+        moduleYamlPath,
+        moduleHelpCsvPath: null,
+        synthesizedModuleYaml: null,
+        synthesizedHelpCsv: null,
+      },
+    ];
+  }
+
   // ─── Strategy 1: Root Module Files ──────────────────────────────────────────
 
   /**
@@ -87,6 +180,7 @@ class PluginResolver {
         name: moduleData.name || plugin.name,
         version: plugin.version || moduleData.module_version || null,
         description: moduleData.description || plugin.description || '',
+        format: 'legacy',
         strategy: 1,
         pluginName: plugin.name,
         moduleYamlPath,
@@ -124,6 +218,7 @@ class PluginResolver {
           name: moduleData.name || plugin.name,
           version: plugin.version || moduleData.module_version || null,
           description: moduleData.description || plugin.description || '',
+          format: 'legacy',
           strategy: 2,
           pluginName: plugin.name,
           moduleYamlPath,
@@ -163,6 +258,7 @@ class PluginResolver {
         name: moduleData.name || plugin.name,
         version: plugin.version || moduleData.module_version || null,
         description: moduleData.description || plugin.description || '',
+        format: 'legacy',
         strategy: 3,
         pluginName: plugin.name,
         moduleYamlPath,
@@ -201,6 +297,7 @@ class PluginResolver {
         name: moduleData.name || path.basename(skillPath),
         version: plugin.version || moduleData.module_version || null,
         description: moduleData.description || '',
+        format: 'legacy',
         strategy: 4,
         pluginName: plugin.name,
         moduleYamlPath,
@@ -257,6 +354,7 @@ class PluginResolver {
         name: moduleName,
         version: plugin.version || null,
         description: plugin.description || '',
+        format: 'legacy',
         strategy: 5,
         pluginName: plugin.name,
         moduleYamlPath: null,
