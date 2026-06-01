@@ -195,6 +195,10 @@ function discoverSkillDirs(rootDirs) {
     for (const entry of entries) {
       if (!entry.isDirectory()) continue;
       if (entry.name === 'node_modules' || entry.name === '.git') continue;
+      // Skip `tests/fixtures/` trees: these hold reference and deliberately-
+      // malformed example modules (e.g. third-party `acme-*` skills and negative
+      // fixtures) that intentionally don't follow the production SKILL rules.
+      if (entry.name === 'fixtures' && path.basename(dir) === 'tests') continue;
 
       const fullPath = path.join(dir, entry.name);
       const skillMd = path.join(fullPath, 'SKILL.md');
