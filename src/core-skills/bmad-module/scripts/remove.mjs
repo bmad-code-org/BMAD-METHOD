@@ -12,6 +12,8 @@ import {
   readSkillCanonicalIdsForModule,
 } from './lib/manifest-ops.mjs';
 import { distributeToIdes } from './lib/ide-sync.mjs';
+import { removeModuleFromConfig } from './lib/config-gen.mjs';
+import { regenerateHelpCatalog } from './lib/help-catalog.mjs';
 
 // Remove a module's installed files and manifest entries. With `--purge` also
 // deletes `_bmad/custom/<code>/` (user customization dir). Without it, customs
@@ -43,6 +45,14 @@ export async function runRemove(opts) {
   // rows, so we can prune them from the IDE directories afterward.
   const removedSkillIds = await readSkillCanonicalIdsForModule(bmadDir, code);
 
+  // Strip the module's central-config blocks ([modules.<code>] + its [agents.*])
+  // while its module.yaml still exists on disk to identify the agent codes.
+  try {
+    await removeModuleFromConfig(bmadDir, code);
+  } catch (e) {
+    process.stderr.write(`[bmad-module] warning: failed to update config for removal of ${code}: ${e.message}\n`);
+  }
+
   // Delete each file tracked in files-manifest.csv; prune empty dirs after.
   const fileEntries = await readFileEntriesForModule(bmadDir, code);
   const moduleRoot = path.join(bmadDir, code);
@@ -70,6 +80,14 @@ export async function runRemove(opts) {
   await removeFilesManifestRows(bmadDir, code);
   await removeSkillManifestRows(bmadDir, code);
   await removeModuleFromManifest(bmadDir, code);
+
+  // Rebuild the merged help catalog now that the module's module-help.csv is
+  // gone, so its skills disappear from `bmad-help`.
+  try {
+    await regenerateHelpCatalog(bmadDir);
+  } catch (e) {
+    process.stderr.write(`[bmad-module] warning: help catalog rebuild failed: ${e.message}\n`);
+  }
 
   // Prune the module's skills from every configured coding assistant. The
   // manifest no longer lists the module, so ide-sync removes its skill dirs +

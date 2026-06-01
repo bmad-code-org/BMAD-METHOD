@@ -97,6 +97,18 @@ ides: []
 YAML
 printf 'canonicalId,name,description,module,path\n' > _bmad/_config/skill-manifest.csv
 printf 'type,name,module,path,hash\n' > _bmad/_config/files-manifest.csv
+# Central config as `bmad install` would leave it: [core] supplies output_folder
+# so module defaults that reference {output_folder} resolve during config-gen.
+cat > _bmad/config.toml <<'TOML'
+# Installer-managed. Regenerated on install.
+
+[core]
+user_name = "Tester"
+output_folder = "{project-root}/_bmad-output"
+TOML
+printf '# Installer-managed.\n\n[core]\ncommunication_language = "English"\n' > _bmad/config.user.toml
+# Core ships a canonical module-help.csv so the merged catalog has a baseline row.
+printf 'module,skill,display-name,menu-code,description,action,args,phase,preceded-by,followed-by,required,output-location,outputs\n,bmad-help,Help,h,Show the BMAD help catalog,bmad-help,,,,,,,\n' > _bmad/core/module-help.csv
 ok "skeleton seeded at ${WORKDIR}/_bmad/"
 
 # ─── 1. list (empty) ─────────────────────────────────────────────────────────
@@ -161,8 +173,8 @@ run install "${FIXTURES}/module-bad-missing-fields"
 assert_exit 20 "missing required fields"
 
 # ─── 9. comprehensive module install ─────────────────────────────────────────
-note "install examples/comprehensive/acme-devlog"
-run install "${EXAMPLES}/comprehensive/acme-devlog"
+note "install examples/comprehensive/acme-devlog (with --set override)"
+run install "${EXAMPLES}/comprehensive/acme-devlog" --set devlog.devlog_path='{output_folder}/journal'
 assert_exit 0 "install comprehensive"
 assert_path_exists "_bmad/devlog/skills/bmad-devlog-write/SKILL.md"
 assert_path_exists "_bmad/devlog/skills/bmad-devlog-setup/SKILL.md"
@@ -170,12 +182,43 @@ assert_path_exists "_bmad/devlog/agents/changelog-archivist.md"
 # hooks/mcpServers are flattened to canonical root slots (see rewriteManifestPaths)
 assert_path_exists "_bmad/devlog/hooks.json"
 assert_path_exists "_bmad/devlog/.mcp.json"
+# moduleDefinition / moduleHelpCsv are also flattened to the module root even
+# though they live inside the setup skill's assets/ dir.
+assert_path_exists "_bmad/devlog/module.yaml"
+assert_path_exists "_bmad/devlog/module-help.csv"
 # install.ignore excludes docs/ and tests/ and README.md / CHANGELOG.md
 assert_path_absent "_bmad/devlog/docs"
 assert_path_absent "_bmad/devlog/README.md"
 assert_path_absent "_bmad/devlog/CHANGELOG.md"
 [[ "${STDOUT}" == *"hooks"* ]] && ok "warns about hooks not auto-activated" \
   || ko "expected hooks warning in stdout: ${STDOUT}"
+
+# ─── 9a. parity: central config + agent roster (gap #3) ──────────────────────
+note "config generation + agent roster"
+assert_grep '^\[modules\.devlog]' "_bmad/config.toml"
+# --set override resolves {output_folder} from [core] and applies the result template
+assert_grep 'devlog_path = "\{project-root}/_bmad-output/journal"' "_bmad/config.toml"
+assert_grep '^\[agents\.bmad-agent-historian]' "_bmad/config.toml"
+assert_grep 'module = "devlog"' "_bmad/config.toml"
+# [core] is preserved untouched
+assert_grep '^user_name = "Tester"' "_bmad/config.toml"
+# user-scoped answer lands in config.user.toml, not config.toml
+assert_grep '^\[modules\.devlog]' "_bmad/config.user.toml"
+assert_grep 'entry_format = "iso"' "_bmad/config.user.toml"
+
+# ─── 9b. parity: module working directories (gap #2) ─────────────────────────
+note "module directory creation"
+assert_path_exists "_bmad-output/journal"
+
+# ─── 9c. parity: merged help catalog (gap #1) ────────────────────────────────
+note "bmad-help.csv merge"
+assert_path_exists "_bmad/_config/bmad-help.csv"
+head -1 _bmad/_config/bmad-help.csv | grep -q '^module,skill,display-name,' \
+  && ok "bmad-help.csv has canonical header" || ko "bmad-help.csv header wrong"
+assert_grep '^devlog,bmad-devlog-write,' "_bmad/_config/bmad-help.csv"
+assert_grep '^devlog,bmad-agent-historian,' "_bmad/_config/bmad-help.csv"
+# the core baseline row is still present
+assert_grep ',bmad-help,Help,' "_bmad/_config/bmad-help.csv"
 
 # ─── 10. remove minimal (no purge), preserve custom ─────────────────────────
 note "create _bmad/custom/mdlint to test preservation, then remove"
@@ -201,6 +244,17 @@ run remove devlog --purge
 assert_exit 0 "remove --purge"
 assert_path_absent "_bmad/devlog"
 assert_path_absent "_bmad/custom/devlog"
+# config blocks and help rows for devlog are stripped on removal
+grep -q '\[modules\.devlog]' _bmad/config.toml \
+  && ko "[modules.devlog] still in config.toml" || ok "config.toml [modules.devlog] stripped"
+grep -q '\[agents\.bmad-agent-historian]' _bmad/config.toml \
+  && ko "[agents.bmad-agent-historian] still in config.toml" || ok "config.toml agent block stripped"
+grep -q '\[modules\.devlog]' _bmad/config.user.toml \
+  && ko "[modules.devlog] still in config.user.toml" || ok "config.user.toml [modules.devlog] stripped"
+grep -q '^devlog,' _bmad/_config/bmad-help.csv \
+  && ko "devlog rows still in bmad-help.csv" || ok "bmad-help.csv devlog rows removed"
+# [core] survives the removal
+assert_grep '^user_name = "Tester"' "_bmad/config.toml"
 
 # ─── 12. remove unknown ──────────────────────────────────────────────────────
 note "remove unknown code"
@@ -244,6 +298,26 @@ run remove mdlint --project-dir "${IDEPROJ}"
 assert_exit 0 "remove from IDE project"
 assert_path_absent "${IDEPROJ}/.claude/skills/acme-md-lint"
 assert_path_absent "${IDEPROJ}/.agents/skills/acme-md-lint"
+
+# ─── 14. npm dependency install (gap #4) ─────────────────────────────────────
+# A module shipping package.json. package.json/package-lock.json are copied to
+# the module root; if npm is available, deps are installed in place. The fixture
+# has no dependencies, so npm resolves offline. Guarded on npm availability so
+# CI sandboxes without npm still pass.
+note "npm fixture: package.json copied + deps installed in place"
+run install "${EXAMPLES}/minimal-npm/acme-npmtool"
+assert_exit 0 "install npm fixture"
+assert_path_exists "_bmad/npmtool/package.json"
+if command -v npm >/dev/null 2>&1; then
+  [[ "${STDOUT}" == *"installed npm dependencies for npmtool"* ]] \
+    && ok "npm dependencies installed" \
+    || ko "expected npm install confirmation in stdout: ${STDOUT}"
+  # The fixture has zero deps, so npm writes package-lock.json (not node_modules);
+  # its presence proves npm actually ran inside the installed module dir.
+  assert_path_exists "_bmad/npmtool/package-lock.json"
+else
+  ok "npm not on PATH — skipping dependency-install assertion"
+fi
 
 # ─── Summary ─────────────────────────────────────────────────────────────────
 echo

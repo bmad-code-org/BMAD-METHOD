@@ -16,6 +16,7 @@ import {
   readSkillCanonicalIdsForModule,
 } from './lib/manifest-ops.mjs';
 import { distributeToIdes } from './lib/ide-sync.mjs';
+import { finishModuleInstall } from './install.mjs';
 
 // Update one installed module (or all when opts.all is true). v1 semantics:
 //   - Re-resolves the original source (or new --ref) and re-clones.
@@ -137,6 +138,10 @@ async function updateOne(bmadDir, projectDir, entry, opts) {
       `[bmad-module] updated ${code} (${manifest.name} ${manifest.version})${materialized.sha ? ` @ ${materialized.sha.slice(0, 7)}` : ''}\n`,
     );
     process.stdout.write(`[bmad-module] previous ${oldEntries.length} file(s) → new ${destPaths.length} file(s)\n`);
+
+    // Re-run the same post-copy completion as install: deps, config + agent
+    // roster, working directories (moves if a path changed), and help catalog.
+    await finishModuleInstall({ bmadDir, code, targetDir, manifest, setOverrides: opts.setOverrides });
 
     // Re-distribute to the configured coding assistants: prune skills that no
     // longer exist in this version, refresh the rest.

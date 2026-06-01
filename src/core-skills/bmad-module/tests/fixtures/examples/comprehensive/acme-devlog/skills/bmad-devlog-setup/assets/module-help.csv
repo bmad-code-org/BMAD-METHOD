@@ -1,4 +1,4 @@
-canonical_id,name,description,module,path,kind,team,agent,visible,deprecated,version,tags,help_text
-bmad-devlog-write,bmad-devlog-write,Write today's devlog entry from a template.,devlog,skills/bmad-devlog-write,skill,knowledge-management,,true,false,0.4.0,"devlog,write,daily",Use `/bmad-devlog-write` to create today's entry.
-bmad-devlog-summarize,bmad-devlog-summarize,Summarize devlog entries across a date range.,devlog,skills/bmad-devlog-summarize,skill,knowledge-management,,true,false,0.4.0,"devlog,summarize,history",Use `/bmad-devlog-summarize <range>` (e.g. `last-week`, `2026-05`).
-bmad-agent-historian,bmad-agent-historian,Clio the Historian — persona-agent for narrative recall and pattern detection.,devlog,skills/bmad-agent-historian,persona-agent,knowledge-management,Clio,true,false,0.4.0,"devlog,history,persona",Use `/bmad-agent-historian` or ask to "talk to Clio".
+module,skill,display-name,menu-code,description,action,args,phase,preceded-by,followed-by,required,output-location,outputs
+devlog,bmad-devlog-write,Write Devlog Entry,dw,Write today's devlog entry from a template.,bmad-devlog-write,,daily,,,,{devlog_path},entry.md
+devlog,bmad-devlog-summarize,Summarize Devlog,ds,Summarize devlog entries across a date range.,bmad-devlog-summarize,<range>,history,,,,,summary.md
+devlog,bmad-agent-historian,Clio the Historian,ch,Persona-agent for narrative recall and pattern detection.,bmad-agent-historian,,,,,,,

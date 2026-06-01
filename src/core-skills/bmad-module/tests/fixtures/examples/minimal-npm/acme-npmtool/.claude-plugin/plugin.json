@@ -1,0 +1,14 @@
+{
+  "name": "acme-npmtool",
+  "version": "0.1.0",
+  "description": "A module that ships a package.json so install exercises npm dependency setup.",
+  "license": "MIT",
+  "author": { "name": "Acme Corp" },
+  "skills": ["./skills/acme-npmtool"],
+  "bmad": {
+    "specVersion": "1.0.0",
+    "code": "npmtool",
+    "category": "developer-tools",
+    "compatibility": { "bmadMethod": ">=6.6.0" }
+  }
+}

@@ -7,6 +7,10 @@ import { readUserIgnores, buildIgnoreMatcher, buildCopyPlan, rewriteManifestPath
 import { stageCopyPlan, atomicSwapDir } from './lib/fs-safe.mjs';
 import { readManifestYaml, addModuleToManifest, appendSkillManifestRows, appendFilesManifestRows } from './lib/manifest-ops.mjs';
 import { distributeToIdes } from './lib/ide-sync.mjs';
+import { installModuleDeps } from './lib/npm-deps.mjs';
+import { regenerateCentralConfig, readModuleConfigValues, resolveSectionKey } from './lib/config-gen.mjs';
+import { createModuleDirectories } from './lib/module-dirs.mjs';
+import { regenerateHelpCatalog } from './lib/help-catalog.mjs';
 
 // Run the install verb. `opts` shape:
 //   { source, ref, sha, channel, dryRun, projectDir }
@@ -108,6 +112,12 @@ export async function runInstall(opts) {
     );
     process.stdout.write(`[bmad-module] copied ${destPaths.length} file(s) to ${path.relative(projectDir, targetDir)}\n`);
 
+    // §7.5. Complete the install the way the full installer does for custom
+    // modules: install JS deps, generate central config + agent roster, create
+    // declared working directories, and rebuild the merged help catalog. All are
+    // non-fatal — the module is already committed to _bmad/<code>/.
+    await finishModuleInstall({ bmadDir, code, targetDir, manifest, setOverrides: opts.setOverrides });
+
     // §8. Distribute the module's skills to the coding assistants the user chose
     // at `bmad install` time (read from _bmad/_config/manifest.yaml). This is the
     // same distribution the full installer performs; without it the skills would
@@ -140,5 +150,52 @@ export async function runInstall(opts) {
     }
   } finally {
     await materialized.cleanup();
+  }
+}
+
+// Shared post-copy completion for install and update: install JS deps, generate
+// the central config + agent roster, create declared working directories, and
+// rebuild the merged help catalog. Mirrors what the full installer does for a
+// custom module so a skill-driven install lands the same on-disk state. Every
+// step is non-fatal — the module files are already committed under _bmad/<code>/.
+export async function finishModuleInstall({ bmadDir, code, targetDir, manifest, setOverrides }) {
+  // 1. npm deps (in place — see npm-deps.mjs for the design note).
+  const dep = await installModuleDeps(targetDir, manifest);
+  if (dep.ran && dep.ok) process.stdout.write(`[bmad-module] installed npm dependencies for ${code}\n`);
+  else if (dep.ran && !dep.ok) process.stderr.write(`[bmad-module] warning: npm install failed for ${code}: ${dep.error}\n`);
+
+  // 2. Capture prior config (for directory move-detection on update) before regen.
+  const sectionKey = await resolveSectionKey(bmadDir, code);
+  let existingConfig = {};
+  try {
+    existingConfig = await readModuleConfigValues(bmadDir, sectionKey);
+  } catch {
+    /* no prior config — fine */
+  }
+
+  // 3. Central config + agent roster.
+  let resolved = { values: {} };
+  try {
+    resolved = await regenerateCentralConfig(bmadDir, code, { setOverrides: setOverrides || {} });
+  } catch (e) {
+    process.stderr.write(`[bmad-module] warning: config generation failed for ${code}: ${e.message}\n`);
+  }
+
+  // 4. Declared working directories.
+  try {
+    const dirs = await createModuleDirectories(bmadDir, code, resolved.values, existingConfig);
+    const made = dirs.createdDirs.length;
+    const moved = dirs.movedDirs.length;
+    if (made) process.stdout.write(`[bmad-module] created ${made} working director${made === 1 ? 'y' : 'ies'} for ${code}\n`);
+    if (moved) process.stdout.write(`[bmad-module] moved ${moved} working director${moved === 1 ? 'y' : 'ies'} for ${code}\n`);
+  } catch (e) {
+    process.stderr.write(`[bmad-module] warning: directory creation failed for ${code}: ${e.message}\n`);
+  }
+
+  // 5. Merged help catalog.
+  try {
+    await regenerateHelpCatalog(bmadDir);
+  } catch (e) {
+    process.stderr.write(`[bmad-module] warning: help catalog rebuild failed: ${e.message}\n`);
   }
 }

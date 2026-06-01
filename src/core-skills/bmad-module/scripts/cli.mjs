@@ -37,7 +37,13 @@ function parseArgs(argv) {
       if (val === undefined || val.startsWith('--')) {
         throw new BmadModuleError(EXIT.USAGE, `flag --${key} requires a value`);
       }
-      out.flags[key] = val;
+      // --set is repeatable; collect into an array. All other flags take the
+      // last value seen.
+      if (key === 'set') {
+        (out.flags.set ||= []).push(val);
+      } else {
+        out.flags[key] = val;
+      }
       i += 2;
       continue;
     }
@@ -71,6 +77,7 @@ export async function main() {
   }
 
   const projectDir = parsed.flags['project-dir'] || process.cwd();
+  const setOverrides = parseSetOverrides(parsed.flags.set);
 
   try {
     switch (verb) {
@@ -80,6 +87,7 @@ export async function main() {
           ref: parsed.flags['ref'] || null,
           channel: parsed.flags['channel'] || null,
           dryRun: !!parsed.flags['dry-run'],
+          setOverrides,
           projectDir,
         });
         break;
@@ -89,6 +97,7 @@ export async function main() {
           all: !!parsed.flags['all'],
           ref: parsed.flags['ref'] || null,
           channel: parsed.flags['channel'] || null,
+          setOverrides,
           projectDir,
         });
         break;
@@ -116,17 +125,38 @@ export async function main() {
   }
 }
 
+// Parse repeatable `--set <code>.<key>=<value>` flags into a nested map
+// { [code]: { [key]: value } }. Mirrors the full installer's --set spec.
+function parseSetOverrides(rawList) {
+  const out = {};
+  if (!Array.isArray(rawList)) return out;
+  for (const spec of rawList) {
+    const eq = spec.indexOf('=');
+    if (eq === -1) throw new BmadModuleError(EXIT.USAGE, `--set expects <code>.<key>=<value>, got "${spec}"`);
+    const lhs = spec.slice(0, eq);
+    const value = spec.slice(eq + 1);
+    const dot = lhs.indexOf('.');
+    if (dot === -1) throw new BmadModuleError(EXIT.USAGE, `--set expects <code>.<key>=<value>, got "${spec}"`);
+    const code = lhs.slice(0, dot);
+    const key = lhs.slice(dot + 1);
+    if (!code || !key) throw new BmadModuleError(EXIT.USAGE, `--set expects <code>.<key>=<value>, got "${spec}"`);
+    (out[code] ||= {})[key] = value;
+  }
+  return out;
+}
+
 function printUsage() {
   process.stderr.write(`bmad-module — install, update, remove, or list BMAD community modules.
 
 USAGE
-  bmad-module install <source> [--ref <ref>] [--channel <c>] [--dry-run]
-  bmad-module update <code|--all> [--ref <ref>] [--channel <c>]
+  bmad-module install <source> [--ref <ref>] [--channel <c>] [--set <code>.<key>=<v>] [--dry-run]
+  bmad-module update <code|--all> [--ref <ref>] [--channel <c>] [--set <code>.<key>=<v>]
   bmad-module remove <code> [--purge]
   bmad-module list [--json]
 
 GLOBAL FLAGS
   --project-dir <path>   Project root containing _bmad/ (default: cwd)
+  --set <code>.<key>=<v> Override a module config answer (repeatable)
 
 EXAMPLES
   bmad-module install acme/acme-devlog

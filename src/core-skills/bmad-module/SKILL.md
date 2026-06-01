@@ -7,6 +7,8 @@ description: Install, update, remove, or list community BMAD modules. Use when t
 
 Manage community BMAD modules — installable packages of skills, agents, and supporting assets that ship as standalone GitHub repos. Modules are staged under `_bmad/<bmad.code>/` and tracked in the existing manifests. On `install`, `update`, and `remove`, the script then distributes (or prunes) the module's skills to **every coding assistant the user selected when they ran `bmad install`** — read from the `ides:` list in `_bmad/_config/manifest.yaml` — so a community module lands in Claude Code, Cursor, Copilot, etc. exactly like an official module. As with official modules, the canonical end state is skills living in the IDE directories (e.g. `.claude/skills/<id>/`), not in `_bmad/`. The same artifact is also loadable as a Claude Code plugin via its `.claude-plugin/plugin.json` manifest.
 
+To match the full `bmad install` for custom modules, the script also completes the install in place: it installs npm dependencies when the module ships a `package.json` (opt out with `bmad.install.skipNpm: true`), generates the module's `[modules.<code>]` / `[agents.<code>]` blocks in `_bmad/config.toml` and `config.user.toml` from its `module.yaml` (defaults, overridable with `--set`), creates the working directories the module declares under `directories:`, and rebuilds the merged `_bmad/_config/bmad-help.csv` so the module's skills show up in `bmad-help`. These steps are best-effort — a failure in any of them is reported as a warning, not a failed install. Interactive config refinement remains the job of the module's `postInstallSkill`, if it declares one.
+
 ## CRITICAL RULES
 
 - NEVER write directly to files under `_bmad/` or into IDE directories (`.claude/skills/`, `.agents/skills/`, etc.). All filesystem changes go through the Node script at `scripts/bmad-module.mjs` — it handles staging, atomic swaps, manifest updates, IDE distribution, and rollback on failure.
@@ -31,8 +33,8 @@ If the verb is ambiguous (e.g. the user says "manage modules"), ASK which verb t
 
 ### Step 2 — Parse the args
 
-- **install:** the user supplies `<source>` — `owner/repo` (GitHub short), a full git URL (`https://…` or `git@…`), or a local path. Optional flags: `--ref <branch-tag-or-sha>`, `--channel <stable|next|pinned>`, `--dry-run`.
-- **update:** the user supplies `<code>` (the `_bmad/<code>/` folder name) or asks for "all"; in that case use `--all`. Optional `--ref`.
+- **install:** the user supplies `<source>` — `owner/repo` (GitHub short), a full git URL (`https://…` or `git@…`), or a local path. Optional flags: `--ref <branch-tag-or-sha>`, `--channel <stable|next|pinned>`, `--set <code>.<key>=<value>` (override a module config answer; repeatable), `--dry-run`.
+- **update:** the user supplies `<code>` (the `_bmad/<code>/` folder name) or asks for "all"; in that case use `--all`. Optional `--ref`, `--set <code>.<key>=<value>`.
 - **remove:** the user supplies `<code>`. Use `--purge` only if they explicitly say "also remove customizations" or "purge".
 - **list:** no args. Use `--json` if the user asks for machine-readable.
 
