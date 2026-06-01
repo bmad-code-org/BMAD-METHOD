@@ -67,7 +67,7 @@ Two things get set before ideating: the **facilitation mode** (your stance) and 
 - Default catalog → open `{skill-root}/assets/brain-selector.html`.
 - Customized catalog (overridden `{workflow.brain_methods}` or any `{workflow.additional_techniques}`) → regenerate first, then open it. If there are `{workflow.additional_techniques}`, write them to a JSON file (a list of `{category, technique_name, description}` objects) and pass it as `--extra` so the page includes them too: `python3 {skill-root}/scripts/brain.py --file {workflow.brain_methods} [--extra {doc_workspace}/extra-techniques.json] html --out {doc_workspace}/brain-selector.html`.
 
-There they choose a facilitation mode, build a technique batch (tick cards, **+Random**, **+Invent**, **AI picks**), filter by category if they want, click **Copy prompt**, and paste it back. Read that pasted block:
+There they choose a facilitation mode, build a technique batch (tick cards, **+Random**, **+Invent**, **AI picks**), jump to a category via the chips if they want, click **Copy prompt**, and paste it back. Read that pasted block:
 
 - the **`Facilitation mode:`** line → the mode;
 - the **listed techniques** — full category, name, and description are included, some tagged `(random pick)` → that is the batch; run them as given, no `list`/`show` needed;

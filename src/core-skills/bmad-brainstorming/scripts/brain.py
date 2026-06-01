@@ -433,58 +433,88 @@ SELECTOR_TEMPLATE = r"""<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BMad Method Brainstorming Selection</title>
+<script>
+/* set the theme before first paint so there's no light-mode flash */
+(function(){ try {
+  var t = localStorage.getItem('bmad-theme');
+  if (!t) { t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light'; }
+  document.documentElement.setAttribute('data-theme', t);
+} catch(e){} })();
+</script>
 <style>
-  :root { --bg:#f6f7fb; --card:#fff; --ink:#1c1e2b; --muted:#6b7080; --accent:#5b4bdc; --warn:#c0561f; }
+  :root {
+    --bg:#f6f7fb; --surface:#fff; --ink:#1c1e2b; --muted:#6b7080;
+    --accent:#5b4bdc; --accent-ink:#5b4bdc; --warn:#c0561f;
+    --line:#e6e8f0; --control:#eef0f7; --control2:#f1f2f8; --raised:#fff;
+    --cnt:#b9bdce; --foot:#aeb2c4; --shadow:rgba(20,20,50,.06);
+  }
+  :root[data-theme="dark"] {
+    --bg:#0f1117; --surface:#171a23; --ink:#e7e9f2; --muted:#9aa0b4;
+    --accent:#6d5cf0; --accent-ink:#a99bff; --warn:#e08a4a;
+    --line:#2a2f3e; --control:#222634; --control2:#1d212d; --raised:#2c3242;
+    --cnt:#5a6076; --foot:#5a6076; --shadow:rgba(0,0,0,.45);
+  }
+  /* lift the category hue toward white on dark surfaces so deep hues stay legible */
+  :root[data-theme="dark"] section > h2 { color:color-mix(in srgb, var(--c) 62%, #fff); }
+  :root[data-theme="dark"] .tech .ico { color:color-mix(in srgb, var(--c) 68%, #fff); }
+  :root[data-theme="dark"] label.tech:has(input:checked) { border-color:color-mix(in srgb, var(--c) 60%, #fff); }
+  .titlerow { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+  .themebtn { flex:none; width:36px; height:36px; border-radius:9px; background:var(--control); color:var(--ink); font-size:17px; line-height:1; display:inline-flex; align-items:center; justify-content:center; }
+  .themebtn:hover { background:var(--raised); }
   * { box-sizing:border-box; }
   body { margin:0; font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--ink); }
-  header { position:sticky; top:0; z-index:5; background:#fff; padding:20px 24px 12px; border-bottom:1px solid #e6e8f0; box-shadow:0 2px 12px rgba(20,20,50,.05); }
+  header { position:sticky; top:0; z-index:5; background:var(--surface); padding:20px 0 12px; border-bottom:1px solid var(--line); box-shadow:0 2px 12px var(--shadow); }
+  .hwrap { max-width:1120px; margin:0 auto; padding:0 24px; }  /* align header content with the card column on wide screens */
   h1 { margin:0 0 4px; font-size:24px; letter-spacing:-.02em; }
   .sub { margin:0 0 12px; color:var(--muted); font-size:14px; max-width:74ch; }
   button { font:inherit; border:0; border-radius:8px; cursor:pointer; }
   .composer { display:flex; flex-direction:column; gap:9px; margin:6px 0 12px; }
   .grp { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
   .glabel { font-size:11px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); min-width:74px; }
-  .modes { display:inline-flex; background:#eef0f7; border-radius:9px; padding:3px; gap:2px; }
+  .modes { display:inline-flex; background:var(--control); border-radius:9px; padding:3px; gap:2px; }
   .mode { padding:7px 13px; font-size:14px; font-weight:600; color:var(--muted); background:transparent; }
-  .mode.on { background:#fff; color:var(--accent); box-shadow:0 1px 3px rgba(20,20,50,.13); }
-  .pill { font-size:13px; color:var(--muted); background:#eef0f7; padding:6px 12px; border-radius:20px; }
-  .pill b { color:var(--accent); }
-  .step { display:inline-flex; align-items:center; gap:7px; font-size:13px; color:#444; background:#f1f2f8; padding:4px 6px 4px 12px; border-radius:20px; }
+  .mode.on { background:var(--raised); color:var(--accent-ink); box-shadow:0 1px 3px var(--shadow); }
+  .modehint { flex:1 1 240px; min-width:0; font-size:13px; color:var(--muted); font-style:italic; }
+  .pill { font-size:13px; color:var(--muted); background:var(--control); padding:6px 12px; border-radius:20px; }
+  .pill b { color:var(--accent-ink); }
+  .step { display:inline-flex; align-items:center; gap:7px; font-size:13px; color:var(--ink); background:var(--control2); padding:4px 6px 4px 12px; border-radius:20px; }
   .step b { min-width:12px; text-align:center; font-size:14px; color:var(--ink); }
-  .step button { width:24px; height:24px; border-radius:50%; background:#fff; color:#555; font-size:17px; line-height:22px; text-align:center; box-shadow:0 1px 2px rgba(0,0,0,.13); }
-  .step button:hover { color:var(--accent); }
+  .step button { width:24px; height:24px; border-radius:50%; background:var(--raised); color:var(--muted); font-size:17px; line-height:22px; text-align:center; box-shadow:0 1px 2px var(--shadow); }
+  .step button:hover { color:var(--accent-ink); }
   .total { font-size:12px; color:var(--muted); }
   .total.warn { color:var(--warn); font-weight:600; }
-  .bar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-  #q { flex:1; min-width:220px; padding:9px 12px; border:1px solid #d6d9e6; border-radius:8px; font-size:14px; }
-  #copy { padding:10px 20px; background:var(--accent); color:#fff; font-size:14px; font-weight:700; }
+  .bar { display:flex; gap:10px 14px; align-items:center; flex-wrap:wrap; }
+  #copy { margin-left:auto; padding:9px 22px; background:var(--accent); color:#fff; font-size:14px; font-weight:700; }
   #copy:hover { filter:brightness(1.07); }
-  .chips { display:flex; gap:6px; flex-wrap:wrap; }
-  .chip { font-size:12px; padding:4px 10px; border-radius:16px; border:1.5px solid var(--cc); color:var(--cc); background:transparent; font-weight:600; }
-  .chip.on { background:var(--cc); color:#fff; }
-  .chip:not(.on) { opacity:.9; }
+  .chips { flex:1 1 320px; min-width:0; display:flex; gap:7px; flex-wrap:wrap; align-items:center; }
+  .chip { font-size:12px; padding:4px 11px; border-radius:16px; border:0; color:#fff; background:var(--cc); font-weight:600; cursor:pointer; }
+  .chip:hover { filter:brightness(1.08); }
   .banner { max-height:0; overflow:hidden; transition:max-height .25s ease, padding .22s ease, margin .22s ease; background:linear-gradient(90deg,var(--accent),#8275f2); color:#fff; border-radius:10px; font-weight:700; text-align:center; padding:0 14px; }
   .banner.show { max-height:64px; padding:13px 14px; margin-top:10px; }
   .banner.fail { background:linear-gradient(90deg,var(--warn),#e0894a); }
   main { padding:18px 24px 60px; max-width:1120px; margin:0 auto; }
   section { margin:0 0 26px; }
-  section > h2 { font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:var(--c); margin:0 0 10px; border-bottom:1px solid color-mix(in srgb, var(--c) 24%, #e6e8f0); padding-bottom:6px; }
-  section > h2 .cnt { color:color-mix(in srgb, var(--c) 45%, #b9bdce); margin-left:6px; }
+  section > h2 { font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:var(--c); margin:0 0 10px; border-bottom:1px solid color-mix(in srgb, var(--c) 24%, var(--line)); padding-bottom:6px; }
+  section > h2 .cnt { color:color-mix(in srgb, var(--c) 45%, var(--cnt)); margin-left:6px; }
   .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(360px,1fr)); gap:10px; }
-  label.tech { display:flex; gap:12px; align-items:flex-start; background:color-mix(in srgb, var(--c) 5%, #fff); border:1px solid color-mix(in srgb, var(--c) 18%, #e6e8f0); border-radius:10px; padding:11px 13px; cursor:pointer; transition:border-color .12s, box-shadow .12s, background .12s; }
-  label.tech:hover { border-color:color-mix(in srgb, var(--c) 45%, #fff); }
+  label.tech { display:flex; gap:12px; align-items:flex-start; background:color-mix(in srgb, var(--c) 5%, var(--surface)); border:1px solid color-mix(in srgb, var(--c) 18%, var(--line)); border-radius:10px; padding:11px 13px; cursor:pointer; transition:border-color .12s, box-shadow .12s, background .12s; }
+  label.tech:hover { border-color:color-mix(in srgb, var(--c) 45%, var(--surface)); }
   label.tech input { margin-top:2px; width:17px; height:17px; accent-color:var(--c); flex:none; }
-  label.tech:has(input:checked) { border-color:var(--c); background:color-mix(in srgb, var(--c) 12%, #fff); box-shadow:0 0 0 2px color-mix(in srgb, var(--c) 30%, transparent); }
+  label.tech:has(input:checked) { border-color:var(--c); background:color-mix(in srgb, var(--c) 12%, var(--surface)); box-shadow:0 0 0 2px color-mix(in srgb, var(--c) 30%, transparent); }
   .tech .ic2 { display:flex; gap:5px; flex:none; }
   .tech .ico { width:40px; height:40px; flex:none; color:var(--c); }
   .tech .n { font-weight:600; display:block; }
   .tech .d { color:var(--muted); font-size:13.5px; display:block; margin-top:2px; }
-  footer { text-align:center; color:#aeb2c4; font-size:12px; padding:24px; }
+  footer { text-align:center; color:var(--foot); font-size:12px; padding:24px; }
 </style>
 </head>
 <body>
 <header>
-  <h1>BMad Method Brainstorming Selection</h1>
+  <div class="hwrap">
+  <div class="titlerow">
+    <h1>BMad Method Brainstorming Selection</h1>
+    <button id="theme" class="themebtn" type="button" aria-label="Toggle dark mode" title="Toggle dark mode"></button>
+  </div>
   <p class="sub">Compose your session, hit <strong>Copy prompt</strong>, and paste it back into the chat to begin. {{TOTAL}}</p>
 
   <div class="composer">
@@ -495,6 +525,7 @@ SELECTOR_TEMPLATE = r"""<!DOCTYPE html>
         <button type="button" class="mode" data-mode="Creative Partner">Creative Partner</button>
         <button type="button" class="mode" data-mode="Ideate for me">Ideate for me</button>
       </div>
+      <span class="modehint" id="modehint"></span>
     </div>
     <div class="grp">
       <span class="glabel">Techniques</span>
@@ -503,16 +534,17 @@ SELECTOR_TEMPLATE = r"""<!DOCTYPE html>
       <span class="step">Invent <button type="button" data-step="inv" data-d="-1">&minus;</button><b id="invN">0</b><button type="button" data-step="inv" data-d="1">+</button></span>
       <span class="step">AI picks <button type="button" data-step="ai" data-d="-1">&minus;</button><b id="aiN">0</b><button type="button" data-step="ai" data-d="1">+</button></span>
       <span class="total" id="total">Total 0 &middot; 3&ndash;4 is the sweet spot</span>
+      <button id="copy" type="button">Copy prompt</button>
     </div>
   </div>
 
   <div class="bar">
-    <input id="q" type="search" placeholder="Filter by name, description, or category&hellip;" autocomplete="off">
-    <button id="copy" type="button">Copy prompt</button>
+    <span class="glabel">Jump to</span>
+    <div class="chips" id="chips">{{CHIPS}}</div>
   </div>
 
-  <div class="chips" id="chips">{{CHIPS}}</div>
   <div class="banner" id="banner">&#10003; Copied! Now paste it into the chat to start your session.</div>
+  </div>
 </header>
 <main>
 {{BODY}}
@@ -523,15 +555,31 @@ SELECTOR_TEMPLATE = r"""<!DOCTYPE html>
   var $ = function(id){ return document.getElementById(id); };
   var all = Array.prototype.slice;
   var boxes = all.call(document.querySelectorAll('input[type=checkbox]'));
-  var q = $('q');
+  var header = document.querySelector('header');
+  var sections = all.call(document.querySelectorAll('section'));
   var state = { mode: 'Facilitator', rand: 0, inv: 0, ai: 0 };
-  var offCats = {};
+  var MODE_HINTS = {
+    'Facilitator': 'A forcing function for your ideas — I prompt and push, but never supply them.',
+    'Creative Partner': 'We riff together — I facilitate and add ideas too, each logged as yours or mine.',
+    'Ideate for me': 'I run the whole session myself, then show you the result and offer to keep going.'
+  };
+  function setHint(){ $('modehint').textContent = MODE_HINTS[state.mode] || ''; }
+
+  var themeBtn = $('theme');
+  function setThemeIcon(){ themeBtn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀' : '☾'; }
+  themeBtn.addEventListener('click', function(){
+    var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('bmad-theme', next); } catch(e){}
+    setThemeIcon();
+  });
 
   all.call(document.querySelectorAll('.mode')).forEach(function(b){
     b.addEventListener('click', function(){
       all.call(document.querySelectorAll('.mode')).forEach(function(m){ m.classList.remove('on'); });
       b.classList.add('on');
       state.mode = b.dataset.mode;
+      setHint();
     });
   });
 
@@ -543,25 +591,21 @@ SELECTOR_TEMPLATE = r"""<!DOCTYPE html>
     });
   });
 
+  // Category chips are jump-nav: click one to smooth-scroll its section into view,
+  // offsetting by the sticky header's height so the heading isn't hidden beneath it.
   all.call(document.querySelectorAll('.chip')).forEach(function(chip){
     chip.addEventListener('click', function(){
-      var on = !chip.classList.contains('on');
-      chip.classList.toggle('on', on);
-      if (on){ delete offCats[chip.dataset.cat]; } else { offCats[chip.dataset.cat] = true; }
-      applyFilter();
-      update();  // a toggled-off category leaves the session, so counts must refresh too
+      var sec = null;
+      for (var i = 0; i < sections.length; i++){ if (sections[i].dataset.cat === chip.dataset.cat){ sec = sections[i]; break; } }
+      if (!sec){ return; }
+      var top = sec.getBoundingClientRect().top + window.pageYOffset - header.offsetHeight - 8;
+      window.scrollTo({ top: top, behavior: 'smooth' });
     });
   });
 
   boxes.forEach(function(b){ b.addEventListener('change', update); });
-  q.addEventListener('input', applyFilter);
 
-  // A category toggled off (offCats) leaves the session entirely; the text filter is a
-  // transient browse aid that never changes what's selected. So both manual picks and the
-  // random pool key off offCats — never the search box — keeping the copied prompt in step
-  // with what the user sees, and never starving a random draw because of a stray filter term.
-  function inScope(b){ return !offCats[b.dataset.cat]; }
-  function checked(){ return boxes.filter(function(b){ return b.checked && inScope(b); }); }
+  function checked(){ return boxes.filter(function(b){ return b.checked; }); }
 
   function update(){
     $('pickN').textContent = checked().length;
@@ -574,20 +618,7 @@ SELECTOR_TEMPLATE = r"""<!DOCTYPE html>
     t.classList.toggle('warn', total > 5);
   }
 
-  function applyFilter(){
-    var s = q.value.trim().toLowerCase();
-    all.call(document.querySelectorAll('label.tech')).forEach(function(l){
-      var cat = l.querySelector('input').dataset.cat;
-      var hay = (l.textContent + ' ' + cat).toLowerCase();
-      l.style.display = (!offCats[cat] && (!s || hay.indexOf(s) > -1)) ? '' : 'none';
-    });
-    all.call(document.querySelectorAll('section')).forEach(function(sec){
-      var any = all.call(sec.querySelectorAll('label.tech')).some(function(l){ return l.style.display !== 'none'; });
-      sec.style.display = (!offCats[sec.dataset.cat] && any) ? '' : 'none';
-    });
-  }
-
-  function randomPool(){ return boxes.filter(function(b){ return !b.checked && inScope(b); }); }
+  function randomPool(){ return boxes.filter(function(b){ return !b.checked; }); }
 
   function sample(arr, n){
     var a = arr.slice(), out = [];
@@ -651,6 +682,8 @@ SELECTOR_TEMPLATE = r"""<!DOCTYPE html>
     } else { flash(fallbackCopy(text), text); }
   });
 
+  setHint();
+  setThemeIcon();
   update();
 })();
 </script>
@@ -690,7 +723,7 @@ def html_doc(rows: list[dict]) -> str:
                 f'<span class="ic2">{cat_icon}{t_icon}</span>'
                 f'<span><span class="n">{name}</span><span class="d">{desc}</span></span></label>'
             )
-        chips.append(f'<button type="button" class="chip on" data-cat="{disp}" style="--cc:{hue}">{disp}</button>')
+        chips.append(f'<button type="button" class="chip" data-cat="{disp}" style="--cc:{hue}">{disp}</button>')
         sections.append(
             f'<section data-cat="{disp}" style="--c:{hue}"><h2>{disp}<span class="cnt">{len(groups[cat])}</span></h2>'
             f'<div class="grid">{"".join(cards)}</div></section>'
