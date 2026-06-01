@@ -125,3 +125,40 @@ def test_random_respects_n_and_category(lib, capsys):
 
 def test_missing_file_returns_2(tmp_path):
     assert brain.main(["--file", str(tmp_path / "nope.csv"), "categories"]) == 2
+
+
+# --- html selection page ------------------------------------------------
+
+def test_html_requires_out(lib, capsys):
+    # never dump the catalog to stdout — writing to a file is the whole point
+    assert brain.main(["--file", str(lib), "html"]) == 2
+    assert "--out" in capsys.readouterr().err
+
+
+def test_html_writes_selection_page(lib, tmp_path):
+    out = tmp_path / "sel.html"
+    assert brain.main(["--file", str(lib), "html", "--out", str(out)]) == 0
+    doc = out.read_text(encoding="utf-8")
+    assert doc.startswith("<!DOCTYPE html>")
+    assert "BMad Method Brainstorming Selection" in doc
+    for r in brain.load(lib):
+        assert r["technique_name"] in doc  # every technique is selectable
+    assert "&quot;yes and&quot;" in doc  # quotes in a description are escaped, not raw
+
+
+def test_html_creates_missing_parent(lib, tmp_path):
+    out = tmp_path / "nested" / "deep" / "sel.html"
+    assert brain.main(["--file", str(lib), "html", "--out", str(out)]) == 0
+    assert out.is_file()
+
+
+def test_shipped_selector_is_in_sync_with_catalog():
+    # foolproofing: if someone edits brain-methods.csv they must regenerate the page.
+    # Regenerate with: python3 brain.py html --out assets/brain-selector.html
+    asset = brain.DEFAULT_FILE.parent / "brain-selector.html"
+    assert asset.is_file(), "missing assets/brain-selector.html — generate it"
+    expected = brain.html_doc(brain.load(brain.DEFAULT_FILE))
+    assert asset.read_text(encoding="utf-8") == expected, (
+        "assets/brain-selector.html is stale; regenerate: "
+        "python3 brain.py html --out assets/brain-selector.html"
+    )

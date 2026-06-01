@@ -44,13 +44,15 @@ The file shape (.memlog.md):
     - (decision) lead with one pre-categorized account; defer multi-account import
 
 Each entry may carry an optional `--type` — what KIND it is (idea, insight, question,
-decision, technique, …) — rendered as a short inline tag. Omit it for a plain note.
-The host skill names the vocabulary; the script does not.
+decision, technique, …) — and an optional `--by` naming who it came from (e.g. `user`,
+`coach`), for sessions where authorship matters. Both render into one short inline tag:
+`(idea)`, `(idea by user)`, `(by coach)`. Omit them for a plain note. The host skill
+names the vocabulary; the script does not.
 
 Commands:
-  init   --workspace DIR [--field k=v ...]      create the memlog (errors if it exists)
-  append --workspace DIR --text STR [--type T]  append one entry at the end
-  set    --workspace DIR --key K --value V      set/replace a frontmatter field
+  init   --workspace DIR [--field k=v ...]              create the memlog (errors if it exists)
+  append --workspace DIR --text STR [--type T] [--by W]  append one entry at the end
+  set    --workspace DIR --key K --value V              set/replace a frontmatter field
 
 The workspace is the run folder; the memlog is always {workspace}/.memlog.md.
 """
@@ -140,7 +142,10 @@ def cmd_append(args) -> int:
     path = memlog_path(args.workspace)
     meta, body = split(path.read_text(encoding="utf-8"))
     text = " ".join(args.text.split())  # collapse newlines/runs → one-line entry, no prose bloat
-    tag = f"({args.type}) " if args.type else ""
+    label = args.type or ""
+    if args.by:
+        label = f"{label} by {args.by}".strip()  # attribution: "(idea by user)" / "(by coach)"
+    tag = f"({label}) " if label else ""
     entry = f"- {tag}{text}"
     body = (body.rstrip("\n") + "\n" + entry) if body.strip() else entry  # always at the end
     touch(meta)
@@ -172,6 +177,7 @@ def main(argv: list[str] | None = None) -> int:
     pa.add_argument("--workspace", required=True)
     pa.add_argument("--text", required=True)
     pa.add_argument("--type", help="entry kind, rendered as an inline tag")
+    pa.add_argument("--by", help="who the entry came from (e.g. user, coach); rendered into the tag")
     pa.set_defaults(func=cmd_append)
 
     pset = sub.add_parser("set", help="set a frontmatter field")

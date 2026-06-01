@@ -44,10 +44,12 @@ def init(ws, **fields):
     assert memlog.main(argv) == 0
 
 
-def append(ws, text, type=None):
+def append(ws, text, type=None, by=None):
     argv = ["append", "--workspace", ws, "--text", text]
     if type:
         argv += ["--type", type]
+    if by:
+        argv += ["--by", by]
     assert memlog.main(argv) == 0
 
 
@@ -140,6 +142,22 @@ def test_revisited_technique_is_just_a_later_entry(ws):
         "- (technique) started SCAMPER",
         "- (idea) stackable tiers",
     ]
+
+
+def test_by_renders_attribution_in_tag(ws):
+    # Creative Partner mode must record whose idea each one was
+    init(ws)
+    append(ws, "magnetic latch lid", type="idea", by="user")
+    append(ws, "lid doubles as a plate", type="idea", by="coach")
+    body = body_of(ws)
+    assert "- (idea by user) magnetic latch lid" in body
+    assert "- (idea by coach) lid doubles as a plate" in body
+
+
+def test_by_without_type_renders_alone(ws):
+    init(ws)
+    append(ws, "off-the-cuff thought", by="coach")
+    assert entries(ws) == ["- (by coach) off-the-cuff thought"]
 
 
 def test_heterogeneous_entry_types_coexist(ws):
