@@ -22,6 +22,10 @@ Commands:
 rather than stdout: dumping the full catalog into context is a footgun, so reaching the
 whole library at once must always be an explicit, deliberate choice.
 
+`--extra PATH` merges a JSON overlay of additional techniques (customize.toml's
+`additional_techniques`) into every command, so custom techniques and whole new
+categories are first-class everywhere — including the browse page and category draws.
+
 Default output is lean text for an LLM to read; pass --json for structured output.
 """
 import argparse
@@ -43,6 +47,24 @@ def load(file: Path) -> list[dict]:
     for r in rows:
         r.setdefault("detail", "")
         r["detail"] = (r.get("detail") or "").strip()
+    return rows
+
+
+def load_extra(file: Path) -> list[dict]:
+    """Merge-in techniques from a JSON overlay — a list of
+    {category, technique_name, description[, detail]} objects. This is how
+    customize.toml's `additional_techniques` become first-class across *every*
+    subcommand (categories/list/random/show/html), so the browse page and
+    category draws include them too, not just the in-chat flows."""
+    data = json.loads(file.read_text(encoding="utf-8"))
+    rows = []
+    for item in data:
+        rows.append({
+            "category": str(item.get("category", "")).strip(),
+            "technique_name": str(item.get("technique_name", "")).strip(),
+            "description": str(item.get("description", "")).strip(),
+            "detail": str(item.get("detail") or "").strip(),
+        })
     return rows
 
 
@@ -269,7 +291,7 @@ def _hsl_hex(deg: int, s: float, lt: float) -> str:
 def category_style(cat: str) -> tuple[str, str]:
     """(hue, glyph markup) for a category — crafted for the shipped set, derived for extras."""
     if cat in _HUES:
-        return _HUES[cat], _GLYPHS[cat]
+        return _HUES[cat], _GLYPHS.get(cat, _FALLBACK_GLYPH)
     deg = int(hashlib.md5(cat.encode("utf-8")).hexdigest(), 16) % 360
     return _hsl_hex(deg, 0.58, 0.52), _FALLBACK_GLYPH
 
@@ -443,6 +465,7 @@ SELECTOR_TEMPLATE = r"""<!DOCTYPE html>
   .chip:not(.on) { opacity:.9; }
   .banner { max-height:0; overflow:hidden; transition:max-height .25s ease, padding .22s ease, margin .22s ease; background:linear-gradient(90deg,var(--accent),#8275f2); color:#fff; border-radius:10px; font-weight:700; text-align:center; padding:0 14px; }
   .banner.show { max-height:64px; padding:13px 14px; margin-top:10px; }
+  .banner.fail { background:linear-gradient(90deg,var(--warn),#e0894a); }
   main { padding:18px 24px 60px; max-width:1120px; margin:0 auto; }
   section { margin:0 0 26px; }
   section > h2 { font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:var(--c); margin:0 0 10px; border-bottom:1px solid color-mix(in srgb, var(--c) 24%, #e6e8f0); padding-bottom:6px; }
@@ -526,13 +549,19 @@ SELECTOR_TEMPLATE = r"""<!DOCTYPE html>
       chip.classList.toggle('on', on);
       if (on){ delete offCats[chip.dataset.cat]; } else { offCats[chip.dataset.cat] = true; }
       applyFilter();
+      update();  // a toggled-off category leaves the session, so counts must refresh too
     });
   });
 
   boxes.forEach(function(b){ b.addEventListener('change', update); });
   q.addEventListener('input', applyFilter);
 
-  function checked(){ return boxes.filter(function(b){ return b.checked; }); }
+  // A category toggled off (offCats) leaves the session entirely; the text filter is a
+  // transient browse aid that never changes what's selected. So both manual picks and the
+  // random pool key off offCats — never the search box — keeping the copied prompt in step
+  // with what the user sees, and never starving a random draw because of a stray filter term.
+  function inScope(b){ return !offCats[b.dataset.cat]; }
+  function checked(){ return boxes.filter(function(b){ return b.checked && inScope(b); }); }
 
   function update(){
     $('pickN').textContent = checked().length;
@@ -558,11 +587,7 @@ SELECTOR_TEMPLATE = r"""<!DOCTYPE html>
     });
   }
 
-  function visibleUnchecked(){
-    return boxes.filter(function(b){
-      return !b.checked && b.closest('label.tech').style.display !== 'none';
-    });
-  }
+  function randomPool(){ return boxes.filter(function(b){ return !b.checked && inScope(b); }); }
 
   function sample(arr, n){
     var a = arr.slice(), out = [];
@@ -572,7 +597,7 @@ SELECTOR_TEMPLATE = r"""<!DOCTYPE html>
 
   function compose(){
     var picks = checked().map(function(b){ return { n: b.dataset.name, c: b.dataset.cat, d: b.dataset.desc, r: false }; });
-    var rnd = sample(visibleUnchecked(), state.rand).map(function(b){ return { n: b.dataset.name, c: b.dataset.cat, d: b.dataset.desc, r: true }; });
+    var rnd = sample(randomPool(), state.rand).map(function(b){ return { n: b.dataset.name, c: b.dataset.cat, d: b.dataset.desc, r: true }; });
     var techs = picks.concat(rnd);
     var L = ["Let's run my brainstorming session.", "", 'Facilitation mode: ' + state.mode + '.'];
     if (techs.length){
@@ -598,16 +623,32 @@ SELECTOR_TEMPLATE = r"""<!DOCTYPE html>
     var ta = document.createElement('textarea');
     ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0';
     document.body.appendChild(ta); ta.focus(); ta.select();
-    try { document.execCommand('copy'); } catch(e){}
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch(e){ ok = false; }
     document.body.removeChild(ta);
+    return ok;
+  }
+
+  function flash(ok, text){
+    var b = $('banner');
+    b.classList.toggle('fail', !ok);
+    b.innerHTML = ok
+      ? '✓ Copied! Now paste it into the chat to start your session.'
+      : '⚠ Couldn’t reach the clipboard — copy the text in the box, then paste it into the chat.';
+    b.classList.add('show');
+    setTimeout(function(){ b.classList.remove('show'); }, 4500);
+    // Last resort on a hard failure: a prefilled, selectable prompt so the text is never lost.
+    if (!ok){ window.prompt('Copy this, then paste it into the chat:', text); }
   }
 
   $('copy').addEventListener('click', function(){
     var text = compose();
-    var show = function(){ var b = $('banner'); b.classList.add('show'); setTimeout(function(){ b.classList.remove('show'); }, 4500); };
     if (navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(text).then(show, function(){ fallbackCopy(text); show(); });
-    } else { fallbackCopy(text); show(); }
+      navigator.clipboard.writeText(text).then(
+        function(){ flash(true, text); },
+        function(){ flash(fallbackCopy(text), text); }
+      );
+    } else { flash(fallbackCopy(text), text); }
   });
 
   update();
@@ -665,6 +706,7 @@ def html_doc(rows: list[dict]) -> str:
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--file", type=Path, default=DEFAULT_FILE, help="technique CSV (default: sibling assets/brain-methods.csv)")
+    p.add_argument("--extra", type=Path, help="JSON overlay of additional techniques (customize.toml additional_techniques), merged into every command")
     p.add_argument("--json", action="store_true", help="emit structured JSON instead of lean text")
     sub = p.add_subparsers(dest="cmd", required=True)
     sub.add_parser("categories", help="list category names + counts")
@@ -684,6 +726,11 @@ def main(argv: list[str] | None = None) -> int:
         print(f"error: technique file not found: {args.file}", file=sys.stderr)
         return 2
     rows = load(args.file)
+    if args.extra:
+        if not args.extra.is_file():
+            print(f"error: --extra file not found: {args.extra}", file=sys.stderr)
+            return 2
+        rows += load_extra(args.extra)
     csv_dir = args.file.resolve().parent
 
     if args.cmd == "categories":
@@ -709,7 +756,8 @@ def main(argv: list[str] | None = None) -> int:
         if not pool:
             print("# no techniques match", file=sys.stderr)
             return 1
-        print(fmt_list(random.sample(pool, min(args.n, len(pool))), args.json))
+        n = max(0, min(args.n, len(pool)))  # clamp: never crash on a negative or oversized -n
+        print(fmt_list(random.sample(pool, n), args.json))
     elif args.cmd == "html":
         if not args.out:
             print(

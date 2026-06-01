@@ -75,20 +75,28 @@ def memlog_path(workspace: str) -> Path:
 
 
 def split(text: str) -> tuple[dict, str]:
-    """Return (frontmatter dict in source order, body str). Frontmatter is plain key: value."""
-    if not text.startswith("---"):
+    """Return (frontmatter dict in source order, body str). Frontmatter is plain key: value.
+
+    The closing fence is the first line that is *exactly* `---`, so a `---` inside a
+    field value (topic/goal are free user text) never truncates the frontmatter.
+    """
+    lines = text.splitlines()
+    if not lines or lines[0] != "---":
         raise ValueError(".memlog.md has no frontmatter")
-    _, fm, body = text.split("---", 2)
+    end = next((i for i in range(1, len(lines)) if lines[i] == "---"), None)
+    if end is None:
+        raise ValueError(".memlog.md frontmatter is not terminated")
     meta: dict[str, str] = {}
-    for line in fm.strip().splitlines():
+    for line in lines[1:end]:
         if ":" in line:
             k, v = line.split(":", 1)
             meta[k.strip()] = v.strip()
-    return meta, body.lstrip("\n")
+    return meta, "\n".join(lines[end + 1:]).lstrip("\n")
 
 
 def render(meta: dict, body: str) -> str:
-    fm = "\n".join(f"{k}: {v}" for k, v in meta.items())
+    # Neutralize newlines in values so a multi-line field can't break the fence on re-read.
+    fm = "\n".join(f"{k}: {' '.join(str(v).splitlines())}" for k, v in meta.items())
     return "---\n" + fm + "\n---\n\n" + body.rstrip("\n") + "\n"
 
 

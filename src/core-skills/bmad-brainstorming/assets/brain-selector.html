@@ -36,6 +36,7 @@
   .chip:not(.on) { opacity:.9; }
   .banner { max-height:0; overflow:hidden; transition:max-height .25s ease, padding .22s ease, margin .22s ease; background:linear-gradient(90deg,var(--accent),#8275f2); color:#fff; border-radius:10px; font-weight:700; text-align:center; padding:0 14px; }
   .banner.show { max-height:64px; padding:13px 14px; margin-top:10px; }
+  .banner.fail { background:linear-gradient(90deg,var(--warn),#e0894a); }
   main { padding:18px 24px 60px; max-width:1120px; margin:0 auto; }
   section { margin:0 0 26px; }
   section > h2 { font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:var(--c); margin:0 0 10px; border-bottom:1px solid color-mix(in srgb, var(--c) 24%, #e6e8f0); padding-bottom:6px; }
@@ -131,13 +132,19 @@
       chip.classList.toggle('on', on);
       if (on){ delete offCats[chip.dataset.cat]; } else { offCats[chip.dataset.cat] = true; }
       applyFilter();
+      update();  // a toggled-off category leaves the session, so counts must refresh too
     });
   });
 
   boxes.forEach(function(b){ b.addEventListener('change', update); });
   q.addEventListener('input', applyFilter);
 
-  function checked(){ return boxes.filter(function(b){ return b.checked; }); }
+  // A category toggled off (offCats) leaves the session entirely; the text filter is a
+  // transient browse aid that never changes what's selected. So both manual picks and the
+  // random pool key off offCats — never the search box — keeping the copied prompt in step
+  // with what the user sees, and never starving a random draw because of a stray filter term.
+  function inScope(b){ return !offCats[b.dataset.cat]; }
+  function checked(){ return boxes.filter(function(b){ return b.checked && inScope(b); }); }
 
   function update(){
     $('pickN').textContent = checked().length;
@@ -163,11 +170,7 @@
     });
   }
 
-  function visibleUnchecked(){
-    return boxes.filter(function(b){
-      return !b.checked && b.closest('label.tech').style.display !== 'none';
-    });
-  }
+  function randomPool(){ return boxes.filter(function(b){ return !b.checked && inScope(b); }); }
 
   function sample(arr, n){
     var a = arr.slice(), out = [];
@@ -177,7 +180,7 @@
 
   function compose(){
     var picks = checked().map(function(b){ return { n: b.dataset.name, c: b.dataset.cat, d: b.dataset.desc, r: false }; });
-    var rnd = sample(visibleUnchecked(), state.rand).map(function(b){ return { n: b.dataset.name, c: b.dataset.cat, d: b.dataset.desc, r: true }; });
+    var rnd = sample(randomPool(), state.rand).map(function(b){ return { n: b.dataset.name, c: b.dataset.cat, d: b.dataset.desc, r: true }; });
     var techs = picks.concat(rnd);
     var L = ["Let's run my brainstorming session.", "", 'Facilitation mode: ' + state.mode + '.'];
     if (techs.length){
@@ -203,16 +206,32 @@
     var ta = document.createElement('textarea');
     ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0';
     document.body.appendChild(ta); ta.focus(); ta.select();
-    try { document.execCommand('copy'); } catch(e){}
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch(e){ ok = false; }
     document.body.removeChild(ta);
+    return ok;
+  }
+
+  function flash(ok, text){
+    var b = $('banner');
+    b.classList.toggle('fail', !ok);
+    b.innerHTML = ok
+      ? '✓ Copied! Now paste it into the chat to start your session.'
+      : '⚠ Couldn’t reach the clipboard — copy the text in the box, then paste it into the chat.';
+    b.classList.add('show');
+    setTimeout(function(){ b.classList.remove('show'); }, 4500);
+    // Last resort on a hard failure: a prefilled, selectable prompt so the text is never lost.
+    if (!ok){ window.prompt('Copy this, then paste it into the chat:', text); }
   }
 
   $('copy').addEventListener('click', function(){
     var text = compose();
-    var show = function(){ var b = $('banner'); b.classList.add('show'); setTimeout(function(){ b.classList.remove('show'); }, 4500); };
     if (navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(text).then(show, function(){ fallbackCopy(text); show(); });
-    } else { fallbackCopy(text); show(); }
+      navigator.clipboard.writeText(text).then(
+        function(){ flash(true, text); },
+        function(){ flash(fallbackCopy(text), text); }
+      );
+    } else { flash(fallbackCopy(text), text); }
   });
 
   update();

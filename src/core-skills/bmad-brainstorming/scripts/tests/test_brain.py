@@ -120,7 +120,13 @@ def test_random_respects_n_and_category(lib, capsys):
     brain.main(["--file", str(lib), "random", "--category", "wild", "-n", "5"])
     lines = capsys.readouterr().out.strip().splitlines()
     assert len(lines) == 2  # only 2 wild exist, n capped
-    assert all(l.startswith("wild\t") for l in lines)
+    assert all(line.startswith("wild\t") for line in lines)
+
+
+def test_random_negative_n_does_not_crash(lib, capsys):
+    # a negative -n is clamped to 0, not passed to random.sample (which would raise)
+    assert brain.main(["--file", str(lib), "random", "-n", "-1"]) == 0
+    assert capsys.readouterr().out.strip() == ""
 
 
 def test_missing_file_returns_2(tmp_path):
@@ -150,6 +156,53 @@ def test_html_creates_missing_parent(lib, tmp_path):
     out = tmp_path / "nested" / "deep" / "sel.html"
     assert brain.main(["--file", str(lib), "html", "--out", str(out)]) == 0
     assert out.is_file()
+
+
+# --- --extra overlay (customize.toml additional_techniques) -------------
+
+EXTRA = (
+    '[{"category": "domain-specific", "technique_name": "Regulatory Inversion", '
+    '"description": "Start from the compliance constraint and brainstorm what it unlocks."}, '
+    '{"category": "wild", "technique_name": "Extra Wild One", "description": "An added wild method."}]'
+)
+
+
+@pytest.fixture
+def extra(tmp_path):
+    p = tmp_path / "extra.json"
+    p.write_text(EXTRA, encoding="utf-8")
+    return p
+
+
+def test_extra_merges_into_categories(lib, extra, capsys):
+    brain.main(["--file", str(lib), "--extra", str(extra), "categories"])
+    out = capsys.readouterr().out
+    assert "domain-specific\t1" in out  # a brand-new category appears
+    assert "wild\t3" in out  # the extra wild one is counted alongside the shipped two
+
+
+def test_extra_appears_in_list_and_random(lib, extra, capsys):
+    brain.main(["--file", str(lib), "--extra", str(extra), "list", "--category", "domain-specific"])
+    assert "Regulatory Inversion" in capsys.readouterr().out
+
+
+def test_extra_is_first_class_in_html(lib, extra, tmp_path):
+    out = tmp_path / "sel.html"
+    assert brain.main(["--file", str(lib), "--extra", str(extra), "html", "--out", str(out)]) == 0
+    doc = out.read_text(encoding="utf-8")
+    # custom technique is selectable and its new category renders without crashing (fallback glyph/hue)
+    assert "Regulatory Inversion" in doc
+    assert "Domain Specific" in doc
+
+
+def test_extra_missing_file_returns_2(lib, tmp_path):
+    assert brain.main(["--file", str(lib), "--extra", str(tmp_path / "nope.json"), "categories"]) == 2
+
+
+def test_unknown_category_style_uses_fallback_glyph():
+    hue, glyph = brain.category_style("totally-made-up-category")
+    assert hue.startswith("#") and len(hue) == 7  # valid derived hex
+    assert glyph == brain._FALLBACK_GLYPH
 
 
 def test_shipped_selector_is_in_sync_with_catalog():

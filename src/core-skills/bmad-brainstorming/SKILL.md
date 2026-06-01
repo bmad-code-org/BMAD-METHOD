@@ -36,7 +36,7 @@ These hold the whole run, in every mode. They fight your defaults, so hold them 
 - **Keep shifting the creative domain** — roughly every 5–10 turns (or every ~10 ideas when you're the one generating), usually by moving to the next technique. Divergence is a discipline, not a mood.
 - **While you're in dialogue (Facilitator and Creative Partner): one prompt per message, no multiple-choice menus.** Never stack questions into a wall the user reads instead of answers; never hand a menu that invites lazy picking — both pull them out of generating. The lone exceptions are the two up-front *process* choices (your mode, and the technique flow in `## Choosing Techniques`): *how* to run the session is the user's to pick; *what* to ideate never is.
 
-What changes between modes is **who generates the ideas and how you relate to the user** — your stance. That is set by the mode the user picks (`## Choosing Your Mode`); load its frame and hold it alongside these.
+What changes between modes is **who generates the ideas and how you relate to the user** — your stance. That is set by the mode the user picks (`## Choose How to Run It`); load its frame and hold it alongside these.
 
 ## Framing — The Memlog
 
@@ -65,7 +65,7 @@ Two things get set before ideating: the **facilitation mode** (your stance) and 
 **Primary — the composer page.** Send the user to it:
 
 - Default catalog → open `{skill-root}/assets/brain-selector.html`.
-- Customized catalog (overridden `{workflow.brain_methods}` or any `{workflow.additional_techniques}`) → regenerate first, then open it: `python3 {skill-root}/scripts/brain.py --file {workflow.brain_methods} html --out {doc_workspace}/brain-selector.html`.
+- Customized catalog (overridden `{workflow.brain_methods}` or any `{workflow.additional_techniques}`) → regenerate first, then open it. If there are `{workflow.additional_techniques}`, write them to a JSON file (a list of `{category, technique_name, description}` objects) and pass it as `--extra` so the page includes them too: `python3 {skill-root}/scripts/brain.py --file {workflow.brain_methods} [--extra {doc_workspace}/extra-techniques.json] html --out {doc_workspace}/brain-selector.html`.
 
 There they choose a facilitation mode, build a technique batch (tick cards, **+Random**, **+Invent**, **AI picks**), filter by category if they want, click **Copy prompt**, and paste it back. Read that pasted block:
 
@@ -116,7 +116,7 @@ The library is large, so **never pull it whole into context.** The only way in i
 Once the user has chosen, run that flow and reach no further than the calls it names:
 
 - **Facilitator Chosen** — from the goal, your `{workflow.favorite_techniques}`, and the `categories` map, name a batch of 3–4; confirm exact names with a targeted `list --category` on only the one or two categories you are drawing from. Never enumerate the library to choose.
-- **Browse** — hand the user the offline **selection page** so the catalog never enters context. With the default catalog, open the prebuilt `{skill-root}/assets/brain-selector.html`; with a customized catalog, regenerate first — `python3 {skill-root}/scripts/brain.py --file {workflow.brain_methods} html --out {doc_workspace}/brain-selector.html` — then open that. They tick techniques (3–4 is the sweet spot), click **Copy selection**, and paste the result back; that paste carries each technique's full category, name, and description, so you run them straight away — no `list` or `show` needed.
+- **Browse** — hand the user the offline **selection page** so the catalog never enters context. With the default catalog, open the prebuilt `{skill-root}/assets/brain-selector.html`; with a customized catalog, regenerate first — `python3 {skill-root}/scripts/brain.py --file {workflow.brain_methods} [--extra {doc_workspace}/extra-techniques.json] html --out {doc_workspace}/brain-selector.html` (pass `--extra` when there are `{workflow.additional_techniques}`) — then open that. They tick techniques (3–4 is the sweet spot), click **Copy prompt**, and paste the result back; that paste carries each technique's full category, name, and description, so you run them straight away — no `list` or `show` needed.
 - **Category** — the user names 1–n categories; `random --category` draws the batch from them, so the progression varies session to session. No listing needed.
 - **Inventive Flow** — invent at least 3 techniques, announce the order before starting the first, and touch no script. Log each one's name + description so you can offer to save a keeper into `{workflow.additional_techniques}` (via `bmad-customize`) at wrap-up.
 
