@@ -10,7 +10,7 @@ description: 'Execute story implementation following a context filled story spec
 **Your Role:** Developer implementing the story.
 - Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}
 - Generate all documents in {document_output_language}
-- Only modify the story file in these areas: YAML frontmatter `baseline_commit`, Tasks/Subtasks checkboxes, Dev Agent Record (Debug Log, Completion Notes), File List, Change Log, and Status
+- Only modify the story file in these areas: YAML frontmatter `baseline_commit`, Tasks/Subtasks checkboxes, Review Findings checkboxes, Dev Agent Record (Debug Log, Completion Notes), File List, Change Log, and Status
 - Execute ALL steps in exact order; do NOT skip steps
 - Absolutely DO NOT stop because of "milestones", "significant progress", or "session boundaries". Continue in a single execution until the story is COMPLETE (all ACs satisfied and all tasks/subtasks checked) UNLESS a HALT condition is triggered or the USER gives other instruction.
 - Do NOT schedule a "next session" or request review pauses unless a HALT condition applies. Only Step 9 decides completion.
@@ -76,7 +76,7 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
 <workflow>
   <critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
   <critical>Generate all documents in {document_output_language}</critical>
-  <critical>Only modify the story file in these areas: YAML frontmatter `baseline_commit`, Tasks/Subtasks checkboxes, Dev Agent Record (Debug Log, Completion Notes), File List,
+  <critical>Only modify the story file in these areas: YAML frontmatter `baseline_commit`, Tasks/Subtasks checkboxes, Review Findings checkboxes, Dev Agent Record (Debug Log, Completion Notes), File List,
     Change Log, and Status</critical>
   <critical>Execute ALL steps in exact order; do NOT skip steps</critical>
   <critical>Absolutely DO NOT stop because of "milestones", "significant progress", or "session boundaries". Continue in a single execution
@@ -223,31 +223,33 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
   <step n="3" goal="Detect review continuation and extract review context">
     <critical>Determine if this is a fresh start or continuation after code review</critical>
 
-    <action>Check if "Senior Developer Review (AI)" section exists in the story file</action>
-    <action>Check if "Review Follow-ups (AI)" subsection exists under Tasks/Subtasks</action>
+    <action>Check if a "Review Findings" subsection exists under Tasks/Subtasks</action>
+    <action>Count unchecked [ ] items marked "[Review][Decision]" in "Review Findings"</action>
+    <action>Count unchecked [ ] items marked "[Review][Patch]" in "Review Findings"</action>
 
-    <check if="Senior Developer Review section exists">
+    <check if="unchecked [Review][Decision] items exist">
+      <output>⚠️ **Review Decision Required**
+
+        This story still has unresolved `[Review][Decision]` findings. These require user/code-review workflow decisions before development can continue.
+
+        Return to `code-review` or resolve the decision items into patch, defer, or dismiss outcomes before running `dev-story` again.
+      </output>
+      <action>HALT - unresolved review decisions must be resolved before development</action>
+    </check>
+
+    <check if="unchecked [Review][Patch] items exist">
       <action>Set review_continuation = true</action>
-      <action>Extract from "Senior Developer Review (AI)" section:
-        - Review outcome (Approve/Changes Requested/Blocked)
-        - Review date
-        - Total action items with checkboxes (count checked vs unchecked)
-        - Severity breakdown (High/Med/Low counts)
-      </action>
-      <action>Count unchecked [ ] review follow-up tasks in "Review Follow-ups (AI)" subsection</action>
-      <action>Store list of unchecked review items as {{pending_review_items}}</action>
+      <action>Store list of unchecked [Review][Patch] items as {{pending_review_items}}</action>
 
-      <output>⏯️ **Resuming Story After Code Review** ({{review_date}})
+      <output>⏯️ **Resuming Story After Code Review**
 
-        **Review Outcome:** {{review_outcome}}
-        **Action Items:** {{unchecked_review_count}} remaining to address
-        **Priorities:** {{high_count}} High, {{med_count}} Medium, {{low_count}} Low
+        **Review Findings:** {{unchecked_review_count}} remaining to address
 
-        **Strategy:** Will prioritize review follow-up tasks (marked [AI-Review]) before continuing with regular tasks.
+        **Strategy:** Will prioritize Review Findings tasks marked `[Review][Patch]` before continuing with regular tasks.
       </output>
     </check>
 
-    <check if="Senior Developer Review section does NOT exist">
+    <check if="no unchecked [Review][Patch] items exist">
       <action>Set review_continuation = false</action>
       <action>Set {{pending_review_items}} = empty</action>
 
@@ -366,24 +368,17 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
     <action>Validate that ALL acceptance criteria related to this task are satisfied</action>
     <action>Run full test suite to ensure NO regressions introduced</action>
 
-    <!-- REVIEW FOLLOW-UP HANDLING -->
-    <check if="task is review follow-up (has [AI-Review] prefix)">
-      <action>Extract review item details (severity, description, related AC/file)</action>
+    <!-- REVIEW FINDINGS HANDLING -->
+    <check if="task is a review finding (has [Review][Patch] marker)">
+      <action>Extract review item details (description and related file/line if present)</action>
       <action>Add to resolution tracking list: {{resolved_review_items}}</action>
-
-      <!-- Mark task in Review Follow-ups section -->
-      <action>Mark task checkbox [x] in "Tasks/Subtasks → Review Follow-ups (AI)" section</action>
-
-      <!-- CRITICAL: Also mark corresponding action item in review section -->
-      <action>Find matching action item in "Senior Developer Review (AI) → Action Items" section by matching description</action>
-      <action>Mark that action item checkbox [x] as resolved</action>
-
-      <action>Add to Dev Agent Record → Completion Notes: "✅ Resolved review finding [{{severity}}]: {{description}}"</action>
+      <action>Prepare review finding completion note: "✅ Resolved review finding: {{description}}"</action>
     </check>
 
     <!-- ONLY MARK COMPLETE IF ALL VALIDATION PASS -->
     <check if="ALL validation gates pass AND tests ACTUALLY exist and pass">
       <action>ONLY THEN mark the task (and subtasks) checkbox with [x]</action>
+      <action>If this is a review finding task, this marks the item in "Tasks/Subtasks → Review Findings" and records the prepared review finding completion note</action>
       <action>Update File List section with ALL new, modified, or deleted files (paths relative to repo root)</action>
       <action>Add completion notes to Dev Agent Record summarizing what was ACTUALLY implemented and tested</action>
     </check>
