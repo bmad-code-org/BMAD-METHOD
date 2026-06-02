@@ -4,7 +4,7 @@
 # Hermetic: fabricates a minimal _bmad/_config/manifest.yaml skeleton in a
 # tmp dir and exercises every verb against the vendored reference modules
 # (tests/fixtures/examples/) and negative fixtures. Does NOT require
-# BMAD-METHOD's installer; the upstream patch (§5) is verified separately.
+# BMAD-METHOD's installer; installer integration is verified separately.
 #
 # Run from anywhere:
 #   bash src/core-skills/bmad-module/tests/integration.test.sh
@@ -17,7 +17,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SKILL_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 MODULE_JS="${SKILL_DIR}/scripts/bmad-module.mjs"
 # Reference modules are vendored under tests/fixtures/examples/ so the suite is
-# self-contained — it does not depend on a sibling bmad-marketplace checkout.
+# self-contained — the fixtures travel with the test, no external checkout.
 EXAMPLES="${SCRIPT_DIR}/fixtures/examples"
 FIXTURES="${SCRIPT_DIR}/fixtures"
 

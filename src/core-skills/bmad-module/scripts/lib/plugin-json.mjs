@@ -3,8 +3,8 @@ import path from 'node:path';
 import { valid as semverValid, validRange as semverValidRange } from './semver-lite.mjs';
 import { EXIT, BmadModuleError } from './exit.mjs';
 
-// Reserved bmad.code values — must match docs/spec.md §7.1 and the
-// validator's RESERVED_CODES set. Single source of truth for the runtime.
+// Reserved bmad.code values — must match the validator's RESERVED_CODES
+// set. Single source of truth for the runtime.
 export const RESERVED_CODES = new Set([
   'core',
   'bmm',
@@ -70,7 +70,7 @@ export async function readAndValidateManifest(sourceDir) {
     throw new BmadModuleError(EXIT.BAD_MANIFEST, `plugin.json#bmad.code "${m.bmad.code}" must match ${CODE_REGEX}`);
   }
   if (RESERVED_CODES.has(m.bmad.code)) {
-    throw new BmadModuleError(EXIT.RESERVED_PREFIX, `plugin.json#bmad.code "${m.bmad.code}" is reserved (spec §7.1)`);
+    throw new BmadModuleError(EXIT.RESERVED_PREFIX, `plugin.json#bmad.code "${m.bmad.code}" is reserved`);
   }
   if (!semverValidRange(m.bmad.compatibility.bmadMethod)) {
     throw new BmadModuleError(

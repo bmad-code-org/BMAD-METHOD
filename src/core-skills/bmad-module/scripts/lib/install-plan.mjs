@@ -39,8 +39,8 @@ export function buildIgnoreMatcher(userPatterns) {
   };
 }
 
-// Load user ignore patterns from manifest first, then .bmadignore. Spec §15
-// disallows both at once — readUserIgnores enforces it.
+// Load user ignore patterns from manifest first, then .bmadignore. Declaring
+// both at once is disallowed — readUserIgnores enforces it.
 export async function readUserIgnores(sourceDir, manifest) {
   const fromManifest = manifest?.bmad?.install?.ignore;
   const ignoreFilePath = path.join(sourceDir, '.bmadignore');

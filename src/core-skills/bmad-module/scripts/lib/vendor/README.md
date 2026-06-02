@@ -4,7 +4,7 @@ This directory holds **self-contained, generated** copies of third-party librari
 
 ## Why vendor at all?
 
-The `bmad-module` skill is **copied into a user's project** at `_bmad/core/skills/bmad-module/` by `npx bmad-method install`. The installer:
+The `bmad-module` skill is **copied into a user's project** — into the IDE skills directories chosen at `bmad install` time (e.g. `.claude/skills/bmad-module/`, `.agents/skills/bmad-module/`) — by `npx bmad-method install`. The installer:
 
 - strips `node_modules` while copying (`tools/installer/core/installer.js`),
 - ships **no** `package.json` under the skill, and

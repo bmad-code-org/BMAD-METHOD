@@ -2,7 +2,7 @@
 
 A minimal BMAD module: one skill that lints markdown files under `_bmad/` for heading-hierarchy mistakes and broken relative links.
 
-This is the **smallest valid module** that conforms to the [BMAD Module Manifest Specification](https://github.com/bmad-code-org/bmad-marketplace/blob/main/docs/spec.md). Use it as a starting template.
+This is the **smallest valid module** that conforms to the BMAD Module Manifest Specification. Use it as a starting template.
 
 ## Install
 

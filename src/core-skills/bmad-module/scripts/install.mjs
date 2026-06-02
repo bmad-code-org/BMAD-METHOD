@@ -58,7 +58,7 @@ export async function runInstall(opts) {
         EXIT.PREFIX_COLLISION,
         `code "${code}" already used by ${existingEntry.source} module ` +
           `${existingEntry.repoUrl || existingEntry.rawSource || existingEntry.npmPackage || '(local)'}. ` +
-          `Module authors should pick a unique bmad.code (spec §7.1).`,
+          `Module authors should pick a unique bmad.code.`,
       );
     }
 
