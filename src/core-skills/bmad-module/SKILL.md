@@ -59,7 +59,7 @@ Run from the project root (the dir containing `_bmad/`):
 node <skill-dir>/scripts/bmad-module.mjs <verb> [args...]
 ```
 
-`<skill-dir>` is wherever the skill files live in the current install. After this skill ships into BMAD-METHOD that's `_bmad/core/skills/bmad-module/`; during development it's this repo's `src/core-skills/bmad-module/`.
+`<skill-dir>` is this skill's own directory — the script ships alongside this `SKILL.md`, so it lives wherever `bmad install` distributed skills for the coding assistant you're running under. That's `<target_dir>/bmad-module/` (e.g. `.claude/skills/bmad-module/` for Claude Code, `.agents/skills/bmad-module/` for Cursor/Copilot/etc.), making the script `<target_dir>/bmad-module/scripts/bmad-module.mjs`. During development in this repo it's `src/core-skills/bmad-module/scripts/bmad-module.mjs`. Resolve it relative to this `SKILL.md` rather than assuming a fixed path. If the script isn't found next to it, the skill's bundled runtime is missing — that's the exit-code-5 case (see CRITICAL RULES and EXIT CODES): relay the "reinstall the skill" guidance rather than guessing another location.
 
 Stream stdout and stderr verbatim. Do NOT silence or rewrite them — the script's own messages are designed for end-user consumption.
 
