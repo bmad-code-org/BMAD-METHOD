@@ -11,9 +11,9 @@ In Facilitator mode this is the one place your own creative contribution is welc
 
 Record the insights and chosen directions with `memlog.py append --type insight`. **Then run `python3 {skill-root}/scripts/memlog.py set --workspace {doc_workspace} --key status --value complete`** — the session is done and must stop being offered for resume. Do this even if the user declines every artifact below.
 
-## Artifacts — opt-in, ask, never assume
+## Artifacts
 
-Each artifact is a fresh, token-expensive generation, so the user opts in. Ask what they want; recommend the HTML keepsake as the default, but generate only what they choose. Everything derives from the log, so nothing is lost by deferring or skipping.
+In **Ideate for me** (and headless), the imaginative HTML keepsake is the deliverable you promised — produce it automatically, no asking; the other artifacts below stay opt-in. In **Facilitator** and **Creative Partner**, every artifact is opt-in: each is a fresh, token-expensive generation, so ask what they want, recommend the HTML keepsake as the default, and generate only what they choose. Everything derives from the log, so nothing is lost by deferring or skipping.
 
 **Delegate each artifact to a subagent.** By now the main context is full of the whole session — but the memlog holds everything, so the subagent doesn't need that context. Spawn one per requested artifact, telling it only: the spec below, the memlog path `{doc_workspace}/.memlog.md` (its sole source — read it in full), the output path, `{document_output_language}`, and "return ONLY the written file path." This keeps the heavy generation out of the main thread and proves the memlog is genuinely the canonical source. (Subagents can't spawn subagents — run these from here.)
 
