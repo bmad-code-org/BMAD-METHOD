@@ -80,10 +80,10 @@ function escapeTableCell(str) {
 }
 
 // Path prefixes/patterns that only exist in installed structure, not in source
-const INSTALL_ONLY_PATHS = ['_config/'];
+const INSTALL_ONLY_PATHS = ['_config/', 'custom/'];
 
 // Files that are generated at install time and don't exist in the source tree
-const INSTALL_GENERATED_FILES = ['config.yaml'];
+const INSTALL_GENERATED_FILES = ['config.yaml', 'config.user.yaml'];
 
 // Variables that indicate a path is not statically resolvable
 const UNRESOLVABLE_VARS = [
@@ -156,8 +156,15 @@ function mapInstalledToSource(refPath) {
   // Skip install-only paths (generated at install time, not in source)
   if (isInstallOnly(cleaned)) return null;
 
-  // core/, bmm/, and utility/ are directly under src/
-  if (cleaned.startsWith('core/') || cleaned.startsWith('bmm/') || cleaned.startsWith('utility/')) {
+  // Map installed module names to their source directory names
+  // _bmad/core/ → src/core-skills/, _bmad/bmm/ → src/bmm-skills/
+  if (cleaned.startsWith('core/')) {
+    return path.join(SRC_DIR, 'core-skills', cleaned.slice('core/'.length));
+  }
+  if (cleaned.startsWith('bmm/')) {
+    return path.join(SRC_DIR, 'bmm-skills', cleaned.slice('bmm/'.length));
+  }
+  if (cleaned.startsWith('utility/')) {
     return path.join(SRC_DIR, cleaned);
   }
 
@@ -324,6 +331,8 @@ function extractCsvRefs(filePath, content) {
     const raw = record['workflow-file'];
     if (!raw || raw.trim() === '') continue;
     if (!isResolvable(raw)) continue;
+    // skill: prefixed references are resolved by the IDE/CLI, not as file paths
+    if (raw.startsWith('skill:')) continue;
 
     // Line = header (1) + data row index (0-based) + 1
     const line = i + 2;

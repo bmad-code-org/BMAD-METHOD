@@ -1,19 +1,20 @@
 ---
-title: "Established Projects"
+title: 'Established Projects'
 description: How to use BMad Method on existing codebases
 sidebar:
-  order: 6
+  order: 7
 ---
 
-Use BMad Method effectively when working on existing projects and legacy codebases, sometimes also referred to as brownfield projects.
+Use BMad Method effectively when working on existing projects and legacy codebases.
 
 This guide covers the essential workflow for onboarding to existing projects with BMad Method.
 
 :::note[Prerequisites]
+
 - BMad Method installed (`npx bmad-method install`)
 - An existing codebase you want to work on
-- Access to an AI-powered IDE (Claude Code, Cursor, or Windsurf)
-:::
+- Access to an AI-powered IDE (Claude Code or Cursor)
+  :::
 
 ## Step 1: Clean Up Completed Planning Artifacts
 
@@ -23,7 +24,31 @@ If you have completed all PRD epics and stories through the BMad process, clean 
 - `_bmad-output/planning-artifacts/`
 - `_bmad-output/implementation-artifacts/`
 
-## Step 2: Maintain Quality Project Documentation
+## Step 2: Create Project Context
+
+:::tip[Recommended for Existing Projects]
+Generate `project-context.md` to capture your existing codebase patterns and conventions. This ensures AI agents follow your established practices when implementing changes.
+:::
+
+Run the generate project context workflow:
+
+```bash
+bmad-generate-project-context
+```
+
+This scans your codebase to identify:
+
+- Technology stack and versions
+- Code organization patterns
+- Naming conventions
+- Testing approaches
+- Framework-specific patterns
+
+You can review and refine the generated file, or create it manually at `_bmad-output/project-context.md` if you prefer.
+
+[Learn more about project context](../explanation/project-context.md)
+
+## Step 3: Maintain Quality Project Documentation
 
 Your `docs/` folder should contain succinct, well-organized documentation that accurately represents your project:
 
@@ -32,7 +57,7 @@ Your `docs/` folder should contain succinct, well-organized documentation that a
 - Architecture
 - Any other relevant project information
 
-For complex projects, consider using the `document-project` workflow. It offers runtime variants that will scan your entire project and document its actual current state.
+For complex projects, consider using the `bmad-document-project` workflow. It offers runtime variants that will scan your entire project and document its actual current state.
 
 ## Step 3: Generate Project Context
 
@@ -46,18 +71,30 @@ For comprehensive project documentation beyond implementation rules, use `docume
 
 ## Step 4: Get Help
 
-Get help to know what to do next based on your unique needs
+### BMad-Help: Your Starting Point
 
-Run `bmad-help` to get guidance when you are not sure what to do next.
+**Run `bmad-help` anytime you're unsure what to do next.** This intelligent guide:
+
+- Inspects your project to see what's already been done
+- Shows options based on your installed modules
+- Understands natural language queries
+
+```
+bmad-help I have an existing Rails app, where should I start?
+bmad-help What's the difference between quick-flow and full method?
+bmad-help Show me what workflows are available
+```
+
+BMad-Help also **automatically runs at the end of every workflow**, providing clear guidance on exactly what to do next.
 
 ### Choosing Your Approach
 
 You have two primary options depending on the scope of changes:
 
-| Scope                          | Recommended Approach                                                                                                          |
-| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| **Small updates or additions** | Use `quick-flow-solo-dev` to create a tech-spec and implement the change. The full four-phase BMad Method is likely overkill. |
-| **Major changes or additions** | Start with the BMad Method, applying as much or as little rigor as needed.                                                    |
+| Scope                          | Recommended Approach                                                                                                                          |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Small updates or additions** | Run `bmad-quick-dev` to clarify intent, plan, implement, and review in a single workflow. The full four-phase BMad Method is likely overkill. |
+| **Major changes or additions** | Start with the BMad Method, applying as much or as little rigor as needed.                                                                    |
 
 ### During PRD Creation
 

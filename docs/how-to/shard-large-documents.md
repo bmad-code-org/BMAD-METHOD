@@ -1,11 +1,11 @@
 ---
-title: "Document Sharding Guide"
+title: 'Document Sharding Guide'
 description: Split large markdown files into smaller organized files for better context management
 sidebar:
-  order: 8
+  order: 10
 ---
 
-Use the `shard-doc` tool if you need to split large markdown files into smaller, organized files for better context management.
+Use the `bmad-shard-doc` tool if you need to split large markdown files into smaller, organized files for better context management.
 
 :::caution[Deprecated]
 This is no longer recommended, and soon with updated workflows and most major LLMs and tools supporting subprocesses this will be unnecessary.
@@ -23,11 +23,11 @@ Document sharding splits large markdown files into smaller, organized files base
 
 ```text
 Before Sharding:
-docs/
+_bmad-output/planning-artifacts/
 └── PRD.md (large 50k token file)
 
 After Sharding:
-docs/
+_bmad-output/planning-artifacts/
 └── prd/
     ├── index.md                    # Table of contents with descriptions
     ├── overview.md                 # Section 1

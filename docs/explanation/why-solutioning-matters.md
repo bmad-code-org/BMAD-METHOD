@@ -2,7 +2,7 @@
 title: "Why Solutioning Matters"
 description: Understanding why the solutioning phase is critical for multi-epic projects
 sidebar:
-  order: 3
+  order: 5
 ---
 
 

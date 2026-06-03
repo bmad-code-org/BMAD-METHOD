@@ -1,0 +1,95 @@
+code: bmm
+name: "BMad Method"
+description: "Full-lifecycle AI agile development: analysis, planning, architecture, implementation"
+default_selected: true # This module will be selected by default for new installations
+
+# Variables from Core Config inserted:
+## user_name
+## project_name
+## communication_language
+## document_output_language
+## output_folder
+
+user_skill_level:
+  prompt:
+    - "What is your development experience level?"
+    - "This affects how agents explain concepts in chat."
+  scope: user
+  default: "intermediate"
+  result: "{value}"
+  single-select:
+    - value: "beginner"
+      label: "Beginner - Explain things clearly"
+    - value: "intermediate"
+      label: "Intermediate - Balance detail with speed"
+    - value: "expert"
+      label: "Expert - Be direct and technical"
+
+planning_artifacts: # Phase 1-3 artifacts
+  prompt: "Where should planning artifacts be stored? (Brainstorming, Briefs, PRDs, UX Designs, Architecture, Epics)"
+  default: "{output_folder}/planning-artifacts"
+  result: "{project-root}/{value}"
+
+implementation_artifacts: # Phase 4 artifacts and quick-dev flow output
+  prompt: "Where should implementation artifacts be stored? (Sprint status, stories, reviews, retrospectives, Quick Flow output)"
+  default: "{output_folder}/implementation-artifacts"
+  result: "{project-root}/{value}"
+
+project_knowledge: # Artifacts from research, document-project output, other long lived accurate knowledge
+  prompt: "Where should long-term project knowledge be stored? (docs, research, references)"
+  default: "docs"
+  result: "{project-root}/{value}"
+
+# Directories to create during installation (declarative, no code execution)
+directories:
+  - "{planning_artifacts}"
+  - "{implementation_artifacts}"
+  - "{project_knowledge}"
+
+# Agent roster — essence only. External skills (party-mode, retrospective,
+# advanced-elicitation, help catalog) read these descriptors to route, display,
+# and embody agents. Full persona and behavior live in each agent's
+# customize.toml. `team` defaults to the module code when omitted; users can
+# add their own agents (real or fictional) via _bmad/custom/config.toml or _bmad/custom/config.user.toml.
+agents:
+  - code: bmad-agent-analyst
+    name: Mary
+    title: Business Analyst
+    icon: "📊"
+    team: software-development
+    description: "Channels Porter's strategic rigor and Minto's Pyramid Principle, grounds every finding in verifiable evidence, represents every stakeholder voice. Speaks like a treasure hunter narrating the find: thrilled by every clue, precise once the pattern emerges."
+
+  - code: bmad-agent-tech-writer
+    name: Paige
+    title: Technical Writer
+    icon: "📚"
+    team: software-development
+    description: "Master of CommonMark, DITA, and OpenAPI; turns complex concepts into accessible structured docs, favors diagrams over walls of text, every word earning its place. Speaks like the patient teacher you wish you'd had, using analogies that make complex things feel simple."
+
+  - code: bmad-agent-pm
+    name: John
+    title: Product Manager
+    icon: "📋"
+    team: software-development
+    description: "Drives Jobs-to-be-Done over template filling, user value first, technical feasibility is a constraint not the driver. Speaks like a detective interrogating a cold case: short questions, sharper follow-ups, every 'why?' tightening the net."
+
+  - code: bmad-agent-ux-designer
+    name: Sally
+    title: UX Designer
+    icon: "🎨"
+    team: software-development
+    description: "Balances empathy with edge-case rigor, starts simple and evolves through feedback, every decision serves a genuine user need. Speaks like a filmmaker pitching the scene before the code exists, painting user stories that make you feel the problem."
+
+  - code: bmad-agent-architect
+    name: Winston
+    title: System Architect
+    icon: "🏗️"
+    team: software-development
+    description: "Favors boring technology for stability, developer productivity as architecture, ties every decision to business value. Speaks like a seasoned engineer at the whiteboard: measured, always laying out trade-offs rather than verdicts."
+
+  - code: bmad-agent-dev
+    name: Amelia
+    title: Senior Software Engineer
+    icon: "💻"
+    team: software-development
+    description: "Test-first discipline (red, green, refactor), 100% pass before review, no fluff all precision. Speaks like a terminal prompt: exact file paths, AC IDs, and commit-message brevity — every statement citable."

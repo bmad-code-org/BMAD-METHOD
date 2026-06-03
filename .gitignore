@@ -17,8 +17,14 @@ npm-debug.log*
 # Build output
 build/*.txt
 
+design-artifacts/
+
 # Environment variables
 .env
+
+# Python
+__pycache__/
+.pytest_cache/
 
 # System files
 .DS_Store
@@ -35,15 +41,22 @@ cursor
 CLAUDE.local.md
 .serena/
 .claude/settings.local.json
+.junie/
+.agents/
 
 z*/
+!docs/zh-cn/
 
 _bmad
 _bmad-output
+
+# Personal customization files (team files are committed, personal files are not)
+_bmad/custom/*.user.toml
 .clinerules
 # .augment/ is gitignored except tracked config files — add exceptions explicitly
 .augment/*
 !.augment/code_review_guidelines.yaml
+.codebuddy
 .crush
 .cursor
 .iflow
@@ -51,7 +64,7 @@ _bmad-output
 .qwen
 .rovodev
 .kilocodemodes
-.claude/commands
+.claude
 .codex
 .github/chatmodes
 .github/agents
@@ -67,3 +80,6 @@ _bmad-output
 website/.astro/
 website/dist/
 build/
+
+# Web bundle release artifacts
+dist/web-bundles/

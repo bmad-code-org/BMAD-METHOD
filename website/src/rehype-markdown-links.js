@@ -101,9 +101,17 @@ export function findFirstDelimiter(str) {
 /** Walk up from a file path to find the content docs directory. */
 export function detectContentDir(filePath) {
   const segments = filePath.split(path.sep);
-  // Look for src/content/docs in the path
+  // Look for src/content/docs in the path (standard Astro)
   for (let i = segments.length - 1; i >= 2; i--) {
     if (segments[i - 2] === 'src' && segments[i - 1] === 'content' && segments[i] === 'docs') {
+      return segments.slice(0, i + 1).join(path.sep);
+    }
+  }
+  // Also check for a standalone 'docs' directory (BMAD project structure)
+  // Path format: .../bmm/docs/file.mdx or .../bmm/website/...
+  for (let i = segments.length - 1; i >= 0; i--) {
+    if (segments[i] === 'docs') {
+      // Found docs directory - use its parent as the content root
       return segments.slice(0, i + 1).join(path.sep);
     }
   }

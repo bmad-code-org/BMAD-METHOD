@@ -203,29 +203,25 @@ BMAD-METHOD/
 │       ├── tdd-flow.sh
 │       └── regression-gate.sh
 └── src/
-    ├── core/
-    │   └── tasks/
-    │       └── workflow.xml         # Core workflow executor
-    └── modules/
-        └── bmm/
-            └── workflows/
-                └── 4-implementation/
-                    ├── dev-story/           # Dev phase workflow
-                    │   ├── workflow.yaml
-                    │   ├── instructions.xml
-                    │   └── checklist.md
-                    ├── code-review/         # Review phase workflow
-                    │   ├── workflow.yaml
-                    │   ├── instructions.xml
-                    │   └── checklist.md
-                    └── epic-execute/        # Quality gate steps
-                        ├── steps/
-                        │   ├── step-02b-arch-compliance.md
-                        │   ├── step-03b-test-quality.md
-                        │   ├── step-03c-traceability.md
-                        │   └── step-04-generate-uat.md
-                        └── templates/
-                            └── uat-template.md
+    ├── bmm-skills/                          # Upstream skill-based workflows (v6.1+)
+    │   └── 4-implementation/
+    │       ├── bmad-dev-story/             # Dev phase skill
+    │       │   ├── SKILL.md
+    │       │   └── checklist.md
+    │       └── bmad-code-review/           # Review phase skill
+    │           ├── SKILL.md
+    │           └── steps/
+    └── bmm/                                 # Our automation workflows
+        └── workflows/
+            └── 4-implementation/
+                └── epic-execute/            # Quality gate steps
+                    ├── steps/
+                    │   ├── step-02b-arch-compliance.md
+                    │   ├── step-03b-test-quality.md
+                    │   ├── step-03c-traceability.md
+                    │   └── step-04-generate-uat.md
+                    └── templates/
+                        └── uat-template.md
 ```
 
 ### Target Project Structure
@@ -270,9 +266,9 @@ echo "BMAD-METHOD not found - check installation"
 
 # Verify workflow files exist
 BMAD_PATH="<path-to-bmad-method>"
-ls -la "$BMAD_PATH/src/bmm/workflows/4-implementation/dev-story/"
-ls -la "$BMAD_PATH/src/bmm/workflows/4-implementation/code-review/"
-ls -la "$BMAD_PATH/src/core/tasks/workflow.xml"
+ls -la "$BMAD_PATH/src/bmm-skills/4-implementation/bmad-dev-story/SKILL.md"
+ls -la "$BMAD_PATH/src/bmm-skills/4-implementation/bmad-code-review/SKILL.md"
+ls -la "$BMAD_PATH/src/bmm/workflows/4-implementation/epic-execute/"
 
 # Verify your project has required directories
 ls -la ./docs/stories/

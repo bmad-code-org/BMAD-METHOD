@@ -5,6 +5,7 @@ import sitemap from '@astrojs/sitemap';
 import rehypeMarkdownLinks from './src/rehype-markdown-links.js';
 import rehypeBasePaths from './src/rehype-base-paths.js';
 import { getSiteUrl } from './src/lib/site-url.mjs';
+import { locales } from './src/lib/locales.mjs';
 
 const siteUrl = getSiteUrl();
 const urlParts = new URL(siteUrl);
@@ -36,17 +37,19 @@ export default defineConfig({
   },
 
   integrations: [
-    sitemap(),
+    // Exclude custom 404 pages (all locales) from the sitemap — they are
+    // treated as normal content docs by Starlight even with disable404Route.
+    sitemap({
+      filter: (page) => !/\/404(\/|$)/.test(new URL(page).pathname),
+    }),
     starlight({
       title: 'BMAD Method',
       tagline: 'AI-driven agile development with specialized agents and workflows that scale from bug fixes to enterprise platforms.',
 
-      logo: {
-        light: './public/img/bmad-light.png',
-        dark: './public/img/bmad-dark.png',
-        alt: 'BMAD Method',
-        replacesTitle: true,
-      },
+      // i18n: locale config from shared module (website/src/lib/locales.mjs)
+      defaultLocale: 'root',
+      locales,
+
       favicon: '/favicon.ico',
 
       // Social links
@@ -89,28 +92,87 @@ export default defineConfig({
 
       // Sidebar configuration (Diataxis structure)
       sidebar: [
-        { label: 'Welcome', slug: 'index' },
+        {
+          label: 'Welcome',
+          translations: { 'vi-VN': 'Chào mừng', 'zh-CN': '欢迎', 'fr-FR': 'Bienvenue', 'cs-CZ': 'Vítejte' },
+          slug: 'index',
+        },
+        {
+          label: 'Roadmap',
+          translations: { 'vi-VN': 'Lộ trình', 'zh-CN': '路线图', 'fr-FR': 'Feuille de route', 'cs-CZ': 'Plán rozvoje' },
+          slug: 'roadmap',
+        },
         {
           label: 'Tutorials',
+          translations: { 'vi-VN': 'Hướng dẫn nhập môn', 'zh-CN': '教程', 'fr-FR': 'Tutoriels', 'cs-CZ': 'Tutoriály' },
           collapsed: false,
           autogenerate: { directory: 'tutorials' },
         },
         {
           label: 'How-To Guides',
+          translations: { 'vi-VN': 'Hướng dẫn tác vụ', 'zh-CN': '操作指南', 'fr-FR': 'Guides pratiques', 'cs-CZ': 'Praktické návody' },
           collapsed: true,
           autogenerate: { directory: 'how-to' },
         },
         {
           label: 'Explanation',
+          translations: { 'vi-VN': 'Giải thích', 'zh-CN': '概念说明', 'fr-FR': 'Explications', 'cs-CZ': 'Vysvětlení' },
           collapsed: true,
           autogenerate: { directory: 'explanation' },
         },
         {
           label: 'Reference',
+          translations: { 'vi-VN': 'Tham chiếu', 'zh-CN': '参考', 'fr-FR': 'Référence', 'cs-CZ': 'Reference' },
           collapsed: true,
           autogenerate: { directory: 'reference' },
         },
         // TEA docs moved to standalone module site; keep BMM sidebar focused.
+        {
+          label: 'BMad Ecosystem',
+          translations: { 'vi-VN': 'Hệ sinh thái BMad', 'zh-CN': 'BMad 生态系统', 'fr-FR': 'Écosystème BMad', 'cs-CZ': 'Ekosystém BMad' },
+          collapsed: false,
+          items: [
+            {
+              label: 'BMad Builder',
+              translations: { 'vi-VN': 'BMad Builder', 'zh-CN': 'BMad 构建器', 'fr-FR': 'BMad Builder', 'cs-CZ': 'BMad Builder' },
+              link: 'https://bmad-builder-docs.bmad-method.org/',
+              attrs: { target: '_blank' },
+            },
+            {
+              label: 'Creative Intelligence Suite',
+              translations: {
+                'vi-VN': 'Bộ công cụ Trí tuệ Sáng tạo',
+                'zh-CN': '创意智能套件',
+                'fr-FR': "Suite d'Intelligence Créative",
+                'cs-CZ': 'Sada kreativní inteligence',
+              },
+              link: 'https://cis-docs.bmad-method.org/',
+              attrs: { target: '_blank' },
+            },
+            {
+              label: 'Game Dev Studio',
+              translations: {
+                'vi-VN': 'Xưởng phát triển Game',
+                'zh-CN': '游戏开发工作室',
+                'fr-FR': 'Studio de Développement de Jeux',
+                'cs-CZ': 'Herní vývojové studio',
+              },
+              link: 'https://game-dev-studio-docs.bmad-method.org/',
+              attrs: { target: '_blank' },
+            },
+            {
+              label: 'Test Architect (TEA)',
+              translations: {
+                'vi-VN': 'Kiến trúc sư Kiểm thử (TEA)',
+                'zh-CN': '测试架构师 (TEA)',
+                'fr-FR': 'Architecte de Tests (TEA)',
+                'cs-CZ': 'Testovací architekt (TEA)',
+              },
+              link: 'https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/',
+              attrs: { target: '_blank' },
+            },
+          ],
+        },
       ],
 
       // Credits in footer

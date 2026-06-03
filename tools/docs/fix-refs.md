@@ -50,7 +50,7 @@ Use backticks with plain workflow name:
 - **Other docs**: "Run `prd`" — they already know, so "workflow" is noise
 
 **Platform hint**: Only in newbie docs, and only on the **first** workflow mention:
-- First mention: Run the `help` workflow (`/bmad-help` on most platforms)
+- First mention: Run the `help` workflow (`bmad-help` on most platforms)
 - Subsequent mentions: Run `prd` — no hint, no "workflow" needed after they've seen the pattern
 
 In experienced docs, the hint is always noise — just use the workflow name.

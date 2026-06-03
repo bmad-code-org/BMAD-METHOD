@@ -1,7 +1,7 @@
 blank_issues_enabled: false
 contact_links:
   - name: 📚 Documentation
-    url: http://docs.bmad-method.org
+    url: https://docs.bmad-method.org
     about: Check the docs first — tutorials, guides, and reference
   - name: 💬 Discord Community
     url: https://discord.gg/gk8jAdXWmj
