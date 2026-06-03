@@ -139,6 +139,8 @@ SPRINTS_DIR="$PROJECT_ROOT/docs/sprints"
 EPICS_DIR="$PROJECT_ROOT/docs/epics"
 UAT_DIR="$PROJECT_ROOT/docs/uat"
 LOGS_DIR="$SPRINT_ARTIFACTS_DIR/logs"
+# Per-story design plans (persisted so dev phase can read them after resume)
+DESIGN_DIR="$SPRINT_ARTIFACTS_DIR/design"
 
 # Temporary log file during execution - will be copied to LOGS_DIR on completion
 LOG_FILE="/tmp/bmad-epic-execute-$$.log"
