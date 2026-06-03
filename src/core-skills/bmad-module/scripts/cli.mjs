@@ -174,7 +174,6 @@ EXIT CODES
   20   missing or invalid plugin.json
   21   reserved bmad.code
   30   prefix collision with existing module
-  40   file overlap outside the module root
   50   filesystem commit failed
   60   network/git clone failed
   70   path traversal in manifest

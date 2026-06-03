@@ -5,9 +5,9 @@ description: Install, update, remove, or list community BMAD modules. Use when t
 
 # bmad-module
 
-Manage community BMAD modules — installable packages of skills, agents, and supporting assets that ship as standalone GitHub repos. Modules are staged under `_bmad/<bmad.code>/` and tracked in the existing manifests. On `install`, `update`, and `remove`, the script then distributes (or prunes) the module's skills to **every coding assistant the user selected when they ran `bmad install`** — read from the `ides:` list in `_bmad/_config/manifest.yaml` — so a community module lands in Claude Code, Cursor, Copilot, etc. exactly like an official module. As with official modules, the canonical end state is skills living in the IDE directories (e.g. `.claude/skills/<id>/`), not in `_bmad/`. The same artifact is also loadable as a Claude Code plugin via its `.claude-plugin/plugin.json` manifest.
+Manage community BMAD modules — installable packages of skills, agents, and supporting assets that ship as standalone GitHub repos. Modules are staged under `_bmad/<bmad.code>/` and tracked in the existing manifests. On `install`, `update`, and `remove`, the script distributes (or prunes) the module's skills to **every coding assistant the user selected at `bmad install`** — read from the `ides:` list in `_bmad/_config/manifest.yaml` — so the module lands in Claude Code, Cursor, Copilot, etc. The canonical end state is skills living in the IDE directories (e.g. `.claude/skills/<id>/`), not in `_bmad/`. The same artifact also loads as a Claude Code plugin via its `.claude-plugin/plugin.json` manifest.
 
-To match the full `bmad install` for custom modules, the script also completes the install in place: it installs npm dependencies when the module ships a `package.json` (opt out with `bmad.install.skipNpm: true`), generates the module's `[modules.<code>]` / `[agents.<code>]` blocks in `_bmad/config.toml` and `config.user.toml` from its `module.yaml` (defaults, overridable with `--set`), creates the working directories the module declares under `directories:`, and rebuilds the merged `_bmad/_config/bmad-help.csv` so the module's skills show up in `bmad-help`. These steps are best-effort — a failure in any of them is reported as a warning, not a failed install. Interactive config refinement remains the job of the module's `postInstallSkill`, if it declares one.
+The script also completes the install in place, best-effort: it runs `npm install` when the module ships a `package.json` (skip with `bmad.install.skipNpm: true`), generates the module's `[modules.<code>]` / `[agents.<code>]` config blocks from its `module.yaml` (overridable with `--set`), creates the working directories it declares under `directories:`, and rebuilds `_bmad/_config/bmad-help.csv` so its skills appear in `bmad-help`. A failure in any of these is reported as a warning, not a failed install. Interactive config refinement remains the job of the module's `postInstallSkill`, if it declares one.
 
 ## CRITICAL RULES
 
@@ -34,7 +34,7 @@ If the verb is ambiguous (e.g. the user says "manage modules"), ASK which verb t
 ### Step 2 — Parse the args
 
 - **install:** the user supplies `<source>` — `owner/repo` (GitHub short), a full git URL (`https://…` or `git@…`), or a local path. Optional flags: `--ref <branch-tag-or-sha>`, `--channel <stable|next|pinned>`, `--set <code>.<key>=<value>` (override a module config answer; repeatable), `--dry-run`.
-- **update:** the user supplies `<code>` (the `_bmad/<code>/` folder name) or asks for "all"; in that case use `--all`. Optional `--ref`, `--set <code>.<key>=<value>`.
+- **update:** the user supplies `<code>` (the `_bmad/<code>/` folder name) or asks for "all"; in that case use `--all`. Optional `--ref`, `--channel <stable|next|pinned>`, `--set <code>.<key>=<value>`.
 - **remove:** the user supplies `<code>`. Use `--purge` only if they explicitly say "also remove customizations" or "purge".
 - **list:** no args. Use `--json` if the user asks for machine-readable.
 
@@ -59,7 +59,7 @@ Run from the project root (the dir containing `_bmad/`):
 node <skill-dir>/scripts/bmad-module.mjs <verb> [args...]
 ```
 
-`<skill-dir>` is this skill's own directory — the script ships alongside this `SKILL.md`, so it lives wherever `bmad install` distributed skills for the coding assistant you're running under. That's `<target_dir>/bmad-module/` (e.g. `.claude/skills/bmad-module/` for Claude Code, `.agents/skills/bmad-module/` for Cursor/Copilot/etc.), making the script `<target_dir>/bmad-module/scripts/bmad-module.mjs`. During development in this repo it's `src/core-skills/bmad-module/scripts/bmad-module.mjs`. Resolve it relative to this `SKILL.md` rather than assuming a fixed path. If the script isn't found next to it, the skill's bundled runtime is missing — that's the exit-code-5 case (see CRITICAL RULES and EXIT CODES): relay the "reinstall the skill" guidance rather than guessing another location.
+`<skill-dir>` is this skill's own directory: the script ships alongside this `SKILL.md`, so resolve it relative to this file rather than assuming a fixed path — `<skill-dir>/scripts/bmad-module.mjs` (e.g. `.claude/skills/bmad-module/scripts/bmad-module.mjs` once distributed, or `src/core-skills/bmad-module/scripts/bmad-module.mjs` during development in this repo). If the script isn't found next to this `SKILL.md`, the skill's bundled runtime is missing — that's the exit-code-5 case (see CRITICAL RULES and EXIT CODES): relay the "reinstall the skill" guidance rather than guessing another location.
 
 Stream stdout and stderr verbatim. Do NOT silence or rewrite them — the script's own messages are designed for end-user consumption.
 
@@ -76,21 +76,16 @@ On non-zero exit: print the exit code, the stderr message, and stop. Do not sugg
 
 ## EXIT CODES
 
-| Code | Meaning                                                                                                       |
-| ---- | ------------------------------------------------------------------------------------------------------------- |
-| 0    | success                                                                                                       |
-| 2    | usage error (bad/missing args or flags)                                                                       |
-| 5    | skill runtime files missing/corrupt — reinstall the skill (a setup/packaging problem, NOT a module rejection) |
-| 10   | no `_bmad/` directory in project — run `bmad install` first                                                   |
-| 20   | missing or invalid `.claude-plugin/plugin.json` in source                                                     |
-| 21   | module uses a reserved `bmad.code`                                                                            |
-| 30   | prefix collision with an already-installed module                                                             |
-| 40   | module would write outside its `_bmad/<code>/` root                                                           |
-| 50   | filesystem commit (atomic swap) failed                                                                        |
-| 60   | network or `git clone` failed                                                                                 |
-| 70   | path traversal detected in manifest                                                                           |
-| 80   | update aborted: locally modified files would be overwritten                                                   |
-| 90   | no such installed module (for `update`/`remove`)                                                              |
+The script's stderr always names the condition, so for most non-zero exits you just relay it (see CRITICAL RULES). These few change what you tell the user next:
+
+| Code | Meaning                                                              | What to tell the user                                              |
+| ---- | ------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| 5    | skill runtime files missing/corrupt — NOT a module rejection        | reinstall the skill (relay the script's guidance)                 |
+| 10   | no `_bmad/` directory in project                                     | run `bmad install` first                                          |
+| 80   | update aborted: locally modified files would be overwritten          | move overrides into `_bmad/custom/<code>/`, then retry            |
+| 90   | no such installed module (for `update`/`remove`)                     | check the code, or run `list` to see what's installed             |
+
+Any other non-zero exit: report the code and stderr verbatim and stop — stderr names the condition. For the full list of codes, run the script with `--help`.
 
 ## EXAMPLES
 
