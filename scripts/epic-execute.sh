@@ -132,6 +132,7 @@ LIB_DIR="$SCRIPT_DIR/epic-execute-lib"
 [ -f "$LIB_DIR/design-phase.sh" ] && source "$LIB_DIR/design-phase.sh"
 [ -f "$LIB_DIR/json-output.sh" ] && source "$LIB_DIR/json-output.sh"
 [ -f "$LIB_DIR/tdd-flow.sh" ] && source "$LIB_DIR/tdd-flow.sh"
+[ -f "$LIB_DIR/contract-harness.sh" ] && source "$LIB_DIR/contract-harness.sh"
 
 STORIES_DIR="$PROJECT_ROOT/docs/stories"
 SPRINT_ARTIFACTS_DIR="$PROJECT_ROOT/docs/sprint-artifacts"
@@ -941,6 +942,11 @@ OPTIONS:
       --skip-test-spec      Skip test specification phase only
       --skip-test-impl      Skip test implementation phase only
 
+    Contract Validation:
+      --init-harness        Scaffold a contract-harness.yaml template and exit
+      --preflight-deep      Also run a connectivity smoke (boots the sample env)
+      --skip-contract-validation  Skip the contract harness preflight
+
     Commit Control:
       --no-commit           Stage changes but don't commit
       --skip-done           Skip stories with Status: Done
@@ -983,6 +989,16 @@ FILES:
     Logs:       docs/sprint-artifacts/logs/epic-<id>-<timestamp>.log
     Metrics:    docs/sprint-artifacts/metrics/epic-<id>-metrics.yaml
     Checkpoint: docs/sprint-artifacts/.epic-<id>-checkpoint
+    Harness:    contract-harness.yaml (project root or docs/) - optional
+
+CONTRACT VALIDATION:
+    If a contract-harness.yaml is present, startup runs a preflight that checks
+    every credential, command, and file the harness needs (inferred from the
+    harness itself). A dry run prints a readiness report and exits non-zero when
+    anything required is missing, so it works as a CI readiness gate:
+        ./epic-execute.sh <id> --dry-run        # presence checks only
+        ./epic-execute.sh <id> --dry-run --preflight-deep   # + connectivity smoke
+        ./epic-execute.sh --init-harness        # scaffold a starter harness
 
 For more information, see: docs/bmad_improvements_v2_fixes.md
 EOF
@@ -1009,6 +1025,9 @@ SKIP_STATIC_ANALYSIS=false
 SKIP_DESIGN=false
 SKIP_DESIGN_CRITIC=false
 SKIP_REGRESSION=false
+SKIP_CONTRACT_VALIDATION=false
+PREFLIGHT_DEEP=false
+INIT_HARNESS=false
 SKIP_TDD=false
 SKIP_TEST_SPEC=false
 SKIP_TEST_IMPL=false
@@ -1084,6 +1103,18 @@ while [[ $# -gt 0 ]]; do
             SKIP_REGRESSION=true
             shift
             ;;
+        --skip-contract-validation)
+            SKIP_CONTRACT_VALIDATION=true
+            shift
+            ;;
+        --preflight-deep)
+            PREFLIGHT_DEEP=true
+            shift
+            ;;
+        --init-harness)
+            INIT_HARNESS=true
+            shift
+            ;;
         --skip-tdd)
             SKIP_TDD=true
             shift
@@ -1110,6 +1141,17 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
+
+# --init-harness: scaffold a contract-harness.yaml template and exit (no epic needed)
+if [ "$INIT_HARNESS" = true ]; then
+    if type init_contract_harness >/dev/null 2>&1; then
+        init_contract_harness
+        exit $?
+    else
+        echo "Contract harness module not available (scripts/epic-execute-lib/contract-harness.sh)"
+        exit 1
+    fi
+fi
 
 if [ -z "$EPIC_ID" ]; then
     echo "Usage: $0 <epic-id> [options]"
@@ -1207,6 +1249,26 @@ fi
 if [ "$NO_COMMIT" != true ] && type check_branch_protection >/dev/null 2>&1; then
     if ! check_branch_protection; then
         exit 1
+    fi
+fi
+
+# Contract harness preflight - validate readiness to run contract validation.
+# Opt-in by presence of a contract-harness.yaml. In a real run this is a
+# fail-fast gate (abort before story 1 if prerequisites are missing). In a dry
+# run it reports readiness and makes the run exit non-zero (a CI readiness gate).
+if [ "$SKIP_CONTRACT_VALIDATION" != true ] && type contract_preflight >/dev/null 2>&1; then
+    CONTRACT_HARNESS_FILE=$(find_contract_harness)
+    if [ -n "$CONTRACT_HARNESS_FILE" ]; then
+        if ! contract_preflight "$CONTRACT_HARNESS_FILE"; then
+            if [ "$DRY_RUN" = true ]; then
+                log_warn "Preflight found missing prerequisites - dry run will exit non-zero"
+            else
+                log_error "Contract harness preflight failed - aborting before execution"
+                exit 1
+            fi
+        fi
+    elif [ "$VERBOSE" = true ]; then
+        log "No contract-harness.yaml found - contract validation not configured"
     fi
 fi
 
@@ -3215,6 +3277,14 @@ echo "    - Traceability:  $TRACEABILITY_DIR/epic-${EPIC_ID}-traceability.md"
 echo "    - Metrics:       $METRICS_FILE"
 echo "    - Log:           $LOGS_DIR/epic-${EPIC_ID}-<timestamp>.log (saved on exit)"
 echo ""
+
+# Contract preflight is an exit-code-honest gate: if a declared harness was
+# missing prerequisites, fail the run (this is what makes --dry-run usable as a
+# CI readiness check).
+if [ "${PREFLIGHT_FAILED:-false}" = true ]; then
+    log_warn "Contract preflight reported missing prerequisites - see the readiness report above"
+    exit 1
+fi
 
 if [ $FAILED -gt 0 ]; then
     log_warn "$FAILED stories failed - check log for details"

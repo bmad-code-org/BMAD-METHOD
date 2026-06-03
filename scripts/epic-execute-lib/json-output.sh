@@ -133,6 +133,25 @@ get_result_story_id() {
     fi
 }
 
+# Get the feature_type field from a JSON result (design phase)
+# Arguments:
+#   $1 - JSON string (optional, uses LAST_JSON_RESULT if not provided)
+# Returns: frontend | backend | fullstack (or empty if not present)
+get_result_feature_type() {
+    local json="${1:-$LAST_JSON_RESULT}"
+
+    if [ -z "$json" ]; then
+        echo ""
+        return 1
+    fi
+
+    if command -v jq >/dev/null 2>&1; then
+        echo "$json" | jq -r '.feature_type // empty'
+    else
+        echo "$json" | grep -oE '"feature_type":\s*"[^"]+"' | sed 's/.*"\([^"]*\)"$/\1/'
+    fi
+}
+
 # Get the summary field from a JSON result
 # Arguments:
 #   $1 - JSON string (optional, uses LAST_JSON_RESULT if not provided)
