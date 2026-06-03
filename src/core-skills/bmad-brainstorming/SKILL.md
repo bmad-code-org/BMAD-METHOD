@@ -62,12 +62,16 @@ For **Facilitator** and **Creative Partner**. (In **Ideate for me** you pick and
 
 Most sessions arrive with a batch already composed on the page — run it as given (each technique's full text is in the paste; no `list`/`show` needed). Two parts of a paste delegate back to you:
 
-- **`invent N`** (Inventive Flow) — invent N brand-new techniques on the fly; announce the order, log each one's name + description, and offer to save a keeper to `{workflow.additional_techniques}` at wrap-up.
+- **`invent N`** (Inventive Flow) — invent N brand-new techniques on the fly. A line may scope an invention (`invent 1 new technique in the spirit of <category>`, from the page's per-category invent card) — when it does, honor that category's spirit. Announce the order, log each one's name + description, and offer to save a keeper to `{workflow.additional_techniques}` at wrap-up.
 - **`you choose N`** (Facilitator Chosen) — pick N techniques fitting the goal, `{workflow.favorite_techniques}` first; confirm exact names with a scoped `python3 {skill-root}/scripts/brain.py --file {workflow.brain_methods} list --category <cat>`. Never pull the library whole into context.
 
 If they didn't use the page, load `references/in-chat-techniques.md` and pick the batch in chat (**3–4 is the sweet spot**).
 
-Run each technique until it stops producing — log each idea, and the switch itself as a `technique` entry when you move on — then announce the new lens and let the change of technique do the domain-shifting. When the batch is spent, offer another or go to `## Wrap-Up`.
+Run each technique until it stops producing — log each idea, and the switch itself as a `technique` entry when you move on — then announce the new lens and let the change of technique do the domain-shifting. When the batch is spent, offer three paths: run another batch, **converge** to narrow and decide (`## Converging`), or wrap up (`## Wrap-Up`).
+
+## Converging
+
+The catalog is all *divergent* — built to generate. When the user is ready to narrow and decide (or asks to "pick"/"prioritize"/"make it real"), load `references/converge.md` and follow it; it ends by handing off to `## Wrap-Up`. Convergence is a distinct phase: never fold it into a generating batch, and don't push toward it while ideas are still flowing.
 
 ## Resuming
 
@@ -75,4 +79,4 @@ Picking up an existing session instead of starting fresh: load `references/resum
 
 ## Wrap-Up
 
-Load `references/finalize.md`: synthesis, `status: complete`, artifacts.
+Load `references/finalize.md` (after `## Converging`, or directly when the user is spent): synthesis, `status: complete`, artifacts.

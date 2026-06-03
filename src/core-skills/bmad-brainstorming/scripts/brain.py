@@ -38,15 +38,22 @@ import sys
 from pathlib import Path
 
 DEFAULT_FILE = Path(__file__).resolve().parent.parent / "assets" / "brain-methods.csv"
-FIELDS = ("category", "technique_name", "description", "detail")
+FIELDS = ("category", "technique_name", "description", "detail", "provenance", "good_for", "audience")
+# Optional columns beyond the original four — absent in older CSVs and in --extra
+# overlays, so always read through .get/setdefault. `provenance` (classic|signature|
+# playful) drives the "Proven & Professional" lead group; `good_for` (a |-separated
+# list of goal tags) drives the browse page's goal filter; `audience` (solo|group|either)
+# is advisory.
+OPTIONAL_FIELDS = ("detail", "provenance", "good_for", "audience")
 
 
 def load(file: Path) -> list[dict]:
     with open(file, newline="", encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
     for r in rows:
-        r.setdefault("detail", "")
-        r["detail"] = (r.get("detail") or "").strip()
+        for k in OPTIONAL_FIELDS:
+            r.setdefault(k, "")
+            r[k] = (r.get(k) or "").strip()
     return rows
 
 
@@ -64,6 +71,9 @@ def load_extra(file: Path) -> list[dict]:
             "technique_name": str(item.get("technique_name", "")).strip(),
             "description": str(item.get("description", "")).strip(),
             "detail": str(item.get("detail") or "").strip(),
+            "provenance": str(item.get("provenance") or "").strip(),
+            "good_for": str(item.get("good_for") or "").strip(),
+            "audience": str(item.get("audience") or "").strip(),
         })
     return rows
 
@@ -140,145 +150,41 @@ def pretty(cat: str) -> str:
     return cat.replace("_", " ").replace("-", " ").title()
 
 
-# --- card visuals: a crafted duotone icon + hue per category ---------------
-# Each card shows its category's icon (drawn in `currentColor`, which the CSS sets
-# to the category hue) plus a per-technique accent seeded by the technique name, so
-# every card is unique while staying on-theme. Hues span the wheel so categories
-# stay distinguishable; an unknown (user-added) category gets a hash-derived hue and
-# a generic glyph, so custom catalogs still render.
+# --- card visuals: a crafted duotone icon + hue per category, plus a per-technique icon ---
+# The hues and SVG glyphs are *data*, not logic: they live in the icon sidecar
+# (assets/brain-icons.json) so the catalog's visuals can be edited without touching code.
+# It maps category slug -> {hue, glyph} and technique name -> svg (inner markup, drawn in
+# `currentColor` which the CSS sets to the category hue; the shared CHIP frame is added by
+# the renderer). Anything missing falls back here — an unknown category gets a hash-derived
+# hue + generic glyph, an unknown/not-yet-iconed technique a neutral mark — so custom
+# catalogs always render.
 
-_HUES = {
-    "creative": "#6d5cf0",
-    "deep": "#4658c9",
-    "structured": "#3b6ea5",
-    "quantum": "#2b86d9",
-    "speculative_future": "#0fb5c9",
-    "collaborative": "#15a3a3",
-    "biomimetic": "#1f9d6b",
-    "constraint": "#d9882b",
-    "wild": "#e2562f",
-    "cultural": "#c75b39",
-    "theatrical": "#cf4d6f",
-    "absurdist": "#e0529c",
-    "introspective_delight": "#b15ad6",
-}
+ICON_FILE = DEFAULT_FILE.parent / "brain-icons.json"
 
 CHIP = '<rect x="1.5" y="1.5" width="41" height="41" rx="12" fill="currentColor" fill-opacity="0.12"/>'
-
-_GLYPHS = {
-    # idea starburst
-    "creative": (
-        '<g stroke="currentColor" stroke-width="2.4" stroke-linecap="round">'
-        '<line x1="22" y1="6.5" x2="22" y2="12.5"/><line x1="22" y1="31.5" x2="22" y2="37.5"/>'
-        '<line x1="6.5" y1="22" x2="12.5" y2="22"/><line x1="31.5" y1="22" x2="37.5" y2="22"/>'
-        '<line x1="11.3" y1="11.3" x2="15.5" y2="15.5"/><line x1="28.5" y1="28.5" x2="32.7" y2="32.7"/>'
-        '<line x1="32.7" y1="11.3" x2="28.5" y2="15.5"/><line x1="15.5" y1="28.5" x2="11.3" y2="32.7"/></g>'
-        '<circle cx="22" cy="22" r="6.6" fill="currentColor" fill-opacity="0.25"/>'
-        '<circle cx="22" cy="22" r="3.6" fill="currentColor"/>'
-    ),
-    # nested depth rings
-    "deep": (
-        '<g fill="none" stroke="currentColor">'
-        '<circle cx="22" cy="22" r="13" stroke-width="1.5" stroke-opacity="0.4"/>'
-        '<circle cx="22" cy="22" r="9" stroke-width="1.7" stroke-opacity="0.7"/>'
-        '<circle cx="22" cy="22" r="5" stroke-width="1.9"/></g>'
-        '<circle cx="22" cy="22" r="2.4" fill="currentColor"/>'
-    ),
-    # 2x2 blocks, diagonal filled
-    "structured": (
-        '<g fill="currentColor">'
-        '<rect x="11" y="11" width="9.5" height="9.5" rx="2"/>'
-        '<rect x="23.5" y="11" width="9.5" height="9.5" rx="2" fill-opacity="0.25"/>'
-        '<rect x="11" y="23.5" width="9.5" height="9.5" rx="2" fill-opacity="0.25"/>'
-        '<rect x="23.5" y="23.5" width="9.5" height="9.5" rx="2"/></g>'
-    ),
-    # atom
-    "quantum": (
-        '<g stroke="currentColor" stroke-width="1.8" fill="none">'
-        '<ellipse cx="22" cy="22" rx="14.5" ry="6" transform="rotate(28 22 22)"/>'
-        '<ellipse cx="22" cy="22" rx="14.5" ry="6" transform="rotate(-28 22 22)"/></g>'
-        '<circle cx="22" cy="22" r="6.6" fill="currentColor" fill-opacity="0.18"/>'
-        '<circle cx="22" cy="22" r="3.4" fill="currentColor"/>'
-        '<circle cx="33.2" cy="17.4" r="2" fill="currentColor"/>'
-    ),
-    # upward arrow to a twinkling star
-    "speculative_future": (
-        '<g stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none">'
-        '<path d="M11 31 L 26.5 15.5"/><path d="M20 14.5 H 28 V 22.5"/></g>'
-        '<circle cx="31" cy="12" r="2.8" fill="currentColor"/>'
-        '<g stroke="currentColor" stroke-width="1.4" stroke-linecap="round">'
-        '<line x1="31" y1="6.5" x2="31" y2="8.4"/><line x1="31" y1="15.6" x2="31" y2="17.5"/>'
-        '<line x1="25.5" y1="12" x2="27.4" y2="12"/><line x1="34.6" y1="12" x2="36.5" y2="12"/></g>'
-    ),
-    # three linked nodes
-    "collaborative": (
-        '<g stroke="currentColor" stroke-width="1.8">'
-        '<line x1="14" y1="16" x2="30" y2="16"/><line x1="14" y1="16" x2="22" y2="30"/>'
-        '<line x1="30" y1="16" x2="22" y2="30"/></g>'
-        '<g fill="currentColor" fill-opacity="0.22">'
-        '<circle cx="14" cy="16" r="4.6"/><circle cx="30" cy="16" r="4.6"/><circle cx="22" cy="30" r="4.6"/></g>'
-        '<g fill="currentColor">'
-        '<circle cx="14" cy="16" r="2.4"/><circle cx="30" cy="16" r="2.4"/><circle cx="22" cy="30" r="2.4"/></g>'
-    ),
-    # leaf
-    "biomimetic": (
-        '<path d="M22 7.5 C 31.5 12.5, 31.5 29, 22 36.5 C 12.5 29, 12.5 12.5, 22 7.5 Z" fill="currentColor" fill-opacity="0.22"/>'
-        '<path d="M22 9 V 35.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>'
-        '<g stroke="currentColor" stroke-width="1.5" stroke-linecap="round">'
-        '<path d="M22 16 l5.6 -2.6"/><path d="M22 16 l-5.6 -2.6"/>'
-        '<path d="M22 22 l6.6 -2.6"/><path d="M22 22 l-6.6 -2.6"/>'
-        '<path d="M22 28 l5.6 -2.6"/><path d="M22 28 l-5.6 -2.6"/></g>'
-    ),
-    # corner brackets framing a point
-    "constraint": (
-        '<g stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none">'
-        '<path d="M17 11 H 11 V 17"/><path d="M27 11 H 33 V 17"/>'
-        '<path d="M17 33 H 11 V 27"/><path d="M27 33 H 33 V 27"/></g>'
-        '<circle cx="22" cy="22" r="5" fill="currentColor" fill-opacity="0.25"/>'
-        '<circle cx="22" cy="22" r="2.6" fill="currentColor"/>'
-    ),
-    # lightning bolt
-    "wild": (
-        '<path d="M24.5 6.5 L 12.5 24 H 19.5 L 17.5 37.5 L 31.5 18.5 H 24 L 24.5 6.5 Z" fill="currentColor"/>'
-    ),
-    # globe
-    "cultural": (
-        '<circle cx="22" cy="22" r="13.5" fill="currentColor" fill-opacity="0.14"/>'
-        '<g stroke="currentColor" stroke-width="1.6" fill="none">'
-        '<circle cx="22" cy="22" r="13.5"/><ellipse cx="22" cy="22" rx="6" ry="13.5"/>'
-        '<line x1="8.5" y1="22" x2="35.5" y2="22"/>'
-        '<path d="M11 15 H 33" stroke-opacity="0.55"/><path d="M11 29 H 33" stroke-opacity="0.55"/></g>'
-    ),
-    # theatre mask
-    "theatrical": (
-        '<path d="M13 12 H 31 V 22 C 31 30, 27 35, 22 35 C 17 35, 13 30, 13 22 Z" fill="currentColor" fill-opacity="0.18"/>'
-        '<path d="M13 12 H 31 V 22 C 31 30, 27 35, 22 35 C 17 35, 13 30, 13 22 Z" stroke="currentColor" stroke-width="1.8" fill="none"/>'
-        '<g fill="currentColor"><circle cx="18.5" cy="21" r="1.7"/><circle cx="25.5" cy="21" r="1.7"/></g>'
-        '<path d="M18 27 C 20 29.5, 24 29.5, 26 27" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>'
-    ),
-    # off-kilter winking grin
-    "absurdist": (
-        '<g transform="rotate(-12 22 22)">'
-        '<circle cx="22" cy="22" r="13" fill="currentColor" fill-opacity="0.14"/>'
-        '<circle cx="22" cy="22" r="13" stroke="currentColor" stroke-width="1.6" fill="none"/>'
-        '<path d="M16 19 q 2 -2.4 4 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>'
-        '<circle cx="26.5" cy="18.8" r="1.8" fill="currentColor"/>'
-        '<path d="M16.5 26 C 19 30, 25 30, 28 24.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></g>'
-    ),
-    # meditating figure
-    "introspective_delight": (
-        '<circle cx="22" cy="13.5" r="4" fill="currentColor"/>'
-        '<path d="M10.5 31 C 12.5 23, 31.5 23, 33.5 31 Z" fill="currentColor" fill-opacity="0.22"/>'
-        '<path d="M10.5 31 C 12.5 23, 31.5 23, 33.5 31" stroke="currentColor" stroke-width="1.7" fill="none"/>'
-        '<path d="M13.5 30 C 16 26.5, 20 25.5, 22 25.5 C 24 25.5, 28 26.5, 30.5 30" stroke="currentColor" stroke-width="1.5" fill="none" stroke-opacity="0.6"/>'
-    ),
-}
 
 _FALLBACK_GLYPH = (
     '<circle cx="22" cy="22" r="11" fill="currentColor" fill-opacity="0.16"/>'
     '<circle cx="22" cy="22" r="11" stroke="currentColor" stroke-width="1.6" fill="none"/>'
     '<circle cx="22" cy="22" r="3.4" fill="currentColor"/>'
 )
+_FALLBACK_TECH = (
+    '<rect x="15" y="15" width="14" height="14" rx="2.5" transform="rotate(45 22 22)" '
+    'fill="none" stroke="currentColor" stroke-width="2"/><circle cx="22" cy="22" r="2.4" fill="currentColor"/>'
+)
+
+
+def _load_icons(file: Path = ICON_FILE) -> tuple[dict, dict]:
+    """Read the icon sidecar: (category slug -> {hue, glyph}, technique name -> svg).
+    A missing or malformed file is non-fatal — everything then uses the fallbacks below."""
+    try:
+        data = json.loads(file.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}, {}
+    return (data.get("categories") or {}), (data.get("techniques") or {})
+
+
+_CATEGORY_STYLES, _TECH_ICONS = _load_icons()
 
 
 def _hsl_hex(deg: int, s: float, lt: float) -> str:
@@ -289,137 +195,12 @@ def _hsl_hex(deg: int, s: float, lt: float) -> str:
 
 
 def category_style(cat: str) -> tuple[str, str]:
-    """(hue, glyph markup) for a category — crafted for the shipped set, derived for extras."""
-    if cat in _HUES:
-        return _HUES[cat], _GLYPHS.get(cat, _FALLBACK_GLYPH)
+    """(hue, glyph markup) for a category — from the sidecar for the shipped set, derived for extras."""
+    style = _CATEGORY_STYLES.get(cat)
+    if style and style.get("hue"):
+        return style["hue"], style.get("glyph") or _FALLBACK_GLYPH
     deg = int(hashlib.md5(cat.encode("utf-8")).hexdigest(), 16) % 360
     return _hsl_hex(deg, 0.58, 0.52), _FALLBACK_GLYPH
-
-
-# A deliberately chosen line-icon depicting each specific technique. Drawn in
-# `currentColor` (the category hue), consistent 2px stroke. Shown beside the shared
-# category icon on every card. Unknown (custom) techniques fall back to a neutral mark.
-_S = '<g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
-_FALLBACK_TECH = (
-    '<rect x="15" y="15" width="14" height="14" rx="2.5" transform="rotate(45 22 22)" '
-    'fill="none" stroke="currentColor" stroke-width="2"/><circle cx="22" cy="22" r="2.4" fill="currentColor"/>'
-)
-
-_TECH_ICONS = {
-    # --- collaborative ---
-    "Yes And Building": '<g fill="currentColor"><rect x="8" y="27" width="12" height="8" rx="1.5" fill-opacity=".8"/><rect x="14" y="19" width="12" height="8" rx="1.5" fill-opacity=".5"/><rect x="20" y="11" width="12" height="8" rx="1.5"/></g>',
-    "Brain Writing Round Robin": _S + '<path d="M31 16 A10 10 0 1 0 32.5 22"/><path d="M31 10 L31.5 16.3 L25 16.5"/></g>',
-    "Random Stimulation": '<rect x="11" y="11" width="22" height="22" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><g fill="currentColor"><circle cx="17" cy="17" r="1.8"/><circle cx="27" cy="17" r="1.8"/><circle cx="22" cy="22" r="1.8"/><circle cx="17" cy="27" r="1.8"/><circle cx="27" cy="27" r="1.8"/></g>',
-    "Role Playing": '<rect x="11" y="9" width="22" height="26" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="22" cy="19" r="4" fill="currentColor"/><path d="M15.5 30 c2 -4.5 11 -4.5 13 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
-    "Ideation Relay Race": _S + '<line x1="12" y1="31" x2="27" y2="16"/><line x1="8" y1="22" x2="14" y2="22" stroke-opacity=".5"/><line x1="8" y1="27" x2="13" y2="27" stroke-opacity=".35"/></g><circle cx="29" cy="14" r="3.4" fill="currentColor"/>',
-    "Idea Hot Potato": '<path d="M11 31 Q22 8 33 31" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="2 3.5" stroke-linecap="round"/><circle cx="22" cy="12.5" r="4.2" fill="currentColor"/>',
-    "Steal And Upgrade": _S + '<path d="M20 33 V14"/><path d="M13 21 L20 14 L27 21"/></g><path d="M30 27 l1 2.6 2.6 1 -2.6 1 -1 2.6 -1 -2.6 -2.6 -1 2.6 -1 z" fill="currentColor"/>',
-    "Fold The Paper": '<path d="M13 16 L21 12 V28 L13 32 Z" fill="currentColor" fill-opacity=".22"/><path d="M21 12 L29 16 V32 L21 28 Z" fill="currentColor" fill-opacity=".45"/><path d="M13 16 L21 12 L29 16 M21 12 V28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>',
-    # --- creative ---
-    "What If Scenarios": _S + '<path d="M18 17 a4 4 0 1 1 4 4 v3"/></g><circle cx="22" cy="30" r="1.6" fill="currentColor"/>',
-    "Analogical Thinking": '<circle cx="15" cy="22" r="6" fill="none" stroke="currentColor" stroke-width="2"/><rect x="25" y="16" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M19 20 q2 2 0 4 M23 20 q-2 2 0 4" stroke="currentColor" stroke-width="1.6" fill="none"/>',
-    "First Principles Thinking": '<g fill="currentColor"><rect x="10" y="28" width="8" height="6" rx="1"/><rect x="18.5" y="28" width="8" height="6" rx="1"/><rect x="27" y="28" width="7" height="6" rx="1"/></g><path d="M22 25 L22 11 M16 17 L22 11 L28 17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
-    "Forced Relationships": '<circle cx="12" cy="22" r="3.4" fill="currentColor"/><circle cx="32" cy="22" r="3.4" fill="currentColor"/><path d="M15 22 q7 -9 14 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="1.5 3"/>',
-    "Time Shifting": '<circle cx="22" cy="22" r="12" fill="none" stroke="currentColor" stroke-width="2"/><path d="M22 15 V22 L27 25" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
-    "Metaphor Mapping": '<rect x="10" y="14" width="14" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="28" cy="25" r="7" fill="currentColor" fill-opacity=".22"/><circle cx="28" cy="25" r="7" fill="none" stroke="currentColor" stroke-width="2"/>',
-    "Cross-Pollination": _S + '<path d="M13 14 H27 a4 4 0 0 1 0 8 H17 a4 4 0 0 0 0 8 H31"/><path d="M28 11 L31.5 14 L28 17 M16 27 L12.5 30 L16 33"/></g>',
-    "Concept Blending": '<circle cx="18" cy="22" r="8" fill="currentColor" fill-opacity=".25"/><circle cx="26" cy="22" r="8" fill="currentColor" fill-opacity=".25"/><g fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="22" r="8"/><circle cx="26" cy="22" r="8"/></g>',
-    "Reverse Brainstorming": _S + '<path d="M13 18 H28 a4 4 0 0 1 0 8 H16"/><path d="M19 15 L13 18 L19 21 M22 23 L16 26 L22 29"/></g>',
-    "Sensory Exploration": '<path d="M10 22 q12 -10 24 0 q-12 10 -24 0 z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="22" cy="22" r="4" fill="currentColor"/>',
-    # --- deep ---
-    "Five Whys": _S + '<circle cx="14" cy="13" r="2.4"/><circle cx="22" cy="22" r="2.4"/><circle cx="30" cy="31" r="2.4"/><path d="M15.6 14.8 L20.4 20.2 M23.6 23.8 L28.4 29.2"/></g>',
-    "Provocation Technique": _S + '<path d="M24 9 L13 24 H21 L19 35 L31 19 H23 Z"/></g>',
-    "Assumption Reversal": _S + '<path d="M16 14 V30"/><path d="M11.5 25 L16 30 L20.5 25"/><path d="M28 30 V14"/><path d="M23.5 19 L28 14 L32.5 19"/></g>',
-    "Question Storming": _S + '<path d="M14 16 a3.2 3.2 0 1 1 3.2 3.2 v2"/><path d="M26 13 a3.6 3.6 0 1 1 3.6 3.6 v2.4"/></g><circle cx="17.2" cy="27" r="1.5" fill="currentColor"/><circle cx="29.6" cy="25.6" r="1.6" fill="currentColor"/>',
-    "Constraint Mapping": '<path d="M11 14 L18 12 L26 14 L33 12 V30 L26 32 L18 30 L11 32 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M18 12 V30 M26 14 V32" stroke="currentColor" stroke-width="1.6"/>',
-    "Failure Analysis": '<circle cx="20" cy="20" r="8" fill="none" stroke="currentColor" stroke-width="2"/><line x1="26" y1="26" x2="33" y2="33" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M20 16 V21 M20 24 V24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
-    "Emergent Thinking": '<g fill="currentColor"><circle cx="11" cy="31" r="1.6"/><circle cx="17" cy="29" r="1.6"/><circle cx="16" cy="23" r="1.6"/><circle cx="22" cy="24" r="1.8"/><circle cx="23" cy="17" r="1.9"/><circle cx="29" cy="18" r="1.7"/><circle cx="28" cy="12" r="2.1"/></g>',
-    "Causal Loop Mapping": _S + '<path d="M16 16 a9 9 0 1 1 -2 12"/><path d="M16 10.5 L16.5 16.5 L10.5 17"/><path d="M30 28.5 L29.5 22.5 L35 22"/></g>',
-    "Morphological Analysis": '<g fill="none" stroke="currentColor" stroke-width="1.8"><rect x="11" y="11" width="22" height="22" rx="2"/><path d="M11 18.3 H33 M11 25.6 H33 M18.3 11 V33 M25.6 11 V33"/></g><rect x="18.5" y="18.5" width="7" height="7" fill="currentColor" fill-opacity=".4"/>',
-    "Laddering": _S + '<path d="M16 9 V35 M28 9 V35 M16 15 H28 M16 22 H28 M16 29 H28"/></g>',
-    # --- introspective_delight ---
-    "Inner Child Conference": '<circle cx="22" cy="16" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M22 22 V31" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M19 34 q3 -3 6 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><g fill="currentColor"><circle cx="20" cy="15" r="1"/><circle cx="24" cy="15" r="1"/></g>',
-    "Shadow Work Mining": '<circle cx="22" cy="22" r="12" fill="none" stroke="currentColor" stroke-width="2"/><path d="M22 10 a12 12 0 0 1 0 24 z" fill="currentColor" fill-opacity=".85"/>',
-    "Values Archaeology": '<g fill="none" stroke="currentColor" stroke-width="2"><path d="M10 16 h24" stroke-opacity=".4"/><path d="M10 22 h24" stroke-opacity=".6"/></g><path d="M22 24 L16 30 L22 36 L28 30 Z" fill="currentColor"/>',
-    "Future Self Interview": _S + '<path d="M14 10 H30 L24 22 L30 34 H14 L20 22 Z"/></g><path d="M18 14 H26" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
-    "Body Wisdom Dialogue": '<path d="M22 33 C12 26 9 19 13.5 15 C17 12 21 14 22 17 C23 14 27 12 30.5 15 C35 19 32 26 22 33 Z" fill="currentColor" fill-opacity=".22"/><path d="M22 33 C12 26 9 19 13.5 15 C17 12 21 14 22 17 C23 14 27 12 30.5 15 C35 19 32 26 22 33 Z" fill="none" stroke="currentColor" stroke-width="2"/>',
-    "Permission Giving": '<rect x="10" y="14" width="24" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15 23 L19 27 L28 17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>',
-    "Secret Wish Confession": '<rect x="13" y="20" width="18" height="14" rx="2.5" fill="currentColor" fill-opacity=".22"/><rect x="13" y="20" width="18" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16.5 20 v-3 a5.5 5.5 0 0 1 11 0 v3" fill="none" stroke="currentColor" stroke-width="2"/>',
-    "Mood Weather Report": '<circle cx="17" cy="17" r="4.5" fill="currentColor" fill-opacity=".5"/><path d="M22 30 a5 5 0 0 1 0.5 -10 a6 6 0 0 1 11 2.5 a4 4 0 0 1 -1.5 7.5 z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>',
-    # --- structured ---
-    "SCAMPER Method": '<circle cx="22" cy="22" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><g stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M22 9 V13.5 M22 30.5 V35 M9 22 H13.5 M30.5 22 H35 M12.8 12.8 L16 16 M28 28 L31.2 31.2 M31.2 12.8 L28 16 M16 28 L12.8 31.2"/></g>',
-    "Six Thinking Hats": '<path d="M14 26 q8 -5 16 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M17 26 q-6 1 -8 3 q13 4 26 0 q-2 -2 -8 -3" fill="currentColor" fill-opacity=".22"/><path d="M17 26 c-1 -8 11 -8 10 0" fill="currentColor" fill-opacity=".5"/>',
-    "Decision Tree Mapping": _S + '<circle cx="22" cy="12" r="2.6"/><circle cx="14" cy="32" r="2.6"/><circle cx="30" cy="32" r="2.6"/><path d="M22 14.5 L22 20 M22 20 L14 29.4 M22 20 L30 29.4"/></g>',
-    "Solution Matrix": '<g fill="none" stroke="currentColor" stroke-width="1.8"><rect x="11" y="11" width="22" height="22" rx="2"/><path d="M11 22 H33 M22 11 V33"/></g><path d="M24.5 14.5 L26.5 16.5 L30.5 12.5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
-    "Trait Transfer": '<path d="M12 16 l1.6 3.4 3.6 .4 -2.7 2.5 .7 3.6 -3.2 -1.8 -3.2 1.8 .7 -3.6 -2.7 -2.5 3.6 -.4 z" fill="currentColor"/><rect x="25" y="23" width="9" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M17 22 L25 27" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="1.5 2.5"/>',
-    "Lotus Blossom": '<g fill="currentColor"><circle cx="22" cy="22" r="3.4"/></g><g fill="currentColor" fill-opacity=".4"><circle cx="22" cy="13" r="2.8"/><circle cx="22" cy="31" r="2.8"/><circle cx="13" cy="22" r="2.8"/><circle cx="31" cy="22" r="2.8"/><circle cx="15.5" cy="15.5" r="2.5"/><circle cx="28.5" cy="15.5" r="2.5"/><circle cx="15.5" cy="28.5" r="2.5"/><circle cx="28.5" cy="28.5" r="2.5"/></g>',
-    "Worst Possible Idea": _S + '<path d="M17 11 v10 h-5 l10 12 10 -12 h-5 v-10 z"/></g>',
-    "Disney Method": '<g fill="none" stroke="currentColor" stroke-width="2"><circle cx="14" cy="22" r="4.5"/><circle cx="22" cy="22" r="4.5"/><circle cx="30" cy="22" r="4.5"/></g>',
-    "Starbursting": _S + '<path d="M22 8 V15 M22 29 V36 M8 22 H15 M29 22 H36 M12 12 L17 17 M27 27 L32 32 M32 12 L27 17 M12 32 L17 27"/></g><path d="M19.5 19 a3.2 3.2 0 1 1 3 4 v1.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
-    "Mind Mapping": _S + '<circle cx="22" cy="22" r="4"/><circle cx="11" cy="13" r="2.2"/><circle cx="33" cy="13" r="2.2"/><circle cx="10" cy="28" r="2.2"/><circle cx="32" cy="31" r="2.2"/><path d="M19 19.5 L12.5 14.5 M25 19.5 L31.5 14.5 M19 24.5 L11.5 27 M25.5 24 L30.5 29.5"/></g>',
-    "Crazy 8s": '<g fill="none" stroke="currentColor" stroke-width="1.7"><rect x="9" y="12" width="8" height="9" rx="1.5"/><rect x="18" y="12" width="8" height="9" rx="1.5"/><rect x="27" y="12" width="8" height="9" rx="1.5"/><rect x="9" y="23" width="8" height="9" rx="1.5"/><rect x="18" y="23" width="8" height="9" rx="1.5"/><rect x="27" y="23" width="8" height="9" rx="1.5"/></g>',
-    # --- theatrical ---
-    "Time Travel Talk Show": '<rect x="18" y="9" width="8" height="15" rx="4" fill="currentColor" fill-opacity=".25"/><rect x="18" y="9" width="8" height="15" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M14 21 a8 8 0 0 0 16 0 M22 29 V34 M17 34 H27" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
-    "Alien Anthropologist": '<ellipse cx="22" cy="30" rx="13" ry="4.5" fill="currentColor" fill-opacity=".25"/><path d="M22 11 c7 0 10 6 10 11 c0 5 -5 7 -10 7 c-5 0 -10 -2 -10 -7 c0 -5 3 -11 10 -11 z" fill="none" stroke="currentColor" stroke-width="2"/><g fill="currentColor"><ellipse cx="18" cy="22" rx="1.6" ry="2.4"/><ellipse cx="26" cy="22" rx="1.6" ry="2.4"/></g>',
-    "Dream Fusion Laboratory": _S + '<path d="M18 9 H26 M19.5 9 V18 L13 30 a2 2 0 0 0 2 3 H29 a2 2 0 0 0 2 -3 L24.5 18 V9"/></g><path d="M16.5 26 H27.5" stroke="currentColor" stroke-width="2"/><circle cx="20" cy="29" r="1.4" fill="currentColor"/><circle cx="25" cy="28" r="1.1" fill="currentColor"/>',
-    "Emotion Orchestra": _S + '<path d="M17 30 V15 L31 12 V27"/><circle cx="14" cy="30" r="3"/><circle cx="28" cy="27" r="3"/></g>',
-    "Parallel Universe Cafe": '<g fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="22" r="9"/><circle cx="26" cy="22" r="9" stroke-dasharray="2.5 2.5"/></g>',
-    "Persona Journey": '<path d="M14 33 q-2 -8 6 -9 q8 -1 6 -8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="0.1 4"/><circle cx="14" cy="33" r="2.4" fill="currentColor"/><path d="M26 16 l3 -5 3 5 z" fill="currentColor"/>',
-    "Devil's Advocate Courtroom": _S + '<path d="M22 10 V32 M14 32 H30"/><path d="M11 16 H33 M11 16 L8 23 H14 Z M33 16 L30 23 H36 Z"/></g>',
-    # --- wild ---
-    "Chaos Engineering": _S + '<path d="M22 9 L25 18 L34 18 L27 24 L30 33 L22 27 L14 33 L17 24 L10 18 L19 18 Z"/></g>',
-    "Guerrilla Gardening Ideas": _S + '<path d="M22 33 V21"/><path d="M22 22 c-7 0 -9 -6 -9 -9 c6 0 9 3 9 9 z"/><path d="M22 24 c6 0 8 -4 8 -7 c-5 0 -8 2 -8 7 z"/></g>',
-    "Pirate Code Brainstorm": '<path d="M22 10 c-7 0 -11 5 -11 11 c0 4 2 6 4 7 v4 h3 v-2 h2 v2 h4 v-2 h2 v2 h3 v-4 c2 -1 4 -3 4 -7 c0 -6 -4 -11 -11 -11 z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><g fill="currentColor"><circle cx="17.5" cy="21" r="2.2"/><circle cx="26.5" cy="21" r="2.2"/></g>',
-    "Zombie Apocalypse Planning": '<circle cx="22" cy="22" r="4" fill="none" stroke="currentColor" stroke-width="2"/><g fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10 a12 12 0 0 1 6 3.5 M32 16 a12 12 0 0 1 0 12 M28 33.5 a12 12 0 0 1 -12 0 M12 28 a12 12 0 0 1 0 -12 M16 10.5 a12 12 0 0 1 6 -0.5" stroke-dasharray="0.1 5.5"/></g><g fill="currentColor"><circle cx="22" cy="11" r="2"/><circle cx="11" cy="22" r="2"/><circle cx="33" cy="22" r="2"/></g>',
-    "Drunk History Retelling": _S + '<path d="M13 12 H31 L25 23 V31 H19 V23 Z"/><path d="M19 31 H25" /></g><circle cx="29" cy="14" r="1.4" fill="currentColor"/>',
-    "Anti-Solution": _S + '<path d="M14 18 a8 8 0 1 1 -1 8"/><path d="M14 12 L14 18.5 L20 18"/></g>',
-    "Elemental Forces": _S + '<path d="M22 8 L30 22 H14 Z"/><path d="M14 30 L22 36 L30 30"/><path d="M14 26 H30"/></g>',
-    # --- biomimetic ---
-    "Nature's Solutions": _S + '<path d="M16 32 C12 24 12 20 16 12 M28 32 C32 24 32 20 28 12"/><path d="M16 16 L28 14 M16 22 L28 20 M16 28 L28 26"/></g>',
-    "Ecosystem Thinking": _S + '<circle cx="22" cy="13" r="2.4"/><circle cx="12" cy="27" r="2.4"/><circle cx="32" cy="27" r="2.4"/><circle cx="22" cy="24" r="2.4"/><path d="M22 15.4 V21.6 M14 26 L20 24.5 M30 26 L24 24.5 M13.6 25.2 L30.4 25.2"/></g>',
-    "Evolutionary Pressure": _S + '<path d="M11 31 H17 M19 31 a6 6 0 0 1 6 -6 M25 25 a5 5 0 0 1 5 -5 M30 20 H33"/><circle cx="11" cy="31" r="2" fill="currentColor"/><circle cx="33" cy="20" r="2.6" fill="currentColor"/></g>',
-    "Predator & Prey": '<path d="M22 9 L33 14 V23 C33 30 28 34 22 36 C16 34 11 30 11 23 V14 Z" fill="currentColor" fill-opacity=".18"/><path d="M22 9 L33 14 V23 C33 30 28 34 22 36 C16 34 11 30 11 23 V14 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>',
-    "Metamorphosis Stages": _S + '<path d="M22 12 V32"/><path d="M22 16 C14 12 10 18 14 22 C10 26 14 32 22 28 C30 32 34 26 30 22 C34 18 30 12 22 16"/></g>',
-    "Swarm Logic": _S + '<path d="M22 10 L29 14 V22 L22 26 L15 22 V14 Z"/><path d="M15 24 L18 33 M29 24 L26 33 M22 28 V35" stroke-opacity=".6"/></g>',
-    # --- quantum ---
-    "Observer Effect": '<path d="M9 22 q13 -10 26 0 q-13 10 -26 0 z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="22" cy="22" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="22" cy="22" r="1.8" fill="currentColor"/>',
-    "Entanglement Thinking": '<g fill="none" stroke="currentColor" stroke-width="2"><circle cx="15" cy="22" r="6"/><circle cx="29" cy="22" r="6"/></g><path d="M15 22 h14" stroke="currentColor" stroke-width="2" stroke-dasharray="1.5 2.5"/><g fill="currentColor"><circle cx="15" cy="22" r="1.8"/><circle cx="29" cy="22" r="1.8"/></g>',
-    "Superposition Collapse": _S + '<path d="M11 12 C20 16 24 16 33 12 M11 18 C20 22 24 22 33 18 M11 24 C20 28 24 28 33 24"/><path d="M22 26 V34"/></g><circle cx="22" cy="34" r="2" fill="currentColor"/>',
-    "Relativity Frame Shift": '<rect x="11" y="11" width="22" height="22" rx="2" fill="none" stroke="currentColor" stroke-width="2" stroke-opacity=".4"/><rect x="15" y="15" width="18" height="18" rx="2" transform="rotate(-14 22 22)" fill="none" stroke="currentColor" stroke-width="2"/>',
-    "Field Lines": _S + '<path d="M12 13 V31 M16 13 C24 18 24 26 16 31 M22 13 C32 18 32 26 22 31"/></g><circle cx="11" cy="22" r="2" fill="currentColor"/>',
-    "Quantum Tunneling": '<rect x="20" y="9" width="5" height="26" rx="1.5" fill="currentColor" fill-opacity=".3"/><path d="M10 22 H34" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M28 17 L34 22 L28 27" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>',
-    # --- cultural ---
-    "Indigenous Wisdom": _S + '<path d="M26 11 C18 16 14 24 13 33 M26 11 C28 18 26 25 20 29"/><path d="M26 11 C24 13 22 14 19 15 M24 16 C22 18 20 19 17 20 M22 21 C20 23 18 24 15 25"/></g>',
-    "Fusion Cuisine": _S + '<path d="M10 19 a12 7 0 0 0 24 0 Z"/><path d="M22 19 V32 M16 32 H28"/></g>',
-    "Ritual Innovation": _S + '<path d="M12 33 V17 a10 10 0 0 1 20 0 V33"/><path d="M12 33 H32 M22 33 V21"/></g>',
-    "Mythic Frameworks": _S + '<path d="M14 12 h13 a3 3 0 0 1 3 3 v17 l-3 -2 -3 2 -3 -2 -3 2 V15 a3 3 0 0 0 -3 -3 z"/><path d="M14 12 a3 3 0 0 0 -3 3 h6"/><path d="M20 18 H26 M20 23 H26"/></g>',
-    "Proverb Mining": _S + '<path d="M22 14 C17 10 11 11 11 11 V30 s6 -1 11 3 c5 -4 11 -3 11 -3 V11 s-6 -1 -11 3 z"/><path d="M22 14 V31"/></g>',
-    "Ancestor Council": '<g fill="none" stroke="currentColor" stroke-width="2"><circle cx="22" cy="14" r="3.5"/><circle cx="13" cy="19" r="3"/><circle cx="31" cy="19" r="3"/></g><g fill="currentColor" fill-opacity=".25"><path d="M16 31 c0 -5 12 -5 12 0 z"/><path d="M8 31 c0 -4 9 -4.5 9 0 z"/><path d="M27 31 c0 -4.5 9 -4 9 0 z"/></g>',
-    "Trickster's Gambit": '<rect x="11" y="12" width="13" height="18" rx="2" transform="rotate(-10 17.5 21)" fill="currentColor" fill-opacity=".2" stroke="currentColor" stroke-width="2"/><rect x="20" y="14" width="13" height="18" rx="2" transform="rotate(10 26.5 23)" fill="none" stroke="currentColor" stroke-width="2"/><path d="M26.5 19 l1.4 3 1.4 -3 -1.4 -1 z" fill="currentColor"/>',
-    # --- absurdist ---
-    "Villain's Monologue": _S + '<path d="M12 20 C16 18 19 18 22 21 C25 18 28 18 32 20 C30 24 26 24 22 21 C18 24 14 24 12 20 Z"/></g><circle cx="22" cy="14" r="2.4" fill="currentColor"/>',
-    "Explain It to a Golden Retriever": _S + '<path d="M14 18 C12 12 17 13 18 17 M30 18 C32 12 27 13 26 17"/><path d="M15 19 C13 28 18 33 22 33 C26 33 31 28 29 19 C26 16 18 16 15 19 Z"/></g><g fill="currentColor"><circle cx="19" cy="24" r="1.4"/><circle cx="25" cy="24" r="1.4"/><circle cx="22" cy="28" r="1.6"/></g>',
-    "Infomercial at 3AM": '<rect x="9" y="14" width="26" height="18" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M18 9 L22 14 L26 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 19 l1 2.6 2.8 .2 -2.1 1.9 .7 2.7 -2.4 -1.5 -2.4 1.5 .7 -2.7 -2.1 -1.9 2.8 -.2 z" fill="currentColor"/>',
-    "Drunk Uncle at Thanksgiving": _S + '<path d="M11 16 L20 16 L27 11 V29 L20 24 L11 24 Z"/><path d="M30 16 q3 4 0 8 M33 13 q5 7 0 14"/></g>',
-    "Cursed Genie": _S + '<path d="M10 30 h18 a2 2 0 0 0 2 -2 c0 -5 -6 -5 -8 -8 c5 -1 8 -3 8 -3 c-4 -2 -12 -2 -16 1 c-4 3 -5 9 -4 12 z"/><path d="M30 17 L33 14 M31 21 L35 20" stroke-opacity=".6"/></g>',
-    "Three Rounds of Stupid": _S + '<path d="M13 30 V20 M9 24 L13 20 L17 24 M22 30 V15 M18 19 L22 15 L26 19 M31 30 V11 M27 15 L31 11 L35 15"/></g>',
-    # --- constraint ---
-    "Kill the Crown Jewel": _S + '<path d="M11 28 L13 15 L19 22 L22 12 L25 22 L31 15 L33 28 Z"/><path d="M11 28 H33"/></g><path d="M14 12 L30 32" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>',
-    "1000x Budget": '<g fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="22" cy="14" rx="9" ry="3.5"/><path d="M13 14 V22 a9 3.5 0 0 0 18 0 V14"/><path d="M13 22 V30 a9 3.5 0 0 0 18 0 V22"/></g>',
-    "Ship in 60 Minutes": '<circle cx="22" cy="24" r="11" fill="none" stroke="currentColor" stroke-width="2"/><path d="M22 24 V17 M22 24 L27 27" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18 8 H26 M22 8 V13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
-    "The $0 Mandate": '<circle cx="22" cy="22" r="11" fill="none" stroke="currentColor" stroke-width="2"/><path d="M22 14 V30 M18 18 a4 3 0 0 1 8 0 a4 3 0 0 1 -8 4 a4 3 0 0 0 8 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M14 30 L30 14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>',
-    "One Feature Only": _S + '<circle cx="22" cy="22" r="4.5"/><path d="M22 9 V13 M22 31 V35 M9 22 H13 M31 22 H35" stroke-opacity=".35"/></g><circle cx="22" cy="22" r="2" fill="currentColor"/>',
-    "Crank the Dial to 11": '<path d="M11 28 A12 12 0 0 1 33 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M22 28 L31 17" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="22" cy="28" r="2.6" fill="currentColor"/>',
-    "Constraint Roulette": '<circle cx="22" cy="22" r="12" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="22" cy="22" r="12" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="3 3.7" stroke-opacity=".5"/><circle cx="22" cy="22" r="3" fill="currentColor"/><path d="M22 7 L25 12 H19 Z" fill="currentColor"/>',
-    # --- speculative_future ---
-    "Time Horizon Ladder": _S + '<path d="M9 30 H35"/><path d="M14 30 V24 M22 30 V18 M30 30 V12"/></g><g fill="currentColor"><circle cx="14" cy="24" r="2"/><circle cx="22" cy="18" r="2"/><circle cx="30" cy="12" r="2"/></g>',
-    "Post-Scarcity Test": _S + '<path d="M15 22 a4.5 4.5 0 1 1 4.5 4.5 C16 26.5 14 18 11 18 a3.5 3.5 0 0 0 0 7 c4 0 5 -8 11 -8 a4.5 4.5 0 0 1 0 9 c-3 0 -4 -4.5 -7 -4.5"/></g>',
-    "Utopia vs Dystopia Split-Screen": '<rect x="11" y="11" width="22" height="22" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M22 11 V33" stroke="currentColor" stroke-width="2"/><path d="M22 11 H33 a0 0 0 0 1 0 0 V33 H22 Z" fill="currentColor" fill-opacity=".8"/>',
-    "Sci-Fi Artifact From the Future": '<path d="M22 9 L33 15 V28 L22 35 L11 28 V15 Z" fill="currentColor" fill-opacity=".15"/><path d="M22 9 L33 15 V28 L22 35 L11 28 V15 Z M11 15 L22 21 L33 15 M22 21 V35" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>',
-    "Emerging Tech Collision": '<rect x="15" y="15" width="14" height="14" rx="2" fill="currentColor" fill-opacity=".22"/><rect x="15" y="15" width="14" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 15 V10 M25 15 V10 M19 29 V34 M25 29 V34 M15 19 H10 M15 25 H10 M29 19 H34 M29 25 H34"/></g>',
-    "What-If-The-World-Changed Card Flip": '<rect x="13" y="10" width="18" height="24" rx="2.5" fill="currentColor" fill-opacity=".18" stroke="currentColor" stroke-width="2"/><path d="M22 10 V34" stroke="currentColor" stroke-width="1.6" stroke-dasharray="2 2.5"/><path d="M27 16 a4 4 0 1 1 4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
-    "Future Anthropologist Dig": _S + '<path d="M22 27 a6 6 0 1 1 0.1 0 z"/><path d="M22 23 a2.5 2.5 0 1 0 0.1 0 M19 30 a5 5 0 0 0 6 0"/></g><path d="M12 16 L17 13 M32 16 L27 13" stroke="currentColor" stroke-width="1.6" stroke-opacity=".5"/>',
-}
 
 
 def tech_icon(name: str) -> str:
@@ -505,6 +286,18 @@ SELECTOR_TEMPLATE = r"""<!DOCTYPE html>
   .tech .ico { width:40px; height:40px; flex:none; color:var(--c); }
   .tech .n { font-weight:600; display:block; }
   .tech .d { color:var(--muted); font-size:13.5px; display:block; margin-top:2px; }
+  .tech .gf { color:var(--accent-ink); font-size:11px; display:block; margin-top:5px; opacity:.85; }
+  .grouphdr { margin:30px 0 12px; font-size:12px; text-transform:uppercase; letter-spacing:.14em; font-weight:700; color:var(--c); opacity:.92; border-bottom:1px solid color-mix(in srgb, var(--c) 22%, var(--line)); padding-bottom:7px; }
+  main > .grouphdr:first-child { margin-top:2px; }
+  :root[data-theme="dark"] .grouphdr { color:color-mix(in srgb, var(--c) 62%, #fff); }
+  .goals { display:flex; gap:7px; flex-wrap:wrap; }
+  .goal { font-size:12px; padding:5px 12px; border-radius:16px; background:var(--control); color:var(--muted); font-weight:600; }
+  .goal:hover { color:var(--ink); }
+  .goal.on { background:var(--accent); color:#fff; }
+  label.tech.invent { border-style:dashed; background:transparent; }
+  label.tech.invent:hover { border-color:var(--c); }
+  label.tech.invent .n { color:var(--c); }
+  label.tech.hidden { display:none; }
   footer { text-align:center; color:var(--foot); font-size:12px; padding:24px; }
 </style>
 </head>
@@ -538,6 +331,7 @@ SELECTOR_TEMPLATE = r"""<!DOCTYPE html>
     </div>
   </div>
 
+  {{GOALBAR}}
   <div class="bar">
     <span class="glabel">Jump to</span>
     <div class="chips" id="chips">{{CHIPS}}</div>
@@ -555,6 +349,8 @@ SELECTOR_TEMPLATE = r"""<!DOCTYPE html>
   var $ = function(id){ return document.getElementById(id); };
   var all = Array.prototype.slice;
   var boxes = all.call(document.querySelectorAll('input[type=checkbox]'));
+  var techBoxes = boxes.filter(function(b){ return b.dataset.name; });      // real technique cards
+  var inventBoxes = boxes.filter(function(b){ return b.dataset.invent; });  // per-category "invent in the spirit of" cards
   var header = document.querySelector('header');
   var sections = all.call(document.querySelectorAll('section'));
   var state = { mode: 'Facilitator', rand: 0, inv: 0, ai: 0 };
@@ -605,20 +401,51 @@ SELECTOR_TEMPLATE = r"""<!DOCTYPE html>
 
   boxes.forEach(function(b){ b.addEventListener('change', update); });
 
-  function checked(){ return boxes.filter(function(b){ return b.checked; }); }
+  // A `classic` technique appears twice (lead "Proven & Professional" group + its home
+  // category), so de-dupe checked picks by name; the lead copy carries data-lead.
+  function checkedTech(){
+    var seen = {}, out = [];
+    techBoxes.forEach(function(b){
+      if (!b.checked || seen[b.dataset.name]) { return; }
+      seen[b.dataset.name] = 1;
+      out.push(b);
+    });
+    return out;
+  }
+  function checkedInvent(){ return inventBoxes.filter(function(b){ return b.checked; }); }
 
   function update(){
-    $('pickN').textContent = checked().length;
+    $('pickN').textContent = checkedTech().length;
     $('randN').textContent = state.rand;
     $('invN').textContent = state.inv;
     $('aiN').textContent = state.ai;
-    var total = checked().length + state.rand + state.inv + state.ai;
+    var total = checkedTech().length + state.rand + state.inv + checkedInvent().length + state.ai;
     var t = $('total');
     t.textContent = 'Total ' + total + ' · 3–4 is the sweet spot';
     t.classList.toggle('warn', total > 5);
   }
 
-  function randomPool(){ return boxes.filter(function(b){ return !b.checked; }); }
+  // "Great for" goal filter: clicking a goal narrows visible cards to those tagged with it.
+  var goalBtns = all.call(document.querySelectorAll('.goal'));
+  function activeGoals(){ return goalBtns.filter(function(b){ return b.classList.contains('on'); }).map(function(b){ return b.dataset.goal; }); }
+  function applyFilter(){
+    var act = activeGoals();
+    all.call(document.querySelectorAll('label.tech')).forEach(function(lab){
+      var inp = lab.querySelector('input');
+      if (inp.dataset.invent){ return; }  // invent cards aren't goal-tagged — always visible
+      var good = (inp.dataset.good || '').split('|');
+      var show = !act.length || act.some(function(g){ return good.indexOf(g) >= 0; });
+      lab.classList.toggle('hidden', !show);
+    });
+  }
+  goalBtns.forEach(function(b){ b.addEventListener('click', function(){ b.classList.toggle('on'); applyFilter(); }); });
+
+  function randomPool(){
+    var picked = {};
+    checkedTech().forEach(function(b){ picked[b.dataset.name] = 1; });
+    // draw from unchecked, non-lead copies, skipping anything already picked
+    return techBoxes.filter(function(b){ return !b.checked && !b.dataset.lead && !picked[b.dataset.name]; });
+  }
 
   function sample(arr, n){
     var a = arr.slice(), out = [];
@@ -627,7 +454,7 @@ SELECTOR_TEMPLATE = r"""<!DOCTYPE html>
   }
 
   function compose(){
-    var picks = checked().map(function(b){ return { n: b.dataset.name, c: b.dataset.cat, d: b.dataset.desc, r: false }; });
+    var picks = checkedTech().map(function(b){ return { n: b.dataset.name, c: b.dataset.cat, d: b.dataset.desc, r: false }; });
     var rnd = sample(randomPool(), state.rand).map(function(b){ return { n: b.dataset.name, c: b.dataset.cat, d: b.dataset.desc, r: true }; });
     var techs = picks.concat(rnd);
     var L = ["Let's run my brainstorming session.", "", 'Facilitation mode: ' + state.mode + '.'];
@@ -640,6 +467,7 @@ SELECTOR_TEMPLATE = r"""<!DOCTYPE html>
     }
     var extra = [];
     if (state.inv > 0){ extra.push('invent ' + state.inv + ' brand-new technique' + (state.inv > 1 ? 's' : '') + ' on the fly'); }
+    checkedInvent().forEach(function(b){ extra.push('invent 1 new technique in the spirit of ' + b.dataset.invent); });
     if (state.ai > 0){ extra.push('you choose ' + state.ai + ' more technique' + (state.ai > 1 ? 's' : '') + ' that fit my goal'); }
     if (extra.length){ L.push("", 'Then: ' + extra.join('; and ') + '.'); }
     if (!techs.length && !extra.length){
@@ -692,46 +520,148 @@ SELECTOR_TEMPLATE = r"""<!DOCTYPE html>
 """
 
 
+# --- browse-page layout: a "Proven & Professional" lead group, then super-groups ----------
+CLASSIC_GROUP = "Proven & Professional"
+LEAD_HUE = "#3d4f73"  # a dignified slate for the professional lead group
+
+# Super-group order for the shipped categories. Categories not listed (e.g. user-added
+# via --extra) render last under "More", alphabetically — so custom catalogs always show.
+CATEGORY_GROUPS = (
+    ("Structured & Analytical", ("structured", "deep")),
+    ("Creative & Generative", ("creative", "biomimetic", "cultural", "speculative_future", "quantum")),
+    ("Wild & Playful", ("wild", "absurdist", "theatrical", "constraint")),
+    ("Introspective & Personal", ("introspective_delight", "collaborative")),
+)
+
+# Human labels for the `good_for` goal tags; this dict's order is the filter-bar order.
+GOAL_LABELS = {
+    "feature": "Build a feature",
+    "novel": "Novel concept",
+    "strategy": "Strategy",
+    "planning": "Planning",
+    "diagnosis": "Diagnose",
+    "personal": "Personal / life",
+    "unstuck": "Get unstuck",
+}
+
+
+def _good_for_label(good: str) -> str:
+    parts = [GOAL_LABELS.get(g, g) for g in good.split("|") if g]
+    return ("Great for: " + " · ".join(parts)) if parts else ""
+
+
+def _svg(inner: str) -> str:
+    return f'<svg class="ico" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">{CHIP}{inner}</svg>'
+
+
+def _card(r: dict, lead: bool = False) -> str:
+    """One technique card. `lead=True` cards live in the cross-cutting professional group;
+    they carry their own category hue (inline --c) and data-lead so selection can de-dupe."""
+    name = html.escape(r["technique_name"])
+    desc = html.escape(r["description"])
+    hue, glyph = category_style(r["category"])
+    disp_cat = html.escape(pretty(r["category"]))
+    good = html.escape(r.get("good_for", ""))
+    prov = html.escape(r.get("provenance", ""))
+    style = f' style="--c:{hue}"' if lead else ""
+    lead_attr = ' data-lead="1"' if lead else ""
+    gf = _good_for_label(r.get("good_for", ""))
+    gf_html = f'<span class="gf">{html.escape(gf)}</span>' if gf else ""
+    return (
+        f'<label class="tech"{style}><input type="checkbox" '
+        f'data-name="{name}" data-cat="{disp_cat}" data-desc="{desc}" data-good="{good}" data-prov="{prov}"{lead_attr}>'
+        f'<span class="ic2">{_svg(glyph)}{_svg(tech_icon(r["technique_name"]))}</span>'
+        f'<span><span class="n">{name}</span><span class="d">{desc}</span>{gf_html}</span></label>'
+    )
+
+
+def _invent_card(disp_cat: str, glyph: str) -> str:
+    """A dashed 'invent on the fly, in this category's spirit' card appended to each section."""
+    return (
+        f'<label class="tech invent"><input type="checkbox" data-invent="{disp_cat}">'
+        f'<span class="ic2">{_svg(glyph)}</span>'
+        f'<span><span class="n">✨ Invent a {disp_cat} technique</span>'
+        f'<span class="d">Make up a brand-new technique on the fly, in the spirit of {disp_cat}</span></span></label>'
+    )
+
+
 def html_doc(rows: list[dict]) -> str:
     """Render the self-contained 'browse all techniques' selection page from the catalog.
 
-    Deterministic: categories sorted, techniques in file order — so the shipped asset can
-    be snapshot-tested against the CSV and never silently drifts out of sync.
+    Deterministic ordering so the shipped asset can be snapshot-tested against the CSV:
+    a cross-cutting "Proven & Professional" lead group (every `classic`-tagged row), then
+    the categories in fixed super-group order, then any unlisted/custom categories under
+    "More" alphabetically. Techniques render in file order within a category. A `classic`
+    row appears both in the lead group and its home category; the page de-dupes on select.
     """
     groups: dict[str, list[dict]] = {}
     for r in rows:
         groups.setdefault(r["category"], []).append(r)
-    sections, chips = [], []
-    for cat in sorted(groups):
+
+    body: list[str] = []
+    chips: list[str] = []
+
+    def add_section(cat: str) -> None:
         hue, glyph = category_style(cat)
         disp = html.escape(pretty(cat))
-        cards = []
-        for r in groups[cat]:
-            name = html.escape(r["technique_name"])
-            desc = html.escape(r["description"])
-            cat_icon = (
-                '<svg class="ico" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">'
-                f'{CHIP}{glyph}</svg>'
-            )
-            t_icon = (
-                '<svg class="ico" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">'
-                f'{CHIP}{tech_icon(r["technique_name"])}</svg>'
-            )
-            cards.append(
-                '<label class="tech"><input type="checkbox" '
-                f'data-name="{name}" data-cat="{disp}" data-desc="{desc}">'
-                f'<span class="ic2">{cat_icon}{t_icon}</span>'
-                f'<span><span class="n">{name}</span><span class="d">{desc}</span></span></label>'
-            )
+        cards = [_card(r) for r in groups[cat]]
+        cards.append(_invent_card(disp, glyph))
         chips.append(f'<button type="button" class="chip" data-cat="{disp}" style="--cc:{hue}">{disp}</button>')
-        sections.append(
+        body.append(
             f'<section data-cat="{disp}" style="--c:{hue}"><h2>{disp}<span class="cnt">{len(groups[cat])}</span></h2>'
             f'<div class="grid">{"".join(cards)}</div></section>'
         )
+
+    # 1) lead group — every classic-tagged technique, cross-category (no invent card here)
+    classics = [r for r in rows if r.get("provenance", "").lower() == "classic"]
+    if classics:
+        disp = html.escape(CLASSIC_GROUP)
+        lead_cards = "".join(_card(r, lead=True) for r in classics)
+        chips.append(f'<button type="button" class="chip" data-cat="{disp}" style="--cc:{LEAD_HUE}">{disp}</button>')
+        body.append(
+            f'<section data-cat="{disp}" style="--c:{LEAD_HUE}"><h2>{disp}<span class="cnt">{len(classics)}</span></h2>'
+            f'<div class="grid">{lead_cards}</div></section>'
+        )
+
+    # 2) shipped categories, in super-group order
+    placed = set()
+    for group_title, cats in CATEGORY_GROUPS:
+        present = [c for c in cats if c in groups]
+        if not present:
+            continue
+        hue, _ = category_style(present[0])
+        body.append(f'<h2 class="grouphdr" style="--c:{hue}">{html.escape(group_title)}</h2>')
+        for c in present:
+            add_section(c)
+            placed.add(c)
+
+    # 3) leftover (custom / --extra) categories, alphabetically
+    leftover = sorted(c for c in groups if c not in placed)
+    if leftover:
+        body.append('<h2 class="grouphdr" style="--c:#8a8f9e">More</h2>')
+        for c in leftover:
+            add_section(c)
+
+    # goal-affinity filter bar — only if the catalog actually carries good_for tags
+    present_goals: set[str] = set()
+    for r in rows:
+        for g in (r.get("good_for", "") or "").split("|"):
+            if g:
+                present_goals.add(g)
+    goalbar = ""
+    if present_goals:
+        ordered = [g for g in GOAL_LABELS if g in present_goals] + sorted(present_goals - set(GOAL_LABELS))
+        gchips = "".join(
+            f'<button type="button" class="goal" data-goal="{html.escape(g)}">{html.escape(GOAL_LABELS.get(g, g))}</button>'
+            for g in ordered
+        )
+        goalbar = f'<div class="bar"><span class="glabel">Great for</span><div class="goals" id="goals">{gchips}</div></div>'
+
     total = html.escape(f"{len(rows)} techniques across {len(groups)} categories.")
     return (
-        SELECTOR_TEMPLATE.replace("{{BODY}}", "\n".join(sections))
+        SELECTOR_TEMPLATE.replace("{{BODY}}", "\n".join(body))
         .replace("{{CHIPS}}", "".join(chips))
+        .replace("{{GOALBAR}}", goalbar)
         .replace("{{TOTAL}}", total)
     )
 
