@@ -139,6 +139,8 @@ SPRINTS_DIR="$PROJECT_ROOT/docs/sprints"
 EPICS_DIR="$PROJECT_ROOT/docs/epics"
 UAT_DIR="$PROJECT_ROOT/docs/uat"
 LOGS_DIR="$SPRINT_ARTIFACTS_DIR/logs"
+# Per-story design plans (persisted so dev phase can read them after resume)
+DESIGN_DIR="$SPRINT_ARTIFACTS_DIR/design"
 
 # Temporary log file during execution - will be copied to LOGS_DIR on completion
 LOG_FILE="/tmp/bmad-epic-execute-$$.log"
@@ -934,6 +936,7 @@ OPTIONS:
 
     TDD/Testing Options:
       --skip-design         Skip pre-implementation design phase
+      --skip-design-critic  Skip the design plan critic/revision loop
       --skip-tdd            Skip all test-first development phases
       --skip-test-spec      Skip test specification phase only
       --skip-test-impl      Skip test implementation phase only
@@ -974,6 +977,7 @@ ENVIRONMENT VARIABLES:
     MAX_PROMPT_SIZE         Maximum prompt size in bytes (default: 150000)
     RETRY_MAX_ATTEMPTS      Max retry attempts for transient failures (default: 3)
     RETRY_INITIAL_DELAY     Initial retry delay in seconds (default: 5)
+    MAX_DESIGN_CRITIC_ATTEMPTS  Max design plan revision rounds (default: 2)
 
 FILES:
     Logs:       docs/sprint-artifacts/logs/epic-<id>-<timestamp>.log
@@ -1003,6 +1007,7 @@ SKIP_TEST_QUALITY=false
 SKIP_TRACEABILITY=false
 SKIP_STATIC_ANALYSIS=false
 SKIP_DESIGN=false
+SKIP_DESIGN_CRITIC=false
 SKIP_REGRESSION=false
 SKIP_TDD=false
 SKIP_TEST_SPEC=false
@@ -1071,6 +1076,10 @@ while [[ $# -gt 0 ]]; do
             SKIP_DESIGN=true
             shift
             ;;
+        --skip-design-critic)
+            SKIP_DESIGN_CRITIC=true
+            shift
+            ;;
         --skip-regression)
             SKIP_REGRESSION=true
             shift
@@ -1118,6 +1127,7 @@ if [ -z "$EPIC_ID" ]; then
     echo "  --skip-traceability  Skip traceability check (not recommended)"
     echo "  --skip-static-analysis  Skip static analysis gate (runs real tooling)"
     echo "  --skip-design     Skip pre-implementation design phase"
+    echo "  --skip-design-critic  Skip the design plan critic/revision loop"
     echo "  --skip-regression Skip regression test gate"
     echo "  --skip-tdd        Skip test-first development phases"
     echo "  --skip-test-spec  Skip test specification phase only"

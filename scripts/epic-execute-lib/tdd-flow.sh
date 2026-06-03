@@ -54,6 +54,13 @@ execute_test_spec_phase() {
         design_context=$(get_last_design)
     fi
 
+    # Get the test files the design phase already planned, so the test-spec
+    # phase reuses them instead of deciding the test surface independently (#7).
+    local planned_tests=""
+    if type build_planned_test_files_context >/dev/null 2>&1; then
+        planned_tests=$(build_planned_test_files_context "$story_id")
+    fi
+
     local spec_prompt="You are a Test Architect (TEA) generating test specifications from acceptance criteria.
 
 ## Your Task
@@ -89,7 +96,7 @@ $arch_contents
 <design>
 $design_context
 </design>
-
+$planned_tests
 ## Exploration Commands
 
 First, explore existing test patterns in the codebase:
