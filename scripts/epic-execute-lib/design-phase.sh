@@ -79,6 +79,117 @@ build_repo_map() {
 }
 
 # =============================================================================
+# Feature Domain Classification (frontend / backend / fullstack)
+# =============================================================================
+
+# Auto-detect the feature domain for a story so the design phase can apply the
+# right planning lens. Resolution order (all automatic):
+#   1. An explicit Type:/Domain:/Feature-Type: field in the story file
+#   2. Heuristic keyword scoring of the story content
+#   3. Default to "fullstack" (the superset) when ambiguous - fail safe so we
+#      never under-plan a story.
+# Returns one of: frontend | backend | fullstack
+classify_feature_domain() {
+    local story_file="$1"
+
+    # 1. Explicit metadata field in the story (highest confidence, still auto)
+    local meta
+    meta=$(grep -iE '^(Type|Domain|Feature[ _-]?Type)[[:space:]]*:' "$story_file" 2>/dev/null | head -1 | tr '[:upper:]' '[:lower:]')
+    case "$meta" in
+        *fullstack*|*full-stack*|*full\ stack*) echo "fullstack"; return ;;
+        *frontend*|*front-end*|*ui*|*ux*)       echo "frontend"; return ;;
+        *backend*|*back-end*|*api*|*server*)    echo "backend"; return ;;
+    esac
+
+    # 2. Heuristic keyword scoring on story content
+    local content
+    content=$(cat "$story_file" 2>/dev/null)
+
+    local fe be
+    fe=$(printf '%s' "$content" | grep -ioE '\b(component|components|page|pages|screen|view|button|form|modal|dialog|css|tailwind|stylesheet|layout|responsive|render|UI|UX|accessibility|a11y|frontend|front-end|click|hover|route|router|navigation|nav)\b' 2>/dev/null | wc -l | tr -d ' ')
+    be=$(printf '%s' "$content" | grep -ioE '\b(endpoint|endpoints|API|REST|GraphQL|controller|service|repository|schema|migration|migrations|database|query|queries|SQL|model|models|auth|authentication|authorization|token|queue|job|cron|webhook|backend|back-end|server)\b' 2>/dev/null | wc -l | tr -d ' ')
+
+    fe=${fe:-0}; be=${be:-0}
+    local threshold=2
+
+    # One side clearly dominant -> that domain; otherwise fail safe to fullstack
+    if [ "$fe" -ge "$threshold" ] && [ "$be" -lt "$threshold" ]; then
+        echo "frontend"
+    elif [ "$be" -ge "$threshold" ] && [ "$fe" -lt "$threshold" ]; then
+        echo "backend"
+    else
+        echo "fullstack"
+    fi
+}
+
+# Build the planning-lens prompt block for a domain. The lens tells the planner
+# which domain-specific questions it MUST answer (states, a11y, API contract,
+# error handling, etc). Fullstack injects both lenses.
+# Arguments:
+#   $1 - domain (frontend | backend | fullstack)
+build_lens_block() {
+    local domain="$1"
+
+    local fe_lens="## Frontend Planning Lens
+
+This story involves UI. Your plan MUST address these in the \"frontend\" object:
+- Component breakdown: which components are new vs reused from the design system
+- Every interactive component's states: loading, empty, error, success, disabled
+- Accessibility: keyboard navigation, ARIA, focus management, color contrast
+- Responsive behavior across breakpoints
+- Which existing design-system components/tokens to reuse (do not reinvent)"
+
+    local be_lens="## Backend Planning Lens
+
+This story involves backend logic. Your plan MUST address these in the \"backend\" object:
+- API contract: method, path, request/response shape, and status codes
+- Data model and any migrations (and whether they are reversible)
+- Error handling and failure modes for each state-changing operation
+- Concurrency / idempotency / transactions where state changes
+- Observability: what to log and which metrics to emit
+- Backward compatibility / versioning"
+
+    case "$domain" in
+        frontend) printf '%s\n' "$fe_lens" ;;
+        backend)  printf '%s\n' "$be_lens" ;;
+        *)        printf '%s\n\n%s\n\n%s\n' \
+                    "This story spans BOTH the UI and backend tiers - address both lenses." \
+                    "$fe_lens" "$be_lens" ;;
+    esac
+}
+
+# Build the domain-specific JSON schema fragment to inject into the plan schema.
+# Arguments:
+#   $1 - domain (frontend | backend | fullstack)
+build_domain_schema() {
+    local domain="$1"
+
+    local fe_schema="  \"frontend\": {
+    \"components\": [{\"name\": \"...\", \"new_or_existing\": \"new|existing\", \"states\": [\"loading\",\"empty\",\"error\",\"success\",\"disabled\"]}],
+    \"user_flows\": [\"...\"],
+    \"accessibility\": [\"...\"],
+    \"responsive\": [\"...\"],
+    \"design_system_usage\": [\"...\"]
+  },"
+
+    local be_schema="  \"backend\": {
+    \"api_contract\": [{\"method\": \"...\", \"path\": \"...\", \"request\": \"...\", \"response\": \"...\", \"status_codes\": [\"...\"]}],
+    \"data_model\": [\"...\"],
+    \"migrations\": [\"...\"],
+    \"error_handling\": [\"...\"],
+    \"concurrency\": [\"...\"],
+    \"observability\": [\"...\"],
+    \"backward_compatibility\": [\"...\"]
+  },"
+
+    case "$domain" in
+        frontend) printf '%s\n' "$fe_schema" ;;
+        backend)  printf '%s\n' "$be_schema" ;;
+        *)        printf '%s\n%s\n' "$fe_schema" "$be_schema" ;;
+    esac
+}
+
+# =============================================================================
 # Design Phase Functions
 # =============================================================================
 
@@ -127,8 +238,18 @@ execute_design_phase() {
         repo_map=$(build_repo_map)
     fi
 
+    # Auto-detect the feature domain and build the matching planning lens +
+    # schema fragment (frontend / backend / fullstack). Fails safe to fullstack.
+    local domain
+    domain=$(classify_feature_domain "$story_file")
+    log "Design domain for $story_id: $domain"
+    local lens_block
+    lens_block=$(build_lens_block "$domain")
+    local domain_schema
+    domain_schema=$(build_domain_schema "$domain")
+
     if [ "$DRY_RUN" = true ]; then
-        echo "[DRY RUN] Would execute design phase for $story_id"
+        echo "[DRY RUN] Would execute design phase for $story_id (domain: $domain)"
         return 0
     fi
 
@@ -198,17 +319,24 @@ Follow existing patterns rather than introducing new ones.
 $repo_map
 </repo-map>
 
+## Feature Domain: $domain
+
+$lens_block
+
 ${revision_block}## Required Output
 
 Output your implementation plan as a single JSON result block. Map EVERY
 acceptance criterion in the story to the files/functions that will implement
 it - the \"ac\" field must use the exact AC identifier from the story (e.g.
-\"AC1\", \"AC2\").
+\"AC1\", \"AC2\"). Set \"feature_type\" to \"$domain\" (correct it only if the
+story clearly belongs to a different domain) and fill the matching domain
+object(s).
 
 \`\`\`json
 {
   \"status\": \"COMPLETE\",
   \"story_id\": \"$story_id\",
+  \"feature_type\": \"$domain\",
   \"summary\": \"<one-line description of the planned approach>\",
   \"files_to_modify\": [
     {\"path\": \"<file path>\", \"action\": \"create|modify\", \"purpose\": \"<why>\"}
@@ -222,6 +350,7 @@ it - the \"ac\" field must use the exact AC identifier from the story (e.g.
   \"acceptance_criteria_mapping\": [
     {\"ac\": \"AC1\", \"covered_by\": \"<files/functions implementing this AC>\"}
   ],
+$domain_schema
   \"risks\": [
     {\"risk\": \"<potential issue>\", \"mitigation\": \"<how to mitigate>\"}
   ],
@@ -278,13 +407,24 @@ DESIGN COMPLETE: $story_id"
             return 1
         fi
 
+        # Prefer the model's emitted feature_type (it has seen the code) over
+        # the heuristic; fall back to the heuristic domain.
+        local effective_domain="$domain"
+        if [ -n "$json" ] && type get_result_feature_type >/dev/null 2>&1; then
+            local model_ft
+            model_ft=$(get_result_feature_type "$json" | tr '[:upper:]' '[:lower:]')
+            case "$model_ft" in
+                frontend|backend|fullstack) effective_domain="$model_ft" ;;
+            esac
+        fi
+
         # Critic disabled or no attempts budgeted - accept the first plan
         if [ "${SKIP_DESIGN_CRITIC:-false}" = true ] || [ "$max_attempts" -le 0 ]; then
             break
         fi
 
-        # Run the critic against the plan
-        run_design_critic "$story_file" "$story_id" "$arch_file" "$LAST_DESIGN"
+        # Run the critic against the plan (domain-aware)
+        run_design_critic "$story_file" "$story_id" "$arch_file" "$LAST_DESIGN" "$effective_domain"
         local verdict=$?
 
         if [ "$verdict" -ne 1 ]; then
@@ -323,6 +463,9 @@ DESIGN COMPLETE: $story_id"
     # Validate that every acceptance criterion is mapped (advisory warning).
     validate_design_coverage "$story_file" "$story_id" "$json"
 
+    # Validate domain-specific completeness (advisory; the critic enforces).
+    validate_domain_completeness "$story_id" "$effective_domain" "$json"
+
     # Save to decision log
     if type append_to_decision_log >/dev/null 2>&1; then
         append_to_decision_log "DESIGN" "$story_id" "$LAST_DESIGN"
@@ -333,36 +476,52 @@ DESIGN COMPLETE: $story_id"
 }
 
 # Run a fresh-context critic pass over a proposed design plan (#4).
-# The critic checks two things: (a) does the plan map every acceptance
-# criterion, and (b) does it conform to the architecture. Gaps are stored in
-# DESIGN_CRITIC_GAPS for feedback into a regeneration pass.
+# The critic checks: (a) does the plan map every acceptance criterion, (b) does
+# it conform to the architecture, and (c) is it complete for its feature domain.
+# Gaps are stored in DESIGN_CRITIC_GAPS for feedback into a regeneration pass.
 # Arguments:
 #   $1 - story_file path
 #   $2 - story_id
 #   $3 - architecture file path (may be empty)
 #   $4 - the proposed plan (JSON or text)
+#   $5 - feature domain (frontend | backend | fullstack)
 # Returns: 0 approved, 1 needs revision, 2 unclear
 run_design_critic() {
     local story_file="$1"
     local story_id="$2"
     local arch_file="$3"
     local plan="$4"
+    local domain="${5:-fullstack}"
 
     DESIGN_CRITIC_GAPS=""
 
     local story_contents
     story_contents=$(cat "$story_file")
 
+    # Domain-specific completeness checks the critic must enforce
+    local domain_checks=""
+    case "$domain" in
+        frontend) domain_checks="- Every interactive component enumerates ALL of its states (loading, empty, error, success, disabled)
+- Accessibility is addressed (keyboard navigation, ARIA, focus management, contrast)
+- Responsive behavior is specified" ;;
+        backend)  domain_checks="- Every state-changing operation has an explicit error path AND defined status codes
+- Data-model / migration impact is covered (and migration reversibility noted)
+- Concurrency / idempotency is addressed where state changes" ;;
+        *)        domain_checks="- (Frontend) every interactive component enumerates ALL states (loading/empty/error/success/disabled); accessibility and responsive behavior are addressed
+- (Backend) every state-changing operation has an explicit error path and defined status codes; data-model/migration impact is covered" ;;
+    esac
+
     local critic_prompt="You are a skeptical senior engineer reviewing an implementation PLAN before any code is written.
 
 ## Your Task
 
-Critique the proposed plan for story: $story_id
+Critique the proposed plan for story: $story_id (feature domain: $domain)
 
 You are reviewing a PLAN, not code. Be rigorous. Decide whether the plan:
 1. Maps EVERY acceptance criterion in the story to concrete files/functions
 2. Conforms to the project's architecture
 3. Is concrete and actionable (no vague hand-waving)
+4. Is COMPLETE for its feature domain (see Domain Completeness below)
 
 ## Story
 
@@ -380,6 +539,11 @@ $story_contents
 $plan
 </plan>
 
+## Domain Completeness (feature domain: $domain)
+
+Treat any of the following that is missing as a NEEDS_REVISION gap:
+$domain_checks
+
 ## Required Output
 
 Output a single JSON result block:
@@ -394,8 +558,9 @@ Output a single JSON result block:
 }
 \`\`\`
 
-Use APPROVED only if the plan covers every acceptance criterion and conforms to
-the architecture. Otherwise use NEEDS_REVISION and list specific, actionable gaps.
+Use APPROVED only if the plan covers every acceptance criterion, conforms to the
+architecture, AND is complete for its feature domain. Otherwise use
+NEEDS_REVISION and list specific, actionable gaps.
 
 ## Completion Signal
 
@@ -480,6 +645,54 @@ validate_design_coverage() {
     fi
 }
 
+# Validate domain-specific completeness of the plan (advisory; the critic is the
+# enforcing gate). Warns + records a metric for the most common omissions:
+# frontend components missing their states, and backend APIs without an error
+# path. Skips cleanly without a JSON plan or jq.
+# Arguments:
+#   $1 - story_id
+#   $2 - feature domain (frontend | backend | fullstack)
+#   $3 - JSON plan (may be empty)
+validate_domain_completeness() {
+    local story_id="$1"
+    local domain="$2"
+    local json="$3"
+
+    if [ -z "$json" ] || ! command -v jq >/dev/null 2>&1; then
+        return 0
+    fi
+
+    # Frontend: every interactive component should enumerate its states
+    if [ "$domain" = "frontend" ] || [ "$domain" = "fullstack" ]; then
+        local comp_count states_missing
+        comp_count=$(echo "$json" | jq '[.frontend.components[]?] | length' 2>/dev/null || echo 0)
+        comp_count=$(echo "$comp_count" | tr -d '[:space:]'); [ -z "$comp_count" ] && comp_count=0
+        if [ "$comp_count" -gt 0 ]; then
+            states_missing=$(echo "$json" | jq '[.frontend.components[]? | select((.states | length) == 0)] | length' 2>/dev/null || echo 0)
+            states_missing=$(echo "$states_missing" | tr -d '[:space:]'); [ -z "$states_missing" ] && states_missing=0
+            if [ "$states_missing" -gt 0 ]; then
+                log_warn "Design: $states_missing frontend component(s) missing states for $story_id"
+                type add_metrics_issue >/dev/null 2>&1 && add_metrics_issue "$story_id" "design_domain_incomplete" "$states_missing FE component(s) missing states"
+            fi
+        fi
+    fi
+
+    # Backend: an API contract without any error handling is a red flag
+    if [ "$domain" = "backend" ] || [ "$domain" = "fullstack" ]; then
+        local api_count err_count
+        api_count=$(echo "$json" | jq '[.backend.api_contract[]?] | length' 2>/dev/null || echo 0)
+        api_count=$(echo "$api_count" | tr -d '[:space:]'); [ -z "$api_count" ] && api_count=0
+        err_count=$(echo "$json" | jq '[.backend.error_handling[]?] | length' 2>/dev/null || echo 0)
+        err_count=$(echo "$err_count" | tr -d '[:space:]'); [ -z "$err_count" ] && err_count=0
+        if [ "$api_count" -gt 0 ] && [ "$err_count" -eq 0 ]; then
+            log_warn "Design: backend API planned without error handling for $story_id"
+            type add_metrics_issue >/dev/null 2>&1 && add_metrics_issue "$story_id" "design_domain_incomplete" "Backend API without error_handling"
+        fi
+    fi
+
+    return 0
+}
+
 # Persist a design plan to a per-story file under DESIGN_DIR.
 # Arguments:
 #   $1 - story_id
@@ -535,6 +748,15 @@ build_planned_test_files_context() {
         return
     fi
 
+    # Domain-aware hint on which kinds of tests to emphasize (#7 + domain)
+    local feature_type test_hint=""
+    feature_type=$(echo "$design" | jq -r '.feature_type // empty' 2>/dev/null || echo "")
+    case "$feature_type" in
+        frontend)  test_hint="This is a frontend feature: emphasize component, interaction, and accessibility tests (plus visual regression where applicable)." ;;
+        backend)   test_hint="This is a backend feature: emphasize unit, integration, contract, and migration tests." ;;
+        fullstack) test_hint="This is a fullstack feature: cover both UI (component/interaction/a11y) and backend (unit/integration/contract) tests." ;;
+    esac
+
     cat << EOF
 
 ## Planned Test Files (from design phase)
@@ -542,6 +764,8 @@ build_planned_test_files_context() {
 The design phase already identified the intended test files below. Align your
 specifications with these paths and reuse them; only introduce a new test file
 when a scenario genuinely isn't covered here, and call out any deviation.
+${test_hint:+
+$test_hint}
 
 <planned-test-files>
 $files
