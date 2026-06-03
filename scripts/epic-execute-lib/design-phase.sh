@@ -100,45 +100,47 @@ story touches, and follow existing patterns rather than introducing new ones).
 
 ## Required Output
 
-Output your implementation plan in this exact format:
+Output your implementation plan as a single JSON result block. Map EVERY
+acceptance criterion in the story to the files/functions that will implement
+it - the \"ac\" field must use the exact AC identifier from the story (e.g.
+\"AC1\", \"AC2\").
 
-\`\`\`
-DESIGN START
-story_id: $story_id
-
-files_to_modify:
-  - path: <file path>
-    action: create|modify
-    purpose: <why this file needs changes>
-
-patterns_to_use:
-  - <pattern name>: <how it will be applied>
-
-dependencies:
-  - <package>: <installed|needs-install>
-
-acceptance_criteria_mapping:
-  - AC1: <which files/functions will implement this>
-  - AC2: <which files/functions will implement this>
-
-risks:
-  - <potential issue and mitigation>
-
-estimated_test_files:
-  - <test file path>: <what it will test>
-
-implementation_order:
-  1. <first step>
-  2. <second step>
-  ...
-DESIGN END
+\`\`\`json
+{
+  \"status\": \"COMPLETE\",
+  \"story_id\": \"$story_id\",
+  \"summary\": \"<one-line description of the planned approach>\",
+  \"files_to_modify\": [
+    {\"path\": \"<file path>\", \"action\": \"create|modify\", \"purpose\": \"<why>\"}
+  ],
+  \"patterns_to_use\": [
+    {\"pattern\": \"<pattern name>\", \"how\": \"<how it will be applied>\"}
+  ],
+  \"dependencies\": [
+    {\"package\": \"<name>\", \"state\": \"installed|needs-install\"}
+  ],
+  \"acceptance_criteria_mapping\": [
+    {\"ac\": \"AC1\", \"covered_by\": \"<files/functions implementing this AC>\"}
+  ],
+  \"risks\": [
+    {\"risk\": \"<potential issue>\", \"mitigation\": \"<how to mitigate>\"}
+  ],
+  \"test_files\": [
+    {\"path\": \"<test file path>\", \"covers\": \"<what it will test>\"}
+  ],
+  \"implementation_order\": [\"<first step>\", \"<second step>\"]
+}
 \`\`\`
 
 Be specific and concrete. This plan will guide the implementation phase.
 
+If you cannot produce a plan (e.g. the story is too ambiguous to design),
+output the same JSON block with \"status\": \"BLOCKED\" and a \"summary\"
+explaining why.
+
 ## Completion Signal
 
-After outputting the design block, output exactly:
+After outputting the JSON block, output exactly:
 DESIGN COMPLETE: $story_id"
 
     # Log prompt size in verbose mode (consistent with other phases)
@@ -154,24 +156,89 @@ DESIGN COMPLETE: $story_id"
     local result
     result=$(read_phase_tail)
 
-    # Extract design block
-    LAST_DESIGN=$(echo "$result" | sed -n '/DESIGN START/,/DESIGN END/p')
+    # Extract the JSON plan using the shared parser (falls back to legacy
+    # text scraping if no JSON block is present, e.g. older models).
+    local json=""
+    if type extract_json_result >/dev/null 2>&1; then
+        json=$(extract_json_result "$result")
+    fi
 
-    if [ -n "$LAST_DESIGN" ]; then
-        # Persist the plan to a per-story file so the dev phase can read it
-        # even after a resume (when the in-memory LAST_DESIGN is empty).
-        persist_design "$story_id" "$LAST_DESIGN"
+    # Determine completion using the shared JSON-first checker
+    local completion_status=0
+    if type check_phase_completion >/dev/null 2>&1; then
+        check_phase_completion "$result" "design" "$story_id"
+        completion_status=$?
+    fi
 
-        # Save to decision log
-        if type append_to_decision_log >/dev/null 2>&1; then
-            append_to_decision_log "DESIGN" "$story_id" "$LAST_DESIGN"
-        fi
-
-        log_success "Design phase complete: $story_id"
-        return 0
+    if [ -n "$json" ] && [ "$completion_status" -ne 1 ]; then
+        # Valid JSON plan
+        LAST_DESIGN="$json"
     else
-        log_error "Design phase did not produce valid output"
+        # Fall back to legacy DESIGN START/END text block (backward compat)
+        LAST_DESIGN=$(echo "$result" | sed -n '/DESIGN START/,/DESIGN END/p')
+    fi
+
+    if [ -z "$LAST_DESIGN" ] || [ "$completion_status" -eq 1 ]; then
+        log_error "Design phase did not produce a valid plan"
         return 1
+    fi
+
+    # Persist the plan to a per-story file so the dev phase can read it
+    # even after a resume (when the in-memory LAST_DESIGN is empty).
+    persist_design "$story_id" "$LAST_DESIGN"
+
+    # Validate that every acceptance criterion is mapped (advisory warning).
+    validate_design_coverage "$story_file" "$story_id" "$json"
+
+    # Save to decision log
+    if type append_to_decision_log >/dev/null 2>&1; then
+        append_to_decision_log "DESIGN" "$story_id" "$LAST_DESIGN"
+    fi
+
+    log_success "Design phase complete: $story_id"
+    return 0
+}
+
+# Validate that the design plan maps every acceptance criterion in the story.
+# This is advisory: it warns and records a metric but never fails the story
+# (design is a non-blocking phase). AC extraction is heuristic since story
+# formats vary; if no ACs are detected the check is skipped.
+# Arguments:
+#   $1 - story_file path
+#   $2 - story_id
+#   $3 - JSON plan (may be empty if the model fell back to text output)
+validate_design_coverage() {
+    local story_file="$1"
+    local story_id="$2"
+    local json="$3"
+
+    # Coverage check requires jq and a JSON plan; skip otherwise.
+    if [ -z "$json" ] || ! command -v jq >/dev/null 2>&1; then
+        return 0
+    fi
+
+    # Count distinct AC identifiers declared in the story (e.g. AC1, AC2, ...).
+    local ac_count
+    ac_count=$(grep -oiE '\bAC[0-9]+\b' "$story_file" 2>/dev/null | tr '[:lower:]' '[:upper:]' | sort -u | wc -l | tr -d ' ')
+
+    if [ "${ac_count:-0}" -eq 0 ]; then
+        # No recognizable AC identifiers in this story - nothing to validate.
+        return 0
+    fi
+
+    # Count distinct ACs the plan claims to cover.
+    local mapped
+    mapped=$(echo "$json" | jq -r '[.acceptance_criteria_mapping[]?.ac] | map(ascii_upcase) | unique | length' 2>/dev/null || echo 0)
+    mapped=$(echo "$mapped" | tr -d '[:space:]')
+    [ -z "$mapped" ] && mapped=0
+
+    if [ "$mapped" -lt "$ac_count" ]; then
+        log_warn "Design maps $mapped of $ac_count acceptance criteria for $story_id"
+        if type add_metrics_issue >/dev/null 2>&1; then
+            add_metrics_issue "$story_id" "design_incomplete" "Plan maps $mapped/$ac_count acceptance criteria"
+        fi
+    else
+        [ "$VERBOSE" = true ] && log "Design covers all $ac_count acceptance criteria for $story_id"
     fi
 }
 

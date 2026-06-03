@@ -299,6 +299,13 @@ check_phase_completion() {
 
     # Fallback to legacy text-based parsing
     case "$phase_type" in
+        design)
+            if echo "$output" | grep -q "DESIGN COMPLETE"; then
+                return 0
+            elif echo "$output" | grep -q "DESIGN BLOCKED"; then
+                return 1
+            fi
+            ;;
         dev)
             if echo "$output" | grep -q "IMPLEMENTATION COMPLETE"; then
                 return 0
