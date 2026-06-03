@@ -507,6 +507,48 @@ get_last_design() {
     echo "$LAST_DESIGN"
 }
 
+# Build a focused "planned test files" context block from the design plan (#7).
+# Lets the TDD test-spec phase reuse the test files the design already proposed,
+# rather than independently deciding the test surface. Reads the in-memory plan
+# first, then the persisted file (resume-safe). Requires a JSON plan + jq.
+# Arguments:
+#   $1 - story_id
+build_planned_test_files_context() {
+    local story_id="$1"
+
+    local design="$LAST_DESIGN"
+    if [ -z "$design" ] && [ -n "${DESIGN_DIR:-}" ]; then
+        local design_file="$DESIGN_DIR/${story_id}-design.md"
+        [ -f "$design_file" ] && design=$(cat "$design_file")
+    fi
+
+    if [ -z "$design" ] || ! command -v jq >/dev/null 2>&1; then
+        echo ""
+        return
+    fi
+
+    local files
+    files=$(echo "$design" | jq -r '.test_files[]? | "- \(.path): \(.covers)"' 2>/dev/null || echo "")
+
+    if [ -z "$files" ]; then
+        echo ""
+        return
+    fi
+
+    cat << EOF
+
+## Planned Test Files (from design phase)
+
+The design phase already identified the intended test files below. Align your
+specifications with these paths and reuse them; only introduce a new test file
+when a scenario genuinely isn't covered here, and call out any deviation.
+
+<planned-test-files>
+$files
+</planned-test-files>
+EOF
+}
+
 # Build the design context block for dev phase prompt
 # Returns formatted design context for inclusion in prompts
 build_design_context_for_dev() {
