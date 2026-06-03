@@ -3302,6 +3302,52 @@ async function runTests() {
       await fs.remove(tmp).catch(() => {});
     }
 
+    // ---- Strategy 1: module files ABOVE the skills' common parent ----
+    // Mirrors the bmad-creative-intelligence-suite layout: module.yaml +
+    // module-help.csv at src/, skills nested under src/skills/<name>/. The
+    // skills' common parent is src/skills (no module files), so the resolver
+    // must walk up to src/ to find them — otherwise it synthesizes a degenerate
+    // module named after the plugin and loses the real code/agents roster.
+    {
+      const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-srcmod-'));
+      const srcDir = path.join(tmp, 'src');
+      await fs.ensureDir(path.join(srcDir, 'skills'));
+      await fs.writeFile(
+        path.join(srcDir, 'module.yaml'),
+        'code: cis\nname: "CIS: Creative Innovation Suite"\ndescription: legacy at src\n',
+        'utf8',
+      );
+      await fs.writeFile(
+        path.join(srcDir, 'module-help.csv'),
+        'module,skill,display-name,menu-code,description,action,args,phase,preceded-by,followed-by,required,output-location,outputs\n',
+        'utf8',
+      );
+      for (const name of ['bmad-cis-storytelling', 'bmad-cis-design-thinking']) {
+        const skill = path.join(srcDir, 'skills', name);
+        await fs.ensureDir(skill);
+        await fs.writeFile(path.join(skill, 'SKILL.md'), `---\nname: ${name}\ndescription: x\n---\n`, 'utf8');
+      }
+
+      const resolved = await new PluginResolver().resolve(tmp, {
+        name: 'bmad-creative-intelligence-suite',
+        source: '.',
+        skills: ['./src/skills/bmad-cis-storytelling', './src/skills/bmad-cis-design-thinking'],
+      });
+      assert(
+        resolved.length === 1 && resolved[0].strategy === 1,
+        'module files above the skills common parent resolve via strategy 1 (not synthesized strategy 5)',
+      );
+      assert(
+        resolved[0].code === 'cis' && resolved[0].name === 'CIS: Creative Innovation Suite',
+        'code/name come from src/module.yaml, not the marketplace plugin name',
+      );
+      assert(
+        resolved[0].moduleYamlPath && resolved[0].moduleYamlPath.endsWith(path.join('src', 'module.yaml')),
+        'moduleYamlPath points at src/module.yaml',
+      );
+      await fs.remove(tmp).catch(() => {});
+    }
+
     // ---- End-to-end install of a new-system module via OfficialModules ----
     {
       const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-pj-install-'));

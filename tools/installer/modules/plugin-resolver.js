@@ -160,16 +160,23 @@ class PluginResolver {
   // ─── Strategy 1: Root Module Files ──────────────────────────────────────────
 
   /**
-   * Check if module.yaml + module-help.csv exist at the common parent of all skills.
+   * Check if module.yaml + module-help.csv exist at the common parent of all
+   * skills, or in any directory between there and the repo root.
+   *
+   * The canonical BMad layout puts module.yaml + module-help.csv at the repo
+   * root or under src/, while skills live in src/skills/<name>/ — i.e. one or
+   * more levels ABOVE the skills' common parent. We therefore start at the
+   * common parent and walk up to the repo root, using the first (deepest)
+   * directory that has both files. This catches the common case where, e.g.,
+   * module.yaml sits at src/module.yaml but skills are in src/skills/.
    */
   async _tryRootModuleFiles(repoPath, plugin, skillPaths) {
     const commonParent = this._computeCommonParent(skillPaths);
-    const moduleYamlPath = path.join(commonParent, 'module.yaml');
-    const moduleHelpPath = path.join(commonParent, 'module-help.csv');
-
-    if (!(await fs.pathExists(moduleYamlPath)) || !(await fs.pathExists(moduleHelpPath))) {
+    const found = await this._findModuleFilesUpward(commonParent, repoPath);
+    if (!found) {
       return null;
     }
+    const { moduleYamlPath, moduleHelpPath } = found;
 
     const moduleData = await this._readModuleYaml(moduleYamlPath);
     if (!moduleData) return null;
@@ -367,6 +374,38 @@ class PluginResolver {
   }
 
   // ─── Helpers ────────────────────────────────────────────────────────────────
+
+  /**
+   * Walk up from startDir to the repo root, returning the first directory that
+   * contains BOTH module.yaml and module-help.csv. Bounded by repoRoot so we
+   * never escape the cloned repository. Returns null if neither pair is found.
+   * @param {string} startDir - Directory to start searching from (inclusive)
+   * @param {string} repoPath - Repository root (upper bound, inclusive)
+   * @returns {Promise<{moduleYamlPath: string, moduleHelpPath: string}|null>}
+   */
+  async _findModuleFilesUpward(startDir, repoPath) {
+    const repoRoot = path.resolve(repoPath);
+    let dir = path.resolve(startDir);
+
+    // If startDir somehow falls outside the repo, only consider the repo root.
+    if (dir !== repoRoot && !dir.startsWith(repoRoot + path.sep)) {
+      dir = repoRoot;
+    }
+
+    while (true) {
+      const moduleYamlPath = path.join(dir, 'module.yaml');
+      const moduleHelpPath = path.join(dir, 'module-help.csv');
+      if ((await fs.pathExists(moduleYamlPath)) && (await fs.pathExists(moduleHelpPath))) {
+        return { moduleYamlPath, moduleHelpPath };
+      }
+      if (dir === repoRoot) break;
+      const parent = path.dirname(dir);
+      if (parent === dir) break; // filesystem root — stop defensively
+      dir = parent;
+    }
+
+    return null;
+  }
 
   /**
    * Compute the deepest common ancestor directory of an array of absolute paths.
