@@ -572,12 +572,14 @@ class CustomModuleManager {
    * @param {Object} plugin - Raw plugin object from marketplace.json
    * @param {string} [sourceUrl] - Original URL for manifest tracking (null for local)
    * @param {string} [localPath] - Local source path for manifest tracking (null for URLs)
+   * @param {Object} [options] - Forwarded to PluginResolver.resolve (e.g.
+   *   chooseModuleDefinition for interactive disambiguation).
    * @returns {Promise<Array<Object>>} Array of ResolvedModule objects
    */
-  async resolvePlugin(repoPath, plugin, sourceUrl, localPath) {
+  async resolvePlugin(repoPath, plugin, sourceUrl, localPath, options = {}) {
     const { PluginResolver } = require('./plugin-resolver');
     const resolver = new PluginResolver();
-    const resolved = await resolver.resolve(repoPath, plugin);
+    const resolved = await resolver.resolve(repoPath, plugin, options);
 
     // Read clone metadata (written by cloneRepo) so we can pick up the
     // resolved git ref + SHA for manifest recording.

@@ -32,9 +32,15 @@ class PluginResolver {
    * @param {string} [plugin.version] - Semantic version
    * @param {string} [plugin.description] - Plugin description
    * @param {string[]} [plugin.skills] - Relative paths to skill directories
+   * @param {Object} [options] - Resolution options
+   * @param {function} [options.chooseModuleDefinition] - Async selector invoked
+   *   when more than one module.yaml + module-help.csv pair is found between the
+   *   skills' common parent and the repo root. Receives (candidates, context)
+   *   and returns the chosen candidate. When omitted (headless / non-interactive
+   *   / CLI), the deepest candidate is used so resolution never blocks.
    * @returns {Promise<ResolvedModule[]>} Array of resolved module definitions
    */
-  async resolve(repoPath, plugin) {
+  async resolve(repoPath, plugin, options = {}) {
     // Strategy 0: new module system. Tried before everything else — and before
     // the no-skills early return below — because new-system modules declare
     // their skills inside plugin.json rather than via marketplace.json's
@@ -70,7 +76,7 @@ class PluginResolver {
 
     // Try each strategy in order
     const result =
-      (await this._tryRootModuleFiles(repoPath, plugin, skillPaths)) ||
+      (await this._tryRootModuleFiles(repoPath, plugin, skillPaths, options)) ||
       (await this._trySetupSkill(repoPath, plugin, skillPaths)) ||
       (await this._trySingleStandalone(repoPath, plugin, skillPaths)) ||
       (await this._tryMultipleStandalone(repoPath, plugin, skillPaths)) ||
@@ -170,13 +176,38 @@ class PluginResolver {
    * directory that has both files. This catches the common case where, e.g.,
    * module.yaml sits at src/module.yaml but skills are in src/skills/.
    */
-  async _tryRootModuleFiles(repoPath, plugin, skillPaths) {
+  async _tryRootModuleFiles(repoPath, plugin, skillPaths, options = {}) {
     const commonParent = this._computeCommonParent(skillPaths);
-    const found = await this._findModuleFilesUpward(commonParent, repoPath);
-    if (!found) {
+    const candidates = await this._findModuleFileCandidatesUpward(commonParent, repoPath);
+    if (candidates.length === 0) {
       return null;
     }
-    const { moduleYamlPath, moduleHelpPath } = found;
+
+    // Deepest candidate (closest to the skills) is the safe default. When more
+    // than one directory in the chain carries both files, give an interactive
+    // caller the chance to pick — enriching each option with its module.yaml
+    // metadata so the choice is meaningful. Headless callers fall through to
+    // the deepest candidate without prompting.
+    let chosen = candidates[0];
+    if (candidates.length > 1 && typeof options.chooseModuleDefinition === 'function') {
+      const enriched = [];
+      for (const candidate of candidates) {
+        const data = await this._readModuleYaml(candidate.moduleYamlPath);
+        enriched.push({
+          ...candidate,
+          relativePath: path.relative(path.resolve(repoPath), candidate.moduleYamlPath),
+          code: data?.code || null,
+          name: data?.name || null,
+          description: data?.description || null,
+        });
+      }
+      const picked = await options.chooseModuleDefinition(enriched, { plugin });
+      if (picked && picked.moduleYamlPath && picked.moduleHelpPath) {
+        chosen = picked;
+      }
+    }
+
+    const { moduleYamlPath, moduleHelpPath } = chosen;
 
     const moduleData = await this._readModuleYaml(moduleYamlPath);
     if (!moduleData) return null;
@@ -376,14 +407,15 @@ class PluginResolver {
   // ─── Helpers ────────────────────────────────────────────────────────────────
 
   /**
-   * Walk up from startDir to the repo root, returning the first directory that
+   * Walk up from startDir to the repo root, collecting every directory that
    * contains BOTH module.yaml and module-help.csv. Bounded by repoRoot so we
-   * never escape the cloned repository. Returns null if neither pair is found.
+   * never escape the cloned repository. Results are ordered deepest-first
+   * (closest to startDir), so candidates[0] is the safe default.
    * @param {string} startDir - Directory to start searching from (inclusive)
    * @param {string} repoPath - Repository root (upper bound, inclusive)
-   * @returns {Promise<{moduleYamlPath: string, moduleHelpPath: string}|null>}
+   * @returns {Promise<Array<{moduleYamlPath: string, moduleHelpPath: string}>>}
    */
-  async _findModuleFilesUpward(startDir, repoPath) {
+  async _findModuleFileCandidatesUpward(startDir, repoPath) {
     const repoRoot = path.resolve(repoPath);
     let dir = path.resolve(startDir);
 
@@ -392,11 +424,12 @@ class PluginResolver {
       dir = repoRoot;
     }
 
+    const candidates = [];
     while (true) {
       const moduleYamlPath = path.join(dir, 'module.yaml');
       const moduleHelpPath = path.join(dir, 'module-help.csv');
       if ((await fs.pathExists(moduleYamlPath)) && (await fs.pathExists(moduleHelpPath))) {
-        return { moduleYamlPath, moduleHelpPath };
+        candidates.push({ moduleYamlPath, moduleHelpPath });
       }
       if (dir === repoRoot) break;
       const parent = path.dirname(dir);
@@ -404,7 +437,7 @@ class PluginResolver {
       dir = parent;
     }
 
-    return null;
+    return candidates;
   }
 
   /**

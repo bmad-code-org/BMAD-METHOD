@@ -1008,6 +1008,25 @@ class UI {
     const customMgr = new CustomModuleManager();
     const selectedModules = [];
 
+    // Interactive disambiguation: when a plugin has more than one module.yaml +
+    // module-help.csv pair between its skills and the repo root, let the user
+    // pick which one defines the module. `activeSpinner` is paused around the
+    // prompt so the choice renders cleanly, then resumed by the caller.
+    let activeSpinner = null;
+    const chooseModuleDefinition = async (candidates, { plugin }) => {
+      activeSpinner?.stop('Multiple module definitions found');
+      const choice = await prompts.select({
+        message: `"${plugin.name}" declares multiple module definitions — choose which to install:`,
+        choices: candidates.map((c) => ({
+          name: `${c.code || '(no code)'}${c.name ? ` — ${c.name}` : ''}  [${c.relativePath}]`,
+          value: c,
+        })),
+        default: candidates[0],
+      });
+      activeSpinner?.start('Analyzing plugin structure...');
+      return choice;
+    };
+
     let addMore = true;
     while (addMore) {
       const sourceInput = await prompts.text({
@@ -1021,6 +1040,7 @@ class UI {
       });
 
       const s = await prompts.spinner();
+      activeSpinner = s;
       s.start('Resolving source...');
 
       let sourceResult;
@@ -1062,7 +1082,9 @@ class UI {
         const effectiveRepoPath = sourceResult.repoPath || sourceResult.rootDir;
         for (const plugin of plugins) {
           try {
-            const resolved = await customMgr.resolvePlugin(effectiveRepoPath, plugin.rawPlugin, sourceResult.sourceUrl, localPath);
+            const resolved = await customMgr.resolvePlugin(effectiveRepoPath, plugin.rawPlugin, sourceResult.sourceUrl, localPath, {
+              chooseModuleDefinition,
+            });
             if (resolved.length > 0) {
               allResolved.push(...resolved);
             } else {
@@ -1117,7 +1139,9 @@ class UI {
         // so an empty skills[] here is expected); legacy modules need ≥1 skill.
         if (rootManifest || directPlugin.skills.length > 0) {
           try {
-            const resolved = await customMgr.resolvePlugin(sourceResult.rootDir, directPlugin, sourceResult.sourceUrl, localPath);
+            const resolved = await customMgr.resolvePlugin(sourceResult.rootDir, directPlugin, sourceResult.sourceUrl, localPath, {
+              chooseModuleDefinition,
+            });
             allResolved.push(...resolved);
           } catch (resolveError) {
             await prompts.log.warn(`  Could not resolve: ${resolveError.message}`);

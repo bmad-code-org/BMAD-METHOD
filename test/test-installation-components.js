@@ -3348,6 +3348,47 @@ async function runTests() {
       await fs.remove(tmp).catch(() => {});
     }
 
+    // ---- Multiple module definitions: deepest-first default + chooser ----
+    // Both src/ and src/skills/ carry module.yaml + module-help.csv. Headless
+    // resolution must take the deepest (src/skills); an interactive caller can
+    // override via chooseModuleDefinition, which receives enriched metadata.
+    {
+      const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-multimod-'));
+      const csv =
+        'module,skill,display-name,menu-code,description,action,args,phase,preceded-by,followed-by,required,output-location,outputs\n';
+      const srcDir = path.join(tmp, 'src');
+      const skillsDir = path.join(srcDir, 'skills');
+      await fs.ensureDir(skillsDir);
+      await fs.writeFile(path.join(srcDir, 'module.yaml'), 'code: outer\nname: Outer\ndescription: at src\n', 'utf8');
+      await fs.writeFile(path.join(srcDir, 'module-help.csv'), csv, 'utf8');
+      await fs.writeFile(path.join(skillsDir, 'module.yaml'), 'code: inner\nname: Inner\ndescription: at src/skills\n', 'utf8');
+      await fs.writeFile(path.join(skillsDir, 'module-help.csv'), csv, 'utf8');
+      for (const name of ['skill-a', 'skill-b']) {
+        const skill = path.join(skillsDir, name);
+        await fs.ensureDir(skill);
+        await fs.writeFile(path.join(skill, 'SKILL.md'), `---\nname: ${name}\ndescription: x\n---\n`, 'utf8');
+      }
+      const plugin = { name: 'multi', source: '.', skills: ['./src/skills/skill-a', './src/skills/skill-b'] };
+
+      const def = await new PluginResolver().resolve(tmp, plugin);
+      assert(def[0].code === 'inner', 'with no chooser, the deepest module definition (src/skills) is used by default');
+
+      let seen = null;
+      const picked = await new PluginResolver().resolve(tmp, plugin, {
+        chooseModuleDefinition: async (candidates) => {
+          seen = candidates;
+          return candidates.find((c) => c.code === 'outer');
+        },
+      });
+      assert(Array.isArray(seen) && seen.length === 2, 'chooser receives all candidates when more than one is found');
+      assert(
+        seen.every((c) => typeof c.relativePath === 'string' && 'name' in c && 'description' in c),
+        'chooser candidates are enriched with relativePath + module.yaml metadata',
+      );
+      assert(picked[0].code === 'outer', "chooser's selection (src) overrides the deepest default");
+      await fs.remove(tmp).catch(() => {});
+    }
+
     // ---- End-to-end install of a new-system module via OfficialModules ----
     {
       const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-pj-install-'));
