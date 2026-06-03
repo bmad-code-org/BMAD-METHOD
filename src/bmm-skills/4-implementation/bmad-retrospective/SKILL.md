@@ -225,12 +225,12 @@ Amelia (Developer): "Perfect. Epic {{epic_number}} is complete and ready for ret
 
 </step>
 
-<step n="0.5" goal="Discover and load project documents">
+<step n="2" goal="Discover and load project documents">
   <action>Load input files according to the Input Files table above. For SELECTIVE_LOAD inputs, load only the epic matching {{epic_number}}. For FULL_LOAD inputs, load the complete document. For INDEX_GUIDED inputs, check the index first and load relevant sections. After discovery, these content variables are available: {epics_content} (selective load for this epic), {architecture_content}, {prd_content}, {document_project_content}</action>
   <note>After discovery, these content variables are available: {epics_content} (selective load for this epic), {architecture_content}, {prd_content}, {document_project_content}</note>
 </step>
 
-<step n="2" goal="Deep Story Analysis - Extract Lessons from Implementation">
+<step n="3" goal="Deep Story Analysis - Extract Lessons from Implementation">
 
 <output>
 Amelia (Developer): "Before we start the team discussion, let me review all the story records to surface key themes. This'll help us have a richer conversation."
@@ -324,7 +324,7 @@ Amelia (Developer): "We'll get to all of it. But first, let me load the previous
 
 </step>
 
-<step n="3" goal="Load and Integrate Previous Epic Retrospective">
+<step n="4" goal="Load and Integrate Previous Epic Retrospective">
 
 <action>Calculate previous epic number: {{prev_epic_num}} = {{epic_number}} - 1</action>
 
@@ -420,7 +420,7 @@ Charlie (Senior Dev): "First epic, first retro. Let's make it count."
 
 </step>
 
-<step n="4" goal="Preview Next Epic with Change Detection">
+<step n="5" goal="Preview Next Epic with Change Detection">
 
 <action>Calculate next epic number: {{next_epic_num}} = {{epic_number}} + 1</action>
 
@@ -509,7 +509,7 @@ Amelia (Developer): "No problem. We'll still do a thorough retro on Epic {{epic_
 
 </step>
 
-<step n="5" goal="Initialize Retrospective with Rich Context">
+<step n="6" goal="Initialize Retrospective with Rich Context">
 
 <action>Load agent roster from {agent_roster}</action>
 <action>Identify which agents participated in Epic {{epic_number}} based on story records</action>
@@ -599,7 +599,7 @@ Amelia (Developer): "Exactly. {user_name}, any questions before we dive in?"
 
 </step>
 
-<step n="6" goal="Epic Review Discussion - What Went Well, What Didn't">
+<step n="7" goal="Epic Review Discussion - What Went Well, What Didn't">
 
 <output>
 Amelia (Developer): "Let's start with the good stuff. What went well in Epic {{epic_number}}?"
@@ -673,7 +673,7 @@ Alice (Product Owner): "I appreciate that. I could've been more proactive about 
 Amelia (Developer): "This is good. We're identifying systemic improvements, not assigning blame."
 </output>
 
-<action>Continue the discussion, weaving in patterns discovered from the deep story analysis (Step 2)</action>
+<action>Continue the discussion, weaving in patterns discovered from the deep story analysis (Step 3)</action>
 
 <output>
 Amelia (Developer): "Speaking of patterns, I noticed something when reviewing all the story records..."
@@ -744,13 +744,13 @@ Amelia (Developer): "Does that capture it? Anyone have something important we mi
 
 </step>
 
-<step n="7" goal="Next Epic Preparation Discussion - Interactive and Collaborative">
+<step n="8" goal="Next Epic Preparation Discussion - Interactive and Collaborative">
 
 <check if="{{next_epic_exists}} == false">
   <output>
 Amelia (Developer): "Normally we'd discuss preparing for the next epic, but since Epic {{next_epic_num}} isn't defined yet, let's skip to action items."
   </output>
-  <action>Skip to Step 8</action>
+  <action>Skip to Step 9</action>
 </check>
 
 <output>
@@ -868,7 +868,7 @@ Amelia (Developer): "{user_name}, does this preparation plan work for you?"
 
 </step>
 
-<step n="8" goal="Synthesize Action Items with Significant Change Detection">
+<step n="9" goal="Synthesize Action Items with Significant Change Detection">
 
 <output>
 Amelia (Developer): "Let's capture concrete action items from everything we've discussed."
@@ -1109,7 +1109,7 @@ Amelia (Developer): "Everyone clear on what they own?"
 
 </step>
 
-<step n="9" goal="Critical Readiness Exploration - Interactive Deep Dive">
+<step n="10" goal="Critical Readiness Exploration - Interactive Deep Dive">
 
 <output>
 Amelia (Developer): "Before we close, I want to do a final readiness check."
@@ -1292,7 +1292,7 @@ Charlie (Senior Dev): "Better to catch this now than three stories into the next
 
 </step>
 
-<step n="10" goal="Retrospective Closure with Celebration and Commitment">
+<step n="11" goal="Retrospective Closure with Celebration and Commitment">
 
 <output>
 Amelia (Developer): "We've covered a lot of ground today. Let me bring this retrospective to a close."
@@ -1368,7 +1368,7 @@ Amelia (Developer): "See you all when prep work is done. Meeting adjourned!"
 
 </step>
 
-<step n="11" goal="Save Retrospective and Update Sprint Status">
+<step n="12" goal="Save Retrospective and Update Sprint Status">
 
 <action>Ensure retrospectives folder exists: {implementation_artifacts}</action>
 <action>Create folder if it doesn't exist</action>
@@ -1425,7 +1425,7 @@ Retrospective document was saved successfully, but {sprint_status_file} may need
 
 </step>
 
-<step n="12" goal="Final Summary and Handoff">
+<step n="13" goal="Final Summary and Handoff">
 
 <output>
 **✅ Retrospective Complete, {user_name}!**
