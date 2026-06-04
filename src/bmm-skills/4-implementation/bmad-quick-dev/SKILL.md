@@ -9,6 +9,9 @@ description: 'Implements any user intent, requirement, story, bug fix or change 
 
 **CRITICAL:** If a step says "read fully and follow step-XX", you read and follow step-XX. No exceptions.
 
+Subagents, when the capability is available, are an important part of this workflow. Use them as directed by the workflow steps.
+If you need an explicit user instruction to run them, ask once now for the whole workflow run.
+
 ## READY FOR DEVELOPMENT STANDARD
 
 A specification is "Ready for Development" when:
