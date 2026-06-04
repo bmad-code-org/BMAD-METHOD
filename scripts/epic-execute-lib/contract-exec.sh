@@ -21,6 +21,10 @@
 CONTRACT_EXEC_FAILURES=""
 # PID of the app started by contract_env_up (so contract_env_down can stop it).
 CONTRACT_APP_PID=""
+# Set true when contract validation ultimately fails (drives the epic exit code).
+CONTRACT_VALIDATION_FAILED=false
+# Max self-heal attempts for contract failures.
+MAX_CONTRACT_FIX_ATTEMPTS="${MAX_CONTRACT_FIX_ATTEMPTS:-2}"
 
 # =============================================================================
 # Environment Lifecycle
@@ -348,4 +352,115 @@ run_ui_flows() {
     fi
     log_error "  UI flows failed"
     return 1
+}
+
+# =============================================================================
+# Orchestration + Fix Loop
+# =============================================================================
+
+# Run the full contract validation: bring the env up, run backend cases and UI
+# flows, tear the env down. Detail of any failures lands in CONTRACT_EXEC_FAILURES.
+# Returns 0 if everything passes, 1 otherwise.
+run_contract_validation() {
+    local h="$1"
+    CONTRACT_EXEC_FAILURES=""
+
+    if [ "${DRY_RUN:-false}" = true ]; then
+        echo "[DRY RUN] Would run contract validation (backend cases + UI flows)"
+        return 0
+    fi
+
+    log ">>> CONTRACT VALIDATION: bringing up sample environment"
+    if ! contract_env_up "$h"; then
+        contract_env_down "$h"
+        CONTRACT_EXEC_FAILURES="- sample environment failed to start"$'\n'
+        return 1
+    fi
+
+    local rc=0
+    run_backend_cases "$h" || rc=1
+    run_ui_flows "$h" || rc=1
+
+    contract_env_down "$h"
+    return $rc
+}
+
+# A focused fix pass for contract validation failures (epic-level self-heal,
+# mirroring the traceability fix loop). Returns 0 if the model reports success.
+execute_contract_fix_phase() {
+    local failures="$1"
+    local attempt="$2"
+
+    log ">>> CONTRACT FIX: attempt $attempt (addressing contract validation failures)"
+
+    local fix_prompt="You are fixing failures found by automated contract validation - real API calls and browser flows run against a running app.
+
+## Failures to Fix
+
+<failures>
+$failures
+</failures>
+
+## Rules
+- Fix the IMPLEMENTATION so these contract checks pass
+- Do NOT weaken, skip, or delete the contract checks themselves
+- Do NOT use 'git add -A' or 'git add .' - stage explicit paths
+- This is attempt $attempt of $MAX_CONTRACT_FIX_ATTEMPTS
+
+## Completion Signal
+When done, output exactly: CONTRACT FIX COMPLETE
+If you cannot fix everything, output: CONTRACT FIX INCOMPLETE: <what remains>"
+
+    if [ "${DRY_RUN:-false}" = true ]; then
+        echo "[DRY RUN] Would run contract fix (attempt $attempt)"
+        return 0
+    fi
+
+    run_claude_to_file "$fix_prompt"
+    local result
+    result=$(read_phase_tail)
+
+    if echo "$result" | grep -q "CONTRACT FIX COMPLETE"; then
+        log_success "Contract fix reported complete (attempt $attempt)"
+        return 0
+    fi
+    log_warn "Contract fix incomplete (attempt $attempt)"
+    return 1
+}
+
+# Top-level gate: run contract validation with a bounded self-heal loop.
+# Non-blocking for the run itself, but sets CONTRACT_VALIDATION_FAILED so the
+# epic exits non-zero if contracts never pass.
+contract_validation_gate() {
+    local h="$1"
+
+    local attempt=0
+    while true; do
+        if run_contract_validation "$h"; then
+            log_success "Contract validation passed"
+            return 0
+        fi
+
+        if [ -z "$CONTRACT_EXEC_FAILURES" ]; then
+            log_warn "Contract validation failed without captured detail - continuing"
+            CONTRACT_VALIDATION_FAILED=true
+            return 1
+        fi
+
+        attempt=$((attempt + 1))
+        if [ "$attempt" -gt "$MAX_CONTRACT_FIX_ATTEMPTS" ]; then
+            log_error "Contract validation still failing after $MAX_CONTRACT_FIX_ATTEMPTS fix attempt(s)"
+            type add_metrics_issue >/dev/null 2>&1 && add_metrics_issue "epic-${EPIC_ID:-?}" "contract_validation_failed" "Contract checks failing after $MAX_CONTRACT_FIX_ATTEMPTS attempts"
+            CONTRACT_VALIDATION_FAILED=true
+            return 1
+        fi
+
+        log_warn "Contract failures found, attempting fix $attempt of $MAX_CONTRACT_FIX_ATTEMPTS"
+        execute_contract_fix_phase "$CONTRACT_EXEC_FAILURES" "$attempt" || true
+
+        if [ "${NO_COMMIT:-false}" = false ] && [ "${DRY_RUN:-false}" = false ]; then
+            git -C "$PROJECT_ROOT" add -u 2>/dev/null || true
+            git -C "$PROJECT_ROOT" commit -m "fix(epic-${EPIC_ID:-0}): contract validation fixes (attempt $attempt)" 2>/dev/null || true
+        fi
+    done
 }
