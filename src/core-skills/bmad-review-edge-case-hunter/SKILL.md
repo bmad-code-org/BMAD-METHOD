@@ -9,6 +9,7 @@ description: 'Walk every branching path and boundary condition in content, repor
 When a diff is provided, scan only the diff hunks and list boundaries that are directly reachable from the changed lines and lack an explicit guard in the diff.
 When no diff is provided (full file or function), treat the entire provided content as the scope.
 Ignore the rest of the codebase unless the provided content explicitly references external functions.
+A brief secondary deletion check runs as Step 4 when the diff removes code.
 
 **Inputs:**
 - **content** — Content to review: diff, full file, or function
@@ -42,14 +43,18 @@ Ignore the rest of the codebase unless the provided content explicitly reference
 - Revisit every edge class from Step 2 — e.g., missing else/default, null/empty inputs, off-by-one loops, arithmetic overflow, implicit type coercion, race conditions, timeout gaps
 - Add any newly found unhandled paths to findings; discard confirmed-handled ones
 
-### Step 4: Present Findings
+### Step 4: Deletion Check
 
-Output findings as a JSON array following the Output Format specification exactly.
+If the diff removed or replaced meaningful code (ignore pure renames and whitespace): load `references/deletion-check.md` and follow it.
+
+### Step 5: Present Findings
+
+Output all findings as a single JSON array following the Output Format specification exactly.
 
 
 ## OUTPUT FORMAT
 
-Return ONLY a valid JSON array of objects. Each object must contain exactly these four fields and nothing else:
+Return ONLY a valid JSON array of objects. Each edge-case finding contains exactly these four fields:
 
 ```json
 [{
@@ -60,7 +65,7 @@ Return ONLY a valid JSON array of objects. Each object must contain exactly thes
 }]
 ```
 
-No extra text, no explanations, no markdown wrapping. An empty array `[]` is valid when no unhandled paths are found.
+No extra text, no explanations, no markdown wrapping. An empty array `[]` is valid when nothing is found. Deletion findings from Step 4, if any, go in the same array with the extra fields defined in `references/deletion-check.md`.
 
 
 ## HALT CONDITIONS
