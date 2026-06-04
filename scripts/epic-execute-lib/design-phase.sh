@@ -137,7 +137,12 @@ This story involves UI. Your plan MUST address these in the \"frontend\" object:
 - Every interactive component's states: loading, empty, error, success, disabled
 - Accessibility: keyboard navigation, ARIA, focus management, color contrast
 - Responsive behavior across breakpoints
-- Which existing design-system components/tokens to reuse (do not reinvent)"
+- Which existing design-system components/tokens to reuse (do not reinvent)
+- A stable data-testid for every element a user interacts with (button, input,
+  link), so UI contract flows can target it reliably. List them in test_ids on
+  each component. New/modified interactive elements MUST get a data-testid.
+- User flows: for each AC, the navigate -> interact -> expected-outcome path,
+  and whether the action is allowed for all users or restricted by role"
 
     local be_lens="## Backend Planning Lens
 
@@ -165,8 +170,8 @@ build_domain_schema() {
     local domain="$1"
 
     local fe_schema="  \"frontend\": {
-    \"components\": [{\"name\": \"...\", \"new_or_existing\": \"new|existing\", \"states\": [\"loading\",\"empty\",\"error\",\"success\",\"disabled\"]}],
-    \"user_flows\": [\"...\"],
+    \"components\": [{\"name\": \"...\", \"new_or_existing\": \"new|existing\", \"states\": [\"loading\",\"empty\",\"error\",\"success\",\"disabled\"], \"test_ids\": [\"kebab-case-testid\"]}],
+    \"user_flows\": [{\"ac\": \"AC1\", \"expect\": \"allowed|forbidden\", \"role\": \"<role or any>\", \"steps\": [\"navigate to ...\", \"click ...\", \"expect ...\"]}],
     \"accessibility\": [\"...\"],
     \"responsive\": [\"...\"],
     \"design_system_usage\": [\"...\"]
@@ -503,11 +508,13 @@ run_design_critic() {
     case "$domain" in
         frontend) domain_checks="- Every interactive component enumerates ALL of its states (loading, empty, error, success, disabled)
 - Accessibility is addressed (keyboard navigation, ARIA, focus management, contrast)
-- Responsive behavior is specified" ;;
+- Responsive behavior is specified
+- Every new/modified interactive element has a stable data-testid (test_ids)
+- Each AC has a user_flow with steps and an allowed/forbidden expectation" ;;
         backend)  domain_checks="- Every state-changing operation has an explicit error path AND defined status codes
 - Data-model / migration impact is covered (and migration reversibility noted)
 - Concurrency / idempotency is addressed where state changes" ;;
-        *)        domain_checks="- (Frontend) every interactive component enumerates ALL states (loading/empty/error/success/disabled); accessibility and responsive behavior are addressed
+        *)        domain_checks="- (Frontend) every interactive component enumerates ALL states (loading/empty/error/success/disabled); accessibility and responsive behavior are addressed; interactive elements have data-testid; each AC has a user_flow with an allowed/forbidden expectation
 - (Backend) every state-changing operation has an explicit error path and defined status codes; data-model/migration impact is covered" ;;
     esac
 
@@ -662,9 +669,10 @@ validate_domain_completeness() {
         return 0
     fi
 
-    # Frontend: every interactive component should enumerate its states
+    # Frontend: components should enumerate states AND expose test_ids so UI
+    # contract flows can target them.
     if [ "$domain" = "frontend" ] || [ "$domain" = "fullstack" ]; then
-        local comp_count states_missing
+        local comp_count states_missing testid_missing
         comp_count=$(echo "$json" | jq '[.frontend.components[]?] | length' 2>/dev/null || echo 0)
         comp_count=$(echo "$comp_count" | tr -d '[:space:]'); [ -z "$comp_count" ] && comp_count=0
         if [ "$comp_count" -gt 0 ]; then
@@ -673,6 +681,13 @@ validate_domain_completeness() {
             if [ "$states_missing" -gt 0 ]; then
                 log_warn "Design: $states_missing frontend component(s) missing states for $story_id"
                 type add_metrics_issue >/dev/null 2>&1 && add_metrics_issue "$story_id" "design_domain_incomplete" "$states_missing FE component(s) missing states"
+            fi
+
+            testid_missing=$(echo "$json" | jq '[.frontend.components[]? | select((.test_ids | length) == 0)] | length' 2>/dev/null || echo 0)
+            testid_missing=$(echo "$testid_missing" | tr -d '[:space:]'); [ -z "$testid_missing" ] && testid_missing=0
+            if [ "$testid_missing" -gt 0 ]; then
+                log_warn "Design: $testid_missing frontend component(s) without a data-testid for $story_id"
+                type add_metrics_issue >/dev/null 2>&1 && add_metrics_issue "$story_id" "design_domain_incomplete" "$testid_missing FE component(s) missing test_ids"
             fi
         fi
     fi

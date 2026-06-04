@@ -50,13 +50,14 @@ find_contract_harness() {
 # =============================================================================
 
 # Emit every command string declared in the harness (setup, start, teardown,
-# and the datastore verify command), one per line.
+# the datastore verify command, and any UI role-seed commands), one per line.
 _harness_commands() {
     local h="$1"
     yq '(.environment.setup // [])[]' "$h" 2>/dev/null
     yq '.environment.start.command // ""' "$h" 2>/dev/null
     yq '(.environment.teardown // [])[]' "$h" 2>/dev/null
     yq '.datastore.verify_command // ""' "$h" 2>/dev/null
+    yq '(.ui.roles // {})[].seed // ""' "$h" 2>/dev/null
 }
 
 # Derive required environment variables: references inside command strings
@@ -99,6 +100,89 @@ _derive_files() {
         _harness_commands "$h" | tr ' ' '\n' | grep -E '/|\.(ya?ml|json|toml|sh|env)$' 2>/dev/null
         yq '(.requires.files // [])[]' "$h" 2>/dev/null
     } | sed '/^$/d' | sort -u
+}
+
+# =============================================================================
+# UI Contract Checks
+# =============================================================================
+
+# UI-specific preflight: verify the browser driver, tests directory, and role
+# seeds needed to run UI contract flows are present. Prints report lines and
+# sets UI_PREFLIGHT_MISSING to the number of missing prerequisites.
+UI_PREFLIGHT_MISSING=0
+_ui_preflight() {
+    local h="$1"
+    UI_PREFLIGHT_MISSING=0
+
+    # Only run when a ui: section is declared
+    local has_ui
+    has_ui=$(yq '.ui // ""' "$h" 2>/dev/null)
+    [ -z "$has_ui" ] && return 0
+
+    local check="✓" cross="✗"
+    log "UI contract (frontend):"
+
+    # Browser driver (default: playwright). Presence check only - browser
+    # binaries and a live boot are verified by the deep connectivity smoke.
+    local driver
+    driver=$(yq '.ui.driver // "playwright"' "$h" 2>/dev/null)
+    case "$driver" in
+        playwright)
+            if [ -x "$PROJECT_ROOT/node_modules/.bin/playwright" ] \
+               || ls "$PROJECT_ROOT"/playwright.config.* >/dev/null 2>&1 \
+               || command -v playwright >/dev/null 2>&1; then
+                echo "    $check playwright driver available"
+            else
+                echo "    $cross playwright not found (no node_modules/.bin/playwright, config, or PATH)"
+                UI_PREFLIGHT_MISSING=$((UI_PREFLIGHT_MISSING + 1))
+            fi
+            ;;
+        cypress)
+            if [ -x "$PROJECT_ROOT/node_modules/.bin/cypress" ] \
+               || ls "$PROJECT_ROOT"/cypress.config.* >/dev/null 2>&1 \
+               || command -v cypress >/dev/null 2>&1; then
+                echo "    $check cypress driver available"
+            else
+                echo "    $cross cypress not found"
+                UI_PREFLIGHT_MISSING=$((UI_PREFLIGHT_MISSING + 1))
+            fi
+            ;;
+        *)
+            echo "    $cross unknown ui.driver '$driver' (expected playwright or cypress)"
+            UI_PREFLIGHT_MISSING=$((UI_PREFLIGHT_MISSING + 1))
+            ;;
+    esac
+
+    # Tests directory (if declared)
+    local tests_dir
+    tests_dir=$(yq '.ui.tests_dir // ""' "$h" 2>/dev/null)
+    if [ -n "$tests_dir" ]; then
+        if [ -d "$PROJECT_ROOT/$tests_dir" ]; then
+            echo "    $check tests_dir $tests_dir"
+        else
+            echo "    $cross tests_dir $tests_dir (not found)"
+            UI_PREFLIGHT_MISSING=$((UI_PREFLIGHT_MISSING + 1))
+        fi
+    fi
+
+    # Each declared role must define how to obtain a session (seed)
+    local roles
+    roles=$(yq '(.ui.roles // {}) | keys | .[]' "$h" 2>/dev/null)
+    if [ -n "$roles" ]; then
+        while IFS= read -r role; do
+            [ -z "$role" ] && continue
+            local seed
+            seed=$(yq ".ui.roles.${role}.seed // \"\"" "$h" 2>/dev/null)
+            if [ -n "$seed" ]; then
+                echo "    $check role '$role' seed declared"
+            else
+                echo "    $cross role '$role' has no seed (cannot establish a session)"
+                UI_PREFLIGHT_MISSING=$((UI_PREFLIGHT_MISSING + 1))
+            fi
+        done <<< "$roles"
+    fi
+
+    return 0
 }
 
 # =============================================================================
@@ -210,10 +294,14 @@ contract_preflight() {
         done <<< "$files"
     fi
 
-    # 4. Safety guard on datastore connection
+    # 4. UI contract prerequisites (driver, tests dir, role seeds)
+    _ui_preflight "$h"
+    missing=$((missing + UI_PREFLIGHT_MISSING))
+
+    # 5. Safety guard on datastore connection
     _check_datastore_safety "$h"
 
-    # 5. Optional deep connectivity smoke (boots the sample environment)
+    # 6. Optional deep connectivity smoke (boots the sample environment)
     if [ "${PREFLIGHT_DEEP:-false}" = true ]; then
         if [ "$missing" -gt 0 ]; then
             log_warn "Skipping deep connectivity smoke - presence checks failed first"
@@ -372,6 +460,40 @@ cases:
     request: { method: POST, path: /api/example, body: { name: "x" } }
     expect: { status: 201, body_contains: { name: "x" } }
     verify_persistence: { table: example, where: { name: "x" }, exists: true }
+
+# UI contract: validate user flows in a real browser (Playwright). Flows can be
+# declared here and/or auto-generated from the design plan's frontend.user_flows.
+# (Preflight validates the driver/tests_dir/role seeds now; flow execution is
+# the next increment.)
+ui:
+  driver: playwright              # auto-detected from your config if present
+  base_url: http://localhost:3000
+  tests_dir: e2e/                 # where flow specs live
+  selector_strategy: data-testid  # with role/label fallback
+  # How to obtain a session per role (the credentials piece, for forbidden checks):
+  roles:
+    editor: { seed: "npm run seed:user -- --role editor" }
+    viewer: { seed: "npm run seed:user -- --role viewer" }
+  flows:
+    - name: "editor can create a quote"
+      ac: AC1
+      expect: allowed             # allowed | forbidden
+      as_role: editor
+      steps:
+        - goto: /quotes
+        - click: { testid: new-quote-button }
+        - fill: { testid: quote-customer, value: "Acme" }
+        - click: { testid: save-quote }
+      assert:
+        - visible: { testid: quote-success }
+        - persisted: { table: quotes, where: { customer: "Acme" } }  # chains to datastore
+    - name: "viewer cannot create a quote"
+      ac: AC5
+      expect: forbidden
+      as_role: viewer
+      steps: [ { goto: /quotes } ]
+      assert:
+        - hidden: { testid: new-quote-button }
 YAML
 
     log_success "Created harness template: $target"

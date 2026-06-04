@@ -994,8 +994,10 @@ FILES:
 CONTRACT VALIDATION:
     If a contract-harness.yaml is present, startup runs a preflight that checks
     every credential, command, and file the harness needs (inferred from the
-    harness itself). A dry run prints a readiness report and exits non-zero when
-    anything required is missing, so it works as a CI readiness gate:
+    harness itself). This covers API/database contracts and, via the ui: section,
+    frontend user-flow contracts (Playwright driver, tests dir, and role seeds).
+    A dry run prints a readiness report and exits non-zero when anything required
+    is missing, so it works as a CI readiness gate:
         ./epic-execute.sh <id> --dry-run        # presence checks only
         ./epic-execute.sh <id> --dry-run --preflight-deep   # + connectivity smoke
         ./epic-execute.sh --init-harness        # scaffold a starter harness
