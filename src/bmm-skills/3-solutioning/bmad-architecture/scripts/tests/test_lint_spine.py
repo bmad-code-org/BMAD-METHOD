@@ -1,0 +1,138 @@
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["pytest>=8.0"]
+# ///
+"""Tests for lint_spine.py. Run: uv run --with pytest pytest scripts/tests/test_lint_spine.py
+
+The spine under test: a clean spine lints empty; the linter catches exactly the
+mechanical defects a prompt is unreliable at — literal placeholders, AD-n id breakage,
+AD-n blocks missing required fields, and unpinned dependency versions.
+"""
+import importlib.util
+import sys
+from pathlib import Path
+
+import pytest
+
+_SPEC = importlib.util.spec_from_file_location(
+    "lint_spine", Path(__file__).resolve().parent.parent / "lint_spine.py"
+)
+lint_spine = importlib.util.module_from_spec(_SPEC)
+sys.modules["lint_spine"] = lint_spine
+_SPEC.loader.exec_module(lint_spine)
+
+
+CLEAN = """---
+name: 'Demo'
+stack:
+  key_deps:
+    - fastapi@0.115
+    - pydantic@2.9
+---
+
+## Invariants & Rules
+
+### AD-1 — single write path
+
+- **Binds:** all
+- **Prevents:** divergent mutation
+- **Rule:** state changes only through the command bus
+
+### AD-2 — layered deps `[ADOPTED]`
+
+- **Binds:** all
+- **Prevents:** import cycles
+- **Rule:** ui -> app -> domain, never backward
+
+```mermaid
+flowchart LR
+  A --> B{decision}
+```
+"""
+
+
+def cats(result):
+    return sorted(f["category"] for f in result["findings"])
+
+
+def test_clean_spine_passes():
+    result = lint_spine.lint(CLEAN)
+    assert result["ok"] is True
+    assert result["total_findings"] == 0
+
+
+def test_mermaid_braces_not_flagged():
+    # the {decision} node lives in a fenced block and must not read as a template token
+    result = lint_spine.lint(CLEAN)
+    assert "placeholder" not in cats(result)
+
+
+def test_placeholder_markers_caught():
+    text = CLEAN.replace("the command bus", "TBD")
+    result = lint_spine.lint(text)
+    assert "placeholder" in cats(result)
+
+
+def test_similar_to_caught():
+    text = CLEAN.replace("import cycles", "similar to AD-1")
+    result = lint_spine.lint(text)
+    assert any("cross-reference" in f["detail"] for f in result["findings"])
+
+
+def test_unfilled_template_token_caught():
+    text = CLEAN.replace("single write path", "{decision}")
+    result = lint_spine.lint(text)
+    assert any(f["category"] == "placeholder" for f in result["findings"])
+
+
+def test_duplicate_ad_id_caught():
+    text = CLEAN.replace("### AD-2 — layered deps `[ADOPTED]`", "### AD-1 — layered deps")
+    result = lint_spine.lint(text)
+    assert "ad_id" in cats(result)
+
+
+def test_non_monotonic_ad_id_caught():
+    text = CLEAN.replace("### AD-2 — layered deps `[ADOPTED]`", "### AD-5 — layered deps").replace(
+        "### AD-1 — single write path", "### AD-9 — single write path"
+    )
+    result = lint_spine.lint(text)
+    assert any("non-monotonic" in f["detail"] for f in result["findings"])
+
+
+def test_missing_field_caught():
+    text = CLEAN.replace("- **Rule:** state changes only through the command bus\n", "")
+    result = lint_spine.lint(text)
+    assert any(f["category"] == "ad_fields" and "rule" in f["detail"] for f in result["findings"])
+
+
+def test_unpinned_dep_caught():
+    text = CLEAN.replace("- fastapi@0.115", "- fastapi")
+    result = lint_spine.lint(text)
+    assert "version_pin" in cats(result)
+
+
+def test_inline_key_deps_unpinned():
+    text = CLEAN.replace("  key_deps:\n    - fastapi@0.115\n    - pydantic@2.9", "  key_deps: [fastapi, redis@7]")
+    result = lint_spine.lint(text)
+    pins = [f for f in result["findings"] if f["category"] == "version_pin"]
+    assert len(pins) == 1 and "fastapi" in pins[0]["detail"]
+
+
+def test_empty_key_deps_ok():
+    text = CLEAN.replace("  key_deps:\n    - fastapi@0.115\n    - pydantic@2.9", "  key_deps: []")
+    result = lint_spine.lint(text)
+    assert "version_pin" not in cats(result)
+
+
+def test_yaml_comments_not_parsed_as_deps():
+    # a SEED comment on the key_deps line must not read as an unpinned dependency
+    text = CLEAN.replace(
+        "  key_deps:\n    - fastapi@0.115\n    - pydantic@2.9",
+        "  key_deps:  # SEED — verified current 2026-06\n    - fastapi@0.115  # web framework",
+    )
+    result = lint_spine.lint(text)
+    assert "version_pin" not in cats(result)
+
+
+if __name__ == "__main__":
+    sys.exit(pytest.main([__file__, "-q"]))
