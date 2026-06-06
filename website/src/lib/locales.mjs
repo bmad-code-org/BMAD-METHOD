@@ -10,6 +10,13 @@
  * (no URL prefix). All other locales get a URL prefix matching their key.
  */
 
+/**
+ * @typedef {Object} Locale
+ * @property {string} label - The display name of the locale.
+ * @property {string} lang - The BCP 47 language tag.
+ */
+
+/** @type {Record<string, Locale>} */
 export const locales = {
   root: {
     label: 'English',
