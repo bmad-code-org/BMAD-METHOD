@@ -220,6 +220,51 @@ assert_grep '^devlog,bmad-agent-historian,' "_bmad/_config/bmad-help.csv"
 # the core baseline row is still present
 assert_grep ',bmad-help,Help,' "_bmad/_config/bmad-help.csv"
 
+# ─── 9d. legacy module (marketplace.json + module.yaml, strategy 1) ──────────
+note "install examples/legacy/bmad-mini-legacy (legacy marketplace.json)"
+run install "${EXAMPLES}/legacy/bmad-mini-legacy"
+assert_exit 0 "install legacy mini"
+[[ "${STDOUT}" == *"resolved legacy module mlg"* ]] && ok "stdout reports legacy resolution" \
+  || ko "expected 'resolved legacy module mlg' in stdout: ${STDOUT}"
+# Synthetic plugin.json is staged; marketplace.json is preserved verbatim.
+assert_path_exists "_bmad/mlg/.claude-plugin/plugin.json"
+assert_path_exists "_bmad/mlg/.claude-plugin/marketplace.json"
+# Skills under src/agents and src/workflows are flattened to skills/<basename>.
+assert_path_exists "_bmad/mlg/skills/mlg-agent-one/SKILL.md"
+assert_path_exists "_bmad/mlg/skills/mlg-flow/SKILL.md"
+# module.yaml / module-help.csv flattened from src/ to the module root.
+assert_path_exists "_bmad/mlg/module.yaml"
+assert_path_exists "_bmad/mlg/module-help.csv"
+# Undeclared trees are dropped — src/ wrapper and docs/ must not leak.
+assert_path_absent "_bmad/mlg/src"
+assert_path_absent "_bmad/mlg/docs"
+# The staged manifest carries canonical rewritten paths.
+assert_grep '"\./skills/mlg-agent-one"' "_bmad/mlg/.claude-plugin/plugin.json"
+assert_grep '"\./module\.yaml"' "_bmad/mlg/.claude-plugin/plugin.json"
+# Registered and merged like any community module. The manifest `name` is the
+# kebab plugin name (module.yaml#name "MLG: …" would fail NAME_REGEX).
+assert_grep '^  - name: mlg' "_bmad/_config/manifest.yaml"
+assert_grep 'source: community' "_bmad/_config/manifest.yaml"
+assert_grep '^mlg,' "_bmad/_config/bmad-help.csv"
+
+# ─── 9e. legacy with a reserved first-party code (gds) ───────────────────────
+note "install examples/legacy/bmad-reserved-legacy (reserved code on legacy path)"
+run install "${EXAMPLES}/legacy/bmad-reserved-legacy"
+assert_exit 0 "install legacy reserved code"
+assert_path_exists "_bmad/gds/module.yaml"
+assert_path_exists "_bmad/gds/skills/gds-agent-demo/SKILL.md"
+
+# ─── 9f. legacy synthesize fallback (strategy 5, no module.yaml) ─────────────
+note "install examples/legacy/bmad-synth-legacy (synthesized module.yaml)"
+run install "${EXAMPLES}/legacy/bmad-synth-legacy"
+assert_exit 0 "install legacy synth fallback"
+# module.yaml + module-help.csv are synthesized and written into the module root.
+assert_path_exists "_bmad/synthlg/module.yaml"
+assert_path_exists "_bmad/synthlg/module-help.csv"
+assert_path_exists "_bmad/synthlg/skills/synthlg-do-thing/SKILL.md"
+assert_grep '^code: synthlg' "_bmad/synthlg/module.yaml"
+assert_grep '^module,skill,display-name,' "_bmad/synthlg/module-help.csv"
+
 # ─── 10. remove minimal (no purge), preserve custom ─────────────────────────
 note "create _bmad/custom/mdlint to test preservation, then remove"
 mkdir -p _bmad/custom/mdlint

@@ -1,0 +1,26 @@
+code: mlg
+name: "MLG: Mini Legacy"
+description: "A minimal legacy module for testing the marketplace.json install path."
+module_version: 0.2.0
+default_selected: false
+
+# Variables from Core Config available:
+## output_folder
+
+artifacts_path:
+  prompt: "Where should mini-legacy artifacts be stored?"
+  default: "{output_folder}/mlg-artifacts"
+  result: "{project-root}/{value}"
+
+# Directories to create during installation
+directories:
+  - "{artifacts_path}"
+
+# Agent roster — essence only.
+agents:
+  - code: mlg-agent-one
+    name: Mini
+    title: Mini Agent
+    icon: "🧩"
+    team: testing
+    description: "A tiny agent that exists to exercise the legacy install path."

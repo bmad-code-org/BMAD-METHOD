@@ -44,7 +44,16 @@ export async function readAndValidateManifest(sourceDir) {
   } catch (e) {
     throw new BmadModuleError(EXIT.BAD_MANIFEST, `plugin.json failed to parse: ${e.message}`);
   }
+  return validateManifestObject(m);
+}
 
+// Validate an already-parsed manifest object against the install-time rules.
+// Shared by readAndValidateManifest (new-spec, from disk) and the legacy
+// resolver (which synthesizes a manifest from marketplace.json + module.yaml).
+// `allowReserved` lets the legacy path install first-party modules whose codes
+// (gds, bmm, cis, …) are reserved against new-spec community authors. Returns
+// the validated object.
+export function validateManifestObject(m, { allowReserved = false } = {}) {
   const missing = [];
   if (typeof m.name !== 'string') missing.push('name');
   if (typeof m.version !== 'string') missing.push('version');
@@ -69,7 +78,7 @@ export async function readAndValidateManifest(sourceDir) {
   if (!CODE_REGEX.test(m.bmad.code)) {
     throw new BmadModuleError(EXIT.BAD_MANIFEST, `plugin.json#bmad.code "${m.bmad.code}" must match ${CODE_REGEX}`);
   }
-  if (RESERVED_CODES.has(m.bmad.code)) {
+  if (!allowReserved && RESERVED_CODES.has(m.bmad.code)) {
     throw new BmadModuleError(EXIT.RESERVED_PREFIX, `plugin.json#bmad.code "${m.bmad.code}" is reserved`);
   }
   if (!semverValidRange(m.bmad.compatibility.bmadMethod)) {
@@ -80,4 +89,25 @@ export async function readAndValidateManifest(sourceDir) {
   }
 
   return m;
+}
+
+// Probe whether a source dir carries a new-spec manifest — a parseable
+// `.claude-plugin/plugin.json` with a `bmad{}` block. Returns false when the
+// file is absent or has no `bmad` object (→ caller tries the legacy resolver),
+// and true on parse failure so a malformed new manifest surfaces via
+// readAndValidateManifest rather than being silently treated as legacy.
+export async function hasBmadPluginJson(sourceDir) {
+  const manifestPath = path.join(sourceDir, '.claude-plugin', 'plugin.json');
+  let raw;
+  try {
+    raw = await fs.readFile(manifestPath, 'utf8');
+  } catch {
+    return false;
+  }
+  try {
+    const m = JSON.parse(raw);
+    return !!(m && typeof m === 'object' && m.bmad && typeof m.bmad === 'object');
+  } catch {
+    return true;
+  }
 }

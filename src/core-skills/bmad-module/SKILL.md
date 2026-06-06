@@ -5,7 +5,7 @@ description: Install, update, remove, or list community BMAD modules. Use when t
 
 # bmad-module
 
-Manage community BMAD modules — installable packages of skills, agents, and supporting assets that ship as standalone GitHub repos. Modules are staged under `_bmad/<bmad.code>/` and tracked in the existing manifests. On `install`, `update`, and `remove`, the script distributes (or prunes) the module's skills to **every coding assistant the user selected at `bmad install`** — read from the `ides:` list in `_bmad/_config/manifest.yaml` — so the module lands in Claude Code, Cursor, Copilot, etc. The canonical end state is skills living in the IDE directories (e.g. `.claude/skills/<id>/`), not in `_bmad/`. The same artifact also loads as a Claude Code plugin via its `.claude-plugin/plugin.json` manifest.
+Manage community BMAD modules — installable packages of skills, agents, and supporting assets that ship as standalone GitHub repos. Both module formats install: the current spec (a `.claude-plugin/plugin.json` with a `bmad{}` block) and the **legacy** format (a `.claude-plugin/marketplace.json` + `module.yaml`, e.g. `bmad-code-org/bmad-module-game-dev-studio`) — the script resolves a legacy repo into the same on-disk layout automatically. Modules are staged under `_bmad/<bmad.code>/` and tracked in the existing manifests. On `install`, `update`, and `remove`, the script distributes (or prunes) the module's skills to **every coding assistant the user selected at `bmad install`** — read from the `ides:` list in `_bmad/_config/manifest.yaml` — so the module lands in Claude Code, Cursor, Copilot, etc. The canonical end state is skills living in the IDE directories (e.g. `.claude/skills/<id>/`), not in `_bmad/`. The same artifact also loads as a Claude Code plugin via its `.claude-plugin/plugin.json` manifest.
 
 The script also completes the install in place, best-effort: it runs `npm install` when the module ships a `package.json` (skip with `bmad.install.skipNpm: true`), generates the module's `[modules.<code>]` / `[agents.<code>]` config blocks from its `module.yaml` (overridable with `--set`), creates the working directories it declares under `directories:`, and rebuilds `_bmad/_config/bmad-help.csv` so its skills appear in `bmad-help`. A failure in any of these is reported as a warning, not a failed install. Interactive config refinement remains the job of the module's `postInstallSkill`, if it declares one.
 
@@ -33,7 +33,7 @@ If the verb is ambiguous (e.g. the user says "manage modules"), ASK which verb t
 
 ### Step 2 — Parse the args
 
-- **install:** the user supplies `<source>` — `owner/repo` (GitHub short), a full git URL (`https://…` or `git@…`), or a local path. Optional flags: `--ref <branch-tag-or-sha>`, `--channel <stable|next|pinned>`, `--set <code>.<key>=<value>` (override a module config answer; repeatable), `--dry-run`.
+- **install:** the user supplies `<source>` — `owner/repo` (GitHub short), a full git URL (`https://…` or `git@…`), or a local path. Optional flags: `--ref <branch-tag-or-sha>`, `--channel <stable|next|pinned>`, `--set <code>.<key>=<value>` (override a module config answer; repeatable), `--module <code>`, `--dry-run`. Use `--module <code>` only when a legacy marketplace.json repo defines more than one module: the script exits 20 listing the available codes, then re-run picking one. First-party legacy modules whose codes are reserved (`gds`, `bmm`, …) install on the legacy path; the same reserved code in a current-spec `plugin.json` is still rejected (exit 21).
 - **update:** the user supplies `<code>` (the `_bmad/<code>/` folder name) or asks for "all"; in that case use `--all`. Optional `--ref`, `--channel <stable|next|pinned>`, `--set <code>.<key>=<value>`.
 - **remove:** the user supplies `<code>`. Use `--purge` only if they explicitly say "also remove customizations" or "purge".
 - **list:** no args. Use `--json` if the user asks for machine-readable.
@@ -78,12 +78,12 @@ On non-zero exit: print the exit code, the stderr message, and stop. Do not sugg
 
 The script's stderr always names the condition, so for most non-zero exits you just relay it (see CRITICAL RULES). These few change what you tell the user next:
 
-| Code | Meaning                                                              | What to tell the user                                              |
-| ---- | ------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| 5    | skill runtime files missing/corrupt — NOT a module rejection        | reinstall the skill (relay the script's guidance)                 |
-| 10   | no `_bmad/` directory in project                                     | run `bmad install` first                                          |
-| 80   | update aborted: locally modified files would be overwritten          | move overrides into `_bmad/custom/<code>/`, then retry            |
-| 90   | no such installed module (for `update`/`remove`)                     | check the code, or run `list` to see what's installed             |
+| Code | Meaning                                                      | What to tell the user                                  |
+| ---- | ------------------------------------------------------------ | ------------------------------------------------------ |
+| 5    | skill runtime files missing/corrupt — NOT a module rejection | reinstall the skill (relay the script's guidance)      |
+| 10   | no `_bmad/` directory in project                             | run `bmad install` first                               |
+| 80   | update aborted: locally modified files would be overwritten  | move overrides into `_bmad/custom/<code>/`, then retry |
+| 90   | no such installed module (for `update`/`remove`)             | check the code, or run `list` to see what's installed  |
 
 Any other non-zero exit: report the code and stderr verbatim and stop — stderr names the condition. For the full list of codes, run the script with `--help`.
 

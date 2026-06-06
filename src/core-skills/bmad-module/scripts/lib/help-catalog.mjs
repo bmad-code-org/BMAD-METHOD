@@ -15,7 +15,7 @@ import path from 'node:path';
 // Canonical per-module CSV header. Must match
 // tools/installer/modules/module-help-schema.js (MODULE_HELP_CSV_HEADER). A
 // per-module file whose header differs is loaded positionally with a warning.
-const MODULE_HELP_CSV_HEADER =
+export const MODULE_HELP_CSV_HEADER =
   'module,skill,display-name,menu-code,description,action,args,phase,preceded-by,followed-by,required,output-location,outputs';
 const COLUMN_COUNT = 13;
 const PHASE_INDEX = 7;

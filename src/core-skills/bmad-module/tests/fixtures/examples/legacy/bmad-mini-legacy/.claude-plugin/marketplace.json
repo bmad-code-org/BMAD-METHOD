@@ -1,0 +1,14 @@
+{
+  "name": "bmad-mini-legacy",
+  "owner": { "name": "Test Author" },
+  "license": "MIT",
+  "plugins": [
+    {
+      "name": "bmad-mini-legacy",
+      "source": "./",
+      "description": "A minimal legacy module for testing the marketplace.json install path.",
+      "version": "0.2.0",
+      "skills": ["./src/agents/mlg-agent-one", "./src/workflows/mlg-flow"]
+    }
+  ]
+}

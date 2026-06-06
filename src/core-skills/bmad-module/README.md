@@ -5,13 +5,14 @@ The core BMAD skill for installing, updating, removing, and listing community BM
 ## How it fits
 
 - **Authors** publish a single repo with `.claude-plugin/plugin.json` that works in both Claude Code's plugin marketplace and BMAD-METHOD.
+- **Legacy modules** (a `.claude-plugin/marketplace.json` + `module.yaml`, the pre-`plugin.json` format) also install: `install` resolves a legacy repo into a synthetic manifest and runs it through the same pipeline. See `lib/legacy-resolver.mjs`, a self-contained port of the full installer's `PluginResolver` strategies.
 - **Users** install via this skill — no CLI required. Modules are staged under `_bmad/<bmad.code>/`, then their skills are distributed to the coding assistants the user chose at `bmad install` time (the `ides:` list in `_bmad/_config/manifest.yaml`), exactly like official modules.
 - **BMAD-METHOD** treats community-installed modules as a new `source: 'community'` row in `manifest.yaml`; re-running `bmad install` preserves them (`manifest-generator.js` carries `source: 'community'` rows through regeneration).
 
 ## Verbs
 
 ```
-bmad-module install <source> [--ref <r>] [--channel <c>] [--dry-run]
+bmad-module install <source> [--ref <r>] [--channel <c>] [--module <code>] [--dry-run]
 bmad-module update  <code|--all> [--ref <r>] [--channel <c>]
 bmad-module remove  <code> [--purge]
 bmad-module list    [--json]
@@ -26,6 +27,7 @@ bmad-module list    [--json]
 - **`remove`** without `--purge` preserves `_bmad/custom/<code>/` so a re-install picks the customizations back up. `--purge` deletes them. Remove also prunes the module's skills from every configured IDE.
 - **IDE distribution** runs after every install/update/remove via a self-contained bundle of BMAD's real IDE engine, shipped at `lib/vendor/ide-sync.mjs` (built from `tools/installer/ide/*` by `lib/vendor/build-ide-sync.mjs`, gated by `vendor:check`). The skill execs it locally — no npx, no network. The same engine also backs the `bmad ide-sync` CLI command and the full installer's IDE setup, so all three stay in lockstep. If the bundle is unreachable on an older install, the skill says so and points the user at `bmad ide-sync`.
 - **Hooks / MCP / LSP / Claude subagents** declared in the module manifest are _copied_ but NOT auto-activated by this skill (they are Claude Code plugin surfaces, not skills). Use Claude Code's plugin manager to wire them up.
+- **Legacy resolution** keys off the absence of a `plugin.json#bmad`: if `marketplace.json` is present, the skill resolves the module via `module.yaml` (or synthesizes one from SKILL.md frontmatter when none exists). A repo defining more than one module exits 20 with the available codes; re-run with `--module <code>`. The reserved-code guard (exit 21) is relaxed on the legacy path so first-party modules (`gds`, `bmm`, …) install; current-spec `plugin.json` authors still get exit 21.
 
 ## Implementation
 
@@ -40,4 +42,4 @@ See `SKILL.md` for the full table. The script's stderr always names the conditio
 
 ## Tests
 
-Integration tests live in `tests/integration.test.sh` and run end-to-end on a fresh BMAD install. Fixtures for negative cases (collisions, path traversal, reserved codes) are under `tests/fixtures/`.
+Integration tests live in `tests/integration.test.sh` and run end-to-end on a fresh BMAD install. Fixtures for negative cases (collisions, path traversal, reserved codes) are under `tests/fixtures/`; legacy-format fixtures (strategy-1 module files, a reserved code, and the synthesize fallback) are under `tests/fixtures/examples/legacy/`.

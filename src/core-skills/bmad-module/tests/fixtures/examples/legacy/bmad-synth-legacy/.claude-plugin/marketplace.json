@@ -1,0 +1,14 @@
+{
+  "name": "bmad-synth-legacy",
+  "owner": { "name": "Test Author" },
+  "license": "MIT",
+  "plugins": [
+    {
+      "name": "synthlg",
+      "source": "./",
+      "description": "A legacy module with no module.yaml — exercises the synthesize fallback (strategy 5).",
+      "version": "0.3.0",
+      "skills": ["./src/skills/synthlg-do-thing"]
+    }
+  ]
+}

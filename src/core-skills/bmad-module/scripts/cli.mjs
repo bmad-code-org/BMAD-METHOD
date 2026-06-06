@@ -4,7 +4,7 @@
 // setup error instead of leaking a raw ESM stack trace. See bmad-module.mjs.
 //
 // Usage:
-//   node bmad-module.mjs install <source> [--ref <r>] [--channel <c>] [--dry-run] [--project-dir <p>]
+//   node bmad-module.mjs install <source> [--ref <r>] [--channel <c>] [--module <code>] [--dry-run] [--project-dir <p>]
 //   node bmad-module.mjs update <code|--all> [--ref <r>] [--channel <c>] [--project-dir <p>]
 //   node bmad-module.mjs remove <code> [--purge] [--project-dir <p>]
 //   node bmad-module.mjs list [--json] [--project-dir <p>]
@@ -86,6 +86,7 @@ export async function main() {
           source: parsed._[0],
           ref: parsed.flags['ref'] || null,
           channel: parsed.flags['channel'] || null,
+          module: parsed.flags['module'] || null,
           dryRun: !!parsed.flags['dry-run'],
           setOverrides,
           projectDir,
@@ -149,10 +150,14 @@ function printUsage() {
   process.stderr.write(`bmad-module — install, update, remove, or list BMAD community modules.
 
 USAGE
-  bmad-module install <source> [--ref <ref>] [--channel <c>] [--set <code>.<key>=<v>] [--dry-run]
+  bmad-module install <source> [--ref <ref>] [--channel <c>] [--module <code>] [--set <code>.<key>=<v>] [--dry-run]
   bmad-module update <code|--all> [--ref <ref>] [--channel <c>] [--set <code>.<key>=<v>]
   bmad-module remove <code> [--purge]
   bmad-module list [--json]
+
+INSTALL FLAGS
+  --module <code>        Pick one module by code when a legacy marketplace.json
+                         repo resolves to more than one
 
 GLOBAL FLAGS
   --project-dir <path>   Project root containing _bmad/ (default: cwd)
@@ -162,6 +167,7 @@ EXAMPLES
   bmad-module install acme/acme-devlog
   bmad-module install ./examples/minimal/acme-md-lint
   bmad-module install https://github.com/acme/acme-devlog --ref v0.4.0
+  bmad-module install bmad-code-org/bmad-module-game-dev-studio   # legacy module
   bmad-module list
   bmad-module update devlog
   bmad-module remove mdlint --purge

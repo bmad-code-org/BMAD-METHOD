@@ -1,8 +1,10 @@
 import path from 'node:path';
 import { EXIT, BmadModuleError } from './lib/exit.mjs';
 import { findBmadDir, ensureConfigDir } from './lib/bmad-dir.mjs';
+import fsp from 'node:fs/promises';
 import { parseSource, materializeSource } from './lib/source.mjs';
-import { readAndValidateManifest } from './lib/plugin-json.mjs';
+import { readAndValidateManifest, validateManifestObject, hasBmadPluginJson } from './lib/plugin-json.mjs';
+import { resolveLegacyModule } from './lib/legacy-resolver.mjs';
 import { readUserIgnores, buildIgnoreMatcher, buildCopyPlan, rewriteManifestPaths, validateDeclaredPaths } from './lib/install-plan.mjs';
 import { stageCopyPlan, atomicSwapDir } from './lib/fs-safe.mjs';
 import { readManifestYaml, addModuleToManifest, appendSkillManifestRows, appendFilesManifestRows } from './lib/manifest-ops.mjs';
@@ -13,8 +15,9 @@ import { createModuleDirectories } from './lib/module-dirs.mjs';
 import { regenerateHelpCatalog } from './lib/help-catalog.mjs';
 
 // Run the install verb. `opts` shape:
-//   { source, ref, sha, channel, dryRun, projectDir }
-// Returns nothing; throws BmadModuleError on failure.
+//   { source, ref, sha, channel, dryRun, module, setOverrides, projectDir }
+// `module` selects one module by code when a legacy marketplace.json resolves to
+// more than one. Returns nothing; throws BmadModuleError on failure.
 export async function runInstall(opts) {
   const projectDir = opts.projectDir || process.cwd();
 
@@ -30,8 +33,28 @@ export async function runInstall(opts) {
   const materialized = await materializeSource(descriptor, { ref: opts.ref || null });
 
   try {
-    // §3. Read + validate plugin.json.
-    const manifest = await readAndValidateManifest(materialized.dir);
+    // §3. Read + validate the manifest. New-spec modules carry a
+    // `.claude-plugin/plugin.json#bmad`; legacy modules carry a
+    // `.claude-plugin/marketplace.json` + module.yaml, which we resolve into a
+    // synthetic manifest of the same shape.
+    let manifest;
+    let synthesized = null;
+    if (await hasBmadPluginJson(materialized.dir)) {
+      manifest = await readAndValidateManifest(materialized.dir);
+    } else {
+      const legacy = await resolveLegacyModule(materialized.dir, { selector: opts.module || null });
+      if (!legacy) {
+        throw new BmadModuleError(
+          EXIT.BAD_MANIFEST,
+          `no .claude-plugin/plugin.json#bmad and no .claude-plugin/marketplace.json at ${materialized.dir}`,
+        );
+      }
+      // Legacy first-party modules (gds, bmm, …) legitimately use reserved codes.
+      validateManifestObject(legacy.manifest, { allowReserved: true });
+      manifest = legacy.manifest;
+      synthesized = legacy.synthesized;
+      process.stdout.write(`[bmad-module] resolved legacy module ${manifest.bmad.code} from marketplace.json\n`);
+    }
     const code = manifest.bmad.code;
 
     // §4. Collision check against installed manifest.
@@ -60,6 +83,19 @@ export async function runInstall(opts) {
           `${existingEntry.repoUrl || existingEntry.rawSource || existingEntry.npmPackage || '(local)'}. ` +
           `Module authors should pick a unique bmad.code.`,
       );
+    }
+
+    // Strategy-5 legacy modules have no module.yaml/module-help.csv on disk —
+    // the resolver synthesized them. Write them into the throwaway temp source so
+    // buildCopyPlan/validateDeclaredPaths discover them via the normal path (the
+    // synthetic manifest already points moduleDefinition/moduleHelpCsv at them).
+    if (synthesized) {
+      if (synthesized['module.yaml']) {
+        await fsp.writeFile(path.join(materialized.dir, 'module.yaml'), synthesized['module.yaml'], 'utf8');
+      }
+      if (synthesized['module-help.csv']) {
+        await fsp.writeFile(path.join(materialized.dir, 'module-help.csv'), synthesized['module-help.csv'], 'utf8');
+      }
     }
 
     // §5. Build install plan.
