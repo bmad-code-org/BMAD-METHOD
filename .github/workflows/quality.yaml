@@ -109,6 +109,12 @@ jobs:
       - name: Test agent compilation components
         run: npm run test:install
 
+      - name: Test bmad-module skill (source parsing + channels)
+        run: npm run test:skill-source
+
+      - name: Test bmad-module skill (end-to-end install/update/remove)
+        run: npm run test:skill
+
       - name: Validate file references
         run: npm run validate:refs
 

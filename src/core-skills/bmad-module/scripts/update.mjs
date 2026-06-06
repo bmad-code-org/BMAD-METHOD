@@ -16,7 +16,7 @@ import {
   readSkillCanonicalIdsForModule,
 } from './lib/manifest-ops.mjs';
 import { distributeToIdes } from './lib/ide-sync.mjs';
-import { finishModuleInstall } from './install.mjs';
+import { finishModuleInstall, resolveCloneTarget } from './install.mjs';
 
 // Update one installed module (or all when opts.all is true). v1 semantics:
 //   - Re-resolves the original source (or new --ref) and re-clones.
@@ -54,7 +54,14 @@ async function updateOne(bmadDir, projectDir, entry, opts) {
     throw new BmadModuleError(EXIT.BAD_MANIFEST, `module ${code} has no rawSource in manifest.yaml — cannot re-resolve`);
   }
   const descriptor = parseSource(entry.rawSource);
-  const materialized = await materializeSource(descriptor, { ref: opts.ref || entry.ref || null });
+  // Re-resolve against the channel/ref the module was installed with, unless the
+  // CLI overrides either. A `stable` entry re-resolves to the latest tag; a
+  // pinned entry stays put unless `--ref` moves it.
+  const target = await resolveCloneTarget(descriptor, {
+    ref: opts.ref ?? entry.ref ?? null,
+    channel: opts.channel ?? entry.channel ?? null,
+  });
+  const materialized = await materializeSource(descriptor, { ref: target.ref });
 
   try {
     // No-op fast path.
@@ -117,11 +124,11 @@ async function updateOne(bmadDir, projectDir, entry, opts) {
     await removeSkillManifestRows(bmadDir, code);
     await removeFilesManifestRows(bmadDir, code);
     await addModuleToManifest(bmadDir, code, {
-      version: manifest.bmad.moduleVersion || manifest.version,
+      version: descriptor.kind === 'git' ? target.version : manifest.bmad.moduleVersion || manifest.version,
       repoUrl: descriptor.kind === 'git' ? descriptor.url : null,
       sha: materialized.sha,
-      ref: opts.ref || entry.ref,
-      channel: opts.channel || (opts.ref ? 'pinned' : entry.channel || (descriptor.kind === 'git' ? 'next' : null)),
+      ref: materialized.ref,
+      channel: target.channel,
       rawSource: descriptor.rawInput,
       moduleName: manifest.name,
     });

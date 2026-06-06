@@ -3,6 +3,7 @@ import { EXIT, BmadModuleError } from './lib/exit.mjs';
 import { findBmadDir, ensureConfigDir } from './lib/bmad-dir.mjs';
 import fsp from 'node:fs/promises';
 import { parseSource, materializeSource } from './lib/source.mjs';
+import { resolveChannel } from './lib/channel-resolver.mjs';
 import { readAndValidateManifest, validateManifestObject, hasBmadPluginJson } from './lib/plugin-json.mjs';
 import { resolveLegacyModule } from './lib/legacy-resolver.mjs';
 import { readUserIgnores, buildIgnoreMatcher, buildCopyPlan, rewriteManifestPaths, validateDeclaredPaths } from './lib/install-plan.mjs';
@@ -28,9 +29,11 @@ export async function runInstall(opts) {
   }
   await ensureConfigDir(bmadDir);
 
-  // §2. Normalize + materialize source.
+  // §2. Normalize source, resolve the channel/ref to a concrete clone target,
+  // then materialize (clone into the shared cache and copy out a working tree).
   const descriptor = parseSource(opts.source);
-  const materialized = await materializeSource(descriptor, { ref: opts.ref || null });
+  const target = await resolveCloneTarget(descriptor, opts);
+  const materialized = await materializeSource(descriptor, { ref: target.ref });
 
   try {
     // §3. Read + validate the manifest. New-spec modules carry a
@@ -130,11 +133,14 @@ export async function runInstall(opts) {
 
     // §7. Register in manifests.
     await addModuleToManifest(bmadDir, code, {
-      version: manifest.bmad.moduleVersion || manifest.version,
+      // Git installs record the resolved channel version (tag for stable/pinned,
+      // 'main' for next) like the full installer; local installs keep the
+      // module's declared version since there is no clone ref.
+      version: descriptor.kind === 'git' ? target.version : manifest.bmad.moduleVersion || manifest.version,
       repoUrl: descriptor.kind === 'git' ? descriptor.url : null,
       sha: materialized.sha,
       ref: materialized.ref,
-      channel: opts.channel || (opts.ref ? 'pinned' : descriptor.kind === 'git' ? 'next' : null),
+      channel: target.channel,
       rawSource: descriptor.rawInput,
       moduleName: manifest.name,
     });
@@ -187,6 +193,54 @@ export async function runInstall(opts) {
   } finally {
     await materialized.cleanup();
   }
+}
+
+// Resolve a parsed source + CLI flags into a concrete clone target:
+//   { ref, channel, version }
+// ref     — git ref to clone (null = default branch / local source)
+// channel — manifest channel tag: 'stable' | 'pinned' | 'next' | null (local)
+// version — manifest version string for git installs (tag for stable/pinned,
+//           'main' for next); null for local (caller uses the module version).
+//
+// Mirrors the installer's channel semantics: an explicit --ref (or an @ref /
+// /tree/<ref> parsed from the source) pins; --channel stable resolves the latest
+// non-prerelease GitHub tag, falling back to next (with a warning) when there are
+// no tags, the URL isn't a GitHub repo, or the tags API is unreachable.
+export async function resolveCloneTarget(descriptor, opts) {
+  if (descriptor.kind !== 'git') {
+    return { ref: null, channel: null, version: null };
+  }
+
+  const explicitRef = opts.ref ?? descriptor.ref ?? null;
+  let channel = opts.channel || (explicitRef ? 'pinned' : 'next');
+
+  if (channel === 'pinned') {
+    if (explicitRef) {
+      return { ref: explicitRef, channel: 'pinned', version: explicitRef };
+    } else {
+      process.stderr.write(`[bmad-module] warning: --channel pinned needs a --ref; falling back to next.\n`);
+      channel = 'next';
+    }
+  }
+
+  if (channel === 'stable') {
+    try {
+      const r = await resolveChannel({ channel: 'stable', repoUrl: descriptor.url });
+      if (r.resolvedFallback) {
+        process.stderr.write(
+          `[bmad-module] note: no stable release found for ${descriptor.displayName} (${r.reason}); tracking the default branch.\n`,
+        );
+        return { ref: null, channel: 'next', version: 'main' };
+      }
+      return { ref: r.ref, channel: 'stable', version: r.version };
+    } catch (e) {
+      process.stderr.write(`[bmad-module] warning: could not resolve stable channel (${e.message}); tracking the default branch.\n`);
+      return { ref: null, channel: 'next', version: 'main' };
+    }
+  }
+
+  // next
+  return { ref: null, channel: 'next', version: 'main' };
 }
 
 // Shared post-copy completion for install and update: install JS deps, generate

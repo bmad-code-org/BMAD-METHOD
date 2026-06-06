@@ -33,8 +33,8 @@ If the verb is ambiguous (e.g. the user says "manage modules"), ASK which verb t
 
 ### Step 2 — Parse the args
 
-- **install:** the user supplies `<source>` — `owner/repo` (GitHub short), a full git URL (`https://…` or `git@…`), or a local path. Optional flags: `--ref <branch-tag-or-sha>`, `--channel <stable|next|pinned>`, `--set <code>.<key>=<value>` (override a module config answer; repeatable), `--module <code>`, `--dry-run`. Use `--module <code>` only when a legacy marketplace.json repo defines more than one module: the script exits 20 listing the available codes, then re-run picking one. First-party legacy modules whose codes are reserved (`gds`, `bmm`, …) install on the legacy path; the same reserved code in a current-spec `plugin.json` is still rejected (exit 21).
-- **update:** the user supplies `<code>` (the `_bmad/<code>/` folder name) or asks for "all"; in that case use `--all`. Optional `--ref`, `--channel <stable|next|pinned>`, `--set <code>.<key>=<value>`.
+- **install:** the user supplies `<source>` — `owner/repo` (GitHub short), a full git URL (`https://…` or `git@…`), or a local path. A source may carry an `@<tag-or-branch>` suffix (`owner/repo@v1.2.3`) and a git URL may be a browser-style deep link (`https://github.com/owner/repo/tree/<ref>/<subdir>`, GitLab `/-/tree/…`, Gitea `/src/branch/…`, or `?path=`): the script extracts the ref and a repo subdirectory automatically, so a module living in a monorepo subfolder installs directly. Optional flags: `--ref <branch-or-tag>`, `--channel <stable|next|pinned>`, `--set <code>.<key>=<value>` (override a module config answer; repeatable), `--module <code>`, `--dry-run`. Channels: `pinned` clones an explicit `--ref`/`@ref`; `stable` resolves the latest non-prerelease GitHub release tag (falls back to the default branch when there are no tags / the host isn't GitHub / the tags API is unreachable); `next` (the default for a bare git source) tracks the default branch. Use `--module <code>` only when a legacy marketplace.json repo defines more than one module: the script exits 20 listing the available codes, then re-run picking one. First-party legacy modules whose codes are reserved (`gds`, `bmm`, …) install on the legacy path; the same reserved code in a current-spec `plugin.json` is still rejected (exit 21).
+- **update:** the user supplies `<code>` (the `_bmad/<code>/` folder name) or asks for "all"; in that case use `--all`. Optional `--ref`, `--channel <stable|next|pinned>`, `--set <code>.<key>=<value>`. Without overrides, update re-resolves the channel the module was installed with — a `stable` module moves to the latest release tag, a `pinned` module stays put unless `--ref` moves it, and a `next` module re-pulls the default branch.
 - **remove:** the user supplies `<code>`. Use `--purge` only if they explicitly say "also remove customizations" or "purge".
 - **list:** no args. Use `--json` if the user asks for machine-readable.
 
@@ -96,5 +96,9 @@ User: "Try installing examples/minimal/acme-md-lint first as a dry-run" → Run 
 User: "What modules do I have installed?" → Run `… list`. No confirmation needed (read-only).
 
 User: "Update the devlog module to v0.5.0" → Confirm, then run `… update devlog --ref v0.5.0`.
+
+User: "Install the studio module on the stable channel" → Confirm, then run `… install acme/acme-studio --channel stable` (resolves the latest release tag).
+
+User: "Install the linter that lives in the tools/ folder of this monorepo" → Confirm, then run `… install https://github.com/acme/monorepo/tree/main/tools/linter` (ref + subdir are parsed from the URL).
 
 User: "Remove the mdlint module and wipe its customizations too" → Confirm, then run `… remove mdlint --purge`.
