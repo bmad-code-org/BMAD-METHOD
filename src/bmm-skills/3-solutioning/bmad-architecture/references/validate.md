@@ -8,13 +8,20 @@ Note the paths — `.memlog.md`, the driving spec (if any), and `ARCHITECTURE-SP
 
 ## Run the Reviewer Gate
 
-Run the Reviewer Gate against `ARCHITECTURE-SPINE.md`. **SKILL.md's menu is the single source** — rubric walker, the **consistency auditor** (mechanically walks the Capability → Architecture Map for orphans, uncovered capabilities, and terminology drift), the **adversarial divergence-hunter** (below), `{workflow.finalize_reviewers}`, and any ad-hoc lens. The rubric walker is the default entry; under Validate intent the consistency auditor is **on by default** (the intent where mechanical orphan-walking matters most), and the divergence-hunter is **on by default whenever stakes are high** — regulated, enterprise, or cross-team — since a missed divergence point is the spine's costliest failure. Validate additionally runs the synthesis pipeline below.
+This file owns the canonical reviewer menu (SKILL.md routes here). Run the gate against `ARCHITECTURE-SPINE.md`; selected reviewers run as parallel subagents, each writing `{doc_workspace}/review-{slug}.md` and returning a compact summary.
+
+- **rubric walker** — the default entry; pipeline below.
+- **consistency auditor** — mechanically walks the Capability → Architecture Map for orphans, uncovered capabilities, and terminology drift. On by default under Validate intent (where mechanical orphan-walking matters most).
+- **adversarial divergence-hunter** — refutational reviewer (prompt below); on by default whenever stakes are high (regulated, enterprise, cross-team), since a missed divergence point is the spine's costliest failure. Lower-stakes runs may skip it.
+- **`{workflow.finalize_reviewers}`** plus any **ad-hoc lens** the content warrants (a security/compliance lens for regulated stakes, and similar).
+
+Validate additionally runs the synthesis pipeline below.
 
 ## Rubric-walker pipeline
 
 First run `python3 {skill-root}/scripts/lint_spine.py --workspace {doc_workspace}` and hand its JSON to the walker, so the mechanical half of decision-integrity (literal placeholders, duplicate or non-monotonic `AD-n` IDs, `AD-n` blocks missing Binds/Prevents/Rule, unpinned `name@version` stack entries) is already settled and the walker spends judgment on the semantic half. Spawn the rubric walker as a subagent with this prompt:
 
-> You are validating an architecture **spine** — a consistency contract, not a design document. Its job is to fix the **invariants** (the durable rules a clean codebase can't reveal — paradigm, boundaries, who-may-depend-on-whom, state mutation) that keep the independently-built level below (features, epics, or stories, per its altitude) coherent, while treating structure (stack, tree, full data shape) as disposable **seed** and leaving everything else open. Read its `.memlog.md`, the driving spec if one exists, and `ARCHITECTURE-SPINE.md`. Judge each dimension below — *strong / adequate / thin / broken* — and write findings only where they add information. Cite specific spine locations and quote phrases. Severity ranks impact on the spine's job (cross-unit consistency), not how easy the fix is.
+> You are validating an architecture **spine** — a consistency contract that fixes only the **invariants** (paradigm, boundaries, who-may-depend-on-whom, state mutation) keeping the independently-built level below (features, epics, or stories, per its altitude) coherent, treating stack/tree/data-shape as disposable **seed**. Read its `.memlog.md`, the driving spec if one exists, and `ARCHITECTURE-SPINE.md`. Judge each dimension below — *strong / adequate / thin / broken* — and write findings only where they add information. Cite specific spine locations and quote phrases. Severity ranks impact on the spine's job (cross-unit consistency), not how easy the fix is.
 >
 > Dimensions:
 > 1. **Consistency coverage** — does it fix the real divergence points for the units one level below? Actively hunt for conflict points it *missed* (where two independent builders could still diverge). This is the primary lens.
@@ -30,7 +37,7 @@ First run `python3 {skill-root}/scripts/lint_spine.py --workspace {doc_workspace
 
 ## Adversarial divergence-hunter
 
-The spine's costliest failure is a *missed* divergence point, so high-stakes runs (regulated, enterprise, cross-team) get a dedicated adversarial reviewer by default — refutational, not evaluative, and orthogonal to the rubric walker's judgment. Lower-stakes runs may skip it. Spawn it as a subagent with this prompt:
+Refutational, not evaluative, and orthogonal to the rubric walker's judgment (stakes-gating is in the menu above). Spawn it as a subagent with this prompt:
 
 > You are an adversarial reviewer of an architecture **spine** — a consistency contract whose one job is to stop the units one level below (features, epics, or stories, per its altitude) from being built incompatibly. Your stance is refutation, not evaluation: assume there is a hole and find it. Read its `.memlog.md`, the driving spec if one exists, and `ARCHITECTURE-SPINE.md`. Then attack:
 > 1. **Hunt the missed divergence.** Walk the units one level down and try to construct two that, each obeying the spine to the letter, still build incompatibly — different shapes for shared data, two owners of the same entity, incompatible contracts across a boundary, conflicting state-mutation paths. Every pair you can construct is a hole the spine must close.
@@ -40,14 +47,12 @@ The spine's costliest failure is a *missed* divergence point, so high-stakes run
 >
 > Report only real holes, each as: the two divergent builds you constructed, the spine location that should have prevented it, and the minimal fix (a new `AD-n`, a tightened `Rule`, or a deferral pulled back in). Do not restate what the spine got right; a confirmed hole is High or Critical severity. Write your review to `{doc_workspace}/review-divergence-hunter.md`; return ONLY a compact summary (hole count by severity, the sharpest one, file path).
 
-Beyond these, the gate dispatches `{workflow.finalize_reviewers}` and any ad-hoc lens the parent judges warranted (a security/compliance lens for regulated stakes, and similar) — the same menu SKILL.md assembles, no subset. Each writes `{doc_workspace}/review-{slug}.md` and returns a compact summary. Run in parallel.
-
 ## Synthesis pipeline
 
 Once every selected reviewer has returned, the parent consolidates one markdown report. **Do not skip under Validate intent** — it is the persistent artifact the user opens.
 
 1. Read every `{doc_workspace}/review-*.md`.
-2. Derive a grade from the rubric verdicts and severity counts: *Excellent* = all dimensions strong/adequate, no high/critical · *Good* = ≤1 thin dimension, no critical · *Fair* = multiple thin dimensions or any high · *Poor* = any broken dimension or any critical.
+2. Get the grade from the script — don't derive it by hand. Pipe the rubric walker's per-dimension verdicts and each reviewer's severity counts to `python3 {skill-root}/scripts/grade_spine.py`; it returns `grade`, `severity_totals`, and the deciding `reason`. Payload shape: `{"dimensions": {"consistency": "strong", ...}, "reviewers": [{"slug": "rubric", "severity": {"critical": 0, "high": 1, ...}}, ...]}`.
 3. Write `{doc_workspace}/validation-report.md`:
 
 ```markdown
