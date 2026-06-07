@@ -288,8 +288,14 @@ function processFile(filePath) {
     if (anchor) {
       const targetContent = fs.readFileSync(targetFile, 'utf-8');
       const anchors = extractAnchors(targetContent);
+      let normalizedAnchor;
+      try {
+        normalizedAnchor = headingToAnchor(decodeURIComponent(anchor));
+      } catch {
+        normalizedAnchor = headingToAnchor(anchor);
+      }
 
-      if (!anchors.has(anchor)) {
+      if (!anchors.has(anchor) && !anchors.has(normalizedAnchor)) {
         issues.push({
           type: 'broken-anchor',
           linkText,
