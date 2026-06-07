@@ -26,6 +26,7 @@ Run any core tool by typing its skill name (e.g., `bmad-help`) in your IDE. No a
 | [`bmad-editorial-review-structure`](#bmad-editorial-review-structure) | Task | Structural editing — cuts, merges, and reorganization |
 | [`bmad-shard-doc`](#bmad-shard-doc) | Task | Split large markdown files into organized sections |
 | [`bmad-index-docs`](#bmad-index-docs) | Task | Generate or update an index of all docs in a folder |
+| [`bmad-customize`](#bmad-customize) | Task | Create and verify BMad customization overrides |
 
 ## bmad-help
 
@@ -295,3 +296,26 @@ Run both `bmad-review-adversarial-general` and `bmad-review-edge-case-hunter` to
 **Input:** Target folder path
 
 **Output:** `index.md` with organized file listings, relative links, and brief descriptions
+
+## bmad-customize
+
+**Create and verify customization overrides.** — Helps you change how an installed BMad agent or workflow behaves without hand-authoring TOML.
+
+**Use it when:**
+
+- You want to change an agent or workflow behavior
+- You need to add persistent facts, activation hooks, or custom menu items
+- You want the right override scope selected and verified automatically
+
+**How it works:**
+
+1. Scans installed BMad skills for customizable surfaces
+2. Selects the right scope for your requested change
+3. Writes override files under `_bmad/custom/`
+4. Verifies the merged configuration
+
+**Input:** Natural language description of the customization you want
+
+**Output:** TOML override files under `_bmad/custom/`
+
+For a detailed guide on customizing BMad, see [How to Customize BMad](../how-to/customize-bmad.md).
