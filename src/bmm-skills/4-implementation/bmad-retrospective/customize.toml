@@ -34,7 +34,7 @@ persistent_facts = [
   "file:{project-root}/**/project-context.md",
 ]
 
-# Scalar: executed when the workflow reaches Step 12 (Final Summary and Handoff),
+# Scalar: executed when the workflow reaches Step 13 (Final Summary and Handoff),
 # after the retrospective document is saved and sprint-status is updated. Override wins.
 # Leave empty for no custom post-completion behavior.
 

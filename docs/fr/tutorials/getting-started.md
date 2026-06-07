@@ -1,90 +1,91 @@
 ---
 title: "Premiers pas"
-description: Installer BMad et construire votre premier projet
+description: Installer BMad et développer votre premier projet
 ---
 
-Construisez des logiciels plus rapidement en utilisant des workflows propulsés par l'IA avec des agents spécialisés qui vous guident à travers la planification, l'architecture et l'implémentation.
+Accélérez le développement de vos applications grâce à des workflows alimentés par l’IA et des agents spécialisés qui vous guident dans la planification, l’architecture et l’implémentation.
 
 ## Ce que vous allez apprendre
 
 - Installer et initialiser la méthode BMad pour un nouveau projet
 - Utiliser **BMad-Help** — votre guide intelligent qui sait quoi faire ensuite
 - Choisir la bonne voie de planification selon la taille de votre projet
-- Progresser à travers les phases, des exigences au code fonctionnel
+- Progresser dans les phases, de la définition des exigences au code fonctionnel
 - Utiliser efficacement les agents et les workflows
 
 :::note[Prérequis]
-- **Node.js 20.12+** — Requis pour l'installateur
-- **Git** — Recommandé pour le contrôle de version
-- **IDE IA** — Claude Code, Cursor, ou similaire
-- **Une idée de projet** — Même simple, elle fonctionne pour apprendre
+- **Node.js 20.12+** — Nécessaire pour l’installation
+- **Git** — Recommandé pour la gestion de versions
+- **IDE avec IA intégrée** — Claude Code, Cursor ou équivalent
+- **Une idée de projet** — Même simple, elle fera l’affaire pour commencer
 :::
 
-:::tip[Le chemin le plus simple]
+:::tip[Le chemin le plus rapide]
 **Installer** → `npx bmad-method install`
 **Demander** → `bmad-help que dois-je faire en premier ?`
-**Construire** → Laissez BMad-Help vous guider workflow par workflow
+**Développez** → Laissez BMad-Help vous guider, workflow par workflow
 :::
 
-## Découvrez BMad-Help : votre guide intelligent
+## Découvrez BMad-Help : votre guide intelligent
 
-**BMad-Help est le moyen le plus rapide de démarrer avec BMad.** Vous n'avez pas besoin de mémoriser les workflows ou les phases — posez simplement la question, et BMad-Help va :
+**BMad-Help est le moyen le plus rapide de démarrer avec BMad.** Pas besoin de mémoriser les workflows ou les phases — posez simplement votre question et BMad-Help saura :
 
 - **Inspecter votre projet** pour voir ce qui a déjà été fait
-- **Vous montrer vos options** en fonction des modules que vous avez installés
-- **Recommander la prochaine étape** — y compris la première tâche obligatoire
-- **Répondre aux questions** comme « J'ai une idée de SaaS, par où commencer ? »
+- **Vous présenter vos options** en fonction des modules installés
+- **Vous recommander la prochaine étape** — y compris la première tâche obligatoire
+- **Répondre à vos questions**, par exemple : « J’ai une idée de SaaS, par où commencer ? »
 
 ### Comment utiliser BMad-Help
 
-Exécutez-le dans votre IDE avec IA en invoquant la skill :
+Dans votre IDE IA, invoquez le skill :
 
 ```
 bmad-help
 ```
 
-Ou combinez-le avec une question pour obtenir des conseils adaptés au contexte :
+Ou accompagnez-le d’une question pour obtenir des conseils contextualisés :
 
 ```
 bmad-help J'ai une idée de produit SaaS, je connais déjà toutes les fonctionnalités que je veux. Par où dois-je commencer ?
 ```
 
-BMad-Help répondra avec :
+BMad-Help vous indiquera :
+
 - Ce qui est recommandé pour votre situation
 - Quelle est la première tâche obligatoire
 - À quoi ressemble le reste du processus
 
-### Il alimente aussi les workflows
+### Il intervient aussi dans les workflows
 
-BMad-Help ne se contente pas de répondre aux questions — **il s'exécute automatiquement à la fin de chaque workflow** pour vous dire exactement quoi faire ensuite. Pas de devinettes, pas de recherche dans la documentation — juste des conseils clairs sur le prochain workflow requis.
+BMad-Help ne se contente pas de répondre aux questions — **il se lance automatiquement à la fin de chaque workflow** pour vous indiquer exactement la suite. Finies les devinettes et les recherches dans la doc : vous recevez des instructions claires sur le prochain workflow à exécuter.
 
 :::tip[Commencez ici]
-Après avoir installé BMad, invoquez immédiatement la skill `bmad-help`. Elle détectera les modules que vous avez installés et vous guidera vers le bon point de départ pour votre projet.
+Après avoir installé BMad, invoquez immédiatement le skill `bmad-help`. Il détectera les modules que vous avez installés et vous orientera vers le bon point de départ pour votre projet.
 :::
 
 ## Comprendre BMad
 
-BMad vous aide à construire des logiciels grâce à des workflows guidés avec des agents IA spécialisés. Le processus suit quatre phases :
+BMad vous aide à développer des logiciels grâce à des workflows guidés par des agents IA spécialisés. Le processus s’articule en quatre phases :
 
 | Phase | Nom            | Ce qui se passe                                                |
 |-------|----------------|----------------------------------------------------------------|
-| 1     | Analyse        | Brainstorming, recherche, product brief ou PRFAQ *(optionnel)*          |
-| 2     | Planification  | Créer les exigences (PRD[^1] ou spécification technique)       |
-| 3     | Solutioning    | Concevoir l'architecture *(BMad Method/Enterprise uniquement)* |
-| 4     | Implémentation | Construire epic[^2] par epic, story[^3] par story              |
+| 1     | Analyse        | Brainstorming, recherche, product brief ou PRFAQ _(optionnel)_ |
+| 2     | Planification  | Définir les exigences (PRD[^1] ou spécification technique)     |
+| 3     | Solutioning    | Concevoir l’architecture _(BMad Method/Enterprise uniquement)_ |
+| 4     | Implémentation | Développer epic[^2] par epic, story[^3] par story              |
 
-**[Ouvrir la carte des workflows](../reference/workflow-map.md)** pour explorer les phases, les workflows et la gestion du contexte.
+**[Ouvrez la carte des workflows](../reference/workflow-map.md)** pour explorer les phases, les workflows et la gestion du contexte.
 
 Selon la complexité de votre projet, BMad propose trois voies de planification :
 
 | Voie             | Idéal pour                                                                   | Documents créés                        |
 |------------------|------------------------------------------------------------------------------|----------------------------------------|
 | **Quick Dev**    | Corrections de bugs, fonctionnalités simples, périmètre clair (1-15 stories) | Spécification technique uniquement     |
-| **méthode BMad** | Produits, plateformes, fonctionnalités complexes (10-50+ stories)            | PRD + Architecture + UX[^4]            |
+| **BMad Method**  | Produits, plateformes, fonctionnalités complexes (10-50+ stories)            | PRD + Architecture + UX[^4]            |
 | **Enterprise**   | Conformité, systèmes multi-tenant[^5] (30+ stories)                          | PRD + Architecture + Security + DevOps |
 
 :::note
-Les comptes de stories sont indicatifs, pas des définitions. Choisissez votre voie en fonction des besoins de planification, pas du calcul des stories.
+Le nombre de stories est indicatif, pas strictement défini. Choisissez votre voie en fonction de vos besoins de planification, pas d’un simple décompte de stories.
 :::
 
 ## Installation
@@ -95,13 +96,14 @@ Ouvrez un terminal dans le répertoire de votre projet et exécutez :
 npx bmad-method install
 ```
 
-Si vous souhaitez la version préliminaire la plus récente au lieu du canal de release par défaut, utilisez `npx bmad-method@next install`.
+Si vous préférez la dernière version préliminaire au lieu du canal de publication par défaut, utilisez `npx bmad-method@next install`.
 
-Lorsque vous êtes invité à sélectionner des modules, choisissez **méthode BMad**.
+À l’invite de sélection des modules, choisissez **BMad Method**.
 
-L'installateur crée deux dossiers :
+L’installateur crée deux dossiers :
+
 - `_bmad/` — agents, workflows, tâches et configuration
-- `_bmad-output/` — vide pour l'instant, mais c'est là que vos artefacts seront enregistrés
+- `_bmad-output/` — vide pour le moment, mais c’est là que seront enregistrés vos artefacts
 
 :::tip[Votre prochaine étape]
 Ouvrez votre IDE avec IA dans le dossier du projet et exécutez :
@@ -110,108 +112,120 @@ Ouvrez votre IDE avec IA dans le dossier du projet et exécutez :
 bmad-help
 ```
 
-BMad-Help détectera ce que vous avez accompli et recommandera exactement quoi faire ensuite. Vous pouvez aussi lui poser des questions comme « Quelles sont mes options ? » ou « J'ai une idée de SaaS, par où devrais-je commencer ? »
+BMad-Help détectera ce que vous avez déjà accompli et vous recommandera exactement la suite. Vous pouvez aussi lui poser des questions comme « Quelles sont mes options ? » ou « J’ai une idée de SaaS, par où devrais-je commencer ? »
 :::
 
 :::note[Comment charger les agents et exécuter les workflows]
-Chaque workflow possède une **skill** que vous invoquez par nom dans votre IDE (par ex., `bmad-create-prd`). Votre outil IA reconnaîtra le nom `bmad-*` et l'exécutera — vous n'avez pas besoin de charger les agents séparément. Vous pouvez aussi invoquer directement une skill d'agent pour une conversation générale (par ex., `bmad-agent-pm` pour l'agent PM).
+Chaque workflow possède une **skill** que vous invoquez par son nom dans votre IDE (par ex. `bmad-prd`). Votre outil IA reconnaîtra le nom `bmad-*` et l’exécutera — pas besoin de charger les agents séparément. Vous pouvez aussi invoquer directement une skill d’agent pour une conversation générale (par ex. `bmad-agent-pm` pour l’agent PM).
 :::
 
 :::caution[Nouveaux chats]
-Démarrez toujours un nouveau chat pour chaque workflow. Cela évite que les limitations de contexte ne causent des problèmes.
+Démarrez toujours un nouveau chat pour chaque workflow. Cela évite les problèmes liés aux limites de contexte de l’IA.
 :::
 
-## Étape 1 : Créer votre plan
+## Étape 1 : Élaborer votre plan
 
-Travaillez à travers les phases 1-3. **Utilisez de nouveaux chats pour chaque workflow.**
+Parcourez les phases 1 à 3. **Utilisez un nouveau chat pour chaque workflow.**
 
-:::tip[Contexte de projet (Optionnel)]
-Avant de commencer, envisagez de créer `project-context.md` pour documenter vos préférences techniques et règles d'implémentation. Cela garantit que tous les agents IA suivent vos conventions tout au long du projet.
+:::tip[Contexte projet (optionnel)]
+Avant de commencer, pensez à créer `project-context.md` pour documenter vos préférences techniques et vos règles d’implémentation. Ainsi, tous les agents IA respecteront vos conventions tout au long du projet.
 
-Créez-le manuellement dans `_bmad-output/project-context.md` ou générez-le après l'architecture en utilisant `bmad-generate-project-context`. [En savoir plus](../explanation/project-context.md).
+Créez-le manuellement à l’emplacement `_bmad-output/project-context.md`, ou générez-le après l’architecture avec `bmad-generate-project-context`. [En savoir plus](../explanation/project-context.md).
 :::
 
-### Phase 1 : Analyse (Optionnel)
+### Phase 1 : Analyse (optionnelle)
 
-Tous les workflows de cette phase sont optionnels. [**Pas sûr de quel outil utiliser ?**](../explanation/analysis-phase.md)
+Tous les workflows de cette phase sont optionnels. [**Vous ne savez pas lequel choisir ?**](../explanation/analysis-phase.md)
+
 - **brainstorming** (`bmad-brainstorming`) — Idéation guidée
 - **research** (`bmad-market-research` / `bmad-domain-research` / `bmad-technical-research`) — Recherche marché, domaine et technique
-- **product-brief** (`bmad-product-brief`) — Document de base recommandé lorsque votre concept est clair
-- **prfaq** (`bmad-prfaq`) — Défi Working Backwards pour éprouver et forger votre concept produit
+- **product-brief** (`bmad-product-brief`) — Document fondateur recommandé une fois votre concept bien défini
+- **prfaq** (`bmad-prfaq`) — Exercice Working Backwards pour tester et affiner votre concept produit
 
-### Phase 2 : Planification (Requis)
+### Phase 2 : Planification (requise)
 
-**Pour les voies BMad Method et Enterprise :**
-1. Invoquez l'**agent PM** (`bmad-agent-pm`) dans un nouveau chat
-2. Exécutez le workflow `bmad-create-prd` (`bmad-create-prd`)
-3. Sortie : `PRD.md`
+**Pour les voies BMad Method et Enterprise :**
 
-**Pour la voie Quick Dev :**
-- Exécutez `bmad-quick-dev` — il gère la planification et l'implémentation dans un seul workflow, passez directement à l'implémentation
+1. Exécutez `bmad-prd` dans un nouveau chat — précisez votre intention (Create / Update / Validate) ou laissez le skill vous la demander
+2. Résultat : `prd.md`, `addendum.md`, `decision-log.md`
 
-:::note[Design UX (Optionnel)]
-Si votre projet a une interface utilisateur, invoquez l'**agent Designer UX** (`bmad-agent-ux-designer`) et exécutez le workflow de design UX (`bmad-ux`) après avoir créé votre PRD.
+:::note[Intentions de `bmad-prd`]
+
+- **Create** — exploration guidée à partir de zéro ; le skill nomme le dossier de travail et vous accompagne jusqu’à l’obtention d’un PRD dont vous serez fier
+- **Update** — pointez vers un PRD existant et un changement à apporter ; le skill met en évidence les conflits avant d’appliquer les modifications
+- **Validate** — critiquez un PRD finalisé à l’aide d’une liste de contrôle et générez un rapport HTML des constatations
 :::
 
-### Phase 3 : Solutioning (méthode BMad/Enterprise)
 
-**Créer l'Architecture**
+**Pour la voie Quick Dev :**
+
+- Exécutez `bmad-quick-dev` — ce workflow couvre la planification et l’implémentation en une seule fois ; vous pouvez passer directement à l’implémentation
+
+:::note[Design UX (optionnel)]
+Si votre projet comporte une interface utilisateur, invoquez l'**agent UX Designer** (`bmad-agent-ux-designer`) et lancez le workflow de design UX (`bmad-ux`) après avoir créé votre PRD.
+:::
+
+### Phase 3 : Solutioning (BMad Method/Enterprise)
+
+**Créer l’architecture**
+
 1. Invoquez l'**agent Architecte** (`bmad-agent-architect`) dans un nouveau chat
 2. Exécutez `bmad-create-architecture` (`bmad-create-architecture`)
-3. Sortie : Document d'architecture avec les décisions techniques
+3. Résultat : document d’architecture avec les décisions techniques
 
-**Créer les Epics et Stories**
+**Créer les epics et les stories**
 
 :::tip[Amélioration V6]
-Les epics et stories sont maintenant créés *après* l'architecture. Cela produit des stories de meilleure qualité car les décisions d'architecture (base de données, patterns d'API, pile technologique) affectent directement la façon dont le travail doit être décomposé.
+Les epics et stories sont désormais créés *après* l’architecture. Cela produit des stories de meilleure qualité, car les décisions d’architecture (choix de la base de données, patterns d’API, pile technologique) influencent directement la façon dont le travail doit être découpé.
 :::
 
 1. Invoquez l'**agent PM** (`bmad-agent-pm`) dans un nouveau chat
 2. Exécutez `bmad-create-epics-and-stories` (`bmad-create-epics-and-stories`)
-3. Le workflow utilise à la fois le PRD et l'Architecture pour créer des stories techniquement éclairées
+3. Le workflow s’appuie sur le PRD et l’architecture pour créer des stories techniquement fondées
 
-**Vérification de préparation à l'implémentation** *(Hautement recommandé)*
+**Vérification de la préparation à l’implémentation** *(fortement recommandée)*
+
 1. Invoquez l'**agent Architecte** (`bmad-agent-architect`) dans un nouveau chat
 2. Exécutez `bmad-check-implementation-readiness` (`bmad-check-implementation-readiness`)
-3. Valide la cohérence entre tous les documents de planification
+3. Valide la cohérence de l’ensemble des documents de planification
 
-## Étape 2 : Construire votre projet
+## Étape 2 : Développer votre projet
 
-Une fois la planification terminée, passez à l'implémentation. **Chaque workflow doit s'exécuter dans un nouveau chat.**
+Une fois la planification terminée, passez à l’implémentation. **Chaque workflow doit être exécuté dans un nouveau chat.**
 
 ### Initialiser la planification de sprint
 
-Invoquez **l’agent Développeur** (`bmad-agent-dev`) et lancez `bmad-sprint-planning`. Cela crée `sprint-status.yaml` pour suivre tous les epics et stories.
+Invoquez l'**agent Développeur** (`bmad-agent-dev`) et exécutez `bmad-sprint-planning` (`bmad-sprint-planning`). Cette commande crée `sprint-status.yaml` pour suivre tous les epics et stories.
 
-### Le cycle de construction
+### Le cycle de développement
 
-Pour chaque story, répétez ce cycle avec de nouveaux chats :
+Pour chaque story, répétez ce cycle dans de nouveaux chats :
 
-| Étape | AGENT | Workflow            | Commande            | Objectif                             |
+| Étape | Agent | Workflow            | Commande            | Objectif                             |
 |-------|-------|---------------------|---------------------|--------------------------------------|
-| 1     | DEV   | `bmad-create-story` | `bmad-create-story` | Créer le fichier story depuis l'epic |
+| 1     | DEV   | `bmad-create-story` | `bmad-create-story` | Créer le fichier story depuis l’epic |
 | 2     | DEV   | `bmad-dev-story`    | `bmad-dev-story`    | Implémenter la story                 |
-| 3     | DEV   | `bmad-code-review`  | `bmad-code-review`  | Validation de qualité *(recommandé)* |
+| 3     | DEV   | `bmad-code-review`  | `bmad-code-review`  | Validation qualité *(recommandée)*   |
 
-Après avoir terminé toutes les stories d'un epic, invoquez **l’agent Développeur** (`bmad-agent-dev`), et exécutez `bmad-retrospective`.
+Après avoir terminé toutes les stories d’un epic, invoquez l'**agent Développeur** (`bmad-agent-dev`) et exécutez `bmad-retrospective` (`bmad-retrospective`).
 
 ## Ce que vous avez accompli
 
-Vous avez appris les fondamentaux de la construction avec BMad :
+Vous maîtrisez maintenant les bases du développement avec BMad :
 
-- Installé BMad et configuré pour votre IDE
-- Initialisé un projet avec votre voie de planification choisie
-- Créé des documents de planification (PRD, Architecture, Epics & Stories)
-- Compris le cycle de construction pour l'implémentation
+- Installation et configuration de BMad pour votre IDE
+- Initialisation d’un projet avec la voie de planification choisie
+- Création des documents de planification (PRD, Architecture, Epics & Stories)
+- Compréhension du cycle de développement pour l’implémentation
 
-Votre projet contient maintenant :
+Votre projet contient désormais :
 
 ```text
 your-project/
 ├── _bmad/                                   # Configuration BMad
 ├── _bmad-output/
 │   ├── planning-artifacts/
-│   │   ├── PRD.md                           # Votre document d'exigences
+│   │   ├── PRD.md                           # Document d'exigences
 │   │   ├── architecture.md                  # Décisions techniques
 │   │   └── epics/                           # Fichiers epic et story
 │   ├── implementation-artifacts/
@@ -224,12 +238,12 @@ your-project/
 
 | Workflow                              | Commande                              | Agent     | Objectif                                                        |
 |---------------------------------------|---------------------------------------|-----------|-----------------------------------------------------------------|
-| **`bmad-help`** ⭐                    | `bmad-help`                           | Tous      | **Votre guide intelligent — posez n'importe quelle question !** |
-| `bmad-create-prd`                     | `bmad-create-prd`                     | PM        | Créer le document d'exigences produit                           |
-| `bmad-create-architecture`            | `bmad-create-architecture`            | Architect | Créer le document d'architecture                                |
+| **`bmad-help`** ⭐                    | `bmad-help`                           | Tous      | **Votre guide intelligent — posez n’importe quelle question !**  |
+| `bmad-prd`                            | `bmad-prd`                            | Tous      | Créer, mettre à jour ou valider un PRD                          |
+| `bmad-create-architecture`            | `bmad-create-architecture`            | Architect | Créer le document d’architecture                                |
 | `bmad-generate-project-context`       | `bmad-generate-project-context`       | Analyst   | Créer le fichier de contexte projet                             |
 | `bmad-create-epics-and-stories`       | `bmad-create-epics-and-stories`       | PM        | Décomposer le PRD en epics                                      |
-| `bmad-check-implementation-readiness` | `bmad-check-implementation-readiness` | Architect | Valider la cohérence de planification                           |
+| `bmad-check-implementation-readiness` | `bmad-check-implementation-readiness` | Architect | Valider la cohérence de la planification                        |
 | `bmad-sprint-planning`                | `bmad-sprint-planning`                | DEV       | Initialiser le suivi de sprint                                  |
 | `bmad-create-story`                   | `bmad-create-story`                   | DEV       | Créer un fichier story                                          |
 | `bmad-dev-story`                      | `bmad-dev-story`                      | DEV       | Implémenter une story                                           |
@@ -237,31 +251,32 @@ your-project/
 
 ## Questions fréquentes
 
-**Ai-je toujours besoin d'une architecture ?**
-Uniquement pour les voies méthode BMad et Enterprise. Quick Dev passe directement de la spécification technique (spec) à l'implémentation.
+**Ai-je toujours besoin d’une architecture ?**
+Seulement pour les voies BMad Method et Enterprise. Quick Dev passe directement de la spécification à l’implémentation.
 
-**Puis-je modifier mon plan plus tard ?**
-Oui. Utilisez `bmad-correct-course` pour gérer les changements de périmètre en cours d’implémentation.
+**Puis-je modifier mon plan en cours de route ?**
+Oui. Le workflow `bmad-correct-course` gère les changements de périmètre en cours d’implémentation.
 
-**Et si je veux d'abord faire du brainstorming ?**
-Invoquez l'agent Analyst (`bmad-agent-analyst`) et exécutez `bmad-brainstorming` (`bmad-brainstorming`) avant de commencer votre PRD.
+**Et si je veux d’abord brainstormer ?**
+Invoquez l’agent Analyste (`bmad-agent-analyst`) et exécutez `bmad-brainstorming` (`bmad-brainstorming`) avant de commencer votre PRD.
 
-**Dois-je suivre un ordre strict ?**
-Pas strictement. Une fois que vous maîtrisez le flux, vous pouvez exécuter les workflows directement en utilisant la référence rapide ci-dessus.
+**Dois-je suivre un ordre strict ?**
+Pas strictement. Une fois le flux maîtrisé, vous pouvez exécuter les workflows directement en vous référant au tableau ci-dessus.
 
-## Obtenir de l'aide
+## Obtenir de l’aide
 
-:::tip[Premier arrêt : BMad-Help]
-**Invoquez `bmad-help` à tout moment** — c'est le moyen le plus rapide de se débloquer. Posez n'importe quelle question :
-- « Que dois-je faire après l'installation ? »
-- « Je suis bloqué sur le workflow X »
-- « Quelles sont mes options pour Y ? »
-- « Montre-moi ce qui a été fait jusqu'ici »
+:::tip[Premier réflexe : BMad-Help]
+**Invoquez `bmad-help` à tout moment** — c’est le moyen le plus rapide de vous débloquer. Posez-lui n’importe quelle question :
 
-BMad-Help inspecte votre projet, détecte ce que vous avez accompli et vous dit exactement quoi faire ensuite.
+- « Que dois-je faire après l’installation ? »
+- « Je suis bloqué sur le workflow X »
+- « Quelles sont mes options pour Y ? »
+- « Montre-moi ce qui a été fait jusqu’ici »
+
+BMad-Help inspecte votre projet, détecte ce que vous avez accompli et vous indique exactement la prochaine étape.
 :::
 
-- **Pendant les workflows** — Les agents vous guident avec des questions et des explications
+- **Pendant les workflows** — Les agents vous guident à l’aide de questions et d’explications
 - **Communauté** — [Discord](https://discord.gg/gk8jAdXWmj) (#bmad-method-help, #report-bugs-and-issues)
 
 ## Points clés à retenir
@@ -269,16 +284,16 @@ BMad-Help inspecte votre projet, détecte ce que vous avez accompli et vous dit 
 :::tip[Retenez ceci]
 - **Commencez par `bmad-help`** — Votre guide intelligent qui connaît votre projet et vos options
 - **Utilisez toujours de nouveaux chats** — Démarrez un nouveau chat pour chaque workflow
-- **La voie compte** — Quick Dev utilise `bmad-quick-dev` ; La méthode BMad/Enterprise nécessitent PRD et architecture
-- **BMad-Help s'exécute automatiquement** — Chaque workflow se termine par des conseils sur la prochaine étape
+- **Le choix de la voie est important** — Quick Dev utilise `bmad-quick-dev` ; BMad Method/Enterprise nécessitent un PRD et une architecture
+- **BMad-Help se lance automatiquement** — Chaque workflow se termine par des conseils sur la prochaine étape
 :::
 
-Prêt à commencer ? Installez BMad, invoquez `bmad-help`, et laissez votre guide intelligent vous montrer le chemin.
+Prêt à commencer ? Installez BMad, invoquez `bmad-help`, et laissez votre guide intelligent vous accompagner.
 
 ## Glossaire
 
-[^1]: PRD (Product Requirements Document) : document de référence qui décrit les objectifs du produit, les besoins utilisateurs, les fonctionnalités attendues, les contraintes et les critères de succès, afin d'aligner les équipes sur ce qui doit être construit et pourquoi.
+[^1]: PRD (Product Requirements Document) : document de référence qui décrit les objectifs du produit, les besoins utilisateurs, les fonctionnalités attendues, les contraintes et les critères de succès, afin d’aligner les équipes sur ce qui doit être construit et pourquoi.
 [^2]: Epic : grand ensemble de fonctionnalités ou de travaux qui peut être décomposé en plusieurs user stories.
-[^3]: Story (User Story) : description courte et simple d'une fonctionnalité du point de vue de l'utilisateur ou du client. Elle représente une unité de travail implémentable en un court délai.
-[^4]: UX (User Experience) : expérience utilisateur, englobant l'ensemble des interactions et perceptions d'un utilisateur face à un produit. Le design UX vise à créer des interfaces intuitives, efficaces et agréables en tenant compte des besoins, comportements et contexte d'utilisation.
-[^5]: Multi-tenant : architecture logicielle où une seule instance de l'application sert plusieurs clients (tenants) tout en maintenant leurs données isolées et sécurisées les unes des autres.
+[^3]: Story (User Story) : description courte et simple d’une fonctionnalité du point de vue de l’utilisateur ou du client. Elle représente une unité de travail implémentable en un court délai.
+[^4]: UX (User Experience) : expérience utilisateur, englobant l’ensemble des interactions et perceptions d’un utilisateur face à un produit. Le design UX vise à créer des interfaces intuitives, efficaces et agréables en tenant compte des besoins, des comportements et du contexte d’utilisation.
+[^5]: Multi-tenant : architecture logicielle où une seule instance de l’application sert plusieurs clients (tenants) tout en maintenant leurs données isolées et sécurisées les unes des autres.
