@@ -133,6 +133,7 @@ LIB_DIR="$SCRIPT_DIR/epic-execute-lib"
 [ -f "$LIB_DIR/json-output.sh" ] && source "$LIB_DIR/json-output.sh"
 [ -f "$LIB_DIR/tdd-flow.sh" ] && source "$LIB_DIR/tdd-flow.sh"
 [ -f "$LIB_DIR/contract-harness.sh" ] && source "$LIB_DIR/contract-harness.sh"
+[ -f "$LIB_DIR/contract-exec.sh" ] && source "$LIB_DIR/contract-exec.sh"
 
 STORIES_DIR="$PROJECT_ROOT/docs/stories"
 SPRINT_ARTIFACTS_DIR="$PROJECT_ROOT/docs/sprint-artifacts"
@@ -994,8 +995,10 @@ FILES:
 CONTRACT VALIDATION:
     If a contract-harness.yaml is present, startup runs a preflight that checks
     every credential, command, and file the harness needs (inferred from the
-    harness itself). A dry run prints a readiness report and exits non-zero when
-    anything required is missing, so it works as a CI readiness gate:
+    harness itself). This covers API/database contracts and, via the ui: section,
+    frontend user-flow contracts (Playwright driver, tests dir, and role seeds).
+    A dry run prints a readiness report and exits non-zero when anything required
+    is missing, so it works as a CI readiness gate:
         ./epic-execute.sh <id> --dry-run        # presence checks only
         ./epic-execute.sh <id> --dry-run --preflight-deep   # + connectivity smoke
         ./epic-execute.sh --init-harness        # scaffold a starter harness
@@ -3191,6 +3194,21 @@ for story_file in "${STORIES[@]}"; do
 done
 
 # =============================================================================
+# Contract Validation (Per-Epic: execute the harness against the live app)
+# =============================================================================
+# v1 granularity: runs once after all stories are implemented (the app reflects
+# the full epic). Brings the sample env up, runs backend cases + UI flows, and
+# self-heals via a bounded fix loop. Non-blocking mid-run, but sets the epic
+# exit code if contracts never pass.
+if [ "$SKIP_CONTRACT_VALIDATION" != true ] && [ -n "${CONTRACT_HARNESS_FILE:-}" ] && type contract_validation_gate >/dev/null 2>&1; then
+    echo ""
+    log "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log "Contract Validation (API + UI)"
+    log "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    contract_validation_gate "$CONTRACT_HARNESS_FILE" || true
+fi
+
+# =============================================================================
 # Traceability Check (Per-Epic, with Self-Healing)
 # =============================================================================
 
@@ -3283,6 +3301,13 @@ echo ""
 # CI readiness check).
 if [ "${PREFLIGHT_FAILED:-false}" = true ]; then
     log_warn "Contract preflight reported missing prerequisites - see the readiness report above"
+    exit 1
+fi
+
+# Contract validation is an exit-code-honest gate: if API/UI contracts never
+# passed (after self-heal attempts), fail the epic.
+if [ "${CONTRACT_VALIDATION_FAILED:-false}" = true ]; then
+    log_warn "Contract validation did not pass - see failures above"
     exit 1
 fi
 
