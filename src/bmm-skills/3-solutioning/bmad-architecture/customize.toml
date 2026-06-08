@@ -30,7 +30,7 @@ activation_steps_append = []
 #   "Our org is AWS-only -- do not propose GCP or Azure."
 #   "file:{project-root}/docs/engineering-standards.md"
 persistent_facts = [
-  "file:{project-root}/**/project-context.md",
+  "file:{output_folder}/project-context.md",
 ]
 
 # Executed when the workflow completes (after the spine is final and the user has been told).
@@ -78,14 +78,17 @@ external_sources = []
 external_handoffs = []
 
 # --- Finalize reviewers ---
-# Reviewers spawned at the Reviewer Gate (Finalize and the Validate intent) alongside the rubric
-# walker. The skill assembles the lens menu (rubric walker + these + ad-hoc lenses the spine
-# warrants) and lets the user pick all / a subset / none.
+# Extra review lenses spawned as parallel subagents at the validation gate (Finalize and the
+# Validate intent), on top of the skill's built-in good-spine checklist and the lint_spine.py
+# mechanical floor. Stakes-gated: high-stakes / cross-team spines run them, throwaway ones may skip.
 #
 # Entries follow the standard prefix convention:
 #   "skill:NAME"   invoke the named review skill as a subagent against ARCHITECTURE-SPINE.md
 #   "file:PATH"    load the file as a review prompt; spawn an adversarial subagent applying it
 #   plain text     use the text directly as the subagent's review prompt
 #
-# Resolved on-demand (not at activation). Override TOML may append. Empty by default.
-finalize_reviewers = []
+# Resolved on-demand (not at activation). Override TOML may append.
+finalize_reviewers = [
+  "Verify every committed decision was web-researched or reality-checked rather than asserted from training data: current library/framework versions, that each named technology still exists and fits, and — greenfield — the live defaults of any starter it leans on. Flag anything that could be out of date and wasn't confirmed against the web, the existing project, or the current starter.",
+  "Attack the spine as an adversary: construct two units one level down that each obey every AD to the letter yet still build incompatibly — clashing shared-data shapes, two owners of one entity, conflicting state-mutation paths. Every pair you find is a hole to close with a new or tightened AD.",
+]

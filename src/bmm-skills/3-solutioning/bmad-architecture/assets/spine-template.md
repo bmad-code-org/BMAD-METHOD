@@ -21,7 +21,7 @@ companions: []
 
 > A consistency contract, not a design document. It fixes the **invariants** that keep the
 > independently-built level below ({features | epics | stories}) coherent — the durable rules a
-> clean codebase can't reveal. Structure is **seed**: true at cold-start, owned by the code after.
+> clean codebase can't reveal. Structure is **seed**: the code owns the detail, the spine keeps the shape.
 > Decisions, not rationale (that lives in the memlog). Diagrams over prose.
 
 ## Design Paradigm
@@ -62,22 +62,35 @@ don't apply.
 
 ## Structural Seed
 
-Cold-start scaffolding only — once the code exists it is the source of truth; regenerate or trim
-these, don't maintain them. Keep minimal.
+Cold-start scaffolding, kept minimal. The code owns the **detail** (every file, every column) — don't
+mirror it here. But this stays the living source of truth for **shape**: evolve it when the shape
+itself changes — a new container, a new core entity, a stack bump — and let the memlog keep the history.
 
 - **Stack & Versions** — the substrate (mirrors frontmatter `stack`).
-- **System Shape** — C4 context / container.
-- **Data Model** — an ERD of entities and relationships (ownership/mutation rules live above).
+- **System Shape** — a container/context view. Use `flowchart` with a `subgraph` per boundary; C4 mermaid is experimental and won't render in most viewers.
+- **Data Model** — an ERD of entities and relationships, one attribute per line (ownership/mutation rules live above).
 - **Project Structure** — a minimal source tree, only as deep as consistency needs.
 
 ```mermaid
-C4Container
-  title Containers — {name}
+flowchart TD
+  user(["{actor}"])
+  subgraph sys["{system boundary}"]
+    a["{container}<br/>{tech} — {role}"]
+  end
+  db[("{datastore}")]
+  ext["{external system}"]
+  user --> a
+  a --> db
+  a -->|{via port}| ext
 ```
 
 ```mermaid
 erDiagram
   ENTITY_A ||--o{ ENTITY_B : "{relationship}"
+  ENTITY_A {
+    uuid id PK
+    string name
+  }
 ```
 
 ```text
