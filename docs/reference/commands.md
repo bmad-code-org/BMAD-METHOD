@@ -42,8 +42,8 @@ The installer writes skill files into an IDE-specific directory inside your proj
 | IDE / CLI | Skills directory |
 | --- | --- |
 | Claude Code | `.claude/skills/` |
-| Cursor | `.cursor/skills/` |
-| Windsurf | `.windsurf/skills/` |
+| Cursor | `.agents/skills/` |
+| Windsurf | `.agents/skills/` |
 | Other IDEs | See the installer output for the target path |
 
 Each skill is a directory containing a `SKILL.md` file. For example, a Claude Code installation looks like:
@@ -80,8 +80,8 @@ Agent skills load a specialized AI persona with a defined role, communication st
 | Example skill | Agent | Role |
 | --- | --- | --- |
 | `bmad-agent-dev` | Amelia (Developer) | Implements stories with strict adherence to specs |
-| `bmad-pm` | John (Product Manager) | Creates and validates PRDs |
-| `bmad-architect` | Winston (Architect) | Designs system architecture |
+| `bmad-agent-pm` | John (Product Manager) | Creates and validates PRDs |
+| `bmad-agent-architect` | Winston (Architect) | Designs system architecture |
 
 See [Agents](./agents.md) for the full list of default agents and their triggers.
 
@@ -94,6 +94,7 @@ Workflow skills run a structured, multi-step process without loading an agent pe
 | `bmad-product-brief` | Create or update a product brief — guided discovery when your concept is clear |
 | `bmad-prfaq` | [Working Backwards PRFAQ](../explanation/analysis-phase.md#prfaq-working-backwards) challenge to stress-test your product concept |
 | `bmad-prd` | Create, update, or validate a Product Requirements Document |
+| `bmad-ux` | Design user experience |
 | `bmad-create-architecture` | Design system architecture |
 | `bmad-create-epics-and-stories` | Create epics and stories |
 | `bmad-dev-story` | Implement a story |
@@ -120,7 +121,7 @@ bmad-help What are my options for UX design?
 
 **Other Core Tasks and Tools**
 
-The core module includes 11 built-in tools — reviews, compression, brainstorming, document management, and more. See [Core Tools](./core-tools.md) for the complete reference.
+The core module includes 12 built-in tools — specs, reviews, brainstorming, customization, document management, and more. See [Core Tools](./core-tools.md) for the complete reference.
 
 ## Naming Convention
 

@@ -7,17 +7,17 @@ Ce projet suit le [Guide de style de documentation pour développeurs Google](ht
 
 ## Règles spécifiques au projet
 
-| Règle                                   | Spécification                                          |
-| --------------------------------------- | ------------------------------------------------------ |
-| Pas de règles horizontales (`---`)      | Perturbe le flux de lecture des fragments              |
-| Pas de titres `####`                    | Utiliser du texte en gras ou des admonitions           |
-| Pas de sections « Related » ou « Next: »    | La barre latérale gère la navigation                   |
-| Pas de listes profondément imbriquées   | Diviser en sections à la place                         |
-| Pas de blocs de code pour non-code      | Utiliser des admonitions pour les exemples de dialogue |
-| Pas de paragraphes en gras pour les appels | Utiliser des admonitions à la place                 |
-| 1-2 admonitions max par section         | Les tutoriels permettent 3-4 par section majeure       |
-| Cellules de tableau / éléments de liste | 1-2 phrases maximum                                    |
-| Budget de titres                        | 8-12 `##` par doc ; 2-3 `###` par section              |
+| Règle                                      | Spécification                                          |
+|--------------------------------------------|--------------------------------------------------------|
+| Pas de règles horizontales (`---`)         | Perturbe le flux de lecture des fragments              |
+| Pas de titres `####`                       | Utiliser du texte en gras ou des admonitions           |
+| Pas de sections « Related » ou « Next »    | La barre latérale gère la navigation                   |
+| Pas de listes profondément imbriquées      | Diviser en sections à la place                         |
+| Pas de blocs de code pour non-code         | Utiliser des admonitions pour les exemples de dialogue |
+| Pas de paragraphes en gras pour les appels | Utiliser des admonitions à la place                    |
+| 1-2 admonitions max par section            | Les tutoriels permettent 3-4 par section majeure       |
+| Cellules de tableau / éléments de liste    | 1-2 phrases maximum                                    |
+| Budget de titres                           | 8-12 `##` par doc ; 2-3 `###` par section              |
 
 ## Admonitions (Syntaxe Starlight)
 
@@ -41,36 +41,36 @@ Avertissements critiques uniquement — perte de données, problèmes de sécuri
 
 ### Utilisations standards
 
-| Admonition                 | Usage                                    |
-| -------------------------- | ---------------------------------------- |
-| `:::note[Pré-requis]`   | Dépendances avant de commencer           |
-| `:::tip[Chemin rapide]`       | Résumé TL;DR en haut du document         |
-| `:::caution[Important]`    | Mises en garde critiques                 |
-| `:::note[Exemple]`         | Exemples de commandes/réponses           |
+| Admonition              | Usage                            |
+|-------------------------|----------------------------------|
+| `:::note[Pré-requis]`   | Dépendances avant de commencer   |
+| `:::tip[Chemin rapide]` | Résumé TL;DR en haut du document |
+| `:::caution[Important]` | Mises en garde critiques         |
+| `:::note[Exemple]`      | Exemples de commandes/réponses   |
 
 ## Formats de tableau standards
 
-**Phases :**
+**Phases :**
 
 ```md
-| Phase | Nom        | Ce qui se passe                                     |
-| ----- | ---------- | --------------------------------------------------- |
-| 1     | Analyse    | Brainstorm, recherche *(optionnel)*                 |
-| 2     | Planification | Exigences — PRD ou spécification technique *(requis)*          |
+| Phase | Nom           | Ce qui se passe                                       |
+|-------|---------------|-------------------------------------------------------|
+| 1     | Analyse       | Brainstorm, recherche *(optionnel)*                   |
+| 2     | Planification | Exigences — PRD ou spécification technique *(requis)* |
 ```
 
-**Skills :**
+**Skills :**
 
 ```md
-| Skill               | Agent   | Objectif                                        |
-| ------------------- | ------- | ----------------------------------------------- |
-| `bmad-brainstorming` | Analyste | Brainstorming pour un nouveau projet                    |
-| `bmad-create-prd`    | PM      | Créer un document d'exigences produit           |
+| Skill                | Agent    | Objectif                              |
+|----------------------|----------|---------------------------------------|
+| `bmad-brainstorming` | Analyste | Brainstorming pour un nouveau projet  |
+| `bmad-prd`           | PM       | Créer un document d'exigences produit |
 ```
 
 ## Blocs de structure de dossiers
 
-À afficher dans les sections "Ce que vous avez accompli" :
+À afficher dans les sections « Ce que vous avez accompli » :
 
 ````md
 ```
@@ -78,9 +78,9 @@ votre-projet/
 ├── _bmad/                                   # Configuration BMad
 ├── _bmad-output/
 │   ├── planning-artifacts/
-│   │   └── PRD.md                           # Votre document d'exigences
+│   │   └── PRD.md                           # Votre document d’exigences
 │   ├── implementation-artifacts/
-│   └── project-context.md                   # Règles d'implémentation (optionnel)
+│   └── project-context.md                   # Règles d’implémentation (optionnel)
 └── ...
 ```
 ````
@@ -107,21 +107,21 @@ votre-projet/
 
 ### Liste de vérification des tutoriels
 
-- [ ] L'accroche décrit le résultat en 1-2 phrases
-- [ ] Section "Ce que vous allez apprendre" présente
+- [ ] L’accroche décrit le résultat en 1-2 phrases
+- [ ] Section « Ce que vous allez apprendre » présente
 - [ ] Prérequis dans une admonition
 - [ ] Admonition TL;DR de chemin rapide en haut
 - [ ] Tableaux pour phases, skills, agents
-- [ ] Section "Ce que vous avez accompli" présente
+- [ ] Section « Ce que vous avez accompli » présente
 - [ ] Tableau de référence rapide présent
 - [ ] Section questions courantes présente
-- [ ] Section obtenir de l'aide présente
+- [ ] Section obtenir de l’aide présente
 - [ ] Admonition points clés à retenir à la fin
 
 ## Structure des guides pratiques (How-To)
 
 ```text
-1. Titre + Accroche (une phrase : « Utilisez le workflow `X` pour... »)
+1. Titre + Accroche (une phrase : « Utilisez le workflow `X` pour... »)
 2. Quand utiliser ce guide (liste à puces de scénarios)
 3. Quand éviter ce guide (optionnel)
 4. Prérequis (admonition note)
@@ -134,23 +134,23 @@ votre-projet/
 
 ### Liste de vérification des guides pratiques
 
-- [ ] L'accroche commence par « Utilisez le workflow `X` pour... »
-- [ ] "Quand utiliser ce guide" contient 3-5 points
+- [ ] L’accroche commence par « Utilisez le workflow `X` pour... »
+- [ ] « Quand utiliser ce guide » contient 3-5 points
 - [ ] Prérequis listés
-- [ ] Les étapes sont des sous-sections `###` numérotées avec des verbes d'action
-- [ ] "Ce que vous obtenez" décrit les artefacts produits
+- [ ] Les étapes sont des sous-sections `###` numérotées avec des verbes d’action
+- [ ] « Ce que vous obtenez » décrit les artefacts produits
 
 ## Structure des explications
 
 ### Types
 
-| Type                    | Exemple                              |
-| ----------------------- | ------------------------------------ |
-| **Index/Page d'accueil** | `core-concepts/index.md`            |
-| **Concept**             | `what-are-agents.md`                 |
-| **Fonctionnalité**      | `quick-dev.md`                       |
-| **Philosophie**         | `why-solutioning-matters.md`         |
-| **FAQ**                 | `established-projects-faq.md`        |
+| Type                     | Exemple                       |
+|--------------------------|-------------------------------|
+| **Index/Page d’accueil** | `core-concepts/index.md`      |
+| **Concept**              | `what-are-agents.md`          |
+| **Fonctionnalité**       | `quick-dev.md`                |
+| **Philosophie**          | `why-solutioning-matters.md`  |
+| **FAQ**                  | `established-projects-faq.md` |
 
 ### Modèle général
 
@@ -164,7 +164,7 @@ votre-projet/
 7. Prochaines étapes (optionnel)
 ```
 
-### Pages d'index/d'accueil
+### Pages d’index/d’accueil
 
 ```text
 1. Titre + Accroche (une phrase)
@@ -209,7 +209,7 @@ votre-projet/
 
 ### Liste de vérification des explications
 
-- [ ] L'accroche énonce ce que le document explique
+- [ ] L’accroche énonce ce que le document explique
 - [ ] Contenu dans des sections `##` parcourables
 - [ ] Tableaux comparatifs pour 3+ options
 - [ ] Les diagrammes ont des étiquettes claires
@@ -220,16 +220,16 @@ votre-projet/
 
 ### Types
 
-| Type                    | Exemple               |
-| ----------------------- | --------------------- |
-| **Index/Page d'accueil** | `workflows/index.md` |
-| **Catalogue**           | `agents/index.md`     |
-| **Approfondissement**   | `document-project.md` |
-| **Configuration**       | `core-tasks.md`       |
-| **Glossaire**           | `glossary/index.md`   |
-| **Complet**             | `bmgd-workflows.md`   |
+| Type                     | Exemple               |
+|--------------------------|-----------------------|
+| **Index/Page d’accueil** | `workflows/index.md`  |
+| **Catalogue**            | `agents/index.md`     |
+| **Approfondissement**    | `document-project.md` |
+| **Configuration**        | `core-tasks.md`       |
+| **Glossaire**            | `glossary/index.md`   |
+| **Complet**              | `bmgd-workflows.md`   |
 
-### Pages d'index de référence
+### Pages d’index de référence
 
 ```text
 1. Titre + Accroche (une phrase)
@@ -243,11 +243,11 @@ votre-projet/
 1. Titre + Accroche
 2. Éléments (## pour chaque élément)
    - Brève description (une phrase)
-   - **Skills :** ou **Infos clés :** sous forme de liste simple
+   - **Skills :** ou **Infos clés :** sous forme de liste simple
 3. Universel/Partagé (## section) (optionnel)
 ```
 
-### Référence d'approfondissement d'élément
+### Référence d’approfondissement d’élément
 
 ```text
 1. Titre + Accroche (objectif en une phrase)
@@ -286,16 +286,16 @@ votre-projet/
 
 ### Liste de vérification des références
 
-- [ ] L'accroche énonce ce que le document référence
+- [ ] L’accroche énonce ce que le document référence
 - [ ] La structure correspond au type de référence
 - [ ] Les éléments utilisent une structure cohérente
 - [ ] Tableaux pour les données structurées/comparatives
-- [ ] Liens vers les documents d'explication pour la profondeur conceptuelle
+- [ ] Liens vers les documents d’explication pour la profondeur conceptuelle
 - [ ] 1-2 admonitions max
 
 ## Structure du glossaire
 
-Starlight génère la navigation "Sur cette page" à droite à partir des titres :
+Starlight génère la navigation « Sur cette page » à droite à partir des titres :
 
 - Catégories en tant que titres `##` — apparaissent dans la navigation à droite
 - Termes dans des tableaux — lignes compactes, pas de titres individuels
@@ -303,22 +303,23 @@ Starlight génère la navigation "Sur cette page" à droite à partir des titres
 
 ### Format de tableau
 
+
 ```md
 ## Nom de catégorie
 
-| Terme        | Définition                                                                                    |
-| ------------ | --------------------------------------------------------------------------------------------- |
-| **Agent**    | Personnalité IA spécialisée avec une expertise spécifique qui guide les utilisateurs dans les workflows. |
+| Terme        | Définition                                                                                                 |
+|--------------|------------------------------------------------------------------------------------------------------------|
+| **Agent**    | Personnalité IA spécialisée avec une expertise spécifique qui guide les utilisateurs dans les workflows.   |
 | **Workflow** | Processus guidé en plusieurs étapes qui orchestre les activités des agents IA pour produire des livrables. |
 ```
 
 ### Règles de définition
 
-| À faire                           | À ne pas faire                                |
-| --------------------------------- | --------------------------------------------- |
-| Commencer par ce que c'est ou ce que cela fait | Commencer par « C'est... » ou « Un [terme] est... » |
-| Se limiter à 1-2 phrases          | Écrire des explications de plusieurs paragraphes |
-| Mettre le nom du terme en gras dans la cellule | Utiliser du texte simple pour les termes      |
+| À faire                                        | À ne pas faire                                      |
+|------------------------------------------------|-----------------------------------------------------|
+| Commencer par ce que c’est ou ce que cela fait | Commencer par « C’est... » ou « Un [terme] est... » |
+| Se limiter à 1-2 phrases                       | Écrire des explications de plusieurs paragraphes    |
+| Mettre le nom du terme en gras dans la cellule | Utiliser du texte simple pour les termes            |
 
 ### Marqueurs de contexte
 
@@ -337,7 +338,7 @@ Ajouter un contexte en italique au début de la définition pour les termes à p
 - [ ] Définitions de 1-2 phrases
 - [ ] Marqueurs de contexte en italique
 - [ ] Noms des termes en gras dans les cellules
-- [ ] Pas de définitions « Un [terme] est... »
+- [ ] Pas de définitions « Un [terme] est... »
 
 ## Sections FAQ
 

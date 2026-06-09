@@ -70,6 +70,13 @@ platforms:
       target_dir: .agents/skills
       global_target_dir: ~/.codex/skills
 
+  codewhale:
+    name: "CodeWhale"
+    preferred: false
+    installer:
+      target_dir: .codewhale/skills
+      global_target_dir: ~/.codewhale/skills
+
   codebuddy:
     name: "CodeBuddy"
     preferred: false
