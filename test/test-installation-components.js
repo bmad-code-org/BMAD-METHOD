@@ -3278,8 +3278,9 @@ async function runTests() {
   // ============================================================
   console.log(`${colors.yellow}Test Suite 45: cleanup prunes empty skill-group dirs${colors.reset}\n`);
 
+  let root45;
   try {
-    const root45 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-cleanup-test-'));
+    root45 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-cleanup-test-'));
     const bmadDir45 = path.join(root45, '_bmad');
     await fs.ensureDir(path.join(bmadDir45, '_config'));
 
@@ -3307,12 +3308,12 @@ async function runTests() {
     assert(!(await fs.pathExists(path.join(bmadDir45, 'bmm', '1-analysis', 'research'))), 'empty nested skill-group dir is pruned');
     assert(await fs.pathExists(path.join(bmadDir45, 'bmm', 'config.yaml')), 'module-level files are preserved');
     assert(await fs.pathExists(bmadDir45), 'bmad root is never removed');
-
-    await fs.remove(root45);
   } catch (error) {
     console.log(`${colors.red}Test Suite 45 setup failed: ${error.message}${colors.reset}`);
     console.log(error.stack);
     failed++;
+  } finally {
+    if (root45) await fs.remove(root45).catch(() => {});
   }
 
   console.log('');
