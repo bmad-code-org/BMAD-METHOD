@@ -447,6 +447,41 @@ async function runTests() {
   // Test 12: Removed — ancestor conflict check no longer applies (no IDE inherits skills from parent dirs)
 
   // ============================================================
+  // Test 12b: CodeWhale Native Skills Install
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 12b: CodeWhale Native Skills${colors.reset}\n`);
+
+  try {
+    clearCache();
+    const platformCodes12b = await loadPlatformCodes();
+    const codewhaleInstaller = platformCodes12b.platforms.codewhale?.installer;
+
+    assert(codewhaleInstaller?.target_dir === '.codewhale/skills', 'CodeWhale target_dir uses native skills path');
+
+    const tempProjectDir12b = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-codewhale-test-'));
+    const installedBmadDir12b = await createTestBmadFixture();
+
+    const ideManager12b = new IdeManager();
+    await ideManager12b.ensureInitialized();
+    const result12b = await ideManager12b.setup('codewhale', tempProjectDir12b, installedBmadDir12b, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result12b.success === true, 'CodeWhale setup succeeds against temp project');
+
+    const skillFile12b = path.join(tempProjectDir12b, '.codewhale', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile12b), 'CodeWhale install writes SKILL.md directory output');
+
+    await fs.remove(tempProjectDir12b);
+    await fs.remove(path.dirname(installedBmadDir12b));
+  } catch (error) {
+    assert(false, 'CodeWhale native skills migration test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
   // Test 13: Cursor Native Skills Install
   // ============================================================
   console.log(`${colors.yellow}Test Suite 13: Cursor Native Skills${colors.reset}\n`);
