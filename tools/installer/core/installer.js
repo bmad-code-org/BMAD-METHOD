@@ -419,7 +419,25 @@ class Installer {
       const sourceDir = path.dirname(path.join(bmadDir, relativePath));
       if (await fs.pathExists(sourceDir)) {
         await fs.remove(sourceDir);
+        await this._removeEmptyParents(path.dirname(sourceDir), bmadDir);
       }
+    }
+  }
+
+  /**
+   * Remove now-empty parent directories left behind after skill dir cleanup.
+   * Walks up from dir, stopping at (and never removing) bmadDir.
+   * @param {string} dir - Directory to start walking up from
+   * @param {string} bmadDir - BMAD installation directory (boundary)
+   */
+  async _removeEmptyParents(dir, bmadDir) {
+    let current = dir;
+    while (current.startsWith(bmadDir) && current !== bmadDir) {
+      if (!(await fs.pathExists(current))) break;
+      const entries = await fs.readdir(current);
+      if (entries.length > 0) break;
+      await fs.rmdir(current);
+      current = path.dirname(current);
     }
   }
 

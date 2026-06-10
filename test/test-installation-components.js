@@ -3274,6 +3274,50 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test Suite 45: _cleanupSkillDirs prunes empty parent dirs (#empty-bmm-folders)
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 45: cleanup prunes empty skill-group dirs${colors.reset}\n`);
+
+  try {
+    const root45 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-cleanup-test-'));
+    const bmadDir45 = path.join(root45, '_bmad');
+    await fs.ensureDir(path.join(bmadDir45, '_config'));
+
+    // Two skills nested under the same grouping dir (1-analysis), plus a
+    // module-level file that must survive the cleanup.
+    await fs.writeFile(
+      path.join(bmadDir45, '_config', 'skill-manifest.csv'),
+      [
+        'canonicalId,name,description,module,path',
+        '"bmad-agent-analyst","bmad-agent-analyst","fixture","bmm","_bmad/bmm/1-analysis/bmad-agent-analyst/SKILL.md"',
+        '"bmad-research","bmad-research","fixture","bmm","_bmad/bmm/1-analysis/research/bmad-research/SKILL.md"',
+        '',
+      ].join('\n'),
+    );
+    await fs.ensureDir(path.join(bmadDir45, 'bmm', '1-analysis', 'bmad-agent-analyst'));
+    await fs.writeFile(path.join(bmadDir45, 'bmm', '1-analysis', 'bmad-agent-analyst', 'SKILL.md'), 'x');
+    await fs.ensureDir(path.join(bmadDir45, 'bmm', '1-analysis', 'research', 'bmad-research'));
+    await fs.writeFile(path.join(bmadDir45, 'bmm', '1-analysis', 'research', 'bmad-research', 'SKILL.md'), 'x');
+    await fs.writeFile(path.join(bmadDir45, 'bmm', 'config.yaml'), 'module: bmm\n');
+
+    const installer45 = new Installer();
+    await installer45._cleanupSkillDirs(bmadDir45);
+
+    assert(!(await fs.pathExists(path.join(bmadDir45, 'bmm', '1-analysis'))), 'empty skill-group dir is pruned after cleanup');
+    assert(!(await fs.pathExists(path.join(bmadDir45, 'bmm', '1-analysis', 'research'))), 'empty nested skill-group dir is pruned');
+    assert(await fs.pathExists(path.join(bmadDir45, 'bmm', 'config.yaml')), 'module-level files are preserved');
+    assert(await fs.pathExists(bmadDir45), 'bmad root is never removed');
+
+    await fs.remove(root45);
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 45 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);
