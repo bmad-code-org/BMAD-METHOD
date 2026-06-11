@@ -702,12 +702,15 @@ class Installer {
 
     if (await fs.pathExists(gitignorePath)) {
       const existing = await fs.readFile(gitignorePath, 'utf8');
-      if (existing.split(/\r?\n/).some((line) => line.trim() === entry)) return;
-      const separator = existing.length > 0 && !existing.endsWith('\n') ? '\n' : '';
-      await fs.writeFile(gitignorePath, `${existing}${separator}${entry}\n`, 'utf8');
+      if (!existing.split(/\r?\n/).some((line) => line.trim() === entry)) {
+        const separator = existing.length > 0 && !existing.endsWith('\n') ? '\n' : '';
+        await fs.writeFile(gitignorePath, `${existing}${separator}${entry}\n`, 'utf8');
+      }
     } else {
       await fs.writeFile(gitignorePath, `${entry}\n`, 'utf8');
     }
+    // Track on every path — each run starts a fresh Installer, so skipping the
+    // already-correct file would drop it from files-manifest.csv on re-installs.
     this.installedFiles.add(gitignorePath);
   }
 

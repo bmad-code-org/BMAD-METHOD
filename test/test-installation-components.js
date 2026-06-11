@@ -3352,17 +3352,22 @@ async function runTests() {
     // The pre-existing custom/*.user.toml rule is still seeded alongside it.
     assert(await fs.pathExists(path.join(customDir46, '.gitignore')), '_installSharedScripts still seeds _bmad/custom/.gitignore');
 
-    // Idempotent: a second install must not duplicate the entry.
-    await installer46._installSharedScripts(paths46);
+    // Idempotent: a second install must not duplicate the entry. Fresh Installer
+    // per run, as in production — reuse would hide a failure to re-track the file.
+    const installer46b = new Installer();
+    await installer46b._installSharedScripts(paths46);
     const occurrences46 = (await fs.readFile(bmadGitignore46, 'utf8')).split(/\r?\n/).filter((line) => line === 'config.user.toml').length;
     assert(occurrences46 === 1, 'second install does not duplicate the config.user.toml entry');
+    assert(installer46b.installedFiles.has(bmadGitignore46), 're-install tracks _bmad/.gitignore even when the entry already exists');
 
     // An existing .gitignore with unrelated rules is topped up, not clobbered.
     await fs.writeFile(bmadGitignore46, 'notes.local.md\n');
-    await installer46._installSharedScripts(paths46);
+    const installer46c = new Installer();
+    await installer46c._installSharedScripts(paths46);
     const toppedUp46 = await fs.readFile(bmadGitignore46, 'utf8');
     assert(toppedUp46.includes('notes.local.md'), 'existing .gitignore rules are preserved');
     assert(toppedUp46.split(/\r?\n/).includes('config.user.toml'), 'config.user.toml is appended to an existing .gitignore');
+    assert(installer46c.installedFiles.has(bmadGitignore46), 'appending install tracks _bmad/.gitignore');
   } catch (error) {
     console.log(`${colors.red}Test Suite 46 setup failed: ${error.message}${colors.reset}`);
     console.log(error.stack);
