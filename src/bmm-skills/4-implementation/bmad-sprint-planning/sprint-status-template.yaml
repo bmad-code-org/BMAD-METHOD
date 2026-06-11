@@ -26,11 +26,17 @@
 #   - optional: Can be completed but not required
 #   - done: Retrospective has been completed
 #
+# Action Item Status:
+#   - open: Committed during a retrospective, not yet addressed
+#   - in-progress: Actively being worked on
+#   - done: Completed
+#
 # WORKFLOW NOTES:
 # ===============
 # - Mark epic as 'in-progress' when starting work on its first story
 # - Developer typically creates next story ONLY after previous one is 'done' to incorporate learnings
 # - Dev moves story to 'review', then Dev runs code-review (fresh context, ideally different LLM)
+# - Retrospective appends its action items to action_items; sprint-status surfaces open ones
 
 # EXAMPLE STRUCTURE (your actual epics/stories will replace these):
 
@@ -54,3 +60,10 @@ development_status:
   2-2-chat-interface: backlog
   2-3-llm-integration: backlog
   epic-2-retrospective: optional
+
+# Action items committed during retrospectives (section created by the retrospective workflow)
+action_items:
+  - epic: 1
+    action: "Add error-handling review to the code review checklist"
+    owner: "Charlie"
+    status: open
