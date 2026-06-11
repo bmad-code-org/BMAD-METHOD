@@ -71,8 +71,6 @@ Execute each of these steps in order (`_None._` means skip):
 
 {workflow.activation_steps_append}
 
-Activation is complete. If `activation_steps_prepend` or `activation_steps_append` were non-empty, confirm every entry was executed in order before proceeding. Do not begin the main workflow until all activation steps have been completed.
-
 ## WORKFLOW ARCHITECTURE
 
 This uses **step-file architecture** for disciplined execution:
