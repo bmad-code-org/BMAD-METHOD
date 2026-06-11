@@ -630,6 +630,7 @@ class Installer {
   /**
    * Sync src/scripts/* → _bmad/scripts/ so shared Python scripts
    * (e.g. resolve_customization.py) are available at install time.
+   * Excludes dev-only tests and Python caches so they don't ship to users.
    * Wipes the destination first so files removed or renamed in source
    * don't linger and get recorded as installed. Also seeds
    * _bmad/custom/.gitignore on fresh installs so *.user.toml overrides
@@ -643,7 +644,12 @@ class Installer {
 
     await fs.remove(paths.scriptsDir);
     await fs.ensureDir(paths.scriptsDir);
-    await fs.copy(srcScriptsDir, paths.scriptsDir, { overwrite: true });
+    // Ship only the runtime scripts — dev-only tests and Python caches must not land in user projects.
+    const isInstallable = (srcPath) => {
+      const base = path.basename(srcPath);
+      return base !== 'tests' && base !== '__pycache__' && base !== '.pytest_cache' && !base.endsWith('.pyc');
+    };
+    await fs.copy(srcScriptsDir, paths.scriptsDir, { overwrite: true, filter: isInstallable });
     await this._trackFilesRecursive(paths.scriptsDir);
 
     const customGitignore = path.join(paths.customDir, '.gitignore');

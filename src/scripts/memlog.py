@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # /// script
-# requires-python = ">=3.10"
+# requires-python = ">=3.8"
 # ///
 """memlog — an append-only memory log: LLM-optimal working memory for a skill.
 
@@ -66,6 +66,8 @@ Commands:
 Addressing: `--workspace` is the run folder, and the memlog is always {workspace}/.memlog.md.
 `--path` points straight at the memlog file instead, for callers that already hold the path.
 """
+from __future__ import annotations  # keep type-hint syntax lazy so the script runs on 3.8+
+
 import argparse
 import json
 import os
