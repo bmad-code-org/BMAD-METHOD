@@ -658,8 +658,8 @@ class Installer {
    * Excludes dev-only tests and Python caches so they don't ship to users.
    * Wipes the destination first so files removed or renamed in source
    * don't linger and get recorded as installed. Also seeds
-   * _bmad/custom/.gitignore on fresh installs so *.user.toml overrides
-   * stay out of version control.
+   * _bmad/custom/.gitignore so *.user.toml overrides and _bmad/.gitignore
+   * so the default config.user.toml both stay out of version control.
    */
   async _installSharedScripts(paths) {
     const srcScriptsDir = path.join(paths.srcDir, 'src', 'scripts');
@@ -682,6 +682,33 @@ class Installer {
       await fs.writeFile(customGitignore, '*.user.toml\n', 'utf8');
       this.installedFiles.add(customGitignore);
     }
+
+    // The default _bmad/config.user.toml holds personal install answers, so it
+    // gets the same treatment as custom/*.user.toml above — seed _bmad/.gitignore
+    // so the file never lands in version control. Append to an existing
+    // .gitignore that lacks the entry so the rule reaches projects predating it.
+    await this._ensureUserConfigGitignored(paths.bmadDir);
+  }
+
+  /**
+   * Keep the personal _bmad/config.user.toml out of version control. Creates
+   * _bmad/.gitignore when missing, or appends the entry to an existing file
+   * that doesn't already list it, so the rule lands on fresh installs and
+   * updates alike without duplicating the line.
+   */
+  async _ensureUserConfigGitignored(bmadDir) {
+    const gitignorePath = path.join(bmadDir, '.gitignore');
+    const entry = 'config.user.toml';
+
+    if (await fs.pathExists(gitignorePath)) {
+      const existing = await fs.readFile(gitignorePath, 'utf8');
+      if (existing.split(/\r?\n/).some((line) => line.trim() === entry)) return;
+      const separator = existing.length > 0 && !existing.endsWith('\n') ? '\n' : '';
+      await fs.writeFile(gitignorePath, `${existing}${separator}${entry}\n`, 'utf8');
+    } else {
+      await fs.writeFile(gitignorePath, `${entry}\n`, 'utf8');
+    }
+    this.installedFiles.add(gitignorePath);
   }
 
   async _trackFilesRecursive(dir) {
