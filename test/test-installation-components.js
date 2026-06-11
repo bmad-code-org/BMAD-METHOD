@@ -3319,6 +3319,52 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test Suite 46: Python environment check (version parsing + classification)
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 46: python-check version parsing and classification${colors.reset}\n`);
+
+  try {
+    const { parsePythonVersion, classifyPython, detectPython } = require('../tools/installer/core/python-check');
+
+    // Version parsing
+    const v312 = parsePythonVersion('Python 3.12.1');
+    assert(v312 && v312.major === 3 && v312.minor === 12 && v312.patch === 1, 'parses "Python 3.12.1"');
+    const v311 = parsePythonVersion('Python 3.11.0\n');
+    assert(v311 && v311.raw === '3.11.0', 'parses with trailing newline');
+    const v2 = parsePythonVersion('\nPython 2.7.18');
+    assert(v2 && v2.major === 2, 'parses Python 2 output (stderr-style)');
+    const noPatch = parsePythonVersion('Python 3.13');
+    assert(noPatch && noPatch.patch === 0, 'missing patch defaults to 0');
+    assert(parsePythonVersion('') === null, 'empty output returns null');
+    assert(parsePythonVersion('command not found: python3') === null, 'non-version output returns null');
+    assert(parsePythonVersion(null) === null, 'null output returns null');
+
+    // Classification against feature requirements
+    assert(classifyPython({ major: 3, minor: 11 }) === 'full', '3.11 is full support (tomllib floor)');
+    assert(classifyPython({ major: 3, minor: 13 }) === 'full', '3.13 is full support');
+    assert(classifyPython({ major: 4, minor: 0 }) === 'full', 'hypothetical 4.0 is full support');
+    assert(classifyPython({ major: 3, minor: 10 }) === 'partial', '3.10 is partial (memlog yes, tomllib no)');
+    assert(classifyPython({ major: 3, minor: 8 }) === 'partial', '3.8 is partial (memlog floor)');
+    assert(classifyPython({ major: 3, minor: 7 }) === 'unsupported', '3.7 is unsupported');
+    assert(classifyPython({ major: 2, minor: 7 }) === 'unsupported', '2.7 is unsupported');
+    assert(classifyPython(null) === 'none', 'no python is none');
+
+    // Detection smoke test — must not throw, and if it finds a Python the
+    // result must be well-formed. (CI machines may or may not have Python.)
+    const detected = detectPython();
+    assert(
+      detected === null || (typeof detected.command === 'string' && typeof detected.version.raw === 'string'),
+      'detectPython returns null or a well-formed result',
+    );
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 46 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);
