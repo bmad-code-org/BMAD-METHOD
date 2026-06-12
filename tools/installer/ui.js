@@ -166,8 +166,10 @@ class UI {
     // runtime. Warn-don't-block, but require an explicit ack so the warning
     // can't scroll past unseen. The installer runs in the destination
     // environment, so probing PATH here tests the right machine.
+    // Skip the ack when stdin isn't a TTY (CI/Docker/piped): clack's select
+    // on closed stdin resolves to cancel, which would silently exit 0.
     const { checkPythonEnvironment } = require('./core/python-check');
-    await checkPythonEnvironment({ nonInteractive: !!options.yes });
+    await checkPythonEnvironment({ nonInteractive: !!options.yes || !process.stdin.isTTY });
 
     // Parse channel flags (--channel/--all-*/--next=/--pin) once. Warnings
     // are surfaced immediately so the user sees them before any git ops run.

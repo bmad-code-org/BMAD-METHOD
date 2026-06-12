@@ -3353,9 +3353,101 @@ async function runTests() {
     // result must be well-formed. (CI machines may or may not have Python.)
     const detected = detectPython();
     assert(
-      detected === null || (typeof detected.command === 'string' && typeof detected.version.raw === 'string'),
+      detected === null ||
+        (typeof detected.command === 'string' &&
+          typeof detected.version.raw === 'string' &&
+          typeof detected.isRuntimeCommand === 'boolean'),
       'detectPython returns null or a well-formed result',
     );
+
+    // checkPythonEnvironment branch coverage — stub detection, prompts, and
+    // process.exit so the assertions are deterministic regardless of the
+    // machine's Python. python-check resolves detectPython via module.exports
+    // and prompts via the shared module object, so swapping properties works.
+    const pythonCheck = require('../tools/installer/core/python-check');
+    const promptsModule = require('../tools/installer/prompts');
+    const real = {
+      detectPython: pythonCheck.detectPython,
+      log: promptsModule.log,
+      note: promptsModule.note,
+      select: promptsModule.select,
+      cancel: promptsModule.cancel,
+      exit: process.exit,
+    };
+    const stub = (detectResult, selectAnswer) => {
+      const seen = { success: [], warn: [], info: [], note: [], select: [], cancel: [], exit: [] };
+      pythonCheck.detectPython = () => detectResult;
+      promptsModule.log = {
+        success: async (m) => void seen.success.push(m),
+        warn: async (m) => void seen.warn.push(m),
+        info: async (m) => void seen.info.push(m),
+        error: async () => {},
+      };
+      promptsModule.note = async (m, t) => void seen.note.push(t || m);
+      promptsModule.select = async (opts) => {
+        seen.select.push(opts.message);
+        return selectAnswer;
+      };
+      promptsModule.cancel = async (m) => void seen.cancel.push(m);
+      process.exit = (code) => {
+        seen.exit.push(code);
+        throw new Error('__stub_exit__');
+      };
+      return seen;
+    };
+
+    try {
+      const v = (major, minor, patch) => ({ major, minor, patch, raw: `${major}.${minor}.${patch}` });
+
+      // Branch: full support via the runtime command — success, no prompt.
+      let seen = stub({ command: 'python3', version: v(3, 12, 1), isRuntimeCommand: true }, 'continue');
+      let result = await pythonCheck.checkPythonEnvironment();
+      assert(result.status === 'full' && seen.success.length === 1, 'full support via python3 logs success');
+      assert(seen.select.length === 0 && seen.warn.length === 0, 'full support via python3 skips warning and ack prompt');
+
+      // Branch: modern Python found, but not as `python3` — runtime mismatch.
+      seen = stub({ command: 'py -3', version: v(3, 12, 0), isRuntimeCommand: false }, 'continue');
+      result = await pythonCheck.checkPythonEnvironment();
+      assert(seen.success.length === 0, 'python3-mismatch never reports full support');
+      assert(
+        seen.warn.length === 1 && seen.warn[0].includes('python3') && seen.warn[0].includes('py -3'),
+        'python3-mismatch warns that scripts invoke python3',
+      );
+      assert(seen.select.length === 1 && result.status === 'full', 'python3-mismatch still requires the ack prompt');
+
+      // Branch: partial support (3.8–3.10) — warn + ack, continue returns.
+      seen = stub({ command: 'python3', version: v(3, 9, 5), isRuntimeCommand: true }, 'continue');
+      result = await pythonCheck.checkPythonEnvironment();
+      assert(
+        result.status === 'partial' && seen.warn.length === 1 && seen.warn[0].includes('3.11+'),
+        'partial support warns about tomllib floor',
+      );
+      assert(seen.select.length === 1 && seen.exit.length === 0, 'partial support prompts and continue proceeds');
+
+      // Branch: no Python, non-interactive — warn + info, never prompts.
+      seen = stub(null, 'continue');
+      result = await pythonCheck.checkPythonEnvironment({ nonInteractive: true });
+      assert(result.status === 'none' && seen.warn[0].includes('No Python found'), 'non-interactive with no Python warns');
+      assert(seen.select.length === 0 && seen.info.length === 1, 'non-interactive skips the ack prompt and logs continuation');
+
+      // Branch: no Python, interactive, user quits — cancel message + exit 0.
+      seen = stub(null, 'quit');
+      let threw = false;
+      try {
+        await pythonCheck.checkPythonEnvironment();
+      } catch (error) {
+        threw = error.message === '__stub_exit__';
+      }
+      assert(threw && seen.exit.length === 1 && seen.exit[0] === 0, 'quit choice exits 0 (user-cancel convention)');
+      assert(seen.cancel.length === 1, 'quit choice shows the cancel guidance');
+    } finally {
+      pythonCheck.detectPython = real.detectPython;
+      promptsModule.log = real.log;
+      promptsModule.note = real.note;
+      promptsModule.select = real.select;
+      promptsModule.cancel = real.cancel;
+      process.exit = real.exit;
+    }
   } catch (error) {
     console.log(`${colors.red}Test Suite 46 setup failed: ${error.message}${colors.reset}`);
     console.log(error.stack);
