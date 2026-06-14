@@ -56,8 +56,8 @@ principles = [
 
 [[agent.menu]]
 code = "CA"
-description = "Guided workflow to document technical decisions to keep implementation on track"
-skill = "bmad-create-architecture"
+description = "Produce the architecture spine: the invariants that keep independently-built units consistent"
+skill = "bmad-architecture"
 
 [[agent.menu]]
 code = "IR"
