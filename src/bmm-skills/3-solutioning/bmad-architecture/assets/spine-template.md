@@ -12,7 +12,7 @@ stack:                      # SEED — verified current at authoring; the code o
   languages: []
   frameworks: []
   key_deps: []              # name@version
-binds: []                   # capability / unit IDs governed (from the driving spec)
+binds: []                   # capability / unit IDs governed (from the driving spec; at epic altitude, also the parent AD IDs inherited)
 sources: []
 companions: []
 ---
@@ -23,11 +23,27 @@ companions: []
 > independently-built level below ({features | epics | stories}) coherent — the durable rules a
 > clean codebase can't reveal. Structure is **seed**: the code owns the detail, the spine keeps the shape.
 > Decisions, not rationale (that lives in the memlog). Diagrams over prose.
+>
+> **Scale to the job — drop any section a project doesn't need.** A small intent may be just a
+> paradigm + a few `AD`s + conventions, seed omitted; a platform earns the full set. An inherited
+> epic spine is usually mostly Inherited Invariants + a thin Deferred. Empty sections are cut, not left as headers.
 
 ## Design Paradigm
 
 Name the pattern — a known one loads a whole model for free — and map its layers to namespaces /
 directories. The smallest, most durable thing in the file.
+
+## Inherited Invariants
+
+Present only when this spine inherits a parent at a higher altitude (e.g. an epic spine under a
+feature/initiative spine). The parent's `AD`s, conventions, and paradigm that bind here, listed by
+their original parent IDs — **read-only, never renumbered, not re-derived**. This spine adds only
+what the parent left open; anything here that a local decision would contradict is a conflict to
+surface, not override.
+
+| Inherited | From parent | Binds here |
+| --- | --- | --- |
+| {AD-n / convention} | {parent spine} | {what it constrains in this scope} |
 
 ## Invariants & Rules
 
@@ -62,13 +78,16 @@ don't apply.
 
 ## Structural Seed
 
-Cold-start scaffolding, kept minimal. The code owns the **detail** (every file, every column) — don't
-mirror it here. But this stays the living source of truth for **shape**: evolve it when the shape
-itself changes — a new container, a new core entity, a stack bump — and let the memlog keep the history.
+Cold-start scaffolding, kept minimal — include an item only where its shape is non-obvious at this
+altitude (at epic altitude the parent usually already fixed it, so the seed is often empty). The code
+owns the **detail** (every file, every column); once code exists it becomes the source of truth for
+detail, and this seed is a starting scaffold, not a mirror to maintain against it. Evolve a seed item
+only when the **shape** itself changes — a new container, a new core entity, a stack bump — and let
+the memlog keep the history.
 
 - **Stack & Versions** — the substrate (mirrors frontmatter `stack`).
-- **System Shape** — a container/context view. Use `flowchart` with a `subgraph` per boundary; C4 mermaid is experimental and won't render in most viewers.
-- **Data Model** — an ERD of entities and relationships, one attribute per line (ownership/mutation rules live above).
+- **System Shape** — a container/context view (at epic altitude, the slice of the parent system this scope touches). Use `flowchart` with a `subgraph` per boundary; C4 mermaid is experimental and won't render in most viewers.
+- **Core Entities** — an ERD of entities and their relationships. Names and relationships only; attributes belong to the code unless one is itself an invariant (then it's an `AD`, not seed).
 - **Project Structure** — a minimal source tree, only as deep as consistency needs.
 
 ```mermaid
@@ -87,10 +106,7 @@ flowchart TD
 ```mermaid
 erDiagram
   ENTITY_A ||--o{ ENTITY_B : "{relationship}"
-  ENTITY_A {
-    uuid id PK
-    string name
-  }
+  ENTITY_B ||--o| ENTITY_C : "{relationship}"
 ```
 
 ```text

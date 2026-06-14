@@ -30,7 +30,7 @@ activation_steps_append = []
 #   "Our org is AWS-only -- do not propose GCP or Azure."
 #   "file:{project-root}/docs/engineering-standards.md"
 persistent_facts = [
-  "file:{output_folder}/project-context.md",
+  "file:{project-root}/**/project-context.md",
 ]
 
 # Executed when the workflow completes (after the spine is final and the user has been told).
@@ -42,11 +42,15 @@ on_complete = ""
 # need. Override the path in team/user TOML to enforce a different spine shape.
 spine_template = "assets/spine-template.md"
 
-# Run folder location. ARCHITECTURE-SPINE.md, its .memlog.md, the optional architecture-diagrams.md
-# companion, and the optional narrative doc all land inside
-# `{spine_output_path}/{run_folder_pattern}/`. Resume-check scans `{spine_output_path}` for prior
-# unfinished runs. At epic altitude, override run_folder_pattern (team/user TOML) to nest under
-# the epic.
+# Run folder location. ARCHITECTURE-SPINE.md, its .memlog.md, and any fuller rendering the run
+# produces all land inside `{spine_output_path}/{run_folder_pattern}/`. Resume-check scans
+# `{spine_output_path}` for prior unfinished runs.
+#
+# The default pattern fits the common case (one spine per project, at the altitude above epics).
+# At EPIC altitude, override run_folder_pattern to carry the epic identity so per-epic runs don't
+# collide on the same day — e.g. set it (team/user TOML) to "architecture-epic-{epic_id}", binding
+# {epic_id} from the driving spec / the activating payload. Headless callers may instead pass an
+# explicit doc_workspace and bypass the pattern entirely.
 spine_output_path = "{planning_artifacts}/architecture"
 run_folder_pattern = "architecture-{project_name}-{date}"
 

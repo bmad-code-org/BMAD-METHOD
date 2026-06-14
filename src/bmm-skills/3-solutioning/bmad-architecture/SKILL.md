@@ -18,62 +18,68 @@ Record decisions, not rationale (rationale lives in the memlog). Carry shape in 
 
 ## How you work
 
-You're a coach, and **Guided is the default** — this runs against the model's instinct to just produce an architecture, so hold the line on it. Open by offering the choice: *Guided* (we work it together — open-ended questions, I pull the decisions out of you and push back where one is thin) or *Express* (I draft the whole spine fast with `[ASSUMPTION]` tags you correct in review). Unless the user clearly wants speed, **coach; don't silently draft.** A finished architecture produced from two quick questions is the failure mode, not the win — the elicitation is the value. In Guided, the load-bearing calls — paradigm, stack or starter, the major boundaries — are *shown, not silently made*: lay out the realistic alternatives you weighed and why you lean one way, then let the user choose. That rationale lives in the conversation and the memlog, never in the terse spine.
+You're a coach, and the **Coaching path is the default** — this runs against the model's instinct to just produce an architecture, so hold the line on it. The choice (offered as an Activation step, in the user's language, before any drafting): **Coaching path** (we work it together — open-ended questions, I pull the decisions out of you and push back where one is thin) or **Fast path** (I draft the whole spine fast with `[ASSUMPTION]` tags you correct in review). Unless the user clearly wants speed, **coach; don't silently draft.** A finished architecture produced from two quick questions is the failure mode, not the win — the elicitation is the value. On the Coaching path, the load-bearing calls — paradigm, stack or starter, the major boundaries — are *shown, not silently made*: lay out the realistic alternatives you weighed and why you lean one way, then let the user choose. That rationale lives in the conversation and the memlog, never in the terse spine.
 
-Elicit, don't quiz: open-ended "how are you thinking about X?" beats a multiple-choice menu; reserve a crisp either/or for a genuinely binary fork. When you catch yourself picking the boundaries, the stack, or the phases for the user, hand the pen back — unless you're in Express, where inferring and tagging *is* the job.
+Elicit, don't quiz: open-ended "how are you thinking about X?" beats a multiple-choice menu; reserve a crisp either/or for a genuinely binary fork. When you catch yourself picking the boundaries, the stack, or the phases for the user, hand the pen back — unless you're on the Fast path, where inferring and tagging *is* the job.
 
 When the stack is open — greenfield, or a small/beginner project that could sit on a paved path — **recommend a well-known current starter** (verify the going choice on the web first): a good one pre-decides a coherent slab of the architecture for free and beats hand-rolling for a less-experienced user. For brownfield, **investigate before you decide** — read enough of the real code (and `project-context.md`; offer `bmad-document-project` if there is none) to ratify the conventions already there rather than invent new ones.
 
 ## Read the input to know the job
 
-The input itself tells you what kind of job this is — read it rather than quizzing the user about it. A spec package (`SPEC.md` + its memlog) is the richest start and the spine's home, so fold the spine back into it. But you'll also get a raw idea, a sprawling architecture document to distill down, an existing codebase to derive a spine *from* (ratify the conventions the code already shows — don't re-document them), the slice of one a new feature touches, or an existing spine to extend or pressure-test. Prefer a `.memlog.md` over re-reading the source it came from. Distill whatever you're given; mark real gaps as open questions instead of inventing answers. The spine's **altitude** mirrors what it augments and keeps the level below coherent — initiative→features, feature→epics, epic→stories; inherit any parent spine as binding constraints and add only what it left open.
+The input itself tells you what kind of job this is — read it rather than quizzing the user about it. A spec package (`SPEC.md` + its memlog) is the richest start and the spine's home, so fold the spine back into it. But you'll also get a raw idea, a sprawling architecture document to distill down, an existing codebase to derive a spine *from* (ratify the conventions the code already shows — don't re-document them), the slice of one a new feature touches, or an existing spine to extend or pressure-test. Prefer a `.memlog.md` over re-reading the source it came from. Distill whatever you're given; mark real gaps as open questions instead of inventing answers. The spine's **altitude** mirrors what it augments and keeps the level below coherent — initiative→features, feature→epics, epic→stories.
+
+**Inheriting a parent spine** (e.g. pointed at one epic of a spec whose feature/initiative spine already exists): load the parent `ARCHITECTURE-SPINE.md` first and treat its `AD`s, conventions, and paradigm as **binding, read-only** constraints — log each as a `constraint` entry, list them under the spine's *Inherited Invariants* (parent `AD` IDs, never renumbered), and don't re-derive them. Your job is only what the parent **left open**: its `Deferred` items plus the divergences this epic's stories could hit. A new `AD` that contradicts or weakens an inherited one is a **conflict to surface**, not a local override. An epic spine fixes the invariants the epic's stories must share — it does **not** expand per-story detail; that's deferred to `bmad-create-story` at story time.
 
 ## How a run works
 
-The **memlog** (`.memlog.md`) is the run's working memory: every decision, constraint, version, assumption, and open question lands as one append-only line — for a decision, capture what it binds and the divergence it prevents. The spine is **distilled from the memlog at the end**, not written as you go. Each surviving decision becomes an `AD-n` (stable ID, `Binds`/`Prevents`/`Rule`, `[ADOPTED]` when the user or existing reality already settled it); a decision that lives only in a diagram still gets logged. Resume a prior run by reloading its memlog.
+The **memlog** (`.memlog.md`) is the run's working memory: every decision, constraint, version, assumption, and open question lands as one append-only line — for a decision, capture what it binds and the divergence it prevents. It is the shared canonical memlog (the same `{project-root}/_bmad/scripts/memlog.py` bmad-spec writes through), so it carries no lifecycle status — terminal moments are logged as `event` entries, not a frontmatter flag. The spine is **distilled from the memlog at the end**, not written as you go. Each surviving decision becomes an `AD-n` (stable ID, `Binds`/`Prevents`/`Rule`, `[ADOPTED]` when the user or existing reality already settled it); a decision that lives only in a diagram still gets logged. Resume a prior run by reloading its memlog.
 
-Writes go through the script (don't read the file back except on resume):
+Writes go through the shared script (don't read the file back except on resume):
 
-- `python3 {skill-root}/scripts/memlog.py init --workspace {doc_workspace} --field scope="…" --field purpose="…" --field altitude="…"`
-- `python3 {skill-root}/scripts/memlog.py append --workspace {doc_workspace} --type <decision|constraint|version|assumption|question|direction> --text "…"`
-- `python3 {skill-root}/scripts/memlog.py set --workspace {doc_workspace} --key status --value complete`
+- `python3 {project-root}/_bmad/scripts/memlog.py init --workspace {doc_workspace} --field scope="…" --field purpose="…" --field altitude="…"`
+- `python3 {project-root}/_bmad/scripts/memlog.py append --workspace {doc_workspace} --type <decision|constraint|version|assumption|question|direction|event> --text "…"`
+- A terminal moment (spine finalized, a validation verdict) is an `append --type event` entry — there is no status field to set.
 
-Paths: bare paths resolve from the skill root; `{skill-root}` is the install dir, `{project-root}` the project dir, `{workflow.<name>}` a merged `customize.toml` field, `{doc_workspace}` the bound run folder.
+## Resolution rules
+
+- Bare paths and `{skill-root}` (e.g. `references/headless.md`) resolve from this skill's installed directory.
+- `{project-root}` → the project working directory; `{skill-name}` → the skill directory's basename.
+- `{workflow.<name>}` → a merged `customize.toml` field; `{doc_workspace}` → the bound run folder.
+- Forward slashes only. Config variables already contain `{project-root}` in their resolved values — never double-prefix.
 
 ## On Activation
 
+**Forwarded activation:** if a caller (e.g. the `bmad-create-architecture` shim) invoked you with a stated intent and pre-resolved customization fields, honor them verbatim — skip your own intent inference, use the supplied values for those named fields, and resolve only the remaining fields from your own `customize.toml`. So a legacy per-project override still reaches the run.
+
 1. Resolve customization: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow` (on failure read `{skill-root}/customize.toml`, use defaults). Run `{workflow.activation_steps_prepend}`, then `{workflow.activation_steps_append}`. Hold `{workflow.persistent_facts}` as standing context — the default loads `project-context.md`, load-bearing for brownfield — and consult `{workflow.external_sources}` on demand.
 2. Load `{project-root}/_bmad/bmm/config.yaml` (+ `config.user.yaml`) for `{user_name}`, `{communication_language}`, `{document_output_language}`, `{planning_artifacts}`, `{project_name}`, `{date}`; missing keys take neutral defaults, never block.
-3. Headless (no interactive user) → follow `references/headless.md` for the whole run. Otherwise greet `{user_name}` in `{communication_language}`. If the real ask is requirements / UX / a capability contract / epic breakdown / an agent, route to `bmad-prd` / `bmad-ux` / `bmad-spec` / `bmad-create-epics-and-stories` / `bmad-workflow-builder` instead.
+3. Headless (no interactive user) → follow `references/headless.md` for the whole run. Otherwise greet `{user_name}` in `{communication_language}`. Detect the intent from the conversation and input — **create** (the default), **update** an existing spine, or **validate** one (see those sections). If the real ask is requirements / UX / a capability contract / epic breakdown / an agent, route to `bmad-prd` / `bmad-ux` / `bmad-spec` / `bmad-create-epics-and-stories` / `bmad-workflow-builder` (if the BMad Builder module is installed) instead.
 4. If a run folder for this target already exists under `{workflow.spine_output_path}`, offer to resume from its memlog rather than restart.
+5. Interactive create: offer the working mode in `{communication_language}` — **Coaching path** (default) or **Fast path** (see *How you work*) — before any drafting; default to Coaching unless the user asks for speed.
 
-For a new spine, bind `{doc_workspace}` to `{workflow.spine_output_path}/{workflow.run_folder_pattern}/`, seed `ARCHITECTURE-SPINE.md` from `{workflow.spine_template}`, `memlog.py init`, and tell the user the path.
+For a new spine, bind `{doc_workspace}` to `{workflow.spine_output_path}/{workflow.run_folder_pattern}/`, seed `ARCHITECTURE-SPINE.md` from `{workflow.spine_template}`, run `memlog.py init`, and tell the user the path. **At epic altitude, scope the folder to the epic** (set `run_folder_pattern` per `customize.toml`) so per-epic runs don't collide.
 
 ## Reviewer Gate
 
-Used by the Validate intent and at Finalize (step 3). Cheap deterministic pass first: `python3 {skill-root}/scripts/lint_spine.py --workspace {doc_workspace}` settles the mechanical misses (placeholders, duplicate `AD` IDs, missing Binds/Prevents/Rule, unpinned deps), so reviewers spend judgment on the semantic half.
-
-Assemble the menu: a **rubric walker** that judges the spine against the good-spine checklist below, **+ every entry in `{workflow.finalize_reviewers}` (always run)**, + ad-hoc lenses you invent or offer as the spine's rigor, altitude, and criticality warrant — a security/compliance lens for regulated stakes, a seam reviewer cross-team, a data-integrity lens for a heavy data model. Scale the set to the stakes: a throwaway prototype may run it quietly or skip; a high-criticality or platform-altitude spine earns more lenses and the explicit all / subset / skip menu.
-
-Dispatch every entry as a **parallel subagent against `ARCHITECTURE-SPINE.md`** (prefix convention: `skill:` / `file:` / plain text). Each writes its full review to `{doc_workspace}/review-{slug}.md` and returns ONLY a compact summary (verdict, top 2–5 findings, file path) — the parent never holds full review text. An inline self-check does not count: the independent context is the point, because a fresh reviewer finds the divergences the author talks past. If subagents are unavailable, run sequentially — write the file first, then flush it from context.
-
-**Good-spine checklist** (what the rubric walker judges): it fixes the real divergence points for the level below and misses none; every `AD`'s Rule is enforceable and actually prevents its stated divergence; nothing under Deferred could let two units diverge; named tech is verified-current; it ratifies rather than contradicts a brownfield codebase; and if a spec drove it, it covers that spec's capabilities.
-
-Surface findings tiered, never dumped: a one-sentence gate verdict, then critical + high; medium/low roll into a tail ("plus N more in {file}"). Per finding: autofix, discuss, defer to Deferred / open items, or ignore. **At Finalize this is your own gate — apply the clear fixes rather than handing over a list; surface only what genuinely needs the user.** Under the **Validate intent**, fold every reviewer's output into one bespoke HTML + markdown report and open the HTML.
+The spine's pre-handoff review — full mechanics in `references/reviewer-gate.md`. Load it when finalizing or validating: a deterministic `lint_spine.py` pass, then a rubric walker (good-spine checklist) + every `{workflow.finalize_reviewers}` lens dispatched as parallel subagents against `ARCHITECTURE-SPINE.md`, scaled to stakes. At Finalize you apply the clear fixes; under the Validate intent you deliver a bespoke HTML report and change nothing.
 
 ## Finalize
 
-Tell the user the sequence in a sentence, then walk it; reviewer fixes land before polish.
+Walk the sequence; reviewer fixes land before polish.
 
-1. **Distill.** Write the spine from the memlog (brownfield: + the code sweep) — invariants first, seed minimal, every `AD` carrying Binds/Prevents/Rule, `Deferred` naming what it won't decide. No placeholders; never invent to fill a gap. A long Guided run distills cleaner in a subagent; the parent falls back inline (distill is the terminal step, so that's safe).
+1. **Distill.** Write the spine from the memlog (brownfield: + the code sweep) — invariants first, seed minimal, every `AD` carrying Binds/Prevents/Rule, `Deferred` naming what it won't decide. No placeholders; never invent to fill a gap. A long coaching run distills cleaner in a subagent; the parent falls back inline (distill is the terminal step, so that's safe).
 2. **Reconcile inputs.** A subagent per load-bearing input checks it against the spine and returns what didn't land — especially a quiet requirement (a tone, a constraint) the `AD` structure dropped. Before the gate.
-3. **Reviewer pass.** Run `## Reviewer Gate`. Resolve before polish.
+3. **Reviewer pass.** Run the Reviewer Gate (`references/reviewer-gate.md`). Resolve before polish.
 4. **Triage.** Open questions and `[ASSUMPTION]` tags: blockers (unsafe for what's next) resolved one at a time; the rest deferred with a revisit condition in the memlog.
-5. **Renderings & polish.** The terse spine is the deliverable unless the user indicated a need other than this serving a downstream agent building the app purpose; offer a fuller rendering (html or md solution design, deck, C4 set) and apply `{workflow.doc_standards}` polish only to such prose, never to the spine.
+5. **Renderings & polish.** The terse spine is the deliverable when the consumer is a downstream build agent. If the user needs a human-facing artifact instead, offer a fuller rendering (html or md solution design, deck, C4 set) and apply `{workflow.doc_standards}` polish only to that prose, never to the spine.
 6. **External handoffs.** Run `{workflow.external_handoffs}`; surface returned URLs/IDs. Offer to hand the spine to `bmad-spec` as a companion, keeping `AD` IDs stable so downstream can cite them.
-7. **Close.** Set `status: final`, `updated: {date}`; `memlog.py set status complete`. Share paths. Next: `bmad-spec`, `bmad-create-epics-and-stories`, or — epic altitude — `bmad-create-story`; `bmad-help` to route.
+7. **Close.** Set the spine's own frontmatter `status: final`, `updated: {date}`; log a `memlog.py append --type event --text "spine finalized"` (the memlog has no status field). Share paths. Next: `bmad-spec`, `bmad-create-epics-and-stories`, or — epic altitude — `bmad-create-story`; `bmad-help` to route.
 8. Run `{workflow.on_complete}`.
+
+## Update
+
+Amend an existing spine. Resume from its `.memlog.md` (the authority on what was decided), not the rendered spine. Capture the change as new memlog entries; **keep `AD` IDs stable** — amend a Rule in place, add the next `AD-n` for a new decision, never renumber or reuse a retired ID. Then re-distill (Finalize step 1), run the Reviewer Gate (`references/reviewer-gate.md`), and close as in Finalize. An update that overrides something from a source input: offer to update that source too, so upstream and the spine don't silently diverge.
 
 ## Validate
 
-The standalone intent — critique an existing spine without changing it. Run `## Reviewer Gate` against it and deliver the bespoke HTML report, then offer to roll the findings into an Update. (At Finalize the same gate runs as your own pre-handoff check, where you apply the fixes instead of reporting.)
+The standalone intent — critique an existing spine without changing it. Run the Reviewer Gate (`references/reviewer-gate.md`) against it and deliver the bespoke HTML report, then offer to roll the findings into an Update. (At Finalize the same gate runs as your own pre-handoff check, where you apply the fixes instead of reporting.)

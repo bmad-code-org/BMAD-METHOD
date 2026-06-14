@@ -9,6 +9,8 @@ mechanical defects a prompt is unreliable at — literal placeholders, AD-n id b
 AD-n blocks missing required fields, and unpinned dependency versions.
 """
 import importlib.util
+import json
+import re
 import sys
 from pathlib import Path
 
@@ -132,6 +134,71 @@ def test_yaml_comments_not_parsed_as_deps():
     )
     result = lint_spine.lint(text)
     assert "version_pin" not in cats(result)
+
+
+def test_template_token_is_low_severity():
+    # a bare {token} can be legitimate brace prose; it is flagged, but low (not high) so the
+    # mechanical pass stays near-zero false-positive
+    text = CLEAN.replace("single write path", "{decision}")
+    result = lint_spine.lint(text)
+    toks = [f for f in result["findings"] if f["category"] == "placeholder" and "template token" in f["detail"]]
+    assert toks and all(f["severity"] == "low" for f in toks)
+
+
+def test_no_frontmatter_body_still_scanned():
+    text = "## Invariants\n\n### AD-1 — x\n\n- **Binds:** all\n- **Prevents:** drift\n- **Rule:** TBD\n"
+    result = lint_spine.lint(text)
+    assert "placeholder" in cats(result)  # TBD caught even with no frontmatter
+
+
+def test_frontmatter_value_with_dashes_not_truncated():
+    # a value containing '---' must not be read as the closing fence (line-exact close)
+    text = "---\nscope: 'phase 1 --- phase 2'\nstack:\n  key_deps:\n    - fastapi\n---\n\n## Invariants\n"
+    result = lint_spine.lint(text)
+    assert any(f["category"] == "version_pin" for f in result["findings"])  # read past the inline ---
+
+
+def test_ad_heading_in_fence_not_counted():
+    text = (
+        "---\nname: 'x'\n---\n\n"
+        "### AD-1 — real\n\n- **Binds:** all\n- **Prevents:** drift\n- **Rule:** do x\n\n"
+        "## Docs\n\n```text\n### AD-2 — illustrative only, no fields\n```\n"
+    )
+    result = lint_spine.lint(text)
+    assert result["ok"] is True  # the fenced AD-2 is not a live AD → no ad_fields/ad_id finding
+
+
+def test_map_form_key_deps_unpinned_caught():
+    text = "---\nstack:\n  key_deps:\n    fastapi: '0.115'\n    redis:\n---\n\n## Invariants\n"
+    result = lint_spine.lint(text)
+    pins = [f for f in result["findings"] if f["category"] == "version_pin"]
+    assert len(pins) == 1 and "redis" in pins[0]["detail"]
+
+
+def test_map_form_key_deps_pinned_ok():
+    text = "---\nstack:\n  key_deps:\n    fastapi: '0.115'\n---\n\n## Invariants\n"
+    result = lint_spine.lint(text)
+    assert "version_pin" not in cats(result)
+
+
+def test_placeholder_line_number_is_absolute():
+    # a TBD after a multi-line fence reports its real file line (fence blanked, not collapsed)
+    text = (
+        "---\nname: 'x'\n---\n\n"
+        "## A\n\n"
+        "```text\nf1\nf2\nf3\n```\n\n"
+        "TBD here\n"
+    )
+    result = lint_spine.lint(text)
+    ph = [f for f in result["findings"] if "TBD" in f["detail"]][0]
+    n = int(re.search(r"line (\d+)", ph["location"]).group(1))
+    assert n == 13
+
+
+def test_missing_spine_file_reports_error(tmp_path, capsys):
+    rc = lint_spine.main(["--workspace", str(tmp_path)])
+    out = json.loads(capsys.readouterr().out)
+    assert rc == 0 and out["ok"] is False and "not found" in out["error"]
 
 
 if __name__ == "__main__":

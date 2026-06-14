@@ -15,9 +15,11 @@ It reads ARCHITECTURE-SPINE.md from a workspace and reports, as compact JSON on 
   - ad_fields      an AD-n block missing Binds / Prevents / Rule
   - version_pin    a frontmatter key_deps entry with no @version
 
-Fenced code blocks are skipped for placeholder/brace scanning so mermaid and source
-trees don't trip false positives. Exit code is always 0 — findings travel in the JSON;
-the caller (Reviewer Gate / rubric walker) decides what to do with them.
+Fenced code blocks are blanked (replaced with equal-count blank lines) before scanning, so
+mermaid and source trees don't trip false positives AND reported line numbers still line up
+with the real file. Reported lines are absolute file lines (frontmatter offset added). Exit
+code is always 0 — findings travel in the JSON; the caller (Reviewer Gate / rubric walker)
+decides what to do with them.
 """
 from __future__ import annotations
 
@@ -37,52 +39,65 @@ SIMILAR_TO = re.compile(r"similar to AD-\d+", re.IGNORECASE)
 TEMPLATE_TOKEN = re.compile(r"\{[a-z_][a-z0-9_ /.-]*\}")
 
 
-def split_frontmatter(text: str) -> tuple[str, str]:
-    """Return (frontmatter, body). Frontmatter is the content between the first two
-    `---` fences, or '' when absent."""
-    if text.startswith("---"):
-        end = text.find("\n---", 3)
-        if end != -1:
-            fm = text[3:end].lstrip("\n")
-            body = text[end + 4:]
-            return fm, body
-    return "", text
+def split_frontmatter(text: str) -> tuple[str, str, int]:
+    """Return (frontmatter, body, body_line_offset).
+
+    Frontmatter is the content between the first two lines that are *exactly* `---`
+    (line-exact, like memlog.split — a `---` inside a value or a body thematic break never
+    truncates it). body_line_offset is the number of file lines before the body begins, so a
+    body-relative line number plus the offset gives the absolute file line. Absent frontmatter
+    → ('', text, 0)."""
+    lines = text.split("\n")
+    if lines and lines[0] == "---":
+        for i in range(1, len(lines)):
+            if lines[i] == "---":
+                fm = "\n".join(lines[1:i])
+                body = "\n".join(lines[i + 1:])
+                return fm, body, i + 1
+    return "", text, 0
 
 
-def strip_fences(text: str) -> str:
-    return FENCE.sub("", text)
+def blank_fences(text: str) -> str:
+    """Replace each fenced block with the same number of newlines, so scanning skips fenced
+    content while every line number outside the fence stays put."""
+    return FENCE.sub(lambda m: "\n" * m.group(0).count("\n"), text)
 
 
 def line_of(text: str, idx: int) -> int:
     return text.count("\n", 0, idx) + 1
 
 
-def find_placeholders(body: str) -> list[dict]:
+def find_placeholders(body: str, offset: int) -> list[dict]:
     findings: list[dict] = []
-    scan = strip_fences(body)
-    for rx, label in (
-        (PLACEHOLDER_WORD, "placeholder marker"),
-        (SIMILAR_TO, "unresolved cross-reference"),
-        (TEMPLATE_TOKEN, "unfilled template token"),
+    scan = blank_fences(body)
+    # (regex, label, severity) — TBD/TODO and dangling cross-refs are unambiguous; a bare
+    # {template-token} can be legitimate brace prose, so it is flagged low ("possible") to keep
+    # the mechanical pass near-zero false-positive rather than train reviewers to ignore it.
+    for rx, label, severity in (
+        (PLACEHOLDER_WORD, "placeholder marker", "high"),
+        (SIMILAR_TO, "unresolved cross-reference", "high"),
+        (TEMPLATE_TOKEN, "possible unfilled template token (verify)", "low"),
     ):
         for m in rx.finditer(scan):
             findings.append({
                 "category": "placeholder",
-                "severity": "high",
+                "severity": severity,
                 "detail": f"{label}: {m.group(0)!r}",
-                "location": f"{SPINE} (approx line {line_of(scan, m.start())})",
+                "location": f"{SPINE} (line {offset + line_of(scan, m.start())})",
             })
     return findings
 
 
-def find_ad_issues(body: str) -> list[dict]:
+def find_ad_issues(body: str, offset: int) -> list[dict]:
     findings: list[dict] = []
-    matches = list(AD_HEADING.finditer(body))
+    scan = blank_fences(body)  # AD headings shown inside a code fence are not live ADs
+    matches = list(AD_HEADING.finditer(scan))
     seen: dict[int, int] = {}
-    prev = 0
-    for i, m in enumerate(matches):
+    prev: int | None = None
+    for m in matches:
         num = int(m.group(1))
-        loc = f"{SPINE} AD-{num} (line {line_of(body, m.start())})"
+        file_line = offset + line_of(scan, m.start())
+        loc = f"{SPINE} AD-{num} (line {file_line})"
         if num in seen:
             findings.append({
                 "category": "ad_id",
@@ -91,20 +106,20 @@ def find_ad_issues(body: str) -> list[dict]:
                 "location": loc,
             })
         else:
-            seen[num] = line_of(body, m.start())
-        if num <= prev:
+            seen[num] = file_line
+        if prev is not None and num <= prev:
             findings.append({
                 "category": "ad_id",
                 "severity": "high",
                 "detail": f"AD-{num} is non-monotonic (follows AD-{prev}); ids must ascend and never renumber",
                 "location": loc,
             })
-        prev = max(prev, num)
+        prev = num if prev is None else max(prev, num)
 
         # block text = from this heading to the next heading of any level
         start = m.end()
-        nxt = HEADING.search(body, start)
-        block = body[start:nxt.start()] if nxt else body[start:]
+        nxt = HEADING.search(scan, start)
+        block = scan[start:nxt.start()] if nxt else scan[start:]
         low = block.lower()
         missing = [f for f in ("binds", "prevents", "rule") if f not in low]
         if missing:
@@ -143,7 +158,21 @@ def find_unpinned_deps(frontmatter: str) -> list[dict]:
                 in_key_deps = False
                 continue
             if stripped.startswith("-"):
+                # block-sequence form: `- name@version`
                 _check_dep(_strip_comment(stripped[1:]).strip().strip("'\""), findings)
+            else:
+                # map form: `name: version` — pinned iff a non-empty value is present
+                mm = re.match(r"([^:]+):\s*(.*)$", stripped)
+                if mm:
+                    name = mm.group(1).strip().strip("'\"")
+                    val = _strip_comment(mm.group(2)).strip().strip("'\"")
+                    if name and not val:
+                        findings.append({
+                            "category": "version_pin",
+                            "severity": "medium",
+                            "detail": f"key_deps entry {name!r} has no version pin",
+                            "location": f"{SPINE} frontmatter stack.key_deps",
+                        })
     return findings
 
 
@@ -165,10 +194,10 @@ def _check_dep(item: str, findings: list[dict]) -> None:
 
 
 def lint(text: str) -> dict:
-    frontmatter, body = split_frontmatter(text)
+    frontmatter, body, offset = split_frontmatter(text)
     findings: list[dict] = []
-    findings += find_placeholders(body)
-    findings += find_ad_issues(body)
+    findings += find_placeholders(body, offset)
+    findings += find_ad_issues(body, offset)
     findings += find_unpinned_deps(frontmatter)
     counts: dict[str, int] = {}
     for f in findings:
