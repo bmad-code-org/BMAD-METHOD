@@ -84,7 +84,9 @@ external_handoffs = []
 # --- Finalize reviewers ---
 # Extra review lenses spawned as parallel subagents at the validation gate (Finalize and the
 # Validate intent), on top of the skill's built-in good-spine checklist and the lint_spine.py
-# mechanical floor. Stakes-gated: high-stakes / cross-team spines run them, throwaway ones may skip.
+# mechanical floor. The GATE is stakes-gated — a throwaway spine may run it quietly or skip it —
+# but whenever the gate runs, every entry here runs with it (the configured floor, never cherry-
+# picked); only ad-hoc lenses are optional, and headless never skips the gate.
 #
 # Entries follow the standard prefix convention:
 #   "skill:NAME"   invoke the named review skill as a subagent against ARCHITECTURE-SPINE.md
