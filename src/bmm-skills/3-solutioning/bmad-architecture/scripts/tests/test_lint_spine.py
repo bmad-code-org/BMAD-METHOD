@@ -190,7 +190,7 @@ def test_placeholder_line_number_is_absolute():
         "TBD here\n"
     )
     result = lint_spine.lint(text)
-    ph = [f for f in result["findings"] if "TBD" in f["detail"]][0]
+    ph = next(f for f in result["findings"] if "TBD" in f["detail"])
     n = int(re.search(r"line (\d+)", ph["location"]).group(1))
     assert n == 13
 
@@ -199,6 +199,29 @@ def test_missing_spine_file_reports_error(tmp_path, capsys):
     rc = lint_spine.main(["--workspace", str(tmp_path)])
     out = json.loads(capsys.readouterr().out)
     assert rc == 0 and out["ok"] is False and "not found" in out["error"]
+
+
+def test_frontmatter_unfilled_token_caught():
+    # an unfilled {scope}/{paradigm}/{date} in frontmatter is part of the contract and must lint
+    text = "---\nname: 'x'\nscope: '{what this spine governs}'\n---\n\n## Invariants\n"
+    result = lint_spine.lint(text)
+    fm = [f for f in result["findings"] if f["category"] == "placeholder" and "frontmatter" in f["detail"]]
+    assert fm and any("template token" in f["detail"] for f in fm)
+
+
+def test_frontmatter_tbd_caught():
+    text = "---\nname: 'x'\nstatus: TBD\n---\n\n## Invariants\n"
+    result = lint_spine.lint(text)
+    assert any(f["category"] == "placeholder" and "frontmatter" in f["detail"] and "TBD" in f["detail"]
+               for f in result["findings"])
+
+
+def test_unreadable_spine_returns_error_not_crash(tmp_path, capsys):
+    # a spine that exists but can't be UTF-8 decoded must yield error JSON + exit 0, not a traceback
+    (tmp_path / lint_spine.SPINE).write_bytes(b"\xff\xfe bad bytes not utf-8")
+    rc = lint_spine.main(["--workspace", str(tmp_path)])
+    out = json.loads(capsys.readouterr().out)
+    assert rc == 0 and out["ok"] is False and "could not read" in out["error"]
 
 
 if __name__ == "__main__":

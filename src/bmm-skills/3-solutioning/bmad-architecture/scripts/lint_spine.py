@@ -88,6 +88,24 @@ def find_placeholders(body: str, offset: int) -> list[dict]:
     return findings
 
 
+def find_frontmatter_placeholders(frontmatter: str) -> list[dict]:
+    """Catch unfilled tokens left in frontmatter (e.g. paradigm/scope/date) — part of the
+    spine contract, but outside the body that find_placeholders scans."""
+    findings: list[dict] = []
+    for rx, label, severity in (
+        (PLACEHOLDER_WORD, "placeholder marker", "high"),
+        (TEMPLATE_TOKEN, "possible unfilled template token (verify)", "low"),
+    ):
+        for m in rx.finditer(frontmatter):
+            findings.append({
+                "category": "placeholder",
+                "severity": severity,
+                "detail": f"frontmatter {label}: {m.group(0)!r}",
+                "location": f"{SPINE} frontmatter (line {1 + line_of(frontmatter, m.start())})",
+            })
+    return findings
+
+
 def find_ad_issues(body: str, offset: int) -> list[dict]:
     findings: list[dict] = []
     scan = blank_fences(body)  # AD headings shown inside a code fence are not live ADs
@@ -196,6 +214,7 @@ def _check_dep(item: str, findings: list[dict]) -> None:
 def lint(text: str) -> dict:
     frontmatter, body, offset = split_frontmatter(text)
     findings: list[dict] = []
+    findings += find_frontmatter_placeholders(frontmatter)
     findings += find_placeholders(body, offset)
     findings += find_ad_issues(body, offset)
     findings += find_unpinned_deps(frontmatter)
@@ -221,7 +240,13 @@ def main(argv: list[str] | None = None) -> int:
     if not spine_path.exists():
         result = {"ok": False, "error": f"{spine_path} not found", "findings": [], "total_findings": 0}
     else:
-        result = lint(spine_path.read_text(encoding="utf-8"))
+        try:
+            text = spine_path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError) as e:
+            # honor the "exit code is always 0" contract: a read/decode failure travels in JSON
+            result = {"ok": False, "error": f"could not read {spine_path}: {e}", "findings": [], "total_findings": 0}
+        else:
+            result = lint(text)
 
     out = json.dumps(result, indent=2)
     if args.output:
