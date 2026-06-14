@@ -3457,6 +3457,125 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test Suite 47: WSL shell using Windows Node guard
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 47: WSL Windows Node guard${colors.reset}\n`);
+
+  try {
+    const wslNodeCheck = require('../tools/installer/core/wsl-node-check');
+
+    let detection = wslNodeCheck.detectWindowsNodeFromWsl({
+      platform: 'win32',
+      env: { WSL_DISTRO_NAME: 'Ubuntu-26.04' },
+      cwd: String.raw`C:\Windows`,
+      execPath: String.raw`C:\Program Files\nodejs\node.exe`,
+    });
+    assert(detection.isMismatch === true, 'detects Windows Node launched from WSL via WSL_DISTRO_NAME');
+
+    detection = wslNodeCheck.detectWindowsNodeFromWsl({
+      platform: 'win32',
+      env: { PWD: '/home/devuser/projects/md2pdf' },
+      cwd: String.raw`\\wsl.localhost\Ubuntu-26.04\home\devuser\projects\md2pdf`,
+      execPath: String.raw`C:\Program Files\nodejs\node.exe`,
+    });
+    assert(detection.isMismatch === true, 'detects Windows Node launched from WSL via Linux PWD / WSL UNC cwd');
+
+    detection = wslNodeCheck.detectWindowsNodeFromWsl({
+      platform: 'win32',
+      env: {},
+      cwd: String.raw`\\wsl$\Ubuntu-26.04\home\devuser\projects\md2pdf`,
+      execPath: String.raw`C:\Program Files\nodejs\node.exe`,
+    });
+    assert(detection.isMismatch === true, 'detects Windows Node launched from WSL via legacy WSL UNC cwd');
+
+    detection = wslNodeCheck.detectWindowsNodeFromWsl({
+      platform: 'linux',
+      env: { WSL_DISTRO_NAME: 'Ubuntu-26.04', PWD: '/home/devuser/projects/md2pdf' },
+      cwd: '/home/devuser/projects/md2pdf',
+      execPath: '/usr/bin/node',
+    });
+    assert(detection.isMismatch === false, 'allows native Linux Node inside WSL');
+
+    detection = wslNodeCheck.detectWindowsNodeFromWsl({
+      platform: 'win32',
+      env: { PWD: String.raw`C:\Users\devuser\project` },
+      cwd: String.raw`C:\Users\devuser\project`,
+      execPath: String.raw`C:\Program Files\nodejs\node.exe`,
+    });
+    assert(detection.isMismatch === false, 'allows normal Windows Node outside WSL');
+
+    detection = wslNodeCheck.detectWindowsNodeFromWsl({
+      platform: 'win32',
+      env: { PWD: '/c/Users/devuser/project' },
+      cwd: String.raw`C:\Users\devuser\project`,
+      execPath: String.raw`C:\Program Files\nodejs\node.exe`,
+    });
+    assert(detection.isMismatch === false, 'allows Git Bash Windows-drive PWD outside WSL');
+
+    detection = wslNodeCheck.detectWindowsNodeFromWsl({
+      platform: 'win32',
+      env: { PWD: '/cygdrive/c/Users/devuser/project' },
+      cwd: String.raw`C:\Users\devuser\project`,
+      execPath: String.raw`C:\Program Files\nodejs\node.exe`,
+    });
+    assert(detection.isMismatch === false, 'allows Cygwin Windows-drive PWD outside WSL');
+
+    const message = wslNodeCheck.formatWindowsNodeFromWslMessage({
+      isMismatch: true,
+      reason: 'WSL_DISTRO_NAME is set',
+      execPath: String.raw`C:\Program Files\nodejs\node.exe`,
+    });
+    assert(message.includes('Install Node.js inside WSL'), 'guard message tells user to install Node.js inside WSL');
+    assert(message.includes(String.raw`C:\Program Files\nodejs\node.exe`), 'guard message includes detected Windows Node path');
+
+    const promptsModule = require('../tools/installer/prompts');
+    const real = {
+      detectWindowsNodeFromWsl: wslNodeCheck.detectWindowsNodeFromWsl,
+      log: promptsModule.log,
+      exit: process.exit,
+    };
+    const seen = { errors: [], exit: [] };
+    wslNodeCheck.detectWindowsNodeFromWsl = () => ({
+      isMismatch: true,
+      reason: 'WSL_INTEROP is set',
+      execPath: String.raw`C:\Program Files\nodejs\node.exe`,
+    });
+    promptsModule.log = {
+      error: async (m) => void seen.errors.push(m),
+      info: async () => {},
+      success: async () => {},
+      warn: async () => {},
+      message: async () => {},
+      step: async () => {},
+    };
+    process.exit = (code) => {
+      seen.exit.push(code);
+      throw new Error('__stub_exit__');
+    };
+
+    try {
+      let threw = false;
+      try {
+        await wslNodeCheck.checkWindowsNodeFromWsl();
+      } catch (error) {
+        threw = error.message === '__stub_exit__';
+      }
+      assert(threw && seen.exit[0] === 1, 'guard exits with code 1 when Windows Node is launched from WSL');
+      assert(seen.errors[0].includes('Windows Node.js was launched from a WSL shell'), 'guard logs the mismatch explanation');
+    } finally {
+      wslNodeCheck.detectWindowsNodeFromWsl = real.detectWindowsNodeFromWsl;
+      promptsModule.log = real.log;
+      process.exit = real.exit;
+    }
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 47 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);

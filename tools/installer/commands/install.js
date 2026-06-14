@@ -75,6 +75,9 @@ module.exports = {
         return;
       }
 
+      const { checkWindowsNodeFromWsl } = require('../core/wsl-node-check');
+      await checkWindowsNodeFromWsl();
+
       // Set debug flag as environment variable for all components
       if (options.debug) {
         process.env.BMAD_DEBUG_MANIFEST = 'true';
