@@ -69,7 +69,7 @@ sidebar:
 .claude/skills/bmad-agent-pm/customize.toml
 ```
 
-경로는 IDE별로 다릅니다. Cursor는 `.cursor/skills/`, Cline은 `.cline/skills/`를 사용합니다.
+경로는 IDE별로 다릅니다. Cursor는 `.agents/skills/`, Cline은 `.cline/skills/`를 사용합니다.
 
 이 파일이 기준 스키마입니다. 읽기 전용 정체성 필드를 제외하고 보이는 모든 필드는 커스터마이즈할 수 있습니다.
 
