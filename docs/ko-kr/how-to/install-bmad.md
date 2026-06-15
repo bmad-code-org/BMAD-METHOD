@@ -16,7 +16,7 @@ sidebar:
 
 :::note[필수 조건]
 
-- **Node.js** 20+ (설치 프로그램에 필요)
+- **Node.js** 20.12+ (설치 프로그램에 필요)
 - **Git** (외부 모듈 복제용)
 - Claude Code 또는 Cursor 같은 **AI 도구**(지원 도구 목록은 `npx bmad-method install --list-tools`로 확인)
 
