@@ -419,7 +419,32 @@ class Installer {
       const sourceDir = path.dirname(path.join(bmadDir, relativePath));
       if (await fs.pathExists(sourceDir)) {
         await fs.remove(sourceDir);
+        await this._removeEmptyParents(path.dirname(sourceDir), bmadDir);
       }
+    }
+  }
+
+  /**
+   * Remove now-empty parent directories left behind after skill dir cleanup.
+   * Walks up from dir, stopping at (and never removing) bmadDir. Best-effort:
+   * a directory that vanishes or fills in mid-walk just ends the walk.
+   * @param {string} dir - Directory to start walking up from
+   * @param {string} bmadDir - BMAD installation directory (boundary)
+   */
+  async _removeEmptyParents(dir, bmadDir) {
+    let current = dir;
+    while (true) {
+      // Path-boundary check (not a string prefix, so siblings like _bmad2 don't match).
+      const rel = path.relative(bmadDir, current);
+      if (rel === '' || rel.startsWith('..') || path.isAbsolute(rel)) break;
+      try {
+        const entries = await fs.readdir(current);
+        if (entries.length > 0) break;
+        await fs.rmdir(current);
+      } catch {
+        break;
+      }
+      current = path.dirname(current);
     }
   }
 
@@ -630,6 +655,7 @@ class Installer {
   /**
    * Sync src/scripts/* → _bmad/scripts/ so shared Python scripts
    * (e.g. resolve_customization.py) are available at install time.
+   * Excludes dev-only tests and Python caches so they don't ship to users.
    * Wipes the destination first so files removed or renamed in source
    * don't linger and get recorded as installed. Also seeds
    * _bmad/custom/.gitignore on fresh installs so *.user.toml overrides
@@ -643,7 +669,12 @@ class Installer {
 
     await fs.remove(paths.scriptsDir);
     await fs.ensureDir(paths.scriptsDir);
-    await fs.copy(srcScriptsDir, paths.scriptsDir, { overwrite: true });
+    // Ship only the runtime scripts — dev-only tests and Python caches must not land in user projects.
+    const isInstallable = (srcPath) => {
+      const base = path.basename(srcPath);
+      return base !== 'tests' && base !== '__pycache__' && base !== '.pytest_cache' && !base.endsWith('.pyc');
+    };
+    await fs.copy(srcScriptsDir, paths.scriptsDir, { overwrite: true, filter: isInstallable });
     await this._trackFilesRecursive(paths.scriptsDir);
 
     const customGitignore = path.join(paths.customDir, '.gitignore');
