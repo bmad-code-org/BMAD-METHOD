@@ -57,6 +57,7 @@
         "./src/bmm-skills/2-plan-workflows/bmad-validate-prd",
         "./src/bmm-skills/2-plan-workflows/bmad-ux",
         "./src/bmm-skills/3-solutioning/bmad-agent-architect",
+        "./src/bmm-skills/3-solutioning/bmad-architecture",
         "./src/bmm-skills/3-solutioning/bmad-create-architecture",
         "./src/bmm-skills/3-solutioning/bmad-check-implementation-readiness",
         "./src/bmm-skills/3-solutioning/bmad-create-epics-and-stories",
