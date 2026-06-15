@@ -240,6 +240,15 @@ EOF
 
 ---
 
+EOF
+
+    # Measured telemetry (real numbers, or an honest "not captured")
+    build_measured_telemetry_md >> "$CHAIN_REPORT_FILE"
+
+    cat >> "$CHAIN_REPORT_FILE" << EOF
+
+---
+
 ## Artifacts
 
 | Artifact | Location |
@@ -257,6 +266,57 @@ EOF
 EOF
 
     log_success "Basic report created: $CHAIN_REPORT_FILE"
+}
+
+# Build a MEASURED telemetry markdown section by aggregating the deterministic
+# `telemetry:` blocks that epic-execute writes into each epic's metrics.yaml
+# (populated when run with BMAD_TRACE=1). Emits real per-epic + total token/cost
+# numbers — never estimates. If no epic captured telemetry, says so plainly.
+# Output: markdown on stdout.
+build_measured_telemetry_md() {
+    if ! command -v yq >/dev/null 2>&1; then
+        echo "## Telemetry"
+        echo ""
+        echo "_Telemetry rollup requires \`yq\` (not found)._"
+        return 0
+    fi
+
+    local any=false
+    local total_cost=0 total_in=0 total_out=0
+    local rows=""
+
+    for epic_id in "${EPIC_IDS[@]}"; do
+        local mf="$METRICS_DIR/epic-${epic_id}-metrics.yaml"
+        [ -f "$mf" ] || continue
+        local has
+        has=$(yq '.telemetry // "" | tag' "$mf" 2>/dev/null)
+        [ "$has" = "!!map" ] || continue
+        any=true
+
+        local cost in out
+        cost=$(yq '.telemetry.total_cost_usd // 0' "$mf" 2>/dev/null)
+        in=$(yq '.telemetry.total_input_tokens // 0' "$mf" 2>/dev/null)
+        out=$(yq '.telemetry.total_output_tokens // 0' "$mf" 2>/dev/null)
+
+        rows+="| $epic_id | $in | $out | \$$(printf '%.4f' "$cost" 2>/dev/null || echo "$cost") |"$'\n'
+        total_cost=$(awk "BEGIN { printf \"%.6f\", $total_cost + $cost }")
+        total_in=$(( total_in + ${in%.*} ))
+        total_out=$(( total_out + ${out%.*} ))
+    done
+
+    echo "## Telemetry (Measured)"
+    echo ""
+    if [ "$any" != true ]; then
+        echo "_No measured telemetry captured. Re-run with \`BMAD_TRACE=1\` to record"
+        echo "real token usage and cost per epic (see docs/improvements/observability-implementation-plan.md)._"
+        return 0
+    fi
+    echo "Actual usage captured from the Claude CLI result envelopes (not estimated):"
+    echo ""
+    echo "| Epic | Input Tokens | Output Tokens | Cost (USD) |"
+    echo "|------|--------------|---------------|------------|"
+    printf '%s' "$rows"
+    echo "| **Total** | **$total_in** | **$total_out** | **\$$(printf '%.4f' "$total_cost")** |"
 }
 
 # =============================================================================
@@ -828,12 +888,27 @@ if [ "$GENERATE_REPORT" = true ] && [ "$DRY_RUN" = false ]; then
             WORKFLOW_PATH="$PROJECT_ROOT/src/bmm/workflows/4-implementation/epic-chain"
         fi
 
+        # Precompute the MEASURED telemetry section in bash so the report uses
+        # ground-truth numbers and the model has no room to invent token/cost data.
+        measured_telemetry_md=$(build_measured_telemetry_md)
+
         # Build report generation prompt
         report_prompt="You are Bob, the Scrum Master, generating a chain execution report.
 
 ## Your Task
 
 Generate a comprehensive chain execution report for the completed epic chain.
+
+## CRITICAL: No Fabricated Metrics
+
+Do NOT estimate, infer, or invent token counts, costs, or call counts. Token
+and cost figures come ONLY from the measured telemetry section below. If a value
+is not present there, write \"not captured\" — never a guess or a typical-pattern
+estimate. Include the measured telemetry section verbatim in the report.
+
+## Measured Telemetry (ground truth — include verbatim)
+
+${measured_telemetry_md}
 
 ## Configuration
 

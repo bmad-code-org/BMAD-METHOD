@@ -43,6 +43,11 @@ cleanup() {
     # Disable trap during cleanup
     trap - EXIT INT TERM
 
+    # Stop any in-flight heartbeat background process first
+    if type stop_phase_heartbeat >/dev/null 2>&1; then
+        stop_phase_heartbeat
+    fi
+
     echo ""
     log "Cleaning up (exit code: $exit_code)..."
 
@@ -57,6 +62,11 @@ cleanup() {
         if [ "${#STORIES[@]}" -gt 0 ] 2>/dev/null; then
             finalize_metrics "${#STORIES[@]}" "${COMPLETED:-0}" "${FAILED:-0}" "${SKIPPED:-0}" "$duration"
             log "Metrics finalized: $METRICS_FILE"
+        fi
+
+        # Roll up trace spans into a deterministic telemetry block (no-op unless traced)
+        if type rollup_telemetry >/dev/null 2>&1; then
+            rollup_telemetry
         fi
     fi
 
@@ -97,8 +107,9 @@ cleanup() {
     # Kill orphaned node/test processes
     kill_orphaned_test_processes
 
-    # Clean up phase output temp file
+    # Clean up phase output temp files
     rm -f "$PHASE_OUTPUT_FILE" 2>/dev/null
+    rm -f "$PHASE_STREAM_FILE" 2>/dev/null
 
     # Save log to repo before exiting
     save_log_to_repo
@@ -134,6 +145,7 @@ LIB_DIR="$SCRIPT_DIR/epic-execute-lib"
 [ -f "$LIB_DIR/tdd-flow.sh" ] && source "$LIB_DIR/tdd-flow.sh"
 [ -f "$LIB_DIR/contract-harness.sh" ] && source "$LIB_DIR/contract-harness.sh"
 [ -f "$LIB_DIR/contract-exec.sh" ] && source "$LIB_DIR/contract-exec.sh"
+[ -f "$LIB_DIR/observability.sh" ] && source "$LIB_DIR/observability.sh"
 
 STORIES_DIR="$PROJECT_ROOT/docs/stories"
 SPRINT_ARTIFACTS_DIR="$PROJECT_ROOT/docs/sprint-artifacts"
@@ -509,23 +521,92 @@ log_prompt_size() {
 
 # Temp file for current phase output (reused across phases, cleaned up on exit)
 PHASE_OUTPUT_FILE="/tmp/bmad-phase-output-$$.txt"
+# Raw stream-json (JSONL) for the current phase when tracing is enabled.
+PHASE_STREAM_FILE="/tmp/bmad-phase-stream-$$.jsonl"
 
-# Run claude and pipe output directly to file + LOG_FILE (no bash variable)
+# Run claude and pipe output directly to file + LOG_FILE (no bash variable).
+#
+# When BMAD_TRACE=1, uses --output-format stream-json so the per-call telemetry
+# envelope (session id, tokens, cost, latency) is captured. The raw JSONL is
+# tee'd to PHASE_STREAM_FILE *before* the live jq renderer, so a renderer
+# failure can never corrupt capture (Open Decision 2). The clean .result text
+# is then written to PHASE_OUTPUT_FILE, so all downstream parsers that read
+# PHASE_OUTPUT_FILE keep working unchanged — and parse cleaner text than before.
+#
+# When tracing is off, falls back to the legacy text path verbatim.
+#
+# Callers set CURRENT_PHASE/CURRENT_STORY_ID (via set_span_context) beforehand.
+#
 # Arguments:
 #   $1 - prompt text (use "-f" as first arg to use file-based prompt)
 #   $2 - prompt file path (only when $1 is "-f")
-# Sets: PHASE_OUTPUT_FILE with the output
+# Sets: PHASE_OUTPUT_FILE with the clean assistant text
 run_claude_to_file() {
     # Truncate phase output file
     : > "$PHASE_OUTPUT_FILE"
 
+    # Legacy text path (tracing disabled) — unchanged behavior.
+    if [ "${TRACE_ENABLED:-false}" != true ]; then
+        if [ "$1" = "-f" ]; then
+            local prompt_file="$2"
+            claude --dangerously-skip-permissions -f "$prompt_file" 2>&1 | tee -a "$LOG_FILE" > "$PHASE_OUTPUT_FILE" || true
+        else
+            local prompt="$1"
+            claude --dangerously-skip-permissions -p "$prompt" 2>&1 | tee -a "$LOG_FILE" > "$PHASE_OUTPUT_FILE" || true
+        fi
+        return 0
+    fi
+
+    # Traced path: stream-json + telemetry capture.
+    : > "$PHASE_STREAM_FILE"
+
+    # Intra-phase heartbeat: liveness trail so a hard kill mid-phase is debuggable.
+    start_phase_heartbeat "$PHASE_STREAM_FILE"
+
+    # Live renderer prints assistant text to the terminal/log. It reads the
+    # raw JSONL *after* the tee has already persisted it, so if jq chokes on a
+    # partial line the capture in PHASE_STREAM_FILE is unaffected (cosmetic only).
+    # stdin is redirected from /dev/null to suppress the CLI's "no stdin" warning.
     if [ "$1" = "-f" ]; then
         local prompt_file="$2"
-        claude --dangerously-skip-permissions -f "$prompt_file" 2>&1 | tee -a "$LOG_FILE" > "$PHASE_OUTPUT_FILE" || true
+        claude --dangerously-skip-permissions --output-format stream-json --verbose -f "$prompt_file" </dev/null 2>>"$LOG_FILE" \
+            | tee -a "$PHASE_STREAM_FILE" \
+            | jq -r --unbuffered 'select(.type=="assistant") | .message.content[]? | select(.type=="text") | .text' 2>/dev/null \
+            | tee -a "$LOG_FILE" || true
     else
         local prompt="$1"
-        claude --dangerously-skip-permissions -p "$prompt" 2>&1 | tee -a "$LOG_FILE" > "$PHASE_OUTPUT_FILE" || true
+        claude --dangerously-skip-permissions --output-format stream-json --verbose -p "$prompt" </dev/null 2>>"$LOG_FILE" \
+            | tee -a "$PHASE_STREAM_FILE" \
+            | jq -r --unbuffered 'select(.type=="assistant") | .message.content[]? | select(.type=="text") | .text' 2>/dev/null \
+            | tee -a "$LOG_FILE" || true
     fi
+
+    # Stop the heartbeat now that the phase's claude call has returned.
+    stop_phase_heartbeat
+
+    # Derive the clean assistant text from the final result envelope so that
+    # all downstream parsers (extract_json_result, check_phase_completion) keep
+    # reading PHASE_OUTPUT_FILE exactly as before. The result line is always last.
+    local result_text=""
+    if [ -s "$PHASE_STREAM_FILE" ]; then
+        result_text=$(tail -n 1 "$PHASE_STREAM_FILE" 2>/dev/null | jq -r 'select(.type=="result") | .result // empty' 2>/dev/null) || true
+    fi
+    if [ -n "$result_text" ]; then
+        printf '%s' "$result_text" > "$PHASE_OUTPUT_FILE"
+    else
+        # No result envelope (crash/timeout) — fall back to raw stream so the
+        # downstream "unclear result" handling still has something to inspect.
+        cp "$PHASE_STREAM_FILE" "$PHASE_OUTPUT_FILE" 2>/dev/null || true
+    fi
+
+    # Record one span for this phase. Status is best-effort from the JSON result
+    # block in the clean text; the core telemetry comes from the envelope itself.
+    local span_status=""
+    if [ -n "$result_text" ] && type extract_json_result >/dev/null 2>&1; then
+        extract_json_result "$result_text" >/dev/null 2>&1 || true
+        span_status=$(get_result_status 2>/dev/null || echo "")
+    fi
+    record_span "$PHASE_STREAM_FILE" "$span_status"
 }
 
 # Read the tail of phase output for completion signal parsing.
@@ -1279,6 +1360,15 @@ fi
 mkdir -p "$UAT_DIR"
 mkdir -p "$SPRINTS_DIR"
 
+# Observability: enforce jq when tracing is enabled (hard prerequisite), then
+# mint the epic-level trace id and create the span file. No-op unless BMAD_TRACE=1.
+if type require_observability_deps >/dev/null 2>&1; then
+    require_observability_deps
+fi
+if type init_observability >/dev/null 2>&1; then
+    init_observability
+fi
+
 # Initialize metrics collection
 EPIC_START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 EPIC_START_SECONDS=$(date +%s)
@@ -1543,6 +1633,7 @@ Do NOT use 'git add -A' or 'git add .' - only stage files you created or modifie
     fi
 
     # Execute in isolated context — pipe to file to avoid memory bloat
+    set_span_context "dev" "$story_id"
     run_claude_to_file "$dev_prompt"
     local result
     result=$(read_phase_tail)
@@ -1682,6 +1773,7 @@ Stage any fixes with explicit file paths: git add <file1> <file2> ..."
     fi
 
     # Execute in isolated context — pipe to file to avoid memory bloat
+    set_span_context "review" "$story_id"
     run_claude_to_file "$review_prompt"
     local result
     result=$(read_phase_tail)
@@ -1928,6 +2020,7 @@ Address all review findings now. This is attempt $attempt_num of 3."
         fi
 
         # Pipe to file to avoid memory bloat
+        set_span_context "fix" "$story_id"
         run_claude_to_file "-f" "$temp_prompt_file"
         rm -f "$temp_prompt_file"
     else
@@ -1937,6 +2030,7 @@ Address all review findings now. This is attempt $attempt_num of 3."
         fi
 
         # Execute in isolated context — pipe to file to avoid memory bloat
+        set_span_context "fix" "$story_id"
         run_claude_to_file "$fix_prompt"
     fi
 
@@ -2395,6 +2489,7 @@ Stage any fixes with: git add <file1> <file2> ..."
     fi
 
     # Pipe to file to avoid memory bloat
+    set_span_context "arch" "$story_id"
     run_claude_to_file "$arch_prompt"
     local result
     result=$(read_phase_tail)
@@ -2472,6 +2567,7 @@ Stage any fixes with: git add <file1> <file2> ..."
     fi
 
     # Pipe to file to avoid memory bloat
+    set_span_context "test_quality" "$story_id"
     run_claude_to_file "$quality_prompt"
     local result
     result=$(read_phase_tail)
@@ -2607,6 +2703,7 @@ Analyze traceability now. Read story files on-demand as needed."
     fi
 
     # Pipe to file to avoid memory bloat
+    set_span_context "trace" "epic-$EPIC_ID"
     run_claude_to_file "$trace_prompt"
     local result
     result=$(read_phase_tail)
@@ -2685,6 +2782,7 @@ Generate missing tests now."
     fi
 
     # Pipe to file to avoid memory bloat
+    set_span_context "trace_fix" "epic-$EPIC_ID"
     run_claude_to_file "$fix_prompt"
     local result
     result=$(read_phase_tail)
@@ -3039,6 +3137,7 @@ Generate the UAT document now. Read story files on-demand as needed."
     fi
 
     # Pipe to file to avoid memory bloat
+    set_span_context "uat" "epic-$EPIC_ID"
     run_claude_to_file "$uat_prompt"
     local result
     result=$(read_phase_tail)
