@@ -151,6 +151,7 @@ development_status:
 
 - If existing `{status_file}` exists and has more advanced status, preserve it
 - Never downgrade status (e.g., don't change `done` to `ready-for-dev`)
+- If existing `{status_file}` has an `action_items` section, carry it over unchanged
 
 **Status Flow Reference:**
 
@@ -194,12 +195,18 @@ development_status:
 #   - optional: Can be completed but not required
 #   - done: Retrospective has been completed
 #
+# Action Item Status:
+#   - open: Committed during a retrospective, not yet addressed
+#   - in-progress: Actively being worked on
+#   - done: Completed
+#
 # WORKFLOW NOTES:
 # ===============
 # - Epic transitions to 'in-progress' automatically when first story is created
 # - Stories can be worked in parallel if team capacity allows
 # - Developer typically creates next story after previous one is 'done' to incorporate learnings
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+# - Retrospective appends its action items to action_items; sprint-status surfaces open ones
 
 generated: { date }
 last_updated: { date }
@@ -215,6 +222,7 @@ development_status:
 <action>Write the complete sprint status YAML to {status_file}</action>
 <action>CRITICAL: Metadata appears TWICE - once as comments (#) for documentation, once as YAML key:value fields for parsing</action>
 <action>Ensure all items are ordered: epic, its stories, its retrospective, next epic...</action>
+<action>If the existing file had an action_items section, write it back unchanged after development_status</action>
 </step>
 
 <step n="5" goal="Validate and report">
@@ -223,7 +231,8 @@ development_status:
 - [ ] Every epic in epic files appears in {status_file}
 - [ ] Every story in epic files appears in {status_file}
 - [ ] Every epic has a corresponding retrospective entry
-- [ ] No items in {status_file} that don't exist in epic files
+- [ ] No development_status items in {status_file} that don't exist in epic files
+- [ ] action_items section (if it existed) carried over unchanged
 - [ ] All status values are legal (match state machine definitions)
 - [ ] File is valid YAML syntax
 
@@ -290,6 +299,16 @@ optional ↔ done
 
 - **optional**: Ready to be conducted but not required
 - **done**: Finished
+
+**Action Item Status:**
+
+```
+open → in-progress → done
+```
+
+- **open**: Committed during a retrospective, not yet addressed
+- **in-progress**: Actively being worked on
+- **done**: Completed
 
 ### Guidelines
 

@@ -7,7 +7,8 @@
 - [ ] Every epic found in epic\*.md files appears in sprint-status.yaml
 - [ ] Every story found in epic\*.md files appears in sprint-status.yaml
 - [ ] Every epic has a corresponding retrospective entry
-- [ ] No items in sprint-status.yaml that don't exist in epic files
+- [ ] No development_status items in sprint-status.yaml that don't exist in epic files
+- [ ] action_items section (if it existed) carried over unchanged
 
 ### Parsing Verification
 
