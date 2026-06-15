@@ -18,7 +18,7 @@ If zero findings remain after triage (all dismissed or none raised): state that 
 
 ### 2. Write findings to the story file
 
-If `{spec_file}` exists and contains a Tasks/Subtasks section, append a `### Review Findings` subsection. Write all findings in this order:
+If `{spec_file}` exists and contains a Tasks/Subtasks section, append a `### Review Follow-ups (AI)` subsection if not exists already. Append all findings in this order:
 
 1. **`decision-needed`** findings (unchecked):
    `- [ ] [Review][Decision] <Title> — <Detail>`
