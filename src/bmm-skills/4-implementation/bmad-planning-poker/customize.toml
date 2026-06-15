@@ -1,0 +1,32 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# Workflow customization surface for bmad-planning-poker. Mirrors the
+# agent customization shape under the [workflow] namespace.
+
+[workflow]
+
+# Steps to run before the standard activation (config load, greet).
+activation_steps_prepend = []
+
+# Steps to run after greet but before the workflow begins.
+activation_steps_append = []
+
+# Persistent facts the workflow keeps in mind for the whole run.
+persistent_facts = [
+  "file:{project-root}/**/project-context.md",
+]
+
+# Estimation scale: fibonacci | tshirt | linear
+estimation_scale = "fibonacci"
+
+# Divergence threshold: max/min > this triggers debate
+divergence_threshold = 2.0
+
+# Maximum re-vote rounds before PM tiebreaks
+max_rounds = 3
+
+# Agents participating in estimation (agent codes)
+participating_agents = ["bmad-agent-pm", "bmad-agent-dev", "bmad-agent-architect"]
+
+# Post-completion hook (empty by default)
+on_complete = ""
