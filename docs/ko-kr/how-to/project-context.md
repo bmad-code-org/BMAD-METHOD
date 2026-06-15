@@ -2,7 +2,7 @@
 title: '프로젝트 컨텍스트 관리'
 description: AI 에이전트를 안내하는 project-context.md를 만들고 유지합니다
 sidebar:
-  order: 10
+  order: 9
 ---
 
 `project-context.md` 파일을 사용해 모든 워크플로에서 AI 에이전트가 프로젝트의 기술 선호도와 구현 규칙을 따르게 하세요. 이 파일을 항상 참고하게 하려면 도구 컨텍스트나 항상 적용되는 규칙 파일(예: `AGENTS.md`)에 `중요한 프로젝트 컨텍스트와 관례는 [프로젝트 컨텍스트 경로]/project-context.md에 있습니다`라는 줄을 추가할 수도 있습니다.

@@ -2,7 +2,7 @@
 title: "체크포인트 미리보기"
 description: 목적에서 세부 사항에 이르기까지의 변경 과정을 단계별로 안내하는, LLM을 활용한 인간 중심 검토
 sidebar:
-  order: 5
+  order: 8
 ---
 
 `bmad-checkpoint-preview`는 LLM이 보조하는 대화형 human-in-the-loop 리뷰 워크플로입니다. 코드 변경을 목적과 컨텍스트에서 세부 사항까지 안내해, 출시할지, 다시 작업할지, 더 파고들지에 대해 충분한 정보를 바탕으로 판단할 수 있게 합니다.

@@ -2,7 +2,7 @@
 title: '문서 샤딩 가이드'
 description: 큰 Markdown 파일을 더 작고 정리된 파일로 나눠 컨텍스트 관리를 개선합니다
 sidebar:
-  order: 11
+  order: 10
 ---
 
 큰 Markdown 파일을 더 작고 정리된 파일로 나눠 컨텍스트 관리를 개선해야 한다면 `bmad-shard-doc` 도구를 사용하세요.
