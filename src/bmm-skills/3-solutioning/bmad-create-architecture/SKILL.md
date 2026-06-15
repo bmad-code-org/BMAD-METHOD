@@ -1,74 +1,30 @@
 ---
 name: bmad-create-architecture
-description: 'Create architecture solution design decisions for AI agent consistency. Use when the user says "lets create architecture" or "create technical architecture" or "create a solution design"'
+description: 'DEPRECATED — consolidated into bmad-architecture create intent - this skill will be removed in v7 in favor of `bmad-architecture`.'
 ---
 
-# Architecture Workflow
+# DEPRECATED — forwards to bmad-architecture (create intent)
 
-**Goal:** Create comprehensive architecture decisions through collaborative step-by-step discovery that ensures AI agents implement consistently.
-
-**Your Role:** You are an architectural facilitator collaborating with a peer. This is a partnership, not a client-vendor relationship. You bring structured thinking and architectural knowledge, while the user brings domain expertise and product vision. Work together as equals to make decisions that prevent implementation conflicts.
-
-## Conventions
-
-- Bare paths (e.g. `steps/step-01-init.md`) resolve from the skill root.
-- `{skill-root}` resolves to this skill's installed directory (where `customize.toml` lives).
-- `{project-root}`-prefixed paths resolve from the project working directory.
-- `{skill-name}` resolves to the skill directory's basename.
-
-## WORKFLOW ARCHITECTURE
-
-This uses **micro-file architecture** for disciplined execution:
-
-- Each step is a self-contained file with embedded rules
-- Sequential progression with user control at each step
-- Document state tracked in frontmatter
-- Append-only document building through conversation
-- You NEVER proceed to a step file if the current step file indicates the user must approve and indicate continuation.
+This skill was consolidated into `bmad-architecture`. It is retained as a thin compatibility shim so existing invocations by name and `_bmad/custom/bmad-create-architecture.toml` override files keep working. New work should invoke `bmad-architecture` directly — it detects create / update / validate intent from the conversation.
 
 ## On Activation
 
-### Step 1: Resolve the Workflow Block
+1. Resolve customization: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`. This picks up any `{project-root}/_bmad/custom/bmad-create-architecture.toml` and `bmad-create-architecture.user.toml` overrides for the legacy fields (`activation_steps_prepend`, `activation_steps_append`, `persistent_facts`, `on_complete`).
 
-Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`
+2. Load `{project-root}/_bmad/bmm/config.yaml` (and `config.user.yaml` if present) to resolve `{user_name}` and `{communication_language}`.
 
-**If the script fails**, resolve the `workflow` block yourself by reading these three files in base → team → user order and applying the same structural merge rules as the resolver:
+3. Emit a deprecation notice to the user in `{communication_language}`:
 
-1. `{skill-root}/customize.toml` — defaults
-2. `{project-root}/_bmad/custom/{skill-name}.toml` — team overrides
-3. `{project-root}/_bmad/custom/{skill-name}.user.toml` — personal overrides
+   > Notice: `bmad-create-architecture` is deprecated and will be removed in a future release. It now forwards to `bmad-architecture` with create intent. To silence this notice and access the full new customization surface (`spine_template`, `spine_output_path`, `run_folder_pattern`, `doc_standards`, `external_sources`, `external_handoffs`, `finalize_reviewers`), migrate `_bmad/custom/bmad-create-architecture.toml` to `_bmad/custom/bmad-architecture.toml` and invoke `bmad-architecture` directly next time. Customization fields that were in this version still remain in the new version and will be respected if present in `_bmad/custom/bmad-architecture.toml`, but the new version also supports additional fields that you can take advantage of by migrating.
 
-Any missing file is skipped. Scalars override, tables deep-merge, arrays of tables keyed by `code` or `id` replace matching entries and append new entries, and all other arrays append.
+4. Invoke `bmad-architecture` with the following context. Pass these as the activating context so `bmad-architecture` honors them instead of resolving its own customization from scratch:
 
-### Step 2: Execute Prepend Steps
+   - **Intent:** `create` — skip `bmad-architecture`'s usual intent detection step.
+   - **Pre-resolved legacy customization** — use these in place of resolving from `bmad-architecture`'s own `customize.toml` for the four legacy fields. For everything else (`spine_template`, `spine_output_path`, `run_folder_pattern`, `doc_standards`, `external_sources`, `external_handoffs`, `finalize_reviewers`), use `bmad-architecture`'s own defaults and overrides as normal:
+     - `activation_steps_prepend` = the resolved value from step 1
+     - `activation_steps_append` = the resolved value from step 1
+     - `persistent_facts` = the resolved value from step 1
+     - `on_complete` = the resolved value from step 1
+   - **Original user input:** forward whatever the user said when invoking this skill verbatim.
 
-Execute each entry in `{workflow.activation_steps_prepend}` in order before proceeding.
-
-### Step 3: Load Persistent Facts
-
-Treat every entry in `{workflow.persistent_facts}` as foundational context you carry for the rest of the workflow run. Entries prefixed `file:` are paths or globs under `{project-root}` — load the referenced contents as facts. All other entries are facts verbatim.
-
-### Step 4: Load Config
-
-Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
-- Use `{user_name}` for greeting
-- Use `{communication_language}` for all communications
-- Use `{document_output_language}` for output documents
-- Use `{planning_artifacts}` for output location and artifact scanning
-- Use `{project_knowledge}` for additional context scanning
-
-### Step 5: Greet the User
-
-Greet `{user_name}`, speaking in `{communication_language}`.
-
-### Step 6: Execute Append Steps
-
-Execute each entry in `{workflow.activation_steps_append}` in order.
-
-Activation is complete. If `activation_steps_prepend` or `activation_steps_append` were non-empty, confirm every entry was executed in order before proceeding. Do not begin the main workflow until all activation steps have been completed.
-
-## Execution
-
-Read fully and follow: `./steps/step-01-init.md` to begin the workflow.
-
-**Note:** Input document discovery and all initialization protocols are handled in step-01-init.md.
+   `bmad-architecture` takes the workflow from here. Do not execute any further steps in this shim.
