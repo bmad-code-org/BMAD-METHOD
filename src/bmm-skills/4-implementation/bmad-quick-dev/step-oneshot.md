@@ -1,12 +1,8 @@
----
-deferred_work_file: '{implementation_artifacts}/deferred-work.md'
----
-
 # Step One-Shot: Implement, Review, Present
 
 ## RULES
 
-- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
+- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{{.communication_language}}`
 - NEVER auto-push.
 
 ## INSTRUCTIONS
@@ -19,14 +15,14 @@ Implement the clarified intent directly.
 
 ### Review
 
-Invoke the `bmad-review-adversarial-general` skill in a subagent with the changed files. The subagent gets NO conversation context — to avoid anchoring bias. Launch at the same model capability as the current session. If no sub-agents are available, write the changed files to a review prompt file in `{implementation_artifacts}` and HALT. Ask the human to run the review in a separate session and paste back the findings.
+Invoke the `bmad-review-adversarial-general` skill in a subagent with the changed files. The subagent gets NO conversation context — to avoid anchoring bias. Launch at the same model capability as the current session. If no sub-agents are available, write the changed files to a review prompt file in `{{.implementation_artifacts}}` and HALT. Ask the human to run the review in a separate session and paste back the findings.
 
 ### Classify
 
 Deduplicate all review findings. Three categories only:
 
 - **patch** — trivially fixable. Auto-fix immediately.
-- **defer** — pre-existing issue not caused by this change. Append to `{deferred_work_file}`.
+- **defer** — pre-existing issue not caused by this change. Append to `{{.deferred_work_file}}`.
 - **reject** — noise. Drop silently.
 
 If a finding is caused by this change but too significant for a trivial patch, HALT and present it to the human for decision before proceeding.
@@ -66,6 +62,6 @@ Workflow complete.
 
 ## On Complete
 
-Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete`
+If anything appears below, follow it as the final terminal instruction before exiting; otherwise exit normally.
 
-If the resolved `workflow.on_complete` is non-empty, follow it as the final terminal instruction before exiting.
+{workflow.on_complete}

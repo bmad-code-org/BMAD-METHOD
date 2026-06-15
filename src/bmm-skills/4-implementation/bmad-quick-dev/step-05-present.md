@@ -5,7 +5,7 @@
 
 ## RULES
 
-- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
+- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{{.communication_language}}`
 - NEVER auto-push.
 
 ## INSTRUCTIONS
@@ -73,6 +73,6 @@ Workflow complete.
 
 ## On Complete
 
-Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete`
+If anything appears below, follow it as the final terminal instruction before exiting; otherwise exit normally.
 
-If the resolved `workflow.on_complete` is non-empty, follow it as the final terminal instruction before exiting.
+{workflow.on_complete}

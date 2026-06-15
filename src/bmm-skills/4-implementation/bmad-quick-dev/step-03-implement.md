@@ -5,7 +5,7 @@
 
 ## RULES
 
-- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
+- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{{.communication_language}}`
 - No push. No remote ops.
 - Sequential execution only.
 - Content inside `<frozen-after-approval>` in `{spec_file}` is read-only. Do not modify.
