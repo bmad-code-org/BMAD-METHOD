@@ -26,10 +26,6 @@ _SPEC.loader.exec_module(lint_spine)
 
 CLEAN = """---
 name: 'Demo'
-stack:
-  key_deps:
-    - fastapi@0.115
-    - pydantic@2.9
 ---
 
 ## Invariants & Rules
@@ -50,6 +46,13 @@ stack:
 flowchart LR
   A --> B{decision}
 ```
+
+## Stack
+
+| Name | Version |
+| --- | --- |
+| fastapi | 0.115 |
+| pydantic | 2.9 |
 """
 
 
@@ -108,30 +111,32 @@ def test_missing_field_caught():
 
 
 def test_unpinned_dep_caught():
-    text = CLEAN.replace("- fastapi@0.115", "- fastapi")
+    text = CLEAN.replace("| fastapi | 0.115 |", "| fastapi |  |")
     result = lint_spine.lint(text)
     assert "version_pin" in cats(result)
 
 
-def test_inline_key_deps_unpinned():
-    text = CLEAN.replace("  key_deps:\n    - fastapi@0.115\n    - pydantic@2.9", "  key_deps: [fastapi, redis@7]")
+def test_placeholder_version_caught():
+    text = CLEAN.replace("| fastapi | 0.115 |", "| fastapi | {pin} |")
     result = lint_spine.lint(text)
-    pins = [f for f in result["findings"] if f["category"] == "version_pin"]
-    assert len(pins) == 1 and "fastapi" in pins[0]["detail"]
+    assert any(f["category"] == "version_pin" and "fastapi" in f["detail"] for f in result["findings"])
 
 
-def test_empty_key_deps_ok():
-    text = CLEAN.replace("  key_deps:\n    - fastapi@0.115\n    - pydantic@2.9", "  key_deps: []")
+def test_no_stack_section_ok():
+    text = CLEAN.split("## Stack")[0]
     result = lint_spine.lint(text)
     assert "version_pin" not in cats(result)
 
 
-def test_yaml_comments_not_parsed_as_deps():
-    # a SEED comment on the key_deps line must not read as an unpinned dependency
-    text = CLEAN.replace(
-        "  key_deps:\n    - fastapi@0.115\n    - pydantic@2.9",
-        "  key_deps:  # SEED — verified current 2026-06\n    - fastapi@0.115  # web framework",
-    )
+def test_stack_skeleton_row_not_version_pinned():
+    # a leftover {token} name is the placeholder pass's job, not a double-reported version_pin
+    text = CLEAN.replace("| fastapi | 0.115 |", "| {language / framework} | {pinned version} |")
+    result = lint_spine.lint(text)
+    assert "version_pin" not in cats(result)
+
+
+def test_stack_html_comment_not_parsed_as_row():
+    text = CLEAN.replace("## Stack\n", "## Stack\n\n<!-- SEED — verified current 2026-06 -->\n")
     result = lint_spine.lint(text)
     assert "version_pin" not in cats(result)
 
@@ -153,7 +158,8 @@ def test_no_frontmatter_body_still_scanned():
 
 def test_frontmatter_value_with_dashes_not_truncated():
     # a value containing '---' must not be read as the closing fence (line-exact close)
-    text = "---\nscope: 'phase 1 --- phase 2'\nstack:\n  key_deps:\n    - fastapi\n---\n\n## Invariants\n"
+    text = ("---\nname: 'x'\nscope: 'phase 1 --- phase 2'\n---\n\n"
+            "## Stack\n\n| Name | Version |\n| --- | --- |\n| fastapi |  |\n")
     result = lint_spine.lint(text)
     assert any(f["category"] == "version_pin" for f in result["findings"])  # read past the inline ---
 
@@ -168,15 +174,17 @@ def test_ad_heading_in_fence_not_counted():
     assert result["ok"] is True  # the fenced AD-2 is not a live AD → no ad_fields/ad_id finding
 
 
-def test_map_form_key_deps_unpinned_caught():
-    text = "---\nstack:\n  key_deps:\n    fastapi: '0.115'\n    redis:\n---\n\n## Invariants\n"
+def test_stack_table_flags_only_the_unpinned_row():
+    text = ("---\nname: 'x'\n---\n\n## Stack\n\n| Name | Version |\n| --- | --- |\n"
+            "| fastapi | 0.115 |\n| redis |  |\n")
     result = lint_spine.lint(text)
     pins = [f for f in result["findings"] if f["category"] == "version_pin"]
     assert len(pins) == 1 and "redis" in pins[0]["detail"]
 
 
-def test_map_form_key_deps_pinned_ok():
-    text = "---\nstack:\n  key_deps:\n    fastapi: '0.115'\n---\n\n## Invariants\n"
+def test_stack_table_all_pinned_ok():
+    text = ("---\nname: 'x'\n---\n\n## Stack\n\n| Name | Version |\n| --- | --- |\n"
+            "| fastapi | 0.115 |\n")
     result = lint_spine.lint(text)
     assert "version_pin" not in cats(result)
 
