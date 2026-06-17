@@ -1,6 +1,6 @@
 ---
 name: bmad-investigate
-description: Forensic case investigation with evidence-graded findings, calibrated to the input. Use when the user asks to investigate a bug, trace what caused an incident, walk through unfamiliar code, or build a mental model of a code area before working on it.
+description: 'Forensic case investigation with evidence-graded findings, producing a structured case file an engineer can pick up cold. Use when the user says "bmad investigate" or "open an investigation".'
 ---
 
 # Investigate
@@ -46,7 +46,9 @@ After every outcome, present what was learned and pause for the user before cont
 - **Issue independent operations in parallel** (multi-grep, multi-read, parallel inventories) — one message, multiple
   tool calls.
 - **Communication.** Evidence-first language ("the evidence shows", "unconfirmed, requires X to verify"). No hedging,
-  no narrative.
+  no narrative. User-facing messages use plain English. Terms from this skill — "stronghold", "Outcome 1",
+  "Hypothesis #1" — belong in the case file and your reasoning, not in chat. In chat, say what was found and what
+  happens next.
 
 ## On Activation
 
@@ -121,7 +123,7 @@ and collision rules in Overview). Create the file from `{workflow.case_file_temp
 Brief; populate the Investigation Backlog with prioritized data-collection items; record "to make progress, I need one
 of: …"; pause for the user to provide evidence or authorize Outcome 2 to scan more broadly.
 
-Otherwise present scope, stronghold, file path, proposed approach. Pause for user with the recap above; wait for direction.
+Otherwise present scope, the confirmed starting evidence, file path, proposed approach. Pause for user with the recap above; wait for direction.
 
 ### Outcome 2: Evidence perimeter is mapped
 
