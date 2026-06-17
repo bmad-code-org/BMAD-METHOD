@@ -153,16 +153,23 @@ def find_ad_issues(body: str, offset: int) -> list[dict]:
 def find_unpinned_stack(body: str, offset: int) -> list[dict]:
     """Flag a `## Stack` table row that names something but leaves its version blank or a
     placeholder. Pinning lives in the body table now, not frontmatter. A row whose name is
-    still a `{token}` skeleton is left to the placeholder pass, not double-reported here."""
+    still a `{token}` skeleton is left to the placeholder pass, not double-reported here.
+
+    Fences are blanked first (like find_placeholders / find_ad_issues), so a pipe-row or
+    heading inside a code block is never read as live Stack content. The heading match is
+    `## Stack` with a word boundary, so a renamed heading (`## Stack & Versions`) still
+    counts. Name and Version columns are located from the header row, so a reordered table
+    pairs name to version correctly; both default to the canonical positions (0, 1)."""
     findings: list[dict] = []
     in_stack = False
     header_seen = False
-    ver_idx = 1
-    for i, raw in enumerate(body.splitlines()):
+    name_idx, ver_idx = 0, 1
+    scan = blank_fences(body)
+    for i, raw in enumerate(scan.splitlines()):
         if HEADING.match(raw):
-            in_stack = re.match(r"^##\s+Stack\s*$", raw) is not None
+            in_stack = re.match(r"^##\s+Stack\b", raw) is not None
             header_seen = False
-            ver_idx = 1
+            name_idx, ver_idx = 0, 1
             continue
         if not in_stack or not raw.lstrip().startswith("|"):
             continue
@@ -172,10 +179,12 @@ def find_unpinned_stack(body: str, offset: int) -> list[dict]:
         if not header_seen:
             header_seen = True
             for j, c in enumerate(cells):
-                if c.lower() == "version":
+                if c.lower() == "name":
+                    name_idx = j
+                elif c.lower() == "version":
                     ver_idx = j
             continue
-        name = cells[0] if cells else ""
+        name = cells[name_idx] if len(cells) > name_idx else ""
         version = cells[ver_idx] if len(cells) > ver_idx else ""
         if not name or TEMPLATE_TOKEN.search(name):
             continue

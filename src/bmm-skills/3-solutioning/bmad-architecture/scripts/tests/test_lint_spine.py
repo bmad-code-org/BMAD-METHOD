@@ -6,7 +6,7 @@
 
 The spine under test: a clean spine lints empty; the linter catches exactly the
 mechanical defects a prompt is unreliable at — literal placeholders, AD-n id breakage,
-AD-n blocks missing required fields, and unpinned dependency versions.
+AD-n blocks missing required fields, and unpinned Stack versions.
 """
 import importlib.util
 import json
@@ -187,6 +187,40 @@ def test_stack_table_all_pinned_ok():
             "| fastapi | 0.115 |\n")
     result = lint_spine.lint(text)
     assert "version_pin" not in cats(result)
+
+
+def test_fenced_stack_rows_not_parsed():
+    # an illustrative fenced table under ## Stack must not be read as live rows (fences are
+    # blanked first, like every other pass) — a blank-version row inside a fence is not a finding
+    text = ("---\nname: 'x'\n---\n\n## Stack\n\n| Name | Version |\n| --- | --- |\n"
+            "| fastapi | 0.115 |\n\n```text\n| example |  |\n```\n")
+    result = lint_spine.lint(text)
+    assert "version_pin" not in cats(result)
+
+
+def test_fenced_stack_heading_not_live():
+    # a `## Stack` heading shown inside a code fence is not the live Stack section
+    text = ("---\nname: 'x'\n---\n\n## Docs\n\n```md\n## Stack\n\n| foo |  |\n```\n")
+    result = lint_spine.lint(text)
+    assert "version_pin" not in cats(result)
+
+
+def test_renamed_stack_heading_still_scanned():
+    # the heading match is word-boundary, so a varied `## Stack` heading still counts
+    text = ("---\nname: 'x'\n---\n\n## Stack & Versions\n\n| Name | Version |\n| --- | --- |\n"
+            "| redis |  |\n")
+    result = lint_spine.lint(text)
+    pins = [f for f in result["findings"] if f["category"] == "version_pin"]
+    assert len(pins) == 1 and "redis" in pins[0]["detail"]
+
+
+def test_reordered_columns_pair_name_to_version():
+    # Version-then-Name header: the unpinned row must still be flagged by its real name
+    text = ("---\nname: 'x'\n---\n\n## Stack\n\n| Version | Name |\n| --- | --- |\n"
+            "| 0.115 | fastapi |\n|  | redis |\n")
+    result = lint_spine.lint(text)
+    pins = [f for f in result["findings"] if f["category"] == "version_pin"]
+    assert len(pins) == 1 and "redis" in pins[0]["detail"]
 
 
 def test_placeholder_line_number_is_absolute():
