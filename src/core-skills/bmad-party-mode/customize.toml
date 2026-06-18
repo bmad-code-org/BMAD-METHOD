@@ -46,6 +46,11 @@ default_party = ""
 #   "agent-team" persistent agent team addressing each other directly (Claude Code only)
 party_mode = "session"
 
+# Where the optional end-of-session keepsake is written. The self-contained HTML
+# document lands in `{output_dir}/`. `{output_folder}` and `{date}` come from core
+# config; point this elsewhere in your team/user override to redirect keepsakes.
+output_dir = "{output_folder}/party-mode"
+
 # Executed when the party wraps (after the read-back, before dropping to normal
 # mode). String scalar = one instruction; array = instructions run in order.
 on_complete = ""
