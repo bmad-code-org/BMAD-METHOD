@@ -11,6 +11,15 @@ function quoteCustomRef(ref) {
   return `"${ref}"`;
 }
 
+function urlHasRepoPath(value) {
+  try {
+    const url = new URL(value);
+    return Boolean(url.host && url.pathname.replace(/^\/+/, '').replace(/\/+$/, ''));
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Manages custom modules installed from user-provided sources.
  * Supports any Git host (GitHub, GitLab, Bitbucket, self-hosted) and local file paths.
@@ -88,7 +97,8 @@ class CustomModuleManager {
           before.startsWith('./') ||
           before.startsWith('../') ||
           before.startsWith('~') ||
-          /^https?:\/\//i.test(before) ||
+          (/^https?:\/\//i.test(before) && urlHasRepoPath(before)) ||
+          (/^ssh:\/\//i.test(before) && urlHasRepoPath(before)) ||
           /^git@[^:]+:.+/.test(before);
         if (beforeLooksLikeRepo) {
           versionSuffix = candidate;
@@ -130,6 +140,51 @@ class CustomModuleManager {
         isValid: true,
         error: null,
       };
+    }
+
+    // SSH protocol URL: ssh://git@host[:port]/owner/repo.git
+    if (/^ssh:\/\//i.test(trimmed)) {
+      let url;
+      try {
+        url = new URL(trimmed);
+      } catch {
+        url = null;
+      }
+
+      if (url && url.host) {
+        const repoPath = url.pathname.replace(/^\/+/, '').replace(/\/+$/, '');
+        const repoPathClean = repoPath.replace(/\.git$/i, '');
+        if (!repoPathClean) {
+          return {
+            type: null,
+            cloneUrl: null,
+            subdir: null,
+            localPath: null,
+            cacheKey: null,
+            displayName: null,
+            isValid: false,
+            error: 'Not a valid Git URL or local path',
+          };
+        }
+
+        const segments = repoPathClean.split('/').filter(Boolean);
+        const repoSeg = segments.at(-1);
+        const ownerSeg = segments.at(-2);
+        const displayName = ownerSeg ? `${ownerSeg}/${repoSeg}` : repoSeg;
+
+        return {
+          type: 'url',
+          cloneUrl: trimmed,
+          subdir: null,
+          localPath: null,
+          version: versionSuffix || null,
+          rawInput: trimmedRaw,
+          cacheKey: `${url.host}/${repoPathClean}`,
+          displayName,
+          isValid: true,
+          error: null,
+        };
+      }
     }
 
     // HTTPS/HTTP URL: generic handling for any Git host.
@@ -358,6 +413,18 @@ class CustomModuleManager {
   }
 
   /**
+   * Convert a stable cache key into filesystem-safe path segments.
+   * Keep parseSource().cacheKey human-readable while avoiding invalid
+   * characters such as ":" from custom SSH ports on Windows.
+   * @param {string} cacheKey - Parsed cache key
+   * @returns {string} Filesystem path for the cached clone
+   */
+  _getRepoCacheDir(cacheKey) {
+    const safeSegments = cacheKey.split('/').map((segment) => segment.replaceAll(':', '__port_'));
+    return path.join(this.getCacheDir(), ...safeSegments);
+  }
+
+  /**
    * Clone a custom module repository to cache.
    * Supports any Git host (GitHub, GitLab, Bitbucket, self-hosted, etc.).
    * @param {string} sourceInput - Git URL (HTTPS, HTTP, or SSH)
@@ -371,8 +438,7 @@ class CustomModuleManager {
     if (!parsed.isValid) throw new Error(parsed.error);
     if (parsed.type === 'local') throw new Error('cloneRepo does not accept local paths');
 
-    const cacheDir = this.getCacheDir();
-    const repoCacheDir = path.join(cacheDir, ...parsed.cacheKey.split('/'));
+    const repoCacheDir = this._getRepoCacheDir(parsed.cacheKey);
     const silent = options.silent || false;
     const displayName = parsed.displayName;
 
@@ -630,7 +696,7 @@ class CustomModuleManager {
     if (parsed.type === 'local') {
       baseDir = parsed.localPath;
     } else {
-      baseDir = path.join(this.getCacheDir(), ...parsed.cacheKey.split('/'));
+      baseDir = this._getRepoCacheDir(parsed.cacheKey);
     }
 
     if (!(await fs.pathExists(baseDir))) return null;

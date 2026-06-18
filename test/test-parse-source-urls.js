@@ -212,6 +212,31 @@ console.log(`\n${colors.cyan}Simple owner/repo URLs (regression check)${colors.r
   assert(result.cloneUrl === 'git@github.com:owner/repo.git', 'SSH cloneUrl unchanged', `Got: ${result.cloneUrl}`);
 }
 
+{
+  const result = manager.parseSource('ssh://git@host:2222/path/repo.git');
+  assert(result.isValid === true, 'SSH protocol URL with custom port is valid');
+  assert(result.cloneUrl === 'ssh://git@host:2222/path/repo.git', 'SSH protocol custom-port cloneUrl unchanged', `Got: ${result.cloneUrl}`);
+  assert(result.cacheKey === 'host:2222/path/repo', 'SSH protocol custom-port cacheKey includes port and path', `Got: ${result.cacheKey}`);
+  assert(result.displayName === 'path/repo', 'SSH protocol custom-port displayName uses last two segments', `Got: ${result.displayName}`);
+}
+
+{
+  const result = manager.parseSource('ssh://git@host/owner/repo.git');
+  assert(result.isValid === true, 'SSH protocol URL without custom port remains valid');
+  assert(result.cacheKey === 'host/owner/repo', 'SSH protocol no-port cacheKey excludes port', `Got: ${result.cacheKey}`);
+}
+
+{
+  const result = manager.parseSource('ssh://git@host:2222/owner/repo.git@v1.2.3');
+  assert(result.isValid === true, 'SSH protocol URL with custom port and @version is valid');
+  assert(
+    result.cloneUrl === 'ssh://git@host:2222/owner/repo.git',
+    'SSH protocol @version cloneUrl strips suffix',
+    `Got: ${result.cloneUrl}`,
+  );
+  assert(result.version === 'v1.2.3', 'SSH protocol @version suffix extracted', `Got: ${result.version}`);
+}
+
 // ─── Generic URL handling (any host, any path depth) ────────────────────────
 
 console.log(`\n${colors.cyan}Generic URL handling${colors.reset}\n`);
