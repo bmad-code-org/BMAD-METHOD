@@ -37,19 +37,14 @@ persistent_facts = [
 # Example (set in team/user override TOML):  default_party = "writers-room"
 default_party = ""
 
-# How the room is run — who actually does the talking. A runtime `--mode <value>`
-# wins for the session. If a mode isn't supported by the harness (e.g. agent-team
-# outside Claude Code), it falls back to "auto".
-#   "auto"       (default) voice the room for banter, spin up real subagents only
-#                when a round needs genuinely independent thinking. The current,
-#                always-supported behavior.
-#   "session"    never spawn — the orchestrator voices every persona inline.
-#                Fastest and fully conversational; one mind behind every voice.
-#   "subagent"   spawn a real subagent for every substantive round, so each
-#                persona thinks independently (the opening banter included).
-#   "agent-team" stand the personas up as a persistent agent team whose members
-#                address each other directly. Claude Code only.
-party_mode = "auto"
+# How the room is run — who does the talking. A runtime `--mode <value>` wins for
+# the session; an unsupported mode (e.g. agent-team outside Claude Code) falls back
+# to "session". SKILL.md "How It Runs" is the authority on what each mode does.
+#   "session"    (default) never spawn — one mind voices every persona inline
+#   "auto"       voice inline for light rounds, spawn subagents when independent thinking matters
+#   "subagent"   spawn a real subagent per substantive round, so each persona thinks independently
+#   "agent-team" persistent agent team addressing each other directly (Claude Code only)
+party_mode = "session"
 
 # Executed when the party wraps (after the read-back, before dropping to normal
 # mode). String scalar = one instruction; array = instructions run in order.

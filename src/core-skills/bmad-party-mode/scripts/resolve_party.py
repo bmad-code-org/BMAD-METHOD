@@ -219,7 +219,7 @@ def main():
     workflow = load_workflow(project_root, skill_root)
     groups = workflow.get("party_groups", []) or []
     default_party = workflow.get("default_party", "") or ""
-    party_mode = workflow.get("party_mode", "auto") or "auto"
+    party_mode = workflow.get("party_mode", "session") or "session"
 
     # Group menu never needs the (more expensive) installed-agent resolve.
     if args.list_groups:
