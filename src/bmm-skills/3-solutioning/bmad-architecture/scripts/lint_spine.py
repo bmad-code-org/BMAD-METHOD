@@ -13,7 +13,7 @@ It reads ARCHITECTURE-SPINE.md from a workspace and reports, as compact JSON on 
   - placeholder    literal TBD / TODO / "similar to AD-n" / unfilled {template-token}
   - ad_id          duplicate or non-monotonic AD-n identifiers
   - ad_fields      an AD-n block missing Binds / Prevents / Rule
-  - version_pin    a frontmatter key_deps entry with no @version
+  - version_pin    a ## Stack table row with no version
 
 Fenced code blocks are blanked (replaced with equal-count blank lines) before scanning, so
 mermaid and source trees don't trip false positives AND reported line numbers still line up
@@ -150,65 +150,62 @@ def find_ad_issues(body: str, offset: int) -> list[dict]:
     return findings
 
 
-def find_unpinned_deps(frontmatter: str) -> list[dict]:
+def find_unpinned_stack(body: str, offset: int) -> list[dict]:
+    """Flag a `## Stack` table row that names something but leaves its version blank or a
+    placeholder. Pinning lives in the body table now, not frontmatter. A row whose name is
+    still a `{token}` skeleton is left to the placeholder pass, not double-reported here.
+
+    Fences are blanked first (like find_placeholders / find_ad_issues), so a pipe-row or
+    heading inside a code block is never read as live Stack content. The heading match is
+    `## Stack` with a word boundary, so a renamed heading (`## Stack & Versions`) still
+    counts. Name and Version columns are located from the header row, so a reordered table
+    pairs name to version correctly; both default to the canonical positions (0, 1)."""
     findings: list[dict] = []
-    lines = frontmatter.splitlines()
-    in_key_deps = False
-    key_indent = 0
-    for raw in lines:
-        stripped = raw.strip()
-        if not stripped or stripped.startswith("#"):
+    in_stack = False
+    header_seen = False
+    name_idx, ver_idx = 0, 1
+    scan = blank_fences(body)
+    for i, raw in enumerate(scan.splitlines()):
+        if HEADING.match(raw):
+            in_stack = re.match(r"^##\s+Stack\b", raw) is not None
+            header_seen = False
+            name_idx, ver_idx = 0, 1
             continue
-        indent = len(raw) - len(raw.lstrip())
-        m = re.match(r"key_deps:\s*(.*)$", stripped)
-        if m:
-            in_key_deps = True
-            key_indent = indent
-            inline = _strip_comment(m.group(1)).strip()
-            if inline and inline not in ("[]", "[ ]"):
-                # inline list form: key_deps: [a@1, b] — consumed here, no block follows
-                for item in re.findall(r"[^\[\],]+", inline.strip("[]")):
-                    _check_dep(item.strip().strip("'\""), findings)
-                in_key_deps = False
+        if not in_stack or not raw.lstrip().startswith("|"):
             continue
-        if in_key_deps:
-            if indent <= key_indent and not stripped.startswith("-"):
-                in_key_deps = False
-                continue
-            if stripped.startswith("-"):
-                # block-sequence form: `- name@version`
-                _check_dep(_strip_comment(stripped[1:]).strip().strip("'\""), findings)
-            else:
-                # map form: `name: version` — pinned iff a non-empty value is present
-                mm = re.match(r"([^:]+):\s*(.*)$", stripped)
-                if mm:
-                    name = mm.group(1).strip().strip("'\"")
-                    val = _strip_comment(mm.group(2)).strip().strip("'\"")
-                    if name and not val:
-                        findings.append({
-                            "category": "version_pin",
-                            "severity": "medium",
-                            "detail": f"key_deps entry {name!r} has no version pin",
-                            "location": f"{SPINE} frontmatter stack.key_deps",
-                        })
+        if set(raw.strip()) <= set("|-: "):
+            continue  # separator row
+        cells = _table_cells(raw)
+        if not header_seen:
+            header_seen = True
+            for j, c in enumerate(cells):
+                if c.lower() == "name":
+                    name_idx = j
+                elif c.lower() == "version":
+                    ver_idx = j
+            continue
+        name = cells[name_idx] if len(cells) > name_idx else ""
+        version = cells[ver_idx] if len(cells) > ver_idx else ""
+        if not name or TEMPLATE_TOKEN.search(name):
+            continue
+        if not version or TEMPLATE_TOKEN.search(version):
+            findings.append({
+                "category": "version_pin",
+                "severity": "medium",
+                "detail": f"Stack entry {name!r} has no version",
+                "location": f"{SPINE} (line {offset + i + 1})",
+            })
     return findings
 
 
-def _strip_comment(s: str) -> str:
-    """Drop a trailing YAML ` # comment`, leaving an inline `name@1.2` intact."""
-    return re.sub(r"(^|\s)#.*$", "", s)
-
-
-def _check_dep(item: str, findings: list[dict]) -> None:
-    if not item or item.startswith("#"):
-        return
-    if "@" not in item:
-        findings.append({
-            "category": "version_pin",
-            "severity": "medium",
-            "detail": f"key_deps entry {item!r} has no @version pin",
-            "location": f"{SPINE} frontmatter stack.key_deps",
-        })
+def _table_cells(row: str) -> list[str]:
+    """Split a markdown table row into trimmed cells, dropping the leading/trailing pipe."""
+    s = row.strip()
+    if s.startswith("|"):
+        s = s[1:]
+    if s.endswith("|"):
+        s = s[:-1]
+    return [c.strip() for c in s.split("|")]
 
 
 def lint(text: str) -> dict:
@@ -217,7 +214,7 @@ def lint(text: str) -> dict:
     findings += find_frontmatter_placeholders(frontmatter)
     findings += find_placeholders(body, offset)
     findings += find_ad_issues(body, offset)
-    findings += find_unpinned_deps(frontmatter)
+    findings += find_unpinned_stack(body, offset)
     counts: dict[str, int] = {}
     for f in findings:
         counts[f["severity"]] = counts.get(f["severity"], 0) + 1
