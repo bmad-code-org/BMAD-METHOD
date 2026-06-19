@@ -3274,9 +3274,311 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Test Suite 45: New module system (plugin.json#bmad) in the installer
+  // Test Suite 45: _cleanupSkillDirs prunes empty parent dirs (#empty-bmm-folders)
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 45: New module system + legacy detection in custom-module install${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 45: cleanup prunes empty skill-group dirs${colors.reset}\n`);
+
+  let root45;
+  try {
+    root45 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-cleanup-test-'));
+    const bmadDir45 = path.join(root45, '_bmad');
+    await fs.ensureDir(path.join(bmadDir45, '_config'));
+
+    // Two skills nested under the same grouping dir (1-analysis), plus a
+    // module-level file that must survive the cleanup.
+    await fs.writeFile(
+      path.join(bmadDir45, '_config', 'skill-manifest.csv'),
+      [
+        'canonicalId,name,description,module,path',
+        '"bmad-agent-analyst","bmad-agent-analyst","fixture","bmm","_bmad/bmm/1-analysis/bmad-agent-analyst/SKILL.md"',
+        '"bmad-research","bmad-research","fixture","bmm","_bmad/bmm/1-analysis/research/bmad-research/SKILL.md"',
+        '',
+      ].join('\n'),
+    );
+    await fs.ensureDir(path.join(bmadDir45, 'bmm', '1-analysis', 'bmad-agent-analyst'));
+    await fs.writeFile(path.join(bmadDir45, 'bmm', '1-analysis', 'bmad-agent-analyst', 'SKILL.md'), 'x');
+    await fs.ensureDir(path.join(bmadDir45, 'bmm', '1-analysis', 'research', 'bmad-research'));
+    await fs.writeFile(path.join(bmadDir45, 'bmm', '1-analysis', 'research', 'bmad-research', 'SKILL.md'), 'x');
+    await fs.writeFile(path.join(bmadDir45, 'bmm', 'config.yaml'), 'module: bmm\n');
+
+    const installer45 = new Installer();
+    await installer45._cleanupSkillDirs(bmadDir45);
+
+    assert(!(await fs.pathExists(path.join(bmadDir45, 'bmm', '1-analysis'))), 'empty skill-group dir is pruned after cleanup');
+    assert(!(await fs.pathExists(path.join(bmadDir45, 'bmm', '1-analysis', 'research'))), 'empty nested skill-group dir is pruned');
+    assert(await fs.pathExists(path.join(bmadDir45, 'bmm', 'config.yaml')), 'module-level files are preserved');
+    assert(await fs.pathExists(bmadDir45), 'bmad root is never removed');
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 45 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  } finally {
+    if (root45) await fs.remove(root45).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 46: Python environment check (version parsing + classification)
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 46: python-check version parsing and classification${colors.reset}\n`);
+
+  try {
+    const { parsePythonVersion, classifyPython, detectPython } = require('../tools/installer/core/python-check');
+
+    // Version parsing
+    const v312 = parsePythonVersion('Python 3.12.1');
+    assert(v312 && v312.major === 3 && v312.minor === 12 && v312.patch === 1, 'parses "Python 3.12.1"');
+    const v311 = parsePythonVersion('Python 3.11.0\n');
+    assert(v311 && v311.raw === '3.11.0', 'parses with trailing newline');
+    const v2 = parsePythonVersion('\nPython 2.7.18');
+    assert(v2 && v2.major === 2, 'parses Python 2 output (stderr-style)');
+    const noPatch = parsePythonVersion('Python 3.13');
+    assert(noPatch && noPatch.patch === 0, 'missing patch defaults to 0');
+    assert(parsePythonVersion('') === null, 'empty output returns null');
+    assert(parsePythonVersion('command not found: python3') === null, 'non-version output returns null');
+    assert(parsePythonVersion(null) === null, 'null output returns null');
+
+    // Classification against feature requirements
+    assert(classifyPython({ major: 3, minor: 11 }) === 'full', '3.11 is full support (tomllib floor)');
+    assert(classifyPython({ major: 3, minor: 13 }) === 'full', '3.13 is full support');
+    assert(classifyPython({ major: 4, minor: 0 }) === 'full', 'hypothetical 4.0 is full support');
+    assert(classifyPython({ major: 3, minor: 10 }) === 'partial', '3.10 is partial (memlog yes, tomllib no)');
+    assert(classifyPython({ major: 3, minor: 8 }) === 'partial', '3.8 is partial (memlog floor)');
+    assert(classifyPython({ major: 3, minor: 7 }) === 'unsupported', '3.7 is unsupported');
+    assert(classifyPython({ major: 2, minor: 7 }) === 'unsupported', '2.7 is unsupported');
+    assert(classifyPython(null) === 'none', 'no python is none');
+
+    // Detection smoke test — must not throw, and if it finds a Python the
+    // result must be well-formed. (CI machines may or may not have Python.)
+    const detected = detectPython();
+    assert(
+      detected === null ||
+        (typeof detected.command === 'string' &&
+          typeof detected.version.raw === 'string' &&
+          typeof detected.isRuntimeCommand === 'boolean'),
+      'detectPython returns null or a well-formed result',
+    );
+
+    // checkPythonEnvironment branch coverage — stub detection, prompts, and
+    // process.exit so the assertions are deterministic regardless of the
+    // machine's Python. python-check resolves detectPython via module.exports
+    // and prompts via the shared module object, so swapping properties works.
+    const pythonCheck = require('../tools/installer/core/python-check');
+    const promptsModule = require('../tools/installer/prompts');
+    const real = {
+      detectPython: pythonCheck.detectPython,
+      log: promptsModule.log,
+      note: promptsModule.note,
+      select: promptsModule.select,
+      cancel: promptsModule.cancel,
+      exit: process.exit,
+    };
+    const stub = (detectResult, selectAnswer) => {
+      const seen = { success: [], warn: [], info: [], note: [], select: [], cancel: [], exit: [] };
+      pythonCheck.detectPython = () => detectResult;
+      promptsModule.log = {
+        success: async (m) => void seen.success.push(m),
+        warn: async (m) => void seen.warn.push(m),
+        info: async (m) => void seen.info.push(m),
+        error: async () => {},
+      };
+      promptsModule.note = async (m, t) => void seen.note.push(t || m);
+      promptsModule.select = async (opts) => {
+        seen.select.push(opts.message);
+        return selectAnswer;
+      };
+      promptsModule.cancel = async (m) => void seen.cancel.push(m);
+      process.exit = (code) => {
+        seen.exit.push(code);
+        throw new Error('__stub_exit__');
+      };
+      return seen;
+    };
+
+    try {
+      const v = (major, minor, patch) => ({ major, minor, patch, raw: `${major}.${minor}.${patch}` });
+
+      // Branch: full support via the runtime command — success, no prompt.
+      let seen = stub({ command: 'python3', version: v(3, 12, 1), isRuntimeCommand: true }, 'continue');
+      let result = await pythonCheck.checkPythonEnvironment();
+      assert(result.status === 'full' && seen.success.length === 1, 'full support via python3 logs success');
+      assert(seen.select.length === 0 && seen.warn.length === 0, 'full support via python3 skips warning and ack prompt');
+
+      // Branch: modern Python found, but not as `python3` — runtime mismatch.
+      seen = stub({ command: 'py -3', version: v(3, 12, 0), isRuntimeCommand: false }, 'continue');
+      result = await pythonCheck.checkPythonEnvironment();
+      assert(seen.success.length === 0, 'python3-mismatch never reports full support');
+      assert(
+        seen.warn.length === 1 && seen.warn[0].includes('python3') && seen.warn[0].includes('py -3'),
+        'python3-mismatch warns that scripts invoke python3',
+      );
+      assert(seen.select.length === 1 && result.status === 'full', 'python3-mismatch still requires the ack prompt');
+
+      // Branch: partial support (3.8–3.10) — warn + ack, continue returns.
+      seen = stub({ command: 'python3', version: v(3, 9, 5), isRuntimeCommand: true }, 'continue');
+      result = await pythonCheck.checkPythonEnvironment();
+      assert(
+        result.status === 'partial' && seen.warn.length === 1 && seen.warn[0].includes('3.11+'),
+        'partial support warns about tomllib floor',
+      );
+      assert(seen.select.length === 1 && seen.exit.length === 0, 'partial support prompts and continue proceeds');
+
+      // Branch: no Python, non-interactive — warn + info, never prompts.
+      seen = stub(null, 'continue');
+      result = await pythonCheck.checkPythonEnvironment({ nonInteractive: true });
+      assert(result.status === 'none' && seen.warn[0].includes('No Python found'), 'non-interactive with no Python warns');
+      assert(seen.select.length === 0 && seen.info.length === 1, 'non-interactive skips the ack prompt and logs continuation');
+
+      // Branch: no Python, interactive, user quits — cancel message + exit 0.
+      seen = stub(null, 'quit');
+      let threw = false;
+      try {
+        await pythonCheck.checkPythonEnvironment();
+      } catch (error) {
+        threw = error.message === '__stub_exit__';
+      }
+      assert(threw && seen.exit.length === 1 && seen.exit[0] === 0, 'quit choice exits 0 (user-cancel convention)');
+      assert(seen.cancel.length === 1, 'quit choice shows the cancel guidance');
+    } finally {
+      pythonCheck.detectPython = real.detectPython;
+      promptsModule.log = real.log;
+      promptsModule.note = real.note;
+      promptsModule.select = real.select;
+      promptsModule.cancel = real.cancel;
+      process.exit = real.exit;
+    }
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 46 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 47: WSL shell using Windows Node guard
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 47: WSL Windows Node guard${colors.reset}\n`);
+
+  try {
+    const wslNodeCheck = require('../tools/installer/core/wsl-node-check');
+
+    let detection = wslNodeCheck.detectWindowsNodeFromWsl({
+      platform: 'win32',
+      env: { WSL_DISTRO_NAME: 'Ubuntu-26.04' },
+      cwd: String.raw`C:\Windows`,
+      execPath: String.raw`C:\Program Files\nodejs\node.exe`,
+    });
+    assert(detection.isMismatch === true, 'detects Windows Node launched from WSL via WSL_DISTRO_NAME');
+
+    detection = wslNodeCheck.detectWindowsNodeFromWsl({
+      platform: 'win32',
+      env: { PWD: '/home/devuser/projects/md2pdf' },
+      cwd: String.raw`\\wsl.localhost\Ubuntu-26.04\home\devuser\projects\md2pdf`,
+      execPath: String.raw`C:\Program Files\nodejs\node.exe`,
+    });
+    assert(detection.isMismatch === true, 'detects Windows Node launched from WSL via Linux PWD / WSL UNC cwd');
+
+    detection = wslNodeCheck.detectWindowsNodeFromWsl({
+      platform: 'win32',
+      env: {},
+      cwd: String.raw`\\wsl$\Ubuntu-26.04\home\devuser\projects\md2pdf`,
+      execPath: String.raw`C:\Program Files\nodejs\node.exe`,
+    });
+    assert(detection.isMismatch === true, 'detects Windows Node launched from WSL via legacy WSL UNC cwd');
+
+    detection = wslNodeCheck.detectWindowsNodeFromWsl({
+      platform: 'linux',
+      env: { WSL_DISTRO_NAME: 'Ubuntu-26.04', PWD: '/home/devuser/projects/md2pdf' },
+      cwd: '/home/devuser/projects/md2pdf',
+      execPath: '/usr/bin/node',
+    });
+    assert(detection.isMismatch === false, 'allows native Linux Node inside WSL');
+
+    detection = wslNodeCheck.detectWindowsNodeFromWsl({
+      platform: 'win32',
+      env: { PWD: String.raw`C:\Users\devuser\project` },
+      cwd: String.raw`C:\Users\devuser\project`,
+      execPath: String.raw`C:\Program Files\nodejs\node.exe`,
+    });
+    assert(detection.isMismatch === false, 'allows normal Windows Node outside WSL');
+
+    detection = wslNodeCheck.detectWindowsNodeFromWsl({
+      platform: 'win32',
+      env: { PWD: '/c/Users/devuser/project' },
+      cwd: String.raw`C:\Users\devuser\project`,
+      execPath: String.raw`C:\Program Files\nodejs\node.exe`,
+    });
+    assert(detection.isMismatch === false, 'allows Git Bash Windows-drive PWD outside WSL');
+
+    detection = wslNodeCheck.detectWindowsNodeFromWsl({
+      platform: 'win32',
+      env: { PWD: '/cygdrive/c/Users/devuser/project' },
+      cwd: String.raw`C:\Users\devuser\project`,
+      execPath: String.raw`C:\Program Files\nodejs\node.exe`,
+    });
+    assert(detection.isMismatch === false, 'allows Cygwin Windows-drive PWD outside WSL');
+
+    const message = wslNodeCheck.formatWindowsNodeFromWslMessage({
+      isMismatch: true,
+      reason: 'WSL_DISTRO_NAME is set',
+      execPath: String.raw`C:\Program Files\nodejs\node.exe`,
+    });
+    assert(message.includes('Install Node.js inside WSL'), 'guard message tells user to install Node.js inside WSL');
+    assert(message.includes(String.raw`C:\Program Files\nodejs\node.exe`), 'guard message includes detected Windows Node path');
+
+    const promptsModule = require('../tools/installer/prompts');
+    const real = {
+      detectWindowsNodeFromWsl: wslNodeCheck.detectWindowsNodeFromWsl,
+      log: promptsModule.log,
+      exit: process.exit,
+    };
+    const seen = { errors: [], exit: [] };
+    wslNodeCheck.detectWindowsNodeFromWsl = () => ({
+      isMismatch: true,
+      reason: 'WSL_INTEROP is set',
+      execPath: String.raw`C:\Program Files\nodejs\node.exe`,
+    });
+    promptsModule.log = {
+      error: async (m) => void seen.errors.push(m),
+      info: async () => {},
+      success: async () => {},
+      warn: async () => {},
+      message: async () => {},
+      step: async () => {},
+    };
+    process.exit = (code) => {
+      seen.exit.push(code);
+      throw new Error('__stub_exit__');
+    };
+
+    try {
+      let threw = false;
+      try {
+        await wslNodeCheck.checkWindowsNodeFromWsl();
+      } catch (error) {
+        threw = error.message === '__stub_exit__';
+      }
+      assert(threw && seen.exit[0] === 1, 'guard exits with code 1 when Windows Node is launched from WSL');
+      assert(seen.errors[0].includes('Windows Node.js was launched from a WSL shell'), 'guard logs the mismatch explanation');
+    } finally {
+      wslNodeCheck.detectWindowsNodeFromWsl = real.detectWindowsNodeFromWsl;
+      promptsModule.log = real.log;
+      process.exit = real.exit;
+    }
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 47 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 48: New module system (plugin.json#bmad) in the installer
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 48: New module system + legacy detection in custom-module install${colors.reset}\n`);
   try {
     const { PluginResolver } = require('../tools/installer/modules/plugin-resolver');
     const { CustomModuleManager } = require('../tools/installer/modules/custom-module-manager');
@@ -3473,7 +3775,7 @@ async function runTests() {
       await fs.remove(tmp).catch(() => {});
     }
   } catch (error) {
-    console.log(`${colors.red}Test Suite 45 setup failed: ${error.message}${colors.reset}`);
+    console.log(`${colors.red}Test Suite 48 setup failed: ${error.message}${colors.reset}`);
     console.log(error.stack);
     failed++;
   }

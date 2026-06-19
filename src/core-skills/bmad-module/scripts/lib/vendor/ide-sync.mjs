@@ -10250,7 +10250,23 @@ var require_ide_sync = __commonJS({
         const sourceDir = path.dirname(path.join(bmadDir, relativePath));
         if (await fs.pathExists(sourceDir)) {
           await fs.remove(sourceDir);
+          await removeEmptyParents(path.dirname(sourceDir), bmadDir);
         }
+      }
+    }
+    async function removeEmptyParents(dir, bmadDir) {
+      let current = dir;
+      while (true) {
+        const rel = path.relative(bmadDir, current);
+        if (rel === "" || rel.startsWith("..") || path.isAbsolute(rel)) break;
+        try {
+          const entries = await fs.readdir(current);
+          if (entries.length > 0) break;
+          await fs.rmdir(current);
+        } catch {
+          break;
+        }
+        current = path.dirname(current);
       }
     }
     async function readSelectedIdes(bmadDir) {
