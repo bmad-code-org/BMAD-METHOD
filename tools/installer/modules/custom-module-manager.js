@@ -414,13 +414,14 @@ class CustomModuleManager {
 
   /**
    * Convert a stable cache key into filesystem-safe path segments.
-   * Keep parseSource().cacheKey human-readable while avoiding invalid
-   * characters such as ":" from custom SSH ports on Windows.
+   * Preserve the historical on-disk layout except on Windows, where ":" from
+   * custom SSH ports is invalid inside a path segment.
    * @param {string} cacheKey - Parsed cache key
    * @returns {string} Filesystem path for the cached clone
    */
   _getRepoCacheDir(cacheKey) {
-    const safeSegments = cacheKey.split('/').map((segment) => segment.replaceAll(':', '__port_'));
+    const segments = cacheKey.split('/');
+    const safeSegments = process.platform === 'win32' ? segments.map((segment) => segment.replaceAll(':', '__port_')) : segments;
     return path.join(this.getCacheDir(), ...safeSegments);
   }
 
