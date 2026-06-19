@@ -221,6 +221,13 @@ console.log(`\n${colors.cyan}Simple owner/repo URLs (regression check)${colors.r
 }
 
 {
+  const result = manager.parseSource('ssh://git@host:2222/path/repo.git?foo=bar#readme');
+  assert(result.isValid === true, 'SSH protocol URL with query and hash is valid');
+  assert(result.cloneUrl === 'ssh://git@host:2222/path/repo.git', 'SSH protocol cloneUrl drops query and hash', `Got: ${result.cloneUrl}`);
+  assert(result.cacheKey === 'host:2222/path/repo', 'SSH protocol query/hash cacheKey ignores query and hash', `Got: ${result.cacheKey}`);
+}
+
+{
   const result = manager.parseSource('ssh://git@host/owner/repo.git');
   assert(result.isValid === true, 'SSH protocol URL without custom port remains valid');
   assert(result.cacheKey === 'host/owner/repo', 'SSH protocol no-port cacheKey excludes port', `Got: ${result.cacheKey}`);
