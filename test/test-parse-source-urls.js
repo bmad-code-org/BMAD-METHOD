@@ -228,6 +228,16 @@ console.log(`\n${colors.cyan}Simple owner/repo URLs (regression check)${colors.r
 }
 
 {
+  const result = manager.parseSource('ssh://git%40corp@host:2222/path/repo.git?foo=bar#readme');
+  assert(result.isValid === true, 'SSH protocol URL with encoded username is valid');
+  assert(
+    result.cloneUrl === 'ssh://git%40corp@host:2222/path/repo.git',
+    'SSH protocol cloneUrl preserves encoded username',
+    `Got: ${result.cloneUrl}`,
+  );
+}
+
+{
   const result = manager.parseSource('ssh://git@host/owner/repo.git');
   assert(result.isValid === true, 'SSH protocol URL without custom port remains valid');
   assert(result.cacheKey === 'host/owner/repo', 'SSH protocol no-port cacheKey excludes port', `Got: ${result.cacheKey}`);

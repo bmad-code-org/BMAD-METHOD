@@ -171,8 +171,9 @@ class CustomModuleManager {
         const repoSeg = segments.at(-1);
         const ownerSeg = segments.at(-2);
         const displayName = ownerSeg ? `${ownerSeg}/${repoSeg}` : repoSeg;
-        const auth = url.username ? `${url.username}${url.password ? `:${url.password}` : ''}@` : '';
-        const cloneUrl = `${url.protocol}//${auth}${url.host}/${repoPath}`;
+        url.search = '';
+        url.hash = '';
+        const cloneUrl = url.toString();
 
         return {
           type: 'url',
