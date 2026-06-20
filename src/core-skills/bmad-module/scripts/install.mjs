@@ -206,7 +206,15 @@ export async function runInstall(opts) {
 // /tree/<ref> parsed from the source) pins; --channel stable resolves the latest
 // non-prerelease GitHub tag, falling back to next (with a warning) when there are
 // no tags, the URL isn't a GitHub repo, or the tags API is unreachable.
+const VALID_CHANNELS = new Set(['stable', 'pinned', 'next']);
+
 export async function resolveCloneTarget(descriptor, opts) {
+  // Reject typo'd channels up front (e.g. `--channel stabl`) so they error
+  // instead of silently falling through the branches below to the `next` default.
+  if (opts.channel && !VALID_CHANNELS.has(opts.channel)) {
+    throw new BmadModuleError(EXIT.USAGE, `unknown --channel "${opts.channel}" (expected: stable, pinned, next)`);
+  }
+
   if (descriptor.kind !== 'git') {
     return { ref: null, channel: null, version: null };
   }

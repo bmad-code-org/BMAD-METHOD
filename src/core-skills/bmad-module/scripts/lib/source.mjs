@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
-import { copyDir } from './fs-safe.mjs';
+import { copyDir, safePathInsideRoot } from './fs-safe.mjs';
 import { ensureCachedRepo } from './cache.mjs';
 import { EXIT, BmadModuleError } from './exit.mjs';
 
@@ -210,7 +210,12 @@ export async function materializeSource(descriptor, opts = {}) {
       await cleanup();
       throw new BmadModuleError(EXIT.USAGE, `local source not a directory: ${descriptor.path}`);
     }
-    await copyDir(descriptor.path, dir, STAGE_IGNORE);
+    try {
+      await copyDir(descriptor.path, dir, STAGE_IGNORE);
+    } catch (e) {
+      await cleanup();
+      throw e;
+    }
     return { dir, sha: null, ref: null, cleanup };
   }
 
@@ -224,13 +229,28 @@ export async function materializeSource(descriptor, opts = {}) {
     throw e;
   }
 
-  const moduleRoot = descriptor.subdir ? path.join(cached.repoDir, descriptor.subdir) : cached.repoDir;
+  // A subdir parsed from the source URL (/tree/<ref>/<subdir> or ?path=) is
+  // untrusted: reject `..`/absolute/symlink escapes so it can't copy out of the
+  // shared clone cache. safePathInsideRoot returns null on any escape.
+  let moduleRoot = cached.repoDir;
+  if (descriptor.subdir) {
+    moduleRoot = safePathInsideRoot(cached.repoDir, descriptor.subdir);
+    if (!moduleRoot) {
+      await cleanup();
+      throw new BmadModuleError(EXIT.PATH_TRAVERSAL, `subdirectory "${descriptor.subdir}" escapes the repository root`);
+    }
+  }
   const rootStat = await fs.stat(moduleRoot).catch(() => null);
   if (!rootStat || !rootStat.isDirectory()) {
     await cleanup();
     throw new BmadModuleError(EXIT.USAGE, `subdirectory "${descriptor.subdir}" not found in ${descriptor.displayName}`);
   }
 
-  await copyDir(moduleRoot, dir, STAGE_IGNORE);
+  try {
+    await copyDir(moduleRoot, dir, STAGE_IGNORE);
+  } catch (e) {
+    await cleanup();
+    throw e;
+  }
   return { dir, sha: cached.sha, ref: cached.ref, cleanup };
 }

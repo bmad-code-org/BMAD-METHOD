@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { EXIT, BmadModuleError } from './lib/exit.mjs';
 import { findBmadDir } from './lib/bmad-dir.mjs';
-import { pruneEmptyDirs } from './lib/fs-safe.mjs';
+import { pruneEmptyDirs, safePathInsideRoot } from './lib/fs-safe.mjs';
 import {
   readManifestYaml,
   removeModuleFromManifest,
@@ -53,11 +53,21 @@ export async function runRemove(opts) {
     process.stderr.write(`[bmad-module] warning: failed to update config for removal of ${code}: ${e.message}\n`);
   }
 
+  // Resolve the module root with a containment check, so a traversal-tainted
+  // code (e.g. from a hand-edited manifest) can never delete outside _bmad/.
+  const moduleRoot = safePathInsideRoot(bmadDir, code);
+  if (!moduleRoot) {
+    throw new BmadModuleError(EXIT.PATH_TRAVERSAL, `module code "${code}" escapes _bmad/`);
+  }
+
   // Delete each file tracked in files-manifest.csv; prune empty dirs after.
   const fileEntries = await readFileEntriesForModule(bmadDir, code);
-  const moduleRoot = path.join(bmadDir, code);
   for (const fe of fileEntries) {
-    const abs = path.join(bmadDir, fe.path);
+    const abs = safePathInsideRoot(bmadDir, fe.path);
+    if (!abs) {
+      process.stderr.write(`[bmad-module] warn: skipping files-manifest path that escapes _bmad/: ${fe.path}\n`);
+      continue;
+    }
     try {
       await fs.rm(abs, { force: true });
       await pruneEmptyDirs(path.dirname(abs), moduleRoot);
@@ -72,8 +82,8 @@ export async function runRemove(opts) {
 
   // Optionally purge custom overrides.
   if (opts.purge) {
-    const customDir = path.join(bmadDir, 'custom', code);
-    await fs.rm(customDir, { recursive: true, force: true });
+    const customDir = safePathInsideRoot(path.join(bmadDir, 'custom'), code);
+    if (customDir) await fs.rm(customDir, { recursive: true, force: true });
   }
 
   // Drop manifest rows.

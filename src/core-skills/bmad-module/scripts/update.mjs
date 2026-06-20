@@ -4,7 +4,7 @@ import { findBmadDir } from './lib/bmad-dir.mjs';
 import { parseSource, materializeSource } from './lib/source.mjs';
 import { readAndValidateManifest } from './lib/plugin-json.mjs';
 import { readUserIgnores, buildIgnoreMatcher, buildCopyPlan, rewriteManifestPaths, validateDeclaredPaths } from './lib/install-plan.mjs';
-import { stageCopyPlan, atomicSwapDir, sha256File, pruneEmptyDirs } from './lib/fs-safe.mjs';
+import { stageCopyPlan, atomicSwapDir, sha256File, pruneEmptyDirs, safePathInsideRoot } from './lib/fs-safe.mjs';
 import {
   readManifestYaml,
   addModuleToManifest,
@@ -88,7 +88,8 @@ async function updateOne(bmadDir, projectDir, entry, opts) {
     const oldEntries = await readFileEntriesForModule(bmadDir, code);
     const modified = [];
     for (const fe of oldEntries) {
-      const abs = path.join(bmadDir, fe.path);
+      const abs = safePathInsideRoot(bmadDir, fe.path);
+      if (!abs) continue; // an entry that escapes _bmad/ is not a tracked file
       const current = await sha256File(abs);
       if (current === null) continue;
       if (fe.hash && current !== fe.hash) modified.push(fe.path);
@@ -113,7 +114,10 @@ async function updateOne(bmadDir, projectDir, entry, opts) {
     await stageCopyPlan(materialized.dir, stagedDir, plan, {
       '.claude-plugin/plugin.json': rewrittenManifestJson,
     });
-    const targetDir = path.join(bmadDir, code);
+    const targetDir = safePathInsideRoot(bmadDir, code);
+    if (!targetDir) {
+      throw new BmadModuleError(EXIT.PATH_TRAVERSAL, `module code "${code}" escapes _bmad/`);
+    }
     try {
       await atomicSwapDir(stagedDir, targetDir);
     } catch (e) {
