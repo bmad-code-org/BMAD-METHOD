@@ -67,6 +67,16 @@ test('Windows forward-slash drive path is detected', () => {
   assert(leakCount('See C:/Users/alex/notes.md for details.') === 1, 'C:/Users... not detected');
 });
 
+test('lowercase Windows drive path is detected', () => {
+  assert(leakCount(String.raw`see c:\Users\alex\notes.md`) === 1, String.raw`c:\Users... not detected`);
+  assert(leakCount('see c:/users/alex/notes.md') === 1, 'c:/users... not detected');
+});
+
+test('URLs are not flagged as drive-letter leaks', () => {
+  // https:// also contains "<letter>:/"; the \b in the pattern must exclude it.
+  assert(leakCount('docs at https://github.com/org/repo and http://example.com') === 0, 'URL falsely flagged');
+});
+
 test('Unix /Users path is detected', () => {
   assert(leakCount('open /Users/alex/secret.md') === 1, '/Users path not detected');
 });
