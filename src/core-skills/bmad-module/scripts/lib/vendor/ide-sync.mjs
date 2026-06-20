@@ -10233,7 +10233,8 @@ var require_ide_sync = __commonJS({
         verbose,
         silent
       });
-      if (cleanup) await cleanupBmadSkillDirs(bmadDir);
+      const allSucceeded = results.every((r) => r && r.success);
+      if (cleanup && allSucceeded) await cleanupBmadSkillDirs(bmadDir);
       return { skipped: false, results };
     }
     async function cleanupBmadSkillDirs(bmadDir) {
@@ -10244,10 +10245,14 @@ var require_ide_sync = __commonJS({
       const records = csv.parse(csvContent, { columns: true, skip_empty_lines: true });
       const bmadFolderName = path.basename(bmadDir);
       const bmadPrefix = bmadFolderName + "/";
+      const bmadRoot = path.resolve(bmadDir);
       for (const record of records) {
         if (!record.path) continue;
         const relativePath = record.path.startsWith(bmadPrefix) ? record.path.slice(bmadPrefix.length) : record.path;
-        const sourceDir = path.dirname(path.join(bmadDir, relativePath));
+        const skillFilePath = path.resolve(bmadDir, relativePath);
+        if (skillFilePath !== bmadRoot && !skillFilePath.startsWith(bmadRoot + path.sep)) continue;
+        const sourceDir = path.dirname(skillFilePath);
+        if (sourceDir === bmadRoot) continue;
         if (await fs.pathExists(sourceDir)) {
           await fs.remove(sourceDir);
           await removeEmptyParents(path.dirname(sourceDir), bmadDir);

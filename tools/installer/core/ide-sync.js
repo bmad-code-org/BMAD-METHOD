@@ -54,8 +54,11 @@ async function syncIdes({ projectRoot, bmadDir, ides, previousSkillIds = [], ver
   });
 
   // Mirror Installer._cleanupSkillDirs: skills are self-contained in IDE dirs,
-  // so _bmad/ only needs module-level files.
-  if (cleanup) await cleanupBmadSkillDirs(bmadDir);
+  // so _bmad/ only needs module-level files. Only clean up when every IDE
+  // synced successfully — otherwise the source skill dirs are still needed to
+  // retry the failed targets.
+  const allSucceeded = results.every((r) => r && r.success);
+  if (cleanup && allSucceeded) await cleanupBmadSkillDirs(bmadDir);
 
   return { skipped: false, results };
 }
@@ -77,10 +80,16 @@ async function cleanupBmadSkillDirs(bmadDir) {
   const bmadFolderName = path.basename(bmadDir);
   const bmadPrefix = bmadFolderName + '/';
 
+  const bmadRoot = path.resolve(bmadDir);
   for (const record of records) {
     if (!record.path) continue;
     const relativePath = record.path.startsWith(bmadPrefix) ? record.path.slice(bmadPrefix.length) : record.path;
-    const sourceDir = path.dirname(path.join(bmadDir, relativePath));
+    const skillFilePath = path.resolve(bmadDir, relativePath);
+    // Containment guard: a malformed CSV row (absolute path or `../`) must not
+    // let cleanup escape _bmad/ and remove arbitrary directories.
+    if (skillFilePath !== bmadRoot && !skillFilePath.startsWith(bmadRoot + path.sep)) continue;
+    const sourceDir = path.dirname(skillFilePath);
+    if (sourceDir === bmadRoot) continue;
     if (await fs.pathExists(sourceDir)) {
       await fs.remove(sourceDir);
       await removeEmptyParents(path.dirname(sourceDir), bmadDir);

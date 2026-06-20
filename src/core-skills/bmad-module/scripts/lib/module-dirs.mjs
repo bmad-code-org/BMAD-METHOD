@@ -108,7 +108,14 @@ export async function createModuleDirectories(bmadDir, code, moduleConfig = {}, 
     // WDS subfolders under design_artifacts.
     if (configKey === 'design_artifacts' && wdsFolders.length) {
       for (const sub of wdsFolders) {
-        const subPath = path.join(fullPath, sub);
+        if (typeof sub !== 'string' || sub === '') continue;
+        const subPath = path.normalize(path.join(fullPath, sub));
+        // `sub` is untrusted module content; reject traversal/absolute escapes
+        // out of the design_artifacts directory.
+        if (subPath !== normalizedNewAbs && !subPath.startsWith(normalizedNewAbs + path.sep)) {
+          warn(`wds_folders entry escapes design_artifacts, skipping: ${sub}`);
+          continue;
+        }
         if (!(await pathExists(subPath))) {
           await fs.mkdir(subPath, { recursive: true });
           createdWdsFolders.push(sub);

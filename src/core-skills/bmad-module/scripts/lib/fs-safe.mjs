@@ -99,7 +99,9 @@ export async function stageCopyPlan(srcRoot, destDir, plan, extras = {}) {
 export async function atomicSwapDir(stagedDir, targetDir) {
   const parent = path.dirname(targetDir);
   await fsp.mkdir(parent, { recursive: true });
-  const sibling = path.join(parent, `.${path.basename(targetDir)}.bmad-tmp-${crypto.randomBytes(6).toString('hex')}`);
+  const suffix = crypto.randomBytes(6).toString('hex');
+  const sibling = path.join(parent, `.${path.basename(targetDir)}.bmad-tmp-${suffix}`);
+  const backup = path.join(parent, `.${path.basename(targetDir)}.bmad-old-${suffix}`);
   try {
     try {
       await fsp.rename(stagedDir, sibling);
@@ -108,10 +110,23 @@ export async function atomicSwapDir(stagedDir, targetDir) {
       await copyDir(stagedDir, sibling);
       await fsp.rm(stagedDir, { recursive: true, force: true });
     }
-    await fsp.rm(targetDir, { recursive: true, force: true });
-    await fsp.rename(sibling, targetDir);
+    // Move any existing target aside as a backup rather than deleting it
+    // up front, so a failed swap can be rolled back to the old install.
+    const hadTarget = await fsp
+      .stat(targetDir)
+      .then(() => true)
+      .catch(() => false);
+    if (hadTarget) await fsp.rename(targetDir, backup);
+    try {
+      await fsp.rename(sibling, targetDir);
+    } catch (e) {
+      if (hadTarget) await fsp.rename(backup, targetDir).catch(() => {});
+      throw e;
+    }
+    if (hadTarget) await fsp.rm(backup, { recursive: true, force: true });
   } catch (e) {
     await fsp.rm(sibling, { recursive: true, force: true });
+    await fsp.rm(backup, { recursive: true, force: true });
     throw e;
   }
 }
