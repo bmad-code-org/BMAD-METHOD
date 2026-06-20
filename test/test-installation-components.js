@@ -3739,8 +3739,12 @@ async function runTests() {
 
       const om = new OfficialModules();
       const tracked = [];
-      const result = await om.install('devlog', bmadDir, (p) => tracked.push(p), { skipModuleInstaller: true, moduleConfig: {} });
-      CustomModuleManager._resolutionCache.delete('devlog');
+      let result;
+      try {
+        result = await om.install('devlog', bmadDir, (p) => tracked.push(p), { skipModuleInstaller: true, moduleConfig: {} });
+      } finally {
+        CustomModuleManager._resolutionCache.delete('devlog');
+      }
 
       assert(result.success === true && result.module === 'devlog', 'install() routes plugin-json resolution and succeeds');
       assert(

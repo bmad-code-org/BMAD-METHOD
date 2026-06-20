@@ -305,7 +305,7 @@ async function readModuleYaml(yamlAbs) {
 async function parseSkillFrontmatter(skillDirAbs) {
   try {
     const content = await fs.readFile(path.join(skillDirAbs, 'SKILL.md'), 'utf8');
-    const match = content.match(/^---\s*\n([\s\S]*?)\n---/);
+    const match = content.match(/^---\s*\r?\n([\s\S]*?)\r?\n---/);
     if (!match) return { name: '', description: '' };
     const parsed = parseYaml(match[1]) || {};
     return { name: parsed.name || '', description: parsed.description || '' };

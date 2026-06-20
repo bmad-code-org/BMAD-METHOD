@@ -34,11 +34,13 @@ ko()   { printf '  \033[31m✗\033[0m %s\n' "$*"; fail=$((fail+1)); }
 
 # Wrapper that captures stdout/stderr/exit code into globals.
 run() {
+  local stderr_file
+  stderr_file="$(mktemp)"
   set +e
-  STDOUT="$(node "${MODULE_JS}" "$@" 2>/tmp/bmad-module-stderr.$$)"
+  STDOUT="$(node "${MODULE_JS}" "$@" 2>"${stderr_file}")"
   EXIT=$?
-  STDERR="$(cat /tmp/bmad-module-stderr.$$)"
-  rm -f /tmp/bmad-module-stderr.$$
+  STDERR="$(cat "${stderr_file}")"
+  rm -f "${stderr_file}"
   set -e
 }
 
@@ -115,15 +117,22 @@ ok "skeleton seeded at ${WORKDIR}/_bmad/"
 note "list (no modules)"
 run list
 assert_exit 0 "list empty"
-[[ "${STDOUT}" == *"no modules installed"* ]] && ok "stdout reports empty" \
-  || ko "expected 'no modules installed' in stdout: ${STDOUT}"
+if [[ "${STDOUT}" == *"no modules installed"* ]]; then ok "stdout reports empty"
+else ko "expected 'no modules installed' in stdout: ${STDOUT}"; fi
+
+# ─── 1a. usage errors: unknown flag / invalid channel reject early ───────────
+note "unknown flag and invalid channel → exit 2"
+run install "${EXAMPLES}/minimal/acme-md-lint" --bogus
+assert_exit 2 "unknown flag rejected"
+run install "${EXAMPLES}/minimal/acme-md-lint" --channel stabl --dry-run
+assert_exit 2 "invalid channel rejected"
 
 # ─── 2. dry-run install of minimal module ────────────────────────────────────
 note "install --dry-run examples/minimal/acme-md-lint"
 run install "${EXAMPLES}/minimal/acme-md-lint" --dry-run
 assert_exit 0 "dry-run install"
-[[ "${STDOUT}" == *"dry-run"* ]] && ok "stdout mentions dry-run" \
-  || ko "expected 'dry-run' in stdout: ${STDOUT}"
+if [[ "${STDOUT}" == *"dry-run"* ]]; then ok "stdout mentions dry-run"
+else ko "expected 'dry-run' in stdout: ${STDOUT}"; fi
 assert_path_absent "_bmad/mdlint"
 
 # ─── 3. real install of minimal module ───────────────────────────────────────
@@ -141,13 +150,13 @@ assert_grep ',"mdlint",' "_bmad/_config/files-manifest.csv"
 note "list (after minimal install)"
 run list
 assert_exit 0 "list one"
-[[ "${STDOUT}" == *"mdlint"* ]] && ok "stdout includes mdlint" \
-  || ko "expected 'mdlint' in stdout: ${STDOUT}"
+if [[ "${STDOUT}" == *"mdlint"* ]]; then ok "stdout includes mdlint"
+else ko "expected 'mdlint' in stdout: ${STDOUT}"; fi
 
 run list --json
 assert_exit 0 "list --json"
-[[ "${STDOUT}" == *"\"name\": \"mdlint\""* ]] && ok "json includes mdlint name" \
-  || ko "expected mdlint in JSON: ${STDOUT}"
+if [[ "${STDOUT}" == *"\"name\": \"mdlint\""* ]]; then ok "json includes mdlint name"
+else ko "expected mdlint in JSON: ${STDOUT}"; fi
 
 # ─── 5. idempotent re-install ────────────────────────────────────────────────
 note "install acme-md-lint again (idempotent / collision)"
@@ -190,8 +199,8 @@ assert_path_exists "_bmad/devlog/module-help.csv"
 assert_path_absent "_bmad/devlog/docs"
 assert_path_absent "_bmad/devlog/README.md"
 assert_path_absent "_bmad/devlog/CHANGELOG.md"
-[[ "${STDOUT}" == *"hooks"* ]] && ok "warns about hooks not auto-activated" \
-  || ko "expected hooks warning in stdout: ${STDOUT}"
+if [[ "${STDOUT}" == *"hooks"* ]]; then ok "warns about hooks not auto-activated"
+else ko "expected hooks warning in stdout: ${STDOUT}"; fi
 
 # ─── 9a. parity: central config + agent roster (gap #3) ──────────────────────
 note "config generation + agent roster"
@@ -213,8 +222,9 @@ assert_path_exists "_bmad-output/journal"
 # ─── 9c. parity: merged help catalog (gap #1) ────────────────────────────────
 note "bmad-help.csv merge"
 assert_path_exists "_bmad/_config/bmad-help.csv"
-head -1 _bmad/_config/bmad-help.csv | grep -q '^module,skill,display-name,' \
-  && ok "bmad-help.csv has canonical header" || ko "bmad-help.csv header wrong"
+if head -1 _bmad/_config/bmad-help.csv | grep -q '^module,skill,display-name,'; then
+  ok "bmad-help.csv has canonical header"
+else ko "bmad-help.csv header wrong"; fi
 assert_grep '^devlog,bmad-devlog-write,' "_bmad/_config/bmad-help.csv"
 assert_grep '^devlog,bmad-agent-historian,' "_bmad/_config/bmad-help.csv"
 # the core baseline row is still present
@@ -224,8 +234,8 @@ assert_grep ',bmad-help,Help,' "_bmad/_config/bmad-help.csv"
 note "install examples/legacy/bmad-mini-legacy (legacy marketplace.json)"
 run install "${EXAMPLES}/legacy/bmad-mini-legacy"
 assert_exit 0 "install legacy mini"
-[[ "${STDOUT}" == *"resolved legacy module mlg"* ]] && ok "stdout reports legacy resolution" \
-  || ko "expected 'resolved legacy module mlg' in stdout: ${STDOUT}"
+if [[ "${STDOUT}" == *"resolved legacy module mlg"* ]]; then ok "stdout reports legacy resolution"
+else ko "expected 'resolved legacy module mlg' in stdout: ${STDOUT}"; fi
 # Synthetic plugin.json is staged; marketplace.json is preserved verbatim.
 assert_path_exists "_bmad/mlg/.claude-plugin/plugin.json"
 assert_path_exists "_bmad/mlg/.claude-plugin/marketplace.json"
@@ -273,13 +283,15 @@ run remove mdlint
 assert_exit 0 "remove mdlint"
 assert_path_absent "_bmad/mdlint"
 assert_path_exists "_bmad/custom/mdlint/override.md"
-[[ "${STDOUT}" == *"preserved"* ]] && ok "stdout mentions preserved customs" \
-  || ko "expected 'preserved' in stdout: ${STDOUT}"
+if [[ "${STDOUT}" == *"preserved"* ]]; then ok "stdout mentions preserved customs"
+else ko "expected 'preserved' in stdout: ${STDOUT}"; fi
 # manifest rows for mdlint should be gone
-grep -q ',"mdlint",' _bmad/_config/files-manifest.csv && \
-  ko "mdlint rows still in files-manifest.csv" || ok "files-manifest.csv pruned"
-grep -q '"acme-md-lint"' _bmad/_config/skill-manifest.csv && \
-  ko "acme-md-lint row still in skill-manifest.csv" || ok "skill-manifest.csv pruned"
+if grep -q ',"mdlint",' _bmad/_config/files-manifest.csv; then
+  ko "mdlint rows still in files-manifest.csv"
+else ok "files-manifest.csv pruned"; fi
+if grep -q '"acme-md-lint"' _bmad/_config/skill-manifest.csv; then
+  ko "acme-md-lint row still in skill-manifest.csv"
+else ok "skill-manifest.csv pruned"; fi
 
 # ─── 11. remove --purge ──────────────────────────────────────────────────────
 note "remove devlog --purge"
@@ -290,14 +302,18 @@ assert_exit 0 "remove --purge"
 assert_path_absent "_bmad/devlog"
 assert_path_absent "_bmad/custom/devlog"
 # config blocks and help rows for devlog are stripped on removal
-grep -q '\[modules\.devlog]' _bmad/config.toml \
-  && ko "[modules.devlog] still in config.toml" || ok "config.toml [modules.devlog] stripped"
-grep -q '\[agents\.bmad-agent-historian]' _bmad/config.toml \
-  && ko "[agents.bmad-agent-historian] still in config.toml" || ok "config.toml agent block stripped"
-grep -q '\[modules\.devlog]' _bmad/config.user.toml \
-  && ko "[modules.devlog] still in config.user.toml" || ok "config.user.toml [modules.devlog] stripped"
-grep -q '^devlog,' _bmad/_config/bmad-help.csv \
-  && ko "devlog rows still in bmad-help.csv" || ok "bmad-help.csv devlog rows removed"
+if grep -q '\[modules\.devlog]' _bmad/config.toml; then
+  ko "[modules.devlog] still in config.toml"
+else ok "config.toml [modules.devlog] stripped"; fi
+if grep -q '\[agents\.bmad-agent-historian]' _bmad/config.toml; then
+  ko "[agents.bmad-agent-historian] still in config.toml"
+else ok "config.toml agent block stripped"; fi
+if grep -q '\[modules\.devlog]' _bmad/config.user.toml; then
+  ko "[modules.devlog] still in config.user.toml"
+else ok "config.user.toml [modules.devlog] stripped"; fi
+if grep -q '^devlog,' _bmad/_config/bmad-help.csv; then
+  ko "devlog rows still in bmad-help.csv"
+else ok "bmad-help.csv devlog rows removed"; fi
 # [core] survives the removal
 assert_grep '^user_name = "Tester"' "_bmad/config.toml"
 
@@ -330,8 +346,8 @@ run install "${EXAMPLES}/minimal/acme-md-lint" --project-dir "${IDEPROJ}"
 assert_exit 0 "install into IDE project"
 assert_path_exists "${IDEPROJ}/.claude/skills/acme-md-lint/SKILL.md"
 assert_path_exists "${IDEPROJ}/.agents/skills/acme-md-lint/SKILL.md"
-[[ "${STDOUT}" == *"claude-code"* ]] && ok "stdout reports claude-code distribution" \
-  || ko "expected claude-code in stdout: ${STDOUT}"
+if [[ "${STDOUT}" == *"claude-code"* ]]; then ok "stdout reports claude-code distribution"
+else ko "expected claude-code in stdout: ${STDOUT}"; fi
 # Canonical end-state: skill source dirs removed from _bmad/ after distribution.
 if find "${IDEPROJ}/_bmad" -name SKILL.md | grep -q .; then
   ko "SKILL.md still under _bmad after distribution"
@@ -354,9 +370,9 @@ run install "${EXAMPLES}/minimal-npm/acme-npmtool"
 assert_exit 0 "install npm fixture"
 assert_path_exists "_bmad/npmtool/package.json"
 if command -v npm >/dev/null 2>&1; then
-  [[ "${STDOUT}" == *"installed npm dependencies for npmtool"* ]] \
-    && ok "npm dependencies installed" \
-    || ko "expected npm install confirmation in stdout: ${STDOUT}"
+  if [[ "${STDOUT}" == *"installed npm dependencies for npmtool"* ]]; then
+    ok "npm dependencies installed"
+  else ko "expected npm install confirmation in stdout: ${STDOUT}"; fi
   # The fixture has zero deps, so npm writes package-lock.json (not node_modules);
   # its presence proves npm actually ran inside the installed module dir.
   assert_path_exists "_bmad/npmtool/package-lock.json"

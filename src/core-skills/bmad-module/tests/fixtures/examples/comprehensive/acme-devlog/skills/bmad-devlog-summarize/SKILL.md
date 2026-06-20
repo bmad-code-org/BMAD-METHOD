@@ -11,7 +11,7 @@ Walks devlog entries in a date range and produces a structured summary: themes, 
 
 ### Step 1: Resolve config
 
-Read `{project-root}/_bmad/devlog/config.yaml`. If missing, run `/bmad-devlog-setup` first.
+Read `{project-root}/_bmad/devlog/config.yaml`. If missing, invoke `/bmad-devlog-setup` first.
 
 ### Step 2: Parse the range argument
 

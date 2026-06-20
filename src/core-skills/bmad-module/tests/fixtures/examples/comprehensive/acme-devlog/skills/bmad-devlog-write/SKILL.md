@@ -16,7 +16,7 @@ Read `{project-root}/_bmad/devlog/config.yaml`. Expect:
 - `devlog_path` (absolute path)
 - `entry_format` (`iso` | `weekly` | `monthly`)
 
-If config is missing, run `/bmad-devlog-setup` first.
+If config is missing, invoke `/bmad-devlog-setup` first.
 
 ### Step 2: Determine the entry file
 
@@ -26,7 +26,7 @@ If config is missing, run `/bmad-devlog-setup` first.
 
 ### Step 3: Initialize if absent
 
-If the file doesn't exist, copy `./assets/template.md` to the target path. Substitute `{{date}}`, `{{author}}` (from `user_name`), and `{{week}}`/`{{month}}` placeholders.
+If the file doesn't exist, copy `./assets/template.md` to the target path. Substitute `{{date}}` and `{{author}}` (from `user_name`). For `weekly`/`monthly`, render the `{{date}}` heading from the period value (e.g. `2026-W21` or `2026-05`) instead of reusing the daily date.
 
 ### Step 4: Collect entry content
 

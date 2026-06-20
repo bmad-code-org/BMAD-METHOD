@@ -22,8 +22,16 @@ if [ -f "$today_file" ]; then
   exit 0
 fi
 
-# Fall back to the most recent .md by mtime.
-latest=$(ls -t "${devlog_path}"/*.md 2>/dev/null | head -n 1 || true)
+# Fall back to the most recent .md by mtime. Glob + `-nt` instead of parsing
+# `ls` so filenames with spaces/newlines are handled safely (and ShellCheck
+# stays happy).
+latest=""
+for f in "${devlog_path}"/*.md; do
+  [ -e "$f" ] || continue
+  if [ -z "$latest" ] || [ "$f" -nt "$latest" ]; then
+    latest="$f"
+  fi
+done
 if [ -n "$latest" ]; then
   echo "=== Most recent devlog ($(basename "$latest" .md)) ==="
   cat "$latest"

@@ -22,8 +22,11 @@ activation_steps_append = []
 
 # Persistent facts the agent keeps in mind for the whole session.
 # `file:` entries are loaded as content; literal entries are facts verbatim.
+# Note: the devlog config is intentionally NOT loaded here as an always-on
+# `file:` fact — it may not exist on first run, which would fail activation
+# before the `/bmad-devlog-setup` fallback can create it. Skills read the
+# config after checking it exists.
 persistent_facts = [
-  "file:{project-root}/_bmad/devlog/config.yaml",
   "The devlog is a primary source. Never invent context that isn't written down.",
 ]
 

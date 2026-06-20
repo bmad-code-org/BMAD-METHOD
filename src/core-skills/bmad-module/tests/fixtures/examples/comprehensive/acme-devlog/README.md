@@ -32,7 +32,7 @@ See `docs/index.md` (in this repo) for the customization recipe.
 ## Uninstall
 
 ```
-bmad-module remove devlog            # leaves _bmad/custom/devlog/ intact
+bmad-module remove devlog            # leaves _bmad/custom/bmad-agent-historian*.toml intact
 bmad-module remove devlog --purge    # removes user customizations too
 ```
 
