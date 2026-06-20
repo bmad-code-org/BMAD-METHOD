@@ -67,7 +67,9 @@ const STEP_META = /(?:thisStepFile|nextStepFile|continueStepFile|skipToStepFile|
 const LOAD_DIRECTIVE = /Load[:\s]+`(\.[^`]+)`/g;
 
 // Pattern: absolute path leaks
-const ABS_PATH_LEAK = /(?:\/Users\/|\/home\/|[A-Z]:\\\\)/;
+// Windows drive paths use a single separator (C:\Users or C:/Users). In a regex
+// literal `\\` already matches one backslash, so the class matches either separator.
+const ABS_PATH_LEAK = /(?:\/Users\/|\/home\/|[A-Z]:[\\/])/;
 
 // --- Output Escaping ---
 
@@ -402,7 +404,7 @@ function checkAbsolutePathLeaks(filePath, content) {
 }
 
 // --- Exports (for testing) ---
-module.exports = { extractCsvRefs };
+module.exports = { extractCsvRefs, checkAbsolutePathLeaks };
 
 // --- Main ---
 
