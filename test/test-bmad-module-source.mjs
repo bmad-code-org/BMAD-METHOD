@@ -144,6 +144,8 @@ console.log(`\n${colors.cyan}channel-resolver${colors.reset}\n`);
 eq(parseGitHubRepo('https://github.com/o/r/tree/main'), { owner: 'o', repo: 'r' }, 'parseGitHubRepo from deep URL');
 eq(parseGitHubRepo('git@github.com:o/r'), { owner: 'o', repo: 'r' }, 'parseGitHubRepo from SSH');
 eq(parseGitHubRepo('https://gitlab.com/o/r'), null, 'parseGitHubRepo null for non-GitHub');
+eq(parseGitHubRepo('https://github.com/o/r.git'), { owner: 'o', repo: 'r' }, 'parseGitHubRepo strips .git');
+eq(parseGitHubRepo('https://github.com/o/r.git/'), { owner: 'o', repo: 'r' }, 'parseGitHubRepo strips .git before trailing slash');
 eq(
   [normalizeStableTag('v1.7.0'), normalizeStableTag('1.0.0-rc.1'), normalizeStableTag('nope')],
   ['1.7.0', null, null],

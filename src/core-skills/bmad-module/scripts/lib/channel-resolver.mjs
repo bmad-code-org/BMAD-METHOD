@@ -24,8 +24,8 @@ export function parseGitHubRepo(url) {
   if (!url || typeof url !== 'string') return null;
   const trimmed = url
     .trim()
-    .replace(/\.git$/, '')
-    .replace(/\/$/, '');
+    .replace(/\/+$/, '')
+    .replace(/\.git$/, '');
   const httpsMatch = trimmed.match(/^https?:\/\/github\.com\/([^/]+)\/([^/]+)(?:\/.*)?$/i);
   if (httpsMatch) return { owner: httpsMatch[1], repo: httpsMatch[2] };
   const sshMatch = trimmed.match(/^git@github\.com:([^/]+)\/([^/]+)$/i);

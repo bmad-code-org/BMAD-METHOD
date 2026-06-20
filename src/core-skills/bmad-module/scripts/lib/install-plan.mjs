@@ -310,14 +310,14 @@ export async function buildCopyPlan(sourceDir, manifest, ignoreMatch) {
     if (typeof v !== 'string') continue;
     const srcRel = stripDotSlash(v);
     if (!srcRel) continue;
-    // If the declared path is a directory, copy it under its basename.
+    // These surfaces are single JSON files installed at a fixed canonical name
+    // (rewriteManifestPaths always points the manifest at `./hooks.json`,
+    // `./.mcp.json`, etc.). A directory source would be copied under its
+    // basename yet leave the manifest pointing at a file that was never written,
+    // so only file sources are honored here.
     try {
       const stat = await fs.stat(path.join(sourceDir, srcRel));
-      if (stat.isDirectory()) {
-        await addDirRecursive(srcRel, path.posix.basename(srcRel));
-      } else if (stat.isFile()) {
-        addFile(srcRel, destName);
-      }
+      if (stat.isFile()) addFile(srcRel, destName);
     } catch {
       /* missing — skip */
     }
@@ -363,21 +363,28 @@ export function rewriteManifestPaths(manifest) {
     if (typeof out.bmad.moduleDefinition === 'string') out.bmad.moduleDefinition = './module.yaml';
     if (typeof out.bmad.moduleHelpCsv === 'string') out.bmad.moduleHelpCsv = './module-help.csv';
 
-    // customize.schemas — each entry lives inside its skill dir; the skill dir
-    // itself is remapped to `skills/<basename>`, so the schema's new path is
-    // `./skills/<skill-basename>/<file>`.
+    // customize.schemas — each entry lives inside a declared skill dir, which is
+    // remapped to `skills/<basename>`. Anchor on the owning skill dir and keep
+    // every segment after it, so nested schemas (e.g. `<skill>/schemas/x.yaml`)
+    // land under the right skill instead of being collapsed to the last two
+    // segments.
+    const skillDirs = Array.isArray(manifest.skills)
+      ? manifest.skills.filter((s) => typeof s === 'string').map((s) => stripDotSlash(s))
+      : [];
     const schemas = out.bmad.customize?.schemas;
     if (Array.isArray(schemas)) {
       out.bmad.customize.schemas = schemas.map((entry) => {
         if (typeof entry !== 'string') return entry;
         const srcRel = stripDotSlash(entry);
-        const parts = srcRel.split('/');
-        // Heuristic: last two segments are `<skill-name>/<filename>`.
-        if (parts.length >= 2) {
-          const file = parts.at(-1);
-          const skill = parts.at(-2);
-          return `./skills/${skill}/${file}`;
+        const owner = skillDirs.find((sd) => sd && (srcRel === sd || srcRel.startsWith(sd + '/')));
+        if (owner) {
+          const remainder = srcRel.slice(owner.length + 1);
+          return `./skills/${path.posix.basename(owner)}/${remainder}`;
         }
+        // Fallback when no declared skill owns the path: last two segments are
+        // assumed to be `<skill-name>/<filename>`.
+        const parts = srcRel.split('/');
+        if (parts.length >= 2) return `./skills/${parts.at(-2)}/${parts.at(-1)}`;
         return `./${srcRel}`;
       });
     }

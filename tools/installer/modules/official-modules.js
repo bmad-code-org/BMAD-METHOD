@@ -694,21 +694,29 @@ class OfficialModules {
     const projectRoot = path.dirname(bmadDir);
     const emptyResult = { createdDirs: [], movedDirs: [], createdWdsFolders: [] };
 
-    // Special handling for core module - it's in src/core-skills not src/modules
-    let sourcePath;
-    if (moduleName === 'core') {
-      sourcePath = getSourcePath('core-skills');
-    } else {
-      sourcePath = await this.findModuleSource(moduleName, { silent: true });
-      if (!sourcePath) {
-        return emptyResult; // No source found, skip
-      }
-    }
-
-    // Read module.yaml to find the `directories` key
-    const moduleYamlPath = path.join(sourcePath, 'module.yaml');
+    // Prefer the flattened installed module.yaml. buildCopyPlan() copies a
+    // new-spec module's moduleDefinition to _bmad/<code>/module.yaml, where it
+    // carries the canonical `directories` declarations — but its source tree may
+    // keep module.yaml under a skill asset path that findModuleSource() can't
+    // locate, which would otherwise skip the declared working dirs.
+    let moduleYamlPath = path.join(bmadDir, moduleName, 'module.yaml');
     if (!(await fs.pathExists(moduleYamlPath))) {
-      return emptyResult; // No module.yaml, skip
+      // Special handling for core module - it's in src/core-skills not src/modules
+      let sourcePath;
+      if (moduleName === 'core') {
+        sourcePath = getSourcePath('core-skills');
+      } else {
+        sourcePath = await this.findModuleSource(moduleName, { silent: true });
+        if (!sourcePath) {
+          return emptyResult; // No source found, skip
+        }
+      }
+
+      // Read module.yaml to find the `directories` key
+      moduleYamlPath = path.join(sourcePath, 'module.yaml');
+      if (!(await fs.pathExists(moduleYamlPath))) {
+        return emptyResult; // No module.yaml, skip
+      }
     }
 
     let moduleYaml;

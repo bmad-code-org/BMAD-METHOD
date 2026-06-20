@@ -176,7 +176,14 @@ async function resolveInstalledModuleYaml(moduleName) {
       // from its marketplace plugin name (e.g. bmad-creative-intelligence-suite)
       // can be tracked downstream under any of the three — match all of them.
       const matches = mod.code === moduleName || mod.name === moduleName || mod.pluginName === moduleName;
-      if (matches && mod.localPath) {
+      if (!matches) continue;
+      // Prefer the resolution's exact module.yaml — searchRoot(localPath) returns
+      // the FIRST module.yaml under the root, which can be the wrong one in a
+      // multi-module/multi-plugin repo resolved by pluginName.
+      if (mod.moduleYamlPath && (await fs.pathExists(mod.moduleYamlPath))) {
+        return mod.moduleYamlPath;
+      }
+      if (mod.localPath) {
         const found = await searchRoot(mod.localPath);
         if (found) return found;
       }

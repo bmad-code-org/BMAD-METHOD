@@ -1,5 +1,6 @@
 import { spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { readManifestYaml } from './manifest-ops.mjs';
 
@@ -20,6 +21,18 @@ import { readManifestYaml } from './manifest-ops.mjs';
 //                                    (the _bmad/ write already succeeded).
 export async function distributeToIdes({ projectDir, bmadDir, prune = [] }) {
   const manifest = await readManifestYaml(bmadDir);
+  // readManifestYaml returns null for BOTH a missing manifest and a parse
+  // failure. A present-but-unreadable manifest is real config corruption — don't
+  // silently skip distribution; surface a repair hint. A genuinely absent
+  // manifest falls through to the "nothing configured" skip below.
+  if (manifest === null && existsSync(path.join(bmadDir, '_config', 'manifest.yaml'))) {
+    return {
+      ok: false,
+      hint:
+        'Could not read _bmad/_config/manifest.yaml (invalid YAML). Run `bmad install` to repair BMAD config, ' +
+        'then `bmad ide-sync` to push skills to your coding assistants.',
+    };
+  }
   const ides = Array.isArray(manifest?.ides) ? manifest.ides.filter((i) => i && typeof i === 'string') : [];
   if (ides.length === 0) {
     return { skipped: true };

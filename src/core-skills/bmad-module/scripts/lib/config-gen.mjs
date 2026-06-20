@@ -249,10 +249,18 @@ export async function regenerateCentralConfig(bmadDir, code, opts = {}) {
   {
     const base = teamContent || TEAM_HEADER.join('\n') + '\n';
     const { preamble, blocks } = splitBlocks(base);
-    // Drop this module's prior [modules.<code>] and its [agents.*] (by code).
-    const kept = blocks.filter(
-      (b) => b.header !== `modules.${sectionKey}` && !(b.header.startsWith('agents.') && agentCodes.has(b.header.slice('agents.'.length))),
-    );
+    // Drop this module's prior [modules.<code>] and its [agents.*] blocks. Match
+    // current agent codes AND, as a fallback for removed/renamed agents (or a
+    // missing module.yaml that leaves agentCodes empty), any [agents.*] block
+    // whose `module = "<code>"` line marks it as owned by this module.
+    const kept = blocks.filter((b) => {
+      if (b.header === `modules.${sectionKey}` || b.header === `modules.${code}`) return false;
+      if (b.header.startsWith('agents.')) {
+        if (agentCodes.has(b.header.slice('agents.'.length))) return false;
+        if (b.lines.some((l) => /^module\s*=/.test(l) && parseTomlScalar(l.split('=').slice(1).join('=')) === code)) return false;
+      }
+      return true;
+    });
     if (Object.keys(teamKv).length) kept.push(renderModuleBlock(sectionKey, teamKv));
     for (const a of agents) kept.push(renderAgentBlock(a));
     await fs.writeFile(teamPath, joinFile(preamble, kept), 'utf8');

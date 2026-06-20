@@ -18,6 +18,8 @@ import { runList } from './list.mjs';
 import { EXIT, BmadModuleError } from './lib/exit.mjs';
 
 const VERBS = new Set(['install', 'update', 'remove', 'list']);
+const BOOLEAN_FLAGS = new Set(['dry-run', 'purge', 'all', 'json']);
+const VALUE_FLAGS = new Set(['ref', 'channel', 'module', 'set', 'project-dir']);
 
 function parseArgs(argv) {
   const out = { _: [], flags: {} };
@@ -26,8 +28,13 @@ function parseArgs(argv) {
     const a = argv[i];
     if (a.startsWith('--')) {
       const key = a.slice(2);
+      // Reject unknown flags so typos fail fast instead of silently running
+      // with defaults.
+      if (!BOOLEAN_FLAGS.has(key) && !VALUE_FLAGS.has(key)) {
+        throw new BmadModuleError(EXIT.USAGE, `unknown flag --${key}`);
+      }
       // boolean flags
-      if (['dry-run', 'purge', 'all', 'json'].includes(key)) {
+      if (BOOLEAN_FLAGS.has(key)) {
         out.flags[key] = true;
         i++;
         continue;
