@@ -1231,6 +1231,12 @@ class UI {
       .map((s) => s.trim())
       .filter(Boolean);
 
+    // Non-interactive mode: a source the user explicitly asked for must not be
+    // silently dropped. Collect failures and throw after attempting every source
+    // so the install fails (non-zero exit) instead of completing with the
+    // requested module missing.
+    const failures = [];
+
     for (const source of sources) {
       const s = await prompts.spinner();
       s.start(`Resolving ${source}...`);
@@ -1242,6 +1248,7 @@ class UI {
       } catch (error) {
         s.error(`Failed to resolve ${source}`);
         await prompts.log.error(`  ${error.message}`);
+        failures.push(`${source}: ${error.message}`);
         continue;
       }
 
@@ -1267,6 +1274,7 @@ class UI {
         } catch (discoverError) {
           s2.error('Failed to discover modules');
           await prompts.log.error(`  ${discoverError.message}`);
+          failures.push(`${source}: ${discoverError.message}`);
           continue;
         }
       } else {
@@ -1299,17 +1307,29 @@ class UI {
             const resolved = await customMgr.resolvePlugin(sourceResult.rootDir, directPlugin, sourceResult.sourceUrl, localPath);
             allResolved.push(...resolved);
           } catch (resolveError) {
-            await prompts.log.warn(`  Could not resolve ${source}: ${resolveError.message}`);
+            s2.error(`Failed to resolve ${source}`);
+            await prompts.log.error(`  ${resolveError.message}`);
+            failures.push(`${source}: ${resolveError.message}`);
+            continue;
           }
         }
       }
       s2.stop(`Found ${allResolved.length} module${allResolved.length === 1 ? '' : 's'}`);
+
+      if (allResolved.length === 0) {
+        failures.push(`${source}: no installable module found at this source`);
+        continue;
+      }
 
       for (const mod of allResolved) {
         allCodes.push(mod.code);
         const versionStr = mod.version ? ` v${mod.version}` : '';
         await prompts.log.info(`  Custom module: ${mod.name}${versionStr}`);
       }
+    }
+
+    if (failures.length > 0) {
+      throw new Error(`Could not resolve ${failures.length} custom source(s):\n  - ${failures.join('\n  - ')}`);
     }
 
     return allCodes;

@@ -81,9 +81,11 @@ async function readPluginManifest(dir) {
     if (parsed && typeof parsed === 'object' && parsed.bmad && typeof parsed.bmad === 'object') {
       return parsed;
     }
-  } catch {
-    // Malformed JSON — treat as "not a new-system module" and let the legacy
-    // resolver (or validateDeclaredPaths at install time) surface the problem.
+  } catch (error) {
+    // Malformed JSON — fall back to the legacy resolver (or validateDeclaredPaths
+    // at install time) rather than hard-failing, but warn so the corruption is
+    // not swallowed silently and looks indistinguishable from a missing file.
+    process.stderr.write(`[bmad-module] warning: ignoring invalid JSON in ${manifestPath}: ${error.message}\n`);
   }
   return null;
 }
