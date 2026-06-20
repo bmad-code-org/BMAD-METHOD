@@ -47,6 +47,8 @@ CLAUDE.local.md
 .claude/settings.local.json
 .junie/
 .agents/
+.analysis/
+
 
 z*/
 !docs/zh-cn/

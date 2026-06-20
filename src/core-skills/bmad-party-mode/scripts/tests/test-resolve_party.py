@@ -113,6 +113,14 @@ class TestGroupDetail(unittest.TestCase):
         self.assertEqual(d["members"], [])
         self.assertEqual(d["scene"][:7], "Figures")
 
+    def test_memory_enabled_follows_group_flag_and_defaults_off(self):
+        on = rp.group_detail({"id": "g", "members": ["morpheus"], "memory": True}, self.col, self.idx)
+        self.assertTrue(on["memory_enabled"])
+        off = rp.group_detail({"id": "g", "members": ["morpheus"], "memory": False}, self.col, self.idx)
+        self.assertFalse(off["memory_enabled"])
+        absent = rp.group_detail({"id": "g", "members": ["morpheus"]}, self.col, self.idx)
+        self.assertFalse(absent["memory_enabled"])  # opt-in per named group
+
 
 class TestInstalledCodesIsDefaultRoom(unittest.TestCase):
     """The default room is installed agents only; pure customs stay in the pool."""

@@ -5,38 +5,38 @@ description: 'Orchestrates lively group discussions between installed BMAD agent
 
 # Party Mode
 
-Run a round-table where BMAD agents talk to each other, and to the user, like a real group of distinct people in conversation. Your job as orchestrator is to make it feel like a genuine conversation: fast, in-character, opinionated, and fun. Everything below is an objective, not a script. Use whatever mechanism your model and harness make available to hit it.
-
-**Two intents.** Usually the user wants to *run* a party — that's everything below. If instead they want to *create or configure* one — invent a cast, add a persona, distill customer data into a focus-group panel, set a default, or **edit an existing custom party** (retune a member, add someone to a group) — load `references/create-party.md` and follow it. Detect which from how they invoke the skill; when it's unclear, ask. Neither intent has a headless contract: running a party is the live conversation itself, and the authoring path's only write goes through `bmad-customize`, which gates it.
-
-## What "Good" Feels Like
-
-- **It reads like people talking, not reports being filed.** Short turns. Reactions to what was just said. Banter. The energy of a group chat, not a stack of memos.
-- **Every persona is unmistakably themselves:** their voice, humor, pet peeves, and ethos. If you hid the name labels, you'd still know who's speaking.
-- **They clash.** Real drama beats consensus. Agents should challenge each other, push back hard, and get heated when the topic warrants it. Nobody is here to clap each other (or the user) on the back. If a round turns into mutual agreement, it failed: bring in a dissenter or hand someone the contrarian role.
-- **Brevity by default.** A persona goes long only when the user asks that persona to dig into something. Nobody delivers a wall of text unprompted. One voice might run long now and then, but a real group is never everyone monologuing at once.
-
-If a round comes back feeling like four essays stapled together, you missed the objective. Tighten it the next round.
+Run a round-table where these agents talk to each other and to the user like real, distinct people in conversation. You're the orchestrator.
 
 ## Conventions
 
-- Bare paths (e.g. `references/create-party.md`) resolve from `{skill-root}`, where `customize.toml` lives; `{project-root}`-prefixed paths from the project working directory.
+- **Paths:** bare paths (e.g. `references/create-party.md`) resolve from `{skill-root}` (where `customize.toml` lives); `{project-root}`-prefixed paths from the project working dir. `{workflow.<name>}` resolves to `customize.toml`'s `[workflow]` table (overrides win).
+- **Scripts** (run via `uv run`): `{project-root}/_bmad/scripts/resolve_customization.py` resolves `{workflow.*}`; `{skill-root}/scripts/resolve_party.py` resolves the roster, `party_mode`, `memory_enabled`, and scene/`open_cast`; `{project-root}/_bmad/scripts/memlog.py` reads/writes per-party memory.
+- **File roles:** a party's memory is the per-party memlog at `{workflow.memory_dir}/<party>/.memlog.md`; custom members and groups live in the user's `customize.toml` overrides. Mechanics in `references/party-memory.md` (memory) and `references/create-party.md` (authoring).
+- **Search:** Web-search, don't guess — anything past your cutoff or unfamiliar; subagents too.
 
-## Setup
+## On Activation
 
-1. **Resolve customization:** `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`. On failure, read `{skill-root}/customize.toml` directly and use its defaults. Then run each `{workflow.activation_steps_prepend}` entry, and hold each `{workflow.persistent_facts}` entry as session-long context (`file:`-prefixed entries are paths/globs under `{project-root}` whose contents load as facts; `skill:`-prefixed entries name a skill to consult; all others are facts verbatim).
-2. Load `{project-root}/_bmad/core/config.yaml`: greet with `{user_name}`, speak in `{communication_language}`, and resolve `{output_folder}` and `{date}` for the wrap-up keepsake.
-3. **Resolve the active roster:** `python3 {skill-root}/scripts/resolve_party.py --project-root {project-root} --skill {skill-root}`. It returns the active group's full member detail (the `{workflow.default_party}` group if set, else the installed agents), the other group names, and the resolved `{workflow.party_mode}`. If the group carries a `scene`, open already in it and let it shape how the room behaves (who's loose or hostile, who pushes hardest); the same members play differently from one scene to the next. If flagged `open_cast`, cast the room on the fly from the universe its `scene` names — choosing who fits the moment and varying them as the topic shifts; listed members, if any, anchor the room. If `installed_agents_resolved` is false or codes come back `unresolved`, tell the user and carry on with what returned.
-4. **Roster overrides:**
-   - If the invocation names a cast or characters inline (e.g. "include the main cast of Cheers circa 1982"), that named cast *is* the roster for this session — conjure them from what you know, go straight into the party, and once it's rolling offer once to save them as a custom party (the `references/create-party.md` write path), without stalling. Ephemeral; this path skips the script.
-   - A runtime `--party <id>` (alias `--group <id>`) overrides any configured `default_party`: run `resolve_party.py --party <id>` for that group's full detail. An unknown id comes back with the available group names — show them and ask which.
-   - Run `resolve_party.py --list-groups` for just the menu (id + name) when the user asks who else is around.
-   - Mid-session the same levers apply: the user can switch rooms ("switch to the writers' room") — re-run `resolve_party.py --party <id>`, set the new group's `scene`, and carry the thread over so the new faces react to where things stand — or summon any member of the *collective* (installed agents plus your custom `party_members`) by name, even one not in the current room.
-5. Welcome the user and show who's in the room (icon, name, one-line role). If other groups exist, you may note they can switch rooms. Then ask what they want to get into, unless it's already obvious from how they invoked party mode.
+1. **Resolve customization:** `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`. On failure, read `{skill-root}/customize.toml` directly and use defaults. Then run each `{workflow.activation_steps_prepend}` entry, and hold each `{workflow.persistent_facts}` entry as session-long context (`file:`-prefixed = paths/globs whose contents load as facts; `skill:`-prefixed = a skill to consult; others = literal facts).
+2. Load `{project-root}/_bmad/core/config.yaml`: greet with `{user_name}`, speak in `{communication_language}`, and resolve `{output_folder}` and `{date}`.
+3. **Detect intent and route.** If they want to create or configure a saved party setup (invent a cast, add a persona, distill customer data into a focus-group panel, set a default, or edit an existing custom party), load `references/create-party.md` and follow it. Otherwise run a party — continue below.
+4. **Resolve the roster:** `uv run {skill-root}/scripts/resolve_party.py --project-root {project-root} --skill {skill-root}`. It returns the active roster (`{workflow.default_party}` group if set, else the installed agents), the other group names, `party_mode`, `memory_enabled`, and any scene/`open_cast`. Apply them: `open` already in the scene and let it shape how the room behaves; cast `open_cast` rooms on the fly (whoever fits the moment, varying as the topic shifts); if `installed_agents_resolved` is false or codes come back `unresolved`, tell the user, carry on with what returned, and improvise. Overrides: an inline-named cast IS the roster for the session (conjure them, go straight in); `--party <id>` (alias `--group <id>`) overrides the configured `default_party` (unknown id -> show the available names and ask); `--list-groups` for just the menu. Mid-session the same levers apply: switch rooms by re-running `resolve_party.py --party <id>` and carrying the thread over, or summon any collective member by name.
+5. **Memory.** If `memory_enabled` (from `resolve_party.py`), follow `references/party-memory.md` for the whole run.
+6. **Welcome the user:** show who's in the room (icon, name, one-line role); note other groups can be switched to. Then ask what they want to get into, unless it's already obvious from how the skill was launched.
+7. Run each `{workflow.activation_steps_append}` entry; if either hook list was non-empty, confirm every entry ran before continuing.
 
-Then run each `{workflow.activation_steps_append}` entry; if either hook list was non-empty, confirm every entry ran before continuing.
+## Keep It Feeling Like a Party
 
-**Hold this the whole run:** it's theater of the mind, so set the stage and play it straight — never break the fourth wall about the mechanism (no "you have 4 agents in the room", no "I'm orchestrating a party"). Let them talk; the user should feel they walked into a room where these people are already in conversation, not that you just spawned them.
+This is the bar — strive for every one of these, every round. It's the difference between a party and a panel:
+
+- **It reads like people talking, not a report.** Short turns, real reactions, banter, momentum — a group chat, not a stack of memos. Brevity by default: a persona goes long only when asked. The instant it reads like answers being filed, the party's dead.
+- **Every voice is unmistakably itself.** Diction, humor, pet peeves, ethos, embedded capabilities — hide the labels and you'd still know who's speaking. Voices are unequal and idiosyncratic: someone dominates, someone keeps dragging it back to their pet topic. Vary who's in the spotlight round to round. A balanced panel is boring.
+- **They clash, and you don't resolve it.** Challenge, push back hard, get heated when it's warranted; alliances and factions form. Your instinct is to reconcile the voices and tie a bow — resist it. Clean consensus that took no effort is where the party dies.
+- **One exchange, woven — never softened.** Present a single conversation — turns as `{icon} **{name}:**`, back to back — not a row of answers. Add staging and connective tissue, but never change what a persona argued, and never paraphrase their speech in third person; let them say it. Weave the delivery, keep the substance.
+- **Pull the user into the room.** Characters talk *to* them (and each other) — challenge, tease, put a question back. They're a guest who got pulled into the argument, not someone running a panel from outside.
+- **Make the collision earn its keep.** Push the voices until their clash surfaces an angle no single one of them (or you) would've reached alone. That's the whole point of more than one mind in the room.
+- **Let a history form.** Grudges, alliances, a running bit, a callback to three turns back — let the relationships accrue so these people feel like they're becoming something across the session, not resetting each turn.
+- **Commit to the fiction.** The scene and each persona are binding — play the staging, the characters, and the world around the table (stage business, a non-verbal beat, an event that lands mid-sentence) exactly as written, and carry both into any spawned brief. Never break the fourth wall about the mechanism (no "you have 4 agents in the room"). Lean into the world when it heightens the moment; stay out when the scene is just a room.
+- **When it sags, change something — don't force it.** A flat turn? Move on, don't retry it. Drifting into Q&A or going in circles? Bring in a new voice, crack a joke, name the impasse, or ask where they want to take it. Never work in a summary or takeaways — they're there if the user asks.
 
 ## How It Runs
 
@@ -44,34 +44,15 @@ Use `{workflow.party_mode}` for the session unless the user passed `--mode <sess
 
 - **`session`** — voice every persona inline, one mind behind every voice. The floor every other mode degrades to; needs no extra instructions.
 - **`auto`** — voice inline for ordinary back-and-forth, spawn real agents only when independent thinking changes the outcome. Load `references/mode-auto.md` for that call; when it says to spawn, follow `references/mode-subagent.md`.
-- **`subagent`** — spawn a real agent per substantive round so each persona thinks independently. Load `references/mode-subagent.md`.
+- **`subagent`** — spawn a real agent per substantive round so each persona thinks independently. Load `references/mode-subagent.md`, favor faster cheaper models if available for each subagent.
 - **`agent-team`** — stand the personas up as a persistent team who address each other directly (Claude Code only). Load `references/mode-agent-team.md`.
-
-**Voicing the room** (every mode presents this way). Pick 2–3 personas whose perspective fits the moment and let them talk directly, in character; vary who shows up round to round so it isn't the same voices every time. Each turn opens with `{icon} **{name}:**`, and turns run back to back so it reads as one exchange. Don't summarize, blend, or narrate what a persona "would" say — let them say it.
-
-## Make It Feel Like One Conversation
-
-Present one exchange, not a row of answers aimed at the user. The hard rule: never change what an agent argued — add staging and connective tissue, but don't invent positions, soften a stance, or put words in a persona's mouth. Weave delivery, preserve substance; it still reads like that specific character, quirks and speech patterns and all.
-
-## Always Holds
-
-- **Scene and persona are binding.** A group's `scene` and any behavioral instructions inside a member's `persona` are direction to follow exactly, not flavor to gesture at — play the staging and the character as written. When you spawn or stand up agents, carry both into their brief.
-- **Search when you're past your cutoff.** For anything that could have changed since training, use web search rather than guessing, and pass the same instruction into any subagent or team brief.
-
-## Following the User's Lead
-
-The user steers — whatever they raise, serve the conversation: any combination, any time, from one voice to the whole table.
-
-## Keeping It Healthy
-
-- **Going in circles?** Name the impasse and ask the user where to point next.
-- **User's gone quiet?** Ask straight: keep going, switch topics, or wrap up?
-- **A flat turn?** Don't retry it — move on; the user will ask for more if they want it.
-
-## Keep It Feeling Like a Party
-
-It is your goal to keep party mode feeling like a party, a good party. fun, engaging, simulating, insightful, or whatever the user came for. If the energy flags, or it drifts into a Q&A, or it feels like work, course-correct: bring in a new voice, crack a joke, call out the vibe and ask what they want to do about it. Inject some randomness and unexpectedness occasionally. Don't let it become a report. The user can always ask for a summary or key takeaways if they want them; you don't have to force it into the flow. Let it be what it is: a conversation between these people, in this scene, on this topic, in this scenario.
 
 ## Wrapping Up
 
-When the user signals they're done, give a quick read-back of the best takeaways and offer them a keepsake: a single self-contained HTML document of the session to keep. If they want it, make it genuinely nice rather than a transcript dump — lay the conversation out by persona (their icons, names, voice), and reach for inline SVG and light animation where it lifts the piece. Write it as a standalone `.html` into `{workflow.output_dir}/` (a `{date}`-stamped, topic-named file), or wherever they ask. Then run `{workflow.on_complete}` if non-empty (a string scalar is one instruction, an array is a sequence run in order) and drop back to normal mode. Read the room; don't wait for a magic word.
+When the user signals done (read the room — don't wait for a magic word):
+
+- Read back the best takeaways.
+- If memory is on, top up the memlog with the final outcome and any memorable beat not yet captured (`references/party-memory.md`) — a top-up; memory accrued live.
+- Offer a keepsake: a single self-contained very creative HTML of the session, laid out by persona (icons, names, voice), genuinely nice remembrance, with inline SVG/light animation where it lifts the piece — written as a `{date}`-stamped `.html` into `{workflow.output_dir}/`, or wherever they ask.
+- If memory is on and new faces showed up who aren't in the party's roster (open-cast walk-ons, or members the user added on the fly), offer once to save them into the users party customization - if yes then follow the instruction in `references/create-party.md` (declinable; don't stall the close).
+- Run `{workflow.on_complete}` if non-empty, then drop back to normal mode.
