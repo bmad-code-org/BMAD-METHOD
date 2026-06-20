@@ -109,6 +109,9 @@ jobs:
       - name: Test agent compilation components
         run: npm run test:install
 
+      - name: Test IDE sync (engine/bundle parity)
+        run: npm run test:ide-sync
+
       - name: Test bmad-module skill (source parsing + channels)
         run: npm run test:skill-source
 
