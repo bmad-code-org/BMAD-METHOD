@@ -30,8 +30,8 @@ Free-form structured payload in the first message; provide what applies:
 ## Run
 
 1. Bind `{doc_workspace}` and create the memlog with `uv run {project-root}/_bmad/scripts/memlog.py init --workspace {doc_workspace} --field topic="<topic>" [--field goal="<goal>"]`. It remains the canonical source every artifact derives from.
-2. Run the divergent session per **The inversion**, capturing each idea with `memlog.py append --workspace {doc_workspace} --type idea --text "<idea>"` as it lands, and marking each technique switch with `memlog.py append --type technique --text "started <name>"`.
-3. Synthesize: surface the conclusions, connections, and the few directions that matter; record them with `memlog.py append --type insight`, then run `memlog.py set --workspace {doc_workspace} --key status --value complete`.
+2. Run the divergent session per **The inversion**, capturing each idea with `uv run {project-root}/_bmad/scripts/memlog.py append --workspace {doc_workspace} --type idea --text "<idea>"` as it lands, and marking each technique switch with `uv run {project-root}/_bmad/scripts/memlog.py append --workspace {doc_workspace} --type technique --text "started <name>"`.
+3. Synthesize: surface the conclusions, connections, and the few directions that matter; record them with `uv run {project-root}/_bmad/scripts/memlog.py append --workspace {doc_workspace} --type insight --text "<insights>"`, then run `uv run {project-root}/_bmad/scripts/memlog.py set --workspace {doc_workspace} --key status --value complete`.
 4. Produce the requested artifacts from the log — `brainstorm.html` (the imaginative, self-contained, no-template report) and/or the succinct `brainstorm-intent.md` — the same artifacts `references/finalize.md` describes, delegating each to a subagent that reads the log as its sole source. (Headless produces the `artifacts` payload directly; it does not ask, unlike the interactive opt-in.)
 5. Execute each entry in `{workflow.external_handoffs}` (capture returned URLs/IDs into the JSON `external_handoffs` array; skip and flag unavailable tools — local files always exist). Then run `{workflow.on_complete}` if non-empty.
 
