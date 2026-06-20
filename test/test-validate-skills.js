@@ -26,6 +26,11 @@ let totalTests = 0;
 let passedTests = 0;
 const failures = [];
 
+/**
+ * Run a single named test case, recording the result and printing a status line.
+ * @param {string} name - Human-readable test description.
+ * @param {Function} fn - Test body; throw to signal failure.
+ */
 function test(name, fn) {
   totalTests++;
   try {
@@ -38,11 +43,21 @@ function test(name, fn) {
   }
 }
 
+/**
+ * Throw an Error with `message` when `condition` is falsy.
+ * @param {boolean} condition - Expression that must hold.
+ * @param {string} message - Failure message.
+ */
 function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
-// True when validateSkill emitted the SKILL-06 "Use when/Use if" trigger finding.
+/**
+ * Whether validateSkill emitted the SKILL-06 "Use when/Use if" trigger finding
+ * for the given fixture skill directory.
+ * @param {string} skillName - Fixture subdirectory name under FIXTURES.
+ * @returns {boolean} True if the trigger-phrase finding was reported.
+ */
 function hasTriggerFinding(skillName) {
   const findings = validateSkill(path.join(FIXTURES, skillName));
   return findings.some((f) => f.rule === 'SKILL-06' && /trigger phrase/i.test(f.detail));
