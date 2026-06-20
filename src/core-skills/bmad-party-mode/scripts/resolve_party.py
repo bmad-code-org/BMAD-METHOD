@@ -197,7 +197,8 @@ def group_detail(g, collective, index):
     raw_members = g.get("members", []) or []
     members, unresolved = resolve_members(raw_members, collective, index)
     detail = {"active": g["id"], "name": g.get("name", g["id"]),
-              "members": members, "unresolved": unresolved}
+              "members": members, "unresolved": unresolved,
+              "memory_enabled": bool(g.get("memory", False))}
     if g.get("scene"):
         detail["scene"] = g["scene"]
     if not raw_members:
@@ -220,6 +221,9 @@ def main():
     groups = workflow.get("party_groups", []) or []
     default_party = workflow.get("default_party", "") or ""
     party_mode = workflow.get("party_mode", "session") or "session"
+    # The global party_memory flag governs only the DEFAULT installed-agent room;
+    # a named group carries its own `memory` flag (resolved in group_detail).
+    party_memory = bool(workflow.get("party_memory", True))
 
     # Group menu never needs the (more expensive) installed-agent resolve.
     if args.list_groups:
@@ -252,7 +256,8 @@ def main():
         # No default group: the installed agents (custom additions stay in the
         # pool but don't crowd the default room), exactly like a plain install.
         result.update({"active": "installed",
-                       "members": [collective[c] for c in installed_codes]})
+                       "members": [collective[c] for c in installed_codes],
+                       "memory_enabled": party_memory})
     _emit(result)
 
 

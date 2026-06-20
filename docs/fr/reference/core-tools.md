@@ -113,7 +113,7 @@ La magie se produit dans les idées 50–100. Le workflow encourage la générat
 1. Lit l’entrée et tout document annexe lié
 2. Distille en un noyau à cinq champs via un modèle configurable ; redirige l’excédent vers des fichiers compagnons correctement nommés
 3. Exécute une auto-validation en deux passes (règles de cohérence, puis préservation de chaque affirmation essentielle de la source)
-4. Écrit `SPEC.md`, les compagnons associés, et un `.decision-log.md` sous `{output_folder}/specs/spec-{slug}/`
+4. Écrit `SPEC.md`, les compagnons associés, et un `.memlog.md` sous `{output_folder}/specs/spec-{slug}/`
 
 La loi Spec impose huit règles : les capacités expriment à la fois l’intention et le critère de succès ; les intentions décrivent le QUOI, pas le COMMENT ; les contraintes guident réellement les décisions ; les non-objectifs sont explicites ; les signaux de succès sont concrets ; les identifiants de capacité sont stables ; chaque affirmation essentielle de la source est préservée ; la rédaction est concise.
 
@@ -123,7 +123,7 @@ La loi Spec impose huit règles : les capacités expriment à la fois l’inten
 - `slug` (optionnel) — Requis uniquement lorsque l’entrée est succincte et qu’aucun slug ne peut être dérivé du nom de fichier source
 - `target_spec_path` (optionnel) — Définir pour mettre à jour une spécification existante au lieu d’en créer une nouvelle
 
-**Sortie :** Dossier de spécification contenant `SPEC.md`, les éventuels fichiers compagnons, et un `.decision-log.md`. Les appelants en mode headless reçoivent une réponse JSON avec le statut du résultat et la liste des fichiers écrits ou modifiés.
+**Sortie :** Dossier de spécification contenant `SPEC.md`, les éventuels fichiers compagnons, et un `.memlog.md`. Les appelants en mode headless reçoivent une réponse JSON avec le statut du résultat et la liste des fichiers écrits ou modifiés.
 
 :::note[Contrat de mutation]
 `bmad-spec` est le seul outil autorisé à écrire `SPEC.md` et les fichiers compagnons de la spécification. Les autres compétences produisent leurs propres artefacts natifs et invoquent `bmad-spec` en mode headless lorsqu’elles ont besoin d’exprimer une intention sous forme de contrat canonique ou de proposer des mises à jour.

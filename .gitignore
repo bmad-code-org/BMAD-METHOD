@@ -47,6 +47,8 @@ CLAUDE.local.md
 .claude/settings.local.json
 .junie/
 .agents/
+.analysis/
+
 
 # Test fixtures need a committed .mcp.json (the rule above ignores real projects')
 !src/core-skills/bmad-module/tests/fixtures/**/.mcp.json

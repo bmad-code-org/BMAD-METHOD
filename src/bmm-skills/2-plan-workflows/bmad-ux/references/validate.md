@@ -4,7 +4,7 @@ Critique an existing spine pair (`DESIGN.md` + `EXPERIENCE.md`) or any format of
 
 ## Orient
 
-Subagent-extract from `.decision-log.md`, sources in frontmatter, `imports/`, `mockups/`, `wireframes/`, `DESIGN.md`, `EXPERIENCE.md`. Parent assembles from extracts.
+Subagent-extract from `.memlog.md`, sources in frontmatter, `imports/`, `mockups/`, `wireframes/`, `DESIGN.md`, `EXPERIENCE.md`. Parent assembles from extracts.
 
 ## Reviewer Gate
 
@@ -34,7 +34,7 @@ Rubric walker prompt:
 >
 > 7. **Inheritance discipline.** `sources` frontmatter resolves. UJ / requirement names verbatim from sources. Glossary identical across spines and sources. Component names identical across all sections in both files. EXPERIENCE.md token references resolve to DESIGN.md tokens by name.
 >
-> 8. **Shape fit.** DESIGN.md sections in canonical order (Brand & Style → Colors → Typography → Layout & Spacing → Elevation & Depth → Shapes → Components → Do's and Don'ts; omittable but order-locked when present). EXPERIENCE.md required defaults present (Foundation, IA, Voice and Tone, Component Patterns, State Patterns, Interaction Primitives, Accessibility Floor, Key Flows). Dropped defaults defensible. Required-when-applicable present where triggered (Inspiration when sources / log show reference products or rejects; Responsive when multi-surface or breakpoints). Invented sections earn their place.
+> 8. **Shape fit.** DESIGN.md sections in canonical order (Brand & Style → Colors → Typography → Layout & Spacing → Elevation & Depth → Shapes → Components → Do's and Don'ts; omittable but order-locked when present). EXPERIENCE.md required defaults present (Foundation, IA, Voice and Tone, Component Patterns, State Patterns, Interaction Primitives, Accessibility Floor, Key Flows). Dropped defaults defensible. Required-when-applicable present where triggered (Inspiration when sources / memlog show reference products or rejects; Responsive when multi-surface or breakpoints). Invented sections earn their place.
 >
 > Severity = downstream impact, not fix difficulty.
 >

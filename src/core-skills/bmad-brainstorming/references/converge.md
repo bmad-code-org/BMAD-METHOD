@@ -17,7 +17,7 @@ Pick by what the decision needs:
 - **PMI (Plus / Minus / Interesting)** — when one strong candidate needs pressure-testing before commitment: list its pluses, minuses, and the merely-interesting, then judge.
 - **MoSCoW** — when scoping a build: sort into Must / Should / Could / Won't-this-time.
 
-Log the surviving directions and the reasoning with `python3 {skill-root}/scripts/memlog.py append --type decision --text "<one-line gist>"` (use `--by` in Creative Partner mode). Two or three convergence moves chained is fine (e.g. cluster → score the clusters); more than that is usually over-processing.
+Log the surviving directions and the reasoning with `uv run {project-root}/_bmad/scripts/memlog.py append --workspace {doc_workspace} --type decision --text "<one-line gist>"` (use `--by` in Creative Partner mode). Two or three convergence moves chained is fine (e.g. cluster → score the clusters); more than that is usually over-processing.
 
 ## Then finalize
 
