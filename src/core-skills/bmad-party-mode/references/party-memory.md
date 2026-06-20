@@ -2,6 +2,8 @@
 
 The room remembers its past sessions with this user and brings them back to life — in character. Memory is per-party and append-only.
 
+Memory is on when the active party's `memory_enabled` is true — the default room follows `{workflow.party_memory}`, a named group its own `memory` flag (both resolved by `resolve_party.py`); ad-hoc inline casts have none. Read on entry and on any mid-session room switch; write through the session.
+
 ## Where it lives
 
 One memlog per party: `{workflow.memory_dir}/{active}/.memlog.md`, where `{active}` is the key `resolve_party.py` already returned — the group id (e.g. `code-review-crew`), or `installed` for the default room. The folder is named after the party.
@@ -24,6 +26,10 @@ Writes are silent. The room never announces "noted" or "I'll remember".
 ## What's worth remembering
 
 The test for every entry: *would this color a future session, or make a callback land, or improve the party?* If not, leave it out. A handful of entries, never a recap, never a transcript. keep each entry as brief as possible but usable by future llm.
+
+## New faces
+
+When a character shows up who isn't in the party's roster — cast from an open-cast scene, or one the user adds on the fly — name them in the entry that captures the moment ("<name> turned up and …") so a recurring face can return next session. At wrap-up these are the faces the room offers to keep, saved into the party's roster through `references/create-party.md` (which writes via `bmad-customize`). Until saved they live only in the memlog, and the room re-conjures them from there.
 
 ## Write it
 
