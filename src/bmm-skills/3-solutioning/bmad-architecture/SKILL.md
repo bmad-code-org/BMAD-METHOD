@@ -32,12 +32,12 @@ The input itself tells you what kind of job this is — read it rather than quiz
 
 ## How a run works
 
-The **memlog** (`.memlog.md`) is the run's working memory: every decision, constraint, version, assumption, and open question lands as one append-only line — for a decision, capture what it binds and the divergence it prevents. It is the shared canonical memlog (the same `{project-root}/_bmad/scripts/memlog.py` bmad-spec writes through), so it carries no lifecycle status — terminal moments are logged as `event` entries, not a frontmatter flag. The spine is **distilled from the memlog at the end**, not written as you go. Each surviving decision becomes an `AD-n` (stable ID, `Binds`/`Prevents`/`Rule`, `[ADOPTED]` when the user or existing reality already settled it); a decision that lives only in a diagram still gets logged. Resume a prior run by reloading its memlog.
+The **memlog** (`.memlog.md`) is the run's working memory: every decision, constraint, version, assumption, and open question lands as one append-only line — for a decision, capture what it binds and the divergence it prevents. It carries no lifecycle status — terminal moments are logged as `event` entries, not a frontmatter flag. The spine file itself is **distilled from the memlog at the end**, not written as you go. Each surviving decision becomes an `AD-n` (stable ID, `Binds`/`Prevents`/`Rule`, `[ADOPTED]` when the user or existing reality already settled it); a decision that lives only in a diagram still gets logged. Resume a prior run by reloading its memlog.
 
 Writes go through the shared script (don't read the file back except on resume):
 
-- `python3 {project-root}/_bmad/scripts/memlog.py init --workspace {doc_workspace} --field scope="…" --field purpose="…" --field altitude="…"`
-- `python3 {project-root}/_bmad/scripts/memlog.py append --workspace {doc_workspace} --type <decision|constraint|version|assumption|question|direction|event> --text "…"`
+- `uv {project-root}/_bmad/scripts/memlog.py init --workspace {doc_workspace} --field scope="…" --field purpose="…" --field altitude="…"`
+- `uv {project-root}/_bmad/scripts/memlog.py append --workspace {doc_workspace} --type <decision|constraint|version|assumption|question|direction|event> --text "…"`
 
 ## Resolution rules
 

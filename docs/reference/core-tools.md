@@ -113,7 +113,7 @@ The magic happens in ideas 50–100. The workflow encourages generating 100+ ide
 1. Reads the input and any ancillary linked materials.
 2. Distills into the five-field kernel using a configurable template; routes overflow into appropriately-named companions.
 3. Runs a two-pass self-validate (coherence rules, then preservation of every load-bearing source claim).
-4. Writes `SPEC.md`, sibling companions, and a `.decision-log.md` under `{output_folder}/specs/spec-{slug}/`.
+4. Writes `SPEC.md`, sibling companions, and a `.memlog.md` under `{output_folder}/specs/spec-{slug}/`.
 
 Spec Law enforces eight rules: capabilities carry both intent and success; intents are WHAT not HOW; constraints actually bend decisions; non-goals are explicit; success signals are concrete; capability IDs are stable; every load-bearing source claim is preserved; prose is lean.
 
@@ -123,7 +123,7 @@ Spec Law enforces eight rules: capabilities carry both intent and success; inten
 - `slug` (optional) — required only when input is sparse and no slug is derivable from a source filename.
 - `target_spec_path` (optional) — set to update an existing spec instead of creating a new one.
 
-**Output:** Spec folder containing `SPEC.md`, any companion files, and a `.decision-log.md`. Headless callers receive a JSON response with the result status and the list of files written or modified.
+**Output:** Spec folder containing `SPEC.md`, any companion files, and a `.memlog.md`. Headless callers receive a JSON response with the result status and the list of files written or modified.
 
 :::note[Mutation contract]
 `bmad-spec` is the only writer of `SPEC.md` and of spec-authored companions. Other skills produce their own native artifacts and invoke `bmad-spec` headless when they need to express intent as the canonical contract or propose updates.

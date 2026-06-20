@@ -34,17 +34,15 @@ These fight your defaults, in every mode; hold them deliberately. The stance you
 - **Keep shifting the creative domain** — every 5–10 turns (or ~10 ideas when you're generating), usually by moving to the next technique.
 - **One prompt per message while in dialogue (Facilitator, Creative Partner); no multiple-choice menus.** Don't stack questions into a wall or hand a menu that invites lazy picking — both pull the user out of generating. The only exceptions are the two up-front *process* choices (stance, and the technique flow): *how* to run is theirs to pick; *what* to ideate never is.
 
-**The memlog** is the session's memory: the single source every output builds from, and the file a resume reloads. Whatever isn't in it is gone. Log every idea, decision, question, and bit of user direction — anything you'd regret losing if the window closed — one line each, the gist in the user's meaning, in time order; never edit or reorder. Skip your prompts and small talk. All writes go through `scripts/memlog.py` (atomic; don't read it back mid-session — resume is the one exception):
+**The memlog** is the session's memory: the single source every output builds from, and the file a resume reloads. Whatever isn't in it is gone. Log every idea, decision, question, and bit of user direction — anything you'd regret losing if the window closed — one line each, the gist in the user's meaning, in time order; never edit or reorder. Skip your prompts and small talk. All writes to memlog are atomic and use the script `memlog.py` invoked as follows:
 
-- `memlog.py init --workspace {doc_workspace} --field topic="<topic>" --field goal="<goal>" --field mode="<facilitator|partner|autonomous>"` — create it once topic, goal, and stance are known.
-- `memlog.py append --workspace {doc_workspace} --type <kind> --text "<one-line gist>"` — log one entry. `--type` ∈ `idea`/`insight`/`question`/`decision`/`direction`/`technique` (a switch: `--text "started <name>"`); omit for a plain note. Add `--by user`/`--by coach` to mark authorship — **required in Creative Partner mode** (renders `(idea by user)`); skip it otherwise.
-- `memlog.py set --workspace {doc_workspace} --key status --value complete` — flip status at wrap-up.
-
-(Each is `python3 {skill-root}/scripts/memlog.py …`.)
+- `uv {project-root}/_bmad/scripts/memlog.py init --workspace {doc_workspace} --field topic="<topic>" --field goal="<goal>" --field mode="<facilitator|partner|autonomous>"` — create it once topic, goal, and stance are known.
+- `uv {project-root}/_bmad/scripts/memlog.py append --workspace {doc_workspace} --type <kind> --text "<one-line gist>"` — log one entry. `--type` ∈ `idea`/`insight`/`question`/`decision`/`direction`/`technique` (a switch: `--text "started <name>"`); omit for a plain note. Add `--by user`/`--by coach` to mark authorship — **required in Creative Partner mode** (renders `(idea by user)`); skip it otherwise.
+- `uv {project-root}/_bmad/scripts/memlog.py set --workspace {doc_workspace} --key status --value complete` — flip status at wrap-up.
 
 ## Run a Session
 
-Open with one compound question — **what are we brainstorming, and what's the goal or why behind it?** (plus any inputs or special requests). The why shapes technique choice and synthesis (*kids' iPhone apps to build with your own kids* vs. *to win market share* point different ways). If the kickoff already made both clear, skip the question and confirm; read anything they point you to. Derive a kebab-case `{topic_slug}` and bind `{doc_workspace} = {workflow.output_dir}/{workflow.output_folder_name}/`.
+Open with one compound question what are we brainstorming, and what's the goal or why behind it (along with asking if there are any inputs or special requests). The why shapes technique choice and synthesis (*kids' iPhone apps to build with your own kids* vs. *to win market share* point different ways). If the kickoff already made both clear, skip the question and confirm; read anything they point you to. Derive a kebab-case `{topic_slug}` and bind `{doc_workspace} = {workflow.output_dir}/{workflow.output_folder_name}/`.
 
 Now set the **stance** and the **technique batch** in one step — the composer page does both, so make it the default.
 

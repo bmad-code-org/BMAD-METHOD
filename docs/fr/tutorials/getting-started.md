@@ -147,7 +147,7 @@ Tous les workflows de cette phase sont optionnels. [**Vous ne savez pas lequel c
 **Pour les voies BMad Method et Enterprise :**
 
 1. Exécutez `bmad-prd` dans un nouveau chat — précisez votre intention (Create / Update / Validate) ou laissez le skill vous la demander
-2. Résultat : `prd.md`, `addendum.md`, `decision-log.md`
+2. Résultat : `prd.md`, `addendum.md`, `.memlog.md`
 
 :::note[Intentions de `bmad-prd`]
 

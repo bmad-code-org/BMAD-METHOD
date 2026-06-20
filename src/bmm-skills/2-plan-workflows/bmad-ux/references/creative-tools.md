@@ -14,6 +14,6 @@ Every renderer writes to `{doc_workspace}/.working/` with a descriptive filename
 
 ## Renderer contract
 
-The parent passes the subagent: current `.decision-log.md`, relevant prior `.working/` captures, the user's stated intent for this pass, the output path. The subagent writes its artifact under `.working/` and returns ONLY a compact summary (file path, one line per variant, mode coverage). Parent never holds the full payload.
+The parent passes the subagent: current `.memlog.md`, relevant prior `.working/` captures, the user's stated intent for this pass, the output path. The subagent writes its artifact under `.working/` and returns ONLY a compact summary (file path, one line per variant, mode coverage). Parent never holds the full payload.
 
 For HTML, open in browser when interactive: `python3 -c "import webbrowser, pathlib; webbrowser.open(pathlib.Path('PATH').resolve().as_uri())"`. Skip in headless.
