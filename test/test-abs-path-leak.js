@@ -22,6 +22,11 @@ let totalTests = 0;
 let passedTests = 0;
 const failures = [];
 
+/**
+ * Run a single named test case, recording the result and printing a status line.
+ * @param {string} name - Human-readable test description.
+ * @param {Function} fn - Test body; throw to signal failure.
+ */
 function test(name, fn) {
   totalTests++;
   try {
@@ -34,11 +39,20 @@ function test(name, fn) {
   }
 }
 
+/**
+ * Throw an Error with `message` when `condition` is falsy.
+ * @param {boolean} condition - Expression that must hold.
+ * @param {string} message - Failure message.
+ */
 function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
-// Number of leak lines detected in a content string (filePath is only used for labelling).
+/**
+ * Count the leak lines detected in a content string.
+ * @param {string} content - File content to scan (filePath is only used for labelling).
+ * @returns {number} Number of lines flagged as absolute-path leaks.
+ */
 function leakCount(content) {
   return checkAbsolutePathLeaks('fixture.md', content).length;
 }
