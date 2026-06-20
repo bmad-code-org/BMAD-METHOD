@@ -7,7 +7,7 @@ Loaded only when the user won't use the composer page (no browser, headless, or 
 - **Category** — the user names 1–n categories; `random --category` draws the batch from them. No listing needed.
 - **Inventive Flow** — invent at least 3 techniques, announce the order before the first, touch no script. Log each one's name + description so you can offer to save a keeper to `{workflow.additional_techniques}` (via `bmad-customize`) at wrap-up.
 
-The library is large — never pull it whole into context. The only way in is the helper, always passing `--file {workflow.brain_methods}`. Subcommands of `python3 {skill-root}/scripts/brain.py --file {workflow.brain_methods}`:
+The library is large — never pull it whole into context. The only way in is the helper, always passing `--file {workflow.brain_methods}`. Subcommands of `uv run {skill-root}/scripts/brain.py --file {workflow.brain_methods}`:
 
 - `categories` — names + counts; the cheap survey map.
 - `list --category X [--category Y]` — the index (name + gist) for those categories. Bare `list` is refused by the script.

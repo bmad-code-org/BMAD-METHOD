@@ -2,7 +2,7 @@
 
 The spine's pre-handoff review. Runs at Finalize (after distill + reconcile) and *is* the Validate intent. The difference is the ending: at Finalize you apply the clear fixes yourself; under Validate you report and don't change the spine.
 
-Cheap deterministic pass first: `python3 {skill-root}/scripts/lint_spine.py --workspace {doc_workspace}` settles the mechanical misses (placeholders, duplicate `AD` IDs, missing Binds/Prevents/Rule, unpinned Stack versions), so reviewers spend judgment on the semantic half.
+Cheap deterministic pass first: `uv run {skill-root}/scripts/lint_spine.py --workspace {doc_workspace}` settles the mechanical misses (placeholders, duplicate `AD` IDs, missing Binds/Prevents/Rule, unpinned Stack versions), so reviewers spend judgment on the semantic half.
 
 Assemble the menu: a **rubric walker** that judges the spine against the good-spine checklist below, **+ every entry in `{workflow.finalize_reviewers}`**, + ad-hoc lenses you invent or offer as the spine's rigor, altitude, and criticality warrant — a security/compliance lens for regulated stakes, a seam reviewer cross-team, a data-integrity lens for a heavy data model. Scale *whether and how heavily the gate runs* to the stakes: a throwaway prototype may run it quietly or skip the gate entirely; a high-criticality or platform-altitude spine earns more lenses and the explicit all / subset / skip menu. But once the gate runs, the `{workflow.finalize_reviewers}` always run — they are the configured floor, never cherry-picked out; only the ad-hoc lenses are optional. (Headless never skips the gate.)
 
