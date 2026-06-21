@@ -1,0 +1,14 @@
+{
+  "name": "acme-md-lint",
+  "version": "0.1.0",
+  "description": "Lints markdown headings and link rot in BMad projects.",
+  "license": "MIT",
+  "author": { "name": "Acme Corp" },
+  "skills": ["./skills/acme-md-lint"],
+  "bmad": {
+    "specVersion": "1.0.0",
+    "code": "mdlint",
+    "category": "developer-tools",
+    "compatibility": { "bmadMethod": ">=6.6.0" }
+  }
+}

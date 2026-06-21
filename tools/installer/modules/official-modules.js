@@ -5,6 +5,7 @@ const prompts = require('../prompts');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../project-root');
 const { CLIUtils } = require('../cli-utils');
 const { ExternalModuleManager } = require('./external-manager');
+const { loadBmadModuleLib } = require('./bmad-module-lib');
 
 class OfficialModules {
   constructor(options = {}) {
@@ -312,6 +313,14 @@ class OfficialModules {
    * @param {Object} options - Installation options
    */
   async installFromResolution(resolved, bmadDir, fileTrackingCallback = null, options = {}) {
+    // New module system: a .claude-plugin/plugin.json#bmad manifest drives the
+    // copy. Reuse the bmad-module skill's libs so the on-disk result matches a
+    // skill-driven install exactly. Legacy (marketplace.json + module.yaml)
+    // resolutions fall through to the original path below.
+    if (resolved.format === 'plugin-json') {
+      return this._installFromPluginJson(resolved, bmadDir, fileTrackingCallback, options);
+    }
+
     const targetPath = path.join(bmadDir, resolved.code);
 
     if (await fs.pathExists(targetPath)) {
@@ -376,6 +385,140 @@ class OfficialModules {
         version: resolved.cloneRef || (hasGitClone ? 'main' : resolved.version || ''),
       },
     };
+  }
+
+  /**
+   * Install a new-module-system module (resolved from .claude-plugin/plugin.json#bmad).
+   *
+   * Reuses the bmad-module skill's ESM libs (via bmad-module-lib) to build the
+   * curated copy plan, flatten moduleDefinition/moduleHelpCsv to the module root,
+   * rewrite plugin.json to canonical paths, and install npm deps in place — so the
+   * on-disk layout is byte-identical to a `bmad-module install`. Downstream installer
+   * steps (config generation, directory creation, help-catalog merge, manifest/skill
+   * discovery, IDE distribution) then treat it exactly like any other module, since
+   * module.yaml + module-help.csv now sit at the module root.
+   *
+   * @param {Object} resolved - ResolvedModule with format 'plugin-json' (sourceDir, manifest)
+   * @param {string} bmadDir - Target _bmad directory
+   * @param {Function} fileTrackingCallback - Optional callback to track installed files
+   * @param {Object} options - Installation options
+   */
+  async _installFromPluginJson(resolved, bmadDir, fileTrackingCallback = null, options = {}) {
+    const crypto = require('node:crypto');
+    const lib = await loadBmadModuleLib();
+    const { sourceDir, manifest, code } = { sourceDir: resolved.sourceDir, manifest: resolved.manifest, code: resolved.code };
+    const targetPath = path.join(bmadDir, code);
+
+    // Validate declared paths (throws on traversal / escapes) and build the plan.
+    lib.validateDeclaredPaths(sourceDir, manifest);
+    const userIgnores = await lib.readUserIgnores(sourceDir, manifest);
+    const matchIgnore = lib.buildIgnoreMatcher(userIgnores);
+    const { plan } = await lib.buildCopyPlan(sourceDir, manifest, matchIgnore);
+    const rewrittenManifestJson = lib.rewriteManifestPaths(manifest);
+
+    // Stage on the same filesystem as the target, then atomically swap in.
+    const stagedDir = path.join(bmadDir, `.${code}.bmad-stage-${crypto.randomBytes(6).toString('hex')}`);
+    try {
+      await lib.stageCopyPlan(sourceDir, stagedDir, plan, {
+        '.claude-plugin/plugin.json': rewrittenManifestJson,
+      });
+      await lib.atomicSwapDir(stagedDir, targetPath);
+    } catch (error) {
+      await fs.remove(stagedDir).catch(() => {});
+      throw new Error(`Failed to install ${code}: ${error.message}`);
+    }
+
+    // Track every installed file for the files manifest.
+    if (fileTrackingCallback) {
+      fileTrackingCallback(path.join(targetPath, '.claude-plugin', 'plugin.json'));
+      for (const { destRel } of plan) {
+        fileTrackingCallback(path.join(targetPath, destRel));
+      }
+    }
+
+    // npm deps in place (honors bmad.install.skipNpm; non-fatal).
+    try {
+      const dep = await lib.installModuleDeps(targetPath, manifest);
+      if (dep.ran && dep.ok) await prompts.log.info(`  Installed npm dependencies for ${code}`);
+      else if (dep.ran && !dep.ok) await prompts.log.warn(`  npm install failed for ${code}: ${dep.error}`);
+    } catch (error) {
+      await prompts.log.warn(`  npm install failed for ${code}: ${error.message}`);
+    }
+
+    // Warn about unmet declared module dependencies (best-effort, non-fatal).
+    await this._warnUnmetModuleDeps(manifest, bmadDir, code);
+
+    // Create directories declared in module.yaml (now flattened at module root).
+    if (!options.skipModuleInstaller) {
+      await this.createModuleDirectories(code, bmadDir, options);
+    }
+
+    // Register in the manifest. Keep the installer's existing custom tagging so
+    // its own update / quick-update path is unaffected — the new-module-system
+    // compliance is about on-disk layout + which manifest format is recognized,
+    // not the _bmad/_config/manifest.yaml source tag.
+    const { Manifest } = require('../core/manifest');
+    const manifestObj = new Manifest();
+    const hasGitClone = !!resolved.repoUrl;
+    const manifestEntry = {
+      version: resolved.cloneRef || (hasGitClone ? 'main' : resolved.version || null),
+      source: 'custom',
+      npmPackage: null,
+      repoUrl: resolved.repoUrl || null,
+    };
+    if (hasGitClone) {
+      manifestEntry.channel = resolved.cloneRef ? 'pinned' : 'next';
+      if (resolved.cloneSha) manifestEntry.sha = resolved.cloneSha;
+      if (resolved.rawInput) manifestEntry.rawSource = resolved.rawInput;
+    }
+    if (resolved.localPath) manifestEntry.localPath = resolved.localPath;
+    await manifestObj.addModule(bmadDir, code, manifestEntry);
+
+    // Surface install hints the way the bmad-module skill does.
+    const claudeOnly = [];
+    if (manifest.hooks) claudeOnly.push('hooks');
+    if (manifest.mcpServers) claudeOnly.push('mcpServers');
+    if (manifest.lspServers) claudeOnly.push('lspServers');
+    if (Array.isArray(manifest.agents) && manifest.agents.length > 0) claudeOnly.push('agents');
+    if (Array.isArray(manifest.commands) && manifest.commands.length > 0) claudeOnly.push('commands');
+    if (claudeOnly.length > 0) {
+      await prompts.log.info(
+        `  ${code}: ${claudeOnly.join(', ')} are Claude Code plugin surfaces — copied but not auto-activated. Wire them up via Claude Code's plugin manager.`,
+      );
+    }
+    if (manifest.bmad?.install?.postInstallSkill) {
+      await prompts.log.info(`  ${code}: next, run the \`${manifest.bmad.install.postInstallSkill}\` skill to finish setup.`);
+    }
+
+    return {
+      success: true,
+      module: code,
+      path: targetPath,
+      versionInfo: { version: manifestEntry.version || '' },
+    };
+  }
+
+  /**
+   * Best-effort, non-fatal warning for declared bmad.dependencies.modules that
+   * are not present on disk and not selected for install in this run.
+   * @param {Object} manifest - The module's plugin.json manifest
+   * @param {string} bmadDir - Target _bmad directory
+   * @param {string} code - The installing module's code (skip self-reference)
+   */
+  async _warnUnmetModuleDeps(manifest, bmadDir, code) {
+    const deps = manifest?.bmad?.dependencies?.modules;
+    if (!Array.isArray(deps) || deps.length === 0) return;
+
+    const { CustomModuleManager } = require('./custom-module-manager');
+    for (const dep of deps) {
+      const depCode = typeof dep === 'string' ? dep : dep?.code;
+      if (!depCode || depCode === code) continue;
+      const onDisk = await fs.pathExists(path.join(bmadDir, depCode));
+      const selectedThisRun = CustomModuleManager._resolutionCache.has(depCode);
+      if (onDisk || selectedThisRun) continue;
+      const versionStr = typeof dep === 'object' && dep.version ? ` (${dep.version})` : '';
+      await prompts.log.warn(`  ${code} declares a dependency on module '${depCode}'${versionStr} — ensure it is installed.`);
+    }
   }
 
   /**
@@ -551,21 +694,29 @@ class OfficialModules {
     const projectRoot = path.dirname(bmadDir);
     const emptyResult = { createdDirs: [], movedDirs: [], createdWdsFolders: [] };
 
-    // Special handling for core module - it's in src/core-skills not src/modules
-    let sourcePath;
-    if (moduleName === 'core') {
-      sourcePath = getSourcePath('core-skills');
-    } else {
-      sourcePath = await this.findModuleSource(moduleName, { silent: true });
-      if (!sourcePath) {
-        return emptyResult; // No source found, skip
-      }
-    }
-
-    // Read module.yaml to find the `directories` key
-    const moduleYamlPath = path.join(sourcePath, 'module.yaml');
+    // Prefer the flattened installed module.yaml. buildCopyPlan() copies a
+    // new-spec module's moduleDefinition to _bmad/<code>/module.yaml, where it
+    // carries the canonical `directories` declarations — but its source tree may
+    // keep module.yaml under a skill asset path that findModuleSource() can't
+    // locate, which would otherwise skip the declared working dirs.
+    let moduleYamlPath = path.join(bmadDir, moduleName, 'module.yaml');
     if (!(await fs.pathExists(moduleYamlPath))) {
-      return emptyResult; // No module.yaml, skip
+      // Special handling for core module - it's in src/core-skills not src/modules
+      let sourcePath;
+      if (moduleName === 'core') {
+        sourcePath = getSourcePath('core-skills');
+      } else {
+        sourcePath = await this.findModuleSource(moduleName, { silent: true });
+        if (!sourcePath) {
+          return emptyResult; // No source found, skip
+        }
+      }
+
+      // Read module.yaml to find the `directories` key
+      moduleYamlPath = path.join(sourcePath, 'module.yaml');
+      if (!(await fs.pathExists(moduleYamlPath))) {
+        return emptyResult; // No module.yaml, skip
+      }
     }
 
     let moduleYaml;

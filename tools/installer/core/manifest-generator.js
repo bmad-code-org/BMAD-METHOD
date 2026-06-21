@@ -401,21 +401,139 @@ class ManifestGenerator {
     const csvPath = path.join(cfgDir, 'skill-manifest.csv');
     const escapeCsv = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
 
-    let csvContent = 'canonicalId,name,description,module,path\n';
+    // Preserve rows for modules installed via the bmad-module skill —
+    // those rows are not in this.skills (the installer doesn't walk
+    // community sources), so without this they'd be silently dropped on
+    // every regeneration.
+    const preserved = await this._readPreservedCommunityCsvRows(csvPath);
 
+    const rows = [];
     for (const skill of this.skills) {
-      const row = [
-        escapeCsv(skill.canonicalId),
-        escapeCsv(skill.name),
-        escapeCsv(skill.description),
-        escapeCsv(skill.module),
-        escapeCsv(skill.path),
-      ].join(',');
-      csvContent += row + '\n';
+      rows.push([skill.canonicalId, skill.name, skill.description, skill.module, skill.path]);
+    }
+    for (const r of preserved) rows.push(r);
+    rows.sort((a, b) => {
+      if (a[3] !== b[3]) return a[3].localeCompare(b[3]);
+      return a[0].localeCompare(b[0]);
+    });
+
+    let csvContent = 'canonicalId,name,description,module,path\n';
+    for (const r of rows) {
+      csvContent += r.map(escapeCsv).join(',') + '\n';
     }
 
     await fs.writeFile(csvPath, csvContent);
     return csvPath;
+  }
+
+  /**
+   * Load the set of module codes installed via the bmad-module skill
+   * (source: 'community' in manifest.yaml). Empty set if no manifest or none.
+   * @returns {Promise<Set<string>>}
+   */
+  async _loadCommunityModuleCodes() {
+    if (!this.bmadDir) return new Set();
+    const manifestPath = path.join(this.bmadDir, '_config', 'manifest.yaml');
+    if (!(await fs.pathExists(manifestPath))) return new Set();
+    try {
+      const parsed = yaml.parse(await fs.readFile(manifestPath, 'utf8'));
+      const modules = Array.isArray(parsed?.modules) ? parsed.modules : [];
+      return new Set(
+        modules.filter((m) => m && typeof m === 'object' && m.source === 'community' && typeof m.name === 'string').map((m) => m.name),
+      );
+    } catch {
+      return new Set();
+    }
+  }
+
+  /**
+   * Read rows from a previously-generated CSV that belong to community-source
+   * modules. Used by writeSkillManifest and writeFilesManifest to keep
+   * community entries across installer regenerations.
+   * @param {string} csvPath
+   * @returns {Promise<Array<Array<string>>>}
+   */
+  async _readPreservedCommunityCsvRows(csvPath) {
+    if (!(await fs.pathExists(csvPath))) return [];
+    const communityCodes = await this._loadCommunityModuleCodes();
+    if (communityCodes.size === 0) return [];
+    let text;
+    try {
+      text = await fs.readFile(csvPath, 'utf8');
+    } catch {
+      return [];
+    }
+    const rows = ManifestGenerator._parseCsv(text);
+    if (rows.length < 2) return [];
+    // The `module` column lives at a different index in each CSV:
+    //   skill-manifest.csv: canonicalId,name,description,module,path     → 3
+    //   files-manifest.csv: type,name,module,path,hash                   → 2
+    // Look it up from the header rather than hardcoding the index.
+    const header = rows[0];
+    const moduleIdx = header.indexOf('module');
+    if (moduleIdx === -1) return [];
+    return rows.slice(1).filter((r) => r.length > moduleIdx && communityCodes.has(r[moduleIdx]));
+  }
+
+  /**
+   * Minimal CSV parser for the shapes this generator writes: header +
+   * records with `"…"` fields, quotes escaped as `""`.
+   * @param {string} text
+   * @returns {Array<Array<string>>}
+   */
+  static _parseCsv(text) {
+    const rows = [];
+    let row = [];
+    let field = '';
+    let i = 0;
+    let inQuotes = false;
+    while (i < text.length) {
+      const c = text[i];
+      if (inQuotes) {
+        if (c === '"') {
+          if (text[i + 1] === '"') {
+            field += '"';
+            i += 2;
+            continue;
+          }
+          inQuotes = false;
+          i++;
+          continue;
+        }
+        field += c;
+        i++;
+      } else {
+        if (c === '"') {
+          inQuotes = true;
+          i++;
+          continue;
+        }
+        if (c === ',') {
+          row.push(field);
+          field = '';
+          i++;
+          continue;
+        }
+        if (c === '\n' || c === '\r') {
+          if (field !== '' || row.length > 0) {
+            row.push(field);
+            rows.push(row);
+          }
+          row = [];
+          field = '';
+          if (c === '\r' && text[i + 1] === '\n') i += 2;
+          else i++;
+          continue;
+        }
+        field += c;
+        i++;
+      }
+    }
+    if (field !== '' || row.length > 0) {
+      row.push(field);
+      rows.push(row);
+    }
+    return rows;
   }
 
   /**
@@ -681,6 +799,12 @@ class ManifestGenerator {
   async writeFilesManifest(cfgDir) {
     const csvPath = path.join(cfgDir, 'files-manifest.csv');
 
+    // Preserve rows for modules installed via the bmad-module skill —
+    // those files are not in this.allInstalledFiles or this.files (the
+    // installer doesn't walk community sources), so without this they'd be
+    // silently dropped on every regeneration.
+    const preserved = await this._readPreservedCommunityCsvRows(csvPath);
+
     // Create CSV header with hash column
     let csv = 'type,name,module,path,hash\n';
 
@@ -722,6 +846,12 @@ class ManifestGenerator {
           hash: hash,
         });
       }
+    }
+
+    // Merge in preserved community rows before sorting so they interleave
+    // with the freshly-generated rows in stable (module, type, name) order.
+    for (const r of preserved) {
+      allFiles.push({ type: r[0], name: r[1], module: r[2], path: r[3], hash: r[4] || '' });
     }
 
     // Sort files by module, then type, then name

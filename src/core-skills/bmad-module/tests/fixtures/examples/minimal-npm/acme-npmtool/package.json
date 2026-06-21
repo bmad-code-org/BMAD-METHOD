@@ -1,0 +1,7 @@
+{
+  "name": "acme-npmtool",
+  "version": "0.1.0",
+  "private": true,
+  "description": "No runtime dependencies — npm install resolves cleanly offline.",
+  "dependencies": {}
+}

@@ -1,0 +1,14 @@
+code: gds
+name: "GDS: Reserved Legacy"
+description: "A legacy module using a reserved first-party code to test the reserved relaxation."
+module_version: 0.1.0
+default_selected: false
+
+# Agent roster — essence only.
+agents:
+  - code: gds-agent-demo
+    name: Demo
+    title: Demo Agent
+    icon: "🎮"
+    team: testing
+    description: "Exists only to prove reserved codes install on the legacy path."

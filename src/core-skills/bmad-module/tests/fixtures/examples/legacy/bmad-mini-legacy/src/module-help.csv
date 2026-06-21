@@ -1,0 +1,3 @@
+module,skill,display-name,menu-code,description,action,args,phase,preceded-by,followed-by,required,output-location,outputs
+mlg,mlg-agent-one,Mini Agent,ma,A tiny agent for legacy-path testing.,mlg-agent-one,,anytime,,,,,
+mlg,mlg-flow,Mini Flow,mf,A tiny workflow for legacy-path testing.,mlg-flow,,anytime,,,,{artifacts_path},result.md

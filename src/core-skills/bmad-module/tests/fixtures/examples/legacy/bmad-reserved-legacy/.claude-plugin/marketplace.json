@@ -1,0 +1,14 @@
+{
+  "name": "bmad-reserved-legacy",
+  "owner": { "name": "Test Author" },
+  "license": "MIT",
+  "plugins": [
+    {
+      "name": "bmad-reserved-legacy",
+      "source": "./",
+      "description": "A legacy module using a reserved first-party code (gds) to test the reserved relaxation.",
+      "version": "0.1.0",
+      "skills": ["./src/agents/gds-agent-demo"]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "devlog-history": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/mcp-server.js"],
+      "env": {
+        "DEVLOG_PATH": "${CLAUDE_PLUGIN_DATA}/devlog"
+      }
+    }
+  }
+}
