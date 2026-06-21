@@ -20,9 +20,9 @@ Name which (or which combination) applies, who is affected, and the backdrop tha
 
 ## Capabilities
 
-- id: CAP-1
-  intent: {One sentence. "User or system can do X to achieve Y." WHAT, not HOW.}
-  success: {Testable or demonstrable criterion. Something a test or a real demonstration can decide.}
+- **CAP-1**
+  - **intent:** {One sentence. "User or system can do X to achieve Y." WHAT, not HOW.}
+  - **success:** {Testable or demonstrable criterion. Something a test or a real demonstration can decide.}
 
 ## Constraints
 

@@ -162,6 +162,13 @@ platforms:
       target_dir: .agents/skills
       global_target_dir: ~/.config/agents/skills
 
+  hermes:
+    name: "Hermes Agent"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.hermes/skills
+
   iflow:
     name: "iFlow"
     preferred: false
