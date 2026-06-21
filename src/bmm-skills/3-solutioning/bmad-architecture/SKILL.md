@@ -32,12 +32,12 @@ The input itself tells you what kind of job this is — read it rather than quiz
 
 ## How a run works
 
-The **memlog** (`.memlog.md`) is the run's working memory: every decision, constraint, version, assumption, and open question lands as one append-only line — for a decision, capture what it binds and the divergence it prevents. It is the shared canonical memlog (the same `{project-root}/_bmad/scripts/memlog.py` bmad-spec writes through), so it carries no lifecycle status — terminal moments are logged as `event` entries, not a frontmatter flag. The spine is **distilled from the memlog at the end**, not written as you go. Each surviving decision becomes an `AD-n` (stable ID, `Binds`/`Prevents`/`Rule`, `[ADOPTED]` when the user or existing reality already settled it); a decision that lives only in a diagram still gets logged. Resume a prior run by reloading its memlog.
+The **memlog** (`.memlog.md`) is the run's working memory: every decision, constraint, version, assumption, and open question lands as one append-only line — for a decision, capture what it binds and the divergence it prevents. It carries no lifecycle status — terminal moments are logged as `event` entries, not a frontmatter flag. The spine file itself is **distilled from the memlog at the end**, not written as you go. Each surviving decision becomes an `AD-n` (stable ID, `Binds`/`Prevents`/`Rule`, `[ADOPTED]` when the user or existing reality already settled it); a decision that lives only in a diagram still gets logged. Resume a prior run by reloading its memlog.
 
 Writes go through the shared script (don't read the file back except on resume):
 
-- `python3 {project-root}/_bmad/scripts/memlog.py init --workspace {doc_workspace} --field scope="…" --field purpose="…" --field altitude="…"`
-- `python3 {project-root}/_bmad/scripts/memlog.py append --workspace {doc_workspace} --type <decision|constraint|version|assumption|question|direction|event> --text "…"`
+- `uv run {project-root}/_bmad/scripts/memlog.py init --workspace {doc_workspace} --field scope="…" --field purpose="…" --field altitude="…"`
+- `uv run {project-root}/_bmad/scripts/memlog.py append --workspace {doc_workspace} --type <decision|constraint|version|assumption|question|direction|event> --text "…"`
 
 ## Resolution rules
 
@@ -50,7 +50,7 @@ Writes go through the shared script (don't read the file back except on resume):
 
 **Forwarded activation:** if a caller (e.g. the `bmad-create-architecture` shim) invoked you with a stated intent and pre-resolved customization fields, honor them verbatim — skip your own intent inference, use the supplied values for those named fields, and resolve only the remaining fields from your own `customize.toml`.
 
-1. Resolve customization: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow` (on failure read `{skill-root}/customize.toml`, use defaults). Run `{workflow.activation_steps_prepend}`, then `{workflow.activation_steps_append}`. Hold `{workflow.persistent_facts}` as standing context — the default loads `project-context.md`, load-bearing for brownfield — and consult `{workflow.external_sources}` on demand.
+1. Resolve customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow` (on failure read `{skill-root}/customize.toml`, use defaults). Run `{workflow.activation_steps_prepend}`, then `{workflow.activation_steps_append}`. Hold `{workflow.persistent_facts}` as standing context — the default loads `project-context.md`, load-bearing for brownfield — and consult `{workflow.external_sources}` on demand.
 2. Load `{project-root}/_bmad/bmm/config.yaml` (+ `config.user.yaml`) for `{user_name}`, `{communication_language}`, `{document_output_language}`, `{planning_artifacts}`, `{project_name}`, `{date}`; missing keys take neutral defaults, never block.
 3. Headless (no interactive user) → follow `references/headless.md` for the whole run. Otherwise greet `{user_name}` in `{communication_language}`. Detect the intent from the conversation and input — **create** (the default), **update** an existing spine, or **validate** one (see those sections). If the real ask is requirements / UX / a capability contract / epic breakdown / an agent, invoke the `bmad-prd`, `bmad-ux`, `bmad-spec`, `bmad-create-epics-and-stories`, or `bmad-workflow-builder` (if the BMad Builder module is installed) skill instead.
 4. If a run folder for this target already exists under `{workflow.spine_output_path}`, offer to resume from its memlog rather than restart.

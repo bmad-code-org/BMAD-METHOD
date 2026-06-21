@@ -51,6 +51,22 @@ party_mode = "session"
 # config; point this elsewhere in your team/user override to redirect keepsakes.
 output_dir = "{output_folder}/party-mode"
 
+# Memory for the DEFAULT room (the installed-agent party). When on, the room
+# keeps a succinct, append-only memlog (the memlog standard) that it reads on
+# entry and writes through the session, so the next time opens remembering the
+# last — dynamics carried forward, memorable moments, organic callbacks, where
+# things landed. It is memory, not a transcript. Set false to turn the default
+# room's memory off. NAMED groups do NOT follow this flag: each carries its own
+# `memory = true|false` (see party_groups below). Ad-hoc inline casts are always
+# ephemeral until saved as a party.
+party_memory = true
+
+# Root for the per-party memlogs. Each party stores at
+# `{memory_dir}/<party>/.memlog.md`, where `<party>` is the group id (or
+# `installed` for the default room). `{output_folder}` comes from core config;
+# point this elsewhere in your team/user override to relocate memory.
+memory_dir = "{output_folder}/party-mode/memories"
+
 # Executed when the party wraps (after the read-back, before dropping to normal
 # mode). String scalar = one instruction; array = instructions run in order.
 on_complete = ""
@@ -130,17 +146,25 @@ persona = "Counters the perfectionists so the room isn't a pile-on. 'Does this a
 # who shows up; the model picks who fits and can vary them by topic. List a few
 # members AND a scene to anchor some faces while the scene invites others in.
 #
+# `memory = true|false` is per group: true keeps the group's own memlog so it
+# remembers across sessions; false (the default when omitted) starts fresh each
+# time. The create/save/update-party flow asks when you don't say. Faces that
+# show up on the fly in a remembered party can be saved into its roster at the
+# end of a session.
+#
 # More examples to drop into your override TOML:
 #   [[workflow.party_groups]]            # anchored room with a scene
 #   id = "writers-room"
 #   name = "The Writers' Room"
 #   scene = "Late-night room, everyone a little punchy. Pitch hard, kill darlings faster."
 #   members = ["analyst", "tech-writer", "morpheus"]
+#   memory = true
 #
 #   [[workflow.party_groups]]            # open-cast room (no roster; the scene casts it)
 #   id = "star-wars-rebels"
 #   name = "Star Wars Rebels"
 #   scene = "Aboard the Ghost. Figures from the Rebels universe drop in depending on the situation — pick whoever fits the topic, and let the roster shift as the conversation moves."
+#   memory = true
 # ---------------------------------------------------------------------------
 
 [[workflow.party_groups]]
@@ -148,3 +172,4 @@ id = "code-review-crew"
 name = "Code Review Crew"
 scene = "Adversarial code review. Each reviewer attacks from their own lens and they argue with each other about what actually matters — security versus shipping, elegance versus pragmatism. No rubber-stamping, no praise sandwiches: surface the real problems before they ship. Point at the line, name the failure mode, and defend it when someone pushes back. Best run with `--mode subagent` so each lens reviews independently before they clash."
 members = ["sec-hawk", "adversary", "edge-hunter", "craftsman", "shipper"]
+memory = false  # each review stands on its own; flip to true to remember past reviews

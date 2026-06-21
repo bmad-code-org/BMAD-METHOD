@@ -46,13 +46,13 @@ Define what to build and for whom.
 
 | Workflow                | Purpose                                                                             | Produces                                          |
 |-------------------------|-------------------------------------------------------------------------------------|---------------------------------------------------|
-| `bmad-prd`              | Create, update, or validate a PRD — facilitated discovery, three intents in one skill | Create/Update: `prd.md`, `addendum.md`, `decision-log.md`; Validate: `validation-report.html` + `.md` |
-| `bmad-ux`               | Design user experience (when UX matters) — DESIGN.md (visual) + EXPERIENCE.md (behavioral) spine pair | `DESIGN.md`, `EXPERIENCE.md`, `.decision-log.md`  |
+| `bmad-prd`              | Create, update, or validate a PRD — facilitated discovery, three intents in one skill | Create/Update: `prd.md`, `addendum.md`, `.memlog.md`; Validate: `validation-report.html` + `.md` |
+| `bmad-ux`               | Design user experience (when UX matters) — DESIGN.md (visual) + EXPERIENCE.md (behavioral) spine pair | `DESIGN.md`, `EXPERIENCE.md`, `.memlog.md`  |
 
 :::tip[Three intents in one skill]
 `bmad-prd` handles the full PRD lifecycle. State your intent when invoking or the skill will ask:
 
-- **Create** — new PRD from scratch via coached discovery; produces `prd.md`, `addendum.md`, and `decision-log.md`
+- **Create** — new PRD from scratch via coached discovery; produces `prd.md`, `addendum.md`, and `.memlog.md`
 - **Update** — reconcile an existing PRD with a change signal, surfacing conflicts before applying changes
 - **Validate** — critique a PRD against a configurable checklist and produce a structured HTML findings report
 :::

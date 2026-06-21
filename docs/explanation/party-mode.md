@@ -5,7 +5,7 @@ sidebar:
   order: 11
 ---
 
-Party mode puts your AI agents in one room and lets them talk, to each other and to you. This page explains what a party is, the four ways it can run, and how to build your own cast of personas instead of using the installed agents.
+Party mode puts your AI agents in one room and lets them talk, to each other and to you. This page explains what a party is, the four ways it can run, how to build your own cast of personas instead of using the installed agents, and how a party remembers you between sessions.
 
 ## What is Party Mode?
 
@@ -130,6 +130,16 @@ Whichever mode is running, the orchestrator presents the result as one conversat
 :::tip[Mix more than one room]
 You aren't limited to a single group. Pull members from several parties into the same conversation, or name a cast on the spot, and let them mix. Picture the Golden Girls thrown into an architecture review with Martin Fowler and Linus Torvalds, sparring over a change request: you can imagine how that goes.
 :::
+
+## The room remembers
+
+Give a party a memory and it picks up where you left off. It keeps its own record of your past sessions — the dynamics that built up between members, the threads you left open, and where earlier conversations landed. Reopen it a week later and that history is intact: two members who came to blows last time still open a little frosty, and a sharp line from a past session can resurface as an organic callback.
+
+It's memory, not a transcript. The room carries the few things worth remembering, not a log of everything said, so the next conversation feels continuous without dragging the whole past into it. It happens on its own, in the background — nothing to save, and the room never breaks character to announce it.
+
+A character who turns up on the fly is remembered too — a walk-on from an open-cast scene, or someone you add mid-conversation. At the end of a session the room offers to keep the new arrivals, folding them into the party so they can come back next time.
+
+Memory is set per party. When you create or save a party you're asked whether it should remember; the default installed-agent room remembers unless you turn it off. Set or change any of this through `/bmad-customize bmad-party-mode`.
 
 ## A keepsake of the session
 

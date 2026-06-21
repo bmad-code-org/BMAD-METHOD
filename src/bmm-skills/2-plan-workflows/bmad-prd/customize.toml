@@ -60,7 +60,7 @@ validation_checklist_template = "assets/prd-validation-checklist.md"
 # collapse — no JS.
 validation_report_template = "assets/validation-report-template.html"
 
-# Run folder location. The PRD, optional addendum, decision log, and optional
+# Run folder location. The PRD, optional addendum, memlog, and optional
 # validation report all land inside `{prd_output_path}/{run_folder_pattern}/`.
 # Resume-check scans `{prd_output_path}` for prior unfinished runs.
 prd_output_path = "{planning_artifacts}/prds"
