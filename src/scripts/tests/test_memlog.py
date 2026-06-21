@@ -5,7 +5,8 @@
 """Tests for memlog.py. Run: uv run --with pytest pytest scripts/tests/test_memlog.py
 
 The spine under test is the flat, append-only, chronological invariant: every entry is
-one line recorded at the end in the order it happened — no sections, no grouping.
+one line recorded at the end in the order it happened — no sections, no grouping, and no
+lifecycle status the log would have to mutate.
 """
 import json
 import sys
@@ -60,9 +61,15 @@ def test_init_writes_frontmatter_fields(ws):
     meta, body = memlog.split(read(ws))
     assert meta["topic"] == "Reinvent the lunchbox"
     assert meta["goal"] == "ideas for a pitch"
-    assert meta["status"] == "active"
     assert "updated" in meta
     assert body.strip() == ""
+
+
+def test_init_has_no_lifecycle_status(ws):
+    # A memory log carries no "status" flag; completion is an appended entry, not frontmatter.
+    init(ws)
+    meta, _ = memlog.split(read(ws))
+    assert "status" not in meta
 
 
 def test_init_arbitrary_fields(ws):
@@ -84,6 +91,30 @@ def test_init_creates_missing_workspace(tmp_path):
 
 def test_init_rejects_malformed_field(ws):
     assert memlog.main(["init", "--workspace", ws, "--field", "noequals"]) == 2
+
+
+# --- addressing: --workspace and --path are interchangeable --------------
+
+def test_path_addressing_targets_the_file_directly(tmp_path):
+    target = tmp_path / "run" / ".memlog.md"
+    assert memlog.main(["init", "--path", str(target), "--field", "topic=T"]) == 0
+    assert target.is_file()
+    assert memlog.main(["append", "--path", str(target), "--text", "an idea", "--type", "idea"]) == 0
+    body = memlog.split(target.read_text(encoding="utf-8"))[1]
+    assert "- (idea) an idea" in body
+
+
+def test_workspace_and_path_resolve_to_same_file(ws):
+    init(ws)
+    via_path = str(Path(ws) / MEMLOG)
+    assert memlog.main(["append", "--path", via_path, "--text", "from path"]) == 0
+    assert memlog.main(["append", "--workspace", ws, "--text", "from workspace"]) == 0
+    assert entries(ws) == ["- from path", "- from workspace"]
+
+
+def test_target_is_required(ws):
+    with pytest.raises(SystemExit):
+        memlog.main(["append", "--text", "orphan"])  # neither --workspace nor --path
 
 
 # --- append: flat chronological order is the whole point -----------------
@@ -117,6 +148,15 @@ def test_append_without_type_is_plain_note(ws):
     init(ws)
     append(ws, "bare entry")
     assert entries(ws) == ["- bare entry"]
+
+
+def test_completion_is_an_entry_not_a_status(ws):
+    # The documented way to mark a session done: append it. Frontmatter never gains a status.
+    init(ws)
+    append(ws, "session complete", entry_type="event")
+    meta, _ = memlog.split(read(ws))
+    assert "status" not in meta
+    assert entries(ws)[-1] == "- (event) session complete"
 
 
 def test_append_collapses_newlines_into_one_line(ws):
@@ -171,27 +211,37 @@ def test_heterogeneous_entry_types_coexist(ws):
         assert tag in body
 
 
-# --- set ----------------------------------------------------------------
-
-def test_set_flips_status(ws):
+def test_free_vocabulary_is_not_enforced(ws):
+    # The tool is neutral: any --type the host skill names renders verbatim.
     init(ws)
-    memlog.main(["set", "--workspace", ws, "--key", "status", "--value", "complete"])
-    assert memlog.split(read(ws))[0]["status"] == "complete"
+    append(ws, "a custom kind", entry_type="crack")
+    append(ws, "another", entry_type="lock")
+    body = body_of(ws)
+    assert "- (crack) a custom kind" in body
+    assert "- (lock) another" in body
+
+
+# --- set: generic descriptive frontmatter, no lifecycle semantics --------
+
+def test_set_adds_field(ws):
+    init(ws)
+    memlog.main(["set", "--workspace", ws, "--key", "mode", "--value", "partner"])
+    assert memlog.split(read(ws))[0]["mode"] == "partner"
+
+
+def test_set_replaces_field(ws):
+    init(ws, topic="T", mode="facilitator")
+    memlog.main(["set", "--workspace", ws, "--key", "mode", "--value", "partner"])
+    assert memlog.split(read(ws))[0]["mode"] == "partner"
 
 
 def test_set_preserves_body(ws):
     init(ws)
     append(ws, "keep me", entry_type="idea")
-    memlog.main(["set", "--workspace", ws, "--key", "status", "--value", "complete"])
+    memlog.main(["set", "--workspace", ws, "--key", "mode", "--value", "partner"])
     meta, body = memlog.split(read(ws))
-    assert meta["status"] == "complete"
+    assert meta["mode"] == "partner"
     assert "- (idea) keep me" in body
-
-
-def test_set_can_add_new_field(ws):
-    init(ws)
-    memlog.main(["set", "--workspace", ws, "--key", "owner", "--value", "BMad"])
-    assert memlog.split(read(ws))[0]["owner"] == "BMad"
 
 
 def test_updated_stays_last(ws):
@@ -219,22 +269,14 @@ def test_commas_in_field_survive(ws):
 
 
 def test_triple_dash_in_field_does_not_corrupt_frontmatter(ws):
-    # A `---` inside a value must NOT be read as the closing fence: topic stays intact,
-    # status survives, and the body never leaks frontmatter text.
+    # A `---` inside a value must NOT be read as the closing fence: topic stays intact
+    # and the body never leaks frontmatter text.
     init(ws, topic="Pricing --- tiers --- and add-ons")
     append(ws, "an idea", entry_type="idea")
     meta, body = memlog.split(read(ws))
     assert meta["topic"] == "Pricing --- tiers --- and add-ons"
-    assert meta["status"] == "active"
     assert entries(ws) == ["- (idea) an idea"]
-    assert "status:" not in body  # frontmatter never bled into the body
-
-
-def test_triple_dash_status_survives_in_ack(ws, capsys):
-    init(ws, topic="a --- b")
-    append(ws, "x", entry_type="idea")
-    out = json.loads(capsys.readouterr().out.strip().splitlines()[-1])
-    assert out["status"] == "active"  # not "" — frontmatter recovered cleanly
+    assert "topic:" not in body  # frontmatter never bled into the body
 
 
 def test_newline_in_field_is_neutralized(ws):
@@ -243,7 +285,6 @@ def test_newline_in_field_is_neutralized(ws):
     append(ws, "x", entry_type="idea")
     meta, _ = memlog.split(read(ws))
     assert "\n" not in meta["topic"]
-    assert meta["status"] == "active"
 
 
 def test_append_emits_json_ack(ws, capsys):
@@ -251,9 +292,9 @@ def test_append_emits_json_ack(ws, capsys):
     append(ws, "x", entry_type="idea")
     out = json.loads(capsys.readouterr().out.strip().splitlines()[-1])
     assert out["ok"] is True
-    assert out["status"] == "active"
     assert out["entries"] == 1
     assert out["memlog"].endswith(MEMLOG)
+    assert "status" not in out  # no lifecycle status
     assert "section" not in out  # sections are gone
 
 

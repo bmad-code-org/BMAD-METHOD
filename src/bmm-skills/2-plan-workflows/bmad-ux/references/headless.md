@@ -32,6 +32,6 @@ End with JSON matching `assets/headless-schemas.md`. `intent` reflects detected 
 
 ## Mode-specific overrides
 
-**Update.** Apply the change. Log to `.decision-log.md` with rationale. Surface conflicts in `conflicts_with_prior_decisions[]`.
+**Update.** Apply the change. Log it via `uv run {project-root}/_bmad/scripts/memlog.py append --workspace {doc_workspace} --type change --text "<change + rationale>"`. Surface conflicts in `conflicts_with_prior_decisions[]`.
 
 **Validate.** Always write both `validation-report.html` and `validation-report.md` regardless of finding count. Always include `"offer_to_update": true`. Skip the browser-open step.

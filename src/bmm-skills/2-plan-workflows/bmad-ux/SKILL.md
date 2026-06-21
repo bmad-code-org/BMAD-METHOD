@@ -30,10 +30,10 @@ UX may lead, follow, or stand alone. Inherit `sources:` by reference; the spines
 
 ## On Activation
 
-1. Resolve customization: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`. On failure, read `{skill-root}/customize.toml` directly and use defaults.
+1. Resolve customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`. On failure, read `{skill-root}/customize.toml` directly and use defaults.
 2. Run `{workflow.activation_steps_prepend}`. Treat `{workflow.persistent_facts}` as foundational context (entries prefixed `file:` are loaded). `{workflow.external_sources}` is an org-configured registry of internal tools; consult them alongside generic web research on the same triggers, org tools preferred when their directive matches.
 3. Load `{project-root}/_bmad/bmm/config.yaml` (+ `config.user.yaml` if present). Resolve `{user_name}`, `{communication_language}`, `{document_output_language}`, `{planning_artifacts}`, `{project_name}`, `{date}`. Missing keys → neutral defaults; never block.
-4. If headless, follow `references/headless.md` for the whole run. Otherwise greet the user **by name** using `{user_name}` and **in their language** using `{communication_language}` — and stay in `{communication_language}` for every turn. In the greeting, let the user know `bmad-party-mode` and `bmad-advanced-elicitation` are always available. Then scan for misroute on the first message: PRD → `bmad-prd`; architecture → `bmad-create-architecture`; game UX → BMad GDS; agent/skill → `bmad-workflow-builder`; brief → `bmad-product-brief`.
+4. If headless, follow `references/headless.md` for the whole run. Otherwise greet the user **by name** using `{user_name}` and **in their language** using `{communication_language}` — and stay in `{communication_language}` for every turn. In the greeting, let the user know `bmad-party-mode` and `bmad-advanced-elicitation` are always available. Then scan for misroute on the first message: PRD → `bmad-prd`; architecture → `bmad-architecture`; game UX → BMad GDS; agent/skill → `bmad-workflow-builder`; brief → `bmad-product-brief`.
 5. Detect intent: **Create**, **Update**, **Validate**. For Create, before binding a fresh workspace, scan `{workflow.ux_output_path}` for prior in-progress runs (folders matching `{workflow.run_folder_pattern}` whose `DESIGN.md` frontmatter `status` is not `final`) and offer to resume rather than starting over.
 
 Run `{workflow.activation_steps_append}`.
@@ -42,15 +42,15 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
 
 ## Modes
 
-**Create.** Bind `{doc_workspace}` to `{workflow.ux_output_path}/{workflow.run_folder_pattern}/`. Create `.working/`, `imports/`, `.decision-log.md`, `DESIGN.md` (frontmatter only), and `EXPERIENCE.md` (frontmatter only). Run Discovery → Finalize.
+**Create.** Bind `{doc_workspace}` to `{workflow.ux_output_path}/{workflow.run_folder_pattern}/`. Create `.working/` and `imports/`; seed the memlog with `uv run {project-root}/_bmad/scripts/memlog.py init --workspace {doc_workspace} --field topic="<product/UX>"`; create `DESIGN.md` (frontmatter only) and `EXPERIENCE.md` (frontmatter only). Run Discovery → Finalize.
 
-**Update.** Read spines + log + sources. Create the log if missing — this update is entry one. Surface conflicts with prior decisions. Run Finalize.
+**Update.** Read spines + memlog + sources. If `.memlog.md` is missing, init it with `uv run {project-root}/_bmad/scripts/memlog.py init --workspace {doc_workspace}` — this update is entry one. Surface conflicts with prior decisions. Run Finalize.
 
 **Validate.** See `references/validate.md`.
 
 ## Discovery
 
-**Capture; do not author.** The spines are distilled at Finalize. Decisions → `.decision-log.md` (canonical). Creative-tool artifacts → `.working/`. User-supplied visuals (Figma, sketches, brand decks, image folders) → `imports/`, one log line per item. Spines win on conflict.
+**Capture; do not author.** The spines are distilled at Finalize toward the memlog. Decisions → `.memlog.md` (canonical), each appended via `uv run {project-root}/_bmad/scripts/memlog.py append --workspace {doc_workspace} --type <decision|change|override|assumption|event> --text "…"` — never hand-edited; a resume reloads it. Creative-tool artifacts → `.working/`. User-supplied visuals (Figma, sketches, brand decks, image folders) → `imports/`, one `memlog.py append` per item. Spines win on conflict.
 
 **Source scan.** Glob `{planning_artifacts}/` for candidate input paths; surface paths only — never read content in the parent. User confirms which apply or adds others; subagent-extracts on confirm.
 
@@ -80,11 +80,11 @@ Used by Validate and Finalize. **Opt-in, lens-selectable** — reviewers are cos
 
 Outcomes, in order:
 
-- **Spines distilled.** Subagent reads `.decision-log.md`, `.working/`, `imports/`, sources; produces `DESIGN.md` against `## The DESIGN.md spine` + `{workflow.design_md_examples}` and `EXPERIENCE.md` against `## The EXPERIENCE.md spine` + `{workflow.experience_md_examples}`. Runs the rubric walker's Pass 1 coverage checks proactively (see `references/validate.md`). Surface gaps; never invent.
+- **Spines distilled.** Subagent reads `.memlog.md`, `.working/`, `imports/`, sources; produces `DESIGN.md` against `## The DESIGN.md spine` + `{workflow.design_md_examples}` and `EXPERIENCE.md` against `## The EXPERIENCE.md spine` + `{workflow.experience_md_examples}`. Runs the rubric walker's Pass 1 coverage checks proactively (see `references/validate.md`). Surface gaps; never invent.
 - **Inputs reconciled.** Subagent per user-supplied input → `reconcile-{slug}.md`. Surface dropped qualitative ideas.
 - **Reviewer Gate offered.** Ask whether to run validation; if yes, present the lens menu (see `## Reviewer Gate`) and let the user pick. If any lens ran, resolve findings before polish; otherwise proceed.
-- **Open items triaged.** Open Questions, `[ASSUMPTION]`, `[NOTE FOR UX]`. Phase-blockers one at a time; non-blockers → log.
+- **Open items triaged.** Open Questions, `[ASSUMPTION]`, `[NOTE FOR UX]`. Phase-blockers one at a time; non-blockers → `memlog.py append`.
 - **Key-screen mocks rendered.** Key-screens tool → `.working/` for surfaces where layout drives behavior or anchors visual language.
 - **Mock coverage confirmed.** Walk every IA surface; classify *mocked* vs *spine-only*. Ask: *"These will be built from spine tables alone — any need a visual reference?"* Render more if named; log spine-only choices.
 - **Layout extracted, artifacts promoted.** Distill subagent re-reads each `.working/` and `imports/` artifact; lifts visual decisions into DESIGN.md and behavioral decisions into EXPERIENCE.md. Promote `.working/` keepers to `mockups/` (HTML) or `wireframes/` (Excalidraw); imports stay. Inline relative links at relevant spine sections; state spines-win-on-conflict once.
-- **Polished, handed off, closed.** Apply `{workflow.doc_standards}` in order. Execute `{workflow.external_handoffs}`; surface URLs. Set both files' `status: final`, `updated: {date}`. Log finalization. Share paths. Common next: `bmad-create-architecture`, `bmad-create-epics-and-stories`, `bmad-dev-story`. Run `{workflow.on_complete}`.
+- **Polished, handed off, closed.** Apply `{workflow.doc_standards}` in order. Execute `{workflow.external_handoffs}`; surface URLs. Set both files' `status: final`, `updated: {date}`. Log finalization via `uv run {project-root}/_bmad/scripts/memlog.py append --workspace {doc_workspace} --type event --text "spines finalized"`. Share paths. Common next: `bmad-architecture`, `bmad-create-epics-and-stories`, `bmad-dev-story`. Run `{workflow.on_complete}`.

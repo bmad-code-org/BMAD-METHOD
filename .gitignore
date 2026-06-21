@@ -26,6 +26,9 @@ design-artifacts/
 __pycache__/
 .pytest_cache/
 
+# BMad run artifacts (memlogs are per-run working memory, never committed)
+.memlog.md
+
 # System files
 .DS_Store
 Thumbs.db
@@ -44,6 +47,8 @@ CLAUDE.local.md
 .claude/settings.local.json
 .junie/
 .agents/
+.analysis/
+
 
 z*/
 !docs/zh-cn/

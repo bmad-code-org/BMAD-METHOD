@@ -47,13 +47,13 @@ Définissez ce qu’il faut construire et pour qui.
 
 | Workflow   | Objectif                                                                                               | Livrable                                                                                                          |
 |------------|--------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
-| `bmad-prd` | Créez, mettez à jour ou validez un PRD[^1] — découverte accompagnée, trois intentions en un seul skill | Création/Mise à jour : `prd.md`, `addendum.md`, `decision-log.md` ; Validation : `validation-report.html` + `.md` |
+| `bmad-prd` | Créez, mettez à jour ou validez un PRD[^1] — découverte accompagnée, trois intentions en un seul skill | Création/Mise à jour : `prd.md`, `addendum.md`, `.memlog.md` ; Validation : `validation-report.html` + `.md` |
 | `bmad-ux`  | Concevez l’expérience utilisateur (lorsque l’UX compte)                                                | `DESIGN.md`, `EXPERIENCE.md`                                                                                      |
 
 :::tip[Trois intentions en un seul skill]
 `bmad-prd` couvre l’intégralité du cycle de vie du PRD. Précisez votre intention lors de l’appel, sinon le skill vous la demandera :
 
-- **Créer** — nouveau PRD à partir de zéro via une découverte accompagnée ; produit `prd.md`, `addendum.md` et `decision-log.md`
+- **Créer** — nouveau PRD à partir de zéro via une découverte accompagnée ; produit `prd.md`, `addendum.md` et `.memlog.md`
 - **Mettre à jour** — réconcilie un PRD existant avec un signal de changement, en mettant en évidence les conflits avant d’appliquer les modifications
 - **Valider** — évalue un PRD à l’aide d’une liste de contrôle configurable et produit un rapport de constats structuré au format HTML
 :::
