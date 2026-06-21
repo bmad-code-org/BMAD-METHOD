@@ -140,6 +140,10 @@ if (checkMode) {
       `  The committed bundle no longer matches tools/installer/ide/*.\n` +
       `  Fix: run \`npm run vendor:build\` and commit the regenerated files.\n`,
   );
+  // Pinpoint the first divergence so a CI-only mismatch is diagnosable from the
+  // log instead of just "they differ".
+  reportFirstDiff('ide-sync.mjs', currentBundle, built);
+  reportFirstDiff('platform-codes.yaml', currentSidecar, sidecar);
   process.exit(1);
 }
 
@@ -148,6 +152,26 @@ await fs.writeFile(sidecarOut, sidecar, 'utf8');
 process.stdout.write(`built ide-sync.mjs + platform-codes.yaml (self-check OK, esbuild ${esbuildVersion})\n`);
 
 // ---------------------------------------------------------------------------
+
+// On a --check mismatch, print the committed vs freshly-built lengths and a
+// window around the first differing character. Keeps CI logs actionable when a
+// drift is environment-specific and can't be reproduced locally.
+function reportFirstDiff(label, committed, fresh) {
+  if (committed === fresh) return;
+  if (committed == null) {
+    process.stderr.write(`  [diff] ${label}: committed file missing\n`);
+    return;
+  }
+  const n = Math.min(committed.length, fresh.length);
+  let i = 0;
+  while (i < n && committed[i] === fresh[i]) i++;
+  const win = (s) => JSON.stringify(s.slice(Math.max(0, i - 40), i + 40));
+  process.stderr.write(
+    `  [diff] ${label}: committed=${committed.length}B fresh=${fresh.length}B firstDiff@${i}\n` +
+      `         committed: ${win(committed)}\n` +
+      `         fresh    : ${win(fresh)}\n`,
+  );
+}
 
 async function selfCheck(bundleText, sidecarText) {
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-ide-sync-check-'));
