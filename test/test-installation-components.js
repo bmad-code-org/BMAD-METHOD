@@ -3319,9 +3319,69 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Test Suite 46: Python environment check (version parsing + classification)
+  // Test Suite 46: shared-scripts install gitignores config.user.toml (#2456)
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 46: python-check version parsing and classification${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 46: shared-scripts install gitignores user config${colors.reset}\n`);
+
+  let root46;
+  try {
+    root46 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-gitignore-test-'));
+    const bmadDir46 = path.join(root46, '_bmad');
+    const customDir46 = path.join(bmadDir46, 'custom');
+    await fs.ensureDir(customDir46);
+
+    // _installSharedScripts only reaches for these four path fields, so a plain
+    // object stands in for the frozen InstallPaths instance. srcDir points at
+    // the real repo so src/scripts is copied into scriptsDir as in production.
+    const paths46 = {
+      srcDir: projectRoot,
+      bmadDir: bmadDir46,
+      customDir: customDir46,
+      scriptsDir: path.join(bmadDir46, 'scripts'),
+    };
+
+    const installer46 = new Installer();
+    await installer46._installSharedScripts(paths46);
+
+    const bmadGitignore46 = path.join(bmadDir46, '.gitignore');
+    assert(await fs.pathExists(bmadGitignore46), '_installSharedScripts seeds _bmad/.gitignore');
+    const ignoreLines46 = (await fs.readFile(bmadGitignore46, 'utf8')).split(/\r?\n/);
+    assert(ignoreLines46.includes('config.user.toml'), '_bmad/.gitignore ignores config.user.toml');
+    assert(installer46.installedFiles.has(bmadGitignore46), '_bmad/.gitignore is tracked as an installed file');
+
+    // The pre-existing custom/*.user.toml rule is still seeded alongside it.
+    assert(await fs.pathExists(path.join(customDir46, '.gitignore')), '_installSharedScripts still seeds _bmad/custom/.gitignore');
+
+    // Idempotent: a second install must not duplicate the entry. Fresh Installer
+    // per run, as in production — reuse would hide a failure to re-track the file.
+    const installer46b = new Installer();
+    await installer46b._installSharedScripts(paths46);
+    const occurrences46 = (await fs.readFile(bmadGitignore46, 'utf8')).split(/\r?\n/).filter((line) => line === 'config.user.toml').length;
+    assert(occurrences46 === 1, 'second install does not duplicate the config.user.toml entry');
+    assert(installer46b.installedFiles.has(bmadGitignore46), 're-install tracks _bmad/.gitignore even when the entry already exists');
+
+    // An existing .gitignore with unrelated rules is topped up, not clobbered.
+    await fs.writeFile(bmadGitignore46, 'notes.local.md\n');
+    const installer46c = new Installer();
+    await installer46c._installSharedScripts(paths46);
+    const toppedUp46 = await fs.readFile(bmadGitignore46, 'utf8');
+    assert(toppedUp46.includes('notes.local.md'), 'existing .gitignore rules are preserved');
+    assert(toppedUp46.split(/\r?\n/).includes('config.user.toml'), 'config.user.toml is appended to an existing .gitignore');
+    assert(installer46c.installedFiles.has(bmadGitignore46), 'appending install tracks _bmad/.gitignore');
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 46 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  } finally {
+    if (root46) await fs.remove(root46).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 47: Python environment check (version parsing + classification)
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 47: python-check version parsing and classification${colors.reset}\n`);
 
   try {
     const { parsePythonVersion, classifyPython, detectPython } = require('../tools/installer/core/python-check');
@@ -3449,7 +3509,7 @@ async function runTests() {
       process.exit = real.exit;
     }
   } catch (error) {
-    console.log(`${colors.red}Test Suite 46 setup failed: ${error.message}${colors.reset}`);
+    console.log(`${colors.red}Test Suite 47 setup failed: ${error.message}${colors.reset}`);
     console.log(error.stack);
     failed++;
   }
