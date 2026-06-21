@@ -62,7 +62,13 @@ function parseArgs(argv) {
 
 export async function main() {
   const argv = process.argv.slice(2);
-  if (argv.length === 0 || argv[0] === '--help' || argv[0] === '-h') {
+  // An explicit help request is a successful invocation → exit 0. A bare call
+  // with no verb is an incomplete usage → EXIT.USAGE (2).
+  if (argv[0] === '--help' || argv[0] === '-h') {
+    printUsage();
+    process.exit(0);
+  }
+  if (argv.length === 0) {
     printUsage();
     process.exit(EXIT.USAGE);
   }

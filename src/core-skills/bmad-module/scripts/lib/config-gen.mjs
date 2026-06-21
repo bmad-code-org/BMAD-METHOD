@@ -39,19 +39,29 @@ export function formatTomlValue(value) {
 }
 
 // Minimal reverse of formatTomlValue for the scalars we read back (core values).
-function parseTomlScalar(raw) {
+// Exported for round-trip unit tests (test/test-bmad-module-source.mjs).
+export function parseTomlScalar(raw) {
   const s = raw.trim();
   if (s === 'true') return true;
   if (s === 'false') return false;
   if (/^-?\d+(\.\d+)?$/.test(s)) return Number(s);
   if (s.startsWith('"') && s.endsWith('"')) {
-    return s
-      .slice(1, -1)
-      .replaceAll('\\n', '\n')
-      .replaceAll('\\r', '\r')
-      .replaceAll('\\t', '\t')
-      .replaceAll('\\"', '"')
-      .replaceAll('\\\\', '\\');
+    // Single left-to-right pass: each backslash consumes exactly one following
+    // char. A chained replaceAll would mis-handle round-tripped literal
+    // backslashes (e.g. `\\n` → `\` + newline instead of `\` + `n`), since an
+    // earlier pass can rewrite the escape introduced by a later one. The escape
+    // set here is the exact inverse of formatTomlValue (\\ \" \n \r \t).
+    const inner = s.slice(1, -1);
+    let out = '';
+    for (let i = 0; i < inner.length; i++) {
+      if (inner[i] === '\\' && i + 1 < inner.length) {
+        const n = inner[++i];
+        out += n === 'n' ? '\n' : n === 'r' ? '\r' : n === 't' ? '\t' : n === '"' ? '"' : n === '\\' ? '\\' : '\\' + n;
+      } else {
+        out += inner[i];
+      }
+    }
+    return out;
   }
   return s;
 }

@@ -14,6 +14,7 @@
 import { parseSource } from '../src/core-skills/bmad-module/scripts/lib/source.mjs';
 import { valid, prerelease, compare, rcompare, validRange } from '../src/core-skills/bmad-module/scripts/lib/semver-lite.mjs';
 import { parseGitHubRepo, normalizeStableTag } from '../src/core-skills/bmad-module/scripts/lib/channel-resolver.mjs';
+import { formatTomlValue, parseTomlScalar } from '../src/core-skills/bmad-module/scripts/lib/config-gen.mjs';
 
 const colors = { reset: '[0m', green: '[32m', red: '[31m', cyan: '[36m', dim: '[2m' };
 let passed = 0;
@@ -151,6 +152,18 @@ eq(
   ['1.7.0', null, null],
   'normalizeStableTag excludes prereleases/invalid',
 );
+
+// ─── config-gen TOML scalar round-trip ────────────────────────────────────────
+// parseTomlScalar must be the exact inverse of formatTomlValue. Regression guard
+// for the unescape bug where a literal backslash followed by `n` (e.g. a Windows
+// path segment `\new`) was corrupted into a backslash + newline on read-back.
+console.log(`\n${colors.cyan}config-gen TOML scalars${colors.reset}\n`);
+
+for (const v of [String.raw`a\new`, 'x\ty', 'l1\nl2', 'say "hi"', String.raw`back\\slash`, 'trailing\\', 'plain', '']) {
+  eq(parseTomlScalar(formatTomlValue(v)), v, `TOML round-trip: ${JSON.stringify(v)}`);
+}
+eq(parseTomlScalar('true'), true, 'parseTomlScalar bare true');
+eq(parseTomlScalar('42'), 42, 'parseTomlScalar bare number');
 
 // ─── Summary ──────────────────────────────────────────────────────────────────
 console.log(`\n${colors.cyan}Results: ${passed} passed, ${failed} failed${colors.reset}\n`);

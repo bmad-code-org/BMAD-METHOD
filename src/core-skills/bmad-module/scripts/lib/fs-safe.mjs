@@ -126,7 +126,16 @@ export async function atomicSwapDir(stagedDir, targetDir) {
     if (hadTarget) await fsp.rm(backup, { recursive: true, force: true });
   } catch (e) {
     await fsp.rm(sibling, { recursive: true, force: true });
-    await fsp.rm(backup, { recursive: true, force: true });
+    // Keep `backup` if it still exists — on a failed swap+rollback it is the
+    // only surviving copy of the previous install. Surface its location so the
+    // user can recover manually rather than silently destroying it here.
+    const backupSurvives = await fsp
+      .stat(backup)
+      .then(() => true)
+      .catch(() => false);
+    if (backupSurvives) {
+      process.stderr.write(`[bmad-module] previous install preserved at ${backup}\n`);
+    }
     throw e;
   }
 }

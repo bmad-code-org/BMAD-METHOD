@@ -1,8 +1,10 @@
 import path from 'node:path';
+import fsp from 'node:fs/promises';
 import { EXIT, BmadModuleError } from './lib/exit.mjs';
 import { findBmadDir } from './lib/bmad-dir.mjs';
 import { parseSource, materializeSource } from './lib/source.mjs';
-import { readAndValidateManifest } from './lib/plugin-json.mjs';
+import { readAndValidateManifest, validateManifestObject, hasBmadPluginJson } from './lib/plugin-json.mjs';
+import { resolveLegacyModule } from './lib/legacy-resolver.mjs';
 import { readUserIgnores, buildIgnoreMatcher, buildCopyPlan, rewriteManifestPaths, validateDeclaredPaths } from './lib/install-plan.mjs';
 import { stageCopyPlan, atomicSwapDir, sha256File, pruneEmptyDirs, safePathInsideRoot } from './lib/fs-safe.mjs';
 import {
@@ -70,7 +72,29 @@ async function updateOne(bmadDir, projectDir, entry, opts) {
       return;
     }
 
-    const manifest = await readAndValidateManifest(materialized.dir);
+    // Re-read the manifest the same way install does: new-spec modules carry a
+    // `.claude-plugin/plugin.json#bmad`; legacy modules carry a
+    // `.claude-plugin/marketplace.json` resolved into a synthetic manifest. A
+    // legacy-installed module re-clones to the legacy format, so update must
+    // handle both — otherwise readAndValidateManifest throws BAD_MANIFEST and
+    // every legacy community module becomes un-updatable.
+    let manifest;
+    let synthesized = null;
+    if (await hasBmadPluginJson(materialized.dir)) {
+      manifest = await readAndValidateManifest(materialized.dir);
+    } else {
+      const legacy = await resolveLegacyModule(materialized.dir, { selector: code });
+      if (!legacy) {
+        throw new BmadModuleError(
+          EXIT.BAD_MANIFEST,
+          `no .claude-plugin/plugin.json#bmad and no .claude-plugin/marketplace.json at ${materialized.dir}`,
+        );
+      }
+      // Legacy first-party modules (gds, bmm, …) legitimately use reserved codes.
+      validateManifestObject(legacy.manifest, { allowReserved: true });
+      manifest = legacy.manifest;
+      synthesized = legacy.synthesized;
+    }
     if (manifest.bmad.code !== code) {
       throw new BmadModuleError(
         EXIT.PREFIX_COLLISION,
@@ -101,6 +125,18 @@ async function updateOne(bmadDir, projectDir, entry, opts) {
           modified.join('\n  ') +
           `\nMove your changes into _bmad/custom/${code}/ and re-run.`,
       );
+    }
+
+    // Strategy-5 legacy modules have no module.yaml/module-help.csv on disk —
+    // the resolver synthesized them. Write them into the throwaway temp source so
+    // buildCopyPlan/validateDeclaredPaths discover them via the normal path.
+    if (synthesized) {
+      if (synthesized['module.yaml']) {
+        await fsp.writeFile(path.join(materialized.dir, 'module.yaml'), synthesized['module.yaml'], 'utf8');
+      }
+      if (synthesized['module-help.csv']) {
+        await fsp.writeFile(path.join(materialized.dir, 'module-help.csv'), synthesized['module-help.csv'], 'utf8');
+      }
     }
 
     // Build new copy plan, stage, swap.
