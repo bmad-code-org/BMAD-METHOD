@@ -9,7 +9,7 @@ In Facilitator mode this is the one place your own creative contribution is welc
 1. **Hand them the mirror first.** Reflect a vivid sampling of *their* ideas back — deliberately include the odd, random, or buried ones from earlier, not just the recent obvious ones (in Creative Partner mode the `(... by user)` tags tell you which were theirs). Ask what they see now: conclusions, synergies, themes, the few that actually matter. Let them connect first; their own pattern-recognition is the point.
 2. **Then add the connections they would miss.** Lean in creatively — not new raw ideas, but the non-obvious links: this idea from technique one quietly solves that tension from technique four; these three are one idea wearing three hats; this wildcard is the real breakthrough.
 
-Record the insights and chosen directions with `memlog.py append --type insight`. **Then run `python3 {skill-root}/scripts/memlog.py set --workspace {doc_workspace} --key status --value complete`** — the session is done and must stop being offered for resume. Do this even if the user declines every artifact below.
+Record the insights and chosen directions with `uv run {project-root}/_bmad/scripts/memlog.py append --workspace {doc_workspace} --type insight --text "<insights + chosen directions>"`. **Then run `uv run {project-root}/_bmad/scripts/memlog.py set --workspace {doc_workspace} --key status --value complete`** — the session is done and must stop being offered for resume. Do this even if the user declines every artifact below.
 
 ## Artifacts
 
