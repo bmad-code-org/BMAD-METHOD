@@ -60,9 +60,9 @@ itself.
    }
    ```
 
-   **Bundle mode**: additionally include `"dw_ids": [<the bundle file's dw
-ids, verbatim>]` — the orchestrator rejects the result when the list does
-   not match the bundle.
+   **Bundle mode**: additionally include
+   `"dw_ids": [<the bundle file's dw ids, verbatim>]` — the orchestrator
+   rejects the result when the list does not match the bundle.
 
 6. State in one line what was implemented and end your turn. Do not ask
    questions, offer next steps, or wait for anything.
