@@ -56,6 +56,8 @@
 
    If `{auto_mode}` and a finding would otherwise be `decision_needed`: reclassify as `patch` only when the fix is genuinely unambiguous; otherwise reclassify as `defer` with reason "auto-mode: needs human decision" AND record it in the result escalations — severity `CRITICAL` if it concerns correctness or security of the new code, else `PREFERENCE` (see `../automation-mode.md` rule 5).
 
+   If `{auto_mode}` and a finding's root cause is a defect in the spec itself (the code faithfully implements something the spec got wrong), handle it per `../automation-mode.md` rule 6: if the root cause is inside the spec's `<frozen-after-approval>` block, classify as `defer` and record a `CRITICAL` (`type: spec-defect`) escalation — never patch around frozen, human-owned intent; if the root cause is outside the frozen block, classify as `patch` (correct the code to the evidently right behavior), mark it for the step-04 `## Spec Change Log` append, and record a `PREFERENCE` escalation.
+
 5. **Drop** all `dismiss` findings. Record the dismiss count for the summary. (`{auto_mode}`: do NOT drop — set each dismissed finding aside, keeping its title, location, and one-line dismissal reason; step-04 writes them to the Review Ledger so later cycles do not re-litigate them.)
 
 6. If `{failed_layers}` is non-empty, report which layers failed before announcing results. If zero findings remain after dropping dismissed AND `{failed_layers}` is non-empty, warn the user that the review may be incomplete rather than announcing a clean review.

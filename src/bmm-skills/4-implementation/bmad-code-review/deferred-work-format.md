@@ -46,6 +46,11 @@ for polish and nice-to-haves.
 When a deferred item is later completed, set its `status:` to `done` with the
 date (e.g. `status: done 2026-06-20`) — do not delete the entry.
 
+Each field value stays on one logical line; a `reason:` that wraps simply
+continues on the next line with no special indentation. `seen-again:`,
+`resolution:`, and `decision:` are always their own separate lines — never
+embedded into the `status:` line.
+
 ## Sweep annotations
 
 `bmad-auto sweep` runs (the orchestrator and its bundle dev sessions) add two

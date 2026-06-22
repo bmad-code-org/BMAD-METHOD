@@ -38,7 +38,7 @@ Before leaving this step, verify every task in the `## Tasks & Acceptance` secti
 
 ## NEXT
 
-If `{auto_mode}` and the environment variable `$BMAD_AUTO_SKIP_REVIEW` is set (= `1`): the orchestrator runs no separate review session — read fully and follow `./step-04-review.md` to run the internal triple-review unattended (per automation-mode.md), then finalize.
+If `{auto_mode}` and the environment variable `$BMAD_AUTO_SKIP_REVIEW` is set (= `1`): the orchestrator runs no separate review session — read fully and follow `./step-04-review.md` to run the internal triple-review unattended (per automation-mode.md), then finalize via `./step-auto-finalize.md` (step-04-review's NEXT routes there in auto mode).
 
 Otherwise if `{auto_mode}`: read fully and follow `./step-auto-finalize.md` — review and commit belong to the orchestrator.
 
