@@ -1,6 +1,6 @@
 ---
 name: bmad-prfaq
-description: Working Backwards PRFAQ challenge to forge product concepts. Use when the user requests to 'create a PRFAQ', 'work backwards', or 'run the PRFAQ challenge'.
+description: Working Backwards PRFAQ challenge that stress-tests a product concept customer-first. Use when the user requests to 'create a PRFAQ', 'work backwards', or 'run the PRFAQ challenge'.
 ---
 
 # Working Backwards: The PRFAQ Challenge
@@ -107,7 +107,7 @@ When the user gets stuck, offer concrete suggestions based on what they've share
 
 **Fast-track:** If the user provides all four essentials in their opening message (or via structured input), acknowledge and confirm understanding, then move directly to document creation and Stage 2 without extended discovery.
 
-**Graceful redirect:** If after 2-3 exchanges the user can't articulate a customer or problem, don't force it — suggest the idea may need more exploration first and recommend they invoke the `bmad-brainstorming` skill to develop it further.
+**Graceful redirect:** If after 2-3 exchanges the user can't articulate a customer or problem, don't force it. Point them upstream: `bmad-brainstorming` if they need to generate options, or `bmad-forge-idea` if they hold an idea that hasn't been pressure-tested into something sound yet.
 
 **Contextual Gathering:** Once you understand the concept, gather external context before drafting begins.
 

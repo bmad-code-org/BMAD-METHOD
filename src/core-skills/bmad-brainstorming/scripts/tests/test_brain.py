@@ -207,11 +207,11 @@ def test_unknown_category_style_uses_fallback_glyph():
 
 def test_shipped_selector_is_in_sync_with_catalog():
     # foolproofing: if someone edits brain-methods.csv they must regenerate the page.
-    # Regenerate with: python3 brain.py html --out assets/brain-selector.html
+    # Regenerate with: uv run brain.py html --out assets/brain-selector.html
     asset = brain.DEFAULT_FILE.parent / "brain-selector.html"
     assert asset.is_file(), "missing assets/brain-selector.html — generate it"
     expected = brain.html_doc(brain.load(brain.DEFAULT_FILE))
     assert asset.read_text(encoding="utf-8") == expected, (
         "assets/brain-selector.html is stale; regenerate: "
-        "python3 brain.py html --out assets/brain-selector.html"
+        "uv run brain.py html --out assets/brain-selector.html"
     )

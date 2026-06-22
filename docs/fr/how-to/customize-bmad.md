@@ -22,7 +22,7 @@ Le skill `bmad-customize` est un assistant de rédaction guidée pour les **opti
 :::note[Prérequis]
 
 - BMad installé dans votre projet (voir [Comment installer BMad](./install-bmad.md))
-- Python 3.11+ sur votre PATH (pour le script de résolution — utilise `tomllib` de la bibliothèque standard, pas de `pip install`, pas de `uv`, pas de virtualenv)
+- Un moyen d’exécuter le script de résolution — BMad adopte `uv` comme standard (`uv run`, qui provisionne Python pour vous) ; un simple `python3` 3.11+ sur votre PATH fonctionne toujours pendant la transition. Le script n’utilise que `tomllib` de la bibliothèque standard, il n’y a donc rien à `pip install`.
 - Un éditeur de texte pour les fichiers TOML
 :::
 
@@ -201,15 +201,15 @@ persistent_facts = [
 
 ## Comment fonctionne la résolution
 
-À l’activation, le SKILL.md de l’agent exécute un script Python partagé qui effectue la fusion à trois couches et renvoie le bloc résolu en JSON. Le script utilise le module `tomllib` de la bibliothèque standard Python (aucune dépendance externe), donc `python3` suffit :
+À l’activation, le SKILL.md de l’agent exécute un script Python partagé qui effectue la fusion à trois couches et renvoie le bloc résolu en JSON. Le script utilise uniquement le module `tomllib` de la bibliothèque standard Python (aucune dépendance externe). BMad adopte `uv run` comme standard pour exécuter ces scripts (uv provisionne un Python adapté pour vous) ; un simple `python3` fonctionne toujours pendant la transition :
 
 ```bash
-python3 {project-root}/_bmad/scripts/resolve_customization.py \
+uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill {skill-root} \
   --key agent
 ```
 
-**Prérequis** : Python 3.11+ (les versions antérieures n’incluent pas `tomllib`). Pas de `pip install`, pas de `uv`, pas de virtualenv. Vérifiez avec `python3 --version`. Certaines plateformes (macOS sans Homebrew, Ubuntu 22.04) ont `python3` par défaut en 3.10 ou antérieur, vous devrez peut-être installer 3.11+ séparément.
+**Prérequis** : Python 3.11+ (les versions antérieures n’incluent pas `tomllib`). Rien à `pip install`. L’exécution via `uv run` est le standard à venir — uv résout un interpréteur adapté pour vous. Si vous l’exécutez directement avec `python3` pendant la transition, vérifiez votre version avec `python3 --version` ; certaines plateformes (macOS sans Homebrew, Ubuntu 22.04) ont `python3` par défaut en 3.10 ou antérieur, vous devrez peut-être installer 3.11+ séparément.
 
 `--skill` pointe vers le répertoire installé du skill (où se trouve `customize.toml`). Le nom du skill est déduit du basename du répertoire, et le script cherche automatiquement `_bmad/custom/{skill-name}.toml` et `{skill-name}.user.toml`.
 
@@ -217,17 +217,17 @@ Exemples d’utilisation :
 
 ```bash
 # Résoudre le bloc agent complet
-python3 {project-root}/_bmad/scripts/resolve_customization.py \
+uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill /chemin/absolu/vers/bmad-agent-pm \
   --key agent
 
 # Résoudre un seul champ
-python3 {project-root}/_bmad/scripts/resolve_customization.py \
+uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill /chemin/absolu/vers/bmad-agent-pm \
   --key agent.icon
 
 # Dump complet
-python3 {project-root}/_bmad/scripts/resolve_customization.py \
+uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill /chemin/absolu/vers/bmad-agent-pm
 ```
 
