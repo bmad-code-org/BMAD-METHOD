@@ -17,7 +17,7 @@ Use these headings:
 ```markdown
 # Epic {N} Context: {Epic Title}
 
-<!-- Compiled from planning artifacts. Edit freely. Regenerate with compile-epic-context if planning docs change. -->
+<!-- Generated from planning artifacts. Regenerate with compile-epic-context if planning docs change. -->
 
 ## Goal
 
@@ -59,4 +59,4 @@ Use these headings:
 ## Error handling
 
 - **If the epics file is missing or the target epic is not found:** write nothing and report the problem to the calling agent. Goal and Stories cannot be populated without a usable epics file.
-- **If planning artifacts are missing or empty:** still produce the file with Goal and Stories populated from the epics file, and note the gap in the Goal section. Never hallucinate content to fill missing sections.
+- **If planning artifacts are missing or empty:** still produce the file with Goal and Stories populated from the epics file. Under Requirements & Constraints, write: "Planning artifacts were unavailable; only epics-file context was used." Never hallucinate content to fill missing sections.
