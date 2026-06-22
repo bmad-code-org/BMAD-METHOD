@@ -45,6 +45,25 @@ Launch two subagents without prior session context.
    - **defer** — Append to `{deferred_work_file}`.
    - **reject** — Drop silently.
 
-## NEXT
+## Finalize
 
-Read fully and follow `./step-05-present.md`
+Change `{spec_file}` status to `done` in the frontmatter.
+
+Follow `./sync-sprint-status.md` with `{target_status}` = `review`.
+
+Append `## Auto Run Result` to `{spec_file}`. Include:
+
+- `Status: done`
+- Summary of implemented change
+- Files changed with one-line descriptions
+- Review findings breakdown: patches applied, items deferred, items rejected
+- Verification performed, including command outcomes or manual inspection notes
+- Any residual risks
+
+Workflow complete.
+
+## On Complete
+
+Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete`
+
+If the resolved `workflow.on_complete` is non-empty, follow it as the final terminal instruction before exiting.
