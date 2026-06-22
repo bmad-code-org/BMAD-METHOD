@@ -82,6 +82,9 @@ These rules override conversational behavior everywhere in this workflow.
      `./step-auto-finalize.md` (status `in-review`; orchestrator reviews).
    - **Never run step-05-present** in either case — the orchestrator commits.
 6. **Never open an editor, never commit, never push, never offer follow-ups.**
+   Skip any `## On Complete` step / `workflow.on_complete` customization — result.json
+   (step-auto-finalize) is the LAST action of the run; the orchestrator owns commit,
+   review, and everything after it.
 
 ## Scope override
 

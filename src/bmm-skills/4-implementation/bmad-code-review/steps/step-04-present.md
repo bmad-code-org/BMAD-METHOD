@@ -100,8 +100,8 @@ Skip this section if `{spec_file}` is not set.
 
 #### Determine new status based on review outcome
 
-- If all `decision-needed` and `patch` findings were resolved (fixed or dismissed) AND no unresolved HIGH/MEDIUM issues remain: set `{new_status}` = `done`. Update the story file Status section to `done`.
-- If `patch` findings were left as action items, or unresolved issues remain: set `{new_status}` = `in-progress`. Update the story file Status section to `in-progress`.
+- If all `decision-needed` and `patch` findings were resolved (fixed or dismissed) AND no unresolved HIGH/MEDIUM issues remain: set `{new_status}` = `done`. Update the spec's YAML frontmatter `status:` field to `done`.
+- If `patch` findings were left as action items, or unresolved issues remain: set `{new_status}` = `in-progress`. Update the spec's YAML frontmatter `status:` field to `in-progress`.
 
 Save the story file.
 
@@ -140,6 +140,8 @@ Present the user with follow-up options:
 **HALT** — I am waiting for your choice. Do not proceed until the user selects an option.
 
 ## On Complete
+
+**If `{auto_mode}`:** skip this section entirely — result.json (written after section 6) is the LAST action of the run (see `../automation-mode.md`); the orchestrator owns commit and everything after it.
 
 Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete`
 

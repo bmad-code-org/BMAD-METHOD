@@ -67,7 +67,9 @@ this workflow.
 7. **Act** (step-04): write findings to the spec file as usual; apply EVERY
    `patch` finding without asking; append `defer` findings to the
    deferred-work file following the format in `./deferred-work-format.md`;
-   skip the "Next steps" menu entirely.
+   skip the "Next steps" menu entirely. Skip the `## On Complete` step /
+   `workflow.on_complete` customization — result.json is the LAST action;
+   the orchestrator owns commit and everything after it.
 8. **Status updates** (step-04 section 6) run exactly as written: spec
    status (frontmatter `status:`) and sprint-status sync.
    `clean: true` in result.json must mean you set the spec to `done` —

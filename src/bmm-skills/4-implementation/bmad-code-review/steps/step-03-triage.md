@@ -37,16 +37,16 @@
    checked against the current code before re-raising — the patch may already
    cover it.
 
-2b. **Verify against the code** (`{auto_mode}` only). For each surviving finding (except `static`
-ones — those are tool output), check it against the actual code before
-classifying. You have project access; the hunters that produced these
-findings mostly did not. A finding contradicted by the surrounding code —
-the case is already guarded, the function behaves differently than the
-finding assumes, the "missing" handling exists elsewhere — becomes `dismiss`
-with the contradiction recorded as its reason. Do not classify a finding you
-have not verified.
+3. **Verify against the code** (`{auto_mode}` only). For each surviving finding (except `static`
+   ones — those are tool output), check it against the actual code before
+   classifying. You have project access; the hunters that produced these
+   findings mostly did not. A finding contradicted by the surrounding code —
+   the case is already guarded, the function behaves differently than the
+   finding assumes, the "missing" handling exists elsewhere — becomes `dismiss`
+   with the contradiction recorded as its reason. Do not classify a finding you
+   have not verified.
 
-3. **Classify** each finding into exactly one bucket:
+4. **Classify** each finding into exactly one bucket:
    - **decision_needed** -- There is an ambiguous choice that requires human input. The code cannot be correctly patched without knowing the user's intent. Only possible if `{review_mode}` = `"full"`.
    - **patch** -- Code issue that is fixable without human input. The correct fix is unambiguous.
    - **defer** -- Pre-existing issue not caused by the current change. Real but not actionable now.
@@ -56,11 +56,11 @@ have not verified.
 
    If `{auto_mode}` and a finding would otherwise be `decision_needed`: reclassify as `patch` only when the fix is genuinely unambiguous; otherwise reclassify as `defer` with reason "auto-mode: needs human decision" AND record it in the result escalations — severity `CRITICAL` if it concerns correctness or security of the new code, else `PREFERENCE` (see `../automation-mode.md` rule 5).
 
-4. **Drop** all `dismiss` findings. Record the dismiss count for the summary. (`{auto_mode}`: do NOT drop — set each dismissed finding aside, keeping its title, location, and one-line dismissal reason; step-04 writes them to the Review Ledger so later cycles do not re-litigate them.)
+5. **Drop** all `dismiss` findings. Record the dismiss count for the summary. (`{auto_mode}`: do NOT drop — set each dismissed finding aside, keeping its title, location, and one-line dismissal reason; step-04 writes them to the Review Ledger so later cycles do not re-litigate them.)
 
-5. If `{failed_layers}` is non-empty, report which layers failed before announcing results. If zero findings remain after dropping dismissed AND `{failed_layers}` is non-empty, warn the user that the review may be incomplete rather than announcing a clean review.
+6. If `{failed_layers}` is non-empty, report which layers failed before announcing results. If zero findings remain after dropping dismissed AND `{failed_layers}` is non-empty, warn the user that the review may be incomplete rather than announcing a clean review.
 
-6. If zero findings remain after triage (all rejected or none raised): state "✅ Clean review — all layers passed." (Step 3 already warned if any review layers failed via `{failed_layers}`.)
+7. If zero findings remain after triage (all rejected or none raised): state "✅ Clean review — all layers passed." (Step 3 already warned if any review layers failed via `{failed_layers}`.)
 
 
 ## NEXT

@@ -67,8 +67,8 @@ ids, verbatim>]` — the orchestrator rejects the result when the list does
 6. State in one line what was implemented and end your turn. Do not ask
    questions, offer next steps, or wait for anything.
 
-## On Complete
-
-Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete`
-
-If the resolved `workflow.on_complete` is non-empty, follow it as the final terminal instruction before exiting.
+There is no `## On Complete` step here: this step runs only under automation,
+where writing result.json (instruction 5) is the LAST action of the run (see
+`./automation-mode.md`) and the orchestrator owns everything after it. The
+interactive `workflow.on_complete` customization hook lives in
+`./step-05-present.md`.
