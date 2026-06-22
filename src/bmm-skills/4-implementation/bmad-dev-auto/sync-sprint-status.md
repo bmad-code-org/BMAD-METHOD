@@ -1,6 +1,6 @@
 # Sync Sprint Status
 
-Shared sub-step for updating `sprint-status.yaml` during bmad-dev-auto. Called from any route (plan-code-review, one-shot, future routes) with a `{target_status}` parameter.
+Shared sub-step for updating `sprint-status.yaml` during bmad-dev-auto. Called with a `{target_status}` parameter.
 
 ## Preconditions
 

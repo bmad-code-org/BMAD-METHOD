@@ -70,13 +70,6 @@ If the spec is an epic story and `{sprint_status}` exists: find the `development
 
    Derive a valid kebab-case slug from the clarified intent. If the intent references a tracking identifier (story number, issue number, ticket ID), lead the slug with it (e.g. `3-2-digest-delivery`, `gh-47-fix-auth`). If `{implementation_artifacts}/spec-{slug}.md` already exists: if its status is `draft`, treat it as the same work and resume it (set `spec_file` to that path, **EARLY EXIT** → `./step-02-plan.md`); otherwise append `-2`, `-3`, etc. Set `spec_file` = `{implementation_artifacts}/spec-{slug}.md`.
 
-   **a) One-shot** — zero blast radius: no plausible path by which this change causes unintended consequences elsewhere. Clear intent, no architectural decisions.
-
-   **EARLY EXIT** → `./step-oneshot.md`
-
-   **b) Plan-code-review** — everything else. When uncertain whether blast radius is truly zero, choose this path.
-
-
 ## NEXT
 
 Read fully and follow `./step-02-plan.md`
