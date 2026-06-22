@@ -161,15 +161,16 @@ class UI {
     const messageLoader = new MessageLoader();
     await messageLoader.displayStartMessage();
 
-    // Probe the local Python before any other prompts: several BMAD features
-    // (memlog session memory, TOML config resolution) need Python 3.11+ at
-    // runtime. Warn-don't-block, but require an explicit ack so the warning
-    // can't scroll past unseen. The installer runs in the destination
-    // environment, so probing PATH here tests the right machine.
-    // Skip the ack when stdin isn't a TTY (CI/Docker/piped): clack's select
-    // on closed stdin resolves to cancel, which would silently exit 0.
-    const { checkPythonEnvironment } = require('./core/python-check');
-    await checkPythonEnvironment({ nonInteractive: !!options.yes || !process.stdin.isTTY });
+    // Probe for `uv` before any other prompts: it's becoming the de facto
+    // runner for the Python scripts BMAD workflows shell out to
+    // (`uv run <script>`), and uv provisions the interpreter itself, so it's
+    // the single thing worth checking for. The migration is still in progress
+    // (some skills still call `python3` directly), so this is informational —
+    // warn-don't-block, no ack prompt — and just points the user at setup
+    // (ideally "ask your agent to set up uv"). The installer runs in the
+    // destination environment, so probing PATH here tests the right machine.
+    const { checkUvEnvironment } = require('./core/uv-check');
+    await checkUvEnvironment();
 
     // Parse channel flags (--channel/--all-*/--next=/--pin) once. Warnings
     // are surfaced immediately so the user sees them before any git ops run.
