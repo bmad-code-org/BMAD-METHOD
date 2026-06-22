@@ -18,6 +18,7 @@ Run any core tool by typing its skill name (e.g., `bmad-help`) in your IDE. No a
 | [`bmad-help`](#bmad-help) | Task | Get context-aware guidance on what to do next |
 | [`bmad-brainstorming`](#bmad-brainstorming) | Workflow | Facilitate interactive brainstorming sessions |
 | [`bmad-party-mode`](#bmad-party-mode) | Workflow | Orchestrate multi-agent group discussions |
+| [`bmad-forge-idea`](#bmad-forge-idea) | Workflow | Pressure-test an idea until it hardens, proves out, or dies cheaply |
 | [`bmad-spec`](#bmad-spec) | Workflow | Distill any intent input into a SPEC kernel and companions, the canonical contract for downstream work |
 | [`bmad-advanced-elicitation`](#bmad-advanced-elicitation) | Task | Push LLM output through iterative refinement methods |
 | [`bmad-review-adversarial-general`](#bmad-review-adversarial-general) | Task | Cynical review that finds what's missing and what's wrong |
@@ -70,7 +71,7 @@ Run any core tool by typing its skill name (e.g., `bmad-help`) in your IDE. No a
 
 **Input:** Brainstorming topic or problem statement, optional context file
 
-**Output:** `brainstorming-session-{date}.md` with all generated ideas
+**Output:** a self-contained `brainstorm.html` keepsake of the session, an optional `brainstorm-intent.md` for downstream skills, and a `.memlog.md` session record
 
 :::note[Quantity Target]
 The magic happens in ideas 50–100. The workflow encourages generating 100+ ideas before organization.
@@ -97,6 +98,28 @@ The magic happens in ideas 50–100. The workflow encourages generating 100+ ide
 **Input:** Discussion topic or question, along with specification of personas you would like to participate (optional)
 
 **Output:** Real-time multi-agent conversation with maintained agent personalities
+
+## bmad-forge-idea
+
+**Pressure-test an idea until it hardens, proves out, or dies cheaply.** — An adversarial interrogator drives a half-formed idea one question at a time, bringing two characters to every branch, until what survives is something you can act on with conviction.
+
+**Use it when:**
+
+- You hold an idea and want it stress-tested before you invest in it
+- You want an honest read on whether to kill it
+- You need a thinking partner that pushes back instead of agreeing
+
+**How it works:**
+
+1. Establishes the goal up front and steers the questioning to match it
+2. Works one question at a time in dependency order, putting a recommended answer on the table to push against
+3. Brings two voices to every branch — one from your installed roster, one conjured by the topic
+4. Challenges fuzzy terms and tests claims against an existing project's material
+5. Lands as Hardened, Killed, or Clearer, with a self-contained report you can keep
+
+**Input:** The idea, in any domain — a feature, a business model, a research hypothesis, a life decision
+
+**Output:** A `forged-idea.md` distillate when an idea hardens (optional), plus a `forge-report.html` keepsake every run
 
 ## bmad-spec
 
