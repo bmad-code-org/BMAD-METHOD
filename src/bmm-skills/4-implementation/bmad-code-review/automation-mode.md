@@ -66,8 +66,7 @@ this workflow.
    `PREFERENCE` escalation so a human can revisit the call.
 7. **Act** (step-04): write findings to the spec file as usual; apply EVERY
    `patch` finding without asking; append `defer` findings to the
-   deferred-work file following the format in the sibling `bmad-quick-dev`
-   skill's deferred-work format file at `../bmad-quick-dev/deferred-work-format.md`;
+   deferred-work file following the format in `./deferred-work-format.md`;
    skip the "Next steps" menu entirely.
 8. **Status updates** (step-04 section 6) run exactly as written: spec
    status (frontmatter `status:`) and sprint-status sync.
