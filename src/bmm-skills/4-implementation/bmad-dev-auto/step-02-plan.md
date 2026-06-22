@@ -7,8 +7,7 @@ deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 ## RULES
 
 - YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
-- No intermediate approvals.
-- Never ask questions or wait for approval.
+- No human interaction: do not ask questions or wait for approval in this step.
 
 ## INSTRUCTIONS
 
@@ -19,13 +18,13 @@ deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 5. If intent gaps exist, do not fantasize and do not leave open questions. Set `{spec_file}` frontmatter status to `blocked`, append `## Auto Run Result` with `Status: blocked`, the unanswered questions, and evidence gathered, then terminate cleanly.
 6. Warning check. If step-01 carried `multiple-goals`, add it to `{spec_file}` frontmatter `warnings`. If `{spec_file}` exceeds 1600 tokens, add `oversized` to frontmatter `warnings`. Continue either way.
 
-### APPROVAL BLOCK
+### READY-FOR-DEVELOPMENT GATE
 
-Do not present a conversational checkpoint.
+Re-read `{spec_file}` from disk and verify it meets the READY FOR DEVELOPMENT standard in `./SKILL.md`.
 
-Re-read `{spec_file}` from disk.
 - **If the file is missing:** write a best-effort result artifact in `{implementation_artifacts}` with `Status: blocked`, `Blocking condition: planned spec file disappeared before implementation`, and terminate cleanly.
-- **If the file exists:** compare the content to what you wrote. If it has changed since you wrote it, note the external edits in `## Auto Run Result`. Set `{spec_file}` frontmatter status to `blocked`, append `## Auto Run Result` with `Status: blocked`, `Blocking condition: missing spec approval/edit decision`, and terminate cleanly.
+- **If the spec meets the standard:** set `{spec_file}` frontmatter status to `ready-for-dev`, then continue to step 3.
+- **If the spec does not meet the standard:** repair it once, then re-read it from disk and verify again. If it still does not meet the standard, set `{spec_file}` frontmatter status to `blocked`, append `## Auto Run Result` with `Status: blocked`, the failing criteria, and evidence gathered, then terminate cleanly.
 
 
 ## NEXT
