@@ -16,10 +16,14 @@ failed_layers: '' # set at runtime: comma-separated list of layers that failed o
 
 0. **Static prefilter** (`{auto_mode}` only — skip entirely in interactive runs). Before any LLM review, run the project's deterministic
    checks — they are free, precise findings the hunters should not have to
-   rediscover. Resolve the command list in this order, first match wins:
-   1. `[verify] commands` in `{project-root}/.automator/policy.toml` (if the file exists)
-   2. the `## Verification` commands in `{spec_file}` (if `{review_mode}` = `"full"`)
-   3. none found — skip this instruction silently.
+   rediscover. Build the command list from BOTH sources below (the orchestrator
+   runs only the policy.toml gates itself, never the spec's, so the spec's
+   story-specific checks must run here or nowhere), then run each unique command
+   once — dedupe identical command strings:
+   - `[verify] commands` in `{project-root}/.automator/policy.toml` (if the file exists) — the orchestrator's project-wide gates
+   - the `## Verification` commands in `{spec_file}` (if `{review_mode}` = `"full"`) — story-specific checks
+
+   If neither source yields a command, skip this instruction silently.
 
    Record each failing command as a finding with `source: static` (title = the
    command, detail = the failure output tail). Summarize failures in one line
