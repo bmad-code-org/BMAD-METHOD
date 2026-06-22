@@ -1,0 +1,26 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# Workflow customization surface for bmad-dev-auto. Mirrors the
+# agent customization shape under the [workflow] namespace.
+
+[workflow]
+
+# --- Configurable below. Overrides merge per BMad structural rules: ---
+#   scalars: override wins • arrays (persistent_facts, activation_steps_*): append
+#   arrays-of-tables with `code`/`id`: replace matching items, append new ones.
+
+# Steps to run before standard activation. Overrides append.
+activation_steps_prepend = []
+
+# Steps to run after config load but before the workflow begins. Overrides append.
+activation_steps_append = []
+
+# Persistent facts the workflow keeps in mind for the whole run.
+# Each entry is either a literal sentence or a file reference prefixed with `file:`.
+persistent_facts = [
+  "file:{project-root}/**/project-context.md",
+]
+
+# Scalar: executed after result.json is written. Override wins.
+# Leave empty for no custom post-completion behavior.
+on_complete = ""
