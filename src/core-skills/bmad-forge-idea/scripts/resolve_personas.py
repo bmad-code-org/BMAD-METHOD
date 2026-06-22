@@ -109,10 +109,11 @@ def load_party_workflow(project_root: Path, party_skill: Path):
     """Merged [workflow] table for bmad-party-mode (base + user overrides)."""
     resolver = project_root / "_bmad" / "scripts" / "resolve_customization.py"
     data = _run_json([sys.executable, str(resolver), "--skill", str(party_skill), "--key", "workflow"])
-    if data is not None and "workflow" in data:
+    if data is not None and isinstance(data.get("workflow"), dict):
         return data["workflow"]
     # Fallback: base customize.toml directly, no override merge.
-    return _load_toml(party_skill / "customize.toml").get("workflow", {})
+    wf = _load_toml(party_skill / "customize.toml").get("workflow", {})
+    return wf if isinstance(wf, dict) else {}
 
 
 def load_party_overrides(project_root: Path):
@@ -124,6 +125,8 @@ def load_party_overrides(project_root: Path):
     custom = project_root / "_bmad" / "custom"
     team = _load_toml(custom / f"{PARTY_SKILL}.toml").get("workflow", {})
     user = _load_toml(custom / f"{PARTY_SKILL}.user.toml").get("workflow", {})
+    team = team if isinstance(team, dict) else {}
+    user = user if isinstance(user, dict) else {}
     merged = dict(team)
     for key, val in user.items():
         if isinstance(val, list) and isinstance(merged.get(key), list):
@@ -157,8 +160,12 @@ def build_pool(agents: dict, party_members: list):
         index[code] = code
         index[code.lower()] = code
         index[_alias(code).lower()] = code
-        if entry.get("name"):
-            index[entry["name"].lower()] = code
+        name = entry.get("name")
+        if name:
+            key = name.lower()
+            # A custom rename must not hijack another agent's name lookup.
+            if index.get(key, code) == code:
+                index[key] = code
 
     for code, info in (agents or {}).items():
         register(code, {
@@ -171,7 +178,9 @@ def build_pool(agents: dict, party_members: list):
         })
         installed_codes.append(code)
 
-    for m in party_members or []:
+    for m in (party_members if isinstance(party_members, list) else []):
+        if not isinstance(m, dict):
+            continue
         code = m.get("code")
         if not code:
             continue
@@ -192,7 +201,7 @@ def build_pool(agents: dict, party_members: list):
 def _brief(entry):
     """The slim card the orchestrator needs to cast a persona."""
     out = {k: entry[k] for k in ("code", "name", "icon", "title", "source") if entry.get(k)}
-    for k in ("description", "persona"):
+    for k in ("description", "persona", "capabilities", "model"):
         if entry.get(k):
             out[k] = entry[k]
     return out
@@ -204,8 +213,12 @@ def resolve_parties(groups, pool, index):
         if not isinstance(g, dict) or not g.get("id"):
             continue
         raw = g.get("members", []) or []
-        members = [_brief(pool[index[t]]) for t in raw
-                   if (index.get(t) or index.get(str(t).lower())) in pool]
+        members = []
+        for t in raw:
+            key = t if isinstance(t, str) else str(t)
+            code = index.get(key) or index.get(key.lower())
+            if code in pool:
+                members.append(_brief(pool[code]))
         party = {"id": g["id"], "name": g.get("name", g["id"]), "members": members}
         if g.get("scene"):
             party["scene"] = g["scene"]

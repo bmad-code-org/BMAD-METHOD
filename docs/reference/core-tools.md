@@ -71,7 +71,7 @@ Run any core tool by typing its skill name (e.g., `bmad-help`) in your IDE. No a
 
 **Input:** Brainstorming topic or problem statement, optional context file
 
-**Output:** `brainstorming-session-{date}.md` with all generated ideas and an HTML bespoke report of your session
+**Output:** a self-contained `brainstorm.html` keepsake of the session, an optional `brainstorm-intent.md` for downstream skills, and a `.memlog.md` session record
 
 :::note[Quantity Target]
 The magic happens in ideas 50–100. The workflow encourages generating 100+ ideas before organization.

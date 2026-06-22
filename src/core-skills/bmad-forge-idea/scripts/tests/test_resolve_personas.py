@@ -55,6 +55,24 @@ class TestBuildPool(unittest.TestCase):
         self.assertEqual(custom, [])
         self.assertEqual(set(pool), {"bmad-agent-analyst", "bmad-agent-pm"})
 
+    def test_custom_rename_does_not_hijack_another_agents_name(self):
+        # Override the analyst slot, renaming it to "John" — the PM's name.
+        # The PM's name lookup must survive (last-writer-wins would corrupt it).
+        _, idx, _, _ = rp.build_pool(AGENTS, [{"code": "analyst", "name": "John"}])
+        self.assertEqual(idx["john"], "bmad-agent-pm")
+
+    def test_brief_carries_model_and_capabilities(self):
+        pool, _, _, _ = rp.build_pool(
+            AGENTS, [{"code": "neo", "name": "Neo", "model": "opus", "capabilities": ["x"]}])
+        brief = rp._brief(pool["neo"])
+        self.assertEqual(brief["model"], "opus")
+        self.assertEqual(brief["capabilities"], ["x"])
+
+    def test_non_list_party_members_is_safe(self):
+        pool, _, installed, custom = rp.build_pool(AGENTS, "not-a-list")
+        self.assertEqual(custom, [])
+        self.assertEqual(set(pool), {"bmad-agent-analyst", "bmad-agent-pm"})
+
 
 class TestResolveParties(unittest.TestCase):
     def setUp(self):
@@ -72,6 +90,19 @@ class TestResolveParties(unittest.TestCase):
     def test_unknown_member_dropped_silently(self):
         parties = rp.resolve_parties(
             [{"id": "g", "members": ["analyst", "ghost"]}], self.pool, self.idx)
+        self.assertEqual([m["name"] for m in parties[0]["members"]], ["Mary"])
+
+    def test_member_resolution_is_case_insensitive(self):
+        # A TOML author naturally writes "Analyst"/"Shark"; the filter accepts
+        # them via the lowercase index, so resolution must too (no KeyError).
+        parties = rp.resolve_parties(
+            [{"id": "g", "members": ["Analyst", "Shark"]}], self.pool, self.idx)
+        self.assertEqual([m["name"] for m in parties[0]["members"]], ["Mary", "Marcus"])
+
+    def test_non_string_member_does_not_crash(self):
+        # Malformed members (int, list) must drop silently, never raise.
+        parties = rp.resolve_parties(
+            [{"id": "g", "members": [123, ["x"], "analyst"]}], self.pool, self.idx)
         self.assertEqual([m["name"] for m in parties[0]["members"]], ["Mary"])
 
     def test_open_cast_group_flagged(self):

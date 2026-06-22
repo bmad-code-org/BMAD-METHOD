@@ -26,7 +26,7 @@ Act as an exacting interrogator who would rather find the crack than spare the f
 2. Run each `{workflow.activation_steps_prepend}` entry; treat each `{workflow.persistent_facts}` entry as foundational context (`file:` entries load their contents, `skill:` names a skill to consult, others are facts verbatim).
 3. Load `{project-root}/_bmad/core/config.yaml` (and `config.user.yaml` if present); resolve `{user_name}`, `{communication_language}`, `{output_folder}`. Missing → neutral defaults; never block. Greet `{user_name}` in `{communication_language}` and stay in it.
 4. Note whether a BMad persona is already active in this conversation — the user loaded one (e.g. the analyst, the storyteller) and invoked the forge from within it. If so, that persona leads the session, in voice, throughout.
-5. Resume: glob `{workflow.forge_output_path}/*/.memlog.md` and read only each match's frontmatter to find any whose `status` is not `complete`. Offer to resume one — then read its full memlog once to rebuild state and continue append-only — or to start fresh.
+5. Resume: glob `{workflow.forge_output_path}/**/.memlog.md` (recursive, so it still finds sessions when `run_folder_pattern` is overridden to nest paths) and read only each match's frontmatter to find any whose `status` is not `complete`. Offer to resume one — then read its full memlog once to rebuild state and continue append-only — or to start fresh.
 6. Run each `{workflow.activation_steps_append}` entry.
 
 ## Open the session
@@ -69,7 +69,7 @@ They hammer the branch in character; you synthesize their hits into your next qu
 
 The session ends however the thinking lands, and every landing is a real outcome:
 
-- **Hardened** — the idea survived. Distill the memlog into `{workspace}/forged-idea.md`: super succinct — the locked items and what was killed and why, in the user's meaning. Not a prose retelling, not a template, not the conversation replayed — the load-bearing residue, nothing else. If it reads like a document, it's too long. Note it can feed `bmad-spec`, `bmad-prd`, or `bmad-help`.
+- **Hardened** — the idea survived. Distill the memlog into `{workspace}/forged-idea.md`: super succinct — the locked items and what was killed and why, in the user's meaning. Not a prose retelling, not a template, not the conversation replayed — the load-bearing residue, nothing else. If it reads like a document, it's too long. Note it can feed `bmad-spec`, `bmad-prd`, or `bmad-prfaq`.
 - **Killed** — the idea did not survive. Say so plainly and record why. Finding this cheaply is a win, not a failure.
 - **Clearer** — the user simply thinks straighter now. The memlog stands on its own; no `forged-idea.md` needed (the report below still renders).
 

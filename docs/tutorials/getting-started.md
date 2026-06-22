@@ -71,7 +71,7 @@ BMad helps you build software through guided workflows with specialized AI agent
 | Phase | Name           | What Happens                                                 |
 | ----- | -------------- | ------------------------------------------------------------ |
 | 1     | Analysis       | Brainstorming, research, forge idea, product brief or PRFAQ _(optional)_ |
-| 2     | Planning       | Create requirements and design PRD, UX, SPEC
+| 2     | Planning       | Create requirements and design PRD, UX, SPEC                 |
 | 3     | Solutioning    | Design architecture spine or detailed project or system architectures          |
 | 4     | Implementation | Build epic by epic, story by story with quick dev or automated epic delivery    |
 

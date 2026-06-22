@@ -57,7 +57,7 @@ Reach for the forge when you already hold an idea and want it hardened or killed
 | `bmad-prfaq` | You've committed to a product and want it proven customer-first | A Working Backwards coach |
 | `bmad-brainstorming` | You have no idea yet and need to generate options | A facilitation coach |
 | `bmad-party-mode` | You want your agents to discuss or decide together | Your whole roster in one conversation |
-| `bmad-adversarial-review` | You have an artifact and need its flaws found | A reviewer who must find issues |
+| `bmad-review-adversarial-general` | You have an artifact and need its flaws found | A reviewer who must find issues |
 
 ## Example
 

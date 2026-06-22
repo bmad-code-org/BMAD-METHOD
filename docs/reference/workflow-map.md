@@ -35,10 +35,10 @@ it**](../explanation/analysis-phase.md).
 
 | Workflow                                                                  | Purpose                                                                    | Produces                  |
 |---------------------------------------------------------------------------|----------------------------------------------------------------------------|---------------------------|
-| `bmad-brainstorming`                                                      | Brainstorm Project Ideas with guided facilitation of a brainstorming coach | `brainstorming-report.md` and a bespoke HTML |
-| `bmad-forge-idea` | Pressure-test an idea until it hardens, proves out, or dies cheaply | `forged-idea.md` and a bespoke HTML |
+| `bmad-brainstorming`                                                      | Brainstorm Project Ideas with guided facilitation of a brainstorming coach | `brainstorm.html` keepsake plus an optional `brainstorm-intent.md` |
+| `bmad-forge-idea` | Pressure-test an idea until it hardens, proves out, or dies cheaply | `forge-report.html` every run; `forged-idea.md` when an idea hardens |
 | `bmad-domain-research`, `bmad-market-research`, `bmad-technical-research` | Validate market, technical, or domain assumptions                          | Research findings         |
-| `bmad-product-brief`                                                      | Capture strategic vision — best when your concept is clear                 | `product-brief.md`  and a bespoke HTML along with any desired presentation output       |
+| `bmad-product-brief`                                                      | Capture strategic vision — best when your concept is clear                 | `brief.md` + `addendum.md`, plus any desired HTML or presentation output       |
 | `bmad-prfaq`                                                              | Working Backwards — stress-test your product concept customer-first             | `prfaq-{project}.md`      |
 
 ## Phase 2: Planning
@@ -68,7 +68,7 @@ Decide how to build it and break work into stories.
 
 | Workflow                              | Purpose                                    | Produces                    |
 |---------------------------------------|--------------------------------------------|-----------------------------|
-| `bmad-architecture`            | Make technical decisions explicit          | `architecture.md` is a spine by default but can hydrate to your desired output or presentation needs also |
+| `bmad-architecture`            | Make technical decisions explicit          | `ARCHITECTURE-SPINE.md` is the spine by default but can hydrate to your desired output or presentation needs also |
 | `bmad-create-epics-and-stories`       | Break requirements into implementable work | Epic files with stories     |
 | `bmad-check-implementation-readiness` | Gate check before implementation           | PASS/CONCERNS/FAIL decision |
 
