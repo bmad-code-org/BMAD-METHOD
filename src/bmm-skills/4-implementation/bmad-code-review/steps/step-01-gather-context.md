@@ -12,7 +12,7 @@ story_key: '' # set at runtime when discovered from sprint status
 - YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
 - The prompt that triggered this workflow IS the intent — not a hint.
 - Do not modify any files. This step is read-only.
-- If `{auto_mode}`: do NOT HALT or ask anywhere in this step (automation-mode.md rule 1). The invocation argument is the spec file — apply rule 2 (target/baseline/story-key; this skips the instruction-1 cascade and instruction 2's ask), rule 3 (diff source), and rule 4 (no chunk question); skip instruction 4's spec-context question, instruction 6's question, and the CHECKPOINT — go straight to NEXT.
+- If `{auto_mode}`: do NOT HALT or ask anywhere in this step (`../automation-mode.md` rule 1). The invocation argument is the spec file — apply rule 2 (target/baseline/story-key; this skips the instruction-1 cascade and instruction 2's ask), rule 3 (diff source), and rule 4 (no chunk question); skip instruction 4's spec-context question, instruction 6's question, and the CHECKPOINT — go straight to NEXT.
 
 ## INSTRUCTIONS
 

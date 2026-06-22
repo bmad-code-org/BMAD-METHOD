@@ -28,7 +28,7 @@ failed_layers: '' # set at runtime: comma-separated list of layers that failed o
 
 1. If `{review_mode}` = `"no-spec"`, note to the user: "Acceptance Auditor skipped — no spec file provided."
 
-2. Launch parallel subagents without conversation context. If subagents are not available, generate prompt files in `{implementation_artifacts}` — one per reviewer role below — and HALT. Ask the user to run each in a separate session (ideally a different LLM) and paste back the findings. When findings are pasted, resume from this point and proceed to step 3.
+2. Launch parallel subagents without conversation context. If subagents are not available: in `{auto_mode}` do NOT HALT (`../automation-mode.md` rule 1) — run each reviewer role below inline, one after another in this same session, keeping each role's input scoped as specified (the Blind Hunter still gets only the diff), then proceed to step 3. Otherwise (interactive), generate prompt files in `{implementation_artifacts}` — one per reviewer role below — and HALT. Ask the user to run each in a separate session (ideally a different LLM) and paste back the findings. When findings are pasted, resume from this point and proceed to step 3.
 
    - **Blind Hunter** — receives inline `{diff_output}` only. No spec, no context docs, no project access. Invoke via the `bmad-review-adversarial-general` skill.
 

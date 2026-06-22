@@ -3,8 +3,9 @@
 Canonical entry format for `{implementation_artifacts}/deferred-work.md`.
 Used (in `bmad-auto` automation mode) by bmad-quick-dev (multi-goal splits,
 token splits, review defers) and bmad-code-review (defer findings). This copy
-lives in the bmad-code-review skill; an identical copy ships with bmad-quick-dev
-— keep the two in sync when the format changes. The file is append-only — never
+lives in the bmad-code-review skill; bmad-quick-dev ships a sibling copy of the
+same entry format (its surrounding prose differs slightly) — keep the format
+itself in sync across the two when it changes. The file is append-only — never
 rewrite or delete existing entries. (One exception: freeform pre-DW-format
 content from older projects is rewritten wholesale into canonical entries by a
 `bmad-auto sweep` migration run — an orchestrator-side process external to this

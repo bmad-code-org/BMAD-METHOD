@@ -12,13 +12,13 @@ deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 
 ## AUTOMATION MODE
 
-If `{auto_mode}`, run this step with these substitutions (see automation-mode.md):
+If `{auto_mode}`, run this step with these substitutions (see `../automation-mode.md`):
 
 - Sections 1, 2, 3, and 6 run as written (no waiting after section 3).
 - Section 4: no `decision-needed` findings should remain (step-03's automation rule reclassified them). If any do, treat each as `defer` with reason "auto-mode: needs human decision" and record an escalation.
 - Section 5: do not present the menu — **Apply every patch**, then check off the patch items in the story file.
 - Section 7: skip entirely.
-- After section 6, write `$BMAD_AUTO_RUN_DIR/tasks/$BMAD_AUTO_TASK_ID/result.json` per the schema in automation-mode.md (`clean` is true only when `{new_status}` = `done` was set on disk), state the outcome in one line, and end your turn.
+- After section 6, write `$BMAD_AUTO_RUN_DIR/tasks/$BMAD_AUTO_TASK_ID/result.json` per the schema in `../automation-mode.md` (`clean` is true only when `{new_status}` = `done` was set on disk), state the outcome in one line, and end your turn.
 
 ## INSTRUCTIONS
 

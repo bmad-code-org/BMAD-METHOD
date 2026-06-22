@@ -54,7 +54,7 @@ have not verified.
 
    If `{review_mode}` = `"no-spec"` and a finding would otherwise be `decision_needed`, reclassify it as `patch` (if the fix is unambiguous) or `defer` (if not).
 
-   If `{auto_mode}` and a finding would otherwise be `decision_needed`: reclassify as `patch` only when the fix is genuinely unambiguous; otherwise reclassify as `defer` with reason "auto-mode: needs human decision" AND record it in the result escalations — severity `CRITICAL` if it concerns correctness or security of the new code, else `PREFERENCE` (see automation-mode.md rule 5).
+   If `{auto_mode}` and a finding would otherwise be `decision_needed`: reclassify as `patch` only when the fix is genuinely unambiguous; otherwise reclassify as `defer` with reason "auto-mode: needs human decision" AND record it in the result escalations — severity `CRITICAL` if it concerns correctness or security of the new code, else `PREFERENCE` (see `../automation-mode.md` rule 5).
 
 4. **Drop** all `dismiss` findings. Record the dismiss count for the summary. (`{auto_mode}`: do NOT drop — set each dismissed finding aside, keeping its title, location, and one-line dismissal reason; step-04 writes them to the Review Ledger so later cycles do not re-litigate them.)
 
