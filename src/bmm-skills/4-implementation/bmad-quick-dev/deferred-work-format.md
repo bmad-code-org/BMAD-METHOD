@@ -5,9 +5,9 @@ Used (in `bmad-auto` automation mode) by bmad-quick-dev (multi-goal splits,
 token splits, review defers) and bmad-code-review (defer findings). The file is
 append-only — never rewrite or delete existing entries. (One exception: freeform
 pre-DW-format content from older projects is rewritten wholesale into canonical
-entries by a `bmad-auto sweep` migration session — see
-`bmad-auto-sweep/migration-mode.md`; the TUI displays such legacy items
-read-only until that happens.)
+entries by a `bmad-auto sweep` migration run — an orchestrator-side process
+external to this skill; the TUI displays such legacy items read-only until that
+happens.)
 
 ## Before appending: dedupe check
 

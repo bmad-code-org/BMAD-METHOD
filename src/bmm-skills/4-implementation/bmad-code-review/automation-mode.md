@@ -17,10 +17,10 @@ this workflow.
   ```json
   {
     "workflow": "code-review",
-    "clean": <true when zero unresolved decision-needed/patch findings remain>,
+    "clean": <true only when zero actionable findings remain AND you set the spec status to "done" on disk — see rule 8>,
     "patched": <count of patch findings applied this session>,
     "deferred": <count of defer findings appended to deferred-work>,
-    "dismissed": <count dropped as noise>,
+    "dismissed": <count dismissed as noise — recorded to the Review Ledger, not dropped>,
     "escalations": [{"type": "<kind>", "severity": "CRITICAL|PREFERENCE",
                      "detail": "<one or two sentences>"}]
   }
@@ -67,7 +67,7 @@ this workflow.
 7. **Act** (step-04): write findings to the spec file as usual; apply EVERY
    `patch` finding without asking; append `defer` findings to the
    deferred-work file following the format in the sibling `bmad-quick-dev`
-   skill's `deferred-work-format.md` (same directory conventions);
+   skill's deferred-work format file at `../bmad-quick-dev/deferred-work-format.md`;
    skip the "Next steps" menu entirely.
 8. **Status updates** (step-04 section 6) run exactly as written: spec
    status (frontmatter `status:`) and sprint-status sync.

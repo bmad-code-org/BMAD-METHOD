@@ -24,7 +24,9 @@ If `{auto_mode}`, run this step with these substitutions (see automation-mode.md
 
 ### 1. Clean review shortcut
 
-If zero findings remain after triage (all dismissed or none raised): state that and proceed to section 6 (Sprint Status Update).
+If no **actionable** findings remain after triage — no `decision-needed`, `patch`, or `defer` findings (every finding was dismissed, or none were raised): state that and proceed to section 6 (Sprint Status Update). Set-aside dismissed findings do not count as "remaining".
+
+**If `{auto_mode}`:** when any findings were dismissed, do NOT skip straight to section 6 — first perform section 2's Review Ledger append (the `#### Review Ledger ({date})` subsection) so the next cycle's reviewers do not re-litigate them, then proceed to section 6.
 
 ### 2. Write findings to the story file
 
@@ -41,7 +43,7 @@ If `{spec_file}` exists and contains a Tasks/Subtasks section, append a `### Rev
 
 Also append each `defer` finding to `{deferred_work_file}` under a heading `## Deferred from: code review ({date})`. If `{spec_file}` is set, include its basename in the heading (e.g., `code review of story-3.3 (2026-03-18)`). One bullet per finding with description.
 
-**If `{auto_mode}`:** instead of the heading-based append above, append each `defer` finding to `{deferred_work_file}` as a `DW-<seq>` entry following the format and dedupe rule in the sibling `bmad-quick-dev` skill's `deferred-work-format.md`. Use `origin: code review of <spec basename>, {date}`, and set the entry's `severity:` from the finding's own severity. Then append a `#### Review Ledger ({date})` subsection to `{spec_file}` recording every triaged finding on one line each — `<verdict>: <title> [<location>] — <one-line reason>` — including the dismissed ones set aside in step-03. The ledger is append-only across review cycles; it is what stops the next cycle's fresh reviewers from re-litigating findings that were already adjudicated.
+**If `{auto_mode}`:** instead of the heading-based append above, append each `defer` finding to `{deferred_work_file}` as a `DW-<seq>` entry following the format and dedupe rule in the sibling `bmad-quick-dev` skill's deferred-work format file at `../../bmad-quick-dev/deferred-work-format.md`. Use `origin: code review of <spec basename>, {date}`, and set the entry's `severity:` from the finding's own severity. Then append a `#### Review Ledger ({date})` subsection to `{spec_file}` recording every triaged finding on one line each — `<verdict>: <title> [<location>] — <one-line reason>` — including the dismissed ones set aside in step-03. The ledger is append-only across review cycles; it is what stops the next cycle's fresh reviewers from re-litigating findings that were already adjudicated.
 
 ### 3. Present summary
 
