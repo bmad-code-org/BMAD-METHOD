@@ -12,13 +12,13 @@
 
 ## PRECONDITION
 
-Verify `{spec_file}` resolves to a non-empty path and the file exists on disk. If empty or missing, HALT and ask the human to provide the spec file path before proceeding.
+Verify `{spec_file}` resolves to a non-empty path and the file exists on disk. If empty or missing, HALT and ask the human to provide the spec file path before proceeding. (`{auto_mode}`: escalate `CRITICAL` `missing-spec` per automation-mode.md instead.)
 
 ## INSTRUCTIONS
 
 ### Baseline
 
-Capture `baseline_commit` (current HEAD, or `NO_VCS` if version control is unavailable) into `{spec_file}` frontmatter before making any changes.
+Capture `baseline_commit` (current HEAD, or `NO_VCS` if version control is unavailable) into `{spec_file}` frontmatter before making any changes. (`{auto_mode}`: record the full hash from `git rev-parse HEAD`, not `--short` — the orchestrator matches it exactly.)
 
 ### Implement
 
@@ -38,4 +38,8 @@ Before leaving this step, verify every task in the `## Tasks & Acceptance` secti
 
 ## NEXT
 
-Read fully and follow `./step-04-review.md`
+If `{auto_mode}` and the environment variable `$BMAD_AUTO_SKIP_REVIEW` is set (= `1`): the orchestrator runs no separate review session — read fully and follow `./step-04-review.md` to run the internal triple-review unattended (per automation-mode.md), then finalize.
+
+Otherwise if `{auto_mode}`: read fully and follow `./step-auto-finalize.md` — review and commit belong to the orchestrator.
+
+Otherwise: read fully and follow `./step-04-review.md`

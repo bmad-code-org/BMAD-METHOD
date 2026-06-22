@@ -56,6 +56,8 @@ Follow `./sync-sprint-status.md` with `{target_status}` = `review`.
 
 ### Commit and Open
 
+Skip this entire section if `{auto_mode}` — the orchestrator commits, and no human is present to use an editor.
+
 1. If version control is available and the tree is dirty, create a local commit with a conventional message derived from the spec title.
 2. Open the spec in the user's editor so they can click through the Suggested Review Order:
    - Resolve two absolute paths: (1) the repository root (`git rev-parse --show-toplevel` — returns the worktree root when in a worktree, project root otherwise; if this fails, fall back to the current working directory), (2) `{spec_file}`. Run `code -r "{absolute-root}" "{absolute-spec-file}"` — the root first so VS Code opens in the right context, then the spec file. Always double-quote paths to handle spaces and special characters.
@@ -67,7 +69,7 @@ Display summary of your work to the user, including the commit hash if one was c
 
 - A note that the spec is open in their editor (or the file path if it couldn't be opened). Mention that `{spec_file}` now contains a Suggested Review Order.
 - **Navigation tip:** "Ctrl+click (Cmd+click on macOS) the links in the Suggested Review Order to jump to each stop."
-- Offer to push and/or create a pull request.
+- Offer to push and/or create a pull request. (`{auto_mode}`: never offer; summarize in one line and end the turn.)
 
 Workflow complete.
 

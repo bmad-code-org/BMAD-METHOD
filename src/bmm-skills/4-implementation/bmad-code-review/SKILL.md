@@ -21,6 +21,12 @@ If you need an explicit user instruction to run them, ask once now for the whole
 
 ## On Activation
 
+### Step 0: Automation Check
+
+Run: `echo "${BMAD_AUTO_MODE:-}"`
+
+If the output is `1`, set `{auto_mode}` = true and read `./automation-mode.md` fully — treat its rules as persistent facts that override conversational behavior for the entire run (skip the greeting in Step 5, never halt for input). Otherwise set `{auto_mode}` = false and ignore that file. The `automation-mode.md` file exists only to support the `bmad-auto` orchestrator and is never read in a normal interactive run.
+
 ### Step 1: Resolve the Workflow Block
 
 Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`
@@ -77,7 +83,7 @@ This uses **step-file architecture** for disciplined execution:
 
 1. **READ COMPLETELY**: Read the entire step file before acting
 2. **FOLLOW SEQUENCE**: Execute sections in order
-3. **WAIT FOR INPUT**: Halt at checkpoints and wait for human
+3. **WAIT FOR INPUT**: Halt at checkpoints and wait for human — unless `{auto_mode}`, where each halt resolves via the rules in `automation-mode.md`
 4. **LOAD NEXT**: When directed, read fully and follow the next step file
 
 ### Critical Rules (NO EXCEPTIONS)
@@ -86,7 +92,7 @@ This uses **step-file architecture** for disciplined execution:
 - **ALWAYS** read entire step file before execution
 - **NEVER** skip steps or optimize the sequence
 - **ALWAYS** follow the exact instructions in the step file
-- **ALWAYS** halt at checkpoints and wait for human input
+- **ALWAYS** halt at checkpoints and wait for human input — in `{auto_mode}` the automation-mode.md rules ARE the human input; apply them instead of waiting
 
 ## FIRST STEP
 

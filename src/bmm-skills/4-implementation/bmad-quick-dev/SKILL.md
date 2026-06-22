@@ -30,6 +30,7 @@ A specification should target a **single user-facing goal** within **900–1600 
   - Don't split: "add validation and display errors" / "support drag-and-drop AND paste AND retry"
 - **900–1600 tokens**: Optimal range for LLM consumption. Below 900 risks ambiguity; above 1600 risks context-rot in implementation agents.
 - **Neither limit is a gate.** Both are proposals with user override.
+- (`{auto_mode}`: the target is **1,500–4,000 tokens** instead — see the scope override in `./automation-mode.md`.)
 
 ## Conventions
 
@@ -39,6 +40,12 @@ A specification should target a **single user-facing goal** within **900–1600 
 - `{skill-name}` resolves to the skill directory's basename.
 
 ## On Activation
+
+### Step 0: Automation Check
+
+Run: `echo "${BMAD_AUTO_MODE:-}"`
+
+If the output is `1`, set `{auto_mode}` = true and read `./automation-mode.md` fully — treat its rules as persistent facts that override conversational behavior for the entire run (skip the greeting in Step 5, never halt for input). Otherwise set `{auto_mode}` = false and ignore that file. The automation files (`automation-mode.md`, `step-auto-finalize.md`, `deferred-work-format.md`) exist only to support the `bmad-auto` orchestrator and are never read in a normal interactive run.
 
 ### Step 1: Resolve the Workflow Block
 
@@ -98,7 +105,7 @@ This uses **step-file architecture** for disciplined execution:
 
 1. **READ COMPLETELY**: Read the entire step file before acting
 2. **FOLLOW SEQUENCE**: Execute sections in order
-3. **WAIT FOR INPUT**: Halt at checkpoints and wait for human
+3. **WAIT FOR INPUT**: Halt at checkpoints and wait for human — unless `{auto_mode}`, where each halt resolves via the decision table in `automation-mode.md`
 4. **LOAD NEXT**: When directed, read fully and follow the next step file
 
 ### Critical Rules (NO EXCEPTIONS)
@@ -107,7 +114,7 @@ This uses **step-file architecture** for disciplined execution:
 - **ALWAYS** read entire step file before execution
 - **NEVER** skip steps or optimize the sequence
 - **ALWAYS** follow the exact instructions in the step file
-- **ALWAYS** halt at checkpoints and wait for human input
+- **ALWAYS** halt at checkpoints and wait for human input — in `{auto_mode}` the automation-mode.md decision table IS the human input; apply it instead of waiting
 
 ## FIRST STEP
 

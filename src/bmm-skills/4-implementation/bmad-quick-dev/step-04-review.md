@@ -42,9 +42,11 @@ Launch three subagents without conversation context. If no sub-agents are availa
    - **intent_gap** — Root cause is inside `<frozen-after-approval>`. Revert code changes. Loop back to the human to resolve. Once resolved, read fully and follow `./step-02-plan.md` to re-run steps 2–4.
    - **bad_spec** — Root cause is outside `<frozen-after-approval>`. Before reverting code: extract KEEP instructions for positive preservation (what worked well and must survive re-derivation). Revert code changes. Read the `## Spec Change Log` in `{spec_file}` and strictly respect all logged constraints when amending the non-frozen sections that contain the root cause. Append a new change-log entry recording: the triggering finding, what was amended, the known-bad state avoided, and the KEEP instructions. Read fully and follow `./step-03-implement.md` to re-derive the code, then this step will run again.
    - **patch** — Auto-fix. These are the only findings that survive loopbacks.
-   - **defer** — Append to `{deferred_work_file}`.
+   - **defer** — Append to `{deferred_work_file}` (in `{auto_mode}`, following `./deferred-work-format.md`).
    - **reject** — Drop silently.
 
 ## NEXT
 
-Read fully and follow `./step-05-present.md`
+If `{auto_mode}`: read fully and follow `./step-auto-finalize.md` — the orchestrator commits, so step-05-present (commit/push/present) is skipped.
+
+Otherwise: read fully and follow `./step-05-present.md`

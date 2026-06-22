@@ -10,6 +10,16 @@ deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 - When `{spec_file}` is set, always write findings to the story file before offering action choices.
 - `decision-needed` findings must be resolved before handling `patch` findings.
 
+## AUTOMATION MODE
+
+If `{auto_mode}`, run this step with these substitutions (see automation-mode.md):
+
+- Sections 1, 2, 3, and 6 run as written (no waiting after section 3).
+- Section 4: no `decision-needed` findings should remain (step-03's automation rule reclassified them). If any do, treat each as `defer` with reason "auto-mode: needs human decision" and record an escalation.
+- Section 5: do not present the menu — **Apply every patch**, then check off the patch items in the story file.
+- Section 7: skip entirely.
+- After section 6, write `$BMAD_AUTO_RUN_DIR/tasks/$BMAD_AUTO_TASK_ID/result.json` per the schema in automation-mode.md (`clean` is true only when `{new_status}` = `done` was set on disk), state the outcome in one line, and end your turn.
+
 ## INSTRUCTIONS
 
 ### 1. Clean review shortcut
@@ -30,6 +40,8 @@ If `{spec_file}` exists and contains a Tasks/Subtasks section, append a `### Rev
    `- [x] [Review][Defer] <Title> [<file>:<line>] — deferred, pre-existing`
 
 Also append each `defer` finding to `{deferred_work_file}` under a heading `## Deferred from: code review ({date})`. If `{spec_file}` is set, include its basename in the heading (e.g., `code review of story-3.3 (2026-03-18)`). One bullet per finding with description.
+
+**If `{auto_mode}`:** instead of the heading-based append above, append each `defer` finding to `{deferred_work_file}` as a `DW-<seq>` entry following the format and dedupe rule in the sibling `bmad-quick-dev` skill's `deferred-work-format.md`. Use `origin: code review of <spec basename>, {date}`, and set the entry's `severity:` from the finding's own severity. Then append a `#### Review Ledger ({date})` subsection to `{spec_file}` recording every triaged finding on one line each — `<verdict>: <title> [<location>] — <one-line reason>` — including the dismissed ones set aside in step-03. The ledger is append-only across review cycles; it is what stops the next cycle's fresh reviewers from re-litigating findings that were already adjudicated.
 
 ### 3. Present summary
 

@@ -14,6 +14,18 @@ failed_layers: '' # set at runtime: comma-separated list of layers that failed o
 
 ## INSTRUCTIONS
 
+0. **Static prefilter** (`{auto_mode}` only — skip entirely in interactive runs). Before any LLM review, run the project's deterministic
+   checks — they are free, precise findings the hunters should not have to
+   rediscover. Resolve the command list in this order, first match wins:
+   1. `[verify] commands` in `{project-root}/.automator/policy.toml` (if the file exists)
+   2. the `## Verification` commands in `{spec_file}` (if `{review_mode}` = `"full"`)
+   3. none found — skip this instruction silently.
+
+   Record each failing command as a finding with `source: static` (title = the
+   command, detail = the failure output tail). Summarize failures in one line
+   each and pass them to the Edge Case Hunter and Acceptance Auditor as
+   `also_consider` input. Do NOT pass them to the Blind Hunter — it stays blind.
+
 1. If `{review_mode}` = `"no-spec"`, note to the user: "Acceptance Auditor skipped — no spec file provided."
 
 2. Launch parallel subagents without conversation context. If subagents are not available, generate prompt files in `{implementation_artifacts}` — one per reviewer role below — and HALT. Ask the user to run each in a separate session (ideally a different LLM) and paste back the findings. When findings are pasted, resume from this point and proceed to step 3.
