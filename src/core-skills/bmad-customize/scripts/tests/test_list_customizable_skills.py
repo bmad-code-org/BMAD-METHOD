@@ -13,7 +13,7 @@ Exercises the scanner against a synthesized install tree:
 - malformed TOML (surfaces as an error without aborting)
 - multiple skills roots (e.g. project-local + user-global mix)
 
-Run: python3 scripts/tests/test_list_customizable_skills.py
+Run: uv run scripts/tests/test_list_customizable_skills.py
 """
 
 from __future__ import annotations

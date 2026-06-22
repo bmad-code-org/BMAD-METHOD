@@ -11,12 +11,14 @@ Skill name is derived from the basename of the skill directory.
 
 Outputs merged JSON to stdout. Errors go to stderr.
 
-Requires Python 3.11+ (uses stdlib `tomllib`). No `uv`, no `pip install`,
-no virtualenv — plain `python3` is sufficient.
+Uses only the Python stdlib (`tomllib`) — no third-party dependencies.
+BMad is standardizing on `uv run` to invoke scripts (uv provisions a suitable
+interpreter for you); a plain `python3` on PATH still works during the
+transition. Either runner needs Python 3.11+ for `tomllib`.
 
-  python3 resolve_customization.py --skill /abs/path/to/skill-dir
-  python3 resolve_customization.py --skill ... --key agent
-  python3 resolve_customization.py --skill ... --key agent.menu
+  uv run resolve_customization.py --skill /abs/path/to/skill-dir
+  uv run resolve_customization.py --skill ... --key agent
+  uv run resolve_customization.py --skill ... --key agent.menu
 
 Merge rules (purely structural — no field-name special-casing):
   - Scalars (string, int, bool, float): override wins

@@ -22,7 +22,7 @@ Skill `bmad-customize` là trợ lý tạo cấu hình có hướng dẫn cho **
 :::note[Điều kiện tiên quyết]
 
 - BMad đã được cài trong dự án của bạn (xem [Cách cài đặt BMad](./install-bmad.md))
-- Python 3.11+ có trên PATH của bạn (để chạy resolver; dùng stdlib `tomllib`, không cần `pip install`, `uv` hay virtualenv)
+- Một cách để chạy resolver script — BMad đang chuẩn hóa sang `uv` (`uv run`, tự cấp Python cho bạn); một `python3` 3.11+ thuần trên PATH vẫn dùng được trong giai đoạn chuyển đổi. Script chỉ dùng stdlib `tomllib`, nên không cần `pip install` gì cả.
 - Một trình soạn thảo văn bản cho file TOML
 :::
 
@@ -201,15 +201,15 @@ persistent_facts = [
 
 ## Cách quá trình resolve diễn ra
 
-Khi agent được kích hoạt, `SKILL.md` của nó sẽ gọi một shared Python script để merge ba lớp nói trên và trả về block kết quả ở dạng JSON. Script này dùng `tomllib` của Python stdlib, nên `python3` thuần là đủ:
+Khi agent được kích hoạt, `SKILL.md` của nó sẽ gọi một shared Python script để merge ba lớp nói trên và trả về block kết quả ở dạng JSON. Script này chỉ dùng `tomllib` của Python stdlib (không có dependency ngoài). BMad đang chuẩn hóa sang `uv run` để chạy các script này (uv tự cấp một bản Python phù hợp cho bạn); một `python3` thuần vẫn dùng được trong giai đoạn chuyển đổi:
 
 ```bash
-python3 {project-root}/_bmad/scripts/resolve_customization.py \
+uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill {skill-root} \
   --key agent
 ```
 
-**Yêu cầu**: Python 3.11+ vì các phiên bản cũ hơn không có `tomllib`. Không cần `pip install`, không cần `uv`, không cần virtualenv. Bạn có thể kiểm tra bằng `python3 --version`. Trên một số nền tảng, `python3` mặc định vẫn là 3.10 hoặc thấp hơn, nên có thể bạn sẽ phải cài 3.11+ riêng.
+**Yêu cầu**: Python 3.11+ vì các phiên bản cũ hơn không có `tomllib`; không cần `pip install` gì. Chạy qua `uv run` là chuẩn về sau — uv tự tìm một bản interpreter phù hợp cho bạn. Nếu bạn chạy trực tiếp bằng `python3` trong giai đoạn chuyển đổi, hãy kiểm tra phiên bản bằng `python3 --version`: trên một số nền tảng, `python3` mặc định vẫn là 3.10 hoặc thấp hơn, nên có thể bạn sẽ phải cài 3.11+ riêng.
 
 `--skill` trỏ vào thư mục skill đã cài, nơi có file `customize.toml`. Tên skill được lấy từ basename của thư mục, sau đó script sẽ tự tìm `_bmad/custom/{skill-name}.toml` và `{skill-name}.user.toml`.
 
@@ -217,17 +217,17 @@ Một số lệnh hữu ích:
 
 ```bash
 # Resolve toàn bộ block agent
-python3 {project-root}/_bmad/scripts/resolve_customization.py \
+uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill /duong-dan/tuyet-doi/toi/bmad-agent-pm \
   --key agent
 
 # Resolve một trường cụ thể
-python3 {project-root}/_bmad/scripts/resolve_customization.py \
+uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill /duong-dan/tuyet-doi/toi/bmad-agent-pm \
   --key agent.icon
 
 # Dump toàn bộ
-python3 {project-root}/_bmad/scripts/resolve_customization.py \
+uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill /duong-dan/tuyet-doi/toi/bmad-agent-pm
 ```
 
