@@ -14,7 +14,7 @@ description: 'One iteration of an unattended development loop. Use when invoked 
 To HALT with a final status and optional blocking condition:
 
 1. If `{spec_file}` is known and exists, update `status` in frontmatter and append missing result details under `## Auto Run Result`.
-2. If `{spec_file}` is unknown or missing, create `{implementation_artifacts}/bmad-dev-auto-result-{slug-or-timestamp}.md` with:
+2. If `{spec_file}` is unknown or missing, create `{implementation_artifacts}/bmad-dev-auto-result-<slug-or-timestamp>.md` with:
    ```markdown
    ---
    status: <final status>

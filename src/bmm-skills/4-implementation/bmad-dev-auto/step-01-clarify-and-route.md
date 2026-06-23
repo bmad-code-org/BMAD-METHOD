@@ -19,6 +19,7 @@ If the invocation prompt explicitly points to an existing spec file with recogni
 - `draft` → `./step-02-plan.md`
 - `ready-for-dev` or `in-progress` → `./step-03-implement.md`
 - `in-review` → `./step-04-review.md`
+- `blocked` → HALT with status `blocked` and blocking condition `blocked spec supplied`.
 - `done` → ingest as context and proceed to INSTRUCTIONS — do not resume.
 
 Otherwise, treat the invocation prompt as starting intent. This may be a story ID, ticket ID, file path, short description, or longer free-form intent. Do not infer workflow state from non-spec files.
@@ -39,7 +40,7 @@ If the invocation prompt does not contain enough intent to identify what to impl
         - **If valid:** load it as the primary planning context. Do not load raw planning docs (PRD, architecture, UX, etc.).
         - **If missing, empty, or invalid:** compile it in the next bullet.
 
-     3. **Compile epic context if needed.** If no valid cached epic context was loaded, produce `{implementation_artifacts}/epic-<N>-context.md` by spawning a sub-agent with `./compile-epic-context.md` as its prompt. Pass it the epic number, the epics file path, the `{planning_artifacts}` directory, and the output path `{implementation_artifacts}/epic-<N>-context.md`. If sub-agents are unavailable, HALT with status `blocked` and blocking condition `no subagents`.
+     3. **Compile epic context if needed.** If no valid cached epic context was loaded, produce `{implementation_artifacts}/epic-<N>-context.md` by spawning a sub-agent with `./compile-epic-context.md` as its prompt. Pass it the epic number, the epics file path, the `{planning_artifacts}` directory, and the output path `{implementation_artifacts}/epic-<N>-context.md`.
 
      4. **Verify if compiled.** If epic context was compiled, verify the output file exists, is non-empty, and starts with `# Epic <N> Context:`. If valid, load it. If verification fails, HALT with status `blocked` and blocking condition `context compilation verification failed`.
 
