@@ -13,7 +13,7 @@ warnings: [] # optional: machine-readable warnings for orchestration, e.g. overs
      Cohesive cross-layer stories (DB+BE+UI) stay in ONE file.
      IMPORTANT: Remove all HTML comments when filling this template. -->
 
-<frozen-after-approval reason="invocation-owned intent — do not modify unless a later invocation replaces it">
+<intent-contract>
 
 ## Intent
 
@@ -43,7 +43,7 @@ warnings: [] # optional: machine-readable warnings for orchestration, e.g. overs
 | HAPPY_PATH | INPUT | OUTCOME | N/A |
 | ERROR_CASE | INPUT | OUTCOME | ERROR_HANDLING |
 
-</frozen-after-approval>
+</intent-contract>
 
 ## Code Map
 

@@ -7,7 +7,7 @@
 
 - YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
 - No human interaction: do not ask questions or wait for approval in this step.
-- Content inside `<frozen-after-approval>` in `{spec_file}` is read-only. Do not modify.
+- Content inside `<intent-contract>` in `{spec_file}` is read-only. Do not modify.
 
 ## PRECONDITION
 
