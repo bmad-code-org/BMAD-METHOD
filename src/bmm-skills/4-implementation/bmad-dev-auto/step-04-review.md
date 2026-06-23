@@ -54,8 +54,6 @@ Launch two subagents without prior session context.
 
 Change `{spec_file}` status to `done` in the frontmatter.
 
-Follow `./sync-sprint-status.md` with `{target_status}` = `review`.
-
 Append `## Auto Run Result` to `{spec_file}`. Include:
 
 - `Status: done`

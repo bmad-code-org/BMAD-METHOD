@@ -1,7 +1,6 @@
 ---
 deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 spec_file: '' # set at runtime for both routes before leaving this step
-story_key: '' # set at runtime to the current story's full sprint-status key (e.g. 3-2-digest-delivery) when the intent is an epic story and sprint-status resolution succeeds
 ---
 
 # Step 1: Clarify and Route
@@ -17,7 +16,7 @@ story_key: '' # set at runtime to the current story's full sprint-status key (e.
 
 Use the invocation prompt as the intent.
 
-If the invocation prompt explicitly points to an existing spec file with recognized `status` frontmatter, set `spec_file`. Before exiting, run **Story-key resolution** (below). Then **EARLY EXIT** to the appropriate step:
+If the invocation prompt explicitly points to an existing spec file with recognized `status` frontmatter, set `spec_file`, then **EARLY EXIT** to the appropriate step:
 - `draft` → `./step-02-plan.md`
 - `ready-for-dev` or `in-progress` → `./step-03-implement.md`
 - `in-review` → `./step-04-review.md`
@@ -25,12 +24,6 @@ If the invocation prompt explicitly points to an existing spec file with recogni
 
 Otherwise, treat the invocation prompt as starting intent. This may be a story ID, ticket ID, file path, short description, or longer free-form intent. Do not infer workflow state from non-spec files.
 If the invocation prompt does not contain enough intent to identify what to implement, write `unclear intent` to the result artifact and **BLOCKED EXIT**.
-
-### Story-key resolution
-
-This runs on ALL paths (early-exit and INSTRUCTIONS) whenever `spec_file` is set. Determine whether the spec is an epic story — use the spec's filename, frontmatter, and any loaded epics file to identify `{epic_num}` and `{story_num}`. If the spec is not an epic story, skip silently and leave `{story_key}` unset.
-
-If the spec is an epic story and `{sprint_status}` exists: find the `development_status` key matching `{epic_num}-{story_num}` by exact numeric equality on the first two segments (so `1-1` never collides with `1-10`). Exactly one match → set `{story_key}` to that full key. Zero or multiple matches → leave `{story_key}` unset (warn on multiple).
 
 ## INSTRUCTIONS
 
@@ -52,8 +45,6 @@ If the spec is an epic story and `{sprint_status}` exists: find the `development
      4. **Verify if compiled.** If epic context was compiled, verify the output file exists, is non-empty, and starts with `# Epic <N> Context:`. If valid, load it. If verification fails, write the failed context-compilation condition to the result artifact and **BLOCKED EXIT**.
 
      5. **Previous story continuity.** Regardless of which context source succeeded above, scan `{implementation_artifacts}` for specs from the same epic with `status: done` and a lower story number. Load the most recent one (highest story number below current). Extract its **Code Map**, **Design Notes**, **Spec Change Log**, and **task list** as continuity context for step-02 planning. If no `done` spec is found but an `in-review` spec exists for the same epic with a lower story number, write the missing continuity decision to the result artifact and **BLOCKED EXIT**.
-
-     6. **Resolve `{story_key}`.** If not already set by an earlier early-exit path, run **Story-key resolution** (above) now.
 
      **B) Freeform path** — if the intent is not an epic story:
      - Planning artifacts are the output of BMAD phases 1-3. Typical files include:
