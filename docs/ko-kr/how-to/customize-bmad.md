@@ -22,7 +22,7 @@ sidebar:
 :::note[필수 조건]
 
 - 프로젝트에 BMad 설치([BMad 설치 방법](./install-bmad.md) 참고)
-- PATH의 Python 3.11+(병합 스크립트용, stdlib `tomllib`만 사용하며 `pip install`, `uv`, virtualenv 불필요)
+- resolver 스크립트를 실행할 방법. BMad는 `uv run` 표준으로 이동 중이며, `uv`가 Python을 준비해 줍니다. 전환 기간에는 PATH의 일반 `python3` 3.11+도 작동합니다. 스크립트는 stdlib `tomllib`만 사용하므로 `pip install`할 것은 없습니다
 - TOML 파일을 편집할 텍스트 에디터
 :::
 
@@ -198,15 +198,15 @@ persistent_facts = [
 
 ## 해석이 작동하는 방식
 
-활성화 시 에이전트의 SKILL.md가 공유 Python 스크립트를 실행해 3계층 병합을 수행하고 해석된 블록을 JSON으로 반환합니다. 스크립트는 Python 표준 라이브러리의 `tomllib`만 사용하므로 기본 `python3`이면 충분합니다.
+활성화 시 에이전트의 SKILL.md가 공유 Python 스크립트를 실행해 3계층 병합을 수행하고 해석된 블록을 JSON으로 반환합니다. 스크립트는 Python 표준 라이브러리의 `tomllib`만 사용합니다. BMad는 이 스크립트를 `uv run`으로 호출하는 방향으로 표준화하고 있습니다. `uv`가 적절한 Python을 준비해 주며, 전환 기간에는 일반 `python3`도 작동합니다.
 
 ```bash
-python3 {project-root}/_bmad/scripts/resolve_customization.py \
+uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill {skill-root} \
   --key agent
 ```
 
-**요구사항**: Python 3.11+(이전 버전에는 `tomllib`이 없습니다). `pip install`, `uv`, virtualenv는 필요 없습니다. `python3 --version`으로 확인하세요. Homebrew 없는 macOS나 Ubuntu 22.04 같은 플랫폼은 기본 `python3`이 3.10 이하일 수 있으므로 3.11+를 별도 설치해야 할 수 있습니다.
+**요구사항**: Python 3.11+(이전 버전에는 `tomllib`이 없습니다). `pip install`할 것은 없습니다. 앞으로의 표준은 `uv run`입니다. `uv`가 적절한 인터프리터를 해결해 줍니다. 전환 기간에 `python3`로 직접 실행한다면 `python3 --version`으로 버전을 확인하세요. Homebrew 없는 macOS나 Ubuntu 22.04 같은 플랫폼은 기본 `python3`이 3.10 이하일 수 있으므로 3.11+를 별도 설치해야 할 수 있습니다.
 
 `--skill`은 스킬이 설치된 디렉터리(`customize.toml`이 있는 위치)를 가리킵니다. 스킬 이름은 디렉터리의 basename에서 파생되며, 스크립트는 `_bmad/custom/{skill-name}.toml`과 `{skill-name}.user.toml`을 자동으로 찾습니다.
 
@@ -214,17 +214,17 @@ python3 {project-root}/_bmad/scripts/resolve_customization.py \
 
 ```bash
 # 전체 에이전트 블록 해석
-python3 {project-root}/_bmad/scripts/resolve_customization.py \
+uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill /abs/path/to/bmad-agent-pm \
   --key agent
 
 # 단일 필드 해석
-python3 {project-root}/_bmad/scripts/resolve_customization.py \
+uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill /abs/path/to/bmad-agent-pm \
   --key agent.icon
 
 # 전체 덤프
-python3 {project-root}/_bmad/scripts/resolve_customization.py \
+uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill /abs/path/to/bmad-agent-pm
 ```
 
