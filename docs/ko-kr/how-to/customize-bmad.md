@@ -22,7 +22,7 @@ sidebar:
 :::note[필수 조건]
 
 - 프로젝트에 BMad 설치([BMad 설치 방법](./install-bmad.md) 참고)
-- resolver 스크립트를 실행할 방법. BMad는 `uv run` 표준으로 이동 중이며, `uv`가 Python을 준비해 줍니다. 전환 기간에는 PATH의 일반 `python3` 3.11+도 작동합니다. 스크립트는 stdlib `tomllib`만 사용하므로 `pip install`할 것은 없습니다
+- 해석 스크립트를 실행할 방법. BMad는 `uv run` 표준으로 이동 중이며, `uv`가 Python을 준비해 줍니다. 전환 기간에는 PATH의 일반 `python3` 3.11+도 작동합니다. 스크립트는 stdlib `tomllib`만 사용하므로 `pip install`할 것은 없습니다
 - TOML 파일을 편집할 텍스트 에디터
 :::
 
