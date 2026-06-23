@@ -1,0 +1,33 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# Default customization values for bmad-dev-auto.
+# Override in _bmad/custom/bmad-dev-auto.toml or
+# _bmad/custom/bmad-dev-auto.user.toml.
+#
+# Merge rules:
+# - Strings replace the default.
+# - Lists append to the default list.
+# - Tables merge key by key.
+
+[workflow]
+
+# Extra instructions to run before config is loaded.
+
+activation_steps_prepend = []
+
+# Extra instructions to run after config is loaded and before step 01.
+
+activation_steps_append = []
+
+# Facts kept in context for the whole run.
+# Entries are literal text or file references prefixed with "file:".
+# File entries may use globs and are loaded during activation.
+
+persistent_facts = [
+  "file:{project-root}/**/project-context.md",
+]
+
+# Instruction run by HALT after writing the terminal result.
+# Empty means no extra terminal behavior.
+
+on_complete = ""
