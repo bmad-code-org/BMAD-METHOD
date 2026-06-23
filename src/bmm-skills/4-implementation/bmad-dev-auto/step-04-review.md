@@ -51,16 +51,11 @@ Launch two subagents without prior session context.
 
 ## Finalize
 
-Change `{spec_file}` status to `done` in the frontmatter.
-
-Append `## Auto Run Result` to `{spec_file}`. Include:
-
-- `Status: done`
+Prepare `Auto Run Result` details:
 - Summary of implemented change
 - Files changed with one-line descriptions
 - Review findings breakdown: patches applied, items deferred, items rejected
 - Verification performed, including command outcomes or manual inspection notes
 - Any residual risks
 
-Workflow complete.
 HALT with status `done`.
