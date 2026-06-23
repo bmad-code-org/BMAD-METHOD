@@ -23,15 +23,15 @@ Capture `baseline_revision` (current HEAD, or `NO_VCS` if version control is una
 
 Change `{spec_file}` status to `in-progress` in the frontmatter before starting implementation.
 
-If `{spec_file}` has a non-empty `context:` list in its frontmatter, load those files before implementation begins. When handing to a sub-agent, include them in the sub-agent prompt so it has access to the referenced context.
+If `{spec_file}` has a non-empty `context:` list in its frontmatter, load those files before implementation begins. When handing to a subagent, include them in the subagent prompt so it has access to the referenced context.
 
-Hand `{spec_file}` to a sub-agent/task and let it implement.
+Hand `{spec_file}` to an implementation subagent.
 
 **Path formatting rule:** Any markdown links written into `{spec_file}` must use paths relative to `{spec_file}`'s directory so they are clickable in VS Code. Any file paths displayed in terminal/conversation output must use CWD-relative format with `:line` notation (e.g., `src/path/file.ts:42`) for terminal clickability. No leading `/` in either case.
 
 ### Tasks & Acceptance Verification
 
-After the implementation sub-agent returns, verify every task in the `## Tasks & Acceptance` section of `{spec_file}` is complete and every acceptance criterion is satisfied. Mark each finished task `[x]`. If any task is not done or any acceptance criterion is not satisfied, finish the missing work before proceeding. If the missing work cannot be completed, HALT with status `blocked` and include the unfinished task or failing acceptance criterion and reason.
+After the implementation subagent returns, verify every task in the `## Tasks & Acceptance` section of `{spec_file}` is complete and every acceptance criterion is satisfied. Mark each finished task `[x]`. If any task is not done or any acceptance criterion is not satisfied, finish the missing work before proceeding. If the missing work cannot be completed, HALT with status `blocked`, blocking condition `implementation verification failed`, and include the unfinished task or failing acceptance criterion and reason.
 
 ## NEXT
 

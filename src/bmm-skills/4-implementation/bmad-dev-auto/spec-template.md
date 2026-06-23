@@ -40,7 +40,7 @@ warnings: [] # optional: machine-readable warnings for orchestration, e.g. overs
 
 | Scenario | Input / State | Expected Output / Behavior | Error Handling |
 |----------|--------------|---------------------------|----------------|
-| HAPPY_PATH | INPUT | OUTCOME | N/A |
+| HAPPY_PATH | INPUT | OUTCOME | No error expected |
 | ERROR_CASE | INPUT | OUTCOME | ERROR_HANDLING |
 
 </intent-contract>

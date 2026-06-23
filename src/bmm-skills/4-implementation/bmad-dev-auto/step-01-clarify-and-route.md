@@ -40,7 +40,7 @@ If the invocation prompt does not contain enough intent to identify what to impl
         - **If valid:** load it as the primary planning context. Do not load raw planning docs (PRD, architecture, UX, etc.).
         - **If missing, empty, or invalid:** compile it in the next bullet.
 
-     3. **Compile epic context if needed.** If no valid cached epic context was loaded, produce `{implementation_artifacts}/epic-<N>-context.md` by spawning a sub-agent with `./compile-epic-context.md` as its prompt. Pass it the epic number, the epics file path, the `{planning_artifacts}` directory, and the output path `{implementation_artifacts}/epic-<N>-context.md`.
+     3. **Compile epic context if needed.** If no valid cached epic context was loaded, produce `{implementation_artifacts}/epic-<N>-context.md` by spawning a subagent with `./compile-epic-context.md` as its prompt. Pass it the epic number, the epics file path, the `{planning_artifacts}` directory, and the output path `{implementation_artifacts}/epic-<N>-context.md`.
 
      4. **Verify if compiled.** If epic context was compiled, verify the output file exists, is non-empty, and starts with `# Epic <N> Context:`. If valid, load it. If verification fails, HALT with status `blocked` and blocking condition `context compilation verification failed`.
 
@@ -54,7 +54,7 @@ If the invocation prompt does not contain enough intent to identify what to impl
        - **Epics** (`*epic*`) — feature breakdown into implementable stories
        - **Product Brief** (`*brief*`) — project vision and scope
      - Scan the listing for files matching these patterns. If any look relevant to the current intent, load them selectively — you don't need all of them, but you need the right constraints and requirements rather than guessing from code alone.
-2. Clarify intent. Do not fantasize, do not leave open questions. If you must ask questions, HALT with status `blocked` and those questions as blocking condition.
+2. Resolve intent from the invocation prompt and loaded artifacts. Do not fantasize or leave open questions. If the intent cannot be resolved, HALT with status `blocked` and the unresolved questions as blocking condition.
 3. Version control sanity check. Is the working tree clean? Does the current branch make sense for this intent — considering its name and recent history? If the tree is dirty or the branch is an obvious mismatch, HALT with status `blocked` and that condition as blocking condition. If version control is unavailable, skip this check.
 4. Multi-goal warning. If the intent appears to contain multiple independently shippable goals, carry `multiple-goals` forward so step-02 can add it to `{spec_file}` frontmatter `warnings`. Do not split or block.
 5. Route:

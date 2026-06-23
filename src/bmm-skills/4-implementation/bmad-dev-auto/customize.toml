@@ -14,9 +14,8 @@
 
 activation_steps_prepend = []
 
-# Steps to run after activation but before the workflow begins.
-# Overrides append. Use for context-heavy setup that should happen
-# once the user has been acknowledged.
+# Steps to run after config load but before the workflow begins.
+# Overrides append. Use for context-heavy setup.
 
 activation_steps_append = []
 
@@ -34,8 +33,7 @@ persistent_facts = [
   "file:{project-root}/**/project-context.md",
 ]
 
-# Scalar: executed when the workflow reaches its final step,
-# after implementation is complete and explanations are provided. Override wins.
-# Leave empty for no custom post-completion behavior.
+# Scalar: final instruction run by HALT on every terminal path. Override wins.
+# Leave empty for no custom terminal behavior.
 
 on_complete = ""
