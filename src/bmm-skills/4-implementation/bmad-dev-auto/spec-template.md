@@ -29,7 +29,7 @@ warnings: [] # optional: machine-readable warnings for orchestration, e.g. overs
 **Always:** INVARIANT_RULES
 
 **Block If:** DECISIONS_REQUIRING_HUMAN_INPUT
-<!-- Agent: if any of these trigger during execution, write the blocked condition to the result artifact and terminate cleanly. -->
+<!-- Agent: if any of these trigger during execution, HALT with status blocked and the blocking condition. -->
 
 **Never:** NON_GOALS_AND_FORBIDDEN_APPROACHES
 

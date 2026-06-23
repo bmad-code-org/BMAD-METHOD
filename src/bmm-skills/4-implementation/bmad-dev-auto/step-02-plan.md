@@ -15,16 +15,16 @@ deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 2. Investigate codebase. _Isolate deep exploration in sub-agents/tasks where available. To prevent context snowballing, instruct subagents to give you distilled summaries only._
 3. Read `./spec-template.md` fully. Fill it out based on the intent and investigation. If `{preserved_intent}` is non-empty, substitute it for the `<frozen-after-approval>` block in your filled spec before writing. Write the result to `{spec_file}`.
 4. Self-review against READY FOR DEVELOPMENT standard.
-5. If intent gaps exist, do not fantasize and do not leave open questions. Set `{spec_file}` frontmatter status to `blocked`, append `## Auto Run Result` with `Status: blocked`, the unanswered questions, and evidence gathered, then terminate cleanly.
+5. If intent gaps exist, do not fantasize and do not leave open questions. HALT with status `blocked`, blocking condition `intent gaps`, and include the unanswered questions and evidence gathered.
 6. Warning check. If step-01 carried `multiple-goals`, add it to `{spec_file}` frontmatter `warnings`. If `{spec_file}` exceeds 1600 tokens, add `oversized` to frontmatter `warnings`. Continue either way.
 
 ### READY-FOR-DEVELOPMENT GATE
 
 Re-read `{spec_file}` from disk and verify it meets the READY FOR DEVELOPMENT standard in `./SKILL.md`.
 
-- **If the file is missing:** write a best-effort result artifact in `{implementation_artifacts}` with `Status: blocked`, `Blocking condition: planned spec file disappeared before implementation`, and terminate cleanly.
+- **If the file is missing:** HALT with status `blocked` and blocking condition `planned spec file disappeared before implementation`.
 - **If the spec meets the standard:** set `{spec_file}` frontmatter status to `ready-for-dev`, then continue to step 3.
-- **If the spec does not meet the standard:** repair it once, then re-read it from disk and verify again. If it still does not meet the standard, set `{spec_file}` frontmatter status to `blocked`, append `## Auto Run Result` with `Status: blocked`, the failing criteria, and evidence gathered, then terminate cleanly.
+- **If the spec does not meet the standard:** repair it once, then re-read it from disk and verify again. If it still does not meet the standard, HALT with status `blocked`, blocking condition `spec failed ready-for-development standard`, and include the failing criteria and evidence gathered.
 
 
 ## NEXT

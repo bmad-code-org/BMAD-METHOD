@@ -38,8 +38,8 @@ Launch two subagents without prior session context.
    - **patch** — caused by the change; trivially fixable without human input. Just part of the diff.
    - **defer** — pre-existing issue not caused by this story, surfaced incidentally by the review. Collect for later focused attention.
    - **reject** — noise. Drop silently. When unsure between defer and reject, prefer reject — only defer findings you are confident are real.
-3. Process findings in cascading order. If intent_gap or bad_spec findings exist, they trigger a loopback — lower findings are moot since code will be re-derived. If neither exists, process patch and defer normally. Increment `{specLoopIteration}` on each loopback. If it exceeds 5, set `{spec_file}` frontmatter status to `blocked`, append `## Auto Run Result` with `Status: blocked`, `Blocking condition: review repair loop exceeded 5 iterations`, and terminate cleanly.
-   - **intent_gap** — Root cause is inside `<frozen-after-approval>`. Revert code changes. Set `{spec_file}` frontmatter status to `blocked`, append `## Auto Run Result` with `Status: blocked`, `Blocking condition: intent gap in frozen intent`, and the intent-gap findings, then terminate cleanly.
+3. Process findings in cascading order. If intent_gap or bad_spec findings exist, they trigger a loopback — lower findings are moot since code will be re-derived. If neither exists, process patch and defer normally. Increment `{specLoopIteration}` on each loopback. If it exceeds 5, HALT with status `blocked` and blocking condition `review repair loop exceeded 5 iterations`.
+   - **intent_gap** — Root cause is inside `<frozen-after-approval>`. Revert code changes. HALT with status `blocked`, blocking condition `intent gap in frozen intent`, and include the intent-gap findings.
    - **bad_spec** — Root cause is outside `<frozen-after-approval>`. Before reverting code: extract KEEP instructions for positive preservation (what worked well and must survive re-derivation). Revert code changes. Read the `## Spec Change Log` in `{spec_file}` and strictly respect all logged constraints when amending the non-frozen sections that contain the root cause. Append a new change-log entry recording: the triggering finding, what was amended, the known-bad state avoided, and the KEEP instructions. Read fully and follow `./step-03-implement.md` to re-derive the code, then this step will run again.
    - **patch** — Auto-fix. These are the only findings that survive loopbacks.
    - **defer** — Append one new entry to `{deferred_work_file}` using this format. Do not modify existing entries or look for duplicates.
@@ -64,9 +64,4 @@ Append `## Auto Run Result` to `{spec_file}`. Include:
 - Any residual risks
 
 Workflow complete.
-
-## On Complete
-
-Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete`
-
-If the resolved `workflow.on_complete` is non-empty, follow it as the final terminal instruction before exiting.
+HALT with status `done`.

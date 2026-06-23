@@ -9,11 +9,29 @@ description: 'One iteration of an unattended development loop. Use when invoked 
 
 **CRITICAL:** If a step says "read fully and follow step-XX", you read and follow step-XX. No exceptions.
 
-Using subagents when instructed is mandatory. If you cannot, record `no subagents` in the result artifact and end the run.
+## HALT
 
-## Result Artifact
+To HALT with a final status and optional blocking condition:
 
-The result artifact is `{spec_file}` once it is known. If `{spec_file}` is unknown, create `{implementation_artifacts}/bmad-dev-auto-result-{slug-or-timestamp}.md`.
+1. If `{spec_file}` is known and exists, update `status` in frontmatter and append missing result details under `## Auto Run Result`.
+2. If `{spec_file}` is unknown or missing, create `{implementation_artifacts}/bmad-dev-auto-result-{slug-or-timestamp}.md` with:
+   ```markdown
+   ---
+   status: <final status>
+   ---
+
+   # BMad Dev Auto Result
+
+   Status: <final status>
+   Blocking condition: <blocking condition, if any>
+   ```
+3. Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete`
+4. If the resolved `workflow.on_complete` is non-empty, follow it as the final instruction before exiting.
+5. Stop the workflow.
+
+## Subagents
+
+Using subagents when instructed is mandatory. If you cannot, HALT with status `blocked` and blocking condition `no subagents`.
 
 ## READY FOR DEVELOPMENT STANDARD
 
@@ -74,10 +92,10 @@ Execute each entry in `{workflow.activation_steps_append}` in order.
 
 Activation is complete after all activation steps have run.
 
-## WORKFLOW EXECUTION
+## Workflow Execution
 
 Follow the step files in order. Read one step fully, execute it, then load the next step only when directed. Do not skip, reorder, or pre-load steps.
 
-## FIRST WORKFLOW STEP
+## First workflow step
 
 Read fully and follow: `./step-01-clarify-and-route.md` to begin the workflow.

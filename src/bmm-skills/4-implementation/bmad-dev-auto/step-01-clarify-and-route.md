@@ -10,7 +10,6 @@ spec_file: '' # set at runtime for both routes before leaving this step
 - YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
 - Treat the invocation intent as workflow input, not as a substitute for step-02 investigation and spec generation.
 - **EARLY EXIT** means: stop this step immediately, then read and follow the target file. Return here only if a later step explicitly says to loop back.
-- **BLOCKED EXIT** means: write the blocked reason to the result artifact and end the run.
 
 ## Intent check (do this first)
 
@@ -23,7 +22,7 @@ If the invocation prompt explicitly points to an existing spec file with recogni
 - `done` → ingest as context and proceed to INSTRUCTIONS — do not resume.
 
 Otherwise, treat the invocation prompt as starting intent. This may be a story ID, ticket ID, file path, short description, or longer free-form intent. Do not infer workflow state from non-spec files.
-If the invocation prompt does not contain enough intent to identify what to implement, write `unclear intent` to the result artifact and **BLOCKED EXIT**.
+If the invocation prompt does not contain enough intent to identify what to implement, HALT with status `blocked` and blocking condition `unclear intent`.
 
 ## INSTRUCTIONS
 
@@ -40,11 +39,11 @@ If the invocation prompt does not contain enough intent to identify what to impl
         - **If valid:** load it as the primary planning context. Do not load raw planning docs (PRD, architecture, UX, etc.).
         - **If missing, empty, or invalid:** compile it in the next bullet.
 
-     3. **Compile epic context if needed.** If no valid cached epic context was loaded, produce `{implementation_artifacts}/epic-<N>-context.md` by spawning a sub-agent with `./compile-epic-context.md` as its prompt. Pass it the epic number, the epics file path, the `{planning_artifacts}` directory, and the output path `{implementation_artifacts}/epic-<N>-context.md`. If sub-agents are unavailable, write `no subagents` to the result artifact and **BLOCKED EXIT**.
+     3. **Compile epic context if needed.** If no valid cached epic context was loaded, produce `{implementation_artifacts}/epic-<N>-context.md` by spawning a sub-agent with `./compile-epic-context.md` as its prompt. Pass it the epic number, the epics file path, the `{planning_artifacts}` directory, and the output path `{implementation_artifacts}/epic-<N>-context.md`. If sub-agents are unavailable, HALT with status `blocked` and blocking condition `no subagents`.
 
-     4. **Verify if compiled.** If epic context was compiled, verify the output file exists, is non-empty, and starts with `# Epic <N> Context:`. If valid, load it. If verification fails, write the failed context-compilation condition to the result artifact and **BLOCKED EXIT**.
+     4. **Verify if compiled.** If epic context was compiled, verify the output file exists, is non-empty, and starts with `# Epic <N> Context:`. If valid, load it. If verification fails, HALT with status `blocked` and blocking condition `context compilation verification failed`.
 
-     5. **Previous story continuity.** Regardless of which context source succeeded above, scan `{implementation_artifacts}` for specs from the same epic with `status: done` and a lower story number. Load the most recent one (highest story number below current). Extract its **Code Map**, **Design Notes**, **Spec Change Log**, and **task list** as continuity context for step-02 planning. If no `done` spec is found but an `in-review` spec exists for the same epic with a lower story number, write the missing continuity decision to the result artifact and **BLOCKED EXIT**.
+     5. **Previous story continuity.** Regardless of which context source succeeded above, scan `{implementation_artifacts}` for specs from the same epic with `status: done` and a lower story number. Load the most recent one (highest story number below current). Extract its **Code Map**, **Design Notes**, **Spec Change Log**, and **task list** as continuity context for step-02 planning. If no `done` spec is found but an `in-review` spec exists for the same epic with a lower story number, HALT with status `blocked` and blocking condition `missing previous-story continuity decision`.
 
      **B) Freeform path** — if the intent is not an epic story:
      - Planning artifacts are the output of BMAD phases 1-3. Typical files include:
@@ -54,8 +53,8 @@ If the invocation prompt does not contain enough intent to identify what to impl
        - **Epics** (`*epic*`) — feature breakdown into implementable stories
        - **Product Brief** (`*brief*`) — project vision and scope
      - Scan the listing for files matching these patterns. If any look relevant to the current intent, load them selectively — you don't need all of them, but you need the right constraints and requirements rather than guessing from code alone.
-2. Clarify intent. Do not fantasize, do not leave open questions. If you must ask questions, write them as a blocked condition in the result artifact and **BLOCKED EXIT**.
-3. Version control sanity check. Is the working tree clean? Does the current branch make sense for this intent — considering its name and recent history? If the tree is dirty or the branch is an obvious mismatch, write the condition to the result artifact and **BLOCKED EXIT**. If version control is unavailable, skip this check.
+2. Clarify intent. Do not fantasize, do not leave open questions. If you must ask questions, HALT with status `blocked` and those questions as blocking condition.
+3. Version control sanity check. Is the working tree clean? Does the current branch make sense for this intent — considering its name and recent history? If the tree is dirty or the branch is an obvious mismatch, HALT with status `blocked` and that condition as blocking condition. If version control is unavailable, skip this check.
 4. Multi-goal warning. If the intent appears to contain multiple independently shippable goals, carry `multiple-goals` forward so step-02 can add it to `{spec_file}` frontmatter `warnings`. Do not split or block.
 5. Route:
 
