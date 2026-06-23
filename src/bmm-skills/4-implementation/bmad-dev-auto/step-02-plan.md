@@ -20,7 +20,7 @@ deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 
 ### READY-FOR-DEVELOPMENT GATE
 
-Re-read `{spec_file}` from disk and verify it meets the READY FOR DEVELOPMENT standard in `./SKILL.md`.
+Re-read `./SKILL.md`, then re-read `{spec_file}` from disk and verify the spec meets the READY FOR DEVELOPMENT standard.
 
 - **If the file is missing:** HALT with status `blocked` and blocking condition `planned spec file disappeared before implementation`.
 - **If the spec meets the standard:** set `{spec_file}` frontmatter status to `ready-for-dev`, then continue to step 3.
