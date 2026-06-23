@@ -1,10 +1,10 @@
 ---
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
-import { getEntry } from 'astro:content';
+import { getEntry, render } from 'astro:content';
 import { translatedLocales } from '../lib/locales.mjs';
 
 const entry = await getEntry('docs', '404');
-const { Content } = await entry.render();
+const { Content } = await render(entry);
 ---
 
 <StarlightPage frontmatter={{ title: entry.data.title, template: entry.data.template }}>

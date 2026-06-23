@@ -1233,6 +1233,9 @@ class Installer {
       `    1. Launch your AI agent from your project folder`,
       `    2. Not sure what to do? Invoke the ${color.cyan('bmad-help')} skill and ask it what to do!`,
       '',
+      `    ${color.cyan('Tip:')} BMAD workflows increasingly run Python scripts via ${color.cyan('uv run')} — uv is`,
+      `    becoming the de facto standard. If you don't have it yet, ask your agent to set it up.`,
+      '',
       `    Blog, Docs and Guides: ${color.blue('https://bmadcode.com/')}`,
       `    Community: ${color.blue('https://discord.gg/gk8jAdXWmj')}`,
     );

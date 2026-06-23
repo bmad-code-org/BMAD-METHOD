@@ -4,7 +4,7 @@ The Validate intent playbook. Standalone — this intent critiques an existing P
 
 ## Orient
 
-Source-extract against `.decision-log.md`, any original inputs, and the PRD/addendum themselves. Delegate to subagents per PRD Discipline → "Extract, don't ingest" (in SKILL.md); the parent assembles from extracts.
+Source-extract against `.memlog.md`, any original inputs, and the PRD/addendum themselves. Delegate to subagents per PRD Discipline → "Extract, don't ingest" (in SKILL.md); the parent assembles from extracts.
 
 ## Run the Reviewer Gate
 

@@ -15,7 +15,7 @@
    ============================================ */
 :root {
   --ai-banner-height: 2.75rem;
-  --sl-nav-height: 6.25rem; /* Base nav height (~3.5rem) + banner height (2.75rem) */
+  --sl-nav-height: 9rem; /* Base nav (3.5rem) + two announcement banners (2.75rem each) */
 
   /* Full-width content - override Starlight's default 45rem/67.5rem */
   --sl-content-width: 65rem;

@@ -12,6 +12,10 @@ startMessage: |
   🌟 100% free. 100% open source. Always.
      No paywalls. No gated content. Knowledge shared, not sold.
 
+  🐍 HEADS UP: uv (https://docs.astral.sh/uv/) is becoming the de facto standard
+     for running the Python scripts BMAD workflows rely on (`uv run <script>`).
+     If it's not set up yet, ask your AI agent to "install and set up uv for me".
+
   🌐 CONNECT:
     Website:   https://bmadcode.com/
     Discord:   https://discord.gg/gk8jAdXWmj

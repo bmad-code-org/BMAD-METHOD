@@ -70,10 +70,10 @@ BMad helps you build software through guided workflows with specialized AI agent
 
 | Phase | Name           | What Happens                                                 |
 | ----- | -------------- | ------------------------------------------------------------ |
-| 1     | Analysis       | Brainstorming, research, product brief or PRFAQ _(optional)_ |
-| 2     | Planning       | Create requirements (PRD or spec)                            |
-| 3     | Solutioning    | Design architecture _(BMad Method/Enterprise only)_          |
-| 4     | Implementation | Build epic by epic, story by story                           |
+| 1     | Analysis       | Brainstorming, research, forge idea, product brief or PRFAQ _(optional)_ |
+| 2     | Planning       | Create requirements and design PRD, UX, SPEC                 |
+| 3     | Solutioning    | Design architecture spine or detailed project or system architectures          |
+| 4     | Implementation | Build epic by epic, story by story with quick dev or automated epic delivery    |
 
 **[Open the Workflow Map](../reference/workflow-map.md)** to explore phases, workflows, and context management.
 
@@ -139,16 +139,17 @@ Create it manually at `_bmad-output/project-context.md` or generate it after arc
 All workflows in this phase are optional. [**Not sure which to use?**](../explanation/analysis-phase.md)
 
 - **brainstorming** (`bmad-brainstorming`) — Guided ideation
+- **forge-idea** (`bmad-forge-idea`) — Pressure-test an idea until it hardens or dies cheaply
 - **research** (`bmad-market-research` / `bmad-domain-research` / `bmad-technical-research`) — Market, domain, and technical research
 - **product-brief** (`bmad-product-brief`) — Recommended foundation document when your concept is clear
-- **prfaq** (`bmad-prfaq`) — Working Backwards challenge to stress-test and forge your product concept
+- **prfaq** (`bmad-prfaq`) — Working Backwards challenge to stress-test your product concept customer-first
 
 ### Phase 2: Planning (Required)
 
 **For BMad Method and Enterprise tracks:**
 
 1. Run `bmad-prd` in a new chat — state your intent (Create / Update / Validate) or let the skill ask
-2. Output: `prd.md`, `addendum.md`, `decision-log.md`
+2. Output: `prd.md`, `addendum.md`, `.memlog.md`
 
 :::note[`bmad-prd` intents]
 
