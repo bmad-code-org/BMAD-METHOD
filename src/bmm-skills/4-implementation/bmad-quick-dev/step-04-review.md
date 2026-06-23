@@ -22,7 +22,7 @@ Do NOT `git add` anything — this is read-only inspection.
 
 ### Review
 
-Launch two subagents without conversation context. If no sub-agents are available, generate two review prompt files in `{implementation_artifacts}` — one per reviewer role below — and HALT. Ask the human to run each in a separate session (ideally a different LLM) and paste back the findings.
+Launch two subagents without conversation context. If no subagents are available, generate two review prompt files in `{implementation_artifacts}` — one per reviewer role below — and HALT. Ask the human to run each in a separate session (ideally a different LLM) and paste back the findings.
 
 - **Blind hunter** — receives inline `{diff_output}` only. No spec, no context docs, no project access. Invoke via the `bmad-review-adversarial-general` skill.
 - **Edge case hunter** — receives `{diff_output}` and read access to the project. Invoke via the `bmad-review-edge-case-hunter` skill.
