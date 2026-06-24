@@ -77,7 +77,7 @@ Prepare `Auto Run Result` details:
 - Summary of implemented change
 - Files changed with one-line descriptions
 - Review findings breakdown: patches applied, items deferred, items rejected
-- Follow-up review recommendation: `true` iff the final review pass fixed one or more `medium` or `high` patch findings; otherwise `false`
+- Follow-up review recommendation: `true` only when the final review pass fixed one or more `medium` or `high` patch findings; otherwise `false`
 - Verification performed, including command outcomes or manual inspection notes
 - Any residual risks
 
