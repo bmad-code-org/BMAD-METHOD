@@ -20,7 +20,7 @@ If the invocation prompt explicitly points to an existing spec file with recogni
 - `ready-for-dev` or `in-progress` → `./step-03-implement.md`
 - `in-review` → `./step-04-review.md`
 - `blocked` → HALT with status `blocked` and blocking condition `blocked spec supplied`.
-- `done` → ingest as context and proceed to INSTRUCTIONS — do not resume.
+- `done` → set `review_loop_iteration` to `0` in the frontmatter, then **EARLY EXIT** to `./step-04-review.md` for a fresh review pass. (A `done` spec is a completed run, so this starts a follow-up review, not a resumption.)
 
 Otherwise, treat the invocation prompt as starting intent. This may be a story ID, ticket ID, file path, short description, or longer free-form intent. Do not infer workflow state from non-spec files.
 If the invocation prompt does not contain enough intent to identify what to implement, HALT with status `blocked` and blocking condition `unclear intent`.
