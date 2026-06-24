@@ -1,8 +1,8 @@
 # DO NOT EDIT -- overwritten on every update.
 #
-# Default customization values for bmad-quick-dev.
-# Override in _bmad/custom/bmad-quick-dev.toml or
-# _bmad/custom/bmad-quick-dev.user.toml.
+# Default customization values for bmad-dev-auto.
+# Override in _bmad/custom/bmad-dev-auto.toml or
+# _bmad/custom/bmad-dev-auto.user.toml.
 #
 # Merge rules:
 # - Strings replace the default.
@@ -11,11 +11,11 @@
 
 [workflow]
 
-# Extra instructions to run before config is loaded and before the user is greeted.
+# Extra instructions to run before config is loaded.
 
 activation_steps_prepend = []
 
-# Extra instructions to run after the greeting and before step 01.
+# Extra instructions to run after config is loaded and before step 01.
 
 activation_steps_append = []
 
@@ -27,7 +27,7 @@ persistent_facts = [
   "file:{project-root}/**/project-context.md",
 ]
 
-# Instruction run after Quick Dev completes.
-# Empty means no extra completion behavior.
+# Instruction run by HALT after writing the terminal result.
+# Empty means no extra terminal behavior.
 
 on_complete = ""

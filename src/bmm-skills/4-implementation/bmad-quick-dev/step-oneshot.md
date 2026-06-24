@@ -19,14 +19,19 @@ Implement the clarified intent directly.
 
 ### Review
 
-Invoke the `bmad-review-adversarial-general` skill in a subagent with the changed files. The subagent gets NO conversation context — to avoid anchoring bias. Launch at the same model capability as the current session. If no sub-agents are available, write the changed files to a review prompt file in `{implementation_artifacts}` and HALT. Ask the human to run the review in a separate session and paste back the findings.
+Invoke the `bmad-review-adversarial-general` skill in a subagent with the changed files. The subagent gets NO conversation context — to avoid anchoring bias. Launch at the same model capability as the current session. If no subagents are available, write the changed files to a review prompt file in `{implementation_artifacts}` and HALT. Ask the human to run the review in a separate session and paste back the findings.
 
 ### Classify
 
 Deduplicate all review findings. Three categories only:
 
 - **patch** — trivially fixable. Auto-fix immediately.
-- **defer** — pre-existing issue not caused by this change. Append to `{deferred_work_file}`.
+- **defer** — pre-existing issue not caused by this change. Append one new entry to `{deferred_work_file}` using this format. Do not modify existing entries or look for duplicates.
+  ```markdown
+  - source_spec: `{spec_file}`
+    summary: <one sentence>
+    evidence: <why this is real>
+  ```
 - **reject** — noise. Drop silently.
 
 If a finding is caused by this change but too significant for a trivial patch, HALT and present it to the human for decision before proceeding.

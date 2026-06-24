@@ -2,17 +2,18 @@
 title: '{title}'
 type: 'feature' # feature | bugfix | refactor | chore
 created: '{date}'
-status: 'draft' # draft | ready-for-dev | in-progress | in-review | done
+status: 'draft' # draft | ready-for-dev | in-progress | in-review | done | blocked
 review_loop_iteration: 0 # incremented by step-04 before each review loopback
 context: [] # optional: `{project-root}/`-prefixed paths to project-wide standards/docs the implementation agent should load. Keep short — only what isn't already distilled into the spec body.
+warnings: [] # optional: machine-readable warnings for orchestration, e.g. oversized, multiple-goals
 ---
 
-<!-- Target: 900–1300 tokens. Above 1600 = high risk of context rot.
+<!-- Aim for 900–1600 tokens. If larger, add `oversized` to frontmatter `warnings` and continue.
      Never over-specify "how" — use boundaries + examples instead.
      Cohesive cross-layer stories (DB+BE+UI) stay in ONE file.
      IMPORTANT: Remove all HTML comments when filling this template. -->
 
-<frozen-after-approval reason="human-owned intent — do not modify unless human renegotiates">
+<intent-contract>
 
 ## Intent
 
@@ -24,12 +25,12 @@ context: [] # optional: `{project-root}/`-prefixed paths to project-wide standar
 
 ## Boundaries & Constraints
 
-<!-- Three tiers: Always = invariant rules. Ask First = human-gated decisions. Never = out of scope + forbidden approaches. -->
+<!-- Three tiers: Always = invariant rules. Block If = decisions that cannot be made unattended. Never = out of scope + forbidden approaches. -->
 
 **Always:** INVARIANT_RULES
 
-**Ask First:** DECISIONS_REQUIRING_HUMAN_APPROVAL
-<!-- Agent: if any of these trigger during execution, HALT and ask the user before proceeding. -->
+**Block If:** DECISIONS_REQUIRING_HUMAN_INPUT
+<!-- Agent: if any of these trigger during execution, HALT with status blocked and the blocking condition. -->
 
 **Never:** NON_GOALS_AND_FORBIDDEN_APPROACHES
 
@@ -39,10 +40,10 @@ context: [] # optional: `{project-root}/`-prefixed paths to project-wide standar
 
 | Scenario | Input / State | Expected Output / Behavior | Error Handling |
 |----------|--------------|---------------------------|----------------|
-| HAPPY_PATH | INPUT | OUTCOME | N/A |
+| HAPPY_PATH | INPUT | OUTCOME | No error expected |
 | ERROR_CASE | INPUT | OUTCOME | ERROR_HANDLING |
 
-</frozen-after-approval>
+</intent-contract>
 
 ## Code Map
 
