@@ -77,7 +77,7 @@ Prepare `Auto Run Result` details:
 - Summary of implemented change
 - Files changed with one-line descriptions
 - Review findings breakdown: patches applied, items deferred, items rejected
-- Follow-up review recommendation: `true` only when the final review pass routed at least 30% of deduplicated findings to `patch` and fixed at least one `medium` or `high` patch finding; otherwise `false`
+- Follow-up review recommendation: `true` when the final review pass either routed at least 30% of deduplicated findings to `patch` or fixed at least one `medium` or `high` patch finding; otherwise `false`
 - Verification performed, including command outcomes or manual inspection notes
 - Any residual risks
 
