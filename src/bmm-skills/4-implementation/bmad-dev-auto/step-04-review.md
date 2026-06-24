@@ -77,10 +77,10 @@ Prepare `Auto Run Result` details:
 - Summary of implemented change
 - Files changed with one-line descriptions
 - Review findings breakdown: patches applied, items deferred, items rejected
-- Follow-up review recommendation: `true` when the final review pass either routed at least 30% of deduplicated findings to `patch` or fixed at least one `medium` or `high` patch finding; otherwise `false`
+- Follow-up review recommendation: `true` when the final review pass made review-driven changes significant enough to benefit from an independent follow-up review; otherwise `false`. Use judgment, not a fixed numeric threshold. Base the judgment on the final pass's triage log and fixes, including patched-finding volume, consequence/severity, breadth, behavior/API/security/data impact, and implementation complexity. Many low-severity patched findings can be significant by volume. Do not recommend follow-up for only a few localized low-consequence fixes.
 - Verification performed, including command outcomes or manual inspection notes
 - Any residual risks
 
-Before HALT with status `done`, set `{spec_file}` frontmatter `followup_review_recommended` from the final-pass heuristic above. Do not set or recommend follow-up review on blocked exits, including review-loop non-convergence.
+Before HALT with status `done`, set `{spec_file}` frontmatter `followup_review_recommended` from the final-pass judgment above. Do not set or recommend follow-up review on blocked exits, including review-loop non-convergence.
 
 HALT with status `done`.
