@@ -42,7 +42,7 @@ Launch two subagents without prior session context.
    - **patch** — caused by the change; trivially fixable without human input. Just part of the diff.
    - **defer** — pre-existing issue not caused by this story, surfaced incidentally by the review. Collect for later focused attention.
    - **reject** — noise. Drop silently. When unsure between defer and reject, prefer reject — only defer findings you are confident are real.
-4. Before any HALT or loopback, append exactly one new entry under `## Review Triage Log` in `{spec_file}` for this review pass. The section is append-only: never rewrite or delete prior entries. Use this format:
+4. Append a new entry to the `## Review Triage Log` section in `{spec_file}`, in this format:
    ```markdown
    ### {date} — Review pass
    - intent_gap: count
