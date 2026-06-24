@@ -25,8 +25,8 @@ Do NOT `git add` anything — this is read-only inspection.
 
 Launch two subagents without prior session context.
 
-- **Blind hunter** — receives inline `{diff_output}` only. No spec, no context docs, no project access. Invoke via the `bmad-review-adversarial-general` skill.
-- **Edge case hunter** — receives `{diff_output}` and read access to the project. Invoke via the `bmad-review-edge-case-hunter` skill.
+- **Blind hunter** — prompt: "Use the `bmad-review-adversarial-general` skill on `{diff_output}`."
+- **Edge case hunter** — prompt: "Use the `bmad-review-edge-case-hunter` skill on `{diff_output}`."
 
 ### Classify
 
