@@ -12,7 +12,7 @@ optional-inputs:
   - 'CI logs'
   - 'Linting reports'
 validation-rules:
-  - 'Only permitted story sections modified: Tasks/Subtasks checkboxes, Dev Agent Record, File List, Change Log, Status'
+  - 'Only permitted story sections modified: Tasks/Subtasks checkboxes, Review Findings checkboxes, Dev Agent Record, File List, Change Log, Status'
   - 'All implementation requirements from story Dev Notes must be satisfied'
   - 'Definition of Done checklist must pass completely'
   - 'Enhanced story context must contain sufficient technical guidance'
@@ -52,7 +52,7 @@ validation-rules:
 - [ ] **File List Complete:** File List includes EVERY new, modified, or deleted file (paths relative to repo root)
 - [ ] **Dev Agent Record Updated:** Contains relevant Implementation Notes and/or Debug Log for this work
 - [ ] **Change Log Updated:** Change Log includes clear summary of what changed and why
-- [ ] **Review Follow-ups:** All review follow-up tasks (marked [AI-Review]) completed and corresponding review items marked resolved (if applicable)
+- [ ] **Review Findings:** All review findings tasks (marked [Review][Patch]) completed and corresponding review items marked resolved (if applicable)
 - [ ] **Story Structure Compliance:** Only permitted sections of story file were modified
 
 ## 🔚 Final Status Verification

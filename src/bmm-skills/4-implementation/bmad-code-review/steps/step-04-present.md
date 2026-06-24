@@ -42,7 +42,7 @@ Otherwise add: `Findings are listed above. No story file was provided, so nothin
 
 ### 4. Resolve decision-needed findings
 
-If `decision_needed` findings exist, present each one with its detail and the options available. The user must decide — the correct fix is ambiguous without their input. Walk through each finding (or batch related ones) and get the user's call. Once resolved, each becomes a `patch`, `defer`, or is dismissed.
+If `decision-needed` findings exist, present each one with its detail and the options available. The user must decide — the correct fix is ambiguous without their input. Walk through each finding (or batch related ones) and get the user's call. Once resolved, each becomes a `patch`, `defer`, or is dismissed.
 
 If the user chooses to defer, ask: Quick one-line reason for deferring this item? (helps future reviews): — then append that reason to both the story file bullet and the `{deferred_work_file}` entry.
 
@@ -87,7 +87,7 @@ Skip this section if `{spec_file}` is not set.
 #### Determine new status based on review outcome
 
 - If all `decision-needed` and `patch` findings were resolved (fixed or dismissed) AND no unresolved HIGH/MEDIUM issues remain: set `{new_status}` = `done`. Update the story file Status section to `done`.
-- If `patch` findings were left as action items, or unresolved issues remain: set `{new_status}` = `in-progress`. Update the story file Status section to `in-progress`.
+- If `patch` findings were left as action items, or unresolved issues remain: set `{new_status}` = `ready-for-dev`. Update the story file Status section to `ready-for-dev`.
 
 Save the story file.
 
@@ -119,7 +119,7 @@ If `{sprint_status}` file does not exist, note that story status was updated in 
 Present the user with follow-up options:
 
 > **What would you like to do next?**
-> 1. **Start the next story** — run `dev-story` to pick up the next `ready-for-dev` story
+> 1. **Continue development** — run `dev-story` to pick up the reviewed story or the next `ready-for-dev` story
 > 2. **Re-run code review** — address findings and review again
 > 3. **Done** — end the workflow
 
