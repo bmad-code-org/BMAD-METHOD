@@ -83,4 +83,6 @@ Prepare `Auto Run Result` details:
 
 Before HALT with status `done`, set `{spec_file}` frontmatter `followup_review_recommended` from the final-pass judgment above. Do not set or recommend follow-up review on blocked exits, including review-loop non-convergence.
 
+If version control is available, commit. Do not push.
+
 HALT with status `done`.
