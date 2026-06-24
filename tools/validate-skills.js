@@ -312,6 +312,11 @@ function validateSkill(skillDir) {
   const name = skillFm && skillFm.name;
   const description = skillFm && skillFm.description;
 
+  // Deprecated skills are thin compatibility shims that forward to a replacement.
+  // They intentionally omit a "Use when" trigger so users are steered to the new
+  // skill instead, so exempt them from the SKILL-06 trigger-phrase requirement.
+  const isDeprecated = typeof description === 'string' && /^\s*deprecated\b/i.test(description);
+
   // --- SKILL-04: name format ---
   if (name && !NAME_REGEX.test(name)) {
     findings.push({
@@ -349,7 +354,7 @@ function validateSkill(skillDir) {
       });
     }
 
-    if (!/use\s+when\b/i.test(description) && !/use\s+if\b/i.test(description)) {
+    if (!isDeprecated && !/use\s+when\b/i.test(description) && !/use\s+if\b/i.test(description)) {
       findings.push({
         rule: 'SKILL-06',
         title: 'description Quality',
