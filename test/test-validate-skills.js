@@ -66,10 +66,7 @@ function hasTriggerFinding(skillName) {
 console.log(`\n${colors.cyan}Skill Validation — SKILL-06 trigger phrase${colors.reset}\n`);
 
 test('deprecated skill is exempt from the trigger-phrase requirement', () => {
-  assert(
-    hasTriggerFinding('deprecated-shim') === false,
-    'Expected no SKILL-06 trigger finding for a DEPRECATED skill',
-  );
+  assert(hasTriggerFinding('deprecated-shim') === false, 'Expected no SKILL-06 trigger finding for a DEPRECATED skill');
 });
 
 test('active skill missing a trigger phrase is still flagged', () => {
@@ -80,10 +77,7 @@ test('active skill missing a trigger phrase is still flagged', () => {
 });
 
 test('active skill with a "Use when" trigger is not flagged', () => {
-  assert(
-    hasTriggerFinding('with-trigger') === false,
-    'Expected no SKILL-06 trigger finding when description contains "Use when"',
-  );
+  assert(hasTriggerFinding('with-trigger') === false, 'Expected no SKILL-06 trigger finding when description contains "Use when"');
 });
 
 // --- Summary ---
