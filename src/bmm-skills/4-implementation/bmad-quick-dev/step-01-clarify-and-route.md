@@ -59,8 +59,8 @@ If the spec is an epic story and `{sprint_status}` exists: find the `development
         - **If missing, empty, or invalid:** continue to step 3.
 
      3. **Compile epic context.** Produce `{implementation_artifacts}/epic-<N>-context.md` by following `./compile-epic-context.md`, in order of preference:
-        - **Preferred — sub-agent:** spawn a sub-agent with `./compile-epic-context.md` as its prompt. Pass it the epic number, the epics file path, the `{planning_artifacts}` directory, and the output path `{implementation_artifacts}/epic-<N>-context.md`.
-        - **Fallback — inline** (for runtimes without sub-agent support, e.g. Copilot, Codex, local Ollama, older Claude): if your runtime cannot spawn sub-agents, or the spawn fails/times out, read `./compile-epic-context.md` yourself and follow its instructions to produce the same output file.
+        - **Preferred — subagent:** spawn a subagent with `./compile-epic-context.md` as its prompt. Pass it the epic number, the epics file path, the `{planning_artifacts}` directory, and the output path `{implementation_artifacts}/epic-<N>-context.md`.
+        - **Fallback — inline** (for runtimes without subagent support, e.g. Copilot, Codex, local Ollama, older Claude): if your runtime cannot spawn subagents, or the spawn fails/times out, read `./compile-epic-context.md` yourself and follow its instructions to produce the same output file.
 
      4. **Verify.** After compilation, verify the output file exists, is non-empty, and starts with `# Epic <N> Context:`. If valid, load it. If verification fails, HALT and report the failure.
 
@@ -82,7 +82,12 @@ If the spec is an epic story and `{sprint_status}` exists: find the `development
    - Present detected distinct goals as a bullet list.
    - Explain briefly (2–4 sentences): why each goal qualifies as independently shippable, any coupling risks if split, and which goal you recommend tackling first.
    - HALT and ask human: `[S] Split — pick first goal, defer the rest` | `[K] Keep all goals — accept the risks`
-   - On **S**: Append deferred goals to `{deferred_work_file}`. Narrow scope to the first-mentioned goal. Continue routing.
+   - On **S**: For each deferred goal, append one new entry to `{deferred_work_file}` using this format. Do not modify existing entries or look for duplicates. Narrow scope to the first-mentioned goal. Continue routing.
+     ```markdown
+     - source_spec: none
+       summary: <one sentence naming the deferred goal>
+       evidence: <why this was split from the current intent>
+     ```
    - On **K**: Proceed as-is.
 5. Route — choose exactly one:
 

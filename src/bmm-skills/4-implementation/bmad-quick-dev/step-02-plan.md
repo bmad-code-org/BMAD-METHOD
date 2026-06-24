@@ -12,14 +12,19 @@ deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 ## INSTRUCTIONS
 
 1. Draft resume check. If `{spec_file}` exists with `status: draft`, read it and capture the verbatim `<frozen-after-approval>...</frozen-after-approval>` block as `preserved_intent`. Otherwise `preserved_intent` is empty.
-2. Investigate codebase. _Isolate deep exploration in sub-agents/tasks where available. To prevent context snowballing, instruct subagents to give you distilled summaries only._
+2. Investigate codebase. _Isolate deep exploration in subagents/tasks where available. To prevent context snowballing, instruct subagents to give you distilled summaries only._
 3. Read `./spec-template.md` fully. Fill it out based on the intent and investigation. If `{preserved_intent}` is non-empty, substitute it for the `<frozen-after-approval>` block in your filled spec before writing. Write the result to `{spec_file}`.
 4. Self-review against READY FOR DEVELOPMENT standard.
 5. If intent gaps exist, do not fantasize, do not leave open questions, HALT and ask the human.
 6. Token count check (see SCOPE STANDARD). If spec exceeds 1600 tokens:
    - Show user the token count.
    - HALT and ask human: `[S] Split — carve off secondary goals` | `[K] Keep full spec — accept the risks`
-   - On **S**: Propose the split — name each secondary goal. Append deferred goals to `{deferred_work_file}`. Rewrite the current spec to cover only the main goal — do not surgically carve sections out; regenerate the spec for the narrowed scope. Continue to checkpoint.
+   - On **S**: Propose the split — name each secondary goal. For each deferred goal, append one new entry to `{deferred_work_file}` using this format. Do not modify existing entries or look for duplicates. Rewrite the current spec to cover only the main goal — do not surgically carve sections out; regenerate the spec for the narrowed scope. Continue to checkpoint.
+     ```markdown
+     - source_spec: `{spec_file}`
+       summary: <one sentence naming the deferred goal>
+       evidence: <why this was split from the current spec>
+     ```
    - On **K**: Continue to checkpoint with full spec.
 
 ### CHECKPOINT 1
