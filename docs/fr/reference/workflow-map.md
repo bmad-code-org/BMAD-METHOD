@@ -85,7 +85,6 @@ Construisez, une story à la fois. L’automatisation complète de la phase 4 ar
 | `bmad-correct-course`  | Gérez les changements significatifs en cours de sprint                               | Plan mis à jour ou réorientation |
 | `bmad-sprint-status`   | Suivez la progression du sprint et le statut des stories                             | Mise à jour du statut du sprint  |
 | `bmad-retrospective`   | Bilan après l’achèvement d’un epic                                                   | Leçons apprises                  |
-| `bmad-investigate`     | Analyse forensique avec conclusions pondérées par les preuves, adaptée au cas traité | `{slug}-investigation.md`        |
 
 ## Flux Rapide (Parcours Parallèle)
 
