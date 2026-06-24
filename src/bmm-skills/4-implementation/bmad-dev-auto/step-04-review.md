@@ -81,7 +81,7 @@ Prepare `Auto Run Result` details:
 - Verification performed, including command outcomes or manual inspection notes
 - Any residual risks
 
-Before HALT with status `done`, set `{spec_file}` frontmatter `followup_review_recommended` from the final-pass judgment above. Do not set or recommend follow-up review on blocked exits, including review-loop non-convergence.
+Set `{spec_file}` frontmatter `followup_review_recommended` from the judgment above.
 
 If version control is available, commit. Do not push.
 
