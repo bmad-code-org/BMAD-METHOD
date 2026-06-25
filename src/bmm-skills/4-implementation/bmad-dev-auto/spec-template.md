@@ -4,6 +4,7 @@ type: 'feature' # feature | bugfix | refactor | chore
 created: '{date}'
 status: 'draft' # draft | ready-for-dev | in-progress | in-review | done | blocked
 review_loop_iteration: 0 # incremented by step-04 before each review loopback
+followup_review_recommended: false # set by step-04 on status: done from the final review pass significance judgment
 context: [] # optional: `{project-root}/`-prefixed paths to project-wide standards/docs the implementation agent should load. Keep short — only what isn't already distilled into the spec body.
 warnings: [] # optional: machine-readable warnings for orchestration, e.g. oversized, multiple-goals
 ---
@@ -70,6 +71,13 @@ warnings: [] # optional: machine-readable warnings for orchestration, e.g. overs
      Each entry records: what finding triggered the change, what was amended, what known-bad state
      the amendment avoids, and any KEEP instructions (what worked well and must survive re-derivation).
      Empty until the first bad_spec loopback. -->
+
+## Review Triage Log
+
+<!-- Append-only. Populated by step-04 on EVERY review pass, including loopbacks and blocked exits.
+     Each entry records triage decision counts for intent_gap, bad_spec, patch, defer, and reject,
+     with per-category severity breakdowns using low/medium/high, plus the findings addressed in
+     that pass. Empty until the first review pass. -->
 
 ## Design Notes
 

@@ -28,7 +28,7 @@ Review with extreme skepticism — assume problems exist. Find at least ten issu
 
 ### Step 3: Present Findings
 
-Output findings as a Markdown list (descriptions only).
+Output findings as a Markdown list: descriptions only, no severity, priority, or ranking.
 
 
 ## HALT CONDITIONS
