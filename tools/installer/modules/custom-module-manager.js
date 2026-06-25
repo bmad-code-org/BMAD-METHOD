@@ -96,12 +96,7 @@ class CustomModuleManager {
         // in that case. Require that the @ comes after the host/path, not inside the auth segment.
         // Rule: the @ is a version suffix only if `before` looks like a complete URL or local path.
         const beforeLooksLikeRepo =
-          before.startsWith('/') ||
-          before.startsWith('./') ||
-          before.startsWith('../') ||
-          before.startsWith('~') ||
-          /^https?:\/\//i.test(before) ||
-          /^git@[^:]+:.+/.test(before);
+          isLocalSourcePath(before) || /^https?:\/\//i.test(before) || /^git@[^:]+:.+/.test(before);
         if (beforeLooksLikeRepo) {
           versionSuffix = candidate;
           trimmed = before;

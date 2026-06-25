@@ -234,6 +234,18 @@ console.log(`\n${colors.cyan}Windows local paths${colors.reset}\n`);
   assert(result.error && result.error.startsWith('Path does not exist:'), 'missing Windows relative path gets path-specific error');
 }
 
+{
+  const result = manager.parseSource(String.raw`C:\__bmad_missing_module__\source@main`);
+  assert(result.type === 'local', 'Windows drive path with @version is treated as local');
+  assert(result.error === 'Local paths do not support @version suffixes', 'Windows drive path rejects @version suffix');
+}
+
+{
+  const result = manager.parseSource(String.raw`.\__bmad_missing_module__\source@main`);
+  assert(result.type === 'local', 'Windows relative path with @version is treated as local');
+  assert(result.error === 'Local paths do not support @version suffixes', 'Windows relative path rejects @version suffix');
+}
+
 // ─── Generic URL handling (any host, any path depth) ────────────────────────
 
 console.log(`\n${colors.cyan}Generic URL handling${colors.reset}\n`);
