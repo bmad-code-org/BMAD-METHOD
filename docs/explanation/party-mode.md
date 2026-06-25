@@ -2,7 +2,7 @@
 title: "Party Mode"
 description: Get your AI agents in one conversation — run them, build your own cast, and choose how independently they think
 sidebar:
-  order: 11
+  order: 10
 ---
 
 Party mode puts your AI agents in one room and lets them talk, to each other and to you. This page explains what a party is, the four ways it can run, how to build your own cast of personas instead of using the installed agents, and how a party remembers you between sessions.

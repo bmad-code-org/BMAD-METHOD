@@ -60,3 +60,6 @@ bmad-distillator
 # bmad-create-ux-design: renamed to bmad-ux (spine-based skill with separate
 # DESIGN.md and EXPERIENCE.md outputs).
 bmad-create-ux-design
+# bmad-investigate: retired. Plain investigation reaches the same conclusions at
+# lower cost.
+bmad-investigate

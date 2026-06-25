@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### 🗑️ Removed
+
+* **bmad-investigate retired.** It reached the same conclusions as plain investigation at higher cost; the case-file artifact didn't justify the overhead.
+
 ## v6.9.0 - 2026-06-21
 
 ### ✨ Headline

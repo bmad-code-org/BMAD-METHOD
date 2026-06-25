@@ -36,7 +36,7 @@ BMad embarque six agents nommés, chacun ancré à une phase de la méthode BMad
 | 📋 **John**, Chef de produit       | Planification  | création de PRD, décomposition epic/story, vérification de la préparation à l’implémentation                             |
 | 🎨 **Sally**, Designer UX          | Planification  | spécifications de design UX                                                                                              |
 | 🏗️ **Winston**, Architecte système  | Solutioning    | architecture technique, vérifications d’alignement                                                                     |
-| 💻 **Amelia**, Ingénieure senior   | Implémentation | exécution de stories, quick-dev, revue de code, planification de sprint, [enquête de code](./forensic-investigation.md)  |
+| 💻 **Amelia**, Ingénieure senior   | Implémentation | exécution de stories, quick-dev, revue de code, planification de sprint  |
 
 Chacun possède une identité codée en dur (nom, titre, domaine) et une couche personnalisable (rôle, principes, style de communication, icône, menu). Vous pouvez réécrire les principes de Mary ou ajouter des éléments de menu ; vous ne pouvez pas la renommer — c’est délibéré. La reconnaissance de marque persiste après personnalisation pour que « hey Mary » active toujours l’analyste, indépendamment de la façon dont une équipe a façonné son comportement.
 

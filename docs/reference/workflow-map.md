@@ -85,7 +85,6 @@ Build it, one story at a time. Phase 4 epic and story automation is now availabl
 | `bmad-correct-course`  | Handle significant mid-sprint changes                                         | Updated plan or re-routing                           |
 | `bmad-sprint-status`   | Track sprint progress and story status                                        | Sprint status update                                 |
 | `bmad-retrospective`   | Review after epic completion                                                  | Lessons learned                                      |
-| `bmad-investigate`     | Forensic case investigation with evidence-graded findings, calibrated to the input | `{slug}-investigation.md` |
 
 ## Quick Flow (Parallel Track)
 

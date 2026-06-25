@@ -2,7 +2,7 @@
 title: "Forge an Idea"
 description: Pressure-test an idea through persona-driven interrogation until it hardens, proves out, or dies cheaply
 sidebar:
-  order: 14
+  order: 13
 ---
 
 Take a half-formed idea and pressure-test it now, in conversation, while changing your mind is still free.
