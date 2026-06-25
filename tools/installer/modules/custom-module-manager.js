@@ -95,8 +95,7 @@ class CustomModuleManager {
         // Avoid consuming the @ in `git@host:owner/repo` — `before` wouldn't end with a path separator
         // in that case. Require that the @ comes after the host/path, not inside the auth segment.
         // Rule: the @ is a version suffix only if `before` looks like a complete URL or local path.
-        const beforeLooksLikeRepo =
-          isLocalSourcePath(before) || /^https?:\/\//i.test(before) || /^git@[^:]+:.+/.test(before);
+        const beforeLooksLikeRepo = isLocalSourcePath(before) || /^https?:\/\//i.test(before) || /^git@[^:]+:.+/.test(before);
         if (beforeLooksLikeRepo) {
           versionSuffix = candidate;
           trimmed = before;
