@@ -11,6 +11,18 @@ function quoteCustomRef(ref) {
   return `"${ref}"`;
 }
 
+function isLocalSourcePath(input) {
+  return (
+    input.startsWith('/') ||
+    input.startsWith('./') ||
+    input.startsWith('../') ||
+    input.startsWith('.\\') ||
+    input.startsWith('..\\') ||
+    input.startsWith('~') ||
+    path.win32.isAbsolute(input)
+  );
+}
+
 /**
  * Manages custom modules installed from user-provided sources.
  * Supports any Git host (GitHub, GitLab, Bitbucket, self-hosted) and local file paths.
@@ -97,8 +109,8 @@ class CustomModuleManager {
       }
     }
 
-    // Local path detection: starts with /, ./, ../, or ~
-    if (trimmed.startsWith('/') || trimmed.startsWith('./') || trimmed.startsWith('../') || trimmed.startsWith('~')) {
+    // Local path detection: POSIX, Windows, relative, or home-relative.
+    if (isLocalSourcePath(trimmed)) {
       if (versionSuffix) {
         return {
           type: 'local',

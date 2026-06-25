@@ -212,6 +212,28 @@ console.log(`\n${colors.cyan}Simple owner/repo URLs (regression check)${colors.r
   assert(result.cloneUrl === 'git@github.com:owner/repo.git', 'SSH cloneUrl unchanged', `Got: ${result.cloneUrl}`);
 }
 
+// ─── Windows local paths ────────────────────────────────────────────────────
+
+console.log(`\n${colors.cyan}Windows local paths${colors.reset}\n`);
+
+{
+  const result = manager.parseSource(String.raw`C:\__bmad_missing_module__\source`);
+  assert(result.type === 'local', 'Windows drive path is treated as local');
+  assert(result.error && result.error.startsWith('Path does not exist:'), 'missing Windows drive path gets path-specific error');
+}
+
+{
+  const result = manager.parseSource('C:/__bmad_missing_module__/source');
+  assert(result.type === 'local', 'Windows forward-slash drive path is treated as local');
+  assert(result.error && result.error.startsWith('Path does not exist:'), 'missing Windows forward-slash path gets path-specific error');
+}
+
+{
+  const result = manager.parseSource(String.raw`.\__bmad_missing_module__\source`);
+  assert(result.type === 'local', 'Windows relative path is treated as local');
+  assert(result.error && result.error.startsWith('Path does not exist:'), 'missing Windows relative path gets path-specific error');
+}
+
 // ─── Generic URL handling (any host, any path depth) ────────────────────────
 
 console.log(`\n${colors.cyan}Generic URL handling${colors.reset}\n`);
