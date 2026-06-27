@@ -1,11 +1,11 @@
 ---
-title: Dev Auto Integration
-description: Orchestrator-facing contract for bmad-dev-auto inputs, outputs, runtime requirements, and terminal states.
+title: Autonomous Development Loops
+description: Reference for running unattended BMad development loops with bmad-dev-auto as the single-iteration worker.
 sidebar:
   order: 7
 ---
 
-`bmad-dev-auto` is like [Quick Dev](../explanation/quick-dev.md), but designed to keep moving without human interaction. You can use it in an interactive session, but its main purpose is to be used in unattended development loops.
+To use BMad in an autonomous development loop, use the `bmad-dev-auto` skill. It is like [Quick Dev](../explanation/quick-dev.md), but designed to keep moving without human interaction. You can use it in an interactive session, but its main purpose is to be used by an orchestrator.
 
 ## What It Does
 
