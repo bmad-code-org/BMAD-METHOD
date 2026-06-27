@@ -33,6 +33,7 @@ Ignore the rest of the codebase unless the provided content explicitly reference
 
 - If `also_consider` input was provided, incorporate those areas into the analysis
 - Walk all branching paths: control flow (conditionals, loops, error handlers, early returns) and domain boundaries (where values, states, or conditions transition). Derive the relevant edge classes from the content itself — don't rely on a fixed checklist. Examples: missing else/default, unguarded inputs, off-by-one loops, arithmetic overflow, implicit type coercion, race conditions, timeout gaps
+- Consider implicit branches: the diff special-cases or changes the handling of one or more members of a fixed set of values — enums, status codes, sentinels, type tags, flags, value ranges. The rest of the set is implicit branches (e.g. the diff changes the `RED` and `YELLOW` cases of a `RED`/`YELLOW`/`GREEN` enum; `GREEN` is the implicit branch)
 - For each path: determine whether the content handles it
 - Collect only the unhandled paths as findings — discard handled ones silently
 
