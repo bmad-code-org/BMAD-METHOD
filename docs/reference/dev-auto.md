@@ -89,6 +89,7 @@ On successful completion, the workflow writes or updates the spec with:
   - Verification performed
   - Residual risks
 - `followup_review_recommended` flag. True if LLM decided another review pass seems worthwhile. It's a suggestion, not a must. Simplest way to give it a second review pass is to re-run the skill pointing it at the spec file.
+- `baseline_revision` and `final_revision` — HEAD before implementation and after the final commit. Together they bracket the run's commits: `git log baseline_revision..final_revision` lists exactly what it produced, and equal values mean no commits were made. Both are `NO_VCS` when version control is unavailable.
 
 If version control is available, the workflow commits the change. It does not push.
 
@@ -153,6 +154,7 @@ An orchestrator integrating `bmad-dev-auto` should:
 - Prefer passing a spec path when resuming prior work
 - Monitor the produced spec file or fallback result file for terminal state
 - Read `status`, `blocking condition`, and `followup_review_recommended` rather than inferring success from chat output alone
+- Use `baseline_revision..final_revision` to identify the commits the run produced, rather than inferring them from git state
 - Expect autonomous file changes and possibly a local commit
 - Handle `blocked` as a routing signal, not just a failure signal
 

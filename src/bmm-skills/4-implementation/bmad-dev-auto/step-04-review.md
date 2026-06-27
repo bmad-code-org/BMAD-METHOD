@@ -85,4 +85,6 @@ Set `{spec_file}` frontmatter `followup_review_recommended` from the judgment ab
 
 If version control is available, commit. Do not push.
 
+Capture `final_revision` (current HEAD after committing, or `NO_VCS` if version control is unavailable) into `{spec_file}` frontmatter.
+
 HALT with status `done`.
