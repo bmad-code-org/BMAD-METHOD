@@ -35,7 +35,11 @@ When invoked from another prompt or process:
 
 ### Step 1: Method Registry Loading
 
-**Action:** Load `./methods.csv` for elicitation methods. If party-mode may participate, resolve the agent roster via:
+**Action:** Load `./methods.csv` for elicitation methods.
+
+**HALT — registry guard:** If `./methods.csv` cannot be read, is empty, is missing the header `num,category,method_name,description,output_pattern`, or contains no method rows, STOP immediately and report to the user: "Advanced Elicitation cannot run — the method registry `methods.csv` is missing or malformed." Do NOT invent methods or proceed from memory.
+
+If party-mode may participate, resolve the agent roster via:
 
 ```bash
 python3 {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key agents
