@@ -85,6 +85,7 @@ Two ideas do most of the work.
 | One-off personas | A persona or two added to the pool, no group needed. |
 | Focus group from data | Hand it customer or survey data; it clusters people by what drives their behavior and builds representative personas. Pair it with `subagent` mode so the customers stay independent. |
 | Review panel | Purpose-built critical lenses that argue about what matters. The shipped Code Review Crew is one. |
+| Deliberation scaffold | A room that makes the human think harder without pretending to be an autonomous decision council. The shipped Anti-Consensus Club is one. |
 | Open-cast room | No fixed roster. The scene names a universe and the room is cast on the fly as the topic shifts. |
 
 A focus group is the case that pays off most. Feed in real profiles and you get a standing panel of representative customers to test an idea against before you build it, each reacting from their own goals and budget instead of agreeing with the last voice.
@@ -115,6 +116,19 @@ Your default party is the agents your installed modules provide. The Code Review
 | Dana | The pragmatist — counters the perfectionists and ranks what's real versus a nit. |
 
 The crew ships defined but inactive. The members sit in the pool and cost nothing until you summon the group, and they never crowd your default room. Run it with `subagent` mode so each lens reviews on its own before the five clash over the findings.
+
+## The Anti-Consensus Club
+
+The Anti-Consensus Club helps with decisions, strategy, designs, and fuzzy questions where one assistant might agree too quickly or keep debating after the useful work is done. It is not a voting body. Its job is to raise useful objections, check claims, stop repetition, and return the decision to the human.
+
+| Member | Lens |
+| --- | --- |
+| Wildcard | Option generator — suggests alternative problem statements, assumptions, and examples. |
+| Level | Claim checker — checks support, missing information, and confidence. |
+| Killjoy | Loop stopper — stops repetition, fake disagreement, and unsupported speculation. |
+| Splinter | Consensus challenger — questions easy agreement and ignored tradeoffs. |
+
+Run it as `/bmad-party-mode --party anti-consensus-club --mode subagent` when the platform supports it. The room recommends that at session start, then stops nagging if you continue in another mode.
 
 ## Steering the conversation
 
