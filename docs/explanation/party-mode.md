@@ -40,6 +40,7 @@ Invoke the skill and say what you want; it works out whether you mean to run a p
 | --- | --- |
 | Start a party in the default mode | `/bmad-party-mode` |
 | Start in a specific mode | `/bmad-party-mode --mode auto` (also `session`, `subagent`, `agent-team`) |
+| Run it once, non-interactively | `/bmad-party-mode --non-interactive "review this PR"` |
 | Open a saved party | `/bmad-party-mode --party code-review-crew` |
 | Conjure a cast on the spot | "party mode with the bridge crew of the Enterprise" |
 | Create or add a party | "party mode, create a new party" |
@@ -64,6 +65,8 @@ The choice matters because one model voicing five personas can quietly converge:
 :::tip[Override for one session]
 Start a party with `--mode subagent` (or `auto`, `agent-team`, `session`) to override the configured default just for that run.
 :::
+
+A party is interactive by default: the opening ask is a starting topic, not a stopping point, and the room stays open round after round until you end it. Answering the first question never ends the party on its own. To run it the other way — serve one intent and stop — start with `--non-interactive`; it runs to a natural close, wraps up, and releases any spawned agents.
 
 ## Custom parties
 
