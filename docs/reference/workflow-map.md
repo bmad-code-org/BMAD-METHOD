@@ -93,7 +93,9 @@ Skip phases 1-3 for small, well-understood work.
 | Workflow         | Purpose                                                                   | Produces           |
 |------------------|---------------------------------------------------------------------------|--------------------|
 | `bmad-quick-dev` | Unified quick flow — clarify intent, plan, implement, review, and present | `spec-*.md` + code |
-| `bmad-dev-auto`  | One unattended development-loop iteration — small intent in, code out      | `spec-*.md` + code |
+| `bmad-dev-auto`  | Runs one unattended development-loop iteration — small intent in, code out | `spec-*.md` + code |
+
+For the reference on unattended development loops with `bmad-dev-auto`, see [Autonomous Development Loops](./dev-auto.md).
 
 ## Context Management
 

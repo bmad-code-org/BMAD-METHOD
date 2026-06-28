@@ -222,6 +222,8 @@ Spec Law enforces eight rules: capabilities carry both intent and success; inten
 
 **Output:** JSON array of findings, each with `location`, `trigger_condition`, `guard_snippet`, and `potential_consequence`
 
+**Deletion check (secondary):** When the diff removes meaningful code, the hunter also flags deletions that drop behavior or contracts without replacement, tagged `kind: deletion` in the same array.
+
 :::note[Complementary Reviews]
 Run both `bmad-review-adversarial-general` and `bmad-review-edge-case-hunter` together for orthogonal coverage. The adversarial review catches quality and completeness issues; the edge case hunter catches unhandled paths.
 :::
