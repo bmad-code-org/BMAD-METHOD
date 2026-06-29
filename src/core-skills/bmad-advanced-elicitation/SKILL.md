@@ -35,7 +35,11 @@ When invoked from another prompt or process:
 
 ### Step 1: Method Registry Loading
 
-**Action:** Load `./methods.csv` for elicitation methods. If party-mode may participate, resolve the agent roster via:
+**Action:** Load `./methods.csv` for elicitation methods.
+
+**Fallback (registry unavailable):** If `./methods.csv` cannot be read, is empty, or is malformed (missing the `num,category,method_name,description,output_pattern` header or containing no usable rows), do NOT halt. Proceed using a built-in default set of well-known elicitation techniques drawn from your own knowledge — for example: Critique and Refine, First Principles, Pre-Mortem, Red Team vs Blue Team, Stakeholder Round Table, Tree of Thoughts. Briefly note to the user that the method registry was unavailable so you are using built-in defaults, then continue the flow normally.
+
+If party-mode may participate, resolve the agent roster via:
 
 ```bash
 python3 {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key agents
