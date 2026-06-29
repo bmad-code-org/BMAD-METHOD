@@ -102,6 +102,11 @@ class Installer {
 
       const restoreResult = await this._restoreUserFiles(paths, updateState);
 
+      // Surface any "action needed" post-install messages for installed modules
+      // (e.g. run a setup skill) and let the user acknowledge them before the
+      // final summary, so "BMAD is ready to use!" stays the last thing shown.
+      await this._displayPostInstallMessages(config, officialModules);
+
       // Render consolidated summary
       await this.renderInstallSummary(results, {
         bmadDir: paths.bmadDir,
@@ -1244,6 +1249,56 @@ class Installer {
       rounded: true,
       formatBorder: color.green,
     });
+  }
+
+  /**
+   * Display registry-defined post-install messages for the modules installed in
+   * this run. These are "action needed" notices (e.g. "run the bmad-auto-setup
+   * skill") that the user must see to finish setup. They are defined via the
+   * `post-install-message` property on a module's bmad-modules.yaml entry.
+   *
+   * Interactive installs require the user to acknowledge each message (press
+   * Enter); non-interactive (--yes / skipPrompts) installs print the message
+   * and continue without blocking, so CI/scripted installs don't hang.
+   *
+   * @param {Object} config - Install config (config.modules, config.skipPrompts)
+   * @param {Object} officialModules - OfficialModules instance (carries the registry)
+   */
+  async _displayPostInstallMessages(config, officialModules) {
+    const moduleCodes = config.modules || [];
+    if (moduleCodes.length === 0) return;
+
+    const externalManager = officialModules.externalModuleManager;
+    if (!externalManager) return;
+
+    const color = await prompts.getColor();
+
+    for (const code of moduleCodes) {
+      let moduleInfo;
+      try {
+        moduleInfo = await externalManager.getModuleByCode(code);
+      } catch {
+        continue; // Built-in modules (core/bmm) aren't in the registry — skip.
+      }
+
+      const message = moduleInfo && moduleInfo.postInstallMessage;
+      if (!message) continue;
+
+      await prompts.box(String(message).trim(), `⚑ Action needed — ${moduleInfo.name || code}`, {
+        rounded: true,
+        formatBorder: color.yellow,
+      });
+
+      // Interactive: require the user to acknowledge before continuing. Skip the
+      // blocking prompt in non-interactive installs (the message is still shown).
+      if (!config.skipPrompts) {
+        await prompts.text({
+          message: 'Press Enter to acknowledge',
+          placeholder: '',
+          default: '',
+        });
+      }
+    }
   }
 
   /**

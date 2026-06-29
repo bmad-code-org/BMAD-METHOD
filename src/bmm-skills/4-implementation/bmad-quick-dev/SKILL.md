@@ -71,7 +71,6 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 - `date` as system-generated current datetime
 - `sprint_status` = `{implementation_artifacts}/sprint-status.yaml`
 - `project_context` = `**/project-context.md` (load if exists)
-- CLAUDE.md / memory files (load if exist)
 - YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
 - Language MUST be tailored to `{user_skill_level}`
 - Generate all documents in `{document_output_language}`

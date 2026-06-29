@@ -8,6 +8,7 @@ deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 
 - YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
 - NEVER auto-push.
+- All review subagents must run at the same model capability as the current session.
 
 ## INSTRUCTIONS
 
@@ -19,7 +20,9 @@ Implement the clarified intent directly.
 
 ### Review
 
-Invoke the `bmad-review-adversarial-general` skill in a subagent with the changed files. The subagent gets NO conversation context — to avoid anchoring bias. Launch at the same model capability as the current session. If no subagents are available, write the changed files to a review prompt file in `{implementation_artifacts}` and HALT. Ask the human to run the review in a separate session and paste back the findings.
+Launch Blind Hunter without prior conversation context. If no subagents are available, generate one review prompt file in `{implementation_artifacts}` and HALT. Ask the human to run it in a separate session and paste back the findings.
+
+- **Blind Hunter** — prompt: "Invoke the `bmad-review-adversarial-general` skill on the changed files."
 
 ### Classify
 
