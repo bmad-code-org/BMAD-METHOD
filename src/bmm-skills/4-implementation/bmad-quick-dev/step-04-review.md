@@ -21,7 +21,7 @@ Do NOT `git add` anything — this is read-only inspection.
 
 ### Review
 
-Launch Blind Hunter and Edge Case Hunter in parallel without prior conversation context. If no subagents are available, generate two review prompt files in `{implementation_artifacts}` — one per reviewer role below — and HALT. Ask the human to run each in a separate session (ideally a different LLM) and paste back the findings.
+Launch Blind Hunter, Edge Case Hunter, and Verification Gap Reviewer in parallel without prior conversation context. If no subagents are available, generate three review prompt files in `{implementation_artifacts}` — one per reviewer role below — and HALT. Ask the human to run each in a separate session (ideally a different LLM) and paste back the findings.
 
 - **Blind Hunter** — prompt:
   > Invoke the `bmad-review-adversarial-general` skill on this diff:
@@ -29,6 +29,10 @@ Launch Blind Hunter and Edge Case Hunter in parallel without prior conversation 
   > {diff_output}
 - **Edge Case Hunter** — prompt:
   > Invoke the `bmad-review-edge-case-hunter` skill on this diff:
+  >
+  > {diff_output}
+- **Verification Gap Reviewer** — prompt:
+  > Invoke the `bmad-review-verification-gap` skill on this diff:
   >
   > {diff_output}
 
