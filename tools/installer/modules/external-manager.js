@@ -132,6 +132,7 @@ class ExternalModuleManager {
       deprecated: mod.deprecated === true,
       deprecationMessage: mod.deprecation_message || mod['deprecation-message'] || mod.deprecationMessage || null,
       marketplacePlugin: mod.marketplace_plugin === true || mod['marketplace-plugin'] === true || mod.marketplacePlugin === true,
+      postInstallMessage: mod.post_install_message || mod['post-install-message'] || mod.postInstallMessage || null,
       builtIn: mod.built_in === true,
       isExternal: mod.built_in !== true,
     };
