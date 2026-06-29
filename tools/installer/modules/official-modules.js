@@ -277,7 +277,27 @@ class OfficialModules {
       await fs.remove(targetPath);
     }
 
-    await this.copyModuleWithFiltering(sourcePath, targetPath, fileTrackingCallback, options.moduleConfig);
+    // Marketplace-plugin registry modules keep their installable skills outside
+    // the directory that holds module.yaml (sourcePath points at the -setup
+    // skill's assets/). Copy each resolved skill directory and place
+    // module-help.csv at the module root, matching how custom marketplace
+    // installs lay out a module. Everything else (manifest, version info) flows
+    // through the standard external-module path below.
+    const pluginResolution = this.externalModuleManager.getPluginResolution(moduleName);
+    if (pluginResolution && Array.isArray(pluginResolution.skillPaths) && pluginResolution.skillPaths.length > 0) {
+      await fs.ensureDir(targetPath);
+      for (const skillPath of pluginResolution.skillPaths) {
+        const skillTarget = path.join(targetPath, path.basename(skillPath));
+        await this.copyModuleWithFiltering(skillPath, skillTarget, fileTrackingCallback, options.moduleConfig);
+      }
+      if (pluginResolution.moduleHelpCsvPath) {
+        const helpTarget = path.join(targetPath, 'module-help.csv');
+        await fs.copy(pluginResolution.moduleHelpCsvPath, helpTarget, { overwrite: true });
+        if (fileTrackingCallback) fileTrackingCallback(helpTarget);
+      }
+    } else {
+      await this.copyModuleWithFiltering(sourcePath, targetPath, fileTrackingCallback, options.moduleConfig);
+    }
 
     if (!options.skipModuleInstaller) {
       await this.createModuleDirectories(moduleName, bmadDir, options);
