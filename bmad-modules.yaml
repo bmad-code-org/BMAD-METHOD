@@ -7,6 +7,25 @@
 # default_channel (optional) — the install channel when the user does not
 # override with --channel/--pin/--next. Valid values: stable | next.
 # Omit to inherit the installer's hardcoded default (stable).
+#
+# deprecated (optional, default false) — when true, the module is hidden from
+# the installer picker UNLESS it is already installed (so existing users can
+# still see/manage it, but new users are not offered it).
+# deprecation-message (optional) — surfaced in the picker hint for a deprecated
+# module that is still installed; use it to point users to the replacement.
+#
+# marketplace-plugin (optional, default false) — when true, the module's
+# installable skills are resolved from its .claude-plugin/marketplace.json via
+# the plugin resolver (instead of copying the single module-definition dir).
+# Use this for modules whose module.yaml does not sit alongside the skill
+# folders. module-definition should still point at the real module.yaml so
+# config/version lookups work.
+#
+# post-install-message (optional) — an "action needed" notice shown to the user
+# after install completes, once for each install run that includes the module.
+# Interactive installs require the user to acknowledge it (press Enter);
+# non-interactive (--yes) installs print it and continue. Use for required
+# follow-up steps (e.g. "run the X setup skill").
 
 modules:
   bmad-method-test-architecture-enterprise:
@@ -41,6 +60,29 @@ modules:
     type: experimental
     npmPackage: bmad-story-automator
     default_channel: next
+    deprecated: true
+    deprecation-message: "BMad Automator has been deprecated and is replaced by BMad Auto (bmad-auto). Install BMad Auto instead."
+
+  bmad-auto:
+    url: https://github.com/bmad-code-org/bmad-auto
+    module-definition: src/automator/data/skills/bmad-auto-setup/assets/module.yaml
+    code: bauto
+    name: "BMad Auto"
+    description: "Automation-mode skills driven by the bmad-auto orchestrator: unattended dev, adversarial review, and deferred-work sweep triage"
+    defaultSelected: false
+    type: bmad-org
+    default_channel: stable
+    # Skills live outside a single module.yaml dir; resolve them from
+    # .claude-plugin/marketplace.json via the plugin resolver (see external-manager).
+    marketplace-plugin: true
+    post-install-message: |
+      BMad Auto installed. To finish setup, run the bmad-auto-setup skill
+      from your agent:
+
+        > use the bmad-auto-setup skill
+
+      It installs the bmad-auto orchestrator tool and wires up the per-project
+      hooks and policy. The automation skills don't run until setup completes.
 
   bmad-creative-intelligence-suite:
     url: https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite

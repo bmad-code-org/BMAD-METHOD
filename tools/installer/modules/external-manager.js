@@ -62,6 +62,13 @@ class ExternalModuleManager {
   // ExternalModuleManager) sees resolutions made during install.
   static _resolutions = new Map();
 
+  // moduleCode → ResolvedModule (from PluginResolver). Populated for registry
+  // modules flagged `marketplace-plugin: true`, whose installable skills live
+  // outside a single module.yaml directory and must be resolved from
+  // .claude-plugin/marketplace.json. Shared across instances so install() can
+  // pick up the resolution computed during findExternalModuleSource.
+  static _pluginResolutions = new Map();
+
   constructor() {}
 
   /**
@@ -71,6 +78,15 @@ class ExternalModuleManager {
    */
   getResolution(moduleCode) {
     return ExternalModuleManager._resolutions.get(moduleCode) || null;
+  }
+
+  /**
+   * Get the cached marketplace-plugin resolution for a module (if any).
+   * @param {string} moduleCode
+   * @returns {Object|null} ResolvedModule from PluginResolver, or null
+   */
+  getPluginResolution(moduleCode) {
+    return ExternalModuleManager._pluginResolutions.get(moduleCode) || null;
   }
 
   /**
@@ -113,6 +129,10 @@ class ExternalModuleManager {
       npmPackage: mod.npm_package || mod.npmPackage || null,
       pluginName: mod.plugin_name || mod.pluginName || null,
       defaultChannel: normalizeChannelName(mod.default_channel || mod.defaultChannel) || 'stable',
+      deprecated: mod.deprecated === true,
+      deprecationMessage: mod.deprecation_message || mod['deprecation-message'] || mod.deprecationMessage || null,
+      marketplacePlugin: mod.marketplace_plugin === true || mod['marketplace-plugin'] === true || mod.marketplacePlugin === true,
+      postInstallMessage: mod.post_install_message || mod['post-install-message'] || mod.postInstallMessage || null,
       builtIn: mod.built_in === true,
       isExternal: mod.built_in !== true,
     };
@@ -468,6 +488,19 @@ class ExternalModuleManager {
       return null;
     }
 
+    // Marketplace-plugin modules (registry entries flagged `marketplace-plugin`)
+    // ship a .claude-plugin/marketplace.json and keep their module.yaml inside a
+    // skill's assets/ rather than in one directory alongside the skills. Resolve
+    // them through the PluginResolver (the same machinery custom-URL installs
+    // use) and return the directory that holds module.yaml so config/version/
+    // directory callers work; install() copies the resolved skill dirs.
+    if (moduleInfo.marketplacePlugin) {
+      const pluginMod = await this.resolvePluginModule(moduleCode, options);
+      if (pluginMod && pluginMod.moduleYamlPath) {
+        return path.dirname(pluginMod.moduleYamlPath);
+      }
+    }
+
     // Clone the external module repo
     const cloneDir = await this.cloneExternalModule(moduleCode, options);
 
@@ -520,6 +553,84 @@ class ExternalModuleManager {
         `Expected '${moduleDefinitionPath}' to exist in ${versionHint}, but it is missing. ` +
         `The repository may have been restructured after this release was tagged.${channelHint}`,
     );
+  }
+
+  /**
+   * Resolve a marketplace-plugin registry module to an installable plugin
+   * definition. Clones the repo (respecting the channel plan), reads its
+   * .claude-plugin/marketplace.json, and runs the PluginResolver against the
+   * plugin matching this module. The result (skillPaths + module.yaml +
+   * module-help.csv) is cached so install() can copy the resolved skill dirs.
+   *
+   * @param {string} moduleCode - Code of the external module
+   * @param {Object} options - Options passed to cloneExternalModule
+   * @returns {Promise<Object|null>} ResolvedModule from PluginResolver, or null
+   *   when the module is not a marketplace plugin or cannot be resolved.
+   */
+  async resolvePluginModule(moduleCode, options = {}) {
+    const moduleInfo = await this.getModuleByCode(moduleCode);
+    if (!moduleInfo || moduleInfo.builtIn || !moduleInfo.marketplacePlugin) {
+      return null;
+    }
+
+    const cloneDir = await this.cloneExternalModule(moduleCode, options);
+
+    const marketplacePath = path.join(cloneDir, '.claude-plugin', 'marketplace.json');
+    if (!(await fs.pathExists(marketplacePath))) {
+      return null;
+    }
+
+    let marketplace;
+    try {
+      marketplace = JSON.parse(await fs.readFile(marketplacePath, 'utf8'));
+    } catch {
+      return null;
+    }
+
+    const plugins = Array.isArray(marketplace.plugins) ? marketplace.plugins : [];
+    if (plugins.length === 0) {
+      return null;
+    }
+
+    // Prefer the plugin whose name matches the registry's plugin_name (or code),
+    // falling back to any plugin that declares skills.
+    const preferredName = moduleInfo.pluginName || moduleInfo.code;
+    const ordered = [...plugins].sort((a, b) => {
+      const am = a?.name === preferredName ? 0 : 1;
+      const bm = b?.name === preferredName ? 0 : 1;
+      return am - bm;
+    });
+
+    const { PluginResolver } = require('./plugin-resolver');
+    const resolver = new PluginResolver();
+
+    for (const plugin of ordered) {
+      if (!plugin || !Array.isArray(plugin.skills) || plugin.skills.length === 0) {
+        continue;
+      }
+      let resolvedMods;
+      try {
+        resolvedMods = await resolver.resolve(cloneDir, plugin);
+      } catch {
+        continue;
+      }
+      if (!resolvedMods || resolvedMods.length === 0) {
+        continue;
+      }
+      // Match the registry code, then the preferred plugin name, then accept a
+      // lone resolved module.
+      const match =
+        resolvedMods.find((mod) => mod.code === moduleCode) ||
+        resolvedMods.find((mod) => mod.code === preferredName) ||
+        (resolvedMods.length === 1 ? resolvedMods[0] : null);
+      if (match) {
+        match.repoUrl = moduleInfo.url;
+        ExternalModuleManager._pluginResolutions.set(moduleCode, match);
+        return match;
+      }
+    }
+
+    return null;
   }
   cachedModules = null;
 }

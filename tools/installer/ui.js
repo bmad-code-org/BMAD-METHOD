@@ -944,25 +944,32 @@ class UI {
       }
     }
 
-    // Add external registry modules (skip built-in duplicates)
-    const externalRegistryModules = registryModules.filter((mod) => !mod.builtIn && !builtInCodes.has(mod.code));
+    // Add external registry modules (skip built-in duplicates and deprecated
+    // modules that are not already installed — deprecated modules stay visible
+    // only so existing users can continue to manage them).
+    const externalRegistryModules = registryModules.filter(
+      (mod) => !mod.builtIn && !builtInCodes.has(mod.code) && (!mod.deprecated || installedModuleIds.has(mod.code)),
+    );
     let externalRegistryEntries = [];
     if (externalRegistryModules.length > 0) {
       const spinner = await prompts.spinner();
       spinner.start('Checking latest module versions...');
 
       externalRegistryEntries = await Promise.all(
-        externalRegistryModules.map(async (mod) => ({
-          code: mod.code,
-          entry: await buildModuleEntry(
+        externalRegistryModules.map(async (mod) => {
+          const entry = await buildModuleEntry(
             mod.code,
             mod.name,
             mod.description,
             mod.defaultSelected,
             mod.url || null,
             mod.defaultChannel || null,
-          ),
-        })),
+          );
+          if (mod.deprecated && mod.deprecationMessage) {
+            entry.hint = entry.hint ? `${entry.hint} — ${mod.deprecationMessage}` : mod.deprecationMessage;
+          }
+          return { code: mod.code, entry };
+        }),
       );
 
       spinner.stop('Checked latest module versions.');
