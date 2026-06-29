@@ -102,6 +102,11 @@ class Installer {
 
       const restoreResult = await this._restoreUserFiles(paths, updateState);
 
+      // Surface any "action needed" post-install messages for installed modules
+      // (e.g. run a setup skill) and let the user acknowledge them before the
+      // final summary, so "BMAD is ready to use!" stays the last thing shown.
+      await this._displayPostInstallMessages(config, officialModules);
+
       // Render consolidated summary
       await this.renderInstallSummary(results, {
         bmadDir: paths.bmadDir,
@@ -111,11 +116,6 @@ class Installer {
         modifiedFiles: restoreResult.modifiedFiles.length > 0 ? restoreResult.modifiedFiles : undefined,
         preInstallVersions,
       });
-
-      // Surface any "action needed" post-install messages for installed modules
-      // (e.g. run a setup skill). Shown after the summary so they're the last
-      // thing the user sees; interactive installs must acknowledge each one.
-      await this._displayPostInstallMessages(config, officialModules);
 
       return {
         success: true,
