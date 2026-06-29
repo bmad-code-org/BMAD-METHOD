@@ -12,13 +12,14 @@
 1. **Normalize** findings into a common format. Expected input formats:
    - Adversarial (Blind Hunter): markdown list of descriptions
    - Edge Case Hunter: JSON array with `location`, `trigger_condition`, `guard_snippet`, `potential_consequence` fields
+   - Verification Gap Reviewer: markdown finding blocks, each with `Changed surface`, `Impacted consumer or site`, `Existing test evidence`, `Missing verification`, `Demonstration`, and `Consequence`. The single line `No verification gaps found.` means the layer ran clean — treat it as zero findings, not a failure or a finding.
    - Acceptance Auditor: markdown list with title, AC/constraint reference, and evidence
 
    If a layer's output does not match its expected format, attempt best-effort parsing. Note any parsing issues for the user.
 
    Convert all to a unified list where each finding has:
    - `id` -- sequential integer
-   - `source` -- `blind`, `edge`, `auditor`, or merged sources (e.g., `blind+edge`)
+   - `source` -- `blind`, `edge`, `vgap`, `auditor`, or merged sources (e.g., `blind+edge`)
    - `title` -- one-line summary
    - `detail` -- full description
    - `location` -- file and line reference (if available)

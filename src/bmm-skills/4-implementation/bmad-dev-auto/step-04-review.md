@@ -22,7 +22,7 @@ Do NOT `git add` anything — this is read-only inspection.
 
 ### Review
 
-Launch Blind Hunter and Edge Case Hunter in parallel without prior conversation context.
+Launch Blind Hunter, Edge Case Hunter, and Verification Gap Reviewer in parallel without prior conversation context.
 
 - **Blind Hunter** — prompt:
   > Invoke the `bmad-review-adversarial-general` skill on this diff:
@@ -30,6 +30,10 @@ Launch Blind Hunter and Edge Case Hunter in parallel without prior conversation 
   > {diff_output}
 - **Edge Case Hunter** — prompt:
   > Invoke the `bmad-review-edge-case-hunter` skill on this diff:
+  >
+  > {diff_output}
+- **Verification Gap Reviewer** — prompt:
+  > Invoke the `bmad-review-verification-gap` skill on this diff:
   >
   > {diff_output}
 
