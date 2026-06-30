@@ -1,0 +1,25 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# Workflow customization surface for bmad-code-review-auto.
+
+[workflow]
+
+# Steps to run before the standard activation.
+
+activation_steps_prepend = []
+
+# Steps to run after config is loaded and before the workflow begins.
+
+activation_steps_append = []
+
+# Facts kept in context for the whole run.
+# Entries are literal text or file references prefixed with "file:".
+
+persistent_facts = [
+  "file:{project-root}/**/project-context.md",
+]
+
+# Instruction run after the terminal result is written.
+# Empty means no extra terminal behavior.
+
+on_complete = ""

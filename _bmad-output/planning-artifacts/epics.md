@@ -4,6 +4,16 @@ status: handoff
 created: "2026-06-30"
 updated: "2026-06-30"
 source_parent_epics: ../../../_bmad-output/planning-artifacts/epics-bmad-tea-workflow-orchestration-2026-06-29/epics.md
+stepsCompleted:
+  - step-01-validate-prerequisites
+  - step-02-design-epics
+  - step-03-create-stories
+  - step-04-final-validation
+inputDocuments:
+  - _bmad-output/planning-artifacts/prd.md
+  - _bmad-output/planning-artifacts/architecture.md
+  - _bmad-output/planning-artifacts/epics.md
+  - _bmad-output/planning-artifacts/implementation-readiness-report-2026-06-30.md
 ---
 
 # BMAD-METHOD Epics: BMAD Code Review Auto
@@ -14,6 +24,110 @@ This file contains the BMAD-METHOD-owned subset of the parent BMAD TEA v2 workfl
 It is local planning input for implementation inside `BMAD-METHOD`.
 It excludes Archon DAG work and BMAD-TEA gate work except where dependency notes are required.
 No BMAD-METHOD story may require traversal out of `BMAD-METHOD` to read parent workspace planning files during implementation.
+
+## Requirements Inventory
+
+### Functional Requirements
+
+M-FR-1: Add `bmad-code-review-auto`.
+BMAD-METHOD must add an automation-native sibling surface named `bmad-code-review-auto`.
+The existing interactive `bmad-code-review` remains available.
+The new surface must be invokable from Archon without Archon reinterpreting BMAD findings.
+
+M-FR-2: Preserve BMAD Review Behavior.
+`bmad-code-review-auto` must use the same review reasoning model as BMAD code review where automation permits it.
+It must preserve applicable review layers and triage vocabulary.
+It must not introduce Archon-specific finding categories.
+
+M-FR-3: Disable Patch Application And Interactive Choices In Automation.
+`bmad-code-review-auto` must not apply code patches.
+It must not offer or execute interactive next-step choices.
+It must write findings and contracts only.
+
+M-FR-4: Emit CR JSON Gate Contract.
+`bmad-code-review-auto` must emit `code-review-auto.gate.json`.
+The contract must include `contract_version`, `workflow`, `story_ref`, `node`, `round`, `gate`, `patch_count`, `decision_needed_count`, `defer_count`, `dismiss_count`, `blocking_findings_count`, `decision_needed_file`, `report_file`, and `story_file`.
+
+M-FR-5: Persist Decision Needed Findings.
+BMAD-METHOD must persist `decision_needed` findings in `decision-needed.json`.
+The artifact must be durable and readable by Archon `decision-needed-check`.
+The artifact must not require a `converted_to_patch` path for v2.
+
+M-FR-6: Sync Deferred Linear References Into BMAD Artifacts.
+BMAD-METHOD must provide or support a sync path that records Linear issue references back into BMAD artifacts after Archon creates or reuses the issues.
+Sync targets are story Review Findings, decision log, deferred-work tracking, and `decision-needed.json`.
+
+M-FR-7: Validate Outcome Mapping With Fixtures.
+BMAD-METHOD must provide fixtures or deterministic tests for `patch`, `decision_needed`, `defer`, `dismiss`, and invalid or untrusted output.
+
+### NonFunctional Requirements
+
+NFR1: Automation must preserve BMAD review semantics better than an Archon wrapper.
+
+NFR2: Contract output must be stable enough for Archon routing.
+
+NFR3: Human-readable reports may evolve without breaking JSON contract consumers.
+
+NFR4: Interactive BMAD review remains usable outside Archon.
+
+NFR5: Decision-needed follow-up must remain traceable after PR preparation.
+
+NFR6: Errors must be diagnosable as review execution, evidence, contract, or sync failures.
+
+### Additional Requirements
+
+- `bmad-code-review-auto` lives in BMAD-METHOD.
+- Archon may invoke it but does not own its review semantics.
+- The implementation must preserve BMAD review layers where context allows, including Blind Hunter, Edge Case Hunter, and Acceptance Auditor when story context exists.
+- The required triage categories are `patch`, `decision_needed`, `defer`, and `dismiss`.
+- `bmad-code-review-auto` never applies code patches.
+- `code-review-auto.gate.json` is the machine-readable route API.
+- Markdown review reports are human evidence and may evolve.
+- `decision_needed` findings are written to `decision-needed.json`.
+- `decision_needed` findings are not converted to patches in v2.
+- When Archon supplies Linear references, BMAD-METHOD must update story Review Findings, decision log, deferred-work tracking, and `decision-needed.json`.
+- Fixture coverage must include `patch`, `decision_needed`, `defer`, `dismiss`, and invalid or untrusted output.
+- JSON contract validation must prove `PASS`, `FAIL`, `CONCERNS`, and `ERROR`.
+- Implementation agents must not traverse out of this repository to read parent workspace planning files.
+
+### UX Design Requirements
+
+No UX design requirements were found.
+No UX design contract exists, and this scope is not a product UI.
+
+### FR Coverage Map
+
+| FR Number | Epic Coverage |
+| --------- | ------------- |
+| M-FR-1 | Epic M1, Story M1.1 |
+| M-FR-2 | Epic M1, Story M1.2 |
+| M-FR-3 | Epic M1, Story M1.1 |
+| M-FR-4 | Epic M2, Stories M2.1 and M2.2 |
+| M-FR-5 | Epic M3, Story M3.1 |
+| M-FR-6 | Epic M3, Story M3.2 |
+| M-FR-7 | Epic M4, Story M4.1 |
+
+## Epic List
+
+### Epic M1: Automation-Native BMAD Code Review
+
+BMAD-METHOD maintainers and Archon can invoke a non-interactive BMAD-owned review surface that preserves existing review behavior and never patches code.
+**FRs covered:** M-FR-1, M-FR-2, M-FR-3.
+
+### Epic M2: CR Contract And Review Evidence
+
+Archon can route on stable JSON while humans can inspect readable review evidence.
+**FRs covered:** M-FR-4.
+
+### Epic M3: Decision Needed Persistence And Sync
+
+Workflow operators keep human-judgment findings durable and traceable through Linear deferral sync.
+**FRs covered:** M-FR-5, M-FR-6.
+
+### Epic M4: BMAD Review Auto Validation
+
+Maintainers can trust the automated review contract because outcome mapping is covered by deterministic fixtures.
+**FRs covered:** M-FR-7.
 
 ## Epic M1: Automation-Native BMAD Code Review
 
@@ -68,6 +182,14 @@ Integration validation: Fixtures prove `patch`, `decision_needed`, `defer`, and 
 **Then** categories are `patch`, `decision_needed`, `defer`, and `dismiss`
 **And** no Archon-specific category is introduced.
 
+**Given** a finding requires human product, design, or operator judgment
+**When** classification runs
+**Then** it is recorded as `decision_needed`.
+
+**Given** a finding is fixable by development work
+**When** classification runs
+**Then** it is recorded as `patch`.
+
 ## Epic M2: CR Contract And Review Evidence
 
 BMAD-METHOD emits stable machine-readable review output while preserving human review evidence.
@@ -100,6 +222,14 @@ Integration validation: Contract fixtures prove PASS, FAIL, CONCERNS, and ERROR.
 **When** the contract is emitted
 **Then** `gate` is `CONCERNS`
 **And** `decision_needed_file` points to `decision-needed.json`.
+
+**Given** no `patch` and no `decision_needed` findings exist
+**When** the contract is emitted
+**Then** `gate` is `PASS`.
+
+**Given** reviewer execution fails, evidence is invalid, or output is untrusted
+**When** the contract is emitted or validated
+**Then** `gate` is `ERROR`.
 
 ### Story M2.2: Preserve Human Review Report
 

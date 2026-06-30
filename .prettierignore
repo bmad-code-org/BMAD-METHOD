@@ -9,7 +9,9 @@ _bmad/
 _bmad*/
 
 # IDE integration folders (user-specific, not in repo)
+.agents/
 .junie/
+.omx/
 
 # Quality scan artifacts produced by bmad-workflow-builder
 # (per-skill .analysis/ folders contain JSON/HTML reports that should

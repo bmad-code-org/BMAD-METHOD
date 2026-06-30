@@ -5,6 +5,7 @@ name: Quality & Validation
 # - ESLint (linting)
 # - markdownlint (markdown quality)
 # - Installation component tests (compilation)
+# - Code review automation surface tests
 # Keep this workflow aligned with `npm run quality` in `package.json`.
 
 "on":
@@ -105,6 +106,9 @@ jobs:
 
       - name: Test agent compilation components
         run: npm run test:install
+
+      - name: Test code review auto surface
+        run: npm run test:code-review-auto
 
       - name: Validate file references
         run: npm run validate:refs

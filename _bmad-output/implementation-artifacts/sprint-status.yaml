@@ -1,9 +1,9 @@
 # generated: 2026-06-30 10:50:10 +0700
-# last_updated: 2026-06-30 10:50:10 +0700
+# last_updated: 2026-06-30 19:23:01 +0700
 # project: BMAD-METHOD
 # project_key: NOKEY
 # tracking_system: file-system
-# story_location: /Users/dale/Desktop/workspace/OceanLabs/workflow-engine/BMAD-METHOD/_bmad-output/implementation-artifacts
+# story_location: /Users/dale/Desktop/workspace/opensources/BMAD-METHOD/_bmad-output/implementation-artifacts
 
 # STATUS DEFINITIONS:
 # ==================
@@ -41,25 +41,25 @@
 # - Retrospective appends its action items to action_items; sprint-status surfaces open ones
 
 generated: "2026-06-30 10:50:10 +0700"
-last_updated: "2026-06-30 10:50:10 +0700"
+last_updated: "2026-06-30 19:23:01 +0700"
 project: BMAD-METHOD
 project_key: NOKEY
 tracking_system: file-system
-story_location: /Users/dale/Desktop/workspace/OceanLabs/workflow-engine/BMAD-METHOD/_bmad-output/implementation-artifacts
+story_location: /Users/dale/Desktop/workspace/opensources/BMAD-METHOD/_bmad-output/implementation-artifacts
 
 development_status:
-  epic-m1: backlog
-  m1-1-add-bmad-code-review-auto: backlog
-  m1-2-preserve-review-layers-and-triage-vocabulary: backlog
+  epic-m1: in-progress
+  m1-1-add-bmad-code-review-auto: review
+  m1-2-preserve-review-layers-and-triage-vocabulary: done
   epic-m1-retrospective: optional
-  epic-m2: backlog
-  m2-1-emit-code-review-auto-gate-json: backlog
-  m2-2-preserve-human-review-report: backlog
+  epic-m2: in-progress
+  m2-1-emit-code-review-auto-gate-json: ready-for-dev
+  m2-2-preserve-human-review-report: ready-for-dev
   epic-m2-retrospective: optional
-  epic-m3: backlog
-  m3-1-persist-decision-needed-json: backlog
-  m3-2-sync-linear-references-into-bmad-artifacts: backlog
+  epic-m3: in-progress
+  m3-1-persist-decision-needed-json: ready-for-dev
+  m3-2-sync-linear-references-into-bmad-artifacts: ready-for-dev
   epic-m3-retrospective: optional
-  epic-m4: backlog
-  m4-1-add-outcome-mapping-fixtures: backlog
+  epic-m4: in-progress
+  m4-1-add-outcome-mapping-fixtures: ready-for-dev
   epic-m4-retrospective: optional

@@ -37,7 +37,7 @@ export default defineConfig({
   },
 
   integrations: [
-    // Exclude custom 404 pages (all locales) from the sitemap — they are
+    // Exclude custom 404 pages (all locales) from the sitemap - they are
     // treated as normal content docs by Starlight even with disable404Route.
     sitemap({
       filter: (page) => !/\/404(\/|$)/.test(new URL(page).pathname),
