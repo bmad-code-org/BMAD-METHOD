@@ -8,3 +8,7 @@
 commands:
   folder: .archon/commands
   autoLoad: true
+
+# Worktree settings
+worktree:
+  baseBranch: main
