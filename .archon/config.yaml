@@ -1,0 +1,10 @@
+# Archon repository configuration
+# See: https://github.com/coleam00/Archon
+
+# AI assistant preference (optional - overrides global default)
+# assistant: claude
+
+# Commands configuration (optional)
+commands:
+  folder: .archon/commands
+  autoLoad: true
