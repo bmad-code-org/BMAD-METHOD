@@ -1901,6 +1901,52 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test Suite 36b: Root .gitignore keeps generated config uncommitted
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 36b: Root .gitignore for installer-generated config${colors.reset}\n`);
+
+  {
+    const tempBmadDir36b = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-root-gitignore-'));
+
+    try {
+      const generator36b = new ManifestGenerator();
+      const gitignorePath = path.join(tempBmadDir36b, '.gitignore');
+
+      // First install: _bmad/.gitignore is created with root-anchored patterns
+      await generator36b.ensureRootGitignore(tempBmadDir36b);
+      assert(await fs.pathExists(gitignorePath), 'ensureRootGitignore creates _bmad/.gitignore');
+
+      const gitignore = await fs.readFile(gitignorePath, 'utf8');
+      assert(/^\/config\.user\.toml$/m.test(gitignore), '.gitignore excludes /config.user.toml (holds personal user_name)');
+      assert(/^\/config\.toml$/m.test(gitignore), '.gitignore excludes /config.toml');
+      assert(/^\/\*\/config\.yaml$/m.test(gitignore), '.gitignore excludes /*/config.yaml (churn + spread user_name)');
+      // Personal custom overrides are ignored here too, so the documented guarantee
+      // holds even without _bmad/custom/.gitignore
+      assert(/^\/custom\/\*\.user\.toml$/m.test(gitignore), '.gitignore excludes /custom/*.user.toml (personal, documented as gitignored)');
+      // Patterns are root-anchored so committed _bmad/custom/config.toml is NOT ignored
+      assert(!/^config\.toml$/m.test(gitignore), '.gitignore does not use unanchored config.toml (would ignore custom/config.toml)');
+
+      // Idempotent: a second install does not duplicate the managed block
+      await generator36b.ensureRootGitignore(tempBmadDir36b);
+      const afterSecond = await fs.readFile(gitignorePath, 'utf8');
+      const markerCount = (afterSecond.match(/installer-managed \(do not edit\)/g) || []).length;
+      assert(markerCount === 1, 'ensureRootGitignore does not duplicate its managed block on reinstall');
+
+      // Upgrade path: a pre-existing .gitignore WITHOUT the block gets it appended,
+      // and the user's own lines are preserved.
+      await fs.writeFile(gitignorePath, '# my project rules\nlocal-notes.md\n');
+      await generator36b.ensureRootGitignore(tempBmadDir36b);
+      const upgraded = await fs.readFile(gitignorePath, 'utf8');
+      assert(/^local-notes\.md$/m.test(upgraded), 'ensureRootGitignore preserves user-added lines when upgrading');
+      assert(/^\/config\.user\.toml$/m.test(upgraded), 'ensureRootGitignore appends managed rules to an existing .gitignore');
+    } finally {
+      await fs.remove(tempBmadDir36b).catch(() => {});
+    }
+  }
+
+  console.log('');
+
+  // ============================================================
   // Test Suite 37: Agent Preservation for Non-Contributing Modules
   // ============================================================
   console.log(`${colors.yellow}Test Suite 37: Agent Preservation for Non-Contributing Modules${colors.reset}\n`);
