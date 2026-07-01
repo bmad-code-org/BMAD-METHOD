@@ -92,4 +92,6 @@ If version control is available, commit. Do not push.
 
 Capture `final_revision` (current HEAD after committing, or `NO_VCS` if version control is unavailable) into `{spec_file}` frontmatter.
 
+Set `{spec_file}` frontmatter `status: done`.
+
 HALT with status `done`.
