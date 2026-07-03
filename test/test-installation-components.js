@@ -3364,7 +3364,10 @@ async function runTests() {
       let seen = stubUv({ version: { major: 0, minor: 5, patch: 31, raw: '0.5.31' } });
       let result = await uvCheck.checkUvEnvironment();
       assert(result.status === 'found' && seen.success.length === 1, 'uv present logs success');
-      assert(seen.success[0].includes('uv run') && seen.warn.length === 0, 'uv present mentions uv run, no warning');
+      assert(
+        seen.success[0].includes('Python UV check pass') && seen.warn.length === 0,
+        'uv present shows Python UV check pass, no warning',
+      );
 
       // Branch: uv missing — warn + setup note, never blocks (no prompt).
       seen = stubUv(null);

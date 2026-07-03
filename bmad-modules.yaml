@@ -61,14 +61,14 @@ modules:
     npmPackage: bmad-story-automator
     default_channel: next
     deprecated: true
-    deprecation-message: "BMad Automator has been deprecated and is replaced by BMad Auto (bmad-auto). Install BMad Auto instead."
+    deprecation-message: "BMad Automator has been deprecated and is replaced by BMad Loop (bmad-loop). Install BMad Loop instead."
 
-  bmad-auto:
-    url: https://github.com/bmad-code-org/bmad-auto
-    module-definition: src/automator/data/skills/bmad-auto-setup/assets/module.yaml
-    code: bauto
-    name: "BMad Auto"
-    description: "Automation-mode skills driven by the bmad-auto orchestrator: unattended dev, adversarial review, and deferred-work sweep triage"
+  bmad-loop:
+    url: https://github.com/bmad-code-org/bmad-loop
+    module-definition: src/automator/data/skills/bmad-loop-setup/assets/module.yaml
+    code: bmad-loop
+    name: "BMad Loop"
+    description: "Automation-mode skills driven by the bmad-loop orchestrator: unattended dev, adversarial review, and deferred-work sweep triage"
     defaultSelected: false
     type: bmad-org
     default_channel: stable
@@ -76,12 +76,12 @@ modules:
     # .claude-plugin/marketplace.json via the plugin resolver (see external-manager).
     marketplace-plugin: true
     post-install-message: |
-      BMad Auto installed. To finish setup, run the bmad-auto-setup skill
+      BMad Loop installed. To finish setup, run the bmad-loop-setup skill
       from your agent:
 
-        > use the bmad-auto-setup skill
+        > use the bmad-loop-setup skill
 
-      It installs the bmad-auto orchestrator tool and wires up the per-project
+      It installs the bmad-loop orchestrator tool and wires up the per-project
       hooks and policy. The automation skills don't run until setup completes.
 
   bmad-creative-intelligence-suite:

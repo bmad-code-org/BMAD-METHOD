@@ -1253,7 +1253,7 @@ class Installer {
 
   /**
    * Display registry-defined post-install messages for the modules installed in
-   * this run. These are "action needed" notices (e.g. "run the bmad-auto-setup
+   * this run. These are "action needed" notices (e.g. "run the bmad-loop-setup
    * skill") that the user must see to finish setup. They are defined via the
    * `post-install-message` property on a module's bmad-modules.yaml entry.
    *
