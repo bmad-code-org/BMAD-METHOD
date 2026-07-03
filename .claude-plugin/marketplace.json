@@ -29,7 +29,8 @@
         "./src/core-skills/bmad-editorial-review-structure",
         "./src/core-skills/bmad-index-docs",
         "./src/core-skills/bmad-review-adversarial-general",
-        "./src/core-skills/bmad-review-edge-case-hunter"
+        "./src/core-skills/bmad-review-edge-case-hunter",
+        "./src/core-skills/bmad-review-verification-gap"
       ]
     },
     {

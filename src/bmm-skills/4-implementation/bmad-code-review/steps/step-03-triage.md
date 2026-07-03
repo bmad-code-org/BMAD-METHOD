@@ -9,16 +9,9 @@
 
 ## INSTRUCTIONS
 
-1. **Normalize** findings into a common format. Expected input formats:
-   - Adversarial (Blind Hunter): markdown list of descriptions
-   - Edge Case Hunter: JSON array with `location`, `trigger_condition`, `guard_snippet`, `potential_consequence` fields
-   - Acceptance Auditor: markdown list with title, AC/constraint reference, and evidence
-
-   If a layer's output does not match its expected format, attempt best-effort parsing. Note any parsing issues for the user.
-
-   Convert all to a unified list where each finding has:
+1. **Normalize** findings from all layers into a unified list where each finding has:
    - `id` -- sequential integer
-   - `source` -- `blind`, `edge`, `auditor`, or merged sources (e.g., `blind+edge`)
+   - `source` -- `blind`, `edge`, `vgap`, `auditor`, or merged sources (e.g., `blind+edge`)
    - `title` -- one-line summary
    - `detail` -- full description
    - `location` -- file and line reference (if available)

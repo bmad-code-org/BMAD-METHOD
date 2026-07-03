@@ -13,7 +13,7 @@ failed_layers: '' # set at runtime: comma-separated list of layers that failed o
 
 1. If `{review_mode}` = `"no-spec"`, note to the user: "Acceptance Auditor skipped — no spec file provided."
 
-2. Launch Blind Hunter and Edge Case Hunter in parallel without prior conversation context. If `{review_mode}` = `"full"`, include the Acceptance Auditor in the same parallel launch. If subagents are not available, generate prompt files in `{implementation_artifacts}` for each applicable reviewer role and HALT. Ask the user to run each in a separate session (ideally a different LLM) and paste back the findings. When findings are pasted, resume from this point and proceed to step 3.
+2. Launch Blind Hunter, Edge Case Hunter, and Verification Gap Reviewer in parallel without prior conversation context. If `{review_mode}` = `"full"`, include the Acceptance Auditor in the same parallel launch. If subagents are not available, generate prompt files in `{implementation_artifacts}` for each applicable reviewer role and HALT. Ask the user to run each in a separate session (ideally a different LLM) and paste back the findings. When findings are pasted, resume from this point and proceed to step 3.
 
    - **Blind Hunter** — prompt:
      > Invoke the `bmad-review-adversarial-general` skill on this diff:
@@ -22,6 +22,11 @@ failed_layers: '' # set at runtime: comma-separated list of layers that failed o
 
    - **Edge Case Hunter** — prompt:
      > Invoke the `bmad-review-edge-case-hunter` skill on this diff:
+     >
+     > {diff_output}
+
+   - **Verification Gap Reviewer** — prompt:
+     > Invoke the `bmad-review-verification-gap` skill on this diff:
      >
      > {diff_output}
 
