@@ -1,0 +1,5 @@
+[workflow]
+activation_steps_prepend = []
+activation_steps_append = []
+persistent_facts = ["Data-driven iteration — no feature without a hypothesis."]
+on_complete = "Schedule next iteration cycle. Offer bmad-apf-experiment for A/B tests."

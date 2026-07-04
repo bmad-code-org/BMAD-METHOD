@@ -117,3 +117,25 @@ modules:
     type: bmad-org
     npmPackage: bmad-wds
     default_channel: stable
+
+  ai-product-factory:
+    url: https://github.com/kilokid/BMAD-TEMPLATE
+    module-definition: expansion-packs/ai-product-factory/module.yaml
+    code: apf
+    name: "AI Product Factory"
+    description: "Operating system for builders — transform a single idea into a production-ready digital product"
+    defaultSelected: false
+    type: bmad-org
+    default_channel: next
+    post-install-message: |
+      AI Product Factory installed. To launch your startup:
+
+        > use the bmad-apf-launch-startup skill
+
+      Or validate an idea first:
+
+        > use the bmad-apf-validate-idea skill
+
+      Talk to the Startup Coach anytime:
+
+        > use the bmad-apf-startup-coach skill

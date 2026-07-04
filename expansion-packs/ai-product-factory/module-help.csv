@@ -1,0 +1,13 @@
+module,skill,display-name,menu-code,description,action,args,phase,preceded-by,followed-by,required,output-location,outputs
+AI Product Factory,_meta,,,,,,,,,false,,
+AI Product Factory,bmad-apf-launch-startup,Launch Startup,LS,Full orchestrated workflow from idea to production-ready startup launch.,,,anytime,,,false,apf_artifacts,launch artifacts
+AI Product Factory,bmad-apf-validate-idea,Validate Idea,VI,Validate a startup idea with structured analysis before any build investment.,,,anytime,,,false,apf_artifacts,validation report
+AI Product Factory,bmad-apf-startup-coach,Startup Coach,SC,Orchestrate the founder journey from idea to launch.,,,anytime,,,false,apf_artifacts,phase routing
+AI Product Factory,bmad-apf-generate-prd,Generate PRD,GP,Generate PRD from AI Product Factory founder artifacts.,,,anytime,,,false,apf_artifacts|planning_artifacts,prd
+AI Product Factory,bmad-apf-generate-ux,Generate UX,GU,Generate UX flows wireframes and navigation from PRD.,,,anytime,bmad-apf-generate-prd,,false,apf_artifacts,ux artifacts
+AI Product Factory,bmad-apf-generate-design-system,Design System,DS,Generate design system with tokens and component catalog.,,,anytime,bmad-apf-generate-ux,,false,apf_artifacts,design system
+AI Product Factory,bmad-apf-choose-stack,Choose Stack,CS,Select optimal tech stack for the product.,,,anytime,bmad-apf-generate-prd,,false,apf_artifacts,tech stack
+AI Product Factory,bmad-apf-build-mvp,Build MVP,BM,Build MVP via Cursor with BMAD orchestration.,,,anytime,bmad-apf-choose-stack,,false,implementation_artifacts,mvp codebase
+AI Product Factory,bmad-apf-deploy-app,Deploy App,DA,Deploy application to production.,,,anytime,bmad-apf-build-mvp,,false,apf_artifacts,deploy report
+AI Product Factory,bmad-apf-generate-landing,Generate Landing,GL,Generate and deploy landing page with SEO and legal pages.,,,anytime,,,false,apf_artifacts,landing page
+AI Product Factory,bmad-apf-iterate-product,Iterate Product,IP,Post-launch product iteration based on analytics and feedback.,,,anytime,bmad-apf-deploy-app,,false,apf_artifacts,iteration plan
