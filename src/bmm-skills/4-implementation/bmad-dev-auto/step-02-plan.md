@@ -23,8 +23,8 @@ deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 Re-read `./SKILL.md`, then re-read `{spec_file}` from disk and verify the spec meets the READY FOR DEVELOPMENT standard.
 
 - **If the file is missing:** HALT with status `blocked` and blocking condition `planned spec file disappeared before implementation`.
-- **If the spec meets the standard:** set `{spec_file}` frontmatter status to `ready-for-dev`, then continue to step 3.
-- **If the spec does not meet the standard:** repair it once, then re-read it from disk and verify again. If it still does not meet the standard, HALT with status `blocked`, blocking condition `spec failed ready-for-development standard`, and include the failing criteria and evidence gathered.
+- **If the spec meets the standard:** set `{spec_file}` frontmatter status to `ready-for-dev`. If the invocation prompt directs a halt after planning (standard phrasing: `Halt after planning.` — accept any clear equivalent), HALT with status `ready-for-dev`; otherwise continue to step 3.
+- **If the spec does not meet the standard:** repair it once, then re-read it from disk and verify again. If it now meets the standard, apply the **If the spec meets the standard** handling above, including the halt-after-planning check. If it still does not meet the standard, HALT with status `blocked`, blocking condition `spec failed ready-for-development standard`, and include the failing criteria and evidence gathered.
 
 ## NEXT
 

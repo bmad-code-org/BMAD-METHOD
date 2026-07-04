@@ -1,6 +1,8 @@
 ---
 deferred_work_file: '{implementation_artifacts}/deferred-work.md'
-spec_file: '' # set at runtime for both routes before leaving this step
+spec_file: '' # set at runtime once a route resolves it; some HALT branches exit before it is set
+spec_folder: '' # set at runtime under folder+id dispatch only
+story_id: '' # set at runtime under folder+id dispatch only
 ---
 
 # Step 1: Clarify and Route
@@ -21,6 +23,20 @@ If the invocation prompt explicitly points to an existing spec file with recogni
 - `in-review` → `./step-04-review.md`
 - `blocked` → HALT with status `blocked` and blocking condition `blocked spec supplied`.
 - `done` → set `review_loop_iteration` to `0` in the frontmatter, then **EARLY EXIT** to `./step-04-review.md` for a fresh review pass. (A `done` spec is a completed run, so this starts a follow-up review, not a resumption.)
+
+If the invocation prompt instead supplies a spec folder and a story id, with no specific spec file path, this is a **folder+id dispatch**: set `spec_folder` (a `{project-root}`-relative or absolute path) and `story_id` from the prompt. Any further prompt text (e.g. `invoke_dev_with` guidance the caller appended) is additional planning context to carry into step-02 — not a competing description of what to implement.
+
+Read `{spec_folder}/stories.yaml`. If the file does not exist or fails to parse, HALT with status `blocked` and blocking condition `no stories.yaml found`. Find the entry whose `id` equals `{story_id}`; if none matches, HALT with status `blocked` and blocking condition `story id not found in stories.yaml`. Take only that entry's `title` and `description` — never read the checkpoint fields or `invoke_dev_with`; those are the caller's orchestration fields, not dev-auto's.
+
+Look for files matching `{spec_folder}/stories/{story_id}-*.md` (id-prefix match — story ids are prefix-free, so at most one should match):
+- **If more than one matches**, HALT with status `blocked` and blocking condition `ambiguous story file match`.
+- **If exactly one matches**, set `spec_file` to that path.
+  - `draft` (planning was interrupted mid-flight): accumulate cross-story context before resuming — load every other file matching `{spec_folder}/stories/*.md` (every match except `{spec_file}` itself), regardless of `status`, and carry forward each one's **Code Map**, **Design Notes**, **Spec Change Log**, **Tasks & Acceptance** checklist state, and **Auto Run Result** details, where present, as additional planning context for step-02. Then **EARLY EXIT** to `./step-02-plan.md`.
+  - Any other recognized `status`: **EARLY EXIT** using the same routing as above, including the `review_loop_iteration` reset for `done`. One difference: a `blocked` story HALTs with blocking condition `story already blocked`, not `blocked spec supplied` — the caller did not supply this file; dev-auto found it by id.
+  - `status` missing or unrecognized: HALT with status `blocked` and blocking condition `unrecognized status in existing story file`.
+- **If none matches**, this is the first dispatch for `{story_id}`. The entry's `title` and `description` are the resolved intent. If `{spec_folder}/SPEC.md` does not exist, HALT with status `blocked` and blocking condition `no epic spec found`. Otherwise load it and the files listed in its `companions:` frontmatter as planning context, then accumulate cross-story context the same way as the `draft` case above — load every file matching `{spec_folder}/stories/*.md` (none yet exists for `{story_id}` at this point, so nothing is excluded), regardless of `status`, carrying forward the same fields, where present, as additional planning context for step-02. Then continue to INSTRUCTIONS item 3 below — not `step-03-implement.md`, item 3 of the numbered list in this file (items 1 and 2 do not apply — context and intent are already resolved; item 1.A.5's previous-story continuity scan in particular never runs here, since folder+id dispatch already skips items 1 and 2 entirely — the cross-story accumulation above is its replacement for this dispatch mode).
+
+One `stories.yaml` entry per invocation: never read another entry, and never advance to a different story id regardless of outcome.
 
 Otherwise, treat the invocation prompt as starting intent. This may be a story ID, ticket ID, file path, short description, or longer free-form intent. Do not infer workflow state from non-spec files.
 If the invocation prompt does not contain enough intent to identify what to implement, HALT with status `blocked` and blocking condition `unclear intent`.
@@ -55,11 +71,13 @@ If the invocation prompt does not contain enough intent to identify what to impl
        - **Product Brief** (`*brief*`) — project vision and scope
      - Scan the listing for files matching these patterns. If any look relevant to the current intent, load them selectively — you don't need all of them, but you need the right constraints and requirements rather than guessing from code alone.
 2. Resolve intent from the invocation prompt and loaded artifacts. Do not fantasize or leave open questions. If the intent cannot be resolved, HALT with status `blocked` and the unresolved questions as blocking condition.
-3. Version control sanity check. Is the working tree clean? Does the current branch make sense for this intent — considering its name and recent history? If the tree is dirty or the branch is an obvious mismatch, HALT with status `blocked` and that condition as blocking condition. If version control is unavailable, skip this check.
+3. Version control sanity check. Is the working tree clean? Does the current branch make sense for this intent — considering its name and recent history? Under folder+id dispatch, judge the branch against the epic spec, not the story title: one branch usually carries all of an epic's stories. If the tree is dirty or the branch is an obvious mismatch, HALT with status `blocked` and that condition as blocking condition. If version control is unavailable, skip this check.
 4. Multi-goal warning. If the intent appears to contain multiple independently shippable goals, carry `multiple-goals` forward so step-02 can add it to `{spec_file}` frontmatter `warnings`. Do not split or block.
 5. Route:
 
-   Derive a valid kebab-case slug from the clarified intent. If the intent references a tracking identifier (story number, issue number, ticket ID), lead the slug with it (e.g. `3-2-digest-delivery`, `gh-47-fix-auth`). If `{implementation_artifacts}/spec-{slug}.md` already exists: if its status is `draft`, treat it as the same work and resume it (set `spec_file` to that path, **EARLY EXIT** → `./step-02-plan.md`); otherwise append `-2`, `-3`, etc. Set `spec_file` = `{implementation_artifacts}/spec-{slug}.md`.
+   **Folder+id dispatch:** derive a valid kebab-case slug from the entry's `title` (and `description` if needed) — the same kebab-casing convention as below, but never prefixed with `{story_id}`, since the id is already the filename's separate leading segment. Set `spec_file` = `{spec_folder}/stories/{story_id}-{slug}.md`. The id already disambiguates: no `{implementation_artifacts}` fallback, no `-2`/`-3` suffixing.
+
+   **Otherwise:** derive a valid kebab-case slug from the clarified intent. If the intent references a tracking identifier (story number, issue number, ticket ID), lead the slug with it (e.g. `3-2-digest-delivery`, `gh-47-fix-auth`). If `{implementation_artifacts}/spec-{slug}.md` already exists: if its status is `draft`, treat it as the same work and resume it (set `spec_file` to that path, **EARLY EXIT** → `./step-02-plan.md`); otherwise append `-2`, `-3`, etc. Set `spec_file` = `{implementation_artifacts}/spec-{slug}.md`.
 
 ## NEXT
 
