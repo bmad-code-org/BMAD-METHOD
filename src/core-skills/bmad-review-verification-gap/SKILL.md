@@ -18,6 +18,7 @@ The main verification gap shapes are:
 - Read a test before claiming what it covers, runs, asserts, or misses.
 - Before claiming no test exists, search the whole repo by the symbol under test and by import references; expected file locations are not enough.
 - Never assert what you did not verify. If a finding cannot be grounded, drop it.
+- In a finding, say what you actually checked — "none of the tests I read cover this" — and show how far you looked. Say a test doesn't exist anywhere only when the symbol/import-reference search actually shows that.
 - Do not assign severity, confidence, priority, or ranking.
 
 ## Review Sequence
@@ -42,12 +43,15 @@ Follow a path only while the changed behavior is reachable and unverified. Stop 
 
 ### Step 4: Qualify the consumer, then check its test
 
-For each consumer, name the smallest realistic regression this consumer would observe: invert the branch, drop the default, omit the field, return the old error code, skip the integration call, etc. This is the Demonstration. If no such regression exists, drop the path; untested downstream code is not a finding. A `Missing-adoption gap` qualifies by the adoption failure itself.
+For each consumer, name the smallest realistic regression this consumer would observe: invert the branch, drop the default, omit the field, return the old error code, skip the integration call, etc. This is the Demonstration. If no such regression exists, drop the path; untested downstream code is not a finding.
+
+A `Missing-adoption gap` qualifies not by the adoption failure alone but by a supersession signal: the change gives clear evidence the new behavior is meant to replace the local one — PR intent, naming or docs, a replaced sibling site, deleted duplicate logic, or a test defining the new rule — and the local site shares the same observable contract. Without a supersession signal and a shared observable contract, it is a refactor suggestion, not a verification-gap finding. Once both hold, check whether any test for that site would flag the non-adoption; missing coverage of the non-adoption is the gap itself, not a disqualifier.
 
 Find and read the relevant test. Ask whether the Demonstration would make an assertion fail.
 
 - If yes, the behavior is verified. No finding.
-- If no test runs the path, the test is skipped/flaky/not run normally, or the test runs the code without checking the changed result, report a `Regression gap` or `Broken-verification gap`.
+- For a regression-style Demonstration: if no test runs the path, the test is skipped/flaky/not run normally, or the test runs the code without checking the changed result, report a `Regression gap` or `Broken-verification gap`.
+- For a qualifying Missing-adoption case: if none of the site tests you found assert it adopts the new behavior, report a `Missing-adoption gap`.
 
 A test counts only if it runs normally and an assertion observes the changed output, branch, or contract. These do not count: no execution; success/no-throw/snapshot-only checks; mock/log-call checks; human-only checks; tests that mock away the integration; e2e tests that pass through without checking the changed output; stale assertions or fixtures.
 
@@ -62,7 +66,7 @@ Common patterns:
 
 ### Step 5: Confirm each finding is real
 
-Before writing a finding, re-open the specific tests or search results the finding relies on. Verify the Demonstration would not make any test fail, or that the absence claim is backed by the symbol/import-reference search. Do not claim more than you verified; drop any finding you cannot ground.
+Before writing a finding, re-open the specific tests or search results the finding relies on. Verify the Demonstration would not make any test you checked fail, or that the absence claim is backed by the symbol/import-reference search. Do not claim more than you verified; drop any finding you cannot ground.
 
 Do not report: compiler/type-checker-enforced cases; behavior already verified by an integration, contract, or e2e test; implementation-detail or mock-only tests; low coverage or a missing test file by itself; legacy untested code the change did not affect.
 
@@ -83,9 +87,9 @@ Emit each verification-gap finding as one block. No general advice, no severity 
   - `Broken-verification gap`: the apparent test or verification path, and why it does not count.
 - **Missing verification:** the precise assertion or check that's absent.
 - **Demonstration:**
-  - `Regression gap` / `Broken-verification gap`: the concrete regression that would ship undetected, and why the tests would not fail.
-  - `Missing-adoption gap`: the case the site mishandles by not adopting the new behavior, and that no test asserts adoption.
-- **Consequence:** the concrete thing that ships wrong — a regression no test would catch, or a site that should use the new behavior and doesn't.
+  - `Regression gap` / `Broken-verification gap`: the concrete regression that would ship undetected, and why the tests you checked would not fail.
+  - `Missing-adoption gap`: the case the site mishandles by not adopting the new behavior, and that none of the tests you read assert adoption.
+- **Consequence:** the concrete thing that ships wrong — a regression the checked evidence would not catch, or a site that should use the new behavior and doesn't.
 - **Suggested test shape:** (optional) the kind of test that would close the gap, fit to the repo's own way of verifying — don't impose a generic test pyramid.
 ```
 
