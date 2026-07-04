@@ -23,6 +23,7 @@ Every implementation workflow automatically loads `project-context.md` if it exi
 **Loaded by these workflows:**
 - `bmad-create-architecture` — respects technical preferences during solutioning
 - `bmad-create-story` — informs story creation with project patterns
+- `bmad-detail-design` — grounds technical design decisions in current project rules
 - `bmad-dev-story` — guides implementation decisions
 - `bmad-code-review` — validates against project standards
 - `bmad-quick-dev` — applies patterns when implementing specs

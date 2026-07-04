@@ -80,6 +80,7 @@ Build it, one story at a time. Phase 4 epic and story automation is now availabl
 |------------------------|-------------------------------------------------------------------------------|------------------------------------------------------|
 | `bmad-sprint-planning` | Initialize tracking (once per project to sequence the dev cycle)              | `sprint-status.yaml`                                 |
 | `bmad-create-story`    | Prepare next story for implementation                                         | `story-[slug].md`                                    |
+| `bmad-detail-design`   | Convert a validated story into a concrete technical design before coding      | `detail-design/[story-key]-detail-design.md`         |
 | `bmad-dev-story`       | Implement the story                                                           | Working code + tests                                 |
 | `bmad-code-review`     | Validate implementation quality                                               | Approved or changes requested                        |
 | `bmad-correct-course`  | Handle significant mid-sprint changes                                         | Updated plan or re-routing                           |

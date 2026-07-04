@@ -97,6 +97,7 @@ Workflow skills run a structured, multi-step process without loading an agent pe
 | `bmad-ux` | Design user experience |
 | `bmad-create-architecture` | Design system architecture |
 | `bmad-create-epics-and-stories` | Create epics and stories |
+| `bmad-detail-design` | Create a technical design for a validated story before development |
 | `bmad-dev-story` | Implement a story |
 | `bmad-code-review` | Run a code review |
 | `bmad-quick-dev` | Implement a story or any other small intent — clarify, plan, implement, review, present |

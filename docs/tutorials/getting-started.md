@@ -205,8 +205,9 @@ For each story, repeat this cycle with fresh chats:
 | Step | Agent | Workflow            | Command             | Purpose                            |
 | ---- | ----- | ------------------- | ------------------- | ---------------------------------- |
 | 1    | DEV   | `bmad-create-story` | `bmad-create-story` | Create story file from epic        |
-| 2    | DEV   | `bmad-dev-story`    | `bmad-dev-story`    | Implement the story                |
-| 3    | DEV   | `bmad-code-review`  | `bmad-code-review`  | Quality validation _(recommended)_ |
+| 2    | DEV   | `bmad-detail-design`| `bmad-detail-design`| Create a technical design for the story |
+| 3    | DEV   | `bmad-dev-story`    | `bmad-dev-story`    | Implement the story                |
+| 4    | DEV   | `bmad-code-review`  | `bmad-code-review`  | Quality validation _(recommended)_ |
 
 After completing all stories in an epic, invoke the **Developer agent** (`bmad-agent-dev`) and run `bmad-retrospective` (`bmad-retrospective`).
 
@@ -247,6 +248,7 @@ your-project/
 | `bmad-check-implementation-readiness` | `bmad-check-implementation-readiness` | Architect | Validate planning cohesion                 |
 | `bmad-sprint-planning`                | `bmad-sprint-planning`                | DEV       | Initialize sprint tracking                 |
 | `bmad-create-story`                   | `bmad-create-story`                   | DEV       | Create a story file                        |
+| `bmad-detail-design`                  | `bmad-detail-design`                  | DEV       | Create a technical design for a validated story |
 | `bmad-dev-story`                      | `bmad-dev-story`                      | DEV       | Implement a story                          |
 | `bmad-code-review`                    | `bmad-code-review`                    | DEV       | Review implemented code                    |
 
