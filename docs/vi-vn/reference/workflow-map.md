@@ -57,6 +57,7 @@ Xây dựng từng story một. Tự động hóa toàn bộ giai đoạn 4 sẽ
 | -------------------------- | ------------------------------------------------------------------------ | -------------------------------- |
 | `bmad-sprint-planning` | Khởi tạo theo dõi, thường chạy một lần mỗi dự án để sắp thứ tự chu trình phát triển | `sprint-status.yaml` |
 | `bmad-create-story` | Chuẩn bị story tiếp theo cho implementation | `story-[slug].md` |
+| `bmad-detail-design` | Chuyển story đã được thẩm định thành thiết kế kỹ thuật cụ thể trước khi bắt đầu code | `detail-design/[story-key]-detail-design.md` |
 | `bmad-dev-story` | Triển khai story | Code chạy được + tests |
 | `bmad-code-review` | Kiểm tra chất lượng phần triển khai | Được duyệt hoặc yêu cầu thay đổi |
 | `bmad-correct-course` | Xử lý thay đổi lớn giữa sprint | Kế hoạch cập nhật hoặc định tuyến lại |

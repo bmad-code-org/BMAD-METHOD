@@ -204,8 +204,9 @@ Pour chaque story, répétez ce cycle dans de nouveaux chats :
 | Étape | Agent | Workflow            | Commande            | Objectif                             |
 |-------|-------|---------------------|---------------------|--------------------------------------|
 | 1     | DEV   | `bmad-create-story` | `bmad-create-story` | Créer le fichier story depuis l’epic |
-| 2     | DEV   | `bmad-dev-story`    | `bmad-dev-story`    | Implémenter la story                 |
-| 3     | DEV   | `bmad-code-review`  | `bmad-code-review`  | Validation qualité *(recommandée)*   |
+| 2     | DEV   | `bmad-detail-design`| `bmad-detail-design`| Créer une conception technique pour la story |
+| 3     | DEV   | `bmad-dev-story`    | `bmad-dev-story`    | Implémenter la story                 |
+| 4     | DEV   | `bmad-code-review`  | `bmad-code-review`  | Validation qualité *(recommandée)*   |
 
 Après avoir terminé toutes les stories d’un epic, invoquez l'**agent Développeur** (`bmad-agent-dev`) et exécutez `bmad-retrospective` (`bmad-retrospective`).
 
@@ -246,6 +247,7 @@ your-project/
 | `bmad-check-implementation-readiness` | `bmad-check-implementation-readiness` | Architect | Valider la cohérence de la planification                        |
 | `bmad-sprint-planning`                | `bmad-sprint-planning`                | DEV       | Initialiser le suivi de sprint                                  |
 | `bmad-create-story`                   | `bmad-create-story`                   | DEV       | Créer un fichier story                                          |
+| `bmad-detail-design`                  | `bmad-detail-design`                  | DEV       | Créer une conception technique pour une story validée           |
 | `bmad-dev-story`                      | `bmad-dev-story`                      | DEV       | Implémenter une story                                           |
 | `bmad-code-review`                    | `bmad-code-review`                    | DEV       | Revoir le code implémenté                                       |
 

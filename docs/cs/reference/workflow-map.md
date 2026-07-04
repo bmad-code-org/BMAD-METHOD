@@ -57,6 +57,7 @@ Budujte to, jednu story po druhé. Brzy plná automatizace fáze 4!
 | -------------------------- | ------------------------------------------------------------------------ | -------------------------------- |
 | `bmad-sprint-planning`     | Inicializace sledování (jednou na projekt pro sekvencování dev cyklu)    | `sprint-status.yaml`             |
 | `bmad-create-story`        | Příprava další story pro implementaci                                    | `story-[slug].md`                |
+| `bmad-detail-design`       | Převede validovanou story na konkrétní technický návrh před kódováním    | `detail-design/[story-key]-detail-design.md` |
 | `bmad-dev-story`           | Implementace story                                                       | Fungující kód + testy            |
 | `bmad-code-review`         | Validace kvality implementace                                            | Schváleno nebo požadovány změny  |
 | `bmad-correct-course`      | Řešení významných změn uprostřed sprintu                                 | Aktualizovaný plán nebo přesměrování |

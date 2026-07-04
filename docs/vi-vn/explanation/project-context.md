@@ -23,6 +23,7 @@ Mỗi workflow triển khai đều tự động nạp `project-context.md` nếu
 **Được nạp bởi các workflow sau:**
 - `bmad-create-architecture` - tôn trọng ưu tiên kỹ thuật trong giai đoạn solutioning
 - `bmad-create-story` - đưa pattern của dự án vào quá trình tạo story
+- `bmad-detail-design` - neo các quyết định thiết kế kỹ thuật vào những quy tắc hiện tại của dự án
 - `bmad-dev-story` - định hướng các quyết định triển khai
 - `bmad-code-review` - đối chiếu với tiêu chuẩn của dự án
 - `bmad-quick-dev` - áp dụng pattern khi triển khai các spec

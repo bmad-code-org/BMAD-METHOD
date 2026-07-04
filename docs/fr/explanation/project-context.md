@@ -23,6 +23,7 @@ Chaque workflow d’implémentation charge automatiquement `project-context.md` 
 **Chargé par ces workflows :**
 - `bmad-create-architecture` — respecte les préférences techniques pendant la phase de solutioning
 - `bmad-create-story` — informe la création de stories avec les patterns du projet
+- `bmad-detail-design` — ancre les décisions de conception technique dans les règles actuelles du projet
 - `bmad-dev-story` — guide les décisions d’implémentation
 - `bmad-code-review` — valide par rapport aux standards du projet
 - `bmad-quick-dev` — applique les patterns lors de l’implémentation des spécifications techniques

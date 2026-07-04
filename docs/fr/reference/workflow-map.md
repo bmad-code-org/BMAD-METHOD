@@ -80,6 +80,7 @@ Construisez, une story à la fois. L’automatisation complète de la phase 4 ar
 |------------------------|--------------------------------------------------------------------------------------|----------------------------------|
 | `bmad-sprint-planning` | Initialisez le suivi (une fois par projet, pour séquencer le cycle de développement) | `sprint-status.yaml`             |
 | `bmad-create-story`    | Préparez la story suivante pour implémentation                                       | `story-[slug].md`                |
+| `bmad-detail-design`   | Transformez une story validée en conception technique concrète avant de coder         | `detail-design/[story-key]-detail-design.md` |
 | `bmad-dev-story`       | Implémentez la story                                                                 | Code fonctionnel + tests         |
 | `bmad-code-review`     | Validez la qualité de l’implémentation                                               | Approuvé ou changements demandés |
 | `bmad-correct-course`  | Gérez les changements significatifs en cours de sprint                               | Plan mis à jour ou réorientation |

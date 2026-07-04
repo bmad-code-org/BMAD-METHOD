@@ -46,7 +46,7 @@ Nguyên tắc ngón tay cái:
 [agent]
 
 # Áp dụng ở mọi lần kích hoạt. Theo Amelia đi vào dev-story, quick-dev,
-# create-story, code-review, qa-generate và mọi skill cô ấy dispatch.
+# create-story, detail-design, code-review, qa-generate và mọi skill cô ấy dispatch.
 persistent_facts = [
   "Với mọi truy vấn tài liệu thư viện như React, TypeScript, Zod, Prisma..., hãy gọi Context7 MCP tool (`mcp__context7__resolve_library_id` rồi `mcp__context7__get_library_docs`) trước khi dựa vào kiến thức trong dữ liệu huấn luyện (training data). Tài liệu cập nhật phải thắng API đã ghi nhớ.",
   "Khi không tìm thấy tham chiếu story trong {planning_artifacts}/epics-and-stories.md, hãy tìm trong Linear bằng `mcp__linear__search_issues` theo ID hoặc tiêu đề story trước khi yêu cầu người dùng làm rõ. Nếu Linear trả về kết quả khớp, coi đó là nguồn story có thẩm quyền.",

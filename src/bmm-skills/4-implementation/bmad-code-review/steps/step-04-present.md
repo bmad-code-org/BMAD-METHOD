@@ -119,7 +119,7 @@ If `{sprint_status}` file does not exist, note that story status was updated in 
 Present the user with follow-up options:
 
 > **What would you like to do next?**
-> 1. **Start the next story** — run `dev-story` to pick up the next `ready-for-dev` story
+> 1. **Start the next story** — run `bmad-detail-design` to prepare the next `ready-for-dev` story for development
 > 2. **Re-run code review** — address findings and review again
 > 3. **Done** — end the workflow
 

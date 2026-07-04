@@ -190,8 +190,9 @@ Pro každou story opakujte tento cyklus s novými chaty:
 | Krok | Agent | Workflow             | Příkaz                     | Účel                               |
 | ---- | ----- | -------------------- | -------------------------- | ---------------------------------- |
 | 1    | DEV   | `bmad-create-story`  | `bmad-create-story`        | Vytvoření story souboru z epicu    |
-| 2    | DEV   | `bmad-dev-story`     | `bmad-dev-story`           | Implementace story                 |
-| 3    | DEV   | `bmad-code-review`   | `bmad-code-review`         | Validace kvality *(doporučeno)*    |
+| 2    | DEV   | `bmad-detail-design` | `bmad-detail-design`       | Vytvoření technického návrhu pro story |
+| 3    | DEV   | `bmad-dev-story`     | `bmad-dev-story`           | Implementace story                 |
+| 4    | DEV   | `bmad-code-review`   | `bmad-code-review`         | Validace kvality *(doporučeno)*    |
 
 Po dokončení všech stories v epicu vyvolejte **Developer agenta** (`bmad-agent-dev`) a spusťte `bmad-retrospective` (`bmad-retrospective`).
 
@@ -232,6 +233,7 @@ váš-projekt/
 | `bmad-check-implementation-readiness` | `bmad-check-implementation-readiness`     | Architect | Validace soudržnosti plánování                  |
 | `bmad-sprint-planning`                | `bmad-sprint-planning`                    | DEV       | Inicializace sledování sprintu                  |
 | `bmad-create-story`                   | `bmad-create-story`                       | DEV       | Vytvoření souboru story                         |
+| `bmad-detail-design`                  | `bmad-detail-design`                      | DEV       | Vytvoření technického návrhu pro validovanou story |
 | `bmad-dev-story`                      | `bmad-dev-story`                          | DEV       | Implementace story                              |
 | `bmad-code-review`                    | `bmad-code-review`                        | DEV       | Revize implementovaného kódu                    |
 

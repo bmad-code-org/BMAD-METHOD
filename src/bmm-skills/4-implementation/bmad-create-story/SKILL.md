@@ -420,9 +420,10 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
 
     **Next Steps:**
     1. Review the comprehensive story in {{story_file}}
-    2. Run dev agents `dev-story` for optimized implementation
-    3. Run `code-review` when complete (auto-marks done)
-    4. Optional: If Test Architect module installed, run `/bmad:tea:automate` after `dev-story` to generate guardrail tests
+    2. Run `bmad-detail-design` to create the technical design artifact for {{story_key}}
+    3. Run dev agent `dev-story` after the detail design exists
+    4. Run `code-review` when complete (auto-marks done)
+    5. Optional: If Test Architect module installed, run `/bmad:tea:automate` after `dev-story` to generate guardrail tests
 
     **The developer now has everything needed for flawless implementation!**
   </output>

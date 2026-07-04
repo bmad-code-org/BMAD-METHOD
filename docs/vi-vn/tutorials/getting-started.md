@@ -190,8 +190,9 @@ Với mỗi story, lặp lại chu trình này trong chat mới:
 | Bước | Agent | Workflow | Lệnh | Mục đích |
 | ---- | ----- | -------------- | -------------------------- | ---------------------------------- |
 | 1 | DEV | `bmad-create-story` | `bmad-create-story` | Tạo file story từ epic |
-| 2 | DEV | `bmad-dev-story` | `bmad-dev-story` | Triển khai story |
-| 3 | DEV | `bmad-code-review` | `bmad-code-review` | Kiểm tra chất lượng *(khuyến nghị)* |
+| 2 | DEV | `bmad-detail-design` | `bmad-detail-design` | Tạo thiết kế kỹ thuật cho story |
+| 3 | DEV | `bmad-dev-story` | `bmad-dev-story` | Triển khai story |
+| 4 | DEV | `bmad-code-review` | `bmad-code-review` | Kiểm tra chất lượng *(khuyến nghị)* |
 
 Sau khi hoàn tất tất cả story trong một epic, hãy gọi **Developer agent** (`bmad-agent-dev`) và chạy `bmad-retrospective` (`bmad-retrospective`).
 
@@ -232,6 +233,7 @@ your-project/
 | `bmad-check-implementation-readiness` | `bmad-check-implementation-readiness` | Architect | Kiểm tra độ nhất quán của kế hoạch |
 | `bmad-sprint-planning` | `bmad-sprint-planning` | DEV | Khởi tạo theo dõi sprint |
 | `bmad-create-story` | `bmad-create-story` | DEV | Tạo file story |
+| `bmad-detail-design` | `bmad-detail-design` | DEV | Tạo thiết kế kỹ thuật cho story đã được thẩm định |
 | `bmad-dev-story` | `bmad-dev-story` | DEV | Triển khai một story |
 | `bmad-code-review` | `bmad-code-review` | DEV | Review phần code đã triển khai |
 

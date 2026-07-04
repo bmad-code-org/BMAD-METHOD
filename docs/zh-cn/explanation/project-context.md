@@ -23,6 +23,7 @@ sidebar:
 **常见加载方包括：**
 - `bmad-create-architecture`：在 solutioning 时纳入你的技术偏好
 - `bmad-create-story`：按项目约定拆分和描述 story
+- `bmad-detail-design`：让技术设计决策锚定在当前项目规则上
 - `bmad-dev-story`：约束实现路径和代码风格
 - `bmad-code-review`：按项目标准做一致性校验
 - `bmad-quick-dev`：在快速实现中避免偏离既有模式

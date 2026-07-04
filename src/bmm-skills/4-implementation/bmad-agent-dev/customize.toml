@@ -85,6 +85,11 @@ description = "Prepare a story with all required context for implementation"
 skill = "bmad-create-story"
 
 [[agent.menu]]
+code = "DD"
+description = "Turn a validated story into a concrete technical design before implementation"
+skill = "bmad-detail-design"
+
+[[agent.menu]]
 code = "ER"
 description = "Party mode review of all work completed across an epic"
 skill = "bmad-retrospective"

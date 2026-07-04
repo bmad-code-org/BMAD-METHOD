@@ -42,7 +42,7 @@ BMad 的自定义机制让组织无需编辑已安装文件或 fork 技能就能
 [agent]
 
 # 每次激活时加载。传递到 dev-story、quick-dev、
-# create-story、code-review、qa-generate——Amelia 分发的每个技能。
+# create-story、detail-design、code-review、qa-generate——Amelia 分发的每个技能。
 persistent_facts = [
   "For any library documentation lookup (React, TypeScript, Zod, Prisma, etc.), call the context7 MCP tool (`mcp__context7__resolve_library_id` then `mcp__context7__get_library_docs`) before relying on training-data knowledge. Up-to-date docs trump memorized APIs.",
   "When a story reference isn't found in {planning_artifacts}/epics-and-stories.md, search Linear via `mcp__linear__search_issues` using the story ID or title before asking the user to clarify. If Linear returns a match, treat it as the authoritative story source.",

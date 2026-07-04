@@ -23,6 +23,7 @@ Každý implementační workflow automaticky načítá `project-context.md`, pok
 **Načítán těmito workflow:**
 - `bmad-create-architecture` — respektuje technické preference během solutioningu
 - `bmad-create-story` — informuje tvorbu stories vzory projektu
+- `bmad-detail-design` — ukotvuje rozhodnutí technického návrhu v aktuálních pravidlech projektu
 - `bmad-dev-story` — vede implementační rozhodnutí
 - `bmad-code-review` — validuje proti standardům projektu
 - `bmad-quick-dev` — aplikuje vzory při implementaci specifikací

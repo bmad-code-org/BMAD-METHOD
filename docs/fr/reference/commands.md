@@ -96,6 +96,7 @@ Les skills de workflow exécutent un processus structuré en plusieurs étapes s
 | `bmad-prd`                      | Créer, mettre à jour ou valider un PRD[^1]                                                                                   |
 | `bmad-create-architecture`      | Concevoir l’architecture système                                                                                             |
 | `bmad-create-epics-and-stories` | Créer des epics et des stories                                                                                               |
+| `bmad-detail-design`            | Créer une conception technique pour une story validée avant le développement                                                 |
 | `bmad-dev-story`                | Implémenter une story                                                                                                        |
 | `bmad-code-review`              | Effectuer une revue de code                                                                                                  |
 | `bmad-quick-dev`                | Flux rapide unifié — clarifier l’intention, planifier, implémenter, réviser, présenter                                       |
