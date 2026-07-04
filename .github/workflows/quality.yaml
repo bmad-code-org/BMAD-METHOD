@@ -5,6 +5,7 @@ name: Quality & Validation
 # - ESLint (linting)
 # - markdownlint (markdown quality)
 # - Installation component tests (compilation)
+# - Python script tests (pytest via uv)
 # Keep this workflow aligned with `npm run quality` in `package.json`.
 
 "on":
@@ -103,8 +104,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8
+
       - name: Test agent compilation components
         run: npm run test:install
+
+      - name: Run Python script tests
+        run: npm run test:python
 
       - name: Validate file references
         run: npm run validate:refs

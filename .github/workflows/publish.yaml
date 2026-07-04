@@ -66,6 +66,9 @@ jobs:
           # npm trusted publishing requires Node >= 22.14.0 and npm >= 11.5.1.
           npm install --global npm@11.6.2
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8
+
       - name: Configure git user
         if: github.event_name == 'workflow_dispatch' && inputs.channel == 'latest'
         run: |

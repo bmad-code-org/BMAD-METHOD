@@ -10,6 +10,9 @@
   },
   "github.copilot.chat.agent.autoFix": true,
   "chat.tools.autoApprove": false,
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestArgs": ["--rootdir", "."],
   "cSpell.words": [
     "Agentic",
     "atlasing",
