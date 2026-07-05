@@ -38,7 +38,7 @@ Launch Blind Hunter, Edge Case Hunter, and Verification Gap Reviewer in parallel
 
 ### Classify
 
-1. Deduplicate all review findings.
+1. Deduplicate only findings with the same claim and same required action. Then evaluate each remaining finding independently. Do not reject a finding because a related finding was rejected.
 2. Assign severity to each finding by consequence for the artifact's main consumer (software user, document reader, etc).
    Disregard any severity assigned by a reviewing subagent. Review subagents operate under by-design information asymmetry and do not have enough context to set final severity for this workflow.
    - `low`: none or cosmetic
