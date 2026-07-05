@@ -1253,7 +1253,7 @@ class Installer {
 
   /**
    * Display registry-defined post-install messages for the modules installed in
-   * this run. These are "action needed" notices (e.g. "run the bmad-auto-setup
+   * this run. These are "action needed" notices (e.g. "run the bmad-loop-setup
    * skill") that the user must see to finish setup. They are defined via the
    * `post-install-message` property on a module's bmad-modules.yaml entry.
    *
@@ -1317,9 +1317,31 @@ class Installer {
 
     // Detect existing installation
     const existingInstall = await ExistingInstall.detect(bmadDir);
-    const installedModules = existingInstall.moduleIds;
     const configuredIdes = existingInstall.ides;
     const projectRoot = path.dirname(bmadDir);
+
+    // Resolve any legacy/aliased module codes (e.g. an install recorded as
+    // `bauto` before the registry renamed it to `bmad-loop`) to their current
+    // canonical code up front. Without this, a renamed module's old installs
+    // would fall out of `availableModuleIds` below and get silently frozen
+    // (see the `baut` → `automator` incident in CHANGELOG v6.7.1) instead of
+    // migrating forward.
+    const aliasMigrations = [];
+    const seenModuleIds = new Set();
+    const installedModules = [];
+    for (const rawId of existingInstall.moduleIds) {
+      const canonicalId = await this.externalModuleManager.resolveCanonicalCode(rawId);
+      if (canonicalId !== rawId) {
+        aliasMigrations.push({ from: rawId, to: canonicalId });
+      }
+      if (!seenModuleIds.has(canonicalId)) {
+        seenModuleIds.add(canonicalId);
+        installedModules.push(canonicalId);
+      }
+    }
+    for (const { from, to } of aliasMigrations) {
+      await prompts.log.info(`Migrating installed module '${from}' to its renamed successor '${to}'.`);
+    }
 
     // Get available modules (what we have source for)
     const availableModulesData = await new OfficialModules().listAvailable();
@@ -1464,6 +1486,18 @@ class Installer {
     };
 
     await this.install(installConfig);
+
+    // Now that the canonical module has been installed successfully, remove
+    // the stale directory left behind under its old code so the two don't
+    // coexist (e.g. `_bmad/bauto/` once `_bmad/bmad-loop/` is in place).
+    for (const { from, to } of aliasMigrations) {
+      if (!modulesToUpdate.includes(to)) continue; // new code wasn't actually installed this run
+      const oldModuleDir = path.join(bmadDir, from);
+      if (await fs.pathExists(oldModuleDir)) {
+        await fs.remove(oldModuleDir);
+        await prompts.log.success(`Removed legacy '${from}' directory after migrating to '${to}'.`);
+      }
+    }
 
     return {
       success: true,

@@ -63,3 +63,8 @@ bmad-create-ux-design
 # bmad-investigate: retired. Plain investigation reaches the same conclusions at
 # lower cost.
 bmad-investigate
+
+# Removed skills (v6.10.0)
+# bmad-auto-setup: renamed to bmad-loop-setup as part of the bmad-auto ->
+# bmad-loop module rename (BMad Automator's replacement).
+bmad-auto-setup

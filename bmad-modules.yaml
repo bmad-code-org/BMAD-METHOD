@@ -26,8 +26,39 @@
 # Interactive installs require the user to acknowledge it (press Enter);
 # non-interactive (--yes) installs print it and continue. Use for required
 # follow-up steps (e.g. "run the X setup skill").
+#
+# aliases (optional) — prior `code` values this module was registered under.
+# An existing install recorded under an alias resolves to this entry (source,
+# name, description, post-install message) instead of being orphaned as
+# "no source available" when the code changes. quick-update also migrates the
+# install to the new code and removes the stale `_bmad/<alias>/` directory.
 
 modules:
+  bmad-loop:
+    url: https://github.com/bmad-code-org/bmad-loop
+    module-definition: src/bmad_loop/data/skills/bmad-loop-setup/assets/module.yaml
+    code: bmad-loop
+    # bauto is the pre-rename code (module was bmad-auto before both the repo
+    # and its contents were renamed to bmad-loop); keeps existing bauto
+    # installs migrating forward instead of being orphaned.
+    aliases: [bauto]
+    name: "BMad Loop"
+    description: "Deterministic, Python-based unattended dev loop with adversarial review"
+    defaultSelected: false
+    type: bmad-org
+    default_channel: stable
+    # Skills live outside a single module.yaml dir; resolve them from
+    # .claude-plugin/marketplace.json via the plugin resolver (see external-manager).
+    marketplace-plugin: true
+    post-install-message: |
+      BMad Loop installed. To finish setup, run the bmad-loop-setup skill
+      from your agent:
+
+        > use the bmad-loop-setup skill
+
+      It installs the bmad-loop orchestrator tool and wires up the per-project
+      hooks and policy. The automation skills don't run until setup completes.
+
   bmad-method-test-architecture-enterprise:
     url: https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise
     module-definition: src/module.yaml
@@ -61,28 +92,7 @@ modules:
     npmPackage: bmad-story-automator
     default_channel: next
     deprecated: true
-    deprecation-message: "BMad Automator has been deprecated and is replaced by BMad Auto (bmad-auto). Install BMad Auto instead."
-
-  bmad-auto:
-    url: https://github.com/bmad-code-org/bmad-auto
-    module-definition: src/automator/data/skills/bmad-auto-setup/assets/module.yaml
-    code: bauto
-    name: "BMad Auto"
-    description: "Automation-mode skills driven by the bmad-auto orchestrator: unattended dev, adversarial review, and deferred-work sweep triage"
-    defaultSelected: false
-    type: bmad-org
-    default_channel: stable
-    # Skills live outside a single module.yaml dir; resolve them from
-    # .claude-plugin/marketplace.json via the plugin resolver (see external-manager).
-    marketplace-plugin: true
-    post-install-message: |
-      BMad Auto installed. To finish setup, run the bmad-auto-setup skill
-      from your agent:
-
-        > use the bmad-auto-setup skill
-
-      It installs the bmad-auto orchestrator tool and wires up the per-project
-      hooks and policy. The automation skills don't run until setup completes.
+    deprecation-message: "BMad Automator has been deprecated and is replaced by BMad Loop (bmad-loop). Install BMad Loop instead."
 
   bmad-creative-intelligence-suite:
     url: https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite

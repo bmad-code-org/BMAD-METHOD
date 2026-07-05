@@ -135,6 +135,10 @@ class ExternalModuleManager {
       postInstallMessage: mod.post_install_message || mod['post-install-message'] || mod.postInstallMessage || null,
       builtIn: mod.built_in === true,
       isExternal: mod.built_in !== true,
+      // Prior codes this module was registered under (e.g. `bmad-loop` was
+      // `bauto`). Lets a renamed module keep resolving existing installs
+      // instead of orphaning them — see getModuleByCode().
+      aliases: Array.isArray(mod.aliases) ? mod.aliases : [],
     };
   }
 
@@ -159,13 +163,27 @@ class ExternalModuleManager {
   }
 
   /**
-   * Get module info by code
-   * @param {string} code - The module code (e.g., 'cis')
+   * Get module info by code. Falls back to matching a registry entry's
+   * `aliases` list, so a module that was renamed (its `code` changed) still
+   * resolves for installs recorded under the prior code.
+   * @param {string} code - The module code (e.g., 'cis'), current or aliased
    * @returns {Object|null} Module info or null if not found
    */
   async getModuleByCode(code) {
     const modules = await this.listAvailable();
-    return modules.find((m) => m.code === code) || null;
+    return modules.find((m) => m.code === code) || modules.find((m) => m.aliases.includes(code)) || null;
+  }
+
+  /**
+   * Resolve a possibly-legacy module code to its current canonical code.
+   * Returns the input unchanged if it doesn't match any registry entry or
+   * alias (e.g. a custom/unknown module).
+   * @param {string} code
+   * @returns {Promise<string>}
+   */
+  async resolveCanonicalCode(code) {
+    const info = await this.getModuleByCode(code);
+    return info ? info.code : code;
   }
 
   /**
@@ -195,6 +213,11 @@ class ExternalModuleManager {
     if (!moduleInfo) {
       throw new Error(`External module '${moduleCode}' not found in the BMad registry`);
     }
+
+    // Normalize to the canonical code so cache dir, in-memory resolutions,
+    // and log/error text stay consistent even when called with a renamed
+    // module's prior alias (getModuleByCode resolves aliases above).
+    moduleCode = moduleInfo.code;
 
     const cacheDir = this.getExternalCacheDir();
     const moduleCacheDir = path.join(cacheDir, moduleCode);
@@ -488,6 +511,9 @@ class ExternalModuleManager {
       return null;
     }
 
+    // Normalize to the canonical code — see cloneExternalModule for why.
+    moduleCode = moduleInfo.code;
+
     // Marketplace-plugin modules (registry entries flagged `marketplace-plugin`)
     // ship a .claude-plugin/marketplace.json and keep their module.yaml inside a
     // skill's assets/ rather than in one directory alongside the skills. Resolve
@@ -572,6 +598,9 @@ class ExternalModuleManager {
     if (!moduleInfo || moduleInfo.builtIn || !moduleInfo.marketplacePlugin) {
       return null;
     }
+
+    // Normalize to the canonical code — see cloneExternalModule for why.
+    moduleCode = moduleInfo.code;
 
     const cloneDir = await this.cloneExternalModule(moduleCode, options);
 

@@ -3364,7 +3364,10 @@ async function runTests() {
       let seen = stubUv({ version: { major: 0, minor: 5, patch: 31, raw: '0.5.31' } });
       let result = await uvCheck.checkUvEnvironment();
       assert(result.status === 'found' && seen.success.length === 1, 'uv present logs success');
-      assert(seen.success[0].includes('uv run') && seen.warn.length === 0, 'uv present mentions uv run, no warning');
+      assert(
+        seen.success[0].includes('Python UV check pass') && seen.warn.length === 0,
+        'uv present shows Python UV check pass, no warning',
+      );
 
       // Branch: uv missing — warn + setup note, never blocks (no prompt).
       seen = stubUv(null);
@@ -3498,6 +3501,70 @@ async function runTests() {
     }
   } catch (error) {
     console.log(`${colors.red}Test Suite 47 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 48: registry module-code aliases (renamed modules)
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 48: registry module-code aliases${colors.reset}\n`);
+
+  try {
+    const { ExternalModuleManager } = require('../tools/installer/modules/external-manager');
+    const originalLoadConfig48 = ExternalModuleManager.prototype.loadExternalModulesConfig;
+
+    ExternalModuleManager.prototype.loadExternalModulesConfig = async function () {
+      return {
+        modules: [
+          {
+            code: 'bmad-loop',
+            aliases: ['bauto'],
+            name: 'BMad Loop',
+            repository: 'https://example.com/bmad-loop.git',
+            module_definition: 'src/automator/data/skills/bmad-loop-setup/assets/module.yaml',
+          },
+          {
+            code: 'cis',
+            name: 'BMad Creative Intelligence Suite',
+            repository: 'https://example.com/cis.git',
+            module_definition: 'src/module.yaml',
+          },
+        ],
+      };
+    };
+
+    try {
+      const manager48 = new ExternalModuleManager();
+
+      const byCanonical = await manager48.getModuleByCode('bmad-loop');
+      assert(byCanonical && byCanonical.code === 'bmad-loop', 'getModuleByCode resolves the canonical code directly');
+
+      const byAlias = await manager48.getModuleByCode('bauto');
+      assert(byAlias && byAlias.code === 'bmad-loop', 'getModuleByCode resolves a prior code via aliases');
+
+      const noAliasModule = await manager48.getModuleByCode('cis');
+      assert(noAliasModule && noAliasModule.code === 'cis', 'getModuleByCode is unaffected for modules with no aliases');
+
+      const unknown = await manager48.getModuleByCode('nonexistent-code');
+      assert(unknown === null, 'getModuleByCode returns null for a code that matches nothing, including no alias');
+
+      assert((await manager48.resolveCanonicalCode('bauto')) === 'bmad-loop', 'resolveCanonicalCode maps an alias to its canonical code');
+      assert(
+        (await manager48.resolveCanonicalCode('bmad-loop')) === 'bmad-loop',
+        'resolveCanonicalCode is a no-op for an already-canonical code',
+      );
+      assert(
+        (await manager48.resolveCanonicalCode('some-custom-module')) === 'some-custom-module',
+        'resolveCanonicalCode passes through a code that matches no registry entry (e.g. a custom module)',
+      );
+    } finally {
+      ExternalModuleManager.prototype.loadExternalModulesConfig = originalLoadConfig48;
+    }
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 48 setup failed: ${error.message}${colors.reset}`);
     console.log(error.stack);
     failed++;
   }
