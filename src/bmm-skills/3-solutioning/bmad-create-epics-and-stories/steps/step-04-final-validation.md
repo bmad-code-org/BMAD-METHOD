@@ -93,6 +93,8 @@ The parent workflow owns accepted edits to `epics.md`; the auditor remains read-
 
 Critical findings demonstrating missing required coverage, impossible dependency order, or an unimplementable plan block completion. High findings may remain only with explicit user risk acceptance.
 
+If the verdict is `BLOCKED`, do not proceed to completion. Resolve unavailable evidence or blocking findings and rerun the audit before showing the final menu.
+
 ### 4. Confirm Material Corrections Once
 
 Material corrections change epic or story boundaries, ordering, requirements coverage, acceptance criteria, or architecture/NFR/UX alignment.
@@ -108,6 +110,7 @@ Do not start an automatic author-auditor loop. If the confirmation audit still r
 Completion requires:
 
 - the audit report exists
+- the audit verdict is not `BLOCKED`
 - no unresolved critical findings remain
 - remaining high findings have explicit user risk acceptance
 - accepted corrections are saved in `{planning_artifacts}/epics.md`
