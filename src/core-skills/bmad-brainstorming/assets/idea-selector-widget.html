@@ -1,0 +1,514 @@
+<script>
+/**
+ * BMad Brainstorm Vibes — UI enhancement for brainstorm.html artifacts.
+ *
+ * Inject this at the END of <body> in the generated brainstorm.html.
+ * It self-initializes and requires no external dependencies.
+ *
+ * Features:
+ *   - Auto-hiding top + bottom floating bars (appear on edge hover)
+ *   - "Pin" toggle to keep bars visible while scrolling
+ *   - Filter pills: Selected (with live count badge) + Clear Filters
+ *   - Checkbox on every [data-idea] element to mark ideas as selected
+ *   - Export Selected — downloads ticked ideas as a markdown file
+ *   - Help button that opens an inline modal explaining the UI
+ */
+(function () {
+  'use strict';
+
+  /* ── state ─────────────────────────────────────────── */
+  var selectedIds = {};
+  var currentFilter = 'all'; // 'all' | 'selected'
+  var barsSticky = false;
+  var hoverTimer;
+  var ideaCounter = 0;
+
+  /* ── styles ─────────────────────────────────────────── */
+  var css = [
+    ':root{--bv-bg:rgba(10,12,20,.97);--bv-brd:rgba(255,255,255,.1);',
+    '--bv-acc:#6d5cf0;--bv-acc-s:rgba(109,92,240,.22);',
+    '--bv-txt:#c0c5d8;--bv-mut:#6b7080;}',
+
+    '.bv-bar{position:fixed;left:0;right:0;z-index:9999;',
+    'background:var(--bv-bg);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);',
+    'border:1px solid var(--bv-brd);padding:9px 18px;',
+    'display:flex;align-items:center;gap:9px;flex-wrap:nowrap;',
+    'opacity:0;pointer-events:none;',
+    'transition:opacity .22s ease,transform .22s ease;',
+    'font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}',
+
+    '.bv-bar-top{top:0;border-top:none;border-radius:0 0 14px 14px;transform:translateY(-10px);}',
+    '.bv-bar-bottom{bottom:0;border-bottom:none;border-radius:14px 14px 0 0;transform:translateY(10px);}',
+    '.bv-bar.bv-show{opacity:1;pointer-events:all;transform:translateY(0);}',
+
+    '.bv-brand{font-size:12px;font-weight:700;color:var(--bv-acc);letter-spacing:.07em;',
+    'text-transform:uppercase;white-space:nowrap;padding:5px 13px;',
+    'background:var(--bv-acc-s);border-radius:20px;border:1px solid rgba(109,92,240,.35);}',
+
+    '.bv-sep{width:1px;height:22px;background:var(--bv-brd);flex-shrink:0;}',
+
+    '.bv-filter-label{font-size:11px;color:var(--bv-mut);text-transform:uppercase;',
+    'letter-spacing:.06em;white-space:nowrap;}',
+
+    '.bv-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;',
+    'border-radius:20px;font-size:12px;font-weight:600;color:var(--bv-txt);',
+    'background:rgba(255,255,255,.06);border:1px solid var(--bv-brd);',
+    'cursor:pointer;transition:all .15s;white-space:nowrap;outline:none;}',
+    '.bv-pill:hover{background:rgba(255,255,255,.12);color:#fff;}',
+    '.bv-pill.bv-on{background:var(--bv-acc-s);color:#a99bff;border-color:rgba(109,92,240,.5);}',
+    '.bv-pill:disabled{opacity:.4;cursor:not-allowed;}',
+    '.bv-pill:disabled:hover{background:rgba(255,255,255,.06);color:var(--bv-txt);}',
+
+    '.bv-badge{display:inline-flex;align-items:center;justify-content:center;',
+    'min-width:18px;height:18px;padding:0 4px;background:var(--bv-acc);color:#fff;',
+    'border-radius:9px;font-size:11px;font-weight:700;line-height:1;}',
+    '.bv-badge.bv-hide{display:none;}',
+
+    '.bv-clear{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;',
+    'border-radius:20px;font-size:12px;font-weight:500;color:var(--bv-mut);',
+    'background:transparent;border:1px solid rgba(255,255,255,.06);',
+    'cursor:pointer;transition:all .15s;outline:none;}',
+    '.bv-clear:hover{color:#f87171;border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.08);}',
+
+    '.bv-help-btn{display:inline-flex;align-items:center;justify-content:center;',
+    'width:26px;height:26px;border-radius:50%;font-size:13px;font-weight:700;',
+    'color:var(--bv-mut);background:rgba(255,255,255,.06);',
+    'border:1px solid rgba(255,255,255,.1);cursor:pointer;',
+    'transition:all .15s;outline:none;flex-shrink:0;}',
+    '.bv-help-btn:hover{color:#fff;background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.25);}',
+
+    '.bv-pin{margin-left:auto;display:inline-flex;align-items:center;gap:4px;',
+    'padding:5px 11px;border-radius:20px;font-size:11px;font-weight:500;',
+    'color:var(--bv-mut);background:transparent;border:1px solid transparent;',
+    'cursor:pointer;transition:all .15s;outline:none;white-space:nowrap;}',
+    '.bv-pin:hover{color:var(--bv-txt);border-color:var(--bv-brd);}',
+    '.bv-pin.bv-on{color:#a99bff;border-color:rgba(109,92,240,.4);background:var(--bv-acc-s);}',
+
+    /* idea control row */
+    '.bv-ctrl{display:flex;align-items:center;gap:7px;margin-top:10px;',
+    'padding-top:8px;border-top:1px solid rgba(255,255,255,.06);}',
+
+    '.bv-cb{appearance:none;-webkit-appearance:none;width:16px;height:16px;',
+    'border:1.5px solid rgba(255,255,255,.22);border-radius:4px;background:transparent;',
+    'cursor:pointer;transition:all .15s;flex-shrink:0;position:relative;}',
+    '.bv-cb:hover{border-color:rgba(109,92,240,.7);}',
+    '.bv-cb:checked{background:var(--bv-acc);border-color:var(--bv-acc);}',
+    '.bv-cb:checked::after{content:"✓";position:absolute;top:-3px;left:1px;',
+    'font-size:13px;color:#fff;font-weight:900;}',
+
+    '.bv-cblabel{font-size:12px;color:var(--bv-mut);cursor:pointer;user-select:none;}',
+    '.bv-cblabel.bv-sel{color:#a99bff;}',
+
+    /* filter hide */
+    '.bv-idea[data-bv-out]{display:none!important;}',
+
+    /* body padding when pinned */
+    'body.bv-ptop{padding-top:52px!important;}',
+    'body.bv-pbot{padding-bottom:52px!important;}',
+
+    /* ── toast ── */
+    '.bv-toast{position:fixed;left:50%;bottom:74px;transform:translateX(-50%) translateY(12px);',
+    'z-index:10001;background:#12142080;background:rgba(14,16,24,.96);border:1px solid rgba(109,92,240,.4);',
+    'color:#e2e4f0;padding:10px 18px;border-radius:12px;font-size:13px;font-weight:600;',
+    'font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;',
+    'box-shadow:0 12px 32px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;}',
+    '.bv-toast.bv-show{opacity:1;transform:translateX(-50%) translateY(0);}',
+
+    /* ── help modal ── */
+    '.bv-overlay{position:fixed;inset:0;z-index:10000;',
+    'background:rgba(0,0,0,.7);backdrop-filter:blur(6px);',
+    'display:flex;align-items:center;justify-content:center;padding:20px;',
+    'opacity:0;pointer-events:none;transition:opacity .2s;}',
+    '.bv-overlay.bv-open{opacity:1;pointer-events:all;}',
+
+    '.bv-modal{background:#0e1018;border:1px solid rgba(255,255,255,.12);',
+    'border-radius:20px;padding:36px 40px;max-width:560px;width:100%;',
+    'max-height:82vh;overflow-y:auto;',
+    'box-shadow:0 24px 80px rgba(0,0,0,.7);',
+    'transform:translateY(16px) scale(.97);transition:transform .22s ease;',
+    'font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}',
+    '.bv-overlay.bv-open .bv-modal{transform:translateY(0) scale(1);}',
+
+    '.bv-modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}',
+    '.bv-modal-title{font-size:18px;font-weight:800;color:#e2e4f0;letter-spacing:-.01em;}',
+    '.bv-modal-close{width:30px;height:30px;border-radius:50%;',
+    'background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);',
+    'color:#6b7080;font-size:16px;cursor:pointer;display:flex;',
+    'align-items:center;justify-content:center;transition:all .15s;outline:none;}',
+    '.bv-modal-close:hover{color:#fff;background:rgba(255,255,255,.14);}',
+
+    '.bv-help-section{margin-bottom:22px;}',
+    '.bv-help-section:last-child{margin-bottom:0;}',
+    '.bv-help-label{font-size:11px;font-weight:700;letter-spacing:.1em;',
+    'text-transform:uppercase;color:var(--bv-acc);margin-bottom:10px;}',
+    '.bv-help-row{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;}',
+    '.bv-help-row:last-child{margin-bottom:0;}',
+    '.bv-help-icon{font-size:18px;flex-shrink:0;width:28px;text-align:center;margin-top:1px;}',
+    '.bv-help-copy{font-size:13.5px;line-height:1.6;color:#9aa0b4;}',
+    '.bv-help-copy strong{color:#e2e4f0;font-weight:700;}',
+
+    '.bv-help-divider{height:1px;background:rgba(255,255,255,.07);margin:18px 0;}',
+
+    '.bv-tip{background:rgba(109,92,240,.1);border:1px solid rgba(109,92,240,.25);',
+    'border-radius:10px;padding:12px 14px;font-size:12.5px;color:#a99bff;',
+    'line-height:1.55;margin-top:20px;}',
+  ].join('');
+
+  var styleEl = document.createElement('style');
+  styleEl.textContent = css;
+  document.head.appendChild(styleEl);
+
+  /* ── helpers ─────────────────────────────────────────── */
+  function sel(q, root) { return (root || document).querySelectorAll(q); }
+  function el(tag, cls) { var e = document.createElement(tag); if (cls) e.className = cls; return e; }
+  function sep() { return el('span', 'bv-sep'); }
+
+  function selectedCount() {
+    return Object.keys(selectedIds).filter(function (k) { return selectedIds[k]; }).length;
+  }
+
+  function syncBadges() {
+    var n = selectedCount();
+    sel('.bv-badge').forEach(function (b) {
+      b.textContent = n;
+      b.classList.toggle('bv-hide', n === 0);
+    });
+    sel('.bv-pill-sel').forEach(function (p) {
+      p.classList.toggle('bv-on', currentFilter === 'selected');
+    });
+    sel('.bv-pill-export').forEach(function (b) {
+      b.disabled = n === 0;
+    });
+  }
+
+  function applyFilter() {
+    sel('.bv-idea').forEach(function (idea) {
+      var id = idea.getAttribute('data-bv-id');
+      var keep = currentFilter === 'all' || selectedIds[id];
+      if (keep) idea.removeAttribute('data-bv-out');
+      else idea.setAttribute('data-bv-out', '');
+    });
+  }
+
+  /* ── toast ───────────────────────────────────────────── */
+  var toastTimer;
+  function showToast(msg) {
+    var t = document.getElementById('bv-toast');
+    if (!t) {
+      t = el('div', 'bv-toast');
+      t.id = 'bv-toast';
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.classList.add('bv-show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove('bv-show'); }, 2400);
+  }
+
+  /* ── export ──────────────────────────────────────────── */
+  function ideaText(idea) {
+    var clone = idea.cloneNode(true);
+    var ctrl = clone.querySelector('.bv-ctrl');
+    if (ctrl) ctrl.remove();
+    var hint = clone.querySelector('.face-hint');
+    if (hint) hint.remove();
+    var text = (clone.innerText || clone.textContent || '').replace(/\s+/g, ' ').trim();
+    return text;
+  }
+
+  function exportSelected() {
+    var picked = [];
+    sel('.bv-idea').forEach(function (idea) {
+      var id = idea.getAttribute('data-bv-id');
+      if (selectedIds[id]) picked.push(ideaText(idea));
+    });
+    if (picked.length === 0) {
+      showToast('Tick a few ideas first — nothing selected yet.');
+      return;
+    }
+    var stamp = document.title || 'brainstorm';
+    var md = '# Selected Ideas — ' + stamp + '\n\n' +
+      picked.map(function (t) { return '- ' + t; }).join('\n') + '\n';
+    var blob = new Blob([md], { type: 'text/markdown' });
+    var url = URL.createObjectURL(blob);
+    var a = el('a');
+    a.href = url;
+    a.download = 'selected-ideas.md';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
+    showToast('Exported ' + picked.length + ' idea' + (picked.length === 1 ? '' : 's') + ' to selected-ideas.md');
+  }
+
+  /* ── help modal ──────────────────────────────────────── */
+  function helpRow(icon, html) {
+    var row = el('div', 'bv-help-row');
+    var ic = el('span', 'bv-help-icon'); ic.textContent = icon;
+    var cp = el('div', 'bv-help-copy'); cp.innerHTML = html;
+    row.appendChild(ic); row.appendChild(cp);
+    return row;
+  }
+
+  function buildHelpModal() {
+    var overlay = el('div', 'bv-overlay');
+    overlay.id = 'bv-help-overlay';
+
+    var modal = el('div', 'bv-modal');
+
+    var head = el('div', 'bv-modal-head');
+    var title = el('span', 'bv-modal-title');
+    title.textContent = '✦ How to use this artifact';
+    var closeBtn = el('button', 'bv-modal-close');
+    closeBtn.innerHTML = '&times;';
+    closeBtn.setAttribute('aria-label', 'Close help');
+    closeBtn.addEventListener('click', closeHelp);
+    head.appendChild(title); head.appendChild(closeBtn);
+    modal.appendChild(head);
+
+    /* section 1 — toolbar */
+    var s1 = el('div', 'bv-help-section');
+    var l1 = el('div', 'bv-help-label'); l1.textContent = 'Floating Toolbar';
+    s1.appendChild(l1);
+    s1.appendChild(helpRow('🖱️', '<strong>Hover near the top or bottom edge</strong> of the screen to reveal the toolbar. It slides in automatically and hides when you move away.'));
+    s1.appendChild(helpRow('📌', '<strong>Pin bar</strong> — click the pin button on the right to keep the toolbar always visible while you scroll. Click again to unpin.'));
+    modal.appendChild(s1);
+
+    modal.appendChild(el('div', 'bv-help-divider'));
+
+    /* section 2 — selecting ideas */
+    var s2 = el('div', 'bv-help-section');
+    var l2 = el('div', 'bv-help-label'); l2.textContent = 'Selecting Ideas You Like';
+    s2.appendChild(l2);
+    s2.appendChild(helpRow('☑️', '<strong>Every idea has a "Mark as selected" checkbox</strong> at the bottom. Tick it to flag ideas you find interesting, want to develop further, or want to bring into your next session.'));
+    s2.appendChild(helpRow('✦', 'The checkbox turns <strong>purple</strong> and shows "Selected ✓" when active. Select as many ideas as you like — no limit.'));
+    modal.appendChild(s2);
+
+    modal.appendChild(el('div', 'bv-help-divider'));
+
+    /* section 3 — filtering */
+    var s3 = el('div', 'bv-help-section');
+    var l3 = el('div', 'bv-help-label'); l3.textContent = 'Filtering Your Selections';
+    s3.appendChild(l3);
+    s3.appendChild(helpRow('🏷️', '<strong>Selected</strong> — click this pill in the toolbar to show <em>only</em> the ideas you\'ve ticked. A purple number badge shows your running count. Click again to return to showing everything.'));
+    s3.appendChild(helpRow('×', '<strong>Clear</strong> — resets all checkboxes and returns to the full view. Start a fresh round of selection whenever you want.'));
+    modal.appendChild(s3);
+
+    modal.appendChild(el('div', 'bv-help-divider'));
+
+    /* section 4 — exporting */
+    var s4 = el('div', 'bv-help-section');
+    var l4 = el('div', 'bv-help-label'); l4.textContent = 'Exporting Your Shortlist';
+    s4.appendChild(l4);
+    s4.appendChild(helpRow('⬇️', '<strong>Export</strong> — downloads every ticked idea as a <code>selected-ideas.md</code> markdown file, ready to paste into a doc, a PRD, or your next brainstorming session.'));
+    modal.appendChild(s4);
+
+    /* tip */
+    var tip = el('div', 'bv-tip');
+    tip.innerHTML = '💡 <strong>Tip:</strong> Read through all ideas first, tick your favourites as you go, click <strong>Selected</strong> to review your shortlist, then <strong>Export</strong> to save it.';
+    modal.appendChild(tip);
+
+    overlay.appendChild(modal);
+
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) closeHelp();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeHelp();
+    });
+
+    document.body.appendChild(overlay);
+    return overlay;
+  }
+
+  function openHelp() {
+    var overlay = document.getElementById('bv-help-overlay');
+    if (overlay) overlay.classList.add('bv-open');
+  }
+
+  function closeHelp() {
+    var overlay = document.getElementById('bv-help-overlay');
+    if (overlay) overlay.classList.remove('bv-open');
+  }
+
+  /* ── build one bar ───────────────────────────────────── */
+  function buildBar(pos) {
+    var bar = el('div', 'bv-bar bv-bar-' + pos);
+
+    var brand = el('span', 'bv-brand');
+    brand.textContent = '✶ BMad Brainstorming Tool';
+    bar.appendChild(brand);
+    bar.appendChild(sep());
+
+    var lbl = el('span', 'bv-filter-label');
+    lbl.textContent = 'Filter:';
+    bar.appendChild(lbl);
+
+    var selPill = el('button', 'bv-pill bv-pill-sel');
+    selPill.innerHTML = 'Selected <span class="bv-badge bv-hide">0</span>';
+    selPill.addEventListener('click', function () {
+      currentFilter = currentFilter === 'selected' ? 'all' : 'selected';
+      syncBadges();
+      applyFilter();
+    });
+    bar.appendChild(selPill);
+
+    var clr = el('button', 'bv-clear');
+    clr.textContent = '× Clear';
+    clr.addEventListener('click', function () {
+      selectedIds = {};
+      currentFilter = 'all';
+      sel('.bv-cb').forEach(function (cb) { cb.checked = false; });
+      sel('.bv-cblabel').forEach(function (l) { l.textContent = 'Mark as selected'; l.classList.remove('bv-sel'); });
+      syncBadges();
+      applyFilter();
+    });
+    bar.appendChild(clr);
+
+    var expBtn = el('button', 'bv-pill bv-pill-export');
+    expBtn.innerHTML = '⬇ Export';
+    expBtn.disabled = true;
+    expBtn.title = 'Download ticked ideas as a markdown file';
+    expBtn.addEventListener('click', exportSelected);
+    bar.appendChild(expBtn);
+
+    bar.appendChild(sep());
+
+    var helpBtn = el('button', 'bv-help-btn');
+    helpBtn.textContent = '?';
+    helpBtn.title = 'How to use this brainstorm artifact';
+    helpBtn.addEventListener('click', openHelp);
+    bar.appendChild(helpBtn);
+
+    var pin = el('button', 'bv-pin');
+    pin.textContent = '📌 Pin bar';
+    pin.setAttribute('data-bv-pin', '');
+    pin.addEventListener('click', function () {
+      barsSticky = !barsSticky;
+      syncSticky();
+    });
+    bar.appendChild(pin);
+
+    return bar;
+  }
+
+  function syncSticky() {
+    var on = barsSticky;
+    sel('[data-bv-pin]').forEach(function (b) {
+      b.classList.toggle('bv-on', on);
+      b.textContent = on ? '📌 Pinned' : '📌 Pin bar';
+    });
+    sel('.bv-bar').forEach(function (b) {
+      if (on) b.classList.add('bv-show');
+      else b.classList.remove('bv-show');
+    });
+    document.body.classList.toggle('bv-ptop', on);
+    document.body.classList.toggle('bv-pbot', on);
+  }
+
+  /* ── hover zones ─────────────────────────────────────── */
+  function setupHover(topBar, botBar) {
+    var ZONE = 64;
+
+    document.addEventListener('mousemove', function (e) {
+      if (barsSticky) return;
+      var y = e.clientY;
+      var vh = window.innerHeight;
+      clearTimeout(hoverTimer);
+
+      if (y < ZONE) {
+        topBar.classList.add('bv-show');
+        botBar.classList.remove('bv-show');
+      } else if (y > vh - ZONE) {
+        botBar.classList.add('bv-show');
+        topBar.classList.remove('bv-show');
+      } else {
+        hoverTimer = setTimeout(function () {
+          if (!topBar.matches(':hover') && !botBar.matches(':hover')) {
+            topBar.classList.remove('bv-show');
+            botBar.classList.remove('bv-show');
+          }
+        }, 500);
+      }
+    });
+
+    [topBar, botBar].forEach(function (bar) {
+      bar.addEventListener('mouseleave', function () {
+        if (barsSticky) return;
+        hoverTimer = setTimeout(function () {
+          if (!topBar.matches(':hover') && !botBar.matches(':hover')) {
+            topBar.classList.remove('bv-show');
+            botBar.classList.remove('bv-show');
+          }
+        }, 600);
+      });
+    });
+  }
+
+  /* ── inject checkboxes into ideas ───────────────────── */
+  function findIdeas() {
+    var found = Array.prototype.slice.call(sel('[data-idea]'));
+    if (found.length === 0) {
+      found = Array.prototype.slice.call(
+        sel('article, .idea, .card, .idea-card, [class*="idea-"], [class*="-idea"]')
+      );
+      found.forEach(function (e) { e.setAttribute('data-idea', ''); });
+    }
+    return found;
+  }
+
+  function attachCheckboxes(ideas) {
+    ideas.forEach(function (idea) {
+      if (idea.querySelector('.bv-ctrl')) return;
+      ideaCounter += 1;
+      var id = 'bv' + ideaCounter;
+      idea.setAttribute('data-bv-id', id);
+      idea.classList.add('bv-idea');
+
+      var ctrl = el('div', 'bv-ctrl');
+      var cb = el('input', 'bv-cb');
+      cb.type = 'checkbox';
+      cb.id = 'bvcb-' + id;
+
+      var lblEl = el('label', 'bv-cblabel');
+      lblEl.setAttribute('for', 'bvcb-' + id);
+      lblEl.textContent = 'Mark as selected';
+
+      cb.addEventListener('change', function () {
+        selectedIds[id] = cb.checked;
+        lblEl.textContent = cb.checked ? 'Selected ✓' : 'Mark as selected';
+        lblEl.classList.toggle('bv-sel', cb.checked);
+        syncBadges();
+        if (currentFilter === 'selected') applyFilter();
+      });
+      cb.addEventListener('click', function (e) { e.stopPropagation(); });
+      lblEl.addEventListener('click', function (e) { e.stopPropagation(); });
+
+      ctrl.appendChild(cb);
+      ctrl.appendChild(lblEl);
+      idea.appendChild(ctrl);
+    });
+  }
+
+  /* ── init ────────────────────────────────────────────── */
+  function init() {
+    var topBar = buildBar('top');
+    var botBar = buildBar('bottom');
+    document.body.appendChild(topBar);
+    document.body.appendChild(botBar);
+    buildHelpModal();
+
+    attachCheckboxes(findIdeas());
+    setupHover(topBar, botBar);
+    syncBadges();
+
+    setTimeout(function () {
+      topBar.classList.add('bv-show');
+      setTimeout(function () { if (!barsSticky) topBar.classList.remove('bv-show'); }, 2800);
+    }, 400);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
