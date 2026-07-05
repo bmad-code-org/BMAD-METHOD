@@ -245,6 +245,14 @@ async function runTests() {
     const antigravityCliInstaller = platformCodes6b.platforms['antigravity-cli']?.installer;
 
     assert(antigravityCliInstaller?.target_dir === '.agents/skills', 'Antigravity CLI target_dir uses shared skills path');
+    assert(
+      antigravityCliInstaller?.global_target_dir === '~/.gemini/antigravity-cli/skills',
+      'Antigravity CLI global_target_dir uses the CLI-specific skills path',
+    );
+    assert(
+      antigravityCliInstaller?.global_target_dir !== platformCodes6b.platforms.antigravity?.installer?.global_target_dir,
+      'Antigravity CLI global_target_dir differs from the Antigravity IDE so installs never collide',
+    );
 
     const tempProjectDir6b = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-antigravity-cli-test-'));
     const installedBmadDir6b = await createTestBmadFixture();
