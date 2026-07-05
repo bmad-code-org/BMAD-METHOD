@@ -11,15 +11,15 @@
 
 1. **Normalize** findings from all layers into a unified list where each finding has:
    - `id` -- sequential integer
-   - `source` -- `blind`, `edge`, `vgap`, `auditor`, or merged sources (e.g., `blind+edge`)
+   - `source` -- the `id` of the layer that produced the finding (e.g., `blind-hunter`), or merged sources joined with `+` (e.g., `blind-hunter+edge-case-hunter`)
    - `title` -- one-line summary
    - `detail` -- full description
    - `location` -- file and line reference (if available)
 
 2. **Deduplicate.** Deduplicate only findings with the same claim and same required action. If two or more findings meet both conditions, merge them into one:
-   - Use the most specific finding as the base (prefer edge-case JSON with location over adversarial prose).
+   - Use the most specific finding as the base (prefer findings with a precise location over prose-only findings).
    - Append any unique detail, reasoning, or location references from the other finding(s) into the surviving `detail` field.
-   - Set `source` to the merged sources (e.g., `blind+edge`).
+   - Set `source` to the merged sources (e.g., `blind-hunter+edge-case-hunter`).
 
 3. Then evaluate each remaining finding independently. Do not reject a finding because a related finding was rejected.
 
@@ -44,7 +44,6 @@
 8. If `{failed_layers}` is non-empty, report which layers failed before announcing results. If zero findings remain after dropping dismissed AND `{failed_layers}` is non-empty, warn the user that the review may be incomplete rather than announcing a clean review.
 
 9. If zero findings remain after triage (all rejected or none raised): state "✅ Clean review — all layers passed." (Step 3 already warned if any review layers failed via `{failed_layers}`.)
-
 
 ## NEXT
 

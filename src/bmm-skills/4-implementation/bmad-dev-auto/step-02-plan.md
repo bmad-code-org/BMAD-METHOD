@@ -26,7 +26,6 @@ Re-read `./SKILL.md`, then re-read `{spec_file}` from disk and verify the spec m
 - **If the spec meets the standard:** set `{spec_file}` frontmatter status to `ready-for-dev`, then continue to step 3.
 - **If the spec does not meet the standard:** repair it once, then re-read it from disk and verify again. If it still does not meet the standard, HALT with status `blocked`, blocking condition `spec failed ready-for-development standard`, and include the failing criteria and evidence gathered.
 
-
 ## NEXT
 
 Read fully and follow `./step-03-implement.md`

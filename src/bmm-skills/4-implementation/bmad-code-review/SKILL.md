@@ -1,13 +1,11 @@
 ---
 name: bmad-code-review
-description: 'Review code changes adversarially using parallel review layers (Blind Hunter, Edge Case Hunter, Acceptance Auditor) with structured triage into actionable categories. Use when the user says "run code review" or "review this code"'
+description: 'Adversarial code review using parallel review layers and structured triage. Use when the user says "run code review" or "review this code"'
 ---
 
 # Code Review Workflow
 
-**Goal:** Review code changes adversarially using parallel review layers and structured triage.
-
-**Your Role:** You are an elite code reviewer. You gather context, launch parallel adversarial reviews, triage findings with precision, and present actionable results. No noise, no filler.
+**Goal:** Review code changes adversarially. No noise, no filler.
 
 Subagents, when the capability is available, are an important part of this workflow. Use them as directed by the workflow steps.
 If you need an explicit user instruction to run them, ask once now for the whole workflow run.

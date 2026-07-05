@@ -9,6 +9,7 @@ deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 - YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
 - NEVER auto-push.
 - All review subagents must run at the same model capability as the current session.
+- Run subagents synchronously: launch them together, then wait for all results before continuing.
 
 ## INSTRUCTIONS
 
@@ -20,9 +21,11 @@ Implement the clarified intent directly.
 
 ### Review
 
-Launch Blind Hunter without prior conversation context. If no subagents are available, generate one review prompt file in `{implementation_artifacts}` and HALT. Ask the human to run it in a separate session and paste back the findings.
+The review layers for this route are `{workflow.oneshot_review_layers}`, resolved during activation.
 
-- **Blind Hunter** — prompt: "Invoke the `bmad-review-adversarial-general` skill on the changed files."
+Skip every layer whose `instruction` is empty or missing, and every layer whose `when` condition (if present) does not hold. If no layers remain, HALT with status `blocked` and blocking condition `no active review layers`. Execute all remaining layers in parallel wherever their execution methods allow, following each layer's `instruction` verbatim after substituting any runtime placeholders.
+
+If a layer's instruction requires subagents and none are available, generate one review prompt file per such layer in `{implementation_artifacts}` and HALT. Ask the human to run each in a separate session and paste back the findings.
 
 ### Classify
 

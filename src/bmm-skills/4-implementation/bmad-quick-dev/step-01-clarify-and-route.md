@@ -99,7 +99,6 @@ If the spec is an epic story and `{sprint_status}` exists: find the `development
 
    **b) Plan-code-review** — everything else. When uncertain whether blast radius is truly zero, choose this path.
 
-
 ## NEXT
 
 Read fully and follow `./step-02-plan.md`
