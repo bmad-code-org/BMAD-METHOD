@@ -23,9 +23,9 @@ Capture `baseline_revision` (current HEAD, or `NO_VCS` if version control is una
 
 Change `{spec_file}` status to `in-progress` in the frontmatter before starting implementation.
 
-If `{spec_file}` has a non-empty `context:` list in its frontmatter, load those files before implementation begins. When handing to a subagent, include them in the subagent prompt so it has access to the referenced context.
+The implementation handoff is `{workflow.implementation_handoff}`, resolved during activation. Substitute the runtime placeholders (e.g. `{spec_file}`) into it, then follow it verbatim. Do not add parent-authored goal restatements, file lists, ownership boundaries, or acceptance criteria to the handoff — the spec is the subagent's sole source of truth. If the resolved handoff conflicts with the spec, HALT with status `blocked` and blocking condition `handoff conflicts with spec`, and include both conflicting passages.
 
-Hand `{spec_file}` to an implementation subagent. Invoke it **synchronously** and wait for it to return in this same turn — do not background/detach it (`run_in_background`) or end your turn to await a notification (see SKILL.md → Subagents). Resume at "Verify" only after it returns.
+Invoke the subagent **synchronously** and wait for it to return in this same turn — do not background/detach it (`run_in_background`) or end your turn to await a notification (see SKILL.md → Subagents). Resume at "Verify" only after it returns.
 
 **Path formatting rule:** Any markdown links written into `{spec_file}` must use paths relative to `{spec_file}`'s directory so they are clickable in VS Code. Any file paths displayed in terminal/conversation output must use CWD-relative format with `:line` notation (e.g., `src/path/file.ts:42`) for terminal clickability. No leading `/` in either case.
 
