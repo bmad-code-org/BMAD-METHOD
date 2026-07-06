@@ -86,7 +86,7 @@ Prepare `Auto Run Result` details:
 
 Set `{spec_file}` frontmatter `followup_review_recommended` from the judgment above.
 
-If version control is available, commit. Do not push.
+If version control is available, commit every file in the reviewed diff — tracked and untracked. Do not push. After committing, verify the commit contains each file from the reviewed diff; if any is missing, add it and amend before proceeding. Anything still visible in `git status --porcelain` is by definition not part of the change: leave it in place — do not commit, delete, or gitignore it — and list it under `Auto Run Result` as residual artifacts.
 
 Capture `final_revision` (current HEAD after committing, or `NO_VCS` if version control is unavailable) into `{spec_file}` frontmatter.
 

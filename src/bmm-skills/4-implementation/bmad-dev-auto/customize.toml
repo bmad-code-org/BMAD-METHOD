@@ -49,7 +49,7 @@ Launch a subagent with no prior conversation context, with this prompt:
 > - Do not revert or overwrite changes unrelated to this spec.
 > - Run the verification described in the spec, plus focused checks for the code you touched.
 >
-> When done, report: files changed with one line each, verification commands run and their outcomes, anything you could not complete and why, and residual risks.
+> When done, report: files changed with one line each, verification commands run and their outcomes, any files changed beyond the spec's tasks and why each was needed, anything you could not complete and why, and residual risks.
 """
 
 # Review layers for the review step. `instruction` is the layer's whole
