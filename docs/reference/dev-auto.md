@@ -104,12 +104,13 @@ On blocked completion, the workflow writes:
 Typical blocking conditions include:
 
 - `unclear intent`
-- `intent gaps`
+- `intent gap`
 - `no subagents`
 - `missing spec_file before implementation`
 - `implementation verification failed`
-- `intent gap in intent contract`
 - `review repair loop exceeded 5 iterations (non-convergence)`
+
+An `intent gap` means the captured intent cannot answer a question the run hit — it can halt the planning step (before any code exists) or the review step. When review halts on it, the working tree is reverted as usual, but the attempted change is first saved as a patch file in `{implementation_artifacts}`, referenced from the spec's triage log and the halt output. The patch shows which reading of the intent the run implemented — concrete evidence for repairing the intent. If the attempted reading turns out to be correct, `git apply` the patch and set the spec status to `in-review` to resume review on it instead of re-running from scratch.
 
 ## Output Artifacts
 
@@ -145,6 +146,7 @@ Depending on the route, the workflow may also write:
 
 - `{implementation_artifacts}/epic-<N>-context.md`
 - `{implementation_artifacts}/deferred-work.md`
+- A patch file preserving the attempted change when the review step halts on `intent gap` (path recorded in the spec's triage log)
 
 ## Orchestrator Responsibilities
 

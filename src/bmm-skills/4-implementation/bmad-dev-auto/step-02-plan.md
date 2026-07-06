@@ -15,7 +15,7 @@ deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 2. Investigate codebase. _Read the code yourself for narrow, localized tasks. Isolate deep exploration in subagents: instruct them to give you distilled summaries only, and plan from those summaries._
 3. Read `./spec-template.md` fully. Fill it out based on the intent and investigation. If `{preserved_intent_contract}` is non-empty, substitute it for the `<intent-contract>` block in your filled spec before writing. Write the result to `{spec_file}`.
 4. Self-review against READY FOR DEVELOPMENT standard.
-5. If intent gaps exist, do not fantasize and do not leave open questions. Multiple defensible readings of the intent that lead to observably different outcomes, with nothing in the intent to select between them, are an intent gap — do not resolve one by picking a reading. HALT with status `blocked`, blocking condition `intent gaps`, and include the unanswered questions and evidence gathered.
+5. If intent gaps exist, do not fantasize and do not leave open questions. Multiple defensible readings of the intent that lead to observably different outcomes, with nothing in the intent to select between them, are an intent gap — do not resolve one by picking a reading. HALT with status `blocked`, blocking condition `intent gap`, and include the unanswered questions and evidence gathered.
 6. Warning check. If step-01 carried `multiple-goals`, add it to `{spec_file}` frontmatter `warnings`. If `{spec_file}` exceeds 1600 tokens, add `oversized` to frontmatter `warnings`. Continue either way.
 
 ### READY-FOR-DEVELOPMENT GATE
