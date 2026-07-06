@@ -70,3 +70,20 @@ Launch a subagent with no prior conversation context, with this prompt:
 >
 > {diff_output}
 """
+
+[[workflow.review_layers]]
+id = "intent-alignment"
+name = "Intent Alignment Auditor"
+instruction = """
+Launch a subagent with no prior conversation context, with this prompt:
+
+> You are an intent-alignment auditor. You have no other context about how this change was produced. Here is the verbatim intent this work started from:
+>
+> {verbatim_intent}
+>
+> Here is the diff:
+>
+> {diff_output}
+>
+> Your task is strictly descriptive — do not prescribe additional work. Report: (1) the defensible readings of the intent, enumerated; (2) which reading this diff implements; (3) where the readings and the diff diverge — specifically, which surface the intent's expectations live at versus which surface the diff's changes and its tests exercise.
+"""

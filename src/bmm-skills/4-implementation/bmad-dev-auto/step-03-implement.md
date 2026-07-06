@@ -25,13 +25,13 @@ Change `{spec_file}` status to `in-progress` in the frontmatter before starting 
 
 If `{spec_file}` has a non-empty `context:` list in its frontmatter, load those files before implementation begins. When handing to a subagent, include them in the subagent prompt so it has access to the referenced context.
 
-Hand `{spec_file}` to an implementation subagent. Invoke it **synchronously** and wait for it to return in this same turn — do not background/detach it (`run_in_background`) or end your turn to await a notification (see SKILL.md → Subagents). Resume at "Tasks & Acceptance Verification" only after it returns.
+Hand `{spec_file}` to an implementation subagent. Invoke it **synchronously** and wait for it to return in this same turn — do not background/detach it (`run_in_background`) or end your turn to await a notification (see SKILL.md → Subagents). Resume at "Verify" only after it returns.
 
 **Path formatting rule:** Any markdown links written into `{spec_file}` must use paths relative to `{spec_file}`'s directory so they are clickable in VS Code. Any file paths displayed in terminal/conversation output must use CWD-relative format with `:line` notation (e.g., `src/path/file.ts:42`) for terminal clickability. No leading `/` in either case.
 
-### Tasks & Acceptance Verification
+### Verify
 
-After the implementation subagent returns, verify every task in the `## Tasks & Acceptance` section of `{spec_file}` is complete and every acceptance criterion is satisfied. Mark each finished task `[x]`. If any task is not done or any acceptance criterion is not satisfied, finish the missing work before proceeding. If the missing work cannot be completed, HALT with status `blocked`, blocking condition `implementation verification failed`, and include the unfinished task or failing acceptance criterion and reason.
+After the implementation subagent returns: if it reported unfinished work, finish it before proceeding. Run the commands in `{spec_file}`'s `## Verification` section (or perform its manual checks). If verification fails and the failure cannot be fixed, HALT with status `blocked`, blocking condition `implementation verification failed`, and include the failing command or check and reason. Acceptance criteria are judged at review, not here.
 
 ### Matrix Test Audit
 

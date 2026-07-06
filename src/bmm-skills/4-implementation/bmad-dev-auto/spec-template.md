@@ -60,7 +60,7 @@ warnings: [] # optional: machine-readable warnings for orchestration, e.g. overs
 <!-- AC covers system-level behaviors not captured by the I/O Matrix. Do not duplicate I/O scenarios here. -->
 
 **Execution:**
-- [ ] `FILE` -- ACTION -- RATIONALE
+- `FILE` -- ACTION -- RATIONALE
 
 **Acceptance Criteria:**
 - Given PRECONDITION, when ACTION, then EXPECTED_RESULT

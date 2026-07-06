@@ -42,6 +42,7 @@ A specification is "Ready for Development" when:
 - **Actionable**: Every task has a file path and specific action.
 - **Logical**: Tasks ordered by dependency.
 - **Testable**: All ACs use Given/When/Then.
+- **Surface-anchored**: ACs observe the outermost surface the intent references — never a more internal proxy for it (e.g. the API response, not the database row behind it).
 - **Complete**: No placeholders or TBDs.
 - **Sufficient**: No known requirement, acceptance, dependency, or implementation gaps remain unresolved.
 - **Coherent**: No unresolved ambiguities or internal contradictions.
