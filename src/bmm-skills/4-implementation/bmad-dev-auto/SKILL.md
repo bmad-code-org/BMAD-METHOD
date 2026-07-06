@@ -33,6 +33,8 @@ To HALT with a final status and optional blocking condition:
 
 Using subagents when instructed is mandatory. If you cannot, HALT with status `blocked` and blocking condition `no subagents`.
 
+Invoke every subagent **synchronously**: launch it, wait for it to return within the same turn, then continue with its result. When a step says to run subagents "in parallel" (e.g. the reviewers), that means several **blocking** calls awaited together in one turn — not detached execution. Never run a subagent in the background / detached / async (e.g. `run_in_background: true`), and never end your turn to "await a completion notification." This workflow runs unattended: there is no event loop to resume a yielded turn, so a backgrounded subagent never hands control back and the run stalls. The only sanctioned way to end a turn is the HALT protocol above with an explicit terminal `status`.
+
 ## READY FOR DEVELOPMENT STANDARD
 
 A specification is "Ready for Development" when:
@@ -40,6 +42,7 @@ A specification is "Ready for Development" when:
 - **Actionable**: Every task has a file path and specific action.
 - **Logical**: Tasks ordered by dependency.
 - **Testable**: All ACs use Given/When/Then.
+- **Surface-anchored**: ACs observe the outermost surface the intent references — never a more internal proxy for it (e.g. the API response, not the database row behind it).
 - **Complete**: No placeholders or TBDs.
 - **Sufficient**: No known requirement, acceptance, dependency, or implementation gaps remain unresolved.
 - **Coherent**: No unresolved ambiguities or internal contradictions.

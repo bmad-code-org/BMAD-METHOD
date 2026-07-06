@@ -46,7 +46,6 @@ HALT and ask human: `[A] Approve` | `[E] Edit`
   - **If the file exists:** Compare the content to what you wrote. If it has changed since you wrote it, acknowledge the external edits — show a brief summary of what changed — and proceed with the updated version. Then set status `ready-for-dev` in `{spec_file}`. Everything inside `<frozen-after-approval>` is now locked — only the human can change it. → Step 3.
 - **E**: Apply changes, then return to CHECKPOINT 1.
 
-
 ## NEXT
 
 Read fully and follow `./step-03-implement.md`

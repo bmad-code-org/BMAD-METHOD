@@ -77,7 +77,7 @@ async function checkUvEnvironment() {
   const detected = module.exports.detectUv();
 
   if (detected) {
-    await prompts.log.success(`uv ${detected.version.raw} detected — ready to run BMAD's Python-powered scripts via \`uv run\`.`);
+    await prompts.log.success(`✅ Python UV check pass (uv ${detected.version.raw} detected).`);
     return { status: 'found', detected };
   }
 
