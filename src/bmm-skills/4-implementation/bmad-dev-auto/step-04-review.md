@@ -28,7 +28,7 @@ Skip every layer whose `instruction` is empty or missing — that is how an over
 
 Runtime placeholders: `{diff_output}` is the diff constructed above. `{verbatim_intent}` is the invocation intent exactly as this run received it at step-01; if the run started from an existing spec file rather than a fresh intent, it is the spec's `<intent-contract>` block instead.
 
-Execute all remaining layers in parallel wherever their execution methods allow: substitute the runtime placeholders (e.g. `{diff_output}`) into each layer's `instruction`, then follow it verbatim.
+Execute all remaining layers in parallel wherever their execution methods allow: substitute the runtime placeholders (e.g. `{diff_output}`) into each layer's `instruction`, then follow it verbatim. Spawn every reviewer subagent before reading or reacting to any of their output; begin collection and triage only once all are launched.
 
 ### Classify
 
