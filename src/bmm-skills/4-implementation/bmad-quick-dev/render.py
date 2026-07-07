@@ -215,12 +215,59 @@ def _scalar_str(value):
     return str(value)
 
 
-def _render_workflow_value(value):
-    """Format a resolved [workflow] value for inline substitution. Lists render
-    as markdown bullets (empty -> '_None._'); scalars render verbatim. Each list
-    item uses the same scalar formatting so booleans stay consistent. Entries are
-    emitted as-is so runtime placeholders like {project-root} survive for the LLM
-    to resolve."""
+# [workflow] keys holding review layers ([[workflow.review_layers]] tables with
+# id/name/instruction/when fields). This renderer knows this skill's
+# customization schema outright — layer semantics are materialized here, not
+# interpreted by the LLM at run time.
+_REVIEW_LAYER_KEYS = ("review_layers", "oneshot_review_layers")
+
+
+def _render_review_layers(layers):
+    """Materialize review layers into direct invocation blocks. A layer with an
+    empty or missing instruction is disabled (that is how an override turns off
+    a default layer) and drops out entirely. A `when` condition is the one part
+    that stays with the LLM: it renders as a run-time guard line. No active
+    layers renders as the HALT instruction the workflow would otherwise have to
+    derive from an empty list."""
+    active = [
+        layer
+        for layer in layers
+        if isinstance(layer, dict) and _scalar_str(layer.get("instruction")).strip()
+    ]
+    if not active:
+        return (
+            "No review layers are active. HALT with status `blocked` and "
+            "blocking condition `no active review layers`."
+        )
+    blocks = []
+    for layer in active:
+        title = (
+            _scalar_str(layer.get("name")).strip()
+            or _scalar_str(layer.get("id")).strip()
+            or "Review layer"
+        )
+        lines = [f"#### {title}", ""]
+        when = _scalar_str(layer.get("when")).strip()
+        if when:
+            lines.append(
+                "Run this layer only if the following holds in the "
+                f"current context: `{when}`"
+            )
+            lines.append("")
+        lines.append(_scalar_str(layer.get("instruction")).strip("\n"))
+        blocks.append("\n".join(lines))
+    return "\n\n".join(blocks)
+
+
+def _render_workflow_value(key, value):
+    """Format a resolved [workflow] value for inline substitution. Review-layer
+    keys materialize as invocation blocks; other lists render as markdown
+    bullets (empty -> '_None._'); scalars render verbatim. Each list item uses
+    the same scalar formatting so booleans stay consistent. Entries are emitted
+    as-is so runtime placeholders like {project-root} or {diff_output} survive
+    for the LLM to resolve."""
+    if key in _REVIEW_LAYER_KEYS and isinstance(value, list):
+        return _render_review_layers(value)
     if isinstance(value, list):
         if not value:
             return "_None._"
@@ -235,7 +282,7 @@ def render_workflow(content, workflow):
     elsewhere are untouched."""
     return re.sub(
         r"\{workflow\.(\w+)\}",
-        lambda m: _render_workflow_value(workflow.get(m.group(1))),
+        lambda m: _render_workflow_value(m.group(1), workflow.get(m.group(1))),
         content,
     )
 

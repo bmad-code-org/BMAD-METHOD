@@ -17,9 +17,9 @@ Implement the clarified intent directly.
 
 ### Review
 
-The review layers for this route are `{workflow.oneshot_review_layers}`, resolved during activation.
+Execute these review layers in parallel wherever their execution methods allow, following each layer's instruction verbatim after substituting any runtime placeholders:
 
-Skip every layer whose `instruction` is empty or missing, and every layer whose `when` condition (if present) does not hold. If no layers remain, HALT with status `blocked` and blocking condition `no active review layers`. Execute all remaining layers in parallel wherever their execution methods allow, following each layer's `instruction` verbatim after substituting any runtime placeholders.
+{workflow.oneshot_review_layers}
 
 If a layer's instruction requires subagents and none are available, generate one review prompt file per such layer in `{{.implementation_artifacts}}` and HALT. Ask the human to run each in a separate session and paste back the findings.
 

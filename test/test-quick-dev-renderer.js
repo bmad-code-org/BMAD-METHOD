@@ -9,7 +9,12 @@
  *   3. [workflow] customization is self-resolved and inlined: prepend bullet,
  *      persistent_facts append (base kept), empty list -> _None._, on_complete
  *      scalar baked into step-05/step-oneshot.
- *   4. No {workflow.*} placeholder or resolve_customization.py call survives
+ *   4. Review layers materialize as direct invocation blocks: default layers
+ *      become #### sections in step-04, an override replacing a layer by id
+ *      wins, an empty-instruction override drops its layer, a `when` renders
+ *      as a run-time guard, runtime placeholders like {diff_output} survive,
+ *      and disabling every layer renders the HALT instruction.
+ *   5. No {workflow.*} placeholder or resolve_customization.py call survives
  *      in any rendered file.
  *
  * Usage: node test/test-quick-dev-renderer.js
@@ -114,6 +119,16 @@ try {
       'activation_steps_prepend = ["TEST_PREPEND_STEP"]',
       'persistent_facts = ["TEST_EXTRA_FACT"]',
       'on_complete = "TEST_ON_COMPLETE_INSTRUCTION"',
+      '',
+      '[[workflow.review_layers]]',
+      'id = "edge-case-hunter"',
+      'name = "Replaced Layer"',
+      'when = "TEST_WHEN_CONDITION"',
+      'instruction = "TEST_REPLACED_LAYER_INSTRUCTION"',
+      '',
+      '[[workflow.review_layers]]',
+      'id = "verification-gap"',
+      'instruction = ""',
     ].join('\n'),
     'utf-8',
   );
@@ -192,6 +207,72 @@ try {
   test('on_complete scalar inlined into step-05 and step-oneshot', () => {
     for (const file of ['step-05-present.md', 'step-oneshot.md']) {
       assert(readRendered(file).includes('TEST_ON_COMPLETE_INSTRUCTION'), `on_complete not inlined into ${file}`);
+    }
+  });
+
+  test('review layers materialize as invocation blocks in step-04', () => {
+    const content = readRendered('step-04-review.md');
+    assert(content.includes('#### Blind Hunter'), 'default review layer not rendered as a #### invocation block');
+    assert(!content.includes('- id:'), 'layer table data leaked into the rendered output');
+    assert(content.includes('{diff_output}'), 'runtime {diff_output} placeholder did not survive rendering');
+  });
+
+  test('review layer override replaces the matching default by id', () => {
+    const content = readRendered('step-04-review.md');
+    assert(content.includes('#### Replaced Layer'), 'override layer name not used as block title');
+    assert(content.includes('TEST_REPLACED_LAYER_INSTRUCTION'), 'override layer instruction not inlined');
+    assert(!content.includes('bmad-review-edge-case-hunter'), 'replaced default layer instruction still present');
+    assert(content.includes('bmad-review-adversarial-general'), 'untouched default layer dropped by keyed merge');
+  });
+
+  test('empty-instruction override drops its layer entirely', () => {
+    const content = readRendered('step-04-review.md');
+    assert(!content.includes('verification-gap'), 'disabled layer id still present in rendered output');
+    assert(!content.includes('Verification Gap Reviewer'), 'disabled layer name still present in rendered output');
+  });
+
+  test('when condition renders as a run-time guard line', () => {
+    const content = readRendered('step-04-review.md');
+    assert(
+      content.includes('Run this layer only if the following holds in the current context: `TEST_WHEN_CONDITION`'),
+      'when condition not rendered as a guard line',
+    );
+  });
+
+  test('disabling every layer renders the HALT instruction', () => {
+    // Second render pass: replace the override file so every default layer
+    // (and the oneshot route's only layer) is disabled, then re-render.
+    fs.writeFileSync(
+      path.join(tmpDir, '_bmad', 'custom', 'bmad-quick-dev.user.toml'),
+      [
+        '[workflow]',
+        '',
+        '[[workflow.review_layers]]',
+        'id = "blind-hunter"',
+        'instruction = ""',
+        '',
+        '[[workflow.review_layers]]',
+        'id = "edge-case-hunter"',
+        'instruction = ""',
+        '',
+        '[[workflow.review_layers]]',
+        'id = "verification-gap"',
+        'instruction = ""',
+        '',
+        '[[workflow.oneshot_review_layers]]',
+        'id = "blind-hunter"',
+        'instruction = ""',
+      ].join('\n'),
+      'utf-8',
+    );
+    const rerun = spawnSync('python3', [path.join(skillDst, 'render.py')], {
+      cwd: skillDst,
+      encoding: 'utf-8',
+    });
+    assert(rerun.status === 0, `re-render exit code ${rerun.status}\nstderr: ${rerun.stderr}`);
+    const halt = 'No review layers are active. HALT with status `blocked` and blocking condition `no active review layers`.';
+    for (const file of ['step-04-review.md', 'step-oneshot.md']) {
+      assert(readRendered(file).includes(halt), `HALT instruction missing from ${file}`);
     }
   });
 

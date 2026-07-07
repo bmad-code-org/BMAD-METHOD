@@ -18,11 +18,9 @@ Do NOT `git add` anything — this is read-only inspection.
 
 ### Review
 
-The review layers are `{workflow.review_layers}`, resolved during activation.
+Execute these review layers in parallel wherever their execution methods allow: substitute the runtime placeholders (e.g. `{diff_output}`) into each layer's instruction, then follow it verbatim.
 
-Skip every layer whose `instruction` is empty or missing — that is how an override disables a default layer — and every layer whose `when` condition (if present) does not hold in the current context. If no layers remain, HALT with status `blocked` and blocking condition `no active review layers`.
-
-Execute all remaining layers in parallel wherever their execution methods allow: substitute the runtime placeholders (e.g. `{diff_output}`) into each layer's `instruction`, then follow it verbatim.
+{workflow.review_layers}
 
 If a layer's instruction requires subagents and none are available, generate one review prompt file per such layer in `{{.implementation_artifacts}}` and HALT. Ask the human to run each in a separate session (ideally a different LLM) and paste back the findings.
 
