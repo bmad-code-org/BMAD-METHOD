@@ -78,6 +78,24 @@ function copyDirSync(src, dst) {
   }
 }
 
+// Extra one-off temp projects created by makeProject(); cleaned up in finally.
+const extraTmpDirs = [];
+
+/**
+ * Spin up an isolated temp project with the given _bmad/config.toml body and a
+ * copy of the skill dir, so a single bad-config scenario can be rendered in
+ * isolation. Returns { dir, skillDst }; the caller runs render.py against it.
+ */
+function makeProject(configText) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'bmad-renderer-halt-'));
+  extraTmpDirs.push(dir);
+  fs.mkdirSync(path.join(dir, '_bmad'), { recursive: true });
+  fs.writeFileSync(path.join(dir, '_bmad', 'config.toml'), configText, 'utf-8');
+  const skillDst = path.join(dir, 'bmad-quick-dev');
+  copyDirSync(SKILL_SRC, skillDst);
+  return { dir, skillDst };
+}
+
 // ---------------------------------------------------------------------------
 // Test fixture setup
 // ---------------------------------------------------------------------------
@@ -285,8 +303,39 @@ try {
     const leaks = renderedMdFiles().filter((f) => readRendered(f).includes('resolve_customization.py'));
     assert(leaks.length === 0, `resolve_customization.py still referenced in: ${leaks.join(', ')}`);
   });
+
+  // ---------------------------------------------------------------------------
+  // Bad-config HALTs cleanly (never a raw Python traceback)
+  // ---------------------------------------------------------------------------
+
+  test('missing implementation_artifacts HALTs cleanly (no traceback)', () => {
+    const { skillDst: dst } = makeProject(['[core]', 'communication_language = "French"'].join('\n'));
+    const res = spawnSync('python3', [path.join(dst, 'render.py')], { cwd: dst, encoding: 'utf-8' });
+    assert(res.status === 1, `expected exit 1, got ${res.status}\nstdout: ${res.stdout}\nstderr: ${res.stderr}`);
+    assert(
+      res.stdout.includes('HALT and report to the user: config is missing `implementation_artifacts`'),
+      `stdout missing the implementation_artifacts HALT directive.\nstdout: ${res.stdout}`,
+    );
+    assert(!res.stderr.includes('Traceback'), `renderer crashed with a traceback instead of HALTing:\n${res.stderr}`);
+  });
+
+  test('non-table [modules] does not crash the renderer', () => {
+    const { dir, skillDst: dst } = makeProject(
+      ['modules = "oops-not-a-table"', '', '[core]', 'implementation_artifacts = "{project-root}/impl"'].join('\n'),
+    );
+    const res = spawnSync('python3', [path.join(dst, 'render.py')], { cwd: dst, encoding: 'utf-8' });
+    assert(res.status === 0, `expected exit 0, got ${res.status}\nstdout: ${res.stdout}\nstderr: ${res.stderr}`);
+    assert(!res.stderr.includes('Traceback'), `renderer crashed on non-table modules:\n${res.stderr}`);
+    assert(
+      fs.existsSync(path.join(dir, '_bmad', 'render', 'bmad-quick-dev', 'workflow.md')),
+      'workflow.md not rendered when [modules] was a non-table scalar',
+    );
+  });
 } finally {
   fs.rmSync(tmpDir, { recursive: true, force: true });
+  for (const dir of extraTmpDirs) {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
 }
 
 // ---------------------------------------------------------------------------

@@ -188,7 +188,9 @@ def flatten_central_config(merged):
     Module keys take precedence on collision (installer strips core keys from
     module buckets, so collisions shouldn't happen in practice)."""
     flat = {}
-    for section in (merged.get("core"), merged.get("modules", {}).get("bmm")):
+    modules = merged.get("modules")
+    modules = modules if isinstance(modules, dict) else {}
+    for section in (merged.get("core"), modules.get("bmm")):
         if not isinstance(section, dict):
             continue
         for key, value in section.items():
@@ -301,11 +303,20 @@ def main():
 
     vars_["project_root"] = root
     vars_["main_config"] = posixpath.join(bmad_dir, "config.toml")
+
+    implementation_artifacts = vars_.get("implementation_artifacts", "").strip()
+    if not implementation_artifacts:
+        print(
+            "HALT and report to the user: config is missing `implementation_artifacts` "
+            "(expected under [core] or [modules.bmm] in _bmad/config.toml)"
+        )
+        sys.exit(1)
+
     vars_["sprint_status"] = posixpath.join(
-        vars_["implementation_artifacts"], "sprint-status.yaml"
+        implementation_artifacts, "sprint-status.yaml"
     )
     vars_["deferred_work_file"] = posixpath.join(
-        vars_["implementation_artifacts"], "deferred-work.md"
+        implementation_artifacts, "deferred-work.md"
     )
 
     workflow = resolve_workflow(root, script_dir.replace(os.sep, "/"), skill_name)
