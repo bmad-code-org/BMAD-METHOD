@@ -2,14 +2,14 @@
 
 ## RULES
 
-- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{{.communication_language}}`
+- **Language** — Speak in `{{.communication_language}}`. Write any file output in `{{.document_output_language}}`.
 - No intermediate approvals.
 
 ## INSTRUCTIONS
 
 1. Draft resume check. If `{spec_file}` exists with `status: draft`, read it and capture the verbatim `<frozen-after-approval>...</frozen-after-approval>` block as `preserved_intent`. Otherwise `preserved_intent` is empty.
 2. Investigate codebase. _Isolate deep exploration in subagents/tasks where available. To prevent context snowballing, instruct subagents to give you distilled summaries only._
-3. Read `./spec-template.md` fully. Fill it out based on the intent and investigation. If `{preserved_intent}` is non-empty, substitute it for the `<frozen-after-approval>` block in your filled spec before writing. Write the result to `{spec_file}`.
+3. Read `./spec-template.md` fully. Fill it out based on the intent and investigation, resolving the template's `{date}` field to the current system date. If `{preserved_intent}` is non-empty, substitute it for the `<frozen-after-approval>` block in your filled spec before writing. Write the result to `{spec_file}`.
 4. Self-review against READY FOR DEVELOPMENT standard.
 5. If intent gaps exist, do not fantasize, do not leave open questions, HALT and ask the human.
 6. Token count check (see SCOPE STANDARD). If spec exceeds 1600 tokens:

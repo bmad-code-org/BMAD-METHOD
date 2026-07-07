@@ -49,24 +49,7 @@ Treat every entry below as foundational context you carry for the rest of the wo
 
 {workflow.persistent_facts}
 
-### Step 3: Load Config
-
-Load config from `{{.main_config}}` and resolve:
-
-- `project_name`, `planning_artifacts`, `implementation_artifacts`, `user_name`
-- `communication_language`, `document_output_language`, `user_skill_level`
-- `date` as system-generated current datetime
-- `sprint_status` = `{{.sprint_status}}`
-- `project_context` = `**/project-context.md` (load if exists)
-- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{{.communication_language}}`
-- Language MUST be tailored to `{{.user_skill_level}}`
-- Generate all documents in `{{.document_output_language}}`
-
-### Step 4: Greet the User
-
-Greet `{{.user_name}}`, speaking in `{{.communication_language}}`.
-
-### Step 5: Execute Append Steps
+### Step 3: Execute Append Steps
 
 Execute each of these steps in order (`_None._` means skip):
 

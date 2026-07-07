@@ -4,7 +4,7 @@
  * Sets up a temp project with base + override config layers and a
  * _bmad/custom/bmad-quick-dev.user.toml [workflow] override, runs render.py,
  * and asserts:
- *   1. The central-config override wins (workflow.md contains "Japanese").
+ *   1. The central-config override wins (step files' language line contains "Japanese").
  *   2. sprint_status is an absolute path rooted at the temp project dir.
  *   3. [workflow] customization is self-resolved and inlined: prepend bullet,
  *      persistent_facts append (base kept), empty list -> _None._, on_complete
@@ -110,6 +110,7 @@ try {
     [
       '[core]',
       'communication_language = "French"',
+      'document_output_language = "Klingon"',
       '',
       '[modules.bmm]',
       'planning_artifacts = "{project-root}/plan"',
@@ -186,15 +187,18 @@ try {
     assert(fs.existsSync(rendered), `workflow.md not found at ${rendered}`);
   });
 
-  test('custom override wins — workflow.md contains "Japanese"', () => {
-    const rendered = path.join(tmpDir, '_bmad', 'render', 'bmad-quick-dev', 'workflow.md');
-    const content = fs.readFileSync(rendered, 'utf-8');
-    assert(content.includes('Japanese'), `"Japanese" not found in workflow.md (communication_language override did not win)`);
+  test('custom override wins — communication_language baked into step files', () => {
+    const content = readRendered('step-01-clarify-and-route.md');
+    assert(content.includes('Japanese'), 'communication_language override (Japanese) did not win in the step-01 language line');
+  });
+
+  test('document_output_language bakes into the per-step language line', () => {
+    const content = readRendered('step-01-clarify-and-route.md');
+    assert(content.includes('Klingon'), 'document_output_language not baked into the step-01 language line');
   });
 
   test('sprint_status is an absolute path rooted at temp project dir', () => {
-    const rendered = path.join(tmpDir, '_bmad', 'render', 'bmad-quick-dev', 'workflow.md');
-    const content = fs.readFileSync(rendered, 'utf-8');
+    const content = readRendered('sync-sprint-status.md');
     // Normalize to forward slashes for cross-platform matching
     const normalizedTmp = tmpDir.replaceAll('\\', '/');
     // sprint_status should appear as <tmpDir>/impl/sprint-status.yaml
@@ -202,7 +206,7 @@ try {
     assert(
       content.includes(expected),
       `sprint_status path not found.\nExpected substring: ${expected}\n` +
-        `workflow.md excerpt (first 2000 chars):\n${content.slice(0, 2000)}`,
+        `sync-sprint-status.md excerpt (first 2000 chars):\n${content.slice(0, 2000)}`,
     );
   });
 
@@ -302,6 +306,11 @@ try {
   test('no resolve_customization.py reference survives in any rendered file', () => {
     const leaks = renderedMdFiles().filter((f) => readRendered(f).includes('resolve_customization.py'));
     assert(leaks.length === 0, `resolve_customization.py still referenced in: ${leaks.join(', ')}`);
+  });
+
+  test('no main_config reference survives in any rendered file', () => {
+    const leaks = renderedMdFiles().filter((f) => readRendered(f).includes('main_config'));
+    assert(leaks.length === 0, `main_config still referenced in: ${leaks.join(', ')} (the runtime config re-read was removed)`);
   });
 
   // ---------------------------------------------------------------------------

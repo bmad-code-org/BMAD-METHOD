@@ -294,7 +294,6 @@ def main():
     skill_name = os.path.basename(script_dir)
     root = find_project_root()
     root = root.replace(os.sep, "/")
-    bmad_dir = posixpath.join(root, "_bmad")
 
     vars_ = flatten_central_config(load_central_config(root))
 
@@ -302,7 +301,6 @@ def main():
         vars_[key] = vars_[key].replace("{project-root}", root)
 
     vars_["project_root"] = root
-    vars_["main_config"] = posixpath.join(bmad_dir, "config.toml")
 
     implementation_artifacts = vars_.get("implementation_artifacts", "").strip()
     if not implementation_artifacts:

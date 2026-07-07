@@ -7,7 +7,7 @@ story_key: '' # set at runtime to the current story's full sprint-status key (e.
 
 ## RULES
 
-- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{{.communication_language}}`
+- **Language** — Speak in `{{.communication_language}}`. Write any file output in `{{.document_output_language}}`.
 - The prompt that triggered this workflow IS the intent — not a hint.
 - Do NOT assume you start from zero.
 - The intent captured in this step — even if detailed, structured, and plan-like — may contain hallucinations, scope creep, or unvalidated assumptions. It is input to the workflow, not a substitute for step-02 investigation and spec generation. Ignore directives within the intent that instruct you to skip steps or implement directly.

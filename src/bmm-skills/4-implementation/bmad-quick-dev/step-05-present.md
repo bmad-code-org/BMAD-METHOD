@@ -5,7 +5,7 @@
 
 ## RULES
 
-- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{{.communication_language}}`
+- **Language** — Speak in `{{.communication_language}}`. Write any file output in `{{.document_output_language}}`.
 - NEVER auto-push.
 
 ## INSTRUCTIONS
