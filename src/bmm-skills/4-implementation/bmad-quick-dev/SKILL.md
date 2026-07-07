@@ -6,9 +6,9 @@ description: 'Implements any user intent, requirement, story, bug fix or change 
 Run this, substituting `{skill-root}` with the absolute path to this skill's base directory, without changing the cwd:
 
 ```bash
-python3 {skill-root}/render.py
+uv run {skill-root}/render.py
 ```
 
 - **On success:** follow the instruction it prints to stdout; ignore stderr.
-- **If `python3` is missing or lacks `tomllib`:** recover and retry.
+- **If `uv` is missing:** retry with a Python 3.11+ interpreter directly — `python3 {skill-root}/render.py` (or `python`/`py -3` on Windows). The script needs 3.11+ for `tomllib`.
 - **Any other failure:** report what it printed and HALT.
