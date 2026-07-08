@@ -11,7 +11,7 @@
 
 ### Implement
 
-Follow `./sync-sprint-status.md` with `{target_status}` = `in-progress`.
+Follow `./sync-sprint-status.md` with `target_status` = `in-progress`.
 
 Implement the clarified intent directly.
 
@@ -40,7 +40,7 @@ If a finding is caused by this change but too significant for a trivial patch, H
 
 ### Generate Spec Trace
 
-Set `{title}` = a concise title derived from the clarified intent.
+Set `title` = a concise title derived from the clarified intent.
 
 Write `{spec_file}` using `./spec-template.md`. Fill only these sections — delete all others:
 
@@ -48,7 +48,7 @@ Write `{spec_file}` using `./spec-template.md`. Fill only these sections — del
 2. **Title and Intent** — `# {title}` heading and `## Intent` with **Problem** and **Approach** lines. Reuse the summary you already generated for the terminal.
 3. **Suggested Review Order** — append after Intent. Build using the same convention as `./step-05-present.md` § "Generate Suggested Review Order" (spec-file-relative links, concern-based ordering, ultra-concise framing).
 
-Follow `./sync-sprint-status.md` with `{target_status}` = `review`.
+Follow `./sync-sprint-status.md` with `target_status` = `review`.
 
 ### Commit
 

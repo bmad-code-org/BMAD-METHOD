@@ -52,7 +52,7 @@ When there is only one concern, omit the bold label — just list the stops dire
 
 Change `{spec_file}` status to `done` in the frontmatter.
 
-Follow `./sync-sprint-status.md` with `{target_status}` = `review`.
+Follow `./sync-sprint-status.md` with `target_status` = `review`.
 
 ### Commit and Open
 

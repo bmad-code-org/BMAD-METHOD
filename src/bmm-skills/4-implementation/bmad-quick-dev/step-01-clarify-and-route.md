@@ -38,9 +38,9 @@ Never ask extra questions if you already understand what the user intends.
 
 ### Story-key resolution
 
-This runs on ALL paths (early-exit and INSTRUCTIONS) whenever `spec_file` is set. Determine whether the spec is an epic story — use the spec's filename, frontmatter, and any loaded epics file to identify `{epic_num}` and `{story_num}`. If the spec is not an epic story, skip silently and leave `{story_key}` unset.
+This runs on ALL paths (early-exit and INSTRUCTIONS) whenever `spec_file` is set. Determine whether the spec is an epic story — use the spec's filename, frontmatter, and any loaded epics file to identify `epic_num` and `story_num`. If the spec is not an epic story, skip silently and leave `story_key` unset.
 
-If the spec is an epic story and `{{.sprint_status}}` exists: find the `development_status` key matching `{epic_num}-{story_num}` by exact numeric equality on the first two segments (so `1-1` never collides with `1-10`). Exactly one match → set `{story_key}` to that full key. Zero or multiple matches → leave `{story_key}` unset (warn on multiple).
+If the spec is an epic story and `{{.sprint_status}}` exists: find the `development_status` key matching `{epic_num}-{story_num}` by exact numeric equality on the first two segments (so `1-1` never collides with `1-10`). Exactly one match → set `story_key` to that full key. Zero or multiple matches → leave `story_key` unset (warn on multiple).
 
 ## INSTRUCTIONS
 
