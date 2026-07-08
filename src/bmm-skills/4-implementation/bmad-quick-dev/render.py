@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.11"
+# ///
 """render.py — bmad-quick-dev template renderer.
 
 Resolves compile-time {{.variable}} placeholders from BMad's central config,
