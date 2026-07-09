@@ -8,6 +8,7 @@
 # - Strings replace the default.
 # - Lists append to the default list.
 # - Tables merge key by key.
+# - Arrays of tables merge by `id`: matching `id` replaces, new `id`s append.
 
 [workflow]
 
@@ -31,3 +32,52 @@ persistent_facts = [
 # Empty means no extra completion behavior.
 
 on_complete = ""
+
+# Review layers for the review step. `instruction` is the layer's whole
+# execution recipe — subagents by default, but an override may run anything
+# (e.g. an external reviewer via bash). {diff_output} is substituted at run
+# time. `when` (optional) gates a layer; empty `instruction` disables it.
+
+[[workflow.review_layers]]
+id = "blind-hunter"
+name = "Blind Hunter"
+instruction = """
+Launch a subagent with no prior conversation context, with this prompt:
+
+> Invoke the `bmad-review-adversarial-general` skill on this diff:
+>
+> {diff_output}
+"""
+
+[[workflow.review_layers]]
+id = "edge-case-hunter"
+name = "Edge Case Hunter"
+instruction = """
+Launch a subagent with no prior conversation context, with this prompt:
+
+> Invoke the `bmad-review-edge-case-hunter` skill on this diff:
+>
+> {diff_output}
+"""
+
+[[workflow.review_layers]]
+id = "verification-gap"
+name = "Verification Gap Reviewer"
+instruction = """
+Launch a subagent with no prior conversation context, with this prompt:
+
+> Invoke the `bmad-review-verification-gap` skill on this diff:
+>
+> {diff_output}
+"""
+
+# Review layers for the one-shot route.
+
+[[workflow.oneshot_review_layers]]
+id = "blind-hunter"
+name = "Blind Hunter"
+instruction = """
+Launch a subagent with no prior conversation context, with this prompt:
+
+> Invoke the `bmad-review-adversarial-general` skill on the changed files.
+"""

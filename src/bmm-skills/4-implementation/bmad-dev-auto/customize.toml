@@ -8,6 +8,7 @@
 # - Strings replace the default.
 # - Lists append to the default list.
 # - Tables merge key by key.
+# - Arrays of tables merge by `id`: matching `id` replaces, new `id`s append.
 
 [workflow]
 
@@ -31,3 +32,77 @@ persistent_facts = [
 # Empty means no extra terminal behavior.
 
 on_complete = ""
+
+# Handoff for the implementation subagent in step 03. The whole execution
+# recipe — a subagent by default, but an override may run anything (e.g. an
+# external coding tool via bash). {spec_file} is substituted at run time.
+
+implementation_handoff = """
+Launch a subagent with no prior conversation context, with this prompt:
+
+> Read {spec_file} fully and implement it. The spec is the sole source of truth for this change; its Spec Change Log entries are binding constraints, not history.
+>
+> Guardrails:
+>
+> - Work in the current project. Before starting, load every file listed in the spec frontmatter `context:`.
+> - Do not edit the spec file itself.
+> - Do not revert or overwrite changes unrelated to this spec.
+> - Run the verification described in the spec, plus focused checks for the code you touched.
+>
+> When done, report: files changed with one line each, verification commands run and their outcomes, any files changed beyond the spec's tasks and why each was needed, anything you could not complete and why, and residual risks.
+"""
+
+# Review layers for the review step. `instruction` is the layer's whole
+# execution recipe — subagents by default, but an override may run anything
+# (e.g. an external reviewer via bash). {diff_output} is substituted at run
+# time. `when` (optional) gates a layer; empty `instruction` disables it.
+
+[[workflow.review_layers]]
+id = "blind-hunter"
+name = "Blind Hunter"
+instruction = """
+Launch a subagent with no prior conversation context, with this prompt:
+
+> Invoke the `bmad-review-adversarial-general` skill on this diff:
+>
+> {diff_output}
+"""
+
+[[workflow.review_layers]]
+id = "edge-case-hunter"
+name = "Edge Case Hunter"
+instruction = """
+Launch a subagent with no prior conversation context, with this prompt:
+
+> Invoke the `bmad-review-edge-case-hunter` skill on this diff:
+>
+> {diff_output}
+"""
+
+[[workflow.review_layers]]
+id = "verification-gap"
+name = "Verification Gap Reviewer"
+instruction = """
+Launch a subagent with no prior conversation context, with this prompt:
+
+> Invoke the `bmad-review-verification-gap` skill on this diff:
+>
+> {diff_output}
+"""
+
+[[workflow.review_layers]]
+id = "intent-alignment"
+name = "Intent Alignment Auditor"
+instruction = """
+Launch a subagent with no prior conversation context, with this prompt:
+
+> You are an intent-alignment auditor. You have no other context about how this change was produced. Here is the verbatim intent this work started from:
+>
+> {verbatim_intent}
+>
+> Here is the diff:
+>
+> {diff_output}
+>
+> Your task is strictly descriptive — do not prescribe additional work. Report: (1) the defensible readings of the intent, enumerated; (2) which reading this diff implements; (3) where the readings and the diff diverge — specifically, which surface the intent's expectations live at versus which surface the diff's changes and its tests exercise.
+"""

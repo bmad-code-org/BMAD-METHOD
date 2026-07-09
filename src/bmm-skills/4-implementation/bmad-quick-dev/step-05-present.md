@@ -5,7 +5,7 @@
 
 ## RULES
 
-- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
+- **Language** — Speak in `{{.communication_language}}`. Write any file output in `{{.document_output_language}}`.
 - NEVER auto-push.
 
 ## INSTRUCTIONS
@@ -52,7 +52,7 @@ When there is only one concern, omit the bold label — just list the stops dire
 
 Change `{spec_file}` status to `done` in the frontmatter.
 
-Follow `./sync-sprint-status.md` with `{target_status}` = `review`.
+Follow `./sync-sprint-status.md` with `target_status` = `review`.
 
 ### Commit and Open
 
@@ -73,6 +73,6 @@ Workflow complete.
 
 ## On Complete
 
-Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete`
+If anything appears below, follow it as the final terminal instruction before exiting; otherwise exit normally.
 
-If the resolved `workflow.on_complete` is non-empty, follow it as the final terminal instruction before exiting.
+{workflow.on_complete}

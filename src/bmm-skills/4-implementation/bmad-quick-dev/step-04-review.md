@@ -1,13 +1,10 @@
----
-deferred_work_file: '{implementation_artifacts}/deferred-work.md'
----
-
 # Step 4: Review
 
 ## RULES
 
-- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
+- **Language** — Speak in `{{.communication_language}}`. Write any file output in `{{.document_output_language}}`.
 - All review subagents must run at the same model capability as the current session.
+- Run subagents synchronously: launch them together, then wait for all results before continuing.
 
 ## INSTRUCTIONS
 
@@ -21,24 +18,15 @@ Do NOT `git add` anything — this is read-only inspection.
 
 ### Review
 
-Launch Blind Hunter, Edge Case Hunter, and Verification Gap Reviewer in parallel without prior conversation context. If no subagents are available, generate three review prompt files in `{implementation_artifacts}` — one per reviewer role below — and HALT. Ask the human to run each in a separate session (ideally a different LLM) and paste back the findings.
+Execute these review layers in parallel wherever their execution methods allow: substitute the runtime placeholders (e.g. `{diff_output}`) into each layer's instruction, then follow it verbatim.
 
-- **Blind Hunter** — prompt:
-  > Invoke the `bmad-review-adversarial-general` skill on this diff:
-  >
-  > {diff_output}
-- **Edge Case Hunter** — prompt:
-  > Invoke the `bmad-review-edge-case-hunter` skill on this diff:
-  >
-  > {diff_output}
-- **Verification Gap Reviewer** — prompt:
-  > Invoke the `bmad-review-verification-gap` skill on this diff:
-  >
-  > {diff_output}
+{workflow.review_layers}
+
+If a layer's instruction requires subagents and none are available, generate one review prompt file per such layer in `{{.implementation_artifacts}}` and HALT. Ask the human to run each in a separate session (ideally a different LLM) and paste back the findings.
 
 ### Classify
 
-1. Deduplicate all review findings.
+1. Deduplicate only findings with the same claim and same required action. Then evaluate each remaining finding independently. Do not reject a finding because a related finding was rejected.
 2. Assign severity to each finding by consequence for the artifact's main consumer (software user, document reader, etc).
    Disregard any severity assigned by a reviewing subagent. Review subagents operate under by-design information asymmetry and do not have enough context to set final severity for this workflow.
    - `low`: none or cosmetic
@@ -54,7 +42,7 @@ Launch Blind Hunter, Edge Case Hunter, and Verification Gap Reviewer in parallel
    - **intent_gap** — Root cause is inside `<frozen-after-approval>`. Revert code changes. Loop back to the human to resolve. Once resolved, read fully and follow `./step-02-plan.md` to re-run steps 2–4.
    - **bad_spec** — Root cause is outside `<frozen-after-approval>`. Before reverting code: extract KEEP instructions for positive preservation (what worked well and must survive re-derivation). Revert code changes. Read the `## Spec Change Log` in `{spec_file}` and strictly respect all logged constraints when amending the non-frozen sections that contain the root cause. Append a new change-log entry recording: the triggering finding, what was amended, the known-bad state avoided, and the KEEP instructions. Read fully and follow `./step-03-implement.md` to re-derive the code, then this step will run again.
    - **patch** — Auto-fix. These are the only findings that survive loopbacks.
-   - **defer** — Append one new entry to `{deferred_work_file}` using this format. Do not modify existing entries or look for duplicates.
+   - **defer** — Append one new entry to `{{.deferred_work_file}}` using this format. Do not modify existing entries or look for duplicates.
      ```markdown
      - source_spec: `{spec_file}`
        summary: <one sentence>

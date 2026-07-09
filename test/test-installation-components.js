@@ -235,6 +235,49 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test 6b: Antigravity CLI Native Skills Install
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 6b: Antigravity CLI Native Skills${colors.reset}\n`);
+
+  try {
+    clearCache();
+    const platformCodes6b = await loadPlatformCodes();
+    const antigravityCliInstaller = platformCodes6b.platforms['antigravity-cli']?.installer;
+
+    assert(antigravityCliInstaller?.target_dir === '.agents/skills', 'Antigravity CLI target_dir uses shared skills path');
+    assert(
+      antigravityCliInstaller?.global_target_dir === '~/.gemini/antigravity-cli/skills',
+      'Antigravity CLI global_target_dir uses the CLI-specific skills path',
+    );
+    assert(
+      antigravityCliInstaller?.global_target_dir !== platformCodes6b.platforms.antigravity?.installer?.global_target_dir,
+      'Antigravity CLI global_target_dir differs from the Antigravity IDE so installs never collide',
+    );
+
+    const tempProjectDir6b = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-antigravity-cli-test-'));
+    const installedBmadDir6b = await createTestBmadFixture();
+
+    const ideManager6b = new IdeManager();
+    await ideManager6b.ensureInitialized();
+    const result6b = await ideManager6b.setup('antigravity-cli', tempProjectDir6b, installedBmadDir6b, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result6b.success === true, 'Antigravity CLI setup succeeds against temp project');
+
+    const skillFile6b = path.join(tempProjectDir6b, '.agents', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile6b), 'Antigravity CLI install writes SKILL.md directory output');
+
+    await fs.remove(tempProjectDir6b);
+    await fs.remove(path.dirname(installedBmadDir6b));
+  } catch (error) {
+    assert(false, 'Antigravity CLI native skills migration test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
   // Test 7: Auggie Native Skills Install
   // ============================================================
   console.log(`${colors.yellow}Test Suite 7: Auggie Native Skills${colors.reset}\n`);
