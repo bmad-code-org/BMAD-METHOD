@@ -19,15 +19,15 @@ description: 'Close out a completed epic: analyze the evidence, verify behavior,
 
 ## Phase 1: Prepare
 
-1. **Collect Evidence** — Enumerate what actually exists: spec, story files, diff, session logs, git history. Each later step declares what it needs and degrades when something is missing.
+1. **Collect Evidence** — Enumerate what actually exists: spec, story files, diff, session logs, git history. Inventory capabilities too: sub-agent availability shapes later steps. Each later step declares what it needs and degrades when something is missing.
 
 2. **Load Audit Plan / Profile Epic** — Read the acceptance criteria declared in the epic spec; if absent, profile the epic from its diff and stories to select which analyses to run.
 
 ## Phase 2: Analyze
 
-3. **Build Aggregate Views** — Derive whole-epic views that no single diff hunk shows: architecture delta, duplication map, pattern divergence, size trajectories, spec-to-implementation reconciliation.
+3. **Build Aggregate Views** — Derive whole-epic views that no single diff hunk shows: architecture delta, duplication map, pattern divergence, size trajectories, spec-to-implementation reconciliation. Prefer deterministic scripts; sub-agents return evidence with source refs, never findings. No sub-agents: compute inline and record the narrowed scope.
 
-4. **Run Review Passes** — Machine review at diff scope, weighted per audit plan: correctness at boundaries between stories, verification gaps, intent conformance.
+4. **Run Review Passes** — Independent sub-agent reviews at diff scope, with asymmetric lenses chosen by the audit plan: correctness at boundaries between stories, verification gaps, intent conformance. Outputs are hypotheses with source refs and checked scope. No sub-agents: emit prompt files for the human to run in separate sessions, or record the skip — never run "independent" reviews inline.
 
 5. **Verify Behavior** — Exercise the changed behavior end-to-end as the audit plan directs: run the system, drive the affected flows, record what was observed. Passing tests do not substitute for this step.
 
@@ -35,7 +35,7 @@ description: 'Close out a completed epic: analyze the evidence, verify behavior,
 
 ## Phase 3: Decide
 
-7. **Route Findings** — Assign each finding a disposition (fix now / defer / accept as-is) and a lesson destination by lifetime: repo is permanent, spec files last the project, skill changes go via PR.
+7. **Route Findings** — Assign each finding a disposition (fix now / defer / accept as-is) and a lesson destination by lifetime: repo is permanent, spec files last the project, skill changes go via PR. Sub-agent findings are testimony, not truth: before actuation, reground per write authority — reopen primary sources for spec and skill targets; repo fixes are rechecked by the remediation session itself.
 
 8. **Emit Questions** — For each delta a human answer would materially change: a pointed question, a machine default, links to evidence. Also ask one open question for observations the analyses missed.
 
