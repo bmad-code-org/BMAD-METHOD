@@ -114,7 +114,7 @@ On successful completion, the workflow writes or updates the spec with:
   - Review findings breakdown
   - Verification performed
   - Residual risks
-- `followup_review_recommended` flag. True if LLM decided another review pass seems worthwhile. It's a suggestion, not a must. Simplest way to give it a second review pass is to re-run the skill pointing it at the spec file.
+- `followup_review_recommended` flag. Default false; true only when the final review pass leaves a specific unverified risk — a patched high-severity finding, or first-run patches that changed behavior across module boundaries — named under Auto Run Result. Patch volume alone never sets it, and a follow-up pass that patches no new high-severity finding sets it back to false, so repeated re-runs converge. It's a suggestion, not a must. Simplest way to give it a second review pass is to re-run the skill pointing it at the spec file.
 - `baseline_revision` and `final_revision` — HEAD before implementation and after the final commit. Together they bracket the run's commits: `git log baseline_revision..final_revision` lists exactly what it produced, and equal values mean no commits were made. Both are `NO_VCS` when version control is unavailable.
 
 If version control is available, the workflow commits the change. It does not push.

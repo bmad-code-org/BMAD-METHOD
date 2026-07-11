@@ -80,7 +80,11 @@ Prepare `Auto Run Result` details:
 - Summary of implemented change
 - Files changed with one-line descriptions
 - Review findings breakdown: patches applied, items deferred, items rejected
-- Follow-up review recommendation: `true` when the final review pass made review-driven changes significant enough to benefit from an independent follow-up review; otherwise `false`. Use judgment, not a fixed numeric threshold. Base the judgment on the final pass's triage log and fixes, including patched-finding volume, consequence/severity, breadth, behavior/API/security/data impact, and implementation complexity. Many low-severity patched findings can be significant by volume. Do not recommend follow-up for only a few localized low-consequence fixes.
+- Follow-up review recommendation: default `false`. Judge only from this session's final `## Review Triage Log` entry — the one this pass appended; earlier loopback entries do not count. Set `true` ONLY when:
+  - (a) this pass patched a `high` finding, or
+  - (b) this is a first run — `{spec_file}` frontmatter `final_revision` not yet present (only a completed prior run sets it) — and this pass's patches changed runtime behavior across module boundaries. Patches land after step-03's verification and are never re-verified, so such changes are unverified by definition. Cosmetic or non-behavioral patches (naming, comments, formatting, message text) do not qualify.
+
+  If `final_revision` is already present, this session is itself the follow-up review: without a patched `high` finding, set `false` — the work has converged. Record any remaining nameable polish in `{deferred_work_file}` using the defer entry format above (permitted here even though it is this story's own residue, not pre-existing). Patch volume is NEVER grounds for `true`: `low`/`medium` patches outside (b) are settled work regardless of count. A `true` recommendation MUST name the specific unverified risk under `Auto Run Result`; if none can be named, it is `false`. Do not recommend a follow-up merely because this pass made review-driven changes — every pass does.
 - Verification performed, including command outcomes or manual inspection notes
 - Any residual risks
 
