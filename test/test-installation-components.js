@@ -1412,7 +1412,7 @@ async function runTests() {
     const platformCodes28b = await loadPlatformCodes();
     const polytokenInstaller = platformCodes28b.platforms.polytoken?.installer;
 
-    assert(polytokenInstaller?.target_dir === '.polytoken/skills', 'Polytoken target_dir uses its project-local native skills path');
+    assert(polytokenInstaller?.target_dir === '.agents/skills', 'Polytoken target_dir uses the shared project-local skills path');
     assert(!polytokenInstaller?.global_target_dir, 'Polytoken does not claim an undocumented global skills path');
 
     tempProjectDir28b = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-polytoken-test-'));
@@ -1438,7 +1438,7 @@ async function runTests() {
     const detectedAfter28b = await ideManager28b.detectInstalledIdes(tempProjectDir28b);
     assert(detectedAfter28b.includes('polytoken'), 'Polytoken is detected after install');
 
-    const skillFile28b = path.join(tempProjectDir28b, '.polytoken', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile28b = path.join(tempProjectDir28b, '.agents', 'skills', 'bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile28b), 'Polytoken install writes SKILL.md directory output');
 
     const skillContent28b = await fs.readFile(skillFile28b, 'utf8');
