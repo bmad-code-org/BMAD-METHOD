@@ -285,7 +285,7 @@ platforms:
     name: "Polytoken"
     preferred: false
     installer:
-      target_dir: .polytoken/skills
+      target_dir: .agents/skills
 
   qoder:
     name: "Qoder"
