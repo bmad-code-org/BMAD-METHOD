@@ -106,25 +106,25 @@ export default defineConfig({
           label: 'Tutorials',
           translations: { 'vi-VN': 'Hướng dẫn nhập môn', 'zh-CN': '教程', 'fr-FR': 'Tutoriels', 'cs-CZ': 'Tutoriály' },
           collapsed: false,
-          items: [{ autogenerate: { directory: 'tutorials' } }],
+          autogenerate: { directory: 'tutorials' },
         },
         {
           label: 'How-To Guides',
           translations: { 'vi-VN': 'Hướng dẫn tác vụ', 'zh-CN': '操作指南', 'fr-FR': 'Guides pratiques', 'cs-CZ': 'Praktické návody' },
           collapsed: true,
-          items: [{ autogenerate: { directory: 'how-to' } }],
+          autogenerate: { directory: 'how-to' },
         },
         {
           label: 'Explanation',
           translations: { 'vi-VN': 'Giải thích', 'zh-CN': '概念说明', 'fr-FR': 'Explications', 'cs-CZ': 'Vysvětlení' },
           collapsed: true,
-          items: [{ autogenerate: { directory: 'explanation' } }],
+          autogenerate: { directory: 'explanation' },
         },
         {
           label: 'Reference',
           translations: { 'vi-VN': 'Tham chiếu', 'zh-CN': '参考', 'fr-FR': 'Référence', 'cs-CZ': 'Reference' },
           collapsed: true,
-          items: [{ autogenerate: { directory: 'reference' } }],
+          autogenerate: { directory: 'reference' },
         },
         // TEA docs moved to standalone module site; keep BMM sidebar focused.
         {
