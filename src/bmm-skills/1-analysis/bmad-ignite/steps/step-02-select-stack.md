@@ -15,7 +15,7 @@
    - `[M] Manual` — skip scaffolding entirely; route to the standard planning track (`bmad-prd`) and end this workflow.
 
    HALT and wait for the user's choice.
-4. If the user picks `[C]`, capture the URL and build an ad-hoc template entry: `scaffold` = `git clone --depth 1 <url> {target}`, everything else empty. Say plainly that env wiring and verification will be discovered from the repo's own README and manifests.
+4. If the user picks `[C]`, capture the URL and build an ad-hoc template entry: `scaffold` = `git clone --depth 1 <url> {target}`, `requires` = `["git"]`, everything else empty. Say plainly that env wiring and verification will be discovered from the repo's own README and manifests.
 5. If the user picks `[M]`, tell them to invoke `bmad-prd` (or `bmad-product-brief` first if the concept needs shaping) and HALT — the workflow ends here.
 6. Decide placement with the user:
    - **Project root** (default) — the app lives at `{project-root}`, alongside `_bmad/`.
