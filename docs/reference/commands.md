@@ -91,6 +91,7 @@ Workflow skills run a structured, multi-step process without loading an agent pe
 
 | Example skill | Purpose |
 | --- | --- |
+| `bmad-ignite` | Bootstrap a brand-new project from a curated starter template — scaffold, verify, hand off into planning |
 | `bmad-product-brief` | Create or update a product brief — guided discovery when your concept is clear |
 | `bmad-prfaq` | [Working Backwards PRFAQ](../explanation/analysis-phase.md#prfaq-working-backwards) challenge to stress-test your product concept |
 | `bmad-prd` | Create, update, or validate a Product Requirements Document |

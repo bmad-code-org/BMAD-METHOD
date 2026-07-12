@@ -35,6 +35,7 @@ it**](../explanation/analysis-phase.md).
 
 | Workflow                                                                  | Purpose                                                                    | Produces                  |
 |---------------------------------------------------------------------------|----------------------------------------------------------------------------|---------------------------|
+| `bmad-ignite`                                                             | Bootstrap a brand-new repo from a curated starter template — scaffold, verify, hand off into planning ([learn more](../explanation/ignite.md)) | Scaffolded repo plus `brief.md` and `architecture-seed.md` |
 | `bmad-brainstorming`                                                      | Brainstorm Project Ideas with guided facilitation of a brainstorming coach | `brainstorm.html` keepsake plus an optional `brainstorm-intent.md` |
 | `bmad-forge-idea` | Pressure-test an idea until it hardens, proves out, or dies cheaply | `forge-report.html` every run; `forged-idea.md` when an idea hardens |
 | `bmad-domain-research`, `bmad-market-research`, `bmad-technical-research` | Validate market, technical, or domain assumptions                          | Research findings         |
