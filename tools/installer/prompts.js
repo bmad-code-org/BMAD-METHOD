@@ -267,16 +267,22 @@ async function autocompleteMultiselect(options) {
   const lockedSet = new Set(options.lockedValues || []);
 
   if (typeof core.AutocompletePrompt !== 'function') {
-    const initialValues = [...new Set([...(options.initialValues || []), ...(options.lockedValues || [])])];
+    const lockedValues = options.lockedValues || [];
+    const selectableOptions = options.options.filter((option) => !lockedSet.has(option.value));
+    const initialValues = [...new Set(options.initialValues || [])].filter((value) => !lockedSet.has(value));
+    const lockedLabels = options.options
+      .filter((option) => lockedSet.has(option.value))
+      .map((option) => `${option.label ?? String(option.value ?? '')} (always installed)`);
+    const message = lockedLabels.length > 0 ? `${options.message} [${lockedLabels.join(', ')}]` : options.message;
     const result = await clack.multiselect({
-      message: options.message,
-      options: options.options,
+      message,
+      options: selectableOptions,
       initialValues: initialValues.length > 0 ? initialValues : undefined,
-      required: options.required || false,
+      required: (options.required || false) && lockedValues.length === 0,
       maxItems: options.maxItems,
     });
     await handleCancel(result);
-    return [...new Set([...result, ...(options.lockedValues || [])])];
+    return [...new Set([...result, ...lockedValues])];
   }
 
   const prompt = new core.AutocompletePrompt({
