@@ -80,11 +80,11 @@ Prepare `Auto Run Result` details:
 - Summary of implemented change
 - Files changed with one-line descriptions
 - Review findings breakdown: patches applied, items deferred, items rejected
-- Follow-up review recommendation: `true` when the final review pass made review-driven changes significant enough to benefit from an independent follow-up review; otherwise `false`. Use judgment, not a fixed numeric threshold. Base the judgment on the final pass's triage log and fixes, including patched-finding volume, consequence/severity, breadth, behavior/API/security/data impact, and implementation complexity. Many low-severity patched findings can be significant by volume. Do not recommend follow-up for only a few localized low-consequence fixes.
+- Follow-up review recommendation: count only this pass's findings triaged `patch` — never defer or reject. `true` if any patched finding was `high` severity, or if `3 × medium count + 1 × low count` is 5 or more; otherwise `false`. Record the patched counts by severity and the score.
 - Verification performed, including command outcomes or manual inspection notes
 - Any residual risks
 
-Set `{spec_file}` frontmatter `followup_review_recommended` from the judgment above.
+Set `{spec_file}` frontmatter `followup_review_recommended` from the computation above.
 
 If version control is available, commit every file in the reviewed diff — tracked and untracked. Do not push. After committing, verify the commit contains each file from the reviewed diff; if any is missing, add it and amend before proceeding. Anything still visible in `git status --porcelain` is by definition not part of the change: leave it in place — do not commit, delete, or gitignore it — and list it under `Auto Run Result` as residual artifacts.
 
