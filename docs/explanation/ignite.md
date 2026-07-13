@@ -39,10 +39,12 @@ Each template is one markdown manifest. The frontmatter carries the machine fiel
 | Template | Stack | Best For |
 | --- | --- | --- |
 | `nextjs-supabase` | Next.js, Tailwind, shadcn/ui, Supabase | Web apps needing auth and a managed database |
+| `nextjs-supabase-starter` | The above plus RLS patterns, CRUD reference slice, tests, CI | Full-stack apps wanting plumbing pre-built |
 | `t3-stack` | Next.js, tRPC, Drizzle, your own Postgres | Typesafe full-stack without a managed BaaS |
 | `expo-mobile` | Expo, expo-router | iOS/Android mobile apps |
 | `fastapi-fullstack` | FastAPI, SQLModel, Postgres, React, Docker | Python backends with a React SPA |
-| `astro-content` | Astro, content collections | Marketing sites, blogs, docs |
+| `astro-content` | Astro, content collections | Minimal blogs and content sites |
+| `marketing-site` | Astro, MDX blog, JSON-LD, GA4/Plausible/Umami | Marketing sites that must rank and load fast |
 
 Two escape hatches always appear in the menu: **custom template** (any public git repository URL) and **manual** (skip scaffolding, go straight to planning).
 
@@ -86,7 +88,7 @@ Save that as `_bmad/custom/ignite-templates/acme-internal-tool.md` and it appear
 Three ways to share a template, cheapest first:
 
 - **A manifest file** — anyone can publish a manifest (a gist, a snippet in a README); users drop it into `_bmad/custom/ignite-templates/`.
-- **A template repository** — ship a starter repo with `bmad-template.md` at its root. When a user picks the custom-URL option and points ignite at the repo, the clone is the scaffold and the manifest inside it drives env wiring, bootstrap, verification, and Agent Notes — the repo behaves exactly like a built-in.
+- **A template repository** — ship a starter repo with `bmad-template.md` at its root. When ignite clones it (from a menu entry or the custom-URL option), the clone is the scaffold and the manifest inside it drives env wiring, bootstrap, verification, and Agent Notes. The `nextjs-supabase-starter` and `marketing-site` built-ins are live examples of this pattern.
 - **An org pack** — teams append their own directory to `template_paths` in `_bmad/custom/bmad-ignite.toml` and manage manifests wherever they live.
 
 :::tip[No new infrastructure]
