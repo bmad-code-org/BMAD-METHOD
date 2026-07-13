@@ -16,7 +16,7 @@ description: 'Bootstrap a brand-new project from a curated starter template: cap
 - `{project-root}`-prefixed paths resolve from the project working directory.
 - `{skill-name}` resolves to the skill directory's basename.
 - `{workflow.<name>}` resolves to fields in the merged `customize.toml` `[workflow]` table.
-- `{workflow.templates}` is the starter-template registry: an array of tables keyed by `id`. Teams add or replace entries in `_bmad/custom/bmad-ignite.toml` — matching `id` replaces, new `id`s append.
+- **Template manifests** are markdown files: frontmatter carries machine fields (`id`, `label`, `stack`, `best_for`, `requires`, `scaffold`, `verify_build`, `verify_dev`, `verify_url`), the body carries the agent playbook (`## Environment`, `## Bootstrap`, `## Agent Notes`). Step 02 discovers them by scanning each directory in `{workflow.template_paths}` in order; on duplicate `id`, the later source wins. Community templates are manifest files too — dropped into the custom directory, or shipped as `bmad-template.md` at the root of any public repo.
 
 ## WORKFLOW ARCHITECTURE
 

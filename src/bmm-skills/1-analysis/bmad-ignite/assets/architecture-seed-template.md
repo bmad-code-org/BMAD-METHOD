@@ -37,7 +37,11 @@ Names and purpose only — values live in the local env file, never here.
 
 ## Pending Bootstrap
 
-[Setup the user still owes — accounts to create, credentials to fill, bootstrap notes skipped in step 3. Empty if none.]
+[Setup the user still owes — accounts to create, credentials to fill, bootstrap items skipped in step 3. Empty if none.]
+
+## Template Conventions
+
+[The manifest's Agent Notes, carried verbatim or lightly edited — the patterns implementation agents must follow in this starter (where auth lives, how schema changes happen, what not to hand-roll). Feed these into project-context generation.]
 
 ## Verification Record
 

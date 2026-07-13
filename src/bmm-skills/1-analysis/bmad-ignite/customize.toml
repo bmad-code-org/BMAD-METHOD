@@ -10,7 +10,6 @@
 # - Strings replace the default.
 # - Lists append to the default list.
 # - Tables merge key by key.
-# - Arrays of tables merge by `id`: matching `id` replaces, new `id`s append.
 
 [workflow]
 
@@ -29,97 +28,23 @@ persistent_facts = []
 # Accepts a string scalar (single instruction) or an array executed in order.
 on_complete = ""
 
-# --- Starter template registry -------------------------------------------
+# --- Starter template discovery -------------------------------------------
 #
-# Curated, opinionated starters. Each entry drives step 02 (selection),
-# step 03 (scaffold), and step 04 (verification). Teams extend or replace
-# entries in the override TOMLs: a [[workflow.templates]] block with a
-# matching `id` replaces the default; a new `id` appends to the menu.
+# Templates are markdown manifest files: frontmatter carries the machine
+# fields (id, label, stack, best_for, requires, scaffold, verify_*), the body
+# carries the agent playbook (## Environment, ## Bootstrap, ## Agent Notes).
+# See the built-in manifests in this skill's templates/ directory for the
+# format, and the Ignite docs for authoring and sharing guidance.
 #
-# Fields:
-#   id           unique key (merge identity)
-#   label        menu display name
-#   stack        one-line stack summary shown in the proposal
-#   best_for     what intents this fits — step 02 matches against this
-#   requires     tools that must be on PATH before scaffolding
-#   scaffold     command run verbatim with {target} as the staging directory
-#   env          where credentials come from (guidance for the user, with links)
-#   notes        one-time bootstrap steps after scaffolding (may be empty)
-#   verify_build build command; empty string skips the check
-#   verify_dev   dev-server command; empty string skips the boot check
-#   verify_url   URL probed while verify_dev runs
-
-[[workflow.templates]]
-id = "nextjs-supabase"
-label = "Next.js + Supabase"
-stack = "Next.js App Router, TypeScript, Tailwind, shadcn/ui, Supabase (Postgres, auth, storage)"
-best_for = "Full-stack web apps that need auth and a managed database"
-requires = ["node", "npx", "git"]
-scaffold = "npx --yes create-next-app@latest {target} --example with-supabase"
-env = "Create a free project at https://database.new, then copy the project URL and publishable key from the Supabase dashboard (Settings > API) into the env file the template documents."
-notes = [
-  "Static pages render without Supabase credentials; auth flows need the env file filled in first.",
+# Step 02 scans these directories in order for *.md manifests. On duplicate
+# `id`, the later source wins — so a team manifest in _bmad/custom/
+# ignite-templates/ with a built-in's id replaces that built-in, and a new
+# id appends to the menu. Community templates are just manifest files:
+# drop one in the custom directory, or ship a repo with bmad-template.md
+# at its root and hand ignite the URL.
+#
+# Overrides append to this list (e.g. an org-wide templates directory).
+template_paths = [
+  "{skill-root}/templates",
+  "{project-root}/_bmad/custom/ignite-templates",
 ]
-verify_build = "npm run build"
-verify_dev = "npm run dev"
-verify_url = "http://localhost:3000"
-
-[[workflow.templates]]
-id = "t3-stack"
-label = "T3 Stack (Next.js + Postgres, self-hosted)"
-stack = "Next.js App Router, TypeScript, tRPC, Tailwind, Drizzle ORM against your own Postgres"
-best_for = "Typesafe full-stack web apps without a managed BaaS — you own the database"
-requires = ["node", "npm", "git"]
-scaffold = "npm create t3-app@latest {target} -- --CI --appRouter --trpc --tailwind --drizzle --dbProvider postgres"
-env = "Point DATABASE_URL in .env at a local or hosted Postgres instance, then push the schema with the db script the template README documents."
-notes = [
-  "The generated .env ships a placeholder DATABASE_URL; the app builds without a live database but data routes need one.",
-]
-verify_build = "npm run build"
-verify_dev = "npm run dev"
-verify_url = "http://localhost:3000"
-
-[[workflow.templates]]
-id = "expo-mobile"
-label = "Expo (React Native)"
-stack = "Expo SDK, expo-router, TypeScript"
-best_for = "iOS/Android mobile apps, with web preview during development"
-requires = ["node", "npx", "git"]
-scaffold = "npx --yes create-expo-app@latest {target}"
-env = "No credentials needed to start. Add service keys later as the app grows (see https://docs.expo.dev/guides/environment-variables/)."
-notes = [
-  "Preview on a device with the Expo Go app, or in a simulator via the dev-server keyboard shortcuts.",
-]
-verify_build = ""
-verify_dev = "npx expo start"
-verify_url = "http://localhost:8081"
-
-[[workflow.templates]]
-id = "fastapi-fullstack"
-label = "FastAPI + React"
-stack = "FastAPI, SQLModel, Postgres, React + TypeScript + Vite, Docker Compose"
-best_for = "Python backends with a React SPA frontend, API-first products"
-requires = ["git", "docker"]
-scaffold = "git clone --depth 1 https://github.com/fastapi/full-stack-fastapi-template.git {target}"
-env = "Set SECRET_KEY, FIRST_SUPERUSER, and FIRST_SUPERUSER_PASSWORD in .env as the template README describes (https://github.com/fastapi/full-stack-fastapi-template)."
-notes = [
-  "docker compose up brings up the full stack; backend and frontend also run standalone per backend/README.md and frontend/README.md.",
-]
-verify_build = "docker compose config --quiet"
-verify_dev = ""
-verify_url = ""
-
-[[workflow.templates]]
-id = "astro-content"
-label = "Astro content site"
-stack = "Astro, content collections, official blog starter, zero-JS by default"
-best_for = "Marketing sites, blogs, docs, and other content-first sites"
-requires = ["node", "npm", "git"]
-scaffold = "npm create astro@latest {target} -- --template blog --install --no-git --yes"
-env = "No credentials needed."
-notes = [
-  "Replace the starter's sample posts in src/content/ with real content when planning lands.",
-]
-verify_build = "npm run build"
-verify_dev = "npm run dev"
-verify_url = "http://localhost:4321"

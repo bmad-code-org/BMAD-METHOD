@@ -8,11 +8,11 @@
 
 ## VERIFY
 
-Run the template's checks in order, skipping any whose command is empty (say what you skipped and why it matters):
+Run the manifest's checks in order, skipping any whose command is empty (say what you skipped and why it matters):
 
 1. **Build** — run `verify_build` in `{app_root}`. On failure: diagnose, fix, retry (max three attempts).
 2. **Boot** — run `verify_dev` in `{app_root}` as a background process. Give it a reasonable startup window, then request `verify_url` (e.g. with `curl`). Any HTTP response demonstrates the app is serving; a connection failure does not. On failure: diagnose (port in use, missing env), fix, retry (max three attempts). Always terminate the dev process afterwards.
-3. For `[C]` custom templates: discover equivalent commands from the repo's manifest scripts and README; if none are discoverable, skip with a note.
+3. For `[C]` custom templates without an adopted `bmad-template.md`: discover equivalent commands from the repo's manifest scripts and README; if none are discoverable, skip with a note.
 
 Record the outcome of each check as `passed`, `failed (reason)`, or `skipped (reason)`. If anything failed after three attempts, present the failure output and ask whether to hand off anyway (marking the failure in the artifacts) or stop here.
 
@@ -23,7 +23,7 @@ If every run check passed, commit any verification-driven fixes: `chore: verifie
 Create `{ignite_workspace}/` and write both artifacts in `{document_output_language}`:
 
 1. **`brief.md`** — seed the standard brief from `assets/ignite-brief-template.md`, filled from the step 1 intent. Mark unknowns as open questions; do not pad. This is a starting point for `bmad-prd` (or a deeper `bmad-product-brief` pass), not a finished brief.
-2. **`architecture-seed.md`** — from `assets/architecture-seed-template.md`, filled with the chosen template's decided stack, the env variables collected in step 3 (names and purpose, never values), pending bootstrap notes, and the verification record. Downstream planning and architecture agents treat its **Decided** section as settled — the scaffold already implements those choices.
+2. **`architecture-seed.md`** — from `assets/architecture-seed-template.md`, filled with the chosen template's decided stack, the env variables collected in step 3 (names and purpose, never values), pending bootstrap items, the manifest's `## Agent Notes` (the conventions implementation agents must follow), and the verification record. Downstream planning and architecture agents treat its **Decided** section as settled — the scaffold already implements those choices.
 
 ## PRESENT AND ROUTE
 

@@ -30,9 +30,11 @@ It is greenfield-only. If it detects an existing application in the workspace, i
 | 3. Scaffold | Preflight tool checks, scaffold into a staging directory, collision-safe move into place, fresh git history with an initial commit, env placeholders documented — never invented. |
 | 4. Verify and hand off | Build and boot checks with a bounded fix loop, an honest pass/fail record, then the handoff artifacts and a pointer to `bmad-prd`. |
 
-## The Template Registry
+## Template Manifests
 
-Ignite picks from a curated menu, not a stack designed from scratch. Constraint is the feature: every entry uses an official scaffolding CLI or first-party template, so the starting point is maintained upstream rather than frozen in this repo.
+Ignite picks from a curated menu, not a stack designed from scratch. Constraint is the feature: every built-in uses an official scaffolding CLI or first-party template, so the starting point is maintained upstream rather than frozen in this repo.
+
+Each template is one markdown manifest. The frontmatter carries the machine fields — `id`, `label`, `stack`, `best_for`, `requires`, `scaffold`, `verify_build`, `verify_dev`, `verify_url` — used for the menu, preflight, and verification. The body is a playbook the agent reads and executes: `## Environment` (where credentials come from and how env files are wired), `## Bootstrap` (one-time steps after scaffolding), and `## Agent Notes` (the starter's conventions — where auth lives, how schema changes happen, what not to hand-roll). Agent Notes flow into `architecture-seed.md`, so every downstream agent inherits them.
 
 | Template | Stack | Best For |
 | --- | --- | --- |
@@ -42,29 +44,53 @@ Ignite picks from a curated menu, not a stack designed from scratch. Constraint 
 | `fastapi-fullstack` | FastAPI, SQLModel, Postgres, React, Docker | Python backends with a React SPA |
 | `astro-content` | Astro, content collections | Marketing sites, blogs, docs |
 
-Two escape hatches always appear: **custom template** (scaffold from any public git repository URL, history removed) and **manual** (skip scaffolding, go straight to planning).
+Two escape hatches always appear in the menu: **custom template** (any public git repository URL) and **manual** (skip scaffolding, go straight to planning).
 
-## Extending the Registry
+## Build Your Own Templates
 
-The registry lives in the skill's `customize.toml` as `[[workflow.templates]]` entries and merges through BMad's standard customization layers. A team drops entries into `_bmad/custom/bmad-ignite.toml`: a matching `id` replaces a default template, a new `id` appends to the menu.
+Ignite discovers manifests by scanning the directories in `template_paths` (a `customize.toml` list): the skill's built-in `templates/` directory first, then `_bmad/custom/ignite-templates/`. Later sources win on duplicate `id` — so a manifest in your custom directory with a built-in's id replaces it, and a new id appends to the menu.
 
-```toml
-[[workflow.templates]]
-id = "acme-internal-tool"
-label = "Acme internal tool starter"
-stack = "Next.js, Acme design system, internal auth"
-best_for = "Internal tools on the Acme platform"
-requires = ["node", "npx", "git"]
-scaffold = "npx --yes create-acme-app@latest {target}"
-env = "Request credentials via go/acme-onboarding."
-notes = []
-verify_build = "npm run build"
-verify_dev = "npm run dev"
-verify_url = "http://localhost:3000"
+```markdown
+---
+id: acme-internal-tool
+label: Acme internal tool starter
+stack: Next.js, Acme design system, internal auth
+best_for: Internal tools on the Acme platform
+requires: [node, npx, git]
+scaffold: npx --yes create-acme-app@latest {target}
+verify_build: npm run build
+verify_dev: npm run dev
+verify_url: http://localhost:3000
+---
+
+# Acme Internal Tool
+
+## Environment
+
+Request credentials via go/acme-onboarding; wire them into .env.local per the starter README.
+
+## Bootstrap
+
+1. Run npm run setup to register the app with the internal gateway.
+
+## Agent Notes
+
+- All UI comes from @acme/design-system — never hand-roll components.
+- API calls go through the gateway client in src/lib/gateway.ts.
 ```
 
-:::tip[Org starters]
-This is the same override mechanism every BMad skill uses — no separate registry infrastructure. Committing `_bmad/custom/bmad-ignite.toml` gives everyone on the team the org's blessed starters in the menu.
+Save that as `_bmad/custom/ignite-templates/acme-internal-tool.md` and it appears in the menu. Commit the directory and the whole team gets the org's blessed starters.
+
+## Community Templates
+
+Three ways to share a template, cheapest first:
+
+- **A manifest file** — anyone can publish a manifest (a gist, a snippet in a README); users drop it into `_bmad/custom/ignite-templates/`.
+- **A template repository** — ship a starter repo with `bmad-template.md` at its root. When a user picks the custom-URL option and points ignite at the repo, the clone is the scaffold and the manifest inside it drives env wiring, bootstrap, verification, and Agent Notes — the repo behaves exactly like a built-in.
+- **An org pack** — teams append their own directory to `template_paths` in `_bmad/custom/bmad-ignite.toml` and manage manifests wherever they live.
+
+:::tip[No new infrastructure]
+All of this rides BMad's existing customization merge — there is no separate registry service to run or schema to learn beyond one markdown file.
 :::
 
 ## The Handoff
