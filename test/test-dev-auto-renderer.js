@@ -82,6 +82,24 @@ function copyDirSync(src, dst) {
   }
 }
 
+// Extra one-off temp projects created by makeProject(); cleaned up in finally.
+const extraTmpDirs = [];
+
+/**
+ * Spin up an isolated temp project with the given _bmad/config.toml body and a
+ * copy of the skill dir, so a single bad-config scenario can be rendered in
+ * isolation. Returns { dir, skillDst }; the caller runs render.py against it.
+ */
+function makeProject(configText) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'bmad-dev-auto-renderer-halt-'));
+  extraTmpDirs.push(dir);
+  fs.mkdirSync(path.join(dir, '_bmad'), { recursive: true });
+  fs.writeFileSync(path.join(dir, '_bmad', 'config.toml'), configText, 'utf-8');
+  const skillDst = path.join(dir, 'bmad-dev-auto');
+  copyDirSync(SKILL_SRC, skillDst);
+  return { dir, skillDst };
+}
+
 // ---------------------------------------------------------------------------
 // Test fixture setup
 // ---------------------------------------------------------------------------
@@ -315,8 +333,60 @@ try {
     const leaks = renderedMdFiles().filter((f) => readRendered(f).includes('resolve_customization.py'));
     assert(leaks.length === 0, `resolve_customization.py still referenced in: ${leaks.join(', ')}`);
   });
+
+  // ---------------------------------------------------------------------------
+  // Bad-config HALTs cleanly (never a raw Python traceback)
+  // ---------------------------------------------------------------------------
+
+  test('missing planning_artifacts HALTs cleanly (no traceback)', () => {
+    // implementation_artifacts is present, so this exercises the general
+    // missing-vars scan rather than the dedicated guard.
+    const { skillDst: dst } = makeProject(
+      [
+        '[core]',
+        'communication_language = "French"',
+        'document_output_language = "Klingon"',
+        'implementation_artifacts = "{project-root}/impl"',
+      ].join('\n'),
+    );
+    const res = spawnSync('python3', [path.join(dst, 'render.py')], { cwd: dst, encoding: 'utf-8' });
+    assert(res.status === 1, `expected exit 1, got ${res.status}\nstdout: ${res.stdout}\nstderr: ${res.stderr}`);
+    assert(
+      res.stdout.includes('HALT and report to the user: config is missing') && res.stdout.includes('`planning_artifacts`'),
+      `stdout missing the planning_artifacts HALT directive.\nstdout: ${res.stdout}`,
+    );
+    assert(
+      res.stdout.includes('step-01-clarify-and-route.md'),
+      `HALT directive does not name the referencing file.\nstdout: ${res.stdout}`,
+    );
+    assert(!res.stderr.includes('Traceback'), `renderer crashed with a traceback instead of HALTing:\n${res.stderr}`);
+  });
+
+  test('unparseable customization override HALTs cleanly (no traceback)', () => {
+    const { dir, skillDst: dst } = makeProject(
+      [
+        '[core]',
+        'communication_language = "French"',
+        'document_output_language = "Klingon"',
+        'planning_artifacts = "{project-root}/plan"',
+        'implementation_artifacts = "{project-root}/impl"',
+      ].join('\n'),
+    );
+    fs.mkdirSync(path.join(dir, '_bmad', 'custom'), { recursive: true });
+    fs.writeFileSync(path.join(dir, '_bmad', 'custom', 'bmad-dev-auto.user.toml'), '[workflow\non_complete = broken', 'utf-8');
+    const res = spawnSync('python3', [path.join(dst, 'render.py')], { cwd: dst, encoding: 'utf-8' });
+    assert(res.status === 1, `expected exit 1, got ${res.status}\nstdout: ${res.stdout}\nstderr: ${res.stderr}`);
+    assert(
+      res.stdout.includes('HALT and report to the user: failed to parse') && res.stdout.includes('bmad-dev-auto.user.toml'),
+      `stdout missing the failed-to-parse HALT directive naming the override file.\nstdout: ${res.stdout}`,
+    );
+    assert(!res.stderr.includes('Traceback'), `renderer crashed with a traceback instead of HALTing:\n${res.stderr}`);
+  });
 } finally {
   fs.rmSync(tmpDir, { recursive: true, force: true });
+  for (const dir of extraTmpDirs) {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
 }
 
 // ---------------------------------------------------------------------------
