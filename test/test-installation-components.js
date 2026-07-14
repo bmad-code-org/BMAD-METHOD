@@ -3615,6 +3615,139 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test Suite 49: partial headless core CLI defaults
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 49: partial headless core CLI defaults${colors.reset}\n`);
+
+  {
+    const { UI } = require('../tools/installer/ui');
+    const fixtureRoot49 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-partial-cli-defaults-'));
+
+    try {
+      const ui49 = new UI();
+      const { moduleConfigs: partialConfigs49 } = await ui49.collectModuleConfigs(fixtureRoot49, ['bmm'], {
+        yes: true,
+        userName: 'CLI User',
+        communicationLanguage: 'French',
+        documentOutputLanguage: 'Spanish',
+      });
+
+      assert(partialConfigs49.core.user_name === 'CLI User', 'partial --yes preserves the explicit user name');
+      assert(partialConfigs49.core.communication_language === 'French', 'partial --yes preserves the explicit communication language');
+      assert(partialConfigs49.core.document_output_language === 'Spanish', 'partial --yes preserves the explicit document output language');
+      assert(
+        partialConfigs49.core.project_name === path.basename(fixtureRoot49),
+        'partial --yes defaults the omitted project name from the target directory',
+      );
+      assert(partialConfigs49.core.output_folder === '_bmad-output', 'partial --yes defaults the omitted output folder');
+      assert(
+        partialConfigs49.bmm.planning_artifacts === '{project-root}/_bmad-output/planning-artifacts',
+        'partial --yes resolves BMM planning artifacts beneath the default output folder',
+      );
+      assert(
+        partialConfigs49.bmm.implementation_artifacts === '{project-root}/_bmad-output/implementation-artifacts',
+        'partial --yes resolves BMM implementation artifacts beneath the default output folder',
+      );
+      assert(
+        !JSON.stringify(partialConfigs49).includes('{output_folder}'),
+        'partial --yes leaves no unresolved output_folder placeholders',
+      );
+
+      const customOutputRoot49 = path.join(fixtureRoot49, 'custom-output');
+      await fs.ensureDir(customOutputRoot49);
+      const { moduleConfigs: customConfigs49 } = await new UI().collectModuleConfigs(customOutputRoot49, ['bmm'], {
+        yes: true,
+        userName: 'CLI User',
+        outputFolder: 'generated',
+      });
+
+      assert(customConfigs49.core.output_folder === 'generated', 'partial --yes preserves an explicit output folder');
+      assert(
+        customConfigs49.core.communication_language === 'English' && customConfigs49.core.document_output_language === 'English',
+        'partial --yes completes omitted language fields alongside explicit values',
+      );
+      assert(
+        customConfigs49.bmm.planning_artifacts === '{project-root}/generated/planning-artifacts',
+        'partial --yes resolves BMM paths beneath the explicit output folder',
+      );
+
+      const originalUserInfo49 = os.userInfo;
+      os.userInfo = () => ({ username: 'fixture-user' });
+      try {
+        const usernameDefaultRoot49 = path.join(fixtureRoot49, 'username-default');
+        await fs.ensureDir(usernameDefaultRoot49);
+        const { moduleConfigs: usernameDefaultConfigs49 } = await new UI().collectModuleConfigs(usernameDefaultRoot49, ['bmm'], {
+          yes: true,
+          outputFolder: 'generated',
+        });
+        assert(
+          usernameDefaultConfigs49.core.user_name === 'Fixture-user',
+          'partial --yes defaults an omitted user name from the system account',
+        );
+      } finally {
+        os.userInfo = originalUserInfo49;
+      }
+
+      const existingRoot49 = path.join(fixtureRoot49, 'existing-install');
+      const existingBmadDir49 = path.join(existingRoot49, '_bmad');
+      await fs.ensureDir(path.join(existingBmadDir49, '_config'));
+      await fs.writeFile(path.join(existingBmadDir49, '_config', 'manifest.yaml'), 'modules: []\n', 'utf8');
+      await fs.writeFile(
+        path.join(existingBmadDir49, 'config.toml'),
+        '[core]\nproject_name = "Existing Project"\ndocument_output_language = "German"\noutput_folder = "existing-output"\n',
+        'utf8',
+      );
+      await fs.writeFile(
+        path.join(existingBmadDir49, 'config.user.toml'),
+        '[core]\nuser_name = "Existing User"\ncommunication_language = "Italian"\n',
+        'utf8',
+      );
+
+      const { moduleConfigs: existingConfigs49 } = await new UI().collectModuleConfigs(existingRoot49, ['bmm'], {
+        yes: true,
+        userName: 'CLI Override',
+      });
+
+      assert(existingConfigs49.core.user_name === 'CLI Override', 'explicit CLI values override existing core configuration');
+      assert(
+        existingConfigs49.core.communication_language === 'Italian' && existingConfigs49.core.output_folder === 'existing-output',
+        'existing core values override headless defaults for omitted CLI fields',
+      );
+      assert(
+        existingConfigs49.bmm.planning_artifacts === '{project-root}/existing-output/planning-artifacts',
+        'BMM paths resolve from preserved existing core configuration',
+      );
+
+      const partialExistingRoot49 = path.join(fixtureRoot49, 'partial-existing-install');
+      const partialExistingBmadDir49 = path.join(partialExistingRoot49, '_bmad');
+      await fs.ensureDir(path.join(partialExistingBmadDir49, '_config'));
+      await fs.writeFile(path.join(partialExistingBmadDir49, '_config', 'manifest.yaml'), 'modules: []\n', 'utf8');
+      await fs.writeFile(path.join(partialExistingBmadDir49, 'config.toml'), '[core]\nproject_name = "Partial Existing Project"\n', 'utf8');
+
+      const { moduleConfigs: partialExistingConfigs49 } = await new UI().collectModuleConfigs(partialExistingRoot49, ['bmm'], {
+        yes: true,
+      });
+
+      assert(
+        partialExistingConfigs49.core.project_name === 'Partial Existing Project',
+        'headless --yes preserves a partial existing core configuration without CLI overrides',
+      );
+      assert(
+        partialExistingConfigs49.core.output_folder === '_bmad-output',
+        'headless --yes completes omitted fields in a partial existing core configuration',
+      );
+      assert(
+        partialExistingConfigs49.bmm.planning_artifacts === '{project-root}/_bmad-output/planning-artifacts',
+        'headless --yes resolves BMM paths after completing a partial existing core configuration',
+      );
+    } finally {
+      await fs.remove(fixtureRoot49).catch(() => {});
+    }
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);
