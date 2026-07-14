@@ -46,7 +46,7 @@
     "test:channels": "node test/test-installer-channels.js",
     "test:install": "node test/test-installation-components.js",
     "test:refs": "node test/test-file-refs-csv.js",
-    "test:renderer": "node test/test-quick-dev-renderer.js",
+    "test:renderer": "node test/test-quick-dev-renderer.js && node test/test-dev-auto-renderer.js",
     "test:skills": "node test/test-validate-skills.js",
     "test:urls": "node test/test-parse-source-urls.js",
     "validate:refs": "node tools/validate-file-refs.js --strict",

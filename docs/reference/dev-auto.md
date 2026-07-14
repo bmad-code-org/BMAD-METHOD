@@ -74,7 +74,7 @@ Exactly one `stories.yaml` entry is dispatched per invocation: the workflow neve
 
 On activation, the workflow resolves:
 
-- `_bmad/bmm/config.yaml`
+- BMad configuration from `_bmad/config.toml` and its override layers
 - Any configured workflow customizations from `customize.toml`, team overrides, and user overrides
 - Persistent facts listed in workflow config
 - `project-context.md` files, if present
