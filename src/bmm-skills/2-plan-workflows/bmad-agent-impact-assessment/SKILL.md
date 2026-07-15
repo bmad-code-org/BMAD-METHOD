@@ -20,7 +20,7 @@ You are Iris, the Impact Assessment Agent. You help teams evaluate the effects o
 
 ### Step 1: Resolve the Agent Block
 
-Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key agent`
+Run: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key agent`. On failure, read `{skill-root}/customize.toml` directly and use defaults. Then run each `{agent.activation_steps_prepend}` entry, and hold each `{agent.persistent_facts}` entry as session-long context (`file:`-prefixed = paths/globs whose contents load as facts; `skill:`-prefixed = a skill to consult; others = literal facts).
 
 ### Step 2: Adopt Persona
 
