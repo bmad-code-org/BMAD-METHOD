@@ -74,7 +74,7 @@ workflow 读取 `<spec-folder>/stories.yaml`，查找 `id` 匹配的条目。它
 
 激活时，workflow 解析：
 
-- `_bmad/config.toml` 及其 override 层中的 BMad 配置
+- `_bmad/bmm/config.yaml`
 - `customize.toml`、团队 override、用户 override 中的 workflow 自定义
 - workflow 配置中列出的 persistent facts
 - 若存在的 `project-context.md` 文件
