@@ -2,12 +2,12 @@
 # /// script
 # requires-python = ">=3.11"
 # ///
-"""render.py — bmad-quick-dev template renderer.
+"""render.py — bmad-dev-auto template renderer.
 
 Resolves compile-time {{.variable}} placeholders from BMad's central config,
 bakes absolute paths for {project-root} into derived values, resolves and
 inlines the skill's [workflow] customization block, and writes rendered .md
-files to {project-root}/_bmad/render/bmad-quick-dev/.
+files to {project-root}/_bmad/render/bmad-dev-auto/.
 
 Config: four-layer merge of _bmad/config.toml + config.user.toml +
 custom/config.toml + custom/config.user.toml (post-#2285 installs).
@@ -18,7 +18,7 @@ Optional layers may be missing, but one that exists and cannot be parsed
 or read → HALT.
 
 Customization: three-layer merge of {skill}/customize.toml +
-_bmad/custom/bmad-quick-dev.toml + .user.toml (same structural rules as
+_bmad/custom/bmad-dev-auto.toml + .user.toml (same structural rules as
 resolve_customization.py). The resolved [workflow] values fill {workflow.*}
 placeholders, so this skill needs no runtime resolve_customization.py call.
 Other single-curly placeholders ({project-root}, {spec_file}, {skill-root},
@@ -83,7 +83,7 @@ def load_toml(path, required=False):
 
 def _deep_merge(base, override):
     """Dict-aware deep merge. Lists and scalars: override wins (we don't need
-    the full keyed-merge semantics of resolve_config.py — quick-dev only reads
+    the full keyed-merge semantics of resolve_config.py — dev-auto only reads
     flat scalars out of [core] and [modules.bmm])."""
     if isinstance(base, dict) and isinstance(override, dict):
         result = dict(base)
