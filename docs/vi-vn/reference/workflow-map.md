@@ -36,7 +36,7 @@ Xác định cần xây gì và xây cho ai.
 
 | Quy trình | Mục đích | Tạo ra |
 | --------------------------- | ---------------------------------------- | ------------ |
-| `bmad-create-prd` | Xác định yêu cầu (FR/NFR) | `PRD.md` |
+| `bmad-prd` | Xác định yêu cầu (FR/NFR) | `PRD.md` |
 | `bmad-ux`            | Thiết kế trải nghiệm người dùng khi UX là yếu tố quan trọng | `DESIGN.md`, `EXPERIENCE.md` |
 
 ## Giai đoạn 3: Định hình giải pháp
@@ -45,7 +45,7 @@ Quyết định cách xây và chia nhỏ công việc thành các story.
 
 | Quy trình | Mục đích | Tạo ra |
 | ----------------------------------------- | ------------------------------------------ | --------------------------- |
-| `bmad-create-architecture` | Làm rõ các quyết định kỹ thuật | `architecture.md` kèm ADR |
+| `bmad-architecture` | Làm rõ các quyết định kỹ thuật | `architecture.md` kèm ADR |
 | `bmad-create-epics-and-stories` | Phân rã yêu cầu thành các phần việc có thể triển khai | Các file epic chứa các story |
 | `bmad-check-implementation-readiness` | Cổng kiểm tra trước khi triển khai | Quyết định PASS/CONCERNS/FAIL |
 

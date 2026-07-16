@@ -2,7 +2,7 @@
 title: "Pressure-Test an Idea"
 description: Use the bmad-forge-idea skill to harden, prove, or kill an idea before you invest in it
 sidebar:
-  order: 12
+  order: 11
 ---
 
 Use the `bmad-forge-idea` skill to put a half-formed idea under adversarial questioning. It either survives with earned conviction or dies cheaply.
@@ -28,7 +28,7 @@ None. The forge runs in plain conversation. Installed agents and a configured pe
 
 ### 1. Invoke the skill
 
-Type `bmad-forge-idea` in your IDE, or say "forge an idea" or "pressure-test this." Name the idea in the same message or wait for the first question.
+Type `bmad-forge-idea` in your IDE, or say "forge an idea" or "pressure-test this." Name the idea in the same message or wait for the first question. If the skill isn't installed, select the **BMad Analysis** module in the installer — it brings in `bmad-forge-idea` along with `bmad-brainstorming` and `bmad-party-mode`.
 
 ### 2. State your goal
 

@@ -68,7 +68,7 @@ Décidez comment le construire et décomposez le travail en stories.
 
 | Workflow                              | Objectif                                          | Livrable                        |
 |---------------------------------------|---------------------------------------------------|---------------------------------|
-| `bmad-create-architecture`            | Rendez explicites les décisions techniques        | `architecture.md` avec ADRs[^2] |
+| `bmad-architecture`            | Rendez explicites les décisions techniques        | `architecture.md` avec ADRs[^2] |
 | `bmad-create-epics-and-stories`       | Décomposez les exigences en tâches implémentables | Fichiers d’epic avec stories    |
 | `bmad-check-implementation-readiness` | Jalon de validation avant implémentation          | Décision OK / RÉSERVES / ÉCHEC  |
 

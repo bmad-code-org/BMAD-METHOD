@@ -170,7 +170,7 @@ Si votre projet comporte une interface utilisateur, invoquez l'**agent UX Design
 **Créer l’architecture**
 
 1. Invoquez l'**agent Architecte** (`bmad-agent-architect`) dans un nouveau chat
-2. Exécutez `bmad-create-architecture` (`bmad-create-architecture`)
+2. Exécutez `bmad-architecture` (`bmad-architecture`)
 3. Résultat : document d’architecture avec les décisions techniques
 
 **Créer les epics et les stories**
@@ -240,7 +240,7 @@ your-project/
 |---------------------------------------|---------------------------------------|-----------|-----------------------------------------------------------------|
 | **`bmad-help`** ⭐                    | `bmad-help`                           | Tous      | **Votre guide intelligent — posez n’importe quelle question !**  |
 | `bmad-prd`                            | `bmad-prd`                            | Tous      | Créer, mettre à jour ou valider un PRD                          |
-| `bmad-create-architecture`            | `bmad-create-architecture`            | Architect | Créer le document d’architecture                                |
+| `bmad-architecture`            | `bmad-architecture`            | Architect | Créer le document d’architecture                                |
 | `bmad-generate-project-context`       | `bmad-generate-project-context`       | Analyst   | Créer le fichier de contexte projet                             |
 | `bmad-create-epics-and-stories`       | `bmad-create-epics-and-stories`       | PM        | Décomposer le PRD en epics                                      |
 | `bmad-check-implementation-readiness` | `bmad-check-implementation-readiness` | Architect | Valider la cohérence de la planification                        |

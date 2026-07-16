@@ -327,6 +327,14 @@ class UI {
           selectedModules.unshift('core');
         }
 
+        // Expand module-declared dependencies (e.g. the bmad-analysis bundle
+        // pulls in its standalone atoms). Appends deps after the current list
+        // so the force-unshifted 'core' stays first; unknown deps warn and skip.
+        {
+          const { OfficialModules } = require('./modules/official-modules');
+          selectedModules = await new OfficialModules().resolveModuleDependencies(selectedModules);
+        }
+
         const retainedModuleResult = await this._retainUnavailableInstalledModules(selectedModules, installedModuleIds, bmadDir, {
           preserveUnselected: options.yes && !options.modules,
         });
@@ -422,6 +430,14 @@ class UI {
     // Ensure core is in the modules list
     if (!selectedModules.includes('core')) {
       selectedModules.unshift('core');
+    }
+
+    // Expand module-declared dependencies (e.g. the bmad-analysis bundle pulls
+    // in its standalone atoms). Appends deps after the current list so the
+    // force-unshifted 'core' stays first; unknown deps warn and skip.
+    {
+      const { OfficialModules } = require('./modules/official-modules');
+      selectedModules = await new OfficialModules().resolveModuleDependencies(selectedModules);
     }
 
     // Interactive channel gate: "Ready to install (all stable)? [Y/n]"
@@ -942,6 +958,11 @@ class UI {
     for (const mod of builtInModules) {
       const code = mod.id;
       builtInCodes.add(code);
+      // Hidden modules (e.g. the standalone analysis atoms) stay out of the
+      // picker unless already installed — mirror how deprecated registry
+      // modules are hidden below. They remain installable via --modules and
+      // dependency resolution (e.g. the bmad-analysis bundle pulls them in).
+      if (mod.hidden && !installedModuleIds.has(code)) continue;
       const entry = await buildModuleEntry(code, mod.name, mod.description, mod.defaultSelected);
       allOptions.push({ label: entry.label, value: entry.value, hint: entry.hint });
       if (entry.selected) {

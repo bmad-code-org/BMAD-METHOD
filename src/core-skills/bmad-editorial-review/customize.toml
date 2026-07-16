@@ -1,0 +1,46 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# Workflow customization surface for bmad-editorial-review.
+#
+# Override files (not edited here):
+#   {project-root}/_bmad/custom/bmad-editorial-review.toml         (team)
+#   {project-root}/_bmad/custom/bmad-editorial-review.user.toml    (personal)
+
+[workflow]
+
+# --- Configurable below. Overrides merge per BMad structural rules: ---
+#   scalars: override wins • arrays: append
+
+# Default reader the review calibrates for when the request doesn't say:
+#   "humans"  clarity, flow, comprehension aids preserved
+#   "llm"     precision, consistent terminology, no hedging
+# A reader type stated in the request wins for that run.
+reader_type = "humans"
+
+# Style guide that overrides the Microsoft Writing Style Guide baseline and
+# every generic principle in the skill except CONTENT IS SACROSANCT. Either a
+# `file:`-prefixed path to a style guide document, or the rules inline as text.
+# Empty = baseline only.
+#
+# Examples (set in team/user override TOML):
+#   style_guide = "file:{project-root}/_bmad/style-guides/company-voice.md"
+#   style_guide = "Sentence-case headings. No Oxford comma. Address the reader as 'you'."
+style_guide = ""
+
+# Where and how findings land. Freeform directive; empty = present the
+# findings table in chat.
+#
+# Examples:
+#   output_preferences = "Write the findings table to <target>-review.md beside the reviewed document."
+#   output_preferences = "Cap output at the 20 highest-impact findings."
+output_preferences = ""
+
+# Standing review directives applied on every run alongside the skill's own
+# principles. Each entry is a literal sentence or a `file:`-prefixed path/glob
+# whose contents load as directives.
+#
+# Examples:
+#   "Flag passive voice in headings."
+#   "Second-person imperative is the house voice; never suggest changing it."
+#   "file:{project-root}/docs/terminology.md"
+review_guidance = []

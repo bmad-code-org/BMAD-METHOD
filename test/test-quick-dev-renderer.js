@@ -243,8 +243,8 @@ try {
     const content = readRendered('step-04-review.md');
     assert(content.includes('#### Replaced Layer'), 'override layer name not used as block title');
     assert(content.includes('TEST_REPLACED_LAYER_INSTRUCTION'), 'override layer instruction not inlined');
-    assert(!content.includes('bmad-review-edge-case-hunter'), 'replaced default layer instruction still present');
-    assert(content.includes('bmad-review-adversarial-general'), 'untouched default layer dropped by keyed merge');
+    assert(!content.includes('only the `edge-case` lens'), 'replaced default layer instruction still present');
+    assert(content.includes('only the `adversarial` lens'), 'untouched default layer dropped by keyed merge');
   });
 
   test('empty-instruction override drops its layer entirely', () => {

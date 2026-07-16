@@ -78,9 +78,9 @@ creative_tools = [
 # Polish passes applied to DESIGN.md and EXPERIENCE.md at finalize.
 # Entries: `skill:NAME`, `file:PATH`, or plain text directive.
 # Suggested order: structural → content/voice → prose mechanics.
+# The default entry runs both editorial passes in order: structure, then prose.
 doc_standards = [
-  "skill:bmad-editorial-review-structure",
-  "skill:bmad-editorial-review-prose",
+  "skill:bmad-editorial-review",
 ]
 
 # Information retrieval registry. Consulted on demand when the conversation

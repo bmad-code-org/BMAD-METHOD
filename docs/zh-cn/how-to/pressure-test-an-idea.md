@@ -2,7 +2,7 @@
 title: "压测一个想法"
 description: 用 bmad-forge-idea skill 在投入之前强化、验证或淘汰一个想法
 sidebar:
-  order: 12
+  order: 11
 ---
 
 用 `bmad-forge-idea` skill 把半成型的想法放到对抗式提问下。要么带着 earned conviction 活下来，要么廉价地死掉。

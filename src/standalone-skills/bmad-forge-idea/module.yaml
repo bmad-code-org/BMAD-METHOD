@@ -1,0 +1,7 @@
+code: bmad-forge-idea
+name: "Forge Idea"
+description: "Pressure-test and harden ideas via persona interrogation"
+
+# Hidden from the installer picker — installed via another module's
+# dependencies (e.g. bmad-analysis) or by explicit selection.
+hidden: true

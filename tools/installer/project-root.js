@@ -103,6 +103,12 @@ async function resolveInstalledModuleYaml(moduleName) {
   const builtIn = path.join(getModulePath(moduleName), 'module.yaml');
   if (await fs.pathExists(builtIn)) return builtIn;
 
+  // Built-in standalone modules live under src/standalone-skills/<code>/module.yaml.
+  // The installed module dir omits module.yaml (copyModuleWithFiltering strips it),
+  // so resolve back to source by directory name (which matches the module code).
+  const standalone = getSourcePath('standalone-skills', moduleName, 'module.yaml');
+  if (await fs.pathExists(standalone)) return standalone;
+
   // Collect every module.yaml under a root using the standard candidate paths.
   // Url-source repos can host multiple plugins (discovery mode), so we need all
   // matches, not just the first. Returned in priority order.

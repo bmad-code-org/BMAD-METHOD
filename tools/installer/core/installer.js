@@ -1380,8 +1380,15 @@ class Installer {
     const availableModuleIds = new Set(availableModules.map((m) => m.id));
 
     // Only update modules that are BOTH installed AND available (we have source for)
-    const modulesToUpdate = installedModules.filter((id) => availableModuleIds.has(id));
+    const installedAndAvailable = installedModules.filter((id) => availableModuleIds.has(id));
     const skippedModules = installedModules.filter((id) => !availableModuleIds.has(id));
+
+    // Expand declared module dependencies (e.g. bmm pulling in the standalone
+    // analysis atoms) so quick update installs the same set the interactive
+    // flows resolve via ui.js. Without this, skills that moved out of a module
+    // into a dependency would be cleaned up on update instead of re-arriving
+    // through their new module.
+    const modulesToUpdate = await new OfficialModules().resolveModuleDependencies(installedAndAvailable);
 
     if (skippedModules.length > 0) {
       await prompts.log.warn(`Skipping ${skippedModules.length} module(s) - no source available: ${skippedModules.join(', ')}`);

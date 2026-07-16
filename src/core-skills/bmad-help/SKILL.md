@@ -23,7 +23,7 @@ When this skill completes, the user should:
 ## Data Sources
 
 - **Catalog**: `{project-root}/_bmad/_config/bmad-help.csv` — assembled manifest of all installed module skills
-- **Config**: Run `uv run --python 3.11 {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}` and use the merged JSON to resolve `output-location` variables and read `core.communication_language` and `modules.bmm.project_knowledge`. The resolver merges `_bmad/config.toml`, `_bmad/config.user.toml`, `_bmad/custom/config.toml`, and `_bmad/custom/config.user.toml` in that order.
+- **Config**: Run `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}` and use the merged JSON to resolve `output-location` variables and read `core.communication_language` and `modules.bmm.project_knowledge`. The resolver merges `_bmad/config.toml`, `_bmad/config.user.toml`, `_bmad/custom/config.toml`, and `_bmad/custom/config.user.toml` in that order.
 - **Artifacts**: Files matching `outputs` patterns at resolved `output-location` paths reveal which steps are possibly completed; their content may also provide grounding context for recommendations
 - **Project knowledge**: If `project_knowledge` resolves to an existing path, read it for grounding context. Never fabricate project-specific details.
 - **Module docs**: Rows with `_meta` in the `skill` column carry a URL or path in `output-location` pointing to the module's documentation (e.g., llms.txt). Fetch and use these to answer general questions about that module.
@@ -72,4 +72,5 @@ For each recommended item, present:
 - Present all output in `{communication_language}`
 - Recommend running each skill in a **fresh context window**
 - Match the user's tone — conversational when they're casual, structured when they want specifics
+- When the user asks for brainstorming, ideation, or other thinking tools that aren't installed, mention that the bmad-analysis pack (brainstorm, pressure-test, multi-perspective) can be added via the installer
 - If the active module is ambiguous, retrieve all meta rows remote sources to find relevant info also to help answer their question

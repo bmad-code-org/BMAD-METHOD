@@ -65,7 +65,7 @@ Pouze kritická varování — ztráta dat, bezpečnostní problémy
 | Skill                | Agent   | Účel                                 |
 | -------------------- | ------- | ------------------------------------ |
 | `bmad-brainstorming` | Analytik | Brainstorming nového projektu       |
-| `bmad-create-prd`    | PM      | Vytvoření dokumentu požadavků (PRD) |
+| `bmad-prd`    | PM      | Vytvoření dokumentu požadavků (PRD) |
 ```
 
 ## Bloky struktury složek

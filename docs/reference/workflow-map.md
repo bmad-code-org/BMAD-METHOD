@@ -49,6 +49,7 @@ Define what to build and for whom.
 |-------------------------|-------------------------------------------------------------------------------------|---------------------------------------------------|
 | `bmad-prd`              | Create, update, or validate a PRD — facilitated discovery, three intents in one skill | Create/Update: `prd.md`, `addendum.md`, `.memlog.md`; Validate: `validation-report.html` + `.md` |
 | `bmad-ux`               | Design user experience (when UX matters) — DESIGN.md (visual) + EXPERIENCE.md (behavioral) spine pair | `DESIGN.md`, `EXPERIENCE.md`, `.memlog.md`  |
+| `bmad-spec`             | Distill any intent input (brief, PRD, transcript, brain dump, design folder) into a succinct SPEC.md contract + companions — locks the WHAT before the HOW | `SPEC.md` + companions under `{output_folder}/specs/spec-{slug}/`; optional `stories.yaml` |
 
 :::tip[Three intents in one skill]
 `bmad-prd` handles the full PRD lifecycle. State your intent when invoking or the skill will ask:
@@ -56,6 +57,10 @@ Define what to build and for whom.
 - **Create** — new PRD from scratch via coached discovery; produces `prd.md`, `addendum.md`, and `.memlog.md`
 - **Update** — reconcile an existing PRD with a change signal, surfacing conflicts before applying changes
 - **Validate** — critique a PRD against a configurable checklist and produce a structured HTML findings report
+:::
+
+:::note[`bmad-spec`]
+`bmad-spec` produces the canonical machine contract: a five-field kernel (Why, Capabilities, Constraints, Non-goals, Success signal) plus companion files, validated so every load-bearing source claim is preserved. It is the only writer of `SPEC.md`; other skills invoke it headless when they need to express or update intent. On request it can also break a spec into an ordered `stories.yaml` for autonomous dispatch — see [Autonomous Development Loops](./dev-auto.md).
 :::
 
 :::tip[Upstream: `bmad-product-brief`]

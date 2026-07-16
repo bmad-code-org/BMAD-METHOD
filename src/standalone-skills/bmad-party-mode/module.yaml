@@ -1,0 +1,10 @@
+code: bmad-party-mode
+name: "Party Mode"
+description: "Round-table discussions between installed BMad agents or custom personas — multiple perspectives in one room"
+
+# Hidden from the installer picker; installed via module dependencies
+# (e.g. the bmad-analysis bundle) or explicit selection.
+hidden: true
+
+# No config questions — reads core config (user_name, communication_language,
+# output_folder) from the central four-layer TOML merge.

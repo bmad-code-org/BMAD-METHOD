@@ -11,6 +11,20 @@ BMad extends through official modules that you select during installation. These
 Run `npx bmad-method install` and select the modules you want. The installer handles downloading, configuration, and IDE integration automatically.
 :::
 
+## BMad Analysis
+
+The BMad thinking pack, built into the main `bmad-method` installer. A bundle module that ships no skills of its own — selecting it installs three standalone thinking skills via [module dependencies](./standalone-skills.md).
+
+- **Code:** `bmad-analysis`
+
+**Provides:**
+
+- `bmad-brainstorming` -- facilitated ideation with a curated technique library
+- `bmad-forge-idea` -- pressure-test an idea until it hardens, proves out, or dies cheaply
+- `bmad-party-mode` -- round-table discussions between installed agents or custom personas
+
+See [Core Tools](./core-tools.md#standalone-thinking-skills) for what each skill does.
+
 ## BMad Builder
 
 Create custom agents, workflows, and domain-specific modules with guided assistance. BMad Builder is the meta-module for extending the framework itself.
