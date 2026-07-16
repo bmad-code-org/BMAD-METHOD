@@ -9,6 +9,7 @@ BMad Method,bmad-agent-tech-writer,Update Standards,US,Update agent memory docum
 BMad Method,bmad-agent-tech-writer,Mermaid Generate,MG,Create a Mermaid diagram based on user description. Will suggest diagram types if not specified.,mermaid,,anytime,,,false,planning_artifacts,mermaid diagram
 BMad Method,bmad-agent-tech-writer,Validate Document,VD,Review the specified document against documentation standards and best practices. Returns specific actionable improvement suggestions organized by priority.,validate,[path],anytime,,,false,planning_artifacts,validation report
 BMad Method,bmad-agent-tech-writer,Explain Concept,EC,Create clear technical explanations with examples and diagrams for complex concepts.,explain,[topic],anytime,,,false,project_knowledge,explanation
+BMad Method,bmad-agent-impact-assessment,Impact Assessment,IA,Assess change impact, dependency risk, and mitigation options before implementation.,,,2-planning,,,false,planning_artifacts,impact assessment summary
 BMad Method,bmad-brainstorming,Brainstorm Project,BP,Expert guided facilitation through a single or multiple techniques.,,,1-analysis,,,false,planning_artifacts,brainstorming session
 BMad Method,bmad-market-research,Market Research,MR,Market analysis competitive landscape customer needs and trends.,,,1-analysis,,,false,planning_artifacts|project-knowledge,research documents
 BMad Method,bmad-domain-research,Domain Research,DR,Industry domain deep dive subject matter expertise and terminology.,,,1-analysis,,,false,planning_artifacts|project_knowledge,research documents
