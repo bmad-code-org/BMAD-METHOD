@@ -43,10 +43,6 @@ are JavaScript AST transforms:
 
 - `test/test-rehype-plugins.mjs`
 
-`test/test-workflow-path-regex.js` is a legacy direct runner that is not part of
-`npm test`, `npm run quality`, or CI. Do not use it as precedent for new tests;
-triage it separately before wiring or migrating it.
-
 ## Python Test Policy
 
 New non-installer regression coverage should use Python tests near the relevant
