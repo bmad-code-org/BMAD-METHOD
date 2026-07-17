@@ -23,6 +23,12 @@ This skill relies on an ability to run subagents. If subagents are unavailable, 
 
 Version control, while optional, is strongly recommended. If it's present, there must be no uncommitted changes.
 
+## Workflow Rendering
+
+Activation is a single `uv` call to the installed shared renderer. It resolves the four central TOML layers (`_bmad/config.toml`, `config.user.toml`, and both files under `_bmad/custom/`) plus the skill default, team, and user customization layers before any workflow step runs. A present malformed layer or a missing/wrong-type referenced value halts activation rather than producing a partial workflow.
+
+The renderer publishes a complete immutable snapshot under `_bmad/render/bmad-dev-auto/<project-slug>-<root-hash>/<generation-hash>/` and returns its absolute `workflow.md` path. The project namespace keeps worktrees distinct even when they share one physical `_bmad`. Identical effective inputs reuse the same generation; changed effective inputs create a new one, and prior generations are never mutated or automatically removed. `manifest.json` records the canonical project root, effective input identity, source hashes, and final output hashes for inspection.
+
 ## Inputs
 
 ### Primary Invocation Input
@@ -74,7 +80,7 @@ Exactly one `stories.yaml` entry is dispatched per invocation: the workflow neve
 
 On activation, the workflow resolves:
 
-- `_bmad/bmm/config.yaml`
+- `_bmad/config.toml`, `_bmad/config.user.toml`, and optional team/user overrides under `_bmad/custom/`
 - Any configured workflow customizations from `customize.toml`, team overrides, and user overrides
 - Persistent facts listed in workflow config
 - `project-context.md` files, if present

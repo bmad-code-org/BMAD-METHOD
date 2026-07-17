@@ -1,0 +1,80 @@
+[render]
+version = 1
+skill = "bmad-dev-auto"
+entry = "workflow.md"
+sources = [
+  "workflow.md",
+  "compile-epic-context.md",
+  "spec-template.md",
+  "step-01-clarify-and-route.md",
+  "step-02-plan.md",
+  "step-03-implement.md",
+  "step-04-review.md",
+]
+
+[[values]]
+token = "{{.communication_language}}"
+source = "config.core.communication_language"
+type = "string"
+format = "raw"
+
+[[values]]
+token = "{{.document_output_language}}"
+source = "config.core.document_output_language"
+type = "string"
+format = "raw"
+
+[[values]]
+token = "{{.user_skill_level}}"
+source = "config.modules.bmm.user_skill_level"
+type = "string"
+format = "raw"
+
+[[values]]
+token = "{{.planning_artifacts}}"
+source = "config.modules.bmm.planning_artifacts"
+type = "path"
+format = "raw"
+
+[[values]]
+token = "{{.implementation_artifacts}}"
+source = "config.modules.bmm.implementation_artifacts"
+type = "path"
+format = "raw"
+
+[[values]]
+token = "{workflow.activation_steps_prepend}"
+source = "customization.workflow.activation_steps_prepend"
+type = "list"
+format = "markdown-list"
+
+[[values]]
+token = "{workflow.activation_steps_append}"
+source = "customization.workflow.activation_steps_append"
+type = "list"
+format = "markdown-list"
+
+[[values]]
+token = "{workflow.persistent_facts}"
+source = "customization.workflow.persistent_facts"
+type = "list"
+format = "markdown-list"
+
+[[values]]
+token = "{workflow.on_complete}"
+source = "customization.workflow.on_complete"
+type = "string"
+format = "raw"
+allow_empty = true
+
+[[values]]
+token = "{workflow.implementation_handoff}"
+source = "customization.workflow.implementation_handoff"
+type = "string"
+format = "raw"
+
+[[values]]
+token = "{workflow.review_layers}"
+source = "customization.workflow.review_layers"
+type = "review-layers"
+format = "review-layers"

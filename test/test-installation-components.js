@@ -13,6 +13,7 @@
 
 const path = require('node:path');
 const os = require('node:os');
+const { spawnSync } = require('node:child_process');
 const fs = require('../tools/installer/fs-native');
 const { Installer } = require('../tools/installer/core/installer');
 const { ManifestGenerator } = require('../tools/installer/core/manifest-generator');
@@ -3610,6 +3611,83 @@ async function runTests() {
     console.log(`${colors.red}Test Suite 48 setup failed: ${error.message}${colors.reset}`);
     console.log(error.stack);
     failed++;
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 49: dev-auto renderer installation surface
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 49: dev-auto renderer installation surface${colors.reset}\n`);
+
+  let root49;
+  try {
+    root49 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-dev-auto-install-'));
+    const bmadDir49 = path.join(root49, '_bmad');
+    await fs.ensureDir(path.join(bmadDir49, 'custom'));
+    const paths49 = {
+      srcDir: path.resolve(__dirname, '..'),
+      bmadDir: bmadDir49,
+      scriptsDir: path.join(bmadDir49, 'scripts'),
+      customDir: path.join(bmadDir49, 'custom'),
+    };
+    const installer49 = new Installer();
+    await installer49._installSharedScripts(paths49);
+
+    const official49 = new OfficialModules();
+    await official49.install('bmm', bmadDir49, null, {
+      skipModuleInstaller: true,
+      moduleConfig: {},
+      silent: true,
+    });
+
+    const scripts49 = path.join(bmadDir49, 'scripts');
+    const skill49 = path.join(bmadDir49, 'bmm', '4-implementation', 'bmad-dev-auto');
+    assert(await fs.pathExists(path.join(scripts49, 'render_skill.py')), 'shared render_skill.py reaches installed _bmad/scripts');
+    assert(await fs.pathExists(path.join(scripts49, 'config_utils.py')), 'shared config utility reaches installed _bmad/scripts');
+    assert(!(await fs.pathExists(path.join(scripts49, 'tests'))), 'shared-script development tests are excluded from install');
+    assert(!(await fs.pathExists(path.join(scripts49, '__pycache__'))), 'shared-script Python caches are excluded from install');
+    assert(await fs.pathExists(path.join(skill49, 'SKILL.md')), 'dev-auto entry reaches installed skill surface');
+    assert(await fs.pathExists(path.join(skill49, 'render.toml')), 'dev-auto render contract reaches installed skill surface');
+    assert(await fs.pathExists(path.join(skill49, 'workflow.md')), 'dev-auto workflow source reaches installed skill surface');
+    assert(await fs.pathExists(path.join(skill49, 'step-04-review.md')), 'dev-auto step sources reach installed skill surface');
+    assert(
+      (await fs.readFile(path.join(bmadDir49, 'render', '.gitignore'), 'utf8')) === '*\n!.gitignore\n',
+      'generated render snapshots are ignored by installed projects',
+    );
+
+    await fs.writeFile(
+      path.join(bmadDir49, 'config.toml'),
+      [
+        '[core]',
+        'communication_language = "English"',
+        'document_output_language = "English"',
+        '',
+        '[modules.bmm]',
+        'user_skill_level = "expert"',
+        `planning_artifacts = ${JSON.stringify(path.join(root49, 'planning'))}`,
+        `implementation_artifacts = ${JSON.stringify(path.join(root49, 'implementation'))}`,
+        '',
+      ].join('\n'),
+      'utf8',
+    );
+    const render49 = spawnSync(
+      'uv',
+      ['run', '--python', '3.11', path.join(scripts49, 'render_skill.py'), '--project-root', root49, '--skill', skill49],
+      { encoding: 'utf8' },
+    );
+    const dispatch49 = render49.stdout.trim().replace(/^read and follow /, '');
+    assert(
+      render49.status === 0 && path.isAbsolute(dispatch49) && (await fs.pathExists(dispatch49)),
+      'installer-produced dev-auto tree renders and dispatches end to end',
+      `${render49.stdout}${render49.stderr}`,
+    );
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 49 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  } finally {
+    if (root49) await fs.remove(root49).catch(() => {});
   }
 
   console.log('');

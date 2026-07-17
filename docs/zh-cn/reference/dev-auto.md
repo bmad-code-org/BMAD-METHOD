@@ -23,6 +23,12 @@ sidebar:
 
 版本控制可选但强烈建议。若存在，工作区不得有 uncommitted changes。
 
+## Workflow 渲染
+
+激活只调用一次已安装的共享 `uv` renderer。它会在任何 workflow step 运行前解析四层中央 TOML（`_bmad/config.toml`、`config.user.toml` 以及 `_bmad/custom/` 下的两个文件）和 skill 的默认、团队、用户 customization 层。只要已存在的层格式错误，或被引用的值缺失、类型错误，激活就会 halt，而不会生成不完整的 workflow。
+
+Renderer 把完整的不可变 snapshot 发布到 `_bmad/render/bmad-dev-auto/<project-slug>-<root-hash>/<generation-hash>/`，并返回其中 `workflow.md` 的绝对路径。即使多个 worktree 共用同一个物理 `_bmad`，project namespace 也能隔离它们。相同的有效输入复用同一 generation；有效输入变化时创建新 generation，旧 generation 永不修改，也不会自动删除。`manifest.json` 记录 canonical project root、有效输入 identity、source hash 和最终 output hash，便于检查。
+
 ## 输入
 
 ### 主要调用输入
@@ -74,7 +80,7 @@ workflow 读取 `<spec-folder>/stories.yaml`，查找 `id` 匹配的条目。它
 
 激活时，workflow 解析：
 
-- `_bmad/bmm/config.yaml`
+- `_bmad/config.toml`、`_bmad/config.user.toml`，以及 `_bmad/custom/` 下可选的团队/用户 override
 - `customize.toml`、团队 override、用户 override 中的 workflow 自定义
 - workflow 配置中列出的 persistent facts
 - 若存在的 `project-context.md` 文件
