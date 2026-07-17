@@ -19,9 +19,6 @@ npm run validate:skills
 
 # Python script and black-box tests
 npm run test:python
-
-# Rehype plugin coverage, retained as a direct Node runner
-node test/test-rehype-plugins.mjs
 ```
 
 `npm run test:python` uses `uv run --python 3.11 --with "pytest>=8,<10" pytest`.
@@ -37,11 +34,6 @@ installation channels, package assembly, and related CLI behavior:
 
 - `test/test-installation-components.js`
 - `test/test-installer-channels.js`
-
-Rehype plugin tests remain JavaScript because the plugins under `website/src/`
-are JavaScript AST transforms:
-
-- `test/test-rehype-plugins.mjs`
 
 ## Python Test Policy
 
@@ -82,6 +74,28 @@ the JSON-decoded result. `export` is either a bare export name
 be found or the call throws, the bridge exits non-zero and `call` raises
 `RuntimeError` with the underlying stderr message. See
 `test/python/test_js_bridge.py` for a working example.
+
+For default-export factory modules (the `options => (tree, file) => void`
+shape used by rehype/unified-style plugins), use `js_bridge.transform`
+instead:
+
+```python
+tree = js_bridge.transform(
+    "website/src/rehype-base-paths.js",
+    "default",
+    {"base": "/BMAD-METHOD/"},
+    tree,
+)
+```
+
+`js_bridge.transform(module_path, export, options, tree, file=None)` calls
+`require(module_path)[export](options)` to get the transformer, then calls
+`transformer(tree, file)` and returns the (possibly mutated) `tree` argument
+— not the transformer's own (conventionally undefined) return value. Each
+call round-trips through a Node subprocess, so the returned tree is a new
+object; rebind `tree = js_bridge.transform(...)` rather than relying on
+in-place mutation. See `test/python/test_rehype_markdown_links.py` and
+`test/python/test_rehype_base_paths.py` for working examples.
 
 ## Test Fixtures
 

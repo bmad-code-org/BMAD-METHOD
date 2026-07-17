@@ -49,3 +49,57 @@ def call(module_path: str, export: str, *args):
         raise RuntimeError(result.stderr)
 
     return json.loads(result.stdout)
+
+
+def transform(module_path: str, export: str, options, tree, file=None):
+    """Call a real JS default-export factory transformer and return the mutated tree.
+
+    Matches the rehype/unified plugin convention of a factory that takes
+    options and returns a `(tree, file) => void` transformer:
+    `require(module_path)[export](options)` produces the transformer, then
+    `transformer(tree, file)` is called to mutate `tree`.
+
+    module_path: path to the JS module to require, relative to the repo root
+        (matching the current working directory when pytest runs via
+        `npm run test:python` or `pytest` from the repo root).
+    export: bare export name of the factory function (e.g. "default").
+    options: JSON-serializable options passed to the factory.
+    tree: JSON-serializable tree structure passed to (and mutated by) the
+        transformer.
+    file: optional JSON-serializable file/vfile-like context passed to the
+        transformer as its second argument; omit for transformers that
+        ignore it.
+
+    Returns the (possibly mutated) `tree` argument, not the transformer's
+    own (conventionally undefined) return value.
+
+    Raises RuntimeError with the subprocess's stderr if the bridge exits
+    non-zero (e.g. an unknown export, a non-function factory, or a factory
+    that doesn't return a function) or does not finish within
+    `_TIMEOUT_SECONDS`.
+    """
+    try:
+        result = subprocess.run(
+            [
+                "node",
+                str(_BRIDGE_JS),
+                module_path,
+                export,
+                json.dumps([options, tree, file]),
+                "transform",
+            ],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            timeout=_TIMEOUT_SECONDS,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise RuntimeError(
+            f"js_bridge transform call to {module_path}:{export} did not finish within "
+            f"{_TIMEOUT_SECONDS}s"
+        ) from exc
+
+    if result.returncode != 0:
+        raise RuntimeError(result.stderr)
+
+    return json.loads(result.stdout)
