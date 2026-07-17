@@ -1,23 +1,26 @@
 /**
- * Smoke test for bmad-quick-dev render.py
+ * Smoke test for bmad-dev-auto render.py
  *
  * Sets up a temp project with base + override config layers and a
- * _bmad/custom/bmad-quick-dev.user.toml [workflow] override, runs render.py,
+ * _bmad/custom/bmad-dev-auto.user.toml [workflow] override, runs render.py,
  * and asserts:
- *   1. The central-config override wins (step files' language line contains "Japanese").
- *   2. sprint_status is an absolute path rooted at the temp project dir.
+ *   1. render.py stays in sync with bmad-quick-dev's (skill-name refs aside) —
+ *      the renderer is deliberately duplicated per skill, so drift is a bug.
+ *   2. The central-config override wins (step files' language line contains
+ *      "Japanese") and paths bake absolute into the rendered output.
  *   3. [workflow] customization is self-resolved and inlined: prepend bullet,
  *      persistent_facts append (base kept), empty list -> _None._, on_complete
- *      scalar baked into step-05/step-oneshot.
- *   4. Review layers materialize as direct invocation blocks: default layers
- *      become #### sections in step-04, an override replacing a layer by id
- *      wins, an empty-instruction override drops its layer, a `when` renders
- *      as a run-time guard, runtime placeholders like {diff_output} survive,
- *      and disabling every layer renders the HALT instruction.
+ *      scalar baked into workflow.md, implementation_handoff baked into
+ *      step-03 with runtime {spec_file} surviving.
+ *   4. Review layers materialize as direct invocation blocks in step-04: an
+ *      override replacing a layer by id wins, an empty-instruction override
+ *      drops its layer, a `when` renders as a run-time guard, runtime
+ *      placeholders like {diff_output}/{verbatim_intent} survive, and
+ *      disabling every layer renders the HALT instruction.
  *   5. No {workflow.*} placeholder or resolve_customization.py call survives
  *      in any rendered file.
  *
- * Usage: node test/test-quick-dev-renderer.js
+ * Usage: node test/test-dev-auto-renderer.js
  * Exit codes: 0 = all tests pass, 1 = test failures
  */
 
@@ -60,7 +63,8 @@ function assert(condition, message) {
 // Helpers
 // ---------------------------------------------------------------------------
 
-const SKILL_SRC = path.join(__dirname, '..', 'src', 'bmm-skills', '4-implementation', 'bmad-quick-dev');
+const SKILL_SRC = path.join(__dirname, '..', 'src', 'bmm-skills', '4-implementation', 'bmad-dev-auto');
+const QUICK_DEV_SRC = path.join(__dirname, '..', 'src', 'bmm-skills', '4-implementation', 'bmad-quick-dev');
 
 /**
  * Recursively copy a directory (stdlib only, no fs.cp to stay >=20 compat).
@@ -87,11 +91,11 @@ const extraTmpDirs = [];
  * isolation. Returns { dir, skillDst }; the caller runs render.py against it.
  */
 function makeProject(configText) {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'bmad-renderer-halt-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'bmad-dev-auto-renderer-halt-'));
   extraTmpDirs.push(dir);
   fs.mkdirSync(path.join(dir, '_bmad'), { recursive: true });
   fs.writeFileSync(path.join(dir, '_bmad', 'config.toml'), configText, 'utf-8');
-  const skillDst = path.join(dir, 'bmad-quick-dev');
+  const skillDst = path.join(dir, 'bmad-dev-auto');
   copyDirSync(SKILL_SRC, skillDst);
   return { dir, skillDst };
 }
@@ -100,9 +104,26 @@ function makeProject(configText) {
 // Test fixture setup
 // ---------------------------------------------------------------------------
 
-const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'bmad-renderer-test-'));
+const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'bmad-dev-auto-renderer-test-'));
 
 try {
+  console.log(`\n${colors.cyan}Dev-auto renderer smoke tests${colors.reset}\n`);
+
+  test('render.py stays in sync with the quick-dev renderer (skill-name refs aside)', () => {
+    const normalize = (source) =>
+      source
+        .replaceAll('bmad-quick-dev', '<skill>')
+        .replaceAll('bmad-dev-auto', '<skill>')
+        .replaceAll('quick-dev only reads', '<skill> only reads')
+        .replaceAll('dev-auto only reads', '<skill> only reads');
+    const devAuto = fs.readFileSync(path.join(SKILL_SRC, 'render.py'), 'utf-8');
+    const quickDev = fs.readFileSync(path.join(QUICK_DEV_SRC, 'render.py'), 'utf-8');
+    assert(
+      normalize(devAuto) === normalize(quickDev),
+      'bmad-dev-auto/render.py has drifted from bmad-quick-dev/render.py beyond skill-name references — propagate the change to both copies',
+    );
+  });
+
   // _bmad/config.toml — base layer
   fs.mkdirSync(path.join(tmpDir, '_bmad'), { recursive: true });
   fs.writeFileSync(
@@ -127,17 +148,19 @@ try {
     'utf-8',
   );
 
-  // _bmad/custom/bmad-quick-dev.user.toml — [workflow] customization override.
+  // _bmad/custom/bmad-dev-auto.user.toml — [workflow] customization override.
   // Exercises render.py's self-resolution: array append (persistent_facts),
-  // list inlining (activation_steps_prepend), and scalar override (on_complete),
-  // all baked into the rendered output with no runtime resolve_customization.py.
+  // list inlining (activation_steps_prepend), scalar overrides (on_complete,
+  // implementation_handoff), and review-layer keyed merge, all baked into the
+  // rendered output with no runtime resolve_customization.py.
   fs.writeFileSync(
-    path.join(tmpDir, '_bmad', 'custom', 'bmad-quick-dev.user.toml'),
+    path.join(tmpDir, '_bmad', 'custom', 'bmad-dev-auto.user.toml'),
     [
       '[workflow]',
       'activation_steps_prepend = ["TEST_PREPEND_STEP"]',
       'persistent_facts = ["TEST_EXTRA_FACT"]',
       'on_complete = "TEST_ON_COMPLETE_INSTRUCTION"',
+      'implementation_handoff = "TEST_HANDOFF_INSTRUCTION for {spec_file}"',
       '',
       '[[workflow.review_layers]]',
       'id = "edge-case-hunter"',
@@ -152,25 +175,23 @@ try {
     'utf-8',
   );
 
-  // Copy skill dir into <tmpDir>/bmad-quick-dev/ so find_project_root() walks
+  // Copy skill dir into <tmpDir>/bmad-dev-auto/ so find_project_root() walks
   // up and finds <tmpDir>/_bmad/, and os.path.basename(script_dir) resolves
   // to the real skill name so the render output lands at
-  // _bmad/render/bmad-quick-dev/workflow.md.
-  const skillDst = path.join(tmpDir, 'bmad-quick-dev');
+  // _bmad/render/bmad-dev-auto/workflow.md.
+  const skillDst = path.join(tmpDir, 'bmad-dev-auto');
   copyDirSync(SKILL_SRC, skillDst);
 
   // ---------------------------------------------------------------------------
   // Run render.py
   // ---------------------------------------------------------------------------
 
-  console.log(`\n${colors.cyan}Quick-dev renderer smoke tests${colors.reset}\n`);
-
   const result = spawnSync('python3', [path.join(skillDst, 'render.py')], {
     cwd: skillDst,
     encoding: 'utf-8',
   });
 
-  const renderDir = path.join(tmpDir, '_bmad', 'render', 'bmad-quick-dev');
+  const renderDir = path.join(tmpDir, '_bmad', 'render', 'bmad-dev-auto');
   const readRendered = (name) => fs.readFileSync(path.join(renderDir, name), 'utf-8');
   const renderedMdFiles = () => fs.readdirSync(renderDir).filter((f) => f.endsWith('.md'));
 
@@ -217,16 +238,15 @@ try {
     assert(content.includes('Klingon'), 'document_output_language not baked into the step-01 language line');
   });
 
-  test('sprint_status is an absolute path rooted at temp project dir', () => {
-    const content = readRendered('sync-sprint-status.md');
+  test('deferred_work_file is an absolute path rooted at temp project dir', () => {
+    const content = readRendered('step-04-review.md');
     // Normalize to forward slashes for cross-platform matching
     const normalizedTmp = tmpDir.replaceAll('\\', '/');
-    // sprint_status should appear as <tmpDir>/impl/sprint-status.yaml
-    const expected = `${normalizedTmp}/impl/sprint-status.yaml`;
+    const expected = `${normalizedTmp}/impl/deferred-work.md`;
     assert(
       content.includes(expected),
-      `sprint_status path not found.\nExpected substring: ${expected}\n` +
-        `sync-sprint-status.md excerpt (first 2000 chars):\n${content.slice(0, 2000)}`,
+      `deferred_work_file path not found.\nExpected substring: ${expected}\n` +
+        `step-04-review.md excerpt (first 2000 chars):\n${content.slice(0, 2000)}`,
     );
   });
 
@@ -246,17 +266,23 @@ try {
     assert(content.includes('_None._'), '_None._ sentinel missing for empty list');
   });
 
-  test('on_complete scalar inlined into step-05 and step-oneshot', () => {
-    for (const file of ['step-05-present.md', 'step-oneshot.md']) {
-      assert(readRendered(file).includes('TEST_ON_COMPLETE_INSTRUCTION'), `on_complete not inlined into ${file}`);
-    }
+  test('on_complete scalar inlined into the HALT On Complete section', () => {
+    assert(readRendered('workflow.md').includes('TEST_ON_COMPLETE_INSTRUCTION'), 'on_complete not inlined into workflow.md');
+  });
+
+  test('implementation_handoff inlined into step-03 with runtime {spec_file} surviving', () => {
+    const content = readRendered('step-03-implement.md');
+    assert(content.includes('TEST_HANDOFF_INSTRUCTION'), 'implementation_handoff override not inlined into step-03');
+    assert(content.includes('{spec_file}'), 'runtime {spec_file} placeholder did not survive rendering');
   });
 
   test('review layers materialize as invocation blocks in step-04', () => {
     const content = readRendered('step-04-review.md');
     assert(content.includes('#### Blind Hunter'), 'default review layer not rendered as a #### invocation block');
+    assert(content.includes('#### Intent Alignment Auditor'), 'intent-alignment layer not rendered as a #### invocation block');
     assert(!content.includes('- id:'), 'layer table data leaked into the rendered output');
     assert(content.includes('{diff_output}'), 'runtime {diff_output} placeholder did not survive rendering');
+    assert(content.includes('{verbatim_intent}'), 'runtime {verbatim_intent} placeholder did not survive rendering');
   });
 
   test('review layer override replaces the matching default by id', () => {
@@ -282,10 +308,10 @@ try {
   });
 
   test('disabling every layer renders the HALT instruction', () => {
-    // Second render pass: replace the override file so every default layer
-    // (and the oneshot route's only layer) is disabled, then re-render.
+    // Second render pass: replace the override file so every default layer is
+    // disabled, then re-render.
     fs.writeFileSync(
-      path.join(tmpDir, '_bmad', 'custom', 'bmad-quick-dev.user.toml'),
+      path.join(tmpDir, '_bmad', 'custom', 'bmad-dev-auto.user.toml'),
       [
         '[workflow]',
         '',
@@ -301,8 +327,8 @@ try {
         'id = "verification-gap"',
         'instruction = ""',
         '',
-        '[[workflow.oneshot_review_layers]]',
-        'id = "blind-hunter"',
+        '[[workflow.review_layers]]',
+        'id = "intent-alignment"',
         'instruction = ""',
       ].join('\n'),
       'utf-8',
@@ -313,9 +339,7 @@ try {
     });
     assert(rerun.status === 0, `re-render exit code ${rerun.status}\nstderr: ${rerun.stderr}`);
     const halt = 'No review layers are active. HALT with status `blocked` and blocking condition `no active review layers`.';
-    for (const file of ['step-04-review.md', 'step-oneshot.md']) {
-      assert(readRendered(file).includes(halt), `HALT instruction missing from ${file}`);
-    }
+    assert(readRendered('step-04-review.md').includes(halt), 'HALT instruction missing from step-04-review.md');
   });
 
   test('no {workflow.*} placeholder survives in any rendered file', () => {
@@ -352,25 +376,9 @@ try {
     assert(leaks.length === 0, `resolve_customization.py still referenced in: ${leaks.join(', ')}`);
   });
 
-  test('no main_config reference survives in any rendered file', () => {
-    const leaks = renderedMdFiles().filter((f) => readRendered(f).includes('main_config'));
-    assert(leaks.length === 0, `main_config still referenced in: ${leaks.join(', ')} (the runtime config re-read was removed)`);
-  });
-
   // ---------------------------------------------------------------------------
   // Bad-config HALTs cleanly (never a raw Python traceback)
   // ---------------------------------------------------------------------------
-
-  test('missing implementation_artifacts HALTs cleanly (no traceback)', () => {
-    const { skillDst: dst } = makeProject(['[core]', 'communication_language = "French"'].join('\n'));
-    const res = spawnSync('python3', [path.join(dst, 'render.py')], { cwd: dst, encoding: 'utf-8' });
-    assert(res.status === 1, `expected exit 1, got ${res.status}\nstdout: ${res.stdout}\nstderr: ${res.stderr}`);
-    assert(
-      res.stdout.includes('HALT and report to the user: config is missing `implementation_artifacts`'),
-      `stdout missing the implementation_artifacts HALT directive.\nstdout: ${res.stdout}`,
-    );
-    assert(!res.stderr.includes('Traceback'), `renderer crashed with a traceback instead of HALTing:\n${res.stderr}`);
-  });
 
   test('missing planning_artifacts HALTs cleanly (no traceback)', () => {
     // implementation_artifacts is present, so this exercises the general
@@ -407,11 +415,11 @@ try {
       ].join('\n'),
     );
     fs.mkdirSync(path.join(dir, '_bmad', 'custom'), { recursive: true });
-    fs.writeFileSync(path.join(dir, '_bmad', 'custom', 'bmad-quick-dev.user.toml'), '[workflow\non_complete = broken', 'utf-8');
+    fs.writeFileSync(path.join(dir, '_bmad', 'custom', 'bmad-dev-auto.user.toml'), '[workflow\non_complete = broken', 'utf-8');
     const res = spawnSync('python3', [path.join(dst, 'render.py')], { cwd: dst, encoding: 'utf-8' });
     assert(res.status === 1, `expected exit 1, got ${res.status}\nstdout: ${res.stdout}\nstderr: ${res.stderr}`);
     assert(
-      res.stdout.includes('HALT and report to the user: failed to parse') && res.stdout.includes('bmad-quick-dev.user.toml'),
+      res.stdout.includes('HALT and report to the user: failed to parse') && res.stdout.includes('bmad-dev-auto.user.toml'),
       `stdout missing the failed-to-parse HALT directive naming the override file.\nstdout: ${res.stdout}`,
     );
     assert(!res.stderr.includes('Traceback'), `renderer crashed with a traceback instead of HALTing:\n${res.stderr}`);
@@ -450,7 +458,7 @@ try {
       ].join('\n'),
     );
     fs.mkdirSync(path.join(dir, '_bmad', 'custom'), { recursive: true });
-    fs.writeFileSync(path.join(dir, '_bmad', 'custom', 'bmad-quick-dev.user.toml'), '[workflow]\nreview_layers = "not a list"', 'utf-8');
+    fs.writeFileSync(path.join(dir, '_bmad', 'custom', 'bmad-dev-auto.user.toml'), '[workflow]\nreview_layers = "not a list"', 'utf-8');
     const res = spawnSync('python3', [path.join(dst, 'render.py')], { cwd: dst, encoding: 'utf-8' });
     assert(res.status === 1, `expected exit 1, got ${res.status}\nstdout: ${res.stdout}\nstderr: ${res.stderr}`);
     assert(
@@ -461,25 +469,147 @@ try {
     assert(!res.stderr.includes('Traceback'), `renderer crashed with a traceback instead of HALTing:\n${res.stderr}`);
   });
 
-  test('non-table [modules] does not crash the renderer', () => {
-    const { dir, skillDst: dst } = makeProject(
-      [
-        'modules = "oops-not-a-table"',
-        '',
-        '[core]',
-        'communication_language = "French"',
-        'document_output_language = "Klingon"',
-        'planning_artifacts = "{project-root}/plan"',
-        'implementation_artifacts = "{project-root}/impl"',
-      ].join('\n'),
+  const GOOD_CONFIG = [
+    '[core]',
+    'communication_language = "French"',
+    'document_output_language = "Klingon"',
+    'planning_artifacts = "{project-root}/plan"',
+    'implementation_artifacts = "{project-root}/impl"',
+  ].join('\n');
+
+  test('present-but-empty config value HALTs cleanly (no traceback)', () => {
+    const { skillDst: dst } = makeProject(GOOD_CONFIG.replace('"{project-root}/plan"', '"  "'));
+    const res = spawnSync('python3', [path.join(dst, 'render.py')], { cwd: dst, encoding: 'utf-8' });
+    assert(res.status === 1, `expected exit 1, got ${res.status}\nstdout: ${res.stdout}\nstderr: ${res.stderr}`);
+    assert(
+      res.stdout.includes('HALT and report to the user: config value is empty for') && res.stdout.includes('`planning_artifacts`'),
+      `stdout missing the empty-value HALT directive.\nstdout: ${res.stdout}`,
+    );
+    assert(!res.stderr.includes('Traceback'), `renderer crashed with a traceback instead of HALTing:\n${res.stderr}`);
+  });
+
+  test('unsupported-type config value is not misreported as missing (no traceback)', () => {
+    const { skillDst: dst } = makeProject(GOOD_CONFIG.replace('"{project-root}/plan"', '["a", "b"]'));
+    const res = spawnSync('python3', [path.join(dst, 'render.py')], { cwd: dst, encoding: 'utf-8' });
+    assert(res.status === 1, `expected exit 1, got ${res.status}\nstdout: ${res.stdout}\nstderr: ${res.stderr}`);
+    assert(
+      res.stdout.includes('`planning_artifacts` has unsupported type list') && res.stdout.includes('expected a string'),
+      `stdout does not name the unsupported type.\nstdout: ${res.stdout}`,
+    );
+    assert(!res.stdout.includes('config is missing'), `a present key must not be reported as missing.\nstdout: ${res.stdout}`);
+    assert(!res.stderr.includes('Traceback'), `renderer crashed with a traceback instead of HALTing:\n${res.stderr}`);
+  });
+
+  test('non-scalar [workflow] value HALTs instead of baking Python repr (no traceback)', () => {
+    const { dir, skillDst: dst } = makeProject(GOOD_CONFIG);
+    fs.mkdirSync(path.join(dir, '_bmad', 'custom'), { recursive: true });
+    fs.writeFileSync(
+      path.join(dir, '_bmad', 'custom', 'bmad-dev-auto.user.toml'),
+      '[workflow.implementation_handoff]\ntext = "boom"',
+      'utf-8',
     );
     const res = spawnSync('python3', [path.join(dst, 'render.py')], { cwd: dst, encoding: 'utf-8' });
-    assert(res.status === 0, `expected exit 0, got ${res.status}\nstdout: ${res.stdout}\nstderr: ${res.stderr}`);
-    assert(!res.stderr.includes('Traceback'), `renderer crashed on non-table modules:\n${res.stderr}`);
+    assert(res.status === 1, `expected exit 1, got ${res.status}\nstdout: ${res.stdout}\nstderr: ${res.stderr}`);
     assert(
-      fs.existsSync(path.join(dir, '_bmad', 'render', 'bmad-quick-dev', 'workflow.md')),
-      'workflow.md not rendered when [modules] was a non-table scalar',
+      res.stdout.includes('[workflow] customization key `implementation_handoff`') &&
+        res.stdout.includes('must be a scalar or an array of scalars'),
+      `stdout missing the non-scalar workflow-value HALT directive.\nstdout: ${res.stdout}`,
     );
+    assert(!res.stderr.includes('Traceback'), `renderer crashed with a traceback instead of HALTing:\n${res.stderr}`);
+  });
+
+  test('non-scalar review-layer field HALTs cleanly (no traceback)', () => {
+    const { dir, skillDst: dst } = makeProject(GOOD_CONFIG);
+    fs.mkdirSync(path.join(dir, '_bmad', 'custom'), { recursive: true });
+    fs.writeFileSync(
+      path.join(dir, '_bmad', 'custom', 'bmad-dev-auto.user.toml'),
+      ['[[workflow.review_layers]]', 'id = "blind-hunter"', 'instruction = ["not", "a", "string"]'].join('\n'),
+      'utf-8',
+    );
+    const res = spawnSync('python3', [path.join(dst, 'render.py')], { cwd: dst, encoding: 'utf-8' });
+    assert(res.status === 1, `expected exit 1, got ${res.status}\nstdout: ${res.stdout}\nstderr: ${res.stderr}`);
+    assert(
+      res.stdout.includes('entries must be [[workflow.review_layers]] tables with scalar'),
+      `stdout missing the non-scalar layer-field HALT directive.\nstdout: ${res.stdout}`,
+    );
+    assert(!res.stderr.includes('Traceback'), `renderer crashed with a traceback instead of HALTing:\n${res.stderr}`);
+  });
+
+  test('unreadable (non-UTF-8) skill source HALTs cleanly (no traceback)', () => {
+    const { skillDst: dst } = makeProject(GOOD_CONFIG);
+    fs.appendFileSync(path.join(dst, 'step-02-plan.md'), Buffer.from([0xff, 0xfe, 0xfa]));
+    const res = spawnSync('python3', [path.join(dst, 'render.py')], { cwd: dst, encoding: 'utf-8' });
+    assert(res.status === 1, `expected exit 1, got ${res.status}\nstdout: ${res.stdout}\nstderr: ${res.stderr}`);
+    assert(
+      res.stdout.includes('HALT and report to the user: failed to read skill source step-02-plan.md'),
+      `stdout missing the unreadable-source HALT directive.\nstdout: ${res.stdout}`,
+    );
+    assert(!res.stderr.includes('Traceback'), `renderer crashed with a traceback instead of HALTing:\n${res.stderr}`);
+  });
+
+  // ---------------------------------------------------------------------------
+  // Publish-swap failure handling (injected os.rename errors)
+  // ---------------------------------------------------------------------------
+
+  test('failed publish swap HALTs and preserves the previous render', () => {
+    const { dir, skillDst: dst } = makeProject(GOOD_CONFIG);
+    const first = spawnSync('python3', [path.join(dst, 'render.py')], { cwd: dst, encoding: 'utf-8' });
+    assert(first.status === 0, `initial render failed: ${first.stdout}\n${first.stderr}`);
+    // Change config so a republish is required, then deny every rename.
+    fs.writeFileSync(path.join(dir, '_bmad', 'config.toml'), GOOD_CONFIG.replace('"French"', '"Japanese"'), 'utf-8');
+    const wrapper = [
+      'import os, sys',
+      `sys.path.insert(0, ${JSON.stringify(dst)})`,
+      'import render',
+      'def deny(src, dst):',
+      "    raise OSError(13, 'injected rename failure')",
+      'os.rename = deny',
+      'render.main()',
+    ].join('\n');
+    const res = spawnSync('python3', ['-c', wrapper], { cwd: dst, encoding: 'utf-8' });
+    assert(res.status === 1, `expected exit 1, got ${res.status}\nstdout: ${res.stdout}\nstderr: ${res.stderr}`);
+    assert(
+      res.stdout.includes('HALT and report to the user: render publish failed') && res.stdout.includes('injected rename failure'),
+      `stdout missing the publish-failure HALT with the OS error.\nstdout: ${res.stdout}`,
+    );
+    assert(!res.stderr.includes('Traceback'), `renderer crashed with a traceback instead of HALTing:\n${res.stderr}`);
+    const preserved = fs.readFileSync(path.join(dir, '_bmad', 'render', 'bmad-dev-auto', 'step-01-clarify-and-route.md'), 'utf-8');
+    assert(preserved.includes('French'), 'previous render was not preserved after the failed swap');
+    const leftovers = fs.readdirSync(path.join(dir, '_bmad', 'render')).filter((f) => f !== 'bmad-dev-auto');
+    assert(leftovers.length === 0, `staging/trash leftovers after failed swap: ${leftovers.join(', ')}`);
+  });
+
+  test('lost deterministic race (equivalent content already published) succeeds', () => {
+    const { dir, skillDst: dst } = makeProject(GOOD_CONFIG);
+    const first = spawnSync('python3', [path.join(dst, 'render.py')], { cwd: dst, encoding: 'utf-8' });
+    assert(first.status === 0, `initial render failed: ${first.stdout}\n${first.stderr}`);
+    fs.writeFileSync(path.join(dir, '_bmad', 'config.toml'), GOOD_CONFIG.replace('"French"', '"Japanese"'), 'utf-8');
+    // First rename (out_dir -> trash) succeeds; the second is made to lose the
+    // race: a simulated concurrent winner publishes identical content at
+    // out_dir before the rename raises.
+    const wrapper = [
+      'import os, shutil, sys',
+      `sys.path.insert(0, ${JSON.stringify(dst)})`,
+      'import render',
+      'real_rename = os.rename',
+      'calls = []',
+      'def racy(src, dst):',
+      '    calls.append(1)',
+      '    if len(calls) == 1:',
+      '        real_rename(src, dst)',
+      '        return',
+      '    shutil.copytree(src, dst)',
+      "    raise OSError(16, 'injected race loss')",
+      'os.rename = racy',
+      'render.main()',
+    ].join('\n');
+    const res = spawnSync('python3', ['-c', wrapper], { cwd: dst, encoding: 'utf-8' });
+    assert(res.status === 0, `expected exit 0, got ${res.status}\nstdout: ${res.stdout}\nstderr: ${res.stderr}`);
+    assert(res.stdout.includes('read and follow'), `stdout missing the dispatch line.\nstdout: ${res.stdout}`);
+    const published = fs.readFileSync(path.join(dir, '_bmad', 'render', 'bmad-dev-auto', 'step-01-clarify-and-route.md'), 'utf-8');
+    assert(published.includes('Japanese'), 'published render does not hold the new content after the lost race');
+    const leftovers = fs.readdirSync(path.join(dir, '_bmad', 'render')).filter((f) => f !== 'bmad-dev-auto');
+    assert(leftovers.length === 0, `staging/trash leftovers after lost race: ${leftovers.join(', ')}`);
   });
 } finally {
   fs.rmSync(tmpDir, { recursive: true, force: true });

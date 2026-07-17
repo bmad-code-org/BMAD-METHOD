@@ -6,7 +6,7 @@ description: 'Implements any user intent, requirement, story, bug fix or change 
 Run this, substituting `{skill-root}` with the absolute path to this skill's base directory, without changing the cwd:
 
 ```bash
-uv run {skill-root}/render.py
+uv run "{skill-root}/render.py"
 ```
 
 - **On success:** follow the instruction it prints to stdout; ignore stderr.

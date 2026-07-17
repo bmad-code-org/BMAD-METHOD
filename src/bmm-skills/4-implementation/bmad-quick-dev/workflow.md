@@ -30,10 +30,8 @@ A specification should target a **single user-facing goal** within **900–1600 
 
 ## Conventions
 
-- Bare paths (e.g. `step-01-clarify-and-route.md`) resolve from the skill root.
-- `{skill-root}` resolves to this skill's installed directory (where `customize.toml` lives).
+- Every cross-file reference in this workflow is an absolute path — open it directly. Do not resolve anything relative to this file or to any skill directory.
 - `{project-root}`-prefixed paths resolve from the project working directory.
-- `{skill-name}` resolves to the skill directory's basename.
 
 ## On Activation
 
