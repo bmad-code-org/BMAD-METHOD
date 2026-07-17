@@ -48,10 +48,10 @@ warnings: [] # optional: machine-readable warnings for orchestration, e.g. overs
 
 ## Code Map
 
-<!-- Agent-populated during planning. Annotated paths prevent blind codebase searching. -->
+<!-- Agent-populated during planning: the distilled investigation map, so the spec carries what exploration found and the implementation handoff need only point here. Annotated paths prevent blind codebase searching. Entries may drill to symbol/line and carry reuse pointers ("mirror X at FILE:LINE") or read-only evidence, where they save the implementer a search. -->
 
 - `FILE` -- ROLE_OR_RELEVANCE
-- `FILE` -- ROLE_OR_RELEVANCE
+- `FILE:LINE` -- ROLE_OR_RELEVANCE; reuse pointer or READ-ONLY evidence when relevant
 
 ## Tasks & Acceptance
 
