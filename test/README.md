@@ -14,7 +14,6 @@ npm test
 # JavaScript installer and validator coverage
 npm run test:install
 npm run test:channels
-npm run test:urls
 npm run validate:refs
 npm run validate:skills
 
@@ -38,11 +37,6 @@ installation channels, package assembly, and related CLI behavior:
 
 - `test/test-installation-components.js`
 - `test/test-installer-channels.js`
-
-Validator and reference tests also remain JavaScript where they cover existing
-Node validator implementations:
-
-- `test/test-parse-source-urls.js`
 
 Rehype plugin tests remain JavaScript because the plugins under `website/src/`
 are JavaScript AST transforms:
