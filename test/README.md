@@ -14,8 +14,6 @@ npm test
 # JavaScript installer and validator coverage
 npm run test:install
 npm run test:channels
-npm run test:refs
-npm run test:skills
 npm run test:urls
 npm run validate:refs
 npm run validate:skills
@@ -44,9 +42,7 @@ installation channels, package assembly, and related CLI behavior:
 Validator and reference tests also remain JavaScript where they cover existing
 Node validator implementations:
 
-- `test/test-file-refs-csv.js`
 - `test/test-parse-source-urls.js`
-- `test/test-validate-skills.js`
 
 Rehype plugin tests remain JavaScript because the plugins under `website/src/`
 are JavaScript AST transforms:
