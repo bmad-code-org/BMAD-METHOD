@@ -79,4 +79,4 @@ Emit each gap with the canonical fields plus this lens's extras:
 - `consumer` — the impacted consumer or site, named concretely with `file:line` (e.g. "the `createInvoice` mutation used by the billing dashboard at `billing/dashboard.ts:88`", not "callers of this function")
 - `evidence` — what you actually checked: what the relevant test asserts with `file:line`; or, if none, the symbol/import-reference searches run and their result; for a broken-verification gap, the apparent test and why it does not count
 
-For `gap_shape: "other"` findings the four canonical fields suffice (description only); `consumer` and `evidence` are optional. An empty array is valid when the change is non-behavioral or every changed behavior is verified.
+For `gap_shape: "other"` findings the four canonical fields suffice (description only); `consumer` and `evidence` are optional. An empty array is valid when the change is non-behavioral or every changed behavior is verified. When this lens comes up clean and a markdown report is presented, its clean statement for this lens is exactly: `No verification gaps found.`

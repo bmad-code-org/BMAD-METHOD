@@ -5,7 +5,7 @@ description: 'Multi-lens critical review — adversarial, edge-case, and verific
 
 # BMad Review
 
-Review content through independent lenses — each a distinct method and stance — and report findings in one canonical shape. Report what is real: zero findings is a valid outcome, never pad to look thorough.
+Review content through independent lenses — each a distinct method and stance — and report findings in one canonical shape. Report what is real — never pad to look thorough. Each lens sets its own stance toward zero findings: for most an empty result is valid; the adversarial lens treats it as suspicious.
 
 ## Inputs
 
