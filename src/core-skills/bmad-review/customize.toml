@@ -40,12 +40,14 @@ report_path = ""
 [[workflow.lenses]]
 code = "adversarial"
 name = "Adversarial"
+when = "always"
 instruction = "Load `references/lens-adversarial.md` from the skill root and follow it."
 
 [[workflow.lenses]]
-code = "edge-case"
+code = "edge-case-hunter"
 name = "Edge-Case Hunter"
-instruction = "Load `references/lens-edge-case.md` from the skill root and follow it."
+when = "always"
+instruction = "Load `references/lens-edge-case-hunter.md` from the skill root and follow it."
 
 [[workflow.lenses]]
 code = "verification-gap"
