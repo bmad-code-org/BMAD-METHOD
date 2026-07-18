@@ -3810,6 +3810,13 @@ async function runTests() {
       return false;
     };
 
+    // Stub the custom-module lookup: the real one scans the user-level cache
+    // (~/.bmad/cache/custom-modules) and refreshes every cached clone with
+    // network git fetches — real user state a test must never touch.
+    const { CustomModuleManager } = require('../tools/installer/modules/custom-module-manager');
+    const origFindSource51 = CustomModuleManager.prototype.findModuleSourceByCode;
+    CustomModuleManager.prototype.findModuleSourceByCode = async () => null;
+
     try {
       const inst51 = new Installer();
       inst51.findBmadDir = async () => ({ bmadDir: bmadDir51 });
@@ -3843,6 +3850,7 @@ async function runTests() {
     } finally {
       OfficialModules.prototype.loadExistingConfig = origLoadExistingConfig;
       OfficialModules.prototype.collectModuleConfigQuick = origCollectQuick;
+      CustomModuleManager.prototype.findModuleSourceByCode = origFindSource51;
       await fs.remove(root51).catch(() => {});
     }
   }
