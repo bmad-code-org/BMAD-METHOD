@@ -128,9 +128,18 @@ class OfficialModules {
       }
     }
 
-    // Add built-in standalone modules (each src/standalone-skills/<dir> holding
-    // a module.yaml — single-skill modules like bmad-brainstorming and bundle
-    // modules like bmad-analysis). Hidden ones are filtered by the picker later.
+    // Add built-in bmad-analysis bundle module (directly under src/bmad-analysis-skills)
+    const analysisPath = getSourcePath('bmad-analysis-skills');
+    if (await fs.pathExists(analysisPath)) {
+      const analysisInfo = await this.getModuleInfo(analysisPath, 'bmad-analysis', 'src/bmad-analysis-skills');
+      if (analysisInfo) {
+        modules.push(analysisInfo);
+      }
+    }
+
+    // Add built-in standalone skill modules (each src/standalone-skills/<dir>
+    // holding a module.yaml — single-skill atom modules like bmad-brainstorming).
+    // Hidden ones are filtered by the picker later.
     for (const standalone of await this._listStandaloneModules()) {
       const info = await this.getModuleInfo(standalone.path, standalone.code, standalone.source);
       if (info) {
@@ -142,11 +151,11 @@ class OfficialModules {
   }
 
   /**
-   * Enumerate built-in standalone modules under src/standalone-skills/.
-   * Each direct child directory that contains a module.yaml is a module; its
-   * code comes from module.yaml (falling back to the directory name). This is
-   * a filesystem-only scan — no network — so it's safe to call anywhere,
-   * including during dependency resolution.
+   * Enumerate built-in standalone skill modules under src/standalone-skills/.
+   * Each direct child directory that contains a module.yaml is a single-skill
+   * atom module; its code comes from module.yaml (falling back to the
+   * directory name). This is a filesystem-only scan — no network — so it's
+   * safe to call anywhere, including during dependency resolution.
    * @returns {Promise<Array<{code: string, path: string, source: string}>>}
    */
   async _listStandaloneModules() {
@@ -355,7 +364,15 @@ class OfficialModules {
       }
     }
 
-    // Check built-in standalone modules (src/standalone-skills/<dir>/module.yaml).
+    // Check for built-in bmad-analysis bundle module (directly under src/bmad-analysis-skills)
+    if (moduleCode === 'bmad-analysis') {
+      const analysisPath = getSourcePath('bmad-analysis-skills');
+      if (await fs.pathExists(analysisPath)) {
+        return analysisPath;
+      }
+    }
+
+    // Check built-in standalone skill modules (src/standalone-skills/<dir>/module.yaml).
     // Matched by the `code` declared in module.yaml, not the directory name.
     for (const standalone of await this._listStandaloneModules()) {
       if (standalone.code === moduleCode) {

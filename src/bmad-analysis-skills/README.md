@@ -1,6 +1,6 @@
 # BMad Analysis
 
-A bundle module. It ships no skills of its own — selecting it in the installer pulls in three standalone thinking skills via the `dependencies` list in `module.yaml`:
+A module, at the same level as `core` and `bmm`. It ships no skills of its own — selecting it in the installer pulls in three standalone thinking skills via the `dependencies` list in `module.yaml`, the same way `bmm` declares its own standalone-skill dependencies:
 
 - **bmad-brainstorming** — diverge and generate ideas with facilitated techniques
 - **bmad-forge-idea** — pressure-test an idea until it hardens, proves out, or dies cheaply

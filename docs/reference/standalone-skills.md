@@ -46,17 +46,20 @@ Each skill is documented in [Core Tools](./core-tools.md#standalone-thinking-ski
 
 ## Source layout
 
-In the BMad Method repository, standalone skill modules live under `src/standalone-skills/`:
+In the BMad Method repository, standalone skill modules live under `src/standalone-skills/`. BMad Analysis is a module (like `core` and `bmm`), so it lives at the same level as the other module folders:
 
 ```text
-src/standalone-skills/
-├── bmad-analysis/            # bundle: module.yaml (dependencies only) + module-help.csv
-├── bmad-brainstorming/       # hidden single-skill module
-│   ├── module.yaml
-│   ├── module-help.csv
-│   └── bmad-brainstorming/   # the skill itself
-├── bmad-forge-idea/
-└── bmad-party-mode/
+src/
+├── core-skills/              # the core module
+├── bmm-skills/               # the BMad Method module
+├── bmad-analysis-skills/     # the BMad Analysis module (bundle: module.yaml with dependencies only)
+└── standalone-skills/
+    ├── bmad-brainstorming/   # hidden single-skill module
+    │   ├── module.yaml
+    │   ├── module-help.csv
+    │   └── bmad-brainstorming/   # the skill itself
+    ├── bmad-forge-idea/
+    └── bmad-party-mode/
 ```
 
 Each standalone module reads the central BMad configuration (user name, communication language, output folder) from the shared four-layer TOML merge — none of them asks its own install questions.
