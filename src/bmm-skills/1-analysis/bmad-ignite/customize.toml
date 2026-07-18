@@ -1,0 +1,50 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# Workflow customization surface for bmad-ignite.
+#
+# Override files (not edited here):
+#   {project-root}/_bmad/custom/bmad-ignite.toml         (team)
+#   {project-root}/_bmad/custom/bmad-ignite.user.toml    (personal)
+#
+# Merge rules:
+# - Strings replace the default.
+# - Lists append to the default list.
+# - Tables merge key by key.
+
+[workflow]
+
+# Steps to run before the standard activation (config load, greet).
+activation_steps_prepend = []
+
+# Steps to run after greet but before step 01.
+activation_steps_append = []
+
+# Persistent facts the workflow keeps in mind for the whole run.
+# Each entry is a literal sentence, a `skill:`-prefixed skill to consult,
+# or a `file:`-prefixed path/glob whose contents are loaded as facts.
+persistent_facts = []
+
+# Executed when the workflow completes (after handoff is presented).
+# Accepts a string scalar (single instruction) or an array executed in order.
+on_complete = ""
+
+# --- Starter template discovery -------------------------------------------
+#
+# Templates are markdown manifest files: frontmatter carries the machine
+# fields (id, label, stack, best_for, requires, scaffold, verify_*), the body
+# carries the agent playbook (## Environment, ## Bootstrap, ## Agent Notes).
+# See the built-in manifests in this skill's templates/ directory for the
+# format, and the Ignite docs for authoring and sharing guidance.
+#
+# Step 02 scans these directories in order for *.md manifests. On duplicate
+# `id`, the later source wins — so a team manifest in _bmad/custom/
+# ignite-templates/ with a built-in's id replaces that built-in, and a new
+# id appends to the menu. Community templates are just manifest files:
+# drop one in the custom directory, or ship a repo with bmad-template.md
+# at its root and hand ignite the URL.
+#
+# Overrides append to this list (e.g. an org-wide templates directory).
+template_paths = [
+  "{skill-root}/templates",
+  "{project-root}/_bmad/custom/ignite-templates",
+]

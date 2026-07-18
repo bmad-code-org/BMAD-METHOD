@@ -42,6 +42,7 @@
         "name": "Brian (BMad) Madison"
       },
       "skills": [
+        "./src/bmm-skills/1-analysis/bmad-ignite",
         "./src/bmm-skills/1-analysis/bmad-product-brief",
         "./src/bmm-skills/1-analysis/bmad-prfaq",
         "./src/bmm-skills/1-analysis/bmad-agent-analyst",
