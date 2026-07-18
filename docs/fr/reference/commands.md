@@ -120,7 +120,7 @@ bmad-help Quelles sont mes options pour le design UX ?
 
 **Autres tâches et outils principaux**
 
-Le module principal inclut 5 outils intégrés — aide, revues, raffinement et personnalisation — et le pack optionnel BMad Analysis ajoute les compétences de réflexion autonomes (brainstorming, forge idea, party mode). Consultez [Outils principaux](./core-tools.md) pour la référence complète.
+Le module principal inclut 8 outils intégrés — aide, revues, raffinement, personnalisation et les compétences de réflexion (brainstorming, forge idea, party mode). Consultez [Outils principaux](./core-tools.md) pour la référence complète.
 
 ## Convention de nommage
 

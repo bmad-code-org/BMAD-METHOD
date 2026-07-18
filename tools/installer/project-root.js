@@ -68,9 +68,6 @@ function getModulePath(moduleName, ...segments) {
   if (moduleName === 'bmm') {
     return getSourcePath('bmm-skills', ...segments);
   }
-  if (moduleName === 'bmad-analysis') {
-    return getSourcePath('bmad-analysis-skills', ...segments);
-  }
   return getSourcePath('modules', moduleName, ...segments);
 }
 
@@ -102,27 +99,9 @@ function getExternalModuleCachePath(moduleName, ...segments) {
  * @param {string} moduleName
  * @returns {Promise<string|null>} Absolute path to module.yaml, or null if not found.
  */
-/**
- * True when the module ships inside this package: core, bmm, bmad-analysis
- * (via getModulePath), or a standalone skill module under src/standalone-skills/.
- * Filesystem-only — safe to call during manifest writing.
- * @param {string} moduleName
- * @returns {Promise<boolean>}
- */
-async function isBuiltInModule(moduleName) {
-  if (await fs.pathExists(getModulePath(moduleName, 'module.yaml'))) return true;
-  return fs.pathExists(getSourcePath('standalone-skills', moduleName, 'module.yaml'));
-}
-
 async function resolveInstalledModuleYaml(moduleName) {
   const builtIn = path.join(getModulePath(moduleName), 'module.yaml');
   if (await fs.pathExists(builtIn)) return builtIn;
-
-  // Built-in standalone modules live under src/standalone-skills/<code>/module.yaml.
-  // The installed module dir omits module.yaml (copyModuleWithFiltering strips it),
-  // so resolve back to source by directory name (which matches the module code).
-  const standalone = getSourcePath('standalone-skills', moduleName, 'module.yaml');
-  if (await fs.pathExists(standalone)) return standalone;
 
   // Collect every module.yaml under a root using the standard candidate paths.
   // Url-source repos can host multiple plugins (discovery mode), so we need all
@@ -238,7 +217,6 @@ async function resolveInstalledModuleYaml(moduleName) {
 module.exports = {
   getProjectRoot,
   getSourcePath,
-  isBuiltInModule,
   getModulePath,
   getExternalModuleCachePath,
   resolveInstalledModuleYaml,

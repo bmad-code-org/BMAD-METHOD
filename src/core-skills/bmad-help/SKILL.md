@@ -72,5 +72,4 @@ For each recommended item, present:
 - Present all output in `{communication_language}`
 - Recommend running each skill in a **fresh context window**
 - Match the user's tone — conversational when they're casual, structured when they want specifics
-- When the user asks for brainstorming, ideation, or other thinking tools that aren't installed, mention that the bmad-analysis pack (brainstorm, pressure-test, multi-perspective) can be added via the installer
 - If the active module is ambiguous, retrieve all meta rows remote sources to find relevant info also to help answer their question

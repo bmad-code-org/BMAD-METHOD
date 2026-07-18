@@ -138,8 +138,8 @@ Create it manually at `_bmad-output/project-context.md` or generate it after arc
 
 All workflows in this phase are optional. [**Not sure which to use?**](../explanation/analysis-phase.md)
 
-- **brainstorming** (`bmad-brainstorming`) — Guided ideation _(installs with the BMad Analysis module)_
-- **forge-idea** (`bmad-forge-idea`) — Pressure-test an idea until it hardens or dies cheaply _(installs with the BMad Analysis module)_
+- **brainstorming** (`bmad-brainstorming`) — Guided ideation
+- **forge-idea** (`bmad-forge-idea`) — Pressure-test an idea until it hardens or dies cheaply
 - **research** (`bmad-market-research` / `bmad-domain-research` / `bmad-technical-research`) — Market, domain, and technical research
 - **product-brief** (`bmad-product-brief`) — Recommended foundation document when your concept is clear
 - **prfaq** (`bmad-prfaq`) — Working Backwards challenge to stress-test your product concept customer-first

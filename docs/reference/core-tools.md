@@ -1,11 +1,11 @@
 ---
 title: Core Tools
-description: Reference for the core module's built-in skills, plus the standalone thinking skills and the BMad Analysis pack.
+description: Reference for the core module's built-in skills.
 sidebar:
   order: 3
 ---
 
-Every BMad installation includes the **core module** — a small set of skills that work across all projects, all modules, and all phases. This page covers those five core skills, plus the **standalone thinking skills** (brainstorming, forge idea, party mode) that install separately as their own modules — most easily via the **BMad Analysis** pack.
+Every BMad installation includes the **core module** — a small set of skills that work across all projects, all modules, and all phases. This page covers those eight core skills: the five kernel tools plus the three **thinking skills** (brainstorming, forge idea, party mode).
 
 :::tip[Quick Path]
 Run any tool by typing its skill name (e.g., `bmad-help`) in your IDE. No agent session required.
@@ -23,7 +23,7 @@ Run any tool by typing its skill name (e.g., `bmad-help`) in your IDE. No agent 
 | [`bmad-review`](#bmad-review) | Multi-lens critical review — adversarial, edge-case, and verification-gap |
 | [`bmad-customize`](#bmad-customize) | Create and verify BMad customization overrides |
 
-**Standalone thinking skills (installed via the [BMad Analysis pack](./standalone-skills.md) or individually):**
+**Thinking skills:**
 
 | Tool | Purpose |
 | --- | --- |
@@ -167,9 +167,9 @@ Code Review workflows in other modules run these lenses automatically. Custom le
 
 For a detailed guide on customizing BMad, see [How to Customize BMad](../how-to/customize-bmad.md).
 
-## Standalone Thinking Skills
+## Thinking Skills
 
-The three skills below are not part of the core module. Each is its own single-skill module, hidden from the installer picker, and arrives either through the visible **BMad Analysis** pack or when another module declares it as a dependency. See [Standalone Skills & Module Dependencies](./standalone-skills.md) for how that works.
+The three skills below round out the core module — general-purpose thinking tools that any phase or module can lean on.
 
 ### bmad-brainstorming
 

@@ -28,7 +28,7 @@ None. The forge runs in plain conversation. Installed agents and a configured pe
 
 ### 1. Invoke the skill
 
-Type `bmad-forge-idea` in your IDE, or say "forge an idea" or "pressure-test this." Name the idea in the same message or wait for the first question. If the skill isn't installed, select the **BMad Analysis** module in the installer — it brings in `bmad-forge-idea` along with `bmad-brainstorming` and `bmad-party-mode`.
+Type `bmad-forge-idea` in your IDE, or say "forge an idea" or "pressure-test this." Name the idea in the same message or wait for the first question.
 
 ### 2. State your goal
 

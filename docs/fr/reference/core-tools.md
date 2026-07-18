@@ -1,11 +1,11 @@
 ---
 title: Outils Principaux
-description: Référence des compétences intégrées du module principal, plus les compétences de réflexion autonomes et le pack BMad Analysis.
+description: Référence des compétences intégrées du module principal.
 sidebar:
   order: 3
 ---
 
-Chaque installation BMad comprend le **module principal** — un petit ensemble de compétences qui fonctionnent dans tous les projets, tous les modules et toutes les phases. Cette page couvre ces cinq compétences principales, ainsi que les **compétences de réflexion autonomes** (brainstorming, forge idea, party mode) qui s’installent séparément en tant que modules à part entière — le plus simplement via le pack **BMad Analysis**.
+Chaque installation BMad comprend le **module principal** — un petit ensemble de compétences qui fonctionnent dans tous les projets, tous les modules et toutes les phases. Cette page couvre ces huit compétences principales : les cinq outils du noyau plus les trois **compétences de réflexion** (brainstorming, forge idea, party mode).
 
 :::tip[Raccourci Rapide]
 Exécutez n’importe quel outil en tapant son nom de compétence (par ex., `bmad-help`) dans votre IDE. Aucune session d’agent requise.
@@ -23,7 +23,7 @@ Exécutez n’importe quel outil en tapant son nom de compétence (par ex., `bma
 | [`bmad-review`](#bmad-review) | Revue critique multi-perspectives — contradictoire, cas limites et lacunes de vérification |
 | [`bmad-customize`](#bmad-customize) | Créer et vérifier des personnalisations BMad |
 
-**Compétences de réflexion autonomes (installées via le [pack BMad Analysis](../../reference/standalone-skills.md) ou individuellement) :**
+**Compétences de réflexion :**
 
 | Outil | Objectif |
 | --- | --- |
@@ -167,9 +167,9 @@ Les workflows de Code Review d’autres modules exécutent ces perspectives auto
 
 Pour un guide détaillé sur la personnalisation de BMad, consultez [Comment personnaliser BMad](../how-to/customize-bmad.md).
 
-## Compétences de Réflexion Autonomes
+## Compétences de Réflexion
 
-Les trois compétences ci-dessous ne font pas partie du module principal. Chacune est son propre module mono-compétence, masqué dans le sélecteur de l’installateur, et arrive soit via le pack visible **BMad Analysis**, soit lorsqu’un autre module la déclare comme dépendance. Voir [Compétences Autonomes et Dépendances de Modules](../../reference/standalone-skills.md) pour le fonctionnement.
+Les trois compétences ci-dessous complètent le module principal — des outils de réflexion généralistes sur lesquels toute phase ou tout module peut s’appuyer.
 
 ### bmad-brainstorming
 

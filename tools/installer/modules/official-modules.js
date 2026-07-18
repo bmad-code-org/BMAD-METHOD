@@ -128,142 +128,7 @@ class OfficialModules {
       }
     }
 
-    // Add built-in bmad-analysis bundle module (directly under src/bmad-analysis-skills)
-    const analysisPath = getSourcePath('bmad-analysis-skills');
-    if (await fs.pathExists(analysisPath)) {
-      const analysisInfo = await this.getModuleInfo(analysisPath, 'bmad-analysis', 'src/bmad-analysis-skills');
-      if (analysisInfo) {
-        modules.push(analysisInfo);
-      }
-    }
-
-    // Add built-in standalone skill modules (each src/standalone-skills/<dir>
-    // holding a module.yaml — single-skill atom modules like bmad-brainstorming).
-    // Hidden ones are filtered by the picker later.
-    for (const standalone of await this._listStandaloneModules()) {
-      const info = await this.getModuleInfo(standalone.path, standalone.code, standalone.source);
-      if (info) {
-        modules.push(info);
-      }
-    }
-
     return { modules };
-  }
-
-  /**
-   * Enumerate built-in standalone skill modules under src/standalone-skills/.
-   * Each direct child directory that contains a module.yaml is a single-skill
-   * atom module; its code comes from module.yaml (falling back to the
-   * directory name). This is a filesystem-only scan — no network — so it's
-   * safe to call anywhere, including during dependency resolution.
-   * @returns {Promise<Array<{code: string, path: string, source: string}>>}
-   */
-  async _listStandaloneModules() {
-    const standaloneRoot = getSourcePath('standalone-skills');
-    const results = [];
-    if (!(await fs.pathExists(standaloneRoot))) {
-      return results;
-    }
-
-    let entries;
-    try {
-      entries = await fs.readdir(standaloneRoot, { withFileTypes: true });
-    } catch {
-      return results;
-    }
-
-    for (const entry of entries) {
-      if (!entry.isDirectory()) continue;
-      const modulePath = path.join(standaloneRoot, entry.name);
-      const moduleYamlPath = path.join(modulePath, 'module.yaml');
-      if (!(await fs.pathExists(moduleYamlPath))) continue;
-
-      let code = entry.name;
-      try {
-        const parsed = yaml.parse(await fs.readFile(moduleYamlPath, 'utf8'));
-        if (parsed && typeof parsed.code === 'string' && parsed.code.trim()) {
-          code = parsed.code.trim();
-        }
-      } catch {
-        // Malformed module.yaml — fall back to the directory name as the code.
-      }
-
-      results.push({ code, path: modulePath, source: `src/standalone-skills/${entry.name}` });
-    }
-
-    return results;
-  }
-
-  /**
-   * Recursively expand a selected-module list with the `dependencies` each
-   * module declares in its module.yaml (e.g. the bmad-analysis bundle pulls in
-   * its standalone atoms). Only locally-resolvable modules (core, bmm, and
-   * standalone modules) carry a readable dependency list; registry/custom
-   * modules resolve their own dependencies at install time and are not
-   * recursed into. Unknown dependency codes are warned and skipped — never
-   * fatal. Cycle-guarded via a visited set and depth-capped. The original
-   * order is preserved; resolved dependencies are appended in discovery order,
-   * deduped, so a force-unshifted 'core' stays first.
-   * @param {string[]} selectedModules
-   * @returns {Promise<string[]>} Expanded, deduped module list
-   */
-  async resolveModuleDependencies(selectedModules) {
-    const MAX_DEPTH = 10;
-
-    // Network-free map of locally-known modules keyed by code. Recursion
-    // follows only these edges because their module.yaml is on disk.
-    const localInfos = (await this.listAvailable()).modules || [];
-    const localByCode = new Map();
-    for (const info of localInfos) {
-      localByCode.set(info.id, info);
-    }
-
-    // Registry codes are valid install targets (so a local module may depend on
-    // one), but we don't recurse into them. Metadata read is network-free.
-    const registryCodes = new Set();
-    try {
-      const registryModules = await this.externalModuleManager.listAvailable();
-      for (const mod of registryModules) {
-        if (mod && mod.code) registryCodes.add(mod.code);
-      }
-    } catch {
-      // Registry unavailable (offline) — proceed with local knowledge only.
-    }
-
-    const result = [...selectedModules];
-    const inList = new Set(result);
-    const visited = new Set();
-
-    const visit = async (code, depth) => {
-      if (visited.has(code)) return;
-      visited.add(code);
-      if (depth > MAX_DEPTH) {
-        await prompts.log.warn(`Module dependency resolution hit the depth cap (${MAX_DEPTH}) at '${code}'; stopping recursion.`);
-        return;
-      }
-
-      const info = localByCode.get(code);
-      const deps = info && Array.isArray(info.dependencies) ? info.dependencies : [];
-      for (const dep of deps) {
-        if (typeof dep !== 'string' || !dep.trim()) continue;
-        const depCode = dep.trim();
-        if (!localByCode.has(depCode) && !registryCodes.has(depCode)) {
-          await prompts.log.warn(`Module '${code}' declares dependency '${depCode}', which is not a known module — skipping.`);
-          continue;
-        }
-        if (!inList.has(depCode)) {
-          inList.add(depCode);
-          result.push(depCode);
-        }
-        await visit(depCode, depth + 1);
-      }
-    };
-
-    for (const code of selectedModules) {
-      await visit(code, 0);
-    }
-
-    return result;
   }
 
   /**
@@ -291,7 +156,6 @@ class OfficialModules {
           source: sourceDescription,
           dependencies: [],
           defaultSelected: false,
-          hidden: false,
         };
       }
       return null;
@@ -324,9 +188,6 @@ class OfficialModules {
       moduleInfo.version = config.version || moduleInfo.version;
       moduleInfo.dependencies = config.dependencies || [];
       moduleInfo.defaultSelected = config.default_selected === undefined ? false : config.default_selected;
-      // Hidden modules install like any other but are filtered out of the
-      // interactive picker unless already installed (see UI._selectOfficialModules).
-      moduleInfo.hidden = config.hidden === true;
     } catch (error) {
       await prompts.log.warn(`Failed to read config for ${defaultName}: ${error.message}`);
     }
@@ -361,22 +222,6 @@ class OfficialModules {
       const bmmPath = getSourcePath('bmm-skills');
       if (await fs.pathExists(bmmPath)) {
         return bmmPath;
-      }
-    }
-
-    // Check for built-in bmad-analysis bundle module (directly under src/bmad-analysis-skills)
-    if (moduleCode === 'bmad-analysis') {
-      const analysisPath = getSourcePath('bmad-analysis-skills');
-      if (await fs.pathExists(analysisPath)) {
-        return analysisPath;
-      }
-    }
-
-    // Check built-in standalone skill modules (src/standalone-skills/<dir>/module.yaml).
-    // Matched by the `code` declared in module.yaml, not the directory name.
-    for (const standalone of await this._listStandaloneModules()) {
-      if (standalone.code === moduleCode) {
-        return standalone.path;
       }
     }
 

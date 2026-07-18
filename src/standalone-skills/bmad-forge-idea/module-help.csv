@@ -1,2 +1,0 @@
-module,skill,display-name,menu-code,description,action,args,phase,preceded-by,followed-by,required,output-location,outputs
-Forge Idea,bmad-forge-idea,Forge Idea,FI,"Use to pressure-test and harden an idea — software, business, creative, research, or life — until it proves out, hardens into something buildable, or dies cheaply. Persona-driven interrogation; optional handoff to bmad-spec or bmad-quick-dev.",,,anytime,,,false,{output_folder}/forge,refined-idea brief (optional)

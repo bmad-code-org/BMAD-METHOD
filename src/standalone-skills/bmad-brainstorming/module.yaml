@@ -1,8 +1,0 @@
-code: bmad-brainstorming
-name: "Brainstorming"
-description: "Interactive brainstorming facilitator with a curated technique library"
-hidden: true # Not shown in the installer picker — installed via another module's dependencies or explicit selection
-
-
-# No config questions — core central config (user_name, communication_language,
-# document_output_language, output_folder, project_name) covers this module.

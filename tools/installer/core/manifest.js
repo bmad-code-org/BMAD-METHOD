@@ -5,7 +5,6 @@ const { promisify } = require('node:util');
 const fs = require('../fs-native');
 const crypto = require('node:crypto');
 const { resolveModuleVersion } = require('../modules/version-resolver');
-const { isBuiltInModule, getProjectRoot } = require('../project-root');
 const prompts = require('../prompts');
 
 const execFileAsync = promisify(execFile);
@@ -37,17 +36,16 @@ class Manifest {
     const moduleDetails = [];
     if (data.modules && Array.isArray(data.modules)) {
       for (const moduleName of data.modules) {
-        // Built-in modules (core, bmm, bmad-analysis, standalone skill modules)
-        // ship with this package and use the BMad version
-        const builtIn = await isBuiltInModule(moduleName);
+        // Core and BMM modules use the BMad version
+        const moduleVersion = moduleName === 'core' || moduleName === 'bmm' ? bmadVersion : null;
         const now = data.installDate || new Date().toISOString();
 
         moduleDetails.push({
           name: moduleName,
-          version: builtIn ? bmadVersion : null,
+          version: moduleVersion,
           installDate: now,
           lastUpdated: now,
-          source: builtIn ? 'built-in' : 'unknown',
+          source: moduleName === 'core' || moduleName === 'bmm' ? 'built-in' : 'unknown',
         });
       }
     }
@@ -282,10 +280,10 @@ class Manifest {
    */
   async getModuleVersionInfo(moduleName, bmadDir, moduleSourcePath = null) {
     // Resolve source type first, then read version with the correct path context
-    if (await isBuiltInModule(moduleName)) {
+    if (['core', 'bmm'].includes(moduleName)) {
       const versionInfo = await resolveModuleVersion(moduleName, { moduleSourcePath });
       return {
-        version: versionInfo.version || require(path.join(getProjectRoot(), 'package.json')).version,
+        version: versionInfo.version,
         source: 'built-in',
         npmPackage: null,
         repoUrl: null,

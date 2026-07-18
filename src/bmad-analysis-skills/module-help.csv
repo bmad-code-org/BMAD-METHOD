@@ -1,2 +1,0 @@
-module,skill,display-name,menu-code,description,action,args,phase,preceded-by,followed-by,required,output-location,outputs
-BMad Analysis,_meta,,,"The BMad thinking pack — a bundle with no skills of its own. Installing it pulls in three standalone skills: bmad-brainstorming (diverge and generate ideas), bmad-forge-idea (pressure-test an idea until it hardens or dies cheaply), and bmad-party-mode (multi-perspective agent roundtable). Each skill documents itself in its own module.",,,,,,false,,

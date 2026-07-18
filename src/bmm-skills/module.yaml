@@ -3,12 +3,6 @@ name: "BMad Method"
 description: "Full-lifecycle AI agile development: analysis, planning, architecture, implementation"
 default_selected: true # This module will be selected by default for new installations
 
-# Standalone skill modules installed with bmm — bmm skills offer these at checkpoints.
-dependencies:
-  - bmad-brainstorming
-  - bmad-party-mode
-  - bmad-forge-idea
-
 # Variables from Core Config inserted:
 ## user_name
 ## project_name

@@ -120,7 +120,7 @@ bmad-help What are my options for UX design?
 
 **Các task và tool lõi khác**
 
-Module lõi có 5 công cụ tích hợp sẵn — trợ giúp, review, tinh luyện và tùy biến — và gói BMad Analysis tùy chọn bổ sung các skill tư duy độc lập (brainstorming, forge idea, party mode). Xem [Core Tools](./core-tools.md) để có tài liệu tham chiếu đầy đủ.
+Module lõi có 8 công cụ tích hợp sẵn — trợ giúp, review, tinh luyện, tùy biến và các skill tư duy (brainstorming, forge idea, party mode). Xem [Core Tools](./core-tools.md) để có tài liệu tham chiếu đầy đủ.
 
 ## Quy Ước Đặt Tên
 

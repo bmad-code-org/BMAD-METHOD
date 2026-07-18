@@ -17,7 +17,7 @@
       "author": {
         "name": "Brian (BMad) Madison"
       },
-      "skills": ["./src/standalone-skills/bmad-brainstorming/bmad-brainstorming"]
+      "skills": ["./src/core-skills/bmad-brainstorming"]
     },
     {
       "name": "bmad-party-mode",
@@ -27,7 +27,7 @@
       "author": {
         "name": "Brian (BMad) Madison"
       },
-      "skills": ["./src/standalone-skills/bmad-party-mode/bmad-party-mode"]
+      "skills": ["./src/core-skills/bmad-party-mode"]
     },
     {
       "name": "bmad-forge-idea",
@@ -37,7 +37,7 @@
       "author": {
         "name": "Brian (BMad) Madison"
       },
-      "skills": ["./src/standalone-skills/bmad-forge-idea/bmad-forge-idea"]
+      "skills": ["./src/core-skills/bmad-forge-idea"]
     },
     {
       "name": "bmad-analysis",
@@ -48,9 +48,9 @@
         "name": "Brian (BMad) Madison"
       },
       "skills": [
-        "./src/standalone-skills/bmad-brainstorming/bmad-brainstorming",
-        "./src/standalone-skills/bmad-party-mode/bmad-party-mode",
-        "./src/standalone-skills/bmad-forge-idea/bmad-forge-idea"
+        "./src/core-skills/bmad-brainstorming",
+        "./src/core-skills/bmad-party-mode",
+        "./src/core-skills/bmad-forge-idea"
       ]
     },
     {

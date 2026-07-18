@@ -120,7 +120,7 @@ bmad-help What are my options for UX design?
 
 **Další základní tasks a tools**
 
-Základní modul zahrnuje 5 vestavěných nástrojů — nápovědu, revize, zdokonalování a přizpůsobení — a volitelný balíček BMad Analysis přidává samostatné myšlenkové skills (brainstorming, forge idea, party mode). Viz [Základní nástroje](./core-tools.md) pro kompletní referenci.
+Základní modul zahrnuje 8 vestavěných nástrojů — nápovědu, revize, zdokonalování, přizpůsobení a myšlenkové skills (brainstorming, forge idea, party mode). Viz [Základní nástroje](./core-tools.md) pro kompletní referenci.
 
 ## Konvence pojmenování
 

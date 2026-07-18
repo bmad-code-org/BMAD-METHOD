@@ -1,11 +1,11 @@
 ---
 title: Základní nástroje
-description: Reference vestavěných skills základního modulu, plus samostatné myšlenkové skills a balíček BMad Analysis.
+description: Reference vestavěných skills základního modulu.
 sidebar:
   order: 3
 ---
 
-Každá instalace BMad zahrnuje **základní modul** — malou sadu skills, které fungují napříč všemi projekty, všemi moduly a všemi fázemi. Tato stránka pokrývá těchto pět základních skills, plus **samostatné myšlenkové skills** (brainstorming, forge idea, party mode), které se instalují zvlášť jako vlastní moduly — nejsnadněji přes balíček **BMad Analysis**.
+Každá instalace BMad zahrnuje **základní modul** — malou sadu skills, které fungují napříč všemi projekty, všemi moduly a všemi fázemi. Tato stránka pokrývá těchto osm základních skills: pět jádrových nástrojů plus tři **myšlenkové skills** (brainstorming, forge idea, party mode).
 
 :::tip[Rychlá cesta]
 Spusťte jakýkoli nástroj zadáním jeho názvu skillu (např. `bmad-help`) ve vašem IDE. Nevyžaduje relaci agenta.
@@ -23,7 +23,7 @@ Spusťte jakýkoli nástroj zadáním jeho názvu skillu (např. `bmad-help`) ve
 | [`bmad-review`](#bmad-review) | Kritická revize z více perspektiv — adversariální, hraniční případy a mezery ve verifikaci |
 | [`bmad-customize`](#bmad-customize) | Vytváření a ověřování přizpůsobení BMad |
 
-**Samostatné myšlenkové skills (instalované přes [balíček BMad Analysis](../../reference/standalone-skills.md) nebo jednotlivě):**
+**Myšlenkové skills:**
 
 | Nástroj | Účel |
 | --- | --- |
@@ -161,9 +161,9 @@ Spusťte jakýkoli nástroj zadáním jeho názvu skillu (např. `bmad-help`) ve
 
 **Výstup:** TOML přepisové soubory pod `_bmad/custom/`. Podrobný návod viz [Jak přizpůsobit BMad](../how-to/customize-bmad.md)
 
-## Samostatné myšlenkové skills
+## Myšlenkové skills
 
-Tři skills níže nejsou součástí základního modulu. Každý je vlastním modulem s jediným skillem, skrytým ve výběru instalátoru, a dorazí buď přes viditelný balíček **BMad Analysis**, nebo když jej jiný modul deklaruje jako závislost. Jak to funguje, viz [Samostatné skills a závislosti modulů](../../reference/standalone-skills.md).
+Tři skills níže doplňují základní modul — obecné myšlenkové nástroje, o které se může opřít kterákoli fáze či modul.
 
 ### bmad-brainstorming
 

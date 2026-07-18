@@ -13,7 +13,7 @@ Run `bmad-forge-idea` and an exacting interrogator goes to work on your idea, on
 
 What you walk away with is sharper thinking. A distilled `forged-idea.md` is only ever one possible exit, and the session never herds you toward "shall we build it?"
 
-Forge Idea is a standalone skill module. It installs with the **BMad Analysis** pack (select `BMad Analysis` in the installer) or whenever another installed module depends on it — see [Standalone Skills & Module Dependencies](../reference/standalone-skills.md).
+Forge Idea is one of the core module's thinking skills, so it is present in every BMad installation.
 
 ## Why Pressure-Test Early
 

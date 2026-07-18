@@ -1,11 +1,11 @@
 ---
 title: "核心工具"
-description: 核心模块内置 skills 参考，以及独立思考类 skills 与 BMad Analysis 包。
+description: 核心模块内置 skills 参考。
 sidebar:
   order: 3
 ---
 
-每个 BMad 安装都包含 **核心模块** —— 一小组跨项目、跨模块、跨阶段通用的 skills。本页覆盖这 5 个核心 skills，以及作为独立模块单独安装的 **独立思考类 skills**（brainstorming、forge idea、party mode）—— 最简单的安装方式是选择 **BMad Analysis** 包。
+每个 BMad 安装都包含 **核心模块** —— 一小组跨项目、跨模块、跨阶段通用的 skills。本页覆盖这 8 个核心 skills：5 个内核工具，加上 3 个 **思考类 skills**（brainstorming、forge idea、party mode）。
 
 :::tip[快速入口]
 在 IDE 中直接输入工具 skill 名（例如 `bmad-help`）即可调用，无需先加载智能体。
@@ -23,7 +23,7 @@ sidebar:
 | [`bmad-review`](#bmad-review) | 多视角批判性审查 —— 对抗、边界条件与验证缺口 |
 | [`bmad-customize`](#bmad-customize) | 创建并验证 BMad 自定义覆盖 |
 
-**独立思考类 skills（通过 [BMad Analysis 包](../../reference/standalone-skills.md) 或单独安装）：**
+**思考类 skills：**
 
 | 工具 | 主要用途 |
 | --- | --- |
@@ -122,9 +122,9 @@ sidebar:
 **输入：** 用自然语言描述想要的自定义  
 **输出：** `_bmad/custom/` 下的 TOML 覆盖文件。详见[如何自定义 BMad](../how-to/customize-bmad.md)
 
-## 独立思考类 skills
+## 思考类 skills
 
-以下三个 skills 不属于核心模块。每个都是独立的单 skill 模块，在安装器中默认隐藏，通过可见的 **BMad Analysis** 包安装，或在其他模块声明依赖时自动带入。详见 [Standalone Skills 与模块依赖](../../reference/standalone-skills.md)。
+以下三个 skills 是核心模块的组成部分 —— 任何阶段、任何模块都可以借助的通用思考工具。
 
 ### bmad-brainstorming
 
