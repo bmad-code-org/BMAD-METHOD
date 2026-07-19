@@ -2,7 +2,7 @@
 title: "Party Mode"
 description: Collaboration multi-agents - regroupez tous vos agents IA dans une seule conversation
 sidebar:
-  order: 11
+  order: 10
 ---
 
 Regroupez tous vos agents IA dans une seule conversation.

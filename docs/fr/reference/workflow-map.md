@@ -49,6 +49,7 @@ Définissez ce qu’il faut construire et pour qui.
 |------------|--------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
 | `bmad-prd` | Créez, mettez à jour ou validez un PRD[^1] — découverte accompagnée, trois intentions en un seul skill | Création/Mise à jour : `prd.md`, `addendum.md`, `.memlog.md` ; Validation : `validation-report.html` + `.md` |
 | `bmad-ux`  | Concevez l’expérience utilisateur (lorsque l’UX compte)                                                | `DESIGN.md`, `EXPERIENCE.md`                                                                                      |
+| `bmad-spec` | Distillez toute intention (brief, PRD, transcription, notes) en un contrat `SPEC.md` succinct + fichiers compagnons — fige le QUOI avant le COMMENT | `SPEC.md` + compagnons sous `{output_folder}/specs/spec-{slug}/` |
 
 :::tip[Trois intentions en un seul skill]
 `bmad-prd` couvre l’intégralité du cycle de vie du PRD. Précisez votre intention lors de l’appel, sinon le skill vous la demandera :
@@ -68,7 +69,7 @@ Décidez comment le construire et décomposez le travail en stories.
 
 | Workflow                              | Objectif                                          | Livrable                        |
 |---------------------------------------|---------------------------------------------------|---------------------------------|
-| `bmad-create-architecture`            | Rendez explicites les décisions techniques        | `architecture.md` avec ADRs[^2] |
+| `bmad-architecture`            | Rendez explicites les décisions techniques        | `architecture.md` avec ADRs[^2] |
 | `bmad-create-epics-and-stories`       | Décomposez les exigences en tâches implémentables | Fichiers d’epic avec stories    |
 | `bmad-check-implementation-readiness` | Jalon de validation avant implémentation          | Décision OK / RÉSERVES / ÉCHEC  |
 
@@ -85,7 +86,6 @@ Construisez, une story à la fois. L’automatisation complète de la phase 4 ar
 | `bmad-correct-course`  | Gérez les changements significatifs en cours de sprint                               | Plan mis à jour ou réorientation |
 | `bmad-sprint-status`   | Suivez la progression du sprint et le statut des stories                             | Mise à jour du statut du sprint  |
 | `bmad-retrospective`   | Bilan après l’achèvement d’un epic                                                   | Leçons apprises                  |
-| `bmad-investigate`     | Analyse forensique avec conclusions pondérées par les preuves, adaptée au cas traité | `{slug}-investigation.md`        |
 
 ## Flux Rapide (Parcours Parallèle)
 

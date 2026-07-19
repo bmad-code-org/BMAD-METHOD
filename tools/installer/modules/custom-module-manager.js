@@ -3,12 +3,25 @@ const os = require('node:os');
 const path = require('node:path');
 const { execSync } = require('node:child_process');
 const prompts = require('../prompts');
+const { gitEnv } = require('./git-env');
 
 function quoteCustomRef(ref) {
   if (typeof ref !== 'string' || !/^[\w.\-+/]+$/.test(ref)) {
     throw new Error(`Unsafe ref name: ${JSON.stringify(ref)}`);
   }
   return `"${ref}"`;
+}
+
+function isLocalSourcePath(input) {
+  return (
+    input.startsWith('/') ||
+    input.startsWith('./') ||
+    input.startsWith('../') ||
+    input.startsWith('.\\') ||
+    input.startsWith('..\\') ||
+    input.startsWith('~') ||
+    path.win32.isAbsolute(input)
+  );
 }
 
 /**
@@ -83,13 +96,7 @@ class CustomModuleManager {
         // Avoid consuming the @ in `git@host:owner/repo` — `before` wouldn't end with a path separator
         // in that case. Require that the @ comes after the host/path, not inside the auth segment.
         // Rule: the @ is a version suffix only if `before` looks like a complete URL or local path.
-        const beforeLooksLikeRepo =
-          before.startsWith('/') ||
-          before.startsWith('./') ||
-          before.startsWith('../') ||
-          before.startsWith('~') ||
-          /^https?:\/\//i.test(before) ||
-          /^git@[^:]+:.+/.test(before);
+        const beforeLooksLikeRepo = isLocalSourcePath(before) || /^https?:\/\//i.test(before) || /^git@[^:]+:.+/.test(before);
         if (beforeLooksLikeRepo) {
           versionSuffix = candidate;
           trimmed = before;
@@ -97,8 +104,8 @@ class CustomModuleManager {
       }
     }
 
-    // Local path detection: starts with /, ./, ../, or ~
-    if (trimmed.startsWith('/') || trimmed.startsWith('./') || trimmed.startsWith('../') || trimmed.startsWith('~')) {
+    // Local path detection: POSIX, Windows, relative, or home-relative.
+    if (isLocalSourcePath(trimmed)) {
       if (versionSuffix) {
         return {
           type: 'local',
@@ -412,7 +419,7 @@ class CustomModuleManager {
         execSync('git fetch origin --depth 1', {
           cwd: repoCacheDir,
           stdio: ['ignore', 'pipe', 'pipe'],
-          env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+          env: gitEnv({ GIT_TERMINAL_PROMPT: '0' }),
         });
         if (effectiveVersion) {
           // Fetch the ref as either a tag or a branch — `origin <ref>` works
@@ -421,11 +428,12 @@ class CustomModuleManager {
           execSync(`git fetch --depth 1 origin ${quoteCustomRef(effectiveVersion)} --no-tags`, {
             cwd: repoCacheDir,
             stdio: ['ignore', 'pipe', 'pipe'],
-            env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+            env: gitEnv({ GIT_TERMINAL_PROMPT: '0' }),
           });
           execSync(`git checkout --quiet FETCH_HEAD`, {
             cwd: repoCacheDir,
             stdio: ['ignore', 'pipe', 'pipe'],
+            env: gitEnv(),
           });
         } else {
           // Resolve the default branch (origin/HEAD) and fetch it explicitly.
@@ -436,6 +444,7 @@ class CustomModuleManager {
             defaultBranch = execSync('git symbolic-ref refs/remotes/origin/HEAD --short', {
               cwd: repoCacheDir,
               stdio: 'pipe',
+              env: gitEnv(),
             })
               .toString()
               .trim()
@@ -446,11 +455,12 @@ class CustomModuleManager {
           execSync(`git fetch --depth 1 origin ${quoteCustomRef(defaultBranch)}`, {
             cwd: repoCacheDir,
             stdio: ['ignore', 'pipe', 'pipe'],
-            env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+            env: gitEnv({ GIT_TERMINAL_PROMPT: '0' }),
           });
           execSync(`git reset --hard origin/${quoteCustomRef(defaultBranch)}`, {
             cwd: repoCacheDir,
             stdio: ['ignore', 'pipe', 'pipe'],
+            env: gitEnv(),
           });
         }
         fetchSpinner.stop(`Updated ${displayName}`);
@@ -471,12 +481,12 @@ class CustomModuleManager {
         if (effectiveVersion) {
           execSync(`git clone --depth 1 --branch ${quoteCustomRef(effectiveVersion)} "${parsed.cloneUrl}" "${repoCacheDir}"`, {
             stdio: ['ignore', 'pipe', 'pipe'],
-            env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+            env: gitEnv({ GIT_TERMINAL_PROMPT: '0' }),
           });
         } else {
           execSync(`git clone --depth 1 "${parsed.cloneUrl}" "${repoCacheDir}"`, {
             stdio: ['ignore', 'pipe', 'pipe'],
-            env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+            env: gitEnv({ GIT_TERMINAL_PROMPT: '0' }),
           });
         }
         fetchSpinner.stop(`Cloned ${displayName}`);
@@ -490,7 +500,7 @@ class CustomModuleManager {
     // Record the resolved SHA for the manifest writer.
     let resolvedSha = null;
     try {
-      resolvedSha = execSync('git rev-parse HEAD', { cwd: repoCacheDir, stdio: 'pipe' }).toString().trim();
+      resolvedSha = execSync('git rev-parse HEAD', { cwd: repoCacheDir, stdio: 'pipe', env: gitEnv() }).toString().trim();
     } catch {
       // swallow — a non-git repo (local path) wouldn't reach here anyway
     }
@@ -502,6 +512,7 @@ class CustomModuleManager {
         const symbolic = execSync('git symbolic-ref --short refs/remotes/origin/HEAD', {
           cwd: repoCacheDir,
           stdio: 'pipe',
+          env: gitEnv(),
         })
           .toString()
           .trim();
@@ -552,6 +563,7 @@ class CustomModuleManager {
           cwd: repoCacheDir,
           stdio: ['ignore', 'pipe', 'pipe'],
           timeout: 120_000,
+          env: gitEnv(), // npm shells out to git for git-URL deps; keep hook GIT_* vars away from it
         });
         installSpinner.stop(`Installed dependencies for ${displayName}`);
       } catch (error_) {

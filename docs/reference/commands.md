@@ -95,12 +95,12 @@ Workflow skills run a structured, multi-step process without loading an agent pe
 | `bmad-prfaq` | [Working Backwards PRFAQ](../explanation/analysis-phase.md#prfaq-working-backwards) challenge to stress-test your product concept |
 | `bmad-prd` | Create, update, or validate a Product Requirements Document |
 | `bmad-ux` | Design user experience |
-| `bmad-create-architecture` | Design system architecture |
+| `bmad-architecture` | Design system architecture |
 | `bmad-create-epics-and-stories` | Create epics and stories |
 | `bmad-dev-story` | Implement a story |
 | `bmad-code-review` | Run a code review |
 | `bmad-quick-dev` | Implement a story or any other small intent — clarify, plan, implement, review, present |
-| `bmad-dev-auto` | One unattended development-loop iteration — small intent in, code out, no human interaction |
+| `bmad-dev-auto` | Run one unattended development-loop iteration — small intent in, code out, no human interaction |
 
 See [Workflow Map](./workflow-map.md) for the complete workflow reference organized by phase.
 
@@ -122,7 +122,7 @@ bmad-help What are my options for UX design?
 
 **Other Core Tasks and Tools**
 
-The core module includes 12 built-in tools — specs, reviews, brainstorming, customization, document management, and more. See [Core Tools](./core-tools.md) for the complete reference.
+The core module includes 8 built-in tools — help, reviews, refinement, customization, and the thinking skills (brainstorming, forge idea, party mode). See [Core Tools](./core-tools.md) for the complete reference.
 
 ## Naming Convention
 

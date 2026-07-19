@@ -222,6 +222,8 @@
   function checkedInvent(){ return inventBoxes.filter(function(b){ return b.checked; }); }
 
   function update(){
+    // rand can't exceed what the pool can supply — keep the counter honest with the draw
+    if (state.rand > randomPool().length){ state.rand = randomPool().length; }
     $('pickN').textContent = checkedTech().length;
     $('randN').textContent = state.rand;
     $('invN').textContent = state.inv;

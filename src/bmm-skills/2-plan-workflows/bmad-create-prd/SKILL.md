@@ -1,6 +1,6 @@
 ---
 name: bmad-create-prd
-description: 'DEPRECATED — consolidated into bmad-prd create intent - this skill will be removed in v7 in favor of `bmad-prd`.'
+description: 'Deprecated — forwards to bmad-prd (create intent).'
 ---
 
 # DEPRECATED — forwards to bmad-prd (create intent)
@@ -15,12 +15,12 @@ This skill was consolidated into `bmad-prd`. It is retained as a thin compatibil
 
 3. Emit a deprecation notice to the user in `{communication_language}`:
 
-   > Notice: `bmad-create-prd` is deprecated and will be removed in a future release. It now forwards to `bmad-prd` with create intent. To silence this notice and access the full new customization surface (`prd_template`, `validation_checklist`, `doc_standards`, `external_sources`, `external_handoffs`, `output_dir`, `output_folder_name`), migrate `_bmad/custom/bmad-create-prd.toml` to `_bmad/custom/bmad-prd.toml` and invoke `bmad-prd` directly next time. Customization fields that were in this version still remain in the new version and will be respected if present in `_bmad/custom/bmad-prd.toml`, but the new version also supports additional fields that you can take advantage of by migrating.
+   > Notice: `bmad-create-prd` is deprecated and will be removed in a future release. It now forwards to `bmad-prd` with create intent. To silence this notice and access the full new customization surface (`prd_template`, `validation_checklist_template`, `validation_report_template`, `doc_standards`, `finalize_reviewers`, `external_sources`, `external_handoffs`, `prd_output_path`, `run_folder_pattern`), migrate `_bmad/custom/bmad-create-prd.toml` to `_bmad/custom/bmad-prd.toml` and invoke `bmad-prd` directly next time. Customization fields that were in this version still remain in the new version and will be respected if present in `_bmad/custom/bmad-prd.toml`, but the new version also supports additional fields that you can take advantage of by migrating.
 
 4. Invoke `bmad-prd` with the following context. Pass these as the activating context so `bmad-prd` honors them instead of resolving its own customization from scratch:
 
    - **Intent:** `create` — skip `bmad-prd`'s usual intent detection step.
-   - **Pre-resolved legacy customization** — use these in place of resolving from `bmad-prd`'s own `customize.toml` for the four legacy fields. For everything else (`prd_template`, `validation_checklist`, `validation_report_template`, `doc_standards`, `output_dir`, `output_folder_name`, `external_sources`, `external_handoffs`), use `bmad-prd`'s own defaults and overrides as normal:
+   - **Pre-resolved legacy customization** — use these in place of resolving from `bmad-prd`'s own `customize.toml` for the four legacy fields. For everything else (`prd_template`, `validation_checklist_template`, `validation_report_template`, `doc_standards`, `finalize_reviewers`, `prd_output_path`, `run_folder_pattern`, `external_sources`, `external_handoffs`), use `bmad-prd`'s own defaults and overrides as normal:
      - `activation_steps_prepend` = the resolved value from step 1
      - `activation_steps_append` = the resolved value from step 1
      - `persistent_facts` = the resolved value from step 1

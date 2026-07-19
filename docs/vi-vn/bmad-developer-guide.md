@@ -638,7 +638,7 @@ Ngoài QA workflow, Developer Agent còn hỗ trợ:
 
 ```bash
 # Trong hội thoại với Developer Agent
-bmad-review-edge-case-hunter
+bmad-review
 ```
 
 Phân tích toàn bộ nhánh điều kiện trong code để tìm:
@@ -686,21 +686,13 @@ Dùng sau khi có một tài liệu quan trọng (PRD, Architecture) để tìm 
 ### 8.3. Adversarial Review — Review hoài nghi
 
 ```bash
-bmad-review-adversarial-general
+bmad-review
 ```
 
 Review kiểu "devil's advocate" — giả định vấn đề luôn tồn tại:
 - Phải tìm được tối thiểu 10 vấn đề
 - Tìm những gì **còn thiếu**, không chỉ những gì sai
 - Trực giao với Edge Case Hunter
-
-### 8.4. Shard Large Documents — Tách file lớn
-
-```bash
-bmad-shard-doc
-```
-
-Tách file markdown lớn thành các file phần nhỏ hơn, với index tự động.
 
 ---
 

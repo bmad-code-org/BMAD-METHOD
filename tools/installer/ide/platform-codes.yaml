@@ -35,6 +35,13 @@ platforms:
       target_dir: .agent/skills
       global_target_dir: ~/.gemini/antigravity/skills
 
+  antigravity-cli:
+    name: "Antigravity CLI (AGY)"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.gemini/antigravity-cli/skills
+
   auggie:
     name: "Auggie"
     preferred: false

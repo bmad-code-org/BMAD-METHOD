@@ -59,9 +59,9 @@ run_folder_pattern = "architecture-{project_name}-{date}"
 # short, structured outputs, which are terse and carry decisions in AD-n blocks and diagrams by
 # design. Each entry is a `skill:`, `file:`, or plain-text directive applied before the user sees
 # the polished draft. Suggested order: structural passes first, prose mechanics last. Append-only.
+# The default entry runs both editorial passes in order: structure, then prose.
 doc_standards = [
-  "skill:bmad-editorial-review-structure",
-  "skill:bmad-editorial-review-prose",
+  "skill:bmad-editorial-review",
 ]
 
 # External-source registry. Natural-language directives describing knowledge bases, MCP tools, or

@@ -71,7 +71,7 @@ run_folder_pattern = "prd-{project_name}-{date}"
 # findings before the user sees the draft. Encodes standards, not options.
 #
 # Examples:
-#   "skill:bmad-editorial-review-prose"
+#   "skill:bmad-editorial-review"
 #   "file:{project-root}/_bmad/style-guides/company-voice.md"
 #   "Convert all dates to ISO 8601 format."
 #
@@ -82,9 +82,9 @@ run_folder_pattern = "prd-{project_name}-{date}"
 #
 # Override the array in team/user TOML to add additional standards. Append-only:
 # base entries cannot be removed or replaced (resolver has no removal mechanism).
+# The default entry runs both editorial passes in order: structure, then prose.
 doc_standards = [
-  "skill:bmad-editorial-review-structure",
-  "skill:bmad-editorial-review-prose",
+  "skill:bmad-editorial-review",
 ]
 
 # External-source registry. Natural-language directives describing knowledge
