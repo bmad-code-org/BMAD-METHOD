@@ -461,6 +461,7 @@ class ExternalModuleManager {
             cwd: moduleCacheDir,
             stdio: ['ignore', 'pipe', 'pipe'],
             timeout: 120_000, // 2 minute timeout
+            env: gitEnv(), // npm shells out to git for git-URL deps; keep hook GIT_* vars away from it
           });
           installSpinner.stop(`Installed dependencies for ${moduleInfo.name}`);
         } catch (error) {
@@ -487,6 +488,7 @@ class ExternalModuleManager {
               cwd: moduleCacheDir,
               stdio: ['ignore', 'pipe', 'pipe'],
               timeout: 120_000, // 2 minute timeout
+              env: gitEnv(), // npm shells out to git for git-URL deps; keep hook GIT_* vars away from it
             });
             installSpinner.stop(`Installed dependencies for ${moduleInfo.name}`);
           } catch (error) {

@@ -15,7 +15,7 @@ Review content through independent lenses — each a distinct method and stance 
 
 ## Conventions
 
-- Bare paths (e.g. `references/lens-edge-case.md`) resolve from `{skill-root}` — this skill's installed directory, where `customize.toml` lives. `{project-root}` resolves to the project working directory.
+- Bare paths (e.g. `references/lens-edge-case-hunter.md`) resolve from `{skill-root}` — this skill's installed directory, where `customize.toml` lives. `{project-root}` resolves to the project working directory.
 - `{workflow.<name>}` values come from the resolved customization.
 
 ## Execution

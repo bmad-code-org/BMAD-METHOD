@@ -43,7 +43,8 @@ FIELDS = ("num", "category", "method_name", "description", "output_pattern")
 
 
 def load(file: Path) -> list[dict]:
-    with open(file, newline="", encoding="utf-8") as f:
+    # utf-8-sig: tolerate BOM-prefixed catalogs (Excel "CSV UTF-8", Notepad)
+    with open(file, newline="", encoding="utf-8-sig") as f:
         rows = list(csv.DictReader(f))
     for r in rows:
         for k in FIELDS:
@@ -54,10 +55,14 @@ def load(file: Path) -> list[dict]:
 
 def load_extra(spec: str) -> list[dict]:
     """Parse the --extra overlay: a JSON array literal or a path to a JSON file."""
-    text = spec if spec.lstrip().startswith("[") else Path(spec).read_text(encoding="utf-8")
+    text = spec if spec.lstrip().startswith("[") else Path(spec).read_text(encoding="utf-8-sig")
     data = json.loads(text)
+    if not isinstance(data, list):
+        raise ValueError("--extra must be a JSON array of objects")
     rows = []
     for item in data:
+        if not isinstance(item, dict):
+            raise ValueError(f"each --extra entry must be a JSON object, got: {item!r}")
         row = {k: str(item.get(k) or "").strip() for k in FIELDS}
         row["code"] = str(item.get("code") or "").strip()  # kept for traceability
         rows.append(row)
@@ -164,6 +169,8 @@ def fmt_rows(rows: list[dict], as_json: bool) -> str:
 
 
 def main(argv: list[str] | None = None) -> int:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")  # catalog rows contain →; don't die on locale code pages
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--file", type=Path, default=DEFAULT_FILE, help="method CSV (default: sibling assets/methods.csv)")
     p.add_argument("--extra", help="additional methods: a JSON array literal or a path to a JSON file")

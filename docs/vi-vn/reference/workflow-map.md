@@ -38,6 +38,7 @@ Xác định cần xây gì và xây cho ai.
 | --------------------------- | ---------------------------------------- | ------------ |
 | `bmad-prd` | Xác định yêu cầu (FR/NFR) | `PRD.md` |
 | `bmad-ux`            | Thiết kế trải nghiệm người dùng khi UX là yếu tố quan trọng | `DESIGN.md`, `EXPERIENCE.md` |
+| `bmad-spec`          | Chưng cất mọi đầu vào ý định (brief, PRD, bản ghi, ghi chú) thành hợp đồng `SPEC.md` súc tích + các tệp đi kèm — chốt CÁI GÌ trước CÁCH LÀM | `SPEC.md` + tệp đi kèm trong `{output_folder}/specs/spec-{slug}/` |
 
 ## Giai đoạn 3: Định hình giải pháp
 

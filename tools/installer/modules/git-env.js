@@ -21,7 +21,14 @@ const REPO_TARGETING_VARS = [
   'GIT_ALTERNATE_OBJECT_DIRECTORIES',
   'GIT_PREFIX',
   'GIT_NAMESPACE',
+  // `git -c key=val` exports its overrides to hook subprocesses through these;
+  // a core.worktree override can retarget the work tree just like GIT_WORK_TREE.
+  'GIT_CONFIG_PARAMETERS',
+  'GIT_CONFIG_COUNT',
 ];
+
+// GIT_CONFIG_KEY_0 / GIT_CONFIG_VALUE_0 ... — the enumerated form of the same mechanism.
+const CONFIG_PAIR_VAR = /^GIT_CONFIG_(KEY|VALUE)_\d+$/;
 
 /**
  * Build the environment for a git child process.
@@ -31,6 +38,9 @@ const REPO_TARGETING_VARS = [
 function gitEnv(extra = {}) {
   const env = { ...process.env, ...extra };
   for (const name of REPO_TARGETING_VARS) delete env[name];
+  for (const name of Object.keys(env)) {
+    if (CONFIG_PAIR_VAR.test(name)) delete env[name];
+  }
   return env;
 }
 

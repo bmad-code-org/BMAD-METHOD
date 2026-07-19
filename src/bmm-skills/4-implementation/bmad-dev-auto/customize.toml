@@ -74,7 +74,7 @@ name = "Edge Case Hunter"
 instruction = """
 Launch a subagent with no prior conversation context, with this prompt:
 
-> Invoke the `bmad-review` skill with only the `edge-case` lens on this diff:
+> Invoke the `bmad-review` skill with only the `edge-case-hunter` lens on this diff:
 >
 > {diff_output}
 """

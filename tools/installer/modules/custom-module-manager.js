@@ -563,6 +563,7 @@ class CustomModuleManager {
           cwd: repoCacheDir,
           stdio: ['ignore', 'pipe', 'pipe'],
           timeout: 120_000,
+          env: gitEnv(), // npm shells out to git for git-URL deps; keep hook GIT_* vars away from it
         });
         installSpinner.stop(`Installed dependencies for ${displayName}`);
       } catch (error_) {

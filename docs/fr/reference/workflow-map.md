@@ -49,6 +49,7 @@ Définissez ce qu’il faut construire et pour qui.
 |------------|--------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
 | `bmad-prd` | Créez, mettez à jour ou validez un PRD[^1] — découverte accompagnée, trois intentions en un seul skill | Création/Mise à jour : `prd.md`, `addendum.md`, `.memlog.md` ; Validation : `validation-report.html` + `.md` |
 | `bmad-ux`  | Concevez l’expérience utilisateur (lorsque l’UX compte)                                                | `DESIGN.md`, `EXPERIENCE.md`                                                                                      |
+| `bmad-spec` | Distillez toute intention (brief, PRD, transcription, notes) en un contrat `SPEC.md` succinct + fichiers compagnons — fige le QUOI avant le COMMENT | `SPEC.md` + compagnons sous `{output_folder}/specs/spec-{slug}/` |
 
 :::tip[Trois intentions en un seul skill]
 `bmad-prd` couvre l’intégralité du cycle de vie du PRD. Précisez votre intention lors de l’appel, sinon le skill vous la demandera :

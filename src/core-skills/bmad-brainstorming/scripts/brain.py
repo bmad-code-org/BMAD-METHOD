@@ -23,8 +23,11 @@ rather than stdout: dumping the full catalog into context is a footgun, so reach
 whole library at once must always be an explicit, deliberate choice.
 
 `--extra PATH` merges a JSON overlay of additional techniques (customize.toml's
-`additional_techniques`) into every command, so custom techniques and whole new
-categories are first-class everywhere — including the browse page and category draws.
+`additional_techniques`) into every command. An extra whose technique_name matches
+a shipped row (case-insensitive) REPLACES it — retune a shipped technique; others
+append, so custom techniques and whole new categories are first-class everywhere —
+including the browse page and category draws. (Same overlay semantics as
+bmad-advanced-elicitation's pick_methods.py.)
 
 Default output is lean text for an LLM to read; pass --json for structured output.
 """
@@ -76,6 +79,22 @@ def load_extra(file: Path) -> list[dict]:
             "audience": str(item.get("audience") or "").strip(),
         })
     return rows
+
+
+def merge_extra(rows: list[dict], extras: list[dict]) -> list[dict]:
+    """Extras replace a catalog row with the same technique_name (case-insensitive),
+    otherwise append — the same overlay semantics as pick_methods.py, so
+    customize.toml additional_* entries behave identically across sibling skills."""
+    merged = list(rows)
+    index = {r["technique_name"].lower(): i for i, r in enumerate(merged)}
+    for e in extras:
+        key = e["technique_name"].lower()
+        if key in index:
+            merged[index[key]] = e
+        else:
+            index[key] = len(merged)
+            merged.append(e)
+    return merged
 
 
 def categories(rows: list[dict]) -> list[tuple[str, int]]:
@@ -693,7 +712,7 @@ def main(argv: list[str] | None = None) -> int:
         if not args.extra.is_file():
             print(f"error: --extra file not found: {args.extra}", file=sys.stderr)
             return 2
-        rows += load_extra(args.extra)
+        rows = merge_extra(rows, load_extra(args.extra))
     csv_dir = args.file.resolve().parent
 
     if args.cmd == "categories":

@@ -38,10 +38,9 @@ spec_template = "assets/spec-template.md"
 # Uppercase by convention to signal "the central source of truth."
 spec_filename = "SPEC.md"
 
-# Output path for spec folders. Lands directly under {output_folder}
-# so bmad-spec works in core-only installs and matches the
-# long-term BMad direction of grouping artifacts as siblings under
-# {output_folder}/<type>/ rather than nested inside planning vs
+# Output path for spec folders. Lands directly under {output_folder},
+# matching the long-term BMad direction of grouping artifacts as siblings
+# under {output_folder}/<type>/ rather than nested inside planning vs
 # implementation folders.
 spec_output_path = "{output_folder}/specs"
 
