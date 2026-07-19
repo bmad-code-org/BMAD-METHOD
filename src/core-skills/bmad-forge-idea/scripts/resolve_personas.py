@@ -186,7 +186,10 @@ def build_pool(agents: dict, party_members: list):
             continue
         canonical = index.get(code) or index.get(code.lower()) or code
         was_installed = canonical in pool
-        entry = {"code": canonical, "source": "custom"}
+        # Start from the installed entry so fields the override omits
+        # (icon, title, description) survive.
+        entry = dict(pool.get(canonical, {}))
+        entry.update({"code": canonical, "source": "custom"})
         for field in ("name", "icon", "title", "persona", "capabilities", "model"):
             if m.get(field) is not None:
                 entry[field] = m[field]

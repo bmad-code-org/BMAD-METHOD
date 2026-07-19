@@ -4,7 +4,7 @@ companions: []     # files downstream MUST read alongside SPEC.md. Paths may poi
 sources: []        # files fully absorbed into the SPEC (audit only; downstream does NOT read these). Never the memlog.
 ---
 
-> **Canonical contract.** This SPEC and the files in `companions:` are the complete, preservation-validated contract for what to build, test, and validate. Source documents listed in frontmatter are for traceability only — consult them only if you need narrative rationale or prose color this contract intentionally omits.
+> **Canonical contract.** This SPEC and the files in `companions:` are the complete, preservation-validated contract for what to build, test, and validate. Source documents listed in frontmatter are for traceability — consult them only if you need narrative rationale or prose color this contract intentionally omits.
 
 # {Spec Title}
 

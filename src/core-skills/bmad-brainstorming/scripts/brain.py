@@ -51,10 +51,11 @@ OPTIONAL_FIELDS = ("detail", "provenance", "good_for", "audience")
 
 
 def load(file: Path) -> list[dict]:
-    with open(file, newline="", encoding="utf-8") as f:
+    # utf-8-sig: tolerate BOM-prefixed catalogs (Excel "CSV UTF-8", Notepad)
+    with open(file, newline="", encoding="utf-8-sig") as f:
         rows = list(csv.DictReader(f))
     for r in rows:
-        for k in OPTIONAL_FIELDS:
+        for k in FIELDS:
             r.setdefault(k, "")
             r[k] = (r.get(k) or "").strip()
     return rows
@@ -66,9 +67,13 @@ def load_extra(file: Path) -> list[dict]:
     customize.toml's `additional_techniques` become first-class across *every*
     subcommand (categories/list/random/show/html), so the browse page and
     category draws include them too, not just the in-chat flows."""
-    data = json.loads(file.read_text(encoding="utf-8"))
+    data = json.loads(file.read_text(encoding="utf-8-sig"))
+    if not isinstance(data, list):
+        raise ValueError("--extra must be a JSON array of objects")
     rows = []
     for item in data:
+        if not isinstance(item, dict):
+            raise ValueError(f"each --extra entry must be a JSON object, got: {item!r}")
         rows.append({
             "category": str(item.get("category", "")).strip(),
             "technique_name": str(item.get("technique_name", "")).strip(),
@@ -434,6 +439,8 @@ SELECTOR_TEMPLATE = r"""<!DOCTYPE html>
   function checkedInvent(){ return inventBoxes.filter(function(b){ return b.checked; }); }
 
   function update(){
+    // rand can't exceed what the pool can supply — keep the counter honest with the draw
+    if (state.rand > randomPool().length){ state.rand = randomPool().length; }
     $('pickN').textContent = checkedTech().length;
     $('randN').textContent = state.rand;
     $('invN').textContent = state.inv;
@@ -712,7 +719,11 @@ def main(argv: list[str] | None = None) -> int:
         if not args.extra.is_file():
             print(f"error: --extra file not found: {args.extra}", file=sys.stderr)
             return 2
-        rows = merge_extra(rows, load_extra(args.extra))
+        try:
+            rows = merge_extra(rows, load_extra(args.extra))
+        except (OSError, ValueError) as e:
+            print(f"error: could not read --extra: {e}", file=sys.stderr)
+            return 2
     csv_dir = args.file.resolve().parent
 
     if args.cmd == "categories":

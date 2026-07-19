@@ -200,6 +200,14 @@ def test_extra_replaces_shipped_row_by_name(lib, extra, tmp_path, capsys):
     assert out.count(shipped["technique_name"]) == 1  # replaced, not duplicated
 
 
+def test_extra_malformed_exits_cleanly(lib, tmp_path, capsys):
+    bad = tmp_path / "bad.json"
+    for content in ('{not json', '{"a": 1}', '["not-an-object"]'):
+        bad.write_text(content, encoding="utf-8")
+        assert brain.main(["--file", str(lib), "--extra", str(bad), "categories"]) == 2
+        assert "could not read --extra" in capsys.readouterr().err
+
+
 def test_extra_is_first_class_in_html(lib, extra, tmp_path):
     out = tmp_path / "sel.html"
     assert brain.main(["--file", str(lib), "--extra", str(extra), "html", "--out", str(out)]) == 0
