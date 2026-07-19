@@ -5,7 +5,7 @@ sidebar:
   order: 3
 ---
 
-Chaque installation BMad comprend le **module principal** — un petit ensemble de compétences qui fonctionnent dans tous les projets, tous les modules et toutes les phases. Cette page couvre ces huit compétences principales : les cinq outils du noyau plus les trois **compétences de réflexion** (brainstorming, forge idea, party mode).
+Chaque installation BMad comprend le **module principal** — un petit ensemble de compétences qui fonctionnent dans tous les projets, tous les modules et toutes les phases. Cette page couvre ces sept compétences principales : les quatre outils du noyau plus les trois **compétences de réflexion** (brainstorming, forge idea, party mode).
 
 :::tip[Raccourci Rapide]
 Exécutez n’importe quel outil en tapant son nom de compétence (par ex., `bmad-help`) dans votre IDE. Aucune session d’agent requise.
@@ -87,12 +87,14 @@ Exécutez n’importe quel outil en tapant son nom de compétence (par ex., `bma
 | Perspective                 | S’applique à                         | Méthode                                                                                                                |
 | --------------------------- | ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
 | **Contradictoire**          | Tout contenu                         | Revue sceptique qui part du principe que des problèmes existent — traque ce qui manque, pas seulement ce qui ne va pas |
-| **Cas limites**             | Tout contenu porteur de comportement | Parcourt chaque chemin de branchement et condition aux limites, ne rapporte que les chemins non gérés                  |
+| **Cas limites**             | Tout contenu                         | Parcourt chaque chemin de branchement et condition aux limites d’un contenu qui définit un comportement                |
 | **Lacunes de vérification** | Code                                 | Trouve les comportements modifiés qui pourraient régresser sans qu’une vérification fiable ne le détecte               |
 | **Structure**               | Documents                            | Propose coupes, fusions, déplacements et condensations — la forme du document sert-elle son objectif ?                 |
 | **Prose**                   | Documents                            | Corrige les problèmes de communication qui nuisent à la compréhension                                                  |
 
 Les deux perspectives éditoriales tiennent le contenu pour sacro-saint : elles ne remettent jamais en cause vos idées, seulement leur organisation et leur expression, et elles proposent sans exécuter. La perspective prose s’exécute sur les constatations de la perspective structure lorsque les deux sont sélectionnées.
+
+L’ensemble n’est pas figé : une surcharge dans `customize.toml` peut ajouter des perspectives ou remplacer celles fournies, et une revue exécute celles qui sont effectivement résolues.
 
 **À utiliser quand :**
 

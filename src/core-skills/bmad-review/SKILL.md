@@ -1,17 +1,20 @@
 ---
 name: bmad-review
-description: 'Multi-lens review — adversarial, edge-case, verification-gap, structure, and prose lenses over any diff, doc, or artifact, run singly or together. Use when the user says "review this", "critical review", "editorial review", "hunt edge cases", "review the structure", or "review the prose".'
+description: 'Multi-lens review over any diff, doc, spec, or artifact — whichever installed lenses fit the content, run singly or together. Shipped lenses include adversarial, edge-case, verification-gap, structure, and prose. Use when the user says "review this", "critical review", "editorial review", "hunt edge cases", "review the structure", or "review the prose".'
 ---
 
 # BMad Review
 
 Review content through lenses — each a distinct method and stance — and report findings in one canonical shape. Report what is real — never pad to look thorough. Each lens sets its own stance toward the content and toward zero findings: for most an empty result is valid; the adversarial lens treats it as suspicious; the editorial lenses hold content sacrosanct and critique only how it is organized and expressed.
 
+The lens set is whatever `{workflow.lenses}` resolves to, not a fixed list — overrides add lenses and replace shipped ones. Never claim a capability from this file; read the resolved lenses and work from those.
+
 ## Inputs
 
 - **content** — what to review: a diff, branch, uncommitted changes, file, spec, story, or any document. Args: `[path]`.
-- **lenses** (optional) — one or more lens codes or names. Default: every applicable lens (a full review).
+- **lenses** (optional) — one or more lens codes or names, however the caller expresses them: a spoken request, or a directive of the form `skill:bmad-review lenses=<code>[,<code>...]` (the form bmm's `doc_standards` uses). Default: every applicable lens (a full review).
 - **also_consider** (optional) — areas to keep in mind alongside each lens's normal analysis.
+- **pre-resolved customization** (optional) — `[workflow]` field values supplied by a forwarding caller. See Execution step 1.
 
 ## Conventions
 
@@ -21,10 +24,10 @@ Review content through lenses — each a distinct method and stance — and repo
 
 ## Execution
 
-1. **Resolve customization:** `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`. On failure, read `{skill-root}/customize.toml` directly and use defaults. Execute each `{workflow.activation_steps_prepend}` entry in order, hold `{workflow.persistent_facts}` as standing context for the session, and treat `{workflow.review_guidance}` entries as standing review directives for every lens.
+1. **Resolve customization:** `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`. On failure, read `{skill-root}/customize.toml` directly and use defaults. **Forwarded activation:** if a caller invoked you with pre-resolved customization fields (e.g. the `bmad-editorial-review` shim), honor them verbatim for those named fields — they already carry the user's overrides — and resolve only the remaining fields from your own `customize.toml`. Then execute each `{workflow.activation_steps_prepend}` entry in order, hold `{workflow.persistent_facts}` as standing context for the session, and treat `{workflow.review_guidance}` entries as standing review directives for every lens.
 2. **Load the content.** If it is empty or cannot be decoded as text: when the caller expects the raw findings JSON array (e.g. the legacy edge-case forwarder), return `[{"location":"N/A","trigger_condition":"Input empty or undecodable","guard_snippet":"Provide valid content to review","potential_consequence":"Review skipped — no analysis performed"}]` (no `lens` field) and stop; otherwise say what's wrong and ask for reviewable content. Classify the content — diff, source file, function, or document — and whether it is **code** or **docs**; scope rules and lens applicability both depend on it. A document that defines behavior (spec, requirements, plan, story) is `docs` that a behavioral lens may still apply to; judge by `when`.
 3. **Select lenses** from `{workflow.lenses}`. A lens with an empty `instruction` is disabled. If the user or caller named lenses, run exactly those only — `applies_to` and `when` do not filter an explicit request. Otherwise run every enabled lens whose `applies_to` covers the content class (`any` always covers) and whose `when` applies.
-4. **Announce the plan** in one line before running anything: the content class, the lenses about to run, and — when any lens has `after` set — that it runs on top of the named lens's findings. Then execute each `{workflow.activation_steps_append}` entry in order.
+4. **Announce the plan** in one line before running anything: the content class, the lenses about to run, and — when any lens has `after` set — that it runs on top of the named lens's findings. Skip the announcement entirely when the caller pinned an exact output contract (the legacy forwarders that demand raw JSON or one exact line) — their contract covers everything you emit, not just the findings block. Then execute each `{workflow.activation_steps_append}` entry in order.
 5. **Run the independent lenses** — every selected lens without `after`. Each sees the content and `also_consider`, never another lens's findings. Follow each lens's `instruction`; the shipped lenses load their reference file just-in-time, so load only what runs. When subagents are available, spawn one per lens in parallel: give it the lens `instruction` with `{skill-root}` and paths resolved absolute, the content or where to read it, any `also_consider` areas, the standing review directives, and the constraint "Return ONLY your findings — no other output." Otherwise run the lenses sequentially yourself, completing one before starting the next.
 6. **Run the dependent lenses** — every selected lens with `after`, once the lens it names has completed, passing that lens's findings in. A lens whose `after` target was not selected or produced nothing still runs, with no prior findings. Dependent lenses that name different targets are independent of each other and may run in parallel.
 7. **Assemble and present** per Output below. Keep every lens's findings — overlap between lenses is signal, not duplication; note it in the markdown report rather than deduping. Execute `{workflow.on_complete}` if set.
@@ -41,6 +44,6 @@ One JSON array holding every finding from every lens. Each finding carries:
 
 Each lens file refines these semantics for its findings and may add lens-specific fields (e.g. `kind`/`confidence` on deletion findings, `gap_shape`/`consumer`/`evidence` on verification-gap findings). A lens file may instead declare its own findings shape and rendering — the editorial lenses render a findings table — and that shape wins for that lens's findings. `[]` is valid when nothing is found. No severity, priority, or ranking anywhere.
 
-Present per `{workflow.output_format}` — `"json"` (the raw array in a fenced json block), `"markdown"`, or `"both"` — unless the caller requested a specific shape; a legacy forwarder's output contract always wins. The markdown report groups findings by lens, each rendered in its declared shape: a short block per finding rendering the fields plus any extras worth surfacing, one line for a lens that found nothing, and a plain clean statement when the whole review is clean. Shape the report per `{workflow.output_preferences}`.
+Present per `{workflow.output_format}` — `"json"` (the raw array in a fenced json block), `"markdown"`, or `"both"` — unless the caller requested a specific shape; a legacy forwarder's output contract always wins, and governs everything you emit rather than the findings block alone. The markdown report groups findings by lens, each rendered in its declared shape: a short block per finding rendering the fields plus any extras worth surfacing, one line for a lens that found nothing, and a plain clean statement when the whole review is clean. Shape the report per `{workflow.output_preferences}`.
 
 When `{workflow.report_path}` is set, write the report there; otherwise present it in chat.

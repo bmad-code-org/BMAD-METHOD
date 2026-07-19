@@ -5,7 +5,7 @@ sidebar:
   order: 3
 ---
 
-Každá instalace BMad zahrnuje **základní modul** — malou sadu skills, které fungují napříč všemi projekty, všemi moduly a všemi fázemi. Tato stránka pokrývá těchto osm základních skills: pět jádrových nástrojů plus tři **myšlenkové skills** (brainstorming, forge idea, party mode).
+Každá instalace BMad zahrnuje **základní modul** — malou sadu skills, které fungují napříč všemi projekty, všemi moduly a všemi fázemi. Tato stránka pokrývá těchto sedm základních skills: čtyři jádrové nástroje plus tři **myšlenkové skills** (brainstorming, forge idea, party mode).
 
 :::tip[Rychlá cesta]
 Spusťte jakýkoli nástroj zadáním jeho názvu skillu (např. `bmad-help`) ve vašem IDE. Nevyžaduje relaci agenta.
@@ -87,12 +87,14 @@ Spusťte jakýkoli nástroj zadáním jeho názvu skillu (např. `bmad-help`) ve
 | Perspektiva              | Vztahuje se na            | Metoda                                                                                       |
 | ------------------------ | ------------------------- | -------------------------------------------------------------------------------------------- |
 | **Adversariální**        | Jakýkoli obsah            | Skeptická revize předpokládající existenci problémů — hledá, co chybí, ne jen co je špatně   |
-| **Hraniční případy**     | Jakýkoli obsah s chováním | Projde každou větvící se cestu a hraniční podmínku, hlásí pouze neošetřené cesty             |
+| **Hraniční případy**     | Jakýkoli obsah            | Projde každou větvící se cestu a hraniční podmínku v obsahu, který definuje chování          |
 | **Mezery ve verifikaci** | Kód                       | Hledá změněné chování, které by mohlo regredovat, aniž by to spolehlivá verifikace zachytila |
 | **Struktura**            | Dokumenty                 | Navrhuje škrty, sloučení, přesuny a zhuštění — slouží tvar dokumentu jeho účelu?             |
 | **Text**                 | Dokumenty                 | Redakčně upravuje komunikační problémy, které brání porozumění                               |
 
 Obě redakční perspektivy považují obsah za nedotknutelný: nikdy nezpochybňují vaše myšlenky, pouze jejich uspořádání a vyjádření, a navrhují místo toho, aby zasahovaly. Je-li vybráno obojí, textová perspektiva běží nad nálezy strukturní.
+
+Sada není pevná: přepis v `customize.toml` může perspektivy přidat nebo nahradit dodávané a revize spustí ty, které se skutečně vyhodnotí.
 
 **Použijte když:**
 

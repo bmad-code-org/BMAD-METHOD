@@ -19,8 +19,10 @@
 activation_steps_prepend = []
 activation_steps_append = []
 
-# Standing context held for every review. Entries prefixed `file:` are paths
-# or globs whose contents load as facts; all others are literal facts.
+# Standing context held for every review, code and document alike. Entries
+# prefixed `file:` are paths or globs whose contents load as facts; all others
+# are literal facts. The shipped entry is a project-wide glob — set it to []
+# if you don't want every review scanning for it.
 persistent_facts = ["file:{project-root}/**/project-context.md"]
 
 # Standing review directives applied on every run alongside each lens's own
@@ -120,14 +122,14 @@ instruction = "Load `references/lens-edge-case-hunter.md` from the skill root an
 code = "verification-gap"
 name = "Verification Gap"
 applies_to = "code"
-when = "Code changes reviewed inside a repo where tests can be searched and read. Skip for prose documents or content with no verification surface."
+when = "Reviewed inside a repo where tests can be searched and read."
 instruction = "Load `references/lens-verification-gap.md` from the skill root and follow it."
 
 [[workflow.lenses]]
 code = "structure"
 name = "Editorial Structure"
 applies_to = "docs"
-when = "Documents whose shape is the author's to change. Skip for diffs and source files."
+when = "Documents whose shape is the author's to change."
 instruction = "Load `references/lens-structure.md` from the skill root and follow it."
 
 [[workflow.lenses]]
@@ -135,5 +137,5 @@ code = "prose"
 name = "Editorial Prose"
 applies_to = "docs"
 after = "structure"
-when = "Documents being copy-edited. Skip for diffs and source files."
+when = "Documents being copy-edited."
 instruction = "Load `references/lens-prose.md` from the skill root and follow it."
