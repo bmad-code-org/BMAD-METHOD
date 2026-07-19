@@ -1,31 +1,39 @@
 ---
 title: Základní nástroje
-description: Reference všech vestavěných úkolů a workflow dostupných v každé instalaci BMad bez dalších modulů.
+description: Reference vestavěných skills základního modulu.
 sidebar:
   order: 3
 ---
 
-Každá instalace BMad zahrnuje sadu základních skills, které lze použít v kombinaci s čímkoli — samostatné úkoly a workflow, které fungují napříč všemi projekty, všemi moduly a všemi fázemi. Ty jsou vždy dostupné bez ohledu na to, které volitelné moduly nainstalujete.
+Každá instalace BMad zahrnuje **základní modul** — malou sadu skills, které fungují napříč všemi projekty, všemi moduly a všemi fázemi. Tato stránka pokrývá těchto osm základních skills: pět jádrových nástrojů plus tři **myšlenkové skills** (brainstorming, forge idea, party mode).
 
 :::tip[Rychlá cesta]
-Spusťte jakýkoli základní nástroj zadáním jeho názvu skillu (např. `bmad-help`) ve vašem IDE. Nevyžaduje relaci agenta.
+Spusťte jakýkoli nástroj zadáním jeho názvu skillu (např. `bmad-help`) ve vašem IDE. Nevyžaduje relaci agenta.
 :::
 
 ## Přehled
 
-| Nástroj | Typ | Účel |
-| --- | --- | --- |
-| [`bmad-help`](#bmad-help) | Task | Kontextové poradenství, co dělat dál |
-| [`bmad-brainstorming`](#bmad-brainstorming) | Workflow | Facilitace interaktivních brainstormingových sezení |
-| [`bmad-party-mode`](#bmad-party-mode) | Workflow | Orchestrace skupinových diskuzí více agentů |
-| [`bmad-spec`](#bmad-spec) | Workflow | Distill any intent input into a SPEC kernel and companions, the canonical contract for downstream work (translation pending) |
-| [`bmad-advanced-elicitation`](#bmad-advanced-elicitation) | Task | Iterativní zdokonalování LLM výstupu |
-| [`bmad-review-adversarial-general`](#bmad-review-adversarial-general) | Task | Cynická revize hledající chybějící a chybné |
-| [`bmad-review-edge-case-hunter`](#bmad-review-edge-case-hunter) | Task | Vyčerpávající analýza větvících cest pro neošetřené hraniční případy |
-| [`bmad-editorial-review-prose`](#bmad-editorial-review-prose) | Task | Klinická jazyková korektura pro komunikační srozumitelnost |
-| [`bmad-editorial-review-structure`](#bmad-editorial-review-structure) | Task | Strukturální editace — škrty, sloučení a reorganizace |
-| [`bmad-shard-doc`](#bmad-shard-doc) | Task | Rozdělení velkých markdown souborů do organizovaných sekcí |
-| [`bmad-index-docs`](#bmad-index-docs) | Task | Generování nebo aktualizace indexu dokumentů ve složce |
+**Základní modul (vždy nainstalován):**
+
+| Nástroj | Účel |
+| --- | --- |
+| [`bmad-help`](#bmad-help) | Kontextové poradenství, co dělat dál |
+| [`bmad-advanced-elicitation`](#bmad-advanced-elicitation) | Iterativní zdokonalování LLM výstupu |
+| [`bmad-editorial-review`](#bmad-editorial-review) | Dvoufázová redakční revize — nejprve struktura, pak text |
+| [`bmad-review`](#bmad-review) | Kritická revize z více perspektiv — adversariální, hraniční případy a mezery ve verifikaci |
+| [`bmad-customize`](#bmad-customize) | Vytváření a ověřování přizpůsobení BMad |
+
+**Myšlenkové skills:**
+
+| Nástroj | Účel |
+| --- | --- |
+| [`bmad-brainstorming`](#bmad-brainstorming) | Facilitace interaktivních brainstormingových sezení |
+| [`bmad-forge-idea`](#bmad-forge-idea) | Zátěžový test nápadu, dokud se nezpevní, nepotvrdí, nebo levně nezemře |
+| [`bmad-party-mode`](#bmad-party-mode) | Orchestrace skupinových diskuzí více agentů |
+
+:::note[Přesunuto a odstraněno]
+`bmad-spec` se nyní dodává s modulem BMM jako plánovací workflow Fáze 2 — viz [Mapa workflow](./workflow-map.md). Utility `bmad-shard-doc` a `bmad-index-docs` byly odstraněny. Dřívější skills `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter` a `bmad-review-verification-gap` jsou sloučeny do `bmad-editorial-review` a `bmad-review`; staré identifikátory se stále rozliší přes skryté přesměrování kvůli kompatibilitě.
+:::
 
 ## bmad-help
 
@@ -49,7 +57,115 @@ Spusťte jakýkoli základní nástroj zadáním jeho názvu skillu (např. `bma
 
 **Výstup:** Prioritizovaný seznam doporučených dalších kroků s příkazy skills
 
-## bmad-brainstorming
+## bmad-advanced-elicitation
+
+**Přiměje LLM přehodnotit, zdokonalit a vylepšit svůj nedávný výstup.** — Sdílený zdokonalovací checkpoint BMad: ostatní skills jej vyvolávají při přirozených pauzách a vy jej můžete zavolat přímo na cokoli nedávného v konverzaci.
+
+**Použijte když:**
+
+- LLM výstup působí povrchně nebo genericky
+- Chcete prozkoumat téma z více analytických úhlů
+- Zdokonalujete kritický dokument a chcete hlubší myšlení
+- Chcete známou metodu jménem — sokratovská, první principy, pre-mortem, red team
+
+**Jak to funguje:**
+
+1. Cílí na nejnovější výstup v konverzaci, pokud jej nenasměrujete jinam
+2. Nabídne krátké menu elicitačních metod nejlépe odpovídajících obsahu
+3. Aplikuje zvolené metody na cíl
+4. Vrátí vylepšenou verzi, aby vyvolávající tok pokračoval tam, kde se zastavil
+
+**Vstup:** Nedávný výstup ke zdokonalení (výchozí), nebo jakýkoli obsah, na který ukážete; volitelně pojmenovaná metoda
+
+**Výstup:** Vylepšená verze obsahu s aplikovanými zlepšeními
+
+## bmad-editorial-review
+
+**Dvoufázová redakční revize — nejprve struktura, pak text.** — Klinický editor, který reviduje tvar dokumentu i jeho věty a vrací navrhované opravy, jež řádek po řádku přijímáte nebo odmítáte. Obsah je nedotknutelný: nikdy nezpochybňuje vaše myšlenky, jen jejich organizaci a vyjádření.
+
+**Použijte když:**
+
+- Napsali jste dokument a chcete jej zpřísnit a vyladit
+- Dokument vznikl z více podprocesů a potřebuje strukturální soudržnost
+- Chcete zkrátit délku při zachování srozumitelnosti
+- Potřebujete opravy srozumitelnosti bez stylistických zásahů
+
+**Jak to funguje:**
+
+1. **Strukturální fáze** — navrhuje škrty, sloučení, přesuny a zhuštění; ptá se, zda tvar dokumentu slouží jeho účelu
+2. **Textová fáze** — koriguje komunikační problémy bránící porozumění, s Microsoft Writing Style Guide jako výchozí baseline (dodaný průvodce stylem má přednost)
+3. Ve výchozím stavu běží obě fáze, nejprve struktura; požádejte o revizi jen struktury nebo jen textu, chcete-li spustit jednu
+4. Navrhuje, nikdy neprovádí — o přijetí rozhoduje autor
+
+**Vstup:**
+
+- `content` (povinné) — Dokument k revizi
+- `style_guide` (volitelné) — Projektově specifický průvodce stylem
+- `reader_type` (volitelné) — `humans` (výchozí) pro srozumitelnost/plynulost, nebo `llm` pro přesnost/konzistenci
+- `purpose` / `target_audience` / `length_target` (volitelné) — kalibrují strukturální fázi
+
+**Výstup:** Tabulka nálezů s navrhovanými opravami, plus odhad zkrácení při navržených strukturálních změnách
+
+## bmad-review
+
+**Kritická revize z více perspektiv nad jakýmkoli diffem, dokumentem nebo artefaktem.** — Spouští nezávislé revizní perspektivy — každou s vlastní metodou a postojem — a hlásí každý nález v jednom kanonickém tvaru. Nula nálezů je platný výsledek; nikdy nedoplňuje, aby vypadal důkladně.
+
+**Dodávané perspektivy:**
+
+| Perspektiva | Metoda |
+| --- | --- |
+| **Adversariální** | Skeptická revize předpokládající existenci problémů — hledá, co chybí, ne jen co je špatně |
+| **Hraniční případy** | Projde každou větvící se cestu a hraniční podmínku, hlásí pouze neošetřené cesty |
+| **Mezery ve verifikaci** | Hledá změněné chování, které by mohlo regredovat, aniž by to spolehlivá verifikace zachytila |
+
+**Použijte když:**
+
+- Potřebujete zajištění kvality před finalizací výstupu
+- Chcete vyčerpávající pokrytí hraničních případů kódu nebo logiky
+- Chcete vědět, zda je změna dostatečně ověřena
+- Chcete všechny tři perspektivy najednou (výchozí chování)
+
+**Jak to funguje:**
+
+1. Načte obsah a identifikuje jeho typ — diff, soubor, funkce nebo dokument
+2. Vybere perspektivy: ty, které pojmenujete, nebo každou povolenou perspektivu odpovídající obsahu
+3. Spustí každou perspektivu nezávisle — paralelně přes subagenty, pokud to platforma podporuje
+4. Sestaví jeden seznam nálezů; překryv mezi perspektivami je signál, ne duplikace
+
+**Vstup:**
+
+- `content` (povinné) — Diff, větev, nezakomitované změny, soubor, specifikace, story nebo jakýkoli dokument
+- `lenses` (volitelné) — jeden nebo více kódů či názvů perspektiv; výchozí je plná revize
+- `also_consider` (volitelné) — Další oblasti k zvážení
+
+**Výstup:** JSON pole nálezů a/nebo markdown report seskupený podle perspektiv. Vlastní perspektivy lze přidat — a dodávané doladit či vypnout — přes `customize.toml` skillu
+
+## bmad-customize
+
+**Vytváření a ověřování přizpůsobení.** — Pomůže vám změnit chování nainstalovaného BMad agenta nebo workflow bez ručního psaní TOML.
+
+**Použijte když:**
+
+- Chcete změnit chování agenta nebo workflow
+- Potřebujete přidat trvalé fakty, aktivační hooky nebo vlastní položky menu
+- Chcete, aby byl správný rozsah přepisu vybrán a ověřen automaticky
+
+**Jak to funguje:**
+
+1. Skenuje nainstalované BMad skills pro přizpůsobitelné plochy
+2. Vybere správný rozsah pro požadovanou změnu
+3. Zapíše přepisové soubory pod `_bmad/custom/`
+4. Ověří sloučenou konfiguraci
+
+**Vstup:** Popis požadovaného přizpůsobení v přirozeném jazyce
+
+**Výstup:** TOML přepisové soubory pod `_bmad/custom/`. Podrobný návod viz [Jak přizpůsobit BMad](../how-to/customize-bmad.md)
+
+## Myšlenkové skills
+
+Tři skills níže doplňují základní modul — obecné myšlenkové nástroje, o které se může opřít kterákoli fáze či modul.
+
+### bmad-brainstorming
 
 **Generování různorodých nápadů prostřednictvím interaktivních kreativních technik.** — Facilitované brainstormingové sezení, které načítá osvědčené ideační metody z knihovny technik a vede vás k 100+ nápadům před organizací.
 
@@ -65,17 +181,38 @@ Spusťte jakýkoli základní nástroj zadáním jeho názvu skillu (např. `bma
 2. Načte kreativní techniky z knihovny metod
 3. Provede vás technikou za technikou, generuje nápady
 4. Aplikuje anti-bias protokol — mění kreativní doménu každých 10 nápadů
-5. Produkuje append-only dokument sezení se všemi nápady organizovanými podle techniky
 
 **Vstup:** Téma brainstormingu nebo formulace problému, volitelný kontextový soubor
 
-**Výstup:** `brainstorming-session-{date}.md` se všemi generovanými nápady
+**Výstup:** samostatný `brainstorm.html` jako památka na sezení, volitelný `brainstorm-intent.md` pro navazující skills a záznam sezení `.memlog.md`
 
 :::note[Cíl množství]
 Kouzlo se děje v nápadech 50–100. Workflow povzbuzuje generování 100+ nápadů před organizací.
 :::
 
-## bmad-party-mode
+### bmad-forge-idea
+
+**Zátěžový test nápadu, dokud se nezpevní, nepotvrdí, nebo levně nezemře.** — Adversariální tazatel žene napůl zformovaný nápad otázku po otázce, do každého větvení přivádí dvě postavy, dokud to, co přežije, není něco, na čem můžete s přesvědčením stavět.
+
+**Použijte když:**
+
+- Máte nápad a chcete jej otestovat, než do něj investujete
+- Chcete upřímný pohled na to, zda jej zabít
+- Potřebujete myšlenkového partnera, který se vzepře, místo aby souhlasil
+
+**Jak to funguje:**
+
+1. Předem stanoví cíl a podle něj směruje dotazování
+2. Pracuje otázku po otázce v pořadí závislostí a předkládá doporučenou odpověď, proti které se lze vymezit
+3. Do každého větvení přivádí dva hlasy — jeden z vaší nainstalované sestavy, jeden vyvolaný tématem
+4. Zpochybňuje mlhavé pojmy a testuje tvrzení proti materiálu existujícího projektu
+5. Končí jako Zpevněný, Zabitý nebo Jasnější, se samostatným reportem, který si můžete ponechat
+
+**Vstup:** Nápad z jakékoli domény — funkce, byznys model, výzkumná hypotéza, životní rozhodnutí
+
+**Výstup:** Destilát `forged-idea.md`, když se nápad zpevní (volitelné), plus `forge-report.html` z každého běhu
+
+### bmad-party-mode
 
 **Orchestrace skupinových diskuzí více agentů.** — Načte všechny nainstalované BMad agenty a facilituje přirozenou konverzaci, kde každý agent přispívá svou unikátní odborností a osobností.
 
@@ -96,171 +233,3 @@ Kouzlo se děje v nápadech 50–100. Workflow povzbuzuje generování 100+ náp
 **Vstup:** Diskuzní téma nebo otázka, s volitelnou specifikací person
 
 **Výstup:** Real-time multi-agentní konverzace s udržovanými osobnostmi agentů
-
-## bmad-advanced-elicitation
-
-**Iterativní zdokonalování LLM výstupu metodami elicitace.** — Vybírá z knihovny elicitačních technik pro systematické zlepšování obsahu více průchody.
-
-**Použijte když:**
-
-- LLM výstup působí povrchně nebo genericky
-- Chcete prozkoumat téma z více analytických úhlů
-- Zdokonalujete kritický dokument a chcete hlubší myšlení
-
-**Jak to funguje:**
-
-1. Načte registr metod s 5+ elicitačními technikami
-2. Vybere 5 nejlépe odpovídajících metod podle typu a složitosti obsahu
-3. Prezentuje interaktivní nabídku — vyberte metodu, zamíchejte nebo zobrazte vše
-4. Aplikuje vybranou metodu k vylepšení obsahu
-5. Znovu prezentuje možnosti pro iterativní zlepšení, dokud nevyberete „Pokračovat“
-
-**Vstup:** Sekce obsahu k vylepšení
-
-**Výstup:** Vylepšená verze obsahu s aplikovanými zlepšeními
-
-## bmad-review-adversarial-general
-
-**Cynická revize, která předpokládá existenci problémů a hledá je.** — Zaujme perspektivu skeptického, otráveného recenzenta s nulovou tolerancí pro nedbalou práci. Hledá, co chybí, ne jen co je špatně.
-
-**Použijte když:**
-
-- Potřebujete zajištění kvality před finalizací výstupu
-- Chcete zátěžově otestovat specifikaci, story nebo dokument
-- Chcete najít mezery v pokrytí, které optimistické revize přehlédnou
-
-**Jak to funguje:**
-
-1. Čte obsah s cynickou, kritickou perspektivou
-2. Identifikuje problémy v úplnosti, správnosti a kvalitě
-3. Specificky hledá, co chybí — ne jen co je přítomné a špatné
-4. Musí najít minimálně 10 problémů nebo analyzuje hlouběji
-
-**Vstup:**
-
-- `content` (povinné) — Diff, specifikace, story, dokument nebo jakýkoli artefakt
-- `also_consider` (volitelné) — Další oblasti k zvážení
-
-**Výstup:** Markdown seznam 10+ nálezů s popisy
-
-## bmad-review-edge-case-hunter
-
-**Procházení každé větvící cesty a hraničních podmínek, hlášení pouze neošetřených případů.** — Čistě metodologický přístup trasování cest, který mechanicky odvozuje třídy hraničních případů.
-
-**Použijte když:**
-
-- Chcete vyčerpávající pokrytí hraničních případů pro kód nebo logiku
-- Potřebujete doplněk k adversariální revizi (jiná metodologie, jiné nálezy)
-- Revidujete diff nebo funkci pro hraniční podmínky
-
-**Jak to funguje:**
-
-1. Enumeruje všechny větvící cesty v obsahu
-2. Mechanicky odvozuje třídy případů: chybějící else/default, nestřežené vstupy, off-by-one, přetečení aritmetiky, implicitní typová koerce, race conditions, mezery v timeoutech
-3. Testuje každou cestu proti existujícím ochranám
-4. Hlásí pouze neošetřené cesty — tiše zahazuje ošetřené
-
-**Vstup:**
-
-- `content` (povinné) — Diff, celý soubor nebo funkce
-- `also_consider` (volitelné) — Další oblasti k zvážení
-
-**Výstup:** JSON pole nálezů, každý s `location`, `trigger_condition`, `guard_snippet` a `potential_consequence`
-
-:::note[Komplementární revize]
-Spusťte obě `bmad-review-adversarial-general` a `bmad-review-edge-case-hunter` společně pro ortogonální pokrytí. Adversariální revize zachytí problémy kvality a úplnosti; hunter hraničních případů zachytí neošetřené cesty.
-:::
-
-## bmad-editorial-review-prose
-
-**Klinická jazyková korektura zaměřená na srozumitelnost komunikace.** — Reviduje text pro problémy bránící porozumění. Aplikuje baseline Microsoft Writing Style Guide. Zachovává autorský hlas.
-
-**Použijte když:**
-
-- Napsali jste dokument a chcete vylepšit psaní
-- Potřebujete zajistit srozumitelnost pro konkrétní publikum
-- Chcete komunikační opravy bez změn stylistických preferencí
-
-**Jak to funguje:**
-
-1. Čte obsah, přeskakuje bloky kódu a frontmatter
-2. Identifikuje komunikační problémy (ne stylistické preference)
-3. Deduplikuje stejné problémy napříč více lokacemi
-4. Produkuje třísloupcovou tabulku oprav
-
-**Vstup:**
-
-- `content` (povinné) — Markdown, prostý text nebo XML
-- `style_guide` (volitelné) — Projektově specifický průvodce stylem
-- `reader_type` (volitelné) — `humans` (výchozí) pro srozumitelnost/plynulost, nebo `llm` pro přesnost/konzistenci
-
-**Výstup:** Třísloupcová markdown tabulka: Původní text | Revidovaný text | Změny
-
-## bmad-editorial-review-structure
-
-**Strukturální editace — navrhuje škrty, sloučení, přesuny a zhuštění.** — Reviduje organizaci dokumentu a navrhuje substantivní změny pro zlepšení srozumitelnosti a toku před jazykovou korekcí.
-
-**Použijte když:**
-
-- Dokument byl vytvořen z více subprocesů a potřebuje strukturální koherenci
-- Chcete zkrátit dokument při zachování porozumění
-- Potřebujete identifikovat porušení rozsahu nebo pohřbené kritické informace
-
-**Jak to funguje:**
-
-1. Analyzuje dokument proti 5 strukturním modelům (Tutorial, Reference, Explanation, Prompt, Strategic)
-2. Identifikuje redundance, porušení rozsahu a pohřbené informace
-3. Produkuje prioritizovaná doporučení: CUT, MERGE, MOVE, CONDENSE, QUESTION, PRESERVE
-4. Odhaduje celkovou redukci ve slovech a procentech
-
-**Vstup:**
-
-- `content` (povinné) — Dokument k revizi
-- `purpose` (volitelné) — Zamýšlený účel (např. „quickstart tutoriál“)
-- `target_audience` (volitelné) — Kdo to čte
-- `reader_type` (volitelné) — `humans` nebo `llm`
-- `length_target` (volitelné) — Cílová redukce (např. „o 30 % kratší“)
-
-**Výstup:** Shrnutí dokumentu, prioritizovaný seznam doporučení a odhadovaná redukce
-
-## bmad-shard-doc
-
-**Rozdělení velkých markdown souborů do organizovaných souborů sekcí.** — Používá nadpisy úrovně 2 jako body dělení k vytvoření složky samostatných souborů sekcí s indexem.
-
-**Použijte když:**
-
-- Markdown dokument narostl na nezvládnutelnou velikost (500+ řádků)
-- Chcete rozložit monolitický dokument na navigovatelné sekce
-- Potřebujete samostatné soubory pro paralelní editaci nebo správu LLM kontextu
-
-**Jak to funguje:**
-
-1. Validuje, že zdrojový soubor existuje a je markdown
-2. Dělí na nadpisech úrovně 2 (`##`) do číslovaných souborů sekcí
-3. Vytváří `index.md` s manifestem sekcí a odkazy
-4. Vyzve vás ke smazání, archivaci nebo zachování originálu
-
-**Vstup:** Cesta ke zdrojovému markdown souboru, volitelná cílová složka
-
-**Výstup:** Složka s `index.md` a `01-{sekce}.md`, `02-{sekce}.md` atd.
-
-## bmad-index-docs
-
-**Generování nebo aktualizace indexu všech dokumentů ve složce.** — Skenuje adresář, čte každý soubor pro pochopení jeho účelu a produkuje organizovaný `index.md` s odkazy a popisy.
-
-**Použijte když:**
-
-- Potřebujete lehký index pro rychlé LLM skenování dostupných dokumentů
-- Složka dokumentace narostla a potřebuje organizovaný obsah
-- Chcete automaticky generovaný přehled, který zůstává aktuální
-
-**Jak to funguje:**
-
-1. Skenuje cílový adresář pro všechny neskryté soubory
-2. Čte každý soubor pro pochopení jeho skutečného účelu
-3. Seskupuje soubory podle typu, účelu nebo podadresáře
-4. Generuje stručné popisy (3–10 slov každý)
-
-**Vstup:** Cesta k cílové složce
-
-**Výstup:** `index.md` s organizovanými výpisy souborů, relativními odkazy a stručnými popisy

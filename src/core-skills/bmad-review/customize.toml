@@ -1,0 +1,56 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# Workflow customization surface for bmad-review.
+#
+# Override files (not edited here):
+#   {project-root}/_bmad/custom/bmad-review.toml         (team)
+#   {project-root}/_bmad/custom/bmad-review.user.toml    (personal)
+
+[workflow]
+
+# --- Configurable below. Overrides merge per BMad structural rules: ---
+#   scalars: override wins
+#   arrays of tables keyed by `code`: matching key replaces, new keys append
+
+# How findings are presented when the caller doesn't say: "json" (the raw
+# findings array only), "markdown" (the human report only), or "both".
+output_format = "both"
+
+# Where to write the review report. Empty = present in chat only. Accepts
+# {project-root}-prefixed paths.
+report_path = ""
+
+# ---------------------------------------------------------------------------
+# Review lenses. Each lens is an independent pass over the content with its
+# own method and stance. `instruction` is the lens's whole execution recipe —
+# the shipped lenses load a reference file from the skill root, but an
+# override may inline any prompt. `when` (optional) gates whether the lens
+# joins a default full review; an explicitly requested lens always runs.
+# Empty `instruction` disables a lens. Keyed by `code`: an override with a
+# matching code replaces the shipped lens, a new code appends.
+#
+# Example (add an org-specific lens in team/user override TOML):
+#   [[workflow.lenses]]
+#   code = "accessibility"
+#   name = "Accessibility"
+#   when = "UI code or user-facing documents."
+#   instruction = "Review against WCAG 2.2 AA. Emit findings in the canonical fields."
+# ---------------------------------------------------------------------------
+
+[[workflow.lenses]]
+code = "adversarial"
+name = "Adversarial"
+when = "always"
+instruction = "Load `references/lens-adversarial.md` from the skill root and follow it."
+
+[[workflow.lenses]]
+code = "edge-case-hunter"
+name = "Edge-Case Hunter"
+when = "always"
+instruction = "Load `references/lens-edge-case-hunter.md` from the skill root and follow it."
+
+[[workflow.lenses]]
+code = "verification-gap"
+name = "Verification Gap"
+when = "Code changes reviewed inside a repo where tests can be searched and read. Skip for prose documents or content with no verification surface."
+instruction = "Load `references/lens-verification-gap.md` from the skill root and follow it."

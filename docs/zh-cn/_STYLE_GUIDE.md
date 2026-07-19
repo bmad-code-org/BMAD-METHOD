@@ -65,7 +65,7 @@ Critical warnings only — data loss, security issues
 | Skill                | Agent   | Purpose                              |
 | -------------------- | ------- | ------------------------------------ |
 | `bmad-brainstorming` | Analyst | Brainstorm a new project             |
-| `bmad-create-prd`    | PM      | Create Product Requirements Document |
+| `bmad-prd`    | PM      | Create Product Requirements Document |
 ```
 
 ## 文件结构块（Folder Structure）

@@ -21,7 +21,7 @@ sidebar:
 多数实现相关工作流会自动加载 `project-context.md`（若存在），并把它作为共享上下文参与决策。
 
 **常见加载方包括：**
-- `bmad-create-architecture`：在 solutioning 时纳入你的技术偏好
+- `bmad-architecture`：在 solutioning 时纳入你的技术偏好
 - `bmad-create-story`：按项目约定拆分和描述 story
 - `bmad-dev-story`：约束实现路径和代码风格
 - `bmad-code-review`：按项目标准做一致性校验
@@ -32,7 +32,7 @@ sidebar:
 
 | 场景 | 建议时机 | 目标 |
 |----------|----------------|---------|
-| **新项目（架构前）** | 在 `bmad-create-architecture` 前手动创建 | 先声明技术偏好，避免架构偏航 |
+| **新项目（架构前）** | 在 `bmad-architecture` 前手动创建 | 先声明技术偏好，避免架构偏航 |
 | **新项目（架构后）** | 通过 `bmad-generate-project-context` 生成并补充 | 把架构决策转成可执行规则 |
 | **既有项目** | 先生成，再人工校对 | 让智能体学习现有约定而非重造体系 |
 | **Quick Flow 场景** | 在 `bmad-quick-dev` 前或过程中维护 | 弥补跳过完整规划带来的上下文缺口 |

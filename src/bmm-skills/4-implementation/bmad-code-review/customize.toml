@@ -39,3 +39,55 @@ persistent_facts = [
 # Leave empty for no custom post-completion behavior.
 
 on_complete = ""
+
+# Review layers for the review step. `instruction` is the layer's whole
+# execution recipe — subagents by default, but an override may run anything
+# (e.g. an external reviewer via bash). {diff_output} and {spec_file} are
+# substituted at run time. `when` (optional) gates a layer; empty
+# `instruction` disables it.
+
+[[workflow.review_layers]]
+id = "blind-hunter"
+name = "Blind Hunter"
+instruction = """
+Launch a subagent with no prior conversation context, with this prompt:
+
+> Invoke the `bmad-review` skill with only the `adversarial` lens on this diff:
+>
+> {diff_output}
+"""
+
+[[workflow.review_layers]]
+id = "edge-case-hunter"
+name = "Edge Case Hunter"
+instruction = """
+Launch a subagent with no prior conversation context, with this prompt:
+
+> Invoke the `bmad-review` skill with only the `edge-case-hunter` lens on this diff:
+>
+> {diff_output}
+"""
+
+[[workflow.review_layers]]
+id = "verification-gap"
+name = "Verification Gap Reviewer"
+instruction = """
+Launch a subagent with no prior conversation context, with this prompt:
+
+> Invoke the `bmad-review` skill with only the `verification-gap` lens on this diff:
+>
+> {diff_output}
+"""
+
+[[workflow.review_layers]]
+id = "acceptance-auditor"
+name = "Acceptance Auditor"
+when = 'Only when {review_mode} = "full".'
+instruction = """
+Launch a subagent with no prior conversation context, with this prompt:
+
+> You are an Acceptance Auditor. Review the provided diff against `{spec_file}` and any loaded context docs. Check for: violations of acceptance criteria, deviations from spec intent, missing implementation of specified behavior, contradictions between spec constraints and actual code. Output findings as a Markdown list. Each finding: one-line title, which AC/constraint it violates, and evidence from the diff.
+>
+> Diff:
+> {diff_output}
+"""

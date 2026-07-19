@@ -94,7 +94,7 @@ Les skills de workflow exécutent un processus structuré en plusieurs étapes s
 | `bmad-product-brief`            | Créer ou mettre à jour un product brief[^3] — découverte guidée lorsque votre concept est clair                              |
 | `bmad-prfaq`                    | Défi [PRFAQ Working Backwards](../explanation/analysis-phase.md#prfaq-working-backwards) pour éprouver votre concept produit |
 | `bmad-prd`                      | Créer, mettre à jour ou valider un PRD[^1]                                                                                   |
-| `bmad-create-architecture`      | Concevoir l’architecture système                                                                                             |
+| `bmad-architecture`      | Concevoir l’architecture système                                                                                             |
 | `bmad-create-epics-and-stories` | Créer des epics et des stories                                                                                               |
 | `bmad-dev-story`                | Implémenter une story                                                                                                        |
 | `bmad-code-review`              | Effectuer une revue de code                                                                                                  |
@@ -120,7 +120,7 @@ bmad-help Quelles sont mes options pour le design UX ?
 
 **Autres tâches et outils principaux**
 
-Le module principal inclut 12 outils intégrés — specs, revues, brainstorming, personnalisation, gestion de documents, et plus. Consultez [Outils principaux](./core-tools.md) pour la référence complète.
+Le module principal inclut 8 outils intégrés — aide, revues, raffinement, personnalisation et les compétences de réflexion (brainstorming, forge idea, party mode). Consultez [Outils principaux](./core-tools.md) pour la référence complète.
 
 ## Convention de nommage
 

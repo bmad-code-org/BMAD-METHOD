@@ -1,4 +1,4 @@
-# Test Cases for bmad-review-adversarial-general skill with also_consider input
+# Test Cases for the bmad-review skill (adversarial lens only) with also_consider input
 #
 # Purpose: Evaluate how the optional also_consider input influences review findings
 # Content: All tests use sample-content.md (User Authentication API docs)

@@ -60,3 +60,16 @@ bmad-distillator
 # bmad-create-ux-design: renamed to bmad-ux (spine-based skill with separate
 # DESIGN.md and EXPERIENCE.md outputs).
 bmad-create-ux-design
+# bmad-investigate: retired. Plain investigation reaches the same conclusions at
+# lower cost.
+bmad-investigate
+
+# Removed skills (v6.10.0)
+# bmad-auto-setup: renamed to bmad-loop-setup as part of the bmad-auto ->
+# bmad-loop module rename (BMad Automator's replacement).
+bmad-auto-setup
+
+# Removed skills (core streamline, post-v6.10.0)
+# bmad-index-docs, bmad-shard-doc: retired outright.
+bmad-index-docs
+bmad-shard-doc

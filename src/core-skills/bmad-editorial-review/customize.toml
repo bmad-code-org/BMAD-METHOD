@@ -1,0 +1,68 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# Workflow customization surface for bmad-editorial-review.
+#
+# Override files (not edited here):
+#   {project-root}/_bmad/custom/bmad-editorial-review.toml         (team)
+#   {project-root}/_bmad/custom/bmad-editorial-review.user.toml    (personal)
+
+[workflow]
+
+# --- Configurable below. Overrides merge per BMad structural rules: ---
+#   scalars: override wins • arrays: append
+
+# Steps executed on activation: prepend runs before the skill's own
+# activation flow, append runs after it. Each entry is a literal instruction.
+activation_steps_prepend = []
+activation_steps_append = []
+
+# Standing context held for every review. Entries prefixed `file:` are paths
+# or globs whose contents load as facts; all others are literal facts.
+persistent_facts = ["file:{project-root}/**/project-context.md"]
+
+# Executed after the findings are delivered. Freeform directive; empty = the
+# review ends with the findings.
+#
+# Example:
+#   on_complete = "Append a one-line review summary to {project-root}/docs/review-log.md"
+on_complete = ""
+
+# Default reader the review calibrates for when the request doesn't say:
+#   "humans"  clarity, flow, comprehension aids preserved
+#   "llm"     precision, consistent terminology, no hedging
+# A reader type stated in the request wins for that run.
+reader_type = "humans"
+
+# The baseline style guide for every review: the name of a guide the model
+# knows well, a `file:`-prefixed path to a style guide document, or the rules
+# inline as text. A style guide stated in the request wins for that run.
+# Where the guide in effect conflicts with the skill's generic principles,
+# the guide wins — except content is sacrosanct.
+#
+# Examples (set in team/user override TOML):
+#   style_guide = "file:{project-root}/_bmad/style-guides/company-voice.md"
+#   style_guide = "Sentence-case headings. No Oxford comma. Address the reader as 'you'."
+style_guide = "Microsoft Writing Style Guide"
+
+# Where the findings table lands. A path or path directive; empty = chat.
+#
+# Example:
+#   review_output_path = "Write the findings table to <target>-review.md beside the reviewed document."
+review_output_path = ""
+
+# How findings are presented — shaping, not destination. Freeform directive;
+# empty = the default table ordering and long-tail rollup.
+#
+# Example:
+#   output_preferences = "Cap output at the 20 highest-impact findings."
+output_preferences = ""
+
+# Standing review directives applied on every run alongside the skill's own
+# principles. Each entry is a literal sentence or a `file:`-prefixed path/glob
+# whose contents load as directives.
+#
+# Examples:
+#   "Flag passive voice in headings."
+#   "Second-person imperative is the house voice; never suggest changing it."
+#   "file:{project-root}/docs/terminology.md"
+review_guidance = []

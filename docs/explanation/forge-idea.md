@@ -2,7 +2,7 @@
 title: "Forge an Idea"
 description: Pressure-test an idea through persona-driven interrogation until it hardens, proves out, or dies cheaply
 sidebar:
-  order: 14
+  order: 13
 ---
 
 Take a half-formed idea and pressure-test it now, in conversation, while changing your mind is still free.
@@ -12,6 +12,8 @@ Take a half-formed idea and pressure-test it now, in conversation, while changin
 Run `bmad-forge-idea` and an exacting interrogator goes to work on your idea, one question at a time, until what survives is something you can act on with earned conviction. The skill is domain-agnostic. It runs on a software feature, a business model, a research hypothesis, or a life decision you keep circling.
 
 What you walk away with is sharper thinking. A distilled `forged-idea.md` is only ever one possible exit, and the session never herds you toward "shall we build it?"
+
+Forge Idea is one of the core module's thinking skills, so it is present in every BMad installation.
 
 ## Why Pressure-Test Early
 
@@ -57,7 +59,7 @@ Reach for the forge when you already hold an idea and want it hardened or killed
 | `bmad-prfaq` | You've committed to a product and want it proven customer-first | A Working Backwards coach |
 | `bmad-brainstorming` | You have no idea yet and need to generate options | A facilitation coach |
 | `bmad-party-mode` | You want your agents to discuss or decide together | Your whole roster in one conversation |
-| `bmad-review-adversarial-general` | You have an artifact and need its flaws found | A reviewer who must find issues |
+| `bmad-review` | You have an artifact and need its flaws found | A multi-lens reviewer hunting real issues |
 
 ## Example
 

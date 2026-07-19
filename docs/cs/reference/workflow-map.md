@@ -36,8 +36,9 @@ Definujte, co budovat a pro koho.
 
 | Workflow                    | Účel                                     | Produkuje    |
 | --------------------------- | ---------------------------------------- | ------------ |
-| `bmad-create-prd`           | Definice požadavků (FR/NFR)              | `PRD.md`     |
+| `bmad-prd`           | Definice požadavků (FR/NFR)              | `PRD.md`     |
 | `bmad-ux`                | Návrh uživatelského zážitku (když záleží na UX) | `DESIGN.md`, `EXPERIENCE.md` |
+| `bmad-spec`              | Destiluje jakýkoli vstupní záměr (brief, PRD, přepis, poznámky) do stručného kontraktu `SPEC.md` + doprovodných souborů — zafixuje CO před JAK | `SPEC.md` + doprovodné soubory pod `{output_folder}/specs/spec-{slug}/` |
 
 ## Fáze 3: Solutioning
 
@@ -45,7 +46,7 @@ Rozhodněte, jak to budovat, a rozložte práci na stories.
 
 | Workflow                                  | Účel                                       | Produkuje                   |
 | ----------------------------------------- | ------------------------------------------ | --------------------------- |
-| `bmad-create-architecture`                | Explicitní technická rozhodnutí            | `architecture.md` s ADR     |
+| `bmad-architecture`                | Explicitní technická rozhodnutí            | `architecture.md` s ADR     |
 | `bmad-create-epics-and-stories`           | Rozložení požadavků na implementovatelnou práci | Soubory epiců se stories |
 | `bmad-check-implementation-readiness`     | Kontrola brány před implementací           | Rozhodnutí PASS/CONCERNS/FAIL |
 

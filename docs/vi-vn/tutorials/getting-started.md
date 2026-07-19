@@ -114,7 +114,7 @@ BMad-Help sẽ nhận biết bạn đã làm đến đâu và đề xuất chín
 :::
 
 :::note[Cách Nạp Agent Và Chạy Workflow]
-Mỗi workflow có một **skill** được gọi bằng tên trong IDE của bạn, ví dụ `bmad-create-prd`. Công cụ AI sẽ nhận diện tên `bmad-*` và chạy nó, bạn không cần nạp agent riêng. Bạn cũng có thể gọi trực tiếp skill của agent để trò chuyện tổng quát, ví dụ `bmad-agent-pm` cho PM agent.
+Mỗi workflow có một **skill** được gọi bằng tên trong IDE của bạn, ví dụ `bmad-prd`. Công cụ AI sẽ nhận diện tên `bmad-*` và chạy nó, bạn không cần nạp agent riêng. Bạn cũng có thể gọi trực tiếp skill của agent để trò chuyện tổng quát, ví dụ `bmad-agent-pm` cho PM agent.
 :::
 
 :::caution[Chat Mới]
@@ -143,7 +143,7 @@ Tất cả workflow trong phase này đều là tùy chọn. [**Chưa chắc nê
 
 **Với nhánh BMad Method và Enterprise:**
 1. Gọi **PM agent** (`bmad-agent-pm`) trong một chat mới
-2. Chạy workflow `bmad-create-prd` (`bmad-create-prd`)
+2. Chạy workflow `bmad-prd` (`bmad-prd`)
 3. Kết quả: `PRD.md`
 
 **Với nhánh Quick Flow:**
@@ -157,7 +157,7 @@ Nếu dự án của bạn có giao diện người dùng, hãy gọi **UX-Desig
 
 **Tạo Architecture**
 1. Gọi **Architect agent** (`bmad-agent-architect`) trong một chat mới
-2. Chạy `bmad-create-architecture` (`bmad-create-architecture`)
+2. Chạy `bmad-architecture` (`bmad-architecture`)
 3. Kết quả: tài liệu kiến trúc chứa các quyết định kỹ thuật
 
 **Tạo Epics và Stories**
@@ -225,8 +225,8 @@ your-project/
 | Workflow | Lệnh | Agent | Mục đích |
 | ------------------------------------- | ------------------------------------------ | --------- | ----------------------------------------------- |
 | **`bmad-help`** ⭐ | `bmad-help` | Bất kỳ | **Người dẫn đường thông minh của bạn — hỏi gì cũng được!** |
-| `bmad-create-prd` | `bmad-create-prd` | PM | Tạo tài liệu yêu cầu sản phẩm |
-| `bmad-create-architecture` | `bmad-create-architecture` | Architect | Tạo tài liệu kiến trúc |
+| `bmad-prd` | `bmad-prd` | PM | Tạo tài liệu yêu cầu sản phẩm |
+| `bmad-architecture` | `bmad-architecture` | Architect | Tạo tài liệu kiến trúc |
 | `bmad-generate-project-context` | `bmad-generate-project-context` | Analyst | Tạo file project context |
 | `bmad-create-epics-and-stories` | `bmad-create-epics-and-stories` | PM | Phân rã PRD thành epics |
 | `bmad-check-implementation-readiness` | `bmad-check-implementation-readiness` | Architect | Kiểm tra độ nhất quán của kế hoạch |

@@ -172,5 +172,4 @@ npx bmad-method install
 
 ## 后续步骤
 
-- [文档分片指南](./shard-large-documents.md) - 了解如何管理超长文档
 - [命令参考](../reference/commands.md) - 查看可用命令和工作流入口
