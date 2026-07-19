@@ -1,6 +1,10 @@
 # DO NOT EDIT -- overwritten on every update.
 #
-# Workflow customization surface for bmad-editorial-review.
+# Workflow customization surface for bmad-editorial-review, which is
+# deprecated and forwards to bmad-review's `structure` and `prose` lenses.
+# These fields are kept so existing overrides keep resolving: the shim
+# resolves them here and passes them to bmad-review as pre-resolved values.
+# New customization belongs on bmad-review itself.
 #
 # Override files (not edited here):
 #   {project-root}/_bmad/custom/bmad-editorial-review.toml         (team)

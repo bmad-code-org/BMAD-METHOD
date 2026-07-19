@@ -6,11 +6,15 @@ the legacy output contract so existing callers keep working.
 
 | Shim                              | Forwards to                              |
 | --------------------------------- | ---------------------------------------- |
-| `bmad-editorial-review-prose`     | `bmad-editorial-review` (prose pass)     |
-| `bmad-editorial-review-structure` | `bmad-editorial-review` (structure pass) |
+| `bmad-editorial-review`           | `bmad-review` (structure + prose lenses) |
+| `bmad-editorial-review-prose`     | `bmad-review` (prose lens)               |
+| `bmad-editorial-review-structure` | `bmad-review` (structure lens)           |
 | `bmad-review-adversarial-general` | `bmad-review` (adversarial lens)         |
 | `bmad-review-edge-case-hunter`    | `bmad-review` (edge-case lens)           |
 | `bmad-review-verification-gap`    | `bmad-review` (verification-gap lens)    |
+
+`bmad-editorial-review` keeps its `customize.toml` so existing team and user
+overrides still resolve; the shim forwards those resolved values to `bmad-review`.
 
 External module repos (gds, loop, tea, bmb, os-utils) still invoke these IDs, so they
 ship by default. Removal rides the v7 cut — never a 6.x minor.
