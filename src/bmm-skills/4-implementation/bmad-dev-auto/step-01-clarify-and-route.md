@@ -56,7 +56,7 @@ If the invocation prompt does not contain enough intent to identify what to impl
         - **If valid:** load it as the primary planning context. Do not load raw planning docs (PRD, architecture, UX, etc.).
         - **If missing, empty, or invalid:** compile it in the next bullet.
 
-     3. **Compile epic context if needed.** If no valid cached epic context was loaded, produce `{implementation_artifacts}/epic-<N>-context.md` by spawning a subagent with `./compile-epic-context.md` as its prompt. Pass it the epic number, the epics file path, the `{planning_artifacts}` directory, and the output path `{implementation_artifacts}/epic-<N>-context.md`.
+     3. **Compile epic context if needed.** If no valid cached epic context was loaded, produce `{implementation_artifacts}/epic-<N>-context.md` by spawning a subagent synchronously (wait for it to return in this turn) with `./compile-epic-context.md` as its prompt. Pass it the epic number, the epics file path, the `{planning_artifacts}` directory, and the output path `{implementation_artifacts}/epic-<N>-context.md`.
 
      4. **Verify if compiled.** If epic context was compiled, verify the output file exists, is non-empty, and starts with `# Epic <N> Context:`. If valid, load it. If verification fails, HALT with status `blocked` and blocking condition `context compilation verification failed`.
 

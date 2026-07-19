@@ -28,7 +28,7 @@ Follow `./sync-sprint-status.md` with `target_status` = `in-progress`.
 
 If `{spec_file}` has a non-empty `context:` list in its frontmatter, load those files before implementation begins. When handing to a subagent, include them in the subagent prompt so it has access to the referenced context.
 
-Hand `{spec_file}` to a subagent/task and let it implement. If no subagents are available, implement directly.
+Hand `{spec_file}` to a subagent/task and let it implement. If no subagents are available, implement directly. If the platform allows, keep the subagent available for re-engagement after it returns — step-04 may send it review fixes.
 
 **Path formatting rule:** Any markdown links written into `{spec_file}` must use paths relative to `{spec_file}`'s directory so they are clickable in VS Code. Any file paths displayed in terminal/conversation output must use CWD-relative format with `:line` notation (e.g., `src/path/file.ts:42`) for terminal clickability. No leading `/` in either case.
 

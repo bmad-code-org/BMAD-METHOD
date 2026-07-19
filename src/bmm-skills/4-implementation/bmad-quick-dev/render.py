@@ -12,7 +12,10 @@ files to {project-root}/_bmad/render/bmad-quick-dev/.
 Config: four-layer merge of _bmad/config.toml + config.user.toml +
 custom/config.toml + custom/config.user.toml (post-#2285 installs).
 Keys surface from [core] and [modules.bmm]. Missing or unparseable
-config.toml → HALT.
+config.toml → HALT. A {{.var}} referenced by this skill's .md sources but
+absent from the merged config → HALT (never a silent empty substitution).
+Optional layers may be missing, but one that exists and cannot be parsed
+or read → HALT.
 
 Customization: three-layer merge of {skill}/customize.toml +
 _bmad/custom/bmad-quick-dev.toml + .user.toml (same structural rules as
@@ -50,10 +53,12 @@ def find_project_root():
 
 
 def load_toml(path, required=False):
-    """Load a TOML file. For required files, HALT (stdout) on missing/parse
-    error so the LLM-driven workflow stops — stdout is how this script signals
-    workflow halts to its LLM caller. For optional files, write a stderr
-    warning and return {}."""
+    """Load a TOML file. Only absence is negotiable: a missing optional file
+    returns {} (customization layers are optional), a missing required file
+    HALTs. A file that exists but cannot be parsed or read always HALTs —
+    stdout is how this script signals workflow halts to its LLM caller — the
+    user wrote it to be honored, and silently continuing with {} would discard
+    their customizations with no failure signal."""
     if not os.path.isfile(path):
         if required:
             print(
@@ -66,17 +71,11 @@ def load_toml(path, required=False):
         with open(path, "rb") as fh:
             parsed = tomllib.load(fh)
     except tomllib.TOMLDecodeError as error:
-        if required:
-            print(f"HALT and report to the user: failed to parse {path}: {error}")
-            sys.exit(1)
-        print(f"render.py: warning: failed to parse {path}: {error}", file=sys.stderr)
-        return {}
+        print(f"HALT and report to the user: failed to parse {path}: {error}")
+        sys.exit(1)
     except OSError as error:
-        if required:
-            print(f"HALT and report to the user: failed to read {path}: {error}")
-            sys.exit(1)
-        print(f"render.py: warning: failed to read {path}: {error}", file=sys.stderr)
-        return {}
+        print(f"HALT and report to the user: failed to read {path}: {error}")
+        sys.exit(1)
     if not isinstance(parsed, dict):
         return {}
     return parsed
@@ -160,7 +159,7 @@ def resolve_workflow(root, skill_dir, skill_name):
     """Resolve the [workflow] customization block via the three-layer merge
     (skill defaults -> team -> user), highest priority last. Same structural
     rules as resolve_customization.py. All three layers are optional: a missing
-    or unparseable file warns (via load_toml) and is skipped."""
+    file is skipped, but an unparseable one HALTs (via load_toml)."""
     defaults = load_toml(posixpath.join(skill_dir, "customize.toml"))
     custom_dir = posixpath.join(root, "_bmad", "custom")
     team = load_toml(posixpath.join(custom_dir, f"{skill_name}.toml"))
@@ -205,9 +204,25 @@ def flatten_central_config(merged):
 
 
 def render_template(content, vars_):
-    """Resolve {{.var}} substitutions. Unresolved references emit an empty string
-    (Go's missingkey=zero semantics)."""
+    """Resolve {{.var}} substitutions. Unresolved references emit an empty string,
+    but main() HALTs on any missing reference before rendering starts, so this
+    fallback never fires in practice."""
     return re.sub(r"\{\{\.(\w+)\}\}", lambda m: vars_.get(m.group(1), ""), content)
+
+
+def collect_missing_vars(sources, vars_):
+    """Map each {{.var}} name referenced by the source .md files but absent from
+    the merged config to the files that reference it. A missing key must HALT:
+    missingkey=zero rendering would bake a corrupted workflow (empty paths,
+    blank language lines) with no failure signal."""
+    missing = {}
+    for fname, content in sources:
+        for name in re.findall(r"\{\{\.(\w+)\}\}", content):
+            if name not in vars_:
+                files = missing.setdefault(name, [])
+                if fname not in files:
+                    files.append(fname)
+    return missing
 
 
 def _scalar_str(value):
@@ -305,6 +320,9 @@ def main():
 
     vars_["project_root"] = root
 
+    # Guarded ahead of the general missing-vars scan: sprint_status and
+    # deferred_work_file derive from it below, and unlike the scan (absent
+    # keys only) this also HALTs on a present-but-empty value.
     implementation_artifacts = vars_.get("implementation_artifacts", "").strip()
     if not implementation_artifacts:
         print(
@@ -320,6 +338,27 @@ def main():
         implementation_artifacts, "deferred-work.md"
     )
 
+    sources = []
+    for fname in sorted(os.listdir(script_dir)):
+        if not fname.endswith(".md") or fname == "SKILL.md":
+            continue
+        with open(
+            posixpath.join(script_dir, fname), "r", encoding="utf-8", newline=""
+        ) as fh:
+            sources.append((fname, fh.read()))
+
+    missing = collect_missing_vars(sources, vars_)
+    if missing:
+        details = "; ".join(
+            f"`{name}` (referenced by {', '.join(files)})"
+            for name, files in sorted(missing.items())
+        )
+        print(
+            f"HALT and report to the user: config is missing {details} "
+            "(expected under [core] or [modules.bmm] in _bmad/config.toml)"
+        )
+        sys.exit(1)
+
     workflow = resolve_workflow(root, script_dir.replace(os.sep, "/"), skill_name)
 
     out_dir = posixpath.join(root, "_bmad", "render", skill_name)
@@ -329,13 +368,8 @@ def main():
         if fname.endswith(".md"):
             os.remove(posixpath.join(out_dir, fname))
 
-    for fname in sorted(os.listdir(script_dir)):
-        if not fname.endswith(".md") or fname == "SKILL.md":
-            continue
-        src = posixpath.join(script_dir, fname)
+    for fname, content in sources:
         dst = posixpath.join(out_dir, fname)
-        with open(src, "r", encoding="utf-8", newline="") as fh:
-            content = fh.read()
         with open(dst, "w", encoding="utf-8", newline="") as fh:
             fh.write(render_workflow(render_template(content, vars_), workflow))
 
