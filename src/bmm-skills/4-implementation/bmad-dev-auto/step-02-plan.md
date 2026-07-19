@@ -12,7 +12,7 @@ deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 ## INSTRUCTIONS
 
 1. Draft resume check. If `{spec_file}` exists with `status: draft`, read it and capture the verbatim `<intent-contract>...</intent-contract>` block as `preserved_intent_contract`. Otherwise `preserved_intent_contract` is empty.
-2. Investigate codebase. _Read the code yourself for narrow, localized tasks. Isolate deep exploration in subagents: instruct them to give you distilled summaries only, and plan from those summaries._
+2. Investigate codebase. _Read the code yourself for narrow, localized tasks. Isolate deep exploration in synchronous subagents: instruct them to give you distilled summaries only, and plan from those summaries._
 3. Read `./spec-template.md` fully. Fill it out based on the intent and investigation. If `{preserved_intent_contract}` is non-empty, substitute it for the `<intent-contract>` block in your filled spec before writing. Write the result to `{spec_file}`.
 4. Self-review against READY FOR DEVELOPMENT standard.
 5. If intent gaps exist, do not fantasize and do not leave open questions. Multiple defensible readings of the intent that lead to observably different outcomes, with nothing in the intent to select between them, are an intent gap — do not resolve one by picking a reading. HALT with status `blocked`, blocking condition `intent gap`, and include the unanswered questions and evidence gathered.

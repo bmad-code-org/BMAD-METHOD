@@ -328,9 +328,62 @@ try {
     assert(!res.stderr.includes('Traceback'), `renderer crashed with a traceback instead of HALTing:\n${res.stderr}`);
   });
 
+  test('missing planning_artifacts HALTs cleanly (no traceback)', () => {
+    // implementation_artifacts is present, so this exercises the general
+    // missing-vars scan rather than the dedicated guard.
+    const { skillDst: dst } = makeProject(
+      [
+        '[core]',
+        'communication_language = "French"',
+        'document_output_language = "Klingon"',
+        'implementation_artifacts = "{project-root}/impl"',
+      ].join('\n'),
+    );
+    const res = spawnSync('python3', [path.join(dst, 'render.py')], { cwd: dst, encoding: 'utf-8' });
+    assert(res.status === 1, `expected exit 1, got ${res.status}\nstdout: ${res.stdout}\nstderr: ${res.stderr}`);
+    assert(
+      res.stdout.includes('HALT and report to the user: config is missing') && res.stdout.includes('`planning_artifacts`'),
+      `stdout missing the planning_artifacts HALT directive.\nstdout: ${res.stdout}`,
+    );
+    assert(
+      res.stdout.includes('step-01-clarify-and-route.md'),
+      `HALT directive does not name the referencing file.\nstdout: ${res.stdout}`,
+    );
+    assert(!res.stderr.includes('Traceback'), `renderer crashed with a traceback instead of HALTing:\n${res.stderr}`);
+  });
+
+  test('unparseable customization override HALTs cleanly (no traceback)', () => {
+    const { dir, skillDst: dst } = makeProject(
+      [
+        '[core]',
+        'communication_language = "French"',
+        'document_output_language = "Klingon"',
+        'planning_artifacts = "{project-root}/plan"',
+        'implementation_artifacts = "{project-root}/impl"',
+      ].join('\n'),
+    );
+    fs.mkdirSync(path.join(dir, '_bmad', 'custom'), { recursive: true });
+    fs.writeFileSync(path.join(dir, '_bmad', 'custom', 'bmad-quick-dev.user.toml'), '[workflow\non_complete = broken', 'utf-8');
+    const res = spawnSync('python3', [path.join(dst, 'render.py')], { cwd: dst, encoding: 'utf-8' });
+    assert(res.status === 1, `expected exit 1, got ${res.status}\nstdout: ${res.stdout}\nstderr: ${res.stderr}`);
+    assert(
+      res.stdout.includes('HALT and report to the user: failed to parse') && res.stdout.includes('bmad-quick-dev.user.toml'),
+      `stdout missing the failed-to-parse HALT directive naming the override file.\nstdout: ${res.stdout}`,
+    );
+    assert(!res.stderr.includes('Traceback'), `renderer crashed with a traceback instead of HALTing:\n${res.stderr}`);
+  });
+
   test('non-table [modules] does not crash the renderer', () => {
     const { dir, skillDst: dst } = makeProject(
-      ['modules = "oops-not-a-table"', '', '[core]', 'implementation_artifacts = "{project-root}/impl"'].join('\n'),
+      [
+        'modules = "oops-not-a-table"',
+        '',
+        '[core]',
+        'communication_language = "French"',
+        'document_output_language = "Klingon"',
+        'planning_artifacts = "{project-root}/plan"',
+        'implementation_artifacts = "{project-root}/impl"',
+      ].join('\n'),
     );
     const res = spawnSync('python3', [path.join(dst, 'render.py')], { cwd: dst, encoding: 'utf-8' });
     assert(res.status === 0, `expected exit 0, got ${res.status}\nstdout: ${res.stdout}\nstderr: ${res.stderr}`);
