@@ -133,7 +133,12 @@ class UI {
     for (const moduleId of installedModuleIds) {
       if (moduleId === 'core') continue;
       if (!selectedSet.has(moduleId) && !options.preserveUnselected) continue;
-      if (officialCodes.has(moduleId)) continue;
+      // Resolve a possibly-renamed module code (e.g. `bauto` -> `bmad-loop`)
+      // before checking availability, so a registry rename doesn't freeze
+      // the install here the way it would have prior to the alias support
+      // in ExternalModuleManager.getModuleByCode().
+      const canonicalId = await externalManager.resolveCanonicalCode(moduleId);
+      if (officialCodes.has(canonicalId)) continue;
 
       const customSource = await customMgr.findModuleSourceByCode(moduleId, { bmadDir });
       if (!customSource) {

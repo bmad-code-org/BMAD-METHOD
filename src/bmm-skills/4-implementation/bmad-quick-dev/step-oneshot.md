@@ -1,35 +1,34 @@
----
-deferred_work_file: '{implementation_artifacts}/deferred-work.md'
----
-
 # Step One-Shot: Implement, Review, Present
 
 ## RULES
 
-- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
+- **Language** — Speak in `{{.communication_language}}`. Write any file output in `{{.document_output_language}}`.
 - NEVER auto-push.
 - All review subagents must run at the same model capability as the current session.
+- Run subagents synchronously: launch them together, then wait for all results before continuing.
 
 ## INSTRUCTIONS
 
 ### Implement
 
-Follow `./sync-sprint-status.md` with `{target_status}` = `in-progress`.
+Follow `./sync-sprint-status.md` with `target_status` = `in-progress`.
 
 Implement the clarified intent directly.
 
 ### Review
 
-Launch Blind Hunter without prior conversation context. If no subagents are available, generate one review prompt file in `{implementation_artifacts}` and HALT. Ask the human to run it in a separate session and paste back the findings.
+Execute these review layers in parallel wherever their execution methods allow, following each layer's instruction verbatim after substituting any runtime placeholders:
 
-- **Blind Hunter** — prompt: "Invoke the `bmad-review-adversarial-general` skill on the changed files."
+{workflow.oneshot_review_layers}
+
+If a layer's instruction requires subagents and none are available, generate one review prompt file per such layer in `{{.implementation_artifacts}}` and HALT. Ask the human to run each in a separate session and paste back the findings.
 
 ### Classify
 
 Deduplicate all review findings. Three categories only:
 
 - **patch** — trivially fixable. Auto-fix immediately.
-- **defer** — pre-existing issue not caused by this change. Append one new entry to `{deferred_work_file}` using this format. Do not modify existing entries or look for duplicates.
+- **defer** — pre-existing issue not caused by this change. Append one new entry to `{{.deferred_work_file}}` using this format. Do not modify existing entries or look for duplicates.
   ```markdown
   - source_spec: `{spec_file}`
     summary: <one sentence>
@@ -41,7 +40,7 @@ If a finding is caused by this change but too significant for a trivial patch, H
 
 ### Generate Spec Trace
 
-Set `{title}` = a concise title derived from the clarified intent.
+Set `title` = a concise title derived from the clarified intent.
 
 Write `{spec_file}` using `./spec-template.md`. Fill only these sections — delete all others:
 
@@ -49,7 +48,7 @@ Write `{spec_file}` using `./spec-template.md`. Fill only these sections — del
 2. **Title and Intent** — `# {title}` heading and `## Intent` with **Problem** and **Approach** lines. Reuse the summary you already generated for the terminal.
 3. **Suggested Review Order** — append after Intent. Build using the same convention as `./step-05-present.md` § "Generate Suggested Review Order" (spec-file-relative links, concern-based ordering, ultra-concise framing).
 
-Follow `./sync-sprint-status.md` with `{target_status}` = `review`.
+Follow `./sync-sprint-status.md` with `target_status` = `review`.
 
 ### Commit
 
@@ -74,6 +73,6 @@ Workflow complete.
 
 ## On Complete
 
-Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete`
+If anything appears below, follow it as the final terminal instruction before exiting; otherwise exit normally.
 
-If the resolved `workflow.on_complete` is non-empty, follow it as the final terminal instruction before exiting.
+{workflow.on_complete}
