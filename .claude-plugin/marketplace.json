@@ -47,11 +47,7 @@
       "author": {
         "name": "Brian (BMad) Madison"
       },
-      "skills": [
-        "./src/core-skills/bmad-brainstorming",
-        "./src/core-skills/bmad-party-mode",
-        "./src/core-skills/bmad-forge-idea"
-      ]
+      "skills": ["./src/core-skills/bmad-brainstorming", "./src/core-skills/bmad-party-mode", "./src/core-skills/bmad-forge-idea"]
     },
     {
       "name": "bmad-method-lifecycle",
