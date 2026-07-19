@@ -95,11 +95,12 @@ IDE에서 스킬 이름을 입력해 호출합니다. 일부 플랫폼은 스킬
 | `bmad-prfaq` | 제품 개념을 스트레스 테스트하는 [워킹 백워드 PRFAQ](../explanation/analysis-phase.md#prfaq-working-backwards) 챌린지 |
 | `bmad-prd` | 제품 요구사항 문서(PRD) 생성, 업데이트, 검증 |
 | `bmad-ux` | 사용자 경험 설계 |
-| `bmad-create-architecture` | 시스템 아키텍처 설계 |
+| `bmad-architecture` | 시스템 아키텍처 설계 |
 | `bmad-create-epics-and-stories` | 에픽과 스토리 생성 |
 | `bmad-dev-story` | 스토리 구현 |
 | `bmad-code-review` | 코드 리뷰 실행 |
-| `bmad-quick-dev` | 통합 빠른 흐름 - 의도 정리, 계획, 구현, 리뷰, 발표 |
+| `bmad-quick-dev` | 작은 요청을 빠르게 구현 - 의도 정리, 계획, 구현, 리뷰, 결과 제시 |
+| `bmad-dev-auto` | 사람의 개입 없이 개발 루프를 한 번 실행해 작은 요청을 코드로 구현 |
 
 단계별 전체 워크플로 참조는 [워크플로 맵](./workflow-map.md)을 참고하세요.
 
@@ -121,7 +122,7 @@ bmad-help UX 설계에는 어떤 선택지가 있나요?
 
 **기타 핵심 작업과 도구**
 
-핵심 모듈에는 스펙, 리뷰, 브레인스토밍, 커스터마이징, 문서 관리 등 12개의 내장 도구가 포함됩니다. 전체 참조는 [핵심 도구](./core-tools.md)를 참고하세요.
+핵심 모듈에는 도움말, 리뷰, 개선, 커스터마이징과 사고 스킬(브레인스토밍, 아이디어 단련, 파티 모드) 등 8개의 내장 도구가 포함됩니다. 전체 목록은 [핵심 도구](./core-tools.md)를 참고하세요.
 
 ## 이름 규칙
 

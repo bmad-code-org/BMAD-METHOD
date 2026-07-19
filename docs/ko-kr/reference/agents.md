@@ -20,7 +20,7 @@ sidebar:
 | 분석가(Mary) | `bmad-agent-analyst` | `BP`, `MR`, `DR`, `TR`, `CB`, `WB`, `DP` | 브레인스토밍, 시장 리서치, 도메인 리서치, 기술 리서치, 개요 작성, PRFAQ 챌린지, 프로젝트 문서화 |
 | 제품 관리자(John) | `bmad-agent-pm` | `PRD`, `CE`, `IR`, `CC` | PRD 생성/업데이트/검증, 에픽과 스토리 생성, 구현 준비 상태, 방향 수정 |
 | 아키텍트(Winston) | `bmad-agent-architect` | `CA`, `IR` | 아키텍처 생성, 구현 준비 상태 |
-| 개발자(Amelia) | `bmad-agent-dev` | `DS`, `QD`, `QA`, `CR`, `SP`, `CS`, `ER`, `IN` | 스토리 구현, 빠른 개발, QA 테스트 생성, 코드 리뷰, 스프린트 계획, 스토리 생성, 에픽 회고, [포렌식 조사](../explanation/forensic-investigation.md) |
+| 개발자(Amelia) | `bmad-agent-dev` | `DS`, `QD`, `QA`, `CR`, `SP`, `CS`, `ER` | 스토리 구현, 빠른 개발, QA 테스트 생성, 코드 리뷰, 스프린트 계획, 스토리 생성, 에픽 회고 |
 | UX 디자이너(Sally) | `bmad-agent-ux-designer` | `CU` | UX 설계 생성 |
 | 기술 작성자(Paige) | `bmad-agent-tech-writer` | `DP`, `WD`, `MG`, `VD`, `EC` | 프로젝트 문서화, 문서 작성, Mermaid 생성, 문서 검증, 개념 설명 |
 
