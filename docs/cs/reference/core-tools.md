@@ -5,7 +5,7 @@ sidebar:
   order: 3
 ---
 
-Každá instalace BMad zahrnuje **základní modul** — malou sadu skills, které fungují napříč všemi projekty, všemi moduly a všemi fázemi. Tato stránka pokrývá těchto osm základních skills: pět jádrových nástrojů plus tři **myšlenkové skills** (brainstorming, forge idea, party mode).
+Každá instalace BMad zahrnuje **základní modul** — malou sadu skills, které fungují napříč všemi projekty, všemi moduly a všemi fázemi. Tato stránka pokrývá těchto sedm základních skills: čtyři jádrové nástroje plus tři **myšlenkové skills** (brainstorming, forge idea, party mode).
 
 :::tip[Rychlá cesta]
 Spusťte jakýkoli nástroj zadáním jeho názvu skillu (např. `bmad-help`) ve vašem IDE. Nevyžaduje relaci agenta.
@@ -15,24 +15,23 @@ Spusťte jakýkoli nástroj zadáním jeho názvu skillu (např. `bmad-help`) ve
 
 **Základní modul (vždy nainstalován):**
 
-| Nástroj | Účel |
-| --- | --- |
-| [`bmad-help`](#bmad-help) | Kontextové poradenství, co dělat dál |
-| [`bmad-advanced-elicitation`](#bmad-advanced-elicitation) | Iterativní zdokonalování LLM výstupu |
-| [`bmad-editorial-review`](#bmad-editorial-review) | Dvoufázová redakční revize — nejprve struktura, pak text |
-| [`bmad-review`](#bmad-review) | Kritická revize z více perspektiv — adversariální, hraniční případy a mezery ve verifikaci |
-| [`bmad-customize`](#bmad-customize) | Vytváření a ověřování přizpůsobení BMad |
+| Nástroj                                                   | Účel                                                                                                                      |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| [`bmad-help`](#bmad-help)                                 | Kontextové poradenství, co dělat dál                                                                                      |
+| [`bmad-advanced-elicitation`](#bmad-advanced-elicitation) | Iterativní zdokonalování LLM výstupu                                                                                      |
+| [`bmad-review`](#bmad-review)                             | Revize z více perspektiv — adversariální, hraniční případy a mezery ve verifikaci pro kód; struktura a text pro dokumenty |
+| [`bmad-customize`](#bmad-customize)                       | Vytváření a ověřování přizpůsobení BMad                                                                                   |
 
 **Myšlenkové skills:**
 
-| Nástroj | Účel |
-| --- | --- |
-| [`bmad-brainstorming`](#bmad-brainstorming) | Facilitace interaktivních brainstormingových sezení |
-| [`bmad-forge-idea`](#bmad-forge-idea) | Zátěžový test nápadu, dokud se nezpevní, nepotvrdí, nebo levně nezemře |
-| [`bmad-party-mode`](#bmad-party-mode) | Orchestrace skupinových diskuzí více agentů |
+| Nástroj                                     | Účel                                                                   |
+| ------------------------------------------- | ---------------------------------------------------------------------- |
+| [`bmad-brainstorming`](#bmad-brainstorming) | Facilitace interaktivních brainstormingových sezení                    |
+| [`bmad-forge-idea`](#bmad-forge-idea)       | Zátěžový test nápadu, dokud se nezpevní, nepotvrdí, nebo levně nezemře |
+| [`bmad-party-mode`](#bmad-party-mode)       | Orchestrace skupinových diskuzí více agentů                            |
 
 :::note[Přesunuto a odstraněno]
-`bmad-spec` se nyní dodává s modulem BMM jako plánovací workflow Fáze 2 — viz [Mapa workflow](./workflow-map.md). Utility `bmad-shard-doc` a `bmad-index-docs` byly odstraněny. Dřívější skills `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter` a `bmad-review-verification-gap` jsou sloučeny do `bmad-editorial-review` a `bmad-review`; staré identifikátory se stále rozliší přes skryté přesměrování kvůli kompatibilitě.
+`bmad-spec` se nyní dodává s modulem BMM jako plánovací workflow Fáze 2 — viz [Mapa workflow](./workflow-map.md). Utility `bmad-shard-doc` a `bmad-index-docs` byly odstraněny. Dřívější skills `bmad-editorial-review`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter` a `bmad-review-verification-gap` jsou všechny sloučeny do `bmad-review`, jehož redakční perspektivy nahrazují samostatný redakční skill; staré identifikátory se stále rozliší přes přesměrování kvůli kompatibilitě.
 :::
 
 ## bmad-help
@@ -79,64 +78,46 @@ Spusťte jakýkoli nástroj zadáním jeho názvu skillu (např. `bmad-help`) ve
 
 **Výstup:** Vylepšená verze obsahu s aplikovanými zlepšeními
 
-## bmad-editorial-review
-
-**Dvoufázová redakční revize — nejprve struktura, pak text.** — Klinický editor, který reviduje tvar dokumentu i jeho věty a vrací navrhované opravy, jež řádek po řádku přijímáte nebo odmítáte. Obsah je nedotknutelný: nikdy nezpochybňuje vaše myšlenky, jen jejich organizaci a vyjádření.
-
-**Použijte když:**
-
-- Napsali jste dokument a chcete jej zpřísnit a vyladit
-- Dokument vznikl z více podprocesů a potřebuje strukturální soudržnost
-- Chcete zkrátit délku při zachování srozumitelnosti
-- Potřebujete opravy srozumitelnosti bez stylistických zásahů
-
-**Jak to funguje:**
-
-1. **Strukturální fáze** — navrhuje škrty, sloučení, přesuny a zhuštění; ptá se, zda tvar dokumentu slouží jeho účelu
-2. **Textová fáze** — koriguje komunikační problémy bránící porozumění, s Microsoft Writing Style Guide jako výchozí baseline (dodaný průvodce stylem má přednost)
-3. Ve výchozím stavu běží obě fáze, nejprve struktura; požádejte o revizi jen struktury nebo jen textu, chcete-li spustit jednu
-4. Navrhuje, nikdy neprovádí — o přijetí rozhoduje autor
-
-**Vstup:**
-
-- `content` (povinné) — Dokument k revizi
-- `style_guide` (volitelné) — Projektově specifický průvodce stylem
-- `reader_type` (volitelné) — `humans` (výchozí) pro srozumitelnost/plynulost, nebo `llm` pro přesnost/konzistenci
-- `purpose` / `target_audience` / `length_target` (volitelné) — kalibrují strukturální fázi
-
-**Výstup:** Tabulka nálezů s navrhovanými opravami, plus odhad zkrácení při navržených strukturálních změnách
-
 ## bmad-review
 
-**Kritická revize z více perspektiv nad jakýmkoli diffem, dokumentem nebo artefaktem.** — Spouští nezávislé revizní perspektivy — každou s vlastní metodou a postojem — a hlásí každý nález v jednom kanonickém tvaru. Nula nálezů je platný výsledek; nikdy nedoplňuje, aby vypadal důkladně.
+**Revize z více perspektiv nad jakýmkoli diffem, dokumentem nebo artefaktem.** — Spouští revizní perspektivy — každou s vlastní metodou a postojem — a hlásí každý nález v jednom kanonickém tvaru. Nula nálezů je platný výsledek; nikdy nedoplňuje, aby vypadal důkladně. Každá perspektiva deklaruje, na co se vztahuje: diff vyvolá perspektivy pro kód, dokument ty redakční.
 
 **Dodávané perspektivy:**
 
-| Perspektiva | Metoda |
-| --- | --- |
-| **Adversariální** | Skeptická revize předpokládající existenci problémů — hledá, co chybí, ne jen co je špatně |
-| **Hraniční případy** | Projde každou větvící se cestu a hraniční podmínku, hlásí pouze neošetřené cesty |
-| **Mezery ve verifikaci** | Hledá změněné chování, které by mohlo regredovat, aniž by to spolehlivá verifikace zachytila |
+| Perspektiva              | Vztahuje se na            | Metoda                                                                                       |
+| ------------------------ | ------------------------- | -------------------------------------------------------------------------------------------- |
+| **Adversariální**        | Jakýkoli obsah            | Skeptická revize předpokládající existenci problémů — hledá, co chybí, ne jen co je špatně   |
+| **Hraniční případy**     | Jakýkoli obsah            | Projde každou větvící se cestu a hraniční podmínku v obsahu, který definuje chování          |
+| **Mezery ve verifikaci** | Kód                       | Hledá změněné chování, které by mohlo regredovat, aniž by to spolehlivá verifikace zachytila |
+| **Struktura**            | Dokumenty                 | Navrhuje škrty, sloučení, přesuny a zhuštění — slouží tvar dokumentu jeho účelu?             |
+| **Text**                 | Dokumenty                 | Redakčně upravuje komunikační problémy, které brání porozumění                               |
+
+Obě redakční perspektivy považují obsah za nedotknutelný: nikdy nezpochybňují vaše myšlenky, pouze jejich uspořádání a vyjádření, a navrhují místo toho, aby zasahovaly. Je-li vybráno obojí, textová perspektiva běží nad nálezy strukturní.
+
+Sada není pevná: přepis v `customize.toml` může perspektivy přidat nebo nahradit dodávané a revize spustí ty, které se skutečně vyhodnotí.
 
 **Použijte když:**
 
 - Potřebujete zajištění kvality před finalizací výstupu
 - Chcete vyčerpávající pokrytí hraničních případů kódu nebo logiky
 - Chcete vědět, zda je změna dostatečně ověřena
-- Chcete všechny tři perspektivy najednou (výchozí chování)
+- Napsali jste dokument a chcete jej zpřesnit a vyladit
+- Chcete zkrátit délku při zachování srozumitelnosti
 
 **Jak to funguje:**
 
-1. Načte obsah a identifikuje jeho typ — diff, soubor, funkce nebo dokument
-2. Vybere perspektivy: ty, které pojmenujete, nebo každou povolenou perspektivu odpovídající obsahu
-3. Spustí každou perspektivu nezávisle — paralelně přes subagenty, pokud to platforma podporuje
-4. Sestaví jeden seznam nálezů; překryv mezi perspektivami je signál, ne duplikace
+1. Načte obsah, identifikuje jeho typ — diff, soubor, funkce nebo dokument — a zda jde o kód či dokumentaci
+2. Vybere perspektivy: ty, které pojmenujete, nebo každou povolenou perspektivu, jejíž použitelnost a podmínky obsahu odpovídají
+3. Oznámí plán — které perspektivy poběží a které staví na nálezech jiné
+4. Spustí nezávislé perspektivy — paralelně přes subagenty, pokud to platforma podporuje — a poté ty závislé
+5. Sestaví jeden seznam nálezů; překryv mezi perspektivami je signál, ne duplikace
 
 **Vstup:**
 
 - `content` (povinné) — Diff, větev, nezakomitované změny, soubor, specifikace, story nebo jakýkoli dokument
 - `lenses` (volitelné) — jeden nebo více kódů či názvů perspektiv; výchozí je plná revize
 - `also_consider` (volitelné) — Další oblasti k zvážení
+- `style_guide` / `reader_type` (volitelné, redakční perspektivy) — projektový průvodce stylem a `humans` (výchozí) nebo `llm`
 
 **Výstup:** JSON pole nálezů a/nebo markdown report seskupený podle perspektiv. Vlastní perspektivy lze přidat — a dodávané doladit či vypnout — přes `customize.toml` skillu
 
