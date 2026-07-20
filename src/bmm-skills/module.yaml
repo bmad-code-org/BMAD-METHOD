@@ -25,6 +25,19 @@ user_skill_level:
     - value: "expert"
       label: "Expert - Be direct and technical"
 
+always_show_recommendation:
+  prompt:
+    - "Should agents recommend an option when asking you to decide?"
+    - "The final decision always stays with you."
+  scope: user
+  default: "true"
+  result: "{value}"
+  single-select:
+    - value: "true"
+      label: "Yes - State a recommended option with a brief justification"
+    - value: "false"
+      label: "No - Just present the options"
+
 planning_artifacts: # Phase 1-3 artifacts
   prompt: "Where should planning artifacts be stored? (Brainstorming, Briefs, PRDs, UX Designs, Architecture, Epics)"
   default: "{output_folder}/planning-artifacts"
