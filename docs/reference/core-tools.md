@@ -5,7 +5,7 @@ sidebar:
   order: 3
 ---
 
-Every BMad installation includes the **core module** — a small set of skills that work across all projects, all modules, and all phases. This page covers those eight core skills: the five kernel tools plus the three **thinking skills** (brainstorming, forge idea, party mode).
+Every BMad installation includes the **core module** — a small set of skills that work across all projects, all modules, and all phases. This page covers those seven core skills: the four kernel tools plus the three **thinking skills** (brainstorming, forge idea, party mode).
 
 :::tip[Quick Path]
 Run any tool by typing its skill name (e.g., `bmad-help`) in your IDE. No agent session required.
@@ -15,24 +15,23 @@ Run any tool by typing its skill name (e.g., `bmad-help`) in your IDE. No agent 
 
 **Core module (always installed):**
 
-| Tool | Purpose |
-| --- | --- |
-| [`bmad-help`](#bmad-help) | Get context-aware guidance on what to do next |
-| [`bmad-advanced-elicitation`](#bmad-advanced-elicitation) | Push LLM output through iterative refinement methods |
-| [`bmad-editorial-review`](#bmad-editorial-review) | Two-pass editorial review — structure, then prose |
-| [`bmad-review`](#bmad-review) | Multi-lens critical review — adversarial, edge-case, and verification-gap |
-| [`bmad-customize`](#bmad-customize) | Create and verify BMad customization overrides |
+| Tool                                                      | Purpose                                                                                                      |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| [`bmad-help`](#bmad-help)                                 | Get context-aware guidance on what to do next                                                                |
+| [`bmad-advanced-elicitation`](#bmad-advanced-elicitation) | Push LLM output through iterative refinement methods                                                         |
+| [`bmad-review`](#bmad-review)                             | Multi-lens review — adversarial, edge-case, and verification-gap for code; structure and prose for documents |
+| [`bmad-customize`](#bmad-customize)                       | Create and verify BMad customization overrides                                                               |
 
 **Thinking skills:**
 
-| Tool | Purpose |
-| --- | --- |
-| [`bmad-brainstorming`](#bmad-brainstorming) | Facilitate interactive brainstorming sessions |
-| [`bmad-forge-idea`](#bmad-forge-idea) | Pressure-test an idea until it hardens, proves out, or dies cheaply |
-| [`bmad-party-mode`](#bmad-party-mode) | Orchestrate multi-agent group discussions |
+| Tool                                        | Purpose                                                             |
+| ------------------------------------------- | ------------------------------------------------------------------- |
+| [`bmad-brainstorming`](#bmad-brainstorming) | Facilitate interactive brainstorming sessions                       |
+| [`bmad-forge-idea`](#bmad-forge-idea)       | Pressure-test an idea until it hardens, proves out, or dies cheaply |
+| [`bmad-party-mode`](#bmad-party-mode)       | Orchestrate multi-agent group discussions                           |
 
 :::note[Moved and removed]
-`bmad-spec` now ships with the BMM module as a Phase 2 planning workflow — see the [Workflow Map](./workflow-map.md#phase-2-planning). The `bmad-shard-doc` and `bmad-index-docs` utilities have been removed. The former `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, and `bmad-review-verification-gap` skills are merged into `bmad-editorial-review` and `bmad-review`; the old IDs still resolve via hidden forwarders for compatibility.
+`bmad-spec` now ships with the BMM module as a Phase 2 planning workflow — see the [Workflow Map](./workflow-map.md#phase-2-planning). The `bmad-shard-doc` and `bmad-index-docs` utilities have been removed. The former `bmad-editorial-review`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, and `bmad-review-verification-gap` skills are all merged into `bmad-review`, whose editorial lenses replace the separate editorial skill; the old IDs still resolve via forwarders for compatibility.
 :::
 
 ## bmad-help
@@ -79,69 +78,51 @@ Run any tool by typing its skill name (e.g., `bmad-help`) in your IDE. No agent 
 
 **Output:** Enhanced version of the content with improvements applied
 
-## bmad-editorial-review
-
-**Two-pass editorial review — structure, then prose.** — A clinical editor that reviews a document's shape and its sentences, returning suggested fixes you accept or reject row by row. Content is sacrosanct: it never challenges your ideas, only how they're organized and expressed.
-
-**Use it when:**
-
-- You've drafted a document and want it tightened and polished
-- A document was produced from multiple subprocesses and needs structural coherence
-- You want to reduce length while preserving comprehension
-- You need clarity fixes without style-opinion changes
-
-**How it works:**
-
-1. **Structure pass** — proposes cuts, merges, moves, and condensing; asks whether the document's shape serves its purpose
-2. **Prose pass** — copy-edits for communication issues that impede comprehension, using the Microsoft Writing Style Guide as the baseline (a provided style guide overrides it)
-3. Runs both passes, structure first, by default; ask for a structure-only or prose-only review to run one
-4. Proposes, never executes — the author decides what to accept
-
-**Input:**
-
-- `content` (required) — Document to review
-- `style_guide` (optional) — Project-specific style guide
-- `reader_type` (optional) — `humans` (default) for clarity/flow, or `llm` for precision/consistency
-- `purpose` / `target_audience` / `length_target` (optional) — calibrate the structure pass
-
-**Output:** Findings table with suggested fixes, plus estimated reduction when structural changes are proposed
-
 ## bmad-review
 
-**Multi-lens critical review over any diff, doc, or artifact.** — Runs independent review lenses — each a distinct method and stance — and reports every finding in one canonical shape. Zero findings is a valid outcome; it never pads to look thorough.
+**Multi-lens review over any diff, doc, or artifact.** — Runs review lenses — each a distinct method and stance — and reports every finding in one canonical shape. Zero findings is a valid outcome; it never pads to look thorough. Each lens declares what it applies to, so a diff draws the code lenses and a document draws the editorial ones.
 
 **The shipped lenses:**
 
-| Lens | Method |
-| --- | --- |
-| **Adversarial** | Skeptical review that assumes problems exist — hunts what's missing, not just what's wrong |
-| **Edge case** | Walks every branching path and boundary condition, reports only unhandled paths |
-| **Verification gap** | Finds changed behavior that could regress without reliable verification catching it |
+| Lens                 | Applies to             | Method                                                                                      |
+| -------------------- | ---------------------- | ------------------------------------------------------------------------------------------- |
+| **Adversarial**      | Anything               | Skeptical review that assumes problems exist — hunts what's missing, not just what's wrong  |
+| **Edge case**        | Anything               | Walks every branching path and boundary condition in content that defines behavior          |
+| **Verification gap** | Code                   | Finds changed behavior that could regress without reliable verification catching it         |
+| **Structure**        | Documents              | Proposes cuts, merges, moves, and condensing — does the document's shape serve its purpose? |
+| **Prose**            | Documents              | Copy-edits for communication issues that impede comprehension                               |
+
+The two editorial lenses hold content sacrosanct: they never challenge your ideas, only how they're organized and expressed, and they propose rather than execute. Prose runs on top of the structure findings when both are selected.
+
+The set isn't fixed: a `customize.toml` override can add lenses or replace shipped ones, and a review runs whatever resolves.
 
 **Use it when:**
 
 - You need quality assurance before finalizing a deliverable
 - You want exhaustive edge-case coverage of code or logic
 - You want to know whether a change is adequately verified
-- You want all three perspectives at once (the default)
+- You've drafted a document and want it tightened and polished
+- You want to reduce length while preserving comprehension
 
 **How it works:**
 
-1. Loads the content and identifies its type — diff, file, function, or document
-2. Selects lenses: the ones you name, or every enabled lens that fits the content
-3. Runs each lens independently — in parallel via subagents when the platform supports it
-4. Assembles one findings array; overlap between lenses is signal, not duplication
+1. Loads the content, identifies its type — diff, file, function, or document — and whether it is code or docs
+2. Selects lenses: the ones you name, or every enabled lens whose applicability and conditions fit the content
+3. Announces the plan — which lenses will run, and which run on top of another's findings
+4. Runs the independent lenses — in parallel via subagents when the platform supports it — then the dependent ones on top of their results
+5. Assembles one findings array; overlap between lenses is signal, not duplication
 
 **Input:**
 
 - `content` (required) — Diff, branch, uncommitted changes, file, spec, story, or any document
-- `lenses` (optional) — one or more lens codes or names; default is a full review
+- `lenses` (optional) — one or more lens codes or names; default is every lens that fits the content
 - `also_consider` (optional) — Additional areas to keep in mind
+- `style_guide` / `reader_type` (optional, editorial lenses) — a project style guide, and `humans` (default) for clarity/flow or `llm` for precision/consistency
 
-**Output:** JSON findings array (each finding carries `lens`, `location`, `trigger_condition`, `guard_snippet`, `potential_consequence`) and/or a markdown report grouped by lens
+**Output:** JSON findings array (each finding carries `lens`, `location`, `trigger_condition`, `guard_snippet`, `potential_consequence`) and/or a markdown report grouped by lens. The editorial lenses render a findings table you accept or reject row by row, plus an estimated reduction when structural changes are proposed.
 
 :::note[Used by other workflows]
-Code Review workflows in other modules run these lenses automatically. Custom lenses can be added — and shipped ones tuned or disabled — through the skill's `customize.toml`.
+Code Review workflows in other modules run the code lenses automatically, and the document workflows (PRD, UX, architecture, product brief) run the editorial lenses as their finalize step. Custom lenses can be added — and shipped ones tuned or disabled — through the skill's `customize.toml`.
 :::
 
 ## bmad-customize

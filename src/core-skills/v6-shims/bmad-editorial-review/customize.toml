@@ -1,0 +1,31 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# Legacy override surface for bmad-editorial-review, which is deprecated and
+# forwards to bmad-review's `structure` and `prose` lenses. These keys exist
+# only so overrides written against the old skill keep resolving: the shim
+# resolves them here and passes them to bmad-review as pre-resolved values,
+# which bmad-review honors verbatim over its own.
+#
+# Every field is documented in bmad-review's customize.toml, which is where
+# new customization belongs. Defaults are empty here so the shim contributes
+# nothing of its own — an unset key falls through to bmad-review's default.
+#
+# Override files (not edited here):
+#   {project-root}/_bmad/custom/bmad-editorial-review.toml         (team)
+#   {project-root}/_bmad/custom/bmad-editorial-review.user.toml    (personal)
+#
+# Overrides merge per BMad structural rules: scalars win, arrays append.
+
+[workflow]
+
+activation_steps_prepend = []
+activation_steps_append = []
+persistent_facts = []
+review_guidance = []
+on_complete = ""
+output_preferences = ""
+reader_type = ""
+style_guide = ""
+
+# Where the findings table lands; forwarded as bmad-review's report path.
+review_output_path = ""

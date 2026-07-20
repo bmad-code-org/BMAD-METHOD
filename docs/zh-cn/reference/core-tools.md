@@ -1,11 +1,11 @@
 ---
-title: "核心工具"
+title: '核心工具'
 description: 核心模块内置 skills 参考。
 sidebar:
   order: 3
 ---
 
-每个 BMad 安装都包含 **核心模块** —— 一小组跨项目、跨模块、跨阶段通用的 skills。本页覆盖这 8 个核心 skills：5 个内核工具，加上 3 个 **思考类 skills**（brainstorming、forge idea、party mode）。
+每个 BMad 安装都包含 **核心模块** —— 一小组跨项目、跨模块、跨阶段通用的 skills。本页覆盖这 7 个核心 skills：4 个内核工具，加上 3 个 **思考类 skills**（brainstorming、forge idea、party mode）。
 
 :::tip[快速入口]
 在 IDE 中直接输入工具 skill 名（例如 `bmad-help`）即可调用，无需先加载智能体。
@@ -15,24 +15,23 @@ sidebar:
 
 **核心模块（始终安装）：**
 
-| 工具 | 主要用途 |
-| --- | --- |
-| [`bmad-help`](#bmad-help) | 基于项目上下文推荐下一步 |
-| [`bmad-advanced-elicitation`](#bmad-advanced-elicitation) | 通过多轮技法增强 LLM 输出 |
-| [`bmad-editorial-review`](#bmad-editorial-review) | 两阶段编辑审查 —— 先结构、后文字 |
-| [`bmad-review`](#bmad-review) | 多视角批判性审查 —— 对抗、边界条件与验证缺口 |
-| [`bmad-customize`](#bmad-customize) | 创建并验证 BMad 自定义覆盖 |
+| 工具                                                      | 主要用途                                     |
+| --------------------------------------------------------- | -------------------------------------------- |
+| [`bmad-help`](#bmad-help)                                 | 基于项目上下文推荐下一步                     |
+| [`bmad-advanced-elicitation`](#bmad-advanced-elicitation) | 通过多轮技法增强 LLM 输出                    |
+| [`bmad-review`](#bmad-review)                             | 多视角批判性审查 —— 对抗、边界条件与验证缺口 |
+| [`bmad-customize`](#bmad-customize)                       | 创建并验证 BMad 自定义覆盖                   |
 
 **思考类 skills：**
 
-| 工具 | 主要用途 |
-| --- | --- |
-| [`bmad-brainstorming`](#bmad-brainstorming) | 引导式头脑风暴与想法扩展 |
-| [`bmad-forge-idea`](#bmad-forge-idea) | 压力测试一个想法，直到它站得住、被证实或低成本地淘汰 |
-| [`bmad-party-mode`](#bmad-party-mode) | 多智能体协作讨论 |
+| 工具                                        | 主要用途                                             |
+| ------------------------------------------- | ---------------------------------------------------- |
+| [`bmad-brainstorming`](#bmad-brainstorming) | 引导式头脑风暴与想法扩展                             |
+| [`bmad-forge-idea`](#bmad-forge-idea)       | 压力测试一个想法，直到它站得住、被证实或低成本地淘汰 |
+| [`bmad-party-mode`](#bmad-party-mode)       | 多智能体协作讨论                                     |
 
 :::note[迁移与移除]
-`bmad-spec` 现随 BMM 模块作为第 2 阶段规划 workflow 发布 —— 见[工作流地图](./workflow-map.md)。`bmad-shard-doc` 与 `bmad-index-docs` 已移除。原 `bmad-editorial-review-prose`、`bmad-editorial-review-structure`、`bmad-review-adversarial-general`、`bmad-review-edge-case-hunter`、`bmad-review-verification-gap` 已合并进 `bmad-editorial-review` 与 `bmad-review`；旧 ID 仍可通过隐藏转发器解析，保持兼容。
+`bmad-spec` 现随 BMM 模块作为第 2 阶段规划 workflow 发布 —— 见[工作流地图](./workflow-map.md)。`bmad-shard-doc` 与 `bmad-index-docs` 已移除。原 `bmad-editorial-review`、`bmad-editorial-review-prose`、`bmad-editorial-review-structure`、`bmad-review-adversarial-general`、`bmad-review-edge-case-hunter`、`bmad-review-verification-gap` 已全部合并进 `bmad-review`，其编辑视角取代了原独立的编辑审查 skill；旧 ID 仍可通过转发器解析，保持兼容。
 :::
 
 ## bmad-help
@@ -40,11 +39,13 @@ sidebar:
 **定位：** 你的默认导航入口，告诉你“下一步该做什么”。
 
 **适用场景：**
+
 - 刚完成一个 workflow，不确定如何衔接
 - 新接触项目，需要先看当前进度
 - 变更模块后，想知道可用能力和推荐顺序
 
 **工作机制：**
+
 1. 扫描已存在产物（PRD、architecture、stories 等）
 2. 检测已安装模块及其可用 workflow
 3. 按优先级输出“必需步骤 + 可选步骤”
@@ -57,11 +58,13 @@ sidebar:
 **定位：** 对已有 LLM 输出做第二轮深挖与改写强化。
 
 **适用场景：**
+
 - 结果“看起来对”，但深度不够
 - 想从多个思维框架交叉审视同一内容
 - 想按名字调用已知方法 —— 苏格拉底式、第一性原理、事前验尸、红队
 
 **工作机制：**
+
 1. 默认针对会话中最近一次输出，也可指向其他内容
 2. 给出与内容匹配的候选技法短菜单
 3. 应用所选技法进行强化
@@ -70,43 +73,33 @@ sidebar:
 **输入：** 待增强内容（默认最近输出），可选指定方法名  
 **输出：** 增强后的内容版本
 
-## bmad-editorial-review
-
-**定位：** 两阶段编辑审查 —— 先审结构，再审文字；只改表达，不动观点。
-
-**适用场景：**
-- 文档已成稿，想要收紧和打磨
-- 多个子流程拼出的文档需要结构上的连贯性
-- 想在保留可理解性的前提下缩减篇幅
-
-**工作机制：**
-1. **结构阶段** —— 提出删减、合并、移动与压缩建议，检验文档形态是否服务于其目的
-2. **文字阶段** —— 以 Microsoft Writing Style Guide 为基线（提供的风格指南优先），修复影响理解的表达问题
-3. 默认两阶段依次执行；可只要求结构或文字单项审查
-4. 只提建议、不直接改写 —— 是否采纳由作者决定
-
-**输入：** `content`（必填），`style_guide` / `reader_type` / `purpose` / `target_audience` / `length_target`（可选）  
-**输出：** 修订建议表；提出结构性修改时附预计压缩幅度
-
 ## bmad-review
 
-**定位：** 面向任意 diff、文档或产物的多视角批判性审查。各视角独立运行，统一输出。零发现是合法结果，绝不为“看起来彻底”而凑数。
+**定位：** 面向任意 diff、文档或产物的多视角审查。统一输出。零发现是合法结果，绝不为“看起来彻底”而凑数。每个视角声明其适用对象：diff 触发代码视角，文档触发编辑视角。
 
 **内置视角：**
 
-| 视角 | 方法 |
-| --- | --- |
-| **对抗（Adversarial）** | 假设问题存在的怀疑式审查 —— 主动找缺失，而非只纠错 |
-| **边界条件（Edge case）** | 走遍每条分支路径与边界条件，只报告未处理的路径 |
-| **验证缺口（Verification gap）** | 找出可能回归且缺乏可靠验证兜底的行为变更 |
+| 视角                             | 适用于           | 方法                                                       |
+| -------------------------------- | ---------------- | ---------------------------------------------------------- |
+| **对抗（Adversarial）**          | 任意内容         | 假设问题存在的怀疑式审查 —— 主动找缺失，而非只纠错         |
+| **边界条件（Edge case）**        | 任意内容         | 走遍定义了行为的内容中的每条分支路径与边界条件             |
+| **验证缺口（Verification gap）** | 代码             | 找出可能回归且缺乏可靠验证兜底的行为变更                   |
+| **结构（Structure）**            | 文档             | 提出删减、合并、移动与精简 —— 文档的结构是否服务于其目的？ |
+| **文字（Prose）**                | 文档             | 针对妨碍理解的表达问题做文字编辑                           |
+
+两个编辑视角视内容为不可侵犯：只审组织与表达，从不质疑观点；只提建议，不直接改写。两者同时选中时，文字视角在结构视角的发现之上运行。
+
+这套视角并非固定：`customize.toml` 覆盖可以新增视角或替换内置视角，审查会运行解析后实际生效的那些。
 
 **工作机制：**
-1. 加载内容并识别类型 —— diff、文件、函数或文档
-2. 选择视角：你指定的，或所有适配内容的已启用视角
-3. 各视角独立运行 —— 平台支持时通过子代理并行
-4. 汇总为一个 findings 列表；视角间重叠是信号而非重复
 
-**输入：** `content`（必填），`lenses`（可选，默认全量审查），`also_consider`（可选）  
+1. 加载内容，识别类型（diff、文件、函数或文档）以及属于代码还是文档
+2. 选择视角：你指定的，或所有适用性与条件匹配的已启用视角
+3. announce 执行计划 —— 将运行哪些视角，以及哪些视角在其他视角的发现之上运行
+4. 独立视角先运行 —— 平台支持时通过子代理并行 —— 随后运行依赖它们的视角
+5. 汇总为一个 findings 列表；视角间重叠是信号而非重复
+
+**输入：** `content`（必填），`lenses`（可选，默认运行所有适配内容的视角），`also_consider`（可选），`style_guide` / `reader_type`（可选，供编辑视角使用）  
 **输出：** JSON findings 数组和/或按视角分组的 markdown 报告。可通过 skill 的 `customize.toml` 增加自定义视角，或调整/停用内置视角
 
 ## bmad-customize
@@ -114,6 +107,7 @@ sidebar:
 **定位：** 无需手写 TOML，即可修改已安装 BMad 智能体或 workflow 的行为。
 
 **工作机制：**
+
 1. 扫描已安装 BMad skills 的可自定义面
 2. 为你的变更选择合适的覆盖范围
 3. 在 `_bmad/custom/` 下写入覆盖文件
@@ -131,11 +125,13 @@ sidebar:
 **定位：** 用结构化创意技法快速扩展想法池。
 
 **适用场景：**
+
 - 启动新主题，想先打开问题空间
 - 团队卡在同一思路，需要外部技法打破惯性
 - 需要把“模糊方向”变成可讨论候选方案
 
 **工作机制：**
+
 1. 建立主题会话
 2. 从方法库选择创意技法
 3. 逐轮引导产出并记录想法
@@ -149,6 +145,7 @@ sidebar:
 **定位：** 压力测试一个想法，直到它站得住、被证实或低成本地淘汰。
 
 **工作机制：**
+
 1. 先确立目标，并据此调整提问方向
 2. 按依赖顺序一次一个问题，先摆出推荐答案供你反驳
 3. 每个分支引入两个角色声音 —— 一个来自已安装的角色阵容，一个由话题临时召唤
@@ -163,11 +160,13 @@ sidebar:
 **定位：** 让多个智能体围绕同一议题协作讨论。
 
 **适用场景：**
+
 - 决策涉及产品、架构、实现、质量等多视角
 - 希望不同角色显式冲突并暴露假设差异
 - 需要在短时间内收集多方案观点
 
 **工作机制：**
+
 1. 读取已安装智能体清单
 2. 选取最相关的 2-3 个角色先发言
 3. 轮换角色、持续交叉讨论

@@ -5,7 +5,7 @@ sidebar:
   order: 3
 ---
 
-Chaque installation BMad comprend le **module principal** — un petit ensemble de compétences qui fonctionnent dans tous les projets, tous les modules et toutes les phases. Cette page couvre ces huit compétences principales : les cinq outils du noyau plus les trois **compétences de réflexion** (brainstorming, forge idea, party mode).
+Chaque installation BMad comprend le **module principal** — un petit ensemble de compétences qui fonctionnent dans tous les projets, tous les modules et toutes les phases. Cette page couvre ces sept compétences principales : les quatre outils du noyau plus les trois **compétences de réflexion** (brainstorming, forge idea, party mode).
 
 :::tip[Raccourci Rapide]
 Exécutez n’importe quel outil en tapant son nom de compétence (par ex., `bmad-help`) dans votre IDE. Aucune session d’agent requise.
@@ -15,24 +15,23 @@ Exécutez n’importe quel outil en tapant son nom de compétence (par ex., `bma
 
 **Module principal (toujours installé) :**
 
-| Outil | Objectif |
-| --- | --- |
-| [`bmad-help`](#bmad-help) | Obtenir des conseils contextuels sur la prochaine étape |
-| [`bmad-advanced-elicitation`](#bmad-advanced-elicitation) | Soumettre la sortie LLM à des méthodes de raffinement itératives |
-| [`bmad-editorial-review`](#bmad-editorial-review) | Revue éditoriale en deux passes — structure, puis prose |
-| [`bmad-review`](#bmad-review) | Revue critique multi-perspectives — contradictoire, cas limites et lacunes de vérification |
-| [`bmad-customize`](#bmad-customize) | Créer et vérifier des personnalisations BMad |
+| Outil                                                     | Objectif                                                                                                                               |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| [`bmad-help`](#bmad-help)                                 | Obtenir des conseils contextuels sur la prochaine étape                                                                                |
+| [`bmad-advanced-elicitation`](#bmad-advanced-elicitation) | Soumettre la sortie LLM à des méthodes de raffinement itératives                                                                       |
+| [`bmad-review`](#bmad-review)                             | Revue multi-perspectives — contradictoire, cas limites et lacunes de vérification pour le code ; structure et prose pour les documents |
+| [`bmad-customize`](#bmad-customize)                       | Créer et vérifier des personnalisations BMad                                                                                           |
 
 **Compétences de réflexion :**
 
-| Outil | Objectif |
-| --- | --- |
-| [`bmad-brainstorming`](#bmad-brainstorming) | Faciliter des sessions de brainstorming interactives |
-| [`bmad-forge-idea`](#bmad-forge-idea) | Éprouver une idée jusqu’à ce qu’elle se consolide, se confirme ou meure à moindre coût |
-| [`bmad-party-mode`](#bmad-party-mode) | Orchestrer des discussions de groupe multi-agents |
+| Outil                                       | Objectif                                                                               |
+| ------------------------------------------- | -------------------------------------------------------------------------------------- |
+| [`bmad-brainstorming`](#bmad-brainstorming) | Faciliter des sessions de brainstorming interactives                                   |
+| [`bmad-forge-idea`](#bmad-forge-idea)       | Éprouver une idée jusqu’à ce qu’elle se consolide, se confirme ou meure à moindre coût |
+| [`bmad-party-mode`](#bmad-party-mode)       | Orchestrer des discussions de groupe multi-agents                                      |
 
 :::note[Déplacés et supprimés]
-`bmad-spec` fait désormais partie du module BMM comme workflow de planification de Phase 2 — voir la [Carte des Workflows](./workflow-map.md). Les utilitaires `bmad-shard-doc` et `bmad-index-docs` ont été supprimés. Les anciennes compétences `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter` et `bmad-review-verification-gap` sont fusionnées dans `bmad-editorial-review` et `bmad-review` ; les anciens identifiants restent résolus via des redirections masquées pour la compatibilité.
+`bmad-spec` fait désormais partie du module BMM comme workflow de planification de Phase 2 — voir la [Carte des Workflows](./workflow-map.md). Les utilitaires `bmad-shard-doc` et `bmad-index-docs` ont été supprimés. Les anciennes compétences `bmad-editorial-review`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter` et `bmad-review-verification-gap` sont toutes fusionnées dans `bmad-review`, dont les perspectives éditoriales remplacent la compétence éditoriale séparée ; les anciens identifiants restent résolus via des redirections pour la compatibilité.
 :::
 
 ## bmad-help
@@ -79,69 +78,51 @@ Exécutez n’importe quel outil en tapant son nom de compétence (par ex., `bma
 
 **Sortie :** Version améliorée du contenu avec les améliorations appliquées
 
-## bmad-editorial-review
-
-**Revue éditoriale en deux passes — structure, puis prose.** — Un éditeur clinique qui examine la forme d’un document et ses phrases, et propose des corrections que vous acceptez ou refusez ligne par ligne. Le contenu est sacré : il ne remet jamais en question vos idées, seulement leur organisation et leur expression.
-
-**À utiliser quand :**
-
-- Vous avez rédigé un document et voulez le resserrer et le polir
-- Un document issu de plusieurs sous-processus a besoin de cohérence structurelle
-- Vous voulez réduire la longueur tout en préservant la compréhension
-- Vous voulez des corrections de clarté sans modifier les choix stylistiques
-
-**Fonctionnement :**
-
-1. **Passe structure** — propose des coupes, fusions, déplacements et condensations ; interroge si la forme du document sert son objectif
-2. **Passe prose** — corrige les problèmes de communication qui nuisent à la compréhension, avec le Microsoft Writing Style Guide comme référence (un guide de style fourni prévaut)
-3. Exécute les deux passes, structure d’abord, par défaut ; demandez une revue structure seule ou prose seule pour n’en exécuter qu’une
-4. Propose, n’exécute jamais — l’auteur décide de ce qu’il accepte
-
-**Entrée :**
-
-- `content` (requis) — Document à réviser
-- `style_guide` (optionnel) — Guide de style spécifique au projet
-- `reader_type` (optionnel) — `humans` (par défaut) pour clarté/fluidité, ou `llm` pour précision/consistance
-- `purpose` / `target_audience` / `length_target` (optionnel) — calibrent la passe structure
-
-**Sortie :** Tableau de constatations avec corrections suggérées, plus une estimation de réduction lorsque des changements structurels sont proposés
-
 ## bmad-review
 
-**Revue critique multi-perspectives sur tout diff, document ou artefact.** — Exécute des perspectives de revue indépendantes — chacune avec sa méthode et sa posture propres — et rapporte chaque constatation dans un format canonique unique. Zéro constatation est un résultat valide ; il ne remplit jamais pour paraître exhaustif.
+**Revue multi-perspectives sur tout diff, document ou artefact.** — Exécute des perspectives de revue — chacune avec sa méthode et sa posture propres — et rapporte chaque constatation dans un format canonique unique. Zéro constatation est un résultat valide ; il ne remplit jamais pour paraître exhaustif. Chaque perspective déclare ce à quoi elle s’applique : un diff appelle les perspectives de code, un document les perspectives éditoriales.
 
 **Les perspectives livrées :**
 
-| Perspective | Méthode |
-| --- | --- |
-| **Contradictoire** | Revue sceptique qui part du principe que des problèmes existent — traque ce qui manque, pas seulement ce qui ne va pas |
-| **Cas limites** | Parcourt chaque chemin de branchement et condition aux limites, ne rapporte que les chemins non gérés |
-| **Lacunes de vérification** | Trouve les comportements modifiés qui pourraient régresser sans qu’une vérification fiable ne le détecte |
+| Perspective                 | S’applique à                         | Méthode                                                                                                                |
+| --------------------------- | ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| **Contradictoire**          | Tout contenu                         | Revue sceptique qui part du principe que des problèmes existent — traque ce qui manque, pas seulement ce qui ne va pas |
+| **Cas limites**             | Tout contenu                         | Parcourt chaque chemin de branchement et condition aux limites d’un contenu qui définit un comportement                |
+| **Lacunes de vérification** | Code                                 | Trouve les comportements modifiés qui pourraient régresser sans qu’une vérification fiable ne le détecte               |
+| **Structure**               | Documents                            | Propose coupes, fusions, déplacements et condensations — la forme du document sert-elle son objectif ?                 |
+| **Prose**                   | Documents                            | Corrige les problèmes de communication qui nuisent à la compréhension                                                  |
+
+Les deux perspectives éditoriales tiennent le contenu pour sacro-saint : elles ne remettent jamais en cause vos idées, seulement leur organisation et leur expression, et elles proposent sans exécuter. La perspective prose s’exécute sur les constatations de la perspective structure lorsque les deux sont sélectionnées.
+
+L’ensemble n’est pas figé : une surcharge dans `customize.toml` peut ajouter des perspectives ou remplacer celles fournies, et une revue exécute celles qui sont effectivement résolues.
 
 **À utiliser quand :**
 
 - Vous avez besoin d’assurance qualité avant de finaliser un livrable
 - Vous voulez une couverture exhaustive des cas limites d’un code ou d’une logique
 - Vous voulez savoir si un changement est correctement vérifié
-- Vous voulez les trois perspectives à la fois (le comportement par défaut)
+- Vous avez rédigé un document et voulez le resserrer et le polir
+- Vous voulez réduire la longueur en préservant la compréhension
 
 **Fonctionnement :**
 
-1. Charge le contenu et identifie son type — diff, fichier, fonction ou document
-2. Sélectionne les perspectives : celles que vous nommez, ou toutes les perspectives activées adaptées au contenu
-3. Exécute chaque perspective indépendamment — en parallèle via des sous-agents lorsque la plateforme le permet
-4. Assemble une liste unique de constatations ; le chevauchement entre perspectives est un signal, pas une duplication
+1. Charge le contenu, identifie son type — diff, fichier, fonction ou document — et s’il s’agit de code ou de documentation
+2. Sélectionne les perspectives : celles que vous nommez, ou toutes les perspectives activées dont l’applicabilité et les conditions correspondent au contenu
+3. Annonce le plan — quelles perspectives vont s’exécuter, et lesquelles s’appuient sur les constatations d’une autre
+4. Exécute les perspectives indépendantes — en parallèle via des sous-agents lorsque la plateforme le permet — puis celles qui en dépendent
+5. Assemble une liste unique de constatations ; le chevauchement entre perspectives est un signal, pas une duplication
 
 **Entrée :**
 
 - `content` (requis) — Diff, branche, changements non commités, fichier, spécification, story ou tout document
 - `lenses` (optionnel) — un ou plusieurs codes ou noms de perspectives ; par défaut, revue complète
 - `also_consider` (optionnel) — Domaines supplémentaires à garder à l’esprit
+- `style_guide` / `reader_type` (optionnel, perspectives éditoriales) — un guide de style projet, et `humans` (défaut) ou `llm`
 
 **Sortie :** Liste de constatations JSON (chaque constatation porte `lens`, `location`, `trigger_condition`, `guard_snippet`, `potential_consequence`) et/ou rapport markdown groupé par perspective
 
 :::note[Utilisé par d’autres workflows]
-Les workflows de Code Review d’autres modules exécutent ces perspectives automatiquement. Des perspectives personnalisées peuvent être ajoutées — et celles livrées ajustées ou désactivées — via le `customize.toml` de la compétence.
+Les workflows de Code Review d’autres modules exécutent les perspectives de code automatiquement, et les workflows documentaires (PRD, UX, architecture, brief produit) exécutent les perspectives éditoriales à l’étape de finalisation. Des perspectives personnalisées peuvent être ajoutées — et celles livrées ajustées ou désactivées — via le `customize.toml` de la compétence.
 :::
 
 ## bmad-customize
