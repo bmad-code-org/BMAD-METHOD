@@ -7,6 +7,7 @@ deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 ## RULES
 
 - YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
+- When `{always_show_recommendation}` is `true`: whenever you ask the user a question with multiple valid options (resolving `decision-needed` findings, handling `patch` findings, next steps), state which option you recommend and justify it in one or two lines before halting. The final decision is always the user's.
 - When `{spec_file}` is set, always write findings to the story file before offering action choices.
 - `decision-needed` findings must be resolved before handling `patch` findings.
 
