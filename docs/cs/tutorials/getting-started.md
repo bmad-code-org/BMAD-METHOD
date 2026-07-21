@@ -135,7 +135,7 @@ Vytvořte ho ručně na `_bmad-output/project-context.md` nebo ho vygenerujte po
 
 Všechny workflow v této fázi jsou volitelné:
 - **brainstorming** (`bmad-brainstorming`) — Řízená ideace
-- **průzkum** (`bmad-market-research` / `bmad-domain-research` / `bmad-technical-research`) — Tržní, doménový a technický průzkum
+- **průzkum** (`bmad-deep-recon`) — Tržní, doménový, technický, konkurenční, uživatelský a akademický průzkum — plus režim výběru mezi variantami — s ověřováním tvrzení a životním cyklem obnovy
 - **product-brief** (`bmad-product-brief`) — Doporučený základní dokument, když je váš koncept jasný
 - **prfaq** (`bmad-prfaq`) — Working Backwards výzva pro zátěžový test a zformování vašeho produktového konceptu
 

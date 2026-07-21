@@ -1,0 +1,222 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# Workflow customization surface for bmad-deep-recon.
+#
+# Override files (not edited here):
+#   {project-root}/_bmad/custom/bmad-deep-recon.toml         (team)
+#   {project-root}/_bmad/custom/bmad-deep-recon.user.toml    (personal)
+
+[workflow]
+
+# --- Configurable below. Overrides merge per BMad structural rules: ---
+#   scalars: override wins
+#   arrays (persistent_facts, activation_steps_*, *_sources, doc_standards,
+#   external_*): append
+#   arrays of tables keyed by `code`: matching key replaces, new keys append
+
+# Steps executed on activation: prepend runs before the skill's own
+# activation flow, append runs after it. Each entry is a literal instruction.
+activation_steps_prepend = []
+activation_steps_append = []
+
+# Standing context held for the whole run. Entries prefixed `file:` are paths
+# or globs whose contents load as facts; all others are literal facts.
+persistent_facts = ["file:{project-root}/**/project-context.md"]
+
+# Where research runs live and how each run folder is named.
+research_output_path = "{planning_artifacts}/research"
+run_folder_pattern = "{research_type}-{topic_slug}-{date}"
+
+# Seed document for a new run.
+research_template = "assets/research.template.md"
+
+# --- Effort and rigor -------------------------------------------------------
+# A preset bundles the four knobs below; any knob set here individually pins
+# that knob over the preset. What the user says in the request beats both.
+#
+#   preset     subagents  sources/round  depth  validation
+#   quick      low (2)    5              1      normal
+#   standard   normal (5) 10             3      normal
+#   deep       high (10)  15             5      high
+#
+# Grounding: orchestrator-worker research systems document 3-5 parallel
+# workers as the sweet spot (10+ only for genuinely complex work), ~3
+# iterations as the standard refinement cap, and two-source confirmation as
+# the coverage bar. Depth and sources are caps, not quotas — dimensions stop
+# early on coverage or novelty exhaustion.
+
+preset = "standard"
+
+# "" = from preset. Values: none | low | normal | high
+# (0 / 2 / 5 / 10 parallel research assistants; none also = no-subagent
+# environments, run inline sequentially).
+subagents = ""
+
+# 0 = from preset. Distinct sources actually read per dimension per round.
+# Ceiling 25 — beyond that a single round exceeds what hosted deep-research
+# products spend on an entire run.
+max_sources_per_round = 0
+
+# 0 = from preset. Rounds per dimension: initial pass + lead-following
+# follow-ups. Ceiling 5.
+max_depth = 0
+
+# "" = from preset. Values: normal | high | max.
+#   normal  two-source cross-check on each pack's two-source classes
+#   high    every ledger claim cross-checked; red-team on major conclusions
+#   max     high + independent adversarial verifiers per conclusion +
+#           primary-source-priority ranking
+validation = ""
+
+# Red-team stance pass — actively search for disconfirming evidence after the
+# main loop: "off", "offer" (proposed at the plan gate, user decides), or "on"
+# (always runs; headless runs it only when set to "on").
+red_team = "offer"
+
+# Run the acquisition fan-out through the harness's deterministic
+# orchestration when it offers one (e.g. workflows): "off", "offer" (proposed
+# at the plan gate when available), or "on". Orchestrated runs are faster and
+# more rigorous but spend substantially more tokens.
+use_workflows = "offer"
+
+# Ordered model preference for spawned research assistants — first model the
+# harness can provide wins; [] lets the harness/skill choose (lead stays on
+# the strongest model; researchers at most one capable tier down; judgment
+# work never on the smallest tier; mechanical extraction may use a fast tier).
+#
+# Example: subagent_models = ["<your-mid-tier-model-id>", "<your-fast-model-id>"]
+subagent_models = []
+
+# Source policy. Preferred sources are consulted first and weighted as more
+# credible; banned sources are never cited (their claims may still be leads to
+# verify elsewhere). Entries are domains or plain-text descriptions.
+preferred_sources = []
+banned_sources = []
+
+# Output formats: "markdown" is canonical and always produced; add "html" for
+# the interactive briefing page (see references/html-briefing.md).
+output_formats = ["markdown"]
+
+# Theme for the HTML briefing: empty = the shipped neutral professional theme,
+# a `file:` path to a theme/brand spec, or inline directives
+# (e.g. "Canvas #122543, accent #B66D46, sans-serif, dark-mode aware").
+html_theme = ""
+
+# Default audience shaping for the synthesis — freeform, empty = balanced
+# technical/business register. Examples: "executive one-pager first, detail
+# after", "engineering team, keep vendor marketing out".
+audience = ""
+
+# Org-configured registry of internal research tools (knowledge bases, MCP
+# tools) consulted alongside web research — each entry names the tool and when
+# to use it. Distinct from `engines`: external_sources answer questions inline;
+# engines run whole research briefs.
+#
+# Example:
+#   external_sources = ["Gartner MCP (corp:gartner_query) for analyst data on enterprise software markets"]
+external_sources = []
+
+# Polish passes applied to research.md at finalize. Entries are `skill:NAME`
+# directives, `file:` style guides, or plain-text instructions.
+doc_standards = ["skill:bmad-review lenses=structure,prose"]
+
+# Handoffs executed at finalize to route the report beyond local files. Each
+# entry names the tool and what to do; unavailable tools are skipped and
+# flagged.
+#
+# Examples:
+#   "NotebookLM (notebooklm-mcp): create a notebook from research.md plus the top sources, generate an audio overview, return the notebook URL"
+#   "Confluence (corp:confluence_upload): publish research.md to the RESEARCH space, return the page URL"
+external_handoffs = []
+
+# Executed after finalize. A string scalar is one instruction; an array is a
+# sequence. Empty = the run ends with the finalize summary.
+on_complete = ""
+
+# ---------------------------------------------------------------------------
+# Delegate engines — external systems that can run a whole research brief for
+# one or more dimensions (acquisition mode "Delegate"). Generate (the skill's
+# own web fan-out) is built in and is not an entry here.
+#
+# `kind` is "cli" (invoke holds a shell command template; {brief} is replaced
+# with the research brief prompt) or "mcp" (invoke names the tool). `when`
+# says what the engine is good for — the plan gate uses it to route
+# dimensions. `model` optionally pins the engine's own model (appended to the
+# CLI's model flag or passed to the tool where supported); "" = the engine's
+# default. Engines ship disabled as documented examples; enable in an
+# override, or add your org's own (keyed by `code`: matching key replaces,
+# new keys append).
+# ---------------------------------------------------------------------------
+
+[[workflow.engines]]
+code = "agy"
+name = "Antigravity (Gemini) headless research"
+kind = "cli"
+invoke = 'agy -p "{brief}" --dangerously-skip-permissions'
+when = "Fast broad web research briefs; offloads a whole dimension cheaply."
+model = ""
+enabled = false
+
+[[workflow.engines]]
+code = "grok"
+name = "Grok headless research"
+kind = "cli"
+invoke = 'grok -p "{brief}" --always-approve'
+when = "Real-time X/social sentiment and developer-community pulse."
+model = ""
+enabled = false
+
+# ---------------------------------------------------------------------------
+# Research types — subject lenses. Each type is a pack: a policy and craft
+# card (prioritized dimensions, non-obvious source craft, freshness bars,
+# two-source classes, downstream bindings). `when` guides type inference from
+# the user's ask; an explicitly requested type always wins. The decision
+# shape (explore vs select) is orthogonal and detected at the plan gate —
+# any type can end in a selection matrix.
+#
+# Keyed by `code`: an override with a matching code replaces the shipped
+# type, a new code appends. Empty `pack` disables a type.
+#
+# Example (add an org-specific type in team/user override TOML):
+#   [[workflow.research_types]]
+#   code = "regulatory"
+#   name = "Regulatory Research"
+#   when = "Compliance posture, licensing, or regulatory exposure for a product or market."
+#   pack = "file:{project-root}/_bmad/custom/packs/regulatory.md"
+# ---------------------------------------------------------------------------
+
+[[workflow.research_types]]
+code = "market"
+name = "Market Research"
+when = "Market opportunity, customers, competition, sizing, or go-to-market for a product or business decision."
+pack = "types/market.md"
+
+[[workflow.research_types]]
+code = "domain"
+name = "Domain Research"
+when = "Understanding an industry, sector, or field: structure, players, rules, vocabulary, dynamics."
+pack = "types/domain.md"
+
+[[workflow.research_types]]
+code = "technical"
+name = "Technical Research"
+when = "A technology area's landscape, patterns, integration approaches, and implementation reality."
+pack = "types/technical.md"
+
+[[workflow.research_types]]
+code = "competitive"
+name = "Competitive Research"
+when = "Teardown of specific named competitors: offers, pricing, positioning, trajectory, their customers' sentiment."
+pack = "types/competitive.md"
+
+[[workflow.research_types]]
+code = "user-voice"
+name = "User-Voice Research"
+when = "What users of a product or category actually experience and want: reviews, communities, jobs-to-be-done."
+pack = "types/user-voice.md"
+
+[[workflow.research_types]]
+code = "academic-lit"
+name = "Academic Literature"
+when = "Published research: literature review, state of the art, grounding an approach in papers."
+pack = "types/academic-lit.md"

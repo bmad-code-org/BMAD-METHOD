@@ -140,7 +140,7 @@ All workflows in this phase are optional. [**Not sure which to use?**](../explan
 
 - **brainstorming** (`bmad-brainstorming`) — Guided ideation
 - **forge-idea** (`bmad-forge-idea`) — Pressure-test an idea until it hardens or dies cheaply
-- **research** (`bmad-market-research` / `bmad-domain-research` / `bmad-technical-research`) — Market, domain, and technical research
+- **research** (`bmad-deep-recon`) — Market, domain, technical, competitive, user-voice, and academic research — plus a selection mode for choose-between decisions — with claim verification and a refresh lifecycle
 - **product-brief** (`bmad-product-brief`) — Recommended foundation document when your concept is clear
 - **prfaq** (`bmad-prfaq`) — Working Backwards challenge to stress-test your product concept customer-first
 
