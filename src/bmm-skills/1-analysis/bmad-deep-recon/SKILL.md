@@ -101,7 +101,6 @@ When invoked headless, do not ask. The plan gate becomes plan-and-proceed: infer
   "intent": "create",
   "type": "market",
   "report": "{doc_workspace}/research.md",
-  "briefing": "{doc_workspace}/research-briefing.html",
   "memlog": "{doc_workspace}/.memlog.md",
   "claims": {"verified": 34, "unverified": 6, "overturned": 0},
   "open_questions": [],
@@ -109,12 +108,12 @@ When invoked headless, do not ask. The plan gate becomes plan-and-proceed: infer
 }
 ```
 
-Omit keys for artifacts not produced. For refresh, `claims` covers the refresh set and a `deltas` array lists changed/overturned claims.
+Omit keys for artifacts not produced (with `output_format = "auto"`, headless runs produce no briefing; add a `"briefing"` key when one was rendered). For refresh, `claims` covers the refresh set and a `deltas` array lists changed/overturned claims.
 
 ## Finalize
 
 1. Assemble per `references/synthesis.md` (already loaded by the run): executive summary answering the decision, cross-dimension insights, recommendations with downstream bindings, source appendix, staleness map.
-2. If `"html"` is in `{workflow.output_formats}`, generate the briefing page per `references/html-briefing.md`.
+2. Render per `{workflow.output_format}` (see `references/html-briefing.md`): `auto` renders the briefing page on interactive runs and skips it on headless/skill-invoked runs; `html`/`both` always render; `md` never. `research.md` always exists in the workspace either way — it is the canonical report Refresh, Deepen, and downstream skills consume; the briefing is its regenerable face.
 3. Polish: apply each `{workflow.doc_standards}` entry (a `skill:`, `file:`, or plain-text directive) to `research.md` via parallel subagents.
 4. Execute each `{workflow.external_handoffs}` entry (NotebookLM notebook + audio overview, Confluence, Notion, …) — invoke the named tool, capture returned URLs/IDs, surface them; skip and flag any unavailable tool. Local files always exist regardless.
 5. Tell the user what exists and where: report, briefing, memlog, handoff URLs, plus the two lines that keep the artifact alive — what the staleness map says to re-check and when, and that Refresh/Deepen handle it. Invoke `bmad-help` to suggest the next step in the method.

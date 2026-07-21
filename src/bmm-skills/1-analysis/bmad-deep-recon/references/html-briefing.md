@@ -1,6 +1,6 @@
 # HTML Briefing
 
-When `"html"` is in `{workflow.output_formats}`, generate `research-briefing.html` in `{doc_workspace}` after `research.md` is final. It is a presentation of the report, never a second source of truth — same claims, same numbers, same citations.
+Generate `research-briefing.html` in `{doc_workspace}` after `research.md` is final, when `{workflow.output_format}` calls for it: `"auto"` renders on interactive runs and skips on headless/skill-invoked runs (the md is always there to render from later), `"html"`/`"both"` always render, `"md"` never. The page is a full-fidelity presentation of the report, never a second source of truth — same claims, same numbers, same citations; nothing is lost by reading it instead of the markdown.
 
 ## Requirements
 

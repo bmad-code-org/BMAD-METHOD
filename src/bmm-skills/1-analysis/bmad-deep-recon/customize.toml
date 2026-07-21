@@ -93,9 +93,14 @@ subagent_models = []
 preferred_sources = []
 banned_sources = []
 
-# Output formats: "markdown" is canonical and always produced; add "html" for
-# the interactive briefing page (see references/html-briefing.md).
-output_formats = ["markdown"]
+# What is presented and handed off — never what exists: research.md (the
+# canonical machine-readable report) always lives in the workspace regardless.
+#   "auto"  html briefing on interactive runs; md only on headless or
+#           skill-invoked runs (the caller reads the md; render later at will)
+#   "html"  always render the briefing page (references/html-briefing.md)
+#   "md"    never render html
+#   "both"  render and present both
+output_format = "auto"
 
 # Theme for the HTML briefing: empty = the shipped neutral professional theme,
 # a `file:` path to a theme/brand spec, or inline directives
