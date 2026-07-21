@@ -289,7 +289,7 @@ Per-skill `customize.toml` covers **deep behavior** (hooks, menus, persistent_fa
 
 ```text
 _bmad/config.toml               (installer-owned)  team scope:   install answers + agent roster
-_bmad/config.user.toml          (installer-owned)  user scope:   user_name, language, skill level
+_bmad/config.user.toml          (installer-owned)  user scope:   user_name, language, skill level, recommendation preference
 _bmad/custom/config.toml        (human-authored)   team overrides (committed to git)
 _bmad/custom/config.user.toml   (human-authored)   personal overrides (gitignored)
 ```
