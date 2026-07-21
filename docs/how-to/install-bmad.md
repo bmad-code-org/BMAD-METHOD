@@ -195,6 +195,15 @@ npx bmad-method install --yes \
   --set bmm.user_skill_level=expert
 ```
 
+**Example — turn off decision-point recommendations:**
+
+```bash
+npx bmad-method install --yes --action update \
+  --set bmm.always_show_recommendation=false
+```
+
+`bmm.always_show_recommendation` (user scope, default `"true"`) is prompted during install. When `"true"`, workflows with decision points — starting with `/bmad-code-review` — state a recommended option with a one- or two-line justification whenever they ask you to choose between alternatives. The final decision always stays with you.
+
 **Discover available keys for a module:**
 
 ```bash
