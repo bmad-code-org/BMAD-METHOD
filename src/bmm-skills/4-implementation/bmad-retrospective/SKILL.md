@@ -70,7 +70,7 @@ Consolidate: merge, dedupe, and provenance-link findings. Drop any finding you c
 
 ### Phase 3 — Team Discussion (opt-in)
 
-Skip by default; never runs headless. When the user asks to "discuss it as a team," "run party mode," or convene the roster, invoke **`bmad-party-mode`** seeded with the Phase 2 findings so the installed agents react to real evidence — the god class the diff really grew, the verification gap that is actually there, the wins the evidence confirms. Load `references/team-discussion.md` for how to seed it and keep it grounded. The rule that makes this worth doing: agents speak only to findings with sources; nobody invents drama.
+Skip by default; never runs headless. When the user asks to "discuss it as a team," "run party mode," or convene the roster, invoke the skill `bmad-party-mode` seeded with the Phase 2 findings so the installed agents react to real evidence — the god class the diff really grew, the verification gap that is actually there, the wins the evidence confirms. Load `references/team-discussion.md` for how to seed it and keep it grounded. The rule that makes this worth doing: agents speak only to findings with sources.
 
 ### Phase 4 — Decide
 
