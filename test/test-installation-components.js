@@ -282,6 +282,8 @@ async function runTests() {
   // ============================================================
   console.log(`${colors.yellow}Test Suite 6c: ZCode Native Skills${colors.reset}\n`);
 
+  let tempProjectDir6c;
+  let installedBmadDir6c;
   try {
     clearCache();
     const platformCodes6c = await loadPlatformCodes();
@@ -293,8 +295,8 @@ async function runTests() {
     // so it must never collide with the cross-tool shared path.
     assert(zcodeInstaller?.target_dir !== '.agents/skills', 'ZCode target_dir is distinct from the shared .agents/skills standard');
 
-    const tempProjectDir6c = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-zcode-test-'));
-    const installedBmadDir6c = await createTestBmadFixture();
+    tempProjectDir6c = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-zcode-test-'));
+    installedBmadDir6c = await createTestBmadFixture();
 
     const ideManager6c = new IdeManager();
     await ideManager6c.ensureInitialized();
@@ -307,11 +309,11 @@ async function runTests() {
 
     const skillFile6c = path.join(tempProjectDir6c, '.zcode', 'skills', 'bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile6c), 'ZCode install writes SKILL.md directory output');
-
-    await fs.remove(tempProjectDir6c);
-    await fs.remove(path.dirname(installedBmadDir6c));
   } catch (error) {
     assert(false, 'ZCode native skills install test succeeds', error.message);
+  } finally {
+    if (tempProjectDir6c) await fs.remove(tempProjectDir6c).catch(() => {});
+    if (installedBmadDir6c) await fs.remove(path.dirname(installedBmadDir6c)).catch(() => {});
   }
 
   console.log('');
