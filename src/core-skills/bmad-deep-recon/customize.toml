@@ -143,10 +143,12 @@ on_complete = ""
 # one or more dimensions (acquisition mode "Delegate"). Generate (the skill's
 # own web fan-out) is built in and is not an entry here.
 #
-# `kind` is "cli" (invoke holds a shell command template; {brief} is replaced
-# with the research brief prompt) or "mcp" (invoke names the tool). `when`
-# says what the engine is good for — the plan gate uses it to route
-# dimensions. `model` optionally pins the engine's own model (appended to the
+# `kind` is "cli" (invoke holds a shell command template; {brief_file} is
+# replaced with the path of the brief file the skill writes into the run
+# workspace — brief text itself never enters the command line, so quotes and
+# shell metacharacters in researched content can't shape a command) or "mcp"
+# (invoke names the tool, which receives the brief text). `when` says what
+# the engine is good for — the plan gate uses it to route dimensions. `model` optionally pins the engine's own model (appended to the
 # CLI's model flag or passed to the tool where supported); "" = the engine's
 # default. Engines ship disabled as documented examples; enable in an
 # override, or add your org's own (keyed by `code`: matching key replaces,
@@ -157,7 +159,7 @@ on_complete = ""
 code = "agy"
 name = "Antigravity (Gemini) headless research"
 kind = "cli"
-invoke = 'agy -p "{brief}" --dangerously-skip-permissions'
+invoke = 'agy -p "Read the research brief at {brief_file} and execute it fully." --dangerously-skip-permissions'
 when = "Fast broad web research briefs; offloads a whole dimension cheaply."
 model = ""
 enabled = false
@@ -166,7 +168,7 @@ enabled = false
 code = "grok"
 name = "Grok headless research"
 kind = "cli"
-invoke = 'grok -p "{brief}" --always-approve'
+invoke = 'grok -p "Read the research brief at {brief_file} and execute it fully." --always-approve'
 when = "Real-time X/social sentiment and developer-community pulse."
 model = ""
 enabled = false

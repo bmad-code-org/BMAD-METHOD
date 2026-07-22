@@ -4,7 +4,7 @@ Runs after the acquisition loop, before synthesis. This is the trust layer — t
 
 ## The claims ledger
 
-Assemble from the memlog `claim` entries plus a scan of `research.md`: every claim a decision could rest on. Each entry: the claim, its class (each pack names its classes — quantitative sizes, pricing, versions/compatibility, regulatory assertions, …), source, publisher, publication date, and current status (`unverified` until this pass says otherwise).
+Assemble from the memlog `claim` entries plus a scan of `research.md`: every claim a decision could rest on. Each entry: the claim, its class (each pack names its classes — quantitative sizes, pricing, versions/compatibility, regulatory assertions, …), source, publisher, publication date, and current status. New claims enter `unverified` until this pass says otherwise; on a Refresh or Deepen run, claims outside the run's scope keep their prior status from the memlog — only new and in-scope claims are (re)checked.
 
 ## Cross-checking
 

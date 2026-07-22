@@ -25,7 +25,7 @@ Fan out researcher assistants for the round — concurrency per the resolved `su
 
 Spawn assistants on `{workflow.subagent_models}` when set (first available wins); otherwise the harness default — judgment work never drops to the smallest tier. When subagents are unavailable (or `subagents` is `none`), run the same rounds yourself, sequentially, under the same budgets — never skip the digest discipline.
 
-When workflow orchestration was approved at the plan gate, run the fan-out as a workflow: dimensions as parallel pipelines, assistants returning structured digests, verification as its own stage. The budgets, digest contract, and stopping rules above apply unchanged.
+When workflow orchestration was approved at the plan gate, run the fan-out as a workflow: dimensions as parallel pipelines, assistants returning structured digests, verification as its own stage. The budgets, digest contract, and stopping rules above apply unchanged — and however the acquisition parallelizes, digests return to the lead, which alone writes `research.md`, committing sections in plan order.
 
 `{workflow.external_sources}` entries whose directive matches the dimension are consulted alongside the web — org tools preferred when their scope matches.
 
@@ -35,8 +35,8 @@ When workflow orchestration was approved at the plan gate, run the fan-out as a 
 
 For a dimension routed to an enabled engine from `{workflow.engines}`:
 
-1. Compose the **brief** from the dimension's questions, the decision context, the freshness bars, and an explicit citation demand: every claim with source URL and publication date.
-2. Run the engine — `cli`: execute `invoke` with `{brief}` substituted (shell-quote it), applying the entry's `model` via the CLI's model flag when set; `mcp`: call the named tool with the brief.
+1. Compose the **brief** from the dimension's questions, the decision context, the freshness bars, and an explicit citation demand: every claim with source URL and publication date. Write it to `{doc_workspace}/briefs/{dimension_slug}.md`.
+2. Run the engine — `cli`: execute `invoke` with `{brief_file}` substituted with that path, applying the entry's `model` via the CLI's model flag when set; `mcp`: call the named tool with the brief text. Brief text never enters a command line — briefs contain quotes and shell metacharacters, and researched content must not be able to shape a shell command; only the skill-generated file path is substituted.
 3. Treat the returned text as **imported material with provenance = the engine**: an extraction subagent pulls the claims relevant to the dimension's questions into the standard digest shape. Engine output is never trusted verbatim — its claims enter the ledger `unverified` like everything else, and the verification pass treats the engine as one publisher, not an independent source for its own claims.
 4. If the engine fails or returns nothing usable, log an `event` and fall back to Generate for that dimension.
 

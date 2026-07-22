@@ -10,7 +10,7 @@ Serves: understand what users of a product or category actually experience and w
 4. Unmet needs & requests — what they ask for, and the deeper need under the ask
 5. Their language — the words users say, versus the words vendors use
 
-**Craft (the non-obvious):** mine 1–3★ reviews for pain *and* 5★ for why they stay; a workaround is unpriced demand — someone laboring around a gap has already voted; forums, Discord, and Reddit beat surveys because people lie less when nobody's asking; keep verbatim quotes — user words carry evidence paraphrase destroys; feature-request boards measure willingness to wait, not willingness to pay; distinguish loud power-users from the silent majority — count distinct voices, not thread length.
+**Craft (the non-obvious):** mine 1–3★ reviews for pain *and* 5★ for why they stay; a workaround is unpriced demand — someone laboring around a gap has already voted; forums, Discord, and Reddit surface what surveys miss — people lie less when nobody's asking — but they over-sample the loud, so triangulate against reviews and any survey data; keep verbatim quotes, redacted — user words carry evidence paraphrase destroys, but usernames, handles, emails, and identifying links never enter the report or memlog; feature-request boards measure willingness to wait, not willingness to pay; distinguish loud power-users from the silent majority — count distinct voices, not thread length.
 
 **Freshness:** sentiment ≤ 18 mo · complaints re-checked against the current version before citing.
 
