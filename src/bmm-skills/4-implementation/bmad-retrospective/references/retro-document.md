@@ -4,7 +4,23 @@ Phase 5. Finalize the retrospective and update sprint tracking. Two writes: the 
 
 ## The retrospective document
 
-This document is the run's working artifact: it is created as a skeleton once the epic is fixed and filled as each phase completes, so Phase 5 finalizes rather than writes it from scratch. It lives at `{implementation_artifacts}/epic-{{epic_number}}-retro-{date}.md`, in `{document_output_language}`, as readable markdown; ensure `{implementation_artifacts}` exists. Sections:
+This document is the run's working artifact: it is created as a skeleton once the epic is fixed and filled as each phase completes, so Phase 5 finalizes rather than writes it from scratch. It lives at `{implementation_artifacts}/epic-{{epic_number}}-retro-{date}.md`, in `{document_output_language}`, as readable markdown; ensure `{implementation_artifacts}` exists.
+
+Open the document with YAML frontmatter a machine can read without parsing the prose — an epic gate or orchestrator keys off `verdict` to decide whether to hold the next epic:
+
+```
+---
+epic: {{epic_number}}
+date: {date}
+verdict: accepted | accepted-with-open-items | rejected
+criteria: declared | profiled
+headless: true | false
+---
+```
+
+Keep `verdict` in sync with the Acceptance verdict section below. Do not encode the verdict in the sprint-status retro key — that key's value stays `done` so the existing lifecycle consumers (sprint planning's `optional ↔ done` transition, status TUIs) keep working unchanged.
+
+Sections:
 
 - **Epic summary** — which epic, the diff range, stories completed, the evidence inventory (what was available, what was missing).
 - **Findings** — grouped by aggregate view and by lens, each with its source reference and disposition (fix now / defer / accept). This is the record; do not summarize away the provenance.
@@ -26,13 +42,15 @@ uv run {skill-root}/scripts/sprint_status.py update \
   --file {implementation_artifacts}/sprint-status.yaml \
   --epic {{epic_number}} --set-retro-done \
   --add-action '[{"action":"...","owner":"..."}, ...]' \
+  --ref {implementation_artifacts}/epic-{{epic_number}}-retro-{date}.md \
+  --verdict "<the acceptance verdict>" \
   --date {date}
 ```
 
-It sets `development_status["epic-{{epic_number}}-retrospective"]` to `done`, appends one `action_items` entry per proposed item (`status: open`), and bumps `last_updated`. Read the JSON it returns:
+It sets `development_status["epic-{{epic_number}}-retrospective"]` to `done`, appends one `action_items` entry per proposed item, and bumps `last_updated`. Each appended item carries `status: open`, a stable `id` (`epic-<N>-retro-item-<n>-<slug>` derived from the action text, or the `id` you supply in the JSON), and a `ref` back to this retro document (from `--ref`, or a per-item `ref` in the JSON) — so an orchestrator can dedupe items across re-runs and dispatch each one to its full, sourced finding. `--verdict` is not written into the file; it is echoed back in the result JSON as a signal for consumers. Read the JSON it returns:
 
-- `ok: true` → report the retro-key transition and `action_items_added`.
-- `ok: false` → the file was left untouched; surface the error, do not hand-edit.
+- `ok: true` → report the retro-key transition, `action_items_added`, and the echoed `verdict`.
+- `ok: false` → the file was left untouched (`restored: true`); surface the error, do not hand-edit. `restored: false` means the rollback write also failed and the file may be incomplete — warn the user explicitly.
 - `retro_key_found: false` → the retro key was absent, so nothing was marked done; the document still saved, but tell the user sprint-status needs a manual retro entry.
 
 Adjusting a *previous* epic's action-item statuses from the Phase 4 follow-through is recorded in the retro document; sprint-status surfaces open items regardless, so leave those YAML entries unless the user asks to change them.

@@ -17,7 +17,9 @@ Every finding you report carries a source reference (file, line, commit, or log)
 
 ## Modes
 
-Interactive by default. With `-H`/`--headless`: skip every confirmation, accept epic detection, never open the team discussion, render the verdict on the evidence alone, and record each assumption made without the user (which epic was selected, the machine verdict, each proposed item) into the retrospective document's Assumptions section so the audit trail survives. The Phase 4 acceptance fail-safe still applies in headless runs.
+Interactive by default. With `-H`/`--headless`: skip every confirmation, take the epic from the invocation (falling back to detection only if none was supplied), never open the team discussion, render the verdict on the evidence alone, and record each assumption made without the user (which epic was selected, the machine verdict, each proposed item) into the retrospective document's Assumptions section so the audit trail survives. The Phase 4 acceptance fail-safe still applies in headless runs.
+
+For automation, `-H <epic>` — an explicit epic in headless mode — is the stable orchestrator-facing interface. Epic auto-detection is a human convenience, not an automation contract: `detect-epic` returns the highest epic with *any* `done` story, which may be a half-finished epic, and stories-mode projects have no `sprint-status.yaml` to detect from. An orchestrator should always pass the epic explicitly.
 
 ## On Activation
 

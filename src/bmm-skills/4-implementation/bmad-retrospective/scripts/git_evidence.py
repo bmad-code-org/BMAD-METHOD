@@ -23,6 +23,13 @@ def _emit(obj, code=0):
     sys.exit(code)
 
 
+class JsonArgumentParser(argparse.ArgumentParser):
+    """Emit argparse failures on the JSON-only stdout contract, not usage text."""
+
+    def error(self, message):
+        _emit({"ok": False, "error": f"argument error: {message}"}, 2)
+
+
 def _parse_numstat_line(line):
     # numstat lines: "<added>\t<deleted>\t<path>"; binary files use "-".
     parts = line.split("\t")
@@ -35,7 +42,7 @@ def _parse_numstat_line(line):
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(
+    parser = JsonArgumentParser(
         description=(
             "Measure commit and per-file change evidence over a git revision "
             "range. Measures only; does not judge."

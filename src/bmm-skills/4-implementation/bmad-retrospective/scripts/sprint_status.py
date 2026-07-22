@@ -19,7 +19,7 @@ from datetime import datetime
 from ruamel.yaml import YAML
 from ruamel.yaml.scalarstring import DoubleQuotedScalarString
 
-STORY_RE = re.compile(r"^(\d+)-\d+-")
+STORY_RE = re.compile(r"^(\d+)-\d+[a-z]?-")  # trailing [a-z]? matches split-story keys like 2-6a-...
 
 
 def _load_yaml(path):
@@ -33,6 +33,18 @@ def _load_yaml(path):
 def _emit(obj, code=0):
     sys.stdout.write(json.dumps(obj))
     sys.exit(code)
+
+
+class JsonArgumentParser(argparse.ArgumentParser):
+    """Emit argparse failures on the JSON-only stdout contract, not usage text."""
+
+    def error(self, message):
+        _emit({"ok": False, "error": f"argument error: {message}"}, 2)
+
+
+def _slugify(text, maxlen=40):
+    slug = re.sub(r"[^a-z0-9]+", "-", str(text).lower()).strip("-")
+    return slug[:maxlen].strip("-") or "item"
 
 
 def cmd_detect_epic(args):
@@ -125,10 +137,12 @@ def cmd_update(args):
             retro_status_after = "done"
 
     # 3. Optionally append action items.
+    existing_actions = data.get("action_items")
+    if existing_actions is not None and not isinstance(existing_actions, list):
+        # A hand-corrupted file must still fail on the JSON contract, not crash.
+        _emit({"ok": False, "error": "action_items in file is not a list"}, 1)
     items_added = 0
-    original_action_len = 0
-    if data.get("action_items") is not None:
-        original_action_len = len(data.get("action_items"))
+    original_action_len = len(existing_actions) if existing_actions is not None else 0
 
     if args.add_action:
         try:
@@ -149,11 +163,22 @@ def cmd_update(args):
                     {"ok": False, "error": "each --add-action item must be an object"},
                     1,
                 )
+            # Stable identity for orchestrator consumers: an id that lets a
+            # re-run dedupe against prior items, and a ref back to the sourced
+            # finding in the retro document. Both accept an explicit override.
+            seq_num = len(seq) + 1
+            action_text = str(item.get("action", ""))
+            item_id = item.get("id") or (
+                f"epic-{int(epic)}-retro-item-{seq_num}-{_slugify(action_text)}"
+            )
+            ref = item.get("ref") or (args.ref or "")
             entry = {
+                "id": DoubleQuotedScalarString(str(item_id)),
                 "epic": int(epic),
-                "action": DoubleQuotedScalarString(str(item.get("action", ""))),
+                "action": DoubleQuotedScalarString(action_text),
                 "owner": DoubleQuotedScalarString(str(item.get("owner", ""))),
                 "status": "open",
+                "ref": DoubleQuotedScalarString(str(ref)),
             }
             seq.append(entry)
             items_added += 1
@@ -170,13 +195,13 @@ def cmd_update(args):
         with open(args.file, "w", encoding="utf-8") as fh:
             yaml.dump(data, fh)
     except Exception as exc:  # noqa: BLE001
-        _restore(args.file, original_bytes)
-        _emit({"ok": False, "error": f"write failed: {exc}"}, 1)
+        restored = _restore(args.file, original_bytes)
+        _emit({"ok": False, "error": f"write failed: {exc}", "restored": restored}, 1)
 
     # 6. Validate the written file; restore on any failure.
     def _fail(msg):
-        _restore(args.file, original_bytes)
-        _emit({"ok": False, "error": msg}, 1)
+        restored = _restore(args.file, original_bytes)
+        _emit({"ok": False, "error": msg, "restored": restored}, 1)
 
     try:
         _, reloaded = _load_yaml(args.file)
@@ -214,20 +239,25 @@ def cmd_update(args):
             "retro_status_after": retro_status_after,
             "action_items_added": items_added,
             "last_updated": last_updated,
+            "verdict": args.verdict,
         }
     )
 
 
 def _restore(path, original_bytes):
+    """Best-effort restore of the original bytes. Returns True on success so a
+    caller can surface a restore failure instead of hiding a half-written file."""
     try:
         with open(path, "wb") as fh:
             fh.write(original_bytes)
-    except Exception:  # noqa: BLE001 - best-effort restore
-        pass
+        return True
+    except Exception as exc:  # noqa: BLE001 - best-effort restore
+        sys.stderr.write(f"restore failed: {exc}\n")
+        return False
 
 
 def build_parser():
-    parser = argparse.ArgumentParser(
+    parser = JsonArgumentParser(
         description=(
             "Detect the current retrospective epic and surgically update "
             "sprint-status.yaml while preserving comments and formatting."
@@ -255,7 +285,15 @@ def build_parser():
     )
     p_update.add_argument(
         "--add-action",
-        help='JSON array of {"action":str,"owner":str} to append.',
+        help='JSON array of {"action":str,"owner":str,"id"?:str,"ref"?:str} to append.',
+    )
+    p_update.add_argument(
+        "--ref",
+        help="Reference (e.g. the retro document path) recorded on each appended action item.",
+    )
+    p_update.add_argument(
+        "--verdict",
+        help="Acceptance verdict echoed back in the JSON result for orchestrator consumers.",
     )
     p_update.add_argument(
         "--date",
