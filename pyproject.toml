@@ -1,0 +1,75 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "bmad-method"
+dynamic = ["version"]
+description = "Breakthrough Method of Agile AI-driven Development - pure-Python installer (pip install, no npm)"
+readme = "bmad_method/README.md"
+# Floor is 3.11 because BMAD's bundled runtime scripts (resolve_config.py,
+# resolve_customization.py) use the stdlib `tomllib`, added in 3.11.
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [{ name = "Brian (BMad) Madison" }]
+maintainers = [{ name = "BMAD Python packaging (PoC)" }]
+keywords = ["agile", "ai", "orchestrator", "development", "methodology", "agents", "bmad"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development",
+]
+# The installer parses module.yaml / SKILL.md frontmatter (YAML). The scaffolded
+# runtime itself stays dependency-free (stdlib only).
+dependencies = ["pyyaml>=6"]
+
+[project.scripts]
+bmad = "bmad_method.cli:main"
+bmad-method = "bmad_method.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/bmad-code-org/BMAD-METHOD"
+Documentation = "https://docs.bmad-method.org"
+Repository = "https://github.com/bmad-code-org/BMAD-METHOD"
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
+
+# Version tracks the BMAD content version declared in package.json, so the
+# PyPI release and the scaffolded _bmad/ report the same version.
+[tool.hatch.version]
+path = "package.json"
+pattern = '"version":\s*"(?P<version>[^"]+)"'
+
+[tool.hatch.build.targets.wheel]
+packages = ["bmad_method"]
+
+# BMAD's payload (skills, agents, modules, runtime scripts) is plain data files.
+# Ship the src/ tree and the license/trademark/version metadata inside the wheel
+# under bmad_method/_payload/ so the installed package is self-contained and needs
+# no repo checkout. force-include maps repo paths → wheel paths without physically
+# duplicating them in the source tree.
+[tool.hatch.build.targets.wheel.force-include]
+"src" = "bmad_method/_payload/src"
+"tools/installer/ide/platform-codes.yaml" = "bmad_method/_payload/platform-codes.yaml"
+"package.json" = "bmad_method/_payload/package.json"
+"LICENSE" = "bmad_method/_payload/LICENSE"
+"TRADEMARK.md" = "bmad_method/_payload/TRADEMARK.md"
+
+[tool.hatch.build.targets.sdist]
+# Keep the sdist lean but self-buildable: the package, its payload sources, and
+# the metadata files hatch reads at build time.
+include = [
+  "/bmad_method",
+  "/src",
+  "/tools/installer/ide/platform-codes.yaml",
+  "/package.json",
+  "/LICENSE",
+  "/TRADEMARK.md",
+]
