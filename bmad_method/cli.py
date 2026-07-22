@@ -36,14 +36,18 @@ def _build_parser() -> argparse.ArgumentParser:
         default=".",
         help="Installation directory (default: current directory).",
     )
+    # type=_split_csv makes each of these arrive as a list; argparse applies the
+    # converter to the string default too ("bmm" -> ["bmm"], "" -> []).
     install_cmd.add_argument(
         "--modules",
         default="bmm",
+        type=_split_csv,
         help='Comma-separated module IDs to install (default: "bmm"). "core" is always included.',
     )
     install_cmd.add_argument(
         "--tools",
         default="",
+        type=_split_csv,
         help='Comma-separated tool/IDE IDs to configure (e.g. "claude-code"). Required for a fresh install.',
     )
     install_cmd.add_argument("--user-name", dest="user_name", default=None, help="Name for agents to use.")
@@ -51,7 +55,7 @@ def _build_parser() -> argparse.ArgumentParser:
     install_cmd.add_argument("--document-output-language", dest="document_output_language", default=None)
     install_cmd.add_argument("--output-folder", dest="output_folder", default=None)
     install_cmd.add_argument(
-        "-y", "--yes", action="store_true", help="Accept defaults and run non-interactively (required for this PoC)."
+        "-y", "--yes", action="store_true", help="Accept defaults and run non-interactively (required)."
     )
     install_cmd.set_defaults(func=_cmd_install)
 
@@ -68,10 +72,10 @@ def _cmd_list_tools(_args: argparse.Namespace) -> int:
 
 
 def _cmd_install(args: argparse.Namespace) -> int:
-    tools = _split_csv(args.tools)
+    tools = args.tools  # already split into a list by type=_split_csv
     if not args.yes:
         print(
-            "This proof-of-concept installer is non-interactive only. Re-run with --yes.",
+            "This installer runs non-interactively; pass --yes to proceed.",
             file=sys.stderr,
         )
         return 2
@@ -92,7 +96,7 @@ def _cmd_install(args: argparse.Namespace) -> int:
 
     config = InstallConfig(
         directory=Path(args.directory),
-        modules=_split_csv(args.modules),
+        modules=args.modules,
         tools=tools,
         user_name=args.user_name,
         communication_language=args.communication_language,
@@ -117,7 +121,7 @@ def _cmd_install(args: argparse.Namespace) -> int:
 def main(argv: list[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
-    if not getattr(args, "command", None):
+    if not args.command:
         parser.print_help()
         return 0
     return args.func(args)

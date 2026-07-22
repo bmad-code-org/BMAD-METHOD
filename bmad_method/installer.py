@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import getpass
 import hashlib
+import os
 import re
 import shutil
 from dataclasses import dataclass, field
@@ -69,7 +70,16 @@ class InstallResult:
 
 
 def format_toml_value(value) -> str:
-    """Format a scalar/list as a TOML literal (mirrors the Node formatter)."""
+    """Format a scalar/list as a TOML literal (mirrors the Node formatter).
+
+    Hand-rolled rather than delegated to a TOML writer (e.g. tomli-w) on
+    purpose: this installer's output is validated byte-for-byte against the Node
+    installer, whose config.toml carries hand-authored comment headers and a
+    fixed section layout that a serializer library can't reproduce (TOML writers
+    don't emit comments). Since the file is assembled by hand anyway, matching
+    Node's exact scalar escaping here is what keeps the bytes identical.
+    It also avoids a second runtime dependency as a bonus.
+    """
     if value is None:
         return '""'
     if isinstance(value, bool):
@@ -140,7 +150,18 @@ def _csv_escape_field(value) -> str:
 
 
 def _parse_csv_line(line: str) -> list[str]:
-    """Split a single CSV line honouring quotes (mirrors parseCSVLine)."""
+    """Split one CSV line into fields the same way the Node installer does.
+
+    We can't use `csv.reader` here. These fields get merged into bmad-help.csv,
+    which has to come out identical to the file Node writes, and the two parsers
+    disagree when a quote sits in the middle of a field. For example, given
+    `a"b,c`, Node returns ['ab,c'] but `csv.reader` returns ['a"b', 'c']. They
+    agree on today's files, but module-help.csv can come from third-party
+    modules, so we copy Node's behaviour to stay safe.
+
+    (When a CSV is only read, and doesn't need to match Node's output, this
+    installer uses the standard `csv` module instead.)
+    """
     result: list[str] = []
     current = ""
     in_quotes = False
@@ -171,8 +192,10 @@ def _clean_for_csv(text: str) -> str:
 
 
 def _iso_now() -> str:
-    now = datetime.now(timezone.utc)
-    return now.strftime("%Y-%m-%dT%H:%M:%S.") + f"{now.microsecond // 1000:03d}Z"
+    # Match JS `new Date().toISOString()` (e.g. 2026-07-21T18:48:55.616Z):
+    # millisecond precision with a `Z` suffix. isoformat() emits the offset as
+    # `+00:00`, so swap it for `Z`.
+    return datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
 
 
 # --------------------------- module.yaml model ---------------------------
@@ -264,47 +287,50 @@ def _seed_core_config(config: InstallConfig, project_root: Path) -> dict:
 
 
 def _copy_shared_scripts(src_scripts: Path, dest_scripts: Path, tracked: list[Path]) -> None:
-    """Copy src/scripts/* -> _bmad/scripts/, skipping tests and caches."""
-    if dest_scripts.exists():
+    """Copy src/scripts/* -> _bmad/scripts/, skipping tests and caches.
+
+    dest_scripts is always the installer-owned <project>/_bmad/scripts. Like the
+    Node installer, we wipe it first so scripts renamed or removed upstream don't
+    linger. The delete is guarded: a symlink or file at that path is unlinked
+    (removing only the entry, never followed), and only a real directory is
+    removed recursively. So, rmtree can't delete through a symlink pointing
+    outside the install.
+    """
+    if dest_scripts.is_symlink() or dest_scripts.is_file():
+        dest_scripts.unlink()
+    elif dest_scripts.is_dir():
         shutil.rmtree(dest_scripts)
     dest_scripts.mkdir(parents=True, exist_ok=True)
 
-    def recurse(src_dir: Path, dst_dir: Path) -> None:
-        for entry in sorted(src_dir.iterdir(), key=lambda p: p.name):
-            if entry.is_dir():
-                if entry.name in _SCRIPT_SKIP_DIRS:
-                    continue
-                target = dst_dir / entry.name
-                target.mkdir(parents=True, exist_ok=True)
-                recurse(entry, target)
-            else:
-                if entry.name.endswith(".pyc"):
-                    continue
-                target = dst_dir / entry.name
-                shutil.copy2(entry, target)
-                tracked.append(target)
-
-    recurse(src_scripts, dest_scripts)
+    for root, dirs, files in os.walk(src_scripts):
+        # Prune skip dirs in place so os.walk never descends into them; sort both
+        # dirs and files for deterministic (name-ordered) output.
+        dirs[:] = sorted(d for d in dirs if d not in _SCRIPT_SKIP_DIRS)
+        dst_root = dest_scripts / Path(root).relative_to(src_scripts)
+        dst_root.mkdir(parents=True, exist_ok=True)
+        for name in sorted(files):
+            if name.endswith(".pyc"):
+                continue
+            target = dst_root / name
+            shutil.copy2(Path(root) / name, target)
+            tracked.append(target)
 
 
 def _list_files(root: Path) -> list[str]:
-    """All files under root, as POSIX-relative paths (mirrors getFileList).
+    """All files under root, as POSIX-relative paths, name-sorted per directory.
 
-    Walks depth-first with per-directory name sorting so the emitted order
-    matches the Node installer's readdir-order recursion (which determines the
-    stable tiebreak in files-manifest.csv). Sorting per-directory - rather than
-    by full path - matters because ``-`` sorts before ``/``.
+    The per-directory sort (dirs and files each ordered by name) is the point:
+    it matches the Node installer's sorted readdir walk, which sets the stable
+    tie-break in files-manifest.csv for rows that share a (module, type, name)
+    key.
+    Verified to reproduce Node's files-manifest ordering byte-for-byte.
     """
     files: list[str] = []
-
-    def walk(d: Path) -> None:
-        for entry in sorted(d.iterdir(), key=lambda p: p.name):
-            if entry.is_dir():
-                walk(entry)
-            elif entry.is_file():
-                files.append(entry.relative_to(root).as_posix())
-
-    walk(root)
+    for dirpath, dirs, names in os.walk(root):
+        dirs[:] = sorted(dirs)
+        rel = Path(dirpath).relative_to(root)
+        for name in sorted(names):
+            files.append(name if rel == Path(".") else (rel / name).as_posix())
     return files
 
 

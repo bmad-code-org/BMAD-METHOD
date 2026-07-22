@@ -25,11 +25,8 @@ design-artifacts/
 # Python
 __pycache__/
 .pytest_cache/
-*.egg-info/
 .venv/
-# Python packaging build outputs (bmad_method installer)
 /dist/
-/build/
 bmad_method/_payload/
 
 # BMad run artifacts (memlogs are per-run working memory, never committed)

@@ -59,35 +59,32 @@ def target_dir_for(tool: str) -> str:
     return target
 
 
-def _skill_copy_filter(name: str) -> bool:
-    if name in _SKILL_COPY_SKIP_NAMES:
-        return False
-    if name.startswith(".") and name != ".gitkeep":
-        return False
-    if any(name.endswith(suffix) for suffix in _SKILL_COPY_SKIP_SUFFIXES):
+def _skill_copy_keep(name: str) -> bool:
+    """Whether an entry (file or dir) should be copied into a skill.
+
+    Mirrors the Node installer's verbatim-copy filter (_config-driven.js).
+    `.gitkeep` is the one dotfile intentionally kept - it's how a skill ships
+    an otherwise-empty placeholder directory. Every other dotfile (VCS/editor/OS
+    metadata) plus bytecode caches and editor swap/backup files are dropped.
+    """
+    if ( (name in _SKILL_COPY_SKIP_NAMES) or
+         any(name.endswith(suffix) for suffix in _SKILL_COPY_SKIP_SUFFIXES) or
+         (name.startswith(".") and name != ".gitkeep") ):
         return False
     return True
 
 
-# Glob patterns for shutil.copytree so nested artifacts (deep in a skill's
-# subtree) are dropped too, not just top-level entries.
-_SKILL_COPY_IGNORE = shutil.ignore_patterns(
-    ".DS_Store", "Thumbs.db", "desktop.ini", "__pycache__", "*.pyc", "*~", "*.swp", "*.swo", "*.bak"
-)
+def _skill_copy_ignore(_dir: str, names: list[str]) -> set[str]:
+    """copytree `ignore` callback: applies `_skill_copy_keep` at every depth so
+    nested entries are filtered identically to top-level ones (matching Node's
+    recursive filter)."""
+    return {name for name in names if not _skill_copy_keep(name)}
 
 
 def _copy_skill_dir(source_dir: Path, skill_dir: Path) -> None:
     if skill_dir.exists():
         shutil.rmtree(skill_dir)
-    skill_dir.mkdir(parents=True, exist_ok=True)
-    for entry in source_dir.iterdir():
-        if not _skill_copy_filter(entry.name):
-            continue
-        dest = skill_dir / entry.name
-        if entry.is_dir():
-            shutil.copytree(entry, dest, ignore=_SKILL_COPY_IGNORE)
-        else:
-            shutil.copy2(entry, dest)
+    shutil.copytree(source_dir, skill_dir, ignore=_skill_copy_ignore)
 
 
 def setup_tool(tool: str, project_root: Path, bmad_dir: Path) -> dict:

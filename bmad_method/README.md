@@ -5,10 +5,10 @@ A **pure-Python** installer for the [BMAD Method](https://github.com/bmad-code-o
 skills, agents, and workflows into a project for use with AI IDEs - **with no
 npm / Node toolchain required**.
 
-> **Proof of concept / draft.** This packaging is a good-faith PoC. The BMAD
-> payload, name, and wordmark belong to the upstream project. Publishing under a
-> `bmad-*` name on any index is **gated on the upstream redistribution /
-> trademark ruling** - see the bundled `TRADEMARK.md`.
+> **Proof of concept / draft.** The BMAD payload, name, and wordmark belong to
+> the upstream project. Publishing under a `bmad-*` name on any index is
+> **gated on the upstream redistribution / trademark ruling** - see the bundled
+> `TRADEMARK.md`.
 
 ## Usage
 

@@ -201,6 +201,53 @@ def test_central_config_header_bytes_match_node(scaffold):
     assert f"(gitignored) {em} applies only" in user_stub
 
 
+def test_skill_copy_filter_is_recursive(tmp_path):
+    # The skill copy must filter identically at every depth (mirrors Node):
+    # `.gitkeep` is the one kept dotfile; other dotfiles, bytecode caches, and
+    # editor/OS artifacts are dropped nested as well as at the top level.
+    from bmad_method.ide import _copy_skill_dir
+
+    src = tmp_path / "skill"
+    (src / "sub" / "__pycache__").mkdir(parents=True)
+    (src / "SKILL.md").write_text("x")
+    (src / ".gitkeep").write_text("")
+    (src / ".hidden").write_text("secret")
+    (src / "sub" / ".gitkeep").write_text("")
+    (src / "sub" / ".hidden").write_text("secret")
+    (src / "sub" / "normal.txt").write_text("ok")
+    (src / "sub" / ".DS_Store").write_text("junk")
+    (src / "sub" / "__pycache__" / "m.cpython-313.pyc").write_text("bytecode")
+    (src / "sub" / "tool.pyc").write_text("bytecode")
+
+    dst = tmp_path / "out"
+    _copy_skill_dir(src, dst)
+    copied = {p.relative_to(dst).as_posix() for p in dst.rglob("*") if p.is_file()}
+    assert copied == {".gitkeep", "SKILL.md", "sub/.gitkeep", "sub/normal.txt"}
+    assert not (dst / "sub" / "__pycache__").exists()
+
+
+def test_shared_scripts_wipe_does_not_follow_symlink(tmp_path):
+    # Guard on the recursive delete in _copy_shared_scripts: if _bmad/scripts is
+    # a symlink, we must unlink it (removing only the link), never rmtree through
+    # it into whatever it points at.
+    from bmad_method.installer import _copy_shared_scripts
+    from bmad_method.payload import src_path
+
+    important = tmp_path / "important"
+    important.mkdir()
+    (important / "keepme.txt").write_text("do not delete")
+
+    dest = tmp_path / "_bmad" / "scripts"
+    dest.parent.mkdir(parents=True)
+    dest.symlink_to(important, target_is_directory=True)
+
+    _copy_shared_scripts(src_path("scripts"), dest, [])
+
+    assert (important / "keepme.txt").exists()  # target untouched
+    assert dest.is_dir() and not dest.is_symlink()  # replaced by a real dir
+    assert (dest / "resolve_config.py").is_file()
+
+
 def test_install_is_idempotent(tmp_path):
     cfg = InstallConfig(directory=tmp_path, modules=["bmm"], tools=["claude-code"], yes=True)
     first = install(cfg)
