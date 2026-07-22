@@ -26,7 +26,7 @@ Khám phá không gian vấn đề và xác nhận ý tưởng trước khi cam 
 | Quy trình | Mục đích | Tạo ra |
 | ------------------------------- | -------------------------------------------------------------------------- | ------------------------- |
 | `bmad-brainstorming` | Động não ý tưởng dự án với sự điều phối của người dẫn dắt brainstorming | `brainstorming-report.md` |
-| `bmad-deep-recon` | Xác thực giả định hoặc lựa chọn giữa các phương án — thị trường, miền nghiệp vụ, kỹ thuật, cạnh tranh, tiếng nói người dùng, học thuật; đã kiểm chứng, có trích dẫn, có thể làm mới | Báo cáo nghiên cứu + bản tóm tắt HTML tùy chọn |
+| `bmad-deep-recon` | Xác thực giả định hoặc lựa chọn giữa các phương án — soạn prompt cho công cụ nghiên cứu chuyên sâu của bạn, xử lý báo cáo của nó, hoặc nghiên cứu ngay tại đây; thị trường, miền nghiệp vụ, kỹ thuật, cạnh tranh, tiếng nói người dùng, học thuật; đã kiểm chứng, có trích dẫn, có thể làm mới | Báo cáo hoặc bản tóm tắt nghiên cứu + bản tóm tắt HTML tùy chọn |
 | `bmad-product-brief` | Ghi lại tầm nhìn chiến lược — phù hợp nhất khi concept của bạn đã rõ | `product-brief.md` |
 | `bmad-prfaq` | Working Backwards — stress-test và rèn sắc concept sản phẩm của bạn | `prfaq-{project}.md` |
 

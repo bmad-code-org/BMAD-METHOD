@@ -42,7 +42,7 @@
     {
       "name": "bmad-deep-recon",
       "source": "./",
-      "description": "Decision-grade research harness — market, domain, technical, competitive, user-voice, and academic research with claim verification, configurable rigor, and a living refresh cycle.",
+      "description": "Decision-grade research harness — draft deep-research prompts for your own AI tools, process finished reports into downstream-ready cited summaries, or run the research directly; six research types, claim verification, and a living refresh cycle.",
       "version": "6.10.0",
       "author": {
         "name": "Brian (BMad) Madison"

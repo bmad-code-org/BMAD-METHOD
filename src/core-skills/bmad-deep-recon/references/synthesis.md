@@ -1,6 +1,8 @@
 # Synthesis
 
-The report answers the decision. Assemble `research.md` in this order, shaped by `{workflow.audience}` and written in `{document_output_language}`:
+The report answers the decision — whether the material came from a native Run or a processed import. **Succinct is the contract**: findings and verdicts, not essays; rationale lives in the memlog; a reader gets the decision-relevant truth in minutes. For Process mode this is the whole point — the summary is what downstream consumers read so nobody reprocesses the original, and sections with nothing behind them collapse to a line rather than pad.
+
+Assemble `research.md` in this order, shaped by `{workflow.audience}` and written in `{document_output_language}`:
 
 1. **Executive summary** — decision-first: what the evidence says to do, the two or three findings that drive that answer, and the biggest caveat. One page maximum, readable standalone. Written last, placed first.
 2. **Dimension sections** — already written during the loop; now reconciled: consistent terminology, no duplicated ground, verification statuses and any corrections from the pass applied to the text.

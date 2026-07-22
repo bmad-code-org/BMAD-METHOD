@@ -138,7 +138,7 @@ Créez-le manuellement à l’emplacement `_bmad-output/project-context.md`, ou 
 Tous les workflows de cette phase sont optionnels. [**Vous ne savez pas lequel choisir ?**](../explanation/analysis-phase.md)
 
 - **brainstorming** (`bmad-brainstorming`) — Idéation guidée
-- **research** (`bmad-deep-recon`) — Recherche marché, domaine, technique, concurrentielle, voix des utilisateurs et académique — avec un mode sélection pour choisir entre des options — vérification des affirmations et cycle de rafraîchissement
+- **research** (`bmad-deep-recon`) — Rédigez un prompt de recherche approfondie pour votre propre outil IA, transformez un rapport terminé en synthèse exploitable en aval, ou menez la recherche ici — marché, domaine, technique, concurrentiel, voix des utilisateurs et académique — avec vérification des affirmations et cycle de rafraîchissement
 - **product-brief** (`bmad-product-brief`) — Document fondateur recommandé une fois votre concept bien défini
 - **prfaq** (`bmad-prfaq`) — Exercice Working Backwards pour tester et affiner votre concept produit
 

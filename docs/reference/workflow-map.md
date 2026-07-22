@@ -37,7 +37,7 @@ it**](../explanation/analysis-phase.md).
 |---------------------------------------------------------------------------|----------------------------------------------------------------------------|---------------------------|
 | `bmad-brainstorming`                                                      | Brainstorm Project Ideas with guided facilitation of a brainstorming coach | `brainstorm.html` keepsake plus an optional `brainstorm-intent.md` |
 | `bmad-forge-idea` | Pressure-test an idea until it hardens, proves out, or dies cheaply | `forge-report.html` every run; `forged-idea.md` when an idea hardens |
-| `bmad-deep-recon`                                                           | Validate assumptions or choose between options — market, domain, technical, competitive, user-voice, academic; verified, cited, refreshable | Research report + optional HTML briefing |
+| `bmad-deep-recon`                                                           | Validate assumptions or choose between options — draft a prompt for your deep-research tool, process its report, or research here; market, domain, technical, competitive, user-voice, academic; verified, cited, refreshable | Research report or summary + optional HTML briefing |
 | `bmad-product-brief`                                                      | Capture strategic vision — best when your concept is clear                 | `brief.md` + `addendum.md`, plus any desired HTML or presentation output       |
 | `bmad-prfaq`                                                              | Working Backwards — stress-test your product concept customer-first             | `prfaq-{project}.md`      |
 
