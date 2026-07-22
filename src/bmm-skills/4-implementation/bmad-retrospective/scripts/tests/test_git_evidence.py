@@ -83,3 +83,11 @@ def test_bad_range_errors_as_json(tmp_path):
     code, out = _run("--repo", str(repo), "--range", "nope..alsonope")
     assert code == 1
     assert out["ok"] is False and out["error"]
+
+
+def test_malformed_args_emit_json_not_usage(tmp_path):
+    # An unknown flag must still land on the JSON contract, not argparse's
+    # plain usage text on stderr.
+    code, out = _run("--bogus-flag")
+    assert code != 0
+    assert out["ok"] is False and out["error"]
