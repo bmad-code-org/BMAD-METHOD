@@ -266,6 +266,25 @@ async function autocompleteMultiselect(options) {
   const filterFn = options.filter ?? defaultAutocompleteFilter;
   const lockedSet = new Set(options.lockedValues || []);
 
+  if (typeof core.AutocompletePrompt !== 'function') {
+    const lockedValues = options.lockedValues || [];
+    const selectableOptions = options.options.filter((option) => !lockedSet.has(option.value));
+    const initialValues = [...new Set(options.initialValues || [])].filter((value) => !lockedSet.has(value));
+    const lockedLabels = options.options
+      .filter((option) => lockedSet.has(option.value))
+      .map((option) => `${option.label ?? String(option.value ?? '')} (always installed)`);
+    const message = lockedLabels.length > 0 ? `${options.message} [${lockedLabels.join(', ')}]` : options.message;
+    const result = await clack.multiselect({
+      message,
+      options: selectableOptions,
+      initialValues: initialValues.length > 0 ? initialValues : undefined,
+      required: (options.required || false) && lockedValues.length === 0,
+      maxItems: options.maxItems,
+    });
+    await handleCancel(result);
+    return [...new Set([...result, ...lockedValues])];
+  }
+
   const prompt = new core.AutocompletePrompt({
     options: options.options,
     multiple: true,
@@ -558,7 +577,17 @@ async function cancel(message = 'Operation cancelled') {
  */
 async function box(content, title, options) {
   const clack = await getClack();
-  clack.box(content, title, options);
+
+  // @clack/prompts does not currently expose box(), despite some versions of
+  // its documentation and ecosystem examples referring to one. Keep the
+  // wrapper forward-compatible while falling back to Clack's supported boxed
+  // note renderer for current releases.
+  if (typeof clack.box === 'function') {
+    clack.box(content, title, options);
+    return;
+  }
+
+  clack.note(content, title);
 }
 
 /**
@@ -573,7 +602,8 @@ async function box(content, title, options) {
  */
 async function autocomplete(options) {
   const clack = await getClack();
-  const result = await clack.autocomplete(options);
+  const prompt = typeof clack.autocomplete === 'function' ? clack.autocomplete : clack.select;
+  const result = await prompt(options);
   await handleCancel(result);
   return result;
 }
@@ -654,6 +684,20 @@ function listDirectoryOptions(input, options) {
  */
 async function directory(options) {
   const core = await getClackCore();
+
+  if (typeof core.AutocompletePrompt !== 'function') {
+    const clack = await getClack();
+    const result = await clack.text({
+      message: options.message,
+      placeholder: options.placeholder,
+      initialValue: options.default,
+      defaultValue: options.default,
+      validate: options.validate,
+    });
+    await handleCancel(result);
+    return result;
+  }
+
   const color = await getPicocolors();
   const tabCompletion = {
     prefix: '',

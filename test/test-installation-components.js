@@ -1401,6 +1401,67 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Suite 28b: Polytoken Native Skills
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 28b: Polytoken Native Skills${colors.reset}\n`);
+
+  let tempProjectDir28b;
+  let installedBmadDir28b;
+  try {
+    clearCache();
+    const platformCodes28b = await loadPlatformCodes();
+    const polytokenInstaller = platformCodes28b.platforms.polytoken?.installer;
+
+    assert(polytokenInstaller?.target_dir === '.agents/skills', 'Polytoken target_dir uses the shared project-local skills path');
+    assert(!polytokenInstaller?.global_target_dir, 'Polytoken does not claim an undocumented global skills path');
+
+    tempProjectDir28b = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-polytoken-test-'));
+    installedBmadDir28b = await createTestBmadFixture();
+
+    const ideManager28b = new IdeManager();
+    await ideManager28b.ensureInitialized();
+
+    assert(
+      ideManager28b.getAvailableIdes().some((ide) => ide.value === 'polytoken'),
+      'Polytoken appears in available IDEs list',
+    );
+
+    const detectedBefore28b = await ideManager28b.detectInstalledIdes(tempProjectDir28b);
+    assert(!detectedBefore28b.includes('polytoken'), 'Polytoken is not detected before install');
+
+    const result28b = await ideManager28b.setup('polytoken', tempProjectDir28b, installedBmadDir28b, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+    assert(result28b.success === true, 'Polytoken setup succeeds against temp project');
+
+    const detectedAfter28b = await ideManager28b.detectInstalledIdes(tempProjectDir28b);
+    assert(detectedAfter28b.includes('polytoken'), 'Polytoken is detected after install');
+
+    const skillFile28b = path.join(tempProjectDir28b, '.agents', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile28b), 'Polytoken install writes SKILL.md directory output');
+
+    const skillContent28b = await fs.readFile(skillFile28b, 'utf8');
+    const frontmatter28b = skillContent28b.match(/^---\n([\s\S]*?)\n---\n?/);
+    assert(frontmatter28b, 'Polytoken SKILL.md contains valid frontmatter delimiters');
+    assert(/^description:\s*\S.+$/m.test(frontmatter28b?.[1] || ''), 'Polytoken skill has a non-empty description');
+    assert(skillContent28b.includes('agent-activation'), 'Polytoken skill preserves its activation instructions');
+
+    const reinstall28b = await ideManager28b.setup('polytoken', tempProjectDir28b, installedBmadDir28b, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+    assert(reinstall28b.success === true, 'Polytoken reinstall succeeds over existing skills');
+  } catch (error) {
+    assert(false, 'Polytoken native skills test succeeds', error.message);
+  } finally {
+    if (tempProjectDir28b) await fs.remove(tempProjectDir28b).catch(() => {});
+    if (installedBmadDir28b) await fs.remove(path.dirname(installedBmadDir28b)).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
   // Suite 29: Unified Skill Scanner — collectSkills
   // ============================================================
   console.log(`${colors.yellow}Test Suite 29: Unified Skill Scanner${colors.reset}\n`);

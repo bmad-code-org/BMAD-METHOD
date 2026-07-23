@@ -281,6 +281,12 @@ platforms:
       target_dir: .agents/skills
       global_target_dir: ~/.agents/skills
 
+  polytoken:
+    name: "Polytoken"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+
   qoder:
     name: "Qoder"
     preferred: false
