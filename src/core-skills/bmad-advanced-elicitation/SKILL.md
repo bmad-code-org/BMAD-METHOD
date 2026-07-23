@@ -34,6 +34,8 @@ If `{workflow.additional_methods}` is non-empty, add `--extra '<its entries as a
 
 **First menu:** run `categories`, pick the 2–4 categories that fit the target (risk before a launch, technical for code, collaboration when stakeholders compete, creative when the content is flat), `list` them, and hand-pick five methods that attack the target from different angles — honoring `{workflow.preferences}`. **Reshuffle:** `random -n 5 --spread`, excluding everything already offered.
 
+**If the catalog is unavailable:** do not halt — a refinement pass is worth more than none. Treat the catalog as unavailable when a command exits non-zero (a missing methods file exits 2), or when it yields no usable rows: empty output, or rows with blank `method_name`/`description` because the file is not in the expected `num,category,method_name,description,output_pattern` shape. Fall back to well-known elicitation methods from your own knowledge, drawing on the same categories you would have picked for the target — risk (Pre-Mortem, Red Team vs Blue Team), technical (First Principles, Tree of Thoughts), collaboration (Stakeholder Round Table), creative (Critique and Refine). Say once that the catalog was unavailable so built-in methods are in use, then serve the menu unchanged; reshuffle and [a] draw from that same built-in set. Honor `{workflow.preferences}` as usual, and treat `{workflow.additional_methods}` entries as available if you were able to read them.
+
 ## The Menu
 
 ```
