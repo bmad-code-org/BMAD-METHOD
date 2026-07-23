@@ -37,9 +37,11 @@ it**](../explanation/analysis-phase.md).
 |---------------------------------------------------------------------------|----------------------------------------------------------------------------|---------------------------|
 | `bmad-brainstorming`                                                      | Brainstorm Project Ideas with guided facilitation of a brainstorming coach | `brainstorm.html` keepsake plus an optional `brainstorm-intent.md` |
 | `bmad-forge-idea` | Pressure-test an idea until it hardens, proves out, or dies cheaply | `forge-report.html` every run; `forged-idea.md` when an idea hardens |
-| `bmad-domain-research`, `bmad-market-research`, `bmad-technical-research` | Validate market, technical, or domain assumptions                          | Research findings         |
+| `bmad-deep-recon`                                                           | Research any subject for a decision — draft a prompt for your deep-research tool, process its report, or run the research here; six typed packs, verified and cited | Research report or summary + optional HTML briefing |
 | `bmad-product-brief`                                                      | Capture strategic vision — best when your concept is clear                 | `brief.md` + `addendum.md`, plus any desired HTML or presentation output       |
 | `bmad-prfaq`                                                              | Working Backwards — stress-test your product concept customer-first             | `prfaq-{project}.md`      |
+
+For Deep Recon's three modes and how a research run works inside, see [Deep Recon](../explanation/deep-recon.md).
 
 ## Phase 2: Planning
 
