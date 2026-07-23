@@ -90,7 +90,7 @@ Every implementation path converges on `bmad-build`. It accepts direct intent, a
 | `bmad-code-review` | Ad hoc review of any code change | Findings + applied patches |
 | `bmad-correct-course` | Handle significant mid-sprint changes | Updated plan or re-routing |
 | `bmad-sprint-status` | Track sprint progress and story status | Sprint status update |
-| `bmad-retrospective` | Review after epic completion | Lessons learned |
+| `bmad-retrospective` | Evidence-based review of a completed epic against its acceptance criteria | Retro document, action items, acceptance verdict |
 
 ### Direct and Planned Entry
 
