@@ -72,8 +72,8 @@ max_depth = 0
 #   normal  spot-check load-bearing claims only — fast, the default
 #   high    cross-check the pack's two-source classes; red-team major
 #           conclusions
-#   max     cross-check every ledger claim + independent adversarial
-#           verifiers per conclusion + primary-source-priority ranking
+#   max     cross-check every ledger claim + the red-team pass at full
+#           breadth + primary-source-priority ranking
 validation = "normal"
 
 # Red-team stance pass — fresh-context skeptics hunting disconfirming
@@ -123,12 +123,19 @@ html_theme = ""
 # after", "engineering team, keep vendor marketing out".
 audience = ""
 
-# Org-configured registry of internal research tools (knowledge bases, MCP
-# tools) consulted alongside web research in Run mode — each entry names the
-# tool and when to use it.
+# Registry of extra research surfaces — internal knowledge bases or search
+# tools you subscribe to — consulted alongside web research in Run mode; each
+# entry names the tool and when to use it. Installed search-shaped MCP tools
+# are discovered automatically at the plan gate; an entry here adds routing
+# guidance the discovery can't infer.
 #
-# Example:
-#   external_sources = ["Gartner MCP (corp:gartner_query) for analyst data on enterprise software markets"]
+# Examples:
+#   external_sources = [
+#     "Tavily MCP (tavily_search/tavily_extract): preferred web search + clean page extraction",
+#     "Perplexity Sonar MCP (perplexity_ask): cited synthesized answers — chase its citations as the sources",
+#     "xAI X Search MCP: live X/Twitter posts and threads, for user-voice and sentiment dimensions",
+#     "Gartner MCP (corp:gartner_query): analyst data on enterprise software markets",
+#   ]
 external_sources = []
 
 # Polish passes applied to research.md at finalize. Entries are `skill:NAME`
