@@ -807,6 +807,26 @@ class UI {
     }
 
     const configCollector = new OfficialModules({ channelOptions: options.channelOptions });
+    let headlessCoreDefaults = {};
+
+    if (options.yes) {
+      let safeUsername;
+      try {
+        safeUsername = os.userInfo().username;
+      } catch {
+        safeUsername = process.env.USER || process.env.USERNAME || 'User';
+      }
+      const defaultUsername = safeUsername.charAt(0).toUpperCase() + safeUsername.slice(1);
+      headlessCoreDefaults = {
+        user_name: defaultUsername,
+        // {directory_name} default per src/core-skills/module.yaml — matches what the
+        // interactive flow resolves via buildQuestion()'s {directory_name} placeholder.
+        project_name: path.basename(directory),
+        communication_language: 'English',
+        document_output_language: 'English',
+        output_folder: '_bmad-output',
+      };
+    }
 
     // Seed core config from CLI options if provided
     if (options.userName || options.communicationLanguage || options.documentOutputLanguage || options.outputFolder) {
@@ -830,8 +850,8 @@ class UI {
 
       // Load existing config to merge with provided options
       await configCollector.loadExistingConfig(directory);
-      const existingConfig = configCollector.collectedConfig.core || {};
-      configCollector.collectedConfig.core = { ...existingConfig, ...coreConfig };
+      const existingConfig = configCollector.existingConfig?.core || {};
+      configCollector.collectedConfig.core = { ...headlessCoreDefaults, ...existingConfig, ...coreConfig };
 
       // If not all options are provided, collect the missing ones interactively (unless --yes flag)
       if (
@@ -843,27 +863,12 @@ class UI {
     } else if (options.yes) {
       // Use all defaults when --yes flag is set
       await configCollector.loadExistingConfig(directory);
-      const existingConfig = configCollector.collectedConfig.core || {};
+      const existingConfig = configCollector.existingConfig?.core || {};
 
       if (Object.keys(existingConfig).length === 0) {
-        let safeUsername;
-        try {
-          safeUsername = os.userInfo().username;
-        } catch {
-          safeUsername = process.env.USER || process.env.USERNAME || 'User';
-        }
-        const defaultUsername = safeUsername.charAt(0).toUpperCase() + safeUsername.slice(1);
-        configCollector.collectedConfig.core = {
-          user_name: defaultUsername,
-          // {directory_name} default per src/core-skills/module.yaml — matches what the
-          // interactive flow resolves via buildQuestion()'s {directory_name} placeholder.
-          project_name: path.basename(directory),
-          communication_language: 'English',
-          document_output_language: 'English',
-          output_folder: '_bmad-output',
-        };
         await prompts.log.info('Using default configuration (--yes flag)');
       }
+      configCollector.collectedConfig.core = { ...headlessCoreDefaults, ...existingConfig };
     }
 
     // Collect all module configs — core is skipped if already seeded above
