@@ -27,11 +27,12 @@ Run any tool by typing its skill name (e.g., `bmad-help`) in your IDE. No agent 
 | Tool                                        | Purpose                                                             |
 | ------------------------------------------- | ------------------------------------------------------------------- |
 | [`bmad-brainstorming`](#bmad-brainstorming) | Facilitate interactive brainstorming sessions                       |
+| [`bmad-deep-recon`](#bmad-deep-recon)       | Decision-grade research: draft, process, or run — any subject       |
 | [`bmad-forge-idea`](#bmad-forge-idea)       | Pressure-test an idea until it hardens, proves out, or dies cheaply |
 | [`bmad-party-mode`](#bmad-party-mode)       | Orchestrate multi-agent group discussions                           |
 
 :::note[Moved and removed]
-`bmad-spec` now ships with the BMM module as a Phase 2 planning workflow — see the [Workflow Map](./workflow-map.md#phase-2-planning). The `bmad-shard-doc` and `bmad-index-docs` utilities have been removed. The former `bmad-editorial-review`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, and `bmad-review-verification-gap` skills are all merged into `bmad-review`, whose editorial lenses replace the separate editorial skill; the old IDs still resolve via forwarders for compatibility.
+`bmad-spec` now ships with the BMM module as a Phase 2 planning workflow — see the [Workflow Map](./workflow-map.md#phase-2-planning). The `bmad-shard-doc` and `bmad-index-docs` utilities have been removed. The former `bmad-editorial-review`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, and `bmad-review-verification-gap` skills are all merged into `bmad-review`, whose editorial lenses replace the separate editorial skill; the old IDs still resolve via forwarders for compatibility. The former `bmad-market-research`, `bmad-domain-research`, and `bmad-technical-research` workflows are merged into `bmad-deep-recon` as research types, with the old IDs forwarding the same way.
 :::
 
 ## bmad-help
@@ -150,7 +151,7 @@ For a detailed guide on customizing BMad, see [How to Customize BMad](../how-to/
 
 ## Thinking Skills
 
-The three skills below round out the core module — general-purpose thinking tools that any phase or module can lean on.
+The skills below round out the core module — general-purpose thinking tools that any phase or module can lean on.
 
 ### bmad-brainstorming
 
@@ -177,6 +178,31 @@ The three skills below round out the core module — general-purpose thinking to
 :::note[Quantity Target]
 The magic happens in ideas 50–100. The workflow encourages generating 100+ ideas before organization.
 :::
+
+### bmad-deep-recon
+
+**Decision-grade research on any subject, three ways.** — Draft a deep-research prompt for the AI tool you already subscribe to, process a finished report into a cited summary downstream skills consume directly, or run the research in place through parallel web fan-out.
+
+**Use it when:**
+
+- A decision should rest on evidence instead of the model's memory
+- You need market, domain, technical, competitive, user-voice, or literature research
+- You have a research report from any source and want it distilled for downstream use
+- You're choosing between named options and want a structured comparison
+
+**How it works:**
+
+1. Detects the mode — draft, process, or run — and infers the research type from your ask
+2. Loads the type's pack: prioritized dimensions, source craft, freshness rules
+3. Run mode plans at one gate, fans out firewalled research assistants, and verifies claims as they land
+4. Draft and Process round-trip through your own deep-research tool instead
+5. Refresh and Deepen update an existing report without re-researching it
+
+**Input:** The decision and topic, a report to process, or an existing research folder to refresh
+
+**Output:** A cited `research.md` with metadata frontmatter, plus an optional self-contained HTML briefing
+
+For the three modes, how to choose between them, and what happens inside a run, see [Deep Recon](../explanation/deep-recon.md).
 
 ### bmad-forge-idea
 

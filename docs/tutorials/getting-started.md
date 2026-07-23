@@ -140,7 +140,7 @@ All workflows in this phase are optional. [**Not sure which to use?**](../explan
 
 - **brainstorming** (`bmad-brainstorming`) — Guided ideation
 - **forge-idea** (`bmad-forge-idea`) — Pressure-test an idea until it hardens or dies cheaply
-- **research** (`bmad-deep-recon`) — Draft a deep-research prompt for your own AI tool, process a finished report into a downstream-ready summary, or run the research here — market, domain, technical, competitive, user-voice, and academic types, with claim verification and a refresh lifecycle
+- **research** (`bmad-deep-recon`) — Draft a deep-research prompt for your own AI tool, process a finished report into a downstream-ready summary, or run the research here, with claim verification and a refresh lifecycle. [Learn more](../explanation/deep-recon.md)
 - **product-brief** (`bmad-product-brief`) — Recommended foundation document when your concept is clear
 - **prfaq** (`bmad-prfaq`) — Working Backwards challenge to stress-test your product concept customer-first
 
