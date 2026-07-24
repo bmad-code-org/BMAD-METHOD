@@ -9,7 +9,9 @@ one line recorded at the end in the order it happened — no sections, no groupi
 lifecycle status the log would have to mutate.
 """
 import json
+import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import pytest
@@ -304,3 +306,51 @@ def test_ack_entry_count_climbs(ws, capsys):
     append(ws, "b")
     out = json.loads(capsys.readouterr().out.strip().splitlines()[-1])
     assert out["entries"] == 2
+
+
+def test_concurrent_appends_preserve_every_entry(tmp_path):
+    target = tmp_path / MEMLOG
+    script = str(Path(memlog.__file__).resolve())
+    subprocess.run(
+        [sys.executable, script, "init", "--path", str(target), "--field", "topic=concurrency"],
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+
+    def append_in_process(index):
+        return subprocess.run(
+            [
+                sys.executable,
+                script,
+                "append",
+                "--path",
+                str(target),
+                "--type",
+                "note",
+                "--text",
+                f"entry-{index}",
+            ],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+
+    count = 50
+    with ThreadPoolExecutor(max_workers=count) as pool:
+        results = list(pool.map(append_in_process, range(count)))
+
+    failures = [
+        f"{index}: exit {result.returncode}: {result.stderr.strip()}"
+        for index, result in enumerate(results)
+        if result.returncode != 0
+    ]
+    assert not failures, "\n".join(failures)
+
+    body = memlog.split(target.read_text(encoding="utf-8"))[1]
+    actual = [line for line in body.splitlines() if line.startswith("- ")]
+    expected = {f"- (note) entry-{index}" for index in range(count)}
+    assert len(actual) == count
+    assert set(actual) == expected
+    assert not target.with_suffix(target.suffix + ".lock").exists()
