@@ -663,8 +663,7 @@ class Installer {
    * Excludes dev-only tests and Python caches so they don't ship to users.
    * Wipes the destination first so files removed or renamed in source
    * don't linger and get recorded as installed. Also seeds
-   * _bmad/custom/.gitignore on fresh installs so *.user.toml overrides
-   * stay out of version control.
+   * gitignore files for personal overrides and generated render snapshots.
    */
   async _installSharedScripts(paths) {
     const srcScriptsDir = path.join(paths.srcDir, 'src', 'scripts');
@@ -686,6 +685,14 @@ class Installer {
     if (!(await fs.pathExists(customGitignore))) {
       await fs.writeFile(customGitignore, '*.user.toml\n', 'utf8');
       this.installedFiles.add(customGitignore);
+    }
+
+    const renderDir = path.join(paths.bmadDir, 'render');
+    const renderGitignore = path.join(renderDir, '.gitignore');
+    if (!(await fs.pathExists(renderGitignore))) {
+      await fs.ensureDir(renderDir);
+      await fs.writeFile(renderGitignore, '*\n!.gitignore\n', 'utf8');
+      this.installedFiles.add(renderGitignore);
     }
   }
 

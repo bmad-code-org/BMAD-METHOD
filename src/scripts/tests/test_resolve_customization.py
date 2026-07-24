@@ -33,6 +33,7 @@ class ResolveCustomizationStdoutTests(unittest.TestCase):
                 ],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
+                cwd=temp_dir,
                 env=env,
                 check=False,
             )
