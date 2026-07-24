@@ -40,6 +40,16 @@
       "skills": ["./src/core-skills/bmad-forge-idea"]
     },
     {
+      "name": "bmad-deep-recon",
+      "source": "./",
+      "description": "Decision-grade research harness — draft deep-research prompts for your own AI tools, process finished reports into downstream-ready cited summaries, or run the research directly; six research types, claim verification, and a living refresh cycle.",
+      "version": "6.10.0",
+      "author": {
+        "name": "Brian (BMad) Madison"
+      },
+      "skills": ["./src/core-skills/bmad-deep-recon"]
+    },
+    {
       "name": "bmad-analysis",
       "source": "./",
       "description": "The BMad thinking pack — structured brainstorming, idea pressure-testing, and multi-perspective agent roundtables in one install.",
@@ -67,9 +77,7 @@
         "./src/bmm-skills/1-analysis/bmad-agent-analyst",
         "./src/bmm-skills/1-analysis/bmad-agent-tech-writer",
         "./src/bmm-skills/1-analysis/bmad-document-project",
-        "./src/bmm-skills/1-analysis/research/bmad-domain-research",
-        "./src/bmm-skills/1-analysis/research/bmad-market-research",
-        "./src/bmm-skills/1-analysis/research/bmad-technical-research",
+        "./src/core-skills/bmad-deep-recon",
         "./src/bmm-skills/2-plan-workflows/bmad-agent-pm",
         "./src/bmm-skills/2-plan-workflows/bmad-agent-ux-designer",
         "./src/bmm-skills/2-plan-workflows/bmad-prd",

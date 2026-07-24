@@ -135,7 +135,7 @@ Bạn có thể tạo thủ công tại `_bmad-output/project-context.md` hoặc
 
 Tất cả workflow trong phase này đều là tùy chọn. [**Chưa chắc nên dùng cái nào?**](../explanation/analysis-phase.md)
 - **brainstorming** (`bmad-brainstorming`) — Gợi ý ý tưởng có hướng dẫn
-- **research** (`bmad-market-research` / `bmad-domain-research` / `bmad-technical-research`) — Nghiên cứu thị trường, miền nghiệp vụ và kỹ thuật
+- **research** (`bmad-deep-recon`) — Soạn prompt nghiên cứu chuyên sâu cho công cụ AI của riêng bạn, xử lý báo cáo hoàn chỉnh thành bản tóm tắt sẵn sàng cho các bước sau, hoặc thực hiện nghiên cứu ngay tại đây — thị trường, miền nghiệp vụ, kỹ thuật, cạnh tranh, tiếng nói người dùng và học thuật — kèm kiểm chứng luận điểm và vòng đời làm mới
 - **product-brief** (`bmad-product-brief`) — Tài liệu nền tảng được khuyến nghị khi concept của bạn đã rõ
 - **prfaq** (`bmad-prfaq`) — Bài kiểm tra Working Backwards để stress-test và rèn sắc concept sản phẩm của bạn
 

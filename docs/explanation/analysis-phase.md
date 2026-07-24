@@ -25,13 +25,15 @@ Analysis tools exist to make your PRD sharp. They attack the problem from differ
 
 See [Brainstorming](./brainstorming.md) for a deeper look at how sessions work.
 
-### Research (Market, Domain, Technical)
+### Research (Deep Recon)
 
-**What it is.** Three focused research workflows that investigate different dimensions of your idea. Market research examines competitors, trends, and user sentiment. Domain research builds subject-matter expertise and terminology. Technical research evaluates feasibility, architecture options, and implementation approaches.
+**What it is.** One research skill, `bmad-deep-recon`, that investigates any dimension of your idea through typed research packs: market (competitors, trends, sizing), domain (subject-matter expertise and terminology), technical (feasibility and implementation approaches), competitive teardowns, user-voice, and academic literature. It works three ways — draft a prompt for the deep-research tool you already subscribe to, process a finished report into a cited summary, or run the research directly.
 
 **Why it's here.** Building on assumptions is the fastest way to build something nobody needs. Research grounds your concept in reality — what competitors already exist, what users actually struggle with, what's technically feasible, and what industry-specific constraints you'll face.
 
-**When to use it.** You're entering an unfamiliar domain, you suspect competitors exist but haven't mapped them, or your concept depends on technical capabilities you haven't validated. Run one, two, or all three — each stands alone.
+**When to use it.** You're entering an unfamiliar domain, you suspect competitors exist but haven't mapped them, or your concept depends on technical capabilities you haven't validated. Each research type stands alone; run whichever ones bear on your decision.
+
+See [Deep Recon](./deep-recon.md) for the three modes, how to choose between them, and how a research run works inside.
 
 ### Product Brief
 
