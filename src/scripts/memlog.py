@@ -72,10 +72,13 @@ import argparse
 import json
 import os
 import sys
+import time
+from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
 
 MEMLOG = ".memlog.md"
+LOCK_TIMEOUT_SECONDS = 10.0
 
 
 def now() -> str:
@@ -129,6 +132,40 @@ def write_atomic(path: Path, text: str) -> None:
     os.replace(tmp, path)
 
 
+@contextmanager
+def exclusive_lock(path: Path):
+    """Lock the complete read/modify/replace cycle across processes."""
+    lock = path.with_suffix(path.suffix + ".lock")
+    deadline = time.monotonic() + LOCK_TIMEOUT_SECONDS
+    while True:
+        try:
+            descriptor = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+            break
+        except (FileExistsError, PermissionError) as contention:
+            if time.monotonic() < deadline:
+                time.sleep(0.05)
+                continue
+            if isinstance(contention, PermissionError) and not lock.exists():
+                raise
+            try:
+                holder = lock.read_text(encoding="ascii").strip()
+            except FileNotFoundError:
+                continue
+            except OSError:
+                holder = "unreadable"
+            raise TimeoutError(
+                f"timed out waiting for memlog lock: {lock} "
+                f"(holder {holder or 'unknown'}; inspect the process before removing a stale lock)"
+            ) from contention
+    try:
+        os.write(descriptor, f"{os.getpid()} {time.time()}\n".encode("ascii"))
+        os.fsync(descriptor)
+        yield
+    finally:
+        os.close(descriptor)
+        lock.unlink(missing_ok=True)
+
+
 def entry_count(body: str) -> int:
     return sum(1 for ln in body.splitlines() if ln.startswith("- "))
 
@@ -144,45 +181,48 @@ def ack(path: Path, body: str) -> None:
 
 def cmd_init(args) -> int:
     path = resolve(args)
-    if path.exists():
-        print(f"error: {path} already exists; use append/set to update it", file=sys.stderr)
-        return 2
     path.parent.mkdir(parents=True, exist_ok=True)
-    meta: dict[str, str] = {}
-    for pair in args.field or []:
-        if "=" not in pair:
-            print(f"error: --field expects key=value, got {pair!r}", file=sys.stderr)
+    with exclusive_lock(path):
+        if path.exists():
+            print(f"error: {path} already exists; use append/set to update it", file=sys.stderr)
             return 2
-        k, v = pair.split("=", 1)
-        meta[k.strip()] = v.strip()
-    touch(meta)
-    write_atomic(path, render(meta, ""))
+        meta: dict[str, str] = {}
+        for pair in args.field or []:
+            if "=" not in pair:
+                print(f"error: --field expects key=value, got {pair!r}", file=sys.stderr)
+                return 2
+            k, v = pair.split("=", 1)
+            meta[k.strip()] = v.strip()
+        touch(meta)
+        write_atomic(path, render(meta, ""))
     ack(path, "")
     return 0
 
 
 def cmd_append(args) -> int:
     path = resolve(args)
-    meta, body = split(path.read_text(encoding="utf-8"))
-    text = " ".join(args.text.split())  # collapse newlines/runs → one-line entry, no prose bloat
-    label = args.type or ""
-    if args.by:
-        label = f"{label} by {args.by}".strip()  # attribution: "(idea by user)" / "(by coach)"
-    tag = f"({label}) " if label else ""
-    entry = f"- {tag}{text}"
-    body = (body.rstrip("\n") + "\n" + entry) if body.strip() else entry  # always at the end
-    touch(meta)
-    write_atomic(path, render(meta, body))
+    with exclusive_lock(path):
+        meta, body = split(path.read_text(encoding="utf-8"))
+        text = " ".join(args.text.split())  # collapse newlines/runs → one-line entry, no prose bloat
+        label = args.type or ""
+        if args.by:
+            label = f"{label} by {args.by}".strip()  # attribution: "(idea by user)" / "(by coach)"
+        tag = f"({label}) " if label else ""
+        entry = f"- {tag}{text}"
+        body = (body.rstrip("\n") + "\n" + entry) if body.strip() else entry  # always at the end
+        touch(meta)
+        write_atomic(path, render(meta, body))
     ack(path, body)
     return 0
 
 
 def cmd_set(args) -> int:
     path = resolve(args)
-    meta, body = split(path.read_text(encoding="utf-8"))
-    meta[args.key] = args.value
-    touch(meta)
-    write_atomic(path, render(meta, body))
+    with exclusive_lock(path):
+        meta, body = split(path.read_text(encoding="utf-8"))
+        meta[args.key] = args.value
+        touch(meta)
+        write_atomic(path, render(meta, body))
     ack(path, body)
     return 0
 
