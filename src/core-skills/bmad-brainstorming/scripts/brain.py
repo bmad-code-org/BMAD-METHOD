@@ -693,6 +693,12 @@ def html_doc(rows: list[dict]) -> str:
 
 
 def main(argv: list[str] | None = None) -> int:
+    # Technique text carries non-ASCII (em-dashes, curly quotes); pin the output
+    # streams to UTF-8 so a Windows cp1252 default doesn't corrupt or crash on it.
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is not None:
+            reconfigure(encoding="utf-8")
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--file", type=Path, default=DEFAULT_FILE, help="technique CSV (default: sibling assets/brain-methods.csv)")
     p.add_argument("--extra", type=Path, help="JSON overlay of additional techniques (customize.toml additional_techniques), merged into every command")

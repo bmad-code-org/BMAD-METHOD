@@ -44,15 +44,23 @@ except ImportError:  # pragma: no cover - guarded for <3.11
 
 
 def _run_json(cmd):
-    """Run a resolver script and parse its JSON stdout. None on any failure."""
+    """Run a resolver script and parse its JSON stdout. None on any failure.
+
+    The child emits UTF-8 (emoji agent icons); decode it as UTF-8 explicitly so
+    a Windows cp1252 default doesn't corrupt or crash on the non-ASCII bytes.
+    """
     try:
-        out = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        out = subprocess.run(
+            cmd, capture_output=True, text=True,
+            encoding="utf-8", errors="replace", timeout=60,
+        )
     except (OSError, subprocess.SubprocessError):
         return None
-    if out.returncode != 0 or not out.stdout.strip():
+    stdout = out.stdout or ""
+    if out.returncode != 0 or not stdout.strip():
         return None
     try:
-        return json.loads(out.stdout)
+        return json.loads(stdout)
     except json.JSONDecodeError:
         return None
 
