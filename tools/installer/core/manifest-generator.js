@@ -91,6 +91,7 @@ class ManifestGenerator {
     ];
 
     await this.ensureCustomConfigStubs(bmadDir);
+    await this.ensureRootGitignore(bmadDir);
 
     return {
       skills: this.skills.length,
@@ -655,6 +656,63 @@ class ManifestGenerator {
     for (const { file, header } of stubs) {
       if (await fs.pathExists(file)) continue;
       await fs.writeFile(file, header.join('\n'));
+    }
+  }
+
+  /**
+   * Keep _bmad/.gitignore excluding installer-generated config so it stays
+   * out of version control. These files are regenerated on every install
+   * (per-module config.yaml even restamps a timestamp header) and
+   * config.user.toml / the spread user_name in each config.yaml are personal
+   * — committing them causes per-developer merge churn on shared repos.
+   * Team-wide customization belongs in _bmad/custom/ (committed) instead.
+   *
+   * Patterns are root-anchored (leading `/`) so they match ONLY the generated
+   * files at _bmad/ root and not _bmad/custom/config.toml, which is committed.
+   * Personal overrides under _bmad/custom/ (*.user.toml) are ignored here too,
+   * so the documented "gitignored" guarantee holds even if the separate
+   * _bmad/custom/.gitignore is absent (e.g. deleted, or an older install).
+   *
+   * The rules live in a marked, installer-managed block that is refreshed on
+   * every install (so existing installs pick up rule changes), while any lines
+   * the user added outside the block are preserved.
+   */
+  async ensureRootGitignore(bmadDir) {
+    const gitignorePath = path.join(bmadDir, '.gitignore');
+    const START = '# >>> bmad-method installer-managed (do not edit) >>>';
+    const END = '# <<< bmad-method installer-managed <<<';
+    const block = [
+      START,
+      '# Installer-generated — regenerated on every `bmad-method install`.',
+      '# Personal (user_name) and churn-prone (timestamps); do not commit.',
+      '# Commit team-wide customization under _bmad/custom/ instead.',
+      '/config.toml',
+      '/config.user.toml',
+      '/*/config.yaml',
+      '/custom/*.user.toml',
+      END,
+    ].join('\n');
+
+    let existing = '';
+    if (await fs.pathExists(gitignorePath)) {
+      existing = await fs.readFile(gitignorePath, 'utf8');
+    }
+
+    let next;
+    const startIdx = existing.indexOf(START);
+    const endIdx = existing.indexOf(END);
+    if (startIdx !== -1 && endIdx !== -1 && endIdx > startIdx) {
+      // Replace the managed block in place, preserving surrounding user lines.
+      next = existing.slice(0, startIdx) + block + existing.slice(endIdx + END.length);
+    } else if (existing.trim() === '') {
+      next = block + '\n';
+    } else {
+      // Append the managed block after the user's existing content.
+      next = existing.replace(/\n*$/, '') + '\n\n' + block + '\n';
+    }
+
+    if (next !== existing) {
+      await fs.writeFile(gitignorePath, next, 'utf8');
     }
   }
 
