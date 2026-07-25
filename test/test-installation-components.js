@@ -278,6 +278,47 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test 6c: ZCode Native Skills Install
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 6c: ZCode Native Skills${colors.reset}\n`);
+
+  let tempProjectDir6c;
+  let installedBmadDir6c;
+  try {
+    clearCache();
+    const platformCodes6c = await loadPlatformCodes();
+    const zcodeInstaller = platformCodes6c.platforms['zcode']?.installer;
+
+    assert(zcodeInstaller?.target_dir === '.zcode/skills', 'ZCode target_dir uses its own skills path');
+    assert(zcodeInstaller?.global_target_dir === '~/.zcode/skills', 'ZCode global_target_dir uses its own global skills path');
+    // ZCode keeps a private skills tree (not the shared .agents/skills standard),
+    // so it must never collide with the cross-tool shared path.
+    assert(zcodeInstaller?.target_dir !== '.agents/skills', 'ZCode target_dir is distinct from the shared .agents/skills standard');
+
+    tempProjectDir6c = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-zcode-test-'));
+    installedBmadDir6c = await createTestBmadFixture();
+
+    const ideManager6c = new IdeManager();
+    await ideManager6c.ensureInitialized();
+    const result6c = await ideManager6c.setup('zcode', tempProjectDir6c, installedBmadDir6c, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result6c.success === true, 'ZCode setup succeeds against temp project');
+
+    const skillFile6c = path.join(tempProjectDir6c, '.zcode', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile6c), 'ZCode install writes SKILL.md directory output');
+  } catch (error) {
+    assert(false, 'ZCode native skills install test succeeds', error.message);
+  } finally {
+    if (tempProjectDir6c) await fs.remove(tempProjectDir6c).catch(() => {});
+    if (installedBmadDir6c) await fs.remove(path.dirname(installedBmadDir6c)).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
   // Test 7: Auggie Native Skills Install
   // ============================================================
   console.log(`${colors.yellow}Test Suite 7: Auggie Native Skills${colors.reset}\n`);
