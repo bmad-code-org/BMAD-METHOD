@@ -37,7 +37,7 @@ chaque outil et quand l’utiliser**](../explanation/analysis-phase.md).
 | Workflow                                                                  | Objectif                                                                       | Livrable                  |
 |---------------------------------------------------------------------------|--------------------------------------------------------------------------------|---------------------------|
 | `bmad-brainstorming`                                                      | Brainstormez des idées de projet, animé par un coach de brainstorming dédié    | `brainstorming-report.md` |
-| `bmad-domain-research`, `bmad-market-research`, `bmad-technical-research` | Validez vos hypothèses de marché, techniques ou liées au domaine               | Rapport de recherches     |
+| `bmad-deep-recon` | Validez vos hypothèses ou choisissez entre des options — rédigez un prompt pour votre outil de recherche approfondie, traitez son rapport, ou menez la recherche ici ; marché, domaine, technique, concurrentiel, voix des utilisateurs, académique ; vérifiée, citée, actualisable | Rapport ou synthèse de recherche + briefing HTML optionnel |
 | `bmad-product-brief`                                                      | Formalisez la vision stratégique — idéal lorsque votre concept est bien défini | `product-brief.md`        |
 | `bmad-prfaq`                                                              | Working Backwards — mettez à l’épreuve et affinez votre concept produit        | `prfaq-{project}.md`      |
 

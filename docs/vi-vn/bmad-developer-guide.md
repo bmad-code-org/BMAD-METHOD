@@ -486,7 +486,7 @@ bmad-quick-dev
 ```
 Ngày 1-2: Analysis
   ├── bmad-analyst → CB → product-brief.md
-  └── (tùy chọn) bmad-analyst → MR → market-research.md
+  └── (tùy chọn) bmad-analyst → RS (bmad-deep-recon) → research.md
 
 Ngày 2-3: Planning  
   ├── bmad-pm → CP → PRD.md
