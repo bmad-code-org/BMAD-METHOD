@@ -87,6 +87,12 @@ def test_resolve_detail_refuses_path_traversal(lib, tmp_path, capsys):
     rows[1]["detail"] = str(secret.resolve())
     assert brain.resolve_detail(rows[1], lib.parent) is None
     assert "escapes" in capsys.readouterr().err
+    # symlink inside catalog pointing outside
+    link = lib.parent / "techniques" / "escape.md"
+    link.symlink_to(secret)
+    rows[1]["detail"] = "techniques/escape.md"
+    assert brain.resolve_detail(rows[1], lib.parent) is None
+    assert "escapes" in capsys.readouterr().err
 
 
 def test_resolve_detail_still_reads_valid_detail(lib):
