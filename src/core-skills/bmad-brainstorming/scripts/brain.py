@@ -130,7 +130,11 @@ def resolve_detail(row: dict, csv_dir: Path) -> str | None:
     (or the file is missing — a missing file is reported to stderr, not fatal)."""
     if not row.get("detail"):
         return None
-    path = (csv_dir / row["detail"]).resolve()
+    base = csv_dir.resolve()
+    path = (base / row["detail"]).resolve()
+    if not path.is_relative_to(base):
+        print(f"# detail path escapes the catalog directory for {row['technique_name']}: {row['detail']}", file=sys.stderr)
+        return None
     if not path.is_file():
         print(f"# detail file not found for {row['technique_name']}: {row['detail']}", file=sys.stderr)
         return None

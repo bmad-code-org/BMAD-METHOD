@@ -75,6 +75,27 @@ def test_resolve_detail_missing_file_warns_not_fatal(lib, capsys):
     assert "not found" in capsys.readouterr().err
 
 
+def test_resolve_detail_refuses_path_traversal(lib, tmp_path, capsys):
+    """Paths that escape the catalog directory must be refused, not read."""
+    rows = brain.load(lib)
+    secret = tmp_path.parent / ".env"
+    secret.write_text("SECRET=hunter2", encoding="utf-8")
+    # relative traversal
+    rows[1]["detail"] = "../.env"
+    assert brain.resolve_detail(rows[1], lib.parent) is None
+    assert "escapes" in capsys.readouterr().err
+    # absolute path (pathlib '/' lets the right operand win)
+    rows[1]["detail"] = str(secret.resolve())
+    assert brain.resolve_detail(rows[1], lib.parent) is None
+    assert "escapes" in capsys.readouterr().err
+
+
+def test_resolve_detail_still_reads_valid_detail(lib):
+    """A legitimate detail file inside the catalog directory still resolves."""
+    row = next(r for r in brain.load(lib) if r["detail"])
+    assert "multi-step instructions" in brain.resolve_detail(row, lib.parent)
+
+
 def test_show_inlines_detail(lib, capsys):
     assert brain.main(["--file", str(lib), "show", "Quantum Superposition"]) == 0
     out = capsys.readouterr().out
