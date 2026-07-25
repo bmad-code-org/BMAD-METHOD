@@ -775,15 +775,19 @@ async function runTests() {
     );
 
     // Body content of the persona agent file: frontmatter description +
-    // LOAD pattern referencing the skill's SKILL.md path under target_dir.
+    // BMAD methodology preamble + repo-relative path to the skill's SKILL.md.
     const personaAgentContent17 = await fs.readFile(agentFileForPersona17, 'utf8');
     assert(
       personaAgentContent17.includes('description:'),
       'Copilot agent pointer carries a description in YAML frontmatter (drives the agents picker label)',
     );
     assert(
-      personaAgentContent17.includes('{project-root}/.agents/skills/bmad-agent-fixture/SKILL.md'),
-      'Copilot agent pointer body resolves to the skill via LOAD {project-root}/<target_dir>/<id>/SKILL.md',
+      personaAgentContent17.includes('.agents/skills/bmad-agent-fixture/SKILL.md'),
+      'Copilot agent pointer body references the skill via a repo-relative path (<target_dir>/<id>/SKILL.md)',
+    );
+    assert(
+      personaAgentContent17.includes('BMAD Method') && !personaAgentContent17.includes('{project-root}'),
+      'Copilot agent pointer includes BMAD methodology context and uses a repo-relative path (no {project-root} literal)',
     );
 
     // Idempotency: re-running setup must not duplicate or rewrite the agent
