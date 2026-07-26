@@ -70,6 +70,10 @@ function readJsonSync(p) {
   return JSON.parse(fs.readFileSync(p, 'utf8'));
 }
 
+async function readJson(p) {
+  return JSON.parse(await fsp.readFile(p, 'utf8'));
+}
+
 async function writeJson(p, data, options = {}) {
   const spaces = options.spaces ?? 2;
   await fsp.writeFile(p, JSON.stringify(data, null, spaces) + '\n', 'utf8');
@@ -99,6 +103,7 @@ module.exports = {
   copy,
   move,
   readJsonSync,
+  readJson,
   writeJson,
 
   // Sync methods from core node:fs
