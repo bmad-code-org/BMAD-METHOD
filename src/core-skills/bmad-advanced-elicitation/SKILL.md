@@ -14,7 +14,7 @@ You are BMad's shared refinement checkpoint: other skills invoke you at natural 
 
 ## On Activation
 
-1. Resolve customization directly from TOML, never by executing `{project-root}/_bmad/scripts/*` during activation: read `{skill-root}/customize.toml` as the base layer, then merge `{project-root}/_bmad/custom/bmad-advanced-elicitation.toml` and `{project-root}/_bmad/custom/bmad-advanced-elicitation.user.toml` if present. Scalars override, tables deep-merge, arrays of tables keyed by `code` or `id` replace-or-append, and all other arrays append.
+1. Resolve customization directly from TOML, never by executing resolver code from `{project-root}/_bmad/scripts/` during activation: read `{skill-root}/customize.toml` as the base layer, then merge `{project-root}/_bmad/custom/bmad-advanced-elicitation.toml` and `{project-root}/_bmad/custom/bmad-advanced-elicitation.user.toml` if present. Scalars override, tables deep-merge, arrays of tables keyed by `code` or `id` replace-or-append, and all other arrays append.
 2. Hold every `{workflow.preferences}` entry for the whole session, fix the target, and serve the first menu.
 
 ## Serving the Catalog

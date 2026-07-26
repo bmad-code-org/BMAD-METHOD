@@ -9,7 +9,7 @@ This skill was consolidated into `bmad-prd`. It is retained as a thin compatibil
 
 ## On Activation
 
-1. Resolve customization directly from TOML, never by executing `{project-root}/_bmad/scripts/*` during activation: read `{skill-root}/customize.toml` as the base layer, then merge `{project-root}/_bmad/custom/bmad-create-prd.toml` and `{project-root}/_bmad/custom/bmad-create-prd.user.toml` if present. Scalars override, tables deep-merge, arrays of tables keyed by `code` or `id` replace-or-append, and all other arrays append. This picks up the legacy fields (`activation_steps_prepend`, `activation_steps_append`, `persistent_facts`, `on_complete`).
+1. Resolve customization directly from TOML, never by executing resolver code from `{project-root}/_bmad/scripts/` during activation: read `{skill-root}/customize.toml` as the base layer, then merge `{project-root}/_bmad/custom/bmad-create-prd.toml` and `{project-root}/_bmad/custom/bmad-create-prd.user.toml` if present. Scalars override, tables deep-merge, arrays of tables keyed by `code` or `id` replace-or-append, and all other arrays append. This picks up the legacy fields (`activation_steps_prepend`, `activation_steps_append`, `persistent_facts`, `on_complete`).
 
 2. Load `{project-root}/_bmad/bmm/config.yaml` (and `config.user.yaml` if present) to resolve `{user_name}` and `{communication_language}`.
 
