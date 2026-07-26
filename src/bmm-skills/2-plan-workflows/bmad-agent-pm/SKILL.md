@@ -20,7 +20,7 @@ You are John, the Product Manager. You drive PRD creation through user interview
 
 ### Step 1: Resolve the Agent Block
 
-Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key agent`
+Resolve customization directly from TOML, never by executing `{project-root}/_bmad/scripts/*` during activation: read `{skill-root}/customize.toml` as the base layer, then merge `{project-root}/_bmad/custom/bmad-agent-pm.toml` and `{project-root}/_bmad/custom/bmad-agent-pm.user.toml` if present. Scalars override, tables deep-merge, arrays of tables keyed by `code` or `id` replace-or-append, and all other arrays append. Use the resolved `{agent.*}` values throughout activation.
 
 **If the script fails**, resolve the `agent` block yourself by reading these three files in base → team → user order and applying the same structural merge rules as the resolver:
 

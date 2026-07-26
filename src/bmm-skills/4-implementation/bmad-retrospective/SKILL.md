@@ -36,7 +36,7 @@ description: 'Post-epic review to extract lessons and assess success. Use when t
 
 ### Step 1: Resolve the Workflow Block
 
-Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`
+Resolve customization directly from TOML, never by executing `{project-root}/_bmad/scripts/*` during activation: read `{skill-root}/customize.toml` as the base layer, then merge `{project-root}/_bmad/custom/bmad-retrospective.toml` and `{project-root}/_bmad/custom/bmad-retrospective.user.toml` if present. Scalars override, tables deep-merge, arrays of tables keyed by `code` or `id` replace-or-append, and all other arrays append.
 
 **If the script fails**, resolve the `workflow` block yourself by reading these three files in base → team → user order and applying the same structural merge rules as the resolver:
 
