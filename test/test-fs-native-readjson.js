@@ -48,12 +48,19 @@ function assert(condition, testName, errorMessage = '') {
   }
 }
 
+const tempDirs = [];
+
 async function mkdtempFixture() {
   const dir = await fsp.mkdtemp(path.join(os.tmpdir(), 'bmad-fs-native-'));
+  tempDirs.push(dir);
   return dir;
 }
 
-async function main() {
+async function cleanupTempDirs() {
+  await Promise.all(tempDirs.map((dir) => fsp.rm(dir, { recursive: true, force: true }).catch(() => {})));
+}
+
+async function runTests() {
   // ─── fs-native.readJson unit tests ──────────────────────────────────────
   console.log(`\n${colors.cyan}fs-native.readJson (missing-export guard)${colors.reset}\n`);
 
@@ -127,6 +134,10 @@ async function main() {
   const mgr = new CustomModuleManager();
   const marketplace = await mgr.readMarketplaceJsonFromDisk(repoDir);
   const plugins = await mgr.discoverModules(marketplace, sourceUrl);
+  assert(Array.isArray(plugins) && plugins.length > 0, 'discoverModules finds the fixture plugin', `Got: ${plugins?.length} plugins`);
+  if (!Array.isArray(plugins) || plugins.length === 0) {
+    return; // skip dependent assertions; main() prints the summary and exits nonzero
+  }
   const resolved = await mgr.resolvePlugin(repoDir, plugins[0].rawPlugin, sourceUrl, null);
 
   assert(Array.isArray(resolved) && resolved.length > 0, 'resolvePlugin returns a resolved module', `Got: ${resolved?.length} modules`);
@@ -138,7 +149,14 @@ async function main() {
 
   const cached = mgr.getResolution(mod.code);
   assert(cached && cached.cloneRef === pinnedRef, 'getResolution returns cached module with cloneRef', `Got cloneRef: ${cached?.cloneRef}`);
+}
 
+async function main() {
+  try {
+    await runTests();
+  } finally {
+    await cleanupTempDirs();
+  }
   // ─── Summary ────────────────────────────────────────────────────────────
   console.log(`\n${colors.cyan}Results: ${passed} passed, ${failed} failed${colors.reset}\n`);
   process.exit(failed > 0 ? 1 : 0);
