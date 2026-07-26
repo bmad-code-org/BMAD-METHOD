@@ -1,0 +1,45 @@
+version: 1
+default_mode: auto
+defaults:
+  specification: proportional
+  artifacts: minimal
+  review: self
+  verification: targeted
+  subagents: explicit-or-risk-based
+modes:
+  patch:
+    spec: off
+    persistent_artifacts: 0
+    max_subagents: 0
+    verification: manual-or-targeted-static
+    review: self-diff
+    max_repair_cycles: 1
+  focused:
+    spec: off
+    persistent_artifacts: 0
+    max_subagents: 0
+    verification: affected-module
+    review: self
+    max_repair_cycles: 2
+  planned:
+    spec: compact-when-needed
+    persistent_artifacts: 1
+    max_subagents: 1
+    verification: relevant
+    review: conditional
+    max_repair_cycles: 2
+  critical:
+    spec: required
+    persistent_artifacts: risk-based
+    max_subagents: 2
+    verification: full-relevant
+    review: independent
+    max_repair_cycles: 3
+hard_critical_triggers:
+  - authentication
+  - authorization
+  - payments
+  - sensitive-data
+  - destructive-migration
+  - infrastructure
+  - security

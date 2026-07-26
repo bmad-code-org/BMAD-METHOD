@@ -1,5 +1,0 @@
-[workflow]
-activation_steps_prepend = []
-activation_steps_append = []
-persistent_facts = ["Never deploy with secrets in source code."]
-on_complete = "Share deployed URLs. Offer bmad-apf-generate-landing for marketing launch."

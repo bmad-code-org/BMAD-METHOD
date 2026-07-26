@@ -1,5 +1,0 @@
-[workflow]
-activation_steps_prepend = []
-activation_steps_append = []
-persistent_facts = []
-on_complete = "Offer bmad-apf-build-mvp to begin implementation in Cursor."

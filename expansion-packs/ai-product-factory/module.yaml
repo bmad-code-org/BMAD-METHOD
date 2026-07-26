@@ -1,462 +1,71 @@
 code: apf
 name: "AI Product Factory"
-description: "Operating system for builders — transform a single idea into a production-ready digital product"
+version: 2
+description: "Codex-first, risk-proportional product and project delivery extension for BMAD"
 default_selected: false
 
-# Extends BMAD Method (bmm) — does not replace it.
-# Software engineering foundation remains in BMM; APF adds product-oriented vertical.
-
-header: "AI Product Factory Configuration"
-subheader: "Configure the product factory settings for your startup build.\nThese settings orchestrate the journey from idea to launch."
-
-# Inherits from core: user_name, project_name, communication_language,
-# document_output_language, output_folder
+# APF extends BMAD core; it does not replace canonical core workflows.
+header: "AI Product Factory v2 Configuration"
+subheader: "Configure a compact product lifecycle and project-delivery operating layer."
 
 apf_artifacts:
-  prompt: "Where should AI Product Factory artifacts be stored? (Validation reports, business models, launch assets)"
+  prompt: "Where should APF lifecycle artifacts be stored?"
   default: "{output_folder}/apf-artifacts"
   result: "{project-root}/{value}"
 
-product_type:
-  prompt: "What type of product are you building?"
-  default: "saas"
+execution_adapter:
+  prompt: "Which execution adapter should APF use?"
+  default: "codex"
   result: "{value}"
   single-select:
-    - value: "mobile-app"
-      label: "Mobile App (iOS/Android)"
-    - value: "saas"
-      label: "SaaS Web Application"
-    - value: "landing"
-      label: "Landing Page / Marketing Site"
-    - value: "telegram-bot"
-      label: "Telegram Bot"
-    - value: "ai-agent"
-      label: "AI Agent / Assistant"
-    - value: "custom"
-      label: "Custom / Mixed"
+    - value: "codex"
+      label: "Codex (default)"
+    - value: "generic"
+      label: "Generic compatible agent"
 
-target_platform:
-  prompt: "Primary target platform for implementation?"
-  default: "web"
+execution_profile:
+  prompt: "Which execution economy profile should be the default?"
+  default: "balanced"
   result: "{value}"
   single-select:
-    - value: "web"
-      label: "Web (Next.js / React)"
-    - value: "flutter"
-      label: "Flutter (cross-platform mobile)"
-    - value: "react-native"
-      label: "React Native"
-    - value: "swiftui"
-      label: "SwiftUI (native iOS)"
-    - value: "multi"
-      label: "Multi-platform"
-
-launch_kit:
-  prompt: "Which launch kit matches your product?"
-  default: "auto"
-  result: "{value}"
-  single-select:
-    - value: "auto"
-      label: "Auto-detect from product type"
-    - value: "mobile-app"
-      label: "Mobile App Kit"
-    - value: "landing"
-      label: "Landing Kit"
-    - value: "saas"
-      label: "SaaS Kit"
-    - value: "telegram"
-      label: "Telegram Kit"
-    - value: "ai-agent"
-      label: "AI Agent Kit"
+    - value: "economy"
+      label: "Economy — minimal safe process"
+    - value: "balanced"
+      label: "Balanced — risk-proportional default"
+    - value: "assurance"
+      label: "Assurance — more verification for higher-risk work"
 
 directories:
   - "{apf_artifacts}"
-  - "{apf_artifacts}/founder"
-  - "{apf_artifacts}/product"
-  - "{apf_artifacts}/ux"
-  - "{apf_artifacts}/design"
-  - "{apf_artifacts}/engineering"
-  - "{apf_artifacts}/deployment"
-  - "{apf_artifacts}/marketing"
-  - "{apf_artifacts}/growth"
+  - "{apf_artifacts}/runs"
+  - "{apf_artifacts}/evidence"
+  - "{apf_artifacts}/gates"
 
-# Agent roster — product-oriented agents across 8 layers
 agents:
-  # Founder Layer
-  - code: bmad-apf-startup-coach
+  - code: bmad-apf-founder
     name: Alex
-    title: Startup Coach
+    title: Founder Operator
     icon: "🚀"
     team: product-factory
-    description: "Orchestrates the founder journey from idea to launch. Routes between specialized agents and maintains artifact continuity across phases."
+    description: "Coordinates founder context, evidence, and lifecycle routing."
 
-  - code: bmad-apf-idea-validator
-    name: Ivy
-    title: Idea Validator
-    icon: "💡"
-    team: product-factory
-    description: "Stress-tests startup ideas before build investment. Produces validation reports with go/no-go recommendations."
-
-  - code: bmad-apf-market-research
-    name: Morgan
-    title: Market Research Agent
-    icon: "📈"
-    team: product-factory
-    description: "Quantifies market opportunity with TAM/SAM/SOM analysis and demand signals."
-
-  - code: bmad-apf-competitor
-    name: Casey
-    title: Competitor Agent
-    icon: "🔍"
-    team: product-factory
-    description: "Maps competitive landscape and identifies differentiation opportunities."
-
-  - code: bmad-apf-customer-persona
-    name: Priya
-    title: Customer Persona Agent
-    icon: "👤"
-    team: product-factory
-    description: "Builds evidence-backed ICP and persona documents with jobs-to-be-done mapping."
-
-  - code: bmad-apf-problem-discovery
-    name: Dex
-    title: Problem Discovery Agent
-    icon: "🎯"
-    team: product-factory
-    description: "Deep-dives into problem space with root cause analysis and opportunity sizing."
-
-  - code: bmad-apf-business-model
-    name: Blake
-    title: Business Model Agent
-    icon: "🏦"
-    team: product-factory
-    description: "Designs viable business models with Lean Canvas and GTM hypotheses."
-
-  - code: bmad-apf-pricing
-    name: Quinn
-    title: Pricing Agent
-    icon: "💰"
-    team: product-factory
-    description: "Designs pricing strategy with tier matrices and monetization roadmaps."
-
-  # Product Layer
-  - code: bmad-apf-product-manager
+  - code: bmad-apf-product-operator
     name: Jordan
-    title: Product Manager
+    title: Product Operator
     icon: "📋"
     team: product-factory
-    description: "Translates validated ideas into product vision, MVP scope, and success metrics."
+    description: "Coordinates product scope, metrics, and canonical BMAD planning ownership."
 
-  - code: bmad-apf-roadmap-planner
-    name: Riley
-    title: Roadmap Planner
-    icon: "🗺️"
-    team: product-factory
-    description: "Builds phased roadmaps with milestones, dependencies, and release sequencing."
-
-  - code: bmad-apf-feature-prioritizer
-    name: Sam
-    title: Feature Prioritizer
-    icon: "⚖️"
-    team: product-factory
-    description: "Prioritizes features using impact/effort scoring and defines MVP cut lines."
-
-  - code: bmad-apf-prd-generator
-    name: Taylor
-    title: PRD Generator
-    icon: "📝"
-    team: product-factory
-    description: "Generates production-grade PRDs from validated product context."
-
-  - code: bmad-apf-story-generator
-    name: Jamie
-    title: Story Generator
-    icon: "📖"
-    team: product-factory
-    description: "Decomposes PRD into epics and sprint-ready user stories."
-
-  - code: bmad-apf-acceptance-criteria
-    name: Avery
-    title: Acceptance Criteria Generator
-    icon: "✅"
-    team: product-factory
-    description: "Writes testable Given/When/Then acceptance criteria for every story."
-
-  # UX Layer
-  - code: bmad-apf-ux-research
-    name: Sage
-    title: UX Research Agent
-    icon: "🔬"
-    team: product-factory
-    description: "Grounds UX decisions in user research and behavioral evidence."
-
-  - code: bmad-apf-wireframe
-    name: Wren
-    title: Wireframe Agent
-    icon: "📐"
-    team: product-factory
-    description: "Creates low-fidelity wireframes and layout structures."
-
-  - code: bmad-apf-navigation
-    name: Nav
-    title: Navigation Agent
-    icon: "🧭"
-    team: product-factory
-    description: "Designs navigation architecture and information hierarchy."
-
-  - code: bmad-apf-accessibility
-    name: Ada
-    title: Accessibility Agent
-    icon: "♿"
-    team: product-factory
-    description: "Ensures WCAG/HIG accessibility compliance across the product."
-
-  - code: bmad-apf-user-flow
-    name: Flow
-    title: User Flow Agent
-    icon: "🔄"
-    team: product-factory
-    description: "Maps user journeys including onboarding, empty states, and error flows."
-
-  # Design Layer
-  - code: bmad-apf-design-system
-    name: Diana
-    title: Design System Agent
-    icon: "🎨"
-    team: product-factory
-    description: "Creates cohesive design systems with tokens and component catalogs."
-
-  - code: bmad-apf-brand
-    name: Brandon
-    title: Brand Agent
-    icon: "✨"
-    team: product-factory
-    description: "Defines brand identity, voice, and visual language."
-
-  - code: bmad-apf-animation
-    name: Motion
-    title: Animation Agent
-    icon: "🎬"
-    team: product-factory
-    description: "Designs motion language and micro-interactions."
-
-  - code: bmad-apf-ui-generator
-    name: Pixel
-    title: UI Generator
-    icon: "🖼️"
-    team: product-factory
-    description: "Generates high-fidelity UI specifications ready for Cursor implementation."
-
-  # Engineering Layer
-  - code: bmad-apf-architecture
+  - code: bmad-apf-product-engineer
     name: Archie
-    title: Architecture Agent
+    title: Product Engineer
     icon: "🏗️"
     team: product-factory
-    description: "Designs system architecture aligned with product requirements."
+    description: "Coordinates long-running technical delivery and migration work."
 
-  - code: bmad-apf-flutter
-    name: Flutter
-    title: Flutter Agent
-    icon: "📱"
-    team: product-factory
-    description: "Implements Flutter mobile applications."
-
-  - code: bmad-apf-swiftui
-    name: Swift
-    title: SwiftUI Agent
-    icon: "🍎"
-    team: product-factory
-    description: "Implements native iOS applications with SwiftUI."
-
-  - code: bmad-apf-react-native
-    name: React
-    title: React Native Agent
-    icon: "⚛️"
-    team: product-factory
-    description: "Implements cross-platform mobile apps with React Native."
-
-  - code: bmad-apf-backend
-    name: Backend
-    title: Backend Agent
-    icon: "⚙️"
-    team: product-factory
-    description: "Designs and implements backend services and APIs."
-
-  - code: bmad-apf-database
-    name: Data
-    title: Database Agent
-    icon: "🗄️"
-    team: product-factory
-    description: "Designs database schemas and data models."
-
-  - code: bmad-apf-authentication
-    name: Auth
-    title: Authentication Agent
-    icon: "🔐"
-    team: product-factory
-    description: "Implements authentication and authorization systems."
-
-  - code: bmad-apf-payments
-    name: Pay
-    title: Payments Agent
-    icon: "💳"
-    team: product-factory
-    description: "Integrates payment systems and subscription management."
-
-  - code: bmad-apf-analytics
-    name: Metrics
-    title: Analytics Agent
-    icon: "📊"
-    team: product-factory
-    description: "Implements product analytics and event tracking."
-
-  - code: bmad-apf-testing
-    name: Test
-    title: Testing Agent
-    icon: "🧪"
-    team: product-factory
-    description: "Designs and implements test strategies."
-
-  - code: bmad-apf-refactoring
-    name: Refactor
-    title: Refactoring Agent
-    icon: "🔧"
-    team: product-factory
-    description: "Improves code quality without changing behavior."
-
-  - code: bmad-apf-security
-    name: Shield
-    title: Security Agent
-    icon: "🛡️"
-    team: product-factory
-    description: "Audits and hardens product security."
-
-  # Deployment Layer
-  - code: bmad-apf-cicd
-    name: Pipeline
-    title: CI/CD Agent
-    icon: "🔄"
-    team: product-factory
-    description: "Sets up CI/CD pipelines and release workflows."
-
-  - code: bmad-apf-apple-deployment
-    name: Apple
-    title: Apple Deployment Agent
-    icon: "🍎"
-    team: product-factory
-    description: "Deploys iOS apps to App Store and TestFlight."
-
-  - code: bmad-apf-google-play
-    name: Android
-    title: Google Play Agent
-    icon: "🤖"
-    team: product-factory
-    description: "Deploys Android apps to Google Play Console."
-
-  - code: bmad-apf-fastlane
-    name: Lane
-    title: Fastlane Agent
-    icon: "🏎️"
-    team: product-factory
-    description: "Automates mobile release workflows with Fastlane."
-
-  - code: bmad-apf-docker
-    name: Container
-    title: Docker Agent
-    icon: "🐳"
-    team: product-factory
-    description: "Containerizes applications for consistent deployment."
-
-  - code: bmad-apf-infrastructure
-    name: Cloud
-    title: Infrastructure Agent
-    icon: "☁️"
-    team: product-factory
-    description: "Provisions and manages cloud infrastructure."
-
-  # Marketing Layer
-  - code: bmad-apf-landing
-    name: Landing
-    title: Landing Agent
-    icon: "🌐"
-    team: product-factory
-    description: "Creates high-converting landing pages."
-
-  - code: bmad-apf-seo
-    name: SEO
-    title: SEO Agent
-    icon: "🔎"
-    team: product-factory
-    description: "Optimizes for search engine visibility."
-
-  - code: bmad-apf-aso
-    name: ASO
-    title: ASO Agent
-    icon: "📲"
-    team: product-factory
-    description: "Optimizes app store listings for discovery."
-
-  - code: bmad-apf-content
-    name: Content
-    title: Content Agent
-    icon: "✍️"
-    team: product-factory
-    description: "Creates marketing content and legal pages."
-
-  - code: bmad-apf-social
-    name: Social
-    title: Social Agent
-    icon: "📣"
-    team: product-factory
-    description: "Creates social media launch assets and campaigns."
-
-  - code: bmad-apf-email
-    name: Email
-    title: Email Agent
-    icon: "📧"
-    team: product-factory
-    description: "Designs email marketing and onboarding sequences."
-
-  - code: bmad-apf-product-hunt
-    name: Hunter
-    title: Product Hunt Agent
-    icon: "🏹"
-    team: product-factory
-    description: "Prepares and executes Product Hunt launches."
-
-  # Growth Layer
-  - code: bmad-apf-growth-analytics
-    name: Growth
-    title: Growth Analytics Agent
+  - code: bmad-apf-growth-operator
+    name: Morgan
+    title: Growth Operator
     icon: "📈"
     team: product-factory
-    description: "Analyzes product metrics and growth signals."
-
-  - code: bmad-apf-growth-funnel
-    name: Funnel
-    title: Funnel Agent
-    icon: "🔽"
-    team: product-factory
-    description: "Designs and optimizes conversion funnels."
-
-  - code: bmad-apf-growth-pricing
-    name: Monetize
-    title: Growth Pricing Agent
-    icon: "💎"
-    team: product-factory
-    description: "Optimizes pricing through data-driven experiments."
-
-  - code: bmad-apf-retention
-    name: Retain
-    title: Retention Agent
-    icon: "🔄"
-    team: product-factory
-    description: "Improves user retention and reduces churn."
-
-  - code: bmad-apf-experiment
-    name: Lab
-    title: Experiment Agent
-    icon: "🧬"
-    team: product-factory
-    description: "Designs and runs A/B tests and product experiments."
+    description: "Coordinates evidence-led launch, measurement, and iteration."

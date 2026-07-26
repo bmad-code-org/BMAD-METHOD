@@ -1,56 +1,41 @@
-# Idea Validation Report Template
+# Opportunity Validation Report Template
 
-Save to `{apf_artifacts}/founder/idea-validation-report.md`
+Save to `{apf_artifacts}/evidence/opportunity-validation.md`.
 
 ```yaml
 ---
-title: "Idea Validation Report"
-status: go  # go | conditional-go | no-go
-confidence: medium  # high | medium | low
-date: "{date}"
-product_name: ""
+artifact_type: opportunity-validation
+schema_version: 1
+status: draft # draft | validated | blocked | stale | superseded
+generated_by: bmad-apf-validate-opportunity
+source_artifacts: []
+evidence: []
+open_questions: []
 ---
 ```
 
-# Idea Validation Report: {product_name}
+## Problem and target user
 
-## Executive Summary
+State the problem and target user. Mark each claim with its evidence classification.
 
-(3 sentences: problem, solution viability, recommendation)
+## Evidence register
 
-## Scores
+| Claim | Classification | Source or signal | Confidence |
+| --- | --- | --- | --- |
+| | declared | | low |
 
-| Dimension | Score (1-10) | Evidence |
-|---|---|---|
-| Problem severity | | |
-| Solution uniqueness | | |
-| Market timing | | |
-| Founder-market fit | | |
-| Technical feasibility | | |
-| **Overall** | | |
+## Riskiest assumptions
 
-## Top 3 Risks
-
-1. Risk — mitigation
-2. Risk — mitigation
-3. Risk — mitigation
-
-## Assumptions to Test
-
-| Assumption | Confidence | Test Method |
-|---|---|---|
+| Assumption | Cheapest test | Decision signal |
+| --- | --- | --- |
 | | | |
 
-## Recommendation
+## Verdict
 
-**Verdict:** GO / CONDITIONAL GO / NO-GO
+Choose one: `no-go`, `experiment-required`, `provisional-go`, or `validated-go`.
 
-**Next Steps:**
-1.
-2.
-3.
+`validated-go` requires a real user or revenue signal. If that signal is missing, select `experiment-required` or `provisional-go`.
 
-## Handoff
+## Gate report
 
-→ Next agent: `{next-agent}`
-→ Next skill: `{next-skill}`
+List checks, evidence, blocking findings, and any waiver owner/reason/expiry.

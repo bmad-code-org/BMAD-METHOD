@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "APF gate report",
+  "type": "object",
+  "required": ["gate", "result", "checks"],
+  "properties": {
+    "gate": { "type": "string" },
+    "result": { "enum": ["passed", "failed", "waived"] },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "result"],
+        "properties": {
+          "id": { "type": "string" },
+          "result": { "enum": ["passed", "failed", "skipped"] },
+          "evidence": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "waiver": { "type": "object", "required": ["owner", "reason", "expiry"] }
+  },
+  "additionalProperties": true
+}

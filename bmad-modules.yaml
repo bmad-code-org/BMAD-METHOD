@@ -123,19 +123,19 @@ modules:
     module-definition: expansion-packs/ai-product-factory/module.yaml
     code: apf
     name: "AI Product Factory"
-    description: "Operating system for builders — transform a single idea into a production-ready digital product"
+    description: "Codex-first, risk-proportional product and project delivery extension for BMAD"
     defaultSelected: false
     type: bmad-org
     default_channel: next
     post-install-message: |
-      AI Product Factory installed. To launch your startup:
+      AI Product Factory v2 installed. For normal project work:
 
-        > use the bmad-apf-launch-startup skill
+        > use the bmad-apf-execute skill
 
-      Or validate an idea first:
+      For a product lifecycle:
 
-        > use the bmad-apf-validate-idea skill
+        > use the bmad-apf-launch-product skill
 
-      Talk to the Startup Coach anytime:
+      To create shared repository guidance:
 
-        > use the bmad-apf-startup-coach skill
+        > use the bmad-apf-project-contract skill

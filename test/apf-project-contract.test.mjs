@@ -1,0 +1,28 @@
+import assert from 'node:assert/strict';
+import childProcess from 'node:child_process';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const fixture = fs.mkdtempSync(path.join(os.tmpdir(), 'apf-contract-'));
+fs.writeFileSync(path.join(fixture, 'package.json'), JSON.stringify({ scripts: { dev: 'node app.js', test: 'node --test' } }));
+fs.mkdirSync(path.join(fixture, 'src'));
+fs.writeFileSync(path.join(fixture, 'src', 'app.js'), '');
+childProcess.execFileSync('git', ['init', '-q'], { cwd: fixture });
+childProcess.execFileSync('git', ['config', 'user.email', 'test@example.com'], { cwd: fixture });
+childProcess.execFileSync('git', ['config', 'user.name', 'Test'], { cwd: fixture });
+childProcess.execFileSync('git', ['add', '.'], { cwd: fixture });
+childProcess.execFileSync('git', ['commit', '-qm', 'fixture'], { cwd: fixture });
+const script = path.join(root, 'tools/apf/project-contract.mjs');
+childProcess.execFileSync(process.execPath, [script, 'create', fixture]);
+const first = fs.readFileSync(path.join(fixture, '.apf/project-contract.yaml'), 'utf8');
+childProcess.execFileSync(process.execPath, [script, 'update', fixture]);
+const second = fs.readFileSync(path.join(fixture, '.apf/project-contract.yaml'), 'utf8');
+assert.equal(first, second);
+assert.match(fs.readFileSync(path.join(fixture, 'AGENTS.md'), 'utf8'), /APF:GENERATED:START/);
+assert.ok(fs.existsSync(path.join(fixture, '.codex/config.toml')));
+assert.ok(fs.existsSync(path.join(fixture, '.agents/skills/project-change-ui/SKILL.md')));
+assert.ok(fs.existsSync(path.join(fixture, 'docs/ai/bmad-project-context.md')));
+console.log('APF project contract idempotency test passed.');

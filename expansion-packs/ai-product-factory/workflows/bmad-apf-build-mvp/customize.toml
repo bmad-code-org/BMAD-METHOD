@@ -1,8 +1,0 @@
-[workflow]
-activation_steps_prepend = []
-activation_steps_append = []
-persistent_facts = [
-  "Cursor executes code. BMAD orchestrates. Never skip artifact context when delegating to Cursor.",
-  "Use bmad-dev-story for story-driven implementation when BMM is installed.",
-]
-on_complete = "Offer bmad-apf-deploy-app and bmad-apf-cicd."

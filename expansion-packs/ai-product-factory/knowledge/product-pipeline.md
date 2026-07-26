@@ -1,74 +1,17 @@
-# AI Product Factory — Product Pipeline
+# APF v2 Product Lifecycle
 
-The complete orchestrated flow from idea to launched product.
+APF selects an execution track rather than running a fixed product pipeline.
 
-```
-Idea
- ↓
-Idea Validation          → bmad-apf-validate-idea
- ↓
-Market Research          → bmad-apf-market-research
- ↓
-Competitor Analysis      → bmad-apf-competitor
- ↓
-Business Model           → bmad-apf-business-model
- ↓
-PRD                      → bmad-apf-generate-prd (→ bmad-prd)
- ↓
-Feature Planning         → bmad-apf-feature-prioritizer
- ↓
-UX                       → bmad-apf-generate-ux
- ↓
-UI Design                → bmad-apf-generate-design-system
- ↓
-Architecture             → bmad-apf-choose-stack → bmad-create-architecture
- ↓
-Tech Stack Selection     → (included in choose-stack)
- ↓
-Frontend + Backend       → bmad-apf-build-mvp
- ↓
-Database + Auth + Payments → (sub-agents within build-mvp)
- ↓
-Analytics                → bmad-apf-analytics
- ↓
-QA                       → bmad-apf-testing
- ↓
-CI/CD                    → bmad-apf-cicd
- ↓
-Deployment               → bmad-apf-deploy-app
- ↓
-App Store / Play Store   → bmad-apf-apple-deployment / bmad-apf-google-play
- ↓
-Landing Page             → bmad-apf-generate-landing
- ↓
-Marketing Assets         → bmad-apf-content, bmad-apf-social
- ↓
-ASO / SEO                → bmad-apf-aso, bmad-apf-seo
- ↓
-Launch                   → bmad-apf-launch-startup (orchestrator)
- ↓
-Growth                   → bmad-apf-iterate-product
- ↓
-Iteration                → bmad-apf-experiment
-```
+| Track | Goal | Default route |
+| --- | --- | --- |
+| Experiment | Validate demand or a key assumption | validate opportunity → design experiment |
+| Prototype | Validate UX or technical feasibility | design experiment → execute |
+| MVP | Deliver one complete value loop | plan product → plan delivery → build vertical slice |
+| Production | Add operational readiness | plan delivery → build vertical slice → release product |
+| Brownfield | Safely extend an existing product | project contract → execute or plan delivery |
 
-## Master Orchestrator
+`bmad-apf-launch-product` creates a gated DAG from these routes. It does not require database, authentication, backend, analytics, payments, deployment, or launch marketing unless the selected track and requirements need them.
 
-`bmad-apf-launch-startup` runs the full pipeline with phase gates and checkpoints.
+## BMAD core ownership
 
-## BMAD Core Integration
-
-| APF Phase | BMAD Core Skill |
-|---|---|
-| PRD | `bmad-prd` |
-| Architecture | `bmad-create-architecture` |
-| Epics & Stories | `bmad-create-epics-and-stories` |
-| Dev Stories | `bmad-dev-story` |
-| Code Review | `bmad-code-review` |
-| UX (alternative) | `bmad-ux` |
-| Brainstorming | `bmad-brainstorming` |
-| Market Research | `bmad-market-research` |
-
-## Artifact Continuity
-
-Each phase reads artifacts from prior phases in `{apf_artifacts}/`. Never start a phase without checking for existing upstream artifacts.
+APF prepares founder context, evidence, gates, and routing. BMAD core owns canonical PRD, UX, architecture, epics/stories, implementation, and review artifacts.

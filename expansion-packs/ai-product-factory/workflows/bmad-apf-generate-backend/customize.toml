@@ -1,5 +1,0 @@
-[workflow]
-activation_steps_prepend = []
-activation_steps_append = []
-persistent_facts = []
-on_complete = "Share API spec path. Offer frontend integration via bmad-apf-build-mvp."

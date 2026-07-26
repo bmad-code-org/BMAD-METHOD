@@ -1,0 +1,342 @@
+version: 1
+status: proposed
+source:
+  module: ai-product-factory
+  inventory_date: "2026-07-26"
+  active_agents: 53
+  active_workflows: 11
+  active_skills: 64
+
+# Allowed dispositions: KEEP, REWRITE, MERGE, DELEGATE_TO_BMAD, CONVERT,
+# DEPRECATE, DELETE. Public targets use the installed bmad-apf namespace.
+agents:
+  founder:
+    - id: bmad-apf-startup-coach
+      disposition: REWRITE
+      target: bmad-apf-founder
+      rationale: Retains the only founder-facing long-lived orchestration persona.
+      compatibility: legacy alias for one transition release
+    - id: bmad-apf-problem-discovery
+      disposition: MERGE
+      target: bmad-apf-validate-opportunity
+      rationale: Problem discovery is a validation capability, not a persistent persona.
+      compatibility: redirect to target workflow
+    - id: bmad-apf-idea-validator
+      disposition: MERGE
+      target: bmad-apf-validate-opportunity
+      rationale: Idea verdict belongs with evidence, market, ICP, and business assumptions.
+      compatibility: redirect to target workflow
+    - id: bmad-apf-market-research
+      disposition: MERGE
+      target: bmad-apf-validate-opportunity
+      rationale: Research is a conditional capability of opportunity validation.
+      compatibility: redirect to target workflow
+    - id: bmad-apf-competitor
+      disposition: MERGE
+      target: bmad-apf-validate-opportunity
+      rationale: Competitor analysis is evidence for an opportunity decision.
+      compatibility: redirect to target workflow
+    - id: bmad-apf-customer-persona
+      disposition: MERGE
+      target: bmad-apf-validate-opportunity
+      rationale: ICP and persona analysis are conditional research outputs.
+      compatibility: redirect to target workflow
+    - id: bmad-apf-business-model
+      disposition: MERGE
+      target: bmad-apf-validate-opportunity
+      rationale: Business-model assumptions must share the validation evidence contract.
+      compatibility: redirect to target workflow
+    - id: bmad-apf-pricing
+      disposition: CONVERT
+      target: capability-pricing
+      rationale: Pricing is a reusable analysis capability, not a persistent agent.
+      compatibility: route through relevant lifecycle workflow
+  product:
+    - id: bmad-apf-product-manager
+      disposition: REWRITE
+      target: bmad-apf-product-operator
+      rationale: Retains product-level coordination across discovery, scope, and delivery.
+      compatibility: legacy alias for one transition release
+    - id: bmad-apf-feature-prioritizer
+      disposition: MERGE
+      target: bmad-apf-plan-product
+      rationale: Prioritization is part of defining scope and success metrics.
+      compatibility: redirect to target workflow
+    - id: bmad-apf-roadmap-planner
+      disposition: MERGE
+      target: bmad-apf-plan-product
+      rationale: Roadmapping follows approved scope rather than needing a separate persona.
+      compatibility: redirect to target workflow
+    - id: bmad-apf-prd-generator
+      disposition: DELEGATE_TO_BMAD
+      target: bmad-prd
+      rationale: BMAD core owns canonical PRD creation.
+      compatibility: APF context adapter delegates to BMAD core
+    - id: bmad-apf-story-generator
+      disposition: DELEGATE_TO_BMAD
+      target: bmad-create-epics-and-stories
+      rationale: BMAD core owns canonical story decomposition.
+      compatibility: APF delivery plan delegates to BMAD core
+    - id: bmad-apf-acceptance-criteria
+      disposition: DELEGATE_TO_BMAD
+      target: bmad-create-epics-and-stories
+      rationale: Acceptance criteria belong to the canonical story source.
+      compatibility: APF delivery plan delegates to BMAD core
+  ux:
+    - id: bmad-apf-ux-research
+      disposition: DELEGATE_TO_BMAD
+      target: bmad-ux
+      rationale: BMAD core owns canonical UX planning.
+      compatibility: APF plan-product delegates to BMAD core
+    - id: bmad-apf-user-flow
+      disposition: DELEGATE_TO_BMAD
+      target: bmad-ux
+      rationale: User flows are UX planning artifacts with one canonical owner.
+      compatibility: APF plan-product delegates to BMAD core
+    - id: bmad-apf-navigation
+      disposition: DELEGATE_TO_BMAD
+      target: bmad-ux
+      rationale: Navigation architecture is part of UX planning.
+      compatibility: APF plan-product delegates to BMAD core
+    - id: bmad-apf-wireframe
+      disposition: DELEGATE_TO_BMAD
+      target: bmad-ux
+      rationale: Wireframes are UX artifacts, not a persistent APF persona.
+      compatibility: APF plan-product delegates to BMAD core
+    - id: bmad-apf-accessibility
+      disposition: CONVERT
+      target: reference-accessibility
+      rationale: Accessibility rules should be conditionally loaded by UI and release work.
+      compatibility: reference used by relevant workflows
+  design:
+    - id: bmad-apf-design-system
+      disposition: CONVERT
+      target: capability-design-system
+      rationale: Design-system work is a scoped capability of product and UI delivery.
+      compatibility: invoked only when the selected track requires it
+    - id: bmad-apf-brand
+      disposition: CONVERT
+      target: capability-brand
+      rationale: Brand guidance is a reusable reference/capability.
+      compatibility: invoked only when launch or design scope requires it
+    - id: bmad-apf-animation
+      disposition: CONVERT
+      target: reference-motion
+      rationale: Motion guidance is reference knowledge, not a persona.
+      compatibility: conditionally loaded by UI work
+    - id: bmad-apf-ui-generator
+      disposition: CONVERT
+      target: capability-ui-delivery
+      rationale: UI delivery should operate through project context and focused skills.
+      compatibility: routed by apf-execute
+  engineering:
+    - id: bmad-apf-architecture
+      disposition: REWRITE
+      target: bmad-apf-product-engineer
+      rationale: Keeps a long-lived technical coordinator while delegating canonical architecture artifacts to BMAD core.
+      compatibility: legacy alias for one transition release
+    - id: bmad-apf-backend
+      disposition: CONVERT
+      target: capability-backend-delivery
+      rationale: Backend implementation is selected per vertical slice, not by a persistent agent.
+      compatibility: routed by apf-build-vertical-slice
+    - id: bmad-apf-database
+      disposition: CONVERT
+      target: capability-data-modeling
+      rationale: Data work is conditional on product and migration requirements.
+      compatibility: routed by apf-build-vertical-slice
+    - id: bmad-apf-authentication
+      disposition: CONVERT
+      target: capability-authentication
+      rationale: Auth is a critical capability governed by risk rules.
+      compatibility: routed by apf-execute critical mode
+    - id: bmad-apf-payments
+      disposition: CONVERT
+      target: capability-payments
+      rationale: Payments are a critical capability governed by risk rules.
+      compatibility: routed by apf-execute critical mode
+    - id: bmad-apf-security
+      disposition: CONVERT
+      target: reference-security
+      rationale: Security requirements and gates must be integrated shift-left, not deferred to a single agent.
+      compatibility: loaded by critical and release workflows
+    - id: bmad-apf-testing
+      disposition: DELEGATE_TO_BMAD
+      target: bmad-testarch
+      rationale: BMAD core owns test architecture; APF selects proportional verification.
+      compatibility: APF verification adapter delegates to BMAD core
+    - id: bmad-apf-refactoring
+      disposition: DELEGATE_TO_BMAD
+      target: bmad-dev-story
+      rationale: Refactoring follows the normal implementation path and project rules.
+      compatibility: routed by apf-execute
+    - id: bmad-apf-analytics
+      disposition: CONVERT
+      target: capability-product-analytics
+      rationale: Analytics is enabled only when a track needs measurement.
+      compatibility: routed by lifecycle workflow
+    - id: bmad-apf-flutter
+      disposition: CONVERT
+      target: adapter-mobile-flutter
+      rationale: Platform implementation belongs to the configured execution adapter.
+      compatibility: selected by adapter capability
+    - id: bmad-apf-react-native
+      disposition: CONVERT
+      target: adapter-mobile-react-native
+      rationale: Platform implementation belongs to the configured execution adapter.
+      compatibility: selected by adapter capability
+    - id: bmad-apf-swiftui
+      disposition: CONVERT
+      target: adapter-mobile-swiftui
+      rationale: Platform implementation belongs to the configured execution adapter.
+      compatibility: selected by adapter capability
+  deployment:
+    - id: bmad-apf-infrastructure
+      disposition: CONVERT
+      target: capability-infrastructure
+      rationale: Infrastructure is a release capability selected by product needs.
+      compatibility: routed by apf-release-product
+    - id: bmad-apf-cicd
+      disposition: CONVERT
+      target: capability-cicd
+      rationale: CI/CD is a release capability selected by product needs.
+      compatibility: routed by apf-release-product
+    - id: bmad-apf-docker
+      disposition: CONVERT
+      target: capability-containerization
+      rationale: Containerization is optional delivery capability.
+      compatibility: routed by apf-release-product
+    - id: bmad-apf-fastlane
+      disposition: CONVERT
+      target: capability-mobile-release
+      rationale: Fastlane is an adapter-specific mobile release capability.
+      compatibility: routed by apf-release-product
+    - id: bmad-apf-apple-deployment
+      disposition: CONVERT
+      target: capability-apple-release
+      rationale: App Store delivery is conditional release work.
+      compatibility: routed by apf-release-product
+    - id: bmad-apf-google-play
+      disposition: CONVERT
+      target: capability-google-play-release
+      rationale: Google Play delivery is conditional release work.
+      compatibility: routed by apf-release-product
+  marketing:
+    - id: bmad-apf-landing
+      disposition: CONVERT
+      target: capability-landing
+      rationale: Landing creation is an experiment or launch capability.
+      compatibility: routed by apf-design-experiment or apf-release-product
+    - id: bmad-apf-seo
+      disposition: CONVERT
+      target: capability-seo
+      rationale: SEO is a conditional launch capability.
+      compatibility: routed by apf-release-product
+    - id: bmad-apf-aso
+      disposition: CONVERT
+      target: capability-aso
+      rationale: ASO is a conditional mobile release capability.
+      compatibility: routed by apf-release-product
+    - id: bmad-apf-content
+      disposition: CONVERT
+      target: capability-launch-content
+      rationale: Content is a conditional launch capability.
+      compatibility: routed by apf-release-product
+    - id: bmad-apf-email
+      disposition: CONVERT
+      target: capability-email
+      rationale: Email is a conditional launch and retention capability.
+      compatibility: routed by lifecycle workflow
+    - id: bmad-apf-social
+      disposition: CONVERT
+      target: capability-social
+      rationale: Social is a conditional launch capability.
+      compatibility: routed by apf-release-product
+    - id: bmad-apf-product-hunt
+      disposition: CONVERT
+      target: capability-product-hunt
+      rationale: Product Hunt is an optional launch playbook.
+      compatibility: routed by apf-release-product
+  growth:
+    - id: bmad-apf-growth-funnel
+      disposition: REWRITE
+      target: bmad-apf-growth-operator
+      rationale: Retains a long-lived operator for evidence-led iteration and experiments.
+      compatibility: legacy alias for one transition release
+    - id: bmad-apf-experiment
+      disposition: MERGE
+      target: bmad-apf-design-experiment
+      rationale: Experiment design needs a single evidence and verdict contract.
+      compatibility: redirect to target workflow
+    - id: bmad-apf-growth-analytics
+      disposition: MERGE
+      target: bmad-apf-learn-and-iterate
+      rationale: Analytics feeds the product learning loop.
+      compatibility: redirect to target workflow
+    - id: bmad-apf-growth-pricing
+      disposition: MERGE
+      target: bmad-apf-learn-and-iterate
+      rationale: Pricing iteration is evidence-led product learning.
+      compatibility: redirect to target workflow
+    - id: bmad-apf-retention
+      disposition: MERGE
+      target: bmad-apf-learn-and-iterate
+      rationale: Retention work is evidence-led product learning.
+      compatibility: redirect to target workflow
+
+workflows:
+  - id: bmad-apf-validate-idea
+    disposition: REWRITE
+    target: bmad-apf-validate-opportunity
+    rationale: Add evidence policy, schemas, gates, and repair routes.
+    compatibility: legacy alias for one transition release
+  - id: bmad-apf-choose-stack
+    disposition: MERGE
+    target: bmad-apf-plan-delivery
+    rationale: Stack choice is one delivery planning decision.
+    compatibility: redirect to target workflow
+  - id: bmad-apf-generate-prd
+    disposition: DELEGATE_TO_BMAD
+    target: bmad-prd
+    rationale: Canonical PRD ownership remains in BMAD core.
+    compatibility: APF context adapter delegates to BMAD core
+  - id: bmad-apf-generate-ux
+    disposition: DELEGATE_TO_BMAD
+    target: bmad-ux
+    rationale: Canonical UX ownership remains in BMAD core.
+    compatibility: APF plan-product delegates to BMAD core
+  - id: bmad-apf-generate-design-system
+    disposition: CONVERT
+    target: capability-design-system
+    rationale: Design-system work is conditional rather than a mandatory stage.
+    compatibility: selected by apf-plan-product
+  - id: bmad-apf-generate-backend
+    disposition: MERGE
+    target: bmad-apf-build-vertical-slice
+    rationale: Backend work belongs to a selected value slice.
+    compatibility: redirect to target workflow
+  - id: bmad-apf-generate-landing
+    disposition: MERGE
+    target: bmad-apf-design-experiment
+    rationale: Landing work may validate demand rather than imply a full product launch.
+    compatibility: route by selected execution track
+  - id: bmad-apf-build-mvp
+    disposition: REWRITE
+    target: bmad-apf-build-vertical-slice
+    rationale: Replace fixed database/auth/backend sequencing with capability-driven delivery.
+    compatibility: legacy alias for one transition release
+  - id: bmad-apf-deploy-app
+    disposition: REWRITE
+    target: bmad-apf-release-product
+    rationale: Release must include only relevant deployment, observability, and rollback work.
+    compatibility: legacy alias for one transition release
+  - id: bmad-apf-launch-startup
+    disposition: REWRITE
+    target: bmad-apf-launch-product
+    rationale: Replace the linear pipeline with track selection, DAG routing, and gated resume.
+    compatibility: legacy alias for one transition release
+  - id: bmad-apf-iterate-product
+    disposition: REWRITE
+    target: bmad-apf-learn-and-iterate
+    rationale: Require evidence-backed learning and experiments.
+    compatibility: legacy alias for one transition release

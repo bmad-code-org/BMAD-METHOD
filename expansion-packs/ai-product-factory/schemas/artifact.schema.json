@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "APF lifecycle artifact",
+  "type": "object",
+  "required": ["artifact_type", "schema_version", "status", "generated_by", "evidence", "open_questions"],
+  "properties": {
+    "artifact_type": { "type": "string", "minLength": 1 },
+    "schema_version": { "const": 1 },
+    "status": { "enum": ["draft", "validated", "blocked", "stale", "superseded"] },
+    "generated_by": { "type": "string", "minLength": 1 },
+    "source_artifacts": { "type": "array", "items": { "type": "string" } },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["classification", "statement"],
+        "properties": {
+          "classification": { "enum": ["declared", "observed", "verified", "inferred", "assumption", "unknown", "conflict"] },
+          "statement": { "type": "string" }
+        }
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "blocking"],
+        "properties": { "id": { "type": "string" }, "blocking": { "type": "boolean" } }
+      }
+    }
+  },
+  "additionalProperties": true
+}

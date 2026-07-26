@@ -1,13 +1,17 @@
 module,skill,display-name,menu-code,description,action,args,phase,preceded-by,followed-by,required,output-location,outputs
 AI Product Factory,_meta,,,,,,,,,false,,
-AI Product Factory,bmad-apf-launch-startup,Launch Startup,LS,Full orchestrated workflow from idea to production-ready startup launch.,,,anytime,,,false,apf_artifacts,launch artifacts
-AI Product Factory,bmad-apf-validate-idea,Validate Idea,VI,Validate a startup idea with structured analysis before any build investment.,,,anytime,,,false,apf_artifacts,validation report
-AI Product Factory,bmad-apf-startup-coach,Startup Coach,SC,Orchestrate the founder journey from idea to launch.,,,anytime,,,false,apf_artifacts,phase routing
-AI Product Factory,bmad-apf-generate-prd,Generate PRD,GP,Generate PRD from AI Product Factory founder artifacts.,,,anytime,,,false,apf_artifacts|planning_artifacts,prd
-AI Product Factory,bmad-apf-generate-ux,Generate UX,GU,Generate UX flows wireframes and navigation from PRD.,,,anytime,bmad-apf-generate-prd,,false,apf_artifacts,ux artifacts
-AI Product Factory,bmad-apf-generate-design-system,Design System,DS,Generate design system with tokens and component catalog.,,,anytime,bmad-apf-generate-ux,,false,apf_artifacts,design system
-AI Product Factory,bmad-apf-choose-stack,Choose Stack,CS,Select optimal tech stack for the product.,,,anytime,bmad-apf-generate-prd,,false,apf_artifacts,tech stack
-AI Product Factory,bmad-apf-build-mvp,Build MVP,BM,Build MVP via Cursor with BMAD orchestration.,,,anytime,bmad-apf-choose-stack,,false,implementation_artifacts,mvp codebase
-AI Product Factory,bmad-apf-deploy-app,Deploy App,DA,Deploy application to production.,,,anytime,bmad-apf-build-mvp,,false,apf_artifacts,deploy report
-AI Product Factory,bmad-apf-generate-landing,Generate Landing,GL,Generate and deploy landing page with SEO and legal pages.,,,anytime,,,false,apf_artifacts,landing page
-AI Product Factory,bmad-apf-iterate-product,Iterate Product,IP,Post-launch product iteration based on analytics and feedback.,,,anytime,bmad-apf-deploy-app,,false,apf_artifacts,iteration plan
+AI Product Factory,bmad-apf-execute,Execute Task,EX,Route an existing-project task to the smallest safe process.,,,anytime,,,false,,compact execution result
+AI Product Factory,bmad-apf-project-contract,Project Contract,PC,Create update or audit shared project guidance for a team.,,,anytime,,,false,.apf,project contract
+AI Product Factory,bmad-apf-optimize-skills,Optimize Skills,OS,Audit rewrite verify or benchmark skills against compact standards.,,,anytime,,,false,,skill report
+AI Product Factory,bmad-apf-launch-product,Launch Product,LP,Choose a lifecycle track and gated product route.,,,anytime,,,false,apf_artifacts,runtime manifest
+AI Product Factory,bmad-apf-validate-opportunity,Validate Opportunity,VO,Validate an opportunity using classified evidence.,,,anytime,,,false,apf_artifacts,validation report
+AI Product Factory,bmad-apf-design-experiment,Design Experiment,DE,Design the cheapest evidence-producing experiment.,,,anytime,bmad-apf-validate-opportunity,,false,apf_artifacts,experiment plan
+AI Product Factory,bmad-apf-plan-product,Plan Product,PP,Prepare APF context and delegate canonical planning to BMAD core.,,,anytime,bmad-apf-validate-opportunity,,false,apf_artifacts,product context
+AI Product Factory,bmad-apf-plan-delivery,Plan Delivery,PD,Plan architecture depth and vertical slices with BMAD delegation.,,,anytime,bmad-apf-plan-product,,false,apf_artifacts,delivery plan
+AI Product Factory,bmad-apf-build-vertical-slice,Build Vertical Slice,VS,Deliver one approved end-to-end value slice.,,,anytime,bmad-apf-plan-delivery,,false,implementation_artifacts,verified value slice
+AI Product Factory,bmad-apf-release-product,Release Product,RP,Run only relevant release and launch gates.,,,anytime,bmad-apf-build-vertical-slice,,false,apf_artifacts,release decision
+AI Product Factory,bmad-apf-learn-and-iterate,Learn and Iterate,LI,Turn observed signals into a bounded learning action.,,,anytime,bmad-apf-release-product,,false,apf_artifacts,learning record
+AI Product Factory,bmad-apf-founder,Founder Operator,FO,Coordinate long-lived founder context and lifecycle decisions.,,,anytime,,,false,apf_artifacts,decision routing
+AI Product Factory,bmad-apf-product-operator,Product Operator,PO,Coordinate product scope and canonical artifact ownership.,,,anytime,,,false,apf_artifacts,product routing
+AI Product Factory,bmad-apf-product-engineer,Product Engineer,PE,Coordinate long-running technical delivery and migration work.,,,anytime,,,false,apf_artifacts,delivery state
+AI Product Factory,bmad-apf-growth-operator,Growth Operator,GO,Coordinate evidence-led launch and iteration decisions.,,,anytime,,,false,apf_artifacts,growth routing

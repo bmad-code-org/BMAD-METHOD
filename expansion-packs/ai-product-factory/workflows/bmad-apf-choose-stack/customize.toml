@@ -1,5 +1,0 @@
-[workflow]
-activation_steps_prepend = []
-activation_steps_append = []
-persistent_facts = ["Prefer boring, proven technology. Developer productivity over novelty."]
-on_complete = "Offer bmad-create-architecture then bmad-apf-build-mvp."

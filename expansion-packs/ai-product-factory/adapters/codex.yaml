@@ -1,0 +1,17 @@
+version: 1
+adapter: codex
+extends: generic
+project_guidance:
+  root: AGENTS.md
+  nested: AGENTS.md
+  skills: .agents/skills
+  config: .codex/config.toml
+defaults:
+  fast_mode: false
+  execution_profile: balanced
+  subagent_profile: economy
+rules:
+  - Use the nearest applicable AGENTS.md before changing code.
+  - Load a project skill only when its trigger matches the request.
+  - Do not use subagents unless the selected mode permits them.
+  - Prefer compact command output and stop after the selected verification level passes.

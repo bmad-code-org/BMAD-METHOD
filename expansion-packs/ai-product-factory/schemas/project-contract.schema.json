@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "APF project contract",
+  "type": "object",
+  "required": ["schema_version", "repository", "rules", "generated_at"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "repository": { "type": "object", "required": ["commit", "layout"] },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "status", "statement"],
+        "properties": {
+          "id": { "type": "string" },
+          "status": { "enum": ["declared", "observed", "inferred", "conflict", "unknown", "deprecated"] },
+          "statement": { "type": "string" }
+        }
+      }
+    },
+    "generated_at": { "type": "string" }
+  },
+  "additionalProperties": true
+}

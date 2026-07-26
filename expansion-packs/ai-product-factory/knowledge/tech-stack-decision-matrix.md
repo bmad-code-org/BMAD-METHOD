@@ -1,6 +1,6 @@
 # Tech Stack Decision Matrix
 
-Reference for `bmad-apf-choose-stack` workflow.
+Conditional reference for `bmad-apf-plan-delivery`. Use only when the approved delivery plan requires a stack decision.
 
 ## Decision Factors
 
@@ -87,4 +87,4 @@ Reference for `bmad-apf-choose-stack` workflow.
 - Do NOT choose microservices for MVP
 - Do NOT self-host databases for MVP unless required
 - Do NOT build custom auth — use Supabase/Clerk/Firebase
-- Do NOT skip analytics from day one
+- Do NOT add analytics unless the selected track has a measurement need

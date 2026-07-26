@@ -1,0 +1,30 @@
+version: 1
+classes:
+  - declared
+  - observed
+  - verified
+  - inferred
+  - assumption
+  - unknown
+  - conflict
+market_claim:
+  required_fields:
+    - statement
+    - classification
+  verified_fields:
+    - source_title
+    - source_publisher
+    - published_at
+    - accessed_at
+    - source_url
+validation_verdicts:
+  - no-go
+  - experiment-required
+  - provisional-go
+  - validated-go
+validated_go_requires:
+  - interview
+  - waitlist-conversion
+  - preorder
+  - paid-pilot
+  - usage-data

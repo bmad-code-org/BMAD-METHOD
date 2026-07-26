@@ -1,0 +1,12 @@
+version: 1
+adapter: generic
+contract:
+  capabilities:
+    filesystem: required
+    terminal: optional
+    browser: optional
+    subagents: optional
+  rules:
+    - Generic workflows must not name an IDE, model, or vendor command.
+    - Read only the instructions and references relevant to the selected task mode.
+    - Report unavailable capabilities and lower confidence instead of fabricating results.

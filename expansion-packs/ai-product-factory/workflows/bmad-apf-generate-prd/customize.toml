@@ -1,5 +1,0 @@
-[workflow]
-activation_steps_prepend = []
-activation_steps_append = []
-persistent_facts = ["Wrap bmad-prd — do not reinvent PRD generation."]
-on_complete = "Share PRD path. Offer bmad-apf-generate-ux or bmad-apf-feature-prioritizer next."

@@ -1,0 +1,16 @@
+version: 1
+default: disabled
+allowed:
+  planned:
+    max: 1
+    purpose: independent read-only exploration, review, or summarization
+  critical:
+    max: 2
+    purpose: independent risk analysis or review only
+prohibited:
+  - patch
+  - focused
+  - parallel-code-editing
+rules:
+  - A subagent must have an independent scope and explicit expected output.
+  - A subagent must not be started only to satisfy a role label.

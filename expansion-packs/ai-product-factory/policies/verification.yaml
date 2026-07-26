@@ -1,0 +1,17 @@
+version: 1
+levels:
+  manual:
+    use_when: Copy, documentation, or clearly visual changes that the user will inspect.
+    checks: []
+  targeted-static:
+    use_when: Local code or UI changes with a low blast radius.
+    checks: [format-touched-files, lint-touched-files, typecheck-affected-package]
+  relevant:
+    use_when: Feature, API, or service changes with relevant automated tests.
+    checks: [targeted-static, affected-module-tests]
+  full-relevant:
+    use_when: Critical changes affecting security, data, infrastructure, or public contracts.
+    checks: [relevant, integration-tests, build, risk-based-security-checks]
+output:
+  compact: true
+  stop_after_first_failure: true

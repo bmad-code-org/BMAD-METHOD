@@ -1,53 +1,23 @@
-# Run Manifest Template
+# Lifecycle Run Manifest Template
 
-Copy to `{apf_artifacts}/runs/{date}-{slug}/run-manifest.yaml` at workflow start.
+Save to `{apf_artifacts}/runs/{date}-{slug}/run-manifest.yaml`.
 
 ```yaml
----
-product_name: ""
-slug: ""
-created: "{date}"
-status: in-progress  # in-progress | launched | paused | abandoned
-
-idea:
-  summary: ""
-  product_type: ""  # mobile-app | saas | landing | telegram-bot | ai-agent
-  target_platform: ""  # web | flutter | react-native | swiftui
-
-launch_kit: ""  # auto | mobile-app | landing | saas | telegram | ai-agent
-
-phases:
-  founder:
-    status: pending  # pending | in-progress | complete | skipped
-    artifacts: []
-  product:
-    status: pending
-    artifacts: []
-  ux:
-    status: pending
-    artifacts: []
-  design:
-    status: pending
-    artifacts: []
-  engineering:
-    status: pending
-    artifacts: []
-  deployment:
-    status: pending
-    artifacts: []
-  marketing:
-    status: pending
-    artifacts: []
-  growth:
-    status: pending
-    artifacts: []
-
-deployed_urls:
-  app: ""
-  landing: ""
-  app_store: ""
-  play_store: ""
-
+schema_version: 1
+run_id: ""
+status: in-progress # in-progress | blocked | completed | abandoned
+track: experiment # experiment | prototype | mvp | production | brownfield
+created_at: "{date}"
+updated_at: "{date}"
+source_artifacts: []
+dag:
+  - skill: bmad-apf-validate-opportunity
+    status: pending # pending | running | passed | failed | waived | skipped
+    requires: []
+    gate: null
 decisions: []
-open_items: []
+open_questions: []
+waivers: []
 ```
+
+The manifest records only selected nodes. It must not imply that every lifecycle phase is required.

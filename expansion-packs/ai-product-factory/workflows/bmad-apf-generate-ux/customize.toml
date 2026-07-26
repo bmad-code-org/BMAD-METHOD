@@ -1,5 +1,0 @@
-[workflow]
-activation_steps_prepend = []
-activation_steps_append = []
-persistent_facts = ["Reference Apple HIG for iOS, Material Design for Android, WCAG for web."]
-on_complete = "Offer bmad-apf-generate-design-system or bmad-apf-brand next."

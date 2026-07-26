@@ -24,6 +24,12 @@
     "bmad-method": "tools/installer/bmad-cli.js"
   },
   "scripts": {
+    "apf:benchmark": "node tools/apf/benchmark-router.mjs",
+    "apf:check": "npm run apf:foundation && npm run apf:inventory && npm run apf:lint && npm run apf:benchmark && npm run apf:contract-test",
+    "apf:contract-test": "node test/apf-project-contract.test.mjs",
+    "apf:foundation": "node tools/apf/validate-foundation.mjs",
+    "apf:inventory": "node tools/apf/validate-migration-map.mjs",
+    "apf:lint": "node tools/apf/lint-skills.mjs --strict",
     "bmad:install": "node tools/installer/bmad-cli.js install",
     "bmad:uninstall": "node tools/installer/bmad-cli.js uninstall",
     "docs:build": "node tools/build-docs.mjs",
@@ -40,7 +46,7 @@
     "lint:fix": "eslint . --ext .js,.cjs,.mjs,.yaml --fix",
     "lint:md": "markdownlint-cli2 \"**/*.md\"",
     "prepare": "command -v husky >/dev/null 2>&1 && husky || exit 0",
-    "quality": "npm run format:check && npm run lint && npm run lint:md && npm run docs:build && npm run test:install && npm run test:urls && npm run validate:refs && npm run validate:skills && npm run docs:validate-sidebar",
+    "quality": "npm run format:check && npm run lint && npm run lint:md && npm run docs:build && npm run test:install && npm run test:urls && npm run validate:refs && npm run validate:skills && npm run docs:validate-sidebar && npm run apf:check",
     "rebundle": "node tools/installer/bundlers/bundle-web.js rebundle",
     "test": "npm run test:refs && npm run test:install && npm run test:urls && npm run test:channels && npm run test:skills && npm run lint && npm run lint:md && npm run format:check",
     "test:channels": "node test/test-installer-channels.js",

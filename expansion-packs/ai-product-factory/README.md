@@ -1,156 +1,104 @@
-# AI Product Factory
+# AI Product Factory v2
 
-**The Operating System for Builders**
+AI Product Factory (APF) is a Codex-first expansion pack for BMAD. It adds product evidence, lifecycle routing, project reproducibility, and risk-proportional delivery without replacing BMAD core.
 
-> One prompt. One founder. One production-ready startup.
+## What APF owns
 
-AI Product Factory is a BMAD Expansion Pack that transforms a single idea into a production-ready digital product — from validation through design, engineering, deployment, marketing, and growth.
+- Founder context, evidence classification, business assumptions, and lifecycle gates.
+- Product execution tracks: experiment, prototype, MVP, production, and brownfield.
+- Project delivery routing, shared project contract, and execution economy.
+- Release and learning loops built on observed signals.
 
-## What This Is
+BMAD core remains the canonical owner for PRD, UX, architecture, stories, implementation, and code review.
 
-- An **operating system** for building startups, not a prompt collection
-- A **vertical expansion** of BMAD Method — extends, does not replace
-- **53 specialized agents** across 8 product-oriented layers
-- **14 orchestrated workflows** producing deterministic artifacts
-- **5 launch kits** for common product types
-- **Cursor-native** — BMAD orchestrates, Cursor executes
+## Start here
 
-## What This Is NOT
+For normal work in an existing project:
 
-- Not another AI coding framework
-- Not a fork of BMAD core
-- Not a Flutter/template generator
+```text
+use the bmad-apf-execute skill
+<task>
+```
 
-## Quick Start
+It selects one of four modes:
 
-### Install
+| Mode | Specification | Subagents | Verification |
+| --- | --- | ---: | --- |
+| patch | off | 0 | manual or targeted static |
+| focused | off | 0 | affected module |
+| planned | compact when needed | 1 | relevant |
+| critical | required | 2 | full relevant |
+
+For a shared team operating contract:
+
+```text
+use the bmad-apf-project-contract skill
+create
+```
+
+For a product lifecycle, use `bmad-apf-launch-product`. It selects only the relevant APF workflows; it never runs every stage by default.
+
+## Active APF v2 skills
+
+### Workflows
+
+- `bmad-apf-execute`
+- `bmad-apf-project-contract`
+- `bmad-apf-optimize-skills`
+- `bmad-apf-launch-product`
+- `bmad-apf-validate-opportunity`
+- `bmad-apf-design-experiment`
+- `bmad-apf-plan-product`
+- `bmad-apf-plan-delivery`
+- `bmad-apf-build-vertical-slice`
+- `bmad-apf-release-product`
+- `bmad-apf-learn-and-iterate`
+
+### Agents
+
+- `bmad-apf-founder`
+- `bmad-apf-product-operator`
+- `bmad-apf-product-engineer`
+- `bmad-apf-growth-operator`
+
+## Team reproducibility
+
+`bmad-apf-project-contract` records what the repository actually does and generates only the guidance the project needs:
+
+```text
+.apf/project-contract.yaml
+AGENTS.md
+docs/ai/project-map.md
+.agents/skills/*
+.codex/config.toml
+```
+
+Rules are marked as declared, observed, inferred, conflict, unknown, or deprecated. The workflow does not silently treat a legacy pattern as approved architecture.
+
+## Evidence and gates
+
+APF labels claims as declared, observed, verified, inferred, assumption, unknown, or conflict. A `validated-go` requires a real signal such as interviews, waitlist conversion, preorder, paid pilot, or usage data.
+
+Lifecycle artifacts and gate reports use schemas in `schemas/`. A failed blocking gate prevents transition unless a waiver identifies an owner, reason, and expiry.
+
+## Compatibility
+
+APF v2 is distributed from a maintenance fork of BMAD-METHOD. It does not modify or replace BMAD core. The Phase 0 migration map is in [inventory/entity-migration-map.yaml](inventory/entity-migration-map.yaml); it documents the transition from the v1 roster to the v2 skills.
+
+The current repository validator reserves the `bmad-` skill prefix, so APF v2 keeps `bmad-apf-` as the installed identifier pending the namespace ADR.
+
+## Quality checks
 
 ```bash
-npx bmad-method install
-# Select "AI Product Factory" module
+npm run apf:inventory
+npm run apf:lint
+npm run apf:benchmark
+npm run apf:contract-test
 ```
 
-Or install from this local path during development:
+APF checks are deterministic by default. LLM-based evals belong to a budgeted nightly or release workflow, never an implicit hook.
 
-```bash
-npx bmad-method install --module ./expansion-packs/ai-product-factory
-```
+## Short guides
 
-### Launch a Startup
-
-```
-> use the bmad-apf-launch-startup skill
-> I want to build [your idea here]
-```
-
-### Validate an Idea First
-
-```
-> use the bmad-apf-validate-idea skill
-> [describe your idea]
-```
-
-### Talk to the Startup Coach
-
-```
-> use the bmad-apf-startup-coach skill
-```
-
-## Architecture
-
-```
-User
- ↓
-BMAD Orchestrator (APF Workflows)
- ↓
-Specialized Agents (53 across 8 layers)
- ↓
-Cursor (implementation execution)
- ↓
-GitHub → Cloud → Production
-```
-
-## Agent Layers
-
-| Layer | Agents | Focus |
-|---|---|---|
-| **Founder** | 8 | Idea validation, market, business model |
-| **Product** | 6 | PRD, roadmap, stories, prioritization |
-| **UX** | 5 | Flows, wireframes, navigation, a11y |
-| **Design** | 4 | Brand, design system, UI specs |
-| **Engineering** | 12 | Architecture, platform agents, backend |
-| **Deployment** | 6 | CI/CD, app stores, infrastructure |
-| **Marketing** | 7 | Landing, SEO, ASO, social, Product Hunt |
-| **Growth** | 5 | Analytics, funnels, retention, experiments |
-
-## Workflows
-
-| Workflow | Purpose |
-|---|---|
-| `bmad-apf-launch-startup` | Master orchestrator — idea to launch |
-| `bmad-apf-validate-idea` | Validate before building |
-| `bmad-apf-generate-prd` | PRD from founder artifacts |
-| `bmad-apf-generate-ux` | UX flows and wireframes |
-| `bmad-apf-generate-design-system` | Design tokens and components |
-| `bmad-apf-choose-stack` | Tech stack selection |
-| `bmad-apf-build-mvp` | MVP implementation via Cursor |
-| `bmad-apf-generate-backend` | Backend services and API |
-| `bmad-apf-deploy-app` | Production deployment |
-| `bmad-apf-generate-landing` | Landing page with SEO |
-| `bmad-apf-iterate-product` | Post-launch iteration |
-
-## Launch Kits
-
-| Kit | Product Type | Default Stack |
-|---|---|---|
-| [Mobile App Kit](kits/mobile-app-kit.md) | iOS/Android apps | Flutter + Supabase + RevenueCat |
-| [SaaS Kit](kits/saas-kit.md) | Web SaaS | Next.js + Supabase + Stripe |
-| [Landing Kit](kits/landing-kit.md) | Marketing sites | Next.js + Tailwind + Vercel |
-| [Telegram Kit](kits/telegram-kit.md) | Telegram bots | Telegraf + PostgreSQL |
-| [AI Agent Kit](kits/ai-agent-kit.md) | AI assistants | FastAPI + Vector DB + MCP |
-
-## Directory Structure
-
-```
-expansion-packs/ai-product-factory/
-├── module.yaml              # BMAD module definition
-├── agents/                  # 53 agent skills (8 layers)
-│   ├── founder/
-│   ├── product/
-│   ├── ux/
-│   ├── design/
-│   ├── engineering/
-│   ├── deployment/
-│   ├── marketing/
-│   └── growth/
-├── workflows/               # 14 orchestrated workflows
-├── templates/               # Artifact templates
-├── knowledge/               # Domain knowledge base
-├── checklists/              # Phase verification checklists
-├── playbooks/               # Launch playbooks
-├── examples/                # End-to-end examples
-└── kits/                    # Production launch kits
-```
-
-## BMAD Integration
-
-APF delegates to BMAD core where possible:
-
-- `bmad-prd` — PRD generation
-- `bmad-create-architecture` — System architecture
-- `bmad-dev-story` — Story implementation
-- `bmad-code-review` — Code review
-- `bmad-market-research` — Market research
-- `bmad-ux` — UX design (alternative path)
-
-## Design Principles
-
-1. **Do NOT modify BMAD core** — implement as Expansion Pack
-2. **Artifacts over chat** — every phase produces files
-3. **Cursor executes, BMAD orchestrates**
-4. **Reuse BMAD workflows** — extend, don't fork
-5. **Deterministic handoffs** — each agent knows what the next needs
-
-## License
-
-Same as BMAD Method — see repository LICENSE.
+- [Economy of tokens and limits](guides/token-economy.md)
+- [Install BMAD-TEMPLATE in a project](guides/install-in-project.md)

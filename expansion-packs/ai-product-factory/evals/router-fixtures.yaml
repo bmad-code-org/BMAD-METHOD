@@ -1,0 +1,20 @@
+version: 1
+cases:
+  - id: patch-ui-button
+    request: Move the login button from the sidebar to the header.
+    expected_mode: patch
+  - id: focused-content-page
+    request: Add a privacy policy page and a footer route using supplied copy.
+    expected_mode: focused
+  - id: planned-api
+    request: Add a public API endpoint for transaction exports.
+    expected_mode: planned
+  - id: critical-auth
+    request: Add refresh-token rotation and reuse detection.
+    expected_mode: critical
+  - id: critical-payments
+    request: Change subscription billing and checkout behavior.
+    expected_mode: critical
+  - id: critical-data
+    request: Run a destructive migration that deletes obsolete customer data.
+    expected_mode: critical
