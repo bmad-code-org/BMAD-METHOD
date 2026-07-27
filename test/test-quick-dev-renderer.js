@@ -1,3 +1,5 @@
+// Test only deterministic renderer behavior.
+// Do not test model inference or assert prose copied verbatim from skill sources.
 /**
  * Smoke test for bmad-quick-dev render.py
  *

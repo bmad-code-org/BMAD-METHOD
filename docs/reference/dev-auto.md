@@ -21,7 +21,7 @@ To use BMad in an autonomous development loop, use the `bmad-dev-auto` skill. It
 
 This skill relies on an ability to run subagents. If subagents are unavailable, the workflow halts `blocked` with `no subagents`. If you invoke the skill itself in a subagent session, e.g. "hey, Claude, implement stories 2-10, using a subagent running bmad-dev-auto skill for each story", that session will need to spawn its own subagents.
 
-Version control, while optional, is strongly recommended. If it's present, there must be no uncommitted changes.
+Version control, while optional, is strongly recommended. If present, the working tree must be clean and the agent must be able to update repository metadata.
 
 ## Inputs
 
@@ -74,7 +74,7 @@ Exactly one `stories.yaml` entry is dispatched per invocation: the workflow neve
 
 On activation, the workflow resolves:
 
-- `_bmad/bmm/config.yaml`
+- `_bmad/config.toml`, `_bmad/config.user.toml`, and optional team/user overrides under `_bmad/custom/`
 - Any configured workflow customizations from `customize.toml`, team overrides, and user overrides
 - Persistent facts listed in workflow config
 - `project-context.md` files, if present
@@ -115,9 +115,9 @@ On successful completion, the workflow writes or updates the spec with:
   - Verification performed
   - Residual risks
 - `followup_review_recommended` flag. True if LLM decided another review pass seems worthwhile. It's a suggestion, not a must. Simplest way to give it a second review pass is to re-run the skill pointing it at the spec file.
-- `baseline_revision` and `final_revision` — HEAD before implementation and after the final commit. Together they bracket the run's commits: `git log baseline_revision..final_revision` lists exactly what it produced, and equal values mean no commits were made. Both are `NO_VCS` when version control is unavailable.
+- `baseline_revision` and `final_revision` — the full canonical revisions before implementation and at the reviewed change's endpoint. `git log baseline_revision..final_revision` lists the reviewed change commits. Both are `NO_VCS` without version control.
 
-If version control is available, the workflow commits the change. It does not push.
+The workflow commits but does not push. If the spec is tracked in the implementation repository, clean HEAD is one spec-finalization commit beyond `final_revision`; otherwise the implementation repository ends at `final_revision`.
 
 ### On `blocked`
 
@@ -203,8 +203,8 @@ An orchestrator integrating `bmad-dev-auto` should:
 - Prefer passing a spec path when resuming prior work — or the same spec folder and story id, under folder+id dispatch
 - Monitor the produced spec file, story spec artifact, or fallback result file for terminal state
 - Read `status`, `blocking condition`, and `followup_review_recommended` rather than inferring success from chat output alone
-- Use `baseline_revision..final_revision` to identify the commits the run produced, rather than inferring them from git state
-- Expect autonomous file changes and possibly a local commit
+- Use `baseline_revision..final_revision` to identify the reviewed change commits; do not assume `final_revision` equals HEAD
+- Expect autonomous file changes and local commits
 - Handle `blocked` as a routing signal, not just a failure signal
 
 In practice, `blocked` usually means the workflow ran into a situation where unattended execution would be unsafe. That is often the point where a higher-level orchestrator, another workflow, or a human should take over.

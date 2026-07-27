@@ -808,8 +808,10 @@ class UI {
 
     const configCollector = new OfficialModules({ channelOptions: options.channelOptions });
 
+    const hasCoreCliOptions = options.userName || options.communicationLanguage || options.documentOutputLanguage || options.outputFolder;
+
     // Seed core config from CLI options if provided
-    if (options.userName || options.communicationLanguage || options.documentOutputLanguage || options.outputFolder) {
+    if (hasCoreCliOptions) {
       const coreConfig = {};
       if (options.userName) {
         coreConfig.user_name = options.userName;
@@ -830,8 +832,24 @@ class UI {
 
       // Load existing config to merge with provided options
       await configCollector.loadExistingConfig(directory);
-      const existingConfig = configCollector.collectedConfig.core || {};
-      configCollector.collectedConfig.core = { ...existingConfig, ...coreConfig };
+      const existingConfig = configCollector.existingConfig.core || {};
+      let defaultConfig = {};
+      if (options.yes) {
+        let safeUsername;
+        try {
+          safeUsername = os.userInfo().username;
+        } catch {
+          safeUsername = process.env.USER || process.env.USERNAME || 'User';
+        }
+        defaultConfig = {
+          user_name: safeUsername.charAt(0).toUpperCase() + safeUsername.slice(1),
+          project_name: path.basename(directory),
+          communication_language: 'English',
+          document_output_language: 'English',
+          output_folder: '_bmad-output',
+        };
+      }
+      configCollector.collectedConfig.core = { ...defaultConfig, ...existingConfig, ...coreConfig };
 
       // If not all options are provided, collect the missing ones interactively (unless --yes flag)
       if (
@@ -843,7 +861,7 @@ class UI {
     } else if (options.yes) {
       // Use all defaults when --yes flag is set
       await configCollector.loadExistingConfig(directory);
-      const existingConfig = configCollector.collectedConfig.core || {};
+      const existingConfig = configCollector.existingConfig.core || {};
 
       if (Object.keys(existingConfig).length === 0) {
         let safeUsername;

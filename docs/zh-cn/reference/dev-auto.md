@@ -21,7 +21,7 @@ sidebar:
 
 该 skill 依赖运行 subagent 的能力。若 subagent 不可用，workflow 会以 `blocked` 和 `no subagents`  halt。若你在 subagent 会话里调用 skill 本身（例如「嘿 Claude，用 bmad-dev-auto skill 跑 story 2–10，每个 story 一个 subagent」），该会话需要能 spawn 自己的 subagent。
 
-版本控制可选但强烈建议。若存在，工作区不得有 uncommitted changes。
+版本控制可选但强烈建议。若使用，working tree 必须 clean，且 agent 必须能够更新 repository metadata。
 
 ## 输入
 
@@ -74,7 +74,7 @@ workflow 读取 `<spec-folder>/stories.yaml`，查找 `id` 匹配的条目。它
 
 激活时，workflow 解析：
 
-- `_bmad/bmm/config.yaml`
+- `_bmad/config.toml`、`_bmad/config.user.toml`，以及 `_bmad/custom/` 下可选的团队/用户 override
 - `customize.toml`、团队 override、用户 override 中的 workflow 自定义
 - workflow 配置中列出的 persistent facts
 - 若存在的 `project-context.md` 文件
@@ -115,9 +115,9 @@ spec frontmatter 的 `status` 是 orchestration 的主要 machine-readable 状�
   - 已执行 verification
   - Residual risks
 - `followup_review_recommended` 标志。若 LLM 认为值得再 review 一轮则为 true。只是建议，非必须。最简单的二次 review 是重新运行 skill 并指向 spec 文件。
-- `baseline_revision` 和 `final_revision` —— implement 前与最终 commit 的 HEAD。一起 bracket 本次 run 的 commits：`git log baseline_revision..final_revision` 列出它产出的内容；相等表示无 commit。无版本控制时两者均为 `NO_VCS`。
+- `baseline_revision` 和 `final_revision` —— implementation 前与 reviewed change endpoint 的完整 canonical revision。`git log baseline_revision..final_revision` 列出 reviewed change commits。无版本控制时两者均为 `NO_VCS`。
 
-若有版本控制，workflow 会 commit 变更，不 push。
+Workflow 会 commit，但不会 push。若 spec 由 implementation repository track，clean HEAD 会比 `final_revision` 多一个 spec-finalization commit；否则 implementation repository 会停在 `final_revision`。
 
 ### 在 `blocked` 时
 
@@ -203,8 +203,8 @@ workflow 在尚无 valid `spec_file` 时 halt（folder+id dispatch 外 —— �
 - Resume 时优先传 spec 路径 —— 或 folder+id dispatch 下同一 spec 文件夹和 story id
 - 监控产出的 spec 文件、story spec artifact 或 fallback result 文件的 terminal state
 - 读 `status`、`blocking condition`、`followup_review_recommended`，不要只从 chat 输出推断成功
-- 用 `baseline_revision..final_revision` 识别 run 产出的 commits，不要从 git state 推断
-- 预期 autonomous 文件变更和可能的 local commit
+- 用 `baseline_revision..final_revision` 识别 reviewed change commits；不要假设 `final_revision` 等于 HEAD
+- 预期 autonomous 文件变更和 local commits
 - 把 `blocked` 当作 routing signal，而不只是 failure signal
 
 实践中，`blocked` 通常表示 workflow 碰到 unattended 执行会不安全的局面。这往往是更高层 orchestrator、其他 workflow 或人工接手的节点。
