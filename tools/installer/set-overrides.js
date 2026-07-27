@@ -291,8 +291,22 @@ async function applySetOverrides(overrides, bmadDir) {
     // value lives in the per-module yaml but won't be re-emitted into
     // config.toml on the next install (the schema-strict partition drops
     // it); re-pass `--set` if you need it sticky.
-    const moduleYamlPath = path.join(bmadDir, moduleCode, 'config.yaml');
-    if (await fs.pathExists(moduleYamlPath)) {
+    // Core overrides also refresh the spread copies: core values are spread
+    // into every module's config.yaml at generate time and skills read their
+    // own module's copy — without this, a core --set would not take effect
+    // until the next install regenerates the spread.
+    const yamlTargets = [path.join(bmadDir, moduleCode, 'config.yaml')];
+    if (moduleCode === 'core') {
+      const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom', 'core']);
+      const entries = await fs.readdir(bmadDir, { withFileTypes: true });
+      for (const entry of entries) {
+        if (entry.isDirectory() && !nonModuleDirs.has(entry.name)) {
+          yamlTargets.push(path.join(bmadDir, entry.name, 'config.yaml'));
+        }
+      }
+    }
+    for (const moduleYamlPath of yamlTargets) {
+      if (!(await fs.pathExists(moduleYamlPath))) continue;
       try {
         const text = await fs.readFile(moduleYamlPath, 'utf8');
         const parsed = yaml.parse(text);

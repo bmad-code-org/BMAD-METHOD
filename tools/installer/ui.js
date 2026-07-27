@@ -866,6 +866,47 @@ class UI {
       }
     }
 
+    // --yes backfill: seed any core keys declared in the schema but absent from
+    // the config assembled above (the fresh-install defaults, CLI-flag seed, or
+    // carried-forward existing config). Without this, a newly declared core key
+    // is silently dropped on every --yes install — core is skipped by
+    // collectAllConfigurations once seeded, so schema defaults never apply.
+    // Value precedence per key: prior [core] answer, then a prior answer under
+    // a module section (key promoted module → core, e.g. bmm → core), then the
+    // schema default. This mirrors _hoistCoreKeysFromLegacyModuleConfigs, which
+    // only runs on the legacy (pre-central-toml) load path.
+    if (options.yes) {
+      try {
+        const yaml = require('yaml');
+        const { getSourcePath } = require('./project-root');
+        const coreSchema = yaml.parse(await fs.readFile(path.join(getSourcePath('core-skills'), 'module.yaml'), 'utf8'));
+        const core = (configCollector.collectedConfig.core ||= {});
+        const existing = configCollector._existingConfig || {};
+        const existingCore = existing.core && typeof existing.core === 'object' && !Array.isArray(existing.core) ? existing.core : {};
+        for (const [key, item] of Object.entries(coreSchema || {})) {
+          if (!item || typeof item !== 'object' || Array.isArray(item) || !item.prompt || key in core) continue;
+          let value = existingCore[key];
+          if (value === undefined) {
+            for (const [moduleName, cfg] of Object.entries(existing)) {
+              if (moduleName === 'core' || !cfg || typeof cfg !== 'object' || Array.isArray(cfg)) continue;
+              if (cfg[key] !== undefined) {
+                value = cfg[key];
+                break;
+              }
+            }
+          }
+          if (value === undefined) {
+            let def = item.default;
+            if (typeof def === 'string') def = def.replace('{directory_name}', path.basename(directory));
+            value = def;
+          }
+          if (value !== undefined && value !== null && value !== '') core[key] = value;
+        }
+      } catch {
+        // Schema unreadable — keep the seeded config as-is rather than fail the install.
+      }
+    }
+
     // Collect all module configs — core is skipped if already seeded above
     await configCollector.collectAllConfigurations(modules, directory, {
       skipPrompts: options.yes || false,
