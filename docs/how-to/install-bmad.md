@@ -38,6 +38,8 @@ The interactive flow asks you five things:
 
 Accept the defaults and you land on the latest stable release of every module, configured for your chosen tool.
 
+Among the core config prompts is `core.always_show_recommendation` (user scope, default `"true"`), prompted during interactive install; `--yes` installs apply the default silently. When `"true"`, workflows with decision points — starting with `/bmad-code-review` — state a recommended option with a one- or two-line justification whenever they ask you to choose between alternatives. The final decision always stays with you.
+
 :::tip[Just want the newest prerelease?]
 
 ```bash
@@ -199,10 +201,8 @@ npx bmad-method install --yes \
 
 ```bash
 npx bmad-method install --yes --action update \
-  --set bmm.always_show_recommendation=false
+  --set core.always_show_recommendation=false
 ```
-
-`bmm.always_show_recommendation` (user scope, default `"true"`) is prompted during install. When `"true"`, workflows with decision points — starting with `/bmad-code-review` — state a recommended option with a one- or two-line justification whenever they ask you to choose between alternatives. The final decision always stays with you.
 
 **Discover available keys for a module:**
 

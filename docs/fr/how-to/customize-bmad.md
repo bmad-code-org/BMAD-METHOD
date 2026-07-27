@@ -289,7 +289,7 @@ Le `customize.toml` par skill couvre le **comportement profond** (hooks, menus, 
 
 ```text
 _bmad/config.toml               (géré par l'installateur)  périmètre équipe : réponses d'installation + registre des agents
-_bmad/config.user.toml          (géré par l'installateur)  périmètre utilisateur : user_name, langue, niveau de skill
+_bmad/config.user.toml          (géré par l'installateur)  périmètre utilisateur : user_name, langue, niveau de skill, always_show_recommendation
 _bmad/custom/config.toml        (rédigé manuellement)      overrides d'équipe (versionnés dans git)
 _bmad/custom/config.user.toml   (rédigé manuellement)      overrides personnels (ignoré par git)
 ```

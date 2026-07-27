@@ -32,6 +32,19 @@ output_folder:
   default: "_bmad-output"
   result: "{project-root}/{value}"
 
+always_show_recommendation:
+  prompt:
+    - "Should agents recommend an option when asking you to decide?"
+    - "The final decision always stays with you."
+  scope: user
+  default: "true"
+  result: "{value}"
+  single-select:
+    - value: "true"
+      label: "Yes - State a recommended option with a brief justification"
+    - value: "false"
+      label: "No - Just present the options"
+
 # The one directory created at install time. Everything else (module artifact
 # folders, project knowledge) is created lazily by the first skill that writes there.
 directories:
