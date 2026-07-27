@@ -830,7 +830,7 @@ class UI {
 
       // Load existing config to merge with provided options
       await configCollector.loadExistingConfig(directory);
-      const existingConfig = configCollector.collectedConfig.core || {};
+      const existingConfig = configCollector._existingConfig?.core || {};
       configCollector.collectedConfig.core = { ...existingConfig, ...coreConfig };
 
       // If not all options are provided, collect the missing ones interactively (unless --yes flag)

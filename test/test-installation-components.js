@@ -3615,6 +3615,48 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test Suite 49: CLI core overrides preserve existing config (#2435)
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 49: CLI core overrides preserve existing config${colors.reset}\n`);
+
+  let root49;
+  try {
+    const { UI } = require('../tools/installer/ui');
+    root49 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-core-override-'));
+    const bmadDir49 = path.join(root49, '_bmad');
+    await fs.ensureDir(path.join(bmadDir49, '_config'));
+    await fs.writeFile(path.join(bmadDir49, '_config', 'manifest.yaml'), 'installation:\n  version: 6.10.0\n', 'utf8');
+    await fs.writeFile(
+      path.join(bmadDir49, 'config.toml'),
+      '[core]\nproject_name = "Existing Project"\ndocument_output_language = "French"\noutput_folder = "existing-output"\n',
+      'utf8',
+    );
+    await fs.writeFile(path.join(bmadDir49, 'config.user.toml'), '[core]\nuser_name = "Existing User"\n', 'utf8');
+
+    const { moduleConfigs } = await new UI().collectModuleConfigs(root49, ['core'], {
+      userName: 'Updated User',
+      communicationLanguage: 'Spanish',
+      documentOutputLanguage: 'English',
+      outputFolder: 'updated-output',
+      yes: true,
+    });
+
+    assert(moduleConfigs.core.project_name === 'Existing Project', 'CLI core overrides preserve existing project_name');
+    assert(moduleConfigs.core.user_name === 'Updated User', 'CLI core overrides replace explicitly supplied user_name');
+    assert(moduleConfigs.core.communication_language === 'Spanish', 'CLI core overrides add explicitly supplied communication language');
+    assert(moduleConfigs.core.document_output_language === 'English', 'CLI core overrides replace document output language');
+    assert(moduleConfigs.core.output_folder === 'updated-output', 'CLI core overrides replace output folder');
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 49 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  } finally {
+    if (root49) await fs.remove(root49).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);
