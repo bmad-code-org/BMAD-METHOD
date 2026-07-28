@@ -21,7 +21,7 @@ Le fichier `project-context.md` résout ce problème en documentant ce que les a
 Chaque workflow d’implémentation charge automatiquement `project-context.md` s’il existe. Le workflow architecte le charge également pour respecter vos préférences techniques lors de la conception de l’architecture.
 
 **Chargé par ces workflows :**
-- `bmad-create-architecture` — respecte les préférences techniques pendant la phase de solutioning
+- `bmad-architecture` — respecte les préférences techniques pendant la phase de solutioning
 - `bmad-create-story` — informe la création de stories avec les patterns du projet
 - `bmad-dev-story` — guide les décisions d’implémentation
 - `bmad-code-review` — valide par rapport aux standards du projet
@@ -34,7 +34,7 @@ Le fichier `project-context.md` est utile à n’importe quel stade d’un proje
 
 | Scénario                                 | Quand Créer                                         | Objectif                                                                              |
 |------------------------------------------|-----------------------------------------------------|---------------------------------------------------------------------------------------|
-| **Nouveau projet, avant l’architecture** | Manuellement, avant `bmad-create-architecture`      | Documenter vos préférences techniques pour que l’architecte les respecte              |
+| **Nouveau projet, avant l’architecture** | Manuellement, avant `bmad-architecture`      | Documenter vos préférences techniques pour que l’architecte les respecte              |
 | **Nouveau projet, après l’architecture** | Via `bmad-generate-project-context` ou manuellement | Capturer les décisions d’architecture pour les agents d’implémentation                |
 | **Projet existant**                      | Via `bmad-generate-project-context`                 | Découvrir les patterns existants pour que les agents suivent les conventions établies |
 | **Projet Quick Dev**                     | Avant ou pendant `bmad-quick-dev`                   | Garantir que l’implémentation rapide respecte vos patterns                            |

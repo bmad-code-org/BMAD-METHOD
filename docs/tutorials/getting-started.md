@@ -140,7 +140,7 @@ All workflows in this phase are optional. [**Not sure which to use?**](../explan
 
 - **brainstorming** (`bmad-brainstorming`) — Guided ideation
 - **forge-idea** (`bmad-forge-idea`) — Pressure-test an idea until it hardens or dies cheaply
-- **research** (`bmad-market-research` / `bmad-domain-research` / `bmad-technical-research`) — Market, domain, and technical research
+- **research** (`bmad-deep-recon`) — Draft a deep-research prompt for your own AI tool, process a finished report into a downstream-ready summary, or run the research here, with claim verification and a refresh lifecycle. [Learn more](../explanation/deep-recon.md)
 - **product-brief** (`bmad-product-brief`) — Recommended foundation document when your concept is clear
 - **prfaq** (`bmad-prfaq`) — Working Backwards challenge to stress-test your product concept customer-first
 
@@ -171,7 +171,7 @@ If your project has a user interface, invoke the **UX-Designer agent** (`bmad-ag
 **Create Architecture**
 
 1. Invoke the **Architect agent** (`bmad-agent-architect`) in a new chat
-2. Run `bmad-create-architecture` (`bmad-create-architecture`)
+2. Run `bmad-architecture` (`bmad-architecture`)
 3. Output: Architecture document with technical decisions
 
 **Create Epics and Stories**
@@ -241,7 +241,7 @@ your-project/
 | ------------------------------------- | ------------------------------------- | --------- | ------------------------------------------ |
 | **`bmad-help`** ⭐                    | `bmad-help`                           | Any       | **Your intelligent guide — ask anything!** |
 | `bmad-prd`                            | `bmad-prd`                            | Any       | Create, update, or validate a PRD          |
-| `bmad-create-architecture`            | `bmad-create-architecture`            | Architect | Create architecture document               |
+| `bmad-architecture`                   | `bmad-architecture`                   | Architect | Create architecture document               |
 | `bmad-generate-project-context`       | `bmad-generate-project-context`       | Analyst   | Create project context file                |
 | `bmad-create-epics-and-stories`       | `bmad-create-epics-and-stories`       | PM        | Break down PRD into epics                  |
 | `bmad-check-implementation-readiness` | `bmad-check-implementation-readiness` | Architect | Validate planning cohesion                 |

@@ -65,7 +65,7 @@ Chỉ dùng cho cảnh báo nghiêm trọng — mất dữ liệu, vấn đề b
 | Skill | Agent | Mục đích |
 | ----- | ----- | -------- |
 | `bmad-brainstorming` | Analyst | Brainstorm cho dự án mới |
-| `bmad-create-prd` | PM | Tạo tài liệu yêu cầu sản phẩm |
+| `bmad-prd` | PM | Tạo tài liệu yêu cầu sản phẩm |
 ```
 
 ## Khối cấu trúc thư mục

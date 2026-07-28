@@ -46,7 +46,7 @@ sidebar:
 .claude/skills/
 ├── bmad-help/
 │   └── SKILL.md
-├── bmad-create-prd/
+├── bmad-prd/
 │   └── SKILL.md
 ├── bmad-agent-dev/
 │   └── SKILL.md
@@ -85,8 +85,8 @@ skill 目录名就是调用名，例如 `bmad-agent-dev/` 对应 skill `bmad-age
 
 | 示例 skill | 用途 |
 | --- | --- |
-| `bmad-create-prd` | 创建 PRD |
-| `bmad-create-architecture` | 创建架构方案 |
+| `bmad-prd` | 创建 PRD |
+| `bmad-architecture` | 创建架构方案 |
 | `bmad-create-epics-and-stories` | 拆分 epics/stories |
 | `bmad-dev-story` | 实现指定 story |
 | `bmad-code-review` | 代码评审 |
@@ -104,7 +104,7 @@ skill 目录名就是调用名，例如 `bmad-agent-dev/` 对应 skill `bmad-age
 
 ## 命名规则
 
-所有技能统一以 `bmad-` 开头，后接语义化名称（如 `bmad-agent-dev`、`bmad-create-prd`、`bmad-help`）。
+所有技能统一以 `bmad-` 开头，后接语义化名称（如 `bmad-agent-dev`、`bmad-prd`、`bmad-help`）。
 
 ## 故障排查
 

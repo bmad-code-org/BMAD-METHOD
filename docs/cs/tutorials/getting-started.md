@@ -114,7 +114,7 @@ BMad-Help detekuje, co jste dokončili, a doporučí přesně, co dělat dál. M
 :::
 
 :::note[Jak načítat agenty a spouštět workflow]
-Každý workflow má **skill**, který vyvoláte jménem ve vašem IDE (např. `bmad-create-prd`). Váš AI nástroj rozpozná název `bmad-*` a spustí ho — nemusíte načítat agenty zvlášť. Můžete také vyvolat agentní skill přímo pro obecnou konverzaci (např. `bmad-agent-pm` pro PM agenta).
+Každý workflow má **skill**, který vyvoláte jménem ve vašem IDE (např. `bmad-prd`). Váš AI nástroj rozpozná název `bmad-*` a spustí ho — nemusíte načítat agenty zvlášť. Můžete také vyvolat agentní skill přímo pro obecnou konverzaci (např. `bmad-agent-pm` pro PM agenta).
 :::
 
 :::caution[Nové chaty]
@@ -135,7 +135,7 @@ Vytvořte ho ručně na `_bmad-output/project-context.md` nebo ho vygenerujte po
 
 Všechny workflow v této fázi jsou volitelné:
 - **brainstorming** (`bmad-brainstorming`) — Řízená ideace
-- **průzkum** (`bmad-market-research` / `bmad-domain-research` / `bmad-technical-research`) — Tržní, doménový a technický průzkum
+- **průzkum** (`bmad-deep-recon`) — Navrhne prompt pro váš vlastní nástroj hloubkového výzkumu, zpracuje hotovou zprávu do stručného shrnutí pro navazující práci, nebo výzkum provede přímo — tržní, doménový, technický, konkurenční, uživatelský a akademický — s ověřováním tvrzení a životním cyklem obnovy
 - **product-brief** (`bmad-product-brief`) — Doporučený základní dokument, když je váš koncept jasný
 - **prfaq** (`bmad-prfaq`) — Working Backwards výzva pro zátěžový test a zformování vašeho produktového konceptu
 
@@ -143,7 +143,7 @@ Všechny workflow v této fázi jsou volitelné:
 
 **Pro BMad Method a Enterprise cesty:**
 1. Vyvolejte **PM agenta** (`bmad-agent-pm`) v novém chatu
-2. Spusťte workflow `bmad-create-prd` (`bmad-create-prd`)
+2. Spusťte workflow `bmad-prd` (`bmad-prd`)
 3. Výstup: `PRD.md`
 
 **Pro Quick Flow cestu:**
@@ -157,7 +157,7 @@ Pokud má váš projekt uživatelské rozhraní, vyvolejte **UX-Designer agenta*
 
 **Vytvoření architektury**
 1. Vyvolejte **Architect agenta** (`bmad-agent-architect`) v novém chatu
-2. Spusťte `bmad-create-architecture` (`bmad-create-architecture`)
+2. Spusťte `bmad-architecture` (`bmad-architecture`)
 3. Výstup: Dokument architektury s technickými rozhodnutími
 
 **Vytvoření epiců a stories**
@@ -225,8 +225,8 @@ váš-projekt/
 | Workflow                              | Příkaz                                     | Agent     | Účel                                            |
 | ------------------------------------- | ------------------------------------------ | --------- | ----------------------------------------------- |
 | **`bmad-help`** ⭐                    | `bmad-help`                               | Jakýkoli  | **Váš inteligentní průvodce — ptejte se na cokoli!** |
-| `bmad-create-prd`                     | `bmad-create-prd`                         | PM        | Vytvoření dokumentu požadavků (PRD)             |
-| `bmad-create-architecture`            | `bmad-create-architecture`                | Architect | Vytvoření dokumentu architektury                |
+| `bmad-prd`                     | `bmad-prd`                         | PM        | Vytvoření dokumentu požadavků (PRD)             |
+| `bmad-architecture`            | `bmad-architecture`                | Architect | Vytvoření dokumentu architektury                |
 | `bmad-generate-project-context`       | `bmad-generate-project-context`           | Analyst   | Vytvoření souboru kontextu projektu             |
 | `bmad-create-epics-and-stories`       | `bmad-create-epics-and-stories`           | PM        | Rozklad PRD na epicy                            |
 | `bmad-check-implementation-readiness` | `bmad-check-implementation-readiness`     | Architect | Validace soudržnosti plánování                  |

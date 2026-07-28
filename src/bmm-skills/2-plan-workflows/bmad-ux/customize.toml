@@ -78,9 +78,11 @@ creative_tools = [
 # Polish passes applied to DESIGN.md and EXPERIENCE.md at finalize.
 # Entries: `skill:NAME`, `file:PATH`, or plain text directive.
 # Suggested order: structural → content/voice → prose mechanics.
+# The default entry runs bmad-review's two editorial lenses in order:
+# structure, then prose on top of the structure findings. The `lenses=` suffix
+# names them; drop it to let bmad-review pick what fits the content.
 doc_standards = [
-  "skill:bmad-editorial-review-structure",
-  "skill:bmad-editorial-review-prose",
+  "skill:bmad-review lenses=structure,prose",
 ]
 
 # Information retrieval registry. Consulted on demand when the conversation

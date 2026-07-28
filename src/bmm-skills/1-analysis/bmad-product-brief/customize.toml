@@ -53,7 +53,7 @@ run_folder_pattern = "brief-{project_name}-{date}"
 # findings before the user sees the draft. Encodes standards, not options.
 #
 # Examples:
-#   "skill:bmad-editorial-review-prose"
+#   "skill:bmad-review lenses=structure,prose"
 #   "file:{project-root}/_bmad/style-guides/company-voice.md"
 #   "Convert all dates to ISO 8601 format."
 #
@@ -64,9 +64,11 @@ run_folder_pattern = "brief-{project_name}-{date}"
 #
 # Override the array in team/user TOML to add additional standards. Append-only:
 # base entries cannot be removed or replaced (resolver has no removal mechanism).
+# The default entry runs bmad-review's two editorial lenses in order:
+# structure, then prose on top of the structure findings. The `lenses=` suffix
+# names them; drop it to let bmad-review pick what fits the content.
 doc_standards = [
-  "skill:bmad-editorial-review-structure",
-  "skill:bmad-editorial-review-prose",
+  "skill:bmad-review lenses=structure,prose",
 ]
 
 # External-source registry. Natural-language directives describing knowledge

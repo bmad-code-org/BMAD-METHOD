@@ -131,13 +131,18 @@ def build_collective(agents: dict, party_members: list):
         })
         installed_codes.append(code)
 
-    for m in party_members or []:
+    for m in (party_members if isinstance(party_members, list) else []):
+        if not isinstance(m, dict):
+            continue
         code = m.get("code")
         if not code:
             continue
         # A custom member overrides an installed agent it matches by code/alias/name.
         canonical = index.get(code) or index.get(code.lower()) or code
-        entry = {"code": canonical, "source": "custom"}
+        # Start from the installed entry so fields the override omits
+        # (icon, title, description, module, team) survive.
+        entry = dict(collective.get(canonical, {}))
+        entry.update({"code": canonical, "source": "custom"})
         for field in ("name", "icon", "title", "persona", "capabilities", "model"):
             if m.get(field) is not None:
                 entry[field] = m[field]
@@ -152,7 +157,10 @@ def resolve_members(member_tokens, collective, index):
     """(resolved entries in listed order, unresolved tokens)."""
     resolved, unresolved = [], []
     for token in member_tokens or []:
-        code = index.get(token) or index.get(str(token).lower())
+        if not isinstance(token, str):
+            unresolved.append(token)  # malformed config value — never a key lookup
+            continue
+        code = index.get(token) or index.get(token.lower())
         if code and code in collective:
             resolved.append(collective[code])
         else:

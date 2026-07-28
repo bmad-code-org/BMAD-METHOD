@@ -2,7 +2,7 @@
 title: 'Comment étendre BMad pour votre organisation'
 description: Six patterns de personnalisation qui remodèlent BMad sans créer de fork — règles applicables aux agents, conventions de workflow, publication externe, remplacements de templates, modifications du registre des agents et patterns d’intégration avancés
 sidebar:
-  order: 11
+  order: 10
 ---
 
 Le système de personnalisation de BMad permet à une organisation d’adapter les comportements sans modifier les fichiers installés ni forker les skills. Ce guide présente six recettes qui couvrent la plupart des besoins en entreprise.

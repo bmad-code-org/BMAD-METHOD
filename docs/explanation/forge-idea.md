@@ -13,6 +13,8 @@ Run `bmad-forge-idea` and an exacting interrogator goes to work on your idea, on
 
 What you walk away with is sharper thinking. A distilled `forged-idea.md` is only ever one possible exit, and the session never herds you toward "shall we build it?"
 
+Forge Idea is one of the core module's thinking skills, so it is present in every BMad installation.
+
 ## Why Pressure-Test Early
 
 The enemy is the hole you can't see in your own idea. An unexamined assumption or an unresolved branch is a crack, and a crack you miss now resurfaces later — in the build, or the launch, when it costs far more to fix.
@@ -57,7 +59,7 @@ Reach for the forge when you already hold an idea and want it hardened or killed
 | `bmad-prfaq` | You've committed to a product and want it proven customer-first | A Working Backwards coach |
 | `bmad-brainstorming` | You have no idea yet and need to generate options | A facilitation coach |
 | `bmad-party-mode` | You want your agents to discuss or decide together | Your whole roster in one conversation |
-| `bmad-review-adversarial-general` | You have an artifact and need its flaws found | A reviewer who must find issues |
+| `bmad-review` | You have an artifact and need its flaws found | A multi-lens reviewer hunting real issues |
 
 ## Example
 

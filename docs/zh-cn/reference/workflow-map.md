@@ -22,7 +22,7 @@ BMad Method（BMM）通过分阶段 workflow 逐步构建上下文，让智能�
 | Workflow | 目的 | 产出 |
 | --- | --- | --- |
 | `bmad-brainstorming` | 通过引导式创意方法扩展方案空间 | `brainstorming-report.md` |
-| `bmad-domain-research`、`bmad-market-research`、`bmad-technical-research` | 验证领域、市场与技术假设 | 研究发现 |
+| `bmad-deep-recon` | 验证假设或在候选方案间做选择——可为你的深度研究工具起草提示词、加工其报告，或直接在此研究；覆盖市场、领域、技术、竞争、用户之声与学术研究；经核实、有引用、可刷新 | 研究报告或摘要 + 可选 HTML 简报 |
 | `bmad-create-product-brief` | 沉淀产品方向与战略愿景 | `product-brief.md` |
 
 ## 阶段 2：规划
@@ -31,8 +31,9 @@ BMad Method（BMM）通过分阶段 workflow 逐步构建上下文，让智能�
 
 | Workflow | 目的 | 产出 |
 | --- | --- | --- |
-| `bmad-create-prd` | 明确 FR/NFR 与范围边界 | `PRD.md` |
+| `bmad-prd` | 明确 FR/NFR 与范围边界 | `PRD.md` |
 | `bmad-ux`            | 在 UX 复杂场景下补齐交互与体验方案 | `DESIGN.md`, `EXPERIENCE.md` |
+| `bmad-spec`          | 将任意意图输入（brief、PRD、转录、想法笔记）提炼为精炼的 `SPEC.md` 契约及配套文件 —— 先锁定“做什么”，再谈“怎么做” | `SPEC.md` 及配套文件，位于 `{output_folder}/specs/spec-{slug}/` |
 
 ## 阶段 3：解决方案设计（Solutioning）
 
@@ -40,7 +41,7 @@ BMad Method（BMM）通过分阶段 workflow 逐步构建上下文，让智能�
 
 | Workflow | 目的 | 产出 |
 | --- | --- | --- |
-| `bmad-create-architecture` | 显式记录技术决策与架构边界 | `architecture.md`（含 ADR） |
+| `bmad-architecture` | 显式记录技术决策与架构边界 | `architecture.md`（含 ADR） |
 | `bmad-create-epics-and-stories` | 将需求拆分为可实施的 epics/stories | epics 文件与 story 条目 |
 | `bmad-check-implementation-readiness` | 实施前 gate 检查 | PASS / CONCERNS / FAIL 结论 |
 

@@ -59,9 +59,11 @@ run_folder_pattern = "architecture-{project_name}-{date}"
 # short, structured outputs, which are terse and carry decisions in AD-n blocks and diagrams by
 # design. Each entry is a `skill:`, `file:`, or plain-text directive applied before the user sees
 # the polished draft. Suggested order: structural passes first, prose mechanics last. Append-only.
+# The default entry runs bmad-review's two editorial lenses in order:
+# structure, then prose on top of the structure findings. The `lenses=` suffix
+# names them; drop it to let bmad-review pick what fits the content.
 doc_standards = [
-  "skill:bmad-editorial-review-structure",
-  "skill:bmad-editorial-review-prose",
+  "skill:bmad-review lenses=structure,prose",
 ]
 
 # External-source registry. Natural-language directives describing knowledge bases, MCP tools, or

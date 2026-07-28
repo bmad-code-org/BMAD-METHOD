@@ -114,7 +114,7 @@ BMad-Help 将检测你已完成的内容，并准确推荐下一步该做什么�
 :::
 
 :::note[如何加载智能体和运行工作流]
-每个工作流都可以通过技能名直接调用（例如 `bmad-create-prd`）。你的 AI IDE 会识别 `bmad-*` 技能并执行，无需额外单独加载智能体。你也可以直接调用智能体技能进行通用对话（例如 PM 智能体用 `bmad-agent-pm`）。
+每个工作流都可以通过技能名直接调用（例如 `bmad-prd`）。你的 AI IDE 会识别 `bmad-*` 技能并执行，无需额外单独加载智能体。你也可以直接调用智能体技能进行通用对话（例如 PM 智能体用 `bmad-agent-pm`）。
 :::
 
 :::caution[新对话]
@@ -135,14 +135,14 @@ BMad-Help 将检测你已完成的内容，并准确推荐下一步该做什么�
 
 此阶段中的所有工作流都是可选的：
 - **头脑风暴**（`bmad-brainstorming`） — 引导式构思
-- **研究**（`bmad-market-research` / `bmad-domain-research` / `bmad-technical-research`） — 市场、领域和技术研究
+- **研究**（`bmad-deep-recon`） — 为你自己的深度研究工具起草提示词、将完成的研究报告加工为可供下游使用的精炼摘要，或直接在此执行研究——覆盖市场、领域、技术、竞争、用户之声与学术类型，带论断核实与刷新生命周期
 - **创建产品简报**（`bmad-create-product-brief`） — 推荐的基础文档
 
 ### 阶段 2：规划（必需）
 
 **对于 BMad Method 和 Enterprise 路径：**
 1. 在新对话中调用 **PM 智能体**（`bmad-agent-pm`）
-2. 运行 `bmad-create-prd` 工作流（`bmad-create-prd`）
+2. 运行 `bmad-prd` 工作流（`bmad-prd`）
 3. 输出：`PRD.md`
 
 **对于 Quick Flow 路径：**
@@ -156,7 +156,7 @@ BMad-Help 将检测你已完成的内容，并准确推荐下一步该做什么�
 
 **创建架构**
 1. 在新对话中调用 **Architect 智能体**（`bmad-agent-architect`）
-2. 运行 `bmad-create-architecture`（`bmad-create-architecture`）
+2. 运行 `bmad-architecture`（`bmad-architecture`）
 3. 输出：包含技术决策的架构文档
 
 **创建史诗和故事**
@@ -224,8 +224,8 @@ your-project/
 | 工作流                              | 命令                                    | 智能体   | 目的                                         |
 | ----------------------------------- | --------------------------------------- | -------- | -------------------------------------------- |
 | **`bmad-help`** ⭐                  | `bmad-help`                            | 任意     | **你的智能向导 —— 随时询问任何问题！**        |
-| `bmad-create-prd`                   | `bmad-create-prd`                      | PM       | 创建产品需求文档                             |
-| `bmad-create-architecture`          | `bmad-create-architecture`             | Architect | 创建架构文档                                |
+| `bmad-prd`                   | `bmad-prd`                      | PM       | 创建产品需求文档                             |
+| `bmad-architecture`          | `bmad-architecture`             | Architect | 创建架构文档                                |
 | `bmad-generate-project-context`     | `bmad-generate-project-context`        | Analyst  | 创建项目上下文文件                           |
 | `bmad-create-epics-and-stories`     | `bmad-create-epics-and-stories`        | PM       | 将 PRD 分解为史诗                            |
 | `bmad-check-implementation-readiness` | `bmad-check-implementation-readiness` | Architect | 验证规划一致性                              |

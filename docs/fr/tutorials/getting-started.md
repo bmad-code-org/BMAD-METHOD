@@ -138,7 +138,7 @@ Créez-le manuellement à l’emplacement `_bmad-output/project-context.md`, ou 
 Tous les workflows de cette phase sont optionnels. [**Vous ne savez pas lequel choisir ?**](../explanation/analysis-phase.md)
 
 - **brainstorming** (`bmad-brainstorming`) — Idéation guidée
-- **research** (`bmad-market-research` / `bmad-domain-research` / `bmad-technical-research`) — Recherche marché, domaine et technique
+- **research** (`bmad-deep-recon`) — Rédigez un prompt de recherche approfondie pour votre propre outil IA, transformez un rapport terminé en synthèse exploitable en aval, ou menez la recherche ici — marché, domaine, technique, concurrentiel, voix des utilisateurs et académique — avec vérification des affirmations et cycle de rafraîchissement
 - **product-brief** (`bmad-product-brief`) — Document fondateur recommandé une fois votre concept bien défini
 - **prfaq** (`bmad-prfaq`) — Exercice Working Backwards pour tester et affiner votre concept produit
 
@@ -170,7 +170,7 @@ Si votre projet comporte une interface utilisateur, invoquez l'**agent UX Design
 **Créer l’architecture**
 
 1. Invoquez l'**agent Architecte** (`bmad-agent-architect`) dans un nouveau chat
-2. Exécutez `bmad-create-architecture` (`bmad-create-architecture`)
+2. Exécutez `bmad-architecture` (`bmad-architecture`)
 3. Résultat : document d’architecture avec les décisions techniques
 
 **Créer les epics et les stories**
@@ -240,7 +240,7 @@ your-project/
 |---------------------------------------|---------------------------------------|-----------|-----------------------------------------------------------------|
 | **`bmad-help`** ⭐                    | `bmad-help`                           | Tous      | **Votre guide intelligent — posez n’importe quelle question !**  |
 | `bmad-prd`                            | `bmad-prd`                            | Tous      | Créer, mettre à jour ou valider un PRD                          |
-| `bmad-create-architecture`            | `bmad-create-architecture`            | Architect | Créer le document d’architecture                                |
+| `bmad-architecture`            | `bmad-architecture`            | Architect | Créer le document d’architecture                                |
 | `bmad-generate-project-context`       | `bmad-generate-project-context`       | Analyst   | Créer le fichier de contexte projet                             |
 | `bmad-create-epics-and-stories`       | `bmad-create-epics-and-stories`       | PM        | Décomposer le PRD en epics                                      |
 | `bmad-check-implementation-readiness` | `bmad-check-implementation-readiness` | Architect | Valider la cohérence de la planification                        |

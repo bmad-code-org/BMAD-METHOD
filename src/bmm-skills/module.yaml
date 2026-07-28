@@ -40,11 +40,8 @@ project_knowledge: # Artifacts from research, document-project output, other lon
   default: "docs"
   result: "{project-root}/{value}"
 
-# Directories to create during installation (declarative, no code execution)
-directories:
-  - "{planning_artifacts}"
-  - "{implementation_artifacts}"
-  - "{project_knowledge}"
+# No pre-created directories: planning_artifacts, implementation_artifacts, and
+# project_knowledge are created lazily by whichever skill first writes to them.
 
 # Agent roster — essence only. External skills (party-mode, retrospective,
 # advanced-elicitation, help catalog) read these descriptors to route, display,

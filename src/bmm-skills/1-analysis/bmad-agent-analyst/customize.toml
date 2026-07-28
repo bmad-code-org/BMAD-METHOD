@@ -62,17 +62,32 @@ skill = "bmad-brainstorming"
 [[agent.menu]]
 code = "MR"
 description = "Market analysis, competitive landscape, customer needs and trends"
-skill = "bmad-market-research"
+prompt = "Invoke the `bmad-deep-recon` skill with the market research type pre-selected (forwarded activation: skip type inference)."
 
 [[agent.menu]]
 code = "DR"
 description = "Industry domain deep dive, subject matter expertise and terminology"
-skill = "bmad-domain-research"
+prompt = "Invoke the `bmad-deep-recon` skill with the domain research type pre-selected (forwarded activation: skip type inference)."
 
 [[agent.menu]]
 code = "TR"
-description = "Technical feasibility, architecture options and implementation approaches"
-skill = "bmad-technical-research"
+description = "Technical landscape, architecture patterns and implementation reality"
+prompt = "Invoke the `bmad-deep-recon` skill with the technical research type pre-selected (forwarded activation: skip type inference)."
+
+[[agent.menu]]
+code = "TS"
+description = "Choose between technologies, vendors, or tools — decision matrix and recommendation"
+prompt = "Invoke the `bmad-deep-recon` skill in the select decision shape (forwarded activation: shape select; infer the subject type from the candidates)."
+
+[[agent.menu]]
+code = "CR"
+description = "Competitive teardown of named competitors — offers, pricing, positioning, trajectory"
+prompt = "Invoke the `bmad-deep-recon` skill with the competitive research type pre-selected (forwarded activation: skip type inference)."
+
+[[agent.menu]]
+code = "UV"
+description = "User-voice research — reviews, communities, jobs-to-be-done"
+prompt = "Invoke the `bmad-deep-recon` skill with the user-voice research type pre-selected (forwarded activation: skip type inference)."
 
 [[agent.menu]]
 code = "CB"

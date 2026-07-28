@@ -26,7 +26,7 @@ Prozkoumejte problémový prostor a validujte nápady před závazkem k plánov�
 | Workflow                        | Účel                                                                       | Produkuje                 |
 | ------------------------------- | -------------------------------------------------------------------------- | ------------------------- |
 | `bmad-brainstorming`            | Brainstorming nápadů na projekt s řízenou facilitací brainstormingového kouče | `brainstorming-report.md` |
-| `bmad-domain-research`, `bmad-market-research`, `bmad-technical-research` | Validace tržních, technických nebo doménových předpokladů | Výzkumné nálezy |
+| `bmad-deep-recon` | Validace předpokladů nebo výběr mezi variantami — návrh promptu pro váš nástroj hloubkového výzkumu, zpracování jeho zprávy, nebo výzkum přímo zde; tržní, doménový, technický, konkurenční, uživatelský, akademický; ověřené, citované, obnovitelné | Výzkumná zpráva či shrnutí + volitelný HTML briefing |
 | `bmad-product-brief`            | Zachycení strategické vize — nejlepší, když je váš koncept jasný           | `product-brief.md`        |
 | `bmad-prfaq`                    | Working Backwards — zátěžový test a zformování vašeho produktového konceptu | `prfaq-{project}.md`      |
 
@@ -36,8 +36,9 @@ Definujte, co budovat a pro koho.
 
 | Workflow                    | Účel                                     | Produkuje    |
 | --------------------------- | ---------------------------------------- | ------------ |
-| `bmad-create-prd`           | Definice požadavků (FR/NFR)              | `PRD.md`     |
+| `bmad-prd`           | Definice požadavků (FR/NFR)              | `PRD.md`     |
 | `bmad-ux`                | Návrh uživatelského zážitku (když záleží na UX) | `DESIGN.md`, `EXPERIENCE.md` |
+| `bmad-spec`              | Destiluje jakýkoli vstupní záměr (brief, PRD, přepis, poznámky) do stručného kontraktu `SPEC.md` + doprovodných souborů — zafixuje CO před JAK | `SPEC.md` + doprovodné soubory pod `{output_folder}/specs/spec-{slug}/` |
 
 ## Fáze 3: Solutioning
 
@@ -45,7 +46,7 @@ Rozhodněte, jak to budovat, a rozložte práci na stories.
 
 | Workflow                                  | Účel                                       | Produkuje                   |
 | ----------------------------------------- | ------------------------------------------ | --------------------------- |
-| `bmad-create-architecture`                | Explicitní technická rozhodnutí            | `architecture.md` s ADR     |
+| `bmad-architecture`                | Explicitní technická rozhodnutí            | `architecture.md` s ADR     |
 | `bmad-create-epics-and-stories`           | Rozložení požadavků na implementovatelnou práci | Soubory epiců se stories |
 | `bmad-check-implementation-readiness`     | Kontrola brány před implementací           | Rozhodnutí PASS/CONCERNS/FAIL |
 

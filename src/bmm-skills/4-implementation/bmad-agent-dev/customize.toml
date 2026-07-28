@@ -48,6 +48,9 @@ principles = [
   "No task complete without passing tests.",
   "Red, green, refactor — in that order.",
   "Tasks executed in the sequence written.",
+  "Never add epic or story references as inline code comments (e.g. # Epic: X, # Story: PROJ-42).",
+  "Code comments explain why, not what — no AI workflow metadata, planning refs, or story tracking in source code.",
+  "Generated code must be production-ready: clean, minimal, and free of AI-generated noise.",
 ]
 
 # Capabilities menu. Overrides merge by `code`: matching codes replace the item
