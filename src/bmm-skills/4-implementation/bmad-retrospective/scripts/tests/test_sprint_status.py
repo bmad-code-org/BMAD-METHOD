@@ -163,6 +163,123 @@ def test_detect_epic(tmp_path):
     }
 
 
+# --- pending_stories: the unfinished-epic gate --------------------------------
+
+
+def test_pending_stories_lists_the_selected_epics_unfinished_keys(tmp_path):
+    # The gate the skill branches on before Phase 1: an epic whose highest done
+    # story selected it, but which is not actually finished. Document order, so
+    # the listing the user confirms matches the file they can open.
+    fixture = (
+        "development_status:\n"
+        "  epic-2: backlog\n"
+        "  2-1-a: done\n"
+        "  2-2-b: backlog\n"
+        "  2-3-c: ready-for-dev\n"
+    )
+    target = tmp_path / "sprint-status.yaml"
+    target.write_text(fixture, encoding="utf-8")
+    proc = _run(["detect-epic", "--file", str(target)])
+    assert proc.returncode == 0, proc.stderr
+    out = _json(proc)
+    assert out["epic"] == 2
+    assert out["pending_stories"] == ["2-2-b", "2-3-c"]
+    # A non-story key sitting beside them never leaks in: STORY_RE gates entry.
+    assert "epic-2" not in out["pending_stories"]
+
+
+def test_pending_stories_is_empty_for_a_complete_epic(tmp_path):
+    fixture = (
+        "development_status:\n"
+        "  2-1-a: done\n"
+        "  2-2-b: done\n"
+        "  epic-2-retrospective: optional\n"
+    )
+    target = tmp_path / "sprint-status.yaml"
+    target.write_text(fixture, encoding="utf-8")
+    proc = _run(["detect-epic", "--file", str(target)])
+    assert proc.returncode == 0, proc.stderr
+    out = _json(proc)
+    assert out["epic"] == 2
+    assert out["pending_stories"] == []
+
+
+def test_pending_stories_ignores_other_epics(tmp_path):
+    # FIXTURE detects epic 1 while 2-1-dashboard sits at backlog. The key is
+    # scoped to the *selected* epic -- unlike done_stories, which spans the whole
+    # file -- so another epic's unfinished work must never block this retro.
+    target = _write_fixture(tmp_path)
+    proc = _run(["detect-epic", "--file", str(target)])
+    assert proc.returncode == 0, proc.stderr
+    out = _json(proc)
+    assert out["epic"] == 1
+    assert out["pending_stories"] == []
+    # done_stories keeps its whole-file scope, unchanged.
+    assert set(out["done_stories"]) == {
+        "1-1-user-authentication",
+        "1-2-account-management",
+    }
+
+
+def test_pending_stories_present_when_no_epic_is_detected(tmp_path):
+    # No done story anywhere: the shape stays uniform so a caller can read
+    # pending_stories without first branching on epic.
+    fixture = (
+        "development_status:\n"
+        "  1-1-a: backlog\n"
+        "  2-1-b: ready-for-dev\n"
+    )
+    target = tmp_path / "sprint-status.yaml"
+    target.write_text(fixture, encoding="utf-8")
+    proc = _run(["detect-epic", "--file", str(target)])
+    assert proc.returncode == 0, proc.stderr
+    out = _json(proc)
+    assert out["epic"] is None
+    assert out["pending_stories"] == []
+
+
+# --- The JSON-only contract covers the help paths ----------------------------
+
+
+@pytest.mark.parametrize(
+    "args",
+    [["-h"], ["--help"], ["detect-epic", "-h"], ["detect-epic", "--help"]],
+    ids=["top-short", "top-long", "sub-short", "sub-long"],
+)
+def test_help_flags_emit_json_not_usage(args):
+    # argparse's built-in help action bypasses error() -- it prints usage text
+    # to stdout and exits 0, which is exactly the contract this script sells.
+    # add_help=False turns -h into an ordinary unrecognized argument instead.
+    proc = _run(args)
+    # Exit 2 specifically: the module docstring reserves 2 for argument errors
+    # and 1 for I/O failures, and retro-document.md teaches callers to tell the
+    # two apart, so collapsing them must fail here.
+    assert proc.returncode == 2
+    assert "usage:" not in proc.stdout
+    out = _json(proc)
+    assert out["ok"] is False
+    assert out["error"]
+    # An argparse rejection speaks for no file, so it carries no "restored" --
+    # the same rule test_only_the_write_path_reports_restored pins for exit 1.
+    assert "restored" not in out
+
+
+@pytest.mark.parametrize("flag", ["-h", "--help"])
+def test_update_help_flag_emits_json_not_usage(tmp_path, flag):
+    # The update subparser too, driven with its required arguments present so
+    # nothing but the help flag itself can be what argparse objects to.
+    target = _write_fixture(tmp_path)
+    proc = _run(["update", "--file", str(target), "--epic", "1", flag])
+    assert proc.returncode == 2
+    assert "usage:" not in proc.stdout
+    out = _json(proc)
+    assert out["ok"] is False
+    assert flag in out["error"]
+    assert "restored" not in out
+    # A rejected invocation must not have written anything.
+    assert target.read_text(encoding="utf-8") == FIXTURE
+
+
 def test_update_sets_retro_and_appends_action(tmp_path):
     target = _write_fixture(tmp_path)
     payload = '[{"action":"Fix #42: colons: and # hashes","owner":"Amelia"}]'

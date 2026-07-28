@@ -18,6 +18,16 @@ Compile fix-now findings and process lessons into specific, owned action items. 
 - **Remediation** — code fixes are written up as action items (or story-shaped work) for the normal dev loop to execute later. The retrospective does not run the dev loop itself.
 - **Spec reconciliation** — where the as-built diverges from the spec, propose the reconciliation as an action item with the evidence attached. The human applies it to the project contract; an uncertain interpretation is never written into the spec automatically.
 
+## Previous-retro follow-through
+
+When a prior retro exists, close the loop on what it committed to. Read `action_items` in `{implementation_artifacts}/sprint-status.yaml` and, for every entry belonging to an earlier epic that is not already `done`, record one line in the retrospective document's Previous-retro follow-through section:
+
+- **How to address the item** — its `id`, exactly as the file spells it. Legacy entries written before ids existed have none; for those, record the item's `epic` (the integer in the file) plus its exact `action` text, character for character. One or the other is what Phase 5 needs to name the item at all.
+- **Whether it landed** — with the source that shows it: the commit, the file and line, the test. An item you cannot point at is "no evidence found", not "not done" — the reader must be able to tell a checked item from an unchecked one.
+- **The status it argues for** — `done` for a landed item, `in-progress` for one demonstrably underway, or nothing. A proposal, never a write.
+
+That record is exactly what Phase 5's `--set-action-status` offer reads: the selector becomes the JSON, the evidence is what the user is asked to confirm, and the proposed status is written only if they confirm it. A run with no prior retro, or one whose `sprint-status.yaml` is unreadable or carries no `action_items`, records that there was nothing to follow through on — and which of those it was, so a missing file never reads as a clean slate.
+
 ## The verdict
 
 Judge the final state against the epic's declared acceptance criteria. If the epic declared none, profile the criteria from the diff and stories and mark the verdict as **profiled** rather than declared. Weigh verification results (the Phase 2 behavior check) and unresolved findings. Render one of:

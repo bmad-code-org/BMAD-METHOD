@@ -176,6 +176,21 @@ def test_malformed_args_emit_json_not_usage(tmp_path):
     assert out["ok"] is False and out["error"]
 
 
+def test_help_flags_emit_json_not_usage():
+    # argparse's built-in help action bypasses the error() override entirely --
+    # it prints usage text on stdout and exits 0, which breaks the JSON-only
+    # contract for a machine consumer. add_help=False demotes -h to an ordinary
+    # unrecognized argument, which error() already handles.
+    for flag in ("-h", "--help"):
+        proc = _proc(flag)
+        # Exit 2 specifically: the module docstring reserves 2 for argument
+        # errors and 1 for git/I-O failures, so collapsing them must fail here.
+        assert proc.returncode == 2, flag
+        assert "usage:" not in proc.stdout, flag
+        out = _json(proc)
+        assert out["ok"] is False and out["error"], flag
+
+
 # --- helpers for the fixtures below -----------------------------------------
 
 # Same identity `_git` uses; a second helper is needed because a conflicting

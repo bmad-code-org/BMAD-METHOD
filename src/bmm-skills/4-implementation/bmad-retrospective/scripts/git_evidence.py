@@ -34,7 +34,17 @@ def _emit(obj, code=0):
 
 
 class JsonArgumentParser(argparse.ArgumentParser):
-    """Emit argparse failures on the JSON-only stdout contract, not usage text."""
+    """Emit argparse failures on the JSON-only stdout contract, not usage text.
+
+    The parser is constructed with ``add_help=False``. The override below covers
+    ``error()``, but ``-h`` never reaches it: the built-in help action calls
+    ``print_help()`` and ``exit(0)`` directly, which would put plain usage text
+    on stdout with a zero exit and break the JSON-only contract. Removing the
+    action instead of intercepting it routes ``-h`` through the already-tested
+    ``error()`` path as an ordinary unrecognized argument. The cost is that the
+    ``help=`` strings are unreachable from the CLI; the skill's references carry
+    the usage a human needs.
+    """
 
     def error(self, message):
         _emit({"ok": False, "error": f"argument error: {message}"}, 2)
@@ -196,7 +206,8 @@ def main(argv=None):
         description=(
             "Measure commit and per-file change evidence over a git revision "
             "range. Measures only; does not judge."
-        )
+        ),
+        add_help=False,
     )
     parser.add_argument("--repo", default=".", help="Path to the git repo (default: .)")
     parser.add_argument("--range", dest="range", help="Revision range REV..REV")

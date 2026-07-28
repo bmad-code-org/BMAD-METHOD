@@ -65,7 +65,19 @@ def _emit_error(message, code=1, restored=None):
 
 
 class JsonArgumentParser(argparse.ArgumentParser):
-    """Emit argparse failures on the JSON-only stdout contract, not usage text."""
+    """Emit argparse failures on the JSON-only stdout contract, not usage text.
+
+    Every parser built from this class is constructed with ``add_help=False``.
+    The override below covers ``error()``, but ``-h`` never reaches it: the
+    built-in help action calls ``print_help()`` and ``exit(0)`` directly, which
+    would put plain usage text on stdout with a zero exit and break the
+    JSON-only contract for the machine consumer this script exists to serve.
+    Removing the action instead of intercepting it keeps the fix to one keyword
+    per parser and routes ``-h`` through the already-tested ``error()`` path as
+    an ordinary unrecognized argument. The cost is that the ``help=`` strings
+    are unreachable from the CLI; the skill's references carry the usage a
+    human needs.
+    """
 
     def error(self, message):
         _emit({"ok": False, "error": f"argument error: {message}"}, 2)
@@ -217,23 +229,43 @@ def cmd_detect_epic(args):
 
     done_stories = []
     max_epic = None
+    # Every story key with its epic, in document order, so the pending list can
+    # be scoped to whichever epic detection lands on without a second pass over
+    # the mapping. Non-story keys (epic-2, epic-2-retrospective, ...) never enter
+    # here, because STORY_RE does not match them.
+    story_keys = []
     for key, value in dev.items():
         m = STORY_RE.match(str(key))
-        if m and value == "done":
+        if not m:
+            continue
+        epic_num = int(m.group(1))
+        story_keys.append((epic_num, key, value))
+        if value == "done":
             done_stories.append(key)
-            epic_num = int(m.group(1))
             if max_epic is None or epic_num > max_epic:
                 max_epic = epic_num
 
     if max_epic is None:
+        # Uniform shape: pending_stories is always present, even with no epic to
+        # scope it to, so a caller can read it without branching on epic first.
         _emit(
             {
                 "epic": None,
                 "done_stories": done_stories,
+                "pending_stories": [],
                 "retro_key": None,
                 "retro_status": None,
             }
         )
+
+    # Scoped to the selected epic only -- deliberately unlike done_stories, which
+    # spans the whole file. A pending story in some *other* epic is not this
+    # retrospective's business.
+    pending_stories = [
+        key
+        for epic_num, key, value in story_keys
+        if epic_num == max_epic and value != "done"
+    ]
 
     retro_key = f"epic-{max_epic}-retrospective"
     retro_status = dev.get(retro_key)
@@ -241,6 +273,7 @@ def cmd_detect_epic(args):
         {
             "epic": max_epic,
             "done_stories": done_stories,
+            "pending_stories": pending_stories,
             "retro_key": retro_key,
             "retro_status": retro_status,
         }
@@ -571,13 +604,15 @@ def build_parser():
         description=(
             "Detect the current retrospective epic and surgically update "
             "sprint-status.yaml while preserving comments and formatting."
-        )
+        ),
+        add_help=False,
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
     p_detect = sub.add_parser(
         "detect-epic",
         help="Find the highest epic with a done story and its retrospective status.",
+        add_help=False,
     )
     p_detect.add_argument("--file", required=True, help="Path to sprint-status.yaml")
     p_detect.set_defaults(func=cmd_detect_epic)
@@ -585,6 +620,7 @@ def build_parser():
     p_update = sub.add_parser(
         "update",
         help="Surgically update retro status and/or action items.",
+        add_help=False,
     )
     p_update.add_argument("--file", required=True, help="Path to sprint-status.yaml")
     p_update.add_argument("--epic", required=True, type=int, help="Epic number")
