@@ -18,7 +18,7 @@ Verify `{spec_file}` resolves to a non-empty path and the file exists on disk. I
 
 ### Baseline
 
-Capture `baseline_commit` (current HEAD, or `NO_VCS` if version control is unavailable) into `{spec_file}` frontmatter before making any changes.
+Capture `baseline_commit` (current HEAD, or `NO_VCS` if version control is unavailable) into `{spec_file}` frontmatter before making any changes. If the frontmatter already contains `baseline_commit` (resumed run), preserve the existing value — never overwrite it.
 
 ### Implement
 

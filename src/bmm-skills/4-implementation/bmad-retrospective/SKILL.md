@@ -149,7 +149,7 @@ Amelia (Developer): "I'm having trouble detecting the completed epic from {sprin
   <action>PRIORITY 3: Fallback to stories folder</action>
 
 <action>Scan {implementation_artifacts} for highest numbered story files</action>
-<action>Extract epic numbers from story filenames (pattern: epic-X-Y-story-name.md)</action>
+<action>Extract epic numbers from story filenames (patterns: epic-X-Y-story-name.md and spec-X-Y-story-name.md)</action>
 <action>Set {{detected_epic}} = highest epic number found</action>
 
   <output>
@@ -238,13 +238,13 @@ Amelia (Developer): "Before we start the team discussion, let me review all the 
 Charlie (Senior Dev): "Good idea - those dev notes always have gold in them."
 </output>
 
-<action>For each story in epic {{epic_number}}, read the complete story file from {implementation_artifacts}/{{epic_number}}-{{story_num}}-*.md</action>
+<action>For each story in epic {{epic_number}}, read the complete story record from {implementation_artifacts}/{{epic_number}}-{{story_num}}-*.md (legacy story files) and {implementation_artifacts}/spec-{{epic_number}}-{{story_num}}-*.md (quick-dev specs)</action>
 
 <action>Extract and analyze from each story:</action>
 
 **Dev Notes and Struggles:**
 
-- Look for sections like "## Dev Notes", "## Implementation Notes", "## Challenges", "## Development Log"
+- Look for sections like "## Dev Notes", "## Implementation Notes", "## Challenges", "## Development Log" — in quick-dev specs: "## Tasks & Acceptance", "## Code Map", "## Design Notes", "## Spec Change Log"
 - Identify where developers struggled or made mistakes
 - Note unexpected complexity or gotchas discovered
 - Record technical decisions that didn't work out as planned
@@ -1480,7 +1480,7 @@ Retrospective document was saved successfully, but {sprint_status_file} may need
   {{else}}
 
 4. **Begin Epic {{next_epic_num}} when ready**
-   - Start creating stories with Developer agent's `create-story`
+   - Start the next epic's stories with Developer agent's `quick-dev`
    - Epic will be marked as `in-progress` automatically when first story is created
    - Ensure all critical path items are done first
      {{/if}}

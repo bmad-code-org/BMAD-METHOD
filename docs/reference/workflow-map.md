@@ -81,17 +81,16 @@ Decide how to build it and break work into stories.
 
 ## Phase 4: Implementation
 
-Build it, one story at a time. Phase 4 epic and story automation is now available also. So you can choose how you want to stay in the loop. You can choose the full flow, or go right to quick flow.
+Build it with `bmad-quick-dev` as the official implementation method. The legacy `bmad-create-story` / `bmad-dev-story` split is deprecated and remains available only when explicitly invoked by name.
 
-| Workflow               | Purpose                                                                       | Produces                                             |
-|------------------------|-------------------------------------------------------------------------------|------------------------------------------------------|
-| `bmad-sprint-planning` | Initialize tracking (once per project to sequence the dev cycle)              | `sprint-status.yaml`                                 |
-| `bmad-create-story`    | Prepare next story for implementation                                         | `story-[slug].md`                                    |
-| `bmad-dev-story`       | Implement the story                                                           | Working code + tests                                 |
-| `bmad-code-review`     | Validate implementation quality                                               | Approved or changes requested                        |
-| `bmad-correct-course`  | Handle significant mid-sprint changes                                         | Updated plan or re-routing                           |
-| `bmad-sprint-status`   | Track sprint progress and story status                                        | Sprint status update                                 |
-| `bmad-retrospective`   | Review after epic completion                                                  | Lessons learned                                      |
+| Workflow | Purpose | Produces |
+|----------|---------|----------|
+| `bmad-quick-dev` | Turn an intent or story into implemented, reviewed code | `spec-*.md` + code |
+| `bmad-sprint-planning` | Initialize tracking (once per project to sequence the dev cycle) | `sprint-status.yaml` |
+| `bmad-code-review` | Ad hoc review of any code change | Findings + applied patches |
+| `bmad-correct-course` | Handle significant mid-sprint changes | Updated plan or re-routing |
+| `bmad-sprint-status` | Track sprint progress and story status | Sprint status update |
+| `bmad-retrospective` | Review after epic completion | Lessons learned |
 
 ## Quick Flow (Parallel Track)
 
@@ -99,7 +98,7 @@ Skip phases 1-3 for small, well-understood work.
 
 | Workflow         | Purpose                                                                   | Produces           |
 |------------------|---------------------------------------------------------------------------|--------------------|
-| `bmad-quick-dev` | Unified quick flow — clarify intent, plan, implement, review, and present | `spec-*.md` + code |
+| `bmad-quick-dev` | Turn an intent or story into implemented, reviewed code | `spec-*.md` + code |
 | `bmad-dev-auto`  | Runs one unattended development-loop iteration — small intent in, code out | `spec-*.md` + code |
 
 For the reference on unattended development loops with `bmad-dev-auto`, see [Autonomous Development Loops](./dev-auto.md).
@@ -107,7 +106,7 @@ For the reference on unattended development loops with `bmad-dev-auto`, see [Aut
 ## Context Management
 
 Each document becomes context for the next phase. The PRD tells the architect what constraints matter. The architecture
-tells the dev agent which patterns to follow. Story files give focused, complete context for implementation. Without
+tells the dev agent which patterns to follow. Spec files give focused, complete context for implementation. Without
 this structure, agents make inconsistent decisions.
 
 ### Project Context

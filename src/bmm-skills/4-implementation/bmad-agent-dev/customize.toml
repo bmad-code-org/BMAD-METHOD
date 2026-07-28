@@ -58,13 +58,8 @@ principles = [
 # registered skill by name) or `prompt` (executes the prompt text directly).
 
 [[agent.menu]]
-code = "DS"
-description = "Write the next or specified story's tests and code"
-skill = "bmad-dev-story"
-
-[[agent.menu]]
 code = "QD"
-description = "Unified quick flow — clarify intent, plan, implement, review, present"
+description = "Implement a feature, fix, or story"
 skill = "bmad-quick-dev"
 
 [[agent.menu]]
@@ -81,11 +76,6 @@ skill = "bmad-code-review"
 code = "SP"
 description = "Generate or update the sprint plan that sequences tasks for implementation"
 skill = "bmad-sprint-planning"
-
-[[agent.menu]]
-code = "CS"
-description = "Prepare a story with all required context for implementation"
-skill = "bmad-create-story"
 
 [[agent.menu]]
 code = "ER"

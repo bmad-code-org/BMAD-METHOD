@@ -181,7 +181,7 @@ development_status:
 #   - done: All stories in epic completed
 #
 # Epic Status Transitions:
-#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - backlog → in-progress: Automatically when first story starts (via quick-dev's sprint sync)
 #   - in-progress → done: Manually when all stories reach 'done' status
 #
 # Story Status:
