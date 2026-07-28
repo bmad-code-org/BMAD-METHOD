@@ -1,13 +1,74 @@
-"""Tests for git_evidence.py — measurement over a real temp git repo."""
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["pytest>=8.0"]
+# ///
+"""Tests for git_evidence.py — measurement over a real temp git repo.
+
+Run: uv run scripts/tests/test_git_evidence.py
+ or: uv run --with pytest -m pytest scripts/tests/test_git_evidence.py
+"""
 
 import json
 import os
 import shutil
 import subprocess
+import sys
 import unicodedata
 from pathlib import Path
 
+import pytest
+
 SCRIPT = Path(__file__).resolve().parents[1] / "git_evidence.py"
+
+# The fixture commit identity, shared by both git helpers below.
+_IDENT = {
+    "GIT_AUTHOR_NAME": "T",
+    "GIT_AUTHOR_EMAIL": "t@t",
+    "GIT_COMMITTER_NAME": "T",
+    "GIT_COMMITTER_EMAIL": "t@t",
+}
+
+
+def _git_env(repo):
+    """The environment every fixture git runs under, layered outward.
+
+    Inherit the real environment (PATH above all: git lives in /opt/homebrew,
+    /usr/local, or a nix store as readily as /usr/bin, and an env holding only
+    GIT_* vars sends execvp to os.defpath), then strip every ambient GIT_* var
+    -- GIT_DIR, GIT_WORK_TREE and GIT_CONFIG_COUNT would each silently redirect
+    or reconfigure the fixture -- and pin identity plus every source git reads
+    for settings, so nothing on the developer's machine can reach the fixture:
+
+    - gitconfig (commit.gpgsign, core.autocrlf, core.hooksPath,
+      init.defaultBranch). GIT_CONFIG_NOSYSTEM/GIT_CONFIG_GLOBAL cover
+      git >= 2.32; HOME and XDG_CONFIG_HOME cover older git, and are set to the
+      repo's parent directory -- always a per-test directory under pytest's
+      tmp_path -- so nothing is ever planted inside the working tree.
+    - gitattributes, a separate source GIT_CONFIG_NOSYSTEM does not cover: a
+      system `* -diff` rule would make numstat call every path binary and take
+      the churn assertions down with it. GIT_ATTR_NOSYSTEM shuts it out.
+    - the locale. LC_ALL/LANG are pinned to C, matching _run/_proc's existing
+      pin, so fixture git's text output cannot vary with the developer's
+      locale. Inheriting the environment is what makes this pin necessary:
+      the old four-variable env had no locale in it to inherit.
+    """
+    env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
+    env.update(_IDENT)
+    env["GIT_CONFIG_NOSYSTEM"] = "1"
+    env["GIT_ATTR_NOSYSTEM"] = "1"
+    env["GIT_CONFIG_GLOBAL"] = os.devnull
+    env["HOME"] = env["XDG_CONFIG_HOME"] = str(Path(repo).parent)
+    env["LC_ALL"] = env["LANG"] = "C"
+    return env
+
+
+def _json(proc):
+    """Parse the JSON-only stdout contract, surfacing a crash instead of hiding
+    it behind a JSONDecodeError."""
+    assert proc.stdout, f"empty stdout; stderr was: {proc.stderr}"
+    assert "Traceback" not in proc.stderr, proc.stderr
+    return json.loads(proc.stdout)
+
 
 def _run(*args):
     # LC_ALL=C keeps git's error strings in English so assertions on them
@@ -18,7 +79,7 @@ def _run(*args):
         text=True,
         env={**os.environ, "LC_ALL": "C", "LANG": "C"},
     )
-    return proc.returncode, json.loads(proc.stdout)
+    return proc.returncode, _json(proc)
 
 
 def _proc(*args, env=None):
@@ -36,22 +97,25 @@ def _proc(*args, env=None):
     )
 
 
-def _json(proc):
-    """Parse the JSON-only stdout contract, surfacing a crash instead of hiding
-    it behind a JSONDecodeError."""
-    assert proc.stdout, f"empty stdout; stderr was: {proc.stderr}"
-    assert "Traceback" not in proc.stderr, proc.stderr
-    return json.loads(proc.stdout)
-
-
 def _git(repo, *args):
-    env = {
-        "GIT_AUTHOR_NAME": "T",
-        "GIT_AUTHOR_EMAIL": "t@t",
-        "GIT_COMMITTER_NAME": "T",
-        "GIT_COMMITTER_EMAIL": "t@t",
-    }
-    subprocess.run(["git", "-C", str(repo), *args], check=True, capture_output=True, env={**env})
+    subprocess.run(
+        ["git", "-C", str(repo), *args],
+        check=True,
+        capture_output=True,
+        env=_git_env(repo),
+    )
+
+
+def _git_unchecked(repo, *args):
+    """`git` that tolerates a non-zero exit — the conflicting merge in
+    `_merge_repo` is supposed to fail, and the hand resolution comes after it.
+    Same environment as `_git`, which runs with check=True."""
+    return subprocess.run(
+        ["git", "-C", str(repo), *args],
+        capture_output=True,
+        text=True,
+        env=_git_env(repo),
+    )
 
 
 def _make_repo(tmp_path):
@@ -192,26 +256,6 @@ def test_help_flags_emit_json_not_usage():
 
 
 # --- helpers for the fixtures below -----------------------------------------
-
-# Same identity `_git` uses; a second helper is needed because a conflicting
-# merge exits non-zero on purpose, and `_git` runs with check=True.
-_IDENT = {
-    "GIT_AUTHOR_NAME": "T",
-    "GIT_AUTHOR_EMAIL": "t@t",
-    "GIT_COMMITTER_NAME": "T",
-    "GIT_COMMITTER_EMAIL": "t@t",
-}
-
-
-def _git_unchecked(repo, *args):
-    """`git` that tolerates a non-zero exit — the conflicting merge below is
-    supposed to fail, and the hand resolution comes after it."""
-    return subprocess.run(
-        ["git", "-C", str(repo), *args],
-        capture_output=True,
-        text=True,
-        env={**_IDENT},
-    )
 
 
 def _rev(repo, ref):
@@ -678,3 +722,7 @@ def test_success_shape_carries_every_documented_key(tmp_path):
         "commit_count",
         "binary_revisions",
     }
+
+
+if __name__ == "__main__":
+    sys.exit(pytest.main([__file__, "-q"]))

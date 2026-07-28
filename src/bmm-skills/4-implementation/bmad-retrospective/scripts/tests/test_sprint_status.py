@@ -1,8 +1,15 @@
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["pytest>=8.0", "ruamel.yaml>=0.18"]
+# ///
 """Corruption-critical tests for sprint-status.py.
 
 Each test runs the script as a subprocess via ``uv run`` against a temp copy of
 an inline fixture, then re-reads the file to assert comments and formatting
 survive and punctuation-heavy action values round-trip intact.
+
+Run: uv run scripts/tests/test_sprint_status.py
+ or: uv run --with pytest --with ruamel.yaml -m pytest scripts/tests/test_sprint_status.py
 """
 
 import importlib.util
@@ -1370,5 +1377,4 @@ def test_post_write_status_mismatch_restores(tmp_path, monkeypatch, capsys):
 
 
 if __name__ == "__main__":
-    sys.exit(subprocess.call(["uv", "run", "--with", "pytest", "--with", "ruamel.yaml",
-                              "-m", "pytest", str(Path(__file__).parent), "-q"]))
+    sys.exit(pytest.main([__file__, "-q"]))

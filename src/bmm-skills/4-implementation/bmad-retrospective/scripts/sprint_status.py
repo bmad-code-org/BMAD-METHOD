@@ -1,4 +1,3 @@
-#!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.10"
 # dependencies = ["ruamel.yaml>=0.18"]
@@ -41,6 +40,11 @@ def _load_yaml(path):
     # Without this, ruamel re-dumps block sequences at its own default offset and
     # every write silently de-indents pre-existing, untouched action_items.
     yaml.indent(mapping=2, sequence=4, offset=2)
+    # Pin the dump encoding too: `_dump_bytes` serializes into a BytesIO, so the
+    # emitter -- not this module -- encodes the bytes that land in the user's
+    # file. utf-8 is ruamel's current default, but the file is read back as
+    # utf-8 unconditionally, so state it rather than inherit it.
+    yaml.encoding = "utf-8"
     with open(path, "r", encoding="utf-8") as fh:
         data = yaml.load(fh)
     return yaml, data

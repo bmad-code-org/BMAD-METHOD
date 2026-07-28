@@ -40,7 +40,7 @@ Do not state time estimates anywhere in the document.
 Do not hand-edit `sprint-status.yaml` — its comment blocks and quoting are exactly the write that most often corrupts the file. Use the bundled script, which round-trips through a comment-preserving YAML parser, force-quotes values so punctuation (a leading `#`, a colon) cannot break parsing, and validates the result — restoring the original file untouched if the write does not verify:
 
 ```
-uv run {skill-root}/scripts/sprint_status.py update \
+uv run --no-cache {skill-root}/scripts/sprint_status.py update \
   --file "{implementation_artifacts}/sprint-status.yaml" \
   --epic {{epic_number}} --set-retro-done \
   --add-action '[{"action":"...","owner":"..."}, ...]' \
@@ -62,7 +62,7 @@ It sets `development_status["epic-{{epic_number}}-retrospective"]` to `done`, ap
 Moving a *previous* epic's action items off `open` is recorded in the retro document either way. When the Phase 4 follow-through has evidence an item landed, or the user says one did, offer to update the sprint-status entries too and run `--set-action-status` with exactly what the user confirms — that flag is the one sanctioned path to change a status, and hand-editing is never one. It composes with the close-out above, or runs on its own:
 
 ```
-uv run {skill-root}/scripts/sprint_status.py update \
+uv run --no-cache {skill-root}/scripts/sprint_status.py update \
   --file "{implementation_artifacts}/sprint-status.yaml" \
   --epic {{epic_number}} \
   --set-action-status '[{"id":"epic-1-retro-item-1-add-error-handling","status":"done"},{"epic":1,"action":"Exact action text","status":"in-progress"}]'
