@@ -38,7 +38,7 @@ L’assistant interactif vous pose cinq questions :
 
 En acceptant les valeurs par défaut, vous obtenez la dernière version stable de chaque module, configurée pour votre outil choisi.
 
-Parmi les invites de configuration de core figure `core.always_show_recommendation` (portée utilisateur, valeur par défaut `"true"`), demandée lors d’une installation interactive ; les installations `--yes` appliquent silencieusement la valeur par défaut. Quand elle vaut `"true"`, les workflows comportant des points de décision — à commencer par `/bmad-code-review` — indiquent une option recommandée avec une justification d’une ou deux lignes chaque fois qu’ils vous demandent de choisir entre plusieurs alternatives. La décision finale vous revient toujours.
+Parmi les invites de configuration de core figure `core.always_show_recommendation` (portée utilisateur, valeur par défaut `"true"`), demandée lors d’une installation interactive ; les installations `--yes` appliquent silencieusement la valeur par défaut. Quand elle vaut `"true"`, les workflows reliés à cette option — actuellement `/bmad-code-review` — indiquent une option recommandée avec une justification d’une ou deux lignes chaque fois qu’ils vous demandent de choisir entre plusieurs alternatives. La décision finale vous revient toujours.
 
 :::tip[Vous voulez juste la dernière préversion ?]
 

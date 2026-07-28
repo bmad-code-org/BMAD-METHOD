@@ -38,7 +38,7 @@ The interactive flow asks you five things:
 
 Accept the defaults and you land on the latest stable release of every module, configured for your chosen tool.
 
-Among the core config prompts is `core.always_show_recommendation` (user scope, default `"true"`), prompted during interactive install; `--yes` installs apply the default silently. When `"true"`, workflows with decision points — starting with `/bmad-code-review` — state a recommended option with a one- or two-line justification whenever they ask you to choose between alternatives. The final decision always stays with you.
+Among the core config prompts is `core.always_show_recommendation` (user scope, default `"true"`), prompted during interactive install; `--yes` installs apply the default silently. When `"true"`, workflows wired to the option — currently `/bmad-code-review` — state a recommended option with a one- or two-line justification whenever they ask you to choose between alternatives. The final decision always stays with you.
 
 :::tip[Just want the newest prerelease?]
 
