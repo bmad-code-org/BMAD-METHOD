@@ -5,8 +5,9 @@
 """Measure git commit and file-change evidence over a revision range.
 
 Prints ONLY JSON to stdout. Errors are emitted as JSON to stdout with a
-non-zero exit code. This script only MEASURES — it never judges acceleration
-or violations. The model interprets the numbers.
+non-zero exit code: 2 for invalid arguments (rejected before git runs),
+1 for git or I/O failures. This script only MEASURES — it never judges
+acceleration or violations. The model interprets the numbers.
 """
 
 import argparse
@@ -70,6 +71,25 @@ def main(argv=None):
             }
         )
 
+    # Accept only an explicit REV..REV range. Anything else silently measures
+    # the wrong thing: a leading "-" is consumed by git as an option, a single
+    # rev logs all history up to it, a bare pathspec logs by path, and an
+    # empty endpoint ("..", "a..", "..b") makes git default that side to HEAD.
+    left, _, right = args.range.partition("..")
+    if (
+        args.range != args.range.strip()
+        or args.range.startswith("-")
+        or not left
+        or not right.lstrip(".")
+    ):
+        _emit(
+            {
+                "ok": False,
+                "error": f"invalid --range {args.range!r}: expected a revision range like REV..REV",
+            },
+            2,
+        )
+
     cmd = [
         "git",
         "-C",
@@ -78,6 +98,7 @@ def main(argv=None):
         "--numstat",
         f"--format=%H{UNIT_SEP}%s",
         args.range,
+        "--",  # terminate rev parsing so the range can never match a pathspec
     ]
     try:
         proc = subprocess.run(cmd, capture_output=True, text=True)
