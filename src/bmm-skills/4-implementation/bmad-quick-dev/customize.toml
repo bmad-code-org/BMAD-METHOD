@@ -33,6 +33,19 @@ persistent_facts = [
 
 on_complete = ""
 
+# Handoff for the implementation subagent in step 03. The whole execution
+# recipe — a subagent by default, but an override may run it any other way
+# (a different model, an external coding tool via bash). {spec_file} is
+# substituted at run time.
+
+implementation_handoff = """
+Launch a subagent with no prior conversation context, with this prompt:
+
+> Read {spec_file} fully and implement it — the spec is the sole source of truth. Load every file listed in its frontmatter `context:` before you start.
+>
+> When done, report what you changed, how you verified it, and anything left incomplete or risky.
+"""
+
 # Review layers for the review step. `instruction` is the layer's whole
 # execution recipe — subagents by default, but an override may run anything
 # (e.g. an external reviewer via bash). {diff_output} is substituted at run
