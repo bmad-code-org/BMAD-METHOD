@@ -29,6 +29,9 @@ from ruamel.yaml.scalarstring import DoubleQuotedScalarString
 
 STORY_RE = re.compile(r"^(\d+)-\d+[a-z]?-")  # trailing [a-z]? matches split-story keys like 2-6a-...
 DATE_FORMAT = "%m-%d-%Y %H:%M"
+# The authoritative action-item vocabulary, mirrored from bmad-sprint-planning's
+# SKILL.md. Anything outside it would render as unknown in the status dashboard.
+ACTION_STATUSES = ("open", "in-progress", "done")
 
 
 def _load_yaml(path):
@@ -79,6 +82,47 @@ def _slugify(text, maxlen=40):
         # the id deterministic and distinct instead of a bare "item".
         slug = hashlib.sha256(text.encode("utf-8")).hexdigest()[:8]
     return slug
+
+
+def _selector_label(entry):
+    """Human-readable form of a --set-action-status selector, for error text.
+
+    An entry carrying both forms is described by its ``id``, because that is the
+    form resolution actually uses.
+    """
+    if isinstance(entry.get("id"), str):
+        return f"id={entry['id']!r}"
+    return f"epic={entry.get('epic')!r} action={entry.get('action')!r}"
+
+
+def _match_action_items(entry, items):
+    """Indices in ``items`` that the selector ``entry`` resolves to.
+
+    ``id`` wins whenever it is present: the epic/action pair is the fallback for
+    legacy items written before ids existed, so a caller that copied a whole item
+    through gets the precise match rather than a text comparison. Matching is
+    exact equality -- no normalization -- so a file that spells its epic as a
+    string simply does not match and the caller gets a "no match" error instead of
+    a silent write to the wrong item. ``bool`` is excluded on the file side too,
+    since ``True == 1`` in Python.
+    """
+    item_id = entry.get("id")
+    if isinstance(item_id, str):
+        return [
+            idx
+            for idx, item in enumerate(items)
+            if isinstance(item, Mapping) and item.get("id") == item_id
+        ]
+    epic_value = entry.get("epic")
+    action_value = entry.get("action")
+    return [
+        idx
+        for idx, item in enumerate(items)
+        if isinstance(item, Mapping)
+        and not isinstance(item.get("epic"), bool)
+        and item.get("epic") == epic_value
+        and item.get("action") == action_value
+    ]
 
 
 def _comment_counts(text):
@@ -248,6 +292,55 @@ def cmd_update(args):
                     untouched,
                 )
 
+    status_updates = []
+    if args.set_action_status:
+        try:
+            status_updates = json.loads(args.set_action_status)
+        except json.JSONDecodeError as exc:
+            _emit_error(f"invalid --set-action-status JSON: {exc}", 1, untouched)
+        if not isinstance(status_updates, list):
+            _emit_error("--set-action-status must be a JSON array", 1, untouched)
+        for entry in status_updates:
+            if not isinstance(entry, dict):
+                _emit_error(
+                    "each --set-action-status entry must be an object", 1, untouched
+                )
+            status_value = entry.get("status")
+            if not isinstance(status_value, str) or status_value not in ACTION_STATUSES:
+                _emit_error(
+                    f"invalid --set-action-status status {status_value!r} "
+                    f"(allowed: {', '.join(ACTION_STATUSES)})",
+                    1,
+                    untouched,
+                )
+            item_id = entry.get("id")
+            if item_id is not None:
+                # Present but unusable is an input error, not a silent fallback to
+                # the epic/action form -- the caller meant to select by id.
+                if not isinstance(item_id, str) or not item_id.strip():
+                    _emit_error(
+                        "each --set-action-status id must be a non-empty string",
+                        1,
+                        untouched,
+                    )
+                continue
+            epic_value = entry.get("epic")
+            action_value = entry.get("action")
+            if isinstance(epic_value, bool) or not isinstance(epic_value, int):
+                _emit_error(
+                    "each --set-action-status entry must have a non-empty string id, "
+                    "or an integer epic and a non-empty string action",
+                    1,
+                    untouched,
+                )
+            if not isinstance(action_value, str) or not action_value.strip():
+                _emit_error(
+                    "each --set-action-status entry must have a non-empty string id, "
+                    "or an integer epic and a non-empty string action",
+                    1,
+                    untouched,
+                )
+
     # 1. Keep original bytes for restore-on-failure, and the mode to write back
     #    with -- taken from the open handle so an unlink mid-run cannot leave the
     #    replacement silently narrowed to mkstemp's 0600.
@@ -290,7 +383,8 @@ def cmd_update(args):
             dev[retro_key] = "done"
             retro_status_after = "done"
 
-    # 3. Optionally append action items.
+    # 3. Take the action_items sequence as loaded and shape-check it once; both
+    #    of the steps below operate on this same list.
     existing_actions = data.get("action_items")
     if existing_actions is not None and not isinstance(existing_actions, list):
         # A hand-corrupted file must still fail on the JSON contract, not crash.
@@ -298,6 +392,49 @@ def cmd_update(args):
     items_added = 0
     original_action_len = len(existing_actions) if existing_actions is not None else 0
 
+    # 4. Optionally transition the status of items already in the file. Selectors
+    #    resolve against action_items *as loaded* and strictly before the
+    #    --add-action append below, which is what makes an item appended in the
+    #    same invocation unaddressable in that run. Every selector is resolved
+    #    before any is applied, so a rejected batch never leaves a partial edit --
+    #    and since nothing has been written yet, the file is still untouched.
+    status_targets = []
+    if status_updates:
+        pool = existing_actions if isinstance(existing_actions, list) else []
+        claimed = {}
+        for entry in status_updates:
+            label = _selector_label(entry)
+            matches = _match_action_items(entry, pool)
+            if not matches:
+                _emit_error(f"no action item matches {label}", 1, untouched)
+            if len(matches) > 1:
+                _emit_error(
+                    f"ambiguous --set-action-status selector {label}: "
+                    f"{len(matches)} matches",
+                    1,
+                    untouched,
+                )
+            idx = matches[0]
+            if idx in claimed:
+                # Applying both would overcount action_items_updated, and a
+                # conflicting pair would surface as a confusing post-write
+                # validation failure instead of the input error it is.
+                _emit_error(
+                    f"duplicate --set-action-status targets: {label} and "
+                    f"{claimed[idx]} resolve to the same action item",
+                    1,
+                    untouched,
+                )
+            claimed[idx] = label
+            status_targets.append((idx, entry["status"]))
+
+        for idx, new_status in status_targets:
+            # A plain assignment keeps the item's own scalar style: ruamel's
+            # CommentedMap re-applies the existing key's style on overwrite, for
+            # every ScalarString subclass. Pinned by the style tests.
+            pool[idx]["status"] = new_status
+
+    # 5. Optionally append action items.
     if actions:
         seq = data.get("action_items")
         if seq is None:
@@ -325,10 +462,10 @@ def cmd_update(args):
             seq.append(entry)
             items_added += 1
 
-    # 4. Update last_updated.
+    # 6. Update last_updated.
     data["last_updated"] = last_updated
 
-    # 5. Serialize, then swap the file atomically.
+    # 7. Serialize, then swap the file atomically.
     try:
         _atomic_write(args.file, _dump_bytes(yaml, data), original_mode)
     except Exception as exc:  # noqa: BLE001
@@ -338,7 +475,7 @@ def cmd_update(args):
         # the program with nothing to gain and a truncated file to lose.
         _emit({"ok": False, "error": f"write failed: {exc}", "restored": True}, 1)
 
-    # 6. Validate the written file; restore on any failure.
+    # 8. Validate the written file; restore on any failure.
     def _fail(msg):
         restored = _restore(args.file, original_bytes, original_mode)
         _emit({"ok": False, "error": msg, "restored": restored}, 1)
@@ -368,6 +505,23 @@ def cmd_update(args):
             f"(expected {original_action_len + items_added}, got {new_action_len})"
         )
 
+    if status_targets:
+        # The recorded indices are still valid: the only other mutation to the
+        # sequence is an append, and the length check above just confirmed it.
+        reloaded_actions = reloaded.get("action_items")
+        if not isinstance(reloaded_actions, list):
+            _fail("validation: action_items is not a list after write")
+        for idx, new_status in status_targets:
+            reloaded_item = reloaded_actions[idx]
+            if (
+                not isinstance(reloaded_item, Mapping)
+                or reloaded_item.get("status") != new_status
+            ):
+                _fail(
+                    f"validation: action item at index {idx} is not "
+                    f"{new_status!r} after write"
+                )
+
     try:
         with open(args.file, "r", encoding="utf-8") as fh:
             new_text = fh.read()
@@ -390,6 +544,7 @@ def cmd_update(args):
             "retro_status_before": retro_status_before,
             "retro_status_after": retro_status_after,
             "action_items_added": items_added,
+            "action_items_updated": len(status_targets),
             "last_updated": last_updated,
             "verdict": args.verdict,
         }
@@ -441,6 +596,17 @@ def build_parser():
     p_update.add_argument(
         "--add-action",
         help='JSON array of {"action":str,"owner":str,"id"?:str,"ref"?:str} to append.',
+    )
+    p_update.add_argument(
+        "--set-action-status",
+        help=(
+            "JSON array of status transitions for action items already in the file. "
+            'Select each by id -- {"id":str,"status":"open|in-progress|done"} -- or, '
+            'for legacy items with no id, by epic plus exact action text: '
+            '{"epic":int,"action":str,"status":...}. An entry carrying both uses the '
+            "id. Every selector must match exactly one item; any failure aborts the "
+            "whole invocation and leaves the file untouched."
+        ),
     )
     p_update.add_argument(
         "--ref",

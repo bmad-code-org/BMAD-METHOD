@@ -46,6 +46,65 @@ development_status:
 """
 
 
+# Two epics' worth of items, because the flag's headline use is epic N's retro
+# closing epic N-1's items: nothing may scope a selector to --epic. The two
+# "Scripted item" entries share their action text and differ only by epic, so the
+# legacy epic+action selector has to discriminate on the epic to resolve at all.
+ACTION_FIXTURE = """\
+# Sprint Status Tracking
+# STATUS DEFINITIONS:
+#   open           - committed during a retrospective, not yet addressed
+generated: "01-01-2026 09:00"
+last_updated: "01-01-2026 09:00"
+development_status:
+  1-1-a: done
+  epic-1-retrospective: optional
+  2-1-b: done
+  epic-2-retrospective: optional
+
+# Action items committed during retrospectives
+action_items:
+  - id: "epic-1-retro-item-1-x"
+    epic: 1
+    action: "Scripted item"
+    owner: "Amelia"
+    status: "open"
+    ref: "docs/epic-1-retro.md"
+  - epic: 1
+    action: "Pre-existing item"
+    owner: "Charlie"
+    status: open
+  - id: "epic-2-retro-item-1-y"
+    epic: 2
+    action: "Scripted item"
+    owner: "Dana"
+    status: "in-progress"
+    ref: "docs/epic-2-retro.md"
+"""
+
+# Three spellings of the same scalar, to pin that a status write never re-styles
+# the line it lands on.
+STYLE_FIXTURE = """\
+last_updated: "01-01-2026 09:00"
+development_status:
+  1-1-a: done
+  epic-1-retrospective: optional
+action_items:
+  - id: "double"
+    epic: 1
+    action: "Double"
+    status: "open"
+  - id: "single"
+    epic: 1
+    action: "Single"
+    status: 'open'
+  - id: "plain"
+    epic: 1
+    action: "Plain"
+    status: open
+"""
+
+
 def _run(args):
     cmd = ["uv", "run", str(SCRIPT), *args]
     # LC_ALL=C keeps os.strerror text stable so error-string assertions do not
@@ -67,6 +126,12 @@ def _module():
 def _write_fixture(tmp_path):
     target = tmp_path / "sprint-status.yaml"
     target.write_text(FIXTURE, encoding="utf-8")
+    return target
+
+
+def _write_action_fixture(tmp_path):
+    target = tmp_path / "sprint-status.yaml"
+    target.write_text(ACTION_FIXTURE, encoding="utf-8")
     return target
 
 
@@ -649,6 +714,542 @@ def test_malformed_date_is_rejected(tmp_path):
     assert out["restored"] is True
     assert "--date" in out["error"]
     assert target.read_text(encoding="utf-8") == FIXTURE
+
+
+# --- Action-item status transitions ------------------------------------------
+
+
+def test_set_action_status_applies_both_selector_forms(tmp_path):
+    # The whole point of the flag: an item written by this script (selected by
+    # id) and a legacy item that predates ids (selected by epic + exact action
+    # text) both move off "open" in a single call.
+    target = _write_action_fixture(tmp_path)
+    payload = json.dumps(
+        [
+            {"id": "epic-1-retro-item-1-x", "status": "done"},
+            {"epic": 1, "action": "Pre-existing item", "status": "in-progress"},
+        ]
+    )
+    proc = _run(
+        ["update", "--file", str(target), "--epic", "1", "--set-action-status", payload]
+    )
+    assert proc.returncode == 0, proc.stderr
+    out = _json(proc)
+    assert out["ok"] is True
+    assert out["action_items_updated"] == 2
+    assert out["action_items_added"] == 0
+
+    items = _load(target)["action_items"]
+    assert items[0]["status"] == "done"
+    assert items[1]["status"] == "in-progress"
+    # Every other key of both items survived untouched, in place.
+    assert items[0]["id"] == "epic-1-retro-item-1-x"
+    assert items[0]["epic"] == 1
+    assert items[0]["action"] == "Scripted item"
+    assert items[0]["owner"] == "Amelia"
+    assert items[0]["ref"] == "docs/epic-1-retro.md"
+    assert "id" not in items[1]
+    assert items[1]["epic"] == 1
+    assert items[1]["action"] == "Pre-existing item"
+    assert items[1]["owner"] == "Charlie"
+    # The epic-2 item shares its action text with items[0]; the epic-1 selector
+    # must not have touched it.
+    assert items[2]["status"] == "in-progress"
+    assert items[2]["id"] == "epic-2-retro-item-1-y"
+    assert len(items) == 3
+
+
+def test_set_action_status_changes_exactly_one_line(tmp_path):
+    # The status write is surgical: it must not re-style neighbouring lines, and
+    # an item whose status was quoted keeps its quoting. last_updated is rewritten
+    # with the same text it already held, so the whole file differs by one line.
+    target = _write_action_fixture(tmp_path)
+    proc = _run(
+        ["update", "--file", str(target), "--epic", "1", "--date", "01-01-2026 09:00",
+         "--set-action-status", '[{"id":"epic-1-retro-item-1-x","status":"done"}]']
+    )
+    assert proc.returncode == 0, proc.stderr
+
+    before = ACTION_FIXTURE.splitlines()
+    after = target.read_text(encoding="utf-8").splitlines()
+    assert len(before) == len(after)
+    changed = [(b, a) for b, a in zip(before, after) if b != a]
+    assert changed == [('    status: "open"', '    status: "done"')], changed
+
+
+def test_set_action_status_composes_with_retro_done_and_add_action(tmp_path):
+    target = _write_action_fixture(tmp_path)
+    proc = _run(
+        ["update", "--file", str(target), "--epic", "1", "--set-retro-done",
+         "--add-action", '[{"action":"Brand new item","owner":"Amelia"}]',
+         "--set-action-status",
+         '[{"epic":1,"action":"Pre-existing item","status":"done"}]']
+    )
+    assert proc.returncode == 0, proc.stderr
+    out = _json(proc)
+    assert out["ok"] is True
+    assert out["retro_status_after"] == "done"
+    assert out["action_items_added"] == 1
+    assert out["action_items_updated"] == 1
+
+    data = _load(target)
+    assert data["development_status"]["epic-1-retrospective"] == "done"
+    items = data["action_items"]
+    assert len(items) == 4
+    assert items[1]["status"] == "done"  # the targeted pre-existing item
+    assert items[3]["action"] == "Brand new item"
+    assert items[3]["status"] == "open"  # the appended item is always open
+
+
+def test_set_action_status_cannot_target_an_item_added_in_the_same_run(tmp_path):
+    # Selectors resolve against action_items as loaded, so the append cannot be
+    # observed by the same invocation. Silently succeeding here would make the
+    # flag a back door for writing a non-open status onto a brand-new item.
+    target = _write_action_fixture(tmp_path)
+    proc = _run(
+        ["update", "--file", str(target), "--epic", "1",
+         "--add-action", '[{"action":"Brand new","owner":"A","id":"brand-new"}]',
+         "--set-action-status", '[{"id":"brand-new","status":"done"}]']
+    )
+    assert proc.returncode == 1
+    out = _json(proc)
+    assert out["ok"] is False
+    assert out["restored"] is True
+    assert "no action item matches" in out["error"]
+    assert target.read_text(encoding="utf-8") == ACTION_FIXTURE
+
+
+def test_set_action_status_rejects_unknown_id(tmp_path):
+    target = _write_action_fixture(tmp_path)
+    proc = _run(
+        ["update", "--file", str(target), "--epic", "1",
+         "--set-action-status", '[{"id":"not-in-the-file","status":"done"}]']
+    )
+    assert proc.returncode == 1
+    out = _json(proc)
+    assert out["ok"] is False
+    assert out["restored"] is True
+    assert "not-in-the-file" in out["error"]
+    assert target.read_text(encoding="utf-8") == ACTION_FIXTURE
+
+
+def test_set_action_status_rejects_selector_when_action_items_is_absent(tmp_path):
+    # No action_items key at all must read as "no match", not as a crash.
+    target = _write_fixture(tmp_path)
+    proc = _run(
+        ["update", "--file", str(target), "--epic", "1",
+         "--set-action-status", '[{"id":"anything","status":"done"}]']
+    )
+    assert proc.returncode == 1
+    out = _json(proc)
+    assert out["ok"] is False
+    assert out["restored"] is True
+    assert "no action item matches" in out["error"]
+    assert target.read_text(encoding="utf-8") == FIXTURE
+
+
+def test_set_action_status_rejects_ambiguous_selector(tmp_path):
+    # Two legacy items with identical epic + action text: guessing between them
+    # would write the wrong row half the time.
+    fixture = (
+        "development_status:\n"
+        "  1-1-a: done\n"
+        "  epic-1-retrospective: optional\n"
+        "action_items:\n"
+        "  - epic: 1\n"
+        '    action: "Same text"\n'
+        '    owner: "Charlie"\n'
+        "    status: open\n"
+        "  - epic: 1\n"
+        '    action: "Same text"\n'
+        '    owner: "Dana"\n'
+        "    status: open\n"
+    )
+    target = tmp_path / "sprint-status.yaml"
+    target.write_text(fixture, encoding="utf-8")
+    proc = _run(
+        ["update", "--file", str(target), "--epic", "1",
+         "--set-action-status", '[{"epic":1,"action":"Same text","status":"done"}]']
+    )
+    assert proc.returncode == 1
+    out = _json(proc)
+    assert out["ok"] is False
+    assert out["restored"] is True
+    assert "ambiguous" in out["error"]
+    assert "Same text" in out["error"]
+    assert "2 matches" in out["error"]
+    assert target.read_text(encoding="utf-8") == fixture
+
+
+def test_set_action_status_rejects_two_entries_hitting_the_same_item(tmp_path):
+    # The id form and the epic/action form can name the same row; applying both
+    # would overcount action_items_updated and hide a conflicting pair.
+    target = _write_action_fixture(tmp_path)
+    payload = json.dumps(
+        [
+            {"id": "epic-1-retro-item-1-x", "status": "done"},
+            {"epic": 1, "action": "Scripted item", "status": "in-progress"},
+        ]
+    )
+    proc = _run(
+        ["update", "--file", str(target), "--epic", "1", "--set-action-status", payload]
+    )
+    assert proc.returncode == 1
+    out = _json(proc)
+    assert out["ok"] is False
+    assert out["restored"] is True
+    assert "same action item" in out["error"]
+    assert target.read_text(encoding="utf-8") == ACTION_FIXTURE
+
+
+def test_entry_with_both_selector_forms_uses_the_id(tmp_path):
+    # A caller that copied a whole item through supplies both. The id is the
+    # precise form and wins; the extra keys are ignored, not rejected. The two
+    # forms are pointed at *different* rows so the precedence is observable:
+    # the id names items[0], the epic/action pair names items[1].
+    target = _write_action_fixture(tmp_path)
+    payload = json.dumps(
+        [
+            {
+                "id": "epic-1-retro-item-1-x",
+                "epic": 1,
+                "action": "Pre-existing item",
+                "owner": "Charlie",
+                "status": "done",
+            }
+        ]
+    )
+    proc = _run(
+        ["update", "--file", str(target), "--epic", "1", "--set-action-status", payload]
+    )
+    assert proc.returncode == 0, proc.stderr
+    assert _json(proc)["action_items_updated"] == 1
+    items = _load(target)["action_items"]
+    assert items[0]["status"] == "done"  # the id's item
+    assert items[1]["status"] == "open"  # the epic/action item, untouched
+
+
+def test_set_action_status_rejects_invalid_status(tmp_path):
+    target = _write_action_fixture(tmp_path)
+    proc = _run(
+        ["update", "--file", str(target), "--epic", "1",
+         "--set-action-status", '[{"id":"epic-1-retro-item-1-x","status":"closed"}]']
+    )
+    assert proc.returncode == 1
+    out = _json(proc)
+    assert out["ok"] is False
+    assert out["restored"] is True
+    assert "closed" in out["error"]
+    # The allowed vocabulary is named so the caller can correct the call.
+    assert "open, in-progress, done" in out["error"]
+    assert target.read_text(encoding="utf-8") == ACTION_FIXTURE
+
+
+def test_set_action_status_rejects_malformed_json(tmp_path):
+    target = _write_action_fixture(tmp_path)
+    proc = _run(
+        ["update", "--file", str(target), "--epic", "1",
+         "--set-action-status", "{not json"]
+    )
+    assert proc.returncode == 1
+    out = _json(proc)
+    assert out["ok"] is False
+    assert out["restored"] is True
+    assert "invalid --set-action-status JSON" in out["error"]
+    assert target.read_text(encoding="utf-8") == ACTION_FIXTURE
+
+
+_SELECTOR_SHAPE_ERROR = (
+    "each --set-action-status entry must have a non-empty string id, "
+    "or an integer epic and a non-empty string action"
+)
+
+
+@pytest.mark.parametrize(
+    ("payload", "expected_error"),
+    [
+        (
+            '{"id":"epic-1-retro-item-1-x","status":"done"}',
+            "--set-action-status must be a JSON array",
+        ),
+        (
+            '["epic-1-retro-item-1-x"]',
+            "each --set-action-status entry must be an object",
+        ),
+        ('[{"status":"done"}]', _SELECTOR_SHAPE_ERROR),
+        (
+            '[{"id":"","status":"done"}]',
+            "each --set-action-status id must be a non-empty string",
+        ),
+        (
+            '[{"id":42,"status":"done"}]',
+            "each --set-action-status id must be a non-empty string",
+        ),
+        (
+            '[{"epic":"1","action":"Pre-existing item","status":"done"}]',
+            _SELECTOR_SHAPE_ERROR,
+        ),
+        (
+            '[{"epic":true,"action":"Pre-existing item","status":"done"}]',
+            _SELECTOR_SHAPE_ERROR,
+        ),
+        ('[{"epic":1,"action":"   ","status":"done"}]', _SELECTOR_SHAPE_ERROR),
+        (
+            # No status key at all: the status validator runs before the selector
+            # validator, so this is the status branch, not the selector branch.
+            '[{"epic":1,"action":"Pre-existing item"}]',
+            "invalid --set-action-status status None",
+        ),
+        (
+            '[{"id":"epic-1-retro-item-1-x","status":3}]',
+            "invalid --set-action-status status 3",
+        ),
+    ],
+    ids=[
+        "not-a-list",
+        "entry-not-an-object",
+        "no-selector",
+        "empty-id",
+        "non-string-id",
+        "string-epic",
+        "bool-epic",
+        "blank-action",
+        "no-status-key",
+        "non-string-status",
+    ],
+)
+def test_set_action_status_rejects_bad_shapes(tmp_path, payload, expected_error):
+    # Each case pins its own message: collapsing the branches into one generic
+    # error would leave a caller unable to tell which part of the array is wrong.
+    target = _write_action_fixture(tmp_path)
+    proc = _run(
+        ["update", "--file", str(target), "--epic", "1",
+         "--set-action-status", payload]
+    )
+    assert proc.returncode == 1
+    out = _json(proc)
+    assert out["ok"] is False
+    assert out["restored"] is True
+    assert expected_error in out["error"], out["error"]
+    assert target.read_text(encoding="utf-8") == ACTION_FIXTURE
+
+
+def test_selectors_are_not_scoped_to_the_epic_flag(tmp_path):
+    # The flag's headline use: epic 2's retro closing epic 1's items. --epic only
+    # names the retro key and stamps appended items; scoping selectors to it would
+    # silently break the documented cross-epic workflow while every same-epic test
+    # kept passing.
+    target = _write_action_fixture(tmp_path)
+    payload = json.dumps(
+        [
+            {"id": "epic-1-retro-item-1-x", "status": "done"},
+            {"epic": 1, "action": "Pre-existing item", "status": "done"},
+        ]
+    )
+    proc = _run(
+        ["update", "--file", str(target), "--epic", "2", "--set-retro-done",
+         "--set-action-status", payload]
+    )
+    assert proc.returncode == 0, proc.stderr
+    assert _json(proc)["action_items_updated"] == 2
+
+    data = _load(target)
+    assert data["development_status"]["epic-2-retrospective"] == "done"
+    items = data["action_items"]
+    assert items[0]["status"] == "done"
+    assert items[1]["status"] == "done"
+    # Epic 2's own item is not swept along.
+    assert items[2]["status"] == "in-progress"
+
+
+def test_legacy_selector_discriminates_on_the_epic(tmp_path):
+    # Two items share the action text "Scripted item" and differ only by epic, so
+    # an epic-blind text match would be ambiguous -- or worse, silently pick one.
+    target = _write_action_fixture(tmp_path)
+    proc = _run(
+        ["update", "--file", str(target), "--epic", "1", "--set-action-status",
+         '[{"epic":2,"action":"Scripted item","status":"done"}]']
+    )
+    assert proc.returncode == 0, proc.stderr
+    assert _json(proc)["action_items_updated"] == 1
+    items = _load(target)["action_items"]
+    assert items[2]["status"] == "done"
+    assert items[0]["status"] == "open"  # the epic-1 namesake, untouched
+
+
+def test_non_mapping_action_item_does_not_crash_the_selector(tmp_path):
+    # A hand-edited scalar in the action_items list must be skipped, not
+    # AttributeError'd into an empty stdout with a traceback.
+    fixture = (
+        "development_status:\n"
+        "  1-1-a: done\n"
+        "  epic-1-retrospective: optional\n"
+        "action_items:\n"
+        '  - "a bare string someone hand-edited in"\n'
+        '  - id: "real"\n'
+        "    epic: 1\n"
+        '    action: "Real item"\n'
+        "    status: open\n"
+    )
+    target = tmp_path / "sprint-status.yaml"
+    target.write_text(fixture, encoding="utf-8")
+    proc = _run(
+        ["update", "--file", str(target), "--epic", "1",
+         "--set-action-status", '[{"id":"real","status":"done"}]']
+    )
+    assert proc.returncode == 0, proc.stderr
+    assert _json(proc)["action_items_updated"] == 1
+    items = _load(target)["action_items"]
+    assert items[0] == "a bare string someone hand-edited in"
+    assert items[1]["status"] == "done"
+
+
+def test_non_mapping_action_item_stays_on_the_json_contract_when_unmatched(tmp_path):
+    # Same guard, reject path: the scalar must not be dereferenced while looking
+    # for a selector that is not there.
+    fixture = (
+        "development_status:\n"
+        "  1-1-a: done\n"
+        "action_items:\n"
+        "  - 42\n"
+    )
+    target = tmp_path / "sprint-status.yaml"
+    target.write_text(fixture, encoding="utf-8")
+    proc = _run(
+        ["update", "--file", str(target), "--epic", "1",
+         "--set-action-status", '[{"epic":1,"action":"Nothing","status":"done"}]']
+    )
+    assert proc.returncode == 1
+    out = _json(proc)  # asserts stdout is JSON and stderr carries no traceback
+    assert out["ok"] is False
+    assert out["restored"] is True
+    assert "no action item matches" in out["error"]
+    assert target.read_text(encoding="utf-8") == fixture
+
+
+def test_boolean_epic_in_the_file_does_not_match_epic_one(tmp_path):
+    # True == 1 in Python, so without the file-side bool guard a hand-edited
+    # "epic: true" row would be silently rewritten by a selector aimed at epic 1.
+    fixture = (
+        "development_status:\n"
+        "  1-1-a: done\n"
+        "action_items:\n"
+        "  - epic: true\n"
+        '    action: "Boolean epic"\n'
+        "    status: open\n"
+    )
+    target = tmp_path / "sprint-status.yaml"
+    target.write_text(fixture, encoding="utf-8")
+    proc = _run(
+        ["update", "--file", str(target), "--epic", "1", "--set-action-status",
+         '[{"epic":1,"action":"Boolean epic","status":"done"}]']
+    )
+    assert proc.returncode == 1
+    out = _json(proc)
+    assert out["ok"] is False
+    assert out["restored"] is True
+    assert "no action item matches" in out["error"]
+    assert target.read_text(encoding="utf-8") == fixture
+
+
+def test_status_write_preserves_every_scalar_style(tmp_path):
+    # The status write must land on the line without re-styling it, whichever way
+    # the file spells the scalar.
+    target = tmp_path / "sprint-status.yaml"
+    target.write_text(STYLE_FIXTURE, encoding="utf-8")
+    payload = json.dumps(
+        [
+            {"id": "double", "status": "done"},
+            {"id": "single", "status": "done"},
+            {"id": "plain", "status": "done"},
+        ]
+    )
+    proc = _run(
+        ["update", "--file", str(target), "--epic", "1", "--date",
+         "01-01-2026 09:00", "--set-action-status", payload]
+    )
+    assert proc.returncode == 0, proc.stderr
+    assert _json(proc)["action_items_updated"] == 3
+
+    before = STYLE_FIXTURE.splitlines()
+    after = target.read_text(encoding="utf-8").splitlines()
+    assert len(before) == len(after)
+    changed = [(b, a) for b, a in zip(before, after) if b != a]
+    assert changed == [
+        ('    status: "open"', '    status: "done"'),
+        ("    status: 'open'", "    status: 'done'"),
+        ("    status: open", "    status: done"),
+    ], changed
+
+
+def test_action_status_vocabulary_is_exactly_the_three():
+    # bmad-sprint-planning/SKILL.md is the authority. Widening this tuple would
+    # let the script write a value bmad-sprint-status renders as unknown.
+    assert _module().ACTION_STATUSES == ("open", "in-progress", "done")
+
+
+def test_empty_status_array_is_a_no_op(tmp_path):
+    target = _write_action_fixture(tmp_path)
+    proc = _run(
+        ["update", "--file", str(target), "--epic", "1", "--date",
+         "01-01-2026 09:00", "--set-action-status", "[]"]
+    )
+    assert proc.returncode == 0, proc.stderr
+    assert _json(proc)["action_items_updated"] == 0
+    assert target.read_text(encoding="utf-8") == ACTION_FIXTURE
+
+
+def test_in_progress_item_transitions_to_done(tmp_path):
+    # Every other success case starts from "open"; the middle of the lifecycle
+    # has to work too.
+    target = _write_action_fixture(tmp_path)
+    proc = _run(
+        ["update", "--file", str(target), "--epic", "2", "--set-action-status",
+         '[{"id":"epic-2-retro-item-1-y","status":"done"}]']
+    )
+    assert proc.returncode == 0, proc.stderr
+    assert _json(proc)["action_items_updated"] == 1
+    assert _load(target)["action_items"][2]["status"] == "done"
+
+
+def test_action_items_updated_is_always_reported(tmp_path):
+    # Consumers read the counter unconditionally, so it must be present even when
+    # the flag was not passed.
+    target = _write_fixture(tmp_path)
+    proc = _run(["update", "--file", str(target), "--epic", "1", "--set-retro-done"])
+    assert proc.returncode == 0, proc.stderr
+    assert _json(proc)["action_items_updated"] == 0
+
+
+def test_post_write_status_mismatch_restores(tmp_path, monkeypatch, capsys):
+    # The last line of defence: the written file is re-parsed and every targeted
+    # item is checked. No CLI path can fake a mismatch, so the re-parse is
+    # doctored directly.
+    mod = _module()
+    target = _write_action_fixture(tmp_path)
+    real_load_yaml = mod._load_yaml
+    calls = {"n": 0}
+
+    def flaky(path):
+        yaml, data = real_load_yaml(path)
+        calls["n"] += 1
+        if calls["n"] == 2:  # the post-write re-parse
+            data["action_items"][0]["status"] = "open"
+        return yaml, data
+
+    monkeypatch.setattr(mod, "_load_yaml", flaky)
+    args = mod.build_parser().parse_args(
+        ["update", "--file", str(target), "--epic", "1", "--date", "01-01-2026 09:00",
+         "--set-action-status", '[{"id":"epic-1-retro-item-1-x","status":"done"}]']
+    )
+    with pytest.raises(SystemExit) as excinfo:
+        mod.cmd_update(args)
+    assert excinfo.value.code == 1
+    out = json.loads(capsys.readouterr().out)
+    assert out["ok"] is False
+    assert out["restored"] is True
+    assert "after write" in out["error"]
+    assert target.read_text(encoding="utf-8") == ACTION_FIXTURE
 
 
 if __name__ == "__main__":
