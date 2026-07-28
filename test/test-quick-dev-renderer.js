@@ -26,6 +26,7 @@
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
+const crypto = require('node:crypto');
 const { spawnSync } = require('node:child_process');
 
 // ANSI color codes (same as other test files)
@@ -61,6 +62,34 @@ function assert(condition, message) {
 // ---------------------------------------------------------------------------
 
 const SKILL_SRC = path.join(__dirname, '..', 'src', 'bmm-skills', '4-implementation', 'bmad-quick-dev');
+const PHASE_FOUR_ROOT = path.join(__dirname, '..', 'src', 'bmm-skills', '4-implementation');
+const REVIEW_SKILLS = ['bmad-code-review', 'bmad-quick-dev', 'bmad-dev-auto'];
+const PROMPT_HASHES = {
+  'adversarial.md': '0e8b3393cd1962a393787654b4a2326565f4c1ac1164b31bda778112f24a6ec7',
+  'edge-case-hunter.md': '50612cc99eb591c894e3bb75960269c44325f020abc0ed6a34a786fb3c8ac896',
+  'verification-gap.md': '04524d69089762dc7e7a80f165396619daa1dbe81e2a090f5b78c9913f22f602',
+};
+const DELETION_CHECK_HASH = '0f1f124e4e957147e89164a272b10bedc694ad0d9ad2618c8610ac74ee9cb0da';
+
+function sha256(content) {
+  return crypto.createHash('sha256').update(content).digest('hex');
+}
+
+function recoveredPromptBody(name, content) {
+  const marker = name === 'edge-case-hunter.md' ? '<reference path=' : '## PROVIDED INPUTS';
+  return content.slice(0, content.indexOf(marker));
+}
+
+function workflowLayer(content, collection, id) {
+  const header = `[[workflow.${collection}]]`;
+  return (
+    content
+      .split(header)
+      .slice(1)
+      .map((block) => block.split('\n[[')[0])
+      .find((block) => block.includes(`id = "${id}"`)) || ''
+  );
+}
 
 /**
  * Recursively copy a directory (stdlib only, no fs.cp to stay >=20 compat).
@@ -243,8 +272,8 @@ try {
     const content = readRendered('step-04-review.md');
     assert(content.includes('#### Replaced Layer'), 'override layer name not used as block title');
     assert(content.includes('TEST_REPLACED_LAYER_INSTRUCTION'), 'override layer instruction not inlined');
-    assert(!content.includes('only the `edge-case-hunter` lens'), 'replaced default layer instruction still present');
-    assert(content.includes('only the `adversarial` lens'), 'untouched default layer dropped by keyed merge');
+    assert(!content.includes('review-prompts/edge-case-hunter.md'), 'replaced default layer instruction still present');
+    assert(content.includes('review-prompts/adversarial.md'), 'untouched default layer dropped by keyed merge');
   });
 
   test('empty-instruction override drops its layer entirely', () => {
@@ -311,6 +340,60 @@ try {
   test('no main_config reference survives in any rendered file', () => {
     const leaks = renderedMdFiles().filter((f) => readRendered(f).includes('main_config'));
     assert(leaks.length === 0, `main_config still referenced in: ${leaks.join(', ')} (the runtime config re-read was removed)`);
+  });
+
+  test('phase-four skills own exact pre-consolidation reviewer prompt bodies', () => {
+    for (const skill of REVIEW_SKILLS) {
+      const promptDir = path.join(PHASE_FOUR_ROOT, skill, 'review-prompts');
+      for (const [name, expectedHash] of Object.entries(PROMPT_HASHES)) {
+        const content = fs.readFileSync(path.join(promptDir, name), 'utf-8');
+        assert(sha256(recoveredPromptBody(name, content)) === expectedHash, `${skill}/${name} contract wording changed`);
+        assert(content.includes('{review_content}'), `${skill}/${name} has no review-content substitution point`);
+      }
+
+      const edgePrompt = fs.readFileSync(path.join(promptDir, 'edge-case-hunter.md'), 'utf-8');
+      const deletionStart = edgePrompt.indexOf('# Deletion Check');
+      const deletionEnd = edgePrompt.indexOf('</reference>');
+      assert(deletionStart !== -1 && deletionEnd > deletionStart, `${skill} does not embed the deletion-check contract`);
+      assert(sha256(edgePrompt.slice(deletionStart, deletionEnd)) === DELETION_CHECK_HASH, `${skill} deletion-check wording changed`);
+    }
+  });
+
+  test('phase-four handoffs render local prompts directly without invoking bmad-review', () => {
+    const expectedPrompts = {
+      'blind-hunter': 'adversarial.md',
+      'edge-case-hunter': 'edge-case-hunter.md',
+      'verification-gap': 'verification-gap.md',
+    };
+
+    for (const skill of REVIEW_SKILLS) {
+      const customization = fs.readFileSync(path.join(PHASE_FOUR_ROOT, skill, 'customize.toml'), 'utf-8');
+      assert(!customization.includes('Invoke the `bmad-review` skill'), `${skill} still delegates a reviewer to bmad-review`);
+      for (const [id, name] of Object.entries(expectedPrompts)) {
+        const layer = workflowLayer(customization, 'review_layers', id);
+        assert(layer.includes(`review-prompts/${name}`), `${skill}/${id} does not hand off its matching local prompt`);
+        assert(layer.includes('`{review_content}` placeholder'), `${skill}/${id} does not replace the prompt input`);
+        assert(layer.includes('{diff_output}'), `${skill}/${id} does not receive the review diff`);
+        assert(/using the entire rendered\s+prompt directly\./.test(layer), `${skill}/${id} does not launch the rendered prompt directly`);
+      }
+
+      const deletionReference = fs.readFileSync(path.join(PHASE_FOUR_ROOT, skill, 'references', 'deletion-check.md'), 'utf-8');
+      assert(sha256(deletionReference) === DELETION_CHECK_HASH, `${skill} local deletion-check reference wording changed`);
+    }
+  });
+
+  test('quick-dev one-shot review substitutes explicit changed-file context', () => {
+    const customization = fs.readFileSync(path.join(SKILL_SRC, 'customize.toml'), 'utf-8');
+    const oneShotStep = fs.readFileSync(path.join(SKILL_SRC, 'step-oneshot.md'), 'utf-8');
+    const layer = workflowLayer(customization, 'oneshot_review_layers', 'blind-hunter');
+    assert(layer.includes('review-prompts/adversarial.md'), 'one-shot handoff does not load its local adversarial prompt');
+    assert(layer.includes('`{review_content}` placeholder'), 'one-shot handoff does not replace the prompt input');
+    assert(layer.includes('{changed_files_context}'), 'one-shot handoff lacks context substitution');
+    assert(/using the entire rendered\s+prompt directly\./.test(layer), 'one-shot handoff does not launch the rendered prompt directly');
+    assert(oneShotStep.includes('Construct `{changed_files_context}`'), 'one-shot route does not construct changed-file context');
+    assert(oneShotStep.includes('Include the diff for tracked files.'), 'one-shot context omits tracked diffs');
+    assert(oneShotStep.includes('full contents of untracked text files'), 'one-shot context omits untracked text contents');
+    assert(oneShotStep.includes('no-index binary diff metadata'), 'one-shot context does not handle binary untracked files');
   });
 
   // ---------------------------------------------------------------------------
