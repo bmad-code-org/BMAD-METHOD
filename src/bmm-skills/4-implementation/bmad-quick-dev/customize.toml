@@ -97,9 +97,9 @@ id = "blind-hunter"
 name = "Blind Hunter"
 instruction = """
 Read `{skill-root}/review-prompts/adversarial.md` fully and replace its
-`{review_content}` placeholder with the following changed-file context:
+`{review_content}` placeholder with this review target:
 
-{changed_files_context}
+The changed files in the current worktree. Inspect them directly before reviewing.
 
 Launch a subagent with no prior conversation context using the entire rendered
 prompt directly.

@@ -15,14 +15,6 @@ Follow `./sync-sprint-status.md` with `target_status` = `in-progress`.
 
 Implement the clarified intent directly.
 
-### Construct Changed-File Context
-
-Construct `{changed_files_context}` covering every tracked and untracked file
-changed by the implementation. Include the diff for tracked files. Include the
-full contents of untracked text files; for binary or undecodable untracked
-files, include no-index binary diff metadata instead. Do NOT `git add` anything
-— this is read-only inspection.
-
 ### Review
 
 Execute these review layers in parallel wherever their execution methods allow, following each layer's instruction verbatim after substituting any runtime placeholders:
