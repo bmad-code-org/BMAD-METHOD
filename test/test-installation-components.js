@@ -3699,6 +3699,35 @@ test_future_pref:
         bothResult.moduleConfigs.core.test_future_pref === 'keep',
         'a prior [core] answer takes precedence over a prior module-section answer',
       );
+
+      // ---- --yes + CLI flags: backfill must not overwrite CLI values -------
+      const cliDir49 = path.join(root49, 'cli-flags-project');
+      await fs.ensureDir(cliDir49);
+      const cliResult = await new UI().collectModuleConfigs(cliDir49, [], {
+        yes: true,
+        userName: 'CliName',
+        outputFolder: 'cli-output',
+      });
+      assert(cliResult.moduleConfigs.core.user_name === 'CliName', 'backfill preserves a --user-name CLI value under --yes');
+      assert(cliResult.moduleConfigs.core.output_folder === 'cli-output', 'backfill preserves an --output-folder CLI value under --yes');
+      assert(
+        cliResult.moduleConfigs.core.test_future_pref === 'true',
+        'backfill still seeds schema-declared keys alongside CLI-provided values',
+      );
+
+      // ---- unreadable schema: install proceeds with the seeded config ------
+      projectRoot49.getSourcePath = (...segments) => path.join(root49, 'no-such-src', ...segments);
+      const noSchemaDir49 = path.join(root49, 'no-schema-project');
+      await fs.ensureDir(noSchemaDir49);
+      const noSchemaResult = await new UI().collectModuleConfigs(noSchemaDir49, [], { yes: true });
+      assert(
+        typeof noSchemaResult.moduleConfigs.core.user_name === 'string' && noSchemaResult.moduleConfigs.core.user_name.length > 0,
+        'unreadable core module.yaml: --yes install still proceeds with the seeded config',
+      );
+      assert(
+        !('test_future_pref' in noSchemaResult.moduleConfigs.core),
+        'unreadable core module.yaml: backfill is skipped rather than crashing the install',
+      );
     } finally {
       projectRoot49.getSourcePath = originalGetSourcePath49;
     }

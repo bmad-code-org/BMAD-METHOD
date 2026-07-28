@@ -5,6 +5,7 @@ const prompts = require('../prompts');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../project-root');
 const { CLIUtils } = require('../cli-utils');
 const { ExternalModuleManager } = require('./external-manager');
+const { NON_MODULE_DIRS } = require('../non-module-dirs');
 
 class OfficialModules {
   constructor(options = {}) {
@@ -922,10 +923,9 @@ class OfficialModules {
 
     // Fallback: legacy per-module config.yaml files (pre-v6 installations).
     const entries = await fs.readdir(bmadDir, { withFileTypes: true });
-    const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom']);
     for (const entry of entries) {
       if (entry.isDirectory()) {
-        if (nonModuleDirs.has(entry.name)) {
+        if (NON_MODULE_DIRS.has(entry.name)) {
           continue;
         }
 

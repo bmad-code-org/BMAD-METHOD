@@ -25,6 +25,7 @@ const PROTOTYPE_POLLUTING_NAMES = new Set(['__proto__', 'prototype', 'constructo
 const path = require('node:path');
 const fs = require('./fs-native');
 const yaml = require('yaml');
+const { NON_MODULE_DIRS } = require('./non-module-dirs');
 
 /**
  * Parse a single `--set <module>.<key>=<value>` entry.
@@ -297,10 +298,12 @@ async function applySetOverrides(overrides, bmadDir) {
     // until the next install regenerates the spread.
     const yamlTargets = [path.join(bmadDir, moduleCode, 'config.yaml')];
     if (moduleCode === 'core') {
-      const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom', 'core']);
+      // 'core' joins the exclusions only because its own yaml is already the
+      // first target above — don't patch it twice.
+      const excluded = new Set([...NON_MODULE_DIRS, 'core']);
       const entries = await fs.readdir(bmadDir, { withFileTypes: true });
       for (const entry of entries) {
-        if (entry.isDirectory() && !nonModuleDirs.has(entry.name)) {
+        if (entry.isDirectory() && !excluded.has(entry.name)) {
           yamlTargets.push(path.join(bmadDir, entry.name, 'config.yaml'));
         }
       }

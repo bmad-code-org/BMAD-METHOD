@@ -16,6 +16,7 @@ const { MODULE_HELP_CSV_HEADER } = require('../modules/module-help-schema');
 
 const { ExistingInstall } = require('./existing-install');
 const { warnPreNativeSkillsLegacy } = require('./legacy-warnings');
+const { NON_MODULE_DIRS } = require('../non-module-dirs');
 
 class Installer {
   constructor() {
@@ -959,8 +960,7 @@ class Installer {
 
     // Get all installed module directories
     const entries = await fs.readdir(bmadDir, { withFileTypes: true });
-    const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom']);
-    const installedModules = entries.filter((entry) => entry.isDirectory() && !nonModuleDirs.has(entry.name)).map((entry) => entry.name);
+    const installedModules = entries.filter((entry) => entry.isDirectory() && !NON_MODULE_DIRS.has(entry.name)).map((entry) => entry.name);
 
     // Generate config.yaml for each installed module
     for (const moduleName of installedModules) {
@@ -1056,8 +1056,7 @@ class Installer {
 
     // Get all installed module directories
     const entries = await fs.readdir(bmadDir, { withFileTypes: true });
-    const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom']);
-    const installedModules = entries.filter((entry) => entry.isDirectory() && !nonModuleDirs.has(entry.name)).map((entry) => entry.name);
+    const installedModules = entries.filter((entry) => entry.isDirectory() && !NON_MODULE_DIRS.has(entry.name)).map((entry) => entry.name);
 
     // Add core module to scan (it's installed at root level as _config, but we check src/core-skills)
     const coreModulePath = getSourcePath('core-skills');

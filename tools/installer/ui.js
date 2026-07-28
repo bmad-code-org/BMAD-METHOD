@@ -876,14 +876,22 @@ class UI {
     // schema default. This mirrors _hoistCoreKeysFromLegacyModuleConfigs, which
     // only runs on the legacy (pre-central-toml) load path.
     if (options.yes) {
+      const yaml = require('yaml');
+      const { getSourcePath } = require('./project-root');
+      let coreSchema = null;
       try {
-        const yaml = require('yaml');
-        const { getSourcePath } = require('./project-root');
-        const coreSchema = yaml.parse(await fs.readFile(path.join(getSourcePath('core-skills'), 'module.yaml'), 'utf8'));
+        coreSchema = yaml.parse(await fs.readFile(path.join(getSourcePath('core-skills'), 'module.yaml'), 'utf8'));
+      } catch (error) {
+        // Schema unreadable — keep the seeded config as-is rather than fail
+        // the install, but say so: silently skipping means newly declared
+        // core keys quietly stop seeding.
+        await prompts.log.warn(`Could not read core module.yaml (${error.message}); skipping core config backfill.`);
+      }
+      if (coreSchema && typeof coreSchema === 'object' && !Array.isArray(coreSchema)) {
         const core = (configCollector.collectedConfig.core ||= {});
-        const existing = configCollector._existingConfig || {};
+        const existing = configCollector.existingConfig || {};
         const existingCore = existing.core && typeof existing.core === 'object' && !Array.isArray(existing.core) ? existing.core : {};
-        for (const [key, item] of Object.entries(coreSchema || {})) {
+        for (const [key, item] of Object.entries(coreSchema)) {
           if (!item || typeof item !== 'object' || Array.isArray(item) || !item.prompt || key in core) continue;
           let value = existingCore[key];
           if (value === undefined) {
@@ -897,13 +905,11 @@ class UI {
           }
           if (value === undefined) {
             let def = item.default;
-            if (typeof def === 'string') def = def.replace('{directory_name}', path.basename(directory));
+            if (typeof def === 'string') def = def.replaceAll('{directory_name}', path.basename(directory));
             value = def;
           }
           if (value !== undefined && value !== null && value !== '') core[key] = value;
         }
-      } catch {
-        // Schema unreadable — keep the seeded config as-is rather than fail the install.
       }
     }
 
