@@ -26,9 +26,13 @@ Change `{spec_file}` status to `in-progress` in the frontmatter before starting 
 
 Follow `./sync-sprint-status.md` with `target_status` = `in-progress`.
 
-If `{spec_file}` has a non-empty `context:` list in its frontmatter, load those files before implementation begins. When handing to a subagent, include them in the subagent prompt so it has access to the referenced context.
+Execute the implementation handoff below: substitute the runtime placeholders (e.g. `{spec_file}`) into it, then follow it verbatim.
 
-Hand `{spec_file}` to a subagent/task and let it implement. If no subagents are available, implement directly. If the platform allows, keep the subagent available for re-engagement after it returns — step-04 may send it review fixes.
+{workflow.implementation_handoff}
+
+Do not add goal restatements, file lists, ownership boundaries, investigation detail, acceptance criteria, or CLAUDE.md/house-style rules to the dispatch — the spec is the subagent's sole source of truth, and that material already lives in it (investigation findings in its Code Map, the rest in the spec body). One line of sanctioned hedging belongs in the spec at planning time, not in the dispatch. If no subagents are available, implement directly from the spec. If the platform allows, keep the subagent available for re-engagement after it returns — step-04 may send it review fixes.
+
+The handoff directs the subagent to load the spec's `context:` files itself, so never pre-load and paste those files into the dispatch. Only when you implement directly (no subagent available) do you load a non-empty `context:` list yourself before starting.
 
 **Path formatting rule:** Any markdown links written into `{spec_file}` must use paths relative to `{spec_file}`'s directory so they are clickable in VS Code. Any file paths displayed in terminal/conversation output must use CWD-relative format with `:line` notation (e.g., `src/path/file.ts:42`) for terminal clickability. No leading `/` in either case.
 
