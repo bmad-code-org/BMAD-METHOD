@@ -3615,6 +3615,175 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test Suite 49: --yes seeding of schema-declared core keys +
+  // core --set propagation to module config spreads
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 49: core-key seeding and core --set spread propagation${colors.reset}\n`);
+
+  let root49;
+  const projectRoot49 = require('../tools/installer/project-root');
+  const originalGetSourcePath49 = projectRoot49.getSourcePath;
+  try {
+    const { UI } = require('../tools/installer/ui');
+    const { applySetOverrides } = require('../tools/installer/set-overrides');
+
+    root49 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-core-seed-test-'));
+
+    // Fixture "src" tree: the real core schema plus one key the hardcoded
+    // --yes literal in ui.js knows nothing about. Redirecting getSourcePath
+    // here is what makes the backfill read this schema instead of src/.
+    const fixtureSrc49 = path.join(root49, 'src');
+    await fs.ensureDir(path.join(fixtureSrc49, 'core-skills'));
+    const realCoreSchema49 = await fs.readFile(path.join(originalGetSourcePath49('core-skills'), 'module.yaml'), 'utf8');
+    await fs.writeFile(
+      path.join(fixtureSrc49, 'core-skills', 'module.yaml'),
+      realCoreSchema49 +
+        `
+test_future_pref:
+  prompt: "A core preference declared after the --yes literal was written?"
+  scope: user
+  default: "true"
+  result: "{value}"
+`,
+      'utf8',
+    );
+
+    // Minimal v6 install fixture: _config/manifest.yaml is the marker
+    // findBmadDir keys on; the central tomls are what loadExistingConfig reads.
+    const makeV6Install = async (name, userTomlBody) => {
+      const projectDir = path.join(root49, name);
+      const bmadDir = path.join(projectDir, '_bmad');
+      await fs.ensureDir(path.join(bmadDir, '_config'));
+      await fs.writeFile(path.join(bmadDir, '_config', 'manifest.yaml'), 'version: 6.0.0\n', 'utf8');
+      await fs.writeFile(path.join(bmadDir, 'config.toml'), '[core]\nproject_name = "fixture"\n', 'utf8');
+      await fs.writeFile(path.join(bmadDir, 'config.user.toml'), userTomlBody, 'utf8');
+      return projectDir;
+    };
+
+    projectRoot49.getSourcePath = (...segments) => path.join(fixtureSrc49, ...segments);
+    try {
+      // ---- fresh --yes install: schema-declared key seeded from default ----
+      const freshDir49 = path.join(root49, 'fresh-project');
+      await fs.ensureDir(freshDir49);
+      const freshResult = await new UI().collectModuleConfigs(freshDir49, [], { yes: true });
+      assert(
+        freshResult.moduleConfigs.core.test_future_pref === 'true',
+        'fresh --yes install seeds a schema-declared core key with its schema default',
+      );
+
+      // ---- --yes update: prior [core] answer wins over the default --------
+      const coreValueDir49 = await makeV6Install('core-value-project', '[core]\ntest_future_pref = "keep"\n');
+      const coreValueResult = await new UI().collectModuleConfigs(coreValueDir49, [], { yes: true });
+      assert(
+        coreValueResult.moduleConfigs.core.test_future_pref === 'keep',
+        '--yes update preserves a prior [core] answer instead of resetting to the schema default',
+      );
+
+      // ---- --yes update: key promoted module → core keeps the prior value --
+      // The legacy _hoistCoreKeysFromLegacyModuleConfigs never runs on the v6
+      // central-toml load path, so this migration must come from the backfill.
+      const promotedDir49 = await makeV6Install('promoted-project', '[modules.bmm]\ntest_future_pref = "false"\n');
+      const promotedResult = await new UI().collectModuleConfigs(promotedDir49, [], { yes: true });
+      assert(
+        promotedResult.moduleConfigs.core.test_future_pref === 'false',
+        '--yes update migrates a prior module-section value for a key promoted to core',
+      );
+
+      // ---- precedence: prior [core] answer beats a prior module answer -----
+      const bothDir49 = await makeV6Install(
+        'both-values-project',
+        '[core]\ntest_future_pref = "keep"\n\n[modules.bmm]\ntest_future_pref = "false"\n',
+      );
+      const bothResult = await new UI().collectModuleConfigs(bothDir49, [], { yes: true });
+      assert(
+        bothResult.moduleConfigs.core.test_future_pref === 'keep',
+        'a prior [core] answer takes precedence over a prior module-section answer',
+      );
+
+      // ---- --yes + CLI flags: backfill must not overwrite CLI values -------
+      const cliDir49 = path.join(root49, 'cli-flags-project');
+      await fs.ensureDir(cliDir49);
+      const cliResult = await new UI().collectModuleConfigs(cliDir49, [], {
+        yes: true,
+        userName: 'CliName',
+        outputFolder: 'cli-output',
+      });
+      assert(cliResult.moduleConfigs.core.user_name === 'CliName', 'backfill preserves a --user-name CLI value under --yes');
+      assert(cliResult.moduleConfigs.core.output_folder === 'cli-output', 'backfill preserves an --output-folder CLI value under --yes');
+      assert(
+        cliResult.moduleConfigs.core.test_future_pref === 'true',
+        'backfill still seeds schema-declared keys alongside CLI-provided values',
+      );
+
+      // ---- unreadable schema: install proceeds with the seeded config ------
+      projectRoot49.getSourcePath = (...segments) => path.join(root49, 'no-such-src', ...segments);
+      const noSchemaDir49 = path.join(root49, 'no-schema-project');
+      await fs.ensureDir(noSchemaDir49);
+      const noSchemaResult = await new UI().collectModuleConfigs(noSchemaDir49, [], { yes: true });
+      assert(
+        typeof noSchemaResult.moduleConfigs.core.user_name === 'string' && noSchemaResult.moduleConfigs.core.user_name.length > 0,
+        'unreadable core module.yaml: --yes install still proceeds with the seeded config',
+      );
+      assert(
+        !('test_future_pref' in noSchemaResult.moduleConfigs.core),
+        'unreadable core module.yaml: backfill is skipped rather than crashing the install',
+      );
+    } finally {
+      projectRoot49.getSourcePath = originalGetSourcePath49;
+    }
+
+    // ---- core --set propagates to every module's config.yaml spread copy ----
+    {
+      const bmadDir = path.join(root49, 'set-spread', '_bmad');
+      await fs.ensureDir(path.join(bmadDir, '_config'));
+      await fs.writeFile(path.join(bmadDir, 'config.toml'), '[core]\nproject_name = "fixture"\n', 'utf8');
+      await fs.writeFile(path.join(bmadDir, 'config.user.toml'), '[core]\nuser_name = "Brian"\n', 'utf8');
+      for (const moduleName of ['core', 'bmm', 'cis']) {
+        await fs.ensureDir(path.join(bmadDir, moduleName));
+        await fs.writeFile(
+          path.join(bmadDir, moduleName, 'config.yaml'),
+          '# Generated by installer — do not edit.\nuser_name: Brian\n',
+          'utf8',
+        );
+      }
+      // Non-module dirs must not be touched by the core spread refresh.
+      await fs.ensureDir(path.join(bmadDir, 'docs'));
+      await fs.writeFile(path.join(bmadDir, 'docs', 'config.yaml'), 'user_name: Brian\n', 'utf8');
+
+      await applySetOverrides({ core: { user_name: 'Updated' } }, bmadDir);
+
+      const userToml = await fs.readFile(path.join(bmadDir, 'config.user.toml'), 'utf8');
+      assert(userToml.includes('user_name = "Updated"'), 'core --set still routes the value to config.user.toml');
+      for (const moduleName of ['core', 'bmm', 'cis']) {
+        const spread = await fs.readFile(path.join(bmadDir, moduleName, 'config.yaml'), 'utf8');
+        assert(spread.includes('user_name: Updated'), `core --set refreshes the spread copy in ${moduleName}/config.yaml immediately`);
+      }
+      const coreYaml = await fs.readFile(path.join(bmadDir, 'core', 'config.yaml'), 'utf8');
+      assert(coreYaml.startsWith('# Generated by installer'), 'spread refresh preserves the generated-file banner header');
+
+      // docs/ has a config.yaml but is not a module dir — must stay untouched.
+      const docsYaml = await fs.readFile(path.join(bmadDir, 'docs', 'config.yaml'), 'utf8');
+      assert(docsYaml.includes('user_name: Brian'), 'core --set does not touch config.yaml files in non-module dirs');
+
+      // A module-scoped --set must stay scoped to that module's spread copy.
+      await applySetOverrides({ bmm: { project_knowledge: 'research' } }, bmadDir);
+      const cisYaml = await fs.readFile(path.join(bmadDir, 'cis', 'config.yaml'), 'utf8');
+      assert(!cisYaml.includes('project_knowledge'), 'a module-scoped --set does not propagate to other modules');
+      const bmmYaml = await fs.readFile(path.join(bmadDir, 'bmm', 'config.yaml'), 'utf8');
+      assert(bmmYaml.includes('project_knowledge: research'), 'a module-scoped --set still patches its own module yaml');
+    }
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 49 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  } finally {
+    projectRoot49.getSourcePath = originalGetSourcePath49;
+    if (root49) await fs.remove(root49).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);
