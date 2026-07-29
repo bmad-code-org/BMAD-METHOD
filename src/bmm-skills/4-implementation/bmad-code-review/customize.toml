@@ -54,7 +54,7 @@ Launch a context-free subagent with this prompt:
 
 > Read `{skill-root}/review-prompts/adversarial.md` completely and follow it as your review instructions.
 >
-> In that document, `{review_content}` means the following diff:
+> Your review content (the `content` input for those instructions) is the following diff:
 >
 > {diff_output}
 >
@@ -71,7 +71,7 @@ Launch a context-free subagent with this prompt:
 
 > Read `{skill-root}/review-prompts/edge-case-hunter.md` completely and follow it as your review instructions.
 >
-> In that document, `{review_content}` means the following diff:
+> Your review content (the `content` input for those instructions) is the following diff:
 >
 > {diff_output}
 >
@@ -88,7 +88,7 @@ Launch a context-free subagent with this prompt:
 
 > Read `{skill-root}/review-prompts/verification-gap.md` completely and follow it as your review instructions.
 >
-> In that document, `{review_content}` means the following diff:
+> Your review content (the `content` input for those instructions) is the following diff:
 >
 > {diff_output}
 >

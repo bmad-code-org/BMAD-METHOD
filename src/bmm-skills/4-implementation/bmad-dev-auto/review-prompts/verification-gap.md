@@ -99,8 +99,7 @@ If you noticed genuine non-gap problems while tracing verification, append:
 When you find no verification gaps and no other findings, output exactly this single line, not an empty response:
 
 `No verification gaps found.`
-## PROVIDED INPUTS
 
-**content:**
+## CONTENT SOURCE
 
-{review_content}
+The review target is supplied only by the parent message that launched you. This instruction file never contains the target and has no `{review_content}` placeholder to fill or substitute. Load the change set exclusively from that parent message; if none was supplied, stop with exactly: `No verification gaps found.`

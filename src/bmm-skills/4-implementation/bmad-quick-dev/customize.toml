@@ -59,7 +59,7 @@ Launch a context-free subagent with this prompt:
 
 > Read `{skill-root}/review-prompts/adversarial.md` completely and follow it as your review instructions.
 >
-> In that document, `{review_content}` means the following diff:
+> Your review content (the `content` input for those instructions) is the following diff:
 >
 > {diff_output}
 >
@@ -76,7 +76,7 @@ Launch a context-free subagent with this prompt:
 
 > Read `{skill-root}/review-prompts/edge-case-hunter.md` completely and follow it as your review instructions.
 >
-> In that document, `{review_content}` means the following diff:
+> Your review content (the `content` input for those instructions) is the following diff:
 >
 > {diff_output}
 >
@@ -93,7 +93,7 @@ Launch a context-free subagent with this prompt:
 
 > Read `{skill-root}/review-prompts/verification-gap.md` completely and follow it as your review instructions.
 >
-> In that document, `{review_content}` means the following diff:
+> Your review content (the `content` input for those instructions) is the following diff:
 >
 > {diff_output}
 >
@@ -112,7 +112,7 @@ Launch a context-free subagent with this prompt:
 
 > Read `{skill-root}/review-prompts/adversarial.md` completely and follow it as your review instructions.
 >
-> In that document, `{review_content}` means the changed files in the current worktree. Inspect them directly before reviewing.
+> Your review content (the `content` input for those instructions) is the changed files in the current worktree. Inspect them directly before reviewing.
 >
 > Do not invoke any skill. If the instruction file is unreadable, report that exact failure and stop. Return only the review result.
 

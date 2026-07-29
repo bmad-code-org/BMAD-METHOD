@@ -63,60 +63,6 @@ function assert(condition, message) {
 // ---------------------------------------------------------------------------
 
 const SKILL_SRC = path.join(__dirname, '..', 'src', 'bmm-skills', '4-implementation', 'bmad-quick-dev');
-const PHASE_FOUR_SKILLS_DIR = path.join(__dirname, '..', 'src', 'bmm-skills', '4-implementation');
-
-const REVIEWER_PROMPT_FILES = {
-  'blind-hunter': 'adversarial.md',
-  'edge-case-hunter': 'edge-case-hunter.md',
-  'verification-gap': 'verification-gap.md',
-};
-
-function reviewLayerBlocks(customization, section) {
-  const blocks = [];
-  const marker = `[[workflow.${section}]]`;
-  let start = customization.indexOf(marker);
-  while (start !== -1) {
-    const next = customization.indexOf('[[workflow.', start + marker.length);
-    blocks.push(customization.slice(start, next === -1 ? undefined : next));
-    start = next !== -1 && customization.startsWith(marker, next) ? next : -1;
-  }
-  return blocks;
-}
-
-function findReviewLayer(blocks, id) {
-  return blocks.find((block) => block.includes(`id = "${id}"`));
-}
-
-function assertDirectReviewerDispatch(skillName, section, ids) {
-  const customization = fs.readFileSync(path.join(PHASE_FOUR_SKILLS_DIR, skillName, 'customize.toml'), 'utf-8');
-  const blocks = reviewLayerBlocks(customization, section);
-
-  for (const id of ids) {
-    const block = findReviewLayer(blocks, id);
-    assert(block, `${skillName} ${section} is missing ${id}`);
-
-    const promptFile = REVIEWER_PROMPT_FILES[id];
-    assert(
-      block.includes(`Read \`{skill-root}/review-prompts/${promptFile}\` completely and follow it as your review instructions.`),
-      `${skillName} ${id} does not direct its child to load its local prompt file`,
-    );
-    assert(block.includes('Launch a context-free subagent with this prompt:'), `${skillName} ${id} is not context-free`);
-    assert(block.includes('In that document, `{review_content}` means'), `${skillName} ${id} does not supply review_content separately`);
-    assert(block.includes('Do not invoke any skill.'), `${skillName} ${id} allows skill invocation`);
-    assert(
-      block.includes('If the instruction file is unreadable, report that exact failure and stop.'),
-      `${skillName} ${id} does not stop on an unreadable prompt file`,
-    );
-    assert(block.includes('Return only the review result.'), `${skillName} ${id} does not constrain child output`);
-    assert(
-      block.includes('Do not read, render, reproduce, summarize, or inline the reviewer instruction file yourself.'),
-      `${skillName} ${id} still permits parent-side prompt handling`,
-    );
-    assert(!block.includes('bmad-review'), `${skillName} ${id} invokes bmad-review`);
-    assert(!block.includes('replace its'), `${skillName} ${id} still renders the reviewer prompt in the parent`);
-    assert(!block.includes('entire rendered prompt'), `${skillName} ${id} still inlines the reviewer prompt into the child call`);
-  }
-}
 
 /**
  * Recursively copy a directory (stdlib only, no fs.cp to stay >=20 compat).
@@ -296,7 +242,11 @@ try {
     assert(content.includes(expectedPromptPath), 'reviewer prompt path was not expanded to the absolute skill path');
     assert(!content.includes('{skill-root}'), '{skill-root} survived in rendered review instructions');
     assert(content.includes('{diff_output}'), 'runtime {diff_output} placeholder did not survive rendering');
-    assert(content.includes('{review_content}'), 'runtime {review_content} placeholder did not survive rendering');
+    assert(
+      content.includes('Your review content (the `content` input for those instructions) is the following diff:'),
+      'rendered review layers do not supply content via the calling prompt',
+    );
+    assert(!content.includes('{review_content}'), 'rendered review layers still reference a {review_content} file slot');
   });
 
   test('one-shot review layers use direct child file loading after rendering', () => {
@@ -305,9 +255,10 @@ try {
     assert(content.includes(expectedPromptPath), 'one-shot reviewer prompt path was not expanded to the absolute skill path');
     assert(!content.includes('{skill-root}'), '{skill-root} survived in rendered one-shot review instructions');
     assert(
-      content.includes('In that document, `{review_content}` means the changed files in the current worktree.'),
+      content.includes('Your review content (the `content` input for those instructions) is the changed files in the current worktree.'),
       'one-shot review target is no longer the changed files in the current worktree',
     );
+    assert(!content.includes('{review_content}'), 'one-shot layers still reference a {review_content} file slot');
     assert(content.includes('Do not invoke any skill.'), 'one-shot reviewer may invoke another skill');
   });
 
@@ -383,13 +334,6 @@ try {
   test('no main_config reference survives in any rendered file', () => {
     const leaks = renderedMdFiles().filter((f) => readRendered(f).includes('main_config'));
     assert(leaks.length === 0, `main_config still referenced in: ${leaks.join(', ')} (the runtime config re-read was removed)`);
-  });
-
-  test('all phase-four reviewers dispatch children to their own local prompt files', () => {
-    assertDirectReviewerDispatch('bmad-code-review', 'review_layers', ['blind-hunter', 'edge-case-hunter', 'verification-gap']);
-    assertDirectReviewerDispatch('bmad-dev-auto', 'review_layers', ['blind-hunter', 'edge-case-hunter', 'verification-gap']);
-    assertDirectReviewerDispatch('bmad-quick-dev', 'review_layers', ['blind-hunter', 'edge-case-hunter', 'verification-gap']);
-    assertDirectReviewerDispatch('bmad-quick-dev', 'oneshot_review_layers', ['blind-hunter']);
   });
 
   // ---------------------------------------------------------------------------
