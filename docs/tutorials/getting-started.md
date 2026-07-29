@@ -73,7 +73,7 @@ BMad helps you build software through guided workflows with specialized AI agent
 | 1     | Analysis       | Brainstorming, research, forge idea, product brief or PRFAQ _(optional)_ |
 | 2     | Planning       | Create requirements and design PRD, UX, SPEC                 |
 | 3     | Solutioning    | Design architecture spine or detailed project or system architectures          |
-| 4     | Implementation | Build every change or planned story with Quick Dev, optionally through automated orchestration |
+| 4     | Implementation | Implement every change or planned story, optionally through automated orchestration |
 
 **[Open the Workflow Map](../reference/workflow-map.md)** to explore phases, workflows, and context management.
 

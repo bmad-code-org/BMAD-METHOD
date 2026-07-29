@@ -71,7 +71,7 @@ BMad giúp bạn xây dựng phần mềm thông qua các workflow có hướng 
 | 1 | Analysis | Brainstorming, nghiên cứu, product brief hoặc PRFAQ *(tùy chọn)* |
 | 2 | Planning | Tạo tài liệu yêu cầu (PRD hoặc spec) |
 | 3 | Solutioning | Thiết kế kiến trúc khi cần |
-| 4 | Implementation | Mọi thay đổi hoặc story đều qua Quick Dev |
+| 4 | Implementation | Triển khai mọi thay đổi hoặc story đã lập kế hoạch, có thể thông qua điều phối tự động |
 
 **[Mở Workflow Map](../reference/workflow-map.md)** để khám phá các phase, workflow và cách quản lý context.
 

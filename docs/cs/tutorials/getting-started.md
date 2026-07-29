@@ -71,7 +71,7 @@ BMad vám pomáhá vytvářet software prostřednictvím řízených pracovních
 | 1    | Analýza        | Brainstorming, průzkum, product brief nebo PRFAQ *(volitelné)* |
 | 2    | Plánování      | Vytvoření požadavků (PRD nebo specifikace)              |
 | 3    | Solutioning    | Návrh architektury podle potřeby                         |
-| 4    | Implementace   | Každá změna nebo story prochází Quick Dev               |
+| 4    | Implementace   | Implementace každé změny nebo naplánované story, volitelně pomocí automatizované orchestrace |
 
 **[Otevřete Mapu pracovních postupů](../reference/workflow-map.md)** pro prozkoumání fází, workflow a správy kontextu.
 

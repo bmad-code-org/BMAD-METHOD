@@ -72,7 +72,7 @@ BMad vous aide à développer des logiciels grâce à des workflows guidés par 
 | 1     | Analyse        | Brainstorming, recherche, product brief ou PRFAQ _(optionnel)_ |
 | 2     | Planification  | Définir les exigences (PRD[^1] ou spécification technique)     |
 | 3     | Solutioning    | Concevoir l’architecture selon les besoins                      |
-| 4     | Implémentation | Traiter chaque changement ou story avec Quick Dev               |
+| 4     | Implémentation | Implémenter chaque changement ou story planifiée, éventuellement via une orchestration automatisée |
 
 **[Ouvrez la carte des workflows](../reference/workflow-map.md)** pour explorer les phases, les workflows et la gestion du contexte.
 
