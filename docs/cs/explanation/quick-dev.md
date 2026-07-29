@@ -5,7 +5,11 @@ sidebar:
   order: 6
 ---
 
-Záměr na vstupu, změny kódu na výstupu, s co nejmenším počtem human-in-the-loop kroků — bez obětování kvality.
+`bmad-quick-dev` je standardní implementační workflow pro veškerou vývojovou práci. Přijímá vše od volně formulovaného záměru nebo issue po plně naplánovanou story a vytváří změny kódu s minimem bezpečných human-in-the-loop kroků.
+
+Upstream plánování je volitelné a jeho hloubka se liší. Jasná změna může vstoupit přímo; větší iniciativa může přinést PRD, UX, architekturu, epicy, stories, kontrolu připravenosti a sprint plán. Tyto artefakty posilují kontext, nevybírají jiný vývojový workflow.
+
+Když do Quick Dev vstoupí naplánovaná story, zůstává zdrojem produktového kontextu a akceptačních kritérií. Quick Dev vytvoří vlastní záznam provedení aktuálního běhu, aby implementační rozhodnutí a nálezy revize zůstaly dohledatelné, aniž by story nahrazoval.
 
 Umožňuje modelu běžet déle mezi kontrolními body a poté přivede člověka zpět pouze tehdy, když úkol nemůže bezpečně pokračovat bez lidského úsudku nebo když je čas zkontrolovat konečný výsledek.
 
@@ -25,7 +29,7 @@ Současné LLM stále selhávají předvídatelnými způsoby: chybně čtou zá
 
 Workflow začíná tím, že člověk a model zkomprimují požadavek do jednoho koherentního cíle. Vstup může začínat jako hrubé vyjádření záměru, ale předtím, než workflow poběží autonomně, musí být dostatečně malý, jasný a bez protimluvů pro provedení.
 
-Záměr může přijít v mnoha formách: pár frází, odkaz na bug tracker, výstup z plan mode, text zkopírovaný z chatové relace, nebo dokonce číslo story z BMAD vlastního `epics.md`. V posledním případě workflow nepochopí sémantiku sledování stories BMAD, ale stále může vzít samotnou story a pracovat s ní.
+Záměr může přijít v mnoha formách: pár frází, odkaz na bug tracker, výstup z plan mode, text zkopírovaný z chatové relace nebo naplánovaná story z epiců a sprint artefaktů BMad. Workflow použije veškerý dostupný upstream kontext a vyřeší mezery potřebné pro bezpečnou implementaci.
 
 Tento workflow neodstraňuje lidskou kontrolu. Přemisťuje ji na malý počet vysoce hodnotných momentů:
 

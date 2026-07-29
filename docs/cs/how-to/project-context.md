@@ -118,7 +118,7 @@ Soubor `project-context.md`, který:
 - **Zaměřte se na neočividné** — Dokumentujte vzory, které agenti mohou přehlédnout (např. „Použijte JSDoc na každé veřejné třídě“), ne univerzální postupy jako „používejte smysluplné názvy proměnných.“
 - **Udržujte to stručné** — Tento soubor načítá každý implementační workflow. Dlouhé soubory plýtvají kontextem. Vylučte obsah, který platí pouze pro úzký rozsah nebo specifické stories.
 - **Aktualizujte dle potřeby** — Upravte ručně, když se vzory změní, nebo přegenerujte po významných změnách architektury.
-- Funguje pro projekty Quick Flow i plné metody BMad.
+- Podporuje stejný `bmad-quick-dev` loop při přímém vstupu i po rozsáhlém plánování.
 :::
 
 ## Další kroky

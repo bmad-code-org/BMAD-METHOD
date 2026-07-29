@@ -325,7 +325,7 @@ Starlight génère la navigation « Sur cette page » à droite à partir de
 
 Ajouter un contexte en italique au début de la définition pour les termes à portée limitée :
 
-- `*Quick Dev uniquement.*`
+- `*Implémentation en entrée directe uniquement.*`
 - `*méthode BMad/Enterprise.*`
 - `*Phase N.*`
 - `*BMGD.*`
@@ -350,7 +350,7 @@ Ajouter un contexte en italique au début de la définition pour les termes à p
 
 ### Ai-je toujours besoin d'architecture ?
 
-Uniquement pour les parcours méthode BMad et Enterprise. Quick Dev passe directement à l'implémentation.
+Uniquement pour les travaux qui bénéficient d'une architecture. Un travail clair peut entrer directement dans l'implémentation.
 
 ### Puis-je modifier mon plan plus tard ?
 

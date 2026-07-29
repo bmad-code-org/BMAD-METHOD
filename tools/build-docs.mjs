@@ -15,6 +15,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getSiteUrl } from '../website/src/lib/site-url.mjs';
 import { translatedLocales } from '../website/src/lib/locales.mjs';
+import { validatePublishedImplementationModel } from './validate-published-implementation-model.mjs';
 
 // =============================================================================
 // Configuration
@@ -124,6 +125,9 @@ function buildAstroSite() {
   // Build Astro site (outputs to build/site via astro.config.mjs)
   runAstroBuild();
   copyArtifactsToSite(artifactsDir, siteDir);
+  console.log('  → Checking published implementation model...');
+  validatePublishedImplementationModel(siteDir);
+  console.log('    Published implementation model check passed');
 
   console.log();
   console.log(`  \u001B[32m✓\u001B[0m Astro build complete`);
@@ -161,7 +165,7 @@ function generateLlmsTxt(outputDir) {
     '',
     '## Core Concepts',
     '',
-    `- **[Quick Flow](${siteUrl}/explanation/quick-flow/)** - Unified quick workflow — clarify intent, plan, implement, review, present`,
+    `- **[Quick Dev](${siteUrl}/explanation/quick-dev/)** - Canonical implementation workflow for direct intent and fully planned work`,
     `- **[Party Mode](${siteUrl}/explanation/party-mode/)** - Multi-agent collaboration`,
     `- **[Workflow Map](${siteUrl}/reference/workflow-map/)** - Visual overview of phases and workflows`,
     '',

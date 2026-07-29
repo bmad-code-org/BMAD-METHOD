@@ -52,25 +52,20 @@ Rozhodněte, jak to budovat, a rozložte práci na stories.
 
 ## Fáze 4: Implementace
 
-Budujte to, jednu story po druhé. Brzy plná automatizace fáze 4!
+Všechny implementační vstupy se sbíhají do `bmad-quick-dev`. Přijímá přímý záměr, issue, specifikaci nebo naplánovanou story a zvolí potřebnou míru upřesnění, plánování, implementace a revize.
 
 | Workflow                   | Účel                                                                     | Produkuje                        |
 | -------------------------- | ------------------------------------------------------------------------ | -------------------------------- |
+| `bmad-quick-dev`           | Převod přímého záměru nebo naplánované story na implementovaný a revidovaný kód | `spec-*.md` + kód          |
 | `bmad-sprint-planning`     | Inicializace sledování (jednou na projekt pro sekvencování dev cyklu)    | `sprint-status.yaml`             |
-| `bmad-create-story`        | Příprava další story pro implementaci                                    | `story-[slug].md`                |
-| `bmad-dev-story`           | Implementace story                                                       | Fungující kód + testy            |
 | `bmad-code-review`         | Validace kvality implementace                                            | Schváleno nebo požadovány změny  |
 | `bmad-correct-course`      | Řešení významných změn uprostřed sprintu                                 | Aktualizovaný plán nebo přesměrování |
 | `bmad-sprint-status`       | Sledování průběhu sprintu a stavu stories                                | Aktualizace stavu sprintu        |
 | `bmad-retrospective`       | Revize po dokončení epicu                                                | Poučení                          |
 
-## Quick Flow (paralelní cesta)
+### Přímý a plánovaný vstup
 
-Přeskočte fáze 1–3 pro malou, dobře pochopenou práci.
-
-| Workflow           | Účel                                                                        | Produkuje            |
-| ------------------ | --------------------------------------------------------------------------- | -------------------- |
-| `bmad-quick-dev`   | Sjednocený quick flow — vyjasněte záměr, plánujte, implementujte, revidujte a prezentujte | `spec-*.md` + kód |
+Jasná práce může vstoupit do `bmad-quick-dev` přímo. Větší iniciativa může nejprve vytvořit PRD, UX, architekturu, epicy, stories, kontrolu připravenosti a sprint plán. Tyto artefakty přidávají kontext; nevybírají jiný implementační workflow.
 
 ## Správa kontextu
 

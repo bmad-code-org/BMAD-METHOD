@@ -5,7 +5,7 @@ sidebar:
   order: 6
 ---
 
-Utilisez **Quick Dev** pour les corrections de bugs, les refactorisations ou les petites modifications ciblées qui ne nécessitent pas la méthode BMad complète.
+Les corrections de bugs, refactorisations et petites modifications ciblées peuvent entrer directement dans **Quick Dev** avec peu ou pas de planification amont. C’est le même workflow d’implémentation que pour les stories entièrement planifiées.
 
 ## Quand Utiliser Cette Approche
 
@@ -83,15 +83,15 @@ Quick Dev garde chaque exécution concentrée sur un seul objectif. Si votre dem
 
 Consultez ce fichier après une exécution — c’est votre backlog[^1] de choses sur lesquelles revenir. Chaque élément différé peut être introduit dans une nouvelle exécution Quick Dev ultérieurement.
 
-## Quand Passer à une Planification Formelle
+## Quand Ajouter une Planification Formelle
 
-Envisagez d’utiliser la méthode BMad complète lorsque :
+Avant d’exécuter la même boucle Quick Dev, envisagez d’ajouter un PRD, une UX, une architecture ou une planification des stories lorsque :
 
 - La modification affecte plusieurs systèmes ou nécessite des mises à jour coordonnées dans de nombreux fichiers
 - Vous n’êtes pas sûr de la portée et avez besoin d’une découverte des exigences d’abord
 - Vous avez besoin de documentation ou de décisions architecturales enregistrées pour l’équipe
 
-Voir [Quick Dev](../explanation/quick-dev.md) pour plus d’informations sur la façon dont Quick Dev s’intègre dans la méthode BMad.
+Voir [Quick Dev](../explanation/quick-dev.md) pour comprendre comment l’intention directe et le travail planifié convergent vers la même boucle d’implémentation.
 
 ## Glossaire
 

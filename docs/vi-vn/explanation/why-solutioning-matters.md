@@ -49,14 +49,16 @@ Bằng cách tài liệu hóa rõ ràng các quyết định kỹ thuật, tất
 - Lệch quy ước đặt tên
 - Biến thể trong cách tiếp cận bảo mật
 
-## Khi nào solutioning là bắt buộc
+## Chọn độ sâu solutioning
 
-| Track | Có cần solutioning không? |
+| Đặc điểm công việc | Khuyến nghị solutioning |
 |-------|----------------------|
-| Quick Flow | Không - bỏ qua hoàn toàn |
-| BMad Method đơn giản | Tùy chọn |
-| BMad Method phức tạp | Có |
-| Enterprise | Có |
+| Thay đổi cục bộ rõ ràng với pattern đã ổn định | Thường không cần |
+| Nhiều component liên quan với ràng buộc đã biết | Tùy chọn theo rủi ro phối hợp |
+| Nhiều epic hoặc quyết định liên hệ thống | Cần thiết để đồng bộ implementation |
+| Sáng kiến tuân thủ, rủi ro cao hoặc enterprise | Tuân theo governance bắt buộc; solutioning thường là yêu cầu |
+
+Solutioning thay đổi ngữ cảnh cung cấp cho `bmad-quick-dev`, không thay đổi workflow triển khai.
 
 :::tip[Quy tắc ngón tay cái]
 Nếu bạn có nhiều epic có thể được các agent khác nhau triển khai, bạn cần solutioning.

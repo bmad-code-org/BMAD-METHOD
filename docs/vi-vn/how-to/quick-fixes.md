@@ -5,7 +5,7 @@ sidebar:
   order: 6
 ---
 
-Sử dụng **Quick Dev** cho sửa lỗi, refactor, hoặc các thay đổi nhỏ có mục tiêu rõ ràng mà không cần quy trình BMad Method đầy đủ.
+Sửa lỗi, refactor và thay đổi nhỏ có thể đi thẳng vào **Quick Dev** với ít hoặc không có planning upstream. Đây là cùng workflow triển khai dùng cho story đã lập kế hoạch đầy đủ.
 
 ## Khi nào nên dùng
 
@@ -84,12 +84,12 @@ Quick Dev giữ mỗi lần chạy tập trung vào một mục tiêu duy nhất
 
 Hãy kiểm tra tệp này sau mỗi lần chạy - đó là backlog các việc bạn cần quay lại sau. Mỗi mục trì hoãn có thể được đưa vào một lần chạy Quick Dev mới.
 
-## Khi nào nên nâng cấp lên quy trình lập kế hoạch đầy đủ
+## Khi nào nên bổ sung lập kế hoạch đầy đủ
 
-Cân nhắc dùng toàn bộ BMad Method khi:
+Trước khi chạy cùng Quick Dev loop, cân nhắc bổ sung PRD, UX, kiến trúc hoặc lập kế hoạch story khi:
 
 - Thay đổi ảnh hưởng nhiều hệ thống hoặc cần cập nhật đồng bộ trên nhiều tệp
 - Bạn chưa chắc phạm vi và cần làm rõ yêu cầu trước
 - Bạn cần ghi lại tài liệu hoặc quyết định kiến trúc cho cả nhóm
 
-Xem [Quick Dev](../explanation/quick-dev.md) để hiểu rõ hơn Quick Dev nằm ở đâu trong BMad Method.
+Xem [Quick Dev](../explanation/quick-dev.md) để hiểu cách ý định trực tiếp và công việc đã lập kế hoạch hội tụ vào cùng một vòng triển khai.

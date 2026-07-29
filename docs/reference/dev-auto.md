@@ -1,11 +1,11 @@
 ---
 title: Autonomous Development Loops
-description: Reference for running unattended BMad development loops with bmad-dev-auto as the single-iteration worker.
+description: Reference for automating the Quick Dev implementation model with bmad-dev-auto as the single-iteration worker.
 sidebar:
   order: 7
 ---
 
-To use BMad in an autonomous development loop, use the `bmad-dev-auto` skill. It is like [Quick Dev](../explanation/quick-dev.md), but designed to keep moving without human interaction. You can use it in an interactive session, but its main purpose is to be used by an orchestrator.
+`bmad-dev-auto` is the unattended automation surface for the canonical [Quick Dev](../explanation/quick-dev.md) implementation model. It accepts the same range of direct intent and planned work, and preserves the clarify, plan, implement, and review stages while exposing terminal statuses an orchestrator can act on. It automates the implementation loop; it does not define a second implementation path.
 
 The important architectural boundary is this: `bmad-dev-auto` owns the implementation run and the spec artifact it produces, but it does not own your backlog policy. When review finds something real that is not this story's problem, the skill records that finding in the spec it owns and stops there. Deciding whether to queue it, deduplicate it, escalate it, or ignore it is the orchestrator's responsibility.
 

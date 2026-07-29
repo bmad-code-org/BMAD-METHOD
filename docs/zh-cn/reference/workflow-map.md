@@ -47,25 +47,20 @@ BMad Method（BMM）通过分阶段 workflow 逐步构建上下文，让智能�
 
 ## 阶段 4：实施
 
-按 story 节奏持续交付与校验。
+所有实施入口都汇入 `bmad-quick-dev`。它可以接收直接意图、issue、规格或已规划 story，并自行选择所需的澄清、规划、实现和审查深度。
 
 | Workflow | 目的 | 产出 |
 | --- | --- | --- |
+| `bmad-quick-dev` | 将直接意图或已规划 story 转化为完成实现并经过审查的代码 | `spec-*.md` + 代码变更 |
 | `bmad-sprint-planning` | 初始化迭代追踪（通常每项目一次） | `sprint-status.yaml` |
-| `bmad-create-story` | 准备下一个可实施 story | `story-[slug].md` |
-| `bmad-dev-story` | 按规范实现 story | 可运行代码与测试 |
 | `bmad-code-review` | 验证实现质量 | 通过或变更请求 |
 | `bmad-correct-course` | 处理中途重大方向调整 | 更新后的计划或重路由 |
 | `bmad-sprint-status` | 跟踪冲刺与 story 状态 | 状态更新 |
 | `bmad-retrospective` | epic 完成后复盘 | 经验与改进项 |
 
-## Quick Flow（并行快线）
+### 直接入口与规划入口
 
-当任务范围小且目标清晰时，可跳过阶段 1-3 直接推进：
-
-| Workflow | 目的 | 产出 |
-| --- | --- | --- |
-| `bmad-quick-dev` | 统一快流：意图澄清、规划、实现、审查、呈现 | `spec-*.md` + 代码变更 |
+目标清晰的工作可以直接进入 `bmad-quick-dev`。更大的项目可以先准备 PRD、UX、架构、epics、stories、就绪检查和 sprint 计划。上游产物只会增加实施上下文，不会选择另一条实施工作流。
 
 ## 上下文管理
 

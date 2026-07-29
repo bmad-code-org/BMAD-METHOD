@@ -5,7 +5,11 @@ sidebar:
   order: 7
 ---
 
-Intent in, code changes out, with as few human-in-the-loop turns as possible — without sacrificing quality.
+`bmad-quick-dev` is the canonical implementation workflow for all development work. It accepts anything from free-form intent or an issue to a fully planned story, and produces code changes with as few human-in-the-loop turns as safety allows.
+
+Upstream planning remains optional and variable. A clear change can enter directly; a larger initiative can arrive with a PRD, UX design, architecture, epics, stories, readiness results, and sprint plan. Those artifacts strengthen the implementation context rather than selecting a different development workflow.
+
+When a planned story enters Quick Dev, the story remains the upstream product and acceptance context. Quick Dev creates its own execution record for the current run so implementation decisions and review findings stay traceable without replacing the story.
 
 It lets the model run longer between checkpoints, then brings the human back only when the task cannot safely continue without human judgment or when it is time to review the end result.
 
@@ -25,7 +29,7 @@ Current LLMs still fail in predictable ways: they misread intent, fill gaps with
 
 The workflow starts by having the human and the model compress the request into one coherent goal. The input can begin as a rough expression of intent, but before the workflow runs autonomously it has to become small enough, clear enough, and contradiction-free enough to execute.
 
-Intent can come in many forms: a couple of phrases, a bug tracker link, output from plan mode, text copied from a chat session, or even a story number from BMAD's own `epics.md`. In that last case, the workflow will not understand BMAD story-tracking semantics, but it can still take the story itself and run with it.
+Intent can come in many forms: a couple of phrases, a bug tracker link, output from plan mode, text copied from a chat session, or a planned story from BMad's own epics and sprint artifacts. The workflow uses whatever upstream context exists and resolves any gaps it needs to implement safely.
 
 This workflow does not eliminate human control. It relocates it to a small number of high-value moments:
 

@@ -5,7 +5,11 @@ sidebar:
   order: 7
 ---
 
-Đưa ý định vào, nhận thay đổi mã nguồn ra, với số lần cần con người nhảy vào giữa quy trình ít nhất có thể - nhưng không đánh đổi chất lượng.
+`bmad-quick-dev` là workflow triển khai chuẩn cho mọi công việc phát triển. Nó nhận mọi đầu vào từ ý định tự do hoặc issue đến story đã lập kế hoạch đầy đủ, rồi tạo thay đổi mã nguồn với số vòng tương tác con người tối thiểu nhưng an toàn.
+
+Planning upstream vẫn tùy chọn và có độ sâu khác nhau. Thay đổi rõ ràng có thể vào trực tiếp; sáng kiến lớn có thể mang theo PRD, UX, kiến trúc, epic, story, kiểm tra sẵn sàng và kế hoạch sprint. Các artifact này tăng cường ngữ cảnh, không chọn workflow phát triển khác.
+
+Khi một story đã lập kế hoạch đi vào Quick Dev, story vẫn là nguồn ngữ cảnh sản phẩm và tiêu chí chấp nhận. Quick Dev tạo bản ghi thực thi riêng cho lần chạy hiện tại để các quyết định triển khai và phát hiện review có thể truy vết mà không thay thế story.
 
 Nó cho phép mô hình tự vận hành lâu hơn giữa các điểm kiểm tra, rồi chỉ đưa con người quay lại khi tác vụ không thể tiếp tục an toàn nếu thiếu phán đoán của con người, hoặc khi đã đến lúc rà soát kết quả cuối.
 
@@ -25,7 +29,7 @@ LLM hiện tại vẫn thất bại theo những cách dễ đoán: hiểu sai �
 
 Quy trình bắt đầu bằng việc để con người và mô hình nén yêu cầu thành một mục tiêu thống nhất. Đầu vào có thể bắt đầu như một ý định thô, nhưng trước khi quy trình tự vận hành thì nó phải đủ nhỏ, đủ rõ ràng, và đủ ít mâu thuẫn để có thể thực thi.
 
-Ý định có thể đến từ nhiều dạng: vài cụm từ, liên kết trình theo dõi lỗi, đầu ra từ chế độ lập kế hoạch, đoạn văn bản sao chép từ phiên chat, hoặc thậm chí một số story trong `epics.md` của chính BMAD. Ở trường hợp cuối, quy trình không hiểu được ngữ nghĩa theo dõi story của BMAD, nhưng vẫn có thể lấy chính story đó và tiếp tục.
+Ý định có thể đến từ nhiều dạng: vài cụm từ, liên kết trình theo dõi lỗi, đầu ra từ chế độ lập kế hoạch, đoạn văn bản sao chép từ phiên chat, hoặc story đã lập kế hoạch từ epic và artifact sprint của BMad. Workflow sử dụng mọi ngữ cảnh upstream hiện có và giải quyết các khoảng trống cần thiết để triển khai an toàn.
 
 Quy trình này không loại bỏ quyền kiểm soát của con người. Nó chuyển nó về một số thời điểm có giá trị cao:
 

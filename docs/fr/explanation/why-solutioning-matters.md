@@ -49,14 +49,16 @@ Cela évite :
 - Les inadéquations de conventions de nommage
 - Les variations d’approche de sécurité
 
-## Quand le Solutioning est Requis
+## Choisir la profondeur du solutioning
 
-| Parcours              | Solutioning Requis ?        |
-|-----------------------|-----------------------------|
-| Quick Dev             | Non - l’ignore complètement |
-| Méthode BMad Simple   | Optionnel                   |
-| Méthode BMad Complexe | Oui                         |
-| Enterprise            | Oui                         |
+| Caractéristiques du travail | Recommandation de solutioning |
+|------------------------------|-------------------------------|
+| Modification locale claire avec des patterns établis | Généralement inutile |
+| Plusieurs composants liés avec des contraintes connues | Optionnel selon le risque de coordination |
+| Plusieurs epics ou décisions multi-systèmes | Nécessaire pour aligner l’implémentation |
+| Initiative réglementée, risquée ou enterprise | Suivre la gouvernance requise ; le solutioning est normalement obligatoire |
+
+Le solutioning change le contexte fourni à `bmad-quick-dev`, pas le workflow d’implémentation.
 
 :::tip[Règle Générale]
 Si vous avez plusieurs epics qui pourraient être implémentés par différents agents, vous avez besoin de solutioning.

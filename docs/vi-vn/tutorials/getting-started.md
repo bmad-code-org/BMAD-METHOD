@@ -9,7 +9,7 @@ Xây dựng phần mềm nhanh hơn bằng các workflow vận hành bởi AI, v
 
 - Cài đặt và khởi tạo BMad Method cho một dự án mới
 - Dùng **BMad-Help** — trợ lý thông minh biết bước tiếp theo bạn nên làm gì
-- Chọn nhánh lập kế hoạch phù hợp với quy mô dự án
+- Chọn độ sâu lập kế hoạch phù hợp với công việc
 - Đi qua các phase từ yêu cầu đến code chạy được
 - Sử dụng agent và workflow hiệu quả
 
@@ -70,21 +70,21 @@ BMad giúp bạn xây dựng phần mềm thông qua các workflow có hướng 
 | ----- | -------------- | --------------------------------------------------- |
 | 1 | Analysis | Brainstorming, nghiên cứu, product brief hoặc PRFAQ *(tùy chọn)* |
 | 2 | Planning | Tạo tài liệu yêu cầu (PRD hoặc spec) |
-| 3 | Solutioning | Thiết kế kiến trúc *(chỉ dành cho BMad Method/Enterprise)* |
-| 4 | Implementation | Xây dựng theo từng epic, từng story |
+| 3 | Solutioning | Thiết kế kiến trúc khi cần |
+| 4 | Implementation | Mọi thay đổi hoặc story đều qua Quick Dev |
 
 **[Mở Workflow Map](../reference/workflow-map.md)** để khám phá các phase, workflow và cách quản lý context.
 
-Dựa trên độ phức tạp của dự án, BMad cung cấp ba nhánh lập kế hoạch:
+Độ sâu lập kế hoạch có thể thay đổi:
 
-| Nhánh | Phù hợp nhất với | Tài liệu được tạo |
-| --------------- | ------------------------------------------------------ | -------------------------------------- |
-| **Quick Flow** | Sửa lỗi, tính năng đơn giản, phạm vi rõ ràng (1-15 story) | Chỉ spec |
-| **BMad Method** | Sản phẩm, nền tảng, tính năng phức tạp (10-50+ story) | PRD + Architecture + UX |
-| **Enterprise** | Yêu cầu tuân thủ, hệ thống đa tenant (30+ story) | PRD + Architecture + Security + DevOps |
+| Độ sâu | Phù hợp nhất với | Ngữ cảnh trước triển khai |
+| --- | --- | --- |
+| **Trực tiếp** | Bản sửa, tính năng, issue hoặc spec đã rõ | Ý định, issue hoặc spec |
+| **Lập kế hoạch sản phẩm** | Sản phẩm, nền tảng và tính năng phức tạp | PRD và UX tùy chọn |
+| **Định hình giải pháp đầy đủ** | Sáng kiến phối hợp, rủi ro cao hoặc liên hệ thống | PRD, UX, kiến trúc, epic, story và kế hoạch sprint |
 
 :::note
-Số lượng story chỉ là gợi ý, không phải định nghĩa cứng. Hãy chọn nhánh dựa trên nhu cầu lập kế hoạch, không phải phép đếm story.
+Đây không phải các nhánh triển khai riêng. Mọi đầu vào đều hội tụ vào `bmad-quick-dev`; lập kế hoạch chỉ thay đổi lượng ngữ cảnh sẵn có.
 :::
 
 ## Cài Đặt
@@ -121,9 +121,9 @@ Mỗi workflow có một **skill** được gọi bằng tên trong IDE của b�
 Luôn bắt đầu một chat mới cho mỗi workflow. Điều này tránh các vấn đề do giới hạn context gây ra.
 :::
 
-## Bước 1: Tạo Kế Hoạch
+## Bước 1: Chọn Độ Sâu Lập Kế Hoạch
 
-Đi qua các phase 1-3. **Dùng chat mới cho từng workflow.**
+Chỉ dùng những phần cần thiết trong phase 1-3. Với công việc rõ ràng, có phạm vi hữu hạn, bạn có thể đi thẳng đến [Bước 2](#bước-2-xây-dựng-dự-án). **Dùng chat mới cho từng workflow.**
 
 :::tip[Project Context (Tùy chọn)]
 Trước khi bắt đầu, hãy cân nhắc tạo `project-context.md` để ghi lại các ưu tiên kỹ thuật và quy tắc triển khai. Nhờ vậy mọi AI agent sẽ tuân theo cùng một quy ước trong suốt dự án.
@@ -139,21 +139,18 @@ Tất cả workflow trong phase này đều là tùy chọn. [**Chưa chắc nê
 - **product-brief** (`bmad-product-brief`) — Tài liệu nền tảng được khuyến nghị khi concept của bạn đã rõ
 - **prfaq** (`bmad-prfaq`) — Bài kiểm tra Working Backwards để stress-test và rèn sắc concept sản phẩm của bạn
 
-### Phase 2: Planning (Bắt buộc)
+### Phase 2: Planning (Khi cần)
 
-**Với nhánh BMad Method và Enterprise:**
+Với công việc cần lập kế hoạch sản phẩm:
 1. Gọi **PM agent** (`bmad-agent-pm`) trong một chat mới
 2. Chạy workflow `bmad-prd` (`bmad-prd`)
 3. Kết quả: `PRD.md`
-
-**Với nhánh Quick Flow:**
-- Chạy `bmad-quick-dev` — workflow này gộp cả planning và implementation trong một lần, nên bạn có thể chuyển thẳng sang triển khai
 
 :::note[Thiết kế UX (Tùy chọn)]
 Nếu dự án của bạn có giao diện người dùng, hãy gọi **UX-Designer agent** (`bmad-agent-ux-designer`) và chạy workflow thiết kế UX (`bmad-ux`) sau khi tạo PRD.
 :::
 
-### Phase 3: Solutioning (BMad Method/Enterprise)
+### Phase 3: Solutioning (Khi cần)
 
 **Tạo Architecture**
 1. Gọi **Architect agent** (`bmad-agent-architect`) trong một chat mới
@@ -177,21 +174,26 @@ Epics và stories giờ được tạo *sau* kiến trúc. Điều này giúp st
 
 ## Bước 2: Xây Dựng Dự Án
 
-Sau khi lập kế hoạch xong, chuyển sang implementation. **Mỗi workflow nên chạy trong một chat mới.**
+Chuyển sang implementation với ngữ cảnh đang có: yêu cầu trực tiếp, issue, spec hoặc story đã được lập kế hoạch đầy đủ. **Mỗi workflow nên chạy trong một chat mới.**
 
-### Khởi Tạo Sprint Planning
+Với công việc đã lập kế hoạch, chạy `bmad-quick-dev` và nêu rõ story hoặc hạng mục sprint đã chọn, ví dụ: `Triển khai story 2.3 từ _bmad-output/planning-artifacts/epics.md`.
+
+### Khởi Tạo Sprint Planning (Cho công việc đã lập kế hoạch)
 
 Gọi **Developer agent** (`bmad-agent-dev`) và chạy `bmad-sprint-planning` (`bmad-sprint-planning`). Workflow này sẽ tạo `sprint-status.yaml` để theo dõi toàn bộ epic và story.
 
+Khi Quick Dev nhận diện được story đã chọn trong file này, workflow chuyển story sang `in-progress` trong lúc triển khai và sang `review` khi triển khai hoàn tất.
+
 ### Chu Trình Xây Dựng
 
-Với mỗi story, lặp lại chu trình này trong chat mới:
+Với mỗi thay đổi trực tiếp hoặc story đã lập kế hoạch, lặp lại chu trình này trong chat mới:
 
 | Bước | Agent | Workflow | Lệnh | Mục đích |
 | ---- | ----- | -------------- | -------------------------- | ---------------------------------- |
-| 1 | DEV | `bmad-create-story` | `bmad-create-story` | Tạo file story từ epic |
-| 2 | DEV | `bmad-dev-story` | `bmad-dev-story` | Triển khai story |
-| 3 | DEV | `bmad-code-review` | `bmad-code-review` | Kiểm tra chất lượng *(khuyến nghị)* |
+| 1 | DEV | `bmad-quick-dev` | `bmad-quick-dev` | Làm rõ, lập kế hoạch, triển khai, review và trình bày |
+| 2 | DEV | `bmad-code-review` | `bmad-code-review` | Kiểm tra chất lượng bổ sung *(khuyến nghị)* |
+
+Review của Quick Dev là một phần của mọi lần chạy. `bmad-code-review` là lớp xác thực độc lập, tùy chọn trong một ngữ cảnh mới.
 
 Sau khi hoàn tất tất cả story trong một epic, hãy gọi **Developer agent** (`bmad-agent-dev`) và chạy `bmad-retrospective` (`bmad-retrospective`).
 
@@ -200,7 +202,7 @@ Sau khi hoàn tất tất cả story trong một epic, hãy gọi **Developer ag
 Bạn đã nắm được nền tảng để xây dựng với BMad:
 
 - Đã cài BMad và cấu hình cho IDE của bạn
-- Đã khởi tạo dự án theo nhánh lập kế hoạch phù hợp
+- Đã chọn độ sâu lập kế hoạch phù hợp với công việc
 - Đã tạo các tài liệu lập kế hoạch (PRD, Architecture, Epics và Stories)
 - Đã hiểu chu trình triển khai trong implementation
 
@@ -231,14 +233,13 @@ your-project/
 | `bmad-create-epics-and-stories` | `bmad-create-epics-and-stories` | PM | Phân rã PRD thành epics |
 | `bmad-check-implementation-readiness` | `bmad-check-implementation-readiness` | Architect | Kiểm tra độ nhất quán của kế hoạch |
 | `bmad-sprint-planning` | `bmad-sprint-planning` | DEV | Khởi tạo theo dõi sprint |
-| `bmad-create-story` | `bmad-create-story` | DEV | Tạo file story |
-| `bmad-dev-story` | `bmad-dev-story` | DEV | Triển khai một story |
+| `bmad-quick-dev` | `bmad-quick-dev` | DEV | Triển khai ý định, issue, tính năng, bản sửa hoặc story |
 | `bmad-code-review` | `bmad-code-review` | DEV | Review phần code đã triển khai |
 
 ## Câu Hỏi Thường Gặp
 
 **Lúc nào cũng cần kiến trúc à?**
-Chỉ với nhánh BMad Method và Enterprise. Quick Flow bỏ qua bước kiến trúc và chuyển thẳng từ spec sang implementation.
+Không. Dùng kiến trúc khi cần làm rõ quyết định kỹ thuật hoặc ràng buộc liên hệ thống. Công việc rõ ràng có thể đi thẳng vào `bmad-quick-dev`; sáng kiến lớn đưa các artifact lập kế hoạch vào cùng workflow đó.
 
 **Tôi có thể đổi kế hoạch về sau không?**
 Có. Workflow `bmad-correct-course` (`bmad-correct-course`) xử lý thay đổi phạm vi giữa chừng.
@@ -269,7 +270,7 @@ BMad-Help sẽ kiểm tra dự án, phát hiện những gì bạn đã hoàn th
 :::tip[Hãy Nhớ Các Điểm Này]
 - **Bắt đầu với `bmad-help`** — Trợ lý thông minh hiểu dự án và các lựa chọn của bạn
 - **Luôn dùng chat mới** — Mỗi workflow nên bắt đầu trong một chat riêng
-- **Nhánh rất quan trọng** — Quick Flow dùng `bmad-quick-dev`; Method/Enterprise cần PRD và kiến trúc
+- **Độ sâu lập kế hoạch thay đổi** — ý định trực tiếp và story đã lập kế hoạch đều đi vào `bmad-quick-dev`
 - **BMad-Help chạy tự động** — Mỗi workflow đều kết thúc bằng hướng dẫn về bước tiếp theo
 :::
 

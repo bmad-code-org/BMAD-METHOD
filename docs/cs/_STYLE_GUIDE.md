@@ -324,7 +324,7 @@ Starlight generuje navigaci „Na této stránce“ z nadpisů na pravé straně
 
 Přidejte kurzívní kontext na začátek definice pro termíny s omezeným rozsahem:
 
-- `*Pouze Quick Flow.*`
+- `*Pouze přímý vstup do implementace.*`
 - `*BMad Method/Enterprise.*`
 - `*Fáze N.*`
 - `*BMGD.*`
@@ -349,7 +349,7 @@ Přidejte kurzívní kontext na začátek definice pro termíny s omezeným rozs
 
 ### Potřebuji vždy architekturu?
 
-Pouze pro BMad Method a Enterprise. Quick Flow přeskakuje rovnou k implementaci.
+Pouze pro práci, které prospívá architektura. Jasná práce může vstoupit přímo do implementace.
 
 ### Mohu později změnit svůj plán?
 

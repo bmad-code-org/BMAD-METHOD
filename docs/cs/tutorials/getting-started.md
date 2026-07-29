@@ -9,7 +9,7 @@ Vytvářejte software rychleji pomocí pracovních postupů řízených AI se sp
 
 - Nainstalovat a inicializovat BMad Method pro nový projekt
 - Používat **BMad-Help** — vašeho inteligentního průvodce, který ví, co dělat dál
-- Vybrat správnou plánovací cestu pro velikost vašeho projektu
+- Zvolit správnou hloubku plánování pro vaši práci
 - Postupovat fázemi od požadavků k fungujícímu kódu
 - Efektivně používat agenty a pracovní postupy
 
@@ -70,21 +70,21 @@ BMad vám pomáhá vytvářet software prostřednictvím řízených pracovních
 | ---- | -------------- | ------------------------------------------------------- |
 | 1    | Analýza        | Brainstorming, průzkum, product brief nebo PRFAQ *(volitelné)* |
 | 2    | Plánování      | Vytvoření požadavků (PRD nebo specifikace)              |
-| 3    | Solutioning    | Návrh architektury *(pouze BMad Method/Enterprise)*     |
-| 4    | Implementace   | Budování epic po epicu, story po story                  |
+| 3    | Solutioning    | Návrh architektury podle potřeby                         |
+| 4    | Implementace   | Každá změna nebo story prochází Quick Dev               |
 
 **[Otevřete Mapu pracovních postupů](../reference/workflow-map.md)** pro prozkoumání fází, workflow a správy kontextu.
 
-Na základě složitosti vašeho projektu nabízí BMad tři plánovací cesty:
+Hloubka plánování je flexibilní:
 
-| Cesta           | Nejlepší pro                                                   | Vytvořené dokumenty                    |
-| --------------- | -------------------------------------------------------------- | -------------------------------------- |
-| **Quick Flow**  | Opravy chyb, jednoduché funkce, jasný rozsah (1–15 stories)   | Pouze tech-spec                        |
-| **BMad Method** | Produkty, platformy, složité funkce (10–50+ stories)           | PRD + architektura + UX                |
-| **Enterprise**  | Compliance, multi-tenant systémy (30+ stories)                 | PRD + architektura + bezpečnost + DevOps |
+| Hloubka | Nejlepší pro | Kontext před implementací |
+| --- | --- | --- |
+| **Přímá** | Jasné opravy, funkce, issues nebo existující specifikace | Záměr, issue nebo specifikace |
+| **Produktové plánování** | Produkty, platformy a složité funkce | PRD a volitelný UX návrh |
+| **Plné solutioning** | Koordinované, rizikové nebo mezisystémové iniciativy | PRD, UX, architektura, epicy, stories a sprint plán |
 
 :::note
-Počty stories jsou orientační, ne definitivní. Vyberte si cestu podle potřeb plánování, ne podle počtu stories.
+Nejde o oddělené implementační cesty. Všechny vstupy se sbíhají do `bmad-quick-dev`; plánování pouze mění množství dostupného kontextu.
 :::
 
 ## Instalace
@@ -121,9 +121,9 @@ Každý workflow má **skill**, který vyvoláte jménem ve vašem IDE (např. `
 Vždy začněte nový chat pro každý workflow. Tím předejdete problémům s kontextovými omezeními.
 :::
 
-## Krok 1: Vytvořte svůj plán
+## Krok 1: Zvolte hloubku plánování
 
-Projděte fázemi 1–3. **Pro každý workflow používejte nové chaty.**
+Použijte z fází 1–3 tolik, kolik vaše práce potřebuje. U jasné, ohraničené práce můžete přejít přímo ke [Kroku 2](#krok-2-sestavte-svůj-projekt). **Pro každý workflow používejte nové chaty.**
 
 :::tip[Kontext projektu (volitelné)]
 Před začátkem zvažte vytvoření `project-context.md` pro dokumentaci vašich technických preferencí a pravidel implementace. Tím zajistíte, že všichni AI agenti budou dodržovat vaše konvence v průběhu celého projektu.
@@ -139,21 +139,18 @@ Všechny workflow v této fázi jsou volitelné:
 - **product-brief** (`bmad-product-brief`) — Doporučený základní dokument, když je váš koncept jasný
 - **prfaq** (`bmad-prfaq`) — Working Backwards výzva pro zátěžový test a zformování vašeho produktového konceptu
 
-### Fáze 2: Plánování (povinná)
+### Fáze 2: Plánování (podle potřeby)
 
-**Pro BMad Method a Enterprise cesty:**
+Pro práci, které prospívá produktové plánování:
 1. Vyvolejte **PM agenta** (`bmad-agent-pm`) v novém chatu
 2. Spusťte workflow `bmad-prd` (`bmad-prd`)
 3. Výstup: `PRD.md`
-
-**Pro Quick Flow cestu:**
-- Spusťte `bmad-quick-dev` — zvládne plánování i implementaci v jednom workflow, přeskočte k implementaci
 
 :::note[UX Design (volitelné)]
 Pokud má váš projekt uživatelské rozhraní, vyvolejte **UX-Designer agenta** (`bmad-agent-ux-designer`) a spusťte UX design workflow (`bmad-ux`) po vytvoření PRD.
 :::
 
-### Fáze 3: Solutioning (BMad Method/Enterprise)
+### Fáze 3: Solutioning (podle potřeby)
 
 **Vytvoření architektury**
 1. Vyvolejte **Architect agenta** (`bmad-agent-architect`) v novém chatu
@@ -177,21 +174,26 @@ Epicy a stories se nyní vytvářejí *po* architektuře. Tím vznikají kvalitn
 
 ## Krok 2: Sestavte svůj projekt
 
-Jakmile je plánování dokončeno, přejděte k implementaci. **Každý workflow by měl běžet v novém chatu.**
+Přejděte k implementaci s jakýmkoli dostupným kontextem: přímým požadavkem, issue, specifikací nebo plně naplánovanou story. **Každý workflow by měl běžet v novém chatu.**
 
-### Inicializace plánování sprintu
+U plánované práce spusťte `bmad-quick-dev` a určete vybranou story nebo položku sprintu, například: `Implementuj story 2.3 z _bmad-output/planning-artifacts/epics.md`.
+
+### Inicializace plánování sprintu (pro plánovanou práci)
 
 Vyvolejte **Developer agenta** (`bmad-agent-dev`) a spusťte `bmad-sprint-planning` (`bmad-sprint-planning`). Tím se vytvoří `sprint-status.yaml` pro sledování všech epiců a stories.
 
+Když Quick Dev v tomto souboru rozpozná vybranou story, během implementace ji přesune do stavu `in-progress` a po dokončení implementace do stavu `review`.
+
 ### Cyklus vývoje
 
-Pro každou story opakujte tento cyklus s novými chaty:
+Pro každou přímou změnu nebo naplánovanou story opakujte tento cyklus s novými chaty:
 
 | Krok | Agent | Workflow             | Příkaz                     | Účel                               |
 | ---- | ----- | -------------------- | -------------------------- | ---------------------------------- |
-| 1    | DEV   | `bmad-create-story`  | `bmad-create-story`        | Vytvoření story souboru z epicu    |
-| 2    | DEV   | `bmad-dev-story`     | `bmad-dev-story`           | Implementace story                 |
-| 3    | DEV   | `bmad-code-review`   | `bmad-code-review`         | Validace kvality *(doporučeno)*    |
+| 1    | DEV   | `bmad-quick-dev`     | `bmad-quick-dev`           | Upřesnění, plán, implementace, revize a prezentace |
+| 2    | DEV   | `bmad-code-review`   | `bmad-code-review`         | Dodatečná validace kvality *(doporučeno)* |
+
+Revize v Quick Dev je součástí každého běhu. `bmad-code-review` je volitelná nezávislá validační vrstva v novém kontextu.
 
 Po dokončení všech stories v epicu vyvolejte **Developer agenta** (`bmad-agent-dev`) a spusťte `bmad-retrospective` (`bmad-retrospective`).
 
@@ -200,7 +202,7 @@ Po dokončení všech stories v epicu vyvolejte **Developer agenta** (`bmad-agen
 Naučili jste se základy budování s BMad:
 
 - Nainstalovali BMad a nakonfigurovali ho pro vaše IDE
-- Inicializovali projekt s vybranou plánovací cestou
+- Zvolili hloubku plánování odpovídající vaší práci
 - Vytvořili plánovací dokumenty (PRD, architektura, epicy a stories)
 - Pochopili cyklus vývoje pro implementaci
 
@@ -231,14 +233,13 @@ váš-projekt/
 | `bmad-create-epics-and-stories`       | `bmad-create-epics-and-stories`           | PM        | Rozklad PRD na epicy                            |
 | `bmad-check-implementation-readiness` | `bmad-check-implementation-readiness`     | Architect | Validace soudržnosti plánování                  |
 | `bmad-sprint-planning`                | `bmad-sprint-planning`                    | DEV       | Inicializace sledování sprintu                  |
-| `bmad-create-story`                   | `bmad-create-story`                       | DEV       | Vytvoření souboru story                         |
-| `bmad-dev-story`                      | `bmad-dev-story`                          | DEV       | Implementace story                              |
+| `bmad-quick-dev`                      | `bmad-quick-dev`                          | DEV       | Implementace záměru, issue, funkce, opravy nebo story |
 | `bmad-code-review`                    | `bmad-code-review`                        | DEV       | Revize implementovaného kódu                    |
 
 ## Časté otázky
 
 **Potřebuji vždy architekturu?**
-Pouze pro BMad Method a Enterprise cesty. Quick Flow přeskakuje ze specifikace rovnou k implementaci.
+Ne. Architekturu použijte, když je třeba explicitně zachytit technická rozhodnutí nebo mezisystémová omezení. Jasná práce může vstoupit přímo do `bmad-quick-dev`; větší iniciativa přináší do stejného workflow plánovací artefakty.
 
 **Mohu později změnit svůj plán?**
 Ano. Workflow `bmad-correct-course` (`bmad-correct-course`) řeší změny rozsahu během implementace.
@@ -269,7 +270,7 @@ BMad-Help prozkoumá váš projekt, detekuje, co jste dokončili, a řekne vám 
 :::tip[Zapamatujte si]
 - **Začněte s `bmad-help`** — Váš inteligentní průvodce, který zná váš projekt a možnosti
 - **Vždy používejte nové chaty** — Začněte nový chat pro každý workflow
-- **Cesta záleží** — Quick Flow používá `bmad-quick-dev`; Method/Enterprise vyžadují PRD a architekturu
+- **Hloubka plánování se liší** — přímý záměr i plně naplánované stories vstupují do `bmad-quick-dev`
 - **BMad-Help se spouští automaticky** — Každý workflow končí pokyny, co dělat dál
 :::
 

@@ -71,20 +71,20 @@ For complex projects, consider using the `bmad-document-project` workflow. It of
 
 ```
 bmad-help I have an existing Rails app, where should I start?
-bmad-help What's the difference between quick-flow and full method?
+bmad-help How much planning does this change need before implementation?
 bmad-help Show me what workflows are available
 ```
 
 BMad-Help also **automatically runs at the end of every workflow**, providing clear guidance on exactly what to do next.
 
-### Choosing Your Approach
+### Choose Planning Depth
 
-You have two primary options depending on the scope of changes:
+All implementation uses `bmad-quick-dev`; scope determines what context you prepare first:
 
-| Scope                          | Recommended Approach                                                                                                                          |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Small updates or additions** | Run `bmad-quick-dev` to clarify intent, plan, implement, and review in a single workflow. The full four-phase BMad Method is likely overkill. |
-| **Major changes or additions** | Start with the BMad Method, applying as much or as little rigor as needed.                                                                    |
+| Scope | Recommended preparation |
+| --- | --- |
+| **Clear updates or additions** | Enter `bmad-quick-dev` directly with the request, issue, or existing spec. |
+| **Major changes or additions** | Prepare the useful PRD, UX, architecture, epic, story, readiness, and sprint context, then pass the selected work to `bmad-quick-dev`. |
 
 ### During PRD Creation
 

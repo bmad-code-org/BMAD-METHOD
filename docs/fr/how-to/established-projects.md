@@ -69,20 +69,20 @@ Pour les projets complexes, envisagez d’utiliser le workflow `bmad-document-pr
 
 ```
 bmad-help J'ai une app Rails existante, par où dois-je commencer ?
-bmad-help Quelle est la différence entre quick-dev et la méthode complète ?
+bmad-help Quelle profondeur de planification faut-il avant d’implémenter ce changement ?
 bmad-help Montre-moi quels workflows sont disponibles
 ```
 
 BMad-Help s’exécute également **automatiquement à la fin de chaque workflow**, fournissant des conseils clairs sur exactement quoi faire ensuite.
 
-### Choisir votre approche
+### Choisir la profondeur de planification
 
-Vous avez deux options principales selon l’ampleur des modifications :
+Toute implémentation utilise `bmad-quick-dev` ; la portée détermine le contexte à préparer en amont :
 
 | Portée                              | Approche recommandée                                                                                                                                                                 |
 |-------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Petites mises à jour ou ajouts**  | Exécutez `bmad-quick-dev` pour clarifier l’intention, planifier, implémenter et réviser dans un seul workflow. La méthode BMad complète en quatre phases est probablement excessive. |
-| **Modifications ou ajouts majeurs** | Commencez avec la méthode BMad, en appliquant autant ou aussi peu de rigueur que nécessaire.                                                                                         |
+| **Mises à jour ou ajouts clairs**   | Entrez directement dans `bmad-quick-dev` avec la demande, l’issue ou la spécification existante. |
+| **Modifications ou ajouts majeurs** | Préparez le PRD, l’UX, l’architecture, les epics, les stories et le contexte de sprint utiles, puis confiez le travail sélectionné à `bmad-quick-dev`. |
 
 ### Pendant la création du PRD
 

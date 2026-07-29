@@ -14,7 +14,7 @@ BMad offers two ways to start work, and they serve different purposes.
 | Mechanism | How you invoke it | What happens |
 | --- | --- | --- |
 | **Skill** | Type the skill name (e.g. `bmad-help`) in your IDE | Directly loads an agent, runs a workflow, or executes a task |
-| **Agent menu trigger** | Load an agent first, then type a short code (e.g. `DS`) | The agent interprets the code and starts the matching workflow while staying in character |
+| **Agent menu trigger** | Load an agent first, then type a short code (e.g. `QD`) | The agent interprets the code and starts the matching workflow while staying in character |
 
 Agent menu triggers require an active agent session. Use skills when you know which workflow you want. Use triggers when you are already working with an agent and want to switch tasks without leaving the conversation.
 
@@ -97,9 +97,9 @@ Workflow skills run a structured, multi-step process without loading an agent pe
 | `bmad-ux` | Design user experience |
 | `bmad-architecture` | Design system architecture |
 | `bmad-create-epics-and-stories` | Create epics and stories |
-| `bmad-quick-dev` | Implement a feature, fix, or story |
+| `bmad-quick-dev` | Implement direct intent, an issue, a feature, a fix, or a planned story |
 | `bmad-code-review` | Run a code review |
-| `bmad-dev-auto` | Run one unattended development-loop iteration — small intent in, code out, no human interaction |
+| `bmad-dev-auto` | Automate one unattended iteration of the Quick Dev implementation model |
 
 See [Workflow Map](./workflow-map.md) for the complete workflow reference organized by phase.
 

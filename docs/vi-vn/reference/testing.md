@@ -97,7 +97,7 @@ TEA cũng hỗ trợ ưu tiên theo rủi ro P0-P3 và tích hợp tùy chọn v
 
 Workflow QA Automate xuất hiện ở Phase 4 (Implementation) trong workflow map của BMad Method. Nó được thiết kế để chạy **sau khi hoàn tất trọn vẹn một epic** — tức là khi mọi story trong epic đó đã được triển khai và code review xong. Trình tự điển hình là:
 
-1. Với mỗi story trong epic: triển khai bằng Dev (`DS`), sau đó xác nhận bằng Code Review (`CR`)
+1. Với mỗi story trong epic: triển khai bằng Quick Dev (`QD` / `bmad-quick-dev`), sau đó thêm Code Review (`CR`) khi cần
 2. Sau khi epic hoàn tất: tạo test bằng `QA` (thông qua Developer agent) hoặc workflow Automate của TEA
 3. Chạy retrospective (`bmad-retrospective`) để ghi nhận bài học rút ra
 

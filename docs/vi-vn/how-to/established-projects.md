@@ -69,20 +69,20 @@ Với các dự án phức tạp, hãy cân nhắc dùng workflow `bmad-document
 
 ```text
 bmad-help Tôi có một ứng dụng Rails đã tồn tại, tôi nên bắt đầu từ đâu?
-bmad-help Điểm khác nhau giữa quick-flow và full method là gì?
+bmad-help Thay đổi này cần lập kế hoạch sâu đến đâu trước implementation?
 bmad-help Cho tôi xem những workflow đang có
 ```
 
 BMad-Help cũng **tự động chạy ở cuối mỗi workflow**, đưa ra hướng dẫn rõ ràng về việc cần làm tiếp theo.
 
-### Chọn cách tiếp cận
+### Chọn độ sâu lập kế hoạch
 
-Bạn có hai lựa chọn chính, tùy thuộc vào phạm vi thay đổi:
+Mọi implementation đều dùng `bmad-quick-dev`; phạm vi quyết định ngữ cảnh cần chuẩn bị trước:
 
 | Phạm vi | Cách tiếp cận được khuyến nghị |
 | --- | --- |
-| **Cập nhật hoặc bổ sung nhỏ** | Chạy `bmad-quick-dev` để làm rõ ý định, lập kế hoạch, triển khai và review trong một workflow duy nhất. Quy trình BMad Method đầy đủ có thể là quá mức cần thiết. |
-| **Thay đổi hoặc bổ sung lớn** | Bắt đầu với BMad Method, áp dụng mức độ chặt chẽ phù hợp với nhu cầu của bạn. |
+| **Cập nhật hoặc bổ sung rõ ràng** | Đi thẳng vào `bmad-quick-dev` với yêu cầu, issue hoặc spec hiện có. |
+| **Thay đổi hoặc bổ sung lớn** | Chuẩn bị PRD, UX, kiến trúc, epic, story và sprint context hữu ích, rồi đưa phần việc đã chọn vào `bmad-quick-dev`. |
 
 ### Khi tạo PRD
 

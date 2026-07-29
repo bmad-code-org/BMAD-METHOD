@@ -9,7 +9,7 @@ description: 安装 BMad 并构建你的第一个项目
 
 - 为新项目安装并初始化 BMad Method
 - 使用 **BMad-Help** —— 你的智能向导，它知道下一步该做什么
-- 根据项目规模选择合适的规划路径
+- 为当前工作选择合适的规划深度
 - 从需求到可用代码，逐步推进各个阶段
 - 有效使用智能体和工作流
 
@@ -70,21 +70,21 @@ BMad 通过带有专门 AI 智能体的引导工作流帮助你构建软件。�
 | ---- | -------------- | -------------------------------------------------- |
 | 1    | 分析           | 头脑风暴、研究、产品简报 *（可选）*                |
 | 2    | 规划           | 创建需求（PRD 或技术规范）                         |
-| 3    | 解决方案设计   | 设计架构 *（仅适用于 BMad Method/Enterprise）*          |
-| 4    | 实现           | 逐个史诗、逐个故事地构建                           |
+| 3    | 解决方案设计   | 按需要设计架构                                     |
+| 4    | 实现           | 每个变更或 story 都通过 Quick Dev                  |
 
 **[打开工作流地图](../reference/workflow-map.md)** 以探索阶段、工作流和上下文管理。
 
-根据项目的复杂性，BMad 提供三种规划路径：
+规划深度可以灵活调整：
 
-| 路径           | 最适合                                               | 创建的文档                              |
-| --------------- | ---------------------------------------------------- | --------------------------------------- |
-| **Quick Flow**  | 错误修复、简单功能、范围清晰（1-15 个故事）          | 仅技术规范                              |
-| **BMad Method** | 产品、平台、复杂功能（10-50+ 个故事）                | PRD + 架构 + UX                         |
-| **Enterprise**  | 合规、多租户系统（30+ 个故事）                       | PRD + 架构 + 安全 + DevOps              |
+| 规划深度 | 最适合 | 实施前可用上下文 |
+| --- | --- | --- |
+| **直接** | 清晰的修复、功能、issue 或现有规格 | 意图、issue 或规格 |
+| **产品规划** | 产品、平台和复杂功能 | PRD 与可选 UX 设计 |
+| **完整方案设计** | 跨系统、高风险或协同项目 | PRD、UX、架构、epics、stories 与 sprint 计划 |
 
 :::note
-故事数量是指导，而非定义。根据规划需求选择你的路径，而不是故事数学。
+这些不是独立的实施路径。所有入口都汇入 `bmad-quick-dev`；规划只会改变实施前已有的上下文量。
 :::
 
 ## 安装
@@ -121,9 +121,9 @@ BMad-Help 将检测你已完成的内容，并准确推荐下一步该做什么�
 始终为每个工作流开始一个新的对话。这可以防止上下文限制导致问题。
 :::
 
-## 步骤 1：创建你的计划
+## 步骤 1：选择规划深度
 
-完成阶段 1-3。**为每个工作流使用新对话。**
+根据工作需要选用阶段 1-3。对于清晰且边界明确的工作，可以直接进入[步骤 2](#步骤-2构建你的项目)。**为每个工作流使用新对话。**
 
 :::tip[项目上下文（可选）]
 在开始之前，考虑创建 `project-context.md` 来记录你的技术偏好和实现规则。这确保所有 AI 智能体在整个项目中遵循你的约定。
@@ -138,21 +138,18 @@ BMad-Help 将检测你已完成的内容，并准确推荐下一步该做什么�
 - **研究**（`bmad-deep-recon`） — 为你自己的深度研究工具起草提示词、将完成的研究报告加工为可供下游使用的精炼摘要，或直接在此执行研究——覆盖市场、领域、技术、竞争、用户之声与学术类型，带论断核实与刷新生命周期
 - **创建产品简报**（`bmad-create-product-brief`） — 推荐的基础文档
 
-### 阶段 2：规划（必需）
+### 阶段 2：规划（按需）
 
-**对于 BMad Method 和 Enterprise 路径：**
+对于需要产品规划的工作：
 1. 在新对话中调用 **PM 智能体**（`bmad-agent-pm`）
 2. 运行 `bmad-prd` 工作流（`bmad-prd`）
 3. 输出：`PRD.md`
-
-**对于 Quick Flow 路径：**
-- 运行 `bmad-quick-dev` —— 它会在一个工作流里同时处理规划与实现，可直接进入实现阶段
 
 :::note[UX 设计（可选）]
 如果你的项目有用户界面，在创建 PRD 后调用 **UX-Designer 智能体**（`bmad-agent-ux-designer`），然后运行 UX 设计工作流（`bmad-ux`）。
 :::
 
-### 阶段 3：解决方案设计（BMad Method/Enterprise）
+### 阶段 3：解决方案设计（按需）
 
 **创建架构**
 1. 在新对话中调用 **Architect 智能体**（`bmad-agent-architect`）
@@ -176,21 +173,26 @@ BMad-Help 将检测你已完成的内容，并准确推荐下一步该做什么�
 
 ## 步骤 2：构建你的项目
 
-规划完成后，进入实现阶段。**每个工作流应该在新对话中运行。**
+携带现有上下文进入实现阶段：直接请求、issue、规格或完整规划的 story。**每个工作流应该在新对话中运行。**
 
-### 初始化冲刺规划
+对于已规划工作，运行 `bmad-quick-dev` 并指出选定的 story 或 sprint 项，例如：`实现 _bmad-output/planning-artifacts/epics.md 中的 story 2.3`。
+
+### 初始化冲刺规划（用于规划工作）
 
 调用 **Developer 智能体**（`bmad-agent-dev`）并运行 `bmad-sprint-planning`（`bmad-sprint-planning`）。这会创建 `sprint-status.yaml` 来跟踪所有史诗和故事。
 
+当 Quick Dev 在该文件中解析出选定 story 时，它会在实施期间把状态改为 `in-progress`，并在实施完成后改为 `review`。
+
 ### 构建周期
 
-对于每个故事，使用新对话重复此周期：
+对于每个直接变更或已规划 story，使用新对话重复此周期：
 
 | 步骤 | 智能体 | 工作流       | 命令                    | 目的                            |
 | ---- | ------ | ------------ | ----------------------- | ------------------------------- |
-| 1    | DEV    | `bmad-create-story` | `bmad-create-story` | 从史诗创建故事文件              |
-| 2    | DEV    | `bmad-dev-story`    | `bmad-dev-story`    | 实现故事                        |
-| 3    | DEV    | `bmad-code-review`  | `bmad-code-review`  | 质量验证 *（推荐）*             |
+| 1    | DEV    | `bmad-quick-dev`    | `bmad-quick-dev`    | 按需澄清、规划、实现、审查与呈现 |
+| 2    | DEV    | `bmad-code-review`  | `bmad-code-review`  | 额外质量验证 *（推荐）*          |
+
+Quick Dev 的审查是每次运行的一部分。`bmad-code-review` 是在全新上下文中执行的可选独立验证层。
 
 完成史诗中的所有故事后，调用 **Developer 智能体**（`bmad-agent-dev`）并运行 `bmad-retrospective`（`bmad-retrospective`）。
 
@@ -199,7 +201,7 @@ BMad-Help 将检测你已完成的内容，并准确推荐下一步该做什么�
 你已经学习了使用 BMad 构建的基础：
 
 - 安装了 BMad 并为你的 IDE 进行了配置
-- 使用你选择的规划路径初始化了项目
+- 为当前工作选择了合适的规划深度
 - 创建了规划文档（PRD、架构、史诗和故事）
 - 了解了实现的构建周期
 
@@ -230,14 +232,13 @@ your-project/
 | `bmad-create-epics-and-stories`     | `bmad-create-epics-and-stories`        | PM       | 将 PRD 分解为史诗                            |
 | `bmad-check-implementation-readiness` | `bmad-check-implementation-readiness` | Architect | 验证规划一致性                              |
 | `bmad-sprint-planning`              | `bmad-sprint-planning`                 | DEV      | 初始化冲刺跟踪                               |
-| `bmad-create-story`                 | `bmad-create-story`                    | DEV      | 创建故事文件                                 |
-| `bmad-dev-story`                    | `bmad-dev-story`                       | DEV      | 实现故事                                     |
+| `bmad-quick-dev`                    | `bmad-quick-dev`                       | DEV      | 实施意图、issue、功能、修复或已规划 story     |
 | `bmad-code-review`                  | `bmad-code-review`                     | DEV      | 审查已实现的代码                             |
 
 ## 常见问题
 
 **我总是需要架构吗？**
-仅对于 BMad Method 和 Enterprise 路径。Quick Flow 从技术规范跳转到实现。
+不需要。只有当技术决策或跨系统约束需要显式记录时才使用架构。清晰工作可以直接进入 `bmad-quick-dev`；大型项目则把规划产物带入同一个 workflow。
 
 **我可以稍后更改我的计划吗？**
 可以。`bmad-correct-course` 工作流用于处理实现过程中的范围变化。
@@ -268,7 +269,7 @@ BMad-Help 检查你的项目，检测你已完成的内容，并确切地告诉�
 :::tip[记住这些]
 - **从 `bmad-help` 开始** — 你的智能向导，了解你的项目和选项
 - **始终使用新对话** — 为每个工作流开始新对话
-- **路径很重要** — Quick Flow 使用 `bmad-quick-dev`；Method/Enterprise 需要 PRD 和架构
+- **规划深度可变** — 直接意图和完整规划的 story 都进入 `bmad-quick-dev`
 - **BMad-Help 自动运行** — 每个工作流结束时都会提供下一步的指导
 :::
 

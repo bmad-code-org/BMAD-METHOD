@@ -30,7 +30,7 @@ Clone or open the [BMAD-METHOD repo](https://github.com/bmad-code-org/BMAD-METHO
 :::note[Example]
 **Q:** "Tell me the fastest way to build something with BMad"
 
-**A:** Use Quick Flow: Run `bmad-quick-dev` — it clarifies your intent, plans, implements, reviews, and presents results in a single workflow, skipping the full planning phases.
+**A:** Run `bmad-quick-dev`. Give it direct intent, an issue, a spec, or a planned story; it uses the available context and chooses the clarification, planning, implementation, and review depth needed.
 :::
 
 **Tips for better answers:**

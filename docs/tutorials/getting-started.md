@@ -9,7 +9,7 @@ Build software faster using AI-powered workflows with specialized agents that gu
 
 - Install and initialize BMad Method for a new project
 - Use **BMad-Help** — your intelligent guide that knows what to do next
-- Choose the right planning track for your project size
+- Choose the right planning depth for your project
 - Progress through phases from requirements to working code
 - Use agents and workflows effectively
 
@@ -73,20 +73,20 @@ BMad helps you build software through guided workflows with specialized AI agent
 | 1     | Analysis       | Brainstorming, research, forge idea, product brief or PRFAQ _(optional)_ |
 | 2     | Planning       | Create requirements and design PRD, UX, SPEC                 |
 | 3     | Solutioning    | Design architecture spine or detailed project or system architectures          |
-| 4     | Implementation | Build epic by epic, story by story with quick dev or automated epic delivery    |
+| 4     | Implementation | Build every change or planned story with Quick Dev, optionally through automated orchestration |
 
 **[Open the Workflow Map](../reference/workflow-map.md)** to explore phases, workflows, and context management.
 
-Based on your project's complexity, BMad offers three planning tracks:
+Planning depth is flexible. Start implementation directly when the intent is already clear, or add the planning artifacts that reduce risk for larger work:
 
-| Track           | Best For                                               | Documents Created                      |
-| --------------- | ------------------------------------------------------ | -------------------------------------- |
-| **Quick Flow**  | Bug fixes, simple features, clear scope (1-15 stories) | Tech-spec only                         |
-| **BMad Method** | Products, platforms, complex features (10-50+ stories) | PRD + Architecture + UX                |
-| **Enterprise**  | Compliance, multi-tenant systems (30+ stories)         | PRD + Architecture + Security + DevOps |
+| Planning depth | Best For | Context Available Before Implementation |
+| --- | --- | --- |
+| **Direct** | Clear fixes, features, issues, or existing specifications | User intent, issue, or spec |
+| **Product planning** | Products, platforms, and complex features | PRD and optional UX design |
+| **Full solutioning** | Cross-system, high-risk, or coordinated initiatives | PRD, UX, architecture, epics, stories, and sprint plan |
 
 :::note
-Story counts are guidance, not definitions. Choose your track based on planning needs, not story math.
+These are entry points, not separate implementation tracks. Every path converges on `bmad-quick-dev`; planning only changes how much context the workflow receives.
 :::
 
 ## Installation
@@ -124,9 +124,9 @@ Each workflow has a **skill** you invoke by name in your IDE (e.g., `bmad-prd`).
 Always start a fresh chat for each workflow. This prevents context limitations from causing issues.
 :::
 
-## Step 1: Create Your Plan
+## Step 1: Choose Your Planning Depth
 
-Work through phases 1-3. **Use fresh chats for each workflow.**
+Use as much of phases 1-3 as the work needs. For clear, bounded work, you can proceed directly to [Step 2](#step-2-build-your-project). **Use fresh chats for each workflow.**
 
 :::tip[Project Context (Optional)]
 Before starting, consider creating `project-context.md` to document your technical preferences and implementation rules. This ensures all AI agents follow your conventions throughout the project.
@@ -144,9 +144,9 @@ All workflows in this phase are optional. [**Not sure which to use?**](../explan
 - **product-brief** (`bmad-product-brief`) — Recommended foundation document when your concept is clear
 - **prfaq** (`bmad-prfaq`) — Working Backwards challenge to stress-test your product concept customer-first
 
-### Phase 2: Planning (Required)
+### Phase 2: Planning (As Needed)
 
-**For BMad Method and Enterprise tracks:**
+For work that benefits from product planning:
 
 1. Run `bmad-prd` in a new chat — state your intent (Create / Update / Validate) or let the skill ask
 2. Output: `prd.md`, `addendum.md`, `.memlog.md`
@@ -158,15 +158,11 @@ All workflows in this phase are optional. [**Not sure which to use?**](../explan
 - **Validate** — critique a finished PRD against a checklist and produce an HTML findings report
   :::
 
-**For Quick Flow track:**
-
-- Run `bmad-quick-dev` — it handles planning and implementation in a single workflow, skip to implementation
-
 :::note[UX Design (Optional)]
 If your project has a user interface, invoke the **UX-Designer agent** (`bmad-agent-ux-designer`) and run the UX design workflow (`bmad-ux`) after creating your PRD.
 :::
 
-### Phase 3: Solutioning (BMad Method/Enterprise)
+### Phase 3: Solutioning (As Needed)
 
 **Create Architecture**
 
@@ -192,22 +188,26 @@ Epics and stories are now created _after_ architecture. This produces better qua
 
 ## Step 2: Build Your Project
 
-Once planning is complete, move to implementation. **Each workflow should run in a fresh chat.**
+Move to implementation from whatever context you have: a direct request, an issue, a spec, or a fully planned story. **Each workflow should run in a fresh chat.**
 
-### Initialize Sprint Planning
+For planned work, invoke `bmad-quick-dev` and identify the selected story or sprint item, for example: `Implement story 2.3 from _bmad-output/planning-artifacts/epics.md`.
+
+### Initialize Sprint Planning (For Planned Work)
 
 Invoke the **Developer agent** (`bmad-agent-dev`) and run `bmad-sprint-planning` (`bmad-sprint-planning`). This creates `sprint-status.yaml` to track all epics and stories.
 
+When Quick Dev resolves a selected story in that file, it moves the story to `in-progress` during implementation and to `review` when implementation is complete.
+
 ### The Build Cycle
 
-For each story, repeat this cycle with fresh chats:
+For each direct change or planned story, repeat this cycle with fresh chats:
 
 | Step | Agent | Workflow | Command | Purpose |
 | ---- | ----- | -------- | ------- | ------- |
-| 1    | DEV   | `bmad-quick-dev` | `bmad-quick-dev` | Create the story spec, implement, review, present |
+| 1    | DEV   | `bmad-quick-dev` | `bmad-quick-dev` | Clarify as needed, plan, implement, review, present |
 | 2    | DEV   | `bmad-code-review` | `bmad-code-review` | Additional quality validation _(recommended)_ |
 
-The older `bmad-create-story` / `bmad-dev-story` split flow is deprecated; `bmad-quick-dev` is the official implementation method.
+Quick Dev's review is part of every run. `bmad-code-review` is an optional fresh-context, independent validation layer.
 
 After completing all stories in an epic, invoke the **Developer agent** (`bmad-agent-dev`) and run `bmad-retrospective` (`bmad-retrospective`).
 
@@ -216,7 +216,7 @@ After completing all stories in an epic, invoke the **Developer agent** (`bmad-a
 You've learned the foundation of building with BMad:
 
 - Installed BMad and configured it for your IDE
-- Initialized a project with your chosen planning track
+- Chosen planning depth appropriate to your work
 - Created planning documents (PRD, Architecture, Epics & Stories)
 - Understood the build cycle for implementation
 
@@ -253,7 +253,7 @@ your-project/
 ## Common Questions
 
 **Do I always need architecture?**
-Only for BMad Method and Enterprise tracks. Quick Flow skips from spec to implementation.
+No. Use architecture when technical decisions or cross-system constraints need to be explicit. Clear work can enter `bmad-quick-dev` directly, while larger initiatives can bring architecture and other planning artifacts into the same workflow.
 
 **Can I change my plan later?**
 Yes. The `bmad-correct-course` workflow handles scope changes mid-implementation.
@@ -286,7 +286,7 @@ BMad-Help inspects your project, detects what you've completed, and tells you ex
 
 - **Start with `bmad-help`** — Your intelligent guide that knows your project and options
 - **Always use fresh chats** — Start a new chat for each workflow
-- **Track matters** — Quick Flow uses `bmad-quick-dev`; Method/Enterprise need PRD and architecture
+- **Planning depth varies** — direct intent and fully planned stories both enter `bmad-quick-dev`
 - **BMad-Help runs automatically** — Every workflow ends with guidance on what's next
   :::
 

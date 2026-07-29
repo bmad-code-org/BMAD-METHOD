@@ -11,7 +11,7 @@ Các câu trả lời nhanh cho những câu hỏi thường gặp khi làm vi�
 
 - [Tôi có phải chạy document-project trước không?](#toi-co-phai-chay-document-project-truoc-khong)
 - [Nếu tôi quên chạy document-project thì sao?](#neu-toi-quen-chay-document-project-thi-sao)
-- [Tôi có thể dùng Quick Flow cho dự án đã tồn tại không?](#toi-co-the-dung-quick-flow-cho-du-an-da-ton-tai-khong)
+- [Implementation hoạt động thế nào trong dự án đã tồn tại?](#implementation-hoat-dong-the-nao-trong-du-an-da-ton-tai)
 - [Nếu code hiện tại của tôi không theo best practices thì sao?](#neu-code-hien-tai-cua-toi-khong-theo-best-practices-thi-sao)
 
 ### Tôi có phải chạy document-project trước không?
@@ -28,20 +28,20 @@ Bạn có thể bỏ qua nếu đã có tài liệu đầy đủ, mới, bao g�
 
 Không sao - bạn có thể chạy nó bất cứ lúc nào. Bạn thậm chí có thể chạy trong khi dự án đang diễn ra hoặc sau đó để giữ tài liệu luôn mới.
 
-### Tôi có thể dùng Quick Flow cho dự án đã tồn tại không?
+### Implementation hoạt động thế nào trong dự án đã tồn tại?
 
-Có. Quick Flow hoạt động rất tốt với dự án đã tồn tại. Nó sẽ:
+Chạy `bmad-quick-dev`, giống như với dự án mới. Workflow sẽ:
 
 - Tự động nhận diện stack hiện có
 - Phân tích pattern code hiện có
 - Phát hiện quy ước và hỏi bạn để xác nhận
 - Tạo spec giàu ngữ cảnh, tôn trọng code hiện có
 
-Rất hợp với sửa lỗi và tính năng nhỏ trong codebase sẵn có.
+Bạn có thể vào trực tiếp với thay đổi rõ ràng, hoặc cung cấp story đã lập kế hoạch cùng các artifact upstream cho công việc lớn hơn.
 
 ### Nếu code hiện tại của tôi không theo best practices thì sao?
 
-Quick Flow sẽ nhận diện quy ước hiện có và hỏi: "Tôi có nên tuân theo những quy ước hiện tại này không?" Bạn là người quyết định:
+Quick Dev sẽ nhận diện quy ước hiện có và hỏi: "Tôi có nên tuân theo những quy ước hiện tại này không?" Bạn là người quyết định:
 
 - **Có** → Giữ tính nhất quán với codebase hiện tại
 - **Không** → Đặt ra chuẩn mới, đồng thời ghi rõ lý do trong spec

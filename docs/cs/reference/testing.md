@@ -97,7 +97,7 @@ TEA také podporuje prioritizaci P0–P3 založenou na riziku a volitelné integ
 
 Quinn workflow Automate se objevuje ve Fázi 4 (Implementace) mapy workflow BMad Method. Je navržen ke spuštění **po dokončení celého epicu** — jakmile jsou všechny stories v epicu implementovány a zrevidovány. Typická sekvence:
 
-1. Pro každou story v epicu: implementace s Dev (`DS`), pak validace pomocí Code Review (`CR`)
+1. Pro každou story v epicu: implementace pomocí Quick Dev (`QD` / `bmad-quick-dev`), pak podle potřeby Code Review (`CR`)
 2. Po dokončení epicu: generování testů s Quinnem (`QA`) nebo TEA workflow Automate
 3. Spuštění retrospektivy (`bmad-retrospective`) pro zachycení získaných zkušeností
 

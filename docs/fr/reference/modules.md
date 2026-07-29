@@ -43,7 +43,7 @@ Outils basés sur l’IA pour la créativité structurée, l’idéation et l’
 
 ## Game Dev Studio
 
-Workflows de développement de jeux structurés adaptés pour Unity, Unreal, Godot et moteurs personnalisés. Supporte le prototypage rapide via Quick Dev et la production à grande échelle avec des sprints propulsés par epics.
+Workflows de développement de jeux structurés adaptés pour Unity, Unreal, Godot et moteurs personnalisés. Supporte une profondeur de planification allant du prototype à la production à grande échelle ; l’implémentation converge vers Quick Dev.
 
 - **Code :** `gds`
 - **npm :** [`bmad-game-dev-studio`](https://www.npmjs.com/package/bmad-game-dev-studio)
@@ -52,7 +52,7 @@ Workflows de développement de jeux structurés adaptés pour Unity, Unreal, God
 **Fournit :**
 
 - Workflow de génération de Document de Design de Jeu (GDD[^3])
-- Mode Quick Dev pour le prototypage rapide
+- Contexte et planification spécifiques au jeu pour la boucle d’implémentation Quick Dev standard
 - Support de design narratif pour les personnages, dialogues et construction de monde
 - Couverture de plus de 21 types de jeux avec des conseils d’architecture spécifiques au moteur
 

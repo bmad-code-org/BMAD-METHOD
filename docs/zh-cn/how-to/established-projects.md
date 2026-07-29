@@ -70,20 +70,20 @@ bmad-generate-project-context
 
 ```
 bmad-help 我有一个现有的 Rails 应用，我应该从哪里开始？
-bmad-help Quick Flow 和完整方法有什么区别？
+bmad-help 这个变更在实施前需要多深的规划？
 bmad-help 显示我当前有哪些可用工作流
 ```
 
 BMad-Help 还会在**每个工作流结束时自动运行**，明确告诉你下一步该做什么。
 
-### 选择你的方法
+### 选择规划深度
 
-根据变更范围，你有两个主要选项：
+所有实施都使用 `bmad-quick-dev`；范围只决定需要预先准备多少上下文：
 
 | 范围 | 推荐方法 |
 | --- | --- |
-| **小型更新或新增** | 运行 `bmad-quick-dev`，在单个工作流中完成意图澄清、规划、实现与审查。完整四阶段 BMad Method 往往过重。 |
-| **重大变更或新增** | 从完整 BMad Method 开始，再按项目风险和协作需求调整流程严谨度。 |
+| **清晰更新或新增** | 携带请求、issue 或现有规格直接进入 `bmad-quick-dev`。 |
+| **重大变更或新增** | 准备有用的 PRD、UX、架构、epic、story 和 sprint 上下文，再把选定工作交给 `bmad-quick-dev`。 |
 
 ### 在创建 PRD 期间
 

@@ -10,7 +10,7 @@ Rychlé odpovědi na časté otázky o práci na existujících projektech s BMa
 
 - [Musím nejdřív spustit document-project?](#musím-nejdřív-spustit-document-project)
 - [Co když zapomenu spustit document-project?](#co-když-zapomenu-spustit-document-project)
-- [Mohu použít Quick Flow pro existující projekty?](#mohu-použít-quick-flow-pro-existující-projekty)
+- [Jak funguje implementace v existujících projektech?](#jak-funguje-implementace-v-existujících-projektech)
 - [Co když můj existující kód nedodržuje osvědčené postupy?](#co-když-můj-existující-kód-nedodržuje-osvědčené-postupy)
 
 ### Musím nejdřív spustit document-project?
@@ -27,20 +27,20 @@ Můžete to přeskočit, pokud máte komplexní, aktuální dokumentaci včetně
 
 Nedělejte si starosti — můžete to udělat kdykoli. Můžete to udělat i během nebo po projektu, aby pomohl udržet dokumentaci aktuální.
 
-### Mohu použít Quick Flow pro existující projekty?
+### Jak funguje implementace v existujících projektech?
 
-Ano! Quick Flow funguje skvěle pro existující projekty. Umí:
+Spusťte `bmad-quick-dev`, stejně jako u nového vývoje. Umí:
 
 - Automaticky detekovat váš existující stack
 - Analyzovat existující vzory kódu
 - Detekovat konvence a požádat o potvrzení
 - Generovat kontextově bohatou specifikaci, která respektuje existující kód
 
-Ideální pro opravy chyb a malé funkce v existujících kódových bázích.
+Pro jasnou změnu můžete vstoupit přímo; pro větší práci předejte naplánovanou story a její upstream artefakty.
 
 ### Co když můj existující kód nedodržuje osvědčené postupy?
 
-Quick Flow detekuje vaše konvence a zeptá se: „Mám dodržovat tyto existující konvence?“ Rozhodujete vy:
+Quick Dev detekuje vaše konvence a zeptá se: „Mám dodržovat tyto existující konvence?“ Rozhodujete vy:
 
 - **Ano** → Zachovat konzistenci se současnou kódovou bází
 - **Ne** → Zavést nové standardy (zdokumentujte proč ve specifikaci)

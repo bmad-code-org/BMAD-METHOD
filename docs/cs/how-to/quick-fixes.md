@@ -5,7 +5,7 @@ sidebar:
   order: 5
 ---
 
-Použijte **Quick Dev** pro opravy chyb, refaktoringy nebo malé cílené změny, které nevyžadují plnou metodu BMad.
+Opravy chyb, refaktoringy a malé cílené změny mohou vstoupit do **Quick Dev** přímo s minimem upstream plánování. Jde o stejný implementační workflow jako pro plně naplánované stories.
 
 ## Kdy to použít
 
@@ -84,12 +84,12 @@ Quick Dev udržuje každý běh zaměřený na jeden cíl. Pokud váš požadave
 
 Zkontrolujte tento soubor po běhu — je to váš backlog věcí, ke kterým se vrátit. Každou odloženou položku lze zadat do nového běhu Quick Dev později.
 
-## Kdy přejít na formální plánování
+## Kdy přidat formální plánování
 
-Zvažte použití plné metody BMad, když:
+Před spuštěním stejného Quick Dev loopu zvažte přidání PRD, UX, architektury nebo plánování stories, když:
 
 - Změna ovlivňuje více systémů nebo vyžaduje koordinované aktualizace napříč mnoha soubory
 - Nejste si jisti rozsahem a potřebujete nejprve zjišťování požadavků
 - Potřebujete dokumentaci nebo architektonická rozhodnutí zaznamenaná pro tým
 
-Podívejte se na [Quick Dev](../explanation/quick-dev.md) pro více informací o tom, jak Quick Dev zapadá do metody BMad.
+Podívejte se na [Quick Dev](../explanation/quick-dev.md), kde je vysvětleno, jak se přímý záměr a naplánovaná práce sbíhají do stejného implementačního loopu.

@@ -22,10 +22,8 @@ Mỗi workflow triển khai đều tự động nạp `project-context.md` nếu
 
 **Được nạp bởi các workflow sau:**
 - `bmad-architecture` - tôn trọng ưu tiên kỹ thuật trong giai đoạn solutioning
-- `bmad-create-story` - đưa pattern của dự án vào quá trình tạo story
-- `bmad-dev-story` - định hướng các quyết định triển khai
 - `bmad-code-review` - đối chiếu với tiêu chuẩn của dự án
-- `bmad-quick-dev` - áp dụng pattern khi triển khai các spec
+- `bmad-quick-dev` - áp dụng pattern khi lập kế hoạch và triển khai ý định trực tiếp hoặc story
 - `bmad-sprint-planning`, `bmad-retrospective`, `bmad-correct-course` - cung cấp bối cảnh cấp dự án
 
 ## Khi nào nên tạo
@@ -37,7 +35,7 @@ Tệp `project-context.md` hữu ích ở bất kỳ giai đoạn nào của d�
 | **Dự án mới, trước kiến trúc** | Tạo thủ công, trước `bmad-architecture` | Ghi lại ưu tiên kỹ thuật để architect tôn trọng |
 | **Dự án mới, sau kiến trúc** | Qua `bmad-generate-project-context` hoặc tạo thủ công | Ghi lại quyết định kiến trúc cho các agent triển khai |
 | **Dự án hiện có** | Qua `bmad-generate-project-context` | Khám phá pattern hiện có để agent theo đúng quy ước |
-| **Dự án Quick Flow** | Trước hoặc trong `bmad-quick-dev` | Đảm bảo triển khai nhanh vẫn tôn trọng pattern của bạn |
+| **Đầu vào triển khai trực tiếp** | Trước hoặc trong `bmad-quick-dev` | Đảm bảo triển khai không có planning upstream vẫn tôn trọng pattern của bạn |
 
 :::tip[Khuyến nghị]
 Với dự án mới, hãy tạo thủ công trước giai đoạn kiến trúc nếu bạn có ưu tiên kỹ thuật rõ ràng. Nếu không, hãy tạo nó sau kiến trúc để ghi lại các quyết định đã được đưa ra.
@@ -137,7 +135,7 @@ Nếu không có `project-context.md`, các agent sẽ tự đưa ra giả đị
 | Mỗi agent tự quyết định | Tất cả agent canh hàng theo cùng quy tắc |
 
 Điều này đặc biệt quan trọng với:
-- **Quick Flow** - bỏ qua PRD và kiến trúc, nên tệp context lấp đầy khoảng trống
+- **Đầu vào trực tiếp** - khi không có PRD hoặc kiến trúc, tệp context cung cấp quy ước bền vững của dự án
 - **Dự án theo nhóm** - đảm bảo tất cả agent theo cùng tiêu chuẩn
 - **Dự án hiện có** - tránh phá vỡ các pattern đã ổn định
 

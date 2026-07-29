@@ -1,11 +1,11 @@
 ---
 title: 自主开发循环
-description: 以 bmad-dev-auto 作为单次迭代 worker，运行无人值守 BMad 开发循环的参考说明
+description: 以 bmad-dev-auto 作为单次迭代 worker，自动执行 Quick Dev 实施模型的参考说明
 sidebar:
   order: 7
 ---
 
-要在自主开发循环里使用 BMad，请用 `bmad-dev-auto` skill。它类似 [Quick Dev](../explanation/quick-dev.md)，但设计为在无人交互的情况下持续推进。你可以在交互式会话里用它，主要用途是被 orchestrator 调用。
+`bmad-dev-auto` 是标准 [Quick Dev](../explanation/quick-dev.md) 实施模型的无人值守自动化入口。它接受同样广泛的直接意图和已规划工作，保留澄清、规划、实现和审查阶段，同时输出 orchestrator 可处理的终态。它自动执行同一实施循环，不定义第二条实施路径。
 
 这里有一条重要的架构边界：`bmad-dev-auto` 负责 implementation run 及其生成的 spec artifact，但不负责 backlog policy。当 review 发现真实但不属于当前 story 的问题时，skill 会把 finding 记录在自己负责的 spec 中，仅此而已。是排入队列、去重、升级还是忽略，由 orchestrator 决定。
 

@@ -22,10 +22,8 @@ sidebar:
 
 **常见加载方包括：**
 - `bmad-architecture`：在 solutioning 时纳入你的技术偏好
-- `bmad-create-story`：按项目约定拆分和描述 story
-- `bmad-dev-story`：约束实现路径和代码风格
 - `bmad-code-review`：按项目标准做一致性校验
-- `bmad-quick-dev`：在快速实现中避免偏离既有模式
+- `bmad-quick-dev`：在规划和实施直接意图或 story 时遵循既有模式
 - `bmad-sprint-planning`、`bmad-retrospective`、`bmad-correct-course`：读取项目级背景
 
 ## 什么时候建立或更新
@@ -35,7 +33,7 @@ sidebar:
 | **新项目（架构前）** | 在 `bmad-architecture` 前手动创建 | 先声明技术偏好，避免架构偏航 |
 | **新项目（架构后）** | 通过 `bmad-generate-project-context` 生成并补充 | 把架构决策转成可执行规则 |
 | **既有项目** | 先生成，再人工校对 | 让智能体学习现有约定而非重造体系 |
-| **Quick Flow 场景** | 在 `bmad-quick-dev` 前或过程中维护 | 弥补跳过完整规划带来的上下文缺口 |
+| **直接实施入口** | 在 `bmad-quick-dev` 前或过程中维护 | 在没有上游规划时提供持久项目约定 |
 
 :::tip[推荐做法]
 如果你有强技术偏好（例如数据库、状态管理、目录规范），尽量在架构前写入。否则可在架构后生成，再按项目现实补齐。

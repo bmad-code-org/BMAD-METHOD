@@ -75,25 +75,20 @@ Décidez comment le construire et décomposez le travail en stories.
 
 ## Phase 4 : Implémentation
 
-Construisez, une story à la fois. L’automatisation complète de la phase 4 arrive bientôt !
+Tous les points d’entrée convergent vers `bmad-quick-dev`. Il accepte une intention directe, une issue, une spécification ou une story planifiée, puis choisit le niveau de clarification, de planification, d’implémentation et de revue nécessaire.
 
 | Workflow               | Objectif                                                                             | Livrable                         |
 |------------------------|--------------------------------------------------------------------------------------|----------------------------------|
+| `bmad-quick-dev`       | Transformez une intention directe ou une story planifiée en code implémenté et révisé | `spec-*.md` + code              |
 | `bmad-sprint-planning` | Initialisez le suivi (une fois par projet, pour séquencer le cycle de développement) | `sprint-status.yaml`             |
-| `bmad-create-story`    | Préparez la story suivante pour implémentation                                       | `story-[slug].md`                |
-| `bmad-dev-story`       | Implémentez la story                                                                 | Code fonctionnel + tests         |
 | `bmad-code-review`     | Validez la qualité de l’implémentation                                               | Approuvé ou changements demandés |
 | `bmad-correct-course`  | Gérez les changements significatifs en cours de sprint                               | Plan mis à jour ou réorientation |
 | `bmad-sprint-status`   | Suivez la progression du sprint et le statut des stories                             | Mise à jour du statut du sprint  |
 | `bmad-retrospective`   | Bilan après l’achèvement d’un epic                                                   | Leçons apprises                  |
 
-## Flux Rapide (Parcours Parallèle)
+### Entrée directe ou planifiée
 
-Ignorez les phases 1 à 3 pour les travaux de faible envergure et bien cernés.
-
-| Workflow         | Objectif                                                                              | Livrable           |
-|------------------|---------------------------------------------------------------------------------------|--------------------|
-| `bmad-quick-dev` | Flux rapide unifié — clarifiez l’intention, planifiez, implémentez, révisez et livrez | `spec-*.md` + code |
+Un travail clair peut entrer directement dans `bmad-quick-dev`. Une initiative plus vaste peut d’abord produire un PRD, une conception UX, une architecture, des epics, des stories, un contrôle de préparation et un plan de sprint. Ces artefacts ajoutent du contexte sans sélectionner un autre workflow d’implémentation.
 
 ## Gestion du Contexte
 

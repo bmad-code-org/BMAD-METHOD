@@ -50,14 +50,16 @@ This prevents:
 - Naming convention mismatches
 - Security approach variations
 
-## When Solutioning is Required
+## Choosing Solutioning Depth
 
-| Track | Solutioning Required? |
-|-------|----------------------|
-| Quick Flow | No - skip entirely |
-| BMad Method Simple | Optional |
-| BMad Method Complex | Yes |
-| Enterprise | Yes |
+| Work characteristics | Solutioning guidance |
+|---|---|
+| Clear, local change with established patterns | Usually unnecessary |
+| Several related components with known constraints | Optional, based on coordination risk |
+| Multiple epics or cross-system decisions | Needed to align implementation |
+| Regulated, high-risk, or enterprise initiative | Follow required governance; solutioning is normally required |
+
+Solutioning changes the context available to `bmad-quick-dev`; it does not change the implementation workflow.
 
 :::tip[Rule of Thumb]
 If you have multiple epics that could be implemented by different agents, you need solutioning.

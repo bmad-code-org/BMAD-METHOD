@@ -49,14 +49,16 @@ Toto zabraňuje:
 - Nesouladu konvencí pojmenování
 - Variacím v bezpečnostním přístupu
 
-## Kdy je solutioning vyžadován
+## Volba hloubky solutioningu
 
-| Cesta | Solutioning vyžadován? |
+| Charakter práce | Doporučení pro solutioning |
 |-------|----------------------|
-| Quick Flow | Ne — přeskočte úplně |
-| BMad Method Simple | Volitelný |
-| BMad Method Complex | Ano |
-| Enterprise | Ano |
+| Jasná lokální změna se zavedenými vzory | Obvykle není potřeba |
+| Několik souvisejících komponent se známými omezeními | Volitelné podle rizika koordinace |
+| Více epiců nebo mezisystémová rozhodnutí | Potřebné pro sladění implementace |
+| Regulovaná, riziková nebo enterprise iniciativa | Řiďte se požadovanou governance; solutioning je obvykle povinný |
+
+Solutioning mění kontext dostupný pro `bmad-quick-dev`, nikoli implementační workflow.
 
 :::tip[Pravidlo palce]
 Pokud máte více epiců, které by mohly být implementovány různými agenty, potřebujete solutioning.

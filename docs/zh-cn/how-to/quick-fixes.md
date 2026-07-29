@@ -5,7 +5,7 @@ sidebar:
   order: 6
 ---
 
-对于 bug 修复、重构或小范围改动，使用 **Quick Dev** 即可，不必走完整的 BMad Method。
+Bug 修复、重构或小范围改动可以在很少甚至没有上游规划的情况下直接进入 **Quick Dev**。这与完整规划 story 使用的是同一个实施 workflow。
 
 ## 何时使用本指南
 
@@ -84,12 +84,12 @@ Quick Dev 每次只聚焦一个目标。如果你的请求包含多个独立目�
 
 每次运行后都建议看一下这个文件，它就是你的后续待办清单。你可以把其中任何一项在后续新的 Quick Dev 会话里单独处理。
 
-## 何时升级到正式规划
+## 何时增加正式规划
 
-在以下情况下考虑使用完整的 BMad Method：
+在运行同一个 Quick Dev 实施循环前，遇到以下情况可增加 PRD、UX、架构或 story 规划：
 
 - 更改影响多个系统或需要在许多文件中进行协调更新
 - 你不确定范围，需要先进行需求发现
 - 你需要为团队记录文档或架构决策
 
-参见 [Quick Dev](../explanation/quick-dev.md) 了解 Quick Dev 在 BMad Method 中的位置与边界。
+参见 [Quick Dev](../explanation/quick-dev.md) 了解直接意图与已规划工作如何汇入同一实施循环。

@@ -5,7 +5,7 @@ sidebar:
   order: 6
 ---
 
-Use **Quick Dev** for bug fixes, refactorings, or small targeted changes that don't require the full BMad Method.
+Bug fixes, refactorings, and small targeted changes can enter **Quick Dev** directly with little or no upstream planning. This is the same implementation workflow used for fully planned stories.
 
 ## When to Use This
 
@@ -85,12 +85,12 @@ Quick Dev keeps each run focused on a single goal. If your request contains mult
 
 Check this file after a run — it's your backlog of things to come back to. Each deferred item can be fed into a fresh Quick Dev run later.
 
-## When to Upgrade to Formal Planning
+## When to Add Formal Planning
 
-Consider using the full BMad Method when:
+Before running the same Quick Dev implementation loop, consider adding PRD, UX, architecture, or story planning when:
 
 - The change affects multiple systems or requires coordinated updates across many files
 - You are unsure about the scope and need requirements discovery first
 - You need documentation or architectural decisions recorded for the team
 
-See [Quick Dev](../explanation/quick-dev.md) for more on how Quick Dev fits into the BMad Method.
+See [Quick Dev](../explanation/quick-dev.md) for how direct intent and planned work converge on the same implementation loop.

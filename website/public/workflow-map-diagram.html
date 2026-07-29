@@ -10,7 +10,6 @@
             --planning: #22c55e;
             --solutioning: #eab308;
             --implementation: #ef4444;
-            --quickflow: #64748b;
             --bg: #0f172a;
             --card: #1e293b;
             --text: #f8fafc;
@@ -105,17 +104,6 @@
         .arrow { display: flex; align-items: center; justify-content: center; color: var(--arrow); font-size: 0.9rem; margin: 6px 0; }
 
         .decision { background: linear-gradient(135deg, #a855f7, #9333ea); padding: 4px 8px; border-radius: 4px; text-align: center; font-size: 0.65rem; font-weight: 600; margin: 6px 0; }
-
-        .quickflow {
-            background: rgba(100, 116, 139, 0.2); border: 2px dashed var(--quickflow);
-            border-radius: 10px; padding: 12px; margin-bottom: 16px;
-        }
-        .quickflow-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-        .quickflow-header h2 { font-size: 0.95rem; }
-        .quickflow-header span { font-size: 0.7rem; color: var(--text-muted); }
-        .quickflow-body { display: flex; align-items: center; gap: 12px; }
-        .quickflow-item { flex: 1; background: rgba(255,255,255,0.03); border-radius: 8px; padding: 10px; }
-        .quickflow-item code { font-family: monospace; color: var(--success); background: rgba(16, 185, 129, 0.1); padding: 2px 6px; border-radius: 3px; font-size: 0.7rem; }
 
         .context { background: rgba(14, 165, 233, 0.08); border-radius: 10px; padding: 12px; font-size: 0.75rem; }
         .context-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-weight: 600; }
@@ -266,6 +254,7 @@
                 <div class="phase-title">Implementation</div>
             </div>
             <div class="workflows">
+                <div class="decision">Direct intent or planned context ↓</div>
                 <div class="workflow">
                     <div class="workflow-header">
                         <span class="workflow-name">sprint-planning</span>
@@ -277,20 +266,11 @@
                 </div>
                 <div class="workflow">
                     <div class="workflow-header">
-                        <span class="workflow-name">create-story</span>
+                        <span class="workflow-name">quick-dev</span>
                     </div>
                     <div class="workflow-meta">
                         <div class="agent"><div class="agent-icon amelia">A</div><span class="agent-name">Amelia</span></div>
-                        <span class="output">story-[slug].md →</span>
-                    </div>
-                </div>
-                <div class="workflow">
-                    <div class="workflow-header">
-                        <span class="workflow-name">dev-story</span>
-                    </div>
-                    <div class="workflow-meta">
-                        <div class="agent"><div class="agent-icon amelia">A</div><span class="agent-name">Amelia</span></div>
-                        <span class="output">code →</span>
+                        <span class="output">spec + code + review →</span>
                     </div>
                 </div>
                 <div class="workflow">
@@ -326,31 +306,12 @@
         </div>
     </div>
 
-    <div class="quickflow">
-        <div class="quickflow-header">
-            <span>⚡</span>
-            <div>
-                <h2>Quick Flow (Parallel Track)</h2>
-                <span>For small, well-understood changes — skip phases 1-3</span>
-            </div>
-        </div>
-        <div class="quickflow-body">
-            <div class="quickflow-item">
-                <div class="agent"><div class="agent-icon amelia">A</div><span class="agent-name">Amelia</span></div>
-                <code>quick-dev</code>
-                <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 4px;">intent → tech-spec → working code</div>
-            </div>
-        </div>
-    </div>
-
     <div class="context">
         <div class="context-header">📚 Context Flow</div>
-        <p style="margin-bottom: 8px; color: var(--text-muted);">Each document becomes context for the next phase.</p>
+        <p style="margin-bottom: 8px; color: var(--text-muted);">Available documents add context before implementation.</p>
         <div class="context-items">
-            <span><code>create-story</code> <span>loads epics, PRD, architecture, UX</span></span>
-            <span><code>dev-story</code> <span>loads story file</span></span>
-            <span><code>code-review</code> <span>loads architecture, story</span></span>
-            <span><code>quick-dev</code> <span>clarify, plan, implement, review</span></span>
+            <span><code>quick-dev</code> <span>loads available intent, issue, spec, PRD, architecture, UX, epic, story, and sprint context</span></span>
+            <span><code>code-review</code> <span>adds independent validation when needed</span></span>
         </div>
     </div>
 
@@ -359,7 +320,6 @@
         <div class="legend-item"><div class="legend-dot" style="background: var(--planning);"></div>Planning</div>
         <div class="legend-item"><div class="legend-dot" style="background: var(--solutioning);"></div>Solutioning</div>
         <div class="legend-item"><div class="legend-dot" style="background: var(--implementation);"></div>Implementation</div>
-        <div class="legend-item"><div class="legend-dot" style="background: var(--quickflow);"></div>Quick Flow</div>
     </div>
 </body>
 </html>
