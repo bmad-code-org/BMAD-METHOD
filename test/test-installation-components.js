@@ -789,6 +789,11 @@ async function runTests() {
       personaAgentContent17.includes('BMAD Method') && !personaAgentContent17.includes('{project-root}'),
       'Copilot agent pointer includes BMAD methodology context and uses a repo-relative path (no {project-root} literal)',
     );
+    assert(
+      personaAgentContent17.includes('MANDATORY FIRST ACTION') &&
+        personaAgentContent17.includes('Do not skip or defer this step.'),
+      'Copilot agent pointer enforces first-read behavior so PR-assigned agents must load SKILL.md before acting',
+    );
 
     // Idempotency: re-running setup must not duplicate or rewrite the agent
     // pointer when the source manifest is unchanged, AND must not start
