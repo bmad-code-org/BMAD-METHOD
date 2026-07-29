@@ -24,14 +24,14 @@ That holds for a **rejected** epic too: the close-out below marks the retro key 
 
 Sections:
 
-- **Epic summary** — which epic, the diff range, stories completed, any stories still unfinished that the user accepted retro-ing over, the evidence inventory (what was available, what was missing).
+- **Epic summary** — which epic, the diff range, stories completed, any stories still unfinished (`pending_stories`) that the user accepted retro-ing over, the evidence inventory (what was available, what was missing). Unfinished stories force the machine acceptance verdict to **rejected** (see `references/acceptance-verdict.md`).
 - **Findings** — grouped by aggregate view and by lens, each with its source reference and disposition (fix now / defer / accept). This is the record; do not summarize away the provenance.
 - **Behavior verification** — what was exercised end to end and what was observed, or an explicit note that runtime behavior was not exercised.
 - **Previous-retro follow-through** — if a prior retro exists, whether its action items landed, with evidence, and the selector Phase 5 would need to act on each (`references/acceptance-verdict.md` specifies what to record).
 - **Action items** — the routed fix-now items and process lessons, each with an owner. Note which are proposed remediation or spec reconciliations awaiting human application.
 - **Acceptance verdict** — accepted / accepted with open items / rejected, whether the criteria were declared or profiled, and the evidence behind the call.
 - **Open questions** — what a human answer would materially change, and anything the analyses could not resolve.
-- **Assumptions** — in headless runs, every choice made without the user: which epic was auto-selected, any stories of that epic still unfinished when the retro proceeded anyway, a verdict rendered with no human decision, each proposed item. Omit in interactive runs — an interactive run records the same facts where the user confirmed them, in Epic summary.
+- **Assumptions** — in headless runs, every choice made without the user: which epic was selected (invocation or auto-detect), the `detect-epic --epic <N>` (or unflagged) result including any non-empty `pending_stories`, a machine **rejected** verdict forced by unfinished stories or rendered with no human decision, each proposed item. Omit in interactive runs — an interactive run records the same facts where the user confirmed them, in Epic summary.
 
 Do not state time estimates anywhere in the document.
 

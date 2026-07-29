@@ -32,13 +32,24 @@ That record is exactly what Phase 5's `--set-action-status` offer reads: the sel
 
 Judge the final state against the epic's declared acceptance criteria. If the epic declared none, profile the criteria from the diff and stories and mark the verdict as **profiled** rather than declared. Weigh verification results (the Phase 2 behavior check) and unresolved findings. Render one of:
 
-- **Accepted** — criteria demonstrably met in the evidence, no blocking findings open.
-- **Accepted with open items** — criteria met, but named findings remain deferred and tracked.
-- **Rejected** — criteria not met, or a blocking finding stands unresolved.
+- **Accepted** — criteria demonstrably met in the evidence, no blocking findings open, and **no unfinished stories** for this epic.
+- **Accepted with open items** — criteria met, but named findings remain deferred and tracked — still only when every story of this epic is `done`.
+- **Rejected** — criteria not met, a blocking finding stands unresolved, **or any of this epic's stories is still not `done`**.
 
-Two hard rules:
+### Unfinished stories
+
+`pending_stories` from `detect-epic` (with or without `--epic`) is authoritative for this epic's story keys. When that list is non-empty:
+
+- The **machine** verdict is **rejected**. Name every unfinished story key in the Acceptance verdict section as the evidence. Do not soften this to accepted-with-open-items: unfinished delivery is not an open finding about a finished epic — the epic itself is incomplete.
+- Record the unfinished keys in Epic summary (interactive) or Assumptions (headless) as the Inputs section already requires.
+- Headless runs have no human at the console: the document closes **rejected** when `pending_stories` was non-empty. Interactive runs may still let a human override (rule 1 below) after seeing the list.
+
+If the completeness check did not run (no readable `sprint-status.yaml`), do **not** invent a rejected or accepted call from silence — say the check was unavailable and weigh only the criteria and findings you have.
+
+Three hard rules:
 
 1. A human decision always overrides the machine verdict.
 2. An epic that fails its criteria with **no** human decision closes as **not accepted** — never as silently accepted.
+3. A non-empty `pending_stories` list makes the machine verdict **rejected**, including in headless mode.
 
 The verdict and its evidence carry into the Phase 5 document.

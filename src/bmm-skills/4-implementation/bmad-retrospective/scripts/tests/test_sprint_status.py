@@ -245,6 +245,79 @@ def test_pending_stories_present_when_no_epic_is_detected(tmp_path):
     assert out["pending_stories"] == []
 
 
+def test_detect_epic_flag_aims_pending_stories_at_a_supplied_epic(tmp_path):
+    # Auto-detect would pick epic 2 (highest with a done story). --epic 1 aims
+    # the unfinished-epic gate at the orchestrator's explicit choice instead —
+    # the -H <epic> path that previously had no pending_stories at all.
+    fixture = (
+        "development_status:\n"
+        "  1-1-a: done\n"
+        "  1-2-b: backlog\n"
+        "  1-3-c: review\n"
+        "  2-1-a: done\n"
+        "  2-2-b: done\n"
+        "  epic-1-retrospective: optional\n"
+    )
+    target = tmp_path / "sprint-status.yaml"
+    target.write_text(fixture, encoding="utf-8")
+    proc = _run(["detect-epic", "--file", str(target), "--epic", "1"])
+    assert proc.returncode == 0, proc.stderr
+    out = _json(proc)
+    assert out["epic"] == 1
+    assert out["retro_key"] == "epic-1-retrospective"
+    assert out["retro_status"] == "optional"
+    assert out["pending_stories"] == ["1-2-b", "1-3-c"]
+    # done_stories keeps its whole-file scope.
+    assert set(out["done_stories"]) == {"1-1-a", "2-1-a", "2-2-b"}
+
+
+def test_detect_epic_flag_lists_pending_when_no_story_is_done(tmp_path):
+    # Without --epic, no done story means epic is null. With --epic, an
+    # unfinished epic that never landed a done story is still addressable —
+    # every story key of that epic is pending.
+    fixture = (
+        "development_status:\n"
+        "  3-1-a: backlog\n"
+        "  3-2-b: ready-for-dev\n"
+    )
+    target = tmp_path / "sprint-status.yaml"
+    target.write_text(fixture, encoding="utf-8")
+    proc = _run(["detect-epic", "--file", str(target), "--epic", "3"])
+    assert proc.returncode == 0, proc.stderr
+    out = _json(proc)
+    assert out["epic"] == 3
+    assert out["pending_stories"] == ["3-1-a", "3-2-b"]
+    assert out["retro_key"] == "epic-3-retrospective"
+    assert out["retro_status"] is None
+
+
+def test_detect_epic_flag_empty_pending_for_a_complete_supplied_epic(tmp_path):
+    fixture = (
+        "development_status:\n"
+        "  1-1-a: done\n"
+        "  1-2-b: done\n"
+        "  2-1-a: backlog\n"
+    )
+    target = tmp_path / "sprint-status.yaml"
+    target.write_text(fixture, encoding="utf-8")
+    proc = _run(["detect-epic", "--file", str(target), "--epic", "1"])
+    assert proc.returncode == 0, proc.stderr
+    out = _json(proc)
+    assert out["epic"] == 1
+    assert out["pending_stories"] == []
+
+
+def test_detect_epic_flag_rejects_non_positive_epic(tmp_path):
+    target = _write_fixture(tmp_path)
+    for bad in ("0", "-3"):
+        proc = _run(["detect-epic", "--file", str(target), "--epic", bad])
+        assert proc.returncode == 1, proc.stderr
+        out = _json(proc)
+        assert out["ok"] is False
+        assert "epic" in out["error"]
+        assert "restored" not in out
+
+
 # --- The JSON-only contract covers the help paths ----------------------------
 
 

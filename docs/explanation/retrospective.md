@@ -32,7 +32,7 @@ Two artifacts and a decision:
 
 - **A retrospective document** in your implementation artifacts — the evidence inventory, findings grouped with their sources, the verdict, and the action items.
 - **An updated sprint status** — the epic's retrospective marked done, each action item appended with a stable id and a link back to its finding.
-- **A verdict** of `accepted`, `accepted with open items`, or `rejected`, which tells you whether to start the next epic or hold and fix first.
+- **A verdict** of `accepted`, `accepted with open items`, or `rejected`, which tells you whether to start the next epic or hold and fix first. Unfinished stories for that epic make the machine verdict **rejected** (a human can still override interactively).
 
 ## What to do with the output
 
@@ -42,7 +42,7 @@ The skill proposes; you decide what runs. Nothing touches your code or your spec
 - **Spec reconciliations** arrive with the evidence attached, for you to apply to the project contract by hand. An uncertain interpretation never gets written into a spec on its own.
 - **The verdict** is the gate. A rejected epic, or one accepted with open items, tells the next planning step what to carry forward.
 
-A failing epic never closes as quietly accepted. If the criteria aren't met and no one overrides the call, it closes as not accepted.
+A failing epic never closes as quietly accepted. If the criteria aren't met, or any of the epic's stories are still unfinished, and no one overrides the call, it closes as not accepted.
 
 ## Running it
 

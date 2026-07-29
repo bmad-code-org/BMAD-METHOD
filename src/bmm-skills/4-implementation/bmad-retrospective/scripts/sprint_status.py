@@ -249,7 +249,20 @@ def cmd_detect_epic(args):
             if max_epic is None or epic_num > max_epic:
                 max_epic = epic_num
 
-    if max_epic is None:
+    # Optional --epic aims the gate at a supplied number (the -H <epic> path)
+    # instead of auto-picking the highest epic with a done story. Without it,
+    # behavior is unchanged: detect, then scope pending_stories to that epic.
+    if args.epic is not None:
+        if args.epic < 1:
+            _emit_error(
+                f"invalid --epic {args.epic} (expected a positive integer)",
+                1,
+            )
+        selected = args.epic
+    else:
+        selected = max_epic
+
+    if selected is None:
         # Uniform shape: pending_stories is always present, even with no epic to
         # scope it to, so a caller can read it without branching on epic first.
         _emit(
@@ -268,14 +281,14 @@ def cmd_detect_epic(args):
     pending_stories = [
         key
         for epic_num, key, value in story_keys
-        if epic_num == max_epic and value != "done"
+        if epic_num == selected and value != "done"
     ]
 
-    retro_key = f"epic-{max_epic}-retrospective"
+    retro_key = f"epic-{selected}-retrospective"
     retro_status = dev.get(retro_key)
     _emit(
         {
-            "epic": max_epic,
+            "epic": selected,
             "done_stories": done_stories,
             "pending_stories": pending_stories,
             "retro_key": retro_key,
@@ -615,10 +628,24 @@ def build_parser():
 
     p_detect = sub.add_parser(
         "detect-epic",
-        help="Find the highest epic with a done story and its retrospective status.",
+        help=(
+            "Find the highest epic with a done story and its retrospective "
+            "status, or aim the same pending_stories gate at --epic N."
+        ),
         add_help=False,
     )
     p_detect.add_argument("--file", required=True, help="Path to sprint-status.yaml")
+    p_detect.add_argument(
+        "--epic",
+        type=int,
+        default=None,
+        help=(
+            "Optional. Scope the response to this epic number instead of "
+            "auto-detecting the highest epic with a done story. Orchestrators "
+            "passing -H <epic> should pass the same number here so pending_stories "
+            "covers the epic they are about to retro."
+        ),
+    )
     p_detect.set_defaults(func=cmd_detect_epic)
 
     p_update = sub.add_parser(
