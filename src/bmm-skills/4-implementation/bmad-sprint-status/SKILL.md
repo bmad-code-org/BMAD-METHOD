@@ -163,7 +163,7 @@ Enter corrections (e.g., "1=in-progress, 2=backlog") or "skip" to continue witho
   <note>When selecting "first" story: sort by epic number, then story number (e.g., 1-1 before 1-2 before 2-1)</note>
   1. If any story status == in-progress → recommend `quick-dev` to resume the first in-progress story
   2. Else if any story status == review → recommend `code-review` for the first review story
-  3. Else if any story status == ready-for-dev → recommend `quick-dev` to resume the approved spec
+  3. Else if any story status == ready-for-dev → recommend `quick-dev` to start work on the first ready-for-dev story
   4. Else if any story status == backlog → recommend `quick-dev` to start the first backlog story
   5. Else if any retrospective status == optional → recommend `retrospective`
   6. Else → All implementation items done; congratulate the user - you both did amazing work together!
