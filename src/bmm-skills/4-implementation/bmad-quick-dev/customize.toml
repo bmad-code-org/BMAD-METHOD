@@ -57,15 +57,14 @@ name = "Blind Hunter"
 instruction = """
 Launch a context-free subagent with this prompt:
 
-> Read `{skill-root}/review-prompts/adversarial.md` completely and follow it as your review instructions.
->
-> Your review content (the `content` input for those instructions) is the following diff:
->
-> {diff_output}
->
-> Do not invoke any skill. If the instruction file is unreadable, report that exact failure and stop. Return only the review result.
+Read `{skill-root}/review-prompts/adversarial.md` completely and follow it as your review instructions.
 
-Do not read, render, reproduce, summarize, or inline the reviewer instruction file yourself (except the no-subagent fallback in the review step).
+Review content:
+
+{diff_output}
+
+Do not invoke any skill. If the instruction file is unreadable, report that exact failure and stop. Return only the review result.
+
 """
 
 [[workflow.review_layers]]
@@ -74,15 +73,14 @@ name = "Edge Case Hunter"
 instruction = """
 Launch a context-free subagent with this prompt:
 
-> Read `{skill-root}/review-prompts/edge-case-hunter.md` completely and follow it as your review instructions.
->
-> Your review content (the `content` input for those instructions) is the following diff:
->
-> {diff_output}
->
-> Do not invoke any skill. If the instruction file is unreadable, report that exact failure and stop. Return only the review result.
+Read `{skill-root}/review-prompts/edge-case-hunter.md` completely and follow it as your review instructions.
 
-Do not read, render, reproduce, summarize, or inline the reviewer instruction file yourself (except the no-subagent fallback in the review step).
+Review content:
+
+{diff_output}
+
+Do not invoke any skill. If the instruction file is unreadable, report that exact failure and stop. Return only the review result.
+
 """
 
 [[workflow.review_layers]]
@@ -91,15 +89,14 @@ name = "Verification Gap Reviewer"
 instruction = """
 Launch a context-free subagent with this prompt:
 
-> Read `{skill-root}/review-prompts/verification-gap.md` completely and follow it as your review instructions.
->
-> Your review content (the `content` input for those instructions) is the following diff:
->
-> {diff_output}
->
-> Do not invoke any skill. If the instruction file is unreadable, report that exact failure and stop. Return only the review result.
+Read `{skill-root}/review-prompts/verification-gap.md` completely and follow it as your review instructions.
 
-Do not read, render, reproduce, summarize, or inline the reviewer instruction file yourself (except the no-subagent fallback in the review step).
+Review content:
+
+{diff_output}
+
+Do not invoke any skill. If the instruction file is unreadable, report that exact failure and stop. Return only the review result.
+
 """
 
 # Review layers for the one-shot route.
@@ -110,11 +107,10 @@ name = "Blind Hunter"
 instruction = """
 Launch a context-free subagent with this prompt:
 
-> Read `{skill-root}/review-prompts/adversarial.md` completely and follow it as your review instructions.
->
-> Your review content (the `content` input for those instructions) is the changed files in the current worktree. Inspect them directly before reviewing.
->
-> Do not invoke any skill. If the instruction file is unreadable, report that exact failure and stop. Return only the review result.
+Read `{skill-root}/review-prompts/adversarial.md` completely and follow it as your review instructions.
 
-Do not read, render, reproduce, summarize, or inline the reviewer instruction file yourself (except the no-subagent fallback in the review step).
+Review content: the changed files in the current worktree. Inspect them directly before reviewing.
+
+Do not invoke any skill. If the instruction file is unreadable, report that exact failure and stop. Return only the review result.
+
 """

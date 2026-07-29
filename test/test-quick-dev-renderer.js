@@ -242,10 +242,9 @@ try {
     assert(content.includes(expectedPromptPath), 'reviewer prompt path was not expanded to the absolute skill path');
     assert(!content.includes('{skill-root}'), '{skill-root} survived in rendered review instructions');
     assert(content.includes('{diff_output}'), 'runtime {diff_output} placeholder did not survive rendering');
-    assert(
-      content.includes('Your review content (the `content` input for those instructions) is the following diff:'),
-      'rendered review layers do not supply content via the calling prompt',
-    );
+    // Diff is plain text after "Review content:", not trapped under a blockquote.
+    assert(content.includes('Review content:\n\n{diff_output}'), 'review content + diff not laid out as plain multi-line text');
+    assert(!content.includes('> {diff_output}'), '{diff_output} still blockquote-prefixed');
     assert(!content.includes('{review_content}'), 'rendered review layers still reference a {review_content} file slot');
   });
 
@@ -255,7 +254,7 @@ try {
     assert(content.includes(expectedPromptPath), 'one-shot reviewer prompt path was not expanded to the absolute skill path');
     assert(!content.includes('{skill-root}'), '{skill-root} survived in rendered one-shot review instructions');
     assert(
-      content.includes('Your review content (the `content` input for those instructions) is the changed files in the current worktree.'),
+      content.includes('Review content: the changed files in the current worktree.'),
       'one-shot review target is no longer the changed files in the current worktree',
     );
     assert(!content.includes('{review_content}'), 'one-shot layers still reference a {review_content} file slot');
