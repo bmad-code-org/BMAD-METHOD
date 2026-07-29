@@ -4,7 +4,7 @@ Skills in this folder are deprecated skills kept for backward compatibility with
 Some retain their full workflow, while others forward to the skill that replaced them, passing a
 stated intent and pre-resolved customization fields so the target skips its own intent inference.
 
-| Shim                       | Behavior                             |
+| Shim                       | Forwards to                          |
 | -------------------------- | ------------------------------------ |
 | `bmad-create-story`        | Retained in full                     |
 | `bmad-dev-story`           | Retained in full                     |
