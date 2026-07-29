@@ -20,9 +20,9 @@ The main verification gap shapes are:
 
 ### Step 1: Screen for behavioral change
 
-If the change is non-behavioral, stop here and return zero findings (`[]`); when the output format includes a markdown report, note there that the change is non-behavioral (a caller's exact zero-findings output contract wins over this note). Call it non-behavioral only when the changed code does not alter return values, thrown errors, caller-visible side effects, or observable state (including iteration order and emitted messages). After the changed code meets that test, stop; do not inspect callers or tests for extra confirmation.
+Before applying the non-behavioral stop to a test-only change, check whether it removes or weakens verification of deterministic behavior. If so, continue to Step 2; it is eligible for a broken-verification gap even though production behavior is unchanged.
 
-Before stopping on a test-only change, check whether it removes or weakens verification of deterministic behavior. Such changes are eligible for broken-verification gaps even though production behavior is unchanged.
+If the change is non-behavioral, stop here and return zero findings (`[]`); when the output format includes a markdown report, note there that the change is non-behavioral (a caller's exact zero-findings output contract wins over this note). Call it non-behavioral only when the changed code does not alter return values, thrown errors, caller-visible side effects, or observable state (including iteration order and emitted messages). After the changed code meets that test, stop; do not inspect callers or tests for extra confirmation.
 
 Common non-behavioral examples: formatting, comments, whitespace; pure renames; trivial getters/setters and pass-throughs; type-only or compiler-enforced changes with no runtime effect; etc.
 
