@@ -1,293 +1,238 @@
 ---
 title: 'Getting Started'
-description: Install BMad and build your first project
+description: Use BMad to change a large Python codebase, then scale the same workflow across planned stories
 ---
 
-Build software faster using AI-powered workflows with specialized agents that guide you through planning, architecture, and implementation.
+Take a real 489,000-line Python project, make a useful change with BMad, and verify the result yourself. Then turn a larger follow-up into a spec and three independently shippable stories.
 
-## What You'll Learn
-
-- Install and initialize BMad Method for a new project
-- Use **BMad-Help** — your intelligent guide that knows what to do next
-- Choose the right planning depth for your project
-- Progress through phases from requirements to working code
-- Use agents and workflows effectively
+This tutorial uses a local checkout of Django. You won't need to know Django, run a database, or propose your changes to the Django project.
 
 :::note[Prerequisites]
-
-- **Node.js 20.12+** — Required for the installer
-- **Git** — Recommended for version control
-- **AI-powered IDE** — Claude Code, Cursor, or similar
-- **A project idea** — Even a simple one works for learning
-  :::
-
-:::tip[The Easiest Path]
-**Install** → `npx bmad-method install`
-**Ask** → `bmad-help what should I do first?`
-**Build** → Let BMad-Help guide you workflow by workflow
+You need Git, Node.js 20.12+ with `npx`, [uv](https://docs.astral.sh/uv/getting-started/installation/), and Claude Code. `uv` will provision Python 3.12 for the exercise. BMad supports other AI coding tools through the [installer](../how-to/install-bmad.md), but this tutorial keeps one path concrete.
 :::
 
-## Meet BMad-Help: Your Intelligent Guide
+## 1. Clone a Real Codebase
 
-**BMad-Help is the fastest way to get started with BMad.** You don't need to memorize workflows or phases — just ask, and BMad-Help will:
+[Django](https://github.com/django/django) is a widely used Python web framework. Its 5.2.4 release contains approximately 489,000 lines of Python across framework code and tests: large enough that manually loading the codebase into an AI chat is not a serious strategy.
 
-- **Inspect your project** to see what's already been done
-- **Show your options** based on which modules you have installed
-- **Recommend what's next** — including the first required task
-- **Answer questions** like "I have a SaaS idea, where do I start?"
-
-### How to Use BMad-Help
-
-Run it in your AI IDE by invoking the skill:
-
-```
-bmad-help
-```
-
-Or combine it with a question for context-aware guidance:
-
-```
-bmad-help I have an idea for a SaaS product, I already know all the features I want. where do I get started?
-```
-
-BMad-Help will respond with:
-
-- What's recommended for your situation
-- What the first required task is
-- What the rest of the process looks like
-
-### It Powers Workflows Too
-
-BMad-Help doesn't just answer questions — **it automatically runs at the end of every workflow** to tell you exactly what to do next. No guessing, no searching docs — just clear guidance on the next required workflow.
-
-:::tip[Start Here]
-After installing BMad, invoke the `bmad-help` skill immediately. It will detect what modules you have installed and guide you to the right starting point for your project.
-:::
-
-## Understanding BMad
-
-BMad helps you build software through guided workflows with specialized AI agents. The process follows four phases:
-
-| Phase | Name           | What Happens                                                 |
-| ----- | -------------- | ------------------------------------------------------------ |
-| 1     | Analysis       | Brainstorming, research, forge idea, product brief or PRFAQ _(optional)_ |
-| 2     | Planning       | Create requirements and design PRD, UX, SPEC                 |
-| 3     | Solutioning    | Design architecture spine or detailed project or system architectures          |
-| 4     | Implementation | Implement every change or planned story, optionally through automated orchestration |
-
-**[Open the Workflow Map](../reference/workflow-map.md)** to explore phases, workflows, and context management.
-
-Planning depth is flexible. Start implementation directly when the intent is already clear, or add the planning artifacts that reduce risk for larger work:
-
-| Planning depth | Best For | Context Available Before Implementation |
-| --- | --- | --- |
-| **Direct** | Clear fixes, features, issues, or existing specifications | User intent, issue, or spec |
-| **Product planning** | Products, platforms, and complex features | PRD and optional UX design |
-| **Full solutioning** | Cross-system, high-risk, or coordinated initiatives | PRD, UX, architecture, epics, stories, and sprint plan |
-
-:::note
-These are entry points, not separate implementation tracks. Every path converges on `bmad-quick-dev`; planning only changes how much context the workflow receives.
-:::
-
-## Installation
-
-Open a terminal in your project directory and run:
+Choose an empty working directory, then clone the release used by this tutorial:
 
 ```bash
-npx bmad-method install
+git clone --depth 1 --branch 5.2.4 https://github.com/django/django.git bmad-django
+cd bmad-django
+git rev-parse HEAD
 ```
 
-If you want the newest prerelease build instead of the default release channel, use `npx bmad-method@next install`.
-
-When prompted to select modules, choose **BMad Method**.
-
-The installer creates two folders:
-
-- `_bmad/` — agents, workflows, tasks, and configuration
-- `_bmad-output/` — empty for now, but this is where your artifacts will be saved
-
-:::tip[Your Next Step]
-Open your AI IDE in the project folder and run:
-
-```
-bmad-help
-```
-
-BMad-Help will detect what you've completed and recommend exactly what to do next. You can also ask it questions like "What are my options?" or "I have a SaaS idea, where should I start?"
-:::
-
-:::note[How to Load Agents and Run Workflows]
-Each workflow has a **skill** you invoke by name in your IDE (e.g., `bmad-prd`). Your AI tool will recognize the `bmad-*` name and run it — you don't need to load agents separately. You can also invoke an agent skill directly for general conversation (e.g., `bmad-agent-pm` for the PM agent).
-:::
-
-:::caution[Fresh Chats]
-Always start a fresh chat for each workflow. This prevents context limitations from causing issues.
-:::
-
-## Step 1: Choose Your Planning Depth
-
-Use as much of phases 1-3 as the work needs. For clear, bounded work, you can proceed directly to [Step 2](#step-2-build-your-project). **Use fresh chats for each workflow.**
-
-:::tip[Project Context (Optional)]
-Before starting, consider creating `project-context.md` to document your technical preferences and implementation rules. This ensures all AI agents follow your conventions throughout the project.
-
-Create it manually at `_bmad-output/project-context.md` or generate it after architecture using `bmad-generate-project-context`. [Learn more](../explanation/project-context.md).
-:::
-
-### Phase 1: Analysis (Optional)
-
-All workflows in this phase are optional. [**Not sure which to use?**](../explanation/analysis-phase.md)
-
-- **brainstorming** (`bmad-brainstorming`) — Guided ideation
-- **forge-idea** (`bmad-forge-idea`) — Pressure-test an idea until it hardens or dies cheaply
-- **research** (`bmad-deep-recon`) — Draft a deep-research prompt for your own AI tool, process a finished report into a downstream-ready summary, or run the research here, with claim verification and a refresh lifecycle. [Learn more](../explanation/deep-recon.md)
-- **product-brief** (`bmad-product-brief`) — Recommended foundation document when your concept is clear
-- **prfaq** (`bmad-prfaq`) — Working Backwards challenge to stress-test your product concept customer-first
-
-### Phase 2: Planning (As Needed)
-
-For work that benefits from product planning:
-
-1. Run `bmad-prd` in a new chat — state your intent (Create / Update / Validate) or let the skill ask
-2. Output: `prd.md`, `addendum.md`, `.memlog.md`
-
-:::note[`bmad-prd` intents]
-
-- **Create** — coached discovery from scratch; the skill names the workspace folder and guides you to a PRD you're proud of
-- **Update** — point it at an existing PRD and a change signal; it surfaces conflicts before applying changes
-- **Validate** — critique a finished PRD against a checklist and produce an HTML findings report
-  :::
-
-:::note[UX Design (Optional)]
-If your project has a user interface, invoke the **UX-Designer agent** (`bmad-agent-ux-designer`) and run the UX design workflow (`bmad-ux`) after creating your PRD.
-:::
-
-### Phase 3: Solutioning (As Needed)
-
-**Create Architecture**
-
-1. Invoke the **Architect agent** (`bmad-agent-architect`) in a new chat
-2. Run `bmad-architecture` (`bmad-architecture`)
-3. Output: Architecture document with technical decisions
-
-**Create Epics and Stories**
-
-:::tip[V6 Improvement]
-Epics and stories are now created _after_ architecture. This produces better quality stories because architecture decisions (database, API patterns, tech stack) directly affect how work should be broken down.
-:::
-
-1. Invoke the **PM agent** (`bmad-agent-pm`) in a new chat
-2. Run `bmad-create-epics-and-stories` (`bmad-create-epics-and-stories`)
-3. The workflow uses both PRD and Architecture to create technically-informed stories
-
-**Implementation Readiness Check** _(Highly Recommended)_
-
-1. Invoke the **Architect agent** (`bmad-agent-architect`) in a new chat
-2. Run `bmad-check-implementation-readiness` (`bmad-check-implementation-readiness`)
-3. Validates cohesion across all planning documents
-
-## Step 2: Build Your Project
-
-Move to implementation from whatever context you have: a direct request, an issue, a spec, or a fully planned story. **Each workflow should run in a fresh chat.**
-
-For planned work, invoke `bmad-quick-dev` and identify the selected story or sprint item, for example: `Implement story 2.3 from _bmad-output/planning-artifacts/epics.md`.
-
-### Initialize Sprint Planning (For Planned Work)
-
-Invoke the **Developer agent** (`bmad-agent-dev`) and run `bmad-sprint-planning` (`bmad-sprint-planning`). This creates `sprint-status.yaml` to track all epics and stories.
-
-When Quick Dev resolves a selected story in that file, it moves the story to `in-progress` during implementation and to `review` when implementation is complete.
-
-### The Build Cycle
-
-For each direct change or planned story, repeat this cycle with fresh chats:
-
-| Step | Agent | Workflow | Command | Purpose |
-| ---- | ----- | -------- | ------- | ------- |
-| 1    | DEV   | `bmad-quick-dev` | `bmad-quick-dev` | Clarify as needed, plan, implement, review, present |
-| 2    | DEV   | `bmad-code-review` | `bmad-code-review` | Additional quality validation _(recommended)_ |
-
-Quick Dev's review is part of every run. `bmad-code-review` is an optional fresh-context, independent validation layer.
-
-After completing all stories in an epic, invoke the **Developer agent** (`bmad-agent-dev`) and run `bmad-retrospective` (`bmad-retrospective`).
-
-## What You've Accomplished
-
-You've learned the foundation of building with BMad:
-
-- Installed BMad and configured it for your IDE
-- Chosen planning depth appropriate to your work
-- Created planning documents (PRD, Architecture, Epics & Stories)
-- Understood the build cycle for implementation
-
-Your project now has:
+Confirm that Git prints this exact commit:
 
 ```text
-your-project/
-├── _bmad/                                   # BMad configuration
-├── _bmad-output/
-│   ├── planning-artifacts/
-│   │   ├── PRD.md                           # Your requirements document
-│   │   ├── architecture.md                  # Technical decisions
-│   │   └── epics/                           # Epic and story files
-│   ├── implementation-artifacts/
-│   │   └── sprint-status.yaml               # Sprint tracking
-│   └── project-context.md                   # Implementation rules (optional)
-└── ...
+c941d0deec0ea08a30670be0fac879f2372f071b
 ```
 
-## Quick Reference
+The release tag and full commit keep the exercise stable as Django continues to evolve. Git may note that the annotated tag itself is not a commit before switching to the release commit; that message is expected. If the final SHA differs, stop and correct the checkout before continuing.
 
-| Workflow                              | Command                               | Agent     | Purpose                                    |
-| ------------------------------------- | ------------------------------------- | --------- | ------------------------------------------ |
-| **`bmad-help`** ⭐                    | `bmad-help`                           | Any       | **Your intelligent guide — ask anything!** |
-| `bmad-prd`                            | `bmad-prd`                            | Any       | Create, update, or validate a PRD          |
-| `bmad-architecture`                   | `bmad-architecture`                   | Architect | Create architecture document               |
-| `bmad-generate-project-context`       | `bmad-generate-project-context`       | Analyst   | Create project context file                |
-| `bmad-create-epics-and-stories`       | `bmad-create-epics-and-stories`       | PM        | Break down PRD into epics                  |
-| `bmad-check-implementation-readiness` | `bmad-check-implementation-readiness` | Architect | Validate planning cohesion                 |
-| `bmad-sprint-planning`                | `bmad-sprint-planning`                | DEV       | Initialize sprint tracking                 |
-| `bmad-quick-dev`                      | `bmad-quick-dev`                      | DEV       | Implement a feature, fix, or story         |
-| `bmad-code-review`                    | `bmad-code-review`                    | DEV       | Review implemented code                    |
+Create a local branch for your work:
 
-## Common Questions
+```bash
+git switch -c bmad-tutorial
+```
 
-**Do I always need architecture?**
-No. Use architecture when technical decisions or cross-system constraints need to be explicit. Clear work can enter `bmad-quick-dev` directly, while larger initiatives can bring architecture and other planning artifacts into the same workflow.
+Everything you do from here stays on that local branch.
 
-**Can I change my plan later?**
-Yes. The `bmad-correct-course` workflow handles scope changes mid-implementation.
+## 2. Prepare Django and a Small Application
 
-**What if I want to brainstorm first?**
-Invoke the Analyst agent (`bmad-agent-analyst`) and run `bmad-brainstorming` (`bmad-brainstorming`) before starting your PRD.
+Create an environment and install the Django checkout in editable mode:
 
-**Do I need to follow a strict order?**
-Not strictly. Once you learn the flow, you can run workflows directly using the Quick Reference above.
+```bash
+uv python install 3.12
+uv venv --python 3.12
+uv pip install -e .
+```
 
-## Getting Help
+Now generate a minimal Django application in a sibling directory. The application stays outside the framework repository, but because Django is installed in editable mode it immediately uses changes made inside `bmad-django`.
 
-:::tip[First Stop: BMad-Help]
-**Invoke `bmad-help` anytime** — it's the fastest way to get unstuck. Ask it anything:
+```bash
+mkdir ../bmad-django-app
+uv run django-admin startproject tutorial_project ../bmad-django-app
+```
 
-- "What should I do after installing?"
-- "I'm stuck on workflow X"
-- "What are my options for Y?"
-- "Show me what's been done so far"
+Django applications keep deployment configuration in a Python settings module. The `diffsettings` command compares an application's settings with Django's defaults. Run it against the generated application:
 
-BMad-Help inspects your project, detects what you've completed, and tells you exactly what to do next.
-:::
+```bash
+uv run python ../bmad-django-app/manage.py diffsettings
+```
 
-- **During workflows** — Agents guide you with questions and explanations
-- **Community** — [Discord](https://discord.gg/gk8jAdXWmj) (#bmad-method-help, #report-bugs-and-issues)
+You should see settings such as `DATABASES`, `DEBUG`, and `SECRET_KEY`. Establish the focused test baseline too:
 
-## Key Takeaways
+```bash
+uv run python tests/runtests.py admin_scripts.tests.DiffSettings --verbosity 1
+```
 
-:::tip[Remember These]
+The checkout should report seven passing tests.
 
-- **Start with `bmad-help`** — Your intelligent guide that knows your project and options
-- **Always use fresh chats** — Start a new chat for each workflow
-- **Planning depth varies** — direct intent and fully planned stories both enter `bmad-quick-dev`
-- **BMad-Help runs automatically** — Every workflow ends with guidance on what's next
-  :::
+## 3. Install BMad
 
-Ready to start? Install BMad, invoke `bmad-help`, and let your intelligent guide lead the way.
+Install the BMad Method module and its Claude Code skills into the Django checkout:
+
+```bash
+npx bmad-method install --directory . --modules bmm --tools claude-code --yes
+```
+
+The installer adds `_bmad/`, `_bmad-output/`, and `.claude/skills/`. Commit the installed configuration and the small `uv` lockfile so Quick Dev starts from a clean boundary:
+
+```bash
+git add _bmad .claude uv.lock
+git commit -m "chore: install BMAD for tutorial"
+git status --short
+```
+
+The final command should print nothing.
+
+## 4. Ship a Change With Quick Dev
+
+First, demonstrate the missing behavior:
+
+```bash
+uv run python ../bmad-django-app/manage.py diffsettings --output=json
+```
+
+Django rejects `json` because this revision supports only `hash` and `unified` output. That gives you an unambiguous before state.
+
+Start Claude Code from `bmad-django`:
+
+```bash
+claude
+```
+
+Invoke Quick Dev with this intent:
+
+```text
+bmad-quick-dev Add a JSON output mode to django-admin diffsettings.
+
+`--output=json` must emit a deterministic JSON object keyed by setting name.
+For each included setting, return its current value, default value when one
+exists, and status (`added`, `changed`, or `default`). Preserve native JSON
+values where possible and use repr() for values JSON cannot encode. Honor
+--all and --default, keep the existing hash and unified formats unchanged,
+and add focused tests and documentation.
+```
+
+Quick Dev will inspect the repository and may ask questions if it finds a genuine ambiguity. On its full path, it presents a compact implementation spec for your approval, makes the change, runs relevant verification, reviews the result from fresh perspectives, fixes supported findings, and commits the finished work locally.
+
+When the run finishes, verify the result outside the AI conversation:
+
+```bash
+uv run python ../bmad-django-app/manage.py diffsettings --output=json | uv run python -m json.tool
+uv run python tests/runtests.py admin_scripts.tests.DiffSettings --verbosity 1
+git show --stat --oneline HEAD
+```
+
+The first command must produce valid, readable JSON. The focused test suite must pass with the new coverage included, and `git show` lets you inspect exactly what changed.
+
+## What Quick Dev Just Demonstrated
+
+The valuable part is not that an LLM wrote Python. Quick Dev took a bounded outcome into an unfamiliar, mature codebase and kept the work inside an engineering control loop:
+
+1. It resolved intent before implementation.
+2. It found the existing command, tests, and documentation instead of inventing a parallel design.
+3. It preserved existing behavior while adding the new output contract.
+4. It verified and reviewed the change before presenting it.
+5. It left you with a local commit that you can inspect, amend, or discard.
+
+The codebase was large. The human request stayed small.
+
+## Use BMad-Help When You Need a Map
+
+You do not need BMad-Help to run known workflows. Use `bmad-help` when you want to explore what is installed, compare possible planning approaches, inspect what has already been completed, or ask what should happen next.
+
+```text
+bmad-help I completed a direct Quick Dev change. What planning options make
+sense for a related feature that needs several independently shippable steps?
+```
+
+It is a router and an informed reference, not a prerequisite for understanding the framework.
+
+## 5. Scale the Change With a Spec
+
+The JSON output is useful, but deployment tooling also needs control over what it emits and how CI reacts. That is no longer one bounded change. Start a fresh Claude Code session and invoke Spec with this intent:
+
+```text
+bmad-spec Define a configuration-audit extension for django-admin diffsettings,
+building on its new JSON output.
+
+The finished command must:
+1. Filter setting names with repeatable --include and --exclude glob patterns.
+2. Replace current and default values matching repeatable --redact glob patterns
+   with the literal string "********" in every output format.
+3. Support --fail-on-difference, returning status 1 when the selected settings
+   contain an added or changed value and 0 when they do not.
+
+Preserve all existing defaults. Each capability needs focused tests and docs.
+Break the result into three independently shippable stories in that order.
+```
+
+Spec distills the outcome into a compact `SPEC.md` contract. Because the work has independently useful slices, it will offer to create `stories.yaml`; approve the three-story breakdown and choose the human checkpoints you want when asked.
+
+Spec reports the exact output folder when it finishes. Keep that path: it contains the contract and story list that subsequent work will use.
+
+## 6. Implement and Observe the Stories
+
+Start a fresh Claude Code session for each story. Replace `<spec-folder>` with the path Spec reported:
+
+```text
+bmad-quick-dev Implement story 1 from <spec-folder>/stories.yaml.
+Use <spec-folder>/SPEC.md and its companions as the intent contract.
+```
+
+Repeat for stories 2 and 3 after reviewing each completed change. Direct intent and planned stories both enter Quick Dev; the difference is how much settled context Quick Dev receives.
+
+Each story has a visible result against the generated application.
+
+### Story 1: Filtering
+
+```bash
+uv run python ../bmad-django-app/manage.py diffsettings --output=json --include 'DATABASES*' | uv run python -m json.tool
+```
+
+The JSON should contain only matching settings.
+
+### Story 2: Redaction
+
+```bash
+uv run python ../bmad-django-app/manage.py diffsettings --output=json --include 'SECRET_KEY' --redact 'SECRET*' | uv run python -m json.tool
+```
+
+The secret value should be replaced by `"********"`.
+
+### Story 3: CI Status
+
+```bash
+uv run python ../bmad-django-app/manage.py diffsettings --include 'DEBUG' --fail-on-difference
+echo $?
+```
+
+On macOS or Linux, the second command should print `1` because `DEBUG` differs from Django's default. In PowerShell, inspect the same result with `echo $LASTEXITCODE`.
+
+After all three stories, run the focused suite and inspect the local history:
+
+```bash
+uv run python tests/runtests.py admin_scripts.tests.DiffSettings --verbosity 1
+git log --oneline --decorate -6
+```
+
+You now have evidence of both operating modes: a direct request became verified code, and a larger outcome retained one contract while moving through independently reviewable stories.
+
+## Clean Up the Tutorial
+
+The work is local and disposable. On macOS or Linux, exit Claude Code, move to the parent directory, and remove both tutorial directories when you no longer need them. On Windows, delete the same directories with your usual shell or file manager.
+
+```bash
+cd ..
+rm -rf bmad-django bmad-django-app
+```
+
+## Take BMad to Your Codebase
+
+This tutorial deliberately used one command in one framework. Larger product work can add discovery, PRDs, UX decisions, an [architecture spine](../reference/workflow-map.md#phase-3-solutioning), readiness checks, sprint context, and [autonomous story dispatch](../reference/dev-auto.md). Those artifacts increase the quality of context; they do not replace the implementation loop you just used.
+
+**Open the real repository where you have a change worth making. Install BMad, start a fresh session, and give that change to `bmad-quick-dev`.** If the outcome contains several independently shippable parts, establish the contract with `bmad-spec` first. If you are unsure which route fits, ask `bmad-help`.
