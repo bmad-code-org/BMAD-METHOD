@@ -56,6 +56,8 @@ function isSafeCanonicalId(value) {
 // installer config doesn't override `commands_body_template`. Matches
 // OpenCode's native `@skills/<id>` skill-reference syntax.
 const DEFAULT_COMMANDS_BODY_TEMPLATE = '@skills/{canonicalId}';
+const LEGACY_GITHUB_COPILOT_COMMANDS_BODY_TEMPLATE =
+  'LOAD the FULL {project-root}/{target_dir}/{canonicalId}/SKILL.md, READ its entire contents and follow its directions exactly!';
 
 // Is this skill a persona agent (vs. a workflow/tool/standalone skill)?
 // Used by platforms that surface only persona agents (e.g. Copilot's Custom
@@ -114,8 +116,16 @@ function looksLikeGeneratorOutput(content, canonicalId, { template, targetDir })
   if (typeof content !== 'string') return false;
   const trimmed = content.trim();
   const expectedTail = expandBodyTemplate(template, { canonicalId, targetDir }).trim();
-  // Must end with the exact body our generator writes (post-expansion).
-  if (!trimmed.endsWith(expectedTail)) return false;
+  const legacyCopilotTail = expandBodyTemplate(LEGACY_GITHUB_COPILOT_COMMANDS_BODY_TEMPLATE, {
+    canonicalId,
+    targetDir,
+  }).trim();
+  // Must end with either:
+  // - the exact body our current generator writes (post-expansion), or
+  // - the prior GitHub Copilot generator tail (migration path from {project-root}).
+  //   This lets re-installs refresh old generated files instead of treating them
+  //   as hand-modified forever.
+  if (!trimmed.endsWith(expectedTail) && !trimmed.endsWith(legacyCopilotTail)) return false;
   // Must start with frontmatter containing exactly one description: line.
   const fmMatch = trimmed.match(/^---\n([\S\s]*?)\n---\n/);
   if (!fmMatch) return false;
