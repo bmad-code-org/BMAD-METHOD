@@ -64,7 +64,7 @@ story_key: '' # set at runtime when discovered from sprint status
    - After constructing `{diff_output}`, verify it is non-empty regardless of source type. If empty, HALT and tell the user there is nothing to review.
 
 4. **Set the spec context.**
-   - If the triggering request or recent conversation **explicitly** states there is no spec (e.g. "no spec", "without a spec", "no-spec"): set `{review_mode}` = `"no-spec"`. Do **not** ask for a spec. Do **not** infer no-spec mode merely because the invocation omitted a spec path.
+   - If the triggering request or recent conversation **explicitly** states there is no spec (e.g. "no spec", "without a spec", "no-spec"): set `{review_mode}` = `"no-spec"` and clear `{spec_file}` (set it to `''`). Do **not** ask for a spec. Do **not** infer no-spec mode merely because the invocation omitted a spec path.
    - Else if `{spec_file}` is already set (from Tier 1 or Tier 2): verify the file exists and is readable, then set `{review_mode}` = `"full"`.
    - Else (neither a spec path nor an explicit no-spec declaration is present): ask the user to choose:
      1. Provide a spec or story file path for context; or
