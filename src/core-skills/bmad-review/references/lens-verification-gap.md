@@ -22,6 +22,8 @@ The main verification gap shapes are:
 
 If the change is non-behavioral, stop here and return zero findings (`[]`); when the output format includes a markdown report, note there that the change is non-behavioral (a caller's exact zero-findings output contract wins over this note). Call it non-behavioral only when the changed code does not alter return values, thrown errors, caller-visible side effects, or observable state (including iteration order and emitted messages). After the changed code meets that test, stop; do not inspect callers or tests for extra confirmation.
 
+Before stopping on a test-only change, check whether it removes or weakens verification of deterministic behavior. Such changes are eligible for broken-verification gaps even though production behavior is unchanged.
+
 Common non-behavioral examples: formatting, comments, whitespace; pure renames; trivial getters/setters and pass-throughs; type-only or compiler-enforced changes with no runtime effect; etc.
 
 ### Step 2: Find the behavior that changed
@@ -30,7 +32,7 @@ Identify what behavior changed compared to the previous version: output, side ef
 
 Treat broad-impact changes as behavioral even when no single changed line looks important: dependency, toolchain, build/config, data-file, etc.
 
-Seek verification of behavior, not the literal text of implementation or documentation artifacts. Exact content or structure remains eligible when it is output produced by deterministic construction or transformation, including generated prompts and request payloads. Do not seek phrase-existence assertions over hand-authored prompts, skills, documents, or source files.
+Seek verification of behavior, not the literal text of implementation or documentation artifacts. Tests may assert exact content or structure when they execute deterministic construction or transformation and inspect its output, including generated prompts and request payloads. Do not seek phrase-existence assertions over hand-authored prompts, skills, documents, or source files.
 
 For LLM-backed behavior, stop at the inference boundary: do not require invoking a model or judging its semantic response. Deterministic request construction and response handling remain eligible without live inference; existing inference tests are not precedent for more.
 
