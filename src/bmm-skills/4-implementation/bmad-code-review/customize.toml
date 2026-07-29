@@ -50,39 +50,51 @@ on_complete = ""
 id = "blind-hunter"
 name = "Blind Hunter"
 instruction = """
-Read `{skill-root}/review-prompts/adversarial.md` fully and replace its
-`{review_content}` placeholder with the following diff:
+Launch a context-free subagent with this prompt:
 
-{diff_output}
+> Read `{skill-root}/review-prompts/adversarial.md` completely and follow it as your review instructions.
+>
+> In that document, `{review_content}` means the following diff:
+>
+> {diff_output}
+>
+> Do not invoke any skill. If the instruction file is unreadable, report that exact failure and stop. Return only the review result.
 
-Launch a subagent with no prior conversation context using the entire rendered
-prompt directly.
+Do not read, render, reproduce, summarize, or inline the reviewer instruction file yourself.
 """
 
 [[workflow.review_layers]]
 id = "edge-case-hunter"
 name = "Edge Case Hunter"
 instruction = """
-Read `{skill-root}/review-prompts/edge-case-hunter.md` fully and replace its
-`{review_content}` placeholder with the following diff:
+Launch a context-free subagent with this prompt:
 
-{diff_output}
+> Read `{skill-root}/review-prompts/edge-case-hunter.md` completely and follow it as your review instructions.
+>
+> In that document, `{review_content}` means the following diff:
+>
+> {diff_output}
+>
+> Do not invoke any skill. If the instruction file is unreadable, report that exact failure and stop. Return only the review result.
 
-Launch a subagent with no prior conversation context using the entire rendered
-prompt directly.
+Do not read, render, reproduce, summarize, or inline the reviewer instruction file yourself.
 """
 
 [[workflow.review_layers]]
 id = "verification-gap"
 name = "Verification Gap Reviewer"
 instruction = """
-Read `{skill-root}/review-prompts/verification-gap.md` fully and replace its
-`{review_content}` placeholder with the following diff:
+Launch a context-free subagent with this prompt:
 
-{diff_output}
+> Read `{skill-root}/review-prompts/verification-gap.md` completely and follow it as your review instructions.
+>
+> In that document, `{review_content}` means the following diff:
+>
+> {diff_output}
+>
+> Do not invoke any skill. If the instruction file is unreadable, report that exact failure and stop. Return only the review result.
 
-Launch a subagent with no prior conversation context using the entire rendered
-prompt directly.
+Do not read, render, reproduce, summarize, or inline the reviewer instruction file yourself.
 """
 
 [[workflow.review_layers]]

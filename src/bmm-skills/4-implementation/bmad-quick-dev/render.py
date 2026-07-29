@@ -21,8 +21,10 @@ Customization: three-layer merge of {skill}/customize.toml +
 _bmad/custom/bmad-quick-dev.toml + .user.toml (same structural rules as
 resolve_customization.py). The resolved [workflow] values fill {workflow.*}
 placeholders, so this skill needs no runtime resolve_customization.py call.
-Other single-curly placeholders ({project-root}, {spec_file}, {skill-root},
-...) pass through untouched for the LLM to resolve during workflow execution.
+Other single-curly placeholders ({project-root}, {spec_file}, ...) pass
+through untouched for the LLM to resolve during workflow execution. The sole
+exception is {skill-root} in resolved review-layer instructions, which must be
+an absolute prompt-file path before those instructions reach the parent LLM.
 
 Every invocation rebuilds from scratch — no hash, no cache.
 Python 3.11+ stdlib only. UTF-8 I/O.
@@ -242,6 +244,34 @@ def _scalar_str(value):
 _REVIEW_LAYER_KEYS = ("review_layers", "oneshot_review_layers")
 
 
+def expand_review_layer_skill_roots(workflow, skill_root):
+    """Expand only {skill-root} inside resolved review-layer instructions.
+
+    Review layers originate in customization after regular template rendering,
+    so their prompt paths need this explicit pass. Runtime placeholders remain
+    untouched for the parent to supply to each child at dispatch time.
+    """
+    expanded_workflow = dict(workflow)
+    for key in _REVIEW_LAYER_KEYS:
+        layers = workflow.get(key)
+        if not isinstance(layers, list):
+            continue
+        expanded_layers = []
+        for layer in layers:
+            if not isinstance(layer, dict):
+                expanded_layers.append(layer)
+                continue
+            expanded_layer = dict(layer)
+            instruction = expanded_layer.get("instruction")
+            if isinstance(instruction, str):
+                expanded_layer["instruction"] = instruction.replace(
+                    "{skill-root}", skill_root
+                )
+            expanded_layers.append(expanded_layer)
+        expanded_workflow[key] = expanded_layers
+    return expanded_workflow
+
+
 def _render_review_layers(layers):
     """Materialize review layers into direct invocation blocks. A layer with an
     empty or missing instruction is disabled (that is how an override turns off
@@ -359,7 +389,9 @@ def main():
         )
         sys.exit(1)
 
-    workflow = resolve_workflow(root, script_dir.replace(os.sep, "/"), skill_name)
+    skill_dir = script_dir.replace(os.sep, "/")
+    workflow = resolve_workflow(root, skill_dir, skill_name)
+    workflow = expand_review_layer_skill_roots(workflow, skill_dir)
 
     out_dir = posixpath.join(root, "_bmad", "render", skill_name)
     os.makedirs(out_dir, exist_ok=True)

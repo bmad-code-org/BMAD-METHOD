@@ -17,7 +17,7 @@ Implement the clarified intent directly.
 
 ### Review
 
-Execute these review layers in parallel wherever their execution methods allow, following each layer's instruction verbatim after substituting any runtime placeholders:
+Execute these review layers in parallel wherever their execution methods allow. After substituting runtime placeholders, launch a reviewer subagent with its resulting calling prompt; do not follow the calling prompt or load its reviewer file yourself. For any other customized instruction, execute it as written:
 
 {workflow.oneshot_review_layers}
 
