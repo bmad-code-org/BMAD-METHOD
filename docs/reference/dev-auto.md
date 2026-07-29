@@ -7,6 +7,8 @@ sidebar:
 
 To use BMad in an autonomous development loop, use the `bmad-dev-auto` skill. It is like [Quick Dev](../explanation/quick-dev.md), but designed to keep moving without human interaction. You can use it in an interactive session, but its main purpose is to be used by an orchestrator.
 
+The important architectural boundary is this: `bmad-dev-auto` owns the implementation run and the spec artifact it produces, but it does not own your backlog policy. When review finds something real that is not this story's problem, the skill records that finding in the spec it owns and stops there. Deciding whether to queue it, deduplicate it, escalate it, or ignore it is the orchestrator's responsibility.
+
 ## What It Does
 
 `bmad-dev-auto` performs one unattended development-loop iteration:
@@ -41,14 +43,14 @@ Supported intent shapes include:
 
 If the invocation points to an existing spec file with one of the known `status` values in the frontmatter, the workflow resumes from that state:
 
-| Spec status | Entry point |
-| --- | --- |
-| `draft` | plan |
-| `ready-for-dev` | implement |
-| `in-progress` | implement |
-| `in-review` | review |
-| `done` | review again as a fresh follow-up pass |
-| `blocked` | halt immediately |
+| Spec status     | Entry point                            |
+| --------------- | -------------------------------------- |
+| `draft`         | plan                                   |
+| `ready-for-dev` | implement                              |
+| `in-progress`   | implement                              |
+| `in-review`     | review                                 |
+| `done`          | review again as a fresh follow-up pass |
+| `blocked`       | halt immediately                       |
 
 ### Folder+ID Dispatch
 
@@ -58,11 +60,11 @@ The workflow reads `<spec-folder>/stories.yaml` and looks up the entry whose `id
 
 It then checks `<spec-folder>/stories/<story-id>-*.md` (id-prefix match) to tell a first dispatch from a resume:
 
-| On-disk match | Outcome |
-| --- | --- |
-| None | First dispatch. Requires `<spec-folder>/SPEC.md` to exist (otherwise halts `blocked` / `no epic spec found`). Loads `SPEC.md` and its companions, then proceeds to planning. |
-| Exactly one | Resume: routes on that file's `status` exactly like the Resume Input table above. A `blocked` status here reports blocking condition `story already blocked`, not `blocked spec supplied` — dev-auto discovered the file by id, the caller didn't hand it a blocked spec. A missing or unrecognized `status` halts `blocked` / `unrecognized status in existing story file`. |
-| More than one | Halts `blocked` / `ambiguous story file match`. |
+| On-disk match | Outcome                                                                                                                                                                                                                                                                                                                                                                      |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| None          | First dispatch. Requires `<spec-folder>/SPEC.md` to exist (otherwise halts `blocked` / `no epic spec found`). Loads `SPEC.md` and its companions, then proceeds to planning.                                                                                                                                                                                                 |
+| Exactly one   | Resume: routes on that file's `status` exactly like the Resume Input table above. A `blocked` status here reports blocking condition `story already blocked`, not `blocked spec supplied` — dev-auto discovered the file by id, the caller didn't hand it a blocked spec. A missing or unrecognized `status` halts `blocked` / `unrecognized status in existing story file`. |
+| More than one | Halts `blocked` / `ambiguous story file match`.                                                                                                                                                                                                                                                                                                                              |
 
 A `blocked` story file is permanent: every later dispatch of that id halts with `story already blocked`, even after the cause is fixed. To retry, delete the story file — the id then reads as pending and the next dispatch starts fresh.
 
@@ -90,14 +92,25 @@ It may also look at:
 
 The spec frontmatter `status` is the main machine-readable state for orchestration:
 
-| Spec Status | Meaning |
-| --- | --- |
-| `draft` | Spec exists but has not passed ready-for-dev validation |
-| `ready-for-dev` | Spec is complete enough to implement |
-| `in-progress` | Implementation is underway |
-| `in-review` | Review/triage is underway |
-| `done` | Workflow completed successfully |
-| `blocked` | Workflow cannot safely continue unattended |
+| Spec Status     | Meaning                                                 |
+| --------------- | ------------------------------------------------------- |
+| `draft`         | Spec exists but has not passed ready-for-dev validation |
+| `ready-for-dev` | Spec is complete enough to implement                    |
+| `in-progress`   | Implementation is underway                              |
+| `in-review`     | Review/triage is underway                               |
+| `done`          | Workflow completed successfully                         |
+| `blocked`       | Workflow cannot safely continue unattended              |
+
+### Deferred Findings
+
+`deferred` is where the skill reports real findings that are not this story's problem. Each item contains:
+
+- `summary` — one-sentence description of the deferred issue
+- `evidence` — why the finding is real
+- `location` — optional file:line or component hint
+- `severity` — optional final triage severity (`high`, `medium`, `low`)
+
+This is intentionally not a backlog. It is a machine-readable review output. The orchestrator has to decide what happens next: create a ticket, append to a central queue, correlate duplicates across runs, or do nothing.
 
 ### On `ready-for-dev`
 
@@ -116,6 +129,7 @@ On successful completion, the workflow writes or updates the spec with:
   - Residual risks
 - `followup_review_recommended` flag. True if LLM decided another review pass seems worthwhile. It's a suggestion, not a must. Simplest way to give it a second review pass is to re-run the skill pointing it at the spec file.
 - `baseline_revision` and `final_revision` — the full canonical revisions before implementation and at the reviewed change's endpoint. `git log baseline_revision..final_revision` lists the reviewed change commits. Both are `NO_VCS` without version control.
+- `deferred` frontmatter entries for review findings triaged `defer`. Each item records `summary`, `evidence`, and, when known, `location` plus `severity`.
 
 The workflow commits but does not push. If the spec is tracked in the implementation repository, clean HEAD is one spec-finalization commit beyond `final_revision`; otherwise the implementation repository ends at `final_revision`.
 
@@ -158,6 +172,7 @@ For new work, the workflow creates:
 That spec is the contract between planning, implementation, and review. It contains:
 
 - Frontmatter status
+- Frontmatter machine state (`followup_review_recommended`, `warnings`, `deferred`, revision markers)
 - The immutable `<intent-contract>` block
 - Code map
 - Tasks and acceptance criteria
@@ -171,11 +186,11 @@ Under folder+id dispatch, the workflow writes to `<spec-folder>/stories/<story-i
 
 When a halt happens before a slug can be derived from the story's title, the write-back falls back to a fixed slug segment instead:
 
-| Situation | Slug segment used |
-| --- | --- |
-| `stories.yaml` missing/unparseable, or no entry matches the story id | `unresolved` |
-| More than one on-disk file already matches `<story-id>-*.md` | `ambiguous` |
-| Entry resolved and no on-disk ambiguity | slug derived from `title` (and `description` if needed) |
+| Situation                                                            | Slug segment used                                       |
+| -------------------------------------------------------------------- | ------------------------------------------------------- |
+| `stories.yaml` missing/unparseable, or no entry matches the story id | `unresolved`                                            |
+| More than one on-disk file already matches `<story-id>-*.md`         | `ambiguous`                                             |
+| Entry resolved and no on-disk ambiguity                              | slug derived from `title` (and `description` if needed) |
 
 If the resolved path already exists, the workflow updates its `status` frontmatter and appends result details under `## Auto Run Result`, same as the primary spec artifact. If it doesn't exist, the workflow creates a skeletal story spec: frontmatter status, a heading (the entry's title, or `Story <story_id>` if the entry couldn't be resolved or the on-disk match was ambiguous), and an `## Auto Run Result` section.
 
@@ -192,7 +207,6 @@ This records the terminal status and blocking condition.
 Depending on the route, the workflow may also write:
 
 - `{implementation_artifacts}/epic-<N>-context.md`
-- `{implementation_artifacts}/deferred-work.md`
 - A patch file preserving the attempted change when the review step halts on `intent gap` (path recorded in the spec's triage log)
 
 ## Orchestrator Responsibilities
@@ -203,6 +217,7 @@ An orchestrator integrating `bmad-dev-auto` should:
 - Prefer passing a spec path when resuming prior work — or the same spec folder and story id, under folder+id dispatch
 - Monitor the produced spec file, story spec artifact, or fallback result file for terminal state
 - Read `status`, `blocking condition`, and `followup_review_recommended` rather than inferring success from chat output alone
+- Read deferred findings from the spec frontmatter `deferred:` list
 - Use `baseline_revision..final_revision` to identify the reviewed change commits; do not assume `final_revision` equals HEAD
 - Expect autonomous file changes and local commits
 - Handle `blocked` as a routing signal, not just a failure signal

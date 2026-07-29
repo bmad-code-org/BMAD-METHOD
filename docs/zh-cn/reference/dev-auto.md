@@ -7,6 +7,8 @@ sidebar:
 
 要在自主开发循环里使用 BMad，请用 `bmad-dev-auto` skill。它类似 [Quick Dev](../explanation/quick-dev.md)，但设计为在无人交互的情况下持续推进。你可以在交互式会话里用它，主要用途是被 orchestrator 调用。
 
+这里有一条重要的架构边界：`bmad-dev-auto` 负责 implementation run 及其生成的 spec artifact，但不负责 backlog policy。当 review 发现真实但不属于当前 story 的问题时，skill 会把 finding 记录在自己负责的 spec 中，仅此而已。是排入队列、去重、升级还是忽略，由 orchestrator 决定。
+
 ## 它做什么
 
 `bmad-dev-auto` 执行一次无人值守的开发循环迭代：
@@ -99,6 +101,17 @@ spec frontmatter 的 `status` 是 orchestration 的主要 machine-readable 状�
 | `done` | Workflow 成功完成 |
 | `blocked` | Workflow 无法安全 unattended 继续 |
 
+### Deferred Findings
+
+`deferred` 用于记录 skill 发现的真实问题，但这些问题不属于当前 story。每个条目包含：
+
+- `summary` —— deferred issue 的单句描述
+- `evidence` —— 证明 finding 真实存在的依据
+- `location` —— 可选的 file:line 或 component 提示
+- `severity` —— 可选的最终 triage severity（`high`、`medium`、`low`）
+
+它不是 backlog，而是 machine-readable review output。Orchestrator 必须决定下一步：创建 ticket、追加到 central queue、关联多次 run 中的重复项，或不做处理。
+
 ### 在 `ready-for-dev` 时
 
 `ready-for-dev` 通常是 workflow 直通 implement 的 resume 状态。当 invocation prompt 指示 planning 后 halt 时，它成为真正的 halt 结果：spec 通过 READY FOR DEVELOPMENT gate 后，workflow 设 status `ready-for-dev` 并停在那里，而不是继续 implement。重新 dispatch 同一 spec（或同一 spec 文件夹和 story id）会经上述路由在 implement resume。
@@ -116,6 +129,7 @@ spec frontmatter 的 `status` 是 orchestration 的主要 machine-readable 状�
   - Residual risks
 - `followup_review_recommended` 标志。若 LLM 认为值得再 review 一轮则为 true。只是建议，非必须。最简单的二次 review 是重新运行 skill 并指向 spec 文件。
 - `baseline_revision` 和 `final_revision` —— implementation 前与 reviewed change endpoint 的完整 canonical revision。`git log baseline_revision..final_revision` 列出 reviewed change commits。无版本控制时两者均为 `NO_VCS`。
+- triage 为 `defer` 的 review findings 会写入 frontmatter 的 `deferred` 条目。每个条目记录 `summary`、`evidence`，以及已知时的 `location` 和 `severity`。
 
 Workflow 会 commit，但不会 push。若 spec 由 implementation repository track，clean HEAD 会比 `final_revision` 多一个 spec-finalization commit；否则 implementation repository 会停在 `final_revision`。
 
@@ -158,6 +172,7 @@ workflow 总是尽量留下 durable artifact 描述发生了什么。
 该 spec 是 planning、implementation 和 review 之间的 contract，包含：
 
 - Frontmatter status
+- Frontmatter machine state（`followup_review_recommended`、`warnings`、`deferred`、revision markers）
 - 不可变的 `<intent-contract>` 块
 - Code map
 - Tasks 和 acceptance criteria
@@ -192,7 +207,6 @@ workflow 在尚无 valid `spec_file` 时 halt（folder+id dispatch 外 —— �
 视路由，workflow 还可能写入：
 
 - `{implementation_artifacts}/epic-<N>-context.md`
-- `{implementation_artifacts}/deferred-work.md`
 - review step 因 `intent gap` halt 时保存 attempted change 的 patch 文件（路径记录在 spec triage log）
 
 ## Orchestrator 职责
@@ -203,6 +217,7 @@ workflow 在尚无 valid `spec_file` 时 halt（folder+id dispatch 外 —— �
 - Resume 时优先传 spec 路径 —— 或 folder+id dispatch 下同一 spec 文件夹和 story id
 - 监控产出的 spec 文件、story spec artifact 或 fallback result 文件的 terminal state
 - 读 `status`、`blocking condition`、`followup_review_recommended`，不要只从 chat 输出推断成功
+- 从 spec frontmatter 的 `deferred:` list 读取 deferred findings
 - 用 `baseline_revision..final_revision` 识别 reviewed change commits；不要假设 `final_revision` 等于 HEAD
 - 预期 autonomous 文件变更和 local commits
 - 把 `blocked` 当作 routing signal，而不只是 failure signal
