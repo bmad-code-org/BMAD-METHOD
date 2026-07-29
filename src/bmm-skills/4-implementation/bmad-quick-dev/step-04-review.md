@@ -22,7 +22,7 @@ Execute these review layers in parallel wherever their execution methods allow: 
 
 {workflow.review_layers}
 
-If a layer's instruction requires subagents and none are available, generate one review prompt file per such layer in `{{.implementation_artifacts}}` and HALT. Ask the human to run each in a separate session (ideally a different LLM) and paste back the findings.
+If a layer's instruction requires subagents and none are available, for each such layer read its reviewer instruction file, write a self-contained prompt under `{{.implementation_artifacts}}` (full instruction body + `## REVIEW TARGET` with the review content — not a path-only pointer), then HALT. Ask the human to run each in a separate session (ideally a different LLM) and paste back the findings. This is the only allowed parent-side read of a reviewer instruction file.
 
 ### Classify
 

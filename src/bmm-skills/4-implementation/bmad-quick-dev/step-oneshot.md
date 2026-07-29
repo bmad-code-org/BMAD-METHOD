@@ -17,11 +17,11 @@ Implement the clarified intent directly.
 
 ### Review
 
-Execute these review layers in parallel wherever their execution methods allow. After substituting runtime placeholders, launch a reviewer subagent with its resulting calling prompt; do not follow the calling prompt or load its reviewer file yourself. For any other customized instruction, execute it as written:
+Execute these review layers in parallel wherever their execution methods allow. After substituting runtime placeholders, when an instruction launches a reviewer subagent, launch that child with its resulting calling prompt; do not follow the calling prompt or load its reviewer file yourself. For any other customized instruction, execute it as written:
 
 {workflow.oneshot_review_layers}
 
-If a layer's instruction requires subagents and none are available, generate one review prompt file per such layer in `{{.implementation_artifacts}}` and HALT. Ask the human to run each in a separate session and paste back the findings.
+If a layer's instruction requires subagents and none are available, for each such layer read its reviewer instruction file, write a self-contained prompt under `{{.implementation_artifacts}}` (full instruction body + `## REVIEW TARGET` with the review content — not a path-only pointer), then HALT. Ask the human to run each in a separate session and paste back the findings. This is the only allowed parent-side read of a reviewer instruction file.
 
 ### Classify
 

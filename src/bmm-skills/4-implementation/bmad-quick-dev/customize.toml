@@ -65,7 +65,7 @@ Launch a context-free subagent with this prompt:
 >
 > Do not invoke any skill. If the instruction file is unreadable, report that exact failure and stop. Return only the review result.
 
-Do not read, render, reproduce, summarize, or inline the reviewer instruction file yourself.
+Do not read, render, reproduce, summarize, or inline the reviewer instruction file yourself (except the no-subagent fallback in the review step).
 """
 
 [[workflow.review_layers]]
@@ -82,7 +82,7 @@ Launch a context-free subagent with this prompt:
 >
 > Do not invoke any skill. If the instruction file is unreadable, report that exact failure and stop. Return only the review result.
 
-Do not read, render, reproduce, summarize, or inline the reviewer instruction file yourself.
+Do not read, render, reproduce, summarize, or inline the reviewer instruction file yourself (except the no-subagent fallback in the review step).
 """
 
 [[workflow.review_layers]]
@@ -99,7 +99,7 @@ Launch a context-free subagent with this prompt:
 >
 > Do not invoke any skill. If the instruction file is unreadable, report that exact failure and stop. Return only the review result.
 
-Do not read, render, reproduce, summarize, or inline the reviewer instruction file yourself.
+Do not read, render, reproduce, summarize, or inline the reviewer instruction file yourself (except the no-subagent fallback in the review step).
 """
 
 # Review layers for the one-shot route.
@@ -116,5 +116,5 @@ Launch a context-free subagent with this prompt:
 >
 > Do not invoke any skill. If the instruction file is unreadable, report that exact failure and stop. Return only the review result.
 
-Do not read, render, reproduce, summarize, or inline the reviewer instruction file yourself.
+Do not read, render, reproduce, summarize, or inline the reviewer instruction file yourself (except the no-subagent fallback in the review step).
 """

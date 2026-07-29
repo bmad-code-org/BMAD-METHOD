@@ -85,4 +85,4 @@ Add nothing if nothing qualifies.
 
 ## CONTENT SOURCE
 
-The review target is supplied only by the parent message that launched you (the `content` input). This instruction file never contains the target and has no `{review_content}` placeholder to fill or substitute. Load content exclusively from that parent message; if none was supplied, treat content as empty and follow the empty-content halt rules above.
+Load the review target from the parent message, or from a trailing `## REVIEW TARGET` section if present (offline fallback). This file has no `{review_content}` slot. If neither supplies content, treat content as empty and follow the empty-content halt rules above.
