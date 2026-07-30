@@ -248,6 +248,13 @@ try {
     }
   });
 
+  test('open_spec default and examples use only established runtime path placeholders', () => {
+    const content = fs.readFileSync(path.join(skillDst, 'customize.toml'), 'utf-8');
+    assert(content.includes('code -r "{project-root}" "{spec_file}"'), 'default supported-placeholder command missing');
+    assert(!content.includes('{absolute-root}'), 'invented {absolute-root} placeholder remains in customize.toml');
+    assert(!content.includes('{absolute-spec-file}'), 'invented {absolute-spec-file} placeholder remains in customize.toml');
+  });
+
   test('review layers materialize as invocation blocks in step-04', () => {
     const content = readRendered('step-04-review.md');
     const expectedPromptPath = `${skillDst.replaceAll('\\', '/')}/review-prompts/adversarial.md`;
@@ -334,10 +341,9 @@ try {
     }
     for (const file of ['step-05-present.md', 'step-oneshot.md']) {
       const content = readRendered(file);
-      assert(
-        content.includes('code -r "{absolute-root}" "{absolute-spec-file}"'),
-        `default root-first VS Code command missing from ${file}`,
-      );
+      assert(content.includes('code -r "{project-root}" "{spec_file}"'), `default root-first VS Code command missing from ${file}`);
+      assert(!content.includes('{absolute-root}'), `invented {absolute-root} placeholder survived in ${file}`);
+      assert(!content.includes('{absolute-spec-file}'), `invented {absolute-spec-file} placeholder survived in ${file}`);
     }
   });
 
