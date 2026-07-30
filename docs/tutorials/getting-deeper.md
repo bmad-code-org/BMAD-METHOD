@@ -252,3 +252,8 @@ final result still does what you asked for at the start.
 
 If you want several perspectives on the result, `/bmad-party-mode` is an
 optional final step. You do not need it to finish this tutorial.
+
+## 12. Keep Building
+
+Now [install BMad in your own repository](../how-to/install-bmad.md), then use
+the `bmad-build` skill to make a change you want.
