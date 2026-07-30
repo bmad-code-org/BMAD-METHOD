@@ -1,6 +1,6 @@
 ---
 title: 'Getting Started'
-description: Install BMad and build two small Python programs
+description: Install BMad and build a small Python program
 sidebar:
   order: 1
 ---
@@ -13,12 +13,11 @@ Already have a repository and a small change you want to make?
 repository, and run the installed `bmad-build` skill. Talk to it about the
 change you want, and it will make it happen.
 
-Otherwise, start here. You will make two working Python programs in an empty
+Otherwise, start here. You will make a working Python program in an empty
 project.
 
 :::note[Before You Start]
-Use a macOS or Linux shell with Node.js 20.12+, Python 3,
-[uv](https://docs.astral.sh/uv/getting-started/installation/), and a coding tool
+Use a macOS or Linux shell with Node.js 20.12+, Python 3, and a coding tool
 supported by BMad. The exact install and launch commands below are for Claude
 Code. If you use another supported tool, select it when installing BMad and run
 the `bmad-build` skill there instead.
@@ -44,43 +43,11 @@ Open your coding tool in this directory. For Claude Code, run:
 claude
 ```
 
-## Make Hello World
+## Build a Mars Rover
 
-Enter this one-sentence request:
-
-```text
-/bmad-build write me a hello world in Python
-```
-
-If the `bmad-build` skill creates `hello.py`, run it from this directory in
-another terminal. If it uses another filename, use that name instead:
-
-```bash
-python3 hello.py
-```
-
-The program prints:
-
-```text
-Hello, World!
-```
-
-You have working software from one sentence.
-
-## Ask BMad Help
-
-The `bmad-help` skill answers questions about BMad. Use it to understand what
-happened, decide what to do next, or solve a problem. Try it now:
-
-```text
-/bmad-help Explain what bmad-build just did.
-```
-
-## Make a Mars Rover
-
-Start a fresh chat in the same directory. This time, ask the `bmad-build` skill
-to make the [Mars Rover programming kata](https://codingdojo.org/kata/mars-rover/),
-a small exercise used to practice coding, without adding any design choices:
+Ask the `bmad-build` skill to make the
+[Mars Rover programming kata](https://codingdojo.org/kata/mars-rover/), a small
+exercise used to practice coding, without adding any design choices:
 
 ```text
 /bmad-build write an implementation of mars rover kata
@@ -128,13 +95,22 @@ rover>  4  . . . . .
 rover> Mission control signing off.
 ```
 
-Open the files listed in the final message to look at your finished change.
+Open the files listed in the final message to look at your finished program.
+
+## Ask BMad Help
+
+The `bmad-help` skill answers questions about BMad. Use it to understand what
+happened, decide what to do next, or solve a problem. Try it now:
+
+```text
+/bmad-help Explain what bmad-build just did.
+```
 
 ## You Built It
 
-Hello World showed how the `bmad-build` skill can finish a clear, tiny request.
-Mars Rover showed how the same skill can ask questions before it starts. Both
-gave you software you could run.
+Mars Rover showed how the `bmad-build` skill turns a short request into working
+software. It clarified the request, presented a plan for your approval, wrote
+the program, and checked its work before showing you the result.
 
 ## Keep Building
 
