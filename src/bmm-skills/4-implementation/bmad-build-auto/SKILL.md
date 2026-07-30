@@ -1,5 +1,5 @@
 ---
-name: bmad-dev-auto
+name: bmad-build-auto
 description: 'One iteration of an unattended development loop. Use when invoked by name.'
 ---
 

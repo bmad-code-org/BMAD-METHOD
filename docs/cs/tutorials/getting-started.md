@@ -84,7 +84,7 @@ Hloubka plánování je flexibilní:
 | **Plné solutioning** | Koordinované, rizikové nebo mezisystémové iniciativy | PRD, UX, architektura, epicy, stories a sprint plán |
 
 :::note
-Nejde o oddělené implementační cesty. Všechny vstupy se sbíhají do `bmad-quick-dev`; plánování pouze mění množství dostupného kontextu.
+Nejde o oddělené implementační cesty. Všechny vstupy se sbíhají do `bmad-build`; plánování pouze mění množství dostupného kontextu.
 :::
 
 ## Instalace
@@ -176,13 +176,13 @@ Epicy a stories se nyní vytvářejí *po* architektuře. Tím vznikají kvalitn
 
 Přejděte k implementaci s jakýmkoli dostupným kontextem: přímým požadavkem, issue, specifikací nebo plně naplánovanou story. **Každý workflow by měl běžet v novém chatu.**
 
-U plánované práce spusťte `bmad-quick-dev` a určete vybranou story nebo položku sprintu, například: `Implementuj story 2.3 z _bmad-output/planning-artifacts/epics.md`.
+U plánované práce spusťte `bmad-build` a určete vybranou story nebo položku sprintu, například: `Implementuj story 2.3 z _bmad-output/planning-artifacts/epics.md`.
 
 ### Inicializace plánování sprintu (pro plánovanou práci)
 
 Vyvolejte **Developer agenta** (`bmad-agent-dev`) a spusťte `bmad-sprint-planning` (`bmad-sprint-planning`). Tím se vytvoří `sprint-status.yaml` pro sledování všech epiců a stories.
 
-Když Quick Dev v tomto souboru rozpozná vybranou story, během implementace ji přesune do stavu `in-progress` a po dokončení implementace do stavu `review`.
+Když Build v tomto souboru rozpozná vybranou story, během implementace ji přesune do stavu `in-progress` a po dokončení implementace do stavu `review`.
 
 ### Cyklus vývoje
 
@@ -190,10 +190,10 @@ Pro každou přímou změnu nebo naplánovanou story opakujte tento cyklus s nov
 
 | Krok | Agent | Workflow             | Příkaz                     | Účel                               |
 | ---- | ----- | -------------------- | -------------------------- | ---------------------------------- |
-| 1    | DEV   | `bmad-quick-dev`     | `bmad-quick-dev`           | Upřesnění, plán, implementace, revize a prezentace |
+| 1    | DEV   | `bmad-build`     | `bmad-build`           | Upřesnění, plán, implementace, revize a prezentace |
 | 2    | DEV   | `bmad-code-review`   | `bmad-code-review`         | Dodatečná validace kvality *(doporučeno)* |
 
-Revize v Quick Dev je součástí každého běhu. `bmad-code-review` je volitelná nezávislá validační vrstva v novém kontextu.
+Revize v Build je součástí každého běhu. `bmad-code-review` je volitelná nezávislá validační vrstva v novém kontextu.
 
 Po dokončení všech stories v epicu vyvolejte **Developer agenta** (`bmad-agent-dev`) a spusťte `bmad-retrospective` (`bmad-retrospective`).
 
@@ -233,13 +233,13 @@ váš-projekt/
 | `bmad-create-epics-and-stories`       | `bmad-create-epics-and-stories`           | PM        | Rozklad PRD na epicy                            |
 | `bmad-check-implementation-readiness` | `bmad-check-implementation-readiness`     | Architect | Validace soudržnosti plánování                  |
 | `bmad-sprint-planning`                | `bmad-sprint-planning`                    | DEV       | Inicializace sledování sprintu                  |
-| `bmad-quick-dev`                      | `bmad-quick-dev`                          | DEV       | Implementace záměru, issue, funkce, opravy nebo story |
+| `bmad-build`                      | `bmad-build`                          | DEV       | Implementace záměru, issue, funkce, opravy nebo story |
 | `bmad-code-review`                    | `bmad-code-review`                        | DEV       | Revize implementovaného kódu                    |
 
 ## Časté otázky
 
 **Potřebuji vždy architekturu?**
-Ne. Architekturu použijte, když je třeba explicitně zachytit technická rozhodnutí nebo mezisystémová omezení. Jasná práce může vstoupit přímo do `bmad-quick-dev`; větší iniciativa přináší do stejného workflow plánovací artefakty.
+Ne. Architekturu použijte, když je třeba explicitně zachytit technická rozhodnutí nebo mezisystémová omezení. Jasná práce může vstoupit přímo do `bmad-build`; větší iniciativa přináší do stejného workflow plánovací artefakty.
 
 **Mohu později změnit svůj plán?**
 Ano. Workflow `bmad-correct-course` (`bmad-correct-course`) řeší změny rozsahu během implementace.
@@ -270,7 +270,7 @@ BMad-Help prozkoumá váš projekt, detekuje, co jste dokončili, a řekne vám 
 :::tip[Zapamatujte si]
 - **Začněte s `bmad-help`** — Váš inteligentní průvodce, který zná váš projekt a možnosti
 - **Vždy používejte nové chaty** — Začněte nový chat pro každý workflow
-- **Hloubka plánování se liší** — přímý záměr i plně naplánované stories vstupují do `bmad-quick-dev`
+- **Hloubka plánování se liší** — přímý záměr i plně naplánované stories vstupují do `bmad-build`
 - **BMad-Help se spouští automaticky** — Každý workflow končí pokyny, co dělat dál
 :::
 

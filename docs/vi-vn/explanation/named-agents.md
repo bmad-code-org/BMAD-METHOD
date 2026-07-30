@@ -36,7 +36,7 @@ BMad hiện có sáu named agent, mỗi agent gắn với một phase trong BMad
 | 📋 **John**, Quản lý sản phẩm (Product Manager) | Planning | PRD creation, epic/story breakdown, implementation readiness |
 | 🎨 **Sally**, Nhà thiết kế UX (UX Designer) | Planning | UX design specifications |
 | 🏗️ **Winston**, Kiến trúc sư hệ thống (System Architect) | Solutioning | technical architecture, alignment checks |
-| 💻 **Amelia**, Kỹ sư cấp cao (Senior Engineer) | Implementation | story execution, quick-dev, code review, sprint planning |
+| 💻 **Amelia**, Kỹ sư cấp cao (Senior Engineer) | Implementation | story execution, build, code review, sprint planning |
 
 Mỗi agent có một danh tính hardcode gồm tên, chức danh, domain, và một lớp có thể tùy chỉnh gồm vai trò, nguyên tắc, phong cách giao tiếp, icon và menu. Bạn có thể viết lại nguyên tắc của Mary hoặc thêm menu item cho cô ấy, nhưng bạn không thể đổi tên cô ấy. Đó là chủ ý thiết kế. Nhận diện thương hiệu của agent phải sống sót qua lớp tùy chỉnh để câu "hey Mary" luôn kích hoạt đúng analyst, bất kể team đã nắn hành vi của cô ấy theo cách nào.
 
@@ -77,7 +77,7 @@ Mỗi agent đi kèm một `customize.toml` với mặc định hợp lý. Team 
 
 Đa số người dùng không cần tự tay viết các file đó. Skill `bmad-customize` sẽ dẫn họ qua việc chọn đúng mục tiêu, quyết định override ở mức agent hay workflow, viết file và xác minh merge. Nhờ vậy bề mặt tùy chỉnh vẫn tiếp cận được với bất cứ ai hiểu ý định của mình, chứ không chỉ người rành TOML.
 
-Ví dụ cụ thể: một team commit một file yêu cầu Amelia luôn dùng Context7 MCP tool khi tra tài liệu thư viện, và fallback sang Linear nếu story không xuất hiện trong danh sách epic cục bộ. Từ đó mọi dev workflow mà Amelia dispatch như `quick-dev`, `code-review`, `qa-generate` đều tự động thừa hưởng hành vi này mà không cần sửa source hay lặp lại cấu hình từng workflow.
+Ví dụ cụ thể: một team commit một file yêu cầu Amelia luôn dùng Context7 MCP tool khi tra tài liệu thư viện, và fallback sang Linear nếu story không xuất hiện trong danh sách epic cục bộ. Từ đó mọi dev workflow mà Amelia dispatch như `build`, `code-review`, `qa-generate` đều tự động thừa hưởng hành vi này mà không cần sửa source hay lặp lại cấu hình từng workflow.
 
 Ngoài ra còn có một bề mặt tùy chỉnh thứ hai cho các mối quan tâm *xuyên suốt*: `_bmad/config.toml`, `_bmad/config.user.toml`, `_bmad/custom/config.toml` và `_bmad/custom/config.user.toml`. Đây là nơi **agent roster** sống, tức các descriptor gọn nhẹ mà những skill như `bmad-party-mode`, `bmad-retrospective` và `bmad-advanced-elicitation` dùng để biết ai có mặt và phải nhập vai họ thế nào. Bạn có thể rebrand một agent cho cả tổ chức bằng team override, hoặc thêm những giọng hư cấu như Kirk, Spock hay một persona chuyên gia domain qua `.user.toml`, tất cả mà không cần đụng vào thư mục skill. File per-skill quyết định Mary *hành xử* như thế nào khi cô ấy kích hoạt; cấu hình trung tâm quyết định các skill khác *nhìn thấy* cô ấy ra sao khi quan sát toàn bộ đội hình.
 

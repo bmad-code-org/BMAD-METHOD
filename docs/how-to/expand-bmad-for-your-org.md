@@ -41,7 +41,7 @@ Rule of thumb: if the rule should apply everywhere an engineer does dev work, cu
 
 [agent]
 
-# Applied on every activation. Carries into quick-dev, code-review,
+# Applied on every activation. Carries into build, code-review,
 # qa-generate — every skill Amelia dispatches.
 persistent_facts = [
   "For any library documentation lookup (React, TypeScript, Zod, Prisma, etc.), call the context7 MCP tool (`mcp__context7__resolve_library_id` then `mcp__context7__get_library_docs`) before relying on training-data knowledge. Up-to-date docs trump memorized APIs.",

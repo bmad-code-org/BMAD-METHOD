@@ -58,7 +58,7 @@ Toto zabraňuje:
 | Více epiců nebo mezisystémová rozhodnutí | Potřebné pro sladění implementace |
 | Regulovaná, riziková nebo enterprise iniciativa | Řiďte se požadovanou governance; solutioning je obvykle povinný |
 
-Solutioning mění kontext dostupný pro `bmad-quick-dev`, nikoli implementační workflow.
+Solutioning mění kontext dostupný pro `bmad-build`, nikoli implementační workflow.
 
 :::tip[Pravidlo palce]
 Pokud máte více epiců, které by mohly být implementovány různými agenty, potřebujete solutioning.

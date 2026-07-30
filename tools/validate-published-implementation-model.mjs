@@ -1,10 +1,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const CANONICAL_LLMS_ENTRY = '**[Quick Dev]';
+const CANONICAL_LLMS_ENTRY = '**[Build]';
 const CANONICAL_LLMS_DESCRIPTION = 'Canonical implementation workflow for direct intent and fully planned work';
 
 const FORBIDDEN_TERMS = [
+  /\bbmad-(?:quick-dev|dev-auto)\b/gi,
+  /\bQuick[ -]?Dev\b/gi,
+  /\bDev[ -]?Auto\b/gi,
   /\bbmad-(?:create|dev)-story\b/gi,
   /\b(?:create-story|dev-story)\b/gi,
   /\b(?:Create Story|Dev Story)\b/g,
@@ -26,7 +29,7 @@ export function validatePublishedImplementationModel(siteDir) {
   const llmsPath = path.join(siteDir, 'llms.txt');
   const llmsContent = fs.readFileSync(llmsPath, 'utf-8');
   if (!llmsContent.includes(CANONICAL_LLMS_ENTRY) || !llmsContent.includes(CANONICAL_LLMS_DESCRIPTION)) {
-    throw new Error('llms.txt must describe Quick Dev as canonical for both direct intent and fully planned work');
+    throw new Error('llms.txt must describe Build as canonical for both direct intent and fully planned work');
   }
 }
 

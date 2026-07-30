@@ -97,7 +97,7 @@ TEA also supports P0-P3 risk-based prioritization and optional integrations with
 
 The QA Automate workflow appears in Phase 4 (Implementation) of the BMad Method workflow map. It is designed to run **after a full epic is complete** — once all stories in an epic have been implemented and code-reviewed. A typical sequence:
 
-1. For each story in the epic: implement with Quick Dev (`QD` / `bmad-quick-dev`), then optionally add Code Review (`CR`)
+1. For each story in the epic: implement with Build (`BD` / `bmad-build`), then optionally add Code Review (`CR`)
 2. After the epic is complete: generate tests with `QA` (via the Developer agent) or TEA's Automate workflow
 3. Run retrospective (`bmad-retrospective`) to capture lessons learned
 

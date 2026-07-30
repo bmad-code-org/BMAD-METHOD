@@ -5,7 +5,7 @@ sidebar:
   order: 6
 ---
 
-Bug 修复、重构或小范围改动可以在很少甚至没有上游规划的情况下直接进入 **Quick Dev**。这与完整规划 story 使用的是同一个实施 workflow。
+Bug 修复、重构或小范围改动可以在很少甚至没有上游规划的情况下直接进入 **Build**。这与完整规划 story 使用的是同一个实施 workflow。
 
 ## 何时使用本指南
 
@@ -27,28 +27,28 @@ Bug 修复、重构或小范围改动可以在很少甚至没有上游规划的�
 
 ### 2. 提供你的意图
 
-Quick Dev 支持自由表达意图，你可以在调用前、调用时或调用后补充说明。示例：
+Build 支持自由表达意图，你可以在调用前、调用时或调用后补充说明。示例：
 
 ```text
-run quick-dev — 修复允许空密码的登录验证 bug。
+run build — 修复允许空密码的登录验证 bug。
 ```
 
 ```text
-run quick-dev — fix https://github.com/org/repo/issues/42
+run build — fix https://github.com/org/repo/issues/42
 ```
 
 ```text
-run quick-dev — 实现 _bmad-output/implementation-artifacts/my-intent.md 中的意图
+run build — 实现 _bmad-output/implementation-artifacts/my-intent.md 中的意图
 ```
 
 ```text
 我觉得问题在 auth 中间件，它没有检查 token 过期。
 让我看看... 是的，src/auth/middleware.ts 第 47 行完全跳过了
-exp 检查。run quick-dev
+exp 检查。run build
 ```
 
 ```text
-run quick-dev
+run build
 > 你想做什么？
 重构 UserService 以使用 async/await 而不是回调。
 ```
@@ -57,19 +57,19 @@ run quick-dev
 
 ### 3. 回答问题并批准
 
-Quick Dev 可能会先问澄清问题，或在实现前给出一份简短方案供你确认。回答问题后，在你认可方案时再批准继续。
+Build 可能会先问澄清问题，或在实现前给出一份简短方案供你确认。回答问题后，在你认可方案时再批准继续。
 
 ### 4. 审查和推送
 
-Quick Dev 会实现改动、执行自检并修补问题，然后在本地提交。完成后，它会在编辑器中打开受影响文件。
+Build 会实现改动、执行自检并修补问题，然后在本地提交。完成后，它会在编辑器中打开受影响文件。
 
 - 快速浏览 diff，确认改动符合你的意图
 - 如果有偏差，直接告诉智能体要改什么，它可以在同一会话里继续迭代
 
-确认无误后推送提交。Quick Dev 会提供推送和创建 PR 的选项。
+确认无误后推送提交。Build 会提供推送和创建 PR 的选项。
 
 :::caution[如果出现问题]
-如果推送的更改导致意外问题，请使用 `git revert HEAD` 干净地撤销最后一次提交。然后启动新聊天并再次运行 Quick Dev 以尝试不同的方法。
+如果推送的更改导致意外问题，请使用 `git revert HEAD` 干净地撤销最后一次提交。然后启动新聊天并再次运行 Build 以尝试不同的方法。
 :::
 
 ## 你将获得
@@ -80,16 +80,16 @@ Quick Dev 会实现改动、执行自检并修补问题，然后在本地提交�
 
 ## 延迟工作
 
-Quick Dev 每次只聚焦一个目标。如果你的请求包含多个独立目标，或审查过程中发现与你本次改动无关的存量问题，Quick Dev 会把它们记录到 `deferred-work.md`（位于实现产物目录），而不是一次性全都处理。
+Build 每次只聚焦一个目标。如果你的请求包含多个独立目标，或审查过程中发现与你本次改动无关的存量问题，Build 会把它们记录到 `deferred-work.md`（位于实现产物目录），而不是一次性全都处理。
 
-每次运行后都建议看一下这个文件，它就是你的后续待办清单。你可以把其中任何一项在后续新的 Quick Dev 会话里单独处理。
+每次运行后都建议看一下这个文件，它就是你的后续待办清单。你可以把其中任何一项在后续新的 Build 会话里单独处理。
 
 ## 何时增加正式规划
 
-在运行同一个 Quick Dev 实施循环前，遇到以下情况可增加 PRD、UX、架构或 story 规划：
+在运行同一个 Build 实施循环前，遇到以下情况可增加 PRD、UX、架构或 story 规划：
 
 - 更改影响多个系统或需要在许多文件中进行协调更新
 - 你不确定范围，需要先进行需求发现
 - 你需要为团队记录文档或架构决策
 
-参见 [Quick Dev](../explanation/quick-dev.md) 了解直接意图与已规划工作如何汇入同一实施循环。
+参见 [Build](../explanation/build.md) 了解直接意图与已规划工作如何汇入同一实施循环。

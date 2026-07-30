@@ -75,11 +75,11 @@ Décidez comment le construire et décomposez le travail en stories.
 
 ## Phase 4 : Implémentation
 
-Tous les points d’entrée convergent vers `bmad-quick-dev`. Il accepte une intention directe, une issue, une spécification ou une story planifiée, puis choisit le niveau de clarification, de planification, d’implémentation et de revue nécessaire.
+Tous les points d’entrée convergent vers `bmad-build`. Il accepte une intention directe, une issue, une spécification ou une story planifiée, puis choisit le niveau de clarification, de planification, d’implémentation et de revue nécessaire.
 
 | Workflow               | Objectif                                                                             | Livrable                         |
 |------------------------|--------------------------------------------------------------------------------------|----------------------------------|
-| `bmad-quick-dev`       | Transformez une intention directe ou une story planifiée en code implémenté et révisé | `spec-*.md` + code              |
+| `bmad-build`       | Transformez une intention directe ou une story planifiée en code implémenté et révisé | `spec-*.md` + code              |
 | `bmad-sprint-planning` | Initialisez le suivi (une fois par projet, pour séquencer le cycle de développement) | `sprint-status.yaml`             |
 | `bmad-code-review`     | Validez la qualité de l’implémentation                                               | Approuvé ou changements demandés |
 | `bmad-correct-course`  | Gérez les changements significatifs en cours de sprint                               | Plan mis à jour ou réorientation |
@@ -88,7 +88,7 @@ Tous les points d’entrée convergent vers `bmad-quick-dev`. Il accepte une int
 
 ### Entrée directe ou planifiée
 
-Un travail clair peut entrer directement dans `bmad-quick-dev`. Une initiative plus vaste peut d’abord produire un PRD, une conception UX, une architecture, des epics, des stories, un contrôle de préparation et un plan de sprint. Ces artefacts ajoutent du contexte sans sélectionner un autre workflow d’implémentation.
+Un travail clair peut entrer directement dans `bmad-build`. Une initiative plus vaste peut d’abord produire un PRD, une conception UX, une architecture, des epics, des stories, un contrôle de préparation et un plan de sprint. Ces artefacts ajoutent du contexte sans sélectionner un autre workflow d’implémentation.
 
 ## Gestion du Contexte
 

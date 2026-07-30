@@ -30,7 +30,7 @@ Clonez ou ouvrez le [dépôt BMAD-METHOD](https://github.com/bmad-code-org/BMAD-
 :::note[Exemple]
 **Q :** « Quel est le moyen le plus rapide de construire quelque chose avec BMad ? »
 
-**R :** Lancez `bmad-quick-dev`. Donnez-lui une intention directe, une issue, une spécification ou une story planifiée ; il utilise le contexte disponible et choisit la profondeur de clarification, de planification, d’implémentation et de revue nécessaire.
+**R :** Lancez `bmad-build`. Donnez-lui une intention directe, une issue, une spécification ou une story planifiée ; il utilise le contexte disponible et choisit la profondeur de clarification, de planification, d’implémentation et de revue nécessaire.
 :::
 
 **Conseils pour de meilleures réponses :**

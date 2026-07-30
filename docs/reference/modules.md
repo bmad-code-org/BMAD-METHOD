@@ -43,7 +43,7 @@ AI-powered tools for structured creativity, ideation, and innovation during earl
 
 ## Game Dev Studio
 
-Structured game development workflows adapted for Unity, Unreal, Godot, and custom engines. Supports planning depths from rapid prototyping to full-scale production with epic-driven sprints; implementation converges on Quick Dev.
+Structured game development workflows adapted for Unity, Unreal, Godot, and custom engines. Supports planning depths from rapid prototyping to full-scale production with epic-driven sprints; implementation converges on Build.
 
 - **Code:** `gds`
 - **npm:** [`bmad-game-dev-studio`](https://www.npmjs.com/package/bmad-game-dev-studio)
@@ -52,7 +52,7 @@ Structured game development workflows adapted for Unity, Unreal, Godot, and cust
 **Provides:**
 
 - Game Design Document (GDD) generation workflow
-- Game-aware planning and context that feed the standard Quick Dev implementation loop
+- Game-aware planning and context that feed the standard Build implementation loop
 - Narrative design support for characters, dialogue, and world-building
 - Coverage for 21+ game types with engine-specific architecture guidance
 

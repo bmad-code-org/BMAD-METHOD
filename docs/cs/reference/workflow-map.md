@@ -52,11 +52,11 @@ Rozhodněte, jak to budovat, a rozložte práci na stories.
 
 ## Fáze 4: Implementace
 
-Všechny implementační vstupy se sbíhají do `bmad-quick-dev`. Přijímá přímý záměr, issue, specifikaci nebo naplánovanou story a zvolí potřebnou míru upřesnění, plánování, implementace a revize.
+Všechny implementační vstupy se sbíhají do `bmad-build`. Přijímá přímý záměr, issue, specifikaci nebo naplánovanou story a zvolí potřebnou míru upřesnění, plánování, implementace a revize.
 
 | Workflow                   | Účel                                                                     | Produkuje                        |
 | -------------------------- | ------------------------------------------------------------------------ | -------------------------------- |
-| `bmad-quick-dev`           | Převod přímého záměru nebo naplánované story na implementovaný a revidovaný kód | `spec-*.md` + kód          |
+| `bmad-build`           | Převod přímého záměru nebo naplánované story na implementovaný a revidovaný kód | `spec-*.md` + kód          |
 | `bmad-sprint-planning`     | Inicializace sledování (jednou na projekt pro sekvencování dev cyklu)    | `sprint-status.yaml`             |
 | `bmad-code-review`         | Validace kvality implementace                                            | Schváleno nebo požadovány změny  |
 | `bmad-correct-course`      | Řešení významných změn uprostřed sprintu                                 | Aktualizovaný plán nebo přesměrování |
@@ -65,7 +65,7 @@ Všechny implementační vstupy se sbíhají do `bmad-quick-dev`. Přijímá př
 
 ### Přímý a plánovaný vstup
 
-Jasná práce může vstoupit do `bmad-quick-dev` přímo. Větší iniciativa může nejprve vytvořit PRD, UX, architekturu, epicy, stories, kontrolu připravenosti a sprint plán. Tyto artefakty přidávají kontext; nevybírají jiný implementační workflow.
+Jasná práce může vstoupit do `bmad-build` přímo. Větší iniciativa může nejprve vytvořit PRD, UX, architekturu, epicy, stories, kontrolu připravenosti a sprint plán. Tyto artefakty přidávají kontext; nevybírají jiný implementační workflow.
 
 ## Správa kontextu
 

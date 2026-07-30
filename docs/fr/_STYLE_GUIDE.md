@@ -148,7 +148,7 @@ votre-projet/
 |--------------------------|-------------------------------|
 | **Index/Page d’accueil** | `core-concepts/index.md`      |
 | **Concept**              | `what-are-agents.md`          |
-| **Fonctionnalité**       | `quick-dev.md`                |
+| **Fonctionnalité**       | `build.md`                |
 | **Philosophie**          | `why-solutioning-matters.md`  |
 | **FAQ**                  | `established-projects-faq.md` |
 

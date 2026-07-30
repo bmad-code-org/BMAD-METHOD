@@ -118,7 +118,7 @@ Un fichier `project-context.md` qui :
 - **Concentrez-vous sur ce qui n’est pas évident** — Documentez les patterns que les agents pourraient manquer (par ex. « Utiliser JSDoc sur chaque classe publique »), et non les pratiques universelles comme « utiliser des noms de variables significatifs ».
 - **Gardez-le concis** — Ce fichier est chargé par chaque workflow d’implémentation. Les fichiers longs gaspillent le contexte. Excluez le contenu qui ne s’applique qu’à un périmètre restreint ou à des stories spécifiques.
 - **Mettez à jour si nécessaire** — Modifiez manuellement lorsque les patterns changent, ou régénérez après des changements d’architecture significatifs.
-- Prend en charge la même boucle `bmad-quick-dev`, que le travail entre directement ou après une planification approfondie.
+- Prend en charge la même boucle `bmad-build`, que le travail entre directement ou après une planification approfondie.
 :::
 
 ## Prochaines étapes

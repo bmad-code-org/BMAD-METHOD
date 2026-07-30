@@ -6,6 +6,8 @@ stated intent and pre-resolved customization fields so the target skips its own 
 
 | Shim                       | Forwards to                          |
 | -------------------------- | ------------------------------------ |
+| `bmad-quick-dev`           | `bmad-build`                         |
+| `bmad-dev-auto`            | `bmad-build-auto`                    |
 | `bmad-create-story`        | Retained in full                     |
 | `bmad-dev-story`           | Retained in full                     |
 | `bmad-create-prd`          | `bmad-prd` (create intent)           |

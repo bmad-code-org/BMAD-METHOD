@@ -58,9 +58,9 @@ principles = [
 # registered skill by name) or `prompt` (executes the prompt text directly).
 
 [[agent.menu]]
-code = "QD"
+code = "BD"
 description = "Implement a feature, fix, or story"
-skill = "bmad-quick-dev"
+skill = "bmad-build"
 
 [[agent.menu]]
 code = "QA"

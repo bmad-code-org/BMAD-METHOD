@@ -86,7 +86,7 @@ Planning depth is flexible. Start implementation directly when the intent is alr
 | **Full solutioning** | Cross-system, high-risk, or coordinated initiatives | PRD, UX, architecture, epics, stories, and sprint plan |
 
 :::note
-These are entry points, not separate implementation tracks. Every path converges on `bmad-quick-dev`; planning only changes how much context the workflow receives.
+These are entry points, not separate implementation tracks. Every path converges on `bmad-build`; planning only changes how much context the workflow receives.
 :::
 
 ## Installation
@@ -190,13 +190,13 @@ Epics and stories are now created _after_ architecture. This produces better qua
 
 Move to implementation from whatever context you have: a direct request, an issue, a spec, or a fully planned story. **Each workflow should run in a fresh chat.**
 
-For planned work, invoke `bmad-quick-dev` and identify the selected story or sprint item, for example: `Implement story 2.3 from _bmad-output/planning-artifacts/epics.md`.
+For planned work, invoke `bmad-build` and identify the selected story or sprint item, for example: `Implement story 2.3 from _bmad-output/planning-artifacts/epics.md`.
 
 ### Initialize Sprint Planning (For Planned Work)
 
 Invoke the **Developer agent** (`bmad-agent-dev`) and run `bmad-sprint-planning` (`bmad-sprint-planning`). This creates `sprint-status.yaml` to track all epics and stories.
 
-When Quick Dev resolves a selected story in that file, it moves the story to `in-progress` during implementation and to `review` when implementation is complete.
+When Build resolves a selected story in that file, it moves the story to `in-progress` during implementation and to `review` when implementation is complete.
 
 ### The Build Cycle
 
@@ -204,10 +204,10 @@ For each direct change or planned story, repeat this cycle with fresh chats:
 
 | Step | Agent | Workflow | Command | Purpose |
 | ---- | ----- | -------- | ------- | ------- |
-| 1    | DEV   | `bmad-quick-dev` | `bmad-quick-dev` | Clarify as needed, plan, implement, review, present |
+| 1    | DEV   | `bmad-build` | `bmad-build` | Clarify as needed, plan, implement, review, present |
 | 2    | DEV   | `bmad-code-review` | `bmad-code-review` | Additional quality validation _(recommended)_ |
 
-Quick Dev's review is part of every run. `bmad-code-review` is an optional fresh-context, independent validation layer.
+Build's review is part of every run. `bmad-code-review` is an optional fresh-context, independent validation layer.
 
 After completing all stories in an epic, invoke the **Developer agent** (`bmad-agent-dev`) and run `bmad-retrospective` (`bmad-retrospective`).
 
@@ -247,13 +247,13 @@ your-project/
 | `bmad-create-epics-and-stories`       | `bmad-create-epics-and-stories`       | PM        | Break down PRD into epics                  |
 | `bmad-check-implementation-readiness` | `bmad-check-implementation-readiness` | Architect | Validate planning cohesion                 |
 | `bmad-sprint-planning`                | `bmad-sprint-planning`                | DEV       | Initialize sprint tracking                 |
-| `bmad-quick-dev`                      | `bmad-quick-dev`                      | DEV       | Implement a feature, fix, or story         |
+| `bmad-build`                      | `bmad-build`                      | DEV       | Implement a feature, fix, or story         |
 | `bmad-code-review`                    | `bmad-code-review`                    | DEV       | Review implemented code                    |
 
 ## Common Questions
 
 **Do I always need architecture?**
-No. Use architecture when technical decisions or cross-system constraints need to be explicit. Clear work can enter `bmad-quick-dev` directly, while larger initiatives can bring architecture and other planning artifacts into the same workflow.
+No. Use architecture when technical decisions or cross-system constraints need to be explicit. Clear work can enter `bmad-build` directly, while larger initiatives can bring architecture and other planning artifacts into the same workflow.
 
 **Can I change my plan later?**
 Yes. The `bmad-correct-course` workflow handles scope changes mid-implementation.
@@ -286,7 +286,7 @@ BMad-Help inspects your project, detects what you've completed, and tells you ex
 
 - **Start with `bmad-help`** — Your intelligent guide that knows your project and options
 - **Always use fresh chats** — Start a new chat for each workflow
-- **Planning depth varies** — direct intent and fully planned stories both enter `bmad-quick-dev`
+- **Planning depth varies** — direct intent and fully planned stories both enter `bmad-build`
 - **BMad-Help runs automatically** — Every workflow ends with guidance on what's next
   :::
 

@@ -1,17 +1,17 @@
 ---
 title: Autonomous Development Loops
-description: Reference for automating the Quick Dev implementation model with bmad-dev-auto as the single-iteration worker.
+description: Reference for automating the Build implementation model with bmad-build-auto as the single-iteration worker.
 sidebar:
   order: 7
 ---
 
-`bmad-dev-auto` is the unattended automation surface for the canonical [Quick Dev](../explanation/quick-dev.md) implementation model. It accepts the same range of direct intent and planned work, and preserves the clarify, plan, implement, and review stages while exposing terminal statuses an orchestrator can act on. It automates the implementation loop; it does not define a second implementation path.
+`bmad-build-auto` is the unattended automation surface for the canonical [Build](../explanation/build.md) implementation model. It accepts the same range of direct intent and planned work, and preserves the clarify, plan, implement, and review stages while exposing terminal statuses an orchestrator can act on. It automates the implementation loop; it does not define a second implementation path.
 
-The important architectural boundary is this: `bmad-dev-auto` owns the implementation run and the spec artifact it produces, but it does not own your backlog policy. When review finds something real that is not this story's problem, the skill records that finding in the spec it owns and stops there. Deciding whether to queue it, deduplicate it, escalate it, or ignore it is the orchestrator's responsibility.
+The important architectural boundary is this: `bmad-build-auto` owns the implementation run and the spec artifact it produces, but it does not own your backlog policy. When review finds something real that is not this story's problem, the skill records that finding in the spec it owns and stops there. Deciding whether to queue it, deduplicate it, escalate it, or ignore it is the orchestrator's responsibility.
 
 ## What It Does
 
-`bmad-dev-auto` performs one unattended development-loop iteration:
+`bmad-build-auto` performs one unattended development-loop iteration:
 
 1. Clarify the incoming intent
 2. Create (or find and resume) a spec file
@@ -21,7 +21,7 @@ The important architectural boundary is this: `bmad-dev-auto` owns the implement
 
 ## Prerequisites
 
-This skill relies on an ability to run subagents. If subagents are unavailable, the workflow halts `blocked` with `no subagents`. If you invoke the skill itself in a subagent session, e.g. "hey, Claude, implement stories 2-10, using a subagent running bmad-dev-auto skill for each story", that session will need to spawn its own subagents.
+This skill relies on an ability to run subagents. If subagents are unavailable, the workflow halts `blocked` with `no subagents`. If you invoke the skill itself in a subagent session, e.g. "hey, Claude, implement stories 2-10, using a subagent running bmad-build-auto skill for each story", that session will need to spawn its own subagents.
 
 Version control, while optional, is strongly recommended. If present, the working tree must be clean and the agent must be able to update repository metadata.
 
@@ -29,7 +29,7 @@ Version control, while optional, is strongly recommended. If present, the workin
 
 ### Primary Invocation Input
 
-The main input is the invocation prompt. `bmad-dev-auto` treats that prompt as workflow input, not as a finished implementation plan.
+The main input is the invocation prompt. `bmad-build-auto` treats that prompt as workflow input, not as a finished implementation plan.
 
 Supported intent shapes include:
 
@@ -63,7 +63,7 @@ It then checks `<spec-folder>/stories/<story-id>-*.md` (id-prefix match) to tell
 | On-disk match | Outcome                                                                                                                                                                                                                                                                                                                                                                      |
 | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | None          | First dispatch. Requires `<spec-folder>/SPEC.md` to exist (otherwise halts `blocked` / `no epic spec found`). Loads `SPEC.md` and its companions, then proceeds to planning.                                                                                                                                                                                                 |
-| Exactly one   | Resume: routes on that file's `status` exactly like the Resume Input table above. A `blocked` status here reports blocking condition `story already blocked`, not `blocked spec supplied` — dev-auto discovered the file by id, the caller didn't hand it a blocked spec. A missing or unrecognized `status` halts `blocked` / `unrecognized status in existing story file`. |
+| Exactly one   | Resume: routes on that file's `status` exactly like the Resume Input table above. A `blocked` status here reports blocking condition `story already blocked`, not `blocked spec supplied` — build-auto discovered the file by id, the caller didn't hand it a blocked spec. A missing or unrecognized `status` halts `blocked` / `unrecognized status in existing story file`. |
 | More than one | Halts `blocked` / `ambiguous story file match`.                                                                                                                                                                                                                                                                                                                              |
 
 A `blocked` story file is permanent: every later dispatch of that id halts with `story already blocked`, even after the cause is fixed. To retry, delete the story file — the id then reads as pending and the next dispatch starts fresh.
@@ -198,7 +198,7 @@ If the resolved path already exists, the workflow updates its `status` frontmatt
 
 If the workflow halts before it has a valid `spec_file` (outside folder+id dispatch — see above), it writes:
 
-`{implementation_artifacts}/bmad-dev-auto-result-<slug-or-timestamp>.md`
+`{implementation_artifacts}/bmad-build-auto-result-<slug-or-timestamp>.md`
 
 This records the terminal status and blocking condition.
 
@@ -211,7 +211,7 @@ Depending on the route, the workflow may also write:
 
 ## Orchestrator Responsibilities
 
-An orchestrator integrating `bmad-dev-auto` should:
+An orchestrator integrating `bmad-build-auto` should:
 
 - Pass one coherent intent at a time
 - Prefer passing a spec path when resuming prior work — or the same spec folder and story id, under folder+id dispatch
@@ -224,4 +224,4 @@ An orchestrator integrating `bmad-dev-auto` should:
 
 In practice, `blocked` usually means the workflow ran into a situation where unattended execution would be unsafe. That is often the point where a higher-level orchestrator, another workflow, or a human should take over.
 
-After resolving a blocked run, the orchestrator should usually start a fresh `bmad-dev-auto` run. If it reuses prior work, it should pass an explicit known-good spec path rather than relying on implicit discovery.
+After resolving a blocked run, the orchestrator should usually start a fresh `bmad-build-auto` run. If it reuses prior work, it should pass an explicit known-good spec path rather than relying on implicit discovery.

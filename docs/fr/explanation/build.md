@@ -1,19 +1,19 @@
 ---
-title: "Quick Dev"
+title: "Build"
 description: Réduire la friction de l’interaction humaine sans renoncer aux points de contrôle qui protègent la qualité des résultats
 sidebar:
   order: 7
 ---
 
-`bmad-quick-dev` est le workflow d’implémentation standard pour tout travail de développement. Il accepte aussi bien une intention libre ou une issue qu’une story entièrement planifiée, et produit des modifications de code avec le minimum d’interventions humaines compatible avec la sécurité.
+`bmad-build` est le workflow d’implémentation standard pour tout travail de développement. Il accepte aussi bien une intention libre ou une issue qu’une story entièrement planifiée, et produit des modifications de code avec le minimum d’interventions humaines compatible avec la sécurité.
 
 La planification amont reste optionnelle et variable. Un changement clair peut entrer directement ; une initiative plus vaste peut apporter PRD, UX, architecture, epics, stories, contrôle de préparation et plan de sprint. Ces artefacts renforcent le contexte sans sélectionner un autre workflow de développement.
 
-Lorsqu’une story planifiée entre dans Quick Dev, elle reste la source du contexte produit et des critères d’acceptation. Quick Dev crée son propre journal d’exécution pour l’exécution en cours afin de conserver la traçabilité des décisions d’implémentation et des observations de revue, sans remplacer la story.
+Lorsqu’une story planifiée entre dans Build, elle reste la source du contexte produit et des critères d’acceptation. Build crée son propre journal d’exécution pour l’exécution en cours afin de conserver la traçabilité des décisions d’implémentation et des observations de revue, sans remplacer la story.
 
 Il permet au modèle de s’exécuter plus longtemps entre les points de contrôle, puis ne vous fait intervenir que lorsque la tâche ne peut pas se poursuivre en toute sécurité sans jugement humain, ou lorsqu’il est temps de revoir le résultat final.
 
-![Diagramme du workflow Quick Dev](/diagrams/quick-dev-diagram-fr.webp)
+![Diagramme du workflow Build](/diagrams/build-diagram-fr.webp)
 
 ## Pourquoi cette fonctionnalité existe
 
@@ -21,7 +21,7 @@ Les interactions humaines dans la boucle sont nécessaires et coûteuses.
 
 Les LLM actuels échouent encore de manière prévisible : ils interprètent mal l’intention, comblent les lacunes avec des suppositions assurées, dérivent vers du travail non lié, et génèrent des résultats à réviser bruyants. En même temps, l’intervention humaine constante limite la fluidité du développement. L’attention humaine est le goulot d’étranglement.
 
-`bmad-quick-dev` rééquilibre ce compromis. Il fait confiance au modèle pour s’exécuter sans surveillance sur de plus longues périodes, mais seulement après que le workflow ait créé une frontière suffisamment solide pour rendre cela sûr.
+`bmad-build` rééquilibre ce compromis. Il fait confiance au modèle pour s’exécuter sans surveillance sur de plus longues périodes, mais seulement après que le workflow ait créé une frontière suffisamment solide pour rendre cela sûr.
 
 ## La conception fondamentale
 
@@ -57,7 +57,7 @@ L’entretien sur l’intention implique la personne dans la boucle, mais ce n�
 
 - **Résolution des lacunes d’intention** - intervenir à nouveau lors de la revue prouve que le workflow n’a pas pu déduire correctement ce qui était voulu
 
-Tout le reste est candidat à une exécution autonome plus longue. Ce compromis est délibéré. Les anciens patterns dépensent plus d’attention humaine en supervision continue. Quick Dev fait davantage confiance au modèle, mais préserve l’attention humaine pour les moments où le raisonnement humain a le plus d’impact.
+Tout le reste est candidat à une exécution autonome plus longue. Ce compromis est délibéré. Les anciens patterns dépensent plus d’attention humaine en supervision continue. Build fait davantage confiance au modèle, mais préserve l’attention humaine pour les moments où le raisonnement humain a le plus d’impact.
 
 ## Pourquoi le système de revue est important
 
@@ -70,7 +70,7 @@ Les revues agentiques[^2] échouent souvent de deux manières :
 - Elles génèrent trop d’observations, forçant la personne à trier le bruit.
 - Elles déraillent des modifications actuelles en remontant des problèmes non liés et en transformant chaque exécution en un projet de nettoyage improvisé.
 
-Quick Dev aborde ces deux problèmes en traitant la revue comme un triage[^3].
+Build aborde ces deux problèmes en traitant la revue comme un triage[^3].
 
 Certaines observations concernent le changement en cours, d’autres non. Si une observation est incidente plutôt que directement liée au travail en cours, le workflow peut la différer au lieu d’obliger la personne à la traiter immédiatement. Cela permet de rester concentré sur l’exécution et d’éviter que des digressions aléatoires ne viennent épuiser le capital d’attention.
 

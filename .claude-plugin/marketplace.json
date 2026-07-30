@@ -90,7 +90,7 @@
         "./src/bmm-skills/3-solutioning/bmad-generate-project-context",
         "./src/bmm-skills/4-implementation/bmad-agent-dev",
         "./src/bmm-skills/4-implementation/bmad-dev-story",
-        "./src/bmm-skills/4-implementation/bmad-quick-dev",
+        "./src/bmm-skills/4-implementation/bmad-build",
         "./src/bmm-skills/4-implementation/bmad-checkpoint-preview",
         "./src/bmm-skills/4-implementation/bmad-sprint-planning",
         "./src/bmm-skills/4-implementation/bmad-sprint-status",
@@ -98,7 +98,8 @@
         "./src/bmm-skills/4-implementation/bmad-create-story",
         "./src/bmm-skills/4-implementation/bmad-correct-course",
         "./src/bmm-skills/4-implementation/bmad-retrospective",
-        "./src/bmm-skills/4-implementation/bmad-qa-generate-e2e-tests"
+        "./src/bmm-skills/4-implementation/bmad-qa-generate-e2e-tests",
+        "./src/bmm-skills/v6-shims/bmad-quick-dev"
       ]
     }
   ]

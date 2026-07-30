@@ -41,7 +41,7 @@ BMad 的自定义机制让组织无需编辑已安装文件或 fork 技能就能
 
 [agent]
 
-# 每次激活时加载。传递到 quick-dev、code-review、
+# 每次激活时加载。传递到 build、code-review、
 # qa-generate——Amelia 分发的每个技能。
 persistent_facts = [
   "For any library documentation lookup (React, TypeScript, Zod, Prisma, etc.), call the context7 MCP tool (`mcp__context7__resolve_library_id` then `mcp__context7__get_library_docs`) before relying on training-data knowledge. Up-to-date docs trump memorized APIs.",

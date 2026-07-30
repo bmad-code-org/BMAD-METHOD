@@ -14,7 +14,7 @@ sidebar:
 | Analyst (Mary) | `bmad-analyst` | `BP`、`MR`、`DR`、`TR`、`CB`、`WB`、`DP` | Brainstorm、Market Research、Domain Research、Technical Research、Create Brief、PRFAQ Challenge、Document Project |
 | Product Manager (John) | `bmad-pm` | `CP`、`VP`、`EP`、`CE`、`IR`、`CC` | Create/Validate/Edit PRD、Create Epics and Stories、Implementation Readiness、Correct Course |
 | Architect (Winston) | `bmad-architect` | `CA`、`IR` | Create Architecture、Implementation Readiness |
-| Developer (Amelia) | `bmad-agent-dev` | `QD`、`QA`、`CR`、`SP`、`ER` | Quick Dev、QA Test Generation、Code Review、Sprint Planning、Epic Retrospective |
+| Developer (Amelia) | `bmad-agent-dev` | `BD`、`QA`、`CR`、`SP`、`ER` | Build、QA Test Generation、Code Review、Sprint Planning、Epic Retrospective |
 | UX Designer (Sally) | `bmad-ux-designer` | `CU` | Create UX Design |
 | Technical Writer (Paige) | `bmad-tech-writer` | `DP`、`WD`、`US`、`MG`、`VD`、`EC` | Document Project、Write Document、Update Standards、Mermaid Generate、Validate Doc、Explain Concept |
 
@@ -30,7 +30,7 @@ sidebar:
 
 多数触发器会直接启动结构化 workflow。你只需输入触发码，然后按流程提示提供信息。
 
-示例：`CP`（Create PRD）、`CA`（Create Architecture）、`QD`（Quick Dev）
+示例：`CP`（Create PRD）、`CA`（Create Architecture）、`BD`（Build）
 
 ### 会话触发器（需要附带说明）
 

@@ -3616,13 +3616,13 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Test Suite 49: dev-auto renderer installation surface
+  // Test Suite 49: build-auto renderer installation surface
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 49: dev-auto renderer installation surface${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 49: build-auto renderer installation surface${colors.reset}\n`);
 
   let root49;
   try {
-    root49 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-dev-auto-install-'));
+    root49 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-build-auto-install-'));
     const { UI } = require('../tools/installer/ui');
     const partialConfig49 = await new UI().collectModuleConfigs(root49, ['core', 'bmm'], {
       yes: true,
@@ -3665,21 +3665,72 @@ async function runTests() {
     await installer49.generateModuleConfigs(bmadDir49, { core: { communication_language: 'English' }, bmm: {} });
 
     const scripts49 = path.join(bmadDir49, 'scripts');
-    const skill49 = path.join(bmadDir49, 'bmm', '4-implementation', 'bmad-dev-auto');
+    const buildSkill49 = path.join(bmadDir49, 'bmm', '4-implementation', 'bmad-build');
+    const skill49 = path.join(bmadDir49, 'bmm', '4-implementation', 'bmad-build-auto');
+    const legacyBuild49 = path.join(bmadDir49, 'bmm', 'v6-shims', 'bmad-quick-dev');
+    const legacyBuildAuto49 = path.join(bmadDir49, 'bmm', 'v6-shims', 'bmad-dev-auto');
     assert(await fs.pathExists(path.join(scripts49, 'render_skill.py')), 'shared render_skill.py reaches installed _bmad/scripts');
     assert(await fs.pathExists(path.join(scripts49, 'config_utils.py')), 'shared config utility reaches installed _bmad/scripts');
     assert(!(await fs.pathExists(path.join(scripts49, 'tests'))), 'shared-script development tests are excluded from install');
     assert(!(await fs.pathExists(path.join(scripts49, '__pycache__'))), 'shared-script Python caches are excluded from install');
-    assert(await fs.pathExists(path.join(skill49, 'SKILL.md')), 'dev-auto entry reaches installed skill surface');
+    assert(await fs.pathExists(path.join(buildSkill49, 'SKILL.md')), 'canonical build entry reaches installed skill surface');
+    assert(await fs.pathExists(path.join(skill49, 'SKILL.md')), 'build-auto entry reaches installed skill surface');
+    for (const [legacyDir, legacyName, targetName] of [
+      [legacyBuild49, 'bmad-quick-dev', 'bmad-build'],
+      [legacyBuildAuto49, 'bmad-dev-auto', 'bmad-build-auto'],
+    ]) {
+      assert(await fs.pathExists(path.join(legacyDir, 'SKILL.md')), `${legacyName} shim reaches installed skill surface`);
+      const entries = await fs.readdir(legacyDir);
+      assert(entries.length === 1 && entries[0] === 'SKILL.md', `${legacyName} ships as a one-file shim`);
+      const shim = await fs.readFile(path.join(legacyDir, 'SKILL.md'), 'utf8');
+      assert(
+        shim.includes(`description: "Deprecated: forwards to ${targetName}. Do not use unless invoked by name."`),
+        `${legacyName} advertises only its deprecated named-invocation contract`,
+      );
+      assert(shim.includes('File existence alone triggers the halt'), `${legacyName} halts on legacy override existence`);
+      assert(shim.includes('HALT before invoking any skill'), `${legacyName} halts before canonical dispatch`);
+      assert(
+        shim.includes(`\`{project-root}/_bmad/custom/${legacyName}.toml\` -> \`{project-root}/_bmad/custom/${targetName}.toml\``),
+        `${legacyName} reports the exact team override rename`,
+      );
+      assert(
+        shim.includes(`\`{project-root}/_bmad/custom/${legacyName}.user.toml\` -> \`{project-root}/_bmad/custom/${targetName}.user.toml\``),
+        `${legacyName} reports the exact user override rename`,
+      );
+      assert(shim.includes(`silently invoke \`${targetName}\` exactly once`), `${legacyName} transparently forwards exactly once`);
+      assert(shim.includes("user's original input verbatim"), `${legacyName} preserves the original invocation verbatim`);
+      assert(shim.includes('execute no further steps in this shim'), `${legacyName} stops after canonical dispatch`);
+      assert(shim.includes('not to overwrite a target that already exists'), `${legacyName} gives collision-safe migration guidance`);
+    }
+    const agentMenu49 = await fs.readFile(path.join(bmadDir49, 'bmm', '4-implementation', 'bmad-agent-dev', 'customize.toml'), 'utf8');
+    assert(
+      agentMenu49.includes('code = "BD"') && agentMenu49.includes('skill = "bmad-build"'),
+      'installed developer menu dispatches BD to canonical Build',
+    );
+    const helpCatalog49 = await fs.readFile(path.join(bmadDir49, 'bmm', 'module-help.csv'), 'utf8');
+    assert(helpCatalog49.includes('BMad Method,bmad-build,Build,BD,'), 'installed help catalog advertises canonical Build');
+    assert(
+      helpCatalog49.includes('bmad-code-review,Code Review,CR,') && helpCatalog49.includes('bmad-build,,false'),
+      'installed help catalog sequences implementation follow-ups from canonical Build',
+    );
+    const marketplace49 = JSON.parse(await fs.readFile(path.join(paths49.srcDir, '.claude-plugin', 'marketplace.json'), 'utf8'));
+    const lifecycle49 = marketplace49.plugins.find((plugin) => plugin.name === 'bmad-method-lifecycle');
+    assert(lifecycle49?.skills.includes('./src/bmm-skills/4-implementation/bmad-build'), 'lifecycle plugin ships canonical Build');
+    assert(lifecycle49?.skills.includes('./src/bmm-skills/v6-shims/bmad-quick-dev'), 'lifecycle plugin ships the Quick Dev shim');
+    assert(
+      !lifecycle49?.skills.includes('./src/bmm-skills/4-implementation/bmad-build-auto') &&
+        !lifecycle49?.skills.includes('./src/bmm-skills/v6-shims/bmad-dev-auto'),
+      'lifecycle plugin does not broaden the prior Dev Auto exposure surface',
+    );
     const skillSource49 = await fs.readFile(path.join(skill49, 'SKILL.md'), 'utf8');
     assert(
       skillSource49.includes('uv run --no-cache "{project-root}/_bmad/scripts/render_skill.py"'),
-      'dev-auto avoids the user-level uv cache and lets script metadata select Python',
+      'build-auto avoids the user-level uv cache and lets script metadata select Python',
     );
-    assert(!skillSource49.includes('uv run --python'), 'dev-auto does not pin an exact Python series');
+    assert(!skillSource49.includes('uv run --python'), 'build-auto does not pin an exact Python series');
     assert(!(await fs.pathExists(path.join(skill49, 'render.toml'))), 'installed skill has no duplicate render contract');
-    assert(await fs.pathExists(path.join(skill49, 'workflow.md')), 'dev-auto workflow source reaches installed skill surface');
-    assert(await fs.pathExists(path.join(skill49, 'step-04-review.md')), 'dev-auto step sources reach installed skill surface');
+    assert(await fs.pathExists(path.join(skill49, 'workflow.md')), 'build-auto workflow source reaches installed skill surface');
+    assert(await fs.pathExists(path.join(skill49, 'step-04-review.md')), 'build-auto step sources reach installed skill surface');
     assert(
       (await fs.readFile(renderGitignore49, 'utf8')) === '*\n!.gitignore\n',
       'generated render snapshots are ignored by installed projects',
@@ -3709,7 +3760,7 @@ async function runTests() {
     const dispatch49 = render49.stdout.trim().replace(/^read and follow /, '');
     assert(
       render49.status === 0 && path.isAbsolute(dispatch49) && (await fs.pathExists(dispatch49)),
-      'installer-produced dev-auto tree renders and dispatches end to end',
+      'installer-produced build-auto tree renders and dispatches end to end',
       `${render49.stdout}${render49.stderr}`,
     );
     const resolveCustomization49 = spawnSync(

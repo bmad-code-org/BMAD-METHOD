@@ -77,12 +77,12 @@ BMad-Help cũng **tự động chạy ở cuối mỗi workflow**, đưa ra hư�
 
 ### Chọn độ sâu lập kế hoạch
 
-Mọi implementation đều dùng `bmad-quick-dev`; phạm vi quyết định ngữ cảnh cần chuẩn bị trước:
+Mọi implementation đều dùng `bmad-build`; phạm vi quyết định ngữ cảnh cần chuẩn bị trước:
 
 | Phạm vi | Cách tiếp cận được khuyến nghị |
 | --- | --- |
-| **Cập nhật hoặc bổ sung rõ ràng** | Đi thẳng vào `bmad-quick-dev` với yêu cầu, issue hoặc spec hiện có. |
-| **Thay đổi hoặc bổ sung lớn** | Chuẩn bị PRD, UX, kiến trúc, epic, story và sprint context hữu ích, rồi đưa phần việc đã chọn vào `bmad-quick-dev`. |
+| **Cập nhật hoặc bổ sung rõ ràng** | Đi thẳng vào `bmad-build` với yêu cầu, issue hoặc spec hiện có. |
+| **Thay đổi hoặc bổ sung lớn** | Chuẩn bị PRD, UX, kiến trúc, epic, story và sprint context hữu ích, rồi đưa phần việc đã chọn vào `bmad-build`. |
 
 ### Khi tạo PRD
 

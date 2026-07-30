@@ -148,7 +148,7 @@ váš-projekt/
 | ----------------- | ----------------------------- |
 | **Úvodní stránka** | `core-concepts/index.md`     |
 | **Koncept**       | `what-are-agents.md`          |
-| **Funkce**        | `quick-dev.md`                |
+| **Funkce**        | `build.md`                |
 | **Filosofie**     | `why-solutioning-matters.md`  |
 | **FAQ**           | `established-projects-faq.md` |
 

@@ -1,19 +1,19 @@
 ---
-title: "Quick Dev"
+title: "Build"
 description: Snižte tření human-in-the-loop bez ztráty kontrolních bodů chránících kvalitu výstupu
 sidebar:
   order: 6
 ---
 
-`bmad-quick-dev` je standardní implementační workflow pro veškerou vývojovou práci. Přijímá vše od volně formulovaného záměru nebo issue po plně naplánovanou story a vytváří změny kódu s minimem bezpečných human-in-the-loop kroků.
+`bmad-build` je standardní implementační workflow pro veškerou vývojovou práci. Přijímá vše od volně formulovaného záměru nebo issue po plně naplánovanou story a vytváří změny kódu s minimem bezpečných human-in-the-loop kroků.
 
 Upstream plánování je volitelné a jeho hloubka se liší. Jasná změna může vstoupit přímo; větší iniciativa může přinést PRD, UX, architekturu, epicy, stories, kontrolu připravenosti a sprint plán. Tyto artefakty posilují kontext, nevybírají jiný vývojový workflow.
 
-Když do Quick Dev vstoupí naplánovaná story, zůstává zdrojem produktového kontextu a akceptačních kritérií. Quick Dev vytvoří vlastní záznam provedení aktuálního běhu, aby implementační rozhodnutí a nálezy revize zůstaly dohledatelné, aniž by story nahrazoval.
+Když do Build vstoupí naplánovaná story, zůstává zdrojem produktového kontextu a akceptačních kritérií. Build vytvoří vlastní záznam provedení aktuálního běhu, aby implementační rozhodnutí a nálezy revize zůstaly dohledatelné, aniž by story nahrazoval.
 
 Umožňuje modelu běžet déle mezi kontrolními body a poté přivede člověka zpět pouze tehdy, když úkol nemůže bezpečně pokračovat bez lidského úsudku nebo když je čas zkontrolovat konečný výsledek.
 
-![Diagram workflow Quick Dev](/diagrams/quick-dev-diagram.png)
+![Diagram workflow Build](/diagrams/build-diagram.png)
 
 ## Proč to existuje
 
@@ -21,7 +21,7 @@ Human-in-the-loop kroky jsou nutné a nákladné.
 
 Současné LLM stále selhávají předvídatelnými způsoby: chybně čtou záměr, vyplňují mezery sebevědomými odhady, odchylují se k nesouvisející práci a generují šumový výstup revize. Současně neustálá lidská intervence limituje rychlost vývoje. Lidská pozornost je úzké hrdlo.
 
-`bmad-quick-dev` přenastavuje tento kompromis. Důvěřuje modelu, aby běžel bez dozoru delší úseky, ale pouze poté, co workflow vytvořil dostatečně silnou hranici, aby to bylo bezpečné.
+`bmad-build` přenastavuje tento kompromis. Důvěřuje modelu, aby běžel bez dozoru delší úseky, ale pouze poté, co workflow vytvořil dostatečně silnou hranici, aby to bylo bezpečné.
 
 ## Základní design
 
@@ -57,7 +57,7 @@ Interview o záměru je human-in-the-loop, ale není to stejný druh přerušen�
 
 - **Řešení mezer v záměru** — vstoupení zpět, když revize prokáže, že workflow nemohl bezpečně odvodit, co bylo myšleno
 
-Vše ostatní je kandidátem na delší autonomní provádění. Tento kompromis je záměrný. Starší vzory věnují více lidské pozornosti nepřetržitému dozoru. Quick Dev věnuje více důvěry modelu, ale šetří lidskou pozornost pro momenty, kde má lidské uvažování nejvyšší páku.
+Vše ostatní je kandidátem na delší autonomní provádění. Tento kompromis je záměrný. Starší vzory věnují více lidské pozornosti nepřetržitému dozoru. Build věnuje více důvěry modelu, ale šetří lidskou pozornost pro momenty, kde má lidské uvažování nejvyšší páku.
 
 ## Proč systém revize záleží
 
@@ -70,7 +70,7 @@ Agentní revize často selhávají dvěma způsoby:
 - Generují příliš mnoho nálezů, čímž nutí člověka prosévat šum.
 - Vychýlí aktuální změnu odhalením nesouvisejících problémů a přemění každý běh na ad-hoc úklidový projekt.
 
-Quick Dev řeší obojí tím, že s revizí zachází jako s triáží.
+Build řeší obojí tím, že s revizí zachází jako s triáží.
 
 Některé nálezy patří k aktuální změně. Některé ne. Pokud je nález náhodný spíše než kauzálně vázaný na aktuální práci, workflow ho může odložit místo nucení člověka ho okamžitě řešit. To udržuje běh zaměřený a zabraňuje náhodným tangentám ve spotřebování rozpočtu pozornosti.
 

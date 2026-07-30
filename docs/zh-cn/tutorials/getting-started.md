@@ -84,7 +84,7 @@ BMad 通过带有专门 AI 智能体的引导工作流帮助你构建软件。�
 | **完整方案设计** | 跨系统、高风险或协同项目 | PRD、UX、架构、epics、stories 与 sprint 计划 |
 
 :::note
-这些不是独立的实施路径。所有入口都汇入 `bmad-quick-dev`；规划只会改变实施前已有的上下文量。
+这些不是独立的实施路径。所有入口都汇入 `bmad-build`；规划只会改变实施前已有的上下文量。
 :::
 
 ## 安装
@@ -175,13 +175,13 @@ BMad-Help 将检测你已完成的内容，并准确推荐下一步该做什么�
 
 携带现有上下文进入实现阶段：直接请求、issue、规格或完整规划的 story。**每个工作流应该在新对话中运行。**
 
-对于已规划工作，运行 `bmad-quick-dev` 并指出选定的 story 或 sprint 项，例如：`实现 _bmad-output/planning-artifacts/epics.md 中的 story 2.3`。
+对于已规划工作，运行 `bmad-build` 并指出选定的 story 或 sprint 项，例如：`实现 _bmad-output/planning-artifacts/epics.md 中的 story 2.3`。
 
 ### 初始化冲刺规划（用于规划工作）
 
 调用 **Developer 智能体**（`bmad-agent-dev`）并运行 `bmad-sprint-planning`（`bmad-sprint-planning`）。这会创建 `sprint-status.yaml` 来跟踪所有史诗和故事。
 
-当 Quick Dev 在该文件中解析出选定 story 时，它会在实施期间把状态改为 `in-progress`，并在实施完成后改为 `review`。
+当 Build 在该文件中解析出选定 story 时，它会在实施期间把状态改为 `in-progress`，并在实施完成后改为 `review`。
 
 ### 构建周期
 
@@ -189,10 +189,10 @@ BMad-Help 将检测你已完成的内容，并准确推荐下一步该做什么�
 
 | 步骤 | 智能体 | 工作流       | 命令                    | 目的                            |
 | ---- | ------ | ------------ | ----------------------- | ------------------------------- |
-| 1    | DEV    | `bmad-quick-dev`    | `bmad-quick-dev`    | 按需澄清、规划、实现、审查与呈现 |
+| 1    | DEV    | `bmad-build`    | `bmad-build`    | 按需澄清、规划、实现、审查与呈现 |
 | 2    | DEV    | `bmad-code-review`  | `bmad-code-review`  | 额外质量验证 *（推荐）*          |
 
-Quick Dev 的审查是每次运行的一部分。`bmad-code-review` 是在全新上下文中执行的可选独立验证层。
+Build 的审查是每次运行的一部分。`bmad-code-review` 是在全新上下文中执行的可选独立验证层。
 
 完成史诗中的所有故事后，调用 **Developer 智能体**（`bmad-agent-dev`）并运行 `bmad-retrospective`（`bmad-retrospective`）。
 
@@ -232,13 +232,13 @@ your-project/
 | `bmad-create-epics-and-stories`     | `bmad-create-epics-and-stories`        | PM       | 将 PRD 分解为史诗                            |
 | `bmad-check-implementation-readiness` | `bmad-check-implementation-readiness` | Architect | 验证规划一致性                              |
 | `bmad-sprint-planning`              | `bmad-sprint-planning`                 | DEV      | 初始化冲刺跟踪                               |
-| `bmad-quick-dev`                    | `bmad-quick-dev`                       | DEV      | 实施意图、issue、功能、修复或已规划 story     |
+| `bmad-build`                    | `bmad-build`                       | DEV      | 实施意图、issue、功能、修复或已规划 story     |
 | `bmad-code-review`                  | `bmad-code-review`                     | DEV      | 审查已实现的代码                             |
 
 ## 常见问题
 
 **我总是需要架构吗？**
-不需要。只有当技术决策或跨系统约束需要显式记录时才使用架构。清晰工作可以直接进入 `bmad-quick-dev`；大型项目则把规划产物带入同一个 workflow。
+不需要。只有当技术决策或跨系统约束需要显式记录时才使用架构。清晰工作可以直接进入 `bmad-build`；大型项目则把规划产物带入同一个 workflow。
 
 **我可以稍后更改我的计划吗？**
 可以。`bmad-correct-course` 工作流用于处理实现过程中的范围变化。
@@ -269,7 +269,7 @@ BMad-Help 检查你的项目，检测你已完成的内容，并确切地告诉�
 :::tip[记住这些]
 - **从 `bmad-help` 开始** — 你的智能向导，了解你的项目和选项
 - **始终使用新对话** — 为每个工作流开始新对话
-- **规划深度可变** — 直接意图和完整规划的 story 都进入 `bmad-quick-dev`
+- **规划深度可变** — 直接意图和完整规划的 story 都进入 `bmad-build`
 - **BMad-Help 自动运行** — 每个工作流结束时都会提供下一步的指导
 :::
 

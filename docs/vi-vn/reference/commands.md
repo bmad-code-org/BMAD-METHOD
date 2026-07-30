@@ -14,7 +14,7 @@ BMad cung cấp hai cách để bắt đầu công việc, và chúng phục v�
 | Cơ chế | Cách gọi | Điều xảy ra |
 | --- | --- | --- |
 | **Skill** | Gõ tên skill, ví dụ `bmad-help`, trong IDE | Nạp trực tiếp agent, chạy workflow hoặc thực thi task |
-| **Trigger menu agent** | Nạp agent trước, sau đó gõ mã ngắn như `QD` | Agent diễn giải mã đó và bắt đầu workflow tương ứng trong khi vẫn giữ đúng persona |
+| **Trigger menu agent** | Nạp agent trước, sau đó gõ mã ngắn như `BD` | Agent diễn giải mã đó và bắt đầu workflow tương ứng trong khi vẫn giữ đúng persona |
 
 Trigger trong menu agent yêu cầu bạn đang ở trong một phiên agent đang hoạt động. Dùng skill khi bạn đã biết mình muốn workflow nào. Dùng trigger khi bạn đang làm việc với một agent và muốn đổi tác vụ mà không rời khỏi cuộc hội thoại.
 
@@ -97,7 +97,7 @@ Workflow skills chạy một quy trình có cấu trúc, nhiều bước mà kh�
 | `bmad-architecture` | Thiết kế kiến trúc hệ thống |
 | `bmad-create-epics-and-stories` | Tạo epics và stories |
 | `bmad-code-review` | Chạy code review |
-| `bmad-quick-dev` | Triển khai ý định trực tiếp, issue, tính năng, bản sửa hoặc story đã lập kế hoạch |
+| `bmad-build` | Triển khai ý định trực tiếp, issue, tính năng, bản sửa hoặc story đã lập kế hoạch |
 
 Xem [Workflow Map](./workflow-map.md) để có tài liệu workflow đầy đủ theo từng phase.
 

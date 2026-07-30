@@ -79,12 +79,12 @@ BMad-Help also **automatically runs at the end of every workflow**, providing cl
 
 ### Choose Planning Depth
 
-All implementation uses `bmad-quick-dev`; scope determines what context you prepare first:
+All implementation uses `bmad-build`; scope determines what context you prepare first:
 
 | Scope | Recommended preparation |
 | --- | --- |
-| **Clear updates or additions** | Enter `bmad-quick-dev` directly with the request, issue, or existing spec. |
-| **Major changes or additions** | Prepare the useful PRD, UX, architecture, epic, story, readiness, and sprint context, then pass the selected work to `bmad-quick-dev`. |
+| **Clear updates or additions** | Enter `bmad-build` directly with the request, issue, or existing spec. |
+| **Major changes or additions** | Prepare the useful PRD, UX, architecture, epic, story, readiness, and sprint context, then pass the selected work to `bmad-build`. |
 
 ### During PRD Creation
 

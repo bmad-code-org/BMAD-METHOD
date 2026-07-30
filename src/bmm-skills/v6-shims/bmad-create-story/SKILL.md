@@ -1,6 +1,6 @@
 ---
 name: bmad-create-story
-description: "Deprecated: `bmad-quick-dev` is now the official implementation method. Only use this when explicitly invoked by name."
+description: "Deprecated: `bmad-build` is now the official implementation method. Only use this when explicitly invoked by name."
 ---
 
 # Create Story Workflow
@@ -62,7 +62,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 Greet `{user_name}`, speaking in `{communication_language}`.
 
-<output>Deprecated: `bmad-quick-dev` is now the official implementation method. Only use this when explicitly invoked by name.</output>
+<output>Deprecated: `bmad-build` is now the official implementation method. Only use this when explicitly invoked by name.</output>
 
 ### Step 6: Execute Append Steps
 

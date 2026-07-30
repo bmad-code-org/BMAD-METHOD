@@ -85,7 +85,7 @@ La profondeur de planification reste flexible :
 | **Solutioning complet** | Initiatives coordonnées, risquées ou multi-systèmes | PRD, UX, architecture, epics, stories et plan de sprint |
 
 :::note
-Il ne s’agit pas de voies d’implémentation distinctes. Tous les points d’entrée convergent vers `bmad-quick-dev`; la planification ne change que la quantité de contexte disponible.
+Il ne s’agit pas de voies d’implémentation distinctes. Tous les points d’entrée convergent vers `bmad-build`; la planification ne change que la quantité de contexte disponible.
 :::
 
 ## Installation
@@ -189,13 +189,13 @@ Les epics et stories sont désormais créés *après* l’architecture. Cela pro
 
 Passez à l’implémentation avec le contexte disponible : demande directe, issue, spécification ou story entièrement planifiée. **Chaque workflow doit être exécuté dans un nouveau chat.**
 
-Pour un travail planifié, invoquez `bmad-quick-dev` et indiquez la story ou l’élément de sprint sélectionné, par exemple : `Implémente la story 2.3 depuis _bmad-output/planning-artifacts/epics.md`.
+Pour un travail planifié, invoquez `bmad-build` et indiquez la story ou l’élément de sprint sélectionné, par exemple : `Implémente la story 2.3 depuis _bmad-output/planning-artifacts/epics.md`.
 
 ### Initialiser la planification de sprint (pour le travail planifié)
 
 Invoquez l'**agent Développeur** (`bmad-agent-dev`) et exécutez `bmad-sprint-planning` (`bmad-sprint-planning`). Cette commande crée `sprint-status.yaml` pour suivre tous les epics et stories.
 
-Lorsque Quick Dev retrouve la story sélectionnée dans ce fichier, il la passe à `in-progress` pendant l’implémentation, puis à `review` quand l’implémentation est terminée.
+Lorsque Build retrouve la story sélectionnée dans ce fichier, il la passe à `in-progress` pendant l’implémentation, puis à `review` quand l’implémentation est terminée.
 
 ### Le cycle de développement
 
@@ -203,10 +203,10 @@ Pour chaque changement direct ou story planifiée, répétez ce cycle dans de no
 
 | Étape | Agent | Workflow            | Commande            | Objectif                             |
 |-------|-------|---------------------|---------------------|--------------------------------------|
-| 1     | DEV   | `bmad-quick-dev`    | `bmad-quick-dev`    | Clarifier, planifier, implémenter, réviser et présenter |
+| 1     | DEV   | `bmad-build`    | `bmad-build`    | Clarifier, planifier, implémenter, réviser et présenter |
 | 2     | DEV   | `bmad-code-review`  | `bmad-code-review`  | Validation qualité supplémentaire *(recommandée)* |
 
-La revue de Quick Dev fait partie de chaque exécution. `bmad-code-review` est une couche facultative de validation indépendante dans un contexte neuf.
+La revue de Build fait partie de chaque exécution. `bmad-code-review` est une couche facultative de validation indépendante dans un contexte neuf.
 
 Après avoir terminé toutes les stories d’un epic, invoquez l'**agent Développeur** (`bmad-agent-dev`) et exécutez `bmad-retrospective` (`bmad-retrospective`).
 
@@ -246,13 +246,13 @@ your-project/
 | `bmad-create-epics-and-stories`       | `bmad-create-epics-and-stories`       | PM        | Décomposer le PRD en epics                                      |
 | `bmad-check-implementation-readiness` | `bmad-check-implementation-readiness` | Architect | Valider la cohérence de la planification                        |
 | `bmad-sprint-planning`                | `bmad-sprint-planning`                | DEV       | Initialiser le suivi de sprint                                  |
-| `bmad-quick-dev`                      | `bmad-quick-dev`                      | DEV       | Implémenter une intention, une issue, une fonctionnalité, un correctif ou une story |
+| `bmad-build`                      | `bmad-build`                      | DEV       | Implémenter une intention, une issue, une fonctionnalité, un correctif ou une story |
 | `bmad-code-review`                    | `bmad-code-review`                    | DEV       | Revoir le code implémenté                                       |
 
 ## Questions fréquentes
 
 **Ai-je toujours besoin d’une architecture ?**
-Non. Utilisez l’architecture lorsque les décisions techniques ou contraintes multi-systèmes doivent être explicites. Un travail clair peut entrer directement dans `bmad-quick-dev`; une initiative plus vaste fournit ses artefacts de planification au même workflow.
+Non. Utilisez l’architecture lorsque les décisions techniques ou contraintes multi-systèmes doivent être explicites. Un travail clair peut entrer directement dans `bmad-build`; une initiative plus vaste fournit ses artefacts de planification au même workflow.
 
 **Puis-je modifier mon plan en cours de route ?**
 Oui. Le workflow `bmad-correct-course` gère les changements de périmètre en cours d’implémentation.
@@ -284,7 +284,7 @@ BMad-Help inspecte votre projet, détecte ce que vous avez accompli et vous indi
 :::tip[Retenez ceci]
 - **Commencez par `bmad-help`** — Votre guide intelligent qui connaît votre projet et vos options
 - **Utilisez toujours de nouveaux chats** — Démarrez un nouveau chat pour chaque workflow
-- **La profondeur de planification varie** — une intention directe et une story entièrement planifiée entrent toutes deux dans `bmad-quick-dev`
+- **La profondeur de planification varie** — une intention directe et une story entièrement planifiée entrent toutes deux dans `bmad-build`
 - **BMad-Help se lance automatiquement** — Chaque workflow se termine par des conseils sur la prochaine étape
 :::
 

@@ -77,12 +77,12 @@ BMad-Help se také **automaticky spouští na konci každého workflow** a posky
 
 ### Volba hloubky plánování
 
-Veškerá implementace používá `bmad-quick-dev`; rozsah určuje, jaký kontext připravíte předem:
+Veškerá implementace používá `bmad-build`; rozsah určuje, jaký kontext připravíte předem:
 
 | Rozsah                         | Doporučený přístup                                                                                                            |
 | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| **Jasné aktualizace či doplnění** | Vstupte přímo do `bmad-quick-dev` s požadavkem, issue nebo existující specifikací. |
-| **Velké změny či doplnění**    | Připravte užitečné PRD, UX, architekturu, epic, story a sprint kontext a pak předejte vybranou práci do `bmad-quick-dev`. |
+| **Jasné aktualizace či doplnění** | Vstupte přímo do `bmad-build` s požadavkem, issue nebo existující specifikací. |
+| **Velké změny či doplnění**    | Připravte užitečné PRD, UX, architekturu, epic, story a sprint kontext a pak předejte vybranou práci do `bmad-build`. |
 
 ### Během tvorby PRD
 

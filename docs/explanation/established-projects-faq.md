@@ -29,7 +29,7 @@ Don't worry about it - you can do it at any time. You can even do it during or a
 
 ### How does implementation work in established projects?
 
-Run `bmad-quick-dev`, just as you would for new development. It will:
+Run `bmad-build`, just as you would for new development. It will:
 
 - Auto-detect your existing stack
 - Analyze existing code patterns
@@ -40,7 +40,7 @@ You can enter directly for a clear change or provide a planned story and its ups
 
 ### What if my existing code doesn't follow best practices?
 
-Quick Dev detects your conventions and asks: "Should I follow these existing conventions?" You decide:
+Build detects your conventions and asks: "Should I follow these existing conventions?" You decide:
 
 - **Yes** → Maintain consistency with current codebase
 - **No** → Establish new standards (document why in spec)

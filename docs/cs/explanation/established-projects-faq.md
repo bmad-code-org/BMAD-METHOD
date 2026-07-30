@@ -29,7 +29,7 @@ Nedělejte si starosti — můžete to udělat kdykoli. Můžete to udělat i b�
 
 ### Jak funguje implementace v existujících projektech?
 
-Spusťte `bmad-quick-dev`, stejně jako u nového vývoje. Umí:
+Spusťte `bmad-build`, stejně jako u nového vývoje. Umí:
 
 - Automaticky detekovat váš existující stack
 - Analyzovat existující vzory kódu
@@ -40,7 +40,7 @@ Pro jasnou změnu můžete vstoupit přímo; pro větší práci předejte napl�
 
 ### Co když můj existující kód nedodržuje osvědčené postupy?
 
-Quick Dev detekuje vaše konvence a zeptá se: „Mám dodržovat tyto existující konvence?“ Rozhodujete vy:
+Build detekuje vaše konvence a zeptá se: „Mám dodržovat tyto existující konvence?“ Rozhodujete vy:
 
 - **Ano** → Zachovat konzistenci se současnou kódovou bází
 - **Ne** → Zavést nové standardy (zdokumentujte proč ve specifikaci)

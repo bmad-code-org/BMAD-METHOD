@@ -30,7 +30,7 @@ Hãy clone hoặc mở [repo BMAD-METHOD](https://github.com/bmad-code-org/BMAD-
 :::note[Ví dụ]
 **Q:** "Hãy chỉ tôi cách nhanh nhất để xây dựng một thứ gì đó bằng BMad"
 
-**A:** Chạy `bmad-quick-dev`. Đưa vào ý định trực tiếp, issue, spec hoặc story đã lập kế hoạch; workflow dùng ngữ cảnh sẵn có và chọn độ sâu làm rõ, lập kế hoạch, triển khai và review cần thiết.
+**A:** Chạy `bmad-build`. Đưa vào ý định trực tiếp, issue, spec hoặc story đã lập kế hoạch; workflow dùng ngữ cảnh sẵn có và chọn độ sâu làm rõ, lập kế hoạch, triển khai và review cần thiết.
 :::
 
 **Mẹo để có câu trả lời tốt hơn:**

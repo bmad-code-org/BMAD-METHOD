@@ -148,7 +148,7 @@ your-project/
 | --- | --- |
 | **Trang chỉ mục / landing** | `core-concepts/index.md` |
 | **Khái niệm** | `what-are-agents.md` |
-| **Tính năng** | `quick-dev.md` |
+| **Tính năng** | `build.md` |
 | **Triết lý** | `why-solutioning-matters.md` |
 | **FAQ** | `established-projects-faq.md` |
 

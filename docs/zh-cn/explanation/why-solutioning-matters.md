@@ -58,7 +58,7 @@ solutioning 的本质不是“多写一份文档”，而是把高冲突风险�
 | 多个 epic 或跨系统决策 | 需要用它对齐实施 |
 | 受监管、高风险或 enterprise 项目 | 遵循必要的治理要求；通常必须进行 solutioning |
 
-Solutioning 改变提供给 `bmad-quick-dev` 的上下文，不改变实施 workflow。
+Solutioning 改变提供给 `bmad-build` 的上下文，不改变实施 workflow。
 
 :::tip[经验法则]
 只要需求会拆成多个 `epic`，并且可能由不同智能体并行实现，就应该做 solutioning。

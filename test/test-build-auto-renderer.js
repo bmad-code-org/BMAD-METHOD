@@ -1,6 +1,6 @@
 // Test only deterministic renderer behavior.
 // Do not test model inference or assert prose copied verbatim from skill sources.
-/** Black-box tests for the installed dev-auto immutable snapshot renderer. */
+/** Black-box tests for the installed build-auto immutable snapshot renderer. */
 'use strict';
 
 const crypto = require('node:crypto');
@@ -11,7 +11,7 @@ const { spawn, spawnSync } = require('node:child_process');
 
 const REPO = path.resolve(__dirname, '..');
 const SCRIPT_SRC = path.join(REPO, 'src', 'scripts');
-const SKILL_SRC = path.join(REPO, 'src', 'bmm-skills', '4-implementation', 'bmad-dev-auto');
+const SKILL_SRC = path.join(REPO, 'src', 'bmm-skills', '4-implementation', 'bmad-build-auto');
 const tempDirs = [];
 let total = 0;
 let passed = 0;
@@ -68,7 +68,7 @@ function baseConfig(extra = '') {
 }
 
 function fixture({ sharedBmad, config = baseConfig(), projectName = 'project' } = {}) {
-  const outer = fs.mkdtempSync(path.join(os.tmpdir(), 'bmad-dev-auto-render-'));
+  const outer = fs.mkdtempSync(path.join(os.tmpdir(), 'bmad-build-auto-render-'));
   tempDirs.push(outer);
   const project = path.join(outer, projectName);
   const bmad = sharedBmad || path.join(outer, 'installed-bmad');
@@ -78,12 +78,12 @@ function fixture({ sharedBmad, config = baseConfig(), projectName = 'project' } 
     for (const name of ['config_utils.py', 'render_skill.py']) {
       fs.copyFileSync(path.join(SCRIPT_SRC, name), path.join(bmad, 'scripts', name));
     }
-    copyDir(SKILL_SRC, path.join(bmad, 'bmm', 'bmad-dev-auto'));
+    copyDir(SKILL_SRC, path.join(bmad, 'bmm', 'bmad-build-auto'));
     fs.writeFileSync(path.join(bmad, 'config.toml'), config, 'utf8');
   }
   fs.symlinkSync(bmad, path.join(project, '_bmad'), process.platform === 'win32' ? 'junction' : 'dir');
   fs.mkdirSync(path.join(project, 'nested', 'cwd'), { recursive: true });
-  return { outer, project, bmad, skill: path.join(bmad, 'bmm', 'bmad-dev-auto') };
+  return { outer, project, bmad, skill: path.join(bmad, 'bmm', 'bmad-build-auto') };
 }
 
 function run(fix, cwd = fix.project) {
@@ -251,7 +251,7 @@ async function main() {
     assert(result.status !== 0 && result.stdout.startsWith('HALT:'), 'malformed config did not HALT');
     assert(!result.stdout.includes('read and follow') && !result.stderr.includes('Traceback'), 'failure leaked dispatch/traceback');
     fs.rmSync(path.join(invalid.bmad, 'custom', 'config.toml'));
-    fs.writeFileSync(path.join(invalid.bmad, 'custom', 'bmad-dev-auto.toml'), '[workflow\nbad', 'utf8');
+    fs.writeFileSync(path.join(invalid.bmad, 'custom', 'bmad-build-auto.toml'), '[workflow\nbad', 'utf8');
     result = run(invalid);
     assert(result.status !== 0 && result.stdout.includes('failed to parse'), 'malformed customization did not HALT');
   });
@@ -264,7 +264,7 @@ async function main() {
     const keyed = fixture();
     fs.mkdirSync(path.join(keyed.bmad, 'custom'), { recursive: true });
     fs.writeFileSync(
-      path.join(keyed.bmad, 'custom', 'bmad-dev-auto.toml'),
+      path.join(keyed.bmad, 'custom', 'bmad-build-auto.toml'),
       '[[workflow.review_layers]]\nid = 42\nname = "bad"\ninstruction = "bad"\n',
       'utf8',
     );
@@ -277,7 +277,7 @@ async function main() {
     const literal = '[[bmad-snapshot:step-04-review.md]]';
     const compileLiteral = '{workflow.implementation_handoff}';
     fs.writeFileSync(
-      path.join(custom.bmad, 'custom', 'bmad-dev-auto.user.toml'),
+      path.join(custom.bmad, 'custom', 'bmad-build-auto.user.toml'),
       `[workflow]\non_complete = "Preserve ${literal} and ${compileLiteral} as prose"\n`,
       'utf8',
     );
@@ -290,7 +290,7 @@ async function main() {
     const reviewed = fixture();
     fs.mkdirSync(path.join(reviewed.bmad, 'custom'), { recursive: true });
     fs.writeFileSync(
-      path.join(reviewed.bmad, 'custom', 'bmad-dev-auto.toml'),
+      path.join(reviewed.bmad, 'custom', 'bmad-build-auto.toml'),
       [
         '[[workflow.review_layers]]',
         'id = "blind-hunter"',
@@ -308,7 +308,7 @@ async function main() {
 
     const ids = ['blind-hunter', 'edge-case-hunter', 'verification-gap', 'intent-alignment'];
     fs.writeFileSync(
-      path.join(reviewed.bmad, 'custom', 'bmad-dev-auto.toml'),
+      path.join(reviewed.bmad, 'custom', 'bmad-build-auto.toml'),
       ids.map((id) => `[[workflow.review_layers]]\nid = "${id}"\nname = "disabled"\ninstruction = ""\n`).join('\n'),
       'utf8',
     );
@@ -360,7 +360,7 @@ async function main() {
   });
 
   test('long project basenames are bounded in the snapshot namespace', () => {
-    const outer = fs.mkdtempSync(path.join(os.tmpdir(), 'bmad-dev-auto-long-'));
+    const outer = fs.mkdtempSync(path.join(os.tmpdir(), 'bmad-build-auto-long-'));
     tempDirs.push(outer);
     const long = 'project-' + 'x'.repeat(220);
     const project = path.join(outer, long);
@@ -392,7 +392,7 @@ async function main() {
       .toLowerCase()
       .replaceAll(/[^a-z0-9]+/g, '-');
     const rootHash = hash(Buffer.from(fs.realpathSync(broken.project))).slice(0, 12);
-    const namespace = path.join(stable.bmad, 'render', 'bmad-dev-auto', `${slug}-${rootHash}`);
+    const namespace = path.join(stable.bmad, 'render', 'bmad-build-auto', `${slug}-${rootHash}`);
     fs.writeFileSync(namespace, 'not a directory', 'utf8');
     const result = run(broken);
     assert(result.status !== 0 && result.stdout.startsWith('HALT:'), 'publication failure did not HALT');
@@ -414,7 +414,7 @@ async function main() {
   });
 
   for (const dir of tempDirs) fs.rmSync(dir, { recursive: true, force: true });
-  console.log(`\n${passed}/${total} dev-auto renderer tests passed`);
+  console.log(`\n${passed}/${total} build-auto renderer tests passed`);
   process.exitCode = passed === total ? 0 : 1;
 }
 

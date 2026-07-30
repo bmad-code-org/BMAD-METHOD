@@ -1,10 +1,10 @@
 // Test only deterministic renderer behavior.
 // Do not test model inference or assert prose copied verbatim from skill sources.
 /**
- * Smoke test for bmad-quick-dev render.py
+ * Smoke test for bmad-build render.py
  *
  * Sets up a temp project with base + override config layers and a
- * _bmad/custom/bmad-quick-dev.user.toml [workflow] override, runs render.py,
+ * _bmad/custom/bmad-build.user.toml [workflow] override, runs render.py,
  * and asserts:
  *   1. The central-config override wins (step files' language line contains "Japanese").
  *   2. sprint_status is an absolute path rooted at the temp project dir.
@@ -19,7 +19,7 @@
  *   5. No {workflow.*} placeholder or resolve_customization.py call survives
  *      in any rendered file.
  *
- * Usage: node test/test-quick-dev-renderer.js
+ * Usage: node test/test-build-renderer.js
  * Exit codes: 0 = all tests pass, 1 = test failures
  */
 
@@ -62,7 +62,7 @@ function assert(condition, message) {
 // Helpers
 // ---------------------------------------------------------------------------
 
-const SKILL_SRC = path.join(__dirname, '..', 'src', 'bmm-skills', '4-implementation', 'bmad-quick-dev');
+const SKILL_SRC = path.join(__dirname, '..', 'src', 'bmm-skills', '4-implementation', 'bmad-build');
 
 /**
  * Recursively copy a directory (stdlib only, no fs.cp to stay >=20 compat).
@@ -93,7 +93,7 @@ function makeProject(configText) {
   extraTmpDirs.push(dir);
   fs.mkdirSync(path.join(dir, '_bmad'), { recursive: true });
   fs.writeFileSync(path.join(dir, '_bmad', 'config.toml'), configText, 'utf-8');
-  const skillDst = path.join(dir, 'bmad-quick-dev');
+  const skillDst = path.join(dir, 'bmad-build');
   copyDirSync(SKILL_SRC, skillDst);
   return { dir, skillDst };
 }
@@ -129,12 +129,12 @@ try {
     'utf-8',
   );
 
-  // _bmad/custom/bmad-quick-dev.user.toml — [workflow] customization override.
+  // _bmad/custom/bmad-build.user.toml — [workflow] customization override.
   // Exercises render.py's self-resolution: array append (persistent_facts),
   // list inlining (activation_steps_prepend), and scalar override (on_complete),
   // all baked into the rendered output with no runtime resolve_customization.py.
   fs.writeFileSync(
-    path.join(tmpDir, '_bmad', 'custom', 'bmad-quick-dev.user.toml'),
+    path.join(tmpDir, '_bmad', 'custom', 'bmad-build.user.toml'),
     [
       '[workflow]',
       'activation_steps_prepend = ["TEST_PREPEND_STEP"]',
@@ -154,25 +154,25 @@ try {
     'utf-8',
   );
 
-  // Copy skill dir into <tmpDir>/bmad-quick-dev/ so find_project_root() walks
+  // Copy skill dir into <tmpDir>/bmad-build/ so find_project_root() walks
   // up and finds <tmpDir>/_bmad/, and os.path.basename(script_dir) resolves
   // to the real skill name so the render output lands at
-  // _bmad/render/bmad-quick-dev/workflow.md.
-  const skillDst = path.join(tmpDir, 'bmad-quick-dev');
+  // _bmad/render/bmad-build/workflow.md.
+  const skillDst = path.join(tmpDir, 'bmad-build');
   copyDirSync(SKILL_SRC, skillDst);
 
   // ---------------------------------------------------------------------------
   // Run render.py
   // ---------------------------------------------------------------------------
 
-  console.log(`\n${colors.cyan}Quick-dev renderer smoke tests${colors.reset}\n`);
+  console.log(`\n${colors.cyan}Build renderer smoke tests${colors.reset}\n`);
 
   const result = spawnSync('python3', [path.join(skillDst, 'render.py')], {
     cwd: skillDst,
     encoding: 'utf-8',
   });
 
-  const renderDir = path.join(tmpDir, '_bmad', 'render', 'bmad-quick-dev');
+  const renderDir = path.join(tmpDir, '_bmad', 'render', 'bmad-build');
   const readRendered = (name) => fs.readFileSync(path.join(renderDir, name), 'utf-8');
   const renderedMdFiles = () => fs.readdirSync(renderDir).filter((f) => f.endsWith('.md'));
 
@@ -185,7 +185,7 @@ try {
   });
 
   test('workflow.md exists in render output', () => {
-    const rendered = path.join(tmpDir, '_bmad', 'render', 'bmad-quick-dev', 'workflow.md');
+    const rendered = path.join(tmpDir, '_bmad', 'render', 'bmad-build', 'workflow.md');
     assert(fs.existsSync(rendered), `workflow.md not found at ${rendered}`);
   });
 
@@ -287,7 +287,7 @@ try {
     // Second render pass: replace the override file so every default layer
     // (and the oneshot route's only layer) is disabled, then re-render.
     fs.writeFileSync(
-      path.join(tmpDir, '_bmad', 'custom', 'bmad-quick-dev.user.toml'),
+      path.join(tmpDir, '_bmad', 'custom', 'bmad-build.user.toml'),
       [
         '[workflow]',
         '',
@@ -385,11 +385,11 @@ try {
       ].join('\n'),
     );
     fs.mkdirSync(path.join(dir, '_bmad', 'custom'), { recursive: true });
-    fs.writeFileSync(path.join(dir, '_bmad', 'custom', 'bmad-quick-dev.user.toml'), '[workflow\non_complete = broken', 'utf-8');
+    fs.writeFileSync(path.join(dir, '_bmad', 'custom', 'bmad-build.user.toml'), '[workflow\non_complete = broken', 'utf-8');
     const res = spawnSync('python3', [path.join(dst, 'render.py')], { cwd: dst, encoding: 'utf-8' });
     assert(res.status === 1, `expected exit 1, got ${res.status}\nstdout: ${res.stdout}\nstderr: ${res.stderr}`);
     assert(
-      res.stdout.includes('HALT and report to the user: failed to parse') && res.stdout.includes('bmad-quick-dev.user.toml'),
+      res.stdout.includes('HALT and report to the user: failed to parse') && res.stdout.includes('bmad-build.user.toml'),
       `stdout missing the failed-to-parse HALT directive naming the override file.\nstdout: ${res.stdout}`,
     );
     assert(!res.stderr.includes('Traceback'), `renderer crashed with a traceback instead of HALTing:\n${res.stderr}`);
@@ -411,7 +411,7 @@ try {
     assert(res.status === 0, `expected exit 0, got ${res.status}\nstdout: ${res.stdout}\nstderr: ${res.stderr}`);
     assert(!res.stderr.includes('Traceback'), `renderer crashed on non-table modules:\n${res.stderr}`);
     assert(
-      fs.existsSync(path.join(dir, '_bmad', 'render', 'bmad-quick-dev', 'workflow.md')),
+      fs.existsSync(path.join(dir, '_bmad', 'render', 'bmad-build', 'workflow.md')),
       'workflow.md not rendered when [modules] was a non-table scalar',
     );
   });

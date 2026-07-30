@@ -41,7 +41,7 @@ En règle générale : si la règle doit s’appliquer partout où un ingénieu
 
 [agent]
 
-# Appliqué à chaque activation. Se propage dans quick-dev, code-review,
+# Appliqué à chaque activation. Se propage dans build, code-review,
 # qa-generate — chaque skill qu'Amelia dispatche.
 persistent_facts = [
   "Pour toute recherche de documentation sur une bibliothèque (React, TypeScript, Zod, Prisma, etc.), appeler l'outil MCP context7 (`mcp__context7__resolve_library_id` puis `mcp__context7__get_library_docs`) avant de s'appuyer sur les connaissances des données d'entraînement. Les docs à jour priment sur les API mémorisées.",

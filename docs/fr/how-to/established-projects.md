@@ -77,12 +77,12 @@ BMad-Help s’exécute également **automatiquement à la fin de chaque workflow
 
 ### Choisir la profondeur de planification
 
-Toute implémentation utilise `bmad-quick-dev` ; la portée détermine le contexte à préparer en amont :
+Toute implémentation utilise `bmad-build` ; la portée détermine le contexte à préparer en amont :
 
 | Portée                              | Approche recommandée                                                                                                                                                                 |
 |-------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Mises à jour ou ajouts clairs**   | Entrez directement dans `bmad-quick-dev` avec la demande, l’issue ou la spécification existante. |
-| **Modifications ou ajouts majeurs** | Préparez le PRD, l’UX, l’architecture, les epics, les stories et le contexte de sprint utiles, puis confiez le travail sélectionné à `bmad-quick-dev`. |
+| **Mises à jour ou ajouts clairs**   | Entrez directement dans `bmad-build` avec la demande, l’issue ou la spécification existante. |
+| **Modifications ou ajouts majeurs** | Préparez le PRD, l’UX, l’architecture, les epics, les stories et le contexte de sprint utiles, puis confiez le travail sélectionné à `bmad-build`. |
 
 ### Pendant la création du PRD
 

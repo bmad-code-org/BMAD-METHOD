@@ -14,7 +14,7 @@ BMad nabízí dva způsoby zahájení práce a slouží k různým účelům.
 | Mechanismus | Jak se vyvolává | Co se stane |
 | --- | --- | --- |
 | **Skill** | Zadejte název skillu (např. `bmad-help`) ve vašem IDE | Přímo načte agenta, spustí workflow nebo provede úkol |
-| **Spouštěč nabídky agenta** | Nejprve načtěte agenta, pak zadejte krátký kód (např. `QD`) | Agent interpretuje kód a spustí odpovídající workflow, přičemž zůstává v charakteru |
+| **Spouštěč nabídky agenta** | Nejprve načtěte agenta, pak zadejte krátký kód (např. `BD`) | Agent interpretuje kód a spustí odpovídající workflow, přičemž zůstává v charakteru |
 
 Spouštěče nabídky agentů vyžadují aktivní relaci agenta. Používejte skills, když víte, který workflow chcete. Používejte spouštěče, když již pracujete s agentem a chcete přepnout úkol bez opuštění konverzace.
 
@@ -97,7 +97,7 @@ Workflow skills spouštějí strukturovaný, vícekrokový proces bez předchoz�
 | `bmad-architecture` | Návrh systémové architektury |
 | `bmad-create-epics-and-stories` | Vytvoření epiců a stories |
 | `bmad-code-review` | Spuštění revize kódu |
-| `bmad-quick-dev` | Implementace přímého záměru, issue, funkce, opravy nebo naplánované story |
+| `bmad-build` | Implementace přímého záměru, issue, funkce, opravy nebo naplánované story |
 
 Viz [Mapa pracovních postupů](./workflow-map.md) pro kompletní referenci workflow organizovanou podle fází.
 

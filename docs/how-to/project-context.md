@@ -123,7 +123,7 @@ A `project-context.md` file that:
 - **Focus on the unobvious** — Document patterns agents might miss (e.g., "Use JSDoc on every public class"), not universal practices like "use meaningful variable names."
 - **Keep it lean** — This file is loaded by every implementation workflow. Long files waste context. Exclude content that only applies to narrow scope or specific stories.
 - **Update as needed** — Edit manually when patterns change, or re-generate after significant architecture changes.
-- Supports the same `bmad-quick-dev` loop whether work enters directly or after extensive planning.
+- Supports the same `bmad-build` loop whether work enters directly or after extensive planning.
   :::
 
 ## Next Steps

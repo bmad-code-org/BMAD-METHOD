@@ -1,4 +1,4 @@
-# Quick Dev New Preview Workflow
+# Build New Preview Workflow
 
 **Goal:** Turn user intent into a hardened, reviewable artifact.
 

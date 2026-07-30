@@ -62,7 +62,7 @@ Define what to build and for whom.
 :::
 
 :::note[`bmad-spec`]
-`bmad-spec` produces the canonical machine contract: a five-field kernel (Why, Capabilities, Constraints, Non-goals, Success signal) plus companion files, validated so every load-bearing source claim is preserved. It is the only writer of `SPEC.md`; other skills invoke it headless when they need to express or update intent. On request it can also break a spec into an ordered `stories.yaml` for autonomous dispatch — see [Autonomous Development Loops](./dev-auto.md).
+`bmad-spec` produces the canonical machine contract: a five-field kernel (Why, Capabilities, Constraints, Non-goals, Success signal) plus companion files, validated so every load-bearing source claim is preserved. It is the only writer of `SPEC.md`; other skills invoke it headless when they need to express or update intent. On request it can also break a spec into an ordered `stories.yaml` for autonomous dispatch — see [Autonomous Development Loops](./build-auto.md).
 :::
 
 :::tip[Upstream: `bmad-product-brief`]
@@ -81,11 +81,11 @@ Decide how to build it and break work into stories.
 
 ## Phase 4: Implementation
 
-Every implementation path converges on `bmad-quick-dev`. It accepts direct intent, an issue, a specification, or a planned story, then chooses the clarification, planning, implementation, and review depth needed for that input.
+Every implementation path converges on `bmad-build`. It accepts direct intent, an issue, a specification, or a planned story, then chooses the clarification, planning, implementation, and review depth needed for that input.
 
 | Workflow | Purpose | Produces |
 |----------|---------|----------|
-| `bmad-quick-dev` | Turn direct intent or a planned story into implemented, reviewed code | `spec-*.md` + code |
+| `bmad-build` | Turn direct intent or a planned story into implemented, reviewed code | `spec-*.md` + code |
 | `bmad-sprint-planning` | Initialize tracking (once per project to sequence the dev cycle) | `sprint-status.yaml` |
 | `bmad-code-review` | Ad hoc review of any code change | Findings + applied patches |
 | `bmad-correct-course` | Handle significant mid-sprint changes | Updated plan or re-routing |
@@ -94,11 +94,11 @@ Every implementation path converges on `bmad-quick-dev`. It accepts direct inten
 
 ### Direct and Planned Entry
 
-Clear work can enter `bmad-quick-dev` directly. Larger initiatives can first produce a PRD, UX design, architecture, epics, stories, readiness results, and sprint plan. Those artifacts add context; they do not select another implementation workflow.
+Clear work can enter `bmad-build` directly. Larger initiatives can first produce a PRD, UX design, architecture, epics, stories, readiness results, and sprint plan. Those artifacts add context; they do not select another implementation workflow.
 
-`bmad-dev-auto` can orchestrate unattended iterations of the same development model when autonomous execution is appropriate.
+`bmad-build-auto` can orchestrate unattended iterations of the same development model when autonomous execution is appropriate.
 
-For the reference on unattended development loops with `bmad-dev-auto`, see [Autonomous Development Loops](./dev-auto.md).
+For the reference on unattended development loops with `bmad-build-auto`, see [Autonomous Development Loops](./build-auto.md).
 
 ## Context Management
 

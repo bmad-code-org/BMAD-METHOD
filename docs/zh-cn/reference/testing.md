@@ -92,7 +92,7 @@ TEA 提供专家测试 agent（Murat）与 9 个结构化 workflow，覆盖策�
 
 按 BMad workflow-map，测试位于阶段 4（实施）：
 
-1. epic 内逐个 story：使用 Quick Dev（`QD` / `bmad-quick-dev`）实施，并按需追加代码审查（`CR` / `bmad-code-review`）
+1. epic 内逐个 story：使用 Build（`BD` / `bmad-build`）实施，并按需追加代码审查（`CR` / `bmad-code-review`）
 2. epic 完成后：用 `QA`（通过 Developer 智能体）或 TEA 的 Automate 统一生成/补齐测试
 3. 最后执行复盘（`bmad-retrospective`）
 

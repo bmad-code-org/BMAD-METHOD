@@ -23,7 +23,7 @@ Mỗi workflow triển khai đều tự động nạp `project-context.md` nếu
 **Được nạp bởi các workflow sau:**
 - `bmad-architecture` - tôn trọng ưu tiên kỹ thuật trong giai đoạn solutioning
 - `bmad-code-review` - đối chiếu với tiêu chuẩn của dự án
-- `bmad-quick-dev` - áp dụng pattern khi lập kế hoạch và triển khai ý định trực tiếp hoặc story
+- `bmad-build` - áp dụng pattern khi lập kế hoạch và triển khai ý định trực tiếp hoặc story
 - `bmad-sprint-planning`, `bmad-retrospective`, `bmad-correct-course` - cung cấp bối cảnh cấp dự án
 
 ## Khi nào nên tạo
@@ -35,7 +35,7 @@ Tệp `project-context.md` hữu ích ở bất kỳ giai đoạn nào của d�
 | **Dự án mới, trước kiến trúc** | Tạo thủ công, trước `bmad-architecture` | Ghi lại ưu tiên kỹ thuật để architect tôn trọng |
 | **Dự án mới, sau kiến trúc** | Qua `bmad-generate-project-context` hoặc tạo thủ công | Ghi lại quyết định kiến trúc cho các agent triển khai |
 | **Dự án hiện có** | Qua `bmad-generate-project-context` | Khám phá pattern hiện có để agent theo đúng quy ước |
-| **Đầu vào triển khai trực tiếp** | Trước hoặc trong `bmad-quick-dev` | Đảm bảo triển khai không có planning upstream vẫn tôn trọng pattern của bạn |
+| **Đầu vào triển khai trực tiếp** | Trước hoặc trong `bmad-build` | Đảm bảo triển khai không có planning upstream vẫn tôn trọng pattern của bạn |
 
 :::tip[Khuyến nghị]
 Với dự án mới, hãy tạo thủ công trước giai đoạn kiến trúc nếu bạn có ưu tiên kỹ thuật rõ ràng. Nếu không, hãy tạo nó sau kiến trúc để ghi lại các quyết định đã được đưa ra.

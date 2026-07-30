@@ -84,7 +84,7 @@ BMad giúp bạn xây dựng phần mềm thông qua các workflow có hướng 
 | **Định hình giải pháp đầy đủ** | Sáng kiến phối hợp, rủi ro cao hoặc liên hệ thống | PRD, UX, kiến trúc, epic, story và kế hoạch sprint |
 
 :::note
-Đây không phải các nhánh triển khai riêng. Mọi đầu vào đều hội tụ vào `bmad-quick-dev`; lập kế hoạch chỉ thay đổi lượng ngữ cảnh sẵn có.
+Đây không phải các nhánh triển khai riêng. Mọi đầu vào đều hội tụ vào `bmad-build`; lập kế hoạch chỉ thay đổi lượng ngữ cảnh sẵn có.
 :::
 
 ## Cài Đặt
@@ -176,13 +176,13 @@ Epics và stories giờ được tạo *sau* kiến trúc. Điều này giúp st
 
 Chuyển sang implementation với ngữ cảnh đang có: yêu cầu trực tiếp, issue, spec hoặc story đã được lập kế hoạch đầy đủ. **Mỗi workflow nên chạy trong một chat mới.**
 
-Với công việc đã lập kế hoạch, chạy `bmad-quick-dev` và nêu rõ story hoặc hạng mục sprint đã chọn, ví dụ: `Triển khai story 2.3 từ _bmad-output/planning-artifacts/epics.md`.
+Với công việc đã lập kế hoạch, chạy `bmad-build` và nêu rõ story hoặc hạng mục sprint đã chọn, ví dụ: `Triển khai story 2.3 từ _bmad-output/planning-artifacts/epics.md`.
 
 ### Khởi Tạo Sprint Planning (Cho công việc đã lập kế hoạch)
 
 Gọi **Developer agent** (`bmad-agent-dev`) và chạy `bmad-sprint-planning` (`bmad-sprint-planning`). Workflow này sẽ tạo `sprint-status.yaml` để theo dõi toàn bộ epic và story.
 
-Khi Quick Dev nhận diện được story đã chọn trong file này, workflow chuyển story sang `in-progress` trong lúc triển khai và sang `review` khi triển khai hoàn tất.
+Khi Build nhận diện được story đã chọn trong file này, workflow chuyển story sang `in-progress` trong lúc triển khai và sang `review` khi triển khai hoàn tất.
 
 ### Chu Trình Xây Dựng
 
@@ -190,10 +190,10 @@ Với mỗi thay đổi trực tiếp hoặc story đã lập kế hoạch, lặ
 
 | Bước | Agent | Workflow | Lệnh | Mục đích |
 | ---- | ----- | -------------- | -------------------------- | ---------------------------------- |
-| 1 | DEV | `bmad-quick-dev` | `bmad-quick-dev` | Làm rõ, lập kế hoạch, triển khai, review và trình bày |
+| 1 | DEV | `bmad-build` | `bmad-build` | Làm rõ, lập kế hoạch, triển khai, review và trình bày |
 | 2 | DEV | `bmad-code-review` | `bmad-code-review` | Kiểm tra chất lượng bổ sung *(khuyến nghị)* |
 
-Review của Quick Dev là một phần của mọi lần chạy. `bmad-code-review` là lớp xác thực độc lập, tùy chọn trong một ngữ cảnh mới.
+Review của Build là một phần của mọi lần chạy. `bmad-code-review` là lớp xác thực độc lập, tùy chọn trong một ngữ cảnh mới.
 
 Sau khi hoàn tất tất cả story trong một epic, hãy gọi **Developer agent** (`bmad-agent-dev`) và chạy `bmad-retrospective` (`bmad-retrospective`).
 
@@ -233,13 +233,13 @@ your-project/
 | `bmad-create-epics-and-stories` | `bmad-create-epics-and-stories` | PM | Phân rã PRD thành epics |
 | `bmad-check-implementation-readiness` | `bmad-check-implementation-readiness` | Architect | Kiểm tra độ nhất quán của kế hoạch |
 | `bmad-sprint-planning` | `bmad-sprint-planning` | DEV | Khởi tạo theo dõi sprint |
-| `bmad-quick-dev` | `bmad-quick-dev` | DEV | Triển khai ý định, issue, tính năng, bản sửa hoặc story |
+| `bmad-build` | `bmad-build` | DEV | Triển khai ý định, issue, tính năng, bản sửa hoặc story |
 | `bmad-code-review` | `bmad-code-review` | DEV | Review phần code đã triển khai |
 
 ## Câu Hỏi Thường Gặp
 
 **Lúc nào cũng cần kiến trúc à?**
-Không. Dùng kiến trúc khi cần làm rõ quyết định kỹ thuật hoặc ràng buộc liên hệ thống. Công việc rõ ràng có thể đi thẳng vào `bmad-quick-dev`; sáng kiến lớn đưa các artifact lập kế hoạch vào cùng workflow đó.
+Không. Dùng kiến trúc khi cần làm rõ quyết định kỹ thuật hoặc ràng buộc liên hệ thống. Công việc rõ ràng có thể đi thẳng vào `bmad-build`; sáng kiến lớn đưa các artifact lập kế hoạch vào cùng workflow đó.
 
 **Tôi có thể đổi kế hoạch về sau không?**
 Có. Workflow `bmad-correct-course` (`bmad-correct-course`) xử lý thay đổi phạm vi giữa chừng.
@@ -270,7 +270,7 @@ BMad-Help sẽ kiểm tra dự án, phát hiện những gì bạn đã hoàn th
 :::tip[Hãy Nhớ Các Điểm Này]
 - **Bắt đầu với `bmad-help`** — Trợ lý thông minh hiểu dự án và các lựa chọn của bạn
 - **Luôn dùng chat mới** — Mỗi workflow nên bắt đầu trong một chat riêng
-- **Độ sâu lập kế hoạch thay đổi** — ý định trực tiếp và story đã lập kế hoạch đều đi vào `bmad-quick-dev`
+- **Độ sâu lập kế hoạch thay đổi** — ý định trực tiếp và story đã lập kế hoạch đều đi vào `bmad-build`
 - **BMad-Help chạy tự động** — Mỗi workflow đều kết thúc bằng hướng dẫn về bước tiếp theo
 :::
 

@@ -1,8 +1,8 @@
 # DO NOT EDIT -- overwritten on every update.
 #
-# Default customization values for bmad-dev-auto.
-# Override in _bmad/custom/bmad-dev-auto.toml or
-# _bmad/custom/bmad-dev-auto.user.toml.
+# Default customization values for bmad-build.
+# Override in _bmad/custom/bmad-build.toml or
+# _bmad/custom/bmad-build.user.toml.
 #
 # Merge rules:
 # - Strings replace the default.
@@ -12,11 +12,11 @@
 
 [workflow]
 
-# Extra instructions to run before config is loaded.
+# Extra instructions to run before config is loaded and before the user is greeted.
 
 activation_steps_prepend = []
 
-# Extra instructions to run after config is loaded and before step 01.
+# Extra instructions to run after the greeting and before step 01.
 
 activation_steps_append = []
 
@@ -28,8 +28,8 @@ persistent_facts = [
   "file:{project-root}/**/project-context.md",
 ]
 
-# Instruction run by HALT after writing the terminal result.
-# Empty means no extra terminal behavior.
+# Instruction run after Build completes.
+# Empty means no extra completion behavior.
 
 on_complete = ""
 
@@ -99,19 +99,18 @@ Do not invoke any skill. If the instruction file is unreadable, report that exac
 
 """
 
-[[workflow.review_layers]]
-id = "intent-alignment"
-name = "Intent Alignment Auditor"
+# Review layers for the one-shot route.
+
+[[workflow.oneshot_review_layers]]
+id = "blind-hunter"
+name = "Blind Hunter"
 instruction = """
-Launch a subagent with this prompt:
+Launch a context-free subagent with this prompt:
 
-You are an intent-alignment auditor. You have no other context about how this change was produced. Here is the verbatim intent this work started from:
+Read `{skill-root}/review-prompts/adversarial.md` completely and follow it as your review instructions.
 
-{verbatim_intent}
+Review content: the changed files in the current worktree. Inspect them directly before reviewing.
 
-Here is the diff:
+Do not invoke any skill. If the instruction file is unreadable, report that exact failure and stop. Return only the review result.
 
-{diff_output}
-
-Your task is strictly descriptive — do not prescribe additional work. Report: (1) the defensible readings of the intent, enumerated; (2) which reading this diff implements; (3) where the readings and the diff diverge — specifically, which surface the intent's expectations live at versus which surface the diff's changes and its tests exercise.
 """

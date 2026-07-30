@@ -29,7 +29,7 @@ sidebar:
 
 ### 既有项目如何进入实施？
 
-运行 `bmad-quick-dev`，与新项目使用同一实施 workflow。清晰改动可以直接进入；较大工作可以提供已规划 story 及其上游产物。
+运行 `bmad-build`，与新项目使用同一实施 workflow。清晰改动可以直接进入；较大工作可以提供已规划 story 及其上游产物。
 
 它会尝试识别现有技术栈、代码模式和约定，并据此生成更贴近现状的实现方案。
 
@@ -43,7 +43,7 @@ BMad Method 不会强制“立即现代化”，而是把决策权交给你。
 
 ### 什么时候需要增加规划？
 
-当任务出现以下信号时，建议在运行同一个 `bmad-quick-dev` 实施 workflow 前增加规划：
+当任务出现以下信号时，建议在运行同一个 `bmad-build` 实施 workflow 前增加规划：
 - 改动跨多个 `epic` 或多个子系统
 - 需要明确 `architecture` 决策，否则容易冲突
 - 涉及较大协作面、较高回归风险或复杂验收要求
@@ -52,7 +52,7 @@ BMad Method 不会强制“立即现代化”，而是把决策权交给你。
 
 **还有问题？** 欢迎在 [GitHub Issues](https://github.com/bmad-code-org/BMAD-METHOD/issues) 或 [Discord](https://discord.gg/gk8jAdXWmj) 提问。
 
-如果你想了解这套接入方式的操作步骤，可继续阅读 [How-to：既有项目](../how-to/established-projects.md) 与 [How-to：项目上下文](../how-to/project-context.md)。想理解统一实施 workflow，可参见 [快速开发](./quick-dev.md)。
+如果你想了解这套接入方式的操作步骤，可继续阅读 [How-to：既有项目](../how-to/established-projects.md) 与 [How-to：项目上下文](../how-to/project-context.md)。想理解统一实施 workflow，可参见 [快速开发](./build.md)。
 
 ## 继续阅读
 

@@ -58,7 +58,7 @@ Cela évite :
 | Plusieurs epics ou décisions multi-systèmes | Nécessaire pour aligner l’implémentation |
 | Initiative réglementée, risquée ou enterprise | Suivre la gouvernance requise ; le solutioning est normalement obligatoire |
 
-Le solutioning change le contexte fourni à `bmad-quick-dev`, pas le workflow d’implémentation.
+Le solutioning change le contexte fourni à `bmad-build`, pas le workflow d’implémentation.
 
 :::tip[Règle Générale]
 Si vous avez plusieurs epics qui pourraient être implémentés par différents agents, vous avez besoin de solutioning.

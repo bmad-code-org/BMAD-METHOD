@@ -45,7 +45,7 @@ Nguyên tắc ngón tay cái:
 
 [agent]
 
-# Áp dụng ở mọi lần kích hoạt. Theo Amelia đi vào quick-dev,
+# Áp dụng ở mọi lần kích hoạt. Theo Amelia đi vào build,
 # code-review, qa-generate và mọi skill cô ấy dispatch.
 persistent_facts = [
   "Với mọi truy vấn tài liệu thư viện như React, TypeScript, Zod, Prisma..., hãy gọi Context7 MCP tool (`mcp__context7__resolve_library_id` rồi `mcp__context7__get_library_docs`) trước khi dựa vào kiến thức trong dữ liệu huấn luyện (training data). Tài liệu cập nhật phải thắng API đã ghi nhớ.",

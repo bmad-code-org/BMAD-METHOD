@@ -20,7 +20,7 @@ Tato stránka uvádí výchozí BMM (Agile suite) agenty, kteří se instalují 
 | Analyst (Mary)              | `bmad-analyst`       | `BP`, `MR`, `DR`, `TR`, `CB`, `WB`, `DP`     | Brainstorm, průzkum trhu, doménový výzkum, technický výzkum, tvorba briefu, PRFAQ výzva, dokumentace projektu |
 | Product Manager (John)      | `bmad-pm`            | `CP`, `VP`, `EP`, `CE`, `IR`, `CC`           | Tvorba/validace/editace PRD, tvorba epiců a stories, připravenost implementace, korekce kurzu       |
 | Architect (Winston)         | `bmad-architect`     | `CA`, `IR`                                    | Tvorba architektury, připravenost implementace                                                      |
-| Developer (Amelia)          | `bmad-agent-dev`     | `QD`, `QA`, `CR`, `SP`, `ER`                  | Quick Dev, generování QA testů, revize kódu, plánování sprintu, retrospektiva epicu |
+| Developer (Amelia)          | `bmad-agent-dev`     | `BD`, `QA`, `CR`, `SP`, `ER`                  | Build, generování QA testů, revize kódu, plánování sprintu, retrospektiva epicu |
 | UX Designer (Sally)         | `bmad-ux-designer`   | `CU`                                          | Tvorba UX designu                                                                                   |
 | Technical Writer (Paige)    | `bmad-tech-writer`   | `DP`, `WD`, `US`, `MG`, `VD`, `EC`           | Dokumentace projektu, psaní dokumentu, aktualizace standardů, generování Mermaid, validace dok., vysvětlení konceptu |
 
@@ -32,7 +32,7 @@ Spouštěče nabídky agentů používají dva různé typy vyvolání. Znalost 
 
 Většina spouštěčů načítá strukturovaný soubor workflow. Zadejte kód spouštěče a agent zahájí workflow a vyzve vás k zadání vstupu v každém kroku.
 
-Příklady: `CP` (tvorba PRD), `CA` (tvorba architektury), `QD` (Quick Dev)
+Příklady: `CP` (tvorba PRD), `CA` (tvorba architektury), `BD` (Build)
 
 ### Konverzační spouštěče (vyžadují argumenty)
 

@@ -181,7 +181,7 @@ development_status:
 #   - done: All stories in epic completed
 #
 # Epic Status Transitions:
-#   - backlog → in-progress: Automatically when first story starts (via quick-dev's sprint sync)
+#   - backlog → in-progress: Automatically when first story starts (via build's sprint sync)
 #   - in-progress → done: Manually when all stories reach 'done' status
 #
 # Story Status:
@@ -202,7 +202,7 @@ development_status:
 #
 # WORKFLOW NOTES:
 # ===============
-# - Epic transitions to 'in-progress' automatically when first story starts (via quick-dev's sprint sync)
+# - Epic transitions to 'in-progress' automatically when first story starts (via build's sprint sync)
 # - Stories can be worked in parallel if team capacity allows
 # - Developer typically creates next story after previous one is 'done' to incorporate learnings
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)

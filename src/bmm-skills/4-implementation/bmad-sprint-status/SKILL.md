@@ -152,7 +152,7 @@ Enter corrections (e.g., "1=in-progress, 2=backlog") or "skip" to continue witho
 
 - IF any story has status "review": suggest `/bmad:bmm:workflows:code-review`
 - IF any story has status "in-progress" AND no stories have status "ready-for-dev": recommend staying focused on active story
-- IF all epics have status "backlog" AND no stories have status "ready-for-dev": recommend `bmad-quick-dev` to start the first backlog story
+- IF all epics have status "backlog" AND no stories have status "ready-for-dev": recommend `bmad-build` to start the first backlog story
 - IF `last_updated` timestamp is more than 7 days old (or `last_updated` is missing, fall back to `generated`): warn "sprint-status.yaml may be stale"
 - IF any story key doesn't match an epic pattern (e.g., story "5-1-..." but no "epic-5"): warn "orphaned story detected"
 - IF any epic has status in-progress but has no associated stories: warn "in-progress epic has no stories"
@@ -161,10 +161,10 @@ Enter corrections (e.g., "1=in-progress, 2=backlog") or "skip" to continue witho
 <step n="3" goal="Select next action recommendation">
   <action>Pick the next recommended workflow using priority:</action>
   <note>When selecting "first" story: sort by epic number, then story number (e.g., 1-1 before 1-2 before 2-1)</note>
-  1. If any story status == in-progress → recommend `quick-dev` to resume the first in-progress story
+  1. If any story status == in-progress → recommend `build` to resume the first in-progress story
   2. Else if any story status == review → recommend `code-review` for the first review story
-  3. Else if any story status == ready-for-dev → recommend `quick-dev` to start work on the first ready-for-dev story
-  4. Else if any story status == backlog → recommend `quick-dev` to start the first backlog story
+  3. Else if any story status == ready-for-dev → recommend `build` to start work on the first ready-for-dev story
+  4. Else if any story status == backlog → recommend `build` to start the first backlog story
   5. Else if any retrospective status == optional → recommend `retrospective`
   6. Else → All implementation items done; congratulate the user - you both did amazing work together!
   <action>Store selected recommendation as: next_story_id, next_workflow_id, next_agent (DEV)</action>

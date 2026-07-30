@@ -59,7 +59,7 @@ This prevents:
 | Multiple epics or cross-system decisions | Needed to align implementation |
 | Regulated, high-risk, or enterprise initiative | Follow required governance; solutioning is normally required |
 
-Solutioning changes the context available to `bmad-quick-dev`; it does not change the implementation workflow.
+Solutioning changes the context available to `bmad-build`; it does not change the implementation workflow.
 
 :::tip[Rule of Thumb]
 If you have multiple epics that could be implemented by different agents, you need solutioning.

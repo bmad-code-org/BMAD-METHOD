@@ -23,7 +23,7 @@ Chaque workflow d’implémentation charge automatiquement `project-context.md` 
 **Chargé par ces workflows :**
 - `bmad-architecture` — respecte les préférences techniques pendant la phase de solutioning
 - `bmad-code-review` — valide par rapport aux standards du projet
-- `bmad-quick-dev` — applique les patterns lors de la planification et de l’implémentation d’intentions directes ou de stories
+- `bmad-build` — applique les patterns lors de la planification et de l’implémentation d’intentions directes ou de stories
 - `bmad-sprint-planning`, `bmad-retrospective`, `bmad-correct-course` — fournit le contexte global du projet
 
 ## Quand Le Créer
@@ -35,7 +35,7 @@ Le fichier `project-context.md` est utile à n’importe quel stade d’un proje
 | **Nouveau projet, avant l’architecture** | Manuellement, avant `bmad-architecture`      | Documenter vos préférences techniques pour que l’architecte les respecte              |
 | **Nouveau projet, après l’architecture** | Via `bmad-generate-project-context` ou manuellement | Capturer les décisions d’architecture pour les agents d’implémentation                |
 | **Projet existant**                      | Via `bmad-generate-project-context`                 | Découvrir les patterns existants pour que les agents suivent les conventions établies |
-| **Entrée directe en implémentation**     | Avant ou pendant `bmad-quick-dev`                   | Garantir que l’implémentation sans planification amont respecte vos patterns          |
+| **Entrée directe en implémentation**     | Avant ou pendant `bmad-build`                   | Garantir que l’implémentation sans planification amont respecte vos patterns          |
 
 :::tip[Recommandé]
 Pour les nouveaux projets, créez-le manuellement avant l’architecture si vous avez de fortes préférences techniques. Sinon, générez-le après l’architecture pour capturer ces décisions.

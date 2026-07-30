@@ -30,7 +30,7 @@ Không sao - bạn có thể chạy nó bất cứ lúc nào. Bạn thậm chí 
 
 ### Implementation hoạt động thế nào trong dự án đã tồn tại?
 
-Chạy `bmad-quick-dev`, giống như với dự án mới. Workflow sẽ:
+Chạy `bmad-build`, giống như với dự án mới. Workflow sẽ:
 
 - Tự động nhận diện stack hiện có
 - Phân tích pattern code hiện có
@@ -41,7 +41,7 @@ Bạn có thể vào trực tiếp với thay đổi rõ ràng, hoặc cung cấ
 
 ### Nếu code hiện tại của tôi không theo best practices thì sao?
 
-Quick Dev sẽ nhận diện quy ước hiện có và hỏi: "Tôi có nên tuân theo những quy ước hiện tại này không?" Bạn là người quyết định:
+Build sẽ nhận diện quy ước hiện có và hỏi: "Tôi có nên tuân theo những quy ước hiện tại này không?" Bạn là người quyết định:
 
 - **Có** → Giữ tính nhất quán với codebase hiện tại
 - **Không** → Đặt ra chuẩn mới, đồng thời ghi rõ lý do trong spec

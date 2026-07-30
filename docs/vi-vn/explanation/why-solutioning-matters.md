@@ -58,7 +58,7 @@ Bằng cách tài liệu hóa rõ ràng các quyết định kỹ thuật, tất
 | Nhiều epic hoặc quyết định liên hệ thống | Cần thiết để đồng bộ implementation |
 | Sáng kiến tuân thủ, rủi ro cao hoặc enterprise | Tuân theo governance bắt buộc; solutioning thường là yêu cầu |
 
-Solutioning thay đổi ngữ cảnh cung cấp cho `bmad-quick-dev`, không thay đổi workflow triển khai.
+Solutioning thay đổi ngữ cảnh cung cấp cho `bmad-build`, không thay đổi workflow triển khai.
 
 :::tip[Quy tắc ngón tay cái]
 Nếu bạn có nhiều epic có thể được các agent khác nhau triển khai, bạn cần solutioning.

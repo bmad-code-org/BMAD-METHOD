@@ -43,7 +43,7 @@ AI nástroje pro strukturovanou kreativitu, ideaci a inovace v rané fázi vývo
 
 ## Game Dev Studio
 
-Strukturované workflow pro vývoj her adaptované pro Unity, Unreal, Godot a vlastní enginy. Podporuje hloubku plánování od rychlého prototypování po plnoscálovou produkci; implementace se sbíhá do Quick Dev.
+Strukturované workflow pro vývoj her adaptované pro Unity, Unreal, Godot a vlastní enginy. Podporuje hloubku plánování od rychlého prototypování po plnoscálovou produkci; implementace se sbíhá do Build.
 
 - **Kód:** `gds`
 - **npm:** [`bmad-game-dev-studio`](https://www.npmjs.com/package/bmad-game-dev-studio)
@@ -52,7 +52,7 @@ Strukturované workflow pro vývoj her adaptované pro Unity, Unreal, Godot a vl
 **Poskytuje:**
 
 - Workflow pro generování Game Design Document (GDD)
-- Herní kontext a plánování pro standardní implementační loop Quick Dev
+- Herní kontext a plánování pro standardní implementační loop Build
 - Podporu narativního designu pro postavy, dialogy a budování světa
 - Pokrytí 21+ typů her s architektonickým vedením specifickým pro engine
 

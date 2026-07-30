@@ -29,7 +29,7 @@ Ne vous inquiétez pas — vous pouvez le faire à tout moment. Vous pouvez mêm
 
 ### Comment fonctionne l’implémentation dans les projets existants ?
 
-Exécutez `bmad-quick-dev`, comme pour un nouveau développement. Le workflow va :
+Exécutez `bmad-build`, comme pour un nouveau développement. Le workflow va :
 
 - Détecter automatiquement votre pile technologique existante
 - Analyser les patterns de code existants
@@ -40,7 +40,7 @@ Vous pouvez entrer directement pour une modification claire ou fournir une story
 
 ### Que faire si mon code existant ne suit pas les bonnes pratiques ?
 
-Quick Dev détecte vos conventions et demande : « Dois-je suivre ces conventions existantes ? » Vous décidez :
+Build détecte vos conventions et demande : « Dois-je suivre ces conventions existantes ? » Vous décidez :
 
 - **Oui** → Maintenir la cohérence avec la base de code actuelle
 - **Non** → Établir de nouvelles normes (documenter pourquoi dans la spécification technique)
