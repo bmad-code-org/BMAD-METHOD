@@ -62,7 +62,7 @@ Build may ask clarifying questions or present a short spec for your approval bef
 
 ### 4. Review and Push
 
-Build implements the change, reviews its own work, patches issues, and commits locally. When it's done, it opens the affected files in your editor.
+Build implements the change, reviews its own work, patches issues, and commits locally. When it's done, it shows you the review spec.
 
 - Skim the diff to confirm the change matches your intent
 - If something looks off, tell the agent what to fix — it can iterate in the same session

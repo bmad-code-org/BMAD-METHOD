@@ -11,7 +11,7 @@ sidebar:
 
 ## The Typical Flow
 
-You run `bmad-build`. It clarifies your intent, builds a spec, implements the change, and when it's done it appends a review trail to the spec file and opens it in your editor. You look at the spec and see the change touched 20 files across several modules.
+You run `bmad-build`. It clarifies your intent, builds a spec, implements the change, and when it's done it appends a review trail to the spec file and shows it to you. You look at the spec and see the change touched 20 files across several modules.
 
 You could eyeball the diff. But 20 files is where eyeballing starts to fail — you lose the thread, miss a connection between two distant changes, or approve something you didn't fully understand. So instead, you say "checkpoint" and the LLM walks you through it.
 

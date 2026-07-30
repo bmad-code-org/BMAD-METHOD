@@ -391,6 +391,13 @@ def main():
 
     skill_dir = script_dir.replace(os.sep, "/")
     workflow = resolve_workflow(root, skill_dir, skill_name)
+    open_spec = workflow.get("open_spec")
+    if not isinstance(open_spec, str):
+        print(
+            "HALT and report to the user: customization `workflow.open_spec` "
+            "must be a string"
+        )
+        sys.exit(1)
     workflow = expand_review_layer_skill_roots(workflow, skill_dir)
 
     out_dir = posixpath.join(root, "_bmad", "render", skill_name)
