@@ -61,6 +61,9 @@ jobs:
           node-version-file: ".nvmrc"
           cache: "npm"
 
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v6
+
       - name: Ensure trusted publishing toolchain
         run: |
           # npm trusted publishing requires Node >= 22.14.0 and npm >= 11.5.1.

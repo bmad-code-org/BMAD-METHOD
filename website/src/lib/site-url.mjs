@@ -7,7 +7,7 @@
 export function getSiteUrl() {
   // Explicit override (works in both local and GitHub Actions)
   if (process.env.SITE_URL) {
-    return process.env.SITE_URL;
+    return process.env.SITE_URL.replace(/\/+$/, '');
   }
 
   // GitHub Actions: compute from repository context

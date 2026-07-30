@@ -384,7 +384,7 @@ html {
 
 /* Table styling */
 table {
-  display: table;
+  display: block;
   width: 100%;
 }
 

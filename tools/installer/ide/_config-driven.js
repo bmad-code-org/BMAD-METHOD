@@ -434,7 +434,7 @@ class ConfigDrivenIdeSetup {
       if (!canonicalId) continue;
 
       // Derive source directory from path column
-      // path is like "_bmad/bmm/workflows/bmad-quick-flow/bmad-quick-dev-new-preview/SKILL.md"
+      // path is like "_bmad/bmm/workflows/bmad-quick-flow/bmad-build-new-preview/SKILL.md"
       // Strip bmadFolderName prefix and join with bmadDir, then get dirname
       const relativePath = record.path.startsWith(bmadPrefix) ? record.path.slice(bmadPrefix.length) : record.path;
       const sourceFile = path.join(bmadDir, relativePath);
