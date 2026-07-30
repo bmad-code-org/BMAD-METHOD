@@ -1,6 +1,8 @@
 ---
 title: 'Getting Started'
 description: Install BMad and build your first project
+sidebar:
+  order: 1
 ---
 
 Build software faster using AI-powered workflows with specialized agents that guide you through planning, architecture, and implementation.
