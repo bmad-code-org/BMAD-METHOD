@@ -103,8 +103,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v6
+
       - name: Test agent compilation components
         run: npm run test:install
+
+      - name: Test workflow renderers
+        run: npm run test:renderer
 
       - name: Validate file references
         run: npm run validate:refs

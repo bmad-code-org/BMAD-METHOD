@@ -11,11 +11,11 @@ sidebar:
 
 ## The Typical Flow
 
-You run `bmad-quick-dev`. It clarifies your intent, builds a spec, implements the change, and when it's done it appends a review trail to the spec file and opens it in your editor. You look at the spec and see the change touched 20 files across several modules.
+You run `bmad-build`. It clarifies your intent, builds a spec, implements the change, and when it's done it appends a review trail to the spec file and opens it in your editor. You look at the spec and see the change touched 20 files across several modules.
 
 You could eyeball the diff. But 20 files is where eyeballing starts to fail — you lose the thread, miss a connection between two distant changes, or approve something you didn't fully understand. So instead, you say "checkpoint" and the LLM walks you through it.
 
-That handoff — from autonomous implementation back to human judgment — is the primary use case. Quick-dev runs long with minimal supervision. Checkpoint Preview is where you take back the wheel.
+That handoff — from autonomous implementation back to human judgment — is the primary use case. Build runs long with minimal supervision. Checkpoint Preview is where you take back the wheel.
 
 ## Why It Exists
 
@@ -77,7 +77,7 @@ When no author-produced trail exists, the workflow generates one from the diff a
 
 ## When to Use It
 
-The primary scenario is the handoff from `bmad-quick-dev`: the implementation is done, the spec file is open in your editor with a review trail appended, and you need to decide whether to ship. Say "checkpoint" and go.
+The primary scenario is the handoff from `bmad-build`: the implementation is done, the spec file is open in your editor with a review trail appended, and you need to decide whether to ship. Say "checkpoint" and go.
 
 It also works standalone:
 

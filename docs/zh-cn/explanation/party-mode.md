@@ -30,7 +30,7 @@ Party Mode 不是单角色问答，也不是单文档改写。它更像一次”
 - 你需要的是对同一输出做深度二次推理
 
 这些场景通常更适合：
-- `bmad-quick-dev`（直接进入实现）
+- `bmad-build`（直接进入实现）
 - `advanced elicitation`（二次推理补强）
 
 ## 价值与边界

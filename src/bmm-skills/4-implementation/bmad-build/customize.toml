@@ -1,0 +1,116 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# Default customization values for bmad-build.
+# Override in _bmad/custom/bmad-build.toml or
+# _bmad/custom/bmad-build.user.toml.
+#
+# Merge rules:
+# - Strings replace the default.
+# - Lists append to the default list.
+# - Tables merge key by key.
+# - Arrays of tables merge by `id`: matching `id` replaces, new `id`s append.
+
+[workflow]
+
+# Extra instructions to run before config is loaded and before the user is greeted.
+
+activation_steps_prepend = []
+
+# Extra instructions to run after the greeting and before step 01.
+
+activation_steps_append = []
+
+# Facts kept in context for the whole run.
+# Entries are literal text or file references prefixed with "file:".
+# File entries may use globs and are loaded during activation.
+
+persistent_facts = [
+  "file:{project-root}/**/project-context.md",
+]
+
+# Instruction run after Build completes.
+# Empty means no extra completion behavior.
+
+on_complete = ""
+
+# Handoff for the implementation subagent in step 03. The whole execution
+# recipe — a subagent by default, but an override may run it any other way
+# (a different model, an external coding tool via bash). {spec_file} is
+# substituted at run time.
+
+implementation_handoff = """
+Launch a subagent with no prior conversation context, with this prompt:
+
+> Read {spec_file} fully and implement it — the spec is the sole source of truth. Load every file listed in its frontmatter `context:` before you start.
+>
+> When done, report what you changed, how you verified it, and anything left incomplete or risky.
+"""
+
+# Review layers for the review step. `instruction` is the layer's whole
+# execution recipe — subagents by default, but an override may run anything
+# (e.g. an external reviewer via bash). {diff_output} is substituted at run
+# time. `when` (optional) gates a layer; empty `instruction` disables it.
+
+[[workflow.review_layers]]
+id = "blind-hunter"
+name = "Blind Hunter"
+instruction = """
+Launch a context-free subagent with this prompt:
+
+Read `{skill-root}/review-prompts/adversarial.md` completely and follow it as your review instructions.
+
+Review content:
+
+{diff_output}
+
+Do not invoke any skill. If the instruction file is unreadable, report that exact failure and stop. Return only the review result.
+
+"""
+
+[[workflow.review_layers]]
+id = "edge-case-hunter"
+name = "Edge Case Hunter"
+instruction = """
+Launch a context-free subagent with this prompt:
+
+Read `{skill-root}/review-prompts/edge-case-hunter.md` completely and follow it as your review instructions.
+
+Review content:
+
+{diff_output}
+
+Do not invoke any skill. If the instruction file is unreadable, report that exact failure and stop. Return only the review result.
+
+"""
+
+[[workflow.review_layers]]
+id = "verification-gap"
+name = "Verification Gap Reviewer"
+instruction = """
+Launch a context-free subagent with this prompt:
+
+Read `{skill-root}/review-prompts/verification-gap.md` completely and follow it as your review instructions.
+
+Review content:
+
+{diff_output}
+
+Do not invoke any skill. If the instruction file is unreadable, report that exact failure and stop. Return only the review result.
+
+"""
+
+# Review layers for the one-shot route.
+
+[[workflow.oneshot_review_layers]]
+id = "blind-hunter"
+name = "Blind Hunter"
+instruction = """
+Launch a context-free subagent with this prompt:
+
+Read `{skill-root}/review-prompts/adversarial.md` completely and follow it as your review instructions.
+
+Review content: the changed files in the current worktree. Inspect them directly before reviewing.
+
+Do not invoke any skill. If the instruction file is unreadable, report that exact failure and stop. Return only the review result.
+
+"""

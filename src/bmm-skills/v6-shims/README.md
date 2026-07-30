@@ -1,12 +1,15 @@
 # v6 Deprecation Shims
 
-Skills in this folder are forwarders kept for backward compatibility with v6 skill IDs.
-Each one holds no logic of its own — it forwards to the skill that replaced it, passing a
-stated intent and pre-resolved customization fields so the target skips its own intent
-inference.
+Skills in this folder are deprecated skills kept for backward compatibility with v6 skill IDs.
+Some retain their full workflow, while others forward to the skill that replaced them, passing a
+stated intent and pre-resolved customization fields so the target skips its own intent inference.
 
 | Shim                       | Forwards to                          |
 | -------------------------- | ------------------------------------ |
+| `bmad-quick-dev`           | `bmad-build`                         |
+| `bmad-dev-auto`            | `bmad-build-auto`                    |
+| `bmad-create-story`        | Retained in full                     |
+| `bmad-dev-story`           | Retained in full                     |
 | `bmad-create-prd`          | `bmad-prd` (create intent)           |
 | `bmad-edit-prd`            | `bmad-prd` (update intent)           |
 | `bmad-validate-prd`        | `bmad-prd` (validate intent)         |
