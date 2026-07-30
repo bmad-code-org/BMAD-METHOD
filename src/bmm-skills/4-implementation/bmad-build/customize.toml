@@ -33,6 +33,15 @@ persistent_facts = [
 
 on_complete = ""
 
+# How Build opens a completed spec for human review. Override this with the
+# application and behavior you prefer, or instruct Build not to open it.
+# Example requests for bmad-customize: "Open completed specs in Cursor and
+# reuse the project window" or "Do not open completed specs automatically."
+
+open_spec = """
+Open the completed spec with the standard file-opening facility available in the current environment, delegating application choice to the operating system's registered handler. Do not probe for or prefer editor-specific commands. If no graphical system opener is available, skip gracefully.
+"""
+
 # Handoff for the implementation subagent in step 03. The whole execution
 # recipe — a subagent by default, but an override may run it any other way
 # (a different model, an external coding tool via bash). {spec_file} is

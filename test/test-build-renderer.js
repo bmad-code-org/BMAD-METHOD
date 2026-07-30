@@ -10,7 +10,7 @@
  *   2. sprint_status is an absolute path rooted at the temp project dir.
  *   3. [workflow] customization is self-resolved and inlined: prepend bullet,
  *      persistent_facts append (base kept), empty list -> _None._, on_complete
- *      scalar baked into step-05/step-oneshot.
+ *      and open_spec scalars baked into step-05/step-oneshot.
  *   4. Review layers materialize as direct invocation blocks: default layers
  *      become #### sections in step-04, an override replacing a layer by id
  *      wins, an empty-instruction override drops its layer, a `when` renders
@@ -140,6 +140,10 @@ try {
       'activation_steps_prepend = ["TEST_PREPEND_STEP"]',
       'persistent_facts = ["TEST_EXTRA_FACT"]',
       'on_complete = "TEST_ON_COMPLETE_INSTRUCTION"',
+      'open_spec = """',
+      'TEST_OPEN_SPEC_LINE_ONE',
+      'TEST_OPEN_SPEC_LINE_TWO',
+      '"""',
       '',
       '[[workflow.review_layers]]',
       'id = "edge-case-hunter"',
@@ -234,6 +238,16 @@ try {
     }
   });
 
+  test('open_spec scalar inlined into step-05 and step-oneshot', () => {
+    for (const file of ['step-05-present.md', 'step-oneshot.md']) {
+      const content = readRendered(file);
+      assert(
+        content.includes('\nTEST_OPEN_SPEC_LINE_ONE\nTEST_OPEN_SPEC_LINE_TWO\n'),
+        `multiline open_spec not inlined at top-level in ${file}`,
+      );
+    }
+  });
+
   test('review layers materialize as invocation blocks in step-04', () => {
     const content = readRendered('step-04-review.md');
     const expectedPromptPath = `${skillDst.replaceAll('\\', '/')}/review-prompts/adversarial.md`;
@@ -318,6 +332,11 @@ try {
     for (const file of ['step-04-review.md', 'step-oneshot.md']) {
       assert(readRendered(file).includes(halt), `HALT instruction missing from ${file}`);
     }
+    for (const file of ['step-05-present.md', 'step-oneshot.md']) {
+      const content = readRendered(file);
+      assert(content.includes("operating system's registered handler"), `default open_spec missing from ${file}`);
+      assert(!content.includes('code -r'), `hard-coded VS Code command survived in ${file}`);
+    }
   });
 
   test('no {workflow.*} placeholder survives in any rendered file', () => {
@@ -391,6 +410,31 @@ try {
     assert(
       res.stdout.includes('HALT and report to the user: failed to parse') && res.stdout.includes('bmad-build.user.toml'),
       `stdout missing the failed-to-parse HALT directive naming the override file.\nstdout: ${res.stdout}`,
+    );
+    assert(!res.stderr.includes('Traceback'), `renderer crashed with a traceback instead of HALTing:\n${res.stderr}`);
+  });
+
+  test('non-string open_spec customization HALTs cleanly', () => {
+    const { dir, skillDst: dst } = makeProject(
+      [
+        '[core]',
+        'communication_language = "French"',
+        'document_output_language = "Klingon"',
+        'planning_artifacts = "{project-root}/plan"',
+        'implementation_artifacts = "{project-root}/impl"',
+      ].join('\n'),
+    );
+    fs.mkdirSync(path.join(dir, '_bmad', 'custom'), { recursive: true });
+    fs.writeFileSync(
+      path.join(dir, '_bmad', 'custom', 'bmad-build.user.toml'),
+      '[workflow]\nopen_spec = ["not", "an", "instruction"]\n',
+      'utf-8',
+    );
+    const res = spawnSync('python3', [path.join(dst, 'render.py')], { cwd: dst, encoding: 'utf-8' });
+    assert(res.status === 1, `expected exit 1, got ${res.status}\nstdout: ${res.stdout}\nstderr: ${res.stderr}`);
+    assert(
+      res.stdout.includes('customization `workflow.open_spec` must be a non-empty string'),
+      `stdout missing open_spec type error.\nstdout: ${res.stdout}`,
     );
     assert(!res.stderr.includes('Traceback'), `renderer crashed with a traceback instead of HALTing:\n${res.stderr}`);
   });
