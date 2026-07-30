@@ -248,6 +248,12 @@ try {
     }
   });
 
+  test('step-05 keeps the push offer separate from summary content', () => {
+    const content = readRendered('step-05-present.md');
+    assert(!content.includes('Include:\n\n- Offer to push'), 'push offer remains under a dangling Include list');
+    assert(content.includes('\n\nOffer to push and/or create a pull request.\n'), 'standalone push offer missing');
+  });
+
   test('open_spec default and examples use only established runtime path placeholders', () => {
     const content = fs.readFileSync(path.join(skillDst, 'customize.toml'), 'utf-8');
     assert(content.includes('code -r "{project-root}" "{spec_file}"'), 'default supported-placeholder command missing');

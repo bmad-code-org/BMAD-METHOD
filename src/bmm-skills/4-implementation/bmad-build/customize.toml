@@ -62,6 +62,10 @@ on_complete = ""
 #
 # Emacs — reuse an Emacs server without waiting for the buffer to close:
 #   Run `cd "{project-root}" && emacsclient -n "{spec_file}"`.
+#
+# For every non-empty override, also tell Build to note in the completion summary
+# that the spec was sent to the chosen editor and contains a Suggested Review
+# Order, then include the default navigation tip shown below.
 
 open_spec = """
 Run `code -r "{project-root}" "{spec_file}"` — the repository root first so VS Code opens in the right context, then the spec file. Always double-quote both paths to handle spaces and special characters. If `code` is unavailable or the command fails, skip gracefully and tell the user the spec file path instead. In the completion summary, note that the spec was sent to VS Code and that it contains a Suggested Review Order, then add this navigation tip: "Ctrl+click (Cmd+click on macOS) the links in the Suggested Review Order to jump to each stop."
