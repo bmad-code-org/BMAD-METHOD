@@ -36,13 +36,13 @@ on_complete = ""
 # How Build opens a completed spec for human review. The default deliberately
 # opens the repository root first and the spec second in a reused VS Code
 # window so relative review links resolve in the correct workspace. Override
-# this with the application and equivalent behavior you prefer, or instruct
-# Build not to open it.
+# this with the application and equivalent behavior you prefer. Set it to an
+# empty string to disable automatic opening and all related completion output.
 # Example requests for bmad-customize: "Open completed specs in Cursor and
 # reuse the project window" or "Do not open completed specs automatically."
 
 open_spec = """
-Run `code -r "{absolute-root}" "{absolute-spec-file}"` — the repository root first so VS Code opens in the right context, then the spec file. Always double-quote both absolute paths to handle spaces and special characters. If `code` is unavailable or the command fails, skip gracefully.
+Resolve two absolute paths: (1) the repository root (`git rev-parse --show-toplevel` — returns the worktree root when in a worktree, project root otherwise; if this fails, fall back to the current working directory), (2) `{spec_file}`. Run `code -r "{absolute-root}" "{absolute-spec-file}"` — the repository root first so VS Code opens in the right context, then the spec file. Always double-quote both absolute paths to handle spaces and special characters. If `code` is unavailable or the command fails, skip gracefully and tell the user the spec file path instead. In the completion summary, note that the spec was sent to VS Code and that it contains a Suggested Review Order, then add this navigation tip: "Ctrl+click (Cmd+click on macOS) the links in the Suggested Review Order to jump to each stop."
 """
 
 # Handoff for the implementation subagent in step 03. The whole execution

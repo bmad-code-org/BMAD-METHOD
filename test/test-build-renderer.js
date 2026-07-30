@@ -416,6 +416,30 @@ try {
     assert(!res.stderr.includes('Traceback'), `renderer crashed with a traceback instead of HALTing:\n${res.stderr}`);
   });
 
+  test('empty open_spec customization renders as an explicit disable', () => {
+    const { dir, skillDst: dst } = makeProject(
+      [
+        '[core]',
+        'communication_language = "French"',
+        'document_output_language = "Klingon"',
+        'planning_artifacts = "{project-root}/plan"',
+        'implementation_artifacts = "{project-root}/impl"',
+      ].join('\n'),
+    );
+    fs.mkdirSync(path.join(dir, '_bmad', 'custom'), { recursive: true });
+    fs.writeFileSync(path.join(dir, '_bmad', 'custom', 'bmad-build.user.toml'), '[workflow]\nopen_spec = ""\n', 'utf-8');
+    const res = spawnSync('python3', [path.join(dst, 'render.py')], { cwd: dst, encoding: 'utf-8' });
+    assert(res.status === 0, `expected exit 0, got ${res.status}\nstdout: ${res.stdout}\nstderr: ${res.stderr}`);
+    const renderDir = path.join(dir, '_bmad', 'render', 'bmad-build');
+    for (const file of ['step-05-present.md', 'step-oneshot.md']) {
+      const content = fs.readFileSync(path.join(renderDir, file), 'utf-8');
+      assert(!content.includes('code -r'), `default open_spec survived empty override in ${file}`);
+      assert(!content.includes('Suggested Review Order to jump'), `navigation output survived empty override in ${file}`);
+      assert(!content.includes('spec was sent'), `opening summary survived empty override in ${file}`);
+      assert(content.includes('Suggested Review Order'), `spec review trail generation disappeared from ${file}`);
+    }
+  });
+
   test('non-string open_spec customization HALTs cleanly', () => {
     const { dir, skillDst: dst } = makeProject(
       [
@@ -435,7 +459,7 @@ try {
     const res = spawnSync('python3', [path.join(dst, 'render.py')], { cwd: dst, encoding: 'utf-8' });
     assert(res.status === 1, `expected exit 1, got ${res.status}\nstdout: ${res.stdout}\nstderr: ${res.stderr}`);
     assert(
-      res.stdout.includes('customization `workflow.open_spec` must be a non-empty string'),
+      res.stdout.includes('customization `workflow.open_spec` must be a string'),
       `stdout missing open_spec type error.\nstdout: ${res.stdout}`,
     );
     assert(!res.stderr.includes('Traceback'), `renderer crashed with a traceback instead of HALTing:\n${res.stderr}`);

@@ -56,19 +56,13 @@ If version control is available and the tree is dirty, create a local commit wit
 
 ### Present
 
-Resolve two absolute paths: (1) the repository root (`git rev-parse --show-toplevel` — returns the worktree root when in a worktree, project root otherwise; if this fails, fall back to the current working directory), (2) `{spec_file}`. Then follow this configured opening instruction using `{absolute-root}` and `{absolute-spec-file}`:
-
 {workflow.open_spec}
-
-If opening was skipped or failed, tell the user the spec file path instead.
 
 Display a summary in conversation output, including:
 
 - The commit hash (if one was created).
 - List of files changed with one-line descriptions. Any file paths shown in conversation/terminal output must use CWD-relative format (no leading `/`) with `:line` notation (e.g., `src/path/file.ts:42`) for terminal clickability — this differs from spec-file links which use spec-file-relative paths.
 - Review findings breakdown: patches applied, items deferred, items rejected. If all findings were rejected, say so.
-- A note that the spec was sent to their configured application (or the file path if it couldn't be opened). Mention that `{spec_file}` now contains a Suggested Review Order.
-- **Navigation tip:** "Ctrl+click (Cmd+click on macOS) the links in the Suggested Review Order to jump to each stop."
 
 Offer to push and/or create a pull request.
 
