@@ -334,8 +334,10 @@ try {
     }
     for (const file of ['step-05-present.md', 'step-oneshot.md']) {
       const content = readRendered(file);
-      assert(content.includes("operating system's registered handler"), `default open_spec missing from ${file}`);
-      assert(!content.includes('code -r'), `hard-coded VS Code command survived in ${file}`);
+      assert(
+        content.includes('code -r "{absolute-root}" "{absolute-spec-file}"'),
+        `default root-first VS Code command missing from ${file}`,
+      );
     }
   });
 

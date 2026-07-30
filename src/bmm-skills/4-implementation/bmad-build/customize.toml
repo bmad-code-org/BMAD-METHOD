@@ -33,13 +33,16 @@ persistent_facts = [
 
 on_complete = ""
 
-# How Build opens a completed spec for human review. Override this with the
-# application and behavior you prefer, or instruct Build not to open it.
+# How Build opens a completed spec for human review. The default deliberately
+# opens the repository root first and the spec second in a reused VS Code
+# window so relative review links resolve in the correct workspace. Override
+# this with the application and equivalent behavior you prefer, or instruct
+# Build not to open it.
 # Example requests for bmad-customize: "Open completed specs in Cursor and
 # reuse the project window" or "Do not open completed specs automatically."
 
 open_spec = """
-Open the completed spec with the standard file-opening facility available in the current environment, delegating application choice to the operating system's registered handler. Do not probe for or prefer editor-specific commands. If no graphical system opener is available, skip gracefully.
+Run `code -r "{absolute-root}" "{absolute-spec-file}"` — the repository root first so VS Code opens in the right context, then the spec file. Always double-quote both absolute paths to handle spaces and special characters. If `code` is unavailable or the command fails, skip gracefully.
 """
 
 # Handoff for the implementation subagent in step 03. The whole execution

@@ -62,7 +62,7 @@ Build may ask clarifying questions or present a short spec for your approval bef
 
 ### 4. Review and Push
 
-Build implements the change, reviews its own work, patches issues, and commits locally. When it's done, it sends the review spec to your configured application or the operating system's registered handler.
+Build implements the change, reviews its own work, patches issues, and commits locally. When it's done, it opens the review spec in VS Code by default, or in the application configured through Build's customization layer.
 
 - Skim the diff to confirm the change matches your intent
 - If something looks off, tell the agent what to fix — it can iterate in the same session

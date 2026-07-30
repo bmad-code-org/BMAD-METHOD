@@ -58,7 +58,7 @@ Follow `./sync-sprint-status.md` with `target_status` = `review`.
 
 If version control is available and the tree is dirty, create a local commit with a conventional message derived from the spec title.
 
-Resolve two absolute paths: (1) the BMad project root `{{.project_root}}`, (2) `{spec_file}`. Then follow this configured opening instruction using those paths:
+Resolve two absolute paths: (1) the repository root (`git rev-parse --show-toplevel` — returns the worktree root when in a worktree, project root otherwise; if this fails, fall back to the current working directory), (2) `{spec_file}`. Then follow this configured opening instruction using `{absolute-root}` and `{absolute-spec-file}`:
 
 {workflow.open_spec}
 
@@ -68,8 +68,8 @@ If opening was skipped or failed, tell the user the spec file path instead.
 
 Display summary of your work to the user, including the commit hash if one was created. Any file paths shown in conversation/terminal output must use CWD-relative format (no leading `/`) with `:line` notation (e.g., `src/path/file.ts:42`) for terminal clickability — the goal is to make paths clickable in terminal emulators. Include:
 
-- A note that the spec was sent to their configured application or system handler (or the file path if it couldn't be opened). Mention that `{spec_file}` now contains a Suggested Review Order.
-- **Navigation tip:** "Follow the links in the Suggested Review Order to jump to each stop; in source-mode editors this may require Ctrl+click (Cmd+click on macOS)."
+- A note that the spec was sent to their configured application (or the file path if it couldn't be opened). Mention that `{spec_file}` now contains a Suggested Review Order.
+- **Navigation tip:** "Ctrl+click (Cmd+click on macOS) the links in the Suggested Review Order to jump to each stop."
 - Offer to push and/or create a pull request.
 
 Workflow complete.
