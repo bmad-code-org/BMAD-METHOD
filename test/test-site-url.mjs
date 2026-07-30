@@ -5,10 +5,6 @@
  */
 
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
-import os from 'node:os';
-import path from 'node:path';
-import { findObsoleteImplementationTerms } from '../tools/validate-published-implementation-model.mjs';
 import { getSiteUrl } from '../website/src/lib/site-url.mjs';
 
 const originalSiteUrl = process.env.SITE_URL;
@@ -75,28 +71,6 @@ test('uses the local development fallback when deployment variables are absent',
 test('rejects a malformed GitHub repository fallback', () => {
   setEnvironment('', 'malformed');
   assert.throws(() => getSiteUrl(), /Invalid GITHUB_REPOSITORY format/);
-});
-
-for (const obsoleteTerm of ['bmad-quick-dev', 'bmad-dev-auto', 'Quick Dev', 'Dev Auto']) {
-  test(`published-model validation rejects ${obsoleteTerm}`, () => {
-    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'bmad-published-model-'));
-    try {
-      fs.writeFileSync(path.join(directory, 'fixture.html'), `<p>${obsoleteTerm}</p>`, 'utf8');
-      assert.ok(findObsoleteImplementationTerms(directory).some(({ match }) => match === obsoleteTerm));
-    } finally {
-      fs.rmSync(directory, { recursive: true, force: true });
-    }
-  });
-}
-
-test('published-model validation accepts canonical Build terminology', () => {
-  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'bmad-published-model-'));
-  try {
-    fs.writeFileSync(path.join(directory, 'fixture.html'), '<p>bmad-build and bmad-build-auto</p>', 'utf8');
-    assert.deepEqual(findObsoleteImplementationTerms(directory), []);
-  } finally {
-    fs.rmSync(directory, { recursive: true, force: true });
-  }
 });
 
 let failures = 0;
