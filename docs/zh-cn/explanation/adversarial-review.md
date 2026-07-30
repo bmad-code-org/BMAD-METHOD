@@ -46,7 +46,7 @@ sidebar:
 把发现分成三类：必须修、可延后、可忽略。评审质量的关键不在”发现数量”，而在分诊质量。
 :::
 
-如果你想把该策略放进快速实现节奏中，可参见 [快速开发](./build.md)；若要做多轮推理补强，可参见 [高级启发](./advanced-elicitation.md)。整体流程位置请见 [工作流地图](../reference/workflow-map.md)。
+如果你想把该策略放进快速实现节奏中，可参见 [Build](./build.md)；若要做多轮推理补强，可参见 [高级启发](./advanced-elicitation.md)。整体流程位置请见 [工作流地图](../reference/workflow-map.md)。
 
 ## 与 Build 的关系
 
@@ -68,6 +68,6 @@ sidebar:
 
 ## 继续阅读
 
-- [快速开发](./build.md)
+- [Build](./build.md)
 - [高级启发](./advanced-elicitation.md)
 - [工作流地图](../reference/workflow-map.md)

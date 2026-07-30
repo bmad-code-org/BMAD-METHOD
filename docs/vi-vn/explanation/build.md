@@ -1,5 +1,5 @@
 ---
-title: "Phát triển nhanh"
+title: "Build"
 description: Giảm ma sát có người trong vòng lặp mà vẫn giữ các điểm kiểm tra bảo vệ chất lượng đầu ra
 sidebar:
   order: 7

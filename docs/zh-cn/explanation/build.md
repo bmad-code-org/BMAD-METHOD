@@ -1,5 +1,5 @@
 ---
-title: "快速开发"
+title: "Build"
 description: 在不牺牲输出质量检查点的情况下减少人机交互的摩擦
 sidebar:
   order: 7
@@ -11,7 +11,7 @@ sidebar:
 
 当已规划的 story 进入 Build 时，它仍然是产品上下文和验收标准的来源。Build 会为当前运行创建自己的执行记录，使实施决策和审查发现可追溯，但不会取代上游 story。
 
-![快速开发工作流图](/diagrams/build-diagram.png)
+![Build 工作流图](/diagrams/build-diagram.png)
 
 ## 它解决什么问题
 

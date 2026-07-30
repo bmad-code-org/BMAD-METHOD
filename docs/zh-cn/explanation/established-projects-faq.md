@@ -52,7 +52,7 @@ BMad Method 不会强制“立即现代化”，而是把决策权交给你。
 
 **还有问题？** 欢迎在 [GitHub Issues](https://github.com/bmad-code-org/BMAD-METHOD/issues) 或 [Discord](https://discord.gg/gk8jAdXWmj) 提问。
 
-如果你想了解这套接入方式的操作步骤，可继续阅读 [How-to：既有项目](../how-to/established-projects.md) 与 [How-to：项目上下文](../how-to/project-context.md)。想理解统一实施 workflow，可参见 [快速开发](./build.md)。
+如果你想了解这套接入方式的操作步骤，可继续阅读 [How-to：既有项目](../how-to/established-projects.md) 与 [How-to：项目上下文](../how-to/project-context.md)。想理解统一实施 workflow，可参见 [Build](./build.md)。
 
 ## 继续阅读
 

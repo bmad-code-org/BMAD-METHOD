@@ -80,15 +80,23 @@ test('rejects a malformed GitHub repository fallback', () => {
 for (const obsoleteTerm of ['bmad-quick-dev', 'bmad-dev-auto', 'Quick Dev', 'Dev Auto']) {
   test(`published-model validation rejects ${obsoleteTerm}`, () => {
     const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'bmad-published-model-'));
-    fs.writeFileSync(path.join(directory, 'fixture.html'), `<p>${obsoleteTerm}</p>`, 'utf8');
-    assert.ok(findObsoleteImplementationTerms(directory).some(({ match }) => match === obsoleteTerm));
+    try {
+      fs.writeFileSync(path.join(directory, 'fixture.html'), `<p>${obsoleteTerm}</p>`, 'utf8');
+      assert.ok(findObsoleteImplementationTerms(directory).some(({ match }) => match === obsoleteTerm));
+    } finally {
+      fs.rmSync(directory, { recursive: true, force: true });
+    }
   });
 }
 
 test('published-model validation accepts canonical Build terminology', () => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'bmad-published-model-'));
-  fs.writeFileSync(path.join(directory, 'fixture.html'), '<p>bmad-build and bmad-build-auto</p>', 'utf8');
-  assert.deepEqual(findObsoleteImplementationTerms(directory), []);
+  try {
+    fs.writeFileSync(path.join(directory, 'fixture.html'), '<p>bmad-build and bmad-build-auto</p>', 'utf8');
+    assert.deepEqual(findObsoleteImplementationTerms(directory), []);
+  } finally {
+    fs.rmSync(directory, { recursive: true, force: true });
+  }
 });
 
 let failures = 0;
