@@ -224,9 +224,19 @@ def test_degenerate_range_shapes_rejected(tmp_path):
     # Shapes that contain ".." but are not REV..REV: git would silently
     # default an empty endpoint to HEAD ("..", "a..", "..HEAD"), a leading
     # dash must never reach git even when dots are present ("-3..HEAD"),
-    # and unstripped values must not slip past the dash guard.
+    # unstripped values must not slip past the dash guard, and a three-dot
+    # range is a symmetric difference — git would measure commits reachable
+    # from either endpoint but not both, a different evidence set entirely.
     repo = _make_repo(tmp_path)
-    for bad in ("..", "a..", "..HEAD", "-3..HEAD", " HEAD~1..HEAD"):
+    for bad in (
+        "..",
+        "a..",
+        "..HEAD",
+        "-3..HEAD",
+        " HEAD~1..HEAD",
+        "HEAD~1...HEAD",
+        "a...b",
+    ):
         code, out = _run("--repo", str(repo), f"--range={bad}")
         assert code == 2, f"accepted {bad!r}"
         assert out["ok"] is False and "invalid --range" in out["error"], bad

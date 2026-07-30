@@ -237,14 +237,18 @@ def main(argv=None):
 
     # Accept only an explicit REV..REV range. Anything else silently measures
     # the wrong thing: a leading "-" is consumed by git as an option, a single
-    # rev logs all history up to it, a bare pathspec logs by path, and an
-    # empty endpoint ("..", "a..", "..b") makes git default that side to HEAD.
+    # rev logs all history up to it, a bare pathspec logs by path, an empty
+    # endpoint ("..", "a..", "..b") makes git default that side to HEAD, and a
+    # three-dot "A...B" is a symmetric difference — a different commit set
+    # entirely. partition splits at the FIRST "..", so any of those extra-dot
+    # shapes leaves `right` empty or dot-prefixed.
     left, _, right = args.range.partition("..")
     if (
         args.range != args.range.strip()
         or args.range.startswith("-")
         or not left
-        or not right.lstrip(".")
+        or not right
+        or right.startswith(".")
     ):
         _emit(
             {

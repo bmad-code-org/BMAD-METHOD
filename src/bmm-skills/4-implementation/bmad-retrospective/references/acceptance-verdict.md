@@ -33,7 +33,7 @@ That record is exactly what Phase 5's `--set-action-status` offer reads: the sel
 Judge the final state against the epic's declared acceptance criteria. If the epic declared none, profile the criteria from the diff and stories and mark the verdict as **profiled** rather than declared. Weigh verification results (the Phase 2 behavior check) and unresolved findings. Render one of:
 
 - **Accepted** — criteria demonstrably met in the evidence, no blocking findings open, and **no unfinished stories** for this epic.
-- **Accepted with open items** — criteria met, but named findings remain deferred and tracked — still only when every story of this epic is `done`.
+- **Accepted-with-open-items** — criteria met, but named findings remain deferred and tracked — still only when every story of this epic is `done`.
 - **Rejected** — criteria not met, a blocking finding stands unresolved, **or any of this epic's stories is still not `done`**.
 
 ### Unfinished stories

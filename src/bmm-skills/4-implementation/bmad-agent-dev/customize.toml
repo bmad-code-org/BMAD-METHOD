@@ -79,5 +79,5 @@ skill = "bmad-sprint-planning"
 
 [[agent.menu]]
 code = "ER"
-description = "Party mode review of all work completed across an epic"
+description = "Evidence-based review of a completed epic against its acceptance criteria"
 skill = "bmad-retrospective"

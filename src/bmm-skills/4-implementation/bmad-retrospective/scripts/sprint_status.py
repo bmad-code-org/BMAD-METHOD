@@ -31,6 +31,10 @@ DATE_FORMAT = "%m-%d-%Y %H:%M"
 # The authoritative action-item vocabulary, mirrored from bmad-sprint-planning's
 # SKILL.md. Anything outside it would render as unknown in the status dashboard.
 ACTION_STATUSES = ("open", "in-progress", "done")
+# The retro-document frontmatter vocabulary. --verdict is only echoed back, but
+# orchestrators branch on the echo, so a free-spelled value ("accepted with open
+# items") would silently fall through every branch they write.
+VERDICTS = ("accepted", "accepted-with-open-items", "rejected")
 
 
 def _load_yaml(path):
@@ -198,8 +202,9 @@ def _atomic_write(path, payload, mode=None):
     the file), and only then rename over it -- so a kill or a full disk leaves
     the original file intact rather than truncated. ``path`` is resolved through
     symlinks first: renaming onto a symlink would detach the link and leave the
-    real file stale while reporting success. The directory is fsynced too, so
-    the rename survives a power loss and not just the bytes.
+    real file stale while reporting success. The directory is fsynced too --
+    best-effort, see below -- so the rename survives a power loss and not just
+    the bytes.
     """
     path = os.path.realpath(path)
     directory = os.path.dirname(path) or "."
@@ -214,17 +219,25 @@ def _atomic_write(path, payload, mode=None):
         if mode is not None:
             os.chmod(tmp_path, mode)
         os.replace(tmp_path, path)
-        dir_fd = os.open(directory, os.O_RDONLY)
-        try:
-            os.fsync(dir_fd)
-        finally:
-            os.close(dir_fd)
     except BaseException:
         try:
             os.unlink(tmp_path)
         except OSError:
             pass
         raise
+    # The directory sync sits outside the try because once os.replace has
+    # returned, the new bytes ARE the file: a failure past that point must not
+    # propagate as a write failure, or the caller would report the original
+    # "restored" about a write that in fact landed. Skipping it only risks the
+    # rename not surviving a hard power loss.
+    try:
+        dir_fd = os.open(directory, os.O_RDONLY)
+        try:
+            os.fsync(dir_fd)
+        finally:
+            os.close(dir_fd)
+    except OSError:
+        pass
 
 
 def cmd_detect_epic(args):
@@ -268,6 +281,7 @@ def cmd_detect_epic(args):
         _emit(
             {
                 "epic": None,
+                "story_count": 0,
                 "done_stories": done_stories,
                 "pending_stories": [],
                 "retro_key": None,
@@ -278,17 +292,21 @@ def cmd_detect_epic(args):
     # Scoped to the selected epic only -- deliberately unlike done_stories, which
     # spans the whole file. A pending story in some *other* epic is not this
     # retrospective's business.
-    pending_stories = [
-        key
-        for epic_num, key, value in story_keys
-        if epic_num == selected and value != "done"
+    selected_keys = [
+        (key, value) for epic_num, key, value in story_keys if epic_num == selected
     ]
+    pending_stories = [key for key, value in selected_keys if value != "done"]
 
     retro_key = f"epic-{selected}-retrospective"
     retro_status = dev.get(retro_key)
     _emit(
         {
             "epic": selected,
+            # An epic the file has never heard of returns the same empty
+            # pending_stories as a finished one; story_count is the key that
+            # separates "complete" from "nonexistent" (a typo'd --epic), so the
+            # unfinished-story gate can refuse to read silence as done.
+            "story_count": len(selected_keys),
             "done_stories": done_stories,
             "pending_stories": pending_stories,
             "retro_key": retro_key,
@@ -318,6 +336,13 @@ def cmd_update(args):
         last_updated = parsed_date.strftime(DATE_FORMAT)
     else:
         last_updated = datetime.now().strftime(DATE_FORMAT)
+
+    if args.verdict is not None and args.verdict not in VERDICTS:
+        _emit_error(
+            f"invalid --verdict {args.verdict!r} (allowed: {', '.join(VERDICTS)})",
+            1,
+            untouched,
+        )
 
     actions = []
     if args.add_action:
@@ -681,7 +706,10 @@ def build_parser():
     )
     p_update.add_argument(
         "--verdict",
-        help="Acceptance verdict echoed back in the JSON result for orchestrator consumers.",
+        help=(
+            "Acceptance verdict echoed back in the JSON result for orchestrator "
+            f"consumers. One of: {', '.join(VERDICTS)}."
+        ),
     )
     p_update.add_argument(
         "--date",

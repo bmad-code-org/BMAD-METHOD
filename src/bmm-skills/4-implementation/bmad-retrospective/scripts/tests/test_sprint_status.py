@@ -162,6 +162,7 @@ def test_detect_epic(tmp_path):
     assert proc.returncode == 0, proc.stderr
     out = json.loads(proc.stdout)
     assert out["epic"] == 1
+    assert out["story_count"] == 2
     assert out["retro_key"] == "epic-1-retrospective"
     assert out["retro_status"] == "optional"
     assert set(out["done_stories"]) == {
@@ -242,6 +243,7 @@ def test_pending_stories_present_when_no_epic_is_detected(tmp_path):
     assert proc.returncode == 0, proc.stderr
     out = _json(proc)
     assert out["epic"] is None
+    assert out["story_count"] == 0
     assert out["pending_stories"] == []
 
 
@@ -304,6 +306,32 @@ def test_detect_epic_flag_empty_pending_for_a_complete_supplied_epic(tmp_path):
     assert proc.returncode == 0, proc.stderr
     out = _json(proc)
     assert out["epic"] == 1
+    assert out["pending_stories"] == []
+
+
+def test_detect_epic_flag_zero_story_count_marks_a_nonexistent_epic(tmp_path):
+    # --epic 9 against a file that has no epic-9 stories: pending_stories is
+    # empty exactly as it is for a finished epic, so story_count is the only
+    # signal separating "complete" from "typo'd". The gate reads 0 as suspect,
+    # never as done.
+    fixture = (
+        "development_status:\n"
+        "  1-1-a: done\n"
+        "  1-2-b: done\n"
+    )
+    target = tmp_path / "sprint-status.yaml"
+    target.write_text(fixture, encoding="utf-8")
+    proc = _run(["detect-epic", "--file", str(target), "--epic", "9"])
+    assert proc.returncode == 0, proc.stderr
+    out = _json(proc)
+    assert out["epic"] == 9
+    assert out["story_count"] == 0
+    assert out["pending_stories"] == []
+    assert out["retro_status"] is None
+    # The finished epic it could be confused with reports its real count.
+    proc = _run(["detect-epic", "--file", str(target), "--epic", "1"])
+    out = _json(proc)
+    assert out["story_count"] == 2
     assert out["pending_stories"] == []
 
 
@@ -458,6 +486,24 @@ def test_appended_items_carry_id_and_ref(tmp_path):
     assert item["ref"] == ref
     # The retro key value stays "done" — verdict is not encoded into it.
     assert _load(target)["development_status"]["epic-1-retrospective"] == "done"
+
+
+def test_free_spelled_verdict_is_rejected_before_the_file_is_touched(tmp_path):
+    # The SKILL's prose verdict ("accepted with open items") and the frontmatter
+    # token (accepted-with-open-items) used to be two spellings of one value; an
+    # orchestrator branching on the echo would fall through both. Only the
+    # frontmatter vocabulary passes; anything else fails with the file intact.
+    target = _write_fixture(tmp_path)
+    for bad in ("accepted with open items", "ship it", "ACCEPTED"):
+        proc = _run(
+            ["update", "--file", str(target), "--epic", "1", "--set-retro-done",
+             "--verdict", bad]
+        )
+        assert proc.returncode == 1, f"accepted {bad!r}"
+        out = _json(proc)
+        assert out["ok"] is False and "--verdict" in out["error"]
+        assert out["restored"] is True
+    assert target.read_text(encoding="utf-8") == FIXTURE
 
 
 def test_explicit_item_id_is_preserved(tmp_path):
@@ -732,6 +778,28 @@ def test_atomic_write_failure_leaves_target_byte_identical(tmp_path, monkeypatch
     with pytest.raises(OSError):
         mod._atomic_write(str(target), b"replacement bytes\n", 0o644)
     assert target.read_text(encoding="utf-8") == FIXTURE
+    assert [p.name for p in tmp_path.iterdir()] == ["sprint-status.yaml"]
+
+
+def test_dir_fsync_failure_after_rename_is_not_a_write_failure(tmp_path, monkeypatch):
+    # Once os.replace has returned, the new bytes ARE the file. The directory
+    # fsync that follows is durability polish; if it raised, cmd_update would
+    # emit "restored": true about a write that in fact landed — the one lie the
+    # restored contract exists to prevent. Deny opening the directory (the only
+    # thing _atomic_write opens by path after the rename) and require success.
+    mod = _module()
+    target = _write_fixture(tmp_path)
+    directory = os.path.dirname(os.path.realpath(str(target)))
+    real_open = os.open
+
+    def deny_directory_open(p, *args, **kwargs):
+        if p == directory:
+            raise OSError(5, "Input/output error")
+        return real_open(p, *args, **kwargs)
+
+    monkeypatch.setattr(mod.os, "open", deny_directory_open)
+    mod._atomic_write(str(target), b"replacement bytes\n", 0o644)
+    assert target.read_bytes() == b"replacement bytes\n"
     assert [p.name for p in tmp_path.iterdir()] == ["sprint-status.yaml"]
 
 

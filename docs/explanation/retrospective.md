@@ -32,7 +32,7 @@ Two artifacts and a decision:
 
 - **A retrospective document** in your implementation artifacts — the evidence inventory, findings grouped with their sources, the verdict, and the action items.
 - **An updated sprint status** — the epic's retrospective marked done, each action item appended with a stable id and a link back to its finding.
-- **A verdict** of `accepted`, `accepted with open items`, or `rejected`, which tells you whether to start the next epic or hold and fix first. Unfinished stories for that epic make the machine verdict **rejected** (a human can still override interactively).
+- **A verdict** of `accepted`, `accepted-with-open-items`, or `rejected`, which tells you whether to start the next epic or hold and fix first. Unfinished stories for that epic make the machine verdict **rejected** (a human can still override interactively).
 
 ## What to do with the output
 
