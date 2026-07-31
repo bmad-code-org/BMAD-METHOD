@@ -186,6 +186,17 @@ def _load_document(path, restored=None):
     return yaml, data, dev
 
 
+def _retro_status(dev, retro_key, restored=None):
+    status_value = dev.get(retro_key)
+    if status_value is not None and not isinstance(status_value, str):
+        _emit_error(
+            f"{retro_key} status must be a string or null",
+            1,
+            restored,
+        )
+    return status_value
+
+
 def _dump_bytes(yaml, data):
     """Serialize the document to bytes before any file is touched, so a dump
     failure cannot leave a partial file anywhere."""
@@ -298,7 +309,7 @@ def cmd_detect_epic(args):
     pending_stories = [key for key, value in selected_keys if value != "done"]
 
     retro_key = f"epic-{selected}-retrospective"
-    retro_status = dev.get(retro_key)
+    retro_status = _retro_status(dev, retro_key)
     _emit(
         {
             "epic": selected,
@@ -454,7 +465,7 @@ def cmd_update(args):
     if args.set_retro_done:
         retro_key_found = retro_key in dev
         if retro_key_found:
-            retro_status_before = dev[retro_key]
+            retro_status_before = _retro_status(dev, retro_key, restored=untouched)
             dev[retro_key] = "done"
             retro_status_after = "done"
 

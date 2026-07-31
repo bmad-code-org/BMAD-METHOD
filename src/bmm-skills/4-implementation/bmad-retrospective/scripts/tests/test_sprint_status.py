@@ -171,6 +171,25 @@ def test_detect_epic(tmp_path):
     }
 
 
+def test_detect_epic_rejects_typed_retrospective_status_as_json(tmp_path):
+    fixture = (
+        "development_status:\n"
+        "  1-1-a: done\n"
+        "  epic-1-retrospective: 2026-01-01\n"
+    )
+    target = tmp_path / "sprint-status.yaml"
+    target.write_text(fixture, encoding="utf-8")
+
+    proc = _run(["detect-epic", "--file", str(target)])
+
+    assert proc.returncode == 1
+    out = _json(proc)
+    assert out["ok"] is False
+    assert out["error"] == "epic-1-retrospective status must be a string or null"
+    assert "restored" not in out
+    assert target.read_text(encoding="utf-8") == fixture
+
+
 # --- pending_stories: the unfinished-epic gate --------------------------------
 
 
@@ -427,6 +446,37 @@ def test_update_sets_retro_and_appends_action(tmp_path):
     assert action["owner"] == "Amelia"
     assert action["epic"] == 1
     assert action["status"] == "open"
+
+
+def test_update_rejects_typed_retrospective_status_before_writing(tmp_path):
+    fixture = (
+        "last_updated: 01-01-2026 09:00\n"
+        "development_status:\n"
+        "  1-1-a: done\n"
+        "  epic-1-retrospective: 2026-01-01\n"
+    )
+    target = tmp_path / "sprint-status.yaml"
+    target.write_text(fixture, encoding="utf-8")
+
+    proc = _run(
+        [
+            "update",
+            "--file",
+            str(target),
+            "--epic",
+            "1",
+            "--set-retro-done",
+            "--add-action",
+            '[{"action":"Must not be appended","owner":"Amelia"}]',
+        ]
+    )
+
+    assert proc.returncode == 1
+    out = _json(proc)
+    assert out["ok"] is False
+    assert out["restored"] is True
+    assert out["error"] == "epic-1-retrospective status must be a string or null"
+    assert target.read_text(encoding="utf-8") == fixture
 
 
 def test_detect_epic_matches_split_story_keys(tmp_path):
