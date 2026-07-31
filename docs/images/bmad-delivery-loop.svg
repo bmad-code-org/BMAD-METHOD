@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1120" height="420" viewBox="0 0 1120 420" role="img" aria-labelledby="title description">
   <title id="title">The BMad delivery loop</title>
-  <desc id="description">Three kinds of input enter the delivery loop at different points: a vague notion enters at Clarify, a big clear idea enters at Plan, and a small clear idea goes straight to Build and verify. The loop continues through Learn and adjust, which feeds back into planning as the work evolves.</desc>
+  <desc id="description">Three kinds of input enter the delivery loop at different points: a vague notion enters at Clarify, a big clear idea enters at Plan, and a small change goes straight to Build and verify. The loop continues through Learn and adjust, which feeds back into planning as the work evolves.</desc>
   <defs>
     <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#041629"/>
@@ -38,7 +38,7 @@
   <rect x="415" y="92" width="20" height="9" rx="2.5" fill="#112f49" stroke="#ffe34f" stroke-width="2.5"/>
   <path d="M401 42L394 35M449 42L456 35" stroke="#ffe34f" stroke-width="2.5" stroke-linecap="round"/>
 
-  <!-- Small clear idea: small bulb -->
+  <!-- Small change: small bulb -->
   <circle cx="695" cy="80" r="14" fill="#112f49" stroke="#ffe34f" stroke-width="2"/>
   <rect x="688.5" y="94" width="13" height="6" rx="2" fill="#112f49" stroke="#ffe34f" stroke-width="2"/>
   <path d="M681.5 66.5L676.5 61.5M708.5 66.5L713.5 61.5" stroke="#ffe34f" stroke-width="2" stroke-linecap="round"/>
@@ -48,7 +48,7 @@
     <text x="155" y="94" fill="#9cc8e2" font-size="32" font-weight="700">?</text>
     <text x="155" y="128" fill="#ffffff" font-size="16" font-weight="600">Vague notion</text>
     <text x="425" y="128" fill="#ffffff" font-size="16" font-weight="600">Big clear idea</text>
-    <text x="695" y="128" fill="#ffffff" font-size="16" font-weight="600">Small clear idea</text>
+    <text x="695" y="128" fill="#ffffff" font-size="16" font-weight="600">Small change</text>
 
     <g transform="translate(60 200)">
       <rect width="190" height="88" rx="12" fill="#112f49" stroke="#39ccff" stroke-opacity=".7" stroke-width="2"/>
