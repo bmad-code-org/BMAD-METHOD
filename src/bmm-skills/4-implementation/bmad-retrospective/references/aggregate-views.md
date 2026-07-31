@@ -1,6 +1,6 @@
 # Aggregate Views
 
-Phase 2. An epic is many coding sessions, each validated in isolation; the defects that matter are the ones no single session — and no single diff hunk — could see. Nine sessions each add three hundred innocent lines and none ever saw the 3,000-line class they collectively built. These views are properties of the *whole* change, derived across the full diff range from Phase 1.
+Phase 2. An epic is many coding sessions, each validated in isolation; the defects that matter are the ones no single session — and no single diff hunk — could see. Nine sessions each add three hundred lines and none ever sees the 3,000-line class they collectively built. These views are properties of the *whole* change, derived across the full diff range from Phase 1.
 
 Prefer deterministic derivation: a script that measures the codebase is evidence; a model's impression is not. Where you compute a view inline instead of by script, record the narrowed scope. Every observation that becomes a finding carries a source reference — the file, the symbol, the commits. `references/evidence-gathering.md` is authoritative for what every `git_evidence.py` key means, including the commit-level `is_merge` and `stories` (every story id a subject names, so a commit spanning two counts for both) — read it there before deriving anything from the numbers.
 
