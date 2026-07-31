@@ -4,13 +4,7 @@
 
 BMad gives your AI coding tool a structured way to clarify what matters, plan only what the work needs, and carry those decisions through implementation and review. Start with a bug fix or use the full path for a product.
 
-```mermaid
-graph LR;
-    I["Idea or change"] --> P["Clarify and plan"];
-    P --> B["Build and verify"];
-    B --> L["Learn and adapt"];
-    L -.-> P;
-```
+![The BMad delivery loop: Idea or change, Clarify and plan, Build and verify, Learn and adapt, then repeat](docs/images/bmad-delivery-loop.svg)
 
 _Start anywhere. Use the full loop for a product, or go directly to building when the work is already clear._
 

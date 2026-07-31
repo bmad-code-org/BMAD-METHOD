@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="280" viewBox="0 0 1120 280" role="img" aria-labelledby="title description">
+  <title id="title">The BMad delivery loop</title>
+  <desc id="description">Move from an idea or change through planning, building, and learning, then adapt and repeat.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#041629"/>
+      <stop offset="1" stop-color="#0a2c47"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#39ccff"/>
+    </marker>
+  </defs>
+
+  <rect width="1120" height="280" rx="20" fill="url(#background)"/>
+  <path d="M0 70H1120M0 140H1120M0 210H1120M140 0V280M280 0V280M420 0V280M560 0V280M700 0V280M840 0V280M980 0V280" stroke="#38bdf8" stroke-opacity=".06"/>
+
+  <path d="M235 112H315" stroke="#39ccff" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/>
+  <path d="M505 112H585" stroke="#39ccff" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/>
+  <path d="M775 112H855" stroke="#39ccff" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/>
+  <path d="M965 160C965 237 410 237 410 160" fill="none" stroke="#39ccff" stroke-opacity=".75" stroke-width="3" stroke-dasharray="9 10" marker-end="url(#arrow)"/>
+
+  <g font-family="Avenir Next, Avenir, Segoe UI, sans-serif" text-anchor="middle">
+    <g transform="translate(45 72)">
+      <rect width="190" height="88" rx="12" fill="#112f49" stroke="#ffe34f" stroke-width="2"/>
+      <text x="95" y="40" fill="#ffe34f" font-size="14" font-weight="700" letter-spacing="1.5">START ANYWHERE</text>
+      <text x="95" y="66" fill="#ffffff" font-size="21" font-weight="600">Idea or change</text>
+    </g>
+    <g transform="translate(315 72)">
+      <rect width="190" height="88" rx="12" fill="#112f49" stroke="#39ccff" stroke-opacity=".7" stroke-width="2"/>
+      <text x="95" y="40" fill="#39ccff" font-size="14" font-weight="700" letter-spacing="1.5">THINK</text>
+      <text x="95" y="66" fill="#ffffff" font-size="21" font-weight="600">Clarify and plan</text>
+    </g>
+    <g transform="translate(585 72)">
+      <rect width="190" height="88" rx="12" fill="#112f49" stroke="#39ccff" stroke-opacity=".7" stroke-width="2"/>
+      <text x="95" y="40" fill="#39ccff" font-size="14" font-weight="700" letter-spacing="1.5">DELIVER</text>
+      <text x="95" y="66" fill="#ffffff" font-size="21" font-weight="600">Build and verify</text>
+    </g>
+    <g transform="translate(855 72)">
+      <rect width="190" height="88" rx="12" fill="#112f49" stroke="#39ccff" stroke-opacity=".7" stroke-width="2"/>
+      <text x="95" y="40" fill="#39ccff" font-size="14" font-weight="700" letter-spacing="1.5">ADAPT</text>
+      <text x="95" y="66" fill="#ffffff" font-size="21" font-weight="600">Learn and adjust</text>
+    </g>
+    <text x="560" y="254" fill="#9cc8e2" font-size="17" font-weight="600" letter-spacing="1.4">RIGHT-SIZED FOR THE WORK IN FRONT OF YOU</text>
+  </g>
+</svg>
