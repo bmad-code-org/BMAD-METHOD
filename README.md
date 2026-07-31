@@ -2,9 +2,9 @@
 
 **Turn an idea or change request into working software without giving up the thinking.**
 
-**Heard BMad means heavyweight process for every change? It doesn't.** Clear changes can go straight to implementation. Complex work gets the depth it needs.
+**Heard BMad means heavyweight process for every change? It doesn't.** Clear changes go straight to build. Complex work gets the depth it needs.
 
-![The BMad delivery loop: Idea or change, Clarify and plan, Build and verify, Learn and adapt, then repeat](docs/images/bmad-delivery-loop.svg)
+![The BMad delivery loop: a vague notion starts at Clarify, a big clear idea at Plan, and a small clear idea at Build and verify; Learn and adjust loops back to Plan](docs/images/bmad-delivery-loop.svg)
 
 _Start anywhere. Use BMad end to end, or carry its briefs, specifications, and architecture into your existing delivery workflow._
 
