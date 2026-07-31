@@ -5,11 +5,11 @@
 BMad gives your AI coding tool a structured way to clarify what matters, plan only what the work needs, and carry those decisions through implementation and review. Start with a bug fix or use the full path for a product.
 
 ```mermaid
-flowchart LR
-    I[Idea or change] --> P[Clarify and plan]
-    P --> B[Build and verify]
-    B --> L[Learn and adapt]
-    L -.-> P
+graph LR;
+    I["Idea or change"] --> P["Clarify and plan"];
+    P --> B["Build and verify"];
+    B --> L["Learn and adapt"];
+    L -.-> P;
 ```
 
 _Start anywhere. Use the full loop for a product, or go directly to building when the work is already clear._
