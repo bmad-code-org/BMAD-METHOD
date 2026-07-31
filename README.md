@@ -20,7 +20,7 @@ Open your project in your AI coding tool, invoke `bmad-build` with what you want
 
 **[Build your first project with BMad →](https://docs.bmad-method.org/tutorials/getting-started/)**
 
-BMad is free and open source. For prerelease builds, CI/CD, configuration overrides, and non-interactive setup, see the [installation guide](https://docs.bmad-method.org/how-to/install-bmad/).
+BMad is free and open source, with no paywalled workflows or gated community. For prerelease builds, CI/CD, configuration overrides, and non-interactive setup, see the [installation guide](https://docs.bmad-method.org/how-to/install-bmad/).
 
 ## Why BMad?
 
