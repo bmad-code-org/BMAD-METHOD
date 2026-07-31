@@ -40,6 +40,14 @@ BMad ships six named agents, each anchored to a phase of the BMad Method:
 
 They each have a hardcoded identity (name, title, domain) and a customizable layer (role, principles, communication style, icon, menu). You can rewrite Mary's principles or add menu items; you can't rename her — that's deliberate. Brand recognition survives customization so "hey Mary" always activates the analyst, regardless of how a team has shaped her behavior.
 
+## Internal Roles Beneath Named Agents
+
+Named agents are the stable outward-facing interface, but a skill need not execute every responsibility as one undifferentiated role. When specialization, bounded context, or independent checking is worth the cost, a skill may split bundled work into narrower internal roles.
+
+For example, John remains the Product Manager the user interacts with while an epic-and-story skill separates delivery-plan authoring from delivery-plan auditing. The user does not select or manage another persona. Internal roles exchange declared artifacts and compact results rather than an unrestricted conversation.
+
+The isolated audit in `bmad-create-epics-and-stories` is a narrow pilot of this pattern. It tests whether internal modularization beneath a stable outward persona produces useful additional findings at acceptable context, latency, and maintenance cost. It does not imply that every skill should use multiple roles; broader adoption depends on demonstrated value and graceful fallback where subagent isolation is unavailable.
+
 ## The Activation Flow
 
 When you invoke a named agent, eight steps run in order:
