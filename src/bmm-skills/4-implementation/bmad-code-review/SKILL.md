@@ -44,11 +44,12 @@ Treat every entry in `{workflow.persistent_facts}` as foundational context you c
 Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 - `project_name`, `planning_artifacts`, `implementation_artifacts`, `user_name`
-- `communication_language`, `document_output_language`, `user_skill_level`
+- `communication_language`, `document_output_language`, `user_skill_level`, `always_show_recommendation`
 - `date` as system-generated current datetime
 - `sprint_status` = `{implementation_artifacts}/sprint-status.yaml`
 - `project_context` = `**/project-context.md` (load if exists)
 - YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
+- When `{always_show_recommendation}` is `true`: whenever you ask the user to choose between multiple valid options, state which option you recommend and justify it in one or two lines before halting. If you have no grounds to prefer one, say so rather than manufacture a preference. The final decision is always the user's.
 
 ### Step 5: Greet the User
 

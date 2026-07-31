@@ -1790,6 +1790,7 @@ async function runTests() {
           communication_language: 'Spanish',
           document_output_language: 'English',
           output_folder: '_bmad-output',
+          always_show_recommendation: 'true',
         },
         bmm: {
           user_skill_level: 'expert',
@@ -1859,6 +1860,8 @@ async function runTests() {
       assert(userContent.includes('user_name = "TestUser"'), 'user_name lands in config.user.toml');
       assert(userContent.includes('communication_language = "Spanish"'), 'communication_language lands in config.user.toml');
       assert(!userContent.includes('document_output_language'), 'Team-scope key is absent from config.user.toml');
+      assert(userContent.includes('always_show_recommendation = "true"'), 'always_show_recommendation lands in config.user.toml [core]');
+      assert(!teamContent.includes('always_show_recommendation'), 'always_show_recommendation (scope: user) is absent from config.toml');
 
       // [modules.bmm] — core-key pollution stripped; own user-scope key routed to user file
       const bmmTeamMatch = teamContent.match(/\[modules\.bmm\][\s\S]*?(?=\n\[|$)/);
@@ -1901,6 +1904,18 @@ async function runTests() {
       // Header comments present on both files
       assert(teamContent.includes('Installer-managed. Regenerated on every install'), 'config.toml has installer-managed header');
       assert(userContent.includes('Holds install answers scoped to YOU personally.'), 'config.user.toml header clarifies user scope');
+
+      // Core values are spread into every non-core module's config.yaml —
+      // the mechanism that lets a core key reach skills in any module.
+      await fs.ensureDir(path.join(tempBmadDir35, 'core'));
+      await fs.ensureDir(path.join(tempBmadDir35, 'bmm'));
+      const installer35 = new Installer();
+      await installer35.generateModuleConfigs(tempBmadDir35, moduleConfigs);
+      const bmmModuleYaml = await fs.readFile(path.join(tempBmadDir35, 'bmm', 'config.yaml'), 'utf8');
+      assert(
+        bmmModuleYaml.includes('always_show_recommendation: "true"'),
+        'core always_show_recommendation is spread into a non-core module config.yaml',
+      );
     } finally {
       await fs.remove(tempBmadDir35).catch(() => {});
     }

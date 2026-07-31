@@ -10,6 +10,7 @@ story_key: '' # set at runtime when discovered from sprint status
 ## RULES
 
 - YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
+- When `{always_show_recommendation}` is `true`: whenever you ask the user to choose between multiple valid options, state which option you recommend and justify it in one or two lines before halting. If you have no grounds to prefer one, say so rather than manufacture a preference. The final decision is always the user's.
 - The prompt that triggered this workflow IS the intent — not a hint.
 - Do not modify any files. This step is read-only.
 
