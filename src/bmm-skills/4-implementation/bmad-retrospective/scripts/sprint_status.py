@@ -332,6 +332,11 @@ def cmd_update(args):
     untouched = True
 
     # 0. Validate the inputs before anything is mutated or written.
+    if args.epic < 1:
+        _emit_error(
+            f"invalid --epic {args.epic} (expected a positive integer)", 1, untouched
+        )
+
     if args.date is not None:
         try:
             parsed_date = datetime.strptime(args.date, DATE_FORMAT)

@@ -18,6 +18,7 @@ of the commits it merged in, which the first pass already counted.
 
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
@@ -102,6 +103,7 @@ def _git_log(repo, extra_args, rng):
             text=True,
             encoding="utf-8",
             errors="surrogateescape",
+            env={k: v for k, v in os.environ.items() if not k.startswith("GIT_")},
         )
     except Exception as exc:  # noqa: BLE001
         _emit({"ok": False, "error": str(exc)}, 1)

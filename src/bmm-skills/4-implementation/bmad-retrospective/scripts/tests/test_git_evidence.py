@@ -734,5 +734,17 @@ def test_success_shape_carries_every_documented_key(tmp_path):
     }
 
 
+def test_explicit_repo_ignores_ambient_git_dir(tmp_path):
+    repo = _make_repo(tmp_path)
+    proc = _proc(
+        "--repo",
+        str(repo),
+        "--range",
+        "HEAD~1..HEAD",
+        env={"GIT_DIR": str(tmp_path / "wrong-git-dir")},
+    )
+    assert _json(proc)["commit_count"] == 1
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__, "-q"]))

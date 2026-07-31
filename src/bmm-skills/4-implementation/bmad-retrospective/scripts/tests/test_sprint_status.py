@@ -365,6 +365,15 @@ def test_detect_epic_flag_rejects_non_positive_epic(tmp_path):
         assert "restored" not in out
 
 
+def test_update_rejects_non_positive_epic(tmp_path):
+    target = _write_fixture(tmp_path)
+    for bad in ("0", "-3"):
+        proc = _run(["update", "--file", str(target), "--epic", bad])
+        assert proc.returncode == 1, proc.stderr
+        assert "positive integer" in _json(proc)["error"]
+        assert target.read_text(encoding="utf-8") == FIXTURE
+
+
 # --- The JSON-only contract covers the help paths ----------------------------
 
 
