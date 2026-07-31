@@ -2,7 +2,7 @@
 
 **Turn an idea or change request into working software without giving up the thinking.**
 
-Fix a bug without ceremony. Plan deeply when the work demands it. BMad adapts the path to the size and complexity of the change while keeping decisions connected from intent through implementation and review.
+**Heard BMad means heavyweight process for every change? It doesn't.** Clear changes can go straight to implementation. Complex work gets the depth it needs.
 
 ![The BMad delivery loop: Idea or change, Clarify and plan, Build and verify, Learn and adapt, then repeat](docs/images/bmad-delivery-loop.svg)
 
