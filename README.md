@@ -2,7 +2,7 @@
 
 **Turn an idea or change request into working software without giving up the thinking.**
 
-BMad gives your AI coding tool a structured way to clarify what matters, plan only what the work needs, and carry those decisions through implementation and review. Start with a bug fix or use the full path for a product.
+Fix a bug without ceremony. Plan deeply when the work demands it. BMad adapts the path to the size and complexity of the change while keeping decisions connected from intent through implementation and review.
 
 ![The BMad delivery loop: Idea or change, Clarify and plan, Build and verify, Learn and adapt, then repeat](docs/images/bmad-delivery-loop.svg)
 
