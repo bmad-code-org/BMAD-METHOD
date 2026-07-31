@@ -6,7 +6,7 @@ Fix a bug without ceremony. Plan deeply when the work demands it. BMad adapts th
 
 ![The BMad delivery loop: Idea or change, Clarify and plan, Build and verify, Learn and adapt, then repeat](docs/images/bmad-delivery-loop.svg)
 
-_Start anywhere. Use the full loop for a product, or go directly to building when the work is already clear._
+_Start anywhere. Use BMad end to end, or carry its briefs, specifications, and architecture into your existing delivery workflow._
 
 ## Start Building
 
