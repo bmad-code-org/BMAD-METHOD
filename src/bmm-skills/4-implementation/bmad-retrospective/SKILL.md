@@ -5,7 +5,7 @@ description: 'Evidence-based epic retrospective — collect what the epic produc
 
 # Retrospective
 
-Review a completed epic by reading the evidence it left — the epic spec, story files, the full diff, per-story commits, sprint status, and session logs when they exist. An unattended epic run leaves a full record; this skill reads that record, surfaces the defects no single story could show, and judges the epic against the criteria it set for itself.
+Review a completed epic by reading the evidence it left — the epic spec, story files, the full diff, per-story commits, sprint status, and session logs when they exist. An unattended epic run leaves a record; this skill reads that record, surfaces the defects no single story could show, and judges the epic against the criteria it set for itself.
 
 Every finding you report carries a source reference (file, line, commit, or log). A claim you cannot point at — an invented root cause, a pattern the diff does not actually show — is not a finding. Drop it.
 
