@@ -2,7 +2,7 @@
 title: 'How to Expand BMad for Your Organization'
 description: Six customization patterns that reshape BMad without forking — agent-wide rules, workflow conventions, external publishing, template swaps, agent roster changes, and advanced integration patterns
 sidebar:
-  order: 11
+  order: 10
 ---
 
 BMad's customization surface lets an organization reshape behavior without editing installed files or forking skills. This guide walks through six recipes that cover most enterprise needs.
@@ -41,8 +41,8 @@ Rule of thumb: if the rule should apply everywhere an engineer does dev work, cu
 
 [agent]
 
-# Applied on every activation. Carries into dev-story, quick-dev,
-# create-story, code-review, qa-generate — every skill Amelia dispatches.
+# Applied on every activation. Carries into build, code-review,
+# qa-generate — every skill Amelia dispatches.
 persistent_facts = [
   "For any library documentation lookup (React, TypeScript, Zod, Prisma, etc.), call the context7 MCP tool (`mcp__context7__resolve_library_id` then `mcp__context7__get_library_docs`) before relying on training-data knowledge. Up-to-date docs trump memorized APIs.",
   "When a story reference isn't found in {planning_artifacts}/epics-and-stories.md, search Linear via `mcp__linear__search_issues` using the story ID or title before asking the user to clarify. If Linear returns a match, treat it as the authoritative story source.",

@@ -37,7 +37,7 @@ chaque outil et quand l’utiliser**](../explanation/analysis-phase.md).
 | Workflow                                                                  | Objectif                                                                       | Livrable                  |
 |---------------------------------------------------------------------------|--------------------------------------------------------------------------------|---------------------------|
 | `bmad-brainstorming`                                                      | Brainstormez des idées de projet, animé par un coach de brainstorming dédié    | `brainstorming-report.md` |
-| `bmad-domain-research`, `bmad-market-research`, `bmad-technical-research` | Validez vos hypothèses de marché, techniques ou liées au domaine               | Rapport de recherches     |
+| `bmad-deep-recon` | Validez vos hypothèses ou choisissez entre des options — rédigez un prompt pour votre outil de recherche approfondie, traitez son rapport, ou menez la recherche ici ; marché, domaine, technique, concurrentiel, voix des utilisateurs, académique ; vérifiée, citée, actualisable | Rapport ou synthèse de recherche + briefing HTML optionnel |
 | `bmad-product-brief`                                                      | Formalisez la vision stratégique — idéal lorsque votre concept est bien défini | `product-brief.md`        |
 | `bmad-prfaq`                                                              | Working Backwards — mettez à l’épreuve et affinez votre concept produit        | `prfaq-{project}.md`      |
 
@@ -49,6 +49,7 @@ Définissez ce qu’il faut construire et pour qui.
 |------------|--------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
 | `bmad-prd` | Créez, mettez à jour ou validez un PRD[^1] — découverte accompagnée, trois intentions en un seul skill | Création/Mise à jour : `prd.md`, `addendum.md`, `.memlog.md` ; Validation : `validation-report.html` + `.md` |
 | `bmad-ux`  | Concevez l’expérience utilisateur (lorsque l’UX compte)                                                | `DESIGN.md`, `EXPERIENCE.md`                                                                                      |
+| `bmad-spec` | Distillez toute intention (brief, PRD, transcription, notes) en un contrat `SPEC.md` succinct + fichiers compagnons — fige le QUOI avant le COMMENT | `SPEC.md` + compagnons sous `{output_folder}/specs/spec-{slug}/` |
 
 :::tip[Trois intentions en un seul skill]
 `bmad-prd` couvre l’intégralité du cycle de vie du PRD. Précisez votre intention lors de l’appel, sinon le skill vous la demandera :
@@ -68,31 +69,26 @@ Décidez comment le construire et décomposez le travail en stories.
 
 | Workflow                              | Objectif                                          | Livrable                        |
 |---------------------------------------|---------------------------------------------------|---------------------------------|
-| `bmad-create-architecture`            | Rendez explicites les décisions techniques        | `architecture.md` avec ADRs[^2] |
+| `bmad-architecture`            | Rendez explicites les décisions techniques        | `architecture.md` avec ADRs[^2] |
 | `bmad-create-epics-and-stories`       | Décomposez les exigences en tâches implémentables | Fichiers d’epic avec stories    |
 | `bmad-check-implementation-readiness` | Jalon de validation avant implémentation          | Décision OK / RÉSERVES / ÉCHEC  |
 
 ## Phase 4 : Implémentation
 
-Construisez, une story à la fois. L’automatisation complète de la phase 4 arrive bientôt !
+Tous les points d’entrée convergent vers `bmad-build`. Il accepte une intention directe, une issue, une spécification ou une story planifiée, puis choisit le niveau de clarification, de planification, d’implémentation et de revue nécessaire.
 
 | Workflow               | Objectif                                                                             | Livrable                         |
 |------------------------|--------------------------------------------------------------------------------------|----------------------------------|
+| `bmad-build`       | Transformez une intention directe ou une story planifiée en code implémenté et révisé | `spec-*.md` + code              |
 | `bmad-sprint-planning` | Initialisez le suivi (une fois par projet, pour séquencer le cycle de développement) | `sprint-status.yaml`             |
-| `bmad-create-story`    | Préparez la story suivante pour implémentation                                       | `story-[slug].md`                |
-| `bmad-dev-story`       | Implémentez la story                                                                 | Code fonctionnel + tests         |
 | `bmad-code-review`     | Validez la qualité de l’implémentation                                               | Approuvé ou changements demandés |
 | `bmad-correct-course`  | Gérez les changements significatifs en cours de sprint                               | Plan mis à jour ou réorientation |
 | `bmad-sprint-status`   | Suivez la progression du sprint et le statut des stories                             | Mise à jour du statut du sprint  |
 | `bmad-retrospective`   | Bilan après l’achèvement d’un epic                                                   | Leçons apprises                  |
 
-## Flux Rapide (Parcours Parallèle)
+### Entrée directe ou planifiée
 
-Ignorez les phases 1 à 3 pour les travaux de faible envergure et bien cernés.
-
-| Workflow         | Objectif                                                                              | Livrable           |
-|------------------|---------------------------------------------------------------------------------------|--------------------|
-| `bmad-quick-dev` | Flux rapide unifié — clarifiez l’intention, planifiez, implémentez, révisez et livrez | `spec-*.md` + code |
+Un travail clair peut entrer directement dans `bmad-build`. Une initiative plus vaste peut d’abord produire un PRD, une conception UX, une architecture, des epics, des stories, un contrôle de préparation et un plan de sprint. Ces artefacts ajoutent du contexte sans sélectionner un autre workflow d’implémentation.
 
 ## Gestion du Contexte
 

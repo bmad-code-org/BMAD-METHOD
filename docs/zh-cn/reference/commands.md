@@ -12,7 +12,7 @@ sidebar:
 | 机制 | 调用方式 | 适用场景 |
 | --- | --- | --- |
 | **Skill** | 直接输入 skill 名（如 `bmad-help`） | 你已明确要运行哪个功能 |
-| **智能体菜单触发器** | 先加载智能体，再输入短触发码（如 `DS`） | 你在智能体会话内连续切换任务 |
+| **智能体菜单触发器** | 先加载智能体，再输入短触发码（如 `BD`） | 你在智能体会话内连续切换任务 |
 
 菜单触发器依赖“已激活的智能体会话”；skill 可独立运行。
 
@@ -46,7 +46,7 @@ sidebar:
 .claude/skills/
 ├── bmad-help/
 │   └── SKILL.md
-├── bmad-create-prd/
+├── bmad-prd/
 │   └── SKILL.md
 ├── bmad-agent-dev/
 │   └── SKILL.md
@@ -85,12 +85,11 @@ skill 目录名就是调用名，例如 `bmad-agent-dev/` 对应 skill `bmad-age
 
 | 示例 skill | 用途 |
 | --- | --- |
-| `bmad-create-prd` | 创建 PRD |
-| `bmad-create-architecture` | 创建架构方案 |
+| `bmad-prd` | 创建 PRD |
+| `bmad-architecture` | 创建架构方案 |
 | `bmad-create-epics-and-stories` | 拆分 epics/stories |
-| `bmad-dev-story` | 实现指定 story |
 | `bmad-code-review` | 代码评审 |
-| `bmad-quick-dev` | 快速流程（澄清→规划→实现→审查→呈现） |
+| `bmad-build` | 实施直接意图、issue、功能、修复或已规划 story |
 
 按阶段查看见 [工作流地图](./workflow-map.md)。
 
@@ -104,7 +103,7 @@ skill 目录名就是调用名，例如 `bmad-agent-dev/` 对应 skill `bmad-age
 
 ## 命名规则
 
-所有技能统一以 `bmad-` 开头，后接语义化名称（如 `bmad-agent-dev`、`bmad-create-prd`、`bmad-help`）。
+所有技能统一以 `bmad-` 开头，后接语义化名称（如 `bmad-agent-dev`、`bmad-prd`、`bmad-help`）。
 
 ## 故障排查
 

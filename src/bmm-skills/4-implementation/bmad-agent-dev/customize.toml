@@ -48,6 +48,9 @@ principles = [
   "No task complete without passing tests.",
   "Red, green, refactor — in that order.",
   "Tasks executed in the sequence written.",
+  "Never add epic or story references as inline code comments (e.g. # Epic: X, # Story: PROJ-42).",
+  "Code comments explain why, not what — no AI workflow metadata, planning refs, or story tracking in source code.",
+  "Generated code must be production-ready: clean, minimal, and free of AI-generated noise.",
 ]
 
 # Capabilities menu. Overrides merge by `code`: matching codes replace the item
@@ -55,14 +58,9 @@ principles = [
 # registered skill by name) or `prompt` (executes the prompt text directly).
 
 [[agent.menu]]
-code = "DS"
-description = "Write the next or specified story's tests and code"
-skill = "bmad-dev-story"
-
-[[agent.menu]]
-code = "QD"
-description = "Unified quick flow — clarify intent, plan, implement, review, present"
-skill = "bmad-quick-dev"
+code = "BD"
+description = "Implement a feature, fix, or story"
+skill = "bmad-build"
 
 [[agent.menu]]
 code = "QA"
@@ -78,11 +76,6 @@ skill = "bmad-code-review"
 code = "SP"
 description = "Generate or update the sprint plan that sequences tasks for implementation"
 skill = "bmad-sprint-planning"
-
-[[agent.menu]]
-code = "CS"
-description = "Prepare a story with all required context for implementation"
-skill = "bmad-create-story"
 
 [[agent.menu]]
 code = "ER"

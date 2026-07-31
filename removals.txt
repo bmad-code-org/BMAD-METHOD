@@ -68,3 +68,8 @@ bmad-investigate
 # bmad-auto-setup: renamed to bmad-loop-setup as part of the bmad-auto ->
 # bmad-loop module rename (BMad Automator's replacement).
 bmad-auto-setup
+
+# Removed skills (core streamline, post-v6.10.0)
+# bmad-index-docs, bmad-shard-doc: retired outright.
+bmad-index-docs
+bmad-shard-doc

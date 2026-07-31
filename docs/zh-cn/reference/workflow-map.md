@@ -22,7 +22,7 @@ BMad Method（BMM）通过分阶段 workflow 逐步构建上下文，让智能�
 | Workflow | 目的 | 产出 |
 | --- | --- | --- |
 | `bmad-brainstorming` | 通过引导式创意方法扩展方案空间 | `brainstorming-report.md` |
-| `bmad-domain-research`、`bmad-market-research`、`bmad-technical-research` | 验证领域、市场与技术假设 | 研究发现 |
+| `bmad-deep-recon` | 验证假设或在候选方案间做选择——可为你的深度研究工具起草提示词、加工其报告，或直接在此研究；覆盖市场、领域、技术、竞争、用户之声与学术研究；经核实、有引用、可刷新 | 研究报告或摘要 + 可选 HTML 简报 |
 | `bmad-create-product-brief` | 沉淀产品方向与战略愿景 | `product-brief.md` |
 
 ## 阶段 2：规划
@@ -31,8 +31,9 @@ BMad Method（BMM）通过分阶段 workflow 逐步构建上下文，让智能�
 
 | Workflow | 目的 | 产出 |
 | --- | --- | --- |
-| `bmad-create-prd` | 明确 FR/NFR 与范围边界 | `PRD.md` |
+| `bmad-prd` | 明确 FR/NFR 与范围边界 | `PRD.md` |
 | `bmad-ux`            | 在 UX 复杂场景下补齐交互与体验方案 | `DESIGN.md`, `EXPERIENCE.md` |
+| `bmad-spec`          | 将任意意图输入（brief、PRD、转录、想法笔记）提炼为精炼的 `SPEC.md` 契约及配套文件 —— 先锁定“做什么”，再谈“怎么做” | `SPEC.md` 及配套文件，位于 `{output_folder}/specs/spec-{slug}/` |
 
 ## 阶段 3：解决方案设计（Solutioning）
 
@@ -40,31 +41,26 @@ BMad Method（BMM）通过分阶段 workflow 逐步构建上下文，让智能�
 
 | Workflow | 目的 | 产出 |
 | --- | --- | --- |
-| `bmad-create-architecture` | 显式记录技术决策与架构边界 | `architecture.md`（含 ADR） |
+| `bmad-architecture` | 显式记录技术决策与架构边界 | `architecture.md`（含 ADR） |
 | `bmad-create-epics-and-stories` | 将需求拆分为可实施的 epics/stories | epics 文件与 story 条目 |
 | `bmad-check-implementation-readiness` | 实施前 gate 检查 | PASS / CONCERNS / FAIL 结论 |
 
 ## 阶段 4：实施
 
-按 story 节奏持续交付与校验。
+所有实施入口都汇入 `bmad-build`。它可以接收直接意图、issue、规格或已规划 story，并自行选择所需的澄清、规划、实现和审查深度。
 
 | Workflow | 目的 | 产出 |
 | --- | --- | --- |
+| `bmad-build` | 将直接意图或已规划 story 转化为完成实现并经过审查的代码 | `spec-*.md` + 代码变更 |
 | `bmad-sprint-planning` | 初始化迭代追踪（通常每项目一次） | `sprint-status.yaml` |
-| `bmad-create-story` | 准备下一个可实施 story | `story-[slug].md` |
-| `bmad-dev-story` | 按规范实现 story | 可运行代码与测试 |
 | `bmad-code-review` | 验证实现质量 | 通过或变更请求 |
 | `bmad-correct-course` | 处理中途重大方向调整 | 更新后的计划或重路由 |
 | `bmad-sprint-status` | 跟踪冲刺与 story 状态 | 状态更新 |
 | `bmad-retrospective` | epic 完成后复盘 | 经验与改进项 |
 
-## Quick Flow（并行快线）
+### 直接入口与规划入口
 
-当任务范围小且目标清晰时，可跳过阶段 1-3 直接推进：
-
-| Workflow | 目的 | 产出 |
-| --- | --- | --- |
-| `bmad-quick-dev` | 统一快流：意图澄清、规划、实现、审查、呈现 | `spec-*.md` + 代码变更 |
+目标清晰的工作可以直接进入 `bmad-build`。更大的项目可以先准备 PRD、UX、架构、epics、stories、就绪检查和 sprint 计划。上游产物只会增加实施上下文，不会选择另一条实施工作流。
 
 ## 上下文管理
 

@@ -30,8 +30,8 @@ planning_artifacts: # Phase 1-3 artifacts
   default: "{output_folder}/planning-artifacts"
   result: "{project-root}/{value}"
 
-implementation_artifacts: # Phase 4 artifacts and quick-dev flow output
-  prompt: "Where should implementation artifacts be stored? (Sprint status, stories, reviews, retrospectives, Quick Flow output)"
+implementation_artifacts: # Phase 4 artifacts and build flow output
+  prompt: "Where should implementation artifacts be stored? (Sprint status, stories, reviews, retrospectives, Build output)"
   default: "{output_folder}/implementation-artifacts"
   result: "{project-root}/{value}"
 
@@ -40,11 +40,8 @@ project_knowledge: # Artifacts from research, document-project output, other lon
   default: "docs"
   result: "{project-root}/{value}"
 
-# Directories to create during installation (declarative, no code execution)
-directories:
-  - "{planning_artifacts}"
-  - "{implementation_artifacts}"
-  - "{project_knowledge}"
+# No pre-created directories: planning_artifacts, implementation_artifacts, and
+# project_knowledge are created lazily by whichever skill first writes to them.
 
 # Agent roster — essence only. External skills (party-mode, retrospective,
 # advanced-elicitation, help catalog) read these descriptors to route, display,

@@ -21,11 +21,9 @@ The `project-context.md` file solves this by documenting what agents need to kno
 Every implementation workflow automatically loads `project-context.md` if it exists. The architect workflow also loads it to respect your technical preferences when designing the architecture.
 
 **Loaded by these workflows:**
-- `bmad-create-architecture` — respects technical preferences during solutioning
-- `bmad-create-story` — informs story creation with project patterns
-- `bmad-dev-story` — guides implementation decisions
+- `bmad-architecture` — respects technical preferences during solutioning
+- `bmad-build` — informs story planning and implementation with project patterns
 - `bmad-code-review` — validates against project standards
-- `bmad-quick-dev` — applies patterns when implementing specs
 - `bmad-sprint-planning`, `bmad-retrospective`, `bmad-correct-course` — provides project-wide context
 
 ## When to Create It
@@ -34,10 +32,10 @@ The `project-context.md` file is useful at any stage of a project:
 
 | Scenario | When to Create | Purpose |
 |----------|----------------|---------|
-| **New project, before architecture** | Manually, before `bmad-create-architecture` | Document your technical preferences so the architect respects them |
+| **New project, before architecture** | Manually, before `bmad-architecture` | Document your technical preferences so the architect respects them |
 | **New project, after architecture** | Via `bmad-generate-project-context` or manually | Capture architecture decisions for implementation agents |
 | **Existing project** | Via `bmad-generate-project-context` | Discover existing patterns so agents follow established conventions |
-| **Quick Flow project** | Before or during `bmad-quick-dev` | Ensure quick implementation respects your patterns |
+| **Direct implementation entry** | Before or during `bmad-build` | Ensure implementation respects your patterns even without upstream planning |
 
 :::tip[Recommended]
 For new projects, create it manually before architecture if you have strong technical preferences. Otherwise, generate it after architecture to capture those decisions.
@@ -137,7 +135,7 @@ Without `project-context.md`, agents make assumptions that may not match your pr
 | Each agent decides independently | All agents align with same rules |
 
 This is especially important for:
-- **Quick Flow** — skips PRD and architecture, so context file fills the gap
+- **Direct-entry work** — when there is no PRD or architecture, the context file supplies durable project conventions
 - **Team projects** — ensures all agents follow the same standards
 - **Existing projects** — prevents breaking established patterns
 

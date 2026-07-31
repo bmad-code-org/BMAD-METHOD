@@ -65,7 +65,7 @@ Chỉ dùng cho cảnh báo nghiêm trọng — mất dữ liệu, vấn đề b
 | Skill | Agent | Mục đích |
 | ----- | ----- | -------- |
 | `bmad-brainstorming` | Analyst | Brainstorm cho dự án mới |
-| `bmad-create-prd` | PM | Tạo tài liệu yêu cầu sản phẩm |
+| `bmad-prd` | PM | Tạo tài liệu yêu cầu sản phẩm |
 ```
 
 ## Khối cấu trúc thư mục
@@ -148,7 +148,7 @@ your-project/
 | --- | --- |
 | **Trang chỉ mục / landing** | `core-concepts/index.md` |
 | **Khái niệm** | `what-are-agents.md` |
-| **Tính năng** | `quick-dev.md` |
+| **Tính năng** | `build.md` |
 | **Triết lý** | `why-solutioning-matters.md` |
 | **FAQ** | `established-projects-faq.md` |
 
@@ -324,7 +324,7 @@ Starlight tạo phần điều hướng "On this page" từ các tiêu đề:
 
 Thêm ngữ cảnh in nghiêng ở đầu định nghĩa với các thuật ngữ có phạm vi hẹp:
 
-- `*Chỉ dành cho Quick Flow.*`
+- `*Chỉ dành cho đầu vào triển khai trực tiếp.*`
 - `*BMad Method/Enterprise.*`
 - `*Phase N.*`
 - `*BMGD.*`
@@ -349,7 +349,7 @@ Thêm ngữ cảnh in nghiêng ở đầu định nghĩa với các thuật ng�
 
 ### Lúc nào cũng cần kiến trúc à?
 
-Chỉ với nhánh BMad Method và Enterprise. Quick Flow bỏ qua để đi thẳng vào triển khai.
+Chỉ dành cho công việc cần kiến trúc. Công việc rõ ràng có thể đi thẳng vào implementation.
 
 ### Tôi có thể đổi kế hoạch về sau không?
 

@@ -23,8 +23,11 @@ rather than stdout: dumping the full catalog into context is a footgun, so reach
 whole library at once must always be an explicit, deliberate choice.
 
 `--extra PATH` merges a JSON overlay of additional techniques (customize.toml's
-`additional_techniques`) into every command, so custom techniques and whole new
-categories are first-class everywhere — including the browse page and category draws.
+`additional_techniques`) into every command. An extra whose technique_name matches
+a shipped row (case-insensitive) REPLACES it — retune a shipped technique; others
+append, so custom techniques and whole new categories are first-class everywhere —
+including the browse page and category draws. (Same overlay semantics as
+bmad-advanced-elicitation's pick_methods.py.)
 
 Default output is lean text for an LLM to read; pass --json for structured output.
 """
@@ -48,10 +51,11 @@ OPTIONAL_FIELDS = ("detail", "provenance", "good_for", "audience")
 
 
 def load(file: Path) -> list[dict]:
-    with open(file, newline="", encoding="utf-8") as f:
+    # utf-8-sig: tolerate BOM-prefixed catalogs (Excel "CSV UTF-8", Notepad)
+    with open(file, newline="", encoding="utf-8-sig") as f:
         rows = list(csv.DictReader(f))
     for r in rows:
-        for k in OPTIONAL_FIELDS:
+        for k in FIELDS:
             r.setdefault(k, "")
             r[k] = (r.get(k) or "").strip()
     return rows
@@ -63,9 +67,13 @@ def load_extra(file: Path) -> list[dict]:
     customize.toml's `additional_techniques` become first-class across *every*
     subcommand (categories/list/random/show/html), so the browse page and
     category draws include them too, not just the in-chat flows."""
-    data = json.loads(file.read_text(encoding="utf-8"))
+    data = json.loads(file.read_text(encoding="utf-8-sig"))
+    if not isinstance(data, list):
+        raise ValueError("--extra must be a JSON array of objects")
     rows = []
     for item in data:
+        if not isinstance(item, dict):
+            raise ValueError(f"each --extra entry must be a JSON object, got: {item!r}")
         rows.append({
             "category": str(item.get("category", "")).strip(),
             "technique_name": str(item.get("technique_name", "")).strip(),
@@ -76,6 +84,22 @@ def load_extra(file: Path) -> list[dict]:
             "audience": str(item.get("audience") or "").strip(),
         })
     return rows
+
+
+def merge_extra(rows: list[dict], extras: list[dict]) -> list[dict]:
+    """Extras replace a catalog row with the same technique_name (case-insensitive),
+    otherwise append — the same overlay semantics as pick_methods.py, so
+    customize.toml additional_* entries behave identically across sibling skills."""
+    merged = list(rows)
+    index = {r["technique_name"].lower(): i for i, r in enumerate(merged)}
+    for e in extras:
+        key = e["technique_name"].lower()
+        if key in index:
+            merged[index[key]] = e
+        else:
+            index[key] = len(merged)
+            merged.append(e)
+    return merged
 
 
 def categories(rows: list[dict]) -> list[tuple[str, int]]:
@@ -415,6 +439,8 @@ SELECTOR_TEMPLATE = r"""<!DOCTYPE html>
   function checkedInvent(){ return inventBoxes.filter(function(b){ return b.checked; }); }
 
   function update(){
+    // rand can't exceed what the pool can supply — keep the counter honest with the draw
+    if (state.rand > randomPool().length){ state.rand = randomPool().length; }
     $('pickN').textContent = checkedTech().length;
     $('randN').textContent = state.rand;
     $('invN').textContent = state.inv;
@@ -693,7 +719,11 @@ def main(argv: list[str] | None = None) -> int:
         if not args.extra.is_file():
             print(f"error: --extra file not found: {args.extra}", file=sys.stderr)
             return 2
-        rows += load_extra(args.extra)
+        try:
+            rows = merge_extra(rows, load_extra(args.extra))
+        except (OSError, ValueError) as e:
+            print(f"error: could not read --extra: {e}", file=sys.stderr)
+            return 2
     csv_dir = args.file.resolve().parent
 
     if args.cmd == "categories":

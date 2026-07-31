@@ -26,7 +26,7 @@ Prozkoumejte problémový prostor a validujte nápady před závazkem k plánov�
 | Workflow                        | Účel                                                                       | Produkuje                 |
 | ------------------------------- | -------------------------------------------------------------------------- | ------------------------- |
 | `bmad-brainstorming`            | Brainstorming nápadů na projekt s řízenou facilitací brainstormingového kouče | `brainstorming-report.md` |
-| `bmad-domain-research`, `bmad-market-research`, `bmad-technical-research` | Validace tržních, technických nebo doménových předpokladů | Výzkumné nálezy |
+| `bmad-deep-recon` | Validace předpokladů nebo výběr mezi variantami — návrh promptu pro váš nástroj hloubkového výzkumu, zpracování jeho zprávy, nebo výzkum přímo zde; tržní, doménový, technický, konkurenční, uživatelský, akademický; ověřené, citované, obnovitelné | Výzkumná zpráva či shrnutí + volitelný HTML briefing |
 | `bmad-product-brief`            | Zachycení strategické vize — nejlepší, když je váš koncept jasný           | `product-brief.md`        |
 | `bmad-prfaq`                    | Working Backwards — zátěžový test a zformování vašeho produktového konceptu | `prfaq-{project}.md`      |
 
@@ -36,8 +36,9 @@ Definujte, co budovat a pro koho.
 
 | Workflow                    | Účel                                     | Produkuje    |
 | --------------------------- | ---------------------------------------- | ------------ |
-| `bmad-create-prd`           | Definice požadavků (FR/NFR)              | `PRD.md`     |
+| `bmad-prd`           | Definice požadavků (FR/NFR)              | `PRD.md`     |
 | `bmad-ux`                | Návrh uživatelského zážitku (když záleží na UX) | `DESIGN.md`, `EXPERIENCE.md` |
+| `bmad-spec`              | Destiluje jakýkoli vstupní záměr (brief, PRD, přepis, poznámky) do stručného kontraktu `SPEC.md` + doprovodných souborů — zafixuje CO před JAK | `SPEC.md` + doprovodné soubory pod `{output_folder}/specs/spec-{slug}/` |
 
 ## Fáze 3: Solutioning
 
@@ -45,31 +46,26 @@ Rozhodněte, jak to budovat, a rozložte práci na stories.
 
 | Workflow                                  | Účel                                       | Produkuje                   |
 | ----------------------------------------- | ------------------------------------------ | --------------------------- |
-| `bmad-create-architecture`                | Explicitní technická rozhodnutí            | `architecture.md` s ADR     |
+| `bmad-architecture`                | Explicitní technická rozhodnutí            | `architecture.md` s ADR     |
 | `bmad-create-epics-and-stories`           | Rozložení požadavků na implementovatelnou práci | Soubory epiců se stories |
 | `bmad-check-implementation-readiness`     | Kontrola brány před implementací           | Rozhodnutí PASS/CONCERNS/FAIL |
 
 ## Fáze 4: Implementace
 
-Budujte to, jednu story po druhé. Brzy plná automatizace fáze 4!
+Všechny implementační vstupy se sbíhají do `bmad-build`. Přijímá přímý záměr, issue, specifikaci nebo naplánovanou story a zvolí potřebnou míru upřesnění, plánování, implementace a revize.
 
 | Workflow                   | Účel                                                                     | Produkuje                        |
 | -------------------------- | ------------------------------------------------------------------------ | -------------------------------- |
+| `bmad-build`           | Převod přímého záměru nebo naplánované story na implementovaný a revidovaný kód | `spec-*.md` + kód          |
 | `bmad-sprint-planning`     | Inicializace sledování (jednou na projekt pro sekvencování dev cyklu)    | `sprint-status.yaml`             |
-| `bmad-create-story`        | Příprava další story pro implementaci                                    | `story-[slug].md`                |
-| `bmad-dev-story`           | Implementace story                                                       | Fungující kód + testy            |
 | `bmad-code-review`         | Validace kvality implementace                                            | Schváleno nebo požadovány změny  |
 | `bmad-correct-course`      | Řešení významných změn uprostřed sprintu                                 | Aktualizovaný plán nebo přesměrování |
 | `bmad-sprint-status`       | Sledování průběhu sprintu a stavu stories                                | Aktualizace stavu sprintu        |
 | `bmad-retrospective`       | Revize po dokončení epicu                                                | Poučení                          |
 
-## Quick Flow (paralelní cesta)
+### Přímý a plánovaný vstup
 
-Přeskočte fáze 1–3 pro malou, dobře pochopenou práci.
-
-| Workflow           | Účel                                                                        | Produkuje            |
-| ------------------ | --------------------------------------------------------------------------- | -------------------- |
-| `bmad-quick-dev`   | Sjednocený quick flow — vyjasněte záměr, plánujte, implementujte, revidujte a prezentujte | `spec-*.md` + kód |
+Jasná práce může vstoupit do `bmad-build` přímo. Větší iniciativa může nejprve vytvořit PRD, UX, architekturu, epicy, stories, kontrolu připravenosti a sprint plán. Tyto artefakty přidávají kontext; nevybírají jiný implementační workflow.
 
 ## Správa kontextu
 

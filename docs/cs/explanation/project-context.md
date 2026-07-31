@@ -21,11 +21,9 @@ Soubor `project-context.md` toto řeší dokumentací toho, co agenti potřebuj�
 Každý implementační workflow automaticky načítá `project-context.md`, pokud existuje. Architektonický workflow ho také načítá, aby respektoval vaše technické preference při navrhování architektury.
 
 **Načítán těmito workflow:**
-- `bmad-create-architecture` — respektuje technické preference během solutioningu
-- `bmad-create-story` — informuje tvorbu stories vzory projektu
-- `bmad-dev-story` — vede implementační rozhodnutí
+- `bmad-architecture` — respektuje technické preference během solutioningu
 - `bmad-code-review` — validuje proti standardům projektu
-- `bmad-quick-dev` — aplikuje vzory při implementaci specifikací
+- `bmad-build` — aplikuje vzory při plánování a implementaci přímých záměrů i stories
 - `bmad-sprint-planning`, `bmad-retrospective`, `bmad-correct-course` — poskytuje celkový kontext projektu
 
 ## Kdy ho vytvořit
@@ -34,10 +32,10 @@ Soubor `project-context.md` je užitečný v jakékoli fázi projektu:
 
 | Scénář                               | Kdy vytvořit                                    | Účel                                                                 |
 | ------------------------------------ | ----------------------------------------------- | -------------------------------------------------------------------- |
-| **Nový projekt, před architekturou** | Ručně, před `bmad-create-architecture`          | Dokumentujte vaše technické preference, aby je architekt respektoval |
+| **Nový projekt, před architekturou** | Ručně, před `bmad-architecture`          | Dokumentujte vaše technické preference, aby je architekt respektoval |
 | **Nový projekt, po architektuře**    | Přes `bmad-generate-project-context` nebo ručně | Zachyťte architektonická rozhodnutí pro implementační agenty         |
 | **Existující projekt**               | Přes `bmad-generate-project-context`            | Objevte existující vzory, aby agenti dodržovali zavedené konvence    |
-| **Quick Flow projekt**               | Před nebo během `bmad-quick-dev`                | Zajistěte, aby rychlá implementace respektovala vaše vzory           |
+| **Přímý vstup do implementace**      | Před nebo během `bmad-build`                | Zajistěte, aby implementace bez upstream plánování respektovala vaše vzory |
 
 :::tip[Doporučeno]
 Pro nové projekty ho vytvořte ručně před architekturou, pokud máte silné technické preference. Jinak ho vygenerujte po architektuře pro zachycení těchto rozhodnutí.
@@ -137,7 +135,7 @@ Bez `project-context.md` agenti dělají předpoklady, které nemusí odpovídat
 | Každý agent rozhoduje nezávisle                 | Všichni agenti se řídí stejnými pravidly |
 
 To je zvláště důležité pro:
-- **Quick Flow** — přeskakuje PRD a architekturu, takže kontextový soubor vyplní mezeru
+- **Přímý vstup** — bez PRD a architektury dodává kontextový soubor trvalé projektové konvence
 - **Týmové projekty** — zajistí, že všichni agenti dodržují stejné standardy
 - **Existující projekty** — zabrání porušení zavedených vzorů
 

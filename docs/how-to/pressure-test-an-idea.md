@@ -2,7 +2,7 @@
 title: "Pressure-Test an Idea"
 description: Use the bmad-forge-idea skill to harden, prove, or kill an idea before you invest in it
 sidebar:
-  order: 12
+  order: 11
 ---
 
 Use the `bmad-forge-idea` skill to put a half-formed idea under adversarial questioning. It either survives with earned conviction or dies cheaply.

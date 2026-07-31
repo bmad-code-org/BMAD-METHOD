@@ -26,7 +26,7 @@ Khám phá không gian vấn đề và xác nhận ý tưởng trước khi cam 
 | Quy trình | Mục đích | Tạo ra |
 | ------------------------------- | -------------------------------------------------------------------------- | ------------------------- |
 | `bmad-brainstorming` | Động não ý tưởng dự án với sự điều phối của người dẫn dắt brainstorming | `brainstorming-report.md` |
-| `bmad-domain-research`, `bmad-market-research`, `bmad-technical-research` | Xác thực giả định về thị trường, kỹ thuật hoặc miền nghiệp vụ | Kết quả nghiên cứu |
+| `bmad-deep-recon` | Xác thực giả định hoặc lựa chọn giữa các phương án — soạn prompt cho công cụ nghiên cứu chuyên sâu của bạn, xử lý báo cáo của nó, hoặc nghiên cứu ngay tại đây; thị trường, miền nghiệp vụ, kỹ thuật, cạnh tranh, tiếng nói người dùng, học thuật; đã kiểm chứng, có trích dẫn, có thể làm mới | Báo cáo hoặc bản tóm tắt nghiên cứu + bản tóm tắt HTML tùy chọn |
 | `bmad-product-brief` | Ghi lại tầm nhìn chiến lược — phù hợp nhất khi concept của bạn đã rõ | `product-brief.md` |
 | `bmad-prfaq` | Working Backwards — stress-test và rèn sắc concept sản phẩm của bạn | `prfaq-{project}.md` |
 
@@ -36,8 +36,9 @@ Xác định cần xây gì và xây cho ai.
 
 | Quy trình | Mục đích | Tạo ra |
 | --------------------------- | ---------------------------------------- | ------------ |
-| `bmad-create-prd` | Xác định yêu cầu (FR/NFR) | `PRD.md` |
+| `bmad-prd` | Xác định yêu cầu (FR/NFR) | `PRD.md` |
 | `bmad-ux`            | Thiết kế trải nghiệm người dùng khi UX là yếu tố quan trọng | `DESIGN.md`, `EXPERIENCE.md` |
+| `bmad-spec`          | Chưng cất mọi đầu vào ý định (brief, PRD, bản ghi, ghi chú) thành hợp đồng `SPEC.md` súc tích + các tệp đi kèm — chốt CÁI GÌ trước CÁCH LÀM | `SPEC.md` + tệp đi kèm trong `{output_folder}/specs/spec-{slug}/` |
 
 ## Giai đoạn 3: Định hình giải pháp
 
@@ -45,31 +46,26 @@ Quyết định cách xây và chia nhỏ công việc thành các story.
 
 | Quy trình | Mục đích | Tạo ra |
 | ----------------------------------------- | ------------------------------------------ | --------------------------- |
-| `bmad-create-architecture` | Làm rõ các quyết định kỹ thuật | `architecture.md` kèm ADR |
+| `bmad-architecture` | Làm rõ các quyết định kỹ thuật | `architecture.md` kèm ADR |
 | `bmad-create-epics-and-stories` | Phân rã yêu cầu thành các phần việc có thể triển khai | Các file epic chứa các story |
 | `bmad-check-implementation-readiness` | Cổng kiểm tra trước khi triển khai | Quyết định PASS/CONCERNS/FAIL |
 
 ## Giai đoạn 4: Triển khai
 
-Xây dựng từng story một. Tự động hóa toàn bộ giai đoạn 4 sẽ sớm ra mắt.
+Mọi đầu vào triển khai đều hội tụ vào `bmad-build`. Workflow này nhận ý định trực tiếp, issue, đặc tả hoặc story đã lập kế hoạch, rồi chọn mức làm rõ, lập kế hoạch, triển khai và review phù hợp.
 
 | Quy trình | Mục đích | Tạo ra |
 | -------------------------- | ------------------------------------------------------------------------ | -------------------------------- |
+| `bmad-build` | Biến ý định trực tiếp hoặc story đã lập kế hoạch thành mã nguồn đã triển khai và review | `spec-*.md` + mã nguồn |
 | `bmad-sprint-planning` | Khởi tạo theo dõi, thường chạy một lần mỗi dự án để sắp thứ tự chu trình phát triển | `sprint-status.yaml` |
-| `bmad-create-story` | Chuẩn bị story tiếp theo cho implementation | `story-[slug].md` |
-| `bmad-dev-story` | Triển khai story | Code chạy được + tests |
 | `bmad-code-review` | Kiểm tra chất lượng phần triển khai | Được duyệt hoặc yêu cầu thay đổi |
 | `bmad-correct-course` | Xử lý thay đổi lớn giữa sprint | Kế hoạch cập nhật hoặc định tuyến lại |
 | `bmad-sprint-status` | Theo dõi tiến độ sprint và trạng thái story | Cập nhật trạng thái sprint |
 | `bmad-retrospective` | Review sau khi hoàn tất epic | Bài học rút ra |
 
-## Luồng nhanh (nhánh song song)
+### Đầu vào trực tiếp và đã lập kế hoạch
 
-Bỏ qua giai đoạn 1-3 đối với những việc nhỏ, rõ và đã hiểu đầy đủ.
-
-| Quy trình | Mục đích | Tạo ra |
-| ------------------ | --------------------------------------------------------------------------- | ---------------------- |
-| `bmad-quick-dev` | Luồng nhanh hợp nhất — làm rõ yêu cầu, lập kế hoạch, triển khai, review và trình bày | `spec-*.md` + mã nguồn |
+Công việc rõ ràng có thể đi thẳng vào `bmad-build`. Sáng kiến lớn hơn có thể chuẩn bị PRD, UX, kiến trúc, epic, story, kiểm tra mức sẵn sàng và kế hoạch sprint trước. Các artifact này bổ sung ngữ cảnh, không chọn một workflow triển khai khác.
 
 ## Quản lý ngữ cảnh
 

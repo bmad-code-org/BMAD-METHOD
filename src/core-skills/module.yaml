@@ -31,3 +31,8 @@ output_folder:
   prompt: "Where should output files be saved?"
   default: "_bmad-output"
   result: "{project-root}/{value}"
+
+# The one directory created at install time. Everything else (module artifact
+# folders, project knowledge) is created lazily by the first skill that writes there.
+directories:
+  - "{output_folder}"

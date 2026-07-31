@@ -14,7 +14,7 @@ BMad cung cấp hai cách để bắt đầu công việc, và chúng phục v�
 | Cơ chế | Cách gọi | Điều xảy ra |
 | --- | --- | --- |
 | **Skill** | Gõ tên skill, ví dụ `bmad-help`, trong IDE | Nạp trực tiếp agent, chạy workflow hoặc thực thi task |
-| **Trigger menu agent** | Nạp agent trước, sau đó gõ mã ngắn như `DS` | Agent diễn giải mã đó và bắt đầu workflow tương ứng trong khi vẫn giữ đúng persona |
+| **Trigger menu agent** | Nạp agent trước, sau đó gõ mã ngắn như `BD` | Agent diễn giải mã đó và bắt đầu workflow tương ứng trong khi vẫn giữ đúng persona |
 
 Trigger trong menu agent yêu cầu bạn đang ở trong một phiên agent đang hoạt động. Dùng skill khi bạn đã biết mình muốn workflow nào. Dùng trigger khi bạn đang làm việc với một agent và muốn đổi tác vụ mà không rời khỏi cuộc hội thoại.
 
@@ -52,7 +52,7 @@ Mỗi skill là một thư mục chứa file `SKILL.md`. Ví dụ với Claude C
 .claude/skills/
 ├── bmad-help/
 │   └── SKILL.md
-├── bmad-create-prd/
+├── bmad-prd/
 │   └── SKILL.md
 ├── bmad-agent-dev/
 │   └── SKILL.md
@@ -93,12 +93,11 @@ Workflow skills chạy một quy trình có cấu trúc, nhiều bước mà kh�
 | --- | --- |
 | `bmad-product-brief` | Tạo product brief — phiên discovery có hướng dẫn khi concept của bạn đã rõ |
 | `bmad-prfaq` | Bài kiểm tra [Working Backwards PRFAQ](../explanation/analysis-phase.md#prfaq-working-backwards) để stress-test concept sản phẩm |
-| `bmad-create-prd` | Tạo Product Requirements Document |
-| `bmad-create-architecture` | Thiết kế kiến trúc hệ thống |
+| `bmad-prd` | Tạo Product Requirements Document |
+| `bmad-architecture` | Thiết kế kiến trúc hệ thống |
 | `bmad-create-epics-and-stories` | Tạo epics và stories |
-| `bmad-dev-story` | Triển khai một story |
 | `bmad-code-review` | Chạy code review |
-| `bmad-quick-dev` | Luồng nhanh hợp nhất — làm rõ yêu cầu, lập kế hoạch, triển khai, review và trình bày |
+| `bmad-build` | Triển khai ý định trực tiếp, issue, tính năng, bản sửa hoặc story đã lập kế hoạch |
 
 Xem [Workflow Map](./workflow-map.md) để có tài liệu workflow đầy đủ theo từng phase.
 
@@ -120,11 +119,11 @@ bmad-help What are my options for UX design?
 
 **Các task và tool lõi khác**
 
-Module lõi có 11 công cụ tích hợp sẵn — review, nén tài liệu, brainstorming, quản lý tài liệu và nhiều hơn nữa. Xem [Core Tools](./core-tools.md) để có tài liệu tham chiếu đầy đủ.
+Module lõi có 8 công cụ tích hợp sẵn — trợ giúp, review, tinh luyện, tùy biến và các skill tư duy (brainstorming, forge idea, party mode). Xem [Core Tools](./core-tools.md) để có tài liệu tham chiếu đầy đủ.
 
 ## Quy Ước Đặt Tên
 
-Mọi skill đều dùng tiền tố `bmad-` theo sau là tên mô tả, ví dụ `bmad-agent-dev`, `bmad-create-prd`, `bmad-help`. Xem [Modules](./modules.md) để biết các module hiện có.
+Mọi skill đều dùng tiền tố `bmad-` theo sau là tên mô tả, ví dụ `bmad-agent-dev`, `bmad-prd`, `bmad-help`. Xem [Modules](./modules.md) để biết các module hiện có.
 
 ## Khắc Phục Sự Cố
 

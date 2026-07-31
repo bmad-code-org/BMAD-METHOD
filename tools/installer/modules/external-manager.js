@@ -5,6 +5,7 @@ const { execSync } = require('node:child_process');
 const yaml = require('yaml');
 const prompts = require('../prompts');
 const { resolveChannel, tagExists, parseGitHubRepo } = require('./channel-resolver');
+const { gitEnv } = require('./git-env');
 const { decideChannelForModule } = require('./channel-plan');
 const { getProjectRoot } = require('../project-root');
 
@@ -370,33 +371,34 @@ class ExternalModuleManager {
       const fetchSpinner = await createSpinner();
       fetchSpinner.start(`Fetching ${moduleInfo.name}...`);
       try {
-        const currentSha = execSync('git rev-parse HEAD', { cwd: moduleCacheDir, stdio: 'pipe' }).toString().trim();
+        const currentSha = execSync('git rev-parse HEAD', { cwd: moduleCacheDir, stdio: 'pipe', env: gitEnv() }).toString().trim();
 
         if (resolved.channel === 'next') {
           execSync('git fetch origin --depth 1', {
             cwd: moduleCacheDir,
             stdio: ['ignore', 'pipe', 'pipe'],
-            env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+            env: gitEnv({ GIT_TERMINAL_PROMPT: '0' }),
           });
           execSync('git reset --hard origin/HEAD', {
             cwd: moduleCacheDir,
             stdio: ['ignore', 'pipe', 'pipe'],
-            env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+            env: gitEnv({ GIT_TERMINAL_PROMPT: '0' }),
           });
         } else {
           // stable or pinned — fetch the specific tag and check it out.
           execSync(`git fetch --depth 1 origin tag ${quoteShell(resolved.ref)} --no-tags`, {
             cwd: moduleCacheDir,
             stdio: ['ignore', 'pipe', 'pipe'],
-            env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+            env: gitEnv({ GIT_TERMINAL_PROMPT: '0' }),
           });
           execSync(`git checkout --quiet FETCH_HEAD`, {
             cwd: moduleCacheDir,
             stdio: ['ignore', 'pipe', 'pipe'],
+            env: gitEnv(),
           });
         }
 
-        const newSha = execSync('git rev-parse HEAD', { cwd: moduleCacheDir, stdio: 'pipe' }).toString().trim();
+        const newSha = execSync('git rev-parse HEAD', { cwd: moduleCacheDir, stdio: 'pipe', env: gitEnv() }).toString().trim();
         fetchSpinner.stop(`Fetched ${moduleInfo.name}`);
         if (currentSha !== newSha) needsDependencyInstall = true;
       } catch {
@@ -415,12 +417,12 @@ class ExternalModuleManager {
         if (resolved.channel === 'next') {
           execSync(`git clone --depth 1 "${moduleInfo.url}" "${moduleCacheDir}"`, {
             stdio: ['ignore', 'pipe', 'pipe'],
-            env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+            env: gitEnv({ GIT_TERMINAL_PROMPT: '0' }),
           });
         } else {
           execSync(`git clone --depth 1 --branch ${quoteShell(resolved.ref)} "${moduleInfo.url}" "${moduleCacheDir}"`, {
             stdio: ['ignore', 'pipe', 'pipe'],
-            env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+            env: gitEnv({ GIT_TERMINAL_PROMPT: '0' }),
           });
         }
         fetchSpinner.stop(`Fetched ${moduleInfo.name}`);
@@ -431,7 +433,7 @@ class ExternalModuleManager {
     }
 
     // Record resolution (channel + tag + SHA) for the manifest writer to pick up.
-    const sha = execSync('git rev-parse HEAD', { cwd: moduleCacheDir, stdio: 'pipe' }).toString().trim();
+    const sha = execSync('git rev-parse HEAD', { cwd: moduleCacheDir, stdio: 'pipe', env: gitEnv() }).toString().trim();
     ExternalModuleManager._resolutions.set(moduleCode, {
       channel: resolved.channel,
       version: resolved.version,
@@ -459,6 +461,7 @@ class ExternalModuleManager {
             cwd: moduleCacheDir,
             stdio: ['ignore', 'pipe', 'pipe'],
             timeout: 120_000, // 2 minute timeout
+            env: gitEnv(), // npm shells out to git for git-URL deps; keep hook GIT_* vars away from it
           });
           installSpinner.stop(`Installed dependencies for ${moduleInfo.name}`);
         } catch (error) {
@@ -485,6 +488,7 @@ class ExternalModuleManager {
               cwd: moduleCacheDir,
               stdio: ['ignore', 'pipe', 'pipe'],
               timeout: 120_000, // 2 minute timeout
+              env: gitEnv(), // npm shells out to git for git-URL deps; keep hook GIT_* vars away from it
             });
             installSpinner.stop(`Installed dependencies for ${moduleInfo.name}`);
           } catch (error) {

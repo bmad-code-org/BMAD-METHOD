@@ -14,7 +14,7 @@ BMad offre deux façons de démarrer un travail, chacune ayant un usage différe
 | Mécanisme                     | Comment l’invoquer                                            | Ce qui se passe                                                                                |
 |-------------------------------|---------------------------------------------------------------|------------------------------------------------------------------------------------------------|
 | **Skill**                     | Tapez le nom du skill (ex. `bmad-help`) dans votre IDE        | Charge directement un agent, exécute un workflow ou lance une tâche                            |
-| **Déclencheur du menu agent** | Chargez d’abord un agent, puis tapez un code court (ex. `DS`) | L’agent interprète le code et démarre le workflow correspondant tout en préservant son persona |
+| **Déclencheur du menu agent** | Chargez d’abord un agent, puis tapez un code court (ex. `BD`) | L’agent interprète le code et démarre le workflow correspondant tout en préservant son persona |
 
 Les déclencheurs du menu agent nécessitent une session agent active. Utilisez les skills lorsque vous savez quel workflow vous voulez. Utilisez les déclencheurs lorsque vous travaillez déjà avec un agent et souhaitez changer de tâche sans quitter la conversation.
 
@@ -94,11 +94,10 @@ Les skills de workflow exécutent un processus structuré en plusieurs étapes s
 | `bmad-product-brief`            | Créer ou mettre à jour un product brief[^3] — découverte guidée lorsque votre concept est clair                              |
 | `bmad-prfaq`                    | Défi [PRFAQ Working Backwards](../explanation/analysis-phase.md#prfaq-working-backwards) pour éprouver votre concept produit |
 | `bmad-prd`                      | Créer, mettre à jour ou valider un PRD[^1]                                                                                   |
-| `bmad-create-architecture`      | Concevoir l’architecture système                                                                                             |
+| `bmad-architecture`      | Concevoir l’architecture système                                                                                             |
 | `bmad-create-epics-and-stories` | Créer des epics et des stories                                                                                               |
-| `bmad-dev-story`                | Implémenter une story                                                                                                        |
 | `bmad-code-review`              | Effectuer une revue de code                                                                                                  |
-| `bmad-quick-dev`                | Flux rapide unifié — clarifier l’intention, planifier, implémenter, réviser, présenter                                       |
+| `bmad-build`                | Implémenter une intention directe, une issue, une fonctionnalité, un correctif ou une story planifiée                        |
 
 Consultez la [Carte des workflows](./workflow-map.md) pour la référence complète des workflows organisés par phase.
 
@@ -120,7 +119,7 @@ bmad-help Quelles sont mes options pour le design UX ?
 
 **Autres tâches et outils principaux**
 
-Le module principal inclut 12 outils intégrés — specs, revues, brainstorming, personnalisation, gestion de documents, et plus. Consultez [Outils principaux](./core-tools.md) pour la référence complète.
+Le module principal inclut 8 outils intégrés — aide, revues, raffinement, personnalisation et les compétences de réflexion (brainstorming, forge idea, party mode). Consultez [Outils principaux](./core-tools.md) pour la référence complète.
 
 ## Convention de nommage
 

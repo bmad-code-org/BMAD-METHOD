@@ -14,7 +14,7 @@ BMad nabízí dva způsoby zahájení práce a slouží k různým účelům.
 | Mechanismus | Jak se vyvolává | Co se stane |
 | --- | --- | --- |
 | **Skill** | Zadejte název skillu (např. `bmad-help`) ve vašem IDE | Přímo načte agenta, spustí workflow nebo provede úkol |
-| **Spouštěč nabídky agenta** | Nejprve načtěte agenta, pak zadejte krátký kód (např. `DS`) | Agent interpretuje kód a spustí odpovídající workflow, přičemž zůstává v charakteru |
+| **Spouštěč nabídky agenta** | Nejprve načtěte agenta, pak zadejte krátký kód (např. `BD`) | Agent interpretuje kód a spustí odpovídající workflow, přičemž zůstává v charakteru |
 
 Spouštěče nabídky agentů vyžadují aktivní relaci agenta. Používejte skills, když víte, který workflow chcete. Používejte spouštěče, když již pracujete s agentem a chcete přepnout úkol bez opuštění konverzace.
 
@@ -52,7 +52,7 @@ Každý skill je adresář obsahující soubor `SKILL.md`. Například instalace
 .claude/skills/
 ├── bmad-help/
 │   └── SKILL.md
-├── bmad-create-prd/
+├── bmad-prd/
 │   └── SKILL.md
 ├── bmad-agent-dev/
 │   └── SKILL.md
@@ -93,12 +93,11 @@ Workflow skills spouštějí strukturovaný, vícekrokový proces bez předchoz�
 | --- | --- |
 | `bmad-product-brief` | Vytvoření product briefu — řízené discovery, když je váš koncept jasný |
 | `bmad-prfaq` | [Working Backwards PRFAQ](../explanation/analysis-phase.md#prfaq-working-backwards) výzva pro zátěžový test vašeho produktového konceptu |
-| `bmad-create-prd` | Vytvoření dokumentu požadavků (PRD) |
-| `bmad-create-architecture` | Návrh systémové architektury |
+| `bmad-prd` | Vytvoření dokumentu požadavků (PRD) |
+| `bmad-architecture` | Návrh systémové architektury |
 | `bmad-create-epics-and-stories` | Vytvoření epiců a stories |
-| `bmad-dev-story` | Implementace story |
 | `bmad-code-review` | Spuštění revize kódu |
-| `bmad-quick-dev` | Sjednocený quick flow — vyjasnění záměru, plán, implementace, revize, prezentace |
+| `bmad-build` | Implementace přímého záměru, issue, funkce, opravy nebo naplánované story |
 
 Viz [Mapa pracovních postupů](./workflow-map.md) pro kompletní referenci workflow organizovanou podle fází.
 
@@ -120,11 +119,11 @@ bmad-help What are my options for UX design?
 
 **Další základní tasks a tools**
 
-Základní modul zahrnuje 11 vestavěných nástrojů — revize, komprese, brainstorming, správa dokumentů a další. Viz [Základní nástroje](./core-tools.md) pro kompletní referenci.
+Základní modul zahrnuje 8 vestavěných nástrojů — nápovědu, revize, zdokonalování, přizpůsobení a myšlenkové skills (brainstorming, forge idea, party mode). Viz [Základní nástroje](./core-tools.md) pro kompletní referenci.
 
 ## Konvence pojmenování
 
-Všechny skills používají prefix `bmad-` následovaný popisným názvem (např. `bmad-dev`, `bmad-create-prd`, `bmad-help`). Viz [Moduly](./modules.md) pro dostupné moduly.
+Všechny skills používají prefix `bmad-` následovaný popisným názvem (např. `bmad-dev`, `bmad-prd`, `bmad-help`). Viz [Moduly](./modules.md) pro dostupné moduly.
 
 ## Řešení problémů
 

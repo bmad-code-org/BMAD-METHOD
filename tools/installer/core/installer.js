@@ -663,8 +663,7 @@ class Installer {
    * Excludes dev-only tests and Python caches so they don't ship to users.
    * Wipes the destination first so files removed or renamed in source
    * don't linger and get recorded as installed. Also seeds
-   * _bmad/custom/.gitignore on fresh installs so *.user.toml overrides
-   * stay out of version control.
+   * gitignore files for personal overrides and generated render snapshots.
    */
   async _installSharedScripts(paths) {
     const srcScriptsDir = path.join(paths.srcDir, 'src', 'scripts');
@@ -687,6 +686,14 @@ class Installer {
       await fs.writeFile(customGitignore, '*.user.toml\n', 'utf8');
       this.installedFiles.add(customGitignore);
     }
+
+    const renderDir = path.join(paths.bmadDir, 'render');
+    const renderGitignore = path.join(renderDir, '.gitignore');
+    if (!(await fs.pathExists(renderGitignore))) {
+      await fs.ensureDir(renderDir);
+      await fs.writeFile(renderGitignore, '*\n!.gitignore\n', 'utf8');
+    }
+    this.installedFiles.add(renderGitignore);
   }
 
   async _trackFilesRecursive(dir) {
@@ -870,8 +877,9 @@ class Installer {
           const fullPath = path.join(dir, entry.name);
 
           if (entry.isDirectory()) {
-            // Skip certain directories
-            if (entry.name === 'node_modules' || entry.name === '.git') {
+            const relativeDir = path.relative(bmadDir, fullPath);
+            // Render snapshots are generated state, not user-authored customization.
+            if (entry.name === 'node_modules' || entry.name === '.git' || relativeDir === 'render') {
               continue;
             }
             await scanDirectory(fullPath);
@@ -959,7 +967,7 @@ class Installer {
 
     // Get all installed module directories
     const entries = await fs.readdir(bmadDir, { withFileTypes: true });
-    const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom']);
+    const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom', 'render']);
     const installedModules = entries.filter((entry) => entry.isDirectory() && !nonModuleDirs.has(entry.name)).map((entry) => entry.name);
 
     // Generate config.yaml for each installed module
@@ -1056,7 +1064,7 @@ class Installer {
 
     // Get all installed module directories
     const entries = await fs.readdir(bmadDir, { withFileTypes: true });
-    const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom']);
+    const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom', 'render']);
     const installedModules = entries.filter((entry) => entry.isDirectory() && !nonModuleDirs.has(entry.name)).map((entry) => entry.name);
 
     // Add core module to scan (it's installed at root level as _config, but we check src/core-skills)

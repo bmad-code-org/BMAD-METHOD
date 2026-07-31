@@ -98,11 +98,6 @@ export default defineConfig({
           slug: 'index',
         },
         {
-          label: 'Roadmap',
-          translations: { 'vi-VN': 'Lộ trình', 'zh-CN': '路线图', 'fr-FR': 'Feuille de route', 'cs-CZ': 'Plán rozvoje' },
-          slug: 'roadmap',
-        },
-        {
           label: 'Tutorials',
           translations: { 'vi-VN': 'Hướng dẫn nhập môn', 'zh-CN': '教程', 'fr-FR': 'Tutoriels', 'cs-CZ': 'Tutoriály' },
           collapsed: false,
@@ -172,6 +167,11 @@ export default defineConfig({
               attrs: { target: '_blank' },
             },
           ],
+        },
+        {
+          label: 'Roadmap',
+          translations: { 'vi-VN': 'Lộ trình', 'zh-CN': '路线图', 'fr-FR': 'Feuille de route', 'cs-CZ': 'Plán rozvoje' },
+          slug: 'roadmap',
         },
       ],
 
