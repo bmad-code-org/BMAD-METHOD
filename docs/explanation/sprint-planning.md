@@ -1,6 +1,6 @@
 ---
 title: "Sprint Planning"
-description: One skill owns the sprint-status artifact end to end — gate the plan, generate the tracking, view the status — with the mechanical work done by a deterministic script.
+description: One skill owns the sprint-status artifact end to end — gate the plan, generate the tracking, view the status, repair it when it breaks — with the mechanical work done by a deterministic script.
 sidebar:
   order: 16
 ---
