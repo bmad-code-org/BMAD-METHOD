@@ -1,6 +1,6 @@
 # Finalize: Retrospective Document and Sprint Status
 
-Phase 5. Finalize the retrospective and update sprint tracking. Two writes: the retrospective document, and the `sprint-status.yaml` update.
+Phase 5. Finalize the retrospective and update sprint tracking. Two writes: the retrospective document, and the `sprint-status.yaml` update. Stories mode makes only the first.
 
 ## The retrospective document
 
@@ -18,13 +18,30 @@ headless: true | false
 ---
 ```
 
+In stories mode the document lives at `{spec-folder}/RETROSPECTIVE.md` instead — a fixed name, so a resumed run is never mistaken for a new retrospective — and its frontmatter carries the working state that resumption reads:
+
+```
+---
+spec_folder: "<the selected folder, as a YAML string>"
+mode: stories
+date: {date}
+verdict: accepted | accepted-with-open-items | rejected
+criteria: declared | profiled
+headless: true | false
+completed_phases: []
+source_hashes: {}
+---
+```
+
+Add a phase to `completed_phases` only once its section is written; the allowed values are `gather`, `analyze`, `discussion`, `decide`, and `finalize`, and `discussion` is optional. Copy `source_hashes` from the selection-time `inspect` in unchanged. Before resuming from an existing file, validate that `mode` is `stories`, that `spec_folder` is exactly the folder you selected, that `completed_phases` holds only allowed values, and that any `verdict` present uses the terminal vocabulary — stop if the file is malformed or belongs to a different folder rather than resuming into it. Then reconcile against current evidence, replace `source_hashes` with fresh pre-run values, and resume at the first required phase not listed.
+
 Keep `verdict` in sync with the Acceptance verdict section below. Do not encode the verdict in the sprint-status retro key — that key's value stays `done` so the existing lifecycle consumers (sprint planning's `optional ↔ done` transition, status TUIs) keep working unchanged.
 
 That holds for a **rejected** epic too: the update below marks the retro key `done` whichever way the verdict went, because `done` there means *the retrospective ran*, not *the epic passed*. The script writes no verdict of any kind into `sprint-status.yaml` — there is no `retro_verdict` key and `--verdict` is only echoed back in the result JSON — so a gate or orchestrator that acts on the verdict **must** read this document's frontmatter. Reading sprint-status alone cannot tell a rejected epic from an accepted one.
 
 Sections:
 
-- **Epic summary** — which epic, the diff range, stories completed, any stories still unfinished (`pending_stories`) that the user accepted retro-ing over, the evidence inventory (what was available, what was missing). Unfinished stories force the machine acceptance verdict to **rejected** (see `references/acceptance-verdict.md`).
+- **Epic summary** — which epic or spec folder, the diff range (in stories mode, each story's own revision range), stories completed, any stories still unfinished (`pending_stories`) that the user accepted retro-ing over, the evidence inventory (what was available, what was missing). Unfinished stories force the machine acceptance verdict to **rejected** (see `references/acceptance-verdict.md`).
 - **Findings** — grouped by aggregate view and by lens, each with its source reference and disposition (fix now / defer / accept). This is the record; do not summarize away the provenance.
 - **Behavior verification** — what was exercised end to end and what was observed, or an explicit note that runtime behavior was not exercised.
 - **Previous-retro follow-through** — if a prior retro exists, whether its action items landed, with evidence, and the selector Phase 5 would need to act on each (`references/acceptance-verdict.md` specifies what to record).
@@ -78,6 +95,17 @@ Rules:
 - Success reports `action_items_updated`.
 
 Only ever apply a status the user confirmed: the evidence justifies proposing a transition, and only the user's confirmation justifies writing it. In a headless run do not use this flag at all — record the transitions you would have proposed in the Previous-retro follow-through section and leave the prior items' statuses alone.
+
+## Stories-mode finalization
+
+Stories mode finalizes `{spec-folder}/RETROSPECTIVE.md` and nothing else. Do not run `sprint_status.py`, do not read or create a `sprint-status.yaml`, do not edit `SPEC.md`, `stories.yaml`, or any story artifact, and do not persist action items anywhere but this document. If the target path exists and is not a regular file, stop rather than writing through it.
+
+Before reporting success:
+
+1. Run `stories_status.py inspect --folder "{spec-folder}"` once more and reconcile the document against the current ordered inventory.
+2. Confirm a non-empty `pending_stories` still yields `verdict: rejected`, unless an interactive human explicitly overrode it.
+3. Compare that final inspection's `source_hashes` against the pre-run mapping. If any differ, stop and report every changed path — the read-only guarantee is checked, not assumed.
+4. Add `finalize` to `completed_phases`, write the file, and parse its frontmatter again to confirm it round-trips.
 
 ## Finish
 

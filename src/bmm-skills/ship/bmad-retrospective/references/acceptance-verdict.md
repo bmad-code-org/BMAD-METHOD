@@ -20,6 +20,8 @@ Compile fix-now findings and process lessons into specific, owned action items. 
 
 ## Previous-retro follow-through
 
+This section is sprint mode only — stories mode has no action-item store to follow through on, and records relevant earlier lessons in prose where the evidence supports them.
+
 When a prior retro exists, check whether the action items it committed to were completed. Read `action_items` in `{implementation_artifacts}/sprint-status.yaml` and, for every entry belonging to an earlier epic that is not already `done`, record one line in the retrospective document's Previous-retro follow-through section:
 
 - **How to address the item** — its `id`, exactly as the file spells it. Legacy entries written before ids existed have none; for those, record the item's `epic` (the integer in the file) plus its exact `action` text, character for character. One or the other is what Phase 5 needs to name the item at all.
@@ -38,13 +40,13 @@ Judge the final state against the epic's declared acceptance criteria. If the ep
 
 ### Unfinished stories
 
-`pending_stories` from `detect-epic` (with or without `--epic`) is authoritative for this epic's story keys. When that list is non-empty:
+`pending_stories` is authoritative for this epic's incomplete work, whichever mode produced it: `detect-epic` (with or without `--epic`) returns sprint-status story keys in file order; `stories_status.py inspect` returns `stories.yaml` ids in list order. When that list is non-empty:
 
 - The **machine** verdict is **rejected**. Name every unfinished story key in the Acceptance verdict section as the evidence. Do not soften this to accepted-with-open-items: unfinished delivery is not an open finding about a finished epic — the epic itself is incomplete.
 - Record the unfinished keys in Epic summary (interactive) or Assumptions (headless) as the Inputs section already requires.
 - Headless runs have no human at the console: the document's verdict is **rejected** when `pending_stories` was non-empty. Interactive runs may still let a human override (rule 1 below) after seeing the list.
 
-If the completeness check did not run (no readable `sprint-status.yaml`), do **not** render a rejected or accepted verdict from the absence of data — say the check was unavailable and weigh only the criteria and findings you have.
+If the completeness check did not run (no readable `sprint-status.yaml`), do **not** render a rejected or accepted verdict from the absence of data — say the check was unavailable and weigh only the criteria and findings you have. Stories mode cannot reach that state: `inspect` either returns a complete ordered list or fails, and a failure stops the run before Phase 1. Never read an unreadable source as an empty pending list.
 
 Three hard rules:
 

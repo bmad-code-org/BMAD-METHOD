@@ -13,6 +13,19 @@ Collect what the epic produced and note the source path or range of each:
 - **Previous retrospective** — the prior epic's retro doc, if one exists, so Phase 4 can check whether last epic's action items landed.
 - **Session logs** — conversation or session records for the epic's stories, when available. They are the only record of *why* a session took an unexpected turn — what was tried and abandoned. They are also the evidence most likely to be deleted or expire, so capture references now.
 
+## Stories mode
+
+A stories-mode epic is a spec folder, and the `stories_status.py inspect` result from selection *is* the inventory — do not re-derive it. Map it onto the checklist above:
+
+- **Epic spec** → `{spec-folder}/SPEC.md`, the declared intent.
+- **Story files** → every returned story record in `stories.yaml` order, each with its artifact path and current `status`. List order is authoritative; filename sort is not.
+- **Diff range and commits** → each story's own `revision_range` (`baseline_revision..final_revision`), not one epic-wide range. Group the stories sharing an identical range and run `git_evidence.py` once per distinct range, passing every id in that group. No `^` is needed here — unlike the sprint-mode range above, `baseline_revision` is already the pre-change commit. A story whose `revision_range` is `null` — a missing endpoint, or `NO_VCS` — has no commit or diff evidence: record that, and never substitute `HEAD` for the missing endpoint or write a revision back into the story file.
+- **Sprint status** → not read; a stories-mode epic has none.
+- **Previous retrospective** → `{spec-folder}/RETROSPECTIVE.md`, when resuming.
+- **Session logs** → unchanged.
+
+Ranges may overlap or diverge. Count a shared commit or file change once in the aggregate views while keeping each story's range as its provenance, and record any gap between ranges as a limit on the epic-wide picture.
+
 ## Missing evidence
 
 Evidence availability varies; never hide a gap. Each later analysis declares what it needs and, when that input is absent, records a narrowed scope rather than guessing. A reader of the final retro must always be able to tell **"checked and clean"** from **"never checked."**
@@ -20,5 +33,6 @@ Evidence availability varies; never hide a gap. Each later analysis declares wha
 - Missing session logs → process-lesson analysis is skipped, and the retro says so.
 - No declared acceptance criteria → the verdict is profiled from the diff and stories, flagged as profiled rather than declared.
 - Sub-agents unavailable → analyses that would delegate run inline over a narrowed scope, and the narrowing is recorded.
+- No usable revision range for a story → that story's commit and diff history is out of scope, and the retro names which stories that covers.
 
 Carry the inventory forward into Phase 2 as the authoritative list of what is available to read.
