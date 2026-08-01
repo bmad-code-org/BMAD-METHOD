@@ -3328,28 +3328,28 @@ async function runTests() {
     const bmadDir45 = path.join(root45, '_bmad');
     await fs.ensureDir(path.join(bmadDir45, '_config'));
 
-    // Two skills nested under the same grouping dir (1-analysis), plus a
+    // Two skills under grouping dirs (agents, nested planning/research), plus a
     // module-level file that must survive the cleanup.
     await fs.writeFile(
       path.join(bmadDir45, '_config', 'skill-manifest.csv'),
       [
         'canonicalId,name,description,module,path',
-        '"bmad-agent-analyst","bmad-agent-analyst","fixture","bmm","_bmad/bmm/1-analysis/bmad-agent-analyst/SKILL.md"',
-        '"bmad-research","bmad-research","fixture","bmm","_bmad/bmm/1-analysis/research/bmad-research/SKILL.md"',
+        '"bmad-agent-analyst","bmad-agent-analyst","fixture","bmm","_bmad/bmm/agents/bmad-agent-analyst/SKILL.md"',
+        '"bmad-research","bmad-research","fixture","bmm","_bmad/bmm/planning/research/bmad-research/SKILL.md"',
         '',
       ].join('\n'),
     );
-    await fs.ensureDir(path.join(bmadDir45, 'bmm', '1-analysis', 'bmad-agent-analyst'));
-    await fs.writeFile(path.join(bmadDir45, 'bmm', '1-analysis', 'bmad-agent-analyst', 'SKILL.md'), 'x');
-    await fs.ensureDir(path.join(bmadDir45, 'bmm', '1-analysis', 'research', 'bmad-research'));
-    await fs.writeFile(path.join(bmadDir45, 'bmm', '1-analysis', 'research', 'bmad-research', 'SKILL.md'), 'x');
+    await fs.ensureDir(path.join(bmadDir45, 'bmm', 'agents', 'bmad-agent-analyst'));
+    await fs.writeFile(path.join(bmadDir45, 'bmm', 'agents', 'bmad-agent-analyst', 'SKILL.md'), 'x');
+    await fs.ensureDir(path.join(bmadDir45, 'bmm', 'planning', 'research', 'bmad-research'));
+    await fs.writeFile(path.join(bmadDir45, 'bmm', 'planning', 'research', 'bmad-research', 'SKILL.md'), 'x');
     await fs.writeFile(path.join(bmadDir45, 'bmm', 'config.yaml'), 'module: bmm\n');
 
     const installer45 = new Installer();
     await installer45._cleanupSkillDirs(bmadDir45);
 
-    assert(!(await fs.pathExists(path.join(bmadDir45, 'bmm', '1-analysis'))), 'empty skill-group dir is pruned after cleanup');
-    assert(!(await fs.pathExists(path.join(bmadDir45, 'bmm', '1-analysis', 'research'))), 'empty nested skill-group dir is pruned');
+    assert(!(await fs.pathExists(path.join(bmadDir45, 'bmm', 'agents'))), 'empty skill-group dir is pruned after cleanup');
+    assert(!(await fs.pathExists(path.join(bmadDir45, 'bmm', 'planning'))), 'empty nested skill-group dir is pruned');
     assert(await fs.pathExists(path.join(bmadDir45, 'bmm', 'config.yaml')), 'module-level files are preserved');
     assert(await fs.pathExists(bmadDir45), 'bmad root is never removed');
   } catch (error) {
@@ -3665,7 +3665,7 @@ async function runTests() {
     await installer49.generateModuleConfigs(bmadDir49, { core: { communication_language: 'English' }, bmm: {} });
 
     const scripts49 = path.join(bmadDir49, 'scripts');
-    const skill49 = path.join(bmadDir49, 'bmm', '4-implementation', 'bmad-build-auto');
+    const skill49 = path.join(bmadDir49, 'bmm', 'shipping', 'bmad-build-auto');
     assert(await fs.pathExists(path.join(scripts49, 'render_skill.py')), 'shared render_skill.py reaches installed _bmad/scripts');
     assert(await fs.pathExists(path.join(scripts49, 'config_utils.py')), 'shared config utility reaches installed _bmad/scripts');
     assert(!(await fs.pathExists(path.join(scripts49, 'tests'))), 'shared-script development tests are excluded from install');
