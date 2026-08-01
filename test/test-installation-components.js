@@ -3616,9 +3616,9 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Test Suite 49: build-auto renderer installation surface
+  // Test Suite 49: shared renderer installation surface for both build skills
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 49: build-auto renderer installation surface${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 49: shared renderer installation surface for both build skills${colors.reset}\n`);
 
   let root49;
   try {
@@ -3666,6 +3666,7 @@ async function runTests() {
 
     const scripts49 = path.join(bmadDir49, 'scripts');
     const skill49 = path.join(bmadDir49, 'bmm', 'ship', 'bmad-build-auto');
+    const skill49Build = path.join(bmadDir49, 'bmm', 'ship', 'bmad-build');
     assert(await fs.pathExists(path.join(scripts49, 'render_skill.py')), 'shared render_skill.py reaches installed _bmad/scripts');
     assert(await fs.pathExists(path.join(scripts49, 'config_utils.py')), 'shared config utility reaches installed _bmad/scripts');
     assert(!(await fs.pathExists(path.join(scripts49, 'tests'))), 'shared-script development tests are excluded from install');
@@ -3678,8 +3679,30 @@ async function runTests() {
     );
     assert(!skillSource49.includes('uv run --python'), 'build-auto does not pin an exact Python series');
     assert(!(await fs.pathExists(path.join(skill49, 'render.toml'))), 'installed skill has no duplicate render contract');
+    assert(!(await fs.pathExists(path.join(skill49, 'render.py'))), 'no skill-local renderer reaches installed build-auto');
     assert(await fs.pathExists(path.join(skill49, 'workflow.md')), 'build-auto workflow source reaches installed skill surface');
     assert(await fs.pathExists(path.join(skill49, 'step-04-review.md')), 'build-auto step sources reach installed skill surface');
+    // Compare against build-auto's own shipped command rather than a second hardcoded
+    // literal, so the two skills cannot drift apart while both still match this file.
+    const fenced49 = skillSource49.match(/```bash\n([\s\S]*?)```/);
+    assert(
+      fenced49 !== null && fenced49[1].includes('render_skill.py'),
+      'build-auto ships its renderer invocation as a fenced bash command',
+      skillSource49,
+    );
+    const sharedInvocation49 = fenced49 === null ? '' : fenced49[1].trim();
+    assert(await fs.pathExists(path.join(skill49Build, 'SKILL.md')), 'build entry reaches installed skill surface');
+    const buildSource49 = await fs.readFile(path.join(skill49Build, 'SKILL.md'), 'utf8');
+    assert(
+      sharedInvocation49 !== '' && buildSource49.includes(sharedInvocation49),
+      'build dispatches the same shared renderer invocation as build-auto',
+      `build-auto ships: ${sharedInvocation49}\nbuild ships: ${buildSource49}`,
+    );
+    assert(!buildSource49.includes('uv run --python'), 'build does not pin an exact Python series');
+    assert(!(await fs.pathExists(path.join(skill49Build, 'render.py'))), 'the retired skill-local renderer never reaches installed build');
+    assert(!(await fs.pathExists(path.join(skill49Build, 'render.toml'))), 'installed build has no duplicate render contract');
+    assert(await fs.pathExists(path.join(skill49Build, 'workflow.md')), 'build workflow source reaches installed skill surface');
+    assert(await fs.pathExists(path.join(skill49Build, 'step-04-review.md')), 'build step sources reach installed skill surface');
     assert(
       (await fs.readFile(renderGitignore49, 'utf8')) === '*\n!.gitignore\n',
       'generated render snapshots are ignored by installed projects',
@@ -3701,16 +3724,49 @@ async function runTests() {
       ].join('\n'),
       'utf8',
     );
+    // The harness pins the interpreter to keep this scratch run deterministic; the shipped
+    // SKILL.md command must not pin one, and test/test-build-auto-renderer.js executes that
+    // unpinned form verbatim for both skills.
+    const renderOptions49 = { encoding: 'utf8', timeout: 120_000 };
     const render49 = spawnSync(
       'uv',
       ['run', '--python', '3.11', path.join(scripts49, 'render_skill.py'), '--project-root', root49, '--skill', skill49],
-      { encoding: 'utf8' },
+      renderOptions49,
     );
-    const dispatch49 = render49.stdout.trim().replace(/^read and follow /, '');
     assert(
-      render49.status === 0 && path.isAbsolute(dispatch49) && (await fs.pathExists(dispatch49)),
+      !render49.error && typeof render49.stdout === 'string',
+      'shared renderer is spawnable for the installed build-auto tree',
+      String(render49.error || 'uv produced no stdout'),
+    );
+    const dispatch49 = (render49.stdout || '').trim().replace(/^read and follow /, '');
+    assert(
+      render49.status === 0 &&
+        path.isAbsolute(dispatch49) &&
+        dispatch49.includes(`${path.sep}render${path.sep}bmad-build-auto${path.sep}`) &&
+        path.basename(dispatch49) === 'workflow.md' &&
+        (await fs.pathExists(dispatch49)),
       'installer-produced build-auto tree renders and dispatches end to end',
       `${render49.stdout}${render49.stderr}`,
+    );
+    const render49Build = spawnSync(
+      'uv',
+      ['run', '--python', '3.11', path.join(scripts49, 'render_skill.py'), '--project-root', root49, '--skill', skill49Build],
+      renderOptions49,
+    );
+    assert(
+      !render49Build.error && typeof render49Build.stdout === 'string',
+      'shared renderer is spawnable for the installed build tree',
+      String(render49Build.error || 'uv produced no stdout'),
+    );
+    const dispatch49Build = (render49Build.stdout || '').trim().replace(/^read and follow /, '');
+    assert(
+      render49Build.status === 0 &&
+        path.isAbsolute(dispatch49Build) &&
+        dispatch49Build.includes(`${path.sep}render${path.sep}bmad-build${path.sep}`) &&
+        path.basename(dispatch49Build) === 'workflow.md' &&
+        (await fs.pathExists(dispatch49Build)),
+      'installer-produced build tree renders and dispatches end to end',
+      `${render49Build.stdout}${render49Build.stderr}`,
     );
     const resolveCustomization49 = spawnSync(
       'uv',

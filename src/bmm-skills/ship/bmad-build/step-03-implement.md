@@ -24,7 +24,7 @@ Capture `baseline_commit` (current HEAD, or `NO_VCS` if version control is unava
 
 Change `{spec_file}` status to `in-progress` in the frontmatter before starting implementation.
 
-Follow `./sync-sprint-status.md` with `target_status` = `in-progress`.
+Follow `[[bmad-snapshot:sync-sprint-status.md]]` with `target_status` = `in-progress`.
 
 Execute the implementation handoff below: substitute the runtime placeholders (e.g. `{spec_file}`) into it, then follow it verbatim.
 
@@ -46,4 +46,4 @@ If `{spec_file}`'s `<frozen-after-approval>` block contains an I/O & Edge-Case M
 
 ## NEXT
 
-Read fully and follow `./step-04-review.md`
+Read fully and follow `[[bmad-snapshot:step-04-review.md]]`

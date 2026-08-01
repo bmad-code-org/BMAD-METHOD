@@ -3,7 +3,7 @@ name: bmad-build-auto
 description: 'One iteration of an unattended development loop. Use when invoked by name.'
 ---
 
-Run this single command exactly once, substituting the absolute project and skill roots without changing the working directory:
+Run the following command exactly once without changing the current working directory. Replace `{project-root}` with the absolute path to the project root and `{skill-root}` with the absolute path to this skill's directory:
 
 ```bash
 uv run --no-cache "{project-root}/_bmad/scripts/render_skill.py" --project-root "{project-root}" --skill "{skill-root}"
