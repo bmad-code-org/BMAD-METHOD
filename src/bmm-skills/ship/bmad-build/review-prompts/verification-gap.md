@@ -24,6 +24,8 @@ If the change is non-behavioral, stop here and output the clean result (see Outp
 
 Common non-behavioral examples: formatting, comments, whitespace; pure renames; trivial getters/setters and pass-throughs; type-only or compiler-enforced changes with no runtime effect; etc.
 
+Screen each part of the change separately. Only outcomes produced by deterministic code are worth automatically testing; tests are useless on static source text and brittle on LLM output. Skip those parts and review the rest normally.
+
 ### Step 2: Find the behavior that changed
 
 Identify what behavior changed compared to the previous version: output, side effect, branch, error path, schema/event shape, config default, validation/authorization rule, external contract, etc. If the change affects more than one behavior, handle each separately.
@@ -48,7 +50,7 @@ Find and read the relevant test. Ask whether the Demonstration would make an ass
 - For a regression-style Demonstration: if no test runs the path, the test is skipped/flaky/not run normally, or the test runs the code without checking the changed result, report a `Regression gap` or `Broken-verification gap`.
 - For a qualifying Missing-adoption case: if none of the site tests you found assert it adopts the new behavior, report a `Missing-adoption gap`.
 
-A test counts only if it runs normally and an assertion observes the changed output, branch, or contract. These do not count: no execution; success/no-throw/snapshot-only checks; mock/log-call checks; human-only checks; tests that mock away the integration; e2e tests that pass through without checking the changed output; stale assertions or fixtures.
+A test counts only if it runs normally and an assertion observes the changed output, branch, or contract. These do not count: no execution; source-text assertions that match a file's wording instead of running it; success/no-throw/snapshot-only checks; mock/log-call checks; human-only checks; tests that mock away the integration; e2e tests that pass through without checking the changed output; stale assertions or fixtures.
 
 Common patterns:
 
@@ -57,7 +59,7 @@ Common patterns:
 - **Migration compatibility** — tests only create new-format rows or fresh schemas.
 - **Phantom exception** — handled partial-failure path has no test.
 - **Missing-adoption gap** — sibling site should use the new rule/helper and does not.
-- **Removed verification** — deleted test or weakened assertion leaves behavior unpinned.
+- **Removed verification** — deleted test or weakened assertion leaves behavior unpinned; removing a source-text assertion is not this, since it never counted.
 
 ### Step 5: Confirm each finding is real
 
