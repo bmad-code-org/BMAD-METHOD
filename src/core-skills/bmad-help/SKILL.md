@@ -38,7 +38,7 @@ module,skill,display-name,menu-code,description,action,args,phase,preceded-by,fo
 
 **Phases** determine the high-level flow:
 - `anytime` — available regardless of workflow state
-- Skills group into folders (`planning`, `shipping`; some modules use numbered phases) and flow in order; naming varies by module
+- Skills group into folders (`plan`, `ship`; some modules use numbered phases) and flow in order; naming varies by module
 
 **Sequencing** determines recommended ordering within and across phases (these are soft suggestions, not hard gates — see `required` for gating):
 - `preceded-by` — skills that should ideally complete before this one

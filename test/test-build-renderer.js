@@ -62,7 +62,7 @@ function assert(condition, message) {
 // Helpers
 // ---------------------------------------------------------------------------
 
-const SKILL_SRC = path.join(__dirname, '..', 'src', 'bmm-skills', 'shipping', 'bmad-build');
+const SKILL_SRC = path.join(__dirname, '..', 'src', 'bmm-skills', 'ship', 'bmad-build');
 
 /**
  * Recursively copy a directory (stdlib only, no fs.cp to stay >=20 compat).

@@ -11,7 +11,7 @@ const { spawn, spawnSync } = require('node:child_process');
 
 const REPO = path.resolve(__dirname, '..');
 const SCRIPT_SRC = path.join(REPO, 'src', 'scripts');
-const SKILL_SRC = path.join(REPO, 'src', 'bmm-skills', 'shipping', 'bmad-build-auto');
+const SKILL_SRC = path.join(REPO, 'src', 'bmm-skills', 'ship', 'bmad-build-auto');
 const tempDirs = [];
 let total = 0;
 let passed = 0;

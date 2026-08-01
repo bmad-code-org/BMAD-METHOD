@@ -48,7 +48,7 @@
     "test:install": "node test/test-installation-components.js",
     "test:refs": "node test/test-file-refs-csv.js",
     "test:renderer": "uv run --python 3.11 python -m unittest src/scripts/tests/test_config_utils.py src/scripts/tests/test_resolve_config.py src/scripts/tests/test_resolve_customization.py && node test/test-build-renderer.js && node test/test-build-auto-renderer.js",
-    "test:retrospective": "uv run --python 3.11 src/bmm-skills/shipping/bmad-retrospective/scripts/tests/test_git_evidence.py && uv run --python 3.11 src/bmm-skills/shipping/bmad-retrospective/scripts/tests/test_sprint_status.py",
+    "test:retrospective": "uv run --python 3.11 src/bmm-skills/ship/bmad-retrospective/scripts/tests/test_git_evidence.py && uv run --python 3.11 src/bmm-skills/ship/bmad-retrospective/scripts/tests/test_sprint_status.py",
     "test:site-url": "node test/test-site-url.mjs",
     "test:skills": "node test/test-validate-skills.js",
     "test:urls": "node test/test-parse-source-urls.js",
