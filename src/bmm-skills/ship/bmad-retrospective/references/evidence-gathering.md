@@ -1,24 +1,67 @@
 # Evidence Gathering
 
-Phase 1 of the retrospective. Enumerate what the completed epic produced, so every later analysis works from real artifacts instead of memory. Output is an inventory: what exists, what is missing, and the diff range the rest of the retro will read.
+Phase 1 records what the selected epic produced and what evidence is unavailable. Use the selected mode's inventory as the source of truth.
 
-## Inventory checklist
+## Sprint mode
 
-Collect what the epic produced and note the source path or range of each:
+Collect these items:
 
-- **Epic spec** — the epic file under `{planning_artifacts}`, including any declared acceptance criteria. If the spec declares how the epic will be judged, that governs Phase 4; if not, note that the verdict will be profiled from the diff.
-- **Story files** — the story specs implemented under this epic (`{implementation_artifacts}`), each carrying its intent and context. These mark the boundaries between coding sessions.
-- **Diff range and commits** — the full set of changes the epic introduced. Establish the range from the first and last story commits (or ask the user for it). The range must *include* the first story commit: `A..B` excludes `A`, so use the parent of the first commit as the left endpoint — `<first-commit>^..<last-commit>` — or the whole first story disappears from the diff, the commit attribution, and the verdict evidence. Then run `uv run --no-cache {skill-root}/scripts/git_evidence.py --repo {project-root} --range <range> --stories <story-ids>` to get, as JSON, the per-story commit attribution and the per-file change volume — added / deleted / net across the range — that Phase 2 reads. Record the range explicitly; Phase 2's aggregate views and the `bmad-review` pass both read it. When the range cannot be established, say so and narrow the scope rather than guessing. Read the output keys precisely: each commit carries `is_merge` and `stories` — *every* id its subject names, so a commit spanning two stories counts for both. `files` sums non-merge commits only. `merge_files` is each measured merge's diff against its first parent, so it *restates* the churn that merge brought in plus whatever the conflict resolution added — never add it into `files`, and never read it as merge-introduced work on its own. `merges_measured` counts the merges on the range head's first-parent spine; `merge_count` counts every merge in the range, so a gap between the two means merges went unmeasured. `binary_revisions` is unmeasured churn, not zero churn.
-- **Sprint status** — `{implementation_artifacts}/sprint-status.yaml`, for which stories are `done` and the current retro-key state.
-- **Previous retrospective** — the prior epic's retro doc, if one exists, so Phase 4 can check whether last epic's action items landed.
-- **Session logs** — conversation or session records for the epic's stories, when available. They are the only record of *why* a session took an unexpected turn — what was tried and abandoned. They are also the evidence most likely to be deleted or expire, so capture references now.
+- The epic file under `{planning_artifacts}`, including declared acceptance criteria.
+- The epic's story files under `{implementation_artifacts}`.
+- `{implementation_artifacts}/sprint-status.yaml`, including the ordered story states and retrospective key.
+- The previous epic's retrospective, when present.
+- Available session logs for the epic's stories.
+
+Establish a diff range from the first and last story commits. Include the first commit by using `<first-commit>^..<last-commit>`. Run:
+
+```sh
+uv run --no-cache {skill-root}/scripts/git_evidence.py \
+  --repo "{project-root}" --range "<range>" --stories "<comma-separated-story-ids>"
+```
+
+Keep sprint selection, evidence, and status behavior unchanged.
+
+## Stories mode
+
+Use the successful `stories_status.py inspect` result as the inventory. Record:
+
+- `{spec-folder}/SPEC.md` as the declared epic intent.
+- Every returned story record in `stories.yaml` order, including its artifact path and current status.
+- Each available `baseline_revision..final_revision` returned as `revision_range`.
+- `{spec-folder}/RETROSPECTIVE.md` when resuming.
+- Available session logs for each story.
+
+Group stories that share the same non-null revision range. For each distinct range, pass every story id in that group and collect its commits and file changes once:
+
+```sh
+uv run --no-cache {skill-root}/scripts/git_evidence.py \
+  --repo "{project-root}" --range "<baseline_revision>..<final_revision>" \
+  --stories "<comma-separated-story-ids>"
+git -C "{project-root}" diff --no-ext-diff \
+  "<baseline_revision>..<final_revision>" --
+```
+
+If `git_evidence.py` rejects a range, record it as unavailable and surface the error; do not replace an endpoint with `HEAD`. If a story has `NO_VCS` or lacks a complete range, record that its commit and diff evidence is unavailable. Do not write revisions back to the story file.
+
+Compare distinct ranges before aggregating results. Record gaps or branch divergence as limits on the epic-wide diff. When ranges overlap, count shared commits and file changes once in aggregate views while retaining each story's range as provenance.
+
+## Reading git evidence
+
+Read the JSON fields as follows:
+
+- Each commit includes `is_merge` and every matching story id in `stories`.
+- `files` reports non-merge change volume.
+- `merge_files` measures selected merges against their first parent and repeats the merged change; do not add it to `files`.
+- A gap between `merge_count` and `merges_measured` means some merges were not measured.
+- `binary_revisions` is unmeasured change, not zero change.
 
 ## Missing evidence
 
-Evidence availability varies; never hide a gap. Each later analysis declares what it needs and, when that input is absent, records a narrowed scope rather than guessing. A reader of the final retro must always be able to tell **"checked and clean"** from **"never checked."**
+State each gap and narrow later analysis accordingly:
 
-- Missing session logs → process-lesson analysis is skipped, and the retro says so.
-- No declared acceptance criteria → the verdict is profiled from the diff and stories, flagged as profiled rather than declared.
-- Sub-agents unavailable → analyses that would delegate run inline over a narrowed scope, and the narrowing is recorded.
+- Missing session logs means process analysis excludes session decisions.
+- No declared acceptance criteria means Phase 4 profiles criteria from the intent, stories, and diff and labels them `profiled`.
+- No usable revision range means code analysis excludes that story's commit and diff history.
+- If delegated review is unavailable, run the checks inline and record the reduced scope.
 
-Carry the inventory forward into Phase 2 as the authoritative list of what is available to read.
+The final document must distinguish evidence that was checked from evidence that was unavailable.

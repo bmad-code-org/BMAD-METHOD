@@ -1,89 +1,124 @@
 ---
 name: bmad-retrospective
-description: 'Evidence-based epic retrospective — collect what the epic produced, verify findings against sources, render an acceptance verdict. Use when the user says "run a retrospective" or "lets retro the epic [epic]". Supports -H/--headless.'
+description: 'Review a completed sprint epic or spec-folder epic from its source evidence and render an acceptance verdict. Use when the user says "run a retrospective" or "retro this epic". Supports -H/--headless.'
 ---
 
 # Retrospective
 
-Review a completed epic by reading the evidence it left — the epic spec, story files, the full diff, per-story commits, sprint status, and session logs when they exist. An unattended epic run leaves a record; this skill reads that record, surfaces the defects no single story could show, and judges the epic against the criteria it set for itself.
-
-Every finding you report carries a source reference (file, line, commit, or log). A claim you cannot point at — an invented root cause, a pattern the diff does not actually show — is not a finding. Drop it.
+Review an epic from its declared intent, story records, commits, diffs, verification results, and available session logs. Cite a file, line, commit, diff, or log for every finding. Drop claims that cannot be checked against a source.
 
 ## Resolution rules
 
-- Bare paths and `{skill-root}` (e.g. `references/aggregate-views.md`, `scripts/sprint_status.py`) resolve from this skill's installed directory.
-- `{project-root}` → the project working directory.
-- `{skill-name}` → the skill directory's basename.
+- Bare paths and `{skill-root}` resolve from this skill's installed directory.
+- `{project-root}` is the project working directory.
+- `{skill-name}` is the skill directory's basename.
 
 ## Modes
 
-Interactive by default. With `-H`/`--headless`: skip every confirmation, take the epic from the invocation (falling back to detection only if none was supplied), never open the team discussion, render the verdict on the evidence alone, and record each assumption made without the user (which epic was selected, the machine verdict, each proposed item) into the retrospective document's Assumptions section so the audit trail survives. The Phase 4 acceptance fail-safe still applies in headless runs.
+There are two peer modes:
 
-For automation, `-H <epic>` — an explicit epic in headless mode — is the stable orchestrator-facing interface. Pass the same number to `detect-epic --epic <N>` so the unfinished-story gate is script-backed (see Inputs). Epic auto-detection is a human convenience, not an automation contract: unflagged `detect-epic` returns the highest epic with *any* `done` story, and stories-mode projects have no `sprint-status.yaml` to detect from.
+- **Sprint mode** uses `{implementation_artifacts}/sprint-status.yaml`, saves a dated retrospective under `{implementation_artifacts}`, and updates sprint status during finalization.
+- **Stories mode** uses a folder containing `SPEC.md`, `stories.yaml`, and `stories/<id>-*.md`. It saves `{spec-folder}/RETROSPECTIVE.md` and never reads or writes sprint status after selection.
+
+Runs are interactive unless the invocation includes `-H` or `--headless`. Headless runs skip confirmations and team discussion, decide from the evidence, and record every unattended choice in the document's Assumptions section.
 
 ## On Activation
 
-Run these in order before the retrospective begins:
+Run these steps in order:
 
-1. **Resolve the workflow block.** Run `uv run --no-cache {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`. If it fails, resolve `{workflow.*}` yourself by reading `{skill-root}/customize.toml`, then `{project-root}/_bmad/custom/{skill-name}.toml`, then `.user.toml` in that order, merging base → team → user (scalars override, keyed arrays-of-tables merge by `code`/`id`, other arrays append).
-2. **Run prepend steps** — execute each entry in `{workflow.activation_steps_prepend}` in order.
-3. **Load persistent facts** — treat every `{workflow.persistent_facts}` entry as standing context. `file:` entries are paths/globs under `{project-root}` whose contents load as facts; all others are literal facts.
-4. **Load config** from `{project-root}/_bmad/bmm/config.yaml`: `project_name`, `user_name`, `communication_language`, `document_output_language`, `user_skill_level`, `planning_artifacts`, `implementation_artifacts`, and `date` (system datetime). Speak all output in `{communication_language}`; write all documents in `{document_output_language}`. Never state time estimates — AI has changed development speed, so hour/day/week predictions are noise.
-5. **Greet and orient** (interactive only). Greet `{user_name}`, name the epic you are about to retro, and optionally invite their going-in concerns ("anything you want weighted — a story that felt rushed, a risky interaction between two stories?"). Use any answer to focus the Phase 1–2 analysis; it directs attention but never becomes a finding without a source.
-6. **Run append steps** — execute each entry in `{workflow.activation_steps_append}` in order.
+1. Run `uv run --no-cache {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`. If it fails, resolve `{workflow.*}` by reading `{skill-root}/customize.toml`, `{project-root}/_bmad/custom/{skill-name}.toml`, then `.user.toml`, merging base, team, then user. Scalars override earlier values, keyed table arrays merge by `code` or `id`, and other arrays append.
+2. Run each `{workflow.activation_steps_prepend}` entry in order.
+3. Load every `{workflow.persistent_facts}` entry. A `file:` entry is a path or glob under `{project-root}`; other entries are literal facts.
+4. Load `{project-root}/_bmad/bmm/config.yaml`: `project_name`, `user_name`, `communication_language`, `document_output_language`, `user_skill_level`, `planning_artifacts`, and `implementation_artifacts`. Load `output_folder` from `{project-root}/_bmad/core/config.yaml`. Set `date` from the system clock. Speak in `{communication_language}` and write documents in `{document_output_language}`. Do not state time estimates.
+5. Resolve the mode and epic using the rules below.
+6. In an interactive run, greet `{user_name}`, name the selected epic or spec folder, and ask whether any area needs extra attention. Treat the answer as a focus request, not evidence.
+7. Run each `{workflow.activation_steps_append}` entry in order.
 
-## Inputs
+## Input resolution
 
-| Input | Where | Use |
-|-------|-------|-----|
-| epic | invocation argument, or detected from sprint status | which epic to retro |
-| sprint status | `{implementation_artifacts}/sprint-status.yaml` | epic detection + final status update |
-| architecture / prd | `{planning_artifacts}/*architecture*`, `*prd*` | context for judging as-built vs intended |
-| previous retro (optional) | `{implementation_artifacts}/**/epic-{{prev}}-retro-*.md` | check whether last epic's actions landed |
-| session logs (optional) | conversation/session records for the epic's stories | process lessons; record the gap when absent |
+An explicit folder path takes priority over sprint status. When the invocation identifies a folder, run:
 
-Determine the epic and its unfinished-story list from `sprint_status.py detect-epic` whenever `{implementation_artifacts}/sprint-status.yaml` is available:
+```sh
+uv run --no-cache {skill-root}/scripts/stories_status.py inspect --folder "<folder>"
+```
 
-- **Epic supplied** (including the stable `-H <epic>` orchestrator path): run `uv run --no-cache {skill-root}/scripts/sprint_status.py detect-epic --file {implementation_artifacts}/sprint-status.yaml --epic <N>`. The script scopes `pending_stories` to that number even when auto-detect would have picked a different epic, and even when the epic has no `done` story yet. `story_count` is that same scoped count of the epic's story keys: `0` means the file has no such epic at all — a nonexistent epic returns the same empty `pending_stories` as a finished one, so treat `story_count: 0` as a likely mistyped epic number, confirm with the user, and headless, stop and report rather than proceeding.
-- **No epic supplied**: run the same command without `--epic` (returns the highest epic with a `done` story). Confirm the detected epic with the user and let them override; in headless mode accept it and record the assumption. If detection returns none, ask the user — or, headless, stop and report.
+Use the returned ordered `stories` list and select stories mode. If the command fails, surface its JSON error and stop. Do not fall back to sprint mode for an invalid explicit folder.
 
-If the script exits non-zero it emits `{"ok": false, "error": ...}` instead of a detection — the normal path for a stories-mode project with no `sprint-status.yaml`, and for a file that does not parse: surface that error verbatim — or, if the script produced no JSON at all, whatever it wrote to stderr — and ask the user which epic to retro; headless, stop and report. Without a readable sprint-status file there is no `pending_stories` list; record that the completeness check did not run and continue only if the user (or headless Assumptions trail) accepts proceeding without it.
+When no folder was supplied and `{implementation_artifacts}/sprint-status.yaml` exists, select sprint mode and keep the existing selection behavior:
 
-Then check the epic is actually finished before Phase 1. A successful detect carries `pending_stories` — the selected epic's story keys whose status is not `done`, in file order, scoped to that epic alone (an unfinished story in some *other* epic is out of scope for this retrospective). When the list is non-empty, interactively list those stories and ask whether to retro an unfinished epic: if the user declines, stop and report — do not enter Phase 1; if they accept, record the stories they accepted proceeding over in the document's Epic summary. Headless, proceed and record the same list in the Assumptions section — do not invent a confirmation. Either way the list sits in the document, and Phase 4's machine verdict is **rejected** when any story remained unfinished (see `references/acceptance-verdict.md`); a human may override interactively.
+- If an epic number was supplied, run `uv run --no-cache {skill-root}/scripts/sprint_status.py detect-epic --file "{implementation_artifacts}/sprint-status.yaml" --epic <N>`.
+- Otherwise run the same command without `--epic`. It returns the highest epic with a `done` story. Confirm it interactively; accept it and record the assumption headlessly.
+- Treat `story_count: 0` for an explicit number as a likely mistake. Confirm interactively; stop headlessly.
+- If detection returns JSON with `ok: false`, surface its error. If it returns no JSON, surface stderr. Ask for an epic interactively; stop headlessly.
+
+When an epic number was supplied but sprint status does not exist, surface that the requested sprint epic cannot be resolved and stop. Do not replace it with an auto-detected spec folder.
+
+When neither a folder nor an epic number was supplied and sprint status does not exist, find spec-folder candidates:
+
+```sh
+uv run --no-cache {skill-root}/scripts/stories_status.py detect \
+  --root "{output_folder}/specs" \
+  --root "{planning_artifacts}" \
+  --root "{implementation_artifacts}"
+```
+
+- No candidates: ask for a spec folder interactively; stop headlessly.
+- One candidate: inspect it and select stories mode. If inspection fails, surface the JSON error and stop. Record auto-selection in a headless run.
+- Multiple candidates: show the paths and ask the user to choose. In a headless run, stop and require an explicit folder.
+
+Never choose silently among multiple candidates. Once stories mode is selected, do not access sprint status.
+
+## Completeness
+
+The selected detector supplies `pending_stories` in authoritative order. Sprint mode uses sprint-status file order. Stories mode uses `stories.yaml` list order and each uniquely matched story artifact's frontmatter `status`.
+
+When `pending_stories` is non-empty:
+
+- In an interactive run, list the ids and ask whether to inspect the incomplete epic. Stop before Phase 1 if the user declines. If the user continues, record the ids in Epic summary.
+- In a headless sprint-mode run, continue under the existing behavior, record the ids in Assumptions, and force the final machine verdict to `rejected`.
+- In a headless stories-mode run, create or reconcile `RETROSPECTIVE.md`, record the ordered ids and the forced `rejected` verdict, finalize it without Phase 1 analysis, and stop.
+
+An interactive human may override the machine verdict after seeing the incomplete list. The source inventory and recorded revisions remain read-only.
 
 ## Working state and resumption
 
-The retrospective document is the working artifact, not only the final output. Once the epic is fixed, create it as a skeleton (`references/retro-document.md` names the sections) and write each phase's result into it as you finish — inventory, then findings with sources, then dispositions and verdict. Continuity is re-reading the file.
+Create the retrospective skeleton after selection. Sprint mode uses `{implementation_artifacts}/epic-{{epic_number}}-retro-{date}.md`; stories mode uses `{spec-folder}/RETROSPECTIVE.md`. In stories mode, retain the first inspection's `source_hashes` until finalization.
 
-If a retrospective document for this epic already exists, load it, reconcile its recorded state against the current evidence — the current evidence wins, since commits may have landed and questions may have been answered since — and resume at the first incomplete phase instead of redoing finished ones.
+Write each completed phase into the file. Sprint-mode resumption remains unchanged. In stories mode, then add the phase name to frontmatter `completed_phases`. For an existing stories-mode file, first validate that its frontmatter is a mapping for the selected folder and that `completed_phases` contains only `gather`, `analyze`, `discussion`, `decide`, or `finalize`. Stop on malformed or mismatched working state. Reconcile current evidence with recorded content, refresh the stored pre-run hashes, then resume at the first required phase absent from `completed_phases`; discussion remains optional. Current inventory, statuses, revisions, commits, and diffs take precedence over earlier content.
 
 ## Flow
 
-Run the phases in order. A default run stops at a written evidence report and verdict; the team discussion in Phase 3 is opt-in.
+Run the phases in order. Team discussion is optional and never runs headlessly.
 
-### Phase 1 — Gather
+### Phase 1: Gather
 
-Enumerate what the epic actually produced and record what is missing. Load `references/evidence-gathering.md` for the inventory checklist, the `git_evidence.py` pre-pass that derives the diff range and per-story commits, and the missing-evidence rule: each later analysis declares what it needs and records a narrowed scope when the evidence is absent, so a reader can always tell "checked and clean" from "never checked."
+Load `references/evidence-gathering.md`. Record the intent source, ordered story inventory, revisions, commits, diffs, verification evidence, and available session logs. Record missing evidence without guessing.
 
-### Phase 2 — Analyze
+### Phase 2: Analyze
 
-Produce findings, each with a source reference, from three angles:
+Produce source-linked findings from these checks:
 
-- **Aggregate views** — the defects no single diff hunk shows: architecture delta, duplication map, god-class growth, pattern divergence, spec-to-implementation reconciliation. Load `references/aggregate-views.md` for the catalog and how to derive each (deterministic scripts first).
-- **Diff-scope review** — do not reimplement review. Invoke **`bmad-review`** on the epic's diff for the code lenses (adversarial, edge-case, verification-gap), weighting the boundaries between stories, where no single session ever saw both sides. Fold its findings in. If `bmad-review` is unavailable, run those lenses inline over the diff on a narrowed scope and record the narrowing.
-- **Behavior check (when the epic changed runtime behavior)** — exercise the changed flows end to end and record what you observed. Passing tests do not substitute for running the system.
+- Load `references/aggregate-views.md` and compare the full epic result with the declared intent, architecture, repeated code, file growth, and established patterns. Use deterministic tools first.
+- Invoke `bmad-review` over the measured epic diff or each stories-mode revision range. Focus on interactions between stories. If the skill is unavailable, run the same review checks inline and record the reduced scope.
+- When runtime behavior changed, exercise the changed flow end to end and record the observed result. Tests alone do not replace this check.
 
-Consolidate: merge, dedupe, and provenance-link findings. Drop any finding you cannot tie to a source.
+Merge duplicate findings and retain their source references.
 
-### Phase 3 — Team Discussion (opt-in)
+### Phase 3: Team discussion
 
-Skip by default; never runs headless. When the user asks to "discuss it as a team," "run party mode," or similar, invoke the skill `bmad-party-mode` seeded with the Phase 2 findings so the installed agents react to real evidence — the god class the diff really grew, the verification gap that is actually there, the wins the evidence confirms. Load `references/team-discussion.md` for how to seed it and keep it grounded. If `bmad-party-mode` is unavailable, run the discussion inline over the Phase 2 findings and record the narrowing. The rule: agents speak only to findings with sources.
+Run only when the user asks for a team discussion. Invoke `bmad-party-mode` with the Phase 2 findings and load `references/team-discussion.md`. If unavailable, discuss the findings inline and record the reduced scope. Participants may address only source-linked findings.
 
-### Phase 4 — Decide
+### Phase 4: Decide
 
-- **Action items** — compile fix-now findings and process lessons into specific, owned action items. Fixes and spec reconciliations are *proposed here*, not auto-applied; the human decides what to execute.
-- **Acceptance verdict** — judge the final state against the epic's declared acceptance criteria (profile it from the diff and stories if none were declared): **accepted**, **accepted-with-open-items**, or **rejected** — one spelling, everywhere a machine reads it. Unfinished stories in `pending_stories` force the machine verdict to **rejected**. A human decision always overrides. An epic that fails its criteria with no human decision is recorded as *not accepted* — never as silently accepted. Load `references/acceptance-verdict.md` for the rubric, the finding-routing dispositions, and the previous-retro follow-through record — the per-item evidence Phase 5's status offer reads.
+Compile fix-now findings and process lessons into specific action items with owners. Do not apply fixes or edit source specifications.
 
-### Phase 5 — Finalize
+Load `references/acceptance-verdict.md`. Render exactly one machine verdict: `accepted`, `accepted-with-open-items`, or `rejected`. A non-empty authoritative pending list forces `rejected`. A human may override interactively.
 
-Finalize the retrospective document and update sprint status. Load `references/retro-document.md` for the document's sections and the exact `sprint_status.py update` invocation that marks the retro key `done`, appends the action items, and validates the write. Where the Phase 4 follow-through has evidence a *previous* epic's action item landed, offer `--set-action-status` and pass only the transitions the user confirms — the evidence justifies proposing a transition, and only the user's confirmation justifies writing it; a headless run records the transitions it would have proposed and does not pass the flag at all. Then, if `{workflow.on_complete}` is non-empty, follow it as the final instruction.
+### Phase 5: Finalize
+
+Load `references/retro-document.md` and follow the section for the selected mode.
+
+- Sprint mode keeps its existing `sprint_status.py update` flow, including action items and confirmed previous-item transitions.
+- Stories mode finalizes only `{spec-folder}/RETROSPECTIVE.md`. Do not call `sprint_status.py`, create sprint status, or store action items anywhere else.
+
+Then follow `{workflow.on_complete}` when it is non-empty.

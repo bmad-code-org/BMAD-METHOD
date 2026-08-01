@@ -1,56 +1,85 @@
 ---
 title: "Retrospective"
-description: Close out a finished epic by reading the evidence it left — the diff, the commits, the specs — and judging the result instead of trusting memory.
+description: Review a completed sprint epic or spec-folder epic from its specifications, story records, commits, diffs, and verification evidence.
 sidebar:
   order: 15
 ---
 
-Run `bmad-retrospective` when an epic is done. It reads what the epic actually produced (the specs, the full diff, the per-story commits, the sprint status) and works from that evidence rather than anyone's recollection of how the work went. What comes back is a written review, a set of owned action items, and a verdict on whether the epic met its bar.
+Run `bmad-retrospective` after an epic completes. It records the available evidence, reviews the result across story boundaries, proposes owned action items, and writes an acceptance verdict.
 
-## What it does
+Every finding includes a source reference such as a file, line, commit, diff, test result, or session log. Unsupported claims are excluded.
 
-An epic ships as a stack of stories, each built and reviewed on its own. The retrospective looks at all of it at once and pulls out what no single story could show:
+## Supported epic formats
 
-- **Aggregate defects** — the architecture that drifted, the helper written twice, the class that grew past a healthy size a few hundred lines at a time.
-- **Diff-scope review** — it hands the epic's diff to `bmad-review` for the code lenses, weighting the seams between stories where no single session saw both sides.
-- **Spec reconciliation** — where the built code diverged from what the epic and PRD described.
-- **An acceptance verdict** — the epic judged against its own acceptance criteria.
+The skill supports two independent formats.
 
-Every finding carries a source reference: a file, a line, a commit, a log. A claim it can't point at doesn't make the report.
+### Sprint status
 
-## Why run it after an epic
+Sprint mode selects an epic from `{implementation_artifacts}/sprint-status.yaml`. It saves a dated retrospective under the implementation artifacts, marks the sprint retrospective key `done`, and appends proposed action items through the sprint-status helper.
 
-Each story passed its own review in isolation, so the bugs that survive to this point are the ones isolation hides. Nine sessions each add a little to the same file, and none of them ever sees the god class they built together. No session judged the epic as a whole against what it set out to deliver, either. That whole-epic view is the gap this closes, and the end of an epic is the moment to close it: the diff is fresh and the session logs haven't been cleared yet.
+Existing sprint selection and update behavior is unchanged.
 
-:::note[It reads evidence, it doesn't invent it]
-The retrospective reports what the diff, the commits, and the specs actually show. It won't manufacture a root cause or a pattern the code doesn't back up.
-:::
+### Spec folder
 
-## What you get
+Stories mode accepts a folder with this structure:
 
-Two artifacts and a decision:
+```text
+spec-example/
+├── SPEC.md
+├── stories.yaml
+└── stories/
+    ├── 1-first-story.md
+    └── 2-second-story.md
+```
 
-- **A retrospective document** in your implementation artifacts — the evidence inventory, findings grouped with their sources, the verdict, and the action items.
-- **An updated sprint status** — the epic's retrospective marked done, each action item appended with a stable id and a link back to its finding.
-- **A verdict** of `accepted`, `accepted-with-open-items`, or `rejected`, which tells you whether to start the next epic or hold and fix first. Unfinished stories for that epic make the machine verdict **rejected** (a human can still override interactively).
+Invoke it by naming the folder, for example:
 
-## What to do with the output
+```text
+run a retrospective for _bmad-output/specs/spec-example
+```
 
-The skill proposes; you decide what runs. Nothing touches your code or your specs automatically.
+An explicit folder selects stories mode even when sprint status exists. The `stories.yaml` list order is authoritative. Every id must match exactly one `stories/<id>-*.md` file, and the file's frontmatter `status` supplies its current delivery state.
 
-- **Action items** feed the normal dev loop as fix-now work or fresh stories. The retrospective writes them up. It doesn't execute them.
-- **Spec reconciliations** arrive with the evidence attached, for you to apply to the project contract by hand. An uncertain interpretation never gets written into a spec on its own.
-- **The verdict** is the gate. A rejected epic, or one accepted with open items, tells the next planning step what to carry forward.
+Stories mode writes and resumes `<spec-folder>/RETROSPECTIVE.md`. It never requires, creates, reads, or updates `sprint-status.yaml`, and it does not edit `SPEC.md`, `stories.yaml`, story files, or recorded revisions.
 
-A failing epic never closes as quietly accepted. If the criteria aren't met, or any of the epic's stories are still unfinished, and no one overrides the call, it closes as not accepted.
+## Automatic selection
 
-## Running it
+When no epic is supplied and sprint status exists, normal sprint detection runs.
 
-Say "run a retrospective" or "let's retro epic 3." It finds the completed epic from sprint status, or takes the one you name, and by default stops at the written report and verdict.
+When sprint status is absent, the skill searches configured spec roots. One candidate is selected automatically. Multiple candidates are shown for interactive selection; a headless run stops and requires an explicit folder rather than guessing.
 
-| You want | Do this |
+An explicit epic number still means sprint mode. If sprint status is absent, that request stops instead of selecting an unrelated spec folder.
+
+For stable automation, always pass an explicit epic number or spec-folder path:
+
+```text
+-H 3
+-H _bmad-output/specs/spec-example
+```
+
+## Completeness and evidence
+
+An epic is complete only when every selected story has `status: done`. Pending stories are listed in their source order and force the machine verdict to `rejected`. An interactive user may continue inspecting the incomplete epic and may override the verdict. A headless stories-mode run records the rejection and stops before analysis.
+
+For stories mode, each story's recorded `baseline_revision..final_revision` identifies its commits and diff. Missing or `NO_VCS` revisions are recorded as evidence gaps; they are never replaced with `HEAD` or written back to the story.
+
+Missing `SPEC.md`, invalid `stories.yaml`, malformed frontmatter, duplicate or invalid ids, ambiguous file matches, and missing or non-string statuses stop before analysis with a structured error.
+
+## Output
+
+Both modes use the verdict vocabulary `accepted`, `accepted-with-open-items`, and `rejected`. The document includes the evidence inventory, findings, behavior verification, action items, verdict, open questions, and headless assumptions when applicable.
+
+If a stories-mode retrospective already exists, its `completed_phases` frontmatter records where to resume. The skill validates that the file belongs to the selected folder, compares it with the current inventory, and resumes the first incomplete required phase. Current evidence takes precedence over recorded working state.
+
+Stories mode records SHA-256 hashes for `SPEC.md`, `stories.yaml`, and the selected story files at the start of a run. It compares them again before finalization so the read-only guarantee is checked rather than assumed.
+
+## Common invocations
+
+| Goal | Invocation |
 | --- | --- |
-| A standard review | "run a retrospective" |
-| A specific epic | "retro epic 3" |
-| The team to talk it over | Ask to "discuss it as a team" — it convenes [party mode](./party-mode.md) over the real findings, off by default |
-| An unattended run for automation | `-H <epic>` — headless, verdict on the evidence alone |
+| Detect a sprint epic | "run a retrospective" |
+| Select sprint epic 3 | "retro epic 3" |
+| Select a spec folder | "retro `_bmad-output/specs/spec-example`" |
+| Run sprint mode headlessly | `-H 3` |
+| Run stories mode headlessly | `-H _bmad-output/specs/spec-example` |
+| Add an interactive team discussion | Ask to "discuss it as a team" |

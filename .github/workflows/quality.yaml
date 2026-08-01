@@ -5,7 +5,7 @@ name: Quality & Validation
 # - ESLint (linting)
 # - markdownlint (markdown quality)
 # - Installation component tests (compilation)
-# - Retrospective Python tests
+# - Retrospective Python and orchestration contract tests
 # Keep this workflow aligned with `npm run quality` in `package.json`.
 
 "on":
@@ -113,7 +113,7 @@ jobs:
       - name: Test workflow renderers
         run: npm run test:renderer
 
-      - name: Test retrospective scripts
+      - name: Test retrospective scripts and orchestration contracts
         run: npm run test:retrospective
 
       - name: Validate file references
