@@ -7,10 +7,7 @@ const path = require('node:path');
 
 const root = path.join(__dirname, '..');
 const skill = fs.readFileSync(path.join(root, 'src/bmm-skills/ship/bmad-retrospective/SKILL.md'), 'utf8');
-const documentReference = fs.readFileSync(
-  path.join(root, 'src/bmm-skills/ship/bmad-retrospective/references/retro-document.md'),
-  'utf8',
-);
+const documentReference = fs.readFileSync(path.join(root, 'src/bmm-skills/ship/bmad-retrospective/references/retro-document.md'), 'utf8');
 
 const tests = [];
 
