@@ -13,6 +13,12 @@ Collect what the epic produced and note the source path or range of each:
 - **Previous retrospective** — the prior epic's retro doc, if one exists, so Phase 4 can check whether last epic's action items landed.
 - **Session logs** — conversation or session records for the epic's stories, when available. They are the only record of *why* a session took an unexpected turn — what was tried and abandoned. They are also the evidence most likely to be deleted or expire, so capture references now.
 
+## Stories mode
+
+A stories-mode epic is a spec folder. Map it onto the checklist above: `SPEC.md` is the epic spec; `stories.yaml` in list order is the story list, each entry's artifact being the single `stories/<id>-*.md` it names; there is no sprint status; the previous retrospective, when resuming, is `{spec-folder}/RETROSPECTIVE.md`; session logs are unchanged.
+
+The diff range differs. Each story records its own baseline in its artifact frontmatter — `baseline_revision` from `bmad-build-auto`, `baseline_commit` from `bmad-build` — so there is no single epic-wide range. Take the range end from `final_revision` when the artifact carries one; otherwise it is the next story's baseline in list order, which is exact because `bmad-build` adds no commit of its own after the work. For the last story, when nothing records the end, say so rather than substituting `HEAD`. A baseline that is absent or is not a revision leaves that story with no commit or diff evidence — record that too. Group the stories sharing an identical range and run `git_evidence.py` once per distinct range, passing that group's ids as one comma-separated `--stories` value. No `^` is needed here: unlike the sprint-mode range above, the recorded baseline is already the pre-change commit. Ranges may overlap or diverge; count a shared commit or file change once in the aggregate views while keeping each story's range as its provenance.
+
 ## Missing evidence
 
 Evidence availability varies; never hide a gap. Each later analysis declares what it needs and, when that input is absent, records a narrowed scope rather than guessing. A reader of the final retro must always be able to tell **"checked and clean"** from **"never checked."**
