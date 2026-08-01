@@ -26,7 +26,8 @@ from ruamel.yaml import YAML
 
 SCRIPT = Path(__file__).resolve().parents[1] / "sprint_status.py"
 TEMPLATE = (
-    Path(__file__).resolve().parents[3]
+    Path(__file__).resolve().parents[4]
+    / "plan"
     / "bmad-sprint-planning"
     / "sprint-status-template.yaml"
 )
