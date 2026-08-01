@@ -230,7 +230,7 @@ your-project/
 | `bmad-architecture`          | `bmad-architecture`             | Architect | 创建架构文档                                |
 | `bmad-generate-project-context`     | `bmad-generate-project-context`        | Analyst  | 创建项目上下文文件                           |
 | `bmad-create-epics-and-stories`     | `bmad-create-epics-and-stories`        | PM       | 将 PRD 分解为史诗                            |
-| `bmad-sprint-planning`              | `bmad-sprint-planning`                 | DEV      | 就绪 gate 检查 + 初始化冲刺跟踪              |
+| `bmad-sprint-planning`              | `bmad-sprint-planning`                 | DEV      | 就绪 gate 检查 + 初始化冲刺跟踪 + 冲刺状态摘要              |
 | `bmad-build`                    | `bmad-build`                       | DEV      | 实施意图、issue、功能、修复或已规划 story     |
 | `bmad-code-review`                  | `bmad-code-review`                     | DEV      | 审查已实现的代码                             |
 

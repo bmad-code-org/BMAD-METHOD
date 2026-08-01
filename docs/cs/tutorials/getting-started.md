@@ -231,7 +231,7 @@ váš-projekt/
 | `bmad-architecture`            | `bmad-architecture`                | Architect | Vytvoření dokumentu architektury                |
 | `bmad-generate-project-context`       | `bmad-generate-project-context`           | Analyst   | Vytvoření souboru kontextu projektu             |
 | `bmad-create-epics-and-stories`       | `bmad-create-epics-and-stories`           | PM        | Rozklad PRD na epicy                            |
-| `bmad-sprint-planning`                | `bmad-sprint-planning`                    | DEV       | Brána připravenosti + inicializace sledování sprintu |
+| `bmad-sprint-planning`                | `bmad-sprint-planning`                    | DEV       | Brána připravenosti + inicializace sledování sprintu + přehled stavu |
 | `bmad-build`                      | `bmad-build`                          | DEV       | Implementace záměru, issue, funkce, opravy nebo story |
 | `bmad-code-review`                    | `bmad-code-review`                        | DEV       | Revize implementovaného kódu                    |
 

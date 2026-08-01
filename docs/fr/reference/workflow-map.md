@@ -71,7 +71,7 @@ Décidez comment le construire et décomposez le travail en stories.
 |---------------------------------------|---------------------------------------------------|---------------------------------|
 | `bmad-architecture`            | Rendez explicites les décisions techniques        | `architecture.md` avec ADRs[^2] |
 | `bmad-create-epics-and-stories`       | Décomposez les exigences en tâches implémentables | Fichiers d’epic avec stories    |
-| `bmad-sprint-planning`                | Jalon de préparation avant implémentation, puis suivi des stories | OK / RÉSERVES / ÉCHEC + `sprint-status.yaml` |
+| `bmad-sprint-planning`                | Jalon de préparation avant implémentation, puis suivi des stories et vue d’état du sprint | OK / RÉSERVES / ÉCHEC + `sprint-status.yaml` |
 
 ## Phase 4 : Implémentation
 

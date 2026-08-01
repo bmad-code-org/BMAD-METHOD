@@ -48,7 +48,7 @@ Rozhodněte, jak to budovat, a rozložte práci na stories.
 | ----------------------------------------- | ------------------------------------------ | --------------------------- |
 | `bmad-architecture`                | Explicitní technická rozhodnutí            | `architecture.md` s ADR     |
 | `bmad-create-epics-and-stories`           | Rozložení požadavků na implementovatelnou práci | Soubory epiců se stories |
-| `bmad-sprint-planning`                    | Brána připravenosti před implementací, poté sledování stories | PASS/CONCERNS/FAIL + `sprint-status.yaml` |
+| `bmad-sprint-planning`                    | Brána připravenosti před implementací, poté sledování stories a přehled stavu sprintu | PASS/CONCERNS/FAIL + `sprint-status.yaml` |
 
 ## Fáze 4: Implementace
 

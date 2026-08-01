@@ -50,7 +50,7 @@
     "test:retrospective": "uv run --python 3.11 src/bmm-skills/ship/bmad-retrospective/scripts/tests/test_git_evidence.py && uv run --python 3.11 src/bmm-skills/ship/bmad-retrospective/scripts/tests/test_sprint_status.py",
     "test:site-url": "node test/test-site-url.mjs",
     "test:skills": "node test/test-validate-skills.js",
-    "test:sprint-planning": "uv run --python 3.11 src/bmm-skills/plan/bmad-sprint-planning/scripts/tests/test_sprint_plan.py",
+    "test:sprint-planning": "uv run --python 3.11 src/bmm-skills/plan/bmad-sprint-planning/scripts/tests/test_sprint_plan.py && node test/test-template-sync.js",
     "test:urls": "node test/test-parse-source-urls.js",
     "validate:refs": "node tools/validate-file-refs.js --strict",
     "validate:skills": "node tools/validate-skills.js --strict"

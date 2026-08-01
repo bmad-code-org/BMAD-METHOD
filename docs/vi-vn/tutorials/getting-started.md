@@ -231,7 +231,7 @@ your-project/
 | `bmad-architecture` | `bmad-architecture` | Architect | Tạo tài liệu kiến trúc |
 | `bmad-generate-project-context` | `bmad-generate-project-context` | Analyst | Tạo file project context |
 | `bmad-create-epics-and-stories` | `bmad-create-epics-and-stories` | PM | Phân rã PRD thành epics |
-| `bmad-sprint-planning` | `bmad-sprint-planning` | DEV | Cổng sẵn sàng + khởi tạo theo dõi sprint |
+| `bmad-sprint-planning` | `bmad-sprint-planning` | DEV | Cổng sẵn sàng + khởi tạo theo dõi sprint + xem trạng thái |
 | `bmad-build` | `bmad-build` | DEV | Triển khai ý định, issue, tính năng, bản sửa hoặc story |
 | `bmad-code-review` | `bmad-code-review` | DEV | Review phần code đã triển khai |
 
