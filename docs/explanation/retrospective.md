@@ -5,7 +5,7 @@ sidebar:
   order: 15
 ---
 
-Run `bmad-retrospective` when an epic is done. It reads what the epic actually produced (the specs, the full diff, the per-story commits, the sprint status) and works from that evidence rather than anyone's recollection of how the work went. What comes back is a written review, a set of owned action items, and a verdict on whether the epic met its bar.
+Run `bmad-retrospective` at the end of an epic. It reads what the epic actually produced (the specs, the full diff, the per-story commits, the sprint status) and works from that evidence rather than anyone's recollection of how the work went. What comes back is a written review, a set of owned action items, and a verdict on whether the epic met its bar.
 
 ## What it does
 
@@ -18,9 +18,9 @@ An epic ships as a stack of stories, each built and reviewed on its own. The ret
 
 Every finding carries a source reference: a file, a line, a commit, a log. A claim it can't point at doesn't make the report.
 
-## Why run it after an epic
+## Why the whole epic needs its own review
 
-Each story passed its own review in isolation, so the bugs that survive to this point are the ones isolation hides. Nine sessions each add a little to the same file, and none of them ever sees the god class they built together. No session judged the epic as a whole against what it set out to deliver, either. That whole-epic view is the gap this closes, and the end of an epic is the moment to close it: the diff is fresh and the session logs haven't been cleared yet.
+Each story passed its own review in isolation, so the bugs that survive to this point are the ones isolation hides. Nine sessions each add a little to the same file, and none of them ever sees how large it has grown between them. No session judged the epic as a whole against what it set out to deliver, either. That whole-epic view is the gap this closes, and the end of an epic is the moment to close it: the diff is fresh and the session logs haven't been cleared yet.
 
 :::note[It reads evidence, it doesn't invent it]
 The retrospective reports what the diff, the commits, and the specs actually show. It won't manufacture a root cause or a pattern the code doesn't back up.
@@ -30,8 +30,8 @@ The retrospective reports what the diff, the commits, and the specs actually sho
 
 Two artifacts and a decision:
 
-- **A retrospective document** in your implementation artifacts — the evidence inventory, findings grouped with their sources, the verdict, and the action items.
-- **An updated sprint status** — the epic's retrospective marked done, each action item appended with a stable id and a link back to its finding.
+- **A retrospective document** stored next to the epic it reviews — the evidence inventory, findings grouped with their sources, the verdict, and the action items.
+- **An updated sprint status** — the epic's retrospective marked done, each action item appended with a stable id and a link back to its finding. Epics that aren't tracked in sprint status keep their action items in the document.
 - **A verdict** of `accepted`, `accepted-with-open-items`, or `rejected`, which tells you whether to start the next epic or hold and fix first. Unfinished stories for that epic make the machine verdict **rejected** (a human can still override interactively).
 
 ## What to do with the output
@@ -46,11 +46,11 @@ A failing epic never closes as quietly accepted. If the criteria aren't met, or 
 
 ## Running it
 
-Say "run a retrospective" or "let's retro epic 3." It finds the completed epic from sprint status, or takes the one you name, and by default stops at the written report and verdict.
+Say "run a retrospective" or "let's retro epic 3." Name an epic and it works out that epic's stories and the commits behind them; name nothing and it finds the epic for you. By default it stops at the written report and verdict.
 
 | You want | Do this |
 | --- | --- |
 | A standard review | "run a retrospective" |
-| A specific epic | "retro epic 3" |
+| A specific epic | "retro epic 3", or name its folder: "retro `_bmad-output/specs/epic-rate-limiting`" |
 | The team to talk it over | Ask to "discuss it as a team" — it convenes [party mode](./party-mode.md) over the real findings, off by default |
 | An unattended run for automation | `-H <epic>` — headless, verdict on the evidence alone |
