@@ -1,5 +1,22 @@
 # Changelog
 
+## Unreleased
+
+### ✨ Headline
+
+**The bmm skill tree gets its verb-named shape — `agents / plan / ship` — and one skill now owns the sprint-status artifact end to end.** The numbered phase folders (`1-analysis` … `4-implementation`) collapse into two lanes whose alphabetical order matches their conceptual order, agent skills move under `agents/`, and `bmad-sprint-planning` absorbs both the implementation-readiness gate and the sprint-status view — with the mechanical work (epic parsing, status merging, summary computation) moved from inference to a tested deterministic script.
+
+### 💥 Breaking Changes
+
+* **Skill folders renamed: `agents/`, `plan/`, `ship/`** (#2658). `1-analysis`, `2-planning`, and `3-solutioning` collapse into `plan/`; `4-implementation` becomes `ship/`; agent skills live under `agents/`. Installed skill IDs are unchanged — only source-tree paths moved.
+* **`bmad-check-implementation-readiness` removed** (#2659). Its capabilities fold into `bmad-sprint-planning`, which now opens with a readiness gate (PASS/CONCERNS/FAIL). The `IR` trigger on the PM and Architect menus forwards there, so "check implementation readiness" keeps working. The old skill's document discovery hardcoded filename globs that missed current artifacts (`SPEC.md`, `DESIGN.md`); the gate discovers artifacts by content instead. Listed in `removals.txt` so installs clean up.
+* **`bmad-sprint-status` deprecated to a forwarding shim** (#2659). Now a `v6-shims/` husk that forwards to `bmad-sprint-planning`'s status view with a deprecation notice. Migrate `_bmad/custom/bmad-sprint-status.toml` overrides to `_bmad/custom/bmad-sprint-planning.toml`. Its unused data/validate modes (zero callers) are gone.
+* **`bmad-agent-tech-writer` (Paige) retired** (#2658). Her menu items were generic LLM defaults with no domain substance; `bmad-document-project` stays directly invocable and on the Analyst menu. Paige is on hiatus and will return far more capable. Listed in `removals.txt`.
+
+### 🎁 Features
+
+* **sprint-planning rebuilt around a deterministic script core** (#2659). New `scripts/sprint_plan.py` (generate / check / status subcommands, JSON-only output, 20 tests) owns epic parsing, key derivation, ordering, preserve-never-downgrade status merging, story-file detection, `action_items` carry-over, atomic writes, drift checks, and the status summary with risk flags and a priority-ordered next-action recommendation. Judgment stays with the LLM — epic discovery, the readiness verdict, reconciling script-reported orphans — and if a hand-edited status file defeats the script, the skill falls back to reading it directly and summarizing by best judgment. SKILL.md drops the legacy XML step dialect for the modern outcome-driven style. `sprint-status.yaml` format is unchanged, so build's sprint sync and retrospective tooling are unaffected. New explanation page: `docs/explanation/sprint-planning.md`.
+
 ## v6.10.0 - 2026-07-03
 
 ### ✨ Headline
