@@ -2,7 +2,7 @@
 
 **Goal:** Turn user intent into a hardened, reviewable artifact.
 
-**CRITICAL:** If a step says "read fully and follow step-XX", you read and follow step-XX. No exceptions.
+**CRITICAL:** If a step directs you to another snapshot file, read it fully and follow it. No exceptions.
 
 Subagents, when the capability is available, are an important part of this workflow. Use them as directed by the workflow steps.
 If you need an explicit user instruction to run them, ask once now for the whole workflow run.
@@ -30,10 +30,8 @@ A specification should target a **single user-facing goal** within **900–1600 
 
 ## Conventions
 
-- Bare paths (e.g. `step-01-clarify-and-route.md`) resolve from the skill root.
-- `{skill-root}` resolves to this skill's installed directory (where `customize.toml` lives).
+- Every operational cross-file reference in this workflow is an absolute snapshot path. Open it directly; do not resolve it relative to a skill directory.
 - `{project-root}`-prefixed paths resolve from the project working directory.
-- `{skill-name}` resolves to the skill directory's basename.
 - Whenever this workflow captures or records a version-control revision, obtain the full canonical identifier directly from version control and preserve it verbatim.
 
 ## On Activation
@@ -83,4 +81,4 @@ This uses **step-file architecture** for disciplined execution:
 
 ## FIRST STEP
 
-Read fully and follow: `./step-01-clarify-and-route.md` to begin the workflow.
+Read fully and follow: `[[bmad-snapshot:step-01-clarify-and-route.md]]` to begin the workflow.

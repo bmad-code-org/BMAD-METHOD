@@ -1,6 +1,6 @@
 // Test only deterministic renderer behavior.
 // Do not test model inference or assert prose copied verbatim from skill sources.
-/** Black-box tests for the installed build-auto immutable snapshot renderer. */
+/** Black-box tests for the shared immutable snapshot renderer, covering both bmad-build-auto and bmad-build. */
 'use strict';
 
 const crypto = require('node:crypto');
@@ -11,7 +11,8 @@ const { spawn, spawnSync } = require('node:child_process');
 
 const REPO = path.resolve(__dirname, '..');
 const SCRIPT_SRC = path.join(REPO, 'src', 'scripts');
-const SKILL_SRC = path.join(REPO, 'src', 'bmm-skills', 'ship', 'bmad-build-auto');
+const SKILLS_SRC = path.join(REPO, 'src', 'bmm-skills', 'ship');
+const DEFAULT_SKILL = 'bmad-build-auto';
 const tempDirs = [];
 let total = 0;
 let passed = 0;
@@ -67,7 +68,7 @@ function baseConfig(extra = '') {
   ].join('\n');
 }
 
-function fixture({ sharedBmad, config = baseConfig(), projectName = 'project' } = {}) {
+function fixture({ sharedBmad, config = baseConfig(), projectName = 'project', skillName = DEFAULT_SKILL } = {}) {
   const outer = fs.mkdtempSync(path.join(os.tmpdir(), 'bmad-build-auto-render-'));
   tempDirs.push(outer);
   const project = path.join(outer, projectName);
@@ -78,12 +79,12 @@ function fixture({ sharedBmad, config = baseConfig(), projectName = 'project' } 
     for (const name of ['config_utils.py', 'render_skill.py']) {
       fs.copyFileSync(path.join(SCRIPT_SRC, name), path.join(bmad, 'scripts', name));
     }
-    copyDir(SKILL_SRC, path.join(bmad, 'bmm', 'bmad-build-auto'));
+    copyDir(path.join(SKILLS_SRC, skillName), path.join(bmad, 'bmm', skillName));
     fs.writeFileSync(path.join(bmad, 'config.toml'), config, 'utf8');
   }
   fs.symlinkSync(bmad, path.join(project, '_bmad'), process.platform === 'win32' ? 'junction' : 'dir');
   fs.mkdirSync(path.join(project, 'nested', 'cwd'), { recursive: true });
-  return { outer, project, bmad, skill: path.join(bmad, 'bmm', 'bmad-build-auto') };
+  return { outer, project, bmad, skillName, skill: path.join(bmad, 'bmm', skillName) };
 }
 
 function run(fix, cwd = fix.project) {
@@ -251,7 +252,7 @@ async function main() {
     assert(result.status !== 0 && result.stdout.startsWith('HALT:'), 'malformed config did not HALT');
     assert(!result.stdout.includes('read and follow') && !result.stderr.includes('Traceback'), 'failure leaked dispatch/traceback');
     fs.rmSync(path.join(invalid.bmad, 'custom', 'config.toml'));
-    fs.writeFileSync(path.join(invalid.bmad, 'custom', 'bmad-build-auto.toml'), '[workflow\nbad', 'utf8');
+    fs.writeFileSync(path.join(invalid.bmad, 'custom', `${invalid.skillName}.toml`), '[workflow\nbad', 'utf8');
     result = run(invalid);
     assert(result.status !== 0 && result.stdout.includes('failed to parse'), 'malformed customization did not HALT');
   });
@@ -264,7 +265,7 @@ async function main() {
     const keyed = fixture();
     fs.mkdirSync(path.join(keyed.bmad, 'custom'), { recursive: true });
     fs.writeFileSync(
-      path.join(keyed.bmad, 'custom', 'bmad-build-auto.toml'),
+      path.join(keyed.bmad, 'custom', `${keyed.skillName}.toml`),
       '[[workflow.review_layers]]\nid = 42\nname = "bad"\ninstruction = "bad"\n',
       'utf8',
     );
@@ -277,7 +278,7 @@ async function main() {
     const literal = '[[bmad-snapshot:step-04-review.md]]';
     const compileLiteral = '{workflow.implementation_handoff}';
     fs.writeFileSync(
-      path.join(custom.bmad, 'custom', 'bmad-build-auto.user.toml'),
+      path.join(custom.bmad, 'custom', `${custom.skillName}.user.toml`),
       `[workflow]\non_complete = "Preserve ${literal} and ${compileLiteral} as prose"\n`,
       'utf8',
     );
@@ -290,7 +291,7 @@ async function main() {
     const reviewed = fixture();
     fs.mkdirSync(path.join(reviewed.bmad, 'custom'), { recursive: true });
     fs.writeFileSync(
-      path.join(reviewed.bmad, 'custom', 'bmad-build-auto.toml'),
+      path.join(reviewed.bmad, 'custom', `${reviewed.skillName}.toml`),
       [
         '[[workflow.review_layers]]',
         'id = "blind-hunter"',
@@ -308,7 +309,7 @@ async function main() {
 
     const ids = ['blind-hunter', 'edge-case-hunter', 'verification-gap', 'intent-alignment'];
     fs.writeFileSync(
-      path.join(reviewed.bmad, 'custom', 'bmad-build-auto.toml'),
+      path.join(reviewed.bmad, 'custom', `${reviewed.skillName}.toml`),
       ids.map((id) => `[[workflow.review_layers]]\nid = "${id}"\nname = "disabled"\ninstruction = ""\n`).join('\n'),
       'utf8',
     );
@@ -392,7 +393,7 @@ async function main() {
       .toLowerCase()
       .replaceAll(/[^a-z0-9]+/g, '-');
     const rootHash = hash(Buffer.from(fs.realpathSync(broken.project))).slice(0, 12);
-    const namespace = path.join(stable.bmad, 'render', 'bmad-build-auto', `${slug}-${rootHash}`);
+    const namespace = path.join(stable.bmad, 'render', stable.skillName, `${slug}-${rootHash}`);
     fs.writeFileSync(namespace, 'not a directory', 'utf8');
     const result = run(broken);
     assert(result.status !== 0 && result.stdout.startsWith('HALT:'), 'publication failure did not HALT');
@@ -413,8 +414,107 @@ async function main() {
     assert(fs.readFileSync(workflow, 'utf8').endsWith('corrupt'), 'corrupt generation was overwritten');
   });
 
+  test('bmad-build renders through the same shared snapshot contract', () => {
+    const build = fixture({ skillName: 'bmad-build' });
+    const output = entry(run(build));
+    const dir = path.dirname(output);
+    assert(path.basename(output) === 'workflow.md', `dispatch is not a snapshot workflow.md: ${output}`);
+    assert(output.includes(`${path.sep}render${path.sep}bmad-build${path.sep}`), 'bmad-build snapshot namespace missing');
+
+    const markdown = Object.entries(bytesByName(dir))
+      .filter(([name]) => name.endsWith('.md'))
+      .map(([, content]) => content.toString('utf8'))
+      .join('\n');
+    assert(!markdown.includes('{{.'), 'config token survived');
+    assert(!markdown.includes('{workflow.'), 'customization token survived');
+    assert(!markdown.includes('[[bmad-snapshot:'), 'snapshot token survived');
+    assert(!/`\.{1,2}\/[^`]*\.md`/.test(markdown), 'relative skill-root reference survived');
+    assert(!markdown.includes('resolve_customization.py'), 'legacy renderer script referenced');
+    assert(!markdown.includes('main_config'), 'legacy config variable referenced');
+
+    const renderRoot = path.join(fs.realpathSync(build.project), '_bmad', 'render');
+    const referenced = new Set();
+    for (const match of markdown.matchAll(/`(\/[^`]+\.md)`/g)) {
+      const target = match[1];
+      if (!target.startsWith(`${renderRoot}${path.sep}`)) continue;
+      assert(target.startsWith(`${dir}${path.sep}`), `cross-generation reference: ${target}`);
+      assert(fs.existsSync(target), `snapshot reference does not resolve: ${target}`);
+      referenced.add(path.relative(dir, target));
+    }
+    // Every published step must be reachable, which also keeps the loop above non-vacuous.
+    for (const name of Object.keys(bytesByName(dir))) {
+      if (!/^(?:step-|sync-sprint-status)/.test(name)) continue;
+      assert(referenced.has(name), `published step is unreachable from the snapshot: ${name}`);
+    }
+
+    const prompt = path.join(dir, 'review-prompts', 'edge-case-hunter.md');
+    assert(fs.existsSync(prompt), 'review prompt was not published into the snapshot');
+    assert(markdown.includes(prompt), 'snapshot reviewer path missing');
+
+    const review = fs.readFileSync(path.join(dir, 'step-04-review.md'), 'utf8');
+    for (const heading of [
+      '#### Blind Hunter (`blind-hunter`)',
+      '#### Edge Case Hunter (`edge-case-hunter`)',
+      '#### Verification Gap Reviewer (`verification-gap`)',
+    ]) {
+      assert(review.includes(heading), `default review layer missing: ${heading}`);
+    }
+    assert(review.includes('{diff_output}'), 'runtime placeholder was removed from review layers');
+
+    const oneshot = fs.readFileSync(path.join(dir, 'step-oneshot.md'), 'utf8');
+    assert(oneshot.includes('#### Blind Hunter (`blind-hunter`)'), 'oneshot review layer block missing');
+
+    // The spec editor handoff must reach both terminal routes (#2652).
+    const present = fs.readFileSync(path.join(dir, 'step-05-present.md'), 'utf8');
+    assert(present.includes('code -r'), 'open_spec default missing from step-05-present.md');
+    assert(oneshot.includes('code -r'), 'open_spec default missing from step-oneshot.md');
+    assert(/^Offer to push\b/m.test(present), 'standalone "Offer to push" line was lost');
+
+    const artifacts = `${fs.realpathSync(build.project)}/implementation`;
+    assert(markdown.includes(`${artifacts}/sprint-status.yaml`), 'sprint-status path was not baked absolute');
+    assert(markdown.includes(`${artifacts}/deferred-work.md`), 'deferred-work path was not baked absolute');
+
+    for (const name of ['step-01-clarify-and-route.md', 'step-02-plan.md', 'step-04-review.md', 'step-oneshot.md']) {
+      const site = fs.readFileSync(path.join(dir, name), 'utf8');
+      assert(site.includes(`${artifacts}/deferred-work.md`), `${name} does not contain the deferred-work path`);
+    }
+
+    const shipped = fs.readFileSync(path.join(SKILLS_SRC, 'bmad-build', 'customize.toml'), 'utf8');
+    assert(
+      !shipped.includes('{absolute-root}') && !shipped.includes('{absolute-spec-file}'),
+      'legacy absolute-path token in customize.toml',
+    );
+  });
+
+  test('empty open_spec override disables automatic opening', () => {
+    const build = fixture({ skillName: 'bmad-build' });
+    fs.mkdirSync(path.join(build.bmad, 'custom'), { recursive: true });
+    fs.writeFileSync(path.join(build.bmad, 'custom', `${build.skillName}.user.toml`), '[workflow]\nopen_spec = ""\n', 'utf8');
+    const dir = path.dirname(entry(run(build)));
+    for (const name of ['step-05-present.md', 'step-oneshot.md']) {
+      const rendered = fs.readFileSync(path.join(dir, name), 'utf8');
+      assert(!rendered.includes('code -r'), `open_spec default survived in ${name}`);
+      assert(!rendered.includes('spec was sent'), `opening summary survived in ${name}`);
+      assert(rendered.includes('Suggested Review Order'), `review trail generation disappeared from ${name}`);
+    }
+  });
+
+  test('the command shipped in SKILL.md dispatches for both skills', () => {
+    for (const skillName of [DEFAULT_SKILL, 'bmad-build']) {
+      const fix = fixture({ skillName });
+      const fenced = fs.readFileSync(path.join(fix.skill, 'SKILL.md'), 'utf8').match(/```bash\n([\s\S]*?)```/);
+      assert(fenced, `${skillName}: SKILL.md ships no bash command block`);
+      const command = fenced[1].trim().replaceAll('{project-root}', fix.project).replaceAll('{skill-root}', fix.skill);
+      assert(!command.includes('{'), `${skillName}: unsubstituted placeholder in shipped command: ${command}`);
+      // Run it verbatim from a nested cwd — no --python pin, exactly as an agent would.
+      const dispatched = entry(spawnSync(command, { cwd: path.join(fix.project, 'nested', 'cwd'), shell: true, encoding: 'utf8' }));
+      assert(path.basename(dispatched) === 'workflow.md', `${skillName}: shipped command did not dispatch workflow.md`);
+      assert(fs.existsSync(dispatched), `${skillName}: dispatched entry does not exist`);
+    }
+  });
+
   for (const dir of tempDirs) fs.rmSync(dir, { recursive: true, force: true });
-  console.log(`\n${passed}/${total} build-auto renderer tests passed`);
+  console.log(`\n${passed}/${total} shared renderer tests passed`);
   process.exitCode = passed === total ? 0 : 1;
 }
 

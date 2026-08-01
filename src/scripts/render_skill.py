@@ -177,7 +177,8 @@ def _format_review_layers(layers: list[dict[str, str]]) -> str:
 
 def _resolve_customization_value(value: Any, default: Any, label: str) -> tuple[Any, str]:
     if isinstance(default, str):
-        resolved = _require_string(value, label, allow_empty=not default.strip())
+        allow_empty = not default.strip() or label == "customization.workflow.open_spec"
+        resolved = _require_string(value, label, allow_empty=allow_empty)
         return resolved, resolved
     if isinstance(default, list):
         if default and all(isinstance(item, dict) for item in default):

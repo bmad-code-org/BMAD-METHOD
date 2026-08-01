@@ -20,7 +20,7 @@ Before listing artifacts or prompting the user, check whether you already know t
 
 1. Explicit argument
    Did the user pass a specific file path, spec name, or clear instruction this message?
-   - If it points to a file that matches the spec template (has `status` frontmatter with a recognized value: draft, ready-for-dev, in-progress, in-review, or done) → set `spec_file`. Before exiting, run **Story-key resolution** (below). Then **EARLY EXIT** to the appropriate step (step-02 for draft, step-03 for ready/in-progress, step-04 for review). For `done`, ingest as context and proceed to INSTRUCTIONS — do not resume.
+   - If it points to a file that matches the spec template (has `status` frontmatter with a recognized value: draft, ready-for-dev, in-progress, in-review, or done) → set `spec_file`. Before exiting, run **Story-key resolution** (below). Then **EARLY EXIT** to the appropriate step: `draft` → `[[bmad-snapshot:step-02-plan.md]]`, `ready-for-dev`/`in-progress` → `[[bmad-snapshot:step-03-implement.md]]`, `in-review` → `[[bmad-snapshot:step-04-review.md]]`. For `done`, ingest as context and proceed to INSTRUCTIONS — do not resume.
    - Anything else (intent files, external docs, plans, descriptions) → ingest it as starting intent and proceed to INSTRUCTIONS. Do not attempt to infer a workflow state from it.
 
 2. Recent conversation
@@ -29,9 +29,9 @@ Before listing artifacts or prompting the user, check whether you already know t
 
 3. Otherwise — scan artifacts and ask
    - Active specs (`draft`, `ready-for-dev`, `in-progress`, `in-review`) in `{{.implementation_artifacts}}`? → List them and HALT. Ask user which to resume (or `[N]` for new).
-     - If `draft` selected: Set `spec_file`. Run **Story-key resolution** (below). **EARLY EXIT** → `./step-02-plan.md` (resume planning from the draft)
-     - If `ready-for-dev` or `in-progress` selected: Set `spec_file`. Run **Story-key resolution** (below). **EARLY EXIT** → `./step-03-implement.md`
-     - If `in-review` selected: Set `spec_file`. Run **Story-key resolution** (below). **EARLY EXIT** → `./step-04-review.md`
+     - If `draft` selected: Set `spec_file`. Run **Story-key resolution** (below). **EARLY EXIT** → `[[bmad-snapshot:step-02-plan.md]]` (resume planning from the draft)
+     - If `ready-for-dev` or `in-progress` selected: Set `spec_file`. Run **Story-key resolution** (below). **EARLY EXIT** → `[[bmad-snapshot:step-03-implement.md]]`
+     - If `in-review` selected: Set `spec_file`. Run **Story-key resolution** (below). **EARLY EXIT** → `[[bmad-snapshot:step-04-review.md]]`
    - Unformatted spec or intent file lacking `status` frontmatter? → Suggest treating its contents as the starting intent. Do NOT attempt to infer a state and resume it.
 
 Never ask extra questions if you already understand what the user intends.
@@ -40,7 +40,7 @@ Never ask extra questions if you already understand what the user intends.
 
 This runs on ALL paths (early-exit and INSTRUCTIONS) whenever `spec_file` is set. Determine whether the spec is an epic story — use the spec's filename, frontmatter, and any loaded epics file to identify `epic_num` and `story_num`. If the spec is not an epic story, skip silently and leave `story_key` unset.
 
-If the spec is an epic story and `{{.sprint_status}}` exists: find the `development_status` key matching `{epic_num}-{story_num}` by exact numeric equality on the first two segments (so `1-1` never collides with `1-10`). Exactly one match → set `story_key` to that full key. Zero or multiple matches → leave `story_key` unset (warn on multiple).
+If the spec is an epic story and `{{.implementation_artifacts}}/sprint-status.yaml` exists: find the `development_status` key matching `{epic_num}-{story_num}` by exact numeric equality on the first two segments (so `1-1` never collides with `1-10`). Exactly one match → set `story_key` to that full key. Zero or multiple matches → leave `story_key` unset (warn on multiple).
 
 ## INSTRUCTIONS
 
@@ -57,9 +57,9 @@ If the spec is an epic story and `{{.sprint_status}}` exists: find the `developm
         - **If valid:** load it as the primary planning context. Do not load raw planning docs (PRD, architecture, UX, etc.). Skip to step 5.
         - **If missing, empty, or invalid:** continue to step 3.
 
-     3. **Compile epic context.** Produce `{{.implementation_artifacts}}/epic-<N>-context.md` by following `./compile-epic-context.md`, in order of preference:
-        - **Preferred — subagent:** spawn a subagent synchronously (wait for it to return in this turn) with `./compile-epic-context.md` as its prompt. Pass it the epic number, the epics file path, the `{{.planning_artifacts}}` directory, and the output path `{{.implementation_artifacts}}/epic-<N>-context.md`.
-        - **Fallback — inline** (for runtimes without subagent support, e.g. Copilot, Codex, local Ollama, older Claude): if your runtime cannot spawn subagents, or the spawn fails/times out, read `./compile-epic-context.md` yourself and follow its instructions to produce the same output file.
+     3. **Compile epic context.** Produce `{{.implementation_artifacts}}/epic-<N>-context.md` by following `[[bmad-snapshot:compile-epic-context.md]]`, in order of preference:
+        - **Preferred — subagent:** spawn a subagent synchronously (wait for it to return in this turn) with `[[bmad-snapshot:compile-epic-context.md]]` as its prompt. Pass it the epic number, the epics file path, the `{{.planning_artifacts}}` directory, and the output path `{{.implementation_artifacts}}/epic-<N>-context.md`.
+        - **Fallback — inline** (for runtimes without subagent support, e.g. Copilot, Codex, local Ollama, older Claude): if your runtime cannot spawn subagents, or the spawn fails/times out, read `[[bmad-snapshot:compile-epic-context.md]]` yourself and follow its instructions to produce the same output file.
 
      4. **Verify.** After compilation, verify the output file exists, is non-empty, and starts with `# Epic <N> Context:`. If valid, load it. If verification fails, HALT and report the failure.
 
@@ -81,7 +81,7 @@ If the spec is an epic story and `{{.sprint_status}}` exists: find the `developm
    - Present detected distinct goals as a bullet list.
    - Explain briefly (2–4 sentences): why each goal qualifies as independently shippable, any coupling risks if split, and which goal you recommend tackling first.
    - HALT and ask human: `[S] Split — pick first goal, defer the rest` | `[K] Keep all goals — accept the risks`
-   - On **S**: For each deferred goal, append one new entry to `{{.deferred_work_file}}` using this format. Do not modify existing entries or look for duplicates. Narrow scope to the first-mentioned goal. Continue routing.
+   - On **S**: For each deferred goal, append one new entry to `{{.implementation_artifacts}}/deferred-work.md` using this format. Do not modify existing entries or look for duplicates. Narrow scope to the first-mentioned goal. Continue routing.
      ```markdown
      - source_spec: none
        summary: <one sentence naming the deferred goal>
@@ -90,14 +90,14 @@ If the spec is an epic story and `{{.sprint_status}}` exists: find the `developm
    - On **K**: Proceed as-is.
 5. Route — choose exactly one:
 
-   Derive a valid kebab-case slug from the clarified intent. If the intent references a tracking identifier (story number, issue number, ticket ID), lead the slug with it (e.g. `3-2-digest-delivery`, `gh-47-fix-auth`). If `{{.implementation_artifacts}}/spec-{slug}.md` already exists: if its status is `draft`, treat it as the same work and resume it (set `spec_file` to that path, **EARLY EXIT** → `./step-02-plan.md`); otherwise append `-2`, `-3`, etc. Set `spec_file` = `{{.implementation_artifacts}}/spec-{slug}.md`.
+   Derive a valid kebab-case slug from the clarified intent. If the intent references a tracking identifier (story number, issue number, ticket ID), lead the slug with it (e.g. `3-2-digest-delivery`, `gh-47-fix-auth`). If `{{.implementation_artifacts}}/spec-{slug}.md` already exists: if its status is `draft`, treat it as the same work and resume it (set `spec_file` to that path, **EARLY EXIT** → `[[bmad-snapshot:step-02-plan.md]]`); otherwise append `-2`, `-3`, etc. Set `spec_file` = `{{.implementation_artifacts}}/spec-{slug}.md`.
 
    **a) One-shot** — zero blast radius: no plausible path by which this change causes unintended consequences elsewhere. Clear intent, no architectural decisions.
 
-   **EARLY EXIT** → `./step-oneshot.md`
+   **EARLY EXIT** → `[[bmad-snapshot:step-oneshot.md]]`
 
    **b) Plan-code-review** — everything else. When uncertain whether blast radius is truly zero, choose this path.
 
 ## NEXT
 
-Read fully and follow `./step-02-plan.md`
+Read fully and follow `[[bmad-snapshot:step-02-plan.md]]`
