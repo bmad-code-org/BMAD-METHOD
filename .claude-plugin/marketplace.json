@@ -91,7 +91,7 @@
         "./src/bmm-skills/ship/bmad-build",
         "./src/bmm-skills/ship/bmad-checkpoint-preview",
         "./src/bmm-skills/plan/bmad-sprint-planning",
-        "./src/bmm-skills/plan/bmad-sprint-status",
+        "./src/bmm-skills/v6-shims/bmad-sprint-status",
         "./src/bmm-skills/ship/bmad-code-review",
         "./src/bmm-skills/v6-shims/bmad-create-story",
         "./src/bmm-skills/ship/bmad-correct-course",

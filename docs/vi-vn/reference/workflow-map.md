@@ -59,7 +59,6 @@ Mọi đầu vào triển khai đều hội tụ vào `bmad-build`. Workflow nà
 | `bmad-build` | Biến ý định trực tiếp hoặc story đã lập kế hoạch thành mã nguồn đã triển khai và review | `spec-*.md` + mã nguồn |
 | `bmad-code-review` | Kiểm tra chất lượng phần triển khai | Được duyệt hoặc yêu cầu thay đổi |
 | `bmad-correct-course` | Xử lý thay đổi lớn giữa sprint | Kế hoạch cập nhật hoặc định tuyến lại |
-| `bmad-sprint-status` | Theo dõi tiến độ sprint và trạng thái story | Cập nhật trạng thái sprint |
 | `bmad-retrospective` | Review sau khi hoàn tất epic | Bài học rút ra |
 
 ### Đầu vào trực tiếp và đã lập kế hoạch

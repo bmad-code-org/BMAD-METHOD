@@ -210,5 +210,114 @@ def test_check_in_sync_after_generate(tmp_path, capsys):
     assert result["missing"] == [] and result["orphans"] == [] and result["illegal"] == []
 
 
+STATUS_FIXTURE = """\
+generated: 01-01-2026 09:00
+last_updated: 07-30-2026 09:00
+project: My Project
+project_key: NOKEY
+tracking_system: file-system
+story_location: impl
+
+development_status:
+  epic-1: in-progress
+  1-1-user-authentication: done
+  1-2-account-management: drafted
+  epic-1-retrospective: optional
+  epic-2: backlog
+  2-1-personality-system: backlog
+  epic-2-retrospective: optional
+
+action_items:
+  - epic: 1
+    action: "Tighten error handling"
+    owner: "Charlie"
+    status: open
+  - epic: 1
+    action: "Old item"
+    owner: "Charlie"
+    status: done
+"""
+
+
+def run_status(tmp_path, capsys, fixture=STATUS_FIXTURE, extra=()):
+    status_file = tmp_path / "sprint-status.yaml"
+    status_file.write_text(fixture, encoding="utf-8")
+    mod.main(["status", "--status-file", str(status_file), "--date", DATE, *extra])
+    return json.loads(capsys.readouterr().out)
+
+
+def test_status_counts_and_recommendation(tmp_path, capsys):
+    result = run_status(tmp_path, capsys)
+    assert result["stories"] == {"done": 1, "ready-for-dev": 1, "backlog": 1}
+    assert result["epics"] == {"in-progress": 1, "backlog": 1}
+    assert result["retrospectives"] == {"optional": 2}
+    assert result["recommendation"]["skill"] == "bmad-build"
+    assert result["recommendation"]["story_key"] == "1-2-account-management"
+    assert result["all_done"] is False
+
+
+def test_status_maps_legacy_values(tmp_path, capsys):
+    result = run_status(tmp_path, capsys)
+    assert {"key": "1-2-account-management", "from": "drafted", "to": "ready-for-dev"} in result["legacy_mapped"]
+
+
+def test_status_open_action_items(tmp_path, capsys):
+    result = run_status(tmp_path, capsys)
+    assert len(result["open_action_items"]) == 1
+    assert result["open_action_items"][0]["action"] == "Tighten error handling"
+
+
+def test_status_review_beats_ready(tmp_path, capsys):
+    fixture = STATUS_FIXTURE.replace("2-1-personality-system: backlog", "2-1-personality-system: review")
+    result = run_status(tmp_path, capsys, fixture=fixture)
+    assert result["recommendation"]["skill"] == "bmad-code-review"
+    assert result["recommendation"]["story_key"] == "2-1-personality-system"
+    assert any("review" in r for r in result["risks"])
+
+
+def test_status_in_progress_beats_all(tmp_path, capsys):
+    fixture = STATUS_FIXTURE.replace("2-1-personality-system: backlog", "2-1-personality-system: in-progress")
+    result = run_status(tmp_path, capsys, fixture=fixture)
+    assert result["recommendation"]["skill"] == "bmad-build"
+    assert result["recommendation"]["story_key"] == "2-1-personality-system"
+    assert result["recommendation"]["reason"] == "resume the in-progress story"
+
+
+def test_status_staleness_and_orphan_risks(tmp_path, capsys):
+    fixture = (STATUS_FIXTURE
+               .replace("last_updated: 07-30-2026 09:00", "last_updated: 01-02-2026 09:00")
+               .replace("  epic-2-retrospective: optional",
+                        "  epic-2-retrospective: optional\n  5-1-ghost: backlog"))
+    result = run_status(tmp_path, capsys, fixture=fixture)
+    assert any("stale" in r for r in result["risks"])
+    assert any("orphaned story '5-1-ghost'" in r for r in result["risks"])
+
+
+def test_status_all_done_recommends_retro_then_nothing(tmp_path, capsys):
+    fixture = (STATUS_FIXTURE
+               .replace("1-2-account-management: drafted", "1-2-account-management: done")
+               .replace("2-1-personality-system: backlog", "2-1-personality-system: done"))
+    result = run_status(tmp_path, capsys, fixture=fixture)
+    assert result["recommendation"]["skill"] == "bmad-retrospective"
+    assert "epic-1-retrospective" in result["recommendation"]["reason"]
+    fixture_done = fixture.replace("epic-1-retrospective: optional", "epic-1-retrospective: done") \
+                          .replace("epic-2-retrospective: optional", "epic-2-retrospective: done")
+    result = run_status(tmp_path, capsys, fixture=fixture_done)
+    assert result["all_done"] is True and result["recommendation"] is None
+
+
+def test_status_illegal_status_reported(tmp_path, capsys):
+    fixture = STATUS_FIXTURE.replace("2-1-personality-system: backlog", "2-1-personality-system: shipped")
+    result = run_status(tmp_path, capsys, fixture=fixture)
+    assert {"key": "2-1-personality-system", "status": "shipped"} in result["illegal"]
+
+
+def test_status_missing_file_fails_json(tmp_path, capsys):
+    with pytest.raises(SystemExit) as excinfo:
+        mod.main(["status", "--status-file", str(tmp_path / "nope.yaml")])
+    assert excinfo.value.code == 1
+    assert json.loads(capsys.readouterr().out)["ok"] is False
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__, "-q"]))

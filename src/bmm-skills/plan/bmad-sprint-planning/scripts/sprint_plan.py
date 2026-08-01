@@ -11,6 +11,8 @@ bytes are restored if post-write validation fails.
 Subcommands:
   generate  Parse epics, merge with any existing status file, write the result.
   check     Parse epics and report drift against an existing status file. No writes.
+  status    Summarize an existing status file: counts, risks, open action items,
+            and the next recommended action. No writes.
 
 The LLM decides *which* files are epics (discovery is judgment); this script owns
 everything after that decision: parsing, key derivation, ordering, status
@@ -287,6 +289,122 @@ def cmd_check(args):
     }))
 
 
+LEGACY_STATUS = {"drafted": "ready-for-dev", "contexted": "in-progress"}
+STALE_DAYS_DEFAULT = 7
+DATE_FORMAT = "%m-%d-%Y %H:%M"
+
+
+def _classify(key):
+    if key.startswith("epic-") and key.endswith("-retrospective"):
+        return "retro"
+    if re.fullmatch(r"epic-\d+", key):
+        return "epic"
+    return "story"
+
+
+def _story_sort_key(key):
+    m = re.match(r"^(\d+)-(\d+)([a-z]?)-", key)
+    if not m:
+        return (10**9, 10**9, key)
+    return (int(m.group(1)), int(m.group(2)), m.group(3))
+
+
+def cmd_status(args):
+    from datetime import datetime, timedelta
+
+    _, data = _load_existing(args.status_file)
+    if data is None:
+        _fail("status file does not exist — run sprint planning to generate it",
+              status_file=str(args.status_file))
+    dev = dict(data.get("development_status") or {})
+    if not dev:
+        _fail("development_status missing or empty — re-run sprint planning",
+              status_file=str(args.status_file))
+
+    counts = {"story": {}, "epic": {}, "retro": {}}
+    by_status = {}
+    legacy_mapped, illegal = [], []
+    for key, raw in dev.items():
+        kind = _classify(key)
+        status = LEGACY_STATUS.get(raw, raw)
+        if raw in LEGACY_STATUS:
+            legacy_mapped.append({"key": key, "from": raw, "to": status})
+        rank = {"epic": EPIC_RANK, "story": STORY_RANK, "retro": RETRO_RANK}[kind]
+        if status not in rank:
+            illegal.append({"key": key, "status": raw})
+            continue
+        counts[kind][status] = counts[kind].get(status, 0) + 1
+        if kind == "story":
+            by_status.setdefault(status, []).append(key)
+    for stories in by_status.values():
+        stories.sort(key=_story_sort_key)
+
+    action_items = data.get("action_items") or []
+    open_items = []
+    for item in action_items:
+        try:
+            if item.get("status") in ("open", "in-progress"):
+                open_items.append({k: item.get(k) for k in ("epic", "action", "owner", "status")})
+        except AttributeError:
+            illegal.append({"key": "action_items", "status": repr(item)})
+
+    risks = []
+    stamp = data.get("last_updated") or data.get("generated")
+    if args.date and stamp:
+        try:
+            age = datetime.strptime(args.date, DATE_FORMAT) - datetime.strptime(str(stamp), DATE_FORMAT)
+            if age > timedelta(days=args.stale_days):
+                risks.append(f"sprint-status.yaml may be stale (last updated {stamp})")
+        except ValueError:
+            pass
+    epic_nums = {key[len("epic-"):] for key in dev if _classify(key) == "epic"}
+    for key in dev:
+        if _classify(key) == "story":
+            m = re.match(r"^(\d+)-", key)
+            if m and m.group(1) not in epic_nums:
+                risks.append(f"orphaned story '{key}' has no epic-{m.group(1)} entry")
+    for key, raw in dev.items():
+        if _classify(key) == "epic" and LEGACY_STATUS.get(raw, raw) == "in-progress":
+            num = key[len("epic-"):]
+            if not any(_classify(k) == "story" and k.startswith(f"{num}-") for k in dev):
+                risks.append(f"in-progress epic '{key}' has no stories")
+    if by_status.get("review"):
+        risks.append(f"{len(by_status['review'])} story(ies) in review — run bmad-code-review")
+
+    recommendation = None
+    if by_status.get("in-progress"):
+        recommendation = {"skill": "bmad-build", "story_key": by_status["in-progress"][0],
+                          "reason": "resume the in-progress story"}
+    elif by_status.get("review"):
+        recommendation = {"skill": "bmad-code-review", "story_key": by_status["review"][0],
+                          "reason": "review the completed implementation"}
+    elif by_status.get("ready-for-dev"):
+        recommendation = {"skill": "bmad-build", "story_key": by_status["ready-for-dev"][0],
+                          "reason": "start the next ready story"}
+    elif by_status.get("backlog"):
+        recommendation = {"skill": "bmad-build", "story_key": by_status["backlog"][0],
+                          "reason": "start the first backlog story"}
+    else:
+        optional_retros = sorted(
+            (k for k, v in dev.items() if _classify(k) == "retro" and v == "optional"),
+            key=lambda k: int(re.match(r"epic-(\d+)-", k).group(1)))
+        if optional_retros:
+            recommendation = {"skill": "bmad-retrospective", "story_key": None,
+                              "reason": f"all stories done — {optional_retros[0]} is still open"}
+
+    print(json.dumps({
+        "ok": True, "action": "status", "status_file": str(args.status_file),
+        "project": data.get("project"), "project_key": data.get("project_key"),
+        "tracking_system": data.get("tracking_system"),
+        "generated": data.get("generated"), "last_updated": data.get("last_updated"),
+        "stories": counts["story"], "epics": counts["epic"], "retrospectives": counts["retro"],
+        "legacy_mapped": legacy_mapped, "illegal": illegal,
+        "open_action_items": open_items, "risks": risks,
+        "recommendation": recommendation,
+        "all_done": recommendation is None,
+    }))
+
+
 def build_parser():
     parser = argparse.ArgumentParser(prog="sprint_plan.py", description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -309,6 +427,13 @@ def build_parser():
 
     chk = sub.add_parser("check", parents=[common], help="Report drift; never writes")
     chk.set_defaults(func=cmd_check)
+
+    st = sub.add_parser("status", help="Summarize the status file; never writes")
+    st.add_argument("--status-file", required=True, help="Path to sprint-status.yaml")
+    st.add_argument("--date", default=None, help="Current timestamp for staleness check, e.g. '08-01-2026 14:30'")
+    st.add_argument("--stale-days", type=int, default=STALE_DAYS_DEFAULT,
+                    help="Days before the file counts as stale (default 7)")
+    st.set_defaults(func=cmd_status)
     return parser
 
 

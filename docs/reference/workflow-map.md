@@ -79,6 +79,8 @@ Decide how to build it and break work into stories.
 | `bmad-create-epics-and-stories`       | Break requirements into implementable work | Epic files with stories     |
 | `bmad-sprint-planning`                | Readiness gate before implementation, then story tracking | PASS/CONCERNS/FAIL + `sprint-status.yaml` |
 
+For how the readiness gate, deterministic tracking, and status view work together, see [Sprint Planning](../explanation/sprint-planning.md).
+
 ## Phase 4: Implementation
 
 Every implementation path converges on `bmad-build`. It accepts direct intent, an issue, a specification, or a planned story, then chooses the clarification, planning, implementation, and review depth needed for that input.
@@ -88,7 +90,6 @@ Every implementation path converges on `bmad-build`. It accepts direct intent, a
 | `bmad-build` | Turn direct intent or a planned story into implemented, reviewed code | `spec-*.md` + code |
 | `bmad-code-review` | Ad hoc review of any code change | Findings + applied patches |
 | `bmad-correct-course` | Handle significant mid-sprint changes | Updated plan or re-routing |
-| `bmad-sprint-status` | Track sprint progress and story status | Sprint status update |
 | `bmad-retrospective` | Evidence-based review of a completed epic against its acceptance criteria | Retro document, action items, acceptance verdict |
 
 ### Direct and Planned Entry

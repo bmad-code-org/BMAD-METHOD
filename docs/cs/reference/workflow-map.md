@@ -59,7 +59,6 @@ Všechny implementační vstupy se sbíhají do `bmad-build`. Přijímá přím�
 | `bmad-build`           | Převod přímého záměru nebo naplánované story na implementovaný a revidovaný kód | `spec-*.md` + kód          |
 | `bmad-code-review`         | Validace kvality implementace                                            | Schváleno nebo požadovány změny  |
 | `bmad-correct-course`      | Řešení významných změn uprostřed sprintu                                 | Aktualizovaný plán nebo přesměrování |
-| `bmad-sprint-status`       | Sledování průběhu sprintu a stavu stories                                | Aktualizace stavu sprintu        |
 | `bmad-retrospective`       | Revize po dokončení epicu                                                | Poučení                          |
 
 ### Přímý a plánovaný vstup

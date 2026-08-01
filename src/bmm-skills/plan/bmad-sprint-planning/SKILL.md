@@ -1,6 +1,6 @@
 ---
 name: bmad-sprint-planning
-description: 'Gate planning readiness, then generate sprint status tracking from epics. Use when the user says "run sprint planning", "generate sprint plan", or "check implementation readiness"'
+description: 'Gate planning readiness, generate sprint status tracking from epics, and summarize sprint progress. Use when the user says "run sprint planning", "generate sprint plan", "check implementation readiness", or "show sprint status"'
 ---
 
 # Overview
@@ -13,7 +13,7 @@ You are a senior developer about to commit to this plan. Two moves, in order: fi
 2. Execute each entry in `{workflow.activation_steps_prepend}` in order.
 3. Treat every entry in `{workflow.persistent_facts}` as foundational context for the rest of the run. Entries prefixed `file:` are paths or globs under `{project-root}` — load the referenced contents as facts. All other entries are facts verbatim.
 4. Load `{project-root}/_bmad/bmm/config.yaml` (and `config.user.yaml` if present). Resolve `{user_name}`, `{communication_language}`, `{document_output_language}`, `{project_name}`, `{planning_artifacts}`, `{implementation_artifacts}`, `{date}`. Stay in `{communication_language}` for every turn, not just the greeting.
-5. Greet `{user_name}` and detect intent: readiness check only, full sprint planning (gate then tracking), or a refresh of an existing `sprint-status.yaml`. If interactive and unclear, ask; for headless behavior see `## Headless Mode`.
+5. Greet `{user_name}` and detect intent: readiness check only, full sprint planning (gate then tracking), a refresh of an existing `sprint-status.yaml`, or a status view (see `## Status View` — skip the gate entirely). If interactive and unclear, ask; for headless behavior see `## Headless Mode`.
 
 Execute each entry in `{workflow.activation_steps_append}` in order.
 
@@ -64,6 +64,21 @@ Discovery is your call; everything after it is the script's.
 
 There is also a `check` subcommand (same `--epic-file`/`--status-file` arguments, never writes) that reports drift between epics and an existing status file — use it when the user asks whether tracking is in sync rather than to regenerate.
 
+## Status View
+
+When the user wants to know where the sprint stands ("show sprint status", "where are we"), skip the gate and run:
+
+```
+uv run {skill-root}/scripts/sprint_plan.py status \
+  --status-file {implementation_artifacts}/sprint-status.yaml --date "{date}"
+```
+
+The script computes everything: counts by status (legacy values like `drafted` mapped transparently), risk flags (stale file, orphaned stories, in-progress epics without stories, stories waiting in review), open action items from retrospectives, and the next recommended action by fixed priority — resume in-progress → review what's in review → start the next ready or backlog story → run an open retrospective → all done. If the file is missing, the script says so — offer to run sprint planning to create it.
+
+Render the JSON as a compact summary in `{communication_language}`: counts, risks, open action items, and the recommendation with its story key. Offer to run the recommended skill; surface `illegal` entries and ask how to correct them (fix the file if the user gives corrections). No time estimates — status, risks, and next steps only.
+
+If the script errors — malformed YAML, a hand-edited structure it can't parse, anything — do not stop at the error. Read `sprint-status.yaml` yourself, apply best judgment to give the user the same summary (counts, risks, next recommended action), tell them the deterministic path failed and why, and offer to repair the file so the script works next time.
+
 ## Report
 
 Present the result from the script's JSON in `{communication_language}`: file path, epic/story counts, status breakdown, anything upgraded from disk. Suggest next steps — review the file, `bmad-build` to start the first story, rerun this skill anytime to refresh after epics change. Run `{workflow.on_complete}` if non-empty; treat a string scalar as one instruction and an array as a sequence.
@@ -83,7 +98,7 @@ When invoked headless, do not ask. Run the gate and, unless intent was readiness
 }
 ```
 
-`gate` is `PASS`, `CONCERNS`, or `FAIL`; on `FAIL` include `findings` and the saved findings path if written, and omit `status_file`. `intent` is `"readiness"` or `"sprint-planning"`.
+`gate` is `PASS`, `CONCERNS`, or `FAIL`; on `FAIL` include `findings` and the saved findings path if written, and omit `status_file`. `intent` is `"readiness"`, `"sprint-planning"`, or `"status"` — for status intent, omit `gate` and pass the script's JSON through under a `status` key.
 
 ## References
 

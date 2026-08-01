@@ -82,7 +82,6 @@ Tous les points d’entrée convergent vers `bmad-build`. Il accepte une intenti
 | `bmad-build`       | Transformez une intention directe ou une story planifiée en code implémenté et révisé | `spec-*.md` + code              |
 | `bmad-code-review`     | Validez la qualité de l’implémentation                                               | Approuvé ou changements demandés |
 | `bmad-correct-course`  | Gérez les changements significatifs en cours de sprint                               | Plan mis à jour ou réorientation |
-| `bmad-sprint-status`   | Suivez la progression du sprint et le statut des stories                             | Mise à jour du statut du sprint  |
 | `bmad-retrospective`   | Bilan après l’achèvement d’un epic                                                   | Leçons apprises                  |
 
 ### Entrée directe ou planifiée

@@ -54,7 +54,6 @@ BMad Method（BMM）通过分阶段 workflow 逐步构建上下文，让智能�
 | `bmad-build` | 将直接意图或已规划 story 转化为完成实现并经过审查的代码 | `spec-*.md` + 代码变更 |
 | `bmad-code-review` | 验证实现质量 | 通过或变更请求 |
 | `bmad-correct-course` | 处理中途重大方向调整 | 更新后的计划或重路由 |
-| `bmad-sprint-status` | 跟踪冲刺与 story 状态 | 状态更新 |
 | `bmad-retrospective` | epic 完成后复盘 | 经验与改进项 |
 
 ### 直接入口与规划入口
