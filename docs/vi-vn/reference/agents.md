@@ -22,34 +22,13 @@ Trang này liệt kê các agent mặc định của BMM (bộ Agile suite) đư
 | Architect (Winston) | `bmad-architect` | `CA`, `IR` | Create Architecture, Implementation Readiness |
 | Developer (Amelia) | `bmad-agent-dev` | `BD`, `QA`, `CR`, `SP`, `ER` | Build, QA Test Generation, Code Review, Sprint Planning, Epic Retrospective |
 | UX Designer (Sally) | `bmad-ux-designer` | `CU` | Create UX Design |
-| Technical Writer (Paige) | `bmad-tech-writer` | `DP`, `WD`, `US`, `MG`, `VD`, `EC` | Document Project, Write Document, Update Standards, Mermaid Generate, Validate Doc, Explain Concept |
+
+:::note[Paige đâu rồi?]
+Technical Writer (Paige) đang tạm nghỉ — cô ấy sẽ trở lại trong tương lai với năng lực mạnh hơn nhiều. Tài liệu dự án vẫn được hỗ trợ: trigger `DP` (Document Project) khả dụng qua Analyst agent, hoặc gọi trực tiếp skill `bmad-document-project`.
+:::
 
 ## Các Loại Trigger
 
-Trigger trong menu agent dùng hai kiểu gọi khác nhau. Biết trigger thuộc kiểu nào sẽ giúp bạn cung cấp đúng đầu vào.
-
-### Trigger workflow (không cần tham số)
-
-Phần lớn trigger sẽ nạp một file workflow có cấu trúc. Bạn gõ mã trigger, agent sẽ bắt đầu workflow và nhắc bạn nhập thông tin ở từng bước.
+Trigger trong menu agent sẽ nạp một file workflow có cấu trúc. Bạn gõ mã trigger, agent sẽ bắt đầu workflow và nhắc bạn nhập thông tin ở từng bước.
 
 Ví dụ: `CP` (Create PRD), `CA` (Create Architecture), `BD` (Build)
-
-### Trigger hội thoại (cần tham số)
-
-Một số trigger sẽ mở cuộc hội thoại tự do thay vì chạy workflow có cấu trúc. Khi đó bạn cần mô tả yêu cầu của mình cùng với mã trigger.
-
-| Agent | Trigger | Nội dung cần cung cấp |
-| --- | --- | --- |
-| Technical Writer (Paige) | `WD` | Mô tả tài liệu cần viết |
-| Technical Writer (Paige) | `US` | Sở thích hoặc quy ước muốn thêm vào standards |
-| Technical Writer (Paige) | `MG` | Mô tả sơ đồ và loại sơ đồ (sequence, flowchart, v.v.) |
-| Technical Writer (Paige) | `VD` | Tài liệu cần kiểm tra và các vùng trọng tâm |
-| Technical Writer (Paige) | `EC` | Tên khái niệm cần giải thích |
-
-**Ví dụ:**
-
-```text
-WD Write a deployment guide for our Docker setup
-MG Create a sequence diagram showing the auth flow
-EC Explain how the module system works
-```

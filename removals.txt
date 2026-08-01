@@ -73,3 +73,9 @@ bmad-auto-setup
 # bmad-index-docs, bmad-shard-doc: retired outright.
 bmad-index-docs
 bmad-shard-doc
+
+# Removed agents (bmm reorg)
+# bmad-agent-tech-writer (Paige): retired — capabilities were generic LLM
+# defaults; document-project remains directly invocable. Paige is on hiatus
+# and will return in the future far more capable.
+bmad-agent-tech-writer

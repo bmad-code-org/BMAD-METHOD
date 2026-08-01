@@ -22,33 +22,13 @@ This page lists the default BMM (Agile suite) agents that install with BMad Meth
 | Architect (Winston)         | `bmad-agent-architect` | `CA`, `IR`                       | Create Architecture, Implementation Readiness                                                       |
 | Developer (Amelia)          | `bmad-agent-dev`     | `BD`, `QA`, `CR`, `SP`, `ER` | Build, QA Test Generation, Code Review, Sprint Planning, Epic Retrospective |
 | UX Designer (Sally)         | `bmad-agent-ux-designer` | `CU`                           | Create UX Design                                                                                    |
-| Technical Writer (Paige)    | `bmad-agent-tech-writer` | `DP`, `WD`, `MG`, `VD`, `EC`   | Document Project, Write Document, Mermaid Generate, Validate Doc, Explain Concept                   |
+
+:::note[Where is Paige?]
+The Technical Writer (Paige) is on hiatus — she will return in the future far more capable. In the meantime, project documentation lives on: the `DP` (Document Project) trigger is available through the Analyst, or invoke the `bmad-document-project` skill directly.
+:::
 
 ## Trigger Types
 
-Agent menu triggers use two different invocation types. Knowing which type a trigger uses helps you provide the right input.
-
-### Workflow triggers (no arguments needed)
-
-Most triggers load a structured workflow file. Type the trigger code and the agent starts the workflow, prompting you for input at each step.
+Agent menu triggers load a structured workflow file. Type the trigger code and the agent starts the workflow, prompting you for input at each step.
 
 Examples: `PRD` (Create, update, or validate PRD), `CA` (Create Architecture), `BD` (Build)
-
-### Conversational triggers (arguments required)
-
-Some triggers start a free-form conversation instead of a structured workflow. These expect you to describe what you need alongside the trigger code.
-
-| Agent | Trigger | What to provide |
-| --- | --- | --- |
-| Technical Writer (Paige) | `WD` | Description of the document to write |
-| Technical Writer (Paige) | `MG` | Diagram description and type (sequence, flowchart, etc.) |
-| Technical Writer (Paige) | `VD` | Document to validate and focus areas |
-| Technical Writer (Paige) | `EC` | Concept name to explain |
-
-**Example:**
-
-```text
-WD Write a deployment guide for our Docker setup
-MG Create a sequence diagram showing the auth flow
-EC Explain how the module system works
-```

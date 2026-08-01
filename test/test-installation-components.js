@@ -1825,7 +1825,7 @@ async function runTests() {
 
       // collectAgentsFromModuleYaml reads from src/bmm-skills/module.yaml
       await generator35.collectAgentsFromModuleYaml();
-      assert(generator35.agents.length >= 6, 'collectAgentsFromModuleYaml discovers bmm agents from module.yaml (>= 6 agents)');
+      assert(generator35.agents.length >= 5, 'collectAgentsFromModuleYaml discovers bmm agents from module.yaml (>= 5 agents)');
 
       const maryEntry = generator35.agents.find((a) => a.code === 'bmad-agent-analyst');
       assert(maryEntry !== undefined, 'collectAgentsFromModuleYaml includes bmad-agent-analyst');
