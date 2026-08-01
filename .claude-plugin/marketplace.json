@@ -84,7 +84,6 @@
         "./src/bmm-skills/plan/bmad-ux",
         "./src/bmm-skills/agents/bmad-agent-architect",
         "./src/bmm-skills/plan/bmad-architecture",
-        "./src/bmm-skills/plan/bmad-check-implementation-readiness",
         "./src/bmm-skills/plan/bmad-create-epics-and-stories",
         "./src/bmm-skills/plan/bmad-generate-project-context",
         "./src/bmm-skills/agents/bmad-agent-dev",

@@ -1,13 +1,13 @@
 ---
 name: bmad-sprint-planning
-description: 'Generate sprint status tracking from epics. Use when the user says "run sprint planning" or "generate sprint plan"'
+description: 'Gate planning readiness, then generate sprint status tracking from epics. Use when the user says "run sprint planning", "generate sprint plan", or "check implementation readiness"'
 ---
 
 # Sprint Planning Workflow
 
-**Goal:** Generate sprint status tracking from epics, detecting current story statuses and building a complete sprint-status.yaml file.
+**Goal:** Verify the planning is actually implementable (readiness gate), then generate sprint status tracking from epics, detecting current story statuses and building a complete sprint-status.yaml file.
 
-**Your Role:** You are a Developer generating and maintaining sprint tracking. Parse epic files, detect story statuses, and produce a structured sprint-status.yaml.
+**Your Role:** You are a Developer about to commit to this plan. First scrutinize it the way a skeptical senior engineer reads a handoff — gaps found now are cheap, gaps found mid-build are not. Then parse epic files, detect story statuses, and produce a structured sprint-status.yaml.
 
 ## Conventions
 
@@ -98,7 +98,30 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
 
 <workflow>
 
-<step n="1" goal="Parse epic files and extract all work items">
+<step n="1" goal="Readiness gate — verify the planning is implementable">
+
+Before generating any tracking, judge whether the plan can actually be built. If the user only asked to check readiness, this step is the deliverable — report the verdict and stop.
+
+<action>Inventory what planning actually exists: scan {planning_artifacts} and {project_knowledge} for intent and planning artifacts — briefs, PRFAQs, PRDs, specs, UX outputs, architecture, epics and stories. Identify documents by reading what they are, not by filename patterns; projects arrive with different artifact mixes and naming.</action>
+
+<action>Assess the plan as a whole against one question: could a developer implement these epics without inventing decisions nothing records?</action>
+
+- Requirements and decisions in the intent artifacts trace forward into stories; stories trace back to recorded intent — flag orphans in both directions
+- Epics deliver user value and carry no forward dependencies; stories are independently completable
+- Architecture and UX decisions the stories rely on are recorded somewhere, not assumed
+- Conflicts between artifacts (a spec and an epic disagreeing) are surfaced, not silently resolved
+
+A missing document type is only a finding if stories depend on decisions nothing records — a project with no UX artifact and no UI stories is fine.
+
+<action>Deliver a verdict:</action>
+
+- **PASS** — state it in one line and continue to the next step
+- **CONCERNS** — list them briefly with where each gap lives; ask {user_name} whether to proceed anyway or fix first
+- **FAIL** — the plan is not implementable as recorded. Present findings ordered by severity, name the skill that fixes each (the relevant plan skill, or `bmad-correct-course` for cross-cutting changes), offer to save the findings to `{planning_artifacts}/implementation-readiness.md`, and stop
+
+</step>
+
+<step n="2" goal="Parse epic files and extract all work items">
 <action>Load {project_context} for project-wide patterns and conventions (if exists)</action>
 <action>Communicate in {communication_language} with {user_name}</action>
 <action>Look for all files matching `{epics_pattern}` in {epics_location}</action>
@@ -120,7 +143,7 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
 <action>Build complete inventory of all epics and stories from all epic files</action>
 </step>
 
-<step n="2" goal="Build sprint status structure">
+<step n="3" goal="Build sprint status structure">
 <action>For each epic found, create entries in this order:</action>
 
 1. **Epic entry** - Key: `epic-{num}`, Default status: `backlog`
@@ -139,7 +162,7 @@ development_status:
 
 </step>
 
-<step n="3" goal="Apply intelligent status detection">
+<step n="4" goal="Apply intelligent status detection">
 <action>For each story, detect current status by checking files:</action>
 
 **Story file detection:**
@@ -160,7 +183,7 @@ development_status:
 - Retrospective: `optional` ↔ `done`
   </step>
 
-<step n="4" goal="Generate sprint status file">
+<step n="5" goal="Generate sprint status file">
 <action>Create or update {status_file} with:</action>
 
 **File Structure:**
@@ -225,7 +248,7 @@ development_status:
 <action>If the existing file had an action_items section, write it back unchanged after development_status</action>
 </step>
 
-<step n="5" goal="Validate and report">
+<step n="6" goal="Validate and report">
 <action>Perform validation checks:</action>
 
 - [ ] Every epic in epic files appears in {status_file}
