@@ -63,6 +63,7 @@ function assert(condition, message) {
 // ---------------------------------------------------------------------------
 
 const SKILL_SRC = path.join(__dirname, '..', 'src', 'bmm-skills', 'ship', 'bmad-build');
+const BUILD_AUTO_SRC = path.join(__dirname, '..', 'src', 'bmm-skills', 'ship', 'bmad-build-auto');
 
 /**
  * Recursively copy a directory (stdlib only, no fs.cp to stay >=20 compat).
@@ -213,6 +214,103 @@ try {
       content.includes(expected),
       `sprint_status path not found.\nExpected substring: ${expected}\n` +
         `sync-sprint-status.md excerpt (first 2000 chars):\n${content.slice(0, 2000)}`,
+    );
+  });
+
+  test('manifest story template is mechanically identical to Build Auto and is rendered', () => {
+    const canonicalTemplate = fs.readFileSync(path.join(BUILD_AUTO_SRC, 'spec-template.md'), 'utf-8');
+    assert(readRendered('story-spec-template.md') === canonicalTemplate, 'rendered Build story template drifted from canonical');
+  });
+
+  test('first manifest story run uses the resolved id and title slug beside its epic', () => {
+    const content = readRendered('step-01-clarify-and-route.md');
+    assert(content.includes('manifest_story_mode'), 'explicit manifest-story mode is missing');
+    assert(content.includes('`{spec_folder}/SPEC.md`'), 'sibling SPEC.md requirement is missing');
+    assert(content.includes('`{spec_folder}/stories.yaml`'), 'stories.yaml parsing requirement is missing');
+    assert(content.includes('`{spec_folder}/stories/{story_id}-{slug}.md`'), 'first-create id/title-slug placement is missing');
+    assert(content.includes('never prefix the filename with `spec-`'), 'manifest filenames may acquire a spec- prefix');
+    assert(content.includes('never append `-2`/`-3`'), 'manifest story collision suffixes are not forbidden');
+    assert(content.includes('HALT explicitly for `empty story slug`'), 'empty manifest story slugs do not halt');
+  });
+
+  test('manifest story resume uses exact id-prefix matching and complete status routing', () => {
+    const content = readRendered('step-01-clarify-and-route.md');
+    assert(
+      content.includes('Match existing files using exactly `{spec_folder}/stories/{story_id}-*.md`'),
+      'exact story id-prefix resume match is missing',
+    );
+    for (const status of ['`draft`', '`ready-for-dev`', '`in-progress`', '`in-review`', '`blocked`', '`done`']) {
+      assert(content.includes(status), `manifest story route omits recognized status ${status}`);
+    }
+    assert(content.includes('ambiguous story file match'), 'ambiguous id matches do not halt explicitly');
+    assert(content.includes('unrecognized status in existing story file'), 'unrecognized statuses do not halt explicitly');
+    assert(content.includes('story already blocked'), 'blocked stories do not halt explicitly');
+    assert(content.includes('fresh review pass'), 'done stories do not start a fresh review pass');
+    assert(
+      content.includes('Before any non-HALT route, run **Story-key resolution**'),
+      'resumed manifest stories skip sprint story-key resolution',
+    );
+    assert(
+      content.includes('Run **Story-key resolution** below now that `spec_file` is set.'),
+      'new manifest stories skip sprint story-key resolution',
+    );
+  });
+
+  test('malformed manifest attempts halt without a global fallback', () => {
+    const content = readRendered('step-01-clarify-and-route.md');
+    assert(content.includes('Missing, unparseable, or malformed manifest data'), 'malformed manifest handling is missing');
+    assert(
+      content.includes('Never fall back to a global spec after this branch has identified a candidate folder'),
+      'manifest failure may silently fall back globally',
+    );
+    assert(content.includes('`id` is a non-empty string containing only ASCII letters, digits, and dashes'), 'id validation is incomplete');
+    assert(content.includes('`title` is a non-empty one-line string with no CR or LF'), 'one-line title validation is missing');
+    assert(
+      content.includes("any explicit existing path under a candidate epic's `stories/` directory"),
+      'story paths do not force manifest validation',
+    );
+    assert(content.includes("regardless of the file's frontmatter title"), 'story path identity still depends on frontmatter title');
+    assert(content.includes('HALT for unresolved manifest identity'), 'unresolved story path identity may fall through');
+    assert(
+      content.includes('Zero or multiple resolved entries by any method is an explicit HALT'),
+      'non-unique story identity does not halt',
+    );
+  });
+
+  test('standalone placement and collision behavior remain available unchanged', () => {
+    const content = readRendered('step-01-clarify-and-route.md');
+    assert(content.includes('/impl/spec-{slug}.md` already exists: if its status is `draft`'), 'standalone draft-resume route changed');
+    assert(content.includes('otherwise append `-2`, `-3`, etc.'), 'standalone collision suffix behavior changed');
+    assert(content.includes('/impl/spec-{slug}.md`.'), 'standalone global placement changed');
+  });
+
+  test('manifest story mode carries Build Auto fields through every downstream step', () => {
+    const plan = readRendered('step-02-plan.md');
+    const implement = readRendered('step-03-implement.md');
+    const review = readRendered('step-04-review.md');
+    const present = readRendered('step-05-present.md');
+    assert(plan.includes('`./story-spec-template.md`'), 'planning does not select the story template');
+    assert(plan.includes('<intent-contract>'), 'planning does not preserve the story intent contract');
+    assert(implement.includes('`baseline_revision`'), 'implementation does not write the story baseline revision');
+    assert(implement.includes('<intent-contract>'), 'implementation does not protect the story intent contract');
+    assert(
+      implement.includes('Select the immutable intent boundary by route: `<intent-contract>` when `manifest_story_mode` is true'),
+      'matrix test audit does not select the manifest story intent contract',
+    );
+    assert(implement.includes('`<frozen-after-approval>` in standalone mode'), 'matrix test audit omits the standalone boundary');
+    assert(review.includes('`{baseline_revision}`'), 'review does not consume the story baseline revision');
+    assert(review.includes('## Review Triage Log'), 'review does not maintain the story triage log');
+    assert(review.includes('`followup_review_recommended`'), 'review does not finalize follow-up review metadata');
+    assert(
+      review.includes('set `{spec_file}` status to `draft` before reading and fully following `./step-02-plan.md`'),
+      'intent-gap loopback does not restore draft status before planning',
+    );
+    assert(present.includes('`final_revision`'), 'presentation does not finalize the story revision');
+    assert(present.includes('`status: done`'), 'presentation does not finalize the story status');
+    assert(present.includes('missing, `NO_VCS`, invalid, or unreachable'), 'presentation lacks invalid-baseline fallback');
+    assert(
+      present.includes('replace the existing section with the newly generated section instead of appending a duplicate'),
+      'fresh done review may append a duplicate Suggested Review Order',
     );
   });
 

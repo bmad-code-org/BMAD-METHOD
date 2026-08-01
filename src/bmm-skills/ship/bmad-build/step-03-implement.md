@@ -8,7 +8,7 @@
 - **Language** — Speak in `{{.communication_language}}`. Write any file output in `{{.document_output_language}}`.
 - No push. No remote ops.
 - Sequential execution only.
-- Content inside `<frozen-after-approval>` in `{spec_file}` is read-only. Do not modify.
+- In manifest-story mode, content inside `<intent-contract>` in `{spec_file}` is read-only. In standalone mode, content inside `<frozen-after-approval>` is read-only. Do not modify the selected intent boundary.
 
 ## PRECONDITION
 
@@ -18,7 +18,7 @@ Verify `{spec_file}` resolves to a non-empty path and the file exists on disk. I
 
 ### Baseline
 
-Capture `baseline_commit` (current HEAD, or `NO_VCS` if version control is unavailable) into `{spec_file}` frontmatter before making any changes. If the frontmatter already contains `baseline_commit` (resumed run), preserve the existing value — never overwrite it.
+When `manifest_story_mode` is true, capture `baseline_revision` (current HEAD, or `NO_VCS` if version control is unavailable) into `{spec_file}` frontmatter before making any changes, using Build Auto's field name. Otherwise capture `baseline_commit` the same way; if standalone frontmatter already contains `baseline_commit` (resumed run), preserve the existing value — never overwrite it. Never add `baseline_commit` to a manifest story or `baseline_revision` to a standalone spec.
 
 ### Implement
 
@@ -42,7 +42,7 @@ Before leaving this step, verify every task in the `## Tasks & Acceptance` secti
 
 ### Matrix Test Audit
 
-If `{spec_file}`'s `<frozen-after-approval>` block contains an I/O & Edge-Case Matrix, verify every matrix row is covered by at least one test that verifies its expected behavior, and that each covering test ran and passed in the verification output. A covering test that exists but did not run — unregistered, filtered out, skipped, or disabled — counts as missing. If a test disagrees with the matrix, never edit the expectation to match the code: fix the code, or if the matrix row itself is ambiguous, HALT and ask the human. Fix any other audit failure before proceeding.
+Select the immutable intent boundary by route: `<intent-contract>` when `manifest_story_mode` is true, or `<frozen-after-approval>` in standalone mode. If that selected block contains an I/O & Edge-Case Matrix, verify every matrix row is covered by at least one test that verifies its expected behavior, and that each covering test ran and passed in the verification output. A covering test that exists but did not run — unregistered, filtered out, skipped, or disabled — counts as missing. If a test disagrees with the matrix, never edit the expectation to match the code: fix the code, or if the matrix row itself is ambiguous, HALT and ask the human. Fix any other audit failure before proceeding.
 
 ## NEXT
 
