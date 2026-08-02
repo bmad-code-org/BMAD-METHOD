@@ -1,0 +1,18 @@
+[
+  { "query": "make a ticket for the login timeout bug", "should_trigger": true },
+  { "query": "can you break this PRD into epics for me", "should_trigger": true },
+  { "query": "inception for the checkout epic", "should_trigger": true },
+  { "query": "create a story for the dark mode toggle", "should_trigger": true },
+  { "query": "add a spike to figure out which vector db we should use", "should_trigger": true },
+  { "query": "break docs/spec.md into stories", "should_trigger": true },
+  { "query": "turn this braindump into epics and get them on the wall", "should_trigger": true },
+  { "query": "file a defect for the duplicate SMS history rows", "should_trigger": true },
+  { "query": "write a PRD for our claims-triage tool", "should_trigger": false },
+  { "query": "create a spec from this RFC", "should_trigger": false },
+  { "query": "help me brainstorm feature ideas for the app", "should_trigger": false },
+  { "query": "what does this stack trace mean", "should_trigger": false },
+  { "query": "review this PR for bugs before I merge", "should_trigger": false },
+  { "query": "run the architecture workflow for the payments service", "should_trigger": false },
+  { "query": "draft the sprint retro notes", "should_trigger": false },
+  { "query": "update the spec with the new capability we discussed", "should_trigger": false }
+]

@@ -20,7 +20,7 @@ Three routes, cheap exit first. **Refine** writes one ticket with minimal ceremo
 
 ## On Activation
 
-1. Resolve customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`. On failure, read `{skill-root}/customize.toml` directly.
+1. Resolve customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`. On failure — including when `{project-root}/_bmad/` does not exist (standalone installs) — read `{skill-root}/customize.toml` directly; don't hunt for the resolver elsewhere.
 2. Run `{workflow.activation_steps_prepend}`; treat `{workflow.persistent_facts}` as foundational context (`file:` entries are loaded).
 3. Resolve config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}`; from the merged JSON take `{communication_language}`, `{document_output_language}`, `{planning_artifacts}`, `{date}`. Converse in `{communication_language}`; write ticket content in `{document_output_language}`. On failure, ask the user where the ticket tree should live (a sensible project-relative default) and continue.
 4. Open the floor before routing: invite everything the user has — planning docs, existing tickets, constraints, prior decisions. A bare request gets "tell me everything"; a supplied path gets "what should I focus on?". The dump replaces most ingest questioning. Then pick the route from intent — one ticket → refine; open scope or a planning doc → slice; an existing epic to break down → incept — and the mode — **guided** (the default), **quick**, or **autonomous** (also selectable by explicit invocation, e.g. "autonomous" in the request). Ambiguity costs one bundled question, not a quiz.
