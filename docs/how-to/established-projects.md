@@ -27,24 +27,16 @@ If you have completed all PRD epics and stories through the BMad process, clean 
 ## Step 2: Create Project Context
 
 :::tip[Recommended for Existing Projects]
-Generate `project-context.md` to capture your existing codebase patterns and conventions. This ensures AI agents follow your established practices when implementing changes.
+Build your project's context system so AI agents follow your established practices when implementing changes — this is the brownfield on-ramp.
 :::
 
-Run the generate project context workflow:
+Run the project context skill:
 
 ```bash
-bmad-generate-project-context
+bmad-project-context
 ```
 
-This scans your codebase to identify:
-
-- Technology stack and versions
-- Code organization patterns
-- Naming conventions
-- Testing approaches
-- Framework-specific patterns
-
-You can review and refine the generated file, or create it manually at `_bmad-output/project-context.md` if you prefer.
+It scans your codebase and any docs first (mechanically, via its script and parallel subagents), then asks you in short rounds only about what's genuinely unknowable — landmines, frozen areas, org requirements. You end up with a small always-loaded `kernel.md` plus a bundle of verified entries in your `project_knowledge` folder, instead of generated documentation volume. An existing bloated `docs/` folder is treated as a source to verify against code, not something to add to.
 
 [Learn more about project context](../explanation/project-context.md)
 
@@ -57,7 +49,7 @@ Your `docs/` folder should contain succinct, well-organized documentation that a
 - Architecture
 - Any other relevant project information
 
-For complex projects, consider using the `bmad-document-project` workflow. It offers runtime variants that will scan your entire project and document its actual current state.
+`bmad-project-context` audits and maintains the agent-facing part of this — run its audit any time the context feels stale; it shrinks and re-verifies rather than accreting. (The earlier `bmad-document-project` workflow is deprecated and forwards there.)
 
 ## Step 3: Get Help
 

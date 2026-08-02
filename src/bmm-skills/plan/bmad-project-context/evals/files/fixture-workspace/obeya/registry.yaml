@@ -1,0 +1,10 @@
+bmad_obeya_registry: true
+projects:
+  proj-a:
+    remote: https://example.invalid/proj-a.git
+    branch: main
+    context_root: docs
+  sibling-api:
+    remote: https://example.invalid/sibling-api.git
+    branch: main
+    context_root: docs

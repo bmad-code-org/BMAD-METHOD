@@ -24,7 +24,7 @@ This page lists the default BMM (Agile suite) agents that install with BMad Meth
 | UX Designer (Sally)         | `bmad-agent-ux-designer` | `CU`                           | Create UX Design                                                                                    |
 
 :::note[Where is Paige?]
-The Technical Writer (Paige) is on hiatus — she will return in the future far more capable. In the meantime, project documentation lives on: the `DP` (Document Project) trigger is available through the Analyst, or invoke the `bmad-document-project` skill directly.
+The Technical Writer (Paige) is on hiatus — she will return in the future far more capable. In the meantime, project context lives on: the `PC` (Project Context) trigger is available through the Analyst, or invoke the `bmad-project-context` skill directly.
 :::
 
 ## Trigger Types

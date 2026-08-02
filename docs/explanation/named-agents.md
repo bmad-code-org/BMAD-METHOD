@@ -38,7 +38,7 @@ BMad ships five named agents, each anchored to a phase of the BMad Method:
 | 💻 **Amelia**, Senior Engineer | Implementation | story execution, build, code review, sprint planning |
 
 :::note[Where is Paige?]
-📚 **Paige**, the Technical Writer, is on hiatus — she will return in the future far more capable. Project documentation is still covered: invoke `bmad-document-project` directly or through Mary's menu.
+📚 **Paige**, the Technical Writer, is on hiatus — she will return in the future far more capable. Project context is still covered: invoke `bmad-project-context` directly or through Mary's menu.
 :::
 
 They each have a hardcoded identity (name, title, domain) and a customizable layer (role, principles, communication style, icon, menu). You can rewrite Mary's principles or add menu items; you can't rename her — that's deliberate. Brand recognition survives customization so "hey Mary" always activates the analyst, regardless of how a team has shaped her behavior.

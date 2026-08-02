@@ -100,6 +100,6 @@ description = "Working Backwards PRFAQ challenge — forge and stress-test produ
 skill = "bmad-prfaq"
 
 [[agent.menu]]
-code = "DP"
-description = "Analyze an existing project to produce documentation for human and LLM consumption"
-skill = "bmad-document-project"
+code = "PC"
+description = "Curate the verified project context AI agents load — kernel + knowledge bundle (ingest, query, audit)"
+skill = "bmad-project-context"
