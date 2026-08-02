@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # /// script
-# requires-python = ">=3.9"
+# requires-python = ">=3.11"
 # dependencies = []
 # ///
 """Tests for update_ticket.py — run: uv run python -m unittest discover -s scripts/tests"""
@@ -104,16 +104,71 @@ class UpdateTicketTests(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertIn("unknown status", out["error"])
 
-    def test_epic_only_dropped(self):
+    def test_epic_status_intentional_only(self):
         code, out = run("--path", str(self.epic), "--set", "status=in-progress")
         self.assertEqual(code, 1)
         self.assertIn("dropped", out["error"])
         # Structural, not a transition rule: --force does not open it.
         code, out = run("--path", str(self.epic), "--set", "status=in-progress", "--force")
         self.assertEqual(code, 1)
+        # done and dropped are both storable — intentional human calls.
+        code, out = run("--path", str(self.epic), "--set", "status=done")
+        self.assertEqual(code, 0)
+        self.assertIn("status: done", self.epic.read_text())
         code, out = run("--path", str(self.epic), "--set", "status=dropped")
         self.assertEqual(code, 0)
         self.assertIn("status: dropped", self.epic.read_text())
+
+    def test_insert_and_replace_adjacent_lines_both_land(self):
+        # status is absent on the epic (insert after type:) while title is the
+        # very next line (replace) — both must survive the splice.
+        code, out = run("--path", str(self.epic), "--set", "status=done",
+                        "--set", "title=Renamed epic")
+        self.assertEqual(code, 0)
+        text = self.epic.read_text()
+        self.assertIn("status: done", text)
+        self.assertIn('title: "Renamed epic"', text)
+        self.assertEqual(text.count("title:"), 1)
+        self.assertEqual(text.count("description:"), 1)
+
+    def test_newline_in_value_refused(self):
+        code, out = run("--path", str(self.story),
+                        "--set", "title=Pwned\n---\njunk: yes")
+        self.assertEqual(code, 1)
+        self.assertIn("single line", out["error"])
+        self.assertIn('title: "Rule CRUD"', self.story.read_text())  # untouched
+
+    def test_cycle_rejected_through_block_style_dep(self):
+        # ALRT-13 declares its dep in block form; the gate must still see it.
+        (self.root / "alert-rules" / "ALRT-13-rule-eval.md").write_text(
+            STORY.replace("id: ALRT-12", "id: ALRT-13")
+                 .replace("depends_on: []", "depends_on:\n  - ALRT-12"))
+        code, out = run("--root", str(self.root), "--id", "ALRT-12",
+                        "--set", "depends_on=ALRT-13")
+        self.assertEqual(code, 1)
+        self.assertIn("cycle", out["error"])
+
+    def test_quoted_id_resolves(self):
+        quoted = self.root / "ALRT-77-quoted.md"
+        quoted.write_text(STORY.replace("id: ALRT-12", 'id: "ALRT-77"'))
+        code, out = run("--root", str(self.root), "--id", "ALRT-77",
+                        "--set", "status=in-progress")
+        self.assertEqual(code, 0)
+        self.assertTrue(out["file"].endswith("ALRT-77-quoted.md"))
+
+    def test_duplicate_id_refused(self):
+        (self.root / "ALRT-12-clone.md").write_text(STORY)
+        code, out = run("--root", str(self.root), "--id", "ALRT-12",
+                        "--set", "status=in-progress")
+        self.assertEqual(code, 1)
+        self.assertIn("duplicated", out["error"])
+
+    def test_malformed_target_fails_json_clean(self):
+        bad = self.root / "ALRT-88-bad.md"
+        bad.write_text("---\nschema: 1\nid: ALRT-88\ntype: task\n")  # unterminated
+        code, out = run("--path", str(bad), "--set", "status=in-progress")
+        self.assertEqual(code, 1)
+        self.assertIn("unterminated", out["error"])
 
     def test_immutable_fields(self):
         for spec in ("id=ALRT-99", "type=task", "created=2026-01-01", "schema=2"):

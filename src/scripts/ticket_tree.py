@@ -82,7 +82,9 @@ def parse_frontmatter(text):
                     continue
                 fm[key] = ""
             elif rest.startswith("["):
-                inner = rest[1:-1].strip() if rest.endswith("]") else rest[1:].strip()
+                if not rest.endswith("]"):
+                    return None  # unclosed inline list — malformed frontmatter
+                inner = rest[1:-1].strip()
                 fm[key] = [parse_scalar(p) for p in inner.split(",")] if inner else []
             else:
                 fm[key] = parse_scalar(rest)
@@ -91,23 +93,40 @@ def parse_frontmatter(text):
 
 
 def scan(root):
-    """Return (tickets, by_id). Each ticket: frontmatter + _path (Path) + _rel (str)."""
+    """Return (tickets, by_id, problems). Each ticket: frontmatter + _path + _rel.
+    problems: files that claim to be tickets but can't be trusted — unreadable,
+    unparseable frontmatter, missing id/type, or a duplicate id (first file wins)."""
     tickets = []
     by_id = {}
+    problems = []
     for p in sorted(root.rglob("*.md")):
         if p.name == "index.md":
             continue
+        rel = p.relative_to(root).as_posix()
         try:
-            fm = parse_frontmatter(p.read_text(encoding="utf-8"))
-        except (OSError, UnicodeDecodeError):
+            text = p.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError) as e:
+            problems.append({"file": rel, "error": f"unreadable: {e.__class__.__name__}"})
             continue
-        if not fm or "id" not in fm or "type" not in fm:
+        fm = parse_frontmatter(text)
+        if fm is None:
+            if text.lstrip().startswith("---"):
+                problems.append({"file": rel, "error":
+                                 "frontmatter failed to parse (unterminated block or malformed inline list)"})
+            continue
+        if "id" not in fm or "type" not in fm:
+            problems.append({"file": rel, "error": "frontmatter lacks id or type"})
+            continue
+        tid = str(fm["id"])
+        if tid in by_id:
+            problems.append({"file": rel, "error":
+                             f"duplicate id {tid} — also in {by_id[tid]['_rel']}"})
             continue
         fm["_path"] = p
-        fm["_rel"] = p.relative_to(root).as_posix()
+        fm["_rel"] = rel
         tickets.append(fm)
-        by_id[str(fm["id"])] = fm
-    return tickets, by_id
+        by_id[tid] = fm
+    return tickets, by_id, problems
 
 
 def children_of(epic, tickets):
@@ -125,24 +144,21 @@ def children_of(epic, tickets):
 
 
 def epic_state(epic, tickets, _seen=None):
-    if epic.get("status") == DROPPED:
-        return DROPPED
+    """done and dropped are stored, intentional facts (retrospective or user) —
+    never computed. Computed state is only: not-started (no children, or none
+    past backlog) or in-progress (any child underway or resolved done)."""
+    stored = epic.get("status")
+    if stored in (DONE, DROPPED):
+        return stored
     _seen = _seen or set()
     if str(epic["id"]) in _seen:
         return "in-progress"  # cycle guard; graph lint owns real diagnosis
     _seen.add(str(epic["id"]))
     kids = children_of(epic, tickets)
-    if not kids:
-        return "unsliced"
     states = [epic_state(k, tickets, _seen) if k["type"] == "epic" else k.get("status")
               for k in kids]
-    active = [s for s in states if s not in (DONE, DROPPED)]
-    if not active:
-        return DONE
     started = any(s in (DONE, "in-progress", "review") for s in states)
-    if not started and all(s in ("backlog", "unsliced") for s in active):
-        return "backlog"
-    return "in-progress"
+    return "in-progress" if started else "not-started"
 
 
 def dep_done(dep_id, by_id, tickets):
@@ -153,6 +169,15 @@ def dep_done(dep_id, by_id, tickets):
         state = epic_state(t, tickets)
         return state == DONE, state
     return t.get("status") == DONE, t.get("status")
+
+
+def as_list(ticket, field):
+    """List fields defensively: a scalar (schema violation validate will name)
+    reads as a one-entry list, never iterated character by character."""
+    v = ticket.get(field)
+    if isinstance(v, list):
+        return v
+    return [v] if v not in (None, "") else []
 
 
 def read_index_key(root):
@@ -189,16 +214,19 @@ def id_num(ticket_id):
 
 def cmd_next_id(root, args):
     key = resolve_key(root, args.key)
-    tickets, _ = scan(root)
+    tickets, _, problems = scan(root)
     nums = [id_num(t["id"]) for t in tickets
-            if re.fullmatch(re.escape(key) + r"-\d+", str(t["id"]))]
+            if re.fullmatch(re.escape(key) + r"-\d+", str(t["id"]), re.IGNORECASE)]
     nxt = (max(nums) + 1) if nums else 1
-    print(json.dumps({"ok": True, "key": key, "next": nxt, "id": f"{key}-{nxt}"}))
+    out = {"ok": True, "key": key, "next": nxt, "id": f"{key}-{nxt}"}
+    if problems:
+        out["warnings"] = problems  # a broken file could be hiding an issued id
+    print(json.dumps(out))
 
 
 def cmd_index(root, args):
     key = resolve_key(root, args.key)
-    tickets, _ = scan(root)
+    tickets, _, problems = scan(root)
 
     def entry_lines(t, depth):
         pad = "  " * depth
@@ -223,18 +251,20 @@ def cmd_index(root, args):
         body.extend(entry_lines(lf, 0))
     body.append("")
     atomic_write(root / "index.md", "\n".join(body))
-    print(json.dumps({"ok": True, "file": str(root / "index.md"),
-                      "entries": len(tickets)}))
+    out = {"ok": True, "file": str(root / "index.md"), "entries": len(tickets)}
+    if problems:
+        out["warnings"] = problems
+    print(json.dumps(out))
 
 
 def cmd_frontier(root, args):
-    tickets, by_id = scan(root)
+    tickets, by_id, _ = scan(root)
     out = []
     for t in tickets:
         if t["type"] not in LEAF_TYPES or t.get("status") != "backlog":
             continue
         unmet = []
-        for dep in t.get("depends_on") or []:
+        for dep in as_list(t, "depends_on"):
             ok, state = dep_done(dep, by_id, tickets)
             if not ok:
                 unmet.append({"id": str(dep), "state": state})
@@ -245,7 +275,7 @@ def cmd_frontier(root, args):
 
 
 def cmd_board(root, args):
-    tickets, by_id = scan(root)
+    tickets, by_id, _ = scan(root)
     epics, blocked = [], []
     totals = {}
     for t in tickets:
@@ -259,7 +289,7 @@ def cmd_board(root, args):
         else:
             totals[t.get("status", "?")] = totals.get(t.get("status", "?"), 0) + 1
             if t.get("status") == "backlog":
-                unmet = [str(d) for d in (t.get("depends_on") or [])
+                unmet = [str(d) for d in as_list(t, "depends_on")
                          if not dep_done(d, by_id, tickets)[0]]
                 if unmet:
                     blocked.append({"id": str(t["id"]), "waiting_on": unmet})
@@ -272,27 +302,33 @@ def cmd_board(root, args):
 
 
 def cmd_graph(root, args):
-    tickets, by_id = scan(root)
-    deps_of = {str(t["id"]): [str(d) for d in (t.get("depends_on") or []) if str(d) in by_id]
+    tickets, by_id, _ = scan(root)
+    deps_of = {str(t["id"]): [str(d) for d in as_list(t, "depends_on") if str(d) in by_id]
                for t in tickets}
     edges = [[d, n] for n, ds in sorted(deps_of.items()) for d in ds]
 
-    memo, onstack = {}, set()
-
-    def depth(n):
-        if n in memo:
-            return memo[n]
-        if n in onstack:
-            memo[n] = 0  # cycle guard; validate owns diagnosis
-            return 0
-        onstack.add(n)
-        d = 0 if not deps_of[n] else 1 + max(depth(x) for x in deps_of[n])
-        onstack.discard(n)
-        memo[n] = d
-        return d
-
-    for n in deps_of:
-        depth(n)
+    # Longest-path depth, iterative (no recursion limit on deep chains).
+    # Cycle participants contribute depth 0; validate owns cycle diagnosis.
+    memo = {}
+    for start in deps_of:
+        if start in memo:
+            continue
+        stack, onstack = [start], {start}
+        while stack:
+            n = stack[-1]
+            if n in memo:
+                stack.pop()
+                onstack.discard(n)
+                continue
+            pending = [d for d in deps_of[n] if d not in memo and d not in onstack]
+            if pending:
+                stack.extend(pending)
+                onstack.update(pending)
+                continue
+            done_deps = [memo[d] for d in deps_of[n] if d in memo]
+            memo[n] = (1 + max(done_deps)) if done_deps else 0
+            stack.pop()
+            onstack.discard(n)
     max_depth = max(memo.values(), default=0)
     lanes = [[n for n in sorted(deps_of, key=id_num) if memo[n] == i]
              for i in range(max_depth + 1)]
@@ -309,13 +345,16 @@ def cmd_graph(root, args):
            "lanes": lanes, "critical_path": path}
     if getattr(args, "mermaid", False):
         def mid(tid):
-            return tid.replace("-", "_")
+            return re.sub(r"[^A-Za-z0-9_]", "_", str(tid))
+
+        def label(s):
+            return re.sub(r'[\[\]"\n]', "'", str(s))
         lines = ["flowchart TD"]
         for t in tickets:
             tid = str(t["id"])
-            title = str(t.get("title") or "").replace('"', "'")
+            title = label(t.get("title") or "")
             suffix = "" if t["type"] == "epic" else f" ({t.get('status')})"
-            lines.append(f'    {mid(tid)}["{tid} {title}{suffix}"]')
+            lines.append(f'    {mid(tid)}["{label(tid)} {title}{suffix}"]')
         for d, n in edges:
             lines.append(f"    {mid(d)} --> {mid(n)}")
         out["mermaid"] = "\n".join(lines)
@@ -323,23 +362,26 @@ def cmd_graph(root, args):
 
 
 def cmd_coverage(root, args):
-    tickets, _ = scan(root)
+    tickets, _, _ = scan(root)
     covered = {}
     for t in tickets:
-        for cid in t.get("covers") or []:
+        for cid in as_list(t, "covers"):
             covered.setdefault(str(cid), []).append(str(t["id"]))
+    proposed = []
     if getattr(args, "proposed", None):
-        for cid in (p.strip() for p in args.proposed.split(",") if p.strip()):
-            covered.setdefault(cid, []).append("(proposed)")
+        proposed = [p.strip() for p in args.proposed.split(",") if p.strip()]
     result = {"ok": True, "covered": covered}
+    if proposed:
+        result["proposed"] = proposed
     if args.require:
         required = [r.strip() for r in args.require.split(",") if r.strip()]
-        result["uncovered"] = [r for r in required if r not in covered]
+        result["uncovered"] = [r for r in required
+                               if r not in covered and r not in proposed]
     print(json.dumps(result))
 
 
 def cmd_list(root, args):
-    tickets, _ = scan(root)
+    tickets, _, _ = scan(root)
     rows = [{"id": str(t["id"]), "type": t["type"], "title": t.get("title"),
              "status": t.get("status"), "path": t["_rel"]}
             for t in sorted(tickets, key=lambda x: id_num(x["id"]))]
@@ -351,16 +393,23 @@ def _placeholderish(v):
 
 
 def cmd_validate(root, args):
-    tickets, by_id = scan(root)
+    tickets, by_id, problems = scan(root)
     errors = []
 
     def err(t, msg):
         errors.append({"file": t["_rel"], "error": msg})
 
     only = Path(args.path).resolve() if getattr(args, "path", None) else None
-    if only and not any(t["_path"].resolve() == only for t in tickets):
-        errors.append({"file": str(only), "error":
-                       "not a parseable ticket — frontmatter with id and type required"})
+    if only:
+        errors.extend(p for p in problems
+                      if (root / p["file"]).resolve() == only)
+        if not any(t["_path"].resolve() == only for t in tickets) and not errors:
+            errors.append({"file": str(only), "error":
+                           "not a parseable ticket — frontmatter with id and type required"})
+    else:
+        errors.extend(problems)
+
+    epic_dirs = {t["_path"].parent for t in tickets if t["type"] == "epic"}
 
     for t in tickets:
         if only and t["_path"].resolve() != only:
@@ -372,8 +421,12 @@ def cmd_validate(root, args):
         if t["type"] == "epic":
             if t["_path"].name != "ticket.md":
                 err(t, "epic envelope must be named ticket.md")
-        elif tid and not t["_path"].name.startswith(tid + "-"):
-            err(t, f"leaf filename must start with '{tid}-'")
+        else:
+            if tid and not t["_path"].name.startswith(tid + "-"):
+                err(t, f"leaf filename must start with '{tid}-'")
+            if t["_path"].parent != root and t["_path"].parent not in epic_dirs:
+                err(t, "leaf sits in a folder with no epic ticket.md — invisible to "
+                       "index and board; move it to the bin or an epic folder")
         if not isinstance(t.get("schema"), int):
             err(t, "schema must be an integer")
         title = t.get("title")
@@ -406,8 +459,9 @@ def cmd_validate(root, args):
             desc = t.get("description")
             if not isinstance(desc, str) or not desc.strip() or _placeholderish(desc):
                 err(t, f"epic description is missing or a placeholder: {desc!r}")
-            if t.get("status") not in (None, DROPPED):
-                err(t, f"epics store no lifecycle — only 'dropped' is storable, got {t.get('status')!r}")
+            if t.get("status") not in (None, DONE, DROPPED):
+                err(t, "epics compute progress — only intentional 'done' or 'dropped' "
+                       f"is storable, got {t.get('status')!r}")
             for banned in ("hitl", "severity"):
                 if banned in t:
                     err(t, f"{banned} is not an epic field")
@@ -423,9 +477,10 @@ def cmd_validate(root, args):
             elif "severity" in t:
                 err(t, "severity is a bug-only field")
 
-    # Tree-wide cycle check over valid ids.
-    graph = {str(t["id"]): [str(d) for d in (t.get("depends_on") or [])]
-             for t in tickets if isinstance(t.get("id"), str)}
+    # Tree-wide cycle check over valid ids (skipped for single-file runs —
+    # a per-file gate shouldn't fail on a cycle between two other files).
+    graph = {} if only else {str(t["id"]): [str(d) for d in as_list(t, "depends_on")]
+                             for t in tickets if isinstance(t.get("id"), str)}
     seen_in_cycle = set()
     for start in graph:
         if start in seen_in_cycle:
@@ -479,9 +534,14 @@ def main():
     root = Path(args.root)
     if not root.is_dir():
         fail(f"no such directory: {args.root}")
-    {"next-id": cmd_next_id, "index": cmd_index, "validate": cmd_validate,
-     "list": cmd_list, "frontier": cmd_frontier, "board": cmd_board,
-     "coverage": cmd_coverage, "graph": cmd_graph}[args.verb](root, args)
+    try:
+        {"next-id": cmd_next_id, "index": cmd_index, "validate": cmd_validate,
+         "list": cmd_list, "frontier": cmd_frontier, "board": cmd_board,
+         "coverage": cmd_coverage, "graph": cmd_graph}[args.verb](root, args)
+    except SystemExit:
+        raise
+    except Exception as e:  # keep the JSON output contract on fs/encoding errors
+        fail(f"{e.__class__.__name__}: {e}")
 
 
 if __name__ == "__main__":

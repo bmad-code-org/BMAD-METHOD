@@ -22,3 +22,11 @@ created: [YYYY-MM-DD]
 
 - #1 [Verifiable state of the world when this is complete — infra up, tooling works, docs published]
 - #2 [...]
+
+## References
+
+- [Typed-document pointers relevant to this task: document type + section, never file paths or line numbers. Cut the section if there are none.]
+
+## Dev Notes
+
+[Optional. Risk rationale when the score needs explaining (a hard floor tripped), constraints, gotchas.]

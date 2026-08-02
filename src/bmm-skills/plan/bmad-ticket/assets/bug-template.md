@@ -6,7 +6,7 @@ title: "[Symptom, not cause — what goes wrong]"
 status: backlog
 depends_on: []
 covers: []
-discovered_from: "[KEY-n of the work that revealed this, if known]"
+discovered_from: ""
 severity: [1-5]
 risk: [1-5]
 hitl: [true|false]
@@ -30,3 +30,11 @@ created: [YYYY-MM-DD]
 ## Cause Hypothesis
 
 [Best current theory of the cause — a hypothesis, never a prescription. No "preferred fix," no solution steps.]
+
+## References
+
+- [Typed-document pointers relevant to this bug: document type + section, never file paths or line numbers. Set `discovered_from` in the frontmatter to the KEY-n that revealed this, when known. Cut the section if there are none.]
+
+## Dev Notes
+
+[Optional. Risk rationale when the score needs explaining (a hard floor tripped), constraints, gotchas.]

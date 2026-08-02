@@ -84,20 +84,54 @@ class TicketTreeTests(unittest.TestCase):
         self.assertNotIn("ALRT-31", ids)   # dep is epic ALRT-3, not computed done
         self.assertNotIn("ALRT-12", ids)   # already done
 
-    def test_epic_dep_releases_when_children_done(self):
+    def test_epic_dep_releases_only_when_marked_done(self):
+        # All children done — epic done is intentional, never computed.
         (self.root / "alert-rules" / "ALRT-13-rule-eval.md").write_text(
             ticket("ALRT-13", "story", "Rule eval", status="done", deps="[ALRT-12]"))
         code, out = run("frontier", "--root", str(self.root))
         ids = [t["id"] for t in out["frontier"]]
-        self.assertIn("ALRT-31", ids)      # epic now computed done
+        self.assertNotIn("ALRT-31", ids)   # still gated: nobody marked the epic done
+        # Retrospective/user stores done on the envelope — now it releases.
+        (self.root / "alert-rules" / "ticket.md").write_text(ticket(
+            "ALRT-3", "epic", "Alert rules", covers="[CAP-4]",
+            extra='description: "Rules people manage"\nstatus: done\n'))
+        code, out = run("frontier", "--root", str(self.root))
+        ids = [t["id"] for t in out["frontier"]]
+        self.assertIn("ALRT-31", ids)
 
     def test_board_states(self):
         code, out = run("board", "--root", str(self.root))
         states = {e["id"]: e["state"] for e in out["epics"]}
         self.assertEqual(states["ALRT-3"], "in-progress")  # one done, one backlog
-        self.assertEqual(states["ALRT-40"], "unsliced")
+        self.assertEqual(states["ALRT-40"], "not-started")  # childless
         self.assertEqual(out["blocked"][0]["id"], "ALRT-31")
         self.assertEqual(out["leaf_totals"]["done"], 1)
+
+    def test_board_all_children_done_is_still_in_progress(self):
+        (self.root / "alert-rules" / "ALRT-13-rule-eval.md").write_text(
+            ticket("ALRT-13", "story", "Rule eval", status="done", deps="[ALRT-12]"))
+        code, out = run("board", "--root", str(self.root))
+        states = {e["id"]: e["state"] for e in out["epics"]}
+        self.assertEqual(states["ALRT-3"], "in-progress")  # done is never computed
+
+    def test_board_all_dropped_epic_is_not_started(self):
+        for name, tid in (("ALRT-12-rule-crud.md", "ALRT-12"),
+                          ("ALRT-13-rule-eval.md", "ALRT-13")):
+            (self.root / "alert-rules" / name).write_text(
+                ticket(tid, "story", "x", status="dropped"))
+        code, out = run("board", "--root", str(self.root))
+        states = {e["id"]: e["state"] for e in out["epics"]}
+        self.assertEqual(states["ALRT-3"], "not-started")  # abandoned != shipped
+        code, out = run("frontier", "--root", str(self.root))
+        self.assertNotIn("ALRT-31", [t["id"] for t in out["frontier"]])
+
+    def test_board_stored_done_wins(self):
+        (self.root / "reporting" / "ticket.md").write_text(ticket(
+            "ALRT-40", "epic", "Reporting",
+            extra='description: "Reports"\nstatus: done\n'))
+        code, out = run("board", "--root", str(self.root))
+        states = {e["id"]: e["state"] for e in out["epics"]}
+        self.assertEqual(states["ALRT-40"], "done")
 
     def test_validate_clean_tree(self):
         code, out = run("validate", "--root", str(self.root))
@@ -157,7 +191,93 @@ class TicketTreeTests(unittest.TestCase):
         code, out = run("coverage", "--root", str(self.root),
                         "--require", "CAP-4,CAP-9", "--proposed", "CAP-9")
         self.assertEqual(out["uncovered"], [])
-        self.assertIn("(proposed)", out["covered"]["CAP-9"])
+        self.assertEqual(out["proposed"], ["CAP-9"])
+        self.assertNotIn("CAP-9", out["covered"])  # proposed is never real coverage
+
+    def test_validate_flags_duplicate_ids(self):
+        (self.root / "ALRT-31-dupe.md").write_text(
+            ticket("ALRT-31", "task", "Snooze dupe"))
+        code, out = run("validate", "--root", str(self.root))
+        self.assertEqual(code, 1)
+        msgs = " | ".join(e["error"] for e in out["errors"])
+        self.assertIn("duplicate id ALRT-31", msgs)
+
+    def test_malformed_file_is_an_error_not_invisible(self):
+        (self.root / "ALRT-50-broken.md").write_text(
+            "---\nschema: 1\nid: ALRT-50\ntype: task\n")  # unterminated block
+        code, out = run("validate", "--root", str(self.root))
+        self.assertEqual(code, 1)
+        msgs = " | ".join(e["error"] for e in out["errors"])
+        self.assertIn("failed to parse", msgs)
+        code, out = run("next-id", "--root", str(self.root))
+        self.assertEqual(out["id"], "ALRT-41")  # broken file can't be counted...
+        self.assertTrue(out.get("warnings"))    # ...so the caller is warned
+
+    def test_validate_flags_unclosed_inline_list(self):
+        (self.root / "ALRT-51-badlist.md").write_text(
+            ticket("ALRT-51", "task", "Bad list").replace(
+                "depends_on: []", "depends_on: [ALRT-12, ALRT-13"))
+        code, out = run("validate", "--root", str(self.root))
+        self.assertEqual(code, 1)
+        msgs = " | ".join(e["error"] for e in out["errors"])
+        self.assertIn("failed to parse", msgs)
+
+    def test_validate_flags_orphan_leaf_folder(self):
+        orphan = self.root / "alert-rules" / "notes"
+        orphan.mkdir()
+        (orphan / "ALRT-52-orphan.md").write_text(ticket("ALRT-52", "task", "Orphan"))
+        code, out = run("validate", "--root", str(self.root))
+        self.assertEqual(code, 1)
+        msgs = " | ".join(e["error"] for e in out["errors"])
+        self.assertIn("no epic ticket.md", msgs)
+
+    def test_scalar_dep_is_not_iterated_charwise(self):
+        (self.root / "ALRT-53-scalar.md").write_text(
+            ticket("ALRT-53", "task", "Scalar dep").replace(
+                "depends_on: []", "depends_on: ALRT-13"))
+        code, out = run("board", "--root", str(self.root))
+        blocked = {b["id"]: b["waiting_on"] for b in out["blocked"]}
+        self.assertEqual(blocked["ALRT-53"], ["ALRT-13"])  # one id, not 7 characters
+        code, out = run("validate", "--root", str(self.root))
+        self.assertEqual(code, 1)  # still a schema violation validate names
+        self.assertIn("must be a list",
+                      " | ".join(e["error"] for e in out["errors"]))
+
+    def test_validate_path_skips_treewide_cycle(self):
+        (self.root / "alert-rules" / "ALRT-13-rule-eval.md").write_text(
+            ticket("ALRT-13", "story", "Rule eval", deps="[ALRT-12]"))
+        (self.root / "alert-rules" / "ALRT-12-rule-crud.md").write_text(
+            ticket("ALRT-12", "story", "Rule CRUD", status="done", deps="[ALRT-13]"))
+        code, out = run("validate", "--root", str(self.root),
+                        "--path", str(self.root / "ALRT-31-snooze.md"))
+        self.assertEqual(code, 0, out)  # the cycle lives in two other files
+
+    def test_graph_survives_deep_chains(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            (root / "index.md").write_text("---\nkey: DEEP\n---\n")
+            n = 1200  # past the default recursion limit
+            for i in range(1, n + 1):
+                deps = f"[DEEP-{i - 1}]" if i > 1 else "[]"
+                (root / f"DEEP-{i}-t.md").write_text(
+                    ticket(f"DEEP-{i}", "task", f"t{i}", deps=deps))
+            code, out = run("graph", "--root", str(root))
+            self.assertEqual(code, 0)
+            self.assertTrue(out["ok"])
+            self.assertEqual(len(out["lanes"]), n)
+            self.assertEqual(len(out["critical_path"]), n)
+
+    def test_mermaid_sanitizes_hostile_ids_and_titles(self):
+        (self.root / "KEY-n-template.md").write_text(
+            "---\nschema: 1\nid: [KEY-n]\ntype: story\n"
+            'title: "[Outcome] with \\"quotes\\""\nstatus: backlog\n'
+            "depends_on: []\ncovers: []\nrisk: 2\nhitl: false\n"
+            "created: 2026-08-01\n---\n\n# x\n")
+        code, out = run("graph", "--root", str(self.root), "--mermaid")
+        self.assertEqual(code, 0)
+        for line in out["mermaid"].splitlines()[1:]:
+            if "[" in line:  # node lines: id must be word-safe, label bracket-free
+                self.assertRegex(line.strip(), r'^\w+\["[^"\[\]]*"\]$')
 
     def test_coverage(self):
         code, out = run("coverage", "--root", str(self.root),

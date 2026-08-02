@@ -87,7 +87,10 @@ def parse_scalar(raw):
 
 
 def parse_inline_list(raw):
-    inner = raw.strip()[1:-1].strip()
+    raw = raw.strip()
+    if not raw.endswith("]"):
+        raise ValueError(f"unclosed inline list: {raw!r}")
+    inner = raw[1:-1].strip()
     if not inner:
         return []
     return [parse_scalar(part) for part in inner.split(",")]
@@ -95,16 +98,17 @@ def parse_inline_list(raw):
 
 def parse_frontmatter(lines):
     """Return (entries, close_idx). entries: list of dicts {key, value, start, end}
-    where start/end are line indexes [start, end) covering the entry."""
+    where start/end are line indexes [start, end) covering the entry.
+    Raises ValueError on malformed frontmatter."""
     if not lines or lines[0].strip() != "---":
-        fail("no frontmatter found (file does not start with ---)")
+        raise ValueError("no frontmatter found (file does not start with ---)")
     close = None
     for i in range(1, len(lines)):
         if lines[i].strip() == "---":
             close = i
             break
     if close is None:
-        fail("no frontmatter found (unterminated --- block)")
+        raise ValueError("no frontmatter found (unterminated --- block)")
     entries = []
     i = 1
     while i < close:
@@ -150,6 +154,9 @@ def render(key, value):
 
 def coerce(field, raw, ticket_type):
     """Validate and convert a raw --set string for a field. Returns value or fails."""
+    if any(c in raw for c in "\n\r"):
+        fail(f"{field} must be a single line — a newline in a value would "
+             "terminate the frontmatter block")
     if field in LIST_FIELDS:
         return [p.strip() for p in raw.split(",") if p.strip()]
     if field in INT_FIELDS:
@@ -168,29 +175,29 @@ def coerce(field, raw, ticket_type):
 
 
 def collect_tree(root):
-    """Map every ticket in the tree: id -> path, and id -> depends_on list."""
-    ids, deps = {}, {}
+    """Map every ticket in the tree: id -> path, id -> depends_on list, and
+    id -> list of duplicate paths. Uses the same parser as the target file so
+    quoted ids and block-style lists resolve identically everywhere."""
+    ids, deps, dups = {}, {}, {}
     for p in sorted(root.rglob("*.md")):
+        if p.name == "index.md":
+            continue
         try:
             lines = p.read_text(encoding="utf-8").splitlines(keepends=True)
-        except (OSError, UnicodeDecodeError):
+            entries, _ = parse_frontmatter(lines)
+        except (OSError, UnicodeDecodeError, ValueError):
             continue
-        if not lines or lines[0].strip() != "---":
+        fm = {e["key"]: e["value"] for e in entries}
+        if "id" not in fm:
             continue
-        tid, tdeps = None, []
-        for line in lines[1:60]:
-            if line.strip() == "---":
-                break
-            m = re.match(r"^id:\s*(\S+)\s*$", line)
-            if m:
-                tid = m.group(1)
-            m = re.match(r"^depends_on:\s*\[(.*)\]\s*$", line)
-            if m:
-                tdeps = [x.strip() for x in m.group(1).split(",") if x.strip()]
-        if tid:
-            ids[tid] = p
-            deps[tid] = tdeps
-    return ids, deps
+        tid = str(fm["id"])
+        if tid in ids:
+            dups.setdefault(tid, [ids[tid]]).append(p)
+            continue
+        tdeps = fm.get("depends_on")
+        ids[tid] = p
+        deps[tid] = [str(d) for d in tdeps] if isinstance(tdeps, list) else []
+    return ids, deps, dups
 
 
 def cycle_via(graph, start):
@@ -254,7 +261,11 @@ def main():
         root = Path(args.root)
         if not root.is_dir():
             fail(f"no such directory: {args.root}")
-        tree_ids, tree_deps = collect_tree(root)
+        tree_ids, tree_deps, dups = collect_tree(root)
+        if args.id in dups:
+            files = ", ".join(str(p) for p in dups[args.id])
+            fail(f"id '{args.id}' is duplicated across: {files} — fix the tree "
+                 "before updating (run ticket_tree.py validate)")
         if args.id not in tree_ids:
             known = ", ".join(sorted(tree_ids)) or "none"
             fail(f"id '{args.id}' not found under {args.root} — known ids: {known}")
@@ -263,14 +274,17 @@ def main():
         fail("target the ticket with --path FILE, or --root DIR --id KEY-n")
 
     if args.root and tree_ids is None:
-        tree_ids, tree_deps = collect_tree(Path(args.root))
+        tree_ids, tree_deps, _ = collect_tree(Path(args.root))
 
     transitions = set(t.strip() for t in args.transitions.split(",") if t.strip())
     known_states = {"backlog"} | {s for t in transitions for s in t.split(">")}
 
     text = path.read_text(encoding="utf-8")
     lines = text.splitlines(keepends=True)
-    entries, close = parse_frontmatter(lines)
+    try:
+        entries, close = parse_frontmatter(lines)
+    except ValueError as e:
+        fail(str(e))
     fm = {e["key"]: e["value"] for e in entries}
     ticket_type = fm.get("type")
     if ticket_type not in ("epic", "story", "bug", "task", "spike"):
@@ -298,9 +312,10 @@ def main():
         new_status = updates["status"]
         current = fm.get("status")
         if ticket_type == "epic":
-            if new_status != "dropped":
-                fail("epics store no lifecycle — 'dropped' is the only storable epic status; "
-                     "progress is computed from children")
+            if new_status not in ("done", "dropped"):
+                fail("epics compute progress from children — the storable epic statuses "
+                     "are 'done' (an intentional call: retrospective or the user) and "
+                     "'dropped'; neither is ever calculated")
         elif new_status != current:
             if new_status not in known_states:
                 fail(f"unknown status '{new_status}' — known: {', '.join(sorted(known_states))}")
@@ -355,7 +370,12 @@ def main():
 
     if changes:
         new_lines = list(lines)
-        for start, end, new_line in sorted(replacements, key=lambda r: r[0], reverse=True):
+        # Apply bottom-up; at an equal start index the replacement (end > start)
+        # must land before the insertion (end == start), or the insertion is
+        # silently spliced away by the replacement of the line it sits on.
+        for start, end, new_line in sorted(replacements,
+                                           key=lambda r: (r[0], r[1] > r[0]),
+                                           reverse=True):
             new_lines[start:end] = [new_line]
         fd, tmp = tempfile.mkstemp(dir=str(path.parent), prefix=".update-", suffix=".tmp")
         try:
