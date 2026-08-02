@@ -1,11 +1,15 @@
 ---
-title: "Retrospective"
+title: 'Retrospective'
 description: Close out a finished epic by reading the evidence it left — the diff, the commits, the specs — and judging the result instead of trusting memory.
 sidebar:
   order: 15
 ---
 
-Run `bmad-retrospective` when an epic is done. It reads what the epic actually produced (the specs, the full diff, the per-story commits, the sprint status) and works from that evidence rather than anyone's recollection of how the work went. What comes back is a written review, a set of owned action items, and a verdict on whether the epic met its bar.
+Run `bmad-retrospective` directly when an epic is done. It reads what the epic
+produced—the specs, story records, full diff, commits, and tracking artifacts—and
+uses that evidence instead of anyone's recollection. It produces a written
+review, proposed action items, and a verdict on whether the epic met its
+acceptance criteria.
 
 ## What it does
 
@@ -26,12 +30,26 @@ Each story passed its own review in isolation, so the bugs that survive to this 
 The retrospective reports what the diff, the commits, and the specs actually show. It won't manufacture a root cause or a pattern the code doesn't back up.
 :::
 
+## Two Epic Inputs
+
+Retrospective accepts either full-flow sprint tracking or the lightweight spec
+folder described in [Choose a Development Path](../how-to/choose-a-development-path.md).
+
+| Epic input          | Inventory and completion state                                     | Retrospective output                                                               |
+| ------------------- | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| Sprint-tracked epic | The selected epic in `sprint-status.yaml` and its story artifacts  | A dated document in the implementation artifacts; sprint status is updated         |
+| Spec-backed epic    | `SPEC.md`, ordered `stories.yaml`, and `stories/<id>-*.md` records | `RETROSPECTIVE.md` in the spec folder; no sprint-status file is created or changed |
+
+In the spec-backed path, `stories.yaml` defines the epic inventory and each
+story record's frontmatter defines its completion state. Retrospective uses the
+same rule whether Build or Build Auto produced a record.
+
 ## What you get
 
-Two artifacts and a decision:
+You receive an evidence report and a decision:
 
-- **A retrospective document** in your implementation artifacts — the evidence inventory, findings grouped with their sources, the verdict, and the action items.
-- **An updated sprint status** — the epic's retrospective marked done, each action item appended with a stable id and a link back to its finding.
+- **A retrospective document** with the evidence inventory, findings grouped with their sources, the verdict, and proposed action items.
+- **In sprint mode, an updated sprint status** marks the retrospective as done and links action items to their findings. Spec-backed mode does not use sprint status.
 - **A verdict** of `accepted`, `accepted-with-open-items`, or `rejected`, which tells you whether to start the next epic or hold and fix first. Unfinished stories for that epic make the machine verdict **rejected** (a human can still override interactively).
 
 ## What to do with the output
@@ -46,11 +64,14 @@ A failing epic never closes as quietly accepted. If the criteria aren't met, or 
 
 ## Running it
 
-Say "run a retrospective" or "let's retro epic 3." It finds the completed epic from sprint status, or takes the one you name, and by default stops at the written report and verdict.
+Invoke `bmad-retrospective` with the epic number or spec folder. With no input,
+it can find the completed epic from sprint status. By default, it stops at the
+written report and verdict.
 
-| You want | Do this |
-| --- | --- |
-| A standard review | "run a retrospective" |
-| A specific epic | "retro epic 3" |
-| The team to talk it over | Ask to "discuss it as a team" — it convenes [party mode](./party-mode.md) over the real findings, off by default |
-| An unattended run for automation | `-H <epic>` — headless, verdict on the evidence alone |
+| You want                         | Do this                                                                                                          |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| A standard review                | `/bmad-retrospective`                                                                                            |
+| A specific epic                  | `/bmad-retrospective 3`                                                                                          |
+| A spec-backed epic               | `/bmad-retrospective _bmad-output/specs/spec-<slug>/`                                                            |
+| The team to talk it over         | Ask to "discuss it as a team" — it convenes [party mode](./party-mode.md) over the real findings, off by default |
+| An unattended run for automation | `-H <epic>` — headless, verdict on the evidence alone                                                            |
