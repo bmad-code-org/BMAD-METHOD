@@ -2,7 +2,7 @@
 title: "Existující projekty"
 description: Jak používat BMad Method na existujících kódových bázích
 sidebar:
-  order: 6
+  order: 5
 ---
 
 Používejte BMad Method efektivně při práci na existujících projektech a starších kódových bázích.

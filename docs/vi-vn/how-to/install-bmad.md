@@ -7,8 +7,6 @@ sidebar:
 
 Sử dụng lệnh `npx bmad-method install` để thiết lập BMad trong dự án của bạn với các module và công cụ AI theo lựa chọn.
 
-Nếu bạn muốn dùng trình cài đặt không tương tác và cung cấp toàn bộ tùy chọn ngay trên dòng lệnh, xem [hướng dẫn này](./non-interactive-installation.md).
-
 ## Khi nào nên dùng
 
 - Bắt đầu một dự án mới với BMad

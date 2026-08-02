@@ -2,7 +2,7 @@
 title: "Cách tìm câu trả lời về BMad"
 description: Sử dụng LLM để tự nhanh chóng trả lời các câu hỏi về BMad
 sidebar:
-        order: 5
+        order: 4
 ---
 
 Hãy dùng trợ giúp tích hợp sẵn của BMad, tài liệu nguồn, hoặc cộng đồng để tìm câu trả lời, theo thứ tự từ nhanh nhất đến đầy đủ nhất.

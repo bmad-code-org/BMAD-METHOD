@@ -16,6 +16,13 @@ export default defineConfig({
   site: `${urlParts.origin}${basePath}`,
   base: basePath,
   outDir: '../build/site',
+  redirects: {
+    '/how-to/non-interactive-installation': `${basePath}how-to/install-bmad/`,
+    '/fr/how-to/non-interactive-installation': `${basePath}fr/how-to/install-bmad/`,
+    '/cs/how-to/non-interactive-installation': `${basePath}cs/how-to/install-bmad/`,
+    '/vi-vn/how-to/non-interactive-installation': `${basePath}vi-vn/how-to/install-bmad/`,
+    '/zh-cn/how-to/non-interactive-installation': `${basePath}zh-cn/how-to/install-bmad/`,
+  },
 
   // Disable aggressive caching in dev mode
   vite: {

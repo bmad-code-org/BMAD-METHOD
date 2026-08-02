@@ -2,7 +2,7 @@
 title: "Dự án đã tồn tại"
 description: Cách sử dụng BMad Method trên các codebase hiện có
 sidebar:
-  order: 7
+  order: 6
 ---
 
 Sử dụng BMad Method hiệu quả khi làm việc với các dự án hiện có và codebase legacy.
