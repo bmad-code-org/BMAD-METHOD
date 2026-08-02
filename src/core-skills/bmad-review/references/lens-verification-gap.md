@@ -54,7 +54,7 @@ Find and read the relevant test. Ask whether the Demonstration would make an ass
 - For a regression-style Demonstration: if no test runs the path, the test is skipped/flaky/not run normally, or the test runs the code without checking the changed result, report a `Regression gap` or `Broken-verification gap`.
 - For a qualifying Missing-adoption case: if none of the site tests you found assert it adopts the new behavior, report a `Missing-adoption gap`.
 
-A test counts only if it runs normally and an assertion observes the changed output, branch, or contract. These do not count: no execution; success/no-throw/snapshot-only checks; mock/log-call checks; human-only checks; tests that mock away the integration; e2e tests that pass through without checking the changed output; stale assertions or fixtures.
+A test counts only if it runs normally and an assertion observes the changed output, branch, or contract. These do not count: no execution; success/no-throw/snapshot-only checks; mock/log-call checks; human-only checks; tests that mock away the integration; e2e tests that pass through without checking the changed output; stale assertions or fixtures; an assertion whose expected value is also reachable via a `??`/`||` fallback or optional-chaining short-circuit when the field is absent or null — it cannot fail on the omitted-value regression (e.g. `expect(x ?? DEFAULT).toBe(DEFAULT)` passes whether `x` was set correctly or never set at all).
 
 Common patterns:
 
@@ -67,7 +67,9 @@ Common patterns:
 
 ### Step 5: Confirm each finding is real
 
-Before writing a finding, re-open the specific tests or search results the finding relies on. Verify the Demonstration would not make any test you checked fail, or that the absence claim is backed by the symbol/import-reference search. Do not claim more than you verified; drop any finding you cannot ground.
+Before writing a finding, re-open the specific tests or search results the finding relies on. Verify the Demonstration would not make any test you checked fail, or that the absence claim is backed by the symbol/import-reference search. When you can run the suite, apply the Demonstration as a real code mutation and run the tests it should affect: a genuine gap stays green, a false one turns red and the finding self-destructs — this is the strongest available confirmation and is worth the cost when the tooling is available. Do not claim more than you verified; drop any finding you cannot ground.
+
+State why a test misses the behavior only in terms of what that test itself sets up and asserts — never in terms of execution order or state left by other tests. Test isolation makes cross-test ordering claims false by construction and undermines an otherwise-correct finding.
 
 Do not report: compiler/type-checker-enforced cases; behavior already verified by an integration, contract, or e2e test; implementation-detail or mock-only tests; low coverage or a missing test file by itself; legacy untested code the change did not affect.
 
