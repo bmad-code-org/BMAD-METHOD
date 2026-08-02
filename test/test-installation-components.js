@@ -3805,6 +3805,67 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test Suite 50: --set core.<key> reaches config collection
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 50: --set core.<key> reaches config collection${colors.reset}\n`);
+
+  let root50;
+  try {
+    root50 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-set-core-'));
+    const { UI } = require('../tools/installer/ui');
+
+    // core.output_folder is dependency-bearing: module artifact paths are built
+    // from it during collection. Applying it only as a post-install TOML patch
+    // left those paths on the default while core config claimed the override.
+    const viaSet50 = await new UI().collectModuleConfigs(root50, ['core', 'bmm'], {
+      yes: true,
+      set: ['core.output_folder=generated'],
+    });
+    assert(viaSet50.moduleConfigs.core.output_folder === 'generated', '--set core.output_folder seeds the collected core config');
+    assert(
+      viaSet50.moduleConfigs.bmm.planning_artifacts === '{project-root}/generated/planning-artifacts' &&
+        viaSet50.moduleConfigs.bmm.implementation_artifacts === '{project-root}/generated/implementation-artifacts',
+      '--set core.output_folder resolves dependent module paths',
+    );
+
+    // The docs present --set core.<key> and the legacy shortcuts as equivalent,
+    // so they must collect identically.
+    const viaFlag50 = await new UI().collectModuleConfigs(root50, ['core', 'bmm'], {
+      yes: true,
+      outputFolder: 'generated',
+    });
+    assert(
+      viaSet50.moduleConfigs.bmm.planning_artifacts === viaFlag50.moduleConfigs.bmm.planning_artifacts &&
+        viaSet50.moduleConfigs.core.output_folder === viaFlag50.moduleConfigs.core.output_folder,
+      '--set core.output_folder and --output-folder collect identically',
+    );
+
+    // Every core key seeds, not just the four with a legacy shortcut flag.
+    // project_name has none, and module config.yaml files snapshot the core
+    // values at generate time, so a key that misses collection leaves those
+    // copies stale.
+    const otherKeys50 = await new UI().collectModuleConfigs(root50, ['core', 'bmm'], {
+      yes: true,
+      set: ['core.user_name=Bob', 'core.project_name=Foo', 'bmm.user_skill_level=expert'],
+    });
+    assert(otherKeys50.moduleConfigs.core.user_name === 'Bob', '--set core.user_name seeds the collected core config');
+    assert(
+      otherKeys50.moduleConfigs.core.project_name === 'Foo',
+      '--set core.project_name seeds the collected core config (no legacy shortcut flag exists for it)',
+    );
+    assert(otherKeys50.moduleConfigs.core.output_folder === '_bmad-output', 'core keys omitted from --set keep their headless defaults');
+    assert(otherKeys50.setOverrides.bmm.user_skill_level === 'expert', 'non-core --set overrides still reach the post-install patch step');
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 50 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  } finally {
+    if (root50) await fs.remove(root50).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);
