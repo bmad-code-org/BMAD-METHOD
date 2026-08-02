@@ -6,6 +6,7 @@ const { MODULE_HELP_CSV_HEADER } = require('./module-help-schema');
 /**
  * Resolves how to install a plugin from marketplace.json by analyzing
  * where module.yaml and module-help.csv live relative to the listed skills.
+ * Recognized layouts may also provide an optional sibling module-help.md.
  *
  * Five strategies, tried in order:
  *   1. Root module files at the common parent of all skills
@@ -80,6 +81,7 @@ class PluginResolver {
 
     const moduleData = await this._readModuleYaml(moduleYamlPath);
     if (!moduleData) return null;
+    const moduleHelpMarkdownPath = await this._optionalReadableFile(path.join(commonParent, 'module-help.md'));
 
     return [
       {
@@ -91,6 +93,7 @@ class PluginResolver {
         pluginName: plugin.name,
         moduleYamlPath,
         moduleHelpCsvPath: moduleHelpPath,
+        moduleHelpMarkdownPath,
         skillPaths,
         synthesizedModuleYaml: null,
         synthesizedHelpCsv: null,
@@ -117,6 +120,7 @@ class PluginResolver {
 
       const moduleData = await this._readModuleYaml(moduleYamlPath);
       if (!moduleData) continue;
+      const moduleHelpMarkdownPath = await this._optionalReadableFile(path.join(skillPath, 'assets', 'module-help.md'));
 
       return [
         {
@@ -128,6 +132,7 @@ class PluginResolver {
           pluginName: plugin.name,
           moduleYamlPath,
           moduleHelpCsvPath: moduleHelpPath,
+          moduleHelpMarkdownPath,
           skillPaths,
           synthesizedModuleYaml: null,
           synthesizedHelpCsv: null,
@@ -156,6 +161,7 @@ class PluginResolver {
 
     const moduleData = await this._readModuleYaml(moduleYamlPath);
     if (!moduleData) return null;
+    const moduleHelpMarkdownPath = await this._optionalReadableFile(path.join(skillPath, 'assets', 'module-help.md'));
 
     return [
       {
@@ -167,6 +173,7 @@ class PluginResolver {
         pluginName: plugin.name,
         moduleYamlPath,
         moduleHelpCsvPath: moduleHelpPath,
+        moduleHelpMarkdownPath,
         skillPaths,
         synthesizedModuleYaml: null,
         synthesizedHelpCsv: null,
@@ -195,6 +202,7 @@ class PluginResolver {
 
       const moduleData = await this._readModuleYaml(moduleYamlPath);
       if (!moduleData) continue;
+      const moduleHelpMarkdownPath = await this._optionalReadableFile(path.join(skillPath, 'assets', 'module-help.md'));
 
       resolved.push({
         code: moduleData.code || path.basename(skillPath),
@@ -205,6 +213,7 @@ class PluginResolver {
         pluginName: plugin.name,
         moduleYamlPath,
         moduleHelpCsvPath: moduleHelpPath,
+        moduleHelpMarkdownPath,
         skillPaths: [skillPath],
         synthesizedModuleYaml: null,
         synthesizedHelpCsv: null,
@@ -261,6 +270,7 @@ class PluginResolver {
         pluginName: plugin.name,
         moduleYamlPath: null,
         moduleHelpCsvPath: null,
+        moduleHelpMarkdownPath: null,
         skillPaths,
         synthesizedModuleYaml: synthesizedYaml,
         synthesizedHelpCsv: synthesizedCsv,
@@ -269,6 +279,22 @@ class PluginResolver {
   }
 
   // ─── Helpers ────────────────────────────────────────────────────────────────
+
+  /**
+   * Return a path only when it names a readable regular file.
+   * Optional guidance must never make a recognized CSV layout invalid.
+   */
+  async _optionalReadableFile(filePath) {
+    try {
+      const stat = await fs.lstat(filePath);
+      if (stat.isSymbolicLink()) return null;
+      if (!stat.isFile()) return null;
+      await fs.access(filePath, fs.constants.R_OK);
+      return filePath;
+    } catch {
+      return null;
+    }
+  }
 
   /**
    * Compute the deepest common ancestor directory of an array of absolute paths.

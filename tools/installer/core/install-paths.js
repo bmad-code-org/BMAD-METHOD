@@ -66,6 +66,9 @@ class InstallPaths {
   helpCatalog() {
     return path.join(this.configDir, 'bmad-help.csv');
   }
+  helpGuidance() {
+    return path.join(this.configDir, 'bmad-help.md');
+  }
   moduleDir(name) {
     return path.join(this.bmadDir, name);
   }

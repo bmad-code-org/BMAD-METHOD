@@ -590,7 +590,8 @@ class ExternalModuleManager {
    * definition. Clones the repo (respecting the channel plan), reads its
    * .claude-plugin/marketplace.json, and runs the PluginResolver against the
    * plugin matching this module. The result (skillPaths + module.yaml +
-   * module-help.csv) is cached so install() can copy the resolved skill dirs.
+   * module-help.csv + optional module-help.md) is cached so install() can copy
+   * the resolved skill dirs and module-root Help sources.
    *
    * @param {string} moduleCode - Code of the external module
    * @param {Object} options - Options passed to cloneExternalModule

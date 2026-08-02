@@ -22,11 +22,18 @@ When this skill completes, the user should:
 
 ## Data Sources
 
-- **Catalog**: `{project-root}/_bmad/_config/bmad-help.csv` — assembled manifest of all installed module skills
+- **Help inference source**: `{project-root}/_bmad/_config/bmad-help.md` — load this assembled document first. It contains one bounded section per installed CSV module, with that module's raw catalog and any optional authored routing guidance.
 - **Config**: Run `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}` and use the merged JSON to resolve `output-location` variables and read `core.communication_language` and `modules.bmm.project_knowledge`. The resolver merges `_bmad/config.toml`, `_bmad/config.user.toml`, `_bmad/custom/config.toml`, and `_bmad/custom/config.user.toml` in that order.
 - **Artifacts**: Files matching `outputs` patterns at resolved `output-location` paths reveal which steps are possibly completed; their content may also provide grounding context for recommendations
 - **Project knowledge**: If `project_knowledge` resolves to an existing path, read it for grounding context. Never fabricate project-specific details.
 - **Module docs**: Rows with `_meta` in the `skill` column carry a URL or path in `output-location` pointing to the module's documentation (e.g., llms.txt). Fetch and use these to answer general questions about that module.
+
+## Source Authority
+
+- The CSV inside each module section is authoritative for exact skill metadata: skill name, menu code, action, args, phase, sequencing hints, required status, output location, and output patterns.
+- Optional module guidance is authoritative for that module's conditional path selection, repetition, and worker/orchestrator boundaries. Apply it only to its own module.
+- Guidance supplements rather than overrides exact CSV metadata. A recommendation must have a matching CSV row; use that row for the invocation details.
+- Missing guidance is valid. Infer from the CSV and the other grounding sources without treating its absence as an error.
 
 ## CSV Interpretation
 

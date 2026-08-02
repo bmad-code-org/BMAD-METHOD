@@ -150,7 +150,8 @@ your-project/
 │   ├── my-module/         # Your custom module
 │   │   ├── my-skill/
 │   │   │   └── SKILL.md
-│   │   └── module-help.csv
+│   │   ├── module-help.csv
+│   │   └── module-help.md  # Optional routing guidance
 │   └── _config/
 │       └── manifest.yaml  # Tracks all modules, versions, and sources
 └── ...
@@ -175,6 +176,10 @@ Use [BMad Builder](https://github.com/bmad-code-org/bmad-builder) to create modu
 4. Others install with `--custom-source <your-repo-url>`
 
 For modules to support discovery mode, include a `.claude-plugin/marketplace.json` in your repository root (this is a cross-tool convention, not Claude-specific). See the [BMad Builder documentation](https://github.com/bmad-code-org/bmad-builder) for the marketplace.json format.
+
+Every discoverable module requires `module-help.csv`. Keep exact skill names, actions, arguments, sequencing hints, and artifact patterns there. You may place an optional `module-help.md` beside it to explain conditional entry paths, repetition, or the boundary between a worker skill and its orchestrator. The installer preserves both files and assembles them into the Help inference source; Markdown guidance does not replace catalog rows or change the CSV schema.
+
+For marketplace layouts that keep `module.yaml` and `module-help.csv` in a setup or standalone skill's `assets/` directory, place `module-help.md` in that same directory. Synthesized fallback modules receive only generated CSV metadata; the installer does not invent guidance.
 
 :::tip[Testing Locally First]
 During development, install your module with a local path to iterate quickly before publishing to a Git repository.

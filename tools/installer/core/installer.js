@@ -302,7 +302,6 @@ class Installer {
         this.installedFiles.add(paths.centralConfig());
         this.installedFiles.add(paths.centralUserConfig());
 
-        message('Generating manifests...');
         const manifestGen = new ManifestGenerator();
         const preservedModules = originalConfig._preserveModules || [];
 
@@ -320,6 +319,12 @@ class Installer {
         }
 
         await this._trackPreservedModuleFiles(paths.bmadDir, preservedModules);
+
+        message('Generating help artifacts...');
+        await this.mergeModuleHelpCatalogs(paths, manifestGen.agents);
+        addResult('Help artifacts', 'ok');
+
+        message('Generating manifests...');
 
         await manifestGen.generateManifests(paths.bmadDir, allModulesForManifest, [...this.installedFiles], {
           ides: config.ides || [],
@@ -340,10 +345,6 @@ class Installer {
             await prompts.log.info(`Applied --set overrides: ${summary}`);
           }
         }
-
-        message('Generating help catalog...');
-        await this.mergeModuleHelpCatalogs(paths.bmadDir, manifestGen.agents);
-        addResult('Help catalog', 'ok');
 
         return 'Configurations generated';
       },
@@ -1050,118 +1051,164 @@ class Installer {
   }
 
   /**
-   * Merge all module-help.csv files into a single bmad-help.csv.
-   * Scans all installed modules for module-help.csv and merges them.
-   * Output preserves the source schema verbatim — see schema below.
-   * @param {string} bmadDir - BMAD installation directory
+   * Generate the compatibility CSV catalog and the Markdown inference source
+   * from one ordered collection of installed module Help sources.
+   * @param {string|InstallPaths} pathsOrBmadDir - Install paths or BMAD directory
    * @param {Array<Object>} _agentEntries - Unused; retained for call-site compatibility
    */
-  async mergeModuleHelpCatalogs(bmadDir, _agentEntries = []) {
+  async mergeModuleHelpCatalogs(pathsOrBmadDir, _agentEntries = []) {
+    const paths = typeof pathsOrBmadDir === 'string' ? null : pathsOrBmadDir;
+    const bmadDir = paths ? paths.bmadDir : pathsOrBmadDir;
+    const outputDir = path.join(bmadDir, '_config');
+    const catalogPath = paths ? paths.helpCatalog() : path.join(outputDir, 'bmad-help.csv');
+    const guidancePath = paths ? paths.helpGuidance() : path.join(outputDir, 'bmad-help.md');
     const allRows = [];
-    const headerRow = MODULE_HELP_CSV_HEADER;
-    const COLUMN_COUNT = 13;
-    const PHASE_INDEX = 7;
+    const moduleSources = await this._collectModuleHelpSources(bmadDir);
+    const readableSources = [];
 
-    // Get all installed module directories
-    const entries = await fs.readdir(bmadDir, { withFileTypes: true });
-    const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom', 'render']);
-    const installedModules = entries.filter((entry) => entry.isDirectory() && !nonModuleDirs.has(entry.name)).map((entry) => entry.name);
+    for (const source of moduleSources) {
+      if (!(await fs.pathExists(source.csvPath))) continue;
 
-    // Add core module to scan (it's installed at root level as _config, but we check src/core-skills)
-    const coreModulePath = getSourcePath('core-skills');
-    const modulePaths = new Map();
+      try {
+        const csvContent = await fs.readFile(source.csvPath, 'utf8');
+        await this._appendModuleHelpRows(source.moduleName, csvContent, allRows);
+        const guidanceContent = await this._readOptionalModuleGuidance(source);
+        readableSources.push({ ...source, csvContent, guidanceContent });
 
-    // Map all module source paths
-    if (await fs.pathExists(coreModulePath)) {
-      modulePaths.set('core', coreModulePath);
-    }
-
-    // Map installed module paths
-    for (const moduleName of installedModules) {
-      const modulePath = path.join(bmadDir, moduleName);
-      modulePaths.set(moduleName, modulePath);
-    }
-
-    // Scan each module for module-help.csv
-    for (const [moduleName, modulePath] of modulePaths) {
-      const helpFilePath = path.join(modulePath, 'module-help.csv');
-
-      if (await fs.pathExists(helpFilePath)) {
-        try {
-          const content = await fs.readFile(helpFilePath, 'utf8');
-          const lines = content.split('\n').filter((line) => line.trim() && !line.startsWith('#'));
-
-          let headerWarned = false;
-          for (const line of lines) {
-            // Header row: warn on drift from canonical schema, then skip.
-            // Data rows are loaded positionally regardless, so the warning
-            // is advisory — the maintainer should rename their columns.
-            if (line.startsWith('module,')) {
-              if (!headerWarned && line.trim() !== headerRow) {
-                await prompts.log.warn(
-                  `  ${moduleName}/module-help.csv header does not match canonical schema. ` +
-                    `Expected: ${headerRow} | Found: ${line.trim()} | Data loaded positionally.`,
-                );
-                headerWarned = true;
-              }
-              continue;
-            }
-
-            // Parse the line - handle quoted fields with commas
-            const columns = this.parseCSVLine(line);
-            if (columns.length < COLUMN_COUNT - 1) continue;
-
-            // Pad short rows; truncate over-long rows
-            const padded = columns.slice(0, COLUMN_COUNT);
-            while (padded.length < COLUMN_COUNT) padded.push('');
-
-            // If module column is empty, fill with this module's name
-            // (core stays empty so its rows render as universal tools)
-            if ((!padded[0] || padded[0].trim() === '') && moduleName !== 'core') {
-              padded[0] = moduleName;
-            }
-
-            allRows.push(padded.map((c) => this.escapeCSVField(c)).join(','));
-          }
-
-          if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
-            await prompts.log.message(`  Merged module-help from: ${moduleName}`);
-          }
-        } catch (error) {
-          await prompts.log.warn(`  Warning: Failed to read module-help.csv from ${moduleName}: ${error.message}`);
+        if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
+          await prompts.log.message(`  Merged module-help from: ${source.moduleName}`);
         }
+      } catch (error) {
+        await prompts.log.warn(`  Warning: Failed to read module-help.csv from ${source.moduleName}: ${error.message}`);
       }
     }
 
-    // Sort by module, then phase. Stable sort preserves authored order within a phase.
+    const sortedRows = this._sortModuleHelpRows(allRows);
+    await fs.ensureDir(outputDir);
+    await fs.writeFile(catalogPath, [MODULE_HELP_CSV_HEADER, ...sortedRows].join('\n'), 'utf8');
+    await fs.writeFile(guidancePath, this._renderModuleHelpMarkdown(readableSources), 'utf8');
+
+    this.installedFiles.add(catalogPath);
+    this.installedFiles.add(guidancePath);
+
+    if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
+      await prompts.log.message(`  Generated bmad-help.csv: ${sortedRows.length} workflows`);
+      await prompts.log.message(`  Generated bmad-help.md: ${readableSources.length} modules`);
+    }
+  }
+
+  async _collectModuleHelpSources(bmadDir) {
+    const entries = await fs.readdir(bmadDir, { withFileTypes: true });
+    const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom', 'render']);
+    const installedModules = entries
+      .filter((entry) => entry.isDirectory() && !nonModuleDirs.has(entry.name) && entry.name !== 'core')
+      .map((entry) => entry.name)
+      .sort((a, b) => a.localeCompare(b));
+    const sources = [];
+    const coreModulePath = getSourcePath('core-skills');
+
+    if (await fs.pathExists(coreModulePath)) {
+      sources.push(this._moduleHelpSource('core', coreModulePath));
+    }
+    for (const moduleName of installedModules) {
+      sources.push(this._moduleHelpSource(moduleName, path.join(bmadDir, moduleName)));
+    }
+    return sources;
+  }
+
+  _moduleHelpSource(moduleName, modulePath) {
+    return {
+      moduleName,
+      csvPath: path.join(modulePath, 'module-help.csv'),
+      guidancePath: path.join(modulePath, 'module-help.md'),
+    };
+  }
+
+  async _appendModuleHelpRows(moduleName, csvContent, allRows) {
+    const columnCount = 13;
+    const lines = csvContent.split('\n').filter((line) => line.trim() && !line.startsWith('#'));
+    let headerWarned = false;
+
+    for (const line of lines) {
+      if (line.startsWith('module,')) {
+        if (!headerWarned && line.trim() !== MODULE_HELP_CSV_HEADER) {
+          await prompts.log.warn(
+            `  ${moduleName}/module-help.csv header does not match canonical schema. ` +
+              `Expected: ${MODULE_HELP_CSV_HEADER} | Found: ${line.trim()} | Data loaded positionally.`,
+          );
+          headerWarned = true;
+        }
+        continue;
+      }
+
+      const columns = this.parseCSVLine(line);
+      if (columns.length < columnCount - 1) continue;
+      const padded = columns.slice(0, columnCount);
+      while (padded.length < columnCount) padded.push('');
+      if ((!padded[0] || padded[0].trim() === '') && moduleName !== 'core') {
+        padded[0] = moduleName;
+      }
+      allRows.push(padded.map((column) => this.escapeCSVField(column)).join(','));
+    }
+  }
+
+  _sortModuleHelpRows(allRows) {
+    const phaseIndex = 7;
     const decorated = allRows.map((row, index) => ({ row, index, cols: this.parseCSVLine(row) }));
     decorated.sort((a, b) => {
       const moduleA = (a.cols[0] || '').toLowerCase();
       const moduleB = (b.cols[0] || '').toLowerCase();
       if (moduleA !== moduleB) return moduleA.localeCompare(moduleB);
-
-      const phaseA = a.cols[PHASE_INDEX] || '';
-      const phaseB = b.cols[PHASE_INDEX] || '';
+      const phaseA = a.cols[phaseIndex] || '';
+      const phaseB = b.cols[phaseIndex] || '';
       if (phaseA !== phaseB) return phaseA.localeCompare(phaseB);
-
       return a.index - b.index;
     });
-    const sortedRows = decorated.map((d) => d.row);
+    return decorated.map((entry) => entry.row);
+  }
 
-    // Write merged catalog
-    const outputDir = path.join(bmadDir, '_config');
-    await fs.ensureDir(outputDir);
-    const outputPath = path.join(outputDir, 'bmad-help.csv');
+  async _readOptionalModuleGuidance(source) {
+    if (!(await fs.pathExists(source.guidancePath))) return null;
 
-    const mergedContent = [headerRow, ...sortedRows].join('\n');
-    await fs.writeFile(outputPath, mergedContent, 'utf8');
-
-    // Track the installed file
-    this.installedFiles.add(outputPath);
-
-    if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
-      await prompts.log.message(`  Generated bmad-help.csv: ${sortedRows.length} workflows`);
+    try {
+      const stat = await fs.lstat(source.guidancePath);
+      if (stat.isSymbolicLink()) throw new Error('path must not be a symbolic link');
+      if (!stat.isFile()) throw new Error('path is not a regular file');
+      await fs.access(source.guidancePath, fs.constants.R_OK);
+      return await fs.readFile(source.guidancePath, 'utf8');
+    } catch (error) {
+      await prompts.log.warn(`  Warning: Failed to read module-help.md from ${source.moduleName}: ${error.message}`);
+      return null;
     }
+  }
+
+  _renderModuleHelpMarkdown(moduleSources) {
+    const preamble = [
+      '# BMad Help Inference Sources',
+      '',
+      'Each bounded module section contains its authoritative raw CSV catalog and optional conditional routing guidance.',
+      '',
+    ].join('\n');
+    const sections = moduleSources.map((source) => {
+      const fence = this._adaptiveMarkdownFence(source.csvContent);
+      let section = `<!-- bmad-help:module ${source.moduleName} start -->\n## ${source.moduleName}\n\n### Catalog\n\n`;
+      section += `${fence}csv\n${source.csvContent}`;
+      if (!source.csvContent.endsWith('\n')) section += '\n';
+      section += `${fence}\n`;
+      if (source.guidanceContent !== null) {
+        section += `\n### Guidance\n\n${source.guidanceContent}`;
+        if (!source.guidanceContent.endsWith('\n')) section += '\n';
+      }
+      section += `\n<!-- bmad-help:module ${source.moduleName} end -->`;
+      return section;
+    });
+    return preamble + sections.join('\n\n') + '\n';
+  }
+
+  _adaptiveMarkdownFence(content) {
+    let fence = '```';
+    while (content.includes(fence)) fence += '`';
+    return fence;
   }
 
   /**

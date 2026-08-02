@@ -16,8 +16,11 @@ const os = require('node:os');
 const { spawnSync } = require('node:child_process');
 const fs = require('../tools/installer/fs-native');
 const { Installer } = require('../tools/installer/core/installer');
+const { InstallPaths } = require('../tools/installer/core/install-paths');
 const { ManifestGenerator } = require('../tools/installer/core/manifest-generator');
 const { OfficialModules } = require('../tools/installer/modules/official-modules');
+const { PluginResolver } = require('../tools/installer/modules/plugin-resolver');
+const { MODULE_HELP_CSV_HEADER } = require('../tools/installer/modules/module-help-schema');
 const { IdeManager } = require('../tools/installer/ide/manager');
 const { clearCache, loadPlatformCodes } = require('../tools/installer/ide/platform-codes');
 
@@ -3800,6 +3803,312 @@ async function runTests() {
     failed++;
   } finally {
     if (root49) await fs.remove(root49).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 50: module-scoped Help inference sources
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 50: module-scoped Help inference sources${colors.reset}\n`);
+
+  let root50;
+  try {
+    root50 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-help-guidance-'));
+    const bmadDir50 = path.join(root50, '_bmad');
+    const configDir50 = path.join(bmadDir50, '_config');
+    await fs.ensureDir(configDir50);
+
+    const helpCsv50 = (moduleName, skillName, description = 'fixture') =>
+      `${MODULE_HELP_CSV_HEADER}\n${moduleName},${skillName},Fixture,F,${description},,,anytime,,,false,,`;
+    const writeSkill50 = async (skillPath, name) => {
+      await fs.ensureDir(skillPath);
+      await fs.writeFile(
+        path.join(skillPath, 'SKILL.md'),
+        ['---', `name: ${name}`, 'description: Resolver fixture', '---', '', '# Fixture'].join('\n'),
+      );
+    };
+    const writeModuleFiles50 = async (directory, code, guidance = null) => {
+      await fs.ensureDir(directory);
+      await fs.writeFile(path.join(directory, 'module.yaml'), `code: ${code}\nname: ${code}\n`);
+      await fs.writeFile(path.join(directory, 'module-help.csv'), helpCsv50(code, `${code}-skill`));
+      if (guidance !== null) await fs.writeFile(path.join(directory, 'module-help.md'), guidance);
+    };
+
+    const resolver50 = new PluginResolver();
+    let guidedResolution50;
+    for (const withGuidance of [true, false]) {
+      for (const strategy of [1, 2, 3, 4]) {
+        const repo50 = path.join(root50, `resolver-${strategy}-${withGuidance ? 'guided' : 'csv-only'}`);
+        const guidance50 = withGuidance ? `Guidance bytes for strategy ${strategy}.\n` : null;
+        let skills50;
+
+        switch (strategy) {
+          case 1: {
+            skills50 = ['skills/one', 'skills/two'];
+            await writeSkill50(path.join(repo50, skills50[0]), 'one');
+            await writeSkill50(path.join(repo50, skills50[1]), 'two');
+            await writeModuleFiles50(path.join(repo50, 'skills'), 'root-layout', guidance50);
+            break;
+          }
+          case 2: {
+            skills50 = ['skills/widget-setup', 'skills/worker'];
+            await writeSkill50(path.join(repo50, skills50[0]), 'widget-setup');
+            await writeSkill50(path.join(repo50, skills50[1]), 'worker');
+            await writeModuleFiles50(path.join(repo50, skills50[0], 'assets'), 'setup-layout', guidance50);
+            break;
+          }
+          case 3: {
+            skills50 = ['skills/standalone'];
+            await writeSkill50(path.join(repo50, skills50[0]), 'standalone');
+            await writeModuleFiles50(path.join(repo50, skills50[0], 'assets'), 'single-layout', guidance50);
+            break;
+          }
+          default: {
+            skills50 = ['skills/first', 'skills/second'];
+            await writeSkill50(path.join(repo50, skills50[0]), 'first');
+            await writeSkill50(path.join(repo50, skills50[1]), 'second');
+            await writeModuleFiles50(path.join(repo50, skills50[0], 'assets'), 'multi-first', guidance50);
+            await writeModuleFiles50(path.join(repo50, skills50[1], 'assets'), 'multi-second', guidance50);
+          }
+        }
+
+        const resolved50 = await resolver50.resolve(repo50, {
+          name: `fixture-${strategy}`,
+          version: '1.0.0',
+          skills: skills50,
+        });
+        assert(
+          resolved50.length === (strategy === 4 ? 2 : 1) && resolved50.every((record) => record.strategy === strategy),
+          `resolver strategy ${strategy} remains the recognition path for ${withGuidance ? 'guided' : 'CSV-only'} modules`,
+        );
+        assert(
+          resolved50.every((record) => (withGuidance ? record.moduleHelpMarkdownPath !== null : record.moduleHelpMarkdownPath === null)),
+          `resolver strategy ${strategy} exposes guidance only when a readable sibling file is supplied`,
+        );
+        if (strategy === 2 && withGuidance) guidedResolution50 = resolved50[0];
+      }
+    }
+
+    const fallbackRoot50 = path.join(root50, 'resolver-fallback');
+    await writeSkill50(path.join(fallbackRoot50, 'skills', 'fallback'), 'fallback');
+    await fs.ensureDir(path.join(fallbackRoot50, 'skills', 'fallback', 'assets'));
+    await fs.writeFile(path.join(fallbackRoot50, 'skills', 'fallback', 'assets', 'module-help.md'), 'Ignored fallback guidance.\n');
+    const fallback50 = await resolver50.resolve(fallbackRoot50, {
+      name: 'fallback-module',
+      skills: ['skills/fallback'],
+    });
+    assert(
+      fallback50.length === 1 && fallback50[0].strategy === 5 && fallback50[0].moduleHelpMarkdownPath === null,
+      'synthesized fallback keeps CSV recognition behavior and invents no guidance',
+    );
+
+    const nonFileRoot50 = path.join(root50, 'resolver-non-file');
+    await writeSkill50(path.join(nonFileRoot50, 'skills', 'standalone'), 'standalone');
+    const nonFileAssets50 = path.join(nonFileRoot50, 'skills', 'standalone', 'assets');
+    await writeModuleFiles50(nonFileAssets50, 'non-file-layout');
+    await fs.ensureDir(path.join(nonFileAssets50, 'module-help.md'));
+    const nonFile50 = await resolver50.resolve(nonFileRoot50, {
+      name: 'non-file-module',
+      skills: ['skills/standalone'],
+    });
+    assert(nonFile50[0].moduleHelpMarkdownPath === null, 'resolver accepts optional guidance only when it is a regular file');
+
+    await fs.remove(path.join(nonFileAssets50, 'module-help.md'));
+    await fs.symlink(path.join(nonFileAssets50, 'module-help.csv'), path.join(nonFileAssets50, 'module-help.md'));
+    const symlink50 = await resolver50.resolve(nonFileRoot50, {
+      name: 'symlink-module',
+      skills: ['skills/standalone'],
+    });
+    assert(symlink50[0].moduleHelpMarkdownPath === null, 'resolver rejects symbolic links as optional guidance sources');
+
+    const marketplaceTarget50 = path.join(bmadDir50, 'marketplace-module');
+    const marketplaceTracked50 = [];
+    const official50 = new OfficialModules();
+    await official50._copyResolvedSkills(guidedResolution50, marketplaceTarget50, (file) => marketplaceTracked50.push(file), {});
+    const marketplaceGuidanceTarget50 = path.join(marketplaceTarget50, 'module-help.md');
+    assert(
+      (await fs.readFile(marketplaceGuidanceTarget50, 'utf8')) === (await fs.readFile(guidedResolution50.moduleHelpMarkdownPath, 'utf8')),
+      'marketplace installation preserves supplied guidance bytes',
+    );
+    assert(marketplaceTracked50.includes(marketplaceGuidanceTarget50), 'marketplace guidance is tracked as an installed file');
+
+    const bmmTracked50 = [];
+    await official50.install('bmm', bmadDir50, (file) => bmmTracked50.push(file), {
+      skipModuleInstaller: true,
+      moduleConfig: {},
+      silent: true,
+    });
+    const sourceBmmGuidance50 = path.resolve(__dirname, '..', 'src', 'bmm-skills', 'module-help.md');
+    const installedBmmGuidance50 = path.join(bmadDir50, 'bmm', 'module-help.md');
+    const bmmGuidanceBytes50 = await fs.readFile(sourceBmmGuidance50, 'utf8');
+    assert(
+      (await fs.readFile(installedBmmGuidance50, 'utf8')) === bmmGuidanceBytes50,
+      'standard module-root copying preserves real BMM guidance bytes',
+    );
+    assert(bmmTracked50.includes(installedBmmGuidance50), 'standard module-root guidance is tracked during copying');
+
+    const alphaDir50 = path.join(bmadDir50, 'alpha');
+    const alphaRow50 = 'Alpha,alpha-skill,Alpha,A,"contains ``` fence",,,anytime,,,false,,';
+    const rawAlphaCsv50 = `${MODULE_HELP_CSV_HEADER}\n${alphaRow50}\n${alphaRow50}`;
+    await fs.ensureDir(alphaDir50);
+    await fs.writeFile(path.join(alphaDir50, 'module-help.csv'), rawAlphaCsv50);
+    await fs.writeFile(path.join(alphaDir50, 'module-help.md'), 'Alpha conditional guidance.\n');
+
+    const zetaDir50 = path.join(bmadDir50, 'zeta');
+    await fs.ensureDir(zetaDir50);
+    await fs.writeFile(path.join(zetaDir50, 'module-help.csv'), helpCsv50('Zeta', 'zeta-skill'));
+
+    const preservedDir50 = path.join(bmadDir50, 'preserved');
+    await fs.ensureDir(preservedDir50);
+    await fs.writeFile(path.join(preservedDir50, 'module-help.csv'), helpCsv50('Preserved', 'preserved-skill'));
+    await fs.writeFile(path.join(preservedDir50, 'module-help.md'), 'Offline preserved guidance v1.\n');
+
+    const warningDir50 = path.join(bmadDir50, 'warning-module');
+    await fs.ensureDir(warningDir50);
+    await fs.writeFile(path.join(warningDir50, 'module-help.csv'), helpCsv50('Warning', 'warning-skill'));
+    await fs.symlink(path.join(warningDir50, 'module-help.csv'), path.join(warningDir50, 'module-help.md'));
+
+    const brokenDir50 = path.join(bmadDir50, 'broken-module');
+    await fs.ensureDir(path.join(brokenDir50, 'module-help.csv'));
+
+    const installedCoreDir50 = path.join(bmadDir50, 'core');
+    await fs.ensureDir(installedCoreDir50);
+    await fs.writeFile(path.join(installedCoreDir50, 'module-help.csv'), helpCsv50('WRONG CORE', 'installed-core-sentinel'));
+
+    const prompts50 = require('../tools/installer/prompts');
+    const originalWarn50 = prompts50.log.warn;
+    const warnings50 = [];
+    prompts50.log.warn = async (message) => warnings50.push(message);
+    const installer50 = new Installer();
+    try {
+      await installer50.mergeModuleHelpCatalogs(bmadDir50);
+    } finally {
+      prompts50.log.warn = originalWarn50;
+    }
+
+    const catalogPath50 = path.join(configDir50, 'bmad-help.csv');
+    const guidancePath50 = path.join(configDir50, 'bmad-help.md');
+    const catalog50 = await fs.readFile(catalogPath50, 'utf8');
+    const guidance50 = await fs.readFile(guidancePath50, 'utf8');
+    assert(catalog50.startsWith(`${MODULE_HELP_CSV_HEADER}\n`), 'merged CSV retains the canonical schema');
+    assert(
+      catalog50.split('\n').filter((line) => line.includes(',alpha-skill,')).length === 2,
+      'compatible CSV output preserves duplicate authored rows',
+    );
+    assert(guidance50.includes(rawAlphaCsv50), 'Markdown inference source preserves raw CSV bytes and authored row order');
+    assert(guidance50.includes(`\`\`\`\`csv\n${rawAlphaCsv50}`), 'Markdown catalog fences adapt to backticks in raw CSV');
+    assert(
+      (guidance50.match(/<!-- bmad-help:module [^\n]+ start -->/g) || []).length === 7 &&
+        !guidance50.includes('bmad-help:module broken-module start'),
+      'Markdown output has exactly one bounded section for each readable CSV module',
+    );
+    assert(
+      guidance50.indexOf('bmad-help:module alpha start') < guidance50.indexOf('bmad-help:module bmm start') &&
+        guidance50.indexOf('bmad-help:module bmm start') < guidance50.indexOf('bmad-help:module preserved start'),
+      'installed module sections are emitted in stable module-name order',
+    );
+    const zetaSection50 = guidance50.slice(
+      guidance50.indexOf('bmad-help:module zeta start'),
+      guidance50.indexOf('bmad-help:module zeta end'),
+    );
+    assert(!zetaSection50.includes('### Guidance'), 'CSV-only modules receive a bounded section without invented prose');
+    assert(guidance50.includes(bmmGuidanceBytes50), 'assembled inference source contains real BMM guidance bytes');
+    assert(catalog50.includes(',bmad-build-auto,Build Auto,BA,'), 'BMM catalog supplies exact bmad-build-auto invocation metadata');
+    assert(
+      !catalog50.includes('installed-core-sentinel') && !guidance50.includes('installed-core-sentinel'),
+      "installed _bmad/core cannot override Core's source Help catalog",
+    );
+    assert(
+      warnings50.some((warning) => warning.includes('module-help.md from warning-module')) &&
+        warnings50.some((warning) => warning.includes('module-help.csv from broken-module')),
+      'read failures warn with the affected module and file without blocking other sections',
+    );
+    assert(
+      guidance50.includes('bmad-help:module preserved start') && guidance50.includes('Offline preserved guidance v1.'),
+      'installed preserved module sources contribute without any source fetch',
+    );
+
+    await fs.writeFile(path.join(preservedDir50, 'module-help.md'), 'Offline preserved guidance v2.\n');
+    await installer50.mergeModuleHelpCatalogs(bmadDir50);
+    const replacedGuidance50 = await fs.readFile(guidancePath50, 'utf8');
+    assert(
+      replacedGuidance50.includes('Offline preserved guidance v2.') && !replacedGuidance50.includes('Offline preserved guidance v1.'),
+      'regeneration replaces installer-owned guidance output with current installed bytes',
+    );
+    assert(
+      installer50.installedFiles.has(catalogPath50) && installer50.installedFiles.has(guidancePath50),
+      'both generated Help artifacts are installer-owned',
+    );
+
+    const manifest50 = new ManifestGenerator();
+    manifest50.bmadDir = bmadDir50;
+    manifest50.allInstalledFiles = [...installer50.installedFiles];
+    await manifest50.writeFilesManifest(configDir50);
+    const filesManifest50 = await fs.readFile(path.join(configDir50, 'files-manifest.csv'), 'utf8');
+    assert(
+      filesManifest50.includes('_config/bmad-help.csv') && filesManifest50.includes('_config/bmad-help.md'),
+      'files manifest serializes ownership for both generated Help artifacts',
+    );
+
+    const installPaths50 = new InstallPaths({ configDir: configDir50 });
+    assert(
+      installPaths50.helpCatalog() === catalogPath50 && installPaths50.helpGuidance() === guidancePath50,
+      'production install paths expose sibling CSV and Markdown Help outputs',
+    );
+
+    const productionRoot50 = path.join(root50, 'production');
+    const productionBmadDir50 = path.join(productionRoot50, '_bmad');
+    await fs.ensureDir(productionBmadDir50);
+    const productionPaths50 = {
+      bmadDir: productionBmadDir50,
+      manifestFile: () => path.join(productionBmadDir50, '_config', 'manifest.yaml'),
+      centralConfig: () => path.join(productionBmadDir50, 'config.toml'),
+      centralUserConfig: () => path.join(productionBmadDir50, 'config.user.toml'),
+      helpCatalog: () => path.join(productionBmadDir50, '_config', 'bmad-help.csv'),
+      helpGuidance: () => path.join(productionBmadDir50, '_config', 'bmad-help.md'),
+    };
+    const productionInstaller50 = new Installer();
+    productionInstaller50._installSharedScripts = async () => {};
+    productionInstaller50.generateModuleConfigs = async () => {};
+    productionInstaller50._trackPreservedModuleFiles = async () => {};
+    productionInstaller50._appendPreservedSkillManifestRows = async () => {};
+    let manifestInputs50 = [];
+    const originalGenerateManifests50 = ManifestGenerator.prototype.generateManifests;
+    ManifestGenerator.prototype.generateManifests = async (_bmadDir, _modules, installedFiles) => {
+      manifestInputs50 = installedFiles;
+      return {};
+    };
+    try {
+      await productionInstaller50._installAndConfigure(
+        {
+          modules: [],
+          ides: [],
+          verbose: false,
+          setOverrides: {},
+          isQuickUpdate: () => true,
+        },
+        { _existingModules: ['preserved'], _preserveModules: [] },
+        productionPaths50,
+        [],
+        [],
+        () => {},
+        { moduleConfigs: {}, createModuleDirectories: async () => {} },
+        [],
+      );
+    } finally {
+      ManifestGenerator.prototype.generateManifests = originalGenerateManifests50;
+    }
+    assert(
+      manifestInputs50.includes(productionPaths50.helpCatalog()) && manifestInputs50.includes(productionPaths50.helpGuidance()),
+      'production quick-update wiring generates and tracks both Help artifacts before manifest generation',
+    );
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 50 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  } finally {
+    if (root50) await fs.remove(root50).catch(() => {});
   }
 
   console.log('');

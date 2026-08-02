@@ -327,8 +327,8 @@ class OfficialModules {
 
   /**
    * Lay out a PluginResolver resolution on disk: copy each resolved skill
-   * directory (flattened by leaf name) into targetPath and place module-help.csv
-   * at the module root. Shared by both custom marketplace installs
+   * directory (flattened by leaf name) into targetPath and place Help source
+   * files at the module root. Shared by both custom marketplace installs
    * (installFromResolution) and official marketplace-plugin registry installs
    * (install), so the two paths cannot drift.
    * @param {Object} resolved - ResolvedModule from PluginResolver
@@ -357,7 +357,7 @@ class OfficialModules {
       await this.copyModuleWithFiltering(skillPath, skillTarget, fileTrackingCallback, moduleConfig);
     }
 
-    // Place module-help.csv at the module root.
+    // Place Help source files at the module root.
     const helpTarget = path.join(targetPath, 'module-help.csv');
     if (resolved.moduleHelpCsvPath) {
       // Strategies 1-4: copy the existing file.
@@ -368,11 +368,17 @@ class OfficialModules {
       await fs.writeFile(helpTarget, resolved.synthesizedHelpCsv, 'utf8');
       if (fileTrackingCallback) fileTrackingCallback(helpTarget);
     }
+
+    if (resolved.moduleHelpMarkdownPath) {
+      const guidanceTarget = path.join(targetPath, 'module-help.md');
+      await fs.copy(resolved.moduleHelpMarkdownPath, guidanceTarget, { overwrite: true });
+      if (fileTrackingCallback) fileTrackingCallback(guidanceTarget);
+    }
   }
 
   /**
    * Install a module from a PluginResolver resolution result.
-   * Copies specific skill directories and places module-help.csv at the target root.
+   * Copies specific skill directories and places Help source files at the target root.
    * @param {Object} resolved - ResolvedModule from PluginResolver
    * @param {string} bmadDir - Target bmad directory
    * @param {Function} fileTrackingCallback - Optional callback to track installed files
