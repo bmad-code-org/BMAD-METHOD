@@ -49,11 +49,16 @@ lifecycle_transitions = [
 # payments → risk 4 minimum, hitl true) are not configurable.
 hitl_threshold = 3
 
-# Standards applied at the slice/incept gate alongside the baked quiz
-# questions — a team's definition-of-ready, an INVEST checklist. Entries
-# are `skill:` or `file:` references or plain text. Append-only: an org
-# adds its bar; the baked quiz cannot be removed downstream.
-finalize_reviewers = []
+# Review lenses run over the full draft before the user ever sees it
+# (and before autonomous mode approves its own), plus any org standards
+# (definition-of-ready, INVEST checklist). Entries are `skill:` or
+# `file:` references or plain text. Append-only: an org adds its bar;
+# the baked lenses cannot be removed downstream (fork to change them).
+finalize_reviewers = [
+  "skill:bmad-review-adversarial-general",
+  "skill:bmad-review-edge-case-hunter",
+  "skill:bmad-review-verification-gap",
+]
 
 # Bug severity scale (how bad the defect is — distinct from risk, which
 # scores the fix). Overrides append (add bands); renaming or removing a

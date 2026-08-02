@@ -142,6 +142,17 @@ class TicketTreeTests(unittest.TestCase):
         self.assertEqual(rows["ALRT-12"]["status"], "done")
         self.assertTrue(rows["ALRT-3"]["path"].endswith("ticket.md"))
 
+    def test_graph_lanes_and_mermaid(self):
+        code, out = run("graph", "--root", str(self.root), "--mermaid")
+        self.assertEqual(code, 0)
+        self.assertIn("ALRT-12", out["lanes"][0])   # no deps
+        self.assertIn("ALRT-13", out["lanes"][1])   # depends on ALRT-12
+        self.assertEqual(len(out["critical_path"]), 2)
+        self.assertIn(out["critical_path"], [["ALRT-12", "ALRT-13"], ["ALRT-3", "ALRT-31"]])
+        self.assertIn("flowchart TD", out["mermaid"])
+        self.assertIn("ALRT_12 --> ALRT_13", out["mermaid"])
+        self.assertIn("ALRT_3 --> ALRT_31", out["mermaid"])
+
     def test_coverage_proposed(self):
         code, out = run("coverage", "--root", str(self.root),
                         "--require", "CAP-4,CAP-9", "--proposed", "CAP-9")

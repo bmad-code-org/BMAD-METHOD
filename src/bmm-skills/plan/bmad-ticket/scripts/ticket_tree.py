@@ -13,6 +13,7 @@ Everything here is derived by scan — nothing is stored. Verbs:
   list      id/type/title/status/path  uv run ticket_tree.py list --root R
   frontier  workable leaves            uv run ticket_tree.py frontier --root R
   board     status rollup (epics too)  uv run ticket_tree.py board --root R
+  graph     dependency graph + lanes   uv run ticket_tree.py graph --root R [--mermaid]
   coverage  covers: vs an inventory    uv run ticket_tree.py coverage --root R [--require "CAP-1,FR-2"] [--proposed "CAP-3"]
 
 Output is one JSON object per call. Stdlib only. Dual-homed: canonical at
@@ -270,6 +271,57 @@ def cmd_board(root, args):
                       "leaf_totals": totals, "blocked": blocked}))
 
 
+def cmd_graph(root, args):
+    tickets, by_id = scan(root)
+    deps_of = {str(t["id"]): [str(d) for d in (t.get("depends_on") or []) if str(d) in by_id]
+               for t in tickets}
+    edges = [[d, n] for n, ds in sorted(deps_of.items()) for d in ds]
+
+    memo, onstack = {}, set()
+
+    def depth(n):
+        if n in memo:
+            return memo[n]
+        if n in onstack:
+            memo[n] = 0  # cycle guard; validate owns diagnosis
+            return 0
+        onstack.add(n)
+        d = 0 if not deps_of[n] else 1 + max(depth(x) for x in deps_of[n])
+        onstack.discard(n)
+        memo[n] = d
+        return d
+
+    for n in deps_of:
+        depth(n)
+    max_depth = max(memo.values(), default=0)
+    lanes = [[n for n in sorted(deps_of, key=id_num) if memo[n] == i]
+             for i in range(max_depth + 1)]
+
+    path = []
+    if deps_of:
+        node = max(deps_of, key=lambda n: memo[n])
+        while node is not None:
+            path.append(node)
+            node = next((d for d in deps_of[node] if memo.get(d) == memo[path[-1]] - 1), None)
+        path.reverse()
+
+    out = {"ok": True, "nodes": len(deps_of), "edges": edges,
+           "lanes": lanes, "critical_path": path}
+    if getattr(args, "mermaid", False):
+        def mid(tid):
+            return tid.replace("-", "_")
+        lines = ["flowchart TD"]
+        for t in tickets:
+            tid = str(t["id"])
+            title = str(t.get("title") or "").replace('"', "'")
+            suffix = "" if t["type"] == "epic" else f" ({t.get('status')})"
+            lines.append(f'    {mid(tid)}["{tid} {title}{suffix}"]')
+        for d, n in edges:
+            lines.append(f"    {mid(d)} --> {mid(n)}")
+        out["mermaid"] = "\n".join(lines)
+    print(json.dumps(out))
+
+
 def cmd_coverage(root, args):
     tickets, _ = scan(root)
     covered = {}
@@ -410,7 +462,7 @@ def cmd_validate(root, args):
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     sub = ap.add_subparsers(dest="verb", required=True)
-    for verb in ("next-id", "index", "validate", "list", "frontier", "board", "coverage"):
+    for verb in ("next-id", "index", "validate", "list", "frontier", "board", "coverage", "graph"):
         p = sub.add_parser(verb)
         p.add_argument("--root", required=True, help="ticket tree root")
         if verb in ("next-id", "index"):
@@ -420,13 +472,16 @@ def main():
             p.add_argument("--proposed", help="ids a not-yet-written proposal covers, comma-separated")
         if verb == "validate":
             p.add_argument("--path", help="validate one file instead of the whole tree")
+        if verb == "graph":
+            p.add_argument("--mermaid", action="store_true",
+                           help="include a mermaid flowchart rendering")
     args = ap.parse_args()
     root = Path(args.root)
     if not root.is_dir():
         fail(f"no such directory: {args.root}")
     {"next-id": cmd_next_id, "index": cmd_index, "validate": cmd_validate,
      "list": cmd_list, "frontier": cmd_frontier, "board": cmd_board,
-     "coverage": cmd_coverage}[args.verb](root, args)
+     "coverage": cmd_coverage, "graph": cmd_graph}[args.verb](root, args)
 
 
 if __name__ == "__main__":
