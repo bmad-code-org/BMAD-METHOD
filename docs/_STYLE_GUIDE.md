@@ -9,7 +9,7 @@ This project adheres to the [Google Developer Documentation Style Guide](https:/
 
 Make the main point easy to find and act on. These rules apply to every page:
 
-- Lead with the idea, decision, or outcome.
+- At the start, make clear what the page is for and what the reader needs from it.
 - Prefer concrete, familiar words and short sentences.
 - Use specialized terms only when readers need them to use BMAD. Define an unfamiliar term at first use.
 - Use literal language. Avoid decorative metaphors, and do not use a metaphor instead of explaining how something works.
