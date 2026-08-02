@@ -23,6 +23,10 @@ You can use either group on its own. Many people run the thinking skills and
 never ask BMad to write a line of code, and a small fix can go straight to
 building with no planning at all.
 
+Use the smallest path that safely fits the work.
+[Choose a Development Path](./how-to/choose-a-development-path.md) is the
+complete routing guide, from a trivial edit to a multi-epic project.
+
 ## Find Your Starting Point
 
 **You want to see it work.**
@@ -39,7 +43,8 @@ Consider running `bmad-project-context`, then build as usual. See
 
 **You are building a larger feature or a whole product.**
 If you can give `bmad-spec` a complete intent, start there. If you need to
-go through the ideation/planning paces first, choose a path in the
+go through the ideation/planning paces first, choose a path in
+[Choose a Development Path](./how-to/choose-a-development-path.md) or the
 [Workflow Map](./reference/workflow-map.md).
 
 **Your idea is still vague, or you are not sure it is a good one.**

@@ -5,7 +5,9 @@ sidebar:
   order: 4
 ---
 
-Bug fixes, refactorings, and small targeted changes can enter **Build** directly with little or no upstream planning. This is the same implementation workflow used for fully planned stories.
+Use the `bmad-build` workflow for a small targeted change that benefits from
+planning and structured review. This is the same attentive implementation
+workflow used for planned stories.
 
 ## When to Use This
 
@@ -13,6 +15,13 @@ Bug fixes, refactorings, and small targeted changes can enter **Build** directly
 - Small refactorings (rename, extract, restructure) contained within a few files
 - Minor feature tweaks or configuration changes
 - Dependency updates
+
+## When to Skip This
+
+Make an obvious, low-risk edit directly when Build's planning and review would
+not add useful safety or clarity. If the work no longer fits one implementation
+session, use [Choose a Development Path](./choose-a-development-path.md) to add
+the right planning context.
 
 :::note[Prerequisites]
 
@@ -31,25 +40,26 @@ Open a **fresh chat session** in your AI IDE. Reusing a session from a previous 
 Build accepts free-form intent — before, with, or after the invocation. Examples:
 
 ```text
-run build — Fix the login validation bug that allows empty passwords.
+/bmad-build Fix the login validation bug that allows empty passwords.
 ```
 
 ```text
-run build — fix https://github.com/org/repo/issues/42
+/bmad-build Fix https://github.com/org/repo/issues/42.
 ```
 
 ```text
-run build — implement the intent in _bmad-output/implementation-artifacts/my-intent.md
+/bmad-build Implement the intent in
+_bmad-output/implementation-artifacts/my-intent.md.
 ```
 
 ```text
 I think the problem is in the auth middleware, it's not checking token expiry.
 Let me look at it... yeah, src/auth/middleware.ts line 47 skips
-the exp check entirely. run build
+the exp check entirely. /bmad-build
 ```
 
 ```text
-run build
+/bmad-build
 > What would you like to do?
 Refactor UserService to use async/await instead of callbacks.
 ```
@@ -93,4 +103,6 @@ Before running the same Build implementation loop, consider adding PRD, UX, arch
 - You are unsure about the scope and need requirements discovery first
 - You need documentation or architectural decisions recorded for the team
 
-See [Build](../explanation/build.md) for how direct intent and planned work converge on the same implementation loop.
+See [Choose a Development Path](./choose-a-development-path.md) for the
+epic-sized and project-sized paths, or [Build](../explanation/build.md) for how
+direct intent and planned work use the same Build workflow.
