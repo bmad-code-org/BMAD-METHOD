@@ -1,0 +1,345 @@
+{
+  "skill_name": "bmad-project-context",
+  "cases": [
+    {
+      "id": "E1-brownfield-capture",
+      "input": "Run headless. Ingest project context for the repo at files/fixture-brownfield (treat it as the project root).",
+      "rubric": [
+        "files/fixture-brownfield/context/kernel.md exists and contains the integer-cents money rule with a path or link (src/lib/money.ts or planning/decisions.md)",
+        "The kernel or a bundle entry captures the soft-delete rule (deleted_at filtering) and the Stripe webhook staging-replay idempotency landmine",
+        "The kernel captures that legacy/ is frozen and must not be modified",
+        "The test command is captured as pnpm test / vitest with a warning against jest syntax",
+        "The kernel does NOT state self-evident facts: no 'uses TypeScript', no 'built on Express', no layering overview like 'the API layer calls the service layer'",
+        "Every artifact written is marked generated (never verified) \u2014 this was an auto-mode run with no user confirmation",
+        "The kernel is small: at most ~40 content lines, ordered with commands/conventions/landmines style sections, no prose paragraphs",
+        "The transcript shows context.py invocations for mechanical facts (index and/or validate); index.md exists in files/fixture-brownfield/context/",
+        "Scanning stays bounded: either source mining is delegated to subagents returning claim lists, or (small repo) the main session reads sources in a few batched calls \u2014 it never file-by-file crawls a large tree in its own context. For this small fixture, batched direct reads pass."
+      ],
+      "files": [
+        "files/fixture-brownfield/AGENTS.md",
+        "files/fixture-brownfield/_bmad/context.yaml",
+        "files/fixture-brownfield/docs/data-access.md",
+        "files/fixture-brownfield/docs/deploy.md",
+        "files/fixture-brownfield/docs/money.md",
+        "files/fixture-brownfield/docs/overview.md",
+        "files/fixture-brownfield/legacy/README.md",
+        "files/fixture-brownfield/package.json",
+        "files/fixture-brownfield/planning/decisions.md",
+        "files/fixture-brownfield/pnpm-lock.yaml",
+        "files/fixture-brownfield/src/lib/money.ts",
+        "files/fixture-brownfield/src/repos/orders.ts",
+        "files/fixture-brownfield/src/routes/webhooks.ts"
+      ],
+      "timeout": 900
+    },
+    {
+      "id": "E2-false-claim-rejection",
+      "input": "Run headless. Ingest project context for the repo at files/fixture-brownfield (treat it as the project root). The docs/ folder there is pre-existing documentation of unknown quality.",
+      "rubric": [
+        "The false claim 'we use jest' from docs/overview.md does not appear as truth anywhere in kernel or bundle; the captured test framework is vitest",
+        "The false claim that prices are stored as floating-point dollars (docs/money.md) does not appear as truth; money is captured as integer cents",
+        "The stale Heroku deployment claim (docs/deploy.md) is not promoted into kernel or bundle",
+        "The true claim from docs/data-access.md (repository pattern in src/repos/) IS captured",
+        "The run recommends archiving or retiring the stale docs/ folder (in the final message, memlog, or an entry)",
+        "No claim sourced only from docs/ is marked verified"
+      ],
+      "files": [
+        "files/fixture-brownfield/AGENTS.md",
+        "files/fixture-brownfield/_bmad/context.yaml",
+        "files/fixture-brownfield/docs/data-access.md",
+        "files/fixture-brownfield/docs/deploy.md",
+        "files/fixture-brownfield/docs/money.md",
+        "files/fixture-brownfield/docs/overview.md",
+        "files/fixture-brownfield/legacy/README.md",
+        "files/fixture-brownfield/package.json",
+        "files/fixture-brownfield/planning/decisions.md",
+        "files/fixture-brownfield/pnpm-lock.yaml",
+        "files/fixture-brownfield/src/lib/money.ts",
+        "files/fixture-brownfield/src/repos/orders.ts",
+        "files/fixture-brownfield/src/routes/webhooks.ts"
+      ],
+      "timeout": 900
+    },
+    {
+      "id": "E4-interrogation-discipline",
+      "state_prefix": "[Interactive brownfield ingest is underway on the repo at files/fixture-brownfield (the project root). The orchestrated scan of code, configs, planning/decisions.md, and the docs/ folder is complete and the claim list is assembled. The next step is the first interrogation round.]",
+      "input": "User said: \"go ahead with your questions.\"",
+      "rubric": [
+        "The round contains at most 8 items",
+        "No question asks something derivable from the code: nothing like 'what test framework do you use' (package.json answers it) or 'what language is this' \u2014 mined claims are presented for confirmation instead",
+        "Confirmation items quote their evidence (a file path or doc claim) so the user can confirm in seconds",
+        "Unverifiable docs claims are surfaced as 'the docs say X, still true?' rather than stated as fact",
+        "The turn ends waiting for the user; no artifacts are written as verified before the user answers",
+        "No fixture file under files/fixture-brownfield/ is modified during the turn",
+        "At least one docs-vs-code contradiction (jest vs vitest, or float dollars vs integer cents) is surfaced in the round as a claim needing the user's confirmation or already refuted by code evidence"
+      ],
+      "files": [
+        "files/fixture-brownfield/AGENTS.md",
+        "files/fixture-brownfield/_bmad/context.yaml",
+        "files/fixture-brownfield/docs/data-access.md",
+        "files/fixture-brownfield/docs/deploy.md",
+        "files/fixture-brownfield/docs/money.md",
+        "files/fixture-brownfield/docs/overview.md",
+        "files/fixture-brownfield/legacy/README.md",
+        "files/fixture-brownfield/package.json",
+        "files/fixture-brownfield/planning/decisions.md",
+        "files/fixture-brownfield/pnpm-lock.yaml",
+        "files/fixture-brownfield/src/lib/money.ts",
+        "files/fixture-brownfield/src/repos/orders.ts",
+        "files/fixture-brownfield/src/routes/webhooks.ts"
+      ],
+      "timeout": 600
+    },
+    {
+      "id": "E5-writing-rules",
+      "input": "Run headless. Ingest project context for the repo at files/fixture-brownfield (treat it as the project root).",
+      "rubric": [
+        "No kernel line, entry, or compass contains drift narration: no 'we updated/removed/decided to change X because' storytelling anywhere in the written artifacts",
+        "Every reference to a file, decision, or doc inside written artifacts carries a followable path or link; no 'as previously discussed' or naming of unlocatable things",
+        "Entries are succinct: no entry body exceeds ~120 words; kernel lines are single-sentence imperatives",
+        "No entry paraphrases readable code (an entry restating what src/lib/money.ts plainly shows without adding the why would fail)",
+        "Frontmatter on every entry has type, title, description, and exactly one of generated/verified",
+        "Substance, not just restraint: the bundle captures at least three of the planted non-derivable truths (integer-cents why, soft-delete, webhook replay, legacy freeze) each with its reason \u2014 a near-empty bundle fails this",
+        "Links in any materialized AGENTS.md block resolve from that file's own location (no kernel-relative links copied verbatim to repo root)"
+      ],
+      "files": [
+        "files/fixture-brownfield/AGENTS.md",
+        "files/fixture-brownfield/_bmad/context.yaml",
+        "files/fixture-brownfield/docs/data-access.md",
+        "files/fixture-brownfield/docs/deploy.md",
+        "files/fixture-brownfield/docs/money.md",
+        "files/fixture-brownfield/docs/overview.md",
+        "files/fixture-brownfield/legacy/README.md",
+        "files/fixture-brownfield/package.json",
+        "files/fixture-brownfield/planning/decisions.md",
+        "files/fixture-brownfield/pnpm-lock.yaml",
+        "files/fixture-brownfield/src/lib/money.ts",
+        "files/fixture-brownfield/src/repos/orders.ts",
+        "files/fixture-brownfield/src/routes/webhooks.ts"
+      ],
+      "timeout": 900
+    },
+    {
+      "id": "E8a-first-run-placement-ask",
+      "input": "Set up project context for the repo at files/fixture-brownfield (treat it as the project root).",
+      "rubric": [
+        "The first-run flow confirms the bundle location and asks the placement question with the three options (bmad / agent-files / both) explained in plain language",
+        "A default is suggested based on detection rather than left as a bare menu",
+        "The recommendation to make the kernel load (persistent_facts via bmad-customize, or an agent-file pointer) is mentioned",
+        "The pre-existing AGENTS.md is not modified and no new AGENTS.md is created before the user answers",
+        "No altitude or filing machinery surfaces \u2014 no 'altitude', 'org-candidate', promotion, or org-level filing questions (this is a solo repo with no obeya configured). Asking whether the user has org docs as an ingest source is fine and expected.",
+        "The turn ends waiting for the user's placement answer"
+      ],
+      "files": [
+        "files/fixture-brownfield/AGENTS.md",
+        "files/fixture-brownfield/_bmad/context.yaml",
+        "files/fixture-brownfield/docs/data-access.md",
+        "files/fixture-brownfield/docs/deploy.md",
+        "files/fixture-brownfield/docs/money.md",
+        "files/fixture-brownfield/docs/overview.md",
+        "files/fixture-brownfield/legacy/README.md",
+        "files/fixture-brownfield/package.json",
+        "files/fixture-brownfield/planning/decisions.md",
+        "files/fixture-brownfield/pnpm-lock.yaml",
+        "files/fixture-brownfield/src/lib/money.ts",
+        "files/fixture-brownfield/src/repos/orders.ts",
+        "files/fixture-brownfield/src/routes/webhooks.ts"
+      ],
+      "timeout": 600
+    },
+    {
+      "id": "E8b-bmad-placement-honored",
+      "state_prefix": "[First-run setup on the repo at files/fixture-brownfield (the project root). The skill asked the placement question and the user replied:]",
+      "input": "User said: \"bmad placement please \u2014 don't touch my agent files.\"",
+      "rubric": [
+        "context_placement is recorded as bmad in the project config file",
+        "The pre-existing AGENTS.md at files/fixture-brownfield/AGENTS.md is byte-identical to the fixture, and no other AGENTS.md is created anywhere in the workspace",
+        "The user is told how the kernel will load under bmad placement (persistent_facts arrays / bmad-customize)",
+        "The sync command is not run (it refuses under bmad placement and the skill knows not to call it)",
+        "The run proceeds to a completed ingest: context/kernel.md exists and captures at least the integer-cents and webhook-replay truths"
+      ],
+      "files": [
+        "files/fixture-brownfield/AGENTS.md",
+        "files/fixture-brownfield/_bmad/context.yaml",
+        "files/fixture-brownfield/docs/data-access.md",
+        "files/fixture-brownfield/docs/deploy.md",
+        "files/fixture-brownfield/docs/money.md",
+        "files/fixture-brownfield/docs/overview.md",
+        "files/fixture-brownfield/legacy/README.md",
+        "files/fixture-brownfield/package.json",
+        "files/fixture-brownfield/planning/decisions.md",
+        "files/fixture-brownfield/pnpm-lock.yaml",
+        "files/fixture-brownfield/src/lib/money.ts",
+        "files/fixture-brownfield/src/repos/orders.ts",
+        "files/fixture-brownfield/src/routes/webhooks.ts"
+      ],
+      "timeout": 900
+    },
+    {
+      "id": "E3-greenfield-seeding",
+      "input": "Run headless. Generate project context for the repo at files/fixture-greenfield (treat it as the project root). The spec is at files/fixture-greenfield/spec.md.",
+      "rubric": [
+        "The kernel captures the decided stack (TypeScript/Fastify/Postgres), the vitest+testcontainers no-DB-mocking test approach, integer-cents money, and the club_id isolation constraint",
+        "The contested settlement-persistence decision (event sourcing vs CRUD) is NOT decided by the skill: it is flagged as deserving bmad-architecture, in the final message or memlog",
+        "The output is kernel-only or near-kernel-only: no bundle entries that merely restate spec text",
+        "All artifacts are marked generated (auto mode)"
+      ],
+      "files": ["files/fixture-greenfield/spec.md"],
+      "timeout": 900
+    },
+    {
+      "id": "E6-refresh-non-accretion",
+      "input": "Run headless. Refresh the project context for the repo at files/fixture-refresh (treat it as the project root). Context artifacts from a prior run exist at files/fixture-refresh/context/.",
+      "rubric": [
+        "No written artifact still references src/lib/money.ts (the file is now src/lib/currency.ts): the integer-cents claim is either re-pointed to currency.ts or its entry removed",
+        "The repository-pattern convention (src/repos/ no longer exists in the code) is removed, marked superseded via frontmatter, or downgraded from verified \u2014 it is not left standing as verified truth",
+        "Total bundle size does not grow: combined bytes of kernel.md + entries + index.md in context/ is less than or equal to the fixture's originals",
+        "The memlog at context/.memlog.md gains entries recording this refresh diff (what changed and why), and prior entries are untouched",
+        "Nothing already settled in the prior memlog is re-derived from scratch or contradicted without evidence"
+      ],
+      "files": [
+        "files/fixture-refresh/_bmad/context.yaml",
+        "files/fixture-refresh/context/.memlog.md",
+        "files/fixture-refresh/context/index.md",
+        "files/fixture-refresh/context/integer-cents.md",
+        "files/fixture-refresh/context/kernel.md",
+        "files/fixture-refresh/context/repository-pattern.md",
+        "files/fixture-refresh/package.json",
+        "files/fixture-refresh/planning/decisions.md",
+        "files/fixture-refresh/src/lib/currency.ts",
+        "files/fixture-refresh/src/routes/webhooks.ts"
+      ],
+      "timeout": 900
+    },
+    {
+      "id": "E7-query-contract",
+      "input": "Run headless. Query the project context (project root: files/fixture-workspace/proj-a): first, what are the webhook signing rules for calls to sibling-api? Second, what is our deploy cadence?",
+      "rubric": [
+        "The answer states the HMAC-SHA256 X-Sig signing rule including the silent-drop behavior, sourced from sibling-api's webhook-conventions entry",
+        "The answer carries trust metadata: the entry's verified date is surfaced",
+        "Resolution goes through the mechanics (context.py resolve, or the index) rather than ad-hoc tree crawling across the workspace",
+        "The full bundle is not dumped: only the relevant entry content appears in the answer",
+        "The deploy-cadence question is answered with 'the bundle cannot answer this' (or equivalent) rather than an invented answer"
+      ],
+      "files": [
+        "files/fixture-workspace/obeya/registry.yaml",
+        "files/fixture-workspace/proj-a/_bmad/context.yaml",
+        "files/fixture-workspace/proj-a/docs/kernel.md",
+        "files/fixture-workspace/proj-a/src/client.ts",
+        "files/fixture-workspace/sibling-api/docs/kernel.md",
+        "files/fixture-workspace/sibling-api/docs/webhook-conventions.md"
+      ],
+      "timeout": 600
+    },
+    {
+      "id": "E9-monorepo-scoping",
+      "input": "Run headless. Ingest project context for the monorepo at files/fixture-monorepo (treat it as the project root). Work is about to start in services/billing.",
+      "rubric": [
+        "The root kernel contains only global truths (workspace import-boundary rule via @nimbus/contracts, pnpm workspace commands) \u2014 no billing- or web-specific conventions",
+        "Billing truths (idempotent handlers due to queue redelivery/nightly replay, integer cents) land in a compass with area services/billing, 25-35 lines, answering the five compass questions",
+        "The web no-default-exports convention does not leak into the root kernel or the billing compass",
+        "Compass frontmatter carries a correct area field so context.py compass services/billing/src/handlers.ts returns the billing compass"
+      ],
+      "files": [
+        "files/fixture-monorepo/README.md",
+        "files/fixture-monorepo/apps/web/package.json",
+        "files/fixture-monorepo/apps/web/src/conventions.md",
+        "files/fixture-monorepo/package.json",
+        "files/fixture-monorepo/services/billing/package.json",
+        "files/fixture-monorepo/services/billing/src/handlers.ts"
+      ],
+      "timeout": 900
+    },
+    {
+      "id": "E10-standalone",
+      "input": "Run headless. Ingest project context for the repo at files/fixture-standalone (treat it as the project root). This repo has no BMad install.",
+      "rubric": [
+        "The mechanics script is bootstrapped: the transcript shows the skill's bundled scripts/context.py bootstrap call, and _bmad/scripts/context.py exists under the project root afterward",
+        "Placement defaults to agent-files (detected, not asked \u2014 headless): an AGENTS.md is produced at the project root containing the managed <!-- bmad:context --> block with the kernel content",
+        "Capture quality matches a BMad-install run: integer-cents rule and the planning/decisions.md rationale are captured, marked generated",
+        "The run completes without requiring any BMad module, config, or skill beyond this one"
+      ],
+      "files": [
+        "files/fixture-standalone/package.json",
+        "files/fixture-standalone/planning/decisions.md",
+        "files/fixture-standalone/src/lib/money.ts"
+      ],
+      "timeout": 900
+    },
+    {
+      "id": "E11-durability",
+      "state_prefix": "[Interactive brownfield ingest on the repo at files/fixture-brownfield (the project root). The scan is done; round 1 presented 6 confirmations (vitest test command; integer-cents money; repository pattern; soft-delete filtering; webhook replay idempotency; legacy/ frozen) and the user replied:]",
+      "input": "User said: \"all six are correct. One more thing: never run database migrations from CI \u2014 they are applied manually during the release call.\"",
+      "rubric": [
+        "Every one of the six confirmations lands in the memlog as its own entry during this turn, before or alongside artifact writing \u2014 not summarized in conversation only",
+        "The new migrations landmine is captured: memlog entry plus a kernel landmine line (or entry), written this turn",
+        "Kernel lines / entries for the confirmed claims are written to disk this turn (progressive writes), not deferred to a later finalize",
+        "The artifacts written are marked verified (the user confirmed them)",
+        "If a next round is posed, it contains only genuinely unknowable items \u2014 no re-asking anything just confirmed"
+      ],
+      "files": [
+        "files/fixture-brownfield/AGENTS.md",
+        "files/fixture-brownfield/_bmad/context.yaml",
+        "files/fixture-brownfield/docs/data-access.md",
+        "files/fixture-brownfield/docs/deploy.md",
+        "files/fixture-brownfield/docs/money.md",
+        "files/fixture-brownfield/docs/overview.md",
+        "files/fixture-brownfield/legacy/README.md",
+        "files/fixture-brownfield/package.json",
+        "files/fixture-brownfield/planning/decisions.md",
+        "files/fixture-brownfield/pnpm-lock.yaml",
+        "files/fixture-brownfield/src/lib/money.ts",
+        "files/fixture-brownfield/src/repos/orders.ts",
+        "files/fixture-brownfield/src/routes/webhooks.ts"
+      ],
+      "timeout": 900
+    },
+    {
+      "id": "E12a-face-purpose-asked",
+      "state_prefix": "[Ingest just completed on the repo at files/fixture-refresh (the project root); kernel and bundle exist at context/. The skill offered a human-readable face artifact and the user replied:]",
+      "input": "User said: \"yes, make me one.\"",
+      "rubric": [
+        "The skill asks what the face is for (its purpose/audience) before generating anything",
+        "No face artifact is written before the user answers, and nothing in context/ is modified",
+        "The turn ends waiting for the user"
+      ],
+      "files": [
+        "files/fixture-refresh/_bmad/context.yaml",
+        "files/fixture-refresh/context/.memlog.md",
+        "files/fixture-refresh/context/index.md",
+        "files/fixture-refresh/context/integer-cents.md",
+        "files/fixture-refresh/context/kernel.md",
+        "files/fixture-refresh/context/repository-pattern.md",
+        "files/fixture-refresh/package.json",
+        "files/fixture-refresh/planning/decisions.md",
+        "files/fixture-refresh/src/lib/currency.ts",
+        "files/fixture-refresh/src/routes/webhooks.ts"
+      ],
+      "timeout": 600
+    },
+    {
+      "id": "E12b-face-generation",
+      "state_prefix": "[Ingest just completed on the repo at files/fixture-refresh (the project root); kernel and bundle exist at context/. The skill offered a face artifact, asked its purpose, and the user replied:]",
+      "input": "User said: \"a short slide deck to onboard new devs to how we handle money and webhooks.\"",
+      "rubric": [
+        "A face artifact is generated and fits the stated purpose: slide-deck-shaped, focused on money handling and webhooks, drawn from the kernel/bundle content",
+        "The face lives outside context/ (the bundle root)",
+        "context/index.md does not reference the face; every knowledge entry, kernel.md, and index.md in context/ is byte-unchanged (the append-only .memlog.md may gain entries \u2014 that is prescribed behavior)",
+        "The face is presented as ephemeral/regenerable, not as a maintained source of truth"
+      ],
+      "files": [
+        "files/fixture-refresh/_bmad/context.yaml",
+        "files/fixture-refresh/context/.memlog.md",
+        "files/fixture-refresh/context/index.md",
+        "files/fixture-refresh/context/integer-cents.md",
+        "files/fixture-refresh/context/kernel.md",
+        "files/fixture-refresh/context/repository-pattern.md",
+        "files/fixture-refresh/package.json",
+        "files/fixture-refresh/planning/decisions.md",
+        "files/fixture-refresh/src/lib/currency.ts",
+        "files/fixture-refresh/src/routes/webhooks.ts"
+      ],
+      "timeout": 900
+    }
+  ]
+}

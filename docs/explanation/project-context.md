@@ -1,155 +1,44 @@
 ---
 title: "Project Context"
-description: How project-context.md guides AI agents with your project's rules and preferences
+description: How bmad-project-context curates the verified knowledge AI agents load — a small kernel plus a knowledge bundle
 sidebar:
   order: 11
 ---
 
-The `project-context.md` file is your project's implementation guide for AI agents. Similar to a "constitution" in other development systems, it captures the rules, patterns, and preferences that ensure consistent code generation across all workflows.
+`bmad-project-context` owns everything the code can't tell an AI agent: why the architecture is shaped this way, which conventions are deliberate, what the org requires, which landmines a fresh session must know before touching anything. It maintains that knowledge as a small, verified context system instead of generated documentation.
 
-## What It Does
+The evidence behind the design is blunt: LLM-generated context docs measurably make agents *worse* (lower correctness at higher cost), and long overview documents add wasted exploration. What works is a tiny always-loaded file, small verified entries loaded on demand, and mechanical maps produced fresh on demand. So the skill curates the minimum non-derivable set and never describes what the code already says. For the full reasoning — including what is deliberately *not* captured and why — see [The Theory of Project Context](project-context-theory.md).
 
-AI agents make implementation decisions constantly — which patterns to follow, how to structure code, what conventions to use. Without clear guidance, they may:
-- Follow generic best practices that don't match your codebase
-- Make inconsistent decisions across different stories
-- Miss project-specific requirements or constraints
+## The two artifacts
 
-The `project-context.md` file solves this by documenting what agents need to know in a concise, LLM-optimized format.
+**The kernel** (`kernel.md`) is one small file loaded into every agent session — exact commands where the obvious guess fails, conventions that differ from ecosystem defaults, landmines, hard org requirements. It lives under an instruction budget (~150–200 instructions), is priority-ordered, and every line must pass the pruning test: *would removing this line change agent behavior?* Small projects need the kernel and nothing else.
 
-## How It Works
+**The bundle** is a directory of small markdown entries behind the kernel — architecture rationale, the *why* behind conventions, domain facts, decision history. Each entry carries frontmatter with trust signals: `verified` (a human confirmed it, or it was path-checked with a human in the loop) or `generated` (inferred, unconfirmed — everything a headless run writes). `index.md` is the sole entry point; entries are loaded on demand, never wholesale.
 
-Every implementation workflow automatically loads `project-context.md` if it exists. The architect workflow also loads it to respect your technical preferences when designing the architecture.
+Both live in your `project_knowledge` folder (the standard install setting, default `docs/`). A mechanics script (`context.py`) handles everything mechanical — validation, indexing, staleness sweeps, repo maps, cross-project resolution — so no agent ever guesses at mechanical facts.
 
-**Loaded by these workflows:**
-- `bmad-architecture` — respects technical preferences during solutioning
-- `bmad-build` — informs story planning and implementation with project patterns
-- `bmad-code-review` — validates against project standards
-- `bmad-sprint-planning`, `bmad-retrospective`, `bmad-correct-course` — provides project-wide context
+## Three intents
 
-## When to Create It
+| Intent | What it does |
+|--------|--------------|
+| **Ingest** | Build or refresh the context. Brownfield: mine the repo and docs first, then ask only what's genuinely unknowable. Greenfield: seed from a spec or architecture doc, or a short interview. Refresh: diff against the last run — never start over. |
+| **Query** | Answer a question from the bundle without loading all of it, with trust metadata attached. |
+| **Audit** | Keep the set small and true: staleness sweeps, path verification, the pruning test. Context shrinks or holds — it never accretes. |
 
-The `project-context.md` file is useful at any stage of a project:
+## How agents load it
 
-| Scenario | When to Create | Purpose |
-|----------|----------------|---------|
-| **New project, before architecture** | Manually, before `bmad-architecture` | Document your technical preferences so the architect respects them |
-| **New project, after architecture** | Via `bmad-generate-project-context` or manually | Capture architecture decisions for implementation agents |
-| **Existing project** | Via `bmad-generate-project-context` | Discover existing patterns so agents follow established conventions |
-| **Direct implementation entry** | Before or during `bmad-build` | Ensure implementation respects your patterns even without upstream planning |
+On first run the skill asks your **placement** preference:
 
-:::tip[Recommended]
-For new projects, create it manually before architecture if you have strong technical preferences. Otherwise, generate it after architecture to capture those decisions.
-:::
+- **bmad** — the kernel loads through BMad customization arrays; your agent files are never touched.
+- **agent-files** — the script maintains managed `<!-- bmad:context -->` blocks in your root and nested `AGENTS.md` files, preserving everything around them. This is the default when there's no BMad install — the skill works standalone in any repo, with no framework at all.
+- **both** — arrays plus agent files, kept in sync.
 
-## What Goes In It
+## Interaction with architecture
 
-The file has two main sections:
+Decisions are *born* in `bmad-architecture`; they *live* in project-context. The architecture spine is the premier ingest source, and if ingest surfaces a genuinely contested decision, the skill says it deserves `bmad-architecture` rather than quietly making the call.
 
-### Technology Stack & Versions
+## Replaces two earlier skills
 
-Documents the frameworks, languages, and tools your project uses with specific versions:
-
-```markdown
-## Technology Stack & Versions
-
-- Node.js 20.x, TypeScript 5.3, React 18.2
-- State: Zustand (not Redux)
-- Testing: Vitest, Playwright, MSW
-- Styling: Tailwind CSS with custom design tokens
-```
-
-### Critical Implementation Rules
-
-Documents patterns and conventions that agents might otherwise miss:
-
-```markdown
-## Critical Implementation Rules
-
-**TypeScript Configuration:**
-- Strict mode enabled — no `any` types without explicit approval
-- Use `interface` for public APIs, `type` for unions/intersections
-
-**Code Organization:**
-- Components in `/src/components/` with co-located `.test.tsx`
-- Utilities in `/src/lib/` for reusable pure functions
-- API calls use the `apiClient` singleton — never fetch directly
-
-**Testing Patterns:**
-- Unit tests focus on business logic, not implementation details
-- Integration tests use MSW to mock API responses
-- E2E tests cover critical user journeys only
-
-**Framework-Specific:**
-- All async operations use the `handleError` wrapper for consistent error handling
-- Feature flags accessed via `featureFlag()` from `@/lib/flags`
-- New routes follow the file-based routing pattern in `/src/app/`
-```
-
-Focus on what's **unobvious** — things agents might not infer from reading code snippets. Don't document standard practices that apply universally.
-
-## Creating the File
-
-You have three options:
-
-### Manual Creation
-
-Create the file at `_bmad-output/project-context.md` and add your rules:
-
-```bash
-# In your project root
-mkdir -p _bmad-output
-touch _bmad-output/project-context.md
-```
-
-Edit it with your technology stack and implementation rules. The architect and implementation workflows will automatically find and load it.
-
-### Generate After Architecture
-
-Run the `bmad-generate-project-context` workflow after completing your architecture:
-
-```bash
-bmad-generate-project-context
-```
-
-This scans your architecture document and project files to generate a context file capturing the decisions made.
-
-### Generate for Existing Projects
-
-For existing projects, run `bmad-generate-project-context` to discover existing patterns:
-
-```bash
-bmad-generate-project-context
-```
-
-The workflow analyzes your codebase to identify conventions, then generates a context file you can review and refine.
-
-## Why It Matters
-
-Without `project-context.md`, agents make assumptions that may not match your project:
-
-| Without Context | With Context |
-|----------------|--------------|
-| Uses generic patterns | Follows your established conventions |
-| Inconsistent style across stories | Consistent implementation |
-| May miss project-specific constraints | Respects all technical requirements |
-| Each agent decides independently | All agents align with same rules |
-
-This is especially important for:
-- **Direct-entry work** — when there is no PRD or architecture, the context file supplies durable project conventions
-- **Team projects** — ensures all agents follow the same standards
-- **Existing projects** — prevents breaking established patterns
-
-## Editing and Updating
-
-The `project-context.md` file is a living document. Update it when:
-
-- Architecture decisions change
-- New conventions are established
-- Patterns evolve during implementation
-- You identify gaps from agent behavior
-
-You can edit it manually at any time, or re-run `bmad-generate-project-context` to update it after significant changes.
-
-:::note[File Location]
-The default location is `_bmad-output/project-context.md`. Workflows search for it there, and also check `**/project-context.md` anywhere in your project.
+:::note[Deprecated: bmad-document-project and bmad-generate-project-context]
+Both earlier skills are deprecated and now forward here. `bmad-generate-project-context` produced a single `project-context.md`; `bmad-document-project` scanned a brownfield repo into documentation. Their trigger phrases still work, any existing `project-context.md` keeps loading (and becomes a mining source on the next ingest), and the ideas they carried — "capture unobvious rules only" — are now the whole architecture.
 :::

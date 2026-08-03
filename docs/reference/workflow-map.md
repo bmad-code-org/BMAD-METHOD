@@ -109,15 +109,13 @@ this structure, agents make inconsistent decisions.
 ### Project Context
 
 :::tip[Recommended]
-Create `project-context.md` to ensure AI agents follow your project's rules and preferences. This file works like a
-constitution for your project — it guides implementation decisions across all workflows. This optional file can be
-generated at the end of Architecture Creation, or in an existing project it can be generated also to capture whats
-important to keep aligned with current conventions.
+Build your project context so AI agents follow your project's rules and preferences across all workflows: a small
+always-loaded kernel plus a bundle of verified entries, maintained by `bmad-project-context`. Seed it from your
+architecture at the end of planning, or mine it from an existing codebase at any time.
 :::
 
 **How to create it:**
 
-- **Manually** — Create `_bmad-output/project-context.md` with your technology stack and implementation rules
-- **Generate it** — Run `bmad-generate-project-context` to auto-generate from your architecture or codebase
+- Run `bmad-project-context` — greenfield (seeded from your spec or architecture) or brownfield (mined from the codebase, then confirmed with you). The earlier `bmad-generate-project-context` is deprecated and forwards there; an existing `project-context.md` keeps loading.
 
 [**Learn more about project-context.md**](../explanation/project-context.md)

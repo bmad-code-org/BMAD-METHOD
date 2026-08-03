@@ -185,11 +185,13 @@ async function main() {
     assert(!markdown.includes('{skill-root}'), 'mutable skill-root reference survived');
     assert(markdown.includes('{spec_file}'), 'runtime placeholder was removed');
     assert(markdown.includes('tailored to `expert`'), 'user_skill_level behavior missing');
-    for (const prompt of ['adversarial.md', 'edge-case-hunter.md', 'verification-gap.md']) {
+    // Blind hunter is inlined in customize.toml; only file-backed reviewers ship under review-prompts/.
+    for (const prompt of ['edge-case-hunter.md', 'verification-gap.md']) {
       const promptPath = path.join(dir, 'review-prompts', prompt);
       assert(markdown.includes(promptPath), `snapshot reviewer path missing: ${prompt}`);
       assert(fs.existsSync(promptPath), `snapshot reviewer missing: ${prompt}`);
     }
+    assert(markdown.includes('Conduct a review of CONTENT.'), 'inlined blind-hunter prompt missing from rendered layers');
     for (const match of markdown.matchAll(/`(\/[^`]+\/step-[^`]+\.md)`/g)) {
       assert(path.dirname(match[1]) === dir, `cross-generation reference: ${match[1]}`);
     }

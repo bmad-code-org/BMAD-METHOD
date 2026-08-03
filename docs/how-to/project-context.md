@@ -1,132 +1,53 @@
 ---
 title: 'Manage Project Context'
-description: Create and maintain project-context.md to guide AI agents
+description: Build and maintain your project's verified context system with bmad-project-context
 sidebar:
-  order: 9
+  order: 8
 ---
 
-Use the `project-context.md` file to ensure AI agents follow your project's technical preferences and implementation rules throughout all workflows. To make sure this is always available, you can also add the line `Important project context and conventions are located in [path to project context]/project-context.md` to your tools context or always rules file (such as `AGENTS.md`)
+Use `bmad-project-context` to give every AI agent session the minimum verified, non-derivable knowledge it needs — a small always-loaded kernel plus a knowledge bundle — for a new project or an existing codebase, with or without a BMad install.
 
 :::note[Prerequisites]
 
-- BMad Method installed
-- Understanding of your project's technology stack and conventions
+- BMad Method installed — or nothing at all: the skill also runs standalone in any repo (it bootstraps its own mechanics script on first run)
   :::
 
-## When to Use This
+## When to use this
 
-- You have strong technical preferences before starting architecture
-- You've completed architecture and want to capture decisions for implementation
-- You're working on an existing codebase with established patterns
-- You notice agents making inconsistent decisions across stories
+- You're starting AI-assisted work in an existing codebase (this is the brownfield on-ramp)
+- You're starting a new project and want your stack, conventions, and constraints captured before implementation
+- Agents keep making decisions that don't match your project
+- Your context feels stale or bloated — run an audit
 
-## Step 1: Choose Your Approach
-
-**Manual creation** — Best when you know exactly what rules you want to document
-
-**Generate after architecture** — Best for capturing decisions made during solutioning
-
-**Generate for existing projects** — Best for discovering patterns in existing codebases
-
-## Step 2: Create the File
-
-### Option A: Manual Creation
-
-Create the file at `_bmad-output/project-context.md`:
+## Step 1: Run it
 
 ```bash
-mkdir -p _bmad-output
-touch _bmad-output/project-context.md
+bmad-project-context
 ```
 
-Add your technology stack and implementation rules:
+Say what you want in plain language — "set up project context", "refresh the context", "audit our context" — and the skill routes itself (ingest is the default). On first run it confirms where the context lives (your `project_knowledge` folder) and asks how agents should load it: through BMad customization arrays, through managed blocks in your `AGENTS.md` files, or both.
 
-```markdown
----
-project_name: 'MyProject'
-user_name: 'YourName'
-date: '2026-02-15'
-sections_completed: ['technology_stack', 'critical_rules']
----
+## Step 2: Answer only what the code can't
 
-# Project Context for AI Agents
+For an existing codebase the skill scans first — code, configs, planning docs, any docs folders — and then asks in short rounds: confirmations of what it inferred (with evidence, so a confirm takes seconds), then only the genuinely unknowable things — landmines, frozen areas, org requirements. It never asks a question the code could answer. Anything you bring from outside the repo (org handbooks, wiki exports, an MCP knowledgebase) gets mined the same way — mention it when asked what sources you have.
 
-## Technology Stack & Versions
+## Step 3: Review what exists
 
-- Node.js 20.x, TypeScript 5.3, React 18.2
-- State: Zustand
-- Testing: Vitest, Playwright
-- Styling: Tailwind CSS
+You get a kernel (`kernel.md`) that stays under its instruction budget and a bundle of small entries, each marked `verified` (you confirmed it) or `generated` (inferred, unconfirmed). The `index.md` is script-generated. Nothing describes what the code already says — if an entry does, the audit deletes it.
 
-## Critical Implementation Rules
+Keep it healthy over time:
 
-**TypeScript:**
+- **Refresh** after real change — it diffs against the last run and never re-asks what you already settled
+- **Audit** on demand — staleness sweep, path checks, and the pruning test; total size holds or shrinks
+- **Query** — other skills (and you) can ask questions answered from the bundle with trust metadata attached
 
-- Strict mode enabled, no `any` types
-- Use `interface` for public APIs, `type` for unions
+## Deprecated predecessors
 
-**Code Organization:**
+:::note[Looking for bmad-generate-project-context or bmad-document-project?]
+Both are deprecated and forward here — their trigger phrases still work. An existing `project-context.md` keeps loading for backwards compatibility and becomes a mining source on your next ingest.
+:::
 
-- Components in `/src/components/` with co-located tests
-- API calls use `apiClient` singleton — never fetch directly
+## Next steps
 
-**Testing:**
-
-- Unit tests focus on business logic
-- Integration tests use MSW for API mocking
-```
-
-### Option B: Generate After Architecture
-
-Run the workflow in a fresh chat:
-
-```bash
-bmad-generate-project-context
-```
-
-The workflow scans your architecture document and project files to generate a context file capturing the decisions made.
-
-### Option C: Generate for Existing Projects
-
-For existing projects, run:
-
-```bash
-bmad-generate-project-context
-```
-
-The workflow analyzes your codebase to identify conventions, then generates a context file you can review and refine.
-
-## Step 3: Verify Content
-
-Review the generated file and ensure it captures:
-
-- Correct technology versions
-- Your actual conventions (not generic best practices)
-- Rules that prevent common mistakes
-- Framework-specific patterns
-
-Edit manually to add anything missing or remove inaccuracies.
-
-## What You Get
-
-A `project-context.md` file that:
-
-- Ensures all agents follow the same conventions
-- Prevents inconsistent decisions across stories
-- Captures architecture decisions for implementation
-- Serves as a reference for your project's patterns and rules
-
-## Tips
-
-:::tip[Best Practices]
-
-- **Focus on the unobvious** — Document patterns agents might miss (e.g., "Use JSDoc on every public class"), not universal practices like "use meaningful variable names."
-- **Keep it lean** — This file is loaded by every implementation workflow. Long files waste context. Exclude content that only applies to narrow scope or specific stories.
-- **Update as needed** — Edit manually when patterns change, or re-generate after significant architecture changes.
-- Supports the same `bmad-build` loop whether work enters directly or after extensive planning.
-  :::
-
-## Next Steps
-
-- [**Project Context Explanation**](../explanation/project-context.md) — Learn more about how it works
-- [**Workflow Map**](../reference/workflow-map.md) — See which workflows load project context
+- [**Project Context Explanation**](../explanation/project-context.md) — the design and the evidence behind it
+- [**Workflow Map**](../reference/workflow-map.md) — where context fits in the method

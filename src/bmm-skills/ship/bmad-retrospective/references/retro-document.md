@@ -1,10 +1,10 @@
 # Finalize: Retrospective Document and Sprint Status
 
-Phase 5. Finalize the retrospective and update sprint tracking. Two writes: the retrospective document, and the `sprint-status.yaml` update.
+Phase 5. Finalize the retrospective and update sprint tracking. Two writes: the retrospective document, and the `sprint-status.yaml` update. Stories mode makes only the first.
 
 ## The retrospective document
 
-This document is the run's working artifact: it is created as a skeleton once the epic is fixed and filled as each phase completes, so Phase 5 finalizes rather than writes it from scratch. It lives at `{implementation_artifacts}/epic-{{epic_number}}-retro-{date}.md`, in `{document_output_language}`, as readable markdown; ensure `{implementation_artifacts}` exists.
+This document is the run's working artifact: it is created as a skeleton once the epic is fixed and filled as each phase completes, so Phase 5 finalizes rather than writes it from scratch. It lives at `{implementation_artifacts}/epic-{{epic_number}}-retro-{date}.md`, in `{document_output_language}`, as readable markdown; ensure `{implementation_artifacts}` exists. In stories mode it lives at `{spec-folder}/RETROSPECTIVE.md` instead — a fixed name, so a resumed run finds it — and carries the same frontmatter without `epic`, which the folder already names.
 
 Open the document with YAML frontmatter a machine can read without parsing the prose — an epic gate or orchestrator keys off `verdict` to decide whether to hold the next epic:
 

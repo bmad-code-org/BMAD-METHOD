@@ -54,8 +54,6 @@ Làm theo các lời nhắc của trình cài đặt, sau đó mở AI IDE của
 npx bmad-method install --directory /path/to/project --modules bmm --tools claude-code --yes
 ```
 
-[Xem toàn bộ tùy chọn cài đặt](https://docs.bmad-method.org/vi-vn/how-to/non-interactive-installation/)
-
 > **Chưa chắc nên làm gì?** Hãy hỏi `bmad-help` - nó sẽ cho bạn biết chính xác bước nào tiếp theo và bước nào là tùy chọn. Bạn cũng có thể hỏi kiểu như `bmad-help Tôi vừa hoàn thành phần kiến trúc, tiếp theo tôi cần làm gì?`
 
 ## Mô-đun

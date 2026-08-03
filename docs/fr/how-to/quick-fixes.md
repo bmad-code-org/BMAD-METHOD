@@ -2,7 +2,7 @@
 title: "Corrections Rapides"
 description: Comment effectuer des corrections rapides et des modifications ciblées
 sidebar:
-  order: 6
+  order: 5
 ---
 
 Les corrections de bugs, refactorisations et petites modifications ciblées peuvent entrer directement dans **Build** avec peu ou pas de planification amont. C’est le même workflow d’implémentation que pour les stories entièrement planifiées.

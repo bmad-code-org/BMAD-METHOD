@@ -28,7 +28,7 @@ Run these in order before the retrospective begins:
 1. **Resolve the workflow block.** Run `uv run --no-cache {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`. If it fails, resolve `{workflow.*}` yourself by reading `{skill-root}/customize.toml`, then `{project-root}/_bmad/custom/{skill-name}.toml`, then `.user.toml` in that order, merging base → team → user (scalars override, keyed arrays-of-tables merge by `code`/`id`, other arrays append).
 2. **Run prepend steps** — execute each entry in `{workflow.activation_steps_prepend}` in order.
 3. **Load persistent facts** — treat every `{workflow.persistent_facts}` entry as standing context. `file:` entries are paths/globs under `{project-root}` whose contents load as facts; all others are literal facts.
-4. **Load config** from `{project-root}/_bmad/bmm/config.yaml`: `project_name`, `user_name`, `communication_language`, `document_output_language`, `user_skill_level`, `planning_artifacts`, `implementation_artifacts`, and `date` (system datetime). Speak all output in `{communication_language}`; write all documents in `{document_output_language}`. Never state time estimates — AI has changed development speed, so hour/day/week predictions are noise.
+4. **Load config** from `{project-root}/_bmad/bmm/config.yaml`: `project_name`, `user_name`, `communication_language`, `document_output_language`, `user_skill_level`, `planning_artifacts`, `implementation_artifacts`, and `date` (system datetime), plus `output_folder` from `{project-root}/_bmad/core/config.yaml`. Speak all output in `{communication_language}`; write all documents in `{document_output_language}`. Never state time estimates — AI has changed development speed, so hour/day/week predictions are noise.
 5. **Greet and orient** (interactive only). Greet `{user_name}`, name the epic you are about to retro, and optionally invite their going-in concerns ("anything you want weighted — a story that felt rushed, a risky interaction between two stories?"). Use any answer to focus the Phase 1–2 analysis; it directs attention but never becomes a finding without a source.
 6. **Run append steps** — execute each entry in `{workflow.activation_steps_append}` in order.
 
@@ -37,10 +37,15 @@ Run these in order before the retrospective begins:
 | Input | Where | Use |
 |-------|-------|-----|
 | epic | invocation argument, or detected from sprint status | which epic to retro |
+| spec folder | invocation argument, or found under the spec roots | the stories-mode epic: `SPEC.md`, ordered `stories.yaml`, `stories/<id>-*.md` |
 | sprint status | `{implementation_artifacts}/sprint-status.yaml` | epic detection + final status update |
 | architecture / prd | `{planning_artifacts}/*architecture*`, `*prd*` | context for judging as-built vs intended |
 | previous retro (optional) | `{implementation_artifacts}/**/epic-{{prev}}-retro-*.md` | check whether last epic's actions landed |
 | session logs (optional) | conversation/session records for the epic's stories | process lessons; record the gap when absent |
+
+An epic reaches this skill in one of two shapes, and they are peers. **Sprint mode** reads `sprint-status.yaml`. **Stories mode** reads a spec folder holding `SPEC.md`, an ordered `stories.yaml`, and `stories/<id>-*.md` artifacts — the shape an unattended run leaves behind. Resolve which applies first: a named folder is stories mode whether or not sprint status exists; a named epic number is sprint mode; with neither, use sprint mode when `sprint-status.yaml` exists, and otherwise look for spec folders under `{output_folder}/specs`, `{planning_artifacts}`, and `{implementation_artifacts}`. Ask the user which to retro when there is more than one, and never choose silently; headless, stop and require an explicit folder.
+
+In stories mode, `stories.yaml` in list order is the story list — list order is authoritative, filename sort is not — and each story's `stories/<id>-*.md` frontmatter carries its `status`. `pending_stories` is the ids whose status is not `done`; apply the same completeness gate as below. Then skip to Phase 1: do not read or write sprint status for the rest of the run. The rest of this section is sprint mode.
 
 Determine the epic and its unfinished-story list from `sprint_status.py detect-epic` whenever `{implementation_artifacts}/sprint-status.yaml` is available:
 
@@ -55,7 +60,7 @@ Then check the epic is actually finished before Phase 1. A successful detect car
 
 The retrospective document is the working artifact, not only the final output. Once the epic is fixed, create it as a skeleton (`references/retro-document.md` names the sections) and write each phase's result into it as you finish — inventory, then findings with sources, then dispositions and verdict. Continuity is re-reading the file.
 
-If a retrospective document for this epic already exists, load it, reconcile its recorded state against the current evidence — the current evidence wins, since commits may have landed and questions may have been answered since — and resume at the first incomplete phase instead of redoing finished ones.
+If a retrospective document for this epic already exists, load it, reconcile its recorded state against the current evidence — the current evidence wins, since commits may have landed and questions may have been answered since — and resume at the first incomplete phase instead of redoing finished ones. In stories mode that document is `{spec-folder}/RETROSPECTIVE.md`, a fixed name so a resumed run finds it; sprint mode keeps its dated `{implementation_artifacts}` filename.
 
 ## Flow
 
@@ -86,4 +91,4 @@ Skip by default; never runs headless. When the user asks to "discuss it as a tea
 
 ### Phase 5 — Finalize
 
-Finalize the retrospective document and update sprint status. Load `references/retro-document.md` for the document's sections and the exact `sprint_status.py update` invocation that marks the retro key `done`, appends the action items, and validates the write. Where the Phase 4 follow-through has evidence a *previous* epic's action item landed, offer `--set-action-status` and pass only the transitions the user confirms — the evidence justifies proposing a transition, and only the user's confirmation justifies writing it; a headless run records the transitions it would have proposed and does not pass the flag at all. Then, if `{workflow.on_complete}` is non-empty, follow it as the final instruction.
+Finalize the retrospective document and update sprint status. Load `references/retro-document.md` for the document's sections and the exact `sprint_status.py update` invocation that marks the retro key `done`, appends the action items, and validates the write. Where the Phase 4 follow-through has evidence a *previous* epic's action item landed, offer `--set-action-status` and pass only the transitions the user confirms — the evidence justifies proposing a transition, and only the user's confirmation justifies writing it; a headless run records the transitions it would have proposed and does not pass the flag at all. In stories mode, finalize `{spec-folder}/RETROSPECTIVE.md` and stop there: no `sprint_status.py` call, no sprint-status file created, and no edits to `SPEC.md`, `stories.yaml`, or any story artifact. Then, if `{workflow.on_complete}` is non-empty, follow it as the final instruction.

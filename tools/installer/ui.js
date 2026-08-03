@@ -808,11 +808,15 @@ class UI {
 
     const configCollector = new OfficialModules({ channelOptions: options.channelOptions });
 
-    const hasCoreCliOptions = options.userName || options.communicationLanguage || options.documentOutputLanguage || options.outputFolder;
+    const hasCoreCliOptions =
+      options.userName || options.communicationLanguage || options.documentOutputLanguage || options.outputFolder || setOverrides.core;
 
-    // Seed core config from CLI options if provided
+    // Seed core config from CLI options if provided. `--set core.<key>` seeds it
+    // too: core values are dependency-bearing — module artifact paths are built
+    // from output_folder here, and each module's config.yaml snapshots the core
+    // values — so the post-install patch alone lands too late.
     if (hasCoreCliOptions) {
-      const coreConfig = {};
+      const coreConfig = { ...setOverrides.core };
       if (options.userName) {
         coreConfig.user_name = options.userName;
         await prompts.log.info(`Using user name from command-line: ${options.userName}`);

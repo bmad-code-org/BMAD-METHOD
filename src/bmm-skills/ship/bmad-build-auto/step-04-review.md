@@ -86,14 +86,11 @@ Write the following details to `{spec_file}` under `## Auto Run Result`:
 
 Set `{spec_file}` frontmatter `followup_review_recommended` from the computation above.
 
-If version control is unavailable, set `{spec_file}` frontmatter `final_revision: NO_VCS` and `status: done`, then proceed to HALT.
+If version control is unavailable, set `{spec_file}` frontmatter `status: done`, then proceed to HALT.
 
-If version control is available:
+If version control is available, write `status: done` into `{spec_file}` frontmatter, then:
 
-1. Commit any reviewed-diff files that remain uncommitted. Keep commits already created during this run. Verify every reviewed-diff file appears in the change set after `{baseline_revision}` and none remains uncommitted. Do not push.
-2. Obtain the current full canonical revision directly from version control and preserve it verbatim as `{final_revision}`.
-3. Write `{final_revision}` and `status: done` into `{spec_file}` frontmatter.
-4. If `{spec_file}` is tracked in that working copy, commit only `{spec_file}` as a spec-finalization commit. Keep `{final_revision}` unchanged. Otherwise leave the finalized spec in place; do not create a substitute artifact.
-5. Verify the version-controlled working copy is clean. Otherwise HALT with status `blocked` and blocking condition `finalization left repository dirty`.
+1. Commit any reviewed-diff files that remain uncommitted, including `{spec_file}` when it is tracked in that working copy. Keep commits already created during this run. Verify every reviewed-diff file appears in the change set after `{baseline_revision}` and none remains uncommitted. Do not push.
+2. Verify the version-controlled working copy is clean. Otherwise HALT with status `blocked` and blocking condition `finalization left repository dirty`.
 
 HALT with status `done`.

@@ -2,7 +2,7 @@
 title: 'Cài đặt module tùy chỉnh và module cộng đồng'
 description: Cài các module bên thứ ba từ kho cộng đồng (community registry), kho Git hoặc đường dẫn cục bộ
 sidebar:
-  order: 3
+  order: 2
 ---
 
 Sử dụng trình cài đặt BMad để thêm module từ kho cộng đồng (community registry), kho Git của bên thứ ba hoặc đường dẫn file cục bộ.
