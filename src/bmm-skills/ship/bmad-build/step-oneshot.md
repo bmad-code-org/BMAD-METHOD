@@ -21,7 +21,7 @@ Execute these review layers in parallel wherever their execution methods allow. 
 
 {workflow.oneshot_review_layers}
 
-If a layer's instruction requires subagents and none are available, for each such layer read its reviewer instruction file, write a self-contained prompt under `{{.implementation_artifacts}}` (full instruction body + `## REVIEW TARGET` with the review content — not a path-only pointer), then HALT. Ask the human to run each in a separate session and paste back the findings. This is the only allowed parent-side read of a reviewer instruction file.
+If a layer's instruction requires subagents and none are available, for each such layer write under `{{.implementation_artifacts}}` the exact child prompt from that layer's instruction after placeholder substitution (not a path-only pointer), then HALT. Ask the human to run each in a separate session and paste back the findings.
 
 ### Classify
 
