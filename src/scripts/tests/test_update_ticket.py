@@ -6,6 +6,8 @@
 """Tests for update_ticket.py — run: uv run python -m unittest discover -s scripts/tests"""
 
 import json
+import os
+import stat
 import subprocess
 import sys
 import tempfile
@@ -57,7 +59,12 @@ created: 2026-08-01
 def run(*args):
     proc = subprocess.run([sys.executable, str(SCRIPT), *args],
                           capture_output=True, text=True)
-    return proc.returncode, json.loads(proc.stdout)
+    try:
+        return proc.returncode, json.loads(proc.stdout)
+    except json.JSONDecodeError:
+        raise AssertionError(
+            f"non-JSON output (exit {proc.returncode})\n"
+            f"stdout: {proc.stdout!r}\nstderr: {proc.stderr!r}")
 
 
 class UpdateTicketTests(unittest.TestCase):
@@ -170,6 +177,28 @@ class UpdateTicketTests(unittest.TestCase):
         code, out = run("--path", str(bad), "--set", "status=in-progress")
         self.assertEqual(code, 1)
         self.assertIn("unterminated", out["error"])
+
+    def test_file_mode_preserved_across_update(self):
+        os.chmod(self.story, 0o644)
+        code, out = run("--path", str(self.story), "--set", "status=in-progress")
+        self.assertEqual(code, 0)
+        self.assertEqual(stat.S_IMODE(os.stat(self.story).st_mode), 0o644)
+
+    def test_risky_string_value_is_quoted(self):
+        code, out = run("--path", str(self.bug),
+                        "--set", "discovered_from=see: ALRT-3 [maybe]")
+        self.assertEqual(code, 0)
+        self.assertIn('discovered_from: "see: ALRT-3 [maybe]"', self.bug.read_text())
+
+    def test_archived_tickets_are_not_updatable_by_id(self):
+        arch = self.root / ".archive" / "2026-08-01-old"
+        arch.mkdir(parents=True)
+        (arch / "ALRT-70-old.md").write_text(
+            STORY.replace("id: ALRT-12", "id: ALRT-70"), encoding="utf-8")
+        code, out = run("--root", str(self.root), "--id", "ALRT-70",
+                        "--set", "status=in-progress")
+        self.assertEqual(code, 1)
+        self.assertIn("not found", out["error"])
 
     def test_immutable_fields(self):
         for spec in ("id=ALRT-99", "type=task", "created=2026-01-01", "schema=2"):

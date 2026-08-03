@@ -30,7 +30,12 @@ def ticket(tid, ttype, title, status="backlog", deps="[]", covers="[]", extra=""
 def run(*args):
     proc = subprocess.run([sys.executable, str(SCRIPT), *args],
                           capture_output=True, text=True)
-    return proc.returncode, json.loads(proc.stdout)
+    try:
+        return proc.returncode, json.loads(proc.stdout)
+    except json.JSONDecodeError:
+        raise AssertionError(
+            f"non-JSON output (exit {proc.returncode})\n"
+            f"stdout: {proc.stdout!r}\nstderr: {proc.stderr!r}")
 
 
 class TicketTreeTests(unittest.TestCase):
@@ -230,6 +235,23 @@ class TicketTreeTests(unittest.TestCase):
         self.assertEqual(code, 1)
         msgs = " | ".join(e["error"] for e in out["errors"])
         self.assertIn("no epic ticket.md", msgs)
+
+    def test_zero_indent_block_list_parses(self):
+        # YAML allows block-sequence items at zero indent — the parser must too.
+        (self.root / "ALRT-54-zeroindent.md").write_text(
+            ticket("ALRT-54", "task", "Zero indent").replace(
+                "depends_on: []", "depends_on:\n- ALRT-13"))
+        code, out = run("board", "--root", str(self.root))
+        blocked = {b["id"]: b["waiting_on"] for b in out["blocked"]}
+        self.assertEqual(blocked["ALRT-54"], ["ALRT-13"])
+
+    def test_validate_flags_unknown_type(self):
+        (self.root / "ALRT-55-badtype.md").write_text(
+            ticket("ALRT-55", "task", "Bad type").replace("type: task", "type: storyy"))
+        code, out = run("validate", "--root", str(self.root))
+        self.assertEqual(code, 1)
+        self.assertIn("type must be epic or one of",
+                      " | ".join(e["error"] for e in out["errors"]))
 
     def test_scalar_dep_is_not_iterated_charwise(self):
         (self.root / "ALRT-53-scalar.md").write_text(

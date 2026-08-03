@@ -79,8 +79,8 @@ def parse_frontmatter(text):
             if rest == "":
                 items = []
                 j = i + 1
-                while j < len(lines) and re.match(r"^\s+-\s+", lines[j]):
-                    items.append(parse_scalar(re.sub(r"^\s+-\s+", "", lines[j])))
+                while j < len(lines) and re.match(r"^\s*-\s+", lines[j]):
+                    items.append(parse_scalar(re.sub(r"^\s*-\s+", "", lines[j])))
                     j += 1
                 if j > i + 1:
                     fm[key] = items
@@ -210,6 +210,11 @@ def atomic_write(path, content):
     try:
         with os.fdopen(fd, "w", encoding="utf-8", newline="") as f:
             f.write(content)
+            f.flush()
+            os.fsync(f.fileno())
+        # mkstemp creates 0600; keep the target's mode (0644 for new files)
+        # so a rewrite never tightens permissions on collaborators.
+        os.chmod(tmp, path.stat().st_mode if path.exists() else 0o644)
         os.replace(tmp, path)
     except BaseException:
         if os.path.exists(tmp):
@@ -242,7 +247,8 @@ def write_index(root, key):
         pad = "  " * depth
         desc = t.get("description")
         tail = f" - {desc}" if desc else ""
-        lines = [f"{pad}* [{t.get('title', t['id'])}]({t['_rel']}){tail}"]
+        href = t["_rel"].replace(" ", "%20").replace("(", "%28").replace(")", "%29")
+        lines = [f"{pad}* [{t.get('title', t['id'])}]({href}){tail}"]
         if t["type"] == "epic":
             for k in sorted(children_of(t, tickets), key=lambda x: id_num(x["id"])):
                 lines.extend(entry_lines(k, depth + 1))
@@ -474,12 +480,13 @@ def _rewrite_depends_on(path, new_deps):
     """Replace a ticket's depends_on entry (inline or block form) with an
     inline list. Only used by archive to drop satisfied edges."""
     lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
+    close = next((i for i in range(1, len(lines)) if lines[i].strip() == "---"), len(lines))
     new_line = "depends_on: [" + ", ".join(str(d) for d in new_deps) + "]\n"
-    for i, line in enumerate(lines):
-        if re.match(r"^depends_on:", line):
+    for i in range(1, close):  # frontmatter only — a body line never matches
+        if re.match(r"^depends_on:", lines[i]):
             j = i + 1
-            if line.split(":", 1)[1].strip() == "":
-                while j < len(lines) and re.match(r"^\s+-\s+", lines[j]):
+            if lines[i].split(":", 1)[1].strip() == "":
+                while j < close and re.match(r"^\s*-\s+", lines[j]):
                     j += 1
             lines[i:j] = [new_line]
             break
@@ -599,6 +606,8 @@ def cmd_validate(root, args):
             if t["_path"].parent != root and t["_path"].parent not in epic_dirs:
                 err(t, "leaf sits in a folder with no epic ticket.md — invisible to "
                        "index and board; move it to the bin or an epic folder")
+        if t["type"] != "epic" and t["type"] not in LEAF_TYPES:
+            err(t, f"type must be epic or one of {sorted(LEAF_TYPES)}: {t['type']!r}")
         if not isinstance(t.get("schema"), int):
             err(t, "schema must be an integer")
         title = t.get("title")

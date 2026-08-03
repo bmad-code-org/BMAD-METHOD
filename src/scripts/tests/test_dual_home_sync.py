@@ -29,11 +29,14 @@ class DualHomeSyncTests(unittest.TestCase):
         canonical = src / "scripts"
         bundled = src / "bmm-skills" / "plan" / "bmad-ticket" / "scripts"
         for name in SCRIPTS:
-            a, b = canonical / name, bundled / name
-            if not (a.is_file() and b.is_file()):
-                self.skipTest(f"{name} missing from one home")
-            self.assertEqual(a.read_bytes(), b.read_bytes(),
-                             f"{name} has drifted between src/scripts and the bundled copy")
+            with self.subTest(script=name):
+                a, b = canonical / name, bundled / name
+                # Once the src root resolves, both homes exist — a missing
+                # copy is drift, not a layout difference.
+                self.assertTrue(a.is_file(), f"{name} missing from src/scripts")
+                self.assertTrue(b.is_file(), f"{name} missing from the bundled copy")
+                self.assertEqual(a.read_bytes(), b.read_bytes(),
+                                 f"{name} has drifted between src/scripts and the bundled copy")
 
 
 if __name__ == "__main__":

@@ -125,8 +125,8 @@ def parse_frontmatter(lines):
         if rest == "":
             items = []
             j = i + 1
-            while j < close and re.match(r"^\s+-\s+", lines[j]):
-                items.append(parse_scalar(re.sub(r"^\s+-\s+", "", lines[j].rstrip("\n"))))
+            while j < close and re.match(r"^\s*-\s+", lines[j]):
+                items.append(parse_scalar(re.sub(r"^\s*-\s+", "", lines[j].rstrip("\n"))))
                 j += 1
             entries.append({"key": key, "value": items, "start": start, "end": j})
             i = j
@@ -147,9 +147,10 @@ def render(key, value):
     if key in QUOTED_FIELDS:
         escaped = str(value).replace('"', '\\"')
         return f'{key}: "{escaped}"\n'
-    if key in PLAIN_STR_FIELDS and value == "":
-        return f'{key}: ""\n'
-    return f"{key}: {value}\n"
+    s = str(value)
+    if (key in PLAIN_STR_FIELDS and s == "") or re.search(r'[:#\[\]{}"\']', s) or s != s.strip():
+        return f'{key}: "{s.replace(chr(34), chr(92) + chr(34))}"\n'
+    return f"{key}: {s}\n"
 
 
 def coerce(field, raw, ticket_type):
@@ -182,6 +183,8 @@ def collect_tree(root):
     for p in sorted(root.rglob("*.md")):
         if p.name == "index.md":
             continue
+        if any(part.startswith(".") for part in p.relative_to(root).parts):
+            continue  # dot folders (.archive/, .git/) are not the live tree
         try:
             lines = p.read_text(encoding="utf-8").splitlines(keepends=True)
             entries, _ = parse_frontmatter(lines)
@@ -250,7 +253,9 @@ def main():
         args.transitions = ",".join(str(t) for t in cfg_transitions)
     hitl_threshold = args.hitl_threshold
     if hitl_threshold is None:
-        hitl_threshold = cfg.get("hitl_threshold", DEFAULT_HITL_THRESHOLD)
+        ht = cfg.get("hitl_threshold", DEFAULT_HITL_THRESHOLD)
+        hitl_threshold = ht if isinstance(ht, int) and not isinstance(ht, bool) \
+            else DEFAULT_HITL_THRESHOLD
 
     tree_ids, tree_deps = None, None
     if args.path:
@@ -381,6 +386,10 @@ def main():
         try:
             with os.fdopen(fd, "w", encoding="utf-8", newline="") as f:
                 f.write("".join(new_lines))
+                f.flush()
+                os.fsync(f.fileno())
+            # mkstemp creates 0600; keep the ticket's own mode.
+            os.chmod(tmp, path.stat().st_mode)
             os.replace(tmp, path)
         except BaseException:
             if os.path.exists(tmp):
@@ -396,4 +405,9 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except SystemExit:
+        raise
+    except Exception as e:  # keep the JSON output contract on fs/encoding errors
+        fail(f"{e.__class__.__name__}: {e}")
