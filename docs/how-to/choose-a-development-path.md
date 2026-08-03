@@ -8,6 +8,12 @@ sidebar:
 Use this guide to choose the smallest amount of BMad that safely fits your
 software change.
 
+![The BMad loop lets vague notions enter at Clarify, clear ideas at Plan, and small changes at Build; Learn feeds back to Plan](../images/bmad-delivery-loop.svg)
+
+Every path uses the same delivery loop. Larger work adds shared context around
+the loop and repeats its implementation unit; it does not switch to a separate
+delivery system.
+
 ## When to Use This
 
 - Before starting a change when you are unsure how much planning it needs
@@ -42,6 +48,8 @@ change may need more structure than a much larger routine update.
 | One-session work   | One coherent intent fits an implementation session                                      | `bmad-build`                                       |
 | Epic-sized work    | One coherent outcome needs several implementation sessions                              | `bmad-spec`, then Story Breakdown                  |
 | Project-sized work | The work spans several epics or likely needs roughly 20 or more implementation sessions | The [full BMad flow](../reference/workflow-map.md) |
+
+![Four nested paths reuse the same unit: edit directly, run one Build, repeat Build across an epic, or repeat epic paths across a project](../images/development-paths.svg)
 
 If a tiny change would benefit from explicit planning and review, use
 `bmad-build` even though you could edit it directly.
