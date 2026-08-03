@@ -606,13 +606,17 @@ function resolveDirectoryInput(input, options = {}) {
  * Directory prompt.
  *
  * A plain text entry: what is on the input line is what gets submitted,
- * resolved to an absolute path. An empty line accepts the default (the
- * current working directory), which is where installs usually run from.
+ * resolved to an absolute path.
+ *
+ * The line is pre-filled with the default (the current working directory,
+ * which is where installs usually run from) as real editable text rather than
+ * a placeholder, so it can be edited down or extended instead of retyped.
+ * Clearing it and pressing Enter still accepts the default.
  *
  * @param {Object} options - Prompt options
  * @param {string} options.message - Prompt message
- * @param {string} [options.default] - Default directory, used when the line is empty
- * @param {string} [options.placeholder] - Placeholder text
+ * @param {string} [options.default] - Default directory, pre-filled on the input line
+ * @param {string} [options.placeholder] - Placeholder shown only if the line is cleared
  * @param {Function} [options.validate] - Sync validation function
  * @param {Object} [options.input] - Input stream (defaults to process.stdin; tests inject)
  * @param {Object} [options.output] - Output stream (defaults to process.stdout; tests inject)
@@ -625,6 +629,7 @@ async function directory(options) {
   const prompt = new core.TextPrompt({
     ...(options.input ? { input: options.input } : {}),
     ...(options.output ? { output: options.output } : {}),
+    initialValue: options.default,
     defaultValue: options.default,
     validate: options.validate,
     render() {

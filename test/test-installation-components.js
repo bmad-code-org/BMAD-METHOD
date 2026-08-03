@@ -3908,6 +3908,8 @@ async function runTests() {
         tab: '\t',
         shiftTab: ESC51 + '[Z',
         backspace: String.fromCodePoint(127),
+        // ctrl+u — clears the pre-filled default so a script can type its own path
+        clear: String.fromCodePoint(21),
       };
       const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -3936,30 +3938,45 @@ async function runTests() {
       return pending;
     };
 
-    const typed51 = await drivePrompt([`type:${parent51}`]);
+    // The line arrives pre-filled with the default, so Enter alone accepts it
+    // and appending extends it — no retyping to install one level down.
+    const untouched51 = await drivePrompt([]);
+    assert(untouched51 === root51, 'the input line is pre-filled with the default directory');
+
+    const extended51 = await drivePrompt(['type:/workspace']);
+    assert(extended51 === parent51, 'typing extends the pre-filled path instead of replacing it');
+
+    const trimmed51 = await drivePrompt(Array.from({ length: path.basename(root51).length + 1 }, () => 'backspace'));
+    assert(trimmed51 === path.dirname(root51), 'backspacing trims the pre-filled path');
+
+    const typed51 = await drivePrompt(['clear', `type:${parent51}`]);
     assert(typed51 === parent51, 'typed path is returned verbatim');
+
+    const cleared51 = await drivePrompt(['clear']);
+    assert(cleared51 === root51, 'clearing the line and pressing enter still accepts the default');
 
     // The original defect: a directory prompt that returned something other
     // than the text on screen. No navigation key may move the value.
     for (const key of ['down', 'up', 'tab', 'shiftTab']) {
-      const pressed51 = await drivePrompt([`type:${parent51}`, key]);
+      const pressed51 = await drivePrompt(['clear', `type:${parent51}`, key]);
       assert(pressed51 === parent51, `${key} does not change the typed path`);
     }
 
     // Editing mid-line must not splice text into the value.
-    const cursorEdited51 = await drivePrompt([`type:${parent51}`, 'left', 'left', 'left', 'down', 'up']);
+    const cursorEdited51 = await drivePrompt(['clear', `type:${parent51}`, 'left', 'left', 'left', 'down', 'up']);
     assert(cursorEdited51 === parent51, 'moving the cursor and pressing arrows leaves the typed path intact');
 
-    const backspaced51 = await drivePrompt([`type:${path.join(parent51, 'rep')}`, ...Array.from({ length: 4 }, () => 'backspace')]);
+    const backspaced51 = await drivePrompt([
+      'clear',
+      `type:${path.join(parent51, 'rep')}`,
+      ...Array.from({ length: 4 }, () => 'backspace'),
+    ]);
     assert(backspaced51 === parent51, 'backspacing back to the parent returns the parent, not a child');
 
-    const empty51 = await drivePrompt([]);
-    assert(empty51 === root51, 'empty input falls back to the default directory');
-
-    const relative51 = await drivePrompt(['type:~']);
+    const relative51 = await drivePrompt(['clear', 'type:~']);
     assert(relative51 === os.homedir(), 'tilde input expands to the home directory');
 
-    const created51 = await drivePrompt([`type:${path.join(parent51, 'brand-new')}`]);
+    const created51 = await drivePrompt(['clear', `type:${path.join(parent51, 'brand-new')}`]);
     assert(created51 === path.join(parent51, 'brand-new'), 'a not-yet-created path is returned as typed');
 
     // The prompt is a bare text entry: no candidate list, no key hints.
@@ -3982,7 +3999,7 @@ async function runTests() {
       validate: () => {},
     });
     await new Promise((resolve) => setTimeout(resolve, 120));
-    for (const char of parent51) renderProbe51.write(char);
+    for (const char of '/workspace') renderProbe51.write(char);
     await new Promise((resolve) => setTimeout(resolve, 120));
     renderProbe51.write('\r');
     await renderPending51;
