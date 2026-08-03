@@ -1,0 +1,7 @@
+{
+  "name": "@nimbus/web",
+  "scripts": {
+    "dev": "vite",
+    "test": "vitest run"
+  }
+}

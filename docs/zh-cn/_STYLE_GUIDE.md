@@ -148,7 +148,7 @@ your-project/
 | --- | --- |
 | **Index/Landing** | `core-concepts/index.md` |
 | **Concept** | `what-are-agents.md` |
-| **Feature** | `quick-dev.md` |
+| **Feature** | `build.md` |
 | **Philosophy** | `why-solutioning-matters.md` |
 | **FAQ** | `established-projects-faq.md` |
 
@@ -324,7 +324,7 @@ Starlight 右侧 “On this page” 来自标题层级：
 
 在定义开头用斜体标记适用范围：
 
-- `*Quick Flow only.*`
+- `*Direct-entry implementation only.*`
 - `*BMad Method/Enterprise.*`
 - `*Phase N.*`
 - `*BMGD.*`
@@ -349,7 +349,7 @@ Starlight 右侧 “On this page” 来自标题层级：
 
 ### Do I always need architecture?
 
-Only for BMad Method and Enterprise tracks. Quick Flow skips to implementation.
+Only for work that benefits from architecture. Clear work can enter implementation directly.
 
 ### Can I change my plan later?
 

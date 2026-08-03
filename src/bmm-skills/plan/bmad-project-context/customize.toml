@@ -1,0 +1,25 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# Workflow customization surface for bmad-project-context.
+# Team overrides:     {project-root}/_bmad/custom/bmad-project-context.toml
+# Personal overrides: {project-root}/_bmad/custom/bmad-project-context.user.toml
+#
+# Merge rules: scalars override (last layer wins); arrays append.
+
+[workflow]
+
+# --- Universal defaults ---
+activation_steps_prepend = []
+activation_steps_append = []
+# Deliberately empty: the file this skill wants standing (the kernel) is only
+# knowable after config resolves, and the usual **/project-context.md glob is
+# this skill's own superseded output. Users append their own facts.
+persistent_facts = []
+on_complete = ""
+
+# Standing outside-the-repo sources fed into every ingest fan-out at their
+# trust-ladder rank (untrusted until verified against code). Append-only.
+# Entries: "file:{project-root}/..." or "file:/abs/path" for docs,
+# "skill:name" to consult a skill, plain text for a standing fact,
+# "tool:name" for an MCP knowledgebase.
+external_sources = []

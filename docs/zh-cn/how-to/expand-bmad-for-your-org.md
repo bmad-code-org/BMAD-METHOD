@@ -2,7 +2,7 @@
 title: "如何为组织扩展 BMad"
 description: 五个自定义方案，无需 fork 即可重塑 BMad——涵盖智能体全局规则、工作流约定、外部发布、模板替换和花名册变更
 sidebar:
-  order: 10
+  order: 9
 ---
 
 BMad 的自定义机制让组织无需编辑已安装文件或 fork 技能就能重塑行为。本指南介绍五个方案，覆盖大部分企业级需求。
@@ -41,8 +41,8 @@ BMad 的自定义机制让组织无需编辑已安装文件或 fork 技能就能
 
 [agent]
 
-# 每次激活时加载。传递到 dev-story、quick-dev、
-# create-story、code-review、qa-generate——Amelia 分发的每个技能。
+# 每次激活时加载。传递到 build、code-review、
+# qa-generate——Amelia 分发的每个技能。
 persistent_facts = [
   "For any library documentation lookup (React, TypeScript, Zod, Prisma, etc.), call the context7 MCP tool (`mcp__context7__resolve_library_id` then `mcp__context7__get_library_docs`) before relying on training-data knowledge. Up-to-date docs trump memorized APIs.",
   "When a story reference isn't found in {planning_artifacts}/epics-and-stories.md, search Linear via `mcp__linear__search_issues` using the story ID or title before asking the user to clarify. If Linear returns a match, treat it as the authoritative story source.",

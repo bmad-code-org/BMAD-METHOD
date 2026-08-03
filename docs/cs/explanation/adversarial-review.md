@@ -1,38 +1,39 @@
 ---
 title: "Adversariální revize"
-description: Technika vynuceného uvažování, která zabraňuje líným „vypadá dobře“ revizím
+description: Vynucený seznam nálezů místo líného „vypadá dobře“
 sidebar:
   order: 7
 ---
 
-Vynuťte hlubší analýzu tím, že budete vyžadovat nalezení problémů.
+Vynuťte hlubší analýzu povinností najít skutečné problémy — ne cynickou personou.
 
 ## Co je adversariální revize?
 
-Technika revize, kde recenzent *musí* najít problémy. Žádné „vypadá dobře“ není povoleno. Recenzent zaujme cynický postoj — předpokládá, že problémy existují, a hledá je.
+Technika, kde recenzent musí produkovat nálezy. „Vypadá dobře“ s prázdným seznamem není dovoleno.
 
-Nejde o negativismus. Jde o vynucení skutečné analýzy místo povrchního pohledu, který automaticky schválí cokoli, co bylo předloženo.
+Mechanismus je **spodní hranice nálezů** (alespoň deset věcí k opravě nebo zlepšení) a explicitní tlak hledat **co chybí**, nejen co je špatně. Pokud je obsah prázdný, zastavte se. Pokud je seznam prázdný, zkontrolujte znovu — nekončete s ničím.
 
-**Základní pravidlo:** Musíte najít problémy. Nulové nálezy spouštějí zastavení — analyzujte znovu nebo vysvětlete proč.
+Nejde o hostilitu. Starší prompty používaly unavenou personu; na dnešních modelech to nemění, co se najde. Stále platí povinnost hledat dál a preferovat opomenutí před zběžným průchodem.
 
 ## Proč to funguje
 
-Běžné revize trpí konfirmačním zkreslením. Proletíte práci, nic nevyskočí, schválíte to. Mandát „najít problémy“ tento vzor rozbíjí:
+Běžné revize trpí konfirmačním biasem. Přelétnete práci, nic nevyskočí, schválíte. Hranice to láme:
 
-- **Vynucuje důkladnost** — Nemůžete schválit, dokud jste nehledali dostatečně pečlivě
-- **Zachytí chybějící věci** — „Co zde není?“ se stává přirozenou otázkou
-- **Zlepšuje kvalitu signálu** — Nálezy jsou konkrétní a akční, ne vágní obavy
-- **Informační asymetrie** — Provádějte revize s čerstvým kontextem (bez přístupu k původnímu uvažování), abyste hodnotili artefakt, ne záměr
+- **Nutí důkladnost** — nelze skončit, dokud není dost konkrétních nálezů
+- **Chytá chybějící věci** — „co tu není?“ je součást práce
+- **Krmí triage, ne uživatele přímo** — v build a code-review rodičovská session filtruje šum; lovec má recall, ne finální verdikt
+- **Informační asymetrie** — lovci často běží s čerstvým kontextem změny
 
 ## Kde se používá
 
-Adversariální revize se objevuje v celém BMad workflow — revize kódu, kontroly připravenosti implementace, validace specifikací a další. Někdy je to povinný krok, někdy volitelný (jako pokročilá elicitace nebo party mode). Vzor se přizpůsobí jakémukoli artefaktu, který potřebuje kontrolu.
+- **bmad-build / bmad-build-auto / bmad-code-review** — vrstva Blind Hunter: krátký inline prompt, obsah pod `CONTENT:`, paralelně s dalšími vrstvami, pak triage
+- **bmad-review** — adversariální čočka v multi-lens revizi (stejná metoda; kanonická pole nálezů pro sloučení)
 
-## Vyžadováno lidské filtrování
+## Filtrování člověkem (nebo rodičem)
 
-Protože AI je *instruována* najít problémy, najde problémy — i když neexistují. Očekávejte falešné pozitivy: malichernosti převlečené za problémy, nepochopení záměru nebo přímo vymyšlené obavy.
+Protože model má naplnit seznam, vyprodukuje i tenké, starší nebo chybné body. Falešné pozitivy se očekávají.
 
-**Vy rozhodujete, co je skutečné.** Zkontrolujte každý nález, odmítněte šum, opravte to, na čem záleží.
+**Triage rozhoduje, co je skutečné.** V agentních tocích to je rodičovský workflow. V samostatné revizi jste to vy.
 
 ## Příklad
 
@@ -40,20 +41,15 @@ Místo:
 
 > „Implementace autentizace vypadá rozumně. Schváleno.“
 
-Adversariální revize produkuje:
+Adversariální průchod vyprodukuje seznam, např.:
 
-> 1. **VYSOKÁ** — `login.ts:47` — Žádné omezení rychlosti neúspěšných pokusů
-> 2. **VYSOKÁ** — Session token uložen v localStorage (zranitelný vůči XSS)
-> 3. **STŘEDNÍ** — Validace hesla probíhá pouze na straně klienta
-> 4. **STŘEDNÍ** — Žádné auditní logování neúspěšných pokusů o přihlášení
-> 5. **NÍZKÁ** — Magické číslo `3600` by mělo být `SESSION_TIMEOUT_SECONDS`
-
-První revize mohla přehlédnout bezpečnostní zranitelnost. Druhá zachytila čtyři.
+> 1. `login.ts:47` — žádný rate limiting při neúspěšných pokusech  
+> … (alespoň deset konkrétních bodů)
 
 ## Iterace a klesající výnosy
 
-Po řešení nálezů zvažte opětovné spuštění. Druhý průchod obvykle zachytí více. Třetí také není vždy zbytečný. Ale každý průchod zabere čas a nakonec dosáhnete klesajících výnosů — jen malichernosti a falešné nálezy.
+Po opravách další průchod ještě pomůže. Každý průchod stojí čas; nakonec zbývají jen nitky a falešné nálezy. Downstream triage a rozpočet smyček (v build) brání nekonečnému běhu.
 
 :::tip[Lepší revize]
-Předpokládejte, že problémy existují. Hledejte, co chybí, ne jen co je špatně.
+Hledejte, co chybí, nejen co je špatně. Hledejte, dokud je seznam skutečný — pak ho ať triage zkrátí.
 :::

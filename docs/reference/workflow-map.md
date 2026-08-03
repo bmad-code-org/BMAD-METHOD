@@ -62,7 +62,7 @@ Define what to build and for whom.
 :::
 
 :::note[`bmad-spec`]
-`bmad-spec` produces the canonical machine contract: a five-field kernel (Why, Capabilities, Constraints, Non-goals, Success signal) plus companion files, validated so every load-bearing source claim is preserved. It is the only writer of `SPEC.md`; other skills invoke it headless when they need to express or update intent. On request it can also break a spec into an ordered `stories.yaml` for autonomous dispatch — see [Autonomous Development Loops](./dev-auto.md).
+`bmad-spec` produces the canonical machine contract: a five-field kernel (Why, Capabilities, Constraints, Non-goals, Success signal) plus companion files, validated so every load-bearing source claim is preserved. It is the only writer of `SPEC.md`; other skills invoke it headless when they need to express or update intent. On request it can also break a spec into an ordered `stories.yaml` for autonomous dispatch — see [Autonomous Development Loops](./build-auto.md).
 :::
 
 :::tip[Upstream: `bmad-product-brief`]
@@ -77,51 +77,45 @@ Decide how to build it and break work into stories.
 |---------------------------------------|--------------------------------------------|-----------------------------|
 | `bmad-architecture`            | Make technical decisions explicit          | `ARCHITECTURE-SPINE.md` is the spine by default but can hydrate to your desired output or presentation needs also |
 | `bmad-create-epics-and-stories`       | Break requirements into implementable work | Epic files with stories     |
-| `bmad-check-implementation-readiness` | Gate check before implementation           | PASS/CONCERNS/FAIL decision |
+| `bmad-sprint-planning`                | Readiness gate before implementation, then story tracking and status view | PASS/CONCERNS/FAIL + `sprint-status.yaml` |
+
+For how the readiness gate, deterministic tracking, and status view work together, see [Sprint Planning](../explanation/sprint-planning.md).
 
 ## Phase 4: Implementation
 
-Build it, one story at a time. Phase 4 epic and story automation is now available also. So you can choose how you want to stay in the loop. You can choose the full flow, or go right to quick flow.
+Every implementation path converges on `bmad-build`. It accepts direct intent, an issue, a specification, or a planned story, then chooses the clarification, planning, implementation, and review depth needed for that input.
 
-| Workflow               | Purpose                                                                       | Produces                                             |
-|------------------------|-------------------------------------------------------------------------------|------------------------------------------------------|
-| `bmad-sprint-planning` | Initialize tracking (once per project to sequence the dev cycle)              | `sprint-status.yaml`                                 |
-| `bmad-create-story`    | Prepare next story for implementation                                         | `story-[slug].md`                                    |
-| `bmad-dev-story`       | Implement the story                                                           | Working code + tests                                 |
-| `bmad-code-review`     | Validate implementation quality                                               | Approved or changes requested                        |
-| `bmad-correct-course`  | Handle significant mid-sprint changes                                         | Updated plan or re-routing                           |
-| `bmad-sprint-status`   | Track sprint progress and story status                                        | Sprint status update                                 |
-| `bmad-retrospective`   | Review after epic completion                                                  | Lessons learned                                      |
+| Workflow | Purpose | Produces |
+|----------|---------|----------|
+| `bmad-build` | Turn direct intent or a planned story into implemented, reviewed code | `spec-*.md` + code |
+| `bmad-code-review` | Ad hoc review of any code change | Findings + applied patches |
+| `bmad-correct-course` | Handle significant mid-sprint changes | Updated plan or re-routing |
+| `bmad-retrospective` | Evidence-based review of a completed epic against its acceptance criteria | Retro document, action items, acceptance verdict |
 
-## Quick Flow (Parallel Track)
+### Direct and Planned Entry
 
-Skip phases 1-3 for small, well-understood work.
+Clear work can enter `bmad-build` directly. Larger initiatives can first produce a PRD, UX design, architecture, epics, stories, readiness results, and sprint plan. Those artifacts add context; they do not select another implementation workflow.
 
-| Workflow         | Purpose                                                                   | Produces           |
-|------------------|---------------------------------------------------------------------------|--------------------|
-| `bmad-quick-dev` | Unified quick flow — clarify intent, plan, implement, review, and present | `spec-*.md` + code |
-| `bmad-dev-auto`  | Runs one unattended development-loop iteration — small intent in, code out | `spec-*.md` + code |
+`bmad-build-auto` can orchestrate unattended iterations of the same development model when autonomous execution is appropriate.
 
-For the reference on unattended development loops with `bmad-dev-auto`, see [Autonomous Development Loops](./dev-auto.md).
+For the reference on unattended development loops with `bmad-build-auto`, see [Autonomous Development Loops](./build-auto.md).
 
 ## Context Management
 
 Each document becomes context for the next phase. The PRD tells the architect what constraints matter. The architecture
-tells the dev agent which patterns to follow. Story files give focused, complete context for implementation. Without
+tells the dev agent which patterns to follow. Spec files give focused, complete context for implementation. Without
 this structure, agents make inconsistent decisions.
 
 ### Project Context
 
 :::tip[Recommended]
-Create `project-context.md` to ensure AI agents follow your project's rules and preferences. This file works like a
-constitution for your project — it guides implementation decisions across all workflows. This optional file can be
-generated at the end of Architecture Creation, or in an existing project it can be generated also to capture whats
-important to keep aligned with current conventions.
+Build your project context so AI agents follow your project's rules and preferences across all workflows: a small
+always-loaded kernel plus a bundle of verified entries, maintained by `bmad-project-context`. Seed it from your
+architecture at the end of planning, or mine it from an existing codebase at any time.
 :::
 
 **How to create it:**
 
-- **Manually** — Create `_bmad-output/project-context.md` with your technology stack and implementation rules
-- **Generate it** — Run `bmad-generate-project-context` to auto-generate from your architecture or codebase
+- Run `bmad-project-context` — greenfield (seeded from your spec or architecture) or brownfield (mined from the codebase, then confirmed with you). The earlier `bmad-generate-project-context` is deprecated and forwards there; an existing `project-context.md` keeps loading.
 
 [**Learn more about project-context.md**](../explanation/project-context.md)

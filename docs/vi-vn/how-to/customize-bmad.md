@@ -2,7 +2,7 @@
 title: 'Cách tùy chỉnh BMad'
 description: Tùy chỉnh agent và workflow trong khi vẫn giữ khả năng tương thích khi cập nhật
 sidebar:
-  order: 8
+  order: 7
 ---
 
 Điều chỉnh persona của agent, chèn ngữ cảnh theo domain, thêm khả năng mới và cấu hình hành vi workflow mà không cần sửa các file đã cài. Các tùy chỉnh của bạn sẽ được giữ nguyên qua mọi lần cập nhật.

@@ -13,6 +13,7 @@
 
 const path = require('node:path');
 const os = require('node:os');
+const { spawnSync } = require('node:child_process');
 const fs = require('../tools/installer/fs-native');
 const { Installer } = require('../tools/installer/core/installer');
 const { ManifestGenerator } = require('../tools/installer/core/manifest-generator');
@@ -1885,7 +1886,7 @@ async function runTests() {
 
       // collectAgentsFromModuleYaml reads from src/bmm-skills/module.yaml
       await generator35.collectAgentsFromModuleYaml();
-      assert(generator35.agents.length >= 6, 'collectAgentsFromModuleYaml discovers bmm agents from module.yaml (>= 6 agents)');
+      assert(generator35.agents.length >= 5, 'collectAgentsFromModuleYaml discovers bmm agents from module.yaml (>= 5 agents)');
 
       const maryEntry = generator35.agents.find((a) => a.code === 'bmad-agent-analyst');
       assert(maryEntry !== undefined, 'collectAgentsFromModuleYaml includes bmad-agent-analyst');
@@ -3388,28 +3389,28 @@ async function runTests() {
     const bmadDir45 = path.join(root45, '_bmad');
     await fs.ensureDir(path.join(bmadDir45, '_config'));
 
-    // Two skills nested under the same grouping dir (1-analysis), plus a
+    // Two skills under grouping dirs (agents, nested plan/research), plus a
     // module-level file that must survive the cleanup.
     await fs.writeFile(
       path.join(bmadDir45, '_config', 'skill-manifest.csv'),
       [
         'canonicalId,name,description,module,path',
-        '"bmad-agent-analyst","bmad-agent-analyst","fixture","bmm","_bmad/bmm/1-analysis/bmad-agent-analyst/SKILL.md"',
-        '"bmad-research","bmad-research","fixture","bmm","_bmad/bmm/1-analysis/research/bmad-research/SKILL.md"',
+        '"bmad-agent-analyst","bmad-agent-analyst","fixture","bmm","_bmad/bmm/agents/bmad-agent-analyst/SKILL.md"',
+        '"bmad-research","bmad-research","fixture","bmm","_bmad/bmm/plan/research/bmad-research/SKILL.md"',
         '',
       ].join('\n'),
     );
-    await fs.ensureDir(path.join(bmadDir45, 'bmm', '1-analysis', 'bmad-agent-analyst'));
-    await fs.writeFile(path.join(bmadDir45, 'bmm', '1-analysis', 'bmad-agent-analyst', 'SKILL.md'), 'x');
-    await fs.ensureDir(path.join(bmadDir45, 'bmm', '1-analysis', 'research', 'bmad-research'));
-    await fs.writeFile(path.join(bmadDir45, 'bmm', '1-analysis', 'research', 'bmad-research', 'SKILL.md'), 'x');
+    await fs.ensureDir(path.join(bmadDir45, 'bmm', 'agents', 'bmad-agent-analyst'));
+    await fs.writeFile(path.join(bmadDir45, 'bmm', 'agents', 'bmad-agent-analyst', 'SKILL.md'), 'x');
+    await fs.ensureDir(path.join(bmadDir45, 'bmm', 'plan', 'research', 'bmad-research'));
+    await fs.writeFile(path.join(bmadDir45, 'bmm', 'plan', 'research', 'bmad-research', 'SKILL.md'), 'x');
     await fs.writeFile(path.join(bmadDir45, 'bmm', 'config.yaml'), 'module: bmm\n');
 
     const installer45 = new Installer();
     await installer45._cleanupSkillDirs(bmadDir45);
 
-    assert(!(await fs.pathExists(path.join(bmadDir45, 'bmm', '1-analysis'))), 'empty skill-group dir is pruned after cleanup');
-    assert(!(await fs.pathExists(path.join(bmadDir45, 'bmm', '1-analysis', 'research'))), 'empty nested skill-group dir is pruned');
+    assert(!(await fs.pathExists(path.join(bmadDir45, 'bmm', 'agents'))), 'empty skill-group dir is pruned after cleanup');
+    assert(!(await fs.pathExists(path.join(bmadDir45, 'bmm', 'plan'))), 'empty nested skill-group dir is pruned');
     assert(await fs.pathExists(path.join(bmadDir45, 'bmm', 'config.yaml')), 'module-level files are preserved');
     assert(await fs.pathExists(bmadDir45), 'bmad root is never removed');
   } catch (error) {
@@ -3671,6 +3672,256 @@ async function runTests() {
     console.log(`${colors.red}Test Suite 48 setup failed: ${error.message}${colors.reset}`);
     console.log(error.stack);
     failed++;
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 49: shared renderer installation surface for both build skills
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 49: shared renderer installation surface for both build skills${colors.reset}\n`);
+
+  let root49;
+  try {
+    root49 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-build-auto-install-'));
+    const { UI } = require('../tools/installer/ui');
+    const partialConfig49 = await new UI().collectModuleConfigs(root49, ['core', 'bmm'], {
+      yes: true,
+      userName: 'E2E',
+      communicationLanguage: 'English',
+      documentOutputLanguage: 'English',
+    });
+    assert(
+      partialConfig49.moduleConfigs.core.output_folder === '_bmad-output' &&
+        partialConfig49.moduleConfigs.core.project_name === path.basename(root49),
+      'partial noninteractive core options retain defaults for omitted values',
+    );
+    assert(
+      partialConfig49.moduleConfigs.bmm.implementation_artifacts === '{project-root}/_bmad-output/implementation-artifacts' &&
+        partialConfig49.moduleConfigs.bmm.planning_artifacts === '{project-root}/_bmad-output/planning-artifacts',
+      'partial noninteractive core options resolve dependent module defaults',
+    );
+
+    const bmadDir49 = path.join(root49, '_bmad');
+    await fs.ensureDir(path.join(bmadDir49, 'custom'));
+    const paths49 = {
+      srcDir: path.resolve(__dirname, '..'),
+      bmadDir: bmadDir49,
+      scriptsDir: path.join(bmadDir49, 'scripts'),
+      customDir: path.join(bmadDir49, 'custom'),
+    };
+    const installer49 = new Installer();
+    await installer49._installSharedScripts(paths49);
+    const renderGitignore49 = path.join(bmadDir49, 'render', '.gitignore');
+    const reinstall49 = new Installer();
+    await reinstall49._installSharedScripts(paths49);
+    assert(reinstall49.installedFiles.has(renderGitignore49), 'existing render gitignore remains installer-owned on update');
+
+    const official49 = new OfficialModules();
+    await official49.install('bmm', bmadDir49, null, {
+      skipModuleInstaller: true,
+      moduleConfig: {},
+      silent: true,
+    });
+    await installer49.generateModuleConfigs(bmadDir49, { core: { communication_language: 'English' }, bmm: {} });
+
+    const scripts49 = path.join(bmadDir49, 'scripts');
+    const skill49 = path.join(bmadDir49, 'bmm', 'ship', 'bmad-build-auto');
+    const skill49Build = path.join(bmadDir49, 'bmm', 'ship', 'bmad-build');
+    assert(await fs.pathExists(path.join(scripts49, 'render_skill.py')), 'shared render_skill.py reaches installed _bmad/scripts');
+    assert(await fs.pathExists(path.join(scripts49, 'config_utils.py')), 'shared config utility reaches installed _bmad/scripts');
+    assert(!(await fs.pathExists(path.join(scripts49, 'tests'))), 'shared-script development tests are excluded from install');
+    assert(!(await fs.pathExists(path.join(scripts49, '__pycache__'))), 'shared-script Python caches are excluded from install');
+    assert(await fs.pathExists(path.join(skill49, 'SKILL.md')), 'build-auto entry reaches installed skill surface');
+    const skillSource49 = await fs.readFile(path.join(skill49, 'SKILL.md'), 'utf8');
+    assert(
+      skillSource49.includes('uv run --no-cache "{project-root}/_bmad/scripts/render_skill.py"'),
+      'build-auto avoids the user-level uv cache and lets script metadata select Python',
+    );
+    assert(!skillSource49.includes('uv run --python'), 'build-auto does not pin an exact Python series');
+    assert(!(await fs.pathExists(path.join(skill49, 'render.toml'))), 'installed skill has no duplicate render contract');
+    assert(!(await fs.pathExists(path.join(skill49, 'render.py'))), 'no skill-local renderer reaches installed build-auto');
+    assert(await fs.pathExists(path.join(skill49, 'workflow.md')), 'build-auto workflow source reaches installed skill surface');
+    assert(await fs.pathExists(path.join(skill49, 'step-04-review.md')), 'build-auto step sources reach installed skill surface');
+    // Compare against build-auto's own shipped command rather than a second hardcoded
+    // literal, so the two skills cannot drift apart while both still match this file.
+    const fenced49 = skillSource49.match(/```bash\n([\s\S]*?)```/);
+    assert(
+      fenced49 !== null && fenced49[1].includes('render_skill.py'),
+      'build-auto ships its renderer invocation as a fenced bash command',
+      skillSource49,
+    );
+    const sharedInvocation49 = fenced49 === null ? '' : fenced49[1].trim();
+    assert(await fs.pathExists(path.join(skill49Build, 'SKILL.md')), 'build entry reaches installed skill surface');
+    const buildSource49 = await fs.readFile(path.join(skill49Build, 'SKILL.md'), 'utf8');
+    assert(
+      sharedInvocation49 !== '' && buildSource49.includes(sharedInvocation49),
+      'build dispatches the same shared renderer invocation as build-auto',
+      `build-auto ships: ${sharedInvocation49}\nbuild ships: ${buildSource49}`,
+    );
+    assert(!buildSource49.includes('uv run --python'), 'build does not pin an exact Python series');
+    assert(!(await fs.pathExists(path.join(skill49Build, 'render.py'))), 'the retired skill-local renderer never reaches installed build');
+    assert(!(await fs.pathExists(path.join(skill49Build, 'render.toml'))), 'installed build has no duplicate render contract');
+    assert(await fs.pathExists(path.join(skill49Build, 'workflow.md')), 'build workflow source reaches installed skill surface');
+    assert(await fs.pathExists(path.join(skill49Build, 'step-04-review.md')), 'build step sources reach installed skill surface');
+    assert(
+      (await fs.readFile(renderGitignore49, 'utf8')) === '*\n!.gitignore\n',
+      'generated render snapshots are ignored by installed projects',
+    );
+    assert(!(await fs.pathExists(path.join(bmadDir49, 'render', 'config.yaml'))), 'render cache is excluded from module config generation');
+
+    await fs.writeFile(
+      path.join(bmadDir49, 'config.toml'),
+      [
+        '[core]',
+        'communication_language = "English"',
+        'document_output_language = "English"',
+        '',
+        '[modules.bmm]',
+        'user_skill_level = "expert"',
+        `planning_artifacts = ${JSON.stringify(path.join(root49, 'planning'))}`,
+        `implementation_artifacts = ${JSON.stringify(path.join(root49, 'implementation'))}`,
+        '',
+      ].join('\n'),
+      'utf8',
+    );
+    // The harness pins the interpreter to keep this scratch run deterministic; the shipped
+    // SKILL.md command must not pin one, and test/test-build-auto-renderer.js executes that
+    // unpinned form verbatim for both skills.
+    const renderOptions49 = { encoding: 'utf8', timeout: 120_000 };
+    const render49 = spawnSync(
+      'uv',
+      ['run', '--python', '3.11', path.join(scripts49, 'render_skill.py'), '--project-root', root49, '--skill', skill49],
+      renderOptions49,
+    );
+    assert(
+      !render49.error && typeof render49.stdout === 'string',
+      'shared renderer is spawnable for the installed build-auto tree',
+      String(render49.error || 'uv produced no stdout'),
+    );
+    const dispatch49 = (render49.stdout || '').trim().replace(/^read and follow /, '');
+    assert(
+      render49.status === 0 &&
+        path.isAbsolute(dispatch49) &&
+        dispatch49.includes(`${path.sep}render${path.sep}bmad-build-auto${path.sep}`) &&
+        path.basename(dispatch49) === 'workflow.md' &&
+        (await fs.pathExists(dispatch49)),
+      'installer-produced build-auto tree renders and dispatches end to end',
+      `${render49.stdout}${render49.stderr}`,
+    );
+    const render49Build = spawnSync(
+      'uv',
+      ['run', '--python', '3.11', path.join(scripts49, 'render_skill.py'), '--project-root', root49, '--skill', skill49Build],
+      renderOptions49,
+    );
+    assert(
+      !render49Build.error && typeof render49Build.stdout === 'string',
+      'shared renderer is spawnable for the installed build tree',
+      String(render49Build.error || 'uv produced no stdout'),
+    );
+    const dispatch49Build = (render49Build.stdout || '').trim().replace(/^read and follow /, '');
+    assert(
+      render49Build.status === 0 &&
+        path.isAbsolute(dispatch49Build) &&
+        dispatch49Build.includes(`${path.sep}render${path.sep}bmad-build${path.sep}`) &&
+        path.basename(dispatch49Build) === 'workflow.md' &&
+        (await fs.pathExists(dispatch49Build)),
+      'installer-produced build tree renders and dispatches end to end',
+      `${render49Build.stdout}${render49Build.stderr}`,
+    );
+    const resolveCustomization49 = spawnSync(
+      'uv',
+      [
+        'run',
+        '--python',
+        '3.11',
+        path.join(scripts49, 'resolve_customization.py'),
+        '--project-root',
+        root49,
+        '--skill',
+        skill49,
+        '--key',
+        'workflow',
+      ],
+      { encoding: 'utf8' },
+    );
+    assert(resolveCustomization49.status === 0, 'installed customization resolver executes successfully');
+    assert(
+      !(await fs.pathExists(path.join(scripts49, '__pycache__'))),
+      'installed config utility suppresses bytecode caches for every importer',
+    );
+    const detected49 = await installer49.detectCustomFiles(bmadDir49, []);
+    assert(
+      !detected49.customFiles.some((file) => path.relative(bmadDir49, file).split(path.sep)[0] === 'render'),
+      'generated render snapshots are excluded from custom-file preservation',
+    );
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 49 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  } finally {
+    if (root49) await fs.remove(root49).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 50: --set core.<key> reaches config collection
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 50: --set core.<key> reaches config collection${colors.reset}\n`);
+
+  let root50;
+  try {
+    root50 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-set-core-'));
+    const { UI } = require('../tools/installer/ui');
+
+    // core.output_folder is dependency-bearing: module artifact paths are built
+    // from it during collection. Applying it only as a post-install TOML patch
+    // left those paths on the default while core config claimed the override.
+    const viaSet50 = await new UI().collectModuleConfigs(root50, ['core', 'bmm'], {
+      yes: true,
+      set: ['core.output_folder=generated'],
+    });
+    assert(viaSet50.moduleConfigs.core.output_folder === 'generated', '--set core.output_folder seeds the collected core config');
+    assert(
+      viaSet50.moduleConfigs.bmm.planning_artifacts === '{project-root}/generated/planning-artifacts' &&
+        viaSet50.moduleConfigs.bmm.implementation_artifacts === '{project-root}/generated/implementation-artifacts',
+      '--set core.output_folder resolves dependent module paths',
+    );
+
+    // The docs present --set core.<key> and the legacy shortcuts as equivalent,
+    // so they must collect identically.
+    const viaFlag50 = await new UI().collectModuleConfigs(root50, ['core', 'bmm'], {
+      yes: true,
+      outputFolder: 'generated',
+    });
+    assert(
+      viaSet50.moduleConfigs.bmm.planning_artifacts === viaFlag50.moduleConfigs.bmm.planning_artifacts &&
+        viaSet50.moduleConfigs.core.output_folder === viaFlag50.moduleConfigs.core.output_folder,
+      '--set core.output_folder and --output-folder collect identically',
+    );
+
+    // Every core key seeds, not just the four with a legacy shortcut flag.
+    // project_name has none, and module config.yaml files snapshot the core
+    // values at generate time, so a key that misses collection leaves those
+    // copies stale.
+    const otherKeys50 = await new UI().collectModuleConfigs(root50, ['core', 'bmm'], {
+      yes: true,
+      set: ['core.user_name=Bob', 'core.project_name=Foo', 'bmm.user_skill_level=expert'],
+    });
+    assert(otherKeys50.moduleConfigs.core.user_name === 'Bob', '--set core.user_name seeds the collected core config');
+    assert(
+      otherKeys50.moduleConfigs.core.project_name === 'Foo',
+      '--set core.project_name seeds the collected core config (no legacy shortcut flag exists for it)',
+    );
+    assert(otherKeys50.moduleConfigs.core.output_folder === '_bmad-output', 'core keys omitted from --set keep their headless defaults');
+    assert(otherKeys50.setOverrides.bmm.user_skill_level === 'expert', 'non-core --set overrides still reach the post-install patch step');
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 50 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  } finally {
+    if (root50) await fs.remove(root50).catch(() => {});
   }
 
   console.log('');

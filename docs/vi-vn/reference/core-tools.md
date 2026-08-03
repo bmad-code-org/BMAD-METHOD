@@ -86,7 +86,7 @@ Chạy bất kỳ công cụ nào bằng cách gõ tên skill của nó, ví d�
 
 | Lăng kính                                 | Áp dụng cho             | Phương pháp                                                                                  |
 | ----------------------------------------- | ----------------------- | -------------------------------------------------------------------------------------------- |
-| **Hoài nghi (Adversarial)**               | Mọi nội dung            | Review hoài nghi mặc định vấn đề luôn tồn tại — săn phần còn thiếu, không chỉ phần sai       |
+| **Hoài nghi (Adversarial)**               | Mọi nội dung            | Review buộc phải đưa ra ≥10 phát hiện, tìm phần còn thiếu chứ không chỉ phần sai; không được danh sách rỗng |
 | **Ca biên (Edge case)**                   | Mọi nội dung            | Đi qua mọi nhánh rẽ và điều kiện biên trong nội dung có định nghĩa hành vi                   |
 | **Lỗ hổng kiểm chứng (Verification gap)** | Code                    | Tìm hành vi đã thay đổi có thể hồi quy mà không có kiểm chứng đáng tin cậy nào bắt được      |
 | **Cấu trúc (Structure)**                  | Tài liệu                | Đề xuất cắt, gộp, di chuyển và cô đọng — hình hài tài liệu có phục vụ mục đích của nó không? |

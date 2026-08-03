@@ -808,9 +808,15 @@ class UI {
 
     const configCollector = new OfficialModules({ channelOptions: options.channelOptions });
 
-    // Seed core config from CLI options if provided
-    if (options.userName || options.communicationLanguage || options.documentOutputLanguage || options.outputFolder) {
-      const coreConfig = {};
+    const hasCoreCliOptions =
+      options.userName || options.communicationLanguage || options.documentOutputLanguage || options.outputFolder || setOverrides.core;
+
+    // Seed core config from CLI options if provided. `--set core.<key>` seeds it
+    // too: core values are dependency-bearing — module artifact paths are built
+    // from output_folder here, and each module's config.yaml snapshots the core
+    // values — so the post-install patch alone lands too late.
+    if (hasCoreCliOptions) {
+      const coreConfig = { ...setOverrides.core };
       if (options.userName) {
         coreConfig.user_name = options.userName;
         await prompts.log.info(`Using user name from command-line: ${options.userName}`);
@@ -830,8 +836,24 @@ class UI {
 
       // Load existing config to merge with provided options
       await configCollector.loadExistingConfig(directory);
-      const existingConfig = configCollector.collectedConfig.core || {};
-      configCollector.collectedConfig.core = { ...existingConfig, ...coreConfig };
+      const existingConfig = configCollector.existingConfig.core || {};
+      let defaultConfig = {};
+      if (options.yes) {
+        let safeUsername;
+        try {
+          safeUsername = os.userInfo().username;
+        } catch {
+          safeUsername = process.env.USER || process.env.USERNAME || 'User';
+        }
+        defaultConfig = {
+          user_name: safeUsername.charAt(0).toUpperCase() + safeUsername.slice(1),
+          project_name: path.basename(directory),
+          communication_language: 'English',
+          document_output_language: 'English',
+          output_folder: '_bmad-output',
+        };
+      }
+      configCollector.collectedConfig.core = { ...defaultConfig, ...existingConfig, ...coreConfig };
 
       // If not all options are provided, collect the missing ones interactively (unless --yes flag)
       if (
@@ -843,7 +865,7 @@ class UI {
     } else if (options.yes) {
       // Use all defaults when --yes flag is set
       await configCollector.loadExistingConfig(directory);
-      const existingConfig = configCollector.collectedConfig.core || {};
+      const existingConfig = configCollector.existingConfig.core || {};
 
       if (Object.keys(existingConfig).length === 0) {
         let safeUsername;
