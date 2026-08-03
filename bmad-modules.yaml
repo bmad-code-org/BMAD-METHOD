@@ -39,7 +39,7 @@ modules:
     module-definition: skills/module.yaml
     code: bmb
     name: "BMad Builder"
-    description: "Build AI agents, workflows, and modules from a conversation"
+    description: "Skill, workflow, and agent builder"
     defaultSelected: false
     type: bmad-org
     npmPackage: bmad-builder
@@ -50,7 +50,7 @@ modules:
     module-definition: src/module.yaml
     code: cis
     name: "BMad Creative Intelligence Suite"
-    description: "Brainstorming, ideation, storytelling, design thinking, and problem-solving"
+    description: "Brainstorming, ideation, and creative problem solving"
     defaultSelected: false
     type: bmad-org
     npmPackage: bmad-creative-intelligence-suite
@@ -61,7 +61,7 @@ modules:
     module-definition: src/module.yaml
     code: tea
     name: "BMad Test Architect"
-    description: "Quality strategy, test automation, and release gates for enterprise teams"
+    description: "Enterprise testing BMM add-on"
     defaultSelected: false
     type: bmad-org
     npmPackage: bmad-method-test-architecture-enterprise
@@ -76,7 +76,7 @@ modules:
     # installs migrating forward instead of being orphaned.
     aliases: [bauto]
     name: "BMad Loop"
-    description: "Deterministic, Python-based unattended dev loop with adversarial review"
+    description: "Builds, verifies, and retros a whole epic unattended"
     defaultSelected: false
     type: bmad-org
     default_channel: stable
@@ -97,7 +97,7 @@ modules:
     module-definition: src/module.yaml
     code: gds
     name: "BMad Game Dev Studio"
-    description: "Game design and development for Unity, Unreal, Godot, and Phaser."
+    description: "Ideate, design, and build games in any framework"
     defaultSelected: false
     type: bmad-org
     npmPackage: bmad-game-dev-studio
