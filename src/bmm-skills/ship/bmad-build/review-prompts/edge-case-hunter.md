@@ -85,4 +85,4 @@ Add nothing if nothing qualifies.
 
 ## CONTENT SOURCE
 
-Load the review target from the parent message, or from a trailing `## REVIEW TARGET` section if present (offline fallback). This file has no `{review_content}` slot. If neither supplies content, treat content as empty and follow the empty-content halt rules above.
+Review the content supplied under "Review content:" in the message that launched you.

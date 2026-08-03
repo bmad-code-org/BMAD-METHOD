@@ -2,7 +2,7 @@
 title: "Sửa nhanh"
 description: Cách thực hiện các sửa nhanh và thay đổi ad-hoc
 sidebar:
-  order: 6
+  order: 5
 ---
 
 Sửa lỗi, refactor và thay đổi nhỏ có thể đi thẳng vào **Build** với ít hoặc không có planning upstream. Đây là cùng workflow triển khai dùng cho story đã lập kế hoạch đầy đủ.

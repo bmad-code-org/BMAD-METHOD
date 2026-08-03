@@ -2,7 +2,7 @@
 title: "Jak získat odpovědi o BMad"
 description: Použijte LLM k rychlému zodpovězení vašich otázek o BMad
 sidebar:
-  order: 4
+  order: 3
 ---
 
 ## Začněte zde: BMad-Help

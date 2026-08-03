@@ -79,3 +79,9 @@ bmad-shard-doc
 # defaults; document-project remains directly invocable. Paige is on hiatus
 # and will return in the future far more capable.
 bmad-agent-tech-writer
+
+# Removed skills (skill consolidation)
+# bmad-check-implementation-readiness: folded into bmad-sprint-planning,
+# which now opens with a readiness gate (PASS/CONCERNS/FAIL) before
+# generating tracking. The IR agent menu trigger dispatches sprint-planning.
+bmad-check-implementation-readiness

@@ -33,19 +33,21 @@
 #
 # WORKFLOW NOTES:
 # ===============
-# - Mark epic as 'in-progress' when starting work on its first story
-# - Developer typically creates next story ONLY after previous one is 'done' to incorporate learnings
-# - Dev moves story to 'review', then Dev runs code-review (fresh context, ideally different LLM)
-# - Retrospective appends its action items to action_items; sprint-status surfaces open ones
+# - Epic transitions to 'in-progress' automatically when its first story starts (via build's sprint sync)
+# - Stories can be worked in parallel if team capacity allows
+# - Developer typically creates the next story after the previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+# - Retrospective appends its action items to action_items; the status view surfaces open ones
 
 # EXAMPLE STRUCTURE (your actual epics/stories will replace these):
+# Timestamps use MM-DD-YYYY HH:MM.
 
-generated: 05-06-2-2025 21:30
-last_updated: 05-06-2-2025 21:30
+generated: 05-06-2025 21:30
+last_updated: 05-06-2025 21:30
 project: My Awesome Project
 project_key: NOKEY
 tracking_system: file-system
-story_location: "{story_location}"
+story_location: "docs/stories"
 
 development_status:
   epic-1: backlog

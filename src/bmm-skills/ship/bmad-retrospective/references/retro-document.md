@@ -1,10 +1,10 @@
 # Finalize: Retrospective Document and Sprint Status
 
-Phase 5. Finalize the retrospective and update sprint tracking. Two writes: the retrospective document, and the `sprint-status.yaml` update.
+Phase 5. Finalize the retrospective and update sprint tracking. Two writes: the retrospective document, and the `sprint-status.yaml` update. Stories mode makes only the first.
 
 ## The retrospective document
 
-This document is the run's working artifact: it is created as a skeleton once the epic is fixed and filled as each phase completes, so Phase 5 finalizes rather than writes it from scratch. It lives at `{implementation_artifacts}/epic-{{epic_number}}-retro-{date}.md`, in `{document_output_language}`, as readable markdown; ensure `{implementation_artifacts}` exists.
+This document is the run's working artifact: it is created as a skeleton once the epic is fixed and filled as each phase completes, so Phase 5 finalizes rather than writes it from scratch. It lives at `{implementation_artifacts}/epic-{{epic_number}}-retro-{date}.md`, in `{document_output_language}`, as readable markdown; ensure `{implementation_artifacts}` exists. In stories mode it lives at `{spec-folder}/RETROSPECTIVE.md` instead — a fixed name, so a resumed run finds it — and carries the same frontmatter without `epic`, which the folder already names.
 
 Open the document with YAML frontmatter a machine can read without parsing the prose — an epic gate or orchestrator keys off `verdict` to decide whether to hold the next epic:
 
@@ -71,7 +71,7 @@ uv run --no-cache {skill-root}/scripts/sprint_status.py update \
 Rules:
 
 - Select an item by its `id`, or — for legacy entries written before ids existed — by `epic` plus the item's exact `action` text. An entry carrying both uses the `id`. Matching is exact: no trimming, no case folding, and `epic` must be a JSON integer. The `--epic` flag does not scope selectors; it only names the retro key and the epic recorded on appended items, so items from any epic are addressable in one call.
-- The only statuses are `open`, `in-progress`, and `done`. `bmad-sprint-status` counts both `open` and `in-progress` as open action items, so only `done` retires an item from the surfaced list — moving something to `in-progress` records progress, it does not quiet the dashboard.
+- The only statuses are `open`, `in-progress`, and `done`. `bmad-sprint-planning`'s status view counts both `open` and `in-progress` as open action items, so only `done` retires an item from the surfaced list — moving something to `in-progress` records progress, it does not quiet the dashboard.
 - Every selector must resolve to exactly one item already in the file. Matching nothing, matching more than one, or colliding with another entry in the same array aborts the whole invocation — `ok: false`, `restored: true`, the file byte-identical and nothing partially applied. "Whole invocation" includes any `--set-retro-done` and `--add-action` passed in the same call: one mistyped selector drops the entire update, so re-run the full command after fixing it rather than assuming the retro key was set.
 - Items appended by `--add-action` in the same run are not addressable in that run; they are always written as `open`.
 - Only ever apply a status the user confirmed, and in a headless run do not pass this flag at all.

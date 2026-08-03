@@ -61,5 +61,5 @@ skill = "bmad-architecture"
 
 [[agent.menu]]
 code = "IR"
-description = "Ensure the PRD, UX, Architecture and Epics and Stories List are all aligned"
-skill = "bmad-check-implementation-readiness"
+description = "Check implementation readiness — verify the planning artifacts are complete and aligned (opens sprint planning; stop after the gate or continue into tracking)"
+skill = "bmad-sprint-planning"

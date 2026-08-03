@@ -25,11 +25,10 @@ import pytest
 from ruamel.yaml import YAML
 
 SCRIPT = Path(__file__).resolve().parents[1] / "sprint_status.py"
-TEMPLATE = (
-    Path(__file__).resolve().parents[3]
-    / "bmad-sprint-planning"
-    / "sprint-status-template.yaml"
-)
+# Vendored copy of bmad-sprint-planning's sprint-status-template.yaml — skills
+# must not path into each other's directories (PATH-05). The repo-level
+# test/test-template-sync.js keeps this fixture identical to the source.
+TEMPLATE = Path(__file__).resolve().parent / "fixtures" / "sprint-status-template.yaml"
 
 FIXTURE = """\
 # Sprint Status Tracking
@@ -1507,8 +1506,8 @@ def test_status_write_preserves_every_scalar_style(tmp_path):
 
 
 def test_action_status_vocabulary_is_exactly_the_three():
-    # bmad-sprint-planning/SKILL.md is the authority. Widening this tuple would
-    # let the script write a value bmad-sprint-status renders as unknown.
+    # bmad-sprint-planning is the authority. Widening this tuple would let the
+    # script write a value sprint-planning's status view reports as illegal.
     assert _module().ACTION_STATUSES == ("open", "in-progress", "done")
 
 

@@ -2,7 +2,7 @@
 title: 'Manage Project Context'
 description: Build and maintain your project's verified context system with bmad-project-context
 sidebar:
-  order: 9
+  order: 8
 ---
 
 Use `bmad-project-context` to give every AI agent session the minimum verified, non-derivable knowledge it needs — a small always-loaded kernel plus a knowledge bundle — for a new project or an existing codebase, with or without a BMad install.

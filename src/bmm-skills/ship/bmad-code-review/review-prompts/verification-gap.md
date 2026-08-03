@@ -106,4 +106,4 @@ When you find no verification gaps and no other findings, output exactly this si
 
 ## CONTENT SOURCE
 
-Load the change set from the parent message, or from a trailing `## REVIEW TARGET` section if present (offline fallback). This file has no `{review_content}` slot. If neither supplies a change set, stop with exactly: `No verification gaps found.`
+Review the content supplied under "Review content:" in the message that launched you. If none is supplied, stop with exactly: `No verification gaps found.`

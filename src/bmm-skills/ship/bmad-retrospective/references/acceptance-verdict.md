@@ -38,7 +38,7 @@ Judge the final state against the epic's declared acceptance criteria. If the ep
 
 ### Unfinished stories
 
-`pending_stories` from `detect-epic` (with or without `--epic`) is authoritative for this epic's story keys. When that list is non-empty:
+`pending_stories` is authoritative for this epic's incomplete work, whichever mode produced it: sprint-status story keys in file order from `detect-epic`, or `stories.yaml` ids in list order whose artifact status is not `done`. When that list is non-empty:
 
 - The **machine** verdict is **rejected**. Name every unfinished story key in the Acceptance verdict section as the evidence. Do not soften this to accepted-with-open-items: unfinished delivery is not an open finding about a finished epic — the epic itself is incomplete.
 - Record the unfinished keys in Epic summary (interactive) or Assumptions (headless) as the Inputs section already requires.

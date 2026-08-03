@@ -1,59 +1,55 @@
 ---
 title: "Đánh giá đối kháng"
-description: Kỹ thuật lập luận ép buộc giúp tránh các bản review lười kiểu "nhìn ổn"
+description: Bắt buộc phải có danh sách phát hiện, chặn kiểu review lười “nhìn ổn”
 sidebar:
   order: 9
 ---
 
-Buộc quá trình phân tích đi sâu hơn bằng cách ép phải tìm ra vấn đề.
+Ép phân tích sâu hơn bằng **danh sách vấn đề bắt buộc** — không phải bằng persona cay cú.
 
 ## Đánh giá đối kháng là gì?
 
-Đây là một kỹ thuật review mà người review *bắt buộc* phải tìm thấy vấn đề. Không có chuyện "nhìn ổn". Người review chọn lập trường hoài nghi - giả sử vấn đề có tồn tại và đi tìm chúng.
+Kỹ thuật review trong đó người review **phải** đưa ra phát hiện. “Nhìn ổn” với danh sách rỗng không được phép.
 
-Đây không phải là việc cố tình tiêu cực. Đây là cách ép buộc phân tích thật sự, thay vì chỉ liếc qua và đóng dấu chấp nhận những gì vừa được nộp lên.
+Cơ chế là **sàn số phát hiện** (ít nhất mười mục cần sửa hoặc cải thiện) và yêu cầu rõ ràng tìm **phần còn thiếu**, không chỉ phần sai. Nội dung rỗng thì dừng. Danh sách rỗng thì kiểm tra lại — không kết thúc với không có gì.
 
-**Quy tắc cốt lõi:** Bạn phải tìm ra vấn đề. Nếu không có phát hiện nào, quy trình sẽ dừng lại - cần phân tích lại hoặc giải thích tại sao.
+Không phải để nghe hung hăng. Prompt cũ dùng persona hoài nghi; trên model hiện tại điều đó không đổi bản chất phát hiện. Vẫn quan trọng: nghĩa vụ tiếp tục tìm và ưu tiên thiếu sót hơn lướt qua.
 
-## Vì sao nó hiệu quả
+## Vì sao hiệu quả
 
-Những lần review thông thường dễ bị confirmation bias. Bạn lướt qua công việc, không có gì đập vào mắt, rồi phê duyệt. Yêu cầu "tìm vấn đề" phá vỡ mẫu này:
+Review thường bị thiên kiến xác nhận. Lướt qua, không thấy gì, duyệt. Sàn số lượng phá vỡ mẫu đó:
 
-- **Ép buộc sự kỹ lưỡng** - Không thể phê duyệt cho đến khi bạn đã đào đủ sâu để tìm thấy vấn đề
-- **Bắt được những thứ đang thiếu** - "Còn gì chưa có ở đây?" trở thành câu hỏi tự nhiên
-- **Tăng chất lượng tín hiệu** - Các phát hiện cụ thể và có thể hành động được, không phải các lo ngại mơ hồ
-- **Bất đối xứng thông tin** - Chạy review với bối cảnh mới (không có lý do gốc) để đánh giá artifact, không phải ý định
+- **Ép kỹ lưỡng** — không xong cho đến khi đủ phát hiện cụ thể
+- **Bắt phần thiếu** — “chỗ này thiếu gì?” là một phần việc
+- **Nuôi triage, không đập thẳng vào user** — trong build / code-review, session cha lọc nhiễu; hunter lo recall, không phải phán cuối
+- **Bất đối xứng thông tin** — hunter thường chạy với ngữ cảnh tươi về thay đổi
 
-## Nó được dùng ở đâu
+## Dùng ở đâu
 
-Đánh giá đối kháng xuất hiện xuyên suốt các workflow của BMad - code review, kiểm tra sẵn sàng triển khai, xác thực spec, và nhiều nơi khác. Đôi khi là bước bắt buộc, đôi khi là tùy chọn (như khai thác nâng cao hoặc party mode). Mẫu này được điều chỉnh theo artifact cần bị soi kỹ.
+- **bmad-build / bmad-build-auto / bmad-code-review** — lớp Blind Hunter: prompt ngắn inline, nội dung dưới `CONTENT:`, song song các lớp khác, rồi triage
+- **bmad-review** — thấu kính adversarial trong review đa thấu kính (cùng phương pháp; field finding chuẩn để gộp)
 
-## Vẫn cần bộ lọc của con người
+## Cần lọc bởi người (hoặc session cha)
 
-Vì AI *được lệnh* phải tìm vấn đề, nó sẽ tìm vấn đề - ngay cả khi chúng không tồn tại. Hãy kỳ vọng false positive: bắt bẻ những lỗi vặt, hiểu sai ý định, hoặc thậm chí tưởng tượng ra vấn đề.
+Vì model được yêu cầu lấp danh sách, sẽ có mục mỏng, sẵn có, hoặc sai. Dương tính giả là bình thường.
 
-**Bạn là người quyết định cái nào là thật.** Xem từng phát hiện, bỏ qua nhiễu, sửa những gì quan trọng.
+**Triage quyết định cái gì là thật.** Trong luồng agentic là workflow cha. Review đứng một mình thì là bạn.
 
 ## Ví dụ
 
 Thay vì:
 
-> "Phần triển khai xác thực có vẻ hợp lý. Đã duyệt."
+> “Auth trông hợp lý. Duyệt.”
 
-Một lần đánh giá đối kháng sẽ cho ra:
+Một lượt đối kháng cho danh sách kiểu:
 
-> 1. **HIGH** - `login.ts:47` - Không có giới hạn tốc độ cho các lần đăng nhập thất bại
-> 2. **HIGH** - Session token được lưu trong localStorage (dễ bị XSS)
-> 3. **MEDIUM** - Kiểm tra mật khẩu chỉ diễn ra ở client
-> 4. **MEDIUM** - Không có audit log cho các lần đăng nhập thất bại
-> 5. **LOW** - Số magic `3600` nên được đổi thành `SESSION_TIMEOUT_SECONDS`
+> 1. `login.ts:47` — không rate limit khi đăng nhập sai  
+> … (ít nhất mười mục cụ thể)
 
-Bản review thứ nhất có thể bỏ sót một lỗi bảo mật. Bản review thứ hai đã bắt được bốn vấn đề.
+## Lặp và lợi tức giảm dần
 
-## Lặp lại và lợi ích giảm dần
-
-Sau khi đã xử lý các phát hiện, hãy cân nhắc chạy lại. Lần thứ hai thường sẽ bắt thêm được vấn đề. Lần thứ ba cũng không phải lúc nào cũng vô ích. Nhưng mỗi lần đều tốn thời gian, và đến một mức nào đó bạn sẽ gặp lợi ích giảm dần - chỉ còn các bắt bẻ nhỏ và false positive.
+Sau khi sửa, lượt nữa vẫn có ích. Mỗi lượt tốn thời gian; cuối cùng chỉ còn nit và false finding. Triage phía sau và ngân sách vòng (trong build) ngăn chạy mãi.
 
 :::tip[Review tốt hơn]
-Giả sử vấn đề có tồn tại. Tìm những gì còn thiếu, không chỉ những gì sai.
+Tìm phần thiếu, không chỉ phần sai. Cứ tìm đến khi danh sách thật — rồi để triage cắt ngắn.
 :::
