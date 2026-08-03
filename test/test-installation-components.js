@@ -3875,9 +3875,9 @@ async function runTests() {
     const prompts = require('../tools/installer/prompts');
     const { PassThrough } = require('node:stream');
 
-    // Fixture: a directory whose children include one that stays a candidate
-    // while the parent path is being edited — the shape that used to make the
-    // prompt submit a subdirectory instead of the typed path.
+    // Fixture: a directory with children. The old autocomplete prompt returned
+    // a focused child instead of the typed path; the prompt is now a plain text
+    // entry, so no keystroke may ever change the value away from what is typed.
     root51 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-dirprompt-'));
     const parent51 = path.join(root51, 'workspace');
     for (const child of ['alpha', 'repos', 'zulu']) {
@@ -3939,40 +3939,19 @@ async function runTests() {
     const typed51 = await drivePrompt([`type:${parent51}`]);
     assert(typed51 === parent51, 'typed path is returned verbatim');
 
-    // The regression: browse into a subdirectory, then edit the text back to
-    // the parent. The old prompt kept the subdirectory selected invisibly.
-    const editedBack51 = await drivePrompt([`type:${path.join(parent51, 'rep')}`, 'down', ...Array.from({ length: 4 }, () => 'backspace')]);
-    assert(editedBack51 === parent51, 'editing away from a browsed subdirectory returns the edited path, not the subdirectory');
+    // The original defect: a directory prompt that returned something other
+    // than the text on screen. No navigation key may move the value.
+    for (const key of ['down', 'up', 'tab', 'shiftTab']) {
+      const pressed51 = await drivePrompt([`type:${parent51}`, key]);
+      assert(pressed51 === parent51, `${key} does not change the typed path`);
+    }
 
-    // Browsing is deliberate and lands on the highlighted entry.
-    const browsed51 = await drivePrompt([`type:${parent51}`, 'down', 'down']);
-    assert(browsed51 === path.join(parent51, 'alpha'), 'arrow keys select the highlighted candidate');
+    // Editing mid-line must not splice text into the value.
+    const cursorEdited51 = await drivePrompt([`type:${parent51}`, 'left', 'left', 'left', 'down', 'up']);
+    assert(cursorEdited51 === parent51, 'moving the cursor and pressing arrows leaves the typed path intact');
 
-    // Backing out of the list restores what was typed.
-    const backedOut51 = await drivePrompt([`type:${parent51}`, 'down', 'down', 'up', 'up']);
-    assert(backedOut51 === parent51, 'backing out of the candidate list restores the typed path');
-
-    // Tab completes to real directories and cycles among them.
-    const tabbed51 = await drivePrompt([`type:${path.join(parent51, 'a')}`, 'tab']);
-    assert(tabbed51 === path.join(parent51, 'alpha'), 'tab completes to a matching directory');
-
-    const tabCycled51 = await drivePrompt([`type:${parent51}${path.sep}`, 'tab', 'tab']);
-    assert(tabCycled51 === path.join(parent51, 'repos'), 'repeated tab steps to the next directory');
-
-    const shiftTabbed51 = await drivePrompt([`type:${parent51}${path.sep}`, 'tab', 'tab', 'shiftTab']);
-    assert(shiftTabbed51 === path.join(parent51, 'alpha'), 'shift+tab steps back through completions');
-
-    // Browsing must replace the whole line, not splice into it. readline's
-    // ctrl+u only clears left of the cursor, so an arrow-key edit followed by
-    // browsing used to leave the tail appended to the selected candidate.
-    const afterCursorEdit51 = await drivePrompt([`type:${parent51}`, 'left', 'left', 'left', 'down', 'down']);
-    assert(
-      afterCursorEdit51 === path.join(parent51, 'alpha'),
-      'browsing after moving the cursor off the end replaces the line instead of splicing into it',
-    );
-
-    const restoredAfterCursorEdit51 = await drivePrompt([`type:${parent51}`, 'left', 'left', 'down', 'up']);
-    assert(restoredAfterCursorEdit51 === parent51, 'restoring the typed text after a cursor edit yields the typed path');
+    const backspaced51 = await drivePrompt([`type:${path.join(parent51, 'rep')}`, ...Array.from({ length: 4 }, () => 'backspace')]);
+    assert(backspaced51 === parent51, 'backspacing back to the parent returns the parent, not a child');
 
     const empty51 = await drivePrompt([]);
     assert(empty51 === root51, 'empty input falls back to the default directory');
@@ -3982,6 +3961,35 @@ async function runTests() {
 
     const created51 = await drivePrompt([`type:${path.join(parent51, 'brand-new')}`]);
     assert(created51 === path.join(parent51, 'brand-new'), 'a not-yet-created path is returned as typed');
+
+    // The prompt is a bare text entry: no candidate list, no key hints.
+    const renderProbe51 = new PassThrough();
+    renderProbe51.isTTY = true;
+    renderProbe51.setRawMode = () => {};
+    const renderOut51 = new PassThrough();
+    renderOut51.isTTY = true;
+    renderOut51.columns = 120;
+    renderOut51.rows = 40;
+    let frames51 = '';
+    renderOut51.on('data', (chunk) => {
+      frames51 += chunk.toString();
+    });
+    const renderPending51 = prompts.directory({
+      message: 'Installation directory:',
+      default: root51,
+      input: renderProbe51,
+      output: renderOut51,
+      validate: () => {},
+    });
+    await new Promise((resolve) => setTimeout(resolve, 120));
+    for (const char of parent51) renderProbe51.write(char);
+    await new Promise((resolve) => setTimeout(resolve, 120));
+    renderProbe51.write('\r');
+    await renderPending51;
+
+    assert(!frames51.includes('use this directory'), 'the prompt renders no candidate list');
+    assert(!frames51.includes('browse'), 'the prompt renders no navigation hint line');
+    assert(!frames51.includes('alpha'), 'the prompt does not list sibling directories');
   } catch (error) {
     console.log(`${colors.red}Test Suite 51 setup failed: ${error.message}${colors.reset}`);
     console.log(error.stack);
