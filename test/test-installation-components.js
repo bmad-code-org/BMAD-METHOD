@@ -3886,7 +3886,7 @@ async function runTests() {
 
     /**
      * Drive the directory prompt with a scripted key sequence.
-     * @param {Array<string>} script - 'type:<text>' or 'up'/'down'/'tab'/'backspace'
+     * @param {Array<string>} script - 'type:<text>' or a key name from `keys` below
      */
     const drivePrompt = async (script) => {
       const input = new PassThrough();
@@ -3898,7 +3898,17 @@ async function runTests() {
       output.rows = 40;
       output.resume();
 
-      const keys = { up: '[A', down: '[B', tab: '\t', backspace: String.fromCodePoint(127) };
+      // Escape sequences are written as \u001B so they stay visible in a diff.
+      const ESC51 = '\u001B';
+      const keys = {
+        up: ESC51 + '[A',
+        down: ESC51 + '[B',
+        left: ESC51 + '[D',
+        right: ESC51 + '[C',
+        tab: '\t',
+        shiftTab: ESC51 + '[Z',
+        backspace: String.fromCodePoint(127),
+      };
       const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
       const pending = prompts.directory({
@@ -3909,19 +3919,19 @@ async function runTests() {
         validate: () => {},
       });
 
-      await sleep(40);
+      await sleep(120);
       for (const step of script) {
         if (step.startsWith('type:')) {
           for (const char of step.slice(5)) {
             input.write(char);
-            await sleep(3);
+            await sleep(6);
           }
         } else {
           input.write(keys[step]);
         }
-        await sleep(15);
+        await sleep(40);
       }
-      await sleep(30);
+      await sleep(80);
       input.write('\r');
       return pending;
     };
@@ -3945,6 +3955,24 @@ async function runTests() {
     // Tab completes to real directories and cycles among them.
     const tabbed51 = await drivePrompt([`type:${path.join(parent51, 'a')}`, 'tab']);
     assert(tabbed51 === path.join(parent51, 'alpha'), 'tab completes to a matching directory');
+
+    const tabCycled51 = await drivePrompt([`type:${parent51}${path.sep}`, 'tab', 'tab']);
+    assert(tabCycled51 === path.join(parent51, 'repos'), 'repeated tab steps to the next directory');
+
+    const shiftTabbed51 = await drivePrompt([`type:${parent51}${path.sep}`, 'tab', 'tab', 'shiftTab']);
+    assert(shiftTabbed51 === path.join(parent51, 'alpha'), 'shift+tab steps back through completions');
+
+    // Browsing must replace the whole line, not splice into it. readline's
+    // ctrl+u only clears left of the cursor, so an arrow-key edit followed by
+    // browsing used to leave the tail appended to the selected candidate.
+    const afterCursorEdit51 = await drivePrompt([`type:${parent51}`, 'left', 'left', 'left', 'down', 'down']);
+    assert(
+      afterCursorEdit51 === path.join(parent51, 'alpha'),
+      'browsing after moving the cursor off the end replaces the line instead of splicing into it',
+    );
+
+    const restoredAfterCursorEdit51 = await drivePrompt([`type:${parent51}`, 'left', 'left', 'down', 'up']);
+    assert(restoredAfterCursorEdit51 === parent51, 'restoring the typed text after a cursor edit yields the typed path');
 
     const empty51 = await drivePrompt([]);
     assert(empty51 === root51, 'empty input falls back to the default directory');

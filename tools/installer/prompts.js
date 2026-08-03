@@ -611,8 +611,11 @@ function isExistingDirectory(value) {
 function resolveDirectoryInput(input, options = {}) {
   const cwd = options.cwd || process.cwd();
   const rawInput = typeof input === 'string' ? input.trim() : '';
-  if (!rawInput) return options.default || cwd;
-  return path.resolve(cwd, expandHome(rawInput));
+  // An empty line means "use the default", which is resolved the same way as
+  // typed text so a `~/…` or relative default still returns an absolute path.
+  const effective = rawInput || (options.default || '').trim();
+  if (!effective) return cwd;
+  return path.resolve(cwd, expandHome(effective));
 }
 
 function listDirectoryOptions(input, options) {
@@ -620,7 +623,9 @@ function listDirectoryOptions(input, options) {
   const rawInput = input.trim();
   const expandedInput = expandHome(rawInput);
   const trailingSep = hasPathSeparator(rawInput) || hasPathSeparator(expandedInput);
-  const resolvedInput = expandedInput ? path.resolve(cwd, expandedInput) : cwd;
+  // An empty line resolves to whatever Enter would submit, so the candidate
+  // list always describes the directory the prompt is actually pointing at.
+  const resolvedInput = expandedInput ? path.resolve(cwd, expandedInput) : resolveDirectoryInput('', options);
   const browseDir = expandedInput && !trailingSep && !isExistingDirectory(resolvedInput) ? path.dirname(resolvedInput) : resolvedInput;
   const prefix = expandedInput && browseDir !== resolvedInput ? path.basename(resolvedInput).toLowerCase() : '';
   const results = [];
@@ -734,11 +739,13 @@ async function directory(options) {
               const label = isActive ? color.cyan(candidate.label) : color.dim(candidate.label);
               lines.push(`${bar}  ${marker} ${label}`);
             }
-            const hidden = browse.candidates.length - items.length;
-            if (hidden > 0) lines.push(`${bar}    ${color.dim(`… ${hidden} more`)}`);
+            // Count only what is below the window — the label renders below
+            // the list, so counting off-window entries above it would lie.
+            const below = browse.candidates.length - (start + items.length);
+            if (below > 0) lines.push(`${bar}    ${color.dim(`… ${below} more`)}`);
           }
 
-          lines.push(`${barEnd}  ${color.dim('↑↓ browse · tab next · enter accept the path above')}`);
+          lines.push(`${barEnd}  ${color.dim('↑↓ browse · tab/shift+tab complete · enter accept the path above')}`);
           return lines.join('\n');
         }
       }
@@ -757,6 +764,22 @@ async function directory(options) {
     if (value !== browse.line) refresh(value);
   });
 
+  // Replace the whole input line with `value`.
+  //
+  // _clearUserInput() sends readline ctrl+u, which deletes only what is LEFT
+  // of the cursor, and _setUserInput() inserts AT the cursor. Without moving
+  // to end of line first, any text right of the cursor survives the clear and
+  // is appended to the new value — so browsing after an arrow-key edit would
+  // submit a path that was never typed. ctrl+e moves to end of line.
+  const replaceLine = (value) => {
+    browse.line = value;
+    browse.applying = true;
+    prompt.rl?.write(null, { ctrl: true, name: 'e' });
+    if (hasClearUserInput) prompt._clearUserInput();
+    if (value) prompt._setUserInput(value, true);
+    browse.applying = false;
+  };
+
   prompt.on('key', (_, key) => {
     const name = key?.name;
     if (name !== 'up' && name !== 'down' && name !== 'tab') return;
@@ -765,11 +788,13 @@ async function directory(options) {
     if (total === 0) return;
 
     if (name === 'tab') {
-      // Tab completes: advance to the next real directory, never the
-      // typed-text slot and never a not-yet-created path.
+      // Tab completes: step to the next real directory (shift+tab steps back),
+      // never the typed-text slot and never a not-yet-created path.
       const realIndexes = browse.candidates.map((c, i) => (c.synthetic ? -1 : i)).filter((i) => i !== -1);
       if (realIndexes.length === 0) return;
-      browse.index = realIndexes.find((i) => i > browse.index) ?? realIndexes[0];
+      browse.index = key.shift
+        ? (realIndexes.findLast((i) => i < browse.index) ?? realIndexes.at(-1))
+        : (realIndexes.find((i) => i > browse.index) ?? realIndexes[0]);
     } else {
       // Index -1 is the typed text itself, so backing out of the list restores it.
       const step = name === 'up' ? -1 : 1;
@@ -779,11 +804,7 @@ async function directory(options) {
 
     const nextValue = browse.index === -1 ? browse.typed : browse.candidates[browse.index]?.value;
     if (nextValue === undefined) return;
-    browse.line = nextValue;
-    browse.applying = true;
-    if (hasClearUserInput) prompt._clearUserInput();
-    if (nextValue) prompt._setUserInput(nextValue, true);
-    browse.applying = false;
+    replaceLine(nextValue);
   });
 
   const result = await prompt.prompt();

@@ -949,7 +949,7 @@ class UI {
    * @param {Set} installedModuleIds - Currently installed module IDs
    * @param {Map<string, string>} installedModuleVersions - Installed module versions from the local manifest
    * @param {Object|null} channelOptions - Parsed installer channel options
-   * @returns {Array} Selected module codes (excluding core)
+   * @returns {Array} Selected module codes, always including core
    */
   async selectAllModules(installedModuleIds = new Set(), installedModuleVersions = new Map(), channelOptions = null) {
     // Phase 1: Official modules
