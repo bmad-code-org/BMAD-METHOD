@@ -603,6 +603,18 @@ function isExistingDirectory(value) {
   }
 }
 
+/**
+ * Resolve raw prompt input to an absolute directory path.
+ * Mirrors UI.expandUserPath so what the prompt returns matches what the
+ * installer later resolves.
+ */
+function resolveDirectoryInput(input, options = {}) {
+  const cwd = options.cwd || process.cwd();
+  const rawInput = typeof input === 'string' ? input.trim() : '';
+  if (!rawInput) return options.default || cwd;
+  return path.resolve(cwd, expandHome(rawInput));
+}
+
 function listDirectoryOptions(input, options) {
   const cwd = options.cwd || process.cwd();
   const rawInput = input.trim();
@@ -624,7 +636,8 @@ function listDirectoryOptions(input, options) {
         if (prefix && !entry.name.toLowerCase().startsWith(prefix)) continue;
         const fullPath = path.join(browseDir, entry.name);
         if (!results.some((option) => option.value === fullPath)) {
-          results.push(toDirectoryOption(fullPath));
+          // Label with the folder name only; the input line already shows the parent.
+          results.push(toDirectoryOption(fullPath, `${entry.name}/`));
         }
       }
     } catch {
@@ -642,40 +655,61 @@ function listDirectoryOptions(input, options) {
 }
 
 /**
- * Directory prompt with autocomplete candidates and create-directory support.
- * Uses @clack/core directly so typed paths that do not exist yet can still be
- * submitted when validation allows creating them.
+ * Pick the slice of candidates to display, keeping the highlighted row visible.
+ */
+function directoryWindow(candidates, index, max) {
+  if (candidates.length <= max) return { start: 0, items: candidates };
+  const anchor = index === -1 ? 0 : index;
+  const start = Math.max(0, Math.min(anchor - Math.floor(max / 2), candidates.length - max));
+  return { start, items: candidates.slice(start, start + max) };
+}
+
+/**
+ * Directory prompt with a visible candidate list and create-directory support.
+ *
+ * The text on the input line is always what gets submitted. Browsing with
+ * arrow keys or Tab writes the highlighted candidate onto that line, so the
+ * displayed path and the returned path can never diverge. Typing recomputes
+ * the candidate list and clears the highlight.
+ *
  * @param {Object} options - Prompt options
  * @param {string} options.message - Prompt message
  * @param {string} [options.default] - Default directory
  * @param {string} [options.placeholder] - Placeholder text
  * @param {Function} [options.validate] - Sync validation function
- * @returns {Promise<string>} Selected or typed directory path
+ * @param {Object} [options.input] - Input stream (defaults to process.stdin; tests inject)
+ * @param {Object} [options.output] - Output stream (defaults to process.stdout; tests inject)
+ * @returns {Promise<string>} Resolved absolute directory path
  */
 async function directory(options) {
   const core = await getClackCore();
   const color = await getPicocolors();
-  const tabCompletion = {
-    prefix: '',
-    index: -1,
-    options: [],
-    lastValue: '',
+  const MAX_VISIBLE = 6;
+
+  // typed: the text the candidate list was built from, restored when browsing
+  //   backs out of the list (index -1).
+  // line:  the value currently on the input line, whether typed or completed.
+  //   The list stays frozen while browsing, so arrow keys and Tab walk
+  //   siblings instead of descending into whatever was just highlighted.
+  const browse = { typed: '', line: '', candidates: [], index: -1, applying: false };
+
+  const refresh = (input) => {
+    browse.typed = input;
+    browse.line = input;
+    browse.candidates = listDirectoryOptions(input, options);
+    browse.index = -1;
   };
 
   let prompt;
-  prompt = new core.AutocompletePrompt({
-    initialValue: options.default,
-    options: () => listDirectoryOptions(prompt?.userInput || '', options),
-    filter: () => true,
-    validate: (value) => options.validate?.(value ?? prompt.userInput),
+  prompt = new core.TextPrompt({
+    ...(options.input ? { input: options.input } : {}),
+    ...(options.output ? { output: options.output } : {}),
+    defaultValue: options.default,
+    validate: options.validate,
     render() {
-      const title = `${color.gray('◆')}  ${options.message}`;
       const bar = color.gray('│');
       const barEnd = color.gray('└');
       const userInput = this.userInput;
-      const placeholder = options.placeholder || options.default;
-      const inputDisplay = userInput ? this.userInputWithCursor : `${color.inverse(color.hidden('_'))}${color.dim(placeholder || '')}`;
-      const errorLine = this.state === 'error' ? [`${color.yellow('│')}  ${color.yellow(this.error)}`] : [];
 
       switch (this.state) {
         case 'submit': {
@@ -685,7 +719,27 @@ async function directory(options) {
           return `${color.gray('◇')}  ${options.message}\n${bar}  ${color.strikethrough(color.dim(userInput || ''))}`;
         }
         default: {
-          return [title, `${bar}  ${inputDisplay}`, ...errorLine, barEnd].join('\n');
+          const placeholder = options.placeholder || options.default;
+          const inputDisplay = userInput ? this.userInputWithCursor : `${color.inverse(color.hidden('_'))}${color.dim(placeholder || '')}`;
+          const lines = [`${color.gray('◆')}  ${options.message}`, `${bar}  ${inputDisplay}`];
+
+          if (this.state === 'error') lines.push(`${color.yellow('│')}  ${color.yellow(this.error)}`);
+
+          const { start, items } = directoryWindow(browse.candidates, browse.index, MAX_VISIBLE);
+          if (items.length > 0) {
+            lines.push(bar);
+            for (const [offset, candidate] of items.entries()) {
+              const isActive = start + offset === browse.index;
+              const marker = isActive ? color.cyan('❯') : ' ';
+              const label = isActive ? color.cyan(candidate.label) : color.dim(candidate.label);
+              lines.push(`${bar}  ${marker} ${label}`);
+            }
+            const hidden = browse.candidates.length - items.length;
+            if (hidden > 0) lines.push(`${bar}    ${color.dim(`… ${hidden} more`)}`);
+          }
+
+          lines.push(`${barEnd}  ${color.dim('↑↓ browse · tab next · enter accept the path above')}`);
+          return lines.join('\n');
         }
       }
     },
@@ -694,33 +748,47 @@ async function directory(options) {
   const hasSetUserInput = typeof prompt._setUserInput === 'function';
   const hasClearUserInput = typeof prompt._clearUserInput === 'function';
 
-  prompt.on('key', (_, key) => {
-    if (key?.name !== 'tab') return;
-    if (!hasSetUserInput) return; // @clack/core API surface changed — skip Tab silently.
-    const currentInput = prompt.userInput;
-    const isContinuingCycle = tabCompletion.lastValue && currentInput === tabCompletion.lastValue;
-    const completionOptions = isContinuingCycle ? tabCompletion.options : prompt.filteredOptions.filter((option) => !option.synthetic);
-    if (completionOptions.length === 0) return;
+  refresh('');
 
-    if (isContinuingCycle) {
-      tabCompletion.index = (tabCompletion.index + 1) % completionOptions.length;
+  // Typing invalidates any highlight — the typed text is authoritative again.
+  // A value equal to what browsing just wrote is an echo, not a keystroke.
+  prompt.on('userInput', (value) => {
+    if (browse.applying) return;
+    if (value !== browse.line) refresh(value);
+  });
+
+  prompt.on('key', (_, key) => {
+    const name = key?.name;
+    if (name !== 'up' && name !== 'down' && name !== 'tab') return;
+    if (!hasSetUserInput) return; // @clack/core API surface changed — skip browsing silently.
+    const total = browse.candidates.length;
+    if (total === 0) return;
+
+    if (name === 'tab') {
+      // Tab completes: advance to the next real directory, never the
+      // typed-text slot and never a not-yet-created path.
+      const realIndexes = browse.candidates.map((c, i) => (c.synthetic ? -1 : i)).filter((i) => i !== -1);
+      if (realIndexes.length === 0) return;
+      browse.index = realIndexes.find((i) => i > browse.index) ?? realIndexes[0];
     } else {
-      tabCompletion.prefix = currentInput;
-      tabCompletion.options = completionOptions;
-      tabCompletion.index = 0;
+      // Index -1 is the typed text itself, so backing out of the list restores it.
+      const step = name === 'up' ? -1 : 1;
+      const slots = total + 1;
+      browse.index = ((browse.index + 1 + step + slots) % slots) - 1;
     }
 
-    const focusedOption = completionOptions[tabCompletion.index];
-    if (!focusedOption) return;
-    const completedValue = focusedOption.value;
-    tabCompletion.lastValue = completedValue;
+    const nextValue = browse.index === -1 ? browse.typed : browse.candidates[browse.index]?.value;
+    if (nextValue === undefined) return;
+    browse.line = nextValue;
+    browse.applying = true;
     if (hasClearUserInput) prompt._clearUserInput();
-    prompt._setUserInput(completedValue, true);
+    if (nextValue) prompt._setUserInput(nextValue, true);
+    browse.applying = false;
   });
 
   const result = await prompt.prompt();
   await handleCancel(result);
-  return result;
+  return resolveDirectoryInput(result, options);
 }
 
 /**
@@ -843,6 +911,10 @@ module.exports = {
   autocompleteMultiselect,
   autocomplete,
   directory,
+  // Exported for tests
+  listDirectoryOptions,
+  resolveDirectoryInput,
+  directoryWindow,
   confirm,
   text,
   password,
