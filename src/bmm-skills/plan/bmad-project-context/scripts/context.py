@@ -160,7 +160,7 @@ def parse_frontmatter(text: str):
         if val.startswith("[") and val.endswith("]"):
             fields[key] = [v.strip().strip("'\"") for v in val[1:-1].split(",") if v.strip()]
         else:
-            fields[key] = val.split("#")[0].strip().strip("'\"") if "#" in val else val.strip("'\"")
+            fields[key] = re.split(r"\s+#", val)[0].strip().strip("'\"")
     return fields, None, text[end + 5:]
 
 
@@ -294,7 +294,8 @@ def cmd_validate(args, project_root, cfg, as_json):
 def cmd_index(args, project_root, cfg, as_json):
     root = bundle_root(project_root, args.root, cfg)
     idx = root / "index.md"
-    if idx.exists() and INDEX_MARKER not in idx.read_text(encoding="utf-8").splitlines()[0]:
+    first_line = (idx.read_text(encoding="utf-8").splitlines() or [""])[0] if idx.exists() else ""
+    if first_line and INDEX_MARKER not in first_line:
         fail(f"refusing to overwrite foreign index.md at {idx} — move it, or point "
              f"project_knowledge at a clean folder")
     entries = load_entries(root)
@@ -440,10 +441,14 @@ def cache_dir() -> Path:
 def cache_lookup(project: str):
     pointer = cache_dir() / f"{project}.latest.json"
     if pointer.exists():
-        meta = json.loads(pointer.read_text(encoding="utf-8"))
-        path = cache_dir() / f"{project}@{meta['sha']}"
+        try:
+            meta = json.loads(pointer.read_text(encoding="utf-8"))
+            sha = meta["sha"]
+        except (json.JSONDecodeError, OSError, KeyError, TypeError):
+            return None
+        path = cache_dir() / f"{project}@{sha}"
         if path.is_dir():
-            return {"path": str(path), "sha": meta["sha"],
+            return {"path": str(path), "sha": sha,
                     "fetched_at": meta.get("fetched_at"), "source": "cache"}
     return None
 
@@ -472,8 +477,10 @@ def sparse_fetch(project: str, record: dict):
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copytree(src, dest)
         fetched_at = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
-        (cache_dir() / f"{project}.latest.json").write_text(
-            json.dumps({"sha": sha, "fetched_at": fetched_at}), encoding="utf-8")
+        pointer = cache_dir() / f"{project}.latest.json"
+        tmp_pointer = pointer.with_suffix(".json.tmp")
+        tmp_pointer.write_text(json.dumps({"sha": sha, "fetched_at": fetched_at}), encoding="utf-8")
+        os.replace(tmp_pointer, pointer)
         return {"path": str(dest), "sha": sha, "fetched_at": fetched_at,
                 "source": "remote"}, None
 

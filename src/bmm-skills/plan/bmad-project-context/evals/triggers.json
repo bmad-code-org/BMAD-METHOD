@@ -20,6 +20,10 @@
     "should_trigger": true
   },
   {
+    "query": "what does our project context say about how we handle money amounts",
+    "should_trigger": true
+  },
+  {
     "query": "write a product brief for my new app idea",
     "should_trigger": false
   },
