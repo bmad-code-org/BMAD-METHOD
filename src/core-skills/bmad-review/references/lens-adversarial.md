@@ -4,7 +4,6 @@ Conduct a review of the provided content.
 Look for what's missing, not only what's wrong.
 Find at least ten issues to fix or improve.
 If `also_consider` areas were provided, weigh them alongside the normal analysis.
-Every finding must point at something concrete in the content.
 If the content is empty, stop and say so.
 If you have zero findings, re-check and keep thinking; do not stop with an empty list.
 

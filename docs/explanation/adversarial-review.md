@@ -11,7 +11,7 @@ Force deeper analysis by requiring a real list of issues — not a cynical perso
 
 A review technique where the reviewer must produce findings. "Looks good" with an empty list is not allowed.
 
-The mechanism is a **finding floor** (at least ten issues to fix or improve) plus an explicit push to look for **what is missing**, not only what is wrong. If the content is empty, stop. If the list is empty, re-check — do not finish with nothing.
+The mechanism is a **finding floor** (at least ten issues to fix or improve) plus an explicit push to look for **what is missing**, not only what is wrong. Output is a Markdown list of descriptions only — no severity, priority, or ranking. If the content is empty, stop. If the list is empty, re-check — do not finish with nothing.
 
 It is not about sounding hostile. Older prompts used a jaded persona; that does not change what modern models find. What still matters is the obligation to keep searching and to prefer omissions over a cursory pass.
 
