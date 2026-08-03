@@ -7,7 +7,7 @@ sidebar:
 
 `bmad-project-context` owns everything the code can't tell an AI agent: why the architecture is shaped this way, which conventions are deliberate, what the org requires, which landmines a fresh session must know before touching anything. It maintains that knowledge as a small, verified context system instead of generated documentation.
 
-The evidence behind the design is blunt: LLM-generated context docs measurably make agents *worse* (lower correctness at higher cost), and long overview documents add wasted exploration. What works is a tiny always-loaded file, small verified entries loaded on demand, and mechanical maps produced fresh by a script. So the skill curates the minimum non-derivable set and never describes what the code already says.
+The evidence behind the design is blunt: LLM-generated context docs measurably make agents *worse* (lower correctness at higher cost), and long overview documents add wasted exploration. What works is a tiny always-loaded file, small verified entries loaded on demand, and mechanical maps produced fresh on demand. So the skill curates the minimum non-derivable set and never describes what the code already says. For the full reasoning — including what is deliberately *not* captured and why — see [The Theory of Project Context](project-context-theory.md).
 
 ## The two artifacts
 

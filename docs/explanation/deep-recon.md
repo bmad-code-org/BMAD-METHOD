@@ -2,7 +2,7 @@
 title: "Deep Recon"
 description: Decision-grade research three ways — draft a prompt for your own deep-research tool, process a finished report, or run the research in place
 sidebar:
-  order: 14
+  order: 15
 ---
 
 Deep Recon researches anything you need to decide on. This page explains its three modes, how to pick between them, and what actually happens inside a native research run.
