@@ -1,66 +1,56 @@
 ---
-title: "Revue Contradictoire"
-description: Technique de raisonnement forcée qui empêche les revues paresseuses du style « ça à l’air bon »
+title: "Revue contradictoire"
+description: Revue à liste obligatoire qui bloque le tampon « ça a l’air bon »
 sidebar:
   order: 9
 ---
 
-Forcez une analyse plus approfondie en exigeant que des problèmes soient trouvés.
+Forcer une analyse plus profonde en exigeant une vraie liste de problèmes — pas une persona cynique.
 
-## Qu’est-ce que la Revue Contradictoire ?
+## Qu’est-ce que la revue contradictoire ?
 
-Une technique de revue où le réviseur *doit* trouver des problèmes. Pas de « ça a l’air bon » autorisé. Le réviseur adopte une posture cynique - suppose que des problèmes existent et les trouve.
+Une technique où le réviseur doit produire des constats. « Ça a l’air bon » avec une liste vide n’est pas permis.
 
-Il ne s’agit pas d’être négatif. Il s’agit de forcer une analyse authentique au lieu d’un coup d’œil superficiel qui valide automatiquement ce qui a été soumis.
+Le mécanisme est un **plancher de constats** (au moins dix points à corriger ou améliorer) et une exigence de chercher **ce qui manque**, pas seulement ce qui est faux. Si le contenu est vide, s’arrêter. Si la liste est vide, revérifier — ne pas terminer sans rien.
 
-**La règle fondamentale :** Il doit trouver des problèmes. Zéro constatation déclenche un arrêt - réanalyse ou explique pourquoi.
+Ce n’est pas une question d’hostilité. Les anciens prompts utilisaient une persona aigrie ; cela ne change pas ce que trouvent les modèles actuels. Ce qui compte encore, c’est l’obligation de continuer à chercher et de préférer les omissions à un passage en coup de vent.
 
-## Pourquoi Cela Fonctionne
+## Pourquoi ça marche
 
-Les revues normales souffrent du biais de confirmation[^1]. Il parcourt le travail rapidement, rien ne lui saute aux yeux, il l’approuve. L’obligation de « trouver des problèmes » brise ce schéma :
+Les revues normales souffrent du biais de confirmation. On parcourt le travail, rien ne saute aux yeux, on approuve. Le plancher casse ce schéma :
 
-- **Force la rigueur** - Impossible d’approuver tant qu’il n’a pas examiné suffisamment en profondeur pour trouver des problèmes
-- **Détecte les oublis** - « Qu’est-ce qui manque ici ? » devient une question naturelle
-- **Améliore la qualité du signal** - Les constatations sont spécifiques et actionnables, pas des préoccupations vagues
-- **Asymétrie d’information**[^2] - Effectue les revues avec un contexte frais (sans accès au raisonnement original) pour évaluer l’artefact, pas l’intention
+- **Force la rigueur** — on ne peut pas finir tant qu’assez de constats concrets ne sont pas listés
+- **Attrape les manques** — « qu’est-ce qui n’est pas là ? » fait partie du travail
+- **Alimente le triage, pas l’utilisateur directement** — dans build et code-review, la session parente filtre le bruit ; le rôle du chasseur est le rappel, pas le jugement final
+- **Asymétrie d’information** — les chasseurs tournent souvent avec un contexte frais sur le changement
 
-## Où Elle Est Utilisée
+## Où c’est utilisé
 
-La revue contradictoire apparaît dans tous les workflows BMad - revue de code, vérifications de préparation à l’implémentation, validation de spécifications, et d’autres. Parfois c’est une étape obligatoire, parfois optionnelle (comme l’élicitation avancée ou le mode party). Le pattern s’adapte à n’importe quel artefact nécessitant un examen.
+- **bmad-build / bmad-build-auto / bmad-code-review** — couche Blind Hunter : court prompt en ligne, contenu sous `CONTENT:`, en parallèle des autres couches, puis triage
+- **bmad-review** — lentille adversarial parmi les revues multi-lentilles (même méthode ; champs de finding canoniques pour la fusion)
 
-## Filtrage Humain Requis
+## Filtrage humain (ou parent) requis
 
-Parce que l’IA est *instruite* de trouver des problèmes, elle trouvera des problèmes - même lorsqu’ils n’existent pas. Attendez-vous à des faux positifs : des détails présentés comme des problèmes, des malentendus sur l’intention, ou des préoccupations purement hallucinées[^3].
+Parce que le modèle doit remplir une liste, il produira des items minces, préexistants ou faux. Les faux positifs sont attendus.
 
-**C’est vous qui décidez ce qui est réel.** Examinez chaque constatation, ignorez le bruit, corrigez ce qui compte.
+**Le triage décide ce qui est réel.** Dans les flux agentiques, c’est le workflow parent. En revue autonome, c’est vous.
 
 ## Exemple
 
 Au lieu de :
 
-> « L’implémentation de l’authentification semble raisonnable. Approuvé. »
+> « L’implémentation d’auth a l’air raisonnable. Approuvé. »
 
-Une revue contradictoire produit :
+Un passage contradictoire produit une liste, par exemple :
 
-> 1. **ÉLEVÉ** - `login.ts:47` - Pas de limitation de débit sur les tentatives échouées
-> 2. **ÉLEVÉ** - Jeton de session stocké dans localStorage (vulnérable au XSS)
-> 3. **MOYEN** - La validation du mot de passe se fait côté client uniquement
-> 4. **MOYEN** - Pas de journalisation d’audit pour les tentatives de connexion échouées
-> 5. **FAIBLE** - Le nombre magique `3600` devrait être `SESSION_TIMEOUT_SECONDS`
+> 1. `login.ts:47` — pas de rate limiting sur les échecs  
+> 2. Jeton de session dans localStorage (risque XSS)  
+> … (au moins dix points concrets)
 
-La première revue pourrait manquer une vulnérabilité de sécurité. La seconde en a attrapé quatre.
+## Itération et rendements décroissants
 
-## Itération et Rendements Décroissants
+Après correction, un autre passage peut encore aider. Chaque passage coûte du temps ; on finit par n’avoir que des nits et des faux constats. Le triage en aval et le budget de boucle (dans build) empêchent que ça tourne indéfiniment.
 
-Après avoir traité les constatations, envisagez de relancer la revue. Une deuxième passe détecte généralement plus de problèmes. Une troisième n’est pas toujours inutile non plus. Mais chaque passe prend du temps, et vous finissez par atteindre des rendements décroissants[^4] - juste des détails et des faux problèmes.
-
-:::tip[Meilleures Revues]
-Supposez que des problèmes existent. Cherchez ce qui manque, pas seulement ce qui ne va pas.
+:::tip[Meilleures revues]
+Cherchez ce qui manque, pas seulement ce qui est faux. Continuez jusqu’à ce que la liste soit réelle — puis laissez le triage la raccourcir.
 :::
-
-## Glossaire
-
-[^1]: **Biais de confirmation** : tendance cognitive à rechercher, interpréter et favoriser les informations qui confirment nos croyances préexistantes, tout en ignorant ou minimisant celles qui les contredisent.
-[^2]: **Asymétrie d’information** : situation où une partie dispose de plus ou de meilleures informations qu’une autre, conduisant potentiellement à des décisions ou jugements biaisés.
-[^3]: **Hallucination (IA)** : phénomène où un modèle d’IA génère des informations plausibles mais factuellement incorrectes ou inventées, présentées avec confiance comme si elles étaient vraies.
-[^4]: **Rendements décroissants** : principe selon lequel l’augmentation continue d’un investissement (temps, effort, ressources) finit par produire des bénéfices de plus en plus faibles proportionnellement.

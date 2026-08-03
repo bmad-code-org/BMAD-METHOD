@@ -1,38 +1,41 @@
 ---
 title: "Adversarial Review"
-description: Forced reasoning technique that prevents lazy "looks good" reviews
+description: Forced-finding review that blocks lazy "looks good" rubber stamps
 sidebar:
   order: 9
 ---
 
-Force deeper analysis by requiring problems to be found.
+Force deeper analysis by requiring a real list of issues — not a cynical persona.
 
 ## What is Adversarial Review?
 
-A review technique where the reviewer *must* find issues. No "looks good" allowed. The reviewer adopts a cynical stance - assume problems exist and find them.
+A review technique where the reviewer must produce findings. "Looks good" with an empty list is not allowed.
 
-This isn't about being negative. It's about forcing genuine analysis instead of a cursory glance that rubber-stamps whatever was submitted.
+The mechanism is a **finding floor** (at least ten issues to fix or improve) plus an explicit push to look for **what is missing**, not only what is wrong. If the content is empty, stop. If the list is empty, re-check — do not finish with nothing.
 
-**The core rule:** You must find issues. Zero findings triggers a halt - re-analyze or explain why.
+It is not about sounding hostile. Older prompts used a jaded persona; that does not change what modern models find. What still matters is the obligation to keep searching and to prefer omissions over a cursory pass.
 
 ## Why It Works
 
-Normal reviews suffer from confirmation bias. You skim the work, nothing jumps out, you approve it. The "find problems" mandate breaks this pattern:
+Normal reviews suffer from confirmation bias. You skim the work, nothing jumps out, you approve it. The floor breaks that pattern:
 
-- **Forces thoroughness** - Can't approve until you've looked hard enough to find issues
-- **Catches missing things** - "What's not here?" becomes a natural question
-- **Improves signal quality** - Findings are specific and actionable, not vague concerns
-- **Information asymmetry** - Run reviews with fresh context (no access to original reasoning) so you evaluate the artifact, not the intent
+- **Forces thoroughness** — cannot finish until enough concrete issues are listed
+- **Catches missing things** — "what is not here?" is part of the job
+- **Feeds triage, not the user directly** — in build and code-review, a parent session filters noise into a short signal list; the hunter's job is recall, not final judgment
+- **Information asymmetry** — hunters often run with fresh context on the change, so they evaluate the artifact rather than replaying the author's intent
 
 ## Where It's Used
 
-Adversarial review appears throughout BMad workflows - code review, implementation readiness checks, spec validation, and others. Sometimes it's a required step, sometimes optional (like advanced elicitation or party mode). The pattern adapts to whatever artifact needs scrutiny.
+- **bmad-build / bmad-build-auto / bmad-code-review** — the Blind Hunter layer: short inlined prompt, content under `CONTENT:`, parallel with edge-case and verification-gap layers, then triage
+- **bmad-review** — the adversarial lens among multi-lens reviews (same method; canonical finding fields for merge)
 
-## Human Filtering Required
+The pattern can apply to any artifact that needs scrutiny: diffs, specs, docs.
 
-Because the AI is *instructed* to find problems, it will find problems - even when they don't exist. Expect false positives: nitpicks dressed as issues, misunderstandings of intent, or outright hallucinated concerns.
+## Human (or parent) Filtering Required
 
-**You decide what's real.** Review each finding, dismiss the noise, fix what matters.
+Because the model is instructed to fill a list, it will produce items even when some are thin, pre-existing, or wrong. Expect false positives.
+
+**Triage decides what is real.** In agentic build/code-review, that is the parent workflow. In a standalone review, it is you. Dismiss noise; keep what matters.
 
 ## Example
 
@@ -40,20 +43,22 @@ Instead of:
 
 > "The authentication implementation looks reasonable. Approved."
 
-An adversarial review produces:
+An adversarial pass produces a list such as:
 
-> 1. **HIGH** - `login.ts:47` - No rate limiting on failed attempts
-> 2. **HIGH** - Session token stored in localStorage (XSS vulnerable)
-> 3. **MEDIUM** - Password validation happens client-side only
-> 4. **MEDIUM** - No audit logging for failed login attempts
-> 5. **LOW** - Magic number `3600` should be `SESSION_TIMEOUT_SECONDS`
+> 1. `login.ts:47` — no rate limiting on failed attempts
+> 2. Session token stored in localStorage (XSS risk)
+> 3. Password validation only client-side
+> 4. No audit logging for failed login attempts
+> 5. Magic number `3600` should be a named constant
+> …
+> (through at least ten concrete items)
 
-The first review might miss a security vulnerability. The second caught four.
+The first "review" might miss a security gap. The second is long on purpose so something real has a chance to surface.
 
 ## Iteration and Diminishing Returns
 
-After addressing findings, consider running it again. A second pass usually catches more. A third isn't always useless either. But each pass takes time, and eventually you hit diminishing returns - just nitpicks and false findings.
+After addressing findings, another pass can still help. Each pass costs time; eventually you get only nits and false findings. Downstream triage and a fixed loop budget (in build) keep that from running forever.
 
 :::tip[Better Reviews]
-Assume problems exist. Look for what's missing, not just what's wrong.
+Look for what's missing, not only what's wrong. Keep hunting until the list is real — then let triage cut it down.
 :::
