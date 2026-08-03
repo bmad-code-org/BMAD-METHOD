@@ -267,6 +267,85 @@ class TicketTreeTests(unittest.TestCase):
             self.assertEqual(len(out["lanes"]), n)
             self.assertEqual(len(out["critical_path"]), n)
 
+    def _finish_alert_rules(self):
+        (self.root / "alert-rules" / "ticket.md").write_text(ticket(
+            "ALRT-3", "epic", "Alert rules", covers="[CAP-4]",
+            extra='description: "Rules people manage"\nstatus: done\n'))
+        (self.root / "alert-rules" / "ALRT-13-rule-eval.md").write_text(
+            ticket("ALRT-13", "story", "Rule eval", status="done",
+                   deps="[ALRT-12]", covers="[CAP-5]"))
+
+    def test_archive_moves_leaves_and_drops_satisfied_edges(self):
+        self._finish_alert_rules()
+        (self.root / "ALRT-45-followup.md").write_text(
+            ticket("ALRT-45", "task", "Follow-up", deps="[ALRT-12, ALRT-40]"))
+        code, out = run("archive", "--root", str(self.root),
+                        "--epic", "ALRT-3", "--date", "2026-08-02")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(out["archived"], ["ALRT-12", "ALRT-13"])
+        dest = self.root / ".archive" / "2026-08-02-alert-rules"
+        self.assertTrue((dest / "ALRT-12-rule-crud.md").is_file())
+        self.assertFalse((self.root / "alert-rules" / "ALRT-12-rule-crud.md").exists())
+        self.assertTrue((self.root / "alert-rules" / "ticket.md").is_file())  # envelope stays
+        # satisfied edge into the archive dropped; unrelated edge kept
+        self.assertIn("depends_on: [ALRT-40]",
+                      (self.root / "ALRT-45-followup.md").read_text())
+        # archived leaves are off the board everywhere
+        code, out = run("list", "--root", str(self.root))
+        ids = [r["id"] for r in out["tickets"]]
+        self.assertNotIn("ALRT-12", ids)
+        self.assertIn("ALRT-3", ids)
+        code, out = run("validate", "--root", str(self.root))
+        self.assertEqual(code, 0, out)
+
+    def test_archive_refuses_unfinished(self):
+        code, out = run("archive", "--root", str(self.root), "--epic", "ALRT-3")
+        self.assertEqual(code, 1)
+        self.assertIn("not marked done", out["error"])
+        (self.root / "alert-rules" / "ticket.md").write_text(ticket(
+            "ALRT-3", "epic", "Alert rules", covers="[CAP-4]",
+            extra='description: "Rules people manage"\nstatus: done\n'))
+        code, out = run("archive", "--root", str(self.root), "--epic", "ALRT-3")
+        self.assertEqual(code, 1)  # ALRT-13 still backlog
+        self.assertIn("still open", out["error"])
+        self.assertIn("ALRT-13", out["error"])
+
+    def test_archive_refuses_dep_on_dropped_leaf(self):
+        self._finish_alert_rules()
+        (self.root / "alert-rules" / "ALRT-13-rule-eval.md").write_text(
+            ticket("ALRT-13", "story", "Rule eval", status="dropped"))
+        (self.root / "ALRT-46-waiting.md").write_text(
+            ticket("ALRT-46", "task", "Waiting", deps="[ALRT-13]"))
+        code, out = run("archive", "--root", str(self.root), "--epic", "ALRT-3")
+        self.assertEqual(code, 1)
+        self.assertIn("dropped", out["error"])
+        self.assertIn("ALRT-46", out["error"])
+
+    def test_archive_purge_deletes(self):
+        self._finish_alert_rules()
+        code, out = run("archive", "--root", str(self.root),
+                        "--epic", "ALRT-3", "--purge")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(out["purged"], ["ALRT-12", "ALRT-13"])
+        self.assertIsNone(out["dest"])
+        self.assertFalse((self.root / ".archive").exists())
+        self.assertFalse((self.root / "alert-rules" / "ALRT-12-rule-crud.md").exists())
+
+    def test_archived_ids_never_reissued(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            (root / "index.md").write_text("---\nkey: NEW\n---\n")
+            e = root / "one"
+            e.mkdir()
+            (e / "ticket.md").write_text(ticket(
+                "NEW-1", "epic", "One", extra='description: "x"\nstatus: done\n'))
+            (e / "NEW-2-only.md").write_text(
+                ticket("NEW-2", "task", "Only", status="done"))
+            code, out = run("archive", "--root", str(root), "--epic", "NEW-1")
+            self.assertEqual(code, 0, out)
+            code, out = run("next-id", "--root", str(root))
+            self.assertEqual(out["id"], "NEW-3")  # NEW-2 lives in .archive, still owns its id
+
     def test_render_monofile_view(self):
         out_file = self.root / "epics-and-stories.md"
         code, out = run("render", "--root", str(self.root), "--out", str(out_file))

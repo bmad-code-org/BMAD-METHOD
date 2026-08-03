@@ -387,7 +387,12 @@ def main():
                 os.unlink(tmp)
             raise
 
-    print(json.dumps({"ok": True, "file": str(path), "changes": changes, "unchanged": unchanged}))
+    out = {"ok": True, "file": str(path), "changes": changes, "unchanged": unchanged}
+    if ticket_type == "epic" and changes.get("status", {}).get("to") == "done":
+        out["hint"] = ("epic marked done — offer to archive its stories to the dated "
+                       "record: ticket_tree.py archive --epic <id> (--purge if the "
+                       "record lives elsewhere, e.g. Jira)")
+    print(json.dumps(out))
 
 
 if __name__ == "__main__":

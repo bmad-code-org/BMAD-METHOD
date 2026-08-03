@@ -17,6 +17,9 @@ Everything here is derived by scan — nothing is stored. Verbs:
   coverage  covers: vs an inventory    uv run ticket_tree.py coverage --root R [--require "CAP-1,FR-2"] [--proposed "CAP-3"]
   render    single epics-and-stories   uv run ticket_tree.py render --root R --out FILE
             markdown view (generated; the tree stays the source of truth)
+  archive   move a done epic's leaves  uv run ticket_tree.py archive --root R --epic KEY-n [--purge] [--date YYYY-MM-DD]
+            to .archive/<date>-<slug>/ as the dated record (--purge deletes
+            instead, for stories whose record lives elsewhere, e.g. Jira)
 
 Output is one JSON object per call. Stdlib only. Dual-homed: canonical at
 src/scripts/ (installed to {project-root}/_bmad/scripts/ for any skill or
@@ -25,6 +28,7 @@ Keep both in sync.
 """
 
 import argparse
+import datetime
 import json
 import os
 import re
@@ -94,15 +98,19 @@ def parse_frontmatter(text):
     return None
 
 
-def scan(root):
+def scan(root, include_dot=False):
     """Return (tickets, by_id, problems). Each ticket: frontmatter + _path + _rel.
     problems: files that claim to be tickets but can't be trusted — unreadable,
-    unparseable frontmatter, missing id/type, or a duplicate id (first file wins)."""
+    unparseable frontmatter, missing id/type, or a duplicate id (first file wins).
+    Dot folders (.archive/, .git/) are off the board unless include_dot."""
     tickets = []
     by_id = {}
     problems = []
     for p in sorted(root.rglob("*.md")):
         if p.name == "index.md":
+            continue
+        rel_parts = p.relative_to(root).parts
+        if not include_dot and any(part.startswith(".") for part in rel_parts):
             continue
         rel = p.relative_to(root).as_posix()
         try:
@@ -216,7 +224,8 @@ def id_num(ticket_id):
 
 def cmd_next_id(root, args):
     key = resolve_key(root, args.key)
-    tickets, _, problems = scan(root)
+    # include_dot: archived tickets still own their ids — never reissue them.
+    tickets, _, problems = scan(root, include_dot=True)
     nums = [id_num(t["id"]) for t in tickets
             if re.fullmatch(re.escape(key) + r"-\d+", str(t["id"]), re.IGNORECASE)]
     nxt = (max(nums) + 1) if nums else 1
@@ -226,8 +235,7 @@ def cmd_next_id(root, args):
     print(json.dumps(out))
 
 
-def cmd_index(root, args):
-    key = resolve_key(root, args.key)
+def write_index(root, key):
     tickets, _, problems = scan(root)
 
     def entry_lines(t, depth):
@@ -253,7 +261,13 @@ def cmd_index(root, args):
         body.extend(entry_lines(lf, 0))
     body.append("")
     atomic_write(root / "index.md", "\n".join(body))
-    out = {"ok": True, "file": str(root / "index.md"), "entries": len(tickets)}
+    return len(tickets), problems
+
+
+def cmd_index(root, args):
+    key = resolve_key(root, args.key)
+    entries, problems = write_index(root, key)
+    out = {"ok": True, "file": str(root / "index.md"), "entries": entries}
     if problems:
         out["warnings"] = problems
     print(json.dumps(out))
@@ -456,6 +470,96 @@ def cmd_render(root, args):
     print(json.dumps(result))
 
 
+def _rewrite_depends_on(path, new_deps):
+    """Replace a ticket's depends_on entry (inline or block form) with an
+    inline list. Only used by archive to drop satisfied edges."""
+    lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
+    new_line = "depends_on: [" + ", ".join(str(d) for d in new_deps) + "]\n"
+    for i, line in enumerate(lines):
+        if re.match(r"^depends_on:", line):
+            j = i + 1
+            if line.split(":", 1)[1].strip() == "":
+                while j < len(lines) and re.match(r"^\s+-\s+", lines[j]):
+                    j += 1
+            lines[i:j] = [new_line]
+            break
+    atomic_write(path, "".join(lines))
+
+
+def cmd_archive(root, args):
+    """Move a finished epic's leaves to .archive/<date>-<slug>/ — the dated,
+    off-board record of a moment. --purge deletes instead, for stories whose
+    record of truth lives elsewhere (e.g. synced to Jira). The envelope stays:
+    it is the durable thin layer carrying the epic-level covers."""
+    tickets, by_id, problems = scan(root)
+    epic = by_id.get(args.epic)
+    if epic is None or epic.get("type") != "epic":
+        fail(f"no epic with id '{args.epic}' in the tree")
+    if epic.get("status") not in (DONE, DROPPED):
+        fail(f"epic {args.epic} is not marked done or dropped — archive is for "
+             "finished records; store the intentional status first (update_ticket.py)")
+    kids = children_of(epic, tickets)
+    if any(k["type"] == "epic" for k in kids):
+        fail(f"epic {args.epic} contains sub-epics — archive those first")
+    leaves = [k for k in kids if k["type"] in LEAF_TYPES]
+    if not leaves:
+        fail(f"epic {args.epic} has no leaves to archive")
+    still_open = sorted(str(k["id"]) for k in leaves
+                        if k.get("status") not in (DONE, DROPPED))
+    if still_open:
+        fail("archive is for finished records — still open under "
+             f"{args.epic}: {', '.join(still_open)}")
+    leaf_ids = {str(k["id"]): k for k in leaves}
+    done_ids = {i for i, k in leaf_ids.items() if k.get("status") == DONE}
+
+    blockers, edge_drops = [], {}
+    for t in tickets:
+        tid = str(t["id"])
+        if tid in leaf_ids or t is epic:
+            continue
+        refs = [str(d) for d in as_list(t, "depends_on") if str(d) in leaf_ids]
+        if not refs:
+            continue
+        undone = [r for r in refs if r not in done_ids]
+        if undone:
+            blockers.append(f"{tid} depends on dropped {', '.join(undone)}")
+        else:
+            edge_drops[tid] = refs
+    if blockers:
+        fail("live tickets depend on non-done leaves in the archive set — resolve "
+             "these edges first: " + "; ".join(blockers))
+
+    date = args.date or datetime.date.today().isoformat()
+    if not DATE_RE.match(date):
+        fail(f"--date must be YYYY-MM-DD, got '{date}'")
+
+    dest = None
+    if args.purge:
+        for k in leaves:
+            k["_path"].unlink()
+    else:
+        dest = root / ".archive" / f"{date}-{epic['_path'].parent.name}"
+        dest.mkdir(parents=True, exist_ok=True)
+        for k in leaves:
+            os.replace(k["_path"], dest / k["_path"].name)
+
+    for tid, refs in edge_drops.items():
+        t = by_id[tid]
+        kept = [str(d) for d in as_list(t, "depends_on") if str(d) not in refs]
+        _rewrite_depends_on(t["_path"], kept)
+
+    key = read_index_key(root)
+    if key:
+        write_index(root, key)
+    out = {"ok": True, "epic": args.epic,
+           ("purged" if args.purge else "archived"): sorted(leaf_ids),
+           "dest": str(dest) if dest else None,
+           "edges_dropped": edge_drops}
+    if problems:
+        out["warnings"] = problems
+    print(json.dumps(out))
+
+
 def _placeholderish(v):
     return isinstance(v, str) and ("[" in v or "]" in v or "YYYY" in v)
 
@@ -586,7 +690,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     sub = ap.add_subparsers(dest="verb", required=True)
     for verb in ("next-id", "index", "validate", "list", "frontier", "board",
-                 "coverage", "graph", "render"):
+                 "coverage", "graph", "render", "archive"):
         p = sub.add_parser(verb)
         p.add_argument("--root", required=True, help="ticket tree root")
         if verb in ("next-id", "index"):
@@ -602,6 +706,11 @@ def main():
         if verb == "render":
             p.add_argument("--out", required=True,
                            help="path for the generated epics-and-stories markdown")
+        if verb == "archive":
+            p.add_argument("--epic", required=True, help="id of the done/dropped epic")
+            p.add_argument("--purge", action="store_true",
+                           help="delete instead of moving (record lives elsewhere, e.g. Jira)")
+            p.add_argument("--date", help="archive folder date, defaults to today")
     args = ap.parse_args()
     root = Path(args.root)
     if not root.is_dir():
@@ -610,7 +719,7 @@ def main():
         {"next-id": cmd_next_id, "index": cmd_index, "validate": cmd_validate,
          "list": cmd_list, "frontier": cmd_frontier, "board": cmd_board,
          "coverage": cmd_coverage, "graph": cmd_graph,
-         "render": cmd_render}[args.verb](root, args)
+         "render": cmd_render, "archive": cmd_archive}[args.verb](root, args)
     except SystemExit:
         raise
     except Exception as e:  # keep the JSON output contract on fs/encoding errors

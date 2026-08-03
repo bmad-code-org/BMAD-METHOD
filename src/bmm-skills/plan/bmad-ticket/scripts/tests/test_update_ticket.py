@@ -115,6 +115,7 @@ class UpdateTicketTests(unittest.TestCase):
         code, out = run("--path", str(self.epic), "--set", "status=done")
         self.assertEqual(code, 0)
         self.assertIn("status: done", self.epic.read_text())
+        self.assertIn("archive", out.get("hint", ""))  # done → archive offer surfaces
         code, out = run("--path", str(self.epic), "--set", "status=dropped")
         self.assertEqual(code, 0)
         self.assertIn("status: dropped", self.epic.read_text())
