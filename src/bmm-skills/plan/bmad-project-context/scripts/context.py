@@ -12,7 +12,6 @@ bearing conformant frontmatter and never touches foreign files.
 Commands (all accept --json):
   validate [root]            frontmatter + link + index check; exit 1 on findings
   index [root]               regenerate index.md (refuses to overwrite a foreign one)
-  map [path] [--budget N]    mechanical tree + descriptor map to stdout; never writes
   sweep [root] [--today D]   staleness report (stale_after passed; sources drifted)
   resolve <name> [--refresh] cross-project resolution: self > workspace > cache > remote
   compass <path> [root]      nearest compass file covering a repo-relative path
@@ -37,8 +36,6 @@ BLOCK_END = "<!-- /bmad:context -->"
 REGISTRY_FILE = "registry.yaml"
 REGISTRY_KEY = "bmad_obeya_registry"
 DEFAULT_KNOWLEDGE = "docs"
-DEFAULT_MAP_BUDGET = 1000
-SKIP_DIRS = {".git", "node_modules", "__pycache__", ".venv", "venv", "dist", "build"}
 
 
 def fail(msg, code=1):
@@ -305,78 +302,6 @@ def cmd_index(args, project_root, cfg, as_json):
     if not idx.exists() or idx.read_text(encoding="utf-8") != content:
         idx.write_text(content, encoding="utf-8")
     emit({"ok": True, "entries": len(index_rows(entries)), "written": str(idx)}, as_json)
-
-
-# ── map ──────────────────────────────────────────────────────────────────────
-
-def list_files(project_root: Path):
-    proc = subprocess.run(["git", "ls-files"], cwd=str(project_root),
-                          capture_output=True, text=True)
-    if proc.returncode == 0:
-        return sorted(line for line in proc.stdout.splitlines() if line)
-    out = []
-    for base, dirs, files in os.walk(project_root):
-        dirs[:] = sorted(d for d in dirs if d not in SKIP_DIRS and not d.startswith("."))
-        for name in sorted(files):
-            if name.startswith("."):
-                continue
-            out.append(str((Path(base) / name).relative_to(project_root).as_posix()))
-    return sorted(out)
-
-
-def descriptor(path: Path) -> str:
-    try:
-        text = path.read_text(encoding="utf-8", errors="ignore")[:4000]
-    except OSError:
-        return ""
-    suffix = path.suffix
-    if suffix == ".py":
-        m = re.search(r'^\s*(?:"""|\'\'\')(.+?)(?:"""|\'\'\')?\s*$', text, re.MULTILINE)
-        names = re.findall(r"^(?:def|class)\s+(\w+)", text, re.MULTILINE)
-        parts = [m.group(1).strip() if m else "", ", ".join(names[:6])]
-        return " — ".join(p for p in parts if p)
-    if suffix in (".js", ".jsx", ".ts", ".tsx", ".mjs"):
-        names = re.findall(r"^export\s+(?:default\s+)?(?:async\s+)?"
-                           r"(?:function|class|const|let|var)\s+(\w+)", text, re.MULTILINE)
-        return ", ".join(names[:6])
-    if suffix in (".md", ".markdown"):
-        m = re.search(r"^#\s+(.+)$", text, re.MULTILINE)
-        return m.group(1).strip() if m else ""
-    return ""
-
-
-def render_map(project_root: Path, files, subtree: str | None, max_depth, with_desc):
-    if subtree:
-        prefix = subtree.rstrip("/") + "/"
-        files = [f for f in files if f.startswith(prefix) or f == subtree]
-    lines = []
-    counted = {}
-    for f in files:
-        parts = f.split("/")
-        if len(parts) > max_depth:
-            key = "/".join(parts[:max_depth])
-            counted[key] = counted.get(key, 0) + 1
-            continue
-        indent = "  " * (len(parts) - 1)
-        desc = descriptor(project_root / f) if with_desc else ""
-        lines.append(f"{indent}- {parts[-1]}" + (f" — {desc}" if desc else ""))
-    for key in sorted(counted):
-        indent = "  " * key.count("/")
-        lines.append(f"{indent}- {key.split('/')[-1]}/ ({counted[key]} files)")
-    return "\n".join(sorted(set(lines)) if counted else lines) + "\n"
-
-
-def cmd_map(args, project_root, cfg, as_json):
-    files = list_files(project_root)
-    budget = args.budget or DEFAULT_MAP_BUDGET
-    out = ""
-    for max_depth, with_desc in ((99, True), (99, False), (2, False), (1, False)):
-        out = render_map(project_root, files, args.path, max_depth, with_desc)
-        if len(out) / 4 <= budget:
-            break
-    emit({"map": out, "tokens": int(len(out) / 4)}, as_json)
-    if not as_json:
-        sys.stdout.write(out)
 
 
 # ── sweep ────────────────────────────────────────────────────────────────────
@@ -698,9 +623,6 @@ def main(argv=None):
     s.add_argument("root", nargs="?")
     s = sub.add_parser("index", parents=[jp])
     s.add_argument("root", nargs="?")
-    s = sub.add_parser("map", parents=[jp])
-    s.add_argument("path", nargs="?")
-    s.add_argument("--budget", type=int)
     s = sub.add_parser("sweep", parents=[jp])
     s.add_argument("root", nargs="?")
     s.add_argument("--today")
@@ -718,7 +640,7 @@ def main(argv=None):
     args = p.parse_args(argv)
     project_root = Path(args.project_root).resolve()
     cfg = resolve_full_config(project_root)
-    {"validate": cmd_validate, "index": cmd_index, "map": cmd_map, "sweep": cmd_sweep,
+    {"validate": cmd_validate, "index": cmd_index, "sweep": cmd_sweep,
      "resolve": cmd_resolve, "compass": cmd_compass, "sync": cmd_sync,
      "bootstrap": cmd_bootstrap, "config": cmd_config}[args.command](
         args, project_root, cfg, args.as_json)

@@ -195,61 +195,6 @@ class TestIndex:
         assert (proj / "docs" / "index.md").read_text().startswith("# Docs site index")
 
 
-# ── map ──────────────────────────────────────────────────────────────────────
-
-class TestMap:
-    @pytest.fixture
-    def repo(self, tmp_path):
-        r = make_git_repo(tmp_path / "repo")
-        (r / "src").mkdir()
-        (r / "src" / "money.py").write_text('"""Money helpers."""\ndef to_cents(x):\n    pass\n')
-        (r / "src" / "api.js").write_text("export function handler() {}\n")
-        (r / "README.md").write_text("# Fixture Repo\n")
-        (r / ".gitignore").write_text("secret.txt\n")
-        (r / "secret.txt").write_text("ignored")
-        git(r, "add", "-A")
-        git(r, "commit", "-qm", "init")
-        return r
-
-    def test_respects_gitignore(self, repo):
-        proc = run(["map"], repo, check=True)
-        assert "secret.txt" not in proc.stdout
-        assert "money.py" in proc.stdout
-
-    def test_subtree_scoping(self, repo):
-        proc = run(["map", "src"], repo, check=True)
-        assert "money.py" in proc.stdout and "README.md" not in proc.stdout
-
-    def test_descriptors_mechanical(self, repo):
-        proc = run(["map"], repo, check=True)
-        assert "Money helpers" in proc.stdout or "to_cents" in proc.stdout
-        assert "handler" in proc.stdout
-
-    def test_budget_respected(self, repo):
-        for i in range(60):
-            (repo / "src" / f"mod{i:02d}.py").write_text(f'"""Module {i}."""\n')
-        git(repo, "add", "-A")
-        git(repo, "commit", "-qm", "more")
-        proc = run(["map", "--budget", "100"], repo, check=True)
-        assert len(proc.stdout) / 4 <= 150  # ~100 tokens with slack
-
-    def test_stable_and_never_writes(self, repo):
-        before = sorted(p.relative_to(repo).as_posix() for p in repo.rglob("*") if ".git" not in p.parts)
-        out1 = run(["map"], repo, check=True).stdout
-        out2 = run(["map"], repo, check=True).stdout
-        after = sorted(p.relative_to(repo).as_posix() for p in repo.rglob("*") if ".git" not in p.parts)
-        assert out1 == out2
-        assert before == after
-
-    def test_non_git_fallback(self, tmp_path):
-        d = tmp_path / "plain"
-        (d / "node_modules" / "x").mkdir(parents=True)
-        (d / "node_modules" / "x" / "junk.js").write_text("x")
-        (d / "app.py").write_text('"""App."""\n')
-        proc = run(["map"], d, check=True)
-        assert "app.py" in proc.stdout and "junk.js" not in proc.stdout
-
-
 # ── sweep ────────────────────────────────────────────────────────────────────
 
 class TestSweep:

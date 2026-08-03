@@ -12,7 +12,7 @@
         "The kernel does NOT state self-evident facts: no 'uses TypeScript', no 'built on Express', no layering overview like 'the API layer calls the service layer'",
         "Every artifact written is marked generated (never verified) \u2014 this was an auto-mode run with no user confirmation",
         "The kernel is small: at most ~40 content lines, ordered with commands/conventions/landmines style sections, no prose paragraphs",
-        "The transcript shows context.py invocations for mechanical facts (map and/or index and/or validate); index.md exists in files/fixture-brownfield/context/",
+        "The transcript shows context.py invocations for mechanical facts (index and/or validate); index.md exists in files/fixture-brownfield/context/",
         "Scanning stays bounded: either source mining is delegated to subagents returning claim lists, or (small repo) the main session reads sources in a few batched calls \u2014 it never file-by-file crawls a large tree in its own context. For this small fixture, batched direct reads pass."
       ],
       "files": [
