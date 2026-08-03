@@ -18,6 +18,7 @@ stated intent and pre-resolved customization fields so the target skips its own 
 | `bmad-domain-research`     | `bmad-deep-recon` (domain type)      |
 | `bmad-technical-research`  | `bmad-deep-recon` (technical type)   |
 | `bmad-sprint-status`       | `bmad-sprint-planning` (status view) |
+| `bmad-create-epics-and-stories` | `bmad-ticket` (slice route; v6 shape on request) |
 
 Enterprise users may still depend on these IDs, so they ship by default. Removal rides the
 v7 cut — never a 6.x minor.

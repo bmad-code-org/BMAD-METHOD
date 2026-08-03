@@ -267,6 +267,23 @@ class TicketTreeTests(unittest.TestCase):
             self.assertEqual(len(out["lanes"]), n)
             self.assertEqual(len(out["critical_path"]), n)
 
+    def test_render_monofile_view(self):
+        out_file = self.root / "epics-and-stories.md"
+        code, out = run("render", "--root", str(self.root), "--out", str(out_file))
+        self.assertEqual(code, 0)
+        text = out_file.read_text()
+        self.assertIn("Generated from the ticket tree", text)
+        self.assertIn("## ALRT-3 — Alert rules [in-progress]", text)
+        self.assertIn("### ALRT-12 — Rule CRUD [done] (story, risk 2)", text)
+        self.assertIn("## Bin", text)
+        self.assertIn("### ALRT-31 — Snooze button [backlog] (task, risk 2)", text)
+        # A status flip in the tree shows up on re-render — the tree is truth.
+        (self.root / "alert-rules" / "ALRT-13-rule-eval.md").write_text(
+            ticket("ALRT-13", "story", "Rule eval", status="in-progress",
+                   deps="[ALRT-12]", covers="[CAP-5]"))
+        run("render", "--root", str(self.root), "--out", str(out_file))
+        self.assertIn("ALRT-13 — Rule eval [in-progress]", out_file.read_text())
+
     def test_mermaid_sanitizes_hostile_ids_and_titles(self):
         (self.root / "KEY-n-template.md").write_text(
             "---\nschema: 1\nid: [KEY-n]\ntype: story\n"

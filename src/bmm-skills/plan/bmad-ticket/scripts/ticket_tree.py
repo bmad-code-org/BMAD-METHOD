@@ -15,6 +15,8 @@ Everything here is derived by scan — nothing is stored. Verbs:
   board     status rollup (epics too)  uv run ticket_tree.py board --root R
   graph     dependency graph + lanes   uv run ticket_tree.py graph --root R [--mermaid]
   coverage  covers: vs an inventory    uv run ticket_tree.py coverage --root R [--require "CAP-1,FR-2"] [--proposed "CAP-3"]
+  render    single epics-and-stories   uv run ticket_tree.py render --root R --out FILE
+            markdown view (generated; the tree stays the source of truth)
 
 Output is one JSON object per call. Stdlib only. Dual-homed: canonical at
 src/scripts/ (installed to {project-root}/_bmad/scripts/ for any skill or
@@ -388,6 +390,72 @@ def cmd_list(root, args):
     print(json.dumps({"ok": True, "tickets": rows}))
 
 
+def cmd_render(root, args):
+    """One generated epics-and-stories markdown view over the whole tree —
+    the v6-shaped artifact. The tree stays the source of truth; edits to the
+    rendered file are overwritten on the next render."""
+    tickets, by_id, problems = scan(root)
+
+    def body_of(t):
+        lines = t["_path"].read_text(encoding="utf-8").splitlines()
+        if lines and lines[0].strip() == "---":
+            for i in range(1, len(lines)):
+                if lines[i].strip() == "---":
+                    lines = lines[i + 1:]
+                    break
+        while lines and not lines[0].strip():
+            lines = lines[1:]
+        if lines and lines[0].lstrip().startswith("# "):
+            lines = lines[1:]  # drop the file's own H1; the view supplies headings
+        return "\n".join(lines).strip()
+
+    def demote(text, levels):
+        return re.sub(r"^(#+)", "#" * levels + r"\1", text, flags=re.MULTILINE)
+
+    def leaf_block(t, depth):
+        h = "#" * (depth + 1)
+        head = (f"{h} {t['id']} — {t.get('title')} "
+                f"[{t.get('status')}] ({t['type']}, risk {t.get('risk')})")
+        body = demote(body_of(t), depth - 1)
+        return f"{head}\n\n{body}\n" if body else f"{head}\n"
+
+    def epic_block(e, depth):
+        h = "#" * (depth + 1)
+        parts = [f"{h} {e['id']} — {e.get('title')} [{epic_state(e, tickets)}]"]
+        body = demote(body_of(e), depth - 1)
+        if body:
+            parts.append(body)
+        for k in sorted(children_of(e, tickets), key=lambda x: id_num(x["id"])):
+            parts.append(epic_block(k, depth + 1) if k["type"] == "epic"
+                         else leaf_block(k, depth + 1))
+        return "\n\n".join(parts)
+
+    top_epics = [t for t in tickets if t["type"] == "epic"
+                 and not any(o["type"] == "epic" and o is not t
+                             and t["_path"].parent.parent == o["_path"].parent
+                             for o in tickets)]
+    bin_leaves = [t for t in tickets if t["type"] in LEAF_TYPES and t["_path"].parent == root]
+
+    out_parts = [
+        "# Epics and Stories",
+        "> Generated from the ticket tree — do not edit; the tree is the source "
+        "of truth and the next render overwrites this file.\n"
+        f"> Regenerate: `uv run ticket_tree.py render --root {root} --out <this file>`",
+    ]
+    for e in sorted(top_epics, key=lambda x: id_num(x["id"])):
+        out_parts.append(epic_block(e, 1))
+    if bin_leaves:
+        out_parts.append("## Bin")
+        for lf in sorted(bin_leaves, key=lambda x: id_num(x["id"])):
+            out_parts.append(leaf_block(lf, 2))
+    out_path = Path(args.out)
+    atomic_write(out_path, "\n\n".join(out_parts) + "\n")
+    result = {"ok": True, "file": str(out_path), "entries": len(tickets)}
+    if problems:
+        result["warnings"] = problems
+    print(json.dumps(result))
+
+
 def _placeholderish(v):
     return isinstance(v, str) and ("[" in v or "]" in v or "YYYY" in v)
 
@@ -517,7 +585,8 @@ def cmd_validate(root, args):
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     sub = ap.add_subparsers(dest="verb", required=True)
-    for verb in ("next-id", "index", "validate", "list", "frontier", "board", "coverage", "graph"):
+    for verb in ("next-id", "index", "validate", "list", "frontier", "board",
+                 "coverage", "graph", "render"):
         p = sub.add_parser(verb)
         p.add_argument("--root", required=True, help="ticket tree root")
         if verb in ("next-id", "index"):
@@ -530,6 +599,9 @@ def main():
         if verb == "graph":
             p.add_argument("--mermaid", action="store_true",
                            help="include a mermaid flowchart rendering")
+        if verb == "render":
+            p.add_argument("--out", required=True,
+                           help="path for the generated epics-and-stories markdown")
     args = ap.parse_args()
     root = Path(args.root)
     if not root.is_dir():
@@ -537,7 +609,8 @@ def main():
     try:
         {"next-id": cmd_next_id, "index": cmd_index, "validate": cmd_validate,
          "list": cmd_list, "frontier": cmd_frontier, "board": cmd_board,
-         "coverage": cmd_coverage, "graph": cmd_graph}[args.verb](root, args)
+         "coverage": cmd_coverage, "graph": cmd_graph,
+         "render": cmd_render}[args.verb](root, args)
     except SystemExit:
         raise
     except Exception as e:  # keep the JSON output contract on fs/encoding errors

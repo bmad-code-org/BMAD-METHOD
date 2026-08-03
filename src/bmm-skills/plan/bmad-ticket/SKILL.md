@@ -11,6 +11,8 @@ Act as the user's slicing partner: they hold the product knowledge; you hold the
 
 Three routes, cheap exit first. **Refine** writes one ticket with minimal ceremony. **Slice** decomposes open scope into the detailed epic set. **Incept** turns one epic into its stories. Never march a one-ticket request through inception altitude.
 
+**Args:** plain language throughout — anything supplied up front is honored, never re-asked. `refine|slice|incept` picks the route (else detected from intent); `guided|quick|autonomous` the mode; `key=KEY` the project key at bootstrap; paths are source documents, forwarded to ingest verbatim; "one file" or v6 shapes route to `references/v6-migration.md`. On `--help`/`-h`: state this surface, point at `customize.toml` (team overrides: `_bmad/custom/bmad-ticket.toml`) and `uv run {skill-root}/scripts/ticket_tree.py --help`, then stop — no activation, no tree bootstrap, no side effects.
+
 ## Resolution rules
 
 - Bare paths and `{skill-root}` (e.g. `assets/story-template.md`) resolve from this skill's installed directory.
@@ -22,7 +24,7 @@ Three routes, cheap exit first. **Refine** writes one ticket with minimal ceremo
 1. Resolve customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`. On failure — including when `{project-root}/_bmad/` does not exist (standalone installs) — read `{skill-root}/customize.toml` directly; don't hunt for the resolver elsewhere.
 2. Run `{workflow.activation_steps_prepend}`; treat `{workflow.persistent_facts}` as foundational context (`file:` entries are loaded).
 3. Resolve config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}`; from the merged JSON take `{communication_language}` and `{document_output_language}` (under `core`), `{planning_artifacts}` (under `modules.bmm`), `{date}`. Converse in `{communication_language}`; write ticket content in `{document_output_language}`. On failure, ask the user where the ticket tree should live (a sensible project-relative default) and continue.
-4. Open the floor before routing: invite everything the user has — planning docs, existing tickets, constraints, prior decisions, slicing preferences. Say the frame plainly: they are a coequal expert — you facilitate, they hold the product truth, and the more they bring the better the set. Validate what they point at (right docs, tree resolves) and announce what you'll use. Guidance that seems wrong, or contradicts the source or itself, gets a conversation, not silent compliance. A bare request gets "tell me everything"; a supplied path gets "what should I focus on?" — the dump replaces most ingest questioning. Then pick the route from intent — one ticket → refine; open scope or a planning doc → slice; an existing epic to break down → incept — and the mode — **guided** (the default), **quick**, or **autonomous** (explicit invocation selects it). Ambiguity costs one bundled question, not a quiz.
+4. Open the floor before routing (interactive modes; autonomous routes straight from the request): invite everything the user has — planning docs, existing tickets, constraints, prior decisions, slicing preferences. Say the frame plainly: they are a coequal expert — you facilitate, they hold the product truth, and the more they bring the better the set. Validate what they point at (right docs, tree resolves) and announce what you'll use. Guidance that seems wrong, or contradicts the source or itself, gets a conversation, not silent compliance. A bare request gets "tell me everything"; a supplied path gets "what should I focus on?" — the dump replaces most ingest questioning. Then pick the route from intent — one ticket → refine; open scope or a planning doc → slice; an existing epic to break down → incept; updates and status questions need no route (the gate and tree queries answer them) — and the mode — **guided** (the default), **quick**, or **autonomous** (explicit invocation selects it). Ambiguity costs one bundled question, not a quiz.
 5. Tree check: if `{workflow.tickets_output_path}` has no `index.md`, bootstrap before any route runs — create the folder, settle the project key, write the index: `uv run {skill-root}/scripts/ticket_tree.py index --root {workflow.tickets_output_path} --key <KEY>`. Key precedence: the request, `{workflow.project_keys}`, then one bundled question — autonomous never asks: derive 3–5 uppercase letters from the project name and flag the derived key in the completion report. If the tree exists, read `index.md` once to rebuild the landscape before routing.
 6. Run `{workflow.activation_steps_append}`.
 
@@ -85,6 +87,10 @@ Open scope in, the detailed epic set out through a human gate — envelopes with
 
 One epic in, its stories out through the breakdown-quiz gate. The epic's envelope is co-authored working state — re-read it fresh; detail a PM added since slicing is input, never drift. Load `references/incept-stories.md` and run it.
 
+## V6 compatibility
+
+A request for the single epics-and-stories file, all stories for all epics up front, or migration from a `sprint-status.yaml` project: load `references/v6-migration.md` and run it. Recommend the just-in-time path first; comply if the user still wants the v6 shape.
+
 ## Modes
 
 Routes say what gets made; modes say how collaboratively.
@@ -111,6 +117,6 @@ A loosely named target resolves in tiers: exact id/slug/title match (`ticket_tre
 ## Tree queries
 
 Derived state is never hand-computed: `uv run {skill-root}/scripts/ticket_tree.py <verb> --root {workflow.tickets_output_path}` — `next-id` before allocating, `index` after any structural write, `validate` after every write (schema, placeholders, dep resolution, cycles — fix what it names before presenting), `list` for the id/title/status/path inventory, `frontier` for "what's workable now," `board` for rollups (computed epic state included), `coverage --require "<ids>"` for the coverage check (`--proposed` pre-gate, before anything is on disk), `graph --mermaid` for the dependency graph, parallel lanes, and critical path. When the user asks to optimize sequencing or dependencies — and as an offer after incept writes — render `graph --mermaid` and walk the lanes with them: false edges, over-serialized independents, the critical path.
-References: `slice-epics.md` (Route 2) · `incept-stories.md` (Route 3) · `greenfield-guidelines.md` (net-new project, at epic proposal) · type templates in `assets/` via `{workflow.<type>_template}`.
+References: `slice-epics.md` (Route 2) · `incept-stories.md` (Route 3) · `greenfield-guidelines.md` (net-new project, at epic proposal) · `v6-migration.md` (v6 shapes + migration) · type templates in `assets/` via `{workflow.<type>_template}`.
 
 Run `{workflow.on_complete}` if set when we reach a terminal state.
