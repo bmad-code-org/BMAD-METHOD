@@ -71,4 +71,4 @@ On request after any intent, generate a human-readable face of the context — a
 
 ## Finalize
 
-Distill the memlog — every meaningful entry captured in an artifact or set aside as noise — confirm `validate` exits clean, tell the user what exists where (and what was *not* created, if kernel-only), then run `{workflow.on_complete}` if non-empty.
+Distill the memlog — every meaningful entry captured in an artifact or set aside as noise — confirm `validate` exits clean, tell the user what exists where (and what was *not* created, if kernel-only). When `AGENTS.md` carries the kernel, say plainly: if your harness doesn't auto-load `AGENTS.md`, make the context file it does load pull this one in (e.g. a `CLAUDE.md` containing `@AGENTS.md`). Then run `{workflow.on_complete}` if non-empty.
