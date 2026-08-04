@@ -50,7 +50,7 @@ modules:
     module-definition: src/module.yaml
     code: cis
     name: "BMad Creative Intelligence Suite"
-    description: "Brainstorming, ideation, and creative problem solving"
+    description: "Creative thinking partners"
     defaultSelected: false
     type: bmad-org
     npmPackage: bmad-creative-intelligence-suite

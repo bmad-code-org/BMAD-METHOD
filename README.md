@@ -1,8 +1,8 @@
 ![BMad Method](banner-bmad-method.png)
 
-**Turn an idea or change request into working software without giving up the thinking.**
+**Agile Ai Driven Development — turn an idea or change request into working software without giving up the thinking.**
 
-**Heard BMad means heavyweight process for every change? It doesn't.** Small changes go straight to build. Complex work gets the depth it needs.
+Ai Driven Development (AiDD) covers the whole effort, not only the code: what to build, how it holds together, and how it changes as you learn. BMad Method is the agile way to do it — decisions stay explicit, context carries forward, and the process sizes itself to the work. Small changes go straight to build. Complex work gets the depth it needs. The same method covers a weekend prototype and a system with years of history behind it.
 
 ![The BMad delivery loop: a vague notion starts at Clarify, a big clear idea at Plan, and a small change at Build and verify; Learn and adjust loops back to Plan](docs/images/bmad-delivery-loop.svg)
 
@@ -20,6 +20,8 @@ Open your project in your AI coding tool, invoke `bmad-build` with what you want
 
 **[Build your first project with BMad →](https://docs.bmad-method.org/tutorials/getting-started/)**
 
+**[Add BMad to an existing codebase →](https://docs.bmad-method.org/how-to/established-projects/)**
+
 BMad is free and open source, with no paywalled workflows or gated community. For prerelease builds, CI/CD, configuration overrides, and non-interactive setup, see the [installation guide](https://docs.bmad-method.org/how-to/install-bmad/).
 
 ## Why BMad?
@@ -27,6 +29,7 @@ BMad is free and open source, with no paywalled workflows or gated community. Fo
 Coding assistants are effective at implementation, but they often turn unstated assumptions into code. BMad keeps you in control while its agents and workflows make the important decisions explicit and preserve them as context for the work that follows.
 
 - **Right-sized process** — Go directly to implementation for clear changes or add deeper planning for larger initiatives.
+- **New or existing code** — Start from nothing, or establish verified context on a codebase you inherited and work from what is actually there.
 - **Durable context** — Carry product and technical decisions forward instead of re-explaining them in every chat.
 - **Specialized perspectives** — Bring in product, architecture, UX, development, and testing expertise when it helps.
 - **Guided collaboration** — Use structured workflows and multiple-agent discussions without handing over judgment.
@@ -40,11 +43,12 @@ Install the core method or add official modules for specialized work.
 
 | Module | Purpose |
 | --- | --- |
-| **[BMad Method (BMM)](https://github.com/bmad-code-org/BMAD-METHOD)** | Plan and deliver software with scale-adaptive workflows |
-| **[BMad Builder (BMB)](https://github.com/bmad-code-org/bmad-builder)** | Create custom BMad agents and workflows |
-| **[Test Architect (TEA)](https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise)** | Design risk-based test strategy and automation |
-| **[Game Dev Studio (BMGD)](https://github.com/bmad-code-org/bmad-module-game-dev-studio)** | Build games with Unity, Unreal, or Godot workflows |
-| **[Creative Intelligence Suite (CIS)](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite)** | Run innovation, brainstorming, and design-thinking workflows |
+| **[BMad Method](https://github.com/bmad-code-org/BMAD-METHOD)** | Plan and deliver software, from new prototypes to established codebases |
+| **[BMad Builder](https://github.com/bmad-code-org/bmad-builder)** | Skill, workflow, and agent builder |
+| **[BMad Creative Intelligence Suite](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite)** | Creative thinking partners for innovation, design thinking, and storytelling |
+| **[BMad Test Architect](https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise)** | Enterprise testing add-on for BMad Method |
+| **[BMad Loop](https://github.com/bmad-code-org/bmad-loop)** | Builds, verifies, and retros a whole epic unattended |
+| **[BMad Game Dev Studio](https://github.com/bmad-code-org/bmad-module-game-dev-studio)** | Ideate, design, and build games in any framework, including Unity, Unreal, Godot, and Phaser |
 
 ## Plan on the Web
 
