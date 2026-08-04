@@ -2,7 +2,7 @@
 title: "Project Context"
 description: How bmad-project-context curates the verified knowledge AI agents load — a small kernel plus a knowledge bundle
 sidebar:
-  order: 11
+  order: 10
 ---
 
 `bmad-project-context` owns everything the code can't tell an AI agent: why the architecture is shaped this way, which conventions are deliberate, what the org requires, which landmines a fresh session must know before touching anything. It maintains that knowledge as a small, verified context system instead of generated documentation.

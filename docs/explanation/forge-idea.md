@@ -2,7 +2,7 @@
 title: "Forge an Idea"
 description: Pressure-test an idea through persona-driven interrogation until it hardens, proves out, or dies cheaply
 sidebar:
-  order: 14
+  order: 13
 ---
 
 Take a half-formed idea and pressure-test it now, in conversation, while changing your mind is still free.
@@ -37,7 +37,7 @@ You steer the room whenever you want. Name a specific person, call a saved party
 
 Reflexive agreement is the failure this skill exists to refuse. Acknowledging your idea isn't the same as endorsing it, and the forge won't praise anything before it has survived something. It attacks the weak point or builds on the strong one, and it credits only what genuinely earns the credit.
 
-This is the deliberate inverse of [Adversarial Review](./adversarial-review.md). There, the reviewer is told to find problems and you filter out the false positives. Here, the interrogator is told never to grant agreement for free, so the pressure stays high and you think harder under it. It optimizes for the best idea over a comfortable session.
+This is the deliberate inverse of adversarial review. There, the reviewer is told to find problems and you filter out the false positives. Here, the interrogator is told never to grant agreement for free, so the pressure stays high and you think harder under it. It optimizes for the best idea over a comfortable session.
 
 ## How a Session Ends
 
