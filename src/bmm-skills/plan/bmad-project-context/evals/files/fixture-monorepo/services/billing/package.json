@@ -1,0 +1,6 @@
+{
+  "name": "@nimbus/billing",
+  "scripts": {
+    "test": "vitest run --pool=forks"
+  }
+}

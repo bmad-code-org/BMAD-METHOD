@@ -1,0 +1,42 @@
+[
+  {
+    "query": "generate project context for this repo",
+    "should_trigger": true
+  },
+  {
+    "query": "can you document this project so AI agents understand it",
+    "should_trigger": true
+  },
+  {
+    "query": "refresh the project context, a lot has changed",
+    "should_trigger": true
+  },
+  {
+    "query": "audit our project context, I think it's stale",
+    "should_trigger": true
+  },
+  {
+    "query": "set up project context for our monorepo",
+    "should_trigger": true
+  },
+  {
+    "query": "what does our project context say about how we handle money amounts",
+    "should_trigger": true
+  },
+  {
+    "query": "write a product brief for my new app idea",
+    "should_trigger": false
+  },
+  {
+    "query": "document my REST API endpoints for the public docs site",
+    "should_trigger": false
+  },
+  {
+    "query": "help me design the architecture for a new service",
+    "should_trigger": false
+  },
+  {
+    "query": "summarize this codebase for me real quick",
+    "should_trigger": false
+  }
+]

@@ -2,7 +2,7 @@
 title: "Jak přizpůsobit BMad"
 description: Přizpůsobení agentů, workflow a modulů se zachováním kompatibility s aktualizacemi
 sidebar:
-  order: 7
+  order: 6
 ---
 
 Použijte soubory `.customize.yaml` k přizpůsobení chování agentů, person a nabídek při zachování vašich změn napříč aktualizacemi.

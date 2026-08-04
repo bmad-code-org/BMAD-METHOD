@@ -186,7 +186,7 @@ persona = "Splinter challenges easy agreement. He looks for hidden assumptions, 
 #   id = "writers-room"
 #   name = "The Writers' Room"
 #   scene = "Late-night room, everyone a little punchy. Pitch hard, kill darlings faster."
-#   members = ["analyst", "tech-writer", "morpheus"]
+#   members = ["analyst", "ux-designer", "morpheus"]
 #   memory = true
 #
 #   [[workflow.party_groups]]            # open-cast room (no roster; the scene casts it)

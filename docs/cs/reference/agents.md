@@ -22,34 +22,13 @@ Tato stránka uvádí výchozí BMM (Agile suite) agenty, kteří se instalují 
 | Architect (Winston)         | `bmad-architect`     | `CA`, `IR`                                    | Tvorba architektury, připravenost implementace                                                      |
 | Developer (Amelia)          | `bmad-agent-dev`     | `BD`, `QA`, `CR`, `SP`, `ER`                  | Build, generování QA testů, revize kódu, plánování sprintu, retrospektiva epicu |
 | UX Designer (Sally)         | `bmad-ux-designer`   | `CU`                                          | Tvorba UX designu                                                                                   |
-| Technical Writer (Paige)    | `bmad-tech-writer`   | `DP`, `WD`, `US`, `MG`, `VD`, `EC`           | Dokumentace projektu, psaní dokumentu, aktualizace standardů, generování Mermaid, validace dok., vysvětlení konceptu |
+
+:::note[Kde je Paige?]
+Technical Writer (Paige) má přestávku — v budoucnu se vrátí s mnohem širšími schopnostmi. Dokumentace projektu zůstává pokryta: spouštěč `DP` (dokumentace projektu) je dostupný přes Analyst agenta, nebo vyvolejte skill `bmad-document-project` přímo.
+:::
 
 ## Typy spouštěčů
 
-Spouštěče nabídky agentů používají dva různé typy vyvolání. Znalost typu spouštěče vám pomůže poskytnout správný vstup.
-
-### Workflow spouštěče (bez argumentů)
-
-Většina spouštěčů načítá strukturovaný soubor workflow. Zadejte kód spouštěče a agent zahájí workflow a vyzve vás k zadání vstupu v každém kroku.
+Spouštěče nabídky agentů načítají strukturovaný soubor workflow. Zadejte kód spouštěče a agent zahájí workflow a vyzve vás k zadání vstupu v každém kroku.
 
 Příklady: `CP` (tvorba PRD), `CA` (tvorba architektury), `BD` (Build)
-
-### Konverzační spouštěče (vyžadují argumenty)
-
-Některé spouštěče zahajují volnou konverzaci místo strukturovaného workflow. Tyto očekávají, že popíšete, co potřebujete, společně s kódem spouštěče.
-
-| Agent | Spouštěč | Co poskytnout |
-| --- | --- | --- |
-| Technical Writer (Paige) | `WD` | Popis dokumentu k napsání |
-| Technical Writer (Paige) | `US` | Preference nebo konvence k přidání do standardů |
-| Technical Writer (Paige) | `MG` | Popis diagramu a typ (sekvence, vývojový diagram atd.) |
-| Technical Writer (Paige) | `VD` | Dokument k validaci a oblasti zaměření |
-| Technical Writer (Paige) | `EC` | Název konceptu k vysvětlení |
-
-**Příklad:**
-
-```text
-WD Write a deployment guide for our Docker setup
-MG Create a sequence diagram showing the auth flow
-EC Explain how the module system works
-```

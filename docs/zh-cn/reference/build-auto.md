@@ -128,10 +128,10 @@ spec frontmatter 的 `status` 是 orchestration 的主要 machine-readable 状�
   - 已执行 verification
   - Residual risks
 - `followup_review_recommended` 标志。若 LLM 认为值得再 review 一轮则为 true。只是建议，非必须。最简单的二次 review 是重新运行 skill 并指向 spec 文件。
-- `baseline_revision` 和 `final_revision` —— implementation 前与 reviewed change endpoint 的完整 canonical revision。`git log baseline_revision..final_revision` 列出 reviewed change commits。无版本控制时两者均为 `NO_VCS`。
+- `baseline_revision` —— implementation 前的完整 canonical revision。无版本控制时为 `NO_VCS`。
 - triage 为 `defer` 的 review findings 会写入 frontmatter 的 `deferred` 条目。每个条目记录 `summary`、`evidence`，以及已知时的 `location` 和 `severity`。
 
-Workflow 会 commit，但不会 push。若 spec 由 implementation repository track，clean HEAD 会比 `final_revision` 多一个 spec-finalization commit；否则 implementation repository 会停在 `final_revision`。
+Workflow 会 commit，但不会 push。退出时 working copy 是干净的。
 
 ### 在 `blocked` 时
 
@@ -218,7 +218,7 @@ workflow 在尚无 valid `spec_file` 时 halt（folder+id dispatch 外 —— �
 - 监控产出的 spec 文件、story spec artifact 或 fallback result 文件的 terminal state
 - 读 `status`、`blocking condition`、`followup_review_recommended`，不要只从 chat 输出推断成功
 - 从 spec frontmatter 的 `deferred:` list 读取 deferred findings
-- 用 `baseline_revision..final_revision` 识别 reviewed change commits；不要假设 `final_revision` 等于 HEAD
+- 用 `baseline_revision..<下一个 story 的 baseline_revision>` 识别该 story 的 commits；还没有下一个 story 时，退出时用 `baseline_revision..HEAD`
 - 预期 autonomous 文件变更和 local commits
 - 把 `blocked` 当作 routing signal，而不只是 failure signal
 

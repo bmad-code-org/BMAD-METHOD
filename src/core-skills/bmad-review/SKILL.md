@@ -5,7 +5,7 @@ description: 'Multi-lens review over any diff, doc, spec, or artifact — whiche
 
 # BMad Review
 
-Review content through lenses — each a distinct method and stance — and report findings in one canonical shape. Report what is real — never pad to look thorough. Each lens sets its own stance toward the content and toward zero findings: for most an empty result is valid; the adversarial lens treats it as suspicious; the editorial lenses hold content sacrosanct and critique only how it is organized and expressed.
+Review content through lenses — each a distinct method and stance — and report findings in one canonical shape. Report what is real — never pad to look thorough. Each lens sets its own stance toward the content and toward zero findings: for most an empty result is valid; the adversarial lens requires at least ten concrete findings and treats an empty list as a signal to re-check; the editorial lenses hold content sacrosanct and critique only how it is organized and expressed.
 
 The lens set is whatever `{workflow.lenses}` resolves to, not a fixed list — overrides add lenses and replace shipped ones. Never claim a capability from this file; read the resolved lenses and work from those.
 

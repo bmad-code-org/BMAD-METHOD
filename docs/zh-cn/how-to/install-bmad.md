@@ -7,8 +7,6 @@ sidebar:
 
 使用 `npx bmad-method install` 在项目中安装 BMad，并按需选择模块和 AI 工具。
 
-如果你需要在命令行里一次性传入全部安装参数（例如 CI/CD 场景），请阅读[非交互式安装指南](./non-interactive-installation.md)。
-
 ## 何时使用
 
 - 使用 BMad 启动新项目
@@ -117,4 +115,3 @@ bmad-help 对于 SaaS 项目我有哪些选项？
 **安装程序抛出错误**——将输出复制粘贴到你的 AI 助手中，让它来解决问题。
 
 **安装程序工作正常但后续出现问题**——你的 AI 需要 BMad 上下文才能提供帮助。请参阅[如何获取关于 BMad 的答案](./get-answers-about-bmad.md)了解如何将你的 AI 指向正确的来源。
-

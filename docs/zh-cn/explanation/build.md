@@ -85,8 +85,7 @@ Build 是执行节奏设计；`adversarial review` 是审查策略。二者经�
 
 ## 继续阅读
 
-想进一步理解审查策略，可继续阅读 [对抗性评审](./adversarial-review.md)；需要对已有输出进行第二轮推理时，可参考 [高级启发](./advanced-elicitation.md)。若要查看它在完整流程中的位置，请参见 [工作流地图](../reference/workflow-map.md)。
+需要对已有输出进行第二轮推理时，可参考 [高级启发](./advanced-elicitation.md)。若要查看它在完整流程中的位置，请参见 [工作流地图](../reference/workflow-map.md)。
 
-- [对抗性评审](./adversarial-review.md)
 - [高级启发](./advanced-elicitation.md)
 - [工作流地图](../reference/workflow-map.md)

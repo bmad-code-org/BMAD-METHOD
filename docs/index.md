@@ -1,60 +1,68 @@
 ---
-title: Welcome to the BMad Method
-description: AI-driven development framework with specialized agents, guided workflows, and intelligent planning
+title: Build Software with BMad
+description: See how BMad turns short requests and shared specifications into reviewed software changes while you keep control of important decisions.
+hero:
+  title: Turn intent into working software
+  tagline: BMad clarifies what matters, gives you a plan to approve, implements the change, reviews its work, and shows you the result.
+  actions:
+    - text: Start with a small build
+      link: ./tutorials/getting-started/
+      variant: primary
+    - text: Try it in Django
+      link: ./tutorials/getting-deeper/
+      variant: secondary
 ---
 
-The BMad Method (**B**uild **M**ore **A**rchitect **D**reams) is an AI-driven development framework module within the BMad Method Ecosystem that helps you build software through the whole process from ideation and planning all the way through agentic implementation. It provides specialized AI agents, guided workflows, and intelligent planning that adapts to your project's complexity, whether you're fixing a bug or building an enterprise platform.
+BMad works with supported AI coding tools to carry a software request through
+clarification, an approved plan, implementation, and review. You keep control
+of the decisions that shape the result, and Build returns working code you can
+run and inspect.
 
-If you're comfortable working with AI coding assistants like Claude, Cursor, or GitHub Copilot, you're ready to get started.
+## Start with Working Software
 
-:::note[🚀 V6 is Here and We're Just Getting Started!]
-Skills Architecture, BMad Builder v1, Dev Loop Automation, and so much more in the works. **[Check out the Roadmap →](/roadmap/)**
-:::
+[Getting Started](./tutorials/getting-started.md) begins in an empty directory
+with one short request:
 
-## New Here? Start with a Tutorial
+```text
+/bmad-build write an implementation of mars rover kata
+```
 
-The fastest way to understand BMad is to try it.
+Build asks for the choices it needs, then gives you a plan to approve or change.
+It writes and reviews the program before you run the finished Mars Rover in your
+terminal. The request stays small; you decide what the program should become.
 
-- **[Get Started with BMad](./tutorials/getting-started.md)** — Install and understand how BMad works
-- **[Workflow Map](./reference/workflow-map.md)** — Visual overview of BMM phases, workflows, and context management
+**[Build Mars Rover with BMad](./tutorials/getting-started.md)**
 
-:::tip[Just Want to Dive In?]
-Install BMad and use the `bmad-help` skill — it will guide you through everything based on your project and installed modules.
-:::
+## Continue in a Mature Codebase
 
-## How to Use These Docs
+[Getting Deeper](./tutorials/getting-deeper.md) moves the same direct workflow
+into Django 5.2.4. You ask Build to add JSON output to `django-admin
+diffsettings`, make the decisions that define that output, run the focused
+tests, and inspect the JSON produced by the command.
 
-These docs are organized into four sections based on what you're trying to do:
+The second Django exercise shows what changes when the work spans several
+stories. BMad Spec records one shared contract for filtering, redaction, and CI
+status. Three Build runs implement it in order, and one final command shows the
+features working together: filtering selects the setting, redaction hides its
+value, and the exit status still reports the remaining difference.
 
-| Section           | Purpose                                                                                                    |
-| ----------------- | ---------------------------------------------------------------------------------------------------------- |
-| **Tutorials**     | Learning-oriented. Step-by-step guides that walk you through building something. Start here if you're new. |
-| **How-To Guides** | Task-oriented. Practical guides for solving specific problems. "How do I customize an agent?" lives here.  |
-| **Explanation**   | Understanding-oriented. Deep dives into concepts and architecture. Read when you want to know *why*.       |
-| **Reference**     | Information-oriented. Technical specifications for agents, workflows, and configuration.                   |
+**[Try the Django playground](./tutorials/getting-deeper.md)**
 
-## Expand and Customize
+## Find a Specific Answer
 
-Want to expand BMad with your own agents, workflows, or modules? The **[BMad Builder](https://bmad-builder-docs.bmad-method.org/)** provides the framework and tools for creating custom extensions, whether you're adding new capabilities to BMad or building entirely new modules from scratch.
+Use the search box or sidebar when you already know what you need. These common
+tasks lead directly to the relevant documentation:
 
-## What You'll Need
+- [Install or update BMad](./how-to/install-bmad.md)
+- [Use BMad in an established project](./how-to/established-projects.md)
+- [Understand how Build works](./explanation/build.md)
+- [Look up installed skills](./reference/commands.md)
 
-BMad works with any AI coding assistant that supports custom system prompts or project context. Popular options include:
+## Build in Your Repository
 
-- **[Claude Code](https://code.claude.com)** — Anthropic's CLI tool (recommended)
-- **[Cursor](https://cursor.sh)** — AI-first code editor
-- **[Codex CLI](https://github.com/openai/codex)** — OpenAI's terminal coding agent
+Choose a real change in a repository you already use. Install BMad in that
+repository, run the installed `bmad-build` skill, and describe the result you
+want. You can settle the important choices, approve or revise the plan, and
+inspect the finished change in its real context.
 
-You should be comfortable with basic software development concepts like version control, project structure, and agile workflows. No prior experience with BMad-style agent systems is required—that's what these docs are for.
-
-## Join the Community
-
-Get help, share what you're building, or contribute to BMad:
-
-- **[Discord](https://discord.gg/gk8jAdXWmj)** — Chat with other BMad users, ask questions, share ideas
-- **[GitHub](https://github.com/bmad-code-org/BMAD-METHOD)** — Source code, issues, and contributions
-- **[YouTube](https://www.youtube.com/@BMadCode)** — Video tutorials and walkthroughs
-
-## Next Step
-
-Ready to dive in? **[Get Started with BMad](./tutorials/getting-started.md)** and build your first project.
+**[Use BMad in your repository](./how-to/install-bmad.md)**

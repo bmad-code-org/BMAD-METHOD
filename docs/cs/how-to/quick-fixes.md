@@ -2,7 +2,7 @@
 title: "Rychlé opravy"
 description: Jak provádět rychlé opravy a ad-hoc změny
 sidebar:
-  order: 5
+  order: 4
 ---
 
 Opravy chyb, refaktoringy a malé cílené změny mohou vstoupit do **Build** přímo s minimem upstream plánování. Jde o stejný implementační workflow jako pro plně naplánované stories.

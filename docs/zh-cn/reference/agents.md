@@ -16,7 +16,10 @@ sidebar:
 | Architect (Winston) | `bmad-architect` | `CA`、`IR` | Create Architecture、Implementation Readiness |
 | Developer (Amelia) | `bmad-agent-dev` | `BD`、`QA`、`CR`、`SP`、`ER` | Build、QA Test Generation、Code Review、Sprint Planning、Epic Retrospective |
 | UX Designer (Sally) | `bmad-ux-designer` | `CU` | Create UX Design |
-| Technical Writer (Paige) | `bmad-tech-writer` | `DP`、`WD`、`US`、`MG`、`VD`、`EC` | Document Project、Write Document、Update Standards、Mermaid Generate、Validate Doc、Explain Concept |
+
+:::note[Paige 去哪儿了？]
+技术文档工程师 Paige 正在休整——她将在未来以更强大的能力回归。项目文档功能仍然可用：`DP`（Document Project）触发器可通过 Analyst 智能体使用，或直接调用 `bmad-document-project` 技能。
+:::
 
 ## 使用说明
 
@@ -26,31 +29,9 @@ sidebar:
 
 ## 触发器类型
 
-### 工作流触发器（通常不需要额外参数）
-
-多数触发器会直接启动结构化 workflow。你只需输入触发码，然后按流程提示提供信息。
+触发器会直接启动结构化 workflow。你只需输入触发码，然后按流程提示提供信息。
 
 示例：`CP`（Create PRD）、`CA`（Create Architecture）、`BD`（Build）
-
-### 会话触发器（需要附带说明）
-
-部分触发器进入自由对话模式，需要你在触发码后描述需求。
-
-| 智能体 | 触发器 | 你需要提供的内容 |
-| --- | --- | --- |
-| Technical Writer (Paige) | `WD` | 要撰写的文档主题与目标 |
-| Technical Writer (Paige) | `US` | 要补充到标准中的偏好/规范 |
-| Technical Writer (Paige) | `MG` | 图示类型与图示内容描述 |
-| Technical Writer (Paige) | `VD` | 待验证文档与关注点 |
-| Technical Writer (Paige) | `EC` | 需要解释的概念名称 |
-
-示例：
-
-```text
-WD 写一份 Docker 部署指南
-MG 画一个认证流程的时序图
-EC 解释模块系统如何运作
-```
 
 ## 相关参考
 

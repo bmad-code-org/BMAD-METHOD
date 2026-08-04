@@ -7,8 +7,6 @@ sidebar:
 
 Použijte příkaz `npx bmad-method install` k nastavení BMad ve vašem projektu s výběrem modulů a AI nástrojů.
 
-Pokud chcete použít neinteraktivní instalátor a zadat všechny možnosti na příkazové řádce, podívejte se na [tento návod](./non-interactive-installation.md).
-
 ## Kdy to použít
 
 - Začínáte nový projekt s BMad

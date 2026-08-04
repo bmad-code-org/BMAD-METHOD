@@ -27,16 +27,19 @@ Chỉ cần bỏ đi một chân là trải nghiệm sẽ sụp:
 
 ## Named agents mang lại điều gì
 
-BMad hiện có sáu named agent, mỗi agent gắn với một phase trong BMad Method:
+BMad hiện có năm named agent, mỗi agent gắn với một phase trong BMad Method:
 
 | Agent | Phase | Module |
 |---|---|---|
 | 📊 **Mary**, Chuyên viên phân tích nghiệp vụ (Business Analyst) | Analysis | market research, brainstorming, product briefs, PRFAQs |
-| 📚 **Paige**, Technical Writer | Analysis | project documentation, diagrams, doc validation |
 | 📋 **John**, Quản lý sản phẩm (Product Manager) | Planning | PRD creation, epic/story breakdown, implementation readiness |
 | 🎨 **Sally**, Nhà thiết kế UX (UX Designer) | Planning | UX design specifications |
 | 🏗️ **Winston**, Kiến trúc sư hệ thống (System Architect) | Solutioning | technical architecture, alignment checks |
 | 💻 **Amelia**, Kỹ sư cấp cao (Senior Engineer) | Implementation | story execution, build, code review, sprint planning |
+
+:::note[Paige đâu rồi?]
+📚 **Paige**, Technical Writer, đang tạm nghỉ — cô ấy sẽ trở lại trong tương lai với năng lực mạnh hơn nhiều. Tài liệu dự án vẫn được hỗ trợ: gọi trực tiếp skill `bmad-document-project` hoặc qua menu của Mary.
+:::
 
 Mỗi agent có một danh tính hardcode gồm tên, chức danh, domain, và một lớp có thể tùy chỉnh gồm vai trò, nguyên tắc, phong cách giao tiếp, icon và menu. Bạn có thể viết lại nguyên tắc của Mary hoặc thêm menu item cho cô ấy, nhưng bạn không thể đổi tên cô ấy. Đó là chủ ý thiết kế. Nhận diện thương hiệu của agent phải sống sót qua lớp tùy chỉnh để câu "hey Mary" luôn kích hoạt đúng analyst, bất kể team đã nắn hành vi của cô ấy theo cách nào.
 

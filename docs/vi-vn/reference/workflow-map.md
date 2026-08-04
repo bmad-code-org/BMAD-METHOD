@@ -48,7 +48,7 @@ Quyết định cách xây và chia nhỏ công việc thành các story.
 | ----------------------------------------- | ------------------------------------------ | --------------------------- |
 | `bmad-architecture` | Làm rõ các quyết định kỹ thuật | `architecture.md` kèm ADR |
 | `bmad-create-epics-and-stories` | Phân rã yêu cầu thành các phần việc có thể triển khai | Các file epic chứa các story |
-| `bmad-check-implementation-readiness` | Cổng kiểm tra trước khi triển khai | Quyết định PASS/CONCERNS/FAIL |
+| `bmad-sprint-planning` | Cổng kiểm tra mức độ sẵn sàng trước khi triển khai, sau đó theo dõi story và xem trạng thái sprint | PASS/CONCERNS/FAIL + `sprint-status.yaml` |
 
 ## Giai đoạn 4: Triển khai
 
@@ -57,10 +57,8 @@ Mọi đầu vào triển khai đều hội tụ vào `bmad-build`. Workflow nà
 | Quy trình | Mục đích | Tạo ra |
 | -------------------------- | ------------------------------------------------------------------------ | -------------------------------- |
 | `bmad-build` | Biến ý định trực tiếp hoặc story đã lập kế hoạch thành mã nguồn đã triển khai và review | `spec-*.md` + mã nguồn |
-| `bmad-sprint-planning` | Khởi tạo theo dõi, thường chạy một lần mỗi dự án để sắp thứ tự chu trình phát triển | `sprint-status.yaml` |
 | `bmad-code-review` | Kiểm tra chất lượng phần triển khai | Được duyệt hoặc yêu cầu thay đổi |
 | `bmad-correct-course` | Xử lý thay đổi lớn giữa sprint | Kế hoạch cập nhật hoặc định tuyến lại |
-| `bmad-sprint-status` | Theo dõi tiến độ sprint và trạng thái story | Cập nhật trạng thái sprint |
 | `bmad-retrospective` | Review sau khi hoàn tất epic | Bài học rút ra |
 
 ### Đầu vào trực tiếp và đã lập kế hoạch
