@@ -7,6 +7,7 @@
 import sys
 import unittest
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import resolve_party as rp  # noqa: E402
@@ -15,6 +16,22 @@ AGENTS = {
     "bmad-agent-analyst": {"name": "Mary", "icon": "📊", "title": "Analyst"},
     "bmad-agent-pm": {"name": "John", "icon": "📋", "title": "PM"},
 }
+
+
+class TestRunJson(unittest.TestCase):
+    """Pins UTF-8 decoding when reading resolver subprocess stdout."""
+
+    def test_decodes_utf8_emoji_subprocess_stdout(self):
+        mock_result = MagicMock()
+        mock_result.returncode = 0
+        mock_result.stdout = '{"agent": {"icon": "🧭"}}'
+
+        with patch.object(rp.subprocess, "run", return_value=mock_result) as mock_run:
+            result = rp._run_json(["fake", "cmd"])
+
+        _, kwargs = mock_run.call_args
+        self.assertEqual(kwargs.get("encoding"), "utf-8")
+        self.assertEqual(result["agent"]["icon"], "🧭")
 
 
 class TestAlias(unittest.TestCase):
