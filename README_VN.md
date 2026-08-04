@@ -9,7 +9,7 @@
 
 [English](README.md) | [简体中文](README_CN.md) | Tiếng Việt
 
-**Build More Architect Dreams** - một mô-đun khung phát triển hướng AI trong hệ sinh thái BMad, có khả năng thích ứng theo quy mô từ sửa lỗi nhỏ đến các hệ thống doanh nghiệp.
+**Agile Ai Driven Development (Phát triển hướng AI theo lối agile)** - Ai Driven Development (AiDD) bao trùm toàn bộ công việc chứ không chỉ phần mã: xây dựng cái gì, các phần gắn kết ra sao, và thay đổi thế nào khi bạn hiểu thêm. BMad Method là cách làm AiDD theo lối agile: quyết định luôn tường minh, ngữ cảnh được giữ lại xuyên suốt, và quy trình tự co giãn theo khối lượng công việc. Cùng một phương pháp dùng được cho nguyên mẫu cuối tuần lẫn hệ thống đã có nhiều năm lịch sử.
 
 **100% miễn phí và mã nguồn mở.** Không có tường phí. Không có nội dung bị khóa. Không có Discord giới hạn quyền truy cập. Chúng tôi tin vào việc trao quyền cho mọi người, không chỉ cho những ai có thể trả tiền để vào một cộng đồng hay khóa học khép kín.
 
@@ -60,19 +60,21 @@ npx bmad-method install --directory /path/to/project --modules bmm --tools claud
 
 BMad Method có thể được mở rộng bằng các mô-đun chính thức cho những miền chuyên biệt. Chúng có sẵn trong lúc cài đặt hoặc bất kỳ lúc nào sau đó.
 
-| Module                                                                                                            | Mục đích                                           |
-| ----------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| **[BMad Method (BMM)](https://github.com/bmad-code-org/BMAD-METHOD)**                                             | Khung lõi với hơn 34 quy trình                     |
-| **[BMad Builder (BMB)](https://github.com/bmad-code-org/bmad-builder)**                                           | Tạo agent và quy trình BMad tùy chỉnh             |
-| **[Test Architect (TEA)](https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise)**             | Chiến lược kiểm thử và tự động hóa dựa trên rủi ro |
-| **[Game Dev Studio (BMGD)](https://github.com/bmad-code-org/bmad-module-game-dev-studio)**                        | Quy trình phát triển game (Unity, Unreal, Godot)   |
-| **[Creative Intelligence Suite (CIS)](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite)** | Đổi mới, động não ý tưởng, tư duy thiết kế         |
+| Module                                                                                                           | Mục đích                                                                                        |
+| ---------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| **[BMad Method](https://github.com/bmad-code-org/BMAD-METHOD)**                                                  | Lập kế hoạch và bàn giao phần mềm, từ nguyên mẫu mới đến codebase lâu năm                       |
+| **[BMad Builder](https://github.com/bmad-code-org/bmad-builder)**                                                | Trình tạo skill, quy trình và agent                                                             |
+| **[BMad Creative Intelligence Suite](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite)** | Đối tác tư duy sáng tạo cho đổi mới, tư duy thiết kế và kể chuyện                               |
+| **[BMad Test Architect](https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise)**             | Mô-đun kiểm thử doanh nghiệp bổ trợ cho BMad Method                                             |
+| **[BMad Loop](https://github.com/bmad-code-org/bmad-loop)**                                                      | Tự động xây dựng, kiểm chứng và tổng kết cả một Epic                                            |
+| **[BMad Game Dev Studio](https://github.com/bmad-code-org/bmad-module-game-dev-studio)**                         | Lên ý tưởng, thiết kế và phát triển game trên mọi framework, gồm Unity, Unreal, Godot và Phaser |
 
 ## Tài liệu
 
 [Trang tài liệu BMad Method](https://docs.bmad-method.org/vi-vn/) - bài hướng dẫn, hướng dẫn tác vụ, giải thích khái niệm và tài liệu tham chiếu
 
 **Liên kết nhanh:**
+
 - [Hướng dẫn bắt đầu](https://docs.bmad-method.org/vi-vn/tutorials/getting-started/)
 - [Nâng cấp từ các phiên bản trước](https://docs.bmad-method.org/vi-vn/how-to/upgrade-to-v6/)
 - [Tài liệu Test Architect](https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/)

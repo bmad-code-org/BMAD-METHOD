@@ -97,7 +97,7 @@ modules:
     module-definition: src/module.yaml
     code: gds
     name: "BMad Game Dev Studio"
-    description: "Ideate, design, and build games in any framework"
+    description: "Ideate, design, and build games"
     defaultSelected: false
     type: bmad-org
     npmPackage: bmad-game-dev-studio
