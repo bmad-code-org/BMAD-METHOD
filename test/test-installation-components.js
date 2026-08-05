@@ -3891,6 +3891,8 @@ async function runTests() {
       'relative input resolves against the explicit working directory',
     );
 
+    assert(resolveDirectoryInput('~', { cwd: cwd51 }) === os.homedir(), 'bare tilde input expands to the home directory');
+
     assert(
       resolveDirectoryInput('~/destination', { cwd: cwd51 }) === path.join(os.homedir(), 'destination'),
       'home-relative input expands below the home directory',
