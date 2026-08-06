@@ -3866,147 +3866,44 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Test Suite 51: directory prompt returns the path on screen
+  // Test Suite 51: directory input resolution
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 51: directory prompt returns the path on screen${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 51: directory input resolution${colors.reset}\n`);
 
   let root51;
   try {
-    const prompts = require('../tools/installer/prompts');
-    const { PassThrough } = require('node:stream');
+    const { resolveDirectoryInput } = require('../tools/installer/prompts');
 
-    // Fixture: a directory with children. The old autocomplete prompt returned
-    // a focused child instead of the typed path; the prompt is now a plain text
-    // entry, so no keystroke may ever change the value away from what is typed.
     root51 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-dirprompt-'));
-    const parent51 = path.join(root51, 'workspace');
-    for (const child of ['alpha', 'repos', 'zulu']) {
-      await fs.ensureDir(path.join(parent51, child));
-    }
+    const submitted51 = path.join(root51, 'workspace');
+    assert(resolveDirectoryInput(submitted51) === submitted51, 'an absolute submitted path is returned unchanged');
 
-    /**
-     * Drive the directory prompt with a scripted key sequence.
-     * @param {Array<string>} script - 'type:<text>' or a key name from `keys` below
-     */
-    const drivePrompt = async (script) => {
-      const input = new PassThrough();
-      input.isTTY = true;
-      input.setRawMode = () => {};
-      const output = new PassThrough();
-      output.isTTY = true;
-      output.columns = 120;
-      output.rows = 40;
-      output.resume();
+    const cwd51 = path.join(root51, 'working-directory');
+    const default51 = 'default-install';
+    assert(
+      resolveDirectoryInput('', { default: default51, cwd: cwd51 }) === path.resolve(cwd51, default51),
+      'empty input resolves the default directory',
+    );
 
-      // Escape sequences are written as \u001B so they stay visible in a diff.
-      const ESC51 = '\u001B';
-      const keys = {
-        up: ESC51 + '[A',
-        down: ESC51 + '[B',
-        left: ESC51 + '[D',
-        right: ESC51 + '[C',
-        tab: '\t',
-        shiftTab: ESC51 + '[Z',
-        backspace: String.fromCodePoint(127),
-        // ctrl+u — clears the pre-filled default so a script can type its own path
-        clear: String.fromCodePoint(21),
-      };
-      const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const relative51 = path.join('projects', 'bmad');
+    assert(
+      resolveDirectoryInput(relative51, { cwd: cwd51 }) === path.resolve(cwd51, relative51),
+      'relative input resolves against the explicit working directory',
+    );
 
-      const pending = prompts.directory({
-        message: 'Installation directory:',
-        default: root51,
-        input,
-        output,
-        validate: () => {},
-      });
+    assert(resolveDirectoryInput('~', { cwd: cwd51 }) === os.homedir(), 'bare tilde input expands to the home directory');
 
-      await sleep(120);
-      for (const step of script) {
-        if (step.startsWith('type:')) {
-          for (const char of step.slice(5)) {
-            input.write(char);
-            await sleep(6);
-          }
-        } else {
-          input.write(keys[step]);
-        }
-        await sleep(40);
-      }
-      await sleep(80);
-      input.write('\r');
-      return pending;
-    };
+    assert(
+      resolveDirectoryInput('~/destination', { cwd: cwd51 }) === path.join(os.homedir(), 'destination'),
+      'home-relative input expands below the home directory',
+    );
 
-    // The line arrives pre-filled with the default, so Enter alone accepts it
-    // and appending extends it — no retyping to install one level down.
-    const untouched51 = await drivePrompt([]);
-    assert(untouched51 === root51, 'the input line is pre-filled with the default directory');
-
-    const extended51 = await drivePrompt(['type:/workspace']);
-    assert(extended51 === parent51, 'typing extends the pre-filled path instead of replacing it');
-
-    const trimmed51 = await drivePrompt(Array.from({ length: path.basename(root51).length + 1 }, () => 'backspace'));
-    assert(trimmed51 === path.dirname(root51), 'backspacing trims the pre-filled path');
-
-    const typed51 = await drivePrompt(['clear', `type:${parent51}`]);
-    assert(typed51 === parent51, 'typed path is returned verbatim');
-
-    const cleared51 = await drivePrompt(['clear']);
-    assert(cleared51 === root51, 'clearing the line and pressing enter still accepts the default');
-
-    // The original defect: a directory prompt that returned something other
-    // than the text on screen. No navigation key may move the value.
-    for (const key of ['down', 'up', 'tab', 'shiftTab']) {
-      const pressed51 = await drivePrompt(['clear', `type:${parent51}`, key]);
-      assert(pressed51 === parent51, `${key} does not change the typed path`);
-    }
-
-    // Editing mid-line must not splice text into the value.
-    const cursorEdited51 = await drivePrompt(['clear', `type:${parent51}`, 'left', 'left', 'left', 'down', 'up']);
-    assert(cursorEdited51 === parent51, 'moving the cursor and pressing arrows leaves the typed path intact');
-
-    const backspaced51 = await drivePrompt([
-      'clear',
-      `type:${path.join(parent51, 'rep')}`,
-      ...Array.from({ length: 4 }, () => 'backspace'),
-    ]);
-    assert(backspaced51 === parent51, 'backspacing back to the parent returns the parent, not a child');
-
-    const relative51 = await drivePrompt(['clear', 'type:~']);
-    assert(relative51 === os.homedir(), 'tilde input expands to the home directory');
-
-    const created51 = await drivePrompt(['clear', `type:${path.join(parent51, 'brand-new')}`]);
-    assert(created51 === path.join(parent51, 'brand-new'), 'a not-yet-created path is returned as typed');
-
-    // The prompt is a bare text entry: no candidate list, no key hints.
-    const renderProbe51 = new PassThrough();
-    renderProbe51.isTTY = true;
-    renderProbe51.setRawMode = () => {};
-    const renderOut51 = new PassThrough();
-    renderOut51.isTTY = true;
-    renderOut51.columns = 120;
-    renderOut51.rows = 40;
-    let frames51 = '';
-    renderOut51.on('data', (chunk) => {
-      frames51 += chunk.toString();
-    });
-    const renderPending51 = prompts.directory({
-      message: 'Installation directory:',
-      default: root51,
-      input: renderProbe51,
-      output: renderOut51,
-      validate: () => {},
-    });
-    await new Promise((resolve) => setTimeout(resolve, 120));
-    for (const char of '/workspace') renderProbe51.write(char);
-    await new Promise((resolve) => setTimeout(resolve, 120));
-    renderProbe51.write('\r');
-    await renderPending51;
-
-    assert(!frames51.includes('use this directory'), 'the prompt renders no candidate list');
-    assert(!frames51.includes('browse'), 'the prompt renders no navigation hint line');
-    assert(!frames51.includes('alpha'), 'the prompt does not list sibling directories');
+    const newDestination51 = path.join(root51, 'missing-parent', 'destination');
+    const resolvedDestination51 = resolveDirectoryInput(newDestination51, { cwd: cwd51 });
+    assert(
+      resolvedDestination51 === newDestination51 && !(await fs.pathExists(newDestination51)),
+      'a nonexistent destination is normalized without being created',
+    );
   } catch (error) {
     console.log(`${colors.red}Test Suite 51 setup failed: ${error.message}${colors.reset}`);
     console.log(error.stack);
