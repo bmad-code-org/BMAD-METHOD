@@ -53,9 +53,14 @@ function isSafeCanonicalId(value) {
 }
 
 // Default body template for command pointer files. Used when a platform's
-// installer config doesn't override `commands_body_template`. Matches
-// OpenCode's native `@skills/<id>` skill-reference syntax.
-const DEFAULT_COMMANDS_BODY_TEMPLATE = '@skills/{canonicalId}';
+// installer config doesn't override `commands_body_template`.
+//
+// OpenCode (the only platform that relies on this default today) resolves
+// `@` references in command bodies as file paths relative to the project
+// worktree root — there is no `@skills/<id>` skill-reference namespace.
+// Pointers therefore reference the installed skill file directly so
+// `/<canonicalId>` expands the full SKILL.md content.
+const DEFAULT_COMMANDS_BODY_TEMPLATE = '@{target_dir}/{canonicalId}/SKILL.md';
 
 // Is this skill a persona agent (vs. a workflow/tool/standalone skill)?
 // Used by platforms that surface only persona agents (e.g. Copilot's Custom
@@ -266,8 +271,10 @@ class ConfigDrivenIdeSetup {
    * Generate per-skill command pointer files for IDEs that surface commands
    * separately from skills (e.g. OpenCode's `.opencode/commands/<name>.md`).
    *
-   * Each pointer is a tiny markdown file whose body is `@skills/<canonicalId>`
-   * so invoking `/<canonicalId>` routes the user straight to the skill instead
+   * Each pointer is a tiny markdown file whose body is
+   * `@{target_dir}/{canonicalId}/SKILL.md` — an OpenCode `@` file reference
+   * resolved relative to the project worktree root — so invoking
+   * `/<canonicalId>` routes the user straight to the skill content instead
    * of forcing them through a `/skills` menu.
    *
    * Skips:
