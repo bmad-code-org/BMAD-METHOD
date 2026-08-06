@@ -1,27 +1,27 @@
 # Evidence
 
-Where guide content comes from, how it is verified, and how the run is recorded. True and useful are different properties: verification establishes truth; only a section's editorial job establishes usefulness. A verified fact with no section that needs it is rejected, with the reason in the ledger.
+Where guide content comes from, how it is verified, and how the run is recorded. Verification establishes that a claim is true; a claim is useful only if one of the guide's sections needs it. A verified fact no section needs is rejected, with the reason in the ledger.
 
-## Channels
+## Sources
 
-In increasing order of irreplaceability — later channels hold what earlier ones cannot:
+Sources 1–5 are scanner work; source 6 is the interview. Later sources hold what earlier ones cannot.
 
-1. **Active steering files** — root and nested `AGENTS.md`, `CLAUDE.md`, editor rule files. What agents are told today: the baseline, plus conflicts and staleness to fix.
-2. **Executable configuration and CI** — manifests, lockfiles, workflow files, hooks, Makefiles, linter configs. The commands, gates, and enforcement points. The highest-yield scan there is; most of Commands, Verification, and Policy comes from here and gets verified by execution.
-3. **Tracked source** — for boundaries (vendored, generated, frozen areas), conventions that differ from defaults, and entry points. This channel answers questions the section plan already asked; it is never mined for "interesting facts", because a fact's novelty says nothing about whether any agent needs it.
-4. **Git history** — targeted, never wholesale: a surprising constraint found in the current state → `git blame` its introduction → `git show` the change → `git log -S`/`-G` for prior attempts and reversions → verify the reason still holds against the present tree. Commit messages are evidence of past intent, not current truth.
-5. **Agent session logs and review corrections** — when available or pointed at: the only source that can establish *observed* agent mistakes. Extract structure, never transcripts: task, mistake, correction, consequence, whether an instruction could have prevented it, occurrence count, source sessions. One occurrence is a candidate; recurrence makes a pitfall line. Filter incidental noise (tool outages, typos), and route mechanically-preventable mistakes to hooks/lint/CI proposals instead of prose.
-6. **The human** — org requirements, domain concepts, frozen areas, intent, priorities, and mistakes they've watched agents make. The only source for these; no scan substitutes.
+1. **Existing recorded instructions and lessons** — root and nested `AGENTS.md`, `CLAUDE.md`, editor rule files, and lessons written anywhere nearby (notes files, warnings in READMEs). What agents are told today: the baseline, plus conflicts and stale claims to fix. Recorded lessons are standing maintainer testimony — kept by default, challenged only with evidence that a referent is gone or wrong.
+2. **Executable configuration and CI** — manifests, lockfiles, workflow files, hooks, Makefiles, linter configs. Most of Commands, Verification, and Policy comes from here, verified by execution.
+3. **Tracked source** — boundaries (vendored, generated, frozen), conventions that differ from defaults, entry points. Scanned to answer the section plan's questions, never for novelty: an interesting fact no agent needs is noise, and a trap-looking fact is at most an interview question, never a pitfall line.
+4. **Git history** — targeted, never wholesale: when the current state contains a surprising constraint, find the change that introduced it and any reverted attempts to remove it, then check the reason still holds today. Commit messages are past intent, not current truth.
+5. **Agent session logs and review corrections** — when available or pointed at: the only source of *observed* agent mistakes. Extract structure, never transcripts: task, mistake, correction, consequence, occurrence count, source sessions. One occurrence is a candidate; recurrence makes a pitfall line. Ignore one-off noise (tool outages, typos); route mechanically preventable mistakes to a proposed hook, lint, or CI check instead of prose.
+6. **The human** — org requirements, domain concepts, frozen areas, intent, priorities, and mistakes they've watched agents make. No scan substitutes.
 
-External sources the user names (org handbooks, wikis, prior architecture docs, MCP knowledgebases) join at rank 3: mined for candidates, untrusted until verified against the repo or confirmed by the user.
+Documents the user names from outside the repo (org handbooks, wikis, prior architecture docs, MCP knowledgebases) are treated like source 3: scanned for candidates, untrusted until verified against the repo or confirmed by the user.
 
-## Corpus rules — binding on every scanner
+## Scan scope — binding on every scanner
 
-The corpus is tracked files (`git ls-files`); dependency, vendored, generated, build-output, and cache directories are out unless a specific claim requires looking inside one, and then the scanner states why. Scanners return candidates with evidence; they never decide what gets written.
+Scanners read tracked files (`git ls-files`). Dependency, vendored, generated, build-output, and cache directories are out unless a specific claim requires looking inside one, and then the scanner states why. Scanners return candidates with evidence; they never decide what gets written.
 
 ## The ledger
 
-`{output_folder}/project-context-ledger.md` — one plain markdown file, the skill's memory across runs. One block per candidate:
+`{output_folder}/project-context-ledger.md` — one plain markdown file, this skill's memory across runs. One block per candidate:
 
 ```markdown
 ## <short claim>
@@ -32,12 +32,15 @@ The corpus is tracked files (`git ls-files`); dependency, vendored, generated, b
 - disposition: guide | scoped:<path> | rejected — <reason> | pending
 ```
 
-Interview answers, rejections (with reasons), conflicts found in other steering files, and auto-mode assumptions all land here the moment they happen — never batched for session end. Refresh and audit read it first and never re-litigate a recorded disposition unless its evidence changed. The ledger is working memory, not context: agents never load it, and nothing in it counts against the guide's budget.
+Interview answers, rejections with reasons, conflicts found in other instruction files, and auto-mode assumptions are all written here the moment they happen. Refresh and audit read the ledger first and don't revisit a recorded disposition unless its evidence changed. Agents never load the ledger; nothing in it counts against the guide's budget.
 
 ## Interview rules
 
 - **Never ask what a scan could answer.** A claim verified by execution or path-check proceeds as verified; asking the user to confirm it is a defect.
-- Chunked rounds, eight questions maximum, fewest possible. Open questions over confirmations: "what do agents keep getting wrong here?", "what would a new engineer be told on day one that's written nowhere?", "what must never be touched?".
-- An unverifiable claim from docs or an external source is surfaced as "the docs say X — still true?", never stated as fact.
-- Before writing, one closing ask: name in a line what will be captured and ask what's missing — a frozen area, an org rule, a recurring mistake. This class of material is unrecoverable by any later scan.
-- A round that yields nothing new is the signal to write, not to invent another round. Out-of-scope material the user volunteers is captured in the ledger, never deflected.
+- **Ask recall questions, never review lists.** "What do agents keep getting wrong?" works because the maintainer's memory has already selected what mattered. Never hand the human a selection problem a scan created.
+- A mistake this session itself made and caught while reading or verifying the repo is an observed agent failure (sample of one) — worth offering as a question.
+- Ask in batches of at most eight questions; fewer is better. Prefer open questions ("what do agents keep getting wrong here?") over confirmations.
+- An unverifiable claim from docs or an outside document is asked as "the docs say X — still true?", never stated as fact.
+- When the repo contradicts the user's own testimony, show the evidence and ask — never write the claim as given, never drop it silently. Either the claim or the reading of the evidence gets corrected, and the outcome is recorded in the ledger.
+- Before writing, one closing question: say in a line what the guide will contain and ask what's missing — a frozen area, an org rule, a recurring mistake. This material is unrecoverable by any later scan.
+- A batch that yields nothing new means it is time to write, not to ask more. Off-topic information the user offers is recorded in the ledger, never ignored.
