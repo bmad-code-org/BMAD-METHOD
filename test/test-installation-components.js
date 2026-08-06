@@ -776,15 +776,28 @@ async function runTests() {
     );
 
     // Body content of the persona agent file: frontmatter description +
-    // LOAD pattern referencing the skill's SKILL.md path under target_dir.
+    // BMAD methodology preamble + repo-relative path to the skill's SKILL.md.
     const personaAgentContent17 = await fs.readFile(agentFileForPersona17, 'utf8');
     assert(
       personaAgentContent17.includes('description:'),
       'Copilot agent pointer carries a description in YAML frontmatter (drives the agents picker label)',
     );
     assert(
-      personaAgentContent17.includes('{project-root}/.agents/skills/bmad-agent-fixture/SKILL.md'),
-      'Copilot agent pointer body resolves to the skill via LOAD {project-root}/<target_dir>/<id>/SKILL.md',
+      personaAgentContent17.includes('.agents/skills/bmad-agent-fixture/SKILL.md'),
+      'Copilot agent pointer body references the skill via a repo-relative path (<target_dir>/<id>/SKILL.md)',
+    );
+    assert(
+      personaAgentContent17.includes('BMAD Method'),
+      'Copilot agent pointer includes BMAD methodology context',
+    );
+    assert(
+      !personaAgentContent17.includes('{project-root}'),
+      'Copilot agent pointer uses a repo-relative path (no {project-root} literal)',
+    );
+    assert(
+      personaAgentContent17.includes('MANDATORY FIRST ACTION') &&
+        personaAgentContent17.includes('Do not skip or defer this step.'),
+      'Copilot agent pointer enforces first-read behavior so PR-assigned agents must load SKILL.md before acting',
     );
 
     // Idempotency: re-running setup must not duplicate or rewrite the agent
@@ -797,6 +810,34 @@ async function runTests() {
     assert(result17b.success === true, 'Second GitHub Copilot install succeeds (idempotent)');
     assert(await fs.pathExists(agentFileForPersona17), 'Persona agent pointer survives a second install pass');
     assert(!(await fs.pathExists(agentFileForWorkflow17)), 'Workflow skill remains filtered out of agents picker on second install');
+
+    // Migration behavior: an older generated Copilot pointer that still uses
+    // the legacy {project-root} LOAD template should be recognized as
+    // generator-owned and refreshed to the current template on reinstall.
+    const oldGeneratedBody17 = [
+      '---',
+      'description: Persona agent — customize.toml has [agent], SHOULD appear',
+      '---',
+      '',
+      'LOAD the FULL {project-root}/.agents/skills/bmad-agent-fixture/SKILL.md, READ its entire contents and follow its directions exactly!',
+      '',
+    ].join('\n');
+    await fs.writeFile(agentFileForPersona17, oldGeneratedBody17, 'utf8');
+
+    const result17c = await ideManager17.setup('github-copilot', tempProjectDir17, installedBmadDir17, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+    assert(result17c.success === true, 'Third GitHub Copilot install succeeds (legacy pointer migration)');
+    const migratedPersonaAgentContent17 = await fs.readFile(agentFileForPersona17, 'utf8');
+    assert(
+      migratedPersonaAgentContent17.includes('MANDATORY FIRST ACTION'),
+      'Legacy Copilot pointer is refreshed to current template on reinstall',
+    );
+    assert(
+      !migratedPersonaAgentContent17.includes('{project-root}/.agents/skills/bmad-agent-fixture/SKILL.md'),
+      'Migrated Copilot pointer no longer uses legacy {project-root} path',
+    );
 
     await fs.remove(tempProjectDir17);
     await fs.remove(path.dirname(installedBmadDir17));
