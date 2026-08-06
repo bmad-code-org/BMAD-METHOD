@@ -360,6 +360,7 @@ async function runTests() {
       commandContent.includes('@.agents/skills/bmad-master/SKILL.md'),
       'Command pointer body references the installed skill via @<target_dir>/<canonicalId>/SKILL.md',
     );
+    assert(!commandContent.includes('@skills/bmad-master'), 'Command pointer does not use the legacy @skills/<canonicalId> namespace');
     assert(commandContent.includes('description:'), 'Command pointer carries a description in YAML frontmatter');
 
     // Idempotency: re-running install must not duplicate or rewrite pointers.
