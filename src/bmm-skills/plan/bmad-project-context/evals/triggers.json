@@ -8,6 +8,10 @@
     "should_trigger": true
   },
   {
+    "query": "set up an AGENTS.md for this codebase",
+    "should_trigger": true
+  },
+  {
     "query": "refresh the project context, a lot has changed",
     "should_trigger": true
   },
@@ -16,11 +20,7 @@
     "should_trigger": true
   },
   {
-    "query": "set up project context for our monorepo",
-    "should_trigger": true
-  },
-  {
-    "query": "what does our project context say about how we handle money amounts",
+    "query": "the agent keeps using jest syntax in our vitest repo, record that so it stops",
     "should_trigger": true
   },
   {
