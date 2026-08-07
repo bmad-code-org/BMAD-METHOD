@@ -335,6 +335,13 @@ platforms:
       target_dir: .agents/skills
       global_target_dir: ~/.agents/skills
 
+  zcode:
+    name: "ZCode"
+    preferred: false
+    installer:
+      target_dir: .zcode/skills
+      global_target_dir: ~/.zcode/skills
+
   zencoder:
     name: "Zencoder"
     preferred: false
