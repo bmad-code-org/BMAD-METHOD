@@ -2,8 +2,8 @@
 
 The guide is the project's agent instructions, written as two files at the repo root:
 
-- **`AGENTS.md`** — loaded by every session, whatever its kind: Orientation, Policy, and one closing pointer line: "Editing code? Read `AGENTS-dev.md` first."
-- **`AGENTS-dev.md`** — read via that pointer by sessions that will touch code: Commands, Verification, Conventions, Where things are, Known pitfalls. Planning and review sessions never pay for it.
+- **`AGENTS.md`** — loaded by every session, whatever its kind: Orientation, Policy, Where things are, and one closing pointer line: "Editing code? Read `AGENTS-dev.md` first."
+- **`AGENTS-dev.md`** — read via that pointer by sessions that will touch code: Commands, Verification, Conventions, Known pitfalls. Planning and review sessions never pay for it.
 
 When the whole guide fits in about 20 instructions, write a single `AGENTS.md` instead — the extra hop isn't worth it. Every line in either file has a recurring cost; this contract governs every write.
 
@@ -19,10 +19,10 @@ Each section has its own admission rule. There is no global "non-derivable" test
 
 1. **Orientation** (`AGENTS.md`) — three or four sentences: what this project is, the stack, where planning, tickets, PRs, and deeper docs live. No admission test beyond brevity.
 2. **Policy and safety** (`AGENTS.md`) — admitted by **authority**: what the org and the maintainers require and the code cannot express — branch rules, protected and frozen paths, generated files, secrets, what must never be done.
-3. **Commands** (`AGENTS-dev.md`) — admitted by **universal need, verified by execution**: build, test (including a single test), lint, run — exact invocations with flags, plus warnings where an operation is expensive or the obvious guess fails. Derivability is no objection: rediscovery is paid at the start of every session, and a derived command is a guess — both trials found repos where the obvious guess is wrong.
-4. **Verification** (`AGENTS-dev.md`) — same rule: what must pass before commit and push, as the exact commands CI runs.
-5. **Conventions that differ from defaults** (`AGENTS-dev.md`) — admitted when **the agent's default assumption is wrong**: an agent writing new code follows ecosystem norms unless told otherwise. Each line links its enforcement point or source file. Not admitted for being unusual, intricate, or interesting — a fact nobody would get wrong by default is not a convention line.
-6. **Where things are** (`AGENTS-dev.md`) — admitted by **localization value**: entry points where work actually lands, and "working on X? read Y first" pointers. Earned per pointer, never exhaustive. Details go behind links, never inline.
+3. **Where things are** (`AGENTS.md`) — admitted by **localization value**: entry points where work actually lands, and "working on X? read Y first" pointers. Planning sessions need these as much as coding sessions. Earned per pointer, never exhaustive. Details go behind links, never inline.
+4. **Commands** (`AGENTS-dev.md`) — admitted by **universal need, verified by execution**: build, test (including a single test), lint, run — exact invocations with flags, plus warnings where an operation is expensive or the obvious guess fails. Derivability is no objection: rediscovery is paid at the start of every session, and a derived command is a guess — both trials found repos where the obvious guess is wrong.
+5. **Verification** (`AGENTS-dev.md`) — same rule: what must pass before commit and push, as the exact commands CI runs.
+6. **Conventions that differ from defaults** (`AGENTS-dev.md`) — admitted when **the agent's default assumption is wrong**: an agent writing new code follows ecosystem norms unless told otherwise. Each line links its enforcement point or source file. Not admitted for being unusual, intricate, or interesting — a fact nobody would get wrong by default is not a convention line.
 7. **Known pitfalls** (`AGENTS-dev.md`) — admitted by **observed failure only**: a lesson already recorded in the repo's instruction files or notes, the maintainer's recollection, session-log evidence, the same mistake fixed repeatedly in git history, or a mistake the writing session itself made and caught while working. A scan cannot nominate a pitfall from how the code *looks*: the repo yields hundreds of trap-looking facts and no property of the fact separates the few that cause real mistakes — that signal exists only in observed behavior. A surprising fact from scanning becomes, at most, an interview question ("do agents actually trip on this?"). Apparent derivability is irrelevant here in both directions: most working pitfall rules restate something readable, because agents misread it anyway.
 
 **Retiring pitfall and policy lines:** a line retires only when the thing it guards is gone (removed, or now mechanically enforced) or the human retires it. Absence of recent failures is never grounds — a working rule erases its own evidence, and half the value of the guide is failures that no longer happen.
@@ -40,7 +40,7 @@ Each section has its own admission rule. There is no global "non-derivable" test
 
 ## Shape and style
 
-Terse imperative lines under plain headings — no prose paragraphs beyond Orientation, no introduction, no summary. State present truth only; git holds history. Every named decision, doc, file, or system includes a repo-relative path or URL that exists. Target shape (single-file form):
+Terse imperative lines under plain headings — no prose paragraphs beyond Orientation, no introduction, no summary. Every line states what to do or what not to do; a bare fact may appear only as the justification clause of such a line ("Exclude `vendor/` from searches — it is 60% of the tracked files", never "`vendor/` is 60% of the tracked files"). Use the contract's section headings so the guide's shape is recognizable across runs; material that seems to need a new section folds into the nearest one. State present truth only; git holds history. Every named decision, doc, file, or system includes a repo-relative path or URL that exists. Target shape (single-file form):
 
 ```markdown
 # acme-billing
