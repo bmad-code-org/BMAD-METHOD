@@ -5,7 +5,7 @@ sidebar:
   order: 3
 ---
 
-Every BMad installation includes the **core module** — a small set of skills that work across all projects, all modules, and all phases. This page covers those seven core skills: the four kernel tools plus the three **thinking skills** (brainstorming, forge idea, party mode).
+Every BMad installation includes the **core module** — a small set of skills that work across all projects, all modules, and all phases. This page covers those eight core skills: the four kernel tools plus the four **thinking skills** (brainstorming, deep-recon, forge idea, party mode).
 
 :::tip[Quick Path]
 Run any tool by typing its skill name (e.g., `bmad-help`) in your IDE. No agent session required.

@@ -121,7 +121,7 @@ bmad-help What are my options for UX design?
 
 **Other Core Tasks and Tools**
 
-The core module includes 8 built-in tools — help, reviews, refinement, customization, and the thinking skills (brainstorming, forge idea, party mode). See [Core Tools](./core-tools.md) for the complete reference.
+The core module includes 8 built-in tools — help, reviews, refinement, customization, and the thinking skills (brainstorming, deep-recon, forge idea, party mode). See [Core Tools](./core-tools.md) for the complete reference.
 
 ## Naming Convention
 
