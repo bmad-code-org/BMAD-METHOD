@@ -77,7 +77,7 @@ def _installed_resolver_config(project_root: Path):
         return None
     proc = subprocess.run(
         [sys.executable, str(resolver), "--project-root", str(project_root)],
-        capture_output=True, text=True)
+        capture_output=True, text=True, encoding="utf-8")
     if proc.returncode != 0:
         return None
     try:
