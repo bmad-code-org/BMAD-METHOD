@@ -31,7 +31,7 @@ Each section has its own admission rule. There is no global "non-derivable" test
 
 | Excluded | Why |
 |---|---|
-| Repo overviews, directory trees, tech-stack lists | No measured benefit; agents derive structure fresh, and stored copies drift |
+| Repo overviews, directory trees, tech-stack lists | Agents derive structure fresh, and stored copies drift |
 | Facts included for being interesting or unusual | Interest is not evidence of need — this is the failure mode this skill replaces |
 | Style rules an agent is meant to self-enforce | That job belongs to a formatter, linter, hook, or CI check — propose one instead |
 | Platitudes ("write clean code") | Already the agent's default |

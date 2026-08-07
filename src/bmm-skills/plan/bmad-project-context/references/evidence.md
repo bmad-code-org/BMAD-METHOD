@@ -1,6 +1,6 @@
 # Evidence
 
-Where guide content comes from, how it is verified, and how the run is recorded. Verification establishes that a claim is true; a claim is useful only if one of the guide's sections needs it. A verified fact no section needs is rejected, with the reason in the ledger.
+Where guide content comes from, how it is verified, and how the run is recorded. Verification establishes that a claim is true; a claim is useful only if one of the guide's sections needs it. A verified fact no section needs is rejected, with the reason in the memlog.
 
 ## Sources
 
@@ -19,20 +19,22 @@ Documents the user names from outside the repo (org handbooks, wikis, prior arch
 
 Scanners read tracked files (`git ls-files`). Dependency, vendored, generated, build-output, and cache directories are out unless a specific claim requires looking inside one, and then the scanner states why. Scanners return candidates with evidence; they never decide what gets written.
 
-## The ledger
+## The memlog
 
-`{output_folder}/project-context-ledger.md` — one plain markdown file, this skill's memory across runs. One block per candidate:
+`{output_folder}/project-context/.memlog.md` — this skill's memory across runs, kept with the shared memlog tool: `uv run {project-root}/_bmad/scripts/memlog.py init|append --workspace {output_folder}/project-context ...` (standalone, when the script is absent: create and append the same one-line entries by hand). Append-only — nothing is edited or removed; a change of mind or a late answer is a new entry, and a claim's current state is its latest entry.
+
+One entry per fact, the moment it happens, typed by what it is:
 
 ```markdown
-## <short claim>
-- sources: <paths / URLs / session refs>
-- section: <target section, or none>
-- changes: <what an agent does wrong without it>
-- verification: executed | path-checked | user-confirmed | unverified
-- disposition: guide | scoped:<path> | rejected — <reason> | pending
+- (candidate) single test runs need --gtest_filter; suite names don't match file names — sources: test/CMakeLists.txt; section: Commands; changes: agent trusts a 0-test green run; verification: executed; disposition: guide
+- (answer by user) no external docs — one-person shop, the maintainer is the source of truth
+- (rejection) directory tree — excluded by contract: repo overviews
+- (conflict) AGENTS.md says git-commits, CLAUDE.md says tam-commit — asked
+- (disposition) git-commits line → deleted; tam-commit is current, on the maintainer's answer
+- (assumption) auto mode: treated master as the trunk, unconfirmed
 ```
 
-Interview answers, rejections with reasons, conflicts found in other instruction files, and auto-mode assumptions are all written here the moment they happen. Refresh and audit read the ledger first and don't revisit a recorded disposition unless its evidence changed. Agents never load the ledger; nothing in it counts against the guide's budget.
+A candidate entry carries its sources, target section, what an agent does wrong without it, verification status (`executed | path-checked | user-confirmed | unverified`), and disposition (`guide | scoped:<path> | rejected — <reason> | pending`); when the disposition is settled later or changes, append a new `(disposition)` entry rather than rewriting. Interview answers, rejections with reasons, conflicts found in other instruction files, and auto-mode assumptions all land as entries when they happen. Refresh and audit read the memlog first and don't revisit a recorded disposition unless its evidence changed. Agents never load the memlog; nothing in it counts against the guide's budget.
 
 ## Interview rules
 
@@ -41,6 +43,6 @@ Interview answers, rejections with reasons, conflicts found in other instruction
 - A mistake this session itself made and caught while reading or verifying the repo is an observed agent failure (sample of one) — worth offering as a question.
 - Ask in batches of at most eight questions; fewer is better. Prefer open questions ("what do agents keep getting wrong here?") over confirmations.
 - An unverifiable claim from docs or an outside document is asked as "the docs say X — still true?", never stated as fact.
-- When the repo contradicts the user's own testimony, show the evidence and ask — never write the claim as given, never drop it silently. Either the claim or the reading of the evidence gets corrected, and the outcome is recorded in the ledger.
+- When the repo contradicts the user's own testimony, show the evidence and ask — never write the claim as given, never drop it silently. Either the claim or the reading of the evidence gets corrected, and the outcome is recorded in the memlog.
 - Before writing, one closing question: say in a line what the guide will contain and ask what's missing — a frozen area, an org rule, a recurring mistake. This material is unrecoverable by any later scan.
-- A batch that yields nothing new means it is time to write, not to ask more. Off-topic information the user offers is recorded in the ledger, never ignored.
+- A batch that yields nothing new means it is time to write, not to ask more. Off-topic information the user offers is recorded in the memlog, never ignored.
