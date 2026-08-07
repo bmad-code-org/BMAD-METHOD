@@ -4038,6 +4038,52 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test 53: Skill copy excludes Python bytecode caches
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 53: Skill Copy Artifact Filtering${colors.reset}\n`);
+
+  try {
+    const { shouldSkipSkillArtifact } = require('../tools/installer/ide/_config-driven');
+
+    assert(shouldSkipSkillArtifact('__pycache__') === true, '__pycache__ directory is treated as an artifact');
+    assert(shouldSkipSkillArtifact('sprint_plan.cpython-311.pyc') === true, '.pyc files are treated as artifacts');
+    assert(shouldSkipSkillArtifact('.DS_Store') === true, 'existing OS artifact filtering is preserved');
+    assert(shouldSkipSkillArtifact('.gitkeep') === false, '.gitkeep remains copyable');
+    assert(shouldSkipSkillArtifact('sprint_plan.py') === false, 'Python sources remain copyable');
+    assert(shouldSkipSkillArtifact('SKILL.md') === false, 'skill content remains copyable');
+
+    // End-to-end: a cache planted in the source tree must not reach the skill tree.
+    const tempProjectDir53 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-pycache-test-'));
+    const installedBmadDir53 = await createTestBmadFixture();
+
+    const sourceScripts53 = path.join(installedBmadDir53, 'core', 'bmad-master', 'scripts');
+    await fs.ensureDir(path.join(sourceScripts53, '__pycache__'));
+    await fs.writeFile(path.join(sourceScripts53, 'helper.py'), 'print("hello")\n');
+    await fs.writeFile(path.join(sourceScripts53, '__pycache__', 'helper.cpython-311.pyc'), 'bytecode');
+
+    const ideManager53 = new IdeManager();
+    await ideManager53.ensureInitialized();
+    const result53 = await ideManager53.setup('claude-code', tempProjectDir53, installedBmadDir53, {
+      silent: true,
+      selectedModules: ['core'],
+    });
+
+    assert(result53.success === true, 'claude-code setup succeeds against temp project');
+
+    const installedSkill53 = path.join(tempProjectDir53, '.claude', 'skills', 'bmad-master');
+    assert(await fs.pathExists(path.join(installedSkill53, 'SKILL.md')), 'skill content is installed');
+    assert(await fs.pathExists(path.join(installedSkill53, 'scripts', 'helper.py')), 'Python sources are installed');
+    assert(!(await fs.pathExists(path.join(installedSkill53, 'scripts', '__pycache__'))), '__pycache__ is not copied into the skill tree');
+
+    await fs.remove(tempProjectDir53);
+    await fs.remove(path.dirname(installedBmadDir53));
+  } catch (error) {
+    assert(false, 'skill copy excludes Python bytecode caches', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);
