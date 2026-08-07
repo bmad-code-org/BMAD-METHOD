@@ -2,8 +2,8 @@
 
 The guide is the project's agent instructions, written as two files at the repo root:
 
-- **`AGENTS.md`** — loaded by every session, whatever its kind: Orientation, Policy, Where things are, and one closing pointer line: "Editing code? Read `AGENTS-dev.md` first."
-- **`AGENTS-dev.md`** — read via that pointer by sessions that will touch code: Commands, Verification, Conventions, Known pitfalls. Planning and review sessions never pay for it.
+- **`AGENTS.md`** — loaded by every session, whatever its kind: Orientation, Policy, Where things are, and a closing pointer: "Before your first build, test run, or file edit: read `AGENTS-dev.md` — verified commands, conventions, and known pitfalls. Only planning, reviewing, or answering questions? Skip it." The trigger is the *action*, not the session's kind — a session rarely knows it is a hands-on session until the moment it is.
+- **`AGENTS-dev.md`** — read via that pointer by sessions doing hands-on work with the code: Commands, Verification, Conventions, Known pitfalls. Sessions that only plan, review, or answer questions never pay for it.
 
 When the whole guide fits in about 20 instructions, write a single `AGENTS.md` instead — the extra hop isn't worth it. When the maintainer names another frequent session kind (UX, manual testing, data work), it may get its own `AGENTS-<kind>.md` behind its own pointer line, under the same rules as `AGENTS-dev.md` — but a kind with only a few instructions doesn't earn a file, and the kinds come from the maintainer, never from guessing at the repo. Rules that differ by *module* rather than by session kind are the other axis: those go in scoped guides (below), which the harness loads by location. Every line in any of these files has a recurring cost; this contract governs every write.
 
@@ -19,7 +19,7 @@ Each section has its own admission rule. There is no global "non-derivable" test
 
 1. **Orientation** (`AGENTS.md`) — three or four sentences: what this project is, the stack, where planning, tickets, PRs, and deeper docs live. No admission test beyond brevity.
 2. **Policy and safety** (`AGENTS.md`) — admitted by **authority**: what the org and the maintainers require and the code cannot express — branch rules, protected and frozen paths, generated files, secrets, what must never be done.
-3. **Where things are** (`AGENTS.md`) — admitted by **localization value**: entry points where work actually lands, and "working on X? read Y first" pointers. Planning sessions need these as much as coding sessions. Earned per pointer, never exhaustive. Details go behind links, never inline.
+3. **Where things are** (`AGENTS.md`) — admitted by **localization value**: entry points where work actually lands, and "working on X? read Y first" pointers. Planning sessions need these as much as hands-on ones. Earned per pointer, never exhaustive. Details go behind links, never inline.
 4. **Commands** (`AGENTS-dev.md`) — admitted by **universal need, verified by execution**: build, test (including a single test), lint, run — exact invocations with flags, plus warnings where an operation is expensive or the obvious guess fails. Derivability is no objection: rediscovery is paid at the start of every session, and a derived command is a guess — both trials found repos where the obvious guess is wrong.
 5. **Verification** (`AGENTS-dev.md`) — same rule: what must pass before commit and push, as the exact commands CI runs.
 6. **Conventions that differ from defaults** (`AGENTS-dev.md`) — admitted when **the agent's default assumption is wrong**: an agent writing new code follows ecosystem norms unless told otherwise. Each line links its enforcement point or source file. Not admitted for being unusual, intricate, or interesting — a fact nobody would get wrong by default is not a convention line.
@@ -40,12 +40,33 @@ Each section has its own admission rule. There is no global "non-derivable" test
 
 ## Shape and style
 
-Terse imperative lines under plain headings — no prose paragraphs beyond Orientation, no introduction, no summary. Every line states what to do or what not to do; a bare fact may appear only as the justification clause of such a line ("Exclude `vendor/` from searches — it is 60% of the tracked files", never "`vendor/` is 60% of the tracked files"). Use the contract's section headings so the guide's shape is recognizable across runs; material that seems to need a new section folds into the nearest one. State present truth only; git holds history. Every named decision, doc, file, or system includes a repo-relative path or URL that exists. Target shape (single-file form):
+Terse imperative lines under plain headings — no prose paragraphs beyond Orientation, no introduction, no summary. Every line states what to do or what not to do; a bare fact may appear only as the justification clause of such a line ("Exclude `vendor/` from searches — it is 60% of the tracked files", never "`vendor/` is 60% of the tracked files"). Use the contract's section headings so the guide's shape is recognizable across runs; material that seems to need a new section folds into the nearest one. State present truth only; git holds history. Every named decision, doc, file, or system includes a repo-relative path or URL that exists. Target shape:
+
+`AGENTS.md`:
 
 ```markdown
 # acme-billing
 Payment-processing service for Acme storefronts. TypeScript/Node, pnpm.
 Planning lives in docs/planning/, tickets in Linear (ACME board), PRs on GitHub.
+
+## Policy
+- Never push to main; PRs only, one approval required.
+- `legacy/` is frozen: never modify; it is being replaced.
+- `src/generated/` is generated by `pnpm codegen` — never edit by hand.
+
+## Where things are
+- Webhook handling: src/routes/webhooks.ts; conventions in docs/webhooks.md
+- Working on billing rules? Read docs/billing-model.md first.
+
+Before your first build, test run, or file edit: read `AGENTS-dev.md` —
+verified commands, conventions, and known pitfalls. Only planning, reviewing,
+or answering questions? Skip it.
+```
+
+`AGENTS-dev.md`:
+
+```markdown
+# Working on acme-billing code
 
 ## Commands
 - Test: `pnpm test` (vitest — do NOT use jest syntax); single file: `pnpm test -- path/to/file`
@@ -54,23 +75,16 @@ Planning lives in docs/planning/, tickets in Linear (ACME board), PRs on GitHub.
 ## Before pushing
 - `pnpm lint && pnpm test` must pass — same commands CI runs.
 
-## Policy
-- Never push to main; PRs only, one approval required.
-- `legacy/` is frozen: never modify; it is being replaced.
-- `src/generated/` is generated by `pnpm codegen` — never edit by hand.
-
 ## Conventions that differ from defaults
 - Money is integer cents (`amountCents`), never floats — src/lib/money.ts
 - All DB access through repositories in src/repos/ — never call the client directly.
-
-## Where things are
-- Webhook handling: src/routes/webhooks.ts; conventions in docs/webhooks.md
-- Working on billing rules? Read docs/billing-model.md first.
 
 ## Known pitfalls
 - Stripe webhooks replay in staging every 6h — handlers must be idempotent.
 - Agents keep adding jest matchers; this repo is vitest-only.
 ```
+
+In the single-file form the same sections merge into one `AGENTS.md`, Policy first, and the pointer line disappears.
 
 ## Editing an existing guide
 
@@ -78,7 +92,7 @@ A handwritten guide is the baseline, not raw material. Keep its phrasing where i
 
 ## Scoped guides
 
-A subsystem gets its own nested `AGENTS.md` when work keeps landing there and its truths don't belong at root — most harnesses auto-load the nearest file. 25–35 lines answering, in order: what is this, who owns it, how do I run it, what's surprising, where do I go next. Every path verified. Created when a subsystem needs one, never for every subsystem.
+A subsystem gets its own nested `AGENTS.md` when work keeps landing there and its truths don't belong at root. Discovery must not rely on the harness: every scoped guide gets a "working on X? read Y first" pointer in the root guide's Where things are section — harnesses that auto-load the nearest file make it load twice as reliably, but the pointer is the mechanism. 25–35 lines answering, in order: what is this, who owns it, how do I run it, what's surprising, where do I go next. Every path verified. Created when a subsystem needs one, never for every subsystem.
 
 ## Small guides are success
 

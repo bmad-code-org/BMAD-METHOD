@@ -5,7 +5,7 @@ description: 'Write and maintain a project''s agent guide (AGENTS.md): verified 
 
 # Overview
 
-The product is a good agent guide — a short `AGENTS.md` every session loads, plus an `AGENTS-dev.md` that coding sessions read. Generated documentation makes agents worse; what helps is a short guide where every line passed its section's admission rule and its facts are verified. The section plan in `references/guide-contract.md` is fixed: the job is to fill it with verified evidence, not to explore the repository for interesting facts. The repository is where claims get verified; the knowledge itself comes from configuration, history, observed agent mistakes, and the people who maintain the project.
+The product is a good agent guide — a short `AGENTS.md` every session loads, plus an `AGENTS-dev.md` for sessions doing hands-on work with the code. Generated documentation makes agents worse; what helps is a short guide where every line passed its section's admission rule and its facts are verified. The section plan in `references/guide-contract.md` is fixed: the job is to fill it with verified evidence, not to explore the repository for interesting facts. The repository is where claims get verified; the knowledge itself comes from configuration, history, observed agent mistakes, and the people who maintain the project.
 
 Works with a full BMad install or standalone in any repo.
 
