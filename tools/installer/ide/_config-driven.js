@@ -125,6 +125,23 @@ function looksLikeGeneratorOutput(content, canonicalId, { template, targetDir })
   return true;
 }
 
+// Artifacts that must never reach a user's skill tree: OS/editor leftovers and
+// Python bytecode caches built on the maintainer's machine. Mirrors the policy
+// Installer._installSharedScripts already applies to _bmad/scripts.
+const SKILL_ARTIFACT_NAMES = new Set(['.DS_Store', 'Thumbs.db', 'desktop.ini', '__pycache__']);
+const SKILL_ARTIFACT_SUFFIXES = ['~', '.swp', '.swo', '.bak', '.pyc', '.pyo'];
+
+/**
+ * Whether a file or directory basename is a build/editor artifact rather than skill content.
+ * @param {string} name - Basename of the candidate path
+ * @returns {boolean} True when the entry must not be copied into a skill tree
+ */
+function shouldSkipSkillArtifact(name) {
+  if (SKILL_ARTIFACT_NAMES.has(name)) return true;
+  if (name.startsWith('.') && name !== '.gitkeep') return true;
+  return SKILL_ARTIFACT_SUFFIXES.some((suffix) => name.endsWith(suffix));
+}
+
 /**
  * Config-driven IDE setup handler
  *
@@ -448,17 +465,8 @@ class ConfigDrivenIdeSetup {
       await fs.ensureDir(skillDir);
       this.skillWriteTracker?.add(canonicalId);
 
-      // Copy all skill files, filtering OS/editor artifacts recursively
-      const skipPatterns = new Set(['.DS_Store', 'Thumbs.db', 'desktop.ini']);
-      const skipSuffixes = ['~', '.swp', '.swo', '.bak'];
-      const filter = (src) => {
-        const name = path.basename(src);
-        if (src === sourceDir) return true;
-        if (skipPatterns.has(name)) return false;
-        if (name.startsWith('.') && name !== '.gitkeep') return false;
-        if (skipSuffixes.some((s) => name.endsWith(s))) return false;
-        return true;
-      };
+      // Copy all skill files, filtering OS/editor artifacts and Python caches recursively
+      const filter = (src) => src === sourceDir || !shouldSkipSkillArtifact(path.basename(src));
       await fs.copy(sourceDir, skillDir, { filter });
 
       count++;
@@ -969,4 +977,4 @@ class ConfigDrivenIdeSetup {
   }
 }
 
-module.exports = { ConfigDrivenIdeSetup };
+module.exports = { ConfigDrivenIdeSetup, shouldSkipSkillArtifact };
