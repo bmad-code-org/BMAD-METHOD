@@ -1,0 +1,3 @@
+from: support thread, customer #4411 (Meridian Health)
+
+ok so the delivery history page is showing duplicate rows for SMS alerts. every sms alert shows up 2x sometimes 3x in history but the customer only actually received ONE text (we checked twilio logs, one send). email alerts look fine, only sms. started sometime after the thursday deploy. happens for all their users not just one. they're on the enterprise plan so this is getting escalated, pls make a ticket

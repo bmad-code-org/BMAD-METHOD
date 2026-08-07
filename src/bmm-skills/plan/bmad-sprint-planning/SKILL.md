@@ -22,6 +22,8 @@ You are a senior developer about to commit to this plan. Two moves, in order: fi
 
    If interactive and unclear, ask; for headless behavior see `## Headless Mode`.
 
+   **Legacy boundary:** `sprint-status.yaml` serves in-flight v6 work only. Refresh, status, validate, and fix on an existing file stay fully supported — but never generate tracking for net-new epics and stories, and never for work that lives in a `bmad-ticket` tree: redirect those requests to `bmad-ticket`, whose `board` and `frontier` verbs are the tracking for new work.
+
 Execute each entry in `{workflow.activation_steps_append}` in order.
 
 Activation is complete. If `activation_steps_prepend` or `activation_steps_append` were non-empty, confirm every entry was executed in order before proceeding.

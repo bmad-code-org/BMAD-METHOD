@@ -1,0 +1,130 @@
+[
+  {
+    "id": "refine-bug-quick",
+    "input": "quick mode: make a ticket for this bug, the report is in fixtures/bug-report.txt. our ticket tree is at fixtures/tree. dont ask me stuff just propose and write it.",
+    "rubric": [
+      "a new leaf file NOTI-4-*.md exists under fixtures/tree with frontmatter type: bug and status: backlog; if it was placed inside an epic folder rather than the bin, the final message justifies the resolution (refine files into the epic resolution finds, otherwise the bin)",
+      "severity and risk are bare integers 1-5 with no unresolved placeholders anywhere in frontmatter, and hitl is consistent with the skill's rule (risk >= 3 gives hitl: true unless the user decided otherwise)",
+      "the body has Context, Observed Behavior, Expected Behavior, and Cause Hypothesis sections; the hypothesis engages the actual evidence (duplicate SMS history rows while exactly one Twilio send occurred; email unaffected) and prescribes no fix or solution steps",
+      "reported claims are attributed, not laundered into facts — the Thursday-deploy timing and the single-Twilio-send check are carried as the reporter's statements, not asserted as verified",
+      "the transcript shows ticket_tree.py next-id ran before the write, and ticket_tree.py index and validate ran after it",
+      "the regenerated fixtures/tree/index.md lists the new bug and contains no status values",
+      "no clarifying questions were asked, and the final message surfaces the judgment calls made autonomously (type, severity, risk) rather than making them silently",
+      "fixtures/bug-report.txt and all pre-existing ticket files are byte-identical to the fixtures — only the new leaf and the regenerated index changed"
+    ],
+    "state_prefix": null,
+    "files": [
+      "fixtures/bug-report.txt",
+      "fixtures/tree/index.md",
+      "fixtures/tree/notifications/ticket.md",
+      "fixtures/tree/NOTI-3-snooze-button.md"
+    ]
+  },
+  {
+    "id": "refine-autonomous-hard-floor",
+    "input": "autonomous: create a task ticket — nightly job that hard-deletes user accounts inactive for 90+ days, including the DB migration for the deletion-audit table. tree is at fixtures/tree.",
+    "rubric": [
+      "a new task leaf exists under fixtures/tree with frontmatter risk of 4 or 5 and hitl: true (data deletion + schema migration trip the hard floor), and the ticket records why the floor applies",
+      "the Done Criteria cover BOTH named deliverables — the nightly purge job and the deletion-audit-table migration; dropping either fails",
+      "the transcript contains no clarifying questions, and genuinely ambiguous product decisions (what counts as inactive, exemptions, run caps) are recorded in the ticket as open questions rather than silently invented",
+      "the body has numbered Done Criteria (#1, #2, ...) each stating a verifiable end state",
+      "the final message reports a status (complete) plus the tree root and the created ticket id/path",
+      "ticket_tree.py validate ran after the write and passed, and the regenerated index lists the new task",
+      "all pre-existing ticket files are byte-identical to the fixtures"
+    ],
+    "state_prefix": null,
+    "files": ["fixtures/tree/index.md", "fixtures/tree/notifications/ticket.md", "fixtures/tree/NOTI-3-snooze-button.md"]
+  },
+  {
+    "id": "refine-hitl-user-override",
+    "input": "User said: \"set risk 2 and hitl false — this touches the session-cleanup shim in the TEST environment only, I know exactly what it is. just write the ticket.\" (tree at fixtures/tree)",
+    "rubric": [
+      "the written ticket's frontmatter has risk: 2 and hitl: false exactly as the user decided — no silent restoration of the floor values",
+      "the reply contains no request to reconsider, no re-proposal of the floor values, and no risk warning attached to the write — acknowledgment of the user's call only",
+      "the override is recorded in the ticket itself (e.g. Dev Notes) as a user decision naming the floor it overrides, so a later reader will not 'correct' the score back",
+      "the ticket is well-formed: template sections present, status: backlog, no unresolved placeholders",
+      "a fresh run of ticket_tree.py validate over the tree passes",
+      "no pre-existing ticket file changed — only the new leaf and the regenerated index differ from the fixture tree"
+    ],
+    "state_prefix": "[refine route, mid-session: the skill proposed risk 4 / hitl true for a story touching session-auth cleanup, and the user replied:]",
+    "files": ["fixtures/tree/index.md", "fixtures/tree/notifications/ticket.md", "fixtures/tree/NOTI-3-snooze-button.md"]
+  },
+  {
+    "id": "slice-prd-autonomous",
+    "input": "autonomous: turn fixtures/prd-notify.md into epics. put the ticket tree at tree-out, project key NOTI.",
+    "rubric": [
+      "tree-out/index.md exists with key: NOTI in frontmatter, contains no status values, and lists every epic actually written",
+      "between 3 and 6 epic folders exist, each containing a ticket.md with type: epic, and each FR-n id from prd-notify.md appears in exactly one epic's covers: — verbatim ids, no duplicates across epics",
+      "no story, bug, task, or spike leaf files were created — the slice route stops at the epic set",
+      "every id FR-1 through FR-8 is covered or explicitly parked with a reason — none silently dropped — and the coverage check ran through ticket_tree.py coverage, not hand-computed",
+      "each envelope has Context, Goals, Sequencing Notes, and the autonomous self-check addresses the gate questions (boundaries, sizing, edges, merge/split) naming at least one considered-and-rejected alternative — a one-line 'self-check passed' fails",
+      "each epic's title AND Goals read as user-observable outcomes (an actor can do or see something); an epic whose Goals are only schema, queue, or framework work fails regardless of its title",
+      "epic-level depends_on edges form an acyclic graph with each edge's rationale in Sequencing Notes, and the set is not fully serialized into one chain when epics are genuinely independent",
+      "no scaffolding or foundation epic is invented — the PRD names an existing deployed stack with CI, and the decomposition respects that brownfield context",
+      "the PRD's non-functional notes (Twilio, SendGrid, 30-day retention/purge) are carried into the relevant envelopes as constraints rather than dropped",
+      "fixtures/prd-notify.md is byte-identical to the fixture — the source was never edited",
+      "the transcript asked the user nothing; the final message reports status complete, the tree root, and the created epic ids/paths; ticket_tree.py validate passed over the finished tree"
+    ],
+    "state_prefix": null,
+    "files": ["fixtures/prd-notify.md"]
+  },
+  {
+    "id": "slice-guided-gate-approved",
+    "input": "User said: \"approved as presented — write it.\" (source: fixtures/prd-notify.md; tree root tree-out; project key NOTI)",
+    "rubric": [
+      "exactly five epic envelopes are written whose titles, covers:, and depends_on relationships match the approved set field-for-field — a materially different set (merged, split, re-covered, or re-edged) fails even if defensible on its own merits",
+      "no additional epics and no story/bug/task/spike leaves are written",
+      "the index is regenerated listing all five epics and ticket_tree.py validate passes with checked: 5",
+      "the coverage check ran through ticket_tree.py coverage against FR-1..FR-8 and reported none uncovered",
+      "the quiz is not re-asked after approval and no new questions appear — and the silence is earned by output, not by inactivity",
+      "the final summary names the epics written and their covers"
+    ],
+    "state_prefix": "[guided slice of fixtures/prd-notify.md reached the gate. The presented and approved epic set is exactly: (1) 'Alert rule management' covering FR-1 and FR-8, no dependencies; (2) 'Real-time alert delivery' covering FR-2, FR-3, FR-6, depends on epic 1; (3) 'Rule snooze' covering FR-4, depends on epic 2; (4) 'Delivery history' covering FR-5, depends on epic 2; (5) 'Org-wide SMS spend cap' covering FR-7, depends on epic 2. The epic-quiz bundle was answered — granularity approved, every edge confirmed gating, nothing to merge or split — and the user then said:]",
+    "files": ["fixtures/prd-notify.md"]
+  },
+  {
+    "id": "incept-epic-autonomous",
+    "input": "autonomous: inception for the notifications epic. tree is at fixtures/tree.",
+    "rubric": [
+      "at least three new leaves with type: story and status: backlog exist under fixtures/tree/notifications/ with filenames NOTI-n-slug.md, numbering continuing from the tree's next free id (no reuse of NOTI-2 or NOTI-3)",
+      "every new story has a Behavior section in prose, and Acceptance Criteria numbered #1, #2, ... where every verify tail names a concrete mechanism (a test level, command, endpoint, or assertion) — a bare 'verify: test it' fails",
+      "every story carries exactly one (e2e) criterion proving a user-visible flow end to end",
+      "story titles and Behaviors are user-visible outcomes — a layer-cake split (an 'API story' plus a 'UI story' for the same capability) fails",
+      "every leaf covers: id is drawn from the epic's covers set (FR-3, FR-4, FR-5 — no invented ids), and the union accounts for all three or explicitly parks the remainder",
+      "depends_on edges reference only existing ids, contain no cycles, are not fully serialized when stories are independent, and ticket_tree.py validate passes",
+      "fixtures/tree/index.md is regenerated listing the new stories under the epic",
+      "the envelope's Sequencing Notes gain the autonomous self-check addressing granularity, merging, edges, coverage, and risk — a one-line stamp fails — while the envelope's pre-existing human-authored Context, Goals, and original Sequencing Notes survive unmodified",
+      "NOTI-3-snooze-button.md is byte-identical to the fixture",
+      "every new leaf carries integer risk and boolean hitl; the transcript asked nothing; the final message reports status, tree root, and created ids"
+    ],
+    "state_prefix": null,
+    "files": ["fixtures/tree/index.md", "fixtures/tree/notifications/ticket.md", "fixtures/tree/NOTI-3-snooze-button.md"]
+  },
+  {
+    "id": "update-status-refusal-relay",
+    "input": "mark NOTI-3 as done please. tree is at fixtures/tree.",
+    "rubric": [
+      "scripts/update_ticket.py was invoked carrying --id NOTI-3 and --set status=done — the requested change, not a quietly downgraded one — and no Write/Edit touched any tree file",
+      "every file under fixtures/tree is byte-identical to the fixture — the refusal left the whole tree untouched",
+      "the final message relays the refusal faithfully: backlog to done is not legal, the legal moves from backlog are named, and the --force override is offered as the user's explicit choice — and any lifecycle or transition path the reply describes matches the script's actual transition graph (no invented states or illegal routes)",
+      "no --force invocation appears in the transcript — the skill did not force on its own"
+    ],
+    "state_prefix": null,
+    "files": ["fixtures/tree/index.md", "fixtures/tree/notifications/ticket.md", "fixtures/tree/NOTI-3-snooze-button.md"]
+  },
+  {
+    "id": "slice-greenfield-autonomous",
+    "input": "autonomous: slice fixtures/greenfield-idea.md into epics — brand-new project, nothing exists yet. tree root tree-out, project key PANTRY.",
+    "rubric": [
+      "Epic 1 is a scaffolding epic naming CI, a deploy path, and test infrastructure — scaled to a solo free-tier hobby app (no stage environment, multi-region, SSO, or compliance gold-plating), with the calibration reasoning stated",
+      "fixtures/greenfield-idea.md is byte-identical to the fixture, and the generated requirement inventory accounts for the braindump's concrete wants (receipt capture, running inventory, check-off, weekly expiry list, recipe suggestions, household sharing) — not a handful of vague stamped ids",
+      "requirements not stated in the braindump (e.g. sign-in) are flagged as derived rather than presented as given",
+      "between 3 and 8 epics exist; epics after Epic 1 are user-value slices, not technical layers",
+      "later epics depend on Epic 1 directly or through a chain, with rationale in Sequencing Notes — and independent feature epics are not serialized against each other",
+      "the epic carrying auth or household-sharing scores risk 4 or higher (auth floor) while read-mostly epics score lower — risk values are differentiated, not uniform",
+      "no leaf tickets were created; the index exists with key PANTRY listing every epic; ticket_tree.py validate passes"
+    ],
+    "state_prefix": null,
+    "files": ["fixtures/greenfield-idea.md"]
+  }
+]

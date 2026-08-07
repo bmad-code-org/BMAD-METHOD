@@ -1,0 +1,80 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# Workflow customization surface for bmad-ticket.
+# Team overrides:     {project-root}/_bmad/custom/bmad-ticket.toml
+# Personal overrides: {project-root}/_bmad/custom/bmad-ticket.user.toml
+
+[workflow]
+
+# --- Universal defaults. Merge: scalars override, arrays append. ---
+activation_steps_prepend = []
+activation_steps_append = []
+persistent_facts = ["file:{project-root}/**/project-context.md"]
+on_complete = ""
+
+# Root of the ticket tree — where the skill reads and writes tickets.
+# Point this at a dedicated work-store repo later; the grammar is
+# relocatable, so moving is a config change and a folder move.
+tickets_output_path = "{planning_artifacts}/tickets"
+
+# Optional "project-name=KEY" entries consulted at tree bootstrap before
+# asking (interactive) or deriving from the project name (autonomous —
+# a derived key is flagged as unconfirmed in the completion report).
+project_keys = []
+
+# Ticket templates, one per type. The templates drive the output shape,
+# so an org wanting a different AC rendering (Given/When/Then, EARS-style
+# shall-statements) swaps the template — the skill does not change.
+story_template = "assets/story-template.md"
+bug_template = "assets/bug-template.md"
+task_template = "assets/task-template.md"
+spike_template = "assets/spike-template.md"
+epic_template = "assets/epic-template.md"
+
+# Allowed leaf status moves ("from>to"). scripts/update_ticket.py refuses
+# any move not listed unless --force carries an explicit user decision;
+# states outside the graph's vocabulary are refused always. Overrides
+# append (widen the graph — e.g. add a custom state and its edges);
+# removing a default edge means forking. Overrides reach the gate through
+# the --transitions flag the skill passes; a direct script call without
+# the flag falls back to the bundled defaults.
+# Defaults = the schema-1 lifecycle: backlog → in-progress → review →
+# done; dropped from any active state; review may bounce back to
+# in-progress. done is terminal.
+lifecycle_transitions = [
+  "backlog>in-progress",
+  "in-progress>review",
+  "review>in-progress",
+  "review>done",
+  "backlog>dropped",
+  "in-progress>dropped",
+  "review>dropped",
+]
+
+# hitl derives from risk: hitl = (risk >= hitl_threshold), overridable
+# per ticket. Hard floors (schema migrations, data deletion, auth,
+# payments → risk 4 minimum, hitl true) are not configurable.
+hitl_threshold = 3
+
+# Review lenses run over the full draft before the user ever sees it
+# (and before autonomous mode approves its own), plus any org standards
+# (definition-of-ready, INVEST checklist). Entries are `skill:` or
+# `file:` references or plain text. Append-only: an org adds its bar;
+# the baked lenses cannot be removed downstream (fork to change them).
+finalize_reviewers = [
+  "skill:bmad-review-adversarial-general",
+  "skill:bmad-review-edge-case-hunter",
+  "skill:bmad-review-verification-gap",
+]
+
+# Bug severity scale (how bad the defect is — distinct from risk, which
+# scores the fix). Overrides append (add bands); renaming or removing a
+# baked band means forking the skill. Advisory for the conversation: the
+# scripts validate severity as an integer 1-5 regardless of added bands.
+severity_scale = [
+  "1 — cosmetic: annoyance, no functional impact",
+  "2 — minor: workaround exists, limited users affected",
+  "3 — major: core function impaired, workaround painful",
+  "4 — critical: core function broken or data at risk, no workaround",
+  "5 — showstopper: outage, data loss, or security exposure",
+]

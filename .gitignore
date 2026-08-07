@@ -89,3 +89,4 @@ build/
 
 # Web bundle release artifacts
 dist/web-bundles/
+.ruff_cache/
