@@ -48,7 +48,7 @@ Run every command the guide states, path-check every named file, apply the contr
 
 ## Modes
 
-Interactive is the default. **Auto mode** (headless, or on request) never asks: it skips the interview, writes only what repository evidence supports, and logs every open question and assumption to the memlog so the next interactive run starts there. When invoked headless: if intent is neither supplied nor inferable, halt with a `blocked` JSON status and `reason`. End with JSON:
+Interactive is the default. **Auto mode** (headless, or on request) never asks: it skips the interview, writes only what repository evidence supports, and logs every open question and assumption to the memlog so the next interactive run starts there. When an existing guide is not this skill's own work (the memlog doesn't record writing it), auto mode never rewrites it in place: it writes the proposal to `AGENTS.md.proposed` (and `AGENTS-dev.md.proposed`), logs it, and leaves the merge to an interactive run. When invoked headless: if intent is neither supplied nor inferable, halt with a `blocked` JSON status and `reason`. End with JSON:
 
 ```json
 {"status": "complete", "intent": "bootstrap", "guide": "AGENTS.md",
@@ -58,4 +58,4 @@ Interactive is the default. **Auto mode** (headless, or on request) never asks: 
 
 ## Finalize
 
-Confirm the memlog reflects the run — every candidate has a disposition, every interview answer is recorded — and run `{workflow.on_complete}` if non-empty.
+Confirm the memlog reflects the run — every candidate has a disposition, every interview answer is recorded — and run `{workflow.on_complete}` if non-empty. This skill never commits: everything it wrote stays as uncommitted working-tree changes for the user to review and commit.
