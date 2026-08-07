@@ -3,6 +3,7 @@
 # dependencies = ["pytest>=8.0"]
 # ///
 """Tests for brain.py. Run: uv run -m pytest scripts/tests/test_brain.py"""
+import io
 import json
 import sys
 from pathlib import Path
@@ -225,6 +226,55 @@ def test_unknown_category_style_uses_fallback_glyph():
     hue, glyph = brain.category_style("totally-made-up-category")
     assert hue.startswith("#") and len(hue) == 7  # valid derived hex
     assert glyph == brain._FALLBACK_GLYPH
+
+
+# --- console encoding (Windows cp1252) ----------------------------------
+
+def _cp1252_stream():
+    """A text stream that behaves like a Windows console: cp1252, strict."""
+    return io.TextIOWrapper(io.BytesIO(), encoding="cp1252", errors="strict", write_through=True)
+
+
+def test_extra_technique_prints_when_stdout_encoding_is_cp1252(lib, tmp_path, monkeypatch):
+    # --extra text is arbitrary user input; the shipped catalog happens to be
+    # cp1252-safe, an overlay is not. Unpinned stdout raises UnicodeEncodeError
+    # and the command exits having printed nothing.
+    overlay = tmp_path / "extra.json"
+    overlay.write_text(
+        json.dumps([{"category": "wild", "technique_name": "Fikir Fırtınası 🌪", "description": "Beyin fırtınası — 日本語"}]),
+        encoding="utf-8",
+    )
+    fake = _cp1252_stream()
+    monkeypatch.setattr(sys, "stdout", fake)
+    assert brain.main(["--file", str(lib), "--extra", str(overlay), "list", "--all"]) == 0
+    out = fake.buffer.getvalue().decode("utf-8")
+    assert "Fikir Fırtınası 🌪" in out
+    assert "日本語" in out
+
+
+def test_missing_technique_name_reports_when_stderr_encoding_is_cp1252(lib, monkeypatch):
+    # `show` echoes the name it could not find; that name came from argv.
+    fake = _cp1252_stream()
+    monkeypatch.setattr(sys, "stderr", fake)
+    assert brain.main(["--file", str(lib), "show", "日本語"]) == 1
+    assert "日本語" in fake.buffer.getvalue().decode("utf-8")
+
+
+def test_pin_utf8_preserves_the_streams_error_handler():
+    # reconfigure(encoding=...) on its own resets errors to "strict"; stderr on
+    # POSIX defaults to "backslashreplace" and must keep it, or a diagnostic
+    # carrying a surrogate-escaped path becomes a traceback.
+    stream = io.TextIOWrapper(io.BytesIO(), encoding="ascii", errors="backslashreplace")
+    brain.pin_utf8(stream)
+    assert stream.encoding == "utf-8"
+    assert stream.errors == "backslashreplace"
+
+
+def test_pin_utf8_ignores_a_stream_without_reconfigure():
+    class Captured:  # e.g. pytest's capture object, or a StringIO stand-in
+        errors = None
+
+    brain.pin_utf8(Captured())  # must not raise
 
 
 def test_shipped_selector_is_in_sync_with_catalog():
