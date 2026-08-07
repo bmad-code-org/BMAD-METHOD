@@ -1,19 +1,74 @@
 ---
-title: "Build"
-description: Reduce human-in-the-loop friction without giving up the checkpoints that protect output quality
+title: 'Build'
+description: Understand how the attentive Build workflow handles direct intent and planned stories.
 sidebar:
   order: 7
 ---
 
-`bmad-build` is the canonical implementation workflow for all development work. It accepts anything from free-form intent or an issue to a fully planned story, and produces code changes with as few human-in-the-loop turns as safety allows.
+`bmad-build` is the attentive Build workflow for one coherent,
+session-sized unit of software work. It accepts anything from free-form intent
+or an issue to a fully planned story, then clarifies, plans, implements, and
+reviews that unit with as few human checkpoints as safety allows.
 
-Upstream planning remains optional and variable. A clear change can enter directly; a larger initiative can arrive with a PRD, UX design, architecture, epics, stories, readiness results, and sprint plan. Those artifacts strengthen the implementation context rather than selecting a different development workflow.
+Session-sized means that one implementation session can reasonably understand,
+implement, review, and finish the intent. It is a scope boundary, not a time
+estimate. A small change may require more planning because of its risk,
+ambiguity, or architectural reach.
 
-When a planned story enters Build, the story remains the upstream product and acceptance context. Build creates its own execution record for the current run so implementation decisions and review findings stay traceable without replacing the story.
+Invoke the `bmad-build` skill directly. Upstream planning determines the
+context Build receives; it does not require a different implementation agent.
 
-It lets the model run longer between checkpoints, then brings the human back only when the task cannot safely continue without human judgment or when it is time to review the end result.
+When a planned story enters Build, the story remains the product and acceptance
+context. Build creates an implementation record for the current run so
+decisions, completion state, and review findings remain traceable without
+replacing the story.
 
 ![Build workflow diagram](/diagrams/build-diagram.png)
+
+## Where Build Fits
+
+Use the smallest planning path that safely produces a session-sized unit, then
+give that unit to Build.
+
+| Starting point    | What Build receives                             | What preserves the larger intent                              |
+| ----------------- | ----------------------------------------------- | ------------------------------------------------------------- |
+| Direct change     | A request, issue, or intent file                | The Build implementation record                               |
+| Spec-backed epic  | One entry from the spec folder's `stories.yaml` | `SPEC.md`, its companions, and prior story records            |
+| Full BMad project | One selected story                              | PRD, UX, architecture, epics, sprint tracking, and prior work |
+
+An obvious, low-risk edit may not need Build. An epic or project needs more
+planning around Build, but each implementation unit still uses the same workflow.
+See [Choose a Development Path](../how-to/choose-a-development-path.md) for the
+complete routing guide.
+
+## How Larger Work Reaches Build
+
+Larger intent becomes a sequence of session-sized units. That sequence can
+change as implementation produces evidence. Later stories may need to absorb a
+new constraint, reconcile a decision made by an earlier story, or be divided
+differently.
+
+The larger BMad flow reduces the risk of losing information when work is
+divided. Parent specs and planning artifacts preserve shared intent; story
+records carry decisions and completion state; integration checks judge the
+combined behavior; and retrospectives compare the whole epic with its contract.
+
+Build handles one unit in that lifecycle. It does not own the backlog, select
+the next story, coordinate several epic streams, or replace integration and
+retrospective review.
+
+## Attentive and Unattended Work
+
+Use Build for foundational, risky, or important stories where human decisions
+may establish patterns for later work. Once those patterns are stable,
+`bmad-build-auto` can execute one unit unattended. An AI coding session or
+another orchestrator, such as bmad-loop, must still select and dispatch each
+unit.
+
+Both Build workflows write story records under the same spec folder,
+so downstream integration and Retrospective can use their status regardless of
+which Build workflow produced them. See
+[Autonomous Development Loops](../reference/build-auto.md) for that contract.
 
 ## Why This Exists
 

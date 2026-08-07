@@ -5,23 +5,32 @@ sidebar:
   order: 7
 ---
 
-`bmad-build-auto` is the unattended automation surface for the canonical [Build](../explanation/build.md) implementation model. It accepts the same range of direct intent and planned work, and preserves the clarify, plan, implement, and review stages while exposing terminal statuses an orchestrator can act on. It automates the implementation loop; it does not define a second implementation path.
+`bmad-build-auto` is the unattended worker for one session-sized unit in the
+canonical [Build](../explanation/build.md) implementation model. One invocation
+clarifies, plans, implements, and reviews one intent or story, then exposes a
+terminal status that a human or orchestrator can act on.
 
-The important architectural boundary is this: `bmad-build-auto` owns the implementation run and the spec artifact it produces, but it does not own your backlog policy. When review finds something real that is not this story's problem, the skill records that finding in the spec it owns and stops there. Deciding whether to queue it, deduplicate it, escalate it, or ignore it is the orchestrator's responsibility.
+Build Auto does not choose the next story, repeat across a backlog, coordinate
+epics, or run a retrospective. It owns only its implementation run and the
+record it creates or resumes. A human or an orchestrator, such as an AI coding
+session or bmad-loop, owns backlog policy and dispatch.
 
 ## What It Does
 
-`bmad-build-auto` performs one unattended development-loop iteration:
+`bmad-build-auto` performs one unattended implementation run:
 
 1. Clarify the incoming intent
 2. Create (or find and resume) a spec file
 3. Implement the change
 4. Review the result
-5. Finish by writing a terminal status to the spec file or fallback result artifact.
+5. Finish by writing a terminal status to the spec file or fallback result artifact
 
 ## Prerequisites
 
-This skill relies on an ability to run subagents. If subagents are unavailable, the workflow halts `blocked` with `no subagents`. If you invoke the skill itself in a subagent session, e.g. "hey, Claude, implement stories 2-10, using a subagent running bmad-build-auto skill for each story", that session will need to spawn its own subagents.
+This skill relies on an ability to run subagents. If subagents are unavailable,
+the workflow halts `blocked` with `no subagents`. An AI coding session that
+orchestrates several stories must start one Build Auto worker per story. Each
+worker must be able to start the review subagents used inside its own run.
 
 Version control, while optional, is strongly recommended. If present, the working tree must be clean and the agent must be able to update repository metadata.
 
@@ -60,11 +69,11 @@ The workflow reads `<spec-folder>/stories.yaml` and looks up the entry whose `id
 
 It then checks `<spec-folder>/stories/<story-id>-*.md` (id-prefix match) to tell a first dispatch from a resume:
 
-| On-disk match | Outcome                                                                                                                                                                                                                                                                                                                                                                      |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| None          | First dispatch. Requires `<spec-folder>/SPEC.md` to exist (otherwise halts `blocked` / `no epic spec found`). Loads `SPEC.md` and its companions, then proceeds to planning.                                                                                                                                                                                                 |
+| On-disk match | Outcome                                                                                                                                                                                                                                                                                                                                                                        |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| None          | First dispatch. Requires `<spec-folder>/SPEC.md` to exist (otherwise halts `blocked` / `no epic spec found`). Loads `SPEC.md` and its companions, then proceeds to planning.                                                                                                                                                                                                   |
 | Exactly one   | Resume: routes on that file's `status` exactly like the Resume Input table above. A `blocked` status here reports blocking condition `story already blocked`, not `blocked spec supplied` — build-auto discovered the file by id, the caller didn't hand it a blocked spec. A missing or unrecognized `status` halts `blocked` / `unrecognized status in existing story file`. |
-| More than one | Halts `blocked` / `ambiguous story file match`.                                                                                                                                                                                                                                                                                                                              |
+| More than one | Halts `blocked` / `ambiguous story file match`.                                                                                                                                                                                                                                                                                                                                |
 
 A `blocked` story file is permanent: every later dispatch of that id halts with `story already blocked`, even after the cause is fixed. To retry, delete the story file — the id then reads as pending and the next dispatch starts fresh.
 
@@ -72,7 +81,55 @@ Whenever planning runs — on a first dispatch, or on a resume of interrupted pl
 
 Exactly one `stories.yaml` entry is dispatched per invocation: the workflow never reads another entry or advances to a different story id, regardless of outcome.
 
-### Context Inputs
+The shared spec-backed epic layout is:
+
+```text
+<spec-folder>/
+├── SPEC.md
+├── stories.yaml
+└── stories/
+    ├── 1-<slug>.md
+    ├── 2-<slug>.md
+    └── ...
+```
+
+`stories.yaml` is the ordered inventory. Build and Build Auto create or resume
+the Markdown records under `stories/`, and each record carries its lifecycle
+status in frontmatter. Downstream consumers use the location and status rather
+than depending on which Build workflow produced the record.
+
+## Orchestration Options
+
+Build Auto is the worker in each option below. The orchestrator selects a unit,
+starts one worker, reads its result, and decides what happens next.
+
+### Run an ordered manifest with bmad-loop
+
+The optional [bmad-loop](https://github.com/bmad-code-org/bmad-loop)
+orchestrator processes a spec folder's `stories.yaml` in list order. It is a
+linear scheduler: it does not infer a dependency graph. Arrange the list so
+each story's prerequisites appear first.
+
+Selecting one story runs only that story. It does not mean “start here and run
+the remainder.” Retrospective is a separate epic-closing activity; bmad-loop
+may recommend it, but `bmad-retrospective` performs it.
+
+### Use an AI coding session as the orchestrator
+
+An AI coding session can act as the orchestrator, dispatch one Build Auto
+worker per unit, inspect the resulting evidence, and revise later work
+when the parent spec or story list no longer fits what implementation revealed.
+The orchestrating session remains responsible for keeping those revisions
+consistent with the larger intent.
+
+### Coordinate parallel epic streams
+
+Project-level parallelism needs a higher coordination layer or separate epic
+owners. Independent epic streams can run in parallel when dependencies and
+integration boundaries are explicit. bmad-loop's ordered story scheduler does
+not provide that project-level coordination.
+
+## Context Inputs
 
 On activation, the workflow resolves:
 
