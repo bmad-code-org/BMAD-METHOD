@@ -40,7 +40,7 @@ Each section has its own admission rule. There is no global "non-derivable" test
 
 ## Shape and style
 
-Terse imperative lines under plain headings — no prose paragraphs beyond Orientation, no introduction, no summary. Every line states what to do or what not to do; a bare fact may appear only as the justification clause of such a line ("Exclude `vendor/` from searches — it is 60% of the tracked files", never "`vendor/` is 60% of the tracked files"). Use the contract's section headings so the guide's shape is recognizable across runs; material that seems to need a new section folds into the nearest one. State present truth only; git holds history. Every named decision, doc, file, or system includes a repo-relative path or URL that exists. Target shape:
+Terse imperative lines under plain headings — no prose paragraphs beyond Orientation, no introduction, no summary. Every line states what to do or what not to do; a bare fact may appear only as the justification clause of such a line ("Exclude `vendor/` from searches — it is 60% of the tracked files", never "`vendor/` is 60% of the tracked files"). Use the contract's section headings so the guide's shape is recognizable across runs; material that seems to need a new section folds into the nearest one. A prohibition names the permitted alternative — "never force-push; use a new branch" — because a bare "never" leaves the agent stuck at the moment it matters. At most two emphasis markers (IMPORTANT, YOU MUST, bold caps) in the whole guide; past that, emphasis stops working. State present truth only; git holds history. Every named decision, doc, file, or system includes a repo-relative path or URL that exists. Target shape:
 
 `AGENTS.md`:
 
