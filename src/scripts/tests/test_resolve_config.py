@@ -9,6 +9,7 @@ from pathlib import Path
 
 
 SCRIPT = Path(__file__).resolve().parents[1] / "resolve_config.py"
+CONTEXT = Path(__file__).resolve().parents[1] / "context.py"
 
 
 class ResolveConfigCliTests(unittest.TestCase):
@@ -101,6 +102,56 @@ class ResolveConfigCliTests(unittest.TestCase):
             self.assertIn("📊", output)
             resolved = json.loads(output)
             self.assertEqual(resolved["agents"]["icon"], "📊")
+
+    def test_context_consumer_reads_emoji_output_without_locale_decoding(self):
+        # context.py captures this script's stdout; if it omits encoding= the
+        # decode falls back to the locale. On Windows that raises on the reader
+        # thread, which surfaces as stdout=None with returncode 0 rather than an
+        # exception. warn_default_encoding turns the omission into a hard error
+        # on every platform, so this stays a tripwire off Windows too.
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            scripts = root / "_bmad" / "scripts"
+            scripts.mkdir(parents=True)
+            shutil.copy2(SCRIPT, scripts / SCRIPT.name)
+            shutil.copy2(SCRIPT.parent / "config_utils.py", scripts / "config_utils.py")
+            (root / "_bmad" / "config.toml").write_text(
+                'project_name = "Café 📍"\n', encoding="utf-8"
+            )
+
+            driver = root / "driver.py"
+            driver.write_text(
+                "import importlib.util, json, sys\n"
+                "from pathlib import Path\n"
+                "spec = importlib.util.spec_from_file_location('ctx', sys.argv[1])\n"
+                "ctx = importlib.util.module_from_spec(spec)\n"
+                "spec.loader.exec_module(ctx)\n"
+                "resolved = ctx._installed_resolver_config(Path(sys.argv[2]))\n"
+                "sys.stdout.buffer.write(json.dumps(resolved).encode('utf-8'))\n",
+                encoding="utf-8",
+            )
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-X",
+                    "warn_default_encoding",
+                    "-W",
+                    "error::EncodingWarning",
+                    str(driver),
+                    str(CONTEXT),
+                    str(root),
+                ],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
+            )
+
+            stderr = result.stderr.decode("utf-8", errors="replace")
+            self.assertEqual(result.returncode, 0, msg=stderr)
+
+            resolved = json.loads(result.stdout.decode("utf-8"))
+            self.assertEqual(resolved["project_name"], "Café 📍")
 
     @staticmethod
     def _run(root: Path, *args: str) -> subprocess.CompletedProcess[str]:
