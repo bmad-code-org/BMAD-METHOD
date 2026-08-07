@@ -5,7 +5,7 @@ The guide is the project's agent instructions, written as two files at the repo 
 - **`AGENTS.md`** — loaded by every session, whatever its kind: Orientation, Policy, Where things are, and one closing pointer line: "Editing code? Read `AGENTS-dev.md` first."
 - **`AGENTS-dev.md`** — read via that pointer by sessions that will touch code: Commands, Verification, Conventions, Known pitfalls. Planning and review sessions never pay for it.
 
-When the whole guide fits in about 20 instructions, write a single `AGENTS.md` instead — the extra hop isn't worth it. Every line in either file has a recurring cost; this contract governs every write.
+When the whole guide fits in about 20 instructions, write a single `AGENTS.md` instead — the extra hop isn't worth it. When the maintainer names another frequent session kind (UX, manual testing, data work), it may get its own `AGENTS-<kind>.md` behind its own pointer line, under the same rules as `AGENTS-dev.md` — but a kind with only a few instructions doesn't earn a file, and the kinds come from the maintainer, never from guessing at the repo. Rules that differ by *module* rather than by session kind are the other axis: those go in scoped guides (below), which the harness loads by location. Every line in any of these files has a recurring cost; this contract governs every write.
 
 ## Hard rules
 
