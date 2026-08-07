@@ -31,6 +31,7 @@ _CONFIG_TOKEN = re.compile(r"\{\{config\.([A-Za-z0-9_.-]+)\}\}")
 _SHORT_CONFIG_TOKEN = re.compile(r"\{\{\.([A-Za-z0-9_]+)\}\}")
 _CUSTOM_TOKEN = re.compile(r"\{workflow\.([A-Za-z0-9_.-]+)\}")
 _SNAPSHOT_TOKEN = re.compile(r"\[\[bmad-snapshot:([A-Za-z0-9_./-]+\.md)\]\]")
+_ROUTE_NAME = re.compile(r"^[a-z0-9-]+$")
 
 
 def _hash_bytes(content: bytes) -> str:
@@ -319,13 +320,22 @@ def _publish(destination: Path, outputs: dict[str, bytes], manifest: dict[str, A
             shutil.rmtree(staging, ignore_errors=True)
 
 
-def render(project_root: Path, skill_dir: Path) -> Path:
+def render(project_root: Path, skill_dir: Path, route: str | None = None) -> Path:
     project_root = project_root.resolve(strict=True)
     skill_dir = skill_dir.resolve(strict=True)
     if not (project_root / "_bmad").is_dir():
         raise RenderError(f"project root does not contain _bmad/: {project_root}")
 
+    if route is not None and _ROUTE_NAME.fullmatch(route) is None:
+        raise RenderError(f"invalid route name `{route}`; expected [a-z0-9-]+")
+    # `workflow` is reserved: it aliases the default entry, so the default
+    # path has exactly one source spelling.
+    entry_name = "workflow.md" if route in (None, "workflow") else f"route-{route}.md"
     sources = _load_sources(skill_dir)
+    if "route-workflow.md" in sources:
+        raise RenderError(f"reserved route source present: {skill_dir / 'route-workflow.md'}")
+    if entry_name not in sources:
+        raise RenderError(f"render entry is missing: {skill_dir / entry_name}")
     central = load_central_config(project_root)
     has_customization = any(
         _CUSTOM_TOKEN.search(content) for content in sources.values()
@@ -377,19 +387,20 @@ def render(project_root: Path, skill_dir: Path) -> Path:
         "outputs": output_hashes,
     }
     _publish(destination, outputs, manifest)
-    return destination / "workflow.md"
+    return destination / entry_name
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--project-root", required=True)
     parser.add_argument("--skill", required=True)
+    parser.add_argument("--route")
     args = parser.parse_args()
     reconfigure = getattr(sys.stdout, "reconfigure", None)
     if reconfigure is not None:
         reconfigure(encoding="utf-8")
     try:
-        entry = render(Path(args.project_root), Path(args.skill))
+        entry = render(Path(args.project_root), Path(args.skill), args.route)
     except (ConfigError, RenderError, OSError, UnicodeError, ValueError) as error:
         sys.stdout.write(f"HALT: {error}\n")
         return 1

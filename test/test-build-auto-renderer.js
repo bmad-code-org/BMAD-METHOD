@@ -98,6 +98,28 @@ function run(fix, cwd = fix.project) {
   );
 }
 
+function runRoute(fix, route, cwd = fix.project) {
+  return spawnSync(
+    'uv',
+    [
+      'run',
+      '--python',
+      '3.11',
+      path.join(fix.bmad, 'scripts', 'render_skill.py'),
+      '--project-root',
+      fix.project,
+      '--skill',
+      fix.skill,
+      '--route',
+      route,
+    ],
+    {
+      cwd,
+      encoding: 'utf8',
+    },
+  );
+}
+
 function runAsync(fix) {
   return new Promise((resolve) => {
     const child = spawn(
@@ -347,6 +369,40 @@ async function main() {
     assert(fs.existsSync(path.join(path.dirname(output), 'step.md')), 'generic skill source missing');
   });
 
+  test('route dispatch reuses the no-route snapshot and selects its named entry', () => {
+    const routed = fixture({ skillName: 'bmad-build' });
+    const workflow = entry(run(routed));
+    const direct = entry(runRoute(routed, 'direct'));
+    assert(path.basename(workflow) === 'workflow.md', 'no-route dispatch changed');
+    assert(path.basename(direct) === 'route-direct.md', 'named route was not dispatched');
+    assert(path.dirname(direct) === path.dirname(workflow), 'route changed snapshot identity');
+    assert(fs.existsSync(workflow) && fs.existsSync(direct), 'snapshot does not serve both entries');
+  });
+
+  test('invalid and missing routes HALT without publishing a dispatch', () => {
+    const routed = fixture({ skillName: 'bmad-build' });
+    for (const invalid of ['Direct', '../direct', 'direct_route', '']) {
+      const result = runRoute(routed, invalid);
+      assert(result.status !== 0 && result.stdout.includes('invalid route name'), `invalid route accepted: ${invalid}`);
+      assert(!result.stdout.includes('read and follow') && !result.stderr.includes('Traceback'), `invalid route leaked: ${invalid}`);
+    }
+    const missing = runRoute(routed, 'missing');
+    assert(missing.status !== 0 && missing.stdout.includes('route-missing.md'), 'missing route source accepted');
+    assert(!missing.stdout.includes('read and follow') && !missing.stderr.includes('Traceback'), 'missing route leaked dispatch');
+  });
+
+  test('the reserved workflow route aliases the default entry', () => {
+    const routed = fixture({ skillName: 'bmad-build' });
+    const aliased = entry(runRoute(routed, 'workflow'));
+    assert(path.basename(aliased) === 'workflow.md', 'workflow alias did not dispatch the default entry');
+    assert(aliased === entry(run(routed)), 'workflow alias diverged from the no-route dispatch');
+    fs.writeFileSync(path.join(routed.skill, 'route-workflow.md'), '# reserved\n', 'utf8');
+    for (const result of [run(routed), runRoute(routed, 'workflow')]) {
+      assert(result.status !== 0 && result.stdout.includes('reserved route source'), 'reserved route source accepted');
+      assert(!result.stdout.includes('read and follow') && !result.stderr.includes('Traceback'), 'reserved route leaked dispatch');
+    }
+  });
+
   test('ambiguous shorthand config and source symlink escapes HALT', () => {
     const invalid = fixture({ config: baseConfig('communication_language = "German"') });
     let result = run(invalid);
@@ -500,17 +556,41 @@ async function main() {
     }
   });
 
-  test('the command shipped in SKILL.md dispatches for both skills', () => {
+  test('direct route resolves its customizable recipe', () => {
+    const build = fixture({ skillName: 'bmad-build' });
+    fs.mkdirSync(path.join(build.bmad, 'custom'), { recursive: true });
+    fs.writeFileSync(
+      path.join(build.bmad, 'custom', `${build.skillName}.user.toml`),
+      '[workflow]\ndirect_route = "Use the project-specific direct recipe."\n',
+      'utf8',
+    );
+    const direct = fs.readFileSync(entry(runRoute(build, 'direct')), 'utf8');
+    assert(direct.includes('Use the project-specific direct recipe.'), 'direct route customization missing');
+    assert(!direct.includes('{workflow.direct_route}'), 'direct route customization token survived');
+  });
+
+  test('the commands shipped in SKILL.md dispatch their intended entries', () => {
     for (const skillName of [DEFAULT_SKILL, 'bmad-build']) {
       const fix = fixture({ skillName });
-      const fenced = fs.readFileSync(path.join(fix.skill, 'SKILL.md'), 'utf8').match(/```bash\n([\s\S]*?)```/);
-      assert(fenced, `${skillName}: SKILL.md ships no bash command block`);
-      const command = fenced[1].trim().replaceAll('{project-root}', fix.project).replaceAll('{skill-root}', fix.skill);
+      const fences = [...fs.readFileSync(path.join(fix.skill, 'SKILL.md'), 'utf8').matchAll(/```bash\n([\s\S]*?)```/g)];
+      assert(fences.length > 0, `${skillName}: SKILL.md ships no bash command block`);
+      const fullFence = fences.find((match) => !match[1].includes('--route'));
+      assert(fullFence, `${skillName}: SKILL.md ships no full-route command`);
+      const command = fullFence[1].trim().replaceAll('{project-root}', fix.project).replaceAll('{skill-root}', fix.skill);
       assert(!command.includes('{'), `${skillName}: unsubstituted placeholder in shipped command: ${command}`);
       // Run it verbatim from a nested cwd — no --python pin, exactly as an agent would.
       const dispatched = entry(spawnSync(command, { cwd: path.join(fix.project, 'nested', 'cwd'), shell: true, encoding: 'utf8' }));
       assert(path.basename(dispatched) === 'workflow.md', `${skillName}: shipped command did not dispatch workflow.md`);
       assert(fs.existsSync(dispatched), `${skillName}: dispatched entry does not exist`);
+
+      if (skillName === 'bmad-build') {
+        const directFence = fences.find((match) => match[1].includes('--route direct'));
+        assert(directFence, 'bmad-build: SKILL.md ships no direct-route command');
+        const directCommand = directFence[1].trim().replaceAll('{project-root}', fix.project).replaceAll('{skill-root}', fix.skill);
+        const direct = entry(spawnSync(directCommand, { cwd: path.join(fix.project, 'nested', 'cwd'), shell: true, encoding: 'utf8' }));
+        assert(path.basename(direct) === 'route-direct.md', 'bmad-build: shipped direct command dispatched wrong entry');
+        assert(path.dirname(direct) === path.dirname(dispatched), 'bmad-build: shipped direct command changed generation');
+      }
     }
   });
 
