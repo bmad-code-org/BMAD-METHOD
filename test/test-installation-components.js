@@ -3785,12 +3785,16 @@ async function runTests() {
       ],
       renderOptions49,
     );
-    const dispatch49BuildDirect = (render49BuildDirect.stdout || '').trim().replace(/^read and follow /, '');
+    // Route dispatch inlines its entry: one header line, then the entry's bytes.
+    const [header49BuildDirect, ...body49BuildDirect] = (render49BuildDirect.stdout || '').split('\n');
+    const dispatch49BuildDirect = header49BuildDirect.replace(/^follow these instructions from /, '');
     assert(
       render49BuildDirect.status === 0 &&
+        header49BuildDirect.startsWith('follow these instructions from ') &&
         path.basename(dispatch49BuildDirect) === 'route-direct.md' &&
         path.dirname(dispatch49BuildDirect) === path.dirname(dispatch49Build) &&
-        (await fs.pathExists(dispatch49BuildDirect)),
+        (await fs.pathExists(dispatch49BuildDirect)) &&
+        body49BuildDirect.slice(1).join('\n') === (await fs.readFile(dispatch49BuildDirect, 'utf8')),
       'installer-produced build tree dispatches direct from the full-workflow snapshot',
       `${render49BuildDirect.stdout}${render49BuildDirect.stderr}`,
     );

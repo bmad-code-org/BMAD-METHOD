@@ -21,5 +21,5 @@ Full route:
 uv run --no-cache "{project-root}/_bmad/scripts/render_skill.py" --project-root "{project-root}" --skill "{skill-root}"
 ```
 
-- On success, read and follow the one absolute instruction file printed to stdout.
+- On success, follow what stdout gives you: the direct route prints its instructions inline — act on them without reading anything further; the full route prints one absolute instruction file to read and follow.
 - On failure (including `uv` being unavailable), report the command output and HALT. Do not run any workflow source directly.

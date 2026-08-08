@@ -401,10 +401,20 @@ def main() -> int:
         reconfigure(encoding="utf-8")
     try:
         entry = render(Path(args.project_root), Path(args.skill), args.route)
+        # A route entry is a leaf recipe: spend its bytes here to spare the
+        # caller a read. The default entry stays a path — it heads a pipeline.
+        payload = (
+            entry.read_text(encoding="utf-8")
+            if entry.name.startswith("route-")
+            else None
+        )
     except (ConfigError, RenderError, OSError, UnicodeError, ValueError) as error:
         sys.stdout.write(f"HALT: {error}\n")
         return 1
-    sys.stdout.write(f"read and follow {entry}\n")
+    if payload is None:
+        sys.stdout.write(f"read and follow {entry}\n")
+    else:
+        sys.stdout.write(f"follow these instructions from {entry}\n\n{payload}")
     return 0
 
 

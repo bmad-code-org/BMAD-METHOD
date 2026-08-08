@@ -19,4 +19,4 @@ When an edit in this loop touches code — a file a machine executes or parses f
 
 ## ESCALATION
 
-If an edit needs to reach beyond its pointed span — another section, a second file, a decision the user did not pin — or any direct-route tell from SKILL.md stops holding, stop editing. Keep what you learned, then read fully and follow `[[bmad-snapshot:workflow.md]]`.
+If an edit needs to reach beyond its pointed span — another section, a second file, a decision the user did not pin — or any direct-route tell from SKILL.md stops holding, stop editing. Commit the loop's edits as above before handing over. Keep what you learned, then read fully and follow `[[bmad-snapshot:workflow.md]]`.

@@ -145,6 +145,17 @@ function entry(result) {
   return outputPath;
 }
 
+function inlinedEntry(result) {
+  assert(result.status === 0, `renderer failed: ${result.stdout}${result.stderr}`);
+  const prefix = 'follow these instructions from ';
+  const [header, ...rest] = result.stdout.split('\n');
+  const outputPath = header.slice(prefix.length);
+  assert(header.startsWith(prefix) && path.isAbsolute(outputPath), `bad inline dispatch: ${header}`);
+  assert(rest[0] === '', 'inline dispatch omits the blank line after its header');
+  assert(rest.slice(1).join('\n') === fs.readFileSync(outputPath, 'utf8'), 'inline dispatch body diverges from the snapshot');
+  return outputPath;
+}
+
 function bytesByName(directory) {
   const files = {};
 
@@ -372,7 +383,7 @@ async function main() {
   test('route dispatch reuses the no-route snapshot and selects its named entry', () => {
     const routed = fixture({ skillName: 'bmad-build' });
     const workflow = entry(run(routed));
-    const direct = entry(runRoute(routed, 'direct'));
+    const direct = inlinedEntry(runRoute(routed, 'direct'));
     assert(path.basename(workflow) === 'workflow.md', 'no-route dispatch changed');
     assert(path.basename(direct) === 'route-direct.md', 'named route was not dispatched');
     assert(path.dirname(direct) === path.dirname(workflow), 'route changed snapshot identity');
@@ -564,9 +575,22 @@ async function main() {
       '[workflow]\ndirect_route = "Use the project-specific direct recipe."\n',
       'utf8',
     );
-    const direct = fs.readFileSync(entry(runRoute(build, 'direct')), 'utf8');
+    const direct = fs.readFileSync(inlinedEntry(runRoute(build, 'direct')), 'utf8');
     assert(direct.includes('Use the project-specific direct recipe.'), 'direct route customization missing');
     assert(!direct.includes('{workflow.direct_route}'), 'direct route customization token survived');
+  });
+
+  test('route dispatch inlines its entry with no flag to omit', () => {
+    const fix = fixture({ skillName: 'bmad-build' });
+    // Inlining is a property of the route entry, so a caller cannot drop it.
+    const inlined = inlinedEntry(runRoute(fix, 'direct'));
+    assert(path.basename(inlined) === 'route-direct.md', 'route dispatch inlined the wrong entry');
+    assert(entry(run(fix)) === path.join(path.dirname(inlined), 'workflow.md'), 'default entry lost its path contract');
+
+    // A failure must stay a failure: no body, no partial instructions.
+    const broken = runRoute(fix, 'nope');
+    assert(broken.status === 1 && broken.stdout.startsWith('HALT: '), `invalid route survived inlining: ${broken.stdout}`);
+    assert(!broken.stdout.includes('follow these instructions'), 'failed route dispatch leaked instructions');
   });
 
   test('the commands shipped in SKILL.md dispatch their intended entries', () => {
@@ -587,7 +611,9 @@ async function main() {
         const directFence = fences.find((match) => match[1].includes('--route direct'));
         assert(directFence, 'bmad-build: SKILL.md ships no direct-route command');
         const directCommand = directFence[1].trim().replaceAll('{project-root}', fix.project).replaceAll('{skill-root}', fix.skill);
-        const direct = entry(spawnSync(directCommand, { cwd: path.join(fix.project, 'nested', 'cwd'), shell: true, encoding: 'utf8' }));
+        const direct = inlinedEntry(
+          spawnSync(directCommand, { cwd: path.join(fix.project, 'nested', 'cwd'), shell: true, encoding: 'utf8' }),
+        );
         assert(path.basename(direct) === 'route-direct.md', 'bmad-build: shipped direct command dispatched wrong entry');
         assert(path.dirname(direct) === path.dirname(dispatched), 'bmad-build: shipped direct command changed generation');
       }

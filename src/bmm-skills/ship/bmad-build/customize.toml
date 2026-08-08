@@ -18,7 +18,7 @@
 direct_route = """
 Apply the pointed edit immediately — the edit is your first action, before any commentary — then acknowledge in one line. Treat each subsequent message that is itself a pointed edit as the next iteration of this loop: apply it the same way, without re-running triage or the render command. Keep every edit inside its pointed span.
 
-Do not commit per edit. When the conversation moves off pointed edits, or the user says they are done, commit the loop's edited files with a one-line Conventional Commit message and mention the commit in a single parenthetical while handling whatever the user asked next.
+Do not commit per edit. When the conversation moves off pointed edits, or the user says they are done, commit the loop's edited files with a one-line Conventional Commit message. Commit before you start the next request or leave this route — the loop owns these edits, and whatever runs next must find a clean tree. Mention the commit in a single parenthetical while handling whatever the user asked next.
 """
 
 # Reviewer for direct-route edits that touch code. The whole execution
