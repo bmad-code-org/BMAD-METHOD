@@ -98,6 +98,28 @@ function run(fix, cwd = fix.project) {
   );
 }
 
+function runRoute(fix, route, cwd = fix.project) {
+  return spawnSync(
+    'uv',
+    [
+      'run',
+      '--python',
+      '3.11',
+      path.join(fix.bmad, 'scripts', 'render_skill.py'),
+      '--project-root',
+      fix.project,
+      '--skill',
+      fix.skill,
+      '--route',
+      route,
+    ],
+    {
+      cwd,
+      encoding: 'utf8',
+    },
+  );
+}
+
 function runAsync(fix) {
   return new Promise((resolve) => {
     const child = spawn(
@@ -120,6 +142,17 @@ function entry(result) {
   const prefix = 'read and follow ';
   const outputPath = lines[0]?.slice(prefix.length);
   assert(lines.length === 1 && lines[0].startsWith(prefix) && path.isAbsolute(outputPath), `bad dispatch: ${result.stdout}`);
+  return outputPath;
+}
+
+function inlinedEntry(result) {
+  assert(result.status === 0, `renderer failed: ${result.stdout}${result.stderr}`);
+  const prefix = 'follow these instructions from ';
+  const [header, ...rest] = result.stdout.split('\n');
+  const outputPath = header.slice(prefix.length);
+  assert(header.startsWith(prefix) && path.isAbsolute(outputPath), `bad inline dispatch: ${header}`);
+  assert(rest[0] === '', 'inline dispatch omits the blank line after its header');
+  assert(rest.slice(1).join('\n') === fs.readFileSync(outputPath, 'utf8'), 'inline dispatch body diverges from the snapshot');
   return outputPath;
 }
 
@@ -347,6 +380,43 @@ async function main() {
     assert(fs.existsSync(path.join(path.dirname(output), 'step.md')), 'generic skill source missing');
   });
 
+  test('route dispatch reuses the no-route snapshot and selects its named entry', () => {
+    const routed = fixture({ skillName: 'bmad-build' });
+    const workflow = entry(run(routed));
+    const direct = inlinedEntry(runRoute(routed, 'direct'));
+    const oneshot = inlinedEntry(runRoute(routed, 'one-shot'));
+    assert(path.basename(workflow) === 'workflow.md', 'no-route dispatch changed');
+    assert(path.basename(direct) === 'route-direct.md', 'named route was not dispatched');
+    assert(path.basename(oneshot) === 'route-one-shot.md', 'one-shot route was not dispatched');
+    assert(path.dirname(direct) === path.dirname(workflow), 'route changed snapshot identity');
+    assert(path.dirname(oneshot) === path.dirname(workflow), 'one-shot route changed snapshot identity');
+    assert(fs.existsSync(workflow) && fs.existsSync(direct) && fs.existsSync(oneshot), 'snapshot does not serve every entry');
+  });
+
+  test('invalid and missing routes HALT without publishing a dispatch', () => {
+    const routed = fixture({ skillName: 'bmad-build' });
+    for (const invalid of ['Direct', '../direct', 'direct_route', '']) {
+      const result = runRoute(routed, invalid);
+      assert(result.status !== 0 && result.stdout.includes('invalid route name'), `invalid route accepted: ${invalid}`);
+      assert(!result.stdout.includes('read and follow') && !result.stderr.includes('Traceback'), `invalid route leaked: ${invalid}`);
+    }
+    const missing = runRoute(routed, 'missing');
+    assert(missing.status !== 0 && missing.stdout.includes('route-missing.md'), 'missing route source accepted');
+    assert(!missing.stdout.includes('read and follow') && !missing.stderr.includes('Traceback'), 'missing route leaked dispatch');
+  });
+
+  test('the reserved workflow route aliases the default entry', () => {
+    const routed = fixture({ skillName: 'bmad-build' });
+    const aliased = entry(runRoute(routed, 'workflow'));
+    assert(path.basename(aliased) === 'workflow.md', 'workflow alias did not dispatch the default entry');
+    assert(aliased === entry(run(routed)), 'workflow alias diverged from the no-route dispatch');
+    fs.writeFileSync(path.join(routed.skill, 'route-workflow.md'), '# reserved\n', 'utf8');
+    for (const result of [run(routed), runRoute(routed, 'workflow')]) {
+      assert(result.status !== 0 && result.stdout.includes('reserved route source'), 'reserved route source accepted');
+      assert(!result.stdout.includes('read and follow') && !result.stderr.includes('Traceback'), 'reserved route leaked dispatch');
+    }
+  });
+
   test('ambiguous shorthand config and source symlink escapes HALT', () => {
     const invalid = fixture({ config: baseConfig('communication_language = "German"') });
     let result = run(invalid);
@@ -462,20 +532,20 @@ async function main() {
     }
     assert(review.includes('{diff_output}'), 'runtime placeholder was removed from review layers');
 
-    const oneshot = fs.readFileSync(path.join(dir, 'step-oneshot.md'), 'utf8');
+    const oneshot = fs.readFileSync(path.join(dir, 'route-one-shot.md'), 'utf8');
     assert(oneshot.includes('#### Blind Hunter (`blind-hunter`)'), 'oneshot review layer block missing');
 
     // The spec editor handoff must reach both terminal routes (#2652).
     const present = fs.readFileSync(path.join(dir, 'step-05-present.md'), 'utf8');
     assert(present.includes('code -r'), 'open_spec default missing from step-05-present.md');
-    assert(oneshot.includes('code -r'), 'open_spec default missing from step-oneshot.md');
+    assert(oneshot.includes('code -r'), 'open_spec default missing from route-one-shot.md');
     assert(/^Offer to push\b/m.test(present), 'standalone "Offer to push" line was lost');
 
     const artifacts = `${fs.realpathSync(build.project)}/implementation`;
     assert(markdown.includes(`${artifacts}/sprint-status.yaml`), 'sprint-status path was not baked absolute');
     assert(markdown.includes(`${artifacts}/deferred-work.md`), 'deferred-work path was not baked absolute');
 
-    for (const name of ['step-01-clarify-and-route.md', 'step-02-plan.md', 'step-04-review.md', 'step-oneshot.md']) {
+    for (const name of ['step-01-clarify-and-route.md', 'step-02-plan.md', 'step-04-review.md', 'route-one-shot.md']) {
       const site = fs.readFileSync(path.join(dir, name), 'utf8');
       assert(site.includes(`${artifacts}/deferred-work.md`), `${name} does not contain the deferred-work path`);
     }
@@ -492,7 +562,7 @@ async function main() {
     fs.mkdirSync(path.join(build.bmad, 'custom'), { recursive: true });
     fs.writeFileSync(path.join(build.bmad, 'custom', `${build.skillName}.user.toml`), '[workflow]\nopen_spec = ""\n', 'utf8');
     const dir = path.dirname(entry(run(build)));
-    for (const name of ['step-05-present.md', 'step-oneshot.md']) {
+    for (const name of ['step-05-present.md', 'route-one-shot.md']) {
       const rendered = fs.readFileSync(path.join(dir, name), 'utf8');
       assert(!rendered.includes('code -r'), `open_spec default survived in ${name}`);
       assert(!rendered.includes('spec was sent'), `opening summary survived in ${name}`);
@@ -500,17 +570,65 @@ async function main() {
     }
   });
 
-  test('the command shipped in SKILL.md dispatches for both skills', () => {
+  test('direct route resolves its customizable recipe', () => {
+    const build = fixture({ skillName: 'bmad-build' });
+    fs.mkdirSync(path.join(build.bmad, 'custom'), { recursive: true });
+    fs.writeFileSync(
+      path.join(build.bmad, 'custom', `${build.skillName}.user.toml`),
+      '[workflow]\ndirect_route = "Use the project-specific direct recipe."\n',
+      'utf8',
+    );
+    const direct = fs.readFileSync(inlinedEntry(runRoute(build, 'direct')), 'utf8');
+    assert(direct.includes('Use the project-specific direct recipe.'), 'direct route customization missing');
+    assert(!direct.includes('{workflow.direct_route}'), 'direct route customization token survived');
+  });
+
+  test('route dispatch inlines its entry with no flag to omit', () => {
+    const fix = fixture({ skillName: 'bmad-build' });
+    // Inlining is a property of the route entry, so a caller cannot drop it.
+    const inlined = inlinedEntry(runRoute(fix, 'direct'));
+    assert(path.basename(inlined) === 'route-direct.md', 'route dispatch inlined the wrong entry');
+    assert(entry(run(fix)) === path.join(path.dirname(inlined), 'workflow.md'), 'default entry lost its path contract');
+
+    // A failure must stay a failure: no body, no partial instructions.
+    const broken = runRoute(fix, 'nope');
+    assert(broken.status === 1 && broken.stdout.startsWith('HALT: '), `invalid route survived inlining: ${broken.stdout}`);
+    assert(!broken.stdout.includes('follow these instructions'), 'failed route dispatch leaked instructions');
+  });
+
+  test('the commands shipped in SKILL.md dispatch their intended entries', () => {
     for (const skillName of [DEFAULT_SKILL, 'bmad-build']) {
       const fix = fixture({ skillName });
-      const fenced = fs.readFileSync(path.join(fix.skill, 'SKILL.md'), 'utf8').match(/```bash\n([\s\S]*?)```/);
-      assert(fenced, `${skillName}: SKILL.md ships no bash command block`);
-      const command = fenced[1].trim().replaceAll('{project-root}', fix.project).replaceAll('{skill-root}', fix.skill);
+      const fences = [...fs.readFileSync(path.join(fix.skill, 'SKILL.md'), 'utf8').matchAll(/```bash\n([\s\S]*?)```/g)];
+      assert(fences.length > 0, `${skillName}: SKILL.md ships no bash command block`);
+      const fullFence = fences.find((match) => !match[1].includes('--route'));
+      assert(fullFence, `${skillName}: SKILL.md ships no full-route command`);
+      const command = fullFence[1].trim().replaceAll('{project-root}', fix.project).replaceAll('{skill-root}', fix.skill);
       assert(!command.includes('{'), `${skillName}: unsubstituted placeholder in shipped command: ${command}`);
       // Run it verbatim from a nested cwd — no --python pin, exactly as an agent would.
       const dispatched = entry(spawnSync(command, { cwd: path.join(fix.project, 'nested', 'cwd'), shell: true, encoding: 'utf8' }));
       assert(path.basename(dispatched) === 'workflow.md', `${skillName}: shipped command did not dispatch workflow.md`);
       assert(fs.existsSync(dispatched), `${skillName}: dispatched entry does not exist`);
+
+      if (skillName === 'bmad-build') {
+        const directFence = fences.find((match) => match[1].includes('--route direct'));
+        assert(directFence, 'bmad-build: SKILL.md ships no direct-route command');
+        const directCommand = directFence[1].trim().replaceAll('{project-root}', fix.project).replaceAll('{skill-root}', fix.skill);
+        const direct = inlinedEntry(
+          spawnSync(directCommand, { cwd: path.join(fix.project, 'nested', 'cwd'), shell: true, encoding: 'utf8' }),
+        );
+        assert(path.basename(direct) === 'route-direct.md', 'bmad-build: shipped direct command dispatched wrong entry');
+        assert(path.dirname(direct) === path.dirname(dispatched), 'bmad-build: shipped direct command changed generation');
+
+        const oneshotFence = fences.find((match) => match[1].includes('--route one-shot'));
+        assert(oneshotFence, 'bmad-build: SKILL.md ships no one-shot-route command');
+        const oneshotCommand = oneshotFence[1].trim().replaceAll('{project-root}', fix.project).replaceAll('{skill-root}', fix.skill);
+        const oneshot = inlinedEntry(
+          spawnSync(oneshotCommand, { cwd: path.join(fix.project, 'nested', 'cwd'), shell: true, encoding: 'utf8' }),
+        );
+        assert(path.basename(oneshot) === 'route-one-shot.md', 'bmad-build: shipped one-shot command dispatched wrong entry');
+        assert(path.dirname(oneshot) === path.dirname(dispatched), 'bmad-build: shipped one-shot command changed generation');
+      }
     }
   });
 
