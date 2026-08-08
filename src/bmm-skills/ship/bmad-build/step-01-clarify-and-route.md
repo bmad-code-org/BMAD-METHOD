@@ -100,7 +100,7 @@ If the spec is an epic story and `{{.implementation_artifacts}}/sprint-status.ya
 
    **b) One-shot** — zero blast radius: no plausible path by which this change causes unintended consequences elsewhere. Clear intent, no architectural decisions.
 
-   **EARLY EXIT** → `[[bmad-snapshot:step-oneshot.md]]`
+   **EARLY EXIT** → `[[bmad-snapshot:route-one-shot.md]]`
 
    **c) Plan-code-review** — everything else. When uncertain whether blast radius is truly zero, choose this path.
 

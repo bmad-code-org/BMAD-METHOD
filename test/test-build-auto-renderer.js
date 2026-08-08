@@ -384,10 +384,13 @@ async function main() {
     const routed = fixture({ skillName: 'bmad-build' });
     const workflow = entry(run(routed));
     const direct = inlinedEntry(runRoute(routed, 'direct'));
+    const oneshot = inlinedEntry(runRoute(routed, 'one-shot'));
     assert(path.basename(workflow) === 'workflow.md', 'no-route dispatch changed');
     assert(path.basename(direct) === 'route-direct.md', 'named route was not dispatched');
+    assert(path.basename(oneshot) === 'route-one-shot.md', 'one-shot route was not dispatched');
     assert(path.dirname(direct) === path.dirname(workflow), 'route changed snapshot identity');
-    assert(fs.existsSync(workflow) && fs.existsSync(direct), 'snapshot does not serve both entries');
+    assert(path.dirname(oneshot) === path.dirname(workflow), 'one-shot route changed snapshot identity');
+    assert(fs.existsSync(workflow) && fs.existsSync(direct) && fs.existsSync(oneshot), 'snapshot does not serve every entry');
   });
 
   test('invalid and missing routes HALT without publishing a dispatch', () => {
@@ -529,20 +532,20 @@ async function main() {
     }
     assert(review.includes('{diff_output}'), 'runtime placeholder was removed from review layers');
 
-    const oneshot = fs.readFileSync(path.join(dir, 'step-oneshot.md'), 'utf8');
+    const oneshot = fs.readFileSync(path.join(dir, 'route-one-shot.md'), 'utf8');
     assert(oneshot.includes('#### Blind Hunter (`blind-hunter`)'), 'oneshot review layer block missing');
 
     // The spec editor handoff must reach both terminal routes (#2652).
     const present = fs.readFileSync(path.join(dir, 'step-05-present.md'), 'utf8');
     assert(present.includes('code -r'), 'open_spec default missing from step-05-present.md');
-    assert(oneshot.includes('code -r'), 'open_spec default missing from step-oneshot.md');
+    assert(oneshot.includes('code -r'), 'open_spec default missing from route-one-shot.md');
     assert(/^Offer to push\b/m.test(present), 'standalone "Offer to push" line was lost');
 
     const artifacts = `${fs.realpathSync(build.project)}/implementation`;
     assert(markdown.includes(`${artifacts}/sprint-status.yaml`), 'sprint-status path was not baked absolute');
     assert(markdown.includes(`${artifacts}/deferred-work.md`), 'deferred-work path was not baked absolute');
 
-    for (const name of ['step-01-clarify-and-route.md', 'step-02-plan.md', 'step-04-review.md', 'step-oneshot.md']) {
+    for (const name of ['step-01-clarify-and-route.md', 'step-02-plan.md', 'step-04-review.md', 'route-one-shot.md']) {
       const site = fs.readFileSync(path.join(dir, name), 'utf8');
       assert(site.includes(`${artifacts}/deferred-work.md`), `${name} does not contain the deferred-work path`);
     }
@@ -559,7 +562,7 @@ async function main() {
     fs.mkdirSync(path.join(build.bmad, 'custom'), { recursive: true });
     fs.writeFileSync(path.join(build.bmad, 'custom', `${build.skillName}.user.toml`), '[workflow]\nopen_spec = ""\n', 'utf8');
     const dir = path.dirname(entry(run(build)));
-    for (const name of ['step-05-present.md', 'step-oneshot.md']) {
+    for (const name of ['step-05-present.md', 'route-one-shot.md']) {
       const rendered = fs.readFileSync(path.join(dir, name), 'utf8');
       assert(!rendered.includes('code -r'), `open_spec default survived in ${name}`);
       assert(!rendered.includes('spec was sent'), `opening summary survived in ${name}`);
@@ -616,6 +619,15 @@ async function main() {
         );
         assert(path.basename(direct) === 'route-direct.md', 'bmad-build: shipped direct command dispatched wrong entry');
         assert(path.dirname(direct) === path.dirname(dispatched), 'bmad-build: shipped direct command changed generation');
+
+        const oneshotFence = fences.find((match) => match[1].includes('--route one-shot'));
+        assert(oneshotFence, 'bmad-build: SKILL.md ships no one-shot-route command');
+        const oneshotCommand = oneshotFence[1].trim().replaceAll('{project-root}', fix.project).replaceAll('{skill-root}', fix.skill);
+        const oneshot = inlinedEntry(
+          spawnSync(oneshotCommand, { cwd: path.join(fix.project, 'nested', 'cwd'), shell: true, encoding: 'utf8' }),
+        );
+        assert(path.basename(oneshot) === 'route-one-shot.md', 'bmad-build: shipped one-shot command dispatched wrong entry');
+        assert(path.dirname(oneshot) === path.dirname(dispatched), 'bmad-build: shipped one-shot command changed generation');
       }
     }
   });

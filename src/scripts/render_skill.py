@@ -405,7 +405,7 @@ def main() -> int:
         # caller a read. The default entry stays a path — it heads a pipeline.
         payload = (
             entry.read_text(encoding="utf-8")
-            if entry.name.startswith("route-")
+            if args.route not in (None, "workflow")
             else None
         )
     except (ConfigError, RenderError, OSError, UnicodeError, ValueError) as error:

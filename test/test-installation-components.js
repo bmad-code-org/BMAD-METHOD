@@ -3703,6 +3703,7 @@ async function runTests() {
     assert(!(await fs.pathExists(path.join(skill49Build, 'render.toml'))), 'installed build has no duplicate render contract');
     assert(await fs.pathExists(path.join(skill49Build, 'workflow.md')), 'build workflow source reaches installed skill surface');
     assert(await fs.pathExists(path.join(skill49Build, 'route-direct.md')), 'build direct route reaches installed skill surface');
+    assert(await fs.pathExists(path.join(skill49Build, 'route-one-shot.md')), 'build one-shot route reaches installed skill surface');
     assert(await fs.pathExists(path.join(skill49Build, 'step-04-review.md')), 'build step sources reach installed skill surface');
     assert(
       (await fs.readFile(renderGitignore49, 'utf8')) === '*\n!.gitignore\n',
