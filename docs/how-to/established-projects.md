@@ -36,7 +36,7 @@ Run the project context skill:
 bmad-project-context
 ```
 
-It scans your codebase and any docs first (mechanically, via its script and parallel subagents), then asks you in short rounds only about what's genuinely unknowable — landmines, frozen areas, org requirements. You end up with a small always-loaded `kernel.md` plus a bundle of verified entries in your `project_knowledge` folder, instead of generated documentation volume. An existing bloated `docs/` folder is treated as a source to verify against code, not something to add to.
+It reads what you already have and tells you how it measures up, asks what rules you want followed, then discovers and verifies the rest — running every command before writing it down. You end up with a small verified block in your repo's `AGENTS.md` instead of generated documentation volume. An existing hand-written file is a baseline it improves; a bloated `docs/` folder is a source to verify against code, not something to add to.
 
 [Learn more about project context](../explanation/project-context.md)
 

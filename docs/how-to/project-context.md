@@ -1,23 +1,24 @@
 ---
 title: 'Manage Project Context'
-description: Build and maintain your project's verified context system with bmad-project-context
+description: Set up and maintain your repository's agent instructions with bmad-project-context
 sidebar:
   order: 8
 ---
 
-Use `bmad-project-context` to give every AI agent session the minimum verified, non-derivable knowledge it needs — a small always-loaded kernel plus a knowledge bundle — for a new project or an existing codebase, with or without a BMad install.
+Use `bmad-project-context` to set up a repository so AI agents work well in it — for a new project or an existing codebase, with or without a BMad install. The output is a small verified block in your `AGENTS.md`.
 
 :::note[Prerequisites]
 
-- BMad Method installed — or nothing at all: the skill also runs standalone in any repo (it bootstraps its own mechanics script on first run)
+- BMad Method installed — or nothing at all: the skill also runs standalone in any repo
   :::
 
 ## When to use this
 
 - You're starting AI-assisted work in an existing codebase (this is the brownfield on-ramp)
-- You're starting a new project and want your stack, conventions, and constraints captured before implementation
-- Agents keep making decisions that don't match your project
-- Your context feels stale or bloated — run an audit
+- You're starting a new project and want your standards followed from the first commit
+- You have governance, security or style rules that agents need to respect
+- Agents keep making the same mistake and you want it written down
+- Your instructions feel stale or bloated — run an audit
 
 ## Step 1: Run it
 
@@ -25,26 +26,48 @@ Use `bmad-project-context` to give every AI agent session the minimum verified, 
 bmad-project-context
 ```
 
-Say what you want in plain language — "set up project context", "refresh the context", "audit our context" — and the skill routes itself (ingest is the default). On first run it confirms where the context lives (your `project_knowledge` folder) and asks how agents should load it: through BMad customization arrays, through managed blocks in your `AGENTS.md` files, or both.
+Say what you want in plain language — "set up AGENTS.md", "refresh the context", "audit our context", "the agent keeps using the wrong test runner" — and the skill routes itself. Setup is the default.
 
-## Step 2: Answer only what the code can't
+Point it at a repo if you're not already in one. If the path resolves to more than one working tree, it asks which before writing anything.
 
-For an existing codebase the skill scans first — code, configs, planning docs, any docs folders — and then asks in short rounds: confirmations of what it inferred (with evidence, so a confirm takes seconds), then only the genuinely unknowable things — landmines, frozen areas, org requirements. It never asks a question the code could answer. Anything you bring from outside the repo (org handbooks, wiki exports, an MCP knowledgebase) gets mined the same way — mention it when asked what sources you have.
+## Step 2: Tell it what you bring
 
-## Step 3: Review what exists
+The first thing it does is read what's already there — `AGENTS.md`, `CLAUDE.md`, editor rule files, docs — and report back what's good, what's derivable filler, and what looks stale. A hand-written file is a baseline it improves, never something it discards.
 
-You get a kernel (`kernel.md`) that stays under its instruction budget and a bundle of small entries, each marked `verified` (you confirmed it) or `generated` (inferred, unconfirmed). The `index.md` is script-generated. Nothing describes what the code already says — if an entry does, the audit deletes it.
+Then it asks what rules you want followed regardless of what the repo does: governance, security and compliance requirements, coding standards, style guides, frozen areas. Bring outside documents too — org handbooks, wiki exports, an MCP knowledgebase.
 
-Keep it healthy over time:
+For a greenfield project that conversation is the whole content. For a working codebase it's the half no scan can reach.
 
-- **Refresh** after real change — it diffs against the last run and never re-asks what you already settled
-- **Audit** on demand — staleness sweep, path checks, and the pruning test; total size holds or shrinks
-- **Query** — other skills (and you) can ask questions answered from the bundle with trust metadata attached
+## Step 3: It verifies the rest
+
+It checks every path a line names, and reads your `package.json`, `Makefile` and CI config — not to copy the commands out, since an agent reads those directly, but to know what they already say so the block only carries what they don't.
+
+Then it asks what no scan could answer: what agents keep getting wrong here, what's off limits, what a domain term means, and which commands come with a catch.
+
+## Step 4: Approve the block
+
+You see the complete block before anything is written. Nothing lands without that. On approval it's spliced between the `<!-- bmad:context -->` markers, and everything you wrote outside them is preserved byte for byte.
+
+It never commits. Changes stay in your working tree for you to review.
+
+At the end it tells you what went in, what was left out and why, and the reasoning behind both.
+
+## Keeping it healthy
+
+- **Refresh** after real change — re-checks that the caveats still hold, diffs deletions and renames since the recorded commit, updates what moved, and never re-asks what you already settled
+- **Record** the moment an agent gets something wrong — that's the only admissible source for a pitfall line
+- **Audit** on demand — re-verifies everything and prunes; the block ends smaller or equal, never larger
+
+A rule stays until the thing it guards is gone or you retire it. Nothing broke lately is never a reason to delete one — a working rule erases its own evidence.
+
+## Repo or home directory
+
+What this writes belongs committed to the repo, shared by the team. If the same rules keep repeating across all your projects, or they're your personal preferences, put those in your agent's global configuration in your home directory instead.
 
 ## Deprecated predecessors
 
 :::note[Looking for bmad-generate-project-context or bmad-document-project?]
-Both are deprecated and forward here — their trigger phrases still work. An existing `project-context.md` keeps loading for backwards compatibility and becomes a mining source on your next ingest.
+Both are deprecated and forward here — their trigger phrases still work. If you have an existing `project-context.md`, setup offers to absorb its content rather than orphaning it.
 :::
 
 ## Next steps

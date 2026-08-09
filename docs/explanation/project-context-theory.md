@@ -1,61 +1,100 @@
 ---
 title: "The Theory of Project Context"
-description: Why bmad-project-context captures so little, what earns a place in the context system, and what is deliberately left out
+description: Why bmad-project-context captures so little, what earns a place in a repository's agent instructions, and what is deliberately left out
 sidebar:
   order: 11
 ---
 
-`bmad-project-context` is built on an uncomfortable finding: most documentation written *for* AI agents makes them worse. This page explains the theory behind the skill — what it captures and why, and more importantly, what it deliberately refuses to capture. If you are coming from `bmad-document-project` or `bmad-generate-project-context`, the second half explains exactly what changed and why.
+`bmad-project-context` is built on an uncomfortable finding: most documentation written *for* AI agents makes them worse. This page explains the theory behind the skill — what it captures and why, and more importantly, what it deliberately refuses to capture. If you are coming from `bmad-document-project` or `bmad-generate-project-context`, the last section explains exactly what changed.
 
 For what the skill *does* and how to run it, see [Project Context](project-context.md) and the [how-to guide](../how-to/project-context.md).
 
-## The problem with generated documentation
+## The line: derivable or not
 
-Three findings drive the design:
+Written context earns its cost only when it carries something the agent cannot derive by reading the repository.
 
-1. **LLM-generated context documents measurably degrade agent performance** — lower correctness at higher cost. A generated overview is a paraphrase of the code, and a paraphrase is worse than the code: it drops detail, it drifts the moment the code changes, and the agent trusts it instead of looking.
-2. **Every line of always-loaded context is paid for in every session.** A 2,000-line context file is not "thorough" — it is a tax on every future task, most of it spent on things the agent would have gotten right anyway.
-3. **Wrong context is worse than no context.** An agent with no documentation explores and finds the truth. An agent with a stale document confidently follows it off a cliff. Staleness is not a cosmetic problem; it is the failure mode.
+Two results from different literatures locate the same boundary. Separating code reasoning from documentation memorization across repository-level tasks, **code access delivers the dominant gains over documentation access** — a document describing how the system works loses to the source it describes. Running the inverse experiment — generating requirements *from* code — models prove unreliable at producing anything not already implemented. Current behavior is recoverable from source. **Intent, rationale, and what was deliberately rejected are not.**
 
-The conclusion: the valuable set is the **minimum of non-derivable, verified truths** — everything an agent cannot learn by reading the code, and nothing it can.
+So anything derivable is read live and never stored. A stored copy is a stale duplicate of something the agent reads more accurately first-hand, and it is charged on every single call.
+
+## Why most AGENTS.md files measure as worthless
+
+The repository instruction file is the most-studied artifact of 2026, and its record on task correctness is poor. Measured present versus absent: **no improvement in success rate, and +20% inference cost.** Replicated on real repositories, with failures traced to implementation skill gaps rather than missing repository knowledge. In one study at scale, **randomly generated rules matched expert-curated ones.**
+
+That is a damning result until you notice what those files contain. They overwhelmingly restate what the repository already holds — structure, stack, architecture summaries. The studies measured *derivable* written context, not written context in general.
+
+## Why a short index in the always-loaded file is the opposite result
+
+One controlled comparison ran four configurations against framework APIs absent from the model's training data:
+
+| Configuration | Pass rate |
+|---|---|
+| No documentation | 53% |
+| Reusable skill, unaided | 53% |
+| Same skill, with explicit instructions to invoke it | 79% |
+| **Compressed documentation index in `AGENTS.md`** | **100%** |
+
+Same file format as the null results above. Opposite content: knowledge the model did not have, rather than a restatement of the repo. The index was 8KB, compressed from 40KB with no loss in performance.
+
+The other half of that result matters just as much. The unaided skill was **never invoked in 56% of cases**. Adding explicit instructions raised trigger rates above 95% and still capped at 79%, with outcomes swinging on subtle wording changes.
+
+**Conditional retrieval is unreliable**, and separate measurements agree. In an ablation over a 709-page wiki, agents skipped the index entirely and inferred page paths from the question rather than fetching it.
+
+The rule that reconciles all of it: **an index the agent must choose to fetch gets skipped; an index already in context does not.** Anything load-bearing goes in the always-loaded file. Pointers out of it must name a trigger the agent can *observe* — a path, a file type, a concrete task — never one it must judge or self-monitor.
 
 ## What earns a place
 
-The test for every line is the **pruning test**: *would removing this line change agent behavior?* If an agent would do the right thing anyway — because the code shows it, or because it is the ecosystem default — the line is noise. What passes:
+The test for every line is the **pruning test**: *would removing this line change agent behavior?*
 
-- **Commands where the obvious guess fails.** `npm install`, never `npm ci`, because lockfiles are deliberately gitignored. An agent cannot derive "deliberately" from a missing file.
-- **Conventions that differ from defaults.** Only the divergences. "Use conventional commits" earns a line; "write tests for new code" does not — the agent already believes that.
-- **Landmines.** The docs folder that predates two migrations. The workflow that looks live but is broken. The two generations of config variables that must not be mixed. These are the facts whose absence produces confident, wrong work.
-- **Decision rationale.** *Why* the architecture is shaped this way — the code shows the shape, never the reason. Decisions are born in `bmad-architecture`; they live here.
-- **Org requirements and domain facts** that exist nowhere in the repo at all.
-
-Everything captured is **verified before it is written as truth**: mined claims are checked against code (the trust ladder — code and configs are ground truth, existing docs are untrusted until proven), then confirmed with a human. Every entry carries its trust status (`verified` or `generated`), its sources, and its verification date. A claim nobody confirmed is stored as `generated` — visible as inference, never laundered into fact.
+- **What a config file cannot say about running the project.** The invocation itself lives in `package.json`, a `Makefile`, or CI config and is read from there. What does not live there is the correction: the root test script does nothing in this workspace, integration tests need a service up first, the suite is slow enough that you should iterate on single files, CI runs a check the test script does not.
+- **Policy the code cannot express.** Frozen paths, generated files, branch rules, security and compliance requirements. Admitted by authority, not by discovery.
+- **Conventions that differ from ecosystem defaults.** Only the divergences. An agent follows the norm unless told otherwise, so a fact nobody would get wrong by default is not worth a line.
+- **Known pitfalls, from observed failure only.** A repository yields hundreds of trap-looking facts, and no property of the fact separates the few that cause real mistakes — that signal exists only in observed behavior. A surprising scan finding becomes a question, never a line.
+- **Negative constraints over positive guidance**, which measured better, and which is why a prohibition here always names the permitted alternative.
 
 ## What is deliberately not captured
 
-The negative space is the design. Each exclusion has a reason:
+The negative space is the design.
 
 | Not captured | Why |
 |---|---|
-| **What the code already says** | Agents read source better than they read summaries of source. A paraphrase adds a second copy that rots while the original stays true. |
-| **Repo structure and file maps** | Structure changes with every commit — stored maps rot fastest of all. Agents derive structure fresh in seconds with the tools they already have. |
-| **Overview and tour documents** | The classic generated deliverable, and the measured harm: long overviews add wasted exploration and misplaced confidence. The kernel's job is to change behavior, not to orient a reader. |
-| **Ecosystem defaults** | An LLM already knows how a typical Node, Python, or Go project works. Restating defaults spends budget teaching the agent what it arrived knowing. |
-| **History and edit narration** | "We removed X because…" is banned prose. Git and the memlog own history; entries state present truth only, and supersession is a dated frontmatter field, not a story. |
-| **Unverified inference presented as fact** | Anything not confirmed stays marked `generated`. The trust field is the contract: `verified` asserts a human was in the loop. |
-| **User-facing documentation** | Tutorials, setup guides, and reference sites serve human readers — a different artifact with different rules. The skill will flag user docs that have drifted (as a landmine: "distrust docs/ on these topics") but it does not write or replace them. |
-| **Aspirational state** | What the system *should* become belongs in specs and architecture documents. Context describes what *is* — an agent acting on aspiration ships fiction. |
+| **What the code already says** | Agents read source better than summaries of source. A paraphrase adds a second copy that rots while the original stays true. |
+| **Repo structure and file maps** | Structure changes with every commit — stored maps rot fastest of all, and agents derive structure fresh in seconds. |
+| **Overview and tour documents** | The classic generated deliverable, and the measured harm. The block's job is to change behavior, not to orient a reader. |
+| **Ecosystem defaults** | An LLM already knows how a typical Node, Python, or Go project works. Restating them spends budget teaching the agent what it arrived knowing. |
+| **Anything included for being interesting** | Interest is not evidence of need. This is the failure mode the skill exists to avoid. |
+| **Style rules an agent should self-enforce** | That job belongs to a formatter, linter, hook, or CI check. The skill proposes the check instead, and a check that lands deletes its line. |
+| **History and edit narration** | "We removed X because…" is banned prose. Git owns history; the block states present truth only. |
+| **Aspirational state** | What the system *should* become belongs in specs. An agent acting on aspiration ships fiction. |
 
-The result is small by design. A healthy kernel is a screenful; a healthy bundle for a real repo is a dozen small entries. Small projects need the kernel and nothing else — that outcome is success, not an unfinished job.
+The result is small by design. When the evidence supports ten lines, ten lines is the deliverable.
+
+## Retirement runs the other way
+
+There is one rule that inverts the pruning instinct, and getting it wrong quietly destroys the best content in the file.
+
+**A policy or pitfall line retires only when the thing it guards is gone** — removed, or now mechanically enforced — **or when a human retires it.** Absence of recent failures is never grounds. A working rule erases its own evidence, and much of the value of the block is the failures that no longer happen.
+
+## Two altitudes, two artifacts
+
+One artifact cannot serve both coding and planning work. The material divides, and the halves barely overlap.
+
+**Implementation context** — constraints, commands, conventions, pitfalls — is a property of a **code repository**. It is verifiable against the code, executably. It goes stale on every commit. It is loaded on every session, so it must be tiny. That is what this skill owns.
+
+**Planning context** — rationale, rejected approaches, ownership, domain meaning, org standards — is a property of a **project or initiative**. It is traceable only to source documents. It goes stale on organizational time, in months rather than hours. It is consulted in bursts, not loaded continuously. That is a different capability, and it is coming separately.
+
+Trying to serve both from one file is what produced the two skills this one replaced.
 
 ## Context is a liability to be re-earned
 
-The old model treated documentation as an asset: more coverage, more value. This skill treats context as a **liability that must keep proving itself**. Staleness sweeps check every claim's sources against the repo; the audit intent applies the pruning test to every line and ends with the context smaller or equal, never larger; entries that merely paraphrase readable code are deleted. When a claim's source disappears, the claim is fixed against the new reality or removed — never quietly re-pointed at a document that happens to still mention it.
+The old model treated documentation as an asset: more coverage, more value. This skill treats context as a **liability that must keep proving itself.** Refresh re-checks every caveat and diffs deletions and renames against every line. Audit applies the pruning test and ends with the block smaller or equal, never larger. When a claim's source disappears, the claim is fixed against the new reality or removed — never quietly re-pointed at a document that happens to still mention it.
+
+Generating the first version is the cheap part. Keeping it true is where the value is, and it is why refresh and audit exist as first-class intents rather than a note in the documentation.
 
 ## Versus the two replaced skills
 
-`bmad-document-project` scanned a brownfield repo and generated a documentation tree — overview, source tree, per-area deep dives. It embodied the asset model, and the evidence went against it: the output was large, unverified, stale on arrival, and precisely the kind of context that degrades agents. Its valid instinct — *understand the repo before working in it* — survives as the ingest scan, which now feeds verification instead of prose generation. Where it would have described the repo's structure, the new skill lets agents derive structure fresh; where it would have summarized code, the new skill writes nothing.
+`bmad-document-project` scanned a brownfield repo and generated a documentation tree — overview, source tree, per-area deep dives. It embodied the asset model, and the evidence went against it: large, unverified, stale on arrival, and precisely the kind of context that degrades agents. Its valid instinct — *understand the repo before working in it* — survives as the discovery pass, which now feeds verification instead of prose generation.
 
-`bmad-generate-project-context` had the right instinct — a single small rules file of unobvious, project-specific facts — and that instinct is now the whole architecture. What it lacked was everything around the file: no verification (its content was as trusted as its generation run was lucky), no trust marks, no staleness model, no maintenance loop, and no room for the *why* behind the rules. The kernel is its descendant, held to a measured budget; the bundle carries the rationale it had nowhere to put; ingest/audit keep both true over time. An existing `project-context.md` keeps loading and becomes a mining source on the next ingest.
+`bmad-generate-project-context` had the right instinct: a single small rules file of unobvious, project-specific facts. That instinct is now the whole architecture. What it lacked was everything around the file — no verification, no maintenance loop, and no way to tell an inference from a confirmed fact.
 
-The one-line version: the old skills wrote more documentation; this skill maintains less truth — and less, verified, wins.
+The one-line version: the old skills wrote more documentation; this skill maintains less truth, and less, verified, wins.

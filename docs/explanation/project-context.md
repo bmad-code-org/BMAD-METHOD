@@ -1,44 +1,55 @@
 ---
 title: "Project Context"
-description: How bmad-project-context curates the verified knowledge AI agents load — a small kernel plus a knowledge bundle
+description: How bmad-project-context writes a repository's agent instructions — a small verified block in AGENTS.md
 sidebar:
   order: 10
 ---
 
-`bmad-project-context` owns everything the code can't tell an AI agent: why the architecture is shaped this way, which conventions are deliberate, what the org requires, which landmines a fresh session must know before touching anything. It maintains that knowledge as a small, verified context system instead of generated documentation.
+`bmad-project-context` sets up a repository so AI agents work well in it. The output is a small verified block inside the repo's `AGENTS.md`: what the org requires, the commands that were actually run, the conventions where the obvious guess is wrong, and the mistakes agents keep making here.
 
-The evidence behind the design is blunt: LLM-generated context docs measurably make agents *worse* (lower correctness at higher cost), and long overview documents add wasted exploration. What works is a tiny always-loaded file, small verified entries loaded on demand, and mechanical maps produced fresh on demand. So the skill curates the minimum non-derivable set and never describes what the code already says. For the full reasoning — including what is deliberately *not* captured and why — see [The Theory of Project Context](project-context-theory.md).
+It is a conversation, not a generator. You bring the rules you want followed — governance, security, coding standards — and it discovers and verifies the rest. The human is in the loop for every write; there is no unattended mode.
 
-## The two artifacts
+For the full reasoning, including what is deliberately *not* captured and why, see [The Theory of Project Context](project-context-theory.md).
 
-**The kernel** (`kernel.md`) is one small file loaded into every agent session — exact commands where the obvious guess fails, conventions that differ from ecosystem defaults, landmines, hard org requirements. It lives under an instruction budget (~150–200 instructions), is priority-ordered, and every line must pass the pruning test: *would removing this line change agent behavior?* Small projects need the kernel and nothing else.
+## What goes in, and what doesn't
 
-**The bundle** is a directory of small markdown entries behind the kernel — architecture rationale, the *why* behind conventions, domain facts, decision history. Each entry carries frontmatter with trust signals: `verified` (a human confirmed it, or it was path-checked with a human in the loop) or `generated` (inferred, unconfirmed — everything a headless run writes). `index.md` is the sole entry point; entries are loaded on demand, never wholesale.
+The governing line is whether a fact can be derived by reading the repository. Agents read code more accurately than they read prose describing code, and a stored description is a stale duplicate charged on every call. So repo overviews, directory trees and tech-stack lists never enter.
 
-Both live in your `project_knowledge` folder (the standard install setting, default `docs/`). A mechanics script (`context.py`) handles everything mechanical — validation, indexing, staleness sweeps, repo maps, cross-project resolution — so no agent ever guesses at mechanical facts.
+What earns a line is what the code cannot say:
 
-## Three intents
+- **Policy** the org requires — frozen paths, generated files, branch rules, security and compliance.
+- **What a config file cannot say about running the project** — the caveat, not the command. `pnpm test` is already in `package.json`; that the suite takes eleven minutes, or needs a service running first, is not.
+- **Conventions that differ from ecosystem defaults**, because an agent follows the norm unless told otherwise.
+- **Known pitfalls**, admitted only from observed failure — a lesson already recorded, the maintainer's recollection, a mistake fixed repeatedly in git history, or one the writing session made and caught. A trap-looking fact from a scan becomes a question, never a line.
+- **Pointers** to where work lands, and to nested or linked files worth reading first.
+
+Every rule the skill applies is written out in `references/best-practices.md`, with the evidence behind it. The skill uses it to assess what your repo already has, and explains its reasoning back to you at the end.
+
+## Four intents
 
 | Intent | What it does |
 |--------|--------------|
-| **Ingest** | Build or refresh the context. Brownfield: mine the repo and docs first, then ask only what's genuinely unknowable. Greenfield: seed from a spec or architecture doc, or a short interview. Refresh: diff against the last run — never start over. |
-| **Query** | Answer a question from the bundle without loading all of it, with trust metadata attached. |
-| **Audit** | Keep the set small and true: staleness sweeps, path verification, the pruning test. Context shrinks or holds — it never accretes. |
+| **Setup** | The default. Assess what exists, ask what you bring, discover and verify the rest, show you the block, then write it. |
+| **Refresh** | The same run against an existing block: re-run its commands, diff deletions and renames since the recorded commit, update what moved. |
+| **Record** | Capture one observed agent mistake at the moment it happens. A recurring or costly one earns a line. |
+| **Audit** | Re-verify and prune. The block ends smaller or equal, never larger. |
 
 ## How agents load it
 
-On first run the skill asks your **placement** preference:
+`AGENTS.md` at the repo root, which every major coding harness reads. BMad owns only the region between `<!-- bmad:context -->` and `<!-- /bmad:context -->`; everything you write outside those markers is preserved byte for byte, and a refresh never touches it.
 
-- **bmad** — the kernel loads through BMad customization arrays; your agent files are never touched.
-- **agent-files** — the script maintains managed `<!-- bmad:context -->` blocks in your root and nested `AGENTS.md` files, preserving everything around them. This is the default when there's no BMad install — the skill works standalone in any repo, with no framework at all.
-- **both** — arrays plus agent files, kept in sync.
+Monorepo components and nested repositories get their own file under the same rules, listed as pointers in the parent. A large rule set bounded to a directory belongs in a nested `AGENTS.md` there, where the harness attaches it by location.
+
+## Repo or home directory
+
+What this skill writes belongs committed to the repository — shared by the team, consistent across machines, versioned with the code it constrains. If you find the same rules repeating across every project, or they are your personal preferences rather than the team's, they belong in your agent's global configuration in your home directory instead.
 
 ## Interaction with architecture
 
-Decisions are *born* in `bmad-architecture`; they *live* in project-context. The architecture spine is the premier ingest source, and if ingest surfaces a genuinely contested decision, the skill says it deserves `bmad-architecture` rather than quietly making the call.
+Decisions are *born* in `bmad-architecture`. If a genuinely contested design decision surfaces here — real tradeoffs, multiple viable shapes — the skill says it deserves `bmad-architecture` rather than quietly making the call.
 
 ## Replaces two earlier skills
 
 :::note[Deprecated: bmad-document-project and bmad-generate-project-context]
-Both earlier skills are deprecated and now forward here. `bmad-generate-project-context` produced a single `project-context.md`; `bmad-document-project` scanned a brownfield repo into documentation. Their trigger phrases still work, any existing `project-context.md` keeps loading (and becomes a mining source on the next ingest), and the ideas they carried — "capture unobvious rules only" — are now the whole architecture.
+Both earlier skills are deprecated and now forward here. `bmad-generate-project-context` produced a single `project-context.md` — if you have one, setup offers to absorb its content rather than orphaning it. `bmad-document-project` scanned a brownfield repo into generated documentation, which is the approach the evidence went against; the deeper "explain this system and its rationale" material is a different altitude and is coming as its own capability.
 :::

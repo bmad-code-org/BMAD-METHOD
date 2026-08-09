@@ -77,7 +77,7 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
 | Architecture | `{planning_artifacts}/*architecture*.md` (whole) or `{planning_artifacts}/*architecture*/*.md` (sharded) | FULL_LOAD |
 | UX Design | `{planning_artifacts}/*ux*.md` (whole) or `{planning_artifacts}/*ux*/*.md` (sharded) | FULL_LOAD |
 | Spec | `{planning_artifacts}/*spec-*.md` (whole) | FULL_LOAD |
-| Document Project | `{project_knowledge}/index.md` (sharded) | INDEX_GUIDED |
+| Project Context | `AGENTS.md` in the affected repo (the `bmad:context` block) | FULL_LOAD |
 
 ## Execution
 
@@ -95,12 +95,11 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
    - Process the combined content as a single document
 4. **Priority**: If both whole and sharded versions exist, use the whole document
 
-**Discovery Process for INDEX_GUIDED documents (Document Project):**
+**Discovery Process for Project Context:**
 
-1. **Search for index file** - Look for `{project_knowledge}/index.md`
-2. **If found**: Read the index to understand available documentation sections
-3. **Selectively load sections** based on relevance to the change being analyzed — do NOT load everything, only sections that relate to the impacted areas
-4. **This document is optional** — skip if `{project_knowledge}` does not exist (greenfield projects)
+1. **Read `AGENTS.md`** in the repo the change affects — the block between the `bmad:context` markers carries the policy, frozen paths, and conventions a course correction must respect.
+2. **Follow only the pointers that relate to the impacted areas** — nested component files or linked rule files listed under "Where things are". Do not load them all.
+3. **This document is optional** — skip if the repo has no `AGENTS.md` (greenfield projects).
 
 **Fuzzy matching**: Be flexible with document names — users may use variations like `prd.md`, `bmm-prd.md`, `product-requirements.md`, etc.
 

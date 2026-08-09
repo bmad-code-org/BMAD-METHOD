@@ -16,8 +16,8 @@ activation_steps_append = []
 persistent_facts = []
 on_complete = ""
 
-# Standing outside-the-repo sources fed into every bootstrap/refresh evidence
-# sweep (untrusted until verified against the repo or user-confirmed).
+# Standing outside-the-repo sources offered at every setup/refresh run
+# (untrusted until verified against the repo or user-confirmed).
 # Append-only. Entries: "file:{project-root}/..." or "file:/abs/path" for
 # docs, "skill:name" to consult a skill, plain text for a standing fact,
 # "tool:name" for an MCP knowledgebase.

@@ -5,6 +5,6 @@ description: 'Deprecated — forwards to bmad-project-context. Use when the user
 
 # DEPRECATED — forwards to bmad-project-context
 
-Tell the user: this skill is deprecated — `bmad-project-context` now owns this job. Instead of one generated `project-context.md`, it curates a small verified context system (an always-loaded kernel plus a knowledge bundle); any existing `project-context.md` keeps loading and becomes a mining source. Invoke `bmad-project-context` next time.
+Tell the user: this skill is deprecated — `bmad-project-context` now owns this job. Instead of one generated `project-context.md`, it writes a small verified block inside the repo's `AGENTS.md`, and any existing `project-context.md` is offered up for absorption rather than left orphaned. Invoke `bmad-project-context` next time.
 
-Then invoke `bmad-project-context` with **ingest** intent, forwarding the user's original request and any inputs they supplied (architecture doc, spec, preferences), verbatim. It takes the workflow from here.
+Then invoke `bmad-project-context` with **setup** intent, forwarding the user's original request and any inputs they supplied (architecture doc, spec, standards, preferences), verbatim. It takes the workflow from here.

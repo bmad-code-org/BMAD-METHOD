@@ -109,13 +109,13 @@ this structure, agents make inconsistent decisions.
 ### Project Context
 
 :::tip[Recommended]
-Build your project context so AI agents follow your project's rules and preferences across all workflows: a small
-always-loaded kernel plus a bundle of verified entries, maintained by `bmad-project-context`. Seed it from your
-architecture at the end of planning, or mine it from an existing codebase at any time.
+Set up your repo so AI agents follow your project's rules across all workflows: a small verified block in
+`AGENTS.md`, maintained by `bmad-project-context`. Seed it from your architecture at the end of planning, or
+discover it from an existing codebase at any time.
 :::
 
 **How to create it:**
 
-- Run `bmad-project-context` — greenfield (seeded from your spec or architecture) or brownfield (mined from the codebase, then confirmed with you). The earlier `bmad-generate-project-context` is deprecated and forwards there; an existing `project-context.md` keeps loading.
+- Run `bmad-project-context` — greenfield (seeded from your spec or architecture) or brownfield (discovered from the codebase, verified, then confirmed with you). The earlier `bmad-generate-project-context` is deprecated and forwards there; an existing `project-context.md` is offered up for absorption.
 
-[**Learn more about project-context.md**](../explanation/project-context.md)
+[**Learn more about project context**](../explanation/project-context.md)
