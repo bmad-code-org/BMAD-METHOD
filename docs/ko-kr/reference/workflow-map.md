@@ -97,11 +97,11 @@ Deep Recon의 세 가지 모드와 리서치 실행 내부 동작은 [Deep Recon
 ### 프로젝트 컨텍스트
 
 :::tip[권장]
-AI 에이전트가 모든 워크플로에서 프로젝트의 규칙과 선호 사항을 따르도록 프로젝트 컨텍스트를 만드세요. `bmad-project-context`가 관리하는, 항상 불러오는 작은 커널과 검증된 항목 묶음으로 구성됩니다. 계획이 끝날 때 아키텍처에서 초기화하거나, 언제든 기존 코드베이스에서 찾아 만들 수 있습니다.
+AI 에이전트가 모든 워크플로에서 프로젝트 규칙을 따르도록 저장소를 설정하세요. `bmad-project-context`가 `AGENTS.md`의 작고 검증된 블록을 관리합니다. 계획이 끝날 때 아키텍처에서 시작하거나, 언제든 기존 코드베이스에서 필요한 규칙을 찾아 만들 수 있습니다.
 :::
 
 **만드는 방법:**
 
-- `bmad-project-context`를 실행하세요. 그린필드는 사양 또는 아키텍처에서 시작합니다. 브라운필드는 코드베이스에서 찾아낸 뒤 사용자 확인을 거칩니다. 이전 `bmad-generate-project-context`는 폐기됐으며 이 스킬로 포워딩됩니다. 기존 `project-context.md`도 계속 불러옵니다.
+- `bmad-project-context`를 실행하세요. 그린필드는 사양 또는 아키텍처에서 시작합니다. 브라운필드는 코드베이스에서 규칙을 찾고 검증한 뒤 사용자 확인을 거칩니다. 이전 `bmad-generate-project-context`는 폐기됐으며 이 스킬로 연결됩니다. 기존 `project-context.md`가 있다면 내용을 흡수할지 제안합니다.
 
-[**project-context.md 더 알아보기**](../explanation/project-context.md)
+[**프로젝트 컨텍스트 더 알아보기**](../explanation/project-context.md)
