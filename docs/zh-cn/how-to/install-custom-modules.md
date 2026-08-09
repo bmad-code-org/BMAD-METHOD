@@ -2,7 +2,7 @@
 title: "安装自定义和社区模块"
 description: 从社区注册表、Git 仓库或本地路径安装第三方模块
 sidebar:
-  order: 3
+  order: 2
 ---
 
 使用 BMad 安装程序从社区注册表、第三方 Git 仓库或本地文件路径添加模块。

@@ -2,7 +2,7 @@
 title: "Gérer le contexte du projet"
 description: Créer et maintenir project-context.md pour guider les agents IA
 sidebar:
-  order: 9
+  order: 8
 ---
 
 Utilisez le fichier `project-context.md` pour garantir que les agents IA respectent les préférences techniques et les règles d’implémentation de votre projet tout au long des workflows. Pour vous assurer qu’il est toujours disponible, vous pouvez également ajouter la ligne `Le contexte et les conventions importantes du projet se trouvent dans [chemin vers le contexte du projet]/project-context.md` à votre fichier de contexte ou de règles permanentes (comme `AGENTS.md`).
@@ -118,7 +118,7 @@ Un fichier `project-context.md` qui :
 - **Concentrez-vous sur ce qui n’est pas évident** — Documentez les patterns que les agents pourraient manquer (par ex. « Utiliser JSDoc sur chaque classe publique »), et non les pratiques universelles comme « utiliser des noms de variables significatifs ».
 - **Gardez-le concis** — Ce fichier est chargé par chaque workflow d’implémentation. Les fichiers longs gaspillent le contexte. Excluez le contenu qui ne s’applique qu’à un périmètre restreint ou à des stories spécifiques.
 - **Mettez à jour si nécessaire** — Modifiez manuellement lorsque les patterns changent, ou régénérez après des changements d’architecture significatifs.
-- Fonctionne aussi bien pour Quick Dev que pour les projets complets méthode BMad.
+- Prend en charge la même boucle `bmad-build`, que le travail entre directement ou après une planification approfondie.
 :::
 
 ## Prochaines étapes

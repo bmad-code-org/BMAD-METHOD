@@ -2,7 +2,7 @@
 title: "Installer des modules personnalisés et communautaires"
 description: Installer des modules tiers depuis le registre communautaire, des dépôts Git ou des chemins locaux
 sidebar:
-  order: 3
+  order: 2
 ---
 
 Utilisez l’installateur BMad pour ajouter des modules depuis le registre communautaire, des dépôts Git tiers ou des chemins locaux.

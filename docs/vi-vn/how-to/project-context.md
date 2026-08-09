@@ -2,7 +2,7 @@
 title: "Quản lý bối cảnh dự án"
 description: Tạo và duy trì project-context.md để định hướng cho các agent AI
 sidebar:
-  order: 9
+  order: 8
 ---
 
 Sử dụng tệp `project-context.md` để đảm bảo các agent AI tuân theo ưu tiên kỹ thuật và quy tắc triển khai của dự án trong suốt mọi workflow. Để đảm bảo tệp này luôn sẵn có, bạn cũng có thể thêm dòng `Important project context and conventions are located in [path to project context]/project-context.md` vào file context của công cụ hoặc file always rules của bạn (như `AGENTS.md`).
@@ -118,7 +118,7 @@ Một tệp `project-context.md` sẽ:
 - **Tập trung vào điều không hiển nhiên** - Ghi lại những pattern agent dễ bỏ sót (ví dụ: "Dùng JSDoc cho mọi lớp public"), thay vì các quy tắc phổ quát như "đặt tên biến có ý nghĩa".
 - **Gọn nhẹ** - Tệp này được nạp trong mọi workflow triển khai. Tệp quá dài sẽ tốn context. Hãy bỏ qua nội dung chỉ áp dụng cho phạm vi hẹp hoặc một vài story cụ thể.
 - **Cập nhật khi cần** - Sửa thủ công khi pattern thay đổi, hoặc tạo lại sau các thay đổi kiến trúc lớn.
-- Áp dụng được cho cả Quick Flow lẫn quy trình BMad Method đầy đủ.
+- Hỗ trợ cùng loop `bmad-build` dù công việc vào trực tiếp hay sau planning sâu.
 :::
 
 ## Bước tiếp theo

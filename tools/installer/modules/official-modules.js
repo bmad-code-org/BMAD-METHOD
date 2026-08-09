@@ -922,7 +922,7 @@ class OfficialModules {
 
     // Fallback: legacy per-module config.yaml files (pre-v6 installations).
     const entries = await fs.readdir(bmadDir, { withFileTypes: true });
-    const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom']);
+    const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom', 'render']);
     for (const entry of entries) {
       if (entry.isDirectory()) {
         if (nonModuleDirs.has(entry.name)) {

@@ -1,293 +1,120 @@
 ---
 title: 'Getting Started'
-description: Install BMad and build your first project
+description: Install BMad and build a small Python program
+sidebar:
+  order: 1
 ---
 
-Build software faster using AI-powered workflows with specialized agents that guide you through planning, architecture, and implementation.
+BMad can help you plan and build anything from a small bug fix to a project with
+a million lines of code. Let's start with something small.
 
-## What You'll Learn
+Already have a repository and a small change you want to make?
+[Install BMad there](../how-to/install-bmad.md), open your coding tool in the
+repository, and run the installed `bmad-build` skill. Talk to it about the
+change you want, and it will make it happen.
 
-- Install and initialize BMad Method for a new project
-- Use **BMad-Help** — your intelligent guide that knows what to do next
-- Choose the right planning track for your project size
-- Progress through phases from requirements to working code
-- Use agents and workflows effectively
+Otherwise, start here. You will make a working Python program in an empty
+project.
 
-:::note[Prerequisites]
-
-- **Node.js 20.12+** — Required for the installer
-- **Git** — Recommended for version control
-- **AI-powered IDE** — Claude Code, Cursor, or similar
-- **A project idea** — Even a simple one works for learning
-  :::
-
-:::tip[The Easiest Path]
-**Install** → `npx bmad-method install`
-**Ask** → `bmad-help what should I do first?`
-**Build** → Let BMad-Help guide you workflow by workflow
+:::note[Before You Start]
+Use a macOS or Linux shell with Node.js 20.12+, Python 3, and a coding tool
+supported by BMad. The exact install and launch commands below are for Claude
+Code. If you use another supported tool, select it when installing BMad and run
+the `bmad-build` skill there instead.
 :::
 
-## Meet BMad-Help: Your Intelligent Guide
-
-**BMad-Help is the fastest way to get started with BMad.** You don't need to memorize workflows or phases — just ask, and BMad-Help will:
-
-- **Inspect your project** to see what's already been done
-- **Show your options** based on which modules you have installed
-- **Recommend what's next** — including the first required task
-- **Answer questions** like "I have a SaaS idea, where do I start?"
-
-### How to Use BMad-Help
-
-Run it in your AI IDE by invoking the skill:
-
-```
-bmad-help
-```
-
-Or combine it with a question for context-aware guidance:
-
-```
-bmad-help I have an idea for a SaaS product, I already know all the features I want. where do I get started?
-```
-
-BMad-Help will respond with:
-
-- What's recommended for your situation
-- What the first required task is
-- What the rest of the process looks like
-
-### It Powers Workflows Too
-
-BMad-Help doesn't just answer questions — **it automatically runs at the end of every workflow** to tell you exactly what to do next. No guessing, no searching docs — just clear guidance on the next required workflow.
-
-:::tip[Start Here]
-After installing BMad, invoke the `bmad-help` skill immediately. It will detect what modules you have installed and guide you to the right starting point for your project.
-:::
-
-## Understanding BMad
-
-BMad helps you build software through guided workflows with specialized AI agents. The process follows four phases:
-
-| Phase | Name           | What Happens                                                 |
-| ----- | -------------- | ------------------------------------------------------------ |
-| 1     | Analysis       | Brainstorming, research, forge idea, product brief or PRFAQ _(optional)_ |
-| 2     | Planning       | Create requirements and design PRD, UX, SPEC                 |
-| 3     | Solutioning    | Design architecture spine or detailed project or system architectures          |
-| 4     | Implementation | Build epic by epic, story by story with quick dev or automated epic delivery    |
-
-**[Open the Workflow Map](../reference/workflow-map.md)** to explore phases, workflows, and context management.
-
-Based on your project's complexity, BMad offers three planning tracks:
-
-| Track           | Best For                                               | Documents Created                      |
-| --------------- | ------------------------------------------------------ | -------------------------------------- |
-| **Quick Flow**  | Bug fixes, simple features, clear scope (1-15 stories) | Tech-spec only                         |
-| **BMad Method** | Products, platforms, complex features (10-50+ stories) | PRD + Architecture + UX                |
-| **Enterprise**  | Compliance, multi-tenant systems (30+ stories)         | PRD + Architecture + Security + DevOps |
-
-:::note
-Story counts are guidance, not definitions. Choose your track based on planning needs, not story math.
-:::
-
-## Installation
-
-Open a terminal in your project directory and run:
+## Create an Empty Project
 
 ```bash
-npx bmad-method install
+mkdir bmad-first-project
+cd bmad-first-project
 ```
 
-If you want the newest prerelease build instead of the default release channel, use `npx bmad-method@next install`.
+Install the current stable version of BMad Method. This command sets it up for
+Claude Code:
 
-When prompted to select modules, choose **BMad Method**.
-
-The installer creates two folders:
-
-- `_bmad/` — agents, workflows, tasks, and configuration
-- `_bmad-output/` — empty for now, but this is where your artifacts will be saved
-
-:::tip[Your Next Step]
-Open your AI IDE in the project folder and run:
-
-```
-bmad-help
+```bash
+npx bmad-method install --directory . --modules bmm --tools claude-code --yes
 ```
 
-BMad-Help will detect what you've completed and recommend exactly what to do next. You can also ask it questions like "What are my options?" or "I have a SaaS idea, where should I start?"
-:::
+Open your coding tool in this directory. For Claude Code, run:
 
-:::note[How to Load Agents and Run Workflows]
-Each workflow has a **skill** you invoke by name in your IDE (e.g., `bmad-prd`). Your AI tool will recognize the `bmad-*` name and run it — you don't need to load agents separately. You can also invoke an agent skill directly for general conversation (e.g., `bmad-agent-pm` for the PM agent).
-:::
+```bash
+claude
+```
 
-:::caution[Fresh Chats]
-Always start a fresh chat for each workflow. This prevents context limitations from causing issues.
-:::
+## Build a Mars Rover
 
-## Step 1: Create Your Plan
-
-Work through phases 1-3. **Use fresh chats for each workflow.**
-
-:::tip[Project Context (Optional)]
-Before starting, consider creating `project-context.md` to document your technical preferences and implementation rules. This ensures all AI agents follow your conventions throughout the project.
-
-Create it manually at `_bmad-output/project-context.md` or generate it after architecture using `bmad-generate-project-context`. [Learn more](../explanation/project-context.md).
-:::
-
-### Phase 1: Analysis (Optional)
-
-All workflows in this phase are optional. [**Not sure which to use?**](../explanation/analysis-phase.md)
-
-- **brainstorming** (`bmad-brainstorming`) — Guided ideation
-- **forge-idea** (`bmad-forge-idea`) — Pressure-test an idea until it hardens or dies cheaply
-- **research** (`bmad-market-research` / `bmad-domain-research` / `bmad-technical-research`) — Market, domain, and technical research
-- **product-brief** (`bmad-product-brief`) — Recommended foundation document when your concept is clear
-- **prfaq** (`bmad-prfaq`) — Working Backwards challenge to stress-test your product concept customer-first
-
-### Phase 2: Planning (Required)
-
-**For BMad Method and Enterprise tracks:**
-
-1. Run `bmad-prd` in a new chat — state your intent (Create / Update / Validate) or let the skill ask
-2. Output: `prd.md`, `addendum.md`, `.memlog.md`
-
-:::note[`bmad-prd` intents]
-
-- **Create** — coached discovery from scratch; the skill names the workspace folder and guides you to a PRD you're proud of
-- **Update** — point it at an existing PRD and a change signal; it surfaces conflicts before applying changes
-- **Validate** — critique a finished PRD against a checklist and produce an HTML findings report
-  :::
-
-**For Quick Flow track:**
-
-- Run `bmad-quick-dev` — it handles planning and implementation in a single workflow, skip to implementation
-
-:::note[UX Design (Optional)]
-If your project has a user interface, invoke the **UX-Designer agent** (`bmad-agent-ux-designer`) and run the UX design workflow (`bmad-ux`) after creating your PRD.
-:::
-
-### Phase 3: Solutioning (BMad Method/Enterprise)
-
-**Create Architecture**
-
-1. Invoke the **Architect agent** (`bmad-agent-architect`) in a new chat
-2. Run `bmad-architecture` (`bmad-architecture`)
-3. Output: Architecture document with technical decisions
-
-**Create Epics and Stories**
-
-:::tip[V6 Improvement]
-Epics and stories are now created _after_ architecture. This produces better quality stories because architecture decisions (database, API patterns, tech stack) directly affect how work should be broken down.
-:::
-
-1. Invoke the **PM agent** (`bmad-agent-pm`) in a new chat
-2. Run `bmad-create-epics-and-stories` (`bmad-create-epics-and-stories`)
-3. The workflow uses both PRD and Architecture to create technically-informed stories
-
-**Implementation Readiness Check** _(Highly Recommended)_
-
-1. Invoke the **Architect agent** (`bmad-agent-architect`) in a new chat
-2. Run `bmad-check-implementation-readiness` (`bmad-check-implementation-readiness`)
-3. Validates cohesion across all planning documents
-
-## Step 2: Build Your Project
-
-Once planning is complete, move to implementation. **Each workflow should run in a fresh chat.**
-
-### Initialize Sprint Planning
-
-Invoke the **Developer agent** (`bmad-agent-dev`) and run `bmad-sprint-planning` (`bmad-sprint-planning`). This creates `sprint-status.yaml` to track all epics and stories.
-
-### The Build Cycle
-
-For each story, repeat this cycle with fresh chats:
-
-| Step | Agent | Workflow            | Command             | Purpose                            |
-| ---- | ----- | ------------------- | ------------------- | ---------------------------------- |
-| 1    | DEV   | `bmad-create-story` | `bmad-create-story` | Create story file from epic        |
-| 2    | DEV   | `bmad-dev-story`    | `bmad-dev-story`    | Implement the story                |
-| 3    | DEV   | `bmad-code-review`  | `bmad-code-review`  | Quality validation _(recommended)_ |
-
-After completing all stories in an epic, invoke the **Developer agent** (`bmad-agent-dev`) and run `bmad-retrospective` (`bmad-retrospective`).
-
-## What You've Accomplished
-
-You've learned the foundation of building with BMad:
-
-- Installed BMad and configured it for your IDE
-- Initialized a project with your chosen planning track
-- Created planning documents (PRD, Architecture, Epics & Stories)
-- Understood the build cycle for implementation
-
-Your project now has:
+Ask the `bmad-build` skill to make the
+[Mars Rover programming kata](https://codingdojo.org/kata/mars-rover/), a small
+exercise used to practice coding, without adding any design choices:
 
 ```text
-your-project/
-├── _bmad/                                   # BMad configuration
-├── _bmad-output/
-│   ├── planning-artifacts/
-│   │   ├── PRD.md                           # Your requirements document
-│   │   ├── architecture.md                  # Technical decisions
-│   │   └── epics/                           # Epic and story files
-│   ├── implementation-artifacts/
-│   │   └── sprint-status.yaml               # Sprint tracking
-│   └── project-context.md                   # Implementation rules (optional)
-└── ...
+/bmad-build write an implementation of mars rover kata
 ```
 
-## Quick Reference
+This gives the `bmad-build` skill room to ask what you want. It may start with a
+question like this:
 
-| Workflow                              | Command                               | Agent     | Purpose                                    |
-| ------------------------------------- | ------------------------------------- | --------- | ------------------------------------------ |
-| **`bmad-help`** ⭐                    | `bmad-help`                           | Any       | **Your intelligent guide — ask anything!** |
-| `bmad-prd`                            | `bmad-prd`                            | Any       | Create, update, or validate a PRD          |
-| `bmad-architecture`                   | `bmad-architecture`                   | Architect | Create architecture document               |
-| `bmad-generate-project-context`       | `bmad-generate-project-context`       | Analyst   | Create project context file                |
-| `bmad-create-epics-and-stories`       | `bmad-create-epics-and-stories`       | PM        | Break down PRD into epics                  |
-| `bmad-check-implementation-readiness` | `bmad-check-implementation-readiness` | Architect | Validate planning cohesion                 |
-| `bmad-sprint-planning`                | `bmad-sprint-planning`                | DEV       | Initialize sprint tracking                 |
-| `bmad-create-story`                   | `bmad-create-story`                   | DEV       | Create a story file                        |
-| `bmad-dev-story`                      | `bmad-dev-story`                      | DEV       | Implement a story                          |
-| `bmad-code-review`                    | `bmad-code-review`                    | DEV       | Review implemented code                    |
+```text
+`bmad-build`: Before implementation, I need one choice: which language should I use?
+You: Python 3. Make it a small old-school terminal program I can run locally,
+with no dependencies beyond Python standard library.
+```
 
-## Common Questions
+Your questions, answers, plan, and finished program may differ. Choose the
+behavior you want rather than copying the example answer.
 
-**Do I always need architecture?**
-Only for BMad Method and Enterprise tracks. Quick Flow skips from spec to implementation.
+After you answer its questions, read its plan. Approve it or ask for changes.
+The skill then writes the program, checks its work, fixes any problems, and
+shows you what changed.
 
-**Can I change my plan later?**
-Yes. The `bmad-correct-course` workflow handles scope changes mid-implementation.
+## Run the Mars Rover
 
-**What if I want to brainstorm first?**
-Invoke the Analyst agent (`bmad-agent-analyst`) and run `bmad-brainstorming` (`bmad-brainstorming`) before starting your PRD.
+Depending on what you told it, the result may look something like this:
 
-**Do I need to follow a strict order?**
-Not strictly. Once you learn the flow, you can run workflows directly using the Quick Reference above.
+```bash
+python3 mars_rover.py --size 5x5 --obstacle 2,2
+```
 
-## Getting Help
+Enter `FFRFF`, then `MAP`, then `QUIT`. The terminal shows the rover stopping
+before the obstacle:
 
-:::tip[First Stop: BMad-Help]
-**Invoke `bmad-help` anytime** — it's the fastest way to get unstuck. Ask it anything:
+```text
+MARS ROVER CONTROL
+Commands: F/M forward, B backward, L/R turn, MAP, STATUS, HELP, QUIT
+Position: (0, 0)  Heading: N
+rover> Position: (1, 2)  Heading: E
+OBSTACLE: movement blocked at (2, 2)
+rover>  4  . . . . .
+ 3  . . . . .
+ 2  . > # . .
+ 1  . . . . .
+ 0  . . . . .
+    0 1 2 3 4
+rover> Mission control signing off.
+```
 
-- "What should I do after installing?"
-- "I'm stuck on workflow X"
-- "What are my options for Y?"
-- "Show me what's been done so far"
+Open the files listed in the final message to look at your finished program.
 
-BMad-Help inspects your project, detects what you've completed, and tells you exactly what to do next.
-:::
+## Ask BMad Help
 
-- **During workflows** — Agents guide you with questions and explanations
-- **Community** — [Discord](https://discord.gg/gk8jAdXWmj) (#bmad-method-help, #report-bugs-and-issues)
+The `bmad-help` skill answers questions about BMad. Use it to understand what
+happened, decide what to do next, or solve a problem. Try it now:
 
-## Key Takeaways
+```text
+/bmad-help Explain what bmad-build just did.
+```
 
-:::tip[Remember These]
+## You Built It
 
-- **Start with `bmad-help`** — Your intelligent guide that knows your project and options
-- **Always use fresh chats** — Start a new chat for each workflow
-- **Track matters** — Quick Flow uses `bmad-quick-dev`; Method/Enterprise need PRD and architecture
-- **BMad-Help runs automatically** — Every workflow ends with guidance on what's next
-  :::
+Mars Rover showed how the `bmad-build` skill turns a short request into working
+software. It clarified the request, presented a plan for your approval, wrote
+the program, and checked its work before showing you the result.
 
-Ready to start? Install BMad, invoke `bmad-help`, and let your intelligent guide lead the way.
+## Keep Building
+
+1. [Install BMad in your own repository](../how-to/install-bmad.md), then run
+   the `bmad-build` skill with a short description of a small change.
+2. Continue to [Getting Deeper](./getting-deeper.md) for a small change in a
+   mature codebase, followed by a larger change using a written spec.

@@ -10,37 +10,37 @@ Quick answers to common questions about working on established projects with the
 
 - [Do I have to run document-project first?](#do-i-have-to-run-document-project-first)
 - [What if I forget to run document-project?](#what-if-i-forget-to-run-document-project)
-- [Can I use Quick Flow for established projects?](#can-i-use-quick-flow-for-established-projects)
+- [How does implementation work in established projects?](#how-does-implementation-work-in-established-projects)
 - [What if my existing code doesn't follow best practices?](#what-if-my-existing-code-doesnt-follow-best-practices)
 
 ### Do I have to run document-project first?
 
-Highly recommended, especially if:
+`bmad-document-project` is deprecated — its replacement is [`bmad-project-context`](project-context.md), which writes a small verified block into your repo's `AGENTS.md` instead of generated documentation. Running it first is highly recommended, especially if:
 
 - No existing documentation
 - Documentation is outdated
 - AI agents need context about existing code
 
-You can skip it if you have comprehensive, up-to-date documentation including `docs/index.md` or will use other tools or techniques to aid in discovery for the agent to build on an existing system.
+You can skip it if your repo already has maintained agent instructions, or you'll use other tools or techniques to aid discovery for the agent to build on an existing system.
 
 ### What if I forget to run document-project?
 
-Don't worry about it - you can do it at any time. You can even do it during or after a project to help keep docs up to date.
+Don't worry about it — run `bmad-project-context` at any time. Its refresh and audit intents also keep the context true during and after a project, and it treats any docs you already generated as sources to verify.
 
-### Can I use Quick Flow for established projects?
+### How does implementation work in established projects?
 
-Yes! Quick Flow works great for established projects. It will:
+Run `bmad-build`, just as you would for new development. It will:
 
 - Auto-detect your existing stack
 - Analyze existing code patterns
 - Detect conventions and ask for confirmation
 - Generate context-rich spec that respects existing code
 
-Perfect for bug fixes and small features in existing codebases.
+You can enter directly for a clear change or provide a planned story and its upstream artifacts for larger work.
 
 ### What if my existing code doesn't follow best practices?
 
-Quick Flow detects your conventions and asks: "Should I follow these existing conventions?" You decide:
+Build detects your conventions and asks: "Should I follow these existing conventions?" You decide:
 
 - **Yes** → Maintain consistency with current codebase
 - **No** → Establish new standards (document why in spec)

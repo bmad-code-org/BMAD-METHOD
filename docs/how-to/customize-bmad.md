@@ -2,7 +2,7 @@
 title: 'How to Customize BMad'
 description: Customize agents and workflows while preserving update compatibility
 sidebar:
-  order: 8
+  order: 7
 ---
 
 Tailor agent personas, inject domain context, add capabilities, and configure workflow behavior -- all without modifying installed files. Your customizations survive every update.

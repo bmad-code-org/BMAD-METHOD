@@ -29,9 +29,13 @@ const CLIUtils = {
 
     const logoLines = termWidth >= 95 ? logoWide : logoNarrow;
     const logo = logoLines.map((line) => color.blue(line)).join('\n');
-    const tagline = color.white('    Build More, Architect Dreams\n    © BMad Code');
+    // The wordmark supplies "BMad Method", so the lines below read as its
+    // tagline, then its positioning, then the company credit.
+    const tagline = color.white('    Agile Ai Driven Development');
+    const slogan = color.dim('    the agile way to do AiDD');
+    const credit = color.dim('    Build More, Architect Dreams · © BMad Code');
 
-    await prompts.box(`${logo}\n${tagline}`, '', {
+    await prompts.box(`${logo}\n${tagline}\n${slogan}\n${credit}`, '', {
       contentAlign: 'center',
       rounded: true,
       formatBorder: color.blue,

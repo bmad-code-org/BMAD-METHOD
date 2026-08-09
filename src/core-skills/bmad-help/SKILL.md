@@ -38,7 +38,7 @@ module,skill,display-name,menu-code,description,action,args,phase,preceded-by,fo
 
 **Phases** determine the high-level flow:
 - `anytime` — available regardless of workflow state
-- Numbered phases (`1-analysis`, `2-planning`, etc.) flow in order; naming varies by module
+- Skills group into folders (`plan`, `ship`; some modules use numbered phases) and flow in order; naming varies by module
 
 **Sequencing** determines recommended ordering within and across phases (these are soft suggestions, not hard gates — see `required` for gating):
 - `preceded-by` — skills that should ideally complete before this one
@@ -61,7 +61,7 @@ module,skill,display-name,menu-code,description,action,args,phase,preceded-by,fo
 For each recommended item, present:
 - `[menu-code]` **Display name** — e.g., "[PR] PRD"
 - Skill name in backticks — e.g., `bmad-prd`
-- For multi-action skills: action invocation context — e.g., "tech-writer lets create a mermaid diagram!"
+- For multi-action skills: action invocation context — e.g., "dev lets run a code review!"
 - Description if present in CSV; otherwise your existing knowledge of the skill suffices
 - Args if available
 
