@@ -1,6 +1,6 @@
 ---
 name: bmad-create-story
-description: "Deprecated: `bmad-build` is now the official implementation method. Only use this when explicitly invoked by name."
+description: "Deprecated: `bmad-build` is now the official implementation method. Only use this when explicitly invoked by name"
 ---
 
 # Create Story Workflow

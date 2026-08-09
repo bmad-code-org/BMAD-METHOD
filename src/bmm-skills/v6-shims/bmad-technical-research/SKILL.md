@@ -1,6 +1,6 @@
 ---
 name: bmad-technical-research
-description: 'Deprecated — forwards to bmad-deep-recon (technical type).'
+description: 'Deprecated — forwards to bmad-deep-recon (technical type)'
 ---
 
 # DEPRECATED — forwards to bmad-deep-recon (technical type)

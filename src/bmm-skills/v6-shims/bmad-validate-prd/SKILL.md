@@ -1,6 +1,6 @@
 ---
 name: bmad-validate-prd
-description: 'Deprecated — forwards to bmad-prd (validate intent).'
+description: 'Deprecated — forwards to bmad-prd (validate intent)'
 ---
 
 # DEPRECATED — forwards to bmad-prd (validate intent)

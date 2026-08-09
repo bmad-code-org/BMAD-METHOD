@@ -1,6 +1,6 @@
 ---
 name: bmad-architecture
-description: 'Work out and record the architecture decisions that keep separately built parts of a system consistent, in a short architecture document. Creates, updates, or validates one; works from a spec, a raw idea, or an existing codebase. Use when the user says "create the architecture", "create technical architecture", "architecture spine", or "create a solution design".'
+description: 'Work out and record the architecture decisions that keep separately built parts of a system consistent, in a short architecture document. Creates, updates, or validates one; works from a spec, a raw idea, or an existing codebase. Use when the user says "create the architecture", "create technical architecture", "architecture spine", or "create a solution design"'
 ---
 # BMad Architecture
 

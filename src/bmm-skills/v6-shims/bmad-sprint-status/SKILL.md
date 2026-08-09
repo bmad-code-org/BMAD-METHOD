@@ -1,6 +1,6 @@
 ---
 name: bmad-sprint-status
-description: 'Deprecated — forwards to bmad-sprint-planning (status view).'
+description: 'Deprecated — forwards to bmad-sprint-planning (status view)'
 ---
 
 # DEPRECATED — forwards to bmad-sprint-planning (status view)

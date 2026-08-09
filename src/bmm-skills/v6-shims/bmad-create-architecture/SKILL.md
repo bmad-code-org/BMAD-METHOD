@@ -1,6 +1,6 @@
 ---
 name: bmad-create-architecture
-description: 'Deprecated — forwards to bmad-architecture (create intent).'
+description: 'Deprecated — forwards to bmad-architecture (create intent)'
 ---
 
 # DEPRECATED — forwards to bmad-architecture (create intent)

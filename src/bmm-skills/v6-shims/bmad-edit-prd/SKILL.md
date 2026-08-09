@@ -1,6 +1,6 @@
 ---
 name: bmad-edit-prd
-description: 'Deprecated — forwards to bmad-prd (update intent).'
+description: 'Deprecated — forwards to bmad-prd (update intent)'
 ---
 
 # DEPRECATED — forwards to bmad-prd (update intent)

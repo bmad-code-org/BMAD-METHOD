@@ -1,6 +1,6 @@
 ---
 name: bmad-dev-story
-description: "Deprecated: `bmad-build` is now the official implementation method. Only use this when explicitly invoked by name."
+description: "Deprecated: `bmad-build` is now the official implementation method. Only use this when explicitly invoked by name"
 ---
 
 # Dev Story Workflow

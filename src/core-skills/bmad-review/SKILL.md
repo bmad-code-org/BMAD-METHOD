@@ -1,6 +1,6 @@
 ---
 name: bmad-review
-description: 'Review any diff, document, spec, or other artifact with one or more installed review methods (lenses) — shipped ones cover adversarial critique, edge cases, verification gaps, document structure, and prose. Runs whichever fit the content, or exactly the ones asked for. Use when the user says "review this", "critical review", "editorial review", "hunt edge cases", "review the structure", or "review the prose".'
+description: 'Review any diff, document, spec, or other artifact with one or more installed review methods (lenses) — shipped ones cover adversarial critique, edge cases, verification gaps, document structure, and prose. Runs whichever fit the content, or exactly the ones asked for. Use when the user says "review this", "critical review", "editorial review", "hunt edge cases", "review the structure", or "review the prose"'
 ---
 
 # BMad Review

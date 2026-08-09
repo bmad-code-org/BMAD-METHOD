@@ -1,6 +1,6 @@
 ---
 name: bmad-create-prd
-description: 'Deprecated — forwards to bmad-prd (create intent).'
+description: 'Deprecated — forwards to bmad-prd (create intent)'
 ---
 
 # DEPRECATED — forwards to bmad-prd (create intent)
