@@ -3368,7 +3368,7 @@ async function runTests() {
   console.log(`${colors.yellow}Test Suite 46: uv-check version parsing and messaging${colors.reset}\n`);
 
   try {
-    const { parseUvVersion, detectUv } = require('../tools/installer/core/uv-check');
+    const { parseUvVersion, parsePythonVersion, pythonMeetsMinimum, detectUv, detectPython3 } = require('../tools/installer/core/uv-check');
 
     // Version parsing
     const plain = parseUvVersion('uv 0.5.31');
@@ -3381,18 +3381,38 @@ async function runTests() {
     assert(parseUvVersion('command not found: uv') === null, 'non-version output returns null');
     assert(parseUvVersion(null) === null, 'null output returns null');
 
-    // Detection smoke test — must not throw; result is null or well-formed.
+    // Python version parsing — probed only as the no-uv fallback.
+    const py = parsePythonVersion('Python 3.11.7');
+    assert(py && py.major === 3 && py.minor === 11 && py.patch === 7, 'parses "Python 3.11.7"');
+    assert(parsePythonVersion('Python 3.13.0rc1').raw === '3.13.0', 'parses a prerelease python version');
+    assert(parsePythonVersion('python3: command not found') === null, 'non-version python output returns null');
+    assert(pythonMeetsMinimum({ major: 3, minor: 11 }), '3.11 meets the minimum');
+    assert(pythonMeetsMinimum({ major: 3, minor: 13 }), '3.13 meets the minimum');
+    assert(!pythonMeetsMinimum({ major: 3, minor: 10 }), '3.10 is below the minimum');
+    assert(!pythonMeetsMinimum({ major: 2, minor: 7 }), '2.7 is below the minimum');
+    assert(pythonMeetsMinimum({ major: 4, minor: 0 }), 'a future 4.x meets the minimum');
+    assert(!pythonMeetsMinimum(null), 'a missing python version does not meet the minimum');
+
+    // Detection smoke tests — must not throw; result is null or well-formed.
     const detectedUv = detectUv();
     assert(detectedUv === null || typeof detectedUv.version.raw === 'string', 'detectUv returns null or a well-formed result');
+    const detectedPy = detectPython3();
+    assert(detectedPy === null || typeof detectedPy.version.raw === 'string', 'detectPython3 returns null or a well-formed result');
 
     // checkUvEnvironment branch coverage — stub detection + prompts so the
-    // assertions are deterministic regardless of whether uv is installed.
+    // assertions are deterministic regardless of what's installed locally.
     const uvCheck = require('../tools/installer/core/uv-check');
     const promptsModule = require('../tools/installer/prompts');
-    const realUv = { detectUv: uvCheck.detectUv, log: promptsModule.log, note: promptsModule.note };
-    const stubUv = (detectResult) => {
+    const realUv = {
+      detectUv: uvCheck.detectUv,
+      detectPython3: uvCheck.detectPython3,
+      log: promptsModule.log,
+      note: promptsModule.note,
+    };
+    const stubUv = (detectResult, pythonResult = null) => {
       const seen = { success: [], warn: [], note: [] };
       uvCheck.detectUv = () => detectResult;
+      uvCheck.detectPython3 = () => pythonResult;
       promptsModule.log = {
         success: async (m) => void seen.success.push(m),
         warn: async (m) => void seen.warn.push(m),
@@ -3404,23 +3424,52 @@ async function runTests() {
     };
 
     try {
-      // Branch: uv present — success, no warning.
+      // Branch: uv present — success, no warning, and python3 is never probed
+      // (uv provisions its own interpreter from the script's requires-python).
+      let probedPython = false;
       let seen = stubUv({ version: { major: 0, minor: 5, patch: 31, raw: '0.5.31' } });
+      uvCheck.detectPython3 = () => {
+        probedPython = true;
+        return null;
+      };
       let result = await uvCheck.checkUvEnvironment();
       assert(result.status === 'found' && seen.success.length === 1, 'uv present logs success');
       assert(
         seen.success[0].includes('Python UV check pass') && seen.warn.length === 0,
         'uv present shows Python UV check pass, no warning',
       );
+      assert(!probedPython, 'uv present skips the python3 probe');
 
       // Branch: uv missing — warn + setup note, never blocks (no prompt).
-      seen = stubUv(null);
+      seen = stubUv(null, { version: { major: 3, minor: 12, patch: 1, raw: '3.12.1' } });
       result = await uvCheck.checkUvEnvironment();
       assert(result.status === 'missing' && seen.warn.length === 1, 'uv missing warns');
-      assert(seen.warn[0].includes('de facto standard'), 'uv-missing warning frames uv as the de facto standard');
-      assert(seen.note.length === 1 && seen.note[0].includes('uv'), 'uv missing shows a setup note');
+      assert(seen.warn[0].includes('bmad-build') && seen.warn[0].includes('HALT'), 'uv-missing warning names the skills that halt');
+      assert(!seen.warn[0].includes('de facto standard'), 'uv-missing warning no longer frames uv as optional');
+      assert(seen.warn[0].includes('install itself completes'), 'uv-missing warning says the install still completes');
+      assert(
+        seen.warn[0].includes('python3 3.12.1 is present'),
+        'uv missing with a usable python3 says the direct-interpreter skills still work',
+      );
+      assert(seen.note.length === 1 && seen.note[0] === 'uv required', 'uv missing shows a setup note titled "uv required"');
+
+      // Branch: uv missing and python3 too old — nothing Python-backed runs.
+      seen = stubUv(null, { version: { major: 3, minor: 10, patch: 12, raw: '3.10.12' } });
+      result = await uvCheck.checkUvEnvironment();
+      assert(
+        seen.warn[0].includes('below the required 3.11') && seen.warn[0].includes('no Python-backed skill will run'),
+        'uv missing with python3 < 3.11 reports that nothing Python-backed runs',
+      );
+      assert(result.python.version.raw === '3.10.12', 'the probed python version is returned to the caller');
+
+      // Branch: neither uv nor python3.
+      seen = stubUv(null, null);
+      result = await uvCheck.checkUvEnvironment();
+      assert(seen.warn[0].includes('No python3 on PATH either'), 'uv and python3 both missing is reported');
+      assert(result.python === null, 'no python result is returned when python3 is absent');
     } finally {
       uvCheck.detectUv = realUv.detectUv;
+      uvCheck.detectPython3 = realUv.detectPython3;
       promptsModule.log = realUv.log;
       promptsModule.note = realUv.note;
     }
