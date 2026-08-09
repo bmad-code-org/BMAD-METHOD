@@ -2,7 +2,7 @@
 title: "파티 모드"
 description: AI 에이전트를 하나의 대화에 모아 실행하고, 직접 출연진을 만들고, 얼마나 독립적으로 사고할지 선택합니다
 sidebar:
-  order: 10
+  order: 9
 ---
 
 파티 모드는 AI 에이전트를 한자리에 모아 서로, 그리고 사용자와 대화하게 합니다. 이 문서는 파티가 무엇인지, 파티를 실행하는 네 가지 방식, 설치된 에이전트 대신 직접 페르소나 출연진을 만드는 방법, 그리고 파티가 세션 사이에 사용자를 기억하는 방식을 설명합니다.
@@ -40,7 +40,7 @@ sidebar:
 | --- | --- |
 | 기본 모드로 파티 시작 | `/bmad-party-mode` |
 | 특정 모드로 시작 | `/bmad-party-mode --mode auto` (`session`, `subagent`, `agent-team`도 가능) |
-| 비대화형으로 한 번 실행 | `/bmad-party-mode --non-interactive "review this PR"` |
+| 비대화형으로 한 번 실행 | `/bmad-party-mode --non-interactive "이 PR을 검토해 줘"` |
 | 저장된 파티 열기 | `/bmad-party-mode --party code-review-crew` |
 | 즉석에서 출연진 만들기 | "엔터프라이즈호 브리지 크루로 파티 모드" |
 | 파티 생성 또는 추가 | "파티 모드, 새 파티 만들어줘" |

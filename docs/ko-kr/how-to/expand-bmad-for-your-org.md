@@ -2,7 +2,7 @@
 title: '조직을 위해 BMad 확장하기'
 description: 포크 없이 BMad를 재구성하는 여섯 가지 커스터마이징 패턴 - 에이전트 전반 규칙, 워크플로 관례, 외부 게시, 템플릿 교체, 에이전트 명단 변경, 고급 통합 패턴
 sidebar:
-  order: 10
+  order: 9
 ---
 
 BMad의 커스터마이징 영역을 사용하면 설치된 파일을 수정하거나 스킬을 포크하지 않고도 조직에 맞게 동작을 바꿀 수 있습니다. 이 가이드는 대부분의 엔터프라이즈 요구를 다루는 여섯 가지 레시피를 소개합니다.
@@ -41,11 +41,11 @@ BMad의 커스터마이징 영역을 사용하면 설치된 파일을 수정하�
 
 [agent]
 
-# 모든 활성화에 적용됩니다. Amelia가 실행하는 모든 스킬
-# 스토리 구현, 빠른 개발, 스토리 생성, 코드 리뷰, QA 생성으로 이어집니다.
+# 활성화할 때마다 적용됩니다. Amelia가 실행하는 모든 스킬인
+# build, code-review, qa-generate에서도 이어서 적용됩니다.
 persistent_facts = [
-  "라이브러리 문서(React, TypeScript, Zod, Prisma 등)를 찾을 때는 학습 데이터 지식에 의존하기 전에 context7 MCP 도구(`mcp__context7__resolve_library_id`, 이후 `mcp__context7__get_library_docs`)를 호출하세요. 최신 문서가 기억된 API보다 우선합니다.",
-  "스토리 참조를 {planning_artifacts}/epics-and-stories.md에서 찾을 수 없으면 사용자에게 확인을 요청하기 전에 스토리 ID나 제목으로 Linear의 `mcp__linear__search_issues`를 검색하세요. Linear가 일치 항목을 반환하면 권위 있는 스토리 소스로 취급하세요.",
+  "React, TypeScript, Zod, Prisma 등의 라이브러리 문서를 찾을 때는 학습 데이터의 지식에 기대기 전에 context7 MCP 도구(`mcp__context7__resolve_library_id`, 이어서 `mcp__context7__get_library_docs`)를 호출하세요. 기억에 의존한 API 정보보다 최신 문서를 우선하세요.",
+  "{planning_artifacts}/epics-and-stories.md에서 스토리 참조를 찾지 못하면 사용자에게 확인을 요청하기 전에 스토리 ID나 제목으로 `mcp__linear__search_issues`를 호출해 Linear를 검색하세요. 일치하는 항목이 나오면 해당 항목을 공식 스토리 출처로 사용하세요.",
 ]
 ```
 
@@ -325,7 +325,7 @@ persistent_facts = ["도메인이 헬스케어, 금융, 아동 데이터와 관�
 
 ## 문제 해결
 
-**오버라이드가 적용되지 않나요?** 파일이 `_bmad/custom/` 아래 정확한 스킬 디렉터리 이름으로 있는지 확인하세요(예: `bmad-agent-dev.toml`, `bmad-dev.toml` 아님). [BMad 커스터마이징 방법](./customize-bmad.md)을 참고하세요.
+**오버라이드가 적용되지 않나요?** 파일이 `_bmad/custom/` 아래 정확한 스킬 디렉터리 이름으로 있는지 확인하세요(예: `bmad-agent-dev.toml`, `bmad-dev.toml` 아님). [BMad 커스터마이징 방법의 문제 해결](./customize-bmad.md#문제-해결)을 참고하세요.
 
 **MCP 도구 이름을 모르겠나요?** 현재 세션에서 MCP 서버가 노출하는 정확한 이름을 사용하세요. 확실하지 않다면 Claude Code에 사용 가능한 MCP 도구 목록을 보여달라고 요청하세요. `persistent_facts`나 `on_complete`에 하드코딩한 이름은 MCP 서버가 연결되어 있지 않으면 동작하지 않습니다.
 

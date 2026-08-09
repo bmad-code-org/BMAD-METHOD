@@ -2,7 +2,7 @@
 title: 'v6로 업그레이드하는 방법'
 description: BMad v4에서 v6로 마이그레이션합니다
 sidebar:
-  order: 4
+  order: 3
 ---
 
 BMad 설치 프로그램을 사용해 v4에서 v6로 업그레이드하세요. 레거시 설치 자동 감지와 마이그레이션 지원이 포함되어 있습니다.

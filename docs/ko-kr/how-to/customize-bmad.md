@@ -2,13 +2,13 @@
 title: 'BMad 커스터마이징 방법'
 description: 업데이트 호환성을 유지하면서 에이전트와 워크플로를 커스터마이징합니다
 sidebar:
-  order: 8
+  order: 7
 ---
 
 설치된 파일을 수정하지 않고 에이전트 페르소나를 조정하고, 도메인 컨텍스트를 주입하고, 기능을 추가하고, 워크플로 동작을 설정하세요. 커스터마이징은 업데이트 후에도 유지됩니다.
 
 :::tip[TOML을 직접 쓰고 싶지 않나요? `bmad-customize`를 사용하세요]
-`bmad-customize` 스킬은 이 문서에서 설명하는 **스킬별 에이전트/워크플로 오버라이드 영역**을 안내형으로 작성해 주는 도우미입니다. 설치된 항목 중 무엇을 커스터마이즈할 수 있는지 스캔하고, 의도에 맞는 영역(에이전트 또는 워크플로)을 고르게 하고, 오버라이드 파일을 작성하고, 병합이 적용되었는지 검증합니다. 중앙 설정 오버라이드(`_bmad/custom/config.toml`)는 v1 범위 밖이므로 아래 중앙 설정 섹션에 따라 직접 작성해야 합니다.
+`bmad-customize` 스킬은 이 문서에서 설명하는 **스킬별 에이전트/워크플로 오버라이드 영역**을 안내형으로 작성해 주는 도우미입니다. 설치된 항목 중 무엇을 커스터마이즈할 수 있는지 스캔하고, 의도에 맞는 영역(에이전트 또는 워크플로)을 고르게 하고, 오버라이드 파일을 작성하고, 병합이 적용되었는지 검증합니다. 중앙 설정 오버라이드(`_bmad/custom/config.toml`)는 v1 범위 밖이므로 아래 중앙 설정 섹션에 따라 직접 작성해야 합니다. 스킬별 항목을 변경할 때마다 이 스킬을 실행하세요. 이 문서는 각 영역에서 무엇을 설정할 수 있고 병합이 어떻게 작동하는지 설명하는 참고 자료입니다.
 :::
 
 ## 사용 시점
@@ -69,7 +69,7 @@ sidebar:
 .claude/skills/bmad-agent-pm/customize.toml
 ```
 
-경로는 IDE별로 다릅니다. Cursor는 `.agents/skills/`, Cline은 `.cline/skills/`를 사용합니다.
+경로는 IDE별로 다릅니다. Cursor는 `.cursor/skills/`, Cline은 `.cline/skills/`를 사용합니다.
 
 이 파일이 기준 스키마입니다. 읽기 전용 정체성 필드를 제외하고 보이는 모든 필드는 커스터마이즈할 수 있습니다.
 
@@ -143,11 +143,14 @@ principles = [
 ]
 
 # 표준 활성화(페르소나, persistent_facts, 설정, 인사) 전에 실행합니다.
+# 에이전트가 자신을 소개하기 전에 컨텍스트에 있어야 하는 사전 로드,
+# 컴플라이언스 검사 등에 사용합니다.
 activation_steps_prepend = [
   "{project-root}/docs/compliance/를 스캔하고 HIPAA 관련 문서를 컨텍스트로 로드하세요.",
 ]
 
-# 인사 후, 메뉴 전에 실행합니다.
+# 인사 후, 메뉴 전에 실행합니다. 사용자에게 먼저 인사한 뒤 처리해도 되는
+# 컨텍스트가 많은 설정에 사용합니다.
 activation_steps_append = [
   "{project-root}/_bmad/custom/company-glossary.md가 있으면 읽으세요.",
 ]
@@ -179,7 +182,7 @@ prompt = """
 
 각 메뉴 항목은 `skill`(등록된 스킬 호출) 또는 `prompt`(텍스트 직접 실행) 중 정확히 하나를 가집니다. 오버라이드에 나열하지 않은 항목은 기본값을 유지합니다.
 
-**파일 참조.** `persistent_facts`, `activation_steps_prepend`/`activation_steps_append`, 메뉴 항목의 `prompt`처럼 텍스트가 파일을 가리켜야 할 때는 `{project-root}`를 기준으로 한 전체 경로를 사용하세요. 파일이 `_bmad/custom/`에서 오버라이드 옆에 있더라도 `{project-root}/_bmad/custom/info.md`처럼 전체 경로를 적습니다.
+**파일 참조.** `persistent_facts`, `activation_steps_prepend`/`activation_steps_append`, 메뉴 항목의 `prompt`처럼 텍스트가 파일을 가리켜야 할 때는 `{project-root}`를 기준으로 한 전체 경로를 사용하세요. 파일이 `_bmad/custom/`에서 오버라이드 옆에 있더라도 `{project-root}/_bmad/custom/info.md`처럼 전체 경로를 적습니다. 에이전트는 런타임에 `{project-root}`를 해석합니다.
 
 ### 4. 개인 vs 팀
 
@@ -238,21 +241,26 @@ uv run {project-root}/_bmad/scripts/resolve_customization.py \
 # _bmad/custom/bmad-product-brief.toml
 
 [workflow]
+# 에이전트와 같은 prepend/append 의미를 사용합니다. 워크플로 자체 활성화
+# 단계 전후에 실행되며, 오버라이드 항목은 기본값 뒤에 추가됩니다.
 activation_steps_prepend = [
-  "Load {project-root}/docs/product/north-star-principles.md as context.",
+  "{project-root}/docs/product/north-star-principles.md를 컨텍스트로 불러오세요.",
 ]
 
 activation_steps_append = []
 
+# 에이전트 변형과 같은 리터럴 또는 file: 의미를 사용합니다. 워크플로 실행
+# 동안 기본 컨텍스트로 불러옵니다.
 persistent_facts = [
   "모든 개요에는 명시적인 규제 위험 섹션이 포함되어야 합니다.",
   "file:{project-root}/docs/compliance/product-brief-checklist.md",
 ]
 
+# 스칼라 값입니다. 워크플로가 주요 출력을 마친 뒤 한 번 실행되며 오버라이드가 우선합니다.
 on_complete = "개요를 세 개의 글머리표로 요약하고 gws-gmail-send 스킬로 이메일 발송을 제안하세요."
 ```
 
-동일한 필드 관례가 에이전트/워크플로 경계를 넘습니다. `activation_steps_prepend`/`activation_steps_append`, `persistent_facts`(`file:` 참조 포함), 그리고 키 기반 병합용 `code`/`id`가 있는 메뉴 스타일 `[[...]]` 테이블이 모두 같은 방식으로 동작합니다. 병합 스크립트는 최상위 키와 관계없이 네 구조 규칙을 적용합니다. SKILL.md 참조는 네임스페이스를 따릅니다: `{workflow.activation_steps_prepend}`, `{workflow.persistent_facts}`, `{workflow.on_complete}`. 워크플로가 노출하는 추가 필드(출력 경로, 토글, 리뷰 설정, 단계 플래그 등)도 같은 구조 기반 병합 규칙을 따릅니다. 무엇을 커스터마이즈할 수 있는지는 워크플로의 `customize.toml`을 읽으세요.
+동일한 필드 관례가 에이전트/워크플로 경계를 넘습니다. `activation_steps_prepend`/`activation_steps_append`, `persistent_facts`(`file:` 참조 포함), 그리고 키 기반 병합용 `code`/`id`가 있는 메뉴 스타일 `[[…]]` 테이블이 모두 같은 방식으로 동작합니다. 병합 스크립트는 최상위 키와 관계없이 네 구조 규칙을 적용합니다. SKILL.md 참조는 네임스페이스를 따릅니다: `{workflow.activation_steps_prepend}`, `{workflow.persistent_facts}`, `{workflow.on_complete}`. 워크플로가 노출하는 추가 필드(출력 경로, 토글, 리뷰 설정, 단계 플래그 등)도 같은 구조 기반 병합 규칙을 따릅니다. 무엇을 커스터마이즈할 수 있는지는 워크플로의 `customize.toml`을 읽으세요.
 
 ### 활성화 순서
 
