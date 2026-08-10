@@ -27,16 +27,19 @@ BMad 的智能体模型建立在三个可组合的基本要素之上：
 
 ## 命名智能体带来了什么
 
-BMad 内置六个命名智能体，各自对应 BMad Method 的一个阶段：
+BMad 内置五个命名智能体，各自对应 BMad Method 的一个阶段：
 
 | 智能体 | 阶段 | 模块 |
 |---|---|---|
 | 📊 **Mary**，商业分析师 | 分析 | 市场调研、头脑风暴、产品摘要、PRFAQ |
-| 📚 **Paige**，技术文档工程师 | 分析 | 项目文档、流程图、文档校验 |
 | 📋 **John**，产品经理 | 规划 | PRD 创建、Epic/Story 拆分、实施就绪评审 |
 | 🎨 **Sally**，UX 设计师 | 规划 | UX 设计规范 |
 | 🏗️ **Winston**，系统架构师 | 方案设计 | 技术架构、一致性检查 |
-| 💻 **Amelia**，高级工程师 | 实现 | Story 执行、快速开发、代码评审、Sprint 规划 |
+| 💻 **Amelia**，高级工程师 | 实现 | Story 执行、Build、代码评审、Sprint 规划 |
+
+:::note[Paige 去哪儿了？]
+📚 技术文档工程师 **Paige** 正在休整——她将在未来以更强大的能力回归。项目文档功能仍然可用：直接调用 `bmad-document-project` 技能，或通过 Mary 的菜单使用。
+:::
 
 每位智能体都有硬编码的身份（名字、职衔、专业领域）和可自定义的层（角色、原则、沟通风格、图标、菜单）。你可以重写 Mary 的原则或添加菜单项，但无法改她的名字——这是刻意为之的。品牌辨识度经得起自定义，所以"嘿 Mary"永远激活分析师，无论团队怎样塑造她的行为。
 
@@ -77,7 +80,7 @@ BMad 内置六个命名智能体，各自对应 BMad Method 的一个阶段：
 
 大多数用户从不需要手写这些文件。`bmad-customize` 技能会引导你选择目标、区分智能体/工作流作用域、撰写覆盖、验证合并结果——让自定义能力对任何理解自己意图的人开放，不限于精通 TOML 的人。
 
-举个例子：团队提交一个文件，告诉 Amelia 查库文档时一律用 Context7 MCP 工具，本地 epics 列表找不到 story 时回退到 Linear。Amelia 分发的每个开发工作流（dev-story、quick-dev、create-story、code-review）都继承这些行为，无需改源码、无需逐工作流重复配置。
+举个例子：团队提交一个文件，告诉 Amelia 查库文档时一律用 Context7 MCP 工具，本地 epics 列表找不到 story 时回退到 Linear。Amelia 分发的每个开发工作流（build、code-review、qa-generate）都继承这些行为，无需改源码、无需逐工作流重复配置。
 
 此外还有第二个自定义面，用于**跨领域关注点**：中央配置 `_bmad/config.toml` 和 `_bmad/config.user.toml`（由安装器维护，从每个模块的 `module.yaml` 重建）加上 `_bmad/custom/config.toml`（团队提交）和 `_bmad/custom/config.user.toml`（个人，已 gitignore）作为覆盖。这里存放着 **智能体花名册** ——轻量级描述符，`bmad-party-mode`、`bmad-retrospective` 和 `bmad-advanced-elicitation` 等花名册消费者读取它来了解有哪些智能体可用、如何扮演它们。用团队覆盖在全组织范围重新定义某个智能体；用 `.user.toml` 覆盖添加虚构角色（Kirk、Spock、领域专家）作为个人实验——无需碰任何技能目录。每个技能的配置文件塑造 Mary **激活时的行为**；中央配置塑造其他技能**查看花名册时看到的 Mary**。
 

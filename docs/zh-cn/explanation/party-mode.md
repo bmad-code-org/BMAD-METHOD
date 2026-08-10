@@ -2,7 +2,7 @@
 title: "派对模式"
 description: 多智能体协作——将所有 AI 智能体汇聚到一次对话中
 sidebar:
-  order: 10
+  order: 9
 ---
 
 `bmad-party-mode` 用于多角色协作讨论：把 PM、架构、开发、UX 等视角放到同一轮对话里，快速暴露分歧、对齐取舍。
@@ -30,7 +30,7 @@ Party Mode 不是单角色问答，也不是单文档改写。它更像一次”
 - 你需要的是对同一输出做深度二次推理
 
 这些场景通常更适合：
-- `bmad-quick-dev`（直接进入实现）
+- `bmad-build`（直接进入实现）
 - `advanced elicitation`（二次推理补强）
 
 ## 价值与边界

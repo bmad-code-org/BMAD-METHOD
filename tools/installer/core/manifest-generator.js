@@ -753,7 +753,7 @@ class ManifestGenerator {
 
       for (const entry of entries) {
         // Skip if not a directory or is a special directory
-        if (!entry.isDirectory() || entry.name.startsWith('.') || entry.name === '_config') {
+        if (!entry.isDirectory() || entry.name.startsWith('.') || entry.name === '_config' || entry.name === 'render') {
           continue;
         }
 

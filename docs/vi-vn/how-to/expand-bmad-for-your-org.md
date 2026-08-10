@@ -2,7 +2,7 @@
 title: 'Cách mở rộng BMad cho tổ chức của bạn'
 description: Năm mẫu tùy chỉnh giúp thay đổi BMad mà không cần fork, gồm quy tắc ở cấp agent, quy ước workflow, xuất bản ra hệ thống ngoài, thay template và điều chỉnh danh sách agent
 sidebar:
-  order: 10
+  order: 9
 ---
 
 Bề mặt tùy chỉnh của BMad cho phép một tổ chức định hình lại hành vi mà không phải sửa file đã cài hay fork skill. Hướng dẫn này trình bày năm công thức mẫu (recipe) bao phủ phần lớn nhu cầu ở môi trường doanh nghiệp.
@@ -45,8 +45,8 @@ Nguyên tắc ngón tay cái:
 
 [agent]
 
-# Áp dụng ở mọi lần kích hoạt. Theo Amelia đi vào dev-story, quick-dev,
-# create-story, code-review, qa-generate và mọi skill cô ấy dispatch.
+# Áp dụng ở mọi lần kích hoạt. Theo Amelia đi vào build,
+# code-review, qa-generate và mọi skill cô ấy dispatch.
 persistent_facts = [
   "Với mọi truy vấn tài liệu thư viện như React, TypeScript, Zod, Prisma..., hãy gọi Context7 MCP tool (`mcp__context7__resolve_library_id` rồi `mcp__context7__get_library_docs`) trước khi dựa vào kiến thức trong dữ liệu huấn luyện (training data). Tài liệu cập nhật phải thắng API đã ghi nhớ.",
   "Khi không tìm thấy tham chiếu story trong {planning_artifacts}/epics-and-stories.md, hãy tìm trong Linear bằng `mcp__linear__search_issues` theo ID hoặc tiêu đề story trước khi yêu cầu người dùng làm rõ. Nếu Linear trả về kết quả khớp, coi đó là nguồn story có thẩm quyền.",

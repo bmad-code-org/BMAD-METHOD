@@ -2,7 +2,7 @@
 title: 'Established Projects'
 description: How to use BMad Method on existing codebases
 sidebar:
-  order: 7
+  order: 6
 ---
 
 Use BMad Method effectively when working on existing projects and legacy codebases.
@@ -27,24 +27,16 @@ If you have completed all PRD epics and stories through the BMad process, clean 
 ## Step 2: Create Project Context
 
 :::tip[Recommended for Existing Projects]
-Generate `project-context.md` to capture your existing codebase patterns and conventions. This ensures AI agents follow your established practices when implementing changes.
+Build your project's context system so AI agents follow your established practices when implementing changes — this is the brownfield on-ramp.
 :::
 
-Run the generate project context workflow:
+Run the project context skill:
 
 ```bash
-bmad-generate-project-context
+bmad-project-context
 ```
 
-This scans your codebase to identify:
-
-- Technology stack and versions
-- Code organization patterns
-- Naming conventions
-- Testing approaches
-- Framework-specific patterns
-
-You can review and refine the generated file, or create it manually at `_bmad-output/project-context.md` if you prefer.
+It reads what you already have and tells you how it measures up, asks what rules you want followed, then discovers and verifies the rest — running every command before writing it down. You end up with a small verified block in your repo's `AGENTS.md` instead of generated documentation volume. An existing hand-written file is a baseline it improves; a bloated `docs/` folder is a source to verify against code, not something to add to.
 
 [Learn more about project context](../explanation/project-context.md)
 
@@ -57,7 +49,7 @@ Your `docs/` folder should contain succinct, well-organized documentation that a
 - Architecture
 - Any other relevant project information
 
-For complex projects, consider using the `bmad-document-project` workflow. It offers runtime variants that will scan your entire project and document its actual current state.
+`bmad-project-context` audits and maintains the agent-facing part of this — run its audit any time the context feels stale; it shrinks and re-verifies rather than accreting. (The earlier `bmad-document-project` workflow is deprecated and forwards there.)
 
 ## Step 3: Get Help
 
@@ -71,20 +63,20 @@ For complex projects, consider using the `bmad-document-project` workflow. It of
 
 ```
 bmad-help I have an existing Rails app, where should I start?
-bmad-help What's the difference between quick-flow and full method?
+bmad-help How much planning does this change need before implementation?
 bmad-help Show me what workflows are available
 ```
 
 BMad-Help also **automatically runs at the end of every workflow**, providing clear guidance on exactly what to do next.
 
-### Choosing Your Approach
+### Choose Planning Depth
 
-You have two primary options depending on the scope of changes:
+All implementation uses `bmad-build`; scope determines what context you prepare first:
 
-| Scope                          | Recommended Approach                                                                                                                          |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Small updates or additions** | Run `bmad-quick-dev` to clarify intent, plan, implement, and review in a single workflow. The full four-phase BMad Method is likely overkill. |
-| **Major changes or additions** | Start with the BMad Method, applying as much or as little rigor as needed.                                                                    |
+| Scope | Recommended preparation |
+| --- | --- |
+| **Clear updates or additions** | Enter `bmad-build` directly with the request, issue, or existing spec. |
+| **Major changes or additions** | Prepare the useful PRD, UX, architecture, epic, story, readiness, and sprint context, then pass the selected work to `bmad-build`. |
 
 ### During PRD Creation
 

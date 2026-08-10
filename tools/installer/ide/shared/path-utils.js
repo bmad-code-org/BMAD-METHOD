@@ -53,7 +53,7 @@ function toDashName(module, type, name) {
 /**
  * Convert relative path to flat dash-separated name
  * Converts: 'bmm/agents/pm.md' → 'bmad-agent-bmm-pm.md'
- * Converts: 'bmm/agents/tech-writer/tech-writer.md' → 'bmad-agent-bmm-tech-writer.md' (uses folder name)
+ * Converts: 'bmm/agents/analyst/analyst.md' → 'bmad-agent-bmm-analyst.md' (uses folder name)
  * Converts: 'bmm/workflows/correct-course.md' → 'bmad-bmm-correct-course.md'
  * Converts: 'core/agents/brainstorming.md' → 'bmad-agent-brainstorming.md' (core agents skip module name)
  *
@@ -76,7 +76,7 @@ function toDashPath(relativePath) {
   let name;
 
   // For agents, if nested in a folder (more than 3 parts), use the folder name only
-  // e.g., 'bmm/agents/tech-writer/tech-writer' → 'tech-writer' (not 'tech-writer-tech-writer')
+  // e.g., 'bmm/agents/analyst/analyst' → 'analyst' (not 'analyst-analyst')
   if (type === 'agents' && parts.length > 3) {
     // Use the folder name (parts[2]) as the name, ignore the file name
     name = parts[2];

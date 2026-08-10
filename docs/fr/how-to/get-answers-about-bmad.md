@@ -2,7 +2,7 @@
 title: "Comment obtenir des réponses à propos de BMad"
 description: Utiliser un LLM pour répondre rapidement à vos questions sur BMad
 sidebar:
-  order: 5
+  order: 4
 ---
 
 Utilisez l’aide intégrée de BMad, la documentation source ou la communauté pour obtenir des réponses — du plus rapide au plus approfondi.
@@ -30,7 +30,7 @@ Clonez ou ouvrez le [dépôt BMAD-METHOD](https://github.com/bmad-code-org/BMAD-
 :::note[Exemple]
 **Q :** « Quel est le moyen le plus rapide de construire quelque chose avec BMad ? »
 
-**R :** Utilisez le flux rapide : Lancez `bmad-quick-dev` — il clarifie votre intention, planifie, implémente, révise et présente les résultats dans un seul workflow, en sautant les phases de planification complètes.
+**R :** Lancez `bmad-build`. Donnez-lui une intention directe, une issue, une spécification ou une story planifiée ; il utilise le contexte disponible et choisit la profondeur de clarification, de planification, d’implémentation et de revue nécessaire.
 :::
 
 **Conseils pour de meilleures réponses :**

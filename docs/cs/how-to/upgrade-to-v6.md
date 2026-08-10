@@ -2,7 +2,7 @@
 title: "Jak upgradovat na v6"
 description: Migrace z BMad v4 na v6
 sidebar:
-  order: 3
+  order: 2
 ---
 
 Použijte instalátor BMad pro upgrade z v4 na v6, který zahrnuje automatickou detekci starších instalací a asistenci při migraci.
