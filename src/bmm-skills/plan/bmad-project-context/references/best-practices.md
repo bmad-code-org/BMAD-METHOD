@@ -32,7 +32,7 @@ Prefer prohibitions to advice, and name the permitted alternative in the same li
 
 ## Retire
 
-A policy or pitfall line goes only when the thing it guards is gone, or the user retires it. Nothing failing lately is not evidence — a working rule erases its own evidence.
+A policy or pitfall goes only when the thing it guards is gone, or the user retires it. Nothing failing lately is not evidence — a working rule erases its own evidence.
 
 Every other line faces one question at each write: would removing it change agent behavior? If no, cut it.
 

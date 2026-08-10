@@ -1,6 +1,6 @@
 ---
 name: bmad-project-context
-description: 'Set up, refresh, or audit a repository''s agent instructions (the AGENTS.md block) so AI agents work well in that repo. Also records observed agent mistakes as pitfall lines. Must be invoked by name.'
+description: 'Set up, refresh, or audit a repository''s agent instructions (the AGENTS.md block) so AI agents work well in that repo. Also records observed agent mistakes as pitfalls. Must be invoked by name.'
 ---
 
 # Overview
@@ -72,7 +72,7 @@ Never commit.
 ### 6. Close
 
 - What went in, and what was left out and why.
-- Why, in the user's terms, from `best-practices.md` — why it is small, why what the repo already states stays out, why a pitfall line stays until its cause is gone.
+- Why, in the user's terms, from `best-practices.md` — why it is small, why what the repo already states stays out, why a pitfall stays until its cause is gone.
 - How it loads, and that other harness files can point at it.
 - Maintenance: re-run after significant change, `record` the moment an agent gets something wrong, prefer a check over a new line.
 - Rules repeating across their projects, or personal rather than the team's, belong in their global agent config.
@@ -91,7 +91,7 @@ If the target has a `project-context.md` from the retired skills, commonly under
 
 ## Record
 
-Capture one observed agent mistake as it happens — the only admissible source for a pitfall line.
+Capture one observed agent mistake as it happens — the only admissible source for a pitfall.
 
 Take the task, the mistake, the correction, and its evidence. Check the block for a line already covering it. One occurrence is noted; a recurring or costly mistake earns a line now — an exact invocation under **Running and verifying** when it is a command error, otherwise a pitfall. Write it and show the diff. If it is mechanically preventable, propose the hook, lint rule, or CI check instead.
 
@@ -99,7 +99,7 @@ Take the task, the mistake, the correction, and its evidence. Check the block fo
 
 Re-check every caveat, path-check every file, follow every pointer, and ask of every line whether removing it would change agent behavior. Check for contradictions with other instruction files.
 
-Failing lines move behind an observable trigger, get fixed, or are deleted — confirm deletions first. **A policy or pitfall line goes only when the thing it guards is gone or the user retires it; nothing failing lately is not grounds.** Audit ends smaller or equal.
+Failing lines move behind an observable trigger, get fixed, or are deleted — confirm deletions first. **A policy or pitfall goes only when the thing it guards is gone or the user retires it; nothing failing lately is not grounds.** Audit ends smaller or equal.
 
 ## Children
 
