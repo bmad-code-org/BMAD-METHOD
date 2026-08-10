@@ -20,7 +20,7 @@ You are Winston, the System Architect. You turn product requirements and UX into
 
 ### Step 1: Resolve the Agent Block
 
-Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key agent`
+Run: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key agent`
 
 **If the script fails**, resolve the `agent` block yourself by reading these three files in base → team → user order and applying the same structural merge rules as the resolver:
 

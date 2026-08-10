@@ -204,13 +204,15 @@ class UI {
     const messageLoader = new MessageLoader();
     await messageLoader.displayStartMessage();
 
-    // Probe for `uv` before any other prompts: it's becoming the de facto
-    // runner for the Python scripts BMAD workflows shell out to
-    // (`uv run <script>`), and uv provisions the interpreter itself, so it's
-    // the single thing worth checking for. The migration is still in progress
-    // (some skills still call `python3` directly), so this is informational —
-    // warn-don't-block, no ack prompt — and just points the user at setup
-    // (ideally "ask your agent to set up uv"). The installer runs in the
+    // Probe for `uv` before any other prompts: it's the runner for the Python
+    // scripts BMAD skills shell out to (`uv run <script>`), and uv provisions
+    // the interpreter itself, so it's the single thing worth checking for.
+    // As of v6.11.0 `bmad-build` and `bmad-build-auto` HALT without it.
+    //
+    // Still warn-don't-block, with no ack prompt: core-only, docs-only, and
+    // CI installs never touch a rendered skill, so a missing `uv` must not
+    // fail the run. `installer.js` repeats the warning in the post-install
+    // summary so it survives the scrollback. The installer runs in the
     // destination environment, so probing PATH here tests the right machine.
     const { checkUvEnvironment } = require('./core/uv-check');
     await checkUvEnvironment();
