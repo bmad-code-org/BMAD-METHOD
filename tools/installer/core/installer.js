@@ -1245,9 +1245,23 @@ class Installer {
       '  Get started:',
       `    1. Launch your AI agent from your project folder`,
       `    2. Not sure what to do? Invoke the ${color.cyan('bmad-help')} skill and ask it what to do!`,
-      '',
-      `    ${color.cyan('Tip:')} BMAD workflows increasingly run Python scripts via ${color.cyan('uv run')} — uv is`,
-      `    becoming the de facto standard. If you don't have it yet, ask your agent to set it up.`,
+    );
+
+    // Repeat the uv warning here when it applies. The pre-install probe fires
+    // before every prompt in the run, so by now it is far up the scrollback —
+    // and this box is titled "BMAD is ready to use!", which is only true if
+    // the rendered skills can actually start.
+    const { detectUv } = require('./uv-check');
+    if (!detectUv()) {
+      lines.push(
+        '',
+        `    ${color.yellow('⚠ uv is not installed.')} ${color.cyan('bmad-build')} and ${color.cyan('bmad-build-auto')} render through`,
+        `    ${color.cyan('uv run')} and will halt on activation until you set it up — ask your agent to`,
+        `    "install and set up uv for me", or see https://docs.astral.sh/uv/`,
+      );
+    }
+
+    lines.push(
       '',
       `    Blog, Docs and Guides: ${color.blue('https://bmadcode.com/')}`,
       `    Community: ${color.blue('https://discord.gg/gk8jAdXWmj')}`,

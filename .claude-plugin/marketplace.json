@@ -75,7 +75,7 @@
         "./src/bmm-skills/plan/bmad-product-brief",
         "./src/bmm-skills/plan/bmad-prfaq",
         "./src/bmm-skills/agents/bmad-agent-analyst",
-        "./src/bmm-skills/plan/bmad-document-project",
+        "./src/bmm-skills/v6-shims/bmad-document-project",
         "./src/core-skills/bmad-deep-recon",
         "./src/bmm-skills/agents/bmad-agent-pm",
         "./src/bmm-skills/agents/bmad-agent-ux-designer",
