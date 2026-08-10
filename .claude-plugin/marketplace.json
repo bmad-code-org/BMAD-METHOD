@@ -10,94 +10,43 @@
   "keywords": ["bmad", "agile", "ai", "orchestrator", "development", "methodology", "agents", "brainstorming", "thinking"],
   "plugins": [
     {
-      "name": "bmad-brainstorming",
-      "source": "./",
-      "description": "Facilitated brainstorming with a curated technique library — diverge, converge, and capture ideas with a visual technique picker.",
-      "version": "6.10.0",
-      "author": {
-        "name": "Brian (BMad) Madison"
-      },
-      "skills": ["./src/core-skills/bmad-brainstorming"]
-    },
-    {
-      "name": "bmad-party-mode",
-      "source": "./",
-      "description": "Multi-perspective roundtable discussions — collide viewpoints between agents or custom personas to stress-test any topic.",
-      "version": "6.10.0",
-      "author": {
-        "name": "Brian (BMad) Madison"
-      },
-      "skills": ["./src/core-skills/bmad-party-mode"]
-    },
-    {
-      "name": "bmad-forge-idea",
-      "source": "./",
-      "description": "Pressure-test an idea with persona-driven interrogation until it hardens, proves out, or dies cheaply.",
-      "version": "6.10.0",
-      "author": {
-        "name": "Brian (BMad) Madison"
-      },
-      "skills": ["./src/core-skills/bmad-forge-idea"]
-    },
-    {
-      "name": "bmad-deep-recon",
-      "source": "./",
-      "description": "Decision-grade research harness — draft deep-research prompts for your own AI tools, process finished reports into downstream-ready cited summaries, or run the research directly; six research types, claim verification, and a living refresh cycle.",
-      "version": "6.10.0",
-      "author": {
-        "name": "Brian (BMad) Madison"
-      },
-      "skills": ["./src/core-skills/bmad-deep-recon"]
-    },
-    {
-      "name": "bmad-analysis",
-      "source": "./",
-      "description": "The BMad thinking pack — structured brainstorming, idea pressure-testing, and multi-perspective agent roundtables in one install.",
-      "version": "6.10.0",
-      "author": {
-        "name": "Brian (BMad) Madison"
-      },
-      "skills": ["./src/core-skills/bmad-brainstorming", "./src/core-skills/bmad-party-mode", "./src/core-skills/bmad-forge-idea"]
-    },
-    {
-      "name": "bmad-method-lifecycle",
+      "name": "bmad-method-analyze-plan-build",
+      "displayName": "BMad Method Analyze Plan Build",
       "source": "./",
       "description": "Full-lifecycle AI development framework — agents and workflows for product analysis, planning, architecture, and implementation.",
-      "version": "6.10.0",
+      "version": "6.11.0",
       "author": {
         "name": "Brian (BMad) Madison"
       },
       "skills": [
-        "./src/core-skills/bmad-help",
-        "./src/core-skills/bmad-customize",
-        "./src/core-skills/bmad-advanced-elicitation",
-        "./src/core-skills/bmad-review",
-        "./src/bmm-skills/plan/bmad-product-brief",
-        "./src/bmm-skills/plan/bmad-prfaq",
         "./src/bmm-skills/agents/bmad-agent-analyst",
-        "./src/bmm-skills/v6-shims/bmad-document-project",
-        "./src/core-skills/bmad-deep-recon",
+        "./src/bmm-skills/agents/bmad-agent-architect",
+        "./src/bmm-skills/agents/bmad-agent-dev",
         "./src/bmm-skills/agents/bmad-agent-pm",
         "./src/bmm-skills/agents/bmad-agent-ux-designer",
-        "./src/bmm-skills/plan/bmad-prd",
-        "./src/bmm-skills/plan/bmad-spec",
-        "./src/bmm-skills/plan/bmad-ux",
-        "./src/bmm-skills/agents/bmad-agent-architect",
         "./src/bmm-skills/plan/bmad-architecture",
         "./src/bmm-skills/plan/bmad-create-epics-and-stories",
-        "./src/bmm-skills/plan/bmad-generate-project-context",
-        "./src/bmm-skills/agents/bmad-agent-dev",
-        "./src/bmm-skills/v6-shims/bmad-dev-story",
+        "./src/bmm-skills/plan/bmad-prd",
+        "./src/bmm-skills/plan/bmad-prfaq",
+        "./src/bmm-skills/plan/bmad-product-brief",
+        "./src/bmm-skills/plan/bmad-project-context",
+        "./src/bmm-skills/plan/bmad-spec",
+        "./src/bmm-skills/plan/bmad-sprint-planning",
+        "./src/bmm-skills/plan/bmad-ux",
         "./src/bmm-skills/ship/bmad-build",
         "./src/bmm-skills/ship/bmad-checkpoint-preview",
-        "./src/bmm-skills/plan/bmad-sprint-planning",
-        "./src/bmm-skills/v6-shims/bmad-sprint-status",
         "./src/bmm-skills/ship/bmad-code-review",
-        "./src/bmm-skills/v6-shims/bmad-create-story",
         "./src/bmm-skills/ship/bmad-correct-course",
-        "./src/bmm-skills/ship/bmad-retrospective",
         "./src/bmm-skills/ship/bmad-qa-generate-e2e-tests",
-        "./src/bmm-skills/v6-shims/bmad-quick-dev"
+        "./src/bmm-skills/ship/bmad-retrospective",
+        "./src/core-skills/bmad-advanced-elicitation",
+        "./src/core-skills/bmad-brainstorming",
+        "./src/core-skills/bmad-customize",
+        "./src/core-skills/bmad-deep-recon",
+        "./src/core-skills/bmad-forge-idea",
+        "./src/core-skills/bmad-help",
+        "./src/core-skills/bmad-party-mode",
+        "./src/core-skills/bmad-review"
       ]
     }
   ]

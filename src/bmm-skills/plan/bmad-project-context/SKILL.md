@@ -55,6 +55,7 @@ Only what no scan reaches: what agents keep getting wrong here, what is off limi
 - Never ask what a scan could answer. Asking the user to confirm a path-checked claim, or one a config file already states, is a defect.
 - Ask recall questions, not review lists. Never hand the user a selection problem a scan created.
 - A mistake this session made and caught is observed evidence — offer it.
+- A repeatable command spotted in anything read this session — a log, a doc, its own runs — whose correct form is not the obvious guess is a candidate line: offer it. E.g. `uv run pytest` where plain `pytest` looks right but runs outside the project environment.
 - Batches of at most eight; fewer is better. A batch yielding nothing new means write.
 - When the repo contradicts the user, show the evidence and ask. Never write the claim as given, never drop it silently.
 
@@ -92,7 +93,7 @@ If the target has a `project-context.md` from the retired skills, commonly under
 
 Capture one observed agent mistake as it happens — the only admissible source for a pitfall line.
 
-Take the task, the mistake, the correction, and its evidence. Check the block for a line already covering it. One occurrence is noted; a recurring or costly mistake earns a line now — write it, show the diff. If it is mechanically preventable, propose the hook, lint rule, or CI check instead.
+Take the task, the mistake, the correction, and its evidence. Check the block for a line already covering it. One occurrence is noted; a recurring or costly mistake earns a line now — an exact invocation under **Running and verifying** when it is a command error, otherwise a pitfall. Write it and show the diff. If it is mechanically preventable, propose the hook, lint rule, or CI check instead.
 
 ## Audit
 
