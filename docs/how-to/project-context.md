@@ -55,7 +55,7 @@ At the end it tells you what went in, what was left out and why, and the reasoni
 ## Keeping it healthy
 
 - **Refresh** after real change — re-checks that the caveats still hold, diffs deletions and renames since the recorded commit, updates what moved, and never re-asks what you already settled
-- **Record** the moment an agent gets something wrong — that's the only admissible source for a pitfall line
+- **Record** the moment an agent gets something wrong — that's the only admissible source for a pitfall
 - **Audit** on demand — re-verifies everything and prunes; the block ends smaller or equal, never larger
 
 A rule stays until the thing it guards is gone or you retire it. Nothing broke lately is never a reason to delete one — a working rule erases its own evidence.

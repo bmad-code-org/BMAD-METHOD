@@ -73,7 +73,7 @@ The result is small by design. When the evidence supports ten lines, ten lines i
 
 There is one rule that inverts the pruning instinct, and getting it wrong quietly destroys the best content in the file.
 
-**A policy or pitfall line retires only when the thing it guards is gone** — removed, or now mechanically enforced — **or when a human retires it.** Absence of recent failures is never grounds. A working rule erases its own evidence, and much of the value of the block is the failures that no longer happen.
+**A policy or pitfall retires only when the thing it guards is gone** — removed, or now mechanically enforced — **or when a human retires it.** Absence of recent failures is never grounds. A working rule erases its own evidence, and much of the value of the block is the failures that no longer happen.
 
 ## Two altitudes, two artifacts
 
