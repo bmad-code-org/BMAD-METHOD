@@ -43,8 +43,8 @@ while any required artifact is IN_PROGRESS.
 | Artifact | Folder pattern | Primary file | Completion signal |
 |---|---|---|---|
 | Brainstorming | `brainstorming/brainstorm-*/` (under `output_folder`) | `.memlog.md` + `brainstorm-intent.md` | `.memlog.md` contains `"status": "complete"` (set by `memlog.py set --key status --value complete`) |
-| Deep Recon (market / domain / technical) | `research/{type}-*/` (under `planning_artifacts`) | `research.md` | frontmatter `status: complete` (set in `synthesis.md` before Finalize) **and** a final `event` entry in `.memlog.md` |
-| Product Brief | `briefs/brief-*/` (under `planning_artifacts`) | `brief.md` | `brief.md` has a non-empty body **and** `.memlog.md` exists `[CAVEAT: Finalize never changes status: draft — field stays draft even when complete; do not use status as a completion signal for this artifact]` |
+| Deep Recon (market / domain / technical) | `research/{type}-*/` (under `planning_artifacts`) | `research.md` | frontmatter `status: complete` (set in `synthesis.md` before Finalize) — no canonical memlog event text is prescribed by this skill |
+| Product Brief | `briefs/brief-*/` (under `planning_artifacts`) | `brief.md` | `brief.md` has content below the YAML frontmatter (document sections exist beyond the frontmatter fields) **and** `.memlog.md` exists `[CAVEAT: Finalize never changes status: draft and appends no canonical event — the only proxy is substantive body content beyond the frontmatter skeleton; a freshly initialized brief has frontmatter only]` |
 | PRFAQ | `planning_artifacts/` root (no run subfolder) | `prfaq-{project_name}.md` | frontmatter `status: "complete"` (set at Stage 5 of the verdict) |
 
 ### Phase 2 — Planning
@@ -72,6 +72,11 @@ For every artifact folder or file found during phase detection:
 4. If the signal is satisfied → artifact is **COMPLETE**.
 5. If the folder exists but the primary file is absent → artifact is **IN_PROGRESS** (started but not written yet).
 6. If neither folder nor file exists → artifact is **ABSENT** (phase not started for this artifact).
+
+For root-level artifacts (PRFAQ, Epics & Stories, Sprint Planning): detect by the presence
+of their specific files (`prfaq-{project_name}.md`, `epics.md`, `sprint-status.yaml`) — not
+by the existence of `planning_artifacts/` or `implementation_artifacts/` root folders, which
+are always present in any BMad project.
 
 When reporting to the user, distinguish clearly:
 - COMPLETE → this step is done, can advance.
@@ -109,7 +114,7 @@ module,skill,display-name,menu-code,description,action,args,phase,preceded-by,fo
    - Read the primary file and check its specific completion signal (status field, memlog text,
      stepsCompleted array, or non-empty body — as defined per artifact type).
    - A folder or file existing is necessary but **not sufficient** for completion.
-   - `status: draft` always means IN_PROGRESS, regardless of file size or sub-folder content.
+   - `status: draft` means IN_PROGRESS for artifact types that use `status` as a completion signal (PRD, UX Design, Architecture Spine, PRFAQ). Product Brief is exempt — its `status` field remains `draft` permanently even after completion; use its specific body-content contract instead.
    - Report COMPLETE, IN_PROGRESS, or ABSENT per artifact — never infer done from presence alone.
 
 3. **File-presence fallback** — only for artifact types not covered by the Contracts table
