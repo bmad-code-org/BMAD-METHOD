@@ -50,9 +50,11 @@ module,skill,display-name,menu-code,description,action,args,phase,preceded-by,fo
 - A phase with no required items is entirely optional — recommend it but be clear about what's actually required next
 
 **Completion detection**:
-- Search resolved output paths for `outputs` patterns
-- Fuzzy-match found files to catalog rows
-- User may also state completion explicitly, or it may be evident from the current conversation
+- Search resolved output paths for `outputs` patterns and fuzzy-match found files to catalog rows
+- Treat a matching output as evidence that the skill started, not that it completed
+- Inspect matched artifacts for explicit completion evidence, such as final status or finalization markers; a draft or incomplete marker means the skill is still in progress
+- Honor completion stated by the user or established in the current conversation
+- When completion cannot be determined reliably, say so and ask the user; do not recommend advancing based on file presence alone
 
 **Descriptions carry routing context** — some contain cycle info and alternate paths (e.g., "back to DS if fixes needed"). Read them as navigation hints, not just display text.
 
