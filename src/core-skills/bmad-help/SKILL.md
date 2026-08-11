@@ -28,6 +28,56 @@ When this skill completes, the user should:
 - **Project knowledge**: If `project_knowledge` resolves to an existing path, read it for grounding context. Never fabricate project-specific details.
 - **Module docs**: Rows with `_meta` in the `skill` column carry a URL or path in `output-location` pointing to the module's documentation (e.g., llms.txt). Fetch and use these to answer general questions about that module.
 
+## Artifact Completion Contracts
+
+When an artifact folder or file is found during phase detection, **always verify
+completion before treating it as done.** File presence is necessary but not sufficient.
+
+An artifact is **COMPLETE** when its specific completion signal is satisfied (see table).
+Any artifact that exists but does not meet its completion signal is **IN_PROGRESS** —
+it marks the current phase as still active. Never recommend advancing to the next phase
+while any required artifact is IN_PROGRESS.
+
+### Phase 1 — Analysis
+
+| Artifact | Folder pattern | Primary file | Completion signal |
+|---|---|---|---|
+| Brainstorming | `brainstorming/brainstorm-*/` (under `output_folder`) | `.memlog.md` + `brainstorm-intent.md` | `.memlog.md` contains `"status": "complete"` (set by `memlog.py set --key status --value complete`) |
+| Deep Recon (market / domain / technical) | `research/{type}-*/` (under `planning_artifacts`) | `research.md` | frontmatter `status: complete` (set in `synthesis.md` before Finalize) **and** a final `event` entry in `.memlog.md` |
+| Product Brief | `briefs/brief-*/` (under `planning_artifacts`) | `brief.md` | `brief.md` has a non-empty body **and** `.memlog.md` exists `[CAVEAT: Finalize never changes status: draft — field stays draft even when complete; do not use status as a completion signal for this artifact]` |
+| PRFAQ | `planning_artifacts/` root (no run subfolder) | `prfaq-{project_name}.md` | frontmatter `status: "complete"` (set at Stage 5 of the verdict) |
+
+### Phase 2 — Planning
+
+| Artifact | Folder pattern | Primary file | Completion signal |
+|---|---|---|---|
+| PRD | `prds/prd-*/` (under `planning_artifacts`) | `prd.md` | frontmatter `status: final` **and** `.memlog.md` contains the text `PRD finalized` |
+| UX Design | `ux-designs/ux-*/` (under `planning_artifacts`) | `DESIGN.md` + `EXPERIENCE.md` | **Both** files have frontmatter `status: final` **and** `.memlog.md` contains the text `spines finalized` |
+
+### Phase 3 — Solutioning
+
+| Artifact | Folder pattern | Primary file | Completion signal |
+|---|---|---|---|
+| Architecture Spine | `architecture/architecture-*/` (under `planning_artifacts`) | `ARCHITECTURE-SPINE.md` | frontmatter `status: final` **and** `.memlog.md` contains the text `spine finalized` |
+| Epics & Stories | `planning_artifacts/` root (no run subfolder) | `epics.md` | frontmatter `stepsCompleted` array contains `4` (the final step index) — this skill uses no `status:` field and no memlog |
+| Sprint Planning / Readiness | `implementation_artifacts/` | `sprint-status.yaml` | file exists with a non-empty `development_status` map — no `status:` field or memlog used |
+
+### Verification procedure
+
+For every artifact folder or file found during phase detection:
+
+1. Read the primary file(s) listed in the table above.
+2. Apply the completion signal check for that artifact type.
+3. If the signal is not satisfied → artifact is **IN_PROGRESS**.
+4. If the signal is satisfied → artifact is **COMPLETE**.
+5. If the folder exists but the primary file is absent → artifact is **IN_PROGRESS** (started but not written yet).
+6. If neither folder nor file exists → artifact is **ABSENT** (phase not started for this artifact).
+
+When reporting to the user, distinguish clearly:
+- COMPLETE → this step is done, can advance.
+- IN_PROGRESS → still active, recommend continuing the skill that owns this artifact.
+- ABSENT → not started, recommend starting if required.
+
 ## CSV Interpretation
 
 The catalog uses this format:
@@ -49,10 +99,23 @@ module,skill,display-name,menu-code,description,action,args,phase,preceded-by,fo
 - `required=true` items must complete before the user can meaningfully proceed to later phases
 - A phase with no required items is entirely optional — recommend it but be clear about what's actually required next
 
-**Completion detection**:
-- Search resolved output paths for `outputs` patterns
-- Fuzzy-match found files to catalog rows
-- User may also state completion explicitly, or it may be evident from the current conversation
+**Completion detection** — priority order (highest wins):
+
+1. **User explicit statement** — if the user states a step is done or not done, believe them.
+
+2. **Artifact Completion Contracts** — when files are found at the expected output paths,
+   consult the `## Artifact Completion Contracts` section above before treating them as done.
+   Apply the verification procedure for each artifact type:
+   - Read the primary file and check its specific completion signal (status field, memlog text,
+     stepsCompleted array, or non-empty body — as defined per artifact type).
+   - A folder or file existing is necessary but **not sufficient** for completion.
+   - `status: draft` always means IN_PROGRESS, regardless of file size or sub-folder content.
+   - Report COMPLETE, IN_PROGRESS, or ABSENT per artifact — never infer done from presence alone.
+
+3. **File-presence fallback** — only for artifact types not covered by the Contracts table
+   (e.g., third-party or community module outputs with no defined contract): fuzzy-match found
+   files to catalog rows. Always caveat to the user: *"I'm inferring this from file presence —
+   confirm if incorrect."*
 
 **Descriptions carry routing context** — some contain cycle info and alternate paths (e.g., "back to DS if fixes needed"). Read them as navigation hints, not just display text.
 
