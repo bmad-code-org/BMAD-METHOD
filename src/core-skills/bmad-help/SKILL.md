@@ -120,7 +120,7 @@ module,skill,display-name,menu-code,description,action,args,phase,preceded-by,fo
    - Read the primary file and check its specific completion signal (status field, memlog text,
      stepsCompleted array, or non-empty body — as defined per artifact type).
    - A folder or file existing is necessary but **not sufficient** for completion.
-   - `status: draft` means IN_PROGRESS for artifact types that use `status` as a completion signal (PRD, UX Design, Architecture Spine, PRFAQ). Product Brief is exempt — its `status` field remains `draft` permanently even after completion; use its specific body-content contract instead.
+   - `status: draft` means IN_PROGRESS for artifact types that use `status` as a completion signal (PRD, UX Design, Architecture Spine, PRFAQ). Product Brief is exempt — its `status` field remains `draft` permanently even after completion; report it as UNKNOWN and ask the user to confirm whether it is complete.
    - Report COMPLETE, IN_PROGRESS, or ABSENT per artifact — never infer done from presence alone.
 
 3. **File-presence fallback** — only for artifact types not covered by the Contracts table
