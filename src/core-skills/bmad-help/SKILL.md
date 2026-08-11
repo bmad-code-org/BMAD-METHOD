@@ -44,7 +44,6 @@ while any required artifact is IN_PROGRESS.
 |---|---|---|---|
 | Brainstorming | `brainstorming/brainstorm-*/` (under `output_folder`) | `.memlog.md` + `brainstorm-intent.md` | `.memlog.md` contains `"status": "complete"` (set by `memlog.py set --key status --value complete`) |
 | Deep Recon (market / domain / technical) | `research/{type}-*/` (under `planning_artifacts`) | `research.md` | frontmatter `status: complete` (set in `synthesis.md` before Finalize) — no canonical memlog event text is prescribed by this skill |
-| Product Brief | `briefs/brief-*/` (under `planning_artifacts`) | `brief.md` | `brief.md` has content below the YAML frontmatter (document sections exist beyond the frontmatter fields) **and** `.memlog.md` exists `[CAVEAT: Finalize never changes status: draft and appends no canonical event — the only proxy is substantive body content beyond the frontmatter skeleton; a freshly initialized brief has frontmatter only]` |
 | PRFAQ | `planning_artifacts/` root (no run subfolder) | `prfaq-{project_name}.md` | frontmatter `status: "complete"` (set at Stage 5 of the verdict) |
 
 ### Phase 2 — Planning
@@ -61,6 +60,12 @@ while any required artifact is IN_PROGRESS.
 | Architecture Spine | `architecture/architecture-*/` (under `planning_artifacts`) | `ARCHITECTURE-SPINE.md` | frontmatter `status: final` **and** `.memlog.md` contains the text `spine finalized` |
 | Epics & Stories | `planning_artifacts/` root (no run subfolder) | `epics.md` | frontmatter `stepsCompleted` array contains `4` (the final step index) — this skill uses no `status:` field and no memlog |
 | Sprint Planning / Readiness | `implementation_artifacts/` | `sprint-status.yaml` | file exists with a non-empty `development_status` map — no `status:` field or memlog used |
+
+### Known limitations
+
+| Artifact | Reason | Fallback |
+|---|---|---|
+| Product Brief | `bmad-product-brief` Finalize never changes `status: draft` and prescribes no canonical memlog event. Body content below the frontmatter is written progressively during drafting — before Finalize — so it cannot reliably distinguish an active draft from a finished brief. | File-presence fallback with explicit caveat: report as UNKNOWN and ask the user to confirm whether the brief is complete before recommending advancement. |
 
 ### Verification procedure
 
@@ -82,6 +87,7 @@ When reporting to the user, distinguish clearly:
 - COMPLETE → this step is done, can advance.
 - IN_PROGRESS → still active, recommend continuing the skill that owns this artifact.
 - ABSENT → not started, recommend starting if required.
+- UNKNOWN → no reliable completion signal exists (e.g. Product Brief); ask the user to confirm before recommending advancement.
 
 ## CSV Interpretation
 
