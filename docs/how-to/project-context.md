@@ -1,132 +1,76 @@
 ---
 title: 'Manage Project Context'
-description: Create and maintain project-context.md to guide AI agents
+description: Set up and maintain your repository's agent instructions with bmad-project-context
 sidebar:
-  order: 9
+  order: 8
 ---
 
-Use the `project-context.md` file to ensure AI agents follow your project's technical preferences and implementation rules throughout all workflows. To make sure this is always available, you can also add the line `Important project context and conventions are located in [path to project context]/project-context.md` to your tools context or always rules file (such as `AGENTS.md`)
+Use `bmad-project-context` to set up a repository so AI agents work well in it — for a new project or an existing codebase, with or without a BMad install. The output is a small verified block in your `AGENTS.md`.
 
 :::note[Prerequisites]
 
-- BMad Method installed
-- Understanding of your project's technology stack and conventions
+- BMad Method installed — or nothing at all: the skill also runs standalone in any repo
   :::
 
-## When to Use This
+## When to use this
 
-- You have strong technical preferences before starting architecture
-- You've completed architecture and want to capture decisions for implementation
-- You're working on an existing codebase with established patterns
-- You notice agents making inconsistent decisions across stories
+- You're starting AI-assisted work in an existing codebase (this is the brownfield on-ramp)
+- You're starting a new project and want your standards followed from the first commit
+- You have governance, security or style rules that agents need to respect
+- Agents keep making the same mistake and you want it written down
+- Your instructions feel stale or bloated — run an audit
 
-## Step 1: Choose Your Approach
-
-**Manual creation** — Best when you know exactly what rules you want to document
-
-**Generate after architecture** — Best for capturing decisions made during solutioning
-
-**Generate for existing projects** — Best for discovering patterns in existing codebases
-
-## Step 2: Create the File
-
-### Option A: Manual Creation
-
-Create the file at `_bmad-output/project-context.md`:
+## Step 1: Run it
 
 ```bash
-mkdir -p _bmad-output
-touch _bmad-output/project-context.md
+bmad-project-context
 ```
 
-Add your technology stack and implementation rules:
+Say what you want in plain language — "set up AGENTS.md", "refresh the context", "audit our context", "the agent keeps using the wrong test runner" — and the skill routes itself. Setup is the default.
 
-```markdown
----
-project_name: 'MyProject'
-user_name: 'YourName'
-date: '2026-02-15'
-sections_completed: ['technology_stack', 'critical_rules']
----
+Point it at a repo if you're not already in one. If the path resolves to more than one working tree, it asks which before writing anything.
 
-# Project Context for AI Agents
+## Step 2: Tell it what you bring
 
-## Technology Stack & Versions
+The first thing it does is read what's already there — `AGENTS.md`, `CLAUDE.md`, editor rule files, docs — and report back what's good, what's derivable filler, and what looks stale. A hand-written file is a baseline it improves, never something it discards.
 
-- Node.js 20.x, TypeScript 5.3, React 18.2
-- State: Zustand
-- Testing: Vitest, Playwright
-- Styling: Tailwind CSS
+Then it asks what rules you want followed regardless of what the repo does: governance, security and compliance requirements, coding standards, style guides, frozen areas. Bring outside documents too — org handbooks, wiki exports, an MCP knowledgebase.
 
-## Critical Implementation Rules
+For a greenfield project that conversation is the whole content. For a working codebase it's the half no scan can reach.
 
-**TypeScript:**
+## Step 3: It verifies the rest
 
-- Strict mode enabled, no `any` types
-- Use `interface` for public APIs, `type` for unions
+It checks every path a line names, and reads your `package.json`, `Makefile` and CI config — not to copy the commands out, since an agent reads those directly, but to know what they already say so the block only carries what they don't.
 
-**Code Organization:**
+Then it asks what no scan could answer: what agents keep getting wrong here, what's off limits, what a domain term means, and which commands come with a catch.
 
-- Components in `/src/components/` with co-located tests
-- API calls use `apiClient` singleton — never fetch directly
+## Step 4: Approve the block
 
-**Testing:**
+You see the complete block before anything is written. Nothing lands without that. On approval it's spliced between the `<!-- bmad:context -->` markers, and everything you wrote outside them is preserved byte for byte.
 
-- Unit tests focus on business logic
-- Integration tests use MSW for API mocking
-```
+It never commits. Changes stay in your working tree for you to review.
 
-### Option B: Generate After Architecture
+At the end it tells you what went in, what was left out and why, and the reasoning behind both.
 
-Run the workflow in a fresh chat:
+## Keeping it healthy
 
-```bash
-bmad-generate-project-context
-```
+- **Refresh** after real change — re-checks that the caveats still hold, diffs deletions and renames since the recorded commit, updates what moved, and never re-asks what you already settled
+- **Record** the moment an agent gets something wrong — that's the only admissible source for a pitfall
+- **Audit** on demand — re-verifies everything and prunes; the block ends smaller or equal, never larger
 
-The workflow scans your architecture document and project files to generate a context file capturing the decisions made.
+A rule stays until the thing it guards is gone or you retire it. Nothing broke lately is never a reason to delete one — a working rule erases its own evidence.
 
-### Option C: Generate for Existing Projects
+## Repo or home directory
 
-For existing projects, run:
+What this writes belongs committed to the repo, shared by the team. If the same rules keep repeating across all your projects, or they're your personal preferences, put those in your agent's global configuration in your home directory instead.
 
-```bash
-bmad-generate-project-context
-```
+## Deprecated predecessors
 
-The workflow analyzes your codebase to identify conventions, then generates a context file you can review and refine.
+:::note[Looking for bmad-generate-project-context or bmad-document-project?]
+Both are deprecated and forward here — their trigger phrases still work. If you have an existing `project-context.md`, setup offers to absorb its content rather than orphaning it.
+:::
 
-## Step 3: Verify Content
+## Next steps
 
-Review the generated file and ensure it captures:
-
-- Correct technology versions
-- Your actual conventions (not generic best practices)
-- Rules that prevent common mistakes
-- Framework-specific patterns
-
-Edit manually to add anything missing or remove inaccuracies.
-
-## What You Get
-
-A `project-context.md` file that:
-
-- Ensures all agents follow the same conventions
-- Prevents inconsistent decisions across stories
-- Captures architecture decisions for implementation
-- Serves as a reference for your project's patterns and rules
-
-## Tips
-
-:::tip[Best Practices]
-
-- **Focus on the unobvious** — Document patterns agents might miss (e.g., "Use JSDoc on every public class"), not universal practices like "use meaningful variable names."
-- **Keep it lean** — This file is loaded by every implementation workflow. Long files waste context. Exclude content that only applies to narrow scope or specific stories.
-- **Update as needed** — Edit manually when patterns change, or re-generate after significant architecture changes.
-- Supports the same `bmad-build` loop whether work enters directly or after extensive planning.
-  :::
-
-## Next Steps
-
-- [**Project Context Explanation**](../explanation/project-context.md) — Learn more about how it works
-- [**Workflow Map**](../reference/workflow-map.md) — See which workflows load project context
+- [**Project Context Explanation**](../explanation/project-context.md) — the design and the evidence behind it
+- [**Workflow Map**](../reference/workflow-map.md) — where context fits in the method

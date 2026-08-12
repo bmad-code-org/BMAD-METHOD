@@ -2,7 +2,7 @@
 title: "Comment personnaliser BMad"
 description: Personnalisez les agents et les workflows tout en préservant la compatibilité avec les mises à jour
 sidebar:
-  order: 8
+  order: 7
 ---
 
 Adaptez les personas d’agents, injectez du contexte métier, ajoutez des capacités et configurez le comportement des workflows — le tout sans modifier les fichiers installés. Vos personnalisations sont préservées à chaque mise à jour.

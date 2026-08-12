@@ -5,6 +5,18 @@ description: Project-specific documentation conventions based on Google style an
 
 This project adheres to the [Google Developer Documentation Style Guide](https://developers.google.com/style) and uses [Diataxis](https://diataxis.fr/) to structure content. Only project-specific conventions follow.
 
+## Write in Plain English
+
+Make the main point easy to find and act on. These rules apply to every page:
+
+- At the start, make clear what the page is for and what the reader needs from it.
+- Prefer concrete, familiar words and short sentences.
+- Use specialized terms only when readers need them to use BMAD. Define an unfamiliar term at first use.
+- Use literal language. Avoid decorative metaphors, and do not use a metaphor instead of explaining how something works.
+- Give the gist before qualifications and detailed mechanics.
+- Include implementation details only when they help readers understand or act for that page's purpose. Put exact mechanics and contracts in reference pages or linked deeper material.
+- Remove repetition, opening text that delays the point, inflated claims, and caveats that do not change the reader's decision.
+
 ## Project-Specific Rules
 
 | Rule                             | Specification                            |

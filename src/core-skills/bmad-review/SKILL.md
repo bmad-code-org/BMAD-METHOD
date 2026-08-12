@@ -1,11 +1,11 @@
 ---
 name: bmad-review
-description: 'Multi-lens review over any diff, doc, spec, or artifact — whichever installed lenses fit the content, run singly or together. Shipped lenses include adversarial, edge-case, verification-gap, structure, and prose. Use when the user says "review this", "critical review", "editorial review", "hunt edge cases", "review the structure", or "review the prose".'
+description: 'Review any diff, document, spec, or other artifact with one or more installed review methods (lenses) — shipped ones cover adversarial critique, edge cases, verification gaps, document structure, and prose. Runs whichever fit the content, or exactly the ones asked for. Use when the user says "review this", "critical review", "editorial review", "hunt edge cases", "review the structure", or "review the prose"'
 ---
 
 # BMad Review
 
-Review content through lenses — each a distinct method and stance — and report findings in one canonical shape. Report what is real — never pad to look thorough. Each lens sets its own stance toward the content and toward zero findings: for most an empty result is valid; the adversarial lens treats it as suspicious; the editorial lenses hold content sacrosanct and critique only how it is organized and expressed.
+Review content through lenses — each a distinct method and stance — and report findings in one canonical shape. Report what is real — never pad to look thorough. Each lens sets its own stance toward the content and toward zero findings: for most an empty result is valid; the adversarial lens requires at least ten concrete findings and treats an empty list as a signal to re-check; the editorial lenses hold content sacrosanct and critique only how it is organized and expressed.
 
 The lens set is whatever `{workflow.lenses}` resolves to, not a fixed list — overrides add lenses and replace shipped ones. Never claim a capability from this file; read the resolved lenses and work from those.
 

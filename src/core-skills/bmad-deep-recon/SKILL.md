@@ -1,6 +1,6 @@
 ---
 name: bmad-deep-recon
-description: 'Decision-grade research, three ways: draft a deep-research prompt for the user to run in their own tool (ChatGPT, Gemini, Grok, Perplexity, …), process a finished research report — file it, distill a succinct cited summary with metadata that downstream skills consume without reprocessing — or run the research here through web fan-out. Shipped type packs: market, domain, technical, competitive, user-voice, academic-lit — plus a select shape for choose-between decisions and custom types via overrides. Use when the user says "deep recon", "research this", "draft a research prompt", "process this research report", "market research", "domain research", "technical research", "competitor research", "literature review", or "help me choose between".'
+description: 'Research a topic to support a decision, three ways: draft a research prompt for the user to run in their own tool (ChatGPT, Gemini, Grok, Perplexity, …), turn a finished research report into a short summary with cited sources that other skills can use directly, or run the research here with parallel web searches. Built-in research types: market, domain, technical, competitive, user-voice, academic-lit; also supports choosing between candidates, and custom types via overrides. Use when the user says "deep recon", "research this", "draft a research prompt", "process this research report", "market research", "domain research", "technical research", "competitor research", "literature review", or "help me choose between"'
 ---
 
 # BMad Deep Recon

@@ -77,7 +77,9 @@ Decide how to build it and break work into stories.
 |---------------------------------------|--------------------------------------------|-----------------------------|
 | `bmad-architecture`            | Make technical decisions explicit          | `ARCHITECTURE-SPINE.md` is the spine by default but can hydrate to your desired output or presentation needs also |
 | `bmad-create-epics-and-stories`       | Break requirements into implementable work | Epic files with stories     |
-| `bmad-check-implementation-readiness` | Gate check before implementation           | PASS/CONCERNS/FAIL decision |
+| `bmad-sprint-planning`                | Readiness gate before implementation, then story tracking and status view | PASS/CONCERNS/FAIL + `sprint-status.yaml` |
+
+For how the readiness gate, deterministic tracking, and status view work together, see [Sprint Planning](../explanation/sprint-planning.md).
 
 ## Phase 4: Implementation
 
@@ -86,11 +88,9 @@ Every implementation path converges on `bmad-build`. It accepts direct intent, a
 | Workflow | Purpose | Produces |
 |----------|---------|----------|
 | `bmad-build` | Turn direct intent or a planned story into implemented, reviewed code | `spec-*.md` + code |
-| `bmad-sprint-planning` | Initialize tracking (once per project to sequence the dev cycle) | `sprint-status.yaml` |
 | `bmad-code-review` | Ad hoc review of any code change | Findings + applied patches |
 | `bmad-correct-course` | Handle significant mid-sprint changes | Updated plan or re-routing |
-| `bmad-sprint-status` | Track sprint progress and story status | Sprint status update |
-| `bmad-retrospective` | Review after epic completion | Lessons learned |
+| `bmad-retrospective` | Evidence-based review of a completed epic against its acceptance criteria | Retro document, action items, acceptance verdict |
 
 ### Direct and Planned Entry
 
@@ -109,15 +109,13 @@ this structure, agents make inconsistent decisions.
 ### Project Context
 
 :::tip[Recommended]
-Create `project-context.md` to ensure AI agents follow your project's rules and preferences. This file works like a
-constitution for your project — it guides implementation decisions across all workflows. This optional file can be
-generated at the end of Architecture Creation, or in an existing project it can be generated also to capture whats
-important to keep aligned with current conventions.
+Set up your repo so AI agents follow your project's rules across all workflows: a small verified block in
+`AGENTS.md`, maintained by `bmad-project-context`. Seed it from your architecture at the end of planning, or
+discover it from an existing codebase at any time.
 :::
 
 **How to create it:**
 
-- **Manually** — Create `_bmad-output/project-context.md` with your technology stack and implementation rules
-- **Generate it** — Run `bmad-generate-project-context` to auto-generate from your architecture or codebase
+- Run `bmad-project-context` — greenfield (seeded from your spec or architecture) or brownfield (discovered from the codebase, verified, then confirmed with you). The earlier `bmad-generate-project-context` is deprecated and forwards there; an existing `project-context.md` is offered up for absorption.
 
-[**Learn more about project-context.md**](../explanation/project-context.md)
+[**Learn more about project context**](../explanation/project-context.md)

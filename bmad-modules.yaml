@@ -34,6 +34,39 @@
 # install to the new code and removes the stale `_bmad/<alias>/` directory.
 
 modules:
+  bmad-builder:
+    url: https://github.com/bmad-code-org/bmad-builder
+    module-definition: skills/module.yaml
+    code: bmb
+    name: "BMad Builder"
+    description: "Skill, workflow, and agent builder"
+    defaultSelected: false
+    type: bmad-org
+    npmPackage: bmad-builder
+    default_channel: stable
+
+  bmad-creative-intelligence-suite:
+    url: https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite
+    module-definition: src/module.yaml
+    code: cis
+    name: "BMad Creative Intelligence Suite"
+    description: "Creative thinking partners"
+    defaultSelected: false
+    type: bmad-org
+    npmPackage: bmad-creative-intelligence-suite
+    default_channel: stable
+
+  bmad-method-test-architecture-enterprise:
+    url: https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise
+    module-definition: src/module.yaml
+    code: tea
+    name: "BMad Test Architect"
+    description: "Enterprise testing BMM add-on"
+    defaultSelected: false
+    type: bmad-org
+    npmPackage: bmad-method-test-architecture-enterprise
+    default_channel: stable
+
   bmad-loop:
     url: https://github.com/bmad-code-org/bmad-loop
     module-definition: src/bmad_loop/data/skills/bmad-loop-setup/assets/module.yaml
@@ -43,7 +76,7 @@ modules:
     # installs migrating forward instead of being orphaned.
     aliases: [bauto]
     name: "BMad Loop"
-    description: "Deterministic, Python-based unattended dev loop with adversarial review"
+    description: "Builds, verifies, and retros a whole epic unattended"
     defaultSelected: false
     type: bmad-org
     default_channel: stable
@@ -59,27 +92,18 @@ modules:
       It installs the bmad-loop orchestrator tool and wires up the per-project
       hooks and policy. The automation skills don't run until setup completes.
 
-  bmad-method-test-architecture-enterprise:
-    url: https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise
+  bmad-game-dev-studio:
+    url: https://github.com/bmad-code-org/bmad-module-game-dev-studio.git
     module-definition: src/module.yaml
-    code: tea
-    name: "BMad Test Architect"
-    description: "Quality strategy, test automation, and release gates for enterprise teams"
+    code: gds
+    name: "BMad Game Dev Studio"
+    description: "Ideate, design, and build games"
     defaultSelected: false
     type: bmad-org
-    npmPackage: bmad-method-test-architecture-enterprise
+    npmPackage: bmad-game-dev-studio
     default_channel: stable
 
-  bmad-builder:
-    url: https://github.com/bmad-code-org/bmad-builder
-    module-definition: skills/module.yaml
-    code: bmb
-    name: "BMad Builder"
-    description: "Build AI agents, workflows, and modules from a conversation"
-    defaultSelected: false
-    type: bmad-org
-    npmPackage: bmad-builder
-    default_channel: stable
+  # --- Deprecated: hidden from the picker unless already installed ---
 
   bmad-automator:
     url: https://github.com/bmad-code-org/bmad-automator
@@ -94,28 +118,6 @@ modules:
     deprecated: true
     deprecation-message: "BMad Automator has been deprecated and is replaced by BMad Loop (bmad-loop). Install BMad Loop instead."
 
-  bmad-creative-intelligence-suite:
-    url: https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite
-    module-definition: src/module.yaml
-    code: cis
-    name: "BMad Creative Intelligence Suite"
-    description: "Brainstorming, ideation, storytelling, design thinking, and problem-solving"
-    defaultSelected: false
-    type: bmad-org
-    npmPackage: bmad-creative-intelligence-suite
-    default_channel: stable
-
-  bmad-game-dev-studio:
-    url: https://github.com/bmad-code-org/bmad-module-game-dev-studio.git
-    module-definition: src/module.yaml
-    code: gds
-    name: "BMad Game Dev Studio"
-    description: "Game design and development for Unity, Unreal, Godot, and Phaser."
-    defaultSelected: false
-    type: bmad-org
-    npmPackage: bmad-game-dev-studio
-    default_channel: stable
-
   bmad-method-wds-expansion:
     url: https://github.com/bmad-code-org/bmad-method-wds-expansion
     module-definition: src/module.yaml
@@ -127,3 +129,5 @@ modules:
     type: bmad-org
     npmPackage: bmad-wds
     default_channel: stable
+    deprecated: true
+    deprecation-message: "Whiteport Design Studio is no longer receiving updates. Its capabilities are being folded into BMad Method (bmm) as enhanced UX features. Your existing install is kept as-is."

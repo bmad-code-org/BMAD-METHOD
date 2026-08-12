@@ -1,6 +1,6 @@
 ---
 name: bmad-market-research
-description: 'Deprecated — forwards to bmad-deep-recon (market type).'
+description: 'Deprecated — forwards to bmad-deep-recon (market type)'
 ---
 
 # DEPRECATED — forwards to bmad-deep-recon (market type)

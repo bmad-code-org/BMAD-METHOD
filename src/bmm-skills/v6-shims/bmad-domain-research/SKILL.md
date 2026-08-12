@@ -1,6 +1,6 @@
 ---
 name: bmad-domain-research
-description: 'Deprecated — forwards to bmad-deep-recon (domain type).'
+description: 'Deprecated — forwards to bmad-deep-recon (domain type)'
 ---
 
 # DEPRECATED — forwards to bmad-deep-recon (domain type)

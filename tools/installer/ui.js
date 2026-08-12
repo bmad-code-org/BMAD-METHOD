@@ -110,6 +110,44 @@ async function getModuleVersion(moduleCode, { repoUrl = null, registryDefault = 
  * UI utilities for the installer
  */
 class UI {
+  /**
+   * Warn once for each selected module the registry marks deprecated.
+   *
+   * A deprecated module is never dropped from the selection — an existing
+   * install keeps working and keeps being updated on request. The warning is
+   * the only behavior change, and it is what tells CLI users (`--modules`,
+   * `--yes`) what the interactive picker shows as an option hint.
+   *
+   * @param {Array<string>} selectedModules - Module codes about to be installed
+   * @returns {Promise<Array<string>>} The deprecated codes that were warned about
+   */
+  async _warnDeprecatedModules(selectedModules = []) {
+    const externalManager = new ExternalModuleManager();
+    let registryModules;
+    try {
+      registryModules = await externalManager.listAvailable();
+    } catch {
+      return []; // Registry unreadable — never block an install over a notice.
+    }
+
+    const deprecatedByCode = new Map();
+    for (const mod of registryModules) {
+      if (!mod.deprecated) continue;
+      deprecatedByCode.set(mod.code, mod);
+      for (const alias of mod.aliases) deprecatedByCode.set(alias, mod);
+    }
+
+    const warned = [];
+    for (const code of selectedModules) {
+      const mod = deprecatedByCode.get(code);
+      if (!mod || warned.includes(mod.code)) continue;
+      warned.push(mod.code);
+      const detail = mod.deprecationMessage || 'It is no longer receiving updates.';
+      await prompts.log.warn(`${mod.name} (${mod.code}) is deprecated. ${detail}`);
+    }
+    return warned;
+  }
+
   async _retainUnavailableInstalledModules(selectedModules, installedModuleIds, bmadDir, options = {}) {
     const { OfficialModules } = require('./modules/official-modules');
     const officialCodes = new Set(['core']);
@@ -166,13 +204,15 @@ class UI {
     const messageLoader = new MessageLoader();
     await messageLoader.displayStartMessage();
 
-    // Probe for `uv` before any other prompts: it's becoming the de facto
-    // runner for the Python scripts BMAD workflows shell out to
-    // (`uv run <script>`), and uv provisions the interpreter itself, so it's
-    // the single thing worth checking for. The migration is still in progress
-    // (some skills still call `python3` directly), so this is informational —
-    // warn-don't-block, no ack prompt — and just points the user at setup
-    // (ideally "ask your agent to set up uv"). The installer runs in the
+    // Probe for `uv` before any other prompts: it's the runner for the Python
+    // scripts BMAD skills shell out to (`uv run <script>`), and uv provisions
+    // the interpreter itself, so it's the single thing worth checking for.
+    // As of v6.11.0 `bmad-build` and `bmad-build-auto` HALT without it.
+    //
+    // Still warn-don't-block, with no ack prompt: core-only, docs-only, and
+    // CI installs never touch a rendered skill, so a missing `uv` must not
+    // fail the run. `installer.js` repeats the warning in the post-install
+    // summary so it survives the scrollback. The installer runs in the
     // destination environment, so probing PATH here tests the right machine.
     const { checkUvEnvironment } = require('./core/uv-check');
     await checkUvEnvironment();
@@ -275,6 +315,9 @@ class UI {
 
       // Handle quick update separately
       if (actionType === 'quick-update') {
+        // Quick update never shows the module picker, so this is the only
+        // place an existing install of a deprecated module hears about it.
+        await this._warnDeprecatedModules(existingInstall.moduleIds || []);
         return {
           actionType: 'quick-update',
           directory: confirmedDirectory,
@@ -338,6 +381,11 @@ class UI {
             `Retaining ${preservedModules.length} installed module(s) with no available source: ${preservedModules.join(', ')}`,
           );
         }
+
+        // Surface deprecation notices for whatever ended up selected. The
+        // interactive picker only hints at them in the option list, and the
+        // --modules / --yes paths never see that list at all.
+        await this._warnDeprecatedModules(selectedModules);
 
         // For existing installs, resolve per-module update decisions BEFORE
         // we clone anything. Reads the existing manifest's recorded channel
@@ -423,6 +471,8 @@ class UI {
     if (!selectedModules.includes('core')) {
       selectedModules.unshift('core');
     }
+
+    await this._warnDeprecatedModules(selectedModules);
 
     // Interactive channel gate: "Ready to install (all stable)? [Y/n]"
     // Only shown for fresh installs with no channel flags and an external module
@@ -808,11 +858,15 @@ class UI {
 
     const configCollector = new OfficialModules({ channelOptions: options.channelOptions });
 
-    const hasCoreCliOptions = options.userName || options.communicationLanguage || options.documentOutputLanguage || options.outputFolder;
+    const hasCoreCliOptions =
+      options.userName || options.communicationLanguage || options.documentOutputLanguage || options.outputFolder || setOverrides.core;
 
-    // Seed core config from CLI options if provided
+    // Seed core config from CLI options if provided. `--set core.<key>` seeds it
+    // too: core values are dependency-bearing — module artifact paths are built
+    // from output_folder here, and each module's config.yaml snapshots the core
+    // values — so the post-install patch alone lands too late.
     if (hasCoreCliOptions) {
-      const coreConfig = {};
+      const coreConfig = { ...setOverrides.core };
       if (options.userName) {
         coreConfig.user_name = options.userName;
         await prompts.log.info(`Using user name from command-line: ${options.userName}`);
@@ -897,7 +951,7 @@ class UI {
    * @param {Set} installedModuleIds - Currently installed module IDs
    * @param {Map<string, string>} installedModuleVersions - Installed module versions from the local manifest
    * @param {Object|null} channelOptions - Parsed installer channel options
-   * @returns {Array} Selected module codes (excluding core)
+   * @returns {Array} Selected module codes, always including core
    */
   async selectAllModules(installedModuleIds = new Set(), installedModuleVersions = new Map(), channelOptions = null) {
     // Phase 1: Official modules
@@ -938,7 +992,6 @@ class UI {
 
     const allOptions = [];
     const initialValues = [];
-    const lockedValues = ['core'];
 
     const buildModuleEntry = async (code, name, description, isDefault, repoUrl = null, registryDefault = null) => {
       const isInstalled = installedModuleIds.has(code);
@@ -955,11 +1008,15 @@ class UI {
       };
     };
 
-    // Add built-in modules first (always available regardless of network)
+    // Add built-in modules first (always available regardless of network).
+    // core is not offered as a row: it is a dependency of every module, always
+    // installed, and was only ever rendered as a locked always-on checkbox.
+    // It is still added back to the result below.
     const builtInCodes = new Set();
     for (const mod of builtInModules) {
       const code = mod.id;
       builtInCodes.add(code);
+      if (code === 'core') continue;
       const entry = await buildModuleEntry(code, mod.name, mod.description, mod.defaultSelected);
       allOptions.push({ label: entry.label, value: entry.value, hint: entry.hint });
       if (entry.selected) {
@@ -1014,22 +1071,24 @@ class UI {
       message: 'Select official modules to install:',
       options: allOptions,
       initialValues: initialValues.length > 0 ? initialValues : undefined,
-      lockedValues,
-      required: true,
+      // Not required: core is installed either way, so an empty selection is a
+      // legitimate "core only" install rather than a mistake to block on.
+      required: false,
       maxItems: allOptions.length,
     });
 
-    const result = selected ? [...selected] : [];
+    const chosen = selected ? [...selected] : [];
 
-    if (result.length > 0) {
-      const moduleLines = result.map((moduleId) => {
+    if (chosen.length > 0) {
+      const moduleLines = chosen.map((moduleId) => {
         const opt = allOptions.find((o) => o.value === moduleId);
         return `  \u2022 ${opt?.label || moduleId}`;
       });
       await prompts.log.message('Selected official modules:\n' + moduleLines.join('\n'));
     }
 
-    return result;
+    // core is never shown but always installed.
+    return chosen.includes('core') ? chosen : ['core', ...chosen];
   }
 
   /**

@@ -2,7 +2,7 @@
 title: "如何获取关于 BMad 的答案"
 description: 使用 LLM 快速回答您自己的 BMad 问题
 sidebar:
-  order: 5
+  order: 4
 ---
 
 ## 先从 BMad-Help 开始
