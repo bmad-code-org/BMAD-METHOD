@@ -53,7 +53,7 @@ Would you like to browse community modules?
 
 ## 커스텀 소스(Git URL과 로컬 경로)
 
-커스텀 모듈은 어떤 Git 저장소나 로컬 디렉터리에서든 올 수 있습니다. 설치 프로그램은 소스를 해석하고 모듈 구조를 분석한 뒤 다른 모듈 옆에 설치합니다.
+어떤 Git 저장소나 로컬 디렉터리든 커스텀 모듈의 소스로 사용할 수 있습니다. 설치 프로그램은 소스를 해석하고 모듈 구조를 분석한 뒤 기존 모듈과 함께 설치합니다.
 
 ### 대화형 설치
 
@@ -67,14 +67,14 @@ Would you like to install from a custom source (Git URL or local path)?
 
 | 입력 유형 | 예시 |
 | --- | --- |
-| HTTPS URL(모든 호스트) | `https://github.com/org/repo` |
-| HTTP URL(모든 호스트) | `http://host/org/repo` |
+| HTTPS URL(호스트 제한 없음) | `https://github.com/org/repo` |
+| HTTP URL(호스트 제한 없음) | `http://host/org/repo` |
 | 하위 디렉터리가 있는 HTTPS URL | `https://github.com/org/repo/tree/main/my-module` |
 | SSH URL | `git@github.com:org/repo.git` |
 | 로컬 경로 | `/Users/me/projects/my-module` |
 | 틸드가 있는 로컬 경로 | `~/projects/my-module` |
 
-설치 프로그램은 저장소를 복제(URL인 경우)하거나 디스크에서 직접 읽은 뒤(로컬 경로인 경우), 발견된 모듈을 선택할 수 있게 보여줍니다.
+설치 프로그램은 저장소를 복제하거나(URL인 경우) 디스크에서 직접 읽은 뒤(로컬 경로인 경우), 찾은 모듈 목록을 보여 주고 설치할 항목을 선택하게 합니다.
 
 ### 비대화형 설치
 
@@ -116,7 +116,7 @@ npx bmad-method install \
 
 `Discovery` 모드는 게시된 모듈에 일반적입니다. `Direct` 모드는 로컬 개발 중 스킬 디렉터리를 가리킬 때 편리합니다.
 
-:::note[`.claude-plugin/`에 대해]
+:::note[`.claude-plugin/` 안내]
 `.claude-plugin/marketplace.json` 경로는 여러 AI 도구 설치 프로그램에서 플러그인 발견을 위해 채택한 표준 관례입니다. Claude가 필요하지 않고 Claude API를 사용하지 않으며 어떤 AI 도구를 쓰는지에 영향을 주지 않습니다. 이 파일이 있는 모듈은 관례를 따르는 모든 설치 프로그램에서 발견될 수 있습니다.
 :::
 
@@ -160,9 +160,9 @@ your-project/
 
 ## 커스텀 모듈 업데이트
 
-커스텀 모듈도 일반 업데이트 흐름에 참여합니다.
+커스텀 모듈도 일반 업데이트 절차로 갱신합니다.
 
-- **Quick Update**(`--action quick-update`): 모든 모듈을 원래 소스에서 새로 고칩니다. Git 기반 모듈은 다시 가져오고 로컬 모듈은 소스 경로에서 다시 읽힙니다.
+- **Quick Update**(`--action quick-update`): 모든 모듈을 원래 소스에서 다시 불러옵니다. Git 기반 모듈은 다시 가져오고 로컬 모듈은 소스 경로에서 다시 읽힙니다.
 - **전체 업데이트**: 모듈 선택을 다시 실행해 커스텀 모듈을 추가하거나 제거할 수 있습니다.
 
 ## 직접 모듈 만들기
@@ -177,5 +177,5 @@ your-project/
 모듈이 발견 모드를 지원하려면 저장소 루트에 `.claude-plugin/marketplace.json`을 포함하세요(Claude 전용이 아닌 도구 간 관례입니다). marketplace.json 형식은 [BMad 빌더 문서](https://github.com/bmad-code-org/bmad-builder)를 참고하세요.
 
 :::tip[먼저 로컬에서 테스트]
-개발 중에는 Git 저장소에 게시하기 전에 로컬 경로로 모듈을 설치해 빠르게 반복하세요.
+개발 중에는 Git 저장소에 게시하기 전에 로컬 경로로 모듈을 설치해 빠르게 수정하고 확인하세요.
 :::

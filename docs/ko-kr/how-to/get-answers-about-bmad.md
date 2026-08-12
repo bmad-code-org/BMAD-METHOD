@@ -1,5 +1,5 @@
 ---
-title: 'BMad에 대한 답을 얻는 방법'
+title: 'BMad 관련 질문에 답을 얻는 방법'
 description: LLM을 사용해 BMad 관련 질문에 빠르게 답하기
 sidebar:
   order: 4
@@ -36,15 +36,15 @@ BMad 도움말은 설치된 설정을 바탕으로 답합니다. BMad의 내부 
 **더 좋은 답을 위한 팁:**
 
 - **구체적으로 묻기** - "PRD 워크플로 3단계가 무엇을 하나요?"가 "PRD는 어떻게 작동하나요?"보다 좋습니다
-- **놀라운 주장은 확인하기** - LLM은 가끔 틀립니다. 소스 파일을 확인하거나 Discord에서 물어보세요
+- **뜻밖의 내용은 확인하기** - LLM은 가끔 틀립니다. 소스 파일을 확인하거나 Discord에서 물어보세요
 
 ### 에이전트를 쓰지 않는다면 문서 사이트 사용
 
-AI가 로컬 파일을 읽을 수 없다면(ChatGPT, Claude.ai 등), 세션에 [llms-full.txt](https://bmad-code-org.github.io/BMAD-METHOD/llms-full.txt)를 가져오세요. BMad 문서의 단일 파일 스냅샷입니다.
+AI가 로컬 파일을 읽을 수 없다면(ChatGPT, Claude.ai 등), 세션에 [llms-full.txt](https://bmad-code-org.github.io/BMAD-METHOD/llms-full.txt)를 불러오세요. BMad 문서를 한 파일에 모은 스냅샷입니다.
 
 ## 3. 사람에게 묻기
 
-BMad 도움말이나 소스로도 답을 얻지 못했다면, 이제 훨씬 더 좋은 질문을 갖게 된 것입니다.
+BMad 도움말이나 소스로도 답을 얻지 못했다면, 이제 훨씬 나은 질문을 할 수 있습니다.
 
 | 채널 | 사용처 |
 | --- | --- |
@@ -55,27 +55,26 @@ BMad 도움말이나 소스로도 답을 얻지 못했다면, 이제 훨씬 더 
 
 **GitHub Issues:** [github.com/bmad-code-org/BMAD-METHOD/issues](https://github.com/bmad-code-org/BMAD-METHOD/issues)
 
-_당신이_
 _막힌 채_
-_줄 서서_
-_기다린다면_
-_누구를 기다리나요?_
+_줄을 서서_
+_누구를_
+_기다리나요?_
 
 _소스는_
 _이미 거기,_
 _눈앞에 있습니다._
 
 _AI에게_
-_소스를 가리키고._
-_풀어 주세요._
+_소스를 보여 주세요._
+_마음껏 읽게 하세요._
 
 _읽고._
 _말하고._
 _물어보세요._
 
 _내일까지_
-_기다릴 이유가 있나요_
+_미룰 이유가 있나요?_
 _오늘 이미_
-_할 수 있는데?_
+_할 수 있는데요._
 
 _—Claude_
