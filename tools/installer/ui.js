@@ -1396,7 +1396,23 @@ class UI {
       if (mod.builtIn || seen.has(mod.code)) continue;
       if (mod.defaultSelected || installedModuleIds.has(mod.code)) {
         defaultModules.push(mod.code);
+        seen.add(mod.code);
       }
+    }
+
+    // Carry forward installed modules that appear in neither catalog — custom
+    // modules installed from a git URL or local path. selectAllModules() already
+    // does this on the interactive path; without it, a --yes update leaves them
+    // unselected and _removeDeselectedModules() deletes them. Codes are resolved
+    // through resolveCanonicalCode() first, the same way
+    // _retainUnavailableInstalledModules() does, so renamed modules are matched
+    // against the catalogs and selected under their current code.
+    for (const moduleId of installedModuleIds) {
+      const canonicalId = await externalManager.resolveCanonicalCode(moduleId);
+      if (canonicalId === 'core') continue;
+      if (seen.has(canonicalId)) continue;
+      seen.add(canonicalId);
+      defaultModules.push(canonicalId);
     }
 
     // If no defaults found, use 'bmm' as the fallback default

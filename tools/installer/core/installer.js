@@ -158,6 +158,7 @@ class Installer {
       try {
         if (await fs.pathExists(modulePath)) {
           await fs.remove(modulePath);
+          await prompts.log.warn(`Removed module no longer selected: ${moduleId}`);
         }
       } catch (error) {
         await prompts.log.warn(`Warning: Failed to remove ${moduleId}: ${error.message}`);
