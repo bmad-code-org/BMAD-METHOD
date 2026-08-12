@@ -1,6 +1,6 @@
 ---
 name: bmad-review
-description: 'Runs one or more installed review lenses — adversarial critique, edge cases, verification gaps, structure, prose — and reports triaged findings. Use when, and only when, the user asks you to review a diff, a pull request, or an artifact — code or documents, one or many — and actually says "review". A request to act on feedback from an earlier review is a change, not a review. Never invoke this uninvited, including on edits you just made.'
+description: 'Runs one or more installed review lenses — adversarial critique, edge cases, verification gaps, structure, prose — and reports triaged findings. Use when, and only when, the user asks you to review a diff, a pull request, or an artifact — code or documents, one or many — and actually says "review"; an explicit skill:bmad-review directive from another skill counts as that ask. A request to act on feedback from an earlier review is a change, not a review. Never invoke this uninvited, including on edits you just made.'
 ---
 
 # BMad Review
