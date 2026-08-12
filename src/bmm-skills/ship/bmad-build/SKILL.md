@@ -1,6 +1,6 @@
 ---
 name: bmad-build
-description: 'Implement any requirement, story, bug fix, or change request as working code that follows the project''s existing architecture, patterns, and conventions. Use when the user wants to build, fix, tweak, refactor, add, or modify any code, component, or feature'
+description: 'Implement a software change through BMAD''s build workflow, from intent clarification through review and verification. Use when the user explicitly invokes bmad-build or asks BMAD to build, fix, refactor, add, or modify code'
 ---
 
 Run the following command exactly once without changing the current working directory. Replace `{project-root}` with the absolute path to the project root and `{skill-root}` with the absolute path to this skill's directory:
