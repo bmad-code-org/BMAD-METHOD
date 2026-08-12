@@ -1,6 +1,6 @@
 ---
 name: bmad-project-context
-description: 'Set up, refresh, or audit a repository''s agent instructions (the AGENTS.md block) so AI agents work well in that repo. Also records observed agent mistakes as pitfalls. Must be invoked by name'
+description: 'Set up, adopt, refresh, or audit a repository''s agent instructions (the AGENTS.md block) so AI agents work well in that repo. Existing handwritten instructions are adopted, never silently replaced. Also records observed agent mistakes as pitfalls. Must be invoked by name'
 ---
 
 # Overview
@@ -9,7 +9,7 @@ A conversation that produces a repository's agent instructions: a small verified
 
 Conversational always; the user approves every write.
 
-**Args:** intent (`setup` | `refresh` | `record` | `audit`); a target repo or path; extra source paths or URLs. Supplied values skip their questions.
+**Args:** intent (`setup` | `adopt` | `refresh` | `record` | `audit`); a target repo or path; extra source paths or URLs. Supplied values skip their questions, except an intent conflicting with what detection finds — surface it and confirm, never silently obey it.
 
 ## Resolution rules
 
@@ -22,15 +22,17 @@ Conversational always; the user approves every write.
 1. Resolve customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`. On failure, read `{skill-root}/customize.toml` directly and use defaults. Execute `{workflow.activation_steps_prepend}`; treat `{workflow.persistent_facts}` entries as standing context (`file:` = paths/globs to load, others verbatim).
 2. Config: if `{project-root}/_bmad` exists, `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}` and read `{user_name}`, `{communication_language}` (use it every turn), `{output_folder}`. Standalone: skip.
 3. **Load `references/best-practices.md` and `references/template.md` before anything else.** Every decision below is made against them.
-4. Detect intent and greet `{user_name}`: **setup** (no block in the target — the default), **refresh** (a block exists), **record** (the user reports a mistake agents made), **audit** (re-verify and prune). Fold `{workflow.external_sources}` into the source list. Execute `{workflow.activation_steps_append}`.
+4. Detect intent and greet `{user_name}`: **setup** (no instruction file in the target carries meaningful content — scaffolding alone, empty headings, a comment, a lone import line, is not meaningful; when unsure, adopt, since adopting a near-empty file costs one small ledger while setting up a meaningful one loses instructions), **adopt** (an instruction file has content but no managed block, whatever its state and whoever wrote it — the migration form of refresh; that file is the baseline and every instruction in it enters the ledger of step 1), **refresh** (a managed block exists), **record** (the user reports a mistake agents made), **audit** (re-verify and prune). Fold `{workflow.external_sources}` into the source list. Execute `{workflow.activation_steps_append}`.
 
-## Setup and Refresh Steps
+## Setup, Adoption, and Refresh Steps
 
 No writes until step 5!
 
 ### 1. Assess and report
 
 Read `AGENTS.md`, harness or agent specific rule files, docs folders, and any notes carrying lessons. Report what exists and how it measures up, per `best-practices.md`.
+
+Existing instructions are the baseline being improved, never raw material to discard. Open a **ledger**: one entry per existing section and per independently meaningful instruction, opened at `retain` or `rewrite`, carrying what an agent would get wrong without it. Entries settle as evidence arrives in steps 2–4 — `retain | rewrite | relocate | automate | delete`, each with its reason, its evidence, the risk if it goes, a destination for a relocation, and an approval flag. Deletion needs one of the four grounds in `best-practices.md`, and a relocation destination must itself be loaded or sit behind an observable trigger — a move into a file nothing reads is a deletion and needs its ground. Setup has nothing to map and opens no ledger; refresh opens entries for the lines it proposes to change or remove, the block's own included. A lesson found outside the instruction files — a warning in a README, a notes file — is an ordinary candidate, not a ledger entry.
 
 If the target contains separable units — a workspace manifest listing members, or directories carrying their own build manifest — name them and ask whether this run covers the root only, all of them, or which. Absent that evidence, do not ask. Sibling repositories are not children; each is its own target, offered in turn.
 
@@ -61,9 +63,9 @@ Only what no scan reaches: what agents keep getting wrong here, what is off limi
 
 ### 5. Show the block, then write it
 
-Compose against `template.md`. For each candidate, ask first whether a hook, lint rule, or CI check enforces it better than prose; if so propose the check, and the line becomes the fallback if they decline.
+Compose against `template.md`. For each candidate, ask first whether a hook, lint rule, or CI check enforces it better than prose; if so propose the check, and the line becomes the fallback if they decline. A ledger entry marked `automate` keeps its instruction until its check is in place (a later run deletes the line under ground 2 once the check is live).
 
-**Show the complete block before writing it**, and every child block alongside it — one approval covers the set. On approval, splice between the markers, leaving everything outside them byte-identical. Fill each provenance line with today's date and the verified SHA.
+**Show the complete block before writing it**, and every child block alongside it — one approval covers the set. **Present the settled ledger with it**: replacement text alone is an incomplete proposal, because it shows what the user gains and hides what they lose. Every existing instruction appears with its decision and reason; retains and rewrites may be grouped, every relocation, automation, and deletion is itemized. A deletion resting on none of the first three grounds is held for line-item approval — approving the block never approves it — and a declined deletion, relocation, or automation reverts to retain. On approval, splice between the markers, leaving everything outside them byte-identical. Fill each provenance line with today's date and the verified SHA.
 
 Where an instruction elsewhere contradicts the block in a way that changes behavior — a stale `CLAUDE.md` line, a retired command — propose the fix to that file. Two live contradictory instructions is a defect.
 
@@ -71,7 +73,7 @@ Never commit.
 
 ### 6. Close
 
-- What went in, and what was left out and why.
+- What went in, what was left out and why, and — after adoption or refresh — where each existing instruction landed.
 - Why, in the user's terms, from `best-practices.md` — why it is small, why what the repo already states stays out, why a pitfall stays until its cause is gone.
 - How it loads, and that other harness files can point at it.
 - Maintenance: re-run after significant change, `record` the moment an agent gets something wrong, prefer a check over a new line.
@@ -79,7 +81,13 @@ Never commit.
 
 ### Refresh
 
-Same steps, step 1 as a diff. Read the provenance line, re-verify every path and every caveat, and run `git log --diff-filter=DR --name-only` since the recorded SHA against every line — update or remove lines whose evidence is gone. Never re-ask what a prior run settled; the interview shrinks to what changed about how the team works. The block grows only on new evidence.
+Same steps, step 1 as a diff. Read the provenance line, re-verify every path and every caveat, and run `git log --diff-filter=DR --name-only` since the recorded SHA against every line — update or remove lines whose evidence is gone. Every proposed removal is a ledger entry shown in step 5, never a silent edit, and handwritten instructions outside the block are treated as in adoption — any proposal touching them enters the ledger. Never re-ask what a prior run settled; the interview shrinks to what changed about how the team works. The block grows only on new evidence.
+
+### Adoption
+
+Refresh against instructions this skill has never touched. Nothing was settled by a prior run, so the full interview applies — and the file itself is maintainer testimony, so the ledger is the run's main output: the user should be able to read it and see where each of their instructions went.
+
+The proposal states what remains of every file instructions were moved out of — commonly a `CLAUDE.md` reduced to `@AGENTS.md`, once that import is verified for every harness in use, like any loading mechanism. No instruction lives in two loaded files, where it is paid for twice; a duplicate, verbatim or reworded, is kept once — the block keeps the survivor — and that settles both entries.
 
 ### Greenfield
 
@@ -99,11 +107,13 @@ Take the task, the mistake, the correction, and its evidence. Check the block fo
 
 Re-check every caveat, path-check every file, follow every pointer, and ask of every line whether removing it would change agent behavior. Check for contradictions with other instruction files.
 
-Failing lines move behind an observable trigger, get fixed, or are deleted — confirm deletions first. **A policy or pitfall goes only when the thing it guards is gone or the user retires it; nothing failing lately is not grounds.** Audit ends smaller or equal.
+Failing lines get fixed, move behind an observable trigger, or become ledger entries: a removal needs one of the four grounds in `best-practices.md`, presented and settled as in step 5 before anything is removed. **A policy or pitfall goes only when the thing it guards is gone or the user retires it; nothing failing lately is not grounds.** Audit ends smaller or equal.
 
 ## Children
 
-A component, nested repository, or extracted rules file gets its own file under the same shape when work keeps landing there and its truths do not belong at the parent level. Rules bounded to a directory go in a nested `AGENTS.md` there, attached by location. Use a linked file only when the trigger is not a path.
+A component, nested repository, or extracted rules file gets its own file under the same shape when work keeps landing there and every condition holds: its rules are subtree-exclusive, they are substantial (a handful of rules is not a file), the split materially reduces the parent block, the loading mechanism is verified for every harness in use — checked, never assumed — and the user approves the split. Otherwise the rules stay in the parent block as path-qualified lines ("in `src/importer/`: ..."), which cost less than a file nobody loads. Why the loading check: `best-practices.md`.
+
+Use a linked file only when the trigger is not a path.
 
 A chosen child that ends with nothing its parent does not already say gets no file. Say so and move on.
 
