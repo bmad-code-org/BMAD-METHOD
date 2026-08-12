@@ -1,6 +1,6 @@
 ---
 name: bmad-build
-description: 'Implement any requirement, story, bug fix, or change request as working code that follows the project''s existing architecture, patterns, and conventions. Use when the user wants to build, fix, tweak, refactor, add, or modify any code, component, or feature'
+description: 'Turns a work item — feature, story, bug fix, change request — into working code, reviewed and verified. Use when the user hands over an outcome and leaves the edits to you; a bare story or issue link counts. Also use whenever the user asks BMAD by name — then any change qualifies, even a tiny fully-specified edit. Do not volunteer for interactive edits the user directs and reviews themselves, or for version-control operations that record existing work without changing it.'
 ---
 
 Run the following command exactly once without changing the current working directory. Replace `{project-root}` with the absolute path to the project root and `{skill-root}` with the absolute path to this skill's directory:
