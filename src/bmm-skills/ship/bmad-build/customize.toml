@@ -12,6 +12,30 @@
 
 [workflow]
 
+# Recipe for the direct route: an interactive editing loop over pointed edits
+# (see SKILL.md for the trigger).
+
+direct_route = """
+Apply the pointed edit immediately — the edit is your first action, before any commentary — then acknowledge in one line. Treat each subsequent message that is itself a pointed edit as the next iteration of this loop: apply it the same way, without re-running triage or the render command. Keep every edit inside its pointed span.
+
+Do not commit per edit. When the conversation moves off pointed edits, or the user says they are done, commit the loop's edited files with a one-line Conventional Commit message. Commit before you start the next request or leave this route — the loop owns these edits, and whatever runs next must find a clean tree. Mention the commit in a single parenthetical while handling whatever the user asked next.
+"""
+
+# Reviewer for direct-route edits that touch code. The whole execution
+# recipe — a subagent by default, but an override may run anything.
+# {diff_output} is substituted at run time.
+
+direct_review = """
+Launch a context-free subagent with this prompt:
+
+Review this diff. Report ONLY merge-blocking issues: incorrect behavior, data loss, or security. Silence is a valid result — if nothing rises to that bar, reply "No blocking issues." Do not report style, naming, structure, or improvement suggestions.
+
+DIFF:
+{diff_output}
+
+Do not invoke any skill. Return only the review result.
+"""
+
 # Extra instructions to run before config is loaded and before the user is greeted.
 
 activation_steps_prepend = []

@@ -9,9 +9,11 @@
 
 ## INSTRUCTIONS
 
+If `spec_file` is unset, derive a valid kebab-case slug from the clarified intent. If the intent references a tracking identifier, lead the slug with it. Append `-2`, `-3`, etc. if needed to avoid an existing file, and set `spec_file` = `{{.implementation_artifacts}}/spec-{slug}.md`.
+
 ### Implement
 
-Follow `[[bmad-snapshot:sync-sprint-status.md]]` with `target_status` = `in-progress`.
+Only if `story_key` is set, follow `[[bmad-snapshot:sync-sprint-status.md]]` with `target_status` = `in-progress`. Otherwise do not read that file.
 
 Implement the clarified intent directly.
 
@@ -42,13 +44,15 @@ If a finding is caused by this change but too significant for a trivial patch, H
 
 Set `title` = a concise title derived from the clarified intent.
 
+Ensure the parent directory of `{spec_file}` exists.
+
 Write `{spec_file}` using `[[bmad-snapshot:spec-template.md]]`. Fill only these sections — delete all others:
 
 1. **Frontmatter** — set `title: '{title}'`, `type`, `created`, `status: 'done'`. Add `route: 'one-shot'`.
 2. **Title and Intent** — `# {title}` heading and `## Intent` with **Problem** and **Approach** lines. Reuse the summary you already generated for the terminal.
 3. **Suggested Review Order** — append after Intent. Build using the same convention as `[[bmad-snapshot:step-05-present.md]]` § "Generate Suggested Review Order" (spec-file-relative links, concern-based ordering, ultra-concise framing).
 
-Follow `[[bmad-snapshot:sync-sprint-status.md]]` with `target_status` = `review`.
+Only if `story_key` is set, follow `[[bmad-snapshot:sync-sprint-status.md]]` with `target_status` = `review`. Otherwise do not read that file.
 
 ### Commit
 

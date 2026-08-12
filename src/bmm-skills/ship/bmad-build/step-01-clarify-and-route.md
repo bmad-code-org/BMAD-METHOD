@@ -1,5 +1,5 @@
 ---
-spec_file: '' # set at runtime for both routes before leaving this step
+spec_file: '' # set at runtime for every spec-producing route before leaving this step; stays unset on the direct route
 story_key: '' # set at runtime to the current story's full sprint-status key (e.g. 3-2-digest-delivery) when the intent is an epic story and sprint-status resolution succeeds
 ---
 
@@ -94,11 +94,15 @@ If the spec is an epic story and `{{.implementation_artifacts}}/sprint-status.ya
 
    If the explicit spec-folder-plus-story-id pair had no matching story file, keep the colocated `spec_file` selected above. Otherwise, derive a valid kebab-case slug from the clarified intent. If the intent references a tracking identifier (story number, issue number, ticket ID), lead the slug with it (e.g. `3-2-digest-delivery`, `gh-47-fix-auth`). If `{{.implementation_artifacts}}/spec-{slug}.md` already exists: if its status is `draft`, treat it as the same work and resume it (set `spec_file` to that path, **EARLY EXIT** → `[[bmad-snapshot:step-02-plan.md]]`); otherwise append `-2`, `-3`, etc. Set `spec_file` = `{{.implementation_artifacts}}/spec-{slug}.md`.
 
-   **a) One-shot** — zero blast radius: no plausible path by which this change causes unintended consequences elsewhere. Clear intent, no architectural decisions.
+   **a) Direct** — the clarified intent is a pointed edit (a bounded, colocated span in one file) or otherwise needs no planning and its full effect is visible in its diff. This route produces no spec: skip the slug/spec_file selection above and leave `spec_file` unset.
 
-   **EARLY EXIT** → `[[bmad-snapshot:step-oneshot.md]]`
+   **EARLY EXIT** → `[[bmad-snapshot:route-direct.md]]`
 
-   **b) Plan-code-review** — everything else. When uncertain whether blast radius is truly zero, choose this path.
+   **b) One-shot** — zero blast radius: no plausible path by which this change causes unintended consequences elsewhere. Clear intent, no architectural decisions.
+
+   **EARLY EXIT** → `[[bmad-snapshot:route-one-shot.md]]`
+
+   **c) Plan-code-review** — everything else. When uncertain whether blast radius is truly zero, choose this path.
 
 ## NEXT
 

@@ -3807,6 +3807,8 @@ async function runTests() {
     assert(!(await fs.pathExists(path.join(skill49Build, 'render.py'))), 'the retired skill-local renderer never reaches installed build');
     assert(!(await fs.pathExists(path.join(skill49Build, 'render.toml'))), 'installed build has no duplicate render contract');
     assert(await fs.pathExists(path.join(skill49Build, 'workflow.md')), 'build workflow source reaches installed skill surface');
+    assert(await fs.pathExists(path.join(skill49Build, 'route-direct.md')), 'build direct route reaches installed skill surface');
+    assert(await fs.pathExists(path.join(skill49Build, 'route-one-shot.md')), 'build one-shot route reaches installed skill surface');
     assert(await fs.pathExists(path.join(skill49Build, 'step-04-review.md')), 'build step sources reach installed skill surface');
     assert(
       (await fs.readFile(renderGitignore49, 'utf8')) === '*\n!.gitignore\n',
@@ -3872,6 +3874,35 @@ async function runTests() {
         (await fs.pathExists(dispatch49Build)),
       'installer-produced build tree renders and dispatches end to end',
       `${render49Build.stdout}${render49Build.stderr}`,
+    );
+    const render49BuildDirect = spawnSync(
+      'uv',
+      [
+        'run',
+        '--python',
+        '3.11',
+        path.join(scripts49, 'render_skill.py'),
+        '--project-root',
+        root49,
+        '--skill',
+        skill49Build,
+        '--route',
+        'direct',
+      ],
+      renderOptions49,
+    );
+    // Route dispatch inlines its entry: one header line, then the entry's bytes.
+    const [header49BuildDirect, ...body49BuildDirect] = (render49BuildDirect.stdout || '').split('\n');
+    const dispatch49BuildDirect = header49BuildDirect.replace(/^follow these instructions from /, '');
+    assert(
+      render49BuildDirect.status === 0 &&
+        header49BuildDirect.startsWith('follow these instructions from ') &&
+        path.basename(dispatch49BuildDirect) === 'route-direct.md' &&
+        path.dirname(dispatch49BuildDirect) === path.dirname(dispatch49Build) &&
+        (await fs.pathExists(dispatch49BuildDirect)) &&
+        body49BuildDirect.slice(1).join('\n') === (await fs.readFile(dispatch49BuildDirect, 'utf8')),
+      'installer-produced build tree dispatches direct from the full-workflow snapshot',
+      `${render49BuildDirect.stdout}${render49BuildDirect.stderr}`,
     );
     const resolveCustomization49 = spawnSync(
       'uv',
