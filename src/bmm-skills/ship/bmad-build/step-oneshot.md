@@ -25,20 +25,17 @@ If a layer's instruction requires subagents and none are available, for each suc
 
 ### Classify
 
-Deduplicate all review findings. Three categories only:
+Deduplicate all review findings, then route each finding in this order:
 
-Evaluate categories in order. If a finding satisfies the patch definition, patch it; do not defer it. Defer only real findings that do not satisfy the patch evidence or remedy bound and do not require HALT.
-
-- **patch** — trivially fixable, and the finding shows a defect that actually occurs, missing coverage for a specific case, or a broken gate or convention — not a state nothing reaches. Auto-fix immediately with the smallest remedy: no new public surface, no guards for undemonstrated states.
-- **defer** — real but not fixing now: pre-existing issues and improvement ideas. Append one new entry to `{{.implementation_artifacts}}/deferred-work.md` using this format. Do not modify existing entries or look for duplicates.
+- **patch** — Patch every finding caused or exposed by this change that shows a defect that actually occurs, missing coverage for a specific case, or a broken gate or convention — not a state nothing reaches — and whose smallest fix is trivial, adds no public surface, and guards no state the finding did not demonstrate. Apply that smallest fix immediately.
+- **HALT** — HALT on every finding caused or exposed by this change that shows the same evidence but whose smallest fix fails any of those conditions. Present it to the human for decision before proceeding.
+- **defer** — Defer every other real finding, including pre-existing issues and improvement ideas. Append one new entry to `{{.implementation_artifacts}}/deferred-work.md` using this format. Do not modify existing entries or look for duplicates.
   ```markdown
   - source_spec: `{spec_file}`
     summary: <one sentence>
     evidence: <why this is real>
   ```
-- **reject** — noise. Drop silently.
-
-If a finding is caused by this change but too significant for a trivial patch, HALT and present it to the human for decision before proceeding.
+- **reject** — Reject only noise. Drop silently.
 
 ### Generate Spec Trace
 
