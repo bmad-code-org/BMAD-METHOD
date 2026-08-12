@@ -27,6 +27,8 @@ If a layer's instruction requires subagents and none are available, for each suc
 
 Deduplicate all review findings. Three categories only:
 
+Evaluate categories in order. If a finding satisfies the patch definition, patch it; do not defer it. Defer only real findings that do not satisfy the patch evidence or remedy bound and do not require HALT.
+
 - **patch** — trivially fixable, and the finding shows a defect that actually occurs, missing coverage for a specific case, or a broken gate or convention — not a state nothing reaches. Auto-fix immediately with the smallest remedy: no new public surface, no guards for undemonstrated states.
 - **defer** — real but not fixing now: pre-existing issues and improvement ideas. Append one new entry to `{{.implementation_artifacts}}/deferred-work.md` using this format. Do not modify existing entries or look for duplicates.
   ```markdown
