@@ -1,6 +1,6 @@
 ---
 name: bmad-project-context
-description: 'Set up, adopt, refresh, or audit a repository''s agent instructions (the AGENTS.md block) so AI agents work well in that repo. Existing handwritten instructions are adopted, never silently replaced. Also records observed agent mistakes as pitfalls. Must be invoked by name'
+description: 'Set up, adopt, refresh, or audit a repository''s agent instructions (the AGENTS.md block) so AI agents work well in that repo. Also records observed agent mistakes as pitfalls. Must be invoked by name'
 ---
 
 # Overview
