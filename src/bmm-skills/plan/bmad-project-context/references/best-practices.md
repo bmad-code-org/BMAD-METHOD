@@ -44,7 +44,7 @@ Every line faces one question at each write: would removing it change agent beha
 
 Every line is paid in every session, and instruction-following degrades as the loaded set grows. Count what other always-loaded files add. Over budget means cut the weakest lines or move them behind a trigger — never raise the budget. Ten lines of evidence means ten lines.
 
-The budget binds adopted content too, in a different order: the weakest existing instructions relocate first — to a child file, a linked doc, or an enforcement point — and go only on grounds; if grounds run out before the budget is met, the remaining overage is the user's informed call. Small is success governs what this skill adds, never what the maintainer already wrote.
+An adopted file must fit the budget too, but shrinking it works differently. Move the weakest instructions out first — into a child file, a linked doc, or a hook or check that enforces them. Deleting still needs one of the four grounds. If the file is still too big and no ground justifies another deletion, show the user and let them decide — an over-budget file they chose beats a gutted one they didn't. "Keep it small" disciplines what this skill writes, never what the maintainer already wrote.
 
 ## Retrieval
 
