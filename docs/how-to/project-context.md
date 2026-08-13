@@ -41,7 +41,7 @@ For a greenfield project that conversation is the whole content. For a working c
 
 ## Step 3: It verifies the rest
 
-It checks every path a line names, and reads your `package.json`, `Makefile` and CI config — not to transcribe the scripts, since an agent reads those directly, but to know what they already answer so the block adds only the canonical entry points, the corrections, and the caveats.
+It checks every path a line names, and reads your `package.json`, `Makefile` and CI config — not to transcribe the scripts, since an agent reads those directly, but to know what they already answer so the block adds only the right commands to use, the corrections, and the caveats.
 
 Then it asks what no scan could answer: what agents keep getting wrong here, what's off limits, what a domain term means, and which commands come with a catch.
 

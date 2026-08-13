@@ -11,12 +11,12 @@ A line that stops the same rediscovery every session earns its place, derivable 
 ## Admit
 
 - **Policy the code cannot express** — branch rules, frozen and protected paths, generated files, secrets, security and compliance. Stated by a human or read off an enforcing config, never inferred.
-- **What a config file cannot say about running the project** — the root test script does nothing in this workspace, integration tests need a service up first, the suite takes eleven minutes so iterate on single files, the `Makefile` is the real entry point and `package.json` is vestigial, CI runs a typecheck the test script does not. An invocation the obvious guess gets right is already stated in `package.json`, `Makefile`, `pyproject.toml`, or CI config and does not earn a line — the correction, the caveat, and the canonical entry point do.
+- **What a config file cannot say about running the project** — the root test script does nothing in this workspace, integration tests need a service up first, the suite takes eleven minutes so iterate on single files, the `Makefile` is the real entry point and `package.json` is vestigial, CI runs a typecheck the test script does not. An invocation the obvious guess gets right is already stated in `package.json`, `Makefile`, `pyproject.toml`, or CI config and does not earn a line — the correction, the caveat, and the right command to use do.
 - **Conventions that differ from ecosystem defaults.** An agent follows the norm unless told otherwise, so only the divergences earn a line. Command invocations count: when the obvious command is wrong here — a bare-repo prefix, a required wrapper — the exact working invocation earns a line, and no observed mistake is needed to admit it.
 - **Pitfalls with observed evidence** — a recorded lesson, the maintainer's recollection, the same mistake fixed repeatedly in history, or one this session made and caught. A repo yields hundreds of trap-looking facts and none of them predict real mistakes; only observed behavior does. A surprising scan finding is a question to ask, not a line to write.
 - **Runtime behavior invisible from the repo** — replaying webhooks, lying health endpoints, environment quirks — once a human confirms it.
 - **Compact architecture**, admitted by cross-component blast radius — what must stay true across a boundary the agent cannot see from the file it is editing: verified invariants, data-flow contracts, component ownership, pipeline contracts. "Writes go through the dispatcher; direct store mutation skips the transaction." "The importer is two passes — validate every row, then commit; never write inside the parse loop." A six-line map of who owns what. Never an inventory written for completeness; the exclusions below still bind.
-- **Toolchain and runtime pins**, read off the project's pin files, never off this session's environment — which answers faster than the pin file, and wrongly, so the mistake arrives before the search.
+- **Required tool and runtime versions**, read from the project files that declare them, never from this session's environment — which answers faster, and wrongly, so the mistake arrives before the search.
 - **Entry points and pointers** to where work lands.
 
 Prefer prohibitions to advice, and name the permitted alternative in the same line.
@@ -29,7 +29,7 @@ Prefer prohibitions to advice, and name the permitted alternative in the same li
 | Anything included for being interesting | Interest is not need |
 | Style rules an agent self-enforces | Belongs in a formatter, linter, hook, or CI check — propose the check instead |
 | Platitudes | Already the default |
-| Transcribed command lists whose obvious invocation is already right | Read from `package.json`, a `Makefile`, or CI config; a copy drifts the moment a script is renamed. The canonical entry point and any wrong-guess invocation are admitted above |
+| Transcribed command lists whose obvious invocation is already right | Read from `package.json`, a `Makefile`, or CI config; a copy drifts the moment a script is renamed. The right command to use, and any command the obvious guess gets wrong, are admitted above |
 | Pasted code, changelog content, fast-changing facts | Stale immediately |
 | Aspirational state | Describe what is; intent belongs in specs |
 | History and edit narration | Git holds it; state present truth |

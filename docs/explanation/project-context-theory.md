@@ -46,11 +46,11 @@ The rule that reconciles all of it: **an index the agent must choose to fetch ge
 
 The test for every line is the **pruning test**: *would removing this line change agent behavior?* On a line a human wrote, a failed pruning test opens a question rather than settling one — removing it needs grounds, set out under [Retirement runs the other way](#retirement-runs-the-other-way).
 
-- **What a config file cannot say about running the project.** An invocation the obvious guess gets right lives in `package.json`, a `Makefile`, or CI config and is read from there. What does not live there is the canonical entry point when several look plausible, and the correction: the root test script does nothing in this workspace, integration tests need a service up first, the suite is slow enough that you should iterate on single files, CI runs a check the test script does not.
+- **What a config file cannot say about running the project.** An invocation the obvious guess gets right lives in `package.json`, a `Makefile`, or CI config and is read from there. What does not live there is which command is the right one when several look plausible, and the correction: the root test script does nothing in this workspace, integration tests need a service up first, the suite is slow enough that you should iterate on single files, CI runs a check the test script does not.
 - **Policy the code cannot express.** Frozen paths, generated files, branch rules, security and compliance requirements. Admitted by authority, not by discovery.
 - **Conventions that differ from ecosystem defaults.** Only the divergences. An agent follows the norm unless told otherwise, so a fact nobody would get wrong by default is not worth a line.
 - **Known pitfalls, from observed failure only.** A repository yields hundreds of trap-looking facts, and no property of the fact separates the few that cause real mistakes — that signal exists only in observed behavior. A surprising scan finding becomes a question, never a line.
-- **Compact architecture and toolchain pins.** The handful of invariants, data-flow contracts and ownership rules that must hold across a boundary an agent cannot see from the file it is editing, plus the versions the project builds with — not an inventory written for completeness.
+- **Cross-component rules and required versions.** The few rules that must hold across parts of the system an agent cannot see from the file it is editing, plus the tool versions the project actually builds with — not an inventory written for completeness.
 - **Negative constraints over positive guidance**, which measured better, and which is why a prohibition here always names the permitted alternative.
 
 ## What is deliberately not captured
