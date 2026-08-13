@@ -27,7 +27,7 @@ Use `bmad-project-context` to set up a repository so AI agents work well in it �
 bmad-project-context
 ```
 
-Say what you want in plain language — "set up AGENTS.md", "adopt the AGENTS.md we already have", "refresh the context", "audit our context", "the agent keeps using the wrong test runner" — and the skill routes itself. Instructions already in the repo route to adopt; setup is for a repo with nothing worth preserving.
+Say what you want in plain language — "set up AGENTS.md", "adopt the AGENTS.md we already have", "refresh the context", "audit our context", "the agent keeps using the wrong test runner" — and the skill routes itself. Instructions the skill has never managed route to adopt, an existing managed block refreshes, and setup is for a repo with nothing worth preserving.
 
 Point it at a repo if you're not already in one. If the path resolves to more than one working tree, it asks which before writing anything.
 
