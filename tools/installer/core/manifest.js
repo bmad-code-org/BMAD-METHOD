@@ -61,6 +61,10 @@ class Manifest {
       ides: data.ides || [],
     };
 
+    if (typeof data.installShims === 'boolean') {
+      manifestData.installation.installShims = data.installShims;
+    }
+
     // Write YAML manifest
     // Clean the manifest data to remove any non-serializable values
     const cleanManifestData = structuredClone(manifestData);
@@ -106,6 +110,7 @@ class Manifest {
           version: manifestData.installation?.version,
           installDate: manifestData.installation?.installDate,
           lastUpdated: manifestData.installation?.lastUpdated,
+          installShims: manifestData.installation?.installShims,
           modules: moduleNames, // Simple array of module names for backward compatibility
           modulesDetailed: hasDetailedModules ? modules : null, // New detailed format
           ides: manifestData.ides || [],
@@ -153,6 +158,7 @@ class Manifest {
       version: manifest.installation?.version,
       installDate: manifest.installation?.installDate,
       lastUpdated: manifest.installation?.lastUpdated,
+      installShims: manifest.installation?.installShims,
       modules: moduleNames,
       modulesDetailed: hasDetailedModules ? modules : null,
       ides: manifest.ides || [],

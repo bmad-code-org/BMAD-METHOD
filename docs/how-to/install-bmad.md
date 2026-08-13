@@ -28,15 +28,18 @@ Use `npx bmad-method install` to set up BMad in your project. One command handle
 npx bmad-method install
 ```
 
-The interactive flow asks you five things:
+The interactive flow asks you six things when the selected modules still ship deprecated compatibility shims:
 
 1. Installation directory (defaults to the current working directory)
 2. Which modules to install (checkboxes for core, bmm, bmb, cis, gds, tea)
 3. **"Ready to install (all stable)?"** — Yes accepts the latest released tag for every external module
 4. Which AI tools/IDEs to integrate with (claude-code, cursor, and others)
 5. Per-module config (name, language, output folder)
+6. Whether to install deprecated compatibility shim skills (defaults to No on a new installation)
 
 Accept the defaults and you land on the latest stable release of every module, configured for your chosen tool.
+
+Existing installations keep their current shim choice during Quick Update. Modify Install lets you change it explicitly. Once a release no longer contains any shims, the installer stops asking and removes previously installed shims through its normal update cleanup.
 
 :::tip[Just want the newest prerelease?]
 
@@ -126,6 +129,8 @@ Under `--yes`, patch and minor upgrades apply automatically. Majors stay frozen 
 | `--list-tools`                                                                             | Print all supported tool/IDE IDs (with target directories) and exit.                                                              |
 | `--action <type>`                                                                          | `install`, `update`, or `quick-update`. Defaults based on existing install state.                                                 |
 | `--custom-source <urls>`                                                                   | Install custom modules from Git URLs or local paths                                                                               |
+| `--shims`                                                                                  | Install deprecated compatibility shim skills when selected modules still provide them                                             |
+| `--no-shims`                                                                               | Explicitly omit deprecated compatibility shim skills; on an existing install this removes them during update                      |
 | `--channel <stable\|next>`                                                                 | Apply to all externals (aliased as `--all-stable` / `--all-next`)                                                                 |
 | `--all-stable`                                                                             | Alias for `--channel=stable`                                                                                                      |
 | `--all-next`                                                                               | Alias for `--channel=next`                                                                                                        |

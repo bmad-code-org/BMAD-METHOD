@@ -1,6 +1,8 @@
 ---
 name: bmad-sprint-status
 description: 'Deprecated — forwards to bmad-sprint-planning (status view)'
+metadata:
+  lifecycle: shim
 ---
 
 # DEPRECATED — forwards to bmad-sprint-planning (status view)

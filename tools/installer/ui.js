@@ -17,6 +17,7 @@ const {
 const channelResolver = require('./modules/channel-resolver');
 const prompts = require('./prompts');
 const { parseSetEntries } = require('./set-overrides');
+const { inferShimPreference, readInstalledSkillIds } = require('./core/shim-policy');
 
 const manifest = new Manifest();
 
@@ -110,6 +111,33 @@ async function getModuleVersion(moduleCode, { repoUrl = null, registryDefault = 
  * UI utilities for the installer
  */
 class UI {
+  async _selectShimPreference({ selectedModules, bmadDir, existing, options, channelOptions }) {
+    const { OfficialModules } = require('./modules/official-modules');
+    const officialModules = new OfficialModules({ channelOptions });
+    const availableShims = await officialModules.discoverShims(selectedModules, { channelOptions });
+
+    // The prompt is capability-driven. Once the last shim leaves the incoming
+    // release this becomes an ordinary empty set, regardless of old state.
+    if (availableShims.length === 0) return;
+
+    const previousManifest = existing ? await manifest.read(bmadDir) : null;
+    const installedSkillIds = existing ? await readInstalledSkillIds(bmadDir) : new Set();
+    const currentValue = inferShimPreference({
+      requested: options.shims,
+      persisted: previousManifest?.installShims,
+      availableShims,
+      installedSkillIds,
+      existing,
+    });
+
+    if (typeof options.shims === 'boolean' || options.yes) return currentValue;
+
+    return prompts.confirm({
+      message: `Install ${availableShims.length} deprecated compatibility shim skill(s)?`,
+      default: currentValue,
+    });
+  }
+
   /**
    * Warn once for each selected module the registry marks deprecated.
    *
@@ -302,7 +330,7 @@ class UI {
           throw new Error('No valid actions available for this installation');
         }
         const hasQuickUpdate = choices.some((c) => c.value === 'quick-update');
-        const needsFullUpdate = !!options.customSource;
+        const needsFullUpdate = !!options.customSource || typeof options.shims === 'boolean';
         actionType = hasQuickUpdate && !needsFullUpdate ? 'quick-update' : (choices.find((c) => c.value === 'update') || choices[0]).value;
         await prompts.log.info(`Non-interactive mode (--yes): defaulting to ${actionType}`);
       } else {
@@ -322,6 +350,7 @@ class UI {
           actionType: 'quick-update',
           directory: confirmedDirectory,
           skipPrompts: options.yes || false,
+          installShims: options.shims,
         };
       }
 
@@ -406,6 +435,13 @@ class UI {
           ...options,
           channelOptions,
         });
+        const installShims = await this._selectShimPreference({
+          selectedModules,
+          bmadDir,
+          existing: true,
+          options,
+          channelOptions,
+        });
 
         // Warn about --pin/--next flags that refer to modules the user didn't
         // select, or that target bundled modules (core/bmm) where channel
@@ -432,6 +468,7 @@ class UI {
           skipPrompts: options.yes || false,
           channelOptions,
           _preserveModules: preservedModules,
+          installShims,
         };
       }
     }
@@ -487,6 +524,13 @@ class UI {
       ...options,
       channelOptions,
     });
+    const installShims = await this._selectShimPreference({
+      selectedModules,
+      bmadDir,
+      existing: false,
+      options,
+      channelOptions,
+    });
 
     // Warn about --pin/--next flags that refer to modules the user didn't
     // select, or that target bundled modules (core/bmm) where channel
@@ -512,6 +556,7 @@ class UI {
       setOverrides,
       skipPrompts: options.yes || false,
       channelOptions,
+      installShims,
     };
   }
 

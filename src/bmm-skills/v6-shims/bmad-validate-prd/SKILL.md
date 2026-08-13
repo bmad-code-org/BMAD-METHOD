@@ -1,6 +1,8 @@
 ---
 name: bmad-validate-prd
 description: 'Deprecated — forwards to bmad-prd (validate intent)'
+metadata:
+  lifecycle: shim
 ---
 
 # DEPRECATED — forwards to bmad-prd (validate intent)

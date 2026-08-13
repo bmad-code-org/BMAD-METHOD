@@ -1,6 +1,8 @@
 ---
 name: bmad-create-prd
 description: 'Deprecated — forwards to bmad-prd (create intent)'
+metadata:
+  lifecycle: shim
 ---
 
 # DEPRECATED — forwards to bmad-prd (create intent)
