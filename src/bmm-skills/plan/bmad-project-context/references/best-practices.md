@@ -4,7 +4,7 @@ Rules for deciding what goes in the block, for judging what a repo already has, 
 
 ## The test
 
-Not *could an agent derive this* but *what does it cost when it doesn't*: how much exploration finding it takes, how likely the agent is to search the right place in time rather than guess, whether it is available at the point of use or only after the mistake, what a retrieval failure costs — a wasted search, or corrupt data — and whether it is an invariant that must hold or a detail the code already shows.
+Not *could an agent derive this* but *what does it cost when it doesn't*: how much exploration finding it takes, how likely the agent is to search the right place in time rather than guess, whether it is available at the point of use or only after the mistake, what a retrieval failure costs — a wasted search, or corrupt data — and whether it is a rule that must hold or a detail the code already shows.
 
 A line that stops the same rediscovery every session earns its place, derivable or not. A stored copy of what the agent reads more accurately first-hand does not — it rots, and it is charged every session.
 
@@ -15,7 +15,7 @@ A line that stops the same rediscovery every session earns its place, derivable 
 - **Conventions that differ from ecosystem defaults.** An agent follows the norm unless told otherwise, so only the divergences earn a line. Command invocations count: when the obvious command is wrong here — a bare-repo prefix, a required wrapper — the exact working invocation earns a line, and no observed mistake is needed to admit it.
 - **Pitfalls with observed evidence** — a recorded lesson, the maintainer's recollection, the same mistake fixed repeatedly in history, or one this session made and caught. A repo yields hundreds of trap-looking facts and none of them predict real mistakes; only observed behavior does. A surprising scan finding is a question to ask, not a line to write.
 - **Runtime behavior invisible from the repo** — replaying webhooks, lying health endpoints, environment quirks — once a human confirms it.
-- **Compact architecture**, admitted by cross-component blast radius — what must stay true across a boundary the agent cannot see from the file it is editing: verified invariants, data-flow contracts, component ownership, pipeline contracts. "Writes go through the dispatcher; direct store mutation skips the transaction." "The importer is two passes — validate every row, then commit; never write inside the parse loop." A six-line map of who owns what. Never an inventory written for completeness; the exclusions below still bind.
+- **Cross-component rules**, admitted when getting one wrong in one file breaks something elsewhere — what must stay true across parts of the system the agent cannot see from the file it is editing: who owns what, how data must flow, what order a pipeline runs in. "Writes go through the dispatcher; direct store mutation skips the transaction." "The importer is two passes — validate every row, then commit; never write inside the parse loop." A six-line map of who owns what. Never an inventory written for completeness; the exclusions below still bind.
 - **Required tool and runtime versions**, read from the project files that declare them, never from this session's environment — which answers faster, and wrongly, so the mistake arrives before the search.
 - **Entry points and pointers** to where work lands.
 
