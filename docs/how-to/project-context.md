@@ -27,13 +27,13 @@ Use `bmad-project-context` to set up a repository so AI agents work well in it �
 bmad-project-context
 ```
 
-Say what you want in plain language — "set up AGENTS.md", "adopt the AGENTS.md we already have", "refresh the context", "audit our context", "the agent keeps using the wrong test runner" — and the skill routes itself. Instructions the skill has never managed route to adopt, an existing managed block refreshes, and setup is for a repo with nothing worth preserving.
+Say what you want in plain language — "set up AGENTS.md", "adopt the AGENTS.md we already have", "refresh the context", "audit our context", "the agent keeps using the wrong test runner" — and the skill routes itself. If the repo already has instructions this skill never wrote, it adopts them; if the skill wrote them before, it updates them; setup is only for a repo with no instructions worth keeping.
 
 Point it at a repo if you're not already in one. If the path resolves to more than one working tree, it asks which before writing anything.
 
 ## Step 2: Tell it what you bring
 
-The first thing it does is read what's already there — `AGENTS.md`, `CLAUDE.md`, editor rule files, docs — and report back what's good, what looks stale, and what could live somewhere cheaper. A hand-written file is a baseline it improves, never something it discards: every existing instruction gets an accounting — kept, rewritten, relocated, automated, or deleted — presented before anything is written, with the grounds for each deletion shown, and any deletion without hard grounds held for your line-item approval.
+The first thing it does is read what's already there — `AGENTS.md`, `CLAUDE.md`, editor rule files, docs — and report back what's good, what looks stale, and what it suggests changing. A hand-written file is something it improves, never something it discards: before anything is written, you see what happens to every instruction you already have, and nothing is deleted without your sign-off.
 
 Then it asks what rules you want followed regardless of what the repo does: governance, security and compliance requirements, coding standards, style guides, frozen areas. Bring outside documents too — org handbooks, wiki exports, an MCP knowledgebase.
 
