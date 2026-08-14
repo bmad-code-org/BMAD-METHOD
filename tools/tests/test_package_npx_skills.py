@@ -1,5 +1,3 @@
-import contextlib
-import io
 import sys
 import tempfile
 import unittest
@@ -65,11 +63,8 @@ def method_skill_ids(repo: Path) -> set[str]:
     return ids
 
 
-def run_packager(repo: Path, out: Path) -> tuple[int, str]:
-    stderr = io.StringIO()
-    with contextlib.redirect_stderr(stderr):
-        code = package_npx_skills.main(["--repo-root", str(repo), "--out", str(out)])
-    return code, stderr.getvalue()
+def run_packager(repo: Path, out: Path) -> None:
+    package_npx_skills.main(["--repo-root", str(repo), "--out", str(out)])
 
 
 class PackageNpxSkillsTests(unittest.TestCase):
@@ -81,9 +76,8 @@ class PackageNpxSkillsTests(unittest.TestCase):
             write_skill(repo, "src/bmm-skills/plan/bmad-prd")
             write_skill(repo, "src/core-skills/v6-shims/bmad-old")
 
-            code, stderr = run_packager(repo, out)
+            run_packager(repo, out)
 
-            self.assertEqual(code, 0, stderr)
             dest = out / "skills"
             self.assertTrue((dest / "bmad-review" / "SKILL.md").is_file())
             self.assertTrue((dest / "bmad-prd" / "SKILL.md").is_file())
@@ -106,9 +100,8 @@ class PackageNpxSkillsTests(unittest.TestCase):
             write(skill / "keep.txt", "keep")
             write_skill(repo, "src/bmm-skills/plan/bmad-prd")
 
-            code, stderr = run_packager(repo, out)
+            run_packager(repo, out)
 
-            self.assertEqual(code, 0, stderr)
             dest_skill = out / "skills" / "bmad-review"
             self.assertTrue((dest_skill / "SKILL.md").is_file())
             self.assertTrue((dest_skill / "keep.txt").is_file())
@@ -124,9 +117,8 @@ class PackageNpxSkillsTests(unittest.TestCase):
             write_skill(repo, "src/core-skills/bmad-help")
             write_skill(repo, "src/bmm-skills/plan/bmad-prd")
 
-            code, stderr = run_packager(repo, out)
+            run_packager(repo, out)
 
-            self.assertEqual(code, 0, stderr)
             dest_help = out / "skills" / "bmad-help"
             dest_scripts = dest_help / "scripts"
             self.assertEqual(
@@ -176,9 +168,8 @@ class PackageNpxSkillsTests(unittest.TestCase):
             write_skill(repo, "src/core-skills/bmad-help")
             write_skill(repo, "src/bmm-skills/plan/bmad-prd")
 
-            code, stderr = run_packager(repo, out)
+            run_packager(repo, out)
 
-            self.assertEqual(code, 0, stderr)
             dest_prd = out / "skills" / "bmad-prd"
             for name in SHARED_SCRIPTS:
                 self.assertEqual(list(dest_prd.rglob(name)), [])
@@ -192,9 +183,8 @@ class PackageNpxSkillsTests(unittest.TestCase):
             write_skill(repo, "src/bmm-skills/plan/bmad-prd")
             write(out / "skills" / "stale-id" / "SKILL.md", "stale\n")
 
-            code, stderr = run_packager(repo, out)
+            run_packager(repo, out)
 
-            self.assertEqual(code, 0, stderr)
             self.assertFalse((out / "skills" / "stale-id").exists())
             self.assertTrue((out / "skills" / "bmad-prd" / "SKILL.md").is_file())
             self.assertTrue((out / "skills" / "bmad-review" / "SKILL.md").is_file())
@@ -206,11 +196,11 @@ class PackageNpxSkillsTests(unittest.TestCase):
             write_skill(repo, "src/bmm-skills/plan/bmad-prd")
             write(out / "skills" / "stale-id" / "keep.txt", "keep\n")
 
-            code, stderr = run_packager(repo, out)
+            with self.assertRaises(FileNotFoundError) as ctx:
+                run_packager(repo, out)
 
-            self.assertNotEqual(code, 0)
-            self.assertIn("core-skills", stderr)
-            self.assertIn("missing", stderr.lower())
+            self.assertIn("core-skills", str(ctx.exception))
+            self.assertIn("missing", str(ctx.exception).lower())
             self.assertTrue((out / "skills" / "stale-id" / "keep.txt").is_file())
             self.assertFalse((out / "skills" / "bmad-prd").exists())
 
@@ -220,19 +210,18 @@ class PackageNpxSkillsTests(unittest.TestCase):
             out = Path(temp_dir) / "out"
             write_skill(repo, "src/core-skills/bmad-review")
 
-            code, stderr = run_packager(repo, out)
+            with self.assertRaises(FileNotFoundError) as ctx:
+                run_packager(repo, out)
 
-            self.assertNotEqual(code, 0)
-            self.assertIn("bmm-skills", stderr)
-            self.assertIn("missing", stderr.lower())
+            self.assertIn("bmm-skills", str(ctx.exception))
+            self.assertIn("missing", str(ctx.exception).lower())
             self.assertFalse((out / "skills").exists())
 
     def test_real_repo_emits_method_set_and_fattened_help(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             out = Path(temp_dir)
-            code, stderr = run_packager(REPO_ROOT, out)
+            run_packager(REPO_ROOT, out)
 
-            self.assertEqual(code, 0, stderr)
             dest = out / "skills"
             names = sorted(p.name for p in dest.iterdir() if p.is_dir())
             expected = method_skill_ids(REPO_ROOT)
