@@ -6,4 +6,4 @@ Each variation: header (name + one-line emotional register), token chips for eve
 
 Inline CSS only, system font stack, no JS, no network. Document concrete hex values in `<style>` comments per variation so the user can lift them if they pick that theme. The spine itself stays semantic.
 
-Return to the parent: file path, one-line per variation, mode coverage. Do not dump HTML into the parent context. If interactive, open the file with `python3 -c "import webbrowser, pathlib; webbrowser.open(pathlib.Path('PATH').resolve().as_uri())"`.
+Return to the parent: file path, one-line per variation, mode coverage. Do not dump HTML into the parent context. If interactive, open the file with the platform opener — `open "PATH"` on macOS, `xdg-open` on Linux, `start ""` on Windows, path always double-quoted. On failure, give the user the path instead.

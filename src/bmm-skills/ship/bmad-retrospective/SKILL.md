@@ -1,6 +1,6 @@
 ---
 name: bmad-retrospective
-description: 'Evidence-based epic retrospective — collect what the epic produced, verify findings against sources, render an acceptance verdict. Use when the user says "run a retrospective" or "lets retro the epic [epic]". Supports -H/--headless.'
+description: 'Review a completed epic against the evidence it left behind — spec, stories, diffs, commits, sprint status — and produce a retrospective with sourced findings, action items, and an acceptance decision. Use when the user says "run a retrospective" or "lets retro the epic [epic]". Supports -H/--headless'
 ---
 
 # Retrospective

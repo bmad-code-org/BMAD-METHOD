@@ -11,15 +11,14 @@
 # --- Universal defaults ---
 activation_steps_prepend = []
 activation_steps_append = []
-# Deliberately empty: the file this skill wants standing (the kernel) is only
-# knowable after config resolves, and the usual **/project-context.md glob is
-# this skill's own superseded output. Users append their own facts.
+# Deliberately empty: this skill's own output (AGENTS.md) is loaded by the
+# harness, not through this array. Users append their own standing facts.
 persistent_facts = []
 on_complete = ""
 
-# Standing outside-the-repo sources fed into every ingest fan-out at their
-# trust-ladder rank (untrusted until verified against code). Append-only.
-# Entries: "file:{project-root}/..." or "file:/abs/path" for docs,
-# "skill:name" to consult a skill, plain text for a standing fact,
+# Standing outside-the-repo sources offered at every setup/refresh run
+# (untrusted until verified against the repo or user-confirmed).
+# Append-only. Entries: "file:{project-root}/..." or "file:/abs/path" for
+# docs, "skill:name" to consult a skill, plain text for a standing fact,
 # "tool:name" for an MCP knowledgebase.
 external_sources = []
