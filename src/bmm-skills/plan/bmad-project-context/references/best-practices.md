@@ -50,7 +50,7 @@ An adopted file must fit the budget too, but shrinking it works differently. Mov
 
 An index the agent must choose to fetch gets skipped; one already in context does not. Keep everything load-bearing in the block. A pointer out of it names a trigger the agent can observe — a path, a file type, a named task — never one it must judge ("when the task is complex") or track about itself ("before your first edit").
 
-Rules bounded to a directory can go in a nested `AGENTS.md` there, attached by location rather than by pointer — but only when they are subtree-exclusive and substantial, the split materially reduces the root block, the user approves it, and **loading is verified for every harness in use**. Check, never assume: several harnesses build the instruction chain once at session start, root down to the working directory, so a nested file is invisible to the session that later edits into that subtree. Unverified means path-qualified lines at root instead — "in `src/importer/`: ..." — cheaper than a file nobody loads.
+Rules bounded to a directory can go in a nested `AGENTS.md` there, attached by location rather than by pointer — but only when they are subtree-exclusive and substantial, the split materially reduces the root block, the user approves it, and **loading is verified for every harness in use**. Even with verified loading, keep a rule at the root when it must apply before a session enters that directory or when breaking it can affect work outside the child. Check, never assume: several harnesses build the instruction chain once at session start, root down to the working directory, so a nested file is invisible to the session that later edits into that subtree. Unverified means path-qualified lines at root instead — "in `src/importer/`: ..." — cheaper than a file nobody loads.
 
 Use a linked file only when the trigger is not a path.
 
@@ -75,7 +75,7 @@ Every instruction a human wrote is presumed intentional: someone paid for it, us
 **Deletion needs one of four grounds:**
 
 1. **Stale or incorrect** — the referent is gone, or the instruction was never true; the evidence is named.
-2. **Mechanically enforced** — a hook, linter, formatter, or CI check already fails the violation, so the line has no work left to do.
+2. **Mechanically enforced** — a hook, linter, formatter, or CI check already fails the violation named by the instruction. A tool that only covers the same files or topic does not enforce the instruction.
 3. **Harmful or contradictory** — it points agents at the wrong thing, or it contradicts another live instruction and loses the reconciliation.
 4. **The user approved this deletion** — asked as a line item, never implied by approving a replacement block.
 

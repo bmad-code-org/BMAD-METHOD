@@ -46,7 +46,7 @@ Greenfield: this is the whole content. Brownfield: it is the half no scan reache
 
 Fan out with parallel subagents against what the sections need — executable config and CI for policy and for what they already state, tracked source for conventions and boundaries, targeted history for constraints whose reason must still hold.
 
-`package.json`, a `Makefile`, `pyproject.toml`, and CI config are read to know what the block must not repeat. Their caveats come from the human in step 4. Path-check every claim naming a file.
+`package.json`, a `Makefile`, `pyproject.toml`, contribution guides, pull request templates, and CI config are read to know what the block must not repeat. Their caveats come from the human in step 4. Path-check every claim naming a file. For every claim the block will make about what a command does, read the target or script that runs it and verify the claim.
 
 Each child agreed in step 1 is scanned as its own scope, against its own manifests.
 
@@ -65,7 +65,7 @@ Only what no scan reaches: what agents keep getting wrong here, what is off limi
 
 Compose against `template.md`. For each candidate, ask first whether a hook, lint rule, or CI check enforces it better than prose; if so propose the check, and the line becomes the fallback if they decline. A ledger entry marked `automate` keeps its instruction until its check is in place (a later run deletes the line under ground 2 once the check is live).
 
-**Show the complete block before writing it**, and every child block alongside it — one approval covers the set. **Present the settled ledger with it**: replacement text alone is an incomplete proposal, because it shows what the user gains and hides what they lose. Every existing instruction appears with its decision and reason; retains and rewrites may be grouped, every relocation, automation, and deletion is itemized. A deletion resting on none of the first three grounds is held for line-item approval — approving the block never approves it — and a declined deletion, relocation, or automation reverts to retain. On approval, splice between the markers — the splice itself touches nothing outside them. Text outside the markers changes only through a settled ledger entry or a proposed fix the user has seen, never as a side effect of the splice. Fill each provenance line with today's date and the verified SHA.
+**Show the complete block before writing it**, and every child block alongside it — one approval covers the set. **Present the settled ledger with it**: replacement text alone is an incomplete proposal, because it shows what the user gains and hides what they lose. Every existing instruction appears with its decision and reason. Retains and rewrites that keep the full rule may be grouped. If a rewrite weakens, narrows, or drops part of a rule, treat the lost part as a deletion and list it separately. Keep the rule itself; examples may explain it but cannot replace it. Every relocation, automation, and deletion is itemized. A deletion resting on none of the first three grounds is held for line-item approval — approving the block never approves it — and a declined deletion, relocation, or automation reverts to retain. On approval, splice between the markers — the splice itself touches nothing outside them. Text outside the markers changes only through a settled ledger entry or a proposed fix the user has seen, never as a side effect of the splice. Fill each provenance line with today's date and the verified SHA.
 
 Where an instruction elsewhere contradicts the block in a way that changes behavior — a stale `CLAUDE.md` line, a retired command — propose the fix to that file. Two live contradictory instructions is a defect.
 
@@ -76,6 +76,7 @@ Never commit.
 - What went in, what was left out and why, and — after adoption or refresh — where each existing instruction landed.
 - Why, in the user's terms, from `best-practices.md` — why it is small, why what the repo already states stays out, why a pitfall stays until its cause is gone.
 - How it loads, and that other harness files can point at it.
+- Any branch, ticket, commit, or pull request rules that apply when the user submits these instruction changes.
 - Maintenance: re-run after significant change, `record` the moment an agent gets something wrong, prefer a check over a new line.
 - Rules repeating across their projects, or personal rather than the team's, belong in their global agent config.
 
@@ -105,13 +106,13 @@ Take the task, the mistake, the correction, and its evidence. Check the block fo
 
 ## Audit
 
-Re-check every caveat, path-check every file, follow every pointer, and ask of every line whether removing it would change agent behavior. Check for contradictions with other instruction files.
+Re-check every caveat, path-check every file, follow every pointer, and ask of every line whether removing it would change agent behavior. Verify each command claim against the target or script that runs it. Check for contradictions with other instruction files.
 
 Failing lines get fixed, move behind an observable trigger, or become ledger entries: a removal needs one of the four grounds in `best-practices.md`, presented and settled as in step 5 before anything is removed. **A policy or pitfall goes only when the thing it guards is gone or the user retires it; nothing failing lately is not grounds.** Audit ends smaller or equal.
 
 ## Children
 
-A component, nested repository, or extracted rules file gets its own file under the same shape when work keeps landing there and every condition holds: its rules are subtree-exclusive, they are substantial (a handful of rules is not a file), the split materially reduces the parent block, the loading mechanism is verified for every harness in use — checked, never assumed — and the user approves the split. Otherwise the rules stay in the parent block as path-qualified lines ("in `src/importer/`: ..."), which cost less than a file nobody loads. Why the loading check: `best-practices.md`.
+A component, nested repository, or extracted rules file gets its own file under the same shape when work keeps landing there and every condition holds: its rules are subtree-exclusive, they are substantial (a handful of rules is not a file), the split materially reduces the parent block, the loading mechanism is verified for every harness in use — checked, never assumed — and the user approves the split. Even with verified loading, keep a rule at the root when it must apply before a session enters that directory or when breaking it can affect work outside the child. Otherwise the rules stay in the parent block as path-qualified lines ("in `src/importer/`: ..."), which cost less than a file nobody loads. Why the loading check: `best-practices.md`.
 
 Use a linked file only when the trigger is not a path.
 
