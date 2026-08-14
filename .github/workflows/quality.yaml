@@ -113,6 +113,9 @@ jobs:
       - name: Test workflow renderers
         run: npm run test:renderer
 
+      - name: Test npx skills packager
+        run: npm run test:npx-skills
+
       - name: Test retrospective scripts
         run: npm run test:retrospective
 
