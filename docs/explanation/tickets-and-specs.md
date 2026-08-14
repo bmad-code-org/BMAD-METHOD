@@ -2,7 +2,7 @@
 title: "Tickets and Specs"
 description: How BMad turns any input into epics and stories, why stories are written just-in-time and archived when done, and what your job is as the human partner.
 sidebar:
-  order: 17
+  order: 18
 ---
 
 A ticket is a package of context: everything an AI agent needs to build one piece of work without guessing. This page explains how BMad thinks about tickets and specs, what the ticket tree is, and — most importantly — what *your* job is when you and the LLM write them together.
@@ -43,19 +43,24 @@ You don't need every altitude every time. A bug report can become one ticket in 
 All tickets live in one folder structure called the ticket tree. The shape *is* the data:
 
 ```text
-tickets/
-├── index.md                  # generated — names only, never status
-├── alert-rules/              # epic = a folder
-│   ├── ticket.md             # the epic's envelope
-│   └── ALRT-12-rule-crud.md  # a story (or bug, task, spike)
-├── ALRT-31-snooze-button.md  # one-off ticket in the "bin"
-└── .archive/                 # finished stories, filed by date
+smart-alerts/                        # the project folder
+├── ticket.md                        # the project node — carries the key
+└── tickets/
+    ├── alert-rules/                 # an epic is a folder
+    │   ├── ticket.md                # the epic node
+    │   └── tickets/                 # its children
+    │       └── ALRT-12-rule-crud.md # a story (or bug, task, spike)
+    ├── ALRT-31-snooze-button.md     # a one-off ticket — no epic needed
+    └── .archive/                    # finished stories, filed by date
 ```
 
-Three rules keep it honest:
+A node is a folder holding its own `ticket.md`, and its children live in `<node>/tickets/`. That shape repeats at every altitude, so depth is never a special case — and a tree of nothing but loose tickets is a legitimate shape, not a broken one.
 
-- **One stored fact.** A ticket stores exactly one piece of state: its `status`. Everything else — what's blocked, what's next, how an epic is going — is computed by a script that scans the tree. There is no status spreadsheet to drift out of date.
+Four rules keep it honest:
+
+- **One stored fact.** A ticket stores exactly one piece of state: its `status`. Everything else — what's blocked, what's next, how far an epic has gotten — is computed by a script that scans the tree. There is no status spreadsheet to drift out of date.
 - **The folder is the parent.** A story belongs to an epic because it sits in the epic's folder. No parent field, no list of children, so two agents never fight over a shared file.
+- **The folder is also the listing.** There is no index file to keep current. Ask for one and a script renders it on demand; nothing depends on it.
 - **Scripts guard the writes.** Status changes go through a gate script that only allows legal moves. You can override it deliberately — you can never corrupt it accidentally.
 
 ## Three ways in
@@ -107,7 +112,24 @@ stateDiagram-v2
 
 `done` means **merged** — not "looks finished." A ticket becomes workable only when everything it depends on is done. Illegal moves are refused by the gate script with the legal options named; if you really mean it, an explicit override (`--force`) applies your decision — but made-up statuses are refused always.
 
-**Epics are different.** An epic's progress is computed from its children (not started, or in progress) — but an epic is never *calculated* done. Marking an epic done is a human call: the retrospective proposes it, or you declare it. That's deliberate. Finishing an epic means someone looked at the outcome and agreed, not that a counter hit zero.
+**Epics and projects run a different lifecycle.** They have no `review` — nothing is "complete on a branch" at that size. They have `ready` instead:
+
+```mermaid
+stateDiagram-v2
+    [*] --> backlog: created
+    backlog --> ready: inception finished
+    ready --> inprogress: work starts
+    inprogress --> done: you agree it is finished
+    backlog --> dropped: won't do
+    ready --> dropped
+    inprogress --> dropped
+```
+
+`ready` means the epic's stories exist and work can start. It is a record, not a gate — an epic nobody marked ready still blocks nothing, and if you want to start on it anyway, you start on it.
+
+Every one of those moves is stored, and none of them is ever calculated from the children. That is the deliberate part. An epic is done because a person looked at the outcome and agreed, not because a counter hit zero — which also means `done` can never quietly flip back when someone adds a story next week, and archiving stays safe.
+
+What *is* computed is progress: three of five children done, which stories are blocked, what is workable now. Ask `board` and it works that out fresh every time. Progress is information about an epic. It is not the epic's state.
 
 ## When an epic is done: archive the stories
 
