@@ -61,8 +61,8 @@ skill = "bmad-prd"
 
 [[agent.menu]]
 code = "CE"
-description = "Create the Epics and Stories Listing that will drive development"
-skill = "bmad-create-epics-and-stories"
+description = "Turn scope into tickets — slice into the epic set, incept an epic into stories, or refine one ticket (opens the ticket tree; \"create epics and stories\" keeps working)"
+skill = "bmad-ticket"
 
 [[agent.menu]]
 code = "IR"

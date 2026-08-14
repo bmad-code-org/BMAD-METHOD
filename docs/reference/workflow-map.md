@@ -76,8 +76,10 @@ Decide how to build it and break work into stories.
 | Workflow                              | Purpose                                    | Produces                    |
 |---------------------------------------|--------------------------------------------|-----------------------------|
 | `bmad-architecture`            | Make technical decisions explicit          | `ARCHITECTURE-SPINE.md` is the spine by default but can hydrate to your desired output or presentation needs also |
-| `bmad-create-epics-and-stories`       | Break requirements into implementable work | Epic files with stories     |
+| `bmad-ticket`       | Break requirements into implementable work | Ticket tree of epic folders and story files     |
 | `bmad-sprint-planning`                | Readiness gate before implementation, then story tracking and status view | PASS/CONCERNS/FAIL + `sprint-status.yaml` |
+
+`bmad-create-epics-and-stories` is retained as a v6 compatibility shim that forwards to `bmad-ticket`.
 
 For how the readiness gate, deterministic tracking, and status view work together, see [Sprint Planning](../explanation/sprint-planning.md).
 

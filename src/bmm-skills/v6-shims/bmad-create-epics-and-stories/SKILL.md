@@ -22,7 +22,7 @@ This skill was replaced by `bmad-ticket`, which owns the ticket tree, the breakd
 5. Invoke `bmad-ticket` with the following context. Pass these as the activating context so `bmad-ticket` honors them instead of resolving its own customization from scratch for the legacy fields:
 
    - **Route:** `slice`. If the user confirmed the v6 shape in step 4, add: chain the incept route per epic after slice completes, then render the single epics-and-stories file — `bmad-ticket`'s `references/v6-migration.md` carries that flow (including the true-v6 fallback if the user refuses the tree outright).
-   - **Pre-resolved legacy customization** — use these in place of `bmad-ticket`'s own values for the four legacy fields; for everything else (`tickets_output_path`, templates, `lifecycle_transitions`, `hitl_threshold`, `finalize_reviewers`, `severity_scale`, `project_keys`), use `bmad-ticket`'s own defaults and overrides as normal:
+   - **Pre-resolved legacy customization** — use these in place of `bmad-ticket`'s own values for the four legacy fields; for everything else (`project_root`, templates, `lifecycle_transitions`, `hitl_threshold`, `finalize_reviewers`, `severity_scale`, `project_keys`), use `bmad-ticket`'s own defaults and overrides as normal:
      - `activation_steps_prepend` = the resolved value from step 1
      - `activation_steps_append` = the resolved value from step 1
      - `persistent_facts` = the resolved value from step 1

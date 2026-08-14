@@ -96,7 +96,7 @@ Workflow skills run a structured, multi-step process without loading an agent pe
 | `bmad-prd` | Create, update, or validate a Product Requirements Document |
 | `bmad-ux` | Design user experience |
 | `bmad-architecture` | Design system architecture |
-| `bmad-create-epics-and-stories` | Create epics and stories |
+| `bmad-ticket` | Slice scope into epics and incept stories in the ticket tree (`bmad-create-epics-and-stories` is a v6 shim that forwards here) |
 | `bmad-build` | Implement direct intent, an issue, a feature, a fix, or a planned story |
 | `bmad-code-review` | Run a code review |
 | `bmad-build-auto` | Automate one unattended iteration of the Build implementation model |
