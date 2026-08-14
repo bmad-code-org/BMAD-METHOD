@@ -11,6 +11,7 @@ import hashlib
 import json
 import os
 import re
+import secrets
 import shutil
 import sys
 import tempfile
@@ -31,6 +32,7 @@ _CONFIG_TOKEN = re.compile(r"\{\{config\.([A-Za-z0-9_.-]+)\}\}")
 _SHORT_CONFIG_TOKEN = re.compile(r"\{\{\.([A-Za-z0-9_]+)\}\}")
 _CUSTOM_TOKEN = re.compile(r"\{workflow\.([A-Za-z0-9_.-]+)\}")
 _SNAPSHOT_TOKEN = re.compile(r"\[\[bmad-snapshot:([A-Za-z0-9_./-]+\.md)\]\]")
+_WINDOWS_STAGING_ATTEMPTS = 16
 
 
 def _hash_bytes(content: bytes) -> str:
@@ -292,12 +294,30 @@ def _verify_existing(destination: Path, manifest: dict[str, Any]) -> None:
             raise RenderError(f"generation output hash mismatch: {destination / name}")
 
 
+def _create_staging_directory(parent: Path) -> Path:
+    """Create private POSIX staging or inheritable Windows staging."""
+    if sys.platform != "win32":
+        return Path(tempfile.mkdtemp(prefix=".staging-", dir=parent))
+
+    for _ in range(_WINDOWS_STAGING_ATTEMPTS):
+        staging = parent / f".staging-{secrets.token_hex(8)}"
+        try:
+            staging.mkdir()
+        except FileExistsError:
+            continue
+        return staging
+    raise RenderError(
+        "failed to create Windows staging directory after "
+        f"{_WINDOWS_STAGING_ATTEMPTS} name collisions in {parent}"
+    )
+
+
 def _publish(destination: Path, outputs: dict[str, bytes], manifest: dict[str, Any]) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
     if destination.exists():
         _verify_existing(destination, manifest)
         return
-    staging = Path(tempfile.mkdtemp(prefix=".staging-", dir=destination.parent))
+    staging = _create_staging_directory(destination.parent)
     try:
         for name, content in outputs.items():
             path = staging / name
