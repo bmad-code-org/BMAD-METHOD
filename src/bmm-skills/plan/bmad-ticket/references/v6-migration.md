@@ -17,7 +17,7 @@ The old artifact is a **view**, not a second source of truth:
 
 1. Run the slice route to the epic set (its gate included).
 2. On explicit confirmation, chain the incept route per epic — each epic through its own gate; quick and autonomous collapse the pauses per their mode rules.
-3. Render the single file: `uv run {skill-root}/scripts/ticket_tree.py render --root {workflow.tickets_output_path} --out <path>/epics-and-stories.md`. The render is deterministic — statuses come straight from frontmatter — and carries a generated-file banner. Re-render after any change; hand-edits to the rendered file are overwritten, the tree wins. Say that when handing the file over.
+3. Render the single file: `uv run {skill-root}/scripts/ticket_tree.py render --root {workflow.project_root} --out <path>/epics-and-stories.md`. The render is deterministic — statuses come straight from frontmatter — and carries a generated-file banner. Re-render after any change; hand-edits to the rendered file are overwritten, the tree wins. Say that when handing the file over.
 
 Anyone asking "give me one file to read or share" gets this render too — it is not only a v6 path.
 

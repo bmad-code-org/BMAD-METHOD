@@ -20,16 +20,24 @@ created: [YYYY-MM-DD]
 
 ## Research Questions
 
-- #1 [Specific question the spike must answer]
-- #2 [...]
+- #1 [Specific question the spike must answer] — verify: [the artifact or measurement that constitutes the answer — a recorded benchmark run with raw numbers, a written comparison with stated assumptions, a decision record naming the deciding criterion. Not a test, and never "research it"]
+- #2 [...] — verify: [...]
 
 ## Timebox
 
 [Bound the investigation — e.g. one session. Output is knowledge (recorded findings), not shipped code.]
 
+## Boundaries
+
+[Optional — cut the whole section when nothing here rules out an otherwise valid line of investigation, though it earns its place here more often than on other types, since an unbounded spike ships half a product nobody asked for. Still a budget, not a checklist: every line added competes for the agent's attention. `Must not change:` is the load-bearing half; write `May change:` only when the authorized surface is non-obvious.]
+
+- May change: [The throwaway surface the investigation may build in — a scratch harness, a scratch branch — and whether any of it merges.]
+- Must not change: [Production code and configuration, unless the spike genuinely requires touching them. Name behavior, never files.]
+
 ## References
 
-- [Typed-document pointers relevant to this spike: document type + section, never file paths or line numbers. Cut the section if there are none.]
+- [Typed-document pointers relevant to this spike: document type + section, never file paths or line numbers. Cut the section if there are none. Often thin — the authoritative answer does not exist yet.]
+- Verification entry point: [Optional. The command or workflow that reproduces the measurement — only when the project has one an agent would not infer. Cut otherwise.]
 
 ## Dev Notes
 

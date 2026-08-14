@@ -55,6 +55,18 @@ created: 2026-08-01
 # ALRT-3 — Alert rules
 """
 
+PROJECT = """---
+schema: 1
+id: ALRT-1
+type: project
+title: "Alerting"
+description: "The alerting product"
+created: 2026-08-01
+---
+
+# ALRT-1 — Alerting
+"""
+
 
 def run(*args):
     proc = subprocess.run([sys.executable, str(SCRIPT), *args],
@@ -71,12 +83,17 @@ class UpdateTicketTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = Path(self.tmp.name)
-        (self.root / "alert-rules").mkdir()
-        self.story = self.root / "alert-rules" / "ALRT-12-rule-crud.md"
+        self.tickets = self.root / "tickets"
+        self.epic_dir = self.tickets / "alert-rules"
+        self.epic_kids = self.epic_dir / "tickets"
+        self.epic_kids.mkdir(parents=True)
+        self.project = self.root / "ticket.md"
+        self.project.write_text(PROJECT, encoding="utf-8")
+        self.story = self.epic_kids / "ALRT-12-rule-crud.md"
         self.story.write_text(STORY, encoding="utf-8")
-        self.bug = self.root / "ALRT-20-crash.md"
+        self.bug = self.tickets / "ALRT-20-crash.md"
         self.bug.write_text(BUG, encoding="utf-8")
-        self.epic = self.root / "alert-rules" / "ticket.md"
+        self.epic = self.epic_dir / "ticket.md"
         self.epic.write_text(EPIC, encoding="utf-8")
 
     def tearDown(self):
@@ -111,21 +128,55 @@ class UpdateTicketTests(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertIn("unknown status", out["error"])
 
-    def test_epic_status_intentional_only(self):
+    def test_epic_status_walks_the_node_graph(self):
+        # Every node move is a stored, deliberate call — nothing is calculated.
+        code, out = run("--path", str(self.epic), "--set", "status=ready")
+        self.assertEqual(code, 0)
+        self.assertIn("status: ready", self.epic.read_text())
         code, out = run("--path", str(self.epic), "--set", "status=in-progress")
-        self.assertEqual(code, 1)
-        self.assertIn("dropped", out["error"])
-        # Structural, not a transition rule: --force does not open it.
-        code, out = run("--path", str(self.epic), "--set", "status=in-progress", "--force")
-        self.assertEqual(code, 1)
-        # done and dropped are both storable — intentional human calls.
+        self.assertEqual(code, 0)
         code, out = run("--path", str(self.epic), "--set", "status=done")
         self.assertEqual(code, 0)
         self.assertIn("status: done", self.epic.read_text())
         self.assertIn("archive", out.get("hint", ""))  # done → archive offer surfaces
-        code, out = run("--path", str(self.epic), "--set", "status=dropped")
+        # done is terminal: reopening is a user's explicit override, never a slip.
+        code, out = run("--path", str(self.epic), "--set", "status=in-progress")
+        self.assertEqual(code, 1)
+        self.assertIn("not allowed", out["error"])
+
+    def test_epic_rejects_the_leaf_vocabulary(self):
+        # `review` is a leaf's "complete on a branch" — a node never has one.
+        code, out = run("--path", str(self.epic), "--set", "status=review")
+        self.assertEqual(code, 1)
+        self.assertIn("unknown status", out["error"])
+        code, out = run("--path", str(self.epic), "--set", "status=review", "--force")
+        self.assertEqual(code, 1)
+
+    def test_leaf_rejects_the_node_vocabulary(self):
+        # ...and the reverse: `ready` means inception finished, which is a node's
+        # business. A story is workable or it is not.
+        code, out = run("--path", str(self.story), "--set", "status=ready")
+        self.assertEqual(code, 1)
+        self.assertIn("unknown status", out["error"])
+
+    def test_project_writable_fields_and_status_rule(self):
+        # A project scores nothing and traces nothing sideways.
+        for spec in ("risk=2", "hitl=true", "covers=CAP-4", "depends_on=ALRT-3"):
+            code, out = run("--path", str(self.project), "--set", spec)
+            self.assertEqual(code, 1)
+            self.assertIn("not writable", out["error"])
+        code, out = run("--path", str(self.project), "--set", "owner=Mary")
         self.assertEqual(code, 0)
-        self.assertIn("status: dropped", self.epic.read_text())
+        self.assertIn("owner: Mary", self.project.read_text())
+        # The node lifecycle applies at every node altitude, project included.
+        code, out = run("--path", str(self.project), "--set", "status=review")
+        self.assertEqual(code, 1)
+        self.assertIn("unknown status", out["error"])
+        code, out = run("--path", str(self.project), "--set", "status=in-progress")
+        self.assertEqual(code, 0)
+        code, out = run("--path", str(self.project), "--set", "status=done")
+        self.assertEqual(code, 0)
+        self.assertIn("status: done", self.project.read_text())
 
     def test_insert_and_replace_adjacent_lines_both_land(self):
         # status is absent on the epic (insert after type:) while title is the
@@ -148,7 +199,7 @@ class UpdateTicketTests(unittest.TestCase):
 
     def test_cycle_rejected_through_block_style_dep(self):
         # ALRT-13 declares its dep in block form; the gate must still see it.
-        (self.root / "alert-rules" / "ALRT-13-rule-eval.md").write_text(
+        (self.epic_kids / "ALRT-13-rule-eval.md").write_text(
             STORY.replace("id: ALRT-12", "id: ALRT-13")
                  .replace("depends_on: []", "depends_on:\n  - ALRT-12"))
         code, out = run("--root", str(self.root), "--id", "ALRT-12",
@@ -157,7 +208,7 @@ class UpdateTicketTests(unittest.TestCase):
         self.assertIn("cycle", out["error"])
 
     def test_quoted_id_resolves(self):
-        quoted = self.root / "ALRT-77-quoted.md"
+        quoted = self.tickets / "ALRT-77-quoted.md"
         quoted.write_text(STORY.replace("id: ALRT-12", 'id: "ALRT-77"'))
         code, out = run("--root", str(self.root), "--id", "ALRT-77",
                         "--set", "status=in-progress")
@@ -165,14 +216,14 @@ class UpdateTicketTests(unittest.TestCase):
         self.assertTrue(out["file"].endswith("ALRT-77-quoted.md"))
 
     def test_duplicate_id_refused(self):
-        (self.root / "ALRT-12-clone.md").write_text(STORY)
+        (self.tickets / "ALRT-12-clone.md").write_text(STORY)
         code, out = run("--root", str(self.root), "--id", "ALRT-12",
                         "--set", "status=in-progress")
         self.assertEqual(code, 1)
         self.assertIn("duplicated", out["error"])
 
     def test_malformed_target_fails_json_clean(self):
-        bad = self.root / "ALRT-88-bad.md"
+        bad = self.tickets / "ALRT-88-bad.md"
         bad.write_text("---\nschema: 1\nid: ALRT-88\ntype: task\n")  # unterminated
         code, out = run("--path", str(bad), "--set", "status=in-progress")
         self.assertEqual(code, 1)
@@ -219,7 +270,7 @@ class UpdateTicketTests(unittest.TestCase):
         self.assertIn("1-5", out["error"])
 
     def test_hitl_raised_when_risk_crosses_threshold(self):
-        low = self.root / "ALRT-50-low.md"
+        low = self.tickets / "ALRT-50-low.md"
         low.write_text(STORY.replace("id: ALRT-12", "id: ALRT-50")
                             .replace("risk: 3", "risk: 2")
                             .replace("hitl: true", "hitl: false"))
@@ -236,7 +287,7 @@ class UpdateTicketTests(unittest.TestCase):
 
     def test_cycle_rejected(self):
         # ALRT-13 already depends on ALRT-12; the reverse edge closes a cycle.
-        (self.root / "alert-rules" / "ALRT-13-rule-eval.md").write_text(
+        (self.epic_kids / "ALRT-13-rule-eval.md").write_text(
             STORY.replace("id: ALRT-12", "id: ALRT-13")
                  .replace("depends_on: []", "depends_on: [ALRT-12]"))
         code, out = run("--root", str(self.root), "--id", "ALRT-12",

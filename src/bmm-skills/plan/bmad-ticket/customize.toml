@@ -12,10 +12,17 @@ activation_steps_append = []
 persistent_facts = ["file:{project-root}/**/project-context.md"]
 on_complete = ""
 
-# Root of the ticket tree — where the skill reads and writes tickets.
-# Point this at a dedicated work-store repo later; the grammar is
-# relocatable, so moving is a config change and a folder move.
-tickets_output_path = "{planning_artifacts}/tickets"
+# The project folder — the root of one project's work. The skill reads and
+# writes the ticket tree at {project_root}/tickets/, and the project node
+# itself lives at {project_root}/ticket.md. Sibling folders (prd/, spec/,
+# brief/) belong to other skills and are never scanned as tickets.
+#
+# Default is the bare output folder, which is the "no project set" case:
+# tickets land straight in it and the tree simply has no project node.
+# Once a project is active, this resolves to {output_folder}/<project>.
+# Pointing it at a dedicated work-store repo later is a config change and a
+# folder move, never a migration.
+project_root = "{output_folder}"
 
 # Optional "project-name=KEY" entries consulted at tree bootstrap before
 # asking (interactive) or deriving from the project name (autonomous —
@@ -49,6 +56,29 @@ lifecycle_transitions = [
   "backlog>dropped",
   "in-progress>dropped",
   "review>dropped",
+]
+
+# Allowed node (project, epic) status moves. Nodes run their own lifecycle:
+# backlog → ready → in-progress → done, dropped from any active state.
+# `ready` means inception is finished and work can start — it records a
+# decision, it does not gate anything downstream (an unready epic with
+# workable stories still blocks nothing). Nothing here is ever calculated
+# from children: a node is done because somebody looked at the outcome and
+# agreed, so `done` can never flip when a child is added later. Progress
+# against children is derived by `ticket_tree.py board` instead — it is
+# information about a node, not its state. Merge behavior matches
+# lifecycle_transitions: overrides append.
+node_lifecycle_transitions = [
+  "backlog>ready",
+  "backlog>in-progress",
+  "backlog>done",
+  "backlog>dropped",
+  "ready>backlog",
+  "ready>in-progress",
+  "ready>done",
+  "ready>dropped",
+  "in-progress>done",
+  "in-progress>dropped",
 ]
 
 # hitl derives from risk: hitl = (risk >= hitl_threshold), overridable

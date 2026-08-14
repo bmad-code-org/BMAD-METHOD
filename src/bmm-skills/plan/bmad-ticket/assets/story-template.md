@@ -28,14 +28,18 @@ created: [YYYY-MM-DD]
 - #2 [One claim per criterion] — verify: [...]
 - #3 (e2e) [When this story completes a user-visible flow: the end-to-end criterion proving the whole path works] — verify: [...]
 
+## Boundaries
+
+[Optional — cut the whole section when nothing here rules out an otherwise valid solution. This is a budget, not a checklist: every line added competes for the agent's attention and costs accuracy. `Must not change:` is the load-bearing half; write `May change:` only when the authorized surface is non-obvious.]
+
+- May change: [The surface this story is authorized to touch — only when the behavior above does not already make it obvious.]
+- Must not change: [Adjacent behavior, interface, or invariant a plausible implementation could damage while still satisfying the criteria above. Name behavior, never files.]
+
 ## References
 
 - [Typed-document pointers relevant to this story: "epic spec — §auth decisions", "ux — checkout flow", "test plan — scenarios 4–6", "architecture — data model". Document type + section, never file paths or line numbers.]
+- Verification entry point: [Optional. The command or workflow that runs this story's checks — only when the project has one an agent would not infer. Cut otherwise.]
 
 ## Dev Notes
 
-[Optional. Constraints, gotchas, decision-rich snippets (a schema shape, a state machine) trimmed to the decision. No pasted code walls, no file paths.]
-
-## Steps
-
-[Optional execution checklist — working notes, not tickets.]
+[Optional. Constraints and gotchas. A stable contract (schema, state machine, interface) may be reproduced when it is the decision — never sample implementation code, never a pasted code wall, never file paths.]

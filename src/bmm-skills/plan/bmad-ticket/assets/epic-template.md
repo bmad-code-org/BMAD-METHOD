@@ -3,7 +3,8 @@ schema: 1
 id: [KEY-n]
 type: epic
 title: "[The deliverable]"
-description: "[One line — lifted verbatim into the generated index]"
+description: "[One line — what this epic delivers, in the reader's language]"
+status: backlog
 depends_on: []
 covers: []
 risk: [1-5 ceiling hint — leaves score individually]
@@ -27,3 +28,9 @@ created: [YYYY-MM-DD]
 ## Out of Scope
 
 [Optional — what this epic deliberately does not cover.]
+
+<!-- status: backlog → ready → in-progress → done, or dropped. `ready` means
+     inception is finished and work can start; it gates nothing, it records
+     that someone decided. `done` is likewise somebody's call, never a counter
+     hitting zero. Move it through scripts/update_ticket.py, never by hand. -->
+

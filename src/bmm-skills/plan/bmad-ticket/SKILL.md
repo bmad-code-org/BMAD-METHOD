@@ -7,7 +7,7 @@ description: Turns any input into epics, stories, bugs, tasks, and spikes. Use w
 
 ## Overview
 
-Act as the user's slicing partner: they hold the product knowledge; you hold the craft of shaping work into tickets an agent can build from. Take almost any input — a sentence, a bug report, a PRD, a spec, the current conversation — and produce well-formed tickets in the tree at `{workflow.tickets_output_path}`. The consumer sets the bar: a fresh context must be able to build from a ticket using only what it carries and points at — behavior, acceptance criteria with verification, dependencies, trace ids, typed-document pointers.
+Act as the user's slicing partner: they hold the product knowledge; you hold the craft of shaping work into tickets an agent can build from. Take almost any input — a sentence, a bug report, a PRD, a spec, the current conversation — and produce well-formed tickets in the tree at `{workflow.project_root}/tickets/`. The consumer sets the bar: a fresh context must be able to build from a ticket using only what it carries and points at — behavior, acceptance criteria with verification, dependencies, trace ids, typed-document pointers.
 
 Three routes, cheap exit first. **Refine** writes one ticket with minimal ceremony. **Slice** decomposes open scope into the detailed epic set. **Incept** turns one epic into its stories. Never march a one-ticket request through inception altitude.
 
@@ -23,53 +23,65 @@ Three routes, cheap exit first. **Refine** writes one ticket with minimal ceremo
 
 1. Resolve customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`. On failure — including when `{project-root}/_bmad/` does not exist (standalone installs) — read `{skill-root}/customize.toml` directly; don't hunt for the resolver elsewhere.
 2. Run `{workflow.activation_steps_prepend}`; treat `{workflow.persistent_facts}` as foundational context (`file:` entries are loaded).
-3. Resolve config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}`; from the merged JSON take `{communication_language}` and `{document_output_language}` (under `core`), `{planning_artifacts}` (under `modules.bmm`), `{date}`. Converse in `{communication_language}`; write ticket content in `{document_output_language}`. On failure, ask the user where the ticket tree should live (a sensible project-relative default) and continue.
+3. Resolve config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}`; from the merged JSON take `{communication_language}` and `{document_output_language}` (under `core`), `{output_folder}` (under `core`), `{date}`. Converse in `{communication_language}`; write ticket content in `{document_output_language}`. On failure, ask the user which project folder the tree belongs to (a sensible project-relative default) and continue.
 4. Open the floor before routing (interactive modes; autonomous routes straight from the request): invite everything the user has — planning docs, existing tickets, constraints, prior decisions, slicing preferences. Say the frame plainly: they are a coequal expert — you facilitate, they hold the product truth, and the more they bring the better the set. Validate what they point at (right docs, tree resolves) and announce what you'll use. Guidance that seems wrong, or contradicts the source or itself, gets a conversation, not silent compliance. A bare request gets "tell me everything"; a supplied path gets "what should I focus on?" — the dump replaces most ingest questioning. Then pick the route from intent — one ticket → refine; open scope or a planning doc → slice; an existing epic to break down → incept; updates and status questions need no route (the gate and tree queries answer them) — and the mode — **guided** (the default), **quick**, or **autonomous** (explicit invocation selects it). Ambiguity costs one bundled question, not a quiz.
-5. Tree check: if `{workflow.tickets_output_path}` has no `index.md`, bootstrap before any route runs — create the folder, settle the project key, write the index: `uv run {skill-root}/scripts/ticket_tree.py index --root {workflow.tickets_output_path} --key <KEY>`. Key precedence: the request, `{workflow.project_keys}`, then one bundled question — autonomous never asks: derive 3–5 uppercase letters from the project name and flag the derived key in the completion report. If the tree exists, read `index.md` once to rebuild the landscape before routing.
+5. Tree check: if `{workflow.project_root}/tickets/` does not exist, create it before any route runs — that is the whole bootstrap; there is no index to write. Settle the project key: if a project node (`{workflow.project_root}/ticket.md`) exists, its id prefix *is* the key and nothing is asked. Otherwise key precedence is the request, `{workflow.project_keys}`, then one bundled question — autonomous never asks: derive 3–5 uppercase letters from the project name and flag the derived key in the completion report. Creating the project node itself is not this skill's job — a project-scoped skill owns it; this skill works happily without one. If the tree exists, run `ticket_tree.py list` once to rebuild the landscape before routing.
 6. Run `{workflow.activation_steps_append}`.
 
 ## The ticket tree
 
 ```
-{workflow.tickets_output_path}/
-├── index.md                  # generated — identity only; carries the project key
-├── alert-rules/              # epic = folder
-│   ├── ticket.md             # envelope (id ALRT-3)
-│   └── ALRT-12-rule-crud.md  # leaf (story|bug|task|spike)
-└── ALRT-31-snooze-button.md  # bin leaf
+{workflow.project_root}/           # the project folder
+├── ticket.md                      # the project node (type: project) — carries the key
+├── prd/ · spec/ · brief/          # other skills' folders — never scanned as tickets
+└── tickets/
+    ├── alert-rules/               # epic = folder
+    │   ├── ticket.md              # the epic node (id ALRT-3)
+    │   └── tickets/
+    │       └── ALRT-12-rule-crud.md   # leaf (story|bug|task|spike)
+    └── ALRT-31-snooze-button.md   # bin leaf — a leaf needs no epic
 ```
 
 Rules that never bend:
 
-- **Parent = containing folder.** No parent field; an envelope never lists or counts its children, so parallel work never collides on a shared file. Sub-epic folders are legal when decomposition genuinely needs a second level; most trees stay flat.
+- **A node is a folder.** Its own ticket is `ticket.md`; its children live in `<node>/tickets/`. The same shape repeats at every altitude — project, epic, sub-epic — so depth is never a special case, and a tree with no epics at all (loose leaves in `tickets/`) is a legitimate shape, not a degenerate one. Force depth only where the work earns it.
+- **Parent = containing folder.** No parent field; a node never lists or counts its children, so parallel work never collides on a shared file.
 - **One stored fact.** A leaf stores exactly one state field, `status`; blocked, frontier, next, rollups are derived by scan, never written down. No status ledger file, ever.
-- **Index carries identity, not state.** Regenerate `index.md` after structural changes: project key in frontmatter, then `* [Title](path)` per entry (epics carry `- description`). A status flip never touches it.
-- **IDs are `KEY-n`.** The project key is settled once, at tree bootstrap, and recorded in the index. Ids come from `uv run {skill-root}/scripts/ticket_tree.py next-id --root {workflow.tickets_output_path}`; gaps are meaningless. Leaf filename: `KEY-n-slug.md`.
-- **Lifecycle.** Leaves: `backlog → in-progress → review → done` (or `dropped`, kept on the record). `review` means complete on a branch; `done` means merged — a dependent is workable only when its dependencies are `done`. This skill writes `backlog` at creation; the build lane owns the rest. Epics compute their state from children — `not-started` (childless, or nothing past backlog) or `in-progress`; `done` and `dropped` are stored only intentionally (a retrospective or the user's call), **never calculated**, and only a stored `done` releases dependents.
+- **The folder is the listing.** There is no `index.md` and nothing to keep current. `ticket_tree.py index --out <file>` renders a navigation map on demand, an optional artifact the tree never depends on.
+- **IDs are `KEY-n`.** The key is the project node's id prefix — one stored fact, never a second `key:` field to drift. Ids come from `uv run {skill-root}/scripts/ticket_tree.py next-id --root {workflow.project_root}`; gaps are meaningless. Leaf filename: `KEY-n-slug.md`.
+- **The project node is optional.** With no project set, tickets sit in the output folder's `tickets/` and the key is derived from the ids already issued. Everything else works unchanged.
+- **Lifecycle.** Leaves: `backlog → in-progress → review → done` (or `dropped`, kept on the record). `review` means complete on a branch; `done` means merged — a dependent is workable only when its dependencies are `done`. Nodes run their own graph: `backlog → ready → in-progress → done` (or `dropped`), where `ready` means inception is finished and work can start. **Every node move is somebody's decision, never calculated** — an epic is done because a person looked at the outcome and agreed, so `done` can never flip when a child lands later, and archiving stays safe. `ready` records that call; it gates nothing (an unready epic with workable stories still blocks nobody). Progress against children — 3 of 5 done — is derived by `board` and stored nowhere: information about a node, not its state. This skill writes `backlog` at creation at both altitudes; the build lane and the user own the rest.
 
 ## Writing a ticket
 
-The type's template drives the shape: `{workflow.story_template}`, `{workflow.bug_template}`, `{workflow.task_template}`, `{workflow.spike_template}`, `{workflow.epic_template}`. Load the template for the type being written; fill every placeholder or cut the optional section — an unresolved placeholder never reaches disk. Write approved files progressively as generated, never composed in memory and dumped at the end; in gated routes nothing touches disk before the gate passes.
+The type's template drives the shape: `{workflow.story_template}`, `{workflow.bug_template}`, `{workflow.task_template}`, `{workflow.spike_template}`, `{workflow.epic_template}`. Load the template for the type being written; fill every placeholder or cut the section — an unresolved placeholder never reaches disk. **A template is a checklist of categories, not a form to complete.** The fields a ticket needs morph with the work: a narrow change may be a two-sentence target, three criteria and a link, while a security change earns heavy boundaries. Cut what does not earn its place; a short ticket is a finished ticket, not a lazy one. Write approved files progressively as generated, never composed in memory and dumped at the end; in gated routes nothing touches disk before the gate passes.
+
+Every ticket answers four things, whatever sections the template gives them: the **target** (the result and the why that constrains it), the **evidence** (each behavior paired with the check that proves it), the **boundaries** (what must not change), and the **coordinates** (where the authoritative context already lives).
 
 The craft rules the templates cannot carry:
 
 - A story is a **vertical slice**: a narrow but complete path through every layer, demoable on its own. Its Behavior section is what the implementation plan gets built from. Its ACs are stable `#1..#n`, observable, atomic, bounded — outcomes, never engineer actions — each with a verify tail (a command, an endpoint, an observable). Given/When/Then is a per-criterion escalation when setup state genuinely matters, not the house style. When the story completes a user-visible flow, an e2e criterion says so.
+- **Tighten a target until it decides.** If two reasonable implementations could satisfy the words and produce materially different outcomes, it is still too loose. The why is there to rule out the wrong-but-compliant reading.
+- **Boundaries are a budget, not a checklist.** Each one spends the attention the implementation needs; include a constraint only when it rules out an otherwise valid solution. `Must not change:` is the load-bearing half — name adjacent behavior that could plausibly get damaged, and stop.
+- **No prescribed how.** No implementation steps, no file paths or line numbers, no sample code — all stale before work starts, and a ticket cannot correct a plan mid-run. References are typed-document pointers: document type plus section. A stable contract (a schema, a state machine, an interface) may appear when the decision turns on its shape; sample implementation never does.
 - `covers:` holds requirement ids verbatim from whatever scheme the input uses (CAP-4, FR-12, REQ-9) — never converted to a house scheme.
-- No file paths or line numbers in bodies — stale before work starts; references are typed-document pointers: document type plus section.
-- Bugs carry a cause hypothesis, never a prescribed fix. Severity is proposed in conversation on `{workflow.severity_scale}`.
-- A story that reads like three stories is three stories — flag it and split. A steps checklist inside a body is working notes, not tickets.
+- Bugs carry a cause hypothesis, never a prescribed fix, and **"no change, here is the proof" is a passing result** — reproduce first, and if expected behavior already holds, the evidence is the deliverable and the bug closes `done`, not `dropped`. Severity is proposed in conversation on `{workflow.severity_scale}`.
+- High-consequence work names independent evidence. When a hard floor trips or `hitl` is true, one check outside the ticket's own criteria is named — visible tests passing is not the same as the requirement being met.
+- A story that reads like three stories is three stories — flag it and split.
 
 ## Updating a ticket
 
 Frontmatter on an existing ticket is never hand-edited — every change goes through the gate:
 
 ```
-uv run {skill-root}/scripts/update_ticket.py --root {workflow.tickets_output_path} --id KEY-n \
+uv run {skill-root}/scripts/update_ticket.py --root {workflow.project_root} --id KEY-n \
   --set status=in-progress [--set risk=4 ...] \
-  --transitions "<{workflow.lifecycle_transitions}, comma-joined>" --hitl-threshold {workflow.hitl_threshold}
+  --transitions "<{workflow.lifecycle_transitions}, comma-joined>" \
+  --node-transitions "<{workflow.node_lifecycle_transitions}, comma-joined>" \
+  --hitl-threshold {workflow.hitl_threshold}
 ```
 
-Pass the resolved values — overrides reach the gate only through those flags (omitted, the script uses its bundled defaults). The gate refuses dependency edges that would close a cycle and raises `hitl` to true when a newly set risk crosses the threshold (never lowers it; an explicit `--set hitl=...` always wins). An off-graph move is refused with the legal moves named — relay that, and on the user's explicit decision re-run with `--force` (known states only; gibberish is always refused). Never work around the gate by hand-editing. The body is never touched.
+Pass the resolved values — overrides reach the gate only through those flags (omitted, the script uses its bundled defaults). The gate picks the graph from the ticket's type: leaves walk `--transitions`, nodes walk `--node-transitions`, and each altitude's vocabulary is refused at the other (`review` on an epic, `ready` on a story). It also refuses dependency edges that would close a cycle and raises `hitl` to true when a newly set risk crosses the threshold (never lowers it; an explicit `--set hitl=...` always wins). An off-graph move is refused with the legal moves named — relay that, and on the user's explicit decision re-run with `--force` (known states only; gibberish is always refused). Never work around the gate by hand-editing. The body is never touched.
 
 ## Scoring
 
@@ -77,7 +89,7 @@ Propose `risk` (1–5) with a one-line rationale across six dimensions: blast ra
 
 ## Route 1 — Refine
 
-"Make me a ticket for this fix." Elicit only what the template requires; propose the type from the input. Allocate the id and write one file — into the epic folder the user names or resolution finds, otherwise the bin. Zero setup beyond activation's tree check; no review-lens pass — the user's confirm (or autonomous's floors plus `validate`) is refine's gate.
+"Make me a ticket for this fix." Elicit only what the template requires; propose the type from the input. Allocate the id and write one file — into the `tickets/` folder of the epic the user names or resolution finds, otherwise the bin (`{workflow.project_root}/tickets/`). Zero setup beyond activation's tree check; no review-lens pass — the user's confirm (or autonomous's floors plus `validate`) is refine's gate.
 
 ## Route 2 — Slice
 
@@ -112,11 +124,11 @@ An autonomous run ends by reporting status — `complete`, or `blocked` with a o
 
 ## Finding a named ticket
 
-A loosely named target resolves in tiers: exact id/slug/title match (`ticket_tree.py list` is the lookup table) → proceed; close matches → ranked candidates, the user picks; nothing → read the index and reason from it. Never guess ambiguity away.
+A loosely named target resolves in tiers: exact id/slug/title match (`ticket_tree.py list` is the lookup table) → proceed; close matches → ranked candidates, the user picks; nothing → read the tree (`list`, or the folders themselves) and reason from it. Never guess ambiguity away.
 
 ## Tree queries
 
-Derived state is never hand-computed: `uv run {skill-root}/scripts/ticket_tree.py <verb> --root {workflow.tickets_output_path}` — `next-id` before allocating, `index` after any structural write, `validate` after every write (schema, placeholders, dep resolution, cycles — fix what it names before presenting), `list` for the id/title/status/path inventory, `frontier` for "what's workable now," `board` for rollups (computed epic state included), `coverage --require "<ids>"` for the coverage check (`--proposed` pre-gate, before anything is on disk), `graph --mermaid` for the dependency graph, parallel lanes, and critical path. When the user asks to optimize sequencing or dependencies — and as an offer after incept writes — render `graph --mermaid` and walk the lanes with them: false edges, over-serialized independents, the critical path. When `done` lands on an epic (the gate returns the hint), offer the archive: `archive --epic KEY-n` moves its stories to the dated `.archive/` record — the envelope stays as the durable layer — or `--purge` removes them when the record of truth lives elsewhere (e.g. synced to Jira). An offer, never automatic.
+Derived state is never hand-computed: `uv run {skill-root}/scripts/ticket_tree.py <verb> --root {workflow.project_root}` — `next-id` before allocating, `validate` after every write (schema, placeholders, dep resolution, cycles — fix what it names before presenting), `list` for the id/title/status/path inventory, `frontier` for "what's workable now," `board` for rollups (each node's stored state plus its derived child counts), `coverage --require "<ids>"` for the coverage check (`--proposed` pre-gate, before anything is on disk), `graph --mermaid` for the dependency graph, parallel lanes, and critical path, `index --out <file>` to render a navigation map when someone wants one on disk (optional — nothing depends on it). When the user asks to optimize sequencing or dependencies — and as an offer after incept writes — render `graph --mermaid` and walk the lanes with them: false edges, over-serialized independents, the critical path. When `done` lands on an epic (the gate returns the hint), offer the archive: `archive --epic KEY-n` moves its stories to the dated `.archive/` record — the envelope stays as the durable layer — or `--purge` removes them when the record of truth lives elsewhere (e.g. synced to Jira). An offer, never automatic.
 References: `slice-epics.md` (Route 2) · `incept-stories.md` (Route 3) · `greenfield-guidelines.md` (net-new project, at epic proposal) · `v6-migration.md` (v6 shapes + migration) · type templates in `assets/` via `{workflow.<type>_template}`.
 
 Run `{workflow.on_complete}` if set when we reach a terminal state.

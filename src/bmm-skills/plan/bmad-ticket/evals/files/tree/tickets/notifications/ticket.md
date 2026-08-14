@@ -1,16 +1,17 @@
 ---
 schema: 1
-id: NOTI-1
+id: NOTI-2
 type: epic
 title: "Notification service"
 description: "Real-time alerts users configure themselves"
+status: ready
 depends_on: []
 covers: [FR-3, FR-4, FR-5]
 risk: 3
 created: 2026-07-28
 ---
 
-# NOTI-1 — Notification service
+# NOTI-2 — Notification service
 
 ## Context
 

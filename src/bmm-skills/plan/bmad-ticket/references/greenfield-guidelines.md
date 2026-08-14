@@ -1,10 +1,10 @@
 # Greenfield Guidelines
 
-Load when slicing a net-new project — nothing deployed, no CI. The failure this prevents: a ticket set full of feature work with nowhere to run it, so the first real story silently absorbs a week of infrastructure.
+Load when slicing a net-new project — nothing deployed, no CI. The failure this prevents: a ticket set full of product work with nowhere to run it, so the first real story silently absorbs a week of infrastructure.
 
 **Calibrate to the what, the who, and the purpose before proposing anything.** A production SaaS for paying users earns the full scaffolding below; an internal tool may never need a stage environment; a weekend prototype may need CI and nothing more. What Epic 1 contains is a conversation about this project's real destination, not a checklist.
 
-**Epic 1 is the scaffolding epic.** It delivers the ability to ship, not features - examples based on design or spec include:
+**Epic 1 is the scaffolding epic.** It delivers the ability to ship, not product capability - examples based on design or spec include:
 
 - Starter or template chosen and standing — the app skeleton runs locally.
 - Accounts and access the stack needs: cloud/hosting, registry, DNS, monitoring — whatever this project actually requires, and nothing it doesn't.

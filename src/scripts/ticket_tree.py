@@ -5,10 +5,34 @@
 # ///
 """Deterministic read/derive operations over a bmad-ticket tree (schema 1).
 
-Everything here is derived by scan — nothing is stored. Verbs:
+--root is the PROJECT folder. A node is a folder holding `ticket.md`; its
+children live in `<node>/tickets/`. A leaf is a bare `KEY-n-slug.md` inside
+some `tickets/` folder. The same shape repeats at every altitude:
+
+  <project>/
+    ticket.md              type: project — the root node, carries the key
+    prd/  spec/  brief/    skill-owned folders; never scanned as tickets
+    tickets/
+      alert-rules/
+        ticket.md          type: epic
+        tickets/
+          ALRT-12-rule-crud.md
+      ALRT-31-loose.md     a leaf needs no epic
+
+The root node is optional: a tree with no `ticket.md` at the root still works
+(the key then comes from --key or from the ids already in the tree), which is
+the case when no project has been set and tickets sit straight in the output
+folder. There is no index.md — the folder IS the listing, and `index` renders
+a navigation map on demand rather than maintaining one.
+
+Every ticket stores one state field, `status`. Leaves run
+backlog → in-progress → review → done; nodes run backlog → ready →
+in-progress → done; either drops from any active state. Everything else —
+blocked, workable, rollups, coverage, lanes — is derived by scan here and
+stored nowhere. Verbs:
 
   next-id   next free ticket id        uv run ticket_tree.py next-id --root R [--key KEY]
-  index     regenerate index.md        uv run ticket_tree.py index --root R [--key KEY]
+  index     render a navigation map    uv run ticket_tree.py index --root R --out FILE
   validate  schema gate over the tree  uv run ticket_tree.py validate --root R [--path FILE]
   list      id/type/title/status/path  uv run ticket_tree.py list --root R
   frontier  workable leaves            uv run ticket_tree.py frontier --root R
@@ -37,9 +61,16 @@ import tempfile
 from pathlib import Path
 
 LEAF_TYPES = ("story", "bug", "task", "spike")
+NODE_TYPES = ("project", "epic")  # container types: a folder + ticket.md + tickets/
+CHILD_DIR = "tickets"
 DONE = "done"
 DROPPED = "dropped"
-KNOWN_STATES = {"backlog", "in-progress", "review", "done", "dropped"}
+# Leaves and nodes run different lifecycles. A leaf passes through `review`
+# (complete on a branch); a node passes through `ready` (inception finished,
+# work can start). Every move at both altitudes is a stored, deliberate fact.
+LEAF_STATES = {"backlog", "in-progress", "review", "done", "dropped"}
+NODE_STATES = {"backlog", "ready", "in-progress", "done", "dropped"}
+KNOWN_STATES = LEAF_STATES | NODE_STATES
 ID_RE = re.compile(r"^[A-Za-z][A-Za-z0-9]*-\d+$")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
@@ -102,13 +133,22 @@ def scan(root, include_dot=False):
     """Return (tickets, by_id, problems). Each ticket: frontmatter + _path + _rel.
     problems: files that claim to be tickets but can't be trusted — unreadable,
     unparseable frontmatter, missing id/type, or a duplicate id (first file wins).
-    Dot folders (.archive/, .git/) are off the board unless include_dot."""
+    Dot folders (.archive/, .git/) are off the board unless include_dot.
+
+    Only the root node file and everything under root/tickets/ is walked. The
+    project folder's sibling content (prd/, spec/, brief/) is another skill's
+    and must never be read as a malformed ticket."""
     tickets = []
     by_id = {}
     problems = []
-    for p in sorted(root.rglob("*.md")):
-        if p.name == "index.md":
-            continue
+    candidates = sorted((root / CHILD_DIR).rglob("*.md")) if (root / CHILD_DIR).is_dir() else []
+    # The archive sits at the project level, outside tickets/. It is off the
+    # board, but next-id must still see it — an archived id stays owned.
+    if include_dot and (root / ".archive").is_dir():
+        candidates += sorted((root / ".archive").rglob("*.md"))
+    if (root / "ticket.md").is_file():
+        candidates.insert(0, root / "ticket.md")
+    for p in candidates:
         rel_parts = p.relative_to(root).parts
         if not include_dot and any(part.startswith(".") for part in rel_parts):
             continue
@@ -139,44 +179,70 @@ def scan(root, include_dot=False):
     return tickets, by_id, problems
 
 
-def children_of(epic, tickets):
-    """Direct children: leaves in the epic's folder + sub-epics one folder down."""
-    edir = epic["_path"].parent
+def child_dir_of(node):
+    """Where a node's children live: <node folder>/tickets/."""
+    return node["_path"].parent / CHILD_DIR
+
+
+def children_of(node, tickets):
+    """Direct children: leaves sitting in the node's tickets/ folder, plus
+    child nodes whose own folder sits in it."""
+    cdir = child_dir_of(node)
     kids = []
     for t in tickets:
-        if t is epic:
+        if t is node:
             continue
-        if t["type"] in LEAF_TYPES and t["_path"].parent == edir:
+        if t["type"] in LEAF_TYPES and t["_path"].parent == cdir:
             kids.append(t)
-        elif t["type"] == "epic" and t["_path"].parent.parent == edir:
+        elif t["type"] in NODE_TYPES and t["_path"].parent.parent == cdir:
             kids.append(t)
     return kids
 
 
-def epic_state(epic, tickets, _seen=None):
-    """done and dropped are stored, intentional facts (retrospective or user) —
-    never computed. Computed state is only: not-started (no children, or none
-    past backlog) or in-progress (any child underway or resolved done)."""
-    stored = epic.get("status")
-    if stored in (DONE, DROPPED):
-        return stored
-    _seen = _seen or set()
-    if str(epic["id"]) in _seen:
-        return "in-progress"  # cycle guard; graph lint owns real diagnosis
-    _seen.add(str(epic["id"]))
-    kids = children_of(epic, tickets)
-    states = [epic_state(k, tickets, _seen) if k["type"] == "epic" else k.get("status")
-              for k in kids]
-    started = any(s in (DONE, "in-progress", "review") for s in states)
-    return "in-progress" if started else "not-started"
+def node_state(node):
+    """A node's state is stored, never computed. Every move — ready when
+    inception is finished, in-progress when work starts, done when someone
+    looked at the outcome and agreed — is a deliberate call, at every
+    container altitude alike. Progress against children is derived
+    separately (see child_counts) because it is information, not a state.
+    A node with no status yet reads as backlog."""
+    return node.get("status") or "backlog"
+
+
+def child_counts(node, tickets):
+    """Leaf statuses under a node, tallied. Derived every time, stored
+    nowhere — 3 of 5 done is information about a node, not its state."""
+    counts = {}
+    for k in children_of(node, tickets):
+        if k["type"] in LEAF_TYPES:
+            counts[k.get("status", "?")] = counts.get(k.get("status", "?"), 0) + 1
+    return counts
+
+
+def root_node(root, tickets):
+    """The project node, when one exists. Optional: a tree with tickets straight
+    in the output folder has none."""
+    return next((t for t in tickets if t["_path"] == root / "ticket.md"), None)
+
+
+def top_children(root, tickets):
+    """Nodes and leaves at the top of the tree — the root node's children, or
+    everything directly in root/tickets/ when there is no root node."""
+    rn = root_node(root, tickets)
+    if rn is not None:
+        return children_of(rn, tickets)
+    cdir = root / CHILD_DIR
+    return [t for t in tickets
+            if (t["type"] in LEAF_TYPES and t["_path"].parent == cdir)
+            or (t["type"] in NODE_TYPES and t["_path"].parent.parent == cdir)]
 
 
 def dep_done(dep_id, by_id, tickets):
     t = by_id.get(str(dep_id))
     if t is None:
         return False, "not found"
-    if t["type"] == "epic":
-        state = epic_state(t, tickets)
+    if t["type"] in NODE_TYPES:
+        state = node_state(t)
         return state == DONE, state
     return t.get("status") == DONE, t.get("status")
 
@@ -190,19 +256,43 @@ def as_list(ticket, field):
     return [v] if v not in (None, "") else []
 
 
-def read_index_key(root):
-    idx = root / "index.md"
-    if not idx.is_file():
+def key_of(ticket_id):
+    m = re.match(r"^([A-Za-z][A-Za-z0-9]*)-\d+$", str(ticket_id))
+    return m.group(1) if m else None
+
+
+def read_root_key(root):
+    """The project key is the prefix of the root node's id — one stored fact,
+    never a separate `key:` field that can drift out of step with the ids."""
+    p = root / "ticket.md"
+    if not p.is_file():
         return None
-    fm = parse_frontmatter(idx.read_text(encoding="utf-8"))
-    return None if not fm else fm.get("key")
+    try:
+        fm = parse_frontmatter(p.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError):
+        return None
+    return key_of(fm.get("id")) if fm else None
 
 
 def resolve_key(root, args_key):
-    key = args_key or read_index_key(root)
-    if not key:
-        fail("no project key: pass --key or create index.md with `key:` in frontmatter")
-    return str(key)
+    if args_key:
+        return str(args_key)
+    key = read_root_key(root)
+    if key:
+        return key
+    # Rootless tree (no project set): derive from the ids already issued.
+    tickets, _, _ = scan(root, include_dot=True)
+    seen = []
+    for t in tickets:
+        k = key_of(t.get("id"))
+        if k and k.upper() not in [s.upper() for s in seen]:
+            seen.append(k)
+    if len(seen) == 1:
+        return seen[0]
+    if not seen:
+        fail("no project key: pass --key, or give the tree a root ticket.md "
+             "(type: project) whose id carries the key")
+    fail("tickets carry more than one key (" + ", ".join(sorted(seen)) + ") — pass --key")
 
 
 def atomic_write(path, content):
@@ -240,40 +330,40 @@ def cmd_next_id(root, args):
     print(json.dumps(out))
 
 
-def write_index(root, key):
-    tickets, _, problems = scan(root)
+def render_map(root, tickets, out_dir):
+    """A navigation map, rendered on demand. Nothing depends on it existing —
+    the folder tree is the listing. Emitted without frontmatter so that a map
+    written inside the tree is never mistaken for a ticket."""
 
     def entry_lines(t, depth):
         pad = "  " * depth
         desc = t.get("description")
         tail = f" - {desc}" if desc else ""
-        href = t["_rel"].replace(" ", "%20").replace("(", "%28").replace(")", "%29")
+        href = (os.path.relpath(str(t["_path"]), str(out_dir))
+                .replace(" ", "%20").replace("(", "%28").replace(")", "%29"))
         lines = [f"{pad}* [{t.get('title', t['id'])}]({href}){tail}"]
-        if t["type"] == "epic":
+        if t["type"] in NODE_TYPES:
             for k in sorted(children_of(t, tickets), key=lambda x: id_num(x["id"])):
                 lines.extend(entry_lines(k, depth + 1))
         return lines
 
-    top_epics = [t for t in tickets if t["type"] == "epic"
-                 and not any(o["type"] == "epic" and o is not t
-                             and t["_path"].parent.parent == o["_path"].parent
-                             for o in tickets)]
-    bin_leaves = [t for t in tickets if t["type"] in LEAF_TYPES and t["_path"].parent == root]
-
-    body = ["---", f"key: {key}", "generated: true", "---", "", "# Ticket Index", ""]
-    for e in sorted(top_epics, key=lambda x: id_num(x["id"])):
-        body.extend(entry_lines(e, 0))
-    for lf in sorted(bin_leaves, key=lambda x: id_num(x["id"])):
-        body.extend(entry_lines(lf, 0))
+    body = ["# Ticket Map", "",
+            "> Generated on demand — the folder tree is the source of truth.", ""]
+    rn = root_node(root, tickets)
+    tops = [rn] if rn is not None else sorted(top_children(root, tickets),
+                                              key=lambda x: id_num(x["id"]))
+    for t in tops:
+        body.extend(entry_lines(t, 0))
     body.append("")
-    atomic_write(root / "index.md", "\n".join(body))
-    return len(tickets), problems
+    return "\n".join(body)
 
 
 def cmd_index(root, args):
-    key = resolve_key(root, args.key)
-    entries, problems = write_index(root, key)
-    out = {"ok": True, "file": str(root / "index.md"), "entries": entries}
+    tickets, _, problems = scan(root)
+    out_path = Path(args.out)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    atomic_write(out_path, render_map(root, tickets, out_path.parent))
+    out = {"ok": True, "file": str(out_path), "entries": len(tickets)}
     if problems:
         out["warnings"] = problems
     print(json.dumps(out))
@@ -298,16 +388,12 @@ def cmd_frontier(root, args):
 
 def cmd_board(root, args):
     tickets, by_id, _ = scan(root)
-    epics, blocked = [], []
+    nodes, blocked = [], []
     totals = {}
     for t in tickets:
-        if t["type"] == "epic":
-            kids = [k for k in children_of(t, tickets) if k["type"] in LEAF_TYPES]
-            counts = {}
-            for k in kids:
-                counts[k.get("status", "?")] = counts.get(k.get("status", "?"), 0) + 1
-            epics.append({"id": str(t["id"]), "title": t.get("title"),
-                          "state": epic_state(t, tickets), "counts": counts})
+        if t["type"] in NODE_TYPES:
+            nodes.append({"id": str(t["id"]), "type": t["type"], "title": t.get("title"),
+                          "state": node_state(t), "counts": child_counts(t, tickets)})
         else:
             totals[t.get("status", "?")] = totals.get(t.get("status", "?"), 0) + 1
             if t.get("status") == "backlog":
@@ -315,10 +401,11 @@ def cmd_board(root, args):
                          if not dep_done(d, by_id, tickets)[0]]
                 if unmet:
                     blocked.append({"id": str(t["id"]), "waiting_on": unmet})
+    cdir = root / CHILD_DIR
     bin_leaves = [{"id": str(t["id"]), "title": t.get("title"), "status": t.get("status")}
-                  for t in tickets if t["type"] in LEAF_TYPES and t["_path"].parent == root]
+                  for t in tickets if t["type"] in LEAF_TYPES and t["_path"].parent == cdir]
     print(json.dumps({"ok": True,
-                      "epics": sorted(epics, key=lambda x: id_num(x["id"])),
+                      "nodes": sorted(nodes, key=lambda x: id_num(x["id"])),
                       "bin": sorted(bin_leaves, key=lambda x: id_num(x["id"])),
                       "leaf_totals": totals, "blocked": blocked}))
 
@@ -439,22 +526,20 @@ def cmd_render(root, args):
         body = demote(body_of(t), depth - 1)
         return f"{head}\n\n{body}\n" if body else f"{head}\n"
 
-    def epic_block(e, depth):
+    def node_block(e, depth):
         h = "#" * (depth + 1)
-        parts = [f"{h} {e['id']} — {e.get('title')} [{epic_state(e, tickets)}]"]
+        parts = [f"{h} {e['id']} — {e.get('title')} [{node_state(e)}]"]
         body = demote(body_of(e), depth - 1)
         if body:
             parts.append(body)
         for k in sorted(children_of(e, tickets), key=lambda x: id_num(x["id"])):
-            parts.append(epic_block(k, depth + 1) if k["type"] == "epic"
+            parts.append(node_block(k, depth + 1) if k["type"] in NODE_TYPES
                          else leaf_block(k, depth + 1))
         return "\n\n".join(parts)
 
-    top_epics = [t for t in tickets if t["type"] == "epic"
-                 and not any(o["type"] == "epic" and o is not t
-                             and t["_path"].parent.parent == o["_path"].parent
-                             for o in tickets)]
-    bin_leaves = [t for t in tickets if t["type"] in LEAF_TYPES and t["_path"].parent == root]
+    tops = sorted(top_children(root, tickets), key=lambda x: id_num(x["id"]))
+    top_epics = [t for t in tops if t["type"] in NODE_TYPES]
+    bin_leaves = [t for t in tops if t["type"] in LEAF_TYPES]
 
     out_parts = [
         "# Epics and Stories",
@@ -462,11 +547,11 @@ def cmd_render(root, args):
         "of truth and the next render overwrites this file.\n"
         f"> Regenerate: `uv run ticket_tree.py render --root {root} --out <this file>`",
     ]
-    for e in sorted(top_epics, key=lambda x: id_num(x["id"])):
-        out_parts.append(epic_block(e, 1))
+    for e in top_epics:
+        out_parts.append(node_block(e, 1))
     if bin_leaves:
         out_parts.append("## Bin")
-        for lf in sorted(bin_leaves, key=lambda x: id_num(x["id"])):
+        for lf in bin_leaves:
             out_parts.append(leaf_block(lf, 2))
     out_path = Path(args.out)
     atomic_write(out_path, "\n\n".join(out_parts) + "\n")
@@ -506,7 +591,7 @@ def cmd_archive(root, args):
         fail(f"epic {args.epic} is not marked done or dropped — archive is for "
              "finished records; store the intentional status first (update_ticket.py)")
     kids = children_of(epic, tickets)
-    if any(k["type"] == "epic" for k in kids):
+    if any(k["type"] in NODE_TYPES for k in kids):
         fail(f"epic {args.epic} contains sub-epics — archive those first")
     leaves = [k for k in kids if k["type"] in LEAF_TYPES]
     if not leaves:
@@ -555,9 +640,6 @@ def cmd_archive(root, args):
         kept = [str(d) for d in as_list(t, "depends_on") if str(d) not in refs]
         _rewrite_depends_on(t["_path"], kept)
 
-    key = read_index_key(root)
-    if key:
-        write_index(root, key)
     out = {"ok": True, "epic": args.epic,
            ("purged" if args.purge else "archived"): sorted(leaf_ids),
            "dest": str(dest) if dest else None,
@@ -588,7 +670,10 @@ def cmd_validate(root, args):
     else:
         errors.extend(problems)
 
-    epic_dirs = {t["_path"].parent for t in tickets if t["type"] == "epic"}
+    node_child_dirs = {child_dir_of(t) for t in tickets if t["type"] in NODE_TYPES}
+    if not (root / "ticket.md").is_file():
+        # Rootless tree (no project set): root/tickets/ is a legal home for leaves.
+        node_child_dirs.add(root / CHILD_DIR)
 
     for t in tickets:
         if only and t["_path"].resolve() != only:
@@ -597,17 +682,20 @@ def cmd_validate(root, args):
         if not isinstance(tid, str) or not ID_RE.match(tid):
             err(t, f"id is missing, malformed, or an unresolved placeholder: {tid!r}")
             tid = None
-        if t["type"] == "epic":
+        if t["type"] in NODE_TYPES:
             if t["_path"].name != "ticket.md":
-                err(t, "epic envelope must be named ticket.md")
+                err(t, f"a {t['type']} node must be named ticket.md")
+            if t["type"] == "project" and t["_path"] != root / "ticket.md":
+                err(t, "a project node may only sit at the tree root")
         else:
             if tid and not t["_path"].name.startswith(tid + "-"):
                 err(t, f"leaf filename must start with '{tid}-'")
-            if t["_path"].parent != root and t["_path"].parent not in epic_dirs:
-                err(t, "leaf sits in a folder with no epic ticket.md — invisible to "
-                       "index and board; move it to the bin or an epic folder")
-        if t["type"] != "epic" and t["type"] not in LEAF_TYPES:
-            err(t, f"type must be epic or one of {sorted(LEAF_TYPES)}: {t['type']!r}")
+            if t["_path"].parent not in node_child_dirs:
+                err(t, "leaf must sit in a tickets/ folder belonging to a node — "
+                       "where it is, board and frontier cannot see it")
+        if t["type"] not in NODE_TYPES and t["type"] not in LEAF_TYPES:
+            err(t, "type must be one of "
+                   f"{sorted(NODE_TYPES + LEAF_TYPES)}: {t['type']!r}")
         if not isinstance(t.get("schema"), int):
             err(t, "schema must be an integer")
         title = t.get("title")
@@ -616,7 +704,13 @@ def cmd_validate(root, args):
         created = t.get("created")
         if not (isinstance(created, str) and DATE_RE.match(created)):
             err(t, f"created must be YYYY-MM-DD: {created!r}")
+        # The project node is the root of the trace spine and has no siblings:
+        # it neither covers upstream ids nor waits on anything.
         for fname in ("depends_on", "covers"):
+            if t["type"] == "project":
+                if fname in t:
+                    err(t, f"{fname} is not a project field")
+                continue
             val = t.get(fname)
             if not isinstance(val, list):
                 err(t, f"{fname} must be a list")
@@ -631,24 +725,28 @@ def cmd_validate(root, args):
                         err(t, "ticket depends on itself")
                     elif str(entry) not in by_id:
                         err(t, f"depends_on ref '{entry}' not found in the tree")
-        risk = t.get("risk")
-        if not (isinstance(risk, int) and not isinstance(risk, bool) and 1 <= risk <= 5):
-            err(t, f"risk must be an integer 1-5: {risk!r}")
+        # A project node scores nothing: risk and hitl are execution-altitude.
+        if t["type"] != "project":
+            risk = t.get("risk")
+            if not (isinstance(risk, int) and not isinstance(risk, bool) and 1 <= risk <= 5):
+                err(t, f"risk must be an integer 1-5: {risk!r}")
+        elif "risk" in t:
+            err(t, "risk is not a project field")
         if _placeholderish(str(t.get("discovered_from", ""))):
             err(t, f"discovered_from is an unresolved placeholder: {t.get('discovered_from')!r}")
-        if t["type"] == "epic":
+        if t["type"] in NODE_TYPES:
             desc = t.get("description")
             if not isinstance(desc, str) or not desc.strip() or _placeholderish(desc):
-                err(t, f"epic description is missing or a placeholder: {desc!r}")
-            if t.get("status") not in (None, DONE, DROPPED):
-                err(t, "epics compute progress — only intentional 'done' or 'dropped' "
-                       f"is storable, got {t.get('status')!r}")
+                err(t, f"{t['type']} description is missing or a placeholder: {desc!r}")
+            if t.get("status") not in NODE_STATES:
+                err(t, f"{t['type']} status must be one of {sorted(NODE_STATES)}: "
+                       f"{t.get('status')!r}")
             for banned in ("hitl", "severity"):
                 if banned in t:
                     err(t, f"{banned} is not an epic field")
         else:
-            if t.get("status") not in KNOWN_STATES:
-                err(t, f"status must be one of {sorted(KNOWN_STATES)}: {t.get('status')!r}")
+            if t.get("status") not in LEAF_STATES:
+                err(t, f"status must be one of {sorted(LEAF_STATES)}: {t.get('status')!r}")
             if not isinstance(t.get("hitl"), bool):
                 err(t, f"hitl must be true or false: {t.get('hitl')!r}")
             if t["type"] == "bug":
@@ -702,8 +800,11 @@ def main():
                  "coverage", "graph", "render", "archive"):
         p = sub.add_parser(verb)
         p.add_argument("--root", required=True, help="ticket tree root")
-        if verb in ("next-id", "index"):
-            p.add_argument("--key", help="project key (else read from index.md)")
+        if verb == "next-id":
+            p.add_argument("--key", help="project key (else the root node's id prefix)")
+        if verb == "index":
+            p.add_argument("--out", required=True,
+                           help="path for the generated navigation map")
         if verb == "coverage":
             p.add_argument("--require", help="inventory ids, comma-separated")
             p.add_argument("--proposed", help="ids a not-yet-written proposal covers, comma-separated")

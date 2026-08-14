@@ -10,10 +10,16 @@ status changes only along allowed lifecycle transitions. The body below
 the frontmatter is never touched. Output is one JSON object; errors name
 the fix and exit non-zero.
 
+Leaves run backlog → in-progress → review → done; nodes (project, epic) run
+backlog → ready → in-progress → done; either drops from any active state.
+Both graphs are stored facts — a node's state is never calculated from its
+children, so `done` can never flip because somebody added a child.
+
 Usage:
   uv run update_ticket.py --root <tickets-root> --id KEY-n --set status=in-progress
   uv run update_ticket.py --path <ticket.md> --set risk=4 --set hitl=true
   ... [--transitions "backlog>in-progress,in-progress>review,..."]
+  ... [--node-transitions "backlog>ready,ready>in-progress,..."]
 
 Stdlib only. Dual-homed: canonical at src/scripts/ (installed to
 {project-root}/_bmad/scripts/ for any skill or agent to call); bmad-ticket
@@ -41,6 +47,22 @@ DEFAULT_TRANSITIONS = [
     "review>dropped",
 ]
 
+# Nodes (project, epic) run their own lifecycle. `ready` means inception is
+# finished and work can start — it gates nothing; it records that someone
+# decided. `done` is likewise a deliberate call, never a counter hitting zero.
+DEFAULT_NODE_TRANSITIONS = [
+    "backlog>ready",
+    "backlog>in-progress",
+    "backlog>done",
+    "backlog>dropped",
+    "ready>backlog",
+    "ready>in-progress",
+    "ready>done",
+    "ready>dropped",
+    "in-progress>done",
+    "in-progress>dropped",
+]
+
 IMMUTABLE = {"schema", "id", "type", "created"}
 LIST_FIELDS = {"depends_on", "covers"}
 INT_FIELDS = {"risk": (1, 5), "severity": (1, 5)}
@@ -50,6 +72,11 @@ PLAIN_STR_FIELDS = {"discovered_from"}
 
 LEAF_FIELDS = {"title", "status", "depends_on", "covers", "discovered_from", "risk", "hitl"}
 EPIC_FIELDS = {"title", "description", "depends_on", "covers", "risk", "status"}
+# The project node scores nothing (risk and hitl are execution-altitude) and
+# carries the tracker-shaped set instead.
+PROJECT_FIELDS = {"title", "description", "status", "owner", "target", "tags",
+                  "external", "spec"}
+NODE_TYPES = ("project", "epic")
 
 ID_RE = re.compile(r"^[A-Za-z][A-Za-z0-9]*-\d+$")
 
@@ -180,9 +207,13 @@ def collect_tree(root):
     id -> list of duplicate paths. Uses the same parser as the target file so
     quoted ids and block-style lists resolve identically everywhere."""
     ids, deps, dups = {}, {}, {}
-    for p in sorted(root.rglob("*.md")):
-        if p.name == "index.md":
-            continue
+    # Only the root node and everything under root/tickets/. The project
+    # folder's sibling content (prd/, spec/, brief/) carries frontmatter ids
+    # of its own and must never be mistaken for tickets.
+    candidates = sorted((root / "tickets").rglob("*.md")) if (root / "tickets").is_dir() else []
+    if (root / "ticket.md").is_file():
+        candidates.insert(0, root / "ticket.md")
+    for p in candidates:
         if any(part.startswith(".") for part in p.relative_to(root).parts):
             continue  # dot folders (.archive/, .git/) are not the live tree
         try:
@@ -234,8 +265,12 @@ def main():
     ap.add_argument("--set", action="append", default=[], metavar="FIELD=VALUE",
                     help="field to set; repeatable; lists are comma-separated")
     ap.add_argument("--transitions", default=None,
-                    help='allowed status moves as "from>to,from>to"; defaults to the '
+                    help='allowed leaf status moves as "from>to,from>to"; defaults to the '
                          "skill's customize.toml lifecycle_transitions, else built-ins")
+    ap.add_argument("--node-transitions", default=None,
+                    help='allowed node (project, epic) status moves as "from>to,from>to"; '
+                         "defaults to the skill's customize.toml "
+                         "node_lifecycle_transitions, else built-ins")
     ap.add_argument("--hitl-threshold", type=int, default=None,
                     help="risk level at/above which hitl derives true; defaults to the "
                          "skill's customize.toml hitl_threshold, else 3")
@@ -251,6 +286,9 @@ def main():
     if args.transitions is None:
         cfg_transitions = cfg.get("lifecycle_transitions") or DEFAULT_TRANSITIONS
         args.transitions = ",".join(str(t) for t in cfg_transitions)
+    if args.node_transitions is None:
+        cfg_node = cfg.get("node_lifecycle_transitions") or DEFAULT_NODE_TRANSITIONS
+        args.node_transitions = ",".join(str(t) for t in cfg_node)
     hitl_threshold = args.hitl_threshold
     if hitl_threshold is None:
         ht = cfg.get("hitl_threshold", DEFAULT_HITL_THRESHOLD)
@@ -281,8 +319,8 @@ def main():
     if args.root and tree_ids is None:
         tree_ids, tree_deps, _ = collect_tree(Path(args.root))
 
-    transitions = set(t.strip() for t in args.transitions.split(",") if t.strip())
-    known_states = {"backlog"} | {s for t in transitions for s in t.split(">")}
+    leaf_transitions = set(t.strip() for t in args.transitions.split(",") if t.strip())
+    node_transitions = set(t.strip() for t in args.node_transitions.split(",") if t.strip())
 
     text = path.read_text(encoding="utf-8")
     lines = text.splitlines(keepends=True)
@@ -292,10 +330,15 @@ def main():
         fail(str(e))
     fm = {e["key"]: e["value"] for e in entries}
     ticket_type = fm.get("type")
-    if ticket_type not in ("epic", "story", "bug", "task", "spike"):
+    if ticket_type not in NODE_TYPES + ("story", "bug", "task", "spike"):
         fail(f"unsupported or missing type '{ticket_type}' in {path.name}")
 
-    allowed = set(EPIC_FIELDS) if ticket_type == "epic" else set(LEAF_FIELDS)
+    if ticket_type == "project":
+        allowed = set(PROJECT_FIELDS)
+    elif ticket_type == "epic":
+        allowed = set(EPIC_FIELDS)
+    else:
+        allowed = set(LEAF_FIELDS)
     if ticket_type == "bug":
         allowed.add("severity")
 
@@ -312,16 +355,18 @@ def main():
             fail(f"'{field}' is not writable on a {ticket_type} — writable: {', '.join(sorted(allowed))}")
         updates[field] = coerce(field, raw, ticket_type)
 
-    # Status gating.
+    # Status gating. Leaves and nodes run different graphs, through one gate:
+    # every move is deliberate at both altitudes, and nothing is calculated.
     if "status" in updates:
+        transitions = node_transitions if ticket_type in NODE_TYPES else leaf_transitions
+        known_states = {"backlog"} | {s for t in transitions for s in t.split(">")}
         new_status = updates["status"]
+        # A node written before it carried a status reads as backlog, the same
+        # default the tree scanner applies — never a dead end.
         current = fm.get("status")
-        if ticket_type == "epic":
-            if new_status not in ("done", "dropped"):
-                fail("epics compute progress from children — the storable epic statuses "
-                     "are 'done' (an intentional call: retrospective or the user) and "
-                     "'dropped'; neither is ever calculated")
-        elif new_status != current:
+        if current is None and ticket_type in NODE_TYPES:
+            current = "backlog"
+        if new_status != current:
             if new_status not in known_states:
                 fail(f"unknown status '{new_status}' — known: {', '.join(sorted(known_states))}")
             if current is None:
@@ -334,7 +379,7 @@ def main():
 
     # Derive hitl when risk is set without an explicit hitl: raise to true at the
     # threshold, never lower automatically (an explicit --set hitl always wins).
-    if ticket_type != "epic" and "risk" in updates and "hitl" not in updates:
+    if ticket_type not in NODE_TYPES and "risk" in updates and "hitl" not in updates:
         if updates["risk"] >= hitl_threshold and fm.get("hitl") is not True:
             updates["hitl"] = True
 
