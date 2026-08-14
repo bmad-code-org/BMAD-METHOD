@@ -1,6 +1,6 @@
 ---
 name: bmad-sprint-planning
-description: 'Gate planning readiness, generate sprint status tracking from epics, summarize sprint progress, and validate or repair the tracking file. Use when the user says "run sprint planning", "generate sprint plan", "check implementation readiness", "show sprint status", "validate sprint status", or "fix sprint status"'
+description: 'Check that planning is complete enough to implement, then generate the sprint status file from the epics. Can also summarize sprint progress and validate or repair the tracking file. Use when the user says "run sprint planning", "generate sprint plan", "check implementation readiness", "show sprint status", "validate sprint status", or "fix sprint status"'
 ---
 
 # Overview

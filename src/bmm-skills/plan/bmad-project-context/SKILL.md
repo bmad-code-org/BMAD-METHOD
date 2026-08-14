@@ -1,74 +1,121 @@
 ---
 name: bmad-project-context
-description: 'Curate and maintain verified project context for AI agents. Use when the user says "project context", "document project", "generate project context", "refresh context", or "audit context"'
+description: 'Set up, adopt, refresh, or audit a repository''s agent instructions (the AGENTS.md block) so AI agents work well in that repo. Also records observed agent mistakes as pitfalls. Must be invoked by name'
 ---
 
 # Overview
 
-You are the curator of everything the code can't say. This skill builds and maintains a project's context system: a tiny always-loaded **kernel** and a **bundle** of small verified knowledge entries — architecture rationale, unobvious conventions, landmines, org requirements. The governing thesis, backed by measurement: generated documentation makes agents worse; a curated minimum of verified, non-derivable truths makes them better. So you curate the minimum non-derivable set and never describe what the code already says.
+A conversation that produces a repository's agent instructions: a small verified block inside `AGENTS.md`. The user brings rules they want followed — governance, security, standards — and the repository supplies the rest, verified.
 
-Works with a full BMad install or standalone in any repo with no framework at all.
+Conversational always; the user approves every write.
 
-**Args:** intent (`ingest` | `query` | `audit`); `--auto` for headless; a scope path to bound the run; placement (`bmad` | `agent-files` | `both`); a bundle-root override; extra source paths or URLs to mine. Supplied values are used directly and skip their questions. Script interface: `uv run {skill-root}/scripts/context.py --help`.
+**Args:** intent (`setup` | `adopt` | `refresh` | `record` | `audit`); a target repo or path; extra source paths or URLs.
 
 ## Resolution rules
 
-- Bare paths and `{skill-root}` (e.g. `references/kernel-contract.md`) resolve from this skill's installed directory.
+- Bare paths and `{skill-root}` (e.g. `references/best-practices.md`) resolve from this skill's installed directory.
 - `{project-root}` → the project working directory.
+- **Target** → the repository being described, defaulting to `{project-root}`. If it resolves to more than one working tree, or to one the user cannot commit in, ask before writing.
 
 ## On Activation
 
 1. Resolve customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`. On failure, read `{skill-root}/customize.toml` directly and use defaults. Execute `{workflow.activation_steps_prepend}`; treat `{workflow.persistent_facts}` entries as standing context (`file:` = paths/globs to load, others verbatim).
-2. Mechanics: every mechanical fact comes from the script, never from guessing. If `{project-root}/_bmad/scripts/context.py` is missing (standalone repo), run `uv run {skill-root}/scripts/context.py bootstrap` once — it installs itself there. All later calls: `uv run {project-root}/_bmad/scripts/context.py <command>` (`--json` on any command for machine reads; `--help` for the full interface).
-3. Config comes from one resolution, never hand-merged: `uv run {project-root}/_bmad/scripts/context.py config --json`. It delegates to the installed BMad resolver (`resolve_config.py`) when present and otherwise falls back through the legacy and standalone config files itself, so the script and this session can never disagree about paths. Read `{user_name}`, `{communication_language}` (use it every turn), `{document_output_language}`, `{project_knowledge}`, `{output_folder}` (standalone default `_bmad-output`), and `context_placement` from its output.
-4. **First run** (no kernel at `{project_knowledge}/kernel.md`), interactive only: load `references/placement.md` and settle the bundle location and placement there. In auto mode: detect (BMad install → bmad, else agent-files), record `context_placement`, don't ask.
-5. Init or resume the memlog at `{project_knowledge}/.memlog.md` (`uv run {project-root}/_bmad/scripts/memlog.py init --path ...` if absent; if present, read it once — it is the record of every prior run, and refresh diffs against it instead of starting over). If `memlog.py` itself is missing (standalone repo), append one-line typed entries to the same file directly — append-only, never rewritten.
-6. Detect intent — **ingest** (build or refresh; the default), **query** (answer from the bundle), **audit** (shrink and re-verify) — and greet `{user_name}`. For interactive ingest, ask what they bring before anything scans: sources outside the repo (org handbooks, wiki or Notion exports, prior architecture docs, MCP knowledgebases) and any area to focus on — note the paths for subagent scanning, don't read them now; when a named source is huge, ask one bounding question rather than scanning it whole. Fold `{workflow.external_sources}` entries into the same source list. Auto mode skips the ask, scans what's discoverable, and logs that as an assumption. Execute `{workflow.activation_steps_append}`.
+2. Config: if `{project-root}/_bmad` exists, `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}` and read `{user_name}`, `{communication_language}` (use it every turn), `{output_folder}`. Standalone: skip.
+3. **Load `references/best-practices.md` and `references/template.md` before anything else.** Every decision below is made against them.
+4. Detect intent and greet `{user_name}`: **setup** (no instruction file in the target carries meaningful content — scaffolding alone, empty headings, a comment, a lone import line, is not meaningful; when unsure, adopt, since adopting a near-empty file costs one small ledger while setting up a meaningful one loses instructions), **adopt** (an instruction file has content but no managed block, whatever its state and whoever wrote it — the migration form of refresh; that file is the baseline and every instruction in it enters the ledger of step 1), **refresh** (a managed block exists), **record** (the user reports a mistake agents made), **audit** (re-verify and prune). A supplied intent that contradicts what detection finds — e.g. `setup` against a file with content — is surfaced and confirmed, never silently obeyed. Fold `{workflow.external_sources}` into the source list. Execute `{workflow.activation_steps_append}`.
 
-## Engine disciplines — every intent, every mode
+## Setup, Adoption, and Refresh Steps
 
-- Every user decision, confirmed claim, rejected claim, and idea lands in the memlog the moment it happens — never batched for session end.
-- **Orchestrate the scanning.** Discovery is yours to plan with whatever tools fit, but make good use of parallel subagents: they scan, returning claims with evidence paths and an inferred|needs-confirmation mark; you interrogate and decide, and never grind a large tree through your own context.
+No writes until step 5!
 
-## Writing rules — every kernel line, entry, and compass
+### 1. Assess and report
 
-- **Succinct to the point of discomfort.** Every sentence costs context in every future session. If a line can be shorter, it isn't done.
-- **Present truth only.** State what *is*, never the story of the edit — "we removed X because..." is banned prose. Git and the memlog hold history; supersession is a dated frontmatter field.
-- **No reference without a link.** Every mentioned decision, doc, file, or system carries a path, `[[project:entry]]` link, or URL a fresh context can follow. "As previously discussed" is banned.
+Read `AGENTS.md`, harness or agent specific rule files, docs folders, and any notes carrying lessons. Report what exists and how it measures up, per `best-practices.md`.
 
-## Ingest
+Existing instructions are the baseline being improved, never raw material to discard. Open a **ledger**: one entry per existing section and per independently meaningful instruction, opened at `retain` or `rewrite`, carrying what an agent would get wrong without it. Entries settle as evidence arrives in steps 2–4 — `retain | rewrite | relocate | automate | delete`, each with its reason, its evidence, the risk if it goes, a destination for a relocation, and an approval flag. Deletion needs one of the four grounds in `best-practices.md`, and a relocation destination must itself be loaded or sit behind an observable trigger — a move into a file nothing reads is a deletion and needs its ground. Setup has nothing to map and opens no ledger; refresh opens entries for the lines it proposes to change or remove, the block's own included. A lesson found outside the instruction files — a warning in a README, a notes file — is an ordinary candidate, not a ledger entry.
 
-The outcome: a kernel within its instruction budget and bundle entries for what earned depth — every claim verified (user-confirmed or path-checked, interactive only; auto mode writes the same content marked `generated`) before it's written as truth. Contracts govern the artifacts: load `references/kernel-contract.md` and `references/bundle-contract.md` before writing either.
+If the target contains separable units — a workspace manifest listing members, or directories carrying their own build manifest — name them and ask whether this run covers the root only, all of them, or which. Absent that evidence, do not ask. Sibling repositories are not children; each is its own target, offered in turn.
 
-**Brownfield:** discover the repo however you judge best, then fan out the source scan (trust ladder: code and configs are ground truth; planning docs next — an ARCHITECTURE-SPINE is the premier source; existing docs folders, org docs, and MCP knowledgebases are untrusted until verified against code). Then interrogate in chunked rounds per `references/interrogation-guide.md` — confirmations first, then only the genuinely unknowable. Never ask what a scan could answer. A bloated docs folder is a source to strip-mine, then recommend archiving.
+### 2. Ask what they bring
 
-**Greenfield:** same pipeline seeded from a bmad-spec artifact or planning doc (or pure interview). If a genuinely contested decision surfaces — real tradeoffs, multiple viable shapes — say it deserves `bmad-architecture` rather than making the call: decisions are born there; they *live* here.
+Rules to follow regardless of what the repo does: governance, security and compliance, coding standards, style guides, frozen areas. Ask for outside documents too — handbooks, wikis, architecture docs, MCP knowledgebases. Note the paths; do not read them yet.
 
-**Refresh:** ingest with existing artifacts — read the memlog, run `sweep`, diff instead of restarting, never re-ask what a prior run settled. Sweep findings resolve against code, not prose: when a path a claim names is gone, the claim is updated to the new reality or removed/marked superseded — re-pointing its `sources` at documents that merely mention it is laundering, not verification. Total size must hold or shrink.
+Greenfield: this is the whole content. Brownfield: it is the half no scan reaches.
 
-**Scope:** whole repo or a component; in a monorepo, global truths go in the root kernel, component truths in that component's compass. After writing: `index`, then `validate` — its stats block is the measured budget check; an over-budget finding means cut, never raise. Under agent-files/both placement, `sync --dry-run` first and show which files it will touch (confirm on the session's first sync; auto mode skips the ask and logs the written list to the memlog), then `sync`. Close with a fresh-eyes polish pass: a subagent holding only the written artifacts and the two contract files — none of this conversation — returns proposed cuts and rewrites (line, which test it fails, replacement or delete); apply or override, logging overrides to the memlog. The writer who just heard every line justified cannot honestly run the pruning test on it. If subagents are unavailable, run the pass yourself against the contracts. Log the run's summary to the memlog and offer a face artifact.
+### 3. Discover and verify
 
-## Query
+Fan out with parallel subagents against what the sections need — executable config and CI for policy and for what they already state, tracked source for conventions and boundaries, targeted history for constraints whose reason must still hold.
 
-Answer a question from the bundle without loading all of it: resolve through `index.md`, and return only the relevant entries with their trust metadata (`verified`/`generated`, sources, staleness — staleness read from `sweep --json`, never recomputed; field semantics in `references/bundle-contract.md`). Anything outside this repo — a `[[project:entry]]` link, a question about another project — goes through `resolve <name>` only, which returns a local path, SHA, and freshness; never crawl the filesystem or workspace for another project's context, because the same query must work when that project isn't checked out. Never dump the bundle. If the bundle can't answer, say so — don't improvise an answer the context doesn't hold.
+`package.json`, a `Makefile`, `pyproject.toml`, contribution guides, pull request templates, and CI config are read to know what the block must not repeat. Their caveats come from the human in step 4. Path-check every claim naming a file. For every claim the block will make about what a command does, read the target or script that runs it and verify the claim.
+
+Each child agreed in step 1 is scanned as its own scope, against its own manifests.
+
+### 4. Interview the gaps
+
+Only what no scan reaches: what agents keep getting wrong here, what is off limits, what a domain term means, why a constraint exists.
+
+- Never ask what a scan could answer. Asking the user to confirm a path-checked claim, or one a config file already states, is a defect.
+- Ask recall questions, not review lists. Never hand the user a selection problem a scan created.
+- A mistake this session made and caught is observed evidence — offer it.
+- A repeatable command spotted in anything read this session — a log, a doc, its own runs — whose correct form is not the obvious guess is a candidate line: offer it. E.g. `uv run pytest` where plain `pytest` looks right but runs outside the project environment.
+- Batches of at most eight; fewer is better. A batch yielding nothing new means write.
+- When the repo contradicts the user, show the evidence and ask. Never write the claim as given, never drop it silently.
+
+### 5. Show the block, then write it
+
+Compose against `template.md`. For each candidate, ask first whether a hook, lint rule, or CI check enforces it better than prose; if so propose the check, and the line becomes the fallback if they decline. A ledger entry marked `automate` keeps its instruction until its check is in place (a later run deletes the line under ground 2 once the check is live).
+
+**Show the complete block before writing it**, and every child block alongside it — one approval covers the set. **Present the settled ledger with it**: replacement text alone is an incomplete proposal, because it shows what the user gains and hides what they lose. Every existing instruction appears with its decision and reason. Retains and rewrites that keep the full rule may be grouped. If a rewrite weakens, narrows, or drops part of a rule, treat the lost part as a deletion and list it separately. Keep the rule itself; examples may explain it but cannot replace it. Every relocation, automation, and deletion is itemized. A deletion resting on none of the first three grounds is held for line-item approval — approving the block never approves it — and a declined deletion, relocation, or automation reverts to retain. On approval, splice between the markers — the splice itself touches nothing outside them. Text outside the markers changes only through a settled ledger entry or a proposed fix the user has seen, never as a side effect of the splice. Fill each provenance line with today's date and the verified SHA.
+
+Where an instruction elsewhere contradicts the block in a way that changes behavior — a stale `CLAUDE.md` line, a retired command — propose the fix to that file. Two live contradictory instructions is a defect.
+
+Never commit.
+
+### 6. Close
+
+- What went in, what was left out and why, and — after adoption or refresh — where each existing instruction landed.
+- Why, in the user's terms, from `best-practices.md` — why it is small, why what the repo already states stays out, why a pitfall stays until its cause is gone.
+- How it loads, and that other harness files can point at it.
+- Any branch, ticket, commit, or pull request rules that apply when the user submits these instruction changes.
+- Maintenance: re-run after significant change, `record` the moment an agent gets something wrong, prefer a check over a new line.
+- Rules repeating across their projects, or personal rather than the team's, belong in their global agent config.
+
+### Refresh
+
+Same steps, step 1 as a diff. Read the provenance line, re-verify every path and every caveat, and run `git log --diff-filter=DR --name-only` since the recorded SHA against every line — update or remove lines whose evidence is gone. Every proposed removal is a ledger entry shown in step 5, never a silent edit, and handwritten instructions outside the block are treated as in adoption — any proposal touching them enters the ledger. Never re-ask what a prior run settled; the interview shrinks to what changed about how the team works. The block grows only on new evidence.
+
+### Adoption
+
+Refresh against instructions this skill has never touched. Nothing was settled by a prior run, so the full interview applies — and the file itself is maintainer testimony, so the ledger is the run's main output: the user should be able to read it and see where each of their instructions went.
+
+The proposal states what remains of every file instructions were moved out of — commonly a `CLAUDE.md` reduced to `@AGENTS.md`, once that import is verified for every harness in use, like any loading mechanism. No instruction lives in two loaded files, where it is paid for twice; a duplicate, verbatim or reworded, is kept once — the block keeps the survivor — and that settles both entries.
+
+### Greenfield
+
+Seeded from a spec or planning document, or interview alone. Commands that do not exist yet are written as explicit TODOs naming the decided stack, never a guessed invocation stated as fact, and verified on the first refresh after code exists. A genuinely contested design decision — real tradeoffs, multiple viable shapes — goes to `bmad-architecture`.
+
+### Migration
+
+If the target has a `project-context.md` from the retired skills, commonly under `{output_folder}`, read it in step 1 and offer to absorb its content. Do not delete it without agreement, and do not silently orphan it.
+
+## Record
+
+Capture one observed agent mistake as it happens — the only admissible source for a pitfall.
+
+Take the task, the mistake, the correction, and its evidence. Check the block for a line already covering it. One occurrence is noted; a recurring or costly mistake earns a line now — an exact invocation under **Running and verifying** when it is a command error, otherwise a pitfall. Write it and show the diff. If it is mechanically preventable, propose the hook, lint rule, or CI check instead.
 
 ## Audit
 
-Keep the set small and true: run `validate` and `sweep` — sweep's `missing` list is the path-check for every claim naming a file, and validate's stats block measures the kernel budget — and apply the pruning test to every kernel line — *would removing this line change agent behavior?* If no, it goes. Entries that paraphrase readable code are deleted; unconfirmed `generated` entries are queued for confirmation. Load `references/bundle-contract.md` before mutating any entry — the frontmatter it acts on is defined there. Where an obeya is configured, propose batched promotion of `org-candidate` entries. Audit ends with the context smaller or equal, never larger — present proposed deletions for confirmation (interactive) before removing; in auto mode deletions proceed and every removal lands in the memlog as a typed entry.
+Re-check every caveat, path-check every file, follow every pointer, and ask of every line whether removing it would change agent behavior. Verify each command claim against the target or script that runs it. Check for contradictions with other instruction files.
 
-## Modes
+Failing lines get fixed, move behind an observable trigger, or become ledger entries: a removal needs one of the four grounds in `best-practices.md`, presented and settled as in step 5 before anything is removed. **A policy or pitfall goes only when the thing it guards is gone or the user retires it; nothing failing lately is not grounds.** Audit ends smaller or equal.
 
-Interactive is the default: the user is the oracle, in chunked rounds. **Auto mode** (headless, or on request) accepts inferences without confirmation — everything it writes, including path-checked claims, is marked `generated`, never `verified` (`verified` asserts a human was in the loop), and every assumption lands in the memlog. A headless invocation may supply intent (`ingest`|`query`|`audit`), a scope path, a placement, and a bundle root — supplied values are used directly; only genuinely absent ones are inferred, each inference logged as an `assumption`. When invoked headless: never ask; if intent is neither supplied nor inferable, halt with a `blocked` JSON status and `reason`. End with JSON:
+## Children
 
-```json
-{"status": "complete", "intent": "ingest", "kernel": "docs/kernel.md",
- "bundle": "docs/", "memlog": "docs/.memlog.md", "placement": "agent-files"}
-```
+A component, nested repository, or extracted rules file gets its own file under the same shape when work keeps landing there and every condition holds: its rules are subtree-exclusive, they are substantial (a handful of rules is not a file), the split materially reduces the parent block, the loading mechanism is verified for every harness in use — checked, never assumed — and the user approves the split. Even with verified loading, keep a rule at the root when it must apply before a session enters that directory or when breaking it can affect work outside the child. Otherwise the rules stay in the parent block as path-qualified lines ("in `src/importer/`: ..."), which cost less than a file nobody loads. Why the loading check: `best-practices.md`.
 
-## Face artifacts
+Use a linked file only when the trigger is not a path.
 
-On request after any intent, generate a human-readable face of the context — always asking its purpose first so it fits (a slide deck for one subsystem, a website of everything, a service explainer). Faces are written outside the bundle (default `{output_folder}`), never indexed, never cited as a source, and regenerated rather than maintained: the organized, indexed markdown is the only source of truth.
+A chosen child that ends with nothing its parent does not already say gets no file. Say so and move on.
 
-## Finalize
-
-Distill the memlog — every meaningful entry captured in an artifact or set aside as noise — confirm `validate` exits clean, tell the user what exists where (and what was *not* created, if kernel-only). When `AGENTS.md` carries the kernel, say plainly: if your harness doesn't auto-load `AGENTS.md`, make the context file it does load pull this one in (e.g. a `CLAUDE.md` containing `@AGENTS.md`). Then run `{workflow.on_complete}` if non-empty.
+List every child in the parent's **Where things are** with one line and its path. Discovery never depends on the harness finding it.

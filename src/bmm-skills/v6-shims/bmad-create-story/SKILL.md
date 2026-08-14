@@ -1,6 +1,8 @@
 ---
 name: bmad-create-story
-description: "Deprecated: `bmad-build` is now the official implementation method. Only use this when explicitly invoked by name."
+description: "Deprecated: `bmad-build` is now the official implementation method. Only use this when explicitly invoked by name"
+metadata:
+  lifecycle: shim
 ---
 
 # Create Story Workflow
@@ -30,7 +32,7 @@ If you need an explicit user instruction to run them, ask once now for the whole
 
 ### Step 1: Resolve the Workflow Block
 
-Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`
+Run: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`
 
 **If the script fails**, resolve the `workflow` block yourself by reading these three files in base → team → user order and applying the same structural merge rules as the resolver:
 
@@ -428,7 +430,7 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
 
     **The developer now has everything needed for flawless implementation!**
   </output>
-  <action>Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete` — if the resolved value is non-empty, follow it as the final terminal instruction before exiting.</action>
+  <action>Run: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete` — if the resolved value is non-empty, follow it as the final terminal instruction before exiting.</action>
 </step>
 
 </workflow>

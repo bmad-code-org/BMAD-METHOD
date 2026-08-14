@@ -5,7 +5,7 @@
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Community-7289da?logo=discord&logoColor=white)](https://discord.gg/gk8jAdXWmj)
 
-**筑梦架构（Build More Architect Dreams）** —— 简称 “BMAD 方法”，面向 BMad 模块生态的 AI 驱动敏捷开发方法。它会随项目复杂度调整工作深度，从日常 bug 修复到企业级系统建设都能适配。
+**Agile Ai Driven Development（敏捷 AI 驱动开发）** —— Ai Driven Development（AiDD）关注的不只是代码，还包括做什么、如何组织，以及在认知变化时如何调整。BMad Method 是实践 AiDD 的敏捷方式：决策保持显式，上下文持续传递，流程随工作量自动调整。同一套方法既适用于周末原型，也适用于有多年历史的系统。
 
 **100% 免费且开源。** 没有付费墙，没有封闭内容，也没有封闭 Discord。我们希望每个人都能平等获得高质量的人机协作开发方法。
 
@@ -56,19 +56,21 @@ npx bmad-method install --directory /path/to/project --modules bmm --tools claud
 
 BMad 可通过官方模块扩展到不同专业场景。你可以在安装时选择，也可以后续随时补装。
 
-| 模块                                                                                                                | 用途                           |
-| ----------------------------------------------------------------------------------------------------------------- | ---------------------------- |
-| **[BMad Method (BMM)](https://github.com/bmad-code-org/BMAD-METHOD)**                                             | 核心框架，内含 34+ 工作流         |
-| **[BMad Builder (BMB)](https://github.com/bmad-code-org/bmad-builder)**                                           | 创建自定义 BMad 智能体与工作流     |
-| **[Test Architect (TEA)](https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise)**             | 基于风险的测试策略与自动化         |
-| **[Game Dev Studio (BMGD)](https://github.com/bmad-code-org/bmad-module-game-dev-studio)**                        | 游戏开发工作流（Unity/Unreal/Godot） |
-| **[Creative Intelligence Suite (CIS)](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite)** | 创新、头脑风暴、设计思维           |
+| 模块                                                                                                             | 用途                                                                    |
+| ---------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| **[BMad Method](https://github.com/bmad-code-org/BMAD-METHOD)**                                                  | 规划并交付软件，覆盖全新原型到成熟代码库                                |
+| **[BMad Builder](https://github.com/bmad-code-org/bmad-builder)**                                                | 技能、工作流与智能体构建器                                              |
+| **[BMad Creative Intelligence Suite](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite)** | 创意思考伙伴：创新、设计思维与叙事                                      |
+| **[BMad Test Architect](https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise)**             | 面向 BMad Method 的企业级测试扩展模块                                   |
+| **[BMad Loop](https://github.com/bmad-code-org/bmad-loop)**                                                      | 无人值守地构建、验证并复盘整个 Epic                                     |
+| **[BMad Game Dev Studio](https://github.com/bmad-code-org/bmad-module-game-dev-studio)**                         | 构思、设计并开发游戏，支持任意框架，包括 Unity、Unreal、Godot 与 Phaser |
 
 ## 文档
 
 [BMad 方法文档站点](https://docs.bmad-method.org/zh-cn/) — 教程、指南、概念和参考
 
 **快速链接：**
+
 - [入门教程](https://docs.bmad-method.org/zh-cn/tutorials/getting-started/)
 - [从旧版本升级](https://docs.bmad-method.org/zh-cn/how-to/upgrade-to-v6/)
 - [测试架构师文档（英文）](https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/)

@@ -2,7 +2,7 @@
 title: "Tickets and Specs"
 description: How BMad turns any input into epics and stories, why stories are written just-in-time and archived when done, and what your job is as the human partner.
 sidebar:
-  order: 18
+  order: 17
 ---
 
 A ticket is a package of context: everything an AI agent needs to build one piece of work without guessing. This page explains how BMad thinks about tickets and specs, what the ticket tree is, and — most importantly — what *your* job is when you and the LLM write them together.

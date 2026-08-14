@@ -1,6 +1,6 @@
 ---
 name: bmad-qa-generate-e2e-tests
-description: 'Generate end to end automated tests for existing features. Use when the user says "create qa automated tests for [feature]"'
+description: 'Generate automated API and end-to-end tests for implemented features. Use when the user says "create qa automated tests for [feature]"'
 ---
 
 # QA Generate E2E Tests Workflow
@@ -20,7 +20,7 @@ description: 'Generate end to end automated tests for existing features. Use whe
 
 ### Step 1: Resolve the Workflow Block
 
-Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`
+Run: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`
 
 **If the script fails**, resolve the `workflow` block yourself by reading these three files in base → team → user order and applying the same structural merge rules as the resolver:
 
@@ -171,6 +171,6 @@ Save summary to: `{default_output_file}`
 
 ## On Complete
 
-Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete`
+Run: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete`
 
 If the resolved `workflow.on_complete` is non-empty, follow it as the final terminal instruction before exiting.

@@ -1,6 +1,6 @@
 ---
 name: bmad-prfaq
-description: Working Backwards PRFAQ challenge that stress-tests a product concept customer-first. Use when the user requests to 'create a PRFAQ', 'work backwards', or 'run the PRFAQ challenge'.
+description: "Test a product concept with Amazon's Working Backwards method: write the press release for the finished product first, then answer hard customer and stakeholder questions, ending in a complete PRFAQ document. Use when the user requests to 'create a PRFAQ', 'work backwards', or 'run the PRFAQ challenge'"
 ---
 
 # Working Backwards: The PRFAQ Challenge
@@ -30,7 +30,7 @@ The PRFAQ forces customer-first clarity: write the press release announcing the 
 
 ### Step 1: Resolve the Workflow Block
 
-Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`
+Run: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`
 
 **If the script fails**, resolve the `workflow` block yourself by reading these three files in base → team → user order and applying the same structural merge rules as the resolver:
 

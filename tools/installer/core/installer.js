@@ -13,6 +13,7 @@ const { InstallPaths } = require('./install-paths');
 const { ExternalModuleManager } = require('../modules/external-manager');
 const { resolveModuleVersion } = require('../modules/version-resolver');
 const { MODULE_HELP_CSV_HEADER } = require('../modules/module-help-schema');
+const { inferShimPreference, readInstalledSkillIds } = require('./shim-policy');
 
 const { ExistingInstall } = require('./existing-install');
 const { warnPreNativeSkillsLegacy } = require('./legacy-warnings');
@@ -42,6 +43,21 @@ class Installer {
       const paths = await InstallPaths.create(config);
       const officialModules = await OfficialModules.build(config, paths);
       const existingInstall = await ExistingInstall.detect(paths.bmadDir);
+      const availableShims = await officialModules.discoverShims(config.modules, {
+        channelOptions: config.channelOptions,
+      });
+      const previousManifest = existingInstall.installed ? await this.manifest.read(paths.bmadDir) : null;
+      const installedSkillIds = existingInstall.installed ? await readInstalledSkillIds(paths.bmadDir) : new Set();
+      const shimPolicy = {
+        available: availableShims.length > 0,
+        install: inferShimPreference({
+          requested: config.installShims,
+          persisted: previousManifest?.installShims,
+          availableShims,
+          installedSkillIds,
+          existing: existingInstall.installed,
+        }),
+      };
 
       try {
         await warnPreNativeSkillsLegacy({
@@ -92,6 +108,7 @@ class Installer {
         addResult,
         officialModules,
         previousSkillManifestRows,
+        shimPolicy,
       );
 
       await this._setupIdes(config, allModules, paths, addResult, previousSkillIds);
@@ -225,9 +242,11 @@ class Installer {
     addResult,
     officialModules,
     previousSkillManifestRows = [],
+    shimPolicy = null,
   ) {
     const isQuickUpdate = config.isQuickUpdate();
     const moduleConfigs = officialModules.moduleConfigs;
+    const resolvedShimPolicy = shimPolicy || { available: false, install: false };
 
     const dirResults = { createdDirs: [], movedDirs: [], createdWdsFolders: [] };
 
@@ -251,6 +270,7 @@ class Installer {
           await this._installOfficialModules(config, paths, officialModuleIds, addResult, isQuickUpdate, officialModules, {
             message,
             installedModuleNames,
+            shimPolicy: resolvedShimPolicy,
           });
 
           return `${allModules.length} module(s) ${isQuickUpdate ? 'updated' : 'installed'}`;
@@ -325,6 +345,8 @@ class Installer {
           ides: config.ides || [],
           preservedModules: modulesForCsvPreserve,
           moduleConfigs,
+          installShims: resolvedShimPolicy.install,
+          shimsAvailable: resolvedShimPolicy.available,
         });
         await this._appendPreservedSkillManifestRows(paths.bmadDir, previousSkillManifestRows, preservedModules);
 
@@ -727,7 +749,7 @@ class Installer {
    * @param {Object} ctx - Shared context: { message, installedModuleNames }
    */
   async _installOfficialModules(config, paths, officialModuleIds, addResult, isQuickUpdate, officialModules, ctx) {
-    const { message, installedModuleNames } = ctx;
+    const { message, installedModuleNames, shimPolicy } = ctx;
     const { CustomModuleManager } = require('../modules/custom-module-manager');
 
     for (const moduleName of officialModuleIds) {
@@ -749,6 +771,7 @@ class Installer {
           installer: this,
           silent: true,
           channelOptions: config.channelOptions,
+          installShims: shimPolicy.install,
         },
       );
 
@@ -1245,9 +1268,23 @@ class Installer {
       '  Get started:',
       `    1. Launch your AI agent from your project folder`,
       `    2. Not sure what to do? Invoke the ${color.cyan('bmad-help')} skill and ask it what to do!`,
-      '',
-      `    ${color.cyan('Tip:')} BMAD workflows increasingly run Python scripts via ${color.cyan('uv run')} — uv is`,
-      `    becoming the de facto standard. If you don't have it yet, ask your agent to set it up.`,
+    );
+
+    // Repeat the uv warning here when it applies. The pre-install probe fires
+    // before every prompt in the run, so by now it is far up the scrollback —
+    // and this box is titled "BMAD is ready to use!", which is only true if
+    // the rendered skills can actually start.
+    const { detectUv } = require('./uv-check');
+    if (!detectUv()) {
+      lines.push(
+        '',
+        `    ${color.yellow('⚠ uv is not installed.')} ${color.cyan('bmad-build')} and ${color.cyan('bmad-build-auto')} render through`,
+        `    ${color.cyan('uv run')} and will halt on activation until you set it up — ask your agent to`,
+        `    "install and set up uv for me", or see https://docs.astral.sh/uv/`,
+      );
+    }
+
+    lines.push(
       '',
       `    Blog, Docs and Guides: ${color.blue('https://bmadcode.com/')}`,
       `    Community: ${color.blue('https://discord.gg/gk8jAdXWmj')}`,
@@ -1486,6 +1523,7 @@ class Installer {
       // (`applySetOverrides`) runs at the end of quick-update too. The
       // installer.install path applies them after writeCentralConfig.
       setOverrides: config.setOverrides || {},
+      installShims: config.installShims,
       actionType: 'install',
       _quickUpdate: true,
       _preserveModules: skippedModules,

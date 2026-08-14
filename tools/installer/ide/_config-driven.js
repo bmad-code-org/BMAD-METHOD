@@ -448,9 +448,9 @@ class ConfigDrivenIdeSetup {
       await fs.ensureDir(skillDir);
       this.skillWriteTracker?.add(canonicalId);
 
-      // Copy all skill files, filtering OS/editor artifacts recursively
-      const skipPatterns = new Set(['.DS_Store', 'Thumbs.db', 'desktop.ini']);
-      const skipSuffixes = ['~', '.swp', '.swo', '.bak'];
+      // Copy all skill files, filtering OS/editor artifacts and Python caches recursively
+      const skipPatterns = new Set(['.DS_Store', 'Thumbs.db', 'desktop.ini', '__pycache__']);
+      const skipSuffixes = ['~', '.swp', '.swo', '.bak', '.pyc', '.pyo'];
       const filter = (src) => {
         const name = path.basename(src);
         if (src === sourceDir) return true;

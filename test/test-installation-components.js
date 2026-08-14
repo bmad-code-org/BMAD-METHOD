@@ -279,6 +279,47 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test 6c: ZCode Native Skills Install
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 6c: ZCode Native Skills${colors.reset}\n`);
+
+  let tempProjectDir6c;
+  let installedBmadDir6c;
+  try {
+    clearCache();
+    const platformCodes6c = await loadPlatformCodes();
+    const zcodeInstaller = platformCodes6c.platforms['zcode']?.installer;
+
+    assert(zcodeInstaller?.target_dir === '.zcode/skills', 'ZCode target_dir uses its own skills path');
+    assert(zcodeInstaller?.global_target_dir === '~/.zcode/skills', 'ZCode global_target_dir uses its own global skills path');
+    // ZCode keeps a private skills tree (not the shared .agents/skills standard),
+    // so it must never collide with the cross-tool shared path.
+    assert(zcodeInstaller?.target_dir !== '.agents/skills', 'ZCode target_dir is distinct from the shared .agents/skills standard');
+
+    tempProjectDir6c = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-zcode-test-'));
+    installedBmadDir6c = await createTestBmadFixture();
+
+    const ideManager6c = new IdeManager();
+    await ideManager6c.ensureInitialized();
+    const result6c = await ideManager6c.setup('zcode', tempProjectDir6c, installedBmadDir6c, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result6c.success === true, 'ZCode setup succeeds against temp project');
+
+    const skillFile6c = path.join(tempProjectDir6c, '.zcode', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile6c), 'ZCode install writes SKILL.md directory output');
+  } catch (error) {
+    assert(false, 'ZCode native skills install test succeeds', error.message);
+  } finally {
+    if (tempProjectDir6c) await fs.remove(tempProjectDir6c).catch(() => {});
+    if (installedBmadDir6c) await fs.remove(path.dirname(installedBmadDir6c)).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
   // Test 7: Auggie Native Skills Install
   // ============================================================
   console.log(`${colors.yellow}Test Suite 7: Auggie Native Skills${colors.reset}\n`);
@@ -420,6 +461,11 @@ async function runTests() {
 
     const tempProjectDir9 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-claude-code-test-'));
     const installedBmadDir9 = await createTestBmadFixture();
+    const sourceSkillDir9 = path.join(installedBmadDir9, 'core', 'bmad-master');
+    await fs.ensureDir(path.join(sourceSkillDir9, '__pycache__'));
+    await fs.writeFile(path.join(sourceSkillDir9, '__pycache__', 'cached.pyc'), 'bytecode');
+    await fs.writeFile(path.join(sourceSkillDir9, 'cached.pyc'), 'bytecode');
+    await fs.writeFile(path.join(sourceSkillDir9, 'cached.pyo'), 'bytecode');
 
     const ideManager9 = new IdeManager();
     await ideManager9.ensureInitialized();
@@ -432,6 +478,16 @@ async function runTests() {
 
     const skillFile9 = path.join(tempProjectDir9, '.claude', 'skills', 'bmad-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile9), 'Claude Code install writes SKILL.md directory output');
+    const installedSkillDir9 = path.dirname(skillFile9);
+    assert(
+      !(await fs.pathExists(path.join(installedSkillDir9, '__pycache__'))),
+      'Claude Code skill install excludes Python cache directories',
+    );
+    assert(
+      !(await fs.pathExists(path.join(installedSkillDir9, 'cached.pyc'))) &&
+        !(await fs.pathExists(path.join(installedSkillDir9, 'cached.pyo'))),
+      'Claude Code skill install excludes Python bytecode',
+    );
 
     // Verify name frontmatter matches directory name
     const skillContent9 = await fs.readFile(skillFile9, 'utf8');
@@ -484,6 +540,45 @@ async function runTests() {
     await fs.remove(path.dirname(installedBmadDir11));
   } catch (error) {
     assert(false, 'Codex native skills migration test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test 11c: Grok Native Skills Install
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 11c: Grok Native Skills${colors.reset}\n`);
+
+  try {
+    clearCache();
+    const platformCodes11c = await loadPlatformCodes();
+    const grokInstaller = platformCodes11c.platforms.grok?.installer;
+
+    assert(grokInstaller?.target_dir === '.agents/skills', 'Grok target_dir uses native skills path');
+
+    const tempProjectDir11c = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-grok-test-'));
+    const installedBmadDir11c = await createTestBmadFixture();
+
+    const ideManager11c = new IdeManager();
+    await ideManager11c.ensureInitialized();
+    const result11c = await ideManager11c.setup('grok', tempProjectDir11c, installedBmadDir11c, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result11c.success === true, 'Grok setup succeeds against temp project');
+
+    const skillFile11c = path.join(tempProjectDir11c, '.agents', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile11c), 'Grok install writes SKILL.md directory output');
+
+    const skillContent11c = await fs.readFile(skillFile11c, 'utf8');
+    const nameMatch11c = skillContent11c.match(/^name:\s*(.+)$/m);
+    assert(nameMatch11c && nameMatch11c[1].trim() === 'bmad-master', 'Grok skill name frontmatter matches directory name exactly');
+
+    await fs.remove(tempProjectDir11c);
+    await fs.remove(path.dirname(installedBmadDir11c));
+  } catch (error) {
+    assert(false, 'Grok native skills install test succeeds', error.message);
   }
 
   console.log('');
@@ -3368,7 +3463,7 @@ async function runTests() {
   console.log(`${colors.yellow}Test Suite 46: uv-check version parsing and messaging${colors.reset}\n`);
 
   try {
-    const { parseUvVersion, detectUv } = require('../tools/installer/core/uv-check');
+    const { parseUvVersion, parsePythonVersion, pythonMeetsMinimum, detectUv, detectPython3 } = require('../tools/installer/core/uv-check');
 
     // Version parsing
     const plain = parseUvVersion('uv 0.5.31');
@@ -3381,18 +3476,38 @@ async function runTests() {
     assert(parseUvVersion('command not found: uv') === null, 'non-version output returns null');
     assert(parseUvVersion(null) === null, 'null output returns null');
 
-    // Detection smoke test — must not throw; result is null or well-formed.
+    // Python version parsing — probed only as the no-uv fallback.
+    const py = parsePythonVersion('Python 3.11.7');
+    assert(py && py.major === 3 && py.minor === 11 && py.patch === 7, 'parses "Python 3.11.7"');
+    assert(parsePythonVersion('Python 3.13.0rc1').raw === '3.13.0', 'parses a prerelease python version');
+    assert(parsePythonVersion('python3: command not found') === null, 'non-version python output returns null');
+    assert(pythonMeetsMinimum({ major: 3, minor: 11 }), '3.11 meets the minimum');
+    assert(pythonMeetsMinimum({ major: 3, minor: 13 }), '3.13 meets the minimum');
+    assert(!pythonMeetsMinimum({ major: 3, minor: 10 }), '3.10 is below the minimum');
+    assert(!pythonMeetsMinimum({ major: 2, minor: 7 }), '2.7 is below the minimum');
+    assert(pythonMeetsMinimum({ major: 4, minor: 0 }), 'a future 4.x meets the minimum');
+    assert(!pythonMeetsMinimum(null), 'a missing python version does not meet the minimum');
+
+    // Detection smoke tests — must not throw; result is null or well-formed.
     const detectedUv = detectUv();
     assert(detectedUv === null || typeof detectedUv.version.raw === 'string', 'detectUv returns null or a well-formed result');
+    const detectedPy = detectPython3();
+    assert(detectedPy === null || typeof detectedPy.version.raw === 'string', 'detectPython3 returns null or a well-formed result');
 
     // checkUvEnvironment branch coverage — stub detection + prompts so the
-    // assertions are deterministic regardless of whether uv is installed.
+    // assertions are deterministic regardless of what's installed locally.
     const uvCheck = require('../tools/installer/core/uv-check');
     const promptsModule = require('../tools/installer/prompts');
-    const realUv = { detectUv: uvCheck.detectUv, log: promptsModule.log, note: promptsModule.note };
-    const stubUv = (detectResult) => {
+    const realUv = {
+      detectUv: uvCheck.detectUv,
+      detectPython3: uvCheck.detectPython3,
+      log: promptsModule.log,
+      note: promptsModule.note,
+    };
+    const stubUv = (detectResult, pythonResult = null) => {
       const seen = { success: [], warn: [], note: [] };
       uvCheck.detectUv = () => detectResult;
+      uvCheck.detectPython3 = () => pythonResult;
       promptsModule.log = {
         success: async (m) => void seen.success.push(m),
         warn: async (m) => void seen.warn.push(m),
@@ -3404,23 +3519,52 @@ async function runTests() {
     };
 
     try {
-      // Branch: uv present — success, no warning.
+      // Branch: uv present — success, no warning, and python3 is never probed
+      // (uv provisions its own interpreter from the script's requires-python).
+      let probedPython = false;
       let seen = stubUv({ version: { major: 0, minor: 5, patch: 31, raw: '0.5.31' } });
+      uvCheck.detectPython3 = () => {
+        probedPython = true;
+        return null;
+      };
       let result = await uvCheck.checkUvEnvironment();
       assert(result.status === 'found' && seen.success.length === 1, 'uv present logs success');
       assert(
         seen.success[0].includes('Python UV check pass') && seen.warn.length === 0,
         'uv present shows Python UV check pass, no warning',
       );
+      assert(!probedPython, 'uv present skips the python3 probe');
 
       // Branch: uv missing — warn + setup note, never blocks (no prompt).
-      seen = stubUv(null);
+      seen = stubUv(null, { version: { major: 3, minor: 12, patch: 1, raw: '3.12.1' } });
       result = await uvCheck.checkUvEnvironment();
       assert(result.status === 'missing' && seen.warn.length === 1, 'uv missing warns');
-      assert(seen.warn[0].includes('de facto standard'), 'uv-missing warning frames uv as the de facto standard');
-      assert(seen.note.length === 1 && seen.note[0].includes('uv'), 'uv missing shows a setup note');
+      assert(seen.warn[0].includes('bmad-build') && seen.warn[0].includes('HALT'), 'uv-missing warning names the skills that halt');
+      assert(!seen.warn[0].includes('de facto standard'), 'uv-missing warning no longer frames uv as optional');
+      assert(seen.warn[0].includes('install itself completes'), 'uv-missing warning says the install still completes');
+      assert(
+        seen.warn[0].includes('python3 3.12.1 is present'),
+        'uv missing with a usable python3 says the direct-interpreter skills still work',
+      );
+      assert(seen.note.length === 1 && seen.note[0] === 'uv required', 'uv missing shows a setup note titled "uv required"');
+
+      // Branch: uv missing and python3 too old — nothing Python-backed runs.
+      seen = stubUv(null, { version: { major: 3, minor: 10, patch: 12, raw: '3.10.12' } });
+      result = await uvCheck.checkUvEnvironment();
+      assert(
+        seen.warn[0].includes('below the required 3.11') && seen.warn[0].includes('no Python-backed skill will run'),
+        'uv missing with python3 < 3.11 reports that nothing Python-backed runs',
+      );
+      assert(result.python.version.raw === '3.10.12', 'the probed python version is returned to the caller');
+
+      // Branch: neither uv nor python3.
+      seen = stubUv(null, null);
+      result = await uvCheck.checkUvEnvironment();
+      assert(seen.warn[0].includes('No python3 on PATH either'), 'uv and python3 both missing is reported');
+      assert(result.python === null, 'no python result is returned when python3 is absent');
     } finally {
       uvCheck.detectUv = realUv.detectUv;
+      uvCheck.detectPython3 = realUv.detectPython3;
       promptsModule.log = realUv.log;
       promptsModule.note = realUv.note;
     }
@@ -3861,6 +4005,178 @@ async function runTests() {
     failed++;
   } finally {
     if (root50) await fs.remove(root50).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 51: directory input resolution
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 51: directory input resolution${colors.reset}\n`);
+
+  let root51;
+  try {
+    const { resolveDirectoryInput } = require('../tools/installer/prompts');
+
+    root51 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-dirprompt-'));
+    const submitted51 = path.join(root51, 'workspace');
+    assert(resolveDirectoryInput(submitted51) === submitted51, 'an absolute submitted path is returned unchanged');
+
+    const cwd51 = path.join(root51, 'working-directory');
+    const default51 = 'default-install';
+    assert(
+      resolveDirectoryInput('', { default: default51, cwd: cwd51 }) === path.resolve(cwd51, default51),
+      'empty input resolves the default directory',
+    );
+
+    const relative51 = path.join('projects', 'bmad');
+    assert(
+      resolveDirectoryInput(relative51, { cwd: cwd51 }) === path.resolve(cwd51, relative51),
+      'relative input resolves against the explicit working directory',
+    );
+
+    assert(resolveDirectoryInput('~', { cwd: cwd51 }) === os.homedir(), 'bare tilde input expands to the home directory');
+
+    assert(
+      resolveDirectoryInput('~/destination', { cwd: cwd51 }) === path.join(os.homedir(), 'destination'),
+      'home-relative input expands below the home directory',
+    );
+
+    const newDestination51 = path.join(root51, 'missing-parent', 'destination');
+    const resolvedDestination51 = resolveDirectoryInput(newDestination51, { cwd: cwd51 });
+    assert(
+      resolvedDestination51 === newDestination51 && !(await fs.pathExists(newDestination51)),
+      'a nonexistent destination is normalized without being created',
+    );
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 51 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  } finally {
+    if (root51) await fs.remove(root51).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 52: module registry — order and WDS deprecation
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 52: module registry — order and WDS deprecation${colors.reset}\n`);
+
+  try {
+    const { ExternalModuleManager } = require('../tools/installer/modules/external-manager');
+    const { UI } = require('../tools/installer/ui');
+    const prompts = require('../tools/installer/prompts');
+    const registry52 = await new ExternalModuleManager().listAvailable();
+
+    // The picker renders built-in core/bmm first, then registry entries in
+    // registry order, so the registry sequence is the display sequence.
+    const activeOrder52 = registry52.filter((mod) => !mod.builtIn && !mod.deprecated).map((mod) => mod.code);
+    assert(
+      JSON.stringify(activeOrder52.slice(0, 4)) === JSON.stringify(['bmb', 'cis', 'tea', 'bmad-loop']),
+      'registry lists bmb, cis, tea, bmad-loop in that order (bmm is built-in and precedes them)',
+      `got: ${activeOrder52.join(', ')}`,
+    );
+
+    const wds52 = registry52.find((mod) => mod.code === 'wds');
+    assert(wds52 !== undefined, 'wds stays in the registry so existing installs still resolve a source');
+    assert(wds52 && wds52.deprecated === true, 'wds is marked deprecated');
+    assert(wds52 && wds52.defaultSelected === false, 'wds is never selected by default');
+    assert(
+      wds52 && /no longer receiving updates/i.test(wds52.deprecationMessage || ''),
+      'wds deprecation message states it is not receiving updates',
+    );
+    assert(wds52 && /bmm/i.test(wds52.deprecationMessage || ''), 'wds deprecation message points at bmm as the replacement');
+    assert(
+      wds52 && Boolean(wds52.url) && Boolean(wds52.moduleDefinition),
+      'wds keeps its source so an installed copy can still be updated',
+    );
+
+    // Picker visibility: hidden for new users, visible for existing installs.
+    // Mirrors the filter in UI._selectOfficialModules.
+    const visibleFor52 = (installed) =>
+      registry52.filter((mod) => !mod.builtIn && (!mod.deprecated || installed.has(mod.code))).map((mod) => mod.code);
+    assert(!visibleFor52(new Set()).includes('wds'), 'wds is hidden from the picker on a fresh install');
+    assert(visibleFor52(new Set(['wds'])).includes('wds'), 'wds stays visible in the picker when already installed');
+
+    // Deprecation notice reaches the non-interactive paths.
+    const warnings52 = [];
+    const originalWarn52 = prompts.log.warn;
+    prompts.log.warn = async (message) => warnings52.push(message);
+    let warned52;
+    try {
+      warned52 = await new UI()._warnDeprecatedModules(['core', 'bmm', 'wds']);
+    } finally {
+      prompts.log.warn = originalWarn52;
+    }
+    assert(warned52.includes('wds'), '_warnDeprecatedModules reports wds when it is part of the selection');
+    assert(
+      warnings52.some((message) => message.includes('wds') && /no longer receiving updates/i.test(message)),
+      'the wds deprecation notice is logged for --modules / --yes installs',
+    );
+
+    const warnedClean52 = await new UI()._warnDeprecatedModules(['core', 'bmm', 'bmb']);
+    assert(warnedClean52.length === 0, 'no deprecation notice for a selection of supported modules');
+
+    // core is a dependency of every module — it is never offered as a row,
+    // but it is always part of the result.
+    const originalOfficial52 = OfficialModules.prototype.listAvailable;
+    const originalExternal52 = ExternalModuleManager.prototype.listAvailable;
+    const originalAutocomplete52 = prompts.autocompleteMultiselect;
+    const originalSpinner52 = prompts.spinner;
+    const originalMessage52 = prompts.log.message;
+
+    let pickerOptions52 = [];
+    let pickerRequired52;
+    let pickerLocked52;
+    let summary52 = '';
+    OfficialModules.prototype.listAvailable = async () => ({
+      modules: [
+        { id: 'core', name: 'BMad Core Module', description: 'always installed', defaultSelected: true },
+        { id: 'bmm', name: 'BMad Method', description: 'the method', defaultSelected: true },
+      ],
+    });
+    ExternalModuleManager.prototype.listAvailable = async () => [];
+    prompts.spinner = async () => ({ start() {}, stop() {}, error() {} });
+    prompts.log.message = async (message) => {
+      summary52 = message;
+    };
+
+    try {
+      prompts.autocompleteMultiselect = async (opts) => {
+        pickerOptions52 = opts.options.map((opt) => opt.value);
+        pickerRequired52 = opts.required;
+        pickerLocked52 = opts.lockedValues;
+        return ['bmm'];
+      };
+      const picked52 = await new UI()._selectOfficialModules(new Set(), new Map(), null);
+
+      assert(!pickerOptions52.includes('core'), 'core is not shown as a row in the official module picker');
+      assert(pickerOptions52.includes('bmm'), 'other built-in modules are still shown in the picker');
+      assert(pickerLocked52 === undefined, 'no locked always-on row remains in the picker');
+      assert(picked52.includes('core'), 'core is still returned from the picker so it always installs');
+      assert(picked52.includes('bmm'), 'the user selection is preserved alongside core');
+      assert(!summary52.includes('BMad Core Module'), 'the selection summary does not list core');
+
+      // Selecting nothing is a valid core-only install, not a validation error.
+      prompts.autocompleteMultiselect = async (opts) => {
+        pickerRequired52 = opts.required;
+        return [];
+      };
+      const coreOnly52 = await new UI()._selectOfficialModules(new Set(), new Map(), null);
+      assert(pickerRequired52 === false, 'the picker no longer requires a selection now that core is implicit');
+      assert(JSON.stringify(coreOnly52) === JSON.stringify(['core']), 'selecting nothing yields a core-only install');
+    } finally {
+      OfficialModules.prototype.listAvailable = originalOfficial52;
+      ExternalModuleManager.prototype.listAvailable = originalExternal52;
+      prompts.autocompleteMultiselect = originalAutocomplete52;
+      prompts.spinner = originalSpinner52;
+      prompts.log.message = originalMessage52;
+    }
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 52 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
   }
 
   console.log('');

@@ -101,5 +101,5 @@ skill = "bmad-prfaq"
 
 [[agent.menu]]
 code = "PC"
-description = "Curate the verified project context AI agents load — kernel + knowledge bundle (ingest, query, audit)"
+description = "Set up or refresh this repo's agent instructions — verified commands, policy, conventions, pitfalls (setup, refresh, record, audit)"
 skill = "bmad-project-context"
