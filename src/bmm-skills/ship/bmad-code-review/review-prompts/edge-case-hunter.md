@@ -5,10 +5,12 @@ When a diff is provided, scan only the diff hunks and list boundaries that are d
 When no diff is provided (full file or function), treat the entire provided content as the scope.
 Ignore the rest of the codebase unless the provided content explicitly references external functions.
 A brief secondary deletion check runs as Step 4 when the diff removes code.
+A claims check runs as Step 5 when the launch message names a claims file.
 
 **Inputs:**
 - **content** — Content to review: diff, full file, or function
 - **also_consider** (optional) — Areas to keep in mind during review alongside normal edge-case analysis
+- **claims_file** (optional) — Path to the change's stated narrative. Do NOT read it before Step 5: the path tracing in Steps 2–3 must finish before the narrative is seen.
 
 **MANDATORY: Execute steps in the Execution section IN EXACT ORDER. DO NOT skip steps or change the sequence. When a halt condition triggers, follow its specific instruction exactly. Each action within a step is a REQUIRED action to complete that step.**
 
@@ -42,7 +44,11 @@ A brief secondary deletion check runs as Step 4 when the diff removes code.
 
 If the diff removed or replaced meaningful code (ignore pure renames and whitespace): load `references/deletion-check.md` and follow it.
 
-### Step 5: Present Findings
+### Step 5: Claims Check
+
+If the launch message provided a `claims_file` path and the file exists and is non-empty: load `references/claims-check.md` and follow it.
+
+### Step 6: Present Findings
 
 Output all findings as a single JSON array following the Output Format specification exactly.
 
@@ -60,7 +66,7 @@ Return ONLY a valid JSON array of objects. Each edge-case finding contains exact
 }]
 ```
 
-No extra text, no explanations, no markdown wrapping. An empty array `[]` is valid when nothing is found. Deletion findings from Step 4, if any, go in the same array with the extra fields defined in `references/deletion-check.md`.
+No extra text, no explanations, no markdown wrapping. An empty array `[]` is valid when nothing is found. Deletion findings from Step 4 and claim findings from Step 5, if any, go in the same array with the extra fields defined in `references/deletion-check.md` and `references/claims-check.md`.
 
 
 ## HALT CONDITIONS
@@ -81,6 +87,22 @@ Append each finding to the same JSON array as the edge-case findings, with the f
 For a deletion finding the standard fields read as: `location` = the removed item; `trigger_condition` = the behavior or contract it enforced; `guard_snippet` = where or how to re-establish it; `potential_consequence` = the regression or orphan.
 
 Add nothing if nothing qualifies.
+</reference>
+<reference path="references/claims-check.md">
+# Claims Check
+
+Final pass for the Edge Case Hunter — runs only when the message that launched you named a claims file. Read that file now, for the first time; the path tracing is finished and the claims cannot steer it retroactively.
+
+The file holds the change's own narrative — commit messages and any stated description. The narrative is the author's testimony, not evidence: a claim repeated in a code comment is still the same claim, not confirmation. Extract each checkable claim — what the change does, what it preserves, ordering, arithmetic, and parity with existing code ("exactly as X does") — then try to falsify each one against the code you have already traced. Where your trace is not enough to decide, read the code that decides it: the compared-to function, the actual callee, the state the claim assumes.
+
+Append one finding per falsified claim to the same JSON array, with the four standard fields plus:
+
+- `kind`: `"claim"`
+- `confidence`: `"high"`, `"medium"`, or `"low"`
+
+For a claim finding the standard fields read as: `location` = where the code contradicts the claim; `trigger_condition` = the claim, quoted or tightly paraphrased; `guard_snippet` = what the code actually does; `potential_consequence` = what goes wrong for someone who believed the claim.
+
+Verified claims produce nothing. Add nothing if nothing is falsified.
 </reference>
 
 ## CONTENT SOURCE

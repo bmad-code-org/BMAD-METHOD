@@ -1,5 +1,6 @@
 ---
 diff_output: '' # set at runtime
+claims_file: '' # set at runtime (path or empty)
 spec_file: '' # set at runtime (path or empty)
 review_mode: '' # set at runtime: "full" or "no-spec"
 story_key: '' # set at runtime when discovered from sprint status
@@ -66,7 +67,9 @@ story_key: '' # set at runtime when discovered from sprint status
    - For **file list**: validate each path exists in the working tree. Construct `{diff_output}` by running `git diff HEAD -- <path1> <path2> ...`. If any paths are untracked (new files not yet staged), use `git diff --no-index /dev/null <path>` to include them. If the diff is empty (files have no uncommitted changes and are not untracked), ask the user whether to review the full file contents or to specify a different baseline.
    - After constructing `{diff_output}`, verify it is non-empty regardless of source type. If empty, HALT and tell the user there is nothing to review.
 
-4. **Set the spec context.**
+4. **Stage the claims file.** Collect the change's own narrative: for a branch diff or commit range, the commit messages it covers (`git log <base>..<head>`); for other sources, whatever description of the change the user or conversation supplied. Write it verbatim to a file in the system temp directory and set `{claims_file}` to its path. If there is no narrative, set `{claims_file}` = `''`. Do not analyze or summarize the narrative — it is input for one review layer, staged as a file precisely so the other layers never see it.
+
+5. **Set the spec context.**
    - If the triggering request or recent conversation **explicitly** states there is no spec (e.g. "no spec", "without a spec", "no-spec"): set `{review_mode}` = `"no-spec"` and clear `{spec_file}` (set it to `''`). Do **not** ask for a spec. Do **not** infer no-spec mode merely because the invocation omitted a spec path.
    - Else if `{spec_file}` is already set (from Tier 1 or Tier 2): verify the file exists and is readable, then set `{review_mode}` = `"full"`.
    - Else (neither a spec path nor an explicit no-spec declaration is present): ask the user to choose:
@@ -75,9 +78,9 @@ story_key: '' # set at runtime when discovered from sprint status
      - If the user provides a path: set `{spec_file}` to that path, verify the file exists and is readable, then set `{review_mode}` = `"full"`.
      - If the user explicitly chooses to continue without a spec: set `{review_mode}` = `"no-spec"`.
 
-5. If `{review_mode}` = `"full"` and the file at `{spec_file}` has a `context` field in its frontmatter listing additional docs, load each referenced document. Warn the user about any docs that cannot be found.
+6. If `{review_mode}` = `"full"` and the file at `{spec_file}` has a `context` field in its frontmatter listing additional docs, load each referenced document. Warn the user about any docs that cannot be found.
 
-6. Sanity check: if `{diff_output}` exceeds approximately 3000 lines, warn the user and offer to chunk the review by file group.
+7. Sanity check: if `{diff_output}` exceeds approximately 3000 lines, warn the user and offer to chunk the review by file group.
    - If the user opts to chunk: agree on the first group, narrow `{diff_output}` accordingly, and list the remaining groups for the user to note for follow-up runs.
    - If the user declines: proceed as-is with the full diff.
 

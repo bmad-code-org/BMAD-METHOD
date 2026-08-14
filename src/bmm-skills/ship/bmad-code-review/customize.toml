@@ -74,6 +74,8 @@ Launch a context-free subagent with this prompt:
 
 Read `{skill-root}/review-prompts/edge-case-hunter.md` completely and follow it as your review instructions.
 
+claims_file (leave unread until your instructions call for it): {claims_file}
+
 Review content:
 
 {diff_output}
