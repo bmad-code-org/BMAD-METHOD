@@ -1,6 +1,8 @@
 ---
 name: bmad-create-architecture
 description: 'Deprecated — forwards to bmad-architecture (create intent)'
+metadata:
+  lifecycle: shim
 ---
 
 # DEPRECATED — forwards to bmad-architecture (create intent)

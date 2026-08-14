@@ -1,6 +1,8 @@
 ---
 name: bmad-technical-research
 description: 'Deprecated — forwards to bmad-deep-recon (technical type)'
+metadata:
+  lifecycle: shim
 ---
 
 # DEPRECATED — forwards to bmad-deep-recon (technical type)

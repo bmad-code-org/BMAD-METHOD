@@ -15,6 +15,7 @@ Use `bmad-project-context` to set up a repository so AI agents work well in it �
 ## When to use this
 
 - You're starting AI-assisted work in an existing codebase (this is the brownfield on-ramp)
+- You already hand-wrote an `AGENTS.md` or `CLAUDE.md` and want it adopted and improved rather than replaced
 - You're starting a new project and want your standards followed from the first commit
 - You have governance, security or style rules that agents need to respect
 - Agents keep making the same mistake and you want it written down
@@ -26,13 +27,13 @@ Use `bmad-project-context` to set up a repository so AI agents work well in it �
 bmad-project-context
 ```
 
-Say what you want in plain language — "set up AGENTS.md", "refresh the context", "audit our context", "the agent keeps using the wrong test runner" — and the skill routes itself. Setup is the default.
+Say what you want in plain language — "set up AGENTS.md", "adopt the AGENTS.md we already have", "refresh the context", "audit our context", "the agent keeps using the wrong test runner" — and the skill routes itself. If the repo already has instructions this skill never wrote, it adopts them; if the skill wrote them before, it updates them; setup is only for a repo with no instructions worth keeping.
 
 Point it at a repo if you're not already in one. If the path resolves to more than one working tree, it asks which before writing anything.
 
 ## Step 2: Tell it what you bring
 
-The first thing it does is read what's already there — `AGENTS.md`, `CLAUDE.md`, editor rule files, docs — and report back what's good, what's derivable filler, and what looks stale. A hand-written file is a baseline it improves, never something it discards.
+The first thing it does is read what's already there — `AGENTS.md`, `CLAUDE.md`, editor rule files, docs — and report back what's good, what looks stale, and what it suggests changing. A hand-written file is something it improves, never something it discards: before anything is written, you see what happens to every instruction you already have, and nothing is deleted without your sign-off.
 
 Then it asks what rules you want followed regardless of what the repo does: governance, security and compliance requirements, coding standards, style guides, frozen areas. Bring outside documents too — org handbooks, wiki exports, an MCP knowledgebase.
 
@@ -40,7 +41,7 @@ For a greenfield project that conversation is the whole content. For a working c
 
 ## Step 3: It verifies the rest
 
-It checks every path a line names, and reads your `package.json`, `Makefile` and CI config — not to copy the commands out, since an agent reads those directly, but to know what they already say so the block only carries what they don't.
+It checks every path a line names, and reads your `package.json`, `Makefile` and CI config — not to transcribe the scripts, since an agent reads those directly, but to know what they already answer so the block adds only the right commands to use, the corrections, and the caveats.
 
 Then it asks what no scan could answer: what agents keep getting wrong here, what's off limits, what a domain term means, and which commands come with a catch.
 

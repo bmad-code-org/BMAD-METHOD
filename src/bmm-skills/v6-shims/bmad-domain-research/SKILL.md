@@ -1,6 +1,8 @@
 ---
 name: bmad-domain-research
 description: 'Deprecated — forwards to bmad-deep-recon (domain type)'
+metadata:
+  lifecycle: shim
 ---
 
 # DEPRECATED — forwards to bmad-deep-recon (domain type)

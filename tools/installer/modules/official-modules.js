@@ -5,6 +5,7 @@ const prompts = require('../prompts');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../project-root');
 const { CLIUtils } = require('../cli-utils');
 const { ExternalModuleManager } = require('./external-manager');
+const { discoverShims } = require('../core/shim-policy');
 
 class OfficialModules {
   constructor(options = {}) {
@@ -129,6 +130,23 @@ class OfficialModules {
     }
 
     return { modules };
+  }
+
+  async discoverShims(moduleNames = [], options = {}) {
+    const shims = [];
+
+    for (const moduleName of moduleNames) {
+      const sourcePath = await this.findModuleSource(moduleName, {
+        silent: true,
+        channelOptions: options.channelOptions,
+      });
+      if (!sourcePath) continue;
+
+      const moduleShims = await discoverShims(sourcePath);
+      for (const shim of moduleShims) shims.push({ ...shim, module: moduleName });
+    }
+
+    return shims;
   }
 
   /**
@@ -296,9 +314,13 @@ class OfficialModules {
             `Aborting to avoid a partial install with no skills.`,
         );
       }
-      await this._copyResolvedSkills(pluginResolution, targetPath, fileTrackingCallback, options.moduleConfig);
+      await this._copyResolvedSkills(pluginResolution, targetPath, fileTrackingCallback, options.moduleConfig, {
+        installShims: options.installShims,
+      });
     } else {
-      await this.copyModuleWithFiltering(sourcePath, targetPath, fileTrackingCallback, options.moduleConfig);
+      await this.copyModuleWithFiltering(sourcePath, targetPath, fileTrackingCallback, options.moduleConfig, {
+        installShims: options.installShims,
+      });
     }
 
     if (!options.skipModuleInstaller) {
@@ -336,7 +358,7 @@ class OfficialModules {
    * @param {Function} fileTrackingCallback - Optional callback to track installed files
    * @param {Object} moduleConfig - Module configuration passed to copy filtering
    */
-  async _copyResolvedSkills(resolved, targetPath, fileTrackingCallback = null, moduleConfig = {}) {
+  async _copyResolvedSkills(resolved, targetPath, fileTrackingCallback = null, moduleConfig = {}, installOptions = {}) {
     await fs.ensureDir(targetPath);
 
     // Copy each skill directory, flattened by leaf name. Leaf names must be
@@ -354,7 +376,7 @@ class OfficialModules {
       }
       seenLeaves.set(skillDirName, skillPath);
       const skillTarget = path.join(targetPath, skillDirName);
-      await this.copyModuleWithFiltering(skillPath, skillTarget, fileTrackingCallback, moduleConfig);
+      await this.copyModuleWithFiltering(skillPath, skillTarget, fileTrackingCallback, moduleConfig, installOptions);
     }
 
     // Place module-help.csv at the module root.
@@ -385,7 +407,9 @@ class OfficialModules {
       await fs.remove(targetPath);
     }
 
-    await this._copyResolvedSkills(resolved, targetPath, fileTrackingCallback, options.moduleConfig);
+    await this._copyResolvedSkills(resolved, targetPath, fileTrackingCallback, options.moduleConfig, {
+      installShims: options.installShims,
+    });
 
     // Create directories declared in module.yaml (strategies 1-4 may have these)
     if (!options.skipModuleInstaller) {
@@ -522,11 +546,19 @@ class OfficialModules {
    * @param {Function} fileTrackingCallback - Optional callback to track installed files
    * @param {Object} moduleConfig - Module configuration with conditional flags
    */
-  async copyModuleWithFiltering(sourcePath, targetPath, fileTrackingCallback = null, moduleConfig = {}) {
+  async copyModuleWithFiltering(sourcePath, targetPath, fileTrackingCallback = null, moduleConfig = {}, installOptions = {}) {
     // Get all files in source
     const sourceFiles = await this.getFileList(sourcePath);
+    const shimDirectories =
+      installOptions.installShims === false
+        ? (await discoverShims(sourcePath)).map((shim) => shim.relativeDirectory.split(path.sep).join('/'))
+        : [];
 
     for (const file of sourceFiles) {
+      const normalizedFile = file.split(path.sep).join('/');
+      if (shimDirectories.some((shimDir) => shimDir === '' || normalizedFile === shimDir || normalizedFile.startsWith(`${shimDir}/`))) {
+        continue;
+      }
       // Skip sub-modules directory - these are IDE-specific and handled separately
       if (file.startsWith('sub-modules/')) {
         continue;

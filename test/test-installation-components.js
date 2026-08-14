@@ -544,6 +544,45 @@ async function runTests() {
 
   console.log('');
 
+  // ============================================================
+  // Test 11c: Grok Native Skills Install
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 11c: Grok Native Skills${colors.reset}\n`);
+
+  try {
+    clearCache();
+    const platformCodes11c = await loadPlatformCodes();
+    const grokInstaller = platformCodes11c.platforms.grok?.installer;
+
+    assert(grokInstaller?.target_dir === '.agents/skills', 'Grok target_dir uses native skills path');
+
+    const tempProjectDir11c = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-grok-test-'));
+    const installedBmadDir11c = await createTestBmadFixture();
+
+    const ideManager11c = new IdeManager();
+    await ideManager11c.ensureInitialized();
+    const result11c = await ideManager11c.setup('grok', tempProjectDir11c, installedBmadDir11c, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result11c.success === true, 'Grok setup succeeds against temp project');
+
+    const skillFile11c = path.join(tempProjectDir11c, '.agents', 'skills', 'bmad-master', 'SKILL.md');
+    assert(await fs.pathExists(skillFile11c), 'Grok install writes SKILL.md directory output');
+
+    const skillContent11c = await fs.readFile(skillFile11c, 'utf8');
+    const nameMatch11c = skillContent11c.match(/^name:\s*(.+)$/m);
+    assert(nameMatch11c && nameMatch11c[1].trim() === 'bmad-master', 'Grok skill name frontmatter matches directory name exactly');
+
+    await fs.remove(tempProjectDir11c);
+    await fs.remove(path.dirname(installedBmadDir11c));
+  } catch (error) {
+    assert(false, 'Grok native skills install test succeeds', error.message);
+  }
+
+  console.log('');
+
   // Test 12: Removed — ancestor conflict check no longer applies (no IDE inherits skills from parent dirs)
 
   // ============================================================

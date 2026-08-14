@@ -1,6 +1,8 @@
 ---
 name: bmad-market-research
 description: 'Deprecated — forwards to bmad-deep-recon (market type)'
+metadata:
+  lifecycle: shim
 ---
 
 # DEPRECATED — forwards to bmad-deep-recon (market type)

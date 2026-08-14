@@ -1,6 +1,8 @@
 ---
 name: bmad-edit-prd
 description: 'Deprecated — forwards to bmad-prd (update intent)'
+metadata:
+  lifecycle: shim
 ---
 
 # DEPRECATED — forwards to bmad-prd (update intent)

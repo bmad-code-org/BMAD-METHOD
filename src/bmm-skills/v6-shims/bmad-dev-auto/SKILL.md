@@ -1,6 +1,8 @@
 ---
 name: bmad-dev-auto
 description: "Deprecated: forwards to bmad-build-auto. Do not use unless invoked by name"
+metadata:
+  lifecycle: shim
 ---
 
 # Deprecated Build Auto Alias
