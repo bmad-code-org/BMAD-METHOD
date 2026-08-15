@@ -5,7 +5,7 @@
 """Flatten Method skills into a skills/<canonical-id>/ tree for npx skills add.
 
 Walks src/core-skills and src/bmm-skills, discards agents/plan/ship nesting,
-skips v6-shims, and copies shared Python, module.yaml defaults, and a
+skips v6-shims, and copies shared Python, a starter config.toml, and a
 baked core+bmm help catalog into dest bmad-help only.
 """
 
@@ -102,16 +102,19 @@ def copy_scripts_and_assets(repo_root: Path, dest_help: Path) -> None:
     for name in SHARED_SCRIPTS:
         shutil.copy2(scripts_src / name, dest_scripts / name)
 
-    core_yaml = repo_root / "src" / "core-skills" / "module.yaml"
-    bmm_yaml = repo_root / "src" / "bmm-skills" / "module.yaml"
+    assets = repo_root / "src" / "core-skills" / "bmad-help" / "assets"
+    starter = assets / "config.toml"
+    user_starter = assets / "config.user.toml"
+    for required in (starter, user_starter):
+        if not required.is_file():
+            raise FileNotFoundError(f"missing path: {required}")
     core_csv = repo_root / "src" / "core-skills" / "module-help.csv"
     bmm_csv = repo_root / "src" / "bmm-skills" / "module-help.csv"
 
     dest_assets = dest_help / "assets"
-    (dest_assets / "core").mkdir(parents=True, exist_ok=True)
-    (dest_assets / "bmm").mkdir(parents=True, exist_ok=True)
-    shutil.copy2(core_yaml, dest_assets / "core" / "module.yaml")
-    shutil.copy2(bmm_yaml, dest_assets / "bmm" / "module.yaml")
+    dest_assets.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(starter, dest_assets / "config.toml")
+    shutil.copy2(user_starter, dest_assets / "config.user.toml")
     (dest_assets / "bmad-help.csv").write_text(
         assemble_help_csv(core_csv, bmm_csv), encoding="utf-8"
     )
