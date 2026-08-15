@@ -30,11 +30,13 @@ Before listing artifacts or prompting the user, check whether you already know t
    Use the same routing as above.
 
 3. Otherwise — scan artifacts and ask
-   - Active specs (`draft`, `ready-for-dev`, `in-progress`, `in-review`) in `{{.implementation_artifacts}}`? → List them and HALT. Ask which spec to resume, or **New** to start new work.
-     - If `draft` selected: Set `spec_file`. Run **Story-key resolution** (below). **EARLY EXIT** → `[[bmad-snapshot:step-02-plan.md]]` (resume planning from the draft)
-     - If `ready-for-dev` or `in-progress` selected: Set `spec_file`. Run **Story-key resolution** (below). **EARLY EXIT** → `[[bmad-snapshot:step-03-implement.md]]`
-     - If `in-review` selected: Set `spec_file`. Run **Story-key resolution** (below). **EARLY EXIT** → `[[bmad-snapshot:step-04-review.md]]`
-     - If the user chooses **New**: proceed to INSTRUCTIONS
+   - Active specs (`draft`, `ready-for-dev`, `in-progress`, `in-review`) in `{{.implementation_artifacts}}`? → List them and HALT. Give the user a choice:
+     - Resume one of the listed specs
+     - **New** — start new work
+     If `draft` selected: Set `spec_file`. Run **Story-key resolution** (below). **EARLY EXIT** → `[[bmad-snapshot:step-02-plan.md]]` (resume planning from the draft)
+     If `ready-for-dev` or `in-progress` selected: Set `spec_file`. Run **Story-key resolution** (below). **EARLY EXIT** → `[[bmad-snapshot:step-03-implement.md]]`
+     If `in-review` selected: Set `spec_file`. Run **Story-key resolution** (below). **EARLY EXIT** → `[[bmad-snapshot:step-04-review.md]]`
+     If the user chooses **New**: proceed to INSTRUCTIONS
    - Unformatted spec or intent file lacking `status` frontmatter? → Suggest treating its contents as the starting intent. Do NOT attempt to infer a state and resume it.
 
 Never ask extra questions if you already understand what the user intends.
