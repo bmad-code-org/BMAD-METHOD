@@ -63,13 +63,21 @@ class Installer {
       // that never prompt: --yes, --shims, and a scripted quick update. Every
       // run that has shims either way says which way it went, because removal
       // is otherwise completely silent.
+      const removedShims = shimPolicy.install ? [] : availableShims.filter((shim) => installedSkillIds.has(shim.id));
       if (shimPolicy.available && shimPolicy.install) {
         await prompts.note(formatRetainedShimNotice(availableShims), 'Deprecated shim skills retained');
-      } else {
-        const removedShims = availableShims.filter((shim) => installedSkillIds.has(shim.id));
-        if (removedShims.length > 0) {
-          await prompts.note(formatRemovedShimNotice(removedShims), 'Deprecated shim skills removed');
-        }
+      } else if (removedShims.length > 0) {
+        await prompts.note(formatRemovedShimNotice(removedShims), 'Deprecated shim skills removed');
+      }
+
+      // The notice above lands before the install tasks run, so a long install
+      // buries it. Carry the outcome down to the final summary too, the same
+      // way the uv warning is repeated there.
+      let shimStatus = null;
+      if (shimPolicy.available && shimPolicy.install) {
+        shimStatus = { kind: 'retained', count: availableShims.length };
+      } else if (removedShims.length > 0) {
+        shimStatus = { kind: 'removed', count: removedShims.length };
       }
 
       try {
@@ -145,6 +153,7 @@ class Installer {
         customFiles: restoreResult.customFiles.length > 0 ? restoreResult.customFiles : undefined,
         modifiedFiles: restoreResult.modifiedFiles.length > 0 ? restoreResult.modifiedFiles : undefined,
         preInstallVersions,
+        shimStatus,
       });
 
       return {
@@ -1273,6 +1282,11 @@ class Installer {
     }
     if (context.modifiedFiles && context.modifiedFiles.length > 0) {
       lines.push(`  ${color.yellow(`Modified files backed up (.bak): ${context.modifiedFiles.length}`)}`);
+    }
+    if (context.shimStatus?.kind === 'retained') {
+      lines.push(`  ${color.yellow(`Deprecated shim skills retained: ${context.shimStatus.count}`)} (re-run to remove them)`);
+    } else if (context.shimStatus?.kind === 'removed') {
+      lines.push(`  ${color.green(`Deprecated shim skills removed: ${context.shimStatus.count}`)}`);
     }
 
     // Next steps
