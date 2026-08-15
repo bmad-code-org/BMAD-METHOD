@@ -1,11 +1,7 @@
 ## Setup
 
-When the user asks for `bmad-help setup`, `uv` is required. If `uv` is
-missing or cannot run, tell the user that `uv` must be installed and
-stop. Do not write `_bmad` another way.
-
-Ordinary help answers do not rewrite `_bmad`. Do not run setup unless
-the user asked for it.
+`uv` is required. If `uv` is missing or cannot run, tell the user that
+`uv` must be installed and stop. Do not write `_bmad` another way.
 
 ### Update
 
