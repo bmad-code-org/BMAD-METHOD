@@ -141,14 +141,13 @@ class PackageNpxSkillsTests(unittest.TestCase):
                     f"# {name}\n",
                 )
             self.assertFalse((dest_scripts / "tests").exists())
-            self.assertEqual(
-                (dest_help / "assets" / "config.toml").read_text(encoding="utf-8"),
-                '[core]\nproject_name = "{directory_name}"\n',
-            )
-            self.assertEqual(
-                (dest_help / "assets" / "config.user.toml").read_text(encoding="utf-8"),
-                "[core]\nuser_name = {user_name}\n",
-            )
+            source_assets = repo / "src" / "core-skills" / "bmad-help" / "assets"
+            for path in source_assets.iterdir():
+                self.assertEqual(
+                    (dest_help / "assets" / path.name).read_bytes(),
+                    path.read_bytes(),
+                    path.name,
+                )
             dest_csv = dest_help / "assets" / "bmad-help.csv"
             self.assertEqual(dest_csv.read_text(encoding="utf-8").splitlines()[0], HELP_CSV_HEADER)
             self.assertEqual(
@@ -347,14 +346,12 @@ class PackageNpxSkillsTests(unittest.TestCase):
                 )
             self.assertFalse((dest_scripts / "tests").exists())
             help_assets = REPO_ROOT / "src" / "core-skills" / "bmad-help" / "assets"
-            self.assertEqual(
-                (dest_help / "assets" / "config.toml").read_bytes(),
-                (help_assets / "config.toml").read_bytes(),
-            )
-            self.assertEqual(
-                (dest_help / "assets" / "config.user.toml").read_bytes(),
-                (help_assets / "config.user.toml").read_bytes(),
-            )
+            for path in help_assets.iterdir():
+                self.assertEqual(
+                    (dest_help / "assets" / path.name).read_bytes(),
+                    path.read_bytes(),
+                    path.name,
+                )
             dest_csv = dest_help / "assets" / "bmad-help.csv"
             self.assertEqual(dest_csv.read_text(encoding="utf-8").splitlines()[0], HELP_CSV_HEADER)
             self.assertEqual(
@@ -394,12 +391,8 @@ class PackageNpxSkillsTests(unittest.TestCase):
             write(repo / "src" / "scripts" / name, f"# {name}\n")
         write(repo / "src" / "scripts" / "tests" / "test_foo.py", "# test\n")
         write(
-            repo / "src" / "core-skills" / "bmad-help" / "assets" / "config.toml",
-            '[core]\nproject_name = "{directory_name}"\n',
-        )
-        write(
-            repo / "src" / "core-skills" / "bmad-help" / "assets" / "config.user.toml",
-            "[core]\nuser_name = {user_name}\n",
+            repo / "src" / "core-skills" / "bmad-help" / "assets" / "keep.txt",
+            "keep\n",
         )
         write(
             repo / "src" / "core-skills" / "module-help.csv",
