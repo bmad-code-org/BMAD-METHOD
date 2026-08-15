@@ -94,9 +94,7 @@ async function run() {
     const originalIsTTY = process.stdin.isTTY;
     let confirmCalls = 0;
     try {
-      // These cases exercise the interactive branch; the test process itself
-      // has no TTY, which the prompt now treats as "nobody is there to answer".
-      process.stdin.isTTY = true;
+      process.stdin.isTTY = true; // the prompt now skips itself without a TTY
       OfficialModules.prototype.discoverShims = async () => [];
       prompts.confirm = async () => {
         confirmCalls++;
@@ -139,8 +137,6 @@ async function run() {
       assert.equal(offeredDefault, true, 'an existing installation containing shims keeps them enabled by default');
       assert.equal(disabledByUser, false, 'the interactive result records the user explicitly disabling shims');
 
-      // Quick Update is the path most users live on, so it has to ask too —
-      // otherwise shims ride along forever without ever being offered up.
       let quickUpdatePrompts = 0;
       let quickUpdateDefault;
       prompts.confirm = async (question) => {
@@ -178,9 +174,6 @@ async function run() {
       assert.equal(quickUpdatePrompts, 0, 'quick update stays quiet for an installation that already removed its shims');
       assert.equal(quickUpdateSkipped, false, 'a shimless installation keeps its standing answer');
 
-      // A scripted `--action quick-update` has no TTY. Prompting there hangs
-      // clack's confirm forever and the process exits mid-install in silence,
-      // so the standing answer has to win without asking.
       process.stdin.isTTY = undefined;
       quickUpdatePrompts = 0;
       const headless = await new UI()._selectShimPreference({

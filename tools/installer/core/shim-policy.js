@@ -83,22 +83,13 @@ function inferShimPreference({ requested, persisted, availableShims = [], instal
   return availableShims.some((shim) => installedSkillIds.has(shim.id));
 }
 
-/**
- * Every shim description already opens with "Deprecated — forwards to X".
- * The heading of the notice says that once, so strip the prefix rather than
- * repeating it on all twenty lines.
- */
+// Shim descriptions all open with "Deprecated — "; the notice heading says it once.
 function describeShim(shim) {
   const cleaned = (shim.description || '').replace(/^\s*deprecated\s*[-–—:]*\s*/i, '').trim();
   const source = shim.module ? ` (${shim.module})` : '';
   return cleaned ? `  ${shim.id}${source}: ${cleaned}` : `  ${shim.id}${source}`;
 }
 
-/**
- * Body of the notice shown whenever an install keeps its compatibility shims.
- * Names every shim so the user can see what is still forwarding, and what it
- * forwards to, without going digging.
- */
 function formatRetainedShimNotice(availableShims = []) {
   const lines = availableShims.map((shim) => describeShim(shim)).sort();
 
@@ -113,12 +104,6 @@ function formatRetainedShimNotice(availableShims = []) {
   ].join('\n');
 }
 
-/**
- * Counterpart to the retained notice, for the run that takes shims away.
- * Removal is silent everywhere else in the installer, so without this a
- * headless run gives no sign that a skill the user may still be invoking
- * just disappeared.
- */
 function formatRemovedShimNotice(removedShims = []) {
   const lines = removedShims.map((shim) => describeShim(shim)).sort();
 

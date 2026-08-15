@@ -132,20 +132,12 @@ class UI {
 
     if (typeof options.shims === 'boolean' || options.yes) return currentValue;
 
-    // A scripted run (`--action quick-update` with no `--yes`) has nobody to
-    // answer this. clack's confirm never resolves without a TTY, so asking
-    // would drain the event loop and exit mid-install without a word. Keep the
-    // standing answer; `--shims`/`--no-shims` remain the way to change it.
+    // clack's confirm never resolves without a TTY: a scripted run would exit mid-install.
     if (!process.stdin.isTTY) return currentValue;
 
-    // Quick Update asks only when the project actually has shims to give up.
-    // Someone who already dropped them has nothing to decide, and re-asking on
-    // every update would train them to skip past the question.
+    // Nothing to give up, so nothing to ask on every single update.
     if (quickUpdate && !currentValue) return currentValue;
 
-    // Keeping shims is the safe answer, so it stays the default: nobody loses a
-    // working skill by pressing enter. The wording carries the recommendation
-    // instead, and names the one case that justifies a yes.
     const verb = currentValue ? 'Keep' : 'Install';
     const message =
       `${verb} ${availableShims.length} deprecated compatibility shim skill(s)? Recommended: No. ` +
@@ -365,9 +357,6 @@ class UI {
         // place an existing install of a deprecated module hears about it.
         await this._warnDeprecatedModules(existingInstall.moduleIds || []);
 
-        // Same reasoning for shims: without this, someone who only ever runs
-        // Quick Update carries their shims forward release after release and is
-        // never once offered the chance to drop them.
         const installShims = await this._selectShimPreference({
           selectedModules: existingInstall.moduleIds || [],
           bmadDir,
@@ -1147,10 +1136,7 @@ class UI {
       message: 'Select official modules to install:',
       options: allOptions,
       initialValues: initialValues.length > 0 ? initialValues : undefined,
-      // Not required: core is installed either way, so an empty selection is a
-      // legitimate "core only" install rather than a mistake to block on. It
-      // does need saying, though: core is not a row here, so an empty picker
-      // otherwise looks like it is about to install nothing at all.
+      // Core installs either way and is not a row here, so empty is a valid core-only install.
       required: false,
       emptyLabel: 'core only',
       maxItems: allOptions.length,

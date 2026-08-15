@@ -317,9 +317,6 @@ async function autocompleteMultiselect(options) {
       switch (this.state) {
         case 'submit': {
           const count = this.selectedValues.length;
-          // An empty selection is legitimate for some pickers (core is always
-          // installed, so no rows checked still installs something). Say what
-          // it means, otherwise "0 items selected" reads as a no-op.
           const emptyHint = count === 0 && options.emptyLabel ? ` (${options.emptyLabel})` : '';
           return `${title}${color.gray(clack.S_BAR)}  ${color.dim(`${count} item${count === 1 ? '' : 's'} selected${emptyHint}`)}`;
         }
@@ -336,7 +333,6 @@ async function autocompleteMultiselect(options) {
 
           const errorLine = this.state === 'error' ? [`${bar}  ${color.yellow(this.error)}`] : [];
 
-          // Same reasoning as the submit state, shown before they commit.
           const emptyLine =
             this.selectedValues.length === 0 && options.emptyLabel
               ? [`${bar}  ${color.dim(`Nothing selected: installs ${options.emptyLabel}`)}`]

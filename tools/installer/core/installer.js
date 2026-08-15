@@ -59,10 +59,7 @@ class Installer {
         }),
       };
 
-      // Reported here rather than at the prompt so it also reaches the paths
-      // that never prompt: --yes, --shims, and a scripted quick update. Every
-      // run that has shims either way says which way it went, because removal
-      // is otherwise completely silent.
+      // Reported here, not at the prompt, so --yes/--shims/scripted runs get it too.
       const removedShims = shimPolicy.install ? [] : availableShims.filter((shim) => installedSkillIds.has(shim.id));
       if (shimPolicy.available && shimPolicy.install) {
         await prompts.note(formatRetainedShimNotice(availableShims), 'Deprecated shim skills retained');
@@ -70,9 +67,7 @@ class Installer {
         await prompts.note(formatRemovedShimNotice(removedShims), 'Deprecated shim skills removed');
       }
 
-      // The notice above lands before the install tasks run, so a long install
-      // buries it. Carry the outcome down to the final summary too, the same
-      // way the uv warning is repeated there.
+      // The notice above scrolls away on a long install; repeat it in the summary.
       let shimStatus = null;
       if (shimPolicy.available && shimPolicy.install) {
         shimStatus = { kind: 'retained', count: availableShims.length };
