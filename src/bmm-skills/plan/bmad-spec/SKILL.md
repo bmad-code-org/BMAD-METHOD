@@ -18,9 +18,9 @@ Multiple skills may call to update the same spec over time.
 
 ## On Activation
 
-1. Resolve customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`. On failure, read `{skill-root}/customize.toml` directly.
+1. Resolve customization directly from TOML, never by executing resolver code from `{project-root}/_bmad/scripts/` during activation: read `{skill-root}/customize.toml` as the base layer, then merge `{project-root}/_bmad/custom/bmad-spec.toml` and `{project-root}/_bmad/custom/bmad-spec.user.toml` if present. Scalars override, tables deep-merge, arrays of tables keyed by `code` or `id` replace-or-append, and all other arrays append.
 2. Run `{workflow.activation_steps_prepend}`. Treat `{workflow.persistent_facts}` as foundational context (`file:` entries are loaded).
-3. Resolve config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}` (merges `_bmad/config.toml`, `_bmad/config.user.toml`, and the `_bmad/custom/` overrides). From the merged JSON resolve `{user_name}`, `{communication_language}`, `{document_output_language}`, `{project_name}`, `{output_folder}` (under `core`), and `{date}`.
+3. Resolve config by merging the four project config layers in order: the two base config files in `{project-root}/_bmad/`, then their two matching override files in `{project-root}/_bmad/custom/`. From the merged config resolve `{user_name}`, `{communication_language}`, `{document_output_language}`, `{project_name}`, `{output_folder}` (under `core`), and `{date}`.
 4. Detect mode. **Headless** when any of: no TTY, programmatic caller (another skill or non-interactive runner), or the first message pre-supplies all inputs and asks for an artifact path back. **Interactive** otherwise. In interactive mode, greet by `{user_name}` in `{communication_language}`, stay in that language, and mention that `bmad-party-mode` and `bmad-advanced-elicitation` are available for deeper exploration on any field.
 
 Run `{workflow.activation_steps_append}`.
