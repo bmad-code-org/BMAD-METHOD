@@ -1,9 +1,21 @@
 ---
 name: bmad-help
-description: 'Analyzes current state and user query to answer BMad questions or recommend the next skill(s) to use. Use when user asks for help, bmad help, what to do next, or what to start with in BMad'
+description: 'Analyzes current state and user query to answer BMad questions or recommend the next skill(s) to use. Use when user asks for help, bmad help, what to do next, or what to start with in BMad. Also use when the user asks for bmad-help setup.'
 ---
 
 # BMad Help
+
+## Setup
+
+When the user asks for `bmad-help setup`, run:
+
+```
+uv run {skill-root}/setup.py --project-root {project-root} --skill {skill-root}
+```
+
+`uv` is required. If `uv` is missing or cannot run, tell the user that `uv` must be installed and stop. Do not write `_bmad` another way.
+
+Ordinary help answers do not rewrite `_bmad`. Do not run setup unless the user asked for it.
 
 ## Purpose
 
