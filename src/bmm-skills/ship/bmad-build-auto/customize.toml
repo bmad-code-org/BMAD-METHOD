@@ -67,7 +67,7 @@ If you have zero findings, re-check and keep thinking; do not stop with an empty
 CONTENT:
 {diff_output}
 
-Do not invoke any skill. Return only the review result.
+Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
 
 """
 
@@ -83,7 +83,7 @@ Review content:
 
 {diff_output}
 
-Do not invoke any skill. If the instruction file is unreadable, report that exact failure and stop. Return only the review result.
+Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. If the instruction file is unreadable, report that exact failure and stop. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
 
 """
 
@@ -99,7 +99,7 @@ Review content:
 
 {diff_output}
 
-Do not invoke any skill. If the instruction file is unreadable, report that exact failure and stop. Return only the review result.
+Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. If the instruction file is unreadable, report that exact failure and stop. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
 
 """
 
@@ -118,4 +118,7 @@ Here is the diff:
 {diff_output}
 
 Your task is strictly descriptive — do not prescribe additional work. Report: (1) the defensible readings of the intent, enumerated; (2) which reading this diff implements; (3) where the readings and the diff diverge — specifically, which surface the intent's expectations live at versus which surface the diff's changes and its tests exercise.
+
+Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
+
 """

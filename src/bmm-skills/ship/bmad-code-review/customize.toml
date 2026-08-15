@@ -110,4 +110,7 @@ You are an Acceptance Auditor. Review the provided diff against `{spec_file}` an
 Diff:
 
 {diff_output}
+
+Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
+
 """
