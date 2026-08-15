@@ -1,0 +1,6 @@
+[core]
+user_name = {user_name}
+communication_language = {communication_language}
+
+[modules.bmm]
+user_skill_level = {user_skill_level}

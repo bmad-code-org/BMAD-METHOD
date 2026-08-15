@@ -2,7 +2,8 @@
 # /// script
 # requires-python = ">=3.11"
 # ///
-"""First-run pump: project this help skill's payload into {project-root}/_bmad."""
+"""First-run pump: project this help skill's payload into
+{project-root}/_bmad."""
 
 from __future__ import annotations
 
@@ -12,119 +13,198 @@ import os
 import shutil
 import sys
 import tempfile
+import tomllib
 from pathlib import Path
 
 sys.dont_write_bytecode = True
 
 
-class SetupError(Exception):
-    """Raised when setup cannot create a complete first-run `_bmad`."""
-
-
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Materialize {project-root}/_bmad from this help skill's payload."
+        description=(
+            "Materialize {project-root}/_bmad from this help "
+            "skill's payload."
+        )
     )
     parser.add_argument("--project-root", type=Path, required=True)
     parser.add_argument("--skill", type=Path, required=True)
+    parser.add_argument("--user-answers", type=Path)
     args = parser.parse_args(argv)
-    try:
-        setup(args.project_root.resolve(), args.skill.resolve())
-    except SetupError as error:
-        sys.stderr.write(f"error: {error}\n")
-        return 1
+    setup(
+        args.project_root.resolve(),
+        args.skill.resolve(),
+        user_answers=(
+            load_user_answers(args.user_answers)
+            if args.user_answers is not None
+            else None
+        ),
+    )
     return 0
 
 
-def setup(project_root: Path, skill_root: Path) -> None:
+def setup(
+    project_root: Path,
+    skill_root: Path,
+    *,
+    user_answers: tuple[str, str, str] | None = None,
+) -> None:
+    scripts_src, catalog_src, config_src, user_src = payload(skill_root)
+    config_text = fill_team_config(
+        config_src.read_text(encoding="utf-8"), project_root
+    )
+    user_text = None
+    if user_answers is not None:
+        user_text = fill_user_config(
+            user_src.read_text(encoding="utf-8"), user_answers
+        )
+    materialize_bmad(
+        project_root, scripts_src, catalog_src, config_text, user_text
+    )
+    ensure_dir(project_root / output_folder(config_text))
+
+
+def payload(skill_root: Path) -> tuple[Path, Path, Path, Path]:
     scripts_src = skill_root / "scripts"
     assets_src = skill_root / "assets"
-    core_yaml = assets_src / "core" / "module.yaml"
-    bmm_yaml = assets_src / "bmm" / "module.yaml"
+    config_src = assets_src / "config.toml"
+    user_src = assets_src / "config.user.toml"
     catalog_src = assets_src / "bmad-help.csv"
-    for required in (scripts_src, assets_src, core_yaml, bmm_yaml, catalog_src):
-        if required == scripts_src or required == assets_src:
-            if not required.is_dir():
-                raise SetupError(f"missing path: {required}")
-        elif not required.is_file():
-            raise SetupError(f"missing path: {required}")
+    for directory in (scripts_src, assets_src):
+        if not directory.is_dir():
+            raise Exception(f"missing directory: {directory}")
+    for file in (config_src, user_src, catalog_src):
+        if not file.is_file():
+            raise Exception(f"missing file: {file}")
+    return scripts_src, catalog_src, config_src, user_src
 
-    core_text = core_yaml.read_text(encoding="utf-8")
-    bmm_text = bmm_yaml.read_text(encoding="utf-8")
-    directory_name = project_root.name
-    output_folder_default = _core_output_folder_default(core_text)
-    core_code, core_answers, core_agents = project_module(
-        core_text, directory_name=directory_name, output_folder_default=output_folder_default
-    )
-    bmm_code, bmm_answers, bmm_agents = project_module(
-        bmm_text, directory_name=directory_name, output_folder_default=output_folder_default
+
+def load_user_answers(path: Path) -> tuple[str, str, str]:
+    if not path.is_file():
+        raise Exception(f"missing file: {path}")
+    data = tomllib.loads(path.read_text(encoding="utf-8"))
+    name = data.get("user_name")
+    language = data.get("communication_language")
+    level = data.get("user_skill_level")
+    if (
+        not isinstance(name, str)
+        or not isinstance(language, str)
+        or not isinstance(level, str)
+    ):
+        raise Exception(
+            "--user-answers must set string keys user_name, "
+            "communication_language, and user_skill_level"
+        )
+    return name, language, level
+
+
+def fill_team_config(text: str, project_root: Path) -> str:
+    return text.replace("{directory_name}", project_root.name)
+
+
+def fill_user_config(text: str, answers: tuple[str, str, str]) -> str:
+    name, language, level = answers
+    return (
+        text.replace("{user_name}", toml_string(name))
+        .replace("{communication_language}", toml_string(language))
+        .replace("{user_skill_level}", toml_string(level))
     )
 
+
+def output_folder(config_text: str) -> str:
+    folder = (
+        tomllib.loads(config_text)
+        .get("core", {})
+        .get("output_folder", "_bmad-output")
+    )
+    prefix = "{project-root}/"
+    if folder.startswith(prefix):
+        folder = folder[len(prefix):]
+    return folder or "_bmad-output"
+
+
+def materialize_bmad(
+    project_root: Path,
+    scripts_src: Path,
+    catalog_src: Path,
+    config_text: str,
+    user_text: str | None,
+) -> None:
     bmad = project_root / "_bmad"
-    created_new = not bmad.exists()
-    staging: Path | None = None
+    project_root.mkdir(parents=True, exist_ok=True)
+    staging = Path(
+        tempfile.mkdtemp(prefix="_bmad.setup-", dir=project_root)
+    )
     try:
-        if created_new:
-            project_root.mkdir(parents=True, exist_ok=True)
-            staging = Path(tempfile.mkdtemp(prefix="_bmad.setup-", dir=project_root))
-            target = staging
-        else:
-            target = bmad
-        write_first_run(
-            target,
+        # Seed staging from the live tree so ensure_* leaves present
+        # paths alone. An empty staging would rewrite every file.
+        if bmad.exists():
+            shutil.copytree(
+                bmad, staging, dirs_exist_ok=True, symlinks=True
+            )
+        stage_bmad(
+            staging,
             scripts_src=scripts_src,
             catalog_src=catalog_src,
-            core_code=core_code,
-            core_answers=core_answers,
-            core_agents=core_agents,
-            bmm_code=bmm_code,
-            bmm_answers=bmm_answers,
-            bmm_agents=bmm_agents,
+            config_text=config_text,
+            user_text=user_text,
         )
-        if staging is not None:
-            staging.rename(bmad)
-            staging = None
+        replace_dir(staging, bmad)
     except Exception:
-        if staging is not None:
-            shutil.rmtree(staging, ignore_errors=True)
-        elif created_new and bmad.exists():
-            shutil.rmtree(bmad, ignore_errors=True)
+        shutil.rmtree(staging, ignore_errors=True)
         raise
 
-    output_dir = project_root / output_folder_default
-    if not output_dir.exists():
-        output_dir.mkdir(parents=True)
+
+def replace_dir(src: Path, dest: Path) -> None:
+    if not dest.exists():
+        src.rename(dest)
+        return
+    backup = Path(
+        tempfile.mkdtemp(prefix="_bmad.old-", dir=dest.parent)
+    )
+    try:
+        dest.rename(backup)
+    except Exception:
+        shutil.rmtree(backup, ignore_errors=True)
+        raise
+    try:
+        src.rename(dest)
+    except Exception:
+        backup.rename(dest)
+        raise
+    shutil.rmtree(backup)
 
 
-def write_first_run(
-    bmad: Path,
+def stage_bmad(
+    staging: Path,
     *,
     scripts_src: Path,
     catalog_src: Path,
-    core_code: str,
-    core_answers: dict[str, str],
-    core_agents: list[dict[str, str]],
-    bmm_code: str,
-    bmm_answers: dict[str, str],
-    bmm_agents: list[dict[str, str]],
+    config_text: str,
+    user_text: str | None,
 ) -> None:
-    ensure_scripts(bmad / "scripts", scripts_src)
-    ensure_file(bmad / "config.toml", render_config_toml(
-        core_answers=core_answers,
-        bmm_code=bmm_code,
-        bmm_answers=bmm_answers,
-        agents=_agents_with_module(core_agents, core_code)
-        + _agents_with_module(bmm_agents, bmm_code),
-    ))
-    ensure_file(bmad / "core" / "config.yaml", render_module_yaml(core_answers))
+    parsed = tomllib.loads(config_text)
+    core = stringify(parsed.get("core", {}))
+    bmm = stringify(parsed.get("modules", {}).get("bmm", {}))
+    ensure_scripts(staging / "scripts", scripts_src)
+    ensure_file(staging / "config.toml", config_text)
+    if user_text is not None:
+        ensure_file(staging / "config.user.toml", user_text)
+    ensure_file(staging / "core" / "config.yaml", render_module_yaml(core))
     ensure_file(
-        bmad / "bmm" / "config.yaml",
-        render_module_yaml({**bmm_answers, **core_answers}),
+        staging / "bmm" / "config.yaml",
+        render_module_yaml({**bmm, **core}),
     )
-    custom = bmad / "custom"
-    if not custom.exists():
-        custom.mkdir(parents=True)
-    ensure_copy(bmad / "_config" / "bmad-help.csv", catalog_src)
+    ensure_dir(staging / "custom")
+    ensure_copy(staging / "_config" / "bmad-help.csv", catalog_src)
+
+
+def stringify(table: object) -> dict[str, str]:
+    if not isinstance(table, dict):
+        return {}
+    out: dict[str, str] = {}
+    for key, value in table.items():
+        out[str(key)] = "" if value is None else str(value)
+    return out
 
 
 def ensure_scripts(dest: Path, src: Path) -> None:
@@ -144,7 +224,10 @@ def ensure_file(path: Path, content: str) -> None:
     if path.exists() or path.is_symlink():
         return
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(content if content.endswith("\n") else content + "\n", encoding="utf-8")
+    path.write_text(
+        content if content.endswith("\n") else content + "\n",
+        encoding="utf-8",
+    )
 
 
 def ensure_copy(dest: Path, src: Path) -> None:
@@ -154,71 +237,9 @@ def ensure_copy(dest: Path, src: Path) -> None:
     shutil.copy2(src, dest)
 
 
-def _core_output_folder_default(core_text: str) -> str:
-    prompts = extract_prompt_keys(core_text)
-    default = prompts.get("output_folder", {}).get("default", "_bmad-output")
-    return default or "_bmad-output"
-
-
-def project_module(
-    text: str, *, directory_name: str, output_folder_default: str
-) -> tuple[str, dict[str, str], list[dict[str, str]]]:
-    code = extract_code(text)
-    answers: dict[str, str] = {}
-    for key, spec in extract_prompt_keys(text).items():
-        default = spec.get("default", "")
-        value = (
-            default.replace("{directory_name}", directory_name).replace(
-                "{output_folder}", output_folder_default
-            )
-        )
-        result = spec.get("result", "{value}")
-        answers[key] = result.replace("{value}", value)
-    return code, answers, extract_agents(text)
-
-
-def _agents_with_module(agents: list[dict[str, str]], module: str) -> list[dict[str, str]]:
-    out: list[dict[str, str]] = []
-    for agent in agents:
-        if "code" not in agent:
-            continue
-        item = dict(agent)
-        item.setdefault("module", module)
-        item.setdefault("team", module)
-        out.append(item)
-    return out
-
-
-def render_config_toml(
-    *,
-    core_answers: dict[str, str],
-    bmm_code: str,
-    bmm_answers: dict[str, str],
-    agents: list[dict[str, str]],
-) -> str:
-    lines: list[str] = []
-    if core_answers:
-        lines.append("[core]")
-        for key, value in core_answers.items():
-            lines.append(f"{key} = {toml_string(value)}")
-        lines.append("")
-    if bmm_answers:
-        lines.append(f"[modules.{bmm_code or 'bmm'}]")
-        for key, value in bmm_answers.items():
-            lines.append(f"{key} = {toml_string(value)}")
-        lines.append("")
-    for agent in agents:
-        lines.append(f"[agents.{agent['code']}]")
-        for key in ("module", "team", "name", "title", "icon", "description"):
-            if key in agent and agent[key] != "":
-                lines.append(f"{key} = {toml_string(agent[key])}")
-        lines.append("")
-    return "\n".join(lines)
-
-
-def render_module_yaml(answers: dict[str, str]) -> str:
-    lines = [f"{key}: {yaml_scalar(value)}" for key, value in answers.items()]
-    return "\n".join(lines) + "\n"
+def ensure_dir(path: Path) -> None:
+    if not path.exists():
+        path.mkdir(parents=True)
 
 
 def toml_string(value: str) -> str:
@@ -232,6 +253,11 @@ def toml_string(value: str) -> str:
     return f'"{escaped}"'
 
 
+def render_module_yaml(answers: dict[str, str]) -> str:
+    lines = [f"{key}: {yaml_scalar(value)}" for key, value in answers.items()]
+    return "\n".join(lines) + "\n"
+
+
 def yaml_scalar(value: str) -> str:
     if (
         value == ""
@@ -241,126 +267,6 @@ def yaml_scalar(value: str) -> str:
         or value[0] in "-?:"
     ):
         return json.dumps(value, ensure_ascii=False)
-    return value
-
-
-def extract_code(text: str) -> str:
-    for raw in text.splitlines():
-        line = strip_comment(raw)
-        if not line or line[:1].isspace():
-            continue
-        if line.startswith("code:"):
-            return parse_scalar(line.split(":", 1)[1])
-    return ""
-
-
-def extract_prompt_keys(text: str) -> dict[str, dict[str, str]]:
-    """Top-level maps that declare default/result. Not a general YAML engine."""
-    prompts: dict[str, dict[str, str]] = {}
-    lines = text.splitlines()
-    index = 0
-    while index < len(lines):
-        line = strip_comment(lines[index])
-        if not line or line[:1].isspace() or ":" not in line:
-            index += 1
-            continue
-        key, _, rest = line.partition(":")
-        key = key.strip()
-        if rest.strip() or not key:
-            index += 1
-            continue
-        block: list[str] = []
-        index += 1
-        while index < len(lines):
-            nxt = lines[index]
-            stripped = strip_comment(nxt)
-            if stripped and not nxt[:1].isspace():
-                break
-            block.append(stripped)
-            index += 1
-        spec: dict[str, str] = {}
-        for item in block:
-            item = item.strip()
-            if item.startswith("default:"):
-                spec["default"] = parse_scalar(item.split(":", 1)[1])
-            elif item.startswith("result:"):
-                spec["result"] = parse_scalar(item.split(":", 1)[1])
-        if spec:
-            prompts[key] = spec
-    return prompts
-
-
-def extract_agents(text: str) -> list[dict[str, str]]:
-    """The `agents:` list of maps only. Not a general YAML engine."""
-    lines = text.splitlines()
-    start = None
-    for index, raw in enumerate(lines):
-        line = strip_comment(raw)
-        if line == "agents:" or line.startswith("agents:"):
-            if not raw[:1].isspace():
-                start = index + 1
-                break
-    if start is None:
-        return []
-
-    agents: list[dict[str, str]] = []
-    current: dict[str, str] | None = None
-    for raw in lines[start:]:
-        if raw and not raw[:1].isspace():
-            break
-        line = strip_comment(raw).strip()
-        if not line:
-            continue
-        if line.startswith("- "):
-            if current:
-                agents.append(current)
-            current = {}
-            rest = line[2:]
-            if ":" in rest:
-                key, _, value = rest.partition(":")
-                current[key.strip()] = parse_scalar(value)
-            continue
-        if current is not None and ":" in line:
-            key, _, value = line.partition(":")
-            current[key.strip()] = parse_scalar(value)
-    if current:
-        agents.append(current)
-    return agents
-
-
-def strip_comment(line: str) -> str:
-    in_single = False
-    in_double = False
-    escape = False
-    for index, char in enumerate(line):
-        if escape:
-            escape = False
-            continue
-        if char == "\\" and in_double:
-            escape = True
-            continue
-        if char == "'" and not in_double:
-            in_single = not in_single
-        elif char == '"' and not in_single:
-            in_double = not in_double
-        elif char == "#" and not in_single and not in_double:
-            return line[:index].rstrip()
-    return line.rstrip()
-
-
-def parse_scalar(raw: str) -> str:
-    value = raw.strip()
-    if len(value) >= 2 and value[0] == value[-1] and value[0] in {'"', "'"}:
-        inner = value[1:-1]
-        if value[0] == '"':
-            return (
-                inner.replace("\\n", "\n")
-                .replace("\\t", "\t")
-                .replace("\\r", "\r")
-                .replace('\\"', '"')
-                .replace("\\\\", "\\")
-            )
-        return inner
     return value
 
 
