@@ -35,7 +35,10 @@ story_key: '' # set at runtime when discovered from sprint status
 
    **Tier 3 — Sprint tracking.**
    Look for a sprint status file (`*sprint-status*`) in `{implementation_artifacts}` or `{planning_artifacts}`. If found, scan for stories with status `review`:
-   - **Exactly one `review` story:** Set `{story_key}` to the story's key (e.g., `1-2-user-auth`). Suggest it: "I found story <story-id> in `review` status. Would you like to review its changes? [Y] Yes / [N] No, let me choose". If confirmed, use the story context to determine the diff source (branch name derived from story slug, or uncommitted changes). If declined, clear `{story_key}` and fall through.
+   - **Exactly one `review` story:** Set `{story_key}` to the story's key (e.g., `1-2-user-auth`). HALT and give the user a choice:
+     - **Review this story** — review the detected story `<story-id>` (status `review`).
+     - **Choose another target** — pick a different review target.
+     If the user chooses **Review this story**, use the story context to determine the diff source (branch name derived from story slug, or uncommitted changes). If they choose **Choose another target**, clear `{story_key}` and fall through.
    - **Multiple `review` stories:** Present them as numbered options alongside a manual choice option. Wait for user selection. If a story is selected, set `{story_key}` and use its context to determine the diff source. If manual choice is selected, clear `{story_key}` and fall through.
    - **None:** Fall through.
 

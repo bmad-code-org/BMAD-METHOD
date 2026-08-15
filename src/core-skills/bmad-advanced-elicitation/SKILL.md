@@ -19,7 +19,7 @@ You are BMad's shared refinement checkpoint: other skills invoke you at natural 
 
 ## Serving the Catalog
 
-`scripts/pick_methods.py` serves the method catalog (num, category, method_name, description, output_pattern) so it never enters context whole — the one exception is [a], where the user asked for all of it. Invoke as:
+`scripts/pick_methods.py` serves the method catalog (num, category, method_name, description, output_pattern) so it never enters context whole — the one exception is listing the full catalog, when the user asked for all of it. Invoke as:
 
 ```bash
 uv run {skill-root}/scripts/pick_methods.py --file {workflow.methods_file} <command>
@@ -28,7 +28,7 @@ uv run {skill-root}/scripts/pick_methods.py --file {workflow.methods_file} <comm
 If `{workflow.additional_methods}` is non-empty, add `--extra '<its entries as a JSON array>'` (or a path to a JSON file holding them) on every call, so custom methods are first-class in menus, reshuffles, and listings.
 
 - `categories` — category names + counts, the cheap map.
-- `list --category <cat> [--category <cat>]` — the index for chosen categories; `--all` dumps the whole catalog, only for [a].
+- `list --category <cat> [--category <cat>]` — the index for chosen categories; `--all` dumps the whole catalog, only when listing all.
 - `show <name-or-num> [...]` — full rows by name or num.
 - `random -n 5 --spread [--exclude <name>]...` — a category-diverse random draw.
 
@@ -36,30 +36,29 @@ If `{workflow.additional_methods}` is non-empty, add `--extra '<its entries as a
 
 ## The Menu
 
-```
-**Advanced Elicitation Options**
-Choose a number (1-5), [r] to Reshuffle, [a] List All, or [x] to Proceed:
+HALT and give the user a choice:
 
-1. [Method Name]
-2. [Method Name]
-3. [Method Name]
-4. [Method Name]
-5. [Method Name]
-r. Reshuffle the list with 5 new options
-a. List all methods with descriptions
-x. Proceed / No Further Actions
-```
+- The five offered methods, listed by name. The user may pick one or several.
+- **Reshuffle** — replace the list with five new options.
+- **List all** — show the full catalog with descriptions.
+- **Proceed** — no further elicitation.
 
-This menu is the interface other skills and their users rely on — keep its options and behavior stable. When party mode is active in the session, add `_Party mode is active — agents will join in._` under the heading. Handle the response:
+This menu is the interface other skills and their users rely on — keep its options and behavior stable. When party mode is active in the session, add `_Party mode is active — agents will join in._` under the heading.
 
-- **1–5** — run that method (several numbers: in sequence), then re-present the menu.
-- **r** — reshuffle as above and re-present.
-- **a** — show the full catalog (`list --all`) as a compact table; a pick by name or number runs like a numbered choice.
-- **x** — done. The current enhanced version is final for this content: hand it back to the invoking skill as the replacement for what it had, and signal completion so it continues. If anything shown was never accepted, confirm what should carry over before returning.
-- **Anything else** — treat as direction: apply it to the target and re-present the menu.
+- If the user picks methods: run them (several: in sequence), then offer the menu again.
+- If the user chooses **Reshuffle**: reshuffle as above and offer the menu again.
+- If the user chooses **List all**: show the full catalog (`list --all`) as a compact table; a pick by name or number runs like a method choice.
+- If the user chooses **Proceed**: done. The current enhanced version is final for this content: hand it back to the invoking skill as the replacement for what it had, and signal completion so it continues. If anything shown was never accepted, confirm what should carry over before returning.
+- Any other reply is direction: apply it to the target and offer the menu again.
 
 ## Running a Method
 
-Use the method's description as its intent and its output_pattern as a flexible flow guide; scale depth to the target — a paragraph gets a light pass, an architecture decision gets the full treatment. Each application works on the current enhanced version, so refinements compound. Show what the method revealed and the changes it proposes, then ask whether to apply them (y/n/other) and wait — never change the work without a yes; on no, drop the proposal entirely; any other reply is instruction to follow.
+Use the method's description as its intent and its output_pattern as a flexible flow guide; scale depth to the target — a paragraph gets a light pass, an architecture decision gets the full treatment. Each application works on the current enhanced version, so refinements compound. Show what the method revealed and the changes it proposes, then HALT and give the user a choice:
+
+- **Apply** — accept the proposed changes.
+- **Reject** — drop the proposal entirely.
+- Or give different direction.
+
+Never change the work unless the user accepts the proposal. If they reject it, drop the proposal entirely. Any other reply is instruction to follow.
 
 When a method casts personas (round tables, panels, debates), reuse party members already in the session if party mode is active; otherwise resolve installed agents on demand via `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key agents` (a four-layer merge of `_bmad/config.toml`, `config.user.toml`, and the two `_bmad/custom/` overrides; each entry keyed by agent code carries name, title, icon, description). If neither yields a fit, invent named viewpoints suited to the content.
