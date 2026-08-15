@@ -7,7 +7,12 @@ const prompts = require('../tools/installer/prompts');
 const { ManifestGenerator } = require('../tools/installer/core/manifest-generator');
 const { OfficialModules } = require('../tools/installer/modules/official-modules');
 const { UI } = require('../tools/installer/ui');
-const { discoverShims, formatRetainedShimNotice, inferShimPreference } = require('../tools/installer/core/shim-policy');
+const {
+  discoverShims,
+  formatRemovedShimNotice,
+  formatRetainedShimNotice,
+  inferShimPreference,
+} = require('../tools/installer/core/shim-policy');
 
 async function writeSkill(directory, name, lifecycle) {
   await fs.ensureDir(directory);
@@ -86,8 +91,12 @@ async function run() {
 
     const originalDiscover = OfficialModules.prototype.discoverShims;
     const originalConfirm = prompts.confirm;
+    const originalIsTTY = process.stdin.isTTY;
     let confirmCalls = 0;
     try {
+      // These cases exercise the interactive branch; the test process itself
+      // has no TTY, which the prompt now treats as "nobody is there to answer".
+      process.stdin.isTTY = true;
       OfficialModules.prototype.discoverShims = async () => [];
       prompts.confirm = async () => {
         confirmCalls++;
@@ -168,9 +177,26 @@ async function run() {
       });
       assert.equal(quickUpdatePrompts, 0, 'quick update stays quiet for an installation that already removed its shims');
       assert.equal(quickUpdateSkipped, false, 'a shimless installation keeps its standing answer');
+
+      // A scripted `--action quick-update` has no TTY. Prompting there hangs
+      // clack's confirm forever and the process exits mid-install in silence,
+      // so the standing answer has to win without asking.
+      process.stdin.isTTY = undefined;
+      quickUpdatePrompts = 0;
+      const headless = await new UI()._selectShimPreference({
+        selectedModules: ['core'],
+        bmadDir: legacyBmadDir,
+        existing: true,
+        options: {},
+        channelOptions: null,
+        quickUpdate: true,
+      });
+      assert.equal(quickUpdatePrompts, 0, 'a run with no TTY never reaches the prompt');
+      assert.equal(headless, true, 'a headless run keeps the shims it already had');
     } finally {
       OfficialModules.prototype.discoverShims = originalDiscover;
       prompts.confirm = originalConfirm;
+      process.stdin.isTTY = originalIsTTY;
     }
 
     const manifestDir = path.join(root, 'manifest', '_config');
@@ -201,6 +227,13 @@ async function run() {
     assert.match(notice, /bmad-editorial-review: forwards to bmad-review/, 'the module suffix is omitted when unknown');
     assert.match(notice, /^ {2}no-description$/m, 'a shim without a description still gets listed');
     assert.match(notice, /re-run Quick Update/, 'the notice tells the user how to remove them');
+
+    const removalNotice = formatRemovedShimNotice([
+      { id: 'bmad-market-research', description: 'Deprecated — forwards to bmad-deep-recon (market type)', module: 'bmm' },
+    ]);
+    assert.match(removalNotice, /1 deprecated shim skill\(s\) are being removed/, 'removal is reported, not silent');
+    assert.match(removalNotice, /bmad-market-research \(bmm\): forwards to bmad-deep-recon/, 'the removal names what is going away');
+    assert.match(removalNotice, /--shims/, 'the removal notice says how to undo it');
     assert.equal(/Deprecated\s*—\s*forwards/.test(notice), false, 'the redundant "Deprecated" prefix is stripped from each line');
 
     console.log('Shim installation policy tests passed.');

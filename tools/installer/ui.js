@@ -132,6 +132,12 @@ class UI {
 
     if (typeof options.shims === 'boolean' || options.yes) return currentValue;
 
+    // A scripted run (`--action quick-update` with no `--yes`) has nobody to
+    // answer this. clack's confirm never resolves without a TTY, so asking
+    // would drain the event loop and exit mid-install without a word. Keep the
+    // standing answer; `--shims`/`--no-shims` remain the way to change it.
+    if (!process.stdin.isTTY) return currentValue;
+
     // Quick Update asks only when the project actually has shims to give up.
     // Someone who already dropped them has nothing to decide, and re-asking on
     // every update would train them to skip past the question.

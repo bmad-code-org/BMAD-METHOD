@@ -113,8 +113,28 @@ function formatRetainedShimNotice(availableShims = []) {
   ].join('\n');
 }
 
+/**
+ * Counterpart to the retained notice, for the run that takes shims away.
+ * Removal is silent everywhere else in the installer, so without this a
+ * headless run gives no sign that a skill the user may still be invoking
+ * just disappeared.
+ */
+function formatRemovedShimNotice(removedShims = []) {
+  const lines = removedShims.map((shim) => describeShim(shim)).sort();
+
+  return [
+    `${removedShims.length} deprecated shim skill(s) are being removed. Invoking these names will no longer work:`,
+    '',
+    ...lines,
+    '',
+    'Each replacement named above is installed and ready. If you still had a customization on one of',
+    'these shims, move it to the replacement, or re-run with --shims to put the shims back.',
+  ].join('\n');
+}
+
 module.exports = {
   describeShim,
+  formatRemovedShimNotice,
   discoverShims,
   formatRetainedShimNotice,
   inferShimPreference,

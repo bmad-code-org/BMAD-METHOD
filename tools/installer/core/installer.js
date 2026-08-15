@@ -13,7 +13,7 @@ const { InstallPaths } = require('./install-paths');
 const { ExternalModuleManager } = require('../modules/external-manager');
 const { resolveModuleVersion } = require('../modules/version-resolver');
 const { MODULE_HELP_CSV_HEADER } = require('../modules/module-help-schema');
-const { formatRetainedShimNotice, inferShimPreference, readInstalledSkillIds } = require('./shim-policy');
+const { formatRemovedShimNotice, formatRetainedShimNotice, inferShimPreference, readInstalledSkillIds } = require('./shim-policy');
 
 const { ExistingInstall } = require('./existing-install');
 const { warnPreNativeSkillsLegacy } = require('./legacy-warnings');
@@ -59,10 +59,17 @@ class Installer {
         }),
       };
 
-      // Resolved here rather than at the prompt so it also reaches the paths
-      // that never prompt: --yes, --shims, and a scripted quick update.
+      // Reported here rather than at the prompt so it also reaches the paths
+      // that never prompt: --yes, --shims, and a scripted quick update. Every
+      // run that has shims either way says which way it went, because removal
+      // is otherwise completely silent.
       if (shimPolicy.available && shimPolicy.install) {
         await prompts.note(formatRetainedShimNotice(availableShims), 'Deprecated shim skills retained');
+      } else {
+        const removedShims = availableShims.filter((shim) => installedSkillIds.has(shim.id));
+        if (removedShims.length > 0) {
+          await prompts.note(formatRemovedShimNotice(removedShims), 'Deprecated shim skills removed');
+        }
       }
 
       try {
