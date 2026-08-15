@@ -55,23 +55,38 @@ async function discoverShims(modulePath) {
   return shims;
 }
 
-async function readInstalledSkillIds(bmadDir) {
-  const ids = new Set();
+async function readSkillManifest(bmadDir) {
   const manifestPath = path.join(bmadDir, '_config', 'skill-manifest.csv');
-  if (!(await fs.pathExists(manifestPath))) return ids;
+  if (!(await fs.pathExists(manifestPath))) return [];
 
   try {
     const content = await fs.readFile(manifestPath, 'utf8');
-    const records = csv.parse(content, { columns: true, skip_empty_lines: true });
-    for (const record of records) {
-      if (record.canonicalId) ids.add(record.canonicalId);
-    }
+    return csv.parse(content, { columns: true, skip_empty_lines: true });
   } catch {
     // A missing or unreadable legacy manifest means there is no reliable
     // evidence that compatibility shims were installed.
+    return [];
   }
+}
 
+async function readInstalledSkillIds(bmadDir) {
+  const ids = new Set();
+  for (const record of await readSkillManifest(bmadDir)) {
+    if (record.canonicalId) ids.add(record.canonicalId);
+  }
   return ids;
+}
+
+// The installed manifest carries no lifecycle column, so the description
+// prefix every shim ships with is the only record of what was a shim. This
+// is the same signal validate-skills.js uses to exempt them.
+async function readInstalledShims(bmadDir) {
+  const shims = [];
+  for (const record of await readSkillManifest(bmadDir)) {
+    if (!record.canonicalId || !/^\s*deprecated\b/i.test(record.description || '')) continue;
+    shims.push({ id: record.canonicalId, description: record.description || '', module: record.module || '' });
+  }
+  return shims;
 }
 
 function inferShimPreference({ requested, persisted, availableShims = [], installedSkillIds = new Set(), existing = false }) {
@@ -81,6 +96,16 @@ function inferShimPreference({ requested, persisted, availableShims = [], instal
   if (!existing) return false;
 
   return availableShims.some((shim) => installedSkillIds.has(shim.id));
+}
+
+// Removal is driven by what is installed, not by what this release ships: a
+// shim retired from source is still deleted by the update cleanup.
+function selectShimOutcome({ installedShims = [], availableShims = [], install = false }) {
+  const availableShimIds = new Set(availableShims.map((shim) => shim.id));
+  return {
+    retained: install ? availableShims : [],
+    removed: installedShims.filter((shim) => !(install && availableShimIds.has(shim.id))),
+  };
 }
 
 // Shim descriptions all open with "Deprecated — "; the notice heading says it once.
@@ -104,8 +129,11 @@ function formatRetainedShimNotice(availableShims = []) {
   ].join('\n');
 }
 
-function formatRemovedShimNotice(removedShims = []) {
+function formatRemovedShimNotice(removedShims = [], { canReinstall = true } = {}) {
   const lines = removedShims.map((shim) => describeShim(shim)).sort();
+  const recovery = canReinstall
+    ? 'these shims, move it to the replacement, or re-run with --shims to put the shims back.'
+    : 'these shims, move it to the replacement. This release no longer ships them, so --shims cannot bring them back.';
 
   return [
     `${removedShims.length} deprecated shim skill(s) are being removed. Invoking these names will no longer work:`,
@@ -113,7 +141,7 @@ function formatRemovedShimNotice(removedShims = []) {
     ...lines,
     '',
     'Each replacement named above is installed and ready. If you still had a customization on one of',
-    'these shims, move it to the replacement, or re-run with --shims to put the shims back.',
+    recovery,
   ].join('\n');
 }
 
@@ -125,5 +153,7 @@ module.exports = {
   inferShimPreference,
   isShimSkill,
   parseSkillMetadata,
+  readInstalledShims,
   readInstalledSkillIds,
+  selectShimOutcome,
 };

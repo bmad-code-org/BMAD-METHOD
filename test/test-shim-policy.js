@@ -12,6 +12,8 @@ const {
   formatRemovedShimNotice,
   formatRetainedShimNotice,
   inferShimPreference,
+  readInstalledShims,
+  selectShimOutcome,
 } = require('../tools/installer/core/shim-policy');
 
 async function writeSkill(directory, name, lifecycle) {
@@ -191,6 +193,51 @@ async function run() {
       prompts.confirm = originalConfirm;
       process.stdin.isTTY = originalIsTTY;
     }
+
+    const installedShims = await readInstalledShims(path.join(root, 'legacy', '_bmad'));
+    assert.deepEqual(
+      installedShims.map((shim) => shim.id),
+      ['legacy-name'],
+      'installed shims are recovered from the manifest, independent of what the incoming release ships',
+    );
+    assert.deepEqual(await readInstalledShims(path.join(root, 'nothing-here')), [], 'a missing manifest reports no installed shims');
+
+    // The v7 cut: the release ships no shims at all, so nothing is discoverable
+    // in source, yet the update still deletes what is installed.
+    const v7 = selectShimOutcome({ installedShims, availableShims: [], install: false });
+    assert.equal(v7.retained.length, 0);
+    assert.deepEqual(
+      v7.removed.map((shim) => shim.id),
+      ['legacy-name'],
+      'a shimless release still reports the shims it is deleting',
+    );
+    const v7Notice = formatRemovedShimNotice(v7.removed, { canReinstall: false });
+    assert.match(v7Notice, /legacy-name/, 'the retired shim is named in the notice');
+    assert.match(v7Notice, /--shims cannot bring them back/, 'a retired shim is not advertised as reinstallable');
+    assert.match(formatRemovedShimNotice(v7.removed), /re-run with --shims/, 'a shim the release still ships can be restored');
+
+    // A shim retired from source while the user keeps the rest: retained and
+    // removed are both non-empty in the same run.
+    const partial = selectShimOutcome({
+      installedShims: [{ id: 'still-shipped' }, { id: 'retired' }],
+      availableShims: [{ id: 'still-shipped' }],
+      install: true,
+    });
+    assert.deepEqual(
+      partial.retained.map((shim) => shim.id),
+      ['still-shipped'],
+    );
+    assert.deepEqual(
+      partial.removed.map((shim) => shim.id),
+      ['retired'],
+      'a shim dropped from source is reported as removed even while shims stay enabled',
+    );
+
+    assert.deepEqual(
+      selectShimOutcome({ installedShims, availableShims: [{ id: 'legacy-name' }], install: true }).removed,
+      [],
+      'nothing is reported removed when the shim is reinstalled',
+    );
 
     const manifestDir = path.join(root, 'manifest', '_config');
     await fs.ensureDir(manifestDir);
