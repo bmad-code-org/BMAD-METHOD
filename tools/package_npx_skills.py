@@ -5,8 +5,8 @@
 """Flatten Method skills into a skills/<canonical-id>/ tree for npx skills add.
 
 Walks src/core-skills and src/bmm-skills, discards agents/plan/ship nesting,
-skips v6-shims, and copies shared Python, a starter config.toml, and a
-baked core+bmm help catalog into dest bmad-help only.
+skips v6-shims, and copies shared Python and a baked core+bmm help catalog
+into dest bmad-help only. Help-skill assets ride along with the skill copy.
 """
 
 from __future__ import annotations
@@ -102,21 +102,14 @@ def copy_scripts_and_assets(repo_root: Path, dest_help: Path) -> None:
     for name in SHARED_SCRIPTS:
         shutil.copy2(scripts_src / name, dest_scripts / name)
 
-    assets = repo_root / "src" / "core-skills" / "bmad-help" / "assets"
-    starter = assets / "config.toml"
-    user_starter = assets / "config.user.toml"
-    for required in (starter, user_starter):
-        if not required.is_file():
-            raise FileNotFoundError(f"missing path: {required}")
-    core_csv = repo_root / "src" / "core-skills" / "module-help.csv"
-    bmm_csv = repo_root / "src" / "bmm-skills" / "module-help.csv"
-
     dest_assets = dest_help / "assets"
     dest_assets.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(starter, dest_assets / "config.toml")
-    shutil.copy2(user_starter, dest_assets / "config.user.toml")
     (dest_assets / "bmad-help.csv").write_text(
-        assemble_help_csv(core_csv, bmm_csv), encoding="utf-8"
+        assemble_help_csv(
+            repo_root / "src" / "core-skills" / "module-help.csv",
+            repo_root / "src" / "bmm-skills" / "module-help.csv",
+        ),
+        encoding="utf-8",
     )
 
 
