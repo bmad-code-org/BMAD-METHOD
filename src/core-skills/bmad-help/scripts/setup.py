@@ -136,8 +136,8 @@ def materialize_bmad(
         tempfile.mkdtemp(prefix="_bmad.setup-", dir=project_root)
     )
     try:
-        # Seed staging from the live tree so ensure_* leaves present
-        # paths alone. An empty staging would rewrite every file.
+        # Seed staging so custom/, extra *.user.toml, and leftovers
+        # survive replace_dir.
         if bmad.exists():
             shutil.copytree(
                 bmad, staging, dirs_exist_ok=True, symlinks=True
@@ -189,7 +189,7 @@ def stage_bmad(
     ensure_scripts(staging / "scripts", scripts_src)
     ensure_file(staging / "config.toml", config_text)
     if user_text is not None:
-        ensure_file(staging / "config.user.toml", user_text)
+        ensure_new(staging / "config.user.toml", user_text)
     ensure_file(staging / "core" / "config.yaml", render_module_yaml(core))
     ensure_file(
         staging / "bmm" / "config.yaml",
@@ -208,9 +208,27 @@ def stringify(table: object) -> dict[str, str]:
     return out
 
 
+def scripts_ok(dest: Path, src: Path) -> bool:
+    if dest.is_symlink():
+        try:
+            return dest.resolve() == src.resolve()
+        except OSError:
+            return False
+    if not dest.is_dir():
+        return False
+    dest_files = {p.name: p.read_bytes() for p in dest.iterdir() if p.is_file()}
+    src_files = {p.name: p.read_bytes() for p in src.iterdir() if p.is_file()}
+    return dest_files == src_files
+
+
 def ensure_scripts(dest: Path, src: Path) -> None:
-    if dest.exists() or dest.is_symlink():
+    # Right symlink or a byte-identical top-level copy stays.
+    if scripts_ok(dest, src):
         return
+    if dest.is_symlink() or dest.is_file():
+        dest.unlink()
+    elif dest.is_dir():
+        shutil.rmtree(dest)
     dest.parent.mkdir(parents=True, exist_ok=True)
     try:
         os.symlink(src, dest, target_is_directory=True)
@@ -221,9 +239,7 @@ def ensure_scripts(dest: Path, src: Path) -> None:
                 shutil.copy2(item, dest / item.name)
 
 
-def ensure_file(path: Path, content: str) -> None:
-    if path.exists() or path.is_symlink():
-        return
+def write_text(path: Path, content: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         content if content.endswith("\n") else content + "\n",
@@ -231,10 +247,36 @@ def ensure_file(path: Path, content: str) -> None:
     )
 
 
-def ensure_copy(dest: Path, src: Path) -> None:
-    if dest.exists() or dest.is_symlink():
+def ensure_new(path: Path, content: str) -> None:
+    if path.exists() or path.is_symlink():
         return
+    write_text(path, content)
+
+
+def ensure_file(path: Path, content: str) -> None:
+    if path.is_file():
+        existing = path.read_text(encoding="utf-8")
+        filled = (
+            fill_yaml(existing, content)
+            if path.suffix == ".yaml"
+            else fill_toml(existing, content)
+        )
+        if filled == existing:
+            return
+        content = filled
+    elif path.is_symlink():
+        path.unlink()
+    elif path.exists():
+        shutil.rmtree(path)
+    write_text(path, content)
+
+
+def ensure_copy(dest: Path, src: Path) -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
+    if dest.is_symlink() or dest.is_file():
+        dest.unlink()
+    elif dest.exists():
+        shutil.rmtree(dest)
     shutil.copy2(src, dest)
 
 
@@ -252,6 +294,118 @@ def toml_string(value: str) -> str:
         .replace("\t", "\\t")
     )
     return f'"{escaped}"'
+
+
+def toml_key(key: str) -> str:
+    if key and key[0].isalpha() and all(c.isalnum() or c in "-_" for c in key):
+        return key
+    return toml_string(key)
+
+
+def toml_value(value: object) -> str:
+    if isinstance(value, str):
+        return toml_string(value)
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, int):
+        return str(value)
+    if isinstance(value, float):
+        return str(value)
+    if value is None:
+        return '""'
+    if isinstance(value, list):
+        return "[ " + ", ".join(toml_value(item) for item in value) + " ]"
+    return toml_string(str(value))
+
+
+def fill_keep(template: object, existing: object) -> object:
+    if isinstance(template, dict) and isinstance(existing, dict):
+        result = dict(template)
+        for key, value in existing.items():
+            result[key] = (
+                fill_keep(result[key], value) if key in result else value
+            )
+        return result
+    return existing
+
+
+def render_toml(data: dict) -> str:
+    lines: list[str] = []
+
+    def emit_scalars(table: dict) -> None:
+        for key, value in table.items():
+            if not isinstance(value, dict):
+                lines.append(f"{toml_key(str(key))} = {toml_value(value)}")
+
+    def emit_tables(table: dict, prefix: str) -> None:
+        for key, value in table.items():
+            if not isinstance(value, dict):
+                continue
+            header = f"{prefix}.{key}" if prefix else str(key)
+            scalars = any(not isinstance(item, dict) for item in value.values())
+            nested = any(isinstance(item, dict) for item in value.values())
+            if scalars or not nested:
+                if lines:
+                    lines.append("")
+                lines.append(f"[{header}]")
+                emit_scalars(value)
+            emit_tables(value, header)
+
+    emit_scalars(data)
+    emit_tables(data, "")
+    return "\n".join(lines) + "\n"
+
+
+def fill_toml(existing_text: str, template_text: str) -> str:
+    try:
+        existing = tomllib.loads(existing_text)
+        template = tomllib.loads(template_text)
+    except tomllib.TOMLDecodeError:
+        return template_text
+    if not isinstance(existing, dict) or not isinstance(template, dict):
+        return template_text
+    merged = fill_keep(template, existing)
+    if merged == existing:
+        return existing_text
+    return render_toml(merged)
+
+
+def parse_module_yaml(text: str) -> dict[str, str] | None:
+    answers: dict[str, str] = {}
+    for line in text.splitlines():
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        if line[0] in " \t":
+            return None
+        key, sep, rest = line.partition(":")
+        if not sep or not key or key.strip() != key:
+            return None
+        value = rest[1:] if rest.startswith(" ") else rest
+        if value[:1] in "\"[{":
+            try:
+                decoded = json.loads(value)
+            except json.JSONDecodeError:
+                pass
+            else:
+                if decoded is None:
+                    value = ""
+                elif isinstance(decoded, str):
+                    value = decoded
+                else:
+                    value = str(decoded)
+        answers[key] = value
+    return answers
+
+
+def fill_yaml(existing_text: str, projection_text: str) -> str:
+    existing = parse_module_yaml(existing_text)
+    template = parse_module_yaml(projection_text)
+    if existing is None or template is None:
+        return projection_text
+    merged = {**template, **existing}
+    if merged == existing:
+        return existing_text
+    return render_module_yaml(merged)
 
 
 def render_module_yaml(answers: dict[str, str]) -> str:

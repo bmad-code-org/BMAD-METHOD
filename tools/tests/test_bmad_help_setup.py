@@ -285,15 +285,42 @@ class BmadHelpSetupTests(unittest.TestCase):
             result = run_setup(project, skill)
             self.assertEqual(result.returncode, 0, msg=result.stderr)
 
-            self.assertEqual((bmad / "scripts" / "resolve_config.py").read_text(encoding="utf-8"), "# old-scripts\n")
-            self.assertFalse((bmad / "scripts").is_symlink())
-            self.assertEqual((bmad / "config.toml").read_text(encoding="utf-8"), "# old-config\n")
-            self.assertEqual((bmad / "config.user.toml").read_text(encoding="utf-8"), "# old-user\n")
-            self.assertEqual((bmad / "core" / "config.yaml").read_text(encoding="utf-8"), "old: core\n")
-            self.assertEqual((bmad / "bmm" / "config.yaml").read_text(encoding="utf-8"), "old: bmm\n")
-            self.assertEqual((bmad / "custom" / "keep.txt").read_text(encoding="utf-8"), "custom-keep\n")
-            self.assertEqual((bmad / "_config" / "bmad-help.csv").read_text(encoding="utf-8"), "old-catalog\n")
-            self.assertEqual((output / "keep.txt").read_text(encoding="utf-8"), "output-keep\n")
+            self._assert_scripts_identity(bmad / "scripts", skill / "scripts")
+            parsed = tomllib.loads((bmad / "config.toml").read_text(encoding="utf-8"))
+            self.assertEqual(parsed["core"]["project_name"], "proj")
+            self.assertEqual(
+                parsed["core"]["document_output_language"], "English"
+            )
+            self._assert_team_tables_match_template(parsed, skill, "proj")
+            setup = load_setup()
+            core_yaml = setup.parse_module_yaml(
+                (bmad / "core" / "config.yaml").read_text(encoding="utf-8")
+            )
+            bmm_yaml = setup.parse_module_yaml(
+                (bmad / "bmm" / "config.yaml").read_text(encoding="utf-8")
+            )
+            self.assertIsNotNone(core_yaml)
+            self.assertIsNotNone(bmm_yaml)
+            self.assertEqual(core_yaml["old"], "core")
+            self.assertEqual(core_yaml["project_name"], "proj")
+            self.assertEqual(bmm_yaml["old"], "bmm")
+            self.assertIn("planning_artifacts", bmm_yaml)
+            self.assertEqual(
+                (bmad / "config.user.toml").read_text(encoding="utf-8"),
+                "# old-user\n",
+            )
+            self.assertEqual(
+                (bmad / "custom" / "keep.txt").read_text(encoding="utf-8"),
+                "custom-keep\n",
+            )
+            self.assertEqual(
+                (bmad / "_config" / "bmad-help.csv").read_bytes(),
+                (skill / "assets" / "bmad-help.csv").read_bytes(),
+            )
+            self.assertEqual(
+                (output / "keep.txt").read_text(encoding="utf-8"),
+                "output-keep\n",
+            )
 
     def test_already_present_creates_missing_siblings(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -306,9 +333,16 @@ class BmadHelpSetupTests(unittest.TestCase):
             result = run_setup(project, skill)
             self.assertEqual(result.returncode, 0, msg=result.stderr)
 
-            self.assertEqual((project / "_bmad" / "config.toml").read_text(encoding="utf-8"), "# keep-config\n")
+            parsed = tomllib.loads(
+                (project / "_bmad" / "config.toml").read_text(encoding="utf-8")
+            )
+            self.assertEqual(parsed["core"]["project_name"], "proj")
+            self.assertEqual(
+                parsed["core"]["document_output_language"], "English"
+            )
+            self._assert_team_tables_match_template(parsed, skill, "proj")
             scripts = project / "_bmad" / "scripts"
-            self.assertTrue(scripts.is_symlink() or scripts_match(scripts, skill / "scripts"))
+            self._assert_scripts_identity(scripts, skill / "scripts")
             self.assertTrue((project / "_bmad" / "core" / "config.yaml").is_file())
             self.assertTrue((project / "_bmad" / "bmm" / "config.yaml").is_file())
             self.assertTrue((project / "_bmad" / "custom").is_dir())
@@ -317,6 +351,224 @@ class BmadHelpSetupTests(unittest.TestCase):
                 (skill / "assets" / "bmad-help.csv").read_bytes(),
             )
             self.assertTrue((project / "_bmad-output").is_dir())
+
+    def test_second_setup_keeps_answers_and_fills_new_keys(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "proj"
+            skill = write_dest_help(root)
+            project.mkdir()
+            first = run_setup(project, skill)
+            self.assertEqual(first.returncode, 0, msg=first.stderr)
+
+            bmad = project / "_bmad"
+            team = (bmad / "config.toml").read_text(encoding="utf-8")
+            write(
+                bmad / "config.toml",
+                team.replace('project_name = "proj"', 'project_name = "Renamed"'),
+            )
+            setup = load_setup()
+            core_path = bmad / "core" / "config.yaml"
+            core_map = setup.parse_module_yaml(
+                core_path.read_text(encoding="utf-8")
+            )
+            self.assertIsNotNone(core_map)
+            core_map["document_output_language"] = "Spanish"
+            write(core_path, setup.render_module_yaml(core_map))
+            write(bmad / "custom" / "keep.txt", "custom-keep\n")
+            write(bmad / "config.user.toml", "# keep-user\n")
+            write(bmad / "custom" / "extra.user.toml", "# extra-user\n")
+
+            write(
+                skill / "assets" / "config.template.toml",
+                MINIMAL_CONFIG.replace(
+                    'output_folder = "{project-root}/_bmad-output"\n',
+                    'output_folder = "{project-root}/_bmad-output"\n'
+                    'review_language = "English"\n',
+                ),
+            )
+            new_catalog = HELP_CSV + "Core,bmad-help,Help,H,,,,anytime,,,false,,\n"
+            write(skill / "assets" / "bmad-help.csv", new_catalog)
+
+            second = run_setup(project, skill)
+            self.assertEqual(second.returncode, 0, msg=second.stderr)
+
+            parsed = tomllib.loads((bmad / "config.toml").read_text(encoding="utf-8"))
+            self.assertEqual(parsed["core"]["project_name"], "Renamed")
+            self.assertEqual(parsed["core"]["review_language"], "English")
+            self._assert_team_tables_match_template(parsed, skill, "proj")
+            filled_core = setup.parse_module_yaml(
+                (bmad / "core" / "config.yaml").read_text(encoding="utf-8")
+            )
+            self.assertIsNotNone(filled_core)
+            self.assertEqual(filled_core["document_output_language"], "Spanish")
+            self.assertEqual(filled_core["review_language"], "English")
+            self.assertEqual(filled_core["project_name"], "proj")
+            self.assertEqual(
+                (bmad / "_config" / "bmad-help.csv").read_text(encoding="utf-8"),
+                new_catalog,
+            )
+            self.assertEqual(
+                (bmad / "custom" / "keep.txt").read_text(encoding="utf-8"),
+                "custom-keep\n",
+            )
+            self.assertEqual(
+                (bmad / "config.user.toml").read_text(encoding="utf-8"),
+                "# keep-user\n",
+            )
+            self.assertEqual(
+                (bmad / "custom" / "extra.user.toml").read_text(encoding="utf-8"),
+                "# extra-user\n",
+            )
+            self._assert_scripts_identity(bmad / "scripts", skill / "scripts")
+
+    def test_broken_or_wrong_scripts_link_is_repaired(self):
+        if not symlink_to_temp_dir_succeeds():
+            self.skipTest("symlinks not available")
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "proj"
+            skill = write_dest_help(root)
+            project.mkdir()
+            bmad = project / "_bmad"
+            bmad.mkdir()
+            elsewhere = root / "elsewhere"
+            elsewhere.mkdir()
+            os.symlink(
+                elsewhere, bmad / "scripts", target_is_directory=True
+            )
+
+            result = run_setup(project, skill)
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self._assert_scripts_identity(bmad / "scripts", skill / "scripts")
+
+            scripts = bmad / "scripts"
+            if scripts.is_symlink() or scripts.is_file():
+                scripts.unlink()
+            elif scripts.is_dir():
+                shutil.rmtree(scripts)
+            os.symlink(
+                project / "missing-scripts",
+                bmad / "scripts",
+                target_is_directory=True,
+            )
+            result = run_setup(project, skill)
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self._assert_scripts_identity(bmad / "scripts", skill / "scripts")
+
+    def test_stale_scripts_copy_is_replaced(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "proj"
+            skill = write_dest_help(root)
+            project.mkdir()
+            scripts = project / "_bmad" / "scripts"
+            write(scripts / "resolve_config.py", "# stale\n")
+            write(scripts / "leftover.py", "# leftover\n")
+
+            result = run_setup(project, skill)
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self._assert_scripts_identity(scripts, skill / "scripts")
+            self.assertFalse((scripts / "leftover.py").exists())
+
+    def test_identical_scripts_copy_stays_a_copy(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "proj"
+            skill = write_dest_help(root)
+            project.mkdir()
+            scripts = project / "_bmad" / "scripts"
+            scripts.mkdir(parents=True)
+            for item in (skill / "scripts").iterdir():
+                if item.is_file():
+                    shutil.copy2(item, scripts / item.name)
+
+            result = run_setup(project, skill)
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertFalse(scripts.is_symlink())
+            self.assertTrue(scripts_match(scripts, skill / "scripts"))
+
+    def test_right_scripts_symlink_is_left_alone(self):
+        if not symlink_to_temp_dir_succeeds():
+            self.skipTest("symlinks not available")
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "proj"
+            skill = write_dest_help(root)
+            project.mkdir()
+            first = run_setup(project, skill)
+            self.assertEqual(first.returncode, 0, msg=first.stderr)
+            scripts = project / "_bmad" / "scripts"
+            self.assertTrue(scripts.is_symlink())
+            before = os.readlink(scripts)
+
+            second = run_setup(project, skill)
+            self.assertEqual(second.returncode, 0, msg=second.stderr)
+            self.assertTrue(scripts.is_symlink())
+            self.assertEqual(os.readlink(scripts), before)
+
+    def test_user_layers_and_leftovers_survive_second_setup(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "proj"
+            skill = write_dest_help(root)
+            project.mkdir()
+            bmad = project / "_bmad"
+            write(bmad / "custom" / "keep.txt", "custom-keep\n")
+            write(bmad / "config.user.toml", "# keep-user\n")
+            write(bmad / "custom" / "notes.user.toml", "# custom-user\n")
+            write(bmad / "_config" / "manifest.yaml", "leftover: installer\n")
+            write(bmad / "_config" / "bmad-help.csv", "old-catalog\n")
+
+            result = run_setup(project, skill, *user_answers_args(project))
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertEqual(
+                (bmad / "custom" / "keep.txt").read_text(encoding="utf-8"),
+                "custom-keep\n",
+            )
+            self.assertEqual(
+                (bmad / "config.user.toml").read_text(encoding="utf-8"),
+                "# keep-user\n",
+            )
+            self.assertEqual(
+                (bmad / "custom" / "notes.user.toml").read_text(encoding="utf-8"),
+                "# custom-user\n",
+            )
+            self.assertEqual(
+                (bmad / "_config" / "manifest.yaml").read_text(encoding="utf-8"),
+                "leftover: installer\n",
+            )
+            self.assertEqual(
+                (bmad / "_config" / "bmad-help.csv").read_bytes(),
+                (skill / "assets" / "bmad-help.csv").read_bytes(),
+            )
+
+    def test_unparseable_toml_and_yaml_are_rewritten(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "proj"
+            skill = write_dest_help(root)
+            project.mkdir()
+            bmad = project / "_bmad"
+            write(bmad / "config.toml", "[broken\n")
+            write(bmad / "core" / "config.yaml", ":::not-yaml\n")
+            write(bmad / "bmm" / "config.yaml", "- nested:\n  - list\n")
+
+            result = run_setup(project, skill)
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            parsed = tomllib.loads((bmad / "config.toml").read_text(encoding="utf-8"))
+            self.assertEqual(parsed["core"]["project_name"], "proj")
+            setup = load_setup()
+            core_yaml = setup.parse_module_yaml(
+                (bmad / "core" / "config.yaml").read_text(encoding="utf-8")
+            )
+            bmm_yaml = setup.parse_module_yaml(
+                (bmad / "bmm" / "config.yaml").read_text(encoding="utf-8")
+            )
+            self.assertIsNotNone(core_yaml)
+            self.assertIsNotNone(bmm_yaml)
+            self.assertEqual(core_yaml["project_name"], "proj")
+            self.assertIn("planning_artifacts", bmm_yaml)
 
     def test_no_user_toml_without_answers(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -416,6 +668,38 @@ class BmadHelpSetupTests(unittest.TestCase):
             self.assertFalse((project / "_bmad").exists())
             self.assertFalse((project / "_bmad-output").exists())
 
+    def _assert_scripts_identity(self, dest: Path, src: Path) -> None:
+        if dest.is_symlink():
+            self.assertEqual(Path(os.readlink(dest)).resolve(), src.resolve())
+            return
+        self.assertTrue(dest.is_dir())
+        self.assertTrue(scripts_match(dest, src))
+
+    def _assert_team_tables_match_template(
+        self, parsed: dict, skill: Path, project_name: str
+    ) -> None:
+        expected = tomllib.loads(
+            (skill / "assets" / "config.template.toml")
+            .read_text(encoding="utf-8")
+            .replace("{directory_name}", project_name)
+        )
+        self.assertEqual(
+            parsed["modules"]["bmm"]["planning_artifacts"],
+            "{project-root}/_bmad-output/planning-artifacts",
+        )
+        self.assertEqual(
+            parsed["modules"]["bmm"]["implementation_artifacts"],
+            "{project-root}/_bmad-output/implementation-artifacts",
+        )
+        self.assertEqual(
+            parsed["modules"]["bmm"]["project_knowledge"], "{project-root}/docs"
+        )
+        self.assertEqual(set(parsed["agents"]), set(expected["agents"]))
+        for code, expected_agent in expected["agents"].items():
+            got = parsed["agents"][code]
+            for field in ("module", "team", "name", "title", "icon", "description"):
+                self.assertEqual(got[field], expected_agent[field], field)
+
     def _assert_first_run_tree(
         self,
         project: Path,
@@ -441,25 +725,7 @@ class BmadHelpSetupTests(unittest.TestCase):
         self.assertNotIn("user_name", parsed["core"])
         self.assertNotIn("communication_language", parsed["core"])
         self.assertNotIn("user_skill_level", parsed["modules"]["bmm"])
-        self.assertEqual(
-            parsed["modules"]["bmm"]["planning_artifacts"],
-            "{project-root}/_bmad-output/planning-artifacts",
-        )
-        self.assertEqual(
-            parsed["modules"]["bmm"]["implementation_artifacts"],
-            "{project-root}/_bmad-output/implementation-artifacts",
-        )
-        self.assertEqual(parsed["modules"]["bmm"]["project_knowledge"], "{project-root}/docs")
-        expected = tomllib.loads(
-            (skill / "assets" / "config.template.toml")
-            .read_text(encoding="utf-8")
-            .replace("{directory_name}", project_name)
-        )
-        self.assertEqual(set(parsed["agents"]), set(expected["agents"]))
-        for code, expected_agent in expected["agents"].items():
-            got = parsed["agents"][code]
-            for field in ("module", "team", "name", "title", "icon", "description"):
-                self.assertEqual(got[field], expected_agent[field], field)
+        self._assert_team_tables_match_template(parsed, skill, project_name)
 
         core_yaml = (bmad / "core" / "config.yaml").read_text(encoding="utf-8")
         bmm_yaml = (bmad / "bmm" / "config.yaml").read_text(encoding="utf-8")
