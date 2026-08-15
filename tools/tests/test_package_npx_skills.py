@@ -373,7 +373,11 @@ class PackageNpxSkillsTests(unittest.TestCase):
             self.assertEqual(
                 {p.name for p in source_help.iterdir() if p.name != "__pycache__"}
                 - {"scripts", "assets"},
-                {"SKILL.md"},
+                {"SKILL.md", "references"},
+            )
+            self.assertEqual(
+                (dest_help / "references" / "setup.md").read_bytes(),
+                (source_help / "references" / "setup.md").read_bytes(),
             )
             self.assertTrue((source_help / "scripts" / "setup.py").is_file())
             self.assertFalse((source_help / "setup.py").exists())
