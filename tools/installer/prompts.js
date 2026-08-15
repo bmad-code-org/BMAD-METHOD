@@ -316,7 +316,12 @@ async function autocompleteMultiselect(options) {
 
       switch (this.state) {
         case 'submit': {
-          return `${title}${color.gray(clack.S_BAR)}  ${color.dim(`${this.selectedValues.length} items selected`)}`;
+          const count = this.selectedValues.length;
+          // An empty selection is legitimate for some pickers (core is always
+          // installed, so no rows checked still installs something). Say what
+          // it means, otherwise "0 items selected" reads as a no-op.
+          const emptyHint = count === 0 && options.emptyLabel ? ` (${options.emptyLabel})` : '';
+          return `${title}${color.gray(clack.S_BAR)}  ${color.dim(`${count} item${count === 1 ? '' : 's'} selected${emptyHint}`)}`;
         }
 
         case 'cancel': {
@@ -331,7 +336,19 @@ async function autocompleteMultiselect(options) {
 
           const errorLine = this.state === 'error' ? [`${bar}  ${color.yellow(this.error)}`] : [];
 
-          const headerLines = [...`${title}${bar}`.split('\n'), `${bar}  ${searchDisplay}${matchCount}`, ...noMatchesLine, ...errorLine];
+          // Same reasoning as the submit state, shown before they commit.
+          const emptyLine =
+            this.selectedValues.length === 0 && options.emptyLabel
+              ? [`${bar}  ${color.dim(`Nothing selected: installs ${options.emptyLabel}`)}`]
+              : [];
+
+          const headerLines = [
+            ...`${title}${bar}`.split('\n'),
+            `${bar}  ${searchDisplay}${matchCount}`,
+            ...noMatchesLine,
+            ...errorLine,
+            ...emptyLine,
+          ];
 
           const footerLines = [`${bar}  ${color.dim(hints.join(' • '))}`, `${barEnd}`];
 

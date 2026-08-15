@@ -1148,8 +1148,11 @@ class UI {
       options: allOptions,
       initialValues: initialValues.length > 0 ? initialValues : undefined,
       // Not required: core is installed either way, so an empty selection is a
-      // legitimate "core only" install rather than a mistake to block on.
+      // legitimate "core only" install rather than a mistake to block on. It
+      // does need saying, though: core is not a row here, so an empty picker
+      // otherwise looks like it is about to install nothing at all.
       required: false,
+      emptyLabel: 'core only',
       maxItems: allOptions.length,
     });
 
