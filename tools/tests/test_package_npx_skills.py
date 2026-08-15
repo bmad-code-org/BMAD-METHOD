@@ -188,8 +188,8 @@ class PackageNpxSkillsTests(unittest.TestCase):
             )
             source_help = repo / "src" / "core-skills" / "bmad-help"
             self.assertEqual(
-                sorted(p.name for p in source_help.iterdir()),
-                ["SKILL.md"],
+                {p.name for p in source_help.iterdir() if p.name != "__pycache__"} - {"setup.py"},
+                {"SKILL.md"},
             )
 
     def test_other_skill_stays_lean(self):
@@ -371,9 +371,11 @@ class PackageNpxSkillsTests(unittest.TestCase):
 
             source_help = REPO_ROOT / "src" / "core-skills" / "bmad-help"
             self.assertEqual(
-                sorted(p.name for p in source_help.iterdir()),
-                ["SKILL.md"],
+                {p.name for p in source_help.iterdir() if p.name != "__pycache__"} - {"setup.py"},
+                {"SKILL.md"},
             )
+            self.assertTrue((source_help / "setup.py").is_file())
+            self.assertTrue((dest_help / "setup.py").is_file())
 
     def _help_repo_with_stale_dest(self, temp_dir: str) -> tuple[Path, Path]:
         repo = Path(temp_dir) / "repo"
