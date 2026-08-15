@@ -17,6 +17,7 @@ A specification is "Ready for Development" when:
 - **Complete**: No placeholders or TBDs.
 - **Sufficient**: No known requirement, acceptance, dependency, or implementation gaps remain unresolved.
 - **Coherent**: No unresolved ambiguities or internal contradictions.
+- **Human-resolved**: `Ask First` is absent; every human-owned planning question received an explicit human answer or delegation, and the result is incorporated into the spec.
 
 ## SCOPE STANDARD
 

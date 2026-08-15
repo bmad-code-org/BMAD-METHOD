@@ -10,14 +10,14 @@
 1. Draft resume check. If `{spec_file}` exists with `status: draft`, read it and capture the verbatim `<frozen-after-approval>...</frozen-after-approval>` block as `preserved_intent`. Otherwise `preserved_intent` is empty.
 2. Investigate codebase. _Isolate deep exploration in synchronous subagents/tasks where available. To prevent context snowballing, instruct subagents to give you distilled summaries only._ Decide which findings actually matter for execution — the specific files, symbols/lines, reuse points, and read-only constraints — and carry those forward for the Code Map. This is where the investigation lands: the spec preserves it so it is never re-narrated to the implementer at dispatch time.
 3. Read `[[bmad-snapshot:spec-template.md]]` fully. Fill it out based on the intent and investigation, resolving the template's `date` field to the current system date. Drain the investigation into the `## Code Map` section — annotated paths, symbol/line anchors, reuse pointers, and read-only evidence — so the spec is the implementer's investigation map and the step-03 handoff need only point at it. If `preserved_intent` is non-empty, replace the `<frozen-after-approval>` block in the spec you just filled out with `preserved_intent`, before writing. Write the result to `{spec_file}`.
-4. Self-review against READY FOR DEVELOPMENT standard.
-5. If intent gaps exist, do not fantasize, do not leave open questions, HALT and ask the human.
+4. Self-review against the READY FOR DEVELOPMENT standard. Resolve implementation choices yourself. For each material decision with multiple defensible answers that would change the observable outcome and that only the human can make, add one question to `Ask First`. Delete the entire `Ask First` section when there are no such questions.
+5. If `Ask First` contains questions, present all of them as a numbered list and HALT. Remove a question only after an explicit human answer or explicit delegation in the conversation; your inference, recommendation, assumed default, or preferred implementation does not count. Incorporate each answer into the spec. If an answer exposes another human-owned decision, add it to `Ask First` and ask again. Continue only when the section is empty, then delete it.
 6. Token count check (see SCOPE STANDARD). If spec exceeds 1600 tokens:
    - Show user the token count.
    - HALT and give the user a choice:
      - **Split** — carve off secondary goals.
      - **Keep full spec** — accept the risks.
-   - If the user chooses **Split**: Propose the split — name each secondary goal. For each deferred goal, append one new entry to `{{.implementation_artifacts}}/deferred-work.md` using this format. Do not modify existing entries or look for duplicates. Rewrite the current spec to cover only the main goal — do not surgically carve sections out; regenerate the spec for the narrowed scope. Continue to checkpoint.
+   - If the user chooses **Split**: Propose the split — name each secondary goal. For each deferred goal, append one new entry to `{{.implementation_artifacts}}/deferred-work.md` using this format. Do not modify existing entries or look for duplicates. Rewrite the current spec to cover only the main goal — do not surgically carve sections out; regenerate the spec for the narrowed scope. Repeat instructions 4–5 before continuing to checkpoint.
      ```markdown
      - source_spec: `{spec_file}`
        summary: <one sentence naming the deferred goal>
@@ -43,7 +43,7 @@ HALT and give the user a choice:
 - **Approve and stop** — approve the spec, leave it `ready-for-dev`, and stop so a fresh `bmad-build` session can resume at implementation.
 - **Review spec** — review the spec, use a subagent if available, and discuss the findings and revisions with the user until the user is ready to approve, then either stop or continue.
 
-Before acting on approval, re-read `{spec_file}` from disk. If it is missing, HALT without recreating it, changing status, or proceeding. If it changed, acknowledge the external edits and continue with the updated version. Set status `ready-for-dev`; everything inside `<frozen-after-approval>` is then locked and only the human can change it.
+Before acting on approval, re-read `{spec_file}` from disk. If it is missing, HALT without recreating it, changing status, or proceeding. If it changed, acknowledge the external edits and continue with the updated version. If it contains `Ask First` questions, keep status `draft` and return to instruction 5. Otherwise set status `ready-for-dev`; everything inside `<frozen-after-approval>` is then locked and only the human can change it.
 
 ## NEXT
 

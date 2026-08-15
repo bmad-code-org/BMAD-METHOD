@@ -80,7 +80,7 @@ If the spec is an epic story and `{{.implementation_artifacts}}/sprint-status.ya
        - **Epics** (`*epic*`) — feature breakdown into implementable stories
        - **Product Brief** (`*brief*`) — project vision and scope
      - Scan the listing for files matching these patterns. If any look relevant to the current intent, load them selectively — you don't need all of them, but you need the right constraints and requirements rather than guessing from code alone.
-2. Clarify intent. Do not fantasize, do not leave open questions. If you must ask questions, ask them as a numbered list. When the human replies, verify that every single numbered question was answered. If any were ignored, HALT and re-ask only the missing questions before proceeding. Keep looping until intent is clear enough to implement.
+2. Clarify only enough to identify the goal and choose a route. If the intent is clear enough to investigate, carry planning questions into step-02 rather than asking them here.
 3. Version control sanity check. Is the working tree clean? Does the current branch make sense for this intent — considering its name and recent history? If the tree is dirty or the branch is an obvious mismatch, HALT and ask the human before proceeding. If version control is unavailable, skip this check.
 4. Multi-goal check (see SCOPE STANDARD). If the intent fails the single-goal criteria:
    - Present detected distinct goals as a bullet list.

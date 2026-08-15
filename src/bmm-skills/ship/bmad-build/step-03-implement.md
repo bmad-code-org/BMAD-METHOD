@@ -8,11 +8,13 @@
 - **Language** — Speak in `{{.communication_language}}`. Write any file output in `{{.document_output_language}}`.
 - No push. No remote ops.
 - Sequential execution only.
-- Content inside `<frozen-after-approval>` in `{spec_file}` is read-only. Do not modify.
+- Content inside `<frozen-after-approval>` in `{spec_file}` is read-only except for incorporating an explicit human answer to `Ask First` and removing the answered question.
 
 ## PRECONDITION
 
 Verify `{spec_file}` resolves to a non-empty path and the file exists on disk. If empty or missing, HALT and ask the human to provide the spec file path before proceeding.
+
+Before launching the implementation handoff, inspect `{spec_file}` for `Ask First` questions. If any remain, present them as a numbered list and HALT; the implementation session must never answer them. Remove a question only after an explicit human answer or explicit delegation, incorporate the answer throughout the spec, and ask any human-owned follow-up it exposes. Continue only when no questions remain, then delete the entire `Ask First` section.
 
 ## INSTRUCTIONS
 

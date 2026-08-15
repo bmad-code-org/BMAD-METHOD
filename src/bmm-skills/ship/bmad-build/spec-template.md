@@ -24,12 +24,13 @@ context: [] # optional: `{project-root}/`-prefixed paths to project-wide standar
 
 ## Boundaries & Constraints
 
-<!-- Three tiers: Always = invariant rules. Ask First = human-gated decisions. Never = out of scope + forbidden approaches. -->
+<!-- Three tiers: Always = invariant rules. Ask First = unresolved planning questions only the human can answer. Never = out of scope + forbidden approaches. -->
 
 **Always:** INVARIANT_RULES
 
-**Ask First:** DECISIONS_REQUIRING_HUMAN_APPROVAL
-<!-- Agent: if any of these trigger during execution, HALT and ask the user before proceeding. -->
+**Ask First:**
+- UNRESOLVED_QUESTION_FOR_THE_HUMAN
+<!-- Agent: this is a planning checklist, not execution guidance. Delete the entire section when no questions remain. -->
 
 **Never:** NON_GOALS_AND_FORBIDDEN_APPROACHES
 
