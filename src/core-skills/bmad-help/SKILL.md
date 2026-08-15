@@ -21,7 +21,7 @@ If `_bmad/config.user.toml` exists under `{project-root}`, read it. If
 already set, do not ask again. Run:
 
 ```
-uv run --no-cache "{skill-root}/setup.py" --project-root "{project-root}" --skill "{skill-root}"
+uv run --no-cache "{skill-root}/scripts/setup.py" --project-root "{project-root}" --skill "{skill-root}"
 ```
 
 ### First run
@@ -46,7 +46,7 @@ Replace the example values. Use TOML basic strings (double quotes;
 escape `\` and `"` inside a value). Then run:
 
 ```
-uv run --no-cache "{skill-root}/setup.py" --project-root "{project-root}" --skill "{skill-root}" --user-answers "{project-root}/.bmad-help-setup-user.toml"
+uv run --no-cache "{skill-root}/scripts/setup.py" --project-root "{project-root}" --skill "{skill-root}" --user-answers "{project-root}/.bmad-help-setup-user.toml"
 ```
 
 After setup succeeds, delete `{project-root}/.bmad-help-setup-user.toml`.
