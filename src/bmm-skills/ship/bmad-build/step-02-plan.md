@@ -14,18 +14,20 @@
 5. If intent gaps exist, do not fantasize, do not leave open questions, HALT and ask the human.
 6. Token count check (see SCOPE STANDARD). If spec exceeds 1600 tokens:
    - Show user the token count.
-   - HALT and ask human: `[S] Split — carve off secondary goals` | `[K] Keep full spec — accept the risks`
-   - On **S**: Propose the split — name each secondary goal. For each deferred goal, append one new entry to `{{.implementation_artifacts}}/deferred-work.md` using this format. Do not modify existing entries or look for duplicates. Rewrite the current spec to cover only the main goal — do not surgically carve sections out; regenerate the spec for the narrowed scope. Continue to checkpoint.
+   - HALT and give the user a choice:
+     - **Split** — carve off secondary goals.
+     - **Keep full spec** — accept the risks.
+   - If the user chooses **Split**: Propose the split — name each secondary goal. For each deferred goal, append one new entry to `{{.implementation_artifacts}}/deferred-work.md` using this format. Do not modify existing entries or look for duplicates. Rewrite the current spec to cover only the main goal — do not surgically carve sections out; regenerate the spec for the narrowed scope. Continue to checkpoint.
      ```markdown
      - source_spec: `{spec_file}`
        summary: <one sentence naming the deferred goal>
        evidence: <why this was split from the current spec>
      ```
-   - On **K**: Continue to checkpoint with full spec.
+   - If the user chooses **Keep full spec**: Continue to checkpoint with the full spec.
 
 ### CHECKPOINT 1
 
-Present summary. Display the spec file path as a CWD-relative path (no leading `/`) so it is clickable in the terminal. If token count exceeded 1600 and user chose [K], include the token count and explain why it may be a problem.
+Present summary. Display the spec file path as a CWD-relative path (no leading `/`) so it is clickable in the terminal. If token count exceeded 1600 and the user chose to keep the full spec, include the token count and explain why it may be a problem.
 
 After presenting the summary, display this note:
 
