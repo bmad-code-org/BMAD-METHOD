@@ -62,7 +62,7 @@ If you have zero findings, re-check and keep thinking; do not stop with an empty
 CONTENT:
 {diff_output}
 
-Do not invoke any skill. Return only the review result.
+Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
 
 """
 
@@ -78,7 +78,7 @@ Review content:
 
 {diff_output}
 
-Do not invoke any skill. If the instruction file is unreadable, report that exact failure and stop. Return only the review result.
+Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. If the instruction file is unreadable, report that exact failure and stop. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
 
 """
 
@@ -94,7 +94,7 @@ Review content:
 
 {diff_output}
 
-Do not invoke any skill. If the instruction file is unreadable, report that exact failure and stop. Return only the review result.
+Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. If the instruction file is unreadable, report that exact failure and stop. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
 
 """
 
