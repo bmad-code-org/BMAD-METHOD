@@ -188,7 +188,7 @@ class PackageNpxSkillsTests(unittest.TestCase):
             source_help = repo / "src" / "core-skills" / "bmad-help"
             self.assertEqual(
                 {p.name for p in source_help.iterdir() if p.name != "__pycache__"}
-                - {"setup.py", "assets"},
+                - {"assets"},
                 {"SKILL.md"},
             )
 
@@ -334,16 +334,18 @@ class PackageNpxSkillsTests(unittest.TestCase):
                 "resolve_config.py",
                 "resolve_customization.py",
             ]
-            self.assertEqual(
-                sorted(p.name for p in dest_scripts.iterdir()),
-                expected_scripts,
-            )
             for name in expected_scripts:
                 self.assertEqual(
                     (dest_scripts / name).read_bytes(),
                     (REPO_ROOT / "src" / "scripts" / name).read_bytes(),
                     name,
                 )
+            source_help = REPO_ROOT / "src" / "core-skills" / "bmad-help"
+            self.assertEqual(
+                (dest_scripts / "setup.py").read_bytes(),
+                (source_help / "scripts" / "setup.py").read_bytes(),
+            )
+            self.assertFalse((dest_help / "setup.py").exists())
             self.assertFalse((dest_scripts / "tests").exists())
             help_assets = REPO_ROOT / "src" / "core-skills" / "bmad-help" / "assets"
             for path in help_assets.iterdir():
@@ -368,14 +370,14 @@ class PackageNpxSkillsTests(unittest.TestCase):
                     self.assertEqual(list(skill.rglob(script)), [])
                 self.assertFalse((skill / "assets" / "bmad-help.csv").exists())
 
-            source_help = REPO_ROOT / "src" / "core-skills" / "bmad-help"
             self.assertEqual(
                 {p.name for p in source_help.iterdir() if p.name != "__pycache__"}
-                - {"setup.py", "assets"},
+                - {"scripts", "assets"},
                 {"SKILL.md"},
             )
-            self.assertTrue((source_help / "setup.py").is_file())
-            self.assertTrue((dest_help / "setup.py").is_file())
+            self.assertTrue((source_help / "scripts" / "setup.py").is_file())
+            self.assertFalse((source_help / "setup.py").exists())
+            self.assertFalse((dest_help / "setup.py").exists())
 
     def _help_repo_with_stale_dest(self, temp_dir: str) -> tuple[Path, Path]:
         repo = Path(temp_dir) / "repo"
