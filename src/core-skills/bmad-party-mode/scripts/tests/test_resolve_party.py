@@ -52,6 +52,13 @@ class TestBuildCollective(unittest.TestCase):
         col, _, _ = rp.build_collective(AGENTS, [{"name": "Nameless"}])
         self.assertEqual(set(col), {"bmad-agent-analyst", "bmad-agent-pm"})
 
+    def test_member_with_non_string_code_skipped(self):
+        col, _, _ = rp.build_collective(AGENTS, [
+            {"code": 7, "name": "Numeric"},
+            {"code": ["nested"], "name": "Unhashable"},
+        ])
+        self.assertEqual(set(col), {"bmad-agent-analyst", "bmad-agent-pm"})
+
 
 class TestResolveMembers(unittest.TestCase):
     def setUp(self):

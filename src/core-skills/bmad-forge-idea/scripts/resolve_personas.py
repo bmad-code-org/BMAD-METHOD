@@ -184,7 +184,7 @@ def build_pool(agents: dict, party_members: list):
         if not isinstance(m, dict):
             continue
         code = m.get("code")
-        if not code:
+        if not isinstance(code, str) or not code:
             continue
         canonical = index.get(code) or index.get(code.lower()) or code
         was_installed = canonical in pool

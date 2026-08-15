@@ -55,6 +55,14 @@ class TestBuildPool(unittest.TestCase):
         self.assertEqual(custom, [])
         self.assertEqual(set(pool), {"bmad-agent-analyst", "bmad-agent-pm"})
 
+    def test_member_with_non_string_code_skipped(self):
+        pool, _, _, custom = rp.build_pool(AGENTS, [
+            {"code": 7, "name": "Numeric"},
+            {"code": ["nested"], "name": "Unhashable"},
+        ])
+        self.assertEqual(custom, [])
+        self.assertEqual(set(pool), {"bmad-agent-analyst", "bmad-agent-pm"})
+
     def test_custom_rename_does_not_hijack_another_agents_name(self):
         # Override the analyst slot, renaming it to "John" — the PM's name.
         # The PM's name lookup must survive (last-writer-wins would corrupt it).
