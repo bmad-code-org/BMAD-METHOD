@@ -39,7 +39,7 @@ HALT and give the user a choice:
 
 - **Approve and continue** — approve the spec and proceed to implementation in this session.
 - **Approve and stop** — approve the spec, leave it `ready-for-dev`, and stop so a fresh `bmad-build` session can resume at implementation.
-- **Review spec** — review the spec before deciding whether to approve it.
+- **Review spec** — review the spec, use a subagent if available, and discuss the findings and revisions with the user until the user is ready to approve, then either stop or continue.
 
 Before acting on approval, re-read `{spec_file}` from disk. If it is missing, HALT without recreating it, changing status, or proceeding. If it changed, acknowledge the external edits and continue with the updated version. Set status `ready-for-dev`; everything inside `<frozen-after-approval>` is then locked and only the human can change it.
 
