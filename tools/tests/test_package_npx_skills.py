@@ -142,12 +142,12 @@ class PackageNpxSkillsTests(unittest.TestCase):
                 )
             self.assertFalse((dest_scripts / "tests").exists())
             self.assertEqual(
-                (dest_help / "assets" / "core" / "module.yaml").read_text(encoding="utf-8"),
-                "code: core\n",
+                (dest_help / "assets" / "config.toml").read_text(encoding="utf-8"),
+                '[core]\nproject_name = "{directory_name}"\n',
             )
             self.assertEqual(
-                (dest_help / "assets" / "bmm" / "module.yaml").read_text(encoding="utf-8"),
-                "code: bmm\nagents:\n  - code: bmad-agent-pm\n",
+                (dest_help / "assets" / "config.user.toml").read_text(encoding="utf-8"),
+                "[core]\nuser_name = {user_name}\n",
             )
             dest_csv = dest_help / "assets" / "bmad-help.csv"
             self.assertEqual(dest_csv.read_text(encoding="utf-8").splitlines()[0], HELP_CSV_HEADER)
@@ -188,7 +188,8 @@ class PackageNpxSkillsTests(unittest.TestCase):
             )
             source_help = repo / "src" / "core-skills" / "bmad-help"
             self.assertEqual(
-                {p.name for p in source_help.iterdir() if p.name != "__pycache__"} - {"setup.py"},
+                {p.name for p in source_help.iterdir() if p.name != "__pycache__"}
+                - {"setup.py", "assets"},
                 {"SKILL.md"},
             )
 
@@ -345,13 +346,14 @@ class PackageNpxSkillsTests(unittest.TestCase):
                     name,
                 )
             self.assertFalse((dest_scripts / "tests").exists())
+            help_assets = REPO_ROOT / "src" / "core-skills" / "bmad-help" / "assets"
             self.assertEqual(
-                (dest_help / "assets" / "core" / "module.yaml").read_bytes(),
-                (REPO_ROOT / "src" / "core-skills" / "module.yaml").read_bytes(),
+                (dest_help / "assets" / "config.toml").read_bytes(),
+                (help_assets / "config.toml").read_bytes(),
             )
             self.assertEqual(
-                (dest_help / "assets" / "bmm" / "module.yaml").read_bytes(),
-                (REPO_ROOT / "src" / "bmm-skills" / "module.yaml").read_bytes(),
+                (dest_help / "assets" / "config.user.toml").read_bytes(),
+                (help_assets / "config.user.toml").read_bytes(),
             )
             dest_csv = dest_help / "assets" / "bmad-help.csv"
             self.assertEqual(dest_csv.read_text(encoding="utf-8").splitlines()[0], HELP_CSV_HEADER)
@@ -371,7 +373,8 @@ class PackageNpxSkillsTests(unittest.TestCase):
 
             source_help = REPO_ROOT / "src" / "core-skills" / "bmad-help"
             self.assertEqual(
-                {p.name for p in source_help.iterdir() if p.name != "__pycache__"} - {"setup.py"},
+                {p.name for p in source_help.iterdir() if p.name != "__pycache__"}
+                - {"setup.py", "assets"},
                 {"SKILL.md"},
             )
             self.assertTrue((source_help / "setup.py").is_file())
@@ -390,10 +393,13 @@ class PackageNpxSkillsTests(unittest.TestCase):
         for name in SHARED_SCRIPTS:
             write(repo / "src" / "scripts" / name, f"# {name}\n")
         write(repo / "src" / "scripts" / "tests" / "test_foo.py", "# test\n")
-        write(repo / "src" / "core-skills" / "module.yaml", "code: core\n")
         write(
-            repo / "src" / "bmm-skills" / "module.yaml",
-            "code: bmm\nagents:\n  - code: bmad-agent-pm\n",
+            repo / "src" / "core-skills" / "bmad-help" / "assets" / "config.toml",
+            '[core]\nproject_name = "{directory_name}"\n',
+        )
+        write(
+            repo / "src" / "core-skills" / "bmad-help" / "assets" / "config.user.toml",
+            "[core]\nuser_name = {user_name}\n",
         )
         write(
             repo / "src" / "core-skills" / "module-help.csv",
