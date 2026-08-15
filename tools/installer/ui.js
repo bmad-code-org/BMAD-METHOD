@@ -111,7 +111,7 @@ async function getModuleVersion(moduleCode, { repoUrl = null, registryDefault = 
  * UI utilities for the installer
  */
 class UI {
-  async _selectShimPreference({ selectedModules, bmadDir, existing, options, channelOptions }) {
+  async _selectShimPreference({ selectedModules, bmadDir, existing, options, channelOptions, quickUpdate = false }) {
     const { OfficialModules } = require('./modules/official-modules');
     const officialModules = new OfficialModules({ channelOptions });
     const availableShims = await officialModules.discoverShims(selectedModules, { channelOptions });
@@ -132,10 +132,22 @@ class UI {
 
     if (typeof options.shims === 'boolean' || options.yes) return currentValue;
 
-    return prompts.confirm({
-      message: `Install ${availableShims.length} deprecated compatibility shim skill(s)?`,
-      default: currentValue,
-    });
+    // Quick Update asks only when the project actually has shims to give up.
+    // Someone who already dropped them has nothing to decide, and re-asking on
+    // every update would train them to skip past the question.
+    if (quickUpdate && !currentValue) return currentValue;
+
+    // Keeping shims is the safe answer, so it stays the default: nobody loses a
+    // working skill by pressing enter. The wording carries the recommendation
+    // instead, and names the one case that justifies a yes.
+    const verb = currentValue ? 'Keep' : 'Install';
+    const message =
+      `${verb} ${availableShims.length} deprecated compatibility shim skill(s)? Recommended: No. ` +
+      `If you say yes, the deprecated skills will exist as a skill that forwards to its replacement skill. ` +
+      `Shims will be removed with v7. You should only retain if you customized a shimmed skill and need to ` +
+      `still transition it to the replacement.`;
+
+    return prompts.confirm({ message, default: currentValue });
   }
 
   /**
@@ -346,11 +358,24 @@ class UI {
         // Quick update never shows the module picker, so this is the only
         // place an existing install of a deprecated module hears about it.
         await this._warnDeprecatedModules(existingInstall.moduleIds || []);
+
+        // Same reasoning for shims: without this, someone who only ever runs
+        // Quick Update carries their shims forward release after release and is
+        // never once offered the chance to drop them.
+        const installShims = await this._selectShimPreference({
+          selectedModules: existingInstall.moduleIds || [],
+          bmadDir,
+          existing: true,
+          options,
+          channelOptions,
+          quickUpdate: true,
+        });
+
         return {
           actionType: 'quick-update',
           directory: confirmedDirectory,
           skipPrompts: options.yes || false,
-          installShims: options.shims,
+          installShims: installShims === undefined ? options.shims : installShims,
         };
       }
 

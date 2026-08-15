@@ -37,6 +37,7 @@ async function discoverShims(modulePath) {
       if (isShimSkill(metadata)) {
         shims.push({
           id: metadata.name || path.basename(dir),
+          description: typeof metadata.description === 'string' ? metadata.description : '',
           directory: dir,
           relativeDirectory: path.relative(modulePath, dir),
         });
@@ -82,8 +83,40 @@ function inferShimPreference({ requested, persisted, availableShims = [], instal
   return availableShims.some((shim) => installedSkillIds.has(shim.id));
 }
 
+/**
+ * Every shim description already opens with "Deprecated — forwards to X".
+ * The heading of the notice says that once, so strip the prefix rather than
+ * repeating it on all twenty lines.
+ */
+function describeShim(shim) {
+  const cleaned = (shim.description || '').replace(/^\s*deprecated\s*[-–—:]*\s*/i, '').trim();
+  const source = shim.module ? ` (${shim.module})` : '';
+  return cleaned ? `  ${shim.id}${source}: ${cleaned}` : `  ${shim.id}${source}`;
+}
+
+/**
+ * Body of the notice shown whenever an install keeps its compatibility shims.
+ * Names every shim so the user can see what is still forwarding, and what it
+ * forwards to, without going digging.
+ */
+function formatRetainedShimNotice(availableShims = []) {
+  const lines = availableShims.map((shim) => describeShim(shim)).sort();
+
+  return [
+    `${availableShims.length} deprecated shim skill(s) are still installed. Each one only forwards to the skill that replaced it:`,
+    '',
+    ...lines,
+    '',
+    'Shims will be removed with v7, and anything still calling the old name stops working then.',
+    'Only keep a shim if you customized it and still need to move that customization to the replacement.',
+    'Once you have, re-run Quick Update and answer No to this question so the shims come off.',
+  ].join('\n');
+}
+
 module.exports = {
+  describeShim,
   discoverShims,
+  formatRetainedShimNotice,
   inferShimPreference,
   isShimSkill,
   parseSkillMetadata,

@@ -13,7 +13,7 @@ const { InstallPaths } = require('./install-paths');
 const { ExternalModuleManager } = require('../modules/external-manager');
 const { resolveModuleVersion } = require('../modules/version-resolver');
 const { MODULE_HELP_CSV_HEADER } = require('../modules/module-help-schema');
-const { inferShimPreference, readInstalledSkillIds } = require('./shim-policy');
+const { formatRetainedShimNotice, inferShimPreference, readInstalledSkillIds } = require('./shim-policy');
 
 const { ExistingInstall } = require('./existing-install');
 const { warnPreNativeSkillsLegacy } = require('./legacy-warnings');
@@ -58,6 +58,12 @@ class Installer {
           existing: existingInstall.installed,
         }),
       };
+
+      // Resolved here rather than at the prompt so it also reaches the paths
+      // that never prompt: --yes, --shims, and a scripted quick update.
+      if (shimPolicy.available && shimPolicy.install) {
+        await prompts.note(formatRetainedShimNotice(availableShims), 'Deprecated shim skills retained');
+      }
 
       try {
         await warnPreNativeSkillsLegacy({

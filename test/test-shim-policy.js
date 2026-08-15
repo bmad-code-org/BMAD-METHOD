@@ -7,7 +7,7 @@ const prompts = require('../tools/installer/prompts');
 const { ManifestGenerator } = require('../tools/installer/core/manifest-generator');
 const { OfficialModules } = require('../tools/installer/modules/official-modules');
 const { UI } = require('../tools/installer/ui');
-const { discoverShims, inferShimPreference } = require('../tools/installer/core/shim-policy');
+const { discoverShims, formatRetainedShimNotice, inferShimPreference } = require('../tools/installer/core/shim-policy');
 
 async function writeSkill(directory, name, lifecycle) {
   await fs.ensureDir(directory);
@@ -32,6 +32,11 @@ async function run() {
       discovered.map((entry) => entry.id),
       ['legacy-name'],
       'shim discovery uses lifecycle metadata rather than directory naming',
+    );
+    assert.equal(
+      discovered[0].description,
+      'Deprecated compatibility entry',
+      'discovery carries the description used to name the replacement',
     );
 
     assert.equal(inferShimPreference({ availableShims: discovered, existing: false }), false, 'fresh installations default shims off');
@@ -124,6 +129,45 @@ async function run() {
       });
       assert.equal(offeredDefault, true, 'an existing installation containing shims keeps them enabled by default');
       assert.equal(disabledByUser, false, 'the interactive result records the user explicitly disabling shims');
+
+      // Quick Update is the path most users live on, so it has to ask too —
+      // otherwise shims ride along forever without ever being offered up.
+      let quickUpdatePrompts = 0;
+      let quickUpdateDefault;
+      prompts.confirm = async (question) => {
+        quickUpdatePrompts++;
+        quickUpdateDefault = question.default;
+        return question.default;
+      };
+      const quickUpdateKept = await new UI()._selectShimPreference({
+        selectedModules: ['core'],
+        bmadDir: legacyBmadDir,
+        existing: true,
+        options: {},
+        channelOptions: null,
+        quickUpdate: true,
+      });
+      assert.equal(quickUpdatePrompts, 1, 'quick update asks before carrying shims forward again');
+      assert.equal(quickUpdateDefault, true, 'quick update defaults to keeping shims that are already installed');
+      assert.equal(quickUpdateKept, true, 'accepting the default retains the shims');
+
+      const shimlessBmadDir = path.join(root, 'shimless', '_bmad');
+      await fs.ensureDir(path.join(shimlessBmadDir, '_config'));
+      await fs.writeFile(
+        path.join(shimlessBmadDir, '_config', 'manifest.yaml'),
+        yaml.stringify({ installation: { version: '6.11.0', installShims: false }, modules: [], ides: [] }),
+      );
+      quickUpdatePrompts = 0;
+      const quickUpdateSkipped = await new UI()._selectShimPreference({
+        selectedModules: ['core'],
+        bmadDir: shimlessBmadDir,
+        existing: true,
+        options: {},
+        channelOptions: null,
+        quickUpdate: true,
+      });
+      assert.equal(quickUpdatePrompts, 0, 'quick update stays quiet for an installation that already removed its shims');
+      assert.equal(quickUpdateSkipped, false, 'a shimless installation keeps its standing answer');
     } finally {
       OfficialModules.prototype.discoverShims = originalDiscover;
       prompts.confirm = originalConfirm;
@@ -146,6 +190,18 @@ async function run() {
     await generator.writeMainManifest(manifestDir);
     const availableManifest = yaml.parse(await fs.readFile(path.join(manifestDir, 'manifest.yaml'), 'utf8'));
     assert.equal(availableManifest.installation.installShims, false, 'the active user preference is persisted while shims exist');
+
+    const notice = formatRetainedShimNotice([
+      { id: 'bmad-market-research', description: 'Deprecated — forwards to bmad-deep-recon (market type)', module: 'bmm' },
+      { id: 'bmad-editorial-review', description: 'Deprecated — forwards to bmad-review' },
+      { id: 'no-description' },
+    ]);
+    assert.match(notice, /3 deprecated shim skill\(s\) are still installed/, 'the notice counts what is being kept');
+    assert.match(notice, /bmad-market-research \(bmm\): forwards to bmad-deep-recon \(market type\)/, 'each shim names its replacement');
+    assert.match(notice, /bmad-editorial-review: forwards to bmad-review/, 'the module suffix is omitted when unknown');
+    assert.match(notice, /^ {2}no-description$/m, 'a shim without a description still gets listed');
+    assert.match(notice, /re-run Quick Update/, 'the notice tells the user how to remove them');
+    assert.equal(/Deprecated\s*—\s*forwards/.test(notice), false, 'the redundant "Deprecated" prefix is stripped from each line');
 
     console.log('Shim installation policy tests passed.');
   } finally {
