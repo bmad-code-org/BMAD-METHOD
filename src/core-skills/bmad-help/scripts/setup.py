@@ -69,10 +69,11 @@ def payload(skill_root: Path) -> tuple[Path, Path, Path, Path]:
     config_src = assets_src / "config.template.toml"
     user_src = assets_src / "config.user.template.toml"
     catalog_src = assets_src / "bmad-help.csv"
+    resolve_config = scripts_src / "resolve_config.py"
     for directory in (scripts_src, assets_src):
         if not directory.is_dir():
             raise Exception(f"missing directory: {directory}")
-    for file in (config_src, user_src, catalog_src):
+    for file in (resolve_config, config_src, user_src, catalog_src):
         if not file.is_file():
             raise Exception(f"missing file: {file}")
     return scripts_src, catalog_src, config_src, user_src

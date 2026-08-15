@@ -11,7 +11,7 @@ from unittest import mock
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SETUP_PY = REPO_ROOT / "src" / "core-skills" / "bmad-help" / "setup.py"
+SETUP_PY = REPO_ROOT / "src" / "core-skills" / "bmad-help" / "scripts" / "setup.py"
 SHARED_SCRIPTS = (
     "config_utils.py",
     "memlog.py",
@@ -83,13 +83,13 @@ def write_dest_help(
 ) -> Path:
     help_dir = root / "bmad-help"
     write(help_dir / "SKILL.md", "---\nname: bmad-help\n---\n")
-    shutil.copy2(SETUP_PY, help_dir / "setup.py")
+    dest_setup = help_dir / "scripts" / "setup.py"
+    dest_setup.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(SETUP_PY, dest_setup)
     if scripts:
         for name in SHARED_SCRIPTS:
             source = REPO_ROOT / "src" / "scripts" / name
-            dest = help_dir / "scripts" / name
-            dest.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(source, dest)
+            shutil.copy2(source, help_dir / "scripts" / name)
     if assets:
         if config is not None:
             write(help_dir / "assets" / "config.template.toml", config)
@@ -112,7 +112,7 @@ def run_setup(project: Path, skill: Path, *extra: str) -> subprocess.CompletedPr
             "uv",
             "run",
             "--no-cache",
-            str(skill / "setup.py"),
+            str(skill / "scripts" / "setup.py"),
             "--project-root",
             str(project),
             "--skill",
