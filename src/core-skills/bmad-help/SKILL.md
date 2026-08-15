@@ -16,7 +16,7 @@ the user asked for it.
 
 ### Update
 
-If `{project-root}/_bmad/config.user.toml` exists, read it. If
+If `_bmad/config.user.toml` exists under `{project-root}`, read it. If
 `user_name`, `communication_language`, and `user_skill_level` are
 already set, do not ask again. Run:
 
