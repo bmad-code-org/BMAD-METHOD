@@ -66,8 +66,8 @@ def setup(
 def payload(skill_root: Path) -> tuple[Path, Path, Path, Path]:
     scripts_src = skill_root / "scripts"
     assets_src = skill_root / "assets"
-    config_src = assets_src / "config.toml"
-    user_src = assets_src / "config.user.toml"
+    config_src = assets_src / "config.template.toml"
+    user_src = assets_src / "config.user.template.toml"
     catalog_src = assets_src / "bmad-help.csv"
     for directory in (scripts_src, assets_src):
         if not directory.is_dir():

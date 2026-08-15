@@ -92,9 +92,9 @@ def write_dest_help(
             shutil.copy2(source, dest)
     if assets:
         if config is not None:
-            write(help_dir / "assets" / "config.toml", config)
+            write(help_dir / "assets" / "config.template.toml", config)
         if user_config is not None:
-            write(help_dir / "assets" / "config.user.toml", user_config)
+            write(help_dir / "assets" / "config.user.template.toml", user_config)
         if catalog is not None:
             write(help_dir / "assets" / "bmad-help.csv", catalog)
     return help_dir
@@ -451,7 +451,7 @@ class BmadHelpSetupTests(unittest.TestCase):
         )
         self.assertEqual(parsed["modules"]["bmm"]["project_knowledge"], "{project-root}/docs")
         expected = tomllib.loads(
-            (skill / "assets" / "config.toml")
+            (skill / "assets" / "config.template.toml")
             .read_text(encoding="utf-8")
             .replace("{directory_name}", project_name)
         )
