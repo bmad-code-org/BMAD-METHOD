@@ -12,7 +12,7 @@ story_key: '' # set at runtime when discovered from sprint status
 
 - YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
 - The prompt that triggered this workflow IS the intent — not a hint.
-- Writing `{diff_file}` and creating its directory is the only change this step may make. Otherwise it is read-only.
+- Writing `{diff_file}` and the claims file is the only change this step may make. Otherwise it is read-only.
 
 ## INSTRUCTIONS
 
@@ -58,7 +58,7 @@ story_key: '' # set at runtime when discovered from sprint status
    - **Specific commit range** (ask for the range)
    - **Provided diff or file list** (user pastes or provides a path)
 
-3. Write the diff for the chosen source to `{diff_file}` = `{implementation_artifacts}/code-review.diff`, creating `{implementation_artifacts}` first if it does not exist. The review layers read that file; the diff text is never pasted into their prompts.
+3. Write the diff for the chosen source to `{diff_file}` — a uniquely-named file in the system temp directory, so concurrent reviews cannot collide. The review layers read that file; the diff text is never pasted into their prompts.
    - For **staged changes only**: run `git diff --cached > {diff_file}`.
    - For **uncommitted changes** (staged + unstaged): run `git diff HEAD > {diff_file}`.
    - For **branch diff**: verify the base branch exists, then run `git diff <base-branch>...HEAD > {diff_file}`. If it does not exist, HALT and ask the user for a valid branch.
@@ -68,7 +68,7 @@ story_key: '' # set at runtime when discovered from sprint status
    - After writing `{diff_file}`, verify it is non-empty regardless of source type. If empty, HALT and tell the user there is nothing to review.
    - Read `{diff_file}` yourself whenever you need the diff for your own context — triage and presentation later in this workflow.
 
-4. **Stage the claims file.** Collect the change's own narrative: for a branch diff or commit range, the commit messages it covers (`git log <base>..<head>`); for other sources, whatever description of the change the user or conversation supplied. Write it verbatim to a file in the system temp directory and set `{claims_file}` to its path. If there is no narrative, set `{claims_file}` = `''`. Do not analyze or summarize the narrative — it is input for one review layer, staged as a file precisely so the other layers never see it.
+4. **Stage the claims file.** Collect the change's own narrative: for a branch diff or commit range, the commit messages it covers (`git log <base>..<head>`); for other sources, whatever description of the change the user or conversation supplied. Write it verbatim to a uniquely-named file in the system temp directory and set `{claims_file}` to its path. If there is no narrative, set `{claims_file}` = `''`. Do not analyze or summarize the narrative — it is input for one review layer, staged as a file precisely so the other layers never see it.
 
 5. **Set the spec context.**
    - If the triggering request or recent conversation **explicitly** states there is no spec (e.g. "no spec", "without a spec", "no-spec"): set `{review_mode}` = `"no-spec"` and clear `{spec_file}` (set it to `''`). Do **not** ask for a spec. Do **not** infer no-spec mode merely because the invocation omitted a spec path.

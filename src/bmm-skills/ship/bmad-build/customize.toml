@@ -84,8 +84,10 @@ Launch a subagent with no prior conversation context, with this prompt:
 
 # Review layers for the review step. `instruction` is the layer's whole
 # execution recipe — subagents by default, but an override may run anything
-# (e.g. an external reviewer via bash). {diff_output} is substituted at run
-# time. `when` (optional) gates a layer; empty `instruction` disables it.
+# (e.g. an external reviewer via bash). {diff_file} and {claims_file} are
+# substituted at run time; both are paths, and {diff_file} is the unified diff
+# file the layer reads. `when` (optional) gates a layer; empty `instruction`
+# disables it.
 
 [[workflow.review_layers]]
 id = "blind-hunter"
@@ -100,8 +102,7 @@ Output a Markdown list of findings only — no severity, priority, or ranking.
 If the content is empty, stop and say so.
 If you have zero findings, re-check and keep thinking; do not stop with an empty list.
 
-CONTENT:
-{diff_output}
+CONTENT: the unified diff at `{diff_file}`. Read that file — it is the content under review.
 
 Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
 
@@ -115,9 +116,9 @@ Launch a context-free subagent with this prompt:
 
 Read `{skill-root}/review-prompts/edge-case-hunter.md` completely and follow it as your review instructions.
 
-Review content:
+claims_file (leave unread until your instructions call for it): {claims_file}
 
-{diff_output}
+Review content: the unified diff at `{diff_file}`. Read that file — it is the content under review.
 
 Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. If the instruction file is unreadable, report that exact failure and stop. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
 
@@ -131,9 +132,7 @@ Launch a context-free subagent with this prompt:
 
 Read `{skill-root}/review-prompts/verification-gap.md` completely and follow it as your review instructions.
 
-Review content:
-
-{diff_output}
+Review content: the unified diff at `{diff_file}`. Read that file — it is the content under review.
 
 Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. If the instruction file is unreadable, report that exact failure and stop. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
 
