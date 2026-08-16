@@ -8,7 +8,7 @@ A brief secondary deletion check runs as Step 4 when the diff removes code.
 A claims check runs as Step 5 when the launch message names a claims file.
 
 **Inputs:**
-- **content** — Content to review: diff, full file, or function
+- **content** — Content to review, or a path to read it from: diff, full file, or function
 - **also_consider** (optional) — Areas to keep in mind during review alongside normal edge-case analysis
 - **claims_file** (optional) — Path to the change's stated narrative. Do NOT read it before Step 5: the path tracing in Steps 2–3 must finish before the narrative is seen.
 
@@ -21,8 +21,8 @@ A claims check runs as Step 5 when the launch message names a claims file.
 
 ### Step 1: Receive Content
 
-- Load the content to review strictly from the parent message that launched you (not from this instruction file)
-- If content is empty, or cannot be decoded as text, return `[{"location":"N/A","trigger_condition":"Input empty or undecodable","guard_snippet":"Provide valid content to review","potential_consequence":"Review skipped — no analysis performed"}]` and stop
+- Take the content to review from the parent message that launched you — inline, or by reading the file it points to (never from this instruction file)
+- If no content is supplied, or it is empty, unreadable, or cannot be decoded as text, return `[{"location":"N/A","trigger_condition":"Input empty or undecodable","guard_snippet":"Provide valid content to review","potential_consequence":"Review skipped — no analysis performed"}]` and stop
 - Identify content type (diff, full file, or function) to determine scope rules
 
 ### Step 2: Exhaustive Path Analysis
@@ -71,7 +71,7 @@ No extra text, no explanations, no markdown wrapping. An empty array `[]` is val
 
 ## HALT CONDITIONS
 
-- If content is empty or cannot be decoded as text, return `[{"location":"N/A","trigger_condition":"Input empty or undecodable","guard_snippet":"Provide valid content to review","potential_consequence":"Review skipped — no analysis performed"}]` and stop
+- If no content is supplied, or it is empty, unreadable, or cannot be decoded as text, return `[{"location":"N/A","trigger_condition":"Input empty or undecodable","guard_snippet":"Provide valid content to review","potential_consequence":"Review skipped — no analysis performed"}]` and stop
 <reference path="references/deletion-check.md">
 # Deletion Check
 
@@ -107,4 +107,4 @@ Verified claims produce nothing. Add nothing if nothing is falsified.
 
 ## CONTENT SOURCE
 
-Review the content supplied under "Review content:" in the message that launched you.
+"Review content:" in the message that launched you gives the content itself or a path to read it from. Read the file when it is a path; either way that is the content under review, and this instruction file never is.

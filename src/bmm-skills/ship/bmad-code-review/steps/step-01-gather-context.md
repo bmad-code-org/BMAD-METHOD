@@ -1,5 +1,5 @@
 ---
-diff_output: '' # set at runtime
+diff_file: '' # set at runtime: path to the diff file
 claims_file: '' # set at runtime (path or empty)
 spec_file: '' # set at runtime (path or empty)
 review_mode: '' # set at runtime: "full" or "no-spec"
@@ -12,7 +12,7 @@ story_key: '' # set at runtime when discovered from sprint status
 
 - YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
 - The prompt that triggered this workflow IS the intent — not a hint.
-- Do not modify any files. This step is read-only.
+- Writing `{diff_file}` and creating its directory is the only change this step may make. Otherwise it is read-only.
 
 ## INSTRUCTIONS
 
@@ -58,14 +58,15 @@ story_key: '' # set at runtime when discovered from sprint status
    - **Specific commit range** (ask for the range)
    - **Provided diff or file list** (user pastes or provides a path)
 
-3. Construct `{diff_output}` from the chosen source.
-   - For **staged changes only**: run `git diff --cached`.
-   - For **uncommitted changes** (staged + unstaged): run `git diff HEAD`.
-   - For **branch diff**: verify the base branch exists before running `git diff`. If it does not exist, HALT and ask the user for a valid branch.
-   - For **commit range**: verify the range resolves. If it does not, HALT and ask the user for a valid range.
-   - For **provided diff**: validate the content is non-empty and parseable as a unified diff. If it is not parseable, HALT and ask the user to provide a valid diff.
-   - For **file list**: validate each path exists in the working tree. Construct `{diff_output}` by running `git diff HEAD -- <path1> <path2> ...`. If any paths are untracked (new files not yet staged), use `git diff --no-index /dev/null <path>` to include them. If the diff is empty (files have no uncommitted changes and are not untracked), ask the user whether to review the full file contents or to specify a different baseline.
-   - After constructing `{diff_output}`, verify it is non-empty regardless of source type. If empty, HALT and tell the user there is nothing to review.
+3. Write the diff for the chosen source to `{diff_file}` = `{implementation_artifacts}/code-review.diff`, creating `{implementation_artifacts}` first if it does not exist. The review layers read that file; the diff text is never pasted into their prompts.
+   - For **staged changes only**: run `git diff --cached > {diff_file}`.
+   - For **uncommitted changes** (staged + unstaged): run `git diff HEAD > {diff_file}`.
+   - For **branch diff**: verify the base branch exists, then run `git diff <base-branch>...HEAD > {diff_file}`. If it does not exist, HALT and ask the user for a valid branch.
+   - For **commit range**: verify the range resolves, then run `git diff <range> > {diff_file}`. If it does not resolve, HALT and ask the user for a valid range.
+   - For **provided diff**: validate the content is non-empty and parseable as a unified diff. If it is not parseable, HALT and ask the user to provide a valid diff. Write the validated diff to `{diff_file}`.
+   - For **file list**: validate each path exists in the working tree. Run `git diff HEAD -- <path1> <path2> ... > {diff_file}`. If any paths are untracked (new files not yet staged), append them with `git diff --no-index /dev/null <path> >> {diff_file}`. If the diff is empty (files have no uncommitted changes and are not untracked), ask the user whether to review the full file contents or to specify a different baseline.
+   - After writing `{diff_file}`, verify it is non-empty regardless of source type. If empty, HALT and tell the user there is nothing to review.
+   - Read `{diff_file}` yourself whenever you need the diff for your own context — triage and presentation later in this workflow.
 
 4. **Stage the claims file.** Collect the change's own narrative: for a branch diff or commit range, the commit messages it covers (`git log <base>..<head>`); for other sources, whatever description of the change the user or conversation supplied. Write it verbatim to a file in the system temp directory and set `{claims_file}` to its path. If there is no narrative, set `{claims_file}` = `''`. Do not analyze or summarize the narrative — it is input for one review layer, staged as a file precisely so the other layers never see it.
 
@@ -80,8 +81,8 @@ story_key: '' # set at runtime when discovered from sprint status
 
 6. If `{review_mode}` = `"full"` and the file at `{spec_file}` has a `context` field in its frontmatter listing additional docs, load each referenced document. Warn the user about any docs that cannot be found.
 
-7. Sanity check: if `{diff_output}` exceeds approximately 3000 lines, warn the user and offer to chunk the review by file group.
-   - If the user opts to chunk: agree on the first group, narrow `{diff_output}` accordingly, and list the remaining groups for the user to note for follow-up runs.
+7. Sanity check: if `wc -l {diff_file}` exceeds approximately 3000 lines, warn the user and offer to chunk the review by file group.
+   - If the user opts to chunk: agree on the first group, rebuild `{diff_file}` narrowed to that group, and list the remaining groups for the user to note for follow-up runs.
    - If the user declines: proceed as-is with the full diff.
 
 ### CHECKPOINT
