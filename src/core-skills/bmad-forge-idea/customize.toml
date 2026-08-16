@@ -23,9 +23,7 @@ activation_steps_append = []
 # path/glob whose contents are loaded as facts. Default loads project-context.md
 # when one exists (e.g. from bmad-generate-project-context), so the forge grounds
 # in the project's tech, domain, and constraints without re-asking.
-persistent_facts = [
-  "file:{project-root}/**/project-context.md",
-]
+persistent_facts = []
 
 # Executed when the session completes. Scalar or array of instructions. Empty for none.
 on_complete = []

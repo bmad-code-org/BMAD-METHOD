@@ -22,9 +22,7 @@ activation_steps_append = []
 # or a `file:`-prefixed path/glob whose contents are loaded as facts.
 # Default points to a single top-level file; override in team/user TOML
 # to widen the scope (e.g. `_bmad/**/project-context.md`) if needed.
-persistent_facts = [
-  "file:{project-root}/project-context.md",
-]
+persistent_facts = []
 
 # Executed when the workflow completes. Scalar or array of instructions.
 on_complete = ""

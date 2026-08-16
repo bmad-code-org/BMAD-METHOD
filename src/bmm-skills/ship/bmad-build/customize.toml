@@ -24,9 +24,7 @@ activation_steps_append = []
 # Entries are literal text or file references prefixed with "file:".
 # File entries may use globs and are loaded during activation.
 
-persistent_facts = [
-  "file:{project-root}/**/project-context.md",
-]
+persistent_facts = []
 
 # Instruction run after Build completes.
 # Empty means no extra completion behavior.

@@ -29,9 +29,7 @@ activation_steps_append = []
 # for brownfield). Common opt-ins (set in team/user override TOML):
 #   "Our org is AWS-only -- do not propose GCP or Azure."
 #   "file:{project-root}/docs/engineering-standards.md"
-persistent_facts = [
-  "file:{project-root}/**/project-context.md",
-]
+persistent_facts = []
 
 # Executed when the workflow completes (after the spine is final and the user has been told).
 # String scalar (single instruction) or array of instructions executed in order. Empty for none.

@@ -23,9 +23,7 @@ activation_steps_append = []
 # (house rules, running gags, topics to avoid). Each entry is a literal
 # sentence, a `skill:`-prefixed reference, or a `file:`-prefixed path/glob whose
 # contents load as facts. Default picks up project-context.md if one exists.
-persistent_facts = [
-  "file:{project-root}/**/project-context.md",
-]
+persistent_facts = []
 
 # Which party loads when the user just says "party mode" with no override.
 # Empty = the installed BMAD agents — exactly the default behavior of a plain

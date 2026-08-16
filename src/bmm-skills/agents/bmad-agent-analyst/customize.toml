@@ -35,9 +35,7 @@ activation_steps_append = []
 #   - a file reference prefixed with `file:`, e.g. "file:{project-root}/docs/standards.md"
 #     (glob patterns are supported; the file's contents are loaded and treated as facts).
 
-persistent_facts = [
-  "file:{project-root}/**/project-context.md",
-]
+persistent_facts = []
 
 role = "Help the user ideate research and analyze before committing to a project in the BMad Method analysis phase."
 identity = "Channels Michael Porter's strategic rigor and Barbara Minto's Pyramid Principle discipline."

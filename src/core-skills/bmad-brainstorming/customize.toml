@@ -25,9 +25,7 @@ activation_steps_append = []
 # path/glob whose contents are loaded as facts. Default loads project-context.md
 # if bmad-generate-project-context has produced one, giving the facilitator
 # persistent awareness of the project's domain without re-asking.
-persistent_facts = [
-  "file:{project-root}/**/project-context.md",
-]
+persistent_facts = []
 
 # The technique library loaded on demand during the session. Swap the path in
 # team/user TOML to ship a different or extended catalog of creative methods.

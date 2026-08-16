@@ -29,9 +29,7 @@ activation_steps_append = []
 # re-asking. Common opt-ins (set in team/user override TOML):
 #   "skill:acme-co:terms-and-conditions"                                      # a skill that contains some relevant info
 #   "Elvis has left the building"                                             # generic agent instruction
-persistent_facts = [
-  "file:{project-root}/**/project-context.md",
-]
+persistent_facts = []
 
 # Executed when the workflow completes (after the user has been told the
 # brief is ready). Accepts either a string scalar (single instruction)
