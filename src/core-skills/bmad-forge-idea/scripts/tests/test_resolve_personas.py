@@ -59,6 +59,7 @@ class TestBuildPool(unittest.TestCase):
         pool, _, _, custom = rp.build_pool(AGENTS, [
             {"code": 7, "name": "Numeric"},
             {"code": ["nested"], "name": "Unhashable"},
+            {"code": "", "name": "Empty"},
         ])
         self.assertEqual(custom, [])
         self.assertEqual(set(pool), {"bmad-agent-analyst", "bmad-agent-pm"})

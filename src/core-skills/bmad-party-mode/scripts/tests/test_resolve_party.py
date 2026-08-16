@@ -56,6 +56,7 @@ class TestBuildCollective(unittest.TestCase):
         col, _, _ = rp.build_collective(AGENTS, [
             {"code": 7, "name": "Numeric"},
             {"code": ["nested"], "name": "Unhashable"},
+            {"code": "", "name": "Empty"},
         ])
         self.assertEqual(set(col), {"bmad-agent-analyst", "bmad-agent-pm"})
 
