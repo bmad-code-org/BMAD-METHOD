@@ -78,8 +78,7 @@ On activation, the workflow resolves:
 
 - `_bmad/config.toml`, `_bmad/config.user.toml`, and optional team/user overrides under `_bmad/custom/`
 - Any configured workflow customizations from `customize.toml`, team overrides, and user overrides
-- Persistent facts listed in workflow config
-- `project-context.md` files, if present
+- Persistent facts listed in workflow config — empty unless you opt in, so nothing is loaded here by default
 
 It may also look at:
 

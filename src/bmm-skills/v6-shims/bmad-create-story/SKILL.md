@@ -257,7 +257,7 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
 
   <!-- Load all available content through discovery protocol -->
   <action>Read fully and follow `./discover-inputs.md` to load all input files</action>
-  <note>Available content: {epics_content}, {prd_content}, {architecture_content}, {ux_content}, plus the project-context facts loaded during activation via `persistent_facts`.</note>
+  <note>Available content: {epics_content}, {prd_content}, {architecture_content}, {ux_content}, plus any facts loaded during activation via `persistent_facts` (empty unless the user opted in).</note>
 
   <!-- Analyze epics file for story foundation -->
   <action>From {epics_content}, extract Epic {{epic_num}} complete context:</action> **EPIC ANALYSIS:** - Epic
