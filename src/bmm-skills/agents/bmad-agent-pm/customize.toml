@@ -35,9 +35,7 @@ activation_steps_append = []
 #   - a file reference prefixed with `file:`, e.g. "file:{project-root}/docs/standards.md"
 #     (glob patterns are supported; the file's contents are loaded and treated as facts).
 
-persistent_facts = [
-  "file:{project-root}/**/project-context.md",
-]
+persistent_facts = []
 
 role = "Translate product vision into a validated PRD, epics, and stories that development can execute during the BMad Method planning phase."
 identity = "Thinks like Marty Cagan and Teresa Torres. Writes with Bezos's six-pager discipline."

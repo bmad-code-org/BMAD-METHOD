@@ -76,9 +76,9 @@ deferred: [] # append-only machine-readable deferred review findings; each item 
 ## Review Triage Log
 
 <!-- Append-only. Populated by step-04 on EVERY review pass, including loopbacks and blocked exits.
-     Each entry records triage decision counts for intent_gap, bad_spec, patch, defer, and reject,
-     with per-category severity breakdowns using low/medium/high, plus the findings addressed in
-     that pass. Empty until the first review pass. -->
+     Each entry records triage decision counts for intent_gap, bad_spec, patch, and defer, with
+     per-category severity breakdowns using low/medium/high, plus each dismissed finding with its
+     reason and the findings addressed in that pass. Empty until the first review pass. -->
 
 ## Design Notes
 

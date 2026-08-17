@@ -182,8 +182,12 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
 
 <check if="mode is Incremental">
   <action>Present each edit proposal individually</action>
-  <ask>Review and refine this change? Options: Approve [a], Edit [e], Skip [s]</ask>
-  <action>Iterate on each proposal based on user feedback</action>
+  <action>HALT and give the user a choice:
+  - **Approve** — accept this proposal
+  - **Edit** — refine this proposal
+  - **Skip** — drop this proposal
+  </action>
+  <action>If the user chooses **Approve**, keep the proposal. If they choose **Edit**, refine it with them. If they choose **Skip**, drop it. Continue to the next proposal.</action>
 </check>
 
 <action if="mode is Batch">Collect all edit proposals and present together at end of step</action>
@@ -232,7 +236,11 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
 
 <action>Present complete Sprint Change Proposal to user</action>
 <action>Write Sprint Change Proposal document to {default_output_file}</action>
-<ask>Review complete proposal. Continue [c] or Edit [e]?</ask>
+<action>HALT and give the user a choice:
+- **Continue** — proceed to approval
+- **Edit** — revise the proposal first
+</action>
+<action>If the user chooses **Edit**, revise the proposal with them and write the updated document before continuing.</action>
 </step>
 
 <step n="5" goal="Finalize and Route for Implementation">

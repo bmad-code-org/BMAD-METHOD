@@ -39,7 +39,7 @@ The interactive flow asks you six things when the selected modules still ship de
 
 Accept the defaults and you land on the latest stable release of every module, configured for your chosen tool.
 
-Existing installations keep their current shim choice during Quick Update. Modify Install lets you change it explicitly. Once a release no longer contains any shims, the installer stops asking and removes previously installed shims through its normal update cleanup.
+Quick Update asks the same question whenever the project still has shims installed, defaulting to keeping them so pressing enter never breaks a skill you are using. Answer No there to remove them. An installation that has already dropped its shims is not asked again. Whenever an install keeps its shims, the installer lists every one of them and what it forwards to, so you can see what is left to migrate. Once a release no longer contains any shims, the installer stops asking and removes previously installed shims through its normal update cleanup.
 
 :::tip[Just want the newest prerelease?]
 

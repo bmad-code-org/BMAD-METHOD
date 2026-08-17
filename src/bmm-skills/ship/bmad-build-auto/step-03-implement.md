@@ -33,7 +33,11 @@ Invoke the subagent **synchronously** and wait for it to return in this same tur
 
 ### Verify
 
-After the implementation subagent returns: if it reported unfinished work, finish it before proceeding. Run the commands in `{spec_file}`'s `## Verification` section (or perform its manual checks). If verification fails and the failure cannot be fixed, HALT with status `blocked`, blocking condition `implementation verification failed`, and include the failing command or check and reason. Acceptance criteria are judged at review, not here.
+After the implementation subagent returns: if it reported unfinished work, finish it before proceeding.
+
+Stage the diff and read it: using the repository's version-control tooling, write a unified diff of all changes since `{baseline_revision}` (from `{spec_file}` frontmatter) — untracked files included — to a uniquely-named file in the system temp directory, set `{diff_file}` to its absolute path, and read that file into your own context. Judge against the diff, not against the implementation subagent's report.
+
+Run the commands in `{spec_file}`'s `## Verification` section (or perform its manual checks). If verification fails and the failure cannot be fixed, HALT with status `blocked`, blocking condition `implementation verification failed`, and include the failing command or check and reason. When fixing a failure changes code, rewrite `{diff_file}` and re-read it. Acceptance criteria are judged at review, not here.
 
 ### Matrix Test Audit
 
