@@ -30,7 +30,7 @@ Once every layer has reported — and not before — render a verdict on each fi
 - **Verify its own claimed consequence** at the location it names. Read past the changed lines — into the callers, the guards upstream, whatever else the site depends on — far enough to tell whether that consequence actually occurs. Another finding's outcome, however adjacent, never settles this one.
 - **Assign severity** from the verified consequence for the software's user: `low` (none or cosmetic), `medium` (tolerable), `high` (intolerable).
 - **Keep or dismiss.** Keep a finding only where verification confirmed its consequence. Dismiss noise, claims the verification refuted, and claims it could not substantiate — no path to the claimed consequence at the named site is a valid disposal. Whatever the reason, it must dispose of the finding's own claim: a true fact about neighboring code that leaves the claim standing is not a dismissal, and the finding stays kept. Record each dismissal with its reason; never drop a finding silently.
-- A finding whose fix edits an agent-context document (CLAUDE.md, AGENTS.md, rules files, specs): defer, never patch.
+- A finding whose fix edits an agent-context document (e.g. CLAUDE.md, AGENTS.md, rules files, specs): defer, never patch.
 
 Group the survivors by shared root cause — two findings belong in one entry only when the same underlying defect produced both. Same location alone is not a shared root cause, and neither is a shared fix. An entry carries every member's verified consequence and the highest severity among them. Then route each entry in this order:
 

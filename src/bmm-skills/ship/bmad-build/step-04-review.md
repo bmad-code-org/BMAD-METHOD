@@ -35,7 +35,7 @@ If a layer's instruction requires subagents and none are available, for each suc
      - `medium`: tolerable
      - `high`: intolerable
    - **Keep or dismiss.** Keep a finding only where verification confirmed its consequence. Dismiss noise, claims the verification refuted, and claims it could not substantiate — no path to the claimed consequence at the named site is a valid disposal. Whatever the reason, it must dispose of the finding's own claim: a true fact about neighboring code that leaves the claim standing is not a dismissal, and the finding stays kept. Record each dismissal with its reason in the `## Review Triage Log` section of `{spec_file}`; never drop a finding silently.
-   - A finding whose fix edits `{spec_file}`: dismiss. A finding whose fix edits an agent-context document (CLAUDE.md, AGENTS.md, rules files, specs): defer, never patch.
+   - A finding whose fix edits the spec this build is implementing: dismiss. A finding whose fix edits an agent-context document (e.g. CLAUDE.md, AGENTS.md, rules files, other specs): defer, never patch.
 2. Group the survivors by shared root cause — two findings belong in one entry only when the same underlying defect produced both. Same location alone is not a shared root cause, and neither is a shared fix. An entry carries every member's verified consequence and the highest severity among them.
 3. Route each entry into exactly one triage category. The first three are **this story's problem** — caused or exposed by the current change. The last is **not this story's problem**.
    - **intent_gap** — caused by the change; cannot be resolved from the spec because the captured intent is incomplete. Do not infer intent unless there is exactly one possible reading.

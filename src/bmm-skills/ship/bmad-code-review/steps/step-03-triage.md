@@ -23,7 +23,7 @@
      - `medium` -- tolerable
      - `high` -- intolerable
    - **Keep or dismiss.** Keep a finding only where verification confirmed its consequence. Dismiss noise, claims the verification refuted, and claims it could not substantiate -- no path to the claimed consequence at the named site is a valid disposal. Whatever the reason, it must dispose of the finding's own claim: a true fact about neighboring code that leaves the claim standing is not a dismissal, and the finding stays kept. Record each dismissal with its reason for the summary; never drop a finding silently.
-   - A finding whose fix edits `{spec_file}`: dismiss. A finding whose fix edits an agent-context document (CLAUDE.md, AGENTS.md, rules files, specs): defer, never patch.
+   - A finding whose fix edits the spec under review: dismiss. A finding whose fix edits an agent-context document (e.g. CLAUDE.md, AGENTS.md, rules files, other specs): defer, never patch.
 
 3. **Group the survivors by shared root cause** -- two findings belong in one entry only when the same underlying defect produced both. Same location alone is not a shared root cause, and neither is a shared fix. An entry carries every member's verified consequence in `detail` and the highest severity among them; set `source` to the contributing layers joined with `+` (e.g., `blind-hunter+edge-case-hunter`).
 
