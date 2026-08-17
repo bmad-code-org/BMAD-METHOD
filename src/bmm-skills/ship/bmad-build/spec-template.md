@@ -70,6 +70,11 @@ context: [] # optional: `{project-root}/`-prefixed paths to project-wide standar
      the amendment avoids, and any KEEP instructions (what worked well and must survive re-derivation).
      Empty until the first bad_spec loopback. -->
 
+## Review Triage Log
+
+<!-- Append-only. Populated by step-04 on every review pass: each dismissed finding with the
+     reason that disposed of its claim. Empty until the first review pass. -->
+
 ## Design Notes
 
 <!-- If the approach is straightforward, DELETE THIS ENTIRE SECTION. Do not write "N/A" or "None". -->

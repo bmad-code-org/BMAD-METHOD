@@ -25,17 +25,22 @@ If a layer's instruction requires subagents and none are available, for each suc
 
 ### Classify
 
-Deduplicate all review findings, then route each finding in this order:
+Once every layer has reported — and not before — render a verdict on each finding on its own, ahead of any deduplication or grouping:
 
-- **patch** — Patch every finding caused or exposed by this change that shows a defect that actually occurs, missing coverage for a specific case, or a broken gate or convention — not a state nothing reaches — and whose smallest fix is trivial, adds no public surface, and guards no state the finding did not demonstrate. Apply that smallest fix immediately.
-- **HALT** — HALT on every finding caused or exposed by this change that shows the same evidence but whose smallest fix fails any of those conditions. Present it to the human for decision before proceeding.
-- **defer** — Defer every other real finding, including pre-existing issues and improvement ideas. Append one new entry to `{{.implementation_artifacts}}/deferred-work.md` using this format. Do not modify existing entries or look for duplicates.
+- **Verify its own claimed consequence** at the location it names. Read past the changed lines — into the callers, the guards upstream, whatever else the site depends on — far enough to tell whether that consequence actually occurs. Another finding's outcome, however adjacent, never settles this one.
+- **Assign severity** from the verified consequence for the software's user: `low` (none or cosmetic), `medium` (tolerable), `high` (intolerable).
+- **Keep or dismiss.** Keep a finding only where verification confirmed its consequence. Dismiss noise, claims the verification refuted, and claims it could not substantiate — no path to the claimed consequence at the named site is a valid disposal. Whatever the reason, it must dispose of the finding's own claim: a true fact about neighboring code that leaves the claim standing is not a dismissal, and the finding stays kept. Record each dismissal with its reason; never drop a finding silently.
+
+Group the survivors by shared root cause — two findings belong in one entry only when the same underlying defect produced both. Same location alone is not a shared root cause, and neither is a shared fix. An entry carries every member's verified consequence and the highest severity among them. Then route each entry in this order:
+
+- **patch** — Patch every entry caused or exposed by this change that shows a defect that actually occurs, missing coverage for a specific case, or a broken gate or convention — not a state nothing reaches — and whose smallest fix is trivial, adds no public surface, and guards no state the finding did not demonstrate. Apply that smallest fix immediately.
+- **HALT** — HALT on every entry caused or exposed by this change that shows the same evidence but whose smallest fix fails any of those conditions. Present it to the human for decision before proceeding.
+- **defer** — Defer every other entry, including pre-existing issues and improvement ideas. Append one new entry to `{{.implementation_artifacts}}/deferred-work.md` using this format. Do not modify existing entries or look for duplicates.
   ```markdown
   - source_spec: `{spec_file}`
     summary: <one sentence>
     evidence: <why this is real>
   ```
-- **reject** — Reject only noise. Drop silently.
 
 ### Generate Spec Trace
 
@@ -46,6 +51,7 @@ Write `{spec_file}` using `[[bmad-snapshot:spec-template.md]]`. Fill only these 
 1. **Frontmatter** — set `title: '{title}'`, `type`, `created`, `status: 'done'`. Add `route: 'one-shot'`.
 2. **Title and Intent** — `# {title}` heading and `## Intent` with **Problem** and **Approach** lines. Reuse the summary you already generated for the terminal.
 3. **Suggested Review Order** — append after Intent. Build using the same convention as `[[bmad-snapshot:step-05-present.md]]` § "Generate Suggested Review Order" (spec-file-relative links, concern-based ordering, ultra-concise framing).
+4. **Review Triage Log** — only when findings were dismissed: one line per dismissal, the finding and the reason that disposed of its claim.
 
 Follow `[[bmad-snapshot:sync-sprint-status.md]]` with `target_status` = `review`.
 
@@ -61,7 +67,7 @@ Display a summary in conversation output, including:
 
 - The commit hash (if one was created).
 - List of files changed with one-line descriptions. Any file paths shown in conversation/terminal output must use CWD-relative format (no leading `/`) with `:line` notation (e.g., `src/path/file.ts:42`) for terminal clickability — this differs from spec-file links which use spec-file-relative paths.
-- Review findings breakdown: patches applied, items deferred, items rejected. If all findings were rejected, say so.
+- Review findings breakdown: patches applied, items deferred, and the dismissed count — dismissal reasons are recorded in the spec trace. If every finding was dismissed, say so.
 
 Offer to push and/or create a pull request.
 

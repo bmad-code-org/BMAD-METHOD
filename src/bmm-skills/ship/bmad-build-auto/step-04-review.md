@@ -28,19 +28,20 @@ Announce skipped layers first, then launch every active layer before handling an
 
 ### Classify
 
-1. Deduplicate only findings with the same claim and same required action. Then evaluate each remaining finding independently. Do not reject a finding because a related finding was rejected.
-2. Assign severity to each finding by consequence for the artifact's main consumer (software user, document reader, etc).
-   Disregard any severity assigned by a reviewing subagent. Review subagents operate under by-design information asymmetry and do not have enough context to set final severity for this workflow.
-   - `low`: none or cosmetic
-   - `medium`: tolerable
-   - `high`: intolerable
-3. Route each finding into exactly one triage category. The first three categories are **this story's problem** — caused or exposed by the current change. The last two are **not this story's problem**.
-   Scope authority: a finding may be routed to defer or reject *as out of scope* only on the authority of the intent itself. The spec's scope language, the plan, and the diff's own shape are not admissible scope authorities — if only they exclude a finding, treat it as evidence against the chosen reading (intent_gap or bad_spec), not as out of scope.
+1. Once every layer has reported — and not before — render a verdict on each finding on its own, ahead of any deduplication or grouping. For each finding:
+   - **Verify its own claimed consequence** at the location it names. Read past the diff hunk — into the callers, the guards upstream, whatever else the site depends on — far enough to tell whether that consequence actually occurs. Another finding's outcome, however adjacent, never settles this one.
+   - **Assign severity** from the verified consequence for the artifact's main consumer (software user, document reader, etc). Disregard any severity assigned by a reviewing subagent. Review subagents operate under by-design information asymmetry and do not have enough context to set final severity for this workflow.
+     - `low`: none or cosmetic
+     - `medium`: tolerable
+     - `high`: intolerable
+   - **Keep or dismiss.** Keep a finding only where verification confirmed its consequence. Dismiss noise, claims the verification refuted, and claims it could not substantiate — no path to the claimed consequence at the named site is a valid disposal. Whatever the reason, it must dispose of the finding's own claim: a true fact about neighboring code that leaves the claim standing is not a dismissal, and the finding stays kept. Record each dismissal with its reason in the triage log below; never drop a finding silently.
+   - Scope authority: a finding may be dismissed or later deferred *as out of scope* only on the authority of the intent itself. The spec's scope language, the plan, and the diff's own shape are not admissible scope authorities — if only they exclude a finding, treat it as evidence against the chosen reading (intent_gap or bad_spec), not as out of scope.
+2. Group the survivors by shared root cause — two findings belong in one entry only when the same underlying defect produced both. Same location alone is not a shared root cause, and neither is a shared fix. An entry carries every member's verified consequence and the highest severity among them.
+3. Route each entry into exactly one triage category. The first three are **this story's problem** — caused or exposed by the current change. The last is **not this story's problem**.
    - **intent_gap** — caused by the change; cannot be resolved from the spec because the captured intent is incomplete. Do not infer intent unless there is exactly one possible reading.
    - **bad_spec** — caused by the change, including direct deviations from spec. The spec should have been clear enough to prevent it. When in doubt between bad_spec and patch, prefer bad_spec — a spec-level fix is more likely to produce coherent code.
    - **patch** — caused by the change; trivially fixable without human input. Just part of the diff.
    - **defer** — pre-existing issue not caused by this story, surfaced incidentally by the review. Collect for later focused attention.
-   - **reject** — noise. Drop silently. When unsure between defer and reject, prefer reject — only defer findings you are confident are real.
 4. Append a new entry to the `## Review Triage Log` section in `{spec_file}`, in this format:
    ```markdown
    ### {date} — Review pass
@@ -48,11 +49,12 @@ Announce skipped layers first, then launch every active layer before handling an
    - bad_spec: count
    - patch: count
    - defer: count
-   - reject: count
+   - dismissed:
+     - <finding summary> — <the reason, which must dispose of that finding's own claim>
    - addressed_findings:
      - `[high|medium|low]` `[patch|bad_spec]` <finding summary and action taken in this pass>
    ```
-   Where `{date}` is the current system date and `count` is either just `0`, or total with breakdown by severity `N: (high Nhigh, medium Nmedium, low Nlow)`.
+   Where `{date}` is the current system date and `count` is either just `0`, or total with breakdown by severity `N: (high Nhigh, medium Nmedium, low Nlow)`. Give `dismissed` one line per dismissal, or the single line `- none` when nothing was dismissed.
    If no patch was fixed and no bad_spec repair loopback was triggered in this pass, write:
    ```markdown
    - addressed_findings:
@@ -74,15 +76,14 @@ Announce skipped layers first, then launch every active layer before handling an
          severity: medium # optional — high | medium | low
      ```
      After all appends, parse the complete frontmatter as YAML and verify that `deferred` is one list containing every prior item plus the new items with their intended text. Repair serialization errors before continuing.
-   - **reject** — Drop silently.
 
 ## Finalize
 
 Write the following details to `{spec_file}` under `## Auto Run Result`:
 - Summary of implemented change
 - Files changed with one-line descriptions
-- Review findings breakdown: patches applied, items deferred, items rejected
-- Follow-up review recommendation: count only this pass's findings triaged `patch` — never defer or reject. `true` if any patched finding was `high` severity, or if `3 × medium count + 1 × low count` is 5 or more; otherwise `false`. Record the patched counts by severity and the score.
+- Review findings breakdown: patches applied, items deferred, and every dismissed finding with its reason
+- Follow-up review recommendation: count only this pass's entries triaged `patch`, at entry severity — never deferred or dismissed ones. `true` if any patched entry was `high` severity, or if `3 × medium count + 1 × low count` is 5 or more; otherwise `false`. Record the patched counts by severity and the score.
 - Verification performed, including command outcomes or manual inspection notes
 - Any residual risks
 
