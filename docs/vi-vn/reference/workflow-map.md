@@ -47,8 +47,10 @@ Quyết định cách xây và chia nhỏ công việc thành các story.
 | Quy trình | Mục đích | Tạo ra |
 | ----------------------------------------- | ------------------------------------------ | --------------------------- |
 | `bmad-architecture` | Làm rõ các quyết định kỹ thuật | `architecture.md` kèm ADR |
-| `bmad-create-epics-and-stories` | Phân rã yêu cầu thành các phần việc có thể triển khai | Các file epic chứa các story |
+| `bmad-ticket` | Phân rã yêu cầu thành các phần việc có thể triển khai | Cây ticket gồm các thư mục epic và file story |
 | `bmad-sprint-planning` | Cổng kiểm tra mức độ sẵn sàng trước khi triển khai, sau đó theo dõi story và xem trạng thái sprint | PASS/CONCERNS/FAIL + `sprint-status.yaml` |
+
+`bmad-create-epics-and-stories` được giữ lại dưới dạng shim tương thích v6, chuyển tiếp sang `bmad-ticket`.
 
 ## Giai đoạn 4: Triển khai
 

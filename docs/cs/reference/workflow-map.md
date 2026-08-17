@@ -47,8 +47,10 @@ Rozhodněte, jak to budovat, a rozložte práci na stories.
 | Workflow                                  | Účel                                       | Produkuje                   |
 | ----------------------------------------- | ------------------------------------------ | --------------------------- |
 | `bmad-architecture`                | Explicitní technická rozhodnutí            | `architecture.md` s ADR     |
-| `bmad-create-epics-and-stories`           | Rozložení požadavků na implementovatelnou práci | Soubory epiců se stories |
+| `bmad-ticket`                             | Rozložení požadavků na implementovatelnou práci | Strom ticketů se složkami epiců a soubory stories |
 | `bmad-sprint-planning`                    | Brána připravenosti před implementací, poté sledování stories a přehled stavu sprintu | PASS/CONCERNS/FAIL + `sprint-status.yaml` |
+
+`bmad-create-epics-and-stories` je zachován jako shim kompatibilní s v6, který přeposílá na `bmad-ticket`.
 
 ## Fáze 4: Implementace
 

@@ -9,8 +9,8 @@
 children live in `<node>/tickets/`. A leaf is a bare `KEY-n-slug.md` inside
 some `tickets/` folder. The same shape repeats at every altitude:
 
-  <project>/
-    ticket.md              type: project — the root node, carries the key
+  <initiative>/
+    ticket.md              type: initiative — the root node, carries the key
     prd/  spec/  brief/    skill-owned folders; never scanned as tickets
     tickets/
       alert-rules/
@@ -21,8 +21,8 @@ some `tickets/` folder. The same shape repeats at every altitude:
 
 The root node is optional: a tree with no `ticket.md` at the root still works
 (the key then comes from --key or from the ids already in the tree), which is
-the case when no project has been set and tickets sit straight in the output
-folder. There is no index.md — the folder IS the listing, and `index` renders
+the case when no initiative has been set and tickets sit straight in the root
+`tickets/` bin of the work store. There is no index.md — the folder IS the listing, and `index` renders
 a navigation map on demand rather than maintaining one.
 
 Every ticket stores one state field, `status`. Leaves run
@@ -61,7 +61,7 @@ import tempfile
 from pathlib import Path
 
 LEAF_TYPES = ("story", "bug", "task", "spike")
-NODE_TYPES = ("project", "epic")  # container types: a folder + ticket.md + tickets/
+NODE_TYPES = ("initiative", "epic")  # container types: a folder + ticket.md + tickets/
 CHILD_DIR = "tickets"
 DONE = "done"
 DROPPED = "dropped"
@@ -136,13 +136,13 @@ def scan(root, include_dot=False):
     Dot folders (.archive/, .git/) are off the board unless include_dot.
 
     Only the root node file and everything under root/tickets/ is walked. The
-    project folder's sibling content (prd/, spec/, brief/) is another skill's
+    initiative folder's sibling content (prd/, spec/, brief/) is another skill's
     and must never be read as a malformed ticket."""
     tickets = []
     by_id = {}
     problems = []
     candidates = sorted((root / CHILD_DIR).rglob("*.md")) if (root / CHILD_DIR).is_dir() else []
-    # The archive sits at the project level, outside tickets/. It is off the
+    # The archive sits at the initiative level, outside tickets/. It is off the
     # board, but next-id must still see it — an archived id stays owned.
     if include_dot and (root / ".archive").is_dir():
         candidates += sorted((root / ".archive").rglob("*.md"))
@@ -220,8 +220,8 @@ def child_counts(node, tickets):
 
 
 def root_node(root, tickets):
-    """The project node, when one exists. Optional: a tree with tickets straight
-    in the output folder has none."""
+    """The initiative node, when one exists. Optional: a tree with tickets straight
+    in the root `tickets/` bin of the work store has none."""
     return next((t for t in tickets if t["_path"] == root / "ticket.md"), None)
 
 
@@ -262,7 +262,7 @@ def key_of(ticket_id):
 
 
 def read_root_key(root):
-    """The project key is the prefix of the root node's id — one stored fact,
+    """The initiative key is the prefix of the root node's id — one stored fact,
     never a separate `key:` field that can drift out of step with the ids."""
     p = root / "ticket.md"
     if not p.is_file():
@@ -280,7 +280,7 @@ def resolve_key(root, args_key):
     key = read_root_key(root)
     if key:
         return key
-    # Rootless tree (no project set): derive from the ids already issued.
+    # Rootless tree (no initiative set): derive from the ids already issued.
     tickets, _, _ = scan(root, include_dot=True)
     seen = []
     for t in tickets:
@@ -290,8 +290,8 @@ def resolve_key(root, args_key):
     if len(seen) == 1:
         return seen[0]
     if not seen:
-        fail("no project key: pass --key, or give the tree a root ticket.md "
-             "(type: project) whose id carries the key")
+        fail("no initiative key: pass --key, or give the tree a root ticket.md "
+             "(type: initiative) whose id carries the key")
     fail("tickets carry more than one key (" + ", ".join(sorted(seen)) + ") — pass --key")
 
 
@@ -672,7 +672,7 @@ def cmd_validate(root, args):
 
     node_child_dirs = {child_dir_of(t) for t in tickets if t["type"] in NODE_TYPES}
     if not (root / "ticket.md").is_file():
-        # Rootless tree (no project set): root/tickets/ is a legal home for leaves.
+        # Rootless tree (no initiative set): root/tickets/ is a legal home for leaves.
         node_child_dirs.add(root / CHILD_DIR)
 
     for t in tickets:
@@ -685,8 +685,8 @@ def cmd_validate(root, args):
         if t["type"] in NODE_TYPES:
             if t["_path"].name != "ticket.md":
                 err(t, f"a {t['type']} node must be named ticket.md")
-            if t["type"] == "project" and t["_path"] != root / "ticket.md":
-                err(t, "a project node may only sit at the tree root")
+            if t["type"] == "initiative" and t["_path"] != root / "ticket.md":
+                err(t, "an initiative node may only sit at the tree root")
         else:
             if tid and not t["_path"].name.startswith(tid + "-"):
                 err(t, f"leaf filename must start with '{tid}-'")
@@ -704,12 +704,12 @@ def cmd_validate(root, args):
         created = t.get("created")
         if not (isinstance(created, str) and DATE_RE.match(created)):
             err(t, f"created must be YYYY-MM-DD: {created!r}")
-        # The project node is the root of the trace spine and has no siblings:
+        # The initiative node is the root of the trace spine and has no siblings:
         # it neither covers upstream ids nor waits on anything.
         for fname in ("depends_on", "covers"):
-            if t["type"] == "project":
+            if t["type"] == "initiative":
                 if fname in t:
-                    err(t, f"{fname} is not a project field")
+                    err(t, f"{fname} is not an initiative field")
                 continue
             val = t.get(fname)
             if not isinstance(val, list):
@@ -725,13 +725,13 @@ def cmd_validate(root, args):
                         err(t, "ticket depends on itself")
                     elif str(entry) not in by_id:
                         err(t, f"depends_on ref '{entry}' not found in the tree")
-        # A project node scores nothing: risk and hitl are execution-altitude.
-        if t["type"] != "project":
+        # An initiative node scores nothing: risk and hitl are execution-altitude.
+        if t["type"] != "initiative":
             risk = t.get("risk")
             if not (isinstance(risk, int) and not isinstance(risk, bool) and 1 <= risk <= 5):
                 err(t, f"risk must be an integer 1-5: {risk!r}")
         elif "risk" in t:
-            err(t, "risk is not a project field")
+            err(t, "risk is not an initiative field")
         if _placeholderish(str(t.get("discovered_from", ""))):
             err(t, f"discovered_from is an unresolved placeholder: {t.get('discovered_from')!r}")
         if t["type"] in NODE_TYPES:
@@ -801,7 +801,7 @@ def main():
         p = sub.add_parser(verb)
         p.add_argument("--root", required=True, help="ticket tree root")
         if verb == "next-id":
-            p.add_argument("--key", help="project key (else the root node's id prefix)")
+            p.add_argument("--key", help="initiative key (else the root node's id prefix)")
         if verb == "index":
             p.add_argument("--out", required=True,
                            help="path for the generated navigation map")

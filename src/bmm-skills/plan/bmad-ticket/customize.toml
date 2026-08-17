@@ -12,20 +12,21 @@ activation_steps_append = []
 persistent_facts = ["file:{project-root}/**/project-context.md"]
 on_complete = ""
 
-# The project folder — the root of one project's work. The skill reads and
-# writes the ticket tree at {project_root}/tickets/, and the project node
-# itself lives at {project_root}/ticket.md. Sibling folders (prd/, spec/,
+# The initiative folder — the root of one initiative's work. The skill reads
+# and writes the ticket tree at {project_root}/tickets/, and the initiative
+# node itself lives at {project_root}/ticket.md. Sibling folders (prd/, spec/,
 # brief/) belong to other skills and are never scanned as tickets.
 #
-# Default is the bare output folder, which is the "no project set" case:
-# tickets land straight in it and the tree simply has no project node.
-# Once a project is active, this resolves to {output_folder}/<project>.
-# Pointing it at a dedicated work-store repo later is a config change and a
-# folder move, never a migration.
-project_root = "{output_folder}"
+# Default is the bare work store at {project-root}/.bmad-obeya, which is the
+# "no initiative set" case: tickets land straight in its `tickets/` bin and
+# the tree simply has no initiative node. Once an initiative is active, this
+# resolves to {project-root}/.bmad-obeya/<initiative>. Pointing it somewhere
+# else — a docs folder, a dedicated work-store repo — is a config change and
+# a folder move, never a migration.
+project_root = "{project-root}/.bmad-obeya"
 
-# Optional "project-name=KEY" entries consulted at tree bootstrap before
-# asking (interactive) or deriving from the project name (autonomous —
+# Optional "initiative-name=KEY" entries consulted at tree bootstrap before
+# asking (interactive) or deriving from the initiative name (autonomous —
 # a derived key is flagged as unconfirmed in the completion report).
 project_keys = []
 
@@ -58,7 +59,7 @@ lifecycle_transitions = [
   "review>dropped",
 ]
 
-# Allowed node (project, epic) status moves. Nodes run their own lifecycle:
+# Allowed node (initiative, epic) status moves. Nodes run their own lifecycle:
 # backlog → ready → in-progress → done, dropped from any active state.
 # `ready` means inception is finished and work can start — it records a
 # decision, it does not gate anything downstream (an unready epic with
@@ -89,12 +90,13 @@ hitl_threshold = 3
 # Review lenses run over the full draft before the user ever sees it
 # (and before autonomous mode approves its own), plus any org standards
 # (definition-of-ready, INVEST checklist). Entries are `skill:` or
-# `file:` references or plain text. Append-only: an org adds its bar;
-# the baked lenses cannot be removed downstream (fork to change them).
+# `file:` references or plain text. The baked entry names its three
+# lenses explicitly, which runs them whatever the content class — the
+# verification-gap lens is scoped to code, and tickets are docs.
+# Append-only: an org adds its bar; the baked lenses cannot be removed
+# downstream (fork to change them).
 finalize_reviewers = [
-  "skill:bmad-review-adversarial-general",
-  "skill:bmad-review-edge-case-hunter",
-  "skill:bmad-review-verification-gap",
+  "skill:bmad-review lenses=adversarial,edge-case-hunter,verification-gap",
 ]
 
 # Bug severity scale (how bad the defect is — distinct from risk, which

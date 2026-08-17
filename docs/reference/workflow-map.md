@@ -81,11 +81,13 @@ Decide how to build it and break work into stories.
 
 `bmad-create-epics-and-stories` is retained as a v6 compatibility shim that forwards to `bmad-ticket`.
 
+The ticket tree is what Phase 3 hands to Phase 4: each workable story leaf (`KEY-n-slug.md` under a `tickets/` folder) is a complete work definition — behavior, acceptance criteria with verification, boundaries, and typed pointers back to the planning documents — so `bmad-build` is pointed at the leaf path and needs nothing exported from the tree. Ask `bmad-ticket` which leaves are workable now with `ticket_tree.py frontier`; the tree lives in the work store (`.bmad-obeya` by default).
+
 For how the readiness gate, deterministic tracking, and status view work together, see [Sprint Planning](../explanation/sprint-planning.md).
 
 ## Phase 4: Implementation
 
-Every implementation path converges on `bmad-build`. It accepts direct intent, an issue, a specification, or a planned story, then chooses the clarification, planning, implementation, and review depth needed for that input.
+Every implementation path converges on `bmad-build`. It accepts direct intent, an issue, a specification, a ticket from the ticket tree, or a planned story, then chooses the clarification, planning, implementation, and review depth needed for that input.
 
 | Workflow | Purpose | Produces |
 |----------|---------|----------|
@@ -96,7 +98,7 @@ Every implementation path converges on `bmad-build`. It accepts direct intent, a
 
 ### Direct and Planned Entry
 
-Clear work can enter `bmad-build` directly. Larger initiatives can first produce a PRD, UX design, architecture, epics, stories, readiness results, and sprint plan. Those artifacts add context; they do not select another implementation workflow.
+Clear work can enter `bmad-build` directly. Larger initiatives can first produce a PRD, UX design, architecture, a ticket tree of epics and stories, readiness results, and a sprint plan. Those artifacts add context; they do not select another implementation workflow. On the ticket path, hand `bmad-build` (or `bmad-build-auto` unattended) the story leaf's path: it reads the ticket's frontmatter and body as the whole work definition, carries every acceptance criterion into the spec it writes, and leaves the ticket itself untouched — a `stories.yaml` entry remains an equally valid input for in-flight v6 work.
 
 `bmad-build-auto` can orchestrate unattended iterations of the same development model when autonomous execution is appropriate.
 

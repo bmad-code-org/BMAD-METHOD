@@ -87,7 +87,7 @@ skill 目录名就是调用名，例如 `bmad-agent-dev/` 对应 skill `bmad-age
 | --- | --- |
 | `bmad-prd` | 创建 PRD |
 | `bmad-architecture` | 创建架构方案 |
-| `bmad-create-epics-and-stories` | 拆分 epics/stories |
+| `bmad-ticket` | 将范围切分为 epics，并在 ticket 树中生成 stories（`bmad-create-epics-and-stories` 是转发到这里的 v6 shim） |
 | `bmad-code-review` | 代码评审 |
 | `bmad-build` | 实施直接意图、issue、功能、修复或已规划 story |
 

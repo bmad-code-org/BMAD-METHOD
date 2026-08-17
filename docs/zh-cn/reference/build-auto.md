@@ -150,8 +150,9 @@ blocked 完成时，workflow 写入：
 - `implementation verification failed`
 - `review repair loop exceeded 5 iterations (non-convergence)`
 - `blocked spec supplied`（直接调用的 spec 文件已有 `status: blocked`）
-- `no stories.yaml found`
+- `no ticket or stories.yaml found`
 - `story id not found in stories.yaml`
+- `ambiguous ticket file match`
 - `no epic spec found`
 - `ambiguous story file match`
 - `unrecognized status in existing story file`

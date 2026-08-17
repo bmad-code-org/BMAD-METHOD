@@ -164,7 +164,7 @@ Epics và stories giờ được tạo *sau* kiến trúc. Điều này giúp st
 :::
 
 1. Gọi **PM agent** (`bmad-agent-pm`) trong một chat mới
-2. Chạy `bmad-create-epics-and-stories` (`bmad-create-epics-and-stories`)
+2. Chạy `bmad-ticket` (`bmad-ticket`)
 3. Workflow sẽ dùng cả PRD lẫn Architecture để tạo story có đủ ngữ cảnh kỹ thuật
 
 **Kiểm tra mức sẵn sàng để triển khai** *(Rất nên dùng)*
@@ -176,7 +176,7 @@ Epics và stories giờ được tạo *sau* kiến trúc. Điều này giúp st
 
 Chuyển sang implementation với ngữ cảnh đang có: yêu cầu trực tiếp, issue, spec hoặc story đã được lập kế hoạch đầy đủ. **Mỗi workflow nên chạy trong một chat mới.**
 
-Với công việc đã lập kế hoạch, chạy `bmad-build` và nêu rõ story hoặc hạng mục sprint đã chọn, ví dụ: `Triển khai story 2.3 từ _bmad-output/planning-artifacts/epics.md`.
+Với công việc đã lập kế hoạch, chạy `bmad-build` và nêu rõ story hoặc hạng mục sprint đã chọn, ví dụ: `Triển khai story 2.3 từ cây ticket`.
 
 ### Khởi Tạo Sprint Planning (Cho công việc đã lập kế hoạch)
 
@@ -211,11 +211,12 @@ Dự án của bạn bây giờ sẽ có dạng:
 ```text
 your-project/
 ├── _bmad/                                   # Cấu hình BMad
+├── .bmad-obeya/                             # Work store — cây ticket
+│   └── tickets/                             # Epic (thư mục) và story (file)
 ├── _bmad-output/
 │   ├── planning-artifacts/
 │   │   ├── PRD.md                           # Tài liệu yêu cầu của bạn
-│   │   ├── architecture.md                  # Các quyết định kỹ thuật
-│   │   └── epics/                           # Các file epic và story
+│   │   └── architecture.md                  # Các quyết định kỹ thuật
 │   ├── implementation-artifacts/
 │   │   └── sprint-status.yaml               # Theo dõi sprint
 │   └── project-context.md                   # Quy tắc triển khai (tùy chọn)
@@ -230,7 +231,7 @@ your-project/
 | `bmad-prd` | `bmad-prd` | PM | Tạo tài liệu yêu cầu sản phẩm |
 | `bmad-architecture` | `bmad-architecture` | Architect | Tạo tài liệu kiến trúc |
 | `bmad-generate-project-context` | `bmad-generate-project-context` | Analyst | Tạo file project context |
-| `bmad-create-epics-and-stories` | `bmad-create-epics-and-stories` | PM | Phân rã PRD thành epics |
+| `bmad-ticket` | `bmad-ticket` | PM | Phân rã PRD thành epics và stories |
 | `bmad-sprint-planning` | `bmad-sprint-planning` | DEV | Cổng sẵn sàng + khởi tạo theo dõi sprint + xem trạng thái |
 | `bmad-build` | `bmad-build` | DEV | Triển khai ý định, issue, tính năng, bản sửa hoặc story |
 | `bmad-code-review` | `bmad-code-review` | DEV | Review phần code đã triển khai |

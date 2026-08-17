@@ -95,7 +95,7 @@ Les skills de workflow exécutent un processus structuré en plusieurs étapes s
 | `bmad-prfaq`                    | Défi [PRFAQ Working Backwards](../explanation/analysis-phase.md#prfaq-working-backwards) pour éprouver votre concept produit |
 | `bmad-prd`                      | Créer, mettre à jour ou valider un PRD[^1]                                                                                   |
 | `bmad-architecture`      | Concevoir l’architecture système                                                                                             |
-| `bmad-create-epics-and-stories` | Créer des epics et des stories                                                                                               |
+| `bmad-ticket`                   | Découper le périmètre en epics et amorcer les stories dans l’arbre de tickets (`bmad-create-epics-and-stories` est un shim v6 qui redirige ici) |
 | `bmad-code-review`              | Effectuer une revue de code                                                                                                  |
 | `bmad-build`                | Implémenter une intention directe, une issue, une fonctionnalité, un correctif ou une story planifiée                        |
 

@@ -6,6 +6,7 @@ Shared sub-step for updating `sprint-status.yaml` during build. Called from any 
 
 Skip this entire file (return to caller) if ANY of:
 - `story_key` is unset
+- `ticket_file` is set — a ticket tree keeps no sprint status. Ticket status is moved through the gate with `uv run <bmad-ticket skill scripts>/update_ticket.py` when that skill is installed; this file never writes it and never halts over it
 - `{{.implementation_artifacts}}/sprint-status.yaml` does not exist on disk
 
 ## Instructions

@@ -176,7 +176,7 @@ Les epics et stories sont désormais créés *après* l’architecture. Cela pro
 :::
 
 1. Invoquez l'**agent PM** (`bmad-agent-pm`) dans un nouveau chat
-2. Exécutez `bmad-create-epics-and-stories` (`bmad-create-epics-and-stories`)
+2. Exécutez `bmad-ticket` (`bmad-ticket`)
 3. Le workflow s’appuie sur le PRD et l’architecture pour créer des stories techniquement fondées
 
 **Vérification de la préparation à l’implémentation** *(fortement recommandée)*
@@ -189,7 +189,7 @@ Les epics et stories sont désormais créés *après* l’architecture. Cela pro
 
 Passez à l’implémentation avec le contexte disponible : demande directe, issue, spécification ou story entièrement planifiée. **Chaque workflow doit être exécuté dans un nouveau chat.**
 
-Pour un travail planifié, invoquez `bmad-build` et indiquez la story ou l’élément de sprint sélectionné, par exemple : `Implémente la story 2.3 depuis _bmad-output/planning-artifacts/epics.md`.
+Pour un travail planifié, invoquez `bmad-build` et indiquez la story ou l’élément de sprint sélectionné, par exemple : `Implémente la story 2.3 depuis l’arbre de tickets`.
 
 ### Initialiser la planification de sprint (pour le travail planifié)
 
@@ -224,11 +224,12 @@ Votre projet contient désormais :
 ```text
 your-project/
 ├── _bmad/                                   # Configuration BMad
+├── .bmad-obeya/                             # Le work store — l’arbre de tickets
+│   └── tickets/                             # Epics (dossiers) et stories (fichiers)
 ├── _bmad-output/
 │   ├── planning-artifacts/
 │   │   ├── PRD.md                           # Document d’exigences
-│   │   ├── architecture.md                  # Décisions techniques
-│   │   └── epics/                           # Fichiers epic et story
+│   │   └── architecture.md                  # Décisions techniques
 │   ├── implementation-artifacts/
 │   │   └── sprint-status.yaml               # Suivi de sprint
 │   └── project-context.md                   # Règles d’implémentation (optionnel)
@@ -243,7 +244,7 @@ your-project/
 | `bmad-prd`                            | `bmad-prd`                            | Tous      | Créer, mettre à jour ou valider un PRD                          |
 | `bmad-architecture`            | `bmad-architecture`            | Architect | Créer le document d’architecture                                |
 | `bmad-generate-project-context`       | `bmad-generate-project-context`       | Analyst   | Créer le fichier de contexte projet                             |
-| `bmad-create-epics-and-stories`       | `bmad-create-epics-and-stories`       | PM        | Décomposer le PRD en epics                                      |
+| `bmad-ticket`                         | `bmad-ticket`                         | PM        | Décomposer le PRD en epics et en stories                        |
 | `bmad-sprint-planning`                | `bmad-sprint-planning`                | DEV       | Jalon de préparation + initialisation du suivi de sprint + vue d’état        |
 | `bmad-build`                      | `bmad-build`                      | DEV       | Implémenter une intention, une issue, une fonctionnalité, un correctif ou une story |
 | `bmad-code-review`                    | `bmad-code-review`                    | DEV       | Revoir le code implémenté                                       |

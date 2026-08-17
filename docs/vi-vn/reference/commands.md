@@ -95,7 +95,7 @@ Workflow skills chạy một quy trình có cấu trúc, nhiều bước mà kh�
 | `bmad-prfaq` | Bài kiểm tra [Working Backwards PRFAQ](../explanation/analysis-phase.md#prfaq-working-backwards) để stress-test concept sản phẩm |
 | `bmad-prd` | Tạo Product Requirements Document |
 | `bmad-architecture` | Thiết kế kiến trúc hệ thống |
-| `bmad-create-epics-and-stories` | Tạo epics và stories |
+| `bmad-ticket` | Chia phạm vi thành epics và khởi tạo stories trong cây ticket (`bmad-create-epics-and-stories` là shim v6 chuyển tiếp tới đây) |
 | `bmad-code-review` | Chạy code review |
 | `bmad-build` | Triển khai ý định trực tiếp, issue, tính năng, bản sửa hoặc story đã lập kế hoạch |
 

@@ -42,8 +42,10 @@ BMad Method（BMM）通过分阶段 workflow 逐步构建上下文，让智能�
 | Workflow | 目的 | 产出 |
 | --- | --- | --- |
 | `bmad-architecture` | 显式记录技术决策与架构边界 | `architecture.md`（含 ADR） |
-| `bmad-create-epics-and-stories` | 将需求拆分为可实施的 epics/stories | epics 文件与 story 条目 |
+| `bmad-ticket` | 将需求拆分为可实施的工作 | 由 epic 文件夹与 story 文件构成的 ticket 树 |
 | `bmad-sprint-planning` | 实施前就绪 gate 检查，随后生成 story 追踪与冲刺状态摘要 | PASS / CONCERNS / FAIL + `sprint-status.yaml` |
+
+`bmad-create-epics-and-stories` 保留为 v6 兼容 shim，会转发到 `bmad-ticket`。
 
 ## 阶段 4：实施
 

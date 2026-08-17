@@ -1,6 +1,7 @@
 ---
 spec_file: '' # set at runtime for both routes before leaving this step
 story_key: '' # set at runtime to the current story's full sprint-status key (e.g. 3-2-digest-delivery) when the intent is an epic story and sprint-status resolution succeeds
+ticket_file: '' # set at runtime to the absolute path of the ticket leaf when the work definition is a ticket rather than a stories.yaml entry
 ---
 
 # Step 1: Clarify and Route
@@ -20,8 +21,10 @@ Before listing artifacts or prompting the user, check whether you already know t
 
 1. Explicit argument
    Did the user pass a specific file path, spec name, or clear instruction this message?
-   - If the user explicitly supplied a spec folder and a story id, with no specific spec file path, set `spec_folder` and `story_id`. Read `{spec_folder}/stories.yaml`; if it is missing or fails to parse, HALT rather than falling back to `{{.implementation_artifacts}}`. Find the one entry whose string `id` exactly equals `story_id`; if none exists, HALT rather than falling back. Use that entry's `title` and `description` as the starting intent.
-     - Look for files matching `{spec_folder}/stories/{story_id}-*.md`. More than one match → HALT rather than choosing one. Exactly one match → set `spec_file` to that path and process it exactly as if the user had supplied that specific file path, including **Story-key resolution** and the existing status route below. No matches → derive a valid kebab-case slug from the entry's `title` (and `description` if needed), then set `spec_file` = `{spec_folder}/stories/{story_id}-{slug}.md` and proceed to INSTRUCTIONS.
+   - If the user explicitly supplied a spec folder and a story id, with no specific spec file path, set `spec_folder` and `story_id`. Read `{spec_folder}/stories.yaml` if it exists and parses, and find the one entry whose string `id` exactly equals `story_id`; use that entry's `title` and `description` as the starting intent. If the file is missing, fails to parse, or holds no matching entry, look for a ticket leaf instead: files matching `{spec_folder}/**/{story_id}-*.md` whose frontmatter is a ticket (see **Ticket work definition** below). Exactly one match → set `ticket_file` to that path and read it as the work definition. More than one → HALT rather than choosing one. Neither a stories.yaml entry nor a ticket → HALT with both options named (see the both-options halt rule below), never falling back to `{{.implementation_artifacts}}`.
+     - On the stories.yaml path, look for files matching `{spec_folder}/stories/{story_id}-*.md`. More than one match → HALT rather than choosing one. Exactly one match → set `spec_file` to that path and process it exactly as if the user had supplied that specific file path, including **Story-key resolution** and the existing status route below. No matches → derive a valid kebab-case slug from the entry's `title` (and `description` if needed), then set `spec_file` = `{spec_folder}/stories/{story_id}-{slug}.md` and proceed to INSTRUCTIONS.
+     - On the ticket path, proceed to INSTRUCTIONS with `ticket_file` set; the Route section derives `spec_file`.
+   - If it points to a ticket file (see **Ticket work definition** below) → set `ticket_file`, read it as the work definition, and proceed to INSTRUCTIONS. Never route on a ticket's `status`; it is a different vocabulary from a spec's.
    - If it points to a file that matches the spec template (has `status` frontmatter with a recognized value: draft, ready-for-dev, in-progress, in-review, or done) → set `spec_file`. Before exiting, run **Story-key resolution** (below). Then **EARLY EXIT** to the appropriate step: `draft` → `[[bmad-snapshot:step-02-plan.md]]`, `ready-for-dev`/`in-progress` → `[[bmad-snapshot:step-03-implement.md]]`, `in-review` → `[[bmad-snapshot:step-04-review.md]]`. For `done`, ingest as context and proceed to INSTRUCTIONS — do not resume.
    - Anything else (intent files, external docs, plans, descriptions) → ingest it as starting intent and proceed to INSTRUCTIONS. Do not attempt to infer a workflow state from it.
 
@@ -35,20 +38,44 @@ Before listing artifacts or prompting the user, check whether you already know t
      - If `ready-for-dev` or `in-progress` selected: Set `spec_file`. Run **Story-key resolution** (below). **EARLY EXIT** → `[[bmad-snapshot:step-03-implement.md]]`
      - If `in-review` selected: Set `spec_file`. Run **Story-key resolution** (below). **EARLY EXIT** → `[[bmad-snapshot:step-04-review.md]]`
    - Unformatted spec or intent file lacking `status` frontmatter? → Suggest treating its contents as the starting intent. Do NOT attempt to infer a state and resume it.
+   - Workable tickets in a ticket tree (`tickets/` leaves with `status: backlog` or `in-progress`)? → List them alongside the specs above and let the user pick one; the pick sets `ticket_file`. The tree root is the work store the `bmad-ticket` skill writes to: `{project-root}/.bmad-obeya` out of the box, or whatever `project_root` that skill's `customize.toml` (and any `_bmad/custom/bmad-ticket.toml` override) resolves to — read the override before assuming the default, and treat a missing store as simply no tickets. Read the tree there, or run `uv run <bmad-ticket skill scripts>/ticket_tree.py frontier --root <that store>` when the skill is installed, rather than guessing which are workable.
 
 Never ask extra questions if you already understand what the user intends.
 
+Whenever a halt in this step is caused by having no work definition to build from, name both ways to supply one — never demand `stories.yaml` alone: a ticket leaf written by the `bmad-ticket` skill (`KEY-n-slug.md` under a `tickets/` tree), or a `stories.yaml` entry in a spec folder. Point at whichever candidates you actually found on disk.
+
+### Ticket work definition
+
+A **ticket file** is a `KEY-n-slug.md` leaf written by the `bmad-ticket` skill: `schema: 1` frontmatter carrying `id`, `type` (`story`, `bug`, `task`, or `spike`), `title`, `status`, `risk`, `hitl`, and body sections `## Context`, `## Behavior` (or `## Requirements`), `## Acceptance Criteria`, `## Boundaries`, `## References`, `## Dev Notes`. Recognize it by that frontmatter, never by path. Its `status` is the ticket lifecycle (`backlog`, `in-progress`, `review`, `done`, `dropped`), a different vocabulary from a spec's — never route on it, and never treat a ticket as a resumable spec.
+
+When `ticket_file` is set it is the whole work definition, filling the role a `stories.yaml` entry plays with more in it. Everything else in this workflow runs unchanged; carry the ticket forward like this:
+
+| Ticket | Build input |
+|---|---|
+| `title`, `## Context`, `## Behavior` (or `## Requirements`) | the clarified intent — what step-02 plans from. Already clarified by the ticket author: do not re-elicit what it answers |
+| `## Acceptance Criteria` | the verify contract. Every `#n` becomes an acceptance criterion in `{spec_file}`, and its verify tail becomes a `## Verification` entry. These are the ticket author's, not yours — never drop, merge, or soften one; a criterion you cannot satisfy is a HALT, not a rewrite |
+| `## Boundaries` — `Must not change:` | `Never:` in the spec's Boundaries & Constraints, as hard constraints: an implementation that violates one has failed even with every criterion green |
+| `## Boundaries` — `May change:` | `Always:` — the authorized surface |
+| `## References` | typed-document pointers (document type plus section, not paths). Resolve them against `{{.planning_artifacts}}` and load what the work actually needs — this replaces the freeform artifact scan in INSTRUCTIONS item 1B |
+| `## Dev Notes`, `covers:` | design constraints and requirement ids carried into step-02 investigation and into the spec's Intent for traceability |
+| `risk` ≥ 4 or `hitl: true` | the work is high-consequence: name the reason at CHECKPOINT 1 so the human reviews with it in view |
+| `depends_on` | if any listed id is not `done`, say so before planning and let the human decide whether to proceed |
+| `id` + `title` | the slug for `spec_file`: `{id}` lowercased, then a kebab-case slug from the title |
+
+The ticket is read-only here. Never edit its frontmatter or body — status moves through the gate (`uv run <bmad-ticket skill scripts>/update_ticket.py`) when that skill is installed, and full status convergence is its own work.
+
 ### Story-key resolution
 
-This runs on ALL paths (early-exit and INSTRUCTIONS) whenever `spec_file` is set. Determine whether the spec is an epic story — use the spec's filename, frontmatter, and any loaded epics file to identify `epic_num` and `story_num`. If the spec is not an epic story, skip silently and leave `story_key` unset.
+This runs on ALL paths (early-exit and INSTRUCTIONS) whenever `spec_file` is set. On the ticket path, skip it and leave `story_key` unset — a ticket tree keeps no `sprint-status.yaml`. Determine whether the spec is an epic story — use the spec's filename, frontmatter, and any loaded epics file to identify `epic_num` and `story_num`. If the spec is not an epic story, skip silently and leave `story_key` unset.
 
 If the spec is an epic story and `{{.implementation_artifacts}}/sprint-status.yaml` exists: find the `development_status` key matching `{epic_num}-{story_num}` by exact numeric equality on the first two segments (so `1-1` never collides with `1-10`). Exactly one match → set `story_key` to that full key. Zero or multiple matches → leave `story_key` unset (warn on multiple).
 
 ## INSTRUCTIONS
 
 1. Load context.
-   - List files in `{{.planning_artifacts}}` and `{{.implementation_artifacts}}`.
+   - List files in `{{.planning_artifacts}}`, `{{.implementation_artifacts}}`, and the ticket store (`{project-root}/.bmad-obeya` by default — see the tree-root note above).
    - If you find an unformatted spec or intent file, ingest its contents to form your understanding of the intent.
+   - **Ticket path.** If `ticket_file` is set, the ticket is the intent and its `## References` say where the authoritative context lives — load those, plus the node `ticket.md` of the parent folder of the `tickets/` directory containing the ticket, when one exists (a bin leaf has no such node), and skip the context strategy below. Then continue at item 2.
    - **Determine context strategy.** Using the intent and the artifact listing, infer whether the current work is a story from an epic. Do not rely on filename patterns or regex — reason about the intent, the listing, and any epics file content together.
 
      **A) Epic story path** — if the intent is clearly an epic story:
@@ -92,9 +119,11 @@ If the spec is an epic story and `{{.implementation_artifacts}}/sprint-status.ya
    - On **K**: Proceed as-is.
 5. Route — choose exactly one:
 
+   If `ticket_file` is set, the spec path follows how the ticket was supplied. Under the explicit spec-folder-plus-story-id pair, derive a kebab-case slug from the ticket's `title` with no id prefix — the id is already the filename's separate leading segment — and set `spec_file` = `{spec_folder}/stories/{story_id}-{slug}.md`, so this skill and `bmad-build-auto` write the same file for the same dispatch and either one can resume the other's run. Otherwise derive the slug from the ticket's `id` and `title` as the mapping above says and set `spec_file` = `{{.implementation_artifacts}}/spec-{slug}.md`, applying the same existing-file rule as below. Never write the spec next to the ticket — the ticket tree holds tickets only.
+
    If the explicit spec-folder-plus-story-id pair had no matching story file, keep the colocated `spec_file` selected above. Otherwise, derive a valid kebab-case slug from the clarified intent. If the intent references a tracking identifier (story number, issue number, ticket ID), lead the slug with it (e.g. `3-2-digest-delivery`, `gh-47-fix-auth`). If `{{.implementation_artifacts}}/spec-{slug}.md` already exists: if its status is `draft`, treat it as the same work and resume it (set `spec_file` to that path, **EARLY EXIT** → `[[bmad-snapshot:step-02-plan.md]]`); otherwise append `-2`, `-3`, etc. Set `spec_file` = `{{.implementation_artifacts}}/spec-{slug}.md`.
 
-   **a) One-shot** — zero blast radius: no plausible path by which this change causes unintended consequences elsewhere. Clear intent, no architectural decisions.
+   **a) One-shot** — zero blast radius: no plausible path by which this change causes unintended consequences elsewhere. Clear intent, no architectural decisions. Not available when `ticket_file` is set: a ticket leaf is by definition a vertical slice carrying its own acceptance criteria and boundaries, which is not a zero-blast-radius edit whatever its `risk`.
 
    **EARLY EXIT** → `[[bmad-snapshot:step-oneshot.md]]`
 

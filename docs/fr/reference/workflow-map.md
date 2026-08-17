@@ -70,8 +70,10 @@ Décidez comment le construire et décomposez le travail en stories.
 | Workflow                              | Objectif                                          | Livrable                        |
 |---------------------------------------|---------------------------------------------------|---------------------------------|
 | `bmad-architecture`            | Rendez explicites les décisions techniques        | `architecture.md` avec ADRs[^2] |
-| `bmad-create-epics-and-stories`       | Décomposez les exigences en tâches implémentables | Fichiers d’epic avec stories    |
+| `bmad-ticket`                         | Décomposez les exigences en tâches implémentables | Arbre de tickets composé de dossiers d’epic et de fichiers de story |
 | `bmad-sprint-planning`                | Jalon de préparation avant implémentation, puis suivi des stories et vue d’état du sprint | OK / RÉSERVES / ÉCHEC + `sprint-status.yaml` |
+
+`bmad-create-epics-and-stories` est conservé comme shim de compatibilité v6 qui redirige vers `bmad-ticket`.
 
 ## Phase 4 : Implémentation
 

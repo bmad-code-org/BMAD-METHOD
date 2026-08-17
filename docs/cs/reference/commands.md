@@ -95,7 +95,7 @@ Workflow skills spouštějí strukturovaný, vícekrokový proces bez předchoz�
 | `bmad-prfaq` | [Working Backwards PRFAQ](../explanation/analysis-phase.md#prfaq-working-backwards) výzva pro zátěžový test vašeho produktového konceptu |
 | `bmad-prd` | Vytvoření dokumentu požadavků (PRD) |
 | `bmad-architecture` | Návrh systémové architektury |
-| `bmad-create-epics-and-stories` | Vytvoření epiců a stories |
+| `bmad-ticket` | Rozdělení rozsahu na epicy a založení stories ve stromu ticketů (`bmad-create-epics-and-stories` je v6 shim, který přeposílá sem) |
 | `bmad-code-review` | Spuštění revize kódu |
 | `bmad-build` | Implementace přímého záměru, issue, funkce, opravy nebo naplánované story |
 

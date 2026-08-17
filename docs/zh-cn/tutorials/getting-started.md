@@ -163,7 +163,7 @@ BMad-Help 将检测你已完成的内容，并准确推荐下一步该做什么�
 :::
 
 1. 在新对话中调用 **PM 智能体**（`bmad-agent-pm`）
-2. 运行 `bmad-create-epics-and-stories`（`bmad-create-epics-and-stories`）
+2. 运行 `bmad-ticket`（`bmad-ticket`）
 3. 工作流使用 PRD 和架构来创建技术信息丰富的故事
 
 **实现就绪检查** *（强烈推荐）*
@@ -175,7 +175,7 @@ BMad-Help 将检测你已完成的内容，并准确推荐下一步该做什么�
 
 携带现有上下文进入实现阶段：直接请求、issue、规格或完整规划的 story。**每个工作流应该在新对话中运行。**
 
-对于已规划工作，运行 `bmad-build` 并指出选定的 story 或 sprint 项，例如：`实现 _bmad-output/planning-artifacts/epics.md 中的 story 2.3`。
+对于已规划工作，运行 `bmad-build` 并指出选定的 story 或 sprint 项，例如：`实现 ticket 树中的 story 2.3`。
 
 ### 初始化冲刺规划（用于规划工作）
 
@@ -210,11 +210,12 @@ Build 的审查是每次运行的一部分。`bmad-code-review` 是在全新上�
 ```text
 your-project/
 ├── _bmad/                                   # BMad 配置
+├── .bmad-obeya/                             # 工作存储 —— 工单树
+│   └── tickets/                             # 史诗（文件夹）与故事（文件）
 ├── _bmad-output/
 │   ├── planning-artifacts/
 │   │   ├── PRD.md                           # 你的需求文档
-│   │   ├── architecture.md                  # 技术决策
-│   │   └── epics/                           # 史诗和故事文件
+│   │   └── architecture.md                  # 技术决策
 │   ├── implementation-artifacts/
 │   │   └── sprint-status.yaml               # 冲刺跟踪
 │   └── project-context.md                   # 实现规则（可选）
@@ -229,7 +230,7 @@ your-project/
 | `bmad-prd`                   | `bmad-prd`                      | PM       | 创建产品需求文档                             |
 | `bmad-architecture`          | `bmad-architecture`             | Architect | 创建架构文档                                |
 | `bmad-generate-project-context`     | `bmad-generate-project-context`        | Analyst  | 创建项目上下文文件                           |
-| `bmad-create-epics-and-stories`     | `bmad-create-epics-and-stories`        | PM       | 将 PRD 分解为史诗                            |
+| `bmad-ticket`                       | `bmad-ticket`                          | PM       | 将 PRD 分解为史诗与故事                       |
 | `bmad-sprint-planning`              | `bmad-sprint-planning`                 | DEV      | 就绪 gate 检查 + 初始化冲刺跟踪 + 冲刺状态摘要              |
 | `bmad-build`                    | `bmad-build`                       | DEV      | 实施意图、issue、功能、修复或已规划 story     |
 | `bmad-code-review`                  | `bmad-code-review`                     | DEV      | 审查已实现的代码                             |

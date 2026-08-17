@@ -10,7 +10,7 @@ status changes only along allowed lifecycle transitions. The body below
 the frontmatter is never touched. Output is one JSON object; errors name
 the fix and exit non-zero.
 
-Leaves run backlog → in-progress → review → done; nodes (project, epic) run
+Leaves run backlog → in-progress → review → done; nodes (initiative, epic) run
 backlog → ready → in-progress → done; either drops from any active state.
 Both graphs are stored facts — a node's state is never calculated from its
 children, so `done` can never flip because somebody added a child.
@@ -47,7 +47,7 @@ DEFAULT_TRANSITIONS = [
     "review>dropped",
 ]
 
-# Nodes (project, epic) run their own lifecycle. `ready` means inception is
+# Nodes (initiative, epic) run their own lifecycle. `ready` means inception is
 # finished and work can start — it gates nothing; it records that someone
 # decided. `done` is likewise a deliberate call, never a counter hitting zero.
 DEFAULT_NODE_TRANSITIONS = [
@@ -72,11 +72,11 @@ PLAIN_STR_FIELDS = {"discovered_from"}
 
 LEAF_FIELDS = {"title", "status", "depends_on", "covers", "discovered_from", "risk", "hitl"}
 EPIC_FIELDS = {"title", "description", "depends_on", "covers", "risk", "status"}
-# The project node scores nothing (risk and hitl are execution-altitude) and
+# The initiative node scores nothing (risk and hitl are execution-altitude) and
 # carries the tracker-shaped set instead.
 PROJECT_FIELDS = {"title", "description", "status", "owner", "target", "tags",
                   "external", "spec"}
-NODE_TYPES = ("project", "epic")
+NODE_TYPES = ("initiative", "epic")
 
 ID_RE = re.compile(r"^[A-Za-z][A-Za-z0-9]*-\d+$")
 
@@ -207,7 +207,7 @@ def collect_tree(root):
     id -> list of duplicate paths. Uses the same parser as the target file so
     quoted ids and block-style lists resolve identically everywhere."""
     ids, deps, dups = {}, {}, {}
-    # Only the root node and everything under root/tickets/. The project
+    # Only the root node and everything under root/tickets/. The initiative
     # folder's sibling content (prd/, spec/, brief/) carries frontmatter ids
     # of its own and must never be mistaken for tickets.
     candidates = sorted((root / "tickets").rglob("*.md")) if (root / "tickets").is_dir() else []
@@ -268,7 +268,7 @@ def main():
                     help='allowed leaf status moves as "from>to,from>to"; defaults to the '
                          "skill's customize.toml lifecycle_transitions, else built-ins")
     ap.add_argument("--node-transitions", default=None,
-                    help='allowed node (project, epic) status moves as "from>to,from>to"; '
+                    help='allowed node (initiative, epic) status moves as "from>to,from>to"; '
                          "defaults to the skill's customize.toml "
                          "node_lifecycle_transitions, else built-ins")
     ap.add_argument("--hitl-threshold", type=int, default=None,
@@ -333,7 +333,7 @@ def main():
     if ticket_type not in NODE_TYPES + ("story", "bug", "task", "spike"):
         fail(f"unsupported or missing type '{ticket_type}' in {path.name}")
 
-    if ticket_type == "project":
+    if ticket_type == "initiative":
         allowed = set(PROJECT_FIELDS)
     elif ticket_type == "epic":
         allowed = set(EPIC_FIELDS)

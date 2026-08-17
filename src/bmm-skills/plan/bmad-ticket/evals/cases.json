@@ -53,8 +53,22 @@
       "timeout": 600
     },
     {
+      "id": "refine-fresh-project-default-root",
+      "input": "autonomous: make a ticket out of files/bug-report.txt. brand-new project — nothing is configured yet and there is no ticket tree.",
+      "rubric": [
+        "the tree bootstrapped under .bmad-obeya/ with no configuration: the new leaf sits at .bmad-obeya/tickets/KEY-n-slug.md, and no tickets folder was created under _bmad-output/, docs/, or any other root",
+        "only the bin was created — no epic folder and no initiative ticket.md were invented for a single-ticket request",
+        "the initiative key was derived rather than asked for, and the final message flags it as unconfirmed alongside the tree root and the created path",
+        "the leaf is well-formed: type: bug, status: backlog, integer severity and risk, boolean hitl, and no unresolved placeholders",
+        "the transcript shows ticket_tree.py next-id ran before the write and ticket_tree.py validate ran after it",
+        "files/bug-report.txt is byte-identical to the fixture"
+      ],
+      "files": ["files/bug-report.txt"],
+      "timeout": 600
+    },
+    {
       "id": "slice-prd-autonomous",
-      "input": "autonomous: turn files/prd-notify.md into epics. put the ticket tree at tree-out, project key NOTI.",
+      "input": "autonomous: turn files/prd-notify.md into epics. put the ticket tree at tree-out, initiative key NOTI.",
       "rubric": [
         "tree-out/tickets/ holds one folder per epic written, each with a ticket.md envelope carrying status: backlog (slicing is not inception — ready is never claimed here), and no index.md exists anywhere",
         "between 3 and 6 epic folders exist, each containing a ticket.md with type: epic, and each FR-n id from prd-notify.md appears in exactly one epic's covers: — verbatim ids, no duplicates across epics",
@@ -73,7 +87,7 @@
     },
     {
       "id": "slice-guided-gate-approved",
-      "input": "User said: \"approved as presented — write it.\" (source: files/prd-notify.md; tree root tree-out; project key NOTI)",
+      "input": "User said: \"approved as presented — write it.\" (source: files/prd-notify.md; tree root tree-out; initiative key NOTI)",
       "state_prefix": "[guided slice of files/prd-notify.md reached the gate. The presented and approved epic set is exactly: (1) 'Alert rule management' covering FR-1 and FR-8, no dependencies; (2) 'Real-time alert delivery' covering FR-2, FR-3, FR-6, depends on epic 1; (3) 'Rule snooze' covering FR-4, depends on epic 2; (4) 'Delivery history' covering FR-5, depends on epic 2; (5) 'Org-wide SMS spend cap' covering FR-7, depends on epic 2. The epic-quiz bundle was answered — granularity approved, every edge confirmed gating, nothing to merge or split — and the user then said:]",
       "rubric": [
         "exactly five epic envelopes are written whose titles, covers:, and depends_on relationships match the approved set field-for-field — a materially different set (merged, split, re-covered, or re-edged) fails even if defensible on its own merits",
@@ -118,7 +132,7 @@
     },
     {
       "id": "slice-greenfield-autonomous",
-      "input": "autonomous: slice files/greenfield-idea.md into epics — brand-new project, nothing exists yet. tree root tree-out, project key PANTRY.",
+      "input": "autonomous: slice files/greenfield-idea.md into epics — brand-new project, nothing exists yet. tree root tree-out, initiative key PANTRY.",
       "rubric": [
         "Epic 1 is a scaffolding epic naming CI, a deploy path, and test infrastructure — scaled to a solo free-tier hobby app (no stage environment, multi-region, SSO, or compliance gold-plating), with the calibration reasoning stated",
         "files/greenfield-idea.md is byte-identical to the fixture, and the generated requirement inventory accounts for the braindump's concrete wants (receipt capture, running inventory, check-off, weekly expiry list, recipe suggestions, household sharing) — not a handful of vague stamped ids",

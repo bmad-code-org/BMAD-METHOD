@@ -43,8 +43,8 @@ You don't need every altitude every time. A bug report can become one ticket in 
 All tickets live in one folder structure called the ticket tree. The shape *is* the data:
 
 ```text
-smart-alerts/                        # the project folder
-├── ticket.md                        # the project node — carries the key
+.bmad-obeya/                         # the work store — the default home for tickets
+├── ticket.md                        # the initiative node — carries the key (optional)
 └── tickets/
     ├── alert-rules/                 # an epic is a folder
     │   ├── ticket.md                # the epic node
@@ -55,6 +55,8 @@ smart-alerts/                        # the project folder
 ```
 
 A node is a folder holding its own `ticket.md`, and its children live in `<node>/tickets/`. That shape repeats at every altitude, so depth is never a special case — and a tree of nothing but loose tickets is a legitimate shape, not a broken one.
+
+The store sits at `.bmad-obeya/` in the project root out of the box, so your first ticket has somewhere to land with nothing configured. It is a config value (`project_root` in the skill's `customize.toml`): point it at a docs folder or a dedicated work-store repo and nothing about the shape changes.
 
 Four rules keep it honest:
 
