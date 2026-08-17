@@ -2,7 +2,7 @@
 title: "快速修复"
 description: 如何进行快速修复和临时更改
 sidebar:
-  order: 6
+  order: 5
 ---
 
 Bug 修复、重构或小范围改动可以在很少甚至没有上游规划的情况下直接进入 **Build**。这与完整规划 story 使用的是同一个实施 workflow。

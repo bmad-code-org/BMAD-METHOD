@@ -46,7 +46,7 @@ bmad-help
 Ou accompagnez-le d’une question pour obtenir des conseils contextualisés :
 
 ```
-bmad-help J'ai une idée de produit SaaS, je connais déjà toutes les fonctionnalités que je veux. Par où dois-je commencer ?
+bmad-help J’ai une idée de produit SaaS, je connais déjà toutes les fonctionnalités que je veux. Par où dois-je commencer ?
 ```
 
 BMad-Help vous indiquera :
@@ -182,7 +182,7 @@ Les epics et stories sont désormais créés *après* l’architecture. Cela pro
 **Vérification de la préparation à l’implémentation** *(fortement recommandée)*
 
 1. Invoquez l'**agent Architecte** (`bmad-agent-architect`) dans un nouveau chat
-2. Exécutez `bmad-check-implementation-readiness` (`bmad-check-implementation-readiness`)
+2. Exécutez `bmad-sprint-planning` (`bmad-sprint-planning`) — il s’ouvre sur le jalon de préparation
 3. Valide la cohérence de l’ensemble des documents de planification
 
 ## Étape 2 : Développer votre projet
@@ -226,12 +226,12 @@ your-project/
 ├── _bmad/                                   # Configuration BMad
 ├── _bmad-output/
 │   ├── planning-artifacts/
-│   │   ├── PRD.md                           # Document d'exigences
+│   │   ├── PRD.md                           # Document d’exigences
 │   │   ├── architecture.md                  # Décisions techniques
 │   │   └── epics/                           # Fichiers epic et story
 │   ├── implementation-artifacts/
 │   │   └── sprint-status.yaml               # Suivi de sprint
-│   └── project-context.md                   # Règles d'implémentation (optionnel)
+│   └── project-context.md                   # Règles d’implémentation (optionnel)
 └── ...
 ```
 
@@ -244,8 +244,7 @@ your-project/
 | `bmad-architecture`            | `bmad-architecture`            | Architect | Créer le document d’architecture                                |
 | `bmad-generate-project-context`       | `bmad-generate-project-context`       | Analyst   | Créer le fichier de contexte projet                             |
 | `bmad-create-epics-and-stories`       | `bmad-create-epics-and-stories`       | PM        | Décomposer le PRD en epics                                      |
-| `bmad-check-implementation-readiness` | `bmad-check-implementation-readiness` | Architect | Valider la cohérence de la planification                        |
-| `bmad-sprint-planning`                | `bmad-sprint-planning`                | DEV       | Initialiser le suivi de sprint                                  |
+| `bmad-sprint-planning`                | `bmad-sprint-planning`                | DEV       | Jalon de préparation + initialisation du suivi de sprint + vue d’état        |
 | `bmad-build`                      | `bmad-build`                      | DEV       | Implémenter une intention, une issue, une fonctionnalité, un correctif ou une story |
 | `bmad-code-review`                    | `bmad-code-review`                    | DEV       | Revoir le code implémenté                                       |
 

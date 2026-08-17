@@ -1,6 +1,6 @@
 ---
 name: bmad-help
-description: 'Analyzes current state and user query to answer BMad questions or recommend the next skill(s) to use. Use when user asks for help, bmad help, what to do next, or what to start with in BMad.'
+description: 'Analyzes current state and user query to answer BMad questions or recommend the next skill(s) to use. Use when user asks for help, bmad help, what to do next, or what to start with in BMad'
 ---
 
 # BMad Help
@@ -38,7 +38,7 @@ module,skill,display-name,menu-code,description,action,args,phase,preceded-by,fo
 
 **Phases** determine the high-level flow:
 - `anytime` — available regardless of workflow state
-- Numbered phases (`1-analysis`, `2-planning`, etc.) flow in order; naming varies by module
+- Skills group into folders (`plan`, `ship`; some modules use numbered phases) and flow in order; naming varies by module
 
 **Sequencing** determines recommended ordering within and across phases (these are soft suggestions, not hard gates — see `required` for gating):
 - `preceded-by` — skills that should ideally complete before this one
@@ -50,9 +50,11 @@ module,skill,display-name,menu-code,description,action,args,phase,preceded-by,fo
 - A phase with no required items is entirely optional — recommend it but be clear about what's actually required next
 
 **Completion detection**:
-- Search resolved output paths for `outputs` patterns
-- Fuzzy-match found files to catalog rows
-- User may also state completion explicitly, or it may be evident from the current conversation
+- Search resolved output paths for `outputs` patterns and fuzzy-match found files to catalog rows
+- Treat a matching output as evidence that the skill started, not that it completed
+- Inspect matched artifacts for explicit completion evidence, such as final status or finalization markers; a draft or incomplete marker means the skill is still in progress
+- Honor completion stated by the user or established in the current conversation
+- When completion cannot be determined reliably, say so and ask the user; do not recommend advancing based on file presence alone
 
 **Descriptions carry routing context** — some contain cycle info and alternate paths (e.g., "back to DS if fixes needed"). Read them as navigation hints, not just display text.
 
@@ -61,7 +63,7 @@ module,skill,display-name,menu-code,description,action,args,phase,preceded-by,fo
 For each recommended item, present:
 - `[menu-code]` **Display name** — e.g., "[PR] PRD"
 - Skill name in backticks — e.g., `bmad-prd`
-- For multi-action skills: action invocation context — e.g., "tech-writer lets create a mermaid diagram!"
+- For multi-action skills: action invocation context — e.g., "dev lets run a code review!"
 - Description if present in CSV; otherwise your existing knowledge of the skill suffices
 - Args if available
 

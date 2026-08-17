@@ -48,7 +48,7 @@ Rozhodněte, jak to budovat, a rozložte práci na stories.
 | ----------------------------------------- | ------------------------------------------ | --------------------------- |
 | `bmad-architecture`                | Explicitní technická rozhodnutí            | `architecture.md` s ADR     |
 | `bmad-create-epics-and-stories`           | Rozložení požadavků na implementovatelnou práci | Soubory epiců se stories |
-| `bmad-check-implementation-readiness`     | Kontrola brány před implementací           | Rozhodnutí PASS/CONCERNS/FAIL |
+| `bmad-sprint-planning`                    | Brána připravenosti před implementací, poté sledování stories a přehled stavu sprintu | PASS/CONCERNS/FAIL + `sprint-status.yaml` |
 
 ## Fáze 4: Implementace
 
@@ -57,10 +57,8 @@ Všechny implementační vstupy se sbíhají do `bmad-build`. Přijímá přím�
 | Workflow                   | Účel                                                                     | Produkuje                        |
 | -------------------------- | ------------------------------------------------------------------------ | -------------------------------- |
 | `bmad-build`           | Převod přímého záměru nebo naplánované story na implementovaný a revidovaný kód | `spec-*.md` + kód          |
-| `bmad-sprint-planning`     | Inicializace sledování (jednou na projekt pro sekvencování dev cyklu)    | `sprint-status.yaml`             |
 | `bmad-code-review`         | Validace kvality implementace                                            | Schváleno nebo požadovány změny  |
 | `bmad-correct-course`      | Řešení významných změn uprostřed sprintu                                 | Aktualizovaný plán nebo přesměrování |
-| `bmad-sprint-status`       | Sledování průběhu sprintu a stavu stories                                | Aktualizace stavu sprintu        |
 | `bmad-retrospective`       | Revize po dokončení epicu                                                | Poučení                          |
 
 ### Přímý a plánovaný vstup

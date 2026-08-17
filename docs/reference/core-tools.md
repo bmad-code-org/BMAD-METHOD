@@ -87,7 +87,7 @@ Run any tool by typing its skill name (e.g., `bmad-help`) in your IDE. No agent 
 
 | Lens                 | Applies to             | Method                                                                                      |
 | -------------------- | ---------------------- | ------------------------------------------------------------------------------------------- |
-| **Adversarial**      | Anything               | Skeptical review that assumes problems exist — hunts what's missing, not just what's wrong  |
+| **Adversarial**      | Anything               | Forced-finding review (≥10 issues) that looks for what's missing, not only what's wrong; empty lists are not allowed  |
 | **Edge case**        | Anything               | Walks every branching path and boundary condition in content that defines behavior          |
 | **Verification gap** | Code                   | Finds changed behavior that could regress without reliable verification catching it         |
 | **Structure**        | Documents              | Proposes cuts, merges, moves, and condensing — does the document's shape serve its purpose? |

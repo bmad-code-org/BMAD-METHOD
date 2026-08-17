@@ -2,7 +2,7 @@
 title: 'Comment étendre BMad pour votre organisation'
 description: Six patterns de personnalisation qui remodèlent BMad sans créer de fork — règles applicables aux agents, conventions de workflow, publication externe, remplacements de templates, modifications du registre des agents et patterns d’intégration avancés
 sidebar:
-  order: 10
+  order: 9
 ---
 
 Le système de personnalisation de BMad permet à une organisation d’adapter les comportements sans modifier les fichiers installés ni forker les skills. Ce guide présente six recettes qui couvrent la plupart des besoins en entreprise.
@@ -73,7 +73,7 @@ persistent_facts = [
 ]
 ```
 
-**Ce qui se passe :** Les faits sont chargés durant l’étape 3 de l’activation du workflow. Quand l’agent rédige le brief, il connaît les champs requis et le document de conventions enterprise. La valeur par défaut livrée (`file:{project-root}/**/project-context.md`) se charge toujours, car il s’agit d’un ajout.
+**Ce qui se passe :** Les faits sont chargés durant l’étape 3 de l’activation du workflow. Quand l’agent rédige le brief, il connaît les champs requis et le document de conventions enterprise. Les skills livrés ne portent aucun fait persistant par défaut : ce sont donc les seuls chargés. Mais comme la clé ajoute au lieu de remplacer, un fait défini au niveau équipe et un autre au niveau utilisateur s’appliquent tous les deux.
 
 ## Recette 3 : Publier les livrables finis vers des systèmes externes
 

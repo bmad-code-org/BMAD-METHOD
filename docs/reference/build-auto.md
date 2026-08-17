@@ -78,8 +78,7 @@ On activation, the workflow resolves:
 
 - `_bmad/config.toml`, `_bmad/config.user.toml`, and optional team/user overrides under `_bmad/custom/`
 - Any configured workflow customizations from `customize.toml`, team overrides, and user overrides
-- Persistent facts listed in workflow config
-- `project-context.md` files, if present
+- Persistent facts listed in workflow config — empty unless you opt in, so nothing is loaded here by default
 
 It may also look at:
 
@@ -128,10 +127,10 @@ On successful completion, the workflow writes or updates the spec with:
   - Verification performed
   - Residual risks
 - `followup_review_recommended` flag. True if LLM decided another review pass seems worthwhile. It's a suggestion, not a must. Simplest way to give it a second review pass is to re-run the skill pointing it at the spec file.
-- `baseline_revision` and `final_revision` — the full canonical revisions before implementation and at the reviewed change's endpoint. `git log baseline_revision..final_revision` lists the reviewed change commits. Both are `NO_VCS` without version control.
+- `baseline_revision` — the full canonical revision before implementation. `NO_VCS` without version control.
 - `deferred` frontmatter entries for review findings triaged `defer`. Each item records `summary`, `evidence`, and, when known, `location` plus `severity`.
 
-The workflow commits but does not push. If the spec is tracked in the implementation repository, clean HEAD is one spec-finalization commit beyond `final_revision`; otherwise the implementation repository ends at `final_revision`.
+The workflow commits but does not push. The working copy is clean at exit.
 
 ### On `blocked`
 
@@ -218,7 +217,7 @@ An orchestrator integrating `bmad-build-auto` should:
 - Monitor the produced spec file, story spec artifact, or fallback result file for terminal state
 - Read `status`, `blocking condition`, and `followup_review_recommended` rather than inferring success from chat output alone
 - Read deferred findings from the spec frontmatter `deferred:` list
-- Use `baseline_revision..final_revision` to identify the reviewed change commits; do not assume `final_revision` equals HEAD
+- Use `baseline_revision..<next story's baseline_revision>` to identify a story's commits, or `baseline_revision..HEAD` at exit when there is no next story yet
 - Expect autonomous file changes and local commits
 - Handle `blocked` as a routing signal, not just a failure signal
 

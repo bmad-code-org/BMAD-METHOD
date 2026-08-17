@@ -2,7 +2,7 @@
 title: "Chế độ Party"
 description: Cộng tác đa agent - đưa tất cả agent AI vào cùng một cuộc trò chuyện
 sidebar:
-  order: 10
+  order: 9
 ---
 
 Đưa tất cả agent AI của bạn vào cùng một cuộc trò chuyện.

@@ -22,10 +22,10 @@ activation_steps_append = []
 # Persistent facts the orchestrator keeps in mind for the whole session
 # (house rules, running gags, topics to avoid). Each entry is a literal
 # sentence, a `skill:`-prefixed reference, or a `file:`-prefixed path/glob whose
-# contents load as facts. Default picks up project-context.md if one exists.
-persistent_facts = [
-  "file:{project-root}/**/project-context.md",
-]
+# contents load as facts. Empty by default — repo-wide context belongs in AGENTS.md
+# (see bmad-project-context), which every skill already sees. Use this for context only
+# the party needs, loaded on demand rather than carried as constant memory.
+persistent_facts = []
 
 # Which party loads when the user just says "party mode" with no override.
 # Empty = the installed BMAD agents — exactly the default behavior of a plain
@@ -186,7 +186,7 @@ persona = "Splinter challenges easy agreement. He looks for hidden assumptions, 
 #   id = "writers-room"
 #   name = "The Writers' Room"
 #   scene = "Late-night room, everyone a little punchy. Pitch hard, kill darlings faster."
-#   members = ["analyst", "tech-writer", "morpheus"]
+#   members = ["analyst", "ux-designer", "morpheus"]
 #   memory = true
 #
 #   [[workflow.party_groups]]            # open-cast room (no roster; the scene casts it)

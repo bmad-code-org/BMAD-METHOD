@@ -2,7 +2,7 @@
 title: 'Cách mở rộng BMad cho tổ chức của bạn'
 description: Năm mẫu tùy chỉnh giúp thay đổi BMad mà không cần fork, gồm quy tắc ở cấp agent, quy ước workflow, xuất bản ra hệ thống ngoài, thay template và điều chỉnh danh sách agent
 sidebar:
-  order: 10
+  order: 9
 ---
 
 Bề mặt tùy chỉnh của BMad cho phép một tổ chức định hình lại hành vi mà không phải sửa file đã cài hay fork skill. Hướng dẫn này trình bày năm công thức mẫu (recipe) bao phủ phần lớn nhu cầu ở môi trường doanh nghiệp.
@@ -78,7 +78,7 @@ persistent_facts = [
 ]
 ```
 
-**Điều gì xảy ra:** Những fact này được nạp trong quá trình activation của workflow. Khi agent soạn brief, nó đã biết các trường bắt buộc và tài liệu convention nội bộ. Mặc định có sẵn, ví dụ `file:{project-root}/**/project-context.md`, vẫn tiếp tục được nạp vì phần này chỉ append thêm.
+**Điều gì xảy ra:** Những fact này được nạp trong quá trình activation của workflow. Khi agent soạn brief, nó đã biết các trường bắt buộc và tài liệu convention nội bộ. Các skill được ship sẵn không mang fact cố định nào, nên đây là những fact duy nhất được nạp. Nhưng vì khóa này append chứ không thay thế, một fact khai báo ở cấp team và một fact ở cấp user đều có hiệu lực.
 
 ## Recipe 3: xuất bản kết quả hoàn tất sang hệ thống ngoài
 

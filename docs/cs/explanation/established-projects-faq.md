@@ -2,7 +2,7 @@
 title: "FAQ pro existující projekty"
 description: Časté otázky o používání BMad Method na existujících projektech
 sidebar:
-  order: 10
+  order: 9
 ---
 Rychlé odpovědi na časté otázky o práci na existujících projektech s BMad Method (BMM).
 

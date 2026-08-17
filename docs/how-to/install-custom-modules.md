@@ -2,7 +2,7 @@
 title: 'Install Custom and Community Modules'
 description: Install third-party modules from the community registry, Git repositories, or local paths
 sidebar:
-  order: 3
+  order: 2
 ---
 
 Use the BMad installer to add modules from the community registry, third-party Git repositories, or local file paths.
