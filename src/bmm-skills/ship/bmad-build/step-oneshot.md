@@ -28,19 +28,18 @@ If a layer's instruction requires subagents and none are available, for each suc
 Once every layer has reported — and not before — render a verdict on each finding on its own, ahead of any deduplication or grouping:
 
 - **Verify its own claimed consequence** at the location it names. Read past the changed lines — into the callers, the guards upstream, whatever else the site depends on — far enough to tell whether that consequence actually occurs. Another finding's outcome, however adjacent, never settles this one.
-- **Assign severity** from the verified consequence for the software's user: `low` (none or cosmetic), `medium` (tolerable), `high` (intolerable).
-- **Keep or dismiss.** Keep a finding only where verification confirmed its consequence. Dismiss noise, claims the verification refuted, and claims it could not substantiate — no path to the claimed consequence at the named site is a valid disposal. Whatever the reason, it must dispose of the finding's own claim: a true fact about neighboring code that leaves the claim standing is not a dismissal, and the finding stays kept. Record each dismissal with its reason; never drop a finding silently.
+- **Render exactly one verdict** from what verification established — the verdict is the whole triage decision; there is no separate keep-or-dismiss: `critical` (intolerable), `medium` (tolerable), or `minor` (cosmetic or negligible) when the consequence occurs, graded by its verified magnitude for the software's user — erring upward when the magnitude cannot be settled; `false` when verification established the claimed consequence does not occur at the named site — record the refutation, the specific evidence that disposes of the finding's own claim (a true fact about neighboring code that leaves the claim standing is not a refutation); `maybe-false` when verification could not establish whether the claimed consequence occurs at all — record what evidence would settle it, and never use this verdict in place of a check the materials at hand allow. Record every finding with its verdict and evidence; never drop one silently. `false` findings take no further action; `maybe-false` findings route to defer.
 - A finding whose fix edits an agent-context document (e.g. CLAUDE.md, AGENTS.md, rules files, specs): defer, never patch.
 
-Group the survivors by shared root cause — two findings belong in one entry only when the same underlying defect produced both. Same location alone is not a shared root cause, and neither is a shared fix. An entry carries every member's verified consequence and the highest severity among them. Then route each entry in this order:
+Group the surviving `critical`/`medium`/`minor` findings by shared root cause — two findings belong in one entry only when the same underlying defect produced both. Same location alone is not a shared root cause, and neither is a shared fix. An entry carries every member's verified consequence and the highest verdict among them. Then route each entry in this order:
 
 - **patch** — Patch every entry caused or exposed by this change that shows a defect that actually occurs, missing coverage for a specific case, or a broken gate or convention — not a state nothing reaches — and whose smallest fix is trivial, adds no public surface, and guards no state the finding did not demonstrate. Apply that smallest fix immediately.
 - **HALT** — HALT on every entry caused or exposed by this change that shows the same evidence but whose smallest fix fails any of those conditions. Present it to the human for decision before proceeding.
-- **defer** — Defer every other entry, including pre-existing issues and improvement ideas. Append one new entry to `{{.implementation_artifacts}}/deferred-work.md` using this format. Do not modify existing entries or look for duplicates.
+- **defer** — Defer every other entry, including pre-existing issues, improvement ideas, and `maybe-false` findings. Append one new entry to `{{.implementation_artifacts}}/deferred-work.md` using this format. Do not modify existing entries or look for duplicates.
   ```markdown
   - source_spec: `{spec_file}`
     summary: <one sentence>
-    evidence: <why this is real>
+    evidence: <why this is real; for a maybe-false finding, what evidence would settle it>
   ```
 
 ### Generate Spec Trace
@@ -52,7 +51,7 @@ Write `{spec_file}` using `[[bmad-snapshot:spec-template.md]]`. Fill only these 
 1. **Frontmatter** — set `title: '{title}'`, `type`, `created`, `status: 'done'`. Add `route: 'one-shot'`.
 2. **Title and Intent** — `# {title}` heading and `## Intent` with **Problem** and **Approach** lines. Reuse the summary you already generated for the terminal.
 3. **Suggested Review Order** — append after Intent. Build using the same convention as `[[bmad-snapshot:step-05-present.md]]` § "Generate Suggested Review Order" (spec-file-relative links, concern-based ordering, ultra-concise framing).
-4. **Review Triage Log** — only when findings were dismissed: one line per dismissal, the finding and the reason that disposed of its claim.
+4. **Review Triage Log** — only when the review produced findings: one line per finding with its verdict and evidence — the refutation for `false`, what would settle it for `maybe-false`.
 
 Follow `[[bmad-snapshot:sync-sprint-status.md]]` with `target_status` = `review`.
 
@@ -68,7 +67,7 @@ Display a summary in conversation output, including:
 
 - The commit hash (if one was created).
 - List of files changed with one-line descriptions. Any file paths shown in conversation/terminal output must use CWD-relative format (no leading `/`) with `:line` notation (e.g., `src/path/file.ts:42`) for terminal clickability — this differs from spec-file links which use spec-file-relative paths.
-- Review findings breakdown: patches applied, items deferred, and the dismissed count — dismissal reasons are recorded in the spec trace. If every finding was dismissed, say so.
+- Review findings breakdown: patches applied, items deferred, and the `false` count — refutations are recorded in the spec trace. If every finding was `false`, say so.
 
 Offer to push and/or create a pull request.
 

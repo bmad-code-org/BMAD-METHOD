@@ -27,7 +27,7 @@ If `{spec_file}` exists and contains a Tasks/Subtasks section, append a `### Rev
    `- [ ] [Review][Patch] <Title> [<file>:<line>]`
 
 3. **`defer`** findings (checked off, marked deferred):
-   `- [x] [Review][Defer] <Title> [<file>:<line>] — deferred, pre-existing`
+   `- [x] [Review][Defer] <Title> [<file>:<line>] — deferred: <pre-existing, or for maybe-false the evidence that would settle it>`
 
 Also append each `defer` finding to `{deferred_work_file}` under a heading `## Deferred from: code review ({date})`. If `{spec_file}` is set, include its basename in the heading (e.g., `code review of story-3.3 (2026-03-18)`). One bullet per finding with description.
 
@@ -37,7 +37,7 @@ Announce what was written:
 
 > **Code review complete.** <D> `decision-needed`, <P> `patch`, <W> `defer`, <R> dismissed.
 
-The findings report ends with a `Dismissed` appendix — one line per dismissed finding: the finding and the reason that disposed of its claim — in the story file's `### Review Findings` section when `{spec_file}` is set, at the tail of the chat listing otherwise.
+The findings report ends with a `Dismissed` appendix — one line per `false` finding: the finding and its refutation — in the story file's `### Review Findings` section when `{spec_file}` is set, at the tail of the chat listing otherwise.
 
 If `{spec_file}` is set, add: `Findings written to the review findings section in {spec_file}.`
 Otherwise add: `Findings are listed above. No story file was provided, so nothing was persisted.`
@@ -88,7 +88,7 @@ Skip this section if `{spec_file}` is not set.
 
 #### Determine new status based on review outcome
 
-- If all `decision-needed` and `patch` findings were resolved (fixed or dismissed) AND no unresolved `high`/`medium` findings remain: set `{new_status}` = `done`. Update the story file Status section to `done`.
+- If all `decision-needed` and `patch` findings were resolved (fixed or dismissed) AND no unresolved `critical`/`medium` findings remain: set `{new_status}` = `done`. Update the story file Status section to `done`.
 - If `patch` findings were left as action items, or unresolved issues remain: set `{new_status}` = `in-progress`. Update the story file Status section to `in-progress`.
 
 Save the story file.
