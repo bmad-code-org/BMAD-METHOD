@@ -34,9 +34,9 @@ Announce skipped layers first, then launch every active layer before handling an
      - `critical` (intolerable), `medium` (tolerable), `minor` (cosmetic or negligible) — the consequence occurs; grade its verified magnitude for the artifact's consumers. Maintainers are consumers too: a developer-facing cost (design drift, invariant erosion, duplicated sources of truth) grades by the concrete site where it will bite — the call site that will diverge, the invariant that breaks; a claim that names no such site is not gradeable and falls to `false` or `maybe-false`. If the consequence is established but its magnitude cannot be settled, err upward.
      - `false` — verification established that the claimed consequence does not occur at the named site. Record the refutation: the specific evidence that disposes of the finding's own claim. A true fact about neighboring code that leaves the claim standing is not a refutation.
      - `maybe-false` — verification could not establish whether the claimed consequence occurs at all. Record what evidence would settle it. Never use this verdict in place of a check the materials at hand allow.
-   - Every finding gets one row in the triage log below — verdict plus its evidence in a sentence or two; never drop, merge, or silently skip one. `false` findings take no further action. `maybe-false` findings route to defer. `critical`, `medium`, and `minor` findings continue to grouping.
-   - Scope authority: a finding may be dismissed or later deferred *as out of scope* only on the authority of the intent itself. The spec's scope language, the plan, and the diff's own shape are not admissible scope authorities — if only they exclude a finding, treat it as evidence against the chosen reading (intent_gap or bad_spec), not as out of scope.
-   - A finding whose fix edits the spec this build is implementing: record its verdict; take no further action. A finding whose fix edits an agent-context document (e.g. CLAUDE.md, AGENTS.md, rules files, other specs): defer, never patch.
+   - Every finding gets one row in the triage log below — verdict plus its evidence in a sentence or two; never drop, merge, or silently skip one. Reject `false` findings on their refutation. A `minor` continues only when users would plausibly meet the defect in everyday use (judged plainly — no proof needed) or when its fix purely corrects or deletes, adding no guards, branches, parameters, or surface; reject the rest as real but not worth fixing. `maybe-false` findings route to defer. `critical` and `medium` findings always continue to grouping.
+   - Scope authority: a finding may be rejected or later deferred *as out of scope* only on the authority of the intent itself. The spec's scope language, the plan, and the diff's own shape are not admissible scope authorities — if only they exclude a finding, treat it as evidence against the chosen reading (intent_gap or bad_spec), not as out of scope.
+   - A finding whose fix edits the spec this build is implementing: record its verdict and reject it. A finding whose fix edits an agent-context document (e.g. CLAUDE.md, AGENTS.md, rules files, other specs): defer, never patch.
 2. Group the survivors by shared root cause — two findings belong in one entry only when the same underlying defect produced both. Same location alone is not a shared root cause, and neither is a shared fix. An entry carries every member's verified consequence and the highest verdict among them.
 3. Route each entry into exactly one triage category. The first three are **this story's problem** — caused or exposed by the current change. The last is **not this story's problem**.
    - **intent_gap** — caused by the change; cannot be resolved from the spec because the captured intent is incomplete. Do not infer intent unless there is exactly one possible reading.
@@ -48,7 +48,7 @@ Announce skipped layers first, then launch every active layer before handling an
    ### {date} — Review pass
    - verdicts: <total> findings — critical <N>, medium <N>, minor <N>, false <N>, maybe-false <N>
    - findings:
-     - `[verdict]` `[intent_gap|bad_spec|patch|defer|none]` <finding summary> — <evidence: the refutation for false, what would settle it for maybe-false, the action taken for patches>
+     - `[verdict]` `[intent_gap|bad_spec|patch|defer|reject]` <finding summary> — <evidence: the refutation for false, what would settle it for maybe-false, the action taken for patches, why a rejected minor was not worth fixing>
    ```
    Where `{date}` is the current system date. One row per finding from every layer, in the order the layers reported them; `<total>` must equal the number of findings the layers reported — a finding missing from the log is a triage failure. Members of a grouped entry keep their own rows and share the route.
 5. Process findings in cascading order. If intent_gap exists, lower findings are moot; follow the intent_gap branch below. If bad_spec exists, lower findings are moot since code will be re-derived. If neither exists, process patch and defer normally. Before each bad_spec loopback, read `{spec_file}` frontmatter `review_loop_iteration` (missing means `0`), increment it by 1, and write it back. If it exceeds 5, append the triage-log entry for this pass, then HALT with status `blocked` and blocking condition `review repair loop exceeded 5 iterations (non-convergence)`.
@@ -73,8 +73,8 @@ Announce skipped layers first, then launch every active layer before handling an
 Write the following details to `{spec_file}` under `## Auto Run Result`:
 - Summary of implemented change
 - Files changed with one-line descriptions
-- Review findings breakdown: patches applied, items deferred, and every `false` verdict with its refutation
-- Follow-up review recommendation: count only this pass's entries triaged `patch`, at entry verdict — never deferred or `false` ones. `true` if any patched entry was `critical`, or if `3 × medium count + 1 × minor count` is 5 or more; otherwise `false`. Record the patched counts by verdict and the score.
+- Review findings breakdown: patches applied, items deferred, and every rejected finding with its recorded reason
+- Follow-up review recommendation: count only this pass's entries triaged `patch`, at entry verdict — never deferred or `false` ones. `true` if any patched entry was `critical`, or if two or more `medium` entries were patched; otherwise `false`. Record the patched counts by verdict.
 - Verification performed, including command outcomes or manual inspection notes
 - Any residual risks
 
