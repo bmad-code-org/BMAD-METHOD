@@ -9,7 +9,7 @@ Run `bmad-sprint-planning` at the boundary between planning and implementation. 
 
 ## Why one skill
 
-`sprint-status.yaml` is the single tracking artifact the whole dev cycle reads and writes — build syncs story statuses into it, code-review moves stories through review, the retrospective appends action items to it. Everything that *creates* or *summarizes* that artifact now lives in the skill that owns it. Gating, generating, and viewing were previously spread across three skills (`bmad-check-implementation-readiness`, `bmad-sprint-planning`, `bmad-sprint-status`); consolidation means one owner, one status vocabulary, and no drift between what the gate checks and what the tracker builds.
+`sprint-status.yaml` is the single tracking artifact the whole dev cycle reads and writes — build syncs story statuses into it through completion, code-review sends a story back when it finds work left to do, the retrospective appends action items to it. Everything that *creates* or *summarizes* that artifact now lives in the skill that owns it. Gating, generating, and viewing were previously spread across three skills (`bmad-check-implementation-readiness`, `bmad-sprint-planning`, `bmad-sprint-status`); consolidation means one owner, one status vocabulary, and no drift between what the gate checks and what the tracker builds.
 
 ## The readiness gate
 

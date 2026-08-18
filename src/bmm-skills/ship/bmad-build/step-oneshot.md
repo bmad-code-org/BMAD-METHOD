@@ -54,7 +54,7 @@ Write `{spec_file}` using `[[bmad-snapshot:spec-template.md]]`. Fill only these 
 3. **Suggested Review Order** — append after Intent. Build using the same convention as `[[bmad-snapshot:step-05-present.md]]` § "Generate Suggested Review Order" (spec-file-relative links, concern-based ordering, ultra-concise framing).
 4. **Review Triage Log** — only when findings were dismissed: one line per dismissal, the finding and the reason that disposed of its claim.
 
-Follow `[[bmad-snapshot:sync-sprint-status.md]]` with `target_status` = `review`.
+Follow `[[bmad-snapshot:sync-sprint-status.md]]` with `target_status` = `done`.
 
 ### Commit
 
