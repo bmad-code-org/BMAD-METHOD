@@ -9,13 +9,13 @@ sidebar:
 
 For what the skill *does* and how to run it, see [Project Context](project-context.md) and the [how-to guide](../how-to/project-context.md).
 
-## The line: derivable or not
+## The line: what retrieval costs
 
-Written context earns its cost only when it carries something the agent cannot derive by reading the repository.
+Written context earns its cost when the truth it carries is expensive to retrieve from the repository — not whether an agent *could* derive it, but what it costs every time one doesn't: the exploration, the odds of searching the right place in time, whether the fact surfaces before the mistake or after it.
 
-Two results from different literatures locate the same boundary. Separating code reasoning from documentation memorization across repository-level tasks, **code access delivers the dominant gains over documentation access** — a document describing how the system works loses to the source it describes. Running the inverse experiment — generating requirements *from* code — models prove unreliable at producing anything not already implemented. Current behavior is recoverable from source. **Intent, rationale, and what was deliberately rejected are not.**
+Two results from different literatures locate the same boundary. Separating code reasoning from documentation memorization across repository-level tasks, **code access delivers the dominant gains over documentation access** — a document describing how the system works loses to the source it describes. Running the inverse experiment — generating requirements *from* code — models prove unreliable at producing anything not already implemented. Current implementation behavior is recoverable from source. **Intent, rationale, and what was deliberately rejected are not.** That boundary is the cost framing seen from the other side: first-hand retrieval of what the code says is cheap and reliable, which is exactly what makes a stored copy of it worthless.
 
-So anything derivable is read live and never stored. A stored copy is a stale duplicate of something the agent reads more accurately first-hand, and it is charged on every single call.
+So what the agent reads cheaply and reliably first-hand is read live and never stored — a stored copy is a stale duplicate charged on every single call. A line that stops the same expensive rediscovery every session stays, derivable or not.
 
 ## Why most AGENTS.md files measure as worthless
 
@@ -44,12 +44,13 @@ The rule that reconciles all of it: **an index the agent must choose to fetch ge
 
 ## What earns a place
 
-The test for every line is the **pruning test**: *would removing this line change agent behavior?*
+The test for every line is the **pruning test**: *would removing this line change agent behavior?* On a line a human wrote, a failed pruning test opens a question rather than settling one — removing it needs grounds, set out under [Retirement runs the other way](#retirement-runs-the-other-way).
 
-- **What a config file cannot say about running the project.** The invocation itself lives in `package.json`, a `Makefile`, or CI config and is read from there. What does not live there is the correction: the root test script does nothing in this workspace, integration tests need a service up first, the suite is slow enough that you should iterate on single files, CI runs a check the test script does not.
+- **What a config file cannot say about running the project.** An invocation the obvious guess gets right lives in `package.json`, a `Makefile`, or CI config and is read from there. What does not live there is which command is the right one when several look plausible, and the correction: the root test script does nothing in this workspace, integration tests need a service up first, the suite is slow enough that you should iterate on single files, CI runs a check the test script does not.
 - **Policy the code cannot express.** Frozen paths, generated files, branch rules, security and compliance requirements. Admitted by authority, not by discovery.
 - **Conventions that differ from ecosystem defaults.** Only the divergences. An agent follows the norm unless told otherwise, so a fact nobody would get wrong by default is not worth a line.
 - **Known pitfalls, from observed failure only.** A repository yields hundreds of trap-looking facts, and no property of the fact separates the few that cause real mistakes — that signal exists only in observed behavior. A surprising scan finding becomes a question, never a line.
+- **Cross-component rules and required versions.** The few rules that must hold across parts of the system an agent cannot see from the file it is editing, plus the tool versions the project actually builds with — not an inventory written for completeness.
 - **Negative constraints over positive guidance**, which measured better, and which is why a prohibition here always names the permitted alternative.
 
 ## What is deliberately not captured
@@ -75,6 +76,8 @@ There is one rule that inverts the pruning instinct, and getting it wrong quietl
 
 **A policy or pitfall retires only when the thing it guards is gone** — removed, or now mechanically enforced — **or when a human retires it.** Absence of recent failures is never grounds. A working rule erases its own evidence, and much of the value of the block is the failures that no longer happen.
 
+The same protection covers every instruction a human wrote, not just policy and pitfalls: it goes only when it is stale or wrong, already enforced by a hook or a check, harmful or contradictory, or you approve the deletion as a line item — never because it looks derivable, and never because it is discoverable somewhere in the repository.
+
 ## Two altitudes, two artifacts
 
 One artifact cannot serve both coding and planning work. The material divides, and the halves barely overlap.
@@ -87,7 +90,7 @@ Trying to serve both from one file is what produced the two skills this one repl
 
 ## Context is a liability to be re-earned
 
-The old model treated documentation as an asset: more coverage, more value. This skill treats context as a **liability that must keep proving itself.** Refresh re-checks every caveat and diffs deletions and renames against every line. Audit applies the pruning test and ends with the block smaller or equal, never larger. When a claim's source disappears, the claim is fixed against the new reality or removed — never quietly re-pointed at a document that happens to still mention it.
+The old model treated documentation as an asset: more coverage, more value. This skill treats context as a **liability that must keep proving itself.** Refresh re-checks every caveat and diffs deletions and renames against every line. Audit applies the pruning test — subject to those grounds on anything a human wrote — and ends with the block smaller or equal, never larger. When a claim's source disappears, the claim is fixed against the new reality or removed — never quietly re-pointed at a document that happens to still mention it.
 
 Generating the first version is the cheap part. Keeping it true is where the value is, and it is why refresh and audit exist as first-class intents rather than a note in the documentation.
 

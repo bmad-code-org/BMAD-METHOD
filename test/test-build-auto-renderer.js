@@ -460,7 +460,9 @@ async function main() {
     ]) {
       assert(review.includes(heading), `default review layer missing: ${heading}`);
     }
-    assert(review.includes('{diff_output}'), 'runtime placeholder was removed from review layers');
+    assert(review.includes('{diff_file}'), 'runtime placeholder was removed from review layers');
+    assert(review.includes('{claims_file}'), 'claims placeholder was removed from review layers');
+    assert(!review.includes('{diff_output}'), 'stale inline-diff placeholder survived');
 
     const oneshot = fs.readFileSync(path.join(dir, 'step-oneshot.md'), 'utf8');
     assert(oneshot.includes('#### Blind Hunter (`blind-hunter`)'), 'oneshot review layer block missing');

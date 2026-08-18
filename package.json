@@ -44,7 +44,7 @@
     "rebundle": "node tools/installer/bundlers/bundle-web.js rebundle",
     "test": "npm run test:refs && npm run test:install && npm run test:urls && npm run test:site-url && npm run test:channels && npm run test:renderer && npm run test:retrospective && npm run test:sprint-planning && npm run test:skills && npm run lint && npm run lint:md && npm run format:check",
     "test:channels": "node test/test-installer-channels.js",
-    "test:install": "node test/test-installation-components.js",
+    "test:install": "node test/test-installation-components.js && node test/test-shim-policy.js",
     "test:refs": "node test/test-file-refs-csv.js",
     "test:renderer": "uv run --python 3.11 python -m unittest src/scripts/tests/test_config_utils.py src/scripts/tests/test_resolve_config.py src/scripts/tests/test_resolve_customization.py && node test/test-build-auto-renderer.js",
     "test:retrospective": "uv run --python 3.11 src/bmm-skills/ship/bmad-retrospective/scripts/tests/test_git_evidence.py && uv run --python 3.11 src/bmm-skills/ship/bmad-retrospective/scripts/tests/test_sprint_status.py",

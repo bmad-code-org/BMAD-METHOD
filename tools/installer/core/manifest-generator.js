@@ -58,6 +58,8 @@ class ManifestGenerator {
     this.bmadDir = bmadDir;
     this.bmadFolderName = path.basename(bmadDir); // Get the actual folder name (e.g., '_bmad' or 'bmad')
     this.allInstalledFiles = installedFiles;
+    this.installShims = options.installShims === true;
+    this.shimsAvailable = options.shimsAvailable === true;
 
     if (!Object.prototype.hasOwnProperty.call(options, 'ides')) {
       throw new Error('ManifestGenerator requires `options.ides` to be provided – installer should supply the selected IDEs array.');
@@ -377,6 +379,10 @@ class ManifestGenerator {
       modules: updatedModules,
       ides: this.selectedIdes,
     };
+
+    if (this.shimsAvailable) {
+      manifest.installation.installShims = this.installShims;
+    }
 
     // Clean the manifest to remove any non-serializable values
     const cleanManifest = structuredClone(manifest);

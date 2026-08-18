@@ -13,23 +13,25 @@ For the full reasoning, including what is deliberately *not* captured and why, s
 
 ## What goes in, and what doesn't
 
-The governing line is whether a fact can be derived by reading the repository. Agents read code more accurately than they read prose describing code, and a stored description is a stale duplicate charged on every call. So repo overviews, directory trees and tech-stack lists never enter.
+The governing line is what a fact costs to retrieve at the moment it is needed. Agents read code more accurately than they read prose describing code, and a stored description of what they find cheaply is a stale duplicate charged on every call — so repo overviews, directory trees and tech-stack lists never enter. What stays is what an agent rediscovers expensively, or only after the mistake.
 
 What earns a line is what the code cannot say:
 
 - **Policy** the org requires — frozen paths, generated files, branch rules, security and compliance.
-- **What a config file cannot say about running the project** — the caveat, not the command. `pnpm test` is already in `package.json`; that the suite takes eleven minutes, or needs a service running first, is not.
+- **What a config file cannot say about running the project** — the catch, and which command is the right one to use, not a copy of every script. `pnpm test` is already in `package.json`; that the suite takes eleven minutes, or needs a service running first, is not.
 - **Conventions that differ from ecosystem defaults**, because an agent follows the norm unless told otherwise.
 - **Known pitfalls**, admitted only from observed failure — a lesson already recorded, the maintainer's recollection, a mistake fixed repeatedly in git history, or one the writing session made and caught. A trap-looking fact from a scan becomes a question, never a line.
+- **Cross-component rules and required versions** — the few rules that must hold across parts of the system an agent cannot see from the file it is editing, and the tool versions the project actually builds with.
 - **Pointers** to where work lands, and to nested or linked files worth reading first.
 
 Every rule the skill applies is written out in `references/best-practices.md`, with the evidence behind it. The skill uses it to assess what your repo already has, and explains its reasoning back to you at the end.
 
-## Four intents
+## The intents
 
 | Intent | What it does |
 |--------|--------------|
-| **Setup** | The default. Assess what exists, ask what you bring, discover and verify the rest, show you the block, then write it. |
+| **Setup** | For a repo with no instructions worth preserving. Ask what you bring, discover and verify the rest, show you the block, then write it. |
+| **Adopt** | For instructions you already wrote. You see where every one of them went before anything is written; nothing is deleted without your sign-off. |
 | **Refresh** | The same run against an existing block: re-run its commands, diff deletions and renames since the recorded commit, update what moved. |
 | **Record** | Capture one observed agent mistake at the moment it happens. A recurring or costly one earns a line. |
 | **Audit** | Re-verify and prune. The block ends smaller or equal, never larger. |
@@ -38,7 +40,7 @@ Every rule the skill applies is written out in `references/best-practices.md`, w
 
 `AGENTS.md` at the repo root, which every major coding harness reads. BMad owns only the region between `<!-- bmad:context -->` and `<!-- /bmad:context -->`; everything you write outside those markers is preserved byte for byte, and a refresh never touches it.
 
-Monorepo components and nested repositories get their own file under the same rules, listed as pointers in the parent. A large rule set bounded to a directory belongs in a nested `AGENTS.md` there, where the harness attaches it by location.
+Monorepo components and nested repositories get their own file under the same rules, listed as pointers in the parent. A large rule set that only applies to one directory can move into an `AGENTS.md` file in that directory — but only after checking that the tools you use actually read it there. If they don't, the rules stay in the root file, each naming the directory it applies to.
 
 ## Repo or home directory
 

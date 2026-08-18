@@ -169,6 +169,13 @@ platforms:
       target_dir: .agents/skills
       global_target_dir: ~/.config/agents/skills
 
+  grok:
+    name: "Grok"
+    preferred: false
+    installer:
+      target_dir: .agents/skills
+      global_target_dir: ~/.grok/skills
+
   hermes:
     name: "Hermes Agent"
     preferred: false

@@ -1,6 +1,6 @@
 ---
 name: bmad-qa-generate-e2e-tests
-description: 'Generate end to end automated tests for existing features. Use when the user says "create qa automated tests for [feature]"'
+description: 'Generate automated API and end-to-end tests for implemented features. Use when the user says "create qa automated tests for [feature]"'
 ---
 
 # QA Generate E2E Tests Workflow

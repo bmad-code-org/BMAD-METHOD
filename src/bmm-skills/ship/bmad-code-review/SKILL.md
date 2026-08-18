@@ -1,6 +1,6 @@
 ---
 name: bmad-code-review
-description: 'Adversarial code review using parallel review layers and structured triage. Use when the user says "run code review" or "review this code"'
+description: 'Review code changes with several independent reviewers in parallel, then triage and present the findings. Use when the user says "run code review" or "review this code"'
 ---
 
 # Code Review Workflow

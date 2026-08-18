@@ -14,33 +14,36 @@
 5. If intent gaps exist, do not fantasize, do not leave open questions, HALT and ask the human.
 6. Token count check (see SCOPE STANDARD). If spec exceeds 1600 tokens:
    - Show user the token count.
-   - HALT and ask human: `[S] Split — carve off secondary goals` | `[K] Keep full spec — accept the risks`
-   - On **S**: Propose the split — name each secondary goal. For each deferred goal, append one new entry to `{{.implementation_artifacts}}/deferred-work.md` using this format. Do not modify existing entries or look for duplicates. Rewrite the current spec to cover only the main goal — do not surgically carve sections out; regenerate the spec for the narrowed scope. Continue to checkpoint.
+   - HALT and give the user a choice:
+     - **Split** — carve off secondary goals.
+     - **Keep full spec** — accept the risks.
+   - If the user chooses **Split**: Propose the split — name each secondary goal. For each deferred goal, append one new entry to `{{.implementation_artifacts}}/deferred-work.md` using this format. Do not modify existing entries or look for duplicates. Rewrite the current spec to cover only the main goal — do not surgically carve sections out; regenerate the spec for the narrowed scope. Continue to checkpoint.
      ```markdown
      - source_spec: `{spec_file}`
        summary: <one sentence naming the deferred goal>
        evidence: <why this was split from the current spec>
      ```
-   - On **K**: Continue to checkpoint with full spec.
+   - If the user chooses **Keep full spec**: Continue to checkpoint with the full spec.
 
 ### CHECKPOINT 1
 
-Present summary. Display the spec file path as a CWD-relative path (no leading `/`) so it is clickable in the terminal. If token count exceeded 1600 and user chose [K], include the token count and explain why it may be a problem.
+Present summary. Display the spec file path as a CWD-relative path (no leading `/`) so it is clickable in the terminal. If token count exceeded 1600 and the user chose to keep the full spec, include the token count and explain why it may be a problem.
 
 After presenting the summary, display this note:
 
 ---
 
-Before approving, you can open the spec file in an editor or ask me questions and tell me what to change. You can also use `bmad-advanced-elicitation`, `bmad-party-mode`, or `bmad-code-review` skills, ideally in another session to avoid context bloat.
+Before approving, you can open the spec file in an editor or ask me questions and tell me what to change. You can also use `bmad-advanced-elicitation` or `bmad-party-mode`, ideally in another session to avoid context bloat.
 
 ---
 
-HALT and ask human: `[A] Approve` | `[E] Edit`
+HALT and give the user a choice:
 
-- **A**: Re-read `{spec_file}` from disk.
-  - **If the file is missing:** HALT. Tell the user the spec file is gone and STOP — do not write anything to `{spec_file}`, do not set status, do not proceed to Step 3. Nothing below this point runs.
-  - **If the file exists:** Compare the content to what you wrote. If it has changed since you wrote it, acknowledge the external edits — show a brief summary of what changed — and proceed with the updated version. Then set status `ready-for-dev` in `{spec_file}`. Everything inside `<frozen-after-approval>` is now locked — only the human can change it. → Step 3.
-- **E**: Apply changes, then return to CHECKPOINT 1.
+- **Approve and continue** — approve the spec and proceed to implementation in this session.
+- **Approve and stop** — approve the spec, leave it `ready-for-dev`, and stop so a fresh `bmad-build` session can resume at implementation.
+- **Review spec** — review the spec, use a subagent if available, and discuss the findings and revisions with the user until the user is ready to approve, then either stop or continue.
+
+Before acting on approval, re-read `{spec_file}` from disk. If it is missing, HALT without recreating it, changing status, or proceeding. If it changed, acknowledge the external edits and continue with the updated version. Set status `ready-for-dev`; everything inside `<frozen-after-approval>` is then locked and only the human can change it.
 
 ## NEXT
 

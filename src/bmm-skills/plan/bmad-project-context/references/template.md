@@ -5,7 +5,7 @@ Sections in this order. Omit any section with nothing that passes its rule — n
 1. **Orientation** — three or four sentences: what this is, the stack, where planning and deeper docs live.
 2. **Policy** — what the org requires.
 3. **Where things are** — entry points, and pointers to children and linked files.
-4. **Running and verifying** — only what `package.json`, a `Makefile`, or CI config does not already say.
+4. **Running and verifying** — the right commands to run and the required tool versions, plus what `package.json`, `pyproject.toml`, a `Makefile`, or CI config does not already say.
 5. **Conventions that differ from defaults**
 6. **Known pitfalls**
 

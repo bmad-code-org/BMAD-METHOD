@@ -73,7 +73,7 @@ persistent_facts = [
 ]
 ```
 
-**What happens:** The facts load during Step 3 of the workflow's activation. When the agent drafts the brief, it knows the required fields and the enterprise conventions document. The shipped default (`file:{project-root}/**/project-context.md`) still loads, since this is an append.
+**What happens:** The facts load during Step 3 of the workflow's activation. When the agent drafts the brief, it knows the required fields and the enterprise conventions document. Shipped skills carry no persistent facts of their own, so these are the only ones loaded — but because the key appends rather than replaces, a fact added at the team level and one added at the user level both apply.
 
 ## Recipe 3: Publish Completed Outputs to External Systems
 
