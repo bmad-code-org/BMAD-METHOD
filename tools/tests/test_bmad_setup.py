@@ -134,12 +134,13 @@ def write_module_skill(
     scripts: dict[str, bytes] | None = None,
     script_entries: tuple[str, ...] | None = None,
     update_source: str = "file:skills",
+    version: str = "1.2.3",
     extra_fields: dict[str, object] | None = None,
 ) -> Path:
     skill = root / skill_id
     scripts = scripts or {}
     manifest = {
-        "version": "1.2.3",
+        "version": version,
         "module": module,
         "update_source": update_source,
     }
@@ -169,6 +170,26 @@ def run_setup(project: Path, skill: Path, *extra: str) -> subprocess.CompletedPr
             "uv",
             "run",
             "--no-cache",
+            str(skill / "scripts" / "setup.py"),
+            "--project-root",
+            str(project),
+            "--skill",
+            str(skill),
+            *extra,
+        ],
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+
+
+def run_setup_python(
+    project: Path, skill: Path, *extra: str
+) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        [
+            sys.executable,
             str(skill / "scripts" / "setup.py"),
             "--project-root",
             str(project),
@@ -1823,6 +1844,629 @@ class BmadSetupTests(unittest.TestCase):
             self.assertFalse(dest_catalog.exists())
 
         self.assertTrue((project / "_bmad-output").is_dir())
+
+
+class BmadUpdateDoctorTests(unittest.TestCase):
+    def test_update_reports_version_matrix_spreads_and_source_failures_read_only(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_module_skill(
+                root,
+                "bmad",
+                "core",
+                update_source="file:sources",
+            )
+            write_module_skill(project / "sources", "bmad", "core")
+            cases = (
+                ("equal-skill", "equal", "1.2.3", "1.2.3", "current"),
+                (
+                    "newer-skill",
+                    "newer",
+                    "1.2.3",
+                    "1.3.0",
+                    "newer-available",
+                ),
+                ("ahead-skill", "ahead", "2.0.0", "1.9.9", "ahead"),
+                (
+                    "dev-skill",
+                    "dev",
+                    "2.0.0-dev.gabc",
+                    "2.0.0",
+                    "differing-unordered",
+                ),
+                (
+                    "invalid-skill",
+                    "invalid",
+                    "tomorrow",
+                    "2.0.0",
+                    "differing-unordered",
+                ),
+            )
+            for skill_id, module, installed, source, _state in cases:
+                write_module_skill(
+                    root,
+                    skill_id,
+                    module,
+                    version=installed,
+                    update_source="file:sources",
+                )
+                write_module_skill(
+                    project / "sources",
+                    skill_id,
+                    module,
+                    version=source,
+                )
+            write_module_skill(
+                root,
+                "spread-old",
+                "spread",
+                version="1.0.0",
+                update_source="file:sources",
+            )
+            write_module_skill(
+                root,
+                "spread-new",
+                "spread",
+                version="2.0.0",
+                update_source="file:sources",
+            )
+            for skill_id, version in (("spread-old", "2.0.0"), ("spread-new", "2.0.0")):
+                write_module_skill(
+                    project / "sources",
+                    skill_id,
+                    "spread",
+                    version=version,
+                )
+            write_module_skill(
+                root,
+                "missing-source",
+                "unreachable",
+                update_source="file:sources",
+            )
+            write_module_skill(
+                root,
+                "broken-source",
+                "broken",
+                update_source="file:sources",
+            )
+            write(
+                project / "sources" / "broken-source" / "module-manifest.md",
+                "---\nmodule: broken\n---\n",
+            )
+            write(project / "skills-lock.json", "keep\n")
+            before = {
+                path: path.read_bytes()
+                for path in root.rglob("*")
+                if path.is_file()
+            }
+
+            result = run_setup_python(project, skill, "--update")
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            report = json.loads(result.stdout)
+            by_module = {item["module"]: item for item in report["modules"]}
+            for _skill_id, module, _installed, _source, state in cases:
+                self.assertEqual(by_module[module]["state"], state)
+            self.assertEqual(by_module["spread"]["state"], "version-spread")
+            self.assertEqual(
+                [(copy["skill"], copy["version"]) for copy in by_module["spread"]["copies"]],
+                [("spread-new", "2.0.0"), ("spread-old", "1.0.0")],
+            )
+            self.assertEqual(
+                by_module["unreachable"]["state"], "could-not-check"
+            )
+            self.assertIn(
+                "missing-source/module-manifest.md",
+                by_module["unreachable"]["copies"][0]["reason"],
+            )
+            self.assertEqual(by_module["broken"]["state"], "could-not-check")
+            self.assertIn(
+                "field 'version'",
+                by_module["broken"]["copies"][0]["reason"],
+            )
+            self.assertEqual(report["bmad_copy"]["version"], "1.2.3")
+            self.assertFalse(report["current"])
+            self.assertEqual(
+                {
+                    path: path.read_bytes()
+                    for path in root.rglob("*")
+                    if path.is_file()
+                },
+                before,
+            )
+
+    def test_update_source_resolution_uses_https_roots_and_github_head(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            https_skill = write_module_skill(
+                root,
+                "https-skill",
+                "httpsmod",
+                update_source="https://example.test/tree",
+            )
+            github_skill = write_module_skill(
+                root,
+                "github-skill",
+                "githubmod",
+                update_source="github:owner/repository/skills",
+            )
+            copies = {
+                copy_item.skill: copy_item
+                for copy_item in setup.discover_installed_copies(skill)
+            }
+            response = mock.MagicMock()
+            response.__enter__.return_value.read.return_value = (
+                b"---\nversion: 1.2.3\n---\n"
+            )
+            response.__exit__.return_value = False
+            with mock.patch.object(
+                setup.urllib.request, "urlopen", return_value=response
+            ) as opened:
+                for copy_item in (
+                    copies[https_skill.name],
+                    copies[github_skill.name],
+                ):
+                    setup.read_source_manifest(
+                        setup.source_manifest_location(project, copy_item),
+                        copy_item,
+                    )
+            urls = [call.args[0].full_url for call in opened.call_args_list]
+            self.assertEqual(
+                urls[0],
+                "https://example.test/tree/https-skill/module-manifest.md",
+            )
+            self.assertEqual(
+                urls[1],
+                "https://raw.githubusercontent.com/owner/repository/HEAD/"
+                "skills/github-skill/module-manifest.md",
+            )
+
+    def test_doctor_uses_highest_release_adds_only_missing_and_exactly_repairs(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "bmad", "core", version="3.0.0")
+            old_question = {
+                "key": "existing",
+                "prompt": "Existing value",
+                "default": "old",
+            }
+            new_question = {
+                "key": "new.answer",
+                "prompt": "New value",
+                "default": "new default",
+            }
+            write_module_skill(
+                root,
+                "alpha-old",
+                "alpha",
+                version="1.0.0",
+                questions=(old_question,),
+                scripts={"scripts/old.py": b"old payload\n"},
+            )
+            write_module_skill(
+                root,
+                "alpha-new",
+                "alpha",
+                version="2.0.0",
+                questions=(old_question, new_question),
+                scripts={"scripts/tools/new.py": b"new payload\n"},
+            )
+            bmad = project / "_bmad"
+            write(
+                bmad / "config.toml",
+                '[modules.alpha]\nexisting = "keep"\nnumber = 7\n',
+            )
+            write(bmad / "config.user.toml", "# keep user\n")
+            write(bmad / "custom" / "keep.txt", "keep custom\n")
+            write(bmad / "alpha" / "keep.txt", "keep module\n")
+            write(bmad / "alpha" / "scripts" / "obsolete.py", "obsolete\n")
+            write(bmad / "scripts" / "stale.py", "stale\n")
+
+            pending = run_setup_python(
+                project, skill, "--doctor", "--list-config-questions"
+            )
+            self.assertEqual(pending.returncode, 0, msg=pending.stderr)
+            self.assertEqual(
+                [(item["module"], item["key"]) for item in json.loads(pending.stdout)],
+                [("alpha", "new.answer")],
+            )
+            result = run_setup_python(
+                project,
+                skill,
+                "--doctor",
+                *module_answers_args(
+                    project, {"alpha": {"new.answer": "chosen"}}
+                ),
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            report = json.loads(result.stdout)
+            self.assertEqual(report["bmad_copy"]["skill"], "bmad")
+            self.assertEqual(report["bmad_copy"]["version"], "3.0.0")
+            self.assertEqual(report["version_spreads"], ["alpha"])
+            self.assertFalse(report["current"])
+            alpha = next(item for item in report["modules"] if item["module"] == "alpha")
+            self.assertEqual(alpha["selected_copy"]["skill"], "alpha-new")
+            self.assertEqual(alpha["scripts"], "repaired")
+            config = tomllib.loads((bmad / "config.toml").read_text(encoding="utf-8"))
+            self.assertEqual(config["modules"]["alpha"]["existing"], "keep")
+            self.assertEqual(config["modules"]["alpha"]["number"], 7)
+            self.assertEqual(config["modules"]["alpha"]["new"]["answer"], "chosen")
+            self.assertEqual(
+                (bmad / "alpha" / "scripts" / "tools" / "new.py").read_bytes(),
+                b"new payload\n",
+            )
+            self.assertFalse((bmad / "alpha" / "scripts" / "obsolete.py").exists())
+            self.assertFalse((bmad / "alpha" / "scripts" / "old.py").exists())
+            self.assertEqual((bmad / "alpha" / "keep.txt").read_text(), "keep module\n")
+            self.assertEqual((bmad / "custom" / "keep.txt").read_text(), "keep custom\n")
+            self.assertEqual((bmad / "config.user.toml").read_text(), "# keep user\n")
+            self.assertTrue(scripts_match(bmad / "scripts", skill / "scripts"))
+            self.assertFalse((bmad / "scripts").is_symlink())
+            self.assertEqual(list(project.glob("_bmad.doctor-*")), [])
+            self.assertEqual(list(project.glob("_bmad.old-*")), [])
+
+    def test_doctor_blocks_tied_disagreement_and_missing_runtime_is_actionable(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "bmad", "core", version="1.0.0")
+            write_module_skill(
+                root,
+                "alpha-one",
+                "alpha",
+                version="2.0.0",
+                scripts={"scripts/one.py": b"one\n"},
+            )
+            write_module_skill(
+                root,
+                "alpha-two",
+                "alpha",
+                version="2.0.0",
+                scripts={"scripts/two.py": b"two\n"},
+            )
+            write_module_skill(
+                root,
+                "preview-one",
+                "preview",
+                version="3.0.0-dev.gone",
+            )
+            write_module_skill(
+                root,
+                "preview-two",
+                "preview",
+                version="3.0.0-dev.gtwo",
+            )
+            missing = run_setup_python(project, skill, "--doctor")
+            self.assertEqual(missing.returncode, 0, msg=missing.stderr)
+            missing_report = json.loads(missing.stdout)
+            self.assertEqual(missing_report["status"], "setup-required")
+            self.assertIn("bmad setup", missing_report["message"])
+            self.assertFalse((project / "_bmad").exists())
+            self.assertEqual(list(project.glob("_bmad.*-*")), [])
+
+            bmad = project / "_bmad"
+            shutil.copytree(skill / "scripts", bmad / "scripts")
+            (bmad / "core" / "scripts").mkdir(parents=True)
+            write(bmad / "config.toml", "[modules.alpha]\nkeep = 1\n")
+            write(bmad / "alpha" / "scripts" / "keep.py", "keep\n")
+            before = {
+                path.relative_to(bmad): path.read_bytes()
+                for path in bmad.rglob("*")
+                if path.is_file()
+            }
+            result = run_setup_python(project, skill, "--doctor")
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            report = json.loads(result.stdout)
+            alpha = next(item for item in report["modules"] if item["module"] == "alpha")
+            preview = next(
+                item for item in report["modules"] if item["module"] == "preview"
+            )
+            self.assertEqual(alpha["state"], "blocked")
+            self.assertIn("disagree", alpha["reason"])
+            self.assertEqual(alpha["scripts"], "unchanged")
+            self.assertEqual(preview["state"], "blocked")
+            self.assertIn("unordered", preview["reason"])
+            self.assertEqual(report["remaining_staleness"], ["alpha", "preview"])
+            self.assertFalse(report["current"])
+            self.assertEqual(
+                {
+                    path.relative_to(bmad): path.read_bytes()
+                    for path in bmad.rglob("*")
+                    if path.is_file()
+                },
+                before,
+            )
+
+    def test_doctor_never_orders_unordered_copies_but_can_use_a_sole_copy(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "bmad", "core", version="1.0.0")
+            write_module_skill(
+                root,
+                "solo-dev",
+                "solo",
+                version="2.0.0-dev.gabc",
+                scripts={"scripts/solo.py": b"solo\n"},
+            )
+            write_module_skill(
+                root,
+                "mixed-release",
+                "mixed",
+                version="2.0.0",
+                scripts={"scripts/release.py": b"release\n"},
+            )
+            write_module_skill(
+                root,
+                "mixed-dev",
+                "mixed",
+                version="3.0.0-dev.gabc",
+                scripts={"scripts/dev.py": b"dev\n"},
+            )
+
+            modules, selections = setup.select_doctor_modules(skill)
+
+            by_module = {item["module"]: item for item in selections}
+            selected = {item.module: item for item in modules}
+            self.assertEqual(by_module["solo"]["state"], "selected")
+            self.assertEqual(by_module["solo"]["selected_copy"]["skill"], "solo-dev")
+            self.assertIn("solo", selected)
+            self.assertEqual(by_module["mixed"]["state"], "blocked")
+            self.assertIn("unordered", by_module["mixed"]["reason"])
+            self.assertNotIn("mixed", selected)
+
+    def test_doctor_invalid_config_and_unreadable_selected_script_are_atomic(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "bmad", "core", version="1.0.0")
+            module_skill = write_module_skill(
+                root,
+                "alpha-skill",
+                "alpha",
+                scripts={"scripts/tool.py": b"tool\n"},
+            )
+            bmad = project / "_bmad"
+            write(bmad / "config.toml", "invalid = [\n")
+            write(bmad / "custom" / "keep.txt", "keep\n")
+            before = (bmad / "custom" / "keep.txt").read_bytes()
+            invalid = run_setup_python(project, skill, "--doctor")
+            self.assertNotEqual(invalid.returncode, 0)
+            self.assertIn(str(bmad / "config.toml"), invalid.stderr)
+            self.assertEqual((bmad / "custom" / "keep.txt").read_bytes(), before)
+            self.assertEqual(list(project.glob("_bmad.doctor-*")), [])
+
+            write(bmad / "config.toml", "[modules.alpha]\nkeep = 1\n")
+            declared = (module_skill / "scripts" / "tool.py").resolve()
+            real_read_bytes = Path.read_bytes
+
+            def fail_selected(path: Path) -> bytes:
+                if path == declared:
+                    raise OSError("selected script unreadable")
+                return real_read_bytes(path)
+
+            with mock.patch.object(Path, "read_bytes", fail_selected):
+                with self.assertRaisesRegex(Exception, "selected script unreadable"):
+                    setup.doctor(project, skill)
+            self.assertEqual((bmad / "custom" / "keep.txt").read_bytes(), before)
+            self.assertEqual(list(project.glob("_bmad.doctor-*")), [])
+
+    def test_semver_ordering_is_numeric_and_dev_or_invalid_is_unordered(self):
+        setup = load_setup()
+        self.assertEqual(setup.compare_semver("1.10.0", "1.9.9"), 1)
+        self.assertEqual(setup.compare_semver("1.0.0-alpha.2", "1.0.0-alpha.10"), -1)
+        self.assertEqual(setup.compare_semver("1.0.0", "1.0.0+build.2"), 0)
+        self.assertEqual(setup.compare_semver("1.0.0-rc.1", "1.0.0"), -1)
+        self.assertEqual(setup.compare_semver("1.0.0-alpha.1", "1.0.0-alpha"), 1)
+        self.assertIsNone(setup.compare_semver("1.0.0-dev.gabc", "1.0.0"))
+        self.assertIsNone(setup.compare_semver("latest", "1.0.0"))
+
+    def test_update_reports_current_installation_and_source_disagreement(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            for source_root in ("sources-a", "sources-b"):
+                write_module_skill(
+                    root, "bmad", "core", update_source=f"file:{source_root}"
+                )
+                write_module_skill(project / source_root, "bmad", "core")
+            report = json.loads(
+                self.run_update(project, skill),
+            )
+            self.assertTrue(report["current"])
+            self.assertEqual(
+                [module["state"] for module in report["modules"]], ["current"]
+            )
+
+            write_module_skill(
+                root, "pair-a", "pair", update_source="file:sources-a"
+            )
+            write_module_skill(
+                root, "pair-b", "pair", update_source="file:sources-b"
+            )
+            write_module_skill(project / "sources-a", "pair-a", "pair")
+            write_module_skill(
+                project / "sources-b", "pair-b", "pair", version="9.0.0"
+            )
+
+            report = json.loads(self.run_update(project, skill))
+            self.assertFalse(report["current"])
+            pair = next(
+                module for module in report["modules"] if module["module"] == "pair"
+            )
+            self.assertEqual(pair["state"], "source-disagreement")
+            self.assertFalse(pair["version_spread"])
+            self.assertEqual(
+                sorted(copy["state"] for copy in pair["copies"]),
+                ["current", "newer-available"],
+            )
+
+    def test_update_reports_an_unusable_source_url_without_aborting_the_run(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_module_skill(
+                root, "bmad", "core", update_source="file:sources"
+            )
+            write_module_skill(project / "sources", "bmad", "core")
+            write_module_skill(
+                root, "broken-skill", "broken", update_source="https://[oops/tree"
+            )
+
+            report = json.loads(self.run_update(project, skill))
+            self.assertFalse(report["current"])
+            broken = next(
+                module for module in report["modules"] if module["module"] == "broken"
+            )
+            self.assertEqual(broken["state"], "could-not-check")
+            self.assertIn("https://[oops/tree", broken["copies"][0]["reason"])
+            core = next(
+                module for module in report["modules"] if module["module"] == "core"
+            )
+            self.assertEqual(core["state"], "current")
+
+    def test_doctor_leaves_an_already_correct_runtime_untouched(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "bmad", "core")
+            write_module_skill(
+                root,
+                "alpha-skill",
+                "alpha",
+                scripts={"scripts/tool.py": b"payload\n"},
+            )
+            bmad = project / "_bmad"
+            write(bmad / "config.toml", "[core]\nkeep = true\n")
+
+            first = run_setup_python(project, skill, "--doctor")
+            self.assertEqual(first.returncode, 0, msg=first.stderr)
+            self.assertTrue(json.loads(first.stdout)["changed"])
+            before = {
+                path: path.read_bytes()
+                for path in sorted(bmad.rglob("*"))
+                if path.is_file()
+            }
+
+            second = run_setup_python(project, skill, "--doctor")
+            self.assertEqual(second.returncode, 0, msg=second.stderr)
+            report = json.loads(second.stdout)
+            self.assertEqual(report["status"], "current")
+            self.assertFalse(report["changed"])
+            self.assertEqual(report["shared_scripts"], "current")
+            self.assertEqual(report["answers_added"], [])
+            self.assertTrue(report["current"])
+            self.assertEqual(
+                {
+                    path: path.read_bytes()
+                    for path in sorted(bmad.rglob("*"))
+                    if path.is_file()
+                },
+                before,
+            )
+
+    def test_doctor_prefers_a_release_over_its_release_candidate(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "bmad", "core")
+            write_module_skill(
+                root,
+                "mixed-rc",
+                "mixed",
+                version="2.0.0-rc.1",
+                scripts={"scripts/tool.py": b"candidate\n"},
+            )
+            write_module_skill(
+                root,
+                "mixed-release",
+                "mixed",
+                version="2.0.0",
+                scripts={"scripts/tool.py": b"release\n"},
+            )
+            write(project / "_bmad" / "config.toml", "[core]\nkeep = true\n")
+
+            result = run_setup_python(project, skill, "--doctor")
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            report = json.loads(result.stdout)
+            mixed = next(
+                module for module in report["modules"] if module["module"] == "mixed"
+            )
+            self.assertEqual(mixed["selected_copy"]["skill"], "mixed-release")
+            self.assertEqual(
+                (project / "_bmad" / "mixed" / "scripts" / "tool.py").read_bytes(),
+                b"release\n",
+            )
+
+    def test_doctor_question_listing_without_a_runtime_is_actionable(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "bmad", "core")
+
+            result = run_setup_python(
+                project, skill, "--doctor", "--list-config-questions"
+            )
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            report = json.loads(result.stdout)
+            self.assertEqual(report["status"], "setup-required")
+            self.assertIn("bmad setup", report["message"])
+            self.assertFalse(report["changed"])
+            self.assertFalse((project / "_bmad").exists())
+
+    def test_mode_flags_reject_incompatible_combinations(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "bmad", "core")
+            answers = module_answers_args(project, {"core": {"key": "value"}})
+
+            for extra in (
+                ("--update", "--doctor"),
+                ("--update", "--list-config-questions"),
+                ("--update", *answers),
+                ("--doctor", "--user-answers", str(project / "user.toml")),
+                ("--list-config-questions", *answers),
+            ):
+                with self.subTest(extra=extra):
+                    result = run_setup_python(project, skill, *extra)
+                    self.assertEqual(result.returncode, 2, msg=result.stdout)
+                    self.assertFalse((project / "_bmad").exists())
+
+    def run_update(self, project: Path, skill: Path) -> str:
+        result = run_setup_python(project, skill, "--update")
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        return result.stdout
 
 
 if __name__ == "__main__":
