@@ -1,6 +1,6 @@
 # Converging: Narrow & Decide
 
-Load this when divergence is spent and the user wants to narrow the field — or asks to "decide," "prioritize," "pick," or "make it real." The whole catalog is *divergent* by design (it generates); this is the deliberate opposite phase, and keeping the two apart is the point. Never run convergence while ideas are still flowing, and never let it leak into a generating batch — premature judgment is what kills good ideas. `{doc_workspace}/.memlog.md` is the canonical record; everything here works from it. Communicate in `{communication_language}`.
+Load this when divergence is spent and the user wants to narrow the field — or asks to "decide," "prioritize," "pick," or "make it real." The whole catalog is *divergent* by design (it generates); this is the deliberate opposite phase, and keeping the two apart is the point. Never run convergence while ideas are still flowing, and never let it leak into a generating batch — premature judgment is what kills good ideas. `{doc_workspace}/.memlog.md` is the canonical record; everything here works from it.
 
 **Mode holds.** In **Facilitator** you run the convergence *on the user's verdicts* — you structure and prompt, they judge; never rank for them. In **Creative Partner** you weigh in too, each call logged by author. In **Ideate for me** you converge yourself and show the result, then offer to keep going.
 

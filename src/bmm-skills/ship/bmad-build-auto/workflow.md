@@ -70,7 +70,6 @@ A specification is "Ready for Development" when:
 
 - Every operational cross-file reference in this workflow is an absolute snapshot path. Open it directly; do not resolve it relative to a skill directory.
 - `{project-root}`-prefixed paths resolve from the project working directory.
-- Speak in `{{.communication_language}}`, tailor communication to `{{.user_skill_level}}`, and write documents in `{{.document_output_language}}`.
 - Whenever this workflow captures or records a version-control revision, obtain the full canonical identifier directly from version control and preserve it verbatim.
 
 ## On Activation

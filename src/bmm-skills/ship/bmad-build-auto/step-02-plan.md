@@ -2,7 +2,6 @@
 
 ## RULES
 
-- **Language** — Speak in `{{.communication_language}}`, tailored to `{{.user_skill_level}}`. Write files in `{{.document_output_language}}`.
 - No human interaction: do not ask questions or wait for approval in this step.
 
 ## INSTRUCTIONS

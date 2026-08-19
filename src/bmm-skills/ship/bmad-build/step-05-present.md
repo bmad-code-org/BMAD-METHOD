@@ -5,7 +5,6 @@
 
 ## RULES
 
-- **Language** — Speak in `{{.communication_language}}`. Write any file output in `{{.document_output_language}}`.
 - NEVER auto-push.
 
 ## INSTRUCTIONS

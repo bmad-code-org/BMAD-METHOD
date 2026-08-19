@@ -56,14 +56,11 @@ function copyDir(src, dest) {
 function baseConfig(extra = '') {
   return [
     '[core]',
-    'communication_language = "English"',
-    'document_output_language = "French"',
+    extra,
     '',
     '[modules.bmm]',
-    'user_skill_level = "expert"',
     'planning_artifacts = "{project-root}/planning"',
     'implementation_artifacts = "{project-root}/implementation"',
-    extra,
     '',
   ].join('\n');
 }
@@ -184,7 +181,7 @@ async function main() {
     assert(!/\{\{(?:\.|config\.)|\{workflow\.|\[\[bmad-snapshot:/.test(markdown), 'compile token survived');
     assert(!markdown.includes('{skill-root}'), 'mutable skill-root reference survived');
     assert(markdown.includes('{spec_file}'), 'runtime placeholder was removed');
-    assert(markdown.includes('tailored to `expert`'), 'user_skill_level behavior missing');
+    assert(markdown.includes('/implementation/bmad-build-auto-result-'), 'implementation_artifacts value missing');
     // Blind hunter is inlined; only file-backed reviewers ship under review-prompts/.
     for (const prompt of ['edge-case-hunter.md', 'verification-gap.md']) {
       const promptPath = path.join(dir, 'review-prompts', prompt);
@@ -221,10 +218,14 @@ async function main() {
   test('a referenced resolved value publishes a new generation', () => {
     const configured = fixture();
     const before = entry(run(configured));
-    fs.writeFileSync(path.join(configured.bmad, 'config.user.toml'), '[core]\ncommunication_language = "Japanese"\n', 'utf8');
+    fs.writeFileSync(
+      path.join(configured.bmad, 'config.user.toml'),
+      '[modules.bmm]\nimplementation_artifacts = "{project-root}/impl-v2"\n',
+      'utf8',
+    );
     const after = entry(run(configured));
     assert(after !== before, 'referenced config change reused generation');
-    assert(fs.readFileSync(after, 'utf8').includes('Speak in `Japanese`'), 'new value was not rendered');
+    assert(fs.readFileSync(after, 'utf8').includes('/impl-v2/bmad-build-auto-result-'), 'new value was not rendered');
     assert(fs.existsSync(before), 'prior generation disappeared');
   });
 
@@ -259,9 +260,11 @@ async function main() {
   });
 
   test('missing, wrong-type, and non-string keyed values HALT cleanly', () => {
-    const missing = fixture({ config: baseConfig().replace('user_skill_level = "expert"\n', '') });
+    const missing = fixture({ config: baseConfig().replace('implementation_artifacts = "{project-root}/implementation"\n', '') });
     assert(run(missing).stdout.includes('missing config value'), 'missing value accepted');
-    const wrong = fixture({ config: baseConfig().replace('user_skill_level = "expert"', 'user_skill_level = 42') });
+    const wrong = fixture({
+      config: baseConfig().replace('implementation_artifacts = "{project-root}/implementation"', 'implementation_artifacts = 42'),
+    });
     assert(run(wrong).stdout.includes('must be a string'), 'wrong type accepted');
     const keyed = fixture();
     fs.mkdirSync(path.join(keyed.bmad, 'custom'), { recursive: true });
@@ -329,10 +332,10 @@ async function main() {
 
   test('Markdown sources are discovered without a duplicate render contract', () => {
     const discovered = fixture();
-    fs.writeFileSync(path.join(discovered.skill, 'extra.md'), 'Speak in {{config.core.communication_language}}.\n', 'utf8');
+    fs.writeFileSync(path.join(discovered.skill, 'extra.md'), 'Artifacts under {{config.modules.bmm.planning_artifacts}}.\n', 'utf8');
     const output = entry(run(discovered));
     const extra = path.join(path.dirname(output), 'extra.md');
-    assert(fs.readFileSync(extra, 'utf8').includes('Speak in English.'), 'discovered source was not rendered');
+    assert(fs.readFileSync(extra, 'utf8').includes('/planning.'), 'discovered source was not rendered');
     assert(!fs.existsSync(path.join(discovered.skill, 'render.toml')), 'duplicate render contract exists');
   });
 
@@ -348,7 +351,7 @@ async function main() {
   });
 
   test('ambiguous shorthand config and source symlink escapes HALT', () => {
-    const invalid = fixture({ config: baseConfig('communication_language = "German"') });
+    const invalid = fixture({ config: baseConfig('implementation_artifacts = "{project-root}/dup"') });
     let result = run(invalid);
     assert(result.status !== 0 && result.stdout.includes('ambiguous config value'), 'ambiguous config accepted');
 

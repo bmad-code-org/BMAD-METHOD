@@ -51,15 +51,12 @@ Treat every entry in `{workflow.persistent_facts}` as foundational context you c
 ### Step 4: Load Config
 
 Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
-- Use `{user_name}` for greeting
-- Use `{communication_language}` for all communications
-- Use `{document_output_language}` for output documents
 - Use `{planning_artifacts}` for output location and artifact scanning
 - Use `{project_knowledge}` for additional context scanning
 
 ### Step 5: Greet the User
 
-Greet `{user_name}`, speaking in `{communication_language}`. Be warm but efficient — dream builder energy.
+Greet the user. Be warm but efficient — dream builder energy.
 
 ### Step 6: Execute Append Steps
 

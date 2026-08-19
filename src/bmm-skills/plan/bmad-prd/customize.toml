@@ -121,7 +121,7 @@ external_sources = []
 # Fired once at Finalize step 6, never during Discovery or drafting.
 #
 # Examples (set in team/user override TOML):
-#   "After finalize, upload prd.md and addendum.md to Confluence via corp:confluence_upload (space_key='PROD', parent_page='PRDs', label='prd', author={user_name})."
+#   "After finalize, upload prd.md and addendum.md to Confluence via corp:confluence_upload (space_key='PROD', parent_page='PRDs', label='prd')."
 #   "Mirror the PRD to Notion via notion:create_page (database_id='abc123', title='PRD: '+{project_name})."
 #   "When the PRD references a parent initiative, link via corp:jira_link on the epic key in frontmatter."
 external_handoffs = []

@@ -10,7 +10,7 @@ story_key: '' # set at runtime when discovered from sprint status
 
 ## RULES
 
-- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
+- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style
 - The prompt that triggered this workflow IS the intent — not a hint.
 - Writing `{diff_file}` and the claims file is the only change this step may make. Otherwise it is read-only.
 
