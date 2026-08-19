@@ -27,12 +27,9 @@ deferred: [] # append-only machine-readable deferred review findings; each item 
 
 ## Boundaries & Constraints
 
-<!-- Three tiers: Always = invariant rules. Block If = decisions that cannot be made unattended. Never = out of scope + forbidden approaches. -->
+<!-- Two tiers: Always = invariant rules. Never = out of scope + forbidden approaches. -->
 
 **Always:** INVARIANT_RULES
-
-**Block If:** DECISIONS_REQUIRING_HUMAN_INPUT
-<!-- Agent: if any of these trigger during execution, HALT with status blocked and the blocking condition. -->
 
 **Never:** NON_GOALS_AND_FORBIDDEN_APPROACHES
 
