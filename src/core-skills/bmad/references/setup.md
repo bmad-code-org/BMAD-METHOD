@@ -11,9 +11,10 @@ already set, do not ask again. A second run fills new keys in
 `config.toml` and module yaml while keeping existing answers, always
 replaces `_bmad/_config/bmad-help.csv` from this skill's
 `assets/bmad-help.csv`, and repairs `_bmad/scripts` when that path is
-a broken or wrong symlink or a copy that is not byte-identical to
-this help's `scripts/`. A right symlink and a byte-identical copy
-are left as-is. Never touch `custom/` or existing `*.user.toml`.
+a symlink or a copy that is not byte-identical to the packaged `bmad`
+skill's `scripts/`. Every symlink is replaced with a plain copy; a
+byte-identical copy is left as-is. Never touch `custom/` or existing
+`*.user.toml`.
 Run:
 
 ```
@@ -21,6 +22,9 @@ uv run --no-cache "{skill-root}/scripts/setup.py" --project-root "{project-root}
 ```
 
 ### First run
+
+Successful setup creates `_bmad/scripts` as a plain copied directory and
+never attempts to create a symlink.
 
 If that file is missing, ask these three questions first (defaults in
 parentheses). Do not invent answers.

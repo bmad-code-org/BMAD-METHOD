@@ -131,9 +131,14 @@ def user_toml_files(root: Path) -> list[Path]:
 
 
 def scripts_match(dest: Path, src: Path) -> bool:
-    dest_files = {p.name: p.read_bytes() for p in dest.iterdir() if p.is_file()}
+    dest_items = list(dest.iterdir())
+    dest_files = {
+        p.name: p.read_bytes()
+        for p in dest_items
+        if p.is_file() and not p.is_symlink()
+    }
     src_files = {p.name: p.read_bytes() for p in src.iterdir() if p.is_file()}
-    return dest_files == src_files
+    return len(dest_items) == len(dest_files) and dest_files == src_files
 
 
 def symlink_to_temp_dir_succeeds() -> bool:
@@ -250,20 +255,25 @@ class BmadSetupTests(unittest.TestCase):
                 "John",
             )
 
-    def test_symlink_refused_copies_scripts(self):
+    def test_first_setup_copies_scripts(self):
         setup = load_setup()
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             project = root / "proj"
             skill = write_dest_bmad(root)
             project.mkdir()
-            with mock.patch("os.symlink", side_effect=OSError("operation not permitted")):
-                code = setup.main(["--project-root", str(project), "--skill", str(skill)])
+            with mock.patch(
+                "os.symlink",
+                side_effect=AssertionError("setup must not create a symlink"),
+            ) as symlink:
+                code = setup.main(
+                    ["--project-root", str(project), "--skill", str(skill)]
+                )
             self.assertEqual(code, 0)
-            scripts = project / "_bmad" / "scripts"
-            self.assertFalse(scripts.is_symlink())
-            self.assertTrue(scripts.is_dir())
-            self.assertTrue(scripts_match(scripts, skill / "scripts"))
+            symlink.assert_not_called()
+            self._assert_scripts_identity(
+                project / "_bmad" / "scripts", skill / "scripts"
+            )
 
     def test_already_present_paths_are_left_alone(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -456,6 +466,39 @@ class BmadSetupTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, msg=result.stderr)
             self._assert_scripts_identity(bmad / "scripts", skill / "scripts")
 
+    def test_existing_scripts_link_does_not_require_symlink_permission(self):
+        if not symlink_to_temp_dir_succeeds():
+            self.skipTest("symlinks not available")
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "proj"
+            skill = write_dest_bmad(root)
+            project.mkdir()
+            bmad = project / "_bmad"
+            bmad.mkdir()
+            write(bmad / "custom" / "keep.txt", "keep\n")
+            os.symlink(
+                skill / "scripts",
+                bmad / "scripts",
+                target_is_directory=True,
+            )
+
+            with mock.patch(
+                "os.symlink", side_effect=OSError("operation not permitted")
+            ) as symlink:
+                code = setup.main(
+                    ["--project-root", str(project), "--skill", str(skill)]
+                )
+
+            self.assertEqual(code, 0)
+            symlink.assert_not_called()
+            self._assert_scripts_identity(bmad / "scripts", skill / "scripts")
+            self.assertEqual(
+                (bmad / "custom" / "keep.txt").read_text(encoding="utf-8"),
+                "keep\n",
+            )
+
     def test_stale_scripts_copy_is_replaced(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
@@ -471,6 +514,43 @@ class BmadSetupTests(unittest.TestCase):
             self._assert_scripts_identity(scripts, skill / "scripts")
             self.assertFalse((scripts / "leftover.py").exists())
 
+    def test_identical_scripts_copy_with_extra_directory_is_replaced(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "proj"
+            skill = write_dest_bmad(root)
+            project.mkdir()
+            scripts = project / "_bmad" / "scripts"
+            scripts.mkdir(parents=True)
+            for item in (skill / "scripts").iterdir():
+                if item.is_file():
+                    shutil.copy2(item, scripts / item.name)
+            (scripts / "leftover").mkdir()
+
+            result = run_setup(project, skill)
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self._assert_scripts_identity(scripts, skill / "scripts")
+            self.assertFalse((scripts / "leftover").exists())
+
+    def test_expected_script_file_links_are_replaced_with_plain_files(self):
+        if not symlink_to_temp_dir_succeeds():
+            self.skipTest("symlinks not available")
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "proj"
+            skill = write_dest_bmad(root)
+            project.mkdir()
+            scripts = project / "_bmad" / "scripts"
+            scripts.mkdir(parents=True)
+            for item in (skill / "scripts").iterdir():
+                if item.is_file():
+                    os.symlink(item, scripts / item.name)
+            self.assertTrue(all(item.is_symlink() for item in scripts.iterdir()))
+
+            result = run_setup(project, skill)
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self._assert_scripts_identity(scripts, skill / "scripts")
+
     def test_identical_scripts_copy_stays_a_copy(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
@@ -482,13 +562,23 @@ class BmadSetupTests(unittest.TestCase):
             for item in (skill / "scripts").iterdir():
                 if item.is_file():
                     shutil.copy2(item, scripts / item.name)
+            marker = scripts / "resolve_config.py"
+            source_marker = skill / "scripts" / marker.name
+            os.utime(
+                marker,
+                ns=(946_684_800_000_000_000, 946_684_800_000_000_000),
+            )
+            preserved_mtime = marker.stat().st_mtime_ns
+            self.assertNotEqual(
+                preserved_mtime, source_marker.stat().st_mtime_ns
+            )
 
             result = run_setup(project, skill)
             self.assertEqual(result.returncode, 0, msg=result.stderr)
-            self.assertFalse(scripts.is_symlink())
-            self.assertTrue(scripts_match(scripts, skill / "scripts"))
+            self._assert_scripts_identity(scripts, skill / "scripts")
+            self.assertEqual(marker.stat().st_mtime_ns, preserved_mtime)
 
-    def test_right_scripts_symlink_is_left_alone(self):
+    def test_right_scripts_symlink_is_replaced_with_copy(self):
         if not symlink_to_temp_dir_succeeds():
             self.skipTest("symlinks not available")
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -496,16 +586,16 @@ class BmadSetupTests(unittest.TestCase):
             project = root / "proj"
             skill = write_dest_bmad(root)
             project.mkdir()
-            first = run_setup(project, skill)
-            self.assertEqual(first.returncode, 0, msg=first.stderr)
+            bmad = project / "_bmad"
+            bmad.mkdir()
             scripts = project / "_bmad" / "scripts"
-            self.assertTrue(scripts.is_symlink())
-            before = os.readlink(scripts)
+            os.symlink(
+                skill / "scripts", scripts, target_is_directory=True
+            )
 
-            second = run_setup(project, skill)
-            self.assertEqual(second.returncode, 0, msg=second.stderr)
-            self.assertTrue(scripts.is_symlink())
-            self.assertEqual(os.readlink(scripts), before)
+            result = run_setup(project, skill)
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self._assert_scripts_identity(scripts, skill / "scripts")
 
     def test_user_layers_and_leftovers_survive_second_setup(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -668,10 +758,84 @@ class BmadSetupTests(unittest.TestCase):
             self.assertFalse((project / "_bmad").exists())
             self.assertFalse((project / "_bmad-output").exists())
 
+    def test_script_copy_failure_preserves_existing_bmad_and_cleans_staging(
+        self,
+    ):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "proj"
+            skill = write_dest_bmad(root)
+            project.mkdir()
+            bmad = project / "_bmad"
+            write(bmad / "scripts" / "resolve_config.py", "# original\n")
+            write(bmad / "custom" / "keep.txt", "keep\n")
+            write(bmad / "config.user.toml", "# user\n")
+            (bmad / "empty-preserved").mkdir()
+            before_inode = bmad.stat().st_ino
+            before_files = {
+                path.relative_to(bmad): path.read_bytes()
+                for path in bmad.rglob("*")
+                if path.is_file()
+            }
+            before_dirs = {
+                path.relative_to(bmad)
+                for path in bmad.rglob("*")
+                if path.is_dir()
+            }
+            real_copy2 = shutil.copy2
+            script_copy_attempts = 0
+            skill_scripts = (skill / "scripts").resolve()
+
+            def fail_second_script_copy(source, dest, *args, **kwargs):
+                nonlocal script_copy_attempts
+                source_path = Path(source)
+                dest_path = Path(dest)
+                if (
+                    source_path.parent.resolve() == skill_scripts
+                    and dest_path.parent.name == "scripts"
+                    and dest_path.parent.parent.name.startswith("_bmad.setup-")
+                ):
+                    script_copy_attempts += 1
+                    if script_copy_attempts == 2:
+                        raise OSError("script copy failed")
+                return real_copy2(source, dest, *args, **kwargs)
+
+            with mock.patch.object(
+                setup.shutil, "copy2", side_effect=fail_second_script_copy
+            ):
+                with self.assertRaisesRegex(OSError, "script copy failed"):
+                    setup.main(
+                        [
+                            "--project-root",
+                            str(project),
+                            "--skill",
+                            str(skill),
+                        ]
+                    )
+
+            self.assertEqual(script_copy_attempts, 2)
+            self.assertEqual(bmad.stat().st_ino, before_inode)
+            self.assertEqual(
+                {
+                    path.relative_to(bmad): path.read_bytes()
+                    for path in bmad.rglob("*")
+                    if path.is_file()
+                },
+                before_files,
+            )
+            self.assertEqual(
+                {
+                    path.relative_to(bmad)
+                    for path in bmad.rglob("*")
+                    if path.is_dir()
+                },
+                before_dirs,
+            )
+            self.assertEqual(list(project.glob("_bmad.setup-*")), [])
+
     def _assert_scripts_identity(self, dest: Path, src: Path) -> None:
-        if dest.is_symlink():
-            self.assertEqual(Path(os.readlink(dest)).resolve(), src.resolve())
-            return
+        self.assertFalse(dest.is_symlink())
         self.assertTrue(dest.is_dir())
         self.assertTrue(scripts_match(dest, src))
 
@@ -711,12 +875,7 @@ class BmadSetupTests(unittest.TestCase):
         bmad = project / "_bmad"
         scripts = bmad / "scripts"
         skill_scripts = skill / "scripts"
-        if symlink_to_temp_dir_succeeds():
-            self.assertTrue(scripts.is_symlink())
-            self.assertEqual(Path(os.readlink(scripts)).resolve(), skill_scripts.resolve())
-        else:
-            self.assertFalse(scripts.is_symlink())
-            self.assertTrue(scripts_match(scripts, skill_scripts))
+        self._assert_scripts_identity(scripts, skill_scripts)
 
         parsed = tomllib.loads((bmad / "config.toml").read_text(encoding="utf-8"))
         self.assertEqual(parsed["core"]["project_name"], project_name)
