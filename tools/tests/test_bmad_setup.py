@@ -2270,6 +2270,41 @@ class BmadUpdateDoctorTests(unittest.TestCase):
             )
             self.assertEqual(core["state"], "current")
 
+    def test_doctor_replaces_symlinked_legacy_shared_scripts(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "bmad", "core")
+            legacy = root / "legacy-scripts"
+            write(legacy / "resolve_config.py", "# legacy shared copy\n")
+            bmad = project / "_bmad"
+            write(bmad / "config.toml", "[core]\nkeep = true\n")
+            (bmad / "scripts").symlink_to(legacy, target_is_directory=True)
+
+            result = run_setup_python(project, skill, "--doctor")
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            report = json.loads(result.stdout)
+            self.assertEqual(report["status"], "repaired")
+            self.assertEqual(report["shared_scripts"], "repaired")
+            scripts = bmad / "scripts"
+            self.assertFalse(scripts.is_symlink())
+            self.assertTrue(scripts.is_dir())
+            self.assertTrue(scripts_match(scripts, skill / "scripts"))
+            self.assertEqual(
+                [path.name for path in sorted(legacy.rglob("*"))],
+                ["resolve_config.py"],
+            )
+            self.assertEqual(
+                (legacy / "resolve_config.py").read_text(encoding="utf-8"),
+                "# legacy shared copy\n",
+            )
+
+            second = run_setup_python(project, skill, "--doctor")
+            self.assertEqual(second.returncode, 0, msg=second.stderr)
+            self.assertEqual(json.loads(second.stdout)["status"], "current")
+
     def test_first_doctor_after_setup_reports_current(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
