@@ -474,6 +474,35 @@ class PackageNpxSkillsTests(unittest.TestCase):
                 ),
                 "core.output",
             ),
+            (
+                "question-duplicate-key",
+                manifest_text(
+                    "core",
+                    ["bmad-review"],
+                    frontmatter=(
+                        "module: core\nupdate_source: file:skills\n"
+                        "config_questions:\n"
+                        "  - key: output\n    prompt: First?\n    default: one\n"
+                        "  - key: output\n    prompt: Second?\n    default: two\n"
+                    ),
+                ),
+                "conflicts",
+            ),
+            (
+                "question-prefix-collision",
+                manifest_text(
+                    "core",
+                    ["bmad-review"],
+                    frontmatter=(
+                        "module: core\nupdate_source: file:skills\n"
+                        "config_questions:\n"
+                        "  - key: output\n    prompt: First?\n    default: one\n"
+                        "  - key: output.directory\n"
+                        "    prompt: Second?\n    default: two\n"
+                    ),
+                ),
+                "conflicts",
+            ),
         )
         for name, authored, diagnostic in cases:
             with self.subTest(name=name), tempfile.TemporaryDirectory() as temp_dir:
@@ -528,6 +557,8 @@ class PackageNpxSkillsTests(unittest.TestCase):
 
     def test_unsafe_missing_and_non_file_scripts_leave_dest_untouched(self):
         cases = (
+            "scripts",
+            "scripts/",
             "/tmp/tool.py",
             "../tool.py",
             "other/tool.py",

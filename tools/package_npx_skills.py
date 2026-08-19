@@ -265,6 +265,7 @@ def validate_questions(value: Any, module: str, path: Path) -> None:
         raise ValueError(
             f"authored manifest {path} field 'config_questions' must be a list"
         )
+    seen: list[str] = []
     for index, question in enumerate(value):
         field = f"config_questions[{index}]"
         if not isinstance(question, dict):
@@ -296,6 +297,24 @@ def validate_questions(value: Any, module: str, path: Path) -> None:
                 f"authored manifest {path} field {field}.key {key!r} "
                 f"must not start with module {module!r}"
             )
+        conflict = conflicting_question_key(seen, key)
+        if conflict is not None:
+            raise ValueError(
+                f"authored manifest {path} field {field}.key {key!r} "
+                f"conflicts with {conflict!r}"
+            )
+        seen.append(key)
+
+
+def conflicting_question_key(keys: list[str], candidate: str) -> str | None:
+    for key in keys:
+        if (
+            key == candidate
+            or key.startswith(f"{candidate}.")
+            or candidate.startswith(f"{key}.")
+        ):
+            return key
+    return None
 
 
 def validate_scripts(
@@ -316,7 +335,7 @@ def validate_scripts(
         unsafe = (
             relative.is_absolute()
             or "\\" in entry
-            or not relative.parts
+            or len(relative.parts) < 2
             or relative.parts[0] != "scripts"
             or ".." in relative.parts
             or "." in relative.parts

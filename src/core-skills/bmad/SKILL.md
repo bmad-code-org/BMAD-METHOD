@@ -101,10 +101,10 @@ For an ordinary help request:
 
 - do not read or fall back to `{project-root}/_bmad/_config/bmad-help.csv` or
   any `module-help.csv`;
-- do not inspect `{project-root}/_bmad/modules/` as skill discovery state;
+- do not inspect the legacy installed-module cache as skill discovery state;
 - do not require or run `{project-root}/_bmad/scripts/resolve_config.py`;
 - do not invoke setup, update, or doctor as a side effect;
-- do not write files, cache discovery, repair manifests, or create anything
-  under `{project-root}/_bmad/modules/`; and
+- do not write files, cache discovery, repair manifests, or create a legacy
+  installed-module cache beneath `_bmad`; and
 - from sibling skill folders, read only `module-manifest.md`; never open a
   sibling `SKILL.md` or another file there.
