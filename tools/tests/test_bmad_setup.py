@@ -2270,6 +2270,36 @@ class BmadUpdateDoctorTests(unittest.TestCase):
             )
             self.assertEqual(core["state"], "current")
 
+    def test_first_doctor_after_setup_reports_current(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "bmad", "core")
+            write_module_skill(
+                root,
+                "alpha-skill",
+                "alpha",
+                scripts={"scripts/tool.py": b"payload\n"},
+            )
+
+            setup = run_setup_python(project, skill)
+            self.assertEqual(setup.returncode, 0, msg=setup.stderr)
+            bmad = project / "_bmad"
+            self.assertTrue((bmad / "core" / "scripts").is_dir())
+            self.assertTrue((bmad / "alpha" / "scripts" / "tool.py").is_file())
+
+            doctor = run_setup_python(project, skill, "--doctor")
+            self.assertEqual(doctor.returncode, 0, msg=doctor.stderr)
+            report = json.loads(doctor.stdout)
+            self.assertEqual(report["status"], "current")
+            self.assertFalse(report["changed"])
+            self.assertEqual(report["shared_scripts"], "current")
+            for module in report["modules"]:
+                if module["state"] == "selected":
+                    self.assertEqual(module["scripts"], "current")
+
     def test_doctor_leaves_an_already_correct_runtime_untouched(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
