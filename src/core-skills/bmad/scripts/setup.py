@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import shutil
 import sys
 import tempfile
@@ -139,8 +138,21 @@ def materialize_bmad(
         # Seed staging so custom/, extra *.user.toml, and leftovers
         # survive replace_dir.
         if bmad.exists():
+            scripts = bmad / "scripts"
+
+            def ignore_scripts_link(
+                directory: str, _names: list[str]
+            ) -> set[str]:
+                if scripts.is_symlink() and Path(directory) == bmad:
+                    return {"scripts"}
+                return set()
+
             shutil.copytree(
-                bmad, staging, dirs_exist_ok=True, symlinks=True
+                bmad,
+                staging,
+                dirs_exist_ok=True,
+                symlinks=True,
+                ignore=ignore_scripts_link,
             )
         stage_bmad(
             staging,
@@ -208,35 +220,27 @@ def stringify(table: object) -> dict[str, str]:
     return out
 
 
-def scripts_ok(dest: Path, src: Path) -> bool:
-    if dest.is_symlink():
-        try:
-            return dest.resolve() == src.resolve()
-        except OSError:
-            return False
-    if not dest.is_dir():
-        return False
-    dest_files = {p.name: p.read_bytes() for p in dest.iterdir() if p.is_file()}
-    src_files = {p.name: p.read_bytes() for p in src.iterdir() if p.is_file()}
-    return dest_files == src_files
-
-
 def ensure_scripts(dest: Path, src: Path) -> None:
-    # Right symlink or a byte-identical top-level copy stays.
-    if scripts_ok(dest, src):
-        return
     if dest.is_symlink() or dest.is_file():
         dest.unlink()
     elif dest.is_dir():
+        dest_items = list(dest.iterdir())
+        dest_files = {
+            p.name: p.read_bytes()
+            for p in dest_items
+            if p.is_file() and not p.is_symlink()
+        }
+        src_files = {
+            p.name: p.read_bytes() for p in src.iterdir() if p.is_file()
+        }
+        if len(dest_items) == len(dest_files) and dest_files == src_files:
+            return
         shutil.rmtree(dest)
     dest.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        os.symlink(src, dest, target_is_directory=True)
-    except OSError:
-        dest.mkdir()
-        for item in src.iterdir():
-            if item.is_file():
-                shutil.copy2(item, dest / item.name)
+    dest.mkdir()
+    for item in src.iterdir():
+        if item.is_file():
+            shutil.copy2(item, dest / item.name)
 
 
 def write_text(path: Path, content: str) -> None:
