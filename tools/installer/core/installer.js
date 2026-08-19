@@ -36,6 +36,42 @@ class Installer {
   }
 
   /**
+   * Refuse to run in a project managed by the npx skills distribution.
+   * Markers: the npx-only `bmad` skill, or a skills-lock.json entry sourced
+   * from bmad-code-org/bmad-skills. Running this installer there would
+   * overwrite npx-installed skills with older copies and silently un-migrate
+   * the project.
+   * @param {string} projectRoot - Resolved project root directory
+   */
+  async refuseNpxManagedProject(projectRoot) {
+    let marker = null;
+    if (await fs.pathExists(path.join(projectRoot, '.claude', 'skills', 'bmad', 'SKILL.md'))) {
+      marker = '.claude/skills/bmad';
+    } else {
+      const lockPath = path.join(projectRoot, 'skills-lock.json');
+      if (await fs.pathExists(lockPath)) {
+        try {
+          const lock = JSON.parse(await fs.readFile(lockPath, 'utf8'));
+          if (Object.values(lock.skills || {}).some((skill) => skill && skill.source === 'bmad-code-org/bmad-skills')) {
+            marker = 'skills-lock.json';
+          }
+        } catch {
+          // Unreadable lockfile is not evidence of an npx-managed project.
+        }
+      }
+    }
+    if (marker) {
+      const error = new Error(
+        `This project's BMAD skills are managed by the npx skills distribution (found ${marker}). ` +
+          `This installer must not run here. Use "npx skills update" to update skills, ` +
+          `and the installed bmad skill's setup/doctor commands for the project runtime.`,
+      );
+      error.expected = true;
+      throw error;
+    }
+  }
+
+  /**
    * Main installation method
    * @param {Object} config - Installation configuration
    * @param {string} config.directory - Target directory
@@ -47,6 +83,7 @@ class Installer {
 
     try {
       const config = Config.build(originalConfig);
+      await this.refuseNpxManagedProject(path.resolve(config.directory));
       const paths = await InstallPaths.create(config);
       const officialModules = await OfficialModules.build(config, paths);
       const existingInstall = await ExistingInstall.detect(paths.bmadDir);
@@ -1385,6 +1422,7 @@ class Installer {
    */
   async quickUpdate(config) {
     const projectDir = path.resolve(config.directory);
+    await this.refuseNpxManagedProject(projectDir);
     const { bmadDir } = await this.findBmadDir(projectDir);
 
     // Check if bmad directory exists
