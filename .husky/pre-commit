@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+set -e
 
 # Auto-fix changed files and stage them
 npx --no-install lint-staged
