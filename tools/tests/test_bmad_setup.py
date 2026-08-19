@@ -21,11 +21,6 @@ SHARED_SCRIPTS = (
     "resolve_config.py",
     "resolve_customization.py",
 )
-HELP_CSV = (
-    "module,skill,display-name,menu-code,description,action,args,"
-    "phase,preceded-by,followed-by,required,output-location,outputs\n"
-    "Core,bmad-help,BMad Help,BH,,,,anytime,,,false,,\n"
-)
 MINIMAL_CONFIG = """\
 [core]
 project_name = "{directory_name}"
@@ -66,7 +61,6 @@ def write_dest_bmad(
     scripts: bool = True,
     assets: bool = True,
     config: str | None = MINIMAL_CONFIG,
-    catalog: str | None = HELP_CSV,
 ) -> Path:
     bmad_dir = root / "bmad"
     write(bmad_dir / "SKILL.md", "---\nname: bmad\n---\n")
@@ -77,11 +71,8 @@ def write_dest_bmad(
         for name in SHARED_SCRIPTS:
             source = REPO_ROOT / "src" / "scripts" / name
             shutil.copy2(source, bmad_dir / "scripts" / name)
-    if assets:
-        if config is not None:
-            write(bmad_dir / "assets" / "config.template.toml", config)
-        if catalog is not None:
-            write(bmad_dir / "assets" / "bmad-help.csv", catalog)
+    if assets and config is not None:
+        write(bmad_dir / "assets" / "config.template.toml", config)
     return bmad_dir
 
 
@@ -302,7 +293,7 @@ class BmadSetupTests(unittest.TestCase):
             project.mkdir()
             result = run_setup(project, skill)
             self.assertEqual(result.returncode, 0, msg=result.stderr)
-            self._assert_first_run_tree(project, skill, project_name="demo-proj", catalog=HELP_CSV)
+            self._assert_first_run_tree(project, skill, project_name="demo-proj")
 
             parsed = tomllib.loads((project / "_bmad" / "config.toml").read_text(encoding="utf-8"))
             self.assertEqual(
@@ -376,8 +367,8 @@ class BmadSetupTests(unittest.TestCase):
                 "custom-keep\n",
             )
             self.assertEqual(
-                (bmad / "_config" / "bmad-help.csv").read_bytes(),
-                (skill / "assets" / "bmad-help.csv").read_bytes(),
+                (bmad / "_config" / "bmad-help.csv").read_text(encoding="utf-8"),
+                "old-catalog\n",
             )
             self.assertEqual(
                 (output / "keep.txt").read_text(encoding="utf-8"),
@@ -405,17 +396,16 @@ class BmadSetupTests(unittest.TestCase):
             self.assertTrue((project / "_bmad" / "core" / "config.yaml").is_file())
             self.assertTrue((project / "_bmad" / "bmm" / "config.yaml").is_file())
             self.assertTrue((project / "_bmad" / "custom").is_dir())
-            self.assertEqual(
-                (project / "_bmad" / "_config" / "bmad-help.csv").read_bytes(),
-                (skill / "assets" / "bmad-help.csv").read_bytes(),
+            self.assertFalse(
+                (project / "_bmad" / "_config" / "bmad-help.csv").exists()
             )
             self.assertTrue((project / "_bmad-output").is_dir())
 
-    def test_catalogless_payload_removes_legacy_catalog(self):
+    def test_setup_leaves_legacy_catalog_alone(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             project = root / "proj"
-            skill = write_dest_bmad(root, catalog=None)
+            skill = write_dest_bmad(root)
             project.mkdir()
             legacy_catalog = project / "_bmad" / "_config" / "bmad-help.csv"
             write(legacy_catalog, "old-catalog\n")
@@ -423,7 +413,9 @@ class BmadSetupTests(unittest.TestCase):
             result = run_setup(project, skill)
 
             self.assertEqual(result.returncode, 0, msg=result.stderr)
-            self.assertFalse(legacy_catalog.exists())
+            self.assertEqual(
+                legacy_catalog.read_text(encoding="utf-8"), "old-catalog\n"
+            )
 
     def test_second_setup_keeps_answers_and_fills_new_keys(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -460,9 +452,6 @@ class BmadSetupTests(unittest.TestCase):
                     'review_language = "English"\n',
                 ),
             )
-            new_catalog = HELP_CSV + "Core,bmad-help,Help,H,,,,anytime,,,false,,\n"
-            write(skill / "assets" / "bmad-help.csv", new_catalog)
-
             second = run_setup(project, skill)
             self.assertEqual(second.returncode, 0, msg=second.stderr)
 
@@ -477,10 +466,6 @@ class BmadSetupTests(unittest.TestCase):
             self.assertEqual(filled_core["legacy_note"], "Spanish")
             self.assertEqual(filled_core["review_language"], "English")
             self.assertEqual(filled_core["project_name"], "proj")
-            self.assertEqual(
-                (bmad / "_config" / "bmad-help.csv").read_text(encoding="utf-8"),
-                new_catalog,
-            )
             self.assertEqual(
                 (bmad / "custom" / "keep.txt").read_text(encoding="utf-8"),
                 "custom-keep\n",
@@ -692,8 +677,8 @@ class BmadSetupTests(unittest.TestCase):
                 "leftover: installer\n",
             )
             self.assertEqual(
-                (bmad / "_config" / "bmad-help.csv").read_bytes(),
-                (skill / "assets" / "bmad-help.csv").read_bytes(),
+                (bmad / "_config" / "bmad-help.csv").read_text(encoding="utf-8"),
+                "old-catalog\n",
             )
 
     def test_lists_ordered_missing_manifest_questions_without_writing(self):
@@ -1729,7 +1714,6 @@ class BmadSetupTests(unittest.TestCase):
         skill: Path,
         *,
         project_name: str,
-        catalog: str | None = None,
     ) -> None:
         bmad = project / "_bmad"
         scripts = bmad / "scripts"
@@ -1757,14 +1741,7 @@ class BmadSetupTests(unittest.TestCase):
         self.assertEqual(list(custom.iterdir()), [])
         self.assertEqual(user_toml_files(bmad), [])
 
-        dest_catalog = bmad / "_config" / "bmad-help.csv"
-        source_catalog = skill / "assets" / "bmad-help.csv"
-        if source_catalog.is_file():
-            self.assertEqual(dest_catalog.read_bytes(), source_catalog.read_bytes())
-            if catalog is not None:
-                self.assertEqual(dest_catalog.read_text(encoding="utf-8"), catalog)
-        else:
-            self.assertFalse(dest_catalog.exists())
+        self.assertFalse((bmad / "_config" / "bmad-help.csv").exists())
 
         self.assertTrue((project / "_bmad-output").is_dir())
 
@@ -2331,9 +2308,55 @@ class BmadUpdateDoctorTests(unittest.TestCase):
             self.assertEqual(report["status"], "current")
             self.assertFalse(report["changed"])
             self.assertEqual(report["shared_scripts"], "current")
+            self.assertEqual(report["legacy_leftovers"], [])
             for module in report["modules"]:
                 if module["state"] == "selected":
                     self.assertEqual(module["scripts"], "current")
+
+    def test_doctor_reports_legacy_leftovers_read_only(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "bmad", "core")
+            bmad = project / "_bmad"
+            write(bmad / "config.toml", "[core]\nkeep = true\n")
+            write(bmad / "_config" / "manifest.yaml", "leftover: installer\n")
+            write(bmad / "_config" / "bmad-help.csv", "old-catalog\n")
+            write(bmad / "config.user.toml", "# old-user\n")
+            write(bmad / "core" / "v6-shims" / "shim.md", "shim\n")
+
+            result = run_setup_python(project, skill, "--doctor")
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            report = json.loads(result.stdout)
+            self.assertEqual(
+                report["legacy_leftovers"],
+                [
+                    "_config/manifest.yaml",
+                    "_config/bmad-help.csv",
+                    "config.user.toml",
+                    "core/v6-shims",
+                ],
+            )
+            self.assertEqual(
+                (bmad / "_config" / "manifest.yaml").read_text(encoding="utf-8"),
+                "leftover: installer\n",
+            )
+            self.assertEqual(
+                (bmad / "_config" / "bmad-help.csv").read_text(encoding="utf-8"),
+                "old-catalog\n",
+            )
+            self.assertEqual(
+                (bmad / "config.user.toml").read_text(encoding="utf-8"),
+                "# old-user\n",
+            )
+            self.assertEqual(
+                (bmad / "core" / "v6-shims" / "shim.md").read_text(
+                    encoding="utf-8"
+                ),
+                "shim\n",
+            )
 
     def test_doctor_leaves_an_already_correct_runtime_untouched(self):
         with tempfile.TemporaryDirectory() as temp_dir:
