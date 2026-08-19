@@ -1,9 +1,9 @@
 ---
-spec_file: '' # set at runtime for both routes before leaving this step
+spec_file: '' # set at runtime before leaving this step
 story_key: '' # set at runtime to the current story's full sprint-status key (e.g. 3-2-digest-delivery) when the intent is an epic story and sprint-status resolution succeeds
 ---
 
-# Step 1: Clarify and Route
+# Step 1: Clarify
 
 ## RULES
 
@@ -95,15 +95,9 @@ If the spec is an epic story and `{{.implementation_artifacts}}/sprint-status.ya
        evidence: <why this was split from the current intent>
      ```
    - If the user chooses **Keep all goals**: Proceed as-is.
-5. Route — choose exactly one:
+5. Set the spec file.
 
    If the explicit spec-folder-plus-story-id pair had no matching story file, keep the colocated `spec_file` selected above. Otherwise, derive a valid kebab-case slug from the clarified intent. If the intent references a tracking identifier (story number, issue number, ticket ID), lead the slug with it (e.g. `3-2-digest-delivery`, `gh-47-fix-auth`). If `{{.implementation_artifacts}}/spec-{slug}.md` already exists: if its status is `draft`, treat it as the same work and resume it (set `spec_file` to that path, **EARLY EXIT** → `[[bmad-snapshot:step-02-plan.md]]`); otherwise append `-2`, `-3`, etc. Set `spec_file` = `{{.implementation_artifacts}}/spec-{slug}.md`.
-
-   **a) One-shot** — zero blast radius: no plausible path by which this change causes unintended consequences elsewhere. Clear intent, no architectural decisions.
-
-   **EARLY EXIT** → `[[bmad-snapshot:step-oneshot.md]]`
-
-   **b) Plan-code-review** — everything else. When uncertain whether blast radius is truly zero, choose this path.
 
 ## NEXT
 

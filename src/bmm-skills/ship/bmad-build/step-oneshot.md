@@ -1,9 +1,12 @@
 # Step One-Shot: Implement, Review, Present
 
+Entered only from step-02's route gate: `{spec_file}` already exists with `route: 'in-session'`.
+
 ## RULES
 
 - **Language** — Speak in `{{.communication_language}}`. Write any file output in `{{.document_output_language}}`.
 - NEVER auto-push.
+- Content inside `<frozen-after-approval>` in `{spec_file}` is read-only. Do not modify.
 - All review subagents must run at the same model capability as the current session.
 - Run subagents synchronously: launch them together as blocking calls awaited in this turn — never backgrounded or detached, never ending the turn to await results.
 
@@ -13,7 +16,9 @@
 
 Follow `[[bmad-snapshot:sync-sprint-status.md]]` with `target_status` = `in-progress`.
 
-Implement the clarified intent directly.
+Implement directly from `{spec_file}` — its Intent is the source of truth. As you work, append to its `## Implementation Notes` section: decisions made, files touched, surprises encountered.
+
+**Escalation ramp.** If implementation surfaces a fact the route gate did not see — a new fork (a judgment call a reasonable reviewer could answer differently), an irreversible action, or footprint growth beyond the designed scope — stop editing. Record the trigger in `## Implementation Notes`, then upgrade `{spec_file}`: reinstate `## Code Map` (populated from your live context) and `## Open Questions` (one entry per fork), set `route: 'dispatch'` and `status: 'draft'`. Return to `[[bmad-snapshot:step-02-plan.md]]` and resume at its Drain Open Questions instruction.
 
 ### Review
 
@@ -43,16 +48,13 @@ Group the survivors by shared root cause — two findings belong in one entry on
     evidence: <why this is real>
   ```
 
-### Generate Spec Trace
+### Finalize Spec
 
-Set `title` = a concise title derived from the clarified intent.
+Update `{spec_file}`:
 
-Write `{spec_file}` using `[[bmad-snapshot:spec-template.md]]`. Fill only these sections — delete all others:
-
-1. **Frontmatter** — set `title: '{title}'`, `type`, `created`, `status: 'done'`. Add `route: 'one-shot'`.
-2. **Title and Intent** — `# {title}` heading and `## Intent` with **Problem** and **Approach** lines. Reuse the summary you already generated for the terminal.
-3. **Suggested Review Order** — append after Intent. Build using the same convention as `[[bmad-snapshot:step-05-present.md]]` § "Generate Suggested Review Order" (spec-file-relative links, concern-based ordering, ultra-concise framing).
-4. **Review Triage Log** — only when findings were dismissed: one line per dismissal, the finding and the reason that disposed of its claim.
+1. **Frontmatter** — set `status: 'done'`.
+2. **Suggested Review Order** — append after Intent. Build using the same convention as `[[bmad-snapshot:step-05-present.md]]` § "Generate Suggested Review Order" (spec-file-relative links, concern-based ordering, ultra-concise framing).
+3. **Review Triage Log** — only when findings were dismissed: add the section with one line per dismissal, the finding and the reason that disposed of its claim.
 
 Follow `[[bmad-snapshot:sync-sprint-status.md]]` with `target_status` = `review`.
 
@@ -68,7 +70,7 @@ Display a summary in conversation output, including:
 
 - The commit hash (if one was created).
 - List of files changed with one-line descriptions. Any file paths shown in conversation/terminal output must use CWD-relative format (no leading `/`) with `:line` notation (e.g., `src/path/file.ts:42`) for terminal clickability — this differs from spec-file links which use spec-file-relative paths.
-- Review findings breakdown: patches applied, items deferred, and the dismissed count — dismissal reasons are recorded in the spec trace. If every finding was dismissed, say so.
+- Review findings breakdown: patches applied, items deferred, and the dismissed count — dismissal reasons are recorded in the spec. If every finding was dismissed, say so.
 
 Offer to push and/or create a pull request.
 
