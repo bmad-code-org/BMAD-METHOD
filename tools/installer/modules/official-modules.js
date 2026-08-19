@@ -549,6 +549,9 @@ class OfficialModules {
   async copyModuleWithFiltering(sourcePath, targetPath, fileTrackingCallback = null, moduleConfig = {}, installOptions = {}) {
     // Get all files in source
     const sourceFiles = await this.getFileList(sourcePath);
+    // The bmad skill is the npx-distribution setup engine; this installer must
+    // never ship it (the mirror of the npx packager skipping bmad-help).
+    const npxOnlySkills = path.basename(sourcePath) === 'core-skills' ? ['bmad/'] : [];
     const shimDirectories =
       installOptions.installShims === false
         ? (await discoverShims(sourcePath)).map((shim) => shim.relativeDirectory.split(path.sep).join('/'))
@@ -557,6 +560,9 @@ class OfficialModules {
     for (const file of sourceFiles) {
       const normalizedFile = file.split(path.sep).join('/');
       if (shimDirectories.some((shimDir) => shimDir === '' || normalizedFile === shimDir || normalizedFile.startsWith(`${shimDir}/`))) {
+        continue;
+      }
+      if (npxOnlySkills.some((skillDir) => normalizedFile.startsWith(skillDir))) {
         continue;
       }
       // Skip sub-modules directory - these are IDE-specific and handled separately
@@ -576,6 +582,11 @@ class OfficialModules {
 
       // Skip module.yaml at root - it's only needed at install time
       if (file === 'module.yaml') {
+        continue;
+      }
+
+      // Skip module-manifest.md at root - npx-packaging metadata, not runtime content
+      if (file === 'module-manifest.md') {
         continue;
       }
 
