@@ -1,14 +1,16 @@
 ---
 name: bmad
-description: 'Analyzes current state and user query to answer BMad questions or recommend the next skill(s) to use. Use when user asks for help, bmad help, what to do next, or what to start with in BMad. Also when the user asks to set up or update this BMad installation.'
+description: 'Analyzes current state and user query to answer BMad questions or recommend the next skill(s) to use. Use when user asks for help, bmad help, what to do next, or what to start with in BMad. Also when the user asks to set up, update, or doctor this BMad installation.'
 ---
 
 # BMad Help
 
-If the user explicitly asks to set up or update this BMad installation, load
-`references/setup.md` and follow it. Otherwise use the ordinary, read-only help
-process below. Missing BMad project files or scripts never turn an ordinary
-help request into setup.
+If the user explicitly asks to set up, update, or doctor this BMad
+installation — by command name or in words — load `references/setup.md` and
+follow the matching flow. These are distinct
+commands: never route update or doctor through setup. Otherwise use the
+ordinary, read-only help process below. Missing BMad project files or scripts
+never turn an ordinary help request into setup or doctor.
 
 ## Purpose
 
