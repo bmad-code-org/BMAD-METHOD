@@ -362,6 +362,20 @@ class BmadSetupTests(unittest.TestCase):
             )
             self.assertTrue((project / "_bmad-output").is_dir())
 
+    def test_catalogless_payload_removes_legacy_catalog(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "proj"
+            skill = write_dest_bmad(root, catalog=None)
+            project.mkdir()
+            legacy_catalog = project / "_bmad" / "_config" / "bmad-help.csv"
+            write(legacy_catalog, "old-catalog\n")
+
+            result = run_setup(project, skill)
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertFalse(legacy_catalog.exists())
+
     def test_second_setup_keeps_answers_and_fills_new_keys(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
@@ -901,9 +915,12 @@ class BmadSetupTests(unittest.TestCase):
 
         dest_catalog = bmad / "_config" / "bmad-help.csv"
         source_catalog = skill / "assets" / "bmad-help.csv"
-        self.assertEqual(dest_catalog.read_bytes(), source_catalog.read_bytes())
-        if catalog is not None:
-            self.assertEqual(dest_catalog.read_text(encoding="utf-8"), catalog)
+        if source_catalog.is_file():
+            self.assertEqual(dest_catalog.read_bytes(), source_catalog.read_bytes())
+            if catalog is not None:
+                self.assertEqual(dest_catalog.read_text(encoding="utf-8"), catalog)
+        else:
+            self.assertFalse(dest_catalog.exists())
 
         self.assertTrue((project / "_bmad-output").is_dir())
 
