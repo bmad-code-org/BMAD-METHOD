@@ -19,7 +19,7 @@ When the target's `customize.toml` doesn't expose what the user wants, say so pl
 
 ## Activation
 
-Load `_bmad/config.toml` and `_bmad/config.user.toml` from `{project-root}` for `user_name` (default `BMad`) and `communication_language` (default `English`). Greet. If the user's invocation already names a target skill AND a specific change, jump to Step 3.
+Greet the user. If the user's invocation already names a target skill AND a specific change, jump to Step 3.
 
 ## Step 1: Classify intent
 

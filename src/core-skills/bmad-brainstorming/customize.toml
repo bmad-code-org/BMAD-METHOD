@@ -79,5 +79,5 @@ on_complete = ""
 # by default.
 #
 # Example (set in team/user override TOML):
-#   "After artifacts are produced, upload brainstorm.html to Confluence via corp:confluence_upload (space_key='IDEAS', parent_page='Brainstorms', author={user_name})."
+#   "After artifacts are produced, upload brainstorm.html to Confluence via corp:confluence_upload (space_key='IDEAS', parent_page='Brainstorms')."
 external_handoffs = []

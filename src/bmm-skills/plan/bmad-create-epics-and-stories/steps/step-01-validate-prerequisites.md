@@ -12,7 +12,7 @@ To validate that all required input documents exist and extract all requirements
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: When loading next step with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
-- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style
 
 ### Role Reinforcement:
 
@@ -40,7 +40,7 @@ To validate that all required input documents exist and extract all requirements
 
 ### 1. Welcome and Overview
 
-Welcome {user_name} to comprehensive epic and story creation!
+Welcome the user to comprehensive epic and story creation!
 
 **CRITICAL PREREQUISITE VALIDATION:**
 

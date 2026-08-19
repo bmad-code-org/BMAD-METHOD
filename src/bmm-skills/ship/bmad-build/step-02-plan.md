@@ -2,7 +2,6 @@
 
 ## RULES
 
-- **Language** — Speak in `{{.communication_language}}`. Write any file output in `{{.document_output_language}}`.
 - No intermediate approvals.
 - **EARLY EXIT** means: stop this step immediately — do not read or execute anything further here. Read and fully follow the target file instead. Return here ONLY if a later step explicitly says to loop back.
 

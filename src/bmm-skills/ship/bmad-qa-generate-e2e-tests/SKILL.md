@@ -42,15 +42,14 @@ Treat every entry in `{workflow.persistent_facts}` as foundational context you c
 
 Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
-- `project_name`, `user_name`
-- `communication_language`, `document_output_language`
+- `project_name`
 - `implementation_artifacts`
 - `date` as system-generated current datetime
-- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
+- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style
 
 ### Step 5: Greet the User
 
-Greet `{user_name}`, speaking in `{communication_language}`.
+Greet the user.
 
 ### Step 6: Execute Append Steps
 

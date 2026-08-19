@@ -22,4 +22,4 @@ Discovery is your call; everything after it is the script's.
 
 ## Report
 
-Present the result from the script's JSON in `{communication_language}`: file path, epic/story counts, status breakdown, anything upgraded from disk. Suggest next steps — review the file, `bmad-build` to start the first story, rerun this skill anytime to refresh after epics change.
+Present the result from the script's JSON: file path, epic/story counts, status breakdown, anything upgraded from disk. Suggest next steps — review the file, `bmad-build` to start the first story, rerun this skill anytime to refresh after epics change.

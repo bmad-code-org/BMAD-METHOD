@@ -130,7 +130,6 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--project-root", type=Path, required=True)
     parser.add_argument("--skill", type=Path, required=True)
-    parser.add_argument("--user-answers", type=Path)
     parser.add_argument("--module-answers", type=Path)
     parser.add_argument(
         "--list-config-questions",
@@ -152,16 +151,12 @@ def main(argv: list[str] | None = None) -> int:
     project_root = args.project_root.resolve()
     skill_root = args.skill.resolve()
     if args.update:
-        if (
-            args.list_config_questions
-            or args.user_answers is not None
-            or args.module_answers is not None
-        ):
+        if args.list_config_questions or args.module_answers is not None:
             parser.error("--update cannot be combined with questions or answers")
         print(json.dumps(update_report(project_root, skill_root), ensure_ascii=False))
         return 0
     if args.list_config_questions:
-        if args.user_answers is not None or args.module_answers is not None:
+        if args.module_answers is not None:
             parser.error(
                 "--list-config-questions cannot be combined with answer files"
             )
@@ -191,8 +186,6 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 0
     if args.doctor:
-        if args.user_answers is not None:
-            parser.error("--doctor cannot be combined with --user-answers")
         missing = missing_bmad_report(project_root)
         if missing is not None:
             print(json.dumps(missing, ensure_ascii=False))
@@ -212,11 +205,6 @@ def main(argv: list[str] | None = None) -> int:
     setup(
         project_root,
         skill_root,
-        user_answers=(
-            load_user_answers(args.user_answers)
-            if args.user_answers is not None
-            else None
-        ),
         module_answers=(
             load_module_answers(args.module_answers)
             if args.module_answers is not None
@@ -231,11 +219,10 @@ def setup(
     project_root: Path,
     skill_root: Path,
     *,
-    user_answers: tuple[str, str, str] | None = None,
     module_answers: dict[tuple[str, str], str] | None = None,
     module_answers_source: Path | None = None,
 ) -> None:
-    scripts_src, catalog_src, config_src, user_src = payload(skill_root)
+    scripts_src, catalog_src, config_src = payload(skill_root)
     template_text = fill_team_config(
         config_src.read_text(encoding="utf-8"), project_root
     )
@@ -265,48 +252,40 @@ def setup(
         )
     config_text = render_toml(merged) if pending else base_text
     legacy_config = without_manifest_answers(merged, modules)
-    user_text = None
-    if user_answers is not None:
-        user_text = fill_user_config(
-            user_src.read_text(encoding="utf-8"), user_answers
-        )
     materialize_bmad(
         project_root,
         scripts_src,
         catalog_src,
         config_text,
-        user_text,
         legacy_config,
         modules,
     )
     ensure_dir(project_root / output_folder(config_text))
 
 
-def payload(skill_root: Path) -> tuple[Path, Path | None, Path, Path]:
+def payload(skill_root: Path) -> tuple[Path, Path | None, Path]:
     scripts_src = skill_root / "scripts"
     assets_src = skill_root / "assets"
     config_src = assets_src / "config.template.toml"
-    user_src = assets_src / "config.user.template.toml"
     catalog_src = assets_src / "bmad-help.csv"
     resolve_config = scripts_src / "resolve_config.py"
     for directory in (scripts_src, assets_src):
         if not directory.is_dir():
             raise Exception(f"missing directory: {directory}")
-    for file in (resolve_config, config_src, user_src):
+    for file in (resolve_config, config_src):
         if not file.is_file():
             raise Exception(f"missing file: {file}")
     return (
         scripts_src,
         catalog_src if catalog_src.is_file() else None,
         config_src,
-        user_src,
     )
 
 
 def pending_config_questions(
     project_root: Path, skill_root: Path
 ) -> tuple[ConfigQuestion, ...]:
-    _scripts, _catalog, config_src, _user = payload(skill_root)
+    _scripts, _catalog, config_src = payload(skill_root)
     template_text = fill_team_config(
         config_src.read_text(encoding="utf-8"), project_root
     )
@@ -1371,36 +1350,8 @@ def delete_path(data: dict, path: tuple[str, ...]) -> None:
             break
 
 
-def load_user_answers(path: Path) -> tuple[str, str, str]:
-    if not path.is_file():
-        raise Exception(f"missing file: {path}")
-    data = tomllib.loads(path.read_text(encoding="utf-8"))
-    name = data.get("user_name")
-    language = data.get("communication_language")
-    level = data.get("user_skill_level")
-    if (
-        not isinstance(name, str)
-        or not isinstance(language, str)
-        or not isinstance(level, str)
-    ):
-        raise Exception(
-            "--user-answers must set string keys user_name, "
-            "communication_language, and user_skill_level"
-        )
-    return name, language, level
-
-
 def fill_team_config(text: str, project_root: Path) -> str:
     return text.replace("{directory_name}", project_root.name)
-
-
-def fill_user_config(text: str, answers: tuple[str, str, str]) -> str:
-    name, language, level = answers
-    return (
-        text.replace("{user_name}", toml_string(name))
-        .replace("{communication_language}", toml_string(language))
-        .replace("{user_skill_level}", toml_string(level))
-    )
 
 
 def output_folder(config_text: str) -> str:
@@ -1450,7 +1401,6 @@ def materialize_bmad(
     scripts_src: Path,
     catalog_src: Path | None,
     config_text: str,
-    user_text: str | None,
     legacy_config: dict,
     modules: tuple[InstalledModule, ...],
 ) -> None:
@@ -1484,7 +1434,6 @@ def materialize_bmad(
             scripts_src=scripts_src,
             catalog_src=catalog_src,
             config_text=config_text,
-            user_text=user_text,
             legacy_config=legacy_config,
             modules=modules,
         )
@@ -1520,7 +1469,6 @@ def stage_bmad(
     scripts_src: Path,
     catalog_src: Path | None,
     config_text: str,
-    user_text: str | None,
     legacy_config: dict,
     modules: tuple[InstalledModule, ...],
 ) -> None:
@@ -1528,8 +1476,6 @@ def stage_bmad(
     bmm = stringify(legacy_config.get("modules", {}).get("bmm", {}))
     ensure_scripts(staging / "scripts", scripts_src)
     ensure_file(staging / "config.toml", config_text)
-    if user_text is not None:
-        ensure_new(staging / "config.user.toml", user_text)
     ensure_file(staging / "core" / "config.yaml", render_module_yaml(core))
     ensure_file(
         staging / "bmm" / "config.yaml",
@@ -1624,12 +1570,6 @@ def ensure_plain_parents(path: Path, staging: Path) -> None:
                 current.mkdir()
         else:
             current.mkdir()
-
-
-def ensure_new(path: Path, content: str) -> None:
-    if path.exists() or path.is_symlink():
-        return
-    write_text(path, content)
 
 
 def ensure_file(path: Path, content: str) -> None:

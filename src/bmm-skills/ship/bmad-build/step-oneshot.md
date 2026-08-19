@@ -4,7 +4,6 @@ You reach this step from step 2, or from step 1 when resuming a spec whose `rout
 
 ## RULES
 
-- Speak in `{{.communication_language}}`. Write files in `{{.document_output_language}}`.
 - Do not push to a remote unless the user asks.
 - Do not edit anything inside `<frozen-after-approval>` in `{spec_file}`.
 - Review subagents must use the same model level as this session.

@@ -95,6 +95,6 @@ external_sources = []
 # can opt out in their prompt for a specific run. Empty by default.
 #
 # Examples (set in team/user override TOML):
-#   "After finalize, upload brief.md and addendum.md to Confluence via corp:confluence_upload (space_key='PROD', parent_page='Product Briefs', label='brief', author={user_name})."
+#   "After finalize, upload brief.md and addendum.md to Confluence via corp:confluence_upload (space_key='PROD', parent_page='Product Briefs', label='brief')."
 #   "Post a ready-for-review ping to Slack via corp:slack_post (channel='#product', text='New brief: '+{confluence_url})."
 external_handoffs = []

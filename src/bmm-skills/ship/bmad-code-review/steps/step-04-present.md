@@ -6,8 +6,8 @@ deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 
 ## RULES
 
-- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
-- When `spec_file` is set, always write findings to the story file before offering action choices.
+- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style
+- When `{spec_file}` is set, always write findings to the story file before offering action choices.
 - `decision-needed` findings must be resolved before handling `patch` findings.
 
 ## INSTRUCTIONS
