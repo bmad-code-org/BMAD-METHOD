@@ -1,9 +1,87 @@
-## Setup
+## Command Dispatch
 
 `uv` is required. If `uv` is missing or cannot run, tell the user that
 `uv` must be installed and stop. Do not write `_bmad` another way.
 
-### Update
+Run only the flow the user requested. `bmad update` is inspection only,
+`bmad doctor` repairs an existing runtime, and `bmad setup` performs setup.
+
+## `bmad update`
+
+Run this command without creating an answer or temporary file:
+
+```text
+uv run --no-cache "{skill-root}/scripts/setup.py" --project-root "{project-root}" --skill "{skill-root}" --update
+```
+
+The JSON report contains one state per module and lists every installed copy by
+skill id and version. Report `current`, `newer-available`, `ahead`,
+`differing-unordered`, `could-not-check`, `version-spread`, or
+`source-disagreement` exactly as emitted. Name every copy in a version spread,
+include the source-specific reason for a failed check, and state the bmad copy
+and version used. Never claim the installation is current unless the report's
+top-level `current` is true.
+
+This command re-scans installed skills and reads only each source
+`module-manifest.md`. It does not install, move, repair, or remove skills; does
+not write the project or a lockfile; and does not run `npx skills update`. If an
+update is available, tell the user that updating installed skill folders is the
+responsibility of `npx skills update`.
+
+## `bmad doctor`
+
+Doctor requires `{project-root}/_bmad`. Either doctor command below reports
+status `setup-required` when it is absent; relay that instruction to run
+`bmad setup` and stop. Do not create a staging directory or any project output
+yourself.
+
+First list newly declared questions. This command is read-only:
+
+```text
+uv run --no-cache "{skill-root}/scripts/setup.py" --project-root "{project-root}" --skill "{skill-root}" --doctor --list-config-questions
+```
+
+The command prints a JSON array. Ask every returned question exactly once and
+in array order, showing its `default`. Existing answers are absent from the
+array and must not be re-asked or overwritten. An accepted default must be used
+exactly as emitted.
+
+When the array is non-empty, write only the returned module answers to a new
+temporary TOML file using the same quoting, escaping, collision avoidance, and
+`[modules."..."]` shape described under **Installed module questions** below.
+Record its actual path as `{module-answers-path}`.
+
+Run one of these commands:
+
+```text
+# No newly declared questions
+uv run --no-cache "{skill-root}/scripts/setup.py" --project-root "{project-root}" --skill "{skill-root}" --doctor
+
+# With newly declared answers
+uv run --no-cache "{skill-root}/scripts/setup.py" --project-root "{project-root}" --skill "{skill-root}" --doctor --module-answers "{module-answers-path}"
+```
+
+On success, delete only the temporary answer file created for this doctor run.
+Report the top-level `status` — `current` (nothing needed repair), `repaired`,
+or `reconciled-with-warnings` (some module is still spread or blocked) — plus
+the shared-script result, added answers, every module's selected or blocked
+state, exact module-script repair result, remaining version spreads or
+staleness, and the bmad copy/version used. A successful local repair does not
+mean project-scoped skill copies were updated; never call the whole installation
+current while `version_spreads` or `remaining_staleness` is non-empty. Tell the
+user that reconciling the installed copies of a blocked or spread module is the
+responsibility of `npx skills update`.
+
+Doctor preserves existing config answers, `custom/`, user layers, and
+non-script module files. It makes shared and selected module script trees exact,
+which can remove obsolete files below those script directories. If it reports
+or raises malformed config, invalid manifests or answers, an unreadable script,
+or an ambiguous module source, name the affected source. Do not attempt a
+second repair path.
+
+## `bmad setup`
+
+### Repeat setup
 
 If `_bmad/config.user.toml` exists under `{project-root}`, read it. If
 `user_name`, `communication_language`, and `user_skill_level` are
