@@ -1,13 +1,9 @@
 ---
 name: bmad-help
-description: 'Analyzes current state and user query to answer BMad questions or recommend the next skill(s) to use. Use when user asks for help, bmad help, what to do next, or what to start with in BMad. Also when the user asks to set up or update this BMad installation.'
+description: 'Analyzes current state and user query to answer BMad questions or recommend the next skill(s) to use. Use when user asks for help, bmad help, what to do next, or what to start with in BMad'
 ---
 
 # BMad Help
-
-If the user asks for setup or update of this BMad installation, load `references/setup.md` and follow it.
-If `{project-root}/_bmad/scripts/resolve_config.py` is not found when this skill runs it, load `references/setup.md` and follow it, then retry.
-Ordinary help answers do not rewrite `_bmad`.
 
 ## Purpose
 
