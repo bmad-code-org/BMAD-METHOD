@@ -37,6 +37,17 @@ FRONTMATTER = re.compile(
 )
 MODULE_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]*\Z")
 RESERVED_MODULE_DIRS = frozenset({"_config", "custom", "modules", "scripts"})
+
+# Traces the classic installer leaves under _bmad. Doctor reports them
+# read-only and never touches them; they belong to the old-installer world.
+LEGACY_LEFTOVERS = (
+    "_config/manifest.yaml",
+    "_config/files-manifest.csv",
+    "_config/skill-manifest.csv",
+    "_config/bmad-help.csv",
+    "config.user.toml",
+    "core/v6-shims",
+)
 SEMVER = re.compile(
     r"(?P<major>0|[1-9][0-9]*)\."
     r"(?P<minor>0|[1-9][0-9]*)\."
@@ -222,7 +233,7 @@ def setup(
     module_answers: dict[tuple[str, str], str] | None = None,
     module_answers_source: Path | None = None,
 ) -> None:
-    scripts_src, catalog_src, config_src = payload(skill_root)
+    scripts_src, config_src = payload(skill_root)
     template_text = fill_team_config(
         config_src.read_text(encoding="utf-8"), project_root
     )
@@ -255,7 +266,6 @@ def setup(
     materialize_bmad(
         project_root,
         scripts_src,
-        catalog_src,
         config_text,
         legacy_config,
         modules,
@@ -263,11 +273,10 @@ def setup(
     ensure_dir(project_root / output_folder(config_text))
 
 
-def payload(skill_root: Path) -> tuple[Path, Path | None, Path]:
+def payload(skill_root: Path) -> tuple[Path, Path]:
     scripts_src = skill_root / "scripts"
     assets_src = skill_root / "assets"
     config_src = assets_src / "config.template.toml"
-    catalog_src = assets_src / "bmad-help.csv"
     resolve_config = scripts_src / "resolve_config.py"
     for directory in (scripts_src, assets_src):
         if not directory.is_dir():
@@ -275,17 +284,13 @@ def payload(skill_root: Path) -> tuple[Path, Path | None, Path]:
     for file in (resolve_config, config_src):
         if not file.is_file():
             raise Exception(f"missing file: {file}")
-    return (
-        scripts_src,
-        catalog_src if catalog_src.is_file() else None,
-        config_src,
-    )
+    return (scripts_src, config_src)
 
 
 def pending_config_questions(
     project_root: Path, skill_root: Path
 ) -> tuple[ConfigQuestion, ...]:
-    _scripts, _catalog, config_src = payload(skill_root)
+    _scripts, config_src = payload(skill_root)
     template_text = fill_team_config(
         config_src.read_text(encoding="utf-8"), project_root
     )
@@ -419,6 +424,13 @@ def doctor(
         ],
         "version_spreads": spreads,
         "remaining_staleness": blocked,
+        "legacy_leftovers": [
+            relative
+            for relative in LEGACY_LEFTOVERS
+            if (project_root / "_bmad").joinpath(
+                *PurePosixPath(relative).parts
+            ).exists()
+        ],
         "current": not blocked and not spreads,
     }
 
@@ -1399,7 +1411,6 @@ def materialize_doctor(
 def materialize_bmad(
     project_root: Path,
     scripts_src: Path,
-    catalog_src: Path | None,
     config_text: str,
     legacy_config: dict,
     modules: tuple[InstalledModule, ...],
@@ -1432,7 +1443,6 @@ def materialize_bmad(
         stage_bmad(
             staging,
             scripts_src=scripts_src,
-            catalog_src=catalog_src,
             config_text=config_text,
             legacy_config=legacy_config,
             modules=modules,
@@ -1467,7 +1477,6 @@ def stage_bmad(
     staging: Path,
     *,
     scripts_src: Path,
-    catalog_src: Path | None,
     config_text: str,
     legacy_config: dict,
     modules: tuple[InstalledModule, ...],
@@ -1494,11 +1503,6 @@ def stage_bmad(
                 staging,
             )
     ensure_dir(staging / "custom")
-    catalog_dest = staging / "_config" / "bmad-help.csv"
-    if catalog_src is not None:
-        ensure_copy(catalog_dest, catalog_src)
-    else:
-        catalog_dest.unlink(missing_ok=True)
 
 
 def stringify(table: object) -> dict[str, str]:
@@ -1592,15 +1596,6 @@ def ensure_file(path: Path, content: str) -> None:
     elif path.exists():
         shutil.rmtree(path)
     write_text(path, content)
-
-
-def ensure_copy(dest: Path, src: Path) -> None:
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    if dest.is_symlink() or dest.is_file():
-        dest.unlink()
-    elif dest.exists():
-        shutil.rmtree(dest)
-    shutil.copy2(src, dest)
 
 
 def ensure_dir(path: Path) -> None:

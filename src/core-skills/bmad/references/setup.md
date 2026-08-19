@@ -66,7 +66,9 @@ Report the top-level `status` — `current` (nothing needed repair), `repaired`,
 or `reconciled-with-warnings` (some module is still spread or blocked) — plus
 the shared-script result, added answers, every module's selected or blocked
 state, exact module-script repair result, remaining version spreads or
-staleness, and the bmad copy/version used. A successful local repair does not
+staleness, and the bmad copy/version used. When `legacy_leftovers` is
+non-empty, mention that files from a classic BMad installer are present and
+were left untouched. A successful local repair does not
 mean project-scoped skill copies were updated; never call the whole installation
 current while `version_spreads` or `remaining_staleness` is non-empty. Tell the
 user that reconciling the installed copies of a blocked or spread module is the
@@ -83,9 +85,9 @@ second repair path.
 
 Setup asks no questions of its own; the only questions come from installed
 module manifests, below. A second run keeps existing team answers, including
-non-string values, and asks only newly declared module questions. It replaces
-`_bmad/_config/bmad-help.csv` when that packaged asset exists and removes a
-legacy copy when it does not. It also repairs `_bmad/scripts` when that path
+non-string values, and asks only newly declared module questions. Files a
+classic BMad installer left under `_bmad` are never modified or removed.
+It also repairs `_bmad/scripts` when that path
 is a symlink or a copy that is not byte-identical to the packaged `bmad`
 skill's `scripts/`. Every symlink is replaced with a plain copy; a
 byte-identical copy is left as-is; successful setup never attempts to create
