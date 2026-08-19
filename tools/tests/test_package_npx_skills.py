@@ -1,8 +1,11 @@
-import csv
+import json
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
+
+import yaml
 
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -12,7 +15,6 @@ import package_npx_skills  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SHARED_SCRIPTS = package_npx_skills.SHARED_SCRIPTS
-HELP_CSV_HEADER = package_npx_skills.HELP_CSV_HEADER
 SHIM_ONLY_IDS = frozenset(
     {
         "bmad-editorial-review-prose",
@@ -43,380 +45,630 @@ def write(path: Path, content: str = "x\n") -> None:
     path.write_text(content, encoding="utf-8")
 
 
-def write_skill(root: Path, rel: str) -> Path:
-    skill = root / rel
-    write(skill / "SKILL.md", "---\nname: test\n---\n")
+def write_skill(repo: Path, root_name: str, rel: str) -> Path:
+    skill = repo / "src" / root_name / rel
+    write(skill / "SKILL.md", f"---\nname: {skill.name}\n---\n# {skill.name}\n")
     return skill
 
 
-def csv_records(path: Path) -> list[tuple[str, ...]]:
-    with path.open(encoding="utf-8", newline="") as handle:
-        reader = csv.reader(handle)
-        next(reader, None)
-        return [tuple(row) for row in reader if any(cell.strip() for cell in row)]
+def manifest_text(
+    module: str,
+    skill_ids: list[str],
+    *,
+    frontmatter: str | None = None,
+    body: str | None = None,
+) -> str:
+    if frontmatter is None:
+        frontmatter = (
+            f"module: {module}\n"
+            "update_source: github:example/repo/skills\n"
+        )
+    if body is None:
+        body = f"# {module}\n\nThis module includes {' and '.join(f'`{item}`' for item in skill_ids)}.\n"
+    return f"---\n{frontmatter}---\n\n{body}"
 
 
-def method_skill_ids(repo: Path) -> set[str]:
-    ids: set[str] = set()
-    for root_name in ("core-skills", "bmm-skills"):
-        root = repo / "src" / root_name
-        for skill_md in root.rglob("SKILL.md"):
-            if "v6-shims" in skill_md.parts or skill_md.parent.name == "bmad-help":
-                continue
-            ids.add(skill_md.parent.name)
-    return ids
+def build_repo(
+    root: Path,
+    *,
+    core: tuple[str, ...] = ("bmad-review",),
+    bmm: tuple[str, ...] = ("plan/bmad-prd",),
+    version: str = "1.2.3",
+) -> Path:
+    repo = root / "repo"
+    write(repo / "package.json", json.dumps({"version": version}) + "\n")
+    core_ids = [write_skill(repo, "core-skills", rel).name for rel in core]
+    bmm_ids = [write_skill(repo, "bmm-skills", rel).name for rel in bmm]
+    write(
+        repo / "src" / "core-skills" / "module-manifest.md",
+        manifest_text("core", core_ids),
+    )
+    write(
+        repo / "src" / "bmm-skills" / "module-manifest.md",
+        manifest_text("bmm", bmm_ids),
+    )
+    return repo
+
+
+def write_bmad_payload(repo: Path) -> None:
+    for name in SHARED_SCRIPTS:
+        write(repo / "src" / "scripts" / name, f"# {name}\n")
+    write(repo / "src" / "scripts" / "tests" / "test_foo.py", "# test\n")
+    write(repo / "src" / "core-skills" / "bmad" / "assets" / "keep.txt", "keep\n")
+    write(
+        repo / "src" / "core-skills" / "bmad" / "assets" / "bmad-help.csv",
+        "legacy catalog\n",
+    )
 
 
 def run_packager(repo: Path, out: Path) -> None:
     package_npx_skills.main(["--repo-root", str(repo), "--out", str(out)])
 
 
+def frontmatter(path: Path) -> dict[str, object]:
+    text = path.read_text(encoding="utf-8")
+    return yaml.safe_load(text.split("---", 2)[1])
+
+
+def method_skills_by_module(repo: Path) -> dict[str, set[str]]:
+    modules: dict[str, set[str]] = {"core": set(), "bmm": set()}
+    for root_name, module in (("core-skills", "core"), ("bmm-skills", "bmm")):
+        for skill_md in (repo / "src" / root_name).rglob("SKILL.md"):
+            if "v6-shims" in skill_md.parts or skill_md.parent.name == "bmad-help":
+                continue
+            modules[module].add(skill_md.parent.name)
+    return modules
+
+
 class PackageNpxSkillsTests(unittest.TestCase):
-    def test_flatten_method_skills_drops_nesting_and_v6_shims(self):
+    def test_flattens_skills_and_skips_shims_junk_and_bmad_help(self):
         with tempfile.TemporaryDirectory() as temp_dir:
-            repo = Path(temp_dir) / "repo"
-            out = Path(temp_dir) / "out"
-            write_skill(repo, "src/core-skills/bmad-review")
-            write_skill(repo, "src/bmm-skills/plan/bmad-prd")
-            write_skill(repo, "src/core-skills/v6-shims/bmad-old")
+            root = Path(temp_dir)
+            repo = build_repo(
+                root,
+                core=("bmad-review", "v6-shims/bmad-old", "bmad-help"),
+                bmm=("plan/bmad-prd",),
+            )
+            # Excluded ids must not be required in the authored body roster.
+            write(
+                repo / "src" / "core-skills" / "module-manifest.md",
+                manifest_text("core", ["bmad-review"]),
+            )
+            skill = repo / "src" / "core-skills" / "bmad-review"
+            write(skill / ".DS_Store", "junk")
+            write(skill / "__pycache__" / "mod.pyc", "cache")
+            write(skill / "keep.txt", "keep")
+            out = root / "out"
 
             run_packager(repo, out)
 
             dest = out / "skills"
-            self.assertTrue((dest / "bmad-review" / "SKILL.md").is_file())
-            self.assertTrue((dest / "bmad-prd" / "SKILL.md").is_file())
-            self.assertFalse((dest / "plan").exists())
-            self.assertFalse((dest / "v6-shims").exists())
-            self.assertFalse((dest / "bmad-old").exists())
             self.assertEqual(
-                sorted(p.name for p in dest.iterdir()),
+                sorted(path.name for path in dest.iterdir()),
                 ["bmad-prd", "bmad-review"],
             )
+            self.assertTrue((dest / "bmad-review" / "keep.txt").is_file())
+            self.assertFalse((dest / "bmad-review" / ".DS_Store").exists())
+            self.assertFalse((dest / "bmad-review" / "__pycache__").exists())
 
-    def test_skip_junk(self):
+    def test_bmad_gets_only_shared_runtime_enrichment(self):
         with tempfile.TemporaryDirectory() as temp_dir:
-            repo = Path(temp_dir) / "repo"
-            out = Path(temp_dir) / "out"
-            skill = write_skill(repo, "src/core-skills/bmad-review")
-            write(skill / ".DS_Store", "junk")
-            write(skill / "__pycache__" / "mod.cpython-311.pyc", "cache")
-            write(skill / "foo.pyc", "bytecode")
-            write(skill / "keep.txt", "keep")
-            write_skill(repo, "src/bmm-skills/plan/bmad-prd")
+            root = Path(temp_dir)
+            repo = build_repo(root, core=("bmad",), bmm=("plan/bmad-prd",))
+            write_bmad_payload(repo)
+            out = root / "out"
 
             run_packager(repo, out)
 
-            dest_skill = out / "skills" / "bmad-review"
-            self.assertTrue((dest_skill / "SKILL.md").is_file())
-            self.assertTrue((dest_skill / "keep.txt").is_file())
-            self.assertFalse((dest_skill / ".DS_Store").exists())
-            self.assertFalse((dest_skill / "__pycache__").exists())
-            self.assertFalse((dest_skill / "foo.pyc").exists())
-
-    def test_dest_bmad_gets_scripts_and_assets_and_excludes_bmad_help(self):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            repo = Path(temp_dir) / "repo"
-            out = Path(temp_dir) / "out"
-            self._write_bmad_payload(repo)
-            write_skill(repo, "src/core-skills/bmad")
-            write_skill(repo, "src/core-skills/bmad-help")
-            write_skill(repo, "src/bmm-skills/plan/bmad-prd")
-
-            run_packager(repo, out)
-
-            dest_bmad = out / "skills" / "bmad"
-            dest_scripts = dest_bmad / "scripts"
-            self.assertEqual(
-                sorted(p.name for p in dest_scripts.iterdir()),
-                [
-                    "config_utils.py",
-                    "memlog.py",
-                    "render_skill.py",
-                    "resolve_config.py",
-                    "resolve_customization.py",
-                ],
-            )
+            bmad = out / "skills" / "bmad"
             for name in SHARED_SCRIPTS:
                 self.assertEqual(
-                    (dest_scripts / name).read_text(encoding="utf-8"),
-                    f"# {name}\n",
+                    (bmad / "scripts" / name).read_bytes(),
+                    (repo / "src" / "scripts" / name).read_bytes(),
                 )
-            self.assertFalse((dest_scripts / "tests").exists())
-            source_assets = repo / "src" / "core-skills" / "bmad" / "assets"
-            for path in source_assets.iterdir():
+            self.assertFalse((bmad / "scripts" / "tests").exists())
+            self.assertEqual((bmad / "assets" / "keep.txt").read_text(), "keep\n")
+            self.assertFalse((bmad / "assets" / "bmad-help.csv").exists())
+
+    def test_fans_identical_manifest_bytes_to_each_owning_skill(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            repo = build_repo(
+                root,
+                core=("bmad-review", "bmad-customize"),
+                bmm=("plan/bmad-prd", "ship/bmad-build"),
+                version="2.4.6",
+            )
+            out = root / "out"
+            authored_core = (
+                repo / "src" / "core-skills" / "module-manifest.md"
+            ).read_bytes()
+
+            responses = {
+                ("rev-parse", "--short", "HEAD"): "abc1234",
+                ("status", "--porcelain"): "",
+                ("tag", "--points-at", "HEAD"): "v2.4.6",
+            }
+
+            def fake_git(_repo: Path, *args: str) -> str | None:
+                return responses[args]
+
+            with mock.patch.object(
+                package_npx_skills, "git_output", side_effect=fake_git
+            ):
+                run_packager(repo, out)
+
+            dest = out / "skills"
+            core_copies = [
+                (dest / skill / "module-manifest.md").read_bytes()
+                for skill in ("bmad-review", "bmad-customize")
+            ]
+            bmm_copies = [
+                (dest / skill / "module-manifest.md").read_bytes()
+                for skill in ("bmad-prd", "bmad-build")
+            ]
+            self.assertEqual(core_copies[0], core_copies[1])
+            self.assertEqual(bmm_copies[0], bmm_copies[1])
+            self.assertNotEqual(core_copies[0], bmm_copies[0])
+            self.assertEqual(
+                core_copies[0],
+                authored_core.replace(b"---\n", b"---\nversion: 2.4.6\n", 1),
+            )
+            self.assertEqual(frontmatter(dest / "bmad-review" / "module-manifest.md")["module"], "core")
+            self.assertEqual(frontmatter(dest / "bmad-prd" / "module-manifest.md")["module"], "bmm")
+            for skill in ("bmad-review", "bmad-customize", "bmad-prd", "bmad-build"):
                 self.assertEqual(
-                    (dest_bmad / "assets" / path.name).read_bytes(),
-                    path.read_bytes(),
-                    path.name,
+                    frontmatter(dest / skill / "module-manifest.md")["version"],
+                    "2.4.6",
                 )
-            dest_csv = dest_bmad / "assets" / "bmad-help.csv"
-            self.assertEqual(dest_csv.read_text(encoding="utf-8").splitlines()[0], HELP_CSV_HEADER)
-            self.assertEqual(
-                set(csv_records(dest_csv)),
-                {
-                    (
-                        "Core",
-                        "bmad-help",
-                        "BMad Help",
-                        "BH",
-                        "",
-                        "",
-                        "",
-                        "anytime",
-                        "",
-                        "",
-                        "false",
-                        "",
-                        "",
-                    ),
-                    (
-                        "BMad Method",
-                        "bmad-prd",
-                        "Create PRD",
-                        "PRD",
-                        "",
-                        "",
-                        "",
-                        "plan",
-                        "",
-                        "",
-                        "true",
-                        "planning_artifacts",
-                        "prd",
-                    ),
-                },
-            )
-            self.assertFalse((out / "skills" / "bmad-help").exists())
-            source_bmad = repo / "src" / "core-skills" / "bmad"
-            self.assertEqual(
-                {p.name for p in source_bmad.iterdir() if p.name != "__pycache__"}
-                - {"assets"},
-                {"SKILL.md"},
-            )
 
-    def test_other_skill_stays_lean(self):
+    def test_declared_scripts_fan_out_with_source_identical_bytes(self):
         with tempfile.TemporaryDirectory() as temp_dir:
-            repo = Path(temp_dir) / "repo"
-            out = Path(temp_dir) / "out"
-            self._write_bmad_payload(repo)
-            write_skill(repo, "src/core-skills/bmad")
-            write_skill(repo, "src/core-skills/bmad-help")
-            write_skill(repo, "src/bmm-skills/plan/bmad-prd")
+            root = Path(temp_dir)
+            repo = build_repo(
+                root,
+                core=("bmad-review", "bmad-customize"),
+                bmm=("plan/bmad-prd", "ship/bmad-build"),
+            )
+            core_script = repo / "src" / "core-skills" / "scripts" / "nested" / "tool.py"
+            bmm_script = repo / "src" / "bmm-skills" / "scripts" / "check.py"
+            write(core_script, "core bytes\n")
+            write(bmm_script, "bmm bytes\n")
+            original_core_bytes = core_script.read_bytes()
+            write(
+                repo / "src" / "core-skills" / "module-manifest.md",
+                manifest_text(
+                    "core",
+                    ["bmad-review", "bmad-customize"],
+                    frontmatter=(
+                        "module: core\n"
+                        "update_source: file:skills\n"
+                        "scripts:\n  - scripts/nested/tool.py\n"
+                    ),
+                ),
+            )
+            write(
+                repo / "src" / "bmm-skills" / "module-manifest.md",
+                manifest_text(
+                    "bmm",
+                    ["bmad-prd", "bmad-build"],
+                    frontmatter=(
+                        "module: bmm\n"
+                        "update_source: https://example.test/skills\n"
+                        "scripts:\n  - scripts/check.py\n"
+                    ),
+                ),
+            )
+            out = root / "out"
 
-            run_packager(repo, out)
+            original_write_bytes = Path.write_bytes
+            changed = False
 
-            dest_prd = out / "skills" / "bmad-prd"
-            for name in SHARED_SCRIPTS:
-                self.assertEqual(list(dest_prd.rglob(name)), [])
-            self.assertFalse((dest_prd / "assets" / "bmad-help.csv").exists())
+            def mutate_source_after_first_copy(path: Path, data: bytes) -> int:
+                nonlocal changed
+                result = original_write_bytes(path, data)
+                if path.name == "tool.py" and path != core_script and not changed:
+                    original_write_bytes(core_script, b"changed during packaging\n")
+                    changed = True
+                return result
 
-    def test_replace_dest_skills(self):
+            with mock.patch.object(
+                Path, "write_bytes", autospec=True, side_effect=mutate_source_after_first_copy
+            ):
+                run_packager(repo, out)
+
+            for skill in ("bmad-review", "bmad-customize"):
+                self.assertEqual(
+                    (out / "skills" / skill / "scripts" / "nested" / "tool.py").read_bytes(),
+                    original_core_bytes,
+                )
+            for skill in ("bmad-prd", "bmad-build"):
+                self.assertEqual(
+                    (out / "skills" / skill / "scripts" / "check.py").read_bytes(),
+                    bmm_script.read_bytes(),
+                )
+
+    def test_release_and_development_version_selection(self):
+        repo = Path("/repo")
+        cases = (
+            ("release", "abc1234", "", "v1.2.3", "1.2.3"),
+            ("dirty", "abc1234", " M file", "v1.2.3", "1.2.3-dev.gabc1234"),
+            ("untagged", "abc1234", "", "", "1.2.3-dev.gabc1234"),
+            ("wrong-tag", "abc1234", "", "v9.9.9", "1.2.3-dev.gabc1234"),
+            ("numeric-hash", "0123456", "", "", "1.2.3-dev.g0123456"),
+            ("several-tags", "abc1234", "", "other\nv1.2.3", "1.2.3"),
+            ("no-hash", None, None, None, "1.2.3-dev"),
+        )
+        for name, commit, status, tags, expected in cases:
+            responses = {
+                ("rev-parse", "--short", "HEAD"): commit,
+                ("status", "--porcelain"): status,
+                ("tag", "--points-at", "HEAD"): tags,
+            }
+
+            def fake_git(_repo: Path, *args: str) -> str | None:
+                return responses[args]
+
+            with self.subTest(name=name), mock.patch.object(
+                package_npx_skills, "git_output", side_effect=fake_git
+            ):
+                self.assertEqual(
+                    package_npx_skills.stamped_version(repo, "1.2.3"), expected
+                )
+
+    def test_tag_away_from_head_does_not_make_release(self):
+        responses = {
+            ("rev-parse", "--short", "HEAD"): "abc1234",
+            ("status", "--porcelain"): "",
+            ("tag", "--points-at", "HEAD"): "other",
+        }
+
+        def fake_git(_repo: Path, *args: str) -> str | None:
+            return responses[args]
+
+        with mock.patch.object(package_npx_skills, "git_output", side_effect=fake_git):
+            self.assertEqual(
+                package_npx_skills.stamped_version(Path("/repo"), "1.2.3"),
+                "1.2.3-dev.gabc1234",
+            )
+
+    def test_invalid_manifest_shapes_name_field_and_leave_dest_untouched(self):
+        cases = (
+            ("bad-yaml", "---\nmodule: [\n---\n", "yaml"),
+            (
+                "duplicate-key",
+                manifest_text(
+                    "core",
+                    ["bmad-review"],
+                    frontmatter=(
+                        "module: core\nmodule: other\nupdate_source: file:skills\n"
+                    ),
+                ),
+                "duplicate",
+            ),
+            (
+                "unknown-key",
+                manifest_text(
+                    "core",
+                    ["bmad-review"],
+                    frontmatter=(
+                        "module: core\nupdate_source: file:skills\nphase: plan\n"
+                    ),
+                ),
+                "phase",
+            ),
+            (
+                "authored-version",
+                manifest_text(
+                    "core",
+                    ["bmad-review"],
+                    frontmatter=(
+                        "module: core\nversion: 1.0.0\nupdate_source: file:skills\n"
+                    ),
+                ),
+                "version",
+            ),
+            (
+                "missing-module",
+                manifest_text(
+                    "core",
+                    ["bmad-review"],
+                    frontmatter="update_source: file:skills\n",
+                ),
+                "module",
+            ),
+            (
+                "wrong-module",
+                manifest_text(
+                    "bmm",
+                    ["bmad-review"],
+                    frontmatter="module: bmm\nupdate_source: file:skills\n",
+                ),
+                "module",
+            ),
+            (
+                "bad-update-source",
+                manifest_text(
+                    "core",
+                    ["bmad-review"],
+                    frontmatter="module: core\nupdate_source: example/repo\n",
+                ),
+                "update_source",
+            ),
+            (
+                "bad-github-source",
+                manifest_text(
+                    "core",
+                    ["bmad-review"],
+                    frontmatter=(
+                        "module: core\nupdate_source: github:owner//skills\n"
+                    ),
+                ),
+                "update_source",
+            ),
+            (
+                "bad-https-source",
+                manifest_text(
+                    "core",
+                    ["bmad-review"],
+                    frontmatter="module: core\nupdate_source: 'https:// '\n",
+                ),
+                "update_source",
+            ),
+            (
+                "question-not-list",
+                manifest_text(
+                    "core",
+                    ["bmad-review"],
+                    frontmatter=(
+                        "module: core\nupdate_source: file:skills\nconfig_questions: bad\n"
+                    ),
+                ),
+                "config_questions",
+            ),
+            (
+                "question-missing-key",
+                manifest_text(
+                    "core",
+                    ["bmad-review"],
+                    frontmatter=(
+                        "module: core\nupdate_source: file:skills\nconfig_questions:\n"
+                        "  - key: output\n    prompt: Where?\n"
+                    ),
+                ),
+                "default",
+            ),
+            (
+                "question-non-string",
+                manifest_text(
+                    "core",
+                    ["bmad-review"],
+                    frontmatter=(
+                        "module: core\nupdate_source: file:skills\nconfig_questions:\n"
+                        "  - key: output\n    prompt: Where?\n    default: 3\n"
+                    ),
+                ),
+                "default",
+            ),
+            (
+                "question-empty-prompt",
+                manifest_text(
+                    "core",
+                    ["bmad-review"],
+                    frontmatter=(
+                        "module: core\nupdate_source: file:skills\nconfig_questions:\n"
+                        "  - key: output\n    prompt: '  '\n    default: out\n"
+                    ),
+                ),
+                "prompt",
+            ),
+            (
+                "question-module-prefix",
+                manifest_text(
+                    "core",
+                    ["bmad-review"],
+                    frontmatter=(
+                        "module: core\nupdate_source: file:skills\nconfig_questions:\n"
+                        "  - key: core.output\n    prompt: Where?\n    default: out\n"
+                    ),
+                ),
+                "core.output",
+            ),
+        )
+        for name, authored, diagnostic in cases:
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as temp_dir:
+                root = Path(temp_dir)
+                repo = build_repo(root)
+                manifest = repo / "src" / "core-skills" / "module-manifest.md"
+                write(manifest, authored)
+                out = root / "out"
+                stale = out / "skills" / "stale-id" / "keep.txt"
+                write(stale, "keep\n")
+
+                with self.assertRaises(ValueError) as caught:
+                    run_packager(repo, out)
+
+                message = str(caught.exception)
+                self.assertIn(str(manifest), message)
+                self.assertIn(diagnostic.lower(), message.lower())
+                self.assertEqual(stale.read_text(), "keep\n")
+                self.assertEqual(
+                    sorted(path.name for path in (out / "skills").iterdir()),
+                    ["stale-id"],
+                )
+
+    def test_body_omission_names_skill_and_leaves_dest_untouched(self):
         with tempfile.TemporaryDirectory() as temp_dir:
-            repo = Path(temp_dir) / "repo"
-            out = Path(temp_dir) / "out"
-            write_skill(repo, "src/core-skills/bmad-review")
-            write_skill(repo, "src/bmm-skills/plan/bmad-prd")
-            write(out / "skills" / "stale-id" / "SKILL.md", "stale\n")
+            root = Path(temp_dir)
+            repo = build_repo(root, core=("bmad-review", "bmad-customize"))
+            manifest = repo / "src" / "core-skills" / "module-manifest.md"
+            write(manifest, manifest_text("core", ["bmad-review"]))
+            out = root / "out"
+            stale = out / "skills" / "stale-id" / "keep.txt"
+            write(stale, "keep\n")
+
+            with self.assertRaisesRegex(ValueError, "bmad-customize") as caught:
+                run_packager(repo, out)
+
+            self.assertIn(str(manifest), str(caught.exception))
+            self.assertTrue(stale.is_file())
+
+    def test_invalid_package_version_leaves_destination_untouched(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            repo = build_repo(root, version="1.2.3+local")
+            out = root / "out"
+            stale = out / "skills" / "stale-id" / "keep.txt"
+            write(stale, "keep\n")
+
+            with self.assertRaisesRegex(ValueError, "package version"):
+                run_packager(repo, out)
+
+            self.assertTrue(stale.is_file())
+
+    def test_unsafe_missing_and_non_file_scripts_leave_dest_untouched(self):
+        cases = (
+            "/tmp/tool.py",
+            "../tool.py",
+            "other/tool.py",
+            "scripts/missing.py",
+            "scripts/folder",
+            "scripts\\tool.py",
+        )
+        for entry in cases:
+            with self.subTest(entry=entry), tempfile.TemporaryDirectory() as temp_dir:
+                root = Path(temp_dir)
+                repo = build_repo(root)
+                (repo / "src" / "core-skills" / "scripts" / "folder").mkdir(
+                    parents=True
+                )
+                manifest = repo / "src" / "core-skills" / "module-manifest.md"
+                write(
+                    manifest,
+                    manifest_text(
+                        "core",
+                        ["bmad-review"],
+                        frontmatter=(
+                            "module: core\nupdate_source: file:skills\nscripts:\n"
+                            f"  - {json.dumps(entry)}\n"
+                        ),
+                    ),
+                )
+                out = root / "out"
+                stale = out / "skills" / "stale-id" / "keep.txt"
+                write(stale, "keep\n")
+
+                with self.assertRaises(ValueError) as caught:
+                    run_packager(repo, out)
+
+                message = str(caught.exception)
+                self.assertIn("scripts", message)
+                self.assertIn(repr(entry), message)
+                self.assertTrue(stale.is_file())
+
+    def test_missing_source_root_leaves_destination_untouched(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            repo = root / "repo"
+            write(repo / "package.json", '{"version":"1.0.0"}\n')
+            write_skill(repo, "bmm-skills", "plan/bmad-prd")
+            out = root / "out"
+            stale = out / "skills" / "stale-id" / "keep.txt"
+            write(stale, "keep\n")
+
+            with self.assertRaisesRegex(FileNotFoundError, "core-skills"):
+                run_packager(repo, out)
+
+            self.assertTrue(stale.is_file())
+
+    def test_replaces_existing_destination_after_success(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            repo = build_repo(root)
+            out = root / "out"
+            write(out / "skills" / "stale-id" / "keep.txt", "keep\n")
 
             run_packager(repo, out)
 
             self.assertFalse((out / "skills" / "stale-id").exists())
-            self.assertTrue((out / "skills" / "bmad-prd" / "SKILL.md").is_file())
             self.assertTrue((out / "skills" / "bmad-review" / "SKILL.md").is_file())
+            self.assertTrue((out / "skills" / "bmad-prd" / "SKILL.md").is_file())
 
-    def test_missing_core_skills_leaves_dest_untouched(self):
+    def test_failed_destination_replace_restores_existing_destination(self):
         with tempfile.TemporaryDirectory() as temp_dir:
-            repo = Path(temp_dir) / "repo"
-            out = Path(temp_dir) / "out"
-            write_skill(repo, "src/bmm-skills/plan/bmad-prd")
-            write(out / "skills" / "stale-id" / "keep.txt", "keep\n")
+            root = Path(temp_dir)
+            staging = root / "staging"
+            out = root / "out"
+            write(staging / "new-id" / "SKILL.md", "new\n")
+            stale = out / "skills" / "stale-id" / "keep.txt"
+            write(stale, "keep\n")
+            original_replace = Path.replace
 
-            with self.assertRaises(FileNotFoundError) as ctx:
-                run_packager(repo, out)
+            def fail_incoming_replace(path: Path, target: Path) -> Path:
+                if path.name == "skills" and path.parent != out:
+                    raise OSError("simulated destination failure")
+                return original_replace(path, target)
 
-            self.assertIn("core-skills", str(ctx.exception))
-            self.assertIn("missing", str(ctx.exception).lower())
-            self.assertTrue((out / "skills" / "stale-id" / "keep.txt").is_file())
-            self.assertFalse((out / "skills" / "bmad-prd").exists())
+            with mock.patch.object(
+                Path, "replace", autospec=True, side_effect=fail_incoming_replace
+            ), self.assertRaisesRegex(OSError, "simulated destination failure"):
+                package_npx_skills.replace_dest_skills(staging, out)
 
-    def test_missing_bmm_skills_does_not_create_dest_skills(self):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            repo = Path(temp_dir) / "repo"
-            out = Path(temp_dir) / "out"
-            write_skill(repo, "src/core-skills/bmad-review")
+            self.assertEqual(stale.read_text(), "keep\n")
+            self.assertFalse((out / "skills" / "new-id").exists())
 
-            with self.assertRaises(FileNotFoundError) as ctx:
-                run_packager(repo, out)
-
-            self.assertIn("bmm-skills", str(ctx.exception))
-            self.assertIn("missing", str(ctx.exception).lower())
-            self.assertFalse((out / "skills").exists())
-
-    def test_bad_help_csv_header_leaves_dest_untouched(self):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            repo, out = self._bmad_repo_with_stale_dest(temp_dir)
-            write(
-                repo / "src" / "core-skills" / "module-help.csv",
-                "not,the,header\nCore,bmad-help,BMad Help,BH,,,,anytime,,,false,,\n",
-            )
-
-            with self.assertRaises(ValueError) as ctx:
-                run_packager(repo, out)
-
-            self.assertIn("header", str(ctx.exception).lower())
-            self.assertTrue((out / "skills" / "stale-id" / "keep.txt").is_file())
-            self.assertFalse((out / "skills" / "bmad").exists())
-
-    def test_empty_help_csv_leaves_dest_untouched(self):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            repo, out = self._bmad_repo_with_stale_dest(temp_dir)
-            write(repo / "src" / "core-skills" / "module-help.csv", HELP_CSV_HEADER + "\n")
-
-            with self.assertRaises(ValueError) as ctx:
-                run_packager(repo, out)
-
-            self.assertIn("empty", str(ctx.exception).lower())
-            self.assertTrue((out / "skills" / "stale-id" / "keep.txt").is_file())
-            self.assertFalse((out / "skills" / "bmad").exists())
-
-    def test_short_help_csv_row_leaves_dest_untouched(self):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            repo, out = self._bmad_repo_with_stale_dest(temp_dir)
-            write(
-                repo / "src" / "core-skills" / "module-help.csv",
-                HELP_CSV_HEADER + "\nCore,bmad-help\n",
-            )
-
-            with self.assertRaises(ValueError) as ctx:
-                run_packager(repo, out)
-
-            self.assertIn("malformed", str(ctx.exception).lower())
-            self.assertTrue((out / "skills" / "stale-id" / "keep.txt").is_file())
-            self.assertFalse((out / "skills" / "bmad").exists())
-
-    def test_real_repo_emits_method_set_and_help_assets(self):
+    def test_real_repo_emits_owned_stamped_manifests_without_help_csv(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             out = Path(temp_dir)
             run_packager(REPO_ROOT, out)
 
             dest = out / "skills"
-            names = sorted(p.name for p in dest.iterdir() if p.is_dir())
-            expected = method_skill_ids(REPO_ROOT)
-
-            self.assertEqual(names, sorted(expected))
+            modules = method_skills_by_module(REPO_ROOT)
+            names = {path.name for path in dest.iterdir() if path.is_dir()}
+            self.assertEqual(names, modules["core"] | modules["bmm"])
             self.assertIn("bmad-generate-project-context", names)
             self.assertTrue(SHIM_ONLY_IDS.isdisjoint(names))
-            self.assertTrue({"v6-shims", "web-bundles", "test", "docs"}.isdisjoint(names))
-            for name in names:
-                self.assertTrue((dest / name / "SKILL.md").is_file())
-
-            for dest_rel, source in (
-                (
-                    "bmad-review/references/lens-adversarial.md",
-                    REPO_ROOT / "src" / "core-skills" / "bmad-review" / "references" / "lens-adversarial.md",
-                ),
-                (
-                    "bmad-review/scripts/word_metrics.py",
-                    REPO_ROOT / "src" / "core-skills" / "bmad-review" / "scripts" / "word_metrics.py",
-                ),
-                (
-                    "bmad-prd/assets/prd-template.md",
-                    REPO_ROOT / "src" / "bmm-skills" / "plan" / "bmad-prd" / "assets" / "prd-template.md",
-                ),
-            ):
-                dest_file = dest / dest_rel
-                self.assertTrue(dest_file.is_file(), dest_rel)
-                self.assertEqual(dest_file.read_bytes(), source.read_bytes(), dest_rel)
-
-            self.assertIn("bmad", names)
             self.assertNotIn("bmad-help", names)
-            dest_bmad = dest / "bmad"
-            dest_scripts = dest_bmad / "scripts"
-            expected_scripts = [
-                "config_utils.py",
-                "memlog.py",
-                "render_skill.py",
-                "resolve_config.py",
-                "resolve_customization.py",
-            ]
-            for name in expected_scripts:
+
+            expected_version = package_npx_skills.stamped_version(
+                REPO_ROOT, package_npx_skills.package_version(REPO_ROOT)
+            )
+            for module, skill_ids in modules.items():
+                copies = []
+                for skill_id in skill_ids:
+                    packaged = dest / skill_id
+                    self.assertTrue((packaged / "SKILL.md").is_file())
+                    manifest = packaged / "module-manifest.md"
+                    copies.append(manifest.read_bytes())
+                    data = frontmatter(manifest)
+                    self.assertEqual(data["module"], module, skill_id)
+                    self.assertEqual(data["version"], expected_version, skill_id)
+                    self.assertFalse(
+                        (packaged / "assets" / "bmad-help.csv").exists(), skill_id
+                    )
+                self.assertEqual(len(set(copies)), 1, module)
+
+            for root_name in ("core-skills", "bmm-skills"):
+                source_root = REPO_ROOT / "src" / root_name
+                self.assertNotIn(
+                    "version", frontmatter(source_root / "module-manifest.md")
+                )
+                self.assertFalse(
+                    any(
+                        path.parent != source_root
+                        for path in source_root.rglob("module-manifest.md")
+                    )
+                )
+
+            bmad = dest / "bmad"
+            for name in SHARED_SCRIPTS:
                 self.assertEqual(
-                    (dest_scripts / name).read_bytes(),
+                    (bmad / "scripts" / name).read_bytes(),
                     (REPO_ROOT / "src" / "scripts" / name).read_bytes(),
                     name,
                 )
-            source_bmad = REPO_ROOT / "src" / "core-skills" / "bmad"
-            self.assertEqual(
-                (dest_scripts / "setup.py").read_bytes(),
-                (source_bmad / "scripts" / "setup.py").read_bytes(),
-            )
-            self.assertFalse((dest_bmad / "setup.py").exists())
-            self.assertFalse((dest_scripts / "tests").exists())
-            bmad_assets = REPO_ROOT / "src" / "core-skills" / "bmad" / "assets"
-            for path in bmad_assets.iterdir():
-                self.assertEqual(
-                    (dest_bmad / "assets" / path.name).read_bytes(),
-                    path.read_bytes(),
-                    path.name,
-                )
-            self.assertFalse((bmad_assets / "bmad-help.csv").exists())
-            dest_csv = dest_bmad / "assets" / "bmad-help.csv"
-            self.assertEqual(dest_csv.read_text(encoding="utf-8").splitlines()[0], HELP_CSV_HEADER)
-            self.assertEqual(
-                set(csv_records(dest_csv)),
-                set(csv_records(REPO_ROOT / "src" / "core-skills" / "module-help.csv"))
-                | set(csv_records(REPO_ROOT / "src" / "bmm-skills" / "module-help.csv")),
-            )
-
-            for name in names:
-                if name == "bmad":
-                    continue
-                skill = dest / name
-                for script in SHARED_SCRIPTS:
-                    self.assertEqual(list(skill.rglob(script)), [])
-                self.assertFalse((skill / "assets" / "bmad-help.csv").exists())
-
-            source_help = REPO_ROOT / "src" / "core-skills" / "bmad-help"
-            self.assertEqual(
-                {p.name for p in source_help.iterdir() if p.name != "__pycache__"},
-                {"SKILL.md"},
-            )
-            self.assertEqual(
-                (dest_bmad / "references" / "setup.md").read_bytes(),
-                (source_bmad / "references" / "setup.md").read_bytes(),
-            )
-            self.assertTrue((source_bmad / "scripts" / "setup.py").is_file())
-            self.assertFalse((source_bmad / "setup.py").exists())
-            self.assertFalse((dest_bmad / "setup.py").exists())
-
-    def _bmad_repo_with_stale_dest(self, temp_dir: str) -> tuple[Path, Path]:
-        repo = Path(temp_dir) / "repo"
-        out = Path(temp_dir) / "out"
-        self._write_bmad_payload(repo)
-        write_skill(repo, "src/core-skills/bmad")
-        write_skill(repo, "src/core-skills/bmad-help")
-        write_skill(repo, "src/bmm-skills/plan/bmad-prd")
-        write(out / "skills" / "stale-id" / "keep.txt", "keep\n")
-        return repo, out
-
-    def _write_bmad_payload(self, repo: Path) -> None:
-        for name in SHARED_SCRIPTS:
-            write(repo / "src" / "scripts" / name, f"# {name}\n")
-        write(repo / "src" / "scripts" / "tests" / "test_foo.py", "# test\n")
-        write(
-            repo / "src" / "core-skills" / "bmad" / "assets" / "keep.txt",
-            "keep\n",
-        )
-        write(
-            repo / "src" / "core-skills" / "module-help.csv",
-            HELP_CSV_HEADER
-            + "\nCore,bmad-help,BMad Help,BH,,,,anytime,,,false,,\n",
-        )
-        write(
-            repo / "src" / "bmm-skills" / "module-help.csv",
-            HELP_CSV_HEADER
-            + "\nBMad Method,bmad-prd,Create PRD,PRD,,,,plan,,,true,planning_artifacts,prd\n",
-        )
+            self.assertFalse((bmad / "scripts" / "tests").exists())
+            self.assertFalse((bmad / "assets" / "bmad-help.csv").exists())
 
 
 if __name__ == "__main__":
