@@ -3,12 +3,12 @@ schema: 1
 id: [KEY-n]
 type: spike
 title: "[The question being answered]"
-status: backlog
+status: backlog # backlog → ready → in-progress → done, or dropped
 depends_on: []
 covers: []
 discovered_from: ""
 risk: [1-5]
-hitl: [true|false]
+hitl: [true|false] # true only when a human must perform part of this work — name that step in the body
 created: [YYYY-MM-DD]
 ---
 
@@ -20,8 +20,10 @@ created: [YYYY-MM-DD]
 
 ## Research Questions
 
-- #1 [Specific question the spike must answer] — verify: [the artifact or measurement that constitutes the answer — a recorded benchmark run with raw numbers, a written comparison with stated assumptions, a decision record naming the deciding criterion. Not a test, and never "research it"]
-- #2 [...] — verify: [...]
+1. **[Specific question the spike must answer]**
+   Verify: [the artifact or measurement that constitutes the answer — a recorded benchmark run with raw numbers, a written comparison with stated assumptions, a decision record naming the deciding criterion. Not a test, and never "research it"]
+2. **[...]**
+   Verify: [...]
 
 ## Timebox
 
@@ -36,7 +38,7 @@ created: [YYYY-MM-DD]
 
 ## References
 
-- [Typed-document pointers relevant to this spike: document type + section, never file paths or line numbers. Cut the section if there are none. Often thin — the authoritative answer does not exist yet.]
+- [Document citations relevant to this spike: document type + a path that exists on disk + section. A source that lives only in conversation is written to disk first, then cited. Cut the section if there are none. Often thin — the authoritative answer does not exist yet.]
 - Verification entry point: [Optional. The command or workflow that reproduces the measurement — only when the project has one an agent would not infer. Cut otherwise.]
 
 ## Dev Notes

@@ -17,7 +17,7 @@ The old artifact is a **view**, not a second source of truth:
 
 1. Run the slice route to the epic set (its gate included).
 2. On explicit confirmation, chain the incept route per epic — each epic through its own gate; quick and autonomous collapse the pauses per their mode rules.
-3. Render the single file: `uv run {skill-root}/scripts/ticket_tree.py render --root {workflow.project_root} --out <path>/epics-and-stories.md`. The render is deterministic — statuses come straight from frontmatter — and carries a generated-file banner. Re-render after any change; hand-edits to the rendered file are overwritten, the tree wins. Say that when handing the file over.
+3. Render the single file — the obeya's render query (local backing: `uv run {skill-root}/scripts/ticket_tree.py render --root {obeya-root} --out <path>/epics-and-stories.md`; v6 shapes are local-tree shapes, so a non-local backing hands this to its own reference). The render is deterministic — statuses come straight from frontmatter — and carries a generated-file banner. Re-render after any change; hand-edits to the rendered file are overwritten, the tree wins. Say that when handing the file over.
 
 Anyone asking "give me one file to read or share" gets this render too — it is not only a v6 path.
 
@@ -30,6 +30,6 @@ If the user explicitly refuses the ticket tree, fall back to a single authored e
 `sprint-status.yaml` stays in service for in-flight v6 work — and is **never used for net-new epics or stories**. Migration happens per epic, at the natural seam:
 
 1. **In-flight epics finish where they are.** Stories already tracked in `sprint-status.yaml` run to done under the legacy flow. Never migrate half-built work.
-2. **The next epic migrates by inception.** Its section in the v6 epics file is the input: write the envelope into the tree with fidelity — the v6 detail is co-authored input, never drift to regenerate away; `covers:` ids carried verbatim in the source scheme — then run the normal incept route against it.
+2. **The next epic migrates by inception.** Its section in the v6 epics file is the input: write the envelope into the tree with fidelity — the v6 detail is co-authored input, never drift to regenerate away; `covers:` ids carried verbatim in the source scheme — then run the normal epic slice (inception) against it, materializing all files at once since v6 expects them up front.
 3. **One story, one system.** Every story is tracked in exactly one place; the two systems never cross-reference by id. A tree story that genuinely waits on legacy in-flight work records that as prose in Dev Notes ("blocked until legacy story X merges"), never as a `depends_on` id the frontier can't verify.
 4. **Name the seam once.** When a `sprint-status.yaml` is known to exist, say so at the start: in-flight v6 work is tracked there, everything new lives in the tree — `board` and `frontier` are the tracking from here on.

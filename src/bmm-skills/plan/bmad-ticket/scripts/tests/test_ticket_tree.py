@@ -28,12 +28,12 @@ def ticket(tid, ttype, title, status="backlog", deps="[]", covers="[]", extra=""
             f"risk: 2\ncreated: 2026-08-01\n---\n\n# {tid}\n")
 
 
-def project_ticket(tid, title, status="backlog", extra=""):
+def initiative_ticket(tid, title, status="backlog", extra=""):
     """The root node: no risk, no hitl, no depends_on, no covers."""
     if "description:" not in extra:
         extra += f'description: "{title} product"\n'
     state = "" if "status:" in extra else f"status: {status}\n"
-    return (f"---\nschema: 1\nid: {tid}\ntype: project\ntitle: \"{title}\"\n"
+    return (f"---\nschema: 1\nid: {tid}\ntype: initiative\ntitle: \"{title}\"\n"
             f"{state}{extra}created: 2026-08-01\n---\n\n# {tid}\n")
 
 
@@ -58,7 +58,7 @@ class TicketTreeTests(unittest.TestCase):
         self.epic2_dir = self.tickets / "reporting"
         self.epic_kids.mkdir(parents=True)
         self.epic2_dir.mkdir(parents=True)
-        (self.root / "ticket.md").write_text(project_ticket("ALRT-1", "Alerting"))
+        (self.root / "ticket.md").write_text(initiative_ticket("ALRT-1", "Alerting"))
         (self.epic_dir / "ticket.md").write_text(ticket(
             "ALRT-3", "epic", "Alert rules", covers="[CAP-4]",
             extra='description: "Rules people manage"\n'))
@@ -80,7 +80,7 @@ class TicketTreeTests(unittest.TestCase):
         self.assertEqual(out["key"], "ALRT")  # the root node's id prefix, not a key: field
         self.assertEqual(out["id"], "ALRT-41")
 
-    def test_project_node_key_wins_over_ids_in_tree(self):
+    def test_initiative_node_key_wins_over_ids_in_tree(self):
         # A stray foreign-keyed ticket never confuses the key: the root node owns it.
         (self.tickets / "OTHER-9-stray.md").write_text(
             ticket("OTHER-9", "task", "Stray"))
@@ -89,7 +89,7 @@ class TicketTreeTests(unittest.TestCase):
         self.assertEqual(out["id"], "ALRT-41")
 
     def test_rootless_tree_derives_key_from_ids(self):
-        # No project set: tickets sit straight in the output folder's tickets/.
+        # No initiative set: tickets sit straight in the root tickets/ bin of the work store.
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
             (root / "tickets").mkdir()
@@ -155,7 +155,7 @@ class TicketTreeTests(unittest.TestCase):
             outer = root / "tickets" / "outer"
             inner = outer / "tickets" / "inner"
             (inner / "tickets").mkdir(parents=True)
-            (root / "ticket.md").write_text(project_ticket("DEEP-1", "Deep"))
+            (root / "ticket.md").write_text(initiative_ticket("DEEP-1", "Deep"))
             (outer / "ticket.md").write_text(ticket("DEEP-2", "epic", "Outer"))
             (inner / "ticket.md").write_text(ticket("DEEP-3", "epic", "Inner"))
             leaf = inner / "tickets" / "DEEP-4-deep-leaf.md"
@@ -179,7 +179,7 @@ class TicketTreeTests(unittest.TestCase):
             self.assertEqual(counts["DEEP-3"], {"done": 1})   # progress is derived
             self.assertEqual(counts["DEEP-2"], {})            # only direct leaves
             self.assertEqual({n["id"]: n["type"] for n in out["nodes"]},
-                             {"DEEP-1": "project", "DEEP-2": "epic", "DEEP-3": "epic"})
+                             {"DEEP-1": "initiative", "DEEP-2": "epic", "DEEP-3": "epic"})
 
     def test_frontier_dep_gating(self):
         code, out = run("frontier", "--root", str(self.root))
@@ -214,7 +214,7 @@ class TicketTreeTests(unittest.TestCase):
         self.assertEqual(states["ALRT-40"], "backlog")  # childless
         self.assertEqual(counts["ALRT-40"], {})
         self.assertEqual(states["ALRT-1"], "backlog")
-        self.assertEqual(types["ALRT-1"], "project")
+        self.assertEqual(types["ALRT-1"], "initiative")
         self.assertEqual(types["ALRT-3"], "epic")
         self.assertEqual(out["blocked"][0]["id"], "ALRT-31")
         self.assertEqual(out["leaf_totals"]["done"], 1)
@@ -295,11 +295,11 @@ class TicketTreeTests(unittest.TestCase):
         self.assertEqual({e["file"] for e in out["errors"]},
                          {"tickets/reporting/ticket.md"})
         (self.root / "ticket.md").write_text(
-            project_ticket("ALRT-1", "Alerting", extra="status: review\n"))
+            initiative_ticket("ALRT-1", "Alerting", extra="status: review\n"))
         code, out = run("validate", "--root", str(self.root))
         self.assertEqual(code, 1)
         by_file = {e["file"]: e["error"] for e in out["errors"]}
-        self.assertIn("ready", by_file["ticket.md"])  # the project node too
+        self.assertIn("ready", by_file["ticket.md"])  # the initiative node too
 
     def test_validate_node_missing_status_is_named(self):
         (self.epic2_dir / "ticket.md").write_text(
@@ -310,22 +310,22 @@ class TicketTreeTests(unittest.TestCase):
         self.assertIn("status", by_file["tickets/reporting/ticket.md"])
 
     def test_validate_project_node_rejects_execution_fields(self):
-        # The project node scores nothing and traces nothing sideways.
+        # The initiative node scores nothing and traces nothing sideways.
         (self.root / "ticket.md").write_text(
-            project_ticket("ALRT-1", "Alerting", extra="risk: 2\ncovers: [CAP-4]\n"))
+            initiative_ticket("ALRT-1", "Alerting", extra="risk: 2\ncovers: [CAP-4]\n"))
         code, out = run("validate", "--root", str(self.root))
         self.assertEqual(code, 1)
         msgs = " | ".join(e["error"] for e in out["errors"])
-        self.assertIn("risk is not a project field", msgs)
-        self.assertIn("covers is not a project field", msgs)
+        self.assertIn("risk is not an initiative field", msgs)
+        self.assertIn("covers is not an initiative field", msgs)
 
     def test_validate_project_node_only_at_the_root(self):
         (self.epic_dir / "ticket.md").write_text(
-            project_ticket("ALRT-3", "Misplaced project"))
+            initiative_ticket("ALRT-3", "Misplaced initiative"))
         code, out = run("validate", "--root", str(self.root))
         self.assertEqual(code, 1)
         msgs = " | ".join(e["error"] for e in out["errors"])
-        self.assertIn("project node may only sit at the tree root", msgs)
+        self.assertIn("initiative node may only sit at the tree root", msgs)
 
     def test_validate_detects_cycle(self):
         (self.epic_kids / "ALRT-13-rule-eval.md").write_text(
@@ -523,7 +523,7 @@ class TicketTreeTests(unittest.TestCase):
             root = Path(d)
             e = root / "tickets" / "one"
             (e / "tickets").mkdir(parents=True)
-            (root / "ticket.md").write_text(project_ticket("NEW-1", "New"))
+            (root / "ticket.md").write_text(initiative_ticket("NEW-1", "New"))
             (e / "ticket.md").write_text(ticket(
                 "NEW-2", "epic", "One", extra='description: "x"\nstatus: done\n'))
             (e / "tickets" / "NEW-3-only.md").write_text(

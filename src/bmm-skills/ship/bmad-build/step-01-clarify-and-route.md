@@ -53,7 +53,7 @@ When `ticket_file` is set it is the whole work definition, filling the role a `s
 | Ticket | Build input |
 |---|---|
 | `title`, `## Context`, `## Behavior` (or `## Requirements`) | the clarified intent — what step-02 plans from. Already clarified by the ticket author: do not re-elicit what it answers |
-| `## Acceptance Criteria` | the verify contract. Every `#n` becomes an acceptance criterion in `{spec_file}`, and its verify tail becomes a `## Verification` entry. These are the ticket author's, not yours — never drop, merge, or soften one; a criterion you cannot satisfy is a HALT, not a rewrite |
+| `## Acceptance Criteria` | the verify contract. Every numbered criterion (a bold claim sentence with its `Verify:` line) becomes an acceptance criterion in `{spec_file}`, and its Verify line becomes a `## Verification` entry. These are the ticket author's, not yours — never drop, merge, or soften one; a criterion you cannot satisfy is a HALT, not a rewrite |
 | `## Boundaries` — `Must not change:` | `Never:` in the spec's Boundaries & Constraints, as hard constraints: an implementation that violates one has failed even with every criterion green |
 | `## Boundaries` — `May change:` | `Always:` — the authorized surface |
 | `## References` | typed-document pointers (document type plus section, not paths). Resolve them against `{{.planning_artifacts}}` and load what the work actually needs — this replaces the freeform artifact scan in INSTRUCTIONS item 1B |

@@ -58,7 +58,7 @@ created: 2026-08-01
 PROJECT = """---
 schema: 1
 id: ALRT-1
-type: project
+type: initiative
 title: "Alerting"
 description: "The alerting product"
 created: 2026-08-01
@@ -87,8 +87,8 @@ class UpdateTicketTests(unittest.TestCase):
         self.epic_dir = self.tickets / "alert-rules"
         self.epic_kids = self.epic_dir / "tickets"
         self.epic_kids.mkdir(parents=True)
-        self.project = self.root / "ticket.md"
-        self.project.write_text(PROJECT, encoding="utf-8")
+        self.initiative = self.root / "ticket.md"
+        self.initiative.write_text(PROJECT, encoding="utf-8")
         self.story = self.epic_kids / "ALRT-12-rule-crud.md"
         self.story.write_text(STORY, encoding="utf-8")
         self.bug = self.tickets / "ALRT-20-crash.md"
@@ -159,24 +159,24 @@ class UpdateTicketTests(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertIn("unknown status", out["error"])
 
-    def test_project_writable_fields_and_status_rule(self):
-        # A project scores nothing and traces nothing sideways.
+    def test_initiative_writable_fields_and_status_rule(self):
+        # An initiative scores nothing and traces nothing sideways.
         for spec in ("risk=2", "hitl=true", "covers=CAP-4", "depends_on=ALRT-3"):
-            code, out = run("--path", str(self.project), "--set", spec)
+            code, out = run("--path", str(self.initiative), "--set", spec)
             self.assertEqual(code, 1)
             self.assertIn("not writable", out["error"])
-        code, out = run("--path", str(self.project), "--set", "owner=Mary")
+        code, out = run("--path", str(self.initiative), "--set", "owner=Mary")
         self.assertEqual(code, 0)
-        self.assertIn("owner: Mary", self.project.read_text())
-        # The node lifecycle applies at every node altitude, project included.
-        code, out = run("--path", str(self.project), "--set", "status=review")
+        self.assertIn("owner: Mary", self.initiative.read_text())
+        # The node lifecycle applies at every node altitude, initiative included.
+        code, out = run("--path", str(self.initiative), "--set", "status=review")
         self.assertEqual(code, 1)
         self.assertIn("unknown status", out["error"])
-        code, out = run("--path", str(self.project), "--set", "status=in-progress")
+        code, out = run("--path", str(self.initiative), "--set", "status=in-progress")
         self.assertEqual(code, 0)
-        code, out = run("--path", str(self.project), "--set", "status=done")
+        code, out = run("--path", str(self.initiative), "--set", "status=done")
         self.assertEqual(code, 0)
-        self.assertIn("status: done", self.project.read_text())
+        self.assertIn("status: done", self.initiative.read_text())
 
     def test_insert_and_replace_adjacent_lines_both_land(self):
         # status is absent on the epic (insert after type:) while title is the
@@ -269,18 +269,17 @@ class UpdateTicketTests(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertIn("1-5", out["error"])
 
-    def test_hitl_raised_when_risk_crosses_threshold(self):
+    def test_hitl_never_derived_from_risk(self):
+        # hitl marks work a human must perform; risk changes never touch it.
         low = self.tickets / "ALRT-50-low.md"
         low.write_text(STORY.replace("id: ALRT-12", "id: ALRT-50")
                             .replace("risk: 3", "risk: 2")
                             .replace("hitl: true", "hitl: false"))
-        code, out = run("--path", str(low), "--set", "risk=4")
+        code, out = run("--path", str(low), "--set", "risk=5")
         self.assertEqual(code, 0)
         text = low.read_text()
-        self.assertIn("risk: 4", text)
-        self.assertIn("hitl: true", text)
-
-    def test_hitl_never_lowered_automatically(self):
+        self.assertIn("risk: 5", text)
+        self.assertIn("hitl: false", text)
         code, out = run("--path", str(self.story), "--set", "risk=1")
         self.assertEqual(code, 0)
         self.assertIn("hitl: true", self.story.read_text())

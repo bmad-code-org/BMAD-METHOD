@@ -269,18 +269,17 @@ class UpdateTicketTests(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertIn("1-5", out["error"])
 
-    def test_hitl_raised_when_risk_crosses_threshold(self):
+    def test_hitl_never_derived_from_risk(self):
+        # hitl marks work a human must perform; risk changes never touch it.
         low = self.tickets / "ALRT-50-low.md"
         low.write_text(STORY.replace("id: ALRT-12", "id: ALRT-50")
                             .replace("risk: 3", "risk: 2")
                             .replace("hitl: true", "hitl: false"))
-        code, out = run("--path", str(low), "--set", "risk=4")
+        code, out = run("--path", str(low), "--set", "risk=5")
         self.assertEqual(code, 0)
         text = low.read_text()
-        self.assertIn("risk: 4", text)
-        self.assertIn("hitl: true", text)
-
-    def test_hitl_never_lowered_automatically(self):
+        self.assertIn("risk: 5", text)
+        self.assertIn("hitl: false", text)
         code, out = run("--path", str(self.story), "--set", "risk=1")
         self.assertEqual(code, 0)
         self.assertIn("hitl: true", self.story.read_text())

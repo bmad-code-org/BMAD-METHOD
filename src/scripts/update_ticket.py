@@ -35,8 +35,6 @@ import tempfile
 import tomllib
 from pathlib import Path
 
-DEFAULT_HITL_THRESHOLD = 3
-
 DEFAULT_TRANSITIONS = [
     "backlog>in-progress",
     "in-progress>review",
@@ -271,9 +269,6 @@ def main():
                     help='allowed node (initiative, epic) status moves as "from>to,from>to"; '
                          "defaults to the skill's customize.toml "
                          "node_lifecycle_transitions, else built-ins")
-    ap.add_argument("--hitl-threshold", type=int, default=None,
-                    help="risk level at/above which hitl derives true; defaults to the "
-                         "skill's customize.toml hitl_threshold, else 3")
     ap.add_argument("--force", action="store_true",
                     help="apply a user-decided status move outside the transition graph; "
                          "unknown states are still refused")
@@ -289,12 +284,6 @@ def main():
     if args.node_transitions is None:
         cfg_node = cfg.get("node_lifecycle_transitions") or DEFAULT_NODE_TRANSITIONS
         args.node_transitions = ",".join(str(t) for t in cfg_node)
-    hitl_threshold = args.hitl_threshold
-    if hitl_threshold is None:
-        ht = cfg.get("hitl_threshold", DEFAULT_HITL_THRESHOLD)
-        hitl_threshold = ht if isinstance(ht, int) and not isinstance(ht, bool) \
-            else DEFAULT_HITL_THRESHOLD
-
     tree_ids, tree_deps = None, None
     if args.path:
         path = Path(args.path)
@@ -377,11 +366,8 @@ def main():
                      f"'{current}': {', '.join(legal) if legal else 'none (terminal)'}; "
                      "pass --force to apply a user-decided override")
 
-    # Derive hitl when risk is set without an explicit hitl: raise to true at the
-    # threshold, never lower automatically (an explicit --set hitl always wins).
-    if ticket_type not in NODE_TYPES and "risk" in updates and "hitl" not in updates:
-        if updates["risk"] >= hitl_threshold and fm.get("hitl") is not True:
-            updates["hitl"] = True
+    # hitl is never derived: it marks work a human must perform, set explicitly
+    # by a person (or the skill relaying one) via --set hitl=..., nothing else.
 
     # depends_on validation.
     if "depends_on" in updates:

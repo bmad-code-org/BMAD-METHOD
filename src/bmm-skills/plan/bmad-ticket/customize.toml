@@ -12,22 +12,21 @@ activation_steps_append = []
 persistent_facts = ["file:{project-root}/**/project-context.md"]
 on_complete = ""
 
-# The initiative folder — the root of one initiative's work. The skill reads
-# and writes the ticket tree at {project_root}/tickets/, and the initiative
-# node itself lives at {project_root}/ticket.md. Sibling folders (prd/, spec/,
-# brief/) belong to other skills and are never scanned as tickets.
+# Where pre-gate drafts are crafted. Empty = the default: a .drafts/
+# folder inside the destination node. Set to a path for one fixed
+# drafts location — safe to share, since publishing removes only its
+# own files. Drafts are always local; only the gated publish step adds
+# tickets to the tree.
 #
-# Default is the bare work store at {project-root}/.bmad-obeya, which is the
-# "no initiative set" case: tickets land straight in its `tickets/` bin and
-# the tree simply has no initiative node. Once an initiative is active, this
-# resolves to {project-root}/.bmad-obeya/<initiative>. Pointing it somewhere
-# else — a docs folder, a dedicated work-store repo — is a config change and
-# a folder move, never a migration.
-project_root = "{project-root}/.bmad-obeya"
+# The destination itself is not configured here: it resolves from
+# active_space in _bmad/config.toml (else {output_folder}/tickets/) —
+# see SKILL.md "Where tickets go".
+drafts_dir = ""
 
-# Optional "initiative-name=KEY" entries consulted at tree bootstrap before
-# asking (interactive) or deriving from the initiative name (autonomous —
-# a derived key is flagged as unconfirmed in the completion report).
+# Optional "initiative-name=KEY" entries consulted at key settlement
+# before asking (interactive) or deriving from the initiative name
+# (autonomous — a derived key is flagged as unconfirmed in the
+# completion report).
 project_keys = []
 
 # Ticket templates, one per type. The templates drive the output shape,
@@ -35,9 +34,11 @@ project_keys = []
 # shall-statements) swaps the template — the skill does not change.
 story_template = "assets/story-template.md"
 bug_template = "assets/bug-template.md"
-task_template = "assets/task-template.md"
+# A task is a story-shaped enabler (or human-in-the-loop work) — one template.
+task_template = "assets/story-template.md"
 spike_template = "assets/spike-template.md"
 epic_template = "assets/epic-template.md"
+initiative_template = "assets/initiative-template.md"
 
 # Allowed leaf status moves ("from>to"). scripts/update_ticket.py refuses
 # any move not listed unless --force carries an explicit user decision;
@@ -82,13 +83,10 @@ node_lifecycle_transitions = [
   "in-progress>dropped",
 ]
 
-# hitl derives from risk: hitl = (risk >= hitl_threshold), overridable
-# per ticket. Hard floors (schema migrations, data deletion, auth,
-# payments → risk 4 minimum, hitl true) are not configurable.
-hitl_threshold = 3
-
-# Review lenses run over the full draft before the user ever sees it
-# (and before autonomous mode approves its own), plus any org standards
+# Review lenses run over full multi-artifact drafts (the slice route)
+# before the user ever sees them (and before autonomous mode approves
+# its own) — create and refine are gated by the user's confirm
+# instead. Plus any org standards
 # (definition-of-ready, INVEST checklist). Entries are `skill:` or
 # `file:` references or plain text. The baked entry names its three
 # lenses explicitly, which runs them whatever the content class — the

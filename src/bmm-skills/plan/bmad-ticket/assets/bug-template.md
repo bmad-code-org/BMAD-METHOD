@@ -3,13 +3,13 @@ schema: 1
 id: [KEY-n]
 type: bug
 title: "[Symptom, not cause — what goes wrong]"
-status: backlog
+status: backlog # backlog → ready → in-progress → done, or dropped
 depends_on: []
 covers: []
 discovered_from: ""
 severity: [1-5]
 risk: [1-5]
-hitl: [true|false]
+hitl: [true|false] # true only when a human must perform part of this work — name that step in the body
 created: [YYYY-MM-DD]
 ---
 
@@ -33,9 +33,12 @@ created: [YYYY-MM-DD]
 
 ## Acceptance Criteria
 
-- #1 A test reproduces the failure before any fix exists — verify: new regression test, red before green
-- #2 [The corrected behavior, stated as an observable outcome] — verify: [the same regression test, after the fix]
-- #3 [Adjacent behavior that must still hold once the fix lands] — verify: [suite, command, or observable that proves it]
+1. **A test reproduces the failure before any fix exists.**
+   Verify: new regression test, red before green
+2. **[The corrected behavior, stated as an observable outcome]**
+   Verify: [the same regression test, after the fix]
+3. **[Adjacent behavior that must still hold once the fix lands]**
+   Verify: [suite, command, or observable that proves it]
 
 ## Boundaries
 
@@ -46,7 +49,7 @@ created: [YYYY-MM-DD]
 
 ## References
 
-- [Typed-document pointers relevant to this bug: document type + section, never file paths or line numbers. Set `discovered_from` in the frontmatter to the KEY-n that revealed this, when known. Cut the section if there are none.]
+- [Document citations relevant to this bug: document type + a path that exists on disk + section. A source that lives only in conversation is written to disk first, then cited. Set `discovered_from` in the frontmatter to the KEY-n that revealed this, when known. Cut the section if there are none.]
 - Verification entry point: [Optional. The command or workflow that runs this area's checks — only when the project has one an agent would not infer. Cut otherwise.]
 
 ## Dev Notes
