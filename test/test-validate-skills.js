@@ -63,6 +63,16 @@ function hasTriggerFinding(skillName) {
   return findings.some((f) => f.rule === 'SKILL-06' && /trigger phrase/i.test(f.detail));
 }
 
+/**
+ * Whether validateSkill emitted a finding for a given rule.
+ * @param {string} skillName - Fixture subdirectory name under FIXTURES.
+ * @param {string} rule - Validation rule identifier.
+ * @returns {boolean} True if the rule reported a finding.
+ */
+function hasRuleFinding(skillName, rule) {
+  return validateSkill(path.join(FIXTURES, skillName)).some((f) => f.rule === rule);
+}
+
 console.log(`\n${colors.cyan}Skill Validation — SKILL-06 trigger phrase${colors.reset}\n`);
 
 test('deprecated skill is exempt from the trigger-phrase requirement', () => {
@@ -78,6 +88,10 @@ test('active skill missing a trigger phrase is still flagged', () => {
 
 test('active skill with a "Use when" trigger is not flagged', () => {
   assert(hasTriggerFinding('with-trigger') === false, 'Expected no SKILL-06 trigger finding when description contains "Use when"');
+});
+
+test('canonical bmad root skill satisfies the name format', () => {
+  assert(hasRuleFinding('bmad', 'SKILL-04') === false, 'Expected canonical name "bmad" to satisfy SKILL-04');
 });
 
 // --- Summary ---

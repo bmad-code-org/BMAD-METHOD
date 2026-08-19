@@ -11,7 +11,7 @@ from unittest import mock
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SETUP_PY = REPO_ROOT / "src" / "core-skills" / "bmad-help" / "scripts" / "setup.py"
+SETUP_PY = REPO_ROOT / "src" / "core-skills" / "bmad" / "scripts" / "setup.py"
 SHARED_SCRIPTS = (
     "config_utils.py",
     "memlog.py",
@@ -60,7 +60,7 @@ user_skill_level = "intermediate"
 
 def load_setup():
     sys.dont_write_bytecode = True
-    spec = importlib.util.spec_from_file_location("bmad_help_setup", SETUP_PY)
+    spec = importlib.util.spec_from_file_location("bmad_setup", SETUP_PY)
     module = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
     spec.loader.exec_module(module)
@@ -72,7 +72,7 @@ def write(path: Path, content: str = "x\n") -> None:
     path.write_text(content, encoding="utf-8")
 
 
-def write_dest_help(
+def write_dest_bmad(
     root: Path,
     *,
     scripts: bool = True,
@@ -81,23 +81,23 @@ def write_dest_help(
     user_config: str | None = MINIMAL_USER_CONFIG,
     catalog: str | None = HELP_CSV,
 ) -> Path:
-    help_dir = root / "bmad-help"
-    write(help_dir / "SKILL.md", "---\nname: bmad-help\n---\n")
-    dest_setup = help_dir / "scripts" / "setup.py"
+    bmad_dir = root / "bmad"
+    write(bmad_dir / "SKILL.md", "---\nname: bmad\n---\n")
+    dest_setup = bmad_dir / "scripts" / "setup.py"
     dest_setup.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(SETUP_PY, dest_setup)
     if scripts:
         for name in SHARED_SCRIPTS:
             source = REPO_ROOT / "src" / "scripts" / name
-            shutil.copy2(source, help_dir / "scripts" / name)
+            shutil.copy2(source, bmad_dir / "scripts" / name)
     if assets:
         if config is not None:
-            write(help_dir / "assets" / "config.template.toml", config)
+            write(bmad_dir / "assets" / "config.template.toml", config)
         if user_config is not None:
-            write(help_dir / "assets" / "config.user.template.toml", user_config)
+            write(bmad_dir / "assets" / "config.user.template.toml", user_config)
         if catalog is not None:
-            write(help_dir / "assets" / "bmad-help.csv", catalog)
-    return help_dir
+            write(bmad_dir / "assets" / "bmad-help.csv", catalog)
+    return bmad_dir
 
 
 def user_answers_args(project: Path, text: str = USER_ANSWERS) -> list[str]:
@@ -149,7 +149,7 @@ def symlink_to_temp_dir_succeeds() -> bool:
         return link.is_symlink()
 
 
-class BmadHelpSetupTests(unittest.TestCase):
+class BmadSetupTests(unittest.TestCase):
     def test_other_skill_without_setup_is_file_not_found(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             project = Path(temp_dir) / "project"
@@ -167,19 +167,19 @@ class BmadHelpSetupTests(unittest.TestCase):
             self.assertRegex(combined, r"No such file|not found|Errno 2|cannot find", msg=combined)
 
         for skill_md in (REPO_ROOT / "src" / "core-skills").rglob("SKILL.md"):
-            if skill_md.parent.name == "bmad-help":
+            if skill_md.parent.name == "bmad":
                 continue
-            text = skill_md.read_text(encoding="utf-8")
-            self.assertNotIn("bmad-help setup", text, skill_md)
+            self.assertFalse((skill_md.parent / "references" / "setup.md").exists())
+            self.assertFalse((skill_md.parent / "scripts" / "setup.py").exists())
         for skill_md in (REPO_ROOT / "src" / "bmm-skills").rglob("SKILL.md"):
-            text = skill_md.read_text(encoding="utf-8")
-            self.assertNotIn("bmad-help setup", text, skill_md)
+            self.assertFalse((skill_md.parent / "references" / "setup.md").exists())
+            self.assertFalse((skill_md.parent / "scripts" / "setup.py").exists())
 
     def test_scripts_present_missing_config_toml_is_hard_error(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             project = root / "project"
-            skill = write_dest_help(root)
+            skill = write_dest_bmad(root)
             project.mkdir()
             scripts = project / "_bmad" / "scripts"
             scripts.mkdir(parents=True)
@@ -217,7 +217,7 @@ class BmadHelpSetupTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("failed to parse", result.stderr)
 
-    def test_first_setup_from_packaged_help(self):
+    def test_first_setup_from_packaged_bmad(self):
         sys.path.insert(0, str(REPO_ROOT / "tools"))
         try:
             import package_npx_skills
@@ -229,16 +229,16 @@ class BmadHelpSetupTests(unittest.TestCase):
             project = Path(temp_dir) / "my-app"
             project.mkdir()
             package_npx_skills.main(["--repo-root", str(REPO_ROOT), "--out", str(out)])
-            skill = out / "skills" / "bmad-help"
+            skill = out / "skills" / "bmad"
             result = run_setup(project, skill)
             self.assertEqual(result.returncode, 0, msg=result.stderr)
             self._assert_first_run_tree(project, skill, project_name="my-app")
 
-    def test_first_setup_fixture_dest_help(self):
+    def test_first_setup_fixture_dest_bmad(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             project = root / "demo-proj"
-            skill = write_dest_help(root)
+            skill = write_dest_bmad(root)
             project.mkdir()
             result = run_setup(project, skill)
             self.assertEqual(result.returncode, 0, msg=result.stderr)
@@ -255,7 +255,7 @@ class BmadHelpSetupTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             project = root / "proj"
-            skill = write_dest_help(root)
+            skill = write_dest_bmad(root)
             project.mkdir()
             with mock.patch("os.symlink", side_effect=OSError("operation not permitted")):
                 code = setup.main(["--project-root", str(project), "--skill", str(skill)])
@@ -269,7 +269,7 @@ class BmadHelpSetupTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             project = root / "proj"
-            skill = write_dest_help(root)
+            skill = write_dest_bmad(root)
             project.mkdir()
             bmad = project / "_bmad"
             write(bmad / "scripts" / "resolve_config.py", "# old-scripts\n")
@@ -326,7 +326,7 @@ class BmadHelpSetupTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             project = root / "proj"
-            skill = write_dest_help(root)
+            skill = write_dest_bmad(root)
             project.mkdir()
             write(project / "_bmad" / "config.toml", "# keep-config\n")
 
@@ -356,7 +356,7 @@ class BmadHelpSetupTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             project = root / "proj"
-            skill = write_dest_help(root)
+            skill = write_dest_bmad(root)
             project.mkdir()
             first = run_setup(project, skill)
             self.assertEqual(first.returncode, 0, msg=first.stderr)
@@ -428,7 +428,7 @@ class BmadHelpSetupTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             project = root / "proj"
-            skill = write_dest_help(root)
+            skill = write_dest_bmad(root)
             project.mkdir()
             bmad = project / "_bmad"
             bmad.mkdir()
@@ -460,7 +460,7 @@ class BmadHelpSetupTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             project = root / "proj"
-            skill = write_dest_help(root)
+            skill = write_dest_bmad(root)
             project.mkdir()
             scripts = project / "_bmad" / "scripts"
             write(scripts / "resolve_config.py", "# stale\n")
@@ -475,7 +475,7 @@ class BmadHelpSetupTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             project = root / "proj"
-            skill = write_dest_help(root)
+            skill = write_dest_bmad(root)
             project.mkdir()
             scripts = project / "_bmad" / "scripts"
             scripts.mkdir(parents=True)
@@ -494,7 +494,7 @@ class BmadHelpSetupTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             project = root / "proj"
-            skill = write_dest_help(root)
+            skill = write_dest_bmad(root)
             project.mkdir()
             first = run_setup(project, skill)
             self.assertEqual(first.returncode, 0, msg=first.stderr)
@@ -511,7 +511,7 @@ class BmadHelpSetupTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             project = root / "proj"
-            skill = write_dest_help(root)
+            skill = write_dest_bmad(root)
             project.mkdir()
             bmad = project / "_bmad"
             write(bmad / "custom" / "keep.txt", "custom-keep\n")
@@ -547,7 +547,7 @@ class BmadHelpSetupTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             project = root / "proj"
-            skill = write_dest_help(root)
+            skill = write_dest_bmad(root)
             project.mkdir()
             bmad = project / "_bmad"
             write(bmad / "config.toml", "[broken\n")
@@ -574,7 +574,7 @@ class BmadHelpSetupTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             project = root / "proj"
-            skill = write_dest_help(root)
+            skill = write_dest_bmad(root)
             project.mkdir()
             result = run_setup(project, skill)
             self.assertEqual(result.returncode, 0, msg=result.stderr)
@@ -587,7 +587,7 @@ class BmadHelpSetupTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             project = root / "proj"
-            skill = write_dest_help(root)
+            skill = write_dest_bmad(root)
             project.mkdir()
             result = run_setup(project, skill, *user_answers_args(project))
             self.assertEqual(result.returncode, 0, msg=result.stderr)
@@ -604,7 +604,7 @@ class BmadHelpSetupTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             project = root / "proj"
-            skill = write_dest_help(root)
+            skill = write_dest_bmad(root)
             project.mkdir()
             result = run_setup(
                 project,
@@ -634,7 +634,7 @@ class BmadHelpSetupTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             project = root / "proj"
-            skill = write_dest_help(root)
+            skill = write_dest_bmad(root)
             project.mkdir()
             write(project / "_bmad" / "config.user.toml", "# keep-user\n")
             result = run_setup(project, skill, *user_answers_args(project))
@@ -648,7 +648,7 @@ class BmadHelpSetupTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             project = root / "proj"
-            skill = write_dest_help(root, scripts=False)
+            skill = write_dest_bmad(root, scripts=False)
             project.mkdir()
             result = run_setup(project, skill)
             self.assertNotEqual(result.returncode, 0)
@@ -660,7 +660,7 @@ class BmadHelpSetupTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             project = root / "proj"
-            skill = write_dest_help(root, assets=False)
+            skill = write_dest_bmad(root, assets=False)
             project.mkdir()
             result = run_setup(project, skill)
             self.assertNotEqual(result.returncode, 0)

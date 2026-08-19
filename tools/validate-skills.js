@@ -41,7 +41,7 @@ const positionalArgs = args.filter((a) => !a.startsWith('--'));
 
 // --- Constants ---
 
-const NAME_REGEX = /^bmad-[a-z0-9]+(-[a-z0-9]+)*$/;
+const NAME_REGEX = /^(?:bmad|bmad-[a-z0-9]+(?:-[a-z0-9]+)*)$/;
 const STEP_FILENAME_REGEX = /^step-\d{2}[a-z]?-[a-z0-9-]+\.md$/;
 const TIME_ESTIMATE_PATTERNS = [/takes?\s+\d+\s*min/i, /~\s*\d+\s*min/i, /estimated\s+time/i, /\bETA\b/];
 const TEMPLATE_FILENAME_REGEX = /template/i;

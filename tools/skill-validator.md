@@ -68,8 +68,8 @@ If no findings are generated (from either pass), the skill passes validation.
 
 - **Severity:** HIGH
 - **Applies to:** `SKILL.md`
-- **Rule:** The `name` value must start with `bmad-`, use only lowercase letters, numbers, and single hyphens between segments.
-- **Detection:** Regex test: `^bmad-[a-z0-9]+(-[a-z0-9]+)*$`.
+- **Rule:** The `name` value must be the canonical root skill `bmad`, or start with `bmad-` and use only lowercase letters, numbers, and single hyphens between segments.
+- **Detection:** Regex test: `^(?:bmad|bmad-[a-z0-9]+(?:-[a-z0-9]+)*)$`.
 - **Fix:** Rename to comply with the format (e.g., `bmad-my-skill`).
 
 ### SKILL-05 — `name` Must Match Directory Name
