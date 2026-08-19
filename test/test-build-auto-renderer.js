@@ -270,7 +270,11 @@ async function main() {
       '[[workflow.review_layers]]\nid = 42\nname = "bad"\ninstruction = "bad"\n',
       'utf8',
     );
-    assert(run(keyed).stdout.includes('identifier `id` must be a string'), 'non-string id accepted');
+    // config_utils.py's merge-key detector no longer raises here (#2721):
+    // it disqualifies the non-string `id` candidate and falls back to
+    // append semantics. The layer still HALTs cleanly, but now via
+    // render_skill.py's own review-layer schema validation instead.
+    assert(run(keyed).stdout.includes('.id must be a string'), 'non-string id accepted');
   });
 
   test('snapshot-like text inside customization prose is preserved', () => {

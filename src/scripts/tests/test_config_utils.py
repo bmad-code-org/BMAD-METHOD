@@ -43,9 +43,42 @@ class ConfigUtilsTests(unittest.TestCase):
             ],
         )
 
-    def test_non_string_keyed_identifier_is_rejected(self):
-        with self.assertRaisesRegex(ConfigError, "identifier `id` must be a string"):
-            structural_merge([{"id": "valid"}], [{"id": 42}])
+    def test_non_string_keyed_identifier_falls_back_to_append(self):
+        # A candidate whose values are inconsistently typed across items must
+        # disqualify that candidate (not raise) and, with no other candidate
+        # available, fall back to append semantics.
+        merged = structural_merge([{"id": "valid"}], [{"id": 42}])
+
+        self.assertEqual(merged, [{"id": "valid"}, {"id": 42}])
+
+    def test_non_string_candidate_skips_to_next_valid_candidate(self):
+        # `code` is present on every item but not a string; the detector
+        # must move on to `id`, which is present, string, and non-empty
+        # on every item, and use it as the merge key.
+        base = [{"code": 200, "id": "ok", "value": "old"}]
+        override = [{"code": 200, "id": "ok", "value": "new"}]
+
+        merged = structural_merge(base, override)
+
+        self.assertEqual(merged, [{"code": 200, "id": "ok", "value": "new"}])
+
+    def test_non_string_code_values_across_all_items_fall_back_to_append(self):
+        # Regression test for #2721: a keyed array of tables (e.g.
+        # HTTP-status tables) where every item shares a non-string `code`
+        # field, and no other candidate qualifies, must not raise — it
+        # must fall back to append-merge like pre-6.11 behavior.
+        base = [{"code": 200, "description": "OK"}]
+        override = [{"code": 404, "description": "Not Found"}]
+
+        merged = structural_merge(base, override)
+
+        self.assertEqual(
+            merged,
+            [
+                {"code": 200, "description": "OK"},
+                {"code": 404, "description": "Not Found"},
+            ],
+        )
 
     def test_present_malformed_optional_layer_is_rejected(self):
         with tempfile.TemporaryDirectory() as temp_dir:
