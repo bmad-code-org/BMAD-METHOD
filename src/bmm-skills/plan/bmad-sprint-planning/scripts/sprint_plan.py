@@ -175,7 +175,12 @@ def parse_epics(paths):
     warnings = []
     for path in paths:
         try:
-            lines = Path(path).read_text(encoding="utf-8").splitlines()
+            # utf-8-sig: tolerate BOM-prefixed epic files (PowerShell
+            # Out-File/Set-Content, Notepad) — see brain.py / pick_methods.py
+            # for the same fix. Without it, a BOM glued to line 1 defeats both
+            # EPIC_RE and SUSPECT_RE (both anchored ^#) and the heading is
+            # silently dropped with no warning.
+            lines = Path(path).read_text(encoding="utf-8-sig").splitlines()
         except OSError as exc:
             _fail(f"cannot read epic file {path}: {exc}")
         in_fence = False

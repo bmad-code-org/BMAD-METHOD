@@ -259,6 +259,19 @@ def test_non_ascii_titles_keep_distinct_keys(tmp_path, capsys):
     assert "1-1-用户认证" in keys and "1-2-账户管理" in keys
 
 
+def test_bom_prefixed_epic_heading_is_still_parsed(tmp_path):
+    """A UTF-8 BOM (PowerShell Out-File/Set-Content, Notepad) glued to line 1
+    must not defeat EPIC_RE (or the SUSPECT_RE warning net). The epic here has
+    no stories, so `epics.setdefault` can only run through the epic-heading
+    branch — a story on a later line could mask the bug by creating the epic
+    entry on its own, as it does in `build_status`."""
+    epic_file = tmp_path / "epics.md"
+    epic_file.write_bytes("\ufeff## Epic 1: Foundation\n".encode("utf-8"))
+    entries, warnings = mod.parse_epics([str(epic_file)])
+    assert entries == [("epic-1", "epic", 1), ("epic-1-retrospective", "retro", 1)]
+    assert warnings == []
+
+
 def test_suspect_heading_is_reported(tmp_path, capsys):
     text = EPICS_FIXTURE + "\n### Story Two point one: Bad Format\n"
     run_generate(tmp_path, epics_text=text)
