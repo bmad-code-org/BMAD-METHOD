@@ -1,4 +1,6 @@
+import datetime
 import importlib.util
+import json
 import os
 import shutil
 import subprocess
@@ -104,6 +106,61 @@ def user_answers_args(project: Path, text: str = USER_ANSWERS) -> list[str]:
     path = project / ".bmad-help-setup-user.toml"
     write(path, text)
     return ["--user-answers", str(path)]
+
+
+def module_answers_args(
+    project: Path, answers: dict[str, dict[str, str]]
+) -> list[str]:
+    path = project / ".bmad-help-setup-modules.toml"
+    lines: list[str] = []
+    for module, values in answers.items():
+        lines.append(f"[modules.{json.dumps(module, ensure_ascii=False)}]")
+        lines.extend(
+            f"{json.dumps(key, ensure_ascii=False)} = "
+            f"{json.dumps(value, ensure_ascii=False)}"
+            for key, value in values.items()
+        )
+        lines.append("")
+    write(path, "\n".join(lines))
+    return ["--module-answers", str(path)]
+
+
+def write_module_skill(
+    root: Path,
+    skill_id: str,
+    module: str,
+    *,
+    questions: tuple[dict[str, str], ...] = (),
+    scripts: dict[str, bytes] | None = None,
+    script_entries: tuple[str, ...] | None = None,
+    update_source: str = "file:skills",
+    extra_fields: dict[str, object] | None = None,
+) -> Path:
+    skill = root / skill_id
+    scripts = scripts or {}
+    manifest = {
+        "version": "1.2.3",
+        "module": module,
+        "update_source": update_source,
+    }
+    if questions:
+        manifest["config_questions"] = list(questions)
+    entries = tuple(scripts) if script_entries is None else script_entries
+    if entries:
+        manifest["scripts"] = list(entries)
+    if extra_fields:
+        manifest.update(extra_fields)
+    write(
+        skill / "module-manifest.md",
+        "---\n"
+        + json.dumps(manifest, ensure_ascii=False)
+        + "\n---\n\n# module\n",
+    )
+    for relative, content in scripts.items():
+        path = skill / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(content)
+    return skill
 
 
 def run_setup(project: Path, skill: Path, *extra: str) -> subprocess.CompletedProcess[str]:
@@ -647,7 +704,846 @@ class BmadSetupTests(unittest.TestCase):
                 (skill / "assets" / "bmad-help.csv").read_bytes(),
             )
 
-    def test_unparseable_toml_and_yaml_are_rewritten(self):
+    def test_lists_ordered_missing_manifest_questions_without_writing(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "demo-proj"
+            skill = write_dest_bmad(root)
+            project.mkdir()
+            write(
+                project / "_bmad" / "config.toml",
+                "[modules.alpha]\nexisting = false\n",
+            )
+            write(project / "_bmad" / "custom" / "keep.txt", "keep\n")
+            write_module_skill(
+                root,
+                "zeta-skill",
+                "zeta",
+                questions=(
+                    {
+                        "key": "choice",
+                        "prompt": "Choose zeta",
+                        "default": "{directory_name}/{project-root}/{unknown}",
+                    },
+                ),
+            )
+            write_module_skill(
+                root,
+                "alpha-skill",
+                "alpha",
+                questions=(
+                    {
+                        "key": "existing",
+                        "prompt": "Do not ask",
+                        "default": "ignored",
+                    },
+                    {
+                        "key": "first",
+                        "prompt": "First alpha",
+                        "default": "one",
+                    },
+                    {
+                        "key": "nested.second",
+                        "prompt": "Second alpha",
+                        "default": "two",
+                    },
+                ),
+            )
+            before = {
+                path.relative_to(project): path.read_bytes()
+                for path in project.rglob("*")
+                if path.is_file()
+            }
+
+            result = run_setup(project, skill, "--list-config-questions")
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            questions = json.loads(result.stdout)
+            self.assertEqual(
+                [
+                    (item["module"], item["key"], item["prompt"])
+                    for item in questions
+                ],
+                [
+                    ("alpha", "first", "First alpha"),
+                    ("alpha", "nested.second", "Second alpha"),
+                    ("zeta", "choice", "Choose zeta"),
+                ],
+            )
+            self.assertEqual(
+                questions[2]["default"],
+                "demo-proj/{project-root}/{unknown}",
+            )
+            self.assertEqual(
+                {
+                    path.relative_to(project): path.read_bytes()
+                    for path in project.rglob("*")
+                    if path.is_file()
+                },
+                before,
+            )
+            self.assertFalse((project / "_bmad-output").exists())
+            self.assertEqual(list(project.glob("_bmad.setup-*")), [])
+
+    def test_manifest_answers_and_nested_scripts_are_installed_and_refreshed(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "proj"
+            skill = write_dest_bmad(root)
+            project.mkdir()
+            bmad = project / "_bmad"
+            write(
+                bmad / "config.toml",
+                "[modules.alpha]\n"
+                "existing = 42\n"
+                '"naïve" = "café"\n'
+                "release_date = 2026-08-18\n"
+                "release_time = 14:35:22.123456\n"
+                "release_datetime = 2026-08-18T14:35:22-07:00\n",
+            )
+            original_values = tomllib.loads(
+                (bmad / "config.toml").read_text(encoding="utf-8")
+            )["modules"]["alpha"]
+            write(bmad / "custom" / "keep.txt", "custom\n")
+            write(bmad / "config.user.toml", "# user\n")
+            questions = (
+                {
+                    "key": "existing",
+                    "prompt": "Existing",
+                    "default": "ignored",
+                },
+                {
+                    "key": "nested.answer",
+                    "prompt": "Nested",
+                    "default": "default",
+                },
+                {
+                    "key": "escaped",
+                    "prompt": "Escaped",
+                    "default": "default",
+                },
+            )
+            script_path = "scripts/tools/check.py"
+            module_skill = write_module_skill(
+                root,
+                "alpha-skill",
+                "alpha",
+                questions=questions,
+                scripts={script_path: b"# module script\n"},
+            )
+            escaped = 'quote " slash \\ tab\t line\n control\x01'
+
+            result = run_setup(
+                project,
+                skill,
+                *module_answers_args(
+                    project,
+                    {
+                        "alpha": {
+                            "nested.answer": "chosen",
+                            "escaped": escaped,
+                        }
+                    },
+                ),
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            parsed = tomllib.loads(
+                (bmad / "config.toml").read_text(encoding="utf-8")
+            )
+            self.assertEqual(parsed["modules"]["alpha"]["existing"], 42)
+            for key in (
+                "naïve",
+                "release_date",
+                "release_time",
+                "release_datetime",
+            ):
+                self.assertEqual(parsed["modules"]["alpha"][key], original_values[key])
+                self.assertIs(
+                    type(parsed["modules"]["alpha"][key]),
+                    type(original_values[key]),
+                )
+            self.assertIsInstance(
+                parsed["modules"]["alpha"]["release_date"], datetime.date
+            )
+            self.assertIsInstance(
+                parsed["modules"]["alpha"]["release_time"], datetime.time
+            )
+            self.assertIsInstance(
+                parsed["modules"]["alpha"]["release_datetime"],
+                datetime.datetime,
+            )
+            self.assertEqual(
+                parsed["modules"]["alpha"]["nested"]["answer"], "chosen"
+            )
+            self.assertEqual(parsed["modules"]["alpha"]["escaped"], escaped)
+            installed = bmad / "alpha" / "scripts" / "tools" / "check.py"
+            self.assertEqual(
+                installed.read_bytes(),
+                (module_skill / script_path).read_bytes(),
+            )
+            self.assertFalse((bmad / "scripts" / "tools" / "check.py").exists())
+            self.assertFalse((bmad / "alpha" / "config.yaml").exists())
+            self.assertEqual(
+                (bmad / "custom" / "keep.txt").read_bytes(), b"custom\n"
+            )
+            self.assertEqual(
+                (bmad / "config.user.toml").read_bytes(), b"# user\n"
+            )
+
+            expanded_questions = questions + (
+                {
+                    "key": "new_key",
+                    "prompt": "New question",
+                    "default": "new default",
+                },
+            )
+            write_module_skill(
+                root,
+                "alpha-skill",
+                "alpha",
+                questions=expanded_questions,
+                scripts={script_path: b"# refreshed\n"},
+            )
+            pending = run_setup(project, skill, "--list-config-questions")
+            self.assertEqual(pending.returncode, 0, msg=pending.stderr)
+            self.assertEqual(
+                [item["key"] for item in json.loads(pending.stdout)],
+                ["new_key"],
+            )
+            second = run_setup(
+                project,
+                skill,
+                *module_answers_args(
+                    project, {"alpha": {"new_key": "new answer"}}
+                ),
+            )
+            self.assertEqual(second.returncode, 0, msg=second.stderr)
+            reparsed = tomllib.loads(
+                (bmad / "config.toml").read_text(encoding="utf-8")
+            )
+            self.assertEqual(reparsed["modules"]["alpha"]["existing"], 42)
+            self.assertEqual(reparsed["modules"]["alpha"]["escaped"], escaped)
+            for key in (
+                "naïve",
+                "release_date",
+                "release_time",
+                "release_datetime",
+            ):
+                self.assertEqual(
+                    reparsed["modules"]["alpha"][key], original_values[key]
+                )
+                self.assertIs(
+                    type(reparsed["modules"]["alpha"][key]),
+                    type(original_values[key]),
+                )
+            self.assertEqual(
+                reparsed["modules"]["alpha"]["new_key"], "new answer"
+            )
+            self.assertEqual(installed.read_bytes(), b"# refreshed\n")
+
+    def test_bmm_manifest_answers_do_not_enter_legacy_module_yaml(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "proj"
+            skill = write_dest_bmad(root)
+            project.mkdir()
+            write_module_skill(
+                root,
+                "bmm-skill",
+                "bmm",
+                questions=(
+                    {
+                        "key": "review.mode",
+                        "prompt": "Review mode",
+                        "default": "strict",
+                    },
+                ),
+            )
+
+            result = run_setup(
+                project,
+                skill,
+                *module_answers_args(
+                    project, {"bmm": {"review.mode": "strict"}}
+                ),
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            parsed = tomllib.loads(
+                (project / "_bmad" / "config.toml").read_text(
+                    encoding="utf-8"
+                )
+            )
+            self.assertEqual(
+                parsed["modules"]["bmm"]["review"]["mode"], "strict"
+            )
+            legacy = (project / "_bmad" / "bmm" / "config.yaml").read_text(
+                encoding="utf-8"
+            )
+            self.assertNotIn("review", legacy)
+            self.assertNotIn("strict", legacy)
+
+    def test_future_manifest_fields_are_ignored_by_runtime_setup(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "proj"
+            skill = write_dest_bmad(root)
+            project.mkdir()
+            write_module_skill(
+                root,
+                "alpha-skill",
+                "alpha",
+                questions=(
+                    {
+                        "key": "answer",
+                        "prompt": "Future-compatible prompt",
+                        "default": "yes",
+                    },
+                ),
+                extra_fields={
+                    "future_manifest_feature": {
+                        "enabled": True,
+                        "format": 2,
+                    }
+                },
+            )
+
+            pending = run_setup(project, skill, "--list-config-questions")
+            self.assertEqual(pending.returncode, 0, msg=pending.stderr)
+            self.assertEqual(
+                json.loads(pending.stdout)[0]["prompt"],
+                "Future-compatible prompt",
+            )
+            result = run_setup(
+                project,
+                skill,
+                *module_answers_args(
+                    project, {"alpha": {"answer": "accepted"}}
+                ),
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            parsed = tomllib.loads(
+                (project / "_bmad" / "config.toml").read_text(
+                    encoding="utf-8"
+                )
+            )
+            self.assertEqual(
+                parsed["modules"]["alpha"]["answer"], "accepted"
+            )
+
+    def test_module_scripts_with_same_relative_path_stay_isolated(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "proj"
+            skill = write_dest_bmad(root)
+            project.mkdir()
+            relative = "scripts/shared/tool.py"
+            write_module_skill(
+                root,
+                "alpha-skill",
+                "alpha",
+                scripts={relative: b"# alpha\n"},
+            )
+            write_module_skill(
+                root,
+                "beta-skill",
+                "beta",
+                scripts={relative: b"# beta\n"},
+            )
+
+            result = run_setup(project, skill)
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            bmad = project / "_bmad"
+            self.assertEqual(
+                (bmad / "alpha" / relative).read_bytes(), b"# alpha\n"
+            )
+            self.assertEqual(
+                (bmad / "beta" / relative).read_bytes(), b"# beta\n"
+            )
+            self.assertFalse((bmad / relative).exists())
+
+    def test_existing_scalar_blocks_declared_descendant_without_overwrite(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "proj"
+            skill = write_dest_bmad(root)
+            project.mkdir()
+            config = project / "_bmad" / "config.toml"
+            write(config, '[modules.alpha]\noutput = "keep"\n')
+            write_module_skill(
+                root,
+                "alpha-skill",
+                "alpha",
+                questions=(
+                    {
+                        "key": "output.directory",
+                        "prompt": "Output directory",
+                        "default": "out",
+                    },
+                ),
+            )
+            before = config.read_bytes()
+
+            result = run_setup(
+                project,
+                skill,
+                *module_answers_args(
+                    project,
+                    {"alpha": {"output.directory": "replacement"}},
+                ),
+            )
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn(str(config), result.stderr)
+            self.assertIn("parent value", result.stderr)
+            self.assertEqual(config.read_bytes(), before)
+            self.assertEqual(
+                tomllib.loads(config.read_text(encoding="utf-8"))["modules"]
+                ["alpha"]["output"],
+                "keep",
+            )
+            self.assertEqual(list(project.glob("_bmad.setup-*")), [])
+
+    def test_identical_manifest_copies_dedupe_and_conflicts_are_atomic(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "proj"
+            skill = write_dest_bmad(root)
+            project.mkdir()
+            question = (
+                {
+                    "key": "answer",
+                    "prompt": "Answer",
+                    "default": "yes",
+                },
+            )
+            write_module_skill(root, "alpha-one", "alpha", questions=question)
+            write_module_skill(root, "alpha-two", "alpha", questions=question)
+            pending = run_setup(project, skill, "--list-config-questions")
+            self.assertEqual(pending.returncode, 0, msg=pending.stderr)
+            self.assertEqual(len(json.loads(pending.stdout)), 1)
+
+            write(project / "_bmad" / "config.toml", MINIMAL_CONFIG)
+            write(project / "_bmad" / "custom" / "keep.txt", "keep\n")
+            before = {
+                path.relative_to(project / "_bmad"): path.read_bytes()
+                for path in (project / "_bmad").rglob("*")
+                if path.is_file()
+            }
+            write_module_skill(
+                root,
+                "alpha-two",
+                "alpha",
+                questions=(
+                    {
+                        "key": "different",
+                        "prompt": "Different",
+                        "default": "no",
+                    },
+                ),
+            )
+
+            result = run_setup(project, skill)
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("conflicting installed manifests", result.stderr)
+            self.assertIn("alpha-one", result.stderr)
+            self.assertIn("alpha-two", result.stderr)
+            self.assertEqual(
+                {
+                    path.relative_to(project / "_bmad"): path.read_bytes()
+                    for path in (project / "_bmad").rglob("*")
+                    if path.is_file()
+                },
+                before,
+            )
+            self.assertEqual(list(project.glob("_bmad.setup-*")), [])
+
+    def test_missing_declared_script_and_invalid_answers_are_atomic(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "proj"
+            skill = write_dest_bmad(root)
+            project.mkdir()
+            write(project / "_bmad" / "config.toml", MINIMAL_CONFIG)
+            write(project / "_bmad" / "custom" / "keep.txt", "keep\n")
+            original = {
+                path.relative_to(project / "_bmad"): path.read_bytes()
+                for path in (project / "_bmad").rglob("*")
+                if path.is_file()
+            }
+            write_module_skill(
+                root,
+                "alpha-skill",
+                "alpha",
+                script_entries=("scripts/missing.py",),
+            )
+
+            missing = run_setup(project, skill)
+
+            self.assertNotEqual(missing.returncode, 0)
+            self.assertIn("scripts/missing.py", missing.stderr)
+            self.assertEqual(
+                {
+                    path.relative_to(project / "_bmad"): path.read_bytes()
+                    for path in (project / "_bmad").rglob("*")
+                    if path.is_file()
+                },
+                original,
+            )
+
+            shutil.rmtree(root / "alpha-skill")
+            write_module_skill(
+                root,
+                "alpha-skill",
+                "alpha",
+                questions=(
+                    {
+                        "key": "answer",
+                        "prompt": "Answer",
+                        "default": "yes",
+                    },
+                ),
+            )
+            answer_path = project / ".bmad-help-setup-modules.toml"
+            write(answer_path, "[modules.alpha]\nanswer = 7\n")
+
+            invalid = run_setup(
+                project, skill, "--module-answers", str(answer_path)
+            )
+
+            self.assertNotEqual(invalid.returncode, 0)
+            self.assertIn("must be a string", invalid.stderr)
+            self.assertEqual(
+                {
+                    path.relative_to(project / "_bmad"): path.read_bytes()
+                    for path in (project / "_bmad").rglob("*")
+                    if path.is_file()
+                },
+                original,
+            )
+
+    def test_invalid_packaged_manifest_is_source_specific_and_atomic(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "proj"
+            skill = write_dest_bmad(root)
+            project.mkdir()
+            bmad = project / "_bmad"
+            write(bmad / "config.toml", MINIMAL_CONFIG)
+            write(bmad / "custom" / "keep.txt", "keep\n")
+            manifest = root / "alpha-skill" / "module-manifest.md"
+            write(
+                manifest,
+                "---\n"
+                "version: 1.2.3\n"
+                "module: alpha\n"
+                "update_source: file:skills\n"
+                "config_questions: invalid\n"
+                "---\n",
+            )
+            before = {
+                path.relative_to(bmad): path.read_bytes()
+                for path in bmad.rglob("*")
+                if path.is_file()
+            }
+
+            result = run_setup(project, skill)
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn(str(manifest), result.stderr)
+            self.assertIn("config_questions", result.stderr)
+            self.assertEqual(
+                {
+                    path.relative_to(bmad): path.read_bytes()
+                    for path in bmad.rglob("*")
+                    if path.is_file()
+                },
+                before,
+            )
+            self.assertEqual(list(project.glob("_bmad.setup-*")), [])
+
+    def test_runtime_manifest_validation_rejects_recognized_bad_shapes(self):
+        setup = load_setup()
+        base = {
+            "version": "1.2.3",
+            "module": "alpha",
+            "update_source": "file:skills",
+        }
+        cases: tuple[tuple[str, bytes, str], ...] = (
+            ("malformed-yaml", b"---\nversion: [\n---\n", "YAML"),
+            (
+                "duplicate-yaml-mapping",
+                b"---\nversion: 1.2.3\nmodule: alpha\nmodule: beta\n"
+                b"update_source: file:skills\n---\n",
+                "duplicate",
+            ),
+            (
+                "duplicate-question",
+                (
+                    "---\n"
+                    + json.dumps(
+                        {
+                            **base,
+                            "config_questions": [
+                                {"key": "output", "prompt": "One", "default": "1"},
+                                {"key": "output", "prompt": "Two", "default": "2"},
+                            ],
+                        }
+                    )
+                    + "\n---\n"
+                ).encode(),
+                "conflicts",
+            ),
+            (
+                "question-prefix-collision",
+                (
+                    "---\n"
+                    + json.dumps(
+                        {
+                            **base,
+                            "config_questions": [
+                                {"key": "output", "prompt": "One", "default": "1"},
+                                {
+                                    "key": "output.directory",
+                                    "prompt": "Two",
+                                    "default": "2",
+                                },
+                            ],
+                        }
+                    )
+                    + "\n---\n"
+                ).encode(),
+                "conflicts",
+            ),
+            *tuple(
+                (
+                    f"unsafe-script-{index}",
+                    (
+                        "---\n"
+                        + json.dumps({**base, "scripts": [entry]})
+                        + "\n---\n"
+                    ).encode(),
+                    repr(entry),
+                )
+                for index, entry in enumerate(
+                    ("scripts", "scripts/", "scripts/../tool.py", "other/tool.py")
+                )
+            ),
+            (
+                "unsafe-module",
+                (
+                    "---\n"
+                    + json.dumps({**base, "module": "../escape"})
+                    + "\n---\n"
+                ).encode(),
+                "unsafe",
+            ),
+            (
+                "case-insensitive-reserved-module",
+                (
+                    "---\n"
+                    + json.dumps({**base, "module": "ScRiPtS"})
+                    + "\n---\n"
+                ).encode(),
+                "unsafe",
+            ),
+        )
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            for name, raw, diagnostic in cases:
+                path = root / name / "module-manifest.md"
+                with self.subTest(name=name), self.assertRaises(Exception) as caught:
+                    setup.parse_packaged_manifest(path, raw)
+                message = str(caught.exception)
+                self.assertIn(str(path), message)
+                self.assertIn(diagnostic.lower(), message.lower())
+
+    def test_case_only_module_ids_name_both_sources_and_are_atomic(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "proj"
+            skill = write_dest_bmad(root)
+            project.mkdir()
+            bmad = project / "_bmad"
+            write(bmad / "config.toml", MINIMAL_CONFIG)
+            write(bmad / "custom" / "keep.txt", "keep\n")
+            upper = write_module_skill(root, "upper-skill", "Alpha")
+            lower = write_module_skill(root, "lower-skill", "alpha")
+            before = {
+                path.relative_to(bmad): path.read_bytes()
+                for path in bmad.rglob("*")
+                if path.is_file()
+            }
+
+            result = run_setup(project, skill)
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("differ only by case", result.stderr)
+            self.assertIn(str(upper / "module-manifest.md"), result.stderr)
+            self.assertIn(str(lower / "module-manifest.md"), result.stderr)
+            self.assertEqual(
+                {
+                    path.relative_to(bmad): path.read_bytes()
+                    for path in bmad.rglob("*")
+                    if path.is_file()
+                },
+                before,
+            )
+            self.assertEqual(list(project.glob("_bmad.setup-*")), [])
+
+    def test_symlinked_declared_script_is_rejected(self):
+        if not symlink_to_temp_dir_succeeds():
+            self.skipTest("symlinks not available")
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "proj"
+            skill = write_dest_bmad(root)
+            project.mkdir()
+            module_skill = write_module_skill(
+                root,
+                "alpha-skill",
+                "alpha",
+                script_entries=("scripts/link.py",),
+            )
+            outside = root / "outside.py"
+            write(outside, "# outside\n")
+            link = module_skill / "scripts" / "link.py"
+            link.parent.mkdir(parents=True)
+            os.symlink(outside, link)
+
+            result = run_setup(project, skill)
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn(str(module_skill / "module-manifest.md"), result.stderr)
+            self.assertIn("scripts/link.py", result.stderr)
+            self.assertFalse((project / "_bmad").exists())
+            self.assertEqual(list(project.glob("_bmad.setup-*")), [])
+
+    def test_declared_script_read_error_is_source_specific_and_atomic(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "proj"
+            skill = write_dest_bmad(root)
+            project.mkdir()
+            bmad = project / "_bmad"
+            write(bmad / "config.toml", MINIMAL_CONFIG)
+            write(bmad / "custom" / "keep.txt", "keep\n")
+            module_skill = write_module_skill(
+                root,
+                "alpha-skill",
+                "alpha",
+                scripts={"scripts/tool.py": b"# tool\n"},
+            )
+            declared = (module_skill / "scripts" / "tool.py").resolve()
+            manifest = module_skill / "module-manifest.md"
+            before = {
+                path.relative_to(bmad): path.read_bytes()
+                for path in bmad.rglob("*")
+                if path.is_file()
+            }
+            real_read_bytes = Path.read_bytes
+
+            def fail_declared(path: Path) -> bytes:
+                if path == declared:
+                    raise OSError("declared read failed")
+                return real_read_bytes(path)
+
+            with mock.patch.object(Path, "read_bytes", fail_declared):
+                with self.assertRaises(Exception) as caught:
+                    setup.main(
+                        [
+                            "--project-root",
+                            str(project),
+                            "--skill",
+                            str(skill),
+                        ]
+                    )
+
+            message = str(caught.exception)
+            self.assertIn(str(declared), message)
+            self.assertIn(str(manifest), message)
+            self.assertIn("declared read failed", message)
+            self.assertEqual(
+                {
+                    path.relative_to(bmad): path.read_bytes()
+                    for path in bmad.rglob("*")
+                    if path.is_file()
+                },
+                before,
+            )
+            self.assertEqual(list(project.glob("_bmad.setup-*")), [])
+
+    def test_module_answer_collisions_and_diagnostics_name_source(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            collision = root / "collision.toml"
+            write(
+                collision,
+                '[modules.alpha]\n"nested.answer" = "literal"\n'
+                "[modules.alpha.nested]\nanswer = \"table\"\n",
+            )
+            with self.assertRaises(Exception) as caught:
+                setup.load_module_answers(collision)
+            self.assertIn(str(collision), str(caught.exception))
+            self.assertIn("more than once", str(caught.exception))
+
+            for mode in ("missing", "extra"):
+                with self.subTest(mode=mode):
+                    case_root = root / mode
+                    project = case_root / "proj"
+                    skill = write_dest_bmad(case_root)
+                    project.mkdir()
+                    questions = (
+                        {
+                            "key": "first",
+                            "prompt": "First",
+                            "default": "one",
+                        },
+                        {
+                            "key": "second",
+                            "prompt": "Second",
+                            "default": "two",
+                        },
+                    )
+                    write_module_skill(
+                        case_root,
+                        "alpha-skill",
+                        "alpha",
+                        questions=questions,
+                    )
+                    answer_path = project / "chosen-module-answers.toml"
+                    if mode == "missing":
+                        write(answer_path, '[modules.alpha]\nfirst = "one"\n')
+                        diagnostic = "modules.alpha.second"
+                    else:
+                        write(
+                            answer_path,
+                            '[modules.alpha]\nfirst = "one"\n'
+                            'second = "two"\nextra = "three"\n',
+                        )
+                        diagnostic = "modules.alpha.extra"
+
+                    result = run_setup(
+                        project,
+                        skill,
+                        "--module-answers",
+                        str(answer_path),
+                    )
+
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertIn(str(answer_path), result.stderr)
+                    self.assertIn(diagnostic, result.stderr)
+                    self.assertFalse((project / "_bmad").exists())
+                    self.assertEqual(list(project.glob("_bmad.setup-*")), [])
+
+    def test_unparseable_team_toml_is_hard_error_and_yaml_is_unchanged(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             project = root / "proj"
@@ -657,22 +1553,26 @@ class BmadSetupTests(unittest.TestCase):
             write(bmad / "config.toml", "[broken\n")
             write(bmad / "core" / "config.yaml", ":::not-yaml\n")
             write(bmad / "bmm" / "config.yaml", "- nested:\n  - list\n")
+            before = {
+                path.relative_to(bmad): path.read_bytes()
+                for path in bmad.rglob("*")
+                if path.is_file()
+            }
 
             result = run_setup(project, skill)
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
-            parsed = tomllib.loads((bmad / "config.toml").read_text(encoding="utf-8"))
-            self.assertEqual(parsed["core"]["project_name"], "proj")
-            setup = load_setup()
-            core_yaml = setup.parse_module_yaml(
-                (bmad / "core" / "config.yaml").read_text(encoding="utf-8")
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn(str(bmad / "config.toml"), result.stderr)
+            self.assertIn("cannot parse TOML", result.stderr)
+            self.assertEqual(
+                {
+                    path.relative_to(bmad): path.read_bytes()
+                    for path in bmad.rglob("*")
+                    if path.is_file()
+                },
+                before,
             )
-            bmm_yaml = setup.parse_module_yaml(
-                (bmad / "bmm" / "config.yaml").read_text(encoding="utf-8")
-            )
-            self.assertIsNotNone(core_yaml)
-            self.assertIsNotNone(bmm_yaml)
-            self.assertEqual(core_yaml["project_name"], "proj")
-            self.assertIn("planning_artifacts", bmm_yaml)
+            self.assertFalse((project / "_bmad-output").exists())
+            self.assertEqual(list(project.glob("_bmad.setup-*")), [])
 
     def test_no_user_toml_without_answers(self):
         with tempfile.TemporaryDirectory() as temp_dir:
