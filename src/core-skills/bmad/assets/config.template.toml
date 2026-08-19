@@ -1,6 +1,5 @@
 [core]
 project_name = "{directory_name}"
-document_output_language = "English"
 output_folder = "{project-root}/_bmad-output"
 
 [modules.bmm]

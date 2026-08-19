@@ -2,7 +2,6 @@
 
 ## RULES
 
-- **Language** — Speak in `{{.communication_language}}`. Write any file output in `{{.document_output_language}}`.
 - All review subagents must run at the same model capability as the current session.
 - Run subagents synchronously: launch them together, then wait for all results before continuing.
 

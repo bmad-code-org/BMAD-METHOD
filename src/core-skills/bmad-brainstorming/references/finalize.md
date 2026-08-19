@@ -1,6 +1,6 @@
 # Wrap-Up: Synthesis & Artifacts
 
-Load this when the user signals they're spent or the topic is mined out. `{doc_workspace}/.memlog.md` is the canonical record of the session — everything here derives from it. Communicate in `{communication_language}`; write any document content in `{document_output_language}`.
+Load this when the user signals they're spent or the topic is mined out. `{doc_workspace}/.memlog.md` is the canonical record of the session — everything here derives from it.
 
 ## Synthesis
 
@@ -15,7 +15,7 @@ Record the insights and chosen directions with `uv run {project-root}/_bmad/scri
 
 In **Ideate for me** (and headless), the imaginative HTML keepsake is the deliverable you promised — produce it automatically, no asking; the other artifacts below stay opt-in. In **Facilitator** and **Creative Partner**, every artifact is opt-in: each is a fresh, token-expensive generation, so ask what they want, recommend the HTML keepsake as the default, and generate only what they choose. Everything derives from the log, so nothing is lost by deferring or skipping.
 
-**Delegate each artifact to a subagent.** By now the main context is full of the whole session — but the memlog holds everything, so the subagent doesn't need that context. Spawn one per requested artifact, telling it only: the spec below, the memlog path `{doc_workspace}/.memlog.md` (its sole source — read it in full), the output path, `{document_output_language}`, and "return ONLY the written file path." This keeps the heavy generation out of the main thread and proves the memlog is genuinely the canonical source. (Subagents can't spawn subagents — run these from here.)
+**Delegate each artifact to a subagent.** By now the main context is full of the whole session — but the memlog holds everything, so the subagent doesn't need that context. Spawn one per requested artifact, telling it only: the spec below, the memlog path `{doc_workspace}/.memlog.md` (its sole source — read it in full), the output path, and "return ONLY the written file path." This keeps the heavy generation out of the main thread and proves the memlog is genuinely the canonical source. (Subagents can't spawn subagents — run these from here.)
 
 - **Imaginative HTML keepsake (recommended default).** A single self-contained `brainstorm.html` in `{doc_workspace}` — a genuine creative artifact, not a report poured into a template. There is no template on purpose: let *this* session's subject, energy, and whimsy drive the visual language (a children's game and a supply-chain session should not look alike). Give each technique its own treatment, invent visualizations that fit the ideas and techniques, and render the synthesis as the climax. Inline all CSS and any JS; no external dependencies. Open it once complete.
 - **Intent doc.** A succinct `brainstorm-intent.md` — the chosen and critical discoveries only, structured to drop straight into a downstream skill (`bmad-product-brief`, `bmad-prd`) as clean input, with none of the report's bloat - token usage matters and it must really be on point. Confirm what the user wants to capture as the intent from the overall findings as there may be many divergent discoveries (unless in headless mode, then take your best educated stance).

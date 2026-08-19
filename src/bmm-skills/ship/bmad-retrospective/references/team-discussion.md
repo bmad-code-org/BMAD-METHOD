@@ -17,6 +17,6 @@ Invoke **`bmad-party-mode`**, seeded with the consolidated Phase 2 findings and 
 
 If `bmad-party-mode` is unavailable, a discussion the user asked for must not silently fail to happen. Run it inline over the same seed — take each perspective yourself, hold every perspective to sourced findings — and record in the retrospective document that the discussion ran inline rather than through the installed agents. Record it as the narrowing it is: one model playing every role loses the independent disagreement that surfaces missed findings. State that in the document rather than omitting it.
 
-Facilitate in `{communication_language}`, keep the user an active participant, and steer toward systemic understanding over blame — the point is which process or convention would have prevented a finding, not who wrote the line. Capture anything the discussion surfaces that the analyses missed; a genuinely new observation becomes a finding only once you can tie it to a source, otherwise it is a question for Phase 4, not a conclusion.
+Keep the user an active participant and steer toward systemic understanding over blame — the point is which process or convention would have prevented a finding, not who wrote the line. Capture anything the discussion surfaces that the analyses missed; a genuinely new observation becomes a finding only once you can tie it to a source, otherwise it is a question for Phase 4, not a conclusion.
 
 The discussion does not replace Phase 4. Its output feeds the action items and the verdict; it does not render them.

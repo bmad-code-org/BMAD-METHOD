@@ -32,7 +32,7 @@ If no findings are generated (from either pass), the skill passes validation.
 - **Internal reference**: a file path from one file in the skill to another file in the same skill.
 - **External reference**: a file path from a skill file to a file outside the skill directory.
 - **Originating file**: the file that contains the reference (path resolution is relative to this file's location).
-- **Config variable**: a name-value pair whose value comes from the project config file (e.g., `planning_artifacts`, `implementation_artifacts`, `communication_language`).
+- **Config variable**: a name-value pair whose value comes from the project config file (e.g., `planning_artifacts`, `implementation_artifacts`, `project_knowledge`).
 - **Runtime variable**: a name-value pair whose value is set during workflow execution (e.g., `spec_file`, `date`, `status`).
 - **Intra-skill path variable**: a frontmatter variable whose value is a path to another file within the same skill — this is an anti-pattern.
 
@@ -270,7 +270,7 @@ If no findings are generated (from either pass), the skill passes validation.
 - **Rule:** Every `{variable_name}` reference in any file (body text, frontmatter values, inline instructions) must resolve to a defined source. Valid sources are:
   1. A frontmatter variable in the same file
   2. A frontmatter variable in the skill's `workflow.md` (workflow-level variables are available to all steps)
-  3. A known config variable from the project config (e.g., `project-root`, `planning_artifacts`, `implementation_artifacts`, `communication_language`)
+  3. A known config variable from the project config (e.g., `project-root`, `planning_artifacts`, `implementation_artifacts`, `project_knowledge`)
   4. A known runtime variable set during execution (e.g., `date`, `status`, `project_name`, user-provided input variables)
 - **Detection:** Collect all `{...}` tokens in the file. For each, check whether it is defined in the file's own frontmatter, in `workflow.md` frontmatter, or is a recognized config/runtime variable. Flag any token that cannot be traced to a source. Use the config variable list from the project's `config.yaml` as the reference for recognized config variables. Runtime variables are those explicitly described as user-provided or set during execution in the workflow instructions.
 - **Exceptions:**

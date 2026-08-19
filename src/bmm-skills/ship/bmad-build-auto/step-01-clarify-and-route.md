@@ -8,7 +8,6 @@ story_id: '' # set at runtime under folder+id dispatch only
 
 ## RULES
 
-- **Language** — Speak in `{{.communication_language}}`, tailored to `{{.user_skill_level}}`. Write files in `{{.document_output_language}}`.
 - Treat the invocation intent as workflow input, not as a substitute for step-02 investigation and spec generation.
 - **EARLY EXIT** means: stop this step immediately, then read and follow the target file. Return here only if a later step explicitly says to loop back.
 

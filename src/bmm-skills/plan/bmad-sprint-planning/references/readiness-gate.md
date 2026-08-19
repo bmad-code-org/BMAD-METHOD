@@ -16,5 +16,5 @@ A missing document type is only a finding if stories depend on decisions nothing
 Deliver a verdict:
 
 - **PASS** — state it in one line; for the full sprint-planning intent, continue with `generate-tracking.md`
-- **CONCERNS** — list them briefly with where each gap lives; ask `{user_name}` whether to proceed anyway or fix first
+- **CONCERNS** — list them briefly with where each gap lives; ask the user whether to proceed anyway or fix first
 - **FAIL** — the plan is not implementable as recorded. Present findings ordered by severity, name the skill that fixes each (the relevant plan skill, or `bmad-correct-course` for cross-cutting changes), offer to save the findings to `{planning_artifacts}/implementation-readiness.md`, and stop

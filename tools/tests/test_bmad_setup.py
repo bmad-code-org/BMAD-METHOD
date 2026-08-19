@@ -29,7 +29,6 @@ HELP_CSV = (
 MINIMAL_CONFIG = """\
 [core]
 project_name = "{directory_name}"
-document_output_language = "English"
 output_folder = "{project-root}/_bmad-output"
 
 [modules.bmm]
@@ -44,19 +43,6 @@ name = "John"
 title = "Product Manager"
 icon = "📋"
 description = "Drives Jobs-to-be-Done."
-"""
-MINIMAL_USER_CONFIG = """\
-[core]
-user_name = {user_name}
-communication_language = {communication_language}
-
-[modules.bmm]
-user_skill_level = {user_skill_level}
-"""
-USER_ANSWERS = """\
-user_name = "Alex"
-communication_language = "English"
-user_skill_level = "intermediate"
 """
 
 
@@ -80,7 +66,6 @@ def write_dest_bmad(
     scripts: bool = True,
     assets: bool = True,
     config: str | None = MINIMAL_CONFIG,
-    user_config: str | None = MINIMAL_USER_CONFIG,
     catalog: str | None = HELP_CSV,
 ) -> Path:
     bmad_dir = root / "bmad"
@@ -95,17 +80,9 @@ def write_dest_bmad(
     if assets:
         if config is not None:
             write(bmad_dir / "assets" / "config.template.toml", config)
-        if user_config is not None:
-            write(bmad_dir / "assets" / "config.user.template.toml", user_config)
         if catalog is not None:
             write(bmad_dir / "assets" / "bmad-help.csv", catalog)
     return bmad_dir
-
-
-def user_answers_args(project: Path, text: str = USER_ANSWERS) -> list[str]:
-    path = project / ".bmad-help-setup-user.toml"
-    write(path, text)
-    return ["--user-answers", str(path)]
 
 
 def module_answers_args(
@@ -376,9 +353,6 @@ class BmadSetupTests(unittest.TestCase):
             self._assert_scripts_identity(bmad / "scripts", skill / "scripts")
             parsed = tomllib.loads((bmad / "config.toml").read_text(encoding="utf-8"))
             self.assertEqual(parsed["core"]["project_name"], "proj")
-            self.assertEqual(
-                parsed["core"]["document_output_language"], "English"
-            )
             self._assert_team_tables_match_template(parsed, skill, "proj")
             setup = load_setup()
             core_yaml = setup.parse_module_yaml(
@@ -425,9 +399,6 @@ class BmadSetupTests(unittest.TestCase):
                 (project / "_bmad" / "config.toml").read_text(encoding="utf-8")
             )
             self.assertEqual(parsed["core"]["project_name"], "proj")
-            self.assertEqual(
-                parsed["core"]["document_output_language"], "English"
-            )
             self._assert_team_tables_match_template(parsed, skill, "proj")
             scripts = project / "_bmad" / "scripts"
             self._assert_scripts_identity(scripts, skill / "scripts")
@@ -475,7 +446,7 @@ class BmadSetupTests(unittest.TestCase):
                 core_path.read_text(encoding="utf-8")
             )
             self.assertIsNotNone(core_map)
-            core_map["document_output_language"] = "Spanish"
+            core_map["legacy_note"] = "Spanish"
             write(core_path, setup.render_module_yaml(core_map))
             write(bmad / "custom" / "keep.txt", "custom-keep\n")
             write(bmad / "config.user.toml", "# keep-user\n")
@@ -503,7 +474,7 @@ class BmadSetupTests(unittest.TestCase):
                 (bmad / "core" / "config.yaml").read_text(encoding="utf-8")
             )
             self.assertIsNotNone(filled_core)
-            self.assertEqual(filled_core["document_output_language"], "Spanish")
+            self.assertEqual(filled_core["legacy_note"], "Spanish")
             self.assertEqual(filled_core["review_language"], "English")
             self.assertEqual(filled_core["project_name"], "proj")
             self.assertEqual(
@@ -702,7 +673,7 @@ class BmadSetupTests(unittest.TestCase):
             write(bmad / "_config" / "manifest.yaml", "leftover: installer\n")
             write(bmad / "_config" / "bmad-help.csv", "old-catalog\n")
 
-            result = run_setup(project, skill, *user_answers_args(project))
+            result = run_setup(project, skill)
             self.assertEqual(result.returncode, 0, msg=result.stderr)
             self.assertEqual(
                 (bmad / "custom" / "keep.txt").read_text(encoding="utf-8"),
@@ -1608,53 +1579,6 @@ class BmadSetupTests(unittest.TestCase):
             self.assertTrue(custom.is_dir())
             self.assertEqual(list(custom.iterdir()), [])
 
-    def test_user_answers_write_user_toml(self):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            root = Path(temp_dir)
-            project = root / "proj"
-            skill = write_dest_bmad(root)
-            project.mkdir()
-            result = run_setup(project, skill, *user_answers_args(project))
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
-            parsed = tomllib.loads(
-                (project / "_bmad" / "config.user.toml").read_text(encoding="utf-8")
-            )
-            self.assertEqual(parsed["core"]["user_name"], "Alex")
-            self.assertEqual(parsed["core"]["communication_language"], "English")
-            self.assertEqual(parsed["modules"]["bmm"]["user_skill_level"], "intermediate")
-            team = (project / "_bmad" / "config.toml").read_text(encoding="utf-8")
-            self.assertNotIn("user_name", team)
-
-    def test_user_answers_file_write_user_toml(self):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            root = Path(temp_dir)
-            project = root / "proj"
-            skill = write_dest_bmad(root)
-            project.mkdir()
-            result = run_setup(
-                project,
-                skill,
-                *user_answers_args(
-                    project,
-                    "user_name = \"Alex \\\"AJ\\\" Rivera\"\n"
-                    "communication_language = \"English\"\n"
-                    "user_skill_level = \"intermediate\"\n",
-                ),
-            )
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
-            parsed = tomllib.loads(
-                (project / "_bmad" / "config.user.toml").read_text(
-                    encoding="utf-8"
-                )
-            )
-            self.assertEqual(parsed["core"]["user_name"], 'Alex "AJ" Rivera')
-            self.assertEqual(
-                parsed["core"]["communication_language"], "English"
-            )
-            self.assertEqual(
-                parsed["modules"]["bmm"]["user_skill_level"], "intermediate"
-            )
-
     def test_existing_user_toml_is_left_alone(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
@@ -1662,7 +1586,7 @@ class BmadSetupTests(unittest.TestCase):
             skill = write_dest_bmad(root)
             project.mkdir()
             write(project / "_bmad" / "config.user.toml", "# keep-user\n")
-            result = run_setup(project, skill, *user_answers_args(project))
+            result = run_setup(project, skill)
             self.assertEqual(result.returncode, 0, msg=result.stderr)
             self.assertEqual(
                 (project / "_bmad" / "config.user.toml").read_text(encoding="utf-8"),
@@ -1814,7 +1738,6 @@ class BmadSetupTests(unittest.TestCase):
 
         parsed = tomllib.loads((bmad / "config.toml").read_text(encoding="utf-8"))
         self.assertEqual(parsed["core"]["project_name"], project_name)
-        self.assertEqual(parsed["core"]["document_output_language"], "English")
         self.assertEqual(parsed["core"]["output_folder"], "{project-root}/_bmad-output")
         self.assertNotIn("user_name", parsed["core"])
         self.assertNotIn("communication_language", parsed["core"])
@@ -2455,7 +2378,6 @@ class BmadUpdateDoctorTests(unittest.TestCase):
                 ("--update", "--doctor"),
                 ("--update", "--list-config-questions"),
                 ("--update", *answers),
-                ("--doctor", "--user-answers", str(project / "user.toml")),
                 ("--list-config-questions", *answers),
             ):
                 with self.subTest(extra=extra):

@@ -6,7 +6,7 @@ failed_layers: '' # set at runtime: comma-separated list of layers that failed o
 
 ## RULES
 
-- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
+- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style
 - All review subagents must run at the same model capability as the current session.
 - Run subagents synchronously: launch them together as blocking calls awaited in this turn — never backgrounded or detached, never ending the turn to await results.
 
