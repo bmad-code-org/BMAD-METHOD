@@ -1,6 +1,6 @@
 ---
 module: bmm
-update_source: github:bmad-code-org/BMAD-METHOD/skills
+update_source: github:bmad-code-org/bmad-skills/skills
 ---
 
 # bmm
