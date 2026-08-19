@@ -61,7 +61,7 @@ def method_skill_ids(repo: Path) -> set[str]:
     for root_name in ("core-skills", "bmm-skills"):
         root = repo / "src" / root_name
         for skill_md in root.rglob("SKILL.md"):
-            if "v6-shims" in skill_md.parts:
+            if "v6-shims" in skill_md.parts or skill_md.parent.name == "bmad-help":
                 continue
             ids.add(skill_md.parent.name)
     return ids
@@ -113,18 +113,19 @@ class PackageNpxSkillsTests(unittest.TestCase):
             self.assertFalse((dest_skill / "__pycache__").exists())
             self.assertFalse((dest_skill / "foo.pyc").exists())
 
-    def test_dest_help_gets_scripts_and_assets(self):
+    def test_dest_bmad_gets_scripts_and_assets_and_excludes_bmad_help(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             repo = Path(temp_dir) / "repo"
             out = Path(temp_dir) / "out"
-            self._write_help_payload(repo)
+            self._write_bmad_payload(repo)
+            write_skill(repo, "src/core-skills/bmad")
             write_skill(repo, "src/core-skills/bmad-help")
             write_skill(repo, "src/bmm-skills/plan/bmad-prd")
 
             run_packager(repo, out)
 
-            dest_help = out / "skills" / "bmad-help"
-            dest_scripts = dest_help / "scripts"
+            dest_bmad = out / "skills" / "bmad"
+            dest_scripts = dest_bmad / "scripts"
             self.assertEqual(
                 sorted(p.name for p in dest_scripts.iterdir()),
                 [
@@ -141,14 +142,14 @@ class PackageNpxSkillsTests(unittest.TestCase):
                     f"# {name}\n",
                 )
             self.assertFalse((dest_scripts / "tests").exists())
-            source_assets = repo / "src" / "core-skills" / "bmad-help" / "assets"
+            source_assets = repo / "src" / "core-skills" / "bmad" / "assets"
             for path in source_assets.iterdir():
                 self.assertEqual(
-                    (dest_help / "assets" / path.name).read_bytes(),
+                    (dest_bmad / "assets" / path.name).read_bytes(),
                     path.read_bytes(),
                     path.name,
                 )
-            dest_csv = dest_help / "assets" / "bmad-help.csv"
+            dest_csv = dest_bmad / "assets" / "bmad-help.csv"
             self.assertEqual(dest_csv.read_text(encoding="utf-8").splitlines()[0], HELP_CSV_HEADER)
             self.assertEqual(
                 set(csv_records(dest_csv)),
@@ -185,9 +186,10 @@ class PackageNpxSkillsTests(unittest.TestCase):
                     ),
                 },
             )
-            source_help = repo / "src" / "core-skills" / "bmad-help"
+            self.assertFalse((out / "skills" / "bmad-help").exists())
+            source_bmad = repo / "src" / "core-skills" / "bmad"
             self.assertEqual(
-                {p.name for p in source_help.iterdir() if p.name != "__pycache__"}
+                {p.name for p in source_bmad.iterdir() if p.name != "__pycache__"}
                 - {"assets"},
                 {"SKILL.md"},
             )
@@ -196,7 +198,8 @@ class PackageNpxSkillsTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             repo = Path(temp_dir) / "repo"
             out = Path(temp_dir) / "out"
-            self._write_help_payload(repo)
+            self._write_bmad_payload(repo)
+            write_skill(repo, "src/core-skills/bmad")
             write_skill(repo, "src/core-skills/bmad-help")
             write_skill(repo, "src/bmm-skills/plan/bmad-prd")
 
@@ -251,7 +254,7 @@ class PackageNpxSkillsTests(unittest.TestCase):
 
     def test_bad_help_csv_header_leaves_dest_untouched(self):
         with tempfile.TemporaryDirectory() as temp_dir:
-            repo, out = self._help_repo_with_stale_dest(temp_dir)
+            repo, out = self._bmad_repo_with_stale_dest(temp_dir)
             write(
                 repo / "src" / "core-skills" / "module-help.csv",
                 "not,the,header\nCore,bmad-help,BMad Help,BH,,,,anytime,,,false,,\n",
@@ -262,11 +265,11 @@ class PackageNpxSkillsTests(unittest.TestCase):
 
             self.assertIn("header", str(ctx.exception).lower())
             self.assertTrue((out / "skills" / "stale-id" / "keep.txt").is_file())
-            self.assertFalse((out / "skills" / "bmad-help").exists())
+            self.assertFalse((out / "skills" / "bmad").exists())
 
     def test_empty_help_csv_leaves_dest_untouched(self):
         with tempfile.TemporaryDirectory() as temp_dir:
-            repo, out = self._help_repo_with_stale_dest(temp_dir)
+            repo, out = self._bmad_repo_with_stale_dest(temp_dir)
             write(repo / "src" / "core-skills" / "module-help.csv", HELP_CSV_HEADER + "\n")
 
             with self.assertRaises(ValueError) as ctx:
@@ -274,11 +277,11 @@ class PackageNpxSkillsTests(unittest.TestCase):
 
             self.assertIn("empty", str(ctx.exception).lower())
             self.assertTrue((out / "skills" / "stale-id" / "keep.txt").is_file())
-            self.assertFalse((out / "skills" / "bmad-help").exists())
+            self.assertFalse((out / "skills" / "bmad").exists())
 
     def test_short_help_csv_row_leaves_dest_untouched(self):
         with tempfile.TemporaryDirectory() as temp_dir:
-            repo, out = self._help_repo_with_stale_dest(temp_dir)
+            repo, out = self._bmad_repo_with_stale_dest(temp_dir)
             write(
                 repo / "src" / "core-skills" / "module-help.csv",
                 HELP_CSV_HEADER + "\nCore,bmad-help\n",
@@ -289,7 +292,7 @@ class PackageNpxSkillsTests(unittest.TestCase):
 
             self.assertIn("malformed", str(ctx.exception).lower())
             self.assertTrue((out / "skills" / "stale-id" / "keep.txt").is_file())
-            self.assertFalse((out / "skills" / "bmad-help").exists())
+            self.assertFalse((out / "skills" / "bmad").exists())
 
     def test_real_repo_emits_method_set_and_help_assets(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -325,8 +328,10 @@ class PackageNpxSkillsTests(unittest.TestCase):
                 self.assertTrue(dest_file.is_file(), dest_rel)
                 self.assertEqual(dest_file.read_bytes(), source.read_bytes(), dest_rel)
 
-            dest_help = dest / "bmad-help"
-            dest_scripts = dest_help / "scripts"
+            self.assertIn("bmad", names)
+            self.assertNotIn("bmad-help", names)
+            dest_bmad = dest / "bmad"
+            dest_scripts = dest_bmad / "scripts"
             expected_scripts = [
                 "config_utils.py",
                 "memlog.py",
@@ -340,21 +345,22 @@ class PackageNpxSkillsTests(unittest.TestCase):
                     (REPO_ROOT / "src" / "scripts" / name).read_bytes(),
                     name,
                 )
-            source_help = REPO_ROOT / "src" / "core-skills" / "bmad-help"
+            source_bmad = REPO_ROOT / "src" / "core-skills" / "bmad"
             self.assertEqual(
                 (dest_scripts / "setup.py").read_bytes(),
-                (source_help / "scripts" / "setup.py").read_bytes(),
+                (source_bmad / "scripts" / "setup.py").read_bytes(),
             )
-            self.assertFalse((dest_help / "setup.py").exists())
+            self.assertFalse((dest_bmad / "setup.py").exists())
             self.assertFalse((dest_scripts / "tests").exists())
-            help_assets = REPO_ROOT / "src" / "core-skills" / "bmad-help" / "assets"
-            for path in help_assets.iterdir():
+            bmad_assets = REPO_ROOT / "src" / "core-skills" / "bmad" / "assets"
+            for path in bmad_assets.iterdir():
                 self.assertEqual(
-                    (dest_help / "assets" / path.name).read_bytes(),
+                    (dest_bmad / "assets" / path.name).read_bytes(),
                     path.read_bytes(),
                     path.name,
                 )
-            dest_csv = dest_help / "assets" / "bmad-help.csv"
+            self.assertFalse((bmad_assets / "bmad-help.csv").exists())
+            dest_csv = dest_bmad / "assets" / "bmad-help.csv"
             self.assertEqual(dest_csv.read_text(encoding="utf-8").splitlines()[0], HELP_CSV_HEADER)
             self.assertEqual(
                 set(csv_records(dest_csv)),
@@ -363,41 +369,42 @@ class PackageNpxSkillsTests(unittest.TestCase):
             )
 
             for name in names:
-                if name == "bmad-help":
+                if name == "bmad":
                     continue
                 skill = dest / name
                 for script in SHARED_SCRIPTS:
                     self.assertEqual(list(skill.rglob(script)), [])
                 self.assertFalse((skill / "assets" / "bmad-help.csv").exists())
 
+            source_help = REPO_ROOT / "src" / "core-skills" / "bmad-help"
             self.assertEqual(
-                {p.name for p in source_help.iterdir() if p.name != "__pycache__"}
-                - {"scripts", "assets"},
-                {"SKILL.md", "references"},
+                {p.name for p in source_help.iterdir() if p.name != "__pycache__"},
+                {"SKILL.md"},
             )
             self.assertEqual(
-                (dest_help / "references" / "setup.md").read_bytes(),
-                (source_help / "references" / "setup.md").read_bytes(),
+                (dest_bmad / "references" / "setup.md").read_bytes(),
+                (source_bmad / "references" / "setup.md").read_bytes(),
             )
-            self.assertTrue((source_help / "scripts" / "setup.py").is_file())
-            self.assertFalse((source_help / "setup.py").exists())
-            self.assertFalse((dest_help / "setup.py").exists())
+            self.assertTrue((source_bmad / "scripts" / "setup.py").is_file())
+            self.assertFalse((source_bmad / "setup.py").exists())
+            self.assertFalse((dest_bmad / "setup.py").exists())
 
-    def _help_repo_with_stale_dest(self, temp_dir: str) -> tuple[Path, Path]:
+    def _bmad_repo_with_stale_dest(self, temp_dir: str) -> tuple[Path, Path]:
         repo = Path(temp_dir) / "repo"
         out = Path(temp_dir) / "out"
-        self._write_help_payload(repo)
+        self._write_bmad_payload(repo)
+        write_skill(repo, "src/core-skills/bmad")
         write_skill(repo, "src/core-skills/bmad-help")
         write_skill(repo, "src/bmm-skills/plan/bmad-prd")
         write(out / "skills" / "stale-id" / "keep.txt", "keep\n")
         return repo, out
 
-    def _write_help_payload(self, repo: Path) -> None:
+    def _write_bmad_payload(self, repo: Path) -> None:
         for name in SHARED_SCRIPTS:
             write(repo / "src" / "scripts" / name, f"# {name}\n")
         write(repo / "src" / "scripts" / "tests" / "test_foo.py", "# test\n")
         write(
-            repo / "src" / "core-skills" / "bmad-help" / "assets" / "keep.txt",
+            repo / "src" / "core-skills" / "bmad" / "assets" / "keep.txt",
             "keep\n",
         )
         write(

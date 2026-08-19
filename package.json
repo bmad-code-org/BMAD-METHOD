@@ -46,7 +46,7 @@
     "test:channels": "node test/test-installer-channels.js",
     "test:implementation-model": "node test/test-validate-published-implementation-model.mjs",
     "test:install": "node test/test-installation-components.js && node test/test-shim-policy.js",
-    "test:npx-skills": "uv run --python 3.11 python -m unittest tools/tests/test_package_npx_skills.py tools/tests/test_bmad_help_setup.py",
+    "test:npx-skills": "uv run --python 3.11 python -m unittest tools/tests/test_package_npx_skills.py tools/tests/test_bmad_setup.py",
     "test:refs": "node test/test-file-refs-csv.js",
     "test:renderer": "uv run --python 3.11 python -m unittest src/scripts/tests/test_config_utils.py src/scripts/tests/test_resolve_config.py src/scripts/tests/test_resolve_customization.py && node test/test-build-auto-renderer.js",
     "test:retrospective": "uv run --python 3.11 src/bmm-skills/ship/bmad-retrospective/scripts/tests/test_git_evidence.py && uv run --python 3.11 src/bmm-skills/ship/bmad-retrospective/scripts/tests/test_sprint_status.py",

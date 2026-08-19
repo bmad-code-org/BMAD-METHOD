@@ -38,4 +38,4 @@ artifact. Durable outputs land at the configured
 `{output_folder}/party-mode` locations; research lands at
 `{planning_artifacts}/research`, or `{output_folder}/research` in core-only use
 when bmm configuration is absent; and persistent adaptations land at
-`{project-root}/_bmad/custom`.
+`{project-root}/_bmad/custom/`.

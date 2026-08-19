@@ -5,8 +5,8 @@
 """Flatten Method skills into a skills/<canonical-id>/ tree for npx skills add.
 
 Walks src/core-skills and src/bmm-skills, discards agents/plan/ship nesting,
-skips v6-shims, and copies shared Python and a baked core+bmm help catalog
-into dest bmad-help only. Help-skill assets ride along with the skill copy.
+skips v6-shims and bmad-help, and copies shared Python and a baked core+bmm
+help catalog into dest bmad only. BMad-skill assets ride along with the copy.
 """
 
 from __future__ import annotations
@@ -21,6 +21,7 @@ from pathlib import Path
 
 SOURCE_ROOTS = ("src/core-skills", "src/bmm-skills")
 V6_SHIMS = "v6-shims"
+EXCLUDED_SKILLS = frozenset({"bmad-help"})
 SHARED_SCRIPTS = (
     "resolve_config.py",
     "resolve_customization.py",
@@ -57,9 +58,9 @@ def package(repo_root: Path, out: Path) -> None:
         for src in skills(repo_root):
             shutil.copytree(src, staging / src.name, ignore=ignore_junk)
 
-        dest_help = staging / "bmad-help"
-        if dest_help.is_dir():
-            copy_scripts_and_assets(repo_root, dest_help)
+        dest_bmad = staging / "bmad"
+        if dest_bmad.is_dir():
+            copy_scripts_and_assets(repo_root, dest_bmad)
         replace_dest_skills(staging, out)
 
 
@@ -80,6 +81,8 @@ def skills(repo_root: Path) -> list[Path]:
         for skill_md in sorted(root.rglob("SKILL.md")):
             if V6_SHIMS in skill_md.parts:
                 continue
+            if skill_md.parent.name in EXCLUDED_SKILLS:
+                continue
             if skill_md.is_file():
                 found.append(skill_md.parent)
     return found
@@ -95,14 +98,14 @@ def ignore_junk(directory: str, names: list[str]) -> list[str]:
     ]
 
 
-def copy_scripts_and_assets(repo_root: Path, dest_help: Path) -> None:
+def copy_scripts_and_assets(repo_root: Path, dest_bmad: Path) -> None:
     scripts_src = repo_root / "src" / "scripts"
-    dest_scripts = dest_help / "scripts"
+    dest_scripts = dest_bmad / "scripts"
     dest_scripts.mkdir(parents=True, exist_ok=True)
     for name in SHARED_SCRIPTS:
         shutil.copy2(scripts_src / name, dest_scripts / name)
 
-    dest_assets = dest_help / "assets"
+    dest_assets = dest_bmad / "assets"
     dest_assets.mkdir(parents=True, exist_ok=True)
     (dest_assets / "bmad-help.csv").write_text(
         assemble_help_csv(
