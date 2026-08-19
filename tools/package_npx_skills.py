@@ -167,7 +167,7 @@ def module_packages(repo_root: Path, stamp: str) -> tuple[ModulePackage, ...]:
         owned_skills = tuple(skills_in(root))
         manifest_path = root / MANIFEST_NAME
         module, rendered, scripts = load_module_manifest(
-            manifest_path, root, owned_skills, stamp
+            manifest_path, root, stamp
         )
         if module != expected_module:
             raise ValueError(
@@ -181,7 +181,7 @@ def module_packages(repo_root: Path, stamp: str) -> tuple[ModulePackage, ...]:
 
 
 def load_module_manifest(
-    path: Path, source_root: Path, owned_skills: tuple[Path, ...], stamp: str
+    path: Path, source_root: Path, stamp: str
 ) -> tuple[str, bytes, tuple[tuple[PurePosixPath, bytes], ...]]:
     try:
         source = path.read_bytes().decode("utf-8")
@@ -232,16 +232,6 @@ def load_module_manifest(
         )
     validate_questions(data.get("config_questions"), module, path)
     scripts = validate_scripts(data.get("scripts"), source_root, path)
-
-    body = source[match.end() :]
-    for skill in owned_skills:
-        skill_id = skill.name
-        if re.search(
-            rf"(?<![a-z0-9-]){re.escape(skill_id)}(?![a-z0-9-])", body
-        ) is None:
-            raise ValueError(
-                f"authored manifest {path} body omits packaged skill {skill_id!r}"
-            )
 
     newline = match.group("newline")
     insertion = f"version: {stamp}{newline}"

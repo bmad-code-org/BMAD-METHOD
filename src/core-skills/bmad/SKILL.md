@@ -32,27 +32,28 @@ step without assuming that every module or skill is installed.
    skills; if duplicates remain tied, say so instead of picking one.
 3. Collect each active folder's sibling `module-manifest.md`. Ignore folders
    without one. Name and skip a manifest that cannot be read, has malformed
-   frontmatter, lacks a usable `module` or complete roster, or contradicts
-   itself. Continue with sound modules.
-4. Group manifests by `module` and compare their roster, relationship,
-   completion, and output claims. Ignore formatting and unrelated frontmatter
-   differences. If copies conflict, report the conflict and disputed claims;
-   do not pick a winner. Continue with unaffected modules.
+   frontmatter, lacks a usable `module`, or contradicts itself. Continue with
+   sound modules.
+4. Group manifests by `module` and compare their relationship claims. Ignore
+   formatting and unrelated frontmatter differences. If copies conflict,
+   report the conflict and disputed claims; do not pick a winner. Continue
+   with unaffected modules.
 
 ## Build the Current Module View
 
-For every sound module, compare the manifest body's complete roster with the
-canonical ids in the current host listing:
+A module is whatever installed skills currently carry that `module` key. Disk
+is the membership list. The manifest body is not a catalog to complete, and
+help must not report uninstalled skills as missing members of a set.
 
-- **Installed:** Its canonical id is present in the host listing. Use only its
-  host-listed description; the manifest supplies relationships, not skill
-  descriptions.
-- **Missing:** Its canonical id is absent from the host listing. Name it and
-  explain only its manifest-stated relationship to installed skills. Do not
-  give it a description or imply that it can be invoked.
+- **Installed:** A host-listed skill whose manifest belongs to this module.
+  Use only its host-listed description; the manifest supplies relationships,
+  not skill descriptions.
+- **Named but not installed:** Mention another skill only when the body
+  states a relationship to something that is installed. Name it and that
+  relationship. Do not describe it, do not imply it can be invoked, and do
+  not treat it as a gap in the install.
 
-If something could not be read, say so and do not guess. Only manifest rosters
-define module membership, and partial modules must not be presented as complete.
+If something could not be read, say so and do not guess.
 
 ## Reason About State and Next Steps
 
@@ -68,9 +69,9 @@ define module membership, and partial modules must not be presented as complete.
   instructions. File presence alone does not prove completion.
 - When completion remains uncertain, say what is known and ask the user instead
   of recommending advancement as though completion were established.
-- Recommend invokable skills only from the currently installed roster. A
-  missing roster member may be mentioned as an unavailable alternative or
-  dependency only when the manifest states that relationship.
+- Recommend invokable skills only from what is currently installed. Another
+  skill may be mentioned as an unavailable alternative or dependency only
+  when the manifest states that relationship.
 - If one installed skill is the clear next step, invite the user to open a fresh
   context and invoke it there; do not begin it inside the current help context.
 - Use a configured communication language when it is already available from
@@ -85,17 +86,17 @@ Answer the user's actual question first, then include only the orientation that
 helps with it:
 
 - the relevant module and current state, including uncertainty;
-- for every relevant partial sound module, every roster member marked installed
-  or missing; generic `bmad help` makes every partial sound module relevant;
-- installed skills by canonical id with host-listed descriptions, and missing
-  skills by canonical id with only manifest-stated relationships;
+- installed skills that matter for the question, by canonical id with
+  host-listed descriptions;
+- a skill that is not installed only when the manifest states a relationship
+  to something that is;
 - the next installed option or options and the manifest-based reason; and
 - anything that limited the answer.
 
-Outside relevant partial modules, avoid dumping unrelated full rosters unless
-the user asks for them. Match the user's tone. Do not invent display names,
-menu codes, actions, arguments, phases, required flags, or descriptions that
-the host listing and agreed manifest do not supply.
+Do not dump an installed-versus-missing catalog. Match the user's tone. Do
+not invent display names, menu codes, actions, arguments, phases, required
+flags, or descriptions that the host listing and agreed manifest do not
+supply.
 
 ## Ordinary Help Is Read-Only
 
