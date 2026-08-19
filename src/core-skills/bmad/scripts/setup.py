@@ -62,7 +62,7 @@ def setup(
     ensure_dir(project_root / output_folder(config_text))
 
 
-def payload(skill_root: Path) -> tuple[Path, Path, Path, Path]:
+def payload(skill_root: Path) -> tuple[Path, Path | None, Path, Path]:
     scripts_src = skill_root / "scripts"
     assets_src = skill_root / "assets"
     config_src = assets_src / "config.template.toml"
@@ -72,10 +72,15 @@ def payload(skill_root: Path) -> tuple[Path, Path, Path, Path]:
     for directory in (scripts_src, assets_src):
         if not directory.is_dir():
             raise Exception(f"missing directory: {directory}")
-    for file in (resolve_config, config_src, user_src, catalog_src):
+    for file in (resolve_config, config_src, user_src):
         if not file.is_file():
             raise Exception(f"missing file: {file}")
-    return scripts_src, catalog_src, config_src, user_src
+    return (
+        scripts_src,
+        catalog_src if catalog_src.is_file() else None,
+        config_src,
+        user_src,
+    )
 
 
 def load_user_answers(path: Path) -> tuple[str, str, str]:
@@ -125,7 +130,7 @@ def output_folder(config_text: str) -> str:
 def materialize_bmad(
     project_root: Path,
     scripts_src: Path,
-    catalog_src: Path,
+    catalog_src: Path | None,
     config_text: str,
     user_text: str | None,
 ) -> None:
@@ -191,7 +196,7 @@ def stage_bmad(
     staging: Path,
     *,
     scripts_src: Path,
-    catalog_src: Path,
+    catalog_src: Path | None,
     config_text: str,
     user_text: str | None,
 ) -> None:
@@ -208,7 +213,11 @@ def stage_bmad(
         render_module_yaml({**bmm, **core}),
     )
     ensure_dir(staging / "custom")
-    ensure_copy(staging / "_config" / "bmad-help.csv", catalog_src)
+    catalog_dest = staging / "_config" / "bmad-help.csv"
+    if catalog_src is not None:
+        ensure_copy(catalog_dest, catalog_src)
+    else:
+        catalog_dest.unlink(missing_ok=True)
 
 
 def stringify(table: object) -> dict[str, str]:

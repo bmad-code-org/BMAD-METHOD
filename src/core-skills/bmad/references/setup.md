@@ -8,10 +8,10 @@
 If `_bmad/config.user.toml` exists under `{project-root}`, read it. If
 `user_name`, `communication_language`, and `user_skill_level` are
 already set, do not ask again. A second run fills new keys in
-`config.toml` and module yaml while keeping existing answers, always
-replaces `_bmad/_config/bmad-help.csv` from this skill's
-`assets/bmad-help.csv`, and repairs `_bmad/scripts` when that path is
-a symlink or a copy that is not byte-identical to the packaged `bmad`
+`config.toml` and module yaml while keeping existing answers. It replaces
+`_bmad/_config/bmad-help.csv` when that packaged asset exists and removes a
+legacy copy when it does not. It also repairs `_bmad/scripts` when that path
+is a symlink or a copy that is not byte-identical to the packaged `bmad`
 skill's `scripts/`. Every symlink is replaced with a plain copy; a
 byte-identical copy is left as-is. Never touch `custom/` or existing
 `*.user.toml`.
