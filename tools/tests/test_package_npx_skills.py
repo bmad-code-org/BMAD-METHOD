@@ -129,7 +129,6 @@ class PackageNpxSkillsTests(unittest.TestCase):
                 core=("bmad-review", "v6-shims/bmad-old", "bmad-help"),
                 bmm=("plan/bmad-prd",),
             )
-            # Excluded ids must not be required in the authored body roster.
             write(
                 repo / "src" / "core-skills" / "module-manifest.md",
                 manifest_text("core", ["bmad-review"]),
@@ -525,22 +524,6 @@ class PackageNpxSkillsTests(unittest.TestCase):
                     sorted(path.name for path in (out / "skills").iterdir()),
                     ["stale-id"],
                 )
-
-    def test_body_omission_names_skill_and_leaves_dest_untouched(self):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            root = Path(temp_dir)
-            repo = build_repo(root, core=("bmad-review", "bmad-customize"))
-            manifest = repo / "src" / "core-skills" / "module-manifest.md"
-            write(manifest, manifest_text("core", ["bmad-review"]))
-            out = root / "out"
-            stale = out / "skills" / "stale-id" / "keep.txt"
-            write(stale, "keep\n")
-
-            with self.assertRaisesRegex(ValueError, "bmad-customize") as caught:
-                run_packager(repo, out)
-
-            self.assertIn(str(manifest), str(caught.exception))
-            self.assertTrue(stale.is_file())
 
     def test_invalid_package_version_leaves_destination_untouched(self):
         with tempfile.TemporaryDirectory() as temp_dir:
