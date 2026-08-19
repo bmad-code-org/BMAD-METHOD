@@ -1482,6 +1482,10 @@ def stage_bmad(
         render_module_yaml({**bmm, **core}),
     )
     for installed in modules:
+        # Doctor's canonical shape includes the scripts directory even when
+        # the manifest declares no scripts; create it so a first doctor run
+        # on a fresh setup reports current, not repaired.
+        ensure_dir(staging / installed.module / "scripts")
         for relative, content in installed.scripts:
             script_relative = Path(*relative.parts[1:])
             ensure_bytes(
@@ -1600,7 +1604,7 @@ def ensure_copy(dest: Path, src: Path) -> None:
 
 
 def ensure_dir(path: Path) -> None:
-    if not path.exists():
+    if not path.is_symlink() and not path.exists():
         path.mkdir(parents=True)
 
 
