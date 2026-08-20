@@ -40,7 +40,9 @@ from pathlib import Path
 
 DEFAULT_FILE = Path(__file__).resolve().parent.parent / "assets" / "methods.csv"
 FIELDS = ("num", "category", "method_name", "description", "output_pattern")
-OVERLAY_REQUIRED = ("category", "description")  # replace-not-patch: an overlay omitting these wipes them
+# replace-not-patch: an overlay omitting category/description wipes them on the
+# shipped row; a nameless extra appends an unnamed row no command can select.
+OVERLAY_REQUIRED = ("method_name", "category", "description")
 
 
 def load(file: Path) -> list[dict]:
@@ -77,8 +79,9 @@ def merge_extra(rows: list[dict], extras: list[dict]) -> list[dict]:
     free nums, so every merged method stays addressable by number.
     An overlay row must carry the required fields: replacement is wholesale
     (only num is inherited), so a row that omits category/description would
-    wipe them on the shipped entry — fail loudly instead of degrading the
-    catalog silently."""
+    wipe them on the shipped entry, and a row with no method_name would
+    append an unnamed method nothing can select — fail loudly instead of
+    degrading the catalog silently."""
     merged = list(rows)
     index = {r["method_name"].lower(): i for i, r in enumerate(merged)}
     for e in extras:
@@ -86,8 +89,8 @@ def merge_extra(rows: list[dict], extras: list[dict]) -> list[dict]:
         if missing:
             raise ValueError(
                 f"overlay method {e.get('method_name') or '(unnamed)'} is missing "
-                f"{', '.join(missing)}; overlays replace the whole shipped row, so "
-                "repeat every field you want kept"
+                f"{', '.join(missing)}; overlays replace the whole shipped row and "
+                "an unnamed row can never be selected, so repeat every field you want kept"
             )
         key = e["method_name"].lower()
         if key in index:

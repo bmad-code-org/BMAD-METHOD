@@ -223,6 +223,18 @@ def test_extra_new_row_missing_category_is_rejected(lib, tmp_path):
         brain.merge_extra(brain.load(Path(lib)), brain.load_extra(overlay))
 
 
+def test_extra_unnamed_overlay_is_rejected(lib, tmp_path):
+    # An overlay with category/description but no technique_name normalizes to
+    # an empty name and would append an unnamed row no command can select.
+    overlay = tmp_path / "unnamed.json"
+    overlay.write_text(
+        json.dumps([{"category": "risk", "description": "solid, but nameless"}]),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="technique_name"):
+        brain.merge_extra(brain.load(Path(lib)), brain.load_extra(overlay))
+
+
 def test_extra_malformed_exits_cleanly(lib, tmp_path, capsys):
     bad = tmp_path / "bad.json"
     for content in ('{not json', '{"a": 1}', '["not-an-object"]'):

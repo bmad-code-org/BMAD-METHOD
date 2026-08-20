@@ -42,7 +42,9 @@ from pathlib import Path
 
 DEFAULT_FILE = Path(__file__).resolve().parent.parent / "assets" / "brain-methods.csv"
 FIELDS = ("category", "technique_name", "description", "detail", "provenance", "good_for", "audience")
-OVERLAY_REQUIRED = ("category", "description")  # replace-not-patch: an overlay omitting these wipes them
+# replace-not-patch: an overlay omitting category/description wipes them on the
+# shipped row; a nameless extra appends an unnamed row no command can select.
+OVERLAY_REQUIRED = ("technique_name", "category", "description")
 # Optional columns beyond the original four — absent in older CSVs and in --extra
 # overlays, so always read through .get/setdefault. `provenance` (classic|signature|
 # playful) drives the "Proven & Professional" lead group; `good_for` (a |-separated
@@ -93,7 +95,8 @@ def merge_extra(rows: list[dict], extras: list[dict]) -> list[dict]:
     customize.toml additional_* entries behave identically across sibling skills.
     An overlay row must carry the required fields: replacement is wholesale,
     so a row that omits category/description would wipe them on the shipped
-    entry — fail loudly instead of degrading the catalog silently."""
+    entry, and a row with no technique_name would append an unnamed technique
+    nothing can select — fail loudly instead of degrading the catalog silently."""
     merged = list(rows)
     index = {r["technique_name"].lower(): i for i, r in enumerate(merged)}
     for e in extras:
@@ -101,8 +104,8 @@ def merge_extra(rows: list[dict], extras: list[dict]) -> list[dict]:
         if missing:
             raise ValueError(
                 f"overlay technique {e.get('technique_name') or '(unnamed)'} is missing "
-                f"{', '.join(missing)}; overlays replace the whole shipped row, so "
-                "repeat every field you want kept"
+                f"{', '.join(missing)}; overlays replace the whole shipped row and "
+                "an unnamed row can never be selected, so repeat every field you want kept"
             )
         key = e["technique_name"].lower()
         if key in index:

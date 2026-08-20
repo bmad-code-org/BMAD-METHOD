@@ -104,6 +104,16 @@ def test_merge_extra_rejects_new_method_missing_category(lib):
         pick_methods.merge_extra(rows(lib), partial)
 
 
+def test_merge_extra_rejects_unnamed_overlay(lib):
+    # An overlay with category/description but no method_name normalizes to an
+    # empty name and would append an unnamed row no command can select.
+    partial = pick_methods.load_extra(
+        json.dumps([{"category": "risk", "description": "solid, but nameless"}])
+    )
+    with pytest.raises(ValueError, match="method_name"):
+        pick_methods.merge_extra(rows(lib), partial)
+
+
 def test_extras_are_addressable_by_num(lib):
     merged = pick_methods.merge_extra(rows(lib), pick_methods.load_extra(json.dumps(EXTRA)))
     found, missing = pick_methods.find(merged, ["6", "1"])
