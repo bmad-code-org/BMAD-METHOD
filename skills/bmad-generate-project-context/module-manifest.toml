@@ -1,3 +1,0 @@
-module = "bmm"
-version = "6.11.0-next"
-update_source = "github:bmad-code-org/bmad-skills/skills"
