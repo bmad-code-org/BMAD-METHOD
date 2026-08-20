@@ -10,16 +10,17 @@ Catches broken file paths, missing referenced files, and absolute path leaks.
 
 What it checks:
 - {project-root}/_bmad/ references in YAML and markdown resolve to real skills/ files
-- Relative path references (./file.md, ../data/file.csv) point to existing files
-- exec="..." and <invoke-task> targets exist
-- Step metadata (thisStepFile, nextStepFile) references are valid
-- Load directives (Load: `./file.md`) target existing files
+- Backticked skill-relative references (`references/help.md`, `scripts/run.py`)
+  resolve from the containing file's directory or the skill root. Only paths
+  whose first directory actually exists are checked; a path whose directory is
+  absent is prose (an example or a runtime output), not a reference.
 - No absolute paths (/Users/, /home/, C:\\) leak into source files
+- No files sit directly under skills/ — every file belongs to a skill
 
 What it does NOT check (deferred):
-- {installed_path} variable interpolation (self-referential, low risk)
-- {{mustache}} template variables (runtime substitution)
-- {config_source}:key dynamic YAML dereferences
+- Bare backticked filenames (`prd.md`) — indistinguishable from runtime-output mentions
+- {{mustache}} and {placeholder} template variables (runtime substitution)
+- Globs and <angle-bracket> placeholders
 
 Usage:
   uv run --python 3.11 tools/validate_file_refs.py            # Warn on broken references (exit 0)
@@ -55,35 +56,14 @@ SKIP_DIRS = {"node_modules", ".git"}
 # Pattern: {project-root}/_bmad/ references
 PROJECT_ROOT_REF = re.compile(r"\{project-root\}/_bmad/([^\s'\"<>})\]`]+)")
 
-# Pattern: {_bmad}/ shorthand references
-BMAD_SHORTHAND_REF = re.compile(r"\{_bmad\}/([^\s'\"<>})\]`]+)")
-
-# Pattern: exec="..." attributes
-EXEC_ATTR = re.compile(r'exec="([^"]+)"')
-
-# Pattern: <invoke-task> content
-INVOKE_TASK = re.compile(r"<invoke-task>([^<]+)</invoke-task>")
-
-# Pattern: relative paths in quotes
-RELATIVE_PATH_QUOTED = re.compile(r"['\"](\.\./?[^'\"]+\.(?:md|yaml|yml|xml|json|csv|txt))['\"]")
-RELATIVE_PATH_DOT = re.compile(r"['\"](\./[^'\"]+\.(?:md|yaml|yml|xml|json|csv|txt))['\"]")
-
-# Pattern: step metadata
-STEP_META = re.compile(
-    r"(?:thisStepFile|nextStepFile|continueStepFile|skipToStepFile|altStepFile|workflowFile):\s*['\"](\.[^'\"]+)['\"]"
-)
-
-# Pattern: Load directives
-LOAD_DIRECTIVE = re.compile(r"Load[:\s]+`(\.[^`]+)`")
+# Pattern: backticked skill-relative paths — must contain a slash and a known extension
+BACKTICK_REF = re.compile(r"`([^`\s]+/[^`\s]+\.(?:md|yaml|yml|toml|json|csv|txt|xml|py))`")
 
 # Pattern: absolute path leaks (C:\\ is escaped-backslash form, as leaked paths appear in source)
 ABS_PATH_LEAK = re.compile(r"/Users/|/home/|[A-Z]:\\\\")
 
-# In-value forms of the reference patterns, for YAML scalar matching
+# In-value form of the project-root pattern, for YAML scalar matching
 PROJECT_ROOT_IN_VALUE = re.compile(r"\{project-root\}/_bmad/[^\s'\"<>})\]`]+")
-BMAD_SHORTHAND_IN_VALUE = re.compile(r"\{_bmad\}/[^\s'\"<>})\]`]+")
-RELATIVE_IN_VALUE = re.compile(r"^\.\.?/[^\s'\"<>})\]`]+\.(?:md|yaml|yml|xml|json|csv|txt)$")
-BARE_BMAD_IN_VALUE = re.compile(r"_bmad/([^\s'\"<>})\]`]+)")
 
 # Path prefixes/patterns that only exist in installed structure, not in source
 INSTALL_ONLY_PATHS = ["_config/", "custom/", "render/bmad-build/", "render/bmad-build-auto/"]
@@ -230,16 +210,6 @@ def extract_yaml_refs(file_path: str, content: str) -> list[Ref]:
         if pr_match:
             refs.append(Ref(file_path, pr_match.group(0), "project-root", line, key_path))
 
-        # Check for {_bmad}/ refs
-        bm_match = BMAD_SHORTHAND_IN_VALUE.search(value)
-        if bm_match:
-            refs.append(Ref(file_path, bm_match.group(0), "project-root", line, key_path))
-
-        # Check for relative paths
-        rel_match = RELATIVE_IN_VALUE.search(value)
-        if rel_match:
-            refs.append(Ref(file_path, rel_match.group(0), "relative", line, key_path))
-
     seen: set[int] = set()
 
     def walk_node(node: yaml.Node | None, key_path: str) -> None:
@@ -271,34 +241,26 @@ def extract_markdown_refs(file_path: str, content: str) -> list[Ref]:
     refs: list[Ref] = []
     stripped = strip_json_example_blocks(strip_code_blocks(content))
 
-    def run_pattern(regex: re.Pattern[str], ref_type: str) -> None:
-        for match in regex.finditer(stripped):
-            raw = match.group(1)
-            if not is_resolvable(raw):
-                continue
-            refs.append(Ref(file_path, raw, ref_type, offset_to_line(stripped, match.start())))
-
     # {project-root}/_bmad/ refs
-    run_pattern(PROJECT_ROOT_REF, "project-root")
+    for match in PROJECT_ROOT_REF.finditer(stripped):
+        raw = match.group(1)
+        if not is_resolvable(raw):
+            continue
+        refs.append(Ref(file_path, raw, "project-root", offset_to_line(stripped, match.start())))
 
-    # {_bmad}/ shorthand
-    run_pattern(BMAD_SHORTHAND_REF, "project-root")
-
-    # exec="..." attributes
-    run_pattern(EXEC_ATTR, "exec-attr")
-
-    # <invoke-task> tags
-    run_pattern(INVOKE_TASK, "invoke-task")
-
-    # Step metadata
-    run_pattern(STEP_META, "relative")
-
-    # Load directives
-    run_pattern(LOAD_DIRECTIVE, "relative")
-
-    # Relative paths in quotes
-    run_pattern(RELATIVE_PATH_QUOTED, "relative")
-    run_pattern(RELATIVE_PATH_DOT, "relative")
+    # Backticked skill-relative paths
+    for match in BACKTICK_REF.finditer(stripped):
+        raw = match.group(1)
+        # Globs, <placeholders>, and {variables} are prose, not references
+        if any(ch in raw for ch in "*<{"):
+            continue
+        # Absolute paths belong to the leak scan; _bmad/ and dot-relative
+        # forms are install-side or example paths, not skill-relative refs
+        if raw.startswith(("/", "./", "../", "_bmad/", "@")):
+            continue
+        if not is_resolvable(raw):
+            continue
+        refs.append(Ref(file_path, raw, "skill-relative", offset_to_line(stripped, match.start())))
 
     return refs
 
@@ -310,33 +272,34 @@ def resolve_ref(ref: Ref, skills_dir: str) -> str | None:
     if ref.type == "project-root":
         return map_installed_to_source(ref.raw, skills_dir)
 
-    if ref.type == "relative":
-        return os.path.normpath(os.path.join(os.path.dirname(ref.file), ref.raw))
-
-    if ref.type == "exec-attr":
-        exec_path = ref.raw
-        if "{project-root}" in exec_path or "{_bmad}" in exec_path or exec_path.startswith("_bmad/"):
-            return map_installed_to_source(exec_path, skills_dir)
-        # Relative exec path
-        return os.path.normpath(os.path.join(os.path.dirname(ref.file), exec_path))
-
-    if ref.type == "invoke-task":
-        # Extract file path from invoke-task content
-        pr_match = PROJECT_ROOT_IN_VALUE.search(ref.raw)
-        if pr_match:
-            return map_installed_to_source(pr_match.group(0), skills_dir)
-
-        bm_match = BMAD_SHORTHAND_IN_VALUE.search(ref.raw)
-        if bm_match:
-            return map_installed_to_source(bm_match.group(0), skills_dir)
-
-        bare_match = BARE_BMAD_IN_VALUE.search(ref.raw)
-        if bare_match:
-            return map_installed_to_source(bare_match.group(0), skills_dir)
-
-        return None  # Can't resolve — skip
+    if ref.type == "skill-relative":
+        return resolve_skill_relative(ref, skills_dir)
 
     return None
+
+
+def resolve_skill_relative(ref: Ref, skills_dir: str) -> str | None:
+    # Try the containing file's directory first, then the skill root
+    roots = [os.path.dirname(ref.file)]
+    rel = os.path.relpath(ref.file, skills_dir)
+    rel_parts = rel.split(os.sep)
+    if not rel.startswith("..") and len(rel_parts) > 1:
+        skill_root = os.path.join(skills_dir, rel_parts[0])
+        if skill_root not in roots:
+            roots.append(skill_root)
+
+    first_dir = ref.raw.split("/")[0]
+    flag_candidate = None
+    for root in roots:
+        candidate = os.path.normpath(os.path.join(root, ref.raw))
+        if os.path.exists(candidate):
+            return candidate
+        # Only worth flagging when the path's first directory really exists
+        # under this root — otherwise the token is prose, not a reference
+        if flag_candidate is None and os.path.isdir(os.path.join(root, first_dir)):
+            flag_candidate = candidate
+
+    return flag_candidate
 
 
 # --- Absolute Path Leak Detection ---
@@ -376,6 +339,22 @@ def run(project_root: str, strict: bool = False, verbose: bool = False) -> int:
     total_leaks = 0
     files_with_issues = 0
     all_issues: list[dict] = []  # Collect for $GITHUB_STEP_SUMMARY
+
+    # Every file belongs to a skill; anything sitting directly under skills/ is a mistake
+    with os.scandir(skills_dir) as it:
+        stray_files = sorted(entry.name for entry in it if entry.is_file(follow_symlinks=False))
+    if stray_files:
+        files_with_issues += 1
+        print(os.path.relpath(skills_dir, project_root))
+        for name in stray_files:
+            rel = os.path.relpath(os.path.join(skills_dir, name), project_root)
+            print(f"  [STRAY] {name}: files may not sit directly under skills/")
+            all_issues.append({"file": rel, "line": 1, "ref": name, "issue": "stray file"})
+            if github_actions:
+                print(
+                    f"::warning file={rel},line=1::"
+                    f"{escape_annotation('Stray file directly under skills/')}"
+                )
 
     for file_path in files:
         relative_path = os.path.relpath(file_path, project_root)
@@ -461,8 +440,9 @@ def run(project_root: str, strict: bool = False, verbose: bool = False) -> int:
     print(f"   References checked: {total_refs}")
     print(f"   Broken references: {broken_refs}")
     print(f"   Absolute path leaks: {total_leaks}")
+    print(f"   Stray files under skills/: {len(stray_files)}")
 
-    has_issues = broken_refs > 0 or total_leaks > 0
+    has_issues = broken_refs > 0 or total_leaks > 0 or len(stray_files) > 0
 
     if has_issues:
         print(f"\n   {files_with_issues} file(s) with issues")
