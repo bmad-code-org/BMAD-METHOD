@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["pyyaml>=6.0.2,<7"]
 # ///
 """Inspect installed manifests and materialize or repair project BMad runtime."""
 
@@ -21,20 +20,13 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 from pathlib import PurePosixPath
-from typing import Any, NamedTuple
-
-import yaml
-from yaml.constructor import ConstructorError
+from typing import NamedTuple
 
 sys.dont_write_bytecode = True
 
-MANIFEST_NAME = "module-manifest.md"
+MANIFEST_NAME = "module-manifest.toml"
 QUESTION_KEYS = frozenset({"key", "prompt", "default"})
 UPDATE_SOURCE_PREFIXES = ("github:", "https://", "file:")
-FRONTMATTER = re.compile(
-    r"\A---(?P<newline>\r?\n)(?P<yaml>.*?)^---(?:\r?\n|\Z)",
-    re.DOTALL | re.MULTILINE,
-)
 MODULE_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]*\Z")
 RESERVED_MODULE_DIRS = frozenset({"_config", "custom", "modules", "scripts"})
 
@@ -59,42 +51,6 @@ SEMVER = re.compile(
     r"(?:\+(?P<build>[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?\Z"
 )
 SOURCE_READ_LIMIT = 1024 * 1024
-
-
-class UniqueKeyLoader(yaml.SafeLoader):
-    """Safe YAML loader that rejects silently overwritten mapping keys."""
-
-
-def construct_unique_mapping(
-    loader: UniqueKeyLoader, node: yaml.MappingNode, deep: bool = False
-) -> dict[Any, Any]:
-    seen: set[Any] = set()
-    for key_node, _value_node in node.value:
-        key = loader.construct_object(key_node, deep=deep)
-        try:
-            duplicate = key in seen
-        except TypeError as error:
-            raise ConstructorError(
-                "while constructing a mapping",
-                node.start_mark,
-                "found an unhashable key",
-                key_node.start_mark,
-            ) from error
-        if duplicate:
-            raise ConstructorError(
-                "while constructing a mapping",
-                node.start_mark,
-                f"found duplicate key {key!r}",
-                key_node.start_mark,
-            )
-        seen.add(key)
-    return yaml.SafeLoader.construct_mapping(loader, node, deep=deep)
-
-
-UniqueKeyLoader.add_constructor(
-    yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
-    construct_unique_mapping,
-)
 
 
 class ConfigQuestion(NamedTuple):
@@ -448,7 +404,7 @@ def existing_team_config(project_root: Path) -> tuple[str | None, dict]:
     return text, parse_toml(text, path)
 
 
-def parse_toml(text: str, source: Path) -> dict:
+def parse_toml(text: str, source: Path | str) -> dict:
     try:
         return tomllib.loads(text)
     except tomllib.TOMLDecodeError as error:
@@ -552,17 +508,7 @@ def parse_packaged_manifest(path: Path, raw: bytes) -> ParsedManifest:
         source = raw.decode("utf-8")
     except UnicodeError as error:
         raise Exception(f"invalid packaged manifest {path}: {error}") from error
-    match = FRONTMATTER.match(source)
-    if match is None:
-        raise Exception(f"invalid frontmatter in packaged manifest {path}")
-    try:
-        data = yaml.load(match.group("yaml"), Loader=UniqueKeyLoader)
-    except yaml.YAMLError as error:
-        raise Exception(f"invalid YAML in packaged manifest {path}: {error}") from error
-    if not isinstance(data, dict):
-        raise Exception(f"frontmatter in packaged manifest {path} must be a mapping")
-    if any(not isinstance(key, str) for key in data):
-        raise Exception(f"packaged manifest {path} has a non-string field")
+    data = parse_toml(source, path)
     module = manifest_string(data, "module", path)
     if (
         MODULE_NAME.fullmatch(module) is None
@@ -885,15 +831,7 @@ def parse_source_version(source: str, raw: bytes) -> str:
         text = raw.decode("utf-8")
     except UnicodeError as error:
         raise Exception(f"invalid source manifest {source}: {error}") from error
-    match = FRONTMATTER.match(text)
-    if match is None:
-        raise Exception(f"invalid frontmatter in source manifest {source}")
-    try:
-        data = yaml.load(match.group("yaml"), Loader=UniqueKeyLoader)
-    except yaml.YAMLError as error:
-        raise Exception(f"invalid YAML in source manifest {source}: {error}") from error
-    if not isinstance(data, dict):
-        raise Exception(f"frontmatter in source manifest {source} must be a mapping")
+    data = parse_toml(text, source)
     version = data.get("version")
     if not isinstance(version, str) or not version.strip():
         raise Exception(

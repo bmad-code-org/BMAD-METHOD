@@ -23,7 +23,7 @@ and version used. Never claim the installation is current unless the report's
 top-level `current` is true.
 
 This command re-scans installed skills and reads only each source
-`module-manifest.md`. It does not install, move, repair, or remove skills; does
+`module-manifest.toml`. It does not install, move, repair, or remove skills; does
 not write the project or a lockfile; and does not run `npx skills update`. If an
 update is available, tell the user that updating installed skill folders is the
 responsibility of `npx skills update`.
