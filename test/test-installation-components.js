@@ -13,6 +13,7 @@
 
 const path = require('node:path');
 const os = require('node:os');
+const { symlink } = require('node:fs/promises');
 const { spawnSync } = require('node:child_process');
 const fs = require('../tools/installer/fs-native');
 const { Installer } = require('../tools/installer/core/installer');
@@ -4177,6 +4178,114 @@ async function runTests() {
     console.log(`${colors.red}Test Suite 52 setup failed: ${error.message}${colors.reset}`);
     console.log(error.stack);
     failed++;
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 53: Marketplace default skill discovery
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 53: Marketplace default skill discovery${colors.reset}\n`);
+
+  let root53;
+  let outside53;
+  try {
+    const { PluginResolver } = require('../tools/installer/modules/plugin-resolver');
+
+    root53 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-plugin-default-skills-'));
+    outside53 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-plugin-external-skills-'));
+    const pluginRoot53 = path.join(root53, 'plugin');
+    for (const name of ['alpha-skill', 'beta-skill']) {
+      const skillDir = path.join(pluginRoot53, 'skills', name);
+      await fs.ensureDir(skillDir);
+      await fs.writeFile(
+        path.join(skillDir, 'SKILL.md'),
+        ['---', `name: ${name}`, `description: ${name} description`, '---', '', `# ${name}`].join('\n'),
+      );
+    }
+    await fs.ensureDir(path.join(pluginRoot53, 'skills', 'not-a-skill'));
+
+    const [resolved53] = await new PluginResolver().resolve(root53, {
+      name: 'default-skills-plugin',
+      source: './plugin',
+    });
+    assert(resolved53?.strategy === 5, 'marketplace plugin without a skills array uses synthesized module metadata');
+    assert(
+      JSON.stringify(resolved53?.skillPaths.map((skillPath) => path.basename(skillPath))) === JSON.stringify(['alpha-skill', 'beta-skill']),
+      'marketplace plugin discovers only sorted SKILL.md directories under its default skills directory',
+    );
+
+    const escaped53 = await new PluginResolver().resolve(root53, {
+      name: 'escaped-plugin',
+      source: '../outside-repository',
+    });
+    assert(escaped53.length === 0, 'default skill discovery rejects a plugin source outside the repository');
+
+    const orderRoot53 = path.join(root53, 'ordered-plugin');
+    for (const name of ['ä-setup', 'z-setup']) {
+      const skillDir = path.join(orderRoot53, 'skills', name);
+      await fs.ensureDir(path.join(skillDir, 'assets'));
+      await fs.writeFile(path.join(skillDir, 'SKILL.md'), `---\nname: ${name}\ndescription: setup\n---\n`);
+      await fs.writeFile(path.join(skillDir, 'assets', 'module.yaml'), `code: ${name}\nname: ${name}\n`);
+      await fs.writeFile(path.join(skillDir, 'assets', 'module-help.csv'), 'module\n');
+    }
+    const [ordered53] = await new PluginResolver().resolve(root53, {
+      name: 'ordered-plugin',
+      source: './ordered-plugin',
+    });
+    assert(ordered53?.strategy === 2, 'default discovery resolves setup skills before fallback synthesis');
+    assert(ordered53?.code === 'z-setup', 'default discovery uses locale-independent code-unit ordering');
+
+    const externalSkill53 = path.join(outside53, 'skills', 'external-skill');
+    await fs.ensureDir(externalSkill53);
+    await fs.writeFile(path.join(externalSkill53, 'SKILL.md'), '---\nname: external-skill\ndescription: external\n---\n');
+    const linkType53 = process.platform === 'win32' ? 'junction' : 'dir';
+    await symlink(outside53, path.join(root53, 'external-source'), linkType53);
+    await fs.ensureDir(path.join(root53, 'linked-skills-plugin'));
+    await symlink(path.join(outside53, 'skills'), path.join(root53, 'linked-skills-plugin', 'skills'), linkType53);
+    await fs.ensureDir(path.join(root53, 'listed-skills'));
+    await symlink(externalSkill53, path.join(root53, 'listed-skills', 'external-skill'), linkType53);
+
+    const nestedSkill53 = path.join(root53, 'nested-skills', 'nested-external-skill');
+    await fs.ensureDir(path.join(nestedSkill53, 'assets'));
+    await fs.writeFile(path.join(nestedSkill53, 'SKILL.md'), '---\nname: nested-external-skill\ndescription: nested external\n---\n');
+    await symlink(outside53, path.join(nestedSkill53, 'assets', 'external-data'), linkType53);
+
+    const internalData53 = path.join(root53, 'internal-data');
+    const internalSkill53 = path.join(root53, 'nested-skills', 'nested-internal-skill');
+    await fs.ensureDir(internalData53);
+    await fs.writeFile(path.join(internalData53, 'data.txt'), 'inside repository\n');
+    await fs.ensureDir(path.join(internalSkill53, 'assets'));
+    await fs.writeFile(path.join(internalSkill53, 'SKILL.md'), '---\nname: nested-internal-skill\ndescription: nested internal\n---\n');
+    await symlink(internalData53, path.join(internalSkill53, 'assets', 'internal-data'), linkType53);
+
+    const resolver53 = new PluginResolver();
+    const sourceLink53 = await resolver53.resolve(root53, { name: 'source-link', source: './external-source' });
+    const skillsLink53 = await resolver53.resolve(root53, { name: 'skills-link', source: './linked-skills-plugin' });
+    const listedLink53 = await resolver53.resolve(root53, {
+      name: 'listed-link',
+      skills: ['./listed-skills/external-skill'],
+    });
+    const nestedExternal53 = await resolver53.resolve(root53, {
+      name: 'nested-external',
+      skills: ['./nested-skills/nested-external-skill'],
+    });
+    const nestedInternal53 = await resolver53.resolve(root53, {
+      name: 'nested-internal',
+      skills: ['./nested-skills/nested-internal-skill'],
+    });
+    assert(sourceLink53.length === 0, 'default discovery rejects a plugin source symlink outside the repository');
+    assert(skillsLink53.length === 0, 'default discovery rejects a skills directory symlink outside the repository');
+    assert(listedLink53.length === 0, 'explicit discovery rejects a skill symlink outside the repository');
+    assert(nestedExternal53.length === 0, 'skill discovery rejects a nested symlink outside the repository');
+    assert(nestedInternal53.length === 1, 'skill discovery preserves a nested symlink within the repository');
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 53 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  } finally {
+    if (root53) await fs.remove(root53).catch(() => {});
+    if (outside53) await fs.remove(outside53).catch(() => {});
   }
 
   console.log('');
