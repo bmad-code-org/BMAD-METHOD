@@ -18,7 +18,6 @@
   },
   "license": "MIT",
   "author": "Brian (BMad) Madison",
-  "main": "tools/installer/bmad-cli.js",
   "scripts": {
     "docs:build": "node tools/build-docs.mjs",
     "docs:dev": "astro dev --root website",
@@ -68,16 +67,9 @@
     }
   },
   "dependencies": {
-    "@clack/core": "^1.3.1",
-    "@clack/prompts": "^1.4.0",
     "@kayvan/markdown-tree-parser": "^1.6.1",
-    "chalk": "^4.1.2",
-    "commander": "^14.0.0",
     "csv-parse": "^6.1.0",
-    "glob": "^11.0.3",
-    "ignore": "^7.0.5",
     "js-yaml": "^4.1.0",
-    "picocolors": "^1.1.1",
     "semver": "^7.6.3",
     "xml2js": "^0.6.2",
     "yaml": "^2.7.0"
