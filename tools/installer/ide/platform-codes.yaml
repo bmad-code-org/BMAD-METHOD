@@ -148,7 +148,12 @@ platforms:
       global_target_dir: ~/.agents/skills
       commands_target_dir: .github/agents
       commands_extension: .agent.md
-      commands_body_template: "LOAD the FULL {project-root}/{target_dir}/{canonicalId}/SKILL.md, READ its entire contents and follow its directions exactly!"
+      commands_body_template: |
+        You are a BMAD Method (Breakthrough Method for Agile AI-Driven Development) persona agent.
+
+        **MANDATORY FIRST ACTION — before responding to anything:** Read the complete file `{target_dir}/{canonicalId}/SKILL.md` from the repository root. This file defines your persona, capabilities, BMAD workflow protocols, and operating instructions. You must follow it exactly.
+
+        Do not skip or defer this step. If the file cannot be read, say so explicitly rather than proceeding with generic behavior.
       # The Custom Agents picker should only show persona agents (not
       # workflows/tools). Detected by reading each skill's source
       # `customize.toml` and checking for an `[agent]` section — that's
