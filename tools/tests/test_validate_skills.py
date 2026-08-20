@@ -117,7 +117,7 @@ class ProjectCase(unittest.TestCase):
         self._tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self._tmp.cleanup)
         self.root = Path(self._tmp.name)
-        self.skills = self.root / "src"
+        self.skills = self.root / "skills"
         self.skills.mkdir()
         patcher = mock.patch.dict(os.environ, clear=False)
         patcher.start()
@@ -423,13 +423,13 @@ class TestCliAndOutput(ProjectCase):
         code, out, _ = self.run_validator(skill_dir=skill, strict=True)
         self.assertEqual(code, 0)
         self.assertIn(
-            "::notice file=src/bmad-gha/notes.md,line=1::SEQ-02: Time estimate pattern found: \"Ship 100%25 with ETA\"",
+            "::notice file=skills/bmad-gha/notes.md,line=1::SEQ-02: Time estimate pattern found: \"Ship 100%25 with ETA\"",
             out,
         )
         text = summary.read_text(encoding="utf-8")
         self.assertTrue(text.startswith("## Skill Validation\n"))
         self.assertIn("| Skill | Rule | Severity | File | Detail |", text)
-        self.assertIn("| src/bmad-gha | SEQ-02 | LOW | notes.md |", text)
+        self.assertIn("| skills/bmad-gha | SEQ-02 | LOW | notes.md |", text)
         self.assertIn("**1 skills scanned, 1 findings**", text)
 
     def test_nested_skills_discovered_and_sorted(self):

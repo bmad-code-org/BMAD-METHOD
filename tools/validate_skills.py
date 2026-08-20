@@ -37,7 +37,7 @@ import sys
 sys.dont_write_bytecode = True
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SRC_DIR = os.path.join(PROJECT_ROOT, "src")
+SRC_DIR = os.path.join(PROJECT_ROOT, "skills")
 
 # JS RegExp#toString() forms — Python's re.Pattern repr is not load-bearing for messages.
 NAME_REGEX_DISPLAY = r"/^(?:bmad|bmad-[a-z0-9]+(?:-[a-z0-9]+)*)$/"
@@ -656,7 +656,7 @@ def run(
     strict: bool = False,
     json_output: bool = False,
 ) -> int:
-    src_dir = os.path.join(project_root, "src")
+    src_dir = os.path.join(project_root, "skills")
     github_actions = bool(os.environ.get("GITHUB_ACTIONS"))
 
     if skill_dir is not None:
