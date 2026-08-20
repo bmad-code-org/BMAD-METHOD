@@ -5,19 +5,23 @@ update_source: github:bmad-code-org/bmad-skills/skills
 
 # BMad Method (bmm)
 
-This is a cohesive collection of skills for software development, helping user to turn an intent of any size into working software.
+This is a cohesive collection of skills for software development, helping the
+user turn an intent of any size into working software. Route the user to the
+smallest path that safely fits the work; never march them through every skill.
 
 ## The skills and their places in the flow
 
 Shaping and planning:
 
 - `bmad-spec` — condenses any input into a short spec, and can break a spec
-  into an ordered story list. The entry point for epic-sized (2-10 coding sessions)  work and for existing material (notes, transcripts, PRDs from elsewhere).
+  into an ordered story list. The entry point for epic-sized (2-10 coding
+  sessions) work and for existing material (notes, transcripts, PRDs from
+  elsewhere).
 - `bmad-product-brief` and `bmad-prfaq` — two alternative ways to shape a
   product concept; use one, never both.
 - `bmad-prd` — turns a shaped concept into product requirements.
-- `bmad-ux` — records user experience decisions; belongs after the PRD when a UI
-  is a significant part of the work.
+- `bmad-ux` — records user experience decisions; belongs after the PRD when a
+  UI is a significant part of the work.
 - `bmad-architecture` — records the how-to-build decisions that keep
   separately built parts consistent; comes before epics and stories.
 - `bmad-create-epics-and-stories` — breaks the PRD and architecture into
@@ -52,9 +56,10 @@ Agent personas (optional):
   this work. Offer one only when the user asks to talk to a specific role
   or wants one perspective's take without running a full skill.
 
-A project environment may have a subset of these skills supporting user's preferred workflow.
+A project environment may have a subset of these skills supporting the user's
+preferred workflow.
 
-## How to use BMad 
+## How to use BMad
 
 Ask whether one implementation session can reasonably understand, implement,
 review, and finish the change. Scope is only one signal: high risk, unclear
@@ -67,26 +72,40 @@ up a tier even when it is small.
 - **One session.** One coherent intent that fits an implementation session:
   hand it straight to `bmad-build`. No planning skill needs to run first.
 - **Epic-sized.** One coherent outcome that needs several sessions: run
-  `bmad-spec` to pin down the what, tell it to create architecture and/or UX companion files if the situation calls for it, have it break the spec into stories, then
-  run `bmad-build` or `bmad-build-auto` once per story. Risky and foundational stories
-  deserves human attention, therefore `bmad-build`; once the decisions and patterns are stable, an orchestrated loop dispatching `bmad-build-auto` sesions may also be used.
-  Finish with `bmad-retrospective` against the spec.
+  `bmad-spec` to pin down the what, tell it to create architecture and/or UX
+  companion files if the situation calls for it, have it break the spec into
+  stories, then run `bmad-build` or `bmad-build-auto` once per story. Risky
+  and foundational stories deserve human attention, therefore `bmad-build`;
+  once the decisions and patterns are stable, an orchestrated loop
+  dispatching `bmad-build-auto` sessions may also be used. Finish with
+  `bmad-retrospective` against the spec.
 - **Project-sized.** 10-100 coding sessions: take the full planning route —
-  `bmad-product-brief` or `bmad-prfaq`, then `bmad-prd`, then `bmad-ux` when the user
-  experience matters, then `bmad-architecture`, `bmad-create-epics-and-stories`, and  `bmad-sprint-planning`. Each epic then runs like epic-sized work above, but without running spec for every epic.
+  `bmad-product-brief` or `bmad-prfaq`, then `bmad-prd`, then `bmad-ux` when
+  the user experience matters, then `bmad-architecture`,
+  `bmad-create-epics-and-stories`, and `bmad-sprint-planning`. Each epic then
+  runs like epic-sized work above, but without running spec for every epic.
 
 ## Answering "what's next?"
 
-Read the state before recommending: which planning artifacts exist, and what the codebase, git history and/or the user says is done. Caution: presence of a story file with `status: done` or another planning/tracking artifact like this does not prove completion. Then:
+Read the state before recommending: which planning artifacts exist, and what
+the codebase, git history, and/or the user says is done. Caution: presence of
+a story file with `status: done` or another planning/tracking artifact like
+this does not prove completion. Then:
 
 - Mid-path, recommend the next unfinished stage of the chosen path, not a
   restart.
-- When you detect ongoing sprint tracking, but sprint state is unclear, use `bmad-sprint-planning`'s status action.
+- When you detect ongoing sprint tracking, but sprint state is unclear, use
+  `bmad-sprint-planning`'s status action.
 - After a Build: `bmad-code-review` is an optional extra gate; offer
   `bmad-qa-generate-e2e-tests` when automated coverage is wanted and
-  `bmad-checkpoint-preview` when a human wants a walkthrough. Recommend repeated 
-  `bmad-code-review` after material fixes until remaining findings no longer
-  affect acceptance. Keep in mind that both build skills have a review step, and each `bmad-code-review` run can take up to half an hour or more - it pays for itself when it catches real defects, not when it produces a long tail of minor issues. More than two iterations of agentic review on the same change is often a symptom of problems outside of change - bad planning, messy code base, etc.
+  `bmad-checkpoint-preview` when a human wants a walkthrough. Recommend
+  repeated `bmad-code-review` after material fixes until remaining findings
+  no longer affect acceptance. Keep in mind that both build skills have a
+  review step, and each `bmad-code-review` run can take up to half an hour or
+  more — it pays for itself when it catches real defects, not when it
+  produces a long tail of minor issues. More than two iterations of agentic
+  review on the same change is often a symptom of problems outside the
+  change — bad planning, a messy codebase, etc.
 - When an epic completes, offer `bmad-retrospective`. When it — or anything
   midstream — exposes a significant planning change, route through
   `bmad-correct-course`, then resume at the earliest affected skill once the
@@ -101,6 +120,6 @@ has been traversed.
 Durable specs and their story lists live under `{output_folder}/specs`;
 planning documents and change proposals under `{planning_artifacts}`; Build's
 working records, sprint status, reviews, and retrospectives under
-`{implementation_artifacts}`;
-implementation in the project working tree; generated QA tests under
-`{project-root}/tests`; and repository guidance at `{project-root}/AGENTS.md`.
+`{implementation_artifacts}`; implementation in the project working tree;
+generated QA tests under `{project-root}/tests`; and repository guidance at
+`{project-root}/AGENTS.md`.
