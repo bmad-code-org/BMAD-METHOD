@@ -9,7 +9,7 @@ Validates cross-file references in BMAD source files (agents, workflows, tasks, 
 Catches broken file paths, missing referenced files, and absolute path leaks.
 
 What it checks:
-- {project-root}/_bmad/ references in YAML and markdown resolve to real src/ files
+- {project-root}/_bmad/ references in YAML and markdown resolve to real skills/ files
 - Relative path references (./file.md, ../data/file.csv) point to existing files
 - exec="..." and <invoke-task> targets exist
 - Step metadata (thisStepFile, nextStepFile) references are valid
@@ -175,7 +175,7 @@ def strip_json_example_blocks(content: str) -> str:
 # --- Path Mapping ---
 
 
-def map_installed_to_source(ref_path: str, src_dir: str) -> str | None:
+def map_installed_to_source(ref_path: str, skills_dir: str) -> str | None:
     # Strip {project-root}/_bmad/ or {_bmad}/ prefix
     cleaned = re.sub(r"^\{project-root\}/_bmad/", "", ref_path)
     cleaned = re.sub(r"^\{_bmad\}/", "", cleaned)
@@ -187,17 +187,12 @@ def map_installed_to_source(ref_path: str, src_dir: str) -> str | None:
     if is_install_only(cleaned):
         return None
 
-    # Map installed module names to their source directory names
-    # _bmad/core/ → src/core-skills/, _bmad/bmm/ → src/bmm-skills/
-    if cleaned.startswith("core/"):
-        return os.path.join(src_dir, "core-skills", cleaned[len("core/") :])
-    if cleaned.startswith("bmm/"):
-        return os.path.join(src_dir, "bmm-skills", cleaned[len("bmm/") :])
-    if cleaned.startswith("utility/"):
-        return os.path.join(src_dir, cleaned)
+    # _bmad/scripts/ is installed from the bmad hub skill's scripts/
+    if cleaned.startswith("scripts/"):
+        return os.path.join(skills_dir, "bmad", cleaned)
 
-    # Fallback: map directly under src/
-    return os.path.join(src_dir, cleaned)
+    # Fallback: map directly under skills/
+    return os.path.join(skills_dir, cleaned)
 
 
 # --- Reference Extraction ---
@@ -211,7 +206,7 @@ def is_resolvable(ref_str: str) -> bool:
 
 
 def is_install_only(cleaned_path: str) -> bool:
-    # Skip paths that only exist in the installed _bmad/ structure, not in src/
+    # Skip paths that only exist in the installed _bmad/ structure, not in skills/
     if any(cleaned_path.startswith(prefix) for prefix in INSTALL_ONLY_PATHS):
         return True
     # Skip files that are generated during installation
@@ -311,9 +306,9 @@ def extract_markdown_refs(file_path: str, content: str) -> list[Ref]:
 # --- Reference Resolution ---
 
 
-def resolve_ref(ref: Ref, src_dir: str) -> str | None:
+def resolve_ref(ref: Ref, skills_dir: str) -> str | None:
     if ref.type == "project-root":
-        return map_installed_to_source(ref.raw, src_dir)
+        return map_installed_to_source(ref.raw, skills_dir)
 
     if ref.type == "relative":
         return os.path.normpath(os.path.join(os.path.dirname(ref.file), ref.raw))
@@ -321,7 +316,7 @@ def resolve_ref(ref: Ref, src_dir: str) -> str | None:
     if ref.type == "exec-attr":
         exec_path = ref.raw
         if "{project-root}" in exec_path or "{_bmad}" in exec_path or exec_path.startswith("_bmad/"):
-            return map_installed_to_source(exec_path, src_dir)
+            return map_installed_to_source(exec_path, skills_dir)
         # Relative exec path
         return os.path.normpath(os.path.join(os.path.dirname(ref.file), exec_path))
 
@@ -329,15 +324,15 @@ def resolve_ref(ref: Ref, src_dir: str) -> str | None:
         # Extract file path from invoke-task content
         pr_match = PROJECT_ROOT_IN_VALUE.search(ref.raw)
         if pr_match:
-            return map_installed_to_source(pr_match.group(0), src_dir)
+            return map_installed_to_source(pr_match.group(0), skills_dir)
 
         bm_match = BMAD_SHORTHAND_IN_VALUE.search(ref.raw)
         if bm_match:
-            return map_installed_to_source(bm_match.group(0), src_dir)
+            return map_installed_to_source(bm_match.group(0), skills_dir)
 
         bare_match = BARE_BMAD_IN_VALUE.search(ref.raw)
         if bare_match:
-            return map_installed_to_source(bare_match.group(0), src_dir)
+            return map_installed_to_source(bare_match.group(0), skills_dir)
 
         return None  # Can't resolve — skip
 
@@ -366,14 +361,14 @@ def check_absolute_path_leaks(file_path: str, content: str) -> list[Leak]:
 
 
 def run(project_root: str, strict: bool = False, verbose: bool = False) -> int:
-    src_dir = os.path.join(project_root, "src")
+    skills_dir = os.path.join(project_root, "skills")
     github_actions = bool(os.environ.get("GITHUB_ACTIONS"))
 
-    print(f"\nValidating file references in: {src_dir}")
+    print(f"\nValidating file references in: {skills_dir}")
     mode = "STRICT (exit 1 on issues)" if strict else "WARNING (exit 0)"
     print(f"Mode: {mode}{' + VERBOSE' if verbose else ''}\n")
 
-    files = get_source_files(src_dir)
+    files = get_source_files(skills_dir)
     print(f"Found {len(files)} source files\n")
 
     total_refs = 0
@@ -400,7 +395,7 @@ def run(project_root: str, strict: bool = False, verbose: bool = False) -> int:
 
         for ref in refs:
             total_refs += 1
-            resolved = resolve_ref(ref, src_dir)
+            resolved = resolve_ref(ref, skills_dir)
 
             if resolved and not os.path.exists(resolved):
                 rel_resolved = os.path.relpath(resolved, project_root)
