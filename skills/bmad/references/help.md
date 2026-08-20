@@ -1,8 +1,3 @@
----
-module: bmm
-update_source: github:bmad-code-org/bmad-skills/skills
----
-
 # BMad Method (bmm)
 
 This is a cohesive collection of skills for software development, helping the
@@ -58,6 +53,8 @@ Agent personas (optional):
 
 A project environment may have a subset of these skills supporting the user's
 preferred workflow.
+
+Cross-skill routing exists only when the `bmad` hub skill is installed.
 
 ## How to use BMad
 
