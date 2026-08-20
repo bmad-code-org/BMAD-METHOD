@@ -27,9 +27,8 @@
     "docs:validate-sidebar": "node tools/validate-sidebar-order.js",
     "format:check": "prettier --check \"**/*.{js,cjs,mjs,json,yaml}\"",
     "format:fix": "prettier --write \"**/*.{js,cjs,mjs,json,yaml}\"",
-    "format:fix:staged": "prettier --write",
-    "lint": "eslint . --ext .js,.cjs,.mjs,.yaml --max-warnings=0",
-    "lint:fix": "eslint . --ext .js,.cjs,.mjs,.yaml --fix",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --fix",
     "lint:md": "markdownlint-cli2 \"**/*.md\"",
     "prepare": "command -v husky >/dev/null 2>&1 && husky || exit 0",
     "quality": "npm run format:check && npm run lint && npm run lint:md && npm run docs:build && npm test && npm run validate:refs && npm run validate:skills && npm run docs:validate-sidebar",
@@ -42,15 +41,15 @@
   },
   "lint-staged": {
     "*.{js,cjs,mjs}": [
-      "npm run lint:fix",
-      "npm run format:fix:staged"
+      "eslint --fix",
+      "prettier --write"
     ],
     "*.yaml": [
       "eslint --fix",
-      "npm run format:fix:staged"
+      "prettier --write"
     ],
     "*.json": [
-      "npm run format:fix:staged"
+      "prettier --write"
     ],
     "*.md": [
       "markdownlint-cli2"
@@ -78,9 +77,7 @@
     "prettier": "^3.7.4",
     "prettier-plugin-packagejson": "^2.5.19",
     "sharp": "^0.33.5",
-    "unist-util-visit": "^5.1.0",
-    "yaml-eslint-parser": "^1.2.3",
-    "yaml-lint": "^1.7.0"
+    "unist-util-visit": "^5.1.0"
   },
   "engines": {
     "node": ">=20.12.0"
