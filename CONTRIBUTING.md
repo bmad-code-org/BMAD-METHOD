@@ -159,9 +159,8 @@ Keep messages under 72 characters. Each commit = one logical change.
 
 | File Pattern | Validator | Extraction Function |
 | ------------ | --------- | ------------------- |
-| `*.yaml`, `*.yml` | `validate-file-refs.js` | `extractYamlRefs` |
-| `*.md`, `*.xml` | `validate-file-refs.js` | `extractMarkdownRefs` |
-| `*.csv` | `validate-file-refs.js` | `extractCsvRefs` |
+| `*.yaml`, `*.yml` | `validate_file_refs.py` | `extract_yaml_refs` |
+| `*.md`, `*.xml` | `validate_file_refs.py` | `extract_markdown_refs` |
 
 ---
 
