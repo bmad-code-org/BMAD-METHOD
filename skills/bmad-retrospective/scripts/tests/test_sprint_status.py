@@ -26,8 +26,8 @@ from ruamel.yaml import YAML
 
 SCRIPT = Path(__file__).resolve().parents[1] / "sprint_status.py"
 # Vendored copy of bmad-sprint-planning's sprint-status-template.yaml — skills
-# must not path into each other's directories (PATH-05). The repo-level
-# test/test-template-sync.js keeps this fixture identical to the source.
+# must not path into each other's directories (PATH-05). Keep this fixture in
+# sync with the source template by hand when it changes.
 TEMPLATE = Path(__file__).resolve().parent / "fixtures" / "sprint-status-template.yaml"
 
 FIXTURE = """\
