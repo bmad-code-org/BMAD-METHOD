@@ -9,7 +9,7 @@ test-output/
 
 # Documentation site (users access docs online)
 docs/
-website/
+docs-site/
 
 # Configuration files (development only)
 .coderabbit.yaml

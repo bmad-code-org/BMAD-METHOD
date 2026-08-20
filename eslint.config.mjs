@@ -16,8 +16,8 @@ export default [
       '_bmad*/**',
       // Build output
       'build/**',
-      // Website uses ESM/Astro - separate linting ecosystem
-      'website/**',
+      // Docs site uses ESM/Astro - separate linting ecosystem
+      'docs-site/**',
       // Gitignored patterns
       'z*/**', // z-samples, z1, z2, etc.
       '.claude/**',
