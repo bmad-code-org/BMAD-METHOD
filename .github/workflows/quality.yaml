@@ -1,11 +1,5 @@
 name: Quality & Validation
 
-# Runs comprehensive quality checks on all PRs and pushes to main:
-# - Prettier (formatting)
-# - ESLint (linting)
-# - markdownlint (markdown quality)
-# - Installation component tests (compilation)
-# - Retrospective Python tests
 # Keep this workflow aligned with `npm run quality` in `package.json`.
 
 "on":
@@ -89,6 +83,12 @@ jobs:
         # Note: build-docs.mjs runs link validation internally before building
         run: npm run docs:build
 
+      - name: Validate sidebar order
+        run: npm run docs:validate-sidebar
+
+      - name: Test docs-site
+        run: npm run test:docs
+
   validate:
     runs-on: ubuntu-latest
     steps:
@@ -107,17 +107,8 @@ jobs:
       - name: Setup uv
         uses: astral-sh/setup-uv@v6
 
-      - name: Test workflow renderers
-        run: npm run test:renderer
-
-      - name: Test npx skills packager and help setup
-        run: npm run test:npx-skills
-
-      - name: Test retrospective scripts
-        run: npm run test:retrospective
-
-      - name: Test sprint-planning scripts
-        run: npm run test:sprint-planning
+      - name: Test Python
+        run: npm run test:python
 
       - name: Validate file references
         run: npm run validate:refs
