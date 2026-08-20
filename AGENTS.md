@@ -22,3 +22,13 @@ cases — the model usually handles them from context, and the reviewing human c
 
 Automated tests assert outcomes produced by deterministic code. Do not write automated tests for LLM output or for
 static source text.
+
+## Test mirror
+
+`bmad-code-org/bmad-skills` `main` is a disposable mirror of this branch, used to
+test the npx distribution flow end to end (the module manifests' `update_source`
+points at it). After the quality gate passes, refresh it with:
+
+```bash
+git push --force git@github.com:bmad-code-org/bmad-skills.git feat/npx-skills-distribution:main
+```
