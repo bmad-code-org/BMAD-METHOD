@@ -69,7 +69,7 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
 1. **Resume detection:** Check if `{planning_artifacts}/prfaq-{project_name}.md` already exists. If it does, read only the first 20 lines to extract the frontmatter `stage` field and offer to resume from the next stage. Do not read the full document. If the user confirms, route directly to that stage's reference file.
 
 2. **Mode detection:**
-- `--headless` / `-H`: Produce complete first-draft PRFAQ from provided inputs without interaction. Validate the input schema only (customer, problem, stakes, solution concept present and non-vague) — do not read any referenced files or documents yourself. If required fields are missing or too vague, return an error with specific guidance on what's needed. Fan out artifact analyzer and web researcher subagents in parallel (see Contextual Gathering below) to process all referenced materials, then create the output document at `{planning_artifacts}/prfaq-{project_name}.md` using `./assets/prfaq-template.md` and route to `./references/press-release.md`.
+- `--headless` / `-H`: Produce complete first-draft PRFAQ from provided inputs without interaction. Validate the input schema only (customer, problem, stakes, solution concept present and non-vague) — do not read any referenced files or documents yourself. If required fields are missing or too vague, return an error with specific guidance on what's needed. Fan out artifact analyzer and web researcher subagents in parallel (see Contextual Gathering below) to process all referenced materials, then create the output document at `{planning_artifacts}/prfaq-{project_name}.md` using `assets/prfaq-template.md` and route to `references/press-release.md`.
 - Default: Full interactive coaching — the gauntlet.
 
 **Headless input schema:**
@@ -110,23 +110,23 @@ When the user gets stuck, offer concrete suggestions based on what they've share
 
 1. **Ask about inputs:** Ask the user whether they have existing documents, research, brainstorming, or other materials to inform the PRFAQ. Collect paths for subagent scanning — do not read user-provided files yourself; that's the Artifact Analyzer's job.
 2. **Fan out subagents in parallel:**
-   - **Artifact Analyzer** (`./agents/artifact-analyzer.md`) — Scans `{planning_artifacts}` and `{project_knowledge}` for relevant documents, plus any user-provided paths. Receives the product intent summary so it knows what's relevant.
-   - **Web Researcher** (`./agents/web-researcher.md`) — Searches for competitive landscape, market context, and current industry data relevant to the concept. Receives the product intent summary.
+   - **Artifact Analyzer** (`agents/artifact-analyzer.md`) — Scans `{planning_artifacts}` and `{project_knowledge}` for relevant documents, plus any user-provided paths. Receives the product intent summary so it knows what's relevant.
+   - **Web Researcher** (`agents/web-researcher.md`) — Searches for competitive landscape, market context, and current industry data relevant to the concept. Receives the product intent summary.
 3. **Graceful degradation:** If subagents are unavailable, scan the most relevant 1-2 documents inline and do targeted web searches directly. Never block the workflow.
 4. **Merge findings** with what the user shared. Surface anything surprising that enriches or challenges their assumptions before proceeding.
 
-**Create the output document** at `{planning_artifacts}/prfaq-{project_name}.md` using `./assets/prfaq-template.md`. Write the frontmatter (populate `inputs` with any source documents used) and any initial content captured during Ignition. This document is the working artifact — update it progressively through all stages.
+**Create the output document** at `{planning_artifacts}/prfaq-{project_name}.md` using `assets/prfaq-template.md`. Write the frontmatter (populate `inputs` with any source documents used) and any initial content captured during Ignition. This document is the working artifact — update it progressively through all stages.
 
 **Coaching Notes Capture:** Before moving on, append a `<!-- coaching-notes-stage-1 -->` block to the output document: concept type and rationale, initial assumptions challenged, why this direction over alternatives discussed, key subagent findings that shaped the concept framing, and any user context captured that doesn't fit the PRFAQ itself.
 
-**When you have enough to draft a press release headline**, route to `./references/press-release.md`.
+**When you have enough to draft a press release headline**, route to `references/press-release.md`.
 
 ## Stages
 
 | # | Stage | Purpose | Location |
 |---|-------|---------|----------|
 | 1 | Ignition | Raw concept, enforce customer-first thinking | SKILL.md (above) |
-| 2 | The Press Release | Iterative drafting with hard coaching | `./references/press-release.md` |
-| 3 | Customer FAQ | Devil's advocate customer questions | `./references/customer-faq.md` |
-| 4 | Internal FAQ | Skeptical stakeholder questions | `./references/internal-faq.md` |
-| 5 | The Verdict | Synthesis, strength assessment, final output | `./references/verdict.md` |
+| 2 | The Press Release | Iterative drafting with hard coaching | `references/press-release.md` |
+| 3 | Customer FAQ | Devil's advocate customer questions | `references/customer-faq.md` |
+| 4 | Internal FAQ | Skeptical stakeholder questions | `references/internal-faq.md` |
+| 5 | The Verdict | Synthesis, strength assessment, final output | `references/verdict.md` |

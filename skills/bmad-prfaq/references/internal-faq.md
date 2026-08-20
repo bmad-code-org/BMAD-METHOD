@@ -46,4 +46,4 @@ Before moving on, append a `<!-- coaching-notes-stage-4 -->` block to the output
 
 This stage is complete when the internal questions have honest, specific answers — and the user has a clear-eyed view of what it actually takes to execute this concept. Optimism is fine. Delusion is not.
 
-Route to `./verdict.md`.
+Route to `references/verdict.md`.
