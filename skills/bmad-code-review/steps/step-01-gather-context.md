@@ -91,4 +91,4 @@ Present a summary before proceeding: diff stats (files changed, lines added/remo
 
 ## NEXT
 
-Read fully and follow `./step-02-review.md`
+Read fully and follow `steps/step-02-review.md`

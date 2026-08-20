@@ -71,4 +71,4 @@ You've seen the change and how to verify it. When you're ready to make a call, j
 
 ## NEXT
 
-When the human signals they're ready to make a decision about this {change_type}, read fully and follow `./step-05-wrapup.md`
+When the human signals they're ready to make a decision about this {change_type}, read fully and follow `steps/step-05-wrapup.md`

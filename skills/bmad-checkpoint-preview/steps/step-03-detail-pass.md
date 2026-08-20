@@ -83,8 +83,8 @@ You've seen the design and the risk landscape. From here:
 
 If at any point the human signals they want to make a decision about this {change_type} (e.g., "let's ship it", "this needs a rethink", "I'm done reviewing", or anything suggesting they're ready to decide), confirm their intent:
 
-- If they want to **approve and ship** → read fully and follow `./step-05-wrapup.md`
-- If they want to **reject and rework** → read fully and follow `./step-05-wrapup.md`
+- If they want to **approve and ship** → read fully and follow `steps/step-05-wrapup.md`
+- If they want to **reject and rework** → read fully and follow `steps/step-05-wrapup.md`
 - If you misread them → acknowledge and continue the current step.
 
 ## TARGETED RE-REVIEW
@@ -103,4 +103,4 @@ The human can trigger multiple targeted re-reviews. Each time, present new findi
 
 ## NEXT
 
-Read fully and follow `./step-04-testing.md`
+Read fully and follow `steps/step-04-testing.md`

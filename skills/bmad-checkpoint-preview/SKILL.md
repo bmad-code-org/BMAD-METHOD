@@ -62,4 +62,4 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
 
 ## FIRST STEP
 
-Read fully and follow `./step-01-orientation.md` to begin.
+Read fully and follow `steps/step-01-orientation.md` to begin.
