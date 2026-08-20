@@ -25,16 +25,16 @@ Current LLMs still fail in predictable ways: they misread intent, fill gaps with
 
 ## The Core Design
 
-### 1. Compress intent first
+### 1. Resolve intent from evidence
 
-The workflow starts by having the human and the model compress the request into one coherent goal. The input can begin as a rough expression of intent, but before the workflow runs autonomously it has to become small enough, clear enough, and contradiction-free enough to execute.
+The workflow starts by resolving workflow state and gathering the project evidence relevant to the request. The input can begin as a rough expression of intent, but Build investigates before deciding whether anything material is missing. Clear, evidence-supported requests proceed without a clarification turn.
 
-Intent can come in many forms: a couple of phrases, a bug tracker link, output from plan mode, text copied from a chat session, or a planned story from BMad's own epics and sprint artifacts. The workflow uses whatever upstream context exists and resolves any gaps it needs to implement safely.
+Intent can come in many forms: a couple of phrases, a bug tracker link, output from plan mode, text copied from a chat session, or a planned story from BMad's own epics and sprint artifacts. The workflow uses the request together with repository and upstream planning evidence. It asks the human only when multiple defensible interpretations would produce observably different outcomes and that evidence cannot select one.
 
 This workflow does not eliminate human control. It relocates it to a small number of high-value moments:
 
-- **Intent clarification** - turning a messy request into one coherent goal without hidden contradictions
-- **Spec approval** - confirming that the frozen understanding is the right thing to build
+- **Material intent decisions** - choosing between observably different outcomes when project evidence cannot resolve the ambiguity
+- **Spec approval** - on the full path, confirming the frozen understanding is the right thing to build before implementation starts
 - **Review of the final product** - the primary checkpoint, where the human decides whether the result is acceptable at the end
 
 ### 2. Route to the smallest safe path
@@ -53,7 +53,7 @@ Review findings are used to decide whether the problem came from intent, spec ge
 
 ### 5. Bring the human back only when needed
 
-The intent interview is human-in-the-loop, but it is not the same kind of interruption as a recurring checkpoint. The workflow tries to keep those recurring checkpoints to a minimum. After the initial shaping of intent, the human mainly comes back when the workflow cannot safely continue without judgment and at the end, when it is time to review the result.
+Intent resolution is evidence-first rather than a default interview. The workflow keeps interruptions to the minimum needed for safe progress. The human comes back when evidence cannot resolve a material product decision, when a workflow safety gate needs input — for example, a VCS mismatch, a scope choice, or missing required evidence — at the full-path spec approval boundary, and at the end, when it is time to review the result.
 
 - **Intent-gap resolution** - stepping back in when review proves the workflow could not safely infer what was meant
 
