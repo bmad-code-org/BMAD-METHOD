@@ -10,3 +10,13 @@ Open source framework for structured, agent-assisted software delivery.
 
 - Skill validation rules are in `tools/skill-validator.md`.
 - Deterministic skill checks run via `npm run validate:skills` (included in `quality`).
+
+## Test mirror
+
+`bmad-code-org/bmad-skills` `main` is a disposable mirror of this branch, used to
+test the npx distribution flow end to end (the module manifests' `update_source`
+points at it). After the quality gate passes, refresh it with:
+
+```bash
+git push --force git@github.com:bmad-code-org/bmad-skills.git feat/npx-skills-distribution:main
+```
