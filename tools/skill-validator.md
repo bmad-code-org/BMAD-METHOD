@@ -7,7 +7,7 @@ An LLM-readable validation prompt for skills following the Agent Skills open sta
 Before running inference-based validation, run the deterministic validator:
 
 ```bash
-node tools/validate-skills.js --json path/to/skill-dir
+uv run --python 3.11 tools/validate_skills.py --json path/to/skill-dir
 ```
 
 This checks 13 rules deterministically: SKILL-01, SKILL-02, SKILL-03, SKILL-04, SKILL-05, SKILL-06, SKILL-07, PATH-02, STEP-01, STEP-06, STEP-07, SEQ-02, TPL-01.
