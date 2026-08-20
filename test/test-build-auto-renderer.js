@@ -10,8 +10,8 @@ const path = require('node:path');
 const { spawn, spawnSync } = require('node:child_process');
 
 const REPO = path.resolve(__dirname, '..');
-const SCRIPT_SRC = path.join(REPO, 'src', 'scripts');
-const SKILLS_SRC = path.join(REPO, 'src', 'bmm-skills', 'ship');
+const SCRIPT_SRC = path.join(REPO, 'skills', 'bmad', 'scripts');
+const SKILLS_SRC = path.join(REPO, 'skills');
 const DEFAULT_SKILL = 'bmad-build-auto';
 const tempDirs = [];
 let total = 0;

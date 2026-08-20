@@ -13,7 +13,7 @@ from unittest import mock
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SETUP_PY = REPO_ROOT / "src" / "core-skills" / "bmad" / "scripts" / "setup.py"
+SETUP_PY = REPO_ROOT / "skills" / "bmad" / "scripts" / "setup.py"
 SHARED_SCRIPTS = (
     "config_utils.py",
     "memlog.py",
@@ -69,7 +69,7 @@ def write_dest_bmad(
     shutil.copy2(SETUP_PY, dest_setup)
     if scripts:
         for name in SHARED_SCRIPTS:
-            source = REPO_ROOT / "src" / "scripts" / name
+            source = REPO_ROOT / "skills" / "bmad" / "scripts" / name
             shutil.copy2(source, bmad_dir / "scripts" / name)
     if assets and config is not None:
         write(bmad_dir / "assets" / "config.template.toml", config)
@@ -217,12 +217,9 @@ class BmadSetupTests(unittest.TestCase):
             combined = result.stdout + result.stderr
             self.assertRegex(combined, r"No such file|not found|Errno 2|cannot find", msg=combined)
 
-        for skill_md in (REPO_ROOT / "src" / "core-skills").rglob("SKILL.md"):
+        for skill_md in (REPO_ROOT / "skills").rglob("SKILL.md"):
             if skill_md.parent.name == "bmad":
                 continue
-            self.assertFalse((skill_md.parent / "references" / "setup.md").exists())
-            self.assertFalse((skill_md.parent / "scripts" / "setup.py").exists())
-        for skill_md in (REPO_ROOT / "src" / "bmm-skills").rglob("SKILL.md"):
             self.assertFalse((skill_md.parent / "references" / "setup.md").exists())
             self.assertFalse((skill_md.parent / "scripts" / "setup.py").exists())
 
@@ -248,7 +245,7 @@ class BmadSetupTests(unittest.TestCase):
             self.assertIn("not found", result.stderr.lower())
             self.assertIn("config.toml", result.stderr)
 
-            sys.path.insert(0, str(REPO_ROOT / "src" / "scripts"))
+            sys.path.insert(0, str(REPO_ROOT / "skills" / "bmad" / "scripts"))
             try:
                 from config_utils import ConfigError, load_central_config
             finally:
