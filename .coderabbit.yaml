@@ -19,7 +19,6 @@ reviews:
   path_filters:
     # --- Shared baseline: tool configs ---
     - "!.coderabbit.yaml"
-    - "!.augment/**"
     - "!eslint.config.mjs"
     # --- Shared baseline: build output ---
     - "!dist/**"

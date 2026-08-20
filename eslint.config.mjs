@@ -35,10 +35,6 @@ export default [
       // Lock files — generated, gitignored, not project code
       'pnpm-lock.yaml',
       'bun.lock',
-      // Augment vendor config — not project code, naming conventions
-      // are dictated by Augment and can't be changed, so exclude
-      // the entire directory from linting
-      '.augment/**',
     ],
   },
 
