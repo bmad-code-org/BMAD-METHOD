@@ -86,4 +86,4 @@ This uses **step-file architecture** for disciplined execution:
 
 ## FIRST STEP
 
-Read fully and follow: `./steps/step-01-gather-context.md`
+Read fully and follow: `steps/step-01-gather-context.md`

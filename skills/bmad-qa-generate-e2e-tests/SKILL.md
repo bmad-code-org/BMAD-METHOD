@@ -166,7 +166,7 @@ If the project needs:
 
 Save summary to: `{default_output_file}`
 
-**Done!** Tests generated and verified. Validate against `./checklist.md`.
+**Done!** Tests generated and verified. Validate against `checklist.md`.
 
 ## On Complete
 

@@ -98,8 +98,8 @@ Omit any metric you cannot compute rather than guessing.
 
 ## FALLBACK TRAIL GENERATION
 
-If review mode is not `full-trail`, read fully and follow `./generate-trail.md` to build one from the diff. Then return here and continue to NEXT. If trail generation fails (e.g., git unavailable), the original review mode is preserved — step-02 handles this with its non-trail path.
+If review mode is not `full-trail`, read fully and follow `references/generate-trail.md` to build one from the diff. Then return here and continue to NEXT. If trail generation fails (e.g., git unavailable), the original review mode is preserved — step-02 handles this with its non-trail path.
 
 ## NEXT
 
-Read fully and follow `./step-02-walkthrough.md`
+Read fully and follow `steps/step-02-walkthrough.md`

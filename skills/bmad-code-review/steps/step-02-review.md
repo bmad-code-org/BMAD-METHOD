@@ -29,4 +29,4 @@ failed_layers: '' # set at runtime: comma-separated list of layers that failed o
 
 ## NEXT
 
-Read fully and follow `./step-03-triage.md`
+Read fully and follow `steps/step-03-triage.md`
