@@ -45,7 +45,9 @@ CLAUDE.local.md
 .serena/
 .claude/settings.local.json
 .junie/
-.agents/
+.agents/*
+!.agents/plugins/
+!.agents/plugins/marketplace.json
 .analysis/
 
 
