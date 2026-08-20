@@ -37,8 +37,8 @@ class ProjectCase(unittest.TestCase):
         self._tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self._tmp.cleanup)
         self.root = Path(self._tmp.name)
-        self.src = self.root / "src"
-        self.src.mkdir()
+        self.skills = self.root / "skills"
+        self.skills.mkdir()
         # CI env vars would change output and write annotation files
         patcher = mock.patch.dict(os.environ, clear=False)
         patcher.start()
@@ -153,13 +153,13 @@ class TestYamlExtraction(unittest.TestCase):
 
 class TestMapping(unittest.TestCase):
     def map(self, ref):
-        return vfr.map_installed_to_source(ref, "/repo/src")
+        return vfr.map_installed_to_source(ref, "/repo/skills")
 
-    def test_module_mappings(self):
-        self.assertEqual(self.map("{project-root}/_bmad/core/tasks/t.md"), "/repo/src/core-skills/tasks/t.md")
-        self.assertEqual(self.map("{_bmad}/bmm/workflows/w.md"), "/repo/src/bmm-skills/workflows/w.md")
-        self.assertEqual(self.map("_bmad/utility/models/m.md"), "/repo/src/utility/models/m.md")
-        self.assertEqual(self.map("other/file.md"), "/repo/src/other/file.md")
+    def test_mappings(self):
+        self.assertEqual(self.map("{project-root}/_bmad/scripts/memlog.py"), "/repo/skills/bmad/scripts/memlog.py")
+        self.assertEqual(self.map("{_bmad}/scripts/resolve_config.py"), "/repo/skills/bmad/scripts/resolve_config.py")
+        self.assertEqual(self.map("_bmad/scripts/render_skill.py"), "/repo/skills/bmad/scripts/render_skill.py")
+        self.assertEqual(self.map("other/file.md"), "/repo/skills/other/file.md")
 
     def test_install_only_paths_skipped(self):
         for ref in (
@@ -171,7 +171,7 @@ class TestMapping(unittest.TestCase):
             self.assertIsNone(self.map(ref), ref)
 
     def test_install_generated_files_skipped(self):
-        self.assertIsNone(self.map("core/config.yaml"))
+        self.assertIsNone(self.map("bmm/config.yaml"))
         self.assertIsNone(self.map("bmm/_cfg/config.user.yaml"))
 
 
@@ -192,8 +192,8 @@ class TestLeakDetection(unittest.TestCase):
 
 class TestRunClassification(ProjectCase):
     def test_clean_tree_exits_zero(self):
-        write(self.src / "real.md", "target\n")
-        write(self.src / "doc.md", "See './real.md' now.\n")
+        write(self.skills /"real.md", "target\n")
+        write(self.skills /"doc.md", "See './real.md' now.\n")
         code, out = self.run_validator(strict=True)
         self.assertEqual(code, 0)
         self.assertIn("References checked: 1", out)
@@ -201,31 +201,31 @@ class TestRunClassification(ProjectCase):
 
     def test_broken_vs_unresolved(self):
         write(
-            self.src / "doc.md",
-            "Read '../src/gone.md' now.\nAlso {project-root}/_bmad/core/no-such-dir here.\n",
+            self.skills /"doc.md",
+            "Read '../skills/gone.md' now.\nAlso {project-root}/_bmad/core/no-such-dir here.\n",
         )
         code, out = self.run_validator(strict=True)
         self.assertEqual(code, 1)
-        self.assertIn("[BROKEN] ../src/gone.md (line 1)", out)
+        self.assertIn("[BROKEN] ../skills/gone.md (line 1)", out)
         self.assertIn("[UNRESOLVED] core/no-such-dir (line 2)", out)
         self.assertIn("Broken references: 2", out)
 
     def test_leak_reported_in_run(self):
-        write(self.src / "doc.md", "path is /Users/leaky/file\n")
+        write(self.skills /"doc.md", "path is /Users/leaky/file\n")
         code, out = self.run_validator(strict=True)
         self.assertEqual(code, 1)
         self.assertIn("[ABS-PATH] Line 1: path is /Users/leaky/file", out)
         self.assertIn("Absolute path leaks: 1", out)
 
     def test_default_mode_warns_but_exits_zero(self):
-        write(self.src / "doc.md", "Read './gone.md' now.\n")
+        write(self.skills /"doc.md", "Read './gone.md' now.\n")
         code, out = self.run_validator(strict=False)
         self.assertEqual(code, 0)
         self.assertIn("[BROKEN]", out)
         self.assertIn("Run with --strict to treat warnings as errors.", out)
 
     def test_install_only_ref_not_counted_as_broken(self):
-        write(self.src / "doc.md", "Uses {project-root}/_bmad/_config/settings.yaml here.\n")
+        write(self.skills /"doc.md", "Uses {project-root}/_bmad/_config/settings.yaml here.\n")
         code, out = self.run_validator(strict=True)
         self.assertEqual(code, 0)
         # extracted (counted) but skipped by the install-only list, so not broken
@@ -233,33 +233,33 @@ class TestRunClassification(ProjectCase):
         self.assertIn("Broken references: 0", out)
 
     def test_yaml_file_scanned(self):
-        write(self.src / "wf.yaml", "step: '{project-root}/_bmad/bmm/missing.md'\n")
+        write(self.skills /"wf.yaml", "step: '{project-root}/_bmad/bmm/missing.md'\n")
         code, out = self.run_validator(strict=True)
         self.assertEqual(code, 1)
         self.assertIn("[BROKEN] {project-root}/_bmad/bmm/missing.md (line 1)", out)
 
     def test_invalid_utf8_does_not_crash(self):
-        path = self.src / "bad.md"
+        path = self.skills /"bad.md"
         path.write_bytes(b"Read './gone.md' now.\n\xff\xfe binary junk\n")
         code, out = self.run_validator(strict=True)
         self.assertEqual(code, 1)
         self.assertIn("[BROKEN] ./gone.md (line 1)", out)
 
     def test_github_actions_annotations_and_step_summary(self):
-        write(self.src / "doc.md", "Read './gone.md' now.\n")
+        write(self.skills /"doc.md", "Read './gone.md' now.\n")
         summary_path = self.root / "step-summary.md"
         os.environ["GITHUB_ACTIONS"] = "1"
         os.environ["GITHUB_STEP_SUMMARY"] = str(summary_path)
         code, out = self.run_validator(strict=True)
         self.assertEqual(code, 1)
-        self.assertIn("::warning file=src/doc.md,line=1::Broken reference: ./gone.md", out)
+        self.assertIn("::warning file=skills/doc.md,line=1::Broken reference: ./gone.md", out)
         summary = summary_path.read_text(encoding="utf-8")
         self.assertIn("| File | Line | Reference | Issue |", summary)
-        self.assertIn("| src/doc.md | 1 | ./gone.md | broken ref |", summary)
+        self.assertIn("| skills/doc.md | 1 | ./gone.md | broken ref |", summary)
         self.assertIn("1 issues found", summary)
 
     def test_csv_files_not_scanned(self):
-        write(self.src / "data.csv", "workflow-file\n{project-root}/_bmad/bmm/missing.md\n")
+        write(self.skills /"data.csv", "workflow-file\n{project-root}/_bmad/bmm/missing.md\n")
         code, out = self.run_validator(strict=True)
         self.assertEqual(code, 0)
         self.assertIn("Files scanned: 0", out)
