@@ -10,8 +10,9 @@ percentages in real numbers instead of guessing. Sections are delimited by
 markdown headings (# through ######); heading markers inside fenced code
 blocks are ignored (fences pair CommonMark-style: a fence closes only on a
 run of the same character at least as long, so ```` fences may embed ```
-examples). A word is any whitespace-separated token, plus one word per CJK
-character since those scripts do not space-delimit words. For non-markdown
+examples). A word is any whitespace-separated token, plus one word per han
+or kana character since those scripts do not space-delimit words; Korean is
+space-delimited, so Hangul text counts by whitespace. For non-markdown
 input the result is a single section holding the full text.
 """
 
