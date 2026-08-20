@@ -40,6 +40,9 @@ from pathlib import Path
 
 DEFAULT_FILE = Path(__file__).resolve().parent.parent / "assets" / "methods.csv"
 FIELDS = ("num", "category", "method_name", "description", "output_pattern")
+# replace-not-patch: an overlay omitting category/description wipes them on the
+# shipped row; a nameless extra appends an unnamed row no command can select.
+OVERLAY_REQUIRED = ("method_name", "category", "description")
 
 
 def load(file: Path) -> list[dict]:
@@ -73,10 +76,22 @@ def merge_extra(rows: list[dict], extras: list[dict]) -> list[dict]:
     """Extras replace a catalog row with the same method_name (case-insensitive),
     otherwise append — so overrides can retune shipped methods or grow the catalog.
     A replacement inherits the shipped row's num; appended extras get the next
-    free nums, so every merged method stays addressable by number."""
+    free nums, so every merged method stays addressable by number.
+    An overlay row must carry the required fields: replacement is wholesale
+    (only num is inherited), so a row that omits category/description would
+    wipe them on the shipped entry, and a row with no method_name would
+    append an unnamed method nothing can select — fail loudly instead of
+    degrading the catalog silently."""
     merged = list(rows)
     index = {r["method_name"].lower(): i for i, r in enumerate(merged)}
     for e in extras:
+        missing = [f for f in OVERLAY_REQUIRED if not e.get(f, "").strip()]
+        if missing:
+            raise ValueError(
+                f"overlay method {e.get('method_name') or '(unnamed)'} is missing "
+                f"{', '.join(missing)}; overlays replace the whole shipped row and "
+                "an unnamed row can never be selected, so repeat every field you want kept"
+            )
         key = e["method_name"].lower()
         if key in index:
             e = dict(e)
@@ -195,9 +210,14 @@ def main(argv: list[str] | None = None) -> int:
     rows = load(args.file)
     if args.extra:
         try:
-            rows = merge_extra(rows, load_extra(args.extra))
+            extras = load_extra(args.extra)
         except (OSError, ValueError) as e:
             print(f"error: could not read --extra: {e}", file=sys.stderr)
+            return 2
+        try:
+            rows = merge_extra(rows, extras)
+        except ValueError as e:
+            print(f"error: invalid --extra overlay: {e}", file=sys.stderr)
             return 2
 
     if args.cmd == "categories":

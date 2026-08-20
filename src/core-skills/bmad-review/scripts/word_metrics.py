@@ -10,8 +10,9 @@ percentages in real numbers instead of guessing. Sections are delimited by
 markdown headings (# through ######); heading markers inside fenced code
 blocks are ignored (fences pair CommonMark-style: a fence closes only on a
 run of the same character at least as long, so ```` fences may embed ```
-examples). A word is any whitespace-separated token, plus one word per CJK
-character since those scripts do not space-delimit words. For non-markdown
+examples). A word is any whitespace-separated token, plus one word per han
+or kana character since those scripts do not space-delimit words; Korean is
+space-delimited, so Hangul text counts by whitespace. For non-markdown
 input the result is a single section holding the full text.
 """
 
@@ -23,7 +24,11 @@ from pathlib import Path
 
 HEADING = re.compile(r"^(#{1,6})\s+(\S.*)$")
 FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
-CJK = re.compile(r"[぀-ヿ㐀-䶿一-鿿豈-﫿가-힯ｦ-ﾟ]")
+# Per-character counting applies only to scripts that do not space-delimit words
+# (kana, han). Korean IS space-delimited, so Hangul stays out — and the compat
+# ideograph range starts at U+F900, not at its U+8C48 homoglyph, which would
+# swallow the whole Hangul block.
+CJK = re.compile(r"[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f]")
 
 
 def word_count(text: str) -> int:

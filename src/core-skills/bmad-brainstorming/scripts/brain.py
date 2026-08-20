@@ -42,6 +42,9 @@ from pathlib import Path
 
 DEFAULT_FILE = Path(__file__).resolve().parent.parent / "assets" / "brain-methods.csv"
 FIELDS = ("category", "technique_name", "description", "detail", "provenance", "good_for", "audience")
+# replace-not-patch: an overlay omitting category/description wipes them on the
+# shipped row; a nameless extra appends an unnamed row no command can select.
+OVERLAY_REQUIRED = ("technique_name", "category", "description")
 # Optional columns beyond the original four — absent in older CSVs and in --extra
 # overlays, so always read through .get/setdefault. `provenance` (classic|signature|
 # playful) drives the "Proven & Professional" lead group; `good_for` (a |-separated
@@ -89,10 +92,21 @@ def load_extra(file: Path) -> list[dict]:
 def merge_extra(rows: list[dict], extras: list[dict]) -> list[dict]:
     """Extras replace a catalog row with the same technique_name (case-insensitive),
     otherwise append — the same overlay semantics as pick_methods.py, so
-    customize.toml additional_* entries behave identically across sibling skills."""
+    customize.toml additional_* entries behave identically across sibling skills.
+    An overlay row must carry the required fields: replacement is wholesale,
+    so a row that omits category/description would wipe them on the shipped
+    entry, and a row with no technique_name would append an unnamed technique
+    nothing can select — fail loudly instead of degrading the catalog silently."""
     merged = list(rows)
     index = {r["technique_name"].lower(): i for i, r in enumerate(merged)}
     for e in extras:
+        missing = [f for f in OVERLAY_REQUIRED if not e.get(f, "").strip()]
+        if missing:
+            raise ValueError(
+                f"overlay technique {e.get('technique_name') or '(unnamed)'} is missing "
+                f"{', '.join(missing)}; overlays replace the whole shipped row and "
+                "an unnamed row can never be selected, so repeat every field you want kept"
+            )
         key = e["technique_name"].lower()
         if key in index:
             merged[index[key]] = e
@@ -720,9 +734,14 @@ def main(argv: list[str] | None = None) -> int:
             print(f"error: --extra file not found: {args.extra}", file=sys.stderr)
             return 2
         try:
-            rows = merge_extra(rows, load_extra(args.extra))
+            extras = load_extra(args.extra)
         except (OSError, ValueError) as e:
             print(f"error: could not read --extra: {e}", file=sys.stderr)
+            return 2
+        try:
+            rows = merge_extra(rows, extras)
+        except ValueError as e:
+            print(f"error: invalid --extra overlay: {e}", file=sys.stderr)
             return 2
     csv_dir = args.file.resolve().parent
 
