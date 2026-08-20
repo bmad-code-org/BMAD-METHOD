@@ -3,7 +3,6 @@ test/
 .husky/
 .github/
 .vscode/
-.augment/
 coverage/
 test-output/
 
