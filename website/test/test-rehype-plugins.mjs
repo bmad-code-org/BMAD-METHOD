@@ -13,11 +13,11 @@
  * - Raw HTML rewriting
  * - Integration (both plugins together)
  *
- * Usage: node test/test-rehype-plugins.mjs
+ * Usage: node website/test/test-rehype-plugins.mjs
  */
 
-import rehypeMarkdownLinks, { findFirstDelimiter, detectContentDir } from '../website/src/rehype-markdown-links.js';
-import rehypeBasePaths from '../website/src/rehype-base-paths.js';
+import rehypeMarkdownLinks, { findFirstDelimiter, detectContentDir } from '../src/rehype-markdown-links.js';
+import rehypeBasePaths from '../src/rehype-base-paths.js';
 
 // ANSI colors
 const colors = {
