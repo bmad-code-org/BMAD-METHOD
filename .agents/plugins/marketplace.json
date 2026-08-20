@@ -8,7 +8,7 @@
       "name": "bmad-method",
       "source": {
         "source": "local",
-        "path": "./plugins/bmad-method"
+        "path": "."
       },
       "policy": {
         "installation": "AVAILABLE",
