@@ -85,6 +85,25 @@ def test_merge_extra_replaces_by_name_and_appends(lib):
     assert dict(pick_methods.categories(merged))["domain"] == 1  # new category is first-class
 
 
+def test_merge_extra_rejects_partial_overlay_missing_fields(lib):
+    # A retune that omits category/description would wipe those fields on the
+    # shipped row (only num is inherited); it must fail loudly instead.
+    partial = pick_methods.load_extra(
+        json.dumps([{"method_name": "Pre-mortem Analysis", "description": "RETUNED"}])
+    )
+    with pytest.raises(ValueError, match="category"):
+        pick_methods.merge_extra(rows(lib), partial)
+
+
+def test_merge_extra_rejects_new_method_missing_category(lib):
+    # An appended row with no category would surface as a nameless category.
+    partial = pick_methods.load_extra(
+        json.dumps([{"method_name": "Brand New Method", "description": "fresh"}])
+    )
+    with pytest.raises(ValueError, match="category"):
+        pick_methods.merge_extra(rows(lib), partial)
+
+
 def test_extras_are_addressable_by_num(lib):
     merged = pick_methods.merge_extra(rows(lib), pick_methods.load_extra(json.dumps(EXTRA)))
     found, missing = pick_methods.find(merged, ["6", "1"])

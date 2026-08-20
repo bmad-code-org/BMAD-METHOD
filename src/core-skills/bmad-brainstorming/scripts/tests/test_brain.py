@@ -200,6 +200,29 @@ def test_extra_replaces_shipped_row_by_name(lib, extra, tmp_path, capsys):
     assert out.count(shipped["technique_name"]) == 1  # replaced, not duplicated
 
 
+def test_extra_partial_overlay_missing_fields_is_rejected(lib, tmp_path):
+    # A retune that omits category/description would wipe those fields on the
+    # shipped row (replace-not-patch); it must fail loudly instead.
+    overlay = tmp_path / "partial.json"
+    overlay.write_text(
+        json.dumps([{"technique_name": "SCAMPER Method", "detail": "our house variant"}]),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="category"):
+        brain.merge_extra(brain.load(Path(lib)), brain.load_extra(overlay))
+
+
+def test_extra_new_row_missing_category_is_rejected(lib, tmp_path):
+    # An appended row with no category would surface as a nameless category.
+    overlay = tmp_path / "nocat.json"
+    overlay.write_text(
+        json.dumps([{"technique_name": "Brand New One", "description": "has a description"}]),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="category"):
+        brain.merge_extra(brain.load(Path(lib)), brain.load_extra(overlay))
+
+
 def test_extra_malformed_exits_cleanly(lib, tmp_path, capsys):
     bad = tmp_path / "bad.json"
     for content in ('{not json', '{"a": 1}', '["not-an-object"]'):

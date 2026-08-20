@@ -57,6 +57,15 @@ class WordMetricsTest(unittest.TestCase):
         sections = section_metrics("# Only\n\nwords here\n")
         self.assertEqual([s["heading"] for s in sections], ["Only"])
 
+    def test_korean_counts_by_whitespace(self):
+        # Korean is space-delimited; Hangul must not hit the per-character CJK path
+        self.assertEqual(word_count("안녕하세요 세계는 아름답습니다"), 3)
+
+    def test_chinese_japanese_still_per_character(self):
+        # Chinese and Japanese stay per-character; Korean words tokenize by whitespace
+        self.assertEqual(word_count("今日は世界です"), 7)
+        self.assertEqual(word_count("hello 世界 안녕"), 4)
+
 
 if __name__ == "__main__":
     unittest.main()
