@@ -1,7 +1,7 @@
 /**
  * Site URL resolver regression tests.
  *
- * Usage: node website/test/test-site-url.mjs
+ * Usage: node docs-site/test/test-site-url.mjs
  */
 
 import assert from 'node:assert/strict';

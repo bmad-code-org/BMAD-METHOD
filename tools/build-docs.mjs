@@ -13,8 +13,8 @@ import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { getSiteUrl } from '../website/src/lib/site-url.mjs';
-import { translatedLocales } from '../website/src/lib/locales.mjs';
+import { getSiteUrl } from '../docs-site/src/lib/site-url.mjs';
+import { translatedLocales } from '../docs-site/src/lib/locales.mjs';
 import { validatePublishedImplementationModel } from './validate-published-implementation-model.mjs';
 
 // =============================================================================
@@ -331,7 +331,7 @@ function validateLlmSize(content) {
  */
 function runAstroBuild() {
   console.log('  → Running astro build...');
-  execSync('npx astro build --root website', {
+  execSync('npx astro build --root docs-site', {
     cwd: PROJECT_ROOT,
     stdio: 'inherit',
     env: {
