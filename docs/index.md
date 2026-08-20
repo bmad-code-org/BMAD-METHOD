@@ -5,11 +5,11 @@ hero:
   title: Turn intent into working software
   tagline: BMad clarifies what matters, gives you a plan to approve, implements the change, reviews its work, and shows you the result.
   actions:
+    - text: Choose a development path
+      link: ./how-to/choose-a-development-path/
+      variant: primary
     - text: Start with a small build
       link: ./tutorials/getting-started/
-      variant: primary
-    - text: Try it in Django
-      link: ./tutorials/getting-deeper/
       variant: secondary
 ---
 
@@ -17,6 +17,16 @@ BMad works with supported AI coding tools to carry a software request through
 clarification, an approved plan, implementation, and review. You keep control
 of the decisions that shape the result, and Build returns working code you can
 run and inspect.
+
+## Choose the Right Amount of BMad
+
+Use the smallest path that safely fits the work. Make an obvious, low-risk edit
+directly. Use Build for one coherent implementation session. Add a shared spec
+and stories for an epic, or use the full BMad flow when several epics need a
+common product and architecture contract.
+
+See [Choose a Development Path](./how-to/choose-a-development-path.md) for the
+complete routing guide.
 
 ## Start with Working Software
 
@@ -54,6 +64,7 @@ Use the search box or sidebar when you already know what you need. These common
 tasks lead directly to the relevant documentation:
 
 - [Install or update BMad](./how-to/install-bmad.md)
+- [Choose a development path](./how-to/choose-a-development-path.md)
 - [Use BMad in an established project](./how-to/established-projects.md)
 - [Understand how Build works](./explanation/build.md)
 - [Look up installed skills](./reference/commands.md)
