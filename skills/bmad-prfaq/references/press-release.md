@@ -55,4 +55,4 @@ Before moving on, append a brief `<!-- coaching-notes-stage-2 -->` block to the 
 
 This stage is complete when the full press release reads as a coherent, compelling announcement that a real customer would find relevant. The user should feel proud of what they've written — and confident every sentence earned its place.
 
-Route to `./customer-faq.md`.
+Route to `references/customer-faq.md`.
