@@ -12,7 +12,7 @@ export default [
       'coverage/**',
       '**/*.min.js',
       'test/template-test-generator/**',
-      'test/fixtures/**',
+      'tools/tests/fixtures/**',
       '_bmad*/**',
       // Build output
       'build/**',

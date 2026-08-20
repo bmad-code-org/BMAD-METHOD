@@ -27,4 +27,4 @@ Tests the file reference validator (`tools/validate_file_refs.py`) using temp-di
 
 **File**: `tools/tests/test_validate_skills.py`
 
-Tests the deterministic skill validator (`tools/validate_skills.py`) against checked-in fixtures and temp-dir cases.
+Tests the deterministic skill validator (`tools/validate_skills.py`) against checked-in fixtures (`tools/tests/fixtures/validate-skills/`) and temp-dir cases.
