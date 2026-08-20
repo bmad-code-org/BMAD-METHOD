@@ -87,4 +87,4 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
 
 ## Execution
 
-Read fully and follow: `./steps/step-01-validate-prerequisites.md` to begin the workflow.
+Read fully and follow: `steps/step-01-validate-prerequisites.md` to begin the workflow.
