@@ -50,4 +50,4 @@ Before moving on, append a `<!-- coaching-notes-stage-3 -->` block to the output
 
 This stage is complete when every question has an honest, specific answer — and the user has confronted the hardest customer objections their concept faces. No softballs survived.
 
-Route to `./internal-faq.md`.
+Route to `references/internal-faq.md`.
