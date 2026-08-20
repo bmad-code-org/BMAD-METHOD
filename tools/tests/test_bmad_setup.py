@@ -93,6 +93,48 @@ def module_answers_args(
     return ["--module-answers", str(path)]
 
 
+def toml_inline(value: object) -> str:
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, int):
+        return str(value)
+    if isinstance(value, str):
+        return json.dumps(value, ensure_ascii=False)
+    if isinstance(value, list) and all(isinstance(item, str) for item in value):
+        return "[" + ", ".join(toml_inline(item) for item in value) + "]"
+    raise TypeError(f"unsupported TOML fixture value: {value!r}")
+
+
+def dump_manifest_toml(data: dict[str, object]) -> str:
+    scalars: list[tuple[str, object]] = []
+    arrays_of_tables: list[tuple[str, list]] = []
+    tables: list[tuple[str, dict]] = []
+    for key, value in data.items():
+        if isinstance(value, list) and value and all(
+            isinstance(item, dict) for item in value
+        ):
+            arrays_of_tables.append((key, value))
+        elif isinstance(value, dict):
+            tables.append((key, value))
+        else:
+            scalars.append((key, value))
+    lines = [f"{key} = {toml_inline(value)}" for key, value in scalars]
+    for key, items in arrays_of_tables:
+        for item in items:
+            if lines:
+                lines.append("")
+            lines.append(f"[[{key}]]")
+            for nested_key, nested_value in item.items():
+                lines.append(f"{nested_key} = {toml_inline(nested_value)}")
+    for key, table in tables:
+        if lines:
+            lines.append("")
+        lines.append(f"[{key}]")
+        for nested_key, nested_value in table.items():
+            lines.append(f"{nested_key} = {toml_inline(nested_value)}")
+    return "\n".join(lines) + "\n"
+
+
 def write_module_skill(
     root: Path,
     skill_id: str,
@@ -107,7 +149,7 @@ def write_module_skill(
 ) -> Path:
     skill = root / skill_id
     scripts = scripts or {}
-    manifest = {
+    manifest: dict[str, object] = {
         "version": version,
         "module": module,
         "update_source": update_source,
@@ -119,12 +161,7 @@ def write_module_skill(
         manifest["scripts"] = list(entries)
     if extra_fields:
         manifest.update(extra_fields)
-    write(
-        skill / "module-manifest.md",
-        "---\n"
-        + json.dumps(manifest, ensure_ascii=False)
-        + "\n---\n\n# module\n",
-    )
+    write(skill / "module-manifest.toml", dump_manifest_toml(manifest))
     for relative, content in scripts.items():
         path = skill / relative
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -1192,15 +1229,13 @@ class BmadSetupTests(unittest.TestCase):
             bmad = project / "_bmad"
             write(bmad / "config.toml", MINIMAL_CONFIG)
             write(bmad / "custom" / "keep.txt", "keep\n")
-            manifest = root / "alpha-skill" / "module-manifest.md"
+            manifest = root / "alpha-skill" / "module-manifest.toml"
             write(
                 manifest,
-                "---\n"
-                "version: 1.2.3\n"
-                "module: alpha\n"
-                "update_source: file:skills\n"
-                "config_questions: invalid\n"
-                "---\n",
+                'version = "1.2.3"\n'
+                'module = "alpha"\n'
+                'update_source = "file:skills"\n'
+                'config_questions = "invalid"\n',
             )
             before = {
                 path.relative_to(bmad): path.read_bytes()
@@ -1231,59 +1266,51 @@ class BmadSetupTests(unittest.TestCase):
             "update_source": "file:skills",
         }
         cases: tuple[tuple[str, bytes, str], ...] = (
-            ("malformed-yaml", b"---\nversion: [\n---\n", "YAML"),
+            ("malformed-toml", b"version = [\n", "TOML"),
             (
-                "duplicate-yaml-mapping",
-                b"---\nversion: 1.2.3\nmodule: alpha\nmodule: beta\n"
-                b"update_source: file:skills\n---\n",
-                "duplicate",
+                "duplicate-toml-key",
+                (
+                    'version = "1.2.3"\n'
+                    'module = "alpha"\n'
+                    'module = "beta"\n'
+                    'update_source = "file:skills"\n'
+                ).encode(),
+                "overwrite",
             ),
             (
                 "duplicate-question",
-                (
-                    "---\n"
-                    + json.dumps(
-                        {
-                            **base,
-                            "config_questions": [
-                                {"key": "output", "prompt": "One", "default": "1"},
-                                {"key": "output", "prompt": "Two", "default": "2"},
-                            ],
-                        }
-                    )
-                    + "\n---\n"
+                dump_manifest_toml(
+                    {
+                        **base,
+                        "config_questions": [
+                            {"key": "output", "prompt": "One", "default": "1"},
+                            {"key": "output", "prompt": "Two", "default": "2"},
+                        ],
+                    }
                 ).encode(),
                 "conflicts",
             ),
             (
                 "question-prefix-collision",
-                (
-                    "---\n"
-                    + json.dumps(
-                        {
-                            **base,
-                            "config_questions": [
-                                {"key": "output", "prompt": "One", "default": "1"},
-                                {
-                                    "key": "output.directory",
-                                    "prompt": "Two",
-                                    "default": "2",
-                                },
-                            ],
-                        }
-                    )
-                    + "\n---\n"
+                dump_manifest_toml(
+                    {
+                        **base,
+                        "config_questions": [
+                            {"key": "output", "prompt": "One", "default": "1"},
+                            {
+                                "key": "output.directory",
+                                "prompt": "Two",
+                                "default": "2",
+                            },
+                        ],
+                    }
                 ).encode(),
                 "conflicts",
             ),
             *tuple(
                 (
                     f"unsafe-script-{index}",
-                    (
-                        "---\n"
-                        + json.dumps({**base, "scripts": [entry]})
-                        + "\n---\n"
-                    ).encode(),
+                    dump_manifest_toml({**base, "scripts": [entry]}).encode(),
                     repr(entry),
                 )
                 for index, entry in enumerate(
@@ -1292,20 +1319,12 @@ class BmadSetupTests(unittest.TestCase):
             ),
             (
                 "unsafe-module",
-                (
-                    "---\n"
-                    + json.dumps({**base, "module": "../escape"})
-                    + "\n---\n"
-                ).encode(),
+                dump_manifest_toml({**base, "module": "../escape"}).encode(),
                 "unsafe",
             ),
             (
                 "case-insensitive-reserved-module",
-                (
-                    "---\n"
-                    + json.dumps({**base, "module": "ScRiPtS"})
-                    + "\n---\n"
-                ).encode(),
+                dump_manifest_toml({**base, "module": "ScRiPtS"}).encode(),
                 "unsafe",
             ),
         )
@@ -1313,7 +1332,7 @@ class BmadSetupTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             for name, raw, diagnostic in cases:
-                path = root / name / "module-manifest.md"
+                path = root / name / "module-manifest.toml"
                 with self.subTest(name=name), self.assertRaises(Exception) as caught:
                     setup.parse_packaged_manifest(path, raw)
                 message = str(caught.exception)
@@ -1341,8 +1360,8 @@ class BmadSetupTests(unittest.TestCase):
 
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("differ only by case", result.stderr)
-            self.assertIn(str(upper / "module-manifest.md"), result.stderr)
-            self.assertIn(str(lower / "module-manifest.md"), result.stderr)
+            self.assertIn(str(upper / "module-manifest.toml"), result.stderr)
+            self.assertIn(str(lower / "module-manifest.toml"), result.stderr)
             self.assertEqual(
                 {
                     path.relative_to(bmad): path.read_bytes()
@@ -1376,7 +1395,7 @@ class BmadSetupTests(unittest.TestCase):
             result = run_setup(project, skill)
 
             self.assertNotEqual(result.returncode, 0)
-            self.assertIn(str(module_skill / "module-manifest.md"), result.stderr)
+            self.assertIn(str(module_skill / "module-manifest.toml"), result.stderr)
             self.assertIn("scripts/link.py", result.stderr)
             self.assertFalse((project / "_bmad").exists())
             self.assertEqual(list(project.glob("_bmad.setup-*")), [])
@@ -1398,7 +1417,7 @@ class BmadSetupTests(unittest.TestCase):
                 scripts={"scripts/tool.py": b"# tool\n"},
             )
             declared = (module_skill / "scripts" / "tool.py").resolve()
-            manifest = module_skill / "module-manifest.md"
+            manifest = module_skill / "module-manifest.toml"
             before = {
                 path.relative_to(bmad): path.read_bytes()
                 for path in bmad.rglob("*")
@@ -1813,8 +1832,8 @@ class BmadUpdateDoctorTests(unittest.TestCase):
                 update_source="file:sources",
             )
             write(
-                project / "sources" / "broken-source" / "module-manifest.md",
-                "---\nmodule: broken\n---\n",
+                project / "sources" / "broken-source" / "module-manifest.toml",
+                'module = "broken"\n',
             )
             write(project / "skills-lock.json", "keep\n")
             before = {
@@ -1839,7 +1858,7 @@ class BmadUpdateDoctorTests(unittest.TestCase):
                 by_module["unreachable"]["state"], "could-not-check"
             )
             self.assertIn(
-                "missing-source/module-manifest.md",
+                "missing-source/module-manifest.toml",
                 by_module["unreachable"]["copies"][0]["reason"],
             )
             self.assertEqual(by_module["broken"]["state"], "could-not-check")
@@ -1883,7 +1902,7 @@ class BmadUpdateDoctorTests(unittest.TestCase):
             }
             response = mock.MagicMock()
             response.__enter__.return_value.read.return_value = (
-                b"---\nversion: 1.2.3\n---\n"
+                b'version = "1.2.3"\n'
             )
             response.__exit__.return_value = False
             with mock.patch.object(
@@ -1900,12 +1919,12 @@ class BmadUpdateDoctorTests(unittest.TestCase):
             urls = [call.args[0].full_url for call in opened.call_args_list]
             self.assertEqual(
                 urls[0],
-                "https://example.test/tree/https-skill/module-manifest.md",
+                "https://example.test/tree/https-skill/module-manifest.toml",
             )
             self.assertEqual(
                 urls[1],
                 "https://raw.githubusercontent.com/owner/repository/HEAD/"
-                "skills/github-skill/module-manifest.md",
+                "skills/github-skill/module-manifest.toml",
             )
 
     def test_doctor_uses_highest_release_adds_only_missing_and_exactly_repairs(self):
