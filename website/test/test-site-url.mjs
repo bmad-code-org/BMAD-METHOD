@@ -1,11 +1,11 @@
 /**
  * Site URL resolver regression tests.
  *
- * Usage: node test/test-site-url.mjs
+ * Usage: node website/test/test-site-url.mjs
  */
 
 import assert from 'node:assert/strict';
-import { getSiteUrl } from '../website/src/lib/site-url.mjs';
+import { getSiteUrl } from '../src/lib/site-url.mjs';
 
 const originalSiteUrl = process.env.SITE_URL;
 const originalRepository = process.env.GITHUB_REPOSITORY;
