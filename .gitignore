@@ -37,7 +37,6 @@ Thumbs.db
 .prettierrc
 
 # AI assistant files
-CLAUDE.md
 .ai/*
 cursor
 .gemini
