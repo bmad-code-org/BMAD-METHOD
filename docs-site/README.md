@@ -14,11 +14,11 @@ bmad2/
 │   ├── how-to/
 │   ├── explanation/
 │   └── reference/
-└── website/
+└── docs-site/
     ├── astro.config.mjs           # Astro + Starlight config
     ├── src/
     │   ├── content/
-    │   │   └── docs -> ../../docs # Symlink to content
+    │   │   └── docs -> ../../../docs # Symlink to content
     │   └── styles/
     │       └── custom.css         # Custom styling
     └── public/                    # Static assets
@@ -37,7 +37,7 @@ npm run docs:preview  # Preview production build
 
 ### Windows Symlink Support
 
-The `website/src/content/docs` symlink may not work correctly on Windows without Developer Mode enabled or administrator privileges.
+The `docs-site/src/content/docs` symlink may not work correctly on Windows without Developer Mode enabled or administrator privileges.
 
 **To enable symlinks on Windows:**
 
@@ -54,16 +54,16 @@ The `website/src/content/docs` symlink may not work correctly on Windows without
 3. **Or create a junction** (alternative):
    ```cmd
    # Run as Administrator
-   mklink /J website\src\content\docs ..\..\docs
+   mklink /J docs-site\src\content\docs ..\..\..\docs
    ```
 
 **If symlinks don't work**, you can copy the docs folder instead:
 ```bash
 # Remove the symlink
-rm website/src/content/docs
+rm docs-site/src/content/docs
 
 # Copy the docs folder
-cp -r docs website/src/content/docs
+cp -r docs docs-site/src/content/docs
 ```
 
 Note: If copying, remember to keep the copy in sync with changes to `docs/`.

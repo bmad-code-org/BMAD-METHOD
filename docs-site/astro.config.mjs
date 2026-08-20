@@ -106,7 +106,7 @@ export default defineConfig({
       title: 'BMAD Method',
       tagline: 'AI-driven agile development with specialized agents and workflows that scale from bug fixes to enterprise platforms.',
 
-      // i18n: locale config from shared module (website/src/lib/locales.mjs)
+      // i18n: locale config from shared module (docs-site/src/lib/locales.mjs)
       defaultLocale: 'root',
       locales,
 

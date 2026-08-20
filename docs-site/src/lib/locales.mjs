@@ -2,8 +2,8 @@
  * Shared i18n locale configuration.
  *
  * Single source of truth for locale definitions used by:
- *   - website/astro.config.mjs  (Starlight i18n)
- *   - website/src/pages/404.astro (client-side locale redirect)
+ *   - docs-site/astro.config.mjs  (Starlight i18n)
+ *   - docs-site/src/pages/404.astro (client-side locale redirect)
  *
  * The root locale (English) uses Starlight's 'root' key convention
  * (no URL prefix). All other locales get a URL prefix matching their key.

@@ -82,8 +82,8 @@ _bmad/custom/*.user.toml
 
 
 # Astro / Documentation Build (repo-root output only — not docs/build/)
-website/.astro/
-website/dist/
+docs-site/.astro/
+docs-site/dist/
 /build/
 
 # Web bundle release artifacts

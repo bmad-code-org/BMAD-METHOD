@@ -108,7 +108,7 @@ export function detectContentDir(filePath) {
     }
   }
   // Also check for a standalone 'docs' directory (BMAD project structure)
-  // Path format: .../bmm/docs/file.mdx or .../bmm/website/...
+  // Path format: .../bmm/docs/file.mdx or .../bmm/docs-site/...
   for (let i = segments.length - 1; i >= 0; i--) {
     if (segments[i] === 'docs') {
       // Found docs directory - use its parent as the content root

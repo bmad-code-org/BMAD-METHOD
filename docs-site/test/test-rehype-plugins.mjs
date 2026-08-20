@@ -13,7 +13,7 @@
  * - Raw HTML rewriting
  * - Integration (both plugins together)
  *
- * Usage: node website/test/test-rehype-plugins.mjs
+ * Usage: node docs-site/test/test-rehype-plugins.mjs
  */
 
 import rehypeMarkdownLinks, { findFirstDelimiter, detectContentDir } from '../src/rehype-markdown-links.js';
