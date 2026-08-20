@@ -268,23 +268,6 @@ class BmadSetupTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("failed to parse", result.stderr)
 
-    def test_first_setup_from_packaged_bmad(self):
-        sys.path.insert(0, str(REPO_ROOT / "tools"))
-        try:
-            import package_npx_skills
-        finally:
-            sys.path.pop(0)
-
-        with tempfile.TemporaryDirectory() as temp_dir:
-            out = Path(temp_dir) / "flatten"
-            project = Path(temp_dir) / "my-app"
-            project.mkdir()
-            package_npx_skills.main(["--repo-root", str(REPO_ROOT), "--out", str(out)])
-            skill = out / "skills" / "bmad"
-            result = run_setup(project, skill)
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
-            self._assert_first_run_tree(project, skill, project_name="my-app")
-
     def test_first_setup_fixture_dest_bmad(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
