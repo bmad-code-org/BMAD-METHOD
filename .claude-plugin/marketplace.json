@@ -12,42 +12,12 @@
     {
       "name": "bmad-method-analyze-plan-build",
       "displayName": "BMad Method Analyze Plan Build",
-      "source": "./",
+      "source": "./plugins/bmad-method",
       "description": "Full-lifecycle AI development framework — agents and workflows for product analysis, planning, architecture, and implementation.",
       "version": "6.11.0",
       "author": {
         "name": "Brian (BMad) Madison"
-      },
-      "skills": [
-        "./src/bmm-skills/agents/bmad-agent-analyst",
-        "./src/bmm-skills/agents/bmad-agent-architect",
-        "./src/bmm-skills/agents/bmad-agent-dev",
-        "./src/bmm-skills/agents/bmad-agent-pm",
-        "./src/bmm-skills/agents/bmad-agent-ux-designer",
-        "./src/bmm-skills/plan/bmad-architecture",
-        "./src/bmm-skills/plan/bmad-create-epics-and-stories",
-        "./src/bmm-skills/plan/bmad-prd",
-        "./src/bmm-skills/plan/bmad-prfaq",
-        "./src/bmm-skills/plan/bmad-product-brief",
-        "./src/bmm-skills/plan/bmad-project-context",
-        "./src/bmm-skills/plan/bmad-spec",
-        "./src/bmm-skills/plan/bmad-sprint-planning",
-        "./src/bmm-skills/plan/bmad-ux",
-        "./src/bmm-skills/ship/bmad-build",
-        "./src/bmm-skills/ship/bmad-checkpoint-preview",
-        "./src/bmm-skills/ship/bmad-code-review",
-        "./src/bmm-skills/ship/bmad-correct-course",
-        "./src/bmm-skills/ship/bmad-qa-generate-e2e-tests",
-        "./src/bmm-skills/ship/bmad-retrospective",
-        "./src/core-skills/bmad-advanced-elicitation",
-        "./src/core-skills/bmad-brainstorming",
-        "./src/core-skills/bmad-customize",
-        "./src/core-skills/bmad-deep-recon",
-        "./src/core-skills/bmad-forge-idea",
-        "./src/core-skills/bmad-help",
-        "./src/core-skills/bmad-party-mode",
-        "./src/core-skills/bmad-review"
-      ]
+      }
     }
   ]
 }
