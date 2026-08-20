@@ -27,25 +27,43 @@ class PluginResolver {
    * @returns {Promise<ResolvedModule[]>} Array of resolved module definitions
    */
   async resolve(repoPath, plugin) {
-    const skillRelPaths = plugin.skills || [];
-
-    // No skills array: legacy behavior - caller should use existing findModuleSource
+    const repoRoot = await fs.realpath(path.resolve(repoPath));
+    const skillRelPaths = Array.isArray(plugin.skills) ? [...plugin.skills] : [];
     if (skillRelPaths.length === 0) {
-      return [];
+      // Standard plugins discover immediate SKILL.md directories below <source>/skills.
+      const source = plugin.source === undefined ? '.' : plugin.source;
+      if (typeof source !== 'string') return [];
+
+      const sourcePath = path.resolve(repoRoot, source);
+      if (!this._isWithinRepo(repoRoot, sourcePath)) return [];
+
+      const pluginRoot = await this._canonicalWithinRepo(repoRoot, sourcePath);
+      if (!pluginRoot) return [];
+
+      const skillsRoot = await this._canonicalWithinRepo(repoRoot, path.join(pluginRoot, 'skills'));
+      if (skillsRoot) {
+        const entries = await fs.readdir(skillsRoot, { withFileTypes: true });
+        for (const entry of entries.sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))) {
+          if (!entry.isDirectory()) continue;
+          const skillPath = path.join(skillsRoot, entry.name);
+          if (await this._canonicalWithinRepo(repoRoot, path.join(skillPath, 'SKILL.md'))) {
+            skillRelPaths.push(path.relative(repoRoot, skillPath));
+          }
+        }
+      }
     }
 
     // Resolve skill paths to absolute, constrain to repo root, filter non-existent
-    const repoRoot = path.resolve(repoPath);
     const skillPaths = [];
     for (const rel of skillRelPaths) {
+      if (typeof rel !== 'string') continue;
       const normalized = rel.replace(/^\.\//, '');
-      const abs = path.resolve(repoPath, normalized);
+      const abs = path.resolve(repoRoot, normalized);
       // Guard against path traversal (.. segments, absolute paths in marketplace.json)
-      if (!abs.startsWith(repoRoot + path.sep) && abs !== repoRoot) {
-        continue;
-      }
-      if (await fs.pathExists(abs)) {
-        skillPaths.push(abs);
+      if (!this._isWithinRepo(repoRoot, abs)) continue;
+      const canonicalSkill = await this._canonicalWithinRepo(repoRoot, abs);
+      if (canonicalSkill && (await this._treeStaysWithinRepo(repoRoot, canonicalSkill))) {
+        skillPaths.push(canonicalSkill);
       }
     }
 
@@ -55,11 +73,11 @@ class PluginResolver {
 
     // Try each strategy in order
     const result =
-      (await this._tryRootModuleFiles(repoPath, plugin, skillPaths)) ||
-      (await this._trySetupSkill(repoPath, plugin, skillPaths)) ||
-      (await this._trySingleStandalone(repoPath, plugin, skillPaths)) ||
-      (await this._tryMultipleStandalone(repoPath, plugin, skillPaths)) ||
-      (await this._synthesizeFallback(repoPath, plugin, skillPaths));
+      (await this._tryRootModuleFiles(repoRoot, plugin, skillPaths)) ||
+      (await this._trySetupSkill(repoRoot, plugin, skillPaths)) ||
+      (await this._trySingleStandalone(repoRoot, plugin, skillPaths)) ||
+      (await this._tryMultipleStandalone(repoRoot, plugin, skillPaths)) ||
+      (await this._synthesizeFallback(repoRoot, plugin, skillPaths));
 
     return result;
   }
@@ -269,6 +287,40 @@ class PluginResolver {
   }
 
   // ─── Helpers ────────────────────────────────────────────────────────────────
+
+  _isWithinRepo(repoRoot, candidate) {
+    return candidate === repoRoot || candidate.startsWith(repoRoot + path.sep);
+  }
+
+  async _canonicalWithinRepo(repoRoot, candidate) {
+    try {
+      const canonical = await fs.realpath(candidate);
+      return this._isWithinRepo(repoRoot, canonical) ? canonical : null;
+    } catch {
+      return null;
+    }
+  }
+
+  async _treeStaysWithinRepo(repoRoot, root) {
+    const pending = [root];
+    const visitedDirectories = new Set();
+    try {
+      while (pending.length > 0) {
+        const candidate = pending.pop();
+        const canonical = await this._canonicalWithinRepo(repoRoot, candidate);
+        if (!canonical) return false;
+
+        const stats = await fs.stat(candidate);
+        if (!stats.isDirectory() || visitedDirectories.has(canonical)) continue;
+        visitedDirectories.add(canonical);
+        const entries = await fs.readdir(candidate, { withFileTypes: true });
+        for (const entry of entries) pending.push(path.join(candidate, entry.name));
+      }
+      return true;
+    } catch {
+      return false;
+    }
+  }
 
   /**
    * Compute the deepest common ancestor directory of an array of absolute paths.
