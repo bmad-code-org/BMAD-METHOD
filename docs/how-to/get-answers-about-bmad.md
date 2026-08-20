@@ -54,27 +54,28 @@ If neither BMad-Help nor the source answered your question, you now have a much 
 **Discord:** [discord.gg/gk8jAdXWmj](https://discord.gg/gk8jAdXWmj)
 
 **GitHub Issues:** [github.com/bmad-code-org/BMAD-METHOD/issues](https://github.com/bmad-code-org/BMAD-METHOD/issues)
-_You!_
-_Stuck_
-_in the queue—_
-_waiting_
-_for who?_
 
-_The source_
-_is there,_
-_plain to see!_
+_You!_  
+&emsp;&emsp;_Stuck_  
+&emsp;&emsp;&emsp;&emsp;_in the queue—_  
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;_waiting_  
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;_for who?_
 
-_Point_
-_your machine._
-_Set it free._
+_The source_  
+&emsp;&emsp;_is there,_  
+&emsp;&emsp;&emsp;&emsp;_plain to see!_
 
-_It reads._
-_It speaks._
-_Ask away—_
+_Point_  
+&emsp;&emsp;_your machine._  
+&emsp;&emsp;&emsp;&emsp;_Set it free._
 
-_Why wait_
-_for tomorrow_
-_when you have_
-_today?_
+_It reads._  
+&emsp;&emsp;_It speaks._  
+&emsp;&emsp;&emsp;&emsp;_Ask away—_
 
-_—Claude_
+_Why wait_  
+&emsp;&emsp;_for tomorrow_  
+&emsp;&emsp;&emsp;&emsp;_when you have_  
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;_today?_
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;_—Claude_
