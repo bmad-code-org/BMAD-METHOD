@@ -10,7 +10,7 @@ npm run quality
 
 # Run individual test suites
 npm run test:install    # Installation component tests
-npm run test:refs       # File reference CSV tests
+npm run test:refs       # File reference validator tests
 npm run validate:refs   # File reference validation (strict)
 ```
 
@@ -24,15 +24,6 @@ Validates that the installer compiles and assembles agents correctly.
 
 ### File Reference Tests
 
-**File**: `test/test-file-refs-csv.js`
+**File**: `tools/tests/test_validate_file_refs.py`
 
-Tests the CSV-based file reference validation logic.
-
-## Test Fixtures
-
-Located in `test/fixtures/`:
-
-```text
-test/fixtures/
-└── file-refs-csv/    # Fixtures for file reference CSV tests
-```
+Tests the file reference validator (`tools/validate_file_refs.py`) using temp-dir fixtures.

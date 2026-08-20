@@ -23,7 +23,8 @@ prettier.config.mjs
 tools/build-docs.mjs
 tools/fix-doc-links.js
 tools/validate-doc-links.js
-tools/validate-file-refs.js
+tools/validate_file_refs.py
+tools/tests/
 
 # Images (branding/marketing only)
 banner-bmad-method.png
