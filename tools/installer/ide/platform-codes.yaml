@@ -266,6 +266,11 @@ platforms:
       target_dir: .agents/skills
       global_target_dir: ~/.agents/skills
       commands_target_dir: .opencode/commands
+      # OpenCode resolves `@` references in command bodies as file paths
+      # relative to the project worktree root; there is no `@skills/<id>`
+      # namespace. Pointers reference the installed SKILL.md directly so
+      # `/<canonicalId>` expands the full skill content.
+      commands_body_template: "@{target_dir}/{canonicalId}/SKILL.md"
 
   openhands:
     name: "OpenHands"
