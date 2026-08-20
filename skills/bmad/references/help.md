@@ -51,6 +51,28 @@ Agent personas (optional):
   this work. Offer one only when the user asks to talk to a specific role
   or wants one perspective's take without running a full skill.
 
+Support skills (standalone):
+
+- `bmad-brainstorming` — facilitated ideation across many creative
+  techniques.
+- `bmad-forge-idea` — stress-tests a half-formed idea in a questioning
+  conversation until the user can act on it or drop it.
+- `bmad-deep-recon` — research to support a decision: drafts a research
+  prompt for the user's own tool, or runs the research itself.
+- `bmad-advanced-elicitation` — pushes recent output to be reconsidered
+  and improved through a chosen critique method.
+- `bmad-review` — runs installed review lenses (adversarial critique, edge
+  cases, verification gaps, structure, prose) over any artifact and reports
+  triaged findings.
+- `bmad-party-mode` — a lively group discussion between installed agents or
+  custom personas.
+- `bmad-customize` — authors customization overrides for installed BMad
+  skills.
+
+These belong to no path and no stage. Each stands on its own: suggest one
+whenever it is useful — before, during, after, or entirely outside the flow
+above — and never present them as required steps.
+
 A project environment may have a subset of these skills supporting the user's
 preferred workflow.
 
