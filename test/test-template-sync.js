@@ -12,8 +12,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const root = path.join(__dirname, '..');
-const source = path.join(root, 'src/bmm-skills/plan/bmad-sprint-planning/sprint-status-template.yaml');
-const fixture = path.join(root, 'src/bmm-skills/ship/bmad-retrospective/scripts/tests/fixtures/sprint-status-template.yaml');
+const source = path.join(root, 'skills/bmad-sprint-planning/sprint-status-template.yaml');
+const fixture = path.join(root, 'skills/bmad-retrospective/scripts/tests/fixtures/sprint-status-template.yaml');
 
 const sourceText = fs.readFileSync(source, 'utf-8');
 const fixtureText = fs.readFileSync(fixture, 'utf-8');
