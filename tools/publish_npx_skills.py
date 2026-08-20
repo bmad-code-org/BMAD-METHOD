@@ -55,7 +55,7 @@ def main(argv: list[str] | None = None) -> int:
         clone = Path(temp) / "repo"
         run(["git", "clone", "--depth", "1", args.repo, str(clone)], cwd=Path(temp))
         for entry in clone.iterdir():
-            if entry.name in (".git", "README.md"):
+            if entry.name in (".git", "README.md", "SECURITY.md"):
                 continue
             shutil.rmtree(entry) if entry.is_dir() else entry.unlink()
         shutil.copytree(skills_dir, clone / "skills")
