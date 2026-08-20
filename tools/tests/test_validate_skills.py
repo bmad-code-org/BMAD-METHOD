@@ -13,11 +13,11 @@ from unittest import mock
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 VALIDATOR = REPO_ROOT / "tools" / "validate_skills.py"
-FIXTURES = REPO_ROOT / "test" / "fixtures" / "validate-skills"
+FIXTURES = REPO_ROOT / "tools" / "tests" / "fixtures" / "validate-skills"
 
 JS_JSON_MISSING_TRIGGER = [
     {
-        "skill": "test/fixtures/validate-skills/missing-trigger",
+        "skill": "tools/tests/fixtures/validate-skills/missing-trigger",
         "rule": "SKILL-04",
         "title": "name Format",
         "severity": "HIGH",
@@ -27,7 +27,7 @@ JS_JSON_MISSING_TRIGGER = [
         "fix": "Rename to comply with lowercase letters, numbers, and hyphens only (max 64 chars).",
     },
     {
-        "skill": "test/fixtures/validate-skills/missing-trigger",
+        "skill": "tools/tests/fixtures/validate-skills/missing-trigger",
         "rule": "SKILL-06",
         "title": "description Quality",
         "severity": "MEDIUM",
@@ -100,7 +100,7 @@ class FixtureCase(unittest.TestCase):
         deprecated = self._json_for("deprecated-shim")
         self.assertEqual(len(deprecated), 1)
         self.assertEqual(deprecated[0]["rule"], "SKILL-04")
-        self.assertEqual(deprecated[0]["skill"], "test/fixtures/validate-skills/deprecated-shim")
+        self.assertEqual(deprecated[0]["skill"], "tools/tests/fixtures/validate-skills/deprecated-shim")
 
         with_trigger = self._json_for("with-trigger")
         self.assertEqual(len(with_trigger), 1)
