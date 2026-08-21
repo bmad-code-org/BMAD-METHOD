@@ -60,10 +60,10 @@ git show origin/main:skills/bmad/module-manifest.toml
 uv run --python 3.11 tools/stamp_release.py <version>
 ```
 
-Expected: exit 0 and a summary listing every `skills/*/module-manifest.toml`
-plus `.claude-plugin/marketplace.json`,
-`plugins/bmad-method/.claude-plugin/plugin.json`, and
-`.codex-plugin/plugin.json`. If it exits nonzero, the tree may be left
+Expected: exit 0 and a summary listing every `skills/*/module-manifest.toml`.
+Nothing else is stamped — plugin metadata (Claude/Codex plugin.json,
+marketplace catalogs) gets its version from `skills/bmad/module-manifest.toml`
+when those artifacts are built. If it exits nonzero, the tree may be left
 half-stamped (the script writes the files before its final verification), so
 restore it with `git checkout -- .` first, then fix the reported problem and
 rerun.

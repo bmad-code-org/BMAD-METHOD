@@ -18,6 +18,8 @@ MANIFEST = (
     'update_source = "github:bmad-code-org/bmad-skills/skills"\n'
 )
 
+# Plugin metadata that must never be stamped — its version derives from
+# skills/bmad/module-manifest.toml at build time.
 MARKETPLACE = {
     "name": "bmad-method",
     "keywords": ["bmad", "agile"],
@@ -93,7 +95,7 @@ class StampReleaseTests(unittest.TestCase):
         self.addCleanup(self._tmp.cleanup)
         self.root = Path(self._tmp.name)
 
-    def test_happy_path_stamps_manifests_and_plugin_jsons(self):
+    def test_happy_path_stamps_only_manifests(self):
         make_tree(self.root)
         code, out, err = run_stamper(self.root, "1.2.0")
         self.assertEqual(code, 0, err)
@@ -102,23 +104,17 @@ class StampReleaseTests(unittest.TestCase):
         contents = {path.read_bytes() for path in manifests}
         self.assertEqual(len(contents), 1)
         self.assertIn(b'version = "1.2.0"\n', contents.pop())
-        for rel in JSON_PATHS:
-            data = json.loads((self.root / rel).read_text(encoding="utf-8"))
-            found = data["plugins"][0]["version"] if "marketplace" in rel else data["version"]
-            self.assertEqual(found, "1.2.0", rel)
-        self.assertIn("Stamped version 1.2.0 into 6 files", out)
-        for rel in ("skills/bmad/module-manifest.toml", *JSON_PATHS):
-            self.assertIn(rel, out)
+        self.assertIn("Stamped version 1.2.0 into 3 files", out)
+        self.assertIn("skills/bmad/module-manifest.toml", out)
 
-    def test_json_output_keeps_two_space_indent_trailing_newline_and_unicode(self):
+    def test_plugin_metadata_is_left_untouched(self):
         make_tree(self.root)
-        code, _, err = run_stamper(self.root, "1.2.0")
+        before = {rel: (self.root / rel).read_bytes() for rel in JSON_PATHS}
+        code, out, err = run_stamper(self.root, "1.2.0")
         self.assertEqual(code, 0, err)
-        text = (self.root / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")
-        self.assertTrue(text.endswith("}\n"))
-        self.assertIn('\n  "version": "1.2.0",\n', text)
-        self.assertIn("—", text)
-        self.assertNotIn("\\u2014", text)
+        for rel in JSON_PATHS:
+            self.assertEqual((self.root / rel).read_bytes(), before[rel], rel)
+            self.assertNotIn(rel, out)
 
     def test_non_semver_version_touches_nothing(self):
         make_tree(self.root)
@@ -161,27 +157,6 @@ class StampReleaseTests(unittest.TestCase):
         # The stamp itself was applied before the uniformity assert tripped.
         self.assertIn('version = "1.2.0"', divergent.read_text(encoding="utf-8"))
 
-    def test_marketplace_missing_version_key_names_file_and_key(self):
-        make_tree(self.root)
-        broken = dict(MARKETPLACE, plugins=[{"name": "bmad-method-analyze-plan-build"}])
-        write_json(self.root / ".claude-plugin" / "marketplace.json", broken)
-        before = snapshot(self.root)
-        code, _, err = run_stamper(self.root, "1.2.0")
-        self.assertEqual(code, 1)
-        self.assertIn(".claude-plugin/marketplace.json", err)
-        self.assertIn("plugins[0].version", err)
-        self.assertEqual(snapshot(self.root), before)
-
-    def test_plugin_json_missing_version_key_names_file_and_key(self):
-        make_tree(self.root)
-        write_json(self.root / ".codex-plugin" / "plugin.json", {"name": "bmad-method"})
-        before = snapshot(self.root)
-        code, _, err = run_stamper(self.root, "1.2.0")
-        self.assertEqual(code, 1)
-        self.assertIn(".codex-plugin/plugin.json", err)
-        self.assertIn("version", err)
-        self.assertEqual(snapshot(self.root), before)
-
     def test_same_version_is_idempotent(self):
         make_tree(self.root)
         code, _, err = run_stamper(self.root, "1.2.0")
@@ -192,7 +167,6 @@ class StampReleaseTests(unittest.TestCase):
         self.assertEqual(snapshot(self.root), after_first)
 
     def test_empty_skills_tree_reports_error(self):
-        write_json(self.root / ".codex-plugin" / "plugin.json", PLUGIN)
         code, _, err = run_stamper(self.root, "1.2.0")
         self.assertEqual(code, 1)
         self.assertIn("module-manifest.toml", err)
