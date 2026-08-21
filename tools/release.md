@@ -96,3 +96,9 @@ git fetch origin
 git show origin/main:skills/bmad/module-manifest.toml   # version = "<version>"
 git show origin/dev:skills/bmad/module-manifest.toml    # still the placeholder
 ```
+
+Note: installed copies check for updates through `raw.githubusercontent.com`,
+which caches files for around five minutes. Right after the push, update
+checks may still report the previous version; that is the CDN, not a failed
+release. Verify through git (above), or wait a few minutes before trusting
+an update check.
