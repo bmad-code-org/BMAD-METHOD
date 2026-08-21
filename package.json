@@ -34,7 +34,7 @@
     "quality": "npm run format:check && npm run lint && npm run lint:md && npm run docs:build && npm test && npm run validate:refs && npm run validate:skills && npm run docs:validate-sidebar",
     "test": "npm run test:docs && npm run test:python",
     "test:docs": "node docs-site/test/test-site-url.mjs && node docs-site/test/test-rehype-plugins.mjs",
-    "test:python": "uv run --python 3.11 --with pytest --with \"pyyaml>=6.0.2,<7\" --with \"ruamel.yaml>=0.18\" pytest tools/tests skills",
+    "test:python": "PYTHONDONTWRITEBYTECODE=1 uv run --python 3.11 --with pytest --with pytest-xdist --with \"pyyaml>=6.0.2,<7\" --with \"ruamel.yaml>=0.18\" pytest -q -ra --tb=short -n auto -p no:cacheprovider tools/tests skills",
     "validate:refs": "uv run --python 3.11 tools/validate_file_refs.py --strict",
     "validate:skills": "uv run --python 3.11 tools/validate_skills.py --strict"
   },

@@ -7,6 +7,7 @@
 import io
 import json
 import sys
+import tempfile
 import unittest
 from contextlib import redirect_stdout
 from datetime import date
@@ -62,12 +63,10 @@ def run(argv):
 
 class CitationsTest(unittest.TestCase):
     def test_cross_check(self):
-        report = Path(__file__).parent / "_report.md"
-        report.write_text(REPORT, encoding="utf-8")
-        try:
+        with tempfile.TemporaryDirectory() as tmp:
+            report = Path(tmp) / "report.md"
+            report.write_text(REPORT, encoding="utf-8")
             code, result = run(["citations", str(report)])
-        finally:
-            report.unlink()
         self.assertEqual(result["dangling_markers"], [4])
         self.assertEqual(result["orphaned_rows"], [3])
         self.assertNotIn(9, result["markers"])  # fenced content ignored
@@ -76,12 +75,10 @@ class CitationsTest(unittest.TestCase):
 
 class TallyTest(unittest.TestCase):
     def test_last_status_wins_per_ref(self):
-        log = Path(__file__).parent / "_memlog.md"
-        log.write_text(MEMLOG, encoding="utf-8")
-        try:
+        with tempfile.TemporaryDirectory() as tmp:
+            log = Path(tmp) / "memlog.md"
+            log.write_text(MEMLOG, encoding="utf-8")
             code, result = run(["tally", str(log)])
-        finally:
-            log.unlink()
         self.assertEqual(result["by_type"]["claim"], 4)
         self.assertEqual(result["claims"], {"unverified": 1, "verified": 2})
         self.assertEqual(result["claims_total"], 3)  # ref=[2] counted once
@@ -99,16 +96,14 @@ class StalenessTest(unittest.TestCase):
             {"claim": "pricing", "class": "pricing", "pub_date": "2026-06"},
             {"claim": "odd", "class": "unmapped", "pub_date": "2026-06"},
         ])
-        f = Path(__file__).parent / "_claims.json"
-        f.write_text(claims, encoding="utf-8")
-        try:
+        with tempfile.TemporaryDirectory() as tmp:
+            f = Path(tmp) / "claims.json"
+            f.write_text(claims, encoding="utf-8")
             code, result = run([
                 "staleness", str(f),
                 "--windows", '{"size/growth": 18, "pricing": 3}',
                 "--today", "2026-07-22",
             ])
-        finally:
-            f.unlink()
         self.assertEqual(result["stale_count"], 1)  # sizing recheck 2025-12 < today
         self.assertEqual(result["earliest_recheck"], "2025-12-01")
         self.assertEqual(result["no_window_classes"], ["unmapped"])
@@ -126,12 +121,10 @@ class SlugTest(unittest.TestCase):
 
 class EscapeSourcesTest(unittest.TestCase):
     def test_escaping_and_url_validation(self):
-        report = Path(__file__).parent / "_report.md"
-        report.write_text(REPORT, encoding="utf-8")
-        try:
+        with tempfile.TemporaryDirectory() as tmp:
+            report = Path(tmp) / "report.md"
+            report.write_text(REPORT, encoding="utf-8")
             code, result = run(["escape-sources", str(report)])
-        finally:
-            report.unlink()
         self.assertEqual(result["rows"], 3)
         self.assertTrue(any(u.startswith("javascript:") for u in result["invalid_urls"]))
         self.assertNotIn("javascript:", result["html"])  # never linked
