@@ -2223,6 +2223,31 @@ class BmadUpdateDoctorTests(unittest.TestCase):
                 ["current", "newer-available"],
             )
 
+    def test_update_reports_plugin_managed_copies_without_fetching(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "bmad", "core", update_source="file:sources")
+            write_module_skill(project / "sources", "bmad", "core")
+            write_module_skill(
+                root, "plugged", "alpha", update_source="plugin:bmad-method"
+            )
+
+            report = json.loads(self.run_update(project, skill))
+
+            self.assertFalse(report["current"])
+            alpha = next(
+                module for module in report["modules"] if module["module"] == "alpha"
+            )
+            self.assertEqual(alpha["state"], "plugin-managed")
+            (copy,) = alpha["copies"]
+            self.assertEqual(copy["state"], "plugin-managed")
+            self.assertEqual(copy["plugin"], "bmad-method")
+            self.assertIn("update the plugin", copy["instruction"])
+            self.assertNotIn("source_version", copy)
+
     def test_update_reports_an_unusable_source_url_without_aborting_the_run(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)

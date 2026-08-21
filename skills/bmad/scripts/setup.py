@@ -27,7 +27,7 @@ sys.dont_write_bytecode = True
 MANIFEST_NAME = "module-manifest.toml"
 MANIFEST_KNOWLEDGE = "`reference/help.md` in the `bmad` skill"
 QUESTION_KEYS = frozenset({"key", "prompt", "default"})
-UPDATE_SOURCE_PREFIXES = ("github:", "https://", "file:")
+UPDATE_SOURCE_PREFIXES = ("github:", "https://", "file:", "plugin:")
 MODULE_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]*\Z")
 RESERVED_MODULE_DIRS = frozenset({"_config", "custom", "modules", "scripts"})
 
@@ -737,6 +737,19 @@ def update_copy_report(
 ) -> dict[str, object]:
     report: dict[str, object] = copy_identity(copy_item)
     source = copy_item.parsed.update_source
+    if source.startswith("plugin:"):
+        plugin = source.removeprefix("plugin:")
+        report.update(
+            {
+                "state": "plugin-managed",
+                "plugin": plugin,
+                "instruction": (
+                    f"this copy ships inside the {plugin} plugin — update the "
+                    "plugin through its marketplace, not these files"
+                ),
+            }
+        )
+        return report
     try:
         source = source_manifest_location(project_root, copy_item)
         source_version = parse_source_version(
