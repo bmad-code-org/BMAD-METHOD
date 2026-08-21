@@ -78,8 +78,10 @@ If something could not be read, say so and do not guess.
 - Use a configured communication language when it is already available from
   current context or a permitted read-only configuration read. Otherwise answer
   in the user's language. Never run the resolver merely to obtain a language.
-- If the allowed sources cannot support a general BMad question, state that
-  limitation instead of inventing an answer or using a forbidden source.
+- If the allowed sources cannot support a general BMad question, fetch the
+  remote documentation named in `references/help.md` and answer from it. If
+  that too cannot answer, state the limitation instead of inventing an answer
+  or using a forbidden source.
 
 ## Answer Shape
 

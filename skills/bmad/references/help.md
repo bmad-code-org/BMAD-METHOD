@@ -134,6 +134,13 @@ A run is complete when the intent is satisfied, its chosen checks pass, and
 no chosen review leaves material unresolved findings — not when every skill
 has been traversed.
 
+## When this document is not enough
+
+For a BMad question this document and the installed skills cannot answer,
+fetch `https://docs.bmad-method.org/llms.txt` and follow the links relevant
+to the question. It indexes the full documentation site and names the source
+repository, which is the final authority on how anything actually behaves.
+
 ## Where things land
 
 Durable specs and their story lists live under `{output_folder}/specs`;
