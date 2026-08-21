@@ -190,6 +190,7 @@ def setup(
     module_answers: dict[tuple[str, str], str] | None = None,
     module_answers_source: Path | None = None,
 ) -> None:
+    reject_symlinked_bmad(project_root)
     scripts_src, config_src = payload(skill_root)
     template_text = fill_team_config(
         config_src.read_text(encoding="utf-8"), project_root
@@ -262,7 +263,19 @@ def pending_config_questions(
     return find_pending_questions(modules, merged, project_root)
 
 
+def reject_symlinked_bmad(project_root: Path) -> None:
+    bmad = project_root / "_bmad"
+    if bmad.is_symlink():
+        target = bmad.resolve()
+        raise Exception(
+            f"{bmad} is a symlink to {target}; setup and doctor replace "
+            f"_bmad in place, so run them with --project-root "
+            f"{target.parent} to fix the real installation"
+        )
+
+
 def missing_bmad_report(project_root: Path) -> dict[str, object] | None:
+    reject_symlinked_bmad(project_root)
     bmad = project_root / "_bmad"
     if not bmad.exists():
         return {
