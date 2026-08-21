@@ -60,11 +60,11 @@ git show origin/main:skills/bmad/module-manifest.toml
 uv run --python 3.11 tools/stamp_release.py <version>
 ```
 
-Expected: exit 0 and a summary listing every `skills/*/module-manifest.toml`
-plus `.claude-plugin/marketplace.json` (every plugin entry is stamped) and
-`.codex-plugin/plugin.json`. The stamper also validates the distribution
-shape before writing: exact manifest keys, known modules, and Claude
-marketplace skill lists that match each skill's manifest module exactly.
+Expected: exit 0 and a summary listing every `skills/*/module-manifest.toml`.
+The stamper also validates every manifest before writing: exact manifest
+keys, a known module, and the one known update source. (The Claude and Codex
+plugins are built from these stamped manifests by
+`bmad-code-org/bmad-plugins`; this repo carries no plugin metadata.)
 If it exits nonzero, the tree may be left
 half-stamped (the script writes the files before its final verification), so
 restore it with `git checkout -- .` first, then fix the reported problem and
@@ -104,3 +104,9 @@ which caches files for around five minutes. Right after the push, update
 checks may still report the previous version; that is the CDN, not a failed
 release. Verify through git (above), or wait a few minutes before trusting
 an update check.
+
+## 7. Rebuild the plugins
+
+The Claude and Codex plugins ship from `bmad-code-org/bmad-plugins`, built
+from what `main` now serves. In a checkout of that repo, run
+`python3 release.py`, review the diff, and commit — see its README.
