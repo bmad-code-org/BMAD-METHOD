@@ -23,6 +23,8 @@ tools/fix-doc-links.js
 tools/validate-doc-links.js
 tools/validate_file_refs.py
 tools/validate_skills.py
+tools/release.md
+tools/stamp_release.py
 tools/tests/
 
 # Images (branding/marketing only)
@@ -37,3 +39,4 @@ TRADEMARK.md
 CHANGELOG.md
 CNAME
 CODE_OF_CONDUCT.md
+TEMP-RELEASE-PROCESS.md
