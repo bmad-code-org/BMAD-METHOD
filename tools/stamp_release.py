@@ -222,12 +222,22 @@ def run(project_root: Path, version: str) -> int:
     try:
         validate_version(version)
 
-        manifests = sorted((project_root / "skills").glob(f"*/{MANIFEST_NAME}"))
-        if not manifests:
+        skill_dirs = sorted(
+            path for path in (project_root / "skills").glob("*") if path.is_dir()
+        )
+        if not skill_dirs:
             raise StampError(
                 f"no skills/*/{MANIFEST_NAME} found under {project_root} — "
                 "run from a bmad-skills checkout"
             )
+        manifests: list[Path] = []
+        for skill_dir in skill_dirs:
+            manifest = skill_dir / MANIFEST_NAME
+            if not manifest.is_file():
+                raise StampError(
+                    f"{skill_dir.relative_to(project_root).as_posix()}: missing {MANIFEST_NAME}"
+                )
+            manifests.append(manifest)
 
         # Phase 1: compute every new file content; nothing is written if any file fails.
         planned: list[tuple[Path, str]] = []

@@ -156,6 +156,16 @@ class StampReleaseTests(unittest.TestCase):
         self.assertIn("skills/bmad-build/module-manifest.toml", err)
         self.assertEqual(snapshot(self.root), before)
 
+    def test_skill_directory_without_manifest_fails_and_touches_nothing(self):
+        make_tree(self.root)
+        write(self.root / "skills" / "bmad-orphan" / "SKILL.md", "# orphan\n")
+        before = snapshot(self.root)
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 1)
+        self.assertIn("skills/bmad-orphan", err)
+        self.assertIn("module-manifest.toml", err)
+        self.assertEqual(snapshot(self.root), before)
+
     def test_divergent_manifests_trip_uniformity_assert_after_stamp(self):
         make_tree(self.root)
         divergent = self.root / "skills" / "bmad-spec" / "module-manifest.toml"
