@@ -18,16 +18,18 @@ MANIFEST = (
     'update_source = "github:bmad-code-org/bmad-skills/skills"\n'
 )
 
-# Plugin metadata that must never be stamped — its version derives from
-# skills/bmad/module-manifest.toml at build time.
 MARKETPLACE = {
     "name": "bmad-method",
     "keywords": ["bmad", "agile"],
     "plugins": [
         {
-            "name": "bmad-method-analyze-plan-build",
+            "name": "bmad-bmm",
             "version": "6.11.0-next",
-        }
+        },
+        {
+            "name": "bmad-tools",
+            "version": "6.11.0-next",
+        },
     ],
 }
 
@@ -39,7 +41,8 @@ PLUGIN = {
 
 JSON_PATHS = (
     ".claude-plugin/marketplace.json",
-    "plugins/bmad-method/.claude-plugin/plugin.json",
+    "plugins/bmad-bmm/.claude-plugin/plugin.json",
+    "plugins/bmad-tools/.claude-plugin/plugin.json",
     ".codex-plugin/plugin.json",
 )
 
@@ -70,7 +73,8 @@ def make_tree(root: Path, version: str = "6.11.0-next") -> None:
     for skill in ("bmad", "bmad-build", "bmad-spec"):
         write(root / "skills" / skill / "module-manifest.toml", MANIFEST.format(version=version))
     write_json(root / ".claude-plugin" / "marketplace.json", MARKETPLACE)
-    write_json(root / "plugins" / "bmad-method" / ".claude-plugin" / "plugin.json", PLUGIN)
+    write_json(root / "plugins" / "bmad-bmm" / ".claude-plugin" / "plugin.json", PLUGIN)
+    write_json(root / "plugins" / "bmad-tools" / ".claude-plugin" / "plugin.json", PLUGIN)
     write_json(root / ".codex-plugin" / "plugin.json", PLUGIN)
 
 
@@ -95,7 +99,7 @@ class StampReleaseTests(unittest.TestCase):
         self.addCleanup(self._tmp.cleanup)
         self.root = Path(self._tmp.name)
 
-    def test_happy_path_stamps_only_manifests(self):
+    def test_happy_path_stamps_manifests_and_plugin_jsons(self):
         make_tree(self.root)
         code, out, err = run_stamper(self.root, "1.2.0")
         self.assertEqual(code, 0, err)
@@ -104,17 +108,26 @@ class StampReleaseTests(unittest.TestCase):
         contents = {path.read_bytes() for path in manifests}
         self.assertEqual(len(contents), 1)
         self.assertIn(b'version = "1.2.0"\n', contents.pop())
-        self.assertIn("Stamped version 1.2.0 into 3 files", out)
-        self.assertIn("skills/bmad/module-manifest.toml", out)
-
-    def test_plugin_metadata_is_left_untouched(self):
-        make_tree(self.root)
-        before = {rel: (self.root / rel).read_bytes() for rel in JSON_PATHS}
-        code, out, err = run_stamper(self.root, "1.2.0")
-        self.assertEqual(code, 0, err)
         for rel in JSON_PATHS:
-            self.assertEqual((self.root / rel).read_bytes(), before[rel], rel)
-            self.assertNotIn(rel, out)
+            data = json.loads((self.root / rel).read_text(encoding="utf-8"))
+            if "marketplace" in rel:
+                for index, entry in enumerate(data["plugins"]):
+                    self.assertEqual(entry["version"], "1.2.0", f"{rel} plugins[{index}]")
+            else:
+                self.assertEqual(data["version"], "1.2.0", rel)
+        self.assertIn("Stamped version 1.2.0 into 7 files", out)
+        for rel in ("skills/bmad/module-manifest.toml", *JSON_PATHS):
+            self.assertIn(rel, out)
+
+    def test_json_output_keeps_two_space_indent_trailing_newline_and_unicode(self):
+        make_tree(self.root)
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 0, err)
+        text = (self.root / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")
+        self.assertTrue(text.endswith("}\n"))
+        self.assertIn('\n  "version": "1.2.0",\n', text)
+        self.assertIn("—", text)
+        self.assertNotIn("\\u2014", text)
 
     def test_non_semver_version_touches_nothing(self):
         make_tree(self.root)
@@ -157,6 +170,58 @@ class StampReleaseTests(unittest.TestCase):
         # The stamp itself was applied before the uniformity assert tripped.
         self.assertIn('version = "1.2.0"', divergent.read_text(encoding="utf-8"))
 
+    def test_marketplace_missing_version_key_names_file_and_key(self):
+        make_tree(self.root)
+        broken = dict(MARKETPLACE, plugins=[{"name": "bmad-method-analyze-plan-build"}])
+        write_json(self.root / ".claude-plugin" / "marketplace.json", broken)
+        before = snapshot(self.root)
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 1)
+        self.assertIn(".claude-plugin/marketplace.json", err)
+        self.assertIn("plugins[0].version", err)
+        self.assertEqual(snapshot(self.root), before)
+
+    def test_second_marketplace_entry_missing_version_names_its_index(self):
+        make_tree(self.root)
+        broken = dict(MARKETPLACE, plugins=[MARKETPLACE["plugins"][0], {"name": "bmad-tools"}])
+        write_json(self.root / ".claude-plugin" / "marketplace.json", broken)
+        before = snapshot(self.root)
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 1)
+        self.assertIn("plugins[1].version", err)
+        self.assertEqual(snapshot(self.root), before)
+
+    def test_marketplace_entry_count_must_match_plugin_manifests(self):
+        make_tree(self.root)
+        broken = dict(MARKETPLACE, plugins=[MARKETPLACE["plugins"][0]])
+        write_json(self.root / ".claude-plugin" / "marketplace.json", broken)
+        before = snapshot(self.root)
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 1)
+        self.assertIn("lists 1 plugins but found 2", err)
+        self.assertEqual(snapshot(self.root), before)
+
+    def test_version_key_outside_the_target_node_is_not_stamped(self):
+        make_tree(self.root)
+        decoy = dict(PLUGIN, metadata={"version": "9.9.9"})
+        write_json(self.root / ".codex-plugin" / "plugin.json", decoy)
+        before = snapshot(self.root)
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 1)
+        self.assertIn(".codex-plugin/plugin.json", err)
+        self.assertIn("expected exactly 1", err)
+        self.assertEqual(snapshot(self.root), before)
+
+    def test_plugin_json_missing_version_key_names_file_and_key(self):
+        make_tree(self.root)
+        write_json(self.root / ".codex-plugin" / "plugin.json", {"name": "bmad-method"})
+        before = snapshot(self.root)
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 1)
+        self.assertIn(".codex-plugin/plugin.json", err)
+        self.assertIn("version", err)
+        self.assertEqual(snapshot(self.root), before)
+
     def test_same_version_is_idempotent(self):
         make_tree(self.root)
         code, _, err = run_stamper(self.root, "1.2.0")
@@ -167,6 +232,7 @@ class StampReleaseTests(unittest.TestCase):
         self.assertEqual(snapshot(self.root), after_first)
 
     def test_empty_skills_tree_reports_error(self):
+        write_json(self.root / ".codex-plugin" / "plugin.json", PLUGIN)
         code, _, err = run_stamper(self.root, "1.2.0")
         self.assertEqual(code, 1)
         self.assertIn("module-manifest.toml", err)
