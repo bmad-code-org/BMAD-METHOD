@@ -1403,6 +1403,41 @@ class BmadSetupTests(unittest.TestCase):
             self.assertFalse((project / "_bmad").exists())
             self.assertEqual(list(project.glob("_bmad.setup-*")), [])
 
+    def test_symlinked_bmad_is_rejected_before_any_write(self):
+        if not symlink_to_temp_dir_succeeds():
+            self.skipTest("symlinks not available")
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "proj"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            real = root / "real-install" / "_bmad"
+            write(real / "config.toml", "[core]\nkeep = 1\n")
+            os.symlink(real, project / "_bmad", target_is_directory=True)
+            before = {
+                path.relative_to(real): path.read_bytes()
+                for path in real.rglob("*")
+                if path.is_file()
+            }
+
+            for extra in ((), ("--doctor",), ("--list-config-questions", "--doctor")):
+                with self.subTest(extra=extra):
+                    result = run_setup_python(project, skill, *extra)
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertIn("symlink", result.stderr)
+                    self.assertIn(str(real.resolve().parent), result.stderr)
+
+            self.assertTrue((project / "_bmad").is_symlink())
+            self.assertEqual(
+                {
+                    path.relative_to(real): path.read_bytes()
+                    for path in real.rglob("*")
+                    if path.is_file()
+                },
+                before,
+            )
+            self.assertEqual(list(project.glob("_bmad.*-*")), [])
+
     def test_declared_script_read_error_is_source_specific_and_atomic(self):
         setup = load_setup()
         with tempfile.TemporaryDirectory() as temp_dir:
