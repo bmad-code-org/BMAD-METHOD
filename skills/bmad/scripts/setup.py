@@ -25,6 +25,7 @@ from typing import NamedTuple
 sys.dont_write_bytecode = True
 
 MANIFEST_NAME = "module-manifest.toml"
+MANIFEST_KNOWLEDGE = "`reference/help.md` in the `bmad` skill"
 QUESTION_KEYS = frozenset({"key", "prompt", "default"})
 UPDATE_SOURCE_PREFIXES = ("github:", "https://", "file:")
 MODULE_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]*\Z")
@@ -544,6 +545,12 @@ def parse_packaged_manifest(path: Path, raw: bytes) -> ParsedManifest:
         raise Exception(
             f"packaged manifest {path} field 'update_source' must be a valid "
             "HTTPS URL"
+        )
+    knowledge = manifest_string(data, "knowledge", path)
+    if knowledge != MANIFEST_KNOWLEDGE:
+        raise Exception(
+            f"packaged manifest {path} field 'knowledge' must be exactly "
+            f"{MANIFEST_KNOWLEDGE!r}, found {knowledge!r}"
         )
     questions = parse_manifest_questions(data.get("config_questions"), module, path)
     scripts = parse_manifest_scripts(data.get("scripts"), path)

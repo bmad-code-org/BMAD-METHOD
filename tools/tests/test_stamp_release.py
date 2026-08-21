@@ -16,6 +16,7 @@ MANIFEST = (
     'module = "{module}"\n'
     'version = "{version}"\n'
     'update_source = "github:bmad-code-org/bmad-skills/skills"\n'
+    'knowledge = "`reference/help.md` in the `bmad` skill"\n'
 )
 
 METHOD_SKILLS = ("bmad", "bmad-build", "bmad-spec")
@@ -113,7 +114,12 @@ class StampReleaseTests(unittest.TestCase):
     def test_manifest_missing_version_key_names_file_and_touches_nothing(self):
         make_tree(self.root)
         broken = self.root / "skills" / "bmad-build" / "module-manifest.toml"
-        write(broken, 'module = "method"\nupdate_source = "github:bmad-code-org/bmad-skills/skills"\n')
+        write(
+            broken,
+            'module = "method"\n'
+            'update_source = "github:bmad-code-org/bmad-skills/skills"\n'
+            'knowledge = "`reference/help.md` in the `bmad` skill"\n',
+        )
         before = snapshot(self.root)
         code, _, err = run_stamper(self.root, "1.2.0")
         self.assertEqual(code, 1)
@@ -146,12 +152,31 @@ class StampReleaseTests(unittest.TestCase):
         broken = self.root / "skills" / "bmad-spec" / "module-manifest.toml"
         write(
             broken,
-            'module = "method"\nversion = "6.11.0-next"\nupdate_source = "github:o/r/skills"\n',
+            'module = "method"\n'
+            'version = "6.11.0-next"\n'
+            'update_source = "github:o/r/skills"\n'
+            'knowledge = "`reference/help.md` in the `bmad` skill"\n',
         )
         before = snapshot(self.root)
         code, _, err = run_stamper(self.root, "1.2.0")
         self.assertEqual(code, 1)
         self.assertIn("update_source must be exactly", err)
+        self.assertEqual(snapshot(self.root), before)
+
+    def test_wrong_knowledge_rejected(self):
+        make_tree(self.root)
+        broken = self.root / "skills" / "bmad-spec" / "module-manifest.toml"
+        write(
+            broken,
+            'module = "method"\n'
+            'version = "6.11.0-next"\n'
+            'update_source = "github:bmad-code-org/bmad-skills/skills"\n'
+            'knowledge = "elsewhere.md"\n',
+        )
+        before = snapshot(self.root)
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 1)
+        self.assertIn("knowledge must be exactly", err)
         self.assertEqual(snapshot(self.root), before)
 
     def test_skill_directory_without_manifest_fails_and_touches_nothing(self):
@@ -171,7 +196,8 @@ class StampReleaseTests(unittest.TestCase):
             drifted,
             'module = "method"\n'
             'version = "6.11.0-next"\n'
-            'update_source   =   "github:bmad-code-org/bmad-skills/skills"\n',
+            'update_source   =   "github:bmad-code-org/bmad-skills/skills"\n'
+            'knowledge = "`reference/help.md` in the `bmad` skill"\n',
         )
         code, _, err = run_stamper(self.root, "1.2.0")
         self.assertEqual(code, 1)

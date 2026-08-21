@@ -11,8 +11,9 @@ plugins are built from these stamped manifests by bmad-code-org/bmad-plugins,
 so the manifests are the only version source this repo carries.
 
 Before writing anything it validates every manifest's exact schema: exactly
-the keys module, version, and update_source; module is a known module and
-update_source is the one known source. The `version = "..."` line is rewritten
+the keys module, version, update_source, and knowledge; module is a known
+module, and update_source and knowledge each carry their one known value.
+The `version = "..."` line is rewritten
 textually, so manifests of the same module stay byte-identical (setup.py's
 module discovery compares raw manifest bytes).
 
@@ -40,7 +41,8 @@ MANIFEST_NAME = "module-manifest.toml"
 
 MODULES = frozenset({"method", "toolbox"})
 UPDATE_SOURCE = "github:bmad-code-org/bmad-skills/skills"
-MANIFEST_KEYS = frozenset({"module", "version", "update_source"})
+KNOWLEDGE = "`reference/help.md` in the `bmad` skill"
+MANIFEST_KEYS = frozenset({"module", "version", "update_source", "knowledge"})
 
 VERSION_LINE = re.compile(r'^version\s*=\s*".*"\s*$')
 
@@ -101,6 +103,11 @@ def read_manifest_module(path: Path, rel: str) -> str:
             f"{rel}: update_source must be exactly {UPDATE_SOURCE!r}; "
             f"found {data['update_source']!r}"
         )
+    if data["knowledge"] != KNOWLEDGE:
+        raise StampError(
+            f"{rel}: knowledge must be exactly {KNOWLEDGE!r}; "
+            f"found {data['knowledge']!r}"
+        )
     return module
 
 
@@ -158,11 +165,17 @@ def verify_stamp(
             data = tomllib.loads(raw.decode("utf-8"))
         except (OSError, UnicodeError, tomllib.TOMLDecodeError) as error:
             raise StampError(f"{rel}: cannot read manifest after stamping: {error}") from error
-        expected = {"module": module, "version": version, "update_source": UPDATE_SOURCE}
+        expected = {
+            "module": module,
+            "version": version,
+            "update_source": UPDATE_SOURCE,
+            "knowledge": KNOWLEDGE,
+        }
         if data != expected:
             raise StampError(
                 f"{rel}: after stamping, manifest must be exactly "
-                f"module={module!r}, version={version!r}, update_source={UPDATE_SOURCE!r}"
+                f"module={module!r}, version={version!r}, "
+                f"update_source={UPDATE_SOURCE!r}, knowledge={KNOWLEDGE!r}"
             )
         if module not in reference_bytes:
             reference_bytes[module] = raw
