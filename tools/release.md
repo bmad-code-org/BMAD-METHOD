@@ -118,4 +118,5 @@ an update check.
 
 The Claude and Codex plugins ship from `bmad-code-org/bmad-plugins`, built
 from what `main` now serves. In a checkout of that repo, run
-`python3 release.py`, review the diff, and commit — see its README.
+`python3 release.py`, review the diff, commit, and push — the script's
+docstring has the details.
