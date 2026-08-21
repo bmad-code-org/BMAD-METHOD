@@ -80,16 +80,25 @@ git diff
 Expected: only the files from the stamp summary, and within each file only the
 version value changed.
 
-## 5. Commit and push to main
+## 5. Commit, tag, and push to main
 
 ```bash
 git commit -am "chore(release): v<version>"
-git push --force-with-lease origin HEAD:main
+git tag "v<version>"
+git push --atomic --force-with-lease origin HEAD:main "refs/tags/v<version>"
 ```
 
 The force push is expected on every release (see the branch model above).
 `--force-with-lease` makes it fail if someone else moved `main` since your
-fetch; if that happens, start over from step 1.
+fetch; if that happens, start over from step 1 (and delete the local tag
+first: `git tag -d "v<version>"`).
+
+The tag is what preserves history: force-pushing `main` orphans the previous
+release commit, and the tag keeps it reachable — every past release stays
+inspectable as `v<version>`. Tag pushes are never forced, so pushing a
+version that was ever released before fails loudly; that is intentional.
+Versions are never reused — pick a new one. `--atomic` makes `main` and the
+tag land together or not at all.
 
 ## 6. Verify
 
