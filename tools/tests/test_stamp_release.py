@@ -4,6 +4,7 @@ import io
 import json
 import sys
 import tempfile
+import tomllib
 import unittest
 from pathlib import Path
 
@@ -13,10 +14,13 @@ STAMPER = REPO_ROOT / "tools" / "stamp_release.py"
 SETUP_PY = REPO_ROOT / "skills" / "bmad" / "scripts" / "setup.py"
 
 MANIFEST = (
-    'module = "bmm"\n'
+    'module = "{module}"\n'
     'version = "{version}"\n'
     'update_source = "github:bmad-code-org/bmad-skills/skills"\n'
 )
+
+BMM_SKILLS = ("bmad", "bmad-build", "bmad-spec")
+TOOLS_SKILLS = ("bmad-flow",)
 
 MARKETPLACE = {
     "name": "bmad-method",
@@ -24,11 +28,17 @@ MARKETPLACE = {
     "plugins": [
         {
             "name": "bmad-bmm",
+            "source": "./",
+            "strict": False,
             "version": "6.11.0-next",
+            "skills": [f"./skills/{skill}" for skill in BMM_SKILLS],
         },
         {
             "name": "bmad-tools",
+            "source": "./",
+            "strict": False,
             "version": "6.11.0-next",
+            "skills": [f"./skills/{skill}" for skill in TOOLS_SKILLS],
         },
     ],
 }
@@ -41,8 +51,6 @@ PLUGIN = {
 
 JSON_PATHS = (
     ".claude-plugin/marketplace.json",
-    "plugins/bmad-bmm/.claude-plugin/plugin.json",
-    "plugins/bmad-tools/.claude-plugin/plugin.json",
     ".codex-plugin/plugin.json",
 )
 
@@ -70,12 +78,34 @@ def write_json(path: Path, data: dict) -> None:
 
 
 def make_tree(root: Path, version: str = "6.11.0-next") -> None:
-    for skill in ("bmad", "bmad-build", "bmad-spec"):
-        write(root / "skills" / skill / "module-manifest.toml", MANIFEST.format(version=version))
+    for skill in BMM_SKILLS:
+        write(
+            root / "skills" / skill / "module-manifest.toml",
+            MANIFEST.format(module="bmm", version=version),
+        )
+    for skill in TOOLS_SKILLS:
+        write(
+            root / "skills" / skill / "module-manifest.toml",
+            MANIFEST.format(module="tools", version=version),
+        )
     write_json(root / ".claude-plugin" / "marketplace.json", MARKETPLACE)
-    write_json(root / "plugins" / "bmad-bmm" / ".claude-plugin" / "plugin.json", PLUGIN)
-    write_json(root / "plugins" / "bmad-tools" / ".claude-plugin" / "plugin.json", PLUGIN)
     write_json(root / ".codex-plugin" / "plugin.json", PLUGIN)
+
+
+def marketplace_with(plugins: list[dict]) -> dict:
+    return dict(MARKETPLACE, plugins=plugins)
+
+
+def entry(name: str, skills: list[str], **overrides) -> dict:
+    base = {
+        "name": name,
+        "source": "./",
+        "strict": False,
+        "version": "6.11.0-next",
+        "skills": skills,
+    }
+    base.update(overrides)
+    return base
 
 
 def snapshot(root: Path) -> dict[str, bytes]:
@@ -99,23 +129,28 @@ class StampReleaseTests(unittest.TestCase):
         self.addCleanup(self._tmp.cleanup)
         self.root = Path(self._tmp.name)
 
-    def test_happy_path_stamps_manifests_and_plugin_jsons(self):
+    def test_happy_path_stamps_manifests_and_plugin_metadata(self):
         make_tree(self.root)
         code, out, err = run_stamper(self.root, "1.2.0")
         self.assertEqual(code, 0, err)
-        manifests = sorted(self.root.glob("skills/*/module-manifest.toml"))
-        self.assertEqual(len(manifests), 3)
-        contents = {path.read_bytes() for path in manifests}
-        self.assertEqual(len(contents), 1)
-        self.assertIn(b'version = "1.2.0"\n', contents.pop())
-        for rel in JSON_PATHS:
-            data = json.loads((self.root / rel).read_text(encoding="utf-8"))
-            if "marketplace" in rel:
-                for index, entry in enumerate(data["plugins"]):
-                    self.assertEqual(entry["version"], "1.2.0", f"{rel} plugins[{index}]")
-            else:
-                self.assertEqual(data["version"], "1.2.0", rel)
-        self.assertIn("Stamped version 1.2.0 into 7 files", out)
+        bmm = {(self.root / "skills" / s / "module-manifest.toml").read_bytes() for s in BMM_SKILLS}
+        self.assertEqual(len(bmm), 1)  # byte-identical within the module
+        self.assertIn(b'version = "1.2.0"\n', bmm.pop())
+        tools = (self.root / "skills" / "bmad-flow" / "module-manifest.toml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn('module = "tools"', tools)
+        self.assertIn('version = "1.2.0"', tools)
+        marketplace = json.loads(
+            (self.root / ".claude-plugin" / "marketplace.json").read_text(encoding="utf-8")
+        )
+        for index, plugin in enumerate(marketplace["plugins"]):
+            self.assertEqual(plugin["version"], "1.2.0", f"plugins[{index}]")
+        codex = json.loads(
+            (self.root / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(codex["version"], "1.2.0")
+        self.assertIn("Stamped version 1.2.0 into 6 files", out)
         for rel in ("skills/bmad/module-manifest.toml", *JSON_PATHS):
             self.assertIn(rel, out)
 
@@ -146,14 +181,48 @@ class StampReleaseTests(unittest.TestCase):
         self.assertIn("current", err)
         self.assertEqual(snapshot(self.root), before)
 
-    def test_manifest_missing_version_line_names_file_and_touches_nothing(self):
+    def test_manifest_missing_version_key_names_file_and_touches_nothing(self):
         make_tree(self.root)
         broken = self.root / "skills" / "bmad-build" / "module-manifest.toml"
-        write(broken, 'module = "bmm"\nupdate_source = "github:o/r/skills"\n')
+        write(broken, 'module = "bmm"\nupdate_source = "github:bmad-code-org/bmad-skills/skills"\n')
         before = snapshot(self.root)
         code, _, err = run_stamper(self.root, "1.2.0")
         self.assertEqual(code, 1)
         self.assertIn("skills/bmad-build/module-manifest.toml", err)
+        self.assertEqual(snapshot(self.root), before)
+
+    def test_manifest_extra_key_rejected(self):
+        make_tree(self.root)
+        broken = self.root / "skills" / "bmad-build" / "module-manifest.toml"
+        write(broken, MANIFEST.format(module="bmm", version="6.11.0-next") + 'extra = "no"\n')
+        before = snapshot(self.root)
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 1)
+        self.assertIn("keys must be exactly", err)
+        self.assertIn("skills/bmad-build", err)
+        self.assertEqual(snapshot(self.root), before)
+
+    def test_unknown_module_rejected(self):
+        make_tree(self.root)
+        broken = self.root / "skills" / "bmad-spec" / "module-manifest.toml"
+        write(broken, MANIFEST.format(module="other", version="6.11.0-next"))
+        before = snapshot(self.root)
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 1)
+        self.assertIn("unknown module 'other'", err)
+        self.assertEqual(snapshot(self.root), before)
+
+    def test_wrong_update_source_rejected(self):
+        make_tree(self.root)
+        broken = self.root / "skills" / "bmad-spec" / "module-manifest.toml"
+        write(
+            broken,
+            'module = "bmm"\nversion = "6.11.0-next"\nupdate_source = "github:o/r/skills"\n',
+        )
+        before = snapshot(self.root)
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 1)
+        self.assertIn("update_source must be exactly", err)
         self.assertEqual(snapshot(self.root), before)
 
     def test_skill_directory_without_manifest_fails_and_touches_nothing(self):
@@ -166,49 +235,126 @@ class StampReleaseTests(unittest.TestCase):
         self.assertIn("module-manifest.toml", err)
         self.assertEqual(snapshot(self.root), before)
 
-    def test_divergent_manifests_trip_uniformity_assert_after_stamp(self):
+    def test_skill_not_listed_in_its_plugin_fails(self):
         make_tree(self.root)
-        divergent = self.root / "skills" / "bmad-spec" / "module-manifest.toml"
         write(
-            divergent,
-            'module = "other"\nversion = "6.11.0-next"\nupdate_source = "github:o/r/skills"\n',
+            self.root / "skills" / "bmad-orphan" / "module-manifest.toml",
+            MANIFEST.format(module="bmm", version="6.11.0-next"),
         )
+        before = snapshot(self.root)
         code, _, err = run_stamper(self.root, "1.2.0")
         self.assertEqual(code, 1)
-        self.assertIn("byte-identical", err)
-        self.assertIn("module-manifest.toml", err)
-        # The stamp itself was applied before the uniformity assert tripped.
-        self.assertIn('version = "1.2.0"', divergent.read_text(encoding="utf-8"))
+        self.assertIn("bmad-bmm must list ./skills/bmad-orphan", err)
+        self.assertEqual(snapshot(self.root), before)
 
-    def test_marketplace_missing_version_key_names_file_and_key(self):
+    def test_listed_skill_missing_on_disk_fails(self):
         make_tree(self.root)
-        broken = dict(MARKETPLACE, plugins=[{"name": "bmad-method-analyze-plan-build"}])
+        broken = marketplace_with(
+            [
+                entry("bmad-bmm", [f"./skills/{s}" for s in BMM_SKILLS] + ["./skills/bmad-ghost"]),
+                MARKETPLACE["plugins"][1],
+            ]
+        )
         write_json(self.root / ".claude-plugin" / "marketplace.json", broken)
         before = snapshot(self.root)
         code, _, err = run_stamper(self.root, "1.2.0")
         self.assertEqual(code, 1)
-        self.assertIn(".claude-plugin/marketplace.json", err)
-        self.assertIn("plugins[0].version", err)
+        self.assertIn("./skills/bmad-ghost, which does not exist", err)
         self.assertEqual(snapshot(self.root), before)
 
-    def test_second_marketplace_entry_missing_version_names_its_index(self):
+    def test_skill_listed_under_wrong_plugin_fails(self):
         make_tree(self.root)
-        broken = dict(MARKETPLACE, plugins=[MARKETPLACE["plugins"][0], {"name": "bmad-tools"}])
+        broken = marketplace_with(
+            [
+                MARKETPLACE["plugins"][0],
+                entry("bmad-tools", ["./skills/bmad-flow", "./skills/bmad"]),
+            ]
+        )
+        write_json(self.root / ".claude-plugin" / "marketplace.json", broken)
+        before = snapshot(self.root)
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 1)
+        self.assertIn('bmad-tools lists ./skills/bmad, whose manifest says module "bmm"', err)
+        self.assertEqual(snapshot(self.root), before)
+
+    def test_skill_listed_twice_in_one_plugin_fails(self):
+        make_tree(self.root)
+        broken = marketplace_with(
+            [
+                entry("bmad-bmm", [f"./skills/{s}" for s in BMM_SKILLS] + ["./skills/bmad"]),
+                MARKETPLACE["plugins"][1],
+            ]
+        )
+        write_json(self.root / ".claude-plugin" / "marketplace.json", broken)
+        before = snapshot(self.root)
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 1)
+        self.assertIn("lists './skills/bmad' twice", err)
+        self.assertEqual(snapshot(self.root), before)
+
+    def test_empty_plugin_with_marketplace_root_source_fails(self):
+        root = self.root
+        for skill in BMM_SKILLS:
+            write(
+                root / "skills" / skill / "module-manifest.toml",
+                MANIFEST.format(module="bmm", version="6.11.0-next"),
+            )
+        write_json(
+            root / ".claude-plugin" / "marketplace.json",
+            marketplace_with(
+                [
+                    entry("bmad-bmm", [f"./skills/{s}" for s in BMM_SKILLS]),
+                    entry("bmad-tools", []),
+                ]
+            ),
+        )
+        write_json(root / ".codex-plugin" / "plugin.json", PLUGIN)
+        before = snapshot(root)
+        code, _, err = run_stamper(root, "1.2.0")
+        self.assertEqual(code, 1)
+        self.assertIn("bmad-tools has no skills but source \"./\"", err)
+        self.assertEqual(snapshot(root), before)
+
+    def test_empty_plugin_with_dedicated_source_is_accepted(self):
+        root = self.root
+        for skill in BMM_SKILLS:
+            write(
+                root / "skills" / skill / "module-manifest.toml",
+                MANIFEST.format(module="bmm", version="6.11.0-next"),
+            )
+        write_json(
+            root / ".claude-plugin" / "marketplace.json",
+            marketplace_with(
+                [
+                    entry("bmad-bmm", [f"./skills/{s}" for s in BMM_SKILLS]),
+                    entry("bmad-tools", [], source="./plugins/tools"),
+                ]
+            ),
+        )
+        write_json(root / ".codex-plugin" / "plugin.json", PLUGIN)
+        code, _, err = run_stamper(root, "1.2.0")
+        self.assertEqual(code, 0, err)
+
+    def test_wrong_marketplace_entry_set_fails(self):
+        make_tree(self.root)
+        broken = marketplace_with([MARKETPLACE["plugins"][0]])
+        write_json(self.root / ".claude-plugin" / "marketplace.json", broken)
+        before = snapshot(self.root)
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 1)
+        self.assertIn("plugin entries must be exactly bmad-bmm, bmad-tools", err)
+        self.assertEqual(snapshot(self.root), before)
+
+    def test_marketplace_entry_missing_version_names_its_index(self):
+        make_tree(self.root)
+        second = dict(MARKETPLACE["plugins"][1])
+        del second["version"]
+        broken = marketplace_with([MARKETPLACE["plugins"][0], second])
         write_json(self.root / ".claude-plugin" / "marketplace.json", broken)
         before = snapshot(self.root)
         code, _, err = run_stamper(self.root, "1.2.0")
         self.assertEqual(code, 1)
         self.assertIn("plugins[1].version", err)
-        self.assertEqual(snapshot(self.root), before)
-
-    def test_marketplace_entry_count_must_match_plugin_manifests(self):
-        make_tree(self.root)
-        broken = dict(MARKETPLACE, plugins=[MARKETPLACE["plugins"][0]])
-        write_json(self.root / ".claude-plugin" / "marketplace.json", broken)
-        before = snapshot(self.root)
-        code, _, err = run_stamper(self.root, "1.2.0")
-        self.assertEqual(code, 1)
-        self.assertIn("lists 1 plugins but found 2", err)
         self.assertEqual(snapshot(self.root), before)
 
     def test_version_key_outside_the_target_node_is_not_stamped(self):
@@ -222,24 +368,21 @@ class StampReleaseTests(unittest.TestCase):
         self.assertIn("expected exactly 1", err)
         self.assertEqual(snapshot(self.root), before)
 
-    def test_plugin_json_missing_version_key_names_file_and_key(self):
+    def test_formatting_drift_within_module_trips_byte_identity_after_stamp(self):
         make_tree(self.root)
-        write_json(self.root / ".codex-plugin" / "plugin.json", {"name": "bmad-method"})
-        before = snapshot(self.root)
+        drifted = self.root / "skills" / "bmad-spec" / "module-manifest.toml"
+        write(
+            drifted,
+            'module = "bmm"\n'
+            'version = "6.11.0-next"\n'
+            'update_source   =   "github:bmad-code-org/bmad-skills/skills"\n',
+        )
         code, _, err = run_stamper(self.root, "1.2.0")
         self.assertEqual(code, 1)
-        self.assertIn(".codex-plugin/plugin.json", err)
-        self.assertIn("version", err)
-        self.assertEqual(snapshot(self.root), before)
-
-    def test_same_version_is_idempotent(self):
-        make_tree(self.root)
-        code, _, err = run_stamper(self.root, "1.2.0")
-        self.assertEqual(code, 0, err)
-        after_first = snapshot(self.root)
-        code, _, err = run_stamper(self.root, "1.2.0")
-        self.assertEqual(code, 0, err)
-        self.assertEqual(snapshot(self.root), after_first)
+        self.assertIn("byte-identical", err)
+        self.assertIn("module-manifest.toml", err)
+        # The stamp itself was applied before the byte-identity assert tripped.
+        self.assertIn('version = "1.2.0"', drifted.read_text(encoding="utf-8"))
 
     def test_empty_skills_tree_reports_error(self):
         write_json(self.root / ".codex-plugin" / "plugin.json", PLUGIN)
@@ -251,8 +394,10 @@ class StampReleaseTests(unittest.TestCase):
         make_tree(self.root)
         code, _, err = run_stamper(self.root, "6.12.0-next.1")
         self.assertEqual(code, 0, err)
-        data = tomllib_version(self.root / "skills" / "bmad" / "module-manifest.toml")
-        self.assertEqual(data, "6.12.0-next.1")
+        data = tomllib.loads(
+            (self.root / "skills" / "bmad" / "module-manifest.toml").read_text(encoding="utf-8")
+        )
+        self.assertEqual(data["version"], "6.12.0-next.1")
 
 
 class InstallerContractTests(unittest.TestCase):
@@ -288,12 +433,6 @@ class InstallerContractTests(unittest.TestCase):
             except sr.StampError:
                 accepted = False
             self.assertEqual(accepted, orderable, version)
-
-
-def tomllib_version(path: Path) -> str:
-    import tomllib
-
-    return tomllib.loads(path.read_text(encoding="utf-8"))["version"]
 
 
 if __name__ == "__main__":

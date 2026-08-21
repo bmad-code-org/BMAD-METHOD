@@ -61,9 +61,11 @@ uv run --python 3.11 tools/stamp_release.py <version>
 ```
 
 Expected: exit 0 and a summary listing every `skills/*/module-manifest.toml`
-plus `.claude-plugin/marketplace.json` (every plugin entry is stamped), every
-`plugins/*/.claude-plugin/plugin.json`, and
-`.codex-plugin/plugin.json`. If it exits nonzero, the tree may be left
+plus `.claude-plugin/marketplace.json` (every plugin entry is stamped) and
+`.codex-plugin/plugin.json`. The stamper also validates the distribution
+shape before writing: exact manifest keys, known modules, and Claude
+marketplace skill lists that match each skill's manifest module exactly.
+If it exits nonzero, the tree may be left
 half-stamped (the script writes the files before its final verification), so
 restore it with `git checkout -- .` first, then fix the reported problem and
 rerun.
