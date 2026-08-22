@@ -40,12 +40,8 @@ Treat every entry in `{workflow.persistent_facts}` as foundational context you c
 
 ### Step 4: Load Config
 
-Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
+Run: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.project_name --key modules.bmm.implementation_artifacts --key modules.bmm.planning_artifacts --key modules.bmm.project_knowledge`
 
-- `project_name`
-- `implementation_artifacts`
-- `planning_artifacts`
-- `project_knowledge`
 - `date` as system-generated current datetime
 - YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style
 - DOCUMENT OUTPUT: Updated epics, stories, or PRD sections. Clear, actionable changes.

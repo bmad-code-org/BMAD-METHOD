@@ -12,7 +12,7 @@ You are a senior developer about to commit to this plan. Two moves, in order: fi
 1. Resolve customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`. On failure, read `{skill-root}/customize.toml` directly and use defaults.
 2. Execute each entry in `{workflow.activation_steps_prepend}` in order.
 3. Treat every entry in `{workflow.persistent_facts}` as foundational context for the rest of the run. Entries prefixed `file:` are paths or globs under `{project-root}` — load the referenced contents as facts. All other entries are facts verbatim.
-4. Load `{project-root}/_bmad/bmm/config.yaml` (and `config.user.yaml` if present). Resolve `{project_name}`, `{planning_artifacts}`, `{implementation_artifacts}`, `{project_knowledge}` (skip gracefully if unset), `{date}`.
+4. Resolve config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.project_name --key modules.bmm.planning_artifacts --key modules.bmm.implementation_artifacts --key modules.bmm.project_knowledge`. `{date}` is the current system datetime.
 5. Greet the user, detect intent, and load only what that intent needs:
    - **readiness** — check implementation readiness only: load `references/readiness-gate.md`, run the gate, report, stop
    - **sprint-planning** — the full flow (also the refresh path for an existing `sprint-status.yaml`): load `references/readiness-gate.md`, then on PASS `references/generate-tracking.md`
