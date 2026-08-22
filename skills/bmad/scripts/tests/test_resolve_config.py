@@ -46,7 +46,7 @@ class ResolveConfigCliTests(unittest.TestCase):
                 '[core]\nname = "base"\nkeep = "yes"\n', encoding="utf-8"
             )
             (root / "_bmad" / "config.user.toml").write_text(
-                '[core]\nname = "base-user"\n', encoding="utf-8"
+                '[core]\nname = "base-user"\nstray = "ignored"\n', encoding="utf-8"
             )
             (custom / "config.toml").write_text(
                 '[core]\nname = "team"\n', encoding="utf-8"
@@ -57,6 +57,8 @@ class ResolveConfigCliTests(unittest.TestCase):
 
             full = self._run(root)
             self.assertEqual(full.returncode, 0, msg=full.stderr)
+            # _bmad/config.user.toml is old-installer debris, not a layer:
+            # its `stray` key never reaches the merge.
             self.assertEqual(json.loads(full.stdout)["core"], {"name": "user", "keep": "yes"})
 
             keyed = self._run(root, "--key", "core.name", "--key", "missing")
