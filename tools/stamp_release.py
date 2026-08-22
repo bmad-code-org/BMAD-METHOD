@@ -48,7 +48,9 @@ VERSION_LINE = re.compile(r'^version\s*=\s*".*"\s*$')
 
 # Mirrors the SEMVER regex in skills/bmad/scripts/setup.py. That script also
 # refuses to order any version containing "-dev", so such a version can never
-# compare as current or outdated for installed copies — reject it here.
+# compare as current or outdated for installed copies — reject it here. It
+# likewise drops build metadata when ordering, so "1.2.0+x" compares equal to
+# "1.2.0"; a release stamped that way is invisible, so reject that here too.
 SEMVER = re.compile(
     r"(?P<major>0|[1-9][0-9]*)\."
     r"(?P<minor>0|[1-9][0-9]*)\."
@@ -66,16 +68,25 @@ class StampError(Exception):
 
 
 def validate_version(version: str) -> None:
-    if SEMVER.fullmatch(version) is None:
+    match = SEMVER.fullmatch(version)
+    if match is None:
         raise StampError(
             f"invalid version {version!r}: must be SemVer "
-            "(MAJOR.MINOR.PATCH, optional prerelease/build), e.g. 6.12.0"
+            "(MAJOR.MINOR.PATCH, optional prerelease), e.g. 6.12.0"
         )
     if "-dev" in version.casefold():
         raise StampError(
             f"invalid version {version!r}: setup.py cannot order \"-dev\" "
             "versions, so installed copies would never compare as current — "
             "pick a different prerelease label"
+        )
+    if match.group("build") is not None:
+        base = version.split("+", 1)[0]
+        raise StampError(
+            f"invalid version {version!r}: setup.py ignores build metadata when "
+            f"ordering, so this compares equal to {base!r} and installed copies "
+            "would never see the release — change the major, minor, patch, or "
+            "prerelease part"
         )
 
 
