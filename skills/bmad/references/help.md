@@ -1,10 +1,19 @@
-# BMad Method (bmm)
+# BMad knowledge
 
-This is a cohesive collection of skills for software development, helping the
-user turn an intent of any size into working software. Route the user to the
+Installed skills are grouped by their manifest's `module` key. Each module's
+knowledge is read from that manifest's `knowledge` value: free-form text
+saying where the module's knowledge lives or what it is. Follow it for the
+module the question concerns. This document is what the `method` and
+`toolbox` manifests point at; another module points elsewhere, and nothing
+below describes it.
+
+## The method and toolbox modules
+
+A cohesive collection of skills for software development, helping the user
+turn an intent of any size into working software. Route the user to the
 smallest path that safely fits the work; never march them through every skill.
 
-## The skills and their places in the flow
+### The skills and their places in the flow
 
 Shaping and planning:
 
@@ -78,7 +87,7 @@ preferred workflow.
 
 Cross-skill routing exists only when the `bmad` hub skill is installed.
 
-## How to use BMad
+### How to use BMad
 
 Ask whether one implementation session can reasonably understand, implement,
 review, and finish the change. Scope is only one signal: high risk, unclear
@@ -104,7 +113,7 @@ up a tier even when it is small.
   `bmad-create-epics-and-stories`, and `bmad-sprint-planning`. Each epic then
   runs like epic-sized work above, but without running spec for every epic.
 
-## Answering "what's next?"
+### Answering "what's next?"
 
 Read the state before recommending: which planning artifacts exist, and what
 the codebase, git history, and/or the user says is done. Caution: presence of
@@ -134,14 +143,15 @@ A run is complete when the intent is satisfied, its chosen checks pass, and
 no chosen review leaves material unresolved findings — not when every skill
 has been traversed.
 
-## When this document is not enough
+### When this document is not enough
 
-For a BMad question this document and the installed skills cannot answer,
+For a method or toolbox question this section and the installed skills
+cannot answer,
 fetch `https://docs.bmad-method.org/llms.txt` and follow the links relevant
 to the question. It indexes the full documentation site and names the source
 repository, which is the final authority on how anything actually behaves.
 
-## Where things land
+### Where things land
 
 Durable specs and their story lists live under `{output_folder}/specs`;
 planning documents and change proposals under `{planning_artifacts}`; Build's
