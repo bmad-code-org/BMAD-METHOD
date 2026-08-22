@@ -10,3 +10,9 @@ Open source framework for structured, agent-assisted software delivery.
 
 - Skill validation rules are in `tools/skill-validator.md`.
 - Deterministic skill checks run via `npm run validate:skills` (included in `quality`).
+
+## Releases
+
+Release and npx distribution work on this branch is a rehearsal against a
+disposable mirror, not a real ship. Read `TEMP-RELEASE-PROCESS.md` before
+pushing to the mirror or cutting a release.

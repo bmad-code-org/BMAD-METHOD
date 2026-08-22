@@ -1,0 +1,4 @@
+module = "toolbox"
+version = "6.11.0-next"
+update_source = "github:bmad-code-org/bmad-skills/skills"
+knowledge = "`references/help.md` in the `bmad` skill"

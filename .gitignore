@@ -37,7 +37,6 @@ Thumbs.db
 .prettierrc
 
 # AI assistant files
-CLAUDE.md
 .ai/*
 cursor
 .gemini
@@ -46,7 +45,9 @@ CLAUDE.local.md
 .serena/
 .claude/settings.local.json
 .junie/
-.agents/
+.agents/*
+!.agents/plugins/
+!.agents/plugins/marketplace.json
 .analysis/
 
 
@@ -59,9 +60,7 @@ _bmad-output
 # Personal customization files (team files are committed, personal files are not)
 _bmad/custom/*.user.toml
 .clinerules
-# .augment/ is gitignored except tracked config files — add exceptions explicitly
-.augment/*
-!.augment/code_review_guidelines.yaml
+.augment
 .codebuddy
 .crush
 .cursor
@@ -83,8 +82,8 @@ _bmad/custom/*.user.toml
 
 
 # Astro / Documentation Build
-website/.astro/
-website/dist/
+docs-site/.astro/
+docs-site/dist/
 build/
 
 # Web bundle release artifacts
