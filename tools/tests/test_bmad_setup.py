@@ -364,19 +364,14 @@ class BmadSetupTests(unittest.TestCase):
             parsed = tomllib.loads((bmad / "config.toml").read_text(encoding="utf-8"))
             self.assertEqual(parsed["core"]["project_name"], "proj")
             self._assert_team_tables_match_template(parsed, skill, "proj")
-            setup = load_setup()
-            core_yaml = setup.parse_module_yaml(
-                (bmad / "core" / "config.yaml").read_text(encoding="utf-8")
+            self.assertEqual(
+                (bmad / "core" / "config.yaml").read_text(encoding="utf-8"),
+                "old: core\n",
             )
-            bmm_yaml = setup.parse_module_yaml(
-                (bmad / "bmm" / "config.yaml").read_text(encoding="utf-8")
+            self.assertEqual(
+                (bmad / "bmm" / "config.yaml").read_text(encoding="utf-8"),
+                "old: bmm\n",
             )
-            self.assertIsNotNone(core_yaml)
-            self.assertIsNotNone(bmm_yaml)
-            self.assertEqual(core_yaml["old"], "core")
-            self.assertEqual(core_yaml["project_name"], "proj")
-            self.assertEqual(bmm_yaml["old"], "bmm")
-            self.assertIn("planning_artifacts", bmm_yaml)
             self.assertEqual(
                 (bmad / "config.user.toml").read_text(encoding="utf-8"),
                 "# old-user\n",
@@ -412,8 +407,8 @@ class BmadSetupTests(unittest.TestCase):
             self._assert_team_tables_match_template(parsed, skill, "proj")
             scripts = project / "_bmad" / "scripts"
             self._assert_scripts_identity(scripts, skill / "scripts")
-            self.assertTrue((project / "_bmad" / "core" / "config.yaml").is_file())
-            self.assertTrue((project / "_bmad" / "bmm" / "config.yaml").is_file())
+            self.assertFalse((project / "_bmad" / "core" / "config.yaml").exists())
+            self.assertFalse((project / "_bmad" / "bmm" / "config.yaml").exists())
             self.assertTrue((project / "_bmad" / "custom").is_dir())
             self.assertFalse(
                 (project / "_bmad" / "_config" / "bmad-help.csv").exists()
@@ -451,14 +446,6 @@ class BmadSetupTests(unittest.TestCase):
                 bmad / "config.toml",
                 team.replace('project_name = "proj"', 'project_name = "Renamed"'),
             )
-            setup = load_setup()
-            core_path = bmad / "core" / "config.yaml"
-            core_map = setup.parse_module_yaml(
-                core_path.read_text(encoding="utf-8")
-            )
-            self.assertIsNotNone(core_map)
-            core_map["legacy_note"] = "Spanish"
-            write(core_path, setup.render_module_yaml(core_map))
             write(bmad / "custom" / "keep.txt", "custom-keep\n")
             write(bmad / "config.user.toml", "# keep-user\n")
             write(bmad / "custom" / "extra.user.toml", "# extra-user\n")
@@ -478,13 +465,6 @@ class BmadSetupTests(unittest.TestCase):
             self.assertEqual(parsed["core"]["project_name"], "Renamed")
             self.assertEqual(parsed["core"]["review_language"], "English")
             self._assert_team_tables_match_template(parsed, skill, "proj")
-            filled_core = setup.parse_module_yaml(
-                (bmad / "core" / "config.yaml").read_text(encoding="utf-8")
-            )
-            self.assertIsNotNone(filled_core)
-            self.assertEqual(filled_core["legacy_note"], "Spanish")
-            self.assertEqual(filled_core["review_language"], "English")
-            self.assertEqual(filled_core["project_name"], "proj")
             self.assertEqual(
                 (bmad / "custom" / "keep.txt").read_text(encoding="utf-8"),
                 "custom-keep\n",
@@ -879,7 +859,6 @@ class BmadSetupTests(unittest.TestCase):
                 (module_skill / script_path).read_bytes(),
             )
             self.assertFalse((bmad / "scripts" / "tools" / "check.py").exists())
-            self.assertFalse((bmad / "alpha" / "config.yaml").exists())
             self.assertEqual(
                 (bmad / "custom" / "keep.txt").read_bytes(), b"custom\n"
             )
@@ -937,48 +916,6 @@ class BmadSetupTests(unittest.TestCase):
                 reparsed["modules"]["alpha"]["new_key"], "new answer"
             )
             self.assertEqual(installed.read_bytes(), b"# refreshed\n")
-
-    def test_bmm_manifest_answers_do_not_enter_legacy_module_yaml(self):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            root = Path(temp_dir)
-            project = root / "proj"
-            skill = write_dest_bmad(root)
-            project.mkdir()
-            write_module_skill(
-                root,
-                "bmm-skill",
-                "bmm",
-                questions=(
-                    {
-                        "key": "review.mode",
-                        "prompt": "Review mode",
-                        "default": "strict",
-                    },
-                ),
-            )
-
-            result = run_setup(
-                project,
-                skill,
-                *module_answers_args(
-                    project, {"bmm": {"review.mode": "strict"}}
-                ),
-            )
-
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
-            parsed = tomllib.loads(
-                (project / "_bmad" / "config.toml").read_text(
-                    encoding="utf-8"
-                )
-            )
-            self.assertEqual(
-                parsed["modules"]["bmm"]["review"]["mode"], "strict"
-            )
-            legacy = (project / "_bmad" / "bmm" / "config.yaml").read_text(
-                encoding="utf-8"
-            )
-            self.assertNotIn("review", legacy)
-            self.assertNotIn("strict", legacy)
 
     def test_future_manifest_fields_are_ignored_by_runtime_setup(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -1557,7 +1494,7 @@ class BmadSetupTests(unittest.TestCase):
                     self.assertFalse((project / "_bmad").exists())
                     self.assertEqual(list(project.glob("_bmad.setup-*")), [])
 
-    def test_unparseable_team_toml_is_hard_error_and_yaml_is_unchanged(self):
+    def test_unparseable_team_toml_is_hard_error_and_tree_is_unchanged(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             project = root / "proj"
@@ -1765,13 +1702,8 @@ class BmadSetupTests(unittest.TestCase):
         self.assertNotIn("user_skill_level", parsed["modules"]["bmm"])
         self._assert_team_tables_match_template(parsed, skill, project_name)
 
-        core_yaml = (bmad / "core" / "config.yaml").read_text(encoding="utf-8")
-        bmm_yaml = (bmad / "bmm" / "config.yaml").read_text(encoding="utf-8")
-        self.assertIn("project_name:", core_yaml)
-        self.assertIn("output_folder:", core_yaml)
-        self.assertIn("planning_artifacts:", bmm_yaml)
-        self.assertIn("project_name:", bmm_yaml)
-        self.assertIn("{project-root}/_bmad-output", core_yaml)
+        self.assertFalse((bmad / "core" / "config.yaml").exists())
+        self.assertFalse((bmad / "bmm" / "config.yaml").exists())
 
         custom = bmad / "custom"
         self.assertTrue(custom.is_dir())
@@ -2387,6 +2319,8 @@ class BmadUpdateDoctorTests(unittest.TestCase):
             write(bmad / "_config" / "manifest.yaml", "leftover: installer\n")
             write(bmad / "_config" / "bmad-help.csv", "old-catalog\n")
             write(bmad / "config.user.toml", "# old-user\n")
+            write(bmad / "core" / "config.yaml", "project_name: proj\n")
+            write(bmad / "bmm" / "config.yaml", "project_name: proj\n")
             write(bmad / "core" / "v6-shims" / "shim.md", "shim\n")
 
             result = run_setup_python(project, skill, "--doctor")
@@ -2398,6 +2332,8 @@ class BmadUpdateDoctorTests(unittest.TestCase):
                     "_config/manifest.yaml",
                     "_config/bmad-help.csv",
                     "config.user.toml",
+                    "core/config.yaml",
+                    "bmm/config.yaml",
                     "core/v6-shims",
                 ],
             )
@@ -2408,6 +2344,14 @@ class BmadUpdateDoctorTests(unittest.TestCase):
             self.assertEqual(
                 (bmad / "_config" / "bmad-help.csv").read_text(encoding="utf-8"),
                 "old-catalog\n",
+            )
+            self.assertEqual(
+                (bmad / "core" / "config.yaml").read_text(encoding="utf-8"),
+                "project_name: proj\n",
+            )
+            self.assertEqual(
+                (bmad / "bmm" / "config.yaml").read_text(encoding="utf-8"),
+                "project_name: proj\n",
             )
             self.assertEqual(
                 (bmad / "config.user.toml").read_text(encoding="utf-8"),

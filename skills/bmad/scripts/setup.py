@@ -38,6 +38,8 @@ LEGACY_LEFTOVERS = (
     "_config/skill-manifest.csv",
     "_config/bmad-help.csv",
     "config.user.toml",
+    "core/config.yaml",
+    "bmm/config.yaml",
     "core/v6-shims",
 )
 SEMVER = re.compile(
@@ -219,12 +221,10 @@ def setup(
             project_root / "_bmad" / "config.toml",
         )
     config_text = render_toml(merged) if pending else base_text
-    legacy_config = without_manifest_answers(merged, modules)
     materialize_bmad(
         project_root,
         scripts_src,
         config_text,
-        legacy_config,
         modules,
     )
     ensure_dir(project_root / output_folder(config_text))
@@ -1295,38 +1295,6 @@ def set_missing_value(
     current[leaf] = value
 
 
-def without_manifest_answers(
-    config: dict, modules: tuple[InstalledModule, ...]
-) -> dict:
-    projection = copy.deepcopy(config)
-    for installed in modules:
-        for question in installed.questions:
-            delete_path(
-                projection,
-                ("modules", installed.module, *question.key.split(".")),
-            )
-    return projection
-
-
-def delete_path(data: dict, path: tuple[str, ...]) -> None:
-    current: object = data
-    parents: list[tuple[dict, str]] = []
-    for part in path[:-1]:
-        if not isinstance(current, dict) or part not in current:
-            return
-        parents.append((current, part))
-        current = current[part]
-    if not isinstance(current, dict):
-        return
-    current.pop(path[-1], None)
-    for parent, part in reversed(parents):
-        child = parent.get(part)
-        if isinstance(child, dict) and not child:
-            del parent[part]
-        else:
-            break
-
-
 def fill_team_config(text: str, project_root: Path) -> str:
     return text.replace("{directory_name}", project_root.name)
 
@@ -1377,7 +1345,6 @@ def materialize_bmad(
     project_root: Path,
     scripts_src: Path,
     config_text: str,
-    legacy_config: dict,
     modules: tuple[InstalledModule, ...],
 ) -> None:
     bmad = project_root / "_bmad"
@@ -1409,7 +1376,6 @@ def materialize_bmad(
             staging,
             scripts_src=scripts_src,
             config_text=config_text,
-            legacy_config=legacy_config,
             modules=modules,
         )
         replace_dir(staging, bmad)
@@ -1443,18 +1409,10 @@ def stage_bmad(
     *,
     scripts_src: Path,
     config_text: str,
-    legacy_config: dict,
     modules: tuple[InstalledModule, ...],
 ) -> None:
-    core = stringify(legacy_config.get("core", {}))
-    bmm = stringify(legacy_config.get("modules", {}).get("bmm", {}))
     ensure_scripts(staging / "scripts", scripts_src)
     ensure_file(staging / "config.toml", config_text)
-    ensure_file(staging / "core" / "config.yaml", render_module_yaml(core))
-    ensure_file(
-        staging / "bmm" / "config.yaml",
-        render_module_yaml({**bmm, **core}),
-    )
     for installed in modules:
         # Doctor's canonical shape includes the scripts directory even when
         # the manifest declares no scripts; create it so a first doctor run
@@ -1468,15 +1426,6 @@ def stage_bmad(
                 staging,
             )
     ensure_dir(staging / "custom")
-
-
-def stringify(table: object) -> dict[str, str]:
-    if not isinstance(table, dict):
-        return {}
-    out: dict[str, str] = {}
-    for key, value in table.items():
-        out[str(key)] = "" if value is None else str(value)
-    return out
 
 
 def ensure_scripts(dest: Path, src: Path) -> None:
@@ -1550,11 +1499,7 @@ def ensure_file(path: Path, content: str) -> None:
         path.unlink()
     elif path.is_file():
         existing = path.read_text(encoding="utf-8")
-        filled = (
-            fill_yaml(existing, content)
-            if path.suffix == ".yaml"
-            else fill_toml(existing, content)
-        )
+        filled = fill_toml(existing, content)
         if filled == existing:
             return
         content = filled
@@ -1677,61 +1622,6 @@ def fill_toml(existing_text: str, template_text: str) -> str:
     if merged == existing:
         return existing_text
     return render_toml(merged)
-
-
-def parse_module_yaml(text: str) -> dict[str, str] | None:
-    answers: dict[str, str] = {}
-    for line in text.splitlines():
-        if not line.strip() or line.lstrip().startswith("#"):
-            continue
-        if line[0] in " \t":
-            return None
-        key, sep, rest = line.partition(":")
-        if not sep or not key or key.strip() != key:
-            return None
-        value = rest[1:] if rest.startswith(" ") else rest
-        if value[:1] in "\"[{":
-            try:
-                decoded = json.loads(value)
-            except json.JSONDecodeError:
-                pass
-            else:
-                if decoded is None:
-                    value = ""
-                elif isinstance(decoded, str):
-                    value = decoded
-                else:
-                    value = str(decoded)
-        answers[key] = value
-    return answers
-
-
-def fill_yaml(existing_text: str, projection_text: str) -> str:
-    existing = parse_module_yaml(existing_text)
-    template = parse_module_yaml(projection_text)
-    if existing is None or template is None:
-        return projection_text
-    merged = {**template, **existing}
-    if merged == existing:
-        return existing_text
-    return render_module_yaml(merged)
-
-
-def render_module_yaml(answers: dict[str, str]) -> str:
-    lines = [f"{key}: {yaml_scalar(value)}" for key, value in answers.items()]
-    return "\n".join(lines) + "\n"
-
-
-def yaml_scalar(value: str) -> str:
-    if (
-        value == ""
-        or value.strip() != value
-        or value.lower() in {"true", "false", "null", "yes", "no", "on", "off"}
-        or any(char in value for char in ":#{}[],&*!|>%@`'\"\n")
-        or value[0] in "-?:"
-    ):
-        return json.dumps(value, ensure_ascii=False)
-    return value
 
 
 if __name__ == "__main__":
