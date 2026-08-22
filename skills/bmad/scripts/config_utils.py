@@ -100,7 +100,6 @@ def load_central_config(project_root: Path) -> dict[str, Any]:
     return merge_layers(
         (
             load_toml(bmad_dir / "config.toml", required=True),
-            load_toml(bmad_dir / "config.user.toml"),
             load_toml(bmad_dir / "custom" / "config.toml"),
             load_toml(bmad_dir / "custom" / "config.user.toml"),
         )

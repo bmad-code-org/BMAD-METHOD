@@ -244,7 +244,7 @@ class RenderSkillTests(unittest.TestCase):
         skill = self._skill(ws, "bmad-build-auto")
         before = rs.render(ws.project, skill)
         before_files = _files(before.parent)
-        (ws.bmad / "config.user.toml").write_text(
+        (ws.bmad / "custom" / "config.toml").write_text(
             '[modules.bmm]\nimplementation_artifacts = "{project-root}/impl-v2"\n',
             encoding="utf-8",
         )

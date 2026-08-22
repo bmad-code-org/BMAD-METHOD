@@ -70,14 +70,20 @@ class ConfigUtilsTests(unittest.TestCase):
             custom.mkdir(parents=True)
             skill.mkdir(parents=True)
             (bmad / "config.toml").write_text('[value]\norder = "base-team"\n', encoding="utf-8")
-            (bmad / "config.user.toml").write_text('[value]\norder = "base-user"\n', encoding="utf-8")
+            (bmad / "config.user.toml").write_text(
+                '[value]\norder = "base-user"\nstray = "ignored"\n', encoding="utf-8"
+            )
             (custom / "config.toml").write_text('[value]\norder = "custom-team"\n', encoding="utf-8")
             (custom / "config.user.toml").write_text('[value]\norder = "custom-user"\n', encoding="utf-8")
             (skill / "customize.toml").write_text('[value]\norder = "default"\n', encoding="utf-8")
             (custom / "sample-skill.toml").write_text('[value]\norder = "team"\n', encoding="utf-8")
             (custom / "sample-skill.user.toml").write_text('[value]\norder = "user"\n', encoding="utf-8")
 
-            self.assertEqual(load_central_config(root)["value"]["order"], "custom-user")
+            merged = load_central_config(root)
+            self.assertEqual(merged["value"]["order"], "custom-user")
+            # _bmad/config.user.toml is old-installer debris (setup.py's
+            # LEGACY_LEFTOVERS), not a layer. Nothing writes it; nothing reads it.
+            self.assertNotIn("stray", merged["value"])
             self.assertEqual(load_customization(root, skill)["value"]["order"], "user")
 
 
