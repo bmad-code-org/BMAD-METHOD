@@ -16,7 +16,7 @@ MANIFEST = (
     'module = "{module}"\n'
     'version = "{version}"\n'
     'update_source = "github:bmad-code-org/bmad-skills/skills"\n'
-    'knowledge = "`reference/help.md` in the `bmad` skill"\n'
+    'knowledge = "`references/help.md` in the `bmad` skill"\n'
 )
 
 METHOD_SKILLS = ("bmad", "bmad-build", "bmad-spec")
@@ -118,7 +118,7 @@ class StampReleaseTests(unittest.TestCase):
             broken,
             'module = "method"\n'
             'update_source = "github:bmad-code-org/bmad-skills/skills"\n'
-            'knowledge = "`reference/help.md` in the `bmad` skill"\n',
+            'knowledge = "`references/help.md` in the `bmad` skill"\n',
         )
         before = snapshot(self.root)
         code, _, err = run_stamper(self.root, "1.2.0")
@@ -155,7 +155,7 @@ class StampReleaseTests(unittest.TestCase):
             'module = "method"\n'
             'version = "6.11.0-next"\n'
             'update_source = "github:o/r/skills"\n'
-            'knowledge = "`reference/help.md` in the `bmad` skill"\n',
+            'knowledge = "`references/help.md` in the `bmad` skill"\n',
         )
         before = snapshot(self.root)
         code, _, err = run_stamper(self.root, "1.2.0")
@@ -197,7 +197,7 @@ class StampReleaseTests(unittest.TestCase):
             'module = "method"\n'
             'version = "6.11.0-next"\n'
             'update_source   =   "github:bmad-code-org/bmad-skills/skills"\n'
-            'knowledge = "`reference/help.md` in the `bmad` skill"\n',
+            'knowledge = "`references/help.md` in the `bmad` skill"\n',
         )
         code, _, err = run_stamper(self.root, "1.2.0")
         self.assertEqual(code, 1)

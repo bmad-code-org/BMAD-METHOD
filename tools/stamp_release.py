@@ -41,7 +41,7 @@ MANIFEST_NAME = "module-manifest.toml"
 
 MODULES = frozenset({"method", "toolbox"})
 UPDATE_SOURCE = "github:bmad-code-org/bmad-skills/skills"
-KNOWLEDGE = "`reference/help.md` in the `bmad` skill"
+KNOWLEDGE = "`references/help.md` in the `bmad` skill"
 MANIFEST_KEYS = frozenset({"module", "version", "update_source", "knowledge"})
 
 VERSION_LINE = re.compile(r'^version\s*=\s*".*"\s*$')
