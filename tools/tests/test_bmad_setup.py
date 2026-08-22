@@ -144,7 +144,7 @@ def write_module_skill(
     scripts: dict[str, bytes] | None = None,
     script_entries: tuple[str, ...] | None = None,
     update_source: str = "file:skills",
-    knowledge: str = "`reference/help.md` in the `bmad` skill",
+    knowledge: str = "`references/help.md` in the `bmad` skill",
     version: str = "1.2.3",
     extra_fields: dict[str, object] | None = None,
 ) -> Path:
@@ -1236,7 +1236,7 @@ class BmadSetupTests(unittest.TestCase):
                 manifest,
                 'version = "1.2.3"\n'
                 'module = "alpha"\n'
-                'update_source = "file:skills"\nknowledge = "`reference/help.md` in the `bmad` skill"\n'
+                'update_source = "file:skills"\nknowledge = "`references/help.md` in the `bmad` skill"\n'
                 'config_questions = "invalid"\n',
             )
             before = {
@@ -1266,7 +1266,7 @@ class BmadSetupTests(unittest.TestCase):
             "version": "1.2.3",
             "module": "alpha",
             "update_source": "file:skills",
-            "knowledge": "`reference/help.md` in the `bmad` skill",
+            "knowledge": "`references/help.md` in the `bmad` skill",
         }
         cases: tuple[tuple[str, bytes, str], ...] = (
             ("malformed-toml", b"version = [\n", "TOML"),
@@ -1276,7 +1276,7 @@ class BmadSetupTests(unittest.TestCase):
                     'version = "1.2.3"\n'
                     'module = "alpha"\n'
                     'module = "beta"\n'
-                    'update_source = "file:skills"\nknowledge = "`reference/help.md` in the `bmad` skill"\n'
+                    'update_source = "file:skills"\nknowledge = "`references/help.md` in the `bmad` skill"\n'
                 ).encode(),
                 "overwrite",
             ),
