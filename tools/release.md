@@ -41,12 +41,15 @@ You supply the version; the tooling never derives or increments it. It must:
 - be SemVer (`MAJOR.MINOR.PATCH`, optional prerelease such as `-rc.1`),
 - not contain `-dev` (the update check cannot order `-dev` versions, so
   installed copies would never learn they are current or outdated),
+- carry no build metadata (`+...`) — the update check drops it, so
+  `6.12.0+hotfix` compares equal to `6.12.0` and installed copies would never
+  see such a release,
 - differ from the version `main` currently serves — stamping the same version
-  again is a no-op for installed copies, so a release must change it. Build
-  metadata (`+...`) does not count as a change: the update check ignores it,
-  so `6.12.0+hotfix` compares equal to `6.12.0` and installed copies would
-  never see such a release. Change the major, minor, patch, or prerelease
-  part.
+  again is a no-op for installed copies, so a release must change it. Change
+  the major, minor, patch, or prerelease part.
+
+The stamper enforces the first three and refuses to write anything if one
+fails. The last is yours to check — it cannot know what `main` serves.
 
 Check what `main` serves now:
 

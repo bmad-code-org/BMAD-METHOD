@@ -111,6 +111,23 @@ class StampReleaseTests(unittest.TestCase):
         self.assertIn("current", err)
         self.assertEqual(snapshot(self.root), before)
 
+    def test_build_metadata_rejected_with_explanation(self):
+        make_tree(self.root)
+        before = snapshot(self.root)
+        code, _, err = run_stamper(self.root, "1.2.0+hotfix")
+        self.assertEqual(code, 1)
+        self.assertIn("build metadata", err)
+        self.assertIn("'1.2.0'", err)
+        self.assertEqual(snapshot(self.root), before)
+
+    def test_build_metadata_on_prerelease_rejected(self):
+        make_tree(self.root)
+        before = snapshot(self.root)
+        code, _, err = run_stamper(self.root, "1.2.0-rc.1+build.5")
+        self.assertEqual(code, 1)
+        self.assertIn("build metadata", err)
+        self.assertEqual(snapshot(self.root), before)
+
     def test_manifest_missing_version_key_names_file_and_touches_nothing(self):
         make_tree(self.root)
         broken = self.root / "skills" / "bmad-build" / "module-manifest.toml"
@@ -231,7 +248,14 @@ class InstallerContractTests(unittest.TestCase):
     def test_semver_regex_matches_setup(self):
         self.assertEqual(sr.SEMVER.pattern, setup.SEMVER.pattern)
 
-    def test_validate_version_accepts_exactly_what_setup_can_order(self):
+    def test_validate_version_accepts_exactly_what_setup_can_distinguish(self):
+        """Accept a version only if setup.py can both order it and tell it apart.
+
+        Build metadata is orderable but not distinguishing: setup.py drops it,
+        so `1.2.0+hotfix` compares equal to `1.2.0` and a release stamped that
+        way is invisible to installed copies. The stamper is stricter than
+        orderability by exactly that much.
+        """
         candidates = (
             "1.2.0",
             "0.0.1",
@@ -247,13 +271,21 @@ class InstallerContractTests(unittest.TestCase):
             "",
         )
         for version in candidates:
-            orderable = setup.parse_orderable_semver(version) is not None
+            parsed = setup.parse_orderable_semver(version)
+            distinguishable = parsed is not None and "+" not in version
             try:
                 sr.validate_version(version)
                 accepted = True
             except sr.StampError:
                 accepted = False
-            self.assertEqual(accepted, orderable, version)
+            self.assertEqual(accepted, distinguishable, version)
+
+    def test_setup_orders_build_metadata_as_equal(self):
+        """The premise of the rejection above, pinned against setup.py itself."""
+        self.assertEqual(
+            setup.parse_orderable_semver("1.2.0+hotfix"),
+            setup.parse_orderable_semver("1.2.0"),
+        )
 
 
 if __name__ == "__main__":
