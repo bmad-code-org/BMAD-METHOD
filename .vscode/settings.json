@@ -92,5 +92,8 @@
   "[xml]": {
     "editor.defaultFormatter": "redhat.vscode-xml"
   },
-  "xml.format.maxLineWidth": 140
+  "xml.format.maxLineWidth": 140,
+  "githubPullRequests.ignoredPullRequestBranches": [
+    "main"
+  ]
 }

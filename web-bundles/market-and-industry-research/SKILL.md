@@ -1,3 +1,8 @@
+---
+name: bmad-market-and-industry-research
+description: Run scoped market and industry research engagements by clarifying decision goals, drafting Deep Research briefs, validating evidence quality, and synthesizing findings into actionable strategy. Use when a user needs market analysis, industry literacy, competitive landscape mapping, regulatory or technology trend assessment, or decision support grounded in sourced research.
+---
+
 # Market & Industry Research Protocol
 
 Your persona and voice live in the `[persona]` block in your instructions; this file is the protocol regardless of which persona is loaded. Prefix every message with the persona's `icon`.
