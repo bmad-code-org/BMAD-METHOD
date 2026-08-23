@@ -251,6 +251,7 @@
         align-items: center;
         gap: 8px;
         margin-bottom: 6px;
+        font-size: inherit;
         font-weight: 600;
       }
       .context-items {
@@ -291,20 +292,20 @@
     </style>
   </head>
   <body>
-    <div class="header">
-      <div class="header-badge">⚡ 워크플로 맵 V6</div>
+    <header class="header">
+      <div class="header-badge"><span aria-hidden="true">⚡</span> 워크플로 맵 V6</div>
       <h1>BMad Method</h1>
       <p class="subtitle">AI 기반 개발을 위한 컨텍스트 엔지니어링</p>
-    </div>
+    </header>
 
     <div class="flow-legend">→ 화살표는 워크플로 간 산출물 흐름을 나타냅니다</div>
 
-    <div class="flow-grid">
+    <main class="flow-grid" aria-label="BMad Method 개발 워크플로">
       <!-- Phase 1: Analysis -->
-      <div class="phase analysis">
+      <section class="phase analysis" aria-labelledby="phase-analysis-title">
         <div class="phase-header">
           <div class="phase-num">1</div>
-          <div class="phase-title">분석</div>
+          <h2 id="phase-analysis-title" class="phase-title">분석</h2>
           <span class="phase-opt">선택 사항</span>
         </div>
         <div class="workflows">
@@ -315,7 +316,7 @@
             </div>
             <div class="workflow-meta">
               <div class="agent">
-                <div class="agent-icon mary">M</div>
+                <div class="agent-icon mary" aria-hidden="true">M</div>
                 <span class="agent-name">Mary</span>
               </div>
               <span class="output">brainstorming-report.md</span>
@@ -328,7 +329,7 @@
             </div>
             <div class="workflow-meta">
               <div class="agent">
-                <div class="agent-icon mary">M</div>
+                <div class="agent-icon mary" aria-hidden="true">M</div>
                 <span class="agent-name">Mary</span>
               </div>
               <span class="output">리서치 결과</span>
@@ -341,7 +342,7 @@
             </div>
             <div class="workflow-meta">
               <div class="agent">
-                <div class="agent-icon mary">M</div>
+                <div class="agent-icon mary" aria-hidden="true">M</div>
                 <span class="agent-name">Mary</span>
               </div>
               <span class="output">product-brief.md →</span>
@@ -354,21 +355,21 @@
             </div>
             <div class="workflow-meta">
               <div class="agent">
-                <div class="agent-icon mary">M</div>
+                <div class="agent-icon mary" aria-hidden="true">M</div>
                 <span class="agent-name">Mary</span>
               </div>
               <span class="output">prfaq.md →</span>
             </div>
           </div>
         </div>
-        <div class="arrow">→</div>
-      </div>
+        <div class="arrow" aria-hidden="true">→</div>
+      </section>
 
       <!-- Phase 2: Planning -->
-      <div class="phase planning">
+      <section class="phase planning" aria-labelledby="phase-planning-title">
         <div class="phase-header">
           <div class="phase-num">2</div>
-          <div class="phase-title">계획</div>
+          <h2 id="phase-planning-title" class="phase-title">계획</h2>
         </div>
         <div class="workflows">
           <div class="workflow">
@@ -377,7 +378,7 @@
             </div>
             <div class="workflow-meta">
               <div class="agent">
-                <div class="agent-icon john">J</div>
+                <div class="agent-icon john" aria-hidden="true">J</div>
                 <span class="agent-name">John</span>
               </div>
               <span class="output">prd.md →</span>
@@ -391,21 +392,21 @@
             </div>
             <div class="workflow-meta">
               <div class="agent">
-                <div class="agent-icon sally">S</div>
+                <div class="agent-icon sally" aria-hidden="true">S</div>
                 <span class="agent-name">Sally</span>
               </div>
               <span class="output">DESIGN.md + EXPERIENCE.md →</span>
             </div>
           </div>
         </div>
-        <div class="arrow">→</div>
-      </div>
+        <div class="arrow" aria-hidden="true">→</div>
+      </section>
 
       <!-- Phase 3: Solutioning -->
-      <div class="phase solutioning">
+      <section class="phase solutioning" aria-labelledby="phase-solutioning-title">
         <div class="phase-header">
           <div class="phase-num">3</div>
-          <div class="phase-title">솔루션 설계</div>
+          <h2 id="phase-solutioning-title" class="phase-title">솔루션 설계</h2>
         </div>
         <div class="workflows">
           <div class="workflow">
@@ -414,7 +415,7 @@
             </div>
             <div class="workflow-meta">
               <div class="agent">
-                <div class="agent-icon winston">W</div>
+                <div class="agent-icon winston" aria-hidden="true">W</div>
                 <span class="agent-name">Winston</span>
               </div>
               <span class="output">ARCHITECTURE-SPINE.md →</span>
@@ -426,7 +427,7 @@
             </div>
             <div class="workflow-meta">
               <div class="agent">
-                <div class="agent-icon john">J</div>
+                <div class="agent-icon john" aria-hidden="true">J</div>
                 <span class="agent-name">John</span>
               </div>
               <span class="output">epics.md →</span>
@@ -438,21 +439,21 @@
             </div>
             <div class="workflow-meta">
               <div class="agent">
-                <div class="agent-icon john">J</div>
+                <div class="agent-icon john" aria-hidden="true">J</div>
                 <span class="agent-name">John</span>
               </div>
               <span class="output">준비도 게이트 + sprint-status.yaml →</span>
             </div>
           </div>
         </div>
-        <div class="arrow">→</div>
-      </div>
+        <div class="arrow" aria-hidden="true">→</div>
+      </section>
 
       <!-- Phase 4: Implementation -->
-      <div class="phase implementation">
+      <section class="phase implementation" aria-labelledby="phase-implementation-title">
         <div class="phase-header">
           <div class="phase-num">4</div>
-          <div class="phase-title">구현</div>
+          <h2 id="phase-implementation-title" class="phase-title">구현</h2>
         </div>
         <div class="workflows">
           <div class="decision">직접 입력한 의도 또는 계획 컨텍스트 ↓</div>
@@ -462,7 +463,7 @@
             </div>
             <div class="workflow-meta">
               <div class="agent">
-                <div class="agent-icon amelia">A</div>
+                <div class="agent-icon amelia" aria-hidden="true">A</div>
                 <span class="agent-name">Amelia</span>
               </div>
               <span class="output">사양 + 코드 + 리뷰 →</span>
@@ -474,7 +475,7 @@
             </div>
             <div class="workflow-meta">
               <div class="agent">
-                <div class="agent-icon amelia">A</div>
+                <div class="agent-icon amelia" aria-hidden="true">A</div>
                 <span class="agent-name">Amelia</span>
               </div>
               <span class="output">승인</span>
@@ -487,7 +488,7 @@
             </div>
             <div class="workflow-meta">
               <div class="agent">
-                <div class="agent-icon john">J</div>
+                <div class="agent-icon john" aria-hidden="true">J</div>
                 <span class="agent-name">John</span>
               </div>
               <span class="output">계획 업데이트</span>
@@ -500,42 +501,42 @@
             </div>
             <div class="workflow-meta">
               <div class="agent">
-                <div class="agent-icon amelia">A</div>
+                <div class="agent-icon amelia" aria-hidden="true">A</div>
                 <span class="agent-name">Amelia</span>
               </div>
               <span class="output">배운 점</span>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
 
-    <div class="context">
-      <div class="context-header">📚 컨텍스트 흐름</div>
+    <section class="context" aria-labelledby="context-title">
+      <h2 id="context-title" class="context-header"><span aria-hidden="true">📚</span> 컨텍스트 흐름</h2>
       <p style="margin-bottom: 8px; color: var(--text-muted)">구현 전에 사용할 수 있는 문서가 컨텍스트를 보강합니다.</p>
       <div class="context-items">
         <span><code>build</code> <span>사용 가능한 의도, 이슈, 사양, PRD, 아키텍처, UX, 에픽, 스토리, 스프린트 컨텍스트를 로드</span></span>
         <span><code>code-review</code> <span>필요할 때 독립 검증을 추가</span></span>
       </div>
-    </div>
+    </section>
 
-    <div class="legend">
+    <aside class="legend" aria-label="단계 색상 범례">
       <div class="legend-item">
-        <div class="legend-dot" style="background: var(--analysis)"></div>
+        <div class="legend-dot" style="background: var(--analysis)" aria-hidden="true"></div>
         분석
       </div>
       <div class="legend-item">
-        <div class="legend-dot" style="background: var(--planning)"></div>
+        <div class="legend-dot" style="background: var(--planning)" aria-hidden="true"></div>
         계획
       </div>
       <div class="legend-item">
-        <div class="legend-dot" style="background: var(--solutioning)"></div>
+        <div class="legend-dot" style="background: var(--solutioning)" aria-hidden="true"></div>
         솔루션 설계
       </div>
       <div class="legend-item">
-        <div class="legend-dot" style="background: var(--implementation)"></div>
+        <div class="legend-dot" style="background: var(--implementation)" aria-hidden="true"></div>
         구현
       </div>
-    </div>
+    </aside>
   </body>
 </html>

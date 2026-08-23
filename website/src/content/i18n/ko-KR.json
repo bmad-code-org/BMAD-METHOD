@@ -24,5 +24,8 @@
   "aside.caution": "주의",
   "aside.danger": "경고",
   "fileTree.directory": "디렉터리",
-  "builtWithStarlight.label": "Starlight로 제작"
+  "builtWithStarlight.label": "Starlight로 제작",
+  "expressiveCode.copyButtonCopied": "복사했습니다!",
+  "expressiveCode.copyButtonTooltip": "클립보드에 복사",
+  "expressiveCode.terminalWindowFallbackTitle": "터미널 창"
 }
