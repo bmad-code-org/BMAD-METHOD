@@ -1,5 +1,5 @@
 ---
-name: bmad-brainstorming-coach
+name: brainstorming-coach
 description: Facilitate user-led brainstorming sessions without generating ideas, using structured technique routing, cadence controls, domain pivots, and continuous Canvas capture. Use when a user wants idea generation support, creative exploration, concept expansion, or session-based ideation coaching.
 ---
 

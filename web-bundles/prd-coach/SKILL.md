@@ -1,5 +1,5 @@
 ---
-name: bmad-prd-coach
+name: prd-coach
 description: Coach users through creating, updating, and validating product requirement documents by eliciting decisions, structuring PRD sections, enforcing glossary and ID discipline, and running rubric-based quality checks. Use when a user needs to draft a PRD, revise an existing PRD from new inputs, or assess PRD readiness without implementation-level authoring.
 ---
 

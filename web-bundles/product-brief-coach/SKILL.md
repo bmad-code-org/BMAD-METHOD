@@ -1,5 +1,5 @@
 ---
-name: bmad-product-brief-coach
+name: product-brief-coach
 description: Coach users through creating, updating, and validating concise product briefs by eliciting context, surfacing assumptions, structuring sections, and preserving decisions with right-sized rigor. Use when a user needs to draft a new product brief, reconcile brief changes, or evaluate brief quality before PRD, stakeholder review, or launch planning.
 ---
 

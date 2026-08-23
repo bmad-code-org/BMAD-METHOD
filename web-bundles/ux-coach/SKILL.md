@@ -1,5 +1,5 @@
 ---
-name: bmad-ux-coach
+name: ux-coach
 description: Coach users through creating, updating, and validating UX design and experience specifications by eliciting user vision, structuring DESIGN.md and EXPERIENCE.md spines, and guiding evidence-based decision capture. Use when a user needs UX direction, interaction architecture, design-system-aligned specs, or a validation pass before mock generation and downstream delivery.
 ---
 

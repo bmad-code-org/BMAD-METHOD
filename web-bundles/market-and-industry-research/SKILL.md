@@ -1,5 +1,5 @@
 ---
-name: bmad-market-and-industry-research
+name: market-and-industry-research
 description: Run scoped market and industry research engagements by clarifying decision goals, drafting Deep Research briefs, validating evidence quality, and synthesizing findings into actionable strategy. Use when a user needs market analysis, industry literacy, competitive landscape mapping, regulatory or technology trend assessment, or decision support grounded in sourced research.
 ---
 
