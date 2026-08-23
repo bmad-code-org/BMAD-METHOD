@@ -13,7 +13,7 @@ sidebar:
 
 모델은 체크포인트 사이에서 더 오래 실행됩니다. 사람의 판단 없이는 안전하게 계속할 수 없거나 최종 결과를 검토할 때만 다시 사람을 부릅니다.
 
-![Build 워크플로 다이어그램](/diagrams/build-diagram.png)
+![Build 워크플로 다이어그램](/diagrams/build-diagram-ko.webp)
 
 ## 왜 필요한가요?
 

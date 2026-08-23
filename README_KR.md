@@ -1,123 +1,96 @@
 ![BMad Method](banner-bmad-method.png)
 
-[![Version](https://img.shields.io/npm/v/bmad-method?color=blue&label=version)](https://www.npmjs.com/package/bmad-method)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.12.0-brightgreen)](https://nodejs.org)
-[![Python Version](https://img.shields.io/badge/python-%3E%3D3.10-blue?logo=python&logoColor=white)](https://www.python.org)
-[![uv](https://img.shields.io/badge/uv-package%20manager-blueviolet?logo=uv)](https://docs.astral.sh/uv/)
-[![Discord](https://img.shields.io/badge/Discord-Join%20Community-7289da?logo=discord&logoColor=white)](https://discord.gg/gk8jAdXWmj)
-
 [English](README.md) | [简体中文](README_CN.md) | [Tiếng Việt](README_VN.md) | 한국어
 
-**Build More Architect Dreams** - BMad Method 모듈 생태계를 위한 포괄적인 AI 기반 애자일 개발 프레임워크입니다. 버그 수정부터 엔터프라이즈 시스템까지, 프로젝트 규모와 도메인에 맞춰 계획 깊이를 조절합니다.
+**애자일 AI 주도 개발 — 사고 과정을 포기하지 않고 아이디어나 변경 요청을 실제 작동하는 소프트웨어로 바꿉니다.**
 
-**100% 무료 오픈 소스입니다.** 유료 장벽도, 잠긴 콘텐츠도, 폐쇄형 Discord도 없습니다. 우리는 닫힌 커뮤니티나 강좌 비용을 낼 수 있는 사람만이 아니라 모두가 더 나은 도구를 쓸 수 있어야 한다고 믿습니다.
+AI 주도 개발(AiDD)은 코드 작성에 그치지 않습니다. 무엇을 만들지, 각 요소가 어떻게 맞물리는지, 새롭게 알게 된 내용에 따라 어떻게 바꿀지까지 개발 전반을 아우릅니다. BMad Method는 이를 애자일 방식으로 실천합니다. 결정은 명확히 남고, 컨텍스트는 다음 작업으로 이어지며, 작업 규모에 맞춰 절차도 달라집니다. 작은 변경은 바로 Build로 진행하고, 복잡한 작업은 필요한 만큼 깊이 계획합니다. 주말에 만드는 프로토타입부터 오랜 역사를 지닌 시스템까지 같은 방법으로 다룹니다.
 
-## 왜 BMad Method인가요?
+![BMad 전달 루프: 막연한 생각은 구체화부터, 크고 명확한 아이디어는 계획부터 시작하며 작은 변경은 바로 구현 및 검증으로 이어집니다. 학습 및 조정 단계에서 얻은 내용은 다시 계획에 반영됩니다.](docs/images/bmad-delivery-loop-ko.svg)
 
-전통적인 AI 도구는 사용자를 대신해 생각하고 평균적인 결과를 내는 데 그치는 경우가 많습니다. BMad의 전문 에이전트와 안내형 워크플로는 AI와 함께 더 나은 사고를 끌어내도록 돕는 전문가 협업자처럼 작동합니다.
+_어디서든 시작하세요. BMad를 처음부터 끝까지 사용해도 되고, 개요·사양·아키텍처만 기존 개발 흐름에 가져와도 됩니다._
 
-- **AI 안내 도움말** - 언제든 `bmad-help` 스킬을 호출해 다음 단계 안내를 받습니다
-- **규모와 도메인에 적응** - 프로젝트 복잡도에 맞춰 계획 깊이를 자동으로 조절합니다
-- **구조화된 워크플로** - 분석, 계획, 아키텍처, 구현 전반에 애자일 모범 사례를 적용합니다
-- **전문 에이전트** - PM, 아키텍트, 개발자, UX 등 12개 이상의 역할별 전문가를 제공합니다
-- **파티 모드** - 여러 에이전트 페르소나를 한 세션에 불러와 함께 협업하고 토론합니다
-- **전체 수명주기 지원** - 브레인스토밍부터 배포까지 함께합니다
+## 바로 시작하기
 
-[**docs.bmad-method.org**에서 더 알아보기](https://docs.bmad-method.org/ko-kr/)
-
-## BMad의 다음 단계
-
-**V6가 출시됐고, 이제 시작입니다!** BMad Method는 크로스 플랫폼 에이전트 팀과 서브 에이전트 통합, 스킬 아키텍처, BMad 빌더 v1, 개발 루프 자동화 등 여러 개선과 함께 빠르게 진화하고 있습니다.
-
-**[전체 로드맵 보기](https://docs.bmad-method.org/ko-kr/roadmap/)**
-
-## 빠른 시작
-
-**필수 조건**: [Node.js](https://nodejs.org) v20.12+ · [Python](https://www.python.org) 3.10+ · [uv](https://docs.astral.sh/uv/)
+**필수 조건:** [Node.js](https://nodejs.org) 20.12+, [Python](https://www.python.org) 3.10+, [uv](https://docs.astral.sh/uv/)
 
 ```bash
 npx bmad-method install
 ```
 
-> 최신 사전 릴리스 빌드를 사용하려면 `npx bmad-method@next install`을 실행하세요. 기본 설치보다 변경이 더 잦을 수 있습니다.
+프로젝트를 AI 코딩 도구에서 열고 `bmad-build`에 원하는 변경을 말하세요. 중요한 결정은 직접 내리면서 작업을 이어 가면 됩니다. 다음 단계나 선택 사항을 안내받고 싶을 때는 언제든 `bmad-help`를 실행하세요.
 
-설치 프로그램의 안내를 따른 다음, Claude Code나 Cursor 같은 AI IDE를 프로젝트 폴더에서 엽니다.
+**[BMad로 첫 프로젝트 만들기 →](https://docs.bmad-method.org/ko-kr/tutorials/getting-started/)**
 
-**비대화형 설치**(CI/CD용):
+**[기존 코드베이스에 BMad 적용하기 →](https://docs.bmad-method.org/ko-kr/how-to/established-projects/)**
 
-```bash
-npx bmad-method install --directory /path/to/project --modules bmm --tools claude-code --yes
-```
+BMad는 무료 오픈 소스이며, 유료 전용 워크플로나 가입이 제한된 커뮤니티가 없습니다. 사전 릴리스 빌드, CI/CD, 설정 재정의, 비대화형 설치 방법은 [설치 가이드](https://docs.bmad-method.org/ko-kr/how-to/install-bmad/)를 참고하세요.
 
-모듈 설정 옵션은 `--set <module>.<key>=<value>`로 재정의할 수 있습니다. 여러 번 사용할 수 있습니다. 로컬에서 알려진 공식 키를 보려면 `--list-options [module]`을 실행하세요.
+## 왜 BMad인가요?
 
-```bash
-npx bmad-method install --yes \
-  --modules bmm --tools claude-code \
-  --set bmm.project_knowledge=research \
-  --set bmm.user_skill_level=expert
-```
+코딩 도우미는 구현에는 능숙하지만, 명시하지 않은 가정을 그대로 코드로 옮기기도 합니다. BMad는 중요한 결정을 명확히 드러내고 다음 작업에 필요한 컨텍스트로 남기는 에이전트와 워크플로를 제공합니다. 판단은 사용자가 직접 내립니다.
 
-[전체 설치 옵션 보기](https://docs.bmad-method.org/ko-kr/how-to/non-interactive-installation/)
+- **작업에 맞는 절차** — 명확한 변경은 바로 구현하고, 큰 과제는 더 깊이 계획합니다.
+- **신규·기존 코드 모두 지원** — 빈 프로젝트에서 시작하거나, 물려받은 코드베이스의 컨텍스트를 검증해 현재 상태에 맞춰 작업합니다.
+- **지속되는 컨텍스트** — 대화할 때마다 다시 설명하지 않아도 제품과 기술 결정을 다음 작업으로 이어 갑니다.
+- **분야별 관점** — 필요할 때 제품, 아키텍처, UX, 개발, 테스트 전문가의 관점을 활용합니다.
+- **안내형 협업** — 판단을 맡기지 않고도 구조화된 워크플로와 여러 에이전트의 토론을 활용합니다.
+- **하나로 이어지는 개발 흐름** — 초기 구상부터 검토를 거친 구현, 방향 수정, 학습까지 한 흐름으로 진행합니다.
 
-> **무엇을 해야 할지 모르겠나요?** `bmad-help`에게 물어보세요. 다음에 해야 할 일과 선택 사항을 정확히 알려줍니다. `bmad-help 아키텍처를 막 끝냈는데 다음에 무엇을 해야 하나요?`처럼 질문할 수도 있습니다.
+[워크플로가 어떻게 연결되는지 보기 →](https://docs.bmad-method.org/ko-kr/reference/workflow-map/)
 
-## 모듈
+## BMad 생태계
 
-BMad Method는 전문 도메인을 위한 공식 모듈로 확장됩니다. 설치 중에 선택하거나 나중에 추가할 수 있습니다.
+핵심 프레임워크만 설치하거나 전문 작업을 위한 공식 모듈을 추가합니다.
 
-| 모듈                                                                                                            | 목적                                      |
-| ----------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| **[BMad Method(BMM)](https://github.com/bmad-code-org/BMAD-METHOD)**                                             | 34개 이상의 워크플로를 제공하는 핵심 프레임워크 |
-| **[BMad 빌더(BMB)](https://github.com/bmad-code-org/bmad-builder)**                                             | 커스텀 BMad 에이전트와 워크플로 생성         |
-| **[테스트 설계자(TEA)](https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise)**             | 위험 기반 테스트 전략과 자동화              |
-| **[게임 개발 스튜디오(BMGD)](https://github.com/bmad-code-org/bmad-module-game-dev-studio)**                    | Unity, Unreal, Godot 워크플로                |
-| **[창의적 지능 제품군(CIS)](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite)**         | 혁신, 브레인스토밍, 디자인 사고             |
+| 모듈 | 용도 |
+| --- | --- |
+| **[BMad Method](https://github.com/bmad-code-org/BMAD-METHOD)** | 새 프로토타입부터 기존 코드베이스까지 소프트웨어를 계획하고 완성합니다. |
+| **[BMad Builder](https://github.com/bmad-code-org/bmad-builder)** | 스킬, 워크플로, 에이전트를 만듭니다. |
+| **[BMad Creative Intelligence Suite](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite)** | 혁신, 디자인 사고, 스토리텔링을 위한 창의적 사고 파트너를 제공합니다. |
+| **[BMad Test Architect](https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise)** | BMad Method에 엔터프라이즈 테스트 기능을 더합니다. |
+| **[BMad Loop](https://github.com/bmad-code-org/bmad-loop)** | 에픽 전체를 사람의 개입 없이 구현하고 검증한 뒤 회고합니다. |
+| **[BMad Game Dev Studio](https://github.com/bmad-code-org/bmad-module-game-dev-studio)** | Unity, Unreal, Godot, Phaser를 비롯한 모든 프레임워크에서 게임을 구상하고 설계해 구현합니다. |
 
-## Web Bundles
+## 웹에서 계획하기
 
-V4에도 Web bundle이 있었습니다. V6에서는 새롭게 개선된 형태로 다시 돌아왔습니다.
-
-Web bundle은 선택한 BMad 스킬을 **Google Gemini Gem**과 **ChatGPT Custom GPT**로 설치할 수 있게 패키징합니다. 브레인스토밍, 제품 개요, PRD, PRFAQ, UX 사양, 시장 및 산업 리서치 같은 앞단 계획 작업은 웹 LLM 구독 환경에서 진행하고, 다듬어진 산출물은 IDE로 가져와 구현에 사용하세요. 계획 작업을 사용량 과금형 IDE 토큰 대신 정액 구독 환경에서 처리하므로 긴 작업에서는 비용을 줄이는 데 도움이 됩니다. Gemini나 ChatGPT에서 사용할 수 있는 가장 좋은 모델을 선택하면 됩니다.
-
-현재 제공되는 번들은 브레인스토밍, 제품 개요, PRFAQ, PRD, UX, 시장 및 산업 리서치입니다.
-
-**[bmadcode.com/web-bundles](https://bmadcode.com/web-bundles/)에서 찾아보고 설치하세요.** 번들마다 카드가 하나씩 있고, Gemini와 ChatGPT 설치 단계가 페이지 안에 안내되며, ZIP 파일도 바로 다운로드할 수 있습니다. 개념 설명은 [Web bundle 가이드](https://docs.bmad-method.org/ko-kr/explanation/web-bundles/)를 참고하세요.
+[Web bundle](https://bmadcode.com/web-bundles/)은 일부 BMad 워크플로를 Google Gemini Gem과 ChatGPT Custom GPT로 패키징한 것입니다. 기존 웹 구독 환경에서 계획을 세운 뒤, 그 결과물을 AI 코딩 도구로 가져와 구현에 사용하세요.
 
 ## 문서
 
-[BMad Method 문서 사이트](https://docs.bmad-method.org/ko-kr/) - 튜토리얼, 가이드, 개념 설명, 참조 문서
+- **[시작하기](https://docs.bmad-method.org/ko-kr/tutorials/getting-started/)** — BMad를 설치하고 작은 프로젝트를 만듭니다.
+- **[워크플로 맵](https://docs.bmad-method.org/ko-kr/reference/workflow-map/)** — 사용할 수 있는 경로와 산출물을 살펴봅니다.
+- **[기존 프로젝트](https://docs.bmad-method.org/ko-kr/how-to/established-projects/)** — 기존 코드베이스에 BMad를 적용합니다.
+- **[v6로 업그레이드](https://docs.bmad-method.org/ko-kr/how-to/upgrade-to-v6/)** — 이전 버전에서 마이그레이션합니다.
 
-**빠른 링크:**
+## 로드맵
 
-- [시작하기 튜토리얼](https://docs.bmad-method.org/ko-kr/tutorials/getting-started/)
-- [이전 버전에서 업그레이드](https://docs.bmad-method.org/ko-kr/how-to/upgrade-to-v6/)
-- [테스트 설계자 문서](https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/)
+현재 진행 중인 작업과 앞으로의 계획은 [공개 로드맵](https://docs.bmad-method.org/ko-kr/roadmap/)에서 확인하세요.
 
 ## 커뮤니티
 
-- [Discord](https://discord.gg/gk8jAdXWmj) - 도움을 받고, 아이디어를 나누고, 협업하세요
-- [YouTube](https://youtube.com/@BMadCode) - 튜토리얼, 마스터 클래스 등
-- [X / Twitter](https://x.com/BMadCode)
-- [웹사이트](https://bmadcode.com)
-- [GitHub Issues](https://github.com/bmad-code-org/BMAD-METHOD/issues) - 버그 제보와 기능 요청
-- [토론](https://github.com/bmad-code-org/BMAD-METHOD/discussions) - 커뮤니티 대화
+- [Discord](https://discord.gg/gk8jAdXWmj) — 도움을 받고 아이디어를 나누며 협업합니다.
+- [YouTube](https://youtube.com/@BMadCode) — 튜토리얼과 마스터 클래스를 시청합니다.
+- [GitHub Issues](https://github.com/bmad-code-org/BMAD-METHOD/issues) — 버그를 제보하고 기능을 요청합니다.
+- [GitHub Discussions](https://github.com/bmad-code-org/BMAD-METHOD/discussions) — 커뮤니티의 긴 대화에 참여합니다.
+- [BMad Code](https://bmadcode.com) — 더 넓은 BMad 생태계를 둘러봅니다.
 
-## BMad 후원
+## 후원과 기여
 
-BMad는 모두에게 무료이며 앞으로도 그럴 것입니다. 이 저장소에 스타를 눌러 주거나, [커피 한 잔 후원](https://buymeacoffee.com/bmad)을 보내거나, 기업 후원은 <contact@bmadcode.com>으로 문의해 주세요.
+BMad는 누구에게나 무료이며 앞으로도 계속 무료로 제공됩니다. 저장소에 스타를 누르거나 [커피 한 잔을 후원](https://buymeacoffee.com/bmad)해 주세요. 기업 후원은 <contact@bmadcode.com>으로 문의해 주세요.
 
-## 기여
-
-기여를 환영합니다! 자세한 지침은 [CONTRIBUTING.md](CONTRIBUTING.md)를 확인하세요.
+기여를 환영합니다. Pull Request를 열기 전에 [CONTRIBUTING.md](CONTRIBUTING.md)를 읽어 주세요.
 
 ## 라이선스
 
-MIT 라이선스입니다. 자세한 내용은 [LICENSE](LICENSE)를 확인하세요.
+MIT 라이선스를 따릅니다. 자세한 내용은 [LICENSE](LICENSE)를 참고하세요.
 
-**BMad**와 **BMAD-METHOD**는 BMad Code, LLC의 상표입니다. 자세한 내용은 [TRADEMARK.md](TRADEMARK.md)를 확인하세요.
+**BMad**와 **BMAD-METHOD**는 BMad Code, LLC의 상표입니다. 자세한 내용은 [TRADEMARK.md](TRADEMARK.md)를 참고하세요.
 
-[![Contributors](https://contrib.rocks/image?repo=bmad-code-org/BMAD-METHOD)](https://github.com/bmad-code-org/BMAD-METHOD/graphs/contributors)
+[![기여자](https://contrib.rocks/image?repo=bmad-code-org/BMAD-METHOD)](https://github.com/bmad-code-org/BMAD-METHOD/graphs/contributors)
 
-기여자 정보는 [CONTRIBUTORS.md](CONTRIBUTORS.md)를 확인하세요.
+기여자 정보는 [CONTRIBUTORS.md](CONTRIBUTORS.md)를 참고하세요.
+
+[![버전](https://img.shields.io/npm/v/bmad-method?color=blue&label=%EB%B2%84%EC%A0%84)](https://www.npmjs.com/package/bmad-method)
+[![라이선스: MIT](https://img.shields.io/badge/%EB%9D%BC%EC%9D%B4%EC%84%A0%EC%8A%A4-MIT-yellow.svg)](LICENSE)
+[![Discord](https://img.shields.io/badge/Discord-%EC%BB%A4%EB%AE%A4%EB%8B%88%ED%8B%B0%20%EC%B0%B8%EC%97%AC-7289da?logo=discord&logoColor=white)](https://discord.gg/gk8jAdXWmj)

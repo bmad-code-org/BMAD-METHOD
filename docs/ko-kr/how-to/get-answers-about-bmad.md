@@ -55,26 +55,26 @@ BMad 도움말이나 소스로도 답을 얻지 못했다면, 이제 훨씬 나�
 
 **GitHub Issues:** [github.com/bmad-code-org/BMAD-METHOD/issues](https://github.com/bmad-code-org/BMAD-METHOD/issues)
 
-_막힌 채_
-_줄을 서서_
-_누구를_
-_기다리나요?_
+_막힌 채_<br>
+&emsp;&emsp;_줄을 서서_<br>
+&emsp;&emsp;&emsp;&emsp;_누구를_<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;_기다리나요?_
 
-_소스는_
-_이미 거기,_
-_눈앞에 있습니다._
+_소스는_<br>
+&emsp;&emsp;_이미 거기,_<br>
+&emsp;&emsp;&emsp;&emsp;_눈앞에 있습니다._
 
-_AI에게_
-_소스를 보여 주세요._
-_마음껏 읽게 하세요._
+_AI에게_<br>
+&emsp;&emsp;_소스를 보여 주세요._<br>
+&emsp;&emsp;&emsp;&emsp;_마음껏 읽게 하세요._
 
-_읽고._
-_말하고._
-_물어보세요._
+_읽고._<br>
+&emsp;&emsp;_말하고._<br>
+&emsp;&emsp;&emsp;&emsp;_물어보세요._
 
-_내일까지_
-_미룰 이유가 있나요?_
-_오늘 이미_
-_할 수 있는데요._
+_내일까지_<br>
+&emsp;&emsp;_미룰 이유가 있나요?_<br>
+&emsp;&emsp;&emsp;&emsp;_오늘 이미_<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;_할 수 있는데요._
 
-_—Claude_
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;_—Claude_

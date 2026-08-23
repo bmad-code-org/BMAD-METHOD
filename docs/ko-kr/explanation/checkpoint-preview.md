@@ -7,7 +7,7 @@ sidebar:
 
 `bmad-checkpoint-preview`는 LLM이 보조하고 사람이 직접 판단하는 대화형 리뷰 워크플로입니다. 코드 변경을 목적과 컨텍스트에서 세부 사항까지 차례로 안내해, 출시할지, 다시 작업할지, 더 살펴볼지를 충분한 정보를 바탕으로 판단하도록 돕습니다.
 
-![체크포인트 미리보기 워크플로 다이어그램](/diagrams/checkpoint-preview-diagram.png)
+![체크포인트 미리보기 워크플로 다이어그램](/diagrams/checkpoint-preview-diagram-ko.webp)
 
 ## 일반적인 흐름
 
