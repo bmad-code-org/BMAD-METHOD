@@ -1,5 +1,5 @@
 ---
-title: "Comment obtenir des réponses à propos de BMad"
+title: 'Comment obtenir des réponses à propos de BMad'
 description: Utiliser un LLM pour répondre rapidement à vos questions sur BMad
 sidebar:
   order: 4
@@ -47,34 +47,35 @@ Si votre IA ne peut pas lire des fichiers locaux (ChatGPT, Claude.ai, etc.), imp
 Si ni BMad-Help ni la source n’ont répondu à votre question, vous avez maintenant une bien meilleure question à poser.
 
 | Canal                   | Utilisé pour                         |
-|-------------------------|--------------------------------------|
+| ----------------------- | ------------------------------------ |
 | Forum `help-requests`   | Questions                            |
 | `#suggestions-feedback` | Idées et demandes de fonctionnalités |
 
 **Discord :** [discord.gg/gk8jAdXWmj](https://discord.gg/gk8jAdXWmj)
 
 **GitHub Issues :** [github.com/bmad-code-org/BMAD-METHOD/issues](https://github.com/bmad-code-org/BMAD-METHOD/issues)
-*Toi !*
-*Bloqué*
-*dans la file d’attente—*
-*qui*
-*attends-tu ?*
 
-*La source*
-*est là,*
-*facile à voir !*
+_Toi !_  
+&emsp;&emsp;_Bloqué_  
+&emsp;&emsp;&emsp;&emsp;_dans la file d’attente—_  
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;_qui_  
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;_attends-tu ?_
 
-*Pointez*
-*votre machine.*
-*Libérez-la.*
+_La source_  
+&emsp;&emsp;_est là,_  
+&emsp;&emsp;&emsp;&emsp;_facile à voir !_
 
-*Elle lit.*
-*Elle parle.*
-*Demandez—*
+_Pointez_  
+&emsp;&emsp;_votre machine._  
+&emsp;&emsp;&emsp;&emsp;_Libérez-la._
 
-*Pourquoi attendre*
-*demain*
-*quand tu as déjà*
-*cette journée ?*
+_Elle lit._  
+&emsp;&emsp;_Elle parle._  
+&emsp;&emsp;&emsp;&emsp;_Demandez—_
 
-*—Claude*
+_Pourquoi attendre_  
+&emsp;&emsp;_demain_  
+&emsp;&emsp;&emsp;&emsp;_quand tu as déjà_  
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;_cette journée ?_
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;_—Claude_

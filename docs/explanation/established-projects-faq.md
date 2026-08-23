@@ -15,13 +15,13 @@ Quick answers to common questions about working on established projects with the
 
 ### Do I have to run document-project first?
 
-`bmad-document-project` is deprecated — its replacement is [`bmad-project-context`](project-context.md), which builds a small verified context system (kernel + bundle) instead of generated documentation. Running it first is highly recommended, especially if:
+`bmad-document-project` is deprecated — its replacement is [`bmad-project-context`](project-context.md), which writes a small verified block into your repo's `AGENTS.md` instead of generated documentation. Running it first is highly recommended, especially if:
 
 - No existing documentation
 - Documentation is outdated
 - AI agents need context about existing code
 
-You can skip it if agents already load a maintained kernel, or you'll use other tools or techniques to aid discovery for the agent to build on an existing system.
+You can skip it if your repo already has maintained agent instructions, or you'll use other tools or techniques to aid discovery for the agent to build on an existing system.
 
 ### What if I forget to run document-project?
 

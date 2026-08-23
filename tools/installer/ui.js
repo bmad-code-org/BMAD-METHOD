@@ -17,6 +17,7 @@ const {
 const channelResolver = require('./modules/channel-resolver');
 const prompts = require('./prompts');
 const { parseSetEntries } = require('./set-overrides');
+const { inferShimPreference, readInstalledSkillIds } = require('./core/shim-policy');
 
 const manifest = new Manifest();
 
@@ -110,6 +111,43 @@ async function getModuleVersion(moduleCode, { repoUrl = null, registryDefault = 
  * UI utilities for the installer
  */
 class UI {
+  async _selectShimPreference({ selectedModules, bmadDir, existing, options, channelOptions, quickUpdate = false }) {
+    const { OfficialModules } = require('./modules/official-modules');
+    const officialModules = new OfficialModules({ channelOptions });
+    const availableShims = await officialModules.discoverShims(selectedModules, { channelOptions });
+
+    // The prompt is capability-driven. Once the last shim leaves the incoming
+    // release this becomes an ordinary empty set, regardless of old state.
+    if (availableShims.length === 0) return;
+
+    const previousManifest = existing ? await manifest.read(bmadDir) : null;
+    const installedSkillIds = existing ? await readInstalledSkillIds(bmadDir) : new Set();
+    const currentValue = inferShimPreference({
+      requested: options.shims,
+      persisted: previousManifest?.installShims,
+      availableShims,
+      installedSkillIds,
+      existing,
+    });
+
+    if (typeof options.shims === 'boolean' || options.yes) return currentValue;
+
+    // clack's confirm never resolves without a TTY: a scripted run would exit mid-install.
+    if (!process.stdin.isTTY) return currentValue;
+
+    // Nothing to give up, so nothing to ask on every single update.
+    if (quickUpdate && !currentValue) return currentValue;
+
+    const verb = currentValue ? 'Keep' : 'Install';
+    const message =
+      `${verb} ${availableShims.length} deprecated compatibility shim skill(s)? Recommended: No. ` +
+      `If you say yes, the deprecated skills will exist as a skill that forwards to its replacement skill. ` +
+      `Shims will be removed with v7. You should only retain if you customized a shimmed skill and need to ` +
+      `still transition it to the replacement.`;
+
+    return prompts.confirm({ message, default: currentValue });
+  }
+
   /**
    * Warn once for each selected module the registry marks deprecated.
    *
@@ -204,13 +242,15 @@ class UI {
     const messageLoader = new MessageLoader();
     await messageLoader.displayStartMessage();
 
-    // Probe for `uv` before any other prompts: it's becoming the de facto
-    // runner for the Python scripts BMAD workflows shell out to
-    // (`uv run <script>`), and uv provisions the interpreter itself, so it's
-    // the single thing worth checking for. The migration is still in progress
-    // (some skills still call `python3` directly), so this is informational —
-    // warn-don't-block, no ack prompt — and just points the user at setup
-    // (ideally "ask your agent to set up uv"). The installer runs in the
+    // Probe for `uv` before any other prompts: it's the runner for the Python
+    // scripts BMAD skills shell out to (`uv run <script>`), and uv provisions
+    // the interpreter itself, so it's the single thing worth checking for.
+    // As of v6.11.0 `bmad-build` and `bmad-build-auto` HALT without it.
+    //
+    // Still warn-don't-block, with no ack prompt: core-only, docs-only, and
+    // CI installs never touch a rendered skill, so a missing `uv` must not
+    // fail the run. `installer.js` repeats the warning in the post-install
+    // summary so it survives the scrollback. The installer runs in the
     // destination environment, so probing PATH here tests the right machine.
     const { checkUvEnvironment } = require('./core/uv-check');
     await checkUvEnvironment();
@@ -300,7 +340,7 @@ class UI {
           throw new Error('No valid actions available for this installation');
         }
         const hasQuickUpdate = choices.some((c) => c.value === 'quick-update');
-        const needsFullUpdate = !!options.customSource;
+        const needsFullUpdate = !!options.customSource || typeof options.shims === 'boolean';
         actionType = hasQuickUpdate && !needsFullUpdate ? 'quick-update' : (choices.find((c) => c.value === 'update') || choices[0]).value;
         await prompts.log.info(`Non-interactive mode (--yes): defaulting to ${actionType}`);
       } else {
@@ -316,10 +356,21 @@ class UI {
         // Quick update never shows the module picker, so this is the only
         // place an existing install of a deprecated module hears about it.
         await this._warnDeprecatedModules(existingInstall.moduleIds || []);
+
+        const installShims = await this._selectShimPreference({
+          selectedModules: existingInstall.moduleIds || [],
+          bmadDir,
+          existing: true,
+          options,
+          channelOptions,
+          quickUpdate: true,
+        });
+
         return {
           actionType: 'quick-update',
           directory: confirmedDirectory,
           skipPrompts: options.yes || false,
+          installShims: installShims === undefined ? options.shims : installShims,
         };
       }
 
@@ -404,6 +455,13 @@ class UI {
           ...options,
           channelOptions,
         });
+        const installShims = await this._selectShimPreference({
+          selectedModules,
+          bmadDir,
+          existing: true,
+          options,
+          channelOptions,
+        });
 
         // Warn about --pin/--next flags that refer to modules the user didn't
         // select, or that target bundled modules (core/bmm) where channel
@@ -430,6 +488,7 @@ class UI {
           skipPrompts: options.yes || false,
           channelOptions,
           _preserveModules: preservedModules,
+          installShims,
         };
       }
     }
@@ -485,6 +544,13 @@ class UI {
       ...options,
       channelOptions,
     });
+    const installShims = await this._selectShimPreference({
+      selectedModules,
+      bmadDir,
+      existing: false,
+      options,
+      channelOptions,
+    });
 
     // Warn about --pin/--next flags that refer to modules the user didn't
     // select, or that target bundled modules (core/bmm) where channel
@@ -510,6 +576,7 @@ class UI {
       setOverrides,
       skipPrompts: options.yes || false,
       channelOptions,
+      installShims,
     };
   }
 
@@ -1069,9 +1136,9 @@ class UI {
       message: 'Select official modules to install:',
       options: allOptions,
       initialValues: initialValues.length > 0 ? initialValues : undefined,
-      // Not required: core is installed either way, so an empty selection is a
-      // legitimate "core only" install rather than a mistake to block on.
+      // Core installs either way and is not a row here, so empty is a valid core-only install.
       required: false,
+      emptyLabel: 'core only',
       maxItems: allOptions.length,
     });
 

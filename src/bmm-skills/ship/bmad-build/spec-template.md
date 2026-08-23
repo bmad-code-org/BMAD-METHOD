@@ -24,12 +24,9 @@ context: [] # optional: `{project-root}/`-prefixed paths to project-wide standar
 
 ## Boundaries & Constraints
 
-<!-- Three tiers: Always = invariant rules. Ask First = human-gated decisions. Never = out of scope + forbidden approaches. -->
+<!-- Two tiers: Always = invariant rules. Never = out of scope + forbidden approaches. -->
 
 **Always:** INVARIANT_RULES
-
-**Ask First:** DECISIONS_REQUIRING_HUMAN_APPROVAL
-<!-- Agent: if any of these trigger during execution, HALT and ask the user before proceeding. -->
 
 **Never:** NON_GOALS_AND_FORBIDDEN_APPROACHES
 
@@ -69,6 +66,11 @@ context: [] # optional: `{project-root}/`-prefixed paths to project-wide standar
      Each entry records: what finding triggered the change, what was amended, what known-bad state
      the amendment avoids, and any KEEP instructions (what worked well and must survive re-derivation).
      Empty until the first bad_spec loopback. -->
+
+## Review Triage Log
+
+<!-- Append-only. Populated by step-04 on every review pass: each dismissed finding with the
+     reason that disposed of its claim. Empty until the first review pass. -->
 
 ## Design Notes
 

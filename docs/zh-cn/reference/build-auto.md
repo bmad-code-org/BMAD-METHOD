@@ -78,8 +78,7 @@ workflow 读取 `<spec-folder>/stories.yaml`，查找 `id` 匹配的条目。它
 
 - `_bmad/config.toml`、`_bmad/config.user.toml`，以及 `_bmad/custom/` 下可选的团队/用户 override
 - `customize.toml`、团队 override、用户 override 中的 workflow 自定义
-- workflow 配置中列出的 persistent facts
-- 若存在的 `project-context.md` 文件
+- workflow 配置中列出的 persistent facts —— 除非你主动添加，否则为空，默认不会加载任何内容
 
 还可能查看：
 

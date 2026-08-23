@@ -35,7 +35,9 @@ Also append each `defer` finding to `{deferred_work_file}` under a heading `## D
 
 Announce what was written:
 
-> **Code review complete.** <D> `decision-needed`, <P> `patch`, <W> `defer`, <R> dismissed as noise.
+> **Code review complete.** <D> `decision-needed`, <P> `patch`, <W> `defer`, <R> dismissed.
+
+The findings report ends with a `Dismissed` appendix — one line per dismissed finding: the finding and the reason that disposed of its claim — in the story file's `### Review Findings` section when `{spec_file}` is set, at the tail of the chat listing otherwise.
 
 If `{spec_file}` is set, add: `Findings written to the review findings section in {spec_file}.`
 Otherwise add: `Findings are listed above. No story file was provided, so nothing was persisted.`
@@ -127,6 +129,6 @@ Present the user with follow-up options:
 
 ## On Complete
 
-Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete`
+Run: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete`
 
 If the resolved `workflow.on_complete` is non-empty, follow it as the final terminal instruction before exiting.
