@@ -1,5 +1,10 @@
 ![BMad Method](banner-bmad-method.png)
 
+
+[![Version](https://img.shields.io/npm/v/bmad-method?color=blue&label=version)](https://www.npmjs.com/package/bmad-method)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Discord](https://img.shields.io/badge/Discord-Join%20Community-7289da?logo=discord&logoColor=white)](https://discord.gg/gk8jAdXWmj)
+
 **Agile Ai Driven Development — turn an idea or change request into working software without giving up the thinking.**
 
 Ai Driven Development (AiDD) covers the whole effort, not only the code: what to build, how it holds together, and how it changes as you learn. BMad Method is the agile way to do it — decisions stay explicit, context carries forward, and the process sizes itself to the work. Small changes go straight to build. Complex work gets the depth it needs. The same method covers a weekend prototype and a system with years of history behind it.
@@ -61,10 +66,6 @@ Install the core method or add official modules for specialized work.
 - **[Established Projects](https://docs.bmad-method.org/how-to/established-projects/)** — Add BMad to an existing codebase.
 - **[Upgrade to V6](https://docs.bmad-method.org/how-to/upgrade-to-v6/)** — Migrate from an earlier version.
 
-## Roadmap
-
-See what is in progress and what is planned on the [public roadmap](https://docs.bmad-method.org/roadmap/).
-
 ## Community
 
 - [Discord](https://discord.gg/gk8jAdXWmj) — Get help, share ideas, and collaborate.
@@ -85,10 +86,4 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 **BMad** and **BMAD-METHOD** are trademarks of BMad Code, LLC. See [TRADEMARK.md](TRADEMARK.md) for details.
 
-[![Contributors](https://contrib.rocks/image?repo=bmad-code-org/BMAD-METHOD)](https://github.com/bmad-code-org/BMAD-METHOD/graphs/contributors)
-
-See [CONTRIBUTORS.md](CONTRIBUTORS.md) for contributor information.
-
-[![Version](https://img.shields.io/npm/v/bmad-method?color=blue&label=version)](https://www.npmjs.com/package/bmad-method)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Discord](https://img.shields.io/badge/Discord-Join%20Community-7289da?logo=discord&logoColor=white)](https://discord.gg/gk8jAdXWmj)
+If you would like to contribute, join us in the discord and read [CONTRIBUTORS.md](CONTRIBUTORS.md) first.

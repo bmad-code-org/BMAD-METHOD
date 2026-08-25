@@ -175,11 +175,6 @@ export default defineConfig({
             },
           ],
         },
-        {
-          label: 'Roadmap',
-          translations: { 'vi-VN': 'Lộ trình', 'zh-CN': '路线图', 'fr-FR': 'Feuille de route', 'cs-CZ': 'Plán rozvoje' },
-          slug: 'roadmap',
-        },
       ],
 
       // Credits in footer

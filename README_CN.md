@@ -24,14 +24,6 @@
 
 ---
 
-## 🚀 BMad 的下一步是什么？
-
-**V6 已经上线，而这只是开始。** BMad 仍在快速演进：跨平台智能体团队与子智能体集成、Skills 架构、BMad Builder v1、Dev Loop 自动化等能力都在持续推进。
-
-**[📍 查看完整路线图 →](https://docs.bmad-method.org/zh-cn/roadmap/)**
-
----
-
 ## 快速开始
 
 **先决条件**：[Node.js](https://nodejs.org) v20+
@@ -102,7 +94,5 @@ MIT 许可证 — 详见 [LICENSE](LICENSE)。
 ---
 
 **BMad** 和 **BMAD-METHOD** 是 BMad Code, LLC 的商标。详见 [TRADEMARK.md](TRADEMARK.md)。
-
-[![Contributors](https://contrib.rocks/image?repo=bmad-code-org/BMAD-METHOD)](https://github.com/bmad-code-org/BMAD-METHOD/graphs/contributors)
 
 请参阅 [CONTRIBUTORS.md](CONTRIBUTORS.md) 了解贡献者信息。
