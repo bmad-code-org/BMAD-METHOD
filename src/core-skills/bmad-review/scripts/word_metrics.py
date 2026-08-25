@@ -24,23 +24,32 @@ from pathlib import Path
 
 HEADING = re.compile(r"^(#{1,6})\s+(\S.*)$")
 FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
-# Per-character counting applies only to scripts that do not space-delimit words
-# (kana, han). Korean IS space-delimited, so Hangul stays out — and the compat
-# ideograph range starts at U+F900, not at its U+8C48 homoglyph, which would
-# swallow the whole Hangul block.
-#
-# Why the explicit block list? Python's `re` does not support \p{Script=...}
-# escapes, `unicodedata` does not expose Unicode script properties, and the
-# standalone `regex` package (which does support them) is not in the standard
-# library. This file is a PEP 723 inline script with no declared dependencies,
-# so we use the smallest explicit code-point set that matches the behavior we
-# need. The ranges are covered by the regression tests in test_word_metrics.py.
-CJK = re.compile(r"[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f]")
+# Han and kana characters count as one word each because those scripts do not
+# space-delimit words; Korean is space-delimited, so Hangul text counts by
+# whitespace. Character names come from the stdlib Unicode database
+# (unicodedata), so there are no hand-maintained code-point ranges to keep in
+# sync: every han ideograph name starts with "CJK" and kana names contain
+# "HIRAGANA"/"KATAKANA", while Hangul names ("HANGUL SYLLABLE ...") never
+# match. This keeps the PEP 723 inline script dependency-free.
+from unicodedata import name
+
+
+def is_word_script(ch: str) -> bool:
+    """True when a character belongs to a script that counts one word per char."""
+    n = name(ch, "")
+    return n.startswith(("CJK", "HIRAGANA")) or "KATAKANA" in n
 
 
 def word_count(text: str) -> int:
-    cjk = len(CJK.findall(text))
-    return cjk + len(CJK.sub(" ", text).split())
+    cjk = 0
+    rest = []
+    for ch in text:
+        if is_word_script(ch):
+            cjk += 1
+            rest.append(" ")
+        else:
+            rest.append(ch)
+    return cjk + len("".join(rest).split())
 
 
 def section_metrics(text: str) -> list[dict]:

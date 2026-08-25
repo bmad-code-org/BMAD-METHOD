@@ -66,6 +66,16 @@ class WordMetricsTest(unittest.TestCase):
         self.assertEqual(word_count("今日は世界です"), 7)
         self.assertEqual(word_count("hello 世界 안녕"), 4)
 
+    def test_unihan_names_cover_extensions(self):
+        # stdlib character names cover every han ideograph, including blocks the
+        # previous hand-written ranges missed (Ext B U+20000, compat supplement)
+        self.assertEqual(word_count("\U00020000\U0002a700"), 2)
+        self.assertEqual(word_count("\uf900\U0002f800"), 2)
+
+    def test_kana_names_match_across_blocks(self):
+        # kana in the phonetic-extensions and halfwidth blocks still count per char
+        self.assertEqual(word_count("\u31f0\uff66\u30fc"), 3)
+
 
 if __name__ == "__main__":
     unittest.main()
