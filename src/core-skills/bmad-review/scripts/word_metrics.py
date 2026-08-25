@@ -28,6 +28,13 @@ FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
 # (kana, han). Korean IS space-delimited, so Hangul stays out — and the compat
 # ideograph range starts at U+F900, not at its U+8C48 homoglyph, which would
 # swallow the whole Hangul block.
+#
+# Why the explicit block list? Python's `re` does not support \p{Script=...}
+# escapes, `unicodedata` does not expose Unicode script properties, and the
+# standalone `regex` package (which does support them) is not in the standard
+# library. This file is a PEP 723 inline script with no declared dependencies,
+# so we use the smallest explicit code-point set that matches the behavior we
+# need. The ranges are covered by the regression tests in test_word_metrics.py.
 CJK = re.compile(r"[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f]")
 
 
