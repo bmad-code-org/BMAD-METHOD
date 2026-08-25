@@ -78,9 +78,9 @@ def load_extra(file: Path) -> list[dict]:
         if not isinstance(item, dict):
             raise ValueError(f"each --extra entry must be a JSON object, got: {item!r}")
         rows.append({
-            "category": str(item.get("category", "")).strip(),
-            "technique_name": str(item.get("technique_name", "")).strip(),
-            "description": str(item.get("description", "")).strip(),
+            "category": str(item.get("category") or "").strip(),
+            "technique_name": str(item.get("technique_name") or "").strip(),
+            "description": str(item.get("description") or "").strip(),
             "detail": str(item.get("detail") or "").strip(),
             "provenance": str(item.get("provenance") or "").strip(),
             "good_for": str(item.get("good_for") or "").strip(),

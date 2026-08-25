@@ -235,6 +235,18 @@ def test_extra_unnamed_overlay_is_rejected(lib, tmp_path):
         brain.merge_extra(brain.load(Path(lib)), brain.load_extra(overlay))
 
 
+def test_extra_null_required_field_is_rejected(lib, tmp_path):
+    # JSON null stringifies to "None" — non-empty, so it would sail past the
+    # required-field check and append a bogus technique literally named "None".
+    overlay = tmp_path / "nullname.json"
+    overlay.write_text(
+        json.dumps([{"technique_name": None, "category": "risk", "description": "solid"}]),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="technique_name"):
+        brain.merge_extra(brain.load(Path(lib)), brain.load_extra(overlay))
+
+
 def test_extra_malformed_exits_cleanly(lib, tmp_path, capsys):
     bad = tmp_path / "bad.json"
     for content in ('{not json', '{"a": 1}', '["not-an-object"]'):
