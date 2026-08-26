@@ -33,7 +33,7 @@ empty project.
 Run `bmad-build` and describe the change. See [Quick Fixes](./how-to/quick-fixes.md).
 
 **You are working in an existing codebase.**
-Run `bmad-project-context`, then build as usual. See
+Consider running `bmad-project-context`, then build as usual. See
 [Established Projects](./how-to/established-projects.md) and
 [Manage Project Context](./how-to/project-context.md).
 
