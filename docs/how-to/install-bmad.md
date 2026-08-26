@@ -98,23 +98,21 @@ command for ordinary project work.
 
 ## Headless CI installs
 
-For automation, flags, tool IDs, and configuration keys, use the installer's
-live help. These examples show the stable package:
+For a typical fresh headless install of BMM configured for Claude Code, run:
 
 ```bash
-npx bmad-method install --help
-npx bmad-method install --list-tools
-npx bmad-method install --list-options
+npx bmad-method install --yes --modules bmm --tools claude-code
 ```
 
-Use `--help` for the current automation options, `--list-tools` for supported
-tool IDs, and `--list-options` for configuration keys. If your automation uses
-`@next` or an explicit package version, run each discovery command with that
-same tag or version. Build your CI command from that output instead of copying
-a command that can drift as the installer changes.
+Use `npx bmad-method install --help` to see the current automation flags and
+`npx bmad-method install --list-tools` to find valid tool IDs. If your
+automation uses `@next` or an explicit package version, use that same tag or
+version when checking the help and running the installer.
 
 ## What You Get
 
-BMad is installed under `_bmad` in the target project and configured for the
-tools you selected. The installer's final summary confirms the installed path,
-completed steps, and remaining warnings.
+BMad's skills are installed in the skill directories used by each AI tool you
+selected. The project's `_bmad` directory contains shared configuration and
+supporting scripts used by those skills. When installation finishes, the
+installer reports the configured tools and any warnings that still need
+attention.
