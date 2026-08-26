@@ -1,68 +1,45 @@
 ---
 title: Build Software with BMad
-description: See how BMad turns short requests and shared specifications into reviewed software changes while you keep control of important decisions.
+description: BMad turns a request into reviewed, working code. Start here to install it, make your first change, or find the path that fits the work in front of you.
 hero:
-  title: Turn intent into working software
-  tagline: BMad clarifies what matters, gives you a plan to approve, implements the change, reviews its work, and shows you the result.
+  title: Turn a request into working software
+  tagline: BMad works inside your AI coding tool. You describe the result you want, approve the plan, and get code that has been written, reviewed, and left ready for you to run.
   actions:
-    - text: Start with a small build
-      link: ./tutorials/getting-started/
+    - text: Install BMad
+      link: ./how-to/install-bmad/
       variant: primary
-    - text: Try it in Django
-      link: ./tutorials/getting-deeper/
+    - text: Build your first change
+      link: ./tutorials/getting-started/
       variant: secondary
 ---
 
-BMad works with supported AI coding tools to carry a software request through
-clarification, an approved plan, implementation, and review. You keep control
-of the decisions that shape the result, and Build returns working code you can
-run and inspect.
+BMad adds a set of named commands, called skills, to AI coding tools such as
+Claude Code and Cursor. The main one is `bmad-build`: you give it a change to
+make, and it does the work and reviews it.
 
-## Start with Working Software
+## Find Your Starting Point
 
-[Getting Started](./tutorials/getting-started.md) begins in an empty directory
-with one short request:
+**You know exactly what needs to change, and it is small.**
+Run `bmad-build` and describe the change. See [Quick Fixes](./how-to/quick-fixes.md).
 
-```text
-/bmad-build write an implementation of mars rover kata
-```
+**You are building a larger feature or a whole product.**
+Plan it first, write a short specification, then build from that specification
+one piece at a time. See the [Workflow Map](./reference/workflow-map.md).
 
-Build asks for the choices it needs, then gives you a plan to approve or change.
-It writes and reviews the program before you run the finished Mars Rover in your
-terminal. The request stays small; you decide what the program should become.
+**You are working in a codebase that already exists.**
+Give BMad a written description of the project before you ask it to change
+anything. See [Established Projects](./how-to/established-projects.md) and
+[Manage Project Context](./how-to/project-context.md).
 
-**[Build Mars Rover with BMad](./tutorials/getting-started.md)**
+**Your idea is still vague, or you are not sure it is a good one.**
+Generate options with [Brainstorming](./explanation/brainstorming.md), gather
+evidence with [Deep Recon](./explanation/deep-recon.md), or have the idea argued
+against in [Pressure-Test an Idea](./how-to/pressure-test-an-idea.md).
 
-## Continue in a Mature Codebase
+**You want BMad to follow your team's own rules and practices.**
+See [Customize BMad](./how-to/customize-bmad.md) and
+[Expand BMad for Your Organization](./how-to/expand-bmad-for-your-org.md).
 
-[Getting Deeper](./tutorials/getting-deeper.md) moves the same direct workflow
-into Django 5.2.4. You ask Build to add JSON output to `django-admin
-diffsettings`, make the decisions that define that output, run the focused
-tests, and inspect the JSON produced by the command.
+---
 
-The second Django exercise shows what changes when the work spans several
-stories. BMad Spec records one shared contract for filtering, redaction, and CI
-status. Three Build runs implement it in order, and one final command shows the
-features working together: filtering selects the setting, redaction hides its
-value, and the exit status still reports the remaining difference.
-
-**[Try the Django playground](./tutorials/getting-deeper.md)**
-
-## Find a Specific Answer
-
-Use the search box or sidebar when you already know what you need. These common
-tasks lead directly to the relevant documentation:
-
-- [Install or update BMad](./how-to/install-bmad.md)
-- [Use BMad in an established project](./how-to/established-projects.md)
-- [Understand how Build works](./explanation/build.md)
-- [Look up installed skills](./reference/commands.md)
-
-## Build in Your Repository
-
-Choose a real change in a repository you already use. Install BMad in that
-repository, run the installed `bmad-build` skill, and describe the result you
-want. You can settle the important choices, approve or revise the plan, and
-inspect the finished change in its real context.
-
-**[Use BMad in your repository](./how-to/install-bmad.md)**
+Unsure where to start? Run `bmad-help`.
