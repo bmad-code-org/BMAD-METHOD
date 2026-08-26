@@ -2,7 +2,7 @@
 title: 'How to Upgrade to v6'
 description: Migrate from BMad v4 to v6
 sidebar:
-  order: 3
+  order: 2
 ---
 
 Use the BMad installer to upgrade from v4 to v6, which includes automatic detection of legacy installations and migration assistance.
@@ -23,7 +23,7 @@ Use the BMad installer to upgrade from v4 to v6, which includes automatic detect
 
 ### 1. Run the Installer
 
-Follow the [Installer Instructions](./install-bmad.md).
+Follow the [Installer Instructions](../start/install-bmad.md).
 
 ### 2. Handle Legacy Installation
 

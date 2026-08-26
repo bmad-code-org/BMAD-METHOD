@@ -2,7 +2,7 @@
 title: 'Getting Deeper'
 description: Use Build and BMad Spec to extend a command in a specific Django version
 sidebar:
-  order: 2
+  order: 1
 ---
 
 You already know Build from small projects. Here, you will use it in a specific
@@ -12,7 +12,7 @@ stories defined by one BMad Spec.
 :::note[Prerequisites]
 Use a macOS or Linux shell with Git, Node.js 20.12+ and `npx`,
 [uv](https://docs.astral.sh/uv/getting-started/installation/), and a coding tool
-supported by BMad. Complete [Getting Started](./getting-started.md) before
+supported by BMad. Complete [Build Your First Change](../start/build-your-first-change.md) before
 continuing. The exact install and launch commands below are for Claude Code. If
 you use another supported tool, you can run Build there instead. VS Code is
 optional but useful. Build can open the finished work for you when VS Code's
@@ -255,5 +255,5 @@ optional final step. You do not need it to finish this tutorial.
 
 ## 12. Keep Building
 
-Now [install BMad in your own repository](../how-to/install-bmad.md), then use
+Now [install BMad in your own repository](../start/install-bmad.md), then use
 the `bmad-build` skill to make a change you want.

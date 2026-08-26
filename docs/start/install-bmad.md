@@ -1,8 +1,6 @@
 ---
 title: 'How to Install BMad'
 description: Install, verify, update, and reconfigure BMad in your project
-sidebar:
-  order: 1
 ---
 
 Use `npx bmad-method install` to install BMad in a project, connect it to your

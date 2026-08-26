@@ -2,7 +2,7 @@
 title: 'How to Customize BMad'
 description: Customize agents and workflows while preserving update compatibility
 sidebar:
-  order: 7
+  order: 6
 ---
 
 Tailor agent personas, inject domain context, add capabilities, and configure workflow behavior -- all without modifying installed files. Your customizations survive every update.
@@ -21,7 +21,7 @@ The `bmad-customize` skill is a guided authoring helper for the **per-skill agen
 
 :::note[Prerequisites]
 
-- BMad installed in your project (see [How to Install BMad](./install-bmad.md))
+- BMad installed in your project (see [How to Install BMad](../start/install-bmad.md))
 - [`uv`](https://docs.astral.sh/uv/) on your PATH — BMad runs the resolver script with `uv run`, and uv provisions a suitable Python for you, so you don't need to install one yourself. The script uses only stdlib `tomllib`, so there's nothing to `pip install`.
 - A text editor for TOML files
 :::

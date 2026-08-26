@@ -2,7 +2,7 @@
 title: 'Quick Fixes'
 description: How to make quick fixes and ad-hoc changes
 sidebar:
-  order: 5
+  order: 4
 ---
 
 Bug fixes, refactorings, and small targeted changes can enter **Build** directly with little or no upstream planning. This is the same implementation workflow used for fully planned stories.

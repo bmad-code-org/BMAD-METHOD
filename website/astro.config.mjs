@@ -17,7 +17,9 @@ export default defineConfig({
   base: basePath,
   outDir: '../build/site',
   redirects: {
-    '/how-to/non-interactive-installation': `${basePath}how-to/install-bmad/`,
+    '/how-to/install-bmad': `${basePath}start/install-bmad/`,
+    '/how-to/non-interactive-installation': `${basePath}start/install-bmad/`,
+    '/tutorials/getting-started': `${basePath}start/build-your-first-change/`,
     '/fr/how-to/non-interactive-installation': `${basePath}fr/how-to/install-bmad/`,
     '/cs/how-to/non-interactive-installation': `${basePath}cs/how-to/install-bmad/`,
     '/vi-vn/how-to/non-interactive-installation': `${basePath}vi-vn/how-to/install-bmad/`,
@@ -97,12 +99,34 @@ export default defineConfig({
       // Custom CSS
       customCss: ['./src/styles/custom.css'],
 
-      // Sidebar configuration (Diataxis structure)
+      // Sidebar configuration
       sidebar: [
         {
-          label: 'Welcome',
-          translations: { 'vi-VN': 'Chào mừng', 'zh-CN': '欢迎', 'fr-FR': 'Bienvenue', 'cs-CZ': 'Vítejte' },
-          slug: 'index',
+          label: 'Start',
+          translations: { 'vi-VN': 'Bắt đầu', 'zh-CN': '开始', 'fr-FR': 'Démarrer', 'cs-CZ': 'Začít' },
+          collapsed: false,
+          items: [
+            {
+              label: 'Welcome',
+              translations: { 'vi-VN': 'Chào mừng', 'zh-CN': '欢迎', 'fr-FR': 'Bienvenue', 'cs-CZ': 'Vítejte' },
+              slug: 'index',
+            },
+            {
+              label: 'Install BMad',
+              translations: {
+                'vi-VN': 'Cách cài đặt BMad',
+                'zh-CN': '如何安装 BMad',
+                'fr-FR': 'Comment installer BMad',
+                'cs-CZ': 'Jak nainstalovat BMad',
+              },
+              slug: 'start/install-bmad',
+            },
+            {
+              label: 'Build Your First Change',
+              translations: { 'vi-VN': 'Bắt đầu', 'zh-CN': '快速入门', 'fr-FR': 'Premiers pas', 'cs-CZ': 'Začínáme' },
+              slug: 'start/build-your-first-change',
+            },
+          ],
         },
         {
           label: 'Tutorials',
@@ -190,6 +214,7 @@ export default defineConfig({
       components: {
         Header: './src/components/Header.astro',
         MobileMenuFooter: './src/components/MobileMenuFooter.astro',
+        Sidebar: './src/components/Sidebar.astro',
       },
 
       // Table of contents

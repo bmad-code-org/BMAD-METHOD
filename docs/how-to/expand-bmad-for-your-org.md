@@ -2,14 +2,14 @@
 title: 'How to Expand BMad for Your Organization'
 description: Six customization patterns that reshape BMad without forking — agent-wide rules, workflow conventions, external publishing, template swaps, agent roster changes, and advanced integration patterns
 sidebar:
-  order: 9
+  order: 8
 ---
 
 BMad's customization surface lets an organization reshape behavior without editing installed files or forking skills. This guide walks through six recipes that cover most enterprise needs.
 
 :::note[Prerequisites]
 
-- BMad installed in your project (see [How to Install BMad](./install-bmad.md))
+- BMad installed in your project (see [How to Install BMad](../start/install-bmad.md))
 - Familiarity with the customization model (see [How to Customize BMad](./customize-bmad.md))
 - Python 3.11+ on PATH (for the resolver — stdlib only, no `pip install`)
 :::

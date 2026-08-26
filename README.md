@@ -23,11 +23,11 @@ npx bmad-method install
 
 Open your project in your AI coding tool, invoke `bmad-build` with what you want to change, and keep making the decisions that matter. Run `bmad-help` whenever you want guidance on what comes next or what is optional.
 
-**[Build your first project with BMad →](https://docs.bmad-method.org/tutorials/getting-started/)**
+**[Build your first project with BMad →](https://docs.bmad-method.org/start/build-your-first-change/)**
 
 **[Add BMad to an existing codebase →](https://docs.bmad-method.org/how-to/established-projects/)**
 
-BMad is free and open source, with no paywalled workflows or gated community. For installation prerequisites, updates, prerelease builds, and the installer's live automation help, see the [installation guide](https://docs.bmad-method.org/how-to/install-bmad/).
+BMad is free and open source, with no paywalled workflows or gated community. For installation prerequisites, updates, prerelease builds, and the installer's live automation help, see the [installation guide](https://docs.bmad-method.org/start/install-bmad/).
 
 ## Why BMad?
 
@@ -61,7 +61,7 @@ Install the core method or add official modules for specialized work.
 
 ## Documentation
 
-- **[Getting Started](https://docs.bmad-method.org/tutorials/getting-started/)** — Install BMad and build a small project.
+- **[Build Your First Change](https://docs.bmad-method.org/start/build-your-first-change/)** — Install BMad and build a small project.
 - **[Workflow Map](https://docs.bmad-method.org/reference/workflow-map/)** — Understand the available paths and outputs.
 - **[Established Projects](https://docs.bmad-method.org/how-to/established-projects/)** — Add BMad to an existing codebase.
 - **[Upgrade to V6](https://docs.bmad-method.org/how-to/upgrade-to-v6/)** — Migrate from an earlier version.

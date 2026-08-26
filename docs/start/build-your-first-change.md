@@ -1,15 +1,13 @@
 ---
 title: 'Getting Started'
 description: Install BMad and build a small Python program
-sidebar:
-  order: 1
 ---
 
 BMad can help you plan and build anything from a small bug fix to a project with
 a million lines of code. Let's start with something small.
 
 Already have a repository and a small change you want to make?
-[Install BMad there](../how-to/install-bmad.md), open your coding tool in the
+[Install BMad there](./install-bmad.md), open your coding tool in the
 repository, and run the installed `bmad-build` skill. Talk to it about the
 change you want, and it will make it happen.
 
@@ -114,7 +112,7 @@ the program, and checked its work before showing you the result.
 
 ## Keep Building
 
-1. [Install BMad in your own repository](../how-to/install-bmad.md), then run
+1. [Install BMad in your own repository](./install-bmad.md), then run
    the `bmad-build` skill with a short description of a small change.
-2. Continue to [Getting Deeper](./getting-deeper.md) for a small change in a
+2. Continue to [Getting Deeper](../tutorials/getting-deeper.md) for a small change in a
    mature codebase, followed by a larger change using a written spec.

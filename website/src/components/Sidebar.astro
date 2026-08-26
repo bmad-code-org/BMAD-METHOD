@@ -1,0 +1,18 @@
+---
+import DefaultSidebar from '@astrojs/starlight/components/Sidebar.astro';
+
+const isRootIndex = Astro.url.pathname === import.meta.env.BASE_URL;
+---
+
+<DefaultSidebar />
+
+{
+	isRootIndex && (
+		<script is:inline data-astro-rerun>
+			const activeSidebarLink = document.querySelector(
+				'#starlight__sidebar a[aria-current="page"]'
+			);
+			activeSidebarLink?.closest('details')?.setAttribute('open', '');
+		</script>
+	)
+}

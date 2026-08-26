@@ -6,10 +6,10 @@ hero:
   tagline: Think it through, then build it. You make the calls, so you understand what you ship.
   actions:
     - text: Build your first change
-      link: ./tutorials/getting-started/
+      link: ./start/build-your-first-change/
       variant: primary
     - text: Install BMad
-      link: ./how-to/install-bmad/
+      link: ./start/install-bmad/
       variant: secondary
 ---
 
@@ -26,7 +26,7 @@ building with no planning at all.
 ## Find Your Starting Point
 
 **You want to see it work.**
-[Getting Started](./tutorials/getting-started.md) walks through one build in an
+[Build Your First Change](./start/build-your-first-change.md) walks through one build in an
 empty project.
 
 **You know exactly what needs to change, and it is small.**
