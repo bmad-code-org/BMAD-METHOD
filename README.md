@@ -22,7 +22,7 @@ Open your project in your AI coding tool, invoke `bmad-build` with what you want
 
 **[Add BMad to an existing codebase →](https://docs.bmad-method.org/how-to/established-projects/)**
 
-BMad is free and open source, with no paywalled workflows or gated community. For prerelease builds, CI/CD, configuration overrides, and non-interactive setup, see the [installation guide](https://docs.bmad-method.org/how-to/install-bmad/).
+BMad is free and open source, with no paywalled workflows or gated community. For installation prerequisites, updates, prerelease builds, and the installer's live automation help, see the [installation guide](https://docs.bmad-method.org/how-to/install-bmad/).
 
 ## Why BMad?
 
