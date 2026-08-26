@@ -83,6 +83,19 @@
    TYPOGRAPHY
    ============================================ */
 
+/* Hero: left-align at all widths (Starlight centers below 50rem) */
+.hero .stack {
+  text-align: start;
+}
+
+.hero .copy {
+  align-items: flex-start;
+}
+
+.hero .actions {
+  justify-content: flex-start;
+}
+
 /* Space Grotesk for all headings - match Ghost blog */
 .sl-markdown-content h1,
 .sl-markdown-content h2,
