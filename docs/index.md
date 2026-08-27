@@ -34,7 +34,7 @@ complete routing guide, from a trivial edit to a multi-epic project.
 empty project.
 
 **You know exactly what needs to change, and it is small.**
-Run `bmad-build` and describe the change. See [Quick Fixes](./how-to/quick-fixes.md).
+Run `bmad-build` and describe the change. See [Build a Change](./build/build-a-change.md).
 
 **You are working in an existing codebase.**
 Consider running `bmad-project-context`, then build as usual. See

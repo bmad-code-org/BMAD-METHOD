@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const CANONICAL_LLMS_ENTRY = '**[Build]';
+const CANONICAL_LLMS_ENTRY = '**[Build a Change]';
 const CANONICAL_LLMS_DESCRIPTION = 'Canonical implementation workflow for direct intent and fully planned work';
 
 const FORBIDDEN_TERMS = [

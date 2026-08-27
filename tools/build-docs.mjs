@@ -165,7 +165,7 @@ function generateLlmsTxt(outputDir) {
     '',
     '## Core Concepts',
     '',
-    `- **[Build](${siteUrl}/explanation/build/)** - Canonical implementation workflow for direct intent and fully planned work`,
+    `- **[Build a Change](${siteUrl}/build/build-a-change/)** - Canonical implementation workflow for direct intent and fully planned work`,
     `- **[Party Mode](${siteUrl}/explanation/party-mode/)** - Multi-agent collaboration`,
     `- **[Workflow Map](${siteUrl}/reference/workflow-map/)** - Visual overview of phases and workflows`,
     '',

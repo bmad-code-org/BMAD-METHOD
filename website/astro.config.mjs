@@ -20,6 +20,8 @@ export default defineConfig({
     '/how-to/install-bmad': `${basePath}start/install-bmad/`,
     '/how-to/non-interactive-installation': `${basePath}start/install-bmad/`,
     '/tutorials/getting-started': `${basePath}start/build-your-first-change/`,
+    '/how-to/quick-fixes': `${basePath}build/build-a-change/`,
+    '/explanation/build': `${basePath}build/build-a-change/`,
     '/fr/how-to/non-interactive-installation': `${basePath}fr/how-to/install-bmad/`,
     '/cs/how-to/non-interactive-installation': `${basePath}cs/how-to/install-bmad/`,
     '/vi-vn/how-to/non-interactive-installation': `${basePath}vi-vn/how-to/install-bmad/`,
@@ -125,6 +127,23 @@ export default defineConfig({
               label: 'Build Your First Change',
               translations: { 'vi-VN': 'Bắt đầu', 'zh-CN': '快速入门', 'fr-FR': 'Premiers pas', 'cs-CZ': 'Začínáme' },
               slug: 'start/build-your-first-change',
+            },
+          ],
+        },
+        {
+          label: 'Build',
+          translations: { 'vi-VN': 'Xây dựng', 'zh-CN': '构建', 'fr-FR': 'Construire', 'cs-CZ': 'Sestavit' },
+          collapsed: false,
+          items: [
+            {
+              label: 'Build a Change',
+              translations: {
+                'vi-VN': 'Xây dựng một thay đổi',
+                'zh-CN': '构建一个变更',
+                'fr-FR': 'Construire un changement',
+                'cs-CZ': 'Sestavit změnu',
+              },
+              slug: 'build/build-a-change',
             },
           ],
         },

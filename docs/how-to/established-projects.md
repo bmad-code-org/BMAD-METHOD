@@ -2,7 +2,7 @@
 title: 'Established Projects'
 description: How to use BMad Method on existing codebases
 sidebar:
-  order: 5
+  order: 4
 ---
 
 Use BMad Method effectively when working on existing projects and legacy codebases.
@@ -107,5 +107,5 @@ Pay close attention here to prevent reinventing the wheel or making decisions th
 
 ## More Information
 
-- **[Quick Fixes](./quick-fixes.md)** - Bug fixes and ad-hoc changes
+- **[Build a Change](../build/build-a-change.md)** - Bug fixes and ad-hoc changes
 - **[Established Projects FAQ](../explanation/established-projects-faq.md)** - Common questions about working on established projects

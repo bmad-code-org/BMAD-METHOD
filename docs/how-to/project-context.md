@@ -2,7 +2,7 @@
 title: 'Manage Project Context'
 description: Set up and maintain your repository's agent instructions with bmad-project-context
 sidebar:
-  order: 7
+  order: 6
 ---
 
 Use `bmad-project-context` to set up a repository so AI agents work well in it — for a new project or an existing codebase, with or without a BMad install. The output is a small verified block in your `AGENTS.md`.

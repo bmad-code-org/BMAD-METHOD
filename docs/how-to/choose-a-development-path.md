@@ -70,7 +70,7 @@ existing formats.
 
 Build accepts direct intent, an issue, an intent file, an existing Build spec,
 or a planned story. It clarifies the unit, plans when needed, implements it,
-reviews the result, and records what happened. See [Build](../explanation/build.md)
+reviews the result, and records what happened. See [Build a Change](../build/build-a-change.md)
 for the implementation model.
 
 ### 4. Start Epic-Sized Work

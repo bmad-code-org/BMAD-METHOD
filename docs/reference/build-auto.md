@@ -6,7 +6,7 @@ sidebar:
 ---
 
 `bmad-build-auto` is the unattended worker for one session-sized unit in the
-canonical [Build](../explanation/build.md) implementation model. One invocation
+canonical [Build a Change](../build/build-a-change.md) implementation model. One invocation
 clarifies, plans, implements, and reviews one intent or story, then exposes a
 terminal status that a human or orchestrator can act on.
 
