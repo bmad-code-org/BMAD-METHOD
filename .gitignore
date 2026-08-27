@@ -82,10 +82,10 @@ _bmad/custom/*.user.toml
 .windsurf
 
 
-# Astro / Documentation Build
+# Astro / Documentation Build (repo-root output only — not docs/build/)
 website/.astro/
 website/dist/
-build/
+/build/
 
 # Web bundle release artifacts
 dist/web-bundles/
