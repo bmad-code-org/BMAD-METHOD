@@ -69,7 +69,7 @@ If version control is available and the tree is dirty, create a local commit wit
 Display a summary in conversation output, including:
 
 - The commit hash (if one was created).
-- List of files changed with one-line descriptions. Any file paths shown in conversation/terminal output must use CWD-relative format (no leading `/`) with `:line` notation (e.g., `src/path/file.ts:42`) for terminal clickability — this differs from spec-file links which use spec-file-relative paths.
+- List of files changed with one-line descriptions. Display file paths and `file:line` references in whatever form is clickable where you are presenting them (e.g. code citation in chat, CWD-relative path with no leading `/` in terminal). If unsure, use CWD-relative path. This differs from spec-file links which use spec-file-relative paths.
 - Review findings breakdown: patches applied, items deferred, and the dismissed count — dismissal reasons are recorded in the spec. If every finding was dismissed, say so.
 
 Offer to push and/or create a pull request.

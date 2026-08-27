@@ -40,7 +40,9 @@
 
 Reachable only at zero open questions.
 
-Present summary. Display the spec file path as a CWD-relative path (no leading `/`) so it is clickable in the terminal. If token count exceeded 1600 and the user chose to keep the full spec, include the token count and explain why it may be a problem.
+Present summary. Display the spec file path in whatever form is clickable where you are presenting it (e.g. code citation in chat, CWD-relative path with no leading `/` in terminal). If unsure, use CWD-relative path. 
+
+If token count exceeded 1600 and the user chose to keep the full spec, include the token count and explain why it may be a problem.
 
 After presenting the summary, display this note:
 
