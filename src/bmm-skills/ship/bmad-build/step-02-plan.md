@@ -9,19 +9,19 @@
 ## INSTRUCTIONS
 
 1. Draft resume check. If `{spec_file}` exists with `status: draft`, read it and capture the verbatim `<frozen-after-approval>...</frozen-after-approval>` block as `preserved_intent`. Otherwise `preserved_intent` is empty.
-2. Investigate codebase. _Isolate deep exploration in synchronous subagents/tasks where available. To prevent context snowballing, instruct subagents to give you distilled summaries only._ Decide which findings actually matter for execution — the specific files, symbols/lines, reuse points, and read-only constraints — and carry those forward for the Code Map. This is where the investigation lands: the spec preserves it so it is never re-narrated to the implementer at dispatch time.
+2. Investigate the codebase. When you can, send deep searches to subagents and wait for them in this turn. Tell them to return short summaries only, so this session does not fill up with their notes. Keep only what the work needs: the specific files, symbols or lines, what to reuse, and what not to change. Write that into the Code Map. Do not retell the investigation when implementation starts — the spec already has it.
 
-   Do not ask the human during investigation. When something is unclear, look for evidence in the repository, planning artifacts, or history first, and keep investigating until every evidence gap is closed; what evidence cannot settle is a fork for the route gate.
-3. Route gate. The design is now settled; report three facts about it. This is fact-reporting about a finished design, not prediction:
-   - **Forks** — judgment calls where a defensible alternative exists and neither the intent nor codebase convention decides it. Test: for each "I chose X over Y" in the design, could a reasonable reviewer answer "actually, Y"?
-   - **Irreversibles** — migrations, data deletion or mutation, external side effects, deploy or config triggers.
-   - **Footprint** — files touched and new public surface.
+   Do not ask the human during investigation. When something is unclear, look in the repository, planning artifacts, or history first. Keep looking until you know, or until those sources have nothing more to say. Leave any remaining choice for the next step.
+3. Decide the path. You already have a plan. Write down three facts about it — as it is now, not as a guess:
+   - **Forks** — choices where someone could reasonably pick a different option, and neither the request nor the existing code picks for you. Test: for each "I chose X over Y", could a reasonable reviewer say "actually, Y"?
+   - **Irreversibles** — things you cannot undo: migrations, data deletion or mutation, external side effects, deploy or config triggers.
+   - **Footprint** — how big: files you will change, and anything new that other code will call or depend on.
 
-   **All three clean** (no forks, no irreversibles, small footprint) → light path. Read `[[bmad-snapshot:spec-template.md]]` fully and write `{spec_file}` keeping only the frontmatter, `## Intent` (inside its `<frozen-after-approval>` block), and `## Implementation Notes` — delete every other section per the template's deletion license. Set `route: 'in-session'` and `status: 'in-progress'`, resolving `date` to the current system date. If `preserved_intent` is non-empty, use it as the frozen block. **EARLY EXIT** → `[[bmad-snapshot:step-oneshot.md]]`.
+   If there are no forks, nothing irreversible, and the change is small: read `[[bmad-snapshot:spec-template.md]]` fully and write `{spec_file}` with only the frontmatter, `## Intent` (inside its `<frozen-after-approval>` block), and `## Implementation Notes`. Delete every other section; the template says you may. Set `route: 'in-session'` and `status: 'in-progress'`, resolving `date` to the current system date. If `preserved_intent` is non-empty, use it as the frozen block. **EARLY EXIT** → `[[bmad-snapshot:step-oneshot.md]]`.
 
-   **Any flag** → full spec. Set `route: 'dispatch'` and continue.
-4. Read `[[bmad-snapshot:spec-template.md]]` fully. Fill it out based on the intent and investigation, resolving the template's `date` field to the current system date. Drain the investigation into the `## Code Map` section — annotated paths, symbol/line anchors, reuse pointers, and read-only evidence — so the spec is the implementer's investigation map and the step-03 handoff need only point at it. Record each fork the gate reported as one `## Open Questions` entry: the choice, the defensible options, each option's consequence. If `preserved_intent` is non-empty, replace the `<frozen-after-approval>` block in the spec you just filled out with `preserved_intent`, before writing. Write the result to `{spec_file}`.
-5. Self-review against READY FOR DEVELOPMENT standard. For each material gap, name what is missing: evidence the repository can supply → investigate and revise; a human decision → add an `## Open Questions` entry. Never close a material gap with an unsupported assumption.
+   Otherwise write the full spec. Set `route: 'dispatch'` and continue.
+4. Read `[[bmad-snapshot:spec-template.md]]` fully. Fill it out from the intent and investigation, resolving the template's `date` field to the current system date. Put the investigation into `## Code Map`: paths, symbols or lines, what to reuse, and what not to change. Implementation should work from the spec without being told the investigation again. For each Fork you listed, add one `## Open Questions` entry: the choice, the options, and what each option means. If `preserved_intent` is non-empty, replace the `<frozen-after-approval>` block with it before writing. Write the result to `{spec_file}`.
+5. Self-review against READY FOR DEVELOPMENT standard. For anything important that's missing: if the repository can tell you, go look and fix the spec; if a human has to decide, add an `## Open Questions` entry. Do not invent the answer.
 6. Token count check (see SCOPE STANDARD). If spec exceeds 1600 tokens:
    - Show user the token count.
    - HALT and give the user a choice:
@@ -34,11 +34,11 @@
        evidence: <why this was split from the current spec>
      ```
    - If the user chooses **Keep full spec**: Continue with the full spec.
-7. Drain Open Questions. While the spec's `## Open Questions` section is non-empty: present every entry as a numbered question with its options and each option's consequence, then HALT for the human's answers. Fold each answer into the `<frozen-after-approval>` block as a recorded decision and delete its entry. Then re-scan the design — an answer may create a new fork; add any as new entries and repeat. Never offer approval while entries remain. When the last entry resolves, delete the section.
+7. Ask the Open Questions. While the spec's `## Open Questions` section is not empty: present every entry as a numbered question with its options and what each option means, then HALT for the human's answers. Write each answer into the `<frozen-after-approval>` block as a decision and delete that entry. Then look at the plan again — an answer may create a new Fork; add any as new entries and repeat. Never offer approval while entries remain. When the last entry is gone, delete the section.
 
 ### CHECKPOINT 1
 
-Reachable only at zero open questions.
+Only when Open Questions is empty.
 
 Present summary. Display the spec file path in whatever form is clickable where you are presenting it (e.g. code citation in chat, CWD-relative path with no leading `/` in terminal). If unsure, use CWD-relative path. 
 
