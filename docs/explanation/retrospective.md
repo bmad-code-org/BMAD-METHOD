@@ -2,7 +2,7 @@
 title: 'Retrospective'
 description: Close out a finished epic by reading the evidence it left — the diff, the commits, the specs — and judging the result instead of trusting memory.
 sidebar:
-  order: 14
+  order: 13
 ---
 
 Run `bmad-retrospective` directly when an epic is done. It reads what the epic

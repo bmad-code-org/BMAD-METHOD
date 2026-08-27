@@ -2,7 +2,7 @@
 title: "Sprint Planning"
 description: One skill owns the sprint-status artifact end to end — gate the plan, generate the tracking, view the status, repair it when it breaks — with the mechanical work done by a deterministic script.
 sidebar:
-  order: 15
+  order: 14
 ---
 
 Run `bmad-sprint-planning` at the boundary between planning and implementation. It answers three questions with one skill: is this plan actually buildable (the readiness gate), what work exists and where does it stand (`sprint-status.yaml` generation), and where are we now (the status view). It also validates and repairs the tracking file itself. Say "check implementation readiness", "run sprint planning", "show sprint status", "validate sprint status", or "fix sprint status" — the skill detects which you want.
