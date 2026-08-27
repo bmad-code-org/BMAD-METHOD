@@ -54,9 +54,9 @@ Before approving, you can open the spec file in an editor or ask me questions an
 
 HALT and give the user a choice:
 
-- **[C] Approve & continue** — approve the spec and implement it in this session, directly from the spec: proceed to step-03 and take its no-subagent path (do not dispatch an implementation subagent), then step-04 as usual.
-- **[S] Approve & stop** — approve the spec, leave it `ready-for-dev`, and stop; a later `bmad-build` resume dispatches implementation via step-03 normally.
-- **[E] Edit** — apply the user's requested changes to the spec, then return to this checkpoint.
+- **Approve and continue** — approve the spec and proceed to implementation in this session.
+- **Approve and stop** — approve the spec, leave it `ready-for-dev`, and stop so a fresh `bmad-build` session can resume at implementation.
+- **Review spec** — review the spec, use a subagent if available, and discuss the findings and revisions with the user until the user is ready to approve, then either stop or continue.
 
 Before acting on approval, re-read `{spec_file}` from disk. If it is missing, HALT without recreating it, changing status, or proceeding. If it changed, acknowledge the external edits and continue with the updated version. Set status `ready-for-dev`; everything inside `<frozen-after-approval>` is then locked and only the human can change it.
 
