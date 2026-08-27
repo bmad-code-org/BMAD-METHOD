@@ -2,7 +2,7 @@
 title: Autonomous Development Loops
 description: Reference for automating the Build implementation model with bmad-build-auto as the single-iteration worker.
 sidebar:
-  order: 7
+  order: 6
 ---
 
 `bmad-build-auto` is the unattended worker for one session-sized unit in the

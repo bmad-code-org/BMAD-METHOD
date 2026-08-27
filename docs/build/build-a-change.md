@@ -124,6 +124,9 @@ different approach.
 - An implementation record for the run, kept beside the parent spec or story
   when there is one
 
+For generated API and end-to-end coverage of the finished work, see
+[Test Completed Work](test-completed-work.md).
+
 ## Deferred Work
 
 Each run stays focused on one goal. If your request contains several independent
