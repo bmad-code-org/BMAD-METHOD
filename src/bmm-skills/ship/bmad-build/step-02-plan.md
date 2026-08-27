@@ -10,6 +10,8 @@
 
 1. Draft resume check. If `{spec_file}` exists with `status: draft`, read it and capture the verbatim `<frozen-after-approval>...</frozen-after-approval>` block as `preserved_intent`. Otherwise `preserved_intent` is empty.
 2. Investigate codebase. _Isolate deep exploration in synchronous subagents/tasks where available. To prevent context snowballing, instruct subagents to give you distilled summaries only._ Decide which findings actually matter for execution — the specific files, symbols/lines, reuse points, and read-only constraints — and carry those forward for the Code Map. This is where the investigation lands: the spec preserves it so it is never re-narrated to the implementer at dispatch time.
+
+   Do not ask the human during investigation. When something is unclear, look for evidence in the repository, planning artifacts, or history first, and keep investigating until every evidence gap is closed; what evidence cannot settle is a fork for the route gate.
 3. Route gate. The design is now settled; report three facts about it. This is fact-reporting about a finished design, not prediction:
    - **Forks** — judgment calls where a defensible alternative exists and neither the intent nor codebase convention decides it. Test: for each "I chose X over Y" in the design, could a reasonable reviewer answer "actually, Y"?
    - **Irreversibles** — migrations, data deletion or mutation, external side effects, deploy or config triggers.
@@ -19,9 +21,8 @@
 
    **Any flag** → full spec. Set `route: 'dispatch'` and continue.
 4. Read `[[bmad-snapshot:spec-template.md]]` fully. Fill it out based on the intent and investigation, resolving the template's `date` field to the current system date. Drain the investigation into the `## Code Map` section — annotated paths, symbol/line anchors, reuse pointers, and read-only evidence — so the spec is the implementer's investigation map and the step-03 handoff need only point at it. Record each fork the gate reported as one `## Open Questions` entry: the choice, the defensible options, each option's consequence. If `preserved_intent` is non-empty, replace the `<frozen-after-approval>` block in the spec you just filled out with `preserved_intent`, before writing. Write the result to `{spec_file}`.
-5. Self-review against READY FOR DEVELOPMENT standard.
-6. If intent gaps exist, do not fantasize, HALT and ask the human.
-7. Token count check (see SCOPE STANDARD). If spec exceeds 1600 tokens:
+5. Self-review against READY FOR DEVELOPMENT standard. For each material gap, name what is missing: evidence the repository can supply → investigate and revise; a human decision → add an `## Open Questions` entry. Never close a material gap with an unsupported assumption.
+6. Token count check (see SCOPE STANDARD). If spec exceeds 1600 tokens:
    - Show user the token count.
    - HALT and give the user a choice:
      - **Split** — carve off secondary goals.
@@ -33,7 +34,7 @@
        evidence: <why this was split from the current spec>
      ```
    - If the user chooses **Keep full spec**: Continue with the full spec.
-8. Drain Open Questions. While the spec's `## Open Questions` section is non-empty: present every entry as a numbered question with its options and each option's consequence, then HALT for the human's answers. Fold each answer into the `<frozen-after-approval>` block as a recorded decision and delete its entry. Then re-scan the design — an answer may create a new fork; add any as new entries and repeat. Never offer approval while entries remain. When the last entry resolves, delete the section.
+7. Drain Open Questions. While the spec's `## Open Questions` section is non-empty: present every entry as a numbered question with its options and each option's consequence, then HALT for the human's answers. Fold each answer into the `<frozen-after-approval>` block as a recorded decision and delete its entry. Then re-scan the design — an answer may create a new fork; add any as new entries and repeat. Never offer approval while entries remain. When the last entry resolves, delete the section.
 
 ### CHECKPOINT 1
 
