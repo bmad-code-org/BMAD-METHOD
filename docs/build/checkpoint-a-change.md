@@ -1,16 +1,17 @@
 ---
-title: 'Review a Completed Change'
+title: 'Checkpoint a Change'
 description: Use bmad-checkpoint-preview to walk through a finished change and decide whether to approve, rework, or discuss further.
 sidebar:
   order: 2
 ---
 
-The review skill is `bmad-checkpoint-preview`. It walks you through a
-finished change — from purpose and context into details — so you can decide
-whether to approve, rework, or discuss further. See
+`bmad-checkpoint-preview` walks you through a finished change — from
+purpose and context into details — so you can decide whether to approve,
+rework, or discuss further. See
 [how a run works](#run-bmad-checkpoint-preview).
 
-This is human comprehension, not a substitute for automated review.
+This is human comprehension, not a substitute for the review `bmad-build`
+already ran, or for `bmad-code-review`.
 
 ## When to Use It
 
@@ -150,7 +151,8 @@ author-produced one, but far better than reading changes in file order.
 
 ## What It Is Not
 
-`bmad-checkpoint-preview` is not a substitute for automated review. It does
-not run linters, type checkers, or test suites. It does not assign severity
-scores or produce pass/fail verdicts. It is a reading guide that helps a
-human apply their judgment where it matters most.
+`bmad-checkpoint-preview` is not the review skill. It does not replace the
+review `bmad-build` already ran, a re-invoke of that run on a done story, or
+`bmad-code-review`. It does not run linters, type checkers, or test suites.
+It does not assign severity scores or produce pass/fail verdicts. It is a
+reading guide that helps a human apply their judgment where it matters most.
