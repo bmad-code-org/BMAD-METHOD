@@ -52,7 +52,7 @@ checkpoint
 ```
 
 ```text
-/bmad-checkpoint-preview Review https://github.com/org/repo/pull/42.
+/bmad-checkpoint-preview Review https://github.com/org/repo/pull/42
 ```
 
 The workflow has five steps. Each one builds on the last, shifting from
