@@ -4,8 +4,8 @@
  * Uses the source file's disk path (via vfile) to resolve the link target,
  * then computes the output URL relative to the content root directory.
  * This correctly handles Starlight's directory-per-page URL structure
- * where ./sibling.md from reference/testing.md must become /reference/sibling/
- * (not ./sibling/ which would resolve to /reference/testing/sibling/).
+ * where ./sibling.md from reference/commands.md must become /reference/sibling/
+ * (not ./sibling/ which would resolve to /reference/commands/sibling/).
  *
  * Supports: ./sibling.md, ../other/page.md, bare.md, /docs/absolute.md
  * Preserves: query strings, hash anchors

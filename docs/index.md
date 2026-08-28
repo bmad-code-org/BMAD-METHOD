@@ -23,11 +23,11 @@ You can use either group on its own. Many people run the thinking skills and
 never ask BMad to write a line of code, and a small fix can go straight to
 building with no planning at all.
 
-Use the smallest path that safely fits the work.
-[Choose a Development Path](./how-to/choose-a-development-path.md) is the
-complete routing guide, from a trivial edit to a multi-epic project.
-
 ## Find Your Starting Point
+
+**You are not sure how much process the change needs.**
+Use the smallest path that safely fits. [Choose a Development Path](./how-to/choose-a-development-path.md)
+is the complete routing guide, from a trivial edit to a multi-epic project.
 
 **You want to see it work.**
 [Build Your First Change](./start/build-your-first-change.md) walks through one build in an

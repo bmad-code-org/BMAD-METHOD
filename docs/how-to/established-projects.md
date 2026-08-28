@@ -107,5 +107,5 @@ Pay close attention here to prevent reinventing the wheel or making decisions th
 
 ## More Information
 
-- **[Build a Change](../build/build-a-change.md)** - Bug fixes and ad-hoc changes
+- **[Build a Change](../build/build-a-change.md)** - Attended implementation for a request, issue, spec, or story
 - **[Established Projects FAQ](../explanation/established-projects-faq.md)** - Common questions about working on established projects

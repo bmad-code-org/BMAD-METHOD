@@ -116,6 +116,7 @@ the program, and checked its work before showing you the result.
 
 1. [Install BMad in your own repository](./install-bmad.md), then run
    the `bmad-build` skill with a short description of a small change.
+   See [Build a Change](../build/build-a-change.md) for the attended path.
 2. Continue to [Getting Deeper](../tutorials/getting-deeper.md) for a small change in a
    mature codebase, followed by a larger change using a written spec.
 3. Use [Choose a Development Path](../how-to/choose-a-development-path.md) when

@@ -76,7 +76,11 @@ For how the readiness gate, deterministic tracking, and status view work togethe
 
 Implementation happens in session-sized units. `bmad-build` handles a unit
 attentively; `bmad-build-auto` handles one unit unattended. Larger planning
-paths create and preserve the context those units need.
+paths create and preserve the context those units need. See
+[Build a Change](../build/build-a-change.md) for the attended path,
+[Walk Through a Change](../build/walk-through-a-change.md) to walk a finished
+change, and [Test Completed Work](../build/test-completed-work.md) to choose a
+testing path.
 
 | Workflow              | Purpose                                                                        | Produces                                         |
 | --------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------ |

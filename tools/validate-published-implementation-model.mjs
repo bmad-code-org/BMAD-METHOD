@@ -3,6 +3,16 @@ import path from 'node:path';
 
 const CANONICAL_LLMS_ENTRY = '**[Build a Change]';
 const CANONICAL_LLMS_DESCRIPTION = 'Canonical implementation workflow for direct intent and fully planned work';
+const REQUIRED_LLMS_TITLES = ['**[Build a Change]', '**[Walk Through a Change]', '**[Test Completed Work]'];
+const REQUIRED_LLMS_ROUTES = ['/build/build-a-change/', '/build/walk-through-a-change/', '/build/test-completed-work/'];
+const SUPERSEDED_LLMS_ROUTES = [
+  '/how-to/quick-fixes/',
+  '/explanation/build/',
+  '/explanation/checkpoint-preview/',
+  '/reference/testing/',
+  '/build/review-a-completed-change/',
+  '/build/checkpoint-a-change/',
+];
 
 const FORBIDDEN_TERMS = [
   /\bbmad-(?:quick-dev|dev-auto)\b/gi,
@@ -30,6 +40,17 @@ export function validatePublishedImplementationModel(siteDir) {
   const llmsContent = fs.readFileSync(llmsPath, 'utf-8');
   if (!llmsContent.includes(CANONICAL_LLMS_ENTRY) || !llmsContent.includes(CANONICAL_LLMS_DESCRIPTION)) {
     throw new Error('llms.txt must describe Build as canonical for both direct intent and fully planned work');
+  }
+
+  const missingTitles = REQUIRED_LLMS_TITLES.filter((title) => !llmsContent.includes(title));
+  const missingRoutes = REQUIRED_LLMS_ROUTES.filter((route) => !llmsContent.includes(route));
+  if (missingTitles.length > 0 || missingRoutes.length > 0) {
+    throw new Error(`llms.txt must list the Build chapter pages: missing ${[...missingTitles, ...missingRoutes].join(', ')}`);
+  }
+
+  const staleRoutes = SUPERSEDED_LLMS_ROUTES.filter((route) => llmsContent.includes(route));
+  if (staleRoutes.length > 0) {
+    throw new Error(`llms.txt still lists superseded English routes: ${staleRoutes.join(', ')}`);
   }
 }
 

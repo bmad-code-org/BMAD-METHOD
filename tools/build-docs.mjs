@@ -163,9 +163,14 @@ function generateLlmsTxt(outputDir) {
     `- **[Build Your First Change](${siteUrl}/start/build-your-first-change/)** - Tutorial: install and learn how BMad works`,
     `- **[Installation](${siteUrl}/start/install-bmad/)** - How to install BMad Method`,
     '',
-    '## Core Concepts',
+    '## Build',
     '',
     `- **[Build a Change](${siteUrl}/build/build-a-change/)** - Canonical implementation workflow for direct intent and fully planned work`,
+    `- **[Walk Through a Change](${siteUrl}/build/walk-through-a-change/)** - Walk through a finished change and decide whether to approve, rework, or discuss`,
+    `- **[Test Completed Work](${siteUrl}/build/test-completed-work/)** - Choose a testing path after implementation`,
+    '',
+    '## Core Concepts',
+    '',
     `- **[Party Mode](${siteUrl}/explanation/party-mode/)** - Multi-agent collaboration`,
     `- **[Workflow Map](${siteUrl}/reference/workflow-map/)** - Visual overview of phases and workflows`,
     '',
@@ -249,12 +254,14 @@ function compareLlmDocs(a, b) {
 
 function getLlmSortKey(filePath) {
   if (filePath === 'index.md') return 0;
-  if (filePath.startsWith(`tutorials${path.sep}`) || filePath.startsWith('tutorials/')) return 2;
-  if (filePath.startsWith(`how-to${path.sep}`) || filePath.startsWith('how-to/')) return 3;
-  if (filePath.startsWith(`explanation${path.sep}`) || filePath.startsWith('explanation/')) return 4;
-  if (filePath.startsWith(`reference${path.sep}`) || filePath.startsWith('reference/')) return 5;
-  if (filePath.startsWith(`bmgd${path.sep}`) || filePath.startsWith('bmgd/')) return 6;
-  return 7;
+  if (filePath.startsWith(`start${path.sep}`) || filePath.startsWith('start/')) return 1;
+  if (filePath.startsWith(`build${path.sep}`) || filePath.startsWith('build/')) return 2;
+  if (filePath.startsWith(`tutorials${path.sep}`) || filePath.startsWith('tutorials/')) return 3;
+  if (filePath.startsWith(`how-to${path.sep}`) || filePath.startsWith('how-to/')) return 4;
+  if (filePath.startsWith(`explanation${path.sep}`) || filePath.startsWith('explanation/')) return 5;
+  if (filePath.startsWith(`reference${path.sep}`) || filePath.startsWith('reference/')) return 6;
+  if (filePath.startsWith(`bmgd${path.sep}`) || filePath.startsWith('bmgd/')) return 7;
+  return 8;
 }
 
 /**
