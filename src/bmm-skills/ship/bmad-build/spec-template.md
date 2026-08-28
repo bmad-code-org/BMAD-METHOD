@@ -45,8 +45,8 @@ context: [] # optional: `{project-root}/`-prefixed paths to project-wide standar
 
 ## Open Questions
 
-<!-- One entry per unresolved fork: a judgment call where a defensible alternative exists and
-     neither the intent nor codebase convention decides it. State the choice, the defensible
+<!-- One entry per intent gap: something the request does not say, the code cannot settle,
+     and the user would notice in the result. Choices the user would not notice are yours. State the choice, the defensible
      options, and each option's consequence. The spec cannot leave `draft` while any entry
      remains: when the human answers, record the decision inside <frozen-after-approval> and
      delete the entry. When no entries remain, DELETE THIS ENTIRE SECTION. -->

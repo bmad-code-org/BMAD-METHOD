@@ -18,7 +18,7 @@ Follow `[[bmad-snapshot:sync-sprint-status.md]]` with `target_status` = `in-prog
 
 Implement directly from `{spec_file}` — its Intent is the source of truth. As you work, append to its `## Implementation Notes` section: decisions made, files touched, surprises encountered.
 
-**Escalation ramp.** If implementation surfaces a fact the route gate did not see — a new fork (a judgment call a reasonable reviewer could answer differently), an irreversible action, or footprint growth beyond the designed scope — stop editing. Record the trigger in `## Implementation Notes`, then upgrade `{spec_file}`: reinstate `## Code Map` (populated from your live context) and `## Open Questions` (one entry per fork), set `route: 'dispatch'` and `status: 'draft'`. Return to `[[bmad-snapshot:step-02-plan.md]]` and resume at its Drain Open Questions instruction.
+**Escalation ramp.** If implementation surfaces a fact the route gate did not see — an intent gap (something the request does not say and the user would notice in the result), an irreversible action, or footprint growth beyond the designed scope — stop editing. Record the trigger in `## Implementation Notes`, then upgrade `{spec_file}`: reinstate `## Code Map` (populated from your live context) and `## Open Questions` (one entry per intent gap), set `route: 'dispatch'` and `status: 'draft'`. Return to `[[bmad-snapshot:step-02-plan.md]]` and resume at its gate instruction (step 6).
 
 ### Review
 

@@ -80,11 +80,12 @@ expensive kind of mistake to find later.
 ### 4. Approve a Plan When Asked
 
 After investigation, `bmad-build` routes to the smallest safe path. It reports
-three facts about the settled design: judgment calls a reviewer could answer
-differently (forks), irreversible actions, and footprint. A design clean on all
-three takes the light path — a minimal spec and implementation in the same
-session, reviewed afterwards. Anything flagged gets a full written plan first,
-with each fork recorded as an open question you answer before approval.
+three facts about the settled design: intent gaps (things you did not say that you
+would notice in the result), irreversible actions, and footprint. A design
+clean on all three takes the light path — a minimal spec and implementation in
+the same session, reviewed afterwards. Anything flagged gets a full written
+plan first, with each intent gap recorded as an open question you answer
+before approval.
 
 Approve the plan when it describes the right thing to build. Push back if it
 does not — fixing the plan is cheaper than fixing the code.
