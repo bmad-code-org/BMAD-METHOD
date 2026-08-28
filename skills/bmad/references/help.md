@@ -45,7 +45,7 @@ Implementation and quality:
   loop dispatches. Do not choose it for attended work.
 - `bmad-code-review` — optional extra review of any change, on top of
   Build's built-in review.
-- `bmad-checkpoint-preview` — guided human walkthrough of a change.
+- `bmad-walkthrough` — guided human walkthrough of a change.
 - `bmad-qa-generate-e2e-tests` — generates API and end-to-end tests for
   implemented code.
 - `bmad-retrospective` — judges a completed epic as a whole against its spec.
@@ -126,7 +126,7 @@ this does not prove completion. Then:
   `bmad-sprint-planning`'s status action.
 - After a Build: `bmad-code-review` is an optional extra gate; offer
   `bmad-qa-generate-e2e-tests` when automated coverage is wanted and
-  `bmad-checkpoint-preview` when a human wants a walkthrough. Recommend
+  `bmad-walkthrough` when a human wants a walkthrough. Recommend
   repeated `bmad-code-review` after material fixes until remaining findings
   no longer affect acceptance. Keep in mind that both build skills have a
   review step, and each `bmad-code-review` run can take up to half an hour or
