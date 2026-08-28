@@ -169,19 +169,30 @@ decisions may set patterns for later work. Once those patterns are stable,
 `bmad-build-auto` can run one unit without waiting for you; see
 [Autonomous Development Loops](../reference/build-auto.md).
 
-## Why It Works This Way
+## Why Does This Take So Long? I Could Plan Mode and Code It in Ten Minutes
 
-LLMs can see what looks important, not what actually is. Without your
-attention, the whole thing quickly falls apart.
+You can. Plan mode plus a coding agent will give you a diff in about that
+time. `bmad-build` often takes longer because it spends that extra inference
+on every judgment that does not need you: what the change is, what the repo
+already knows, what to build, whether the result is wrong, which findings to
+fix, which to skip.
 
-Ten minutes of inference is usually cheaper than ten seconds of your
-attention. Watching every step yourself is a slog of Continue — keep going,
-yes, proceed. That part is tedious, unnecessary, and it turns you into the
-bottleneck.
+That is also the work you do in plan mode. You read, you decide, you hit
+Continue, you skim, you ask for a fix, you Continue again. Ten minutes of
+your attention, plus the model sitting there between clicks. Ten seconds of
+that attention cost more than ten minutes of inference.
 
-`bmad-build` hands the "go on"s to the machine. It keeps your attention in a
-few places that actually need you — open questions evidence cannot resolve,
-approving the plan on the full path, and reviewing the finished change — and
-brings you back only when it could not safely decide alone. That triage will
-sometimes be imperfect. Missing a low-value finding is usually better than
-flooding you with noise.
+`bmad-build` hands the "go on"s to the machine. It brings you back for the
+calls it could not safely make — open questions evidence cannot settle,
+approving the plan on the full path, and looking at the finished change.
+The rest is investigate, implement, review, triage, and fix. The long tail
+is that last part; see [Review a Change](review-a-change.md). Skipping it is
+how ten-minute diffs land in production.
+
+For a throwaway you will review yourself, skip the process; see
+[Size the Work](#size-the-work). For anything that could escape, the wait
+is the point.
+
+Do not take anyone's word for it. Pick a handful of changes you would
+actually ship, do them both ways, and look at what the extra pass found.
+Or maybe plan mode is faster, and `bmad-build` is inferior. Same test.
