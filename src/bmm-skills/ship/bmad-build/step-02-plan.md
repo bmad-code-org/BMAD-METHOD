@@ -22,19 +22,16 @@
    Otherwise write the full spec. Set `route: 'dispatch'` and continue.
 4. Read `[[bmad-snapshot:spec-template.md]]` fully. Fill it out from the intent and investigation, resolving the template's `date` field to the current system date. Put the investigation into `## Code Map`: paths, symbols or lines, what to reuse, and what not to change. Implementation should work from the spec without being told the investigation again. For each Fork you listed, add one `## Open Questions` entry: the choice, the options, and what each option means. If `preserved_intent` is non-empty, replace the `<frozen-after-approval>` block with it before writing. Write the result to `{spec_file}`.
 5. Self-review against READY FOR DEVELOPMENT standard. For anything important that's missing: if the repository can tell you, go look and fix the spec; if a human has to decide, add an `## Open Questions` entry. Do not invent the answer.
-6. Token count check (see SCOPE STANDARD). If spec exceeds 1600 tokens:
-   - Show user the token count.
-   - HALT and give the user a choice:
-     - **Split** — carve off secondary goals.
+6. Resolve the gates before the checkpoint. Two things must be settled, in whatever order the conversation makes natural; combine them in one message when both apply.
+   - **Token count** (see SCOPE STANDARD). If the spec exceeds 1600 tokens, show the count and give the user a choice:
+     - **Split** — carve off secondary goals. Propose the split — name each secondary goal. For each deferred goal, append one new entry to `{{.implementation_artifacts}}/deferred-work.md` using the format below. Do not modify existing entries or look for duplicates. Rewrite the current spec to cover only the main goal — do not surgically carve sections out; regenerate the spec for the narrowed scope.
      - **Keep full spec** — accept the risks.
-   - If the user chooses **Split**: Propose the split — name each secondary goal. For each deferred goal, append one new entry to `{{.implementation_artifacts}}/deferred-work.md` using this format. Do not modify existing entries or look for duplicates. Rewrite the current spec to cover only the main goal — do not surgically carve sections out; regenerate the spec for the narrowed scope. Continue to checkpoint.
      ```markdown
      - source_spec: `{spec_file}`
        summary: <one sentence naming the deferred goal>
        evidence: <why this was split from the current spec>
      ```
-   - If the user chooses **Keep full spec**: Continue with the full spec.
-7. Ask the Open Questions. While the spec's `## Open Questions` section is not empty: present every entry as a numbered question with its options and what each option means, then HALT for the human's answers. Write each answer into the `<frozen-after-approval>` block as a decision and delete that entry. Then look at the plan again — an answer may create a new Fork; add any as new entries and repeat. Never offer approval while entries remain. When the last entry is gone, delete the section.
+   - **Open Questions.** Present every entry as a numbered question with its options and what each option means, and HALT for the human's answers. Write each answer into the `<frozen-after-approval>` block as a decision and delete the entry. An answer may expose a new fork — add it and ask again. Until every entry is gone, nothing inside `<frozen-after-approval>` may assume an answer: leave the dependent boundary, matrix row, or example out and fill it in from the decision. When the last entry is gone, delete the section.
 
 ### CHECKPOINT 1
 
