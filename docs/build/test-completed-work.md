@@ -13,7 +13,7 @@ or a release gate, install the Test Architect (TEA) module instead. See
 [how a run works](#run-bmad-qa-generate-e2e-tests).
 
 This is generated coverage of finished work. It is not code review, and it
-is not the manual observations in [Checkpoint a Change](checkpoint-a-change.md).
+is not the manual observations in [Walk Through a Change](walk-through-a-change.md).
 
 ## Which Path?
 
@@ -106,6 +106,6 @@ finished work, or step up to TEA.
 
 You can run built-in QA after one change. You do not have to wait for an
 epic to finish. A typical sequence is implement with `bmad-build`,
-optionally [walk through the result](checkpoint-a-change.md), then generate
+optionally [walk through the result](walk-through-a-change.md), then generate
 coverage here. After a whole epic, `bmad-retrospective` is a different
 check — it judges the epic against its spec, not the test suite.
