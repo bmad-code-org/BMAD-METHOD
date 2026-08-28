@@ -14,7 +14,7 @@ deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 
 ### 1. Clean review shortcut
 
-If zero findings remain after triage (all dismissed or none raised): state that and proceed to section 6 (Sprint Status Update).
+If zero findings remain after triage (all rejected or none raised): state that and proceed to section 6 (Sprint Status Update).
 
 ### 2. Write findings to the story file
 
@@ -27,7 +27,7 @@ If `{spec_file}` exists and contains a Tasks/Subtasks section, append a `### Rev
    `- [ ] [Review][Patch] <Title> [<file>:<line>]`
 
 3. **`defer`** findings (checked off, marked deferred):
-   `- [x] [Review][Defer] <Title> [<file>:<line>] — deferred, pre-existing`
+   `- [x] [Review][Defer] <Title> [<file>:<line>] — deferred: <pre-existing, or for maybe-false the evidence that would settle it>`
 
 Also append each `defer` finding to `{deferred_work_file}` under a heading `## Deferred from: code review ({date})`. If `{spec_file}` is set, include its basename in the heading (e.g., `code review of story-3.3 (2026-03-18)`). One bullet per finding with description.
 
@@ -35,16 +35,16 @@ Also append each `defer` finding to `{deferred_work_file}` under a heading `## D
 
 Announce what was written:
 
-> **Code review complete.** <D> `decision-needed`, <P> `patch`, <W> `defer`, <R> dismissed.
+> **Code review complete.** <D> `decision-needed`, <P> `patch`, <W> `defer`, <R> rejected.
 
-The findings report ends with a `Dismissed` appendix — one line per dismissed finding: the finding and the reason that disposed of its claim — in the story file's `### Review Findings` section when `{spec_file}` is set, at the tail of the chat listing otherwise.
+The findings report ends with a `Rejected` appendix — one line per rejected finding: `false` with its refutation, `low` with why it was not worth fixing — in the story file's `### Review Findings` section when `{spec_file}` is set, at the tail of the chat listing otherwise.
 
 If `{spec_file}` is set, add: `Findings written to the review findings section in {spec_file}.`
 Otherwise add: `Findings are listed above. No story file was provided, so nothing was persisted.`
 
 ### 4. Resolve decision-needed findings
 
-If `decision_needed` findings exist, present each one with its detail and the options available. The user must decide — the correct fix is ambiguous without their input. Walk through each finding (or batch related ones) and get the user's call. Once resolved, each becomes a `patch`, `defer`, or is dismissed.
+If `decision_needed` findings exist, present each one with its detail and the options available. The user must decide — the correct fix is ambiguous without their input. Walk through each finding (or batch related ones) and get the user's call. Once resolved, each becomes a `patch`, `defer`, or is rejected.
 
 If the user chooses to defer, ask: Quick one-line reason for deferring this item? (helps future reviews): — then append that reason to both the story file bullet and the `{deferred_work_file}` entry.
 
@@ -80,7 +80,7 @@ If `{spec_file}` is **not** set, present only options 1 and 2 (omit "Leave as ac
 - Decision-needed resolved: <D>
 - Patches handled: <P>
 - Deferred: <W>
-- Dismissed: <R>
+- Rejected: <R>
 
 ### 6. Update story status and sync sprint tracking
 
@@ -88,7 +88,7 @@ Skip this section if `{spec_file}` is not set.
 
 #### Determine new status based on review outcome
 
-- If all `decision-needed` and `patch` findings were resolved (fixed or dismissed) AND no unresolved `high`/`medium` findings remain: set `{new_status}` = `done`. Update the story file Status section to `done`.
+- If all `decision-needed` and `patch` findings were resolved (fixed or rejected) AND no unresolved `high`/`medium` findings remain: set `{new_status}` = `done`. Update the story file Status section to `done`.
 - If `patch` findings were left as action items, or unresolved issues remain: set `{new_status}` = `in-progress`. Update the story file Status section to `in-progress`.
 
 Save the story file.
@@ -114,7 +114,7 @@ If `{sprint_status}` file does not exist, note that story status was updated in 
 > **Issues Fixed:** <fixed_count>
 > **Action Items Created:** <action_count>
 > **Deferred:** <W>
-> **Dismissed:** <R>
+> **Rejected:** <R>
 
 ### 7. Next steps
 
