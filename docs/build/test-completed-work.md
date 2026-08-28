@@ -1,35 +1,37 @@
 ---
 title: 'Test Completed Work'
-description: Choose a testing path after implementation — built-in QA for generated coverage, or TEA when you need strategy, traceability, or release gates.
+description: Choose a generate skill after implementation — simple coverage with bmad-qa-generate-e2e-tests, or heavier coverage with bmad-testarch-automate.
 sidebar:
   order: 4
 ---
 
 After a change is implemented, decide whether it needs more automated
-coverage and which BMad path should produce it. The built-in skill is
-`bmad-qa-generate-e2e-tests`. It generates API and end-to-end tests for
-code that already exists. If you need test strategy, risk-based planning,
-or a release gate, install the Test Architect (TEA) module instead. See
-[how a run works](#run-bmad-qa-generate-e2e-tests).
+coverage and which generate skill should produce it. Both
+`bmad-qa-generate-e2e-tests` and `bmad-testarch-automate` generate tests
+from code that already exists. The built-in skill stays simple. Automate
+is the heavier generate: fixtures, more test levels, and knowledge-base
+patterns. See [how the built-in skill runs](#run-bmad-qa-generate-e2e-tests).
 
 This is generated coverage of finished work. It is not code review, and it
 is not the manual observations in [Walk Through a Change](walk-through-a-change.md).
 
 ## Which Path?
 
-| Factor | Built-in QA | TEA |
+| Factor | `bmad-qa-generate-e2e-tests` | `bmad-testarch-automate` |
 | --- | --- | --- |
-| **Best for** | Coverage for implemented features | Strategy, traceability, or a release gate |
+| **Best for** | Simple coverage of implemented features | Heavier coverage of the same kind of work |
 | **Setup** | Included with BMM | Install the TEA module |
-| **Approach** | Generate tests from the code that exists | Plan first, then generate with traceability |
-| **What it covers** | API and E2E tests | Design, ATDD, automation, review, NFRs, and gates |
-| **Strategy** | Happy path plus a few critical errors | Risk-based (P0–P3) |
+| **Approach** | Generate from the code that exists | Same, standalone; optional test design improves the run |
+| **What it covers** | API and E2E; happy path plus a few errors | API, E2E, fixtures, more patterns; optional component tests |
 
 :::tip[Start with built-in QA]
-Most projects should start with `bmad-qa-generate-e2e-tests`. Install TEA
-when you need a test strategy, quality gates, or requirements traceability
-that this skill does not produce.
+Most projects should start with `bmad-qa-generate-e2e-tests`. Use
+`bmad-testarch-automate` when you want the heavier generate of the same
+kind of work.
 :::
+
+Other TEA skills — test design, trace, ATDD, test review, NFRs, and gates —
+are available. They are not the default generate path.
 
 ## Run `bmad-qa-generate-e2e-tests`
 
@@ -77,20 +79,25 @@ cases, no hardcoded waits, descriptions that read as feature documentation.
 implementation — that is `bmad-build` during the run, or
 [`bmad-code-review`](review-a-change.md) if you want another pass.
 
-It does not produce a test strategy, risk ranking, requirements
-traceability, NFR evidence, or a go/no-go gate. It does not load a PRD or
-architecture to map coverage back to requirements. Happy path plus a few
-critical errors is the ceiling; more edge cases are follow-up work.
+Happy path plus a few critical errors is the ceiling, and it does not
+compose complex fixtures. More edge cases are follow-up work, or a
+reason to use Automate.
 
 ## When to Use TEA
 
-Install TEA when the built-in skill is not enough:
+Install the TEA module when you want `bmad-testarch-automate` — heavier
+generate of the same kind of work. Automate still generates from existing
+code and can run standalone.
 
-- The project needs requirements traceability or compliance evidence
-- Tests must be prioritized by risk across many features
-- A formal quality gate decides whether a release ships
-- Test strategy has to exist before tests are written
-- The work has outgrown one generate-and-run skill
+`bmad-testarch-test-design` is optional before Automate. It improves the
+run; it is not a prerequisite.
+
+`bmad-testarch-trace` is optional after generation, to check coverage. It
+is not part of generate.
+
+ATDD is for features that do not exist yet. Test review, NFR assessment,
+and release gates are available when you need them. They are not required
+to generate tests.
 
 TEA is a separate module. Its current workflows, commands, and setup live
 in the [TEA documentation](https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/).
@@ -101,8 +108,7 @@ for how modules are selected.
 
 [`bmad-build`](build-a-change.md) implements a change and, if a suite
 already exists, aims to leave those tests passing. This page is the next
-testing decision: generate additional API and E2E coverage for that
-finished work, or step up to TEA.
+testing decision: generate additional coverage for that finished work.
 
 You can run built-in QA after one change. You do not have to wait for an
 epic to finish. A typical sequence is implement with `bmad-build`,
