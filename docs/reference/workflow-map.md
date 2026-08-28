@@ -78,6 +78,7 @@ Implementation happens in session-sized units. `bmad-build` handles a unit
 attentively; `bmad-build-auto` handles one unit unattended. Larger planning
 paths create and preserve the context those units need. See
 [Build a Change](../build/build-a-change.md) for the attended path,
+[Review a Change](../build/review-a-change.md) for a standalone review,
 [Walk Through a Change](../build/walk-through-a-change.md) to walk a finished
 change, and [Test Completed Work](../build/test-completed-work.md) to choose a
 testing path.
@@ -86,7 +87,7 @@ testing path.
 | --------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------ |
 | `bmad-build`          | Implement and review one direct intent or planned story with human checkpoints | Implementation record + code                     |
 | `bmad-build-auto`     | Implement and review one unit unattended for a caller or orchestrator          | Implementation record + code + terminal status   |
-| `bmad-code-review`    | Ad hoc review of any code change                                               | Findings + applied patches                       |
+| `bmad-code-review`    | Ad hoc review of any code change. See [Review a Change](../build/review-a-change.md) | Findings + applied patches                       |
 | `bmad-correct-course` | Handle significant mid-sprint changes                                          | Updated plan or re-routing                       |
 | `bmad-retrospective`  | Evidence-based review of a completed epic against its acceptance criteria      | Retro document, action items, acceptance verdict |
 

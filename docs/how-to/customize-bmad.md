@@ -260,6 +260,23 @@ persistent_facts = [
 on_complete = "Summarize the brief in three bullets and offer to email it via the gws-gmail-send skill."
 ```
 
+`bmad-code-review` already ships `[[workflow.review_layers]]`. A sparse override looks like this; merge follows the array-of-tables rule above. See [Review a Change](../build/review-a-change.md) for empty `instruction`, `when`, and a new `id`.
+
+```toml
+# _bmad/custom/bmad-code-review.toml
+[[workflow.review_layers]]
+id = "blind-hunter"
+instruction = ""
+[[workflow.review_layers]]
+id = "security-bot"
+name = "Security bot"
+instruction = """
+Run the team reviewer via bash on {diff_file} and return its findings as a Markdown list.
+"""
+```
+
+That does not delete the default row; the skill skips a layer whose `instruction` is empty.
+
 The same field conventions cross the agent/workflow boundary: `activation_steps_prepend`/`activation_steps_append`, `persistent_facts` (with `file:` refs), and menu-style `[[…]]` tables with `code`/`id` for keyed merge. The resolver applies the same four structural rules regardless of the top-level key. SKILL.md references follow the namespace: `{workflow.activation_steps_prepend}`, `{workflow.persistent_facts}`, `{workflow.on_complete}`. Any additional fields a workflow exposes (output paths, toggles, review settings, stage flags) follow the same shape-based merge rules. Read the workflow's `customize.toml` to see what's customizable.
 
 ### Activation Order
@@ -279,7 +296,7 @@ After step 6 the workflow body begins. Use `activation_steps_prepend` when you n
 
 Customization is rolling out incrementally. The fields documented above — `activation_steps_prepend`, `activation_steps_append`, `persistent_facts`, `on_complete` — are the **baseline surface** that every customizable workflow exposes, and they will remain stable across versions. They give you broad-stroke control today: inject pre/post steps, pin foundational context, trigger follow-up actions.
 
-Over time, individual workflows will expose **more targeted customization points** tailored to what that workflow actually does — things like step-specific toggles, stage flags, output template paths, or review gates. When those arrive, they stack on top of the baseline fields rather than replacing them, so customizations you author today keep working.
+Over time, individual workflows will expose **more targeted customization points** tailored to what that workflow actually does — things like step-specific toggles, stage flags, or output template paths. Some already ship: `bmad-code-review` exposes `[[workflow.review_layers]]` today. When more arrive, they stack on top of the baseline fields rather than replacing them, so customizations you author today keep working.
 
 If you need a fine-grained knob that isn't exposed yet, either use `activation_steps_*` and `persistent_facts` to steer behavior, or open an issue describing the specific customization point you want — those requests are what drive which targeted fields get added next.
 

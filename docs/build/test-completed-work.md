@@ -2,7 +2,7 @@
 title: 'Test Completed Work'
 description: Choose a testing path after implementation — built-in QA for generated coverage, or TEA when you need strategy, traceability, or release gates.
 sidebar:
-  order: 3
+  order: 4
 ---
 
 After a change is implemented, decide whether it needs more automated
@@ -74,8 +74,8 @@ cases, no hardcoded waits, descriptions that read as feature documentation.
 ## Limits
 
 `bmad-qa-generate-e2e-tests` generates tests only. It does not review the
-implementation — that is `bmad-build` during the run, or `bmad-code-review`
-if you want another pass.
+implementation — that is `bmad-build` during the run, or
+[`bmad-code-review`](review-a-change.md) if you want another pass.
 
 It does not produce a test strategy, risk ranking, requirements
 traceability, NFR evidence, or a go/no-go gate. It does not load a PRD or

@@ -103,6 +103,9 @@ code is wrong because the plan was weak, or the plan is wrong because the goal
 was wrong, it goes back to that layer and regenerates from there instead of
 patching only the diff.
 
+For a standalone review — a PR, someone else's change, an extra pass, or a
+review bot — see [Review a Change](review-a-change.md).
+
 ### 6. Review the Result
 
 When it finishes, `bmad-build` shows you the completed change and its review

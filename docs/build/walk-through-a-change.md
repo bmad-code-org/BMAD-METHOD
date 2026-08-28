@@ -2,7 +2,7 @@
 title: 'Walk Through a Change'
 description: Use bmad-walkthrough to walk through a finished change and decide whether to approve, rework, or discuss further.
 sidebar:
-  order: 2
+  order: 3
 ---
 
 `bmad-walkthrough` walks you through a finished change — from purpose and
@@ -10,7 +10,7 @@ context into details — so you can decide whether to approve, rework, or
 discuss further. See [how a run works](#run-bmad-walkthrough).
 
 This is human comprehension, not a substitute for the review `bmad-build`
-already ran, or for `bmad-code-review`.
+already ran, or for [`bmad-code-review`](review-a-change.md).
 
 ## When to Use It
 
@@ -129,8 +129,8 @@ perspective:
   reconsider and refine its analysis of a specific area
 - **"party mode on whether this schema migration is safe"** — bring multiple
   agent perspectives into a focused debate
-- **"run code review"** — generate structured agentic findings with
-  adversarial and edge-case analysis
+- **"run code review"** — a triaged agentic review; see
+  [Review a Change](review-a-change.md)
 
 The walkthrough workflow doesn't lock you into a linear path. It gives you
 structure when you want it and gets out of the way when you want to explore.
@@ -151,7 +151,7 @@ author-produced one, but far better than reading changes in file order.
 ## What It Is Not
 
 `bmad-walkthrough` is not the review skill. It does not replace the review
-`bmad-build` already ran, a re-invoke of that run on a done story, or
-`bmad-code-review`. It does not run linters, type checkers, or test suites.
-It does not assign severity scores or produce pass/fail verdicts. It is a
-reading guide that helps a human apply their judgment where it matters most.
+`bmad-build` already ran, or [`bmad-code-review`](review-a-change.md).
+It does not run linters, type checkers, or test suites. It does not
+assign severity scores or produce pass/fail verdicts. It is a reading
+guide that helps a human apply their judgment where it matters most.

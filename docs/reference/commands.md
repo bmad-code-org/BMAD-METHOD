@@ -98,7 +98,7 @@ Workflow skills run a structured, multi-step process without loading an agent pe
 | `bmad-architecture` | Design system architecture |
 | `bmad-create-epics-and-stories` | Create epics and stories |
 | `bmad-build` | Implement direct intent, an issue, a feature, a fix, or a planned story. See [Build a Change](../build/build-a-change.md) |
-| `bmad-code-review` | Run a code review |
+| `bmad-code-review` | Run a code review. See [Review a Change](../build/review-a-change.md) |
 | `bmad-build-auto` | Automate one unattended iteration of the Build implementation model |
 
 See [Workflow Map](./workflow-map.md) for the complete workflow reference organized by phase.

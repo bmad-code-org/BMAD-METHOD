@@ -28,6 +28,11 @@ export default defineConfig({
     '/fr/explanation/checkpoint-preview': `${basePath}fr/build/walk-through-a-change/`,
     '/vi-vn/explanation/checkpoint-preview': `${basePath}vi-vn/build/walk-through-a-change/`,
     '/zh-cn/explanation/checkpoint-preview': `${basePath}zh-cn/build/walk-through-a-change/`,
+    '/explanation/adversarial-review': `${basePath}build/review-a-change/`,
+    '/fr/explanation/adversarial-review': `${basePath}build/review-a-change/`,
+    '/cs/explanation/adversarial-review': `${basePath}build/review-a-change/`,
+    '/vi-vn/explanation/adversarial-review': `${basePath}build/review-a-change/`,
+    '/zh-cn/explanation/adversarial-review': `${basePath}build/review-a-change/`,
     '/reference/testing': `${basePath}build/test-completed-work/`,
     '/fr/how-to/non-interactive-installation': `${basePath}fr/how-to/install-bmad/`,
     '/cs/how-to/non-interactive-installation': `${basePath}cs/how-to/install-bmad/`,
@@ -126,6 +131,16 @@ export default defineConfig({
                 'cs-CZ': 'Sestavit změnu',
               },
               slug: 'build/build-a-change',
+            },
+            {
+              label: 'Review a Change',
+              translations: {
+                'vi-VN': 'Rà soát một thay đổi',
+                'zh-CN': '审查一个变更',
+                'fr-FR': 'Examiner un changement',
+                'cs-CZ': 'Zkontrolovat změnu',
+              },
+              slug: 'build/review-a-change',
             },
             {
               label: 'Walk Through a Change',
