@@ -1,5 +1,5 @@
 module,skill,display-name,menu-code,description,action,args,phase,preceded-by,followed-by,required,output-location,outputs
-BMad Method,_meta,,,,,,,,,false,https://docs.bmad-method.org/llms.txt,
+BMad Method,_meta,,,,,,,,,false,https://docs.bmad-method.org/,
 BMad Method,bmad-project-context,Project Context,PC,"Set up or refresh a repo's agent instructions so AI agents work well in it: verified commands, policy, conventions that differ from defaults, and known pitfalls. Setup, refresh, record, and audit — replaces document-project and generate-project-context.",,,anytime,,,false,repo root,AGENTS.md managed block
 BMad Method,bmad-build,Build,BD,"The standard implementation flow: clarify intent, plan, implement, review, and present.",,,ship,bmad-sprint-planning,bmad-code-review,true,implementation_artifacts,spec and project implementation
 BMad Method,bmad-spec,Spec,SPC,"Condense any input (brief, PRD, transcript, brain dump, design folder, or several sources at once) into a short SPEC.md plus supporting files that later work builds from. Pins down what to build before deciding how. Works for software, game design, research, editorial, policy, business — anything with an intent behind it. Can also validate an existing spec.",,[path],anytime,,,false,{output_folder}/specs/spec-{slug},SPEC.md + companion files

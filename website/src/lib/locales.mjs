@@ -3,7 +3,6 @@
  *
  * Single source of truth for locale definitions used by:
  *   - website/astro.config.mjs  (Starlight i18n)
- *   - tools/build-docs.mjs      (llms-full.txt locale exclusion)
  *   - website/src/pages/404.astro (client-side locale redirect)
  *
  * The root locale (English) uses Starlight's 'root' key convention

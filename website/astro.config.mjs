@@ -80,31 +80,6 @@ export default defineConfig({
       // Show last updated timestamps
       lastUpdated: true,
 
-      // Custom head tags for LLM discovery
-      head: [
-        {
-          tag: 'meta',
-          attrs: {
-            name: 'ai-terms',
-            content: `AI-optimized documentation: ${siteUrl}/llms-full.txt (plain text, ~100k tokens, complete BMAD reference). Index: ${siteUrl}/llms.txt`,
-          },
-        },
-        {
-          tag: 'meta',
-          attrs: {
-            name: 'llms-full',
-            content: `${siteUrl}/llms-full.txt`,
-          },
-        },
-        {
-          tag: 'meta',
-          attrs: {
-            name: 'llms',
-            content: `${siteUrl}/llms.txt`,
-          },
-        },
-      ],
-
       // Custom CSS
       customCss: ['./src/styles/custom.css'],
 

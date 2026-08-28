@@ -40,7 +40,7 @@ Clone or open the [BMAD-METHOD repo](https://github.com/bmad-code-org/BMAD-METHO
 
 ### Not using an agent? Use the docs site
 
-If your AI can't read local files (ChatGPT, Claude.ai, etc.), fetch [llms-full.txt](https://bmad-code-org.github.io/BMAD-METHOD/llms-full.txt) into your session — it's a single-file snapshot of the BMad documentation.
+If your AI can't read local files (ChatGPT, Claude.ai, etc.), open [the BMad docs site](https://docs.bmad-method.org/).
 
 ## 3. Ask Someone
 
