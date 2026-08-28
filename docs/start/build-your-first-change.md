@@ -1,20 +1,20 @@
 ---
 title: 'Getting Started'
 description: Install BMad and build a small Python program
-sidebar:
-  order: 1
 ---
 
 BMad can help you plan and build anything from a small bug fix to a project with
 a million lines of code. Let's start with something small.
 
 Already have a repository and a small change you want to make?
-[Install BMad there](../how-to/install-bmad.md), open your coding tool in the
+[Install BMad there](./install-bmad.md), open your coding tool in the
 repository, and run the installed `bmad-build` skill. Talk to it about the
 change you want, and it will make it happen.
 
 Otherwise, start here. You will make a working Python program in an empty
-project.
+project. This tutorial follows the
+[one-session development path](../how-to/choose-a-development-path.md): one
+coherent request goes directly to the `bmad-build` skill.
 
 :::note[Before You Start]
 Use a macOS or Linux shell with Node.js 20.12+, Python 3, and a coding tool
@@ -114,7 +114,10 @@ the program, and checked its work before showing you the result.
 
 ## Keep Building
 
-1. [Install BMad in your own repository](../how-to/install-bmad.md), then run
+1. [Install BMad in your own repository](./install-bmad.md), then run
    the `bmad-build` skill with a short description of a small change.
-2. Continue to [Getting Deeper](./getting-deeper.md) for a small change in a
+   See [Build a Change](../build/build-a-change.md) for the attended path.
+2. Continue to [Getting Deeper](../tutorials/getting-deeper.md) for a small change in a
    mature codebase, followed by a larger change using a written spec.
+3. Use [Choose a Development Path](../how-to/choose-a-development-path.md) when
+   your next change may need several implementation sessions or multiple epics.

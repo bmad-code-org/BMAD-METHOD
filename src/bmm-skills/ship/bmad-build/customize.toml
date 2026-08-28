@@ -138,7 +138,7 @@ Do not invoke any skill, and do not spawn subagents of your own — you are the 
 
 """
 
-# Review layers for the one-shot route.
+# Review layers for the in-session (light) route.
 
 [[workflow.oneshot_review_layers]]
 id = "blind-hunter"

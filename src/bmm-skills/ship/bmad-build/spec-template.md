@@ -3,6 +3,7 @@ title: '{title}'
 type: 'feature' # feature | bugfix | refactor | chore
 created: '{date}'
 status: 'draft' # draft | ready-for-dev | in-progress | in-review | done
+route: '' # in-session | dispatch — set by step-02's route gate after design
 review_loop_iteration: 0 # incremented by step-04 before each review loopback
 context: [] # optional: `{project-root}/`-prefixed paths to project-wide standards/docs the implementation agent should load. Keep short — only what isn't already distilled into the spec body.
 ---
@@ -25,6 +26,7 @@ context: [] # optional: `{project-root}/`-prefixed paths to project-wide standar
 ## Boundaries & Constraints
 
 <!-- Two tiers: Always = invariant rules. Never = out of scope + forbidden approaches. -->
+<!-- If step-02's route gate reported all facts clean (route: 'in-session'), DELETE THIS ENTIRE SECTION. -->
 
 **Always:** INVARIANT_RULES
 
@@ -41,9 +43,20 @@ context: [] # optional: `{project-root}/`-prefixed paths to project-wide standar
 
 </frozen-after-approval>
 
+## Open Questions
+
+<!-- One entry per intent gap: something the request does not say, the code cannot settle,
+     and the user would notice in the result. Choices the user would not notice are yours. State the choice, the defensible
+     options, and each option's consequence. The spec cannot leave `draft` while any entry
+     remains: when the human answers, record the decision inside <frozen-after-approval> and
+     delete the entry. When no entries remain, DELETE THIS ENTIRE SECTION. -->
+
+- CHOICE — options: OPTION_A (CONSEQUENCE_A) / OPTION_B (CONSEQUENCE_B)
+
 ## Code Map
 
 <!-- Agent-populated during planning. Annotated paths prevent blind codebase searching. -->
+<!-- If step-02's route gate reported all facts clean (route: 'in-session'), DELETE THIS ENTIRE SECTION. -->
 
 - `FILE` -- ROLE_OR_RELEVANCE
 - `FILE` -- ROLE_OR_RELEVANCE
@@ -53,12 +66,18 @@ context: [] # optional: `{project-root}/`-prefixed paths to project-wide standar
 <!-- Tasks: backtick-quoted file path -- action -- rationale. Prefer one task per file; group tightly-coupled changes when splitting would be artificial. -->
 <!-- If an I/O Matrix is present, include a task to unit-test its edge cases. -->
 <!-- AC covers system-level behaviors not captured by the I/O Matrix. Do not duplicate I/O scenarios here. -->
+<!-- If step-02's route gate reported all facts clean (route: 'in-session'), DELETE THIS ENTIRE SECTION. -->
 
 **Execution:**
 - [ ] `FILE` -- ACTION -- RATIONALE
 
 **Acceptance Criteria:**
 - Given PRECONDITION, when ACTION, then EXPECTED_RESULT
+
+## Implementation Notes
+
+<!-- Agent-owned. Append-only during implementation: decisions made, files touched, surprises
+     encountered. Leave empty at planning time; never delete this section. -->
 
 ## Spec Change Log
 

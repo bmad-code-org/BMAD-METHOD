@@ -1,21 +1,21 @@
 ---
-title: "Xem trước Checkpoint"
+title: "Đi qua một thay đổi"
 description: Review có người trong vòng lặp với hỗ trợ của LLM, dẫn bạn đi qua thay đổi từ mục đích đến chi tiết
 sidebar:
-  order: 8
+  order: 1
 ---
 
-`bmad-checkpoint-preview` là một workflow review tương tác có người trong vòng lặp với hỗ trợ của LLM. Nó dẫn bạn đi qua một thay đổi mã nguồn, từ mục đích và bối cảnh đến các chi tiết quan trọng, để bạn có thể quyết định có nên phát hành, làm lại, hay đào sâu thêm.
+`bmad-walkthrough` là một workflow review tương tác có người trong vòng lặp với hỗ trợ của LLM. Nó dẫn bạn đi qua một thay đổi mã nguồn, từ mục đích và bối cảnh đến các chi tiết quan trọng, để bạn có thể quyết định có nên phát hành, làm lại, hay đào sâu thêm.
 
-![Sơ đồ workflow Checkpoint Preview](/diagrams/checkpoint-preview-diagram.png)
+![Sơ đồ workflow Walkthrough](/diagrams/walkthrough-diagram.png)
 
 ## Luồng điển hình
 
 Bạn chạy `bmad-build`. Nó làm rõ ý định của bạn, dựng spec, triển khai thay đổi, rồi khi xong sẽ nối thêm một review trail vào file spec và mở file đó trong editor. Bạn nhìn vào spec và thấy thay đổi này chạm tới 20 file, trải trên nhiều module.
 
-Bạn có thể tự liếc diff. Nhưng khoảng 20 file là lúc cách đó bắt đầu kém hiệu quả: bạn mất mạch, bỏ sót liên hệ giữa hai thay đổi ở xa nhau, hoặc duyệt một thứ mà bạn chưa thực sự hiểu. Thay vì vậy, bạn nói "checkpoint" và LLM sẽ dẫn bạn đi qua thay đổi.
+Bạn có thể tự liếc diff. Nhưng khoảng 20 file là lúc cách đó bắt đầu kém hiệu quả: bạn mất mạch, bỏ sót liên hệ giữa hai thay đổi ở xa nhau, hoặc duyệt một thứ mà bạn chưa thực sự hiểu. Thay vì vậy, bạn nói "walkthrough" và LLM sẽ dẫn bạn đi qua thay đổi.
 
-Điểm bàn giao đó, từ triển khai tự động quay lại phán đoán của con người, chính là tình huống sử dụng chính. Build có thể chạy khá lâu với rất ít giám sát. Checkpoint Preview là nơi bạn cầm lại tay lái.
+Điểm bàn giao đó, từ triển khai tự động quay lại phán đoán của con người, chính là tình huống sử dụng chính. Build có thể chạy khá lâu với rất ít giám sát. Walkthrough là nơi bạn cầm lại tay lái.
 
 ## Vì sao nó tồn tại
 
@@ -23,7 +23,7 @@ Code review có hai kiểu thất bại. Kiểu đầu là người review lư�
 
 Vấn đề cốt lõi nằm ở thứ tự tiếp nhận. Một raw diff trình bày thay đổi theo thứ tự file, gần như không bao giờ là thứ tự giúp xây dựng hiểu biết. Bạn thấy một helper function trước khi biết vì sao nó tồn tại. Bạn thấy một schema change trước khi hiểu tính năng nào đang dùng nó. Người review phải tự dựng lại ý đồ của tác giả từ những manh mối rời rạc, và chính ở bước dựng lại đó sự tập trung thường bị đứt.
 
-Checkpoint Preview giải quyết việc này bằng cách để LLM làm phần dựng lại. Nó đọc diff, spec nếu có, và codebase xung quanh, rồi trình bày thay đổi theo một thứ tự phục vụ việc hiểu, chứ không theo `git diff`.
+Walkthrough giải quyết việc này bằng cách để LLM làm phần dựng lại. Nó đọc diff, spec nếu có, và codebase xung quanh, rồi trình bày thay đổi theo một thứ tự phục vụ việc hiểu, chứ không theo `git diff`.
 
 ## Nó hoạt động như thế nào
 
@@ -67,7 +67,7 @@ Workflow trình bày từng bước như một điểm khởi đầu, không ph�
 - **"party mode on whether this schema migration is safe"** - kéo nhiều góc nhìn agent vào một cuộc tranh luận tập trung
 - **"run code review"** - tạo ra các phát hiện có cấu trúc với phân tích đối kháng và edge case
 
-Workflow checkpoint không khóa bạn vào một đường đi tuyến tính. Nó cho bạn cấu trúc khi bạn cần, và tránh cản đường khi bạn muốn tự khám phá. Năm bước ở đây để bảo đảm bạn nhìn được toàn cảnh, còn việc đi sâu đến mức nào ở mỗi bước và gọi thêm công cụ nào hoàn toàn là do bạn quyết định.
+Workflow Walkthrough không khóa bạn vào một đường đi tuyến tính. Nó cho bạn cấu trúc khi bạn cần, và tránh cản đường khi bạn muốn tự khám phá. Năm bước ở đây để bảo đảm bạn nhìn được toàn cảnh, còn việc đi sâu đến mức nào ở mỗi bước và gọi thêm công cụ nào hoàn toàn là do bạn quyết định.
 
 ## Lộ trình review (Review Trail)
 
@@ -77,7 +77,7 @@ Nếu không có review trail do tác giả tạo, workflow sẽ tự sinh một
 
 ## Khi nào nên dùng
 
-Tình huống chính là bước bàn giao sau `bmad-build`: phần triển khai đã xong, file spec đang mở trong editor với review trail đã được nối thêm, và bạn cần quyết định có nên phát hành hay không. Lúc đó chỉ cần nói "checkpoint" là bắt đầu.
+Tình huống chính là bước bàn giao sau `bmad-build`: phần triển khai đã xong, file spec đang mở trong editor với review trail đã được nối thêm, và bạn cần quyết định có nên phát hành hay không. Lúc đó chỉ cần nói "walkthrough" là bắt đầu.
 
 Nó cũng hoạt động độc lập:
 
@@ -85,8 +85,8 @@ Nó cũng hoạt động độc lập:
 - **Làm quen với một thay đổi (onboard to a change)** - khi bạn cần hiểu chuyện gì đã xảy ra trên một branch mà bạn không phải người viết
 - **Review sprint (sprint review)** - workflow có thể nhặt các story được đánh dấu `review` trong file trạng thái sprint của bạn
 
-Bạn có thể gọi nó bằng cách nói "checkpoint" hoặc "dẫn tôi đi qua thay đổi này". Nó chạy được trong mọi terminal, nhưng sẽ phát huy tốt nhất trong IDE như VS Code, Cursor hoặc công cụ tương tự, vì workflow tạo tham chiếu `path:line` ở mọi bước. Trong terminal tích hợp của IDE, các tham chiếu đó có thể bấm được, nên bạn có thể nhảy qua lại giữa các file khi đi theo review trail.
+Bạn có thể gọi nó bằng cách nói "walkthrough" hoặc "dẫn tôi đi qua thay đổi này". Nó chạy được trong mọi terminal, nhưng sẽ phát huy tốt nhất trong IDE như VS Code, Cursor hoặc công cụ tương tự, vì workflow tạo tham chiếu `path:line` ở mọi bước. Trong terminal tích hợp của IDE, các tham chiếu đó có thể bấm được, nên bạn có thể nhảy qua lại giữa các file khi đi theo review trail.
 
 ## Nó không phải là gì
 
-Checkpoint Preview không thay thế review tự động. Nó không chạy linter, type checker, hay test suite. Nó không chấm mức độ nghiêm trọng hay đưa ra kết luận pass/fail. Nó là một bản hướng dẫn đọc để giúp con người áp dụng phán đoán của mình vào đúng những chỗ đáng chú ý nhất.
+Walkthrough không thay thế review tự động. Nó không chạy linter, type checker, hay test suite. Nó không chấm mức độ nghiêm trọng hay đưa ra kết luận pass/fail. Nó là một bản hướng dẫn đọc để giúp con người áp dụng phán đoán của mình vào đúng những chỗ đáng chú ý nhất.

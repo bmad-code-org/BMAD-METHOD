@@ -17,7 +17,18 @@ export default defineConfig({
   base: basePath,
   outDir: '../build/site',
   redirects: {
-    '/how-to/non-interactive-installation': `${basePath}how-to/install-bmad/`,
+    '/how-to/install-bmad': `${basePath}start/install-bmad/`,
+    '/how-to/non-interactive-installation': `${basePath}start/install-bmad/`,
+    '/tutorials/getting-started': `${basePath}start/build-your-first-change/`,
+    '/how-to/quick-fixes': `${basePath}build/build-a-change/`,
+    '/explanation/build': `${basePath}build/build-a-change/`,
+    '/explanation/checkpoint-preview': `${basePath}build/walk-through-a-change/`,
+    '/build/review-a-completed-change': `${basePath}build/walk-through-a-change/`,
+    '/build/checkpoint-a-change': `${basePath}build/walk-through-a-change/`,
+    '/fr/explanation/checkpoint-preview': `${basePath}fr/build/walk-through-a-change/`,
+    '/vi-vn/explanation/checkpoint-preview': `${basePath}vi-vn/build/walk-through-a-change/`,
+    '/zh-cn/explanation/checkpoint-preview': `${basePath}zh-cn/build/walk-through-a-change/`,
+    '/reference/testing': `${basePath}build/test-completed-work/`,
     '/fr/how-to/non-interactive-installation': `${basePath}fr/how-to/install-bmad/`,
     '/cs/how-to/non-interactive-installation': `${basePath}cs/how-to/install-bmad/`,
     '/ko-kr/how-to/non-interactive-installation': `${basePath}ko-kr/how-to/install-bmad/`,
@@ -70,40 +81,84 @@ export default defineConfig({
       // Show last updated timestamps
       lastUpdated: true,
 
-      // Custom head tags for LLM discovery
-      head: [
-        {
-          tag: 'meta',
-          attrs: {
-            name: 'ai-terms',
-            content: `AI-optimized documentation: ${siteUrl}/llms-full.txt (plain text, ~100k tokens, complete BMAD reference). Index: ${siteUrl}/llms.txt`,
-          },
-        },
-        {
-          tag: 'meta',
-          attrs: {
-            name: 'llms-full',
-            content: `${siteUrl}/llms-full.txt`,
-          },
-        },
-        {
-          tag: 'meta',
-          attrs: {
-            name: 'llms',
-            content: `${siteUrl}/llms.txt`,
-          },
-        },
-      ],
-
       // Custom CSS
       customCss: ['./src/styles/custom.css'],
 
-      // Sidebar configuration (Diataxis structure)
+      // Sidebar configuration
       sidebar: [
         {
-          label: 'Welcome',
-          translations: { 'ko-KR': '환영합니다', 'vi-VN': 'Chào mừng', 'zh-CN': '欢迎', 'fr-FR': 'Bienvenue', 'cs-CZ': 'Vítejte' },
-          slug: 'index',
+          label: 'Start',
+          translations: { 'ko-KR': '시작하기', 'vi-VN': 'Bắt đầu', 'zh-CN': '开始', 'fr-FR': 'Démarrer', 'cs-CZ': 'Začít' },
+          collapsed: false,
+          items: [
+            {
+              label: 'Welcome',
+              translations: { 'ko-KR': '환영합니다', 'vi-VN': 'Chào mừng', 'zh-CN': '欢迎', 'fr-FR': 'Bienvenue', 'cs-CZ': 'Vítejte' },
+              slug: 'index',
+            },
+            {
+              label: 'Install BMad',
+              translations: {
+                'ko-KR': 'BMad 설치',
+                'vi-VN': 'Cách cài đặt BMad',
+                'zh-CN': '如何安装 BMad',
+                'fr-FR': 'Comment installer BMad',
+                'cs-CZ': 'Jak nainstalovat BMad',
+              },
+              slug: 'start/install-bmad',
+            },
+            {
+              label: 'Build Your First Change',
+              translations: {
+                'ko-KR': '첫 번째 변경 사항 구현하기',
+                'vi-VN': 'Bắt đầu',
+                'zh-CN': '快速入门',
+                'fr-FR': 'Premiers pas',
+                'cs-CZ': 'Začínáme',
+              },
+              slug: 'start/build-your-first-change',
+            },
+          ],
+        },
+        {
+          label: 'Build',
+          translations: { 'ko-KR': 'Build', 'vi-VN': 'Xây dựng', 'zh-CN': '构建', 'fr-FR': 'Construire', 'cs-CZ': 'Sestavit' },
+          collapsed: false,
+          items: [
+            {
+              label: 'Build a Change',
+              translations: {
+                'ko-KR': '변경 사항 구현하기',
+                'vi-VN': 'Xây dựng một thay đổi',
+                'zh-CN': '构建一个变更',
+                'fr-FR': 'Construire un changement',
+                'cs-CZ': 'Sestavit změnu',
+              },
+              slug: 'build/build-a-change',
+            },
+            {
+              label: 'Walk Through a Change',
+              translations: {
+                'ko-KR': '변경 사항 살펴보기',
+                'vi-VN': 'Đi qua một thay đổi',
+                'zh-CN': '走查一个变更',
+                'fr-FR': 'Parcourir un changement',
+                'cs-CZ': 'Projít změnu',
+              },
+              slug: 'build/walk-through-a-change',
+            },
+            {
+              label: 'Test Completed Work',
+              translations: {
+                'ko-KR': '완료된 작업 테스트하기',
+                'vi-VN': 'Kiểm thử công việc đã xong',
+                'zh-CN': '测试已完成的工作',
+                'fr-FR': 'Tester le travail terminé',
+                'cs-CZ': 'Otestovat dokončenou práci',
+              },
+              slug: 'build/test-completed-work',
+            },
+          ],
         },
         {
           label: 'Tutorials',
@@ -203,11 +258,6 @@ export default defineConfig({
             },
           ],
         },
-        {
-          label: 'Roadmap',
-          translations: { 'ko-KR': '로드맵', 'vi-VN': 'Lộ trình', 'zh-CN': '路线图', 'fr-FR': 'Feuille de route', 'cs-CZ': 'Plán rozvoje' },
-          slug: 'roadmap',
-        },
       ],
 
       // Credits in footer
@@ -223,6 +273,7 @@ export default defineConfig({
       components: {
         Header: './src/components/Header.astro',
         MobileMenuFooter: './src/components/MobileMenuFooter.astro',
+        Sidebar: './src/components/Sidebar.astro',
       },
 
       // Table of contents
