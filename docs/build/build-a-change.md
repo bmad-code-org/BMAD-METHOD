@@ -171,28 +171,20 @@ decisions may set patterns for later work. Once those patterns are stable,
 
 ## Why Does This Take So Long? I Could Plan Mode and Code It in Ten Minutes
 
-You can. Plan mode plus a coding agent will give you a diff in about that
-time. `bmad-build` often takes longer because it spends that extra inference
-on every judgment that does not need you: what the change is, what the repo
-already knows, what to build, whether the result is wrong, which findings to
-fix, which to skip.
+You can. The plan-and-implement half of `bmad-build` usually takes about as
+long, and it usually needs a couple fewer turns from you. It then reviews
+the result thoroughly, triages the findings, and automatically fixes the
+ones worth fixing. "Plan mode and code" does none of this. You have to
+invoke a review by hand, then spend time disposing of every finding —
+including the noisy and unrelated ones. See
+[Review a Change](review-a-change.md).
 
-That is also the work you do in plan mode. You read, you decide, you hit
-Continue, you skim, you ask for a fix, you Continue again. Ten minutes of
-your attention, plus the model sitting there between clicks. Ten seconds of
-that attention cost more than ten minutes of inference.
+Human attention is by far the most expensive resource, and the
+productivity bottleneck in AI-backed software development.
 
-`bmad-build` hands the "go on"s to the machine. It brings you back for the
-calls it could not safely make — open questions evidence cannot settle,
-approving the plan on the full path, and looking at the finished change.
-The rest is investigate, implement, review, triage, and fix. The long tail
-is that last part; see [Review a Change](review-a-change.md). Skipping it is
-how ten-minute diffs land in production.
-
-For a throwaway you will review yourself, skip the process; see
-[Size the Work](#size-the-work). For anything that could escape, the wait
-is the point.
-
-Do not take anyone's word for it. Pick a handful of changes you would
-actually ship, do them both ways, and look at what the extra pass found.
-Or maybe plan mode is faster, and `bmad-build` is inferior. Same test.
+For a throwaway prototype, or a trivial change you will review yourself,
+skip the process; see [Size the Work](#size-the-work). Or tell
+`bmad-build` to take the one-shot route, or to skip review. But if you are
+serious about the quality of the product, just let the process run and spend
+your attention where it is irreplaceable. That extra time and inference
+is worth it.
