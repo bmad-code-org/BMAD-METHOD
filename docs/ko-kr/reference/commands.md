@@ -97,7 +97,7 @@ IDE에서 스킬 이름을 입력해 호출합니다. 일부 플랫폼은 스킬
 | `bmad-ux` | 사용자 경험 설계 |
 | `bmad-architecture` | 시스템 아키텍처 설계 |
 | `bmad-create-epics-and-stories` | 에픽과 스토리 생성 |
-| `bmad-build` | 직접 입력한 의도, 이슈, 기능, 수정 또는 계획된 스토리 구현 |
+| `bmad-build` | 직접 입력한 의도, 이슈, 기능, 수정 또는 계획된 스토리 구현. [변경 사항 구현하기](../build/build-a-change.md) 참고 |
 | `bmad-code-review` | 코드 리뷰 실행 |
 | `bmad-build-auto` | Build 구현 모델을 사람 개입 없이 한 번 자동 실행 |
 

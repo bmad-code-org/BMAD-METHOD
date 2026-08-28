@@ -2,7 +2,7 @@
 title: 'BMad 관련 질문에 답을 얻는 방법'
 description: LLM을 사용해 BMad 관련 질문에 빠르게 답하기
 sidebar:
-  order: 4
+  order: 9
 ---
 
 BMad의 내장 도움말, 소스 문서, 커뮤니티를 사용해 답을 얻으세요. 가장 빠른 방법부터 가장 꼼꼼한 방법까지 순서대로 소개합니다.
@@ -40,7 +40,7 @@ BMad 도움말은 설치된 설정을 바탕으로 답합니다. BMad의 내부 
 
 ### 에이전트를 쓰지 않는다면 문서 사이트 사용
 
-AI가 로컬 파일을 읽을 수 없다면(ChatGPT, Claude.ai 등), 세션에 [llms-full.txt](https://bmad-code-org.github.io/BMAD-METHOD/llms-full.txt)를 불러오세요. BMad 문서를 한 파일에 모은 스냅샷입니다.
+AI가 로컬 파일을 읽을 수 없다면(ChatGPT, Claude.ai 등) [BMad 문서 사이트](https://docs.bmad-method.org/)를 여세요.
 
 ## 3. 사람에게 묻기
 

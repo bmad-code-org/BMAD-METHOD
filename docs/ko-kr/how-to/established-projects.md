@@ -2,7 +2,7 @@
 title: '기존 프로젝트'
 description: 기존 코드베이스에서 BMad Method를 사용하는 방법
 sidebar:
-  order: 6
+  order: 4
 ---
 
 기존 프로젝트와 레거시 코드베이스에서 작업할 때 BMad Method를 효과적으로 사용하세요.
@@ -107,5 +107,5 @@ UX 작업은 선택 사항입니다. 결정 기준은 프로젝트에 UX가 있�
 
 ## 더 보기
 
-- **[빠른 수정](./quick-fixes.md)** - 버그 수정과 계획 밖의 변경
+- **[변경 사항 구현하기](../build/build-a-change.md)** - 요청, 이슈, 사양 또는 스토리를 사람이 살펴보며 구현
 - **[기존 프로젝트 FAQ](../explanation/established-projects-faq.md)** - 기존 프로젝트 작업에 대한 일반 질문

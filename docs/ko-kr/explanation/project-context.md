@@ -2,7 +2,7 @@
 title: "프로젝트 컨텍스트"
 description: bmad-project-context가 저장소의 에이전트 지침을 작성하는 방식 — AGENTS.md에 작고 검증된 블록을 추가합니다
 sidebar:
-  order: 10
+  order: 8
 ---
 
 `bmad-project-context`는 AI 에이전트가 저장소에서 제대로 작업할 수 있도록 환경을 정비합니다. 산출물은 저장소의 `AGENTS.md` 안에 들어가는 간결하고 검증된 규칙 블록입니다. 조직이 요구하는 사항, 실제로 실행해 확인한 명령, 일반적인 예상과 다른 규칙, 에이전트가 이 저장소에서 반복하는 실수를 기록합니다.

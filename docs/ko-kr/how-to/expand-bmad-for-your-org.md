@@ -2,14 +2,14 @@
 title: '조직을 위해 BMad 확장하기'
 description: 포크 없이 BMad를 재구성하는 여섯 가지 커스터마이징 패턴 - 에이전트 전반 규칙, 워크플로 관례, 외부 게시, 템플릿 교체, 에이전트 명단 변경, 고급 통합 패턴
 sidebar:
-  order: 9
+  order: 7
 ---
 
 BMad의 커스터마이징 영역을 사용하면 설치된 파일을 수정하거나 스킬을 포크하지 않고도 조직에 맞게 동작을 바꿀 수 있습니다. 이 가이드는 대부분의 엔터프라이즈 요구를 다루는 여섯 가지 레시피를 소개합니다.
 
 :::note[필수 조건]
 
-- 프로젝트에 BMad 설치([BMad 설치 방법](./install-bmad.md) 참고)
+- 프로젝트에 BMad 설치([BMad 설치 방법](../start/install-bmad.md) 참고)
 - 커스터마이징 모델 이해([BMad 커스터마이징 방법](./customize-bmad.md) 참고)
 - PATH의 Python 3.11+(병합 스크립트용, stdlib만 사용하며 `pip install` 불필요)
 :::

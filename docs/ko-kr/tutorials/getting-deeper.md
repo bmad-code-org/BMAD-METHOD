@@ -2,13 +2,13 @@
 title: '더 깊이 알아보기'
 description: Build와 BMad Spec으로 특정 Django 버전의 명령 확장하기
 sidebar:
-  order: 2
+  order: 1
 ---
 
-작은 프로젝트에서 Build를 사용해 봤다면 이제 특정 버전의 Django에 적용해 볼 차례입니다. 먼저 범위가 분명한 명령 변경 하나를 구현합니다. 그다음 하나의 BMad Spec으로 정의한 관련 스토리 세 개를 구현합니다.
+작은 프로젝트에서 Build를 사용해 봤다면 이제 특정 버전의 Django에 적용해 볼 차례입니다. 먼저 범위가 분명한 명령 변경 하나를 구현합니다. 그다음 하나의 BMad Spec으로 정의한 관련 스토리 세 개를 구현합니다. 두 실습에서는 [단일 세션 경로와 에픽 규모 개발 경로](../how-to/choose-a-development-path.md)를 차례로 살펴봅니다.
 
 :::note[필수 조건]
-Git, Node.js 20.12+와 `npx`, [uv](https://docs.astral.sh/uv/getting-started/installation/), BMad가 지원하는 코딩 도구가 설치된 macOS 또는 Linux 셸을 사용하세요. 계속하기 전에 [시작하기](./getting-started.md)를 완료하세요. 아래 설치 및 실행 명령은 Claude Code를 기준으로 합니다. 다른 지원 도구에서도 Build를 실행할 수 있습니다. VS Code는 선택 사항이지만 있으면 편리합니다. `code` 명령을 사용할 수 있으면 Build가 완성된 작업을 VS Code에서 직접 열어 줍니다.
+Git, Node.js 20.12+와 `npx`, [uv](https://docs.astral.sh/uv/getting-started/installation/), BMad가 지원하는 코딩 도구가 설치된 macOS 또는 Linux 셸을 사용하세요. 계속하기 전에 [첫 변경 사항 구현하기](../start/build-your-first-change.md)를 완료하세요. 아래 설치 및 실행 명령은 Claude Code를 기준으로 합니다. 다른 지원 도구에서도 Build를 실행할 수 있습니다. VS Code는 선택 사항이지만 있으면 편리합니다. `code` 명령을 사용할 수 있으면 Build가 완성된 작업을 VS Code에서 직접 열어 줍니다.
 :::
 
 ## 1. 정확한 Django 버전 체크아웃하기
@@ -138,7 +138,7 @@ BMad Spec은 `_bmad-output/specs/spec-diffsettings-audit/`에 사양 하나를 �
 
 ## 9. 세 스토리 구현하기
 
-각 스토리마다 Build를 한 번씩 순서대로 실행합니다. 한 번의 Build 실행을 끝내고 다음 스토리로 넘어가세요. 모든 실행에서 같은 사양을 사용합니다.
+각 스토리마다 Build를 한 번씩 순서대로 실행합니다. 한 번의 Build 실행을 끝내고 다음 스토리로 넘어가세요. 모든 실행에서 같은 사양을 사용합니다. 필터링, 마스킹, 종료 동작이 어떻게 맞물리는지를 정하는 스토리이므로 이번에는 사람이 직접 살펴보며 실행합니다. 이후 에픽에서 안정된 패턴을 반복한다면 자동화에 더 적합할 수 있습니다.
 
 ### 스토리 1: 필터
 
@@ -211,12 +211,20 @@ printf 'exit: %s\n' "$?"
 
 JSON에는 `SECRET_KEY`만 포함됩니다. 앞에서 선택한 JSON 구조가 노출하는 현재 값과 기본값은 모두 `[REDACTED]`입니다. 원래 값은 어느 쪽도 나타나지 않습니다. 실제 값은 여전히 다르므로 마지막 줄은 `exit: 1`입니다.
 
-## 11. 함께 작동하는 스토리
-
 첫 실습에서는 범위가 분명한 변경 하나를 Build에 직접 요청했습니다. 이번 실습에서는 세 번의 Build 실행에 사양 하나를 공유했습니다. 마지막에도 필터링, 마스킹, CI 상태가 함께 작동합니다. 성숙한 Django 명령을 확장했으며 최종 결과는 처음 요청한 동작을 그대로 수행합니다.
 
 결과를 여러 관점에서 살펴보고 싶다면 마지막에 `/bmad-party-mode`를 실행할 수 있습니다. 이 튜토리얼을 마치는 데 꼭 필요하지는 않습니다.
 
+## 11. 에픽 검토하기
+
+사양 폴더를 지정해 Retrospective를 실행하세요.
+
+```text
+/bmad-retrospective _bmad-output/specs/spec-diffsettings-audit/
+```
+
+Retrospective는 `stories.yaml`을 에픽의 스토리 목록으로 사용하고 각 스토리의 구현 기록을 읽습니다. 그런 다음 통합된 결과를 `SPEC.md`와 대조해 같은 사양 폴더에 `RETROSPECTIVE.md`를 작성합니다. 근거, 인수 판정, 제안된 후속 작업을 검토하세요.
+
 ## 12. 계속 만들기
 
-이제 [내 저장소에 BMad를 설치](../how-to/install-bmad.md)하고 `bmad-build` 스킬로 원하는 변경 사항을 만들어 보세요.
+이제 [내 저장소에 BMad를 설치](../start/install-bmad.md)하고 `bmad-build` 스킬로 원하는 변경 사항을 만들어 보세요. 사람이 참여하는 경로는 [변경 사항 구현하기](../build/build-a-change.md)를 참고하세요. 변경에 사양, 자동화 또는 전체 프로젝트 흐름이 필요한지 판단하려면 [개발 경로 선택하기](../how-to/choose-a-development-path.md)를 사용하세요.

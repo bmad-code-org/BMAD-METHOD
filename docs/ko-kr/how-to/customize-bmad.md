@@ -2,7 +2,7 @@
 title: 'BMad 커스터마이징 방법'
 description: 업데이트 호환성을 유지하면서 에이전트와 워크플로를 커스터마이징합니다
 sidebar:
-  order: 7
+  order: 5
 ---
 
 설치된 파일은 그대로 둔 채 에이전트 페르소나를 조정하고 도메인 컨텍스트와 기능을 추가하며 워크플로 동작을 설정하세요. 커스터마이징은 업데이트 후에도 유지됩니다.
@@ -21,7 +21,7 @@ sidebar:
 
 :::note[필수 조건]
 
-- 프로젝트에 BMad 설치([BMad 설치 방법](./install-bmad.md) 참고)
+- 프로젝트에 BMad 설치([BMad 설치 방법](../start/install-bmad.md) 참고)
 - PATH에서 실행 가능한 [`uv`](https://docs.astral.sh/uv/). BMad는 `uv run`으로 해석 스크립트를 실행합니다. `uv`가 적합한 Python을 준비하므로 Python을 직접 설치할 필요가 없습니다. 스크립트는 표준 라이브러리의 `tomllib`만 사용하므로 `pip install`할 항목도 없습니다
 - TOML 파일을 편집할 텍스트 에디터
 :::

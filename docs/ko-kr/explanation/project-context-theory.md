@@ -2,7 +2,7 @@
 title: "프로젝트 컨텍스트의 이론"
 description: bmad-project-context가 적은 정보만 수집하는 이유, 저장소의 에이전트 지침에 포함할 기준, 의도적으로 제외하는 정보
 sidebar:
-  order: 11
+  order: 9
 ---
 
 `bmad-project-context`는 다소 불편한 발견에서 출발했습니다. AI 에이전트를 *위해* 작성한 문서 대부분이 오히려 에이전트의 성능을 떨어뜨린다는 사실입니다. 이 문서에서는 이 스킬이 무엇을 왜 수집하는지, 더 중요하게는 무엇을 의도적으로 수집하지 않는지 설명합니다. `bmad-document-project` 또는 `bmad-generate-project-context`에서 넘어왔다면 마지막 절에서 무엇이 바뀌었는지 정확히 확인할 수 있습니다.

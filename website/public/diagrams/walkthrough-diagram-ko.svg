@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1510" height="1356" viewBox="0 0 1510 1356" role="img" aria-labelledby="title description">
+  <title id="title">변경 사항 둘러보기 워크플로</title>
+  <desc id="description">bmad-build 사양 파일, PR, 커밋 또는 브랜치에서 시작해 방향 잡기, 둘러보기, 상세 검토, 테스트, 마무리를 차례로 진행한 뒤 승인, 재작업 또는 논의를 선택합니다.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#151515"/>
+    </marker>
+    <marker id="arrow-muted" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c8790"/>
+    </marker>
+  </defs>
+
+  <rect width="1510" height="1356" fill="#fbfbfb"/>
+  <g font-family="Apple SD Gothic Neo, Noto Sans KR, Avenir Next, Segoe UI, sans-serif">
+    <text x="755" y="74" fill="#101010" font-size="48" font-weight="700" text-anchor="middle">변경 사항 둘러보기</text>
+
+    <g fill="#e7eaed" stroke="#7c8790" stroke-width="4">
+      <rect x="25" y="105" width="375" height="104" rx="18"/>
+      <rect x="25" y="250" width="375" height="104" rx="18"/>
+    </g>
+    <g fill="#111" font-size="25" font-weight="600" text-anchor="middle">
+      <text x="212" y="148">bmad-build</text>
+      <text x="212" y="181">사양 파일</text>
+      <text x="212" y="293">PR / 커밋</text>
+      <text x="212" y="326">브랜치</text>
+    </g>
+
+    <g fill="none" stroke="#151515" stroke-width="6" stroke-linecap="round" marker-end="url(#arrow)">
+      <path d="M400 157L548 191"/>
+      <path d="M400 302L548 216"/>
+      <path d="M769 253V356"/>
+      <path d="M769 464V566"/>
+      <path d="M769 674V776"/>
+      <path d="M769 884V986"/>
+    </g>
+
+    <g fill="#a9d8f6" stroke="#0879c9" stroke-width="5">
+      <rect x="550" y="145" width="438" height="108" rx="22"/>
+      <rect x="550" y="356" width="438" height="108" rx="22"/>
+      <rect x="550" y="566" width="438" height="108" rx="22"/>
+      <rect x="550" y="776" width="438" height="108" rx="22"/>
+      <rect x="550" y="986" width="438" height="108" rx="22"/>
+    </g>
+    <g fill="#111" font-size="38" font-weight="700" text-anchor="middle">
+      <text x="769" y="214">방향 잡기</text>
+      <text x="769" y="425">둘러보기</text>
+      <text x="769" y="635">상세 검토</text>
+      <text x="769" y="845">테스트</text>
+      <text x="769" y="1055">마무리</text>
+    </g>
+
+    <g fill="#66727c" font-size="21" font-weight="500">
+      <text x="1015" y="175">의도 요약</text>
+      <text x="1015" y="208">영향 범위 통계</text>
+
+      <text x="1015" y="386">관심사별 구성</text>
+      <text x="1015" y="419">클릭 가능한 path:line 지점</text>
+
+      <text x="1015" y="584">영향이 큰 위험부터 확인</text>
+      <text x="1015" y="617">"[영역]을 더 파고들어 줘"</text>
+      <text x="1015" y="650">라고 말해 상세 확인</text>
+
+      <text x="1015" y="806">수동 확인</text>
+      <text x="1015" y="839">작동하는 모습 확인</text>
+    </g>
+
+    <path d="M548 410C410 600 366 850 548 1035" fill="none" stroke="#7c8790" stroke-width="5" stroke-linecap="round" stroke-dasharray="15 16" marker-end="url(#arrow-muted)"/>
+    <text x="307" y="710" fill="#7c8790" font-size="25" font-weight="600">조기 종료</text>
+
+    <g fill="none" stroke="#151515" stroke-width="6" stroke-linecap="round" marker-end="url(#arrow)">
+      <path d="M635 1094L531 1190"/>
+      <path d="M769 1094V1190"/>
+      <path d="M903 1094L1007 1190"/>
+    </g>
+    <g stroke-width="5">
+      <rect x="420" y="1190" width="220" height="86" rx="18" fill="#a7edaa" stroke="#14a52c"/>
+      <rect x="660" y="1190" width="220" height="86" rx="18" fill="#ffd6a3" stroke="#ef6c00"/>
+      <rect x="900" y="1190" width="220" height="86" rx="18" fill="#ffe9a8" stroke="#e99a00"/>
+    </g>
+    <g fill="#111" font-size="31" font-weight="700" text-anchor="middle">
+      <text x="530" y="1246">승인</text>
+      <text x="770" y="1246">재작업</text>
+      <text x="1010" y="1246">논의</text>
+    </g>
+  </g>
+</svg>

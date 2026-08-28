@@ -2,7 +2,7 @@
 title: '프로젝트 컨텍스트 관리하기'
 description: bmad-project-context로 저장소의 에이전트 지침을 설정하고 유지하기
 sidebar:
-  order: 8
+  order: 6
 ---
 
 `bmad-project-context`는 AI 에이전트가 저장소에서 제대로 작업할 수 있는 환경을 마련합니다. 새 프로젝트와 기존 코드베이스에서 모두 쓸 수 있고 BMad 설치 여부도 상관없습니다. 결과는 `AGENTS.md`에 들어가는 간결하고 검증된 규칙 블록입니다.

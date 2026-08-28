@@ -58,7 +58,7 @@ Unity, Unreal, Godot, 커스텀 엔진에 맞춘 구조화된 게임 개발 워�
 
 ## 테스트 설계자(TEA)
 
-전문가 에이전트와 구조화된 워크플로 9개로 엔터프라이즈급 테스트 전략, 자동화 가이드, 릴리스 게이트 결정을 지원합니다. TEA는 위험도 기반 우선순위와 요구사항 추적성까지 제공해 내장 QA 에이전트보다 훨씬 넓은 범위를 다룹니다.
+전문가 에이전트와 구조화된 워크플로 9개로 엔터프라이즈급 테스트 전략, 자동화 가이드, 릴리스 게이트 결정을 지원합니다. TEA는 위험도 기반 우선순위와 요구사항 추적성까지 제공해 내장 QA 스킬보다 훨씬 넓은 범위를 다룹니다. 두 경로 중 어느 쪽을 선택할지는 [완료된 작업 테스트하기](../build/test-completed-work.md)를 참고하세요.
 
 - **코드:** `tea`
 - **npm:** [`bmad-method-test-architecture-enterprise`](https://www.npmjs.com/package/bmad-method-test-architecture-enterprise)

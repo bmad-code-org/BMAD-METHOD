@@ -2,7 +2,7 @@
 title: "아이디어 압박 검증하기"
 description: bmad-forge-idea 스킬로 투자 전에 아이디어를 단단하게 만들고, 입증하거나 폐기합니다
 sidebar:
-  order: 10
+  order: 8
 ---
 
 `bmad-forge-idea` 스킬로 아직 덜 다듬어진 아이디어를 반론과 질문을 통해 검증하세요. 아이디어는 검증을 거쳐 확신을 얻거나, 적은 비용으로 폐기됩니다.

@@ -1,18 +1,16 @@
 ---
 title: '시작하기'
 description: BMad를 설치하고 작은 Python 프로그램 만들기
-sidebar:
-  order: 1
 ---
 
-BMad는 작은 버그 수정부터 코드가 수백만 줄에 이르는 프로젝트까지 계획과 구현을 돕습니다. 먼저 작은 작업부터 시작해 보겠습니다.
+BMad는 작은 버그 수정부터 코드가 수백만 줄에 이르는 프로젝트까지 계획하고 구현할 수 있도록 돕습니다. 먼저 작은 작업부터 시작해 보겠습니다.
 
-이미 저장소가 있고 간단한 변경 사항을 구현하고 싶다면 [해당 저장소에 BMad를 설치](../how-to/install-bmad.md)하세요. 저장소에서 코딩 도구를 열고 설치된 `bmad-build` 스킬을 실행한 뒤, 원하는 변경 사항을 설명하면 됩니다.
+이미 저장소가 있고 간단한 변경 사항을 구현하려면 [해당 저장소에 BMad를 설치](./install-bmad.md)하세요. 저장소에서 코딩 도구를 열고 설치된 `bmad-build` 스킬을 실행한 뒤 원하는 변경 사항을 설명하면 됩니다.
 
-그렇지 않다면 여기서 시작하세요. 빈 프로젝트에 작동하는 Python 프로그램을 만들어 봅니다.
+그렇지 않다면 여기서 시작하세요. 빈 프로젝트에 작동하는 Python 프로그램을 만들어 봅니다. 이 튜토리얼은 하나의 명확한 요청을 `bmad-build` 스킬에 바로 전달하는 [단일 세션 개발 경로](../how-to/choose-a-development-path.md)를 따릅니다.
 
 :::note[시작하기 전에]
-Node.js 20.12+, Python 3, BMad가 지원하는 코딩 도구가 설치된 macOS 또는 Linux 셸을 사용하세요. 아래 설치 및 실행 명령은 Claude Code를 기준으로 합니다. 다른 지원 도구를 사용한다면 BMad를 설치할 때 해당 도구를 선택하고 그곳에서 `bmad-build` 스킬을 실행하세요.
+Node.js 20.12 이상, Python 3, BMad가 지원하는 코딩 도구가 설치된 macOS 또는 Linux 셸을 사용하세요. 아래 설치 및 실행 명령은 Claude Code를 기준으로 합니다. 다른 지원 도구를 사용한다면 BMad를 설치할 때 해당 도구를 선택하고 그곳에서 `bmad-build` 스킬을 실행하세요.
 :::
 
 ## 빈 프로젝트 만들기
@@ -42,7 +40,7 @@ claude
 /bmad-build Mars Rover 카타를 구현해 줘
 ```
 
-구현 방식을 미리 정하지 않았으므로 `bmad-build` 스킬은 먼저 원하는 결과를 확인합니다. 다음과 같은 질문으로 시작할 수 있습니다.
+이렇게 요청하면 `bmad-build` 스킬이 원하는 결과를 물어볼 여지가 생깁니다. 다음과 같은 질문으로 시작할 수 있습니다.
 
 ```text
 `bmad-build`: Before implementation, I need one choice: which language should I use?
@@ -95,5 +93,6 @@ Mars Rover 예제에서 `bmad-build` 스킬이 짧은 요청을 실행 가능한
 
 ## 계속 만들기
 
-1. [내 저장소에 BMad를 설치](../how-to/install-bmad.md)한 다음, `bmad-build` 스킬을 실행하고 작은 변경 사항을 짧게 설명해 보세요.
-2. 성숙한 코드베이스에서 작은 변경을 구현한 뒤 작성된 사양으로 더 큰 변경까지 진행하려면 [더 깊이 알아보기](./getting-deeper.md)를 계속 읽으세요.
+1. [내 저장소에 BMad를 설치](./install-bmad.md)한 다음, `bmad-build` 스킬을 실행하고 작은 변경 사항을 짧게 설명해 보세요. 사람이 참여하는 경로는 [변경 사항 구현하기](../build/build-a-change.md)를 참고하세요.
+2. 성숙한 코드베이스에서 작은 변경을 구현한 뒤 작성된 사양으로 더 큰 변경까지 진행하려면 [더 깊이 알아보기](../tutorials/getting-deeper.md)를 계속 읽으세요.
+3. 다음 변경에 여러 구현 세션이나 에픽이 필요할 수 있다면 [개발 경로 선택하기](../how-to/choose-a-development-path.md)를 참고하세요.
