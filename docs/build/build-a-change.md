@@ -101,7 +101,7 @@ patching only the diff.
 
 When it finishes, `bmad-build` shows you the completed change and its review
 notes. This is the main checkpoint. For a guided walkthrough of the finished
-work, see [Checkpoint a Change](checkpoint-a-change.md).
+work, see [Walk Through a Change](walk-through-a-change.md).
 
 - Skim the diff to confirm the change matches your intent
 - If something looks off, tell the agent what to fix — it can iterate in the

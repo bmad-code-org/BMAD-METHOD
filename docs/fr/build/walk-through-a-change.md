@@ -1,21 +1,21 @@
 ---
-title: "Checkpoint Preview"
+title: "Parcourir un changement"
 description: Revue assistée par LLM, avec intervention humaine, qui vous guide à travers une modification, de son objectif jusqu’aux détails
 sidebar:
-  order: 8
+  order: 1
 ---
 
-`bmad-checkpoint-preview` est un workflow de revue interactif, assisté par LLM, avec intervention humaine. Il vous guide à travers une modification de code — de l’intention et du contexte jusqu’aux détails — afin que vous puissiez prendre une décision éclairée sur la mise en production, la refonte ou l’approfondissement.
+`bmad-walkthrough` est un workflow de revue interactif, assisté par LLM, avec intervention humaine. Il vous guide à travers une modification de code — de l’intention et du contexte jusqu’aux détails — afin que vous puissiez prendre une décision éclairée sur la mise en production, la refonte ou l’approfondissement.
 
-![Diagramme du workflow Checkpoint Preview](/diagrams/checkpoint-preview-diagram-fr.webp)
+![Diagramme du workflow Walkthrough](/diagrams/walkthrough-diagram-fr.webp)
 
 ## Le Flux Typique
 
 Vous lancez `bmad-build`. Il clarifie votre intention, construit une spécification, implémente la modification, et une fois terminé, il ajoute un historique de revue au fichier de spécification et l’ouvre dans votre éditeur. Vous regardez la spec et constatez que la modification a touché 20 fichiers dans plusieurs modules.
 
-Vous pourriez survoler le diff. Mais 20 fichiers, c’est le moment où le survol commence à échouer — on perd le fil, on rate un lien entre deux modifications éloignées, ou on approuve quelque chose qu’on n’a pas pleinement compris. Alors au lieu de cela, vous dites « checkpoint » et le LLM vous guide à travers la modification.
+Vous pourriez survoler le diff. Mais 20 fichiers, c’est le moment où le survol commence à échouer — on perd le fil, on rate un lien entre deux modifications éloignées, ou on approuve quelque chose qu’on n’a pas pleinement compris. Alors au lieu de cela, vous dites « walkthrough » et le LLM vous guide à travers la modification.
 
-Ce passage de relais — de l’implémentation autonome au jugement humain — est le cas d’usage principal. Build s’exécute longtemps avec une supervision minimale. Checkpoint Preview, c’est là où vous reprenez le volant.
+Ce passage de relais — de l’implémentation autonome au jugement humain — est le cas d’usage principal. Build s’exécute longtemps avec une supervision minimale. Le Walkthrough, c’est là où vous reprenez le volant.
 
 ## Pourquoi
 
@@ -23,7 +23,7 @@ La revue de code a deux modes d’échec. Dans le premier, le réviseur survole 
 
 Le problème sous-jacent est le séquençage. Un diff brut présente les modifications dans l’ordre des fichiers, ce qui est presque jamais l’ordre qui construit la compréhension. Vous voyez une fonction utilitaire avant de savoir pourquoi elle existe. Vous voyez une modification de schéma avant de comprendre quelle fonctionnalité elle supporte. Le réviseur doit reconstruire l’intention de l’auteur à partir d’indices dispersés, et c’est cette reconstruction qui fait défaut à l’attention.
 
-Checkpoint Preview résout ce problème en confiant le travail de reconstruction au LLM. Il lit le diff, la spécification (si elle existe) et la base de code environnante, puis présente la modification dans un ordre conçu pour la compréhension — et non pour `git diff`.
+Le Walkthrough résout ce problème en confiant le travail de reconstruction au LLM. Il lit le diff, la spécification (si elle existe) et la base de code environnante, puis présente la modification dans un ordre conçu pour la compréhension — et non pour `git diff`.
 
 ## Comment ça fonctionne
 
@@ -67,7 +67,7 @@ Le workflow présente chaque étape comme un point de départ, pas un mot final.
 - **« active le party mode sur la sécurité de cette migration de schéma »** — fait intervenir plusieurs perspectives agentiques dans un débat ciblé
 - **« lance la revue de code »** — génère des résultats structurés avec analyse adversariale et cas limites
 
-Le workflow checkpoint ne vous enferme pas dans un chemin linéaire. Il vous donne de la structure quand vous la souhaitez et s’efface quand vous voulez explorer. Les cinq étapes sont là pour s’assurer que vous voyez le tableau complet, mais la profondeur à laquelle vous allez à chaque étape — et les outils que vous y apportez — est entièrement entre vos mains.
+Le workflow Walkthrough ne vous enferme pas dans un chemin linéaire. Il vous donne de la structure quand vous la souhaitez et s’efface quand vous voulez explorer. Les cinq étapes sont là pour s’assurer que vous voyez le tableau complet, mais la profondeur à laquelle vous allez à chaque étape — et les outils que vous y apportez — est entièrement entre vos mains.
 
 ## L’historique de revue
 
@@ -77,7 +77,7 @@ Lorsqu’aucun historique produit par l’auteur n’existe, le workflow en gén
 
 ## Quand l’utiliser
 
-Le scénario principal est le passage de relais depuis `bmad-build` : l’implémentation est terminée, le fichier de spécification est ouvert dans votre éditeur avec un historique de revue ajouté, et vous devez décider si vous publiez. Dites « checkpoint » et c’est parti.
+Le scénario principal est le passage de relais depuis `bmad-build` : l’implémentation est terminée, le fichier de spécification est ouvert dans votre éditeur avec un historique de revue ajouté, et vous devez décider si vous publiez. Dites « walkthrough » et c’est parti.
 
 Il fonctionne aussi de manière autonome :
 
@@ -85,8 +85,8 @@ Il fonctionne aussi de manière autonome :
 - **Prise en main d’une modification** — quand vous devez comprendre ce qui s’est passé sur une branche que vous n’avez pas écrite
 - **Revue de sprint** — le workflow peut récupérer les stories marquées `review` dans votre fichier de statut de sprint
 
-Invoquez-le en disant « checkpoint » ou « guide-moi à travers cette modification ». Il fonctionne dans n’importe quel terminal, mais vous en tirerez plus de parti dans un IDE — VS Code, Cursor ou similaire — car le workflow produit des références `chemin:ligne` à chaque étape. Dans un terminal intégré à un IDE, celles-ci sont cliquables, ce qui vous permet de sauter de fichier en fichier en suivant l’historique de revue.
+Invoquez-le en disant « walkthrough » ou « guide-moi à travers cette modification ». Il fonctionne dans n’importe quel terminal, mais vous en tirerez plus de parti dans un IDE — VS Code, Cursor ou similaire — car le workflow produit des références `chemin:ligne` à chaque étape. Dans un terminal intégré à un IDE, celles-ci sont cliquables, ce qui vous permet de sauter de fichier en fichier en suivant l’historique de revue.
 
 ## Ce que ce n’est pas
 
-Checkpoint Preview ne remplace pas la revue automatisée. Il ne lance pas de linters, de vérificateurs de types ou de suites de tests. Il n’attribue pas de scores de sévérité et ne produit pas de verdicts pass/échec. C’est un guide de lecture qui aide un humain à appliquer son jugement là où cela compte le plus.
+Le Walkthrough ne remplace pas la revue automatisée. Il ne lance pas de linters, de vérificateurs de types ou de suites de tests. Il n’attribue pas de scores de sévérité et ne produit pas de verdicts pass/échec. C’est un guide de lecture qui aide un humain à appliquer son jugement là où cela compte le plus.

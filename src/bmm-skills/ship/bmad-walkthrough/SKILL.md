@@ -1,9 +1,9 @@
 ---
-name: bmad-checkpoint-preview
-description: 'Walk the user through reviewing a change: what it is for, what to look at closely, and how to test it. Use when the user says "checkpoint", "human review", or "walk me through this change"'
+name: bmad-walkthrough
+description: 'Walk the user through reviewing a change: what it is for, what to look at closely, and how to test it. Use when the user says "walkthrough", "walk me through this change", or "human review"'
 ---
 
-# Checkpoint Review Workflow
+# Walkthrough Workflow
 
 **Goal:** Guide a human through reviewing a change — from purpose and context into details.
 

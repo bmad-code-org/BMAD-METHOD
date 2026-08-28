@@ -1,14 +1,13 @@
 ---
-title: 'Checkpoint a Change'
-description: Use bmad-checkpoint-preview to walk through a finished change and decide whether to approve, rework, or discuss further.
+title: 'Walk Through a Change'
+description: Use bmad-walkthrough to walk through a finished change and decide whether to approve, rework, or discuss further.
 sidebar:
   order: 2
 ---
 
-`bmad-checkpoint-preview` walks you through a finished change — from
-purpose and context into details — so you can decide whether to approve,
-rework, or discuss further. See
-[how a run works](#run-bmad-checkpoint-preview).
+`bmad-walkthrough` walks you through a finished change — from purpose and
+context into details — so you can decide whether to approve, rework, or
+discuss further. See [how a run works](#run-bmad-walkthrough).
 
 This is human comprehension, not a substitute for the review `bmad-build`
 already ran, or for `bmad-code-review`.
@@ -17,9 +16,9 @@ already ran, or for `bmad-code-review`.
 
 The primary handoff is from [`bmad-build`](build-a-change.md).
 Implementation is done, the spec file is open with a review trail appended,
-and you need to decide whether to ship. Say "checkpoint" and go.
+and you need to decide whether to ship. Say "walkthrough" and go.
 
-Build runs long with little supervision. Checkpoint is where you take back
+Build runs long with little supervision. Walkthrough is where you take back
 the wheel. You could eyeball the diff, but once the change spans many files
 you lose the thread, miss a connection, or approve something you did not
 fully understand. A raw diff presents files in git order, which is almost
@@ -34,25 +33,25 @@ It also works standalone:
 - **Sprint review** — the workflow can pick up stories marked `review` in
   your sprint status file
 
-Invoke it by saying "checkpoint" or "walk me through this change." It works
+Invoke it by saying "walkthrough" or "walk me through this change." It works
 in any terminal, but you'll get more out of it inside an IDE — VS Code,
 Cursor, or similar — because it produces `path:line` references at every
 step. In an IDE-embedded terminal those are clickable.
 
-## Run `bmad-checkpoint-preview`
+## Run `bmad-walkthrough`
 
-![bmad-checkpoint-preview workflow diagram](/diagrams/checkpoint-preview-diagram.png)
+![bmad-walkthrough workflow diagram](/diagrams/walkthrough-diagram.png)
 
-After `bmad-build` finishes, you can say "checkpoint" in the same chat. To
-review something else, start a fresh chat and run `/bmad-checkpoint-preview`
-with a PR, branch, spec path, or the current git state.
+After `bmad-build` finishes, you can say "walkthrough" in the same chat. To
+review something else, start a fresh chat and run `/bmad-walkthrough` with a
+PR, branch, spec path, or the current git state.
 
 ```text
-checkpoint
+walkthrough
 ```
 
 ```text
-/bmad-checkpoint-preview Review https://github.com/org/repo/pull/42
+/bmad-walkthrough Review https://github.com/org/repo/pull/42
 ```
 
 The workflow has five steps. Each one builds on the last, shifting from
@@ -133,7 +132,7 @@ perspective:
 - **"run code review"** — generate structured agentic findings with
   adversarial and edge-case analysis
 
-The checkpoint workflow doesn't lock you into a linear path. It gives you
+The walkthrough workflow doesn't lock you into a linear path. It gives you
 structure when you want it and gets out of the way when you want to explore.
 The five steps are there to make sure you see the whole picture, but how
 deep you go at each step — and what tools you bring in — is entirely up to
@@ -151,8 +150,8 @@ author-produced one, but far better than reading changes in file order.
 
 ## What It Is Not
 
-`bmad-checkpoint-preview` is not the review skill. It does not replace the
-review `bmad-build` already ran, a re-invoke of that run on a done story, or
+`bmad-walkthrough` is not the review skill. It does not replace the review
+`bmad-build` already ran, a re-invoke of that run on a done story, or
 `bmad-code-review`. It does not run linters, type checkers, or test suites.
 It does not assign severity scores or produce pass/fail verdicts. It is a
 reading guide that helps a human apply their judgment where it matters most.
