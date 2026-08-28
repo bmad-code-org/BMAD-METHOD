@@ -4,37 +4,44 @@ description: Use bmad-code-review for a standalone agentic review of a PR, someo
 sidebar:
   order: 2
 ---
+Ten seconds of your attention costs more than ten minutes of inference.
+A bug that escapes to production costs at least a hundred times more
+than one caught in development.
 
-`bmad-code-review` reviews a code change with independent reviewers in
-parallel, then triages the findings. See
+Code an agent just wrote can — and should — be reviewed and cleaned up
+by an agent before any human looks at it.
+
+If you came from [Build a Change](build-a-change.md), you have already
+seen this happen. `bmad-build` has a review and triage stage baked in.
+By the time it finishes, a round of review and fixing has already
+happened.
+
+If you still suspect there is more to find, run `bmad-build` again and
+hand it the spec from that run — the one already marked `status: done`.
+That skips straight to review and triage, and you can repeat it as many
+times as you want. Stop when the findings are mostly low-value notes
+about exotic corner cases. That is accidental complexity, not quality.
+Non-trivial findings on a third pass of agentic review usually mean
+something is wrong upstream of this change: a weak spec, a
+contradiction, or ambiguity in the rules. Fix that instead of running
+another pass.
+
+To review a change that is not a single `bmad-build` run, use
+`bmad-code-review`. It is the same kind of review and triage, but you
+can point it at any code artifact: a diff, a pull request, a file, a
+namespace, someone else's branch. See
 [how a run works](#run-bmad-code-review).
-
-`bmad-build` already reviewed its own change during implementation. Use
-this skill when the review is not part of that run.
-
-## When to Use It
-
-Use `bmad-code-review` for a standalone agentic review:
-
-- **Someone else's change** — a branch or commit you did not just
-  implement
-- **A pull request** — including one that never went through `bmad-build`
-- **An extra pass** — another review after `bmad-build` already reviewed
-  the implementation
-- **A review bot** — this skill as the prompt behind an automated
-  review. The run is still attended: it confirms the target and presents
-  findings to a human.
-
-Implementation-time review stays on [Build a Change](build-a-change.md).
-`bmad-build` reviews the change it just made, inside that same run.
-
-Invoke it by saying "run code review" or "review this code."
 
 ## Run `bmad-code-review`
 
-Start a fresh chat and name the skill. Pass a PR, commit, branch, spec,
-or the current git state. You can describe the target before, with, or
-after the command.
+Start a fresh chat and name the skill. Pass the change to review: a PR,
+commit, branch, file, or the current git state. You can describe the
+target before, with, or after the command.
+
+If you have a spec, requirements, or even a stream of consciousness
+for what this change is supposed to implement, feed that in too. Review
+quality depends on it — without intent, the reviewers can only judge
+the diff against itself.
 
 ```text
 run code review
@@ -71,19 +78,10 @@ patch or defer.
 You get a findings summary. Without a spec, that listing stays in the
 chat. You choose whether to apply patches.
 
-## Why Pay for Triage
-
-Reviewer layers and triage cost tokens and minutes. A defect that
-escapes costs a report, a reproduction, a context switch, a fix, and a
-re-review — orders of magnitude more.
-
-Without triage you pay for every note a layer emitted, including noise.
-Triage is what makes you pay for verified findings instead.
-
 ## Customize the Layers
 
-Fewer layers is cheaper and catches less. You choose the price for your
-situation.
+The shipped lenses are a starting point. Start `bmad-customize` and
+ask what you can change.
 
 Override `[[workflow.review_layers]]` in
 `_bmad/custom/bmad-code-review.toml`. The skill ships four layers:
@@ -110,10 +108,69 @@ Run the team reviewer via bash on {diff_file} and return its findings as a Markd
 
 For how overrides merge, see [Customize BMad](../how-to/customize-bmad.md).
 
-## What It Is Not
+## Why Does Review Take Forever?
 
-`bmad-code-review` is not a human walkthrough — that is
-[Walk Through a Change](walk-through-a-change.md). It is not generated
-test coverage — that is [Test Completed Work](test-completed-work.md).
-Party Mode's Code Review Crew is a debate among lenses, not a triaged
-review; see [Party Mode](../explanation/party-mode.md#the-code-review-crew).
+Three explanations:
+
+- [Exhaustive on purpose](#exhaustive-on-purpose)
+- [Too many rules, or huge files](#too-many-rules-or-huge-files)
+- [Your platform](#your-platform)
+
+### Exhaustive on purpose
+
+The default assumes an average bug escaping into production is worth
+more than an hour of inference. You can turn that down, or off — see
+[Customize the Layers](#customize-the-layers). Turning review off is
+reasonable for a throwaway prototype. A long review can also run
+offline.
+
+It is a bad idea to let teammates look at unreviewed LLM-generated
+code. It is a worse idea to put that code into production without the
+full battery of review lenses. If you care about the quality of the
+product, think about more lenses, not fewer.
+
+Do not take anyone's word for it. Pick a handful of interesting
+changes, run the full battery, look at one or two of the most
+interesting findings, and ask which is better: extra token burn, or
+living with those issues in production.
+
+Your custom lenses can run on other models. That is worth doing. Run
+several `blind-hunter` lenses with the same prompt, one on every LLM
+you have access to.
+
+### Too many rules, or huge files
+
+There are too many rules in `AGENTS.md` and the other instruction files
+the agent reads every run. Or the codebase is shaped so a reviewing
+agent has to read huge files. Those files blow the context window, or
+the agent wastes the run figuring out how to avoid them without losing
+review quality.
+
+### Your platform
+
+Some runtimes have no subagents. Vendors, including Anthropic and
+OpenAI, have also shipped changes that alter how subagents run. Until
+BMad catches up, the lenses execute one after another instead of in
+parallel — or they fall back to the main session, which is far worse
+for review quality than it sounds.
+
+If a review that usually runs for ten minutes suddenly takes an hour,
+or becomes inexplicably stupid, resume that session and ask why.
+
+## Why Do I Need This When My Platform Has `/code-review`?
+
+Typical `/code-review` is much simpler, and finds fewer problems. Or it
+is a black box you have no control over, running on cheap models,
+putting a ton of noise in front of your eyes — and ten seconds of your
+attention are worth more than ten minutes of inference. Or it is great,
+but really expensive, and still a generic black box.
+
+Almost none of them, at the time of this writing, do automatic
+triage/fixing that holds up.
+
+Or maybe it is in fact just great, and BMad review is inferior. Same
+test as above: take several interesting diffs, run an A/B, and either
+pick one, or make the built-in command an extra lens. If you find
+something that genuinely adds quality findings without creating too
+much noise, it is almost always worth adding as a lens — see
+[Customize the Layers](#customize-the-layers).
