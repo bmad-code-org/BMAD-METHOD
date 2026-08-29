@@ -62,7 +62,12 @@ If version control is available and the tree is dirty, create a local commit wit
 
 ### Display Summary
 
-Display summary of your work to the user, including the commit hash if one was created. Any file paths shown in conversation/terminal output must use CWD-relative format (no leading `/`) with `:line` notation (e.g., `src/path/file.ts:42`) for terminal clickability — the goal is to make paths clickable in terminal emulators.
+Display summary of your work to the user, including:
+
+- The commit hash, if one was created.
+- Review findings breakdown: patches applied, items deferred, and the rejected count — reasons are recorded in the spec's `## Review Triage Log`.
+
+Display file paths and `file:line` references in whatever form is clickable where you are presenting them (e.g. code citation in chat, CWD-relative path with no leading `/` in terminal). If unsure, use CWD-relative path.
 
 Offer to push and/or create a pull request.
 

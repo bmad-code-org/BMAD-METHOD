@@ -24,14 +24,13 @@ activation_steps_append = []
 # Each entry is either a literal sentence, a skill prefixed with `skill:`, or a `file:`-prefixed path/glob
 # whose contents are loaded as facts.
 #
-# Default loads project-context.md if bmad-generate-project-context has produced one — this gives
-# the facilitator persistent awareness of the project's tech, domain, and constraints without
-# re-asking. Common opt-ins (set in team/user override TOML):
+# Empty by default. Repo-wide context belongs in AGENTS.md (see bmad-project-context), which every
+# skill already sees; use this for context only this skill needs, loaded on demand rather than
+# carried as constant memory. Common opt-ins (set in team/user override TOML):
+#   "file:{project-root}/**/project-context.md"                               # if you keep a project-context.md
 #   "skill:acme-co:terms-and-conditions"                                      # a skill that contains some relevant info
 #   "Investor PRDs must include a market sizing section."                    # generic agent instruction
-persistent_facts = [
-  "file:{project-root}/**/project-context.md",
-]
+persistent_facts = []
 
 # Executed when the workflow completes (after the user has been told the
 # PRD is ready). Accepts either a string scalar (single instruction)

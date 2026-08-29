@@ -40,7 +40,7 @@ Hãy clone hoặc mở [repo BMAD-METHOD](https://github.com/bmad-code-org/BMAD-
 
 ### Không dùng agent? Dùng trang docs
 
-Nếu AI của bạn không đọc được file cục bộ như ChatGPT hoặc Claude.ai, hãy nạp [llms-full.txt](https://bmad-code-org.github.io/BMAD-METHOD/llms-full.txt) vào phiên làm việc. Đây là bản chụp tài liệu BMad trong một file duy nhất.
+Nếu AI của bạn không đọc được file cục bộ như ChatGPT hoặc Claude.ai, hãy mở [trang tài liệu BMad](https://docs.bmad-method.org/).
 
 ## 3. Hỏi người thật
 

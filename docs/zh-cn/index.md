@@ -7,10 +7,6 @@ BMad 方法（**B**uild **M**ore **A**rchitect **D**reams）是 BMad 方法生�
 
 如果你已经习惯使用 Claude、Cursor 或 GitHub Copilot 这类 AI 编码助手，现在就可以开始。
 
-:::note[🚀 V6 已发布，我们才刚刚起步！]
-技能架构、BMad Builder v1、开发循环自动化以及更多功能正在开发中。**[查看路线图 →](/zh-cn/roadmap/)**
-:::
-
 ## 新手入门？先从教程开始
 
 理解 BMad 的最快方式是亲自尝试。

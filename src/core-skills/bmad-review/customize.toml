@@ -23,7 +23,7 @@ activation_steps_append = []
 # prefixed `file:` are paths or globs whose contents load as facts; all others
 # are literal facts. The shipped entry is a project-wide glob — set it to []
 # if you don't want every review scanning for it.
-persistent_facts = ["file:{project-root}/**/project-context.md"]
+persistent_facts = []
 
 # Standing review directives applied on every run alongside each lens's own
 # method. Each entry is a literal sentence or a `file:`-prefixed path/glob

@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="420" viewBox="0 0 1120 420" role="img" aria-labelledby="title description">
+  <title id="title">BMad 전달 루프</title>
+  <desc id="description">세 가지 입력이 서로 다른 지점에서 전달 루프로 들어갑니다. 막연한 생각은 구체화부터, 크고 명확한 아이디어는 계획부터 시작하며 작은 변경은 바로 구현 및 검증으로 이어집니다. 작업이 진행되면서 학습 및 조정 단계에서 얻은 내용은 다시 계획에 반영됩니다.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#041629"/>
+      <stop offset="1" stop-color="#0a2c47"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#39ccff"/>
+    </marker>
+    <marker id="arrow-gold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#ffe34f"/>
+    </marker>
+  </defs>
+
+  <rect width="1120" height="420" rx="20" fill="url(#background)"/>
+  <path d="M0 70H1120M0 140H1120M0 210H1120M0 280H1120M0 350H1120M140 0V420M280 0V420M420 0V420M560 0V420M700 0V420M840 0V420M980 0V420" stroke="#38bdf8" stroke-opacity=".06"/>
+
+  <!-- 각 입력이 루프에 들어가는 지점으로 이어지는 진입선 -->
+  <path d="M155 140V194" stroke="#ffe34f" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow-gold)"/>
+  <path d="M425 140V194" stroke="#ffe34f" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow-gold)"/>
+  <path d="M695 140V194" stroke="#ffe34f" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow-gold)"/>
+
+  <!-- 주 경로와 피드백 루프 -->
+  <path d="M250 244H330" stroke="#39ccff" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/>
+  <path d="M520 244H600" stroke="#39ccff" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/>
+  <path d="M790 244H870" stroke="#39ccff" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/>
+  <path d="M965 288C965 368 425 368 425 288" fill="none" stroke="#39ccff" stroke-opacity=".75" stroke-width="3" stroke-dasharray="9 10" marker-end="url(#arrow)"/>
+
+  <!-- 막연한 생각: 물음표가 있는 구름 -->
+  <g transform="translate(155 76) scale(3.8) translate(-12 -12)">
+    <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z" fill="#112f49" stroke="#9cc8e2" stroke-width=".7" stroke-dasharray="2 2.4"/>
+  </g>
+
+  <!-- 크고 명확한 아이디어: 큰 전구 -->
+  <circle cx="425" cy="66" r="26" fill="#112f49" stroke="#ffe34f" stroke-width="2.5"/>
+  <rect x="415" y="92" width="20" height="9" rx="2.5" fill="#112f49" stroke="#ffe34f" stroke-width="2.5"/>
+  <path d="M401 42L394 35M449 42L456 35" stroke="#ffe34f" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- 작은 변경: 작은 전구 -->
+  <circle cx="695" cy="80" r="14" fill="#112f49" stroke="#ffe34f" stroke-width="2"/>
+  <rect x="688.5" y="94" width="13" height="6" rx="2" fill="#112f49" stroke="#ffe34f" stroke-width="2"/>
+  <path d="M681.5 66.5L676.5 61.5M708.5 66.5L713.5 61.5" stroke="#ffe34f" stroke-width="2" stroke-linecap="round"/>
+
+  <g font-family="Apple SD Gothic Neo, Noto Sans KR, Avenir Next, Avenir, Segoe UI, sans-serif" text-anchor="middle">
+    <text x="560" y="28" fill="#ffe34f" font-size="14" font-weight="700" letter-spacing="1.5">어디서든 시작</text>
+    <text x="155" y="94" fill="#9cc8e2" font-size="32" font-weight="700">?</text>
+    <text x="155" y="128" fill="#ffffff" font-size="16" font-weight="600">막연한 생각</text>
+    <text x="425" y="128" fill="#ffffff" font-size="16" font-weight="600">크고 명확한 아이디어</text>
+    <text x="695" y="128" fill="#ffffff" font-size="16" font-weight="600">작은 변경</text>
+
+    <g transform="translate(60 200)">
+      <rect width="190" height="88" rx="12" fill="#112f49" stroke="#39ccff" stroke-opacity=".7" stroke-width="2"/>
+      <text x="95" y="51" fill="#ffffff" font-size="21" font-weight="600">구체화</text>
+    </g>
+    <g transform="translate(330 200)">
+      <rect width="190" height="88" rx="12" fill="#112f49" stroke="#39ccff" stroke-opacity=".7" stroke-width="2"/>
+      <text x="95" y="51" fill="#ffffff" font-size="21" font-weight="600">계획</text>
+    </g>
+    <g transform="translate(600 200)">
+      <rect width="190" height="88" rx="12" fill="#112f49" stroke="#39ccff" stroke-opacity=".7" stroke-width="2"/>
+      <text x="95" y="51" fill="#ffffff" font-size="21" font-weight="600">구현 및 검증</text>
+    </g>
+    <g transform="translate(870 200)">
+      <rect width="190" height="88" rx="12" fill="#112f49" stroke="#39ccff" stroke-opacity=".7" stroke-width="2"/>
+      <text x="95" y="51" fill="#ffffff" font-size="21" font-weight="600">학습 및 조정</text>
+    </g>
+    <text x="560" y="396" fill="#9cc8e2" font-size="17" font-weight="600" letter-spacing="1.4">눈앞의 작업에 꼭 맞는 절차</text>
+  </g>
+</svg>

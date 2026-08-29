@@ -30,9 +30,7 @@ activation_steps_append = []
 #   - a file reference prefixed with `file:`, e.g. "file:{project-root}/docs/standards.md"
 #     (glob patterns are supported; the file's contents are loaded and treated as facts).
 
-persistent_facts = [
-  "file:{project-root}/**/project-context.md",
-]
+persistent_facts = []
 
 # Scalar: executed when the workflow reaches its final step,
 # after review findings are presented and sprint status is synced. Override wins.
@@ -42,8 +40,9 @@ on_complete = ""
 
 # Review layers for the review step. `instruction` is the layer's whole
 # execution recipe — subagents by default, but an override may run anything
-# (e.g. an external reviewer via bash). {diff_output} and {spec_file} are
-# substituted at run time. `when` (optional) gates a layer; empty
+# (e.g. an external reviewer via bash). {diff_file} and {spec_file} are
+# substituted at run time; both are paths, and {diff_file} is the unified
+# diff file the layer reads. `when` (optional) gates a layer; empty
 # `instruction` disables it.
 
 [[workflow.review_layers]]
@@ -59,10 +58,9 @@ Output a Markdown list of findings only — no severity, priority, or ranking.
 If the content is empty, stop and say so.
 If you have zero findings, re-check and keep thinking; do not stop with an empty list.
 
-CONTENT:
-{diff_output}
+CONTENT: the unified diff at `{diff_file}`. Read that file — it is the content under review.
 
-Do not invoke any skill. Return only the review result.
+Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
 
 """
 
@@ -74,11 +72,11 @@ Launch a context-free subagent with this prompt:
 
 Read `{skill-root}/review-prompts/edge-case-hunter.md` completely and follow it as your review instructions.
 
-Review content:
+claims_file (leave unread until your instructions call for it): {claims_file}
 
-{diff_output}
+Review content: the unified diff at `{diff_file}`. Read that file — it is the content under review.
 
-Do not invoke any skill. If the instruction file is unreadable, report that exact failure and stop. Return only the review result.
+Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. If the instruction file is unreadable, report that exact failure and stop. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
 
 """
 
@@ -90,11 +88,9 @@ Launch a context-free subagent with this prompt:
 
 Read `{skill-root}/review-prompts/verification-gap.md` completely and follow it as your review instructions.
 
-Review content:
+Review content: the unified diff at `{diff_file}`. Read that file — it is the content under review.
 
-{diff_output}
-
-Do not invoke any skill. If the instruction file is unreadable, report that exact failure and stop. Return only the review result.
+Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. If the instruction file is unreadable, report that exact failure and stop. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
 
 """
 
@@ -107,7 +103,8 @@ Launch a subagent with this prompt:
 
 You are an Acceptance Auditor. Review the provided diff against `{spec_file}` and any loaded context docs. Check for: violations of acceptance criteria, deviations from spec intent, missing implementation of specified behavior, contradictions between spec constraints and actual code. Output findings as a Markdown list. Each finding: one-line title, which AC/constraint it violates, and evidence from the diff.
 
-Diff:
+Diff: the unified diff at `{diff_file}`. Read that file — it is the content under review.
 
-{diff_output}
+Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
+
 """

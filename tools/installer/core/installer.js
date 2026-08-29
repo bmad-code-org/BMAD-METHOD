@@ -13,7 +13,14 @@ const { InstallPaths } = require('./install-paths');
 const { ExternalModuleManager } = require('../modules/external-manager');
 const { resolveModuleVersion } = require('../modules/version-resolver');
 const { MODULE_HELP_CSV_HEADER } = require('../modules/module-help-schema');
-const { inferShimPreference, readInstalledSkillIds } = require('./shim-policy');
+const {
+  formatRemovedShimNotice,
+  formatRetainedShimNotice,
+  inferShimPreference,
+  readInstalledShims,
+  readInstalledSkillIds,
+  selectShimOutcome,
+} = require('./shim-policy');
 
 const { ExistingInstall } = require('./existing-install');
 const { warnPreNativeSkillsLegacy } = require('./legacy-warnings');
@@ -58,6 +65,24 @@ class Installer {
           existing: existingInstall.installed,
         }),
       };
+
+      const installedShims = existingInstall.installed ? await readInstalledShims(paths.bmadDir) : [];
+      const { retained: retainedShims, removed: removedShims } = selectShimOutcome({
+        installedShims,
+        availableShims,
+        install: shimPolicy.install,
+      });
+
+      // Reported here, not at the prompt, so --yes/--shims/scripted runs get it too.
+      if (retainedShims.length > 0) {
+        await prompts.note(formatRetainedShimNotice(retainedShims), 'Deprecated shim skills retained');
+      }
+      if (removedShims.length > 0) {
+        await prompts.note(formatRemovedShimNotice(removedShims, { canReinstall: shimPolicy.available }), 'Deprecated shim skills removed');
+      }
+
+      // The notices above scroll away on a long install; repeat them in the summary.
+      const shimStatus = { retained: retainedShims.length, removed: removedShims.length };
 
       try {
         await warnPreNativeSkillsLegacy({
@@ -132,6 +157,7 @@ class Installer {
         customFiles: restoreResult.customFiles.length > 0 ? restoreResult.customFiles : undefined,
         modifiedFiles: restoreResult.modifiedFiles.length > 0 ? restoreResult.modifiedFiles : undefined,
         preInstallVersions,
+        shimStatus,
       });
 
       return {
@@ -1260,6 +1286,12 @@ class Installer {
     }
     if (context.modifiedFiles && context.modifiedFiles.length > 0) {
       lines.push(`  ${color.yellow(`Modified files backed up (.bak): ${context.modifiedFiles.length}`)}`);
+    }
+    if (context.shimStatus?.retained > 0) {
+      lines.push(`  ${color.yellow(`Deprecated shim skills retained: ${context.shimStatus.retained}`)} (re-run to remove them)`);
+    }
+    if (context.shimStatus?.removed > 0) {
+      lines.push(`  ${color.green(`Deprecated shim skills removed: ${context.shimStatus.removed}`)}`);
     }
 
     // Next steps

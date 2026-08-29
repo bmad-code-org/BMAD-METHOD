@@ -7,10 +7,6 @@ Metoda BMad (**B**uild **M**ore **A**rchitect **D**reams) je framework pro vývo
 
 Pokud jste zvyklí pracovat s AI asistenty pro kódování jako Claude, Cursor nebo GitHub Copilot, jste připraveni začít.
 
-:::note[🚀 V6 je tady a teprve začínáme!]
-Architektura Skills, BMad Builder v1, automatizace Dev Loop a mnoho dalšího ve vývoji. **[Podívejte se na Plán rozvoje →](./roadmap)**
-:::
-
 ## Jste tu nově? Začněte tutoriálem
 
 Nejrychlejší způsob, jak pochopit BMad, je vyzkoušet si ho.
