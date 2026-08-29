@@ -16,27 +16,37 @@
    - `detail` -- full description
    - `location` -- file and line reference (if available)
 
-2. Once every layer has reported -- and not before -- render a verdict on each finding on its own, ahead of any deduplication or grouping. For each finding:
-   - **Verify its own claimed consequence** at the location it names. Read past the diff hunk -- into the callers, the guards upstream, whatever else the site depends on -- far enough to tell whether that consequence actually occurs. Another finding's outcome, however adjacent, never settles this one.
-   - **Assign severity** from the verified consequence for the artifact's main consumer (software user, document reader, etc). Disregard any severity assigned by a reviewing subagent. Review subagents operate under by-design information asymmetry and do not have enough context to set final severity for this workflow.
-     - `low` -- none or cosmetic
-     - `medium` -- tolerable
-     - `high` -- intolerable
-   - **Keep or dismiss.** Keep a finding only where verification confirmed its consequence. Dismiss noise, claims the verification refuted, and claims it could not substantiate -- no path to the claimed consequence at the named site is a valid disposal. Whatever the reason, it must dispose of the finding's own claim: a true fact about neighboring code that leaves the claim standing is not a dismissal, and the finding stays kept. Record each dismissal with its reason for the summary; never drop a finding silently.
-   - A finding whose fix edits the spec under review: dismiss. A finding whose fix edits an agent-context document (e.g. CLAUDE.md, AGENTS.md, rules files, other specs): defer, never patch.
+2. Once every layer has reported -- and not before -- render a verdict on each finding, ahead of any deduplication or grouping. Disregard any severity a reviewing subagent assigned -- they lack the context to grade.
 
-3. **Group the survivors by shared root cause** -- two findings belong in one entry only when the same underlying defect produced both. Same location alone is not a shared root cause, and neither is a shared fix. An entry carries every member's verified consequence in `detail` and the highest severity among them; set `source` to the contributing layers joined with `+` (e.g., `blind-hunter+edge-case-hunter`).
+   For each finding:
+   - **Verify the finding's claim.** At the cited file and line, does the bad outcome the reviewer describes actually occur? Read beyond the changed lines -- follow callers, guards upstream, etc -- until you can answer yes or no. A different finding about nearby code does not settle this one. Judge whether the problem is real, not whether the proposed fix is plausible. Code that loudly fails on a situation you never showed the program can reach is correct behavior, not a defect.
+   - **Render exactly one verdict** from what verification established -- the verdict is the whole triage decision; there is no separate keep-or-dismiss.
+     - `high` (intolerable), `medium` (tolerable), `low` (cosmetic or negligible) -- the bad outcome is real. Assign severity by how much it hurts end users or developers. For developer-only problems (inconsistent design, eroded invariants, duplicated sources of truth), name where it will cause trouble -- which caller will diverge, which rule will break. A vague "this is messy" with no named harm is not a severity grade; use `false` or `maybe-false` instead. When the harm is real but you cannot tell how bad, pick the higher grade.
+     - `false` -- you checked, and the bad outcome does not happen at the cited location. Write what disproves this specific claim. A true fact about nearby code that does not disprove the claim does not count.
+     - `maybe-false` -- you could not tell whether the bad outcome happens. Write what you would need to check to find out. Use this only when the diff and surrounding code leave the question open; when they are enough to decide, pick `high`, `medium`, `low`, or `false`.
 
-4. **Route** each entry into exactly one triage bucket:
+   - Every finding keeps its verdict and evidence (a sentence or two) for the summary; never drop, merge, or silently skip one.
+
+   Reject `false` findings on their refutation.
+
+   Reject `low` findings when it is unlikely that users or developers would meet the defect in everyday use (judged plainly -- no proof needed) and the fix is more than a direct correction or deletion -- adding guards, branches, parameters, or other complexity.
+
+   Reject any finding whose fix is to edit the spec under review.
+
+   All remaining findings continue to grouping.
+
+3. **Group the survivors by shared root cause** -- two findings belong in one entry only when the same defect produced both. Same location alone is not a shared root cause, and neither is a shared fix. An entry carries every member's verified bad outcome in `detail` and the highest verdict among them (`high` > `medium` > `low` > `maybe-false`); set `source` to the contributing layers joined with `+` (e.g., `blind-hunter+edge-case-hunter`).
+
+4. **Route** each entry into exactly one triage bucket. A group that includes verified `high`, `medium`, or `low` members routes by its highest such verdict -- not to defer just because a member is `maybe-false`.
    - **decision_needed** -- There is an ambiguous choice that requires human input. The code cannot be correctly patched without knowing the user's intent. Only possible if `{review_mode}` = `"full"`.
-   - **patch** -- Code issue that is fixable without human input. The correct fix is unambiguous.
-   - **defer** -- Pre-existing issue not caused by the current change. Real but not actionable now.
+   - **patch** -- Code issue that is fixable without human input. The correct fix is unambiguous, adds no public surface, and guards no state you did not demonstrate; otherwise `decision_needed`.
+   - **defer** -- Pre-existing issue not caused by the current change, real but not actionable now; or an entry whose members are all `maybe-false`; or any entry whose fix edits agent-context files (CLAUDE.md, AGENTS.md, rules, other specs). For maybe-false members, record what would settle them.
 
    If `{review_mode}` = `"no-spec"` and an entry would otherwise be `decision_needed`, reclassify it as `patch` (if the fix is unambiguous) or `defer` (if not).
 
-5. If `{failed_layers}` is non-empty, report which layers failed before announcing results. If zero entries remain after dismissals AND `{failed_layers}` is non-empty, warn the user that the review may be incomplete rather than announcing a clean review.
+5. If `{failed_layers}` is non-empty, report which layers failed before announcing results. If zero entries remain after rejections AND `{failed_layers}` is non-empty, warn the user that the review may be incomplete rather than announcing a clean review.
 
-6. If zero entries remain after triage (all dismissed or none raised): state "✅ Clean review — all layers passed." (Step 3 already warned if any review layers failed via `{failed_layers}`.)
+6. If zero entries remain after triage (all rejected or none raised): state "✅ Clean review — all layers passed." (Step 3 already warned if any review layers failed via `{failed_layers}`.)
 
 ## NEXT
 

@@ -5,6 +5,7 @@ import { translatedLocales } from '../lib/locales.mjs';
 
 const entry = await getEntry('docs', '404');
 const { Content } = await render(entry);
+const basePath = import.meta.env.BASE_URL;
 ---
 
 <StarlightPage frontmatter={{ title: entry.data.title, template: entry.data.template }}>
@@ -13,13 +14,16 @@ const { Content } = await render(entry);
 
 <!-- GitHub Pages serves this single 404.html for all paths.
      Redirect to the locale-specific 404 page when the URL has a locale prefix. -->
-<script is:inline define:vars={{ translatedLocales }}>
+<script is:inline define:vars={{ basePath, translatedLocales }}>
   (function () {
     var path = window.location.pathname;
+    var base = basePath.endsWith('/') ? basePath : basePath + '/';
+    if (!path.startsWith(base)) return;
+    var localPath = path.slice(base.length);
     for (var i = 0; i < translatedLocales.length; i++) {
-      var prefix = '/' + translatedLocales[i] + '/';
-      if (path.startsWith(prefix) && path !== prefix + '404/') {
-        window.location.replace(prefix + '404/');
+      var prefix = translatedLocales[i] + '/';
+      if (localPath.startsWith(prefix) && localPath !== prefix + '404/') {
+        window.location.replace(base + prefix + '404/');
         return;
       }
     }

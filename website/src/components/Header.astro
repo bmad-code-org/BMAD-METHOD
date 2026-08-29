@@ -8,8 +8,6 @@ import SiteTitle from 'virtual:starlight/components/SiteTitle';
 import SocialIcons from 'virtual:starlight/components/SocialIcons';
 import ThemeSelect from 'virtual:starlight/components/ThemeSelect';
 
-import Banner from './Banner.astro';
-
 /**
  * Render the `Search` component if Pagefind is enabled or the default search component has been overridden.
  */
@@ -17,7 +15,6 @@ const shouldRenderSearch =
 	config.pagefind || config.components.Search !== '@astrojs/starlight/components/Search.astro';
 ---
 
-<Banner />
 <div class="header sl-flex">
 	<div class="title-wrapper sl-flex">
 		<SiteTitle {...Astro.props} />

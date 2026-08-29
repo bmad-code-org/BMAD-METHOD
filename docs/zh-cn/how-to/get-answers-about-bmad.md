@@ -58,7 +58,6 @@ BMad-Help 通常会返回：
 | --- | --- | --- |
 | **`_bmad` 文件夹** | 智能体、工作流、提示词如何工作 | “PM 智能体具体做什么？” |
 | **完整 GitHub 仓库** | 版本历史、安装器、整体架构 | “v6 主要改了什么？” |
-| **`llms-full.txt`** | 文档层面的快速全景理解 | “解释 BMad 的四个阶段” |
 
 安装 BMad 后会生成 `_bmad` 文件夹；如果你还没有安装，可先克隆仓库。
 
@@ -71,12 +70,7 @@ BMad-Help 通常会返回：
 
 **如果你使用 ChatGPT 或 Claude.ai：**
 
-把 `llms-full.txt` 加入会话上下文：
-
-```text
-https://bmad-code-org.github.io/BMAD-METHOD/llms-full.txt
-```
-
+打开 [BMad 文档站点](https://docs.bmad-method.org/)。
 
 ### 3. 直接提问
 

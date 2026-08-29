@@ -1,9 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const CANONICAL_LLMS_ENTRY = '**[Build]';
-const CANONICAL_LLMS_DESCRIPTION = 'Canonical implementation workflow for direct intent and fully planned work';
-
 const FORBIDDEN_TERMS = [
   /\bbmad-(?:quick-dev|dev-auto)\b/gi,
   /\bQuick[ -]?Dev\b/gi,
@@ -24,12 +21,6 @@ export function validatePublishedImplementationModel(siteDir) {
   if (findings.length > 0) {
     const details = findings.map(({ file, line, match }) => `${file}:${line}: ${match}`).join('\n  ');
     throw new Error(`Obsolete implementation terminology found in deployable documentation:\n  ${details}`);
-  }
-
-  const llmsPath = path.join(siteDir, 'llms.txt');
-  const llmsContent = fs.readFileSync(llmsPath, 'utf-8');
-  if (!llmsContent.includes(CANONICAL_LLMS_ENTRY) || !llmsContent.includes(CANONICAL_LLMS_DESCRIPTION)) {
-    throw new Error('llms.txt must describe Build as canonical for both direct intent and fully planned work');
   }
 }
 
