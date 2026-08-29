@@ -2,7 +2,7 @@
 title: "The Theory of Project Context"
 description: Why bmad-project-context captures so little, what earns a place in a repository's agent instructions, and what is deliberately left out
 sidebar:
-  order: 9
+  order: 5
 ---
 
 `bmad-project-context` is built on an uncomfortable finding: most documentation written *for* AI agents makes them worse. This page explains the theory behind the skill — what it captures and why, and more importantly, what it deliberately refuses to capture. If you are coming from `bmad-document-project` or `bmad-generate-project-context`, the last section explains exactly what changed.

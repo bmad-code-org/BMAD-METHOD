@@ -17,7 +17,7 @@ Use the smallest amount of BMad that safely fits the change. A typical
 session is one goal: about 500 lines of code added or changed (not counting
 tests) in a small handful of files. If it fits, give it to `bmad-build`. If it
 doesn't, plan that bigger piece of work first — see
-[Choose a Development Path](../how-to/choose-a-development-path.md). You
+[Choose a Planning Path](../plan/choose-a-planning-path.md). You
 often cannot tell until you try; if you aren't sure, ask `bmad-help`.
 
 For a trivial edit you are willing to review yourself, skip the process

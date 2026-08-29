@@ -92,7 +92,7 @@ Workflow skills run a structured, multi-step process without loading an agent pe
 | Example skill | Purpose |
 | --- | --- |
 | `bmad-product-brief` | Create or update a product brief — guided discovery when your concept is clear |
-| `bmad-prfaq` | [Working Backwards PRFAQ](../explanation/analysis-phase.md#prfaq-working-backwards) challenge to stress-test your product concept |
+| `bmad-prfaq` | [Working Backwards PRFAQ](../plan/define-requirements-and-a-specification.md#prfaq-working-backwards) challenge to stress-test your product concept |
 | `bmad-prd` | Create, update, or validate a Product Requirements Document |
 | `bmad-ux` | Design user experience |
 | `bmad-architecture` | Design system architecture |

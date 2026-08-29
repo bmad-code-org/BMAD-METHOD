@@ -26,8 +26,7 @@ building with no planning at all.
 ## Find Your Starting Point
 
 **You are not sure how much process the change needs.**
-Use the smallest path that safely fits. [Choose a Development Path](./how-to/choose-a-development-path.md)
-is the complete routing guide, from a trivial edit to a multi-epic project.
+[Choose a Planning Path](./plan/choose-a-planning-path.md).
 
 **You want to see it work.**
 [Build Your First Change](./start/build-your-first-change.md) walks through one build in an
@@ -44,13 +43,12 @@ Consider running `bmad-project-context`, then build as usual. See
 **You are building a larger feature or a whole product.**
 If you can give `bmad-spec` a complete intent, start there. If you need to
 go through the ideation/planning paces first, choose a path in
-[Choose a Development Path](./how-to/choose-a-development-path.md) or the
+[Choose a Planning Path](./plan/choose-a-planning-path.md) or the
 [Workflow Map](./reference/workflow-map.md).
 
 **Your idea is still vague, or you are not sure it is a good one.**
-Generate options with [Brainstorming](./explanation/brainstorming.md), gather
-evidence with [Deep Recon](./explanation/deep-recon.md), or
-[pressure-test the idea](./how-to/pressure-test-an-idea.md).
+Generate options or [pressure-test the idea](./plan/explore-and-validate-an-idea.md),
+then gather evidence with [Deep Recon](./plan/research-a-decision.md).
 
 **You want BMad to follow your team's own rules and practices.**
 See [Customize BMad](./how-to/customize-bmad.md) and

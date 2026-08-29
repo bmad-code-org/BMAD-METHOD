@@ -202,7 +202,7 @@ The magic happens in ideas 50–100. The workflow encourages generating 100+ ide
 
 **Output:** A cited `research.md` with metadata frontmatter, plus an optional self-contained HTML briefing
 
-For the three modes, how to choose between them, and what happens inside a run, see [Deep Recon](../explanation/deep-recon.md).
+For the three modes and how to choose between them, see [Research a Decision](../plan/research-a-decision.md).
 
 ### bmad-forge-idea
 
@@ -225,6 +225,8 @@ For the three modes, how to choose between them, and what happens inside a run, 
 **Input:** The idea, in any domain — a feature, a business model, a research hypothesis, a life decision
 
 **Output:** A `forged-idea.md` distillate when an idea hardens (optional), plus a `forge-report.html` keepsake every run
+
+For how a session runs, the room, and a worked example, see [Explore and Validate an Idea](../plan/explore-and-validate-an-idea.md#pressure-test-an-idea-with-forge-idea).
 
 ### bmad-party-mode
 
