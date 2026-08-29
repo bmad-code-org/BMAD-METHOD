@@ -17,7 +17,7 @@ Use the smallest amount of BMad that safely fits the change. A typical
 session is one goal: about 500 lines of code added or changed (not counting
 tests) in a small handful of files. If it fits, give it to `bmad-build`. If it
 doesn't, plan that bigger piece of work first — see
-[Choose a Development Path](../how-to/choose-a-development-path.md). You
+[Choose a Planning Path](../plan/choose-a-planning-path.md). You
 often cannot tell until you try; if you aren't sure, ask `bmad-help`.
 
 For a trivial edit you are willing to review yourself, skip the process
@@ -103,6 +103,9 @@ code is wrong because the plan was weak, or the plan is wrong because the goal
 was wrong, it goes back to that layer and regenerates from there instead of
 patching only the diff.
 
+For a standalone review — a PR, someone else's change, an extra pass, or a
+review bot — see [Review a Change](review-a-change.md).
+
 ### 6. Review the Result
 
 When it finishes, `bmad-build` shows you the completed change and its review
@@ -166,19 +169,22 @@ decisions may set patterns for later work. Once those patterns are stable,
 `bmad-build-auto` can run one unit without waiting for you; see
 [Autonomous Development Loops](../reference/build-auto.md).
 
-## Why It Works This Way
+## Why Does This Take So Long? I Could Plan Mode and Code It in Ten Minutes
 
-LLMs can see what looks important, not what actually is. Without your
-attention, the whole thing quickly falls apart.
+You can. The plan-and-implement half of `bmad-build` usually takes about as
+long, and it usually needs a couple fewer turns from you. It then reviews
+the result thoroughly, triages the findings, and automatically fixes the
+ones worth fixing. "Plan mode and code" does none of this. You have to
+invoke a review by hand, then spend time disposing of every finding —
+including the noisy and unrelated ones. See
+[Review a Change](review-a-change.md).
 
-Ten minutes of inference is usually cheaper than ten seconds of your
-attention. Watching every step yourself is a slog of Continue — keep going,
-yes, proceed. That part is tedious, unnecessary, and it turns you into the
-bottleneck.
+Human attention is by far the most expensive resource, and the
+productivity bottleneck in AI-backed software development.
 
-`bmad-build` hands the "go on"s to the machine. It keeps your attention in a
-few places that actually need you — open questions evidence cannot resolve,
-approving the plan on the full path, and reviewing the finished change — and
-brings you back only when it could not safely decide alone. That triage will
-sometimes be imperfect. Missing a low-value finding is usually better than
-flooding you with noise.
+For a throwaway prototype, or a trivial change you will review yourself,
+skip the process; see [Size the Work](#size-the-work). Or tell
+`bmad-build` to take the one-shot route, or to skip review. But if you are
+serious about the quality of the product, just let the process run and spend
+your attention where it is irreplaceable. That extra time and inference
+is worth it.

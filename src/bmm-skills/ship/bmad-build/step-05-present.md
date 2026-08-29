@@ -65,7 +65,7 @@ If version control is available and the tree is dirty, create a local commit wit
 Display summary of your work to the user, including:
 
 - The commit hash, if one was created.
-- Review findings breakdown: patches applied, items deferred, and the dismissed count — dismissal reasons are recorded in the spec's `## Review Triage Log`.
+- Review findings breakdown: patches applied, items deferred, and the rejected count — reasons are recorded in the spec's `## Review Triage Log`.
 
 Display file paths and `file:line` references in whatever form is clickable where you are presenting them (e.g. code citation in chat, CWD-relative path with no leading `/` in terminal). If unsure, use CWD-relative path.
 

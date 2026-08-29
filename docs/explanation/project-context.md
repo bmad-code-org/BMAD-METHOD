@@ -2,7 +2,7 @@
 title: "Project Context"
 description: How bmad-project-context writes a repository's agent instructions — a small verified block in AGENTS.md
 sidebar:
-  order: 8
+  order: 4
 ---
 
 `bmad-project-context` sets up a repository so AI agents work well in it. The output is a small verified block inside the repo's `AGENTS.md`: what the org requires, the commands that were actually run, the conventions where the obvious guess is wrong, and the mistakes agents keep making here.

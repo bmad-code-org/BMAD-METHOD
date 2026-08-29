@@ -88,8 +88,9 @@ context: [] # optional: `{project-root}/`-prefixed paths to project-wide standar
 
 ## Review Triage Log
 
-<!-- Append-only. Populated by step-04 on every review pass: each dismissed finding with the
-     reason that disposed of its claim. Empty until the first review pass. -->
+<!-- Append-only. Populated by step-04 on every review pass: one row per reviewer finding —
+     verdict (high/medium/low/false/maybe-false) with its evidence: the refutation for
+     false, what would settle it for maybe-false. Empty until the first review pass. -->
 
 ## Design Notes
 

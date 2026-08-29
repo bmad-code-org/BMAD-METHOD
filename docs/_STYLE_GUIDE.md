@@ -161,7 +161,7 @@ your-project/
 | **Index/Landing** | `core-concepts/index.md`      |
 | **Concept**       | `what-are-agents.md`          |
 | **Feature**       | `build.md`                |
-| **Philosophy**    | `why-solutioning-matters.md`  |
+| **Philosophy**    | `design-ux-and-architecture.md` |
 | **FAQ**           | `established-projects-faq.md` |
 
 ### General Template

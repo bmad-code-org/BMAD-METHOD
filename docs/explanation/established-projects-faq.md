@@ -2,7 +2,7 @@
 title: "Established Projects FAQ"
 description: Common questions about using BMad Method on established projects
 sidebar:
-  order: 10
+  order: 6
 ---
 Quick answers to common questions about working on established projects with the BMad Method (BMM).
 

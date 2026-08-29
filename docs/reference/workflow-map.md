@@ -9,7 +9,7 @@ The BMad Method (BMM) organizes software delivery into four phases. Each phase
 adds only the context the work needs, from optional discovery through planning,
 solutioning, and implementation.
 
-Use [Choose a Development Path](../how-to/choose-a-development-path.md) to
+Use [Choose a Planning Path](../plan/choose-a-planning-path.md) to
 decide how much of this map your change needs. Invoke the listed skills directly.
 If you are unsure what to do next in an installed project, run `bmad-help`.
 
@@ -21,8 +21,10 @@ If you are unsure what to do next in an installed project, run `bmad-help`.
 
 ## Phase 1: Analysis (Optional)
 
-Explore the problem space and validate ideas before committing to planning. [**Learn what each tool does and when to use
-it**](../explanation/analysis-phase.md).
+Explore the problem space and validate ideas before committing to planning. See
+[Explore and Validate an Idea](../plan/explore-and-validate-an-idea.md) for which tool fits
+your situation and [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md)
+for brief versus PRFAQ.
 
 | Workflow             | Purpose                                                                                                                                                             | Produces                                                                 |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
@@ -32,11 +34,13 @@ it**](../explanation/analysis-phase.md).
 | `bmad-product-brief` | Capture strategic vision — best when your concept is clear                                                                                                          | `brief.md` + `addendum.md`, plus any desired HTML or presentation output |
 | `bmad-prfaq`         | Working Backwards — stress-test your product concept customer-first                                                                                                 | `prfaq-{project}.md`                                                     |
 
-For Deep Recon's three modes and how a research run works inside, see [Deep Recon](../explanation/deep-recon.md).
+For Deep Recon's three modes and how to choose between them, see [Research a Decision](../plan/research-a-decision.md).
 
 ## Phase 2: Planning
 
-Define what to build and for whom.
+Define what to build and for whom. See
+[Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md)
+and [Design UX and Architecture](../plan/design-ux-and-architecture.md).
 
 | Workflow    | Purpose                                                                                                                                                    | Produces                                                                                         |
 | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
@@ -53,7 +57,7 @@ Define what to build and for whom.
   :::
 
 :::note[`bmad-spec`]
-`bmad-spec` produces the canonical machine contract: a five-field kernel (Why, Capabilities, Constraints, Non-goals, Success signal) plus companion files, validated so every load-bearing source claim is preserved. It is the only writer of `SPEC.md`; other skills invoke it headless when they need to express or update intent. On request, Story Breakdown also creates the ordered `stories.yaml` used to implement an epic across several sessions. See [Choose a Development Path](../how-to/choose-a-development-path.md#4-start-epic-sized-work).
+`bmad-spec` produces the canonical machine contract: a five-field kernel (Why, Capabilities, Constraints, Non-goals, Success signal) plus companion files, validated so every load-bearing source claim is preserved. It is the only writer of `SPEC.md`; other skills invoke it headless when they need to express or update intent. On request, Story Breakdown also creates the ordered `stories.yaml` used to implement an epic across several sessions. See [Define Requirements and a Specification](../plan/define-requirements-and-a-specification.md) and [Choose a Planning Path](../plan/choose-a-planning-path.md#1-start-epic-sized-work).
 :::
 
 :::tip[Upstream: `bmad-product-brief`]
@@ -70,7 +74,7 @@ Decide how to build it and break work into stories.
 | `bmad-create-epics-and-stories` | Break requirements into implementable work                                | Epic files with stories                                                                                           |
 | `bmad-sprint-planning`          | Readiness gate before implementation, then story tracking and status view | PASS/CONCERNS/FAIL + `sprint-status.yaml`                                                                         |
 
-For how the readiness gate, deterministic tracking, and status view work together, see [Sprint Planning](../explanation/sprint-planning.md).
+For how the readiness gate, deterministic tracking, and status view work together, see [Break Work into Stories and Track It](../plan/break-work-into-stories-and-track-it.md). For closing an epic, see [Finish an Epic](../plan/finish-an-epic.md).
 
 ## Phase 4: Implementation
 
@@ -78,6 +82,7 @@ Implementation happens in session-sized units. `bmad-build` handles a unit
 attentively; `bmad-build-auto` handles one unit unattended. Larger planning
 paths create and preserve the context those units need. See
 [Build a Change](../build/build-a-change.md) for the attended path,
+[Review a Change](../build/review-a-change.md) for a standalone review,
 [Walk Through a Change](../build/walk-through-a-change.md) to walk a finished
 change, and [Test Completed Work](../build/test-completed-work.md) to choose a
 testing path.
@@ -86,7 +91,7 @@ testing path.
 | --------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------ |
 | `bmad-build`          | Implement and review one direct intent or planned story with human checkpoints | Implementation record + code                     |
 | `bmad-build-auto`     | Implement and review one unit unattended for a caller or orchestrator          | Implementation record + code + terminal status   |
-| `bmad-code-review`    | Ad hoc review of any code change                                               | Findings + applied patches                       |
+| `bmad-code-review`    | Ad hoc review of any code change. See [Review a Change](../build/review-a-change.md) | Findings + applied patches                       |
 | `bmad-correct-course` | Handle significant mid-sprint changes                                          | Updated plan or re-routing                       |
 | `bmad-retrospective`  | Evidence-based review of a completed epic against its acceptance criteria      | Retro document, action items, acceptance verdict |
 
