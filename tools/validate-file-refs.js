@@ -67,7 +67,7 @@ const STEP_META = /(?:thisStepFile|nextStepFile|continueStepFile|skipToStepFile|
 const LOAD_DIRECTIVE = /Load[:\s]+`(\.[^`]+)`/g;
 
 // Pattern: absolute path leaks
-const ABS_PATH_LEAK = /(?:\/Users\/|\/home\/|[A-Z]:\\\\)/;
+const ABS_PATH_LEAK = /(?:\/Users\/|\/home\/|\b[A-Za-z]:[\\/])/;
 
 // --- Output Escaping ---
 
