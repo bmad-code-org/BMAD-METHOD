@@ -44,6 +44,12 @@ export default defineConfig({
     '/explanation/preventing-agent-conflicts': `${basePath}plan/design-ux-and-architecture/`,
     '/explanation/sprint-planning': `${basePath}plan/break-work-into-stories-and-track-it/`,
     '/explanation/retrospective': `${basePath}build/finish-an-epic/`,
+    '/how-to/established-projects': `${basePath}existing-codebases/start-in-an-existing-codebase/`,
+    '/explanation/established-projects-faq': `${basePath}existing-codebases/start-in-an-existing-codebase/`,
+    '/how-to/project-context': `${basePath}existing-codebases/set-and-maintain-project-context/`,
+    '/explanation/project-context': `${basePath}existing-codebases/set-and-maintain-project-context/`,
+    '/explanation/project-context-theory': `${basePath}existing-codebases/theory-of-project-context/`,
+    '/tutorials/getting-deeper': `${basePath}existing-codebases/getting-deeper/`,
     '/fr/how-to/non-interactive-installation': `${basePath}fr/how-to/install-bmad/`,
     '/cs/how-to/non-interactive-installation': `${basePath}cs/how-to/install-bmad/`,
     '/ko-kr/how-to/non-interactive-installation': `${basePath}ko-kr/how-to/install-bmad/`,
@@ -203,7 +209,7 @@ export default defineConfig({
             'fr-FR': 'Planifier un travail plus vaste',
             'cs-CZ': 'Plánovat větší práci',
           },
-          collapsed: false,
+          collapsed: true,
           items: [
             {
               label: 'Choose a Planning Path',
@@ -278,10 +284,61 @@ export default defineConfig({
           ],
         },
         {
-          label: 'Tutorials',
-          translations: { 'ko-KR': '튜토리얼', 'vi-VN': 'Hướng dẫn nhập môn', 'zh-CN': '教程', 'fr-FR': 'Tutoriels', 'cs-CZ': 'Tutoriály' },
-          collapsed: false,
-          items: [{ autogenerate: { directory: 'tutorials' } }],
+          label: 'Existing Codebases',
+          translations: {
+            'ko-KR': '기존 코드베이스',
+            'vi-VN': 'Mã nguồn hiện có',
+            'zh-CN': '现有代码库',
+            'fr-FR': 'Bases de code existantes',
+            'cs-CZ': 'Existující kódové základny',
+          },
+          collapsed: true,
+          items: [
+            {
+              label: 'Start in an Existing Codebase',
+              translations: {
+                'ko-KR': '기존 코드베이스에서 시작하기',
+                'vi-VN': 'Bắt đầu trong một mã nguồn hiện có',
+                'zh-CN': '在现有代码库中开始',
+                'fr-FR': 'Démarrer dans une base de code existante',
+                'cs-CZ': 'Začít v existující kódové základně',
+              },
+              slug: 'existing-codebases/start-in-an-existing-codebase',
+            },
+            {
+              label: 'Set and Maintain Project Context',
+              translations: {
+                'ko-KR': '프로젝트 컨텍스트 설정 및 유지',
+                'vi-VN': 'Thiết lập và duy trì ngữ cảnh dự án',
+                'zh-CN': '设置并维护项目上下文',
+                'fr-FR': 'Définir et maintenir le contexte du projet',
+                'cs-CZ': 'Nastavit a udržovat kontext projektu',
+              },
+              slug: 'existing-codebases/set-and-maintain-project-context',
+            },
+            {
+              label: 'Getting Deeper',
+              translations: {
+                'ko-KR': '더 깊이 알아보기',
+                'vi-VN': 'Đi sâu hơn',
+                'zh-CN': '深入探索',
+                'fr-FR': 'Aller plus loin',
+                'cs-CZ': 'Jít hlouběji',
+              },
+              slug: 'existing-codebases/getting-deeper',
+            },
+            {
+              label: 'The Theory of Project Context',
+              translations: {
+                'ko-KR': '프로젝트 컨텍스트의 이론',
+                'vi-VN': 'Lý thuyết về ngữ cảnh dự án',
+                'zh-CN': '项目上下文的理论',
+                'fr-FR': 'La théorie du contexte du projet',
+                'cs-CZ': 'Teorie kontextu projektu',
+              },
+              slug: 'existing-codebases/theory-of-project-context',
+            },
+          ],
         },
         {
           label: 'How-To Guides',

@@ -126,4 +126,4 @@ discover it from an existing codebase at any time.
 
 - Run `bmad-project-context` — greenfield (seeded from your spec or architecture) or brownfield (discovered from the codebase, verified, then confirmed with you). The earlier `bmad-generate-project-context` is deprecated and forwards there; an existing `project-context.md` is offered up for absorption.
 
-[**Learn more about project context**](../explanation/project-context.md)
+[**Learn more about project context**](../existing-codebases/set-and-maintain-project-context.md)

@@ -37,8 +37,8 @@ Run `bmad-build` and describe the change. See [Build a Change](./build/build-a-c
 
 **You are working in an existing codebase.**
 Consider running `bmad-project-context`, then build as usual. See
-[Established Projects](./how-to/established-projects.md) and
-[Manage Project Context](./how-to/project-context.md).
+[Start in an Existing Codebase](./existing-codebases/start-in-an-existing-codebase.md) and
+[Set and Maintain Project Context](./existing-codebases/set-and-maintain-project-context.md).
 
 **You are building a larger feature or a whole product.**
 If you can give `bmad-spec` a complete intent, start there. If you need to

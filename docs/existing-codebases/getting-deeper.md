@@ -2,7 +2,7 @@
 title: 'Getting Deeper'
 description: Use Build and BMad Spec to extend a command in a specific Django version
 sidebar:
-  order: 1
+  order: 3
 ---
 
 You already know Build from small projects. Here, you will use it in a specific

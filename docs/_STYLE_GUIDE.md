@@ -91,8 +91,8 @@ your-project/
 ├── _bmad-output/
 │   ├── planning-artifacts/
 │   │   └── PRD.md                           # Your requirements document
-│   ├── implementation-artifacts/
-│   └── project-context.md                   # Implementation rules (optional)
+│   └── implementation-artifacts/
+├── AGENTS.md                                # agent instructions (optional, via bmad-project-context)
 └── ...
 ```
 ````
@@ -162,7 +162,6 @@ your-project/
 | **Concept**       | `what-are-agents.md`          |
 | **Feature**       | `build.md`                |
 | **Philosophy**    | `design-ux-and-architecture.md` |
-| **FAQ**           | `established-projects-faq.md` |
 
 ### General Template
 

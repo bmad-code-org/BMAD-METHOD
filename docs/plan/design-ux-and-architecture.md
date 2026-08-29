@@ -63,7 +63,7 @@ Point it at the whole system or at one epic; an epic spine inherits the
 parent's decisions and records only what the parent left open. When it
 finishes, it offers to attach itself to the spec, which is how Build and the
 readiness gate find it. Seed
-[project context](../how-to/project-context.md) from it so every later skill
+[project context](../existing-codebases/set-and-maintain-project-context.md) from it so every later skill
 reads the same rules.
 
 :::caution[Common mistakes]
