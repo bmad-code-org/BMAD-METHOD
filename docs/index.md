@@ -51,8 +51,8 @@ Generate options or [pressure-test the idea](./plan/explore-and-validate-an-idea
 then gather evidence with [Deep Recon](./plan/research-a-decision.md).
 
 **You want BMad to follow your team's own rules and practices.**
-See [Customize BMad](./how-to/customize-bmad.md) and
-[Expand BMad for Your Organization](./how-to/expand-bmad-for-your-org.md).
+See [Customize BMad](./customize/customize-bmad.md) and
+[Adopt BMad Across a Team](./customize/adopt-bmad-across-a-team.md).
 
 :::tip[Unsure where to start?]
 Run `bmad-help`.

@@ -125,7 +125,7 @@ The core module includes 8 built-in tools — help, reviews, refinement, customi
 
 ## Naming Convention
 
-All skills use the `bmad-` prefix followed by a descriptive name (e.g., `bmad-agent-dev`, `bmad-prd`, `bmad-help`). See [Modules](./modules.md) for available modules.
+All skills use the `bmad-` prefix followed by a descriptive name (e.g., `bmad-agent-dev`, `bmad-prd`, `bmad-help`). See [Add Modules](../customize/add-modules.md) for available modules.
 
 ## Troubleshooting
 

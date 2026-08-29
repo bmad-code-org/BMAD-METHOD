@@ -106,7 +106,7 @@ Run the team reviewer via bash on {diff_file} and return its findings as a Markd
 """
 ```
 
-For how overrides merge, see [Customize BMad](../how-to/customize-bmad.md).
+For how overrides merge, see [Customize BMad](../customize/customize-bmad.md).
 
 ## Why Does Review Take Forever?
 

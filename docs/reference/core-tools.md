@@ -147,7 +147,7 @@ Code Review workflows in other modules run the code lenses automatically, and th
 
 **Output:** TOML override files under `_bmad/custom/`
 
-For a detailed guide on customizing BMad, see [How to Customize BMad](../how-to/customize-bmad.md).
+For a detailed guide on customizing BMad, see [Customize BMad](../customize/customize-bmad.md).
 
 ## Thinking Skills
 

@@ -101,7 +101,7 @@ to generate tests.
 
 TEA is a separate module. Its current workflows, commands, and setup live
 in the [TEA documentation](https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/).
-Install it with the rest of BMad; see [Official Modules](../reference/modules.md)
+Install it with the rest of BMad; see [Add Modules](../customize/add-modules.md)
 for how modules are selected.
 
 ## Where It Fits

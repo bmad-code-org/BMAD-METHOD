@@ -42,7 +42,7 @@ your ask, or you name it.
 
 **Explore** (the default) builds understanding. **Select** runs a structured
 choose-between when you are picking among candidates. You can add your own
-types through [bmad-customize](../how-to/customize-bmad.md).
+types through [bmad-customize](../customize/customize-bmad.md).
 
 ## The Three Modes
 

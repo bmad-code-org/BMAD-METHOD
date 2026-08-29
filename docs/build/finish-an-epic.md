@@ -101,5 +101,5 @@ written report and verdict.
 | A standard review        | `/bmad-retrospective`                                                                                                        |
 | A specific epic          | `/bmad-retrospective 3`                                                                                                      |
 | A spec-backed epic       | `/bmad-retrospective _bmad-output/specs/spec-<slug>/`                                                                        |
-| The team to talk it over | Ask to "discuss it as a team"; it convenes [party mode](../explanation/party-mode.md) over the real findings, off by default |
+| The team to talk it over | Ask to "discuss it as a team"; it convenes [party mode](../customize/run-multi-agent-discussions.md) over the real findings, off by default |
 | An unattended run        | `-H <epic>`: verdict on the evidence alone                                                                                   |

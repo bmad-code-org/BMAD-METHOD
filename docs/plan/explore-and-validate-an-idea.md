@@ -21,7 +21,7 @@ Start from your situation, not from a preferred skill.
 | "I need to understand the market, domain, or technology first"    | `bmad-deep-recon` — see [Research a Decision](./research-a-decision.md)                                       |
 | "I already have conviction and want it written down"              | A product brief — see [Define Requirements and a Specification](./define-requirements-and-a-specification.md) |
 | "I have a product concept and want it proven customer-first"      | A PRFAQ — see [Define Requirements and a Specification](./define-requirements-and-a-specification.md)         |
-| "I want my agents to discuss or decide together"                  | `bmad-party-mode` — see [Party Mode](../explanation/party-mode.md)                                            |
+| "I want my agents to discuss or decide together"                  | `bmad-party-mode` — see [Run Multi-Agent Discussions](../customize/run-multi-agent-discussions.md)            |
 
 None of these are stages. Run whichever fit, in any order, and condense what
 comes out before the next step.
@@ -79,8 +79,8 @@ argued.
 Each turn brings two voices: one from your installed agents or personas, and
 one generated for the topic (a competitor, a buyer, a finance reviewer). Name
 a persona to change who participates, or ask to go one-on-one. See
-[Party Mode](../explanation/party-mode.md) and
-[named agents](../explanation/named-agents.md) for the roster.
+[Run Multi-Agent Discussions](../customize/run-multi-agent-discussions.md) and
+[Agents](../reference/agents.md) for the roster.
 
 :::tip[Let it kill the idea]
 Finding out cheaply that an idea doesn't hold is the win. Don't steer the
