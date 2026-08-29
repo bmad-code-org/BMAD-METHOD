@@ -14,9 +14,6 @@
    COLOR PALETTE - Light Mode
    ============================================ */
 :root {
-  --ai-banner-height: 2.75rem;
-  --sl-nav-height: 9rem; /* Base nav (3.5rem) + two announcement banners (2.75rem each) */
-
   /* Full-width content - override Starlight's default 45rem/67.5rem */
   --sl-content-width: 65rem;
 
@@ -247,17 +244,12 @@ nav[aria-label="Breadcrumb"] {
    NAVBAR
    ============================================ */
 header.header {
-  padding: 0 !important; /* Remove all padding for full-width banner */
+  padding: 0; /* Zero Starlight PageFrame pad so it does not stack on the inner row */
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  height: var(--sl-nav-height) !important;
-  display: flex;
-  flex-direction: column;
 }
 
 header.header .header.sl-flex {
   padding: 0 1.5rem;
-  height: calc(var(--sl-nav-height) - var(--ai-banner-height));
-  width: 100%;
 }
 
 :root[data-theme='dark'] header.header {
@@ -523,7 +515,7 @@ blockquote {
   }
 }
 
-/* Responsive padding on navbar row only - banner stays full-width */
+/* Responsive padding on navbar row */
 @media (min-width: 50rem) {
   header.header .header.sl-flex {
     padding-left: 1rem;

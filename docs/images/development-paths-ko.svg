@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="1040" viewBox="0 0 760 1040" role="img" aria-labelledby="title description">
+  <title id="title">하나의 전달 패턴을 작업 규모에 맞춘 네 가지 개발 경로</title>
+  <desc id="description">단순 작업은 변경, 편집, 확인으로 이어집니다. 단일 세션 작업은 의도에서 Build를 거쳐 결과로 이어집니다. 에픽 규모 작업은 사양과 스토리를 추가하고 각 스토리에서 Build를 반복한 뒤 통합과 회고를 진행합니다. 프로젝트 규모 작업은 공동 계약을 추가하고 여러 에픽 경로를 반복해 통합된 제품을 만듭니다.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#041629"/>
+      <stop offset="1" stop-color="#0a2c47"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#39ccff"/>
+    </marker>
+  </defs>
+
+  <rect width="760" height="1040" rx="20" fill="url(#background)"/>
+  <path d="M0 80H760M0 160H760M0 240H760M0 320H760M0 400H760M0 480H760M0 560H760M0 640H760M0 720H760M0 800H760M0 880H760M0 960H760M95 0V1040M190 0V1040M285 0V1040M380 0V1040M475 0V1040M570 0V1040M665 0V1040" stroke="#38bdf8" stroke-opacity=".05"/>
+
+  <g font-family="Apple SD Gothic Neo, Noto Sans KR, Avenir Next, Avenir, Segoe UI, sans-serif">
+    <text x="380" y="45" fill="#ffe34f" font-size="17" font-weight="700" text-anchor="middle" letter-spacing="1.2">같은 전달 패턴, 네 가지 규모</text>
+    <text x="380" y="70" fill="#9cc8e2" font-size="18" text-anchor="middle">큰 경로는 컨텍스트를 더하고 작은 단위를 반복합니다.</text>
+
+    <g transform="translate(20 90)">
+      <rect width="720" height="175" rx="16" fill="#0b253b" stroke="#39ccff" stroke-opacity=".28"/>
+      <text x="24" y="36" fill="#ffe34f" font-size="18" font-weight="700" letter-spacing="1">단순 작업</text>
+      <text x="24" y="62" fill="#9cc8e2" font-size="18">명확하고 위험도가 낮음</text>
+      <path d="M310 110H345M505 110H540" stroke="#39ccff" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+      <g text-anchor="middle">
+        <rect x="160" y="77" width="150" height="66" rx="11" fill="#112f49" stroke="#9cc8e2" stroke-width="2"/>
+        <text x="235" y="118" fill="#ffffff" font-size="21" font-weight="600">변경</text>
+        <rect x="355" y="77" width="150" height="66" rx="11" fill="#112f49" stroke="#39ccff" stroke-width="2"/>
+        <text x="430" y="118" fill="#ffffff" font-size="21" font-weight="600">편집</text>
+        <rect x="550" y="77" width="150" height="66" rx="11" fill="#112f49" stroke="#7ee787" stroke-width="2"/>
+        <text x="625" y="118" fill="#ffffff" font-size="21" font-weight="600">확인</text>
+      </g>
+    </g>
+
+    <g transform="translate(20 285)">
+      <rect width="720" height="175" rx="16" fill="#0b253b" stroke="#39ccff" stroke-opacity=".28"/>
+      <text x="24" y="36" fill="#ffe34f" font-size="18" font-weight="700" letter-spacing="1">단일 세션</text>
+      <text x="24" y="62" fill="#9cc8e2" font-size="18">일관된 구현 단위 하나</text>
+      <path d="M310 110H345M505 110H540" stroke="#39ccff" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+      <g text-anchor="middle">
+        <rect x="160" y="77" width="150" height="66" rx="11" fill="#112f49" stroke="#9cc8e2" stroke-width="2"/>
+        <text x="235" y="118" fill="#ffffff" font-size="21" font-weight="600">의도</text>
+        <rect x="355" y="77" width="150" height="66" rx="11" fill="#12334e" stroke="#39ccff" stroke-width="3"/>
+        <text x="430" y="108" fill="#ffffff" font-size="21" font-weight="700">Build</text>
+        <text x="430" y="130" fill="#9cc8e2" font-size="14">계획 · 구현 · 검토</text>
+        <rect x="550" y="77" width="150" height="66" rx="11" fill="#112f49" stroke="#7ee787" stroke-width="2"/>
+        <text x="625" y="118" fill="#ffffff" font-size="21" font-weight="600">결과</text>
+      </g>
+    </g>
+
+    <g transform="translate(20 480)">
+      <rect width="720" height="250" rx="16" fill="#0b253b" stroke="#39ccff" stroke-opacity=".28"/>
+      <text x="24" y="36" fill="#ffe34f" font-size="18" font-weight="700" letter-spacing="1">에픽 규모</text>
+      <text x="24" y="62" fill="#9cc8e2" font-size="18">하나의 결과, 여러 Build 단위</text>
+      <path d="M260 105H290M430 105H460" stroke="#39ccff" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+      <path d="M535 138V153H225V166" fill="none" stroke="#39ccff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+      <path d="M335 199H395" stroke="#39ccff" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+      <g text-anchor="middle">
+        <rect x="120" y="76" width="140" height="58" rx="10" fill="#112f49" stroke="#9cc8e2" stroke-width="2"/>
+        <text x="190" y="112" fill="#ffffff" font-size="20" font-weight="600">의도</text>
+        <rect x="300" y="76" width="130" height="58" rx="10" fill="#112f49" stroke="#9cc8e2" stroke-width="2"/>
+        <text x="365" y="112" fill="#ffffff" font-size="20" font-weight="600">사양</text>
+        <rect x="470" y="76" width="130" height="58" rx="10" fill="#112f49" stroke="#9cc8e2" stroke-width="2"/>
+        <text x="535" y="112" fill="#ffffff" font-size="20" font-weight="600">스토리</text>
+        <rect x="115" y="166" width="220" height="66" rx="11" fill="#12334e" stroke="#39ccff" stroke-width="3"/>
+        <text x="225" y="195" fill="#ffffff" font-size="20" font-weight="700">Build × 스토리</text>
+        <text x="225" y="216" fill="#9cc8e2" font-size="16">스토리마다 한 단위</text>
+        <rect x="405" y="166" width="260" height="66" rx="11" fill="#112f49" stroke="#7ee787" stroke-width="2"/>
+        <text x="535" y="195" fill="#ffffff" font-size="19" font-weight="600">통합 → 회고</text>
+        <text x="535" y="216" fill="#9cc8e2" font-size="16">결합된 결과 검토</text>
+      </g>
+    </g>
+
+    <g transform="translate(20 750)">
+      <rect width="720" height="270" rx="16" fill="#0b253b" stroke="#39ccff" stroke-opacity=".28"/>
+      <text x="24" y="36" fill="#ffe34f" font-size="18" font-weight="700" letter-spacing="1">프로젝트 규모</text>
+      <text x="24" y="62" fill="#9cc8e2" font-size="18">여러 에픽 또는 세션 약 20회 이상</text>
+      <path d="M250 112H280M455 112H485" stroke="#39ccff" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+      <path d="M570 145V163H240V178" fill="none" stroke="#39ccff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+      <path d="M365 213H410" stroke="#39ccff" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+      <g text-anchor="middle">
+        <rect x="110" y="79" width="140" height="66" rx="10" fill="#112f49" stroke="#9cc8e2" stroke-width="2"/>
+        <text x="180" y="119" fill="#ffffff" font-size="20" font-weight="600">의도</text>
+        <rect x="290" y="79" width="165" height="66" rx="10" fill="#112f49" stroke="#9cc8e2" stroke-width="2"/>
+        <text x="372" y="108" fill="#ffffff" font-size="18" font-weight="600">공동 계약</text>
+        <text x="372" y="130" fill="#9cc8e2" font-size="14">제품 · UX · 기술</text>
+        <rect x="495" y="79" width="150" height="66" rx="10" fill="#112f49" stroke="#9cc8e2" stroke-width="2"/>
+        <text x="570" y="119" fill="#ffffff" font-size="20" font-weight="600">에픽</text>
+        <rect x="115" y="178" width="250" height="70" rx="11" fill="#12334e" stroke="#39ccff" stroke-width="3"/>
+        <text x="240" y="207" fill="#ffffff" font-size="20" font-weight="700">에픽 경로 × 에픽</text>
+        <text x="240" y="230" fill="#9cc8e2" font-size="15">사양 · 스토리 · Build · 회고</text>
+        <rect x="420" y="178" width="245" height="70" rx="11" fill="#112f49" stroke="#7ee787" stroke-width="2"/>
+        <text x="542" y="220" fill="#ffffff" font-size="19" font-weight="600">통합된 제품</text>
+      </g>
+    </g>
+  </g>
+</svg>

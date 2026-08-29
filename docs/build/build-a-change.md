@@ -6,10 +6,10 @@ sidebar:
 ---
 
 The core implementation skill is `bmad-build`. It takes any expression of
-what you want — a sentence, an issue, a spec, or a planned story — and asks
-questions until the goal is clear and small enough for one development
-session. Then it plans the change, implements it, reviews the result, and
-fixes the bugs it finds. See [how a run works](#run-bmad-build).
+what you want — a sentence, an issue, a spec, or a planned story — investigates
+the codebase and upstream context, then plans the change, implements it,
+reviews the result, and fixes the bugs it finds. See
+[how a run works](#run-bmad-build).
 
 ## Size the Work
 
@@ -17,7 +17,7 @@ Use the smallest amount of BMad that safely fits the change. A typical
 session is one goal: about 500 lines of code added or changed (not counting
 tests) in a small handful of files. If it fits, give it to `bmad-build`. If it
 doesn't, plan that bigger piece of work first — see
-[Choose a Development Path](../how-to/choose-a-development-path.md). You
+[Choose a Planning Path](../plan/choose-a-planning-path.md). You
 often cannot tell until you try; if you aren't sure, ask `bmad-help`.
 
 For a trivial edit you are willing to review yourself, skip the process
@@ -65,21 +65,27 @@ the exp check entirely. /bmad-build
 Refactor UserService to use async/await instead of callbacks.
 ```
 
-### 3. Clarify the Intent
+### 3. Resolve Intent from Evidence
 
-`bmad-build` first works with you to turn the request into one clear goal. The
-input can start rough, but before it runs on its own the goal must be small
-enough, clear enough, and free of contradictions. It uses any upstream context
-it already has and asks only about gaps it needs to implement safely.
+`bmad-build` starts from your request and investigates the codebase and any
+upstream planning artifacts before deciding whether anything material is still
+missing. The input can start rough; clear, evidence-supported requests proceed
+without a clarification turn. When something is unclear, it looks for evidence
+first — only what the repository and planning context cannot settle becomes an
+open question on a finished design, not an interview before work starts.
 
-Answer those questions carefully. A wrong answer here is the most expensive
-kind of mistake to find later.
+Answer open questions carefully when they appear. A wrong call there is the most
+expensive kind of mistake to find later.
 
 ### 4. Approve a Plan When Asked
 
-Once the goal is clear, `bmad-build` chooses a path. Tiny, low-risk changes go
-straight to implementation. Everything else gets a short written plan first, so
-the model has a firm boundary before it works longer without you.
+After investigation, `bmad-build` routes to the smallest safe path. It reports
+three facts about the settled design: intent gaps (things you did not say that you
+would notice in the result), irreversible actions, and footprint. A design
+clean on all three takes the light path — a minimal spec and implementation in
+the same session, reviewed afterwards. Anything flagged gets a full written
+plan first, with each intent gap recorded as an open question you answer
+before approval.
 
 Approve the plan when it describes the right thing to build. Push back if it
 does not — fixing the plan is cheaper than fixing the code.
@@ -97,10 +103,14 @@ code is wrong because the plan was weak, or the plan is wrong because the goal
 was wrong, it goes back to that layer and regenerates from there instead of
 patching only the diff.
 
+For a standalone review — a PR, someone else's change, an extra pass, or a
+review bot — see [Review a Change](review-a-change.md).
+
 ### 6. Review the Result
 
 When it finishes, `bmad-build` shows you the completed change and its review
-notes. This is the main checkpoint.
+notes. This is the main checkpoint. For a guided walkthrough of the finished
+work, see [Walk Through a Change](walk-through-a-change.md).
 
 - Skim the diff to confirm the change matches your intent
 - If something looks off, tell the agent what to fix — it can iterate in the
@@ -122,6 +132,9 @@ different approach.
 - A ready-to-push commit with a conventional commit message
 - An implementation record for the run, kept beside the parent spec or story
   when there is one
+
+For generated API and end-to-end coverage of the finished work, see
+[Test Completed Work](test-completed-work.md).
 
 ## Deferred Work
 
@@ -156,18 +169,22 @@ decisions may set patterns for later work. Once those patterns are stable,
 `bmad-build-auto` can run one unit without waiting for you; see
 [Autonomous Development Loops](../reference/build-auto.md).
 
-## Why It Works This Way
+## Why Does This Take So Long? I Could Plan Mode and Code It in Ten Minutes
 
-LLMs can see what looks important, not what actually is. Without your
-attention, the whole thing quickly falls apart.
+You can. The plan-and-implement half of `bmad-build` usually takes about as
+long, and it usually needs a couple fewer turns from you. It then reviews
+the result thoroughly, triages the findings, and automatically fixes the
+ones worth fixing. "Plan mode and code" does none of this. You have to
+invoke a review by hand, then spend time disposing of every finding —
+including the noisy and unrelated ones. See
+[Review a Change](review-a-change.md).
 
-Ten minutes of inference is usually cheaper than ten seconds of your
-attention. Watching every step yourself is a slog of Continue — keep going,
-yes, proceed. That part is tedious, unnecessary, and it turns you into the
-bottleneck.
+Human attention is by far the most expensive resource, and the
+productivity bottleneck in AI-backed software development.
 
-`bmad-build` hands the "go on"s to the machine. It keeps your attention in a
-few places that actually need you — clarifying the goal, approving the plan,
-and reviewing the finished change — and brings you back only when it could not
-safely decide alone. That triage will sometimes be imperfect. Missing a
-low-value finding is usually better than flooding you with noise.
+For a throwaway prototype, or a trivial change you will review yourself,
+skip the process; see [Size the Work](#size-the-work). Or tell
+`bmad-build` to take the one-shot route, or to skip review. But if you are
+serious about the quality of the product, just let the process run and spend
+your attention where it is irreplaceable. That extra time and inference
+is worth it.

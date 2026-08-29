@@ -13,7 +13,7 @@ change you want, and it will make it happen.
 
 Otherwise, start here. You will make a working Python program in an empty
 project. This tutorial follows the
-[one-session development path](../how-to/choose-a-development-path.md): one
+[one-session planning path](../plan/choose-a-planning-path.md): one
 coherent request goes directly to the `bmad-build` skill.
 
 :::note[Before You Start]
@@ -116,7 +116,8 @@ the program, and checked its work before showing you the result.
 
 1. [Install BMad in your own repository](./install-bmad.md), then run
    the `bmad-build` skill with a short description of a small change.
+   See [Build a Change](../build/build-a-change.md) for the attended path.
 2. Continue to [Getting Deeper](../tutorials/getting-deeper.md) for a small change in a
    mature codebase, followed by a larger change using a written spec.
-3. Use [Choose a Development Path](../how-to/choose-a-development-path.md) when
+3. Use [Choose a Planning Path](../plan/choose-a-planning-path.md) when
    your next change may need several implementation sessions or multiple epics.
