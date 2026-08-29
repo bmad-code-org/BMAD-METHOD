@@ -9,8 +9,10 @@ one line recorded at the end in the order it happened — no sections, no groupi
 lifecycle status the log would have to mutate.
 """
 import json
+import os
 import subprocess
 import sys
+import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -306,6 +308,96 @@ def test_ack_entry_count_climbs(ws, capsys):
     append(ws, "b")
     out = json.loads(capsys.readouterr().out.strip().splitlines()[-1])
     assert out["entries"] == 2
+
+
+def test_permission_error_without_visible_lock_is_not_misreported_as_contention(tmp_path, monkeypatch):
+    target = tmp_path / MEMLOG
+
+    def deny_open(*_args, **_kwargs):
+        raise PermissionError("workspace is not writable")
+
+    monkeypatch.setattr(memlog.os, "open", deny_open)
+    with pytest.raises(PermissionError, match="not writable"):
+        with memlog.exclusive_lock(target):
+            pass
+
+
+def test_windows_style_permission_error_on_existing_lock_times_out_as_contention(tmp_path, monkeypatch):
+    target = tmp_path / MEMLOG
+    lock = target.with_suffix(target.suffix + ".lock")
+    lock.write_text(f"holder-token 123 {time.time()}\n", encoding="ascii")
+
+    def deny_open(*_args, **_kwargs):
+        raise PermissionError("file is locked")
+
+    monkeypatch.setattr(memlog.os, "open", deny_open)
+    monkeypatch.setattr(memlog, "LOCK_TIMEOUT_SECONDS", 0.0)
+    with pytest.raises(TimeoutError, match="holder-token"):
+        with memlog.exclusive_lock(target):
+            pass
+    assert lock.exists()
+
+
+def test_lock_cleanup_runs_when_the_protected_operation_fails(tmp_path):
+    target = tmp_path / MEMLOG
+    lock = target.with_suffix(target.suffix + ".lock")
+    with pytest.raises(RuntimeError, match="boom"):
+        with memlog.exclusive_lock(target):
+            raise RuntimeError("boom")
+    assert not lock.exists()
+
+
+def test_lock_cleanup_still_unlinks_after_close_error(tmp_path, monkeypatch):
+    target = tmp_path / MEMLOG
+    lock = target.with_suffix(target.suffix + ".lock")
+    real_close = os.close
+
+    def close_then_fail(descriptor):
+        real_close(descriptor)
+        raise OSError("close failed")
+
+    monkeypatch.setattr(memlog.os, "close", close_then_fail)
+    with pytest.raises(OSError, match="close failed"):
+        with memlog.exclusive_lock(target):
+            pass
+    assert not lock.exists()
+
+
+def test_orphaned_lock_is_reclaimed_after_the_documented_lease(tmp_path, monkeypatch):
+    target = tmp_path / MEMLOG
+    lock = target.with_suffix(target.suffix + ".lock")
+    lock.write_text(f"orphan-token 999 {time.time() - 60}\n", encoding="ascii")
+    monkeypatch.setattr(memlog, "LOCK_TIMEOUT_SECONDS", 0.0)
+    monkeypatch.setattr(memlog, "ORPHAN_LOCK_SECONDS", 1.0)
+
+    with memlog.exclusive_lock(target):
+        assert lock.exists()
+        assert not lock.read_text(encoding="ascii").startswith("orphan-token ")
+    assert not lock.exists()
+
+
+def test_young_lock_is_preserved_and_timeout_is_actionable(tmp_path, monkeypatch):
+    target = tmp_path / MEMLOG
+    lock = target.with_suffix(target.suffix + ".lock")
+    lock.write_text(f"active-token 321 {time.time()}\n", encoding="ascii")
+    monkeypatch.setattr(memlog, "LOCK_TIMEOUT_SECONDS", 0.01)
+    monkeypatch.setattr(memlog, "LOCK_POLL_SECONDS", 0.001)
+
+    with pytest.raises(TimeoutError, match="inspect the process"):
+        with memlog.exclusive_lock(target):
+            pass
+    assert lock.exists()
+
+
+def test_expired_writer_does_not_remove_a_successor_lock(tmp_path):
+    target = tmp_path / MEMLOG
+    lock = target.with_suffix(target.suffix + ".lock")
+    successor = f"successor-token 456 {time.time()}\n"
+
+    with memlog.exclusive_lock(target):
+        lock.write_text(successor, encoding="ascii")
+    assert lock.read_text(encoding="ascii") == successor
+    lock.unlink()
 
 
 def test_concurrent_appends_preserve_every_entry(tmp_path):

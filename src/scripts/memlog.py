@@ -34,6 +34,14 @@ Three invariants make it trustworthy:
 Atomicity: every write goes to a temp file, is flushed and fsync'd, then atomically
 renamed over the target, so a crash never leaves a half-written entry.
 
+Concurrency: a sidecar `.lock` serializes the full read/modify/replace cycle. Locks
+carry a random ownership token; a writer only removes the lock it acquired. Because a
+process can die without running cleanup, a lock older than five minutes is treated as
+orphaned and reclaimed after the normal wait timeout. A healthy memlog write is a tiny
+local-file operation and must not hold the lock for that long; callers seeing a timeout
+on a younger lock should inspect the recorded PID before removing it manually. Waiting
+before inspecting the lock avoids Windows readers blocking the active writer's cleanup.
+
 The file shape (.memlog.md):
 
     ---
@@ -71,6 +79,7 @@ from __future__ import annotations  # keep type-hint syntax lazy so the script r
 import argparse
 import json
 import os
+import secrets
 import sys
 import time
 from contextlib import contextmanager
@@ -79,6 +88,8 @@ from pathlib import Path
 
 MEMLOG = ".memlog.md"
 LOCK_TIMEOUT_SECONDS = 10.0
+LOCK_POLL_SECONDS = 0.05
+ORPHAN_LOCK_SECONDS = 5 * 60.0
 
 
 def now() -> str:
@@ -134,36 +145,129 @@ def write_atomic(path: Path, text: str) -> None:
 
 @contextmanager
 def exclusive_lock(path: Path):
-    """Lock the complete read/modify/replace cycle across processes."""
+    """Lock the complete read/modify/replace cycle across processes.
+
+    The age threshold is an explicit lease for crash recovery, not a process-liveness
+    guess (which is not portable to Windows). Ownership tokens keep an expired writer
+    from deleting a successor's lock during late cleanup.
+    """
     lock = path.with_suffix(path.suffix + ".lock")
     deadline = time.monotonic() + LOCK_TIMEOUT_SECONDS
+    descriptor = None
+    token = secrets.token_hex(16)
+    last_contention = None
     while True:
         try:
             descriptor = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
             break
-        except (FileExistsError, PermissionError) as contention:
-            if time.monotonic() < deadline:
-                time.sleep(0.05)
-                continue
-            if isinstance(contention, PermissionError) and not lock.exists():
+        except FileExistsError as contention:
+            last_contention = contention
+        except PermissionError as contention:
+            # Windows may report an existing/locked file as EACCES instead of
+            # EEXIST. Only treat that as contention when the lock is visible;
+            # an absent lock means the directory itself is not writable.
+            if not lock.exists():
                 raise
-            try:
-                holder = lock.read_text(encoding="ascii").strip()
-            except FileNotFoundError:
-                continue
-            except OSError:
-                holder = "unreadable"
-            raise TimeoutError(
-                f"timed out waiting for memlog lock: {lock} "
-                f"(holder {holder or 'unknown'}; inspect the process before removing a stale lock)"
-            ) from contention
+            last_contention = contention
+
+        if time.monotonic() < deadline:
+            time.sleep(LOCK_POLL_SECONDS)
+            continue
+        if _reclaim_orphaned_lock(lock):
+            deadline = time.monotonic() + LOCK_TIMEOUT_SECONDS
+            continue
+        try:
+            holder = lock.read_text(encoding="ascii").strip()
+        except FileNotFoundError:
+            continue
+        except OSError:
+            holder = "unreadable"
+        raise TimeoutError(
+            f"timed out waiting for memlog lock: {lock} "
+            f"(holder {holder or 'unknown'}; inspect the process before removing a young lock manually)"
+        ) from last_contention
+
+    record = f"{token} {os.getpid()} {time.time()}\n".encode("ascii")
     try:
-        os.write(descriptor, f"{os.getpid()} {time.time()}\n".encode("ascii"))
+        os.write(descriptor, record)
         os.fsync(descriptor)
+    except BaseException:
+        try:
+            os.close(descriptor)
+        finally:
+            lock.unlink(missing_ok=True)
+        raise
+    try:
         yield
     finally:
-        os.close(descriptor)
-        lock.unlink(missing_ok=True)
+        try:
+            os.close(descriptor)
+        finally:
+            _unlink_owned_lock(lock, token)
+
+
+def _reclaim_orphaned_lock(lock: Path) -> bool:
+    """Remove an unchanged lock whose lease expired; tolerate another waiter winning."""
+    try:
+        before = lock.stat()
+        holder = lock.read_text(encoding="ascii").strip()
+    except FileNotFoundError:
+        return True
+    except OSError:
+        return False
+
+    parts = holder.split()
+    try:
+        if len(parts) >= 3:
+            created = float(parts[2])
+        elif len(parts) >= 2:  # compatibility with pre-token lock records: "pid timestamp"
+            created = float(parts[1])
+        else:
+            created = before.st_mtime
+    except (TypeError, ValueError):
+        created = before.st_mtime
+    if max(0.0, time.time() - created) < ORPHAN_LOCK_SECONDS:
+        return False
+
+    try:
+        after = lock.stat()
+    except FileNotFoundError:
+        return True
+    identity_before = (before.st_dev, before.st_ino, before.st_mtime_ns, before.st_size)
+    identity_after = (after.st_dev, after.st_ino, after.st_mtime_ns, after.st_size)
+    if identity_before != identity_after:
+        return False
+
+    try:
+        lock.unlink()
+        return True
+    except FileNotFoundError:
+        return True
+    except OSError:
+        return False
+
+
+def _unlink_owned_lock(lock: Path, token: str) -> None:
+    """Best-effort cleanup that never removes a successor writer's lock."""
+    try:
+        holder = lock.read_text(encoding="ascii").split(maxsplit=1)
+    except (FileNotFoundError, OSError):
+        return
+    if holder and secrets.compare_digest(holder[0], token):
+        # Windows scanners/indexers can retain a transient read handle. Retry
+        # briefly, then leave the record for orphan recovery rather than fail
+        # an application write that already completed successfully.
+        deadline = time.monotonic() + 1.0
+        while True:
+            try:
+                lock.unlink()
+                return
+            except FileNotFoundError:
+                return
+            except PermissionError:
+                if time.monotonic() >= deadline:
+                    return
+                time.sleep(0.01)
 
 
 def entry_count(body: str) -> int:
