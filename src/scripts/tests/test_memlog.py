@@ -12,6 +12,7 @@ import json
 import os
 import subprocess
 import sys
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -312,9 +313,13 @@ def test_ack_entry_count_climbs(ws, capsys):
 
 def test_permission_error_without_visible_lock_is_not_misreported_as_contention(tmp_path, monkeypatch):
     target = tmp_path / MEMLOG
+    lock = target.with_suffix(target.suffix + ".lock")
+    real_open = os.open
 
-    def deny_open(*_args, **_kwargs):
-        raise PermissionError("workspace is not writable")
+    def deny_open(candidate, *args, **kwargs):
+        if Path(candidate) == lock:
+            raise PermissionError("workspace is not writable")
+        return real_open(candidate, *args, **kwargs)
 
     monkeypatch.setattr(memlog.os, "open", deny_open)
     with pytest.raises(PermissionError, match="not writable"):
@@ -326,9 +331,12 @@ def test_windows_style_permission_error_on_existing_lock_times_out_as_contention
     target = tmp_path / MEMLOG
     lock = target.with_suffix(target.suffix + ".lock")
     lock.write_text(f"holder-token 123 {time.time()}\n", encoding="ascii")
+    real_open = os.open
 
-    def deny_open(*_args, **_kwargs):
-        raise PermissionError("file is locked")
+    def deny_open(candidate, *args, **kwargs):
+        if Path(candidate) == lock:
+            raise PermissionError("file is locked")
+        return real_open(candidate, *args, **kwargs)
 
     monkeypatch.setattr(memlog.os, "open", deny_open)
     monkeypatch.setattr(memlog, "LOCK_TIMEOUT_SECONDS", 0.0)
@@ -344,6 +352,23 @@ def test_lock_cleanup_runs_when_the_protected_operation_fails(tmp_path):
     with pytest.raises(RuntimeError, match="boom"):
         with memlog.exclusive_lock(target):
             raise RuntimeError("boom")
+    assert not lock.exists()
+    guard = lock.with_suffix(lock.suffix + ".guard")
+    assert guard.is_file()  # persistent inode; the advisory lock itself is released
+
+
+def test_coordination_guard_never_initializes_through_an_existing_hardlink(tmp_path):
+    target = tmp_path / MEMLOG
+    lock = target.with_suffix(target.suffix + ".lock")
+    guard = lock.with_suffix(lock.suffix + ".guard")
+    victim = tmp_path / "victim.txt"
+    victim.write_bytes(b"")
+    os.link(victim, guard)
+
+    with pytest.raises(OSError, match="incomplete"):
+        with memlog.exclusive_lock(target):
+            pass
+    assert victim.read_bytes() == b""
     assert not lock.exists()
 
 
@@ -398,6 +423,59 @@ def test_expired_writer_does_not_remove_a_successor_lock(tmp_path):
         lock.write_text(successor, encoding="ascii")
     assert lock.read_text(encoding="ascii") == successor
     lock.unlink()
+
+
+def test_orphan_reclaim_is_serialized_with_successor_acquisition(tmp_path, monkeypatch):
+    target = tmp_path / MEMLOG
+    lock = target.with_suffix(target.suffix + ".lock")
+    lock.write_text(f"orphan-token 999 {time.time() - 60}\n", encoding="ascii")
+    monkeypatch.setattr(memlog, "LOCK_TIMEOUT_SECONDS", 0.2)
+    monkeypatch.setattr(memlog, "LOCK_POLL_SECONDS", 0.001)
+    monkeypatch.setattr(memlog, "ORPHAN_LOCK_SECONDS", 0.0)
+
+    reclaim_paused = threading.Event()
+    allow_unlink = threading.Event()
+    real_unlink = memlog._unlink_lock_path
+    first_unlink = True
+
+    def pause_before_orphan_unlink(lock_path):
+        nonlocal first_unlink
+        if first_unlink:
+            first_unlink = False
+            reclaim_paused.set()
+            assert allow_unlink.wait(timeout=2)
+        real_unlink(lock_path)
+
+    monkeypatch.setattr(memlog, "_unlink_lock_path", pause_before_orphan_unlink)
+
+    state_guard = threading.Lock()
+    active = 0
+    max_active = 0
+    observed_tokens = []
+
+    def writer():
+        nonlocal active, max_active
+        with memlog.exclusive_lock(target):
+            with state_guard:
+                active += 1
+                max_active = max(max_active, active)
+                observed_tokens.append(lock.read_text(encoding="ascii").split()[0])
+            time.sleep(0.03)
+            with state_guard:
+                active -= 1
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        first = pool.submit(writer)
+        assert reclaim_paused.wait(timeout=2)
+        second = pool.submit(writer)
+        assert not second.done()  # successor cannot replace the pathname mid-reclaim
+        allow_unlink.set()
+        first.result(timeout=3)
+        second.result(timeout=3)
+
+    assert max_active == 1
+    assert len(set(observed_tokens)) == 2
+    assert not lock.exists()
 
 
 def test_concurrent_appends_preserve_every_entry(tmp_path):

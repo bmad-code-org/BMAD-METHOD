@@ -41,6 +41,10 @@ orphaned and reclaimed after the normal wait timeout. A healthy memlog write is 
 local-file operation and must not hold the lock for that long; callers seeing a timeout
 on a younger lock should inspect the recorded PID before removing it manually. Waiting
 before inspecting the lock avoids Windows readers blocking the active writer's cleanup.
+A persistent `.lock.guard` sidecar uses an OS advisory lock to serialize creation,
+reclamation, and deletion of the ownership record. It is deliberately never unlinked:
+the kernel releases its advisory lock after a crash, while its stable inode prevents
+waiters from splitting across replacement guard files.
 
 The file shape (.memlog.md):
 
@@ -77,9 +81,11 @@ Addressing: `--workspace` is the run folder, and the memlog is always {workspace
 from __future__ import annotations  # keep type-hint syntax lazy so the script runs on 3.8+
 
 import argparse
+import errno
 import json
 import os
 import secrets
+import stat
 import sys
 import time
 from contextlib import contextmanager
@@ -90,6 +96,11 @@ MEMLOG = ".memlog.md"
 LOCK_TIMEOUT_SECONDS = 10.0
 LOCK_POLL_SECONDS = 0.05
 ORPHAN_LOCK_SECONDS = 5 * 60.0
+
+if os.name == "nt":
+    import msvcrt
+else:
+    import fcntl
 
 
 def now() -> str:
@@ -154,38 +165,49 @@ def exclusive_lock(path: Path):
     lock = path.with_suffix(path.suffix + ".lock")
     deadline = time.monotonic() + LOCK_TIMEOUT_SECONDS
     descriptor = None
+    owner_identity = None
     token = secrets.token_hex(16)
     last_contention = None
     while True:
-        try:
-            descriptor = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
-            break
-        except FileExistsError as contention:
-            last_contention = contention
-        except PermissionError as contention:
-            # Windows may report an existing/locked file as EACCES instead of
-            # EEXIST. Only treat that as contention when the lock is visible;
-            # an absent lock means the directory itself is not writable.
-            if not lock.exists():
-                raise
-            last_contention = contention
+        with _coordination_guard(lock):
+            try:
+                no_follow = getattr(os, "O_NOFOLLOW", 0)
+                descriptor = os.open(
+                    lock,
+                    os.O_CREAT | os.O_EXCL | os.O_WRONLY | no_follow,
+                    0o600,
+                )
+                owner_identity = _open_file_identity(descriptor)
+            except FileExistsError as contention:
+                last_contention = contention
+            except PermissionError as contention:
+                # Windows may report an existing/locked file as EACCES instead
+                # of EEXIST. Only treat that as contention when the lock is
+                # visible; an absent lock means the directory is not writable.
+                if not lock.exists():
+                    raise
+                last_contention = contention
 
-        if time.monotonic() < deadline:
+            if descriptor is not None:
+                break
+            if time.monotonic() >= deadline:
+                if _reclaim_orphaned_lock(lock):
+                    deadline = time.monotonic() + LOCK_TIMEOUT_SECONDS
+                    continue
+                try:
+                    holder = lock.read_text(encoding="ascii").strip()
+                except FileNotFoundError:
+                    continue
+                except OSError:
+                    holder = "unreadable"
+                raise TimeoutError(
+                    f"timed out waiting for memlog lock: {lock} "
+                    f"(holder {holder or 'unknown'}; inspect the process before removing a young lock manually)"
+                ) from last_contention
+
+        if descriptor is None:
             time.sleep(LOCK_POLL_SECONDS)
             continue
-        if _reclaim_orphaned_lock(lock):
-            deadline = time.monotonic() + LOCK_TIMEOUT_SECONDS
-            continue
-        try:
-            holder = lock.read_text(encoding="ascii").strip()
-        except FileNotFoundError:
-            continue
-        except OSError:
-            holder = "unreadable"
-        raise TimeoutError(
-            f"timed out waiting for memlog lock: {lock} "
-            f"(holder {holder or 'unknown'}; inspect the process before removing a young lock manually)"
-        ) from last_contention
 
     record = f"{token} {os.getpid()} {time.time()}\n".encode("ascii")
     try:
@@ -195,7 +217,8 @@ def exclusive_lock(path: Path):
         try:
             os.close(descriptor)
         finally:
-            lock.unlink(missing_ok=True)
+            with _coordination_guard(lock):
+                _unlink_created_lock(lock, owner_identity)
         raise
     try:
         yield
@@ -203,11 +226,106 @@ def exclusive_lock(path: Path):
         try:
             os.close(descriptor)
         finally:
-            _unlink_owned_lock(lock, token)
+            with _coordination_guard(lock):
+                _unlink_owned_lock(lock, token, owner_identity)
+
+
+@contextmanager
+def _coordination_guard(lock: Path):
+    """Serialize lock pathname creation/reclaim/removal across processes.
+
+    The guard uses an OS advisory lock, which the kernel releases on process
+    death. The guard file is intentionally persistent: unlinking an advisory
+    lock file would split waiters across different inodes and recreate the
+    same pathname race this guard prevents.
+    """
+    guard = lock.with_suffix(lock.suffix + ".guard")
+    no_follow = getattr(os, "O_NOFOLLOW", 0)
+    created = False
+    try:
+        descriptor = os.open(guard, os.O_CREAT | os.O_EXCL | os.O_RDWR | no_follow, 0o600)
+        created = True
+    except FileExistsError:
+        descriptor = os.open(guard, os.O_RDWR | no_follow)
+    try:
+        descriptor_info = os.fstat(descriptor)
+        guard_info = guard.lstat()
+        if (
+            stat.S_ISLNK(guard_info.st_mode)
+            or not stat.S_ISREG(guard_info.st_mode)
+            or not stat.S_ISREG(descriptor_info.st_mode)
+            or (guard_info.st_dev, guard_info.st_ino) != (descriptor_info.st_dev, descriptor_info.st_ino)
+        ):
+            raise OSError(f"memlog coordination guard is not a regular file: {guard}")
+        if created:
+            os.write(descriptor, b"\0")
+            os.fsync(descriptor)
+        elif descriptor_info.st_size == 0:
+            raise OSError(f"memlog coordination guard is incomplete: {guard}")
+
+        deadline = time.monotonic() + LOCK_TIMEOUT_SECONDS
+        while True:
+            try:
+                _try_lock_guard(descriptor)
+                break
+            except OSError as error:
+                if error.errno not in {errno.EACCES, errno.EAGAIN, errno.EDEADLK}:
+                    raise
+                if time.monotonic() >= deadline:
+                    raise TimeoutError(f"timed out waiting for memlog coordination guard: {guard}") from error
+                time.sleep(LOCK_POLL_SECONDS)
+        try:
+            yield
+        finally:
+            _unlock_guard(descriptor)
+    finally:
+        try:
+            os.close(descriptor)
+        except OSError:
+            pass
+
+
+def _try_lock_guard(descriptor: int) -> None:
+    if os.name == "nt":
+        os.lseek(descriptor, 0, os.SEEK_SET)
+        msvcrt.locking(descriptor, msvcrt.LK_NBLCK, 1)
+    else:
+        fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+
+
+def _unlock_guard(descriptor: int) -> None:
+    if os.name == "nt":
+        os.lseek(descriptor, 0, os.SEEK_SET)
+        msvcrt.locking(descriptor, msvcrt.LK_UNLCK, 1)
+    else:
+        fcntl.flock(descriptor, fcntl.LOCK_UN)
+
+
+def _open_file_identity(descriptor: int) -> tuple[int, int]:
+    info = os.fstat(descriptor)
+    return (info.st_dev, info.st_ino)
+
+
+def _path_file_identity(lock: Path) -> tuple[int, int]:
+    info = lock.stat()
+    return (info.st_dev, info.st_ino)
+
+
+def _unlink_lock_path(lock: Path) -> None:
+    """Small seam for deterministic coordination-race regression tests."""
+    lock.unlink()
+
+
+def _unlink_created_lock(lock: Path, owner_identity: tuple[int, int]) -> None:
+    try:
+        if _path_file_identity(lock) == owner_identity:
+            _unlink_lock_path(lock)
+    except FileNotFoundError:
+        pass
 
 
 def _reclaim_orphaned_lock(lock: Path) -> bool:
-    """Remove an unchanged lock whose lease expired; tolerate another waiter winning."""
+    """Remove an expired record while holding _coordination_guard(lock)."""
     try:
         before = lock.stat()
         holder = lock.read_text(encoding="ascii").strip()
@@ -239,7 +357,13 @@ def _reclaim_orphaned_lock(lock: Path) -> bool:
         return False
 
     try:
-        lock.unlink()
+        if lock.read_text(encoding="ascii").strip() != holder:
+            return False
+    except (FileNotFoundError, OSError):
+        return False
+
+    try:
+        _unlink_lock_path(lock)
         return True
     except FileNotFoundError:
         return True
@@ -247,20 +371,29 @@ def _reclaim_orphaned_lock(lock: Path) -> bool:
         return False
 
 
-def _unlink_owned_lock(lock: Path, token: str) -> None:
-    """Best-effort cleanup that never removes a successor writer's lock."""
+def _unlink_owned_lock(lock: Path, token: str, owner_identity: tuple[int, int]) -> None:
+    """Best-effort cleanup while holding _coordination_guard(lock)."""
     try:
         holder = lock.read_text(encoding="ascii").split(maxsplit=1)
+        identity = _path_file_identity(lock)
     except (FileNotFoundError, OSError):
         return
-    if holder and secrets.compare_digest(holder[0], token):
+    if identity == owner_identity and holder and secrets.compare_digest(holder[0], token):
         # Windows scanners/indexers can retain a transient read handle. Retry
         # briefly, then leave the record for orphan recovery rather than fail
         # an application write that already completed successfully.
         deadline = time.monotonic() + 1.0
         while True:
             try:
-                lock.unlink()
+                # Revalidate both inode and token immediately before the
+                # serialized unlink. A successor can therefore never be
+                # mistaken for the writer that is cleaning up.
+                if _path_file_identity(lock) != owner_identity:
+                    return
+                current = lock.read_text(encoding="ascii").split(maxsplit=1)
+                if not current or not secrets.compare_digest(current[0], token):
+                    return
+                _unlink_lock_path(lock)
                 return
             except FileNotFoundError:
                 return
