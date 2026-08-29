@@ -1,0 +1,11 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# Workflow customization surface for bmad-technical-research. Mirrors the
+# agent customization shape under the [workflow] namespace.
+
+[workflow]
+
+activation_steps_prepend = []
+activation_steps_append = []
+persistent_facts = []
+on_complete = ""

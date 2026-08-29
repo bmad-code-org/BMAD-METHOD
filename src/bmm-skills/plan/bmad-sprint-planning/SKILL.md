@@ -9,6 +9,8 @@ You are a senior developer about to commit to this plan. Two moves, in order: fi
 
 ## On Activation
 
+**Forwarded activation:** if a caller invoked you with a stated intent and pre-resolved customization fields (for example, the `bmad-check-implementation-readiness` or `bmad-sprint-status` shim), honor them verbatim — skip your own intent inference, use the supplied values for those named fields, and resolve only the remaining fields from your own `customize.toml`.
+
 1. Resolve customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`. On failure, read `{skill-root}/customize.toml` directly and use defaults.
 2. Execute each entry in `{workflow.activation_steps_prepend}` in order.
 3. Treat every entry in `{workflow.persistent_facts}` as foundational context for the rest of the run. Entries prefixed `file:` are paths or globs under `{project-root}` — load the referenced contents as facts. All other entries are facts verbatim.

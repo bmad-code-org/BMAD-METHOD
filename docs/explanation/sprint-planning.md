@@ -39,6 +39,6 @@ The LLM keeps the parts that need judgment: deciding which files are epics, weig
 
 ## Migration notes
 
-- `bmad-check-implementation-readiness` has been removed; the `IR` agent menu trigger forwards here.
+- `bmad-check-implementation-readiness` is now a deprecation shim that forwards here with readiness-only intent. Migrate any `_bmad/custom/bmad-check-implementation-readiness.toml` overrides to `_bmad/custom/bmad-sprint-planning.toml`. The `IR` agent menu trigger also forwards here.
 - `bmad-sprint-status` is now a deprecation shim that forwards here with status-view intent. Migrate any `_bmad/custom/bmad-sprint-status.toml` overrides to `_bmad/custom/bmad-sprint-planning.toml`.
 - The output format of `sprint-status.yaml` is unchanged — build's sprint sync and the retrospective tooling read and write it exactly as before.

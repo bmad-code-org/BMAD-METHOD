@@ -30,6 +30,45 @@ async function run() {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-shim-policy-'));
 
   try {
+    const bmmSkillsSource = path.resolve(__dirname, '../src/bmm-skills');
+    const legacyWorkflowDefaults = [
+      'activation_steps_prepend = []',
+      'activation_steps_append = []',
+      'persistent_facts = []',
+      'on_complete = ""',
+    ];
+    for (const shimId of [
+      'bmad-domain-research',
+      'bmad-market-research',
+      'bmad-technical-research',
+      'bmad-check-implementation-readiness',
+    ]) {
+      const customization = await fs.readFile(path.join(bmmSkillsSource, 'v6-shims', shimId, 'customize.toml'), 'utf8');
+      assert.match(customization, /^\[workflow\]$/m, `${shimId} exposes workflow customization`);
+      for (const defaultValue of legacyWorkflowDefaults) {
+        assert.match(customization, new RegExp(`^${defaultValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'm'));
+      }
+    }
+
+    const sourceShims = await discoverShims(bmmSkillsSource);
+    assert(
+      sourceShims.some((shim) => shim.id === 'bmad-check-implementation-readiness'),
+      'the consolidated implementation-readiness ID remains discoverable as a lifecycle shim',
+    );
+    const readinessShim = await fs.readFile(
+      path.join(bmmSkillsSource, 'v6-shims', 'bmad-check-implementation-readiness', 'SKILL.md'),
+      'utf8',
+    );
+    assert.match(readinessShim, /\*\*Intent:\*\* `readiness`/, 'the readiness shim forwards readiness-only intent');
+    assert.match(readinessShim, /\*\*Original user input:\*\*/, 'the readiness shim forwards the original request');
+
+    const sprintPlanning = await fs.readFile(path.join(bmmSkillsSource, 'plan', 'bmad-sprint-planning', 'SKILL.md'), 'utf8');
+    assert.match(
+      sprintPlanning,
+      /\*\*Forwarded activation:\*\*[\s\S]*honor them verbatim[\s\S]*resolve only the remaining fields/,
+      'sprint planning honors forwarded intent and supplied customization fields',
+    );
+
     const source = path.join(root, 'source');
     await writeSkill(path.join(source, 'plan', 'active-skill'), 'active-skill');
     await writeSkill(path.join(source, 'plan', 'legacy-name'), 'legacy-name', 'shim');
