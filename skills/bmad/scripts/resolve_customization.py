@@ -124,11 +124,13 @@ def pin_utf8(stream) -> None:
 
 
 def write_json_stdout(output) -> None:
+    """Emit the resolved customization as UTF-8 JSON on stdout."""
     pin_utf8(sys.stdout)
     sys.stdout.write(json.dumps(output, indent=2, ensure_ascii=False) + "\n")
 
 
 def main() -> int:
+    """Resolve one skill's customization and print it, or report why it could not."""
     pin_utf8(sys.stderr)
     parser = argparse.ArgumentParser(
         description="Resolve skill customization using three-layer TOML merge."

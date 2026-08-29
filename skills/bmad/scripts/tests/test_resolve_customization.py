@@ -12,6 +12,8 @@ SCRIPT = Path(__file__).resolve().parents[1] / "resolve_customization.py"
 
 
 class ResolveCustomizationStdoutTests(unittest.TestCase):
+    """stdout carries the resolved JSON, including emoji agent icons."""
+
     def test_missing_tomllib_exits_with_actionable_version_error(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             scripts = Path(temp_dir)
@@ -179,6 +181,7 @@ class ResolveCustomizationStderrEncodingTests(unittest.TestCase):
     """stderr carries user-controlled text, so it needs the same pin as stdout."""
 
     def test_parse_error_survives_a_cp1252_console(self):
+        """A parse error names its file readably even on a cp1252 console."""
         # The diagnostic quotes the offending path verbatim. On a Windows console
         # (cp1252) an unpinned stderr raises UnicodeEncodeError while reporting the
         # error, so the user sees a traceback instead of the filename to go fix.

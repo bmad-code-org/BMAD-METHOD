@@ -212,6 +212,7 @@ def pin_utf8(stream) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Dispatch one memlog subcommand and return its exit code."""
     pin_utf8(sys.stdout)
     pin_utf8(sys.stderr)
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
