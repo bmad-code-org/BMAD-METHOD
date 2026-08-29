@@ -2,7 +2,7 @@
 title: 'Comment étendre BMad pour votre organisation'
 description: Six patterns de personnalisation qui remodèlent BMad sans créer de fork — règles applicables aux agents, conventions de workflow, publication externe, remplacements de templates, modifications du registre des agents et patterns d’intégration avancés
 sidebar:
-  order: 10
+  order: 9
 ---
 
 Le système de personnalisation de BMad permet à une organisation d’adapter les comportements sans modifier les fichiers installés ni forker les skills. Ce guide présente six recettes qui couvrent la plupart des besoins en entreprise.
@@ -41,8 +41,8 @@ En règle générale : si la règle doit s’appliquer partout où un ingénieu
 
 [agent]
 
-# Appliqué à chaque activation. Se propage dans dev-story, quick-dev,
-# create-story, code-review, qa-generate — chaque skill qu'Amelia dispatche.
+# Appliqué à chaque activation. Se propage dans build, code-review,
+# qa-generate — chaque skill qu'Amelia dispatche.
 persistent_facts = [
   "Pour toute recherche de documentation sur une bibliothèque (React, TypeScript, Zod, Prisma, etc.), appeler l'outil MCP context7 (`mcp__context7__resolve_library_id` puis `mcp__context7__get_library_docs`) avant de s'appuyer sur les connaissances des données d'entraînement. Les docs à jour priment sur les API mémorisées.",
   "Quand une référence de story n'est pas trouvée dans {planning_artifacts}/epics-and-stories.md, chercher dans Linear via `mcp__linear__search_issues` en utilisant l'ID ou le titre de la story avant de demander à l'utilisateur de clarifier. Si Linear renvoie un résultat, le considérer comme la source de référence pour la story.",
@@ -73,7 +73,7 @@ persistent_facts = [
 ]
 ```
 
-**Ce qui se passe :** Les faits sont chargés durant l’étape 3 de l’activation du workflow. Quand l’agent rédige le brief, il connaît les champs requis et le document de conventions enterprise. La valeur par défaut livrée (`file:{project-root}/**/project-context.md`) se charge toujours, car il s’agit d’un ajout.
+**Ce qui se passe :** Les faits sont chargés durant l’étape 3 de l’activation du workflow. Quand l’agent rédige le brief, il connaît les champs requis et le document de conventions enterprise. Les skills livrés ne portent aucun fait persistant par défaut : ce sont donc les seuls chargés. Mais comme la clé ajoute au lieu de remplacer, un fait défini au niveau équipe et un autre au niveau utilisateur s’appliquent tous les deux.
 
 ## Recette 3 : Publier les livrables finis vers des systèmes externes
 

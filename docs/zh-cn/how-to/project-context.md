@@ -2,7 +2,7 @@
 title: "管理项目上下文"
 description: 创建并维护 project-context.md 以指导 AI 智能体
 sidebar:
-  order: 9
+  order: 8
 ---
 
 使用 `project-context.md`，确保 AI 智能体在各类工作流中遵循项目的技术偏好与实现规则。
@@ -123,7 +123,7 @@ bmad-generate-project-context
 - **保持精简**：此文件会被多数实现工作流加载，过长会浪费上下文窗口。避免写入
   只适用于单一 story 的细节。
 - **按需更新**：当团队约定变化时手动更新，或在架构发生较大变化后重新生成。
-- **适用于 Quick Flow 与完整 BMad Method**：两种模式都可共享同一份项目上下文。
+- **适用于统一实施 workflow**：无论直接进入还是经过深入规划，都共享同一个 `bmad-build` 循环。
 :::
 
 ## 后续步骤

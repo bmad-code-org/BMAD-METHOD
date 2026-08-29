@@ -3,7 +3,7 @@
  *
  * Transforms:
  *   /img/foo.png → /BMAD-METHOD/img/foo.png (when base is /BMAD-METHOD/)
- *   /llms.txt → /BMAD-METHOD/llms.txt
+ *   /favicon.ico → /BMAD-METHOD/favicon.ico
  *
  * Supported elements:
  *   - img[src], iframe[src], video[src], source[src], audio[src]

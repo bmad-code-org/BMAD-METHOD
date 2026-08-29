@@ -2,7 +2,7 @@
 title: "Existující projekty"
 description: Jak používat BMad Method na existujících kódových bázích
 sidebar:
-  order: 6
+  order: 5
 ---
 
 Používejte BMad Method efektivně při práci na existujících projektech a starších kódových bázích.
@@ -69,20 +69,20 @@ Pro složité projekty zvažte použití workflow `bmad-document-project`. Nabí
 
 ```
 bmad-help I have an existing Rails app, where should I start?
-bmad-help What's the difference between quick-flow and full method?
+bmad-help How much planning does this change need before implementation?
 bmad-help Show me what workflows are available
 ```
 
 BMad-Help se také **automaticky spouští na konci každého workflow** a poskytuje jasné pokyny, co přesně dělat dál.
 
-### Volba přístupu
+### Volba hloubky plánování
 
-Máte dvě hlavní možnosti v závislosti na rozsahu změn:
+Veškerá implementace používá `bmad-build`; rozsah určuje, jaký kontext připravíte předem:
 
 | Rozsah                         | Doporučený přístup                                                                                                            |
 | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| **Malé aktualizace či doplnění** | Spusťte `bmad-quick-dev` pro vyjasnění záměru, plánování, implementaci a revizi v jednom workflow. Plná čtyřfázová metoda BMad je pravděpodobně přehnaná. |
-| **Velké změny či doplnění**    | Začněte s metodou BMad a aplikujte tolik nebo tak málo důkladnosti, kolik potřebujete.                                        |
+| **Jasné aktualizace či doplnění** | Vstupte přímo do `bmad-build` s požadavkem, issue nebo existující specifikací. |
+| **Velké změny či doplnění**    | Připravte užitečné PRD, UX, architekturu, epic, story a sprint kontext a pak předejte vybranou práci do `bmad-build`. |
 
 ### Během tvorby PRD
 

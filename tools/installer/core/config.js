@@ -15,6 +15,7 @@ class Config {
     quickUpdate,
     channelOptions,
     setOverrides,
+    installShims,
   }) {
     this.directory = directory;
     this.modules = Object.freeze([...modules]);
@@ -32,6 +33,7 @@ class Config {
     // Intentionally NOT integrated with the prompt/template/schema flow; see
     // `tools/installer/set-overrides.js` for the rationale and tradeoffs.
     this.setOverrides = setOverrides || {};
+    this.installShims = typeof installShims === 'boolean' ? installShims : undefined;
     Object.freeze(this);
   }
 
@@ -58,6 +60,7 @@ class Config {
       quickUpdate: userInput._quickUpdate || false,
       channelOptions: userInput.channelOptions || null,
       setOverrides: userInput.setOverrides || {},
+      installShims: userInput.installShims,
     });
   }
 

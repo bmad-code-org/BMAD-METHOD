@@ -2,7 +2,7 @@
 title: "Jak získat odpovědi o BMad"
 description: Použijte LLM k rychlému zodpovězení vašich otázek o BMad
 sidebar:
-  order: 4
+  order: 3
 ---
 
 ## Začněte zde: BMad-Help
@@ -58,7 +58,6 @@ Použijte tuto sekci, když:
 | -------------------- | ----------------------------------------- | ---------------------------- |
 | **Složka `_bmad`**   | Jak BMad funguje — agenti, workflow, prompty | „Co dělá PM agent?“        |
 | **Celý GitHub repo** | Historie, instalátor, architektura        | „Co se změnilo ve v6?“      |
-| **`llms-full.txt`**  | Rychlý přehled z dokumentace              | „Vysvětli čtyři fáze BMad“  |
 
 Složka `_bmad` se vytvoří při instalaci BMad. Pokud ji ještě nemáte, naklonujte si repo.
 
@@ -71,18 +70,14 @@ Složka `_bmad` se vytvoří při instalaci BMad. Pokud ji ještě nemáte, nakl
 
 **Pokud používáte ChatGPT nebo Claude.ai:**
 
-Načtěte `llms-full.txt` do vaší relace:
-
-```text
-https://bmad-code-org.github.io/BMAD-METHOD/llms-full.txt
-```
+Otevřete [dokumentaci BMad](https://docs.bmad-method.org/).
 
 ### 3. Položte svou otázku
 
 :::note[Příklad]
 **O:** „Řekni mi nejrychlejší způsob, jak něco vytvořit s BMad“
 
-**A:** Použijte Quick Flow: Spusťte `bmad-quick-dev` — vyjasní váš záměr, naplánuje, implementuje, zreviduje a prezentuje výsledky v jednom workflow, přeskočí celé fáze plánování.
+**A:** Spusťte `bmad-build`. Předejte přímý záměr, issue, specifikaci nebo naplánovanou story; workflow využije dostupný kontext a zvolí potřebnou hloubku upřesnění, plánování, implementace a revize.
 :::
 
 ## Co získáte

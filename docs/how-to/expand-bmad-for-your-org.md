@@ -2,14 +2,14 @@
 title: 'How to Expand BMad for Your Organization'
 description: Six customization patterns that reshape BMad without forking — agent-wide rules, workflow conventions, external publishing, template swaps, agent roster changes, and advanced integration patterns
 sidebar:
-  order: 10
+  order: 6
 ---
 
 BMad's customization surface lets an organization reshape behavior without editing installed files or forking skills. This guide walks through six recipes that cover most enterprise needs.
 
 :::note[Prerequisites]
 
-- BMad installed in your project (see [How to Install BMad](./install-bmad.md))
+- BMad installed in your project (see [How to Install BMad](../start/install-bmad.md))
 - Familiarity with the customization model (see [How to Customize BMad](./customize-bmad.md))
 - Python 3.11+ on PATH (for the resolver — stdlib only, no `pip install`)
 :::
@@ -41,8 +41,8 @@ Rule of thumb: if the rule should apply everywhere an engineer does dev work, cu
 
 [agent]
 
-# Applied on every activation. Carries into dev-story, quick-dev,
-# create-story, code-review, qa-generate — every skill Amelia dispatches.
+# Applied on every activation. Carries into build, code-review,
+# qa-generate — every skill Amelia dispatches.
 persistent_facts = [
   "For any library documentation lookup (React, TypeScript, Zod, Prisma, etc.), call the context7 MCP tool (`mcp__context7__resolve_library_id` then `mcp__context7__get_library_docs`) before relying on training-data knowledge. Up-to-date docs trump memorized APIs.",
   "When a story reference isn't found in {planning_artifacts}/epics-and-stories.md, search Linear via `mcp__linear__search_issues` using the story ID or title before asking the user to clarify. If Linear returns a match, treat it as the authoritative story source.",
@@ -73,7 +73,7 @@ persistent_facts = [
 ]
 ```
 
-**What happens:** The facts load during Step 3 of the workflow's activation. When the agent drafts the brief, it knows the required fields and the enterprise conventions document. The shipped default (`file:{project-root}/**/project-context.md`) still loads, since this is an append.
+**What happens:** The facts load during Step 3 of the workflow's activation. When the agent drafts the brief, it knows the required fields and the enterprise conventions document. Shipped skills carry no persistent facts of their own, so these are the only ones loaded — but because the key appends rather than replaces, a fact added at the team level and one added at the user level both apply.
 
 ## Recipe 3: Publish Completed Outputs to External Systems
 

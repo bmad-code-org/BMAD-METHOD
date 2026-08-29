@@ -13,6 +13,14 @@ const { InstallPaths } = require('./install-paths');
 const { ExternalModuleManager } = require('../modules/external-manager');
 const { resolveModuleVersion } = require('../modules/version-resolver');
 const { MODULE_HELP_CSV_HEADER } = require('../modules/module-help-schema');
+const {
+  formatRemovedShimNotice,
+  formatRetainedShimNotice,
+  inferShimPreference,
+  readInstalledShims,
+  readInstalledSkillIds,
+  selectShimOutcome,
+} = require('./shim-policy');
 
 const { ExistingInstall } = require('./existing-install');
 const { warnPreNativeSkillsLegacy } = require('./legacy-warnings');
@@ -42,6 +50,39 @@ class Installer {
       const paths = await InstallPaths.create(config);
       const officialModules = await OfficialModules.build(config, paths);
       const existingInstall = await ExistingInstall.detect(paths.bmadDir);
+      const availableShims = await officialModules.discoverShims(config.modules, {
+        channelOptions: config.channelOptions,
+      });
+      const previousManifest = existingInstall.installed ? await this.manifest.read(paths.bmadDir) : null;
+      const installedSkillIds = existingInstall.installed ? await readInstalledSkillIds(paths.bmadDir) : new Set();
+      const shimPolicy = {
+        available: availableShims.length > 0,
+        install: inferShimPreference({
+          requested: config.installShims,
+          persisted: previousManifest?.installShims,
+          availableShims,
+          installedSkillIds,
+          existing: existingInstall.installed,
+        }),
+      };
+
+      const installedShims = existingInstall.installed ? await readInstalledShims(paths.bmadDir) : [];
+      const { retained: retainedShims, removed: removedShims } = selectShimOutcome({
+        installedShims,
+        availableShims,
+        install: shimPolicy.install,
+      });
+
+      // Reported here, not at the prompt, so --yes/--shims/scripted runs get it too.
+      if (retainedShims.length > 0) {
+        await prompts.note(formatRetainedShimNotice(retainedShims), 'Deprecated shim skills retained');
+      }
+      if (removedShims.length > 0) {
+        await prompts.note(formatRemovedShimNotice(removedShims, { canReinstall: shimPolicy.available }), 'Deprecated shim skills removed');
+      }
+
+      // The notices above scroll away on a long install; repeat them in the summary.
+      const shimStatus = { retained: retainedShims.length, removed: removedShims.length };
 
       try {
         await warnPreNativeSkillsLegacy({
@@ -92,6 +133,7 @@ class Installer {
         addResult,
         officialModules,
         previousSkillManifestRows,
+        shimPolicy,
       );
 
       await this._setupIdes(config, allModules, paths, addResult, previousSkillIds);
@@ -115,6 +157,7 @@ class Installer {
         customFiles: restoreResult.customFiles.length > 0 ? restoreResult.customFiles : undefined,
         modifiedFiles: restoreResult.modifiedFiles.length > 0 ? restoreResult.modifiedFiles : undefined,
         preInstallVersions,
+        shimStatus,
       });
 
       return {
@@ -225,9 +268,11 @@ class Installer {
     addResult,
     officialModules,
     previousSkillManifestRows = [],
+    shimPolicy = null,
   ) {
     const isQuickUpdate = config.isQuickUpdate();
     const moduleConfigs = officialModules.moduleConfigs;
+    const resolvedShimPolicy = shimPolicy || { available: false, install: false };
 
     const dirResults = { createdDirs: [], movedDirs: [], createdWdsFolders: [] };
 
@@ -251,6 +296,7 @@ class Installer {
           await this._installOfficialModules(config, paths, officialModuleIds, addResult, isQuickUpdate, officialModules, {
             message,
             installedModuleNames,
+            shimPolicy: resolvedShimPolicy,
           });
 
           return `${allModules.length} module(s) ${isQuickUpdate ? 'updated' : 'installed'}`;
@@ -325,6 +371,8 @@ class Installer {
           ides: config.ides || [],
           preservedModules: modulesForCsvPreserve,
           moduleConfigs,
+          installShims: resolvedShimPolicy.install,
+          shimsAvailable: resolvedShimPolicy.available,
         });
         await this._appendPreservedSkillManifestRows(paths.bmadDir, previousSkillManifestRows, preservedModules);
 
@@ -663,8 +711,7 @@ class Installer {
    * Excludes dev-only tests and Python caches so they don't ship to users.
    * Wipes the destination first so files removed or renamed in source
    * don't linger and get recorded as installed. Also seeds
-   * _bmad/custom/.gitignore on fresh installs so *.user.toml overrides
-   * stay out of version control.
+   * gitignore files for personal overrides and generated render snapshots.
    */
   async _installSharedScripts(paths) {
     const srcScriptsDir = path.join(paths.srcDir, 'src', 'scripts');
@@ -687,6 +734,14 @@ class Installer {
       await fs.writeFile(customGitignore, '*.user.toml\n', 'utf8');
       this.installedFiles.add(customGitignore);
     }
+
+    const renderDir = path.join(paths.bmadDir, 'render');
+    const renderGitignore = path.join(renderDir, '.gitignore');
+    if (!(await fs.pathExists(renderGitignore))) {
+      await fs.ensureDir(renderDir);
+      await fs.writeFile(renderGitignore, '*\n!.gitignore\n', 'utf8');
+    }
+    this.installedFiles.add(renderGitignore);
   }
 
   async _trackFilesRecursive(dir) {
@@ -720,7 +775,7 @@ class Installer {
    * @param {Object} ctx - Shared context: { message, installedModuleNames }
    */
   async _installOfficialModules(config, paths, officialModuleIds, addResult, isQuickUpdate, officialModules, ctx) {
-    const { message, installedModuleNames } = ctx;
+    const { message, installedModuleNames, shimPolicy } = ctx;
     const { CustomModuleManager } = require('../modules/custom-module-manager');
 
     for (const moduleName of officialModuleIds) {
@@ -742,6 +797,7 @@ class Installer {
           installer: this,
           silent: true,
           channelOptions: config.channelOptions,
+          installShims: shimPolicy.install,
         },
       );
 
@@ -870,8 +926,9 @@ class Installer {
           const fullPath = path.join(dir, entry.name);
 
           if (entry.isDirectory()) {
-            // Skip certain directories
-            if (entry.name === 'node_modules' || entry.name === '.git') {
+            const relativeDir = path.relative(bmadDir, fullPath);
+            // Render snapshots are generated state, not user-authored customization.
+            if (entry.name === 'node_modules' || entry.name === '.git' || relativeDir === 'render') {
               continue;
             }
             await scanDirectory(fullPath);
@@ -959,7 +1016,7 @@ class Installer {
 
     // Get all installed module directories
     const entries = await fs.readdir(bmadDir, { withFileTypes: true });
-    const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom']);
+    const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom', 'render']);
     const installedModules = entries.filter((entry) => entry.isDirectory() && !nonModuleDirs.has(entry.name)).map((entry) => entry.name);
 
     // Generate config.yaml for each installed module
@@ -1056,7 +1113,7 @@ class Installer {
 
     // Get all installed module directories
     const entries = await fs.readdir(bmadDir, { withFileTypes: true });
-    const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom']);
+    const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom', 'render']);
     const installedModules = entries.filter((entry) => entry.isDirectory() && !nonModuleDirs.has(entry.name)).map((entry) => entry.name);
 
     // Add core module to scan (it's installed at root level as _config, but we check src/core-skills)
@@ -1230,6 +1287,12 @@ class Installer {
     if (context.modifiedFiles && context.modifiedFiles.length > 0) {
       lines.push(`  ${color.yellow(`Modified files backed up (.bak): ${context.modifiedFiles.length}`)}`);
     }
+    if (context.shimStatus?.retained > 0) {
+      lines.push(`  ${color.yellow(`Deprecated shim skills retained: ${context.shimStatus.retained}`)} (re-run to remove them)`);
+    }
+    if (context.shimStatus?.removed > 0) {
+      lines.push(`  ${color.green(`Deprecated shim skills removed: ${context.shimStatus.removed}`)}`);
+    }
 
     // Next steps
     lines.push(
@@ -1237,9 +1300,23 @@ class Installer {
       '  Get started:',
       `    1. Launch your AI agent from your project folder`,
       `    2. Not sure what to do? Invoke the ${color.cyan('bmad-help')} skill and ask it what to do!`,
-      '',
-      `    ${color.cyan('Tip:')} BMAD workflows increasingly run Python scripts via ${color.cyan('uv run')} — uv is`,
-      `    becoming the de facto standard. If you don't have it yet, ask your agent to set it up.`,
+    );
+
+    // Repeat the uv warning here when it applies. The pre-install probe fires
+    // before every prompt in the run, so by now it is far up the scrollback —
+    // and this box is titled "BMAD is ready to use!", which is only true if
+    // the rendered skills can actually start.
+    const { detectUv } = require('./uv-check');
+    if (!detectUv()) {
+      lines.push(
+        '',
+        `    ${color.yellow('⚠ uv is not installed.')} ${color.cyan('bmad-build')} and ${color.cyan('bmad-build-auto')} render through`,
+        `    ${color.cyan('uv run')} and will halt on activation until you set it up — ask your agent to`,
+        `    "install and set up uv for me", or see https://docs.astral.sh/uv/`,
+      );
+    }
+
+    lines.push(
       '',
       `    Blog, Docs and Guides: ${color.blue('https://bmadcode.com/')}`,
       `    Community: ${color.blue('https://discord.gg/gk8jAdXWmj')}`,
@@ -1478,6 +1555,7 @@ class Installer {
       // (`applySetOverrides`) runs at the end of quick-update too. The
       // installer.install path applies them after writeCentralConfig.
       setOverrides: config.setOverrides || {},
+      installShims: config.installShims,
       actionType: 'install',
       _quickUpdate: true,
       _preserveModules: skippedModules,

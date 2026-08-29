@@ -36,7 +36,7 @@ sidebar:
 做规格、方案或计划时，先跑一次“事前复盘”通常收益最高，容易提前暴露隐藏风险。
 :::
 
-如果你还处在方向发散阶段，可先用 [头脑风暴](./brainstorming.md)；如果你需要多角色权衡讨论，可用 [派对模式](./party-mode.md)。在进入实现前做问题发现时，可结合 [对抗性评审](./adversarial-review.md)。
+如果你还处在方向发散阶段，可先用 [头脑风暴](./brainstorming.md)；如果你需要多角色权衡讨论，可用 [派对模式](./party-mode.md)。
 
 ## 与相近模式的区别
 
@@ -56,4 +56,3 @@ sidebar:
 
 - [头脑风暴](./brainstorming.md)
 - [派对模式](./party-mode.md)
-- [对抗性评审](./adversarial-review.md)

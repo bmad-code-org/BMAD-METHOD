@@ -14,7 +14,7 @@ BMad offers two ways to start work, and they serve different purposes.
 | Mechanism | How you invoke it | What happens |
 | --- | --- | --- |
 | **Skill** | Type the skill name (e.g. `bmad-help`) in your IDE | Directly loads an agent, runs a workflow, or executes a task |
-| **Agent menu trigger** | Load an agent first, then type a short code (e.g. `DS`) | The agent interprets the code and starts the matching workflow while staying in character |
+| **Agent menu trigger** | Load an agent first, then type a short code (e.g. `BD`) | The agent interprets the code and starts the matching workflow while staying in character |
 
 Agent menu triggers require an active agent session. Use skills when you know which workflow you want. Use triggers when you are already working with an agent and want to switch tasks without leaving the conversation.
 
@@ -92,15 +92,14 @@ Workflow skills run a structured, multi-step process without loading an agent pe
 | Example skill | Purpose |
 | --- | --- |
 | `bmad-product-brief` | Create or update a product brief — guided discovery when your concept is clear |
-| `bmad-prfaq` | [Working Backwards PRFAQ](../explanation/analysis-phase.md#prfaq-working-backwards) challenge to stress-test your product concept |
+| `bmad-prfaq` | [Working Backwards PRFAQ](../plan/define-requirements-and-a-specification.md#prfaq-working-backwards) challenge to stress-test your product concept |
 | `bmad-prd` | Create, update, or validate a Product Requirements Document |
 | `bmad-ux` | Design user experience |
 | `bmad-architecture` | Design system architecture |
 | `bmad-create-epics-and-stories` | Create epics and stories |
-| `bmad-dev-story` | Implement a story |
-| `bmad-code-review` | Run a code review |
-| `bmad-quick-dev` | Implement a story or any other small intent — clarify, plan, implement, review, present |
-| `bmad-dev-auto` | Run one unattended development-loop iteration — small intent in, code out, no human interaction |
+| `bmad-build` | Implement direct intent, an issue, a feature, a fix, or a planned story. See [Build a Change](../build/build-a-change.md) |
+| `bmad-code-review` | Run a code review. See [Review a Change](../build/review-a-change.md) |
+| `bmad-build-auto` | Automate one unattended iteration of the Build implementation model |
 
 See [Workflow Map](./workflow-map.md) for the complete workflow reference organized by phase.
 

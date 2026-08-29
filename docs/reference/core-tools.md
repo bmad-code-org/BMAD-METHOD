@@ -87,7 +87,7 @@ Run any tool by typing its skill name (e.g., `bmad-help`) in your IDE. No agent 
 
 | Lens                 | Applies to             | Method                                                                                      |
 | -------------------- | ---------------------- | ------------------------------------------------------------------------------------------- |
-| **Adversarial**      | Anything               | Skeptical review that assumes problems exist — hunts what's missing, not just what's wrong  |
+| **Adversarial**      | Anything               | Forced-finding review (≥10 issues) that looks for what's missing, not only what's wrong; empty lists are not allowed  |
 | **Edge case**        | Anything               | Walks every branching path and boundary condition in content that defines behavior          |
 | **Verification gap** | Code                   | Finds changed behavior that could regress without reliable verification catching it         |
 | **Structure**        | Documents              | Proposes cuts, merges, moves, and condensing — does the document's shape serve its purpose? |
@@ -202,7 +202,7 @@ The magic happens in ideas 50–100. The workflow encourages generating 100+ ide
 
 **Output:** A cited `research.md` with metadata frontmatter, plus an optional self-contained HTML briefing
 
-For the three modes, how to choose between them, and what happens inside a run, see [Deep Recon](../explanation/deep-recon.md).
+For the three modes and how to choose between them, see [Research a Decision](../plan/research-a-decision.md).
 
 ### bmad-forge-idea
 
@@ -225,6 +225,8 @@ For the three modes, how to choose between them, and what happens inside a run, 
 **Input:** The idea, in any domain — a feature, a business model, a research hypothesis, a life decision
 
 **Output:** A `forged-idea.md` distillate when an idea hardens (optional), plus a `forge-report.html` keepsake every run
+
+For how a session runs, the room, and a worked example, see [Explore and Validate an Idea](../plan/explore-and-validate-an-idea.md#pressure-test-an-idea-with-forge-idea).
 
 ### bmad-party-mode
 

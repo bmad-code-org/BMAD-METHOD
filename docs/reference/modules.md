@@ -43,7 +43,7 @@ AI-powered tools for structured creativity, ideation, and innovation during earl
 
 ## Game Dev Studio
 
-Structured game development workflows adapted for Unity, Unreal, Godot, and custom engines. Supports rapid prototyping through Quick Flow and full-scale production with epic-driven sprints.
+Structured game development workflows adapted for Unity, Unreal, Godot, and custom engines. Supports planning depths from rapid prototyping to full-scale production with epic-driven sprints; implementation converges on Build.
 
 - **Code:** `gds`
 - **npm:** [`bmad-game-dev-studio`](https://www.npmjs.com/package/bmad-game-dev-studio)
@@ -52,13 +52,13 @@ Structured game development workflows adapted for Unity, Unreal, Godot, and cust
 **Provides:**
 
 - Game Design Document (GDD) generation workflow
-- Quick Dev mode for rapid prototyping
+- Game-aware planning and context that feed the standard Build implementation loop
 - Narrative design support for characters, dialogue, and world-building
 - Coverage for 21+ game types with engine-specific architecture guidance
 
 ## Test Architect (TEA)
 
-Enterprise-grade test strategy, automation guidance, and release gate decisions through an expert agent and nine structured workflows. TEA goes well beyond the built-in QA agent with risk-based prioritization and requirements traceability.
+Enterprise-grade test strategy, automation guidance, and release gate decisions through an expert agent and nine structured workflows. TEA goes well beyond the built-in QA skill with risk-based prioritization and requirements traceability. See [Test Completed Work](../build/test-completed-work.md) to choose between them.
 
 - **Code:** `tea`
 - **npm:** [`bmad-method-test-architecture-enterprise`](https://www.npmjs.com/package/bmad-method-test-architecture-enterprise)

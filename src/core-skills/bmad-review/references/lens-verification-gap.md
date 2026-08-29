@@ -20,6 +20,8 @@ The main verification gap shapes are:
 
 ### Step 1: Screen for behavioral change
 
+Before applying the non-behavioral stop to a test-only change, check whether it removes or weakens verification of deterministic behavior. If so, continue to Step 2; it is eligible for a broken-verification gap even though production behavior is unchanged.
+
 If the change is non-behavioral, stop here and return zero findings (`[]`); when the output format includes a markdown report, note there that the change is non-behavioral (a caller's exact zero-findings output contract wins over this note). Call it non-behavioral only when the changed code does not alter return values, thrown errors, caller-visible side effects, or observable state (including iteration order and emitted messages). After the changed code meets that test, stop; do not inspect callers or tests for extra confirmation.
 
 Common non-behavioral examples: formatting, comments, whitespace; pure renames; trivial getters/setters and pass-throughs; type-only or compiler-enforced changes with no runtime effect; etc.
@@ -29,6 +31,10 @@ Common non-behavioral examples: formatting, comments, whitespace; pure renames; 
 Identify what behavior changed compared to the previous version: output, side effect, branch, error path, schema/event shape, config default, validation/authorization rule, external contract, etc. If the change affects more than one behavior, handle each separately.
 
 Treat broad-impact changes as behavioral even when no single changed line looks important: dependency, toolchain, build/config, data-file, etc.
+
+Seek verification of behavior, not the literal text of implementation or documentation artifacts. Tests may assert exact content or structure when they execute deterministic construction or transformation and inspect its output, including generated prompts and request payloads. Do not seek phrase-existence assertions over hand-authored prompts, skills, documents, or source files.
+
+For LLM-backed behavior, stop at the inference boundary: do not require invoking a model or judging its semantic response. Deterministic request construction and response handling remain eligible without live inference; existing inference tests are not precedent for more.
 
 ### Step 3: Trace where that behavior is used
 
@@ -50,6 +56,8 @@ Find and read the relevant test. Ask whether the Demonstration would make an ass
 
 A test counts only if it runs normally and an assertion observes the changed output, branch, or contract. These do not count: no execution; success/no-throw/snapshot-only checks; mock/log-call checks; human-only checks; tests that mock away the integration; e2e tests that pass through without checking the changed output; stale assertions or fixtures.
 
+For example, `expect(x ?? DEFAULT).toBe(DEFAULT)` passes when `x` is missing.
+
 Common patterns:
 
 - **Caller-path gap** — helper test covers the branch, but caller values skip it.
@@ -62,6 +70,8 @@ Common patterns:
 ### Step 5: Confirm each finding is real
 
 Before writing a finding, re-open the specific tests or search results the finding relies on. Verify the Demonstration would not make any test you checked fail, or that the absence claim is backed by the symbol/import-reference search. Do not claim more than you verified; drop any finding you cannot ground.
+
+Explain why the test misses the bug using what the test sets up and checks.
 
 Do not report: compiler/type-checker-enforced cases; behavior already verified by an integration, contract, or e2e test; implementation-detail or mock-only tests; low coverage or a missing test file by itself; legacy untested code the change did not affect.
 
