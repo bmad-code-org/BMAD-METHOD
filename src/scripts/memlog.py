@@ -240,29 +240,8 @@ def _coordination_guard(lock: Path):
     same pathname race this guard prevents.
     """
     guard = lock.with_suffix(lock.suffix + ".guard")
-    no_follow = getattr(os, "O_NOFOLLOW", 0)
-    created = False
+    descriptor = _open_coordination_guard(guard)
     try:
-        descriptor = os.open(guard, os.O_CREAT | os.O_EXCL | os.O_RDWR | no_follow, 0o600)
-        created = True
-    except FileExistsError:
-        descriptor = os.open(guard, os.O_RDWR | no_follow)
-    try:
-        descriptor_info = os.fstat(descriptor)
-        guard_info = guard.lstat()
-        if (
-            stat.S_ISLNK(guard_info.st_mode)
-            or not stat.S_ISREG(guard_info.st_mode)
-            or not stat.S_ISREG(descriptor_info.st_mode)
-            or (guard_info.st_dev, guard_info.st_ino) != (descriptor_info.st_dev, descriptor_info.st_ino)
-        ):
-            raise OSError(f"memlog coordination guard is not a regular file: {guard}")
-        if created:
-            os.write(descriptor, b"\0")
-            os.fsync(descriptor)
-        elif descriptor_info.st_size == 0:
-            raise OSError(f"memlog coordination guard is incomplete: {guard}")
-
         deadline = time.monotonic() + LOCK_TIMEOUT_SECONDS
         while True:
             try:
@@ -283,6 +262,65 @@ def _coordination_guard(lock: Path):
             os.close(descriptor)
         except OSError:
             pass
+
+
+def _open_coordination_guard(guard: Path) -> int:
+    """Open, creating when needed, the persistent guard sidecar.
+
+    Two first-time writers race between the O_EXCL creation and the byte that
+    makes the guard lockable, and an operator can delete the sidecar between a
+    failed create and the follow-up open. Both windows are transient, so poll
+    until the guard is usable instead of failing an application write.
+    """
+    no_follow = getattr(os, "O_NOFOLLOW", 0)
+    deadline = time.monotonic() + LOCK_TIMEOUT_SECONDS
+    while True:
+        created = False
+        try:
+            descriptor = os.open(guard, os.O_CREAT | os.O_EXCL | os.O_RDWR | no_follow, 0o600)
+            created = True
+        except FileExistsError:
+            try:
+                descriptor = os.open(guard, os.O_RDWR | no_follow)
+            except FileNotFoundError:
+                if time.monotonic() >= deadline:
+                    raise
+                time.sleep(LOCK_POLL_SECONDS)
+                continue
+        try:
+            _assert_guard_identity(descriptor, guard)
+            if created:
+                os.write(descriptor, b"\0")
+                os.fsync(descriptor)
+                return descriptor
+            if os.fstat(descriptor).st_size != 0:
+                return descriptor
+            if time.monotonic() >= deadline:
+                raise TimeoutError(f"timed out waiting for the memlog coordination guard to initialize: {guard}")
+        except BaseException:
+            os.close(descriptor)
+            raise
+        # The creating writer has not published its byte yet: reopen and retry.
+        os.close(descriptor)
+        time.sleep(LOCK_POLL_SECONDS)
+
+
+def _assert_guard_identity(descriptor: int, guard: Path) -> None:
+    """Reject a guard pathname that is a link, a device, or a swapped inode."""
+    descriptor_info = os.fstat(descriptor)
+    guard_info = guard.lstat()
+    if (
+        stat.S_ISLNK(guard_info.st_mode)
+        or not stat.S_ISREG(guard_info.st_mode)
+        or not stat.S_ISREG(descriptor_info.st_mode)
+        or (guard_info.st_dev, guard_info.st_ino) != (descriptor_info.st_dev, descriptor_info.st_ino)
+    ):
+        raise OSError(f"memlog coordination guard is not a regular file: {guard}")
+    # A guard this process created has exactly one name. Extra links mean the
+    # pathname was pre-seeded to alias a file the writer must never touch, and
+    # that is a hard failure rather than a not-yet-published guard to wait for.
+    if descriptor_info.st_nlink > 1:
+        raise OSError(f"memlog coordination guard has multiple hard links: {guard}")
 
 
 def _try_lock_guard(descriptor: int) -> None:

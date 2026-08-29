@@ -365,10 +365,59 @@ def test_coordination_guard_never_initializes_through_an_existing_hardlink(tmp_p
     victim.write_bytes(b"")
     os.link(victim, guard)
 
-    with pytest.raises(OSError, match="incomplete"):
+    with pytest.raises(OSError, match="multiple hard links"):
         with memlog.exclusive_lock(target):
             pass
     assert victim.read_bytes() == b""
+    assert not lock.exists()
+
+
+def test_unpublished_guard_is_awaited_instead_of_failing_the_write(tmp_path):
+    """A guard created but not yet published is contention, not corruption."""
+    target = tmp_path / MEMLOG
+    lock = target.with_suffix(target.suffix + ".lock")
+    guard = lock.with_suffix(lock.suffix + ".guard")
+    guard.touch()  # creator paused between its O_EXCL create and its byte
+
+    def publish():
+        time.sleep(0.1)
+        with open(guard, "r+b") as handle:
+            handle.write(b"\0")
+            handle.flush()
+            os.fsync(handle.fileno())
+
+    publisher = threading.Thread(target=publish)
+    publisher.start()
+    try:
+        with memlog.exclusive_lock(target):
+            assert lock.is_file()
+    finally:
+        publisher.join()
+    assert not lock.exists()
+    assert guard.stat().st_size == 1
+
+
+def test_guard_removed_between_open_attempts_is_retried(tmp_path, monkeypatch):
+    """An operator deleting the sidecar mid-open must not fail an application write."""
+    target = tmp_path / MEMLOG
+    lock = target.with_suffix(target.suffix + ".lock")
+    guard = lock.with_suffix(lock.suffix + ".guard")
+    real_open = memlog.os.open
+    attempts = {"count": 0}
+
+    def flaky_open(path, flags, *rest):
+        if str(path) == str(guard):
+            attempts["count"] += 1
+            if attempts["count"] == 1:
+                raise FileExistsError(f"synthetic contention: {guard}")
+            if attempts["count"] == 2:
+                raise FileNotFoundError(f"synthetic removal: {guard}")
+        return real_open(path, flags, *rest)
+
+    monkeypatch.setattr(memlog.os, "open", flaky_open)
+    with memlog.exclusive_lock(target):
+        assert lock.is_file()
+    assert attempts["count"] >= 3
     assert not lock.exists()
 
 
