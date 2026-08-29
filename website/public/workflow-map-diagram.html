@@ -254,14 +254,21 @@
                 <div class="phase-title">Implementation</div>
             </div>
             <div class="workflows">
-                <div class="decision">Direct intent or planned context ↓</div>
+                <div class="decision">One session-sized unit from direct intent or planned context ↓</div>
                 <div class="workflow">
                     <div class="workflow-header">
                         <span class="workflow-name">build</span>
                     </div>
                     <div class="workflow-meta">
-                        <div class="agent"><div class="agent-icon amelia">A</div><span class="agent-name">Amelia</span></div>
-                        <span class="output">spec + code + review →</span>
+                        <span class="output">attentive implementation + review →</span>
+                    </div>
+                </div>
+                <div class="workflow">
+                    <div class="workflow-header">
+                        <span class="workflow-name">build-auto</span>
+                    </div>
+                    <div class="workflow-meta">
+                        <span class="output">one unattended unit + status →</span>
                     </div>
                 </div>
                 <div class="workflow">
@@ -289,8 +296,7 @@
                         <span class="badge adhoc">per epic</span>
                     </div>
                     <div class="workflow-meta">
-                        <div class="agent"><div class="agent-icon amelia">A</div><span class="agent-name">Amelia</span></div>
-                        <span class="output">lessons</span>
+                        <span class="output">epic evidence + verdict + lessons</span>
                     </div>
                 </div>
             </div>
@@ -301,7 +307,8 @@
         <div class="context-header">📚 Context Flow</div>
         <p style="margin-bottom: 8px; color: var(--text-muted);">Available documents add context before implementation.</p>
         <div class="context-items">
-            <span><code>build</code> <span>loads available intent, issue, spec, PRD, architecture, UX, epic, story, and sprint context</span></span>
+            <span><code>build</code> <span>handles one unit from direct intent or planned context; <code>build-auto</code> handles one unit unattended</span></span>
+            <span><code>spec + stories</code> <span>preserve the parent intent and carry decisions between implementation sessions</span></span>
             <span><code>code-review</code> <span>adds independent validation when needed</span></span>
         </div>
     </div>

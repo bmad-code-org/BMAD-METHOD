@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="ko-KR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BMad Method 워크플로 맵</title>
+    <style>
+      :root {
+        --analysis: #0ea5e9;
+        --planning: #22c55e;
+        --solutioning: #eab308;
+        --implementation: #ef4444;
+        --bg: #0f172a;
+        --card: #1e293b;
+        --text: #f8fafc;
+        --text-muted: #94a3b8;
+        --border: #334155;
+        --success: #10b981;
+        --arrow: #f59e0b;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.4;
+        padding: 12px;
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 16px;
+      }
+      .header-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: linear-gradient(135deg, var(--analysis), var(--planning));
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+      .subtitle {
+        color: var(--text-muted);
+        font-size: 0.8rem;
+      }
+
+      .flow-legend {
+        background: rgba(245, 158, 11, 0.1);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+        border-radius: 8px;
+        padding: 8px 12px;
+        margin-bottom: 16px;
+        text-align: center;
+        font-size: 0.7rem;
+        color: var(--arrow);
+      }
+
+      .flow-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+
+      .phase {
+        background: var(--card);
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        border-top: 3px solid;
+      }
+      .phase.analysis {
+        border-top-color: var(--analysis);
+      }
+      .phase.planning {
+        border-top-color: var(--planning);
+      }
+      .phase.solutioning {
+        border-top-color: var(--solutioning);
+      }
+      .phase.implementation {
+        border-top-color: var(--implementation);
+      }
+
+      .phase-header {
+        padding: 10px 12px 8px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .phase-num {
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+      }
+      .analysis .phase-num {
+        background: var(--analysis);
+      }
+      .planning .phase-num {
+        background: var(--planning);
+      }
+      .solutioning .phase-num {
+        background: var(--solutioning);
+        color: #000;
+      }
+      .implementation .phase-num {
+        background: var(--implementation);
+      }
+      .phase-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+      }
+      .phase-opt {
+        font-size: 0.6rem;
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: rgba(14, 165, 233, 0.2);
+        color: #7dd3fc;
+      }
+
+      .workflows {
+        padding: 8px 10px;
+      }
+
+      .workflow {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 6px;
+        padding: 8px;
+        margin-bottom: 6px;
+        font-size: 0.7rem;
+      }
+      .workflow-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 4px;
+      }
+      .workflow-name {
+        font-family: monospace;
+        color: var(--success);
+        background: rgba(16, 185, 129, 0.1);
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 0.65rem;
+      }
+      .workflow-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .agent {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .agent-icon {
+        width: 14px;
+        height: 14px;
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.55rem;
+        font-weight: 700;
+      }
+      .agent-icon.mary {
+        background: linear-gradient(135deg, #f472b6, #ec4899);
+      }
+      .agent-icon.john {
+        background: linear-gradient(135deg, #60a5fa, #3b82f6);
+      }
+      .agent-icon.sally {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        color: #000;
+      }
+      .agent-icon.winston {
+        background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+      }
+      .agent-icon.amelia {
+        background: linear-gradient(135deg, #fb7185, #ef4444);
+      }
+
+      .agent-name {
+        font-size: 0.65rem;
+      }
+      .output {
+        color: var(--success);
+        font-family: monospace;
+        font-size: 0.6rem;
+      }
+      .badge {
+        font-size: 0.55rem;
+        padding: 1px 4px;
+        border-radius: 3px;
+      }
+      .badge.opt {
+        background: rgba(251, 191, 36, 0.15);
+        color: #fbbf24;
+      }
+      .badge.iffy {
+        background: rgba(168, 85, 247, 0.15);
+        color: #a855f7;
+      }
+      .badge.adhoc {
+        background: rgba(59, 130, 246, 0.15);
+        color: #3b82f6;
+      }
+
+      .arrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--arrow);
+        font-size: 0.9rem;
+        margin: 6px 0;
+      }
+
+      .decision {
+        background: linear-gradient(135deg, #a855f7, #9333ea);
+        padding: 4px 8px;
+        border-radius: 4px;
+        text-align: center;
+        font-size: 0.65rem;
+        font-weight: 600;
+        margin: 6px 0;
+      }
+
+      .context {
+        background: rgba(14, 165, 233, 0.08);
+        border-radius: 10px;
+        padding: 12px;
+        font-size: 0.75rem;
+      }
+      .context-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+        font-size: inherit;
+        font-weight: 600;
+      }
+      .context-items {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .context-items code {
+        font-family: monospace;
+        color: var(--success);
+        background: rgba(16, 185, 129, 0.1);
+        padding: 2px 5px;
+        border-radius: 3px;
+        font-size: 0.65rem;
+      }
+      .context-items span {
+        color: var(--text-muted);
+      }
+
+      .legend {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        font-size: 0.7rem;
+        margin-top: 12px;
+      }
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .legend-dot {
+        width: 12px;
+        height: 3px;
+        border-radius: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-badge"><span aria-hidden="true">⚡</span> 워크플로 맵 V6</div>
+      <h1>BMad Method</h1>
+      <p class="subtitle">AI 기반 개발을 위한 컨텍스트 엔지니어링</p>
+    </header>
+
+    <div class="flow-legend">→ 화살표는 워크플로 간 산출물 흐름을 나타냅니다</div>
+
+    <main class="flow-grid" aria-label="BMad Method 개발 워크플로">
+      <!-- Phase 1: Analysis -->
+      <section class="phase analysis" aria-labelledby="phase-analysis-title">
+        <div class="phase-header">
+          <div class="phase-num">1</div>
+          <h2 id="phase-analysis-title" class="phase-title">분석</h2>
+          <span class="phase-opt">선택 사항</span>
+        </div>
+        <div class="workflows">
+          <div class="workflow">
+            <div class="workflow-header">
+              <span class="workflow-name">brainstorm</span>
+              <span class="badge opt">선택</span>
+            </div>
+            <div class="workflow-meta">
+              <div class="agent">
+                <div class="agent-icon mary" aria-hidden="true">M</div>
+                <span class="agent-name">Mary</span>
+              </div>
+              <span class="output">brainstorming-report.md</span>
+            </div>
+          </div>
+          <div class="workflow">
+            <div class="workflow-header">
+              <span class="workflow-name">research</span>
+              <span class="badge opt">선택</span>
+            </div>
+            <div class="workflow-meta">
+              <div class="agent">
+                <div class="agent-icon mary" aria-hidden="true">M</div>
+                <span class="agent-name">Mary</span>
+              </div>
+              <span class="output">리서치 결과</span>
+            </div>
+          </div>
+          <div class="workflow">
+            <div class="workflow-header">
+              <span class="workflow-name">product-brief</span>
+              <span class="badge opt">또는 ↓</span>
+            </div>
+            <div class="workflow-meta">
+              <div class="agent">
+                <div class="agent-icon mary" aria-hidden="true">M</div>
+                <span class="agent-name">Mary</span>
+              </div>
+              <span class="output">product-brief.md →</span>
+            </div>
+          </div>
+          <div class="workflow">
+            <div class="workflow-header">
+              <span class="workflow-name">prfaq</span>
+              <span class="badge opt">또는 ↑</span>
+            </div>
+            <div class="workflow-meta">
+              <div class="agent">
+                <div class="agent-icon mary" aria-hidden="true">M</div>
+                <span class="agent-name">Mary</span>
+              </div>
+              <span class="output">prfaq.md →</span>
+            </div>
+          </div>
+        </div>
+        <div class="arrow" aria-hidden="true">→</div>
+      </section>
+
+      <!-- Phase 2: Planning -->
+      <section class="phase planning" aria-labelledby="phase-planning-title">
+        <div class="phase-header">
+          <div class="phase-num">2</div>
+          <h2 id="phase-planning-title" class="phase-title">계획</h2>
+        </div>
+        <div class="workflows">
+          <div class="workflow">
+            <div class="workflow-header">
+              <span class="workflow-name">prd</span>
+            </div>
+            <div class="workflow-meta">
+              <div class="agent">
+                <div class="agent-icon john" aria-hidden="true">J</div>
+                <span class="agent-name">John</span>
+              </div>
+              <span class="output">prd.md →</span>
+            </div>
+          </div>
+          <div class="decision">UI가 있나요?</div>
+          <div class="workflow">
+            <div class="workflow-header">
+              <span class="workflow-name">ux</span>
+              <span class="badge iffy">예</span>
+            </div>
+            <div class="workflow-meta">
+              <div class="agent">
+                <div class="agent-icon sally" aria-hidden="true">S</div>
+                <span class="agent-name">Sally</span>
+              </div>
+              <span class="output">DESIGN.md + EXPERIENCE.md →</span>
+            </div>
+          </div>
+        </div>
+        <div class="arrow" aria-hidden="true">→</div>
+      </section>
+
+      <!-- Phase 3: Solutioning -->
+      <section class="phase solutioning" aria-labelledby="phase-solutioning-title">
+        <div class="phase-header">
+          <div class="phase-num">3</div>
+          <h2 id="phase-solutioning-title" class="phase-title">솔루션 설계</h2>
+        </div>
+        <div class="workflows">
+          <div class="workflow">
+            <div class="workflow-header">
+              <span class="workflow-name">architecture</span>
+            </div>
+            <div class="workflow-meta">
+              <div class="agent">
+                <div class="agent-icon winston" aria-hidden="true">W</div>
+                <span class="agent-name">Winston</span>
+              </div>
+              <span class="output">ARCHITECTURE-SPINE.md →</span>
+            </div>
+          </div>
+          <div class="workflow">
+            <div class="workflow-header">
+              <span class="workflow-name">create-epics-and-stories</span>
+            </div>
+            <div class="workflow-meta">
+              <div class="agent">
+                <div class="agent-icon john" aria-hidden="true">J</div>
+                <span class="agent-name">John</span>
+              </div>
+              <span class="output">epics.md →</span>
+            </div>
+          </div>
+          <div class="workflow">
+            <div class="workflow-header">
+              <span class="workflow-name">sprint-planning</span>
+            </div>
+            <div class="workflow-meta">
+              <div class="agent">
+                <div class="agent-icon john" aria-hidden="true">J</div>
+                <span class="agent-name">John</span>
+              </div>
+              <span class="output">준비도 게이트 + sprint-status.yaml →</span>
+            </div>
+          </div>
+        </div>
+        <div class="arrow" aria-hidden="true">→</div>
+      </section>
+
+      <!-- Phase 4: Implementation -->
+      <section class="phase implementation" aria-labelledby="phase-implementation-title">
+        <div class="phase-header">
+          <div class="phase-num">4</div>
+          <h2 id="phase-implementation-title" class="phase-title">구현</h2>
+        </div>
+        <div class="workflows">
+          <div class="decision">직접 입력한 의도 또는 계획 컨텍스트에서 가져온 단일 세션 작업 단위 ↓</div>
+          <div class="workflow">
+            <div class="workflow-header">
+              <span class="workflow-name">build</span>
+            </div>
+            <div class="workflow-meta">
+              <span class="output">사람이 참여하는 구현 + 검토 →</span>
+            </div>
+          </div>
+          <div class="workflow">
+            <div class="workflow-header">
+              <span class="workflow-name">build-auto</span>
+            </div>
+            <div class="workflow-meta">
+              <span class="output">무인 작업 단위 하나 + 종료 상태 →</span>
+            </div>
+          </div>
+          <div class="workflow">
+            <div class="workflow-header">
+              <span class="workflow-name">code-review</span>
+            </div>
+            <div class="workflow-meta">
+              <div class="agent">
+                <div class="agent-icon amelia" aria-hidden="true">A</div>
+                <span class="agent-name">Amelia</span>
+              </div>
+              <span class="output">승인</span>
+            </div>
+          </div>
+          <div class="workflow">
+            <div class="workflow-header">
+              <span class="workflow-name">correct-course</span>
+              <span class="badge adhoc">필요 시</span>
+            </div>
+            <div class="workflow-meta">
+              <div class="agent">
+                <div class="agent-icon john" aria-hidden="true">J</div>
+                <span class="agent-name">John</span>
+              </div>
+              <span class="output">계획 업데이트</span>
+            </div>
+          </div>
+          <div class="workflow">
+            <div class="workflow-header">
+              <span class="workflow-name">retrospective</span>
+              <span class="badge adhoc">에픽별</span>
+            </div>
+            <div class="workflow-meta">
+              <span class="output">에픽 근거 + 판정 + 교훈</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <section class="context" aria-labelledby="context-title">
+      <h2 id="context-title" class="context-header"><span aria-hidden="true">📚</span> 컨텍스트 흐름</h2>
+      <p style="margin-bottom: 8px; color: var(--text-muted)">구현 전에 사용할 수 있는 문서가 컨텍스트를 보강합니다.</p>
+      <div class="context-items">
+        <span><code>build</code> <span>직접 입력한 의도 또는 계획 컨텍스트의 작업 단위 하나를 처리하고, <code>build-auto</code>는 작업 단위 하나를 무인으로 처리</span></span>
+        <span><code>spec + stories</code> <span>상위 의도를 보존하고 구현 세션 사이에 결정 사항을 전달</span></span>
+        <span><code>code-review</code> <span>필요할 때 독립 검증을 추가</span></span>
+      </div>
+    </section>
+
+    <aside class="legend" aria-label="단계 색상 범례">
+      <div class="legend-item">
+        <div class="legend-dot" style="background: var(--analysis)" aria-hidden="true"></div>
+        분석
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background: var(--planning)" aria-hidden="true"></div>
+        계획
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background: var(--solutioning)" aria-hidden="true"></div>
+        솔루션 설계
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background: var(--implementation)" aria-hidden="true"></div>
+        구현
+      </div>
+    </aside>
+  </body>
+</html>
