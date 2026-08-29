@@ -2,7 +2,7 @@
 title: 'Finish an Epic'
 description: Close out a finished epic by reading the evidence it left — the diff, the commits, the specs — and judging the result instead of trusting memory.
 sidebar:
-  order: 8
+  order: 5
 ---
 
 Run `bmad-retrospective` when an epic is done. It reads what the epic
@@ -26,7 +26,7 @@ is fresh and the session logs have not been cleared.
 - **Aggregate defects**: the architecture that drifted, the helper written
   twice, the file that grew a little in every session.
 - **Diff-scope review**: it hands the epic's diff to
-  [`bmad-review`](../build/review-a-change.md), weighting the seams between
+  [`bmad-review`](./review-a-change.md), weighting the seams between
   stories where no single session saw both sides.
 - **Spec reconciliation**: where the built code diverged from what the epic
   and PRD described.
@@ -50,7 +50,7 @@ show. It won't invent a root cause or a pattern the code doesn't back up.
 
 Retrospective accepts either sprint tracking from the project path or the
 spec folder from the epic path in
-[Choose a Planning Path](./choose-a-planning-path.md).
+[Choose a Planning Path](../plan/choose-a-planning-path.md).
 
 | Epic input          | Inventory and completion state                                     | Retrospective output                                                               |
 | ------------------- | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |

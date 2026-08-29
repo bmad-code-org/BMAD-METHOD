@@ -19,7 +19,7 @@ Story Breakdown; a project with a PRD gets epics and stories, then
 
 For a spec-backed epic, `stories.yaml` is the whole tracking file. Build
 creates each story's implementation record under the spec folder, and
-[Finish an Epic](./finish-an-epic.md) reads `stories.yaml` as the inventory.
+[Finish an Epic](../build/finish-an-epic.md) reads `stories.yaml` as the inventory.
 No sprint-status file is involved.
 
 For a project, `bmad-create-epics-and-stories` works with you as a product
@@ -88,4 +88,4 @@ Old names still work: `bmad-check-implementation-readiness` and
 Implement each story with [`bmad-build`](../build/build-a-change.md), or with
 [`bmad-build-auto`](../reference/build-auto.md) once the decisions are stable.
 When the epic's stories are done, close it with
-[Finish an Epic](./finish-an-epic.md).
+[Finish an Epic](../build/finish-an-epic.md).

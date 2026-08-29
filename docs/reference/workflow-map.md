@@ -74,7 +74,7 @@ Decide how to build it and break work into stories.
 | `bmad-create-epics-and-stories` | Break requirements into implementable work                                | Epic files with stories                                                                                           |
 | `bmad-sprint-planning`          | Readiness gate before implementation, then story tracking and status view | PASS/CONCERNS/FAIL + `sprint-status.yaml`                                                                         |
 
-For how the readiness gate, deterministic tracking, and status view work together, see [Break Work into Stories and Track It](../plan/break-work-into-stories-and-track-it.md). For closing an epic, see [Finish an Epic](../plan/finish-an-epic.md).
+For how the readiness gate, deterministic tracking, and status view work together, see [Break Work into Stories and Track It](../plan/break-work-into-stories-and-track-it.md). For closing an epic, see [Finish an Epic](../build/finish-an-epic.md).
 
 ## Phase 4: Implementation
 
@@ -87,13 +87,13 @@ paths create and preserve the context those units need. See
 change, and [Test Completed Work](../build/test-completed-work.md) to choose a
 testing path.
 
-| Workflow              | Purpose                                                                        | Produces                                         |
-| --------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------ |
-| `bmad-build`          | Implement and review one direct intent or planned story with human checkpoints | Implementation record + code                     |
-| `bmad-build-auto`     | Implement and review one unit unattended for a caller or orchestrator          | Implementation record + code + terminal status   |
+| Workflow              | Purpose                                                                              | Produces                                         |
+| --------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------ |
+| `bmad-build`          | Implement and review one direct intent or planned story with human checkpoints       | Implementation record + code                     |
+| `bmad-build-auto`     | Implement and review one unit unattended for a caller or orchestrator                | Implementation record + code + terminal status   |
 | `bmad-code-review`    | Ad hoc review of any code change. See [Review a Change](../build/review-a-change.md) | Findings + applied patches                       |
-| `bmad-correct-course` | Handle significant mid-sprint changes                                          | Updated plan or re-routing                       |
-| `bmad-retrospective`  | Evidence-based review of a completed epic against its acceptance criteria      | Retro document, action items, acceptance verdict |
+| `bmad-correct-course` | Handle significant mid-sprint changes                                                | Updated plan or re-routing                       |
+| `bmad-retrospective`  | Evidence-based review of a completed epic against its acceptance criteria            | Retro document, action items, acceptance verdict |
 
 ### Direct and Planned Entry
 

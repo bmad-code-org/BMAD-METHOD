@@ -43,7 +43,7 @@ export default defineConfig({
     '/explanation/why-solutioning-matters': `${basePath}plan/design-ux-and-architecture/`,
     '/explanation/preventing-agent-conflicts': `${basePath}plan/design-ux-and-architecture/`,
     '/explanation/sprint-planning': `${basePath}plan/break-work-into-stories-and-track-it/`,
-    '/explanation/retrospective': `${basePath}plan/finish-an-epic/`,
+    '/explanation/retrospective': `${basePath}build/finish-an-epic/`,
     '/fr/how-to/non-interactive-installation': `${basePath}fr/how-to/install-bmad/`,
     '/cs/how-to/non-interactive-installation': `${basePath}cs/how-to/install-bmad/`,
     '/ko-kr/how-to/non-interactive-installation': `${basePath}ko-kr/how-to/install-bmad/`,
@@ -183,6 +183,16 @@ export default defineConfig({
               },
               slug: 'build/test-completed-work',
             },
+            {
+              label: 'Finish an Epic',
+              translations: {
+                'vi-VN': 'Hoàn tất một epic',
+                'zh-CN': '完成一个 Epic',
+                'fr-FR': 'Terminer un epic',
+                'cs-CZ': 'Dokončit epic',
+              },
+              slug: 'build/finish-an-epic',
+            },
           ],
         },
         {
@@ -264,16 +274,6 @@ export default defineConfig({
                 'cs-CZ': 'Rozdělit práci na story a sledovat ji',
               },
               slug: 'plan/break-work-into-stories-and-track-it',
-            },
-            {
-              label: 'Finish an Epic',
-              translations: {
-                'vi-VN': 'Hoàn tất một epic',
-                'zh-CN': '完成一个 Epic',
-                'fr-FR': 'Terminer un epic',
-                'cs-CZ': 'Dokončit epic',
-              },
-              slug: 'plan/finish-an-epic',
             },
           ],
         },

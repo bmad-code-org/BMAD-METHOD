@@ -114,7 +114,7 @@ record under the spec folder and keeps it linked to the parent spec.
 Verify the stories together, not only one at a time. Then run
 `bmad-retrospective` with the spec folder. Retrospective reads `stories.yaml`
 as the epic inventory and judges the combined result against the parent spec.
-See [Finish an Epic](./finish-an-epic.md).
+See [Finish an Epic](../build/finish-an-epic.md).
 
 ### 2. Start Project-Sized Work
 
@@ -126,7 +126,7 @@ Prepare only the planning the project actually needs from the table above
 owns which document and where sign-off happens). Then run `bmad-spec` per epic,
 track the stories with
 [Break Work into Stories and Track It](./break-work-into-stories-and-track-it.md),
-and close each epic with [Finish an Epic](./finish-an-epic.md).
+and close each epic with [Finish an Epic](../build/finish-an-epic.md).
 
 These documents coordinate implementation. They do not replace Build. Each
 epic still becomes a sequence of one-session units. Independent epic streams
