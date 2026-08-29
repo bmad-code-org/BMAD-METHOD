@@ -28,14 +28,6 @@ Các công cụ AI truyền thống thường làm thay phần suy nghĩ của b
 
 ---
 
-## 🚀 Điều gì tiếp theo cho BMad?
-
-**V6 đã có mặt và đây mới chỉ là khởi đầu!** BMad Method đang phát triển rất nhanh với các cải tiến như đội agent đa nền tảng và tích hợp sub-agent, kiến trúc Skills, BMad Builder v1, tự động hóa vòng lặp phát triển và nhiều thứ khác vẫn đang được xây dựng.
-
-**[📍 Xem lộ trình đầy đủ →](https://docs.bmad-method.org/vi-vn/roadmap/)**
-
----
-
 ## Bắt đầu nhanh
 
 **Điều kiện tiên quyết**: [Node.js](https://nodejs.org) v20+ · [Python](https://www.python.org) 3.10+ · [uv](https://docs.astral.sh/uv/)
@@ -103,7 +95,5 @@ Giấy phép MIT - xem [LICENSE](LICENSE) để biết chi tiết.
 ---
 
 **BMad** và **BMAD-METHOD** là các nhãn hiệu của BMad Code, LLC. Xem [TRADEMARK.md](TRADEMARK.md) để biết chi tiết.
-
-[![Contributors](https://contrib.rocks/image?repo=bmad-code-org/BMAD-METHOD)](https://github.com/bmad-code-org/BMAD-METHOD/graphs/contributors)
 
 Xem [CONTRIBUTORS.md](CONTRIBUTORS.md) để biết thông tin về những người đóng góp.

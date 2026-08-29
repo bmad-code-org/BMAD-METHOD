@@ -58,7 +58,6 @@ Použijte tuto sekci, když:
 | -------------------- | ----------------------------------------- | ---------------------------- |
 | **Složka `_bmad`**   | Jak BMad funguje — agenti, workflow, prompty | „Co dělá PM agent?“        |
 | **Celý GitHub repo** | Historie, instalátor, architektura        | „Co se změnilo ve v6?“      |
-| **`llms-full.txt`**  | Rychlý přehled z dokumentace              | „Vysvětli čtyři fáze BMad“  |
 
 Složka `_bmad` se vytvoří při instalaci BMad. Pokud ji ještě nemáte, naklonujte si repo.
 
@@ -71,11 +70,7 @@ Složka `_bmad` se vytvoří při instalaci BMad. Pokud ji ještě nemáte, nakl
 
 **Pokud používáte ChatGPT nebo Claude.ai:**
 
-Načtěte `llms-full.txt` do vaší relace:
-
-```text
-https://bmad-code-org.github.io/BMAD-METHOD/llms-full.txt
-```
+Otevřete [dokumentaci BMad](https://docs.bmad-method.org/).
 
 ### 3. Položte svou otázku
 

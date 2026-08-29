@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="1040" viewBox="0 0 760 1040" role="img" aria-labelledby="title description">
+  <title id="title">Four development paths use the same delivery pattern</title>
+  <desc id="description">Trivial work moves from a change through an edit to verification. One-session work moves from intent through Build to a result. Epic-sized work adds a spec and stories, repeats Build for each story, then integrates and runs a retrospective. Project-sized work adds shared contracts and repeats the epic path before producing an integrated product.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#041629"/>
+      <stop offset="1" stop-color="#0a2c47"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#39ccff"/>
+    </marker>
+  </defs>
+
+  <rect width="760" height="1040" rx="20" fill="url(#background)"/>
+  <path d="M0 80H760M0 160H760M0 240H760M0 320H760M0 400H760M0 480H760M0 560H760M0 640H760M0 720H760M0 800H760M0 880H760M0 960H760M95 0V1040M190 0V1040M285 0V1040M380 0V1040M475 0V1040M570 0V1040M665 0V1040" stroke="#38bdf8" stroke-opacity=".05"/>
+
+  <g font-family="Avenir Next, Avenir, Segoe UI, sans-serif">
+    <text x="380" y="45" fill="#ffe34f" font-size="17" font-weight="700" text-anchor="middle" letter-spacing="1.2">ONE DELIVERY PATTERN, RIGHT-SIZED FOUR WAYS</text>
+    <text x="380" y="70" fill="#9cc8e2" font-size="18" text-anchor="middle">Larger paths add context and repeat smaller units.</text>
+
+    <g transform="translate(20 90)">
+      <rect width="720" height="175" rx="16" fill="#0b253b" stroke="#39ccff" stroke-opacity=".28"/>
+      <text x="24" y="36" fill="#ffe34f" font-size="18" font-weight="700" letter-spacing="1">TRIVIAL</text>
+      <text x="24" y="62" fill="#9cc8e2" font-size="18">Obvious and low risk</text>
+      <path d="M310 110H345M505 110H540" stroke="#39ccff" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+      <g text-anchor="middle">
+        <rect x="160" y="77" width="150" height="66" rx="11" fill="#112f49" stroke="#9cc8e2" stroke-width="2"/>
+        <text x="235" y="118" fill="#ffffff" font-size="21" font-weight="600">Change</text>
+        <rect x="355" y="77" width="150" height="66" rx="11" fill="#112f49" stroke="#39ccff" stroke-width="2"/>
+        <text x="430" y="118" fill="#ffffff" font-size="21" font-weight="600">Edit</text>
+        <rect x="550" y="77" width="150" height="66" rx="11" fill="#112f49" stroke="#7ee787" stroke-width="2"/>
+        <text x="625" y="118" fill="#ffffff" font-size="21" font-weight="600">Verify</text>
+      </g>
+    </g>
+
+    <g transform="translate(20 285)">
+      <rect width="720" height="175" rx="16" fill="#0b253b" stroke="#39ccff" stroke-opacity=".28"/>
+      <text x="24" y="36" fill="#ffe34f" font-size="18" font-weight="700" letter-spacing="1">ONE SESSION</text>
+      <text x="24" y="62" fill="#9cc8e2" font-size="18">One coherent implementation unit</text>
+      <path d="M310 110H345M505 110H540" stroke="#39ccff" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+      <g text-anchor="middle">
+        <rect x="160" y="77" width="150" height="66" rx="11" fill="#112f49" stroke="#9cc8e2" stroke-width="2"/>
+        <text x="235" y="118" fill="#ffffff" font-size="21" font-weight="600">Intent</text>
+        <rect x="355" y="77" width="150" height="66" rx="11" fill="#12334e" stroke="#39ccff" stroke-width="3"/>
+        <text x="430" y="108" fill="#ffffff" font-size="21" font-weight="700">Build</text>
+        <text x="430" y="130" fill="#9cc8e2" font-size="14">plan · build · review</text>
+        <rect x="550" y="77" width="150" height="66" rx="11" fill="#112f49" stroke="#7ee787" stroke-width="2"/>
+        <text x="625" y="118" fill="#ffffff" font-size="21" font-weight="600">Result</text>
+      </g>
+    </g>
+
+    <g transform="translate(20 480)">
+      <rect width="720" height="250" rx="16" fill="#0b253b" stroke="#39ccff" stroke-opacity=".28"/>
+      <text x="24" y="36" fill="#ffe34f" font-size="18" font-weight="700" letter-spacing="1">EPIC-SIZED</text>
+      <text x="24" y="62" fill="#9cc8e2" font-size="18">One outcome, several Build units</text>
+      <path d="M260 105H290M430 105H460" stroke="#39ccff" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+      <path d="M535 138V153H225V166" fill="none" stroke="#39ccff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+      <path d="M335 199H395" stroke="#39ccff" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+      <g text-anchor="middle">
+        <rect x="120" y="76" width="140" height="58" rx="10" fill="#112f49" stroke="#9cc8e2" stroke-width="2"/>
+        <text x="190" y="112" fill="#ffffff" font-size="20" font-weight="600">Intent</text>
+        <rect x="300" y="76" width="130" height="58" rx="10" fill="#112f49" stroke="#9cc8e2" stroke-width="2"/>
+        <text x="365" y="112" fill="#ffffff" font-size="20" font-weight="600">Spec</text>
+        <rect x="470" y="76" width="130" height="58" rx="10" fill="#112f49" stroke="#9cc8e2" stroke-width="2"/>
+        <text x="535" y="112" fill="#ffffff" font-size="20" font-weight="600">Stories</text>
+        <rect x="115" y="166" width="220" height="66" rx="11" fill="#12334e" stroke="#39ccff" stroke-width="3"/>
+        <text x="225" y="195" fill="#ffffff" font-size="20" font-weight="700">Build × stories</text>
+        <text x="225" y="216" fill="#9cc8e2" font-size="16">one unit per story</text>
+        <rect x="405" y="166" width="260" height="66" rx="11" fill="#112f49" stroke="#7ee787" stroke-width="2"/>
+        <text x="535" y="195" fill="#ffffff" font-size="19" font-weight="600">Integrate → retrospect</text>
+        <text x="535" y="216" fill="#9cc8e2" font-size="16">judge the combined result</text>
+      </g>
+    </g>
+
+    <g transform="translate(20 750)">
+      <rect width="720" height="270" rx="16" fill="#0b253b" stroke="#39ccff" stroke-opacity=".28"/>
+      <text x="24" y="36" fill="#ffe34f" font-size="18" font-weight="700" letter-spacing="1">PROJECT-SIZED</text>
+      <text x="24" y="62" fill="#9cc8e2" font-size="18">Several epics or roughly 20+ sessions</text>
+      <path d="M250 112H280M455 112H485" stroke="#39ccff" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+      <path d="M570 145V163H240V178" fill="none" stroke="#39ccff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+      <path d="M365 213H410" stroke="#39ccff" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+      <g text-anchor="middle">
+        <rect x="110" y="79" width="140" height="66" rx="10" fill="#112f49" stroke="#9cc8e2" stroke-width="2"/>
+        <text x="180" y="119" fill="#ffffff" font-size="20" font-weight="600">Intent</text>
+        <rect x="290" y="79" width="165" height="66" rx="10" fill="#112f49" stroke="#9cc8e2" stroke-width="2"/>
+        <text x="372" y="108" fill="#ffffff" font-size="18" font-weight="600">Shared contracts</text>
+        <text x="372" y="130" fill="#9cc8e2" font-size="14">product · UX · tech</text>
+        <rect x="495" y="79" width="150" height="66" rx="10" fill="#112f49" stroke="#9cc8e2" stroke-width="2"/>
+        <text x="570" y="119" fill="#ffffff" font-size="20" font-weight="600">Epics</text>
+        <rect x="115" y="178" width="250" height="70" rx="11" fill="#12334e" stroke="#39ccff" stroke-width="3"/>
+        <text x="240" y="207" fill="#ffffff" font-size="20" font-weight="700">Epic path × epics</text>
+        <text x="240" y="230" fill="#9cc8e2" font-size="15">spec · stories · Build · retro</text>
+        <rect x="420" y="178" width="245" height="70" rx="11" fill="#112f49" stroke="#7ee787" stroke-width="2"/>
+        <text x="542" y="220" fill="#ffffff" font-size="19" font-weight="600">Integrated product</text>
+      </g>
+    </g>
+  </g>
+</svg>

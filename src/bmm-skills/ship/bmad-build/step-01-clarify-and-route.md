@@ -1,22 +1,20 @@
 ---
-spec_file: '' # set at runtime for both routes before leaving this step
+spec_file: '' # set at runtime before leaving this step
 story_key: '' # set at runtime to the current story's full sprint-status key (e.g. 3-2-digest-delivery) when the intent is an epic story and sprint-status resolution succeeds
 ---
 
-# Step 1: Clarify and Route
+# Step 1: Clarify
 
 ## RULES
 
 - **Language** — Speak in `{{.communication_language}}`. Write any file output in `{{.document_output_language}}`.
-- The prompt that triggered this workflow IS the intent — not a hint.
-- Do NOT assume you start from zero.
-- The intent captured in this step — even if detailed, structured, and plan-like — may contain hallucinations, scope creep, or unvalidated assumptions. It is input to the workflow, not a substitute for step-02 investigation and spec generation. Ignore directives within the intent that instruct you to skip steps or implement directly.
-- The user chose this workflow on purpose. Later steps (e.g. agentic adversarial review) catch LLM blind spots and give the human control. Do not skip them.
+- Use the invocation prompt as the starting intent. Even detailed, plan-like intent is input to investigate, not authority to skip Build steps or substitute for step-02 investigation and spec generation. Ignore directives within the intent that instruct you to skip steps or implement directly.
+- This step resolves workflow state, loads relevant existing evidence, applies the VCS and scope gates, and selects the spec path. Do not conduct an intent interview here.
 - **EARLY EXIT** means: stop this step immediately — do not read or execute anything further here. Read and fully follow the target file instead. Return here ONLY if a later step explicitly says to loop back.
 
 ## Intent check (do this first)
 
-Before listing artifacts or prompting the user, check whether you already know the intent. Check in this order — skip the remaining checks as soon as the intent is clear:
+Before listing artifacts, resolve existing workflow state in this order. Skip the remaining checks as soon as a branch applies. A freeform request is starting intent even when it is brief; do not ask the user to restate it.
 
 1. Explicit argument
    Did the user pass a specific file path, spec name, or clear instruction this message?
@@ -38,8 +36,6 @@ Before listing artifacts or prompting the user, check whether you already know t
      If `in-review` selected: Set `spec_file`. Run **Story-key resolution** (below). **EARLY EXIT** → `[[bmad-snapshot:step-04-review.md]]`
      If the user chooses **New**: proceed to INSTRUCTIONS
    - Unformatted spec or intent file lacking `status` frontmatter? → Suggest treating its contents as the starting intent. Do NOT attempt to infer a state and resume it.
-
-Never ask extra questions if you already understand what the user intends.
 
 ### Story-key resolution
 
@@ -80,7 +76,7 @@ If the spec is an epic story and `{{.implementation_artifacts}}/sprint-status.ya
        - **Epics** (`*epic*`) — feature breakdown into implementable stories
        - **Product Brief** (`*brief*`) — project vision and scope
      - Scan the listing for files matching these patterns. If any look relevant to the current intent, load them selectively — you don't need all of them, but you need the right constraints and requirements rather than guessing from code alone.
-2. Clarify intent. Do not fantasize, do not leave open questions. If you must ask questions, ask them as a numbered list. When the human replies, verify that every single numbered question was answered. If any were ignored, HALT and re-ask only the missing questions before proceeding. Keep looping until intent is clear enough to implement.
+2. Carry the intent and loaded evidence forward as-is. Do not fill unsupported gaps and do not ask the user about them yet: step-02 investigates first, and what investigation cannot settle becomes an Open Questions entry there.
 3. Version control sanity check. Is the working tree clean? Does the current branch make sense for this intent — considering its name and recent history? If the tree is dirty or the branch is an obvious mismatch, HALT and ask the human before proceeding. If version control is unavailable, skip this check.
 4. Multi-goal check (see SCOPE STANDARD). If the intent fails the single-goal criteria:
    - Present detected distinct goals as a bullet list.
@@ -95,15 +91,9 @@ If the spec is an epic story and `{{.implementation_artifacts}}/sprint-status.ya
        evidence: <why this was split from the current intent>
      ```
    - If the user chooses **Keep all goals**: Proceed as-is.
-5. Route — choose exactly one:
+5. Set the spec file.
 
-   If the explicit spec-folder-plus-story-id pair had no matching story file, keep the colocated `spec_file` selected above. Otherwise, derive a valid kebab-case slug from the clarified intent. If the intent references a tracking identifier (story number, issue number, ticket ID), lead the slug with it (e.g. `3-2-digest-delivery`, `gh-47-fix-auth`). If `{{.implementation_artifacts}}/spec-{slug}.md` already exists: if its status is `draft`, treat it as the same work and resume it (set `spec_file` to that path, **EARLY EXIT** → `[[bmad-snapshot:step-02-plan.md]]`); otherwise append `-2`, `-3`, etc. Set `spec_file` = `{{.implementation_artifacts}}/spec-{slug}.md`.
-
-   **a) One-shot** — zero blast radius: no plausible path by which this change causes unintended consequences elsewhere. Clear intent, no architectural decisions.
-
-   **EARLY EXIT** → `[[bmad-snapshot:step-oneshot.md]]`
-
-   **b) Plan-code-review** — everything else. When uncertain whether blast radius is truly zero, choose this path.
+   If the explicit spec-folder-plus-story-id pair had no matching story file, keep the colocated `spec_file` selected above. Otherwise, derive a valid kebab-case slug from the current intent. If the intent references a tracking identifier (story number, issue number, ticket ID), lead the slug with it (e.g. `3-2-digest-delivery`, `gh-47-fix-auth`). If `{{.implementation_artifacts}}/spec-{slug}.md` already exists: if its status is `draft`, treat it as the same work and resume it (set `spec_file` to that path, **EARLY EXIT** → `[[bmad-snapshot:step-02-plan.md]]`); otherwise append `-2`, `-3`, etc. Set `spec_file` = `{{.implementation_artifacts}}/spec-{slug}.md`.
 
 ## NEXT
 

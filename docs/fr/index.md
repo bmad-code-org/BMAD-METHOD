@@ -7,10 +7,6 @@ La méthode BMad (**B**uild **M**ore **A**rchitect **D**reams) est un module[^1]
 
 Si vous êtes à l’aise avec les assistants de codage IA comme Claude, Cursor ou GitHub Copilot, vous êtes prêt à commencer.
 
-:::note[🚀 La V6 est là et ce n’est que le début !]
-Architecture de Skills, BMad Builder v1, automatisation Dev Loop, et bien plus encore à venir. **[Consultez la Feuille de route →](./roadmap)**
-:::
-
 ## Vous découvrez BMad ? Commencez par un tutoriel
 
 La façon la plus rapide de comprendre BMad est de l’essayer.
