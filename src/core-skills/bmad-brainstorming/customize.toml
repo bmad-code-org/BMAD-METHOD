@@ -22,12 +22,11 @@ activation_steps_append = []
 # Persistent facts the facilitator keeps in mind for the whole session
 # (domain constraints, house rules, stylistic guardrails). Each entry is a
 # literal sentence, a skill prefixed with `skill:`, or a `file:`-prefixed
-# path/glob whose contents are loaded as facts. Default loads project-context.md
-# if bmad-generate-project-context has produced one, giving the facilitator
-# persistent awareness of the project's domain without re-asking.
-persistent_facts = [
-  "file:{project-root}/**/project-context.md",
-]
+# path/glob whose contents are loaded as facts. Empty by default — repo-wide context
+# belongs in AGENTS.md (see bmad-project-context), which every skill already sees. Use
+# this for context only the facilitator needs, loaded on demand rather than carried as
+# constant memory (e.g. `file:{project-root}/**/project-context.md` if you keep one).
+persistent_facts = []
 
 # The technique library loaded on demand during the session. Swap the path in
 # team/user TOML to ship a different or extended catalog of creative methods.

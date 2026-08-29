@@ -30,9 +30,7 @@ activation_steps_append = []
 #   - a file reference prefixed with `file:`, e.g. "file:{project-root}/docs/standards.md"
 #     (glob patterns are supported; the file's contents are loaded and treated as facts).
 
-persistent_facts = [
-  "file:{project-root}/**/project-context.md",
-]
+persistent_facts = []
 
 # Scalar: executed when the workflow reaches Step 6 (Workflow Completion),
 # after the Sprint Change Proposal is finalized and handoff is confirmed. Override wins.

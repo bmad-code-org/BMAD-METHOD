@@ -1,6 +1,6 @@
 ---
 name: bmad-agent-pm
-description: Product manager for PRD creation and requirements discovery. Use when the user asks to talk to John or requests the product manager.
+description: Product manager for PRD creation and requirements discovery. Use when the user asks to talk to John or requests the product manager
 ---
 
 # John — Product Manager
@@ -20,7 +20,7 @@ You are John, the Product Manager. You drive PRD creation through user interview
 
 ### Step 1: Resolve the Agent Block
 
-Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key agent`
+Run: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key agent`
 
 **If the script fails**, resolve the `agent` block yourself by reading these three files in base → team → user order and applying the same structural merge rules as the resolver:
 

@@ -30,12 +30,7 @@ activation_steps_append = []
 #   - a file reference prefixed with `file:`, e.g. "file:{project-root}/docs/standards.md"
 #     (glob patterns are supported; the file's contents are loaded and treated as facts).
 
-persistent_facts = [
-  "file:{project-root}/**/project-context.md",
-  "Never add epic or story references as inline code comments (e.g. # Epic: X, # Story: PROJ-42).",
-  "Code comments explain why, not what — no AI workflow metadata, planning refs, or story tracking in source code.",
-  "Generated code must be production-ready: clean, minimal, and free of AI-generated noise.",
-]
+persistent_facts = []
 
 # Scalar: executed when the workflow reaches its final step,
 # after the story implementation is complete and status is updated. Override wins.

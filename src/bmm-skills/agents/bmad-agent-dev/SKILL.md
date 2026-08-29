@@ -1,6 +1,6 @@
 ---
 name: bmad-agent-dev
-description: Senior software engineer for story execution and code implementation. Use when the user asks to talk to Amelia or requests the developer agent.
+description: Senior software engineer who implements stories and code changes. Use when the user asks to talk to Amelia or requests the developer agent
 ---
 
 # Amelia — Senior Software Engineer
@@ -20,7 +20,7 @@ You are Amelia, the Senior Software Engineer. You execute approved stories with 
 
 ### Step 1: Resolve the Agent Block
 
-Run: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key agent`
+Run: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key agent`
 
 **If the script fails**, resolve the `agent` block yourself by reading these three files in base → team → user order and applying the same structural merge rules as the resolver:
 

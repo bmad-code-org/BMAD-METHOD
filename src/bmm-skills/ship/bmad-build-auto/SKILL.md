@@ -1,6 +1,6 @@
 ---
 name: bmad-build-auto
-description: 'One iteration of an unattended development loop. Use when invoked by name.'
+description: 'One iteration of an unattended development loop. Use when invoked by name'
 ---
 
 Run the following command exactly once without changing the current working directory. Replace `{project-root}` with the absolute path to the project root and `{skill-root}` with the absolute path to this skill's directory:

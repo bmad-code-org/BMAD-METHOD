@@ -2,7 +2,7 @@
 title: 'How to Customize BMad'
 description: Customize agents and workflows while preserving update compatibility
 sidebar:
-  order: 7
+  order: 4
 ---
 
 Tailor agent personas, inject domain context, add capabilities, and configure workflow behavior -- all without modifying installed files. Your customizations survive every update.
@@ -21,8 +21,8 @@ The `bmad-customize` skill is a guided authoring helper for the **per-skill agen
 
 :::note[Prerequisites]
 
-- BMad installed in your project (see [How to Install BMad](./install-bmad.md))
-- A way to run the resolver script — BMad is standardizing on `uv` (`uv run`, which provisions Python for you); a plain `python3` 3.11+ on your PATH still works during the transition. The script uses only stdlib `tomllib`, so there's nothing to `pip install`.
+- BMad installed in your project (see [How to Install BMad](../start/install-bmad.md))
+- [`uv`](https://docs.astral.sh/uv/) on your PATH — BMad runs the resolver script with `uv run`, and uv provisions a suitable Python for you, so you don't need to install one yourself. The script uses only stdlib `tomllib`, so there's nothing to `pip install`.
 - A text editor for TOML files
 :::
 
@@ -201,7 +201,7 @@ persistent_facts = [
 
 ## How Resolution Works
 
-On activation, the agent's SKILL.md runs a shared Python script that does the three-layer merge and returns the resolved block as JSON. The script uses only the Python standard library's `tomllib` module (no external dependencies). BMad is standardizing on `uv run` to invoke these scripts (uv provisions a suitable Python for you); a plain `python3` still works during the transition:
+On activation, the agent's SKILL.md runs a shared Python script that does the three-layer merge and returns the resolved block as JSON. The script uses only the Python standard library's `tomllib` module (no external dependencies). BMad invokes it with `uv run`, which provisions a suitable Python for you:
 
 ```bash
 uv run {project-root}/_bmad/scripts/resolve_customization.py \
@@ -209,7 +209,7 @@ uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --key agent
 ```
 
-**Requirements**: Python 3.11+ (earlier versions don't include `tomllib`); nothing to `pip install`. Running via `uv run` is the going-forward standard — uv resolves a suitable interpreter for you. If you run it with `python3` directly during the transition, check your version with `python3 --version`: some platforms (macOS without Homebrew, Ubuntu 22.04) default `python3` to 3.10 or earlier, so you may need to install 3.11+ separately.
+**Requirements**: `uv`, and nothing to `pip install`. The script declares `requires-python = ">=3.11"` in its own header (earlier versions don't include `tomllib`), and `uv run` reads that and resolves a matching interpreter — so whatever `python3` resolves to on your PATH doesn't matter. If you'd rather invoke it by hand with `python3`, check your version first: some platforms (macOS without Homebrew, Ubuntu 22.04) default `python3` to 3.10 or earlier.
 
 `--skill` points at the skill's installed directory (where `customize.toml` lives). The skill name is derived from the directory's basename, and the script looks up `_bmad/custom/{skill-name}.toml` and `{skill-name}.user.toml` automatically.
 
@@ -260,6 +260,23 @@ persistent_facts = [
 on_complete = "Summarize the brief in three bullets and offer to email it via the gws-gmail-send skill."
 ```
 
+`bmad-code-review` already ships `[[workflow.review_layers]]`. A sparse override looks like this; merge follows the array-of-tables rule above. See [Review a Change](../build/review-a-change.md) for empty `instruction`, `when`, and a new `id`.
+
+```toml
+# _bmad/custom/bmad-code-review.toml
+[[workflow.review_layers]]
+id = "blind-hunter"
+instruction = ""
+[[workflow.review_layers]]
+id = "security-bot"
+name = "Security bot"
+instruction = """
+Run the team reviewer via bash on {diff_file} and return its findings as a Markdown list.
+"""
+```
+
+That does not delete the default row; the skill skips a layer whose `instruction` is empty.
+
 The same field conventions cross the agent/workflow boundary: `activation_steps_prepend`/`activation_steps_append`, `persistent_facts` (with `file:` refs), and menu-style `[[…]]` tables with `code`/`id` for keyed merge. The resolver applies the same four structural rules regardless of the top-level key. SKILL.md references follow the namespace: `{workflow.activation_steps_prepend}`, `{workflow.persistent_facts}`, `{workflow.on_complete}`. Any additional fields a workflow exposes (output paths, toggles, review settings, stage flags) follow the same shape-based merge rules. Read the workflow's `customize.toml` to see what's customizable.
 
 ### Activation Order
@@ -279,7 +296,7 @@ After step 6 the workflow body begins. Use `activation_steps_prepend` when you n
 
 Customization is rolling out incrementally. The fields documented above — `activation_steps_prepend`, `activation_steps_append`, `persistent_facts`, `on_complete` — are the **baseline surface** that every customizable workflow exposes, and they will remain stable across versions. They give you broad-stroke control today: inject pre/post steps, pin foundational context, trigger follow-up actions.
 
-Over time, individual workflows will expose **more targeted customization points** tailored to what that workflow actually does — things like step-specific toggles, stage flags, output template paths, or review gates. When those arrive, they stack on top of the baseline fields rather than replacing them, so customizations you author today keep working.
+Over time, individual workflows will expose **more targeted customization points** tailored to what that workflow actually does — things like step-specific toggles, stage flags, or output template paths. Some already ship: `bmad-code-review` exposes `[[workflow.review_layers]]` today. When more arrive, they stack on top of the baseline fields rather than replacing them, so customizations you author today keep working.
 
 If you need a fine-grained knob that isn't exposed yet, either use `activation_steps_*` and `persistent_facts` to steer behavior, or open an issue describing the specific customization point you want — those requests are what drive which targeted fields get added next.
 

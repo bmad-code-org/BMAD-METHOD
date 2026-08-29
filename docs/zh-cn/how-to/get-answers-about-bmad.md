@@ -58,7 +58,6 @@ BMad-Help 通常会返回：
 | --- | --- | --- |
 | **`_bmad` 文件夹** | 智能体、工作流、提示词如何工作 | “PM 智能体具体做什么？” |
 | **完整 GitHub 仓库** | 版本历史、安装器、整体架构 | “v6 主要改了什么？” |
-| **`llms-full.txt`** | 文档层面的快速全景理解 | “解释 BMad 的四个阶段” |
 
 安装 BMad 后会生成 `_bmad` 文件夹；如果你还没有安装，可先克隆仓库。
 
@@ -71,12 +70,7 @@ BMad-Help 通常会返回：
 
 **如果你使用 ChatGPT 或 Claude.ai：**
 
-把 `llms-full.txt` 加入会话上下文：
-
-```text
-https://bmad-code-org.github.io/BMAD-METHOD/llms-full.txt
-```
-
+打开 [BMad 文档站点](https://docs.bmad-method.org/)。
 
 ### 3. 直接提问
 
@@ -109,27 +103,27 @@ https://bmad-code-org.github.io/BMAD-METHOD/llms-full.txt
 **Discord：** [discord.gg/gk8jAdXWmj](https://discord.gg/gk8jAdXWmj)  
 **GitHub Issues：** [github.com/bmad-code-org/BMAD-METHOD/issues](https://github.com/bmad-code-org/BMAD-METHOD/issues)（用于可复现问题）
 
-*你！*
-        *卡住*
-              *在队列中——*
-                       *等待*
-                               *等待谁？*
+*你！*  
+&emsp;&emsp;*卡住*  
+&emsp;&emsp;&emsp;&emsp;*在队列中——*  
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;*等待*  
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;*等待谁？*
 
-*来源*
-        *就在那里，*
-                *显而易见！*
+*来源*  
+&emsp;&emsp;*就在那里，*  
+&emsp;&emsp;&emsp;&emsp;*显而易见！*
 
-*指向*
-      *你的机器。*
-               *释放它。*
+*指向*  
+&emsp;&emsp;*你的机器。*  
+&emsp;&emsp;&emsp;&emsp;*释放它。*
 
-*它读取。*
-         *它说话。*
-                 *尽管问——*
+*它读取。*  
+&emsp;&emsp;*它说话。*  
+&emsp;&emsp;&emsp;&emsp;*尽管问——*
 
-*为什么要等*
-         *明天*
-                 *当你拥有*
-                         *今天？*
+*为什么要等*  
+&emsp;&emsp;*明天*  
+&emsp;&emsp;&emsp;&emsp;*当你拥有*  
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;*今天？*
 
-*—Claude*
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;*—Claude*

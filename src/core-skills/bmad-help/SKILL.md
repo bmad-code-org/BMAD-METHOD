@@ -1,6 +1,6 @@
 ---
 name: bmad-help
-description: 'Analyzes current state and user query to answer BMad questions or recommend the next skill(s) to use. Use when user asks for help, bmad help, what to do next, or what to start with in BMad.'
+description: 'Analyzes current state and user query to answer BMad questions or recommend the next skill(s) to use. Use when user asks for help, bmad help, what to do next, or what to start with in BMad'
 ---
 
 # BMad Help
@@ -26,7 +26,7 @@ When this skill completes, the user should:
 - **Config**: Run `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}` and use the merged JSON to resolve `output-location` variables and read `core.communication_language` and `modules.bmm.project_knowledge`. The resolver merges `_bmad/config.toml`, `_bmad/config.user.toml`, `_bmad/custom/config.toml`, and `_bmad/custom/config.user.toml` in that order.
 - **Artifacts**: Files matching `outputs` patterns at resolved `output-location` paths reveal which steps are possibly completed; their content may also provide grounding context for recommendations
 - **Project knowledge**: If `project_knowledge` resolves to an existing path, read it for grounding context. Never fabricate project-specific details.
-- **Module docs**: Rows with `_meta` in the `skill` column carry a URL or path in `output-location` pointing to the module's documentation (e.g., llms.txt). Fetch and use these to answer general questions about that module.
+- **Module docs**: Rows with `_meta` in the `skill` column carry a URL or path in `output-location` pointing to the module's documentation. Fetch and use these to answer general questions about that module.
 
 ## CSV Interpretation
 
@@ -50,9 +50,11 @@ module,skill,display-name,menu-code,description,action,args,phase,preceded-by,fo
 - A phase with no required items is entirely optional — recommend it but be clear about what's actually required next
 
 **Completion detection**:
-- Search resolved output paths for `outputs` patterns
-- Fuzzy-match found files to catalog rows
-- User may also state completion explicitly, or it may be evident from the current conversation
+- Search resolved output paths for `outputs` patterns and fuzzy-match found files to catalog rows
+- Treat a matching output as evidence that the skill started, not that it completed
+- Inspect matched artifacts for explicit completion evidence, such as final status or finalization markers; a draft or incomplete marker means the skill is still in progress
+- Honor completion stated by the user or established in the current conversation
+- When completion cannot be determined reliably, say so and ask the user; do not recommend advancing based on file presence alone
 
 **Descriptions carry routing context** — some contain cycle info and alternate paths (e.g., "back to DS if fixes needed"). Read them as navigation hints, not just display text.
 

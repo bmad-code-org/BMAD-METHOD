@@ -2,17 +2,18 @@
 title: 'Getting Deeper'
 description: Use Build and BMad Spec to extend a command in a specific Django version
 sidebar:
-  order: 2
+  order: 1
 ---
 
 You already know Build from small projects. Here, you will use it in a specific
 version of Django: first for one bounded command change, then for three related
-stories defined by one BMad Spec.
+stories defined by one BMad Spec. The two exercises demonstrate the
+[one-session and epic-sized planning paths](../plan/choose-a-planning-path.md).
 
 :::note[Prerequisites]
 Use a macOS or Linux shell with Git, Node.js 20.12+ and `npx`,
 [uv](https://docs.astral.sh/uv/getting-started/installation/), and a coding tool
-supported by BMad. Complete [Getting Started](./getting-started.md) before
+supported by BMad. Complete [Build Your First Change](../start/build-your-first-change.md) before
 continuing. The exact install and launch commands below are for Claude Code. If
 you use another supported tool, you can run Build there instead. VS Code is
 optional but useful. Build can open the finished work for you when VS Code's
@@ -166,7 +167,10 @@ Spec asks. Continue when they match the requirements above.
 ## 9. Build the Three Stories
 
 Run Build once for each story, in order. Complete each Build run before moving
-to the next one. Every run uses the same spec.
+to the next one. Every run uses the same spec. You will run these stories
+attentively because they establish how filtering, redaction, and exit behavior
+fit together. Later epics with stable, repeated patterns may be better
+candidates for automation.
 
 ### Story 1: Filters
 
@@ -243,8 +247,6 @@ The JSON contains only `SECRET_KEY`. Every current or default value exposed by
 the JSON shape you chose earlier is `[REDACTED]`; neither original value
 appears. The underlying values still differ, so the final line is `exit: 1`.
 
-## 11. The Stories Work Together
-
 The first exercise gave Build one bounded change directly. This exercise gave
 three separate Build runs one spec. Filtering, redaction, and CI status still
 work together at the end. You have extended a mature Django command, and the
@@ -253,7 +255,23 @@ final result still does what you asked for at the start.
 If you want several perspectives on the result, `/bmad-party-mode` is an
 optional final step. You do not need it to finish this tutorial.
 
+## 11. Review the Epic
+
+Run Retrospective against the spec folder:
+
+```text
+/bmad-retrospective _bmad-output/specs/spec-diffsettings-audit/
+```
+
+Retrospective treats `stories.yaml` as the epic inventory, reads each story's
+implementation record, and checks the integrated result against `SPEC.md`. It
+writes `RETROSPECTIVE.md` in the same spec folder. Review its evidence,
+acceptance verdict, and any proposed follow-up work.
+
 ## 12. Keep Building
 
-Now [install BMad in your own repository](../how-to/install-bmad.md), then use
-the `bmad-build` skill to make a change you want.
+Now [install BMad in your own repository](../start/install-bmad.md), then use
+the `bmad-build` skill to make a change you want. See
+[Build a Change](../build/build-a-change.md) for the attended path. Use
+[Choose a Planning Path](../plan/choose-a-planning-path.md) to decide
+when a change needs a spec, automation, or the full project flow.
