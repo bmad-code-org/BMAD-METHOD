@@ -159,12 +159,14 @@ The spec frontmatter `status` is the main machine-readable state for orchestrati
 
 ### Deferred Findings
 
-`deferred` is where the skill reports real findings that are not this story's problem. Each item contains:
+`deferred` is where the skill reports real findings that are not this story's problem: a defect the change neither caused nor exposed, in code the change did not touch, whose fix is larger than the entry describing it. Each item contains:
 
-- `summary` — one-sentence description of the deferred issue
-- `evidence` — why the finding is real
-- `location` — optional file:line or component hint
-- `severity` — optional final triage severity (`high`, `medium`, `low`)
+- `summary` — one clause, at most 100 characters, whole words
+- `evidence` — what is wrong, then why it is not this change's problem
+- `location` — file:line or component; `n/a` only when nothing can be opened
+- `severity` — the entry's triage verdict (`high`, `medium`, `low`)
+
+A finding the skill could not verify (`maybe-false`) is recorded in the spec's `## Review Triage Log` with what would settle it; it is never deferred. Before appending, the skill reads the existing items and the triage log and skips any item that names the same location and substance as one already there.
 
 This is intentionally not a backlog. It is a machine-readable review output. The orchestrator has to decide what happens next: create a ticket, append to a central queue, correlate duplicates across runs, or do nothing.
 
@@ -183,9 +185,9 @@ On successful completion, the workflow writes or updates the spec with:
   - Review findings breakdown
   - Verification performed
   - Residual risks
-- `followup_review_recommended` flag. True if LLM decided another review pass seems worthwhile. It's a suggestion, not a must. Simplest way to give it a second review pass is to re-run the skill pointing it at the spec file.
+- `followup_review_recommended` flag. True if LLM decided another review pass seems worthwhile. It's a suggestion, not a must. Simplest way to give it a second review pass is to re-run the skill pointing it at the spec file. A first pass recommends one when it patched a `high` finding or two or more `medium` ones. A follow-up pass — the skill re-run against a `done` spec — carries forward the previous pass's verdicts for code that has not changed and recommends another only when it patched a `high`; otherwise the work has converged.
 - `baseline_revision` — the full canonical revision before implementation. `NO_VCS` without version control.
-- `deferred` frontmatter entries for review findings triaged `defer`. Each item records `summary`, `evidence`, and, when known, `location` plus `severity`.
+- `deferred` frontmatter entries for review findings triaged `defer`. Each item records `summary`, `evidence`, `location`, and `severity`.
 
 The workflow commits but does not push. The working copy is clean at exit.
 

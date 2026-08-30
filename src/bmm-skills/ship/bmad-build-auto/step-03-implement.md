@@ -39,6 +39,8 @@ Stage the diff and read it: using the repository's version-control tooling, writ
 
 Run the commands in `{spec_file}`'s `## Verification` section (or perform its manual checks). If verification fails and the failure cannot be fixed, HALT with status `blocked`, blocking condition `implementation verification failed`, and include the failing command or check and reason. When fixing a failure changes code, rewrite `{diff_file}` and re-read it. Acceptance criteria are judged at review, not here.
 
+Two more things are part of done. A test this change added or changed must discriminate: it fails with the change's production code reverted — judge that from what it asserts, or revert and run it when that is cheap; a test that stays green either way is not done. A helper or chokepoint this change introduced is adopted at every site this change touched; a touched site still on the old path is unfinished work. Finish both before proceeding, and when that changes code, rewrite `{diff_file}` and re-read it.
+
 ### Matrix Test Audit
 
 If `{spec_file}`'s intent-contract contains an I/O & Edge-Case Matrix, verify every matrix row is covered by at least one test that verifies its expected behavior, and that each covering test ran and passed in the verification output. A covering test that exists but did not run — unregistered, filtered out, skipped, or disabled — counts as missing. If a test disagrees with the matrix, never edit the expectation to match the code: fix the code, or if the matrix row itself is ambiguous, HALT with status `blocked` and blocking condition `matrix ambiguity`. If the audit cannot otherwise be satisfied, HALT with status `blocked` and blocking condition `matrix test audit failed`.
