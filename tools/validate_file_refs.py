@@ -60,7 +60,7 @@ PROJECT_ROOT_REF = re.compile(r"\{project-root\}/_bmad/([^\s'\"<>})\]`]+)")
 BACKTICK_REF = re.compile(r"`([^`\s]+/[^`\s]+\.(?:md|yaml|yml|toml|json|csv|txt|xml|py))`")
 
 # Pattern: absolute path leaks (C:\\ is escaped-backslash form, as leaked paths appear in source)
-ABS_PATH_LEAK = re.compile(r"/Users/|/home/|[A-Z]:\\\\")
+ABS_PATH_LEAK = re.compile(r"/Users/|/home/|\b[A-Za-z]:[\\/]")
 
 # In-value form of the project-root pattern, for YAML scalar matching
 PROJECT_ROOT_IN_VALUE = re.compile(r"\{project-root\}/_bmad/[^\s'\"<>})\]`]+")
