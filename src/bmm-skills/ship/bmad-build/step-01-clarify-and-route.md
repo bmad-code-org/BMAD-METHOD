@@ -84,7 +84,7 @@ If the spec is an epic story and `{{.implementation_artifacts}}/sprint-status.ya
    - HALT and give the user a choice:
      - **Split** — pick first goal, defer the rest.
      - **Keep all goals** — accept the risks.
-   - If the user chooses **Split**: For each deferred goal, append one new entry to `{{.implementation_artifacts}}/deferred-work.md` using this format. Do not modify existing entries or look for duplicates. Narrow scope to the first-mentioned goal. Continue routing.
+   - If the user chooses **Split**: For each deferred goal, append one new entry to `{{.implementation_artifacts}}/deferred-work.md` using this format. Do not modify existing entries. Read the file first: an entry naming the same location and the same substance, however worded, is not appended again. Narrow scope to the first-mentioned goal. Continue routing.
      ```markdown
      - source_spec: none
        summary: <one sentence naming the deferred goal>

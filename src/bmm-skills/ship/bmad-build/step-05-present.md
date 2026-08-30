@@ -12,7 +12,7 @@
 
 ### Generate Suggested Review Order
 
-Read `{baseline_commit}` from `{spec_file}` frontmatter and construct the diff of all changes since that commit.
+Read `{diff_file}` — step-04 rewrote it after applying patches, so it reflects the reviewed tree. Rebuild it only if it is missing or stale (code changed after it was last written): read `{baseline_commit}` from `{spec_file}` frontmatter and write the unified diff of all changes since that commit, untracked files included.
 
 Append the review order as a `## Suggested Review Order` section to `{spec_file}` **after the last existing section**. Do not modify the Code Map.
 
