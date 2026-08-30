@@ -128,8 +128,8 @@ for how the epic then runs.
 document with a short summary for the PRD or spec. `bmad-prd`: `prd.md` and
 `addendum.md`, or a validation report. `bmad-spec`: `SPEC.md` plus supporting
 files under `specs/spec-<slug>/`, and `stories.yaml` on request. Exact paths
-and options belong to each skill; see the
-[Workflow Map](../reference/workflow-map.md).
+and options belong to each skill; see
+[Planning Skills and What They Produce](./choose-a-planning-path.md#planning-skills-and-what-they-produce).
 :::
 
 ## What Comes Next

@@ -1,8 +1,6 @@
 ---
-title: 'How to Get Answers About BMad'
+title: 'Get Answers About BMad'
 description: Use an LLM to quickly answer your own BMad questions
-sidebar:
-  order: 2
 ---
 
 Use BMad's built-in help, source docs, or the community to get answers — from quickest to most thorough.

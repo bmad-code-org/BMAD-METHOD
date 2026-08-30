@@ -40,7 +40,7 @@ Every named agent has two parts. Name, title, and domain are fixed:
 "hey Mary" always activates the analyst. Everything else is customizable:
 role, identity statement, communication style, principles, icon, menu,
 persistent facts, and activation hooks. The shipped agents are listed in
-[Agents](../reference/agents.md).
+[Agents](../reference/skills-and-agents.md#agents).
 
 The per-skill file controls how the agent behaves when it activates.
 Central configuration controls how `bmad-party-mode`, `bmad-retrospective`,

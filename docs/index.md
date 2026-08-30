@@ -43,8 +43,7 @@ Consider running `bmad-project-context`, then build as usual. See
 **You are building a larger feature or a whole product.**
 If you can give `bmad-spec` a complete intent, start there. If you need to
 go through the ideation/planning paces first, choose a path in
-[Choose a Planning Path](./plan/choose-a-planning-path.md) or the
-[Workflow Map](./reference/workflow-map.md).
+[Choose a Planning Path](./plan/choose-a-planning-path.md).
 
 **Your idea is still vague, or you are not sure it is a good one.**
 Generate options or [pressure-test the idea](./plan/explore-and-validate-an-idea.md),
@@ -55,5 +54,6 @@ See [Customize BMad](./customize/customize-bmad.md) and
 [Adopt BMad Across a Team](./customize/adopt-bmad-across-a-team.md).
 
 :::tip[Unsure where to start?]
-Run `bmad-help`.
+Run `bmad-help`. If that is not enough, see
+[Get Answers About BMad](./start/get-answers-about-bmad.md).
 :::

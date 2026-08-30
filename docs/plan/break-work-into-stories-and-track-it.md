@@ -86,6 +86,6 @@ Old names still work: `bmad-check-implementation-readiness` and
 ## What Comes Next
 
 Implement each story with [`bmad-build`](../build/build-a-change.md), or with
-[`bmad-build-auto`](../reference/build-auto.md) once the decisions are stable.
+[`bmad-build-auto`](../build/autonomous-development-loops.md) once the decisions are stable.
 When the epic's stories are done, close it with
 [Finish an Epic](../build/finish-an-epic.md).

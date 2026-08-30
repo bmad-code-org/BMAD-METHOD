@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="620" viewBox="0 0 900 620" role="img" aria-labelledby="title description">
+  <title id="title">Planning skills and what they produce</title>
+  <desc id="description">Three columns of skills and their artifacts. Analysis: bmad-brainstorming, bmad-forge-idea, bmad-deep-recon, bmad-product-brief, bmad-prfaq. Planning: bmad-prd, bmad-ux, bmad-spec. Solutioning: bmad-architecture, bmad-create-epics-and-stories, bmad-sprint-planning. The columns flow left to right, and the solutioning column hands off to bmad-build, one session per unit.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2e8bc0"/>
+    </marker>
+  </defs>
+
+  <rect width="900" height="620" rx="16" fill="#eef3f7" stroke="#8aa4b8" stroke-width="1.5"/>
+
+  <g font-family="Avenir Next, Avenir, Segoe UI, Helvetica, Arial, sans-serif" fill="#1a2b3a">
+    <text x="450" y="40" font-size="20" font-weight="700" text-anchor="middle" letter-spacing="1">PLANNING SKILLS AND WHAT THEY PRODUCE</text>
+    <text x="450" y="64" font-size="14" text-anchor="middle" fill="#3d5568">Pick the ones the gap calls for, in any order. Condense the results and hand them to bmad-spec.</text>
+
+    <!-- Analysis column -->
+    <g transform="translate(20 90)">
+      <rect width="270" height="420" rx="12" fill="#ffffff" stroke="#2e8bc0" stroke-width="2"/>
+      <text x="135" y="30" font-size="15" font-weight="700" text-anchor="middle" letter-spacing="1">ANALYSIS</text>
+      <text x="135" y="50" font-size="12" text-anchor="middle" fill="#3d5568">optional: explore and validate</text>
+
+      <g transform="translate(15 66)">
+        <rect width="240" height="58" rx="8" fill="#f4f8fb" stroke="#8aa4b8" stroke-width="1.5"/>
+        <text x="12" y="23" font-size="14" font-weight="700" font-family="Menlo, Consolas, monospace">bmad-brainstorming</text>
+        <text x="12" y="45" font-size="12" fill="#3d5568">brainstorm.html, brainstorm-intent.md</text>
+      </g>
+      <g transform="translate(15 134)">
+        <rect width="240" height="58" rx="8" fill="#f4f8fb" stroke="#8aa4b8" stroke-width="1.5"/>
+        <text x="12" y="23" font-size="14" font-weight="700" font-family="Menlo, Consolas, monospace">bmad-forge-idea</text>
+        <text x="12" y="45" font-size="12" fill="#3d5568">forge-report.html, forged-idea.md</text>
+      </g>
+      <g transform="translate(15 202)">
+        <rect width="240" height="58" rx="8" fill="#f4f8fb" stroke="#8aa4b8" stroke-width="1.5"/>
+        <text x="12" y="23" font-size="14" font-weight="700" font-family="Menlo, Consolas, monospace">bmad-deep-recon</text>
+        <text x="12" y="45" font-size="12" fill="#3d5568">research.md, optional HTML briefing</text>
+      </g>
+      <g transform="translate(15 270)">
+        <rect width="240" height="58" rx="8" fill="#f4f8fb" stroke="#8aa4b8" stroke-width="1.5"/>
+        <text x="12" y="23" font-size="14" font-weight="700" font-family="Menlo, Consolas, monospace">bmad-product-brief</text>
+        <text x="12" y="45" font-size="12" fill="#3d5568">brief.md, addendum.md</text>
+      </g>
+      <g transform="translate(15 338)">
+        <rect width="240" height="58" rx="8" fill="#f4f8fb" stroke="#8aa4b8" stroke-width="1.5"/>
+        <text x="12" y="23" font-size="14" font-weight="700" font-family="Menlo, Consolas, monospace">bmad-prfaq</text>
+        <text x="12" y="45" font-size="12" fill="#3d5568">PRFAQ document</text>
+      </g>
+    </g>
+
+    <!-- Planning column -->
+    <g transform="translate(315 90)">
+      <rect width="270" height="420" rx="12" fill="#ffffff" stroke="#2e8bc0" stroke-width="2"/>
+      <text x="135" y="30" font-size="15" font-weight="700" text-anchor="middle" letter-spacing="1">PLANNING</text>
+      <text x="135" y="50" font-size="12" text-anchor="middle" fill="#3d5568">define what to build</text>
+
+      <g transform="translate(15 66)">
+        <rect width="240" height="74" rx="8" fill="#f4f8fb" stroke="#8aa4b8" stroke-width="1.5"/>
+        <text x="12" y="23" font-size="14" font-weight="700" font-family="Menlo, Consolas, monospace">bmad-prd</text>
+        <text x="12" y="45" font-size="12" fill="#3d5568">prd.md, addendum.md, .memlog.md</text>
+        <text x="12" y="62" font-size="12" fill="#3d5568">validate: HTML + .md report</text>
+      </g>
+      <g transform="translate(15 150)">
+        <rect width="240" height="58" rx="8" fill="#f4f8fb" stroke="#8aa4b8" stroke-width="1.5"/>
+        <text x="12" y="23" font-size="14" font-weight="700" font-family="Menlo, Consolas, monospace">bmad-ux</text>
+        <text x="12" y="45" font-size="12" fill="#3d5568">DESIGN.md, EXPERIENCE.md</text>
+      </g>
+      <g transform="translate(15 218)">
+        <rect width="240" height="74" rx="8" fill="#eaf3fa" stroke="#2e8bc0" stroke-width="2.5"/>
+        <text x="12" y="23" font-size="14" font-weight="700" font-family="Menlo, Consolas, monospace">bmad-spec</text>
+        <text x="12" y="45" font-size="12" fill="#3d5568">SPEC.md + companions</text>
+        <text x="12" y="62" font-size="12" fill="#3d5568">optional stories.yaml</text>
+      </g>
+      <text x="135" y="330" font-size="12" text-anchor="middle" fill="#3d5568">Every path runs bmad-spec.</text>
+      <text x="135" y="348" font-size="12" text-anchor="middle" fill="#3d5568">One session of work goes</text>
+      <text x="135" y="366" font-size="12" text-anchor="middle" fill="#3d5568">straight from the spec to Build.</text>
+    </g>
+
+    <!-- Solutioning column -->
+    <g transform="translate(610 90)">
+      <rect width="270" height="420" rx="12" fill="#ffffff" stroke="#2e8bc0" stroke-width="2"/>
+      <text x="135" y="30" font-size="15" font-weight="700" text-anchor="middle" letter-spacing="1">SOLUTIONING</text>
+      <text x="135" y="50" font-size="12" text-anchor="middle" fill="#3d5568">decide how, divide the work</text>
+
+      <g transform="translate(15 66)">
+        <rect width="240" height="58" rx="8" fill="#f4f8fb" stroke="#8aa4b8" stroke-width="1.5"/>
+        <text x="12" y="23" font-size="14" font-weight="700" font-family="Menlo, Consolas, monospace">bmad-architecture</text>
+        <text x="12" y="45" font-size="12" fill="#3d5568">ARCHITECTURE-SPINE.md</text>
+      </g>
+      <g transform="translate(15 134)">
+        <rect width="240" height="74" rx="8" fill="#f4f8fb" stroke="#8aa4b8" stroke-width="1.5"/>
+        <text x="12" y="23" font-size="13" font-weight="700" font-family="Menlo, Consolas, monospace">bmad-create-epics-</text>
+        <text x="12" y="40" font-size="13" font-weight="700" font-family="Menlo, Consolas, monospace">and-stories</text>
+        <text x="12" y="62" font-size="12" fill="#3d5568">epic files with stories</text>
+      </g>
+      <g transform="translate(15 218)">
+        <rect width="240" height="74" rx="8" fill="#f4f8fb" stroke="#8aa4b8" stroke-width="1.5"/>
+        <text x="12" y="23" font-size="14" font-weight="700" font-family="Menlo, Consolas, monospace">bmad-sprint-planning</text>
+        <text x="12" y="45" font-size="12" fill="#3d5568">PASS / CONCERNS / FAIL</text>
+        <text x="12" y="62" font-size="12" fill="#3d5568">sprint-status.yaml</text>
+      </g>
+    </g>
+
+    <!-- Column arrows -->
+    <path d="M292 300H311" stroke="#2e8bc0" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+    <path d="M587 300H606" stroke="#2e8bc0" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+
+    <!-- Hand-off to Build -->
+    <path d="M155 512V548" stroke="#2e8bc0" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+    <path d="M450 512V548" stroke="#2e8bc0" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+    <path d="M745 512V548" stroke="#2e8bc0" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+    <g transform="translate(150 552)">
+      <rect width="600" height="52" rx="10" fill="#e6f2e6" stroke="#3a8f4f" stroke-width="2.5"/>
+      <text x="300" y="22" font-size="15" font-weight="700" text-anchor="middle" font-family="Menlo, Consolas, monospace">bmad-build</text>
+      <text x="300" y="42" font-size="12" text-anchor="middle" fill="#3d5568">one session per unit</text>
+    </g>
+  </g>
+</svg>

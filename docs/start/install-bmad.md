@@ -74,7 +74,10 @@ npx bmad-method install
 The installer detects the existing installation and offers the update or
 modification paths that apply to it. Choose an update to refresh the existing
 setup, or choose modification when you need to change modules, tools, or
-configuration. Follow any additional prompts the installer displays.
+configuration. Follow any additional prompts the installer displays. Coming
+from an earlier BMad version, the installer also warns about stale `bmad-*`
+entries left in legacy command directories; remove them so your tool does not
+show duplicate commands.
 
 ### 3. Verify the updated integration
 

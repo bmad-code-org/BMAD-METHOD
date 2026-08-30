@@ -167,7 +167,26 @@ not own the backlog, pick the next story, or replace those later checks.
 Use `bmad-build` for foundational, risky, or important stories where your
 decisions may set patterns for later work. Once those patterns are stable,
 `bmad-build-auto` can run one unit without waiting for you; see
-[Autonomous Development Loops](../reference/build-auto.md).
+[Autonomous Development Loops](./autonomous-development-loops.md).
+
+## Implementation Skills
+
+| Skill                 | Purpose                                                                                                                                   | Produces                                         |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `bmad-build`          | Implement and review one direct intent or planned story with human checkpoints (this page)                                                | Implementation record + code                     |
+| `bmad-build-auto`     | Implement and review one unit unattended for a caller or orchestrator ([Autonomous Development Loops](./autonomous-development-loops.md)) | Implementation record + code + terminal status   |
+| `bmad-code-review`    | Review any code change with several independent reviewers ([Review a Change](./review-a-change.md))                                       | Findings + applied patches                       |
+| `bmad-correct-course` | Assess the impact of a significant mid-sprint change ([Design UX and Architecture](../plan/design-ux-and-architecture.md))                | Updated plan or re-routing                       |
+| `bmad-retrospective`  | Review a completed epic against the evidence it left behind ([Finish an Epic](./finish-an-epic.md))                                       | Retro document, action items, acceptance verdict |
+
+Clear one-session work enters `bmad-build` directly. A spec-backed epic uses
+Story Breakdown to create several units under one `SPEC.md`; a project adds a
+PRD, UX, architecture, epics, readiness results, and sprint tracking before
+selecting each unit. `bmad-build-auto` does not orchestrate those units: an AI
+coding session or another orchestrator, such as bmad-loop, dispatches one
+worker per unit. See
+[Autonomous Development Loops](./autonomous-development-loops.md) for the
+worker and orchestration contracts.
 
 ## Why Does This Take So Long? I Could Plan Mode and Code It in Ten Minutes
 

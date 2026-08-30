@@ -1,12 +1,12 @@
 ---
 title: Autonomous Development Loops
-description: Reference for automating the Build implementation model with bmad-build-auto as the single-iteration worker.
+description: Run bmad-build-auto as the unattended worker for one session-sized unit, and let an orchestrator drive many of them.
 sidebar:
-  order: 5
+  order: 6
 ---
 
 `bmad-build-auto` is the unattended worker for one session-sized unit in the
-canonical [Build a Change](../build/build-a-change.md) implementation model. One invocation
+canonical [Build a Change](./build-a-change.md) implementation model. One invocation
 clarifies, plans, implements, and reviews one intent or story, then exposes a
 terminal status that a human or orchestrator can act on.
 

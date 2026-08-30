@@ -80,7 +80,7 @@ Each turn brings two voices: one from your installed agents or personas, and
 one generated for the topic (a competitor, a buyer, a finance reviewer). Name
 a persona to change who participates, or ask to go one-on-one. See
 [Run Multi-Agent Discussions](../customize/run-multi-agent-discussions.md) and
-[Agents](../reference/agents.md) for the roster.
+[Agents](../reference/skills-and-agents.md#agents) for the roster.
 
 :::tip[Let it kill the idea]
 Finding out cheaply that an idea doesn't hold is the win. Don't steer the
@@ -123,7 +123,7 @@ plan, a draft, a decision) and it offers a short menu of critique methods,
 such as pre-mortem, first principles, or red team, runs the ones you pick, and
 shows proposed changes for you to apply or reject. The brief, PRD, UX, and
 spec skills offer it at their own pauses. See
-[Advanced Elicitation](../explanation/advanced-elicitation.md).
+[`bmad-advanced-elicitation`](../reference/skills-and-agents.md#bmad-advanced-elicitation).
 
 ## What Comes Next
 
