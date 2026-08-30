@@ -110,6 +110,9 @@ jobs:
       - name: Test agent compilation components
         run: npm run test:install
 
+      - name: Test memlog concurrency and lock recovery
+        run: npm run test:memlog
+
       - name: Test workflow renderers
         run: npm run test:renderer
 
