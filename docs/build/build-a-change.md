@@ -138,13 +138,29 @@ For generated API and end-to-end coverage of the finished work, see
 
 ## Deferred Work
 
-Each run stays focused on one goal. If your request contains several independent
-goals, or review finds pre-existing issues unrelated to your change,
-`bmad-build` writes them to `deferred-work.md` in your implementation artifacts
-directory instead of trying to do everything at once.
+Each run stays focused on one goal. Two things leave it for later: goals split
+off at the scope and spec gates, and review findings verified as real that are
+not this change's problem — neither caused nor exposed by it, in code it did
+not touch, with a fix larger than the entry describing it. Everything the
+change caused or exposed is patched in the run.
 
-Check that file after a run — it is a backlog of follow-ups. You can feed each
-item into a fresh `bmad-build` run later.
+Both go to `deferred-work.md` in your implementation artifacts directory. Each
+entry is `### DW-<n>: <title>` followed by `origin`, `location`,
+`source_spec`, `severity`, `reason`, and `status: open` lines. Ids are minted
+from the highest one already in the file; existing lines are never rewritten
+or renumbered. The skill's `references/deferred-work-entry.md` holds the
+contract.
+
+Before appending, the skill reads the whole ledger. A finding that names the
+same location and substance as an open entry gets a `seen-again:` line on that
+entry instead of a new one; a match on a closed entry produces a new entry
+naming the closed id. A re-review of the same spec compares findings against
+its `## Review Triage Log` and the open ledger entries first, and carries their
+verdicts forward when the code has not changed — re-runs do not re-defer.
+
+Check the file after a run. Close what no longer applies, batch entries that
+touch the same code into one intent, or let `bmad-loop`'s sweep batch them.
+One run per entry multiplies the backlog.
 
 ## When to Plan First
 

@@ -27,9 +27,9 @@ If `{spec_file}` exists and contains a Tasks/Subtasks section, append a `### Rev
    `- [ ] [Review][Patch] <Title> [<file>:<line>]`
 
 3. **`defer`** findings (checked off, marked deferred):
-   `- [x] [Review][Defer] <Title> [<file>:<line>] — deferred: <pre-existing, or for maybe-false the evidence that would settle it>`
+   `- [x] [Review][Defer] <Title> [<file>:<line>] — deferred (DW-<n>): <why it is not this change's problem>`
 
-Also append each `defer` finding to `{deferred_work_file}` under a heading `## Deferred from: code review ({date})`. If `{spec_file}` is set, include its basename in the heading (e.g., `code review of story-3.3 (2026-03-18)`). One bullet per finding with description.
+Before writing the `defer` bullets, read `../references/deferred-work-entry.md` fully and follow it to record each `defer` finding in `{deferred_work_file}`, origin `code review of <spec basename>` — or `code review, no spec` when `{spec_file}` is not set; the id it mints is the bullet's `DW-<n>`. A carried `defer` is written to neither. Record the ledger entries even when there is no story file to write.
 
 ### 3. Present summary
 
@@ -46,7 +46,7 @@ Otherwise add: `Findings are listed above. No story file was provided, so nothin
 
 If `decision_needed` findings exist, present each one with its detail and the options available. The user must decide — the correct fix is ambiguous without their input. Walk through each finding (or batch related ones) and get the user's call. Once resolved, each becomes a `patch`, `defer`, or is rejected.
 
-If the user chooses to defer, ask: Quick one-line reason for deferring this item? (helps future reviews): — then append that reason to both the story file bullet and the `{deferred_work_file}` entry.
+If the user chooses to defer, ask: Quick one-line reason for deferring this item? (helps future reviews): — then record it as in section 2 with the user's reason as the entry's `reason:`, and put the same reason and its `DW-<n>` in the story file bullet.
 
 **HALT** — I am waiting for your numbered choice. Reply with only the number. Do not proceed until you select an option.
 

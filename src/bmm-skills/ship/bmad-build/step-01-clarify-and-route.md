@@ -84,12 +84,7 @@ If the spec is an epic story and `{{.implementation_artifacts}}/sprint-status.ya
    - HALT and give the user a choice:
      - **Split** — pick first goal, defer the rest.
      - **Keep all goals** — accept the risks.
-   - If the user chooses **Split**: For each deferred goal, append one new entry to `{{.implementation_artifacts}}/deferred-work.md` using this format. Do not modify existing entries. Read the file first: an entry naming the same location and the same substance, however worded, is not appended again. Narrow scope to the first-mentioned goal. Continue routing.
-     ```markdown
-     - source_spec: none
-       summary: <one sentence naming the deferred goal>
-       evidence: <why this was split from the current intent>
-     ```
+   - If the user chooses **Split**: for each deferred goal, read `[[bmad-snapshot:references/deferred-work-entry.md]]` fully and follow it to record one entry in `{{.implementation_artifacts}}/deferred-work.md`, origin `bmad-build scope split` — no spec exists yet, so `location: n/a` and no `source_spec:` line; the title names the goal and the reason says why it was split from the current intent. Narrow scope to the first-mentioned goal. Continue routing.
    - If the user chooses **Keep all goals**: Proceed as-is.
 5. Set the spec file.
 

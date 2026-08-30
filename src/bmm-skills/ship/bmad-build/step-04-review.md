@@ -62,12 +62,7 @@ If a layer's instruction requires subagents and none are available, for each suc
    - **intent_gap** — Root cause is inside `<frozen-after-approval>`. HALT and put the question to the human before touching the tree. If the answer changes what was built, revert code changes, then read fully and follow `[[bmad-snapshot:step-02-plan.md]]` to re-run steps 2–4. If the answer settles on a local fix, the entry is a patch; if the human defers the decision, the entry is a defer with their reason as its evidence.
    - **bad_spec** — Root cause is outside `<frozen-after-approval>`. Before reverting code: extract KEEP instructions for positive preservation (what worked well and must survive re-derivation). Revert code changes. Read the `## Spec Change Log` in `{spec_file}` and strictly respect all logged constraints when amending the non-frozen sections that contain the root cause. Append a new change-log entry recording: the triggering finding, what was amended, the known-bad state avoided, and the KEEP instructions. Read fully and follow `[[bmad-snapshot:step-03-implement.md]]` to re-derive the code, then this step will run again.
    - **patch** — First, if any patch crosses a scope line or changes a rule in an agent-context file, HALT once and put all of them to the human together; record each answer in the entry's triage rows, apply the confirmed ones, and turn each declined one into a defer whose evidence is the human's reason. Then auto-fix. These are the only findings that survive loopbacks. If the step-03 implementation subagent can be re-engaged with its context intact, send it all patch findings in one synchronous message — for each: the file, what is wrong, and what the smallest fix must do. If it cannot be re-engaged, apply the patches yourself. Then re-run the checks in `{spec_file}`'s `## Verification` section, if present; if verification fails and the failure cannot be fixed, HALT and escalate to the human. Rewrite `{diff_file}` so it reflects the patched tree.
-   - **defer** — Append one new entry to `{{.implementation_artifacts}}/deferred-work.md` using this format. Do not modify existing entries. Read the file first: an entry naming the same location and the same substance, however worded, is not appended again.
-     ```markdown
-     - source_spec: `{spec_file}`
-       summary: <one sentence>
-       evidence: <why this is real; for a maybe-false finding, what evidence would settle it>
-     ```
+   - **defer** — Read `[[bmad-snapshot:references/deferred-work-entry.md]]` fully and follow it to record each entry in `{{.implementation_artifacts}}/deferred-work.md`, origin `bmad-build review of <spec basename>`.
 
 ## NEXT
 

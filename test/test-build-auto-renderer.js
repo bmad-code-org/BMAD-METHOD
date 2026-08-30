@@ -477,9 +477,15 @@ async function main() {
     assert(markdown.includes(`${artifacts}/sprint-status.yaml`), 'sprint-status path was not baked absolute');
     assert(markdown.includes(`${artifacts}/deferred-work.md`), 'deferred-work path was not baked absolute');
 
+    // The ledger-entry contract is published with the snapshot and every write site points at it.
+    const ledgerContract = path.join(dir, 'references', 'deferred-work-entry.md');
+    assert(fs.existsSync(ledgerContract), 'deferred-work-entry reference was not published into the snapshot');
+    assert(fs.readFileSync(ledgerContract, 'utf8').includes('seen-again:'), 'ledger contract lost its dedupe marker');
+
     for (const name of ['step-01-clarify-and-route.md', 'step-02-plan.md', 'step-04-review.md', 'step-oneshot.md']) {
       const site = fs.readFileSync(path.join(dir, name), 'utf8');
       assert(site.includes(`${artifacts}/deferred-work.md`), `${name} does not contain the deferred-work path`);
+      assert(site.includes(ledgerContract), `${name} does not reference the ledger-entry contract`);
     }
 
     const shipped = fs.readFileSync(path.join(SKILLS_SRC, 'bmad-build', 'customize.toml'), 'utf8');

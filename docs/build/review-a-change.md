@@ -59,21 +59,32 @@ the command line and wait for a result.
 ## What a Run Does
 
 Active layers review the same diff independently and in parallel. Once
-every layer has reported, triage judges each finding on its own:
+every layer has reported, triage renders one verdict per finding:
 
-- **Verify** the claimed consequence at the named location, reading past
-  the diff hunk far enough to tell whether that consequence actually
-  occurs
-- **Assign severity** from the verified consequence (`low`, `medium`,
-  `high`)
-- **Dismiss** noise, refuted claims, and unsubstantiated claims, with a
-  recorded reason — never silently
-- **Route** survivors to **patch**, **defer**, or **decision needed**
+- `high`, `medium`, or `low` — the bad outcome is verified at the named
+  location, reading past the diff hunk far enough to tell
+- `false` — with the refutation. A finding with no demonstrated outcome
+  is `false`
+- `maybe-false` — with what would settle it
 
-Patch is an unambiguous code fix. Defer is a real pre-existing issue that
-is not this change. Decision needed is an ambiguous choice that requires
-you. Without a spec, decision needed is not used — those findings go to
-patch or defer.
+`false` findings and `low` findings not worth the fix are rejected with a
+recorded reason — never silently. Survivors are grouped by root cause and
+routed to **patch**, **defer**, or **decision needed**.
+
+Patch is a local fix inside the change's blast radius — the diff, its
+tests, direct callers, sibling sites of a pattern the diff fixed. Size is
+not the criterion. Defer is only for a defect the change neither caused
+nor exposed, in code it did not touch, whose fix is larger than writing
+it up. Decision needed is a choice that needs you: an ambiguous fix, one
+that contradicts a spec design decision, one that crosses a spec scope
+line, or a rule change in an agent-context file. Without a spec there are
+no spec decisions or scope lines, but an ambiguous fix still goes to
+decision needed — you are present.
+
+A re-review of the same spec carries forward verdicts from its earlier
+findings when the code has not changed. Deferred items go to the
+deferred-work ledger as `DW-<n>` entries, deduplicated against what is
+already there.
 
 You get a findings summary. Without a spec, that listing stays in the
 chat. You choose whether to apply patches.

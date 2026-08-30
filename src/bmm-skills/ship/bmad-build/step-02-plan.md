@@ -24,13 +24,8 @@
 5. Self-review against READY FOR DEVELOPMENT standard. For anything important that's missing: if the repository can tell you, go look and fix the spec; if a human has to decide, add an `## Open Questions` entry. Do not invent the answer.
 6. Resolve the gates before the checkpoint. Two things must be settled, in whatever order the conversation makes natural; combine them in one message when both apply.
    - **Token count** (see SCOPE STANDARD). If the spec exceeds 1600 tokens, show the count and give the user a choice:
-     - **Split** — carve off secondary goals. Propose the split — name each secondary goal. For each deferred goal, append one new entry to `{{.implementation_artifacts}}/deferred-work.md` using the format below. Do not modify existing entries. Read the file first: an entry naming the same location and the same substance, however worded, is not appended again. Rewrite the current spec to cover only the main goal — do not surgically carve sections out; regenerate the spec for the narrowed scope.
+     - **Split** — carve off secondary goals. Propose the split — name each secondary goal. For each deferred goal, read `[[bmad-snapshot:references/deferred-work-entry.md]]` fully and follow it to record one entry in `{{.implementation_artifacts}}/deferred-work.md`, origin `bmad-build spec split of <spec basename>` — `location: n/a`; the title names the goal and the reason says why it was split from the current spec. Rewrite the current spec to cover only the main goal — do not surgically carve sections out; regenerate the spec for the narrowed scope.
      - **Keep full spec** — accept the risks.
-     ```markdown
-     - source_spec: `{spec_file}`
-       summary: <one sentence naming the deferred goal>
-       evidence: <why this was split from the current spec>
-     ```
    - **Open Questions.** Present every entry as a numbered question with its options and what each option means, and HALT for the human's answers. Write each answer into the `<frozen-after-approval>` block as a decision and delete the entry. An answer may expose a new intent gap — add it and ask again. When the last entry is gone, delete the section.
 
 ### CHECKPOINT 1

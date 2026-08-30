@@ -4,6 +4,7 @@ claims_file: '' # set at runtime (path or empty)
 spec_file: '' # set at runtime (path or empty)
 review_mode: '' # set at runtime: "full" or "no-spec"
 story_key: '' # set at runtime when discovered from sprint status
+prior_triage: '' # set at runtime in full mode: the spec's earlier review record, triage input only
 ---
 
 # Step 1: Gather Context
@@ -81,7 +82,9 @@ story_key: '' # set at runtime when discovered from sprint status
 
 6. If `{review_mode}` = `"full"` and the file at `{spec_file}` has a `context` field in its frontmatter listing additional docs, load each referenced document. Warn the user about any docs that cannot be found.
 
-7. Sanity check: if `wc -l {diff_file}` exceeds approximately 3000 lines, warn the user and offer to chunk the review by file group.
+7. **Load prior triage** -- only when `{review_mode}` = `"full"`. Collect verbatim the spec's `### Review Findings` subsection and `## Review Triage Log` section, where present, and every open entry in `{implementation_artifacts}/deferred-work.md` whose `source_spec:` is this spec's basename. Set `{prior_triage}` to that text, or `''` when there is none. It is input for step-03 triage only -- never part of any layer's prompt, and never a reason to skip a layer.
+
+8. Sanity check: if `wc -l {diff_file}` exceeds approximately 3000 lines, warn the user and offer to chunk the review by file group.
    - If the user opts to chunk: agree on the first group, rebuild `{diff_file}` narrowed to that group, and list the remaining groups for the user to note for follow-up runs.
    - If the user declines: proceed as-is with the full diff.
 
