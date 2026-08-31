@@ -71,7 +71,9 @@ def load_agents(project_root: Path):
 def load_workflow(project_root: Path, skill_root: Path):
     """Merged [workflow] table. Falls back to the skill's base customize.toml."""
     script = project_root / "_bmad" / "scripts" / "resolve_customization.py"
-    data = _run_json([sys.executable, str(script), "--skill", str(skill_root), "--key", "workflow"])
+    data = _run_json(
+        [sys.executable, str(script), "--skill", str(skill_root), "--project-root", str(project_root), "--key", "workflow"]
+    )
     if data is not None and "workflow" in data:
         return data["workflow"]
     # Fallback: read the skill's base customize.toml directly (no override merge).

@@ -110,7 +110,9 @@ def find_party_skill(project_root: Path, skill_root: Path):
 def load_party_workflow(project_root: Path, party_skill: Path):
     """Merged [workflow] table for bmad-party-mode (base + user overrides)."""
     resolver = project_root / "_bmad" / "scripts" / "resolve_customization.py"
-    data = _run_json([sys.executable, str(resolver), "--skill", str(party_skill), "--key", "workflow"])
+    data = _run_json(
+        [sys.executable, str(resolver), "--skill", str(party_skill), "--project-root", str(project_root), "--key", "workflow"]
+    )
     if data is not None and isinstance(data.get("workflow"), dict):
         return data["workflow"]
     # Fallback: base customize.toml directly, no override merge.

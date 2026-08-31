@@ -5,6 +5,7 @@
 """Unit tests for resolve_personas.py — pool merge, alias, party resolution."""
 
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -132,6 +133,27 @@ class TestOverrideMergeFallback(unittest.TestCase):
             wf = rp.load_party_overrides(Path(d))
             self.assertEqual(wf["default_party"], "b")  # personal wins
             self.assertEqual([m["code"] for m in wf["party_members"]], ["x", "y"])  # appended
+
+
+class TestResolverInvocation(unittest.TestCase):
+    """The wrapper knows the project root, so it must not let the resolver
+    infer one from the working directory (#2796)."""
+
+    def _captured_command(self, tmp):
+        captured = []
+        original = rp._run_json
+        rp._run_json = lambda cmd: captured.append(cmd) or {"workflow": {}}
+        try:
+            rp.load_party_workflow(Path(tmp) / "project", Path(tmp) / "skill")
+        finally:
+            rp._run_json = original
+        return captured[0]
+
+    def test_passes_project_root_to_the_customization_resolver(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cmd = self._captured_command(tmp)
+            self.assertIn("--project-root", cmd)
+            self.assertEqual(cmd[cmd.index("--project-root") + 1], str(Path(tmp) / "project"))
 
 
 if __name__ == "__main__":
