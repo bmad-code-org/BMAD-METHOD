@@ -127,3 +127,20 @@ jobs:
 
       - name: Validate skills
         run: npm run validate:skills
+
+  memlog-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Test memlog concurrency and lock recovery (Windows locking branch)
+        run: npm run test:memlog

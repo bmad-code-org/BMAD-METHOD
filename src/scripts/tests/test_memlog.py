@@ -397,6 +397,24 @@ def test_unpublished_guard_is_awaited_instead_of_failing_the_write(tmp_path):
     assert guard.stat().st_size == 1
 
 
+def test_empty_guard_from_a_dead_creator_is_reclaimed(tmp_path, monkeypatch):
+    """A zero-length guard left by a crashed creator must not wedge writes forever."""
+    target = tmp_path / MEMLOG
+    lock = target.with_suffix(target.suffix + ".lock")
+    guard = lock.with_suffix(lock.suffix + ".guard")
+    guard.touch()  # creator died after its O_EXCL create, before publishing the byte
+    assert guard.stat().st_size == 0
+    monkeypatch.setattr(memlog, "LOCK_TIMEOUT_SECONDS", 0.05)
+    monkeypatch.setattr(memlog, "LOCK_POLL_SECONDS", 0.001)
+
+    with memlog.exclusive_lock(target):
+        assert lock.is_file()
+        assert guard.stat().st_size == 1  # reclaimed and recreated, fully formed
+
+    assert not lock.exists()
+    assert guard.is_file()
+
+
 def test_guard_removed_between_open_attempts_is_retried(tmp_path, monkeypatch):
     """An operator deleting the sidecar mid-open must not fail an application write."""
     target = tmp_path / MEMLOG

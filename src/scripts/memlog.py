@@ -267,10 +267,18 @@ def _coordination_guard(lock: Path):
 def _open_coordination_guard(guard: Path) -> int:
     """Open, creating when needed, the persistent guard sidecar.
 
-    Two first-time writers race between the O_EXCL creation and the byte that
-    makes the guard lockable, and an operator can delete the sidecar between a
-    failed create and the follow-up open. Both windows are transient, so poll
-    until the guard is usable instead of failing an application write.
+    Guard creation is two steps — create the pathname, then publish the byte
+    that makes it lockable — so a writer that dies in between would leave a
+    zero-length guard. Rather than blocking every future write on that remnant
+    forever, a guard that stays empty past the wait deadline is reclaimed and
+    recreated. Reclamation is safe: a zero-length guard is never handed back as
+    an initialized lock, so no holder can be split off it, and a live creator
+    re-checks that the pathname still resolves to the inode it created before
+    returning, so it can never proceed on a guard reclaimed underneath it.
+
+    An operator deleting the sidecar between a failed create and the follow-up
+    open is handled the same way — both windows are transient, so poll instead
+    of failing an application write.
     """
     no_follow = getattr(os, "O_NOFOLLOW", 0)
     deadline = time.monotonic() + LOCK_TIMEOUT_SECONDS
@@ -292,17 +300,70 @@ def _open_coordination_guard(guard: Path) -> int:
             if created:
                 os.write(descriptor, b"\0")
                 os.fsync(descriptor)
-                return descriptor
+                # A concurrent reclaim may have removed this still-empty guard
+                # and recreated it; only proceed if the pathname still names the
+                # inode we just initialized.
+                if _descriptor_matches_guard(descriptor, guard):
+                    return descriptor
+                os.close(descriptor)
+                deadline = time.monotonic() + LOCK_TIMEOUT_SECONDS
+                continue
             if os.fstat(descriptor).st_size != 0:
                 return descriptor
             if time.monotonic() >= deadline:
-                raise TimeoutError(f"timed out waiting for the memlog coordination guard to initialize: {guard}")
+                # The guard has stayed empty past the wait: its creator died
+                # before publishing the byte. Close our handle first (Windows
+                # will not unlink an open file), then reclaim the remnant and
+                # recreate it next iteration instead of wedging every write.
+                os.close(descriptor)
+                _reclaim_zero_length_guard(guard)
+                deadline = time.monotonic() + LOCK_TIMEOUT_SECONDS
+                continue
         except BaseException:
             os.close(descriptor)
             raise
         # The creating writer has not published its byte yet: reopen and retry.
         os.close(descriptor)
         time.sleep(LOCK_POLL_SECONDS)
+
+
+def _descriptor_matches_guard(descriptor: int, guard: Path) -> bool:
+    """True when the guard pathname still resolves to the descriptor's inode."""
+    try:
+        fd_info = os.fstat(descriptor)
+        path_info = guard.lstat()
+    except FileNotFoundError:
+        return False
+    return not stat.S_ISLNK(path_info.st_mode) and (fd_info.st_dev, fd_info.st_ino) == (
+        path_info.st_dev,
+        path_info.st_ino,
+    )
+
+
+def _reclaim_zero_length_guard(guard: Path) -> None:
+    """Remove a zero-length guard left by a creator that died before publishing.
+
+    Safe because a zero-length guard never has an advisory-lock holder: no
+    initialized descriptor is ever returned for one, so unlinking it cannot
+    split holders. Only a plain, single-linked, empty regular file is removed,
+    and a live creator re-checks its inode after publishing, so it never
+    proceeds on a guard reclaimed here. The caller closes its own handle first
+    because Windows refuses to unlink a file with an open descriptor.
+    """
+    try:
+        info = guard.lstat()
+    except OSError:
+        return
+    if (
+        not stat.S_ISLNK(info.st_mode)
+        and stat.S_ISREG(info.st_mode)
+        and info.st_size == 0
+        and info.st_nlink == 1
+    ):
+        try:
+            os.unlink(guard)
+        except OSError:
+            pass
 
 
 def _assert_guard_identity(descriptor: int, guard: Path) -> None:
