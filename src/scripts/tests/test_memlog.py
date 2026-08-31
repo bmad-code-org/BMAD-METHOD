@@ -372,93 +372,57 @@ def test_coordination_guard_never_initializes_through_an_existing_hardlink(tmp_p
     assert not lock.exists()
 
 
-def test_unpublished_guard_is_awaited_instead_of_failing_the_write(tmp_path):
-    """A guard created but not yet published is contention, not corruption."""
+def test_an_empty_guard_is_usable_and_is_never_unlinked(tmp_path):
+    """The guard carries no contents, so a crash cannot leave a half-built one."""
     target = tmp_path / MEMLOG
     lock = target.with_suffix(target.suffix + ".lock")
     guard = lock.with_suffix(lock.suffix + ".guard")
-    guard.touch()  # creator paused between its O_EXCL create and its byte
+    guard.touch()  # a bare, zero-length guard is fully lockable
+    before = guard.stat()
 
-    def publish():
-        time.sleep(0.1)
-        with open(guard, "r+b") as handle:
-            handle.write(b"\0")
-            handle.flush()
-            os.fsync(handle.fileno())
+    with memlog.exclusive_lock(target):
+        assert lock.is_file()
 
-    publisher = threading.Thread(target=publish)
-    publisher.start()
-    try:
-        with memlog.exclusive_lock(target):
-            assert lock.is_file()
-    finally:
-        publisher.join()
     assert not lock.exists()
-    assert guard.stat().st_size == 1
-
-
-def test_empty_guard_from_a_dead_creator_is_reclaimed(tmp_path, monkeypatch):
-    """A zero-length guard left by a crashed creator must not wedge writes forever."""
-    target = tmp_path / MEMLOG
-    lock = target.with_suffix(target.suffix + ".lock")
-    guard = lock.with_suffix(lock.suffix + ".guard")
-    guard.touch()  # creator died after its O_EXCL create, before publishing the byte
+    after = guard.stat()
     assert guard.stat().st_size == 0
-    monkeypatch.setattr(memlog, "LOCK_TIMEOUT_SECONDS", 0.05)
-    monkeypatch.setattr(memlog, "LOCK_POLL_SECONDS", 0.001)
-
-    with memlog.exclusive_lock(target):
-        assert lock.is_file()
-        assert guard.stat().st_size == 1  # reclaimed and recreated, fully formed
-
-    assert not lock.exists()
-    assert guard.is_file()
+    # Same inode: the guard is persistent, never reclaimed or recreated, so
+    # waiters can never split across two different guard files.
+    assert (before.st_dev, before.st_ino) == (after.st_dev, after.st_ino)
 
 
-def test_unremovable_empty_guard_times_out_instead_of_looping(tmp_path, monkeypatch):
-    """If an empty guard cannot be unlinked, the write fails bounded rather than spinning."""
+def test_guard_survives_a_writer_that_crashes_mid_operation(tmp_path):
+    """A crashed writer leaves a reusable guard, not a wedged one."""
     target = tmp_path / MEMLOG
     lock = target.with_suffix(target.suffix + ".lock")
     guard = lock.with_suffix(lock.suffix + ".guard")
-    guard.touch()  # empty remnant that cannot be removed
-    real_unlink = os.unlink
 
-    def refuse_guard_unlink(path, *args, **kwargs):
-        if Path(path) == guard:
-            raise PermissionError("guard is pinned open")
-        return real_unlink(path, *args, **kwargs)
-
-    monkeypatch.setattr(memlog.os, "unlink", refuse_guard_unlink)
-    monkeypatch.setattr(memlog, "LOCK_TIMEOUT_SECONDS", 0.02)
-    monkeypatch.setattr(memlog, "LOCK_POLL_SECONDS", 0.001)
-
-    with pytest.raises(TimeoutError, match="coordination guard"):
+    with pytest.raises(RuntimeError, match="boom"):
         with memlog.exclusive_lock(target):
-            pass
-    assert guard.exists()  # left in place for an operator to inspect
+            raise RuntimeError("boom")
+    identity = guard.stat()
+
+    # The next writer reuses the very same guard inode without any recovery step.
+    with memlog.exclusive_lock(target):
+        assert lock.is_file()
+    assert not lock.exists()
+    assert (guard.stat().st_dev, guard.stat().st_ino) == (identity.st_dev, identity.st_ino)
 
 
-def test_guard_removed_between_open_attempts_is_retried(tmp_path, monkeypatch):
-    """An operator deleting the sidecar mid-open must not fail an application write."""
+def test_guard_is_recreated_when_an_operator_deletes_it(tmp_path):
+    """Deleting the sidecar between writes is harmless: the next writer recreates it."""
     target = tmp_path / MEMLOG
     lock = target.with_suffix(target.suffix + ".lock")
     guard = lock.with_suffix(lock.suffix + ".guard")
-    real_open = memlog.os.open
-    attempts = {"count": 0}
 
-    def flaky_open(path, flags, *rest):
-        if str(path) == str(guard):
-            attempts["count"] += 1
-            if attempts["count"] == 1:
-                raise FileExistsError(f"synthetic contention: {guard}")
-            if attempts["count"] == 2:
-                raise FileNotFoundError(f"synthetic removal: {guard}")
-        return real_open(path, flags, *rest)
+    with memlog.exclusive_lock(target):
+        pass
+    assert guard.is_file()
+    guard.unlink()
 
-    monkeypatch.setattr(memlog.os, "open", flaky_open)
     with memlog.exclusive_lock(target):
         assert lock.is_file()
-    assert attempts["count"] >= 3
+    assert guard.is_file()
     assert not lock.exists()
 
 

@@ -42,9 +42,10 @@ local-file operation and must not hold the lock for that long; callers seeing a 
 on a younger lock should inspect the recorded PID before removing it manually. Waiting
 before inspecting the lock avoids Windows readers blocking the active writer's cleanup.
 A persistent `.lock.guard` sidecar uses an OS advisory lock to serialize creation,
-reclamation, and deletion of the ownership record. It is deliberately never unlinked:
-the kernel releases its advisory lock after a crash, while its stable inode prevents
-waiters from splitting across replacement guard files.
+reclamation, and deletion of the ownership record. It stays empty and is deliberately
+never unlinked: the kernel releases its advisory lock after a crash, while its stable
+inode prevents waiters from splitting across replacement guard files. Keeping it
+contentless means there is no half-initialized state a crash can leave behind.
 
 The file shape (.memlog.md):
 
@@ -267,122 +268,24 @@ def _coordination_guard(lock: Path):
 def _open_coordination_guard(guard: Path) -> int:
     """Open, creating when needed, the persistent guard sidecar.
 
-    Guard creation is two steps — create the pathname, then publish the byte
-    that makes it lockable — so a writer that dies in between would leave a
-    zero-length guard. Rather than blocking every future write on that remnant
-    forever, a guard that stays empty past the wait deadline is reclaimed and
-    recreated. Reclamation is safe: a zero-length guard is never handed back as
-    an initialized lock, so no holder can be split off it, and a live creator
-    re-checks that the pathname still resolves to the inode it created before
-    returning, so it can never proceed on a guard reclaimed underneath it.
+    The guard carries no contents: both `fcntl.flock` and `msvcrt.locking` lock
+    a zero-length file just as well as a populated one, so there is no
+    "initialized" state a writer could observe half-finished, and no reason to
+    ever unlink and recreate the file. Creation is therefore a single
+    `O_CREAT` open that races harmlessly — every writer ends up on the same
+    inode, which is exactly what serializes them.
 
-    An operator deleting the sidecar between a failed create and the follow-up
-    open is handled the same way — both windows are transient, so poll instead
-    of failing an application write.
+    An operator deleting the sidecar between the open and the lock is the only
+    transient case left; that just means the next writer recreates it.
     """
     no_follow = getattr(os, "O_NOFOLLOW", 0)
-    deadline = time.monotonic() + LOCK_TIMEOUT_SECONDS
-    while True:
-        created = False
-        try:
-            descriptor = os.open(guard, os.O_CREAT | os.O_EXCL | os.O_RDWR | no_follow, 0o600)
-            created = True
-        except FileExistsError:
-            try:
-                descriptor = os.open(guard, os.O_RDWR | no_follow)
-            except FileNotFoundError:
-                if time.monotonic() >= deadline:
-                    raise
-                time.sleep(LOCK_POLL_SECONDS)
-                continue
-        try:
-            _assert_guard_identity(descriptor, guard)
-            if created:
-                os.write(descriptor, b"\0")
-                os.fsync(descriptor)
-                # A concurrent reclaim may have removed this still-empty guard
-                # and recreated it; only proceed if the pathname still names the
-                # inode we just initialized.
-                if _descriptor_matches_guard(descriptor, guard):
-                    return descriptor
-                os.close(descriptor)
-                deadline = time.monotonic() + LOCK_TIMEOUT_SECONDS
-                continue
-            if os.fstat(descriptor).st_size != 0:
-                return descriptor
-            if time.monotonic() >= deadline:
-                # The guard has stayed empty past the wait: its creator died
-                # before publishing the byte. Close our handle first (Windows
-                # will not unlink an open file), then reclaim the remnant and
-                # recreate it next iteration instead of wedging every write.
-                os.close(descriptor)
-                if not _reclaim_zero_length_guard(guard):
-                    raise TimeoutError(
-                        f"timed out waiting for the memlog coordination guard to initialize: {guard}"
-                    )
-                deadline = time.monotonic() + LOCK_TIMEOUT_SECONDS
-                continue
-        except BaseException:
-            try:
-                os.close(descriptor)
-            except OSError:
-                pass
-            raise
-        # The creating writer has not published its byte yet: reopen and retry.
+    descriptor = os.open(guard, os.O_CREAT | os.O_RDWR | no_follow, 0o600)
+    try:
+        _assert_guard_identity(descriptor, guard)
+    except BaseException:
         os.close(descriptor)
-        time.sleep(LOCK_POLL_SECONDS)
-
-
-def _descriptor_matches_guard(descriptor: int, guard: Path) -> bool:
-    """True when the guard pathname still resolves to the descriptor's inode."""
-    try:
-        fd_info = os.fstat(descriptor)
-        path_info = guard.lstat()
-    except FileNotFoundError:
-        return False
-    return not stat.S_ISLNK(path_info.st_mode) and (fd_info.st_dev, fd_info.st_ino) == (
-        path_info.st_dev,
-        path_info.st_ino,
-    )
-
-
-def _reclaim_zero_length_guard(guard: Path) -> bool:
-    """Remove a zero-length guard left by a creator that died before publishing.
-
-    Returns True when the guard is gone afterwards (removed here, or already
-    absent) and False when it still exists — either because it is not an empty
-    single-linked regular remnant, or because the unlink failed. The caller uses
-    that to stay bounded: it retries only after a successful reclaim and
-    otherwise raises a timeout, instead of looping forever on a guard it cannot
-    remove.
-
-    Removing an empty guard is safe because it never has an advisory-lock
-    holder: no initialized descriptor is ever returned for one, so unlinking it
-    cannot split holders, and a live creator re-checks its inode after
-    publishing, so it never proceeds on a guard reclaimed here. The caller
-    closes its own handle first because Windows refuses to unlink a file with an
-    open descriptor.
-    """
-    try:
-        info = guard.lstat()
-    except FileNotFoundError:
-        return True
-    except OSError:
-        return False
-    if not (
-        not stat.S_ISLNK(info.st_mode)
-        and stat.S_ISREG(info.st_mode)
-        and info.st_size == 0
-        and info.st_nlink == 1
-    ):
-        return False
-    try:
-        os.unlink(guard)
-        return True
-    except FileNotFoundError:
-        return True
-    except OSError:
-        return False
+        raise
+    return descriptor
 
 
 def _assert_guard_identity(descriptor: int, guard: Path) -> None:
@@ -396,15 +299,16 @@ def _assert_guard_identity(descriptor: int, guard: Path) -> None:
         or (guard_info.st_dev, guard_info.st_ino) != (descriptor_info.st_dev, descriptor_info.st_ino)
     ):
         raise OSError(f"memlog coordination guard is not a regular file: {guard}")
-    # A guard this process created has exactly one name. Extra links mean the
-    # pathname was pre-seeded to alias a file the writer must never touch, and
-    # that is a hard failure rather than a not-yet-published guard to wait for.
+    # The guard has exactly one name. Extra links mean the pathname was
+    # pre-seeded to alias a file the writer must never touch.
     if descriptor_info.st_nlink > 1:
         raise OSError(f"memlog coordination guard has multiple hard links: {guard}")
 
 
 def _try_lock_guard(descriptor: int) -> None:
     if os.name == "nt":
+        # Locking one byte at offset 0 works on a zero-length file and is
+        # mutually exclusive across handles, so the guard needs no contents.
         os.lseek(descriptor, 0, os.SEEK_SET)
         msvcrt.locking(descriptor, msvcrt.LK_NBLCK, 1)
     else:
