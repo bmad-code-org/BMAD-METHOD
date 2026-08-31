@@ -206,6 +206,7 @@ persistent_facts = [
 ```bash
 uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill {skill-root} \
+  --project-root {project-root} \
   --key agent
 ```
 
@@ -219,16 +220,19 @@ uv run {project-root}/_bmad/scripts/resolve_customization.py \
 # 전체 에이전트 블록 해석
 uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill /abs/path/to/bmad-agent-pm \
+  --project-root {project-root} \
   --key agent
 
 # 단일 필드 해석
 uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill /abs/path/to/bmad-agent-pm \
+  --project-root {project-root} \
   --key agent.icon
 
 # 전체 덤프
 uv run {project-root}/_bmad/scripts/resolve_customization.py \
-  --skill /abs/path/to/bmad-agent-pm
+  --skill /abs/path/to/bmad-agent-pm \
+  --project-root {project-root}
 ```
 
 출력은 항상 JSON입니다. 특정 플랫폼에서 스크립트를 사용할 수 없다면 SKILL.md는 에이전트에게 세 TOML 파일을 직접 읽고 같은 병합 규칙을 적용하라고 지시합니다.

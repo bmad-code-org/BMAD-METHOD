@@ -5,6 +5,7 @@
 """Unit tests for resolve_party.py — merge, alias, override, group resolution."""
 
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -140,6 +141,27 @@ class TestInstalledCodesIsDefaultRoom(unittest.TestCase):
         self.assertEqual(default_room, ["bmad-agent-analyst", "bmad-agent-pm"])
         # An override keeps its installed slot (and its custom content).
         self.assertEqual(col["bmad-agent-analyst"]["name"], "Mary-Custom")
+
+
+class TestResolverInvocation(unittest.TestCase):
+    """The wrapper knows the project root, so it must not let the resolver
+    infer one from the working directory (#2796)."""
+
+    def _captured_command(self, tmp):
+        captured = []
+        original = rp._run_json
+        rp._run_json = lambda cmd: captured.append(cmd) or {"workflow": {}}
+        try:
+            rp.load_workflow(Path(tmp) / "project", Path(tmp) / "skill")
+        finally:
+            rp._run_json = original
+        return captured[0]
+
+    def test_passes_project_root_to_the_customization_resolver(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cmd = self._captured_command(tmp)
+            self.assertIn("--project-root", cmd)
+            self.assertEqual(cmd[cmd.index("--project-root") + 1], str(Path(tmp) / "project"))
 
 
 if __name__ == "__main__":

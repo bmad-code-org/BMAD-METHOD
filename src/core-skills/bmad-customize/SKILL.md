@@ -87,7 +87,7 @@ Default by character (policy → team, personal → user), confirm before writin
 3. Write. Create `{project-root}/_bmad/custom/` if needed.
 4. Verify:
    ```
-   uv run {project-root}/_bmad/scripts/resolve_customization.py --skill <install-path> --key <agent-or-workflow>
+   uv run {project-root}/_bmad/scripts/resolve_customization.py --skill <install-path> --project-root {project-root} --key <agent-or-workflow>
    ```
    Show the merged output, point out the changed fields.
 

@@ -206,6 +206,7 @@ Khi agent được kích hoạt, `SKILL.md` của nó sẽ gọi một shared Py
 ```bash
 uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill {skill-root} \
+  --project-root {project-root} \
   --key agent
 ```
 
@@ -219,16 +220,19 @@ Một số lệnh hữu ích:
 # Resolve toàn bộ block agent
 uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill /duong-dan/tuyet-doi/toi/bmad-agent-pm \
+  --project-root {project-root} \
   --key agent
 
 # Resolve một trường cụ thể
 uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill /duong-dan/tuyet-doi/toi/bmad-agent-pm \
+  --project-root {project-root} \
   --key agent.icon
 
 # Dump toàn bộ
 uv run {project-root}/_bmad/scripts/resolve_customization.py \
-  --skill /duong-dan/tuyet-doi/toi/bmad-agent-pm
+  --skill /duong-dan/tuyet-doi/toi/bmad-agent-pm \
+  --project-root {project-root}
 ```
 
 Đầu ra luôn là JSON. Nếu script này không khả dụng trên một nền tảng nào đó, `SKILL.md` sẽ hướng dẫn agent đọc trực tiếp ba file TOML và áp dụng cùng các quy tắc merge.

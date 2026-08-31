@@ -22,7 +22,7 @@ Lead by questioning, not lecturing. Ask one question at a time, press on weak po
 
 ## On Activation
 
-1. Resolve customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`. On failure, read `{skill-root}/customize.toml` directly with defaults. Apply the resolved `{workflow.*}` values throughout.
+1. Resolve customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow`. On failure, read `{skill-root}/customize.toml` directly with defaults. Apply the resolved `{workflow.*}` values throughout.
 2. Run each `{workflow.activation_steps_prepend}` entry; treat each `{workflow.persistent_facts}` entry as foundational context (`file:` entries load their contents, `skill:` names a skill to consult, others are facts verbatim).
 3. Resolve central config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core`; from the merged JSON read `{user_name}`, `{communication_language}`, `{output_folder}`. On failure use neutral defaults; never block. Greet `{user_name}` in `{communication_language}` and stay in it.
 4. Note whether a BMad persona is already active in this conversation — the user loaded one (e.g. the analyst, the storyteller) and invoked the forge from within it. If so, that persona leads the session, in voice, throughout.

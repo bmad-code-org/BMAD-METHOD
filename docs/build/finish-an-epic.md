@@ -26,7 +26,7 @@ is fresh and the session logs have not been cleared.
 - **Aggregate defects**: the architecture that drifted, the helper written
   twice, the file that grew a little in every session.
 - **Diff-scope review**: it hands the epic's diff to
-  [`bmad-review`](./review-a-change.md), weighting the seams between
+  [`bmad-review`](../reference/skills-and-agents.md#bmad-review), weighting the seams between
   stories where no single session saw both sides.
 - **Spec reconciliation**: where the built code diverged from what the epic
   and PRD described.

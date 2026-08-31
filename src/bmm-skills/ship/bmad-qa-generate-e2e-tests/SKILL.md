@@ -20,7 +20,7 @@ description: 'Generate automated API and end-to-end tests for implemented featur
 
 ### Step 1: Resolve the Workflow Block
 
-Run: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow`
+Run: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow`
 
 **If the script fails**, resolve the `workflow` block yourself by reading these three files in base → team → user order and applying the same structural merge rules as the resolver:
 
@@ -171,6 +171,6 @@ Save summary to: `{default_output_file}`
 
 ## On Complete
 
-Run: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow.on_complete`
+Run: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow.on_complete`
 
 If the resolved `workflow.on_complete` is non-empty, follow it as the final terminal instruction before exiting.

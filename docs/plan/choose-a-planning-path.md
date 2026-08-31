@@ -64,6 +64,33 @@ than one person must agree on what the product is, or more than one epic must
 not diverge; otherwise skip it. A multi-epic product runs `bmad-spec` once per
 epic with those documents as sources.
 
+## Planning Skills and What They Produce
+
+Every skill in this chapter writes a document you can hand on. The table runs
+from analysis through planning to solutioning; each chapter page is linked
+from the first skill it covers and explains when its skills fit. In an
+installed project, `bmad-help` recommends the next one.
+
+| Skill                           | Purpose                                                                                                                                        | Produces                                                                            |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `bmad-brainstorming`            | Generate ideas with a facilitated session ([Explore and Validate an Idea](./explore-and-validate-an-idea.md))                                  | `brainstorm.html` keepsake plus an optional `brainstorm-intent.md`                  |
+| `bmad-forge-idea`               | Pressure-test an idea until it hardens, proves out, or dies cheaply                                                                            | `forge-report.html` every run; `forged-idea.md` when the idea hardens               |
+| `bmad-deep-recon`               | Research a subject to support a decision ([Research a Decision](./research-a-decision.md))                                                     | Cited `research.md` plus an optional HTML briefing                                  |
+| `bmad-product-brief`            | Capture the product vision when the concept is clear ([Define Requirements and a Specification](./define-requirements-and-a-specification.md)) | `brief.md` + `addendum.md`                                                          |
+| `bmad-prfaq`                    | Stress-test a product concept customer-first, working backwards from the press release                                                         | `prfaq-<project>.md`                                                                |
+| `bmad-prd`                      | Create, update, or validate a PRD                                                                                                              | Create/update: `prd.md`, `addendum.md`, `.memlog.md`; validate: HTML + `.md` report |
+| `bmad-ux`                       | Record how the product looks and behaves ([Design UX and Architecture](./design-ux-and-architecture.md))                                       | `DESIGN.md`, `EXPERIENCE.md`, `.memlog.md`                                          |
+| `bmad-spec`                     | Condense any intent into a short contract; break it into stories on request                                                                    | `SPEC.md` + companions under `specs/spec-<slug>/`; optional `stories.yaml`          |
+| `bmad-architecture`             | Make the technical decisions that keep separately built parts consistent                                                                       | `ARCHITECTURE-SPINE.md` by default                                                  |
+| `bmad-create-epics-and-stories` | Break requirements into epics and stories ([Break Work into Stories and Track It](./break-work-into-stories-and-track-it.md))                  | Epic files with stories                                                             |
+| `bmad-sprint-planning`          | Check readiness before implementation, then track story status                                                                                 | PASS/CONCERNS/FAIL + `sprint-status.yaml`                                           |
+
+`bmad-prd` has three intents, create, update, and validate; say which one you
+want when you invoke it, or it will ask. `bmad-product-brief` feeds `bmad-prd`,
+which reads the brief during discovery, but neither requires the other.
+
+![Three columns of planning skills and the files each writes: analysis (brainstorming, forge idea, deep recon, product brief, PRFAQ), planning (PRD, UX, spec), and solutioning (architecture, epics and stories, sprint planning), all handing off to bmad-build, one session per unit](../images/planning-skills.svg)
+
 ## Size Follows the Intent
 
 The size of the intent decides how many Build sessions follow. One coherent
@@ -144,7 +171,7 @@ and specs exist so later sessions can still see the whole.
 `bmad-build-auto` runs one session without waiting for human input. It does
 not choose the next story or own the backlog. Use it after the important
 implementation decisions are stable. For the worker contract, see
-[Autonomous Development Loops](../reference/build-auto.md).
+[Autonomous Development Loops](../build/autonomous-development-loops.md).
 
 ## What You Get
 

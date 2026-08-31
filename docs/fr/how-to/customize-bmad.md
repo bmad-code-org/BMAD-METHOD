@@ -206,6 +206,7 @@ persistent_facts = [
 ```bash
 uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill {skill-root} \
+  --project-root {project-root} \
   --key agent
 ```
 
@@ -219,16 +220,19 @@ Exemples d’utilisation :
 # Résoudre le bloc agent complet
 uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill /chemin/absolu/vers/bmad-agent-pm \
+  --project-root {project-root} \
   --key agent
 
 # Résoudre un seul champ
 uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill /chemin/absolu/vers/bmad-agent-pm \
+  --project-root {project-root} \
   --key agent.icon
 
 # Dump complet
 uv run {project-root}/_bmad/scripts/resolve_customization.py \
-  --skill /chemin/absolu/vers/bmad-agent-pm
+  --skill /chemin/absolu/vers/bmad-agent-pm \
+  --project-root {project-root}
 ```
 
 La sortie est toujours en JSON. Si le script n’est pas disponible sur une plateforme donnée, le SKILL.md demande à l’agent de lire les trois fichiers TOML directement et d’appliquer les mêmes règles de fusion.
