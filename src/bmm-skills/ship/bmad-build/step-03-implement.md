@@ -42,7 +42,7 @@ Stage the diff and read it first: using the repository's version-control tooling
 
 Verify every task in the `## Tasks & Acceptance` section of `{spec_file}` is complete and every acceptance criterion is satisfied. Mark each finished task `[x]`. If any task is not done or any acceptance criterion is not satisfied, finish the missing work before proceeding — and when that changes code, rewrite `{diff_file}` and re-read it.
 
-Two more things are part of done. A test this change added or changed must discriminate: it fails with the change's production code reverted — judge that from what it asserts, or revert and run it when that is cheap; a test that stays green either way is not done. A helper or chokepoint this change introduced is adopted at every site this change touched; a touched site still on the old path is unfinished work. Finish both before proceeding, and when that changes code, rewrite `{diff_file}` and re-read it.
+Two more things are part of done. A test this change added or changed must discriminate: it fails with the change's production code reverted, or under the wrong behavior it exists to catch when the change is the test itself — judge that from what it asserts, or revert and run it when that is cheap; a test that stays green either way is not done. A helper or chokepoint this change introduced is adopted at every site this change touched; a touched site still on the old path is unfinished work. Finish both before proceeding, and when that changes code, rewrite `{diff_file}` and re-read it.
 
 ### Matrix Test Audit
 

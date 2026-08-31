@@ -185,7 +185,7 @@ On successful completion, the workflow writes or updates the spec with:
   - Review findings breakdown
   - Verification performed
   - Residual risks
-- `followup_review_recommended` flag. True if LLM decided another review pass seems worthwhile. It's a suggestion, not a must. Simplest way to give it a second review pass is to re-run the skill pointing it at the spec file. A first pass recommends one when it patched a `high` finding or two or more `medium` ones. A follow-up pass — the skill re-run against a `done` spec — carries forward the previous pass's verdicts for code that has not changed and recommends another only when it patched a `high`; otherwise the work has converged.
+- `followup_review_recommended` flag. True if LLM decided another review pass seems worthwhile. It's a suggestion, not a must. Simplest way to give it a second review pass is to re-run the skill pointing it at the spec file. A first pass recommends one when it patched a `high` finding or two or more `medium` ones. Re-running the skill against a `done` spec carries forward the previous pass's verdicts for code that has not changed. When that spec recommended the follow-up, the new pass recommends another only when it patched a `high`; otherwise the work has converged.
 - `baseline_revision` — the full canonical revision before implementation. `NO_VCS` without version control.
 - `deferred` frontmatter entries for review findings triaged `defer`. Each item records `summary`, `evidence`, `location`, and `severity`.
 
