@@ -39,7 +39,7 @@ If a layer's instruction requires subagents and none are available, for each suc
      - `false` — you checked, and the bad outcome does not happen at the cited location. Write what disproves this specific claim. A true fact about nearby code that does not disprove the claim does not count. A finding that names no bad outcome, or no input or state that reaches one — a "consider", a "could", a tidy-up — makes no claim to verify: `false`, with "no demonstrated outcome" as the refutation. Do not build the claim on the reviewer's behalf.
      - `maybe-false` — you could not tell whether the bad outcome happens. Write what you would need to check to find out. Use this only when the diff and surrounding code leave the question open; when they are enough to decide, pick `high`, `medium`, `low`, or `false`.
 
-   - Every finding gets one row in the `## Review Triage Log` section of `{spec_file}` — verdict plus its evidence in a sentence or two; never drop, merge, or silently skip one.
+   - Every finding gets one row in the `## Review Triage Log` section of `{spec_file}` — verdict plus its evidence in a sentence or two; never drop, merge, or silently skip one. Append to the `## Review Triage Log` section the spec already has — never create a second; if two exist, merge them into the earlier heading first, preserving every row.
 
    Reject `false` findings on their refutation.
 
