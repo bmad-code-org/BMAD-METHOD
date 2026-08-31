@@ -415,6 +415,29 @@ def test_empty_guard_from_a_dead_creator_is_reclaimed(tmp_path, monkeypatch):
     assert guard.is_file()
 
 
+def test_unremovable_empty_guard_times_out_instead_of_looping(tmp_path, monkeypatch):
+    """If an empty guard cannot be unlinked, the write fails bounded rather than spinning."""
+    target = tmp_path / MEMLOG
+    lock = target.with_suffix(target.suffix + ".lock")
+    guard = lock.with_suffix(lock.suffix + ".guard")
+    guard.touch()  # empty remnant that cannot be removed
+    real_unlink = os.unlink
+
+    def refuse_guard_unlink(path, *args, **kwargs):
+        if Path(path) == guard:
+            raise PermissionError("guard is pinned open")
+        return real_unlink(path, *args, **kwargs)
+
+    monkeypatch.setattr(memlog.os, "unlink", refuse_guard_unlink)
+    monkeypatch.setattr(memlog, "LOCK_TIMEOUT_SECONDS", 0.02)
+    monkeypatch.setattr(memlog, "LOCK_POLL_SECONDS", 0.001)
+
+    with pytest.raises(TimeoutError, match="coordination guard"):
+        with memlog.exclusive_lock(target):
+            pass
+    assert guard.exists()  # left in place for an operator to inspect
+
+
 def test_guard_removed_between_open_attempts_is_retried(tmp_path, monkeypatch):
     """An operator deleting the sidecar mid-open must not fail an application write."""
     target = tmp_path / MEMLOG

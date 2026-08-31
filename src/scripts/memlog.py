@@ -316,11 +316,17 @@ def _open_coordination_guard(guard: Path) -> int:
                 # will not unlink an open file), then reclaim the remnant and
                 # recreate it next iteration instead of wedging every write.
                 os.close(descriptor)
-                _reclaim_zero_length_guard(guard)
+                if not _reclaim_zero_length_guard(guard):
+                    raise TimeoutError(
+                        f"timed out waiting for the memlog coordination guard to initialize: {guard}"
+                    )
                 deadline = time.monotonic() + LOCK_TIMEOUT_SECONDS
                 continue
         except BaseException:
-            os.close(descriptor)
+            try:
+                os.close(descriptor)
+            except OSError:
+                pass
             raise
         # The creating writer has not published its byte yet: reopen and retry.
         os.close(descriptor)
@@ -340,30 +346,43 @@ def _descriptor_matches_guard(descriptor: int, guard: Path) -> bool:
     )
 
 
-def _reclaim_zero_length_guard(guard: Path) -> None:
+def _reclaim_zero_length_guard(guard: Path) -> bool:
     """Remove a zero-length guard left by a creator that died before publishing.
 
-    Safe because a zero-length guard never has an advisory-lock holder: no
-    initialized descriptor is ever returned for one, so unlinking it cannot
-    split holders. Only a plain, single-linked, empty regular file is removed,
-    and a live creator re-checks its inode after publishing, so it never
-    proceeds on a guard reclaimed here. The caller closes its own handle first
-    because Windows refuses to unlink a file with an open descriptor.
+    Returns True when the guard is gone afterwards (removed here, or already
+    absent) and False when it still exists — either because it is not an empty
+    single-linked regular remnant, or because the unlink failed. The caller uses
+    that to stay bounded: it retries only after a successful reclaim and
+    otherwise raises a timeout, instead of looping forever on a guard it cannot
+    remove.
+
+    Removing an empty guard is safe because it never has an advisory-lock
+    holder: no initialized descriptor is ever returned for one, so unlinking it
+    cannot split holders, and a live creator re-checks its inode after
+    publishing, so it never proceeds on a guard reclaimed here. The caller
+    closes its own handle first because Windows refuses to unlink a file with an
+    open descriptor.
     """
     try:
         info = guard.lstat()
+    except FileNotFoundError:
+        return True
     except OSError:
-        return
-    if (
+        return False
+    if not (
         not stat.S_ISLNK(info.st_mode)
         and stat.S_ISREG(info.st_mode)
         and info.st_size == 0
         and info.st_nlink == 1
     ):
-        try:
-            os.unlink(guard)
-        except OSError:
-            pass
+        return False
+    try:
+        os.unlink(guard)
+        return True
+    except FileNotFoundError:
+        return True
+    except OSError:
+        return False
 
 
 def _assert_guard_identity(descriptor: int, guard: Path) -> None:
