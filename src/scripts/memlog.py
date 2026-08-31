@@ -97,6 +97,9 @@ MEMLOG = ".memlog.md"
 LOCK_TIMEOUT_SECONDS = 10.0
 LOCK_POLL_SECONDS = 0.05
 ORPHAN_LOCK_SECONDS = 5 * 60.0
+# A writer should never need to reclaim repeatedly; capping the reclaim-driven
+# deadline extensions keeps the total wait bounded instead of livelocking.
+MAX_LOCK_RECLAIMS = 2
 
 if os.name == "nt":
     import msvcrt
@@ -169,6 +172,7 @@ def exclusive_lock(path: Path):
     owner_identity = None
     token = secrets.token_hex(16)
     last_contention = None
+    reclaims_remaining = MAX_LOCK_RECLAIMS
     while True:
         with _coordination_guard(lock):
             try:
@@ -178,7 +182,24 @@ def exclusive_lock(path: Path):
                     os.O_CREAT | os.O_EXCL | os.O_WRONLY | no_follow,
                     0o600,
                 )
-                owner_identity = _open_file_identity(descriptor)
+                try:
+                    owner_identity = _open_file_identity(descriptor)
+                except BaseException:
+                    # The lock exists but is not usable. Leaving it would strand
+                    # an empty record until the lease expires, and on Windows the
+                    # open handle would also make it undeletable, wedging every
+                    # later write. We still hold the guard, so a zero-length
+                    # record here can only be the one we just created.
+                    try:
+                        os.close(descriptor)
+                    finally:
+                        descriptor = None
+                        try:
+                            if lock.stat().st_size == 0:
+                                os.unlink(lock)
+                        except OSError:
+                            pass
+                    raise
             except FileExistsError as contention:
                 last_contention = contention
             except PermissionError as contention:
@@ -192,7 +213,8 @@ def exclusive_lock(path: Path):
             if descriptor is not None:
                 break
             if time.monotonic() >= deadline:
-                if _reclaim_orphaned_lock(lock):
+                if reclaims_remaining > 0 and _reclaim_orphaned_lock(lock):
+                    reclaims_remaining -= 1
                     deadline = time.monotonic() + LOCK_TIMEOUT_SECONDS
                     continue
                 try:
@@ -223,12 +245,26 @@ def exclusive_lock(path: Path):
         raise
     try:
         yield
-    finally:
+    except BaseException:
+        # Releasing is best effort when the body already failed: a cleanup error
+        # must not replace the caller's exception, and the lease reclaims a lock
+        # left behind.
         try:
-            os.close(descriptor)
-        finally:
-            with _coordination_guard(lock):
-                _unlink_owned_lock(lock, token, owner_identity)
+            _release_owned_lock(lock, descriptor, token, owner_identity)
+        except BaseException:
+            pass
+        raise
+    else:
+        _release_owned_lock(lock, descriptor, token, owner_identity)
+
+
+def _release_owned_lock(lock: Path, descriptor: int, token: str, owner_identity: tuple[int, int]) -> None:
+    """Close the held descriptor and drop our own lock record."""
+    try:
+        os.close(descriptor)
+    finally:
+        with _coordination_guard(lock):
+            _unlink_owned_lock(lock, token, owner_identity)
 
 
 @contextmanager
@@ -238,31 +274,63 @@ def _coordination_guard(lock: Path):
     The guard uses an OS advisory lock, which the kernel releases on process
     death. The guard file is intentionally persistent: unlinking an advisory
     lock file would split waiters across different inodes and recreate the
-    same pathname race this guard prevents.
+    same pathname race this guard prevents. Because an outside process can
+    still delete it, the held inode is re-checked against the pathname after
+    the lock is taken and the lock is retaken on the replacement if they differ.
     """
     guard = lock.with_suffix(lock.suffix + ".guard")
-    descriptor = _open_coordination_guard(guard)
+    deadline = time.monotonic() + LOCK_TIMEOUT_SECONDS
+    descriptor = None
     try:
-        deadline = time.monotonic() + LOCK_TIMEOUT_SECONDS
         while True:
-            try:
-                _try_lock_guard(descriptor)
+            descriptor = _open_coordination_guard(guard)
+            while True:
+                try:
+                    _try_lock_guard(descriptor)
+                    break
+                except OSError as error:
+                    if error.errno not in {errno.EACCES, errno.EAGAIN, errno.EDEADLK}:
+                        raise
+                    if time.monotonic() >= deadline:
+                        raise TimeoutError(f"timed out waiting for memlog coordination guard: {guard}") from error
+                    time.sleep(LOCK_POLL_SECONDS)
+            # The guard is only meaningful while the pathname still names the
+            # inode we locked. If it was unlinked and recreated after our open,
+            # our lock protects an orphaned inode while another writer locks the
+            # replacement, so drop it and take the lock on the current guard.
+            if _guard_is_current(descriptor, guard):
                 break
-            except OSError as error:
-                if error.errno not in {errno.EACCES, errno.EAGAIN, errno.EDEADLK}:
-                    raise
-                if time.monotonic() >= deadline:
-                    raise TimeoutError(f"timed out waiting for memlog coordination guard: {guard}") from error
-                time.sleep(LOCK_POLL_SECONDS)
+            # Closing the descriptor releases the advisory lock on both
+            # platforms, so a failed explicit unlock must not fail the write.
+            try:
+                _unlock_guard(descriptor)
+            except OSError:
+                pass
+            os.close(descriptor)
+            descriptor = None
+            if time.monotonic() >= deadline:
+                raise TimeoutError(f"timed out waiting for memlog coordination guard: {guard}")
+            time.sleep(LOCK_POLL_SECONDS)
         try:
             yield
         finally:
             _unlock_guard(descriptor)
     finally:
-        try:
-            os.close(descriptor)
-        except OSError:
-            pass
+        if descriptor is not None:
+            try:
+                os.close(descriptor)
+            except OSError:
+                pass
+
+
+def _guard_is_current(descriptor: int, guard: Path) -> bool:
+    """True when the guard pathname still names the inode held by descriptor."""
+    try:
+        held = os.fstat(descriptor)
+        named = guard.lstat()
+    except OSError:
+        return False
+    return not stat.S_ISLNK(named.st_mode) and (held.st_dev, held.st_ino) == (named.st_dev, named.st_ino)
 
 
 def _open_coordination_guard(guard: Path) -> int:
@@ -275,17 +343,27 @@ def _open_coordination_guard(guard: Path) -> int:
     `O_CREAT` open that races harmlessly — every writer ends up on the same
     inode, which is exactly what serializes them.
 
-    An operator deleting the sidecar between the open and the lock is the only
-    transient case left; that just means the next writer recreates it.
+    An operator deleting the sidecar is the only transient case left. It can
+    land between the open and the identity check, which would otherwise fail an
+    application write outright, so that specific window is retried within the
+    normal wait instead.
     """
     no_follow = getattr(os, "O_NOFOLLOW", 0)
-    descriptor = os.open(guard, os.O_CREAT | os.O_RDWR | no_follow, 0o600)
-    try:
-        _assert_guard_identity(descriptor, guard)
-    except BaseException:
-        os.close(descriptor)
-        raise
-    return descriptor
+    deadline = time.monotonic() + LOCK_TIMEOUT_SECONDS
+    while True:
+        descriptor = os.open(guard, os.O_CREAT | os.O_RDWR | no_follow, 0o600)
+        try:
+            _assert_guard_identity(descriptor, guard)
+            return descriptor
+        except FileNotFoundError:
+            # Deleted underneath us after the open: transient, not corruption.
+            os.close(descriptor)
+            if time.monotonic() >= deadline:
+                raise
+            time.sleep(LOCK_POLL_SECONDS)
+        except BaseException:
+            os.close(descriptor)
+            raise
 
 
 def _assert_guard_identity(descriptor: int, guard: Path) -> None:

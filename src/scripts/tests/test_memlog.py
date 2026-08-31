@@ -15,6 +15,7 @@ import sys
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
 from pathlib import Path
 
 import pytest
@@ -409,6 +410,95 @@ def test_guard_survives_a_writer_that_crashes_mid_operation(tmp_path):
     assert (guard.stat().st_dev, guard.stat().st_ino) == (identity.st_dev, identity.st_ino)
 
 
+def test_a_guard_replaced_after_open_is_not_locked_in_place(tmp_path, monkeypatch):
+    """If the guard is swapped between our open and our lock, retake it on the replacement.
+
+    Otherwise the writer would hold an advisory lock on an unlinked inode while
+    another writer locks the live pathname, so neither would see the other.
+    """
+    target = tmp_path / MEMLOG
+    lock = target.with_suffix(target.suffix + ".lock")
+    guard = lock.with_suffix(lock.suffix + ".guard")
+    monkeypatch.setattr(memlog, "LOCK_TIMEOUT_SECONDS", 2.0)
+    monkeypatch.setattr(memlog, "LOCK_POLL_SECONDS", 0.001)
+
+    real_is_current = memlog._guard_is_current
+    seen = {"count": 0}
+
+    def stale_once(descriptor, path):
+        seen["count"] += 1
+        if seen["count"] == 1:
+            return False  # the pathname now names a different inode
+        return real_is_current(descriptor, path)
+
+    monkeypatch.setattr(memlog, "_guard_is_current", stale_once)
+
+    with memlog.exclusive_lock(target):
+        assert lock.is_file()
+
+    assert seen["count"] >= 2  # dropped the stale guard and locked the current one
+    assert not lock.exists()
+    assert guard.is_file()
+
+
+def test_guard_deleted_between_open_and_identity_check_is_retried(tmp_path, monkeypatch):
+    """A sidecar deleted underneath the open is transient, not a failed write."""
+    target = tmp_path / MEMLOG
+    lock = target.with_suffix(target.suffix + ".lock")
+    guard = lock.with_suffix(lock.suffix + ".guard")
+    monkeypatch.setattr(memlog, "LOCK_TIMEOUT_SECONDS", 2.0)
+    monkeypatch.setattr(memlog, "LOCK_POLL_SECONDS", 0.001)
+
+    real_assert = memlog._assert_guard_identity
+    calls = {"count": 0}
+
+    def vanish_once(descriptor, path):
+        calls["count"] += 1
+        if calls["count"] == 1:
+            raise FileNotFoundError(f"synthetic removal: {path}")
+        return real_assert(descriptor, path)
+
+    monkeypatch.setattr(memlog, "_assert_guard_identity", vanish_once)
+
+    with memlog.exclusive_lock(target):
+        assert lock.is_file()
+
+    assert calls["count"] >= 2  # retried instead of failing the write
+    assert not lock.exists()
+    assert guard.is_file()
+
+
+def test_a_vanished_guard_eventually_times_out_rather_than_looping(tmp_path, monkeypatch):
+    """The retry for a vanishing guard stays bounded."""
+    target = tmp_path / MEMLOG
+    monkeypatch.setattr(memlog, "LOCK_TIMEOUT_SECONDS", 0.02)
+    monkeypatch.setattr(memlog, "LOCK_POLL_SECONDS", 0.001)
+
+    def always_vanish(descriptor, path):
+        raise FileNotFoundError(f"synthetic removal: {path}")
+
+    monkeypatch.setattr(memlog, "_assert_guard_identity", always_vanish)
+
+    with pytest.raises(FileNotFoundError):
+        with memlog.exclusive_lock(target):
+            pass
+
+
+def test_guard_currency_check_detects_a_swapped_inode(tmp_path):
+    """The identity check itself must compare the held inode to the pathname."""
+    guard = tmp_path / "guard"
+    other = tmp_path / "other"
+    guard.write_bytes(b"")
+    other.write_bytes(b"")
+    descriptor = os.open(guard, os.O_RDWR)
+    try:
+        assert memlog._guard_is_current(descriptor, guard)
+        assert not memlog._guard_is_current(descriptor, other)
+        assert not memlog._guard_is_current(descriptor, tmp_path / "absent")
+    finally:
+        os.close(descriptor)
+
+
 def test_guard_is_recreated_when_an_operator_deletes_it(tmp_path):
     """Deleting the sidecar between writes is harmless: the next writer recreates it."""
     target = tmp_path / MEMLOG
@@ -530,6 +620,78 @@ def test_orphan_reclaim_is_serialized_with_successor_acquisition(tmp_path, monke
     assert max_active == 1
     assert len(set(observed_tokens)) == 2
     assert not lock.exists()
+
+
+def test_repeated_reclaims_cannot_extend_the_wait_forever(tmp_path, monkeypatch):
+    """A reclaimable-looking lock must not defer the timeout indefinitely."""
+    target = tmp_path / MEMLOG
+    lock = target.with_suffix(target.suffix + ".lock")
+    lock.write_text(f"other-holder 999 {time.time()}\n", encoding="ascii")
+    monkeypatch.setattr(memlog, "LOCK_TIMEOUT_SECONDS", 0.01)
+    monkeypatch.setattr(memlog, "LOCK_POLL_SECONDS", 0.001)
+
+    attempts = {"count": 0}
+
+    def always_reclaimable(_lock):
+        attempts["count"] += 1
+        return True  # never actually frees the pathname
+
+    monkeypatch.setattr(memlog, "_reclaim_orphaned_lock", always_reclaimable)
+
+    with pytest.raises(TimeoutError, match="timed out waiting for memlog lock"):
+        with memlog.exclusive_lock(target):
+            pass
+    assert attempts["count"] <= memlog.MAX_LOCK_RECLAIMS + 1
+
+
+def test_a_lock_that_cannot_be_identified_is_not_left_behind(tmp_path, monkeypatch):
+    """A failure right after creating the record must not strand it on disk.
+
+    On Windows a still-open descriptor also makes the record undeletable, which
+    would block every later write, so both are released here.
+    """
+    target = tmp_path / MEMLOG
+    lock = target.with_suffix(target.suffix + ".lock")
+
+    real_identity = memlog._open_file_identity
+
+    def broken_identity(_descriptor):
+        raise OSError("fstat failed")
+
+    monkeypatch.setattr(memlog, "_open_file_identity", broken_identity)
+
+    with pytest.raises(OSError, match="fstat failed"):
+        with memlog.exclusive_lock(target):
+            pass
+
+    assert not lock.exists()
+
+    # The descriptor is closed too, so the pathname is immediately reusable.
+    monkeypatch.setattr(memlog, "_open_file_identity", real_identity)
+    with memlog.exclusive_lock(target):
+        assert lock.is_file()
+    assert not lock.exists()
+
+
+def test_a_release_failure_never_masks_the_callers_exception(tmp_path, monkeypatch):
+    """The caller must still see its own error if releasing the lock fails."""
+    target = tmp_path / MEMLOG
+    real_guard = memlog._coordination_guard
+    calls = {"count": 0}
+
+    @contextmanager
+    def guard_failing_on_release(lock):
+        calls["count"] += 1
+        if calls["count"] >= 2:  # first acquires, the release attempt fails
+            raise TimeoutError("guard timeout during release")
+        with real_guard(lock):
+            yield
+
+    monkeypatch.setattr(memlog, "_coordination_guard", guard_failing_on_release)
+
+    with pytest.raises(ValueError, match="caller error"):
+        with memlog.exclusive_lock(target):
+            raise ValueError("caller error")
 
 
 def test_concurrent_appends_preserve_every_entry(tmp_path):
