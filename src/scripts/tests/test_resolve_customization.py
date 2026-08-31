@@ -73,5 +73,107 @@ class ResolveCustomizationStdoutTests(unittest.TestCase):
             self.assertEqual(resolved["agent"]["icon"], "🧭")
 
 
+def write(path: Path, body: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(body, encoding="utf-8")
+
+
+def facts(*entries: str) -> str:
+    listed = ", ".join(f'"{entry}"' for entry in entries)
+    return f"[workflow]\npersistent_facts = [{listed}]\n"
+
+
+def resolve(skill_dir: Path, cwd: Path, *extra: str):
+    return subprocess.run(
+        [sys.executable, str(SCRIPT), "--skill", str(skill_dir), "--key", "workflow", *extra],
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        cwd=str(cwd),
+        check=False,
+    )
+
+
+class ProjectRootResolutionTests(unittest.TestCase):
+    """Regression cover for #2796 — the project is where the user works, not
+    where the skill is installed."""
+
+    def test_home_installed_skill_reads_project_override_not_home_bmad(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            home = Path(temp_dir) / "home"
+            project = Path(temp_dir) / "project"
+            skill = home / ".claude" / "skills" / "demo-skill"
+            write(skill / "customize.toml", facts("shipped default"))
+            (home / "_bmad" / "custom").mkdir(parents=True)
+            write(project / "_bmad" / "custom" / "demo-skill.toml", facts("team override"))
+
+            result = resolve(skill, project)
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            resolved = json.loads(result.stdout)["workflow"]["persistent_facts"]
+            self.assertEqual(resolved, ["shipped default", "team override"])
+
+    def test_project_installed_skill_still_resolves(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project = Path(temp_dir) / "project"
+            skill = project / ".claude" / "skills" / "demo-skill"
+            write(skill / "customize.toml", facts("shipped default"))
+            write(project / "_bmad" / "custom" / "demo-skill.toml", facts("team override"))
+
+            result = resolve(skill, project)
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            resolved = json.loads(result.stdout)["workflow"]["persistent_facts"]
+            self.assertEqual(resolved, ["shipped default", "team override"])
+
+    def test_walk_prefers_bmad_over_a_nearer_git_directory(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project = Path(temp_dir) / "project"
+            submodule = project / "vendor" / "sub"
+            skill = Path(temp_dir) / "skills" / "demo-skill"
+            write(skill / "customize.toml", facts("shipped default"))
+            write(project / "_bmad" / "custom" / "demo-skill.toml", facts("team override"))
+            (submodule / ".git").mkdir(parents=True)
+
+            result = resolve(skill, submodule)
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            resolved = json.loads(result.stdout)["workflow"]["persistent_facts"]
+            self.assertEqual(resolved, ["shipped default", "team override"])
+
+    def test_notes_when_a_rejected_root_holds_the_only_override(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            home = Path(temp_dir) / "home"
+            project = Path(temp_dir) / "project"
+            skill = home / ".claude" / "skills" / "demo-skill"
+            write(skill / "customize.toml", facts("shipped default"))
+            write(home / "_bmad" / "custom" / "demo-skill.toml", facts("home override"))
+            (project / "_bmad" / "custom").mkdir(parents=True)
+
+            result = resolve(skill, project)
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            resolved = json.loads(result.stdout)["workflow"]["persistent_facts"]
+            self.assertEqual(resolved, ["shipped default"])
+            self.assertIn("demo-skill", result.stderr)
+            self.assertIn("--project-root", result.stderr)
+
+    def test_explicit_project_root_wins_and_stays_quiet(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            home = Path(temp_dir) / "home"
+            project = Path(temp_dir) / "project"
+            skill = home / ".claude" / "skills" / "demo-skill"
+            write(skill / "customize.toml", facts("shipped default"))
+            write(home / "_bmad" / "custom" / "demo-skill.toml", facts("home override"))
+            (project / "_bmad" / "custom").mkdir(parents=True)
+
+            result = resolve(skill, project, "--project-root", str(home))
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            resolved = json.loads(result.stdout)["workflow"]["persistent_facts"]
+            self.assertEqual(resolved, ["shipped default", "home override"])
+            self.assertEqual(result.stderr, "")
+
+
 if __name__ == "__main__":
     unittest.main()

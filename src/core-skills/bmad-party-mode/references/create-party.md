@@ -30,7 +30,7 @@ Ask which they're after if it isn't obvious, then proceed.
 
 ## Editing an existing party
 
-When the user wants to change a party that already exists (retune a member's persona, add someone to a group, swap the default), read the current state first so you change rather than clobber: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key workflow` returns the merged `party_members`, `party_groups`, and `default_party`. Show the member or group being touched, capture only the delta with the user, and hand that sparse change to `bmad-customize` — it replaces a `party_members`/`party_groups` entry whose `code`/`id` matches and appends the rest, so an edit is just the changed entry, never a full rewrite.
+When the user wants to change a party that already exists (retune a member's persona, add someone to a group, swap the default), read the current state first so you change rather than clobber: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow` returns the merged `party_members`, `party_groups`, and `default_party`. Show the member or group being touched, capture only the delta with the user, and hand that sparse change to `bmad-customize` — it replaces a `party_members`/`party_groups` entry whose `code`/`id` matches and appends the rest, so an edit is just the changed entry, never a full rewrite.
 
 ## Keeping new faces from a session
 

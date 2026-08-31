@@ -349,11 +349,13 @@ will use:
 # Resolve the full agent block
 uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill /abs/path/to/bmad-agent-pm \
+  --project-root {project-root} \
   --key agent
 
 # Resolve a single field
 uv run {project-root}/_bmad/scripts/resolve_customization.py \
   --skill /abs/path/to/bmad-agent-pm \
+  --project-root {project-root} \
   --key agent.icon
 
 # Full dump: omit --key
@@ -365,6 +367,15 @@ for you at activation, but a shell will not.
 `--skill` points at the skill's installed directory; the script derives
 the skill name from that folder and finds the matching `_bmad/custom/`
 files itself. Output is always JSON.
+
+`--project-root` names the project whose `_bmad/custom/` files apply.
+Skills pass it on activation. Omit it and the script infers a root —
+working directory first, then its own install path, then the skill
+directory — which lands correctly in ordinary use but has to guess when a
+skill is installed under your home directory and a `~/_bmad` exists there
+too. If it picks a root with no override for that skill while another
+candidate has one, it says so on stderr rather than quietly returning
+defaults.
 
 Use `uv run` so the script gets Python 3.11 or later. If you run it with
 `python3` instead, check the version: 3.10 and earlier lack `tomllib`.
