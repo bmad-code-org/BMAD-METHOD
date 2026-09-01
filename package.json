@@ -50,11 +50,11 @@
     "test:renderer": "uv run --python 3.11 python -m unittest src/scripts/tests/test_config_utils.py src/scripts/tests/test_resolve_config.py src/scripts/tests/test_resolve_customization.py && node test/test-build-auto-renderer.js",
     "test:retrospective": "uv run --python 3.11 src/bmm-skills/ship/bmad-retrospective/scripts/tests/test_git_evidence.py && uv run --python 3.11 src/bmm-skills/ship/bmad-retrospective/scripts/tests/test_sprint_status.py",
     "test:site-url": "node test/test-site-url.mjs",
-    "test:skills": "node test/test-validate-skills.js",
+    "test:skills": "uv run --python 3.11 python -m unittest tools/tests/test_validate_skills.py",
     "test:sprint-planning": "uv run --python 3.11 src/bmm-skills/plan/bmad-sprint-planning/scripts/tests/test_sprint_plan.py && node test/test-template-sync.js",
     "test:urls": "node test/test-parse-source-urls.js",
     "validate:refs": "node tools/validate-file-refs.js --strict",
-    "validate:skills": "node tools/validate-skills.js --strict"
+    "validate:skills": "uv run --python 3.11 tools/validate_skills.py --strict"
   },
   "lint-staged": {
     "*.{js,cjs,mjs}": [

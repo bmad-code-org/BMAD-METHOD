@@ -7,10 +7,10 @@ An LLM-readable validation prompt for skills following the Agent Skills open sta
 Before running inference-based validation, run the deterministic validator:
 
 ```bash
-node tools/validate-skills.js --json path/to/skill-dir
+uv run --python 3.11 tools/validate_skills.py --json path/to/skill-dir
 ```
 
-This checks 13 rules deterministically: SKILL-01, SKILL-02, SKILL-03, SKILL-04, SKILL-05, SKILL-06, SKILL-07, PATH-02, STEP-01, STEP-06, STEP-07, SEQ-02, TPL-01.
+This checks 10 rules deterministically: SKILL-01, SKILL-02, SKILL-03, SKILL-04, SKILL-05, SKILL-06, SKILL-07, PATH-02, SEQ-02, TPL-01.
 
 Review its JSON output. For any rule that produced **zero findings** in the first pass, **skip it** during inference-based validation below — it has already been verified. If a rule produced any findings, the inference validator should still review that rule (some rules like SKILL-04 and SKILL-06 have sub-checks that benefit from judgment). Focus your inference effort on the remaining rules that require judgment (PATH-01, PATH-03, PATH-04, PATH-05, WF-03, STEP-02, STEP-03, STEP-04, STEP-05, SEQ-01, REF-01, REF-02, REF-03).
 
@@ -176,14 +176,6 @@ If no findings are generated (from either pass), the skill passes validation.
 
 ---
 
-### STEP-01 — Step File Naming
-
-- **Severity:** MEDIUM
-- **Applies to:** files in `steps/` directory
-- **Rule:** Step files must be named `step-NN-description.md` where NN is a zero-padded two-digit number. An optional single-letter variant suffix is allowed for branching steps (e.g., `step-01b-continue.md`).
-- **Detection:** Regex: `^step-\d{2}[a-z]?-[a-z0-9-]+\.md$`
-- **Fix:** Rename to match the pattern.
-
 ### STEP-02 — Step Must Have a Goal Section
 
 - **Severity:** HIGH
@@ -216,22 +208,6 @@ If no findings are generated (from either pass), the skill passes validation.
 - **Rule:** A step must not load or read future step files until the current step is complete. Just-in-time loading only.
 - **Detection:** Look for instructions to read multiple step files simultaneously, or unconditional references to step files with higher numbers than the current step. Exempt locations: `## NEXT` sections, navigation/dispatch sections that list valid resumption targets, and conditional routing branches.
 - **Fix:** Remove premature step loading. Ensure only the current step is active.
-
-### STEP-06 — Step File Frontmatter: No `name` or `description`
-
-- **Severity:** MEDIUM
-- **Applies to:** step files
-- **Rule:** Step files should not have `name:` or `description:` in their YAML frontmatter. These are metadata noise — the step's purpose is conveyed by its goal section and filename.
-- **Detection:** Parse step file frontmatter for `name:` or `description:` keys.
-- **Fix:** Remove `name:` and `description:` from step file frontmatter.
-
-### STEP-07 — Step Count
-
-- **Severity:** LOW
-- **Applies to:** workflow as a whole
-- **Rule:** A sharded workflow should have between 2 and 10 step files. More than 10 risks LLM context degradation.
-- **Detection:** Count files matching `step-*.md` in the `steps/` directory.
-- **Fix:** Consider consolidating steps if over 10.
 
 ---
 

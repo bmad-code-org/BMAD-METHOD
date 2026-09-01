@@ -79,7 +79,7 @@ async function readInstalledSkillIds(bmadDir) {
 
 // The installed manifest carries no lifecycle column, so the description
 // prefix every shim ships with is the only record of what was a shim. This
-// is the same signal validate-skills.js uses to exempt them.
+// is the same signal validate_skills.py uses to exempt them.
 async function readInstalledShims(bmadDir) {
   const shims = [];
   for (const record of await readSkillManifest(bmadDir)) {
