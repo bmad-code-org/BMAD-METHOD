@@ -87,7 +87,7 @@ Write the following details to `{spec_file}` under `## Auto Run Result`:
 - Summary of implemented change
 - Files changed with one-line descriptions
 - Review findings breakdown: patches applied, items deferred, and every rejected finding with its recorded reason
-- Follow-up review recommendation: count only this pass's entries triaged `patch`, at entry verdict — never deferred or `false` ones. `true` if any patched entry was `high`, or if two or more `medium` entries were patched; otherwise `false`. Record the patched counts by verdict.
+- Follow-up review recommendation: default `false`. Count only this pass's entries triaged `patch`, at entry verdict — never deferred or `false` ones. On a first pass, `true` if any patched entry was `high`, or if two or more `medium` entries were patched. On a follow-up pass (`{followup_pass}` = `true`), `true` only if this pass patched a `high` — otherwise the work has converged; patch volume is never grounds. A `true` names the specific unverified risk under `## Auto Run Result`; if none can be named, it is `false`. Record the patched counts by verdict.
 - Verification performed, including command outcomes or manual inspection notes
 - Any residual risks
 
