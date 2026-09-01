@@ -44,11 +44,13 @@ reviews:
     - "!**/*.svg"
     # --- Shared baseline: test fixtures ---
     - "!test/fixtures/**"
+    - "!tools/tests/fixtures/**"
     - "!test/template-test-generator/**"
     - "!tools/template-test-generator/test-scenarios/**"
     # --- Shared baseline: non-project dirs ---
     - "!_bmad*/**"
-    - "!website/**"
+    - "!website/public/**"
+    - "!website/diagrams/**"
     - "!z*/**"
     - "!sample-project/**"
     - "!test-project-install/**"
