@@ -1,6 +1,6 @@
 # Skill Validator — Inference-Based
 
-An LLM-readable validation prompt for skills following the Agent Skills open standard.
+An LLM-readable validation prompt for skills following the [Agent Skills specification](https://agentskills.io/specification).
 
 ## First Pass — Deterministic Checks
 
@@ -12,14 +12,14 @@ uv run --python 3.11 tools/validate_skills.py --json path/to/skill-dir
 
 This checks 10 rules deterministically: SKILL-01, SKILL-02, SKILL-03, SKILL-04, SKILL-05, SKILL-06, SKILL-07, PATH-02, SEQ-02, TPL-01.
 
-Review its JSON output. For any rule that produced **zero findings** in the first pass, **skip it** during inference-based validation below — it has already been verified. If a rule produced any findings, the inference validator should still review that rule (some rules like SKILL-04 and SKILL-06 have sub-checks that benefit from judgment). Focus your inference effort on the remaining rules that require judgment (PATH-01, PATH-03, PATH-04, PATH-05, WF-03, STEP-02, STEP-03, STEP-04, STEP-05, SEQ-01, REF-01, REF-02, REF-03).
+Review its JSON output. Skip any rule that produced zero findings — it is already verified. A rule that produced findings still gets reviewed (SKILL-06's what-and-when check benefits from judgment). The 10 rules that need judgment are PATH-01, PATH-03, PATH-04, PATH-05, STEP-04, STEP-05, SEQ-01, REF-01, REF-02, REF-03.
 
 ## How to Use
 
 1. You are given a **skill directory path** to validate.
 2. Run the deterministic first pass (see above) and note which rules passed.
 3. Read every file in the skill directory recursively.
-4. Apply every rule in the catalog below to every applicable file, **skipping rules that passed the deterministic first pass**.
+4. Apply every remaining rule in the catalog below to every applicable file.
 5. Produce a findings report using the report template at the end, including any deterministic findings from the first pass.
 
 If no findings are generated (from either pass), the skill passes validation.
@@ -32,9 +32,40 @@ If no findings are generated (from either pass), the skill passes validation.
 - **Internal reference**: a file path from one file in the skill to another file in the same skill.
 - **External reference**: a file path from a skill file to a file outside the skill directory.
 - **Originating file**: the file that contains the reference (path resolution is relative to this file's location).
-- **Config variable**: a name-value pair whose value comes from the project config file (e.g., `planning_artifacts`, `implementation_artifacts`, `communication_language`).
+- **Config value**: a key declared with a `prompt:` in `src/core-skills/module.yaml` or `src/bmm-skills/module.yaml`. The installer writes these to `{project-root}/_bmad/config.toml` (team scope) and `config.user.toml` (user scope); `_bmad/custom/` may override either. Examples: `project_name`, `output_folder`, `communication_language`, `planning_artifacts`, `project_knowledge`.
+- **Customization value**: a key from the skill's own `customize.toml`, in its `[workflow]` table (most skills) or `[agent]` table (agent skills), layered with `_bmad/custom/<skill-name>.toml` and `.user.toml`.
 - **Runtime variable**: a name-value pair whose value is set during workflow execution (e.g., `spec_file`, `date`, `status`).
-- **Intra-skill path variable**: a frontmatter variable whose value is a path to another file within the same skill — this is an anti-pattern.
+- **Intra-skill path variable**: a variable whose value is a path to another file within the same skill — this is an anti-pattern.
+- **Rendered skill**: a skill whose `SKILL.md` invokes `render_skill.py`, which renders the skill's Markdown files (entry point `workflow.md`; `SKILL.md` excluded) into an immutable snapshot before execution. Only rendered skills may use compile-time tokens. Every other skill interpolates customization values itself at runtime.
+
+---
+
+## Skill Layouts
+
+Three layouts coexist. None is preferred, and the validator does not enforce a choice between them:
+
+- **Single-file** — all instructions inline in `SKILL.md`, with optional supporting files (`references/`, `templates/`, `checklist.md`). The common case.
+- **Flat step files** — `step-NN-name.md` beside `SKILL.md` at the skill root.
+- **`steps/` subdirectory** — `steps/step-NN-name.md`.
+
+Path resolution differs between the last two; see PATH-01.
+
+---
+
+## Token Forms
+
+| Form                             | Resolved by                                                                                | Valid where                                             |
+| -------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------- |
+| `{name}`                         | the agent, at runtime                                                                      | anywhere                                                |
+| `{project-root}`, `{skill-root}` | the agent, at runtime — the project working directory and the skill's own directory        | anywhere                                                |
+| `{workflow.key}`                 | `render_skill.py` at render time, or the agent from `resolve_customization.py` JSON output | any skill with a `[workflow]` table in `customize.toml` |
+| `{agent.key}`                    | the agent, from `resolve_customization.py` JSON output                                     | agent skills                                            |
+| `{{.key}}`                       | `render_skill.py`, at render time                                                          | rendered skills only                                    |
+| `{{config.key}}`                 | `render_skill.py`, at render time                                                          | rendered skills only                                    |
+| `{{name}}` (no leading dot)      | nothing — survives verbatim into the generated artifact                                    | templates and the artifacts they seed                   |
+| `[[bmad-snapshot:file.md]]`      | `render_skill.py`, at render time                                                          | rendered skills only                                    |
+
+The distinction between `{{name}}` and `{{.name}}` matters: the first is an artifact placeholder the consumer of the generated document fills in later; the second is a substitution baked in at render time. See REF-01 and TPL-01.
 
 ---
 
@@ -68,15 +99,15 @@ If no findings are generated (from either pass), the skill passes validation.
 
 - **Severity:** HIGH
 - **Applies to:** `SKILL.md`
-- **Rule:** The `name` value must start with `bmad-`, use only lowercase letters, numbers, and single hyphens between segments.
-- **Detection:** Regex test: `^bmad-[a-z0-9]+(-[a-z0-9]+)*$`.
+- **Rule:** The `name` value must be `bmad` or start with `bmad-`, using only lowercase letters, numbers, and single hyphens between segments.
+- **Detection:** Regex test: `^(?:bmad|bmad-[a-z0-9]+(?:-[a-z0-9]+)*)$`.
 - **Fix:** Rename to comply with the format (e.g., `bmad-my-skill`).
 
 ### SKILL-05 — `name` Must Match Directory Name
 
 - **Severity:** HIGH
 - **Applies to:** `SKILL.md`
-- **Rule:** The `name` value in SKILL.md frontmatter must exactly match the skill directory name. The directory name is the canonical identifier used by installers, manifests, and `skill:` references throughout the project.
+- **Rule:** The `name` value in SKILL.md frontmatter must exactly match the skill directory name. The directory name is the canonical identifier used by installers, manifests, and skill references throughout the project.
 - **Detection:** Compare the `name:` frontmatter value against the basename of the skill directory (i.e., the immediate parent directory of `SKILL.md`).
 - **Fix:** Change the `name:` value to match the directory name, or rename the directory to match — prefer changing `name:` unless other references depend on the current value.
 
@@ -92,25 +123,9 @@ If no findings are generated (from either pass), the skill passes validation.
 
 - **Severity:** HIGH
 - **Applies to:** `SKILL.md`
-- **Rule:** SKILL.md must have non-empty markdown body content after the frontmatter. The body provides L2 instructions — a SKILL.md with only frontmatter is incomplete.
+- **Rule:** SKILL.md must have non-empty markdown body content after the frontmatter. A SKILL.md with only frontmatter is incomplete.
 - **Detection:** Extract content after the closing `---` frontmatter delimiter and check it is non-empty after trimming whitespace.
 - **Fix:** Add markdown body with skill instructions after the closing `---`.
-
----
-
-### WF-03 — workflow.md Frontmatter Variables Must Be Config or Runtime Only
-
-- **Severity:** HIGH
-- **Applies to:** `workflow.md` frontmatter
-- **Rule:** Every variable defined in workflow.md frontmatter must be either:
-  - A config variable (value references `{project-root}` or a config-derived variable like `{planning_artifacts}`)
-  - A runtime variable (value is empty, a placeholder, or set during execution)
-  - A legitimate external path expression (must not violate PATH-05 — no paths into another skill's directory)
-
-  It must NOT be a path to a file within the skill directory (see PATH-04), nor a path into another skill's directory (see PATH-05).
-
-- **Detection:** For each frontmatter variable, check if its value resolves to a file inside the skill (e.g., starts with `./`, `{installed_path}`, or is a bare relative path to a sibling file). If so, it is an intra-skill path variable. Also check if the value is a path into another skill's directory — if so, it violates PATH-05 and is not a legitimate external path.
-- **Fix:** Remove the variable. Use a hardcoded relative path inline where the file is referenced.
 
 ---
 
@@ -119,15 +134,14 @@ If no findings are generated (from either pass), the skill passes validation.
 - **Severity:** CRITICAL
 - **Applies to:** all files in the skill
 - **Rule:** Any reference from one file in the skill to another file in the same skill must be a relative path resolved from the directory of the originating file. Use `./` prefix for siblings or children, `../` for parent traversal. Bare relative filenames in markdown links (e.g., `[text](sibling.md)`) are also acceptable.
-- **Detection:** Scan for file path references (in markdown links, frontmatter values, inline backtick paths, and prose instructions like "Read fully and follow"). Verify each internal reference uses relative notation (`./`, `../`, or bare filename). Always resolve the path from the originating file's directory — a reference to `./steps/step-01.md` from a file already inside `steps/` would resolve to `steps/steps/step-01.md`, which is wrong.
+- **Detection:** Scan for file path references (in markdown links, frontmatter values, inline backtick paths, and prose instructions like "Read fully and follow"). Verify each internal reference uses relative notation (`./`, `../`, or bare filename). Always resolve the path from the originating file's directory — a reference to `./steps/step-02-review.md` from a file already inside `steps/` would resolve to `steps/steps/step-02-review.md`, which is wrong.
 - **Examples:**
-  - CORRECT: `./steps/step-01-init.md` (from workflow.md at skill root to a step)
-  - CORRECT: `./template.md` (from workflow.md to a sibling)
-  - CORRECT: `../template.md` (from steps/step-01.md to a skill-root file)
+  - CORRECT: `./steps/step-01-gather-context.md` (from a skill-root file into a `steps/` subdirectory)
+  - CORRECT: `./step-02-plan.md` (sibling, in the flat step layout or from inside `steps/`)
+  - CORRECT: `./template.md` (from SKILL.md to a sibling)
+  - CORRECT: `../spec-template.md` (from `steps/step-01.md` to a skill-root file)
   - CORRECT: `workflow.md` (bare relative filename for sibling)
-  - CORRECT: `./step-02-plan.md` (from steps/step-01.md to a sibling step)
-  - WRONG: `./steps/step-02-plan.md` (from a file already inside steps/ — resolves to steps/steps/)
-  - WRONG: `{installed_path}/template.md`
+  - WRONG: `./steps/step-02-review.md` (from a file already inside `steps/` — resolves to `steps/steps/`)
   - WRONG: `{project-root}/.claude/skills/my-skill/template.md`
   - WRONG: `/Users/someone/.claude/skills/my-skill/steps/step-01.md`
   - WRONG: `~/.claude/skills/my-skill/file.md`
@@ -136,67 +150,50 @@ If no findings are generated (from either pass), the skill passes validation.
 
 - **Severity:** HIGH
 - **Applies to:** all files in the skill
-- **Rule:** The `installed_path` variable is an anti-pattern from the pre-skill workflow era. It must not be defined in any frontmatter, and `{installed_path}` must not appear anywhere in any file.
+- **Rule:** The `installed_path` variable is a leftover from pre-skill workflows. It must not be defined in any frontmatter, and `{installed_path}` must not appear anywhere in any file.
 - **Detection:** Search all files for:
   - Frontmatter key `installed_path:`
   - String `{installed_path}` anywhere in content
   - Markdown/prose assigning `installed_path` (e.g., `` `installed_path` = `.` ``)
 - **Fix:** Remove all `installed_path` definitions. Replace every `{installed_path}/path` with `./path` (relative from the file that contains the reference). If the reference is in a step file and points to a skill-root file, use `../path` instead.
 
-### PATH-03 — External References Must Use `{project-root}` or Config Variables
+### PATH-03 — External References Must Use `{project-root}` or Config Values
 
 - **Severity:** HIGH
 - **Applies to:** all files in the skill
-- **Rule:** References to files outside the skill directory must use `{project-root}/...` or a config-derived variable path (e.g., `{planning_artifacts}/...`, `{implementation_artifacts}/...`).
-- **Detection:** Identify file references that point outside the skill. Verify they start with `{project-root}` or a known config variable. Flag absolute paths, home-relative paths (`~/`), or bare paths that resolve outside the skill.
-- **Fix:** Replace with `{project-root}/...` or the appropriate config variable.
-
-### PATH-05 — No File Path References Into Another Skill
-
-- **Severity:** HIGH
-- **Applies to:** all files in the skill
-- **Rule:** A skill must never reference any file inside another skill's directory by file path. Skill directories are encapsulated — their internal files (steps, templates, checklists, data files, workflow.md) are private implementation details. The only valid way to reference another skill is via `skill:skill-name` syntax, which invokes the skill as a unit. Reaching into another skill to cherry-pick an internal file (e.g., a template, a step, or even its workflow.md) breaks encapsulation and creates fragile coupling that breaks when the target skill is moved or reorganized.
-- **Detection:** For each external file reference (frontmatter values, markdown links, inline paths), check whether the resolved path points into a directory that is or contains a skill (has a `SKILL.md`). Patterns to flag:
-  - `{project-root}/_bmad/.../other-skill/anything.md`
-  - `{project-root}/_bmad/.../other-skill/steps/...`
-  - `{project-root}/_bmad/.../other-skill/templates/...`
-  - References to old pre-conversion locations that were skill directories (e.g., `core/workflows/skill-name/` when the skill has since moved to `core/skills/skill-name/`)
-- **Fix:**
-  - If the intent is to invoke the other skill: replace with `skill:skill-name`.
-  - If the intent is to use a shared resource (template, data file): the resource should be extracted to a shared location outside both skills (e.g., `core/data/`, `bmm/data/`, or a config-referenced path) — not reached into from across skill boundaries.
+- **Rule:** References to files outside the skill directory must use `{project-root}/...` or a config-derived path (e.g., `{planning_artifacts}/...`, `{implementation_artifacts}/...`, `{project_knowledge}/...`).
+- **Detection:** Identify file references that point outside the skill. Verify they start with `{project-root}` or a known config key. Flag absolute paths, home-relative paths (`~/`), or bare paths that resolve outside the skill.
+- **Fix:** Replace with `{project-root}/...` or the appropriate config value.
 
 ### PATH-04 — No Intra-Skill Path Variables
 
 - **Severity:** MEDIUM
 - **Applies to:** all files (frontmatter AND body content)
 - **Rule:** Variables must not store paths to files within the same skill. These paths should be hardcoded as relative paths inline where used. This applies to YAML frontmatter variables AND markdown body variable assignments (e.g., `` `template` = `./template.md` `` under a `### Paths` section).
-- **Detection:** For each variable with a path-like value — whether defined in frontmatter or in body text — determine if the target is inside the skill directory. Indicators: value starts with `./`, `../`, `{installed_path}`, or is a bare filename of a file that exists in the skill. Exclude variables whose values are prefixed with a config variable like `{planning_artifacts}`, `{implementation_artifacts}`, `{project-root}`, or other config-derived paths — these are external references and are legitimate.
+- **Detection:** For each variable with a path-like value — whether defined in frontmatter or in body text — determine if the target is inside the skill directory. Indicators: value starts with `./`, `../`, or is a bare filename of a file that exists in the skill. Exclude variables whose values are prefixed with a config key like `{planning_artifacts}`, `{implementation_artifacts}`, or `{project-root}` — these are external references and are legitimate.
 - **Fix:** Remove the variable. Replace each `{variable_name}` usage with the direct relative path.
 - **Exception:** If a path variable is used in 4+ locations across multiple files and the path is non-trivial, a variable MAY be acceptable. Flag it as LOW instead and note the exception.
 
----
-
-### STEP-02 — Step Must Have a Goal Section
+### PATH-05 — No File Path References Into Another Skill
 
 - **Severity:** HIGH
-- **Applies to:** step files
-- **Rule:** Each step must clearly state its goal. Look for a heading like `## YOUR TASK`, `## STEP GOAL`, `## INSTRUCTIONS`, `## INITIALIZATION`, `## EXECUTION`, `# Step N:`, or a frontmatter `goal:` field.
-- **Detection:** Scan for goal-indicating headings (including `# Step N: Title` as a top-level heading that names the step's purpose) or frontmatter.
-- **Fix:** Add a clear goal section.
+- **Applies to:** all files in the skill
+- **Rule:** A skill must never reference a file inside another skill's directory by path. A skill's files are private to it, and a path into another skill breaks when that skill is moved or reorganized.
+- **Detection:** For each external file reference (frontmatter values, markdown links, inline paths), check whether the resolved path points into a directory that is or contains a skill (has a `SKILL.md`). Patterns to flag:
+  - `{project-root}/_bmad/.../other-skill/anything.md`
+  - `{project-root}/_bmad/.../other-skill/steps/...`
+  - `{project-root}/_bmad/.../other-skill/templates/...`
+  - References to pre-conversion locations that were skill directories, where the skill has since moved
+- **Fix:**
+  - If the intent is to invoke the other skill: use invoke language in prose — ``Invoke the `skill-name` skill`` (see REF-03).
+  - If the intent is to use a shared resource (template, data file): extract it to a location outside both skills — a config-referenced path such as `{project_knowledge}/...`, or a `file:`-prefixed entry in `customize.toml` — rather than reaching across a skill boundary.
 
-### STEP-03 — Step Must Reference Next Step
-
-- **Severity:** MEDIUM
-- **Applies to:** step files (except the final step)
-- **Rule:** Each non-terminal step must contain a reference to the next step file for sequential execution.
-- **Detection:** Look for `## NEXT` section or inline reference to a next step file. Remember to resolve the reference from the originating file's directory (PATH-01 applies here too).
-- **Fix:** Add a `## NEXT` section with the relative path to the next step.
-- **Note:** A terminal step is one that has no next-step reference and either contains completion/finalization language or is the highest-numbered step. If a workflow branches, there may be multiple terminal steps.
+---
 
 ### STEP-04 — Halt Before Menu
 
 - **Severity:** HIGH
-- **Applies to:** step files
+- **Applies to:** step files and any file presenting a menu
 - **Rule:** Any step that presents a user menu (e.g., `[C] Continue`, `[A] Approve`, `[S] Split`) must explicitly HALT and wait for user response before proceeding.
 - **Detection:** Find menu patterns (bracketed letter options). Check that text within the same section (under the same heading) includes "HALT", "wait", "stop", "FORBIDDEN to proceed", or equivalent.
 - **Fix:** Add an explicit HALT instruction before or after the menu.
@@ -205,7 +202,7 @@ If no findings are generated (from either pass), the skill passes validation.
 
 - **Severity:** HIGH
 - **Applies to:** step files
-- **Rule:** A step must not load or read future step files until the current step is complete. Just-in-time loading only.
+- **Rule:** A step must not load or read future step files until the current step is complete. Load each step when it is reached.
 - **Detection:** Look for instructions to read multiple step files simultaneously, or unconditional references to step files with higher numbers than the current step. Exempt locations: `## NEXT` sections, navigation/dispatch sections that list valid resumption targets, and conditional routing branches.
 - **Fix:** Remove premature step loading. Ensure only the current step is active.
 
@@ -233,42 +230,43 @@ If no findings are generated (from either pass), the skill passes validation.
 
 - **Severity:** HIGH
 - **Applies to:** `.md` files whose name contains `template` (case-insensitive)
-- **Rule:** Template files seed durable, version-controlled artifacts (e.g. spec files) that execute on other machines. A `{{.var}}` compile-time substitution would be baked at render time and freeze a machine-local value into every artifact produced from the template.
+- **Rule:** Template files become artifacts (for example spec files) that are committed and used on other machines. `render_skill.py` would replace a `{{.var}}` with a value from the rendering machine's config, and every artifact produced from the template would carry it.
 - **Detection:** Regex `\{\{\.\w+\}\}` match anywhere in a file whose basename matches `/template/i`.
-- **Fix:** Remove the `{{.var}}` reference. Use single-curly `{var}` if the value should be resolved at LLM runtime by the consumer of the generated artifact.
+- **Fix:** Remove the `{{.var}}` reference. Use single-curly `{var}` if the value should be resolved at runtime by the consumer of the generated artifact, or plain double-curly `{{var}}` if it is a placeholder the consumer fills in.
 
 ---
 
-### REF-01 — Variable References Must Be Defined
+### REF-01 — Variable References Must Resolve
 
 - **Severity:** HIGH
 - **Applies to:** all files
-- **Rule:** Every `{variable_name}` reference in any file (body text, frontmatter values, inline instructions) must resolve to a defined source. Valid sources are:
-  1. A frontmatter variable in the same file
-  2. A frontmatter variable in the skill's `workflow.md` (workflow-level variables are available to all steps)
-  3. A known config variable from the project config (e.g., `project-root`, `planning_artifacts`, `implementation_artifacts`, `communication_language`)
-  4. A known runtime variable set during execution (e.g., `date`, `status`, `project_name`, user-provided input variables)
-- **Detection:** Collect all `{...}` tokens in the file. For each, check whether it is defined in the file's own frontmatter, in `workflow.md` frontmatter, or is a recognized config/runtime variable. Flag any token that cannot be traced to a source. Use the config variable list from the project's `config.yaml` as the reference for recognized config variables. Runtime variables are those explicitly described as user-provided or set during execution in the workflow instructions.
+- **Rule:** Every token must resolve to a defined source, per the Token Forms table above:
+  - `{name}` — a frontmatter variable in the same file, a config key, a runtime variable set during execution, or the path anchors `{project-root}` and `{skill-root}`.
+  - `{workflow.key}` — must name a key in the `[workflow]` table of the skill's own `customize.toml`.
+  - `{agent.key}` — must name a key in the `[agent]` table of the skill's own `customize.toml`.
+  - `{{.key}}`, `{{config.key}}`, `[[bmad-snapshot:file.md]]` — only in a rendered skill (one whose SKILL.md invokes `render_skill.py`). In any other skill nothing will substitute them and they reach the agent verbatim. A `[[bmad-snapshot:file.md]]` target must name a Markdown file in the skill other than `SKILL.md`, which the renderer excludes from its source set.
+- **Detection:** Collect all tokens in the file and classify them by form. Resolve config keys against the `prompt:` keys in `module.yaml`; resolve `{workflow.*}` and `{agent.*}` against the skill's `customize.toml`. Before flagging a compile-time token, grep the skill's `SKILL.md` for `render_skill.py` — if it is a rendered skill, the token is legitimate. Flag any token that cannot be traced to a source.
 - **Exceptions:**
-  - Double-curly `{{variable}}` — these are template placeholders intended to survive into generated output (e.g., `{{project_name}}` in a template file). Do not flag these.
+  - Plain double-curly `{{name}}` with **no** leading dot — an artifact placeholder that survives rendering into the generated document, to be filled in by whoever consumes it (e.g. `{{story_key}}` in a story template). Do not flag these. Dotted `{{.key}}` and `{{config.key}}` are **not** covered by this exception; they are compile-time substitutions governed by the rule above and by TPL-01.
   - Variables inside fenced code blocks that are clearly illustrative examples.
-- **Fix:** Either define the variable in the appropriate frontmatter, or replace the reference with a literal value. If the variable is a config variable that was misspelled, correct the spelling.
+- **Fix:** Either define the variable in the appropriate `customize.toml` table or frontmatter, or replace the reference with a literal value. If a config key was misspelled, correct the spelling.
 
 ### REF-02 — File References Must Resolve
 
 - **Severity:** HIGH
 - **Applies to:** all files
 - **Rule:** All file path references within the skill (markdown links, backtick paths, frontmatter values) should point to files that plausibly exist.
-- **Detection:** For internal references, verify the target file exists in the skill directory. For external references using config variables, verify the path structure is plausible (you cannot resolve config variables, but you can check that the path after the variable looks reasonable — e.g., `{planning_artifacts}/*.md` is plausible, `{planning_artifacts}/../../etc/passwd` is not).
+- **Detection:** For internal references, verify the target file exists in the skill directory. For external references using config keys, verify the path structure is plausible (you cannot resolve config keys, but you can check that the path after the key looks reasonable — e.g., `{planning_artifacts}/*.md` is plausible, `{planning_artifacts}/../../etc/passwd` is not).
 - **Fix:** Correct the path or remove the dead reference.
 
 ### REF-03 — Skill Invocation Must Use "Invoke" Language
 
 - **Severity:** HIGH
 - **Applies to:** all files
-- **Rule:** When a skill references another skill by name, the surrounding instruction must use the word "invoke". The canonical form is `Invoke the \`skill-name\` skill`. Phrases like "Read fully and follow", "Execute", "Run", "Load", "Open", or "Follow" are invalid — they imply file-level operations on a document, not skill invocation. A skill is a unit that is invoked, not a file that is read.
-- **Detection:** Find all references to other skills by name (typically backtick-quoted skill names like \`bmad-foo\`). Check the surrounding instruction text (same sentence or directive) for file-oriented verbs: "read", "follow", "load", "execute", "run", "open". Flag any that do not use "invoke" (or a close synonym like "activate" or "launch").
-- **Fix:** Replace the instruction with `Invoke the \`skill-name\` skill`. Remove any "read fully and follow" or similar file-oriented phrasing. Do NOT add a `skill:` prefix to the name — use natural language.
+- **Rule:** When a skill references another skill by name in prose, the surrounding instruction must use the word "invoke". The canonical form is ``Invoke the `skill-name` skill``. Phrases like "Read fully and follow", "Execute", "Run", "Load", "Open", or "Follow" are invalid — they imply file-level operations on a document, not skill invocation.
+- **Detection:** Find all references to other skills by name (typically backtick-quoted skill names like `bmad-foo`). Check the surrounding instruction text (same sentence or directive) for file-oriented verbs: "read", "follow", "load", "execute", "run", "open". Flag any that do not use "invoke" (or a close synonym like "activate" or "launch").
+- **Fix:** Replace the instruction with ``Invoke the `skill-name` skill``. Remove any "read fully and follow" or similar file-oriented phrasing. Do NOT add a `skill:` prefix in prose — use natural language.
+- **Exception:** `skill:skill-name` is the correct form inside `customize.toml` values (for example a `persistent_facts` entry, or a directive such as `skill:bmad-review lenses=<code>`), where the string is data consumed by a resolver rather than an instruction to the agent. Do not flag it there.
 
 ---
 
@@ -311,44 +309,4 @@ When reporting findings, use this format:
 (list rule IDs that produced no findings)
 ```
 
-If zero findings: report "All {N} rules passed. No findings." and list all passed rule IDs.
-
----
-
-## Skill Spec Cheatsheet
-
-Quick-reference for the Agent Skills open standard.
-For the full standard, see: [Agent Skills specification](https://agentskills.io/specification)
-
-### Structure
-
-- Every skill is a directory with `SKILL.md` as the required entrypoint
-- YAML frontmatter between `---` markers provides metadata; markdown body provides instructions
-- Supporting files (scripts, templates, references) live alongside SKILL.md
-
-### Path resolution
-
-- Relative file references resolve from the directory of the file that contains the reference, not from the skill root
-- Example: from `branch-a/deep/next.md`, `./deeper/final.md` resolves to `branch-a/deep/deeper/final.md`
-- Example: from `branch-a/deep/next.md`, `./branch-b/alt/leaf.md` incorrectly resolves to `branch-a/deep/branch-b/alt/leaf.md`
-
-### Frontmatter fields (standard)
-
-- `name`: lowercase letters, numbers, hyphens only; max 64 chars; no "anthropic" or "claude"
-- `description`: required, max 1024 chars; should state what the skill does AND when to use it
-
-### Progressive disclosure — three loading levels
-
-- **L1 Metadata** (~100 tokens): `name` + `description` loaded at startup into system prompt
-- **L2 Instructions** (<5k tokens): SKILL.md body loaded only when skill is triggered
-- **L3 Resources** (unlimited): additional files + scripts loaded/executed on demand; script output enters context, script code does not
-
-### Key design principle
-
-- Skills are filesystem-based directories, not API payloads — Claude reads them via bash/file tools
-- Keep SKILL.md focused; offload detailed reference to separate files
-
-### Practical tips
-
-- Keep SKILL.md under 500 lines
-- `description` drives auto-discovery — use keywords users would naturally say
+If zero findings: report "All 20 rules passed. No findings." and list all passed rule IDs.
