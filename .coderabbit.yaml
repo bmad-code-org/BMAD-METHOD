@@ -1,14 +1,21 @@
 # yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+#
+# Kept deliberately in step with greptile.json: both bots read the same three
+# guideline files and are given the same scoped instructions, so their findings
+# can be compared rather than merged.
 
 language: "en-US"
 early_access: true
+tone_instructions: |
+  Do not comment on the wording, tone, phrasing, or length of prompt text —
+  those are authoring decisions, not defects.
 reviews:
   profile: chill
   high_level_summary: false # don't post summary until explicitly invoked
   request_changes_workflow: false
   review_status: false
   commit_status: false
-  walkthrough: false
+  collapse_walkthrough: true # `walkthrough: false` is not a schema key; this is the real knob
   poem: false
   auto_review:
     enabled: true
@@ -19,7 +26,6 @@ reviews:
   path_filters:
     # --- Shared baseline: tool configs ---
     - "!.coderabbit.yaml"
-    - "!.augment/**"
     - "!eslint.config.mjs"
     # --- Shared baseline: build output ---
     - "!dist/**"
@@ -32,10 +38,10 @@ reviews:
     - "!**/*.bundle.md"
     # --- Shared baseline: package metadata ---
     - "!package-lock.json"
-    # --- Shared baseline: binary/media ---
-    - "!*.png"
-    - "!*.jpg"
-    - "!*.svg"
+    # --- Shared baseline: binary/media (globs, so `**/` is required to reach subdirs) ---
+    - "!**/*.png"
+    - "!**/*.jpg"
+    - "!**/*.svg"
     # --- Shared baseline: test fixtures ---
     - "!test/fixtures/**"
     - "!test/template-test-generator/**"
@@ -57,46 +63,53 @@ reviews:
     # --- Shared baseline: build temp ---
     - "!.bundler-temp/**"
     # --- Shared baseline: generated reports ---
-    - "!**/validation-report-*.md"
+    - "!**/validation-report-*.html"
     - "!CHANGELOG.md"
   path_instructions:
     - path: "src/**"
       instructions: |
-        Source file changed. Check whether documentation under docs/ needs
-        a corresponding update — new features, changed behavior, renamed
-        concepts, altered CLI flags, or modified configuration options should
-        all be reflected in the relevant doc pages. Flag missing or outdated
-        docs as a review comment.
-    - path: "src/**/skills/**"
+        Source changed. Check whether docs/ needs a matching update — new
+        features, changed behavior, renamed concepts, altered CLI flags, or
+        modified configuration options should all be reflected in the relevant
+        doc pages. Flag missing or outdated docs.
+    - path: "src/*-skills/**"
       instructions: |
-        Skill file. Apply the full rule catalog defined in tools/skill-validator.md.
-        That document is the single source of truth for all skill validation rules
-        covering SKILL.md metadata, workflow.md constraints, step file structure,
-        path references, variable resolution, sequential execution, and skill
+        Skill file. This is prompt text read by an agent at runtime, not
+        executable code. Confine review to claims checkable against the
+        repository: paths and cross-references that do not resolve, invocation
+        syntax that does not match the referenced skill, instructions that
+        contradict another file, documented behavior the code does not
+        implement, and violations of the rule catalog in
+        tools/skill-validator.md — that catalog is the single source of truth
+        for SKILL.md metadata, workflow constraints, step file structure, path
+        references, variable resolution, sequential execution, and skill
         invocation syntax.
-    - path: "src/**/workflows/**"
+    - path: "src/bmm-skills/agents/**"
       instructions: |
-        Legacy workflow file (pre-skill conversion). Apply the full rule catalog
-        defined in tools/skill-validator.md — the same rules apply to workflows
-        that are being converted to skills.
-    - path: "src/**/tasks/**"
-      instructions: |
-        Task file. Apply the full rule catalog defined in tools/skill-validator.md.
-    - path: "src/**/*.agent.yaml"
-      instructions: |
-        Agent definition file. Check:
-        - Has metadata section with id, name, title, icon, and module
-        - Defines persona with role, identity, communication_style, and principles
-        - Menu triggers reference valid skill names that exist
+        Agent skill. The persona is configured in customize.toml under [agent]:
+        check that every {agent.*} placeholder the SKILL.md interpolates has a
+        corresponding key there, and that menu entries name skills that exist
+        in this repo.
     - path: "docs/**/*.md"
       instructions: |
-        Documentation file. Check internal markdown links point to existing files.
+        Documentation file. Check that internal markdown links point at files
+        that exist, and that the page follows docs/_STYLE_GUIDE.md.
     - path: "tools/**"
       instructions: |
-        Build script/tooling. Check error handling and proper exit codes.
+        Build script/tooling. Check error handling and that failures exit
+        non-zero.
+    - path: "src/scripts/**"
+      instructions: |
+        Build script/tooling. Check error handling and that failures exit
+        non-zero.
+knowledge_base:
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - "AGENTS.md"
+      - "tools/skill-validator.md"
 chat:
   auto_reply: true # Response to mentions in comments, a la @coderabbit review
 issue_enrichment:
   auto_enrich:
     enabled: false # don't auto-comment on issues
-
