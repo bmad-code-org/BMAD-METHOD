@@ -7,7 +7,7 @@ deferred_work_file: '{implementation_artifacts}/deferred-work.md'
 ## RULES
 
 - YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
-- When `{spec_file}` is set, always write findings to the story file before offering action choices.
+- When `spec_file` is set, always write findings to the story file before offering action choices.
 - `decision-needed` findings must be resolved before handling `patch` findings.
 
 ## INSTRUCTIONS
@@ -29,7 +29,7 @@ If `{spec_file}` exists and contains a Tasks/Subtasks section, append a `### Rev
 3. **`defer`** findings (checked off, marked deferred):
    `- [x] [Review][Defer] <Title> [<file>:<line>] — deferred: <pre-existing, or for maybe-false the evidence that would settle it>`
 
-Also append each `defer` finding to `{deferred_work_file}` under a heading `## Deferred from: code review ({date})`. If `{spec_file}` is set, include its basename in the heading (e.g., `code review of story-3.3 (2026-03-18)`). One bullet per finding with description.
+Also append each `defer` finding to `{deferred_work_file}` under a heading `## Deferred from: code review ({date})`. If `spec_file` is set, include its basename in the heading (e.g., `code review of story-3.3 (2026-03-18)`). One bullet per finding with description.
 
 ### 3. Present summary
 
@@ -37,9 +37,9 @@ Announce what was written:
 
 > **Code review complete.** <D> `decision-needed`, <P> `patch`, <W> `defer`, <R> rejected.
 
-The findings report ends with a `Rejected` appendix — one line per rejected finding: `false` with its refutation, `low` with why it was not worth fixing — in the story file's `### Review Findings` section when `{spec_file}` is set, at the tail of the chat listing otherwise.
+The findings report ends with a `Rejected` appendix — one line per rejected finding: `false` with its refutation, `low` with why it was not worth fixing — in the story file's `### Review Findings` section when `spec_file` is set, at the tail of the chat listing otherwise.
 
-If `{spec_file}` is set, add: `Findings written to the review findings section in {spec_file}.`
+If `spec_file` is set, add: `Findings written to the review findings section in {spec_file}.`
 Otherwise add: `Findings are listed above. No story file was provided, so nothing was persisted.`
 
 ### 4. Resolve decision-needed findings
@@ -54,14 +54,14 @@ If the user chooses to defer, ask: Quick one-line reason for deferring this item
 
 If `patch` findings exist (including any resolved from step 4), HALT. Ask the user:
 
-If `{spec_file}` is set, present all three options:
+If `spec_file` is set, present all three options:
 
 > **How would you like to handle the `<P>` `patch` findings?**
 > 1. **Apply every patch** — fix all of them now, no per-finding confirmation. Defer and decision-needed items are not touched.
 > 2. **Leave as action items** — they are already in the story file
 > 3. **Walk through each patch** — show details for each before deciding
 
-If `{spec_file}` is **not** set, present only options 1 and 2 (omit "Leave as action items" — findings were not written to a file):
+If `spec_file` is **not** set, present only options 1 and 2 (omit "Leave as action items" — findings were not written to a file):
 
 > **How would you like to handle the `<P>` `patch` findings?**
 > 1. **Apply every patch** — fix all of them now, no per-finding confirmation. Defer and decision-needed items are not touched.
@@ -69,8 +69,8 @@ If `{spec_file}` is **not** set, present only options 1 and 2 (omit "Leave as ac
 
 **HALT** — I am waiting for your numbered choice. Reply with only the number. Do not proceed until you select an option.
 
-- **Apply every patch**: Apply every patch finding without per-finding confirmation. Do not modify defer or decision-needed items. After all patches are applied, present a summary of changes made. If `{spec_file}` is set, check off the patch items in the story file (leave defer items as-is).
-- **Leave as action items** (only when `{spec_file}` is set): Done — findings are already written to the story.
+- **Apply every patch**: Apply every patch finding without per-finding confirmation. Do not modify defer or decision-needed items. After all patches are applied, present a summary of changes made. If `spec_file` is set, check off the patch items in the story file (leave defer items as-is).
+- **Leave as action items** (only when `spec_file` is set): Done — findings are already written to the story.
 - **Walk through each patch**: Present each finding with full detail, diff context, and suggested fix. After walkthrough, re-offer the applicable options above.
 
   **HALT** — I am waiting for your numbered choice. Do not proceed until you select an option.
@@ -84,18 +84,18 @@ If `{spec_file}` is **not** set, present only options 1 and 2 (omit "Leave as ac
 
 ### 6. Update story status and sync sprint tracking
 
-Skip this section if `{spec_file}` is not set.
+Skip this section if `spec_file` is not set.
 
 #### Determine new status based on review outcome
 
-- If all `decision-needed` and `patch` findings were resolved (fixed or rejected) AND no unresolved `high`/`medium` findings remain: set `{new_status}` = `done`. Update the story file Status section to `done`.
-- If `patch` findings were left as action items, or unresolved issues remain: set `{new_status}` = `in-progress`. Update the story file Status section to `in-progress`.
+- If all `decision-needed` and `patch` findings were resolved (fixed or rejected) AND no unresolved `high`/`medium` findings remain: set `new_status` = `done`. Update the story file Status section to `done`.
+- If `patch` findings were left as action items, or unresolved issues remain: set `new_status` = `in-progress`. Update the story file Status section to `in-progress`.
 
 Save the story file.
 
 #### Sync sprint-status.yaml
 
-If `{story_key}` is not set, skip this subsection and note that sprint status was not synced because no story key was available.
+If `story_key` is not set, skip this subsection and note that sprint status was not synced because no story key was available.
 
 If `{sprint_status}` file exists:
 
