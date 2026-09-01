@@ -164,7 +164,9 @@ The spec frontmatter `status` is the main machine-readable state for orchestrati
 - `summary` — one-sentence description of the deferred issue
 - `evidence` — why the finding is real
 - `location` — optional file:line or component hint
-- `severity` — optional final triage severity (`high`, `medium`, `low`)
+- `severity` — optional final triage severity (`high`, `medium`, `low`); a maybe-false entry carries its if-true grade plus " (unverified)"
+
+A `maybe-false` finding is deferred only when its claim, if true, would be `medium` or worse; its evidence records what would settle it. Weaker ones are rejected in the spec's triage log with the same note.
 
 This is intentionally not a backlog. It is a machine-readable review output. The orchestrator has to decide what happens next: create a ticket, append to a central queue, correlate duplicates across runs, or do nothing.
 

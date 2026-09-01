@@ -51,7 +51,7 @@ Group the survivors by shared root cause — two findings belong in one entry on
 
 - **patch** — Patch every entry caused or exposed by this change that shows a defect that actually occurs, missing coverage for a specific case, or a broken gate or convention — not a state nothing reaches — and whose smallest fix is trivial, adds no public surface, and guards no state the finding did not demonstrate. Apply that smallest fix immediately.
 - **HALT** — HALT on every entry caused or exposed by this change that shows the same evidence but whose smallest fix fails any of those conditions. Present it to the human for decision before proceeding.
-- **defer** — Defer every other entry: pre-existing issues, improvement ideas, entries whose members are all `maybe-false` (record what would settle them), and any entry whose fix edits agent-context files (CLAUDE.md, AGENTS.md, rules, specs). Append one new entry to `{{.implementation_artifacts}}/deferred-work.md` using this format. Do not modify existing entries or look for duplicates.
+- **defer** — Defer every other entry: pre-existing issues, improvement ideas, entries whose members are all `maybe-false` where the claim, if true, would be `medium` or `high` (record that severity marked unverified, plus what would settle it; if it would only be `low`, reject it with the same note), and any entry whose fix edits agent-context files (CLAUDE.md, AGENTS.md, rules, specs). Append one new entry to `{{.implementation_artifacts}}/deferred-work.md` using this format. Do not modify existing entries or look for duplicates.
   ```markdown
   - source_spec: `{spec_file}`
     summary: <one sentence>

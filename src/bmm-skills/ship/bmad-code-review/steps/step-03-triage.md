@@ -40,7 +40,7 @@
 4. **Route** each entry into exactly one triage bucket. A group that includes verified `high`, `medium`, or `low` members routes by its highest such verdict -- not to defer just because a member is `maybe-false`.
    - **decision_needed** -- There is an ambiguous choice that requires human input. The code cannot be correctly patched without knowing the user's intent. Only possible if `{review_mode}` = `"full"`.
    - **patch** -- Code issue that is fixable without human input. The correct fix is unambiguous, adds no public surface, and guards no state you did not demonstrate; otherwise `decision_needed`.
-   - **defer** -- Pre-existing issue not caused by the current change, real but not actionable now; or an entry whose members are all `maybe-false`; or any entry whose fix edits agent-context files (CLAUDE.md, AGENTS.md, rules, other specs). For maybe-false members, record what would settle them.
+   - **defer** -- Pre-existing issue not caused by the current change, real but not actionable now; or an entry whose members are all `maybe-false` and the claim, if true, would be `medium` or `high` -- record that severity marked unverified, plus what would settle it (if it would only be `low`, reject it with the same note); or any entry whose fix edits agent-context files (CLAUDE.md, AGENTS.md, rules, other specs).
 
    If `{review_mode}` = `"no-spec"` and an entry would otherwise be `decision_needed`, reclassify it as `patch` (if the fix is unambiguous) or `defer` (if not).
 
