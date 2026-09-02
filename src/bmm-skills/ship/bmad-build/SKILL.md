@@ -1,6 +1,6 @@
 ---
 name: bmad-build
-description: 'Turns a work item — feature, story, bug fix, change request — into working code, reviewed and verified. Use when the user hands over an outcome and leaves the edits to you; a bare story or issue link counts. Also use whenever the user asks BMAD by name — then any change qualifies, even a tiny fully-specified edit. Do not volunteer for interactive edits the user directs and reviews themselves, or for version-control operations that record existing work without changing it.'
+description: 'Turns implementation work into working code, reviewed and verified. Use when the user delegates a feature, story, bug fix, or meaningful change; a bare story or issue link counts. Skip obvious, low-risk mechanical maintenance such as small ignore-file, typo-only, formatting-only, or configuration-hygiene edits. Explicit BMAD requests always qualify. Do not volunteer for user-directed interactive edits or version-control operations that only record existing work.'
 ---
 
 Run the following command exactly once without changing the current working directory. Replace `{project-root}` with the absolute path to the project root and `{skill-root}` with the absolute path to this skill's directory:
