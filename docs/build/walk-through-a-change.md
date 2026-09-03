@@ -5,27 +5,32 @@ sidebar:
   order: 3
 ---
 
-`bmad-walkthrough` walks you through a finished change — from purpose and
-context into details — so you can decide whether to approve, rework, or
-discuss further. See [how a run works](#run-bmad-walkthrough).
+The best way to look at any change is to start at why it happened, then look
+at the core logic change (usually some controller or domain code), then go
+into the implementation details, and finally — peripheral consequences.
 
-This is human comprehension, not a substitute for the review `bmad-build`
-already ran, or for [`bmad-code-review`](review-a-change.md).
+A regular diff presents a change in a sort of alphabetical order. If there is
+more than ~5-10 files changed, it's hard to keep track. As a result, you end
+up approving something you did not fully understand.
+
+`bmad-walkthrough` walks you through a change **in the order** that is right
+for comprehension. See [how it works](#run-bmad-walkthrough).
+
+:::note[Human review]
+This skill is for human review. Agentic review is done during a
+[`bmad-build`](build-a-change.md) run, or by
+[`bmad-code-review`](review-a-change.md).
+:::
 
 ## When to Use It
 
-The primary handoff is from [`bmad-build`](build-a-change.md).
-Implementation is done, the spec file is open with a review trail appended,
-and you need to decide whether to ship. Say "walkthrough" and go.
+Use it when you want to look at a change with your own eyes, make sense of
+it, and decide whether it is worth shipping.
 
-Build runs long with little supervision. Walkthrough is where you take back
-the wheel. You could eyeball the diff, but once the change spans many files
-you lose the thread, miss a connection, or approve something you did not
-fully understand. A raw diff presents files in git order, which is almost
-never the order that builds understanding.
+Typical moments:
 
-It also works standalone:
-
+- **After one or more [`bmad-build`](build-a-change.md) runs** — you let an LLM
+  drive for as long as you dare let it drive, then take the wheel back.
 - **Reviewing a PR** — especially one with more than a handful of files or
   cross-cutting changes
 - **Onboarding to a change** — when you need to understand what happened on
@@ -74,7 +79,7 @@ expectations for scope.
 
 The change is organized by **concern** — cohesive design intents like "input
 validation" or "API contract" — not by file. Each concern gets a short
-explanation of *why* this approach was chosen, followed by clickable
+explanation of _why_ this approach was chosen, followed by clickable
 `path:line` stops that you can follow through the code.
 
 This is the design judgment step. You evaluate whether the approach is right
@@ -137,16 +142,6 @@ structure when you want it and gets out of the way when you want to explore.
 The five steps are there to make sure you see the whole picture, but how
 deep you go at each step — and what tools you bring in — is entirely up to
 you.
-
-## The Review Trail
-
-The walkthrough step works best when it has a **Suggested Review Order** —
-a list of stops the spec author wrote to guide reviewers through the change.
-When a spec includes this, the workflow uses it directly.
-
-When no author-produced trail exists, the workflow generates one from the
-diff and codebase context. A generated trail is lower quality than an
-author-produced one, but far better than reading changes in file order.
 
 ## What It Is Not
 

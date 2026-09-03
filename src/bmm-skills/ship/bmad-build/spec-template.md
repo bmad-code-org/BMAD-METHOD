@@ -3,7 +3,7 @@ title: '{title}'
 type: 'feature' # feature | bugfix | refactor | chore
 created: '{date}'
 status: 'draft' # draft | ready-for-dev | in-progress | in-review | done
-route: '' # in-session | dispatch — set by step-02's route gate after design
+route: '' # oneshot | dispatch — set by step-02's route gate after design
 review_loop_iteration: 0 # incremented by step-04 before each review loopback
 context: [] # optional: `{project-root}/`-prefixed paths to project-wide standards/docs the implementation agent should load. Keep short — only what isn't already distilled into the spec body.
 ---
@@ -26,7 +26,7 @@ context: [] # optional: `{project-root}/`-prefixed paths to project-wide standar
 ## Boundaries & Constraints
 
 <!-- Two tiers: Always = invariant rules. Never = out of scope + forbidden approaches. -->
-<!-- If step-02's route gate reported all facts clean (route: 'in-session'), DELETE THIS ENTIRE SECTION. -->
+<!-- If step-02's route gate reported all facts clean (route: 'oneshot'), DELETE THIS ENTIRE SECTION. -->
 
 **Always:** INVARIANT_RULES
 
@@ -56,7 +56,7 @@ context: [] # optional: `{project-root}/`-prefixed paths to project-wide standar
 ## Code Map
 
 <!-- Agent-populated during planning. Annotated paths prevent blind codebase searching. -->
-<!-- If step-02's route gate reported all facts clean (route: 'in-session'), DELETE THIS ENTIRE SECTION. -->
+<!-- If step-02's route gate reported all facts clean (route: 'oneshot'), DELETE THIS ENTIRE SECTION. -->
 
 - `FILE` -- ROLE_OR_RELEVANCE
 - `FILE` -- ROLE_OR_RELEVANCE
@@ -66,7 +66,7 @@ context: [] # optional: `{project-root}/`-prefixed paths to project-wide standar
 <!-- Tasks: backtick-quoted file path -- action -- rationale. Prefer one task per file; group tightly-coupled changes when splitting would be artificial. -->
 <!-- If an I/O Matrix is present, include a task to unit-test its edge cases. -->
 <!-- AC covers system-level behaviors not captured by the I/O Matrix. Do not duplicate I/O scenarios here. -->
-<!-- If step-02's route gate reported all facts clean (route: 'in-session'), DELETE THIS ENTIRE SECTION. -->
+<!-- If step-02's route gate reported all facts clean (route: 'oneshot'), DELETE THIS ENTIRE SECTION. -->
 
 **Execution:**
 - [ ] `FILE` -- ACTION -- RATIONALE

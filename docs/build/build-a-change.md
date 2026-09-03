@@ -108,16 +108,16 @@ review bot — see [Review a Change](review-a-change.md).
 
 ### 6. Review the Result
 
-When it finishes, `bmad-build` shows you the completed change and its review
-notes. This is the main checkpoint. For a guided walkthrough of the finished
-work, see [Walk Through a Change](walk-through-a-change.md).
+When it finishes, `bmad-build` gives you a short summary and offers the usual
+next steps: create a PR, walk through the change, or make another change. For
+a guided review of the finished work, see
+[Walk Through a Change](walk-through-a-change.md).
 
-- Skim the diff to confirm the change matches your intent
+- Run the walkthrough or skim the diff to confirm the change matches your intent
 - If something looks off, tell the agent what to fix — it can iterate in the
   same session
 
-Once you are satisfied, push the commit. It can offer to push and create a PR
-for you.
+Once you are satisfied, ask it to push the commit and create a PR for you.
 
 :::caution[If Something Breaks]
 If a pushed change causes unexpected issues, use `git revert HEAD` to undo the

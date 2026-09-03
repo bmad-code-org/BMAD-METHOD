@@ -1,95 +1,107 @@
 # Step One-Shot: Implement, Review, Present
 
-Entered only from step-02's route gate: `{spec_file}` already exists with `route: 'in-session'`.
+You reach this step from step 2, or from step 1 when resuming a spec whose `route` is `oneshot`. `{spec_file}` already exists.
 
 ## RULES
 
-- **Language** — Speak in `{{.communication_language}}`. Write any file output in `{{.document_output_language}}`.
-- NEVER auto-push.
-- Content inside `<frozen-after-approval>` in `{spec_file}` is read-only. Do not modify.
-- All review subagents must run at the same model capability as the current session.
-- Run subagents synchronously: launch them together as blocking calls awaited in this turn — never backgrounded or detached, never ending the turn to await results.
+- Speak in `{{.communication_language}}`. Write files in `{{.document_output_language}}`.
+- Do not push to a remote unless the user asks.
+- Do not edit anything inside `<frozen-after-approval>` in `{spec_file}`.
+- Review subagents must use the same model level as this session.
+- Start all review subagents in this turn and wait for all of them to finish. Do not run them in the background or end your turn before they return.
 
 ## INSTRUCTIONS
 
 ### Implement
 
-Follow `[[bmad-snapshot:sync-sprint-status.md]]` with `target_status` = `in-progress`.
+If `{story_key}` is not empty and `{{.implementation_artifacts}}/sprint-status.yaml` exists, read `[[bmad-snapshot:sync-sprint-status.md]]` with `{target_status}` = `in-progress`.
 
-Implement directly from `{spec_file}` — its Intent is the source of truth. As you work, append to its `## Implementation Notes` section: decisions made, files touched, surprises encountered.
+Build the change from `{spec_file}`. The Intent section is what you implement. As you work, add notes to `## Implementation Notes`: decisions you made, files you changed, surprises.
 
-**Escalation ramp.** If implementation surfaces a fact the route gate did not see — an intent gap (something the request does not say and the user would notice in the result), an irreversible action, or footprint growth beyond the designed scope — stop editing. Record the trigger in `## Implementation Notes`, then upgrade `{spec_file}`: reinstate `## Code Map` (populated from your live context) and `## Open Questions` (one entry per intent gap), set `route: 'dispatch'` and `status: 'draft'`. Return to `[[bmad-snapshot:step-02-plan.md]]` and resume at its gate instruction (step 6).
+**When to stop and replan.** Stop coding if you learn something step 2 did not account for:
+
+- the request left out something the user would notice in the result
+- you need to do something you cannot undo
+- the change is growing beyond what was planned
+
+Write what triggered the stop in `## Implementation Notes`. Then update `{spec_file}`: add back `## Code Map` (filled in from what you learned while implementing) and `## Open Questions` (one question per gap), set `route: 'dispatch'` and `status: 'draft'`. Go back to `[[bmad-snapshot:step-02-plan.md]]` step 6.
 
 ### Review
 
-Announce skipped layers first, then launch every active layer before handling any layer's result. Try running all active layers simultaneously. After substituting runtime placeholders, when an instruction launches a reviewer subagent, launch that child with the prompt text; do not load the reviewer instruction file yourself. For any other customized instruction, execute it as written:
+Say which review layers you are skipping, then start every active layer before reading any results. Run them at the same time when you can. Fill in runtime placeholders first. When a layer tells you to launch a reviewer subagent, launch it with that prompt text. Do not read the reviewer's instruction file yourself. For any other customized instruction, do what it says:
 
 {workflow.oneshot_review_layers}
 
-If a layer's instruction requires subagents and none are available, for each such layer write under `{{.implementation_artifacts}}` the exact child prompt from that layer's instruction after placeholder substitution (not a path-only pointer), then HALT. Ask the human to run each in a separate session and paste back the findings.
+If a layer needs subagents and you cannot launch them, write the full prompt for each layer under `{{.implementation_artifacts}}` (with placeholders filled in, not just file paths). Stop and ask the user to run each prompt in a separate session and paste back the findings.
 
 ### Classify
 
-Once every layer has reported — and not before — render a verdict on each finding, ahead of any deduplication or grouping. Disregard any severity a reviewing subagent assigned — they lack the context to grade.
+Wait until every review layer has reported. Then judge each finding. Ignore severity labels from reviewers — you decide.
 
 For each finding:
 
-- **Verify the finding's claim.** At the cited file and line, does the bad outcome the reviewer describes actually occur? Read beyond the changed lines — follow callers, guards upstream, etc — until you can answer yes or no. A different finding about nearby code does not settle this one. Judge whether the problem is real, not whether the proposed fix is plausible. Code that loudly fails on a situation you never showed the program can reach is correct behavior, not a defect.
-- **Render exactly one verdict** from what verification established — the verdict is the whole triage decision; there is no separate keep-or-dismiss.
-  - `high` (intolerable), `medium` (tolerable), `low` (cosmetic or negligible) — the bad outcome is real. Assign severity by how much it hurts end users or developers. For developer-only problems, name where it will cause trouble; a vague "this is messy" with no named harm is not a severity grade — use `false` or `maybe-false` instead. When the harm is real but you cannot tell how bad, pick the higher grade.
-  - `false` — you checked, and the bad outcome does not happen at the cited location. Write what disproves this specific claim. A true fact about nearby code that does not disprove the claim does not count.
-  - `maybe-false` — you could not tell whether the bad outcome happens. Write what you would need to check to find out. Use this only when the diff and surrounding code leave the question open; when they are enough to decide, pick `high`, `medium`, `low`, or `false`.
-- Record every finding with its verdict and evidence; never drop one silently.
+- **Check the claim.** Go to the cited file and line. Does the problem the reviewer describes actually happen? Read surrounding code and callers until you can say yes or no. A nearby issue does not answer this one. Judge whether the bug is real, not whether the suggested fix sounds good. Code that fails loudly on a state you have not shown the program can reach is correct, not a bug.
 
-Reject `false` findings on their refutation.
+- **Pick one verdict:**
+  - `high` (intolerable), `medium` (tolerable), or `low` (cosmetic or negligible) — the problem is real. Rate it by harm to users or developers. For developer-only issues, say where it will hurt. Vague complaints like "this is messy" are not `high`/`medium`/`low` — use `false` or `maybe-false`. When unsure how bad, pick the higher grade.
+  - `false` — you checked and the problem does not happen. Say what you found that disproves it.
+  - `maybe-false` — you could not tell. Say what you would need to check. Use this only when the code and diff are not enough to decide.
 
-Reject `low` findings when it is unlikely that users or developers would meet the defect in everyday use (judged plainly — no proof needed) and the fix is more than a direct correction or deletion — adding guards, branches, parameters, or other complexity.
+- Write down every finding with its verdict and evidence. Do not drop any.
 
-All remaining findings continue to grouping.
+Reject `false` findings.
 
-Group the survivors by shared root cause — two findings belong in one entry only when the same defect produced both. Same location alone is not a shared root cause, and neither is a shared fix. An entry carries every member's verified bad outcome and the highest verdict among them (`high` > `medium` > `low` > `maybe-false`). A group that includes verified `high`, `medium`, or `low` members routes by its highest such verdict — not to defer just because a member is `maybe-false`. Route each entry in this order:
+Reject `low` findings when users or developers would rarely hit the problem in normal use and the fix would add more than a simple correction or deletion.
 
-- **patch** — Patch every entry caused or exposed by this change that shows a defect that actually occurs, missing coverage for a specific case, or a broken gate or convention — not a state nothing reaches — and whose smallest fix is trivial, adds no public surface, and guards no state the finding did not demonstrate. Apply that smallest fix immediately.
-- **HALT** — HALT on every entry caused or exposed by this change that shows the same evidence but whose smallest fix fails any of those conditions. Present it to the human for decision before proceeding.
-- **defer** — Defer every other entry: pre-existing issues, improvement ideas, entries whose members are all `maybe-false` where the claim, if true, would be `medium` or `high` (record that severity marked unverified, plus what would settle it; if it would only be `low`, reject it with the same note), and any entry whose fix edits agent-context files (CLAUDE.md, AGENTS.md, rules, specs). Append one new entry to `{{.implementation_artifacts}}/deferred-work.md` using this format. Do not modify existing entries or look for duplicates.
+Group what remains by root cause — two findings go together only if the same bug caused both. Same file or same fix is not enough. For each group, keep the worst verdict (`high` > `medium` > `low` > `maybe-false`). If a group has verified `high`, `medium`, or `low` members, route by the worst of those — not `defer` just because one member is `maybe-false`.
+
+For each group:
+
+- **patch** — This change caused or exposed the problem. The smallest fix is simple, adds no new public API, and does not guard code paths you did not show are reachable. Fix it now.
+- **HALT** — Same as patch, but the smallest fix is not that simple. Stop and ask the user before continuing.
+- **defer** — Everything else: old bugs not caused by this change, ideas for later, groups where every member is `maybe-false` and would be `medium` or `high` if true (record that severity marked unverified, and what would prove it; if it would only be `low`, reject it), or fixes that would edit CLAUDE.md, AGENTS.md, rules, or specs. Add one entry to `{{.implementation_artifacts}}/deferred-work.md`:
+
   ```markdown
   - source_spec: `{spec_file}`
     summary: <one sentence>
-    evidence: <why this is real; for a maybe-false finding, what evidence would settle it>
+    evidence: <why this is real; for maybe-false, what would prove it>
   ```
+
+  Do not edit old entries or check for duplicates.
 
 ### Finalize Spec
 
 Update `{spec_file}`:
 
-1. **Frontmatter** — set `status: 'done'`.
-2. **Suggested Review Order** — append after Intent. Build using the same convention as `[[bmad-snapshot:step-05-present.md]]` § "Generate Suggested Review Order" (spec-file-relative links, concern-based ordering, ultra-concise framing).
-3. **Review Triage Log** — only when the review produced findings: add the section with one line per finding with its verdict and evidence — the refutation for `false`, what would settle it for `maybe-false`, why a rejected `low` was not worth fixing.
+1. Set `status: 'done'` in the frontmatter.
+2. If review found anything, add `## Review Triage Log` with one line per finding: verdict and evidence. For `false`, the disproof. For `maybe-false`, what would settle it. For rejected `low`, why it was not worth fixing.
 
-Follow `[[bmad-snapshot:sync-sprint-status.md]]` with `target_status` = `review`.
+If `{story_key}` is not empty and `{{.implementation_artifacts}}/sprint-status.yaml` exists, read `[[bmad-snapshot:sync-sprint-status.md]]` with `{target_status}` = `review`.
 
 ### Commit
 
-If version control is available and the tree is dirty, create a local commit with a conventional message derived from the intent. If VCS is unavailable, skip.
+If git is available and there are uncommitted changes, commit with a conventional message based on the Intent. If git is not available, skip.
 
 ### Present
 
 {workflow.open_spec}
 
-Display a summary in conversation output, including:
+Give the user a short summary — one or two sentences:
 
-- The commit hash (if one was created).
-- List of files changed with one-line descriptions. Display file paths and `file:line` references in whatever form is clickable where you are presenting them (e.g. code citation in chat, CWD-relative path with no leading `/` in terminal). If unsure, use CWD-relative path. This differs from spec-file links which use spec-file-relative paths.
-- Review findings breakdown: patches applied, items deferred, and the rejected count — reasons are recorded in the spec. If every finding was rejected, say so.
+- What changed.
+- Review result, including anything deferred.
+- Commit hash, if you made one.
 
-Offer to push and/or create a pull request.
+Do not list files, repeat the spec, or walk through what you did unless asked.
 
-HALT and wait for human input.
+Offer next steps in one line: create a PR (push first if needed) when git and a remote exist; use `bmad-walkthrough`; or make another change.
+
+Stop and wait for the user.
 
 Workflow complete.
 
 ## On Complete
 
-If anything appears below, follow it as the final terminal instruction before exiting; otherwise exit normally.
+If anything appears below, do it before exiting. Otherwise exit.
 
 {workflow.on_complete}

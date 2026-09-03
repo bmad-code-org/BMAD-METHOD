@@ -15,9 +15,7 @@ Use a macOS or Linux shell with Git, Node.js 20.12+ and `npx`,
 [uv](https://docs.astral.sh/uv/getting-started/installation/), and a coding tool
 supported by BMad. Complete [Build Your First Change](../start/build-your-first-change.md) before
 continuing. The exact install and launch commands below are for Claude Code. If
-you use another supported tool, you can run Build there instead. VS Code is
-optional but useful. Build can open the finished work for you when VS Code's
-`code` command is available.
+you use another supported tool, you can run Build there instead.
 :::
 
 ## 1. Check Out the Exact Django Version
@@ -109,8 +107,8 @@ Once approved, it builds and reviews the change, handles its findings, and
 shows you the result. Keep this exercise about JSON output for `diffsettings`;
 filtering, redaction, and CI behavior belong in the next exercise.
 
-If `code` is available, Build opens the project and finished spec in VS
-Code. The Suggested Review Order links lead you through the change.
+Build ends with a short summary and offers the next steps. Continue with the
+manual checks below before asking it to create a PR.
 
 ## 6. See It Work
 
@@ -133,8 +131,7 @@ Look through the JSON and compare it with the choices you made with Build.
 ## 7. You Built It
 
 Congratulations, you've now added something useful to a complex open-source
-codebase. If you use VS Code, you're probably looking at the finished change
-there now.
+codebase.
 
 ## 8. Write a Spec for the Larger Change
 

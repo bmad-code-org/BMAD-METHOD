@@ -31,19 +31,16 @@ persistent_facts = []
 
 on_complete = ""
 
-# How Build opens a completed spec for human review. The default deliberately
-# opens the repository root first and the spec second in a reused VS Code
-# window so relative review links resolve in the correct workspace. Override
-# this with the application and equivalent behavior you prefer. Set it to an
-# empty string to disable automatic opening and all related completion output.
+# Optional instructions for opening a completed spec. The empty default leaves
+# the spec closed. Override this with the application and behavior you prefer.
 # Example requests for bmad-customize: "Open completed specs in Cursor and
 # reuse the project window" or "Do not open completed specs automatically."
 #
 # Example `open_spec` override instructions for bmad-build.user.toml:
 # {project-root} and {spec_file} are substituted at run time.
 #
-# VS Code and compatible GUI editors — shipped default uses `code`; Cursor,
-# Windsurf, Antigravity, Zed, and similar editors can substitute their launcher.
+# VS Code and compatible GUI editors — a custom override can use `code`; Cursor,
+# Windsurf, Antigravity, Zed, and similar editors can use their own launcher.
 # Preserve reuse-window behavior when the launcher supports it, and always pass
 # the repository root first and the spec second:
 #   Run `code -r "{project-root}" "{spec_file}"`, root first.
@@ -61,13 +58,7 @@ on_complete = ""
 # Emacs — reuse an Emacs server without waiting for the buffer to close:
 #   Run `cd "{project-root}" && emacsclient -n "{spec_file}"`.
 #
-# For every non-empty override, also tell Build to note in the completion summary
-# that the spec was sent to the chosen editor and contains a Suggested Review
-# Order, then include the default navigation tip shown below.
-
-open_spec = """
-Run `code -r "{project-root}" "{spec_file}"` — the repository root first so VS Code opens in the right context, then the spec file. Always double-quote both paths to handle spaces and special characters. If `code` is unavailable or the command fails, skip gracefully and tell the user the spec file path instead. In the completion summary, note that the spec was sent to VS Code and that it contains a Suggested Review Order, then add this navigation tip: "Ctrl+click (Cmd+click on macOS) the links in the Suggested Review Order to jump to each stop."
-"""
+open_spec = ""
 
 # Handoff for the implementation subagent in step 03. The whole execution
 # recipe — a subagent by default, but an override may run it any other way
@@ -138,7 +129,7 @@ Do not invoke any skill, and do not spawn subagents of your own — you are the 
 
 """
 
-# Review layers for the in-session (light) route.
+# Review layers for the oneshot route.
 
 [[workflow.oneshot_review_layers]]
 id = "blind-hunter"

@@ -24,7 +24,7 @@ Capture `baseline_commit` (current HEAD, or `NO_VCS` if version control is unava
 
 Change `{spec_file}` status to `in-progress` in the frontmatter before starting implementation.
 
-Follow `[[bmad-snapshot:sync-sprint-status.md]]` with `target_status` = `in-progress`.
+If `{story_key}` is not empty and `{{.implementation_artifacts}}/sprint-status.yaml` exists, read `[[bmad-snapshot:sync-sprint-status.md]]` with `{target_status}` = `in-progress`.
 
 Execute the implementation handoff below: substitute the runtime placeholders (e.g. `{spec_file}`) into it, then follow it verbatim.
 

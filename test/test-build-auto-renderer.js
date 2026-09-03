@@ -467,12 +467,6 @@ async function main() {
     const oneshot = fs.readFileSync(path.join(dir, 'step-oneshot.md'), 'utf8');
     assert(oneshot.includes('#### Blind Hunter (`blind-hunter`)'), 'oneshot review layer block missing');
 
-    // The spec editor handoff must reach both terminal routes (#2652).
-    const present = fs.readFileSync(path.join(dir, 'step-05-present.md'), 'utf8');
-    assert(present.includes('code -r'), 'open_spec default missing from step-05-present.md');
-    assert(oneshot.includes('code -r'), 'open_spec default missing from step-oneshot.md');
-    assert(/^Offer to push\b/m.test(present), 'standalone "Offer to push" line was lost');
-
     const artifacts = `${fs.realpathSync(build.project)}/implementation`;
     assert(markdown.includes(`${artifacts}/sprint-status.yaml`), 'sprint-status path was not baked absolute');
     assert(markdown.includes(`${artifacts}/deferred-work.md`), 'deferred-work path was not baked absolute');
@@ -489,16 +483,21 @@ async function main() {
     );
   });
 
-  test('empty open_spec override disables automatic opening', () => {
+  test('non-empty open_spec override reaches both terminal routes', () => {
     const build = fixture({ skillName: 'bmad-build' });
     fs.mkdirSync(path.join(build.bmad, 'custom'), { recursive: true });
-    fs.writeFileSync(path.join(build.bmad, 'custom', `${build.skillName}.user.toml`), '[workflow]\nopen_spec = ""\n', 'utf8');
+    fs.writeFileSync(
+      path.join(build.bmad, 'custom', `${build.skillName}.user.toml`),
+      '[workflow]\nopen_spec = "OPEN-SPEC-SENTINEL {project-root} {spec_file}"\n',
+      'utf8',
+    );
     const dir = path.dirname(entry(run(build)));
     for (const name of ['step-05-present.md', 'step-oneshot.md']) {
       const rendered = fs.readFileSync(path.join(dir, name), 'utf8');
-      assert(!rendered.includes('code -r'), `open_spec default survived in ${name}`);
-      assert(!rendered.includes('spec was sent'), `opening summary survived in ${name}`);
-      assert(rendered.includes('Suggested Review Order'), `review trail generation disappeared from ${name}`);
+      assert(
+        rendered.includes('OPEN-SPEC-SENTINEL {project-root} {spec_file}'),
+        `open_spec override or its runtime placeholders missing from ${name}`,
+      );
     }
   });
 
