@@ -4,7 +4,10 @@
 # ///
 """Tests for word_metrics.py."""
 
+import os
+import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -57,6 +60,32 @@ class WordMetricsTest(unittest.TestCase):
         sections = section_metrics("# Only\n\nwords here\n")
         self.assertEqual([s["heading"] for s in sections], ["Only"])
 
+
+SCRIPT = Path(__file__).resolve().parent.parent / "word_metrics.py"
+
+
+class StderrEncodingTests(unittest.TestCase):
+    """stderr quotes the caller's path, so it needs the same pin as stdout."""
+
+    def test_missing_path_is_named_readably_on_a_cp1252_console(self):
+        """The user has to be able to read which path the tool could not open."""
+        with tempfile.TemporaryDirectory() as tmp:
+            missing = Path(tmp) / "belge-şık.md"
+            env = dict(os.environ)
+            env["PYTHONIOENCODING"] = "cp1252"
+            result = subprocess.run(
+                [sys.executable, str(SCRIPT), str(missing)],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                env=env,
+                check=False,
+            )
+
+        stderr = result.stderr.decode("utf-8", errors="replace")
+        self.assertEqual(result.returncode, 2, msg=stderr)
+        self.assertIn("belge-şık.md", stderr)
+        self.assertNotIn(r"\u015f", stderr)
+        self.assertNotIn("Traceback", stderr)
 
 if __name__ == "__main__":
     unittest.main()
