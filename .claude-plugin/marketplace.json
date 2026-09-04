@@ -14,7 +14,7 @@
       "displayName": "BMad Method Analyze Plan Build",
       "source": "./",
       "description": "Full-lifecycle AI development framework — agents and workflows for product analysis, planning, architecture, and implementation.",
-      "version": "6.11.0",
+      "version": "6.12.0",
       "author": {
         "name": "Brian (BMad) Madison"
       },
