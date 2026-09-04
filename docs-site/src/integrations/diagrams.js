@@ -19,7 +19,7 @@
  */
 
 import { createHash } from 'node:crypto';
-import { existsSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const DIAGRAM_DIR = 'src/diagrams';
@@ -62,18 +62,28 @@ export default function bmadDiagrams() {
         const files = diagramFiles(config.root);
         if (files.length === 0) return;
 
+        const cacheDir = fileURLToPath(config.cacheDir);
         const stampPath = fileURLToPath(new URL(STAMP, config.cacheDir));
         const store = fileURLToPath(new URL('data-store.json', config.cacheDir));
         const current = digest(files);
-        const previous = existsSync(stampPath) ? readFileSync(stampPath, 'utf8') : '';
 
-        if (current === previous) return;
+        try {
+          const previous = existsSync(stampPath) ? readFileSync(stampPath, 'utf8') : '';
+          if (current === previous) return;
 
-        if (existsSync(store)) {
-          rmSync(store);
-          logger.info('diagram changed, cleared the content layer cache');
+          if (existsSync(store)) {
+            rmSync(store);
+            logger.info('diagram changed, cleared the content layer cache');
+          }
+
+          // On a fresh checkout the cache directory does not exist yet; Astro
+          // creates it later in the build, so the stamp has to make its own.
+          mkdirSync(cacheDir, { recursive: true });
+          writeFileSync(stampPath, current);
+        } catch (error) {
+          // A cache that cannot be stamped is a slower build, not a broken one.
+          logger.warn(`could not stamp the diagram cache: ${error.message}`);
         }
-        writeFileSync(stampPath, current);
       },
     },
   };
