@@ -30,6 +30,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-n": "^17.21.3",
     "eslint-plugin-unicorn": "^60.0.0",
+    "hast-util-from-html": "^2.0.3",
     "prettier": "^3.7.4",
     "sharp": "^0.33.5",
     "unist-util-visit": "^5.1.0"

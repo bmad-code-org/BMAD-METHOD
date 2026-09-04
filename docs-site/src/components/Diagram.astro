@@ -1,0 +1,51 @@
+---
+/**
+ * Inline a hand-authored diagram from `src/diagrams/<name>.svg`.
+ *
+ * The docs are all `.md`, where Astro components cannot be imported, so pages
+ * reach these diagrams through the `rehype-inline-diagrams` plugin instead —
+ * they write `![alt](/diagrams/build-run.svg)` and the plugin substitutes the
+ * SVG. This component is the same behaviour for anywhere that *can* take a
+ * component: an `.mdx` page, or a Starlight component override.
+ *
+ * Both paths share the label file, so a diagram reads the same either way.
+ *
+ *   <Diagram name="build-run" />
+ */
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+
+interface Props {
+  /** File stem under src/diagrams, e.g. "build-run". */
+  name: string;
+  /** Overrides the diagram's own <title>. Omit unless the page needs a different one. */
+  label?: string;
+}
+
+const { name, label } = Astro.props;
+const lang = Astro.locals.starlightRoute?.entryMeta?.lang;
+
+const dir = new URL('../diagrams/', import.meta.url);
+let svg = readFileSync(fileURLToPath(new URL(`${name}.svg`, dir)), 'utf8');
+
+let strings: Record<string, string> = {};
+try {
+  const labels = JSON.parse(readFileSync(fileURLToPath(new URL(`${name}.labels.json`, dir)), 'utf8'));
+  strings = (lang && labels[lang]) || {};
+} catch {
+  // A diagram without a label file is English-only, which is fine.
+}
+
+for (const [key, value] of Object.entries(strings)) {
+  svg = svg.replace(
+    new RegExp(`(data-i18n="${key}"[^>]*>)[^<]*`),
+    (_match, open) => `${open}${value}`
+  );
+}
+
+if (label) {
+  svg = svg.replace('<svg ', `<svg aria-label="${label}" `);
+}
+---
+
+<Fragment set:html={svg} />

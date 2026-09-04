@@ -1,0 +1,76 @@
+<svg class="bmad-diagram" viewBox="0 0 940 762" role="img" xmlns="http://www.w3.org/2000/svg" aria-labelledby="bd-title">
+<title id="bd-title" data-i18n="title">The bmad-build run: intent is clarified, planned, specified, implemented, then reviewed. Review can patch the work, send it back to plan or clarification, void it, or defer it, before the result is presented to you.</title>
+<defs>
+<marker id="bd-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker>
+<marker id="bd-arrow-soft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="head soft" d="M0 0 L10 5 L0 10 z"/></marker>
+<g id="bd-person"><circle cx="0" cy="-7" r="6.5"/><path d="M-11 12a11 11 0 0 1 22 0z"/></g>
+</defs>
+<rect class="node cap" x="322.0" y="20.0" width="156" height="40" rx="20"/>
+<text class="n" x="400" y="45" data-i18n="initial-intent">Initial intent</text>
+<rect class="node" x="300.0" y="102.0" width="200" height="40" rx="2"/>
+<text class="n" x="400" y="127" data-i18n="clarify">Clarify and route</text>
+<rect class="node" x="300.0" y="184.0" width="200" height="40" rx="2"/>
+<text class="n" x="400" y="209" data-i18n="plan">Plan</text>
+<rect class="node cap" x="322.0" y="266.0" width="156" height="40" rx="20"/>
+<text class="n" x="400" y="291" data-i18n="spec">Spec</text>
+<rect class="node" x="300.0" y="348.0" width="200" height="40" rx="2"/>
+<text class="n" x="400" y="373" data-i18n="implement">Implement</text>
+<path class="node gate" d="M400 424 L482 450 L400 476 L318 450 z"/>
+<text class="n" x="400" y="455" data-i18n="gate">Fits AC?</text>
+<rect class="node" x="300.0" y="512.0" width="200" height="40" rx="2"/>
+<text class="n" x="400" y="537" data-i18n="review">Review</text>
+<rect class="node" x="300.0" y="594.0" width="200" height="40" rx="2"/>
+<text class="n" x="400" y="619" data-i18n="present">Present</text>
+<rect class="node cap" x="322.0" y="676.0" width="156" height="40" rx="20"/>
+<text class="n" x="400" y="701" data-i18n="result">Result</text>
+<path class="edge" d="M400 60.0 V102.0" marker-end="url(#bd-arrow)"/>
+<path class="edge" d="M400 142.0 V184.0" marker-end="url(#bd-arrow)"/>
+<path class="edge" d="M400 224.0 V266.0" marker-end="url(#bd-arrow)"/>
+<path class="edge" d="M400 306.0 V348.0" marker-end="url(#bd-arrow)"/>
+<path class="edge" d="M400 388.0 V424" marker-end="url(#bd-arrow)"/>
+<path class="edge" d="M400 476 V512.0" marker-end="url(#bd-arrow)"/>
+<path class="edge" d="M400 552.0 V594.0" marker-end="url(#bd-arrow)"/>
+<path class="edge" d="M400 634.0 V676.0" marker-end="url(#bd-arrow)"/>
+<text class="k" x="410" y="78" data-i18n="edge-intent-1">intent</text>
+<text class="k" x="410" y="160" data-i18n="edge-intent-2">intent</text>
+<path class="edge" d="M300.0 136 H262 Q250 136 250 148 V356 Q250 368 262 368 H298.0" marker-end="url(#bd-arrow)"/>
+<text class="k" x="244" y="240" data-i18n="edge-one-shot" transform="rotate(-90 244 240)">one-shot mode</text>
+<path class="edge" d="M360 512 C 350 484 262 488 258 512 C 254 532 276 530 298.0 527" marker-end="url(#bd-arrow)"/>
+<text class="k" x="252" y="478" data-i18n="edge-patch">patch</text>
+<path class="edge" d="M300.0 545 H206" marker-end="url(#bd-arrow)"/>
+<text class="k" x="215" y="538" data-i18n="edge-reject">reject</text>
+<g class="glyph" transform="translate(170 545)"><rect x="-9" y="-14" width="18" height="3" rx="1.5"/><rect x="-4" y="-18" width="8" height="3" rx="1.5"/><path d="M-8 -8h16l-1.6 18a2 2 0 0 1-2 1.8h-8.8a2 2 0 0 1-2-1.8z"/></g>
+<text class="sub mid" x="170" y="588" data-i18n="void">Void</text>
+<path class="edge" d="M500.0 552 Q 560 560 578 592 T 606 626" marker-end="url(#bd-arrow)"/>
+<text class="k" x="530" y="596" data-i18n="edge-defer">defer</text>
+<g class="glyph" transform="translate(614 632)"><path d="M0 0h20l10 10v30H0z"/><path class="fold" d="M20 0v10h10z"/></g>
+<text class="sub" x="600" y="694">deferred_work.md</text>
+<path class="edge" d="M500.0 524 H540 Q552 524 552 512 V216 Q552 204 540 204 H502.0" marker-end="url(#bd-arrow)"/>
+<text class="k" x="546" y="368" data-i18n="edge-bad-spec" transform="rotate(-90 546 368)">bad_spec</text>
+<path class="edge" d="M500.0 540 H592 Q604 540 604 528 V134 Q604 122 592 122 H502.0" marker-end="url(#bd-arrow)"/>
+<text class="k" x="598" y="330" data-i18n="edge-intent-gap" transform="rotate(-90 598 330)">intent_gap</text>
+<use href="#bd-person" class="glyph" transform="translate(96 118)"/>
+<path class="edge soft" d="M128 122 H298.0" marker-end="url(#bd-arrow-soft)"/>
+<text class="k" x="150" y="112" data-i18n="actor-interview">interview</text>
+<use href="#bd-person" class="glyph" transform="translate(96 282)"/>
+<path class="edge soft" d="M128 286 H320.0" marker-end="url(#bd-arrow-soft)"/>
+<text class="k" x="150" y="266" data-i18n="actor-spec-review">spec review</text>
+<text class="k" x="150" y="278" data-i18n="actor-spec-review-2">optional</text>
+<use href="#bd-person" class="glyph" transform="translate(96 692)"/>
+<path class="edge soft" d="M322.0 696 H128" marker-end="url(#bd-arrow-soft)"/>
+<text class="k" x="150" y="686" data-i18n="actor-review">you review the result</text>
+<rect class="panel" x="660" y="330" width="240" height="196" rx="2"/>
+<text class="k panel-title" x="676" y="354" data-i18n="lenses">Review lenses</text>
+<rect class="node" x="676" y="366" width="208" height="44" rx="2"/>
+<text class="n small" x="688" y="385" data-i18n="lens-blind">Blind Hunter</text>
+<text class="sub" x="688" y="400" data-i18n="lens-blind-sub">find any 10 things to fix</text>
+<path class="edge soft lens" d="M676 388 C 620 388 600 532 502.0 532" marker-end="url(#bd-arrow-soft)"/>
+<rect class="node" x="676" y="418" width="208" height="44" rx="2"/>
+<text class="n small" x="688" y="437" data-i18n="lens-edges">Edge Cases Hunter</text>
+<text class="sub" x="688" y="452" data-i18n="lens-edges-sub">find forgotten corner cases</text>
+<path class="edge soft lens" d="M676 440 C 620 440 600 532 502.0 532" marker-end="url(#bd-arrow-soft)"/>
+<rect class="node" x="676" y="470" width="208" height="44" rx="2"/>
+<text class="n small" x="688" y="489" data-i18n="lens-gaps">Verification Gap Finder</text>
+<text class="sub" x="688" y="504" data-i18n="lens-gaps-sub">is this covered by tests?</text>
+<path class="edge soft lens" d="M676 492 C 620 492 600 532 502.0 532" marker-end="url(#bd-arrow-soft)"/>
+</svg>
