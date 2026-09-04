@@ -4,6 +4,7 @@ import io
 import json
 import os
 import re
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -331,6 +332,10 @@ class TestRules(ProjectCase):
         self.assertTrue(any("{{.name}}" in f["detail"] for f in findings))
         self.assertTrue(any("{{.other}}" in f["detail"] for f in findings))
 
+    @unittest.skipIf(
+        os.name == "nt",
+        "chmod(0) only sets the read-only flag on Windows; the owner can still read",
+    )
     def test_read_err_on_unreadable_file_continues(self):
         skill = self.valid("bmad-perm", {"secret.md": "ok\n"})
         target = skill / "secret.md"
@@ -470,6 +475,68 @@ class TestParsers(unittest.TestCase):
         fm = vs.parse_frontmatter_multiline(content)
         self.assertEqual(fm["name"], "bmad-x")
         self.assertEqual(fm["description"], "line1\n  line2\n  line3")
+
+
+
+class TestPlatformPortability(ProjectCase):
+    """The validator has to reach the same verdict on a Windows checkout."""
+
+    def write_verbatim(self, path: Path, text: str) -> None:
+        """Write with the line endings given, defeating newline translation."""
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with open(path, "w", encoding="utf-8", newline="") as fh:
+            fh.write(text)
+
+    def test_crlf_skill_md_parses_like_its_lf_original(self):
+        # Git for Windows defaults to core.autocrlf=true, so a checkout there is
+        # CRLF throughout. Read with newline="", the fence stayed "\r\n---\r\n",
+        # which find("\n---\n") never matches: every skill came back missing its
+        # name, its description and its body.
+        text = skill_md("bmad-crlf", "Does a thing. Use when the user needs it.")
+        skill = self.skills / "bmad-crlf"
+        self.write_verbatim(skill / "SKILL.md", text.replace("\n", "\r\n"))
+
+        findings = self.findings_for(skill)
+
+        self.assertEqual(findings, [], msg=f"CRLF checkout produced {findings}")
+
+    def test_report_paths_use_forward_slashes(self):
+        # These strings are the JSON skill/file fields and the file= of a GitHub
+        # Actions annotation, which only resolves with forward slashes.
+        self.add_skill(
+            "bmad-sep",
+            skill_md("bmad-sep", "Does a thing. Use when the user needs it."),
+            {"nested/notes.md": "Ship 100% with ETA\n"},
+        )
+
+        _, out, _ = self.run_validator(json_output=True)
+
+        findings = json.loads(out)
+        self.assertTrue(findings)
+        for finding in findings:
+            self.assertNotIn("\\", finding["skill"])
+            self.assertNotIn("\\", finding["file"])
+        self.assertIn("nested/notes.md", out)
+
+    def test_report_survives_a_cp1252_console(self):
+        # The report rules its sections with U+2500, which cp1252 cannot encode.
+        # Unpinned, print() raised before the validator reported anything.
+        self.valid("bmad-pin")
+        env = dict(os.environ)
+        env["PYTHONIOENCODING"] = "cp1252"
+
+        result = subprocess.run(
+            [sys.executable, str(VALIDATOR), str(self.skills / "bmad-pin")],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            env=env,
+            check=False,
+        )
+
+        stderr = result.stderr.decode("utf-8", errors="replace")
+        self.assertEqual(result.returncode, 0, msg=stderr)
+        self.assertNotIn("UnicodeEncodeError", stderr)
+        self.assertIn("─", result.stdout.decode("utf-8"))
 
 
 if __name__ == "__main__":

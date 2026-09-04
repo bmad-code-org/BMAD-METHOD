@@ -74,8 +74,15 @@ def escape_table_cell(s: str) -> str:
 
 
 def _relpath(to_path: str, start: str) -> str:
+    r"""Path of `to_path` relative to `start`, always with "/" separators.
+
+    These strings are a contract, not a display detail: they are the `skill`
+    and `file` fields of the JSON output and the `file=` of a GitHub Actions
+    annotation, which only resolves to a file with forward slashes. Windows
+    would otherwise emit "src\bmad-x\notes.md" and break both.
+    """
     rel = os.path.relpath(to_path, start)
-    return "" if rel == "." else rel
+    return "" if rel == "." else rel.replace(os.sep, "/")
 
 
 def _finding(
@@ -180,8 +187,16 @@ def parse_frontmatter_multiline(content: str) -> dict[str, str] | None:
 
 
 def safe_read_file(file_path: str, findings: list[dict], rel_file: str | None) -> str | None:
+    r"""Read a skill file as UTF-8 text, with line endings normalized to \n.
+
+    Universal newlines, not newline="": every parse downstream is written
+    against \n -- the frontmatter fence is located with find("\n---\n"), and
+    the rules split on \n -- so a CRLF checkout matches no fence at all and
+    leaves a stray \r on the end of every line. Git for Windows defaults to
+    core.autocrlf=true, so that is the ordinary checkout there.
+    """
     try:
-        with open(file_path, encoding="utf-8", errors="replace", newline="") as f:
+        with open(file_path, encoding="utf-8", errors="replace") as f:
             return f.read()
     except OSError as error:
         findings.append(
@@ -685,7 +700,28 @@ def run(
     return 1 if strict and has_high_plus else 0
 
 
+def pin_utf8(stream) -> None:
+    """Pin a console stream to UTF-8, keeping its own error handler.
+
+    The human-readable report rules its sections with U+2500 box drawing, and
+    findings quote skill names, descriptions and file paths. cp1252 -- the
+    Windows default whenever output is not a terminal -- encodes none of that,
+    so `npm run validate:skills` died in print() before reporting anything.
+
+    errors= is passed through deliberately: reconfigure(encoding=...) alone
+    resets the handler to "strict", which would silently downgrade stderr's
+    backslashreplace default and turn a diagnostic about an undecodable path
+    into a traceback.
+    """
+    reconfigure = getattr(stream, "reconfigure", None)
+    if reconfigure is not None:
+        reconfigure(encoding="utf-8", errors=getattr(stream, "errors", None) or "strict")
+
+
 def main(argv: list[str] | None = None) -> int:
+    """Parse arguments, run the validator, and return its exit code."""
+    pin_utf8(sys.stdout)
+    pin_utf8(sys.stderr)
     parser = argparse.ArgumentParser(description="Validate skill directories against deterministic rules.")
     parser.add_argument("--strict", action="store_true", help="exit 1 on HIGH+ findings")
     parser.add_argument("--json", action="store_true", dest="json_output", help="JSON output")
