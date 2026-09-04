@@ -95,6 +95,7 @@ def _finding(
     fix: str,
     line: int | None = None,
 ) -> dict:
+    """Build one finding record, omitting `line` when the rule has no line to cite."""
     item = {
         "rule": rule,
         "title": title,

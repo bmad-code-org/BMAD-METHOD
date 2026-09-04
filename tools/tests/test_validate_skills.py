@@ -161,6 +161,7 @@ class TestRules(ProjectCase):
     """One case per deterministic rule, driven through validate_skill()."""
 
     def test_skill_01_missing_skill_md(self):
+        """A directory with no SKILL.md reports SKILL-01 and nothing else."""
         skill = self.skills / "bmad-empty"
         skill.mkdir()
         findings = self.findings_for(skill)
@@ -298,6 +299,7 @@ class TestRules(ProjectCase):
         self.assertEqual(findings_by_rule(self.findings_for(skill), "PATH-02"), [])
 
     def test_seq_02_patterns_one_per_line_and_eta_case(self):
+        """Each time-estimate line is flagged once, and ETA matches case-insensitively."""
         skill = self.valid(
             "bmad-seq",
             {

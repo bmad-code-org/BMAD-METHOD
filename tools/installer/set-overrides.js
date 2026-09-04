@@ -128,6 +128,12 @@ function sectionHeader(moduleCode) {
  *     trailing blank lines so the section stays tidy).
  *   - If `[section]` doesn't exist, append a new section block at EOF.
  *
+ * Line endings are detected and preserved. Splitting on `\n` alone would
+ * leave a `\r` on the end of every line of a CRLF file, and JavaScript's `.`
+ * does not match `\r`, so the `key = value` pattern below would never match
+ * and an existing key would be appended a second time instead of replaced.
+ * TOML rejects the duplicate, which would take the whole config down.
+ *
  * @param {string} content   existing file content (may be empty)
  * @param {string} section   exact `[section]` header to target
  * @param {string} key
@@ -135,10 +141,10 @@ function sectionHeader(moduleCode) {
  * @returns {string} new content
  */
 function upsertTomlKey(content, section, key, valueToml) {
-  const lines = content.split('\n');
+  const eol = content.includes('\r\n') ? '\r\n' : '\n';
+  const lines = content.split(/\r?\n/);
   // Track whether the file already ended with a newline so we can preserve
-  // that. `split('\n')` on `"a\n"` yields `['a', '']`, which gives us the
-  // marker we need.
+  // that. Splitting `"a\n"` yields `['a', '']`, which gives us the marker.
   const hadTrailingNewline = lines.length > 0 && lines.at(-1) === '';
   if (hadTrailingNewline) lines.pop();
 
@@ -149,7 +155,7 @@ function upsertTomlKey(content, section, key, valueToml) {
     // the file is non-empty so sections stay visually separated.
     if (lines.length > 0 && lines.at(-1).trim() !== '') lines.push('');
     lines.push(section, `${key} = ${valueToml}`);
-    return lines.join('\n') + (hadTrailingNewline ? '\n' : '');
+    return lines.join(eol) + (hadTrailingNewline ? eol : '');
   }
 
   // Find the section's end (next `[...]` header or EOF).
@@ -175,7 +181,7 @@ function upsertTomlKey(content, section, key, valueToml) {
       const commentIdx = tail.search(/\s+#/);
       const commentSuffix = commentIdx === -1 ? '' : tail.slice(commentIdx);
       lines[i] = `${indent}${key} = ${valueToml}${commentSuffix}`;
-      return lines.join('\n') + (hadTrailingNewline ? '\n' : '');
+      return lines.join(eol) + (hadTrailingNewline ? eol : '');
     }
   }
 
@@ -187,9 +193,15 @@ function upsertTomlKey(content, section, key, valueToml) {
     insertAt--;
   }
   lines.splice(insertAt, 0, `${key} = ${valueToml}`);
-  return lines.join('\n') + (hadTrailingNewline ? '\n' : '');
+  return lines.join(eol) + (hadTrailingNewline ? eol : '');
 }
 
+/**
+ * Escape a string for literal use inside a RegExp.
+ *
+ * @param {string} s
+ * @returns {string}
+ */
 function escapeRegExp(s) {
   return s.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 }

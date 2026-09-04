@@ -3322,6 +3322,35 @@ async function runTests() {
       assert(!withoutTrailing.endsWith('\n'), 'upsertTomlKey preserves absence of trailing newline');
     }
 
+    // ---- upsertTomlKey: CRLF content -------------------------------------
+    // A file saved by a Windows editor is CRLF. Splitting on `\n` alone leaves
+    // a `\r` on every line, and JS `.` does not match `\r`, so the key pattern
+    // missed and the "replace" path fell through to "append" — writing the key
+    // a second time. TOML rejects that duplicate, taking the config down.
+    {
+      const crlf = '[modules.bmm]\r\nproject_knowledge = "old"\r\nother = 1\r\n';
+      const after = upsertTomlKey(crlf, '[modules.bmm]', 'project_knowledge', '"new"');
+      assert(
+        (after.match(/project_knowledge/g) || []).length === 1,
+        'upsertTomlKey replaces a CRLF key in place instead of duplicating it',
+        after,
+      );
+      assert(after.includes('project_knowledge = "new"'), 'upsertTomlKey writes the new CRLF value');
+      assert(!after.includes('"old"'), 'upsertTomlKey drops the prior CRLF value');
+      assert(!/(?<!\r)\n/.test(after), 'upsertTomlKey keeps a CRLF file entirely CRLF');
+    }
+
+    // ---- upsertTomlKey: CRLF insert paths keep the file's line ending -----
+    {
+      const crlf = '[core]\r\nuser_name = "old"\r\n';
+      const newKey = upsertTomlKey(crlf, '[core]', 'added', '"x"');
+      assert(!/(?<!\r)\n/.test(newKey), 'upsertTomlKey stays CRLF when adding a key');
+      const newSection = upsertTomlKey(crlf, '[modules.bmm]', 'k', '"v"');
+      assert(!/(?<!\r)\n/.test(newSection), 'upsertTomlKey stays CRLF when adding a section');
+      const lf = upsertTomlKey('[core]\nuser_name = "old"\n', '[core]', 'added', '"x"');
+      assert(!lf.includes('\r'), 'upsertTomlKey leaves an LF file untouched by the CRLF handling');
+    }
+
     // ---- applySetOverrides happy path ------------------------------------
     {
       const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-applyset-'));
@@ -3889,7 +3918,7 @@ async function runTests() {
     assert(await fs.pathExists(path.join(skill49, 'step-04-review.md')), 'build-auto step sources reach installed skill surface');
     // Compare against build-auto's own shipped command rather than a second hardcoded
     // literal, so the two skills cannot drift apart while both still match this file.
-    const fenced49 = skillSource49.match(/```bash\n([\s\S]*?)```/);
+    const fenced49 = skillSource49.match(/```bash\r?\n([\s\S]*?)```/);
     assert(
       fenced49 !== null && fenced49[1].includes('render_skill.py'),
       'build-auto ships its renderer invocation as a fenced bash command',
