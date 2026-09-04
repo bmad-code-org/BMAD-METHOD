@@ -37,26 +37,33 @@ Delta epsilon.
 
 
 class WordMetricsTest(unittest.TestCase):
+    """Counting and section splitting, exercised directly on document text."""
+
     def test_word_count(self):
+        """Runs of whitespace and newlines separate words; empty text counts zero."""
         self.assertEqual(word_count("one two  three\nfour"), 4)
         self.assertEqual(word_count(""), 0)
 
     def test_sections_split_on_headings(self):
+        """Each heading opens a section, after the leading (preamble)."""
         sections = section_metrics(DOC)
         headings = [s["heading"] for s in sections]
         self.assertEqual(headings, ["(preamble)", "Title", "Section A", "Section B"])
 
     def test_fenced_heading_not_a_section(self):
+        """A # line inside a fenced block is body text, not a heading."""
         sections = section_metrics(DOC)
         self.assertNotIn("not a heading", [s["heading"] for s in sections])
 
     def test_section_words_counted(self):
+        """Each section counts its own body, fenced content included."""
         sections = {s["heading"]: s["words"] for s in section_metrics(DOC)}
         self.assertEqual(sections["Section B"], 2)
         # Section A body includes the fenced block's tokens
         self.assertGreater(sections["Section A"], 3)
 
     def test_empty_preamble_dropped(self):
+        """Text starting at a heading yields that section and no empty preamble."""
         sections = section_metrics("# Only\n\nwords here\n")
         self.assertEqual([s["heading"] for s in sections], ["Only"])
 
