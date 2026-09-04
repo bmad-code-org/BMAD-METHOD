@@ -1,0 +1,158 @@
+---
+/**
+ * The BMad site footer: the dark ground and mono column headings bmadcode.com
+ * closes every page on.
+ *
+ * It is rendered inside Starlight's `.main-pane` (see TwoColumnContent.astro),
+ * not inside the content column, so the band spans the whole main column —
+ * flush to the sidebar on one side and the table of contents on the other.
+ * Its inner column reuses Starlight's own `--sl-content-margin-inline`, so the
+ * text lines up with the article above it.
+ *
+ * It cannot run the full viewport width: Starlight's sidebar is
+ * `position: fixed` and full height, so a 100vw band would sit behind it.
+ */
+const COLUMNS = [
+  {
+    heading: 'Method',
+    links: [
+      { href: '/build/build-a-change/', label: 'Build a change' },
+      { href: '/build/review-a-change/', label: 'Review a change' },
+      { href: '/reference/skills-and-agents/', label: 'Skills and agents' },
+      { href: 'https://www.bmadcode.com/philosophy', label: 'Philosophy' },
+    ],
+  },
+  {
+    heading: 'Enterprise',
+    links: [
+      { href: '/plan/plan-inside-an-organization/', label: 'Plan inside an organization' },
+      { href: '/customize/adopt-bmad-across-a-team/', label: 'Adopt across a team' },
+      { href: '/customize/customize-bmad/', label: 'Customization' },
+      { href: 'https://www.bmadcode.com/certification', label: 'Certification' },
+    ],
+  },
+  {
+    heading: 'Community',
+    links: [
+      { href: 'https://github.com/bmad-code-org/BMAD-METHOD', label: 'GitHub' },
+      { href: 'https://www.npmjs.com/package/bmad-method', label: 'npm' },
+      { href: 'https://discord.gg/gk8jAdXWmj', label: 'Discord' },
+      { href: 'https://youtube.com/@BMadCode', label: 'YouTube' },
+    ],
+  },
+];
+
+const BOTTOM = ['© 2026 BMad Code, LLC', 'MIT licensed', 'BMad is a trademark of BMad Code, LLC'];
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const href = (link: string) => (link.startsWith('/') ? `${base}${link}` : link);
+---
+
+<div class="bmad-footer">
+  <div class="inner">
+  <p class="brand"><a href="https://www.bmadcode.com">BMad Code</a></p>
+  <p class="tagline">
+    Agile AI-Driven Development. Turn an idea or change request into working software without
+    giving up the thinking.
+  </p>
+
+  <div class="cols">
+    {
+      COLUMNS.map((col) => (
+        <div>
+          <h2>{col.heading}</h2>
+          {col.links.map((link) => (
+            <a href={href(link.href)}>{link.label}</a>
+          ))}
+        </div>
+      ))
+    }
+  </div>
+
+  <p class="bottom">{BOTTOM.map((line) => <span>{line}</span>)}</p>
+  </div>
+</div>
+
+<style>
+  .bmad-footer {
+    margin-top: clamp(3rem, 6vw, 4.5rem);
+    padding-block: clamp(2.8rem, 5vw, 3.6rem) 2.2rem;
+    background: var(--bmad-dark, #111418);
+    color: var(--bmad-dark-muted, #a2acb9);
+  }
+
+  /* the article's own column, so the footer text sits under the prose */
+  .inner {
+    max-width: var(--sl-content-width);
+    margin-inline: var(--sl-content-margin-inline, auto);
+    padding-inline: var(--sl-content-pad-x);
+  }
+
+  .brand {
+    margin: 0;
+  }
+
+  .brand a {
+    font-size: 1.0625rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: #ffffff;
+    text-decoration: none;
+  }
+
+  .tagline {
+    margin: 0.9rem 0 0;
+    max-width: 46ch;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+  }
+
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: clamp(2.2rem, 4vw, 3rem);
+  }
+
+  .cols h2 {
+    margin: 0 0 0.9rem;
+    font-family: var(--bmad-mono, ui-monospace, monospace);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: #ffffff;
+  }
+
+  .cols a {
+    display: block;
+    padding: 0.28rem 0;
+    font-size: 0.9375rem;
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .cols a:hover {
+    color: #ffffff;
+  }
+
+  .bottom {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.4rem;
+    margin: clamp(2.2rem, 4vw, 3rem) 0 0;
+    padding-top: 1.3rem;
+    border-top: 1px solid var(--bmad-dark-line, #2e353e);
+    font-family: var(--bmad-mono, ui-monospace, monospace);
+    font-size: 0.6875rem;
+    letter-spacing: 0.05em;
+    color: #78828f;
+  }
+
+  @media (max-width: 32rem) {
+    .cols {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

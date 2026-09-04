@@ -1,0 +1,19 @@
+---
+/**
+ * Starlight's two-column layout, with the site footer appended inside
+ * `.main-pane`.
+ *
+ * The footer used to live in the `Footer` override, which renders inside the
+ * content column — a container that Starlight right-aligns in the pane
+ * (`--sl-content-margin-inline: auto 0`), so the band never reached the
+ * sidebar edge. Rendered here it is a sibling of `<main>` and spans the pane.
+ */
+import Default from '@astrojs/starlight/components/TwoColumnContent.astro';
+import SiteFooter from './SiteFooter.astro';
+---
+
+<Default>
+  <slot name="right-sidebar" slot="right-sidebar" />
+  <slot />
+  <SiteFooter />
+</Default>

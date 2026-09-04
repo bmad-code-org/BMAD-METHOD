@@ -1,87 +1,214 @@
 /**
- * BMAD Method Documentation - Custom Styles for Starlight
- * Dark theme matching bmadcode.com Ghost blog
+ * BMAD Method documentation — the bmadcode.com design system, applied to Starlight.
  *
- * Design tokens from Ghost theme:
- * Background: #0a0a0a | Surface: #1a1a1a | Border: #262626
- * Accent: #3b82f6 | Gold: #d4a853 | Text: #fafafa/#a1a1a1/#666666
+ * The marketing site is built from four type registers and almost nothing else:
+ *
+ *   display   Instrument Serif 400, tight — mastheads and statements
+ *   heading   Archivo 600, -0.02em — section headings and UI
+ *   body      Archivo 400, 17px/1.6 — prose, muted ink for anything secondary
+ *   label     IBM Plex Mono, 11px, uppercase, wide — used ONCE per section,
+ *             as an eyebrow, a column heading or a caption. Never for prose,
+ *             never for a table header, never for two things side by side.
+ *
+ * Everything else is ground and hairline: white or paper, one 1px rule at
+ * #d3d8de, 2px corners, one accent at #0f35e0 held under about 2% of the page.
+ * No shadows, no tinted panels, no hover lifts. The restraint is the design —
+ * a docs page should read as an article on that ground, not as a control panel.
+ *
+ * The ramp is copied unchanged from bmadcode.com's stylesheet. Starlight's token contract is aliased onto it below, so the
+ * built-in components inherit this look rather than imposing their own.
+ *
+ * Specificity note: Starlight ships its light values on `:root[data-theme='light']`,
+ * which outranks a bare `:root`, so the overrides sit on the same selectors.
  */
 
-/* Google Fonts - match Ghost blog typography */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap');
 
-/* ============================================
-   COLOR PALETTE - Light Mode
-   ============================================ */
+/* ---------------------------------------------------------------
+   The ramp
+   --------------------------------------------------------------- */
 :root {
-  /* Full-width content - override Starlight's default 45rem/67.5rem */
-  --sl-content-width: 65rem;
+  --bmad-white: #ffffff;
+  --bmad-paper: #f6f7f9;
+  --bmad-paper-2: #edeff3;
+  --bmad-line: #d3d8de;
+  --bmad-line-2: #b6bdc7;
+  --bmad-muted-ink: #5f6b7c;
+  --bmad-muted-ink-2: #7c8797;
+  --bmad-ink: #000000;
+  --bmad-ink-2: #1c2127;
 
-  /* Primary accent colors - blue to match Ghost blog */
-  --sl-color-accent-low: #dbeafe;
-  --sl-color-accent: #2563eb;
-  --sl-color-accent-high: #1d4ed8;
+  --bmad-dark: #111418;
+  --bmad-dark-2: #1a1e24;
+  --bmad-dark-3: #22272e;
+  --bmad-dark-line: #2e353e;
+  --bmad-dark-line-2: #404854;
+  --bmad-dark-muted: #a2acb9;
 
-  /* Text colors */
-  --sl-color-white: #1e293b;
-  --sl-color-gray-1: #334155;
-  --sl-color-gray-2: #475569;
-  --sl-color-gray-3: #64748b;
-  --sl-color-gray-4: #94a3b8;
-  --sl-color-gray-5: #cbd5e1;
-  --sl-color-gray-6: #e2e8f0;
-  --sl-color-black: #f8fafc;
+  --bmad-blue: #0f35e0;
+  --bmad-blue-on-dark: #7fa0ff;
+  --bmad-green: #1f6b3b;
+  --bmad-copper: #8a5a00;
+  --bmad-signal: #8c2018;
 
-  /* Font settings */
-  --sl-font: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
-    Arial, sans-serif;
-  --sl-font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
-  --sl-text-base: 1rem;
-  --sl-line-height: 1.7;
+  --bmad-sans: 'Archivo', -apple-system, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --bmad-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --bmad-display: 'Instrument Serif', Georgia, serif;
 
-  /* Code highlighting */
-  --sl-color-bg-inline-code: rgba(59, 130, 246, 0.08);
+  /* the 64px nav row bmadcode.com uses */
+  --sl-nav-height: 4rem;
+  --sl-nav-pad-x: 1.5rem;
+
+  /* an article measure: ~72 characters of 17px Archivo */
+  --sl-content-width: 46rem;
+
+  --sl-font: var(--bmad-sans);
+  --sl-font-mono: var(--bmad-mono);
+  --sl-text-base: 1.0625rem;
+  --sl-text-body: 1.0625rem;
+  --sl-text-body-sm: 0.9375rem;
+  --sl-line-height: 1.65;
+  --sl-line-height-headings: 1.1;
+  --sl-text-h1: clamp(2.2rem, 4vw, 3.05rem);
+  --sl-text-h2: clamp(1.45rem, 2.2vw, 1.6rem);
+  --sl-text-h3: 1.15rem;
+  --sl-text-h4: 1rem;
+  --sl-text-h5: 0.9375rem;
 }
 
-/* ============================================
-   COLOR PALETTE - Dark Mode (Primary Focus)
-   ============================================ */
+/* ---------------------------------------------------------------
+   Light — the primary look
+   --------------------------------------------------------------- */
+:root,
+:root[data-theme='light'] {
+  --sl-color-accent-low: #e6ebfd;
+  --sl-color-accent: var(--bmad-blue);
+  --sl-color-accent-high: var(--bmad-blue);
+
+  /* Starlight's `white` is its highest-contrast text, not a literal white */
+  --sl-color-white: var(--bmad-ink);
+  --sl-color-gray-1: var(--bmad-ink-2);
+  --sl-color-gray-2: var(--bmad-muted-ink);
+  --sl-color-gray-3: var(--bmad-muted-ink-2);
+  --sl-color-gray-4: var(--bmad-line-2);
+  --sl-color-gray-5: var(--bmad-line);
+  --sl-color-gray-6: var(--bmad-paper-2);
+  --sl-color-gray-7: var(--bmad-paper);
+  --sl-color-black: var(--bmad-white);
+
+  --sl-color-bg: var(--bmad-white);
+  --sl-color-bg-nav: var(--bmad-white);
+  --sl-color-bg-sidebar: var(--bmad-white);
+  --sl-color-bg-inline-code: var(--bmad-paper-2);
+  --sl-color-hairline: var(--bmad-line);
+  --sl-color-hairline-light: var(--bmad-line);
+  --sl-color-hairline-shade: var(--bmad-line);
+  --sl-color-text: var(--bmad-ink-2);
+  --sl-color-text-accent: var(--bmad-blue);
+  --sl-color-text-invert: var(--bmad-white);
+
+  --bmad-accent: var(--bmad-blue);
+  --bmad-tint: var(--bmad-paper);
+}
+
+/* ---------------------------------------------------------------
+   Dark — the same system on the ramp the marketing site uses for
+   its dark bands and its footer
+   --------------------------------------------------------------- */
 :root[data-theme='dark'] {
-  /* Full-width content - override Starlight's default */
-  --sl-content-width: 65rem;
+  --sl-color-accent-low: rgba(127, 160, 255, 0.14);
+  --sl-color-accent: var(--bmad-blue-on-dark);
+  --sl-color-accent-high: #a8beff;
 
-  /* Primary accent colors - blue to match Ghost blog */
-  --sl-color-accent-low: rgba(59, 130, 246, 0.12);
-  --sl-color-accent: #3b82f6;
-  --sl-color-accent-high: #60a5fa;
+  --sl-color-white: #ffffff;
+  --sl-color-gray-1: #e6eaf0;
+  --sl-color-gray-2: var(--bmad-dark-muted);
+  --sl-color-gray-3: #8c96a3;
+  --sl-color-gray-4: #6b7684;
+  --sl-color-gray-5: var(--bmad-dark-line-2);
+  --sl-color-gray-6: var(--bmad-dark-line);
+  --sl-color-gray-7: var(--bmad-dark-2);
+  --sl-color-black: var(--bmad-dark);
 
-  /* Background colors - match Ghost blog */
-  --sl-color-bg: #0a0a0a;
-  --sl-color-bg-nav: #0a0a0a;
-  --sl-color-bg-sidebar: #0a0a0a;
-  --sl-color-hairline-light: rgba(255, 255, 255, 0.06);
-  --sl-color-hairline: #262626;
+  --sl-color-bg: var(--bmad-dark);
+  --sl-color-bg-nav: var(--bmad-dark);
+  --sl-color-bg-sidebar: var(--bmad-dark);
+  --sl-color-bg-inline-code: var(--bmad-dark-3);
+  --sl-color-hairline: var(--bmad-dark-line);
+  --sl-color-hairline-light: var(--bmad-dark-line);
+  --sl-color-hairline-shade: var(--bmad-dark-line);
+  --sl-color-text: var(--bmad-dark-muted);
+  --sl-color-text-accent: var(--bmad-blue-on-dark);
+  --sl-color-text-invert: var(--bmad-dark);
 
-  /* Text colors - match Ghost blog */
-  --sl-color-white: #fafafa;
-  --sl-color-gray-1: #e2e8f0;
-  --sl-color-gray-2: #a1a1a1;
-  --sl-color-gray-3: #94a3b8;
-  --sl-color-gray-4: #666666;
-  --sl-color-gray-5: #475569;
-  --sl-color-gray-6: #262626;
-  --sl-color-black: #0a0a0a;
-
-  /* Code highlighting */
-  --sl-color-bg-inline-code: rgba(59, 130, 246, 0.15);
+  --bmad-accent: var(--bmad-blue-on-dark);
+  --bmad-tint: var(--bmad-dark-2);
 }
 
-/* ============================================
-   TYPOGRAPHY
-   ============================================ */
+/* ---------------------------------------------------------------
+   Base
+   --------------------------------------------------------------- */
+body {
+  font-family: var(--bmad-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
 
-/* Hero: left-align at all widths (Starlight centers below 50rem) */
+:focus-visible {
+  outline: 2px solid var(--bmad-accent);
+  outline-offset: 2px;
+}
+
+/* the workflow diagram breaks out to the full viewport */
+html {
+  overflow-x: clip;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* The label register, in one place, so it stays obvious how often it is spent. */
+.sidebar-content .top-level > li > details > summary,
+.sidebar-content .top-level > li > a,
+starlight-toc h2,
+.content-panel footer .meta {
+  font-family: var(--bmad-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+/* ---------------------------------------------------------------
+   Article
+   Serif masthead, then quiet prose. No rules between sections —
+   the space does that work.
+   --------------------------------------------------------------- */
+.content-panel h1#_top {
+  font-family: var(--bmad-display);
+  font-weight: 400;
+  letter-spacing: -0.014em;
+  line-height: 1.04;
+  max-width: 20ch;
+}
+
+/* The home page is the masthead band: display type, a lead, then a hairline
+   closing the band, the way every section on the marketing site closes.
+   Starlight reserves a 4fr column for a hero image; there is none here, so the
+   grid goes back to one column and the band keeps its own measure. */
+.hero {
+  grid-template-columns: 100%;
+  padding-block: clamp(1.5rem, 3vw, 2.6rem) clamp(2.4rem, 4.5vw, 3.6rem);
+  border-bottom: 1px solid var(--sl-color-hairline);
+  margin-bottom: clamp(2.2rem, 4vw, 3rem);
+}
+
+/* Starlight centres the hero below 50rem; the site never does */
 .hero .stack {
+  gap: 1.6rem;
   text-align: start;
 }
 
@@ -93,127 +220,571 @@
   justify-content: flex-start;
 }
 
-/* Space Grotesk for all headings - match Ghost blog */
-.sl-markdown-content h1,
-.sl-markdown-content h2,
-.sl-markdown-content h3,
-.sl-markdown-content h4,
-.sl-markdown-content h5,
-.sl-markdown-content h6,
-.site-title,
-starlight-toc h2 {
-  font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
-  letter-spacing: -0.02em;
+.hero h1 {
+  font-size: clamp(2.5rem, 4.6vw, 3.6rem);
+  max-width: 17ch;
 }
 
-.sl-markdown-content h1 {
-  margin-bottom: 1.5rem;
+.hero .tagline {
+  margin-top: 1.3rem;
+  max-width: 50ch;
+  font-size: 1.15rem;
+  line-height: 1.52;
+  letter-spacing: -0.008em;
+  color: var(--sl-color-gray-2);
 }
 
-.sl-markdown-content h2 {
-  margin-top: 2.5rem;
-  margin-bottom: 1rem;
+.hero .actions {
+  margin-top: 0.6rem;
 }
 
-.sl-markdown-content h3 {
-  margin-top: 2rem;
-  margin-bottom: 0.75rem;
-}
-
-.sl-markdown-content p {
-  margin-bottom: 1.25rem;
-}
-
-/* ============================================
-   SIDEBAR & NAVIGATION
-   Clean styling inspired by React Native docs
-   ============================================ */
-
-/* Base transition for all sidebar links */
-.sidebar-content a {
-  transition:
-    background-color 0.15s ease,
-    color 0.15s ease,
-    border-color 0.15s ease;
-  border-radius: 4px;
-}
-
-/* Top-level sidebar items (Diataxis categories) */
-.sidebar-content > ul > li > details > summary,
-.sidebar-content > ul > li > a {
-  font-weight: 700;
-  font-size: 0.9375rem;
-  padding: 0.5rem 0.75rem;
-}
-
-/* Nested sidebar items */
-.sidebar-content ul ul a {
-  font-weight: 500;
-  font-size: 0.875rem;
-  padding: 0.375rem 0.75rem;
-  padding-left: 1.5rem;
-  border-left: 3px solid transparent;
-}
-
-/* Deep nested items */
-.sidebar-content ul ul ul a {
-  font-weight: 400;
-  font-size: 0.8125rem;
-  padding-left: 2.25rem;
-}
-
-/* Active state - thin left accent bar */
-.sidebar-content a[aria-current='page'] {
-  background-color: rgba(59, 130, 246, 0.08);
-  color: var(--sl-color-accent);
-  border-left-color: var(--sl-color-accent);
+.sl-markdown-content :is(h2, h3, h4, h5, h6) {
+  font-family: var(--bmad-sans);
   font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.14;
+  color: var(--sl-color-white);
 }
 
-:root[data-theme='dark'] .sidebar-content a[aria-current='page'] {
-  background-color: rgba(59, 130, 246, 0.1);
-  color: var(--sl-color-accent-high);
-  border-left-color: var(--sl-color-accent);
+/* Starlight renders headings inline inside .sl-heading-wrapper so the anchor
+   link can sit beside them; vertical rhythm belongs on the wrapper. */
+.sl-markdown-content .sl-heading-wrapper.level-h2 {
+  margin-top: 3.2rem;
 }
 
-/* Hover states */
-.sidebar-content a:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+.sl-markdown-content .sl-heading-wrapper.level-h2 + * {
+  margin-top: 1rem;
 }
 
-:root[data-theme='dark'] .sidebar-content a:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+.sl-markdown-content .sl-heading-wrapper.level-h3 {
+  margin-top: 2.2rem;
 }
 
-/* Section spacing */
-.sidebar-content > ul > li {
-  margin-top: 0.75rem;
+.sl-markdown-content .sl-heading-wrapper.level-h3 + * {
+  margin-top: 0.7rem;
 }
 
-.sidebar-content > ul > li:first-child {
+.sl-markdown-content .sl-heading-wrapper.level-h2:first-child,
+.sl-markdown-content .sl-heading-wrapper.level-h3:first-child {
   margin-top: 0;
 }
 
-/* Lighter chevrons/carets */
+/* the opening paragraph carries the page, the way a lead does on the site */
+.sl-markdown-content > p:first-of-type {
+  font-size: 1.15rem;
+  line-height: 1.55;
+  letter-spacing: -0.008em;
+  color: var(--sl-color-gray-2);
+  max-width: 52ch;
+}
+
+.sl-markdown-content :is(p, li) {
+  color: var(--sl-color-text);
+}
+
+.sl-markdown-content a:not(:where(.not-content *)) {
+  color: var(--bmad-accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, var(--bmad-accent) 35%, transparent);
+}
+
+.sl-markdown-content a:not(:where(.not-content *)):hover {
+  text-decoration-color: currentcolor;
+}
+
+.sl-markdown-content strong {
+  font-weight: 600;
+  color: var(--sl-color-white);
+}
+
+/* the site sets its emphasis in serif italic */
+.sl-markdown-content em {
+  font-family: var(--bmad-display);
+  font-style: italic;
+  font-size: 1.08em;
+  letter-spacing: 0;
+}
+
+/* ---------------------------------------------------------------
+   Quotes, code, tables
+   --------------------------------------------------------------- */
+.sl-markdown-content blockquote {
+  border-inline-start: 2px solid var(--bmad-accent);
+  padding-inline-start: 1.1rem;
+  background: none;
+  border-radius: 0;
+  font-style: normal;
+  color: var(--sl-color-gray-2);
+}
+
+.sl-markdown-content code:not(:where(.not-content *)) {
+  font-family: var(--bmad-mono);
+  font-size: 0.85em;
+  border-radius: 2px;
+}
+
+/* Expressive Code frames square off and lose their shadow */
+:root {
+  --ec-brdRad: 2px;
+  --ec-brdCol: var(--sl-color-hairline);
+  --ec-uiFontFml: var(--bmad-mono);
+  --ec-codeFontFml: var(--bmad-mono);
+  --ec-codeFontSize: 0.875rem;
+  --ec-frm-frameBoxShdCssVal: none;
+  --ec-frm-edTabBrdRad: 2px;
+}
+
+.sl-markdown-content table {
+  display: block;
+  overflow-x: auto;
+  font-size: 0.9375rem;
+}
+
+.sl-markdown-content :is(th, td) {
+  border-color: var(--sl-color-hairline);
+  padding: 0.6rem 1rem 0.6rem 0;
+}
+
+.sl-markdown-content th {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--sl-color-white);
+  background: none;
+}
+
+.sl-markdown-content td {
+  color: var(--sl-color-text);
+}
+
+/* ---------------------------------------------------------------
+   Diagrams
+   Hand-authored SVGs (src/diagrams) carry geometry and classes only;
+   every colour lives here, so a second diagram written against the
+   same class vocabulary matches the first for free.
+   --------------------------------------------------------------- */
+.bmad-diagram {
+  --dg-surface: var(--bmad-paper);
+  --dg-line: var(--bmad-line);
+  --dg-ink: var(--bmad-ink-2);
+  --dg-muted: var(--bmad-muted-ink-2);
+  --dg-edge: var(--bmad-muted-ink-2);
+  --dg-ground: var(--bmad-white);
+  --dg-accent: var(--bmad-accent);
+
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+  font-family: var(--bmad-sans);
+}
+
+:root[data-theme='dark'] .bmad-diagram {
+  --dg-surface: var(--bmad-dark-2);
+  --dg-line: var(--bmad-dark-line-2);
+  --dg-ink: #e6eaf0;
+  --dg-muted: #8c96a3;
+  --dg-edge: #8c96a3;
+  --dg-ground: var(--bmad-dark);
+}
+
+.bmad-diagram .node {
+  fill: var(--dg-surface);
+  stroke: var(--dg-line);
+  stroke-width: 1;
+}
+
+.bmad-diagram .gate {
+  fill: var(--dg-ground);
+  stroke: var(--dg-accent);
+  stroke-width: 1.5;
+}
+
+.bmad-diagram .panel {
+  fill: none;
+  stroke: var(--dg-line);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+
+.bmad-diagram .edge {
+  fill: none;
+  stroke: var(--dg-edge);
+  stroke-width: 1.5;
+}
+
+.bmad-diagram .edge.soft {
+  stroke-width: 1.25;
+  stroke-dasharray: 4 4;
+  opacity: 0.85;
+}
+
+.bmad-diagram .edge.lens {
+  opacity: 0.5;
+}
+
+.bmad-diagram .head {
+  fill: var(--dg-edge);
+}
+
+.bmad-diagram .glyph {
+  fill: var(--dg-muted);
+}
+
+.bmad-diagram .glyph .fold {
+  fill: var(--dg-ground);
+  opacity: 0.5;
+}
+
+.bmad-diagram text {
+  fill: var(--dg-ink);
+}
+
+.bmad-diagram .n {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  text-anchor: middle;
+}
+
+.bmad-diagram .n.small {
+  font-size: 12.5px;
+  font-weight: 600;
+  text-anchor: start;
+}
+
+.bmad-diagram .sub {
+  font-size: 11.5px;
+  fill: var(--dg-muted);
+}
+
+.bmad-diagram .sub.mid {
+  text-anchor: middle;
+}
+
+.bmad-diagram .k {
+  font-family: var(--bmad-mono);
+  font-size: 10px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  fill: var(--dg-muted);
+}
+
+.bmad-diagram .panel-title {
+  fill: var(--dg-accent);
+}
+
+/* ---------------------------------------------------------------
+   Asides
+   A tinted plate, an icon and a heading in the hue — the shape the
+   docs had before, drawn in the site's palette: the hues are the
+   .tag-ok / .tag-warn / .tag-no colours from the site stylesheet, squared off
+   to 2px with no border and no shadow. The blue for `note` is derived
+   in the same key, since the site has no blue tag.
+   --------------------------------------------------------------- */
+.starlight-aside {
+  border: 0;
+  border-radius: 2px;
+  background: var(--aside-tint);
+  padding: 1.15rem 1.35rem;
+  color: var(--sl-color-text);
+}
+
+.starlight-aside__title {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 0.6rem;
+  font-family: var(--bmad-sans);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.014em;
+  text-transform: none;
+  color: var(--aside-mark);
+}
+
+.starlight-aside__icon {
+  display: inline-flex;
+  color: var(--aside-mark);
+  font-size: 1.15rem;
+}
+
+.starlight-aside__icon svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.starlight-aside p:last-child {
+  margin-bottom: 0;
+}
+
+.starlight-aside--note {
+  --aside-mark: var(--bmad-blue);
+  --aside-tint: #eef2fd;
+}
+
+.starlight-aside--tip {
+  --aside-mark: var(--bmad-green);
+  --aside-tint: #edf6f0;
+}
+
+.starlight-aside--caution {
+  --aside-mark: var(--bmad-copper);
+  --aside-tint: #fbf5e7;
+}
+
+.starlight-aside--danger {
+  --aside-mark: var(--bmad-signal);
+  --aside-tint: #faeeec;
+}
+
+/* on the dark ramp the tints are the same hues held at low alpha over
+   #111418, so the panel lifts without turning into a colour block */
+:root[data-theme='dark'] .starlight-aside--note {
+  --aside-mark: var(--bmad-blue-on-dark);
+  --aside-tint: rgba(127, 160, 255, 0.1);
+}
+
+:root[data-theme='dark'] .starlight-aside--tip {
+  --aside-mark: #6fcf97;
+  --aside-tint: rgba(111, 207, 151, 0.1);
+}
+
+:root[data-theme='dark'] .starlight-aside--caution {
+  --aside-mark: #e0b25f;
+  --aside-tint: rgba(224, 178, 95, 0.1);
+}
+
+:root[data-theme='dark'] .starlight-aside--danger {
+  --aside-mark: #e88a80;
+  --aside-tint: rgba(232, 138, 128, 0.1);
+}
+
+/* ---------------------------------------------------------------
+   Cards and buttons
+   --------------------------------------------------------------- */
+.card,
+.sl-link-card {
+  border: 1px solid var(--sl-color-hairline);
+  border-radius: 2px;
+  background: none;
+  box-shadow: none;
+  transition: border-color 0.18s ease;
+}
+
+.card:hover,
+.sl-link-card:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--bmad-accent);
+}
+
+.card .title {
+  font-weight: 600;
+  letter-spacing: -0.014em;
+}
+
+.card .icon {
+  color: var(--bmad-accent);
+}
+
+.sl-link-button {
+  height: 46px;
+  border-radius: 2px;
+  border: 1px solid transparent;
+  font-weight: 500;
+  letter-spacing: -0.006em;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.sl-link-button.primary {
+  background: var(--sl-color-white);
+  border-color: var(--sl-color-white);
+  color: var(--sl-color-black);
+}
+
+.sl-link-button.primary:hover {
+  background: var(--bmad-accent);
+  border-color: var(--bmad-accent);
+  color: #ffffff;
+}
+
+.sl-link-button.secondary,
+.sl-link-button.minimal {
+  border-color: var(--sl-color-gray-4);
+  color: var(--sl-color-white);
+}
+
+.sl-link-button.secondary:hover,
+.sl-link-button.minimal:hover {
+  background: var(--sl-color-white);
+  border-color: var(--sl-color-white);
+  color: var(--sl-color-black);
+}
+
+/* ---------------------------------------------------------------
+   Header
+   --------------------------------------------------------------- */
+header.header {
+  padding: 0; /* zero the PageFrame pad so it does not stack on the inner row */
+  box-shadow: none;
+  border-bottom: 1px solid var(--sl-color-hairline);
+}
+
+header.header .header.sl-flex {
+  width: 100%;
+  height: 100%;
+  padding: 0 var(--sl-nav-pad-x);
+}
+
+site-search button {
+  border-color: var(--sl-color-hairline);
+  border-radius: 2px;
+  font-family: var(--bmad-sans);
+  font-size: 0.9375rem;
+  color: var(--sl-color-gray-2);
+}
+
+site-search button:hover {
+  border-color: var(--bmad-accent);
+  color: var(--sl-color-white);
+}
+
+site-search button kbd {
+  font-family: var(--bmad-mono);
+  font-size: 0.6875rem;
+  background: none;
+  color: var(--sl-color-gray-3);
+}
+
+.social-icons a {
+  color: var(--sl-color-gray-3);
+  transition: color 0.15s ease;
+}
+
+.social-icons a:hover {
+  color: var(--bmad-accent);
+  background: none;
+}
+
+.social-icons::after {
+  border-inline-end-color: var(--sl-color-hairline);
+}
+
+starlight-menu-button button {
+  border-radius: 2px;
+  box-shadow: none;
+  border: 1px solid var(--sl-color-hairline);
+}
+
+/* ---------------------------------------------------------------
+   Sidebar
+   A quiet index: one mono label per group, then plain text. No
+   borders, no fills, no active pill — the accent is enough.
+   --------------------------------------------------------------- */
+.sidebar-pane {
+  border-inline-end: 1px solid var(--sl-color-hairline);
+}
+
+.sidebar-content .top-level > li > details > summary,
+.sidebar-content .top-level > li > a {
+  color: var(--sl-color-gray-3);
+  padding: 0.3rem 0.7rem;
+}
+
+.sidebar-content .top-level > li {
+  margin-top: 1.8rem;
+}
+
+.sidebar-content .top-level > li:first-child {
+  margin-top: 0.5rem;
+}
+
+.sidebar-content .top-level ul a {
+  padding: 0.32rem 0.7rem;
+  border: 0;
+  border-inline-start: 2px solid transparent;
+  border-radius: 0;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  letter-spacing: -0.008em;
+  color: var(--sl-color-gray-2);
+  background: none;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.sidebar-content .top-level ul ul a {
+  padding-inline-start: 1.5rem;
+  font-size: 0.875rem;
+}
+
+/* The current page is marked the way the site marks a callout: a 2px accent
+   rule and a paper tint. Both sides of the theme read it, because the tint is
+   the ramp's own surface (paper in light, #1a1e24 on dark) rather than a
+   washed accent. */
+.sidebar-content .top-level a:hover {
+  color: var(--sl-color-white);
+  background: var(--sl-color-gray-7);
+}
+
+.sidebar-content .top-level a[aria-current='page'] {
+  color: var(--bmad-accent);
+  font-weight: 500;
+  background: var(--sl-color-gray-7);
+  border-inline-start-color: var(--bmad-accent);
+}
+
 .sidebar-content summary::marker,
 .sidebar-content details > summary::after {
-  opacity: 0.4;
+  opacity: 0.35;
 }
 
-.sidebar-content summary:hover::marker,
-.sidebar-content details > summary:hover::after {
-  opacity: 0.6;
+/* ---------------------------------------------------------------
+   Table of contents
+   --------------------------------------------------------------- */
+starlight-toc h2 {
+  color: var(--sl-color-gray-3);
+  margin-bottom: 0.6rem;
 }
 
-/* ============================================
-   LAYOUT - Full width content
-   ============================================ */
+starlight-toc a {
+  border-radius: 0;
+  font-size: 0.875rem;
+  color: var(--sl-color-gray-2);
+}
+
+starlight-toc a:hover {
+  color: var(--sl-color-white);
+}
+
+starlight-toc a[aria-current='true'] {
+  color: var(--bmad-accent);
+  font-weight: 500;
+}
+
+/* ---------------------------------------------------------------
+   Layout and page meta
+   --------------------------------------------------------------- */
 .content-panel {
-  width: 100%;
-  margin: 0 auto;
+  padding-block: 2.4rem;
 }
 
-/* Full-width workflow diagram iframe */
+main {
+  min-width: 0;
+}
+
+.sl-markdown-content {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+/* the workflow map is a wide diagram; it runs the full viewport */
 .sl-markdown-content > iframe:first-child {
   width: 100vw !important;
   margin-left: calc(50% - 50vw);
@@ -222,310 +793,52 @@ starlight-toc h2 {
   border-right: none !important;
 }
 
-/* Main content area */
-main {
-  min-width: 0;
+/* The site footer is the last child of .main-pane, so the column has to
+   stretch for the band to sit at the bottom of a short page. */
+.page > .main-frame {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
-.sl-markdown-content {
-  min-width: 0;
-  overflow-wrap: break-word;
-  word-wrap: break-word;
+.page > .main-frame > * {
+  flex: 1;
 }
 
-/* Hide breadcrumbs if desired */
-/* Uncomment to hide:
-nav[aria-label="Breadcrumb"] {
-  display: none;
-}
-*/
-
-/* ============================================
-   NAVBAR
-   ============================================ */
-header.header {
-  padding: 0; /* Zero Starlight PageFrame pad so it does not stack on the inner row */
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+.main-pane {
+  display: flex;
+  flex-direction: column;
 }
 
-header.header .header.sl-flex {
-  padding: 0 1.5rem;
-}
+/* Above 72rem the pane sits in a flex row and stretches on its own. Below it
+   the wrapper is a plain block, so it becomes a column and the pane grows —
+   `flex` is scoped to that width because at 72rem and up it would override the
+   width Starlight computes for the two-column layout. */
+@media (max-width: 71.9375rem) {
+  .page > .main-frame > * {
+    display: flex;
+    flex-direction: column;
+  }
 
-:root[data-theme='dark'] header.header {
-  box-shadow: none;
-  border-bottom: 1px solid #262626;
-}
-
-.site-title {
-  font-weight: 700;
-  margin-left: 0;
-  padding-left: 0;
-}
-
-/* Logo sizing - constrain to reasonable size */
-.site-title img {
-  height: 2.5rem;
-  width: auto;
-}
-
-/* Social links styling */
-.social-icons a {
-  padding: 0.5rem;
-  transition:
-    background-color 0.15s ease,
-    color 0.15s ease;
-  border-radius: 6px;
-}
-
-.social-icons a:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-:root[data-theme='dark'] .social-icons a:hover {
-  background-color: rgba(255, 255, 255, 0.05);
-}
-
-/* ============================================
-   CARDS
-   ============================================ */
-.card {
-  border-radius: 12px;
-  border: 2px solid var(--sl-color-gray-5);
-  background-color: var(--sl-color-bg);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    border-color 0.2s ease;
-}
-
-.card:hover {
-  transform: translateY(-3px);
-  border-color: var(--sl-color-accent);
-  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
-}
-
-:root[data-theme='dark'] .card {
-  background: #1a1a1a;
-  border-color: #262626;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-:root[data-theme='dark'] .card:hover {
-  border-color: #3b82f6;
-  box-shadow:
-    0 8px 32px rgba(59, 130, 246, 0.15),
-    0 0 0 1px rgba(59, 130, 246, 0.1);
-}
-
-/* Starlight card grid */
-.sl-link-card {
-  border-radius: 12px;
-  border: 2px solid var(--sl-color-gray-5);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    border-color 0.2s ease;
-}
-
-.sl-link-card:hover {
-  transform: translateY(-3px);
-  border-color: var(--sl-color-accent);
-}
-
-:root[data-theme='dark'] .sl-link-card {
-  border-color: #262626;
-}
-
-:root[data-theme='dark'] .sl-link-card:hover {
-  border-color: #3b82f6;
-}
-
-/* ============================================
-   BUTTONS
-   ============================================ */
-.sl-flex a[href],
-button {
-  transition:
-    background-color 0.2s ease,
-    transform 0.1s ease;
-}
-
-.sl-flex a[href]:hover,
-button:hover {
-  transform: translateY(-1px);
-}
-
-/* ============================================
-   MISC ENHANCEMENTS
-   ============================================ */
-
-/* Prevent horizontal scrollbar from full-viewport-width breakout elements (e.g. iframe) */
-html {
-  overflow-x: clip;
-}
-
-/* Smooth scrolling */
-@media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
+  .main-pane {
+    flex: 1;
   }
 }
 
-/* Disable hover animations for users who prefer reduced motion */
+.main-pane > main {
+  flex: 1;
+}
+
+.content-panel footer .meta {
+  color: var(--sl-color-gray-3);
+  margin-top: 3.5rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--sl-color-hairline);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .card:hover,
   .sl-link-card:hover {
     transform: none;
-  }
-}
-
-/* Better link underlines */
-.sl-markdown-content a:not(.sl-link-card) {
-  text-decoration-thickness: 1px;
-  text-underline-offset: 2px;
-}
-
-/* Table styling */
-table {
-  display: block;
-  width: 100%;
-}
-
-:root[data-theme='dark'] table {
-  border-color: #262626;
-}
-
-:root[data-theme='dark'] table th {
-  background-color: rgba(59, 130, 246, 0.05);
-}
-
-:root[data-theme='dark'] table tr:nth-child(2n) {
-  background-color: rgba(255, 255, 255, 0.02);
-}
-
-/* Blockquotes */
-blockquote {
-  border-left-color: var(--sl-color-accent);
-  background-color: rgba(59, 130, 246, 0.05);
-  border-radius: 0 8px 8px 0;
-  padding: 1rem 1.25rem;
-}
-
-/* ============================================
-   ADMONITIONS (Starlight Asides)
-   Rounded, no left border bar
-   ============================================ */
-.starlight-aside {
-  margin-bottom: 1.5rem;
-  padding: 1.25rem 1.5rem;
-  border-radius: 12px;
-  border: none;
-  border-left: 0;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-}
-
-/* Tip aside */
-.starlight-aside--tip {
-  background-color: rgba(16, 185, 129, 0.08);
-}
-
-.starlight-aside--tip .starlight-aside__title {
-  color: #047857;
-}
-
-:root[data-theme='dark'] .starlight-aside--tip {
-  background-color: rgba(16, 185, 129, 0.12);
-}
-
-:root[data-theme='dark'] .starlight-aside--tip .starlight-aside__title {
-  color: #34d399;
-}
-
-/* Note aside */
-.starlight-aside--note {
-  background-color: rgba(59, 130, 246, 0.08);
-}
-
-.starlight-aside--note .starlight-aside__title {
-  color: #2563eb;
-}
-
-:root[data-theme='dark'] .starlight-aside--note {
-  background-color: rgba(59, 130, 246, 0.12);
-}
-
-:root[data-theme='dark'] .starlight-aside--note .starlight-aside__title {
-  color: #3b82f6;
-}
-
-/* Caution aside */
-.starlight-aside--caution {
-  background-color: rgba(245, 158, 11, 0.1);
-}
-
-.starlight-aside--caution .starlight-aside__title {
-  color: #a14908;
-}
-
-:root[data-theme='dark'] .starlight-aside--caution {
-  background-color: rgba(245, 158, 11, 0.15);
-}
-
-:root[data-theme='dark'] .starlight-aside--caution .starlight-aside__title {
-  color: #fbbf24;
-}
-
-/* Danger aside */
-.starlight-aside--danger {
-  background-color: rgba(239, 68, 68, 0.1);
-}
-
-.starlight-aside--danger .starlight-aside__title {
-  color: #be1c1c;
-}
-
-:root[data-theme='dark'] .starlight-aside--danger {
-  background-color: rgba(239, 68, 68, 0.15);
-}
-
-:root[data-theme='dark'] .starlight-aside--danger .starlight-aside__title {
-  color: #f87171;
-}
-
-/* Aside icon styling */
-.starlight-aside__icon svg {
-  width: 1.25rem;
-  height: 1.25rem;
-}
-
-/* ============================================
-   FOOTER - No custom styling needed
-   The only <footer> in Starlight is the content footer
-   (meta/pagination), which should stay transparent.
-   ============================================ */
-
-/* ============================================
-   RESPONSIVE ADJUSTMENTS
-   ============================================ */
-@media (max-width: 72rem) {
-  .content-panel {
-    max-width: 100%;
-  }
-}
-
-/* Responsive padding on navbar row */
-@media (min-width: 50rem) {
-  header.header .header.sl-flex {
-    padding-left: 1rem;
-    padding-right: 2.5rem;
-  }
-}
-
-@media (min-width: 72rem) {
-  header.header .header.sl-flex {
-    padding-left: 1rem;
-    padding-right: 3rem;
   }
 }
