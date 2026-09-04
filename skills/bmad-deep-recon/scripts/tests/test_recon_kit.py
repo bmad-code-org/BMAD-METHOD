@@ -122,7 +122,10 @@ class SlugTest(unittest.TestCase):
 
 
 class EscapeSourcesTest(unittest.TestCase):
+    """The source appendix as HTML: every cell escaped, only http(s) linked."""
+
     def test_escaping_and_url_validation(self):
+        """A javascript: URL is reported and never becomes an anchor."""
         with tempfile.TemporaryDirectory() as tmp:
             report = Path(tmp) / "report.md"
             report.write_text(REPORT, encoding="utf-8")

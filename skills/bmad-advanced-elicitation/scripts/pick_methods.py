@@ -160,6 +160,7 @@ def fmt_categories(cats: list[tuple[str, int]], as_json: bool) -> str:
 
 
 def fmt_rows(rows: list[dict], as_json: bool) -> str:
+    """Render rows as JSON, or as one tab-separated line each for lean output."""
     if as_json:
         return json.dumps([{k: r[k] for k in FIELDS} for r in rows])
     return "\n".join(

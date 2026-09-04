@@ -218,6 +218,7 @@ def test_cli_json_output(lib, capsys):
 # --- shipped catalog integration ----------------------------------------------
 
 def test_shipped_catalog_loads_clean():
+    """The catalog that ships with the skill parses and has every field filled."""
     shipped = pick_methods.DEFAULT_FILE
     assert shipped.is_file(), f"shipped catalog missing: {shipped}"
     r = pick_methods.load(shipped)

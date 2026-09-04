@@ -69,6 +69,11 @@ def section_metrics(text: str) -> list[dict]:
 
 
 def metrics(path: Path) -> dict:
+    """Word counts for one document: the total, and one entry per section.
+
+    Sections are the headings, preceded by a "(preamble)" entry when the
+    document opens with text before its first heading.
+    """
     text = path.read_text(encoding="utf-8", errors="replace")
     return {
         "file": str(path),
