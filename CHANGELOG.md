@@ -1,5 +1,24 @@
 # Changelog
 
+## v6.12.0 - 2026-09-03
+
+**Build decides how much ceremony a change needs after investigating it, not before.** Simple changes now get a two-section spec and finish in one session.
+
+**Review triage logs a verdict and evidence for every finding**, so nothing gets dropped silently. Several review bugs went with it: layers that returned nothing, serial launches, and re-reviews redoing settled work.
+
+### 💥 Breaking
+
+* `persistent_facts` ships empty. Re-add `project-context.md` to your override if you relied on the auto-load.
+* `{diff_output}` is now `{diff_file}`. Update custom review overrides.
+* Deprecated shims are opt-in on fresh installs. Pass `--shims` to keep them.
+* `bmad-checkpoint-preview` is now `bmad-walkthrough` (`CK` → `WT`). The old ID still forwards.
+* Build no longer auto-triggers on interactive edits, git bookkeeping, or formatting chores.
+* `llms.txt` and `llms-full.txt` are no longer published.
+
+### Also
+
+`bmad-project-context` now adopts a handwritten `AGENTS.md` instead of rewriting it. Polytoken, Grok, and ZCode added to the installer. Docs reorganized by task, Korean translation added. Fixes across customization resolution, review dispatch, and Windows encoding.
+
 ## v6.11.0 - 2026-08-09
 
 ### ✨ Headline
