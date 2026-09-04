@@ -158,6 +158,8 @@ class ProjectCase(unittest.TestCase):
 
 
 class TestRules(ProjectCase):
+    """One case per deterministic rule, driven through validate_skill()."""
+
     def test_skill_01_missing_skill_md(self):
         skill = self.skills / "bmad-empty"
         skill.mkdir()
@@ -319,6 +321,7 @@ class TestRules(ProjectCase):
         self.assertEqual(sum(1 for f in findings if f["line"] == 6), 1)
 
     def test_tpl_01_does_not_strip_code_blocks(self):
+        """TPL-01 reads template files whole, fenced samples included."""
         skill = self.valid(
             "bmad-tpl",
             {
@@ -337,6 +340,7 @@ class TestRules(ProjectCase):
         "chmod(0) only sets the read-only flag on Windows; the owner can still read",
     )
     def test_read_err_on_unreadable_file_continues(self):
+        """An unreadable file is reported as READ-ERR without stopping the scan."""
         skill = self.valid("bmad-perm", {"secret.md": "ok\n"})
         target = skill / "secret.md"
         os.chmod(target, 0)
@@ -465,12 +469,16 @@ class TestCliAndOutput(ProjectCase):
 
 
 class TestParsers(unittest.TestCase):
+    """The frontmatter parsers, exercised directly rather than through a skill."""
+
     def test_parse_frontmatter_null_and_empty(self):
+        """No fence yields None; an empty fence yields an empty dict, not None."""
         self.assertIsNone(vs.parse_frontmatter("no fence\n"))
         self.assertEqual(vs.parse_frontmatter("---\n---\nbody\n"), {})
         self.assertEqual(vs.parse_frontmatter("---\nname: 'quoted'\n---\n"), {"name": "quoted"})
 
     def test_parse_frontmatter_multiline_continuation_and_comments(self):
+        """An indented continuation joins its key; a comment line inside it does not."""
         content = "---\nname: bmad-x\ndescription: line1\n  line2\n# ignored\n  line3\n---\n\nBody\n"
         fm = vs.parse_frontmatter_multiline(content)
         self.assertEqual(fm["name"], "bmad-x")
@@ -488,6 +496,7 @@ class TestPlatformPortability(ProjectCase):
             fh.write(text)
 
     def test_crlf_skill_md_parses_like_its_lf_original(self):
+        """A CRLF checkout must reach the same verdict as the LF original."""
         # Git for Windows defaults to core.autocrlf=true, so a checkout there is
         # CRLF throughout. Read with newline="", the fence stayed "\r\n---\r\n",
         # which find("\n---\n") never matches: every skill came back missing its
@@ -501,6 +510,7 @@ class TestPlatformPortability(ProjectCase):
         self.assertEqual(findings, [], msg=f"CRLF checkout produced {findings}")
 
     def test_report_paths_use_forward_slashes(self):
+        """Report paths are a contract, so they stay POSIX on every platform."""
         # These strings are the JSON skill/file fields and the file= of a GitHub
         # Actions annotation, which only resolves with forward slashes.
         self.add_skill(
@@ -519,6 +529,7 @@ class TestPlatformPortability(ProjectCase):
         self.assertIn("nested/notes.md", out)
 
     def test_report_survives_a_cp1252_console(self):
+        """The report prints in full on a console that cannot encode U+2500."""
         # The report rules its sections with U+2500, which cp1252 cannot encode.
         # Unpinned, print() raised before the validator reported anything.
         self.valid("bmad-pin")

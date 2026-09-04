@@ -70,6 +70,7 @@ def escape_annotation(s: str) -> str:
 
 
 def escape_table_cell(s: str) -> str:
+    """Escape a value for a markdown table cell, where an unescaped | ends the column."""
     return str(s).replace("|", "\\|")
 
 
@@ -155,6 +156,11 @@ def parse_frontmatter(content: str) -> dict[str, str] | None:
 
 
 def parse_frontmatter_multiline(content: str) -> dict[str, str] | None:
+    """Frontmatter as a dict, folding indented continuation lines into their key.
+
+    None when the block is absent, {} when it is present but empty. A comment
+    line inside a continuation is dropped rather than appended to the value.
+    """
     fm_block = _frontmatter_block(content)
     if fm_block is None:
         return None
@@ -671,6 +677,7 @@ def run(
     strict: bool = False,
     json_output: bool = False,
 ) -> int:
+    """Validate the requested skills, print the report, and return the exit code."""
     src_dir = os.path.join(project_root, "src")
     github_actions = bool(os.environ.get("GITHUB_ACTIONS"))
 
