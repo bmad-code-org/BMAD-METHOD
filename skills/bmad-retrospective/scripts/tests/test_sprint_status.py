@@ -1546,6 +1546,7 @@ def test_action_items_updated_is_always_reported(tmp_path):
 
 
 def test_post_write_status_mismatch_restores(tmp_path, monkeypatch, capsys):
+    """A post-write re-parse that disagrees rolls the file back and says so."""
     # The last line of defence: the written file is re-parsed and every targeted
     # item is checked. No CLI path can fake a mismatch, so the re-parse is
     # doctored directly.
@@ -1574,10 +1575,6 @@ def test_post_write_status_mismatch_restores(tmp_path, monkeypatch, capsys):
     assert out["restored"] is True
     assert "after write" in out["error"]
     assert target.read_text(encoding="utf-8") == ACTION_FIXTURE
-
-
-if __name__ == "__main__":
-    sys.exit(pytest.main([__file__, "-q"]))
 
 
 def test_main_pins_stderr_to_utf8(tmp_path, monkeypatch):
@@ -1640,3 +1637,7 @@ def test_pin_utf8_ignores_a_stream_without_reconfigure():
         errors = None
 
     _module().pin_utf8(Captured())  # must not raise
+
+
+if __name__ == "__main__":
+    sys.exit(pytest.main([__file__, "-q"]))
