@@ -13,7 +13,7 @@ Lorsqu’une story planifiée entre dans Build, elle reste la source du contexte
 
 Il permet au modèle de s’exécuter plus longtemps entre les points de contrôle, puis ne vous fait intervenir que lorsque la tâche ne peut pas se poursuivre en toute sécurité sans jugement humain, ou lorsqu’il est temps de revoir le résultat final.
 
-![Diagramme du workflow Build](/diagrams/build-diagram-fr.webp)
+![Le déroulé de bmad-build](/diagrams/build-run.svg)
 
 ## Pourquoi cette fonctionnalité existe
 

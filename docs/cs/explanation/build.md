@@ -13,7 +13,7 @@ Když do Build vstoupí naplánovaná story, zůstává zdrojem produktového ko
 
 Umožňuje modelu běžet déle mezi kontrolními body a poté přivede člověka zpět pouze tehdy, když úkol nemůže bezpečně pokračovat bez lidského úsudku nebo když je čas zkontrolovat konečný výsledek.
 
-![Diagram workflow Build](/diagrams/build-diagram.png)
+![Diagram workflow Build](/diagrams/build-run.svg)
 
 ## Proč to existuje
 

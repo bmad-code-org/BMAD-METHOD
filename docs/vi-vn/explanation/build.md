@@ -13,7 +13,7 @@ Khi một story đã lập kế hoạch đi vào Build, story vẫn là nguồn 
 
 Nó cho phép mô hình tự vận hành lâu hơn giữa các điểm kiểm tra, rồi chỉ đưa con người quay lại khi tác vụ không thể tiếp tục an toàn nếu thiếu phán đoán của con người, hoặc khi đã đến lúc rà soát kết quả cuối.
 
-![Build workflow diagram](/diagrams/build-diagram.png)
+![Sơ đồ quy trình bmad-build](/diagrams/build-run.svg)
 
 ## Vì sao nó tồn tại
 
