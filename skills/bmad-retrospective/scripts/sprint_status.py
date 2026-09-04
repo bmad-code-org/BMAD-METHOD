@@ -658,6 +658,7 @@ def _restore(path, original_bytes, mode=None):
 
 
 def build_parser():
+    """Build the subcommand parser, which reports its own errors as JSON."""
     parser = JsonArgumentParser(
         description=(
             "Detect the current retrospective epic and surgically update "
@@ -736,7 +737,31 @@ def build_parser():
     return parser
 
 
+def pin_utf8(stream) -> None:
+    """Pin a console stream to UTF-8, keeping its own error handler.
+
+    The restore-failure diagnostic is the one thing this script writes as plain
+    text rather than JSON, and it quotes the OSError, which carries the target
+    path. On a Windows console (cp1252) that path comes back as escapes while
+    the user is trying to find out which file was left half written.
+
+    errors= is passed through deliberately: reconfigure(encoding=...) alone
+    resets the handler to "strict", which would silently downgrade stderr's
+    backslashreplace default and turn a diagnostic about an undecodable path
+    into a traceback.
+    """
+    reconfigure = getattr(stream, "reconfigure", None)
+    if reconfigure is not None:
+        reconfigure(encoding="utf-8", errors=getattr(stream, "errors", None) or "strict")
+
+
 def main(argv=None):
+    """Pin the console streams, then dispatch one subcommand.
+
+    Does not return: every handler leaves through ``_emit``, which exits.
+    """
+    pin_utf8(sys.stdout)
+    pin_utf8(sys.stderr)
     parser = build_parser()
     args = parser.parse_args(argv)
     args.func(args)
