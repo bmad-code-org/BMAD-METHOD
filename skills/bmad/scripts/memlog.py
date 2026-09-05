@@ -194,7 +194,27 @@ def add_target(sp) -> None:
     g.add_argument("--path", help="explicit memlog file path (alternative to --workspace)")
 
 
+def pin_utf8(stream) -> None:
+    """Pin a console stream to UTF-8, keeping its own error handler.
+
+    Diagnostics quote user-controlled text -- config paths, tomllib's message,
+    the offending line -- so stderr can carry a character the platform default
+    cannot encode (cp1252 on Windows) and the write then raises.
+
+    errors= is passed through deliberately: reconfigure(encoding=...) alone
+    resets the handler to "strict", which would silently downgrade stderr's
+    POSIX default of "backslashreplace" and turn a diagnostic about an
+    undecodable path into a traceback.
+    """
+    reconfigure = getattr(stream, "reconfigure", None)
+    if reconfigure is not None:
+        reconfigure(encoding="utf-8", errors=getattr(stream, "errors", None) or "strict")
+
+
 def main(argv: list[str] | None = None) -> int:
+    """Dispatch one memlog subcommand and return its exit code."""
+    pin_utf8(sys.stdout)
+    pin_utf8(sys.stderr)
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="cmd", required=True)
 

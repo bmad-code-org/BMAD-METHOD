@@ -12,6 +12,8 @@ SCRIPT = Path(__file__).resolve().parents[1] / "resolve_customization.py"
 
 
 class ResolveCustomizationStdoutTests(unittest.TestCase):
+    """stdout carries the resolved JSON, including emoji agent icons."""
+
     def test_missing_tomllib_exits_with_actionable_version_error(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             scripts = Path(temp_dir)
@@ -173,6 +175,52 @@ class ProjectRootResolutionTests(unittest.TestCase):
             resolved = json.loads(result.stdout)["workflow"]["persistent_facts"]
             self.assertEqual(resolved, ["shipped default", "home override"])
             self.assertEqual(result.stderr, "")
+
+
+class ResolveCustomizationStderrEncodingTests(unittest.TestCase):
+    """stderr carries user-controlled text, so it needs the same pin as stdout."""
+
+    def test_parse_error_survives_a_cp1252_console(self):
+        """A parse error names its file readably even on a cp1252 console."""
+        # The diagnostic quotes the offending path verbatim. On a Windows console
+        # (cp1252) an unpinned stderr raises UnicodeEncodeError while reporting the
+        # error, so the user sees a traceback instead of the filename to go fix.
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project_root = Path(temp_dir) / "proje-şık"
+            skill_dir = project_root / "skills" / "bmad-fake"
+            skill_dir.mkdir(parents=True)
+            (skill_dir / "customize.toml").write_text(
+                "[workflow]\nsteps = []\n", encoding="utf-8"
+            )
+            custom_dir = project_root / "_bmad" / "custom"
+            custom_dir.mkdir(parents=True)
+            (custom_dir / "bmad-fake.toml").write_text(
+                '[workflow]\nnote = "unterminated\n', encoding="utf-8"
+            )
+
+            env = dict(os.environ)
+            env["PYTHONIOENCODING"] = "cp1252"
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--skill",
+                    str(skill_dir),
+                    "--project-root",
+                    str(project_root),
+                ],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                env=env,
+                check=False,
+            )
+
+            stderr = result.stderr.decode("utf-8")
+            self.assertEqual(result.returncode, 1, msg=stderr)
+            self.assertIn("proje-şık", stderr)
+            self.assertNotIn("UnicodeEncodeError", stderr)
+            self.assertNotIn("Traceback", stderr)
 
 
 if __name__ == "__main__":

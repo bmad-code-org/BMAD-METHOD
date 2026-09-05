@@ -106,14 +106,32 @@ def extract_key(data, dotted_key: str):
     return current
 
 
-def write_json_stdout(output) -> None:
-    reconfigure = getattr(sys.stdout, "reconfigure", None)
+def pin_utf8(stream) -> None:
+    """Pin a console stream to UTF-8, keeping its own error handler.
+
+    Diagnostics quote user-controlled text -- config paths, tomllib's message,
+    the offending line -- so stderr can carry a character the platform default
+    cannot encode (cp1252 on Windows) and the write then raises.
+
+    errors= is passed through deliberately: reconfigure(encoding=...) alone
+    resets the handler to "strict", which would silently downgrade stderr's
+    POSIX default of "backslashreplace" and turn a diagnostic about an
+    undecodable path into a traceback.
+    """
+    reconfigure = getattr(stream, "reconfigure", None)
     if reconfigure is not None:
-        reconfigure(encoding="utf-8")
+        reconfigure(encoding="utf-8", errors=getattr(stream, "errors", None) or "strict")
+
+
+def write_json_stdout(output) -> None:
+    """Emit the resolved customization as UTF-8 JSON on stdout."""
+    pin_utf8(sys.stdout)
     sys.stdout.write(json.dumps(output, indent=2, ensure_ascii=False) + "\n")
 
 
 def main() -> int:
+    """Resolve one skill's customization and print it, or report why it could not."""
+    pin_utf8(sys.stderr)
     parser = argparse.ArgumentParser(
         description="Resolve skill customization using three-layer TOML merge."
     )
