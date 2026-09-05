@@ -157,7 +157,7 @@ Keep messages under 72 characters. Each commit = one logical change.
 - Web/planning agents can be larger with complex tasks
 - Everything is natural language (markdown) — no code in core framework
 - Use BMad modules for domain-specific features
-- Validate file references: `npm run validate:refs`
+- Validate file references: `uv run tools/validate_file_refs.py --strict`
 
 ### File-Pattern-to-Validator Mapping
 

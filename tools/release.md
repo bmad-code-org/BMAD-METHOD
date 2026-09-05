@@ -7,7 +7,7 @@ No release branches, release PRs, merge commits, or back-merges are needed.
 required status checks and force-push/deletion blocked.
 
 This is a hand-run process. It does not publish to npm; npm maintenance stays
-on `V6.12`. Use Git, the Node version in `.nvmrc`, and `uv`.
+on `V6.12`. Use Git, `uv`, and the Node version in `docs-site/.nvmrc`.
 Pause other pushes and merges into `dev` until the next placeholder is pushed.
 Do the release in one sitting. Stop on any failed command or unexpected diff.
 
@@ -25,7 +25,7 @@ git merge-base --is-ancestor origin/main dev
 
 bmad_release_version=6.13.0
 bmad_next_version=6.13.1-next
-git show origin/main:package.json
+git show origin/main:skills/bmad/module-manifest.toml
 git tag --list "v$bmad_release_version"
 ```
 
@@ -39,16 +39,15 @@ with `-next`. The stamper enforces the version syntax, not release history.
 ```bash
 uv run --python 3.11 tools/stamp_release.py "$bmad_release_version"
 git diff
-git add skills/*/module-manifest.toml package.json package-lock.json
+git add skills/*/module-manifest.toml
 git commit -m "chore(release): v$bmad_release_version"
 bmad_release_commit=$(git rev-parse HEAD)
-npm ci && npm run quality
+uv sync --frozen && (cd docs-site && npm ci) && uv run --frozen tools/quality.py
 git push origin dev
 ```
 
-Review before committing: only versions in the 29 manifests, `package.json`,
-and both root version fields in `package-lock.json` should change, not
-dependencies. Run the quality gate on committed `HEAD` in this checkout
+Review before committing: only the version in the 29 manifests should
+change. Run the quality gate on committed `HEAD` in this checkout
 before pushing; keep that tested commit checked out through promotion/tagging.
 Wait for its required GitHub status checks to pass before promoting it.
 
@@ -77,9 +76,9 @@ git fetch origin
 test "$(git rev-parse origin/dev)" = "$bmad_release_commit"
 uv run --python 3.11 tools/stamp_release.py "$bmad_next_version"
 git diff
-git add skills/*/module-manifest.toml package.json package-lock.json
+git add skills/*/module-manifest.toml
 git commit -m "chore: bump placeholder version to $bmad_next_version"
-npm ci && npm run quality
+uv sync --frozen && (cd docs-site && npm ci) && uv run --frozen tools/quality.py
 git push origin dev
 ```
 

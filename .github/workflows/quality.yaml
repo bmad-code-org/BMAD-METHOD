@@ -40,6 +40,9 @@ jobs:
   docs-site:
     if: github.event.action != 'edited' || github.event.changes.base != null
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docs-site
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -47,8 +50,9 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc
+          node-version-file: docs-site/.nvmrc
           cache: npm
+          cache-dependency-path: docs-site/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -61,10 +65,10 @@ jobs:
 
       - name: Build documentation
         # Note: docs-site/scripts/build-docs.mjs runs link validation internally before building
-        run: npm run docs:build
+        run: npm run build
 
       - name: Validate sidebar order
-        run: npm run docs:validate-sidebar
+        run: npm run validate-sidebar
 
       - name: Test docs-site
-        run: npm run test:docs
+        run: npm test

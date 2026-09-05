@@ -4,40 +4,9 @@ import nodePlugin from 'eslint-plugin-n';
 import unicorn from 'eslint-plugin-unicorn';
 
 export default [
-  // Global ignores for files/folders that should not be linted
+  // Astro sources are a separate linting ecosystem; scripts/ and test/ are plain Node
   {
-    ignores: [
-      'dist/**',
-      'coverage/**',
-      '**/*.min.js',
-      'test/template-test-generator/**',
-      'tools/tests/fixtures/**',
-      '_bmad*/**',
-      // Build output
-      'build/**',
-      // Astro sources are a separate linting ecosystem; docs-site/scripts and docs-site/test are plain Node
-      'docs-site/src/**',
-      'docs-site/.astro/**',
-      'docs-site/public/**',
-      'docs-site/astro.config.mjs',
-      // Gitignored patterns
-      'z*/**', // z-samples, z1, z2, etc.
-      '.claude/**',
-      '.codex/**',
-      '.github/chatmodes/**',
-      '.agent/**',
-      '.agentvibes/**',
-      '.kiro/**',
-      '.roo/**',
-      'test-project-install/**',
-      'sample-project/**',
-      'tools/template-test-generator/test-scenarios/**',
-      'src/modules/*/sub-modules/**',
-      '.bundler-temp/**',
-      // Lock files — generated, gitignored, not project code
-      'pnpm-lock.yaml',
-      'bun.lock',
-    ],
+    ignores: ['src/**', '.astro/**', 'public/**', 'dist/**', 'astro.config.mjs', 'node_modules/**'],
   },
 
   // Base JavaScript recommended rules
@@ -65,7 +34,7 @@ export default [
 
   // CLI scripts and tests for the docs site
   {
-    files: ['docs-site/scripts/**/*.js', 'docs-site/scripts/**/*.mjs', 'docs-site/test/**/*.js', 'docs-site/test/**/*.mjs'],
+    files: ['scripts/**/*.js', 'scripts/**/*.mjs', 'test/**/*.js', 'test/**/*.mjs'],
     rules: {
       // Allow CommonJS patterns for Node CLI scripts
       'unicorn/prefer-module': 'off',

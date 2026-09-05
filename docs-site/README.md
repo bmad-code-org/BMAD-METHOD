@@ -29,15 +29,22 @@ bmad2/
 ## Development
 
 ```bash
-# From repo root
-npm run docs:dev               # Start dev server
-npm run docs:build             # Build for production (validates links first)
-npm run docs:preview           # Preview production build
-npm run docs:validate-links    # Check site-relative links in docs/
-npm run docs:validate-sidebar  # Check sidebar.order frontmatter
-npm run docs:fix-links         # Rewrite relative links to repo-relative (add --write)
-npm run test:docs              # Run the site tests
+cd docs-site
+npm ci                     # Install (Node version in .nvmrc)
+npm run dev                # Start dev server
+npm run build              # Build for production (validates links first)
+npm run preview            # Preview production build
+npm run validate-links     # Check site-relative links in docs/
+npm run validate-sidebar   # Check sidebar.order frontmatter
+npm run fix-links          # Rewrite relative links to repo-relative (add --write)
+npm run lint               # ESLint over scripts/ and test/
+npm run format:check       # Prettier over scripts/ and test/
+npm test                   # Run the site tests
 ```
+
+The site is the only part of the repository that uses Node; everything else
+runs on `uv`. `tools/quality.py` at the repository root runs these checks
+together with the Python ones.
 
 ## Platform Notes
 
@@ -76,5 +83,5 @@ Note: If copying, remember to keep the copy in sync with changes to `docs/`.
 
 ## Build Output
 
-The build pipeline (`npm run docs:build`) produces:
+The build pipeline (`npm run build`) produces:
 - Static HTML site in `build/site/`

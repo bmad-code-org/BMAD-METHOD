@@ -17,7 +17,8 @@ import { validatePublishedImplementationModel } from './validate-published-imple
 // Configuration
 // =============================================================================
 
-const PROJECT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+const SITE_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const PROJECT_ROOT = path.resolve(SITE_ROOT, '..');
 const BUILD_DIR = path.join(PROJECT_ROOT, 'build');
 
 // =============================================================================
@@ -91,8 +92,8 @@ function buildAstroSite() {
  */
 function runAstroBuild() {
   console.log('  → Running astro build...');
-  execSync('npx astro build --root docs-site', {
-    cwd: PROJECT_ROOT,
+  execSync('npx astro build', {
+    cwd: SITE_ROOT,
     stdio: 'inherit',
     env: {
       ...process.env,
@@ -203,7 +204,7 @@ function checkDocLinks() {
   printHeader('Checking documentation links');
 
   try {
-    execSync('node docs-site/scripts/validate-doc-links.js', {
+    execSync(`node ${path.join(SITE_ROOT, 'scripts', 'validate-doc-links.js')}`, {
       cwd: PROJECT_ROOT,
       stdio: 'inherit',
     });

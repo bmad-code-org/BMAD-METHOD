@@ -363,8 +363,9 @@ Có. Workflow `bmad-correct-course` xử lý thay đổi phạm vi giữa chừn
 Trước khi gửi thay đổi tài liệu:
 
 ```bash
-npm run docs:fix-links            # Xem trước các sửa định dạng link
-npm run docs:fix-links -- --write # Áp dụng các sửa
-npm run docs:validate-links       # Kiểm tra link tồn tại
-npm run docs:build                # Xác minh không có lỗi build
+cd docs-site
+npm run fix-links                 # Xem trước các sửa định dạng link
+npm run fix-links -- --write      # Áp dụng các sửa
+npm run validate-links            # Kiểm tra link tồn tại
+npm run build                     # Xác minh không có lỗi build
 ```
