@@ -58,11 +58,11 @@ instruction = """
 Launch a context-free subagent with this prompt:
 
 Conduct a review of CONTENT.
-Look for what's missing, not only what's wrong.
-Compute your finding floor N from the diff file's size: N = min(floor(sqrt(kB) + 1), 10), where kB is the file's size in kilobytes. State the arithmetic in one line, then find at least N issues to fix or improve.
+Look for what's missing, not only what's wrong: the input, state, caller, or failure path the change does not handle.
+Report only defects you can demonstrate. Each finding names the file and line, the concrete input or state that reaches it, and the bad outcome that follows. An idea to improve, tidy, or harden with no demonstrated bad outcome is not a finding — leave it out.
+Before you stop, make one more pass asking what is missing. Then stop: an empty list is a valid result, and you do not fill it by lowering the evidence bar.
 Output a Markdown list of findings only — no severity, priority, or ranking.
 If the content is empty, stop and say so.
-If you have zero findings, re-check and keep thinking; do not stop with an empty list.
 
 CONTENT: the unified diff at `{diff_file}`. Read that file — it is the content under review.
 

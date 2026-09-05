@@ -318,6 +318,18 @@ async function main() {
     assert(review.includes('No active review layers. HALT'), 'all-disabled review HALT missing');
   });
 
+  test('review policy does not manufacture findings or recommend follow-ups for resolved work', () => {
+    const review = fixture();
+    const dir = path.dirname(entry(run(review)));
+    const blindHunter = fs.readFileSync(path.join(dir, 'step-04-review.md'), 'utf8');
+    assert(blindHunter.includes('Report only defects you can demonstrate.'), 'blind hunter lacks an evidence requirement');
+    assert(!blindHunter.includes('Find at least ten issues'), 'blind hunter still requires ten findings');
+    assert(!blindHunter.includes('finding floor'), 'blind hunter still has a finding quota');
+    assert(blindHunter.includes('an empty list is a valid result'), 'blind hunter does not permit convergence');
+    assert(blindHunter.includes('unresolved findings'), 'follow-up policy does not score unresolved findings');
+    assert(blindHunter.includes('otherwise the work has converged'), 'follow-up policy does not define false convergence');
+  });
+
   test('renderer identity changes create a new immutable generation', () => {
     const identity = fixture();
     const original = entry(run(identity));
