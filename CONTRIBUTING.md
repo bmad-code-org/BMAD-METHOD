@@ -74,7 +74,12 @@ After searching, use the [feature request template](https://github.com/bmad-code
 
 ### Target Branch
 
-Submit PRs to the `main` branch. We use trunk-based development. Every push to `main` auto-publishes to `npm` under the `next` tag. Stable releases are cut ~weekly to the `latest` tag.
+- **Development:** branch from `dev` and target `dev`.
+- `main` is release-only and remains the default branch.
+- **6.12 npm maintenance:** branch from and target `V6.12`, which still ships through npm.
+
+PRs opened against `main` are retargeted to `dev` unless their head is `dev`.
+After retargeting, close and reopen the PR to rerun checks against `dev`.
 
 ### PR Size
 
@@ -94,11 +99,11 @@ We will reject PRs that read like raw LLM output: bulk refactors nobody asked fo
 
 1. **Fork** the repository
 2. **Clone** your fork: `git clone https://github.com/YOUR-USERNAME/bmad-method.git`
-3. **Create a branch**: `git checkout -b fix/description` or `git checkout -b feature/description`
+3. **Branch from upstream dev**: add `git remote add upstream https://github.com/bmad-code-org/BMAD-METHOD.git`, run `git fetch upstream dev`, then `git switch -c fix/description upstream/dev` (or use `feature/description`).
 4. **Make changes** — keep them focused
 5. **Commit**: `git commit -m "fix: correct typo in README"`
 6. **Push**: `git push origin fix/description`
-7. **Open PR** from your fork on GitHub
+7. **Open PR** from your fork into `bmad-code-org/BMAD-METHOD` with `dev` as the base branch.
 
 ### PR Description Template
 
