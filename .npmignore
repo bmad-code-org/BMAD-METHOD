@@ -1,15 +1,13 @@
 # Development & Testing
-test/
 .husky/
 .github/
 .vscode/
-.augment/
 coverage/
 test-output/
 
 # Documentation site (users access docs online)
 docs/
-website/
+docs-site/
 
 # Configuration files (development only)
 .coderabbit.yaml
@@ -23,7 +21,11 @@ prettier.config.mjs
 tools/build-docs.mjs
 tools/fix-doc-links.js
 tools/validate-doc-links.js
-tools/validate-file-refs.js
+tools/validate_file_refs.py
+tools/validate_skills.py
+tools/release.md
+tools/stamp_release.py
+tools/tests/
 
 # Images (branding/marketing only)
 banner-bmad-method.png
@@ -37,3 +39,4 @@ TRADEMARK.md
 CHANGELOG.md
 CNAME
 CODE_OF_CONDUCT.md
+TEMP-RELEASE-PROCESS.md

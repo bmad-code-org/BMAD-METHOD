@@ -39,7 +39,7 @@ Web bundles are generated from BMad skills using the [`bmad-os-skill-to-bundle`]
 
 ## What's in this folder
 
-This folder is the **source** for the shelf, packaged into ZIPs and attached to GitHub Releases. End users do not install from here. If you are a contributor working on a bundle, the bundle directories and `bundles.json` are the files you edit; the [release packager](../tools/bundle-web-bundles.js) zips them and updates the release.
+This folder is the **source** for the shelf, packaged into ZIPs and attached to GitHub Releases. End users do not install from here. If you are a contributor working on a bundle, the bundle directories and `bundles.json` are the files you edit; the [release packager](../tools/bundle_web_bundles.py) zips them and updates the release.
 
 ## Concept docs
 

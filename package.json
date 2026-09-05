@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "bmad-method",
-  "version": "6.12.0",
+  "version": "6.12.0-next",
   "description": "Breakthrough Method of Agile AI-driven Development",
   "keywords": [
     "agile",
@@ -18,55 +18,38 @@
   },
   "license": "MIT",
   "author": "Brian (BMad) Madison",
-  "main": "tools/installer/bmad-cli.js",
-  "bin": {
-    "bmad": "tools/installer/bmad-cli.js",
-    "bmad-method": "tools/installer/bmad-cli.js"
-  },
   "scripts": {
-    "bmad:install": "node tools/installer/bmad-cli.js install",
-    "bmad:uninstall": "node tools/installer/bmad-cli.js uninstall",
     "docs:build": "node tools/build-docs.mjs",
-    "docs:dev": "astro dev --root website",
+    "docs:dev": "astro dev --root docs-site",
     "docs:fix-links": "node tools/fix-doc-links.js",
-    "docs:preview": "astro preview --root website",
+    "docs:preview": "astro preview --root docs-site",
     "docs:validate-links": "node tools/validate-doc-links.js",
     "docs:validate-sidebar": "node tools/validate-sidebar-order.js",
     "format:check": "prettier --check \"**/*.{js,cjs,mjs,json,yaml}\"",
     "format:fix": "prettier --write \"**/*.{js,cjs,mjs,json,yaml}\"",
-    "format:fix:staged": "prettier --write",
-    "install:bmad": "node tools/installer/bmad-cli.js install",
-    "lint": "eslint . --ext .js,.cjs,.mjs,.yaml --max-warnings=0",
-    "lint:fix": "eslint . --ext .js,.cjs,.mjs,.yaml --fix",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --fix",
     "lint:md": "markdownlint-cli2 \"**/*.md\"",
     "prepare": "command -v husky >/dev/null 2>&1 && husky || exit 0",
-    "quality": "npm run format:check && npm run lint && npm run lint:md && npm run docs:build && npm run test:site-url && npm run test:implementation-model && npm run test:install && npm run test:urls && npm run test:renderer && npm run test:retrospective && npm run test:sprint-planning && npm run validate:refs && npm run validate:skills && npm run docs:validate-sidebar",
-    "rebundle": "node tools/installer/bundlers/bundle-web.js rebundle",
-    "test": "npm run test:refs && npm run test:install && npm run test:urls && npm run test:site-url && npm run test:implementation-model && npm run test:channels && npm run test:renderer && npm run test:retrospective && npm run test:sprint-planning && npm run test:skills && npm run lint && npm run lint:md && npm run format:check",
-    "test:channels": "node test/test-installer-channels.js",
+    "quality": "npm run format:check && npm run lint && npm run lint:md && npm run docs:build && npm test && npm run validate:refs && npm run validate:skills && npm run docs:validate-sidebar",
+    "test": "npm run test:docs && npm run test:python",
+    "test:docs": "node docs-site/test/test-site-url.mjs && node docs-site/test/test-rehype-plugins.mjs",
     "test:implementation-model": "node test/test-validate-published-implementation-model.mjs",
-    "test:install": "node test/test-installation-components.js && node test/test-shim-policy.js",
-    "test:refs": "node test/test-file-refs-csv.js",
-    "test:renderer": "uv run --python 3.11 python -m unittest src/scripts/tests/test_config_utils.py src/scripts/tests/test_resolve_config.py src/scripts/tests/test_resolve_customization.py && node test/test-build-auto-renderer.js",
-    "test:retrospective": "uv run --python 3.11 src/bmm-skills/ship/bmad-retrospective/scripts/tests/test_git_evidence.py && uv run --python 3.11 src/bmm-skills/ship/bmad-retrospective/scripts/tests/test_sprint_status.py",
-    "test:site-url": "node test/test-site-url.mjs",
-    "test:skills": "uv run --python 3.11 python -m unittest tools/tests/test_validate_skills.py",
-    "test:sprint-planning": "uv run --python 3.11 src/bmm-skills/plan/bmad-sprint-planning/scripts/tests/test_sprint_plan.py && node test/test-template-sync.js",
-    "test:urls": "node test/test-parse-source-urls.js",
-    "validate:refs": "node tools/validate-file-refs.js --strict",
+    "test:python": "PYTHONDONTWRITEBYTECODE=1 uv run --python 3.11 --with pytest --with pytest-xdist --with \"pyyaml>=6.0.2,<7\" --with \"ruamel.yaml>=0.18\" pytest -q -ra --tb=short -n auto -p no:cacheprovider tools/tests skills",
+    "validate:refs": "uv run --python 3.11 tools/validate_file_refs.py --strict",
     "validate:skills": "uv run --python 3.11 tools/validate_skills.py --strict"
   },
   "lint-staged": {
     "*.{js,cjs,mjs}": [
-      "npm run lint:fix",
-      "npm run format:fix:staged"
+      "eslint --fix",
+      "prettier --write"
     ],
     "*.yaml": [
       "eslint --fix",
-      "npm run format:fix:staged"
+      "prettier --write"
     ],
     "*.json": [
-      "npm run format:fix:staged"
+      "prettier --write"
     ],
     "*.md": [
       "markdownlint-cli2"
@@ -78,42 +61,23 @@
       "markdown-it": "^14.2.0"
     }
   },
-  "dependencies": {
-    "@clack/core": "^1.3.1",
-    "@clack/prompts": "^1.4.0",
-    "@kayvan/markdown-tree-parser": "^1.6.1",
-    "chalk": "^4.1.2",
-    "commander": "^14.0.0",
-    "csv-parse": "^6.1.0",
-    "glob": "^11.0.3",
-    "ignore": "^7.0.5",
-    "js-yaml": "^4.1.0",
-    "picocolors": "^1.1.1",
-    "semver": "^7.6.3",
-    "xml2js": "^0.6.2",
-    "yaml": "^2.7.0"
-  },
   "devDependencies": {
     "@astrojs/sitemap": "^3.7.3",
     "@astrojs/starlight": "^0.40.0",
     "@eslint/js": "^9.33.0",
     "astro": "^6.4.6",
-    "c8": "^10.1.3",
     "eslint": "^9.33.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-n": "^17.21.3",
     "eslint-plugin-unicorn": "^60.0.0",
     "eslint-plugin-yml": "^1.18.0",
     "husky": "^9.1.7",
-    "jest": "^30.2.0",
     "lint-staged": "^16.1.1",
     "markdownlint-cli2": "^0.19.1",
     "prettier": "^3.7.4",
     "prettier-plugin-packagejson": "^2.5.19",
     "sharp": "^0.33.5",
-    "unist-util-visit": "^5.1.0",
-    "yaml-eslint-parser": "^1.2.3",
-    "yaml-lint": "^1.7.0"
+    "unist-util-visit": "^5.1.0"
   },
   "engines": {
     "node": ">=20.12.0"

@@ -1,7 +1,7 @@
 ![BMad Method](banner-bmad-method.png)
 
 
-[![Version](https://img.shields.io/npm/v/bmad-method?color=blue&label=version)](https://www.npmjs.com/package/bmad-method)
+[![Version](https://img.shields.io/github/v/tag/bmad-code-org/BMAD-METHOD?color=blue&label=version)](https://github.com/bmad-code-org/BMAD-METHOD/tags)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Community-7289da?logo=discord&logoColor=white)](https://discord.gg/gk8jAdXWmj)
 
@@ -15,19 +15,44 @@ _Start anywhere. Use BMad end to end, or carry its briefs, specifications, and a
 
 ## Start Building
 
-**Prerequisites:** [Node.js](https://nodejs.org) 20.12+, [Python](https://www.python.org) 3.10+, and [uv](https://docs.astral.sh/uv/)
+Choose one install route. You need an AI coding tool that supports skills and
+[uv](https://docs.astral.sh/uv/) for BMad setup and Python scripts.
+
+**Skills CLI** — with [Node.js and npm](https://nodejs.org) and Git, run in your project:
 
 ```bash
-npx bmad-method install
+npx skills add bmad-code-org/BMAD-METHOD
 ```
 
-Open your project in your AI coding tool, invoke `bmad-build` with what you want to change, and keep making the decisions that matter. Run `bmad-help` whenever you want guidance on what comes next or what is optional.
+Select the skills and coding tool you want; include `bmad` for setup and help.
+
+**Claude Code plugin** — add the marketplace inside Claude Code:
+
+```text
+/plugin marketplace add bmad-code-org/bmad-plugins
+```
+
+**Codex plugin** — add the marketplace from your terminal:
+
+```bash
+codex plugin marketplace add bmad-code-org/bmad-plugins
+```
+
+For either marketplace, install `bmad-method` for the delivery workflows and
+`bmad-toolbox` for standalone skills, including the `bmad` hub.
+
+Open your coding tool in the project and ask the `bmad` skill to run
+`bmad setup`. Then invoke `bmad-build` with what you want to change. Ask
+`bmad` whenever you want guidance on what comes next or what is optional.
 
 **[Build your first project with BMad →](https://docs.bmad-method.org/start/build-your-first-change/)**
 
 **[Add BMad to an existing codebase →](https://docs.bmad-method.org/existing-codebases/start-in-an-existing-codebase/)**
 
-BMad is free and open source, with no paywalled workflows or gated community. For installation prerequisites, updates, prerelease builds, and the installer's live automation help, see the [installation guide](https://docs.bmad-method.org/start/install-bmad/).
+BMad is free and open source, with no paywalled workflows or gated community.
+Use `bmad update` to check versions; install updates with `npx skills update`
+or your plugin marketplace. After updating, ask for `bmad doctor` to repair
+the project's existing runtime.
 
 ## Why BMad?
 

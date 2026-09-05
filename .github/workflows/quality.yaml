@@ -1,22 +1,20 @@
 name: Quality & Validation
 
-# Runs comprehensive quality checks on all PRs and pushes to main:
-# - Prettier (formatting)
-# - ESLint (linting)
-# - markdownlint (markdown quality)
-# - Installation component tests (compilation)
-# - Retrospective Python tests
 # Keep this workflow aligned with `npm run quality` in `package.json`.
 
 "on":
   push:
-    branches: [main]
+    branches: [main, dev]
   pull_request:
     branches: ["**"]
+    # `edited` covers a base-branch change (e.g. a PR retargeted from main to dev);
+    # the job condition skips title/body edits.
+    types: [opened, synchronize, reopened, edited]
   workflow_dispatch:
 
 jobs:
   prettier:
+    if: github.event.action != 'edited' || github.event.changes.base != null
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -35,6 +33,7 @@ jobs:
         run: npm run format:check
 
   eslint:
+    if: github.event.action != 'edited' || github.event.changes.base != null
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -53,6 +52,7 @@ jobs:
         run: npm run lint
 
   markdownlint:
+    if: github.event.action != 'edited' || github.event.changes.base != null
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -71,6 +71,7 @@ jobs:
         run: npm run lint:md
 
   docs:
+    if: github.event.action != 'edited' || github.event.changes.base != null
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -89,7 +90,14 @@ jobs:
         # Note: build-docs.mjs runs link validation internally before building
         run: npm run docs:build
 
+      - name: Validate sidebar order
+        run: npm run docs:validate-sidebar
+
+      - name: Test docs-site
+        run: npm run test:docs
+
   validate:
+    if: github.event.action != 'edited' || github.event.changes.base != null
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -107,17 +115,8 @@ jobs:
       - name: Setup uv
         uses: astral-sh/setup-uv@v6
 
-      - name: Test agent compilation components
-        run: npm run test:install
-
-      - name: Test workflow renderers
-        run: npm run test:renderer
-
-      - name: Test retrospective scripts
-        run: npm run test:retrospective
-
-      - name: Test sprint-planning scripts
-        run: npm run test:sprint-planning
+      - name: Test Python
+        run: npm run test:python
 
       - name: Validate file references
         run: npm run validate:refs

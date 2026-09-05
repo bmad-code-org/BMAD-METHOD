@@ -99,7 +99,7 @@ The distinction between `{{name}}` and `{{.name}}` matters: the first is an arti
 
 - **Severity:** HIGH
 - **Applies to:** `SKILL.md`
-- **Rule:** The `name` value must be `bmad` or start with `bmad-`, using only lowercase letters, numbers, and single hyphens between segments.
+- **Rule:** The `name` value must be the canonical root skill `bmad`, or start with `bmad-` and use only lowercase letters, numbers, and single hyphens between segments.
 - **Detection:** Regex test: `^(?:bmad|bmad-[a-z0-9]+(?:-[a-z0-9]+)*)$`.
 - **Fix:** Rename to comply with the format (e.g., `bmad-my-skill`).
 

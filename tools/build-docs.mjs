@@ -91,7 +91,7 @@ function buildAstroSite() {
  */
 function runAstroBuild() {
   console.log('  → Running astro build...');
-  execSync('npx astro build --root website', {
+  execSync('npx astro build --root docs-site', {
     cwd: PROJECT_ROOT,
     stdio: 'inherit',
     env: {

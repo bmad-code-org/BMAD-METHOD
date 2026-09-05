@@ -22,3 +22,10 @@ cases — the model usually handles them from context, and the reviewing human c
 
 Automated tests assert outcomes produced by deterministic code. Do not write automated tests for LLM output or for
 static source text.
+
+## Releases
+
+Read `tools/release.md` before cutting a release. Stamp on `dev`, fast-forward
+`main` with `git push origin dev:main`, tag that commit, then stamp the next
+placeholder on `dev`. No release PR or back-merge. The 6.12 npm installer is
+maintained separately on `V6.12`.
