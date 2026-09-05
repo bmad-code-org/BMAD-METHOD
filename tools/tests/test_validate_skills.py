@@ -10,7 +10,6 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 VALIDATOR = REPO_ROOT / "tools" / "validate_skills.py"
 FIXTURES = REPO_ROOT / "tools" / "tests" / "fixtures" / "validate-skills"
@@ -70,8 +69,7 @@ class FixtureCase(unittest.TestCase):
 
     def has_trigger_finding(self, name: str) -> bool:
         return any(
-            f["rule"] == "SKILL-06" and re.search(r"trigger phrase", f["detail"], re.I)
-            for f in self.findings(name)
+            f["rule"] == "SKILL-06" and re.search(r"trigger phrase", f["detail"], re.I) for f in self.findings(name)
         )
 
     def test_deprecated_skill_is_exempt_from_trigger_phrase(self):
@@ -423,7 +421,7 @@ class TestCliAndOutput(ProjectCase):
         code, out, _ = self.run_validator(skill_dir=skill, strict=True)
         self.assertEqual(code, 0)
         self.assertIn(
-            "::notice file=skills/bmad-gha/notes.md,line=1::SEQ-02: Time estimate pattern found: \"Ship 100%25 with ETA\"",
+            '::notice file=skills/bmad-gha/notes.md,line=1::SEQ-02: Time estimate pattern found: "Ship 100%25 with ETA"',
             out,
         )
         text = summary.read_text(encoding="utf-8")

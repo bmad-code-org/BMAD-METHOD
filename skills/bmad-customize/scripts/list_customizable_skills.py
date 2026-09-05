@@ -71,9 +71,7 @@ def read_frontmatter_description(skill_md: Path) -> str:
         if stripped.startswith("description:"):
             value = stripped[len("description:") :].strip()
             # Strip surrounding quotes if present.
-            if (value.startswith("'") and value.endswith("'")) or (
-                value.startswith('"') and value.endswith('"')
-            ):
+            if (value.startswith("'") and value.endswith("'")) or (value.startswith('"') and value.endswith('"')):
                 value = value[1:-1]
             return value
     return ""
@@ -143,9 +141,7 @@ def scan_skills(
             # both. Emit one entry per surface so the caller can group cleanly.
             surfaces_found = [k for k in SURFACE_KEYS if k in data]
             if not surfaces_found:
-                errors.append(
-                    f"no [agent] or [workflow] block in {customize_toml}"
-                )
+                errors.append(f"no [agent] or [workflow] block in {customize_toml}")
                 continue
             for surface in surfaces_found:
                 entry = dict(entry_base)
@@ -182,8 +178,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         "--skills-root",
         default=None,
         help=(
-            "Override the primary skills directory to scan. Defaults to the "
-            "directory this script's own skill lives in."
+            "Override the primary skills directory to scan. Defaults to the directory this script's own skill lives in."
         ),
     )
     parser.add_argument(
@@ -210,11 +205,7 @@ def main(argv: list[str]) -> int:
         )
         return 2
 
-    primary = (
-        Path(args.skills_root).expanduser().resolve()
-        if args.skills_root
-        else default_skills_root()
-    )
+    primary = Path(args.skills_root).expanduser().resolve() if args.skills_root else default_skills_root()
     extras = [Path(p).expanduser().resolve() for p in args.extra_root]
     # Deduplicate in order of appearance.
     roots: list[Path] = []

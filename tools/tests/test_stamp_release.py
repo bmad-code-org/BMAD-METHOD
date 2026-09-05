@@ -8,7 +8,6 @@ import tomllib
 import unittest
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 STAMPER = REPO_ROOT / "tools" / "stamp_release.py"
 SETUP_PY = REPO_ROOT / "skills" / "bmad" / "scripts" / "setup.py"
@@ -73,11 +72,7 @@ def make_tree(root: Path, version: str = "6.11.0-next") -> None:
 
 
 def snapshot(root: Path) -> dict[str, bytes]:
-    return {
-        path.relative_to(root).as_posix(): path.read_bytes()
-        for path in sorted(root.rglob("*"))
-        if path.is_file()
-    }
+    return {path.relative_to(root).as_posix(): path.read_bytes() for path in sorted(root.rglob("*")) if path.is_file()}
 
 
 def run_stamper(root: Path, version: str) -> tuple[int, str, str]:
@@ -97,15 +92,10 @@ class StampReleaseTests(unittest.TestCase):
         make_tree(self.root)
         code, out, err = run_stamper(self.root, "1.2.0")
         self.assertEqual(code, 0, err)
-        method = {
-            (self.root / "skills" / s / "module-manifest.toml").read_bytes()
-            for s in METHOD_SKILLS
-        }
+        method = {(self.root / "skills" / s / "module-manifest.toml").read_bytes() for s in METHOD_SKILLS}
         self.assertEqual(len(method), 1)  # byte-identical within the module
         self.assertIn(b'version = "1.2.0"\n', method.pop())
-        toolbox = (self.root / "skills" / "bmad-flow" / "module-manifest.toml").read_text(
-            encoding="utf-8"
-        )
+        toolbox = (self.root / "skills" / "bmad-flow" / "module-manifest.toml").read_text(encoding="utf-8")
         self.assertIn('module = "toolbox"', toolbox)
         self.assertIn('version = "1.2.0"', toolbox)
         self.assertIn("Stamped version 1.2.0 into 6 files", out)
@@ -296,9 +286,7 @@ class StampReleaseTests(unittest.TestCase):
         make_tree(self.root)
         code, _, err = run_stamper(self.root, "6.12.0-next.1")
         self.assertEqual(code, 0, err)
-        data = tomllib.loads(
-            (self.root / "skills" / "bmad" / "module-manifest.toml").read_text(encoding="utf-8")
-        )
+        data = tomllib.loads((self.root / "skills" / "bmad" / "module-manifest.toml").read_text(encoding="utf-8"))
         self.assertEqual(data["version"], "6.12.0-next.1")
 
 

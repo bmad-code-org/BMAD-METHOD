@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # /// script
-# requires-python = ">=3.10"
+# requires-python = ">=3.11"
 # ///
 """lint-spine — the mechanical half of spine decision-integrity, done deterministically.
 
@@ -21,6 +21,7 @@ with the real file. Reported lines are absolute file lines (frontmatter offset a
 code is always 0 — findings travel in the JSON; the caller (Reviewer Gate / rubric walker)
 decides what to do with them.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -52,7 +53,7 @@ def split_frontmatter(text: str) -> tuple[str, str, int]:
         for i in range(1, len(lines)):
             if lines[i] == "---":
                 fm = "\n".join(lines[1:i])
-                body = "\n".join(lines[i + 1:])
+                body = "\n".join(lines[i + 1 :])
                 return fm, body, i + 1
     return "", text, 0
 
@@ -79,12 +80,14 @@ def find_placeholders(body: str, offset: int) -> list[dict]:
         (TEMPLATE_TOKEN, "possible unfilled template token (verify)", "low"),
     ):
         for m in rx.finditer(scan):
-            findings.append({
-                "category": "placeholder",
-                "severity": severity,
-                "detail": f"{label}: {m.group(0)!r}",
-                "location": f"{SPINE} (line {offset + line_of(scan, m.start())})",
-            })
+            findings.append(
+                {
+                    "category": "placeholder",
+                    "severity": severity,
+                    "detail": f"{label}: {m.group(0)!r}",
+                    "location": f"{SPINE} (line {offset + line_of(scan, m.start())})",
+                }
+            )
     return findings
 
 
@@ -97,12 +100,14 @@ def find_frontmatter_placeholders(frontmatter: str) -> list[dict]:
         (TEMPLATE_TOKEN, "possible unfilled template token (verify)", "low"),
     ):
         for m in rx.finditer(frontmatter):
-            findings.append({
-                "category": "placeholder",
-                "severity": severity,
-                "detail": f"frontmatter {label}: {m.group(0)!r}",
-                "location": f"{SPINE} frontmatter (line {1 + line_of(frontmatter, m.start())})",
-            })
+            findings.append(
+                {
+                    "category": "placeholder",
+                    "severity": severity,
+                    "detail": f"frontmatter {label}: {m.group(0)!r}",
+                    "location": f"{SPINE} frontmatter (line {1 + line_of(frontmatter, m.start())})",
+                }
+            )
     return findings
 
 
@@ -117,36 +122,42 @@ def find_ad_issues(body: str, offset: int) -> list[dict]:
         file_line = offset + line_of(scan, m.start())
         loc = f"{SPINE} AD-{num} (line {file_line})"
         if num in seen:
-            findings.append({
-                "category": "ad_id",
-                "severity": "high",
-                "detail": f"AD-{num} id reused (also at line {seen[num]})",
-                "location": loc,
-            })
+            findings.append(
+                {
+                    "category": "ad_id",
+                    "severity": "high",
+                    "detail": f"AD-{num} id reused (also at line {seen[num]})",
+                    "location": loc,
+                }
+            )
         else:
             seen[num] = file_line
         if prev is not None and num <= prev:
-            findings.append({
-                "category": "ad_id",
-                "severity": "high",
-                "detail": f"AD-{num} is non-monotonic (follows AD-{prev}); ids must ascend and never renumber",
-                "location": loc,
-            })
+            findings.append(
+                {
+                    "category": "ad_id",
+                    "severity": "high",
+                    "detail": f"AD-{num} is non-monotonic (follows AD-{prev}); ids must ascend and never renumber",
+                    "location": loc,
+                }
+            )
         prev = num if prev is None else max(prev, num)
 
         # block text = from this heading to the next heading of any level
         start = m.end()
         nxt = HEADING.search(scan, start)
-        block = scan[start:nxt.start()] if nxt else scan[start:]
+        block = scan[start : nxt.start()] if nxt else scan[start:]
         low = block.lower()
         missing = [f for f in ("binds", "prevents", "rule") if f not in low]
         if missing:
-            findings.append({
-                "category": "ad_fields",
-                "severity": "high",
-                "detail": f"AD-{num} missing required field(s): {', '.join(missing)}",
-                "location": loc,
-            })
+            findings.append(
+                {
+                    "category": "ad_fields",
+                    "severity": "high",
+                    "detail": f"AD-{num} missing required field(s): {', '.join(missing)}",
+                    "location": loc,
+                }
+            )
     return findings
 
 
@@ -189,12 +200,14 @@ def find_unpinned_stack(body: str, offset: int) -> list[dict]:
         if not name or TEMPLATE_TOKEN.search(name):
             continue
         if not version or TEMPLATE_TOKEN.search(version):
-            findings.append({
-                "category": "version_pin",
-                "severity": "medium",
-                "detail": f"Stack entry {name!r} has no version",
-                "location": f"{SPINE} (line {offset + i + 1})",
-            })
+            findings.append(
+                {
+                    "category": "version_pin",
+                    "severity": "medium",
+                    "detail": f"Stack entry {name!r} has no version",
+                    "location": f"{SPINE} (line {offset + i + 1})",
+                }
+            )
     return findings
 
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # /// script
-# requires-python = ">=3.10"
+# requires-python = ">=3.11"
 # ///
 """recon_kit — deterministic helpers for bmad-deep-recon.
 
@@ -28,6 +28,7 @@ Subcommands:
       Emit the source-appendix table as HTML with every cell escaped and
       only validated http(s) URLs turned into links, for the briefing.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -91,6 +92,7 @@ def appendix_rows(text: str) -> dict[int, list[str]]:
 
 # --- citations ---------------------------------------------------------------
 
+
 def cmd_citations(args) -> int:
     text = strip_fences(read_text(args.file))
     rows = appendix_rows(text)
@@ -105,13 +107,16 @@ def cmd_citations(args) -> int:
     dangling = sorted(markers - set(rows))
     orphaned = sorted(set(rows) - markers)
     ok = not dangling and not orphaned
-    return out({
-        "markers": sorted(markers),
-        "appendix_rows": sorted(rows),
-        "dangling_markers": dangling,
-        "orphaned_rows": orphaned,
-        "ok": ok,
-    }, 0 if ok else 1)
+    return out(
+        {
+            "markers": sorted(markers),
+            "appendix_rows": sorted(rows),
+            "dangling_markers": dangling,
+            "orphaned_rows": orphaned,
+            "ok": ok,
+        },
+        0 if ok else 1,
+    )
 
 
 # --- tally -------------------------------------------------------------------
@@ -144,15 +149,19 @@ def cmd_tally(args) -> int:
     claims: dict[str, int] = dict(unref_status)
     for status in by_ref.values():
         claims[status] = claims.get(status, 0) + 1
-    return out({
-        "entries": entries,
-        "by_type": dict(sorted(by_type.items())),
-        "claims": dict(sorted(claims.items())),
-        "claims_total": sum(claims.values()),
-    }, 0)
+    return out(
+        {
+            "entries": entries,
+            "by_type": dict(sorted(by_type.items())),
+            "claims": dict(sorted(claims.items())),
+            "claims_total": sum(claims.values()),
+        },
+        0,
+    )
 
 
 # --- staleness ---------------------------------------------------------------
+
 
 def parse_date(raw: str) -> date:
     raw = raw.strip()
@@ -198,16 +207,20 @@ def cmd_staleness(args) -> int:
         stale_count += stale
         earliest = recheck if earliest is None or recheck < earliest else earliest
         results.append({**c, "recheck": recheck.isoformat(), "stale": stale})
-    return out({
-        "today": today.isoformat(),
-        "claims": results,
-        "stale_count": stale_count,
-        "earliest_recheck": earliest.isoformat() if earliest else None,
-        "no_window_classes": sorted(no_window),
-    }, 1 if stale_count else 0)
+    return out(
+        {
+            "today": today.isoformat(),
+            "claims": results,
+            "stale_count": stale_count,
+            "earliest_recheck": earliest.isoformat() if earliest else None,
+            "no_window_classes": sorted(no_window),
+        },
+        1 if stale_count else 0,
+    )
 
 
 # --- slug --------------------------------------------------------------------
+
 
 def slugify(text: str, max_len: int = 40) -> str:
     text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode()
@@ -220,14 +233,16 @@ def cmd_slug(args) -> int:
     if not slug:
         print("error: topic slugified to an empty string", file=sys.stderr)
         return 2
-    folder = (args.pattern
-              .replace("{research_type}", args.type)
-              .replace("{topic_slug}", slug)
-              .replace("{date}", args.date or date.today().isoformat()))
+    folder = (
+        args.pattern.replace("{research_type}", args.type)
+        .replace("{topic_slug}", slug)
+        .replace("{date}", args.date or date.today().isoformat())
+    )
     return out({"topic_slug": slug, "folder": folder}, 0)
 
 
 # --- escape-sources ----------------------------------------------------------
+
 
 def safe_url(raw: str) -> str | None:
     parsed = urlparse(raw)
@@ -241,9 +256,11 @@ def cell_html(cell: str, invalid: list[str]) -> str:
         url = safe_url(link.group(2))
         label = html.escape(link.group(1) or link.group(2))
         if url:
-            return html.escape(cell[:link.start()]) + \
-                f'<a href="{html.escape(url, quote=True)}" target="_blank" rel="noopener">{label}</a>' + \
-                html.escape(cell[link.end():])
+            return (
+                html.escape(cell[: link.start()])
+                + f'<a href="{html.escape(url, quote=True)}" target="_blank" rel="noopener">{label}</a>'
+                + html.escape(cell[link.end() :])
+            )
         invalid.append(link.group(2))
         return html.escape(cell.replace(link.group(0), link.group(1) or link.group(2)))
     bare = BARE_URL_RE.search(cell)
@@ -251,9 +268,11 @@ def cell_html(cell: str, invalid: list[str]) -> str:
         url = safe_url(bare.group(0))
         if url:
             escaped = html.escape(url, quote=True)
-            return html.escape(cell[:bare.start()]) + \
-                f'<a href="{escaped}" target="_blank" rel="noopener">{escaped}</a>' + \
-                html.escape(cell[bare.end():])
+            return (
+                html.escape(cell[: bare.start()])
+                + f'<a href="{escaped}" target="_blank" rel="noopener">{escaped}</a>'
+                + html.escape(cell[bare.end() :])
+            )
         invalid.append(bare.group(0))
     return html.escape(cell)
 
@@ -270,16 +289,15 @@ def cmd_escape_sources(args) -> int:
         cells = rows[n]
         tds = "".join(f"<td>{cell_html(c, invalid)}</td>" for c in cells[1:])
         body_rows.append(f'<tr id="src-{n}"><td>[{n}]</td>{tds}</tr>')
-    table = ('<table class="sources"><tbody>' + "".join(body_rows) + "</tbody></table>")
-    return out({"rows": len(rows), "invalid_urls": invalid, "html": table},
-               1 if invalid else 0)
+    table = '<table class="sources"><tbody>' + "".join(body_rows) + "</tbody></table>"
+    return out({"rows": len(rows), "invalid_urls": invalid, "html": table}, 1 if invalid else 0)
 
 
 # --- entry point -------------------------------------------------------------
 
+
 def main(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(description=__doc__,
-                                formatter_class=argparse.RawDescriptionHelpFormatter)
+    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="cmd", required=True)
 
     pc = sub.add_parser("citations", help="cross-check [n] markers vs the source appendix")
@@ -292,21 +310,22 @@ def main(argv: list[str] | None = None) -> int:
 
     ps = sub.add_parser("staleness", help="compute re-check dates from freshness windows")
     ps.add_argument("file", help="claims JSON: [{claim, class, pub_date}] (or - for stdin)")
-    ps.add_argument("--windows", required=True,
-                    help='JSON months-per-class map, e.g. \'{"pricing": 3}\'')
+    ps.add_argument("--windows", required=True, help="JSON months-per-class map, e.g. '{\"pricing\": 3}'")
     ps.add_argument("--today", help="override today's date (YYYY-MM-DD)")
     ps.set_defaults(func=cmd_staleness)
 
     pg = sub.add_parser("slug", help="expand the run-folder pattern deterministically")
     pg.add_argument("topic", help="research topic text")
     pg.add_argument("--type", required=True, help="research type code (e.g. market)")
-    pg.add_argument("--pattern", default="{research_type}-{topic_slug}-{date}",
-                    help="folder pattern (default: {research_type}-{topic_slug}-{date})")
+    pg.add_argument(
+        "--pattern",
+        default="{research_type}-{topic_slug}-{date}",
+        help="folder pattern (default: {research_type}-{topic_slug}-{date})",
+    )
     pg.add_argument("--date", help="override date (YYYY-MM-DD; default today)")
     pg.set_defaults(func=cmd_slug)
 
-    pe = sub.add_parser("escape-sources",
-                        help="source appendix as escaped HTML with validated links")
+    pe = sub.add_parser("escape-sources", help="source appendix as escaped HTML with validated links")
     pe.add_argument("file", help="path to research.md (or - for stdin)")
     pe.set_defaults(func=cmd_escape_sources)
 

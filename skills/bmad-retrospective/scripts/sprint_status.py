@@ -1,5 +1,5 @@
 # /// script
-# requires-python = ">=3.10"
+# requires-python = ">=3.11"
 # dependencies = ["ruamel.yaml>=0.18"]
 # ///
 """Detect the current retrospective epic and surgically update sprint-status.yaml.
@@ -49,7 +49,7 @@ def _load_yaml(path):
     # file. utf-8 is ruamel's current default, but the file is read back as
     # utf-8 unconditionally, so state it rather than inherit it.
     yaml.encoding = "utf-8"
-    with open(path, "r", encoding="utf-8") as fh:
+    with open(path, encoding="utf-8") as fh:
         data = yaml.load(fh)
     return yaml, data
 
@@ -128,11 +128,7 @@ def _match_action_items(entry, items):
     """
     item_id = entry.get("id")
     if isinstance(item_id, str):
-        return [
-            idx
-            for idx, item in enumerate(items)
-            if isinstance(item, Mapping) and item.get("id") == item_id
-        ]
+        return [idx for idx, item in enumerate(items) if isinstance(item, Mapping) and item.get("id") == item_id]
     epic_value = entry.get("epic")
     action_value = entry.get("action")
     return [
@@ -153,9 +149,7 @@ def _comment_counts(text):
     re-emits comments at their original column even when the block around them
     is re-indented, so an exact key costs nothing in practice.
     """
-    return Counter(
-        line for line in text.splitlines() if line.lstrip().startswith("#")
-    )
+    return Counter(line for line in text.splitlines() if line.lstrip().startswith("#"))
 
 
 def _load_document(path, restored=None):
@@ -219,9 +213,7 @@ def _atomic_write(path, payload, mode=None):
     """
     path = os.path.realpath(path)
     directory = os.path.dirname(path) or "."
-    fd, tmp_path = tempfile.mkstemp(
-        prefix=".sprint-status-", suffix=".tmp", dir=directory
-    )
+    fd, tmp_path = tempfile.mkstemp(prefix=".sprint-status-", suffix=".tmp", dir=directory)
     try:
         with os.fdopen(fd, "wb") as fh:
             fh.write(payload)
@@ -303,9 +295,7 @@ def cmd_detect_epic(args):
     # Scoped to the selected epic only -- deliberately unlike done_stories, which
     # spans the whole file. A pending story in some *other* epic is not this
     # retrospective's business.
-    selected_keys = [
-        (key, value) for epic_num, key, value in story_keys if epic_num == selected
-    ]
+    selected_keys = [(key, value) for epic_num, key, value in story_keys if epic_num == selected]
     pending_stories = [key for key, value in selected_keys if value != "done"]
 
     retro_key = f"epic-{selected}-retrospective"
@@ -333,9 +323,7 @@ def cmd_update(args):
 
     # 0. Validate the inputs before anything is mutated or written.
     if args.epic < 1:
-        _emit_error(
-            f"invalid --epic {args.epic} (expected a positive integer)", 1, untouched
-        )
+        _emit_error(f"invalid --epic {args.epic} (expected a positive integer)", 1, untouched)
 
     if args.date is not None:
         try:
@@ -370,9 +358,7 @@ def cmd_update(args):
             _emit_error("--add-action must be a JSON array", 1, untouched)
         for item in actions:
             if not isinstance(item, dict):
-                _emit_error(
-                    "each --add-action item must be an object", 1, untouched
-                )
+                _emit_error("each --add-action item must be an object", 1, untouched)
             action_value = item.get("action")
             if not isinstance(action_value, str) or not action_value.strip():
                 # A JSON null/number/object would otherwise be str()'d into a
@@ -393,14 +379,11 @@ def cmd_update(args):
             _emit_error("--set-action-status must be a JSON array", 1, untouched)
         for entry in status_updates:
             if not isinstance(entry, dict):
-                _emit_error(
-                    "each --set-action-status entry must be an object", 1, untouched
-                )
+                _emit_error("each --set-action-status entry must be an object", 1, untouched)
             status_value = entry.get("status")
             if not isinstance(status_value, str) or status_value not in ACTION_STATUSES:
                 _emit_error(
-                    f"invalid --set-action-status status {status_value!r} "
-                    f"(allowed: {', '.join(ACTION_STATUSES)})",
+                    f"invalid --set-action-status status {status_value!r} (allowed: {', '.join(ACTION_STATUSES)})",
                     1,
                     untouched,
                 )
@@ -500,8 +483,7 @@ def cmd_update(args):
                 _emit_error(f"no action item matches {label}", 1, untouched)
             if len(matches) > 1:
                 _emit_error(
-                    f"ambiguous --set-action-status selector {label}: "
-                    f"{len(matches)} matches",
+                    f"ambiguous --set-action-status selector {label}: {len(matches)} matches",
                     1,
                     untouched,
                 )
@@ -538,9 +520,7 @@ def cmd_update(args):
             # finding in the retro document. Both accept an explicit override.
             seq_num = len(seq) + 1
             action_text = str(item.get("action", ""))
-            item_id = item.get("id") or (
-                f"epic-{int(epic)}-retro-item-{seq_num}-{_slugify(action_text)}"
-            )
+            item_id = item.get("id") or (f"epic-{int(epic)}-retro-item-{seq_num}-{_slugify(action_text)}")
             ref = item.get("ref") or (args.ref or "")
             entry = {
                 "id": DoubleQuotedScalarString(str(item_id)),
@@ -604,17 +584,11 @@ def cmd_update(args):
             _fail("validation: action_items is not a list after write")
         for idx, new_status in status_targets:
             reloaded_item = reloaded_actions[idx]
-            if (
-                not isinstance(reloaded_item, Mapping)
-                or reloaded_item.get("status") != new_status
-            ):
-                _fail(
-                    f"validation: action item at index {idx} is not "
-                    f"{new_status!r} after write"
-                )
+            if not isinstance(reloaded_item, Mapping) or reloaded_item.get("status") != new_status:
+                _fail(f"validation: action item at index {idx} is not {new_status!r} after write")
 
     try:
-        with open(args.file, "r", encoding="utf-8") as fh:
+        with open(args.file, encoding="utf-8") as fh:
             new_text = fh.read()
     except (OSError, UnicodeDecodeError) as exc:
         _fail(f"re-read failed after write: {exc}")
@@ -623,9 +597,7 @@ def cmd_update(args):
     # can wrap onto a line that begins with '#'), but none may disappear.
     lost = original_comments - _comment_counts(new_text)
     if lost:
-        first = next(
-            (line for line in original_text.splitlines() if line in lost), None
-        )
+        first = next((line for line in original_text.splitlines() if line in lost), None)
         _fail(f"validation: comment line lost after write: {first!r}")
 
     _emit(
@@ -710,7 +682,7 @@ def build_parser():
         help=(
             "JSON array of status transitions for action items already in the file. "
             'Select each by id -- {"id":str,"status":"open|in-progress|done"} -- or, '
-            'for legacy items with no id, by epic plus exact action text: '
+            "for legacy items with no id, by epic plus exact action text: "
             '{"epic":int,"action":str,"status":...}. An entry carrying both uses the '
             "id. Every selector must match exactly one item; any failure aborts the "
             "whole invocation and leaves the file untouched."

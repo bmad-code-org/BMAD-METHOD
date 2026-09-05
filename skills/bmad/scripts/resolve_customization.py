@@ -76,10 +76,7 @@ def candidate_project_roots(skill_dir: Path) -> list[Path]:
 
 def has_override(root: Path, skill_name: str) -> bool:
     custom_dir = root / "_bmad" / "custom"
-    return any(
-        (custom_dir / name).is_file()
-        for name in (f"{skill_name}.toml", f"{skill_name}.user.toml")
-    )
+    return any((custom_dir / name).is_file() for name in (f"{skill_name}.toml", f"{skill_name}.user.toml"))
 
 
 def warn_on_masked_override(chosen: Path, rejected: list[Path], skill_name: str) -> None:
@@ -114,12 +111,8 @@ def write_json_stdout(output) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(
-        description="Resolve skill customization using three-layer TOML merge."
-    )
-    parser.add_argument(
-        "--skill", "-s", required=True, help="Absolute path to the skill directory"
-    )
+    parser = argparse.ArgumentParser(description="Resolve skill customization using three-layer TOML merge.")
+    parser.add_argument("--skill", "-s", required=True, help="Absolute path to the skill directory")
     parser.add_argument(
         "--project-root",
         "-p",

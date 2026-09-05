@@ -11,7 +11,6 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SETUP_PY = REPO_ROOT / "skills" / "bmad" / "scripts" / "setup.py"
 SHARED_SCRIPTS = (
@@ -76,16 +75,13 @@ def write_dest_bmad(
     return bmad_dir
 
 
-def module_answers_args(
-    project: Path, answers: dict[str, dict[str, str]]
-) -> list[str]:
+def module_answers_args(project: Path, answers: dict[str, dict[str, str]]) -> list[str]:
     path = project / ".bmad-help-setup-modules.toml"
     lines: list[str] = []
     for module, values in answers.items():
         lines.append(f"[modules.{json.dumps(module, ensure_ascii=False)}]")
         lines.extend(
-            f"{json.dumps(key, ensure_ascii=False)} = "
-            f"{json.dumps(value, ensure_ascii=False)}"
+            f"{json.dumps(key, ensure_ascii=False)} = {json.dumps(value, ensure_ascii=False)}"
             for key, value in values.items()
         )
         lines.append("")
@@ -110,9 +106,7 @@ def dump_manifest_toml(data: dict[str, object]) -> str:
     arrays_of_tables: list[tuple[str, list]] = []
     tables: list[tuple[str, dict]] = []
     for key, value in data.items():
-        if isinstance(value, list) and value and all(
-            isinstance(item, dict) for item in value
-        ):
+        if isinstance(value, list) and value and all(isinstance(item, dict) for item in value):
             arrays_of_tables.append((key, value))
         elif isinstance(value, dict):
             tables.append((key, value))
@@ -185,15 +179,12 @@ def run_setup(project: Path, skill: Path, *extra: str) -> subprocess.CompletedPr
             *extra,
         ],
         text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
         check=False,
     )
 
 
-def run_setup_python(
-    project: Path, skill: Path, *extra: str
-) -> subprocess.CompletedProcess[str]:
+def run_setup_python(project: Path, skill: Path, *extra: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [
             sys.executable,
@@ -205,8 +196,7 @@ def run_setup_python(
             *extra,
         ],
         text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
         check=False,
     )
 
@@ -217,11 +207,7 @@ def user_toml_files(root: Path) -> list[Path]:
 
 def scripts_match(dest: Path, src: Path) -> bool:
     dest_items = list(dest.iterdir())
-    dest_files = {
-        p.name: p.read_bytes()
-        for p in dest_items
-        if p.is_file() and not p.is_symlink()
-    }
+    dest_files = {p.name: p.read_bytes() for p in dest_items if p.is_file() and not p.is_symlink()}
     src_files = {p.name: p.read_bytes() for p in src.iterdir() if p.is_file()}
     return len(dest_items) == len(dest_files) and dest_files == src_files
 
@@ -248,8 +234,7 @@ class BmadSetupTests(unittest.TestCase):
             result = subprocess.run(
                 ["uv", "run", str(missing), "--project-root", str(project)],
                 text=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
+                capture_output=True,
                 check=False,
             )
             self.assertNotEqual(result.returncode, 0)
@@ -276,8 +261,7 @@ class BmadSetupTests(unittest.TestCase):
             result = subprocess.run(
                 [sys.executable, str(scripts / "resolve_config.py"), "--project-root", str(project)],
                 text=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
+                capture_output=True,
                 check=False,
             )
             self.assertNotEqual(result.returncode, 0)
@@ -297,8 +281,7 @@ class BmadSetupTests(unittest.TestCase):
             result = subprocess.run(
                 [sys.executable, str(scripts / "resolve_config.py"), "--project-root", str(project)],
                 text=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
+                capture_output=True,
                 check=False,
             )
             self.assertNotEqual(result.returncode, 0)
@@ -331,14 +314,10 @@ class BmadSetupTests(unittest.TestCase):
                 "os.symlink",
                 side_effect=AssertionError("setup must not create a symlink"),
             ) as symlink:
-                code = setup.main(
-                    ["--project-root", str(project), "--skill", str(skill)]
-                )
+                code = setup.main(["--project-root", str(project), "--skill", str(skill)])
             self.assertEqual(code, 0)
             symlink.assert_not_called()
-            self._assert_scripts_identity(
-                project / "_bmad" / "scripts", skill / "scripts"
-            )
+            self._assert_scripts_identity(project / "_bmad" / "scripts", skill / "scripts")
 
     def test_already_present_paths_are_left_alone(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -400,9 +379,7 @@ class BmadSetupTests(unittest.TestCase):
             result = run_setup(project, skill)
             self.assertEqual(result.returncode, 0, msg=result.stderr)
 
-            parsed = tomllib.loads(
-                (project / "_bmad" / "config.toml").read_text(encoding="utf-8")
-            )
+            parsed = tomllib.loads((project / "_bmad" / "config.toml").read_text(encoding="utf-8"))
             self.assertEqual(parsed["core"]["project_name"], "proj")
             self._assert_team_tables_match_template(parsed, skill, "proj")
             scripts = project / "_bmad" / "scripts"
@@ -410,9 +387,7 @@ class BmadSetupTests(unittest.TestCase):
             self.assertFalse((project / "_bmad" / "core" / "config.yaml").exists())
             self.assertFalse((project / "_bmad" / "bmm" / "config.yaml").exists())
             self.assertTrue((project / "_bmad" / "custom").is_dir())
-            self.assertFalse(
-                (project / "_bmad" / "_config" / "bmad-help.csv").exists()
-            )
+            self.assertFalse((project / "_bmad" / "_config" / "bmad-help.csv").exists())
             self.assertTrue((project / "_bmad-output").is_dir())
 
     def test_setup_leaves_legacy_catalog_alone(self):
@@ -427,9 +402,7 @@ class BmadSetupTests(unittest.TestCase):
             result = run_setup(project, skill)
 
             self.assertEqual(result.returncode, 0, msg=result.stderr)
-            self.assertEqual(
-                legacy_catalog.read_text(encoding="utf-8"), "old-catalog\n"
-            )
+            self.assertEqual(legacy_catalog.read_text(encoding="utf-8"), "old-catalog\n")
 
     def test_second_setup_keeps_answers_and_fills_new_keys(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -454,8 +427,7 @@ class BmadSetupTests(unittest.TestCase):
                 skill / "assets" / "config.template.toml",
                 MINIMAL_CONFIG.replace(
                     'output_folder = "{project-root}/_bmad-output"\n',
-                    'output_folder = "{project-root}/_bmad-output"\n'
-                    'review_language = "English"\n',
+                    'output_folder = "{project-root}/_bmad-output"\nreview_language = "English"\n',
                 ),
             )
             second = run_setup(project, skill)
@@ -491,9 +463,7 @@ class BmadSetupTests(unittest.TestCase):
             bmad.mkdir()
             elsewhere = root / "elsewhere"
             elsewhere.mkdir()
-            os.symlink(
-                elsewhere, bmad / "scripts", target_is_directory=True
-            )
+            os.symlink(elsewhere, bmad / "scripts", target_is_directory=True)
 
             result = run_setup(project, skill)
             self.assertEqual(result.returncode, 0, msg=result.stderr)
@@ -531,12 +501,8 @@ class BmadSetupTests(unittest.TestCase):
                 target_is_directory=True,
             )
 
-            with mock.patch(
-                "os.symlink", side_effect=OSError("operation not permitted")
-            ) as symlink:
-                code = setup.main(
-                    ["--project-root", str(project), "--skill", str(skill)]
-                )
+            with mock.patch("os.symlink", side_effect=OSError("operation not permitted")) as symlink:
+                code = setup.main(["--project-root", str(project), "--skill", str(skill)])
 
             self.assertEqual(code, 0)
             symlink.assert_not_called()
@@ -616,9 +582,7 @@ class BmadSetupTests(unittest.TestCase):
                 ns=(946_684_800_000_000_000, 946_684_800_000_000_000),
             )
             preserved_mtime = marker.stat().st_mtime_ns
-            self.assertNotEqual(
-                preserved_mtime, source_marker.stat().st_mtime_ns
-            )
+            self.assertNotEqual(preserved_mtime, source_marker.stat().st_mtime_ns)
 
             result = run_setup(project, skill)
             self.assertEqual(result.returncode, 0, msg=result.stderr)
@@ -636,9 +600,7 @@ class BmadSetupTests(unittest.TestCase):
             bmad = project / "_bmad"
             bmad.mkdir()
             scripts = project / "_bmad" / "scripts"
-            os.symlink(
-                skill / "scripts", scripts, target_is_directory=True
-            )
+            os.symlink(skill / "scripts", scripts, target_is_directory=True)
 
             result = run_setup(project, skill)
             self.assertEqual(result.returncode, 0, msg=result.stderr)
@@ -725,21 +687,14 @@ class BmadSetupTests(unittest.TestCase):
                     },
                 ),
             )
-            before = {
-                path.relative_to(project): path.read_bytes()
-                for path in project.rglob("*")
-                if path.is_file()
-            }
+            before = {path.relative_to(project): path.read_bytes() for path in project.rglob("*") if path.is_file()}
 
             result = run_setup(project, skill, "--list-config-questions")
 
             self.assertEqual(result.returncode, 0, msg=result.stderr)
             questions = json.loads(result.stdout)
             self.assertEqual(
-                [
-                    (item["module"], item["key"], item["prompt"])
-                    for item in questions
-                ],
+                [(item["module"], item["key"], item["prompt"]) for item in questions],
                 [
                     ("alpha", "first", "First alpha"),
                     ("alpha", "nested.second", "Second alpha"),
@@ -751,11 +706,7 @@ class BmadSetupTests(unittest.TestCase):
                 "demo-proj/{project-root}/{unknown}",
             )
             self.assertEqual(
-                {
-                    path.relative_to(project): path.read_bytes()
-                    for path in project.rglob("*")
-                    if path.is_file()
-                },
+                {path.relative_to(project): path.read_bytes() for path in project.rglob("*") if path.is_file()},
                 before,
             )
             self.assertFalse((project / "_bmad-output").exists())
@@ -777,9 +728,7 @@ class BmadSetupTests(unittest.TestCase):
                 "release_time = 14:35:22.123456\n"
                 "release_datetime = 2026-08-18T14:35:22-07:00\n",
             )
-            original_values = tomllib.loads(
-                (bmad / "config.toml").read_text(encoding="utf-8")
-            )["modules"]["alpha"]
+            original_values = tomllib.loads((bmad / "config.toml").read_text(encoding="utf-8"))["modules"]["alpha"]
             write(bmad / "custom" / "keep.txt", "custom\n")
             write(bmad / "config.user.toml", "# user\n")
             questions = (
@@ -824,9 +773,7 @@ class BmadSetupTests(unittest.TestCase):
             )
 
             self.assertEqual(result.returncode, 0, msg=result.stderr)
-            parsed = tomllib.loads(
-                (bmad / "config.toml").read_text(encoding="utf-8")
-            )
+            parsed = tomllib.loads((bmad / "config.toml").read_text(encoding="utf-8"))
             self.assertEqual(parsed["modules"]["alpha"]["existing"], 42)
             for key in (
                 "naïve",
@@ -839,19 +786,13 @@ class BmadSetupTests(unittest.TestCase):
                     type(parsed["modules"]["alpha"][key]),
                     type(original_values[key]),
                 )
-            self.assertIsInstance(
-                parsed["modules"]["alpha"]["release_date"], datetime.date
-            )
-            self.assertIsInstance(
-                parsed["modules"]["alpha"]["release_time"], datetime.time
-            )
+            self.assertIsInstance(parsed["modules"]["alpha"]["release_date"], datetime.date)
+            self.assertIsInstance(parsed["modules"]["alpha"]["release_time"], datetime.time)
             self.assertIsInstance(
                 parsed["modules"]["alpha"]["release_datetime"],
                 datetime.datetime,
             )
-            self.assertEqual(
-                parsed["modules"]["alpha"]["nested"]["answer"], "chosen"
-            )
+            self.assertEqual(parsed["modules"]["alpha"]["nested"]["answer"], "chosen")
             self.assertEqual(parsed["modules"]["alpha"]["escaped"], escaped)
             installed = bmad / "alpha" / "scripts" / "tools" / "check.py"
             self.assertEqual(
@@ -859,12 +800,8 @@ class BmadSetupTests(unittest.TestCase):
                 (module_skill / script_path).read_bytes(),
             )
             self.assertFalse((bmad / "scripts" / "tools" / "check.py").exists())
-            self.assertEqual(
-                (bmad / "custom" / "keep.txt").read_bytes(), b"custom\n"
-            )
-            self.assertEqual(
-                (bmad / "config.user.toml").read_bytes(), b"# user\n"
-            )
+            self.assertEqual((bmad / "custom" / "keep.txt").read_bytes(), b"custom\n")
+            self.assertEqual((bmad / "config.user.toml").read_bytes(), b"# user\n")
 
             expanded_questions = questions + (
                 {
@@ -889,14 +826,10 @@ class BmadSetupTests(unittest.TestCase):
             second = run_setup(
                 project,
                 skill,
-                *module_answers_args(
-                    project, {"alpha": {"new_key": "new answer"}}
-                ),
+                *module_answers_args(project, {"alpha": {"new_key": "new answer"}}),
             )
             self.assertEqual(second.returncode, 0, msg=second.stderr)
-            reparsed = tomllib.loads(
-                (bmad / "config.toml").read_text(encoding="utf-8")
-            )
+            reparsed = tomllib.loads((bmad / "config.toml").read_text(encoding="utf-8"))
             self.assertEqual(reparsed["modules"]["alpha"]["existing"], 42)
             self.assertEqual(reparsed["modules"]["alpha"]["escaped"], escaped)
             for key in (
@@ -905,16 +838,12 @@ class BmadSetupTests(unittest.TestCase):
                 "release_time",
                 "release_datetime",
             ):
-                self.assertEqual(
-                    reparsed["modules"]["alpha"][key], original_values[key]
-                )
+                self.assertEqual(reparsed["modules"]["alpha"][key], original_values[key])
                 self.assertIs(
                     type(reparsed["modules"]["alpha"][key]),
                     type(original_values[key]),
                 )
-            self.assertEqual(
-                reparsed["modules"]["alpha"]["new_key"], "new answer"
-            )
+            self.assertEqual(reparsed["modules"]["alpha"]["new_key"], "new answer")
             self.assertEqual(installed.read_bytes(), b"# refreshed\n")
 
     def test_future_manifest_fields_are_ignored_by_runtime_setup(self):
@@ -951,20 +880,12 @@ class BmadSetupTests(unittest.TestCase):
             result = run_setup(
                 project,
                 skill,
-                *module_answers_args(
-                    project, {"alpha": {"answer": "accepted"}}
-                ),
+                *module_answers_args(project, {"alpha": {"answer": "accepted"}}),
             )
 
             self.assertEqual(result.returncode, 0, msg=result.stderr)
-            parsed = tomllib.loads(
-                (project / "_bmad" / "config.toml").read_text(
-                    encoding="utf-8"
-                )
-            )
-            self.assertEqual(
-                parsed["modules"]["alpha"]["answer"], "accepted"
-            )
+            parsed = tomllib.loads((project / "_bmad" / "config.toml").read_text(encoding="utf-8"))
+            self.assertEqual(parsed["modules"]["alpha"]["answer"], "accepted")
 
     def test_module_scripts_with_same_relative_path_stay_isolated(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -990,12 +911,8 @@ class BmadSetupTests(unittest.TestCase):
 
             self.assertEqual(result.returncode, 0, msg=result.stderr)
             bmad = project / "_bmad"
-            self.assertEqual(
-                (bmad / "alpha" / relative).read_bytes(), b"# alpha\n"
-            )
-            self.assertEqual(
-                (bmad / "beta" / relative).read_bytes(), b"# beta\n"
-            )
+            self.assertEqual((bmad / "alpha" / relative).read_bytes(), b"# alpha\n")
+            self.assertEqual((bmad / "beta" / relative).read_bytes(), b"# beta\n")
             self.assertFalse((bmad / relative).exists())
 
     def test_existing_scalar_blocks_declared_descendant_without_overwrite(self):
@@ -1034,8 +951,7 @@ class BmadSetupTests(unittest.TestCase):
             self.assertIn("parent value", result.stderr)
             self.assertEqual(config.read_bytes(), before)
             self.assertEqual(
-                tomllib.loads(config.read_text(encoding="utf-8"))["modules"]
-                ["alpha"]["output"],
+                tomllib.loads(config.read_text(encoding="utf-8"))["modules"]["alpha"]["output"],
                 "keep",
             )
             self.assertEqual(list(project.glob("_bmad.setup-*")), [])
@@ -1144,9 +1060,7 @@ class BmadSetupTests(unittest.TestCase):
             answer_path = project / ".bmad-help-setup-modules.toml"
             write(answer_path, "[modules.alpha]\nanswer = 7\n")
 
-            invalid = run_setup(
-                project, skill, "--module-answers", str(answer_path)
-            )
+            invalid = run_setup(project, skill, "--module-answers", str(answer_path))
 
             self.assertNotEqual(invalid.returncode, 0)
             self.assertIn("must be a string", invalid.stderr)
@@ -1176,11 +1090,7 @@ class BmadSetupTests(unittest.TestCase):
                 'update_source = "file:skills"\nknowledge = "`references/help.md` in the `bmad` skill"\n'
                 'config_questions = "invalid"\n',
             )
-            before = {
-                path.relative_to(bmad): path.read_bytes()
-                for path in bmad.rglob("*")
-                if path.is_file()
-            }
+            before = {path.relative_to(bmad): path.read_bytes() for path in bmad.rglob("*") if path.is_file()}
 
             result = run_setup(project, skill)
 
@@ -1188,11 +1098,7 @@ class BmadSetupTests(unittest.TestCase):
             self.assertIn(str(manifest), result.stderr)
             self.assertIn("config_questions", result.stderr)
             self.assertEqual(
-                {
-                    path.relative_to(bmad): path.read_bytes()
-                    for path in bmad.rglob("*")
-                    if path.is_file()
-                },
+                {path.relative_to(bmad): path.read_bytes() for path in bmad.rglob("*") if path.is_file()},
                 before,
             )
             self.assertEqual(list(project.glob("_bmad.setup-*")), [])
@@ -1210,11 +1116,11 @@ class BmadSetupTests(unittest.TestCase):
             (
                 "duplicate-toml-key",
                 (
-                    'version = "1.2.3"\n'
-                    'module = "alpha"\n'
-                    'module = "beta"\n'
-                    'update_source = "file:skills"\nknowledge = "`references/help.md` in the `bmad` skill"\n'
-                ).encode(),
+                    b'version = "1.2.3"\n'
+                    b'module = "alpha"\n'
+                    b'module = "beta"\n'
+                    b'update_source = "file:skills"\nknowledge = "`references/help.md` in the `bmad` skill"\n'
+                ),
                 "overwrite",
             ),
             (
@@ -1253,9 +1159,7 @@ class BmadSetupTests(unittest.TestCase):
                     dump_manifest_toml({**base, "scripts": [entry]}).encode(),
                     repr(entry),
                 )
-                for index, entry in enumerate(
-                    ("scripts", "scripts/", "scripts/../tool.py", "other/tool.py")
-                )
+                for index, entry in enumerate(("scripts", "scripts/", "scripts/../tool.py", "other/tool.py"))
             ),
             (
                 "unsafe-module",
@@ -1290,11 +1194,7 @@ class BmadSetupTests(unittest.TestCase):
             write(bmad / "custom" / "keep.txt", "keep\n")
             upper = write_module_skill(root, "upper-skill", "Alpha")
             lower = write_module_skill(root, "lower-skill", "alpha")
-            before = {
-                path.relative_to(bmad): path.read_bytes()
-                for path in bmad.rglob("*")
-                if path.is_file()
-            }
+            before = {path.relative_to(bmad): path.read_bytes() for path in bmad.rglob("*") if path.is_file()}
 
             result = run_setup(project, skill)
 
@@ -1303,11 +1203,7 @@ class BmadSetupTests(unittest.TestCase):
             self.assertIn(str(upper / "module-manifest.toml"), result.stderr)
             self.assertIn(str(lower / "module-manifest.toml"), result.stderr)
             self.assertEqual(
-                {
-                    path.relative_to(bmad): path.read_bytes()
-                    for path in bmad.rglob("*")
-                    if path.is_file()
-                },
+                {path.relative_to(bmad): path.read_bytes() for path in bmad.rglob("*") if path.is_file()},
                 before,
             )
             self.assertEqual(list(project.glob("_bmad.setup-*")), [])
@@ -1351,11 +1247,7 @@ class BmadSetupTests(unittest.TestCase):
             real = root / "real-install" / "_bmad"
             write(real / "config.toml", "[core]\nkeep = 1\n")
             os.symlink(real, project / "_bmad", target_is_directory=True)
-            before = {
-                path.relative_to(real): path.read_bytes()
-                for path in real.rglob("*")
-                if path.is_file()
-            }
+            before = {path.relative_to(real): path.read_bytes() for path in real.rglob("*") if path.is_file()}
 
             for extra in ((), ("--doctor",), ("--list-config-questions", "--doctor")):
                 with self.subTest(extra=extra):
@@ -1366,11 +1258,7 @@ class BmadSetupTests(unittest.TestCase):
 
             self.assertTrue((project / "_bmad").is_symlink())
             self.assertEqual(
-                {
-                    path.relative_to(real): path.read_bytes()
-                    for path in real.rglob("*")
-                    if path.is_file()
-                },
+                {path.relative_to(real): path.read_bytes() for path in real.rglob("*") if path.is_file()},
                 before,
             )
             self.assertEqual(list(project.glob("_bmad.*-*")), [])
@@ -1393,11 +1281,7 @@ class BmadSetupTests(unittest.TestCase):
             )
             declared = (module_skill / "scripts" / "tool.py").resolve()
             manifest = module_skill / "module-manifest.toml"
-            before = {
-                path.relative_to(bmad): path.read_bytes()
-                for path in bmad.rglob("*")
-                if path.is_file()
-            }
+            before = {path.relative_to(bmad): path.read_bytes() for path in bmad.rglob("*") if path.is_file()}
             real_read_bytes = Path.read_bytes
 
             def fail_declared(path: Path) -> bytes:
@@ -1421,11 +1305,7 @@ class BmadSetupTests(unittest.TestCase):
             self.assertIn(str(manifest), message)
             self.assertIn("declared read failed", message)
             self.assertEqual(
-                {
-                    path.relative_to(bmad): path.read_bytes()
-                    for path in bmad.rglob("*")
-                    if path.is_file()
-                },
+                {path.relative_to(bmad): path.read_bytes() for path in bmad.rglob("*") if path.is_file()},
                 before,
             )
             self.assertEqual(list(project.glob("_bmad.setup-*")), [])
@@ -1437,8 +1317,7 @@ class BmadSetupTests(unittest.TestCase):
             collision = root / "collision.toml"
             write(
                 collision,
-                '[modules.alpha]\n"nested.answer" = "literal"\n'
-                "[modules.alpha.nested]\nanswer = \"table\"\n",
+                '[modules.alpha]\n"nested.answer" = "literal"\n[modules.alpha.nested]\nanswer = "table"\n',
             )
             with self.assertRaises(Exception) as caught:
                 setup.load_module_answers(collision)
@@ -1476,8 +1355,7 @@ class BmadSetupTests(unittest.TestCase):
                     else:
                         write(
                             answer_path,
-                            '[modules.alpha]\nfirst = "one"\n'
-                            'second = "two"\nextra = "three"\n',
+                            '[modules.alpha]\nfirst = "one"\nsecond = "two"\nextra = "three"\n',
                         )
                         diagnostic = "modules.alpha.extra"
 
@@ -1504,22 +1382,14 @@ class BmadSetupTests(unittest.TestCase):
             write(bmad / "config.toml", "[broken\n")
             write(bmad / "core" / "config.yaml", ":::not-yaml\n")
             write(bmad / "bmm" / "config.yaml", "- nested:\n  - list\n")
-            before = {
-                path.relative_to(bmad): path.read_bytes()
-                for path in bmad.rglob("*")
-                if path.is_file()
-            }
+            before = {path.relative_to(bmad): path.read_bytes() for path in bmad.rglob("*") if path.is_file()}
 
             result = run_setup(project, skill)
             self.assertNotEqual(result.returncode, 0)
             self.assertIn(str(bmad / "config.toml"), result.stderr)
             self.assertIn("cannot parse TOML", result.stderr)
             self.assertEqual(
-                {
-                    path.relative_to(bmad): path.read_bytes()
-                    for path in bmad.rglob("*")
-                    if path.is_file()
-                },
+                {path.relative_to(bmad): path.read_bytes() for path in bmad.rglob("*") if path.is_file()},
                 before,
             )
             self.assertFalse((project / "_bmad-output").exists())
@@ -1591,16 +1461,8 @@ class BmadSetupTests(unittest.TestCase):
             write(bmad / "config.user.toml", "# user\n")
             (bmad / "empty-preserved").mkdir()
             before_inode = bmad.stat().st_ino
-            before_files = {
-                path.relative_to(bmad): path.read_bytes()
-                for path in bmad.rglob("*")
-                if path.is_file()
-            }
-            before_dirs = {
-                path.relative_to(bmad)
-                for path in bmad.rglob("*")
-                if path.is_dir()
-            }
+            before_files = {path.relative_to(bmad): path.read_bytes() for path in bmad.rglob("*") if path.is_file()}
+            before_dirs = {path.relative_to(bmad) for path in bmad.rglob("*") if path.is_dir()}
             real_copy2 = shutil.copy2
             script_copy_attempts = 0
             skill_scripts = (skill / "scripts").resolve()
@@ -1619,9 +1481,7 @@ class BmadSetupTests(unittest.TestCase):
                         raise OSError("script copy failed")
                 return real_copy2(source, dest, *args, **kwargs)
 
-            with mock.patch.object(
-                setup.shutil, "copy2", side_effect=fail_second_script_copy
-            ):
+            with mock.patch.object(setup.shutil, "copy2", side_effect=fail_second_script_copy):
                 with self.assertRaisesRegex(OSError, "script copy failed"):
                     setup.main(
                         [
@@ -1635,19 +1495,11 @@ class BmadSetupTests(unittest.TestCase):
             self.assertEqual(script_copy_attempts, 2)
             self.assertEqual(bmad.stat().st_ino, before_inode)
             self.assertEqual(
-                {
-                    path.relative_to(bmad): path.read_bytes()
-                    for path in bmad.rglob("*")
-                    if path.is_file()
-                },
+                {path.relative_to(bmad): path.read_bytes() for path in bmad.rglob("*") if path.is_file()},
                 before_files,
             )
             self.assertEqual(
-                {
-                    path.relative_to(bmad)
-                    for path in bmad.rglob("*")
-                    if path.is_dir()
-                },
+                {path.relative_to(bmad) for path in bmad.rglob("*") if path.is_dir()},
                 before_dirs,
             )
             self.assertEqual(list(project.glob("_bmad.setup-*")), [])
@@ -1657,9 +1509,7 @@ class BmadSetupTests(unittest.TestCase):
         self.assertTrue(dest.is_dir())
         self.assertTrue(scripts_match(dest, src))
 
-    def _assert_team_tables_match_template(
-        self, parsed: dict, skill: Path, project_name: str
-    ) -> None:
+    def _assert_team_tables_match_template(self, parsed: dict, skill: Path, project_name: str) -> None:
         expected = tomllib.loads(
             (skill / "assets" / "config.template.toml")
             .read_text(encoding="utf-8")
@@ -1673,9 +1523,7 @@ class BmadSetupTests(unittest.TestCase):
             parsed["modules"]["bmm"]["implementation_artifacts"],
             "{project-root}/_bmad-output/implementation-artifacts",
         )
-        self.assertEqual(
-            parsed["modules"]["bmm"]["project_knowledge"], "{project-root}/docs"
-        )
+        self.assertEqual(parsed["modules"]["bmm"]["project_knowledge"], "{project-root}/docs")
         self.assertEqual(set(parsed["agents"]), set(expected["agents"]))
         for code, expected_agent in expected["agents"].items():
             got = parsed["agents"][code]
@@ -1806,11 +1654,7 @@ class BmadUpdateDoctorTests(unittest.TestCase):
                 'module = "broken"\n',
             )
             write(project / "skills-lock.json", "keep\n")
-            before = {
-                path: path.read_bytes()
-                for path in root.rglob("*")
-                if path.is_file()
-            }
+            before = {path: path.read_bytes() for path in root.rglob("*") if path.is_file()}
 
             result = run_setup_python(project, skill, "--update")
 
@@ -1824,9 +1668,7 @@ class BmadUpdateDoctorTests(unittest.TestCase):
                 [(copy["skill"], copy["version"]) for copy in by_module["spread"]["copies"]],
                 [("spread-new", "2.0.0"), ("spread-old", "1.0.0")],
             )
-            self.assertEqual(
-                by_module["unreachable"]["state"], "could-not-check"
-            )
+            self.assertEqual(by_module["unreachable"]["state"], "could-not-check")
             self.assertIn(
                 "missing-source/module-manifest.toml",
                 by_module["unreachable"]["copies"][0]["reason"],
@@ -1839,11 +1681,7 @@ class BmadUpdateDoctorTests(unittest.TestCase):
             self.assertEqual(report["bmad_copy"]["version"], "1.2.3")
             self.assertFalse(report["current"])
             self.assertEqual(
-                {
-                    path: path.read_bytes()
-                    for path in root.rglob("*")
-                    if path.is_file()
-                },
+                {path: path.read_bytes() for path in root.rglob("*") if path.is_file()},
                 before,
             )
 
@@ -1866,18 +1704,11 @@ class BmadUpdateDoctorTests(unittest.TestCase):
                 "githubmod",
                 update_source="github:bmad-code-org/BMAD-METHOD/skills",
             )
-            copies = {
-                copy_item.skill: copy_item
-                for copy_item in setup.discover_installed_copies(skill)
-            }
+            copies = {copy_item.skill: copy_item for copy_item in setup.discover_installed_copies(skill)}
             response = mock.MagicMock()
-            response.__enter__.return_value.read.return_value = (
-                b'version = "1.2.3"\n'
-            )
+            response.__enter__.return_value.read.return_value = b'version = "1.2.3"\n'
             response.__exit__.return_value = False
-            with mock.patch.object(
-                setup.urllib.request, "urlopen", return_value=response
-            ) as opened:
+            with mock.patch.object(setup.urllib.request, "urlopen", return_value=response) as opened:
                 for copy_item in (
                     copies[https_skill.name],
                     copies[github_skill.name],
@@ -1941,9 +1772,7 @@ class BmadUpdateDoctorTests(unittest.TestCase):
             write(bmad / "alpha" / "scripts" / "obsolete.py", "obsolete\n")
             write(bmad / "scripts" / "stale.py", "stale\n")
 
-            pending = run_setup_python(
-                project, skill, "--doctor", "--list-config-questions"
-            )
+            pending = run_setup_python(project, skill, "--doctor", "--list-config-questions")
             self.assertEqual(pending.returncode, 0, msg=pending.stderr)
             self.assertEqual(
                 [(item["module"], item["key"]) for item in json.loads(pending.stdout)],
@@ -1953,9 +1782,7 @@ class BmadUpdateDoctorTests(unittest.TestCase):
                 project,
                 skill,
                 "--doctor",
-                *module_answers_args(
-                    project, {"alpha": {"new.answer": "chosen"}}
-                ),
+                *module_answers_args(project, {"alpha": {"new.answer": "chosen"}}),
             )
 
             self.assertEqual(result.returncode, 0, msg=result.stderr)
@@ -2031,19 +1858,13 @@ class BmadUpdateDoctorTests(unittest.TestCase):
             (bmad / "core" / "scripts").mkdir(parents=True)
             write(bmad / "config.toml", "[modules.alpha]\nkeep = 1\n")
             write(bmad / "alpha" / "scripts" / "keep.py", "keep\n")
-            before = {
-                path.relative_to(bmad): path.read_bytes()
-                for path in bmad.rglob("*")
-                if path.is_file()
-            }
+            before = {path.relative_to(bmad): path.read_bytes() for path in bmad.rglob("*") if path.is_file()}
             result = run_setup_python(project, skill, "--doctor")
 
             self.assertEqual(result.returncode, 0, msg=result.stderr)
             report = json.loads(result.stdout)
             alpha = next(item for item in report["modules"] if item["module"] == "alpha")
-            preview = next(
-                item for item in report["modules"] if item["module"] == "preview"
-            )
+            preview = next(item for item in report["modules"] if item["module"] == "preview")
             self.assertEqual(alpha["state"], "blocked")
             self.assertIn("disagree", alpha["reason"])
             self.assertEqual(alpha["scripts"], "unchanged")
@@ -2052,11 +1873,7 @@ class BmadUpdateDoctorTests(unittest.TestCase):
             self.assertEqual(report["remaining_staleness"], ["alpha", "preview"])
             self.assertFalse(report["current"])
             self.assertEqual(
-                {
-                    path.relative_to(bmad): path.read_bytes()
-                    for path in bmad.rglob("*")
-                    if path.is_file()
-                },
+                {path.relative_to(bmad): path.read_bytes() for path in bmad.rglob("*") if path.is_file()},
                 before,
             )
 
@@ -2155,34 +1972,22 @@ class BmadUpdateDoctorTests(unittest.TestCase):
             project.mkdir()
             skill = write_dest_bmad(root)
             for source_root in ("sources-a", "sources-b"):
-                write_module_skill(
-                    root, "bmad", "core", update_source=f"file:{source_root}"
-                )
+                write_module_skill(root, "bmad", "core", update_source=f"file:{source_root}")
                 write_module_skill(project / source_root, "bmad", "core")
             report = json.loads(
                 self.run_update(project, skill),
             )
             self.assertTrue(report["current"])
-            self.assertEqual(
-                [module["state"] for module in report["modules"]], ["current"]
-            )
+            self.assertEqual([module["state"] for module in report["modules"]], ["current"])
 
-            write_module_skill(
-                root, "pair-a", "pair", update_source="file:sources-a"
-            )
-            write_module_skill(
-                root, "pair-b", "pair", update_source="file:sources-b"
-            )
+            write_module_skill(root, "pair-a", "pair", update_source="file:sources-a")
+            write_module_skill(root, "pair-b", "pair", update_source="file:sources-b")
             write_module_skill(project / "sources-a", "pair-a", "pair")
-            write_module_skill(
-                project / "sources-b", "pair-b", "pair", version="9.0.0"
-            )
+            write_module_skill(project / "sources-b", "pair-b", "pair", version="9.0.0")
 
             report = json.loads(self.run_update(project, skill))
             self.assertFalse(report["current"])
-            pair = next(
-                module for module in report["modules"] if module["module"] == "pair"
-            )
+            pair = next(module for module in report["modules"] if module["module"] == "pair")
             self.assertEqual(pair["state"], "source-disagreement")
             self.assertFalse(pair["version_spread"])
             self.assertEqual(
@@ -2198,16 +2003,12 @@ class BmadUpdateDoctorTests(unittest.TestCase):
             skill = write_dest_bmad(root)
             write_module_skill(root, "bmad", "core", update_source="file:sources")
             write_module_skill(project / "sources", "bmad", "core")
-            write_module_skill(
-                root, "plugged", "alpha", update_source="plugin:bmad-method"
-            )
+            write_module_skill(root, "plugged", "alpha", update_source="plugin:bmad-method")
 
             report = json.loads(self.run_update(project, skill))
 
             self.assertFalse(report["current"])
-            alpha = next(
-                module for module in report["modules"] if module["module"] == "alpha"
-            )
+            alpha = next(module for module in report["modules"] if module["module"] == "alpha")
             self.assertEqual(alpha["state"], "plugin-managed")
             (copy,) = alpha["copies"]
             self.assertEqual(copy["state"], "plugin-managed")
@@ -2221,24 +2022,16 @@ class BmadUpdateDoctorTests(unittest.TestCase):
             project = root / "project"
             project.mkdir()
             skill = write_dest_bmad(root)
-            write_module_skill(
-                root, "bmad", "core", update_source="file:sources"
-            )
+            write_module_skill(root, "bmad", "core", update_source="file:sources")
             write_module_skill(project / "sources", "bmad", "core")
-            write_module_skill(
-                root, "broken-skill", "broken", update_source="https://[oops/tree"
-            )
+            write_module_skill(root, "broken-skill", "broken", update_source="https://[oops/tree")
 
             report = json.loads(self.run_update(project, skill))
             self.assertFalse(report["current"])
-            broken = next(
-                module for module in report["modules"] if module["module"] == "broken"
-            )
+            broken = next(module for module in report["modules"] if module["module"] == "broken")
             self.assertEqual(broken["state"], "could-not-check")
             self.assertIn("https://[oops/tree", broken["copies"][0]["reason"])
-            core = next(
-                module for module in report["modules"] if module["module"] == "core"
-            )
+            core = next(module for module in report["modules"] if module["module"] == "core")
             self.assertEqual(core["state"], "current")
 
     def test_doctor_replaces_symlinked_legacy_shared_scripts(self):
@@ -2358,9 +2151,7 @@ class BmadUpdateDoctorTests(unittest.TestCase):
                 "# old-user\n",
             )
             self.assertEqual(
-                (bmad / "core" / "v6-shims" / "shim.md").read_text(
-                    encoding="utf-8"
-                ),
+                (bmad / "core" / "v6-shims" / "shim.md").read_text(encoding="utf-8"),
                 "shim\n",
             )
 
@@ -2383,11 +2174,7 @@ class BmadUpdateDoctorTests(unittest.TestCase):
             first = run_setup_python(project, skill, "--doctor")
             self.assertEqual(first.returncode, 0, msg=first.stderr)
             self.assertTrue(json.loads(first.stdout)["changed"])
-            before = {
-                path: path.read_bytes()
-                for path in sorted(bmad.rglob("*"))
-                if path.is_file()
-            }
+            before = {path: path.read_bytes() for path in sorted(bmad.rglob("*")) if path.is_file()}
 
             second = run_setup_python(project, skill, "--doctor")
             self.assertEqual(second.returncode, 0, msg=second.stderr)
@@ -2398,11 +2185,7 @@ class BmadUpdateDoctorTests(unittest.TestCase):
             self.assertEqual(report["answers_added"], [])
             self.assertTrue(report["current"])
             self.assertEqual(
-                {
-                    path: path.read_bytes()
-                    for path in sorted(bmad.rglob("*"))
-                    if path.is_file()
-                },
+                {path: path.read_bytes() for path in sorted(bmad.rglob("*")) if path.is_file()},
                 before,
             )
 
@@ -2432,9 +2215,7 @@ class BmadUpdateDoctorTests(unittest.TestCase):
             result = run_setup_python(project, skill, "--doctor")
             self.assertEqual(result.returncode, 0, msg=result.stderr)
             report = json.loads(result.stdout)
-            mixed = next(
-                module for module in report["modules"] if module["module"] == "mixed"
-            )
+            mixed = next(module for module in report["modules"] if module["module"] == "mixed")
             self.assertEqual(mixed["selected_copy"]["skill"], "mixed-release")
             self.assertEqual(
                 (project / "_bmad" / "mixed" / "scripts" / "tool.py").read_bytes(),
@@ -2449,9 +2230,7 @@ class BmadUpdateDoctorTests(unittest.TestCase):
             skill = write_dest_bmad(root)
             write_module_skill(root, "bmad", "core")
 
-            result = run_setup_python(
-                project, skill, "--doctor", "--list-config-questions"
-            )
+            result = run_setup_python(project, skill, "--doctor", "--list-config-questions")
             self.assertEqual(result.returncode, 0, msg=result.stderr)
             report = json.loads(result.stdout)
             self.assertEqual(report["status"], "setup-required")

@@ -1,5 +1,5 @@
 # /// script
-# requires-python = ">=3.10"
+# requires-python = ">=3.11"
 # dependencies = ["pytest>=8.0"]
 # ///
 """Tests for memlog.py. Run: uv run --with pytest pytest scripts/tests/test_memlog.py
@@ -8,6 +8,7 @@ The spine under test is the flat, append-only, chronological invariant: every en
 one line recorded at the end in the order it happened — no sections, no grouping, and no
 lifecycle status the log would have to mutate.
 """
+
 import json
 import sys
 from pathlib import Path
@@ -56,6 +57,7 @@ def append(ws, text, entry_type=None, by=None):
 
 # --- init ---------------------------------------------------------------
 
+
 def test_init_writes_frontmatter_fields(ws):
     init(ws)
     meta, body = memlog.split(read(ws))
@@ -95,6 +97,7 @@ def test_init_rejects_malformed_field(ws):
 
 # --- addressing: --workspace and --path are interchangeable --------------
 
+
 def test_path_addressing_targets_the_file_directly(tmp_path):
     target = tmp_path / "run" / ".memlog.md"
     assert memlog.main(["init", "--path", str(target), "--field", "topic=T"]) == 0
@@ -118,6 +121,7 @@ def test_target_is_required(ws):
 
 
 # --- append: flat chronological order is the whole point -----------------
+
 
 def test_append_lands_at_end_in_order(ws):
     init(ws)
@@ -223,6 +227,7 @@ def test_free_vocabulary_is_not_enforced(ws):
 
 # --- set: generic descriptive frontmatter, no lifecycle semantics --------
 
+
 def test_set_adds_field(ws):
     init(ws)
     memlog.main(["set", "--workspace", ws, "--key", "mode", "--value", "partner"])
@@ -252,6 +257,7 @@ def test_updated_stays_last(ws):
 
 
 # --- robustness ---------------------------------------------------------
+
 
 def test_roundtrip_render_is_stable(ws):
     init(ws)

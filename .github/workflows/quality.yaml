@@ -103,23 +103,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: ".nvmrc"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
       - name: Setup uv
         uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Ruff
+        run: uv run --frozen ruff check . && uv run --frozen ruff format --check .
 
       - name: Test Python
-        run: npm run test:python
+        run: PYTHONDONTWRITEBYTECODE=1 uv run --frozen pytest
 
       - name: Validate file references
-        run: npm run validate:refs
+        run: uv run tools/validate_file_refs.py --strict
 
       - name: Validate skills
-        run: npm run validate:skills
+        run: uv run tools/validate_skills.py --strict
