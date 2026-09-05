@@ -7,6 +7,7 @@ Open source framework for structured, agent-assisted software delivery.
 - Use Conventional Commits for every commit.
 - Before pushing, run `npm ci && npm run quality` on `HEAD` in the exact checkout you are about to push.
   `quality` mirrors the checks in `.github/workflows/quality.yaml`.
+- Run `uv run pre-commit install` once per clone; the commit hook runs the Python-side lint and validation from `quality`.
 
 - Skill validation rules are in `tools/skill-validator.md`.
 - Deterministic skill checks run via `npm run validate:skills` (included in `quality`).

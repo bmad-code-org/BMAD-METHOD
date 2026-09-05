@@ -2,7 +2,6 @@ import js from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier/flat';
 import nodePlugin from 'eslint-plugin-n';
 import unicorn from 'eslint-plugin-unicorn';
-import yml from 'eslint-plugin-yml';
 
 export default [
   // Global ignores for files/folders that should not be linted
@@ -50,9 +49,6 @@ export default [
   // Unicorn rules (modern best practices)
   unicorn.configs.recommended,
 
-  // YAML linting
-  ...yml.configs['flat/recommended'],
-
   // Place Prettier last to disable conflicting stylistic rules
   eslintConfigPrettier,
 
@@ -61,22 +57,6 @@ export default [
     rules: {
       // Allow console for CLI tools in this repo
       'no-console': 'off',
-      // Enforce .yaml file extension for consistency
-      'yml/file-extension': [
-        'error',
-        {
-          extension: 'yaml',
-          caseSensitive: true,
-        },
-      ],
-      // Prefer double quotes in YAML wherever quoting is used, but allow the other to avoid escapes
-      'yml/quotes': [
-        'error',
-        {
-          prefer: 'double',
-          avoidEscape: true,
-        },
-      ],
       // Relax some Unicorn rules that are too opinionated for this codebase
       'unicorn/prevent-abbreviations': 'off',
       'unicorn/no-null': 'off',
@@ -124,20 +104,4 @@ export default [
     },
   },
 
-  // GitHub workflow files in this repo may use empty mapping values
-  {
-    files: ['.github/workflows/**/*.yaml'],
-    rules: {
-      'yml/no-empty-mapping-value': 'off',
-    },
-  },
-
-  // Other GitHub YAML files may intentionally use empty values and reserved filenames
-  {
-    files: ['.github/**/*.yaml'],
-    rules: {
-      'yml/no-empty-mapping-value': 'off',
-      'unicorn/filename-case': 'off',
-    },
-  },
 ];

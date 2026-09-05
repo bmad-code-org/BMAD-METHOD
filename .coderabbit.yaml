@@ -4,77 +4,77 @@
 # guideline files and are given the same scoped instructions, so their findings
 # can be compared rather than merged.
 
-language: "en-US"
+language: en-US
 early_access: true
 tone_instructions: |
   Do not comment on the wording, tone, phrasing, or length of prompt text —
   those are authoring decisions, not defects.
+
 reviews:
   profile: chill
-  high_level_summary: false # don't post summary until explicitly invoked
+  high_level_summary: false  # don't post summary until explicitly invoked
   request_changes_workflow: false
   review_status: false
   commit_status: false
-  collapse_walkthrough: true # `walkthrough: false` is not a schema key; this is the real knob
+  collapse_walkthrough: true  # `walkthrough: false` is not a schema key; this is the real knob
   poem: false
   auto_review:
     enabled: true
-    drafts: false # Don't review drafts automatically
-    auto_incremental_review: false # always review the whole PR, not just new commits
-    base_branches:
-      - main
+    drafts: false  # Don't review drafts automatically
+    auto_incremental_review: false  # always review the whole PR, not just new commits
+    base_branches: [main]
   path_filters:
     # --- Shared baseline: tool configs ---
-    - "!.coderabbit.yaml"
-    - "!eslint.config.mjs"
+    - '!.coderabbit.yaml'
+    - '!eslint.config.mjs'
     # --- Shared baseline: build output ---
-    - "!dist/**"
-    - "!build/**"
-    - "!coverage/**"
+    - '!dist/**'
+    - '!build/**'
+    - '!coverage/**'
     # --- Shared baseline: vendored/generated ---
-    - "!**/node_modules/**"
-    - "!**/*.min.js"
-    - "!**/*.generated.*"
-    - "!**/*.bundle.md"
+    - '!**/node_modules/**'
+    - '!**/*.min.js'
+    - '!**/*.generated.*'
+    - '!**/*.bundle.md'
     # --- Shared baseline: package metadata ---
-    - "!package-lock.json"
+    - '!package-lock.json'
     # --- Shared baseline: binary/media (globs, so `**/` is required to reach subdirs) ---
-    - "!**/*.png"
-    - "!**/*.jpg"
-    - "!**/*.svg"
+    - '!**/*.png'
+    - '!**/*.jpg'
+    - '!**/*.svg'
     # --- Shared baseline: test fixtures ---
-    - "!test/fixtures/**"
-    - "!tools/tests/fixtures/**"
-    - "!test/template-test-generator/**"
-    - "!tools/template-test-generator/test-scenarios/**"
+    - '!test/fixtures/**'
+    - '!tools/tests/fixtures/**'
+    - '!test/template-test-generator/**'
+    - '!tools/template-test-generator/test-scenarios/**'
     # --- Shared baseline: non-project dirs ---
-    - "!_bmad*/**"
-    - "!docs-site/public/**"
-    - "!docs-site/diagrams/**"
-    - "!z*/**"
-    - "!sample-project/**"
-    - "!test-project-install/**"
+    - '!_bmad*/**'
+    - '!docs-site/public/**'
+    - '!docs-site/diagrams/**'
+    - '!z*/**'
+    - '!sample-project/**'
+    - '!test-project-install/**'
     # --- Shared baseline: AI assistant dirs ---
-    - "!.claude/**"
-    - "!.codex/**"
-    - "!.agent/**"
-    - "!.agentvibes/**"
-    - "!.kiro/**"
-    - "!.roo/**"
-    - "!.github/chatmodes/**"
+    - '!.claude/**'
+    - '!.codex/**'
+    - '!.agent/**'
+    - '!.agentvibes/**'
+    - '!.kiro/**'
+    - '!.roo/**'
+    - '!.github/chatmodes/**'
     # --- Shared baseline: build temp ---
-    - "!.bundler-temp/**"
+    - '!.bundler-temp/**'
     # --- Shared baseline: generated reports ---
-    - "!**/validation-report-*.html"
-    - "!CHANGELOG.md"
+    - '!**/validation-report-*.html'
+    - '!CHANGELOG.md'
   path_instructions:
-    - path: "src/**"
+    - path: src/**
       instructions: |
         Source changed. Check whether docs/ needs a matching update — new
         features, changed behavior, renamed concepts, altered CLI flags, or
         modified configuration options should all be reflected in the relevant
         doc pages. Flag missing or outdated docs.
-    - path: "src/*-skills/**"
+    - path: src/*-skills/**
       instructions: |
         Skill file. This is prompt text read by an agent at runtime, not
         executable code. Confine review to claims checkable against the
@@ -86,32 +86,33 @@ reviews:
         for SKILL.md metadata, workflow constraints, step file structure, path
         references, variable resolution, sequential execution, and skill
         invocation syntax.
-    - path: "src/bmm-skills/agents/**"
+    - path: src/bmm-skills/agents/**
       instructions: |
         Agent skill. The persona is configured in customize.toml under [agent]:
         check that every {agent.*} placeholder the SKILL.md interpolates has a
         corresponding key there, and that menu entries name skills that exist
         in this repo.
-    - path: "docs/**/*.md"
+    - path: docs/**/*.md
       instructions: |
         Documentation file. Check that internal markdown links point at files
         that exist, and that the page follows docs/_STYLE_GUIDE.md.
-    - path: "tools/**"
+    - path: tools/**
       instructions: |
         Build script/tooling. Check error handling and that failures exit
         non-zero.
-    - path: "src/scripts/**"
+    - path: src/scripts/**
       instructions: |
         Build script/tooling. Check error handling and that failures exit
         non-zero.
+
 knowledge_base:
   code_guidelines:
     enabled: true
-    filePatterns:
-      - "AGENTS.md"
-      - "tools/skill-validator.md"
+    filePatterns: [AGENTS.md, tools/skill-validator.md]
+
 chat:
-  auto_reply: true # Response to mentions in comments, a la @coderabbit review
+  auto_reply: true  # Response to mentions in comments, a la @coderabbit review
+
 issue_enrichment:
   auto_enrich:
-    enabled: false # don't auto-comment on issues
+    enabled: false  # don't auto-comment on issues

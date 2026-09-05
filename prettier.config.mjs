@@ -16,17 +16,8 @@ export default {
       options: { proseWrap: 'preserve' },
     },
     {
-      files: ['*.yaml'],
-      options: { singleQuote: false },
-    },
-    {
-      files: ['*.json', '*.jsonc'],
-      options: { singleQuote: false },
-    },
-    {
       files: ['*.cjs'],
       options: { parser: 'babel' },
     },
   ],
-  plugins: ['prettier-plugin-packagejson'],
 };

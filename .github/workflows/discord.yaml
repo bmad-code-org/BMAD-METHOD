@@ -70,7 +70,7 @@ jobs:
           ISSUE_TITLE: ${{ github.event.issue.title }}
           ISSUE_USER: ${{ github.event.issue.user.login }}
           ISSUE_BODY: ${{ github.event.issue.body }}
-        run: |
+        run: |-
           set -o pipefail
           source .github/scripts/discord-helpers.sh
           [ -z "$WEBHOOK" ] && exit 0

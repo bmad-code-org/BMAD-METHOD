@@ -1,0 +1,51 @@
+# Runs at commit time (uv run pre-commit install) and over the whole tree
+# from tools/quality.py. Revisions are bumped with `uv run pre-commit autoupdate`.
+exclude: ^(docs-site/|.*/tests/fixtures/)
+
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.6
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+  - repo: https://github.com/rvben/rumdl-pre-commit
+    rev: v0.2.66
+    hooks:
+      - id: rumdl
+        files: \.md$
+        exclude: ^(tools/tests/fixtures/|CODE_OF_CONDUCT\.md$)
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.38.0
+    hooks:
+      - id: yamllint
+  - repo: https://github.com/lyz-code/yamlfix
+    rev: 1.19.1
+    hooks:
+      - id: yamlfix
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-json
+      - id: pretty-format-json
+        args: [--autofix, --no-sort-keys, --no-ensure-ascii]
+  - repo: local
+    hooks:
+      - id: validate-file-refs
+        name: validate file references
+        entry: uv run tools/validate_file_refs.py --strict
+        language: system
+        pass_filenames: false
+        always_run: true
+      - id: validate-skills
+        name: validate skills
+        entry: uv run tools/validate_skills.py --strict
+        language: system
+        pass_filenames: false
+        always_run: true
+      - id: pytest
+        name: pytest
+        entry: env PYTHONDONTWRITEBYTECODE=1 uv run --frozen pytest
+        language: system
+        pass_filenames: false
+        always_run: true

@@ -62,11 +62,15 @@
   ],
   "json.schemas": [
     {
-      "fileMatch": ["package.json"],
+      "fileMatch": [
+        "package.json"
+      ],
       "url": "https://json.schemastore.org/package.json"
     },
     {
-      "fileMatch": [".vscode/settings.json"],
+      "fileMatch": [
+        ".vscode/settings.json"
+      ],
       "url": "vscode://schemas/settings/folder"
     }
   ],
@@ -88,7 +92,9 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
-  "editor.rulers": [140],
+  "editor.rulers": [
+    140
+  ],
   "[xml]": {
     "editor.defaultFormatter": "redhat.vscode-xml"
   },

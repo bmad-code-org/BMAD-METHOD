@@ -13,7 +13,7 @@ jobs:
       - name: Request CodeRabbit review
         uses: actions/github-script@v7
         with:
-          script: |
+          script: |-
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
