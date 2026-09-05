@@ -25,6 +25,6 @@ static source text.
 
 ## Releases
 
-Release and npx distribution work on this branch is a rehearsal against a
-disposable mirror, not a real ship. Read `TEMP-RELEASE-PROCESS.md` before
-pushing to the mirror or cutting a release.
+Read `tools/release.md` before cutting a release. Stamp on `dev`, merge its
+release PR into `main`, tag the merge commit, then stamp the next placeholder
+on `dev`. The 6.12 npm installer is maintained separately on `V6.12`.

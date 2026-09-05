@@ -1,6 +1,7 @@
 import contextlib
 import importlib.util
 import io
+import json
 import sys
 import tempfile
 import tomllib
@@ -42,6 +43,23 @@ def write(path: Path, content: str) -> None:
 
 
 def make_tree(root: Path, version: str = "6.11.0-next") -> None:
+    package = {
+        "name": "bmad-method",
+        "version": version,
+        "description": "BMad — skills",
+        "devDependencies": {"example": version},
+    }
+    lockfile = {
+        "name": "bmad-method",
+        "version": version,
+        "lockfileVersion": 3,
+        "packages": {
+            "": package,
+            "node_modules/example": {"version": version, "integrity": "sha512-example"},
+        },
+    }
+    write(root / "package.json", json.dumps(package, ensure_ascii=False, indent=2) + "\n")
+    write(root / "package-lock.json", json.dumps(lockfile, ensure_ascii=False, indent=2) + "\n")
     for skill in METHOD_SKILLS:
         write(
             root / "skills" / skill / "module-manifest.toml",
@@ -90,9 +108,55 @@ class StampReleaseTests(unittest.TestCase):
         )
         self.assertIn('module = "toolbox"', toolbox)
         self.assertIn('version = "1.2.0"', toolbox)
-        self.assertIn("Stamped version 1.2.0 into 4 files", out)
+        self.assertIn("Stamped version 1.2.0 into 6 files", out)
         self.assertIn("skills/bmad/module-manifest.toml", out)
         self.assertIn("skills/bmad-flow/module-manifest.toml", out)
+
+    def test_stamps_package_versions_without_changing_dependencies(self):
+        make_tree(self.root)
+        before = snapshot(self.root)
+        code, out, err = run_stamper(self.root, "6.13.1-next")
+        self.assertEqual(code, 0, err)
+        for name in ("package.json", "package-lock.json"):
+            with self.subTest(name=name):
+                expected = json.loads(before[name])
+                expected["version"] = "6.13.1-next"
+                if name == "package-lock.json":
+                    expected["packages"][""]["version"] = "6.13.1-next"
+                self.assertEqual(
+                    (self.root / name).read_text(encoding="utf-8"),
+                    json.dumps(expected, ensure_ascii=False, indent=2) + "\n",
+                )
+                self.assertIn(name, out)
+
+    def test_invalid_package_metadata_touches_nothing(self):
+        cases = (
+            ("package.json", "not json"),
+            ("package.json", "[]"),
+            ("package.json", '{"version": 1}'),
+            ("package-lock.json", '{"version": "1.0.0", "packages": {}}'),
+            ("package-lock.json", '{"version": "1.0.0", "packages": {"": {"version": null}}}'),
+        )
+        for name, content in cases:
+            with self.subTest(name=name, content=content):
+                make_tree(self.root)
+                write(self.root / name, content)
+                before = snapshot(self.root)
+                code, _, err = run_stamper(self.root, "1.2.0")
+                self.assertEqual(code, 1)
+                self.assertIn(name, err)
+                self.assertEqual(snapshot(self.root), before)
+
+    def test_missing_package_file_touches_nothing(self):
+        for name in ("package.json", "package-lock.json"):
+            with self.subTest(name=name):
+                make_tree(self.root)
+                (self.root / name).unlink()
+                before = snapshot(self.root)
+                code, _, err = run_stamper(self.root, "1.2.0")
+                self.assertEqual(code, 1)
+                self.assertIn(name, err)
+                self.assertEqual(snapshot(self.root), before)
 
     def test_non_semver_version_touches_nothing(self):
         make_tree(self.root)
