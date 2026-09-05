@@ -3879,7 +3879,7 @@ async function runTests() {
     assert(await fs.pathExists(path.join(skill49, 'SKILL.md')), 'build-auto entry reaches installed skill surface');
     const skillSource49 = await fs.readFile(path.join(skill49, 'SKILL.md'), 'utf8');
     assert(
-      skillSource49.includes('uv run --no-cache "{project-root}/_bmad/scripts/render_skill.py"'),
+      skillSource49.includes('uv run --no-project --no-cache "{project-root}/_bmad/scripts/render_skill.py"'),
       'build-auto avoids the user-level uv cache and lets script metadata select Python',
     );
     assert(!skillSource49.includes('uv run --python'), 'build-auto does not pin an exact Python series');
@@ -3929,10 +3929,50 @@ async function runTests() {
       ].join('\n'),
       'utf8',
     );
+    assert(
+      sharedInvocation49.includes('uv run --no-project'),
+      'build-auto does not let uv manage the project environment',
+      sharedInvocation49,
+    );
+    const renderOptions49 = { encoding: 'utf8', timeout: 120_000 };
+    const brownfieldFixtures49 = [
+      ['uv', { 'pyproject.toml': '[project]\nname = "brownfield-uv"\nversion = "0.0.0"\n' }],
+      ['pipenv', { Pipfile: '[requires]\npython_version = "3.11"\n' }],
+    ];
+    for (const [name49, files49] of brownfieldFixtures49) {
+      const fixture49 = path.join(root49, `brownfield-${name49}`);
+      await fs.ensureDir(path.join(fixture49, '.venv'));
+      await fs.writeFile(path.join(fixture49, '.venv', 'project-owner'), 'project-owned');
+      for (const [file49, content49] of Object.entries(files49)) {
+        await fs.writeFile(path.join(fixture49, file49), content49);
+      }
+      await fs.copy(path.join(bmadDir49, 'config.toml'), path.join(fixture49, '_bmad', 'config.toml'));
+      const resolver49 = spawnSync(
+        'uv',
+        [
+          'run',
+          '--no-project',
+          '--python',
+          '3.11',
+          path.join(scripts49, 'resolve_customization.py'),
+          '--project-root',
+          fixture49,
+          '--skill',
+          skill49,
+          '--key',
+          'workflow',
+        ],
+        { ...renderOptions49, cwd: fixture49 },
+      );
+      assert(resolver49.status === 0, `${name49} brownfield resolver completes`, `${resolver49.stdout}${resolver49.stderr}`);
+      assert(
+        (await fs.readFile(path.join(fixture49, '.venv', 'project-owner'), 'utf8')) === 'project-owned',
+        `${name49} brownfield project environment remains untouched`,
+      );
+    }
     // The harness pins the interpreter to keep this scratch run deterministic; the shipped
     // SKILL.md command must not pin one, and test/test-build-auto-renderer.js executes that
     // unpinned form verbatim for both skills.
-    const renderOptions49 = { encoding: 'utf8', timeout: 120_000 };
     const render49 = spawnSync(
       'uv',
       ['run', '--python', '3.11', path.join(scripts49, 'render_skill.py'), '--project-root', root49, '--skill', skill49],

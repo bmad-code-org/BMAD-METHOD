@@ -36,8 +36,8 @@ The **memlog** (`.memlog.md`) is the run's working memory: every decision, const
 
 Writes go through the shared script (don't read the file back except on resume):
 
-- `uv run {project-root}/_bmad/scripts/memlog.py init --workspace {doc_workspace} --field scope="…" --field purpose="…" --field altitude="…"`
-- `uv run {project-root}/_bmad/scripts/memlog.py append --workspace {doc_workspace} --type <decision|constraint|version|assumption|question|direction|event> --text "…"`
+- `uv run --no-project {project-root}/_bmad/scripts/memlog.py init --workspace {doc_workspace} --field scope="…" --field purpose="…" --field altitude="…"`
+- `uv run --no-project {project-root}/_bmad/scripts/memlog.py append --workspace {doc_workspace} --type <decision|constraint|version|assumption|question|direction|event> --text "…"`
 
 ## Resolution rules
 
@@ -50,8 +50,8 @@ Writes go through the shared script (don't read the file back except on resume):
 
 **Forwarded activation:** if a caller invoked you with a stated intent and pre-resolved customization fields, honor them verbatim — skip your own intent inference, use the supplied values for those named fields, and resolve only the remaining fields from your own `customize.toml`.
 
-1. Resolve customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow` (on failure read `{skill-root}/customize.toml`, use defaults). Run `{workflow.activation_steps_prepend}`, then `{workflow.activation_steps_append}`. Hold `{workflow.persistent_facts}` as standing context — empty unless the user opted in — and consult `{workflow.external_sources}` on demand.
-2. Resolve config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}` (merges `_bmad/config.toml`, `_bmad/config.user.toml`, and the `_bmad/custom/` overrides). From the merged JSON resolve `{user_name}`, `{communication_language}`, `{document_output_language}`, `{project_name}` (under `core`), `{planning_artifacts}` (under `modules.bmm`), and `{date}`; missing keys take neutral defaults, never block.
+1. Resolve customization: `uv run --no-project {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow` (on failure read `{skill-root}/customize.toml`, use defaults). Run `{workflow.activation_steps_prepend}`, then `{workflow.activation_steps_append}`. Hold `{workflow.persistent_facts}` as standing context — empty unless the user opted in — and consult `{workflow.external_sources}` on demand.
+2. Resolve config: `uv run --no-project {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}` (merges `_bmad/config.toml`, `_bmad/config.user.toml`, and the `_bmad/custom/` overrides). From the merged JSON resolve `{user_name}`, `{communication_language}`, `{document_output_language}`, `{project_name}` (under `core`), `{planning_artifacts}` (under `modules.bmm`), and `{date}`; missing keys take neutral defaults, never block.
 3. Headless (no interactive user) → follow `references/headless.md` for the whole run. Otherwise greet `{user_name}` in `{communication_language}`. Detect the intent from the conversation and input — **create** (the default), **update** an existing spine, or **validate** one (see those sections). If the real ask is requirements / UX / a capability contract / epic breakdown / an agent, invoke the `bmad-prd`, `bmad-ux`, `bmad-spec`, `bmad-create-epics-and-stories`, or `bmad-workflow-builder` (if the BMad Builder module is installed) skill instead.
 4. If a run folder for this target already exists under `{workflow.spine_output_path}`, offer to resume from its memlog rather than restart.
 5. Interactive create: offer the working mode in `{communication_language}` — **Coaching path** (default) or **Fast path** (see *How you work*) — before any drafting; default to Coaching unless the user asks for speed.

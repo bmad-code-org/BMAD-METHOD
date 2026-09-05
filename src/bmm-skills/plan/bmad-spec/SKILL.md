@@ -18,9 +18,9 @@ Multiple skills may call to update the same spec over time.
 
 ## On Activation
 
-1. Resolve customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow`. On failure, read `{skill-root}/customize.toml` directly.
+1. Resolve customization: `uv run --no-project {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow`. On failure, read `{skill-root}/customize.toml` directly.
 2. Run `{workflow.activation_steps_prepend}`. Treat `{workflow.persistent_facts}` as foundational context (`file:` entries are loaded).
-3. Resolve config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}` (merges `_bmad/config.toml`, `_bmad/config.user.toml`, and the `_bmad/custom/` overrides). From the merged JSON resolve `{user_name}`, `{communication_language}`, `{document_output_language}`, `{project_name}`, `{output_folder}` (under `core`), and `{date}`.
+3. Resolve config: `uv run --no-project {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}` (merges `_bmad/config.toml`, `_bmad/config.user.toml`, and the `_bmad/custom/` overrides). From the merged JSON resolve `{user_name}`, `{communication_language}`, `{document_output_language}`, `{project_name}`, `{output_folder}` (under `core`), and `{date}`.
 4. Detect mode. **Headless** when any of: no TTY, programmatic caller (another skill or non-interactive runner), or the first message pre-supplies all inputs and asks for an artifact path back. **Interactive** otherwise. In interactive mode, greet by `{user_name}` in `{communication_language}`, stay in that language, and mention that `bmad-party-mode` and `bmad-advanced-elicitation` are available for deeper exploration on any field.
 
 Run `{workflow.activation_steps_append}`.
@@ -58,8 +58,8 @@ Deriving the contract from a living log instead of editing the contract in place
 
 Writes go through the shared script — `{project-root}/_bmad/scripts/memlog.py`, the same location as `resolve_customization.py` (atomic; never read it back except to resume):
 
-- `uv run {project-root}/_bmad/scripts/memlog.py init --workspace {spec-folder} --field topic="<what is being specced>"` — once, at create.
-- `uv run {project-root}/_bmad/scripts/memlog.py append --workspace {spec-folder} --type <decision|constraint|capability|assumption|question|direction|note|event> --text "<one-line gist, reason included>"` — as each lands.
+- `uv run --no-project {project-root}/_bmad/scripts/memlog.py init --workspace {spec-folder} --field topic="<what is being specced>"` — once, at create.
+- `uv run --no-project {project-root}/_bmad/scripts/memlog.py append --workspace {spec-folder} --type <decision|constraint|capability|assumption|question|direction|note|event> --text "<one-line gist, reason included>"` — as each lands.
 - Terminal moments (a validation verdict, "spec finalized") are `--type event` entries; the memlog carries no status field.
 
 ## The Operation
