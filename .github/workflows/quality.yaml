@@ -7,10 +7,14 @@ name: Quality & Validation
     branches: [main, dev]
   pull_request:
     branches: ["**"]
+    # `edited` covers a base-branch change (e.g. a PR retargeted from main to dev);
+    # the job condition skips title/body edits.
+    types: [opened, synchronize, reopened, edited]
   workflow_dispatch:
 
 jobs:
   prettier:
+    if: github.event.action != 'edited' || github.event.changes.base != null
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -29,6 +33,7 @@ jobs:
         run: npm run format:check
 
   eslint:
+    if: github.event.action != 'edited' || github.event.changes.base != null
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -47,6 +52,7 @@ jobs:
         run: npm run lint
 
   markdownlint:
+    if: github.event.action != 'edited' || github.event.changes.base != null
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -65,6 +71,7 @@ jobs:
         run: npm run lint:md
 
   docs:
+    if: github.event.action != 'edited' || github.event.changes.base != null
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -90,6 +97,7 @@ jobs:
         run: npm run test:docs
 
   validate:
+    if: github.event.action != 'edited' || github.event.changes.base != null
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
