@@ -25,14 +25,10 @@
     "docs:preview": "astro preview --root docs-site",
     "docs:validate-links": "node docs-site/scripts/validate-doc-links.js",
     "docs:validate-sidebar": "node docs-site/scripts/validate-sidebar-order.js",
-    "format:check": "prettier --check \"**/*.{js,cjs,mjs,json,yaml}\"",
-    "format:fix": "prettier --write \"**/*.{js,cjs,mjs,json,yaml}\"",
-    "lint": "eslint . --max-warnings=0",
-    "lint:fix": "eslint . --fix",
-    "lint:md": "markdownlint-cli2 \"**/*.md\"",
-    "lint:py": "uv run --frozen ruff check . && uv run --frozen ruff format --check .",
-    "prepare": "command -v husky >/dev/null 2>&1 && husky || exit 0",
-    "quality": "npm run format:check && npm run lint && npm run lint:py && npm run lint:md && npm run docs:build && npm test && npm run validate:refs && npm run validate:skills && npm run docs:validate-sidebar",
+    "format:check": "prettier --check \"docs-site/{scripts,test}/**/*.{js,mjs}\"",
+    "format:fix": "prettier --write \"docs-site/{scripts,test}/**/*.{js,mjs}\"",
+    "lint": "eslint docs-site/scripts docs-site/test --max-warnings=0",
+    "quality": "uv run --frozen tools/quality.py",
     "test": "npm run test:docs && npm run test:python",
     "test:docs": "node docs-site/test/test-site-url.mjs && node docs-site/test/test-rehype-plugins.mjs",
     "test:implementation-model": "node docs-site/test/test-validate-published-implementation-model.mjs",
@@ -40,27 +36,8 @@
     "validate:refs": "uv run tools/validate_file_refs.py --strict",
     "validate:skills": "uv run tools/validate_skills.py --strict"
   },
-  "lint-staged": {
-    "*.{js,cjs,mjs}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.yaml": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.json": [
-      "prettier --write"
-    ],
-    "*.md": [
-      "markdownlint-cli2"
-    ]
-  },
   "overrides": {
-    "esbuild": "^0.28.1",
-    "markdownlint-cli2": {
-      "markdown-it": "^14.2.0"
-    }
+    "esbuild": "^0.28.1"
   },
   "devDependencies": {
     "@astrojs/sitemap": "^3.7.3",
@@ -71,12 +48,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-n": "^17.21.3",
     "eslint-plugin-unicorn": "^60.0.0",
-    "eslint-plugin-yml": "^1.18.0",
-    "husky": "^9.1.7",
-    "lint-staged": "^16.1.1",
-    "markdownlint-cli2": "^0.19.1",
     "prettier": "^3.7.4",
-    "prettier-plugin-packagejson": "^2.5.19",
     "sharp": "^0.33.5",
     "unist-util-visit": "^5.1.0"
   },

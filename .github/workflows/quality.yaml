@@ -1,102 +1,19 @@
 name: Quality & Validation
 
-# Keep this workflow aligned with `npm run quality` in `package.json`.
+# Keep this workflow aligned with `tools/quality.py`.
 
-"on":
+on:
   push:
     branches: [main, dev]
   pull_request:
-    branches: ["**"]
+    branches: ['**']
     # `edited` covers a base-branch change (e.g. a PR retargeted from main to dev);
     # the job condition skips title/body edits.
     types: [opened, synchronize, reopened, edited]
   workflow_dispatch:
 
 jobs:
-  prettier:
-    if: github.event.action != 'edited' || github.event.changes.base != null
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: ".nvmrc"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Prettier format check
-        run: npm run format:check
-
-  eslint:
-    if: github.event.action != 'edited' || github.event.changes.base != null
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: ".nvmrc"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: ESLint
-        run: npm run lint
-
-  markdownlint:
-    if: github.event.action != 'edited' || github.event.changes.base != null
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: ".nvmrc"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: markdownlint
-        run: npm run lint:md
-
-  docs:
-    if: github.event.action != 'edited' || github.event.changes.base != null
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: ".nvmrc"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build documentation
-        # Note: docs-site/scripts/build-docs.mjs runs link validation internally before building
-        run: npm run docs:build
-
-      - name: Validate sidebar order
-        run: npm run docs:validate-sidebar
-
-      - name: Test docs-site
-        run: npm run test:docs
-
-  validate:
+  python:
     if: github.event.action != 'edited' || github.event.changes.base != null
     runs-on: ubuntu-latest
     steps:
@@ -111,14 +28,43 @@ jobs:
       - name: Install dependencies
         run: uv sync --frozen
 
-      - name: Ruff
-        run: uv run --frozen ruff check . && uv run --frozen ruff format --check .
+      - name: Cache pre-commit environments
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
 
-      - name: Test Python
-        run: PYTHONDONTWRITEBYTECODE=1 uv run --frozen pytest
+      - name: Lint, validate, test
+        run: uv run --frozen pre-commit run --all-files --show-diff-on-failure
 
-      - name: Validate file references
-        run: uv run tools/validate_file_refs.py --strict
+  docs-site:
+    if: github.event.action != 'edited' || github.event.changes.base != null
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Validate skills
-        run: uv run tools/validate_skills.py --strict
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: ESLint
+        run: npm run lint
+
+      - name: Prettier format check
+        run: npm run format:check
+
+      - name: Build documentation
+        # Note: docs-site/scripts/build-docs.mjs runs link validation internally before building
+        run: npm run docs:build
+
+      - name: Validate sidebar order
+        run: npm run docs:validate-sidebar
+
+      - name: Test docs-site
+        run: npm run test:docs
