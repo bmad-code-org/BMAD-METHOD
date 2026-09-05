@@ -13,7 +13,7 @@ bottom on a local clone of that repository; it needs no other document.
 ## Branch model
 
 - `dev` is the development branch. It is force-pushed from the source repo and
-  always carries the placeholder version (for example `6.11.0-next`). It is
+  always carries the placeholder version (for example `6.12.0-next`). It is
   never stamped.
 - `main` is the default branch and is release-only. Installed copies check for
   updates against `main`, so what `main` serves defines the released version.
