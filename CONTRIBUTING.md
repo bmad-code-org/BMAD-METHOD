@@ -78,7 +78,7 @@ After searching, use the [feature request template](https://github.com/bmad-code
 - `main` is release-only and remains the default branch.
 - **6.12 npm maintenance:** branch from and target `V6.12`, which still ships through npm.
 
-PRs opened against `main` are retargeted to `dev` unless their head is `dev`.
+PRs opened against `main` are retargeted to `dev`.
 After retargeting, close and reopen the PR to rerun checks against `dev`.
 
 ### PR Size

@@ -25,6 +25,7 @@ static source text.
 
 ## Releases
 
-Read `tools/release.md` before cutting a release. Stamp on `dev`, merge its
-release PR into `main`, tag the merge commit, then stamp the next placeholder
-on `dev`. The 6.12 npm installer is maintained separately on `V6.12`.
+Read `tools/release.md` before cutting a release. Stamp on `dev`, fast-forward
+`main` with `git push origin dev:main`, tag that commit, then stamp the next
+placeholder on `dev`. No release PR or back-merge. The 6.12 npm installer is
+maintained separately on `V6.12`.
