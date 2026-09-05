@@ -1847,7 +1847,7 @@ class BmadUpdateDoctorTests(unittest.TestCase):
                 before,
             )
 
-    def test_update_source_resolution_uses_https_roots_and_github_head(self):
+    def test_update_source_resolution_uses_https_roots_and_pins_github_to_main(self):
         setup = load_setup()
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
@@ -1864,7 +1864,7 @@ class BmadUpdateDoctorTests(unittest.TestCase):
                 root,
                 "github-skill",
                 "githubmod",
-                update_source="github:owner/repository/skills",
+                update_source="github:bmad-code-org/BMAD-METHOD/skills",
             )
             copies = {
                 copy_item.skill: copy_item
@@ -1893,7 +1893,7 @@ class BmadUpdateDoctorTests(unittest.TestCase):
             )
             self.assertEqual(
                 urls[1],
-                "https://raw.githubusercontent.com/owner/repository/HEAD/"
+                "https://raw.githubusercontent.com/bmad-code-org/BMAD-METHOD/main/"
                 "skills/github-skill/module-manifest.toml",
             )
 

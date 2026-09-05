@@ -825,7 +825,7 @@ def source_manifest_location(project_root: Path, copy_item: InstalledCopy) -> st
     return (
         "https://raw.githubusercontent.com/"
         f"{urllib.parse.quote(owner, safe='')}/"
-        f"{urllib.parse.quote(repository, safe='')}/HEAD/{path}"
+        f"{urllib.parse.quote(repository, safe='')}/main/{path}"
     )
 
 
