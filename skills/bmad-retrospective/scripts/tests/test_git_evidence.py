@@ -1,5 +1,5 @@
 # /// script
-# requires-python = ">=3.10"
+# requires-python = ">=3.11"
 # dependencies = ["pytest>=8.0"]
 # ///
 """Tests for git_evidence.py — measurement over a real temp git repo.

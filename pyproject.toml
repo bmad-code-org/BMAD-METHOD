@@ -30,6 +30,9 @@ addopts = "-q -ra --tb=short -n auto -p no:cacheprovider"
 testpaths = ["tools/tests", "skills"]
 
 [tool.ruff]
+# Every shipped script declares the same floor inline (PEP 723) as
+# requires-python above; tools/tests/test_python_floor.py enforces that,
+# since ruff reads only this setting.
 target-version = "py311"
 line-length = 120
 extend-exclude = ["tools/tests/fixtures"]

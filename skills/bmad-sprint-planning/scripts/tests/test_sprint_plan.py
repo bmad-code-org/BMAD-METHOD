@@ -1,5 +1,5 @@
 # /// script
-# requires-python = ">=3.10"
+# requires-python = ">=3.11"
 # dependencies = ["pytest>=8.0", "ruamel.yaml>=0.18"]
 # ///
 """Tests for sprint_plan.py — deterministic sprint-status generation.

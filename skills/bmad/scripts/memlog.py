@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # /// script
-# requires-python = ">=3.8"
+# requires-python = ">=3.11"
 # ///
 """memlog — an append-only memory log: LLM-optimal working memory for a skill.
 
