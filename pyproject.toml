@@ -1,0 +1,41 @@
+# Development tooling for the BMAD-METHOD repository.
+#
+# This is not a distributable package: the repository tree itself is what
+# `npx skills add bmad-code-org/BMAD-METHOD` and the plugin marketplaces
+# install, and each shipped script under skills/*/scripts declares its own
+# dependencies inline (PEP 723) so `uv run` works without this file.
+# The release version lives in skills/*/module-manifest.toml, not here.
+
+[project]
+name = "bmad-method"
+version = "0"
+description = "Repository tooling for BMAD-METHOD (not published)"
+requires-python = ">=3.11"
+dependencies = []
+
+[dependency-groups]
+dev = [
+  "pytest>=8",
+  "pytest-xdist>=3",
+  "pyyaml>=6.0.2,<7",
+  "ruamel.yaml>=0.18",
+  "ruff>=0.14",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+addopts = "-q -ra --tb=short -n auto -p no:cacheprovider"
+testpaths = ["tools/tests", "skills"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+extend-exclude = ["tools/tests/fixtures"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = [
+  "E501", # long lines: the formatter handles code; strings and comments may exceed
+]

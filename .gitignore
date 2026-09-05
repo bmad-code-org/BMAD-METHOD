@@ -25,6 +25,8 @@ design-artifacts/
 # Python
 __pycache__/
 .pytest_cache/
+.venv/
+.ruff_cache/
 
 # BMad run artifacts (memlogs are per-run working memory, never committed)
 .memlog.md
