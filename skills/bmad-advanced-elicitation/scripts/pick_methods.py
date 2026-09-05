@@ -160,6 +160,7 @@ def fmt_categories(cats: list[tuple[str, int]], as_json: bool) -> str:
 
 
 def fmt_rows(rows: list[dict], as_json: bool) -> str:
+    """Render rows as JSON, or as one tab-separated line each for lean output."""
     if as_json:
         return json.dumps([{k: r[k] for k in FIELDS} for r in rows])
     return "\n".join(
@@ -168,9 +169,29 @@ def fmt_rows(rows: list[dict], as_json: bool) -> str:
     )
 
 
+def pin_utf8(stream) -> None:
+    r"""Pin a console stream to UTF-8, keeping its own error handler.
+
+    Catalog rows contain →, and the diagnostics quote user input: the
+    --file and --extra paths, and the method names echoed back when a lookup
+    misses. Either stream can therefore carry a character the platform default
+    cannot encode (cp1252 on Windows). Only stdout was pinned, so a path the
+    user needs in order to fix the call came back as \uXXXX escapes.
+
+    errors= is passed through deliberately: reconfigure(encoding=...) alone
+    resets the handler to "strict", which would silently downgrade stderr's
+    backslashreplace default and turn a diagnostic about an undecodable path
+    into a traceback.
+    """
+    reconfigure = getattr(stream, "reconfigure", None)
+    if reconfigure is not None:
+        reconfigure(encoding="utf-8", errors=getattr(stream, "errors", None) or "strict")
+
+
 def main(argv: list[str] | None = None) -> int:
-    if hasattr(sys.stdout, "reconfigure"):
-        sys.stdout.reconfigure(encoding="utf-8")  # catalog rows contain →; don't die on locale code pages
+    """Dispatch one subcommand and return its exit code."""
+    pin_utf8(sys.stdout)  # catalog rows contain →; don't die on locale code pages
+    pin_utf8(sys.stderr)
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--file", type=Path, default=DEFAULT_FILE, help="method CSV (default: sibling assets/methods.csv)")
     p.add_argument("--extra", help="additional methods: a JSON array literal or a path to a JSON file")

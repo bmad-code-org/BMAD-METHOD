@@ -13,6 +13,7 @@ Run: uv run scripts/tests/test_sprint_status.py
 """
 
 import importlib.util
+import io
 import json
 import os
 import re
@@ -1545,6 +1546,7 @@ def test_action_items_updated_is_always_reported(tmp_path):
 
 
 def test_post_write_status_mismatch_restores(tmp_path, monkeypatch, capsys):
+    """A post-write re-parse that disagrees rolls the file back and says so."""
     # The last line of defence: the written file is re-parsed and every targeted
     # item is checked. No CLI path can fake a mismatch, so the re-parse is
     # doctored directly.
@@ -1573,6 +1575,68 @@ def test_post_write_status_mismatch_restores(tmp_path, monkeypatch, capsys):
     assert out["restored"] is True
     assert "after write" in out["error"]
     assert target.read_text(encoding="utf-8") == ACTION_FIXTURE
+
+
+def test_main_pins_stderr_to_utf8(tmp_path, monkeypatch):
+    """main() pins stderr to UTF-8 before it does any work."""
+    # The restore diagnostic below is the one thing this script writes as plain
+    # text, and it quotes a path. A cp1252 stderr would render that path as
+    # escapes, so main() has to pin the stream before any work happens.
+    target = _write_fixture(tmp_path)
+    fake = io.TextIOWrapper(io.BytesIO(), encoding="cp1252", errors="backslashreplace")
+    monkeypatch.setattr(sys, "stderr", fake)
+    mod = _module()
+
+    with pytest.raises(SystemExit):
+        mod.main(["detect-epic", "--file", str(target)])
+
+    assert fake.encoding == "utf-8"
+    assert fake.errors == "backslashreplace"
+
+
+def test_restore_failure_names_its_file_readably(tmp_path, monkeypatch):
+    """The restore diagnostic keeps a non-ASCII path readable, not escaped."""
+    # _restore cannot be reached from the CLI (see _module), so drive it
+    # directly with stderr pinned the way main() pins it, and check the
+    # diagnostic is something the user can act on.
+    mod = _module()
+    target = tmp_path / "sprint-status.yaml"
+    target.write_text("damaged\n", encoding="utf-8")
+
+    def boom(*args, **kwargs):
+        """Fail the replace the way a full disk would, quoting a non-ASCII path."""
+        raise OSError(28, "No space left on device: proje-şık")
+
+    monkeypatch.setattr(mod.os, "replace", boom)
+    fake = io.TextIOWrapper(io.BytesIO(), encoding="cp1252", errors="backslashreplace")
+    monkeypatch.setattr(sys, "stderr", fake)
+    mod.pin_utf8(sys.stderr)
+
+    assert mod._restore(str(target), FIXTURE.encode("utf-8"), 0o644) is False
+
+    fake.flush()
+    assert "proje-şık" in fake.buffer.getvalue().decode("utf-8")
+
+
+def test_pin_utf8_preserves_the_streams_error_handler():
+    """Pinning the encoding must not reset the stream's error handler."""
+    # reconfigure(encoding=...) on its own resets errors to "strict"; stderr
+    # defaults to "backslashreplace" and must keep it, or a diagnostic carrying
+    # a surrogate-escaped path becomes a traceback.
+    stream = io.TextIOWrapper(io.BytesIO(), encoding="ascii", errors="backslashreplace")
+    _module().pin_utf8(stream)
+    assert stream.encoding == "utf-8"
+    assert stream.errors == "backslashreplace"
+
+
+def test_pin_utf8_ignores_a_stream_without_reconfigure():
+    """A capture object with no reconfigure() is left alone rather than raising."""
+    class Captured:
+        """A stand-in for pytest's capture object: no reconfigure() method."""
+
+        errors = None
+
+    _module().pin_utf8(Captured())  # must not raise
 
 
 if __name__ == "__main__":

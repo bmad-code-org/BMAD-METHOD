@@ -6,6 +6,8 @@
 
 import io
 import json
+import os
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -120,7 +122,10 @@ class SlugTest(unittest.TestCase):
 
 
 class EscapeSourcesTest(unittest.TestCase):
+    """The source appendix as HTML: every cell escaped, only http(s) linked."""
+
     def test_escaping_and_url_validation(self):
+        """A javascript: URL is reported and never becomes an anchor."""
         with tempfile.TemporaryDirectory() as tmp:
             report = Path(tmp) / "report.md"
             report.write_text(REPORT, encoding="utf-8")
@@ -132,6 +137,67 @@ class EscapeSourcesTest(unittest.TestCase):
         self.assertIn('id="src-1"', result["html"])
         self.assertEqual(code, 1)
 
+
+SCRIPT = Path(__file__).resolve().parent.parent / "recon_kit.py"
+
+APPENDIX = (
+    "# Research\n\nGrowth held [1].\n\n"
+    "| # | Source | URL |\n|---|---|---|\n"
+    "| [1] | Türkiye Bilişim Derneği raporu | https://example.com/a |\n"
+)
+
+
+def run_script(args, stdin_bytes=None):
+    """Drive recon_kit in a subprocess with a cp1252 console, as Windows gives it."""
+    env = dict(os.environ)
+    env["PYTHONIOENCODING"] = "cp1252"
+    return subprocess.run(
+        [sys.executable, str(SCRIPT), *args],
+        input=stdin_bytes,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        env=env,
+        check=False,
+    )
+
+
+class ConsoleEncodingTests(unittest.TestCase):
+    """Every payload is ensure_ascii=False and quotes the research verbatim."""
+
+    def test_escape_sources_survives_a_cp1252_console(self):
+        """A source title outside cp1252 reaches stdout instead of raising."""
+        with tempfile.TemporaryDirectory() as tmp:
+            report = Path(tmp) / "research.md"
+            report.write_text(APPENDIX, encoding="utf-8")
+            result = run_script(["escape-sources", str(report)])
+
+        stderr = result.stderr.decode("utf-8", errors="replace")
+        self.assertEqual(result.returncode, 0, msg=stderr)
+        self.assertNotIn("UnicodeEncodeError", stderr)
+        self.assertIn("Türkiye Bilişim Derneği", result.stdout.decode("utf-8"))
+
+    def test_stdin_is_decoded_as_utf8_not_the_locale_code_page(self):
+        """Reading the report from "-" must not mojibake Türkiye into TÃ¼rkiye.
+
+        Driven in-process on purpose: a subprocess under PYTHONIOENCODING sets
+        every stream to the same code page, and reading UTF-8 as cp1252 then
+        writing it back out again is an exact round trip, so the corruption
+        cancels itself and the test would pass unpinned.
+        """
+        stdin = io.TextIOWrapper(
+            io.BytesIO(APPENDIX.encode("utf-8")), encoding="cp1252", errors="surrogateescape"
+        )
+        out = io.StringIO()
+        real_stdin = sys.stdin
+        sys.stdin = stdin
+        try:
+            with redirect_stdout(out):
+                code = main(["escape-sources", "-"])
+        finally:
+            sys.stdin = real_stdin
+
+        self.assertEqual(code, 0)
+        self.assertIn("Türkiye Bilişim Derneği", out.getvalue())
 
 if __name__ == "__main__":
     unittest.main()

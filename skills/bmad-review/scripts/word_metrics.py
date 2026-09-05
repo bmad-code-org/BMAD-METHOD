@@ -69,6 +69,11 @@ def section_metrics(text: str) -> list[dict]:
 
 
 def metrics(path: Path) -> dict:
+    """Word counts for one document: the total, and one entry per section.
+
+    Sections are the headings, preceded by a "(preamble)" entry when the
+    document opens with text before its first heading.
+    """
     text = path.read_text(encoding="utf-8", errors="replace")
     return {
         "file": str(path),
@@ -77,9 +82,29 @@ def metrics(path: Path) -> dict:
     }
 
 
+def pin_utf8(stream) -> None:
+    r"""Pin a console stream to UTF-8, keeping its own error handler.
+
+    The metrics JSON quotes the document's own section headings, and the
+    not-a-file diagnostic quotes the path the caller passed, so either stream
+    can carry a character the platform default cannot encode (cp1252 on
+    Windows). Only stdout was pinned, so a path the user needs in order to fix
+    the call came back from stderr as \uXXXX escapes.
+
+    errors= is passed through deliberately: reconfigure(encoding=...) alone
+    resets the handler to "strict", which would silently downgrade stderr's
+    backslashreplace default and turn a diagnostic about an undecodable path
+    into a traceback.
+    """
+    reconfigure = getattr(stream, "reconfigure", None)
+    if reconfigure is not None:
+        reconfigure(encoding="utf-8", errors=getattr(stream, "errors", None) or "strict")
+
+
 def main() -> int:
-    if hasattr(sys.stdout, "reconfigure"):
-        sys.stdout.reconfigure(encoding="utf-8")  # JSON is UTF-8 regardless of locale code page
+    """Measure one document and emit its metrics, or report why it could not."""
+    pin_utf8(sys.stdout)  # JSON is UTF-8 regardless of locale code page
+    pin_utf8(sys.stderr)
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("path", help="document to measure")
     parser.add_argument("-o", "--output", help="write JSON here (default: stdout)")

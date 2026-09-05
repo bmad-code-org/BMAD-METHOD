@@ -277,7 +277,29 @@ def cmd_escape_sources(args) -> int:
 
 # --- entry point -------------------------------------------------------------
 
+def pin_utf8(stream) -> None:
+    """Pin a console stream to UTF-8, keeping its own error handler.
+
+    Every subcommand prints JSON with ensure_ascii=False, and that JSON quotes
+    the research itself -- source titles, claim text, memlog entry types -- so
+    stdout routinely carries characters cp1252 cannot encode, and print() then
+    raises. Diagnostics quote the offending path, so stderr carries them too,
+    and "-" reads the report from stdin, which decodes with the same default.
+
+    errors= is passed through deliberately: reconfigure(encoding=...) alone
+    resets the handler to "strict", which would silently downgrade stderr's
+    backslashreplace default and turn a diagnostic about an undecodable path
+    into a traceback.
+    """
+    reconfigure = getattr(stream, "reconfigure", None)
+    if reconfigure is not None:
+        reconfigure(encoding="utf-8", errors=getattr(stream, "errors", None) or "strict")
+
+
 def main(argv: list[str] | None = None) -> int:
+    """Dispatch one subcommand and return its exit code."""
+    for stream in (sys.stdin, sys.stdout, sys.stderr):
+        pin_utf8(stream)
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="cmd", required=True)

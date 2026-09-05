@@ -4,7 +4,10 @@
 # ///
 """Tests for word_metrics.py."""
 
+import os
+import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -34,29 +37,62 @@ Delta epsilon.
 
 
 class WordMetricsTest(unittest.TestCase):
+    """Counting and section splitting, exercised directly on document text."""
+
     def test_word_count(self):
+        """Runs of whitespace and newlines separate words; empty text counts zero."""
         self.assertEqual(word_count("one two  three\nfour"), 4)
         self.assertEqual(word_count(""), 0)
 
     def test_sections_split_on_headings(self):
+        """Each heading opens a section, after the leading (preamble)."""
         sections = section_metrics(DOC)
         headings = [s["heading"] for s in sections]
         self.assertEqual(headings, ["(preamble)", "Title", "Section A", "Section B"])
 
     def test_fenced_heading_not_a_section(self):
+        """A # line inside a fenced block is body text, not a heading."""
         sections = section_metrics(DOC)
         self.assertNotIn("not a heading", [s["heading"] for s in sections])
 
     def test_section_words_counted(self):
+        """Each section counts its own body, fenced content included."""
         sections = {s["heading"]: s["words"] for s in section_metrics(DOC)}
         self.assertEqual(sections["Section B"], 2)
         # Section A body includes the fenced block's tokens
         self.assertGreater(sections["Section A"], 3)
 
     def test_empty_preamble_dropped(self):
+        """Text starting at a heading yields that section and no empty preamble."""
         sections = section_metrics("# Only\n\nwords here\n")
         self.assertEqual([s["heading"] for s in sections], ["Only"])
 
+
+SCRIPT = Path(__file__).resolve().parent.parent / "word_metrics.py"
+
+
+class StderrEncodingTests(unittest.TestCase):
+    """stderr quotes the caller's path, so it needs the same pin as stdout."""
+
+    def test_missing_path_is_named_readably_on_a_cp1252_console(self):
+        """The user has to be able to read which path the tool could not open."""
+        with tempfile.TemporaryDirectory() as tmp:
+            missing = Path(tmp) / "belge-şık.md"
+            env = dict(os.environ)
+            env["PYTHONIOENCODING"] = "cp1252"
+            result = subprocess.run(
+                [sys.executable, str(SCRIPT), str(missing)],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                env=env,
+                check=False,
+            )
+
+        stderr = result.stderr.decode("utf-8", errors="replace")
+        self.assertEqual(result.returncode, 2, msg=stderr)
+        self.assertIn("belge-şık.md", stderr)
+        self.assertNotIn(r"\u015f", stderr)
+        self.assertNotIn("Traceback", stderr)
 
 if __name__ == "__main__":
     unittest.main()
