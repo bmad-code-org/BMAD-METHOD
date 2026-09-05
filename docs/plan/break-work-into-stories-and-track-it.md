@@ -89,9 +89,10 @@ Run `bmad-correct-course` when a change is too big for one story to absorb: a
 requirement turned out to be wrong, an architecture decision has to change, or
 a dependency changed. It reads the PRD, epics, architecture, and UX documents,
 assesses the impact, and produces a sprint change proposal — what changes,
-what stays, and in what order. Apply the proposal, then re-run Story Breakdown
-or `bmad-sprint-planning` for the affected epics. Finished work stays
-finished.
+what stays, and in what order. Once you approve it, it applies the edits and
+updates `sprint-status.yaml`. Then create the new or changed stories. For a
+large restructure, re-run Story Breakdown or `bmad-sprint-planning` for the
+affected epics instead. Finished work stays finished.
 
 ## What Comes Next
 
