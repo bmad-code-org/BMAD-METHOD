@@ -1,0 +1,29 @@
+name: Retarget Development Pull Requests
+
+on:
+  pull_request_target:
+    types: [opened]
+    branches: [main]
+
+jobs:
+  retarget:
+    if: github.event.pull_request.head.ref != 'dev'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Retarget to dev
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pullRequest = context.payload.pull_request;
+            await github.rest.pulls.update({
+              ...context.repo,
+              pull_number: pullRequest.number,
+              base: 'dev'
+            });
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: pullRequest.number,
+              body: 'Retargeted to dev: main only accepts release PRs from dev.'
+            });
