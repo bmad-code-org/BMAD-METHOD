@@ -62,9 +62,7 @@ def section_metrics(text: str) -> list[dict]:
         words = word_count("\n".join(section["body"]))
         if section["heading"] == "(preamble)" and words == 0:
             continue
-        out.append(
-            {"heading": section["heading"], "level": section["level"], "words": words}
-        )
+        out.append({"heading": section["heading"], "level": section["level"], "words": words})
     return out
 
 

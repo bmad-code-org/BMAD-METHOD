@@ -91,19 +91,26 @@ class StalenessTest(unittest.TestCase):
         self.assertEqual(add_months(date(2026, 1, 31), 1), date(2026, 2, 28))
 
     def test_windows(self):
-        claims = json.dumps([
-            {"claim": "sizing", "class": "size/growth", "pub_date": "2024-06"},
-            {"claim": "pricing", "class": "pricing", "pub_date": "2026-06"},
-            {"claim": "odd", "class": "unmapped", "pub_date": "2026-06"},
-        ])
+        claims = json.dumps(
+            [
+                {"claim": "sizing", "class": "size/growth", "pub_date": "2024-06"},
+                {"claim": "pricing", "class": "pricing", "pub_date": "2026-06"},
+                {"claim": "odd", "class": "unmapped", "pub_date": "2026-06"},
+            ]
+        )
         with tempfile.TemporaryDirectory() as tmp:
             f = Path(tmp) / "claims.json"
             f.write_text(claims, encoding="utf-8")
-            code, result = run([
-                "staleness", str(f),
-                "--windows", '{"size/growth": 18, "pricing": 3}',
-                "--today", "2026-07-22",
-            ])
+            code, result = run(
+                [
+                    "staleness",
+                    str(f),
+                    "--windows",
+                    '{"size/growth": 18, "pricing": 3}',
+                    "--today",
+                    "2026-07-22",
+                ]
+            )
         self.assertEqual(result["stale_count"], 1)  # sizing recheck 2025-12 < today
         self.assertEqual(result["earliest_recheck"], "2025-12-01")
         self.assertEqual(result["no_window_classes"], ["unmapped"])
@@ -113,8 +120,7 @@ class StalenessTest(unittest.TestCase):
 class SlugTest(unittest.TestCase):
     def test_deterministic_folder(self):
         self.assertEqual(slugify("Créme Brûlée: AI Tools!"), "creme-brulee-ai-tools")
-        code, result = run(["slug", "SMB Accounting SaaS", "--type", "market",
-                            "--date", "2026-07-22"])
+        code, result = run(["slug", "SMB Accounting SaaS", "--type", "market", "--date", "2026-07-22"])
         self.assertEqual(result["folder"], "market-smb-accounting-saas-2026-07-22")
         self.assertEqual(code, 0)
 

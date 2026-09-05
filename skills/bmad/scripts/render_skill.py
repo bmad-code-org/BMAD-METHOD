@@ -20,7 +20,7 @@ from typing import Any
 # Installed scripts are consumer files, not a location for interpreter caches.
 sys.dont_write_bytecode = True
 
-from config_utils import ConfigError, load_central_config, load_customization, load_toml
+from config_utils import ConfigError, load_central_config, load_customization, load_toml  # noqa: E402
 
 
 class RenderError(ValueError):
@@ -38,9 +38,7 @@ def _hash_bytes(content: bytes) -> str:
 
 
 def _canonical_json(value: Any) -> bytes:
-    return json.dumps(
-        value, ensure_ascii=False, sort_keys=True, separators=(",", ":")
-    ).encode("utf-8")
+    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
 
 def _lookup(data: dict[str, Any], dotted_path: str, label: str) -> Any:
@@ -85,9 +83,7 @@ def _require_review_layers(value: Any, label: str) -> list[dict[str, str]]:
         layer = {
             "id": identifier,
             "name": _require_string(item.get("name", identifier), f"{item_label}.name"),
-            "instruction": _require_string(
-                item.get("instruction"), f"{item_label}.instruction", allow_empty=True
-            ),
+            "instruction": _require_string(item.get("instruction"), f"{item_label}.instruction", allow_empty=True),
         }
         if "when" in item:
             layer["when"] = _require_string(item["when"], f"{item_label}.when")
@@ -137,9 +133,7 @@ def _find_config_values(data: Any, key: str, prefix: str = "") -> list[tuple[str
     return matches
 
 
-def _resolve_short_config(
-    central: dict[str, Any], key: str, project_root: Path
-) -> tuple[str, str]:
+def _resolve_short_config(central: dict[str, Any], key: str, project_root: Path) -> tuple[str, str]:
     matches = _find_config_values(central, key)
     if not matches:
         raise RenderError(f"missing config value `{key}`")
@@ -208,9 +202,7 @@ def _resolve_replacements(
         for match in _CONFIG_TOKEN.finditer(content):
             token, path = match.group(0), match.group(1)
             source = f"config.{path}"
-            resolved = _resolve_config_value(
-                _lookup(central, path, "config value"), source, project_root
-            )
+            resolved = _resolve_config_value(_lookup(central, path, "config value"), source, project_root)
             replacements[token] = resolved
             input_values[source] = resolved
         for match in _CUSTOM_TOKEN.finditer(content):
@@ -229,16 +221,12 @@ def _resolve_replacements(
     return replacements, input_values
 
 
-def _render_sources(
-    sources: dict[str, str], replacements: dict[str, str], destination: Path
-) -> dict[str, str]:
+def _render_sources(sources: dict[str, str], replacements: dict[str, str], destination: Path) -> dict[str, str]:
     """Resolve only tokens authored in installed sources in one opaque pass."""
     # Workflow customization may reference installed skill files; bind those
     # references to the immutable generation before inserting the prose.
     replacements = {
-        token: value.replace("{skill-root}", str(destination))
-        if token.startswith("{workflow.")
-        else value
+        token: value.replace("{skill-root}", str(destination)) if token.startswith("{workflow.") else value
         for token, value in replacements.items()
     }
     source_names = set(sources)
@@ -276,11 +264,7 @@ def _verify_existing(destination: Path, manifest: dict[str, Any]) -> None:
     if existing != manifest:
         raise RenderError(f"generation collision or corruption at {destination}")
     expected_files = set(manifest["outputs"]) | {"manifest.json"}
-    actual_files = {
-        path.relative_to(destination).as_posix()
-        for path in destination.rglob("*")
-        if path.is_file()
-    }
+    actual_files = {path.relative_to(destination).as_posix() for path in destination.rglob("*") if path.is_file()}
     if actual_files != expected_files:
         raise RenderError(f"generation contains unexpected or missing files: {destination}")
     for name, expected_hash in manifest["outputs"].items():
@@ -304,8 +288,7 @@ def _publish(destination: Path, outputs: dict[str, bytes], manifest: dict[str, A
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(content)
         (staging / "manifest.json").write_bytes(
-            json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True).encode("utf-8")
-            + b"\n"
+            json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True).encode("utf-8") + b"\n"
         )
         try:
             os.rename(staging, destination)
@@ -327,23 +310,11 @@ def render(project_root: Path, skill_dir: Path) -> Path:
 
     sources = _load_sources(skill_dir)
     central = load_central_config(project_root)
-    has_customization = any(
-        _CUSTOM_TOKEN.search(content) for content in sources.values()
-    )
-    defaults = (
-        load_toml(skill_dir / "customize.toml", required=True)
-        if has_customization
-        else None
-    )
-    customization = (
-        load_customization(project_root, skill_dir) if has_customization else {}
-    )
-    replacements, input_values = _resolve_replacements(
-        sources, central, customization, defaults, project_root
-    )
-    source_hashes = {
-        name: _hash_bytes(content.encode("utf-8")) for name, content in sources.items()
-    }
+    has_customization = any(_CUSTOM_TOKEN.search(content) for content in sources.values())
+    defaults = load_toml(skill_dir / "customize.toml", required=True) if has_customization else None
+    customization = load_customization(project_root, skill_dir) if has_customization else {}
+    replacements, input_values = _resolve_replacements(sources, central, customization, defaults, project_root)
+    source_hashes = {name: _hash_bytes(content.encode("utf-8")) for name, content in sources.items()}
     root_hash = _hash_bytes(str(project_root).encode("utf-8"))[:12]
     slug = re.sub(r"[^a-z0-9]+", "-", project_root.name.lower()).strip("-") or "project"
     slug = slug[:80].rstrip("-") or "project"
@@ -355,14 +326,7 @@ def render(project_root: Path, skill_dir: Path) -> Path:
         "source_sha256": source_hashes,
     }
     generation_hash = _hash_bytes(_canonical_json(identity))[:20]
-    destination = (
-        project_root
-        / "_bmad"
-        / "render"
-        / skill_dir.name
-        / f"{slug}-{root_hash}"
-        / generation_hash
-    )
+    destination = project_root / "_bmad" / "render" / skill_dir.name / f"{slug}-{root_hash}" / generation_hash
     rendered = _render_sources(sources, replacements, destination)
     outputs = {name: content.encode("utf-8") for name, content in rendered.items()}
     output_hashes = {name: _hash_bytes(content) for name, content in outputs.items()}

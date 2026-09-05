@@ -54,8 +54,17 @@ def run_generate(tmp_path, epics_text=EPICS_FIXTURE, existing=None, stories=(), 
     for name in stories:
         (stories_dir / f"{name}.md").write_text("story", encoding="utf-8")
     argv = [
-        "generate", "--epic-file", str(epic_file), "--status-file", str(status_file),
-        "--stories-dir", str(stories_dir), "--project", "My Project", "--date", DATE,
+        "generate",
+        "--epic-file",
+        str(epic_file),
+        "--status-file",
+        str(status_file),
+        "--stories-dir",
+        str(stories_dir),
+        "--project",
+        "My Project",
+        "--date",
+        DATE,
         *extra,
     ]
     mod.main(argv)
@@ -78,8 +87,14 @@ def test_fresh_generate_orders_and_defaults(tmp_path, capsys):
     data = load(status_file)
     keys = list(data["development_status"].keys())
     assert keys == [
-        "epic-1", "1-1-user-authentication", "1-2-account-management", "epic-1-retrospective",
-        "epic-2", "2-1-personality-system", "2-6a-split-story-with-punctuation", "epic-2-retrospective",
+        "epic-1",
+        "1-1-user-authentication",
+        "1-2-account-management",
+        "epic-1-retrospective",
+        "epic-2",
+        "2-1-personality-system",
+        "2-6a-split-story-with-punctuation",
+        "epic-2-retrospective",
     ]
     assert data["development_status"]["epic-1"] == "backlog"
     assert data["development_status"]["1-1-user-authentication"] == "backlog"
@@ -141,9 +156,9 @@ def test_merge_preserves_and_never_downgrades(tmp_path, capsys):
 
 
 def test_legacy_statuses_merge_by_meaning_not_reset(tmp_path, capsys):
-    existing = (EXISTING
-                .replace("1-2-account-management: backlog", "1-2-account-management: drafted")
-                .replace("epic-1: in-progress", "epic-1: contexted"))
+    existing = EXISTING.replace("1-2-account-management: backlog", "1-2-account-management: drafted").replace(
+        "epic-1: in-progress", "epic-1: contexted"
+    )
     status_file = run_generate(tmp_path, existing=existing)
     result = out_json(capsys)
     data = load(status_file)
@@ -155,10 +170,11 @@ def test_legacy_statuses_merge_by_meaning_not_reset(tmp_path, capsys):
 
 
 def test_metadata_preserved_when_flags_omitted(tmp_path, capsys):
-    existing = (EXISTING
-                .replace("project_key: NOKEY", "project_key: JIRA-PROJ")
-                .replace("tracking_system: file-system", "tracking_system: jira")
-                .replace("story_location: impl", "story_location: /custom/stories"))
+    existing = (
+        EXISTING.replace("project_key: NOKEY", "project_key: JIRA-PROJ")
+        .replace("tracking_system: file-system", "tracking_system: jira")
+        .replace("story_location: impl", "story_location: /custom/stories")
+    )
     status_file = run_generate(tmp_path, existing=existing)
     out_json(capsys)
     data = load(status_file)
@@ -189,7 +205,8 @@ def test_fresh_rebuild_ignores_existing_statuses(tmp_path, capsys):
 
 def test_set_applies_explicit_statuses_even_downgrades(tmp_path, capsys):
     status_file = run_generate(
-        tmp_path, existing=EXISTING,
+        tmp_path,
+        existing=EXISTING,
         extra=("--fresh", "--set", "1-1-user-authentication=in-progress", "--set", "epic-1=in-progress"),
     )
     result = out_json(capsys)
@@ -272,10 +289,22 @@ def test_dry_run_writes_nothing_and_reports_drift(tmp_path, capsys):
     status_file = tmp_path / "sprint-status.yaml"
     status_file.write_text(EXISTING, encoding="utf-8")
     original = status_file.read_bytes()
-    mod.main([
-        "generate", "--epic-file", str(epic_file), "--status-file", str(status_file),
-        "--stories-dir", str(tmp_path), "--project", "P", "--date", DATE, "--dry-run",
-    ])
+    mod.main(
+        [
+            "generate",
+            "--epic-file",
+            str(epic_file),
+            "--status-file",
+            str(status_file),
+            "--stories-dir",
+            str(tmp_path),
+            "--project",
+            "P",
+            "--date",
+            DATE,
+            "--dry-run",
+        ]
+    )
     result = out_json(capsys)
     assert result["dry_run"] is True and result["ok"] is True
     assert result["in_sync"] is False
@@ -287,11 +316,22 @@ def test_dry_run_writes_nothing_and_reports_drift(tmp_path, capsys):
 def test_dry_run_in_sync_after_generate(tmp_path, capsys):
     status_file = run_generate(tmp_path)
     capsys.readouterr()
-    mod.main([
-        "generate", "--epic-file", str(tmp_path / "epics.md"), "--status-file", str(status_file),
-        "--stories-dir", str(tmp_path / "impl"), "--project", "My Project", "--date", DATE,
-        "--dry-run",
-    ])
+    mod.main(
+        [
+            "generate",
+            "--epic-file",
+            str(tmp_path / "epics.md"),
+            "--status-file",
+            str(status_file),
+            "--stories-dir",
+            str(tmp_path / "impl"),
+            "--project",
+            "My Project",
+            "--date",
+            DATE,
+            "--dry-run",
+        ]
+    )
     result = out_json(capsys)
     assert result["in_sync"] is True
     assert result["new_entries"] == [] and result["dropped_orphans"] == [] and result["illegal"] == []
@@ -301,10 +341,21 @@ def test_no_epics_fails_with_json(tmp_path, capsys):
     epic_file = tmp_path / "notes.md"
     epic_file.write_text("just prose, no epics", encoding="utf-8")
     with pytest.raises(SystemExit) as excinfo:
-        mod.main([
-            "generate", "--epic-file", str(epic_file), "--status-file", str(tmp_path / "s.yaml"),
-            "--stories-dir", str(tmp_path), "--project", "P", "--date", DATE,
-        ])
+        mod.main(
+            [
+                "generate",
+                "--epic-file",
+                str(epic_file),
+                "--status-file",
+                str(tmp_path / "s.yaml"),
+                "--stories-dir",
+                str(tmp_path),
+                "--project",
+                "P",
+                "--date",
+                DATE,
+            ]
+        )
     assert excinfo.value.code == 1
     assert out_json(capsys)["ok"] is False
 
@@ -315,10 +366,21 @@ def test_non_mapping_yaml_fails_with_json(tmp_path, capsys):
     status_file = tmp_path / "sprint-status.yaml"
     status_file.write_text("- just\n- a\n- list\n", encoding="utf-8")
     with pytest.raises(SystemExit) as excinfo:
-        mod.main([
-            "generate", "--epic-file", str(epic_file), "--status-file", str(status_file),
-            "--stories-dir", str(tmp_path), "--project", "P", "--date", DATE,
-        ])
+        mod.main(
+            [
+                "generate",
+                "--epic-file",
+                str(epic_file),
+                "--status-file",
+                str(status_file),
+                "--stories-dir",
+                str(tmp_path),
+                "--project",
+                "P",
+                "--date",
+                DATE,
+            ]
+        )
     assert excinfo.value.code == 1
     assert "not a mapping" in out_json(capsys)["error"]
     with pytest.raises(SystemExit):
@@ -395,7 +457,7 @@ def test_status_open_action_items(tmp_path, capsys):
 
 
 def test_status_malformed_action_items_are_flagged_not_dropped(tmp_path, capsys):
-    fixture = STATUS_FIXTURE + "  - \"just a string\"\n  - epic: 2\n    action: \"No status\"\n"
+    fixture = STATUS_FIXTURE + '  - "just a string"\n  - epic: 2\n    action: "No status"\n'
     result = run_status(tmp_path, capsys, fixture=fixture)
     assert any("not a mapping" in w for w in result["warnings"])
     assert any("missing or unknown status" in w for w in result["warnings"])
@@ -419,10 +481,9 @@ def test_status_in_progress_beats_all(tmp_path, capsys):
 
 
 def test_status_staleness_and_orphan_risks(tmp_path, capsys):
-    fixture = (STATUS_FIXTURE
-               .replace("last_updated: 07-30-2026 09:00", "last_updated: 01-02-2026 09:00")
-               .replace("  epic-2-retrospective: optional",
-                        "  epic-2-retrospective: optional\n  5-1-ghost: backlog"))
+    fixture = STATUS_FIXTURE.replace("last_updated: 07-30-2026 09:00", "last_updated: 01-02-2026 09:00").replace(
+        "  epic-2-retrospective: optional", "  epic-2-retrospective: optional\n  5-1-ghost: backlog"
+    )
     result = run_status(tmp_path, capsys, fixture=fixture)
     assert any("stale" in r for r in result["risks"])
     assert any("orphaned story '5-1-ghost'" in r for r in result["risks"])
@@ -435,9 +496,9 @@ def test_status_unparseable_timestamp_warns_instead_of_silence(tmp_path, capsys)
 
 
 def test_status_iso_and_date_typed_stamps_do_not_crash(tmp_path, capsys):
-    fixture = (STATUS_FIXTURE
-               .replace("generated: 01-01-2026 09:00", "generated: 2026-01-01")
-               .replace("last_updated: 07-30-2026 09:00", "last_updated: 2026-01-02"))
+    fixture = STATUS_FIXTURE.replace("generated: 01-01-2026 09:00", "generated: 2026-01-01").replace(
+        "last_updated: 07-30-2026 09:00", "last_updated: 2026-01-02"
+    )
     result = run_status(tmp_path, capsys, fixture=fixture)
     assert result["ok"] is True
     assert result["generated"] == "2026-01-01"
@@ -445,25 +506,26 @@ def test_status_iso_and_date_typed_stamps_do_not_crash(tmp_path, capsys):
 
 
 def test_status_all_done_recommends_retro_then_nothing(tmp_path, capsys):
-    fixture = (STATUS_FIXTURE
-               .replace("1-2-account-management: drafted", "1-2-account-management: done")
-               .replace("2-1-personality-system: backlog", "2-1-personality-system: done"))
+    fixture = STATUS_FIXTURE.replace("1-2-account-management: drafted", "1-2-account-management: done").replace(
+        "2-1-personality-system: backlog", "2-1-personality-system: done"
+    )
     result = run_status(tmp_path, capsys, fixture=fixture)
     assert result["recommendation"]["skill"] == "bmad-retrospective"
     assert "epic-1-retrospective" in result["recommendation"]["reason"]
-    fixture_done = fixture.replace("epic-1-retrospective: optional", "epic-1-retrospective: done") \
-                          .replace("epic-2-retrospective: optional", "epic-2-retrospective: done")
+    fixture_done = fixture.replace("epic-1-retrospective: optional", "epic-1-retrospective: done").replace(
+        "epic-2-retrospective: optional", "epic-2-retrospective: done"
+    )
     result = run_status(tmp_path, capsys, fixture=fixture_done)
     assert result["all_done"] is True and result["recommendation"] is None
 
 
 def test_status_odd_retro_key_reports_instead_of_crashing(tmp_path, capsys):
-    fixture = (STATUS_FIXTURE
-               .replace("1-2-account-management: drafted", "1-2-account-management: done")
-               .replace("2-1-personality-system: backlog", "2-1-personality-system: done")
-               .replace("epic-1-retrospective: optional", "epic-1-retrospective: done")
-               .replace("epic-2-retrospective: optional",
-                        "epic-2-retrospective: done\n  epic-abc-retrospective: optional"))
+    fixture = (
+        STATUS_FIXTURE.replace("1-2-account-management: drafted", "1-2-account-management: done")
+        .replace("2-1-personality-system: backlog", "2-1-personality-system: done")
+        .replace("epic-1-retrospective: optional", "epic-1-retrospective: done")
+        .replace("epic-2-retrospective: optional", "epic-2-retrospective: done\n  epic-abc-retrospective: optional")
+    )
     result = run_status(tmp_path, capsys, fixture=fixture)
     assert result["ok"] is True
     assert {"key": "epic-abc-retrospective", "status": "optional"} in result["unrecognized"]
@@ -498,11 +560,11 @@ def test_validate_clean_file(tmp_path, capsys):
 
 
 def test_validate_reports_problems_without_crashing(tmp_path, capsys):
-    broken = (STATUS_FIXTURE
-              .replace("2-1-personality-system: backlog", "2-1-personality-system: shipped")
-              .replace("epic-2-retrospective: optional",
-                       "epic-2-retrospective: optional\n  weird-key: done")
-              .replace("last_updated: 07-30-2026 09:00", "last_updated: whenever"))
+    broken = (
+        STATUS_FIXTURE.replace("2-1-personality-system: backlog", "2-1-personality-system: shipped")
+        .replace("epic-2-retrospective: optional", "epic-2-retrospective: optional\n  weird-key: done")
+        .replace("last_updated: 07-30-2026 09:00", "last_updated: whenever")
+    )
     result = run_validate(tmp_path, capsys, broken)
     assert result["valid"] is False
     assert any("illegal story status 'shipped'" in p for p in result["problems"])

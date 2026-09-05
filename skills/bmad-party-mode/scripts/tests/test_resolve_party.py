@@ -31,9 +31,9 @@ class TestBuildCollective(unittest.TestCase):
     def test_installed_agents_indexed_by_code_alias_and_name(self):
         col, idx, _ = rp.build_collective(AGENTS, [])
         self.assertEqual(set(col), {"bmad-agent-analyst", "bmad-agent-pm"})
-        self.assertEqual(idx["analyst"], "bmad-agent-analyst")      # alias
-        self.assertEqual(idx["mary"], "bmad-agent-analyst")         # name (ci)
-        self.assertEqual(idx["bmad-agent-pm"], "bmad-agent-pm")     # full code
+        self.assertEqual(idx["analyst"], "bmad-agent-analyst")  # alias
+        self.assertEqual(idx["mary"], "bmad-agent-analyst")  # name (ci)
+        self.assertEqual(idx["bmad-agent-pm"], "bmad-agent-pm")  # full code
         self.assertEqual(col["bmad-agent-analyst"]["source"], "installed")
 
     def test_custom_member_appends(self):
@@ -76,10 +76,13 @@ class TestGroups(unittest.TestCase):
 
     def test_menu_is_names_only_with_counts_and_open_cast_flag(self):
         menu = rp.group_menu(self.GROUPS)
-        self.assertEqual(menu, [
-            {"id": "wr", "name": "Writers", "member_count": 2},
-            {"id": "bad", "name": "bad", "member_count": 0, "open_cast": True},
-        ])
+        self.assertEqual(
+            menu,
+            [
+                {"id": "wr", "name": "Writers", "member_count": 2},
+                {"id": "bad", "name": "bad", "member_count": 0, "open_cast": True},
+            ],
+        )
 
     def test_find_group(self):
         self.assertEqual(rp.find_group(self.GROUPS, "wr")["name"], "Writers")
@@ -91,15 +94,18 @@ class TestGroupDetail(unittest.TestCase):
         self.col, self.idx, _ = rp.build_collective(AGENTS, [{"code": "morpheus", "name": "Morpheus"}])
 
     def test_scene_passes_through_when_present(self):
-        g = {"id": "tos-10-forward", "name": "Ten Forward", "members": ["morpheus"],
-             "scene": "Late evening, a few rounds in."}
+        g = {
+            "id": "tos-10-forward",
+            "name": "Ten Forward",
+            "members": ["morpheus"],
+            "scene": "Late evening, a few rounds in.",
+        }
         d = rp.group_detail(g, self.col, self.idx)
         self.assertEqual(d["scene"], "Late evening, a few rounds in.")
         self.assertEqual([m["code"] for m in d["members"]], ["morpheus"])
 
     def test_scene_omitted_when_absent_or_empty(self):
-        for g in ({"id": "g", "members": ["morpheus"]},
-                  {"id": "g", "members": ["morpheus"], "scene": ""}):
+        for g in ({"id": "g", "members": ["morpheus"]}, {"id": "g", "members": ["morpheus"], "scene": ""}):
             self.assertNotIn("scene", rp.group_detail(g, self.col, self.idx))
 
     def test_anchored_group_is_not_open_cast(self):
@@ -107,8 +113,11 @@ class TestGroupDetail(unittest.TestCase):
         self.assertNotIn("open_cast", rp.group_detail(g, self.col, self.idx))
 
     def test_open_cast_group_flagged_with_empty_members(self):
-        g = {"id": "rebels", "name": "Star Wars Rebels",
-             "scene": "Figures from the Rebels universe drop in as the topic calls for them."}
+        g = {
+            "id": "rebels",
+            "name": "Star Wars Rebels",
+            "scene": "Figures from the Rebels universe drop in as the topic calls for them.",
+        }
         d = rp.group_detail(g, self.col, self.idx)
         self.assertTrue(d["open_cast"])
         self.assertEqual(d["members"], [])
@@ -127,11 +136,14 @@ class TestInstalledCodesIsDefaultRoom(unittest.TestCase):
     """The default room is installed agents only; pure customs stay in the pool."""
 
     def test_pure_custom_excluded_override_kept_in_default_room(self):
-        col, _, installed = rp.build_collective(AGENTS, [
-            {"code": "morpheus", "name": "Morpheus"},                 # pure custom
-            {"code": "analyst", "name": "Mary-Custom", "persona": "p"},  # override
-            {"code": "sec-hawk", "name": "Vex"},                      # shipped crew member
-        ])
+        col, _, installed = rp.build_collective(
+            AGENTS,
+            [
+                {"code": "morpheus", "name": "Morpheus"},  # pure custom
+                {"code": "analyst", "name": "Mary-Custom", "persona": "p"},  # override
+                {"code": "sec-hawk", "name": "Vex"},  # shipped crew member
+            ],
+        )
         # Pure customs are in the pool...
         self.assertIn("morpheus", col)
         self.assertIn("sec-hawk", col)

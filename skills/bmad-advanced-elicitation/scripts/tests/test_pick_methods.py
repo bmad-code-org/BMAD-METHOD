@@ -7,6 +7,7 @@
 Run: uv run scripts/tests/test_pick_methods.py
  or: uv run --with pytest -m pytest scripts/tests/test_pick_methods.py
 """
+
 import json
 import random
 import sys
@@ -56,6 +57,7 @@ def rows(lib):
 
 # --- load / merge -----------------------------------------------------------
 
+
 def test_load_all_fields_present(lib):
     r = rows(lib)
     assert len(r) == 5
@@ -94,6 +96,7 @@ def test_extras_are_addressable_by_num(lib):
 
 # --- categories / filter / find / exclude -----------------------------------
 
+
 def test_categories_counts_sorted(lib):
     assert pick_methods.categories(rows(lib)) == [("core", 2), ("creative", 1), ("risk", 2)]
 
@@ -116,11 +119,14 @@ def test_find_by_name_num_and_missing(lib):
 def test_exclude_skips_named(lib):
     got = pick_methods.exclude(rows(lib), ["pre-mortem analysis", "SCAMPER Method"])
     assert {r["method_name"] for r in got} == {
-        "Assumption Audit", "First Principles Analysis", "Socratic Questioning",
+        "Assumption Audit",
+        "First Principles Analysis",
+        "Socratic Questioning",
     }
 
 
 # --- spread sampling ---------------------------------------------------------
+
 
 def test_spread_hits_distinct_categories(lib):
     for seed in range(20):
@@ -139,6 +145,7 @@ def test_spread_clamps_to_pool(lib):
 
 
 # --- CLI ---------------------------------------------------------------------
+
 
 def run(args, lib, capsys):
     code = pick_methods.main(["--file", str(lib), *args])
@@ -176,9 +183,7 @@ def test_cli_show_found_and_missing(lib, capsys):
 
 
 def test_cli_random_spread_exclude(lib, capsys):
-    code, out, _ = run(
-        ["random", "-n", "3", "--spread", "--exclude", "SCAMPER Method"], lib, capsys
-    )
+    code, out, _ = run(["random", "-n", "3", "--spread", "--exclude", "SCAMPER Method"], lib, capsys)
     assert code == 0
     lines = [ln for ln in out.strip().splitlines() if ln]
     assert len(lines) == 3
@@ -193,9 +198,7 @@ def test_cli_random_clamps_and_empty_pool(lib, capsys):
 
 
 def test_cli_extra_inline_json(lib, capsys):
-    code, out, _ = run(
-        ["--extra", json.dumps(EXTRA), "list", "--category", "domain"], lib, capsys
-    )
+    code, out, _ = run(["--extra", json.dumps(EXTRA), "list", "--category", "domain"], lib, capsys)
     assert code == 0 and "Regulatory Inversion" in out
 
 
@@ -214,6 +217,7 @@ def test_cli_json_output(lib, capsys):
 
 
 # --- shipped catalog integration ----------------------------------------------
+
 
 def test_shipped_catalog_loads_clean():
     shipped = pick_methods.DEFAULT_FILE

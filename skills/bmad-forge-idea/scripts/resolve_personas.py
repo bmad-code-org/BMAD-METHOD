@@ -48,9 +48,7 @@ PARTY_SKILL = "bmad-party-mode"
 def _run_json(cmd):
     """Run a resolver script and parse its JSON stdout. None on any failure."""
     try:
-        out = subprocess.run(
-            cmd, capture_output=True, text=True, encoding="utf-8", timeout=60
-        )
+        out = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", timeout=60)
     except (OSError, subprocess.SubprocessError):
         return None
     if out.returncode != 0 or not out.stdout.strip():
@@ -111,7 +109,16 @@ def load_party_workflow(project_root: Path, party_skill: Path):
     """Merged [workflow] table for bmad-party-mode (base + user overrides)."""
     resolver = project_root / "_bmad" / "scripts" / "resolve_customization.py"
     data = _run_json(
-        [sys.executable, str(resolver), "--skill", str(party_skill), "--project-root", str(project_root), "--key", "workflow"]
+        [
+            sys.executable,
+            str(resolver),
+            "--skill",
+            str(party_skill),
+            "--project-root",
+            str(project_root),
+            "--key",
+            "workflow",
+        ]
     )
     if data is not None and isinstance(data.get("workflow"), dict):
         return data["workflow"]
@@ -144,7 +151,7 @@ def _alias(code: str) -> str:
     """Short alias for an installed agent code: bmad-agent-analyst -> analyst."""
     for prefix in ("bmad-agent-", "bmad-"):
         if code.startswith(prefix):
-            return code[len(prefix):]
+            return code[len(prefix) :]
     return code
 
 
@@ -172,17 +179,20 @@ def build_pool(agents: dict, party_members: list):
                 index[key] = code
 
     for code, info in (agents or {}).items():
-        register(code, {
-            "code": code,
-            "name": info.get("name", code),
-            "icon": info.get("icon", ""),
-            "title": info.get("title", ""),
-            "description": info.get("description", ""),
-            "source": "installed",
-        })
+        register(
+            code,
+            {
+                "code": code,
+                "name": info.get("name", code),
+                "icon": info.get("icon", ""),
+                "title": info.get("title", ""),
+                "description": info.get("description", ""),
+                "source": "installed",
+            },
+        )
         installed_codes.append(code)
 
-    for m in (party_members if isinstance(party_members, list) else []):
+    for m in party_members if isinstance(party_members, list) else []:
         if not isinstance(m, dict):
             continue
         code = m.get("code")
@@ -252,18 +262,19 @@ def main():
     else:
         workflow = load_party_overrides(project_root)
 
-    pool, index, installed_codes, custom_codes = build_pool(
-        agents, workflow.get("party_members", []))
+    pool, index, installed_codes, custom_codes = build_pool(agents, workflow.get("party_members", []))
     parties = resolve_parties(workflow.get("party_groups", []), pool, index)
 
-    _emit({
-        "agents": [_brief(pool[c]) for c in installed_codes],
-        "members": [_brief(pool[c]) for c in custom_codes],
-        "parties": parties,
-        "default_party": workflow.get("default_party", "") or "",
-        "party_mode_found": party_skill is not None,
-        "agents_resolved": agents_ok,
-    })
+    _emit(
+        {
+            "agents": [_brief(pool[c]) for c in installed_codes],
+            "members": [_brief(pool[c]) for c in custom_codes],
+            "parties": parties,
+            "default_party": workflow.get("default_party", "") or "",
+            "party_mode_found": party_skill is not None,
+            "agents_resolved": agents_ok,
+        }
+    )
 
 
 def _emit(obj):

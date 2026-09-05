@@ -72,12 +72,11 @@ def validate_version(version: str) -> None:
     match = SEMVER.fullmatch(version)
     if match is None:
         raise StampError(
-            f"invalid version {version!r}: must be SemVer "
-            "(MAJOR.MINOR.PATCH, optional prerelease), e.g. 6.12.0"
+            f"invalid version {version!r}: must be SemVer (MAJOR.MINOR.PATCH, optional prerelease), e.g. 6.12.0"
         )
     if "-dev" in version.casefold():
         raise StampError(
-            f"invalid version {version!r}: setup.py cannot order \"-dev\" "
+            f'invalid version {version!r}: setup.py cannot order "-dev" '
             "versions, so installed copies would never compare as current — "
             "pick a different prerelease label"
         )
@@ -104,44 +103,28 @@ def read_manifest_module(path: Path, rel: str) -> str:
         )
     module = data["module"]
     if module not in MODULES:
-        raise StampError(
-            f"{rel}: unknown module {module!r} "
-            f"(expected one of {', '.join(sorted(MODULES))})"
-        )
+        raise StampError(f"{rel}: unknown module {module!r} (expected one of {', '.join(sorted(MODULES))})")
     if not isinstance(data["version"], str):
         raise StampError(f"{rel}: version must be a string")
     if data["update_source"] != UPDATE_SOURCE:
-        raise StampError(
-            f"{rel}: update_source must be exactly {UPDATE_SOURCE!r}; "
-            f"found {data['update_source']!r}"
-        )
+        raise StampError(f"{rel}: update_source must be exactly {UPDATE_SOURCE!r}; found {data['update_source']!r}")
     if data["knowledge"] != KNOWLEDGE:
-        raise StampError(
-            f"{rel}: knowledge must be exactly {KNOWLEDGE!r}; "
-            f"found {data['knowledge']!r}"
-        )
+        raise StampError(f"{rel}: knowledge must be exactly {KNOWLEDGE!r}; found {data['knowledge']!r}")
     return module
 
 
 def collect_skills(project_root: Path) -> tuple[list[Path], dict[str, str]]:
     """Return every skill's manifest path plus a skill-name -> module map."""
-    skill_dirs = sorted(
-        path for path in (project_root / "skills").glob("*") if path.is_dir()
-    )
+    skill_dirs = sorted(path for path in (project_root / "skills").glob("*") if path.is_dir())
     if not skill_dirs:
-        raise StampError(
-            f"no skills/*/{MANIFEST_NAME} found under {project_root} — "
-            "run from a BMAD-METHOD checkout"
-        )
+        raise StampError(f"no skills/*/{MANIFEST_NAME} found under {project_root} — run from a BMAD-METHOD checkout")
     manifests: list[Path] = []
     modules: dict[str, str] = {}
     for skill_dir in skill_dirs:
         manifest = skill_dir / MANIFEST_NAME
         rel = manifest.relative_to(project_root).as_posix()
         if not manifest.is_file():
-            raise StampError(
-                f"{skill_dir.relative_to(project_root).as_posix()}: missing {MANIFEST_NAME}"
-            )
+            raise StampError(f"{skill_dir.relative_to(project_root).as_posix()}: missing {MANIFEST_NAME}")
         modules[skill_dir.name] = read_manifest_module(manifest, rel)
         manifests.append(manifest)
     return manifests, modules
@@ -155,16 +138,12 @@ def stamped_manifest_content(path: Path, rel: str, version: str) -> str:
     lines = original.splitlines(keepends=True)
     matches = [index for index, line in enumerate(lines) if VERSION_LINE.match(line.rstrip("\n"))]
     if len(matches) != 1:
-        raise StampError(
-            f"{rel}: expected exactly one 'version = \"...\"' line, found {len(matches)}"
-        )
+        raise StampError(f"{rel}: expected exactly one 'version = \"...\"' line, found {len(matches)}")
     lines[matches[0]] = f'version = "{version}"\n'
     return "".join(lines)
 
 
-def verify_stamp(
-    root: Path, manifests: list[Path], modules: dict[str, str], version: str
-) -> None:
+def verify_stamp(root: Path, manifests: list[Path], modules: dict[str, str], version: str) -> None:
     # Manifests: exact expected content, and byte-identical within each module
     # (setup.py's module discovery compares raw manifest bytes).
     reference_bytes: dict[str, bytes] = {}
@@ -193,10 +172,7 @@ def verify_stamp(
             reference_bytes[module] = raw
             reference_rel[module] = rel
         elif raw != reference_bytes[module]:
-            raise StampError(
-                f"{rel}: manifest is not byte-identical to {reference_rel[module]} "
-                "after stamping"
-            )
+            raise StampError(f"{rel}: manifest is not byte-identical to {reference_rel[module]} after stamping")
 
 
 def stamped_package_content(path: Path, version: str) -> str:
@@ -237,9 +213,7 @@ def run(project_root: Path, version: str) -> int:
             try:
                 path.write_text(content, encoding="utf-8")
             except OSError as error:
-                raise StampError(
-                    f"{path.relative_to(project_root).as_posix()}: cannot write: {error}"
-                ) from error
+                raise StampError(f"{path.relative_to(project_root).as_posix()}: cannot write: {error}") from error
         verify_stamp(project_root, manifests, modules, version)
         for path, expected in packages:
             try:
@@ -259,9 +233,7 @@ def run(project_root: Path, version: str) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(
-        description="Stamp a version into skill manifests and package metadata."
-    )
+    parser = argparse.ArgumentParser(description="Stamp a version into skill manifests and package metadata.")
     parser.add_argument("version", help='SemVer release version, e.g. "6.12.0"')
     args = parser.parse_args(argv)
     return run(PROJECT_ROOT, args.version)

@@ -142,9 +142,7 @@ def test_no_range_returns_empty(tmp_path):
 
 def test_measures_commits_and_files_with_attribution(tmp_path):
     repo = _make_repo(tmp_path)
-    code, out = _run(
-        "--repo", str(repo), "--range", "HEAD~1..HEAD", "--stories", "1-2,1-1"
-    )
+    code, out = _run("--repo", str(repo), "--range", "HEAD~1..HEAD", "--stories", "1-2,1-1")
     assert code == 0
     assert out["range"] == "HEAD~1..HEAD"
     assert out["commit_count"] == 1
@@ -367,9 +365,7 @@ def test_non_ascii_path_is_a_real_string(tmp_path):
     # Without core.quotePath=false git emits "src/caf\303\251.py" — quoted and
     # octal-escaped, so the documented "open the ranked files" step cannot.
     repo, base = _accented_repo(tmp_path)
-    _assert_accented_path(
-        repo, _json(_proc("--repo", str(repo), "--range", f"{base}..HEAD"))
-    )
+    _assert_accented_path(repo, _json(_proc("--repo", str(repo), "--range", f"{base}..HEAD")))
 
 
 def test_non_ascii_path_survives_a_non_utf8_locale(tmp_path):
@@ -423,11 +419,7 @@ def test_merge_commits_listed_but_excluded_from_files(tmp_path):
 
 def test_story_attribution_survives_merges(tmp_path):
     repo, base = _merge_repo(tmp_path)
-    out = _json(
-        _proc(
-            "--repo", str(repo), "--range", f"{base}..HEAD", "--stories", "1-2,1-3"
-        )
-    )
+    out = _json(_proc("--repo", str(repo), "--range", f"{base}..HEAD", "--stories", "1-2,1-3"))
     by_subject = {c["subject"]: c for c in out["commits"]}
     assert by_subject["epic-1-2 story one"]["stories"] == ["1-2"]
     assert by_subject["epic-1-3 story two"]["stories"] == ["1-3"]
@@ -483,9 +475,7 @@ def test_distinct_non_utf8_paths_stay_distinct(tmp_path):
     # measurement corruption with nothing in the output admitting to it.
     overlay = _fake_git(
         tmp_path,
-        "#!/bin/sh\n"
-        "printf 'aaaa\\037\\037subj\\n\\n1\\t0\\tsrc/caf\\351.py\\n"
-        "2\\t0\\tsrc/caf\\377.py\\n'\n",
+        "#!/bin/sh\nprintf 'aaaa\\037\\037subj\\n\\n1\\t0\\tsrc/caf\\351.py\\n2\\t0\\tsrc/caf\\377.py\\n'\n",
     )
     out = _json(_proc("--repo", str(tmp_path), "--range", "a..b", env=overlay))
     files = {f["path"]: f for f in out["files"]}
@@ -566,9 +556,7 @@ def _recording_git(tmp_path, calls):
     assert real_git, "git must be on PATH"
     return _fake_git(
         tmp_path,
-        "#!/bin/sh\n"
-        f"( printf '%s\\037' \"$@\"; printf '\\n' ) >> \"{calls}\"\n"
-        f'exec "{real_git}" "$@"\n',
+        f'#!/bin/sh\n( printf \'%s\\037\' "$@"; printf \'\\n\' ) >> "{calls}"\nexec "{real_git}" "$@"\n',
     )
 
 
@@ -620,21 +608,13 @@ def test_multi_story_subject_attributes_to_every_match(tmp_path):
     (repo / "f.py").write_text("a\nb\n")
     _git(repo, "commit", "-qam", "fix seam between 1-2 and 1-3")
 
-    out = _json(
-        _proc(
-            "--repo", str(repo), "--range", "HEAD~1..HEAD", "--stories", "1-3,1-2"
-        )
-    )
+    out = _json(_proc("--repo", str(repo), "--range", "HEAD~1..HEAD", "--stories", "1-3,1-2"))
     # Every match, in --stories order — not whichever id was passed first.
     assert out["commits"][0]["stories"] == ["1-3", "1-2"]
 
     # A repeated id must not list the commit twice: any per-story total built
     # from `stories` would count it twice.
-    repeated = _json(
-        _proc(
-            "--repo", str(repo), "--range", "HEAD~1..HEAD", "--stories", "1-3,1-2,1-3"
-        )
-    )
+    repeated = _json(_proc("--repo", str(repo), "--range", "HEAD~1..HEAD", "--stories", "1-3,1-2,1-3"))
     assert repeated["commits"][0]["stories"] == ["1-3", "1-2"]
     assert repeated["stories_supplied"] == ["1-3", "1-2"]
 
@@ -649,11 +629,7 @@ def test_subject_naming_no_story_gets_an_empty_list(tmp_path):
     (repo / "f.py").write_text("a\nb\n")
     _git(repo, "commit", "-qam", "chore: tidy imports")
 
-    out = _json(
-        _proc(
-            "--repo", str(repo), "--range", "HEAD~1..HEAD", "--stories", "1-2,1-3"
-        )
-    )
+    out = _json(_proc("--repo", str(repo), "--range", "HEAD~1..HEAD", "--stories", "1-2,1-3"))
     assert out["commits"][0]["stories"] == []
 
 

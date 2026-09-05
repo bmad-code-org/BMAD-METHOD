@@ -31,6 +31,7 @@ bmad-advanced-elicitation's pick_methods.py.)
 
 Default output is lean text for an LLM to read; pass --json for structured output.
 """
+
 import argparse
 import csv
 import hashlib
@@ -74,15 +75,17 @@ def load_extra(file: Path) -> list[dict]:
     for item in data:
         if not isinstance(item, dict):
             raise ValueError(f"each --extra entry must be a JSON object, got: {item!r}")
-        rows.append({
-            "category": str(item.get("category", "")).strip(),
-            "technique_name": str(item.get("technique_name", "")).strip(),
-            "description": str(item.get("description", "")).strip(),
-            "detail": str(item.get("detail") or "").strip(),
-            "provenance": str(item.get("provenance") or "").strip(),
-            "good_for": str(item.get("good_for") or "").strip(),
-            "audience": str(item.get("audience") or "").strip(),
-        })
+        rows.append(
+            {
+                "category": str(item.get("category", "")).strip(),
+                "technique_name": str(item.get("technique_name", "")).strip(),
+                "description": str(item.get("description", "")).strip(),
+                "detail": str(item.get("detail") or "").strip(),
+                "provenance": str(item.get("provenance") or "").strip(),
+                "good_for": str(item.get("good_for") or "").strip(),
+                "audience": str(item.get("audience") or "").strip(),
+            }
+        )
     return rows
 
 
@@ -215,7 +218,7 @@ def _hsl_hex(deg: int, s: float, lt: float) -> str:
     import colorsys
 
     r, g, b = colorsys.hls_to_rgb((deg % 360) / 360, lt, s)
-    return "#%02x%02x%02x" % (round(r * 255), round(g * 255), round(b * 255))
+    return f"#{round(r * 255):02x}{round(g * 255):02x}{round(b * 255):02x}"
 
 
 def category_style(cat: str) -> tuple[str, str]:
@@ -681,7 +684,9 @@ def html_doc(rows: list[dict]) -> str:
             f'<button type="button" class="goal" data-goal="{html.escape(g)}">{html.escape(GOAL_LABELS.get(g, g))}</button>'
             for g in ordered
         )
-        goalbar = f'<div class="bar"><span class="glabel">Great for</span><div class="goals" id="goals">{gchips}</div></div>'
+        goalbar = (
+            f'<div class="bar"><span class="glabel">Great for</span><div class="goals" id="goals">{gchips}</div></div>'
+        )
 
     total = html.escape(f"{len(rows)} techniques across {len(groups)} categories.")
     return (
@@ -713,8 +718,14 @@ def main(argv: list[str] | None = None) -> int:
     pin_utf8(sys.stdout)
     pin_utf8(sys.stderr)
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--file", type=Path, default=DEFAULT_FILE, help="technique CSV (default: sibling assets/brain-methods.csv)")
-    p.add_argument("--extra", type=Path, help="JSON overlay of additional techniques (customize.toml additional_techniques), merged into every command")
+    p.add_argument(
+        "--file", type=Path, default=DEFAULT_FILE, help="technique CSV (default: sibling assets/brain-methods.csv)"
+    )
+    p.add_argument(
+        "--extra",
+        type=Path,
+        help="JSON overlay of additional techniques (customize.toml additional_techniques), merged into every command",
+    )
     p.add_argument("--json", action="store_true", help="emit structured JSON instead of lean text")
     sub = p.add_subparsers(dest="cmd", required=True)
     sub.add_parser("categories", help="list category names + counts")

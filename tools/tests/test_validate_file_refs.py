@@ -8,7 +8,6 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 VALIDATOR = REPO_ROOT / "tools" / "validate_file_refs.py"
 
@@ -95,7 +94,9 @@ class TestMarkdownExtraction(unittest.TestCase):
         self.assertEqual([(r.raw, r.line) for r in refs], [("bmm/x.md", 3), ("references/y.md", 4)])
 
     def test_code_blocks_stripped(self):
-        content = "```\n{project-root}/_bmad/bmm/fenced.md\n`references/fenced.md`\n```\n{project-root}/_bmad/bmm/live.md\n"
+        content = (
+            "```\n{project-root}/_bmad/bmm/fenced.md\n`references/fenced.md`\n```\n{project-root}/_bmad/bmm/live.md\n"
+        )
         refs = self.extract(content)
         self.assertEqual([r.raw for r in refs], ["bmm/live.md"])
         self.assertEqual(refs[0].line, 5)
@@ -111,10 +112,7 @@ class TestMarkdownExtraction(unittest.TestCase):
 
 class TestYamlExtraction(unittest.TestCase):
     def test_refs_with_lines_and_keys(self):
-        content = (
-            "steps:\n"
-            "  - file: '{project-root}/_bmad/bmm/workflows/w.md'\n"
-        )
+        content = "steps:\n  - file: '{project-root}/_bmad/bmm/workflows/w.md'\n"
         refs = vfr.extract_yaml_refs("/x/file.yaml", content)
         self.assertEqual(len(refs), 1)
         self.assertEqual(refs[0].raw, "{project-root}/_bmad/bmm/workflows/w.md")
@@ -127,11 +125,7 @@ class TestYamlExtraction(unittest.TestCase):
         self.assertEqual(vfr.extract_yaml_refs("/x/f.yaml", content), [])
 
     def test_multi_document_yaml_scans_all_documents(self):
-        content = (
-            "a: '{project-root}/_bmad/bmm/one.md'\n"
-            "---\n"
-            "b: '{project-root}/_bmad/bmm/two.md'\n"
-        )
+        content = "a: '{project-root}/_bmad/bmm/one.md'\n---\nb: '{project-root}/_bmad/bmm/two.md'\n"
         refs = vfr.extract_yaml_refs("/x/f.yaml", content)
         self.assertEqual(
             [(r.raw, r.line) for r in refs],
@@ -170,11 +164,14 @@ class TestLeakDetection(unittest.TestCase):
     def test_leaks_found_with_line_numbers(self):
         content = "clean\n/Users/alice/secret.md\nC:\\\\Temp\\\\x\nalso /home/bob/y\n"
         leaks = vfr.check_absolute_path_leaks("/x/f.md", content)
-        self.assertEqual([(leak.line, leak.content) for leak in leaks], [
-            (2, "/Users/alice/secret.md"),
-            (3, "C:\\\\Temp\\\\x"),
-            (4, "also /home/bob/y"),
-        ])
+        self.assertEqual(
+            [(leak.line, leak.content) for leak in leaks],
+            [
+                (2, "/Users/alice/secret.md"),
+                (3, "C:\\\\Temp\\\\x"),
+                (4, "also /home/bob/y"),
+            ],
+        )
 
     def test_code_blocks_ignored(self):
         content = "```\n/Users/fenced/path\n```\n"

@@ -23,13 +23,10 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from types import SimpleNamespace
 
-
 SCRIPTS_SRC = Path(__file__).resolve().parents[1]
 REPO = SCRIPTS_SRC.parents[2]
 SKILLS_SRC = REPO / "skills"
-CONFIG_TEMPLATE = (SCRIPTS_SRC.parent / "assets" / "config.template.toml").read_text(
-    encoding="utf-8"
-)
+CONFIG_TEMPLATE = (SCRIPTS_SRC.parent / "assets" / "config.template.toml").read_text(encoding="utf-8")
 SHARED_SCRIPTS = (
     "config_utils.py",
     "memlog.py",
@@ -60,19 +57,13 @@ def _copy_skill(dest: Path, name: str) -> Path:
 
 def _files(directory: Path) -> dict[str, bytes]:
     files = {
-        path.relative_to(directory).as_posix(): path.read_bytes()
-        for path in directory.rglob("*")
-        if path.is_file()
+        path.relative_to(directory).as_posix(): path.read_bytes() for path in directory.rglob("*") if path.is_file()
     }
     return dict(sorted(files.items()))
 
 
 def _markdown(directory: Path) -> str:
-    return "\n".join(
-        content.decode("utf-8")
-        for name, content in _files(directory).items()
-        if name.endswith(".md")
-    )
+    return "\n".join(content.decode("utf-8") for name, content in _files(directory).items() if name.endswith(".md"))
 
 
 def _namespace_dir(project: Path, skill_name: str) -> Path:
@@ -148,9 +139,7 @@ class RenderSkillTests(unittest.TestCase):
     def _skill(self, ws: SimpleNamespace, name: str) -> Path:
         return _copy_skill(ws.outer / "skills" / name, name)
 
-    def _cli(
-        self, project: Path, skill: Path, *, cwd: Path | None = None
-    ) -> subprocess.CompletedProcess[str]:
+    def _cli(self, project: Path, skill: Path, *, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
             [
                 sys.executable,
@@ -162,8 +151,7 @@ class RenderSkillTests(unittest.TestCase):
             ],
             cwd=cwd or project,
             text=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            capture_output=True,
             check=False,
         )
 
@@ -200,9 +188,7 @@ class RenderSkillTests(unittest.TestCase):
         # No shipped skill uses a boolean customization default; arranging one
         # through customize.toml would only exist to reach this branch.
         with self.assertRaisesRegex(rs.RenderError, "unsupported default type"):
-            rs._resolve_customization_value(
-                True, True, "customization.workflow.flag"
-            )
+            rs._resolve_customization_value(True, True, "customization.workflow.flag")
 
     def test_shipped_skills_publish_root_bound_snapshots(self):
         for name in SHIPPED_SKILLS:
@@ -219,9 +205,7 @@ class RenderSkillTests(unittest.TestCase):
     def test_cli_from_nested_cwd_dispatches_one_absolute_workflow(self):
         ws = self._workspace()
         skill = self._skill(ws, "bmad-build")
-        workflow = self._entry(
-            self._cli(ws.project, skill, cwd=ws.project / "nested" / "cwd")
-        )
+        workflow = self._entry(self._cli(ws.project, skill, cwd=ws.project / "nested" / "cwd"))
         self._assert_snapshot(workflow, ws.project, "bmad-build")
         self.assertFalse((ws.bmad / "scripts" / "__pycache__").exists())
         self.assertFalse((skill / "__pycache__").exists())
@@ -254,8 +238,7 @@ class RenderSkillTests(unittest.TestCase):
         self.assertTrue(before.exists())
 
         (skill / "compile-epic-context.md").write_text(
-            (skill / "compile-epic-context.md").read_text(encoding="utf-8")
-            + "\n<!-- effective change -->\n",
+            (skill / "compile-epic-context.md").read_text(encoding="utf-8") + "\n<!-- effective change -->\n",
             encoding="utf-8",
         )
         after_source = rs.render(ws.project, skill)
@@ -278,9 +261,7 @@ class RenderSkillTests(unittest.TestCase):
         ws = self._workspace()
         skill = self._skill(ws, "bmad-build")
         with ThreadPoolExecutor(max_workers=2) as pool:
-            results = list(
-                pool.map(lambda _: self._cli(ws.project, skill), range(2))
-            )
+            results = list(pool.map(lambda _: self._cli(ws.project, skill), range(2)))
         entries = [self._entry(result) for result in results]
         self.assertEqual(entries[0], entries[1])
         self.assertTrue((entries[0].parent / "manifest.json").is_file())
@@ -296,9 +277,7 @@ class RenderSkillTests(unittest.TestCase):
         self.assertNotIn("Traceback", result.stdout + result.stderr)
 
         (ws.bmad / "custom" / "config.toml").unlink()
-        (ws.bmad / "custom" / f"{skill.name}.toml").write_text(
-            "[workflow\nbad", encoding="utf-8"
-        )
+        (ws.bmad / "custom" / f"{skill.name}.toml").write_text("[workflow\nbad", encoding="utf-8")
         result = self._cli(ws.project, skill)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("failed to parse", result.stdout)
@@ -361,27 +340,18 @@ class RenderSkillTests(unittest.TestCase):
             ),
             encoding="utf-8",
         )
-        review = (rs.render(ws.project, skill).parent / "step-04-review.md").read_text(
-            encoding="utf-8"
-        )
+        review = (rs.render(ws.project, skill).parent / "step-04-review.md").read_text(encoding="utf-8")
         self.assertIn("Replacement (`blind-hunter`)", review)
         self.assertIn("Run only when: the replacement condition holds", review)
         self.assertIn("Run replacement review.", review)
 
         defaults = tomllib.loads((skill / "customize.toml").read_text(encoding="utf-8"))
         disabled = "\n".join(
-            '[[workflow.review_layers]]\n'
-            f'id = "{layer["id"]}"\n'
-            'name = "disabled"\n'
-            'instruction = ""\n'
+            f'[[workflow.review_layers]]\nid = "{layer["id"]}"\nname = "disabled"\ninstruction = ""\n'
             for layer in defaults["workflow"]["review_layers"]
         )
-        (ws.bmad / "custom" / f"{skill.name}.toml").write_text(
-            disabled, encoding="utf-8"
-        )
-        review = (rs.render(ws.project, skill).parent / "step-04-review.md").read_text(
-            encoding="utf-8"
-        )
+        (ws.bmad / "custom" / f"{skill.name}.toml").write_text(disabled, encoding="utf-8")
+        review = (rs.render(ws.project, skill).parent / "step-04-review.md").read_text(encoding="utf-8")
         self.assertIn("No active review layers. HALT", review)
 
     def test_non_empty_open_spec_override_reaches_both_terminal_routes(self):
@@ -394,9 +364,7 @@ class RenderSkillTests(unittest.TestCase):
         snap = rs.render(ws.project, skill).parent
         for name in ("step-05-present.md", "step-oneshot.md"):
             rendered = (snap / name).read_text(encoding="utf-8")
-            self.assertIn(
-                "OPEN-SPEC-SENTINEL {project-root} {spec_file}", rendered
-            )
+            self.assertIn("OPEN-SPEC-SENTINEL {project-root} {spec_file}", rendered)
 
     def test_installed_renderer_identity_change_publishes_a_new_generation(self):
         ws = self._workspace()
@@ -412,9 +380,7 @@ class RenderSkillTests(unittest.TestCase):
         ws = self._workspace()
         skill = ws.outer / "skills" / "plain-workflow"
         skill.mkdir(parents=True)
-        (skill / "workflow.md").write_text(
-            "Read `[[bmad-snapshot:step.md]]`.\n", encoding="utf-8"
-        )
+        (skill / "workflow.md").write_text("Read `[[bmad-snapshot:step.md]]`.\n", encoding="utf-8")
         (skill / "step.md").write_text("No rendered values required.\n", encoding="utf-8")
         workflow = rs.render(ws.project, skill)
         self.assertIn(f"{os.sep}render{os.sep}plain-workflow{os.sep}", str(workflow))
@@ -505,8 +471,7 @@ class RenderSkillTests(unittest.TestCase):
                         cwd=ws.project / "nested" / "cwd",
                         shell=True,
                         text=True,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE,
+                        capture_output=True,
                         check=False,
                     )
                 )

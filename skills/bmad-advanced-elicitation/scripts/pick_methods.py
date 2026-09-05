@@ -31,6 +31,7 @@ categories are first-class and number-addressable everywhere.
 
 Default output is lean tab-separated text for an LLM to read; --json for structured.
 """
+
 import argparse
 import csv
 import json
@@ -163,8 +164,7 @@ def fmt_rows(rows: list[dict], as_json: bool) -> str:
     if as_json:
         return json.dumps([{k: r[k] for k in FIELDS} for r in rows])
     return "\n".join(
-        f"{r['num']}\t{r['category']}\t{r['method_name']}\t{r['description']}\t{r['output_pattern']}"
-        for r in rows
+        f"{r['num']}\t{r['category']}\t{r['method_name']}\t{r['description']}\t{r['output_pattern']}" for r in rows
     )
 
 

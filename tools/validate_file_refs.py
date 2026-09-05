@@ -351,10 +351,7 @@ def run(project_root: str, strict: bool = False, verbose: bool = False) -> int:
             print(f"  [STRAY] {name}: files may not sit directly under skills/")
             all_issues.append({"file": rel, "line": 1, "ref": name, "issue": "stray file"})
             if github_actions:
-                print(
-                    f"::warning file={rel},line=1::"
-                    f"{escape_annotation('Stray file directly under skills/')}"
-                )
+                print(f"::warning file={rel},line=1::{escape_annotation('Stray file directly under skills/')}")
 
     for file_path in files:
         relative_path = os.path.relpath(file_path, project_root)
