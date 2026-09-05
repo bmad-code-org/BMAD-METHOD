@@ -47,7 +47,7 @@ last_updated: 05-06-2025 21:30
 project: My Awesome Project
 project_key: NOKEY
 tracking_system: file-system
-story_location: "docs/stories"
+story_location: docs/stories
 
 development_status:
   epic-1: backlog
@@ -66,6 +66,6 @@ development_status:
 # Action items committed during retrospectives (section created by the retrospective workflow)
 action_items:
   - epic: 1
-    action: "Add error-handling review to the code review checklist"
-    owner: "Charlie"
+    action: Add error-handling review to the code review checklist
+    owner: Charlie
     status: open

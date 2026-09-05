@@ -14,7 +14,7 @@ jobs:
       - name: Retarget to dev
         uses: actions/github-script@v7
         with:
-          script: |
+          script: |-
             const pullRequest = context.payload.pull_request;
             await github.rest.pulls.update({
               ...context.repo,

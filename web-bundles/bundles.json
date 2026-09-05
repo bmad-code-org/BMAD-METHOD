@@ -20,7 +20,10 @@
       },
       "accentColor": "#3b82f6",
       "motif": "constellation",
-      "knowledgeFiles": ["SKILL.md", "brain-methods.csv"],
+      "knowledgeFiles": [
+        "SKILL.md",
+        "brain-methods.csv"
+      ],
       "needsWebBrowsing": true,
       "needsDeepResearch": false,
       "stitchIntegration": false
@@ -42,7 +45,9 @@
       },
       "accentColor": "#d4a853",
       "motif": "single-page",
-      "knowledgeFiles": ["SKILL.md"],
+      "knowledgeFiles": [
+        "SKILL.md"
+      ],
       "needsWebBrowsing": true,
       "needsDeepResearch": false,
       "stitchIntegration": false
@@ -64,7 +69,9 @@
       },
       "accentColor": "#dc2626",
       "motif": "document-ribbon",
-      "knowledgeFiles": ["SKILL.md"],
+      "knowledgeFiles": [
+        "SKILL.md"
+      ],
       "needsWebBrowsing": true,
       "needsDeepResearch": false,
       "stitchIntegration": false
@@ -86,7 +93,11 @@
       },
       "accentColor": "#6366f1",
       "motif": "section-stack",
-      "knowledgeFiles": ["SKILL.md", "prd-template.md", "prd-validation-checklist.md"],
+      "knowledgeFiles": [
+        "SKILL.md",
+        "prd-template.md",
+        "prd-validation-checklist.md"
+      ],
       "needsWebBrowsing": true,
       "needsDeepResearch": false,
       "stitchIntegration": false
@@ -108,7 +119,10 @@
       },
       "accentColor": "#10b981",
       "motif": "nested-layers",
-      "knowledgeFiles": ["SKILL.md", "ux-validation.md"],
+      "knowledgeFiles": [
+        "SKILL.md",
+        "ux-validation.md"
+      ],
       "needsWebBrowsing": true,
       "needsDeepResearch": false,
       "stitchIntegration": true
@@ -130,7 +144,9 @@
       },
       "accentColor": "#f59e0b",
       "motif": "positioning-rings",
-      "knowledgeFiles": ["SKILL.md"],
+      "knowledgeFiles": [
+        "SKILL.md"
+      ],
       "needsWebBrowsing": true,
       "needsDeepResearch": true,
       "stitchIntegration": false

@@ -1,8 +1,9 @@
 name: Bug Report
 description: File a bug report to help us improve BMad Method
-title: "[BUG] "
+title: '[BUG] '
 labels: bug
 assignees: []
+
 body:
   - type: markdown
     attributes:
@@ -75,7 +76,7 @@ body:
     id: version
     attributes:
       label: BMad Version
-      description: "Check with: npx bmad-method --version or check package.json"
+      description: 'Check with: npx bmad-method --version or check package.json'
       placeholder: e.g., 6.0.0-Beta.4
     validations:
       required: true
@@ -98,11 +99,7 @@ body:
     id: platform
     attributes:
       label: Operating System
-      options:
-        - macOS
-        - Windows
-        - Linux
-        - Other
+      options: [macOS, Windows, Linux, Other]
     validations:
       required: true
 
