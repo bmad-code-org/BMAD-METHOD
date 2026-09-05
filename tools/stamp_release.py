@@ -2,7 +2,7 @@
 # /// script
 # requires-python = ">=3.11"
 # ///
-"""Release version stamper for the bmad-skills mirror.
+"""Release version stamper for BMAD-METHOD.
 
 Writes a human-supplied SemVer version into every skills/*/module-manifest.toml,
 then verifies the result. Used by tools/release.md to cut a stamped release
@@ -40,7 +40,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 MANIFEST_NAME = "module-manifest.toml"
 
 MODULES = frozenset({"method", "toolbox"})
-UPDATE_SOURCE = "github:bmad-code-org/bmad-skills/skills"
+UPDATE_SOURCE = "github:bmad-code-org/BMAD-METHOD/skills"
 KNOWLEDGE = "`references/help.md` in the `bmad` skill"
 MANIFEST_KEYS = frozenset({"module", "version", "update_source", "knowledge"})
 
@@ -130,7 +130,7 @@ def collect_skills(project_root: Path) -> tuple[list[Path], dict[str, str]]:
     if not skill_dirs:
         raise StampError(
             f"no skills/*/{MANIFEST_NAME} found under {project_root} — "
-            "run from a bmad-skills checkout"
+            "run from a BMAD-METHOD checkout"
         )
     manifests: list[Path] = []
     modules: dict[str, str] = {}

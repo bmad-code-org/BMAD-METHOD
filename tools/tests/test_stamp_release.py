@@ -15,7 +15,7 @@ SETUP_PY = REPO_ROOT / "skills" / "bmad" / "scripts" / "setup.py"
 MANIFEST = (
     'module = "{module}"\n'
     'version = "{version}"\n'
-    'update_source = "github:bmad-code-org/bmad-skills/skills"\n'
+    'update_source = "github:bmad-code-org/BMAD-METHOD/skills"\n'
     'knowledge = "`references/help.md` in the `bmad` skill"\n'
 )
 
@@ -134,7 +134,7 @@ class StampReleaseTests(unittest.TestCase):
         write(
             broken,
             'module = "method"\n'
-            'update_source = "github:bmad-code-org/bmad-skills/skills"\n'
+            'update_source = "github:bmad-code-org/BMAD-METHOD/skills"\n'
             'knowledge = "`references/help.md` in the `bmad` skill"\n',
         )
         before = snapshot(self.root)
@@ -187,7 +187,7 @@ class StampReleaseTests(unittest.TestCase):
             broken,
             'module = "method"\n'
             'version = "6.11.0-next"\n'
-            'update_source = "github:bmad-code-org/bmad-skills/skills"\n'
+            'update_source = "github:bmad-code-org/BMAD-METHOD/skills"\n'
             'knowledge = "elsewhere.md"\n',
         )
         before = snapshot(self.root)
@@ -213,7 +213,7 @@ class StampReleaseTests(unittest.TestCase):
             drifted,
             'module = "method"\n'
             'version = "6.11.0-next"\n'
-            'update_source   =   "github:bmad-code-org/bmad-skills/skills"\n'
+            'update_source   =   "github:bmad-code-org/BMAD-METHOD/skills"\n'
             'knowledge = "`references/help.md` in the `bmad` skill"\n',
         )
         code, _, err = run_stamper(self.root, "1.2.0")
