@@ -3,11 +3,10 @@ name: Deploy Documentation
 on:
   push:
     branches:
-      - main
+      - dev
     paths:
       - "docs/**"
       - "docs-site/**"
-      - "tools/build-docs.mjs"
       - ".github/workflows/docs.yaml"
   workflow_dispatch:
 

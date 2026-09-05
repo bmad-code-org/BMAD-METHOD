@@ -16,6 +16,8 @@ bmad2/
 │   └── reference/
 └── docs-site/
     ├── astro.config.mjs           # Astro + Starlight config
+    ├── scripts/                   # Build pipeline, link and sidebar validators
+    ├── test/                      # Node tests for the site and its scripts
     ├── src/
     │   ├── content/
     │   │   └── docs -> ../../../docs # Symlink to content
@@ -28,9 +30,13 @@ bmad2/
 
 ```bash
 # From repo root
-npm run docs:dev      # Start dev server
-npm run docs:build    # Build for production
-npm run docs:preview  # Preview production build
+npm run docs:dev               # Start dev server
+npm run docs:build             # Build for production (validates links first)
+npm run docs:preview           # Preview production build
+npm run docs:validate-links    # Check site-relative links in docs/
+npm run docs:validate-sidebar  # Check sidebar.order frontmatter
+npm run docs:fix-links         # Rewrite relative links to repo-relative (add --write)
+npm run test:docs              # Run the site tests
 ```
 
 ## Platform Notes

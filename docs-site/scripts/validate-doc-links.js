@@ -11,14 +11,14 @@
  * - Broken links where the target file can be found elsewhere in /docs
  *
  * Usage:
- *   node tools/validate-doc-links.js           # Dry run (validate and show issues)
- *   node tools/validate-doc-links.js --write   # Fix auto-fixable issues
+ *   node docs-site/scripts/validate-doc-links.js           # Dry run (validate and show issues)
+ *   node docs-site/scripts/validate-doc-links.js --write   # Fix auto-fixable issues
  */
 
 const fs = require('node:fs');
 const path = require('node:path');
 
-const DOCS_ROOT = path.resolve(__dirname, '../docs');
+const DOCS_ROOT = path.resolve(__dirname, '../../docs');
 const DRY_RUN = !process.argv.includes('--write');
 
 // Regex to match markdown links with site-relative paths or bare .md references

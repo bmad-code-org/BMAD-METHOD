@@ -1,14 +1,14 @@
 /**
  * Tests for validatePublishedImplementationModel.
  *
- * Usage: node test/test-validate-published-implementation-model.mjs
+ * Usage: node docs-site/test/test-validate-published-implementation-model.mjs
  */
 
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { validatePublishedImplementationModel } from '../tools/validate-published-implementation-model.mjs';
+import { validatePublishedImplementationModel } from '../scripts/validate-published-implementation-model.mjs';
 
 const tests = [];
 

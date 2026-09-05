@@ -13,13 +13,13 @@
  *   - Order drift from English counterpart — warnings (non-blocking)
  *
  * Usage:
- *   node tools/validate-sidebar-order.js
+ *   node docs-site/scripts/validate-sidebar-order.js
  */
 
 const fs = require('node:fs');
 const path = require('node:path');
 
-const DOCS_ROOT = path.resolve(__dirname, '../docs');
+const DOCS_ROOT = path.resolve(__dirname, '../../docs');
 const FRONTMATTER_RE = /^---\r?\n([\s\S]*?)\r?\n---[ \t]*(?:\r?\n|$)/;
 const LOCALE_RE = /^[a-z]{2}(?:-[a-zA-Z0-9]+)*$/;
 const MAX_GAPS = 50;

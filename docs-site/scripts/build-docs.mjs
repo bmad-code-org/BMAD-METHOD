@@ -17,7 +17,7 @@ import { validatePublishedImplementationModel } from './validate-published-imple
 // Configuration
 // =============================================================================
 
-const PROJECT_ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+const PROJECT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const BUILD_DIR = path.join(PROJECT_ROOT, 'build');
 
 // =============================================================================
@@ -195,7 +195,7 @@ function printBanner(title) {
 /**
  * Verify internal documentation links by running the link-checking script.
  *
- * Executes the Node script tools/validate-doc-links.js from the project root and
+ * Executes the Node script docs-site/scripts/validate-doc-links.js from the project root and
  * exits the process with code 1 if the check fails.
  */
 
@@ -203,7 +203,7 @@ function checkDocLinks() {
   printHeader('Checking documentation links');
 
   try {
-    execSync('node tools/validate-doc-links.js', {
+    execSync('node docs-site/scripts/validate-doc-links.js', {
       cwd: PROJECT_ROOT,
       stdio: 'inherit',
     });

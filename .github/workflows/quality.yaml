@@ -87,7 +87,7 @@ jobs:
         run: npm ci
 
       - name: Build documentation
-        # Note: build-docs.mjs runs link validation internally before building
+        # Note: docs-site/scripts/build-docs.mjs runs link validation internally before building
         run: npm run docs:build
 
       - name: Validate sidebar order
