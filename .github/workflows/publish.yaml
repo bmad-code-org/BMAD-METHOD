@@ -2,7 +2,7 @@ name: Publish
 
 on:
   push:
-    branches: [main]
+    branches: [V6.12]
     paths:
       - "src/**"
       - "tools/installer/**"
@@ -38,7 +38,7 @@ permissions:
 
 jobs:
   publish:
-    if: github.repository == 'bmad-code-org/BMAD-METHOD' && (github.event_name != 'workflow_dispatch' || github.ref == 'refs/heads/main')
+    if: github.repository == 'bmad-code-org/BMAD-METHOD' && (github.event_name != 'workflow_dispatch' || github.ref == 'refs/heads/V6.12')
     runs-on: ubuntu-latest
     steps:
       - name: Generate GitHub App token
@@ -118,7 +118,7 @@ jobs:
 
       - name: Push version commit and tag
         if: github.event_name == 'workflow_dispatch' && inputs.channel == 'latest'
-        run: git push origin main --follow-tags
+        run: git push origin V6.12 --follow-tags
 
       - name: Create GitHub Release
         if: github.event_name == 'workflow_dispatch' && inputs.channel == 'latest'
