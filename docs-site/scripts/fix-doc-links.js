@@ -10,14 +10,14 @@
  * - /path/file/ → /docs/path/file.md (or /docs/path/file/index.md if it's a directory)
  *
  * Usage:
- *   node tools/fix-doc-links.js           # Dry run (shows what would change)
- *   node tools/fix-doc-links.js --write   # Actually write changes
+ *   node docs-site/scripts/fix-doc-links.js           # Dry run (shows what would change)
+ *   node docs-site/scripts/fix-doc-links.js --write   # Actually write changes
  */
 
 const fs = require('node:fs');
 const path = require('node:path');
 
-const DOCS_ROOT = path.resolve(__dirname, '../docs');
+const DOCS_ROOT = path.resolve(__dirname, '../../docs');
 const DRY_RUN = !process.argv.includes('--write');
 
 // Match all markdown links; filtering (external, anchors, assets) happens in convertToRepoRelative.

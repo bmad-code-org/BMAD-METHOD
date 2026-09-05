@@ -18,9 +18,6 @@ eslint.config.mjs
 prettier.config.mjs
 
 # Build tools (not needed at runtime)
-tools/build-docs.mjs
-tools/fix-doc-links.js
-tools/validate-doc-links.js
 tools/validate_file_refs.py
 tools/validate_skills.py
 tools/release.md

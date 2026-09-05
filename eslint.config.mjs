@@ -16,8 +16,11 @@ export default [
       '_bmad*/**',
       // Build output
       'build/**',
-      // Docs site uses ESM/Astro - separate linting ecosystem
-      'docs-site/**',
+      // Astro sources are a separate linting ecosystem; docs-site/scripts and docs-site/test are plain Node
+      'docs-site/src/**',
+      'docs-site/.astro/**',
+      'docs-site/public/**',
+      'docs-site/astro.config.mjs',
       // Gitignored patterns
       'z*/**', // z-samples, z1, z2, etc.
       '.claude/**',
@@ -80,9 +83,9 @@ export default [
     },
   },
 
-  // CLI scripts under tools/**, test/**, and src/scripts/**
+  // CLI scripts and tests for the docs site
   {
-    files: ['tools/**/*.js', 'tools/**/*.mjs', 'test/**/*.js', 'test/**/*.mjs', 'src/scripts/**/*.js', 'src/scripts/**/*.mjs'],
+    files: ['docs-site/scripts/**/*.js', 'docs-site/scripts/**/*.mjs', 'docs-site/test/**/*.js', 'docs-site/test/**/*.mjs'],
     rules: {
       // Allow CommonJS patterns for Node CLI scripts
       'unicorn/prefer-module': 'off',
