@@ -45,7 +45,7 @@ step. In an IDE-embedded terminal those are clickable.
 
 ## Run `bmad-walkthrough`
 
-![bmad-walkthrough workflow diagram](/diagrams/walkthrough-diagram.png)
+![The bmad-walkthrough run](/diagrams/walkthrough-run.svg)
 
 After `bmad-build` finishes, you can say "walkthrough" in the same chat. To
 review something else, start a fresh chat and run `/bmad-walkthrough` with a

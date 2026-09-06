@@ -400,6 +400,34 @@ starlight-toc h2,
   stroke-width: 1.5;
 }
 
+/* Outcome chips share the aside palette, so a green in a diagram is the
+   same green as a tip. */
+.bmad-diagram .chip {
+  fill: var(--dg-surface);
+  stroke: var(--dg-line);
+  stroke-width: 1;
+}
+
+.bmad-diagram .chip.ok {
+  fill: #edf6f0;
+  stroke: #bfdcc9;
+}
+
+.bmad-diagram .chip.warn {
+  fill: #fbf5e7;
+  stroke: #e8d5a8;
+}
+
+:root[data-theme='dark'] .bmad-diagram .chip.ok {
+  fill: rgba(111, 207, 151, 0.1);
+  stroke: rgba(111, 207, 151, 0.26);
+}
+
+:root[data-theme='dark'] .bmad-diagram .chip.warn {
+  fill: rgba(224, 178, 95, 0.1);
+  stroke: rgba(224, 178, 95, 0.26);
+}
+
 .bmad-diagram .panel {
   fill: none;
   stroke: var(--dg-line);

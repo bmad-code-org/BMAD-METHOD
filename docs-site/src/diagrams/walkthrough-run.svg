@@ -1,0 +1,48 @@
+<svg class="bmad-diagram" viewBox="0 0 920 726" role="img" xmlns="http://www.w3.org/2000/svg" aria-labelledby="wt-title">
+<title id="wt-title" data-i18n="title">The bmad-walkthrough run: it reads the build spec or a pull request, then moves through orientation, the walkthrough itself, a detail pass and testing before wrapping up, where you approve, ask for rework, or open a discussion.</title>
+<defs>
+<marker id="wt-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker>
+<marker id="wt-arrow-soft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="head soft" d="M0 0 L10 5 L0 10 z"/></marker>
+</defs>
+<rect class="node" x="30" y="36" width="200" height="52" rx="2"/>
+<text class="n" x="130" y="58" data-i18n="input-spec">bmad-build</text>
+<text class="n" x="130" y="76" data-i18n="input-spec-2">spec file</text>
+<path class="edge" d="M230 62 C 300 62 320 90 368.0 90" marker-end="url(#wt-arrow)"/>
+<rect class="node" x="30" y="110" width="200" height="52" rx="2"/>
+<text class="n" x="130" y="132" data-i18n="input-pr">PR / commit</text>
+<text class="n" x="130" y="150" data-i18n="input-pr-2">branch</text>
+<path class="edge" d="M230 136 C 300 136 320 90 368.0 90" marker-end="url(#wt-arrow)"/>
+<rect class="node" x="370.0" y="68.0" width="200" height="44" rx="2"/>
+<text class="n" x="470" y="95" data-i18n="orientation">Orientation</text>
+<text class="sub" x="600" y="86" data-i18n="orientation-note">Intent summary</text>
+<text class="sub" x="600" y="103" data-i18n="orientation-note-2">Surface area stats</text>
+<rect class="node" x="370.0" y="188.0" width="200" height="44" rx="2"/>
+<text class="n" x="470" y="215" data-i18n="walkthrough">Walkthrough</text>
+<text class="sub" x="600" y="206" data-i18n="walkthrough-note">Organized by concern</text>
+<text class="sub" x="600" y="223" data-i18n="walkthrough-note-2">Clickable path:line stops</text>
+<rect class="node" x="370.0" y="308.0" width="200" height="44" rx="2"/>
+<text class="n" x="470" y="335" data-i18n="detail-pass">Detail Pass</text>
+<text class="sub" x="600" y="326" data-i18n="detail-pass-note">Highest blast radius first</text>
+<text class="sub" x="600" y="343" data-i18n="detail-pass-note-2">&quot;dig into [area]&quot; for a deep dive</text>
+<rect class="node" x="370.0" y="428.0" width="200" height="44" rx="2"/>
+<text class="n" x="470" y="455" data-i18n="testing">Testing</text>
+<text class="sub" x="600" y="446" data-i18n="testing-note">Manual observations</text>
+<text class="sub" x="600" y="463" data-i18n="testing-note-2">See it working</text>
+<rect class="node" x="370.0" y="548.0" width="200" height="44" rx="2"/>
+<text class="n" x="470" y="575" data-i18n="wrap-up">Wrap-Up</text>
+<path class="edge" d="M470 112.0 V188.0" marker-end="url(#wt-arrow)"/>
+<path class="edge" d="M470 232.0 V308.0" marker-end="url(#wt-arrow)"/>
+<path class="edge" d="M470 352.0 V428.0" marker-end="url(#wt-arrow)"/>
+<path class="edge" d="M470 472.0 V548.0" marker-end="url(#wt-arrow)"/>
+<path class="edge soft" d="M370.0 210 C 320 210 300 300 300 400 C 300 500 330 570 368.0 570" marker-end="url(#wt-arrow-soft)"/>
+<text class="k" x="246" y="396" data-i18n="early-exit" transform="rotate(-90 246 396)">early exit</text>
+<rect class="chip ok" x="225" y="652" width="150" height="36" rx="2"/>
+<text class="n chip-label" x="300" y="675" data-i18n="approve">Approve</text>
+<path class="edge" d="M470 592.0 C 470 620 300 610 300 650" marker-end="url(#wt-arrow)"/>
+<rect class="chip warn" x="395" y="652" width="150" height="36" rx="2"/>
+<text class="n chip-label" x="470" y="675" data-i18n="rework">Rework</text>
+<path class="edge" d="M470 592.0 C 470 620 470 610 470 650" marker-end="url(#wt-arrow)"/>
+<rect class="chip neutral" x="565" y="652" width="150" height="36" rx="2"/>
+<text class="n chip-label" x="640" y="675" data-i18n="discuss">Discuss</text>
+<path class="edge" d="M470 592.0 C 470 620 640 610 640 650" marker-end="url(#wt-arrow)"/>
+</svg>

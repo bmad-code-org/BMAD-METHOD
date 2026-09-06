@@ -1,0 +1,26 @@
+{
+  "en": {
+    "title": "The bmad-walkthrough run: it reads the build spec or a pull request, then moves through orientation, the walkthrough itself, a detail pass and testing before wrapping up, where you approve, ask for rework, or open a discussion.",
+    "input-spec": "bmad-build",
+    "input-spec-2": "spec file",
+    "input-pr": "PR / commit",
+    "input-pr-2": "branch",
+    "orientation": "Orientation",
+    "orientation-note": "Intent summary",
+    "orientation-note-2": "Surface area stats",
+    "walkthrough": "Walkthrough",
+    "walkthrough-note": "Organized by concern",
+    "walkthrough-note-2": "Clickable path:line stops",
+    "detail-pass": "Detail Pass",
+    "detail-pass-note": "Highest blast radius first",
+    "detail-pass-note-2": "\"dig into [area]\" for a deep dive",
+    "testing": "Testing",
+    "testing-note": "Manual observations",
+    "testing-note-2": "See it working",
+    "wrap-up": "Wrap-Up",
+    "early-exit": "early exit",
+    "approve": "Approve",
+    "rework": "Rework",
+    "discuss": "Discuss"
+  }
+}
