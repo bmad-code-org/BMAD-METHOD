@@ -69,10 +69,11 @@ Build.
 ### Test Architect (TEA)
 
 Test strategy, automation guidance, and release-gate decisions through an
-agent and nine workflows. Compared with the built-in QA skill, TEA adds
-risk-based prioritization and requirements traceability. See
+agent and nine workflows. Its `bmad-testarch-automate` skill generates
+heavier test coverage than the built-in `bmad-qa-generate-e2e-tests`:
+fixtures, more test levels, and knowledge-base patterns. See
 [Test Completed Work](../build/test-completed-work.md) to choose between
-them.
+the two.
 
 - **Code:** `tea`
 - **npm:** [`bmad-method-test-architecture-enterprise`](https://www.npmjs.com/package/bmad-method-test-architecture-enterprise)
