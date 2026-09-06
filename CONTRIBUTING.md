@@ -41,7 +41,7 @@ BMad strengthens human-AI collaboration through specialized agents and guided wo
 
 ### Bug Reports
 
-After searching, if the bug is unreported, use the [bug report template](https://github.com/bmad-code-org/BMAD-METHOD/issues/new?template=bug_report.md) and include:
+After searching, if the bug is unreported, use the [bug report template](https://github.com/bmad-code-org/BMAD-METHOD/issues/new?template=bug-report.yaml) and include:
 
 - Clear description of the problem
 - Steps to reproduce
@@ -51,7 +51,7 @@ After searching, if the bug is unreported, use the [bug report template](https:/
 
 ### Feature Requests
 
-After searching, use the [feature request template](https://github.com/bmad-code-org/BMAD-METHOD/issues/new?template=feature_request.md) and explain:
+After searching, use the [feature request template](https://github.com/bmad-code-org/BMAD-METHOD/issues/new?template=feature-request.md) and explain:
 
 - What the feature is
 - Why it would benefit the BMad community
@@ -155,7 +155,7 @@ Keep messages under 72 characters. Each commit = one logical change.
 
 - Keep dev agents lean — focus on coding context, not documentation
 - Web/planning agents can be larger with complex tasks
-- Everything is natural language (markdown) — no code in core framework
+- Skills and workflows are natural language (markdown); deterministic helpers are Python scripts run through `uv`
 - Use BMad modules for domain-specific features
 - Validate file references: `uv run tools/validate_file_refs.py --strict`
 
@@ -171,8 +171,8 @@ Keep messages under 72 characters. Each commit = one logical change.
 ## Need Help?
 
 - 💬 **Discord**: [Join the community](https://discord.gg/gk8jAdXWmj)
-- 🐛 **Bugs**: Use the [bug report template](https://github.com/bmad-code-org/BMAD-METHOD/issues/new?template=bug_report.md)
-- 💡 **Features**: Use the [feature request template](https://github.com/bmad-code-org/BMAD-METHOD/issues/new?template=feature_request.md)
+- 🐛 **Bugs**: Use the [bug report template](https://github.com/bmad-code-org/BMAD-METHOD/issues/new?template=bug-report.yaml)
+- 💡 **Features**: Use the [feature request template](https://github.com/bmad-code-org/BMAD-METHOD/issues/new?template=feature-request.md)
 
 ---
 
