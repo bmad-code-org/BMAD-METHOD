@@ -2,7 +2,7 @@
 
 Display: `Orientation → Walkthrough → [Detail Pass] → Testing`
 
-## Follow Global Step Rules in SKILL.md
+## Step Rules
 
 - The detail pass surfaces what the human should **think about**, not what the code got wrong. Machine hardening already handled correctness. This activates risk awareness.
 - The LLM detects risk category by pattern. The human judges significance. Do not assign severity scores or numeric rankings — ordering by blast radius (below) is sequencing for readability, not a severity judgment.
@@ -83,8 +83,8 @@ You've seen the design and the risk landscape. From here:
 
 If at any point the human signals they want to make a decision about this {change_type} (e.g., "let's ship it", "this needs a rethink", "I'm done reviewing", or anything suggesting they're ready to decide), confirm their intent:
 
-- If they want to **approve and ship** → read fully and follow `steps/step-05-wrapup.md`
-- If they want to **reject and rework** → read fully and follow `steps/step-05-wrapup.md`
+- If they want to **approve and ship** → read fully and follow `[[bmad-snapshot:step-05-wrapup.md]]`
+- If they want to **reject and rework** → read fully and follow `[[bmad-snapshot:step-05-wrapup.md]]`
 - If you misread them → acknowledge and continue the current step.
 
 ## TARGETED RE-REVIEW
@@ -103,4 +103,4 @@ The human can trigger multiple targeted re-reviews. Each time, present new findi
 
 ## NEXT
 
-Read fully and follow `steps/step-04-testing.md`
+Read fully and follow `[[bmad-snapshot:step-04-testing.md]]`
