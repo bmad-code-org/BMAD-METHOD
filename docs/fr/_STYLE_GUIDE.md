@@ -364,8 +364,9 @@ Oui. Utilisez `bmad-correct-course` pour gérer les changements de portée en co
 Avant de soumettre des modifications de documentation :
 
 ```bash
-npm run docs:fix-links            # Prévisualiser les corrections de format de liens
-npm run docs:fix-links -- --write # Appliquer les corrections
-npm run docs:validate-links       # Vérifier que les liens existent
-npm run docs:build                # Vérifier l'absence d'erreurs de build
+cd docs-site
+npm run fix-links                 # Prévisualiser les corrections de format de liens
+npm run fix-links -- --write      # Appliquer les corrections
+npm run validate-links            # Vérifier que les liens existent
+npm run build                     # Vérifier l'absence d'erreurs de build
 ```

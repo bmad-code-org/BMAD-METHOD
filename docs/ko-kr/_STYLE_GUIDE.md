@@ -375,8 +375,9 @@ Starlight는 헤더에서 오른쪽 "이 페이지에서" 탐색을 생성합니
 문서 변경을 제출하기 전에 다음을 실행하세요.
 
 ```bash
-npm run docs:fix-links            # 링크 형식 수정 미리보기
-npm run docs:fix-links -- --write # 수정 적용
-npm run docs:validate-links       # 링크 존재 여부 확인
-npm run docs:build                # 빌드 오류 없음 확인
+cd docs-site
+npm run fix-links                 # 링크 형식 수정 미리보기
+npm run fix-links -- --write      # 수정 적용
+npm run validate-links            # 링크 존재 여부 확인
+npm run build                     # 빌드 오류 없음 확인
 ```

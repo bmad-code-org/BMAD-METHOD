@@ -363,8 +363,9 @@ Yes. The `bmad-correct-course` workflow handles scope changes mid-implementation
 提交文档改动前，建议执行：
 
 ```bash
-npm run docs:fix-links            # 预览链接修复结果
-npm run docs:fix-links -- --write # 写回链接修复
-npm run docs:validate-links       # 校验链接是否存在
-npm run docs:build                # 校验站点构建
+cd docs-site
+npm run fix-links                 # 预览链接修复结果
+npm run fix-links -- --write      # 写回链接修复
+npm run validate-links            # 校验链接是否存在
+npm run build                     # 校验站点构建
 ```

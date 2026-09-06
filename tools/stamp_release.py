@@ -5,7 +5,7 @@
 """Release version stamper for BMAD-METHOD.
 
 Writes a human-supplied SemVer version into every skills/*/module-manifest.toml,
-package.json, and package-lock.json, then verifies the result. Used by
+then verifies the result. Used by
 tools/release.md to stamp releases and the next placeholder on `dev`.
 The Claude and Codex plugins are built from the stamped manifests by
 bmad-code-org/bmad-plugins.
@@ -28,7 +28,6 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import json
 import re
 import sys
 import tomllib
@@ -175,23 +174,6 @@ def verify_stamp(root: Path, manifests: list[Path], modules: dict[str, str], ver
             raise StampError(f"{rel}: manifest is not byte-identical to {reference_rel[module]} after stamping")
 
 
-def stamped_package_content(path: Path, version: str) -> str:
-    try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeError, json.JSONDecodeError) as error:
-        raise StampError(f"{path.name}: cannot read package metadata: {error}") from error
-    if not isinstance(data, dict) or not isinstance(data.get("version"), str):
-        raise StampError(f"{path.name}: version must be a string")
-    data["version"] = version
-    if path.name == "package-lock.json":
-        packages = data.get("packages")
-        package_root = packages.get("") if isinstance(packages, dict) else None
-        if not isinstance(package_root, dict) or not isinstance(package_root.get("version"), str):
-            raise StampError(f'{path.name}: packages[""].version must be a string')
-        package_root["version"] = version
-    return json.dumps(data, ensure_ascii=False, indent=2) + "\n"
-
-
 def run(project_root: Path, version: str) -> int:
     try:
         validate_version(version)
@@ -202,11 +184,6 @@ def run(project_root: Path, version: str) -> int:
         for manifest in manifests:
             rel = manifest.relative_to(project_root).as_posix()
             planned.append((manifest, stamped_manifest_content(manifest, rel, version)))
-        packages = [
-            (project_root / name, stamped_package_content(project_root / name, version))
-            for name in ("package.json", "package-lock.json")
-        ]
-        planned.extend(packages)
 
         # Phase 2: write, then verify from disk.
         for path, content in planned:
@@ -215,13 +192,6 @@ def run(project_root: Path, version: str) -> int:
             except OSError as error:
                 raise StampError(f"{path.relative_to(project_root).as_posix()}: cannot write: {error}") from error
         verify_stamp(project_root, manifests, modules, version)
-        for path, expected in packages:
-            try:
-                actual = path.read_text(encoding="utf-8")
-            except (OSError, UnicodeError) as error:
-                raise StampError(f"{path.name}: cannot read after stamping: {error}") from error
-            if actual != expected:
-                raise StampError(f"{path.name}: package metadata differs after stamping")
     except StampError as error:
         print(f"Error: {error}", file=sys.stderr)
         return 1
@@ -233,7 +203,7 @@ def run(project_root: Path, version: str) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Stamp a version into skill manifests and package metadata.")
+    parser = argparse.ArgumentParser(description="Stamp a version into every skill manifest.")
     parser.add_argument("version", help='SemVer release version, e.g. "6.12.0"')
     args = parser.parse_args(argv)
     return run(PROJECT_ROOT, args.version)

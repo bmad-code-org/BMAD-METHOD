@@ -363,8 +363,9 @@ Ano. SM agent má workflow `bmad-correct-course` pro řešení změn rozsahu.
 Před odesláním změn dokumentace:
 
 ```bash
-npm run docs:fix-links            # Náhled oprav formátu odkazů
-npm run docs:fix-links -- --write # Aplikovat opravy
-npm run docs:validate-links       # Kontrola existence odkazů
-npm run docs:build                # Ověření bez chyb při sestavení
+cd docs-site
+npm run fix-links                 # Náhled oprav formátu odkazů
+npm run fix-links -- --write      # Aplikovat opravy
+npm run validate-links            # Kontrola existence odkazů
+npm run build                     # Ověření bez chyb při sestavení
 ```

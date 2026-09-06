@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "bmad-docs-site",
+  "private": true,
+  "description": "Documentation site for BMAD-METHOD (Astro + Starlight)",
+  "license": "MIT",
+  "scripts": {
+    "build": "node scripts/build-docs.mjs",
+    "dev": "astro dev",
+    "fix-links": "node scripts/fix-doc-links.js",
+    "format:check": "prettier --check \"{scripts,test}/**/*.{js,mjs}\"",
+    "format:fix": "prettier --write \"{scripts,test}/**/*.{js,mjs}\"",
+    "lint": "eslint scripts test --max-warnings=0",
+    "lint:fix": "eslint scripts test --fix",
+    "preview": "astro preview",
+    "test": "node test/test-site-url.mjs && node test/test-rehype-plugins.mjs",
+    "test:implementation-model": "node test/test-validate-published-implementation-model.mjs",
+    "validate-links": "node scripts/validate-doc-links.js",
+    "validate-sidebar": "node scripts/validate-sidebar-order.js"
+  },
+  "overrides": {
+    "esbuild": "^0.28.1"
+  },
+  "devDependencies": {
+    "@astrojs/sitemap": "^3.7.3",
+    "@astrojs/starlight": "^0.40.0",
+    "@eslint/js": "^9.33.0",
+    "astro": "^6.4.6",
+    "eslint": "^9.33.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-n": "^17.21.3",
+    "eslint-plugin-unicorn": "^60.0.0",
+    "prettier": "^3.7.4",
+    "sharp": "^0.33.5",
+    "unist-util-visit": "^5.1.0"
+  },
+  "engines": {
+    "node": ">=20.12.0"
+  }
+}

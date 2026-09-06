@@ -5,12 +5,12 @@ Open source framework for structured, agent-assisted software delivery.
 ## Rules
 
 - Use Conventional Commits for every commit.
-- Before pushing, run `npm ci && npm run quality` on `HEAD` in the exact checkout you are about to push.
-  `quality` mirrors the checks in `.github/workflows/quality.yaml`.
-- Run `uv run pre-commit install` once per clone; the commit hook runs the Python-side lint and validation from `quality`.
+- Before pushing, run `uv sync --frozen && (cd docs-site && npm ci) && uv run --frozen tools/quality.py` on `HEAD`
+  in the exact checkout you are about to push. It mirrors the checks in `.github/workflows/quality.yaml`.
+- Run `uv run pre-commit install` once per clone; the commit hook runs the Python-side lint and validation from the quality script.
 
 - Skill validation rules are in `tools/skill-validator.md`.
-- Deterministic skill checks run via `npm run validate:skills` (included in `quality`).
+- Deterministic skill checks run via `uv run tools/validate_skills.py --strict` (included in the quality script).
 - Documentation conventions are in `docs/_STYLE_GUIDE.md`.
 
 ## Writing prompts

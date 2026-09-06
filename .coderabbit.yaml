@@ -37,7 +37,7 @@ reviews:
     - '!**/*.generated.*'
     - '!**/*.bundle.md'
     # --- Shared baseline: package metadata ---
-    - '!package-lock.json'
+    - '!docs-site/package-lock.json'
     # --- Shared baseline: binary/media (globs, so `**/` is required to reach subdirs) ---
     - '!**/*.png'
     - '!**/*.jpg'
