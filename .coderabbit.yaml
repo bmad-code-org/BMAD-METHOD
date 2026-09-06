@@ -22,11 +22,11 @@ reviews:
     enabled: true
     drafts: false  # Don't review drafts automatically
     auto_incremental_review: false  # always review the whole PR, not just new commits
-    base_branches: [main]
+    base_branches: [dev]
   path_filters:
     # --- Shared baseline: tool configs ---
     - '!.coderabbit.yaml'
-    - '!eslint.config.mjs'
+    - '!docs-site/eslint.config.mjs'
     # --- Shared baseline: build output ---
     - '!dist/**'
     - '!build/**'
