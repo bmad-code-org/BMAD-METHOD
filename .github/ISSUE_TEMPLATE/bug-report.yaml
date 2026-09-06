@@ -76,8 +76,9 @@ body:
     id: version
     attributes:
       label: BMad Version
-      description: 'Check with: npx bmad-method --version or check package.json'
-      placeholder: e.g., 6.0.0-Beta.4
+      description: Ask your agent for `bmad update`. On 6.12 (npm install), run `npx
+        bmad-method --version`.
+      placeholder: e.g., 6.13.0
     validations:
       required: true
 
