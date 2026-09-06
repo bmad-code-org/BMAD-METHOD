@@ -59,6 +59,7 @@ _bmad
 _bmad-output
 
 # Personal customization files (team files are committed, personal files are not)
+.vscode/
 _bmad/custom/*.user.toml
 .clinerules
 .augment
