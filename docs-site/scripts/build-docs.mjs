@@ -12,6 +12,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { validatePublishedImplementationModel } from './validate-published-implementation-model.mjs';
+import { validateRedirects } from './validate-redirects.mjs';
 
 // =============================================================================
 // Configuration
@@ -78,6 +79,12 @@ function buildAstroSite() {
   console.log('  → Checking published implementation model...');
   validatePublishedImplementationModel(siteDir);
   console.log('    Published implementation model check passed');
+  console.log('  → Checking redirects...');
+  const redirectCount = validateRedirects(path.join(SITE_ROOT, 'astro.config.mjs'), {
+    docsDir: path.join(PROJECT_ROOT, 'docs'),
+    siteDir,
+  });
+  console.log(`    ${redirectCount} redirects resolve to built pages`);
 
   console.log();
   console.log(`  \u001B[32m✓\u001B[0m Astro build complete`);

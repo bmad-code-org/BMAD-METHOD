@@ -72,7 +72,7 @@ export default defineConfig({
     '/cs/explanation/named-agents': `${basePath}cs/customize/customize-bmad/`,
     '/fr/how-to/non-interactive-installation': `${basePath}fr/how-to/install-bmad/`,
     '/cs/how-to/non-interactive-installation': `${basePath}cs/how-to/install-bmad/`,
-    '/ko-kr/how-to/non-interactive-installation': `${basePath}ko-kr/how-to/install-bmad/`,
+    '/ko-kr/how-to/non-interactive-installation': `${basePath}ko-kr/start/install-bmad/`,
     '/vi-vn/how-to/non-interactive-installation': `${basePath}vi-vn/how-to/install-bmad/`,
     '/zh-cn/how-to/non-interactive-installation': `${basePath}zh-cn/how-to/install-bmad/`,
   },
