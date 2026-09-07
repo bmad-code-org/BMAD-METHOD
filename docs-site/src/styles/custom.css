@@ -432,6 +432,14 @@ starlight-toc h2,
   stroke: var(--dg-warn);
 }
 
+/* a band groups a row of the drawing; it is ground, not a box */
+.bmad-diagram .band {
+  fill: var(--dg-surface);
+  stroke: var(--dg-line);
+  stroke-opacity: 0.28;
+  stroke-width: 1;
+}
+
 .bmad-diagram .panel {
   fill: none;
   stroke: var(--dg-line);
