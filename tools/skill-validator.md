@@ -57,7 +57,7 @@ Path resolution differs between the last two; see PATH-01.
 | Form                             | Resolved by                                                                                | Valid where                                             |
 | -------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------- |
 | `{name}`                         | the agent, at runtime                                                                      | anywhere                                                |
-| `{project-root}`, `{skill-root}` | the agent, at runtime — the project working directory and the skill's own directory        | anywhere                                                |
+| `{project-root}`, `{skill-root}` | the agent, at runtime — the project working directory and the skill's own directory; in a rendered skill `render_skill.py` binds `{skill-root}` at render time | anywhere                                                |
 | `{workflow.key}`                 | `render_skill.py` at render time, or the agent from `resolve_customization.py` JSON output | any skill with a `[workflow]` table in `customize.toml` |
 | `{agent.key}`                    | the agent, from `resolve_customization.py` JSON output                                     | agent skills                                            |
 | `{{.key}}`                       | `render_skill.py`, at render time                                                          | rendered skills only                                    |

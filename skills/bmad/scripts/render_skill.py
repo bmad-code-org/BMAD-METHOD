@@ -221,7 +221,9 @@ def _resolve_replacements(
     return replacements, input_values
 
 
-def _render_sources(sources: dict[str, str], replacements: dict[str, str], destination: Path) -> dict[str, str]:
+def _render_sources(
+    sources: dict[str, str], replacements: dict[str, str], destination: Path, skill_dir: Path
+) -> dict[str, str]:
     """Resolve only tokens authored in installed sources in one opaque pass."""
     # Workflow customization may reference installed skill files; bind those
     # references to the immutable generation before inserting the prose.
@@ -229,6 +231,9 @@ def _render_sources(sources: dict[str, str], replacements: dict[str, str], desti
         token: value.replace("{skill-root}", str(destination)) if token.startswith("{workflow.") else value
         for token, value in replacements.items()
     }
+    # Skill sources name their bundled non-Markdown files (scripts, assets)
+    # through {skill-root}; those stay in the installed skill directory.
+    replacements["{skill-root}"] = str(skill_dir)
     source_names = set(sources)
     patterns = [
         *(re.escape(token) for token in sorted(replacements, key=len, reverse=True)),
@@ -321,13 +326,14 @@ def render(project_root: Path, skill_dir: Path) -> Path:
     renderer_hash = _hash_bytes(Path(__file__).read_bytes())
     identity = {
         "project_root": str(project_root),
+        "skill_root": str(skill_dir),
         "renderer_sha256": renderer_hash,
         "resolved_values": input_values,
         "source_sha256": source_hashes,
     }
     generation_hash = _hash_bytes(_canonical_json(identity))[:20]
     destination = project_root / "_bmad" / "render" / skill_dir.name / f"{slug}-{root_hash}" / generation_hash
-    rendered = _render_sources(sources, replacements, destination)
+    rendered = _render_sources(sources, replacements, destination, skill_dir)
     outputs = {name: content.encode("utf-8") for name, content in rendered.items()}
     output_hashes = {name: _hash_bytes(content) for name, content in outputs.items()}
     manifest = {
