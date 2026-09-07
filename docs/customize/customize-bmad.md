@@ -256,6 +256,62 @@ sequence, so you know when each hook fires:
 
 The workflow body begins after step 6.
 
+## Override one rendered invocation
+
+For a skill whose `SKILL.md` calls `render_skill.py`, add repeatable
+`--set key=value` arguments or `--overrides <file.toml>` to that render
+command. These flags apply only to the generated snapshot. They leave
+shipped defaults and persistent project and user files unchanged.
+
+```bash
+uv run /abs/project/_bmad/scripts/render_skill.py \
+  --project-root /abs/project \
+  --skill /abs/path/to/bmad-build \
+  --overrides ./invocation.toml \
+  --set 'workflow.on_complete=Summarize the result in three bullets.'
+```
+
+Use full, bare dotted parameter keys, such as `workflow.on_complete`.
+The override file has the same shape as the skill's `customize.toml`:
+
+```toml
+# invocation.toml
+[workflow]
+on_complete = "Summarize the result in three bullets."
+persistent_facts = ["Use the acceptance criteria in the supplied story."]
+```
+
+The renderer resolves layers from lowest to highest priority: shipped
+defaults, project TOML, user TOML, invocation TOML, then `--set`.
+Command-line assignments win over the invocation file regardless of flag
+order. A relative override file path resolves from the command's working
+directory.
+
+String parameters accept unquoted text, including spaces and `=`, or
+quoted TOML strings. Shell quotes keep each assignment in one argument;
+TOML quotes inside that argument control the value:
+
+```bash
+--set 'workflow.on_complete=Include outcome = complete in the summary.'
+--set 'workflow.on_complete="First line\nSecond line"'
+--set 'workflow.persistent_facts=["Additional context"]'
+--set 'workflow={ on_complete = "Summarize the result." }'
+```
+
+Other types use TOML literal syntax, such as `true`, `3`, arrays, or inline
+tables, and must match the declared defaults. Unknown parameter paths,
+incompatible types, malformed values, and missing invocation files halt
+before a snapshot is published.
+
+Both invocation forms use the same structural merge rules as persistent
+overrides: tables merge recursively, ordinary arrays append, and keyed
+table arrays merge by identity. Repeating the same `--set` path replaces
+its earlier assignment, including arrays; the resulting command-line
+layer merges once, after the file layer. Equivalent effective inputs
+reuse the same immutable snapshot. The command returns one
+`read and follow <absolute workflow.md path>` line on success, or one
+`HALT: ...` line on failure.
+
 ## Central configuration
 
 Per-skill files cover one agent or workflow. Install answers and the agent
