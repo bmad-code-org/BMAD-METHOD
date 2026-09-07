@@ -105,11 +105,13 @@ export default function rehypeInlineDiagrams(options = {}) {
         }
       });
 
-      // Carry the markdown alt text through as the accessible name when the
-      // diagram does not supply its own <title>.
+      // Carry the markdown alt text through as the accessible name, but only
+      // when the diagram does not name itself. hast camel-cases ARIA
+      // attributes, so these are `ariaLabelledBy` / `ariaLabel`; reading the
+      // hyphenated form found nothing and overrode every diagram's own <title>.
       const svg = fragment.children.find((child) => child.tagName === 'svg');
-      if (svg && node.properties.alt && !svg.properties['aria-labelledby']) {
-        svg.properties['aria-label'] = node.properties.alt;
+      if (svg && node.properties.alt && !svg.properties.ariaLabelledBy) {
+        svg.properties.ariaLabel = node.properties.alt;
       }
 
       parent.children.splice(index, 1, ...fragment.children);

@@ -1,7 +1,8 @@
 /**
  * Rehype Plugin Tests
  *
- * Tests for rehype-markdown-links and rehype-base-paths plugins:
+ * Tests for rehype-markdown-links, rehype-base-paths and
+ * rehype-inline-diagrams plugins:
  * - findFirstDelimiter helper
  * - detectContentDir helper
  * - Transformer skip conditions
@@ -12,12 +13,18 @@
  * - Element rewriting
  * - Raw HTML rewriting
  * - Integration (both plugins together)
+ * - Diagram inlining, label translation and cache invalidation
  *
  * Usage: node docs-site/test/test-rehype-plugins.mjs
  */
 
 import rehypeMarkdownLinks, { findFirstDelimiter, detectContentDir } from '../src/rehype-markdown-links.js';
 import rehypeBasePaths from '../src/rehype-base-paths.js';
+import rehypeInlineDiagrams from '../src/rehype-inline-diagrams.js';
+
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync, utimesSync } from 'node:fs';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 
 // ANSI colors
 const colors = {
@@ -107,6 +114,54 @@ function getSrc(tree) {
 
 function getRawValue(tree) {
   return tree.children[0].value;
+}
+
+// --- rehype-inline-diagrams ------------------------------------------------
+
+const DIAGRAM_LOCALES = { root: { lang: 'en' }, fr: { lang: 'fr-FR' }, 'ko-kr': { lang: 'ko-KR' } };
+
+/** A site root holding one diagram and its labels, thrown away after the run. */
+function makeDiagramFixture() {
+  const root = mkdtempSync(join(tmpdir(), 'bmad-diagrams-'));
+  mkdirSync(join(root, 'src', 'diagrams'), { recursive: true });
+  writeDiagram(root, 'flow', '<svg class="bmad-diagram" viewBox="0 0 10 10"><text data-i18n="start">Start</text><text data-i18n="end">End</text></svg>');
+  writeFileSync(
+    join(root, 'src', 'diagrams', 'flow.labels.json'),
+    JSON.stringify({ en: { start: 'Start', end: 'End' }, 'fr-FR': { start: 'Départ' } }),
+  );
+  return root;
+}
+
+function writeDiagram(root, name, svg) {
+  writeFileSync(join(root, 'src', 'diagrams', `${name}.svg`), svg);
+}
+
+function makeImgTree(src, alt = 'a diagram') {
+  return {
+    type: 'root',
+    children: [{ type: 'element', tagName: 'img', properties: { src, alt }, children: [] }],
+  };
+}
+
+function inlineDiagrams(tree, filePath, root) {
+  const plugin = rehypeInlineDiagrams({ root, locales: DIAGRAM_LOCALES });
+  plugin(tree, { path: filePath });
+  return tree;
+}
+
+/** Text of the keyed label in the first inlined SVG, or undefined. */
+function labelText(tree, key) {
+  const found = [];
+  const walk = (node) => {
+    if (node.properties?.dataI18n === key) found.push(node.children?.[0]?.value);
+    (node.children || []).forEach(walk);
+  };
+  tree.children.forEach(walk);
+  return found[0];
+}
+
+function firstTag(tree) {
+  return tree.children[0]?.tagName;
 }
 
 // ---------------------------------------------------------------------------
@@ -1018,6 +1073,76 @@ function runTests() {
     transform(tree, STD_FILE, { ...STD_OPTS, base: BASE });
     transformBase(tree, { base: BASE });
     assert(getHref(tree) === '/BMAD-METHOD/page/', '/page/ (non-.md) -> only base-paths prefixes', `Got ${getHref(tree)}`);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // rehype-inline-diagrams
+  // ============================================================
+  console.log(`${colors.yellow}rehype-inline-diagrams (12 tests)${colors.reset}\n`);
+
+  const dRoot = makeDiagramFixture();
+  const EN_PAGE = '/project/docs/build/a-change.md';
+  const FR_PAGE = '/project/docs/fr/build/a-change.md';
+
+  try {
+    const inlined = inlineDiagrams(makeImgTree('/diagrams/flow.svg'), EN_PAGE, dRoot);
+    assert(firstTag(inlined) === 'svg', 'Replaces the img with the SVG element', `Expected svg, got ${firstTag(inlined)}`);
+
+    assert(
+      JSON.stringify(inlined).includes('"img"') === false,
+      'Leaves no img behind',
+      'The img element survived the transform',
+    );
+
+    const raster = inlineDiagrams(makeImgTree('/diagrams/flow.png'), EN_PAGE, dRoot);
+    assert(firstTag(raster) === 'img', 'Leaves a raster image alone', `Expected img, got ${firstTag(raster)}`);
+
+    const elsewhere = inlineDiagrams(makeImgTree('/img/flow.svg'), EN_PAGE, dRoot);
+    assert(firstTag(elsewhere) === 'img', 'Leaves an SVG outside /diagrams alone', `Expected img, got ${firstTag(elsewhere)}`);
+
+    const missing = inlineDiagrams(makeImgTree('/diagrams/nope.svg'), EN_PAGE, dRoot);
+    assert(firstTag(missing) === 'img', 'Leaves the img alone when the diagram is missing', `Expected img, got ${firstTag(missing)}`);
+
+    const english = inlineDiagrams(makeImgTree('/diagrams/flow.svg'), EN_PAGE, dRoot);
+    assert(labelText(english, 'start') === 'Start', 'Root locale keeps the authored English', `Got ${labelText(english, 'start')}`);
+
+    const french = inlineDiagrams(makeImgTree('/diagrams/flow.svg'), FR_PAGE, dRoot);
+    assert(labelText(french, 'start') === 'Départ', 'Substitutes the label for the page locale', `Got ${labelText(french, 'start')}`);
+
+    assert(
+      labelText(french, 'end') === 'End',
+      'Falls back to the authored English for a missing translation',
+      `Got ${labelText(french, 'end')}`,
+    );
+
+    const korean = inlineDiagrams(makeImgTree('/diagrams/flow.svg'), '/project/docs/ko-kr/build/a-change.md', dRoot);
+    assert(labelText(korean, 'start') === 'Start', 'Falls back when the locale has no label file entry', `Got ${labelText(korean, 'start')}`);
+
+    const labelled = inlineDiagrams(makeImgTree('/diagrams/flow.svg', 'the build run'), EN_PAGE, dRoot);
+    assert(
+      labelled.children[0].properties.ariaLabel === 'the build run',
+      'Carries the markdown alt through as the accessible name',
+      `Got ${labelled.children[0].properties.ariaLabel}`,
+    );
+
+    writeDiagram(dRoot, 'titled', '<svg aria-labelledby="t" viewBox="0 0 10 10"><title id="t">Its own title</title></svg>');
+    const titled = inlineDiagrams(makeImgTree('/diagrams/titled.svg', 'alt text'), EN_PAGE, dRoot);
+    assert(
+      titled.children[0].properties.ariaLabel === undefined,
+      'Does not override a diagram that titles itself',
+      `Got ${titled.children[0].properties.ariaLabel}`,
+    );
+
+    // the dev server is one long-lived process: an edited diagram must be re-read
+    writeDiagram(dRoot, 'flow', '<svg class="bmad-diagram" viewBox="0 0 10 10"><text data-i18n="start">Redrawn</text></svg>');
+    const future = Date.now() / 1000 + 10;
+    utimesSync(join(dRoot, 'src', 'diagrams', 'flow.svg'), future, future);
+    const reread = inlineDiagrams(makeImgTree('/diagrams/flow.svg'), EN_PAGE, dRoot);
+    assert(labelText(reread, 'start') === 'Redrawn', 'Re-reads a diagram after it changes on disk', `Got ${labelText(reread, 'start')}`);
+  } finally {
+    rmSync(dRoot, { recursive: true, force: true });
   }
 
   console.log('');
