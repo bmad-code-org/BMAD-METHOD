@@ -42,7 +42,7 @@
 <g class="glyph" transform="translate(170 545)"><rect x="-9" y="-14" width="18" height="3" rx="1.5"/><rect x="-4" y="-18" width="8" height="3" rx="1.5"/><path d="M-8 -8h16l-1.6 18a2 2 0 0 1-2 1.8h-8.8a2 2 0 0 1-2-1.8z"/></g>
 <text class="sub mid" x="170" y="588" data-i18n="void">Void</text>
 <path class="edge" d="M500.0 552 C 556 566 580 640 610 651" marker-end="url(#bd-arrow)"/>
-<text class="k" x="530" y="596" data-i18n="edge-defer">defer</text>
+<text class="k" x="512" y="628" data-i18n="edge-defer">defer</text>
 <g class="glyph" transform="translate(614 632)"><path d="M0 0h20l10 10v30H0z"/><path class="fold" d="M20 0v10h10z"/></g>
 <text class="sub" x="600" y="694">deferred_work.md</text>
 <path class="edge" d="M500.0 524 H540 Q552 524 552 512 V216 Q552 204 540 204 H502.0" marker-end="url(#bd-arrow)"/>

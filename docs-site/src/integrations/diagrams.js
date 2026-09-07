@@ -15,11 +15,11 @@
  * is per command, because `dev` and `build` share a cache directory and a
  * single stamp let whichever ran first consume the invalidation.
  *
- * `dev` is deliberately left alone. Deleting the store under a running dev
- * server leaves the content layer holding entries it can no longer render, and
- * Astro fails the page rather than rebuilding it. So in dev an edited diagram
- * needs a server restart to appear — noisy, but honest, where a silently stale
- * drawing is neither.
+ * This runs on startup, before the content layer loads, so it is safe in both
+ * commands: an edited diagram appears on the next `dev` start or `build`. It
+ * deliberately does not watch the files and clear mid-session — deleting the
+ * store under a running dev server leaves the content layer holding entries it
+ * can no longer render, and Astro fails the page rather than rebuilding it.
  */
 
 import { createHash } from 'node:crypto';
@@ -64,7 +64,7 @@ export default function bmadDiagrams() {
 
       'astro:config:done'({ config, logger }) {
         const files = diagramFiles(config.root);
-        if (files.length === 0 || mode !== 'build') return;
+        if (files.length === 0) return;
 
         const cacheDir = fileURLToPath(config.cacheDir);
         const stampPath = fileURLToPath(new URL(`${STAMP}.${mode}.hash`, config.cacheDir));
