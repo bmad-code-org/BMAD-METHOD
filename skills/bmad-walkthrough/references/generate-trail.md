@@ -2,8 +2,6 @@
 
 Generate a review trail from the diff and codebase context. A generated trail is lower quality than an author-produced one, but far better than none.
 
-## Follow Global Step Rules in SKILL.md
-
 ## INSTRUCTIONS
 
 1. Get the full diff against the appropriate baseline (same rules as Surface Area Stats in step-01).

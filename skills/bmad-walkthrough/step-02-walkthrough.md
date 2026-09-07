@@ -2,7 +2,7 @@
 
 Display: `Orientation → [Walkthrough] → Detail Pass → Testing`
 
-## Follow Global Step Rules in SKILL.md
+## Step Rules
 
 - Organize by **concern**, not by file. A concern is a cohesive design intent — e.g., "input validation," "state management," "API contract." One file may appear under multiple concerns; one concern may span multiple files.
 - The walkthrough activates **design judgment**, not correctness checking. Frame each concern as "here's what this change does and why" — the human evaluates whether it's the right approach for the system.
@@ -80,10 +80,10 @@ When you're ready, say **next** and I'll surface the highest-risk spots.
 
 If at any point the human signals they want to make a decision about this {change_type} (e.g., "let's ship it", "this needs a rethink", "I'm done reviewing", or anything suggesting they're ready to decide), confirm their intent:
 
-- If they want to **approve and ship** → read fully and follow `steps/step-05-wrapup.md`
-- If they want to **reject and rework** → read fully and follow `steps/step-05-wrapup.md`
+- If they want to **approve and ship** → read fully and follow `[[bmad-snapshot:step-05-wrapup.md]]`
+- If they want to **reject and rework** → read fully and follow `[[bmad-snapshot:step-05-wrapup.md]]`
 - If you misread them → acknowledge and continue the current step.
 
 ## NEXT
 
-Default: read fully and follow `steps/step-03-detail-pass.md`
+Default: read fully and follow `[[bmad-snapshot:step-03-detail-pass.md]]`
