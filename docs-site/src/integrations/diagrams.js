@@ -9,13 +9,17 @@
  * silent and slow to notice: the build succeeds, the page looks fine, and it is
  * simply the wrong picture.
  *
- * This closes the loop from both ends:
+ * On `build` — the run whose output ships — a stamped hash of the diagram
+ * directory is compared before rendering. When it moves, the content layer
+ * store is dropped so every page embedding a diagram renders again. The stamp
+ * is per command, because `dev` and `build` share a cache directory and a
+ * single stamp let whichever ran first consume the invalidation.
  *
- *   - `addWatchFile` so the dev server restarts when a diagram or its labels
- *     change, rather than holding the old render for the session.
- *   - a stamped hash of the diagram directory, compared on every startup and
- *     build; when it moves, the content layer store is dropped so the pages
- *     that embed a diagram render again.
+ * `dev` is deliberately left alone. Deleting the store under a running dev
+ * server leaves the content layer holding entries it can no longer render, and
+ * Astro fails the page rather than rebuilding it. So in dev an edited diagram
+ * needs a server restart to appear — noisy, but honest, where a silently stale
+ * drawing is neither.
  */
 
 import { createHash } from 'node:crypto';
@@ -23,7 +27,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync
 import { fileURLToPath } from 'node:url';
 
 const DIAGRAM_DIR = 'src/diagrams';
-const STAMP = 'bmad-diagrams.hash';
+const STAMP = 'bmad-diagrams';
 
 /** Absolute paths of every diagram and label file, sorted for a stable hash. */
 function diagramFiles(root) {
@@ -49,29 +53,32 @@ function digest(files) {
  * @returns {import('astro').AstroIntegration}
  */
 export default function bmadDiagrams() {
+  let mode = 'build';
+
   return {
     name: 'bmad-diagrams',
     hooks: {
-      'astro:config:setup'({ config, addWatchFile }) {
-        for (const file of diagramFiles(config.root)) {
-          addWatchFile(file);
-        }
+      'astro:config:setup'({ command }) {
+        mode = command;
       },
 
       'astro:config:done'({ config, logger }) {
         const files = diagramFiles(config.root);
-        if (files.length === 0) return;
+        if (files.length === 0 || mode !== 'build') return;
 
         const cacheDir = fileURLToPath(config.cacheDir);
-        const stampPath = fileURLToPath(new URL(STAMP, config.cacheDir));
-        const store = fileURLToPath(new URL('data-store.json', config.cacheDir));
+        const stampPath = fileURLToPath(new URL(`${STAMP}.${mode}.hash`, config.cacheDir));
+        const stores = [
+          fileURLToPath(new URL('data-store.json', config.cacheDir)),
+          fileURLToPath(new URL('.astro/data-store.json', config.root)),
+        ];
         const current = digest(files);
 
         try {
           const previous = existsSync(stampPath) ? readFileSync(stampPath, 'utf8') : '';
           if (current === previous) return;
 
-          if (existsSync(store)) {
+          for (const store of stores.filter((path) => existsSync(path))) {
             rmSync(store);
             logger.info('diagram changed, cleared the content layer cache');
           }

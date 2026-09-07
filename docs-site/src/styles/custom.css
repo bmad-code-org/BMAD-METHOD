@@ -371,6 +371,10 @@ starlight-toc h2,
   --dg-edge: var(--bmad-muted-ink-2);
   --dg-ground: var(--bmad-white);
   --dg-accent: var(--bmad-accent);
+  --dg-ok: #1f6b3b;
+  --dg-ok-tint: #edf6f0;
+  --dg-warn: #8a5a00;
+  --dg-warn-tint: #fbf5e7;
 
   display: block;
   width: 100%;
@@ -386,6 +390,10 @@ starlight-toc h2,
   --dg-muted: #8c96a3;
   --dg-edge: #8c96a3;
   --dg-ground: var(--bmad-dark);
+  --dg-ok: #6fcf97;
+  --dg-ok-tint: rgba(111, 207, 151, 0.1);
+  --dg-warn: #e0b25f;
+  --dg-warn-tint: rgba(224, 178, 95, 0.1);
 }
 
 .bmad-diagram .node {
@@ -409,23 +417,13 @@ starlight-toc h2,
 }
 
 .bmad-diagram .chip.ok {
-  fill: #edf6f0;
-  stroke: #bfdcc9;
+  fill: var(--dg-ok-tint);
+  stroke: var(--dg-ok);
 }
 
 .bmad-diagram .chip.warn {
-  fill: #fbf5e7;
-  stroke: #e8d5a8;
-}
-
-:root[data-theme='dark'] .bmad-diagram .chip.ok {
-  fill: rgba(111, 207, 151, 0.1);
-  stroke: rgba(111, 207, 151, 0.26);
-}
-
-:root[data-theme='dark'] .bmad-diagram .chip.warn {
-  fill: rgba(224, 178, 95, 0.1);
-  stroke: rgba(224, 178, 95, 0.26);
+  fill: var(--dg-warn-tint);
+  stroke: var(--dg-warn);
 }
 
 .bmad-diagram .panel {
@@ -488,6 +486,10 @@ starlight-toc h2,
 
 .bmad-diagram .sub.mid {
   text-anchor: middle;
+}
+
+.bmad-diagram .mono {
+  font-family: var(--bmad-mono);
 }
 
 .bmad-diagram .k {

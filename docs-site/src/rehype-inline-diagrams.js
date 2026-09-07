@@ -20,7 +20,7 @@
  * are left alone.
  */
 
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
 import { fromHtml } from 'hast-util-from-html';
@@ -49,18 +49,27 @@ export default function rehypeInlineDiagrams(options = {}) {
   const { root, locales = {} } = options;
   const cache = new Map();
 
-  /** Read a diagram and its labels once per build. */
+  /**
+   * Read a diagram and its labels, keyed on the file's modification time.
+   *
+   * The dev server is one long-lived process, so a cache keyed on the name
+   * alone would hand back the first drawing it ever read and keep serving it
+   * after the file changed — the page would look built and be wrong.
+   */
   function load(name) {
-    if (cache.has(name)) return cache.get(name);
-
     const svgPath = join(root, DIAGRAM_DIR, `${name}.svg`);
-    if (!existsSync(svgPath)) {
-      cache.set(name, undefined);
-      return undefined;
-    }
+    if (!existsSync(svgPath)) return undefined;
 
     const labelsPath = join(dirname(svgPath), `${name}.labels.json`);
+    const stamp = [svgPath, labelsPath]
+      .map((file) => (existsSync(file) ? statSync(file).mtimeMs : 0))
+      .join(':');
+
+    const cached = cache.get(name);
+    if (cached?.stamp === stamp) return cached;
+
     const entry = {
+      stamp,
       svg: readFileSync(svgPath, 'utf8'),
       labels: existsSync(labelsPath) ? JSON.parse(readFileSync(labelsPath, 'utf8')) : {},
     };
