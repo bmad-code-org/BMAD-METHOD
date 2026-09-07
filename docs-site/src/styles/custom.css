@@ -402,6 +402,12 @@ starlight-toc h2,
   stroke-width: 1;
 }
 
+/* the one emphasised node in a diagram, where the drawing needs to point at
+   a destination; the ok/warn tones stay reserved for status */
+.bmad-diagram .node.hot {
+  stroke: var(--dg-accent);
+}
+
 .bmad-diagram .gate {
   fill: var(--dg-ground);
   stroke: var(--dg-accent);

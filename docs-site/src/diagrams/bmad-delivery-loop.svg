@@ -3,24 +3,23 @@
   <desc id="description">Three kinds of input enter the delivery loop at different points: a vague notion enters at Clarify, a big clear idea enters at Plan, and a small change goes straight to Build and verify. The loop continues through Learn and adjust, which feeds back into planning as the work evolves.</desc>
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--dg-accent)"/>
+      <path class="head" d="M 0 0 L 10 5 L 0 10 z"/>
     </marker>
     <marker id="arrow-gold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--dg-ink)"/>
+      <path class="head" d="M 0 0 L 10 5 L 0 10 z"/>
     </marker>
   </defs>
-  <path d="M0 70H1120M0 140H1120M0 210H1120M0 280H1120M0 350H1120M140 0V420M280 0V420M420 0V420M560 0V420M700 0V420M840 0V420M980 0V420" stroke="var(--dg-accent)" stroke-opacity=".06"/>
 
   <!-- Entry drops: each input lands where it enters the loop -->
-  <path d="M155 140V194" stroke="var(--dg-ink)" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow-gold)"/>
-  <path d="M425 140V194" stroke="var(--dg-ink)" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow-gold)"/>
-  <path d="M695 140V194" stroke="var(--dg-ink)" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow-gold)"/>
+  <path class="edge" d="M155 140V194" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow-gold)"/>
+  <path class="edge" d="M425 140V194" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow-gold)"/>
+  <path class="edge" d="M695 140V194" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow-gold)"/>
 
   <!-- Main path and feedback loop -->
-  <path d="M250 244H330" stroke="var(--dg-accent)" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/>
-  <path d="M520 244H600" stroke="var(--dg-accent)" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/>
-  <path d="M790 244H870" stroke="var(--dg-accent)" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/>
-  <path d="M965 288C965 368 425 368 425 288" fill="none" stroke="var(--dg-accent)" stroke-opacity=".75" stroke-width="3" stroke-dasharray="9 10" marker-end="url(#arrow)"/>
+  <path class="edge" d="M250 244H330" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/>
+  <path class="edge" d="M520 244H600" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/>
+  <path class="edge" d="M790 244H870" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/>
+  <path class="edge" d="M965 288C965 368 425 368 425 288" fill="none" stroke-opacity=".75" stroke-width="3" stroke-dasharray="9 10" marker-end="url(#arrow)"/>
 
   <!-- Vague notion: cloud with a question mark -->
   <g transform="translate(155 76) scale(3.8) translate(-12 -12)">
@@ -29,12 +28,12 @@
 
   <!-- Big clear idea: large bulb -->
   <circle cx="425" cy="66" r="26" fill="var(--dg-surface)" stroke="var(--dg-ink)" stroke-width="2.5"/>
-  <rect x="415" y="92" width="20" height="9" rx="2.5" fill="var(--dg-surface)" stroke="var(--dg-ink)" stroke-width="2.5"/>
+  <rect class="node" x="415" y="92" width="20" height="9" rx="2.5" stroke="var(--dg-ink)" stroke-width="2.5"/>
   <path d="M401 42L394 35M449 42L456 35" stroke="var(--dg-ink)" stroke-width="2.5" stroke-linecap="round"/>
 
   <!-- Small change: small bulb -->
   <circle cx="695" cy="80" r="14" fill="var(--dg-surface)" stroke="var(--dg-ink)" stroke-width="2"/>
-  <rect x="688.5" y="94" width="13" height="6" rx="2" fill="var(--dg-surface)" stroke="var(--dg-ink)" stroke-width="2"/>
+  <rect class="node" x="688.5" y="94" width="13" height="6" rx="2" stroke="var(--dg-ink)" stroke-width="2"/>
   <path d="M681.5 66.5L676.5 61.5M708.5 66.5L713.5 61.5" stroke="var(--dg-ink)" stroke-width="2" stroke-linecap="round"/>
 
   <g text-anchor="middle">
@@ -45,19 +44,19 @@
     <text x="695" y="128" fill="var(--dg-ink)" font-size="16" font-weight="600" data-i18n="small-change">Small change</text>
 
     <g transform="translate(60 200)">
-      <rect width="190" height="88" rx="12" fill="var(--dg-surface)" stroke="var(--dg-accent)" stroke-opacity=".7" stroke-width="2"/>
+      <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7" stroke-width="2"/>
       <text x="95" y="51" fill="var(--dg-ink)" font-size="21" font-weight="600" data-i18n="clarify">Clarify</text>
     </g>
     <g transform="translate(330 200)">
-      <rect width="190" height="88" rx="12" fill="var(--dg-surface)" stroke="var(--dg-accent)" stroke-opacity=".7" stroke-width="2"/>
+      <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7" stroke-width="2"/>
       <text x="95" y="51" fill="var(--dg-ink)" font-size="21" font-weight="600" data-i18n="plan">Plan</text>
     </g>
     <g transform="translate(600 200)">
-      <rect width="190" height="88" rx="12" fill="var(--dg-surface)" stroke="var(--dg-accent)" stroke-opacity=".7" stroke-width="2"/>
+      <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7" stroke-width="2"/>
       <text x="95" y="51" fill="var(--dg-ink)" font-size="21" font-weight="600" data-i18n="build-and-verify">Build and verify</text>
     </g>
     <g transform="translate(870 200)">
-      <rect width="190" height="88" rx="12" fill="var(--dg-surface)" stroke="var(--dg-accent)" stroke-opacity=".7" stroke-width="2"/>
+      <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7" stroke-width="2"/>
       <text x="95" y="51" fill="var(--dg-ink)" font-size="21" font-weight="600" data-i18n="learn-and-adjust">Learn and adjust</text>
     </g>
     <text x="560" y="396" fill="var(--dg-muted)" font-size="17" font-weight="600" letter-spacing="1.4" data-i18n="right-sized-for-the-work-in-front-">RIGHT-SIZED FOR THE WORK IN FRONT OF YOU</text>
