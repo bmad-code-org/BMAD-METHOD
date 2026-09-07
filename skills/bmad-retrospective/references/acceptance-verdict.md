@@ -20,7 +20,7 @@ Compile fix-now findings and process lessons into specific, owned action items. 
 
 ## Previous-retro follow-through
 
-When a prior retro exists, check whether the action items it committed to were completed. Read `action_items` in `{implementation_artifacts}/sprint-status.yaml` and, for every entry belonging to an earlier epic that is not already `done`, record one line in the retrospective document's Previous-retro follow-through section:
+When a prior retro exists, check whether the action items it committed to were completed. Read `action_items` in `{{.implementation_artifacts}}/sprint-status.yaml` and, for every entry belonging to an earlier epic that is not already `done`, record one line in the retrospective document's Previous-retro follow-through section:
 
 - **How to address the item** — its `id`, exactly as the file spells it. Legacy entries written before ids existed have none; for those, record the item's `epic` (the integer in the file) plus its exact `action` text, character for character. One or the other is what Phase 5 needs to name the item at all.
 - **Whether it landed** — with the source that shows it: the commit, the file and line, the test. An item you cannot point at is "no evidence found", not "not done" — the reader must be able to tell a checked item from an unchecked one.

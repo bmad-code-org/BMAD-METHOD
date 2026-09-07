@@ -9,14 +9,14 @@
 #   scalars: override wins • arrays (persistent_facts, activation_steps_*): append
 #   arrays-of-tables with `code`/`id`: replace matching items, append new ones.
 
-# Steps to run before the standard activation (config load, greet).
+# Steps to run before the standard activation.
 # Overrides append. Use for pre-flight loads, compliance checks, etc.
 
 activation_steps_prepend = []
 
-# Steps to run after greet but before the workflow begins.
+# Steps to run after persistent facts load but before the workflow begins.
 # Overrides append. Use for context-heavy setup that should happen
-# once the user has been acknowledged.
+# once activation context is in place.
 
 activation_steps_append = []
 

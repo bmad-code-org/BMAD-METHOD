@@ -4,7 +4,7 @@ Phase 5. Finalize the retrospective and update sprint tracking. Two writes: the 
 
 ## The retrospective document
 
-This document is the run's working artifact: it is created as a skeleton once the epic is fixed and filled as each phase completes, so Phase 5 finalizes rather than writes it from scratch. It lives at `{implementation_artifacts}/epic-{{epic_number}}-retro-{date}.md`, as readable markdown; ensure `{implementation_artifacts}` exists. In stories mode it lives at `{spec-folder}/RETROSPECTIVE.md` instead — a fixed name, so a resumed run finds it — and carries the same frontmatter without `epic`, which the folder already names.
+This document is the run's working artifact: it is created as a skeleton once the epic is fixed and filled as each phase completes, so Phase 5 finalizes rather than writes it from scratch. It lives at `{{.implementation_artifacts}}/epic-{{epic_number}}-retro-{date}.md`, as readable markdown; ensure `{{.implementation_artifacts}}` exists. In stories mode it lives at `{spec-folder}/RETROSPECTIVE.md` instead — a fixed name, so a resumed run finds it — and carries the same frontmatter without `epic`, which the folder already names.
 
 Open the document with YAML frontmatter a machine can read without parsing the prose — an epic gate or orchestrator keys off `verdict` to decide whether to hold the next epic:
 
@@ -24,10 +24,10 @@ That holds for a **rejected** epic too: the update below marks the retro key `do
 
 Sections:
 
-- **Epic summary** — which epic, the diff range, stories completed, any stories still unfinished (`pending_stories`) that the user accepted retro-ing over, the evidence inventory (what was available, what was missing). Unfinished stories force the machine acceptance verdict to **rejected** (see `references/acceptance-verdict.md`).
+- **Epic summary** — which epic, the diff range, stories completed, any stories still unfinished (`pending_stories`) that the user accepted retro-ing over, the evidence inventory (what was available, what was missing). Unfinished stories force the machine acceptance verdict to **rejected** (see `[[bmad-snapshot:references/acceptance-verdict.md]]`).
 - **Findings** — grouped by aggregate view and by lens, each with its source reference and disposition (fix now / defer / accept). This is the record; do not summarize away the provenance.
 - **Behavior verification** — what was exercised end to end and what was observed, or an explicit note that runtime behavior was not exercised.
-- **Previous-retro follow-through** — if a prior retro exists, whether its action items landed, with evidence, and the selector Phase 5 would need to act on each (`references/acceptance-verdict.md` specifies what to record).
+- **Previous-retro follow-through** — if a prior retro exists, whether its action items landed, with evidence, and the selector Phase 5 would need to act on each (`[[bmad-snapshot:references/acceptance-verdict.md]]` specifies what to record).
 - **Action items** — the routed fix-now items and process lessons, each with an owner. Note which are proposed remediation or spec reconciliations awaiting human application.
 - **Acceptance verdict** — accepted / accepted-with-open-items / rejected, whether the criteria were declared or profiled, and the evidence behind the call.
 - **Open questions** — what a human answer would materially change, and anything the analyses could not resolve.
@@ -41,15 +41,15 @@ Do not hand-edit `sprint-status.yaml` — its comment blocks and quoting are exa
 
 ```
 uv run --no-cache {skill-root}/scripts/sprint_status.py update \
-  --file "{implementation_artifacts}/sprint-status.yaml" \
+  --file "{{.implementation_artifacts}}/sprint-status.yaml" \
   --epic {{epic_number}} --set-retro-done \
   --add-action '[{"action":"...","owner":"..."}, ...]' \
-  --ref "{implementation_artifacts}/epic-{{epic_number}}-retro-{date}.md" \
+  --ref "{{.implementation_artifacts}}/epic-{{epic_number}}-retro-{date}.md" \
   --verdict "<accepted | accepted-with-open-items | rejected>" \
   --date "{date}"
 ```
 
-Keep every value quoted. `--date` is parsed as `MM-DD-YYYY HH:MM` and nothing else — unpadded spellings like `1-2-2026 9:05` are accepted and normalized to the padded form, but a value that does not parse is rejected with `ok: false`, `restored: true` and exit 1, before the file is touched, and the whole update is a no-op. So pass `{date}` only if it is already in that form; otherwise reformat it, or omit the flag entirely and let the script stamp the current time itself. That format carries a space, which is why the flag must be quoted: unquoted, `--date 07-28-2026 14:23` splits into two argv words and dies at argparse (`{"ok": false, "error": "argument error: unrecognized arguments: 14:23"}`, exit 2). `--file` and `--ref` are quoted for the same reason — an `{implementation_artifacts}` path containing a space breaks them exactly the same way.
+Keep every value quoted. `--date` is parsed as `MM-DD-YYYY HH:MM` and nothing else — unpadded spellings like `1-2-2026 9:05` are accepted and normalized to the padded form, but a value that does not parse is rejected with `ok: false`, `restored: true` and exit 1, before the file is touched, and the whole update is a no-op. So pass `{date}` only if it is already in that form; otherwise reformat it, or omit the flag entirely and let the script stamp the current time itself. That format carries a space, which is why the flag must be quoted: unquoted, `--date 07-28-2026 14:23` splits into two argv words and dies at argparse (`{"ok": false, "error": "argument error: unrecognized arguments: 14:23"}`, exit 2). `--file` and `--ref` are quoted for the same reason — an `{{.implementation_artifacts}}` path containing a space breaks them exactly the same way.
 
 It sets `development_status["epic-{{epic_number}}-retrospective"]` to `done`, appends one `action_items` entry per proposed item, and bumps `last_updated`. Each appended item carries `status: open`, a stable `id` (`epic-<N>-retro-item-<n>-<slug>` derived from the action text, or the `id` you supply in the JSON), and a `ref` back to this retro document (from `--ref`, or a per-item `ref` in the JSON) — so an orchestrator can dedupe items across re-runs and dispatch each one to its full, sourced finding. `--verdict` is not written into the file; it is echoed back in the result JSON as a signal for consumers. It accepts exactly the frontmatter vocabulary — `accepted`, `accepted-with-open-items`, `rejected` — and any other spelling is rejected (`ok: false`, `restored: true`, exit 1) before the file is touched. Read the JSON it returns:
 
@@ -63,7 +63,7 @@ Moving a *previous* epic's action items off `open` is recorded in the retro docu
 
 ```
 uv run --no-cache {skill-root}/scripts/sprint_status.py update \
-  --file "{implementation_artifacts}/sprint-status.yaml" \
+  --file "{{.implementation_artifacts}}/sprint-status.yaml" \
   --epic {{epic_number}} \
   --set-action-status '[{"id":"epic-1-retro-item-1-add-error-handling","status":"done"},{"epic":1,"action":"Exact action text","status":"in-progress"}]'
 ```
@@ -81,4 +81,10 @@ Only ever apply a status the user confirmed: the evidence justifies proposing a 
 
 ## Finish
 
-Report where the document was saved, the verdict, and the action-item count. Then, if `{workflow.on_complete}` is non-empty, follow it as the final terminal instruction before exiting.
+Report where the document was saved, the verdict, and the action-item count.
+
+## On Complete
+
+If anything appears below, follow it as the final terminal instruction before exiting; otherwise exit normally.
+
+{workflow.on_complete}
