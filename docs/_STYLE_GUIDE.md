@@ -230,7 +230,7 @@ your-project/
 
 ## Diagrams
 
-Diagrams are hand-authored SVGs, kept in `website/src/diagrams/`, and embedded
+Diagrams are hand-authored SVGs, kept in `docs-site/src/diagrams/`, and embedded
 like an image:
 
 ```markdown
