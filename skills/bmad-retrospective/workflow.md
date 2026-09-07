@@ -10,7 +10,6 @@ Every finding you report carries a source reference (file, line, commit, or log)
 
 - Every operational cross-file reference in this workflow is an absolute snapshot path. Open it directly; do not resolve it relative to a skill directory.
 - `{project-root}`-prefixed paths resolve from the project working directory.
-- `{skill-root}` is this skill's installed directory — the `--skill` path you passed to `render_skill.py`. The bundled scripts under `{skill-root}/scripts/` run from there.
 - `{date}` is the current system datetime. Never state time estimates — AI has changed development speed, so hour/day/week predictions are noise.
 
 ## Modes
@@ -65,8 +64,6 @@ If the script exits non-zero it emits `{"ok": false, "error": ...}` instead of a
 
 Then check the epic is actually finished before Phase 1. A successful detect carries `pending_stories` — the selected epic's story keys whose status is not `done`, in file order, scoped to that epic alone (an unfinished story in some *other* epic is out of scope for this retrospective). When the list is non-empty, interactively list those stories and ask whether to retro an unfinished epic: if the user declines, stop and report — do not enter Phase 1; if they accept, record the stories they accepted proceeding over in the document's Epic summary. Headless, proceed and record the same list in the Assumptions section — do not invent a confirmation. Either way the list sits in the document, and Phase 4's machine verdict is **rejected** when any story remained unfinished (see `[[bmad-snapshot:references/acceptance-verdict.md]]`); a human may override interactively.
 
-Once the epic is fixed, interactively invite the user's going-in concerns ("anything you want weighted — a story that felt rushed, a risky interaction between two stories?"). Use any answer to focus the Phase 1–2 analysis; it directs attention but never becomes a finding without a source.
-
 ## Working state and resumption
 
 The retrospective document is the working artifact, not only the final output. Once the epic is fixed, create it as a skeleton (`[[bmad-snapshot:references/retro-document.md]]` names the sections) and write each phase's result into it as you finish — inventory, then findings with sources, then dispositions and verdict. Continuity is re-reading the file.
@@ -76,6 +73,8 @@ If a retrospective document for this epic already exists, load it, reconcile its
 ## Flow
 
 Run the phases in order. A default run stops at a written evidence report and verdict; the team discussion in Phase 3 is opt-in.
+
+Before Phase 1, in either mode, interactively invite the user's going-in concerns ("anything you want weighted — a story that felt rushed, a risky interaction between two stories?"). Use any answer to focus the Phase 1–2 analysis; it directs attention but never becomes a finding without a source.
 
 ### Phase 1 — Gather
 
