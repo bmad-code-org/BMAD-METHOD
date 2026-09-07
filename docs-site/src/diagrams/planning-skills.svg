@@ -13,32 +13,32 @@
 
     <!-- Analysis column -->
     <g transform="translate(20 90)">
-      <rect class="node" width="270" height="420" rx="2" stroke-width="2"/>
+      <rect class="node" width="270" height="420" rx="2"/>
       <text x="135" y="30" font-size="15" font-weight="700" text-anchor="middle" letter-spacing="1" data-i18n="analysis">ANALYSIS</text>
       <text x="135" y="50" font-size="12" text-anchor="middle" fill="var(--dg-ink)" data-i18n="optional-explore-and-validate">optional: explore and validate</text>
 
       <g transform="translate(15 66)">
-        <rect class="node" width="240" height="58" rx="2" stroke-width="1.5"/>
+        <rect class="node" width="240" height="58" rx="2"/>
         <text x="12" y="23" font-size="14" font-weight="700" class="mono" data-i18n="bmad-brainstorming">bmad-brainstorming</text>
         <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="brainstorm-html-brainstorm-intent-">brainstorm.html, brainstorm-intent.md</text>
       </g>
       <g transform="translate(15 134)">
-        <rect class="node" width="240" height="58" rx="2" stroke-width="1.5"/>
+        <rect class="node" width="240" height="58" rx="2"/>
         <text x="12" y="23" font-size="14" font-weight="700" class="mono" data-i18n="bmad-forge-idea">bmad-forge-idea</text>
         <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="forge-report-html-forged-idea-md">forge-report.html, forged-idea.md</text>
       </g>
       <g transform="translate(15 202)">
-        <rect class="node" width="240" height="58" rx="2" stroke-width="1.5"/>
+        <rect class="node" width="240" height="58" rx="2"/>
         <text x="12" y="23" font-size="14" font-weight="700" class="mono" data-i18n="bmad-deep-recon">bmad-deep-recon</text>
         <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="research-md-optional-html-briefing">research.md, optional HTML briefing</text>
       </g>
       <g transform="translate(15 270)">
-        <rect class="node" width="240" height="58" rx="2" stroke-width="1.5"/>
+        <rect class="node" width="240" height="58" rx="2"/>
         <text x="12" y="23" font-size="14" font-weight="700" class="mono" data-i18n="bmad-product-brief">bmad-product-brief</text>
         <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="brief-md-addendum-md">brief.md, addendum.md</text>
       </g>
       <g transform="translate(15 338)">
-        <rect class="node" width="240" height="58" rx="2" stroke-width="1.5"/>
+        <rect class="node" width="240" height="58" rx="2"/>
         <text x="12" y="23" font-size="14" font-weight="700" class="mono" data-i18n="bmad-prfaq">bmad-prfaq</text>
         <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="prfaq-document">PRFAQ document</text>
       </g>
@@ -46,23 +46,23 @@
 
     <!-- Planning column -->
     <g transform="translate(315 90)">
-      <rect class="node" width="270" height="420" rx="2" stroke-width="2"/>
+      <rect class="node" width="270" height="420" rx="2"/>
       <text x="135" y="30" font-size="15" font-weight="700" text-anchor="middle" letter-spacing="1" data-i18n="planning">PLANNING</text>
       <text x="135" y="50" font-size="12" text-anchor="middle" fill="var(--dg-ink)" data-i18n="define-what-to-build">define what to build</text>
 
       <g transform="translate(15 66)">
-        <rect class="node" width="240" height="74" rx="2" stroke-width="1.5"/>
+        <rect class="node" width="240" height="74" rx="2"/>
         <text x="12" y="23" font-size="14" font-weight="700" class="mono" data-i18n="bmad-prd">bmad-prd</text>
         <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="prd-md-addendum-md-memlog-md">prd.md, addendum.md, .memlog.md</text>
         <text x="12" y="62" font-size="12" fill="var(--dg-ink)" data-i18n="validate-html-md-report">validate: HTML + .md report</text>
       </g>
       <g transform="translate(15 150)">
-        <rect class="node" width="240" height="58" rx="2" stroke-width="1.5"/>
+        <rect class="node" width="240" height="58" rx="2"/>
         <text x="12" y="23" font-size="14" font-weight="700" class="mono" data-i18n="bmad-ux">bmad-ux</text>
         <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="design-md-experience-md">DESIGN.md, EXPERIENCE.md</text>
       </g>
       <g transform="translate(15 218)">
-        <rect class="node" width="240" height="74" rx="2" stroke-width="2.5"/>
+        <rect class="node" width="240" height="74" rx="2"/>
         <text x="12" y="23" font-size="14" font-weight="700" class="mono" data-i18n="bmad-spec">bmad-spec</text>
         <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="spec-md-companions">SPEC.md + companions</text>
         <text x="12" y="62" font-size="12" fill="var(--dg-ink)" data-i18n="optional-stories-yaml">optional stories.yaml</text>
@@ -74,23 +74,23 @@
 
     <!-- Solutioning column -->
     <g transform="translate(610 90)">
-      <rect class="node" width="270" height="420" rx="2" stroke-width="2"/>
+      <rect class="node" width="270" height="420" rx="2"/>
       <text x="135" y="30" font-size="15" font-weight="700" text-anchor="middle" letter-spacing="1" data-i18n="solutioning">SOLUTIONING</text>
       <text x="135" y="50" font-size="12" text-anchor="middle" fill="var(--dg-ink)" data-i18n="decide-how-divide-the-work">decide how, divide the work</text>
 
       <g transform="translate(15 66)">
-        <rect class="node" width="240" height="58" rx="2" stroke-width="1.5"/>
+        <rect class="node" width="240" height="58" rx="2"/>
         <text x="12" y="23" font-size="14" font-weight="700" class="mono" data-i18n="bmad-architecture">bmad-architecture</text>
         <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="architecture-spine-md">ARCHITECTURE-SPINE.md</text>
       </g>
       <g transform="translate(15 134)">
-        <rect class="node" width="240" height="74" rx="2" stroke-width="1.5"/>
+        <rect class="node" width="240" height="74" rx="2"/>
         <text x="12" y="23" font-size="13" font-weight="700" class="mono" data-i18n="bmad-create-epics">bmad-create-epics-</text>
         <text x="12" y="40" font-size="13" font-weight="700" class="mono" data-i18n="and-stories">and-stories</text>
         <text x="12" y="62" font-size="12" fill="var(--dg-ink)" data-i18n="epic-files-with-stories">epic files with stories</text>
       </g>
       <g transform="translate(15 218)">
-        <rect class="node" width="240" height="74" rx="2" stroke-width="1.5"/>
+        <rect class="node" width="240" height="74" rx="2"/>
         <text x="12" y="23" font-size="14" font-weight="700" class="mono" data-i18n="bmad-sprint-planning">bmad-sprint-planning</text>
         <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="pass-concerns-fail">PASS / CONCERNS / FAIL</text>
         <text x="12" y="62" font-size="12" fill="var(--dg-ink)" data-i18n="sprint-status-yaml">sprint-status.yaml</text>
@@ -98,13 +98,13 @@
     </g>
 
     <!-- Column arrows -->
-    <path class="edge" d="M292 300H311" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
-    <path class="edge" d="M587 300H606" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+    <path class="edge" d="M292 300H311" stroke-linecap="round" marker-end="url(#arrow)"/>
+    <path class="edge" d="M587 300H606" stroke-linecap="round" marker-end="url(#arrow)"/>
 
     <!-- Hand-off to Build -->
-    <path class="edge" d="M155 512V548" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
-    <path class="edge" d="M450 512V548" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
-    <path class="edge" d="M745 512V548" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+    <path class="edge" d="M155 512V548" stroke-linecap="round" marker-end="url(#arrow)"/>
+    <path class="edge" d="M450 512V548" stroke-linecap="round" marker-end="url(#arrow)"/>
+    <path class="edge" d="M745 512V548" stroke-linecap="round" marker-end="url(#arrow)"/>
     <g transform="translate(150 552)">
       <rect class="node hot" width="600" height="52" rx="2"/>
       <text x="300" y="22" font-size="15" font-weight="700" text-anchor="middle" class="mono" data-i18n="bmad-build">bmad-build</text>

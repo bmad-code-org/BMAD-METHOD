@@ -11,15 +11,15 @@
   </defs>
 
   <!-- Entry drops: each input lands where it enters the loop -->
-  <path class="edge" d="M155 140V194" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow-gold)"/>
-  <path class="edge" d="M425 140V194" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow-gold)"/>
-  <path class="edge" d="M695 140V194" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow-gold)"/>
+  <path class="edge" d="M155 140V194" stroke-linecap="round" marker-end="url(#arrow-gold)"/>
+  <path class="edge" d="M425 140V194" stroke-linecap="round" marker-end="url(#arrow-gold)"/>
+  <path class="edge" d="M695 140V194" stroke-linecap="round" marker-end="url(#arrow-gold)"/>
 
   <!-- Main path and feedback loop -->
-  <path class="edge" d="M250 244H330" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/>
-  <path class="edge" d="M520 244H600" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/>
-  <path class="edge" d="M790 244H870" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/>
-  <path class="edge" d="M965 288C965 368 425 368 425 288" fill="none" stroke-opacity=".75" stroke-width="3" stroke-dasharray="9 10" marker-end="url(#arrow)"/>
+  <path class="edge" d="M250 244H330" stroke-linecap="round" marker-end="url(#arrow)"/>
+  <path class="edge" d="M520 244H600" stroke-linecap="round" marker-end="url(#arrow)"/>
+  <path class="edge" d="M790 244H870" stroke-linecap="round" marker-end="url(#arrow)"/>
+  <path class="edge" d="M965 288C965 368 425 368 425 288" fill="none" stroke-opacity=".75" stroke-dasharray="9 10" marker-end="url(#arrow)"/>
 
   <!-- Vague notion: cloud with a question mark -->
   <g transform="translate(155 76) scale(3.8) translate(-12 -12)">
@@ -28,12 +28,12 @@
 
   <!-- Big clear idea: large bulb -->
   <circle cx="425" cy="66" r="26" fill="var(--dg-surface)" stroke="var(--dg-ink)" stroke-width="2.5"/>
-  <rect class="node" x="415" y="92" width="20" height="9" rx="2.5" stroke="var(--dg-ink)" stroke-width="2.5"/>
+  <rect class="node" x="415" y="92" width="20" height="9" rx="2.5" stroke="var(--dg-ink)"/>
   <path d="M401 42L394 35M449 42L456 35" stroke="var(--dg-ink)" stroke-width="2.5" stroke-linecap="round"/>
 
   <!-- Small change: small bulb -->
   <circle cx="695" cy="80" r="14" fill="var(--dg-surface)" stroke="var(--dg-ink)" stroke-width="2"/>
-  <rect class="node" x="688.5" y="94" width="13" height="6" rx="2" stroke="var(--dg-ink)" stroke-width="2"/>
+  <rect class="node" x="688.5" y="94" width="13" height="6" rx="2" stroke="var(--dg-ink)"/>
   <path d="M681.5 66.5L676.5 61.5M708.5 66.5L713.5 61.5" stroke="var(--dg-ink)" stroke-width="2" stroke-linecap="round"/>
 
   <g text-anchor="middle">
@@ -44,19 +44,19 @@
     <text x="695" y="128" fill="var(--dg-ink)" font-size="16" font-weight="600" data-i18n="small-change">Small change</text>
 
     <g transform="translate(60 200)">
-      <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7" stroke-width="2"/>
+      <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7"/>
       <text x="95" y="51" fill="var(--dg-ink)" font-size="21" font-weight="600" data-i18n="clarify">Clarify</text>
     </g>
     <g transform="translate(330 200)">
-      <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7" stroke-width="2"/>
+      <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7"/>
       <text x="95" y="51" fill="var(--dg-ink)" font-size="21" font-weight="600" data-i18n="plan">Plan</text>
     </g>
     <g transform="translate(600 200)">
-      <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7" stroke-width="2"/>
+      <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7"/>
       <text x="95" y="51" fill="var(--dg-ink)" font-size="21" font-weight="600" data-i18n="build-and-verify">Build and verify</text>
     </g>
     <g transform="translate(870 200)">
-      <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7" stroke-width="2"/>
+      <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7"/>
       <text x="95" y="51" fill="var(--dg-ink)" font-size="21" font-weight="600" data-i18n="learn-and-adjust">Learn and adjust</text>
     </g>
     <text x="560" y="396" fill="var(--dg-muted)" font-size="17" font-weight="600" letter-spacing="1.4" data-i18n="right-sized-for-the-work-in-front-">RIGHT-SIZED FOR THE WORK IN FRONT OF YOU</text>
