@@ -35,6 +35,7 @@ SHARED_SCRIPTS = (
     "resolve_customization.py",
 )
 SHIPPED_SKILLS = ("bmad-build-auto", "bmad-build")
+RENDERED_SKILLS = (*SHIPPED_SKILLS, "bmad-walkthrough", "bmad-retrospective")
 COMPILE_TOKEN = re.compile(r"\{\{(?:\.|config\.)|\{workflow\.|\[\[bmad-snapshot:")
 DISPATCH_PREFIX = "read and follow "
 
@@ -201,6 +202,28 @@ class RenderSkillTests(unittest.TestCase):
                 hunter = snap / "review-prompts" / "edge-case-hunter.md"
                 self.assertTrue(hunter.is_file())
                 self.assertIn(str(hunter), _markdown(snap))
+
+    def test_rendered_skills_publish_snapshots_without_skill_root(self):
+        for name in RENDERED_SKILLS:
+            with self.subTest(name):
+                ws = self._workspace()
+                skill = self._skill(ws, name)
+                workflow = rs.render(ws.project, skill)
+                self._assert_snapshot(workflow, ws.project, name)
+
+    def test_skill_root_binds_bundled_scripts_to_the_installed_skill(self):
+        ws = self._workspace()
+        skill = self._skill(ws, "bmad-retrospective")
+        snap = self._assert_snapshot(rs.render(ws.project, skill), ws.project, "bmad-retrospective")
+        markdown = _markdown(snap)
+        self.assertIn(str(skill / "scripts" / "sprint_status.py"), markdown)
+        self.assertIn(str(skill / "scripts" / "git_evidence.py"), markdown)
+        manifest = json.loads((snap / "manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["inputs"]["skill_root"], str(skill.resolve()))
+        elsewhere = _copy_skill(ws.outer / "elsewhere" / "bmad-retrospective", "bmad-retrospective")
+        other = rs.render(ws.project, elsewhere)
+        self.assertNotEqual(other.parent, snap)
+        self.assertIn(str(elsewhere / "scripts" / "sprint_status.py"), _markdown(other.parent))
 
     def test_cli_from_nested_cwd_dispatches_one_absolute_workflow(self):
         ws = self._workspace()
@@ -450,8 +473,8 @@ class RenderSkillTests(unittest.TestCase):
         self.assertIn("hash mismatch", result.stdout)
         self.assertTrue(workflow.read_text(encoding="utf-8").endswith("corrupt"))
 
-    def test_shipped_skill_md_command_dispatches_for_both_skills(self):
-        for name in SHIPPED_SKILLS:
+    def test_skill_md_command_dispatches_for_every_rendered_skill(self):
+        for name in RENDERED_SKILLS:
             with self.subTest(name):
                 ws = self._workspace()
                 skill = self._skill(ws, name)
