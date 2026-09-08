@@ -34,8 +34,8 @@ SHARED_SCRIPTS = (
     "resolve_config.py",
     "resolve_customization.py",
 )
-SHIPPED_SKILLS = ("bmad-build-auto", "bmad-build")
-RENDERED_SKILLS = (*SHIPPED_SKILLS, "bmad-walkthrough", "bmad-retrospective", "bmad-code-review")
+SHIPPED_SKILLS = ("bmad-build-auto", "bmad-build", "bmad-code-review")
+RENDERED_SKILLS = (*SHIPPED_SKILLS, "bmad-walkthrough", "bmad-retrospective")
 COMPILE_TOKEN = re.compile(r"\{\{(?:\.|config\.)|\{workflow\.|\[\[bmad-snapshot:")
 DISPATCH_PREFIX = "read and follow "
 
