@@ -44,8 +44,14 @@ const COLUMNS = [
 
 const BOTTOM = ['© 2026 BMad Code, LLC', 'MIT licensed', 'BMad is a trademark of BMad Code, LLC'];
 
+/* Internal links keep the reader in their language. Every page here exists
+   under each locale — Starlight generates the untranslated ones as fallbacks —
+   so prefixing the locale is safe, and without it a French or Korean reader
+   following the footer lands back in English. */
+const { locale } = Astro.locals.starlightRoute;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const href = (link: string) => (link.startsWith('/') ? `${base}${link}` : link);
+const root = locale ? `${base}/${locale}` : base;
+const href = (link: string) => (link.startsWith('/') ? `${root}${link}` : link);
 ---
 
 <div class="bmad-footer">
