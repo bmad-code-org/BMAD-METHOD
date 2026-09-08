@@ -124,7 +124,11 @@ const DIAGRAM_LOCALES = { root: { lang: 'en' }, fr: { lang: 'fr-FR' }, 'ko-kr': 
 function makeDiagramFixture() {
   const root = mkdtempSync(join(tmpdir(), 'bmad-diagrams-'));
   mkdirSync(join(root, 'src', 'diagrams'), { recursive: true });
-  writeDiagram(root, 'flow', '<svg class="bmad-diagram" viewBox="0 0 10 10"><text data-i18n="start">Start</text><text data-i18n="end">End</text></svg>');
+  writeDiagram(
+    root,
+    'flow',
+    '<svg class="bmad-diagram" viewBox="0 0 10 10"><text data-i18n="start">Start</text><text data-i18n="end">End</text></svg>',
+  );
   writeFileSync(
     join(root, 'src', 'diagrams', 'flow.labels.json'),
     JSON.stringify({ en: { start: 'Start', end: 'End' }, 'fr-FR': { start: 'Départ' } }),
@@ -154,9 +158,9 @@ function labelText(tree, key) {
   const found = [];
   const walk = (node) => {
     if (node.properties?.dataI18n === key) found.push(node.children?.[0]?.value);
-    (node.children || []).forEach(walk);
+    for (const child of node.children || []) walk(child);
   };
-  tree.children.forEach(walk);
+  for (const child of tree.children) walk(child);
   return found[0];
 }
 
@@ -1090,11 +1094,7 @@ function runTests() {
     const inlined = inlineDiagrams(makeImgTree('/diagrams/flow.svg'), EN_PAGE, dRoot);
     assert(firstTag(inlined) === 'svg', 'Replaces the img with the SVG element', `Expected svg, got ${firstTag(inlined)}`);
 
-    assert(
-      JSON.stringify(inlined).includes('"img"') === false,
-      'Leaves no img behind',
-      'The img element survived the transform',
-    );
+    assert(JSON.stringify(inlined).includes('"img"') === false, 'Leaves no img behind', 'The img element survived the transform');
 
     const raster = inlineDiagrams(makeImgTree('/diagrams/flow.png'), EN_PAGE, dRoot);
     assert(firstTag(raster) === 'img', 'Leaves a raster image alone', `Expected img, got ${firstTag(raster)}`);
@@ -1118,7 +1118,11 @@ function runTests() {
     );
 
     const korean = inlineDiagrams(makeImgTree('/diagrams/flow.svg'), '/project/docs/ko-kr/build/a-change.md', dRoot);
-    assert(labelText(korean, 'start') === 'Start', 'Falls back when the locale has no label file entry', `Got ${labelText(korean, 'start')}`);
+    assert(
+      labelText(korean, 'start') === 'Start',
+      'Falls back when the locale has no label file entry',
+      `Got ${labelText(korean, 'start')}`,
+    );
 
     const labelled = inlineDiagrams(makeImgTree('/diagrams/flow.svg', 'the build run'), EN_PAGE, dRoot);
     assert(
