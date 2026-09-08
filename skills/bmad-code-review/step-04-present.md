@@ -1,12 +1,12 @@
 ---
-deferred_work_file: '{implementation_artifacts}/deferred-work.md'
+deferred_work_file: '{{.implementation_artifacts}}/deferred-work.md'
+sprint_status: '{{.implementation_artifacts}}/sprint-status.yaml'
 ---
 
 # Step 4: Present and Act
 
 ## RULES
 
-- YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style
 - When `{spec_file}` is set, always write findings to the story file before offering action choices.
 - `decision-needed` findings must be resolved before handling `patch` findings.
 
@@ -121,7 +121,7 @@ If `{sprint_status}` file does not exist, note that story status was updated in 
 Present the user with follow-up options:
 
 > **What would you like to do next?**
-> 1. **Start the next story** — run `dev-story` to pick up the next `ready-for-dev` story
+> 1. **Start the next story** — run `bmad-build` to pick up the next `ready-for-dev` story
 > 2. **Re-run code review** — address findings and review again
 > 3. **Done** — end the workflow
 
@@ -129,6 +129,6 @@ Present the user with follow-up options:
 
 ## On Complete
 
-Run: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow.on_complete`
+If anything appears below, follow it as the final terminal instruction before exiting; otherwise exit normally.
 
-If the resolved `workflow.on_complete` is non-empty, follow it as the final terminal instruction before exiting.
+{workflow.on_complete}

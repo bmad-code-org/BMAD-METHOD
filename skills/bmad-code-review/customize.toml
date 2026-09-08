@@ -9,14 +9,14 @@
 #   scalars: override wins • arrays (persistent_facts, activation_steps_*): append
 #   arrays-of-tables with `code`/`id`: replace matching items, append new ones.
 
-# Steps to run before the standard activation (config load, greet).
+# Steps to run before the standard activation.
 # Overrides append. Use for pre-flight loads, compliance checks, etc.
 
 activation_steps_prepend = []
 
-# Steps to run after greet but before the workflow begins.
+# Steps to run after persistent facts load but before the workflow begins.
 # Overrides append. Use for context-heavy setup that should happen
-# once the user has been acknowledged.
+# once activation context is in place.
 
 activation_steps_append = []
 
@@ -40,8 +40,8 @@ on_complete = ""
 
 # Review layers for the review step. `instruction` is the layer's whole
 # execution recipe — subagents by default, but an override may run anything
-# (e.g. an external reviewer via bash). {diff_file} and {spec_file} are
-# substituted at run time; both are paths, and {diff_file} is the unified
+# (e.g. an external reviewer via bash). {diff_file}, {claims_file} and {spec_file} are
+# substituted at run time; all are paths, and {diff_file} is the unified
 # diff file the layer reads. `when` (optional) gates a layer; empty
 # `instruction` disables it.
 
@@ -97,7 +97,7 @@ Do not invoke any skill, and do not spawn subagents of your own — you are the 
 [[workflow.review_layers]]
 id = "acceptance-auditor"
 name = "Acceptance Auditor"
-when = 'Only when {review_mode} = "full".'
+when = '{review_mode} = "full"'
 instruction = """
 Launch a subagent with this prompt:
 
