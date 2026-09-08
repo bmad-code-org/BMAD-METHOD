@@ -15,8 +15,9 @@
  * No shadows, no tinted panels, no hover lifts. The restraint is the design —
  * a docs page should read as an article on that ground, not as a control panel.
  *
- * The ramp is copied unchanged from bmadcode.com's stylesheet. Starlight's token contract is aliased onto it below, so the
- * built-in components inherit this look rather than imposing their own.
+ * The ramp is the one bmadcode.com uses, unchanged. Starlight's token contract
+ * is aliased onto it below, so the built-in components inherit this look
+ * rather than imposing their own.
  *
  * Specificity note: Starlight ships its light values on `:root[data-theme='light']`,
  * which outranks a bare `:root`, so the overrides sit on the same selectors.
@@ -521,10 +522,10 @@ starlight-toc h2,
 /* ---------------------------------------------------------------
    Asides
    A tinted plate, an icon and a heading in the hue — the shape the
-   docs had before, drawn in the site's palette: the hues are the
-   .tag-ok / .tag-warn / .tag-no colours from the site stylesheet, squared off
-   to 2px with no border and no shadow. The blue for `note` is derived
-   in the same key, since the site has no blue tag.
+   docs had before, drawn in the site's palette: the hues are the ones
+   bmadcode.com tints its status tags with, squared off to 2px with no
+   border and no shadow. The blue for `note` is derived in the same key,
+   since the site has no blue tag.
    --------------------------------------------------------------- */
 .starlight-aside {
   border: 0;
