@@ -35,7 +35,7 @@ Activation is complete after all activation steps have run.
 
 ## Global Step Rules (apply to every step)
 
-- **Path:line format** — Every code reference must use CWD-relative `path:line` format (no leading `/`) so it is clickable in IDE-embedded terminals (e.g., `src/auth/middleware.ts:42`).
+- **Code references** — Display every file path and `file:line` reference in whatever form is clickable where you are presenting it (e.g. a code citation or markdown link in chat, a CWD-relative `path:line` with no leading `/` in a terminal). If unsure, use the CWD-relative `path:line` form.
 - **Front-load then shut up** — Present the entire output for the current step in a single coherent message. Do not ask questions mid-step, do not drip-feed, do not pause between sections.
 
 ## Workflow Execution
