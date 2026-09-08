@@ -79,7 +79,7 @@ Instructions for other values.
 [[bmad-endif]]
 ```
 
-The grammar is `[[bmad-if:<dotted customization path> <== or !=> <TOML scalar literal>]]`, an optional `[[bmad-else]]`, and a required `[[bmad-endif]]`. Blocks can nest. The path must name a scalar in the skill's `customize.toml`, and the literal must match its type, so strings are quoted. No other operators or expressions are evaluated.
+The grammar is `[[bmad-if:<dotted customization path> <== or !=> <TOML scalar literal>]]`, an optional `[[bmad-else]]`, and a required `[[bmad-endif]]`. Blocks can nest. The path must name a scalar in the skill's `customize.toml`. Strings are quoted; a literal of a different type than the value never matches. No other operators or expressions are evaluated.
 
 Conditions see the effective customization, including any invocation overrides. Filtering runs before token and snapshot-link resolution, so keep branch-specific links inside the matching condition. A secondary file that filters to nothing is left out of the snapshot; `workflow.md` filtering to nothing is an error.
 

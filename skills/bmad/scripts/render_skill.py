@@ -65,30 +65,6 @@ def _json_scalar(value: Any) -> str:
     raise TypeError(f"unsupported JSON value: {type(value).__name__}")
 
 
-def _validate_override(value: Any, default: Any, label: str) -> None:
-    """Validate invocation parameters without changing persistent consumers."""
-    if type(value) is not type(default):
-        raise RenderError(f"{label} must be {type(default).__name__}, got {type(value).__name__}")
-    if isinstance(default, dict):
-        for key, item in value.items():
-            if key not in default:
-                raise RenderError(f"unknown customization parameter `{label}.{key}`")
-            _validate_override(item, default[key], f"{label}.{key}")
-    elif isinstance(default, list) and default:
-        for index, item in enumerate(value):
-            candidates = [base for base in default if type(base) is type(item)]
-            if not candidates:
-                raise RenderError(f"{label}[{index}] has incompatible item type {type(item).__name__}")
-            if isinstance(item, dict):
-                # Array records can add optional fields (for example `when`).
-                # Validate fields whose types the shipped records declare.
-                schema = {key: field for base in candidates for key, field in base.items()}
-                for key in item.keys() & schema.keys():
-                    _validate_override(item[key], schema[key], f"{label}[{index}].{key}")
-            elif isinstance(item, list):
-                _validate_override(item, [field for base in candidates for field in base], f"{label}[{index}]")
-
-
 def _toml_literal(text: str, label: str) -> Any:
     try:
         parsed = tomllib.loads(f"value = {text}")
@@ -103,7 +79,6 @@ def _invocation_customization(
     defaults: dict[str, Any], overrides: Path | None, assignments: list[str]
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     file_layer = load_toml(overrides, required=True) if overrides is not None else {}
-    _validate_override(file_layer, defaults, "customization")
     command_layer: dict[str, Any] = {}
     assigned: list[str] = []
     for assignment in assignments:
@@ -119,7 +94,6 @@ def _invocation_customization(
         value = (
             raw if isinstance(default, str) and not raw.lstrip().startswith(('"', "'")) else _toml_literal(raw, path)
         )
-        _validate_override(value, default, f"customization.{path}")
         target = command_layer
         parts = path.split(".")
         for part in parts[:-1]:
@@ -151,9 +125,7 @@ def _filter_conditions(
                     if isinstance(default, (dict, list)):
                         raise RenderError(f"condition parameter `{path}` must be a scalar")
                     expected = _toml_literal(literal, path)
-                    _validate_override(expected, default, path)
                     value = _lookup(customization, path, "customization value")
-                    _validate_override(value, default, path)
                 except RenderError as error:
                     raise RenderError(f"{location}: {error}") from error
                 inputs[f"customization.{path}"] = value

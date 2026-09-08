@@ -315,12 +315,7 @@ class RenderSkillTests(unittest.TestCase):
             ("--set", ".workflow.message=x"),
             ("--set", "workflow.unknown=x"),
             ("--set", 'workflow.message="unterminated'),
-            ("--set", "workflow.count=true"),
             ("--set", "workflow.count=words"),
-            ("--set", "workflow.items=7"),
-            ("--set", "workflow.items=[true]"),
-            ("--set", 'workflow.matrix=[["wrong"]]'),
-            ("--set", 'workflow={ unknown = "x" }'),
             ("--set", "workflow.count=2\nextra=3"),
             ("--overrides", "missing.toml"),
             ("--overrides",),
@@ -333,7 +328,7 @@ class RenderSkillTests(unittest.TestCase):
                     ws, '[workflow]\nmessage = "base"\ncount = 1\nitems = ["base"]\nmatrix = [[1]]\n', "Ready\n"
                 )
                 self._assert_halt(self._cli(ws.project, skill, args=args), ws)
-        for content in ("[workflow", '[workflow]\nunknown="x"', '[workflow]\ncount="wrong"'):
+        for content in ("[workflow",):
             with self.subTest(content=content):
                 ws = self._workspace()
                 skill = self._fixture_skill(ws, "[workflow]\ncount = 1\n", "Ready\n")
@@ -411,7 +406,6 @@ class RenderSkillTests(unittest.TestCase):
             '[[bmad-if:workflow.value == "one"]]\n[[bmad-else]]\n[[bmad-else]]\n[[bmad-endif]]\n',
             '[[bmad-if:workflow.unknown == "one"]]\n[[bmad-endif]]\n',
             "[[bmad-if:workflow.value == one]]\n[[bmad-endif]]\n",
-            "[[bmad-if:workflow.value == true]]\n[[bmad-endif]]\n",
             "[[bmad-if:workflow.items == []]]\n[[bmad-endif]]\n",
             '[[bmad-if:workflow.value == "one" or true]]\n[[bmad-endif]]\n',
             '[[bmad-if:workflow.value != "one"]]\n[[bmad-if:broken]]\n[[bmad-endif]]\n',
