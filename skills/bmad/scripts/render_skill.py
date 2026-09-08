@@ -14,23 +14,39 @@ import re
 import shutil
 import sys
 import tempfile
+import tomllib
+from datetime import date, time
 from pathlib import Path
 from typing import Any
 
 # Installed scripts are consumer files, not a location for interpreter caches.
 sys.dont_write_bytecode = True
 
-from config_utils import ConfigError, load_central_config, load_customization, load_toml  # noqa: E402
+from config_utils import (  # noqa: E402
+    ConfigError,
+    load_central_config,
+    load_customization,
+    load_toml,
+    structural_merge,
+)
 
 
 class RenderError(ValueError):
     """Raised when rendering cannot safely publish a snapshot."""
 
 
+class _ArgumentParser(argparse.ArgumentParser):
+    def error(self, message: str) -> None:
+        raise RenderError(message)
+
+
 _CONFIG_TOKEN = re.compile(r"\{\{config\.([A-Za-z0-9_.-]+)\}\}")
 _SHORT_CONFIG_TOKEN = re.compile(r"\{\{\.([A-Za-z0-9_]+)\}\}")
 _CUSTOM_TOKEN = re.compile(r"\{workflow\.([A-Za-z0-9_.-]+)\}")
 _SNAPSHOT_TOKEN = re.compile(r"\[\[bmad-snapshot:([A-Za-z0-9_./-]+\.md)\]\]")
+_PARAMETER = r"[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*"
+_CONDITION = re.compile(rf"\[\[bmad-if:({_PARAMETER})\s*(==|!=)\s*(.+)\]\]")
+_DIRECTIVE = re.compile(r"\[\[bmad-(?:if|else|endif)\b")
 
 
 def _hash_bytes(content: bytes) -> str:
@@ -38,7 +54,118 @@ def _hash_bytes(content: bytes) -> str:
 
 
 def _canonical_json(value: Any) -> bytes:
-    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"), default=_json_scalar).encode(
+        "utf-8"
+    )
+
+
+def _json_scalar(value: Any) -> str:
+    if isinstance(value, (date, time)):
+        return value.isoformat()
+    raise TypeError(f"unsupported JSON value: {type(value).__name__}")
+
+
+def _toml_literal(text: str, label: str) -> Any:
+    try:
+        parsed = tomllib.loads(f"value = {text}")
+    except tomllib.TOMLDecodeError as error:
+        raise RenderError(f"invalid TOML value for {label}: {error}") from error
+    if set(parsed) != {"value"}:
+        raise RenderError(f"{label} must contain a single TOML value")
+    return parsed["value"]
+
+
+def _invocation_customization(
+    defaults: dict[str, Any], overrides: Path | None, assignments: list[str]
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    file_layer = load_toml(overrides, required=True) if overrides is not None else {}
+    command_layer: dict[str, Any] = {}
+    assigned: list[str] = []
+    for assignment in assignments:
+        path, separator, raw = assignment.partition("=")
+        if not separator or re.fullmatch(_PARAMETER, path) is None:
+            raise RenderError(f"invalid --set assignment {assignment!r}; expected bare dotted key=value")
+        # A repeated or overlapping path is a caller mistake, not a precedence rule.
+        for earlier in assigned:
+            if path == earlier or path.startswith(f"{earlier}.") or earlier.startswith(f"{path}."):
+                raise RenderError(f"--set `{path}` conflicts with earlier --set `{earlier}`")
+        assigned.append(path)
+        default = _lookup(defaults, path, "customization parameter")
+        value = (
+            raw if isinstance(default, str) and not raw.lstrip().startswith(('"', "'")) else _toml_literal(raw, path)
+        )
+        target = command_layer
+        parts = path.split(".")
+        for part in parts[:-1]:
+            target = target.setdefault(part, {})
+        target[parts[-1]] = value
+    return file_layer, command_layer
+
+
+def _leaf_paths(table: dict[str, Any], prefix: str = "") -> set[str]:
+    leaves: set[str] = set()
+    for key, value in table.items():
+        path = f"{prefix}{key}"
+        if isinstance(value, dict):
+            leaves |= _leaf_paths(value, f"{path}.")
+        else:
+            leaves.add(path)
+    return leaves
+
+
+def _filter_conditions(
+    sources: dict[str, str], customization: dict[str, Any], defaults: dict[str, Any] | None
+) -> tuple[dict[str, str], dict[str, Any]]:
+    filtered: dict[str, str] = {}
+    inputs: dict[str, Any] = {}
+    for name, content in sources.items():
+        output: list[str] = []
+        # Each frame keeps the enclosing state, comparison, else marker, and line.
+        stack: list[tuple[bool, bool, bool, int]] = []
+        active = True
+        had_condition = False
+        for line_number, line in enumerate(content.splitlines(keepends=True), 1):
+            directive = line.strip()
+            location = f"{name}:{line_number}"
+            match = _CONDITION.fullmatch(directive)
+            if match:
+                had_condition = True
+                path, operator, literal = match.groups()
+                try:
+                    default = _lookup(defaults or {}, path, "customization default")
+                    if isinstance(default, (dict, list)):
+                        raise RenderError(f"condition parameter `{path}` must be a scalar")
+                    expected = _toml_literal(literal, path)
+                    value = _lookup(customization, path, "customization value")
+                except RenderError as error:
+                    raise RenderError(f"{location}: {error}") from error
+                inputs[f"customization.{path}"] = value
+                matches = value == expected if operator == "==" else value != expected
+                stack.append((active, matches, False, line_number))
+                active = active and matches
+            elif directive == "[[bmad-else]]":
+                if not stack or stack[-1][2]:
+                    raise RenderError(f"{location}: unexpected or duplicate bmad-else")
+                parent, matches, _, opening = stack[-1]
+                stack[-1] = (parent, matches, True, opening)
+                active = parent and not matches
+            elif directive == "[[bmad-endif]]":
+                if not stack:
+                    raise RenderError(f"{location}: unexpected bmad-endif")
+                active = stack.pop()[0]
+            elif _DIRECTIVE.search(line):
+                raise RenderError(f"{location}: invalid conditional directive; use a standalone directive line")
+            elif active:
+                output.append(line)
+        if stack:
+            raise RenderError(f"{name}:{stack[-1][3]}: unclosed bmad-if")
+        text = "".join(output)
+        if had_condition and not text.strip():
+            if name == "workflow.md":
+                raise RenderError(f"{name}: conditional rendering excluded the entry")
+        else:
+            filtered[name] = text
+    return filtered, inputs
 
 
 def _lookup(data: dict[str, Any], dotted_path: str, label: str) -> Any:
@@ -293,7 +420,8 @@ def _publish(destination: Path, outputs: dict[str, bytes], manifest: dict[str, A
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(content)
         (staging / "manifest.json").write_bytes(
-            json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True).encode("utf-8") + b"\n"
+            json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True, default=_json_scalar).encode("utf-8")
+            + b"\n"
         )
         try:
             os.rename(staging, destination)
@@ -307,7 +435,9 @@ def _publish(destination: Path, outputs: dict[str, bytes], manifest: dict[str, A
             shutil.rmtree(staging, ignore_errors=True)
 
 
-def render(project_root: Path, skill_dir: Path) -> Path:
+def render(
+    project_root: Path, skill_dir: Path, *, overrides: Path | None = None, assignments: list[str] | None = None
+) -> Path:
     project_root = project_root.resolve(strict=True)
     skill_dir = skill_dir.resolve(strict=True)
     if not (project_root / "_bmad").is_dir():
@@ -315,10 +445,25 @@ def render(project_root: Path, skill_dir: Path) -> Path:
 
     sources = _load_sources(skill_dir)
     central = load_central_config(project_root)
-    has_customization = any(_CUSTOM_TOKEN.search(content) for content in sources.values())
+    has_customization = bool(overrides is not None or assignments) or any(
+        _CUSTOM_TOKEN.search(content) or _DIRECTIVE.search(content) for content in sources.values()
+    )
     defaults = load_toml(skill_dir / "customize.toml", required=True) if has_customization else None
     customization = load_customization(project_root, skill_dir) if has_customization else {}
-    replacements, input_values = _resolve_replacements(sources, central, customization, defaults, project_root)
+    supplied: set[str] = set()
+    if defaults is not None:
+        file_layer, command_layer = _invocation_customization(defaults, overrides, assignments or [])
+        customization = structural_merge(structural_merge(customization, file_layer), command_layer)
+        supplied = _leaf_paths(file_layer) | _leaf_paths(command_layer)
+    selected_sources, condition_inputs = _filter_conditions(sources, customization, defaults)
+    replacements, input_values = _resolve_replacements(selected_sources, central, customization, defaults, project_root)
+    input_values.update(condition_inputs)
+    # Every invocation override must reach a token or condition; values are validated where consumed.
+    unused = sorted(path for path in supplied if f"customization.{path}" not in input_values)
+    if unused:
+        raise RenderError(f"invocation override not used by this render: {', '.join(unused)}")
+    # Store TOML date/time inputs in the same JSON representation used on disk.
+    input_values = json.loads(_canonical_json(input_values))
     source_hashes = {name: _hash_bytes(content.encode("utf-8")) for name, content in sources.items()}
     root_hash = _hash_bytes(str(project_root).encode("utf-8"))[:12]
     slug = re.sub(r"[^a-z0-9]+", "-", project_root.name.lower()).strip("-") or "project"
@@ -333,7 +478,7 @@ def render(project_root: Path, skill_dir: Path) -> Path:
     }
     generation_hash = _hash_bytes(_canonical_json(identity))[:20]
     destination = project_root / "_bmad" / "render" / skill_dir.name / f"{slug}-{root_hash}" / generation_hash
-    rendered = _render_sources(sources, replacements, destination, skill_dir)
+    rendered = _render_sources(selected_sources, replacements, destination, skill_dir)
     outputs = {name: content.encode("utf-8") for name, content in rendered.items()}
     output_hashes = {name: _hash_bytes(content) for name, content in outputs.items()}
     manifest = {
@@ -351,17 +496,21 @@ def render(project_root: Path, skill_dir: Path) -> Path:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = _ArgumentParser(description=__doc__)
     parser.add_argument("--project-root", required=True)
     parser.add_argument("--skill", required=True)
-    args = parser.parse_args()
+    parser.add_argument("--overrides", type=Path, help="invocation-only customization TOML file")
+    parser.add_argument("--set", dest="assignments", action="append", default=[], metavar="KEY=VALUE")
     reconfigure = getattr(sys.stdout, "reconfigure", None)
     if reconfigure is not None:
         reconfigure(encoding="utf-8")
     try:
-        entry = render(Path(args.project_root), Path(args.skill))
+        args = parser.parse_args()
+        entry = render(
+            Path(args.project_root), Path(args.skill), overrides=args.overrides, assignments=args.assignments
+        )
     except (ConfigError, RenderError, OSError, UnicodeError, ValueError) as error:
-        sys.stdout.write(f"HALT: {error}\n")
+        sys.stdout.write(f"HALT: {' '.join(str(error).splitlines())}\n")
         return 1
     sys.stdout.write(f"read and follow {entry}\n")
     return 0

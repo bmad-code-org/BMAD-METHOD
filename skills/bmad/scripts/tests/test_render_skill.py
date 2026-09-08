@@ -140,7 +140,9 @@ class RenderSkillTests(unittest.TestCase):
     def _skill(self, ws: SimpleNamespace, name: str) -> Path:
         return _copy_skill(ws.outer / "skills" / name, name)
 
-    def _cli(self, project: Path, skill: Path, *, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
+    def _cli(
+        self, project: Path, skill: Path, *, cwd: Path | None = None, args: tuple[str, ...] = ()
+    ) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
             [
                 sys.executable,
@@ -149,6 +151,7 @@ class RenderSkillTests(unittest.TestCase):
                 str(project),
                 "--skill",
                 str(skill),
+                *args,
             ],
             cwd=cwd or project,
             text=True,
@@ -184,6 +187,266 @@ class RenderSkillTests(unittest.TestCase):
         artifacts = str(project.resolve() / "_bmad-output" / "implementation-artifacts")
         self.assertIn(artifacts, markdown)
         return snap
+
+    def _fixture_skill(self, ws: SimpleNamespace, defaults: str, workflow: str, **sources: str) -> Path:
+        skill = ws.outer / "skills" / "fixture"
+        skill.mkdir(parents=True)
+        (skill / "customize.toml").write_text(defaults, encoding="utf-8")
+        for name, content in {"workflow.md": workflow, **sources}.items():
+            (skill / name).write_text(content, encoding="utf-8")
+        return skill
+
+    def _assert_halt(self, result: subprocess.CompletedProcess[str], ws: SimpleNamespace) -> None:
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertTrue(result.stdout.startswith("HALT:"), result.stdout)
+        self.assertEqual(len(result.stdout.splitlines()), 1, result.stdout)
+        self.assertNotIn("Traceback", result.stdout + result.stderr)
+        self.assertFalse((ws.bmad / "render").exists())
+
+    def test_invocation_precedence_flag_order_and_persistent_isolation(self):
+        ws = self._workspace()
+        skill = self._fixture_skill(ws, '[workflow]\nmessage = "shipped"\n', "{workflow.message}\n")
+        project_file = ws.bmad / "custom" / "fixture.toml"
+        user_file = ws.bmad / "custom" / "fixture.user.toml"
+        override_file = ws.project / "nested" / "cwd" / "invocation.toml"
+        project_file.write_text('[workflow]\nmessage = "project"\n', encoding="utf-8")
+        user_file.write_text('[workflow]\nmessage = "user"\n', encoding="utf-8")
+        override_file.write_text('[workflow]\nmessage = "file"\n', encoding="utf-8")
+        original = {
+            path: path.read_bytes() for path in (project_file, user_file, override_file, skill / "customize.toml")
+        }
+        baseline = rs.render(ws.project, skill)
+        self.assertEqual(baseline.read_text(), "user\n")
+        from_file = rs.render(ws.project, skill, overrides=override_file)
+        self.assertEqual(from_file.read_text(), "file\n")
+        expected = None
+        for args in (
+            (
+                "--set",
+                "workflow.message=command = wins",
+                "--overrides",
+                "invocation.toml",
+            ),
+            (
+                "--overrides",
+                "invocation.toml",
+                "--set",
+                "workflow.message=command = wins",
+            ),
+        ):
+            entry = self._entry(self._cli(ws.project, skill, cwd=override_file.parent, args=args))
+            self.assertEqual(entry.read_text(), "command = wins\n")
+            if expected is not None:
+                self.assertEqual(entry, expected)
+            expected = entry
+        self.assertEqual(rs.render(ws.project, skill), baseline)
+        for path, content in original.items():
+            self.assertEqual(path.read_bytes(), content)
+        user_file.unlink()
+        self.assertEqual(rs.render(ws.project, skill).read_text(), "project\n")
+        project_file.unlink()
+        self.assertEqual(rs.render(ws.project, skill).read_text(), "shipped\n")
+
+    def test_equivalent_invocation_forms_merge_structures_and_reuse_snapshot(self):
+        ws = self._workspace()
+        skill = self._fixture_skill(
+            ws,
+            '[workflow]\nfacts = ["base"]\n[workflow.details]\nlabel = "base"\nkept = "kept"\n'
+            '[[workflow.layers]]\nid = "a"\nname = "A"\ninstruction = "original"\n',
+            "{workflow.facts}\n{workflow.details.label} {workflow.details.kept}\n{workflow.layers}\n",
+        )
+        override = ws.project / "overrides.toml"
+        override.write_text(
+            '[workflow]\nfacts = ["added"]\ndetails = { label = "changed" }\n'
+            'layers = [{ id = "a", name = "Replaced", instruction = "replacement" }, '
+            '{ id = "b", instruction = "new" }]\n',
+            encoding="utf-8",
+        )
+        file_entry = rs.render(ws.project, skill, overrides=override)
+        command_entry = rs.render(
+            ws.project,
+            skill,
+            assignments=[
+                'workflow.facts=["added"]',
+                'workflow.details={ label = "changed" }',
+                'workflow.layers=[{ id = "a", name = "Replaced", instruction = "replacement" }, '
+                '{ id = "b", instruction = "new" }]',
+            ],
+        )
+        self.assertEqual(file_entry, command_entry)
+        self.assertEqual(_files(file_entry.parent), _files(command_entry.parent))
+        content = command_entry.read_text()
+        self.assertIn("- base\n- added", content)
+        self.assertIn("changed kept", content)
+        self.assertIn("Replaced (`a`)", content)
+        self.assertIn("b (`b`)", content)
+        self.assertNotIn("original", content)
+        combined = rs.render(ws.project, skill, overrides=override, assignments=['workflow.facts=["command"]'])
+        self.assertIn("- base\n- added\n- command", combined.read_text())
+
+    def test_string_assignment_syntax_and_conflicting_paths_halt(self):
+        ws = self._workspace()
+        skill = self._fixture_skill(ws, '[workflow]\nmessage = "base"\n', "{workflow.message}")
+        for assignment, expected in (
+            ("workflow.message=words = more words", "words = more words"),
+            ('workflow.message="line\\nnext"', "line\nnext"),
+            ("workflow.message='literal = text'", "literal = text"),
+            ("workflow.message=", ""),
+        ):
+            with self.subTest(assignment=assignment):
+                # The nonempty shipped default deliberately rejects empty prose.
+                if not expected:
+                    with self.assertRaisesRegex(rs.RenderError, "must not be empty"):
+                        rs.render(ws.project, skill, assignments=[assignment])
+                else:
+                    self.assertEqual(rs.render(ws.project, skill, assignments=[assignment]).read_text(), expected)
+        for assignments in (
+            ["workflow.message=first", "workflow.message=second"],
+            ['workflow={ message = "table" }', "workflow.message=child"],
+            ["workflow.message=child", 'workflow={ message = "table" }'],
+        ):
+            with self.subTest(assignments=assignments):
+                with self.assertRaisesRegex(rs.RenderError, "conflicts with earlier --set"):
+                    rs.render(ws.project, skill, assignments=assignments)
+
+    def test_invalid_invocation_halts_before_publication(self):
+        invalid = (
+            ("--set", "workflow.message"),
+            ("--set", ".workflow.message=x"),
+            ("--set", "workflow.unknown=x"),
+            ("--set", 'workflow.message="unterminated'),
+            ("--set", "workflow.count=words"),
+            # Declared but never reaches a token or condition in this render.
+            ("--set", "workflow.count=7"),
+            # Consumed, so the consumer rejects the type.
+            ("--set", "workflow.items=7"),
+            ("--set", "workflow.items=[true]"),
+            ("--set", "workflow.count=2\nextra=3"),
+            ("--overrides", "missing.toml"),
+            ("--overrides",),
+            ("--set",),
+        )
+        for args in invalid:
+            with self.subTest(args=args):
+                ws = self._workspace()
+                skill = self._fixture_skill(
+                    ws,
+                    '[workflow]\nmessage = "base"\ncount = 1\nitems = ["base"]\n',
+                    "{workflow.message} {workflow.items}\n",
+                )
+                self._assert_halt(self._cli(ws.project, skill, args=args), ws)
+        for content in ("[workflow", '[workflow]\nunknown="x"', "[workflow]\ncount=7", "[workflow]\nitems=7"):
+            with self.subTest(content=content):
+                ws = self._workspace()
+                skill = self._fixture_skill(ws, '[workflow]\ncount = 1\nitems = ["base"]\n', "{workflow.items}\n")
+                override = ws.project / "bad.toml"
+                override.write_text(content, encoding="utf-8")
+                self._assert_halt(self._cli(ws.project, skill, args=("--overrides", str(override))), ws)
+
+    def test_nested_conditions_omit_files_and_do_not_resolve_excluded_tokens(self):
+        ws = self._workspace()
+        skill = self._fixture_skill(
+            ws,
+            '[workflow]\nchoice = "left"\nenabled = true\n',
+            '[[bmad-if:workflow.choice == "left"]]\nLeft [[bmad-snapshot:left.md]]\n'
+            "[[bmad-if:workflow.enabled != false]]\nEnabled\n[[bmad-else]]\n"
+            "{{config.missing}} {workflow.missing} [[bmad-snapshot:missing.md]]\n[[bmad-endif]]\n"
+            "[[bmad-else]]\nRight [[bmad-snapshot:right.md]]\n[[bmad-endif]]\n",
+            **{
+                "left.md": '[[bmad-if:workflow.choice == "left"]]\nLeft detail\n[[bmad-endif]]\n',
+                "right.md": '\n[[bmad-if:workflow.choice != "left"]]\nRight detail\n[[bmad-endif]]\n',
+            },
+        )
+        left = rs.render(ws.project, skill)
+        before = _files(left.parent)
+        self.assertIn("Enabled", left.read_text())
+        self.assertTrue((left.parent / "left.md").exists())
+        self.assertFalse((left.parent / "right.md").exists())
+        right = rs.render(ws.project, skill, assignments=["workflow.choice=right"])
+        self.assertNotEqual(left, right)
+        self.assertIn("Right", right.read_text())
+        self.assertFalse((right.parent / "left.md").exists())
+        self.assertTrue((right.parent / "right.md").exists())
+        self.assertEqual(before, _files(left.parent))
+        self.assertEqual(left, rs.render(ws.project, skill))
+        manifest = json.loads((left.parent / "manifest.json").read_text())
+        self.assertEqual(
+            manifest["inputs"]["resolved_values"],
+            {
+                "customization.workflow.choice": "left",
+                "customization.workflow.enabled": True,
+            },
+        )
+        self.assertIn("right.md", manifest["inputs"]["source_sha256"])
+        self.assertNotIn("right.md", manifest["outputs"])
+        (skill / "right.md").write_text((skill / "right.md").read_text().replace("Right detail", "Changed detail"))
+        self.assertNotEqual(left, rs.render(ws.project, skill))
+
+    def test_typed_scalar_condition_inputs_identify_generations_even_for_identical_output(self):
+        for default, literal, override in (
+            ("true", "true", "false"),
+            ("1", "1", "2"),
+            ("1.5", "1.5", "2.5"),
+            ('"one"', '"one"', '"two"'),
+            ("2026-09-07", "2026-09-07", "2026-09-08"),
+        ):
+            with self.subTest(default=default):
+                ws = self._workspace()
+                skill = self._fixture_skill(
+                    ws,
+                    f"[workflow]\nvalue = {default}\n",
+                    f"[[bmad-if:workflow.value == {literal}]]\nSame\n[[bmad-else]]\nSame\n[[bmad-endif]]\n",
+                )
+                before = rs.render(ws.project, skill)
+                after = rs.render(ws.project, skill, assignments=[f"workflow.value={override}"])
+                self.assertEqual(before.read_bytes(), after.read_bytes())
+                self.assertNotEqual(before, after)
+                self.assertEqual(after, rs.render(ws.project, skill, assignments=[f"workflow.value={override}"]))
+
+    def test_invalid_conditions_report_source_location_and_halt(self):
+        directives = (
+            '[[bmad-if:workflow.value = "one"]]\n',
+            'prefix [[bmad-if:workflow.value == "one"]]\n',
+            '[[bmad-if:workflow.value == "one"]]\ntext\n',
+            "[[bmad-else]]\n",
+            "[[bmad-endif]]\n",
+            '[[bmad-if:workflow.value == "one"]]\n[[bmad-else]]\n[[bmad-else]]\n[[bmad-endif]]\n',
+            '[[bmad-if:workflow.unknown == "one"]]\n[[bmad-endif]]\n',
+            "[[bmad-if:workflow.value == one]]\n[[bmad-endif]]\n",
+            "[[bmad-if:workflow.items == []]]\n[[bmad-endif]]\n",
+            '[[bmad-if:workflow.value == "one" or true]]\n[[bmad-endif]]\n',
+            '[[bmad-if:workflow.value != "one"]]\n[[bmad-if:broken]]\n[[bmad-endif]]\n',
+        )
+        for directive in directives:
+            with self.subTest(directive=directive):
+                ws = self._workspace()
+                skill = self._fixture_skill(ws, '[workflow]\nvalue = "one"\nitems = []\n', directive)
+                result = self._cli(ws.project, skill)
+                self._assert_halt(result, ws)
+                self.assertRegex(result.stdout, r"workflow\.md:\d+:")
+
+    def test_excluded_entry_and_surviving_reference_to_excluded_file_halt(self):
+        for workflow in (
+            "[[bmad-if:workflow.enabled == false]]\nExcluded\n[[bmad-endif]]\n",
+            "Read [[bmad-snapshot:detail.md]]\n",
+        ):
+            with self.subTest(workflow=workflow):
+                ws = self._workspace()
+                skill = self._fixture_skill(
+                    ws,
+                    "[workflow]\nenabled = true\n",
+                    workflow,
+                    **{"detail.md": "[[bmad-if:workflow.enabled == false]]\nExcluded\n[[bmad-endif]]\n"},
+                )
+                self._assert_halt(self._cli(ws.project, skill), ws)
+
+    def test_invocation_prose_keeps_conditional_and_compile_tokens_opaque(self):
+        ws = self._workspace()
+        skill = self._fixture_skill(ws, '[workflow]\nmessage = ""\n', "{workflow.message}\n")
+        literal = "[[bmad-if:workflow.missing == true]]\n{workflow.missing} {{config.missing}}\n[[bmad-endif]]"
+        literal += "\n[[bmad-snapshot:missing.md]] {skill-root}/detail.md"
+        entry = rs.render(ws.project, skill, assignments=[f"workflow.message={literal}"])
+        self.assertEqual(entry.read_text(), literal.replace("{skill-root}", str(entry.parent)) + "\n")
 
     def test_unsupported_customization_default_type_is_rejected(self):
         # No shipped skill uses a boolean customization default; arranging one

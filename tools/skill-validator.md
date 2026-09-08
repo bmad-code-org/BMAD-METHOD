@@ -67,6 +67,22 @@ Path resolution differs between the last two; see PATH-01.
 
 The distinction between `{{name}}` and `{{.name}}` matters: the first is an artifact placeholder the consumer of the generated document fills in later; the second is a substitution baked in at render time. See REF-01 and TPL-01.
 
+### Conditional Sections in Rendered Skills
+
+Rendered Markdown sources can select instructions using standalone directive lines:
+
+```markdown
+[[bmad-if:workflow.key == "value"]]
+Instructions for this value.
+[[bmad-else]]
+Instructions for other values.
+[[bmad-endif]]
+```
+
+The grammar is `[[bmad-if:<dotted customization path> <== or !=> <TOML scalar literal>]]`, an optional `[[bmad-else]]`, and a required `[[bmad-endif]]`. Blocks can nest. The path must name a scalar in the skill's `customize.toml`. Strings are quoted; a literal of a different type than the value never matches. No other operators or expressions are evaluated.
+
+Conditions see the effective customization, including any invocation overrides. Filtering runs before token and snapshot-link resolution, so keep branch-specific links inside the matching condition. A secondary file that filters to nothing is left out of the snapshot; `workflow.md` filtering to nothing is an error.
+
 ---
 
 ## Rule Catalog

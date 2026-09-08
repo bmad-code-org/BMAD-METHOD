@@ -256,6 +256,33 @@ sequence, so you know when each hook fires:
 
 The workflow body begins after step 6.
 
+## Override one rendered invocation
+
+To change a skill's customization for one run only, add `--set key=value`
+arguments or an `--overrides <file.toml>` file to the `render_skill.py`
+command in its `SKILL.md`. Persistent project and user files stay as they
+are.
+
+```bash
+uv run /abs/project/_bmad/scripts/render_skill.py \
+  --project-root /abs/project \
+  --skill /abs/path/to/bmad-build \
+  --overrides ./invocation.toml \
+  --set 'workflow.on_complete=Summarize the result in three bullets.'
+```
+
+Keys are dotted parameter paths such as `workflow.on_complete`. The
+override file has the same shape as the skill's `customize.toml`. Both
+layer on top of the persistent files, and `--set` wins over the file.
+Every override must reach a token or condition in the rendered skill;
+an override the render does not use halts.
+
+String values can be written as plain text. Other types use TOML syntax:
+
+```bash
+--set 'workflow.persistent_facts=["Additional context"]'
+```
+
 ## Central configuration
 
 Per-skill files cover one agent or workflow. Install answers and the agent
