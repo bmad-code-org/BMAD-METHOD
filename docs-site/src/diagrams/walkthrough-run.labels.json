@@ -46,5 +46,29 @@
     "approve": "승인",
     "rework": "재작업",
     "discuss": "논의"
+  },
+  "fr-FR": {
+    "title": "Le déroulé de bmad-walkthrough : il lit la spécification de build ou une pull request, puis passe par l'orientation, la visite guidée, une passe de détail et les tests avant la conclusion, où vous approuvez, demandez une reprise ou ouvrez une discussion.",
+    "input-spec": "bmad-build",
+    "input-spec-2": "fichier de spéc",
+    "input-pr": "PR / commit",
+    "input-pr-2": "branche",
+    "orientation": "Orientation",
+    "orientation-note": "Résumé de l'intention",
+    "orientation-note-2": "Statistiques de portée",
+    "walkthrough": "Visite guidée",
+    "walkthrough-note": "Organisée par sujet",
+    "walkthrough-note-2": "Points path:line cliquables",
+    "detail-pass": "Passe de détail",
+    "detail-pass-note": "Le plus à risque d'abord",
+    "detail-pass-note-2": "« creuse [zone] » pour approfondir",
+    "testing": "Tests",
+    "testing-note": "Observations manuelles",
+    "testing-note-2": "Le voir fonctionner",
+    "wrap-up": "Conclusion",
+    "early-exit": "sortie anticipée",
+    "approve": "Approuver",
+    "rework": "Reprise",
+    "discuss": "Discuter"
   }
 }
