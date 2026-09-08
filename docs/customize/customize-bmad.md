@@ -305,9 +305,11 @@ before a snapshot is published.
 
 Both invocation forms use the same structural merge rules as persistent
 overrides: tables merge recursively, ordinary arrays append, and keyed
-table arrays merge by identity. Repeating the same `--set` path replaces
-its earlier assignment, including arrays; the resulting command-line
-layer merges once, after the file layer. Equivalent effective inputs
+table arrays merge by identity. The command-line layer merges once,
+after the file layer. Two `--set` arguments may not name the same path
+or nest one inside the other, such as `workflow` and
+`workflow.on_complete`; that halts instead of silently keeping one of
+them. Equivalent effective inputs
 reuse the same immutable snapshot. The command returns one
 `read and follow <absolute workflow.md path>` line on success, or one
 `HALT: ...` line on failure.

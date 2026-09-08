@@ -105,10 +105,16 @@ def _invocation_customization(
     file_layer = load_toml(overrides, required=True) if overrides is not None else {}
     _validate_override(file_layer, defaults, "customization")
     command_layer: dict[str, Any] = {}
+    assigned: list[str] = []
     for assignment in assignments:
         path, separator, raw = assignment.partition("=")
         if not separator or re.fullmatch(_PARAMETER, path) is None:
             raise RenderError(f"invalid --set assignment {assignment!r}; expected bare dotted key=value")
+        # A repeated or overlapping path is a caller mistake, not a precedence rule.
+        for earlier in assigned:
+            if path == earlier or path.startswith(f"{earlier}.") or earlier.startswith(f"{path}."):
+                raise RenderError(f"--set `{path}` conflicts with earlier --set `{earlier}`")
+        assigned.append(path)
         default = _lookup(defaults, path, "customization parameter")
         value = (
             raw if isinstance(default, str) and not raw.lstrip().startswith(('"', "'")) else _toml_literal(raw, path)
@@ -118,7 +124,6 @@ def _invocation_customization(
         parts = path.split(".")
         for part in parts[:-1]:
             target = target.setdefault(part, {})
-        # Repeated assignments replace within this layer, including arrays.
         target[parts[-1]] = value
     return file_layer, command_layer
 

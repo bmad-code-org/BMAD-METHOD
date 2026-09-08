@@ -223,8 +223,6 @@ class RenderSkillTests(unittest.TestCase):
         for args in (
             (
                 "--set",
-                "workflow.message=earlier",
-                "--set",
                 "workflow.message=command = wins",
                 "--overrides",
                 "invocation.toml",
@@ -232,8 +230,6 @@ class RenderSkillTests(unittest.TestCase):
             (
                 "--overrides",
                 "invocation.toml",
-                "--set",
-                "workflow.message=earlier",
                 "--set",
                 "workflow.message=command = wins",
             ),
@@ -271,7 +267,6 @@ class RenderSkillTests(unittest.TestCase):
             ws.project,
             skill,
             assignments=[
-                'workflow.facts=["discarded"]',
                 'workflow.facts=["added"]',
                 'workflow.details={ label = "changed" }',
                 'workflow.layers=[{ id = "a", name = "Replaced", instruction = "replacement" }, '
@@ -282,7 +277,6 @@ class RenderSkillTests(unittest.TestCase):
         self.assertEqual(_files(file_entry.parent), _files(command_entry.parent))
         content = command_entry.read_text()
         self.assertIn("- base\n- added", content)
-        self.assertNotIn("discarded", content)
         self.assertIn("changed kept", content)
         self.assertIn("Replaced (`a`)", content)
         self.assertIn("b (`b`)", content)
@@ -290,7 +284,7 @@ class RenderSkillTests(unittest.TestCase):
         combined = rs.render(ws.project, skill, overrides=override, assignments=['workflow.facts=["command"]'])
         self.assertIn("- base\n- added\n- command", combined.read_text())
 
-    def test_string_assignment_syntax_and_parent_child_last_assignment(self):
+    def test_string_assignment_syntax_and_conflicting_paths_halt(self):
         ws = self._workspace()
         skill = self._fixture_skill(ws, '[workflow]\nmessage = "base"\n', "{workflow.message}")
         for assignment, expected in (
@@ -306,11 +300,14 @@ class RenderSkillTests(unittest.TestCase):
                         rs.render(ws.project, skill, assignments=[assignment])
                 else:
                     self.assertEqual(rs.render(ws.project, skill, assignments=[assignment]).read_text(), expected)
-        for assignments, expected in (
-            (['workflow={ message = "table" }', "workflow.message=child"], "child"),
-            (["workflow.message=child", 'workflow={ message = "table" }'], "table"),
+        for assignments in (
+            ["workflow.message=first", "workflow.message=second"],
+            ['workflow={ message = "table" }', "workflow.message=child"],
+            ["workflow.message=child", 'workflow={ message = "table" }'],
         ):
-            self.assertEqual(rs.render(ws.project, skill, assignments=assignments).read_text(), expected)
+            with self.subTest(assignments=assignments):
+                with self.assertRaisesRegex(rs.RenderError, "conflicts with earlier --set"):
+                    rs.render(ws.project, skill, assignments=assignments)
 
     def test_invalid_invocation_halts_before_publication(self):
         invalid = (
