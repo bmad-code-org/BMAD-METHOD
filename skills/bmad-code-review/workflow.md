@@ -33,7 +33,7 @@ Execute each of these steps in order (`_None._` means skip):
 
 {workflow.activation_steps_append}
 
-Activation is complete after all activation steps have run. If `{project-root}/**/project-context.md` exists, load it as context.
+Activation is complete after all activation steps have run.
 
 ## WORKFLOW ARCHITECTURE
 
