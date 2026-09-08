@@ -102,6 +102,17 @@ def _invocation_customization(
     return file_layer, command_layer
 
 
+def _leaf_paths(table: dict[str, Any], prefix: str = "") -> set[str]:
+    leaves: set[str] = set()
+    for key, value in table.items():
+        path = f"{prefix}{key}"
+        if isinstance(value, dict):
+            leaves |= _leaf_paths(value, f"{path}.")
+        else:
+            leaves.add(path)
+    return leaves
+
+
 def _filter_conditions(
     sources: dict[str, str], customization: dict[str, Any], defaults: dict[str, Any] | None
 ) -> tuple[dict[str, str], dict[str, Any]]:
@@ -439,12 +450,18 @@ def render(
     )
     defaults = load_toml(skill_dir / "customize.toml", required=True) if has_customization else None
     customization = load_customization(project_root, skill_dir) if has_customization else {}
+    supplied: set[str] = set()
     if defaults is not None:
         file_layer, command_layer = _invocation_customization(defaults, overrides, assignments or [])
         customization = structural_merge(structural_merge(customization, file_layer), command_layer)
+        supplied = _leaf_paths(file_layer) | _leaf_paths(command_layer)
     selected_sources, condition_inputs = _filter_conditions(sources, customization, defaults)
     replacements, input_values = _resolve_replacements(selected_sources, central, customization, defaults, project_root)
     input_values.update(condition_inputs)
+    # Every invocation override must reach a token or condition; values are validated where consumed.
+    unused = sorted(path for path in supplied if f"customization.{path}" not in input_values)
+    if unused:
+        raise RenderError(f"invocation override not used by this render: {', '.join(unused)}")
     # Store TOML date/time inputs in the same JSON representation used on disk.
     input_values = json.loads(_canonical_json(input_values))
     source_hashes = {name: _hash_bytes(content.encode("utf-8")) for name, content in sources.items()}

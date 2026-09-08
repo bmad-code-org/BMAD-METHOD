@@ -316,6 +316,11 @@ class RenderSkillTests(unittest.TestCase):
             ("--set", "workflow.unknown=x"),
             ("--set", 'workflow.message="unterminated'),
             ("--set", "workflow.count=words"),
+            # Declared but never reaches a token or condition in this render.
+            ("--set", "workflow.count=7"),
+            # Consumed, so the consumer rejects the type.
+            ("--set", "workflow.items=7"),
+            ("--set", "workflow.items=[true]"),
             ("--set", "workflow.count=2\nextra=3"),
             ("--overrides", "missing.toml"),
             ("--overrides",),
@@ -325,13 +330,15 @@ class RenderSkillTests(unittest.TestCase):
             with self.subTest(args=args):
                 ws = self._workspace()
                 skill = self._fixture_skill(
-                    ws, '[workflow]\nmessage = "base"\ncount = 1\nitems = ["base"]\nmatrix = [[1]]\n', "Ready\n"
+                    ws,
+                    '[workflow]\nmessage = "base"\ncount = 1\nitems = ["base"]\n',
+                    "{workflow.message} {workflow.items}\n",
                 )
                 self._assert_halt(self._cli(ws.project, skill, args=args), ws)
-        for content in ("[workflow",):
+        for content in ("[workflow", '[workflow]\nunknown="x"', "[workflow]\ncount=7", "[workflow]\nitems=7"):
             with self.subTest(content=content):
                 ws = self._workspace()
-                skill = self._fixture_skill(ws, "[workflow]\ncount = 1\n", "Ready\n")
+                skill = self._fixture_skill(ws, '[workflow]\ncount = 1\nitems = ["base"]\n', "{workflow.items}\n")
                 override = ws.project / "bad.toml"
                 override.write_text(content, encoding="utf-8")
                 self._assert_halt(self._cli(ws.project, skill, args=("--overrides", str(override))), ws)
