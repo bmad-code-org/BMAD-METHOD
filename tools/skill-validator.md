@@ -79,11 +79,9 @@ Instructions for other values.
 [[bmad-endif]]
 ```
 
-The grammar is `[[bmad-if:<bare dotted customization path> <== or !=> <TOML scalar literal>]]`, an optional `[[bmad-else]]`, and a required `[[bmad-endif]]`. Blocks can nest; surrounding indentation is allowed. Each path must name a scalar declared in the skill's `customize.toml`, and the literal must match its type. Strings must be TOML-quoted; booleans, numbers, and dates use TOML literal syntax. No other operators or expressions are evaluated.
+The grammar is `[[bmad-if:<dotted customization path> <== or !=> <TOML scalar literal>]]`, an optional `[[bmad-else]]`, and a required `[[bmad-endif]]`. Blocks can nest. The path must name a scalar in the skill's `customize.toml`, and the literal must match its type, so strings are quoted. No other operators or expressions are evaluated.
 
-Conditions use the effective customization after shipped defaults, project TOML, user TOML, invocation `--overrides` TOML, and `--set` assignments have merged. The renderer filters authored sources before resolving tokens and snapshot links. Tokens and links in inactive branches are not resolved. A wholly excluded secondary Markdown file is absent from the snapshot; excluding `workflow.md` or retaining a `[[bmad-snapshot:...]]` link to an excluded file is an error. Invalid or unbalanced directives halt with the source filename and line number.
-
-Keep branch-specific instructions and their snapshot links inside the matching conditions. The renderer records condition inputs and original source hashes in snapshot identity. Customization prose is inserted afterward and remains opaque: conditional-looking text and compile-time tokens in it stay literal, apart from the existing `{skill-root}` binding.
+Conditions see the effective customization, including any invocation overrides. Filtering runs before token and snapshot-link resolution, so keep branch-specific links inside the matching condition. A secondary file that filters to nothing is left out of the snapshot; `workflow.md` filtering to nothing is an error.
 
 ---
 
