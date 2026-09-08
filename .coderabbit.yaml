@@ -18,6 +18,11 @@ reviews:
   commit_status: false
   collapse_walkthrough: true  # `walkthrough: false` is not a schema key; this is the real knob
   poem: false
+  pre_merge_checks:
+    # Docstring coverage is on by default at an 80% threshold; the renderer's
+    # private helpers carry none and no repo rule asks for them.
+    docstrings:
+      mode: 'off'
   auto_review:
     enabled: true
     drafts: false  # Don't review drafts automatically
