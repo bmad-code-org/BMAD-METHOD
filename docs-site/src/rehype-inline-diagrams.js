@@ -110,7 +110,7 @@ export default function rehypeInlineDiagrams(options = {}) {
       // attributes, so these are `ariaLabelledBy` / `ariaLabel`; reading the
       // hyphenated form found nothing and overrode every diagram's own <title>.
       const svg = fragment.children.find((child) => child.tagName === 'svg');
-      if (svg && node.properties.alt && !svg.properties.ariaLabelledBy) {
+      if (svg && node.properties.alt && !svg.properties.ariaLabelledBy && !svg.properties.ariaLabel) {
         svg.properties.ariaLabel = node.properties.alt;
       }
 

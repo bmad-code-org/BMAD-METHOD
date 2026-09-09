@@ -90,7 +90,11 @@
   --sl-color-white: var(--bmad-ink);
   --sl-color-gray-1: var(--bmad-ink-2);
   --sl-color-gray-2: var(--bmad-muted-ink);
-  --sl-color-gray-3: var(--bmad-muted-ink-2);
+  /* One step lighter than gray-2, but not so light that it fails: the label
+     register sets 11px uppercase mono in this colour, and --bmad-muted-ink-2
+     (#7c8797) is only 3.64:1 on white where AA wants 4.5. #687383 is 4.81:1
+     and still reads as a step below the body's muted ink. */
+  --sl-color-gray-3: #687383;
   --sl-color-gray-4: var(--bmad-line-2);
   --sl-color-gray-5: var(--bmad-line);
   --sl-color-gray-6: var(--bmad-paper-2);

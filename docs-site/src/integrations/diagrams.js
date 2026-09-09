@@ -63,8 +63,10 @@ export default function bmadDiagrams() {
       },
 
       'astro:config:done'({ config, logger }) {
+        // An empty list still has to reach the digest: deleting the last diagram
+        // changes the stamp, and returning early would leave the pages that
+        // embedded it rendering from cache.
         const files = diagramFiles(config.root);
-        if (files.length === 0) return;
 
         const cacheDir = fileURLToPath(config.cacheDir);
         const stampPath = fileURLToPath(new URL(`${STAMP}.${mode}.hash`, config.cacheDir));

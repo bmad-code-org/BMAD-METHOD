@@ -37,10 +37,11 @@ try {
 }
 
 for (const [key, value] of Object.entries(strings)) {
-  svg = svg.replace(
-    new RegExp(`(data-i18n="${key}"[^>]*>)[^<]*`),
-    (_match, open) => `${open}${value}`
-  );
+  // Global, and the key escaped: a diagram may use one key more than once, and
+  // a key is free to contain regex metacharacters. The rehype plugin walks the
+  // tree and has neither problem; this path has to be told.
+  const pattern = new RegExp(`(data-i18n="${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"[^>]*>)[^<]*`, 'g');
+  svg = svg.replace(pattern, (_match, open) => `${open}${value}`);
 }
 
 if (label) {
