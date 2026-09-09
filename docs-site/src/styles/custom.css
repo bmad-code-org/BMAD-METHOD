@@ -744,16 +744,21 @@ starlight-menu-button button {
   padding: 0.3rem 0.7rem;
 }
 
+/* The whole section list has to clear the fold on a laptop, with the first
+   couple of sections showing their contents — that is how a reader sees what
+   the docs contain before scrolling. Air between groups is what the label
+   register needs, but 1.8rem of it pushed the last section 130px below the
+   fold at 1440x800. */
 .sidebar-content .top-level > li {
-  margin-top: 1.8rem;
+  margin-top: 0.9rem;
 }
 
 .sidebar-content .top-level > li:first-child {
-  margin-top: 0.5rem;
+  margin-top: 0.25rem;
 }
 
 .sidebar-content .top-level ul a {
-  padding: 0.32rem 0.7rem;
+  padding: 0.2rem 0.7rem;
   border: 0;
   border-inline-start: 2px solid transparent;
   border-radius: 0;
