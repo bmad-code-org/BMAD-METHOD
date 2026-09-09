@@ -7,7 +7,7 @@ sidebar:
 
 `bmad-walkthrough` là một workflow review tương tác có người trong vòng lặp với hỗ trợ của LLM. Nó dẫn bạn đi qua một thay đổi mã nguồn, từ mục đích và bối cảnh đến các chi tiết quan trọng, để bạn có thể quyết định có nên phát hành, làm lại, hay đào sâu thêm.
 
-![Sơ đồ workflow Walkthrough](/diagrams/walkthrough-diagram.png)
+![Sơ đồ workflow Walkthrough](/diagrams/walkthrough-run.svg)
 
 ## Luồng điển hình
 

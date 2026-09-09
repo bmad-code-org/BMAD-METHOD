@@ -25,7 +25,7 @@ Build는 사람의 개입을 줄인 채 오래 실행됩니다. Walkthrough에�
 
 ## `bmad-walkthrough` 실행하기
 
-![bmad-walkthrough 워크플로 다이어그램](/diagrams/walkthrough-diagram-ko.svg)
+![bmad-walkthrough 워크플로 다이어그램](/diagrams/walkthrough-run.svg)
 
 `bmad-build`가 끝난 뒤 같은 채팅에서 "walkthrough"라고 말하세요. 다른 변경을 검토하려면 새 채팅을 열고 `/bmad-walkthrough`에 PR, 브랜치, 사양 경로 또는 현재 Git 상태를 전달합니다.
 

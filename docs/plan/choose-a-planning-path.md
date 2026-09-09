@@ -89,7 +89,7 @@ installed project, `bmad-help` recommends the next one.
 want when you invoke it, or it will ask. `bmad-product-brief` feeds `bmad-prd`,
 which reads the brief during discovery, but neither requires the other.
 
-![Three columns of planning skills and the files each writes: analysis (brainstorming, forge idea, deep recon, product brief, PRFAQ), planning (PRD, UX, spec), and solutioning (architecture, epics and stories, sprint planning), all handing off to bmad-build, one session per unit](../images/planning-skills.svg)
+![Three columns of planning skills and the files each writes: analysis (brainstorming, forge idea, deep recon, product brief, PRFAQ), planning (PRD, UX, spec), and solutioning (architecture, epics and stories, sprint planning), all handing off to bmad-build, one session per unit](/diagrams/planning-skills.svg)
 
 ## Size Follows the Intent
 
@@ -100,7 +100,7 @@ signal: use more planning when the work has high risk, unclear requirements,
 broad architectural reach, cross-system effects, or coordination between
 people or teams.
 
-![Four nested paths reuse the same unit: edit directly, run one Build, repeat Build across an epic, or repeat epic paths across a project](../images/development-paths.svg)
+![Four nested paths reuse the same unit: edit directly, run one Build, repeat Build across an epic, or repeat epic paths across a project](/diagrams/development-paths.svg)
 
 Every path uses the same implementation unit. Larger work adds shared context
 around that unit and repeats it; it does not switch to a separate delivery

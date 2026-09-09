@@ -1,7 +1,11 @@
 // @ts-check
+import { fileURLToPath } from 'node:url';
+
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import sitemap from '@astrojs/sitemap';
+import bmadDiagrams from './src/integrations/diagrams.js';
+import rehypeInlineDiagrams from './src/rehype-inline-diagrams.js';
 import rehypeMarkdownLinks from './src/rehype-markdown-links.js';
 import rehypeBasePaths from './src/rehype-base-paths.js';
 import { getSiteUrl } from './src/lib/site-url.mjs';
@@ -91,19 +95,25 @@ export default defineConfig({
 
   markdown: {
     rehypePlugins: [
+      // Hand-authored diagrams are inlined so custom.css can theme them; this
+      // runs before rehypeBasePaths, which would otherwise rewrite the src of
+      // an <img> that is about to be replaced.
+      [rehypeInlineDiagrams, { root: fileURLToPath(new URL('.', import.meta.url)), locales }],
       [rehypeMarkdownLinks, { base: basePath }],
       [rehypeBasePaths, { base: basePath }],
     ],
   },
 
   integrations: [
+    // must come before the pages that embed diagrams are rendered
+    bmadDiagrams(),
     // Exclude custom 404 pages (all locales) from the sitemap — they are
     // treated as normal content docs by Starlight even with disable404Route.
     sitemap({
       filter: (page) => !/\/404(\/|$)/.test(new URL(page).pathname),
     }),
     starlight({
-      title: 'BMAD Method',
+      title: 'BMad Method',
       tagline: 'AI-driven agile development with specialized agents and workflows that scale from bug fixes to enterprise platforms.',
 
       // i18n: locale config from shared module (docs-site/src/lib/locales.mjs)
@@ -534,6 +544,9 @@ export default defineConfig({
         Header: './src/components/Header.astro',
         MobileMenuFooter: './src/components/MobileMenuFooter.astro',
         Sidebar: './src/components/Sidebar.astro',
+        SiteTitle: './src/components/SiteTitle.astro',
+        PageTitle: './src/components/PageTitle.astro',
+        TwoColumnContent: './src/components/TwoColumnContent.astro',
       },
 
       // Table of contents

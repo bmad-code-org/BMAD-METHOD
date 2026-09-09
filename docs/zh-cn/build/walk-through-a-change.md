@@ -7,7 +7,7 @@ sidebar:
 
 `bmad-walkthrough` 是一个交互式的、LLM 辅助的人机协作审查工作流。它带你逐步走过一个代码变更——从目的和上下文到细节——让你能做出知情决策：是发布、返工，还是深入挖掘。
 
-![Walkthrough 工作流图](/diagrams/walkthrough-diagram.png)
+![Walkthrough 工作流图](/diagrams/walkthrough-run.svg)
 
 ## 典型流程
 

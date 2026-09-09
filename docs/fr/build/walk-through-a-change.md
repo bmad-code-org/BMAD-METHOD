@@ -7,7 +7,7 @@ sidebar:
 
 `bmad-walkthrough` est un workflow de revue interactif, assisté par LLM, avec intervention humaine. Il vous guide à travers une modification de code — de l’intention et du contexte jusqu’aux détails — afin que vous puissiez prendre une décision éclairée sur la mise en production, la refonte ou l’approfondissement.
 
-![Diagramme du workflow Walkthrough](/diagrams/walkthrough-diagram-fr.webp)
+![Diagramme du workflow Walkthrough](/diagrams/walkthrough-run.svg)
 
 ## Le Flux Typique
 

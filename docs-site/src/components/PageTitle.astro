@@ -1,0 +1,55 @@
+---
+/**
+ * The page masthead, in the bmadcode.com register: an accent eyebrow naming
+ * the Diataxis section, then the title in Instrument Serif (the serif comes
+ * from custom.css, which styles `h1#_top`).
+ *
+ * The eyebrow is English-only, so it is shown on the root locale only rather
+ * than printing an untranslated label over a translated page.
+ */
+const { entry, locale } = Astro.locals.starlightRoute;
+
+/* Starlight's PAGE_TITLE_ID. Its constants module is not an exported
+   specifier, so the value is written out; the skip link and the "back to top"
+   anchor both target it. */
+const PAGE_TITLE_ID = '_top';
+
+/* the sidebar's own group labels, so the eyebrow names the section the
+   reader navigated through */
+const SECTIONS: Record<string, string> = {
+  start: 'Start',
+  build: 'Build',
+  plan: 'Plan Larger Work',
+  'existing-codebases': 'Existing Codebases',
+  customize: 'Customize and Extend',
+  reference: 'Reference',
+};
+
+const section = locale ? undefined : SECTIONS[entry.id.split('/')[0] ?? ''];
+---
+
+{section && <p class="eyebrow">{section}</p>}
+<h1 id={PAGE_TITLE_ID}>{entry.data.title}</h1>
+
+<style>
+  .eyebrow {
+    margin: 0 0 0.85rem;
+    font-size: clamp(1.125rem, 1.45vw, 1.25rem);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.012em;
+    color: var(--bmad-accent);
+  }
+
+  h1 {
+    margin-top: 1rem;
+    font-size: var(--sl-text-h1);
+    line-height: var(--sl-line-height-headings);
+    font-weight: 600;
+    color: var(--sl-color-white);
+  }
+
+  .eyebrow + h1 {
+    margin-top: 0;
+  }
+</style>

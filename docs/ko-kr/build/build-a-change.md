@@ -15,7 +15,7 @@ sidebar:
 
 ## `bmad-build` 실행하기
 
-![bmad-build 워크플로 다이어그램](/diagrams/build-diagram-ko.webp)
+![bmad-build 워크플로 다이어그램](/diagrams/build-run.svg)
 
 ### 1. 새 채팅 시작
 

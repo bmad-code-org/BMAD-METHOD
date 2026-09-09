@@ -1,0 +1,26 @@
+{
+  "en": {
+    "start-anywhere": "START ANYWHERE",
+    "label": "?",
+    "vague-notion": "Vague notion",
+    "big-clear-idea": "Big clear idea",
+    "small-change": "Small change",
+    "clarify": "Clarify",
+    "plan": "Plan",
+    "build-and-verify": "Build and verify",
+    "learn-and-adjust": "Learn and adjust",
+    "right-sized-for-the-work-in-front-": "RIGHT-SIZED FOR THE WORK IN FRONT OF YOU"
+  },
+  "ko-KR": {
+    "start-anywhere": "어디서든 시작",
+    "label": "?",
+    "vague-notion": "막연한 생각",
+    "big-clear-idea": "크고 명확한 아이디어",
+    "small-change": "작은 변경",
+    "clarify": "구체화",
+    "plan": "계획",
+    "build-and-verify": "구현 및 검증",
+    "learn-and-adjust": "학습 및 조정",
+    "right-sized-for-the-work-in-front-": "눈앞의 작업에 꼭 맞는 절차"
+  }
+}

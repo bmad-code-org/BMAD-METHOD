@@ -26,7 +26,7 @@ production, `bmad-build` is likely worth it.
 
 ## Run `bmad-build`
 
-![bmad-build workflow diagram](/diagrams/build-diagram.png)
+![The bmad-build run](/diagrams/build-run.svg)
 
 ### 1. Start a Fresh Chat
 
