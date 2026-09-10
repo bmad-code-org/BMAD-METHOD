@@ -120,7 +120,16 @@ export default defineConfig({
       defaultLocale: 'root',
       locales,
 
-      favicon: '/favicon.ico',
+      // The BMad tile, the same mark the header and blog.bmadcode.com carry.
+      // The SVG is what modern browsers pick up; the .ico is generated from it
+      // and stays listed for the ones that ignore `image/svg+xml`.
+      favicon: '/favicon.svg',
+      head: [
+        {
+          tag: 'link',
+          attrs: { rel: 'icon', href: '/favicon.ico', sizes: '32x32' },
+        },
+      ],
 
       // Social links
       social: [

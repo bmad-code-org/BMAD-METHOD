@@ -7,6 +7,7 @@
   "scripts": {
     "build": "node scripts/build-docs.mjs",
     "dev": "astro dev",
+    "export-readme-diagrams": "node scripts/export-readme-diagrams.mjs",
     "fix-links": "node scripts/fix-doc-links.js",
     "format:check": "prettier --check \"{scripts,test}/**/*.{js,mjs}\"",
     "format:fix": "prettier --write \"{scripts,test}/**/*.{js,mjs}\"",

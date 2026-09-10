@@ -1,0 +1,96 @@
+<svg class="bmad-diagram" xmlns="http://www.w3.org/2000/svg" width="1120" height="420" viewBox="0 0 1120 420" role="img" aria-labelledby="title description">
+  <style>
+  .bmad-diagram { font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif; }
+  .bmad-diagram text { fill: #e6eaf0; }
+  .bmad-diagram .node { fill: #1a1e24; stroke: #404854; stroke-width: 1; }
+  .bmad-diagram .node.hot { stroke: #7fa0ff; }
+  .bmad-diagram .gate { fill: #111418; stroke: #7fa0ff; stroke-width: 1.5; }
+  .bmad-diagram .chip { fill: #1a1e24; stroke: #404854; stroke-width: 1; }
+  .bmad-diagram .chip.ok { fill: rgba(111, 207, 151, 0.1); stroke: #6fcf97; }
+  .bmad-diagram .chip.warn { fill: rgba(224, 178, 95, 0.1); stroke: #e0b25f; }
+  .bmad-diagram .band { fill: #1a1e24; stroke: #404854; stroke-opacity: 0.28; stroke-width: 1; }
+  .bmad-diagram .panel { fill: none; stroke: #404854; stroke-width: 1; stroke-dasharray: 4 4; }
+  .bmad-diagram .panel-title { fill: #7fa0ff; }
+  .bmad-diagram .edge { fill: none; stroke: #8c96a3; stroke-width: 1.5; }
+  .bmad-diagram .edge.soft { stroke-width: 1.25; stroke-dasharray: 4 4; opacity: 0.85; }
+  .bmad-diagram .edge.lens { opacity: 0.5; }
+  .bmad-diagram .head { fill: #8c96a3; }
+  .bmad-diagram .glyph { fill: #8c96a3; }
+  .bmad-diagram .glyph .fold { fill: #111418; opacity: 0.5; }
+  .bmad-diagram .n { font-size: 14px; font-weight: 500; letter-spacing: -0.012em; text-anchor: middle; }
+  .bmad-diagram .n.small { font-size: 12.5px; font-weight: 600; text-anchor: start; }
+  .bmad-diagram .sub { font-size: 11.5px; fill: #8c96a3; }
+  .bmad-diagram .sub.mid { text-anchor: middle; }
+  .bmad-diagram .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .bmad-diagram .k {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 10px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    fill: #8c96a3;
+  }
+  </style>
+  <rect width="1120" height="420" rx="20" fill="#111418"/>
+  <title id="title">The BMad delivery loop</title>
+  <desc id="description">Three kinds of input enter the delivery loop at different points: a vague notion enters at Clarify, a big clear idea enters at Plan, and a small change goes straight to Build and verify. The loop continues through Learn and adjust, which feeds back into planning as the work evolves.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path class="head" d="M 0 0 L 10 5 L 0 10 z"/>
+    </marker>
+    <marker id="arrow-gold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path class="head" d="M 0 0 L 10 5 L 0 10 z"/>
+    </marker>
+  </defs>
+
+  <!-- Entry drops: each input lands where it enters the loop -->
+  <path class="edge" d="M155 140V194" stroke-linecap="round" marker-end="url(#arrow-gold)"/>
+  <path class="edge" d="M425 140V194" stroke-linecap="round" marker-end="url(#arrow-gold)"/>
+  <path class="edge" d="M695 140V194" stroke-linecap="round" marker-end="url(#arrow-gold)"/>
+
+  <!-- Main path and feedback loop -->
+  <path class="edge" d="M250 244H330" stroke-linecap="round" marker-end="url(#arrow)"/>
+  <path class="edge" d="M520 244H600" stroke-linecap="round" marker-end="url(#arrow)"/>
+  <path class="edge" d="M790 244H870" stroke-linecap="round" marker-end="url(#arrow)"/>
+  <path class="edge" d="M965 288C965 368 425 368 425 288" fill="none" stroke-opacity=".75" stroke-dasharray="9 10" marker-end="url(#arrow)"/>
+
+  <!-- Vague notion: cloud with a question mark -->
+  <g transform="translate(155 76) scale(3.8) translate(-12 -12)">
+    <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z" fill="#1a1e24" stroke="#8c96a3" stroke-width=".7" stroke-dasharray="2 2.4"/>
+  </g>
+
+  <!-- Big clear idea: large bulb -->
+  <circle cx="425" cy="66" r="26" fill="#1a1e24" stroke="#e6eaf0" stroke-width="2.5"/>
+  <rect class="node" x="415" y="92" width="20" height="9" rx="2.5" stroke="#e6eaf0"/>
+  <path d="M401 42L394 35M449 42L456 35" stroke="#e6eaf0" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Small change: small bulb -->
+  <circle cx="695" cy="80" r="14" fill="#1a1e24" stroke="#e6eaf0" stroke-width="2"/>
+  <rect class="node" x="688.5" y="94" width="13" height="6" rx="2" stroke="#e6eaf0"/>
+  <path d="M681.5 66.5L676.5 61.5M708.5 66.5L713.5 61.5" stroke="#e6eaf0" stroke-width="2" stroke-linecap="round"/>
+
+  <g text-anchor="middle">
+    <text x="560" y="28" fill="#e6eaf0" font-size="11.1" font-weight="700" letter-spacing="1.5" data-i18n="start-anywhere">START ANYWHERE</text>
+    <text x="155" y="94" fill="#8c96a3" font-size="25.4" font-weight="700" data-i18n="label">?</text>
+    <text x="155" y="128" fill="#e6eaf0" font-size="12.7" font-weight="600" data-i18n="vague-notion">Vague notion</text>
+    <text x="425" y="128" fill="#e6eaf0" font-size="12.7" font-weight="600" data-i18n="big-clear-idea">Big clear idea</text>
+    <text x="695" y="128" fill="#e6eaf0" font-size="12.7" font-weight="600" data-i18n="small-change">Small change</text>
+
+    <g transform="translate(60 200)">
+      <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7"/>
+      <text x="95" y="51" fill="#e6eaf0" font-size="16.7" font-weight="600" data-i18n="clarify">Clarify</text>
+    </g>
+    <g transform="translate(330 200)">
+      <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7"/>
+      <text x="95" y="51" fill="#e6eaf0" font-size="16.7" font-weight="600" data-i18n="plan">Plan</text>
+    </g>
+    <g transform="translate(600 200)">
+      <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7"/>
+      <text x="95" y="51" fill="#e6eaf0" font-size="16.7" font-weight="600" data-i18n="build-and-verify">Build and verify</text>
+    </g>
+    <g transform="translate(870 200)">
+      <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7"/>
+      <text x="95" y="51" fill="#e6eaf0" font-size="16.7" font-weight="600" data-i18n="learn-and-adjust">Learn and adjust</text>
+    </g>
+    <text x="560" y="396" fill="#8c96a3" font-size="13.5" font-weight="600" letter-spacing="1.4" data-i18n="right-sized-for-the-work-in-front-">RIGHT-SIZED FOR THE WORK IN FRONT OF YOU</text>
+  </g>
+</svg>
