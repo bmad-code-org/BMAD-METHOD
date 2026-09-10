@@ -171,9 +171,12 @@ const href = (link: string) => (link.startsWith('/') ? `${root}${link}` : link);
     color: #78828f;
   }
 
+  /* One column, not two: there are three groups, so two always orphans one
+     onto a row of its own and leaves the space beside it empty. */
   @media (max-width: 32rem) {
     .cols {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: 1fr;
+      gap: 1.9rem;
     }
   }
 </style>
