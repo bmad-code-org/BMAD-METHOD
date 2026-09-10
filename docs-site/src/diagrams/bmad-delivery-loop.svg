@@ -5,15 +5,17 @@
     <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path class="head" d="M 0 0 L 10 5 L 0 10 z"/>
     </marker>
-    <marker id="arrow-gold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path class="head" d="M 0 0 L 10 5 L 0 10 z"/>
+    <marker id="arrow-entry" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path class="head accent" d="M 0 0 L 10 5 L 0 10 z"/>
     </marker>
   </defs>
 
-  <!-- Entry drops: each input lands where it enters the loop -->
-  <path class="edge" d="M155 140V194" stroke-linecap="round" marker-end="url(#arrow-gold)"/>
-  <path class="edge" d="M425 140V194" stroke-linecap="round" marker-end="url(#arrow-gold)"/>
-  <path class="edge" d="M695 140V194" stroke-linecap="round" marker-end="url(#arrow-gold)"/>
+  <!-- Entry drops: each input lands where it enters the loop. These carry
+       the accent, because where a piece of work joins is the one thing this
+       drawing has to say twice. -->
+  <path class="edge entry" d="M155 140V194" stroke-linecap="round" marker-end="url(#arrow-entry)"/>
+  <path class="edge entry" d="M425 140V194" stroke-linecap="round" marker-end="url(#arrow-entry)"/>
+  <path class="edge entry" d="M695 140V194" stroke-linecap="round" marker-end="url(#arrow-entry)"/>
 
   <!-- Main path and feedback loop -->
   <path class="edge" d="M250 244H330" stroke-linecap="round" marker-end="url(#arrow)"/>
@@ -48,28 +50,28 @@
   <path d="M681.5 66.5L676.5 61.5M708.5 66.5L713.5 61.5M695 62V55" stroke="var(--dg-ink)" stroke-width="2" stroke-linecap="round"/>
 
   <g text-anchor="middle">
-    <text x="560" y="28" fill="var(--dg-ink)" font-size="14.5" font-weight="700" letter-spacing="1.5" data-i18n="start-anywhere">START ANYWHERE</text>
-    <text x="155" y="94" fill="var(--dg-muted)" font-size="29.7" font-weight="700" data-i18n="label">?</text>
-    <text x="155" y="128" fill="var(--dg-ink)" font-size="16.5" font-weight="600" data-i18n="vague-notion">Vague notion</text>
-    <text x="425" y="128" fill="var(--dg-ink)" font-size="16.5" font-weight="600" data-i18n="big-clear-idea">Big clear idea</text>
-    <text x="695" y="128" fill="var(--dg-ink)" font-size="16.5" font-weight="600" data-i18n="small-change">Small change</text>
+    <text x="560" y="28" fill="var(--dg-ink)" font-size="17.5" font-weight="700" letter-spacing="1.5" data-i18n="start-anywhere">START ANYWHERE</text>
+    <text x="155" y="94" fill="var(--dg-muted)" font-size="32" font-weight="700" data-i18n="label">?</text>
+    <text x="155" y="128" fill="var(--dg-ink)" font-size="18" font-weight="600" data-i18n="vague-notion">Vague notion</text>
+    <text x="425" y="128" fill="var(--dg-ink)" font-size="18" font-weight="600" data-i18n="big-clear-idea">Big clear idea</text>
+    <text x="695" y="128" fill="var(--dg-ink)" font-size="18" font-weight="600" data-i18n="small-change">Small change</text>
 
     <g transform="translate(60 200)">
       <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7"/>
-      <text x="95" y="51" fill="var(--dg-ink)" font-size="19.5" font-weight="600" data-i18n="clarify">Clarify</text>
+      <text x="95" y="51" fill="var(--dg-ink)" font-size="21" font-weight="600" data-i18n="clarify">Clarify</text>
     </g>
     <g transform="translate(330 200)">
       <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7"/>
-      <text x="95" y="51" fill="var(--dg-ink)" font-size="19.5" font-weight="600" data-i18n="plan">Plan</text>
+      <text x="95" y="51" fill="var(--dg-ink)" font-size="21" font-weight="600" data-i18n="plan">Plan</text>
     </g>
     <g transform="translate(600 200)">
       <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7"/>
-      <text x="95" y="51" fill="var(--dg-ink)" font-size="19.5" font-weight="600" data-i18n="build-and-verify">Build and verify</text>
+      <text x="95" y="51" fill="var(--dg-ink)" font-size="21" font-weight="600" data-i18n="build-and-verify">Build and verify</text>
     </g>
     <g transform="translate(870 200)">
       <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7"/>
-      <text x="95" y="51" fill="var(--dg-ink)" font-size="19.5" font-weight="600" data-i18n="learn-and-adjust">Learn and adjust</text>
+      <text x="95" y="51" fill="var(--dg-ink)" font-size="21" font-weight="600" data-i18n="learn-and-adjust">Learn and adjust</text>
     </g>
-    <text x="560" y="396" fill="var(--dg-muted)" font-size="16.5" font-weight="600" letter-spacing="1.4" data-i18n="right-sized-for-the-work-in-front-">RIGHT-SIZED FOR THE WORK IN FRONT OF YOU</text>
+    <text x="560" y="396" fill="var(--dg-muted)" font-size="18" font-weight="600" letter-spacing="1.4" data-i18n="right-sized-for-the-work-in-front-">RIGHT-SIZED FOR THE WORK IN FRONT OF YOU</text>
   </g>
 </svg>

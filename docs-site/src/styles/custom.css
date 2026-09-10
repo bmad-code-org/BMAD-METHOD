@@ -468,8 +468,18 @@ starlight-toc h2,
   opacity: 0.5;
 }
 
+/* An edge the drawing needs to single out - where work joins a loop, say.
+   Same job the accent does for `.node.hot`. */
+.bmad-diagram .edge.entry {
+  stroke: var(--dg-accent);
+}
+
 .bmad-diagram .head {
   fill: var(--dg-edge);
+}
+
+.bmad-diagram .head.accent {
+  fill: var(--dg-accent);
 }
 
 .bmad-diagram .glyph {
