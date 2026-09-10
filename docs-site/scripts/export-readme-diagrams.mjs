@@ -113,41 +113,19 @@ function resolveTokens(svg) {
 }
 
 /**
- * The ground, in the register bmadcode.com uses for a dark surface: a near-black
- * that lifts very slightly across the diagonal, with one soft wash of the accent
- * behind the row the work enters from. The wash sits high rather than centred so
- * it does not pool behind the boxes, whose flat fill would then read as darker
- * than the ground around it. Both are nearly subliminal by design - the
- * site's own colour is almost all ground and one blue, and a README image that
- * shouted would not look like it came from the same place.
+ * Carry the class vocabulary in, and paint a ground behind the drawing.
  *
- * This belongs to the export alone. The docs site gives the same drawing a
- * ground that follows the reader's theme, so it cannot carry a fixed one.
+ * The ground is one flat fill. A gradient was tried here and read as an effect
+ * rather than a surface; the drawing's colour is the accent on the entry drops,
+ * and it says more with nothing competing behind it.
  */
-function ground(width, height) {
-  return `
-  <defs>
-    <linearGradient id="ground" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0d1014"/>
-      <stop offset="0.55" stop-color="${RAMP.ground}"/>
-      <stop offset="1" stop-color="#161b22"/>
-    </linearGradient>
-    <radialGradient id="wash" cx="0.5" cy="0.1" r="0.72">
-      <stop offset="0" stop-color="${RAMP.accent}" stop-opacity="0.14"/>
-      <stop offset="1" stop-color="${RAMP.accent}" stop-opacity="0"/>
-    </radialGradient>
-  </defs>
-  <rect width="${width}" height="${height}" rx="20" fill="url(#ground)"/>
-  <rect width="${width}" height="${height}" rx="20" fill="url(#wash)"/>`;
-}
-
-/** Carry the class vocabulary in, and paint a ground behind the drawing. */
 function standalone(svg) {
   const width = /\bwidth="(\d+)"/.exec(svg)?.[1];
   const height = /\bheight="(\d+)"/.exec(svg)?.[1];
   if (!width || !height) throw new Error('diagram has no intrinsic width and height');
 
-  return resolveTokens(svg).replace(/(<svg\b[^>]*>)/, `$1\n  <style>${STYLE}  </style>${ground(width, height)}`);
+  const ground = `<rect width="${width}" height="${height}" rx="20" fill="${RAMP.ground}"/>`;
+  return resolveTokens(svg).replace(/(<svg\b[^>]*>)/, `$1\n  <style>${STYLE}  </style>\n  ${ground}`);
 }
 
 for (const { diagram, out, lang } of EXPORTS) {

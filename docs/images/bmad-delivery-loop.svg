@@ -32,19 +32,7 @@
     fill: #8c96a3;
   }
   </style>
-  <defs>
-    <linearGradient id="ground" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0d1014"/>
-      <stop offset="0.55" stop-color="#111418"/>
-      <stop offset="1" stop-color="#161b22"/>
-    </linearGradient>
-    <radialGradient id="wash" cx="0.5" cy="0.1" r="0.72">
-      <stop offset="0" stop-color="#7fa0ff" stop-opacity="0.14"/>
-      <stop offset="1" stop-color="#7fa0ff" stop-opacity="0"/>
-    </radialGradient>
-  </defs>
-  <rect width="1120" height="420" rx="20" fill="url(#ground)"/>
-  <rect width="1120" height="420" rx="20" fill="url(#wash)"/>
+  <rect width="1120" height="420" rx="20" fill="#111418"/>
   <title id="title">The BMad delivery loop</title>
   <desc id="description">Three kinds of input enter the delivery loop at different points: a vague notion enters at Clarify, a big clear idea enters at Plan, and a small change goes straight to Build and verify. The loop continues through Learn and adjust, which feeds back into planning as the work evolves.</desc>
   <defs>
