@@ -48,28 +48,28 @@
   <path d="M681.5 66.5L676.5 61.5M708.5 66.5L713.5 61.5M695 62V55" stroke="var(--dg-ink)" stroke-width="2" stroke-linecap="round"/>
 
   <g text-anchor="middle">
-    <text x="560" y="28" fill="var(--dg-ink)" font-size="11.1" font-weight="700" letter-spacing="1.5" data-i18n="start-anywhere">START ANYWHERE</text>
-    <text x="155" y="94" fill="var(--dg-muted)" font-size="25.4" font-weight="700" data-i18n="label">?</text>
-    <text x="155" y="128" fill="var(--dg-ink)" font-size="12.7" font-weight="600" data-i18n="vague-notion">Vague notion</text>
-    <text x="425" y="128" fill="var(--dg-ink)" font-size="12.7" font-weight="600" data-i18n="big-clear-idea">Big clear idea</text>
-    <text x="695" y="128" fill="var(--dg-ink)" font-size="12.7" font-weight="600" data-i18n="small-change">Small change</text>
+    <text x="560" y="28" fill="var(--dg-ink)" font-size="14.5" font-weight="700" letter-spacing="1.5" data-i18n="start-anywhere">START ANYWHERE</text>
+    <text x="155" y="94" fill="var(--dg-muted)" font-size="29.7" font-weight="700" data-i18n="label">?</text>
+    <text x="155" y="128" fill="var(--dg-ink)" font-size="16.5" font-weight="600" data-i18n="vague-notion">Vague notion</text>
+    <text x="425" y="128" fill="var(--dg-ink)" font-size="16.5" font-weight="600" data-i18n="big-clear-idea">Big clear idea</text>
+    <text x="695" y="128" fill="var(--dg-ink)" font-size="16.5" font-weight="600" data-i18n="small-change">Small change</text>
 
     <g transform="translate(60 200)">
       <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7"/>
-      <text x="95" y="51" fill="var(--dg-ink)" font-size="16.7" font-weight="600" data-i18n="clarify">Clarify</text>
+      <text x="95" y="51" fill="var(--dg-ink)" font-size="19.5" font-weight="600" data-i18n="clarify">Clarify</text>
     </g>
     <g transform="translate(330 200)">
       <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7"/>
-      <text x="95" y="51" fill="var(--dg-ink)" font-size="16.7" font-weight="600" data-i18n="plan">Plan</text>
+      <text x="95" y="51" fill="var(--dg-ink)" font-size="19.5" font-weight="600" data-i18n="plan">Plan</text>
     </g>
     <g transform="translate(600 200)">
       <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7"/>
-      <text x="95" y="51" fill="var(--dg-ink)" font-size="16.7" font-weight="600" data-i18n="build-and-verify">Build and verify</text>
+      <text x="95" y="51" fill="var(--dg-ink)" font-size="19.5" font-weight="600" data-i18n="build-and-verify">Build and verify</text>
     </g>
     <g transform="translate(870 200)">
       <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7"/>
-      <text x="95" y="51" fill="var(--dg-ink)" font-size="16.7" font-weight="600" data-i18n="learn-and-adjust">Learn and adjust</text>
+      <text x="95" y="51" fill="var(--dg-ink)" font-size="19.5" font-weight="600" data-i18n="learn-and-adjust">Learn and adjust</text>
     </g>
-    <text x="560" y="396" fill="var(--dg-muted)" font-size="13.5" font-weight="600" letter-spacing="1.4" data-i18n="right-sized-for-the-work-in-front-">RIGHT-SIZED FOR THE WORK IN FRONT OF YOU</text>
+    <text x="560" y="396" fill="var(--dg-muted)" font-size="16.5" font-weight="600" letter-spacing="1.4" data-i18n="right-sized-for-the-work-in-front-">RIGHT-SIZED FOR THE WORK IN FRONT OF YOU</text>
   </g>
 </svg>
