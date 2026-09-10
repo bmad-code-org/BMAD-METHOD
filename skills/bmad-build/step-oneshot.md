@@ -21,9 +21,9 @@ Build the change from `{spec_file}`. The Intent section is what you implement. A
 
 - the request left out something the user would notice in the result
 - you need to do something you cannot undo
-- the change is growing beyond what was planned
+- the remaining work is substantially larger than anticipated
 
-Write what triggered the stop in `## Implementation Notes`. Then update `{spec_file}`: add back `## Code Map` (filled in from what you learned while implementing) and `## Open Questions` (one question per gap), set `route: 'dispatch'` and `status: 'draft'`. Go back to `[[bmad-snapshot:step-02-plan.md]]` step 6.
+Write what triggered the stop in `## Implementation Notes`. Then update `{spec_file}`: add back `## Code Map` (filled in from what you learned while implementing) and `## Open Questions` (one question per gap), set `route: 'full'` and `status: 'draft'`. Go back to `[[bmad-snapshot:step-02-plan.md]]` step 6.
 
 ### Review
 

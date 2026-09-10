@@ -26,6 +26,17 @@ activation_steps_append = []
 
 persistent_facts = []
 
+# Automatic route selection. Replace the whole instruction to change the rule.
+
+route_selection = """
+Decide whether to use a coding subagent (full) or implement directly (oneshot).
+Using the information already gathered, with no further reading and minimal
+extra reasoning, estimate the lines of code to add or modify.
+100 lines or fewer: oneshot. Otherwise: full.
+If the change touches more than five files and is not simple or mechanical,
+consider upgrading to full.
+"""
+
 # Instruction run by HALT after writing the terminal result.
 # Empty means no extra terminal behavior.
 

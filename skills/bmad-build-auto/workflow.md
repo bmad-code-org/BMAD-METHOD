@@ -56,7 +56,9 @@ Launch all the subagents a step calls for in **one message** — several **block
 
 ## READY FOR DEVELOPMENT STANDARD
 
-A specification is "Ready for Development" when:
+A oneshot story is "Ready for Development" when its intent is clear, complete, coherent, and sufficient to implement and verify, its route choice and reason are recorded, and all template frontmatter fields are preserved.
+
+A full specification is "Ready for Development" when:
 
 - **Actionable**: Every task has a file path and specific action.
 - **Logical**: Tasks ordered by dependency.
