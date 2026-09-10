@@ -86,11 +86,20 @@ const href = (link: string) => (link.startsWith('/') ? `${root}${link}` : link);
 </div>
 
 <style>
+  /* A full-bleed band, so it sits flush against the article rather than
+     floating below it: its own top padding is the gap. */
   .bmad-footer {
-    margin-top: clamp(3rem, 6vw, 4.5rem);
     padding-block: clamp(2.8rem, 5vw, 3.6rem) 2.2rem;
     background: var(--bmad-dark, #111418);
     color: var(--bmad-dark-muted, #a2acb9);
+  }
+
+  /* On the dark ramp the band's ground is the page's ground, so there is no
+     band at all - only an unexplained gap where one should start. Lift it a
+     step and give it an edge. */
+  :global(:root[data-theme='dark']) .bmad-footer {
+    background: var(--bmad-dark-2, #1a1e24);
+    border-top: 1px solid var(--bmad-dark-line, #2e353e);
   }
 
   /* the article's own column, so the footer text sits under the prose */

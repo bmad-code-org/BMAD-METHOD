@@ -13,8 +13,9 @@
     "format:fix": "prettier --write \"{scripts,test}/**/*.{js,mjs}\"",
     "lint": "eslint scripts test --max-warnings=0",
     "lint:fix": "eslint scripts test --fix",
+    "locale-coverage": "node scripts/validate-locale-coverage.mjs",
     "preview": "astro preview",
-    "test": "node test/test-site-url.mjs && node test/test-rehype-plugins.mjs && node test/test-validate-redirects.mjs",
+    "test": "node test/test-site-url.mjs && node test/test-rehype-plugins.mjs && node test/test-validate-redirects.mjs && node test/test-validate-locale-coverage.mjs",
     "test:implementation-model": "node test/test-validate-published-implementation-model.mjs",
     "validate-links": "node scripts/validate-doc-links.js",
     "validate-sidebar": "node scripts/validate-sidebar-order.js"

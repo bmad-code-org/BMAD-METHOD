@@ -887,9 +887,11 @@ main {
   flex: 1;
 }
 
+/* The last-updated line. It sits above the footer band, so the air here and
+   the band's own top padding are read as one gap: keep this side modest. */
 .content-panel footer .meta {
   color: var(--sl-color-gray-3);
-  margin-top: 3.5rem;
+  margin-top: 2.5rem;
   padding-top: 1.2rem;
   border-top: 1px solid var(--sl-color-hairline);
 }
