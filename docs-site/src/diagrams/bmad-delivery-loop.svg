@@ -26,15 +26,26 @@
     <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z" fill="var(--dg-surface)" stroke="var(--dg-muted)" stroke-width=".7" stroke-dasharray="2 2.4"/>
   </g>
 
-  <!-- Big clear idea: large bulb -->
+  <!-- Big clear idea: large bulb.
+       A bulb the theme cannot colour has to be drawn as one: the earlier
+       version leaned on gold to say "idea", and a circle over a tab in the
+       body ink read as neither. The filament, the tapered neck and the ribbed
+       screw base carry it instead, so it stays a bulb on either ground. -->
   <circle cx="425" cy="66" r="26" fill="var(--dg-surface)" stroke="var(--dg-ink)" stroke-width="2.5"/>
-  <rect class="node" x="415" y="92" width="20" height="9" rx="2.5" stroke="var(--dg-ink)"/>
-  <path d="M401 42L394 35M449 42L456 35" stroke="var(--dg-ink)" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M417 84V76C417 66 433 66 433 76V84" fill="none" stroke="var(--dg-ink)" stroke-width="2" stroke-linecap="round"/>
+  <path d="M414.5 89L417 95M435.5 89L433 95" stroke="var(--dg-ink)" stroke-width="2.5" stroke-linecap="round"/>
+  <rect class="node" x="417" y="95" width="16" height="10" rx="1.5" stroke="var(--dg-ink)" stroke-width="2.5"/>
+  <path d="M417 98.5H433M417 101.5H433" stroke="var(--dg-ink)" stroke-width="1.2"/>
+  <path d="M401 42L394 35M449 42L456 35M425 34V25" stroke="var(--dg-ink)" stroke-width="2.5" stroke-linecap="round"/>
 
-  <!-- Small change: small bulb -->
+  <!-- Small change: small bulb. The same construction, one size down; the
+       base takes a single rib rather than two, which is all that reads. -->
   <circle cx="695" cy="80" r="14" fill="var(--dg-surface)" stroke="var(--dg-ink)" stroke-width="2"/>
-  <rect class="node" x="688.5" y="94" width="13" height="6" rx="2" stroke="var(--dg-ink)"/>
-  <path d="M681.5 66.5L676.5 61.5M708.5 66.5L713.5 61.5" stroke="var(--dg-ink)" stroke-width="2" stroke-linecap="round"/>
+  <path d="M691 88V84C691 78 699 78 699 84V88" fill="none" stroke="var(--dg-ink)" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M689.5 92L690.5 96M700.5 92L699.5 96" stroke="var(--dg-ink)" stroke-width="2" stroke-linecap="round"/>
+  <rect class="node" x="690" y="96" width="10" height="7" rx="1.2" stroke="var(--dg-ink)" stroke-width="2"/>
+  <path d="M690 99.5H700" stroke="var(--dg-ink)" stroke-width="1"/>
+  <path d="M681.5 66.5L676.5 61.5M708.5 66.5L713.5 61.5M695 62V55" stroke="var(--dg-ink)" stroke-width="2" stroke-linecap="round"/>
 
   <g text-anchor="middle">
     <text x="560" y="28" fill="var(--dg-ink)" font-size="11.1" font-weight="700" letter-spacing="1.5" data-i18n="start-anywhere">START ANYWHERE</text>
