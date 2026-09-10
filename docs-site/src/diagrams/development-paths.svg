@@ -8,87 +8,87 @@
   </defs>
 
   <g>
-    <text x="380" y="45" fill="var(--dg-ink)" font-size="17" font-weight="700" text-anchor="middle" letter-spacing="1.2" data-i18n="one-delivery-pattern-right-sized-f">ONE DELIVERY PATTERN, RIGHT-SIZED FOUR WAYS</text>
-    <text x="380" y="70" fill="var(--dg-muted)" font-size="18" text-anchor="middle" data-i18n="larger-paths-add-context-and-repea">Larger paths add context and repeat smaller units.</text>
+    <text x="380" y="45" fill="var(--dg-ink)" font-size="10.7" font-weight="700" text-anchor="middle" letter-spacing="1.2" data-i18n="one-delivery-pattern-right-sized-f">ONE DELIVERY PATTERN, RIGHT-SIZED FOUR WAYS</text>
+    <text x="380" y="70" fill="var(--dg-muted)" font-size="11.3" text-anchor="middle" data-i18n="larger-paths-add-context-and-repea">Larger paths add context and repeat smaller units.</text>
 
     <g transform="translate(20 90)">
       <rect class="band" width="720" height="175" rx="2"/>
-      <text x="24" y="36" fill="var(--dg-ink)" font-size="18" font-weight="700" letter-spacing="1" data-i18n="trivial">TRIVIAL</text>
-      <text x="24" y="62" fill="var(--dg-muted)" font-size="18" data-i18n="obvious-and-low-risk">Obvious and low risk</text>
+      <text x="24" y="36" fill="var(--dg-ink)" font-size="11.3" font-weight="700" letter-spacing="1" data-i18n="trivial">TRIVIAL</text>
+      <text x="24" y="62" fill="var(--dg-muted)" font-size="11.3" data-i18n="obvious-and-low-risk">Obvious and low risk</text>
       <path class="edge" d="M310 110H345" stroke-linecap="round" marker-end="url(#arrow)"/>
       <path class="edge" d="M505 110H540" stroke-linecap="round" marker-end="url(#arrow)"/>
       <g text-anchor="middle">
         <rect class="node" x="160" y="77" width="150" height="66" rx="2"/>
-        <text x="235" y="118" fill="var(--dg-ink)" font-size="21" font-weight="600" data-i18n="change">Change</text>
+        <text x="235" y="118" fill="var(--dg-ink)" font-size="13.2" font-weight="600" data-i18n="change">Change</text>
         <rect class="node" x="355" y="77" width="150" height="66" rx="2"/>
-        <text x="430" y="118" fill="var(--dg-ink)" font-size="21" font-weight="600" data-i18n="edit">Edit</text>
+        <text x="430" y="118" fill="var(--dg-ink)" font-size="13.2" font-weight="600" data-i18n="edit">Edit</text>
         <rect class="node" x="550" y="77" width="150" height="66" rx="2" stroke="var(--dg-ok)"/>
-        <text x="625" y="118" fill="var(--dg-ink)" font-size="21" font-weight="600" data-i18n="verify">Verify</text>
+        <text x="625" y="118" fill="var(--dg-ink)" font-size="13.2" font-weight="600" data-i18n="verify">Verify</text>
       </g>
     </g>
 
     <g transform="translate(20 285)">
       <rect class="band" width="720" height="175" rx="2"/>
-      <text x="24" y="36" fill="var(--dg-ink)" font-size="18" font-weight="700" letter-spacing="1" data-i18n="one-session">ONE SESSION</text>
-      <text x="24" y="62" fill="var(--dg-muted)" font-size="18" data-i18n="one-coherent-implementation-unit">One coherent implementation unit</text>
+      <text x="24" y="36" fill="var(--dg-ink)" font-size="11.3" font-weight="700" letter-spacing="1" data-i18n="one-session">ONE SESSION</text>
+      <text x="24" y="62" fill="var(--dg-muted)" font-size="11.3" data-i18n="one-coherent-implementation-unit">One coherent implementation unit</text>
       <path class="edge" d="M310 110H345" stroke-linecap="round" marker-end="url(#arrow)"/>
       <path class="edge" d="M505 110H540" stroke-linecap="round" marker-end="url(#arrow)"/>
       <g text-anchor="middle">
         <rect class="node" x="160" y="77" width="150" height="66" rx="2"/>
-        <text x="235" y="118" fill="var(--dg-ink)" font-size="21" font-weight="600" data-i18n="intent">Intent</text>
+        <text x="235" y="118" fill="var(--dg-ink)" font-size="13.2" font-weight="600" data-i18n="intent">Intent</text>
         <rect class="node" x="355" y="77" width="150" height="66" rx="2"/>
-        <text x="430" y="108" fill="var(--dg-ink)" font-size="21" font-weight="700" data-i18n="build">Build</text>
-        <text x="430" y="130" fill="var(--dg-muted)" font-size="14" data-i18n="plan-build-review">plan · build · review</text>
+        <text x="430" y="108" fill="var(--dg-ink)" font-size="13.2" font-weight="700" data-i18n="build">Build</text>
+        <text x="430" y="130" fill="var(--dg-muted)" font-size="8.8" data-i18n="plan-build-review">plan · build · review</text>
         <rect class="node" x="550" y="77" width="150" height="66" rx="2" stroke="var(--dg-ok)"/>
-        <text x="625" y="118" fill="var(--dg-ink)" font-size="21" font-weight="600" data-i18n="result">Result</text>
+        <text x="625" y="118" fill="var(--dg-ink)" font-size="13.2" font-weight="600" data-i18n="result">Result</text>
       </g>
     </g>
 
     <g transform="translate(20 480)">
       <rect class="band" width="720" height="250" rx="2"/>
-      <text x="24" y="36" fill="var(--dg-ink)" font-size="18" font-weight="700" letter-spacing="1" data-i18n="epic-sized">EPIC-SIZED</text>
-      <text x="24" y="62" fill="var(--dg-muted)" font-size="18" data-i18n="one-outcome-several-build-units">One outcome, several Build units</text>
+      <text x="24" y="36" fill="var(--dg-ink)" font-size="11.3" font-weight="700" letter-spacing="1" data-i18n="epic-sized">EPIC-SIZED</text>
+      <text x="24" y="62" fill="var(--dg-muted)" font-size="11.3" data-i18n="one-outcome-several-build-units">One outcome, several Build units</text>
       <path class="edge" d="M260 105H290" stroke-linecap="round" marker-end="url(#arrow)"/>
       <path class="edge" d="M440 105H470" stroke-linecap="round" marker-end="url(#arrow)"/>
       <path class="edge" d="M550 138V148H225V162" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
       <path class="edge" d="M335 199H395" stroke-linecap="round" marker-end="url(#arrow)"/>
       <g text-anchor="middle">
         <rect class="node" x="120" y="76" width="140" height="58" rx="2"/>
-        <text x="190" y="112" fill="var(--dg-ink)" font-size="20" font-weight="600" data-i18n="intent-2">Intent</text>
+        <text x="190" y="112" fill="var(--dg-ink)" font-size="12.6" font-weight="600" data-i18n="intent-2">Intent</text>
         <rect class="node" x="300" y="76" width="140" height="58" rx="2"/>
-        <text x="370" y="112" fill="var(--dg-ink)" font-size="20" font-weight="600" data-i18n="spec">Spec</text>
+        <text x="370" y="112" fill="var(--dg-ink)" font-size="12.6" font-weight="600" data-i18n="spec">Spec</text>
         <rect class="node" x="480" y="76" width="140" height="58" rx="2"/>
-        <text x="550" y="112" fill="var(--dg-ink)" font-size="20" font-weight="600" data-i18n="stories">Stories</text>
+        <text x="550" y="112" fill="var(--dg-ink)" font-size="12.6" font-weight="600" data-i18n="stories">Stories</text>
         <rect class="node" x="115" y="166" width="220" height="66" rx="2"/>
-        <text x="225" y="195" fill="var(--dg-ink)" font-size="20" font-weight="700" data-i18n="build-stories">Build × stories</text>
-        <text x="225" y="216" fill="var(--dg-muted)" font-size="16" data-i18n="one-unit-per-story">one unit per story</text>
+        <text x="225" y="195" fill="var(--dg-ink)" font-size="12.6" font-weight="700" data-i18n="build-stories">Build × stories</text>
+        <text x="225" y="216" fill="var(--dg-muted)" font-size="10.1" data-i18n="one-unit-per-story">one unit per story</text>
         <rect class="node" x="405" y="166" width="260" height="66" rx="2" stroke="var(--dg-ok)"/>
-        <text x="535" y="195" fill="var(--dg-ink)" font-size="19" font-weight="600" data-i18n="integrate-retrospect">Integrate → retrospect</text>
-        <text x="535" y="216" fill="var(--dg-muted)" font-size="16" data-i18n="judge-the-combined-result">judge the combined result</text>
+        <text x="535" y="195" fill="var(--dg-ink)" font-size="11.9" font-weight="600" data-i18n="integrate-retrospect">Integrate → retrospect</text>
+        <text x="535" y="216" fill="var(--dg-muted)" font-size="10.1" data-i18n="judge-the-combined-result">judge the combined result</text>
       </g>
     </g>
 
     <g transform="translate(20 750)">
       <rect class="band" width="720" height="270" rx="2"/>
-      <text x="24" y="36" fill="var(--dg-ink)" font-size="18" font-weight="700" letter-spacing="1" data-i18n="project-sized">PROJECT-SIZED</text>
-      <text x="24" y="62" fill="var(--dg-muted)" font-size="18" data-i18n="several-epics-or-roughly-20-sessio">Several epics or roughly 20+ sessions</text>
+      <text x="24" y="36" fill="var(--dg-ink)" font-size="11.3" font-weight="700" letter-spacing="1" data-i18n="project-sized">PROJECT-SIZED</text>
+      <text x="24" y="62" fill="var(--dg-muted)" font-size="11.3" data-i18n="several-epics-or-roughly-20-sessio">Several epics or roughly 20+ sessions</text>
       <path class="edge" d="M250 112H280" stroke-linecap="round" marker-end="url(#arrow)"/>
       <path class="edge" d="M455 112H485" stroke-linecap="round" marker-end="url(#arrow)"/>
       <path class="edge" d="M570 145V158H240V174" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
       <path class="edge" d="M365 213H410" stroke-linecap="round" marker-end="url(#arrow)"/>
       <g text-anchor="middle">
         <rect class="node" x="110" y="79" width="140" height="66" rx="2"/>
-        <text x="180" y="119" fill="var(--dg-ink)" font-size="20" font-weight="600" data-i18n="intent-3">Intent</text>
+        <text x="180" y="119" fill="var(--dg-ink)" font-size="12.6" font-weight="600" data-i18n="intent-3">Intent</text>
         <rect class="node" x="290" y="79" width="165" height="66" rx="2"/>
-        <text x="372" y="108" fill="var(--dg-ink)" font-size="18" font-weight="600" data-i18n="shared-contracts">Shared contracts</text>
-        <text x="372" y="130" fill="var(--dg-muted)" font-size="14" data-i18n="product-ux-tech">product · UX · tech</text>
+        <text x="372" y="108" fill="var(--dg-ink)" font-size="11.3" font-weight="600" data-i18n="shared-contracts">Shared contracts</text>
+        <text x="372" y="130" fill="var(--dg-muted)" font-size="8.8" data-i18n="product-ux-tech">product · UX · tech</text>
         <rect class="node" x="495" y="79" width="150" height="66" rx="2"/>
-        <text x="570" y="119" fill="var(--dg-ink)" font-size="20" font-weight="600" data-i18n="epics">Epics</text>
+        <text x="570" y="119" fill="var(--dg-ink)" font-size="12.6" font-weight="600" data-i18n="epics">Epics</text>
         <rect class="node" x="115" y="178" width="250" height="70" rx="2"/>
-        <text x="240" y="207" fill="var(--dg-ink)" font-size="20" font-weight="700" data-i18n="epic-path-epics">Epic path × epics</text>
-        <text x="240" y="230" fill="var(--dg-muted)" font-size="15" data-i18n="spec-stories-build-retro">spec · stories · Build · retro</text>
+        <text x="240" y="207" fill="var(--dg-ink)" font-size="12.6" font-weight="700" data-i18n="epic-path-epics">Epic path × epics</text>
+        <text x="240" y="230" fill="var(--dg-muted)" font-size="9.4" data-i18n="spec-stories-build-retro">spec · stories · Build · retro</text>
         <rect class="node" x="420" y="178" width="245" height="70" rx="2" stroke="var(--dg-ok)"/>
-        <text x="542" y="220" fill="var(--dg-ink)" font-size="19" font-weight="600" data-i18n="integrated-product">Integrated product</text>
+        <text x="542" y="220" fill="var(--dg-ink)" font-size="11.9" font-weight="600" data-i18n="integrated-product">Integrated product</text>
       </g>
     </g>
   </g>

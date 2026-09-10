@@ -855,7 +855,7 @@ main {
   flex: 1;
 }
 
-.page > .main-frame > * {
+.page > .main-frame > div {
   flex: 1;
 }
 
@@ -867,9 +867,13 @@ main {
 /* Above 72rem the pane sits in a flex row and stretches on its own. Below it
    the wrapper is a plain block, so it becomes a column and the pane grows —
    `flex` is scoped to that width because at 72rem and up it would override the
-   width Starlight computes for the two-column layout. */
+   width Starlight computes for the two-column layout.
+
+   The selector names the wrapper div rather than every child: .main-frame also
+   holds an inline <script>, and `display: flex` on that overrides the browser's
+   `display: none` and prints the script's source on the page. */
 @media (max-width: 71.9375rem) {
-  .page > .main-frame > * {
+  .page > .main-frame > div {
     display: flex;
     flex-direction: column;
   }
