@@ -8,8 +8,15 @@
 
 1. Draft resume check. If `{spec_file}` exists with `status: draft`, read it and capture the verbatim `<intent-contract>...</intent-contract>` block as `preserved_intent_contract`. Otherwise `preserved_intent_contract` is empty.
 2. Investigate codebase. _Read the code yourself for narrow, localized tasks. Isolate deep exploration in synchronous subagents: instruct them to give you distilled summaries only, and plan from those summaries._ Decide which findings actually matter for execution — the specific files, symbols/lines, reuse points, and read-only constraints — and carry those forward for the Code Map. This is where the investigation lands: the spec preserves it so it is never re-narrated to the implementer at dispatch time.
-3. Read `[[bmad-snapshot:spec-template.md]]` fully. Fill it out based on the intent and investigation, resolving the template's `date` field to the current system date. Drain the investigation into the `## Code Map` section — annotated paths, symbol/line anchors, reuse pointers, and read-only evidence — so the spec is the implementer's investigation map and the step-03 handoff need only point at it. If `{preserved_intent_contract}` is non-empty, substitute it for the `<intent-contract>` block in your filled spec before writing. Write the result to `{spec_file}`.
-4. Self-review against READY FOR DEVELOPMENT standard.
+3. {workflow.route_selection}
+
+   Irreversible steps (migrations, data mutation, external side effects) always take the full route.
+
+4. Read `[[bmad-snapshot:spec-template.md]]` fully, preserving all frontmatter fields and resolving `date` to the current system date.
+   - **Oneshot:** set `route: 'oneshot'`.
+   - **Full:** set `route: 'full'`. Drain the investigation into `## Code Map` — annotated paths, symbol/line anchors, reuse pointers, and read-only evidence — so the handoff need only point at the spec.
+
+   If `{preserved_intent_contract}` is non-empty, substitute it for the `<intent-contract>` block before writing `{spec_file}`. Self-check against the route's READY FOR DEVELOPMENT standard.
 5. If intent gaps exist, do not fantasize and do not leave open questions. Multiple defensible readings of the intent that lead to observably different outcomes, with nothing in the intent to select between them, are an intent gap — do not resolve one by picking a reading. HALT with status `blocked`, blocking condition `intent gap`, and include the unanswered questions and evidence gathered.
 6. Warning check. If step-01 carried `multiple-goals`, add it to `{spec_file}` frontmatter `warnings`. If `{spec_file}` exceeds 1600 tokens, add `oversized` to frontmatter `warnings`. Continue either way.
 
