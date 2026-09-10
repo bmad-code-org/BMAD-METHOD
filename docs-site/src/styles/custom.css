@@ -90,7 +90,11 @@
   --sl-color-white: var(--bmad-ink);
   --sl-color-gray-1: var(--bmad-ink-2);
   --sl-color-gray-2: var(--bmad-muted-ink);
-  --sl-color-gray-3: var(--bmad-muted-ink-2);
+  /* One step lighter than gray-2, but not so light that it fails: the label
+     register sets 11px uppercase mono in this colour, and --bmad-muted-ink-2
+     (#7c8797) is only 3.64:1 on white where AA wants 4.5. #687383 is 4.81:1
+     and still reads as a step below the body's muted ink. */
+  --sl-color-gray-3: #687383;
   --sl-color-gray-4: var(--bmad-line-2);
   --sl-color-gray-5: var(--bmad-line);
   --sl-color-gray-6: var(--bmad-paper-2);
@@ -740,16 +744,21 @@ starlight-menu-button button {
   padding: 0.3rem 0.7rem;
 }
 
+/* The whole section list has to clear the fold on a laptop, with the first
+   couple of sections showing their contents — that is how a reader sees what
+   the docs contain before scrolling. Air between groups is what the label
+   register needs, but 1.8rem of it pushed the last section 130px below the
+   fold at 1440x800. */
 .sidebar-content .top-level > li {
-  margin-top: 1.8rem;
+  margin-top: 0.9rem;
 }
 
 .sidebar-content .top-level > li:first-child {
-  margin-top: 0.5rem;
+  margin-top: 0.25rem;
 }
 
 .sidebar-content .top-level ul a {
-  padding: 0.32rem 0.7rem;
+  padding: 0.2rem 0.7rem;
   border: 0;
   border-inline-start: 2px solid transparent;
   border-radius: 0;
@@ -846,7 +855,7 @@ main {
   flex: 1;
 }
 
-.page > .main-frame > * {
+.page > .main-frame > div {
   flex: 1;
 }
 
@@ -858,9 +867,13 @@ main {
 /* Above 72rem the pane sits in a flex row and stretches on its own. Below it
    the wrapper is a plain block, so it becomes a column and the pane grows —
    `flex` is scoped to that width because at 72rem and up it would override the
-   width Starlight computes for the two-column layout. */
+   width Starlight computes for the two-column layout.
+
+   The selector names the wrapper div rather than every child: .main-frame also
+   holds an inline <script>, and `display: flex` on that overrides the browser's
+   `display: none` and prints the script's source on the page. */
 @media (max-width: 71.9375rem) {
-  .page > .main-frame > * {
+  .page > .main-frame > div {
     display: flex;
     flex-direction: column;
   }

@@ -65,12 +65,18 @@ const href = (link: string) => (link.startsWith('/') ? `${root}${link}` : link);
   <div class="cols">
     {
       COLUMNS.map((col) => (
-        <div>
-          <h2>{col.heading}</h2>
+        // A nav labelled by its own visible text, not a heading. This footer
+        // renders inside <main>, so an <h2> here joined the page's heading
+        // outline and a reader skimming by heading met "Method" and
+        // "Community" among the article's own sections.
+        <nav aria-labelledby={`footer-${col.heading.toLowerCase()}`}>
+          <p class="col-title" id={`footer-${col.heading.toLowerCase()}`}>
+            {col.heading}
+          </p>
           {col.links.map((link) => (
             <a href={href(link.href)}>{link.label}</a>
           ))}
-        </div>
+        </nav>
       ))
     }
   </div>
@@ -120,7 +126,7 @@ const href = (link: string) => (link.startsWith('/') ? `${root}${link}` : link);
     margin-top: clamp(2.2rem, 4vw, 3rem);
   }
 
-  .cols h2 {
+  .cols .col-title {
     margin: 0 0 0.9rem;
     font-family: var(--bmad-mono, ui-monospace, monospace);
     font-size: 0.6875rem;
