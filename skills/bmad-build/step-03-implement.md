@@ -25,7 +25,32 @@ Change `{spec_file}` status to `in-progress` in the frontmatter before starting 
 
 If `{story_key}` is not empty and `{{ config.implementation_artifacts }}/sprint-status.yaml` exists, read `{{ rendered("sync-sprint-status.md") }}` with `{target_status}` = `in-progress`.
 
-Execute the implementation handoff below: substitute the runtime placeholders (e.g. `{spec_file}`) into it, then follow it verbatim.
+### Resumed-story preflight
+
+If `{spec_file}` already has `baseline_commit` and its execution tasks are all
+checked, run a bounded conformance preflight before launching the implementation
+handoff. Read only the spec's `Code Map`, `Tasks & Acceptance`, `Implementation
+Notes`, and any `Open Questions` or `Review Triage Log` sections. Then inspect
+the current worktree with `git status --short` and `git diff --name-only`, and
+check the mapped files and acceptance commands for evidence of drift or missing
+work.
+
+- If an open question, unresolved review-loop item, missing acceptance evidence,
+  or implementation drift is found, continue to the implementation handoff.
+- If the task checklist is complete, no open question or unresolved review item
+  remains, and the bounded check finds no drift, skip the implementation
+  handoff and proceed directly to Tasks & Acceptance Verification.
+- Checked boxes alone are not proof and must never be the reason to skip the
+  conformance check.
+
+For a resumed story, do not rediscover the original implementation from the
+full baseline diff. Keep the generated diff file-backed and use its path for
+reviewers; the parent verification should consume only `git diff --stat`,
+`git diff --name-only`, the mapped files, and targeted acceptance output.
+
+When the preflight requires implementation, execute the implementation handoff
+below: substitute the runtime placeholders (e.g. `{spec_file}`) into it, then
+follow it verbatim.
 
 {{ workflow.implementation_handoff }}
 
@@ -37,7 +62,7 @@ The handoff directs the subagent to load the spec's `context:` files itself, so 
 
 ### Tasks & Acceptance Verification
 
-Stage the diff and read it first: using the repository's version-control tooling, write a unified diff of all changes since `{baseline_commit}` (from `{spec_file}` frontmatter) — untracked files included — to a uniquely-named file in the system temp directory, set `{diff_file}` to its absolute path, and read that file into your own context. Judge against the diff, not against the implementation subagent's report.
+Stage the diff: using the repository's version-control tooling, write a unified diff of all changes since `{baseline_commit}` (from `{spec_file}` frontmatter) — untracked files included — to a uniquely-named file in the system temp directory, set `{diff_file}` to its absolute path, and pass that path to reviewers. Do not load the complete diff into the parent context. Judge the changed-path summary, mapped files, and targeted verification output rather than the implementation subagent's report alone.
 
 Verify every task in the `## Tasks & Acceptance` section of `{spec_file}` is complete and every acceptance criterion is satisfied. Mark each finished task `[x]`. If any task is not done or any acceptance criterion is not satisfied, finish the missing work before proceeding — and when that changes code, rewrite `{diff_file}` and re-read it.
 

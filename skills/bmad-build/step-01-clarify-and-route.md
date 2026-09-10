@@ -17,6 +17,15 @@ Before listing artifacts, resolve existing workflow state in this order. Skip th
 
 1. Explicit argument
    Did the user pass a specific file path, spec name, or clear instruction this message?
+   - If the argument is an exact story identifier such as `N.M`, first search
+     `{{ config.implementation_artifacts }}` for active spec files (`draft`, `ready-for-dev`,
+     `in-progress`, or `in-review`) whose story identity matches both numeric
+     segments exactly. Resolve the frontmatter and story metadata before using
+     filename matching; `1.1` must not match `1.10`. Exactly one match sets
+     `spec_file` and follows the status route below. More than one match HALTs
+     with the ambiguous paths. With no match, continue with normal intent
+     loading and context selection; do not compile epic context merely because
+     the identifier looks like a story.
    - If the user explicitly supplied a spec folder and a story id, with no specific spec file path, set `spec_folder` and `story_id`. Read `{spec_folder}/stories.yaml`; if it is missing or fails to parse, HALT rather than falling back to `{{ config.implementation_artifacts }}`. Find the one entry whose string `id` exactly equals `story_id`; if none exists, HALT rather than falling back. Use that entry's `title` and `description` as the starting intent.
      - Look for files matching `{spec_folder}/stories/{story_id}-*.md`. More than one match → HALT rather than choosing one. Exactly one match → set `spec_file` to that path and process it exactly as if the user had supplied that specific file path, including **Story-key resolution** and the existing status route below. No matches → derive a valid kebab-case slug from the entry's `title` (and `description` if needed), then set `spec_file` = `{spec_folder}/stories/{story_id}-{slug}.md` and proceed to INSTRUCTIONS.
    - If it points to a file that matches the spec template (has `status` frontmatter with a recognized value: draft, ready-for-dev, in-progress, in-review, or done) → set `spec_file`. Before exiting, run **Story-key resolution** (below). Then **EARLY EXIT** to the appropriate step: `draft` → `{{ rendered("step-02-plan.md") }}`, `ready-for-dev`/`in-progress` → `{{ rendered("step-03-implement.md") }}` (or `{{ rendered("step-oneshot.md") }}` when `route` is `oneshot`), `in-review` → `{{ rendered("step-04-review.md") }}`. For `done`, ingest as context and proceed to INSTRUCTIONS — do not resume.
