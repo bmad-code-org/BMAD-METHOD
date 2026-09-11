@@ -15,7 +15,7 @@ The conversation context before this skill was triggered IS your starting point 
    Do the last few messages reveal what change the user wants reviewed? Look for spec paths, commit refs, branches, PRs, or descriptions of a change. Use the same routing as above.
 
 3. **Sprint tracking**
-   Check for a sprint status file (`*sprint-status*`) in `{{.implementation_artifacts}}` or `{{.planning_artifacts}}`. If found, scan for stories with status `review`:
+   Check for a sprint status file (`*sprint-status*`) in `{{ config.implementation_artifacts }}` or `{{ config.planning_artifacts }}`. If found, scan for stories with status `review`:
    - Exactly one → suggest it and confirm with the user.
    - Multiple → present as numbered options.
    - None → fall through.
@@ -38,7 +38,7 @@ Never ask extra questions beyond what the cascade prescribes. If a step above al
 Once a change is identified from any source above, fill in the complementary artifact:
 
 - If you have a spec, look for `baseline_commit` in its frontmatter to determine the diff baseline.
-- If you have a commit or branch, check `{{.implementation_artifacts}}` for a spec whose `baseline_commit` is an ancestor of that commit/branch (i.e., the spec describes work done on top of that baseline).
+- If you have a commit or branch, check `{{ config.implementation_artifacts }}` for a spec whose `baseline_commit` is an ancestor of that commit/branch (i.e., the spec describes work done on top of that baseline).
 - If you found both a spec and a commit/branch, use both.
 
 ## DETERMINE WHAT YOU HAVE
@@ -96,8 +96,8 @@ Omit any metric you cannot compute rather than guessing.
 
 ## FALLBACK TRAIL GENERATION
 
-If review mode is not `full-trail`, read fully and follow `[[bmad-snapshot:references/generate-trail.md]]` to build one from the diff. Then return here and continue to NEXT. If trail generation fails (e.g., git unavailable), the original review mode is preserved — step-02 handles this with its non-trail path.
+If review mode is not `full-trail`, read fully and follow `{{ rendered("references/generate-trail.md") }}` to build one from the diff. Then return here and continue to NEXT. If trail generation fails (e.g., git unavailable), the original review mode is preserved — step-02 handles this with its non-trail path.
 
 ## NEXT
 
-Read fully and follow `[[bmad-snapshot:step-02-walkthrough.md]]`
+Read fully and follow `{{ rendered("step-02-walkthrough.md") }}`

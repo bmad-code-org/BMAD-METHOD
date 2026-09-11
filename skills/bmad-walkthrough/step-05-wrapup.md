@@ -25,4 +25,4 @@ HALT — do not proceed until the user makes their choice.
 
 If anything appears below, follow it as the final terminal instruction before exiting; otherwise exit normally.
 
-{workflow.on_complete}
+{{ workflow.on_complete }}

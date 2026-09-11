@@ -274,8 +274,6 @@ uv run /abs/project/_bmad/scripts/render_skill.py \
 Keys are dotted parameter paths such as `workflow.on_complete`. The
 override file has the same shape as the skill's `customize.toml`. Both
 layer on top of the persistent files, and `--set` wins over the file.
-Every override must reach a token or condition in the rendered skill;
-an override the render does not use halts.
 
 String values can be written as plain text. Other types use TOML syntax:
 

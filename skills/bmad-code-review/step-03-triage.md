@@ -47,4 +47,4 @@
 
 ## NEXT
 
-Read fully and follow `[[bmad-snapshot:step-04-present.md]]`
+Read fully and follow `{{ rendered("step-04-present.md") }}`

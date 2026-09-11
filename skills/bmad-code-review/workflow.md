@@ -19,19 +19,19 @@ If you need an explicit user instruction to run them, ask once now for the whole
 
 Execute each of these steps in order before proceeding (`_None._` means skip):
 
-{workflow.activation_steps_prepend}
+{{ workflow.activation_steps_prepend }}
 
 ### Step 2: Load Persistent Facts
 
 Treat every entry below as foundational context you carry for the rest of the workflow run. Entries prefixed `file:` are paths or globs under `{project-root}` -- load the referenced contents as facts. All other entries are facts verbatim (`_None._` means none):
 
-{workflow.persistent_facts}
+{{ workflow.persistent_facts }}
 
 ### Step 3: Execute Append Steps
 
 Execute each of these steps in order (`_None._` means skip):
 
-{workflow.activation_steps_append}
+{{ workflow.activation_steps_append }}
 
 Activation is complete after all activation steps have run.
 
@@ -62,4 +62,4 @@ This uses **step-file architecture** for disciplined execution:
 
 ## FIRST STEP
 
-Read fully and follow: `[[bmad-snapshot:step-01-gather-context.md]]` to begin the workflow.
+Read fully and follow: `{{ rendered("step-01-gather-context.md") }}` to begin the workflow.

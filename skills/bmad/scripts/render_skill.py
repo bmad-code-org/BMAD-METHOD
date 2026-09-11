@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["jinja2>=3.1"]
 # ///
 """Render a skill's Markdown sources into an immutable project snapshot."""
 
@@ -18,6 +19,8 @@ import tomllib
 from datetime import date, time
 from pathlib import Path
 from typing import Any
+
+import jinja2
 
 # Installed scripts are consumer files, not a location for interpreter caches.
 sys.dont_write_bytecode = True
@@ -40,13 +43,7 @@ class _ArgumentParser(argparse.ArgumentParser):
         raise RenderError(message)
 
 
-_CONFIG_TOKEN = re.compile(r"\{\{config\.([A-Za-z0-9_.-]+)\}\}")
-_SHORT_CONFIG_TOKEN = re.compile(r"\{\{\.([A-Za-z0-9_]+)\}\}")
-_CUSTOM_TOKEN = re.compile(r"\{workflow\.([A-Za-z0-9_.-]+)\}")
-_SNAPSHOT_TOKEN = re.compile(r"\[\[bmad-snapshot:([A-Za-z0-9_./-]+\.md)\]\]")
 _PARAMETER = r"[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*"
-_CONDITION = re.compile(rf"\[\[bmad-if:({_PARAMETER})\s*(==|!=)\s*(.+)\]\]")
-_DIRECTIVE = re.compile(r"\[\[bmad-(?:if|else|endif)\b")
 
 
 def _hash_bytes(content: bytes) -> str:
@@ -111,61 +108,6 @@ def _leaf_paths(table: dict[str, Any], prefix: str = "") -> set[str]:
         else:
             leaves.add(path)
     return leaves
-
-
-def _filter_conditions(
-    sources: dict[str, str], customization: dict[str, Any], defaults: dict[str, Any] | None
-) -> tuple[dict[str, str], dict[str, Any]]:
-    filtered: dict[str, str] = {}
-    inputs: dict[str, Any] = {}
-    for name, content in sources.items():
-        output: list[str] = []
-        # Each frame keeps the enclosing state, comparison, else marker, and line.
-        stack: list[tuple[bool, bool, bool, int]] = []
-        active = True
-        had_condition = False
-        for line_number, line in enumerate(content.splitlines(keepends=True), 1):
-            directive = line.strip()
-            location = f"{name}:{line_number}"
-            match = _CONDITION.fullmatch(directive)
-            if match:
-                had_condition = True
-                path, operator, literal = match.groups()
-                try:
-                    default = _lookup(defaults or {}, path, "customization default")
-                    if isinstance(default, (dict, list)):
-                        raise RenderError(f"condition parameter `{path}` must be a scalar")
-                    expected = _toml_literal(literal, path)
-                    value = _lookup(customization, path, "customization value")
-                except RenderError as error:
-                    raise RenderError(f"{location}: {error}") from error
-                inputs[f"customization.{path}"] = value
-                matches = value == expected if operator == "==" else value != expected
-                stack.append((active, matches, False, line_number))
-                active = active and matches
-            elif directive == "[[bmad-else]]":
-                if not stack or stack[-1][2]:
-                    raise RenderError(f"{location}: unexpected or duplicate bmad-else")
-                parent, matches, _, opening = stack[-1]
-                stack[-1] = (parent, matches, True, opening)
-                active = parent and not matches
-            elif directive == "[[bmad-endif]]":
-                if not stack:
-                    raise RenderError(f"{location}: unexpected bmad-endif")
-                active = stack.pop()[0]
-            elif _DIRECTIVE.search(line):
-                raise RenderError(f"{location}: invalid conditional directive; use a standalone directive line")
-            elif active:
-                output.append(line)
-        if stack:
-            raise RenderError(f"{name}:{stack[-1][3]}: unclosed bmad-if")
-        text = "".join(output)
-        if had_condition and not text.strip():
-            if name == "workflow.md":
-                raise RenderError(f"{name}: conditional rendering excluded the entry")
-        else:
-            filtered[name] = text
-    return filtered, inputs
 
 
 def _lookup(data: dict[str, Any], dotted_path: str, label: str) -> Any:
@@ -296,95 +238,232 @@ def _format_review_layers(layers: list[dict[str, str]]) -> str:
     return "\n\n".join(sections)
 
 
-def _resolve_customization_value(value: Any, default: Any, label: str) -> tuple[Any, str]:
+def _resolve_customization_value(value: Any, default: Any, label: str) -> Any:
+    """Validate an effective customization leaf against the shape of its shipped default."""
     if isinstance(default, str):
         allow_empty = not default.strip() or label == "customization.workflow.open_spec"
-        resolved = _require_string(value, label, allow_empty=allow_empty)
-        return resolved, resolved
+        return _require_string(value, label, allow_empty=allow_empty)
     if isinstance(default, list):
         if default and all(isinstance(item, dict) for item in default):
-            resolved = _require_review_layers(value, label)
-            return resolved, _format_review_layers(resolved)
-        resolved = _require_string_list(value, label)
-        return resolved, _format_markdown_list(resolved)
+            return _require_review_layers(value, label)
+        return _require_string_list(value, label)
+    if isinstance(default, (bool, int, float, date, time)):
+        if type(value) is not type(default):
+            raise RenderError(f"{label} must be {type(default).__name__}, got {type(value).__name__}")
+        return value
     raise RenderError(f"{label} has unsupported default type {type(default).__name__}")
 
 
-def _resolve_replacements(
-    sources: dict[str, str],
-    central: dict[str, Any],
-    customization: dict[str, Any],
-    defaults: dict[str, Any] | None,
-    project_root: Path,
-) -> tuple[dict[str, str], dict[str, Any]]:
-    replacements: dict[str, str] = {}
-    input_values: dict[str, Any] = {}
-    for content in sources.values():
-        for match in _SHORT_CONFIG_TOKEN.finditer(content):
-            token, key = match.group(0), match.group(1)
-            path, resolved = _resolve_short_config(central, key, project_root)
-            source = f"config.{path}"
-            replacements[token] = resolved
-            input_values[source] = resolved
-        for match in _CONFIG_TOKEN.finditer(content):
-            token, path = match.group(0), match.group(1)
-            source = f"config.{path}"
-            resolved = _resolve_config_value(_lookup(central, path, "config value"), source, project_root)
-            replacements[token] = resolved
-            input_values[source] = resolved
-        for match in _CUSTOM_TOKEN.finditer(content):
-            if defaults is None:
-                raise RenderError("customization tokens require customize.toml")
-            token, relative_path = match.group(0), match.group(1)
-            path = f"workflow.{relative_path}"
-            source = f"customization.{path}"
-            resolved, rendered = _resolve_customization_value(
-                _lookup(customization, path, "customization value"),
-                _lookup(defaults, path, "customization default"),
-                source,
+class _Text(str):
+    """A customization string. Looping over one is a template mistake, not a walk over its characters."""
+
+    def __new__(cls, value: str, label: str) -> _Text:
+        text = super().__new__(cls, value)
+        text.label = label
+        return text
+
+    def __iter__(self):
+        raise RenderError(f"`{self.label}` is a string, not a list")
+
+
+class _MarkdownList(list):
+    """A string-list customization; inserted directly it renders as the Markdown list it always did."""
+
+    def __str__(self) -> str:
+        return _format_markdown_list(list(self))
+
+
+class _LayerList(list):
+    """A review-layer customization; inserted directly it renders as lens sections."""
+
+    def __str__(self) -> str:
+        return _format_review_layers(list(self))
+
+
+def _bind_customization(value: Any, label: str, destination: Path) -> Any:
+    """Bind `{skill-root}` in customization prose to the generation and wrap lists for insertion."""
+    root = str(destination)
+    if isinstance(value, str):
+        return _Text(value.replace("{skill-root}", root), label)
+    if isinstance(value, list):
+        if value and all(isinstance(item, dict) for item in value):
+            return _LayerList(
+                [{key: text.replace("{skill-root}", root) for key, text in layer.items()} for layer in value]
             )
-            replacements[token] = rendered
-            input_values[source] = resolved
-    return replacements, input_values
+        return _MarkdownList([item.replace("{skill-root}", root) for item in value])
+    return value
 
 
-def _render_sources(
-    sources: dict[str, str], replacements: dict[str, str], destination: Path, skill_dir: Path
-) -> dict[str, str]:
-    """Resolve only tokens authored in installed sources in one opaque pass."""
-    # Workflow customization may reference installed skill files; bind those
-    # references to the immutable generation before inserting the prose.
-    replacements = {
-        token: value.replace("{skill-root}", str(destination)) if token.startswith("{workflow.") else value
-        for token, value in replacements.items()
-    }
+class _Table:
+    """A dotted namespace over a TOML table. Names never hit Python attributes, so `workflow.items` is a lookup."""
+
+    def __init__(self, path: str) -> None:
+        self._path = path
+
+    def _child(self, name: str) -> str:
+        return f"{self._path}.{name}"
+
+    def _resolve(self, name: str) -> Any:
+        raise NotImplementedError
+
+    def __getattr__(self, name: str) -> Any:
+        if name.startswith("_"):
+            raise AttributeError(name)
+        return self._resolve(name)
+
+    def __getitem__(self, name: Any) -> Any:
+        if not isinstance(name, str):
+            raise RenderError(f"`{self._path}` is indexed by name, not {name!r}")
+        return self._resolve(name)
+
+    def __str__(self) -> str:
+        raise RenderError(f"`{self._path}` is a table, not a value")
+
+
+class _ConfigTable(_Table):
+    """`config.key` is the short lookup of one scalar anywhere in the central config; `config.a.b.c` is a path."""
+
+    def __init__(self, central: dict[str, Any], table: dict[str, Any], path: str, ctx: _RenderContext) -> None:
+        super().__init__(path)
+        self._central = central
+        self._table = table
+        self._ctx = ctx
+
+    def _resolve(self, name: str) -> Any:
+        if self._path == "config" and name not in self._table:
+            path, resolved = _resolve_short_config(self._central, name, self._ctx.project_root)
+            self._ctx.inputs[f"config.{path}"] = resolved
+            return _Text(resolved, f"config.{path}")
+        label = self._child(name)
+        if name not in self._table:
+            raise RenderError(f"missing config value `{label.removeprefix('config.')}`")
+        value = self._table[name]
+        if isinstance(value, dict):
+            return _ConfigTable(self._central, value, label, self._ctx)
+        resolved = _resolve_config_value(value, label, self._ctx.project_root)
+        self._ctx.inputs[label] = resolved
+        return _Text(resolved, label)
+
+
+class _CustomizationTable(_Table):
+    """The effective customization, each leaf validated against its `customize.toml` default."""
+
+    def __init__(self, defaults: dict[str, Any] | None, values: dict[str, Any], path: str, ctx: _RenderContext) -> None:
+        super().__init__(path)
+        self._defaults = defaults
+        self._values = values
+        self._ctx = ctx
+
+    def _resolve(self, name: str) -> Any:
+        path = self._child(name)
+        if self._defaults is None:
+            raise RenderError(f"`{path}` requires customize.toml")
+        if name not in self._defaults:
+            raise RenderError(f"missing customization parameter `{path}`")
+        if name not in self._values:
+            raise RenderError(f"missing customization value `{path}`")
+        default, value = self._defaults[name], self._values[name]
+        label = f"customization.{path}"
+        if isinstance(default, dict):
+            if not isinstance(value, dict):
+                raise RenderError(f"{label} must be a table, got {type(value).__name__}")
+            return _CustomizationTable(default, value, path, self._ctx)
+        resolved = _resolve_customization_value(value, default, label)
+        self._ctx.inputs[label] = resolved
+        return _bind_customization(resolved, label, self._ctx.destination)
+
+
+class _RenderContext:
+    """One rendering pass: the values it serves and the rendered() links each source makes."""
+
+    def __init__(
+        self,
+        *,
+        central: dict[str, Any],
+        defaults: dict[str, Any] | None,
+        customization: dict[str, Any],
+        source_names: set[str],
+        project_root: Path,
+        destination: Path,
+    ) -> None:
+        self.project_root = project_root
+        self.destination = destination
+        self.inputs: dict[str, Any] = {}
+        self.links: dict[str, set[str]] = {}
+        self._source_names = source_names
+        self.variables = {
+            "config": _ConfigTable(central, central, "config", self),
+            "workflow": _CustomizationTable(
+                None if defaults is None else defaults.get("workflow", {}),
+                customization.get("workflow", {}),
+                "workflow",
+                self,
+            ),
+            "rendered": self._rendered,
+        }
+
+    @jinja2.pass_context
+    def _rendered(self, context: jinja2.runtime.Context, target: Any) -> str:
+        if not isinstance(target, str) or target not in self._source_names:
+            raise RenderError(f"rendered() targets undeclared source: {target}")
+        self.links.setdefault(context.name or "", set()).add(target)
+        return str(self.destination / target)
+
+
+class _SourceLoader(jinja2.BaseLoader):
+    """Serve sources by name, and name them so template frames carry `source:line`."""
+
+    def __init__(self, sources: dict[str, str]) -> None:
+        self._sources = sources
+
+    def get_source(self, environment: jinja2.Environment, template: str) -> tuple[str, str, Any]:
+        if template not in self._sources:
+            raise jinja2.TemplateNotFound(template)
+        return self._sources[template], template, lambda: True
+
+
+def _template_location(error: BaseException, source_names: set[str]) -> str | None:
+    if isinstance(error, jinja2.TemplateSyntaxError):
+        return f"{error.name}:{error.lineno}" if error.name else None
+    location = None
+    traceback = error.__traceback__
+    while traceback is not None:
+        filename = traceback.tb_frame.f_code.co_filename
+        if filename in source_names:
+            location = f"{filename}:{traceback.tb_lineno}"
+        traceback = traceback.tb_next
+    return location
+
+
+def _render_sources(sources: dict[str, str], skill_dir: Path, context: _RenderContext) -> dict[str, str]:
+    """Render every source as a Jinja2 template against the context; return the non-empty outputs."""
     # Skill sources name their bundled non-Markdown files (scripts, assets)
     # through {skill-root}; those stay in the installed skill directory.
-    replacements["{skill-root}"] = str(skill_dir)
-    source_names = set(sources)
-    patterns = [
-        *(re.escape(token) for token in sorted(replacements, key=len, reverse=True)),
-        _SNAPSHOT_TOKEN.pattern,
-    ]
-    token_pattern = re.compile("|".join(patterns))
-
-    def replace(match: re.Match[str]) -> str:
-        token = match.group(0)
-        if token in replacements:
-            return replacements[token]
-        snapshot = _SNAPSHOT_TOKEN.fullmatch(token)
-        if snapshot is None:
-            raise RenderError(f"unsupported render token: {token}")
-        target = snapshot.group(1)
-        if target not in source_names:
-            raise RenderError(f"snapshot reference targets undeclared source: {target}")
-        return str(destination / target)
-
+    bound = {name: content.replace("{skill-root}", str(skill_dir)) for name, content in sources.items()}
+    environment = jinja2.Environment(
+        loader=_SourceLoader(bound),
+        undefined=jinja2.StrictUndefined,
+        autoescape=False,
+        keep_trailing_newline=True,
+        trim_blocks=True,
+        lstrip_blocks=True,
+    )
     rendered: dict[str, str] = {}
-    for name, content in sources.items():
-        # Inserted paths and customization prose are never scanned as source tokens.
-        rendered[name] = token_pattern.sub(replace, content)
-    return rendered
+    for name in sources:
+        try:
+            rendered[name] = environment.get_template(name).render(context.variables)
+        except Exception as error:
+            location = _template_location(error, set(sources))
+            message = str(error) if isinstance(error, (RenderError, ConfigError, jinja2.TemplateError)) else repr(error)
+            raise RenderError(f"{location or name}: {message}") from error
+    # A source whose body renders to nothing is left out; links into it from survivors are broken.
+    omitted = {name for name, text in rendered.items() if not text.strip()}
+    if "workflow.md" in omitted:
+        raise RenderError("workflow.md: rendered empty")
+    for name in sorted(set(rendered) - omitted):
+        for target in sorted(context.links.get(name, set()) & omitted):
+            raise RenderError(f"{name}: rendered() targets omitted source: {target}")
+    return {name: text for name, text in rendered.items() if name not in omitted}
 
 
 def _verify_existing(destination: Path, manifest: dict[str, Any]) -> None:
@@ -445,9 +524,7 @@ def render(
 
     sources = _load_sources(skill_dir)
     central = load_central_config(project_root)
-    has_customization = bool(overrides is not None or assignments) or any(
-        _CUSTOM_TOKEN.search(content) or _DIRECTIVE.search(content) for content in sources.values()
-    )
+    has_customization = bool(overrides is not None or assignments) or (skill_dir / "customize.toml").is_file()
     defaults = load_toml(skill_dir / "customize.toml", required=True) if has_customization else None
     customization = load_customization(project_root, skill_dir) if has_customization else {}
     supplied: set[str] = set()
@@ -455,30 +532,46 @@ def render(
         file_layer, command_layer = _invocation_customization(defaults, overrides, assignments or [])
         customization = structural_merge(structural_merge(customization, file_layer), command_layer)
         supplied = _leaf_paths(file_layer) | _leaf_paths(command_layer)
-    selected_sources, condition_inputs = _filter_conditions(sources, customization, defaults)
-    replacements, input_values = _resolve_replacements(selected_sources, central, customization, defaults, project_root)
-    input_values.update(condition_inputs)
-    # Every invocation override must reach a token or condition; values are validated where consumed.
-    unused = sorted(path for path in supplied if f"customization.{path}" not in input_values)
-    if unused:
-        raise RenderError(f"invocation override not used by this render: {', '.join(unused)}")
-    # Store TOML date/time inputs in the same JSON representation used on disk.
-    input_values = json.loads(_canonical_json(input_values))
+
     source_hashes = {name: _hash_bytes(content.encode("utf-8")) for name, content in sources.items()}
     root_hash = _hash_bytes(str(project_root).encode("utf-8"))[:12]
     slug = re.sub(r"[^a-z0-9]+", "-", project_root.name.lower()).strip("-") or "project"
     slug = slug[:80].rstrip("-") or "project"
+    namespace = project_root / "_bmad" / "render" / skill_dir.name / f"{slug}-{root_hash}"
+
+    def render_pass(destination: Path) -> tuple[_RenderContext, dict[str, str]]:
+        context = _RenderContext(
+            central=central,
+            defaults=defaults,
+            customization=customization,
+            source_names=set(sources),
+            project_root=project_root,
+            destination=destination,
+        )
+        return context, _render_sources(sources, skill_dir, context)
+
+    # The generation path is keyed by the values the templates reach, and the
+    # templates insert that path, so a first pass against a placeholder
+    # destination collects the inputs and the real pass renders the output.
+    probe, _ = render_pass(namespace / "pending")
+    # An override may only name a key some template actually read; values are validated where consumed.
+    unused = sorted(path for path in supplied if f"customization.{path}" not in probe.inputs)
+    if unused:
+        raise RenderError(f"invocation override not used by this render: {', '.join(unused)}")
+    # Store TOML date/time inputs in the same JSON representation used on disk.
+    input_values = json.loads(_canonical_json(probe.inputs))
     renderer_hash = _hash_bytes(Path(__file__).read_bytes())
     identity = {
         "project_root": str(project_root),
         "skill_root": str(skill_dir),
         "renderer_sha256": renderer_hash,
+        "jinja2_version": jinja2.__version__,
         "resolved_values": input_values,
         "source_sha256": source_hashes,
     }
     generation_hash = _hash_bytes(_canonical_json(identity))[:20]
-    destination = project_root / "_bmad" / "render" / skill_dir.name / f"{slug}-{root_hash}" / generation_hash
-    rendered = _render_sources(selected_sources, replacements, destination, skill_dir)
+    destination = namespace / generation_hash
+    _, rendered = render_pass(destination)
     outputs = {name: content.encode("utf-8") for name, content in rendered.items()}
     output_hashes = {name: _hash_bytes(content) for name, content in outputs.items()}
     manifest = {

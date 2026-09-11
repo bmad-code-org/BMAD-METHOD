@@ -11,21 +11,21 @@
 2. Investigate the codebase. When you can, send deep searches to subagents and wait for them in this turn. Tell them to return short summaries only, so this session does not fill up with their notes. Keep only what the work needs: the specific files, symbols or lines, what to reuse, and what not to change. Write that into the Code Map. Do not retell the investigation when implementation starts — the spec already has it.
 
    Do not ask the human during investigation. When something is unclear, look in the repository, planning artifacts, or history first. Keep looking until you know, or until those sources have nothing more to say. Leave any remaining choice for the next step.
-3. {workflow.route_selection}
+3. {{ workflow.route_selection }}
 
    Intent gaps and irreversible steps (migrations, data mutation, external side effects) always take the full path below.
 
-   For oneshot with intent resolved: read `[[bmad-snapshot:spec-template.md]]` fully and write `{spec_file}`.
+   For oneshot with intent resolved: read `{{ rendered("spec-template.md") }}` fully and write `{spec_file}`.
    Set `route: 'oneshot'` and `status: 'in-progress'`, resolving `date` to the current system date.
    If `preserved_intent` is non-empty, use it as the frozen block.
-   **EARLY EXIT** → `[[bmad-snapshot:step-oneshot.md]]`.
+   **EARLY EXIT** → `{{ rendered("step-oneshot.md") }}`.
 
    For full, set `route: 'full'` and continue.
-4. Read `[[bmad-snapshot:spec-template.md]]` fully. Fill it out from the intent and investigation, resolving the template's `date` field to the current system date. Put the investigation into `## Code Map`: paths, symbols or lines, what to reuse, and what not to change. Implementation should work from the spec without being told the investigation again. If there are intent gaps, add a `## Open Questions` section with one entry per gap: the choice, the options, and what each option means. Never write an intent gap into the frozen block as an assumption. If `preserved_intent` is non-empty, replace the `<frozen-after-approval>` block with it before writing. Write the result to `{spec_file}`.
+4. Read `{{ rendered("spec-template.md") }}` fully. Fill it out from the intent and investigation, resolving the template's `date` field to the current system date. Put the investigation into `## Code Map`: paths, symbols or lines, what to reuse, and what not to change. Implementation should work from the spec without being told the investigation again. If there are intent gaps, add a `## Open Questions` section with one entry per gap: the choice, the options, and what each option means. Never write an intent gap into the frozen block as an assumption. If `preserved_intent` is non-empty, replace the `<frozen-after-approval>` block with it before writing. Write the result to `{spec_file}`.
 5. Self-review against READY FOR DEVELOPMENT standard. For anything important that's missing: if the repository can tell you, go look and fix the spec; if a human has to decide, add an `## Open Questions` entry. Do not invent the answer.
 6. Resolve the gates before the checkpoint. Two things must be settled, in whatever order the conversation makes natural; combine them in one message when both apply.
    - **Token count** (see SCOPE STANDARD). If the spec exceeds 1600 tokens, show the count and give the user a choice:
-     - **Split** — carve off secondary goals. Propose the split — name each secondary goal. For each deferred goal, append one new entry to `{{.implementation_artifacts}}/deferred-work.md` using the format below. Do not modify existing entries or look for duplicates. Rewrite the current spec to cover only the main goal — do not surgically carve sections out; regenerate the spec for the narrowed scope.
+     - **Split** — carve off secondary goals. Propose the split — name each secondary goal. For each deferred goal, append one new entry to `{{ config.implementation_artifacts }}/deferred-work.md` using the format below. Do not modify existing entries or look for duplicates. Rewrite the current spec to cover only the main goal — do not surgically carve sections out; regenerate the spec for the narrowed scope.
      - **Keep full spec** — accept the risks.
      ```markdown
      - source_spec: `{spec_file}`
@@ -60,4 +60,4 @@ Before acting on approval, re-read `{spec_file}` from disk. If it is missing, HA
 
 ## NEXT
 
-Read fully and follow `[[bmad-snapshot:step-03-implement.md]]`
+Read fully and follow `{{ rendered("step-03-implement.md") }}`

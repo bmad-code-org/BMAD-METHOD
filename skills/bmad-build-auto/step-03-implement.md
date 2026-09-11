@@ -26,13 +26,13 @@ Change `{spec_file}` status to `in-progress` in the frontmatter before starting 
 
 Implement in this main session from the story's Intent and working notes. Do not launch an implementing subagent or execute the full-route handoff. Append decisions, files touched, and surprises to `## Implementation Notes`.
 
-Stop and replan if the intent left out something the user would notice in the result, you need to do something you cannot undo, or the remaining work is substantially larger than anticipated. Record the trigger in `## Implementation Notes`, set `route: 'full'` and `status: 'draft'`, then read fully and follow `[[bmad-snapshot:step-02-plan.md]]`.
+Stop and replan if the intent left out something the user would notice in the result, you need to do something you cannot undo, or the remaining work is substantially larger than anticipated. Record the trigger in `## Implementation Notes`, set `route: 'full'` and `status: 'draft'`, then read fully and follow `{{ rendered("step-02-plan.md") }}`.
 
 #### Full (`route: full`, or a legacy spec with no route)
 
 Substitute the runtime placeholders (e.g. `{spec_file}`) into the implementation handoff below, then follow it verbatim. Do not add parent-authored goal restatements, file lists, ownership boundaries, or acceptance criteria to the handoff — the spec is the subagent's sole source of truth. If the handoff conflicts with the spec, HALT with status `blocked` and blocking condition `handoff conflicts with spec`, and include both conflicting passages.
 
-{workflow.implementation_handoff}
+{{ workflow.implementation_handoff }}
 
 Invoke the subagent **synchronously** and wait for it to return in this same turn — do not background/detach it (`run_in_background`) or end your turn to await a notification (see workflow.md → Subagents). Resume at "Verify" only after it returns. If the platform allows, keep the subagent available for re-engagement after it returns — step-04 may send it review fixes.
 
@@ -54,4 +54,4 @@ If `{spec_file}`'s intent-contract contains an I/O & Edge-Case Matrix, verify ev
 
 ## NEXT
 
-Read fully and follow `[[bmad-snapshot:step-04-review.md]]`
+Read fully and follow `{{ rendered("step-04-review.md") }}`

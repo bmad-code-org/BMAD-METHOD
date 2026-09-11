@@ -8,11 +8,11 @@
 
 1. Draft resume check. If `{spec_file}` exists with `status: draft`, read it and capture the verbatim `<intent-contract>...</intent-contract>` block as `preserved_intent_contract`. Otherwise `preserved_intent_contract` is empty.
 2. Investigate codebase. _Read the code yourself for narrow, localized tasks. Isolate deep exploration in synchronous subagents: instruct them to give you distilled summaries only, and plan from those summaries._ Decide which findings actually matter for execution — the specific files, symbols/lines, reuse points, and read-only constraints — and carry those forward for the Code Map. This is where the investigation lands: the spec preserves it so it is never re-narrated to the implementer at dispatch time.
-3. {workflow.route_selection}
+3. {{ workflow.route_selection }}
 
    Irreversible steps (migrations, data mutation, external side effects) always take the full route.
 
-4. Read `[[bmad-snapshot:spec-template.md]]` fully, preserving all frontmatter fields and resolving `date` to the current system date.
+4. Read `{{ rendered("spec-template.md") }}` fully, preserving all frontmatter fields and resolving `date` to the current system date.
    - **Oneshot:** set `route: 'oneshot'`.
    - **Full:** set `route: 'full'`. Drain the investigation into `## Code Map` — annotated paths, symbol/line anchors, reuse pointers, and read-only evidence — so the handoff need only point at the spec.
 
@@ -22,7 +22,7 @@
 
 ### READY-FOR-DEVELOPMENT GATE
 
-Re-read `[[bmad-snapshot:workflow.md]]`, then re-read `{spec_file}` from disk and verify the spec meets the READY FOR DEVELOPMENT standard.
+Re-read `{{ rendered("workflow.md") }}`, then re-read `{spec_file}` from disk and verify the spec meets the READY FOR DEVELOPMENT standard.
 
 - **If the file is missing:** HALT with status `blocked` and blocking condition `planned spec file disappeared before implementation`.
 - **If the spec meets the standard:** set `{spec_file}` frontmatter status to `ready-for-dev`. If the invocation prompt directs a halt after planning (standard phrasing: `Halt after planning.` — accept any clear equivalent), HALT with status `ready-for-dev`; otherwise continue to step 3.
@@ -30,4 +30,4 @@ Re-read `[[bmad-snapshot:workflow.md]]`, then re-read `{spec_file}` from disk an
 
 ## NEXT
 
-Read fully and follow `[[bmad-snapshot:step-03-implement.md]]`
+Read fully and follow `{{ rendered("step-03-implement.md") }}`
