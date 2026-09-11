@@ -533,6 +533,12 @@ starlight-toc h2,
   fill: var(--dg-accent);
 }
 
+/* A line that frames a drawing rather than labelling part of it. Reserved for
+   the one or two a diagram is allowed, so the accent stays scarce. */
+.bmad-diagram .slogan {
+  fill: var(--dg-accent);
+}
+
 /* ---------------------------------------------------------------
    Asides
    A tinted plate, an icon and a heading in the hue — the shape the
