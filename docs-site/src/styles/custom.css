@@ -555,6 +555,21 @@ starlight-toc h2,
   fill: var(--dg-muted);
 }
 
+/* A ruled field behind a drawing. Faint enough to be texture, never structure:
+   at this opacity it survives both ramps without competing with the edges. */
+.bmad-diagram .grid {
+  fill: none;
+  stroke: var(--dg-line);
+  stroke-opacity: 0.35;
+  stroke-width: 1;
+}
+
+/* The dark line sits further from its ground than the light one does, so the
+   same opacity reads as structure there rather than texture. */
+:root[data-theme='dark'] .bmad-diagram .grid {
+  stroke-opacity: 0.22;
+}
+
 .bmad-diagram .rule {
   fill: none;
   stroke: var(--dg-line);
