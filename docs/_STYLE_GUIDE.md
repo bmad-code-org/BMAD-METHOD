@@ -248,6 +248,14 @@ the strings to the diagram's `<name>.labels.json`; every language then shares on
 drawing, and a translation cannot drift out of shape with the original. Anything
 missing falls back to the English in the SVG.
 
+A README is not a docs page — it loads an SVG as an `<img>`, where no stylesheet
+can reach it — so the ones the READMEs use are exports, in `docs/images/`. After
+changing a source diagram that a README shows, regenerate them:
+
+```bash
+cd docs-site && npm run export-readme-diagrams
+```
+
 ## Reference Structure
 
 ### Types

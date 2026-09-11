@@ -120,7 +120,21 @@ export default defineConfig({
       defaultLocale: 'root',
       locales,
 
-      favicon: '/favicon.ico',
+      // The BMad tile: the same mark the header carries, and byte-for-byte the
+      // drawing bmadcode.com and blog.bmadcode.com serve. The SVG is what modern
+      // browsers pick up; the .ico and the apple-touch-icon are generated from
+      // it, for the ones that ignore `image/svg+xml` and for iOS home screens.
+      favicon: '/favicon.svg',
+      head: [
+        {
+          tag: 'link',
+          attrs: { rel: 'icon', href: '/favicon.ico', sizes: '32x32' },
+        },
+        {
+          tag: 'link',
+          attrs: { rel: 'apple-touch-icon', href: '/apple-touch-icon.png', sizes: '180x180' },
+        },
+      ],
 
       // Social links
       social: [

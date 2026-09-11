@@ -13,6 +13,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { validatePublishedImplementationModel } from './validate-published-implementation-model.mjs';
 import { validateRedirects } from './validate-redirects.mjs';
+import { validateLocaleCoverage } from './validate-locale-coverage.mjs';
 
 // =============================================================================
 // Configuration
@@ -85,6 +86,13 @@ function buildAstroSite() {
     siteDir,
   });
   console.log(`    ${redirectCount} redirects resolve to built pages`);
+  console.log('  → Checking locale coverage...');
+  const { summary } = validateLocaleCoverage(siteDir, {
+    baselinePath: path.join(SITE_ROOT, 'locale-coverage-baseline.json'),
+  });
+  for (const row of summary) {
+    console.log(`    ${row.locale.padEnd(6)} ${row.translated}/${row.total} translated`);
+  }
 
   console.log();
   console.log(`  \u001B[32m✓\u001B[0m Astro build complete`);
