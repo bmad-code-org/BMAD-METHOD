@@ -44,6 +44,7 @@ const RAMP = {
   edge: '#8c96a3',
   ground: '#111418',
   accent: '#7fa0ff',
+  'accent-2': '#e0b25f',
   ok: '#6fcf97',
   'ok-tint': 'rgba(111, 207, 151, 0.1)',
   warn: '#e0b25f',
@@ -67,6 +68,8 @@ const STYLE = `
   .bmad-diagram .panel { fill: none; stroke: ${RAMP.line}; stroke-width: 1; stroke-dasharray: 4 4; }
   .bmad-diagram .panel-title { fill: ${RAMP.accent}; }
   .bmad-diagram .slogan { fill: ${RAMP.accent}; }
+  .bmad-diagram .slogan.alt { fill: ${RAMP['accent-2']}; }
+  .bmad-diagram .rule { fill: none; stroke: ${RAMP.line}; stroke-width: 1; }
   .bmad-diagram .edge { fill: none; stroke: ${RAMP.edge}; stroke-width: 1.5; }
   .bmad-diagram .edge.soft { stroke-width: 1.25; stroke-dasharray: 4 4; opacity: 0.85; }
   .bmad-diagram .edge.lens { opacity: 0.5; }
