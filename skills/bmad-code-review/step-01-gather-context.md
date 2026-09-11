@@ -34,7 +34,7 @@ story_key: '' # set at runtime when discovered from sprint status
    Do the last few messages reveal what the user wants to be reviewed? Look for spec paths, commit refs, branches, PRs, or descriptions of a change. Apply the same diff-mode keyword scan and routing as Tier 1.
 
    **Tier 3 — Sprint tracking.**
-   Look for a sprint status file (`*sprint-status*`) in `{{.implementation_artifacts}}` or `{{.planning_artifacts}}`. If found, scan for stories with status `review`:
+   Look for a sprint status file (`*sprint-status*`) in `{{ config.implementation_artifacts }}` or `{{ config.planning_artifacts }}`. If found, scan for stories with status `review`:
    - **Exactly one `review` story:** Set `story_key` to the story's key (e.g., `1-2-user-auth`). HALT and give the user a choice:
      - **Review this story** — review the detected story `<story-id>` (status `review`).
      - **Choose another target** — pick a different review target.
@@ -90,4 +90,4 @@ Present a summary before proceeding: diff stats (files changed, lines added/remo
 
 ## NEXT
 
-Read fully and follow `[[bmad-snapshot:step-02-review.md]]`
+Read fully and follow `{{ rendered("step-02-review.md") }}`

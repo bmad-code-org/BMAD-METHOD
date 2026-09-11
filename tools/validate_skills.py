@@ -17,7 +17,7 @@ What it checks:
 - SKILL-07: SKILL.md has body content after frontmatter
 - PATH-02: no installed_path variable
 - SEQ-02: no time estimates
-- TPL-01: template files must not contain compile-time {{.var}} substitutions
+- TPL-01: template files must not contain render-time {{ config.* }} / {{ workflow.* }} expressions
 
 Usage:
   uv run --python 3.11 tools/validate_skills.py                    # All skills, human-readable
@@ -50,7 +50,7 @@ TIME_ESTIMATE_PATTERNS = [
     re.compile(r"\bETA\b"),
 ]
 TEMPLATE_FILENAME_REGEX = re.compile(r"template", re.I)
-COMPILE_TIME_SUB_REGEX = re.compile(r"\{\{\.\w+\}\}")
+COMPILE_TIME_SUB_REGEX = re.compile(r"\{\{-?\s*(?:config|workflow)\.[^}]*\}\}")
 INSTALLED_PATH_RE = re.compile(r"installed_path", re.I)
 USE_WHEN_RE = re.compile(r"use\s+when\b", re.I)
 USE_IF_RE = re.compile(r"use\s+if\b", re.I)
@@ -502,11 +502,11 @@ def validate_skill(skill_dir: str) -> list[dict]:
                 findings.append(
                     _finding(
                         "TPL-01",
-                        "Template files must not contain compile-time substitutions",
+                        "Template files must not contain render-time expressions",
                         "HIGH",
                         rel_file,
-                        f"Template file contains compile-time substitution `{match.group(0)}` — this would be baked at render time and leak a machine-local value into every spec produced from the template.",
-                        "Remove the `{{.var}}` reference. Use single-curly `{var}` if the value should be resolved at LLM runtime by the consumer of the generated spec.",
+                        f"Template file contains render-time expression `{match.group(0)}` — this would be baked at render time and leak a machine-local value into every spec produced from the template.",
+                        "Remove the `{{ config.key }}` or `{{ workflow.key }}` expression. Use single-curly `{var}` if the value should be resolved at LLM runtime by the consumer of the generated spec.",
                         line=i + 1,
                     )
                 )

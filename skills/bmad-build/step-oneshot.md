@@ -13,7 +13,7 @@ You reach this step from step 2, or from step 1 when resuming a spec whose `rout
 
 ### Implement
 
-If `{story_key}` is not empty and `{{.implementation_artifacts}}/sprint-status.yaml` exists, read `[[bmad-snapshot:sync-sprint-status.md]]` with `{target_status}` = `in-progress`.
+If `{story_key}` is not empty and `{{ config.implementation_artifacts }}/sprint-status.yaml` exists, read `{{ rendered("sync-sprint-status.md") }}` with `{target_status}` = `in-progress`.
 
 Build the change from `{spec_file}`. The Intent section is what you implement. As you work, add notes to `## Implementation Notes`: decisions you made, files you changed, surprises.
 
@@ -23,15 +23,15 @@ Build the change from `{spec_file}`. The Intent section is what you implement. A
 - you need to do something you cannot undo
 - the remaining work is substantially larger than anticipated
 
-Write what triggered the stop in `## Implementation Notes`. Then update `{spec_file}`: add back `## Code Map` (filled in from what you learned while implementing) and `## Open Questions` (one question per gap), set `route: 'full'` and `status: 'draft'`. Go back to `[[bmad-snapshot:step-02-plan.md]]` step 6.
+Write what triggered the stop in `## Implementation Notes`. Then update `{spec_file}`: add back `## Code Map` (filled in from what you learned while implementing) and `## Open Questions` (one question per gap), set `route: 'full'` and `status: 'draft'`. Go back to `{{ rendered("step-02-plan.md") }}` step 6.
 
 ### Review
 
 Say which review layers you are skipping, then start every active layer before reading any results. Run them at the same time when you can. Fill in runtime placeholders first. When a layer tells you to launch a reviewer subagent, launch it with that prompt text. Do not read the reviewer's instruction file yourself. For any other customized instruction, do what it says:
 
-{workflow.oneshot_review_layers}
+{{ workflow.oneshot_review_layers }}
 
-If a layer needs subagents and you cannot launch them, write the full prompt for each layer under `{{.implementation_artifacts}}` (with placeholders filled in, not just file paths). Stop and ask the user to run each prompt in a separate session and paste back the findings.
+If a layer needs subagents and you cannot launch them, write the full prompt for each layer under `{{ config.implementation_artifacts }}` (with placeholders filled in, not just file paths). Stop and ask the user to run each prompt in a separate session and paste back the findings.
 
 ### Classify
 
@@ -58,7 +58,7 @@ For each group:
 
 - **patch** — This change caused or exposed the problem. The smallest fix is simple, adds no new public API, and does not guard code paths you did not show are reachable. Fix it now.
 - **HALT** — Same as patch, but the smallest fix is not that simple. Stop and ask the user before continuing.
-- **defer** — Everything else: old bugs not caused by this change, ideas for later, groups where every member is `maybe-false` and would be `medium` or `high` if true (record that severity marked unverified, and what would prove it; if it would only be `low`, reject it), or fixes that would edit CLAUDE.md, AGENTS.md, rules, or specs. Add one entry to `{{.implementation_artifacts}}/deferred-work.md`:
+- **defer** — Everything else: old bugs not caused by this change, ideas for later, groups where every member is `maybe-false` and would be `medium` or `high` if true (record that severity marked unverified, and what would prove it; if it would only be `low`, reject it), or fixes that would edit CLAUDE.md, AGENTS.md, rules, or specs. Add one entry to `{{ config.implementation_artifacts }}/deferred-work.md`:
 
   ```markdown
   - source_spec: `{spec_file}`
@@ -75,7 +75,7 @@ Update `{spec_file}`:
 1. Set `status: 'done'` in the frontmatter.
 2. If review found anything, add `## Review Triage Log` with one line per finding: verdict and evidence. For `false`, the disproof. For `maybe-false`, what would settle it. For rejected `low`, why it was not worth fixing.
 
-If `{story_key}` is not empty and `{{.implementation_artifacts}}/sprint-status.yaml` exists, read `[[bmad-snapshot:sync-sprint-status.md]]` with `{target_status}` = `review`.
+If `{story_key}` is not empty and `{{ config.implementation_artifacts }}/sprint-status.yaml` exists, read `{{ rendered("sync-sprint-status.md") }}` with `{target_status}` = `review`.
 
 ### Commit
 
@@ -83,7 +83,7 @@ If git is available and there are uncommitted changes, commit with a conventiona
 
 ### Present
 
-{workflow.open_spec}
+{{ workflow.open_spec }}
 
 Give the user a short summary — one or two sentences:
 
@@ -103,4 +103,4 @@ Workflow complete.
 
 If anything appears below, do it before exiting. Otherwise exit.
 
-{workflow.on_complete}
+{{ workflow.on_complete }}

@@ -1,6 +1,6 @@
 ---
-deferred_work_file: '{{.implementation_artifacts}}/deferred-work.md'
-sprint_status: '{{.implementation_artifacts}}/sprint-status.yaml'
+deferred_work_file: '{{ config.implementation_artifacts }}/deferred-work.md'
+sprint_status: '{{ config.implementation_artifacts }}/sprint-status.yaml'
 ---
 
 # Step 4: Present and Act
@@ -131,4 +131,4 @@ Present the user with follow-up options:
 
 If anything appears below, follow it as the final terminal instruction before exiting; otherwise exit normally.
 
-{workflow.on_complete}
+{{ workflow.on_complete }}

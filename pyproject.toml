@@ -15,6 +15,7 @@ dependencies = []
 
 [dependency-groups]
 dev = [
+  "jinja2>=3.1",
   "pre-commit>=4.6.2",
   "pytest>=8",
   "pytest-xdist>=3",

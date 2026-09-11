@@ -319,15 +319,15 @@ class TestRules(ProjectCase):
         skill = self.valid(
             "bmad-tpl",
             {
-                "template.md": "plain {{.name}}\n```\nfenced {{.other}}\n```\n",
-                "notes.md": "{{.ignored}}\n",
+                "template.md": "plain {{ config.name }} {{placeholder}}\n```\nfenced {{workflow.other}}\n```\n",
+                "notes.md": "{{ config.ignored }}\n",
             },
         )
         findings = findings_by_rule(self.findings_for(skill), "TPL-01")
         self.assertEqual(len(findings), 2)
         self.assertEqual({f["line"] for f in findings}, {1, 3})
-        self.assertTrue(any("{{.name}}" in f["detail"] for f in findings))
-        self.assertTrue(any("{{.other}}" in f["detail"] for f in findings))
+        self.assertTrue(any("{{ config.name }}" in f["detail"] for f in findings))
+        self.assertTrue(any("{{workflow.other}}" in f["detail"] for f in findings))
 
     def test_read_err_on_unreadable_file_continues(self):
         skill = self.valid("bmad-perm", {"secret.md": "ok\n"})
