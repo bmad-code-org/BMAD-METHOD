@@ -74,6 +74,7 @@ const STYLE = `
     fill: ${RAMP.accent};
   }
   .bmad-diagram .slogan.alt { fill: ${RAMP.muted}; }
+  .bmad-diagram .grid { fill: none; stroke: ${RAMP.line}; stroke-opacity: 0.22; stroke-width: 1; }
   .bmad-diagram .rule { fill: none; stroke: ${RAMP.line}; stroke-width: 1; }
   .bmad-diagram .edge { fill: none; stroke: ${RAMP.edge}; stroke-width: 1.5; }
   .bmad-diagram .edge.soft { stroke-width: 1.25; stroke-dasharray: 4 4; opacity: 0.85; }
