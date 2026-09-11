@@ -376,10 +376,6 @@ starlight-toc h2,
   --dg-edge: var(--bmad-muted-ink-2);
   --dg-ground: var(--bmad-white);
   --dg-accent: var(--bmad-accent);
-  /* The site's copper, and the nearest thing this palette holds to the gold the
-     delivery loop used to open with. Paired with the accent it gives a drawing
-     two framing hues without inventing one. */
-  --dg-accent-2: var(--bmad-copper);
   --dg-ok: #1f6b3b;
   --dg-ok-tint: #edf6f0;
   --dg-warn: #8a5a00;
@@ -399,9 +395,6 @@ starlight-toc h2,
   --dg-muted: #8c96a3;
   --dg-edge: #8c96a3;
   --dg-ground: var(--bmad-dark);
-  /* the copper lifted for a dark ground; `--bmad-copper` itself is far too dark
-     to read here, and the ramp has no on-dark variant of it */
-  --dg-accent-2: #e0b25f;
   --dg-ok: #6fcf97;
   --dg-ok-tint: rgba(111, 207, 151, 0.1);
   --dg-warn: #e0b25f;
@@ -540,16 +533,26 @@ starlight-toc h2,
   fill: var(--dg-accent);
 }
 
-/* A line that frames a drawing rather than labelling part of it, closing on a
-   hairline the way every section of the marketing site does. Reserved for the
-   one or two a diagram is allowed, so the hues stay scarce; `alt` is the second
-   of a pair, so the two ends of a drawing do not read as the same statement. */
+/* The two lines that frame a drawing rather than label part of it, closing on
+   a hairline the way every section of the marketing site closes.
+
+   This is the site's label register, not a heading: mono, uppercase, weight
+   400, wide tracking. Colour follows the site's own rule for these - the accent
+   for a label that carries weight, muted for one that only orients - so a
+   drawing's opening and its closing summary are told apart without a second
+   hue. The site has no second hue to borrow: its copper is a status colour
+   (`tag-warn`, the gate's CONCERNS heading) and reads as a problem anywhere
+   else. */
 .bmad-diagram .slogan {
+  font-family: var(--bmad-mono);
+  font-size: 16px;
+  letter-spacing: 0.085em;
+  text-transform: uppercase;
   fill: var(--dg-accent);
 }
 
 .bmad-diagram .slogan.alt {
-  fill: var(--dg-accent-2);
+  fill: var(--dg-muted);
 }
 
 .bmad-diagram .rule {
