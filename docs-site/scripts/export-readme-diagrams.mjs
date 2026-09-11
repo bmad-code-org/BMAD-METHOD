@@ -66,6 +66,7 @@ const STYLE = `
   .bmad-diagram .band { fill: ${RAMP.surface}; stroke: ${RAMP.line}; stroke-opacity: 0.28; stroke-width: 1; }
   .bmad-diagram .panel { fill: none; stroke: ${RAMP.line}; stroke-width: 1; stroke-dasharray: 4 4; }
   .bmad-diagram .panel-title { fill: ${RAMP.accent}; }
+  .bmad-diagram .slogan { fill: ${RAMP.accent}; }
   .bmad-diagram .edge { fill: none; stroke: ${RAMP.edge}; stroke-width: 1.5; }
   .bmad-diagram .edge.soft { stroke-width: 1.25; stroke-dasharray: 4 4; opacity: 0.85; }
   .bmad-diagram .edge.lens { opacity: 0.5; }
