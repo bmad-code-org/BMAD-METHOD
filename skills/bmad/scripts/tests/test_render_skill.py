@@ -451,6 +451,7 @@ class RenderSkillTests(unittest.TestCase):
             "{% for item in workflow.count %}{{ item }}{% endfor %}\n",
             '{{ rendered("missing.md") }}\n',
             "{{ rendered(workflow.items) }}\n",
+            '{{ halt("rejected") }}\n',
         )
         for template in templates:
             with self.subTest(template=template):
@@ -470,6 +471,13 @@ class RenderSkillTests(unittest.TestCase):
             rs.RenderError, r"^detail\.md:1: missing customization parameter `workflow\.missing`$"
         ):
             rs.render(ws.project, skill)
+        guard = '{% if workflow.value not in ("two", "three") %}{{ halt("value must be two or three, not " ~ workflow.value) }}{% endif %}\n'
+        (skill / "detail.md").write_text(guard + "kept\n", encoding="utf-8")
+        with self.assertRaisesRegex(rs.RenderError, r"^detail\.md:1: value must be two or three, not one$"):
+            rs.render(ws.project, skill)
+        self.assertEqual(
+            _files(rs.render(ws.project, skill, assignments=["workflow.value=two"]).parent)["detail.md"], b"kept\n"
+        )
 
     def test_excluded_entry_and_surviving_reference_to_excluded_file_halt(self):
         for workflow in (

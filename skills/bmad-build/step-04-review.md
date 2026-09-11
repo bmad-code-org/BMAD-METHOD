@@ -1,3 +1,4 @@
+{% if workflow.route != "oneshot" %}
 # Step 4: Review
 
 ## RULES
@@ -82,3 +83,4 @@ If a layer's instruction requires subagents and none are available, for each suc
 ## NEXT
 
 Read fully and follow `{{ rendered("step-05-present.md") }}`
+{% endif %}

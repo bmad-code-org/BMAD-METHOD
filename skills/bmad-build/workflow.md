@@ -1,3 +1,4 @@
+{% if workflow.route not in ("oneshot", "full", "auto") %}{{ halt("workflow.route must be oneshot, full, or auto, not " ~ workflow.route) }}{% endif %}
 # Build New Preview Workflow
 
 **Goal:** Turn user intent into a hardened, reviewable artifact.

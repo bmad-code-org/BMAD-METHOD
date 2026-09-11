@@ -1,3 +1,4 @@
+{% if workflow.route not in ("oneshot", "full", "auto") %}{{ halt("workflow.route must be oneshot, full, or auto, not " ~ workflow.route) }}{% endif %}
 # Build Auto Workflow
 
 **Goal:** Turn intent into a hardened, reviewable artifact, without human interaction.

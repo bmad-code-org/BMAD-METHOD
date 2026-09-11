@@ -1,3 +1,4 @@
+{% if workflow.route != "full" %}
 # Step One-Shot: Implement, Review, Present
 
 You reach this step from step 2, or from step 1 when resuming a spec whose `route` is `oneshot`. `{spec_file}` already exists.
@@ -15,15 +16,15 @@ You reach this step from step 2, or from step 1 when resuming a spec whose `rout
 
 If `{story_key}` is not empty and `{{ config.implementation_artifacts }}/sprint-status.yaml` exists, read `{{ rendered("sync-sprint-status.md") }}` with `{target_status}` = `in-progress`.
 
+If intent gaps remain, present each as a numbered question with its options and what each option means, HALT for the human's answers, and fold the answers into the Intent.
+
 Build the change from `{spec_file}`. The Intent section is what you implement. As you work, add notes to `## Implementation Notes`: decisions you made, files you changed, surprises.
 
-**When to stop and replan.** Stop coding if you learn something step 2 did not account for:
-
-- the request left out something the user would notice in the result
-- you need to do something you cannot undo
-- the remaining work is substantially larger than anticipated
-
-Write what triggered the stop in `## Implementation Notes`. Then update `{spec_file}`: add back `## Code Map` (filled in from what you learned while implementing) and `## Open Questions` (one question per gap), set `route: 'full'` and `status: 'draft'`. Go back to `{{ rendered("step-02-plan.md") }}` step 6.
+{% if workflow.route == "oneshot" %}
+**When to stop.** Stop coding if the request left out something the user would notice in the result. Write the gap in `## Implementation Notes`, then ask the human — do not guess.
+{% else %}
+**When to stop and replan.** Stop coding if the request left out something the user would notice in the result. Write the gap in `## Implementation Notes`. Then update `{spec_file}`: add back `## Code Map` (filled in from what you learned while implementing) and `## Open Questions` (one question per gap), set `route: 'full'` and `status: 'draft'`. Go back to `{{ rendered("step-02-plan.md") }}` step 6.
+{% endif %}
 
 ### Review
 
@@ -104,3 +105,4 @@ Workflow complete.
 If anything appears below, do it before exiting. Otherwise exit.
 
 {{ workflow.on_complete }}
+{% endif %}
