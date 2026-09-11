@@ -1,4 +1,4 @@
-<svg class="bmad-diagram" xmlns="http://www.w3.org/2000/svg" width="1120" height="466" viewBox="0 0 1120 466" role="img" aria-labelledby="title description">
+<svg class="bmad-diagram" xmlns="http://www.w3.org/2000/svg" width="1120" height="477" viewBox="0 0 1120 477" role="img" aria-labelledby="title description">
   <style>
   .bmad-diagram { font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif; }
   .bmad-diagram text { fill: #e6eaf0; }
@@ -12,6 +12,8 @@
   .bmad-diagram .panel { fill: none; stroke: #404854; stroke-width: 1; stroke-dasharray: 4 4; }
   .bmad-diagram .panel-title { fill: #7fa0ff; }
   .bmad-diagram .slogan { fill: #7fa0ff; }
+  .bmad-diagram .slogan.alt { fill: #e0b25f; }
+  .bmad-diagram .rule { fill: none; stroke: #404854; stroke-width: 1; }
   .bmad-diagram .edge { fill: none; stroke: #8c96a3; stroke-width: 1.5; }
   .bmad-diagram .edge.soft { stroke-width: 1.25; stroke-dasharray: 4 4; opacity: 0.85; }
   .bmad-diagram .edge.lens { opacity: 0.5; }
@@ -33,7 +35,7 @@
     fill: #8c96a3;
   }
   </style>
-  <rect width="1120" height="466" rx="20" fill="#111418"/>
+  <rect width="1120" height="477" rx="20" fill="#111418"/>
   <title id="title">The BMad delivery loop</title>
   <desc id="description">Three kinds of input enter the delivery loop at different points: a vague notion enters at Clarify, a big clear idea enters at Plan, and a small change goes straight to Build and verify. The loop continues through Learn and adjust, which feeds back into planning as the work evolves.</desc>
   <defs>
@@ -45,22 +47,24 @@
     </marker>
   </defs>
 
-  <!-- The two slogans frame the drawing, so they are a matched pair: same size,
-       same weight, same accent, each held 40 units clear of the nearest mark.
-       They sit outside the drawing's group and are the only things the shift
-       below does not move.
+  <!-- Two banners closing on a hairline, which is how every section on the
+       marketing site ends. The rules run the drawing's own measure, 60 to 1060,
+       so the banners sit on the same grid as the boxes rather than floating
+       over it.
 
-       The original said these in colour - gold above, pale blue below - and
-       carried them larger than the body around them. Dropping every colour to
-       make one drawing serve both themes took that with it and left two grey
-       lines nobody read. The accent is the theme's one colour, so it is what
-       says this here. -->
+       The original said these in colour, gold above and pale blue below, and
+       carried them larger than the body around them. Dropping every colour so
+       one drawing could serve both themes took that with it and left two grey
+       lines nobody read. They are the only sentences here; a reader who skips
+       them gets four boxes and no argument. -->
   <g text-anchor="middle">
     <text class="slogan" x="560" y="31" font-size="22" font-weight="700" letter-spacing="1.8" data-i18n="start-anywhere">어디서든 시작</text>
-    <text class="slogan" x="560" y="450" font-size="22" font-weight="700" letter-spacing="1.8" data-i18n="right-sized-for-the-work-in-front-">눈앞의 작업에 꼭 맞는 절차</text>
+    <path class="rule" d="M60 47H1060"/>
+    <path class="rule" d="M60 430H1060"/>
+    <text class="slogan alt" x="560" y="462" font-size="22" font-weight="700" letter-spacing="1.8" data-i18n="right-sized-for-the-work-in-front-">눈앞의 작업에 꼭 맞는 절차</text>
   </g>
 
-  <g transform="translate(0 46)">
+  <g transform="translate(0 52)">
 
   <!-- Entry drops: each input lands where it enters the loop. These carry
        the accent, because where a piece of work joins is the one thing this
