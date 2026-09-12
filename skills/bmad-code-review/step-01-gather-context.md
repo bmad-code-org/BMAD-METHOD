@@ -1,3 +1,4 @@
+{% if not workflow.diff_file %}
 ---
 diff_file: '' # set at runtime: path to the diff file
 claims_file: '' # set at runtime (path or empty)
@@ -91,3 +92,4 @@ Present a summary before proceeding: diff stats (files changed, lines added/remo
 ## NEXT
 
 Read fully and follow `{{ rendered("step-02-review.md") }}`
+{% endif %}

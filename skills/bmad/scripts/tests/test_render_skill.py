@@ -36,6 +36,7 @@ SHARED_SCRIPTS = (
     "resolve_customization.py",
 )
 SHIPPED_SKILLS = ("bmad-build-auto", "bmad-build", "bmad-code-review")
+LENS_SKILLS = ("bmad-build-auto", "bmad-code-review")
 RENDERED_SKILLS = (*SHIPPED_SKILLS, "bmad-walkthrough", "bmad-retrospective")
 COMPILE_TOKEN = re.compile(r"\{\{\s*(?:config|workflow)\.|\{\{\s*rendered\(|\{%")
 DISPATCH_PREFIX = "read and follow "
@@ -561,9 +562,10 @@ class RenderSkillTests(unittest.TestCase):
                 workflow = rs.render(ws.project, skill)
                 snap = self._assert_rendered(workflow, ws.project, name)
                 self.assertIn("{spec_file}", _markdown(snap))
-                hunter = snap / "review-prompts" / "edge-case-hunter.md"
-                self.assertTrue(hunter.is_file())
-                self.assertIn(str(hunter), _markdown(snap))
+                if name in LENS_SKILLS:
+                    hunter = snap / "review-prompts" / "edge-case-hunter.md"
+                    self.assertTrue(hunter.is_file())
+                    self.assertIn(str(hunter), _markdown(snap))
 
     def test_rendered_skills_publish_snapshots_without_skill_root(self):
         for name in RENDERED_SKILLS:
@@ -690,9 +692,9 @@ class RenderSkillTests(unittest.TestCase):
         self.assertIn("must be a string", result.stdout)
 
         ws = self._workspace()
-        skill = self._skill(ws, "bmad-build")
+        skill = self._skill(ws, "bmad-code-review")
         (ws.bmad / "custom" / f"{skill.name}.toml").write_text(
-            '[[workflow.review_layers]]\nid = 42\nname = "bad"\ninstruction = "bad"\n',
+            '[[workflow.thorough_lenses]]\nid = 42\nname = "bad"\ninstruction = "bad"\n',
             encoding="utf-8",
         )
         result = self._cli(ws.project, skill)
@@ -713,11 +715,11 @@ class RenderSkillTests(unittest.TestCase):
 
     def test_review_layer_override_guard_and_empty_layer_halt(self):
         ws = self._workspace()
-        skill = self._skill(ws, "bmad-build")
+        skill = self._skill(ws, "bmad-code-review")
         (ws.bmad / "custom" / f"{skill.name}.toml").write_text(
             "\n".join(
                 [
-                    "[[workflow.review_layers]]",
+                    "[[workflow.thorough_lenses]]",
                     'id = "blind-hunter"',
                     'name = "Replacement"',
                     'instruction = "Run replacement review."',
@@ -727,18 +729,18 @@ class RenderSkillTests(unittest.TestCase):
             ),
             encoding="utf-8",
         )
-        review = (rs.render(ws.project, skill).parent / "step-04-review.md").read_text(encoding="utf-8")
+        review = (rs.render(ws.project, skill).parent / "step-02-review.md").read_text(encoding="utf-8")
         self.assertIn("Replacement (`blind-hunter`)", review)
         self.assertIn("Run only when: the replacement condition holds", review)
         self.assertIn("Run replacement review.", review)
 
         defaults = tomllib.loads((skill / "customize.toml").read_text(encoding="utf-8"))
         disabled = "\n".join(
-            f'[[workflow.review_layers]]\nid = "{layer["id"]}"\nname = "disabled"\ninstruction = ""\n'
-            for layer in defaults["workflow"]["review_layers"]
+            f'[[workflow.thorough_lenses]]\nid = "{layer["id"]}"\nname = "disabled"\ninstruction = ""\n'
+            for layer in defaults["workflow"]["thorough_lenses"]
         )
         (ws.bmad / "custom" / f"{skill.name}.toml").write_text(disabled, encoding="utf-8")
-        review = (rs.render(ws.project, skill).parent / "step-04-review.md").read_text(encoding="utf-8")
+        review = (rs.render(ws.project, skill).parent / "step-02-review.md").read_text(encoding="utf-8")
         self.assertIn("No active review layers. HALT", review)
 
     def test_non_empty_open_spec_override_reaches_both_terminal_routes(self):

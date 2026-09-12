@@ -5,7 +5,9 @@ created: '{date}'
 status: 'draft' # draft | ready-for-dev | in-progress | in-review | done
 route: '' # oneshot | full — set by step-02
 route_source: '' # pinned | auto — set with route by step-02
-review_loop_iteration: 0 # incremented by step-04 before each review loopback
+review: '' # none | quick | thorough — set at review
+review_source: '' # pinned | auto
+lenses_ran: [] # ids of the lenses launched, in launch order
 context: [] # optional: `{project-root}/`-prefixed paths to project-wide standards/docs the implementation agent should load. Keep short — only what isn't already distilled into the spec body.
 ---
 
@@ -74,17 +76,13 @@ context: [] # optional: `{project-root}/`-prefixed paths to project-wide standar
 
 ## Spec Change Log
 
-<!-- Append-only. Populated by step-04 during review loops. Do not modify or delete existing entries.
-     Each entry records: what finding triggered the change, what was amended, what known-bad state
-     the amendment avoids, and any KEEP instructions (what worked well and must survive re-derivation).
-     Empty until the first bad_spec loopback. -->
+<!-- Append-only. Records amendments to sections outside the frozen block after approval,
+     and what prompted each. Do not modify or delete existing entries. -->
 
 ## Review Triage Log
 
-<!-- Append-only. Populated by step-04 on EVERY review pass, including loopbacks and blocked exits.
-     Each entry records verdict counts (high/medium/low/false/maybe-false) and one row per
-     reviewer finding: verdict, route, and evidence — the refutation for false, what would settle
-     it for maybe-false, the action taken for patches. Empty until the first review pass. -->
+<!-- Append-only. The findings `bmad-code-review` returned and what was done with each.
+     Do not modify or delete existing entries. -->
 
 ## Design Notes
 

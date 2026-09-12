@@ -3,6 +3,15 @@ deferred_work_file: '{{ config.implementation_artifacts }}/deferred-work.md'
 sprint_status: '{{ config.implementation_artifacts }}/sprint-status.yaml'
 ---
 
+{% if workflow.diff_file %}
+# Step 4: Return the Findings
+
+## INSTRUCTIONS
+
+Write the surviving entries as a Markdown list, one item per triaged group. Each item carries the location, the verified problem and its consequence, the severity (the verdict, or the unverified grade for `maybe-false`), and the class: `patch`, `defer`, or `decision_needed`. No rejected findings and no reviewer transcripts.
+
+Then stop and return to the calling skill's instructions.
+{% else %}
 # Step 4: Present and Act
 
 ## RULES
@@ -132,3 +141,4 @@ Present the user with follow-up options:
 If anything appears below, follow it as the final terminal instruction before exiting; otherwise exit normally.
 
 {{ workflow.on_complete }}
+{% endif %}

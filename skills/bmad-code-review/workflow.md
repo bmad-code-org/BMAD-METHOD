@@ -63,4 +63,8 @@ This uses **step-file architecture** for disciplined execution:
 
 ## FIRST STEP
 
+{% if workflow.diff_file %}
+A calling skill handed off this review. Bind the runtime placeholders: `{diff_file}` = `{{ workflow.diff_file }}`, `{spec_file}` = `{{ workflow.spec_file }}`, `{claims_file}` = `{spec_file}`, `{review_mode}` = `full`, and `{verbatim_intent}` = the `## Intent` section of `{spec_file}`. Then read fully and follow: `{{ rendered("step-02-review.md") }}`.
+{% else %}
 Read fully and follow: `{{ rendered("step-01-gather-context.md") }}` to begin the workflow.
+{% endif %}
