@@ -219,25 +219,13 @@ on_complete = "Summarize the brief in three bullets and offer to email it via th
 ```
 
 Individual workflows add fields on top — output paths, templates, toggles —
-and each follows the shape rules above. `bmad-code-review` ships
-`[[workflow.review_layers]]`, keyed by `id`. This override disables one
-shipped layer and adds another; the skill skips a layer whose
-`instruction` is empty, so nothing is deleted. See
-[Review a Change](../build/review-a-change.md) for empty `instruction`,
-`when`, and a new `id`.
+and each follows the shape rules above. For example, `bmad-code-review`
+exposes `review`, the default review depth:
 
 ```toml
 # _bmad/custom/bmad-code-review.toml
-[[workflow.review_layers]]
-id = "blind-hunter"
-instruction = ""
-
-[[workflow.review_layers]]
-id = "security-bot"
-name = "Security bot"
-instruction = """
-Run the team reviewer via bash on {diff_file} and return its findings as a Markdown list.
-"""
+[workflow]
+review = "quick"
 ```
 
 Read a workflow's `customize.toml` to see the fields it exposes. If the

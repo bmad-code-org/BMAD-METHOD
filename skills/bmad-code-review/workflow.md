@@ -1,3 +1,4 @@
+{% if workflow.review not in ("quick", "thorough") %}{{ halt("workflow.review must be quick or thorough, not " ~ workflow.review) }}{% endif %}
 # Code Review Workflow
 
 **Goal:** Review code changes adversarially. No noise, no filler.
