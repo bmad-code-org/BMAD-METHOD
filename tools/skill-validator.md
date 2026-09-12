@@ -83,11 +83,12 @@ Instructions for the full route.
 {% endfor %}
 ```
 
-Templates see three names:
+Templates see four names:
 
 - `config` — the central config. `config.key` is the one scalar with that key anywhere in the merged config (an ambiguous or missing key halts); `config.a.b.c` names an explicit path. `{project-root}` in the value is bound.
 - `workflow` — the effective customization's `[workflow]` table: shipped `customize.toml`, then project and user TOML, then invocation overrides. Each value is validated against the shape of its shipped default. Inserted directly, a string list renders as a Markdown list and a list of lens tables as lens sections, the same output the pre-Jinja2 tokens produced; `{% for %}` iterates either. `{skill-root}` in a value is bound to the generation directory.
 - `rendered("file.md")` — the generation path of another rendered source. The target must be a Markdown file in the skill other than `SKILL.md`, which the renderer excludes.
+- `halt(message)` — stops the render with that message, prefixed by the source and line. Use it to reject a customization value the templates cannot act on, such as a misspelled selector.
 
 Every value reached during the render is part of the generation's identity. Customization values are inserted as opaque text and never re-parsed as templates. An undefined name, a table inserted as a value, a loop over a non-list, or a syntax error halts the render with `file:line`. A secondary file whose rendered body is whitespace is left out of the snapshot, and a surviving `rendered()` link to it halts; `workflow.md` rendering to nothing halts. Agent-facing placeholders such as `{{epic_number}}` must sit inside `{% raw %}…{% endraw %}` in a rendered skill.
 

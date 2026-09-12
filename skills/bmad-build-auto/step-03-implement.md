@@ -22,12 +22,15 @@ Capture `baseline_revision` (current HEAD, or `NO_VCS` if version control is una
 
 Change `{spec_file}` status to `in-progress` in the frontmatter before starting implementation. Execute only the matching route below, then continue with Both routes.
 
+{% if workflow.route != "full" %}
 #### Oneshot (`route: oneshot`)
 
 Implement in this main session from the story's Intent and working notes. Do not launch an implementing subagent or execute the full-route handoff. Append decisions, files touched, and surprises to `## Implementation Notes`.
 
-Stop and replan if the intent left out something the user would notice in the result, you need to do something you cannot undo, or the remaining work is substantially larger than anticipated. Record the trigger in `## Implementation Notes`, set `route: 'full'` and `status: 'draft'`, then read fully and follow `{{ rendered("step-02-plan.md") }}`.
+Stop if the intent left out something the user would notice in the result. Record the gap in `## Implementation Notes`, then HALT with status `blocked` and blocking condition `intent gap` — do not guess.
 
+{% endif %}
+{% if workflow.route != "oneshot" %}
 #### Full (`route: full`, or a legacy spec with no route)
 
 Substitute the runtime placeholders (e.g. `{spec_file}`) into the implementation handoff below, then follow it verbatim. Do not add parent-authored goal restatements, file lists, ownership boundaries, or acceptance criteria to the handoff — the spec is the subagent's sole source of truth. If the handoff conflicts with the spec, HALT with status `blocked` and blocking condition `handoff conflicts with spec`, and include both conflicting passages.
@@ -36,14 +39,17 @@ Substitute the runtime placeholders (e.g. `{spec_file}`) into the implementation
 
 Invoke the subagent **synchronously** and wait for it to return in this same turn — do not background/detach it (`run_in_background`) or end your turn to await a notification (see workflow.md → Subagents). Resume at "Verify" only after it returns. If the platform allows, keep the subagent available for re-engagement after it returns — step-04 may send it review fixes.
 
+{% endif %}
 ### Both routes
 
 **Path formatting rule:** Any markdown links written into `{spec_file}` must use paths relative to `{spec_file}`'s directory so they are clickable in VS Code. Any file paths displayed in terminal/conversation output must use CWD-relative format with `:line` notation (e.g., `src/path/file.ts:42`) for terminal clickability. No leading `/` in either case.
 
 ### Verify
 
+{% if workflow.route != "oneshot" %}
 On the full route, finish any unfinished work reported by the implementing subagent before proceeding.
 
+{% endif %}
 Stage the diff and read it: using the repository's version-control tooling, write a unified diff of all changes since `{baseline_revision}` (from `{spec_file}` frontmatter) — untracked files included — to a uniquely-named file in the system temp directory, set `{diff_file}` to its absolute path, and read that file into your own context. Judge against the diff, not just implementation notes or a subagent's report.
 
 Run the commands in `{spec_file}`'s `## Verification` section (or perform its manual checks). If verification fails and the failure cannot be fixed, HALT with status `blocked`, blocking condition `implementation verification failed`, and include the failing command or check and reason. When fixing a failure changes code, rewrite `{diff_file}` and re-read it. Acceptance criteria are judged at review, not here.

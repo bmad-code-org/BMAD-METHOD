@@ -1,3 +1,4 @@
+{% if workflow.route != "oneshot" %}
 ---
 ---
 
@@ -48,3 +49,4 @@ If `{spec_file}`'s `<frozen-after-approval>` block contains an I/O & Edge-Case M
 ## NEXT
 
 Read fully and follow `{{ rendered("step-04-review.md") }}`
+{% endif %}

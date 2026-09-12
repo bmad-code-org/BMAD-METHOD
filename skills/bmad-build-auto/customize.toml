@@ -26,6 +26,12 @@ activation_steps_append = []
 
 persistent_facts = []
 
+# Execution route: "oneshot" implements in this session, "full" writes a spec
+# and hands implementation to a subagent, "auto" applies route_selection after
+# planning.
+
+route = "auto"
+
 # Automatic route selection. Replace the whole instruction to change the rule.
 
 route_selection = """

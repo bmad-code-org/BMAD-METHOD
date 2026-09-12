@@ -400,7 +400,13 @@ class _RenderContext:
                 self,
             ),
             "rendered": self._rendered,
+            "halt": self._halt,
         }
+
+    @staticmethod
+    def _halt(message: Any) -> str:
+        """Let a template reject its inputs; the caller prefixes the source and line."""
+        raise RenderError(str(message))
 
     @jinja2.pass_context
     def _rendered(self, context: jinja2.runtime.Context, target: Any) -> str:
