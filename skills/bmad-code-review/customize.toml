@@ -42,6 +42,13 @@ on_complete = ""
 
 review = "thorough"
 
+# Set by a calling skill that hands off a review. When diff_file is set, the
+# review skips target discovery and returns the triaged findings to the caller
+# instead of presenting them.
+
+diff_file = ""
+spec_file = ""
+
 # Review lenses for the review step, in two sets the review selection picks
 # between. `instruction` is the lens's whole execution recipe — subagents by
 # default, but an override may run anything (e.g. an external reviewer via

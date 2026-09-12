@@ -98,10 +98,10 @@ commits locally. This works best on a platform that can spawn subagents, or at
 least call another model from the command line and wait for a result.
 
 Review is triage, not a dump of every possible note. Issues that belong to the
-current change get fixed. Unrelated pre-existing issues get deferred. If the
-code is wrong because the plan was weak, or the plan is wrong because the goal
-was wrong, it goes back to that layer and regenerates from there instead of
-patching only the diff.
+current change get fixed. Unrelated pre-existing issues get deferred. Anything
+that needs a decision comes back to you. Review depth is `thorough` on the full
+path and `quick` on the one-shot path; when invoking, you can name either
+depth, or skip review.
 
 For a standalone review — a PR, someone else's change, an extra pass, or a
 review bot — see [Review a Change](review-a-change.md).
