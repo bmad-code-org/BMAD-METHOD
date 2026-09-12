@@ -70,9 +70,6 @@ Priority 3 (base): the skill's own customize.toml   (shipped defaults)
 ```
 
 `_bmad/custom/` starts empty. Files appear only when someone customizes.
-A key in either file that the skill's `customize.toml` does not declare
-halts the render, so a misspelled or retired key is caught rather than
-ignored.
 
 **Four rules, by shape.** The resolver does not treat fields differently by
 name; the merge depends only on the value's shape:
