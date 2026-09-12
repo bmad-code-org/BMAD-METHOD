@@ -10,7 +10,7 @@ uv run --no-cache "{project-root}/_bmad/scripts/render_skill.py" --project-root 
 ```
 
 - When the invocation names a review selection (`quick` or `thorough`), append `--set workflow.review=<value>` to the command.
-- When a calling skill hands off a diff file and a story file, append `--set workflow.diff_file=<path> --set workflow.spec_file=<path>` to the command.
+- When a calling skill hands off a diff file and a story file, append `--set "workflow.diff_file=<path>" --set "workflow.spec_file=<path>"` to the command.
 - On success, read and follow the one absolute `workflow.md` instruction printed to stdout.
 - If `{project-root}/_bmad/scripts/render_skill.py` is not found, this BMad installation is not set up yet: read the installed `bmad` skill's SKILL.md (a sibling of this skill's directory) and follow its setup flow, then run the command above once more.
 - On any other failure (including `uv` being unavailable), report the command output and HALT. Do not run any workflow source directly.
