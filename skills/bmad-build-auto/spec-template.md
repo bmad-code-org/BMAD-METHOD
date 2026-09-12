@@ -5,6 +5,9 @@ created: '{date}'
 status: 'draft' # draft | ready-for-dev | in-progress | in-review | done | blocked
 route: '' # oneshot | full — set by step-02
 route_source: '' # pinned | auto — set with route by step-02
+review: '' # none | quick | thorough — set by step-04
+review_source: '' # pinned | auto — set with review by step-04
+lenses_ran: [] # ids of the lenses launched, set by step-04
 review_loop_iteration: 0 # incremented by step-04 before each review loopback
 followup_review_recommended: false # set by step-04 on status: done — true if the LLM decided another review pass is worthwhile
 context: [] # optional: `{project-root}/`-prefixed paths to project-wide standards/docs the implementation agent should load. Keep short — only what isn't already distilled into the spec body.

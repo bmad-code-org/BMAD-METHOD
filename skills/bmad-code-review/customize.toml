@@ -38,14 +38,33 @@ persistent_facts = []
 
 on_complete = ""
 
-# Review layers for the review step. `instruction` is the layer's whole
-# execution recipe — subagents by default, but an override may run anything
-# (e.g. an external reviewer via bash). {diff_file}, {claims_file} and {spec_file} are
-# substituted at run time; all are paths, and {diff_file} is the unified
-# diff file the layer reads. `when` (optional) gates a layer; empty
+# Review selection: "quick" runs quick_lenses, "thorough" runs thorough_lenses.
+
+review = "thorough"
+
+# Review lenses for the review step, in two sets the review selection picks
+# between. `instruction` is the lens's whole execution recipe — subagents by
+# default, but an override may run anything (e.g. an external reviewer via
+# bash). {diff_file}, {claims_file}, {spec_file}, and {verbatim_intent} are
+# substituted at run time; the first three are paths, and {diff_file} is the
+# unified diff file the lens reads. `when` (optional) gates a lens; empty
 # `instruction` disables it.
 
-[[workflow.review_layers]]
+[[workflow.quick_lenses]]
+id = "quick"
+name = "Quick"
+instruction = """
+Launch a context-free subagent with this prompt:
+
+Read `{spec_file}` — the story or spec holding the acceptance criteria and intent; it is empty when there is none — and the files its frontmatter `context:` lists. Read the agent instruction files (`AGENTS.md`, `CLAUDE.md`, or equivalents) at the repository root and in the directories the diff touches; those are the rules. Then read the unified diff at `{diff_file}` — it is the change under review.
+
+Report unmet acceptance criteria, broken rules, and bugs. Each finding: the location, what goes wrong, and evidence checked against the surrounding code. Output a Markdown list of findings only — no severity, priority, or ranking.
+
+Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
+
+"""
+
+[[workflow.thorough_lenses]]
 id = "blind-hunter"
 name = "Blind Hunter"
 instruction = """
@@ -64,7 +83,7 @@ Do not invoke any skill, and do not spawn subagents of your own — you are the 
 
 """
 
-[[workflow.review_layers]]
+[[workflow.thorough_lenses]]
 id = "edge-case-hunter"
 name = "Edge Case Hunter"
 instruction = """
@@ -80,7 +99,7 @@ Do not invoke any skill, and do not spawn subagents of your own — you are the 
 
 """
 
-[[workflow.review_layers]]
+[[workflow.thorough_lenses]]
 id = "verification-gap"
 name = "Verification Gap Reviewer"
 instruction = """
@@ -94,16 +113,19 @@ Do not invoke any skill, and do not spawn subagents of your own — you are the 
 
 """
 
-[[workflow.review_layers]]
-id = "acceptance-auditor"
-name = "Acceptance Auditor"
-when = '{review_mode} = "full"'
+[[workflow.thorough_lenses]]
+id = "intent-alignment"
+name = "Intent Alignment Auditor"
 instruction = """
 Launch a subagent with this prompt:
 
-You are an Acceptance Auditor. Review the provided diff against `{spec_file}` and any loaded context docs. Check for: violations of acceptance criteria, deviations from spec intent, missing implementation of specified behavior, contradictions between spec constraints and actual code. Output findings as a Markdown list. Each finding: one-line title, which AC/constraint it violates, and evidence from the diff.
+You are an intent-alignment auditor. You have no other context about how this change was produced. Here is the verbatim intent this work started from:
 
-Diff: the unified diff at `{diff_file}`. Read that file — it is the content under review.
+{verbatim_intent}
+
+The diff is the unified diff at `{diff_file}`. Read that file — it is the change under review.
+
+Your task is strictly descriptive — do not prescribe additional work. Report: (1) the defensible readings of the intent, enumerated; (2) which reading this diff implements; (3) where the readings and the diff diverge — specifically, which surface the intent's expectations live at versus which surface the diff's changes and its tests exercise.
 
 Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
 

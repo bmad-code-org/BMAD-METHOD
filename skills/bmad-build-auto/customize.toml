@@ -61,14 +61,35 @@ Launch a subagent with no prior conversation context, with this prompt:
 > When done, report what you changed, how you verified it, and anything left incomplete or risky.
 """
 
-# Review layers for the review step. `instruction` is the layer's whole
-# execution recipe — subagents by default, but an override may run anything
-# (e.g. an external reviewer via bash). {diff_file} and {claims_file} are
-# substituted at run time; both are paths, and {diff_file} is the unified diff
-# file the layer reads. `when` (optional) gates a layer; empty `instruction`
-# disables it.
+# Review selection: "none" launches no lens and skips triage, "quick" runs
+# quick_lenses, "thorough" runs thorough_lenses, "auto" follows the resolved
+# route — oneshot selects quick, full selects thorough.
 
-[[workflow.review_layers]]
+review = "auto"
+
+# Review lenses for the review step, in two sets the review selection picks
+# between. `instruction` is the lens's whole execution recipe — subagents by
+# default, but an override may run anything (e.g. an external reviewer via
+# bash). {diff_file}, {claims_file}, {spec_file}, and {verbatim_intent} are
+# substituted at run time; the first three are paths, and {diff_file} is the
+# unified diff file the lens reads. `when` (optional) gates a lens; empty
+# `instruction` disables it.
+
+[[workflow.quick_lenses]]
+id = "quick"
+name = "Quick"
+instruction = """
+Launch a context-free subagent with this prompt:
+
+Read `{spec_file}` — the story or spec holding the acceptance criteria and intent; it is empty when there is none — and the files its frontmatter `context:` lists. Read the agent instruction files (`AGENTS.md`, `CLAUDE.md`, or equivalents) at the repository root and in the directories the diff touches; those are the rules. Then read the unified diff at `{diff_file}` — it is the change under review.
+
+Report unmet acceptance criteria, broken rules, and bugs. Each finding: the location, what goes wrong, and evidence checked against the surrounding code. Output a Markdown list of findings only — no severity, priority, or ranking.
+
+Do not invoke any skill, and do not spawn subagents of your own — you are the reviewer. Return your findings as text in your final message; do not route them through any findings-reporting tool the host may offer.
+
+"""
+
+[[workflow.thorough_lenses]]
 id = "blind-hunter"
 name = "Blind Hunter"
 instruction = """
@@ -87,7 +108,7 @@ Do not invoke any skill, and do not spawn subagents of your own — you are the 
 
 """
 
-[[workflow.review_layers]]
+[[workflow.thorough_lenses]]
 id = "edge-case-hunter"
 name = "Edge Case Hunter"
 instruction = """
@@ -103,7 +124,7 @@ Do not invoke any skill, and do not spawn subagents of your own — you are the 
 
 """
 
-[[workflow.review_layers]]
+[[workflow.thorough_lenses]]
 id = "verification-gap"
 name = "Verification Gap Reviewer"
 instruction = """
@@ -117,7 +138,7 @@ Do not invoke any skill, and do not spawn subagents of your own — you are the 
 
 """
 
-[[workflow.review_layers]]
+[[workflow.thorough_lenses]]
 id = "intent-alignment"
 name = "Intent Alignment Auditor"
 instruction = """
