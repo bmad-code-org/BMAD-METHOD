@@ -533,6 +533,49 @@ starlight-toc h2,
   fill: var(--dg-accent);
 }
 
+/* The two lines that frame a drawing rather than label part of it, closing on
+   a hairline the way every section of the marketing site closes.
+
+   This is the site's label register, not a heading: mono, uppercase, weight
+   400, wide tracking. Colour follows the site's own rule for these - the accent
+   for a label that carries weight, muted for one that only orients - so a
+   drawing's opening and its closing summary are told apart without a second
+   hue. The site has no second hue to borrow: its copper is a status colour
+   (`tag-warn`, the gate's CONCERNS heading) and reads as a problem anywhere
+   else. */
+.bmad-diagram .slogan {
+  font-family: var(--bmad-mono);
+  font-size: 16px;
+  letter-spacing: 0.085em;
+  text-transform: uppercase;
+  fill: var(--dg-accent);
+}
+
+.bmad-diagram .slogan.alt {
+  fill: var(--dg-muted);
+}
+
+/* A ruled field behind a drawing. Faint enough to be texture, never structure:
+   at this opacity it survives both ramps without competing with the edges. */
+.bmad-diagram .grid {
+  fill: none;
+  stroke: var(--dg-line);
+  stroke-opacity: 0.35;
+  stroke-width: 1;
+}
+
+/* The dark line sits further from its ground than the light one does, so the
+   same opacity reads as structure there rather than texture. */
+:root[data-theme='dark'] .bmad-diagram .grid {
+  stroke-opacity: 0.22;
+}
+
+.bmad-diagram .rule {
+  fill: none;
+  stroke: var(--dg-line);
+  stroke-width: 1;
+}
+
 /* ---------------------------------------------------------------
    Asides
    A tinted plate, an icon and a heading in the hue — the shape the
