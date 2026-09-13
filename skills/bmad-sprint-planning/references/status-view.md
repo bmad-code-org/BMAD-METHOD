@@ -3,7 +3,7 @@
 When the user wants to know where the sprint stands ("show sprint status", "where are we"), run:
 
 ```
-uv run {skill-root}/scripts/sprint_plan.py status \
+uv run --no-project {skill-root}/scripts/sprint_plan.py status \
   --status-file {implementation_artifacts}/sprint-status.yaml --date "{date}"
 ```
 

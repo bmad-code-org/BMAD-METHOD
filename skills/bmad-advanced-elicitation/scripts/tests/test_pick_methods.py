@@ -4,8 +4,8 @@
 # ///
 """Tests for pick_methods.py.
 
-Run: uv run scripts/tests/test_pick_methods.py
- or: uv run --with pytest -m pytest scripts/tests/test_pick_methods.py
+Run: uv run --no-project scripts/tests/test_pick_methods.py
+ or: uv run --no-project --with pytest -m pytest scripts/tests/test_pick_methods.py
 """
 
 import json

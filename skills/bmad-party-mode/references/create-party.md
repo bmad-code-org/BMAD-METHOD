@@ -30,7 +30,7 @@ Ask which they're after if it isn't obvious, then proceed.
 
 ## Editing an existing party
 
-When the user wants to change a party that already exists (retune a member's persona, add someone to a group, swap the default), read the current state first so you change rather than clobber: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow` returns the merged `party_members`, `party_groups`, and `default_party`. Show the member or group being touched, capture only the delta with the user, and hand that sparse change to `bmad-customize` — it replaces a `party_members`/`party_groups` entry whose `code`/`id` matches and appends the rest, so an edit is just the changed entry, never a full rewrite.
+When the user wants to change a party that already exists (retune a member's persona, add someone to a group, swap the default), read the current state first so you change rather than clobber: `uv run --no-project {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow` returns the merged `party_members`, `party_groups`, and `default_party`. Show the member or group being touched, capture only the delta with the user, and hand that sparse change to `bmad-customize` — it replaces a `party_members`/`party_groups` entry whose `code`/`id` matches and appends the rest, so an edit is just the changed entry, never a full rewrite.
 
 ## Keeping new faces from a session
 
@@ -63,7 +63,7 @@ Keep pushing for specificity. "Skeptical CFO" is a placeholder; "won't approve a
 
 ## Write via bmad-customize
 
-**First, check for code collisions.** A custom member whose `code` matches an installed agent silently *overrides* that agent in the collective. Before composing, resolve the collective once — `uv run {skill-root}/scripts/resolve_party.py --project-root {project-root} --skill {skill-root}` — and check each new member's `code` against the returned members. On a collision, surface it ("`analyst` would override the installed Analyst — intended, or pick a different code?") and let the user confirm or rename. One check, not a gate.
+**First, check for code collisions.** A custom member whose `code` matches an installed agent silently *overrides* that agent in the collective. Before composing, resolve the collective once — `uv run --no-project {skill-root}/scripts/resolve_party.py --project-root {project-root} --skill {skill-root}` — and check each new member's `code` against the returned members. On a collision, surface it ("`analyst` would override the installed Analyst — intended, or pick a different code?") and let the user confirm or rename. One check, not a gate.
 
 Compose the sparse override and hand it to `bmad-customize` to place, confirm, and write — target skill `bmad-party-mode`, `[workflow]` surface. Default to the **user** override (`bmad-party-mode.user.toml`); offer the **team** file when the party is meant to be shared. Hand it the exact entries: the `party_members` tables, any `party_groups` table (including its `memory` flag), and `default_party` if the user opted in. Keep it sparse — only the new entries, never a copy of the base customize.toml. `bmad-customize` shows the TOML, waits for an explicit yes, writes, and verifies the merge; don't write the file yourself.
 

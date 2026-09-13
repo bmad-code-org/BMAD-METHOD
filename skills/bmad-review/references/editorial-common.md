@@ -13,7 +13,7 @@ The baseline style guide is `{workflow.style_guide}`; a style guide stated in th
 ## Setup
 
 1. Gather inputs: the content (required — a path or pasted text), plus whatever the request states: purpose, target audience, length target, reader type, style guide. If no reviewable content was provided, say so and stop. Request-level values win; `{workflow.reader_type}` and `{workflow.style_guide}` fill what the request leaves unstated. Treat `{workflow.review_guidance}` entries as standing review directives.
-2. When the content is a file, get exact word counts — document total and per heading section — via `uv run {skill-root}/scripts/word_metrics.py <path>` (`--help` documents the output), and ground every word-impact estimate and the reduction summary in those numbers. If the content was pasted or the script cannot run, estimate and mark the numbers as estimates.
+2. When the content is a file, get exact word counts — document total and per heading section — via `uv run --no-project {skill-root}/scripts/word_metrics.py <path>` (`--help` documents the output), and ground every word-impact estimate and the reduction summary in those numbers. If the content was pasted or the script cannot run, estimate and mark the numbers as estimates.
 3. Infer purpose and audience from the content and standing context when not provided, and open the output with your one-sentence read — "this document exists to help [audience] accomplish [goal]" — so the author can correct a wrong premise before acting on the findings.
 
 ## Reader calibration
