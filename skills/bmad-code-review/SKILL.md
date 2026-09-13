@@ -6,7 +6,7 @@ description: 'Review code changes with several independent reviewers in parallel
 Run the following command exactly once without changing the current working directory. Replace `{project-root}` with the absolute path to the project root and `{skill-root}` with the absolute path to this skill's directory:
 
 ```bash
-uv run --no-cache "{project-root}/_bmad/scripts/render_skill.py" --project-root "{project-root}" --skill "{skill-root}"
+uv run --no-project --no-cache "{project-root}/_bmad/scripts/render_skill.py" --project-root "{project-root}" --skill "{skill-root}"
 ```
 
 - When the invocation names a review selection (`quick` or `thorough`), append `--set workflow.review=<value>` to the command.

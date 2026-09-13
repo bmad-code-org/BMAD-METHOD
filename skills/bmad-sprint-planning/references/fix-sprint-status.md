@@ -17,7 +17,7 @@ Rebuild `sprint-status.yaml` to a pristine, script-valid state when it is broken
 5. **Write pristine.** One command, from the confirmed table:
 
    ```
-   uv run {skill-root}/scripts/sprint_plan.py generate \
+   uv run --no-project {skill-root}/scripts/sprint_plan.py generate \
      --epic-file <path> [...] \
      --status-file {implementation_artifacts}/sprint-status.yaml \
      --stories-dir {implementation_artifacts} \

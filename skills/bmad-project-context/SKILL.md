@@ -19,8 +19,8 @@ Conversational always; the user approves every write.
 
 ## On Activation
 
-1. Resolve customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow`. On failure, read `{skill-root}/customize.toml` directly and use defaults. Execute `{workflow.activation_steps_prepend}`; treat `{workflow.persistent_facts}` entries as standing context (`file:` = paths/globs to load, others verbatim).
-2. Config: if `{project-root}/_bmad` exists, `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}` and read `{output_folder}`. Standalone: skip.
+1. Resolve customization: `uv run --no-project {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow`. On failure, read `{skill-root}/customize.toml` directly and use defaults. Execute `{workflow.activation_steps_prepend}`; treat `{workflow.persistent_facts}` entries as standing context (`file:` = paths/globs to load, others verbatim).
+2. Config: if `{project-root}/_bmad` exists, `uv run --no-project {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}` and read `{output_folder}`. Standalone: skip.
 3. **Load `references/best-practices.md` and `references/template.md` before anything else.** Every decision below is made against them.
 4. Detect intent and greet the user: **setup** (no instruction file in the target carries meaningful content — scaffolding alone, empty headings, a comment, a lone import line, is not meaningful; when unsure, adopt, since adopting a near-empty file costs one small ledger while setting up a meaningful one loses instructions), **adopt** (an instruction file has content but no managed block, whatever its state and whoever wrote it — the migration form of refresh; that file is the baseline and every instruction in it enters the ledger of step 1), **refresh** (a managed block exists), **record** (the user reports a mistake agents made), **audit** (re-verify and prune). A supplied intent that contradicts what detection finds — e.g. `setup` against a file with content — is surfaced and confirmed, never silently obeyed. Fold `{workflow.external_sources}` into the source list. Execute `{workflow.activation_steps_append}`.
 
@@ -57,7 +57,7 @@ Only what no scan reaches: what agents keep getting wrong here, what is off limi
 - Never ask what a scan could answer. Asking the user to confirm a path-checked claim, or one a config file already states, is a defect.
 - Ask recall questions, not review lists. Never hand the user a selection problem a scan created.
 - A mistake this session made and caught is observed evidence — offer it.
-- A repeatable command spotted in anything read this session — a log, a doc, its own runs — whose correct form is not the obvious guess is a candidate line: offer it. E.g. `uv run pytest` where plain `pytest` looks right but runs outside the project environment.
+- A repeatable command spotted in anything read this session — a log, a doc, its own runs — whose correct form is not the obvious guess is a candidate line: offer it. E.g. `uv run --no-project pytest` where plain `pytest` looks right but runs outside the project environment.
 - Batches of at most eight; fewer is better. A batch yielding nothing new means write.
 - When the repo contradicts the user, show the evidence and ask. Never write the claim as given, never drop it silently.
 

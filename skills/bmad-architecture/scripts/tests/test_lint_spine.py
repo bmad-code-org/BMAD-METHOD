@@ -2,7 +2,7 @@
 # requires-python = ">=3.11"
 # dependencies = ["pytest>=8.0"]
 # ///
-"""Tests for lint_spine.py. Run: uv run --with pytest pytest scripts/tests/test_lint_spine.py
+"""Tests for lint_spine.py. Run: uv run --no-project --with pytest pytest scripts/tests/test_lint_spine.py
 
 The spine under test: a clean spine lints empty; the linter catches exactly the
 mechanical defects a prompt is unreliable at — literal placeholders, AD-n id breakage,

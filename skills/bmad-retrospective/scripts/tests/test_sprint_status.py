@@ -8,8 +8,8 @@ Each test runs the script as a subprocess via ``uv run`` against a temp copy of
 an inline fixture, then re-reads the file to assert comments and formatting
 survive and punctuation-heavy action values round-trip intact.
 
-Run: uv run scripts/tests/test_sprint_status.py
- or: uv run --with pytest --with ruamel.yaml -m pytest scripts/tests/test_sprint_status.py
+Run: uv run --no-project scripts/tests/test_sprint_status.py
+ or: uv run --no-project --with pytest --with ruamel.yaml -m pytest scripts/tests/test_sprint_status.py
 """
 
 import importlib.util

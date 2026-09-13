@@ -4,8 +4,8 @@
 # ///
 """Tests for git_evidence.py — measurement over a real temp git repo.
 
-Run: uv run scripts/tests/test_git_evidence.py
- or: uv run --with pytest -m pytest scripts/tests/test_git_evidence.py
+Run: uv run --no-project scripts/tests/test_git_evidence.py
+ or: uv run --no-project --with pytest -m pytest scripts/tests/test_git_evidence.py
 """
 
 import json
