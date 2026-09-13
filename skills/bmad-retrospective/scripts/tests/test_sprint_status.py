@@ -611,7 +611,7 @@ def test_template_round_trip_changes_only_last_updated(tmp_path):
     assert len(before) == len(after)
     changed = [(b, a) for b, a in zip(before, after, strict=False) if b != a]
     assert len(changed) == 1, changed
-    assert changed[0][1] == "last_updated: 01-01-2026 09:00"
+    assert changed[0][1] == "last_updated: 2026-01-01 09:00"
     # The pre-existing action item keeps its 2-space sequence indent.
     assert "  - epic: 1" in after
 
@@ -977,8 +977,23 @@ def test_date_is_normalized_to_the_canonical_format(tmp_path):
     target = _write_fixture(tmp_path)
     proc = _run(["update", "--file", str(target), "--epic", "1", "--date", "1-2-2026 9:05"])
     assert proc.returncode == 0, proc.stderr
-    assert _json(proc)["last_updated"] == "01-02-2026 09:05"
-    assert _load(target)["last_updated"] == "01-02-2026 09:05"
+    assert _json(proc)["last_updated"] == "2026-01-02 09:05"
+    assert _load(target)["last_updated"] == "2026-01-02 09:05"
+
+
+def test_iso_date_is_accepted_and_remains_canonical(tmp_path):
+    target = _write_fixture(tmp_path)
+    proc = _run(["update", "--file", str(target), "--epic", "1", "--date", "2026-01-02 09:05"])
+    assert proc.returncode == 0, proc.stderr
+    assert _json(proc)["last_updated"] == "2026-01-02 09:05"
+    assert _load(target)["last_updated"] == "2026-01-02 09:05"
+
+
+def test_omitted_date_uses_iso_format(tmp_path):
+    target = _write_fixture(tmp_path)
+    proc = _run(["update", "--file", str(target), "--epic", "1"])
+    assert proc.returncode == 0, proc.stderr
+    assert re.fullmatch(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}", _json(proc)["last_updated"])
 
 
 def test_malformed_date_is_rejected(tmp_path):
@@ -1057,7 +1072,10 @@ def test_set_action_status_changes_exactly_one_line(tmp_path):
     after = target.read_text(encoding="utf-8").splitlines()
     assert len(before) == len(after)
     changed = [(b, a) for b, a in zip(before, after, strict=False) if b != a]
-    assert changed == [('    status: "open"', '    status: "done"')], changed
+    assert changed == [
+        ('last_updated: "01-01-2026 09:00"', 'last_updated: "2026-01-01 09:00"'),
+        ('    status: "open"', '    status: "done"'),
+    ], changed
 
 
 def test_set_action_status_composes_with_retro_done_and_add_action(tmp_path):
@@ -1495,6 +1513,7 @@ def test_status_write_preserves_every_scalar_style(tmp_path):
     assert len(before) == len(after)
     changed = [(b, a) for b, a in zip(before, after, strict=False) if b != a]
     assert changed == [
+        ('last_updated: "01-01-2026 09:00"', 'last_updated: "2026-01-01 09:00"'),
         ('    status: "open"', '    status: "done"'),
         ("    status: 'open'", "    status: 'done'"),
         ("    status: open", "    status: done"),
@@ -1514,7 +1533,9 @@ def test_empty_status_array_is_a_no_op(tmp_path):
     )
     assert proc.returncode == 0, proc.stderr
     assert _json(proc)["action_items_updated"] == 0
-    assert target.read_text(encoding="utf-8") == ACTION_FIXTURE
+    assert target.read_text(encoding="utf-8") == ACTION_FIXTURE.replace(
+        'last_updated: "01-01-2026 09:00"', 'last_updated: "2026-01-01 09:00"'
+    )
 
 
 def test_in_progress_item_transitions_to_done(tmp_path):

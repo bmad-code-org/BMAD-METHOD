@@ -40,10 +40,10 @@
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 
 # EXAMPLE STRUCTURE (your actual epics/stories will replace these):
-# Timestamps use MM-DD-YYYY HH:MM.
+# Timestamps use YYYY-MM-DD HH:MM. Legacy MM-DD-YYYY HH:MM values remain readable.
 
-generated: 05-06-2025 21:30
-last_updated: 05-06-2025 21:30
+generated: 2025-05-06 21:30
+last_updated: 2025-05-06 21:30
 project: My Awesome Project
 project_key: NOKEY
 tracking_system: file-system
