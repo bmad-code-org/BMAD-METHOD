@@ -185,14 +185,10 @@ class ResolveCustomizationStderrEncodingTests(unittest.TestCase):
             project_root = Path(temp_dir) / "proje-şık"
             skill_dir = project_root / "skills" / "bmad-fake"
             skill_dir.mkdir(parents=True)
-            (skill_dir / "customize.toml").write_text(
-                "[workflow]\nsteps = []\n", encoding="utf-8"
-            )
+            (skill_dir / "customize.toml").write_text("[workflow]\nsteps = []\n", encoding="utf-8")
             custom_dir = project_root / "_bmad" / "custom"
             custom_dir.mkdir(parents=True)
-            (custom_dir / "bmad-fake.toml").write_text(
-                '[workflow]\nnote = "unterminated\n', encoding="utf-8"
-            )
+            (custom_dir / "bmad-fake.toml").write_text('[workflow]\nnote = "unterminated\n', encoding="utf-8")
 
             env = dict(os.environ)
             env["PYTHONIOENCODING"] = "cp1252"
@@ -206,8 +202,7 @@ class ResolveCustomizationStderrEncodingTests(unittest.TestCase):
                     "--project-root",
                     str(project_root),
                 ],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
+                capture_output=True,
                 env=env,
                 check=False,
             )
