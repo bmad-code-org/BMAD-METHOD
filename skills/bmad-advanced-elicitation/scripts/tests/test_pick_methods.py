@@ -9,7 +9,9 @@ Run: uv run scripts/tests/test_pick_methods.py
 """
 
 import json
+import os
 import random
+import subprocess
 import sys
 from pathlib import Path
 
@@ -220,12 +222,35 @@ def test_cli_json_output(lib, capsys):
 
 
 def test_shipped_catalog_loads_clean():
+    """The catalog that ships with the skill parses and has every field filled."""
     shipped = pick_methods.DEFAULT_FILE
     assert shipped.is_file(), f"shipped catalog missing: {shipped}"
     r = pick_methods.load(shipped)
     assert len(r) >= 60
     for row in r:
         assert row["category"] and row["method_name"] and row["description"], row
+
+
+SCRIPT = Path(__file__).resolve().parent.parent / "pick_methods.py"
+
+
+def test_extra_error_names_its_path_readably_on_a_cp1252_console(tmp_path):
+    """stderr quotes the --extra path, so it needs the same pin as stdout."""
+    missing = tmp_path / "ek-şık.json"
+    env = dict(os.environ)
+    env["PYTHONIOENCODING"] = "cp1252"
+    result = subprocess.run(
+        [sys.executable, str(SCRIPT), "--extra", str(missing), "categories"],
+        capture_output=True,
+        env=env,
+        check=False,
+    )
+
+    stderr = result.stderr.decode("utf-8", errors="replace")
+    assert result.returncode == 2, stderr
+    assert "ek-şık.json" in stderr
+    assert r"\u015f" not in stderr
+    assert "Traceback" not in stderr
 
 
 if __name__ == "__main__":
