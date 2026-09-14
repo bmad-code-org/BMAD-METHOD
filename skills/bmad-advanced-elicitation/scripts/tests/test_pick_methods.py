@@ -241,8 +241,7 @@ def test_extra_error_names_its_path_readably_on_a_cp1252_console(tmp_path):
     env["PYTHONIOENCODING"] = "cp1252"
     result = subprocess.run(
         [sys.executable, str(SCRIPT), "--extra", str(missing), "categories"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
         env=env,
         check=False,
     )
@@ -252,6 +251,7 @@ def test_extra_error_names_its_path_readably_on_a_cp1252_console(tmp_path):
     assert "ek-şık.json" in stderr
     assert r"\u015f" not in stderr
     assert "Traceback" not in stderr
+
 
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__, "-q"]))

@@ -82,8 +82,7 @@ class StderrEncodingTests(unittest.TestCase):
             env["PYTHONIOENCODING"] = "cp1252"
             result = subprocess.run(
                 [sys.executable, str(SCRIPT), str(missing)],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
+                capture_output=True,
                 env=env,
                 check=False,
             )
@@ -93,6 +92,7 @@ class StderrEncodingTests(unittest.TestCase):
         self.assertIn("belge-şık.md", stderr)
         self.assertNotIn(r"\u015f", stderr)
         self.assertNotIn("Traceback", stderr)
+
 
 if __name__ == "__main__":
     unittest.main()

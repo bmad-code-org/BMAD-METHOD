@@ -1642,6 +1642,7 @@ def test_pin_utf8_preserves_the_streams_error_handler():
 
 def test_pin_utf8_ignores_a_stream_without_reconfigure():
     """A capture object with no reconfigure() is left alone rather than raising."""
+
     class Captured:
         """A stand-in for pytest's capture object: no reconfigure() method."""
 

@@ -160,8 +160,7 @@ def run_script(args, stdin_bytes=None):
     return subprocess.run(
         [sys.executable, str(SCRIPT), *args],
         input=stdin_bytes,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
         env=env,
         check=False,
     )
@@ -190,9 +189,7 @@ class ConsoleEncodingTests(unittest.TestCase):
         writing it back out again is an exact round trip, so the corruption
         cancels itself and the test would pass unpinned.
         """
-        stdin = io.TextIOWrapper(
-            io.BytesIO(APPENDIX.encode("utf-8")), encoding="cp1252", errors="surrogateescape"
-        )
+        stdin = io.TextIOWrapper(io.BytesIO(APPENDIX.encode("utf-8")), encoding="cp1252", errors="surrogateescape")
         out = io.StringIO()
         real_stdin = sys.stdin
         sys.stdin = stdin
@@ -204,6 +201,7 @@ class ConsoleEncodingTests(unittest.TestCase):
 
         self.assertEqual(code, 0)
         self.assertIn("Türkiye Bilişim Derneği", out.getvalue())
+
 
 if __name__ == "__main__":
     unittest.main()
