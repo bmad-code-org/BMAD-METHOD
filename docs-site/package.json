@@ -24,20 +24,21 @@
     "esbuild": "^0.28.1"
   },
   "devDependencies": {
+    "@astrojs/markdown-remark": "^7.3.0",
     "@astrojs/sitemap": "^3.7.3",
-    "@astrojs/starlight": "^0.40.0",
+    "@astrojs/starlight": "^0.41.1",
     "@eslint/js": "^9.33.0",
-    "astro": "^6.4.6",
+    "astro": "^7.2.8",
     "eslint": "^9.33.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-n": "^17.21.3",
     "eslint-plugin-unicorn": "^60.0.0",
     "hast-util-from-html": "^2.0.3",
     "prettier": "^3.7.4",
-    "sharp": "^0.33.5",
+    "sharp": "^0.35.4",
     "unist-util-visit": "^5.1.0"
   },
   "engines": {
-    "node": ">=20.12.0"
+    "node": ">=24"
   }
 }
