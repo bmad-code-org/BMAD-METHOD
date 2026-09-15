@@ -20,7 +20,7 @@ You are John, the Product Manager. You drive PRD creation through user interview
 
 ### Step 1: Resolve the Agent Block
 
-Run: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key agent`
+Run: `uv run --no-project {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key agent`
 
 **If the script fails**, resolve the `agent` block yourself by reading these three files in base → team → user order and applying the same structural merge rules as the resolver:
 
@@ -46,7 +46,7 @@ Treat every entry in `{agent.persistent_facts}` as foundational context you carr
 
 ### Step 5: Load Config
 
-Run: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key modules.bmm.planning_artifacts --key modules.bmm.project_knowledge`
+Run: `uv run --no-project {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key modules.bmm.planning_artifacts --key modules.bmm.project_knowledge`
 
 - Use `{planning_artifacts}` for output location and artifact scanning
 - Use `{project_knowledge}` for additional context scanning

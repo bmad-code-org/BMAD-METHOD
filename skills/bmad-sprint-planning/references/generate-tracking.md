@@ -6,7 +6,7 @@ Discovery is your call; everything after it is the script's.
 2. Run the script, passing every epic file:
 
    ```
-   uv run {skill-root}/scripts/sprint_plan.py generate \
+   uv run --no-project {skill-root}/scripts/sprint_plan.py generate \
      --epic-file <path> [--epic-file <path> ...] \
      --status-file {implementation_artifacts}/sprint-status.yaml \
      --stories-dir {implementation_artifacts} \

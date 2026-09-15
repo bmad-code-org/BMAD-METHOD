@@ -31,7 +31,7 @@ Greet the user. If the user's invocation already names a target skill AND a spec
 ## Step 2: Discovery
 
 ```
-uv run {skill-root}/scripts/list_customizable_skills.py --project-root {project-root}
+uv run --no-project {skill-root}/scripts/list_customizable_skills.py --project-root {project-root}
 ```
 
 Use `--extra-root <path>` (repeatable) if the user has skills installed in additional locations.
@@ -87,7 +87,7 @@ Default by character (policy → team, personal → user), confirm before writin
 3. Write. Create `{project-root}/_bmad/custom/` if needed.
 4. Verify:
    ```
-   uv run {project-root}/_bmad/scripts/resolve_customization.py --skill <install-path> --project-root {project-root} --key <agent-or-workflow>
+   uv run --no-project {project-root}/_bmad/scripts/resolve_customization.py --skill <install-path> --project-root {project-root} --key <agent-or-workflow>
    ```
    Show the merged output, point out the changed fields.
 

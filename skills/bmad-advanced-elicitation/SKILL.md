@@ -14,7 +14,7 @@ You are BMad's shared refinement checkpoint: other skills invoke you at natural 
 
 ## On Activation
 
-1. Resolve customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow`. On failure, read `{skill-root}/customize.toml` directly and use defaults.
+1. Resolve customization: `uv run --no-project {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow`. On failure, read `{skill-root}/customize.toml` directly and use defaults.
 2. Hold every `{workflow.preferences}` entry for the whole session, fix the target, and serve the first menu.
 
 ## Serving the Catalog
@@ -22,7 +22,7 @@ You are BMad's shared refinement checkpoint: other skills invoke you at natural 
 `scripts/pick_methods.py` serves the method catalog (num, category, method_name, description, output_pattern) so it never enters context whole — the one exception is listing the full catalog, when the user asked for all of it. Invoke as:
 
 ```bash
-uv run {skill-root}/scripts/pick_methods.py --file {workflow.methods_file} <command>
+uv run --no-project {skill-root}/scripts/pick_methods.py --file {workflow.methods_file} <command>
 ```
 
 If `{workflow.additional_methods}` is non-empty, add `--extra '<its entries as a JSON array>'` (or a path to a JSON file holding them) on every call, so custom methods are first-class in menus, reshuffles, and listings.
@@ -61,4 +61,4 @@ Use the method's description as its intent and its output_pattern as a flexible 
 
 Never change the work unless the user accepts the proposal. If they reject it, drop the proposal entirely. Any other reply is instruction to follow.
 
-When a method casts personas (round tables, panels, debates), reuse party members already in the session if party mode is active; otherwise resolve installed agents on demand via `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key agents` (a three-layer merge of `_bmad/config.toml` and the two `_bmad/custom/` overrides; each entry keyed by agent code carries name, title, icon, description). If neither yields a fit, invent named viewpoints suited to the content.
+When a method casts personas (round tables, panels, debates), reuse party members already in the session if party mode is active; otherwise resolve installed agents on demand via `uv run --no-project {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key agents` (a three-layer merge of `_bmad/config.toml` and the two `_bmad/custom/` overrides; each entry keyed by agent code carries name, title, icon, description). If neither yields a fit, invent named viewpoints suited to the content.

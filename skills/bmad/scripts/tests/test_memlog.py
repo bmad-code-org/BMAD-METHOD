@@ -2,7 +2,7 @@
 # requires-python = ">=3.11"
 # dependencies = ["pytest>=8.0"]
 # ///
-"""Tests for memlog.py. Run: uv run --with pytest pytest scripts/tests/test_memlog.py
+"""Tests for memlog.py. Run: uv run --no-project --with pytest pytest scripts/tests/test_memlog.py
 
 The spine under test is the flat, append-only, chronological invariant: every entry is
 one line recorded at the end in the order it happened — no sections, no grouping, and no
