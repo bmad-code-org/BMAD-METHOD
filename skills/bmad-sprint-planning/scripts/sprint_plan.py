@@ -66,10 +66,10 @@ ACTION_STATUSES = ("open", "in-progress", "done")
 LEGACY_STATUS = {"drafted": "ready-for-dev", "contexted": "in-progress"}
 
 STALE_DAYS_DEFAULT = 7
-DATE_FORMAT = "%m-%d-%Y %H:%M"
+DATE_FORMAT = "%Y-%m-%d %H:%M"
 # Hand-edited files drift toward ISO stamps; accept them rather than silently
 # disabling the staleness check.
-STAMP_FORMATS = (DATE_FORMAT, "%Y-%m-%d %H:%M", "%Y-%m-%d")
+STAMP_FORMATS = (DATE_FORMAT, "%m-%d-%Y %H:%M", "%Y-%m-%d")
 
 # Kept byte-identical (modulo the leading "# ") with the STATUS DEFINITIONS
 # block in sprint-status-template.yaml; test_sprint_plan.py asserts the two
