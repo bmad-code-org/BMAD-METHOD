@@ -185,8 +185,13 @@ class RenderSkillTests(unittest.TestCase):
         markdown = _markdown(snap)
         self.assertIsNone(COMPILE_TOKEN.search(markdown), markdown)
         self.assertNotIn("{skill-root}", markdown)
-        artifacts = str(project.resolve() / "_bmad-output" / "implementation-artifacts")
-        self.assertIn(artifacts, markdown)
+        reads_artifacts = any(
+            "config.implementation_artifacts" in path.read_text(encoding="utf-8")
+            for path in (SKILLS_SRC / skill_name).rglob("*.md")
+        )
+        if reads_artifacts:
+            artifacts = str(project.resolve() / "_bmad-output" / "implementation-artifacts")
+            self.assertIn(artifacts, markdown)
         return snap
 
     def _fixture_skill(self, ws: SimpleNamespace, defaults: str, workflow: str, **sources: str) -> Path:
