@@ -1,4 +1,9 @@
 {% if workflow.route != "full" %}
+{% if workflow.review == "auto" %}
+{% set review = "quick" %}
+{% else %}
+{% set review = workflow.review %}
+{% endif %}
 # Step One-Shot: Implement, Review, Present
 
 You reach this step from step 2, or from step 1 when resuming a spec whose `route` is `oneshot`. `{spec_file}` already exists.
@@ -18,6 +23,8 @@ If `{story_key}` is not empty and `{{ config.implementation_artifacts }}/sprint-
 
 If intent gaps remain, present each as a numbered question with its options and what each option means, HALT for the human's answers, and fold the answers into the Intent.
 
+Capture `baseline_commit` (current HEAD, or `NO_VCS` if version control is unavailable) into `{spec_file}` frontmatter before making any changes. If the frontmatter already contains `baseline_commit` (resumed run), preserve the existing value.
+
 Build the change from `{spec_file}`. The Intent section is what you implement. As you work, add notes to `## Implementation Notes`: decisions you made, files you changed, surprises.
 
 {% if workflow.route == "oneshot" %}
@@ -28,15 +35,34 @@ Build the change from `{spec_file}`. The Intent section is what you implement. A
 
 ### Review
 
-Say which review layers you are skipping, then start every active layer before reading any results. Run them at the same time when you can. Fill in runtime placeholders first. When a layer tells you to launch a reviewer subagent, launch it with that prompt text. Do not read the reviewer's instruction file yourself. For any other customized instruction, do what it says:
+{% if workflow.review == "none" %}
+Write `review: 'none'`, `review_source: 'pinned'`, and `lenses_ran: []` to `{spec_file}` frontmatter.
+{% elif workflow.review == "auto" %}
+Write `review: 'quick'` and `review_source: 'auto'` to `{spec_file}` frontmatter.
+{% else %}
+Write `review: '{{ workflow.review }}'` and `review_source: 'pinned'` to `{spec_file}` frontmatter.
+{% endif %}
+{% if review != "none" %}
 
-{{ workflow.oneshot_review_layers }}
+Read `{baseline_commit}` from `{spec_file}` frontmatter. If it is `NO_VCS`, use best effort to determine what changed. Otherwise use the repository's version-control tooling to write a unified diff of all changes since `{baseline_commit}`, untracked files included, to a uniquely-named file in the system temp directory; set `{diff_file}` to its absolute path. Set `{claims_file}` = `{spec_file}`.
 
-If a layer needs subagents and you cannot launch them, write the full prompt for each layer under `{{ config.implementation_artifacts }}` (with placeholders filled in, not just file paths). Stop and ask the user to run each prompt in a separate session and paste back the findings.
+Runtime placeholders: `{diff_file}`, `{claims_file}`, and `{spec_file}` are paths, substituted absolute so a lens can read them; a launch prompt never carries diff text. `{verbatim_intent}` is the `## Intent` section of `{spec_file}` (inside `<frozen-after-approval>`), substituted inline as text. Before launching a lens, expand its skill-root placeholder to this skill's absolute installed directory; never leave that placeholder unresolved in a child prompt.
+
+Say which review lenses you are skipping, then start every active lens before reading any results. Run them at the same time when you can. Fill in runtime placeholders first. When a lens tells you to launch a reviewer subagent, launch it with that prompt text. Do not read the reviewer's instruction file yourself. For any other customized instruction, do what it says:
+
+{% if review == "thorough" %}
+{{ workflow.thorough_lenses }}
+{% else %}
+{{ workflow.quick_lenses }}
+{% endif %}
+
+If a lens needs subagents and you cannot launch them, write the full prompt for each lens under `{{ config.implementation_artifacts }}` (with placeholders filled in, not just file paths). Stop and ask the user to run each prompt in a separate session and paste back the findings.
+
+Write `lenses_ran` — the ids launched, in launch order — to `{spec_file}` frontmatter.
 
 ### Classify
 
-Wait until every review layer has reported. Then judge each finding. Ignore severity labels from reviewers — you decide.
+Wait until every review lens has reported. Then judge each finding. Ignore severity labels from reviewers — you decide.
 
 For each finding:
 
@@ -68,6 +94,7 @@ For each group:
   ```
 
   Do not edit old entries or check for duplicates.
+{% endif %}
 
 ### Finalize Spec
 

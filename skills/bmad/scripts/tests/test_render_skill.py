@@ -692,7 +692,7 @@ class RenderSkillTests(unittest.TestCase):
         ws = self._workspace()
         skill = self._skill(ws, "bmad-build")
         (ws.bmad / "custom" / f"{skill.name}.toml").write_text(
-            '[[workflow.review_layers]]\nid = 42\nname = "bad"\ninstruction = "bad"\n',
+            '[[workflow.thorough_lenses]]\nid = 42\nname = "bad"\ninstruction = "bad"\n',
             encoding="utf-8",
         )
         result = self._cli(ws.project, skill)
@@ -717,7 +717,7 @@ class RenderSkillTests(unittest.TestCase):
         (ws.bmad / "custom" / f"{skill.name}.toml").write_text(
             "\n".join(
                 [
-                    "[[workflow.review_layers]]",
+                    "[[workflow.thorough_lenses]]",
                     'id = "blind-hunter"',
                     'name = "Replacement"',
                     'instruction = "Run replacement review."',
@@ -734,8 +734,8 @@ class RenderSkillTests(unittest.TestCase):
 
         defaults = tomllib.loads((skill / "customize.toml").read_text(encoding="utf-8"))
         disabled = "\n".join(
-            f'[[workflow.review_layers]]\nid = "{layer["id"]}"\nname = "disabled"\ninstruction = ""\n'
-            for layer in defaults["workflow"]["review_layers"]
+            f'[[workflow.thorough_lenses]]\nid = "{layer["id"]}"\nname = "disabled"\ninstruction = ""\n'
+            for layer in defaults["workflow"]["thorough_lenses"]
         )
         (ws.bmad / "custom" / f"{skill.name}.toml").write_text(disabled, encoding="utf-8")
         review = (rs.render(ws.project, skill).parent / "step-04-review.md").read_text(encoding="utf-8")
