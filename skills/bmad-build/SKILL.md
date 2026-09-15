@@ -10,6 +10,7 @@ uv run --no-cache "{project-root}/_bmad/scripts/render_skill.py" --project-root 
 ```
 
 - When the invocation names a route (`oneshot` or `full`), append `--set workflow.route=<value>` to the command.
+- When the invocation names a review selection (`none`, `quick`, or `thorough`; "skip review" or "no review" mean `none`), append `--set workflow.review=<value>` to the command.
 - On success, read and follow the one absolute `workflow.md` instruction printed to stdout.
 - If `{project-root}/_bmad/scripts/render_skill.py` is not found, this BMad installation is not set up yet: read the installed `bmad` skill's SKILL.md (a sibling of this skill's directory) and follow its setup flow, then run the command above once more.
 - On any other failure (including `uv` being unavailable), report the command output and HALT. Do not run any workflow source directly.
