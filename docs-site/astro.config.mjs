@@ -1,6 +1,7 @@
 // @ts-check
 import { fileURLToPath } from 'node:url';
 
+import { unified } from '@astrojs/markdown-remark';
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import sitemap from '@astrojs/sitemap';
@@ -17,6 +18,7 @@ const urlParts = new URL(siteUrl);
 const basePath = urlParts.pathname === '/' ? '/' : urlParts.pathname.endsWith('/') ? urlParts.pathname : urlParts.pathname + '/';
 
 export default defineConfig({
+  compressHTML: true,
   site: `${urlParts.origin}${basePath}`,
   base: basePath,
   outDir: '../build/site',
@@ -94,14 +96,16 @@ export default defineConfig({
   },
 
   markdown: {
-    rehypePlugins: [
-      // Hand-authored diagrams are inlined so custom.css can theme them; this
-      // runs before rehypeBasePaths, which would otherwise rewrite the src of
-      // an <img> that is about to be replaced.
-      [rehypeInlineDiagrams, { root: fileURLToPath(new URL('.', import.meta.url)), locales }],
-      [rehypeMarkdownLinks, { base: basePath }],
-      [rehypeBasePaths, { base: basePath }],
-    ],
+    processor: unified({
+      rehypePlugins: [
+        // Hand-authored diagrams are inlined so custom.css can theme them; this
+        // runs before rehypeBasePaths, which would otherwise rewrite the src of
+        // an <img> that is about to be replaced.
+        [rehypeInlineDiagrams, { root: fileURLToPath(new URL('.', import.meta.url)), locales }],
+        [rehypeMarkdownLinks, { base: basePath }],
+        [rehypeBasePaths, { base: basePath }],
+      ],
+    }),
   },
 
   integrations: [
