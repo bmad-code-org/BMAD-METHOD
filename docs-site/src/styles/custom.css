@@ -776,7 +776,7 @@ site-search button kbd {
   border-inline-end-color: var(--sl-color-hairline);
 }
 
-starlight-menu-button button {
+.sl-menu-button {
   border-radius: 2px;
   box-shadow: none;
   border: 1px solid var(--sl-color-hairline);
