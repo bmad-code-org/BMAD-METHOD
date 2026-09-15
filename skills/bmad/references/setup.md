@@ -11,7 +11,7 @@ Run only the flow the user requested. `bmad update` is inspection only,
 Run this command without creating an answer or temporary file:
 
 ```text
-uv run --no-cache "{skill-root}/scripts/setup.py" --project-root "{project-root}" --skill "{skill-root}" --update
+uv run --no-project --no-cache "{skill-root}/scripts/setup.py" --project-root "{project-root}" --skill "{skill-root}" --update
 ```
 
 The JSON report contains one state per module and lists every installed copy by
@@ -38,7 +38,7 @@ yourself.
 First list newly declared questions. This command is read-only:
 
 ```text
-uv run --no-cache "{skill-root}/scripts/setup.py" --project-root "{project-root}" --skill "{skill-root}" --doctor --list-config-questions
+uv run --no-project --no-cache "{skill-root}/scripts/setup.py" --project-root "{project-root}" --skill "{skill-root}" --doctor --list-config-questions
 ```
 
 The command prints a JSON array. Ask every returned question exactly once and
@@ -55,10 +55,10 @@ Run one of these commands:
 
 ```text
 # No newly declared questions
-uv run --no-cache "{skill-root}/scripts/setup.py" --project-root "{project-root}" --skill "{skill-root}" --doctor
+uv run --no-project --no-cache "{skill-root}/scripts/setup.py" --project-root "{project-root}" --skill "{skill-root}" --doctor
 
 # With newly declared answers
-uv run --no-cache "{skill-root}/scripts/setup.py" --project-root "{project-root}" --skill "{skill-root}" --doctor --module-answers "{module-answers-path}"
+uv run --no-project --no-cache "{skill-root}/scripts/setup.py" --project-root "{project-root}" --skill "{skill-root}" --doctor --module-answers "{module-answers-path}"
 ```
 
 On success, delete only the temporary answer file created for this doctor run.
@@ -99,7 +99,7 @@ Discover unanswered installed module questions with the script in this
 skill. This command is read-only:
 
 ```
-uv run --no-cache "{skill-root}/scripts/setup.py" --project-root "{project-root}" --skill "{skill-root}" --list-config-questions
+uv run --no-project --no-cache "{skill-root}/scripts/setup.py" --project-root "{project-root}" --skill "{skill-root}" --list-config-questions
 ```
 
 The command prints a JSON array. Ask every returned question exactly once and
@@ -130,10 +130,10 @@ Run the skill-root script, with the module answer file when one was written:
 
 ```text
 # No module answers
-uv run --no-cache "{skill-root}/scripts/setup.py" --project-root "{project-root}" --skill "{skill-root}"
+uv run --no-project --no-cache "{skill-root}/scripts/setup.py" --project-root "{project-root}" --skill "{skill-root}"
 
 # With module answers
-uv run --no-cache "{skill-root}/scripts/setup.py" --project-root "{project-root}" --skill "{skill-root}" --module-answers "{module-answers-path}"
+uv run --no-project --no-cache "{skill-root}/scripts/setup.py" --project-root "{project-root}" --skill "{skill-root}" --module-answers "{module-answers-path}"
 ```
 
 If discovery or setup reports malformed team TOML, conflicting or invalid
