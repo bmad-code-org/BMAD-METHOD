@@ -45,7 +45,7 @@ Implementation and quality:
   loop dispatches. Do not choose it for attended work.
 - `bmad-code-review` — optional extra review of any change, on top of
   Build's built-in review.
-- `bmad-walkthrough` — guided human walkthrough of a change.
+- `bmad-walkthrough` — guided human review of a commit, PR, file, or directory.
 - `bmad-qa-generate-e2e-tests` — generates API and end-to-end tests for
   implemented code.
 - `bmad-retrospective` — judges a completed epic as a whole against its spec.

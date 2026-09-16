@@ -1,39 +1,30 @@
 # DO NOT EDIT -- overwritten on every update.
 #
-# Workflow customization surface for bmad-walkthrough. Mirrors the
-# agent customization shape under the [workflow] namespace.
+# Workflow customization surface for bmad-walkthrough.
+# Mirrors the agent customization shape under the [workflow] namespace.
 
 [workflow]
 
 # --- Configurable below. Overrides merge per BMad structural rules: ---
-#   scalars: override wins • arrays (persistent_facts, activation_steps_*): append
+#   strings: override wins • arrays (persistent_facts): append
 #   arrays-of-tables with `code`/`id`: replace matching items, append new ones.
 
-# Steps to run before the standard activation.
-# Overrides append. Use for pre-flight loads, compliance checks, etc.
+# Executed when the workflow starts.
+on_activation = ""
 
-activation_steps_prepend = []
+# Executed when a block is first presented.
+on_block_activation = ""
 
-# Steps to run after persistent facts load but before the workflow begins.
-# Overrides append. Use for context-heavy setup that should happen
-# once activation context is in place.
-
-activation_steps_append = []
-
-# Persistent facts the workflow keeps in mind for the whole run
+# Facts the workflow keeps in mind for the whole run
 # (standards, compliance constraints, stylistic guardrails).
-# Distinct from the runtime memory sidecar — these are static context
-# loaded on activation. Overrides append.
-#
 # Each entry is either:
 #   - a literal sentence, e.g. "All stories must include testable acceptance criteria."
 #   - a file reference prefixed with `file:`, e.g. "file:{project-root}/docs/standards.md"
 #     (glob patterns are supported; the file's contents are loaded and treated as facts).
-
 persistent_facts = []
 
-# Scalar: executed when the workflow reaches its final step,
-# after the review decision (approve/rework/discuss) is made. Override wins.
-# Leave empty for no custom post-completion behavior.
+# Executed when the user says a block is done.
+on_block_complete = ""
 
+# Executed when the user wraps up.
 on_complete = ""
