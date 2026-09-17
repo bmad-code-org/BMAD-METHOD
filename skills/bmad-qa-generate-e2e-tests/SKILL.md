@@ -133,6 +133,17 @@ Output markdown summary:
 - Add more edge cases as needed
 ```
 
+### Step 6: Validate Against Checklist
+
+Read fully and follow the systematic analysis from: `checklist.md`
+
+- Work through each checklist section against the generated tests and summary.
+- Record status for each checklist item:
+  - `[x]` Done - Item verified and satisfied
+  - `[N/A]` Skip - Item not applicable to this test run
+  - `[!]` Action-needed - Item requires attention before completion
+- If any item is `[!]`, address it (fix the tests or update the summary) before declaring Done.
+
 ## Keep It Simple
 
 **Do:**
