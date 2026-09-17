@@ -2,6 +2,10 @@
 
 `uv` is required. If `uv` is missing or cannot run, tell the user that
 `uv` must be installed and stop. Do not write `_bmad` another way.
+The first `uv run` in this chain may need network access to fetch a managed
+Python interpreter if no compatible interpreter is already installed; there is
+no supported offline mode. If the machine appears to be offline, warn the user
+before the command stalls or fails for a non-obvious reason.
 
 Run only the flow the user requested. `bmad update` is inspection only,
 `bmad doctor` repairs an existing runtime, and `bmad setup` performs setup.
