@@ -92,7 +92,7 @@ Write `lenses_ran` — the ids launched, in launch order — to `{spec_file}` fr
    - **intent_gap** — caused by the change; cannot be resolved from the spec because the captured intent is incomplete. Do not infer intent unless there is exactly one possible reading.
    - **bad_spec** — caused by the change, including direct deviations from spec. The spec should have been clear enough to prevent it. When in doubt between bad_spec and patch, prefer bad_spec — a spec-level fix is more likely to produce coherent code.
    - **patch** — caused by the change; its smallest fix is trivial, adds no public surface, and guards no state you did not demonstrate. Just part of the diff. A finding whose smallest fix fails any of those conditions routes to intent_gap when the spec does not settle that fix, otherwise to bad_spec.
-   - **defer** — pre-existing issue not caused by this story; or an entry whose members are all `maybe-false` and the claim, if true, would be `medium` or `high` — record that severity marked unverified, plus what would settle it (if it would only be `low`, reject it with the same note); or any entry whose fix edits agent-context files (CLAUDE.md, AGENTS.md, rules, etc).
+   - **defer** — pre-existing issue not caused by this story; or an entry whose members are all `maybe-false` and the claim, if true, would be `medium` or `high` — record that severity marked unverified, plus what would settle it (if it would only be `low`, reject it with the same note); or any entry whose fix edits agent-context files (CLAUDE.md, AGENTS.md, rules, etc) — mark that last kind `priority: governance` in the `deferred` list instead of leaving it indistinguishable from routine technical debt.
 
 4. Append a new entry to the `## Review Triage Log` section in `{spec_file}`, in this format:
    ```markdown
@@ -140,6 +140,7 @@ Write `lenses_ran` — the ids launched, in launch order — to `{spec_file}` fr
          location: >- # optional — file:line or component
            src/foo.py:42
          severity: medium # optional — high | medium | low; for a maybe-false entry, its if-true grade plus " (unverified)"
+         priority: governance # optional — set when the fix would edit agent-context files (CLAUDE.md, AGENTS.md, rules, etc)
      ```
      After all appends, parse the complete frontmatter as YAML and verify that `deferred` is one list containing every prior item plus the new items with their intended text. Repair serialization errors before continuing.
 {% endif %}
