@@ -109,7 +109,10 @@ For UI features, generate tests that:
 
 Execute tests to verify they pass (use project's test command).
 
-If failures occur, fix them immediately.
+If failures occur, fix them immediately. Track a fix-attempt counter in-session, starting at 0 and
+incrementing once per fix-and-rerun cycle. If failures still persist after 3 attempts, HALT and
+escalate to the user: report which tests still fail, what you tried, and ask how to proceed instead
+of continuing to retry.
 
 ### Step 5: Create Summary
 
