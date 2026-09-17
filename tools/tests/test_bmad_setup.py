@@ -1254,6 +1254,16 @@ class BmadSetupTests(unittest.TestCase):
                 dump_bmod_toml(bmod={**base, "required_skills": [7]}).encode(),
                 "skill name or a table",
             ),
+            (
+                "reserved-module-render",
+                dump_manifest_toml({**base, "module": "render"}).encode(),
+                "unsafe",
+            ),
+            (
+                "case-insensitive-reserved-module-render",
+                dump_manifest_toml({**base, "module": "ReNdEr"}).encode(),
+                "unsafe",
+            ),
         )
 
         with tempfile.TemporaryDirectory() as temp_dir:
