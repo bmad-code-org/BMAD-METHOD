@@ -1,6 +1,10 @@
 ## Command Dispatch
 
 `uv` is required. If `uv` is missing or cannot run, tell the user that `uv` must be installed and stop. Do not write `_bmad` another way.
+The first `uv run` in this chain may need network access to fetch a managed
+Python interpreter if no compatible interpreter is already installed; there is
+no supported offline mode. If the machine appears to be offline, warn the user
+before the command stalls or fails for a non-obvious reason.
 
 There are two commands. `bmad setup [code]` is the only one that changes anything. It is an upsert: it creates what is missing, repairs what is stale, and asks only new questions, so it is what to run after a first install and after every `npx skills update`. A user who says "update", "doctor" or "repair" gets setup. `bmad status [code]` only reads.
 
