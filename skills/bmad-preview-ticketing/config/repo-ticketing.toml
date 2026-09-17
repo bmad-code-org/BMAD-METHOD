@@ -1,0 +1,80 @@
+# Ticketing config: tickets as files in the repo (default). Read by every skill that creates, reads, or moves tickets.
+# A starter: at first use the skill copies the chosen one to _bmad/custom/ticketing-store-config.toml
+# (references/store-setup.md), and that copy is the one edited. An org can instead host its own starter
+# anywhere — a repo path or a url — and setup copies from it. Skills read
+# [tickets] and [verbs] through a script, so comments are never loaded.
+# Every ticketing config has the same fields; only the prose and the maps differ. `description` sits
+# outside [tickets] so it is never loaded; it is for choosing a config.
+#
+# Tickets and artifacts live together as markdown files under root (layout in references/board.md,
+# Layout), committed in the monorepo or in a repo of their own. Status and assignee change by commit, and the skill never pushes,
+# so others see them only after a push and pull.
+#
+# The active initiative is `modules.bmm.active_initiative` in _bmad/custom/config.user.toml, read at activation.
+# An empty field below that an operation needs, and that cannot be inferred from what the user gave:
+# use what they tell you for this run and offer to record it in this file (references/store-setup.md).
+
+description = "Quick setup, and the default when nothing else is chosen. Tickets are markdown files under version control: in the monorepo, or in their own repo (recommended for mono and poly repos alike). No tracker or account needed. The simplest store — right for a solo developer or a very small team with no other tracking."
+
+[tickets]
+store = "repo"
+root = "{output_folder}"
+key = ""   # ticket id prefix, e.g. "SHOP" -> SHOP-12. Empty = ask at first publish.
+
+access = """
+Read and write the files under root. If root is missing, tell the user what is blocking and confirm the setup with them.
+"""
+
+fields = """
+risk and severity live in the frontmatter (risk: low|medium|high on any ticket; severity: P0-P3
+on bugs); estimate and estimate_basis the same way. Nothing else carries them.
+"""
+
+reference = """
+A reference is a line in the ticket's References section: `type — location, section`, location a
+path from {project-root} or a url for a remote source, opened before it is cited.
+"""
+
+# Verb prose lives in its own table so a skill can load one verb at a time.
+[verbs]
+setup = """
+Recommend a root outside the project: a new folder beside it — the session then launches one level
+up — or in the workspace that already holds the repos. `git init` a new folder so tickets have
+history; skip that when the user picks a folder already under git, the monorepo included. Then
+create root/backlog/ and the active initiative's folder when they do not exist.
+"""
+
+write = """
+No id yet: assign the next KEY-n (ids in use: `grep -rh "^id: " root`). Every change — body, status, assignee, parent (move the file, or the container folder, into the new
+parent's folder), blocked_by — is an edit to the file. Build records never go in the
+body; bmad-build writes them beside the ticket file (`<name>-plan.md`,
+`<name>-session-<date>.jsonl`, `<name>-results.md`).
+Commit only the files you wrote on the current branch. Root not in a git repo: skip the commit and say so.
+"""
+
+query = """
+By id: `grep -rl "^id: <id>" root`; by title, the filename; by words, `grep -rli "<words>" root
+--include=*.md`; by a frontmatter field, `grep -rl "^type: bug" root` — same for status, assignee,
+parent. A container's children are the ticket files and container folders in its folder. Frontmatter holds id,
+remote, type, title, parent, covers (the source requirement ids), blocked_by, blocked_at and
+blocked_reason when blocked, assignee, status, refined, hitl, risk, estimate, and severity on bugs.
+Candidates to pull (refine thin tickets before starting): status draft or backlog, blocked_at empty, every blocked_by done, unassigned. Several ready tickets are parallel work;
+offer them all. When one must be chosen, take the one that unblocks the most work behind it.
+"""
+
+# BMad type -> this store's type.
+[tickets.types]
+initiative = "initiative"
+epic = "epic"
+story = "story"
+spike = "spike"
+bug = "bug"
+
+# BMad status -> this store's status. The file is the store here, so draft is a real status.
+[tickets.status]
+draft = "draft"
+backlog = "backlog"
+in-progress = "in-progress"
+review = "review"
+done = "done"
+dropped = "dropped"
