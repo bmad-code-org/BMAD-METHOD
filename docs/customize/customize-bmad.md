@@ -246,6 +246,17 @@ The workflow body begins after step 6.
 
 ## Override one rendered invocation
 
+Skills built around a full workflow document — `bmad-build`,
+`bmad-build-auto`, `bmad-code-review`, `bmad-retrospective`, and
+`bmad-walkthrough` — resolve customization by rendering it: `render_skill.py`
+merges the base, team, and user `customize.toml` files into a `workflow.md`
+template and writes the result, and the skill's `SKILL.md` points the agent
+at that one rendered file instead of re-resolving anything itself. Skills
+without their own `workflow.md` resolve customization inline instead —
+reading the merged block straight from `resolve_customization.py` in their
+`SKILL.md` steps (see [Check what resolved](#check-what-resolved)) — since
+there is no template to inject overrides into.
+
 To change a skill's customization for one run only, add `--set key=value`
 arguments or an `--overrides <file.toml>` file to the `render_skill.py`
 command in its `SKILL.md`. Persistent project and user files stay as they
