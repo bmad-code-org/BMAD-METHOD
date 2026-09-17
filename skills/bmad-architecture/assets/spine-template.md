@@ -6,6 +6,7 @@ altitude: feature           # initiative (keeps features) · feature (keeps epic
 paradigm: '{named design pattern, e.g. hexagonal, layered, pipes-and-filters, actor}'
 scope: '{what this spine governs}'
 status: draft               # draft · final
+reviewed: false              # true once the Reviewer Gate has run
 created: '{date}'
 updated: '{date}'
 binds: []                   # capability / unit IDs governed (from the driving spec; at epic altitude, also the inherited parent AD ids)
