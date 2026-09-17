@@ -2,13 +2,12 @@
 # /// script
 # requires-python = ">=3.11"
 # ///
-"""Read named keys from a TOML file (local path or http(s) url) without loading the rest into context."""
+"""Read named keys from a TOML file without loading the rest into context."""
 
 import argparse
 import json
 import sys
 import tomllib
-import urllib.request
 from pathlib import Path
 
 sys.dont_write_bytecode = True
@@ -17,12 +16,7 @@ _MISSING = object()
 
 
 def load(source: str) -> dict:
-    if source.startswith(("http://", "https://")):
-        with urllib.request.urlopen(source, timeout=20) as response:
-            text = response.read().decode("utf-8")
-    else:
-        text = Path(source).expanduser().read_text(encoding="utf-8")
-    return tomllib.loads(text)
+    return tomllib.loads(Path(source).expanduser().read_text(encoding="utf-8"))
 
 
 def extract(data, dotted: str):
@@ -37,7 +31,7 @@ def extract(data, dotted: str):
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Print selected keys from a TOML file.")
-    parser.add_argument("--file", "-f", required=True, help="Path or http(s) url of the TOML file")
+    parser.add_argument("--file", "-f", required=True, help="Path of the TOML file")
     parser.add_argument(
         "--key", "-k", action="append", default=[], help="Dotted key (repeatable). Omit for the whole file as JSON."
     )

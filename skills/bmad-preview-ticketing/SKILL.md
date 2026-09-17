@@ -24,10 +24,10 @@ At every altitude above the leaf the ideal shape is: intent (an idea, brief, PRD
 
 ## On activation
 
-1. Resolve config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder --key modules.bmm.active_initiative`. Draft under `{output_folder}/{active_initiative}/` — an initiative folder, or a backlog folder scoped however the user wants. Unset: offer to create the initiative folder, or a backlog folder, and record it as `active_initiative` under `[modules.bmm]` in `_bmad/custom/config.user.toml`.
+1. Resolve config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder --key modules.bmm.active_initiative`. Tickets are drafted under `{active_initiative}/` in `tickets.root` (step 2) — an initiative folder, or a backlog folder scoped however the user wants. Unset: offer to create the initiative folder, or a backlog folder, and record it as `active_initiative` under `[modules.bmm]` in `_bmad/custom/config.user.toml`.
 2. Read the store config: `uv run {skill-root}/scripts/read_toml.py --file {project-root}/_bmad/custom/ticketing-store-config.toml -k tickets` — store guidance, access, and the type and status maps. Substitute `{output_folder}` in every value. Missing or unreadable: follow `{skill-root}/references/store-setup.md` instead of continuing.
 3. Resolve `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} -k workflow.activation_steps_prepend -k workflow.activation_steps_append -k workflow.persistent_facts -k workflow.on_complete`.
-4. Run `{workflow.activation_steps_prepend}`; treat `{workflow.persistent_facts}` (set with `bmad-customize`) as foundational context for the session, together with whatever is already in your context — registered MCP servers and CLIs, and anything injected from AGENTS.md, CLAUDE.md, or the like. Use what is known; do not ask for it again.
+4. Run `{workflow.activation_steps_prepend}`; treat `{workflow.persistent_facts}` (set with `bmad-customize`) as foundational context for the session — entries prefixed `file:` are paths or globs under `{project-root}` to load, the rest are facts verbatim — together with whatever is already in your context — registered MCP servers and CLIs, and anything injected from AGENTS.md, CLAUDE.md, or the like. Use what is known; do not ask for it again.
 5. Run `{workflow.activation_steps_append}`. When the requested operation ends, run `{workflow.on_complete}`.
 
 ## Intake

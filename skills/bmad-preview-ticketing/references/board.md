@@ -14,12 +14,12 @@ Before starting a candidate, read it and its source. If `refined: false` or it l
 
 ## Progress and closure
 
-- Progress lives on tickets, not in a separate sprint/status file. For an epic's folder, `uv run {skill-root}/scripts/tickets.py next <folder>` proposes candidates, grouped by state. `status <folder>` reports that folder's tickets, counts, and remaining chain. For an initiative, read its container and aggregate its epic folders. With a tracker, query before either view and pass `--synced` to `next`. Its `to_create` group is the Breakdown entries with no file yet whose blockers are done; offer the next one to pull and write its file then.
+- Progress lives on tickets, not in a separate sprint/status file. For an epic's folder, `uv run {skill-root}/scripts/tickets.py --project-root {project-root} next <folder>` proposes candidates, grouped by state. `status <folder>` reports that folder's tickets, counts, and remaining chain. For an initiative, read its container and aggregate its epic folders. With a tracker, query before either view and pass `--synced` to `next`. Its `to_create` group is the Breakdown entries with no file yet whose blockers are done; offer the next one to pull and write its file then.
 - Offer all unblocked, unassigned candidates when work can run in parallel.
-- Status and assignee changes go through `write`; on the repo store that is `tickets.py mark <ticket> <status> [--assignee <who>]` followed by the commit its verb describes. Containers never take review. On done with estimation on, ask for the actual (`estimate.md`).
+- Status and assignee changes go through `write`; on the repo store, for a leaf, that is `tickets.py --project-root {project-root} mark <ticket> <status> [--assignee <who>]` followed by the commit its verb describes. `mark` writes what it is told; the checks above are yours. A container's status is an edit to its file, and containers never take review. On done with estimation on, ask for the actual (`estimate.md`).
 - A ticket waiting on a person or an answer, not on a blocker: set `blocked_at` (date) and `blocked_reason`; clear both when it moves. `next` skips it.
 - Closing every child does not close the parent. Run the closure check in `validate.md` against its requirements and Done when; the user confirms the parent is complete.
-- Drop only after a `Dropped:` line in Notes says why. Cancelling a container cancels its descendants after the user confirms.
+- Drop only after a `Dropped:` line in Notes says why. A dropped ticket still blocks its dependents: remove or repoint it in each one's `blocked_by` with the user. Cancelling a container cancels its descendants after the user confirms.
 - Whatever `query` returns lands in the tree: id, remote, status, assignee, and blocked_by into frontmatter, a ticket with no file gets one per the layout. A body that differs from the file: show and ask.
 
 ## Layout

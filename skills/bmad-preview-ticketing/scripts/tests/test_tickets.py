@@ -180,13 +180,31 @@ class TicketsTests(unittest.TestCase):
         self.assertEqual(r.returncode, 1)
         self.assertIn("does not match", json.loads(r.stderr)["error"])
 
-    def test_dropped_blocker_no_longer_blocks(self):
+    def test_dropped_blocker_still_blocks(self):
         self.breakdown_epic()
         self.add("story-01-scaffold.md", ticket("dropped"))
         self.add("story-02-ui-shell.md", ticket("draft", blocked_by="[1]"))
         out = self.next()
-        self.assertEqual(self.files(out["ready_to_refine"]), ["story-02-ui-shell.md"])
-        self.assertEqual([e["n"] for e in out["to_create"]], [3])
+        self.assertEqual(self.files(out["blocked"]), ["story-02-ui-shell.md"])
+        self.assertEqual(out["ready_to_refine"], [])
+        self.assertEqual(out["to_create"], [])
+
+    def test_breakdown_duplicate_number_and_unknown_blocker_error(self):
+        self.breakdown_epic()
+        text = (self.epic / "epic-cart.md").read_text()
+        (self.epic / "epic-cart.md").write_text(text.replace("- 03 spike", "- 02 spike"))
+        r = run("next", str(self.epic))
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("two entries numbered 02", json.loads(r.stderr)["error"])
+        (self.epic / "epic-cart.md").write_text(text.replace("blocked_by: 02, 03", "blocked_by: 02, 09"))
+        r = run("next", str(self.epic))
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("blocked_by 09, which is no entry", json.loads(r.stderr)["error"])
+
+    def test_numeric_blocker_falls_back_to_ticket_id(self):
+        self.add("story-01-scaffold.md", ticket("done", ticket_id="101"))
+        self.add("story-02-ui-shell.md", ticket("draft", blocked_by="[101]"))
+        self.assertEqual(self.files(self.next()["ready_to_refine"]), ["story-02-ui-shell.md"])
 
     def test_two_files_sharing_a_number_error(self):
         self.add("story-01-a.md", ticket("done"))
@@ -226,6 +244,32 @@ class TicketsTests(unittest.TestCase):
         self.assertIn("status: in-progress\n", text)
         self.assertIn('assignee: "ann"\n', text)
         self.assertIn("# x", text)
+
+    def test_mark_clears_blocking_fields_and_takes_a_literal_assignee(self):
+        path = self.epic / "story-01-scaffold.md"
+        path.write_text(
+            ticket("backlog", blocked_at="2026-09-05").replace("---\n\n# x", 'blocked_reason: "legal"\n---\n\n# x')
+        )
+        r = run("mark", str(path), "backlog", "--assignee", "\\1")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        text = path.read_text()
+        self.assertIn('blocked_at: ""\n', text)
+        self.assertIn('blocked_reason: ""\n', text)
+        self.assertIn('assignee: "\\1"\n', text)
+        self.assertEqual(self.files(self.next()["ready_to_refine"]), ["story-01-scaffold.md"])
+
+    def test_project_root_flag_finds_the_store_for_tickets_outside_the_project(self):
+        self.write_store("jira")
+        outside = tempfile.TemporaryDirectory()
+        self.addCleanup(outside.cleanup)
+        folder = Path(outside.name) / "epic-cart"
+        folder.mkdir()
+        (folder / "story-01-scaffold.md").write_text(ticket("draft"))
+        self.assertEqual(json.loads(run("next", str(folder)).stdout)["store"], "repo")
+        r = run("--project-root", str(self.root), "next", str(folder))
+        self.assertEqual(r.returncode, 2)
+        r = run("--project-root", str(self.root), "mark", str(folder / "story-01-scaffold.md"), "done")
+        self.assertEqual(r.returncode, 2)
 
     def test_mark_refuses_on_tracker_store(self):
         self.write_store("jira")

@@ -7,14 +7,16 @@
 A container folder holds its own ticket file, its spec, and flat leaf files named
 `<type>-<nn>-<slug>.md`. Each leaf's frontmatter is the record: `status` (mirrored from the
 tracker when one is configured), `blocked_by` (numbers, file names, or ids of sibling
-tickets), `refined`, `hitl`, `covers`, `estimate`. The container's `## Breakdown` section lists
+tickets; a dropped blocker still blocks until the dependency is removed or repointed), `refined`, `hitl`, `covers`, `estimate`. The container's `## Breakdown` section lists
 the agreed entries, `- nn type — title; blocked_by: nn, nn; covers: ids`; an entry with no leaf file
 yet is reported under `to_create` once its blockers are done. Nothing else indexes them; this
 script derives the view at read time.
 
   next   <dir>                   tickets whose blockers are done, grouped by state
   status <dir>                   every ticket in number order, counts, longest remaining chain
-  mark   <ticket-file> <status>  set frontmatter status (repo store only)
+  mark   <ticket-file> <status>  set a leaf's frontmatter status (repo store only)
+
+`--project-root` names the project holding `_bmad/` when the tickets live outside it.
 
 Output is one JSON object on stdout. Exit 0 on success, 1 on a malformed ticket, 2 when
 the store forbids the operation.
@@ -84,7 +86,7 @@ def set_frontmatter_value(text: str, key: str, value: str) -> str:
     pattern = re.compile(rf"^{re.escape(key)}:.*$", re.M)
     if not pattern.search(block):
         raise TicketError(f"frontmatter has no `{key}`")
-    return text[: m.start(1)] + pattern.sub(f"{key}: {value}", block, count=1) + text[m.end(1) :]
+    return text[: m.start(1)] + pattern.sub(lambda _: f"{key}: {value}", block, count=1) + text[m.end(1) :]
 
 
 # ---------------------------------------------------------------- tickets
@@ -139,7 +141,10 @@ def _resolve_blockers(tickets: list[dict]) -> None:
         resolved = []
         for ref in t["raw_blocked_by"]:
             key = ref if isinstance(ref, int) else str(ref)
-            target = by_n.get(key) if isinstance(key, int) else (by_file.get(key) or by_stem.get(key) or by_id.get(key))
+            if isinstance(key, int):
+                target = by_n.get(key) or by_id.get(str(key))
+            else:
+                target = by_file.get(key) or by_stem.get(key) or by_id.get(key)
             if target is None and isinstance(key, str) and re.fullmatch(r"\d+", key):
                 target = by_n.get(int(key))
             if target is None:
@@ -180,6 +185,15 @@ def load_breakdown(folder: Path) -> list[dict]:
                 else:
                     raise TicketError(f"{path.name}: Breakdown line has unknown field `{key}`: {line}")
             entries.append(entry)
+        numbers = [e["n"] for e in entries]
+        for e in entries:
+            if numbers.count(e["n"]) > 1:
+                raise TicketError(f"{path.name}: Breakdown has two entries numbered {e['n']:02d}")
+            for b in e["blocked_by"]:
+                if b not in numbers:
+                    raise TicketError(
+                        f"{path.name}: Breakdown entry {e['n']:02d} is blocked_by {b:02d}, which is no entry"
+                    )
         return sorted(entries, key=lambda e: e["n"])
     return []
 
@@ -206,7 +220,7 @@ def _check_cycles(tickets: list[dict]) -> None:
 
 
 def classify(tickets: list[dict]) -> dict:
-    done = {t["file"] for t in tickets if t["status"] in ("done", "dropped")}
+    done = {t["file"] for t in tickets if t["status"] == "done"}
     groups = {"ready_to_refine": [], "ready_to_start": [], "in_progress": [], "blocked": []}
     for t in tickets:
         s = t["status"]
@@ -225,12 +239,12 @@ def classify(tickets: list[dict]) -> dict:
 
 
 def to_create(tickets: list[dict], breakdown: list[dict]) -> list[dict]:
-    """Breakdown entries with no leaf file whose blockers are all done or dropped."""
+    """Breakdown entries with no leaf file whose blockers are all done."""
     by_n = {t["n"]: t for t in tickets if t["n"] is not None}
     return [
         e
         for e in breakdown
-        if e["n"] not in by_n and all(b in by_n and by_n[b]["status"] in ("done", "dropped") for b in e["blocked_by"])
+        if e["n"] not in by_n and all(b in by_n and by_n[b]["status"] == "done" for b in e["blocked_by"])
     ]
 
 
@@ -275,6 +289,10 @@ def find_project_root(start: Path) -> Path | None:
     return None
 
 
+def project_root_for(args, start: Path) -> Path | None:
+    return Path(args.project_root).resolve() if args.project_root else find_project_root(start)
+
+
 def store_name(project_root: Path | None) -> str:
     if not project_root:
         return "repo"
@@ -291,7 +309,7 @@ def cmd_next(args) -> dict:
     folder = Path(args.dir).resolve()
     if not folder.is_dir():
         raise TicketError(f"not a folder: {folder}")
-    store = store_name(find_project_root(folder))
+    store = store_name(project_root_for(args, folder))
     if store != "repo" and not args.synced:
         raise StoreRefusal(f"store is {store}: sync ticket status from the tracker first, then rerun with --synced")
     tickets = load_tickets(folder)
@@ -316,7 +334,7 @@ def cmd_status(args) -> dict:
     written = {t["n"] for t in tickets if t["n"] is not None}
     return {
         "folder": folder.name,
-        "store": store_name(find_project_root(folder)),
+        "store": store_name(project_root_for(args, folder)),
         "tickets": [public(t) for t in tickets],
         "counts": {"total": len(tickets), **counts},
         "breakdown": {"entries": len(breakdown), "without_file": sum(1 for e in breakdown if e["n"] not in written)},
@@ -326,7 +344,7 @@ def cmd_status(args) -> dict:
 
 def cmd_mark(args) -> dict:
     path = Path(args.ticket_file).resolve()
-    store = store_name(find_project_root(path.parent))
+    store = store_name(project_root_for(args, path.parent))
     if store != "repo":
         raise StoreRefusal(f"store is {store}: change status through the store's write verb, not this script")
     text = path.read_text(encoding="utf-8")
@@ -335,6 +353,9 @@ def cmd_mark(args) -> dict:
             f"{path.name} is not a story, spike, or bug; containers close through the closure check, not mark"
         )
     text = set_frontmatter_value(text, "status", args.status)
+    for key in ("blocked_at", "blocked_reason"):
+        if parse_frontmatter(text).get(key):
+            text = set_frontmatter_value(text, key, '""')
     if args.assignee is not None:
         text = set_frontmatter_value(text, "assignee", f'"{args.assignee}"')
     path.write_text(text, encoding="utf-8")
@@ -344,6 +365,7 @@ def cmd_mark(args) -> dict:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Read a folder of tickets and answer what is next.")
+    parser.add_argument("--project-root", help="project holding _bmad/; default: walk up from the ticket folder")
     sub = parser.add_subparsers(dest="command", required=True)
     p = sub.add_parser("next", help="tickets whose blockers are done, by state")
     p.add_argument("dir")

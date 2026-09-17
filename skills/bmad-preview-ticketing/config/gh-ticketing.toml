@@ -67,8 +67,8 @@ query = """
 One issue: `gh issue view <n> --json
 number,title,labels,assignees,state,stateReason,milestone,parent,blockedBy,subIssuesSummary,body`.
 Type, hitl, risk, severity, and status are labels — except done and dropped, the closed states per
-[tickets.status]; the body's covers holds the source requirement ids. Children: `gh issue list
---search "parent:<n>"`. Words: `gh issue list --search "<words>" --state all`, narrowed by
+[tickets.status]; the body's covers holds the source requirement ids. Children: `gh issue view <n>
+--json subIssues`. Words: `gh issue list --search "<words>" --state all`, narrowed by
 --label. The local file: `grep -rl "^id: <n>" root` or the filename.
 A child the tracker holds with no file in the tree gets one, numbered after the last.
 Candidates to pull (refine thin tickets before starting): open (in the initiative's milestone, or with no milestone for a standalone ticket), backlog label and no other status label, every
