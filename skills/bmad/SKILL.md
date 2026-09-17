@@ -67,3 +67,14 @@ For an ordinary help request:
 - from sibling skill folders, read only `bmod.toml`, the files in a record's `help/` folder, and the documents its `[[bmod.knowledge]]` names. Open a sibling skill's own files only as the last resort described above, only for the skill the question is about, and never to build a catalog.
 
 This skill's own `scripts/knowledge.py` is permitted here: it only reads those same files and writes nothing. It needs no `{project-root}/_bmad`, so a project without one is still an ordinary help request.
+
+## Shared Infrastructure
+
+The scripts under `scripts/` — `config_utils.py`, `resolve_config.py`,
+`resolve_customization.py`, `render_skill.py`, `memlog.py`, and `setup.py` —
+are invoked by path from other skills at runtime; they are not private to
+this skill. Known external consumers include `bmad-advanced-elicitation` and
+the five `bmad-agent-*` skills (`bmad-agent-analyst`, `bmad-agent-architect`,
+`bmad-agent-dev`, `bmad-agent-pm`, `bmad-agent-ux-designer`). Treat their
+interfaces as a contract: a change here can break those consumers even
+though they live outside this skill folder.
