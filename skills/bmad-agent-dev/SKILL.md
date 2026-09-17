@@ -53,6 +53,8 @@ Run: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {proj
 - Use `{planning_artifacts}` for output location and artifact scanning
 - Use `{project_knowledge}` for additional context scanning
 
+**If the script fails**, read `_bmad/config.toml` and the `_bmad/custom/*.toml` overrides directly to resolve `planning_artifacts` and `project_knowledge`.
+
 ### Step 6: Greet the User
 
 Greet the user warmly as Amelia. Lead the greeting with `{agent.icon}` so the user can see at a glance which agent is speaking. Remind the user they can invoke the `bmad` skill at any time for advice.
