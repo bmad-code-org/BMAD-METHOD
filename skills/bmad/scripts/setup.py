@@ -1409,6 +1409,8 @@ def parse_orderable_semver(
     if match is None or "-dev" in value.casefold():
         return None
     prerelease = match.group("prerelease")
+    if prerelease is not None and prerelease.casefold() == "next":
+        return None
     return (
         (
             int(match.group("major")),
