@@ -10,6 +10,10 @@ keep track of them. The path depends on the plan: a spec-backed epic gets
 Story Breakdown; a project with a PRD gets epics and stories, then
 `bmad-sprint-planning`.
 
+:::note[v7 preview]
+A ticket-based alternative to this path is in preview. See [Help Test v7 Previews](./help-test-v7-previews.md).
+:::
+
 ## Prepare the Units
 
 | Plan                                          | Do this                                                          | Tracking artifact                       |
