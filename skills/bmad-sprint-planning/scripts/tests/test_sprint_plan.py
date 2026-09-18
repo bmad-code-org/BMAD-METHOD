@@ -4,8 +4,8 @@
 # ///
 """Tests for sprint_plan.py — deterministic sprint-status generation.
 
-Run: uv run scripts/tests/test_sprint_plan.py
- or: uv run --with pytest --with ruamel.yaml -m pytest scripts/tests/test_sprint_plan.py
+Run: uv run --no-project scripts/tests/test_sprint_plan.py
+ or: uv run --no-project --with pytest --with ruamel.yaml -m pytest scripts/tests/test_sprint_plan.py
 """
 
 import importlib.util

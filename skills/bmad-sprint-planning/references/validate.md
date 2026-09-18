@@ -3,7 +3,7 @@
 When the user asks whether `sprint-status.yaml` is well-formed, run:
 
 ```
-uv run {skill-root}/scripts/sprint_plan.py validate \
+uv run --no-project {skill-root}/scripts/sprint_plan.py validate \
   --status-file {implementation_artifacts}/sprint-status.yaml
 ```
 

@@ -13,6 +13,7 @@ import hashlib
 import json
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -588,6 +589,37 @@ class RenderSkillTests(unittest.TestCase):
         other = rs.render(ws.project, elsewhere)
         self.assertNotEqual(other.parent, snap)
         self.assertIn(str(elsewhere / "scripts" / "sprint_status.py"), _markdown(other.parent))
+
+    def test_resolver_does_not_manage_brownfield_project_environment(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project = Path(temp_dir)
+            skill = _copy_skill(project / "skill", "bmad-agent-dev")
+            scripts = project / "_bmad" / "scripts"
+            scripts.mkdir(parents=True)
+            for name in ("config_utils.py", "resolve_customization.py"):
+                shutil.copy2(SCRIPTS_SRC / name, scripts / name)
+            (project / "pyproject.toml").write_text(
+                "[project]\n"
+                "name = 'brownfield'\n"
+                "version = '0.0.0'\n"
+                "dependencies = ['package-that-does-not-exist-anywhere==0']\n",
+                encoding="utf-8",
+            )
+            command_text = re.search(
+                r"`(uv run --no-project [^`]*resolve_customization\.py[^`]*)`", (skill / "SKILL.md").read_text()
+            )
+            self.assertIsNotNone(command_text)
+            command = shlex.split(command_text.group(1))
+            command = [
+                argument.replace("{project-root}", str(project)).replace("{skill-root}", str(skill))
+                for argument in command
+            ]
+            command.insert(command.index("uv") + 2, "--python")
+            command.insert(command.index("--python") + 1, "3.11")
+            self.assertIn("--no-project", command)
+            result = subprocess.run(command, cwd=project, capture_output=True, text=True, timeout=120)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertFalse((project / "uv.lock").exists())
 
     def test_cli_from_nested_cwd_dispatches_one_absolute_workflow(self):
         ws = self._workspace()
