@@ -330,7 +330,7 @@ class Manifest {
       const hasGitClone = !!resolved?.repoUrl;
       return {
         // Prefer the git ref we actually cloned over the package.json version.
-        version: resolved?.cloneRef || (hasGitClone ? 'main' : versionInfo.version),
+        version: resolved?.cloneRef || versionInfo.version || (hasGitClone ? 'main' : null),
         source: 'custom',
         npmPackage: null,
         repoUrl: resolved?.repoUrl || null,
