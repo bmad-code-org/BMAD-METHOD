@@ -132,7 +132,7 @@ HALT — wait for user input before proceeding.
 
 When C is selected, the workflow is complete and the epics.md is ready for development.
 
-Epics and Stories complete. Invoke the `bmad-help` skill.
+Epics and Stories complete. Invoke the `bmad` skill.
 
 Upon Completion of task output: offer to answer any questions about the Epics and Stories.
 
