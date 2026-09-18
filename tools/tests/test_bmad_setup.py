@@ -287,6 +287,32 @@ class BmadSetupTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("failed to parse", result.stderr)
 
+    def test_replace_dir_uses_absent_backup_target(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            source = root / "staging"
+            destination = root / "_bmad"
+            source.mkdir()
+            destination.mkdir()
+            write(source / "new.txt", "new\n")
+            write(destination / "old.txt", "old\n")
+            real_rename = Path.rename
+
+            def windows_rename(path: Path, target: Path) -> Path:
+                target = Path(target)
+                if path == destination and target.exists():
+                    raise OSError(183, "Cannot create a file when that file already exists")
+                return real_rename(path, target)
+
+            with mock.patch.object(Path, "rename", windows_rename):
+                setup.replace_dir(source, destination)
+
+            self.assertFalse(source.exists())
+            self.assertEqual((destination / "new.txt").read_text(encoding="utf-8"), "new\n")
+            self.assertFalse((destination / "old.txt").exists())
+            self.assertEqual(list(root.glob("_bmad.old-*")), [])
+
     def test_first_setup_fixture_dest_bmad(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)

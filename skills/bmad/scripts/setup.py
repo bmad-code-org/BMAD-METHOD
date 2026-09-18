@@ -1177,6 +1177,7 @@ def replace_dir(src: Path, dest: Path) -> None:
         return
     backup = Path(tempfile.mkdtemp(prefix="_bmad.old-", dir=dest.parent))
     try:
+        backup.rmdir()
         dest.rename(backup)
     except Exception:
         shutil.rmtree(backup, ignore_errors=True)
