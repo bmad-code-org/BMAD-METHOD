@@ -33,6 +33,11 @@ Shaping and planning:
 - `bmad-sprint-planning` — checks the planning is complete enough to
   implement and generates the sprint status file; its status action
   summarizes sprint state at any time.
+- `bmad-preview-ticketing` — preview of the ticket tree: slices an
+  initiative into epics, incepts an epic into a breakdown of stories,
+  spikes, and bugs, refines tickets when pulled, and runs the board on a git-backed
+  store or a tracker. An alternative to `bmad-create-epics-and-stories`
+  plus `bmad-sprint-planning`, not a companion to them.
 - `bmad-project-context` — sets up or refreshes the repo's agent
   instructions; useful any time, in any path.
 

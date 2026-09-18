@@ -1,0 +1,101 @@
+# Ticketing config: Jira Cloud. Read by every skill that creates, reads, or moves tickets.
+# A starter: at first use the skill copies the chosen one to _bmad/custom/ticketing-store-config.toml
+# (references/store-setup.md), and that copy is the one edited. An org can instead host its own starter
+# anywhere — a repo path or a url — and setup copies from it. Skills read
+# [tickets] and [verbs] through a script, so comments are never loaded.
+# Every ticketing config has the same fields; only the prose and the maps differ. `description` sits
+# outside [tickets] so it is never loaded; it is for choosing a config.
+# One tool: acli, Atlassian's official CLI (`acli jira workitem ...`): create with --parent, transition,
+# links, comments, assign, JQL. The Atlassian Rovo MCP server (https://mcp.atlassian.com/v1/mcp/authv2)
+# is the alternative for an org that prefers MCP; it has no link-creation tool.
+#
+# The active initiative is `modules.bmm.active_initiative` in _bmad/custom/config.user.toml, read at activation. The ticket tree under root
+# has the same layout for every store (layout in references/board.md, Layout); write pushes it to this tracker.
+# An empty field below that an operation needs, and that cannot be inferred from what the user gave:
+# use what they tell you for this run and offer to record it in this file (references/store-setup.md).
+
+description = "Jira Cloud through acli: work types, transitions, links, JQL. For teams already on Jira, usually with an admin who can adjust the project workflow, or customize this starter."
+
+[tickets]
+store = "jira"
+root = "{output_folder}"
+key = ""    # Jira project key, e.g. "SHOP"; Jira assigns the number
+site = ""   # https://yourorg.atlassian.net
+access = """
+Use acli against `site`. Custom fields go through `--from-json`; check a subcommand's spelling
+with `acli jira workitem --help` before first use. If a call fails on auth, a work type, or a
+status, tell the user what is blocking, confirm the setup with them, and ask them to authenticate when that is the cause.
+"""
+
+fields = """
+severity is Jira's priority: P0 = Highest, P1 = High, P2 = Medium, P3 = Low; set it at create
+(--priority, or --from-json when the flag is absent) and change it the same way. risk is a label
+risk-low, risk-medium, or risk-high. estimate is the Story Points field (points on a story; the t-shirt as a label est:<size> on an epic), through --from-json. Empty field: default priority, no label.
+"""
+
+reference = """
+A reference is a line in the ticket's References section: `type — location, section`, location a
+path from {project-root} or a url for a remote source, opened before it is cited. acli creates no web links; the description line is the
+reference.
+"""
+
+# Verb prose lives in its own table so a skill can load one verb at a time.
+[verbs]
+setup = """
+Connect: `brew tap atlassian/homebrew-acli && brew install acli`, then
+`acli jira auth login --web --site <site>`.
+acli cannot create work types or statuses; those live in the project's settings. At first publish,
+read an existing work item (`acli jira workitem view <key> --json --fields issuetype,status`) and
+the project's work types, compare with [tickets.types] and [tickets.status], and tell the user
+exactly what to add or what to change in their copy of this file. Jira's defaults (To Do, In
+Progress, Done; resolution Won't Do) need no setup; the maps below also expect an In Review status.
+Do not ask for a level above Epic: by default the initiative stays local and everything below it
+publishes. A team-managed project's admin adds a status as a board column under
+Project settings, Board; a company-managed project needs a Jira admin to add it to the workflow.
+"""
+
+write = """
+Create, parents before children, blockers first:
+`acli jira workitem create --project <key> --type <per [tickets.types]> --summary <t>
+--description-file <b> --parent <key> --label <type>[,hitl,risk-<risk>]`, priority per `fields` on
+a bug. Changes: `edit` (body, labels), `assign`, `transition --status <per [tickets.status]>` —
+status never moves by edit — `link create --out <blocker> --in <blocked> --type "Blocks"`,
+`comment create`. No parent: omit --parent — the item sits loose in the project. Custom fields go through --from-json; when dropped shares a status with done,
+set the resolution the same way so the two stay distinct.
+Initiative: with [tickets.types].initiative empty, the default, it is never sent — everything below
+it publishes, the initiative stays local, and epics sit loose in the project. Set that type only when the
+project has a level above Epic; then epics take it as --parent.
+The body sent is the local file without the frontmatter lines id, remote, status, assignee; build
+notes belong in <ticket filename>-plan.md beside it, added as a comment on the move to review
+(or done when there is no review) — acli has no attachment upload.
+After a write, mirror id (the key), remote (the url), status, assignee, and blocked_by in the
+local file; commit local files on the current branch when root is in a git repo, never push.
+"""
+
+query = """
+One work item: `acli jira workitem view <key> --json --fields
+key,issuetype,summary,status,assignee,parent,labels,issuelinks,resolution,description`. blocked_by is the
+"is blocked by" links; Done with resolution Won't Do is dropped; the description's covers holds the source requirement ids. Children:
+`search --jql "parent = <key>"`. Words: `search --jql 'project = <key> AND text ~ "<words>"'`,
+narrowed by issuetype or status per the maps. The local file: `grep -rl "^id: <key>" root` or the
+filename.
+A child the tracker holds with no file in the tree gets one, numbered after the last.
+Candidates to pull (refine thin tickets before starting): status [tickets.status].backlog, every "is blocked by" link done, unassigned, no blocked_at in the ticket file. Offer all
+ready tickets; when one must be chosen, the one that unblocks the most work behind it.
+"""
+
+# BMad type -> this store's type.
+[tickets.types]
+initiative = ""   # empty: the initiative stays local. Jira's default hierarchy is Epic > Story > Subtask; a level above Epic needs Plans (Premium or Enterprise). Set to "Initiative" only when the project has that level.
+epic = "Epic"
+story = "Story"
+spike = "Task"   # plus label spike
+bug = "Bug"
+
+# BMad status -> this store's status. draft is local only and never sent to the store.
+[tickets.status]
+backlog = "To Do"
+in-progress = "In Progress"
+review = "In Review"   # not a default Jira status; `setup` asks for it. Leave empty for no review
+done = "Done"
+dropped = "Done"   # Jira default has no separate status; resolution Won't Do distinguishes it

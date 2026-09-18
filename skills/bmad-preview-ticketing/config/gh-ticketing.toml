@@ -1,0 +1,93 @@
+# Ticketing config: GitHub Issues. Read by every skill that creates, reads, or moves tickets.
+# A starter: at first use the skill copies the chosen one to _bmad/custom/ticketing-store-config.toml
+# (references/store-setup.md), and that copy is the one edited. An org can instead host its own starter
+# anywhere — a repo path or a url — and setup copies from it. Skills read
+# [tickets] and [verbs] through a script, so comments are never loaded.
+# Every ticketing config has the same fields; only the prose and the maps differ. `description` sits
+# outside [tickets] so it is never loaded; it is for choosing a config.
+# One tool: the gh CLI, 2.94 or later (sub-issues and dependencies). Labels carry type and status,
+# sub-issues carry hierarchy, blocked-by relations carry blocking, milestones put initiatives on the roadmap.
+# Using the defaults below: the repo needs the type, status, and hitl labels; `setup` creates them.
+#
+# The active initiative is `modules.bmm.active_initiative` in _bmad/custom/config.user.toml, read at activation. The ticket tree under root
+# has the same layout for every store (layout in references/board.md, Layout); write pushes it to this tracker.
+# An empty field below that an operation needs, and that cannot be inferred from what the user gave:
+# use what they tell you for this run and offer to record it in this file (references/store-setup.md).
+
+description = "GitHub Issues through the gh CLI: labels, sub-issues, blocked-by, milestones. For teams whose code and planning already live on GitHub."
+
+[tickets]
+store = "github"
+root = "{output_folder}"
+key = ""    # ids are the repo's issue numbers; leave empty
+repo = ""   # OWNER/REPO; empty = the repo of the current checkout (origin)
+access = """
+Use the gh CLI against `repo`, passing `-R <repo>` on every call when it is set. If a call fails
+on auth or a missing label, tell the user what is blocking, confirm the setup with them, and ask them to authenticate when that is the cause.
+"""
+
+fields = """
+risk is a label risk:<value>; severity is a label P0-P3. `setup` creates them with the other
+labels; publish and update set them like any label. estimate is a label est:<value> (`setup` creates none; add on first use). Empty field: no label.
+"""
+
+reference = """
+A reference is a line in the ticket's References section: `type — location, section`, location a
+path from {project-root} or a url for a remote source, opened before it is cited. GitHub renders urls as links; nothing more to do.
+"""
+
+# Verb prose lives in its own table so a skill can load one verb at a time.
+[verbs]
+setup = """
+Connect: `gh auth login`.
+Labels must exist before they are used. Run `gh label create <name> --force` for every value in
+[tickets.types], the label values in [tickets.status], `hitl`, risk:low, risk:medium, risk:high,
+and P0-P3. Offer this at first publish, or
+whenever a label is missing.
+"""
+
+write = """
+One issue per new ticket, created in tree and blocking order so every relation has a number to point at.
+Create: `gh issue create --title <t> --body-file <b> --label <type>,<[tickets.status].backlog>[,hitl,risk:<r>,P<n>]
+--parent <n> --blocked-by <n,n> [--milestone <initiative>]`. Changes go through `gh issue edit <n>`
+(--body-file, --add-assignee, --add-blocked-by, label swaps; --add-sub-issue on the parent). No
+parent: omit --parent; no initiative: omit --milestone. Needs
+gh 2.94+; check `--help` when a flag is doubted.
+Status is a label swap on an open issue. done: remove the status label and `gh issue close <n>`;
+dropped: the same with `--reason "not planned"`. An initiative is a
+milestone (`gh api repos/{owner}/{repo}/milestones -f title=<name>`) holding its tree's issues.
+The body sent is the local file without the frontmatter lines id, remote, status, assignee; build
+notes belong in <ticket filename>-plan.md beside it, posted as a comment on the move to
+review (or done when there is no review).
+After a write, mirror id (the number), remote (the url), status, assignee, and blocked_by in the
+local file; commit local files on the current branch when root is in a git repo, never push.
+"""
+
+query = """
+One issue: `gh issue view <n> --json
+number,title,labels,assignees,state,stateReason,milestone,parent,blockedBy,subIssuesSummary,body`.
+Type, hitl, risk, severity, and status are labels — except done and dropped, the closed states per
+[tickets.status]; the body's covers holds the source requirement ids. Children: `gh issue view <n>
+--json subIssues`. Words: `gh issue list --search "<words>" --state all`, narrowed by
+--label. The local file: `grep -rl "^id: <n>" root` or the filename.
+A child the tracker holds with no file in the tree gets one, numbered after the last.
+Candidates to pull (refine thin tickets before starting): open (in the initiative's milestone, or with no milestone for a standalone ticket), backlog label and no other status label, every
+blockedBy closed as completed, no assignee, no blocked_at in the ticket file. Offer all ready tickets; when one must be chosen, the
+one that unblocks the most work behind it.
+"""
+
+# BMad type -> this store's type.
+[tickets.types]
+initiative = "milestone"   # an initiative is a milestone, not an issue; its epics carry it
+epic = "epic"
+story = "story"
+spike = "spike"
+bug = "bug"
+
+# BMad status -> this store's status. draft is local only and never sent to the store.
+[tickets.status]
+backlog = "backlog"
+in-progress = "in-progress"
+review = "review"
+done = "closed"   # state, not a label
+dropped = "closed: not planned"   # state, not a label

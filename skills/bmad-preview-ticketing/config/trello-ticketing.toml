@@ -1,0 +1,96 @@
+# Ticketing config: Trello. Read by every skill that creates, reads, or moves tickets.
+# A starter: at first use the skill copies the chosen one to _bmad/custom/ticketing-store-config.toml
+# (references/store-setup.md), and that copy is the one edited. An org can instead host its own starter
+# anywhere — a repo path or a url — and setup copies from it. Skills read
+# [tickets] and [verbs] through a script, so comments are never loaded.
+# Every ticketing config has the same fields; only the prose and the maps differ. `description` sits
+# outside [tickets] so it is never loaded; it is for choosing a config.
+# One tool: the official Trello MCP server. Trello is flat: lists carry status, labels carry type, card
+# urls in descriptions carry hierarchy and blocking. Using the defaults below: the board needs the lists
+# Backlog, In Progress, Review, Done, Initiatives, Epics and a label per type plus hitl; `setup` says how. Members, comments, attachments, and label creation
+# are not in the MCP yet. Weakest fit of the shipped configs; expect to tune it.
+#
+# The active initiative is `modules.bmm.active_initiative` in _bmad/custom/config.user.toml, read at activation. The ticket tree under root
+# has the same layout for every store (layout in references/board.md, Layout); write pushes it to this tracker.
+# An empty field below that an operation needs, and that cannot be inferred from what the user gave:
+# use what they tell you for this run and offer to record it in this file (references/store-setup.md).
+
+description = "Trello through its MCP server: lists as status, labels as type, card links as hierarchy. For small teams that run a Trello board and want to keep it."
+
+[tickets]
+store = "trello"
+root = "{output_folder}"
+key = ""     # ids are card short links (from the card url); leave empty
+board = ""   # the board url
+access = """
+Use the Trello MCP (trelloReadBoard, trelloReadCard, trelloWriteCard, trelloWriteChecklist,
+trelloSearch) against `board`. Write tools take the server's ids, not urls: resolve a url with
+`trelloReadCard get` first. If a call fails on auth, a list, or a label, tell the user what is blocking, confirm the setup with them, and ask them to authenticate when that is the cause.
+"""
+
+fields = """
+risk is a label risk:<value>; severity a label P0-P3. The MCP cannot create labels: `setup` asks
+the user to add them with the type labels. estimate is an `estimate:` line in the description. Empty field: no label.
+"""
+
+reference = """
+A reference is a line in the ticket's References section: `type — location, section`, location a
+path from {project-root} or a url for a remote source, opened before it is cited. Attachments are not in the MCP yet; the description line
+is the reference.
+"""
+
+# Verb prose lives in its own table so a skill can load one verb at a time.
+[verbs]
+setup = """
+Connect: `claude mcp add --transport http trello https://mcp.trello.com/v1`, then sign in over
+OAuth with write permission.
+The MCP can create a board but not lists or labels. When `board` is empty, offer to create one;
+then ask the user to add the lists in [tickets.status] (Backlog, In Progress, Review, Done) plus
+Initiatives and Epics, and labels for every value in [tickets.types] plus hitl, risk:low, risk:medium, risk:high, and
+P0-P3. Check with
+`trelloReadBoard` before first publish and name what is still missing.
+"""
+
+write = """
+`trelloWriteCard create` makes a card, `update` changes description or labels, `move` changes
+list, `archive` is dropped. Write tools take server ids: resolve a url with `trelloReadCard get`
+first. Status is the list per [tickets.status]; initiative cards live in the Initiatives list,
+epics in Epics, both carrying a `status:` line at the top of the description. Labels carry type,
+hitl, risk, severity. Trello has no fields for the rest — conventions in the description:
+`parent: <card url>` as its first line, an `assignee:` line (no member tools yet), blocked_by as
+card urls; the parent card keeps a checklist with each child's url. A standalone ticket: no parent line. Create parents before
+children, blockers first.
+The body is the description, sent without the frontmatter lines id, remote, status (assignee stays, as the `assignee:` line above); build notes
+belong in <ticket filename>-plan.md beside it — on the move to review (or done when there is
+no review) put its path in the description as `plan:` (no comments in the MCP yet).
+After a write, mirror id (the card short link), remote (the card url), status, assignee, and
+blocked_by in the local file; commit local files on the current branch when root is in a git repo,
+never push.
+"""
+
+query = """
+One card: `trelloReadCard get` by url — name, list, labels, description (assignee, parent,
+covers, blocked_by live there), checklists; a container's children are its checklist items. Many:
+`trelloSearch` scoped to `board`, or `trelloReadBoard` filtered by the maps. The local file:
+`grep -rl "^id: <short link>" root` or the filename.
+A child the tracker holds with no file in the tree gets one, numbered after the last.
+Candidates to pull (refine thin tickets before starting): in the [tickets.status].backlog list, every blocked_by card in the Done list, assignee line
+empty, no blocked_at in the ticket file. Offer all ready tickets; when one must be chosen, the one that unblocks the most work
+behind it.
+"""
+
+# BMad type -> this store's type.
+[tickets.types]
+initiative = "initiative"
+epic = "epic"
+story = "story"
+spike = "spike"
+bug = "bug"
+
+# BMad status -> this store's status. draft is local only and never sent to the store.
+[tickets.status]
+backlog = "Backlog"
+in-progress = "In Progress"
+review = "Review"
+done = "Done"
+dropped = "archived"

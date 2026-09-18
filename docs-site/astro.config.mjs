@@ -350,6 +350,10 @@ export default defineConfig({
               },
               slug: 'plan/break-work-into-stories-and-track-it',
             },
+            {
+              label: 'Help Test v7 Previews',
+              slug: 'plan/help-test-v7-previews',
+            },
           ],
         },
         {
