@@ -16,6 +16,7 @@ const os = require('node:os');
 const { spawnSync } = require('node:child_process');
 const fs = require('../tools/installer/fs-native');
 const { Installer } = require('../tools/installer/core/installer');
+const { Manifest } = require('../tools/installer/core/manifest');
 const { ManifestGenerator } = require('../tools/installer/core/manifest-generator');
 const { OfficialModules } = require('../tools/installer/modules/official-modules');
 const { IdeManager } = require('../tools/installer/ide/manager');
@@ -161,6 +162,44 @@ async function runTests() {
     await fs.remove(path.dirname(installedBmadDir));
   } catch (error) {
     assert(false, 'Windsurf native skills migration test succeeds', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 39b: Unpinned Custom Module Version Display
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 39b: Unpinned Custom Module Version Display${colors.reset}\n`);
+
+  {
+    const { CustomModuleManager } = require('../tools/installer/modules/custom-module-manager');
+    const tempRepo39b = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-custom-version-'));
+    const originalResolution39b = CustomModuleManager._resolutionCache.get('sample-mod');
+
+    try {
+      await fs.ensureDir(path.join(tempRepo39b, '.claude-plugin'));
+      await fs.writeFile(
+        path.join(tempRepo39b, '.claude-plugin', 'marketplace.json'),
+        JSON.stringify({ plugins: [{ name: 'sample-mod', version: '1.0.0' }] }, null, 2) + '\n',
+      );
+
+      CustomModuleManager._resolutionCache.set('sample-mod', {
+        repoUrl: 'https://github.com/example/sample-mod',
+        cloneRef: null,
+        pluginName: 'sample-mod',
+        moduleYamlPath: path.join(tempRepo39b, 'module.yaml'),
+      });
+
+      const versionInfo = await new Manifest().getModuleVersionInfo('sample-mod', tempRepo39b);
+      assert(versionInfo.version === '1.0.0', 'unpinned git custom modules display marketplace.json version');
+    } finally {
+      if (originalResolution39b) {
+        CustomModuleManager._resolutionCache.set('sample-mod', originalResolution39b);
+      } else {
+        CustomModuleManager._resolutionCache.delete('sample-mod');
+      }
+      await fs.remove(tempRepo39b);
+    }
   }
 
   console.log('');
