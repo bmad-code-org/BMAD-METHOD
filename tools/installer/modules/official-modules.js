@@ -282,6 +282,7 @@ class OfficialModules {
     const sourcePath = await this.findModuleSource(moduleName, {
       silent: options.silent,
       channelOptions: options.channelOptions,
+      bmadDir,
     });
     const targetPath = path.join(bmadDir, moduleName);
 
