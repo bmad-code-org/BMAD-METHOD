@@ -451,6 +451,30 @@ class BmadSetupTests(unittest.TestCase):
             )
             self._assert_scripts_identity(bmad / "scripts", skill / "scripts")
 
+    def test_replace_dir_allows_existing_destination_on_windows(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            src = root / "staging"
+            dest = root / "_bmad"
+            write(src / "new.txt", "new\n")
+            write(dest / "old.txt", "old\n")
+
+            real_rename = Path.rename
+
+            def windows_rename(path, target):
+                target = Path(target)
+                if target.exists():
+                    raise OSError(183, "File exists")
+                return real_rename(path, target)
+
+            with mock.patch.object(Path, "rename", windows_rename):
+                setup.replace_dir(src, dest)
+
+            self.assertEqual((dest / "new.txt").read_text(encoding="utf-8"), "new\n")
+            self.assertFalse((dest / "old.txt").exists())
+            self.assertEqual(list(root.glob("_bmad.old-*")), [])
+
     def test_broken_or_wrong_scripts_link_is_repaired(self):
         if not symlink_to_temp_dir_succeeds():
             self.skipTest("symlinks not available")
