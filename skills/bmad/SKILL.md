@@ -119,3 +119,14 @@ For an ordinary help request:
   installed-module cache beneath `_bmad`; and
 - from sibling skill folders, read only `module-manifest.toml` and the
   document a module's `knowledge` names; never open a sibling `SKILL.md`.
+
+## Shared Infrastructure
+
+The scripts under `scripts/` — `config_utils.py`, `resolve_config.py`,
+`resolve_customization.py`, `render_skill.py`, `memlog.py`, and `setup.py` —
+are invoked by path from other skills at runtime; they are not private to
+this skill. Known external consumers include `bmad-advanced-elicitation` and
+the five `bmad-agent-*` skills (`bmad-agent-analyst`, `bmad-agent-architect`,
+`bmad-agent-dev`, `bmad-agent-pm`, `bmad-agent-ux-designer`). Treat their
+interfaces as a contract: a change here can break those consumers even
+though they live outside this skill folder.
