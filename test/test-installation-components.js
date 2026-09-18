@@ -18,6 +18,7 @@ const fs = require('../tools/installer/fs-native');
 const { Installer } = require('../tools/installer/core/installer');
 const { ManifestGenerator } = require('../tools/installer/core/manifest-generator');
 const { OfficialModules } = require('../tools/installer/modules/official-modules');
+const { CustomModuleManager } = require('../tools/installer/modules/custom-module-manager');
 const { IdeManager } = require('../tools/installer/ide/manager');
 const { clearCache, loadPlatformCodes } = require('../tools/installer/ide/platform-codes');
 
@@ -4237,6 +4238,51 @@ async function runTests() {
   } catch (error) {
     console.log(`${colors.red}Test Suite 52 setup failed: ${error.message}${colors.reset}`);
     console.log(error.stack);
+    failed++;
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 53: local custom module source during install (#2869)
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 53: local custom module source during install${colors.reset}\n`);
+
+  try {
+    const fixtureRoot53 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-local-source-'));
+    const bmadDir53 = path.join(fixtureRoot53, '_bmad');
+    const sourceDir53 = path.join(fixtureRoot53, 'custom-module');
+    const cacheDir53 = path.join(fixtureRoot53, 'cache');
+    const configDir53 = path.join(bmadDir53, '_config');
+    await fs.ensureDir(configDir53);
+    await fs.ensureDir(sourceDir53);
+    await fs.ensureDir(cacheDir53);
+    await fs.writeFile(path.join(sourceDir53, 'module.yaml'), ['code: local-test', 'name: Local Test Module', 'version: 1.0.0'].join('\n'));
+    await fs.writeFile(path.join(sourceDir53, 'source.txt'), 'local source content\n');
+    await fs.writeFile(
+      path.join(configDir53, 'manifest.yaml'),
+      ['modules:', '  - name: local-test', `    localPath: ${sourceDir53}`, ''].join('\n'),
+    );
+
+    const originalGetCacheDir53 = CustomModuleManager.prototype.getCacheDir;
+    CustomModuleManager.prototype.getCacheDir = () => cacheDir53;
+    try {
+      const officialModules53 = new OfficialModules();
+      officialModules53.externalModuleManager.findExternalModuleSource = async () => null;
+      officialModules53.externalModuleManager.getModuleByCode = async () => null;
+      const result53 = await officialModules53.install('local-test', bmadDir53, null, { silent: true });
+
+      assert(result53.success === true, 'install resolves a local module from manifest localPath');
+      assert(
+        await fs.pathExists(path.join(bmadDir53, 'local-test', 'source.txt')),
+        'install copies the local module source into the target directory',
+      );
+    } finally {
+      CustomModuleManager.prototype.getCacheDir = originalGetCacheDir53;
+      await fs.remove(fixtureRoot53).catch(() => {});
+    }
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 53 setup failed: ${error.message}${colors.reset}`);
     failed++;
   }
 
