@@ -1963,6 +1963,7 @@ class BmadUpdateDoctorTests(unittest.TestCase):
         self.assertEqual(setup.compare_semver("1.0.0-rc.1", "1.0.0"), -1)
         self.assertEqual(setup.compare_semver("1.0.0-alpha.1", "1.0.0-alpha"), 1)
         self.assertIsNone(setup.compare_semver("1.0.0-dev.gabc", "1.0.0"))
+        self.assertIsNone(setup.compare_semver("1.0.0-next", "1.0.0"))
         self.assertIsNone(setup.compare_semver("latest", "1.0.0"))
 
     def test_update_reports_current_installation_and_source_disagreement(self):
