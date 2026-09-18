@@ -27,7 +27,8 @@ from ruamel.yaml import YAML
 from ruamel.yaml.scalarstring import DoubleQuotedScalarString
 
 STORY_RE = re.compile(r"^(\d+)-\d+[a-z]?-")  # trailing [a-z]? matches split-story keys like 2-6a-...
-DATE_FORMAT = "%m-%d-%Y %H:%M"
+DATE_FORMAT = "%Y-%m-%d %H:%M"
+STAMP_FORMATS = (DATE_FORMAT, "%m-%d-%Y %H:%M")
 # The authoritative action-item vocabulary, mirrored from bmad-sprint-planning's
 # SKILL.md. Anything outside it would render as unknown in the status dashboard.
 ACTION_STATUSES = ("open", "in-progress", "done")
@@ -326,11 +327,16 @@ def cmd_update(args):
         _emit_error(f"invalid --epic {args.epic} (expected a positive integer)", 1, untouched)
 
     if args.date is not None:
-        try:
-            parsed_date = datetime.strptime(args.date, DATE_FORMAT)
-        except (ValueError, TypeError):
+        parsed_date = None
+        for stamp_format in STAMP_FORMATS:
+            try:
+                parsed_date = datetime.strptime(args.date, stamp_format)
+                break
+            except (ValueError, TypeError):
+                continue
+        if parsed_date is None:
             _emit_error(
-                f'invalid --date {args.date!r} (expected "MM-DD-YYYY HH:MM")',
+                f'invalid --date {args.date!r} (expected "YYYY-MM-DD HH:MM")',
                 1,
                 untouched,
             )
@@ -701,7 +707,7 @@ def build_parser():
     )
     p_update.add_argument(
         "--date",
-        help='Value for last_updated (default: now as "MM-DD-YYYY HH:MM").',
+        help='Value for last_updated (default: now as "YYYY-MM-DD HH:MM").',
     )
     p_update.set_defaults(func=cmd_update)
 
