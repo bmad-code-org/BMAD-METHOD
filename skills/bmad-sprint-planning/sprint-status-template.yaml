@@ -20,6 +20,7 @@
 #   - ready-for-dev: Story file created, ready for development
 #   - in-progress: Developer actively working on implementation
 #   - review: Implementation complete, ready for review
+#   - awaiting-operator: Implementation complete, pending external operator acceptance
 #   - done: Story completed
 #
 # Retrospective Status:
