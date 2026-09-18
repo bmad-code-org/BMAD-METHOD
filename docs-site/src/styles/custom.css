@@ -66,7 +66,15 @@
      classic 75 and near the 90 where the eye starts losing its place tracking
      back to the next line, so this is the end of the road at a 17px body: any
      wider wants a larger body size to hold the character count down, not just
-     more pixels. */
+     more pixels.
+
+     Global on purpose, not something that escaped the wide-screen block below.
+     Starlight clamps the measure to the pane it has, so it only reaches 56rem
+     once there is room - 504px at 1152, 792px at 1440, 896px from 1599 - and a
+     1440 laptop, the common case, would keep the old cramped 46rem if this were
+     scoped to that block. Checked across 1152 to 1920 for TOC overlap and
+     horizontal overflow: neither occurs, because the min()/max() clamps
+     Starlight added for custom measures hold. */
   --sl-content-width: 56rem;
 
   --sl-font: var(--bmad-sans);
