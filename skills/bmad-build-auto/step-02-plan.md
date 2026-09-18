@@ -7,7 +7,7 @@
 ## INSTRUCTIONS
 
 1. Draft resume check. If `{spec_file}` exists with `status: draft`, read it and capture the verbatim `<intent-contract>...</intent-contract>` block as `preserved_intent_contract`. Otherwise `preserved_intent_contract` is empty.
-2. Investigate codebase. _Read the code yourself for narrow, localized tasks. Isolate deep exploration in synchronous subagents: instruct them to give you distilled summaries only, and plan from those summaries._ Decide which findings actually matter for execution — the specific files, symbols/lines, reuse points, and read-only constraints — and carry those forward for the Code Map. This is where the investigation lands: the spec preserves it so it is never re-narrated to the implementer at dispatch time.
+2. Investigate codebase. _Read the code yourself for narrow, localized tasks. Isolate deep exploration in synchronous subagents: instruct them to give you distilled summaries only, and plan from those summaries._ Decide which findings actually matter for execution — the specific files, symbols/lines, reuse points, and read-only constraints — and carry those forward for the Code Map. For each new Code Map entry, mark files the story may create or modify with `(write)` and files used as context or required to remain untouched with `(read)`. Unmarked entries remain valid legacy entries and retain their existing prose-defined behavior. This is where the investigation lands: the spec preserves it so it is never re-narrated to the implementer at dispatch time.
 {% if workflow.route == "oneshot" or workflow.route == "full" %}
 3. The route is `{{ workflow.route }}`; `route_source` is `pinned`.
 {% else %}

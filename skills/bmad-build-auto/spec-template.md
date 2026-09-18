@@ -55,10 +55,13 @@ deferred: [] # append-only machine-readable deferred review findings; each item 
 ## Code Map
 
 <!-- Agent-populated during planning. Annotated paths prevent blind codebase searching.
+     `(write)` identifies files the story may create or modify. `(read)` identifies
+     files used as context or required to remain untouched. Unmarked bullets remain
+     valid legacy entries and retain their existing prose-defined behavior.
      Delete this section if route is oneshot. -->
 
-- `FILE` -- ROLE_OR_RELEVANCE
-- `FILE` -- ROLE_OR_RELEVANCE
+- `FILE` (write) -- ROLE_OR_RELEVANCE
+- `FILE` (read) -- ROLE_OR_RELEVANCE
 
 ## Tasks & Acceptance
 
