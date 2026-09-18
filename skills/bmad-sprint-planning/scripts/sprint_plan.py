@@ -54,7 +54,14 @@ EPIC_KEY_RE = re.compile(r"^epic-(\d+)$")
 RETRO_KEY_RE = re.compile(r"^epic-(\d+)-retrospective$")
 STORY_KEY_RE = re.compile(r"^(\d+)-(\d+)([a-z]?)-.+")
 
-STORY_RANK = {"backlog": 0, "ready-for-dev": 1, "in-progress": 2, "review": 3, "done": 4}
+STORY_RANK = {
+    "backlog": 0,
+    "ready-for-dev": 1,
+    "in-progress": 2,
+    "review": 3,
+    "awaiting-operator": 4,
+    "done": 5,
+}
 EPIC_RANK = {"backlog": 0, "in-progress": 1, "done": 2}
 RETRO_RANK = {"optional": 0, "done": 1}
 RANKS = {"epic": EPIC_RANK, "story": STORY_RANK, "retro": RETRO_RANK}
@@ -87,6 +94,7 @@ Story Status:
   - ready-for-dev: Story file created, ready for development
   - in-progress: Developer actively working on implementation
   - review: Implementation complete, ready for review
+  - awaiting-operator: Implementation complete, pending external operator acceptance
   - done: Story completed
 
 Retrospective Status:
@@ -581,7 +589,7 @@ def cmd_status(args):
             "story_key": by_status["backlog"][0],
             "reason": "start the first backlog story",
         }
-    else:
+    elif not by_status.get("awaiting-operator") and not illegal and not unrecognized:
         optional_retros = sorted(num for num, status in retro_status.items() if status == "optional")
         if optional_retros:
             recommendation = {
@@ -611,7 +619,12 @@ def cmd_status(args):
                 "risks": risks,
                 "warnings": warnings,
                 "recommendation": recommendation,
-                "all_done": recommendation is None,
+                "all_done": (
+                    recommendation is None
+                    and not by_status.get("awaiting-operator")
+                    and not illegal
+                    and not unrecognized
+                ),
             },
             default=str,
         )

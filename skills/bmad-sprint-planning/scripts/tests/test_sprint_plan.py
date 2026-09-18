@@ -538,6 +538,33 @@ def test_status_illegal_status_reported(tmp_path, capsys):
     assert {"key": "2-1-personality-system", "status": "shipped"} in result["illegal"]
 
 
+def test_status_awaiting_operator_is_outstanding(tmp_path, capsys):
+    fixture = (
+        STATUS_FIXTURE.replace("1-2-account-management: drafted", "1-2-account-management: done")
+        .replace("2-1-personality-system: backlog", "2-1-personality-system: awaiting-operator")
+        .replace("epic-2: backlog", "epic-2: done")
+        .replace("epic-2-retrospective: optional", "epic-2-retrospective: done")
+    )
+    result = run_status(tmp_path, capsys, fixture=fixture)
+    assert result["stories"]["awaiting-operator"] == 1
+    assert {"key": "2-1-personality-system", "status": "awaiting-operator"} not in result["illegal"]
+    assert result["all_done"] is False
+    assert result["recommendation"] is None
+    assert "all stories done" not in (result["recommendation"] or {}).get("reason", "")
+
+
+def test_status_illegal_story_prevents_false_completion(tmp_path, capsys):
+    fixture = STATUS_FIXTURE.replace("1-2-account-management: drafted", "1-2-account-management: done")
+    fixture = fixture.replace("2-1-personality-system: backlog", "2-1-personality-system: shipped")
+    fixture = fixture.replace("epic-2: backlog", "epic-2: done")
+    fixture = fixture.replace("epic-2-retrospective: optional", "epic-2-retrospective: done")
+    result = run_status(tmp_path, capsys, fixture=fixture)
+    assert result["illegal"] == [{"key": "2-1-personality-system", "status": "shipped"}]
+    assert result["all_done"] is False
+    assert result["recommendation"] is None
+    assert "all stories done" not in (result["recommendation"] or {}).get("reason", "")
+
+
 def test_status_missing_file_fails_json(tmp_path, capsys):
     with pytest.raises(SystemExit) as excinfo:
         mod.main(["status", "--status-file", str(tmp_path / "nope.yaml")])
@@ -557,6 +584,21 @@ def test_validate_clean_file(tmp_path, capsys):
     clean = STATUS_FIXTURE.replace("1-2-account-management: drafted", "1-2-account-management: backlog")
     result = run_validate(tmp_path, capsys, clean)
     assert result["valid"] is True and result["problems"] == []
+
+
+def test_validate_accepts_awaiting_operator(tmp_path, capsys):
+    clean = STATUS_FIXTURE.replace("1-2-account-management: drafted", "1-2-account-management: awaiting-operator")
+    result = run_validate(tmp_path, capsys, clean)
+    assert result["valid"] is True and result["problems"] == []
+
+
+def test_generate_preserves_awaiting_operator(tmp_path, capsys):
+    existing = STATUS_FIXTURE.replace("1-2-account-management: drafted", "1-2-account-management: awaiting-operator")
+    status_file = run_generate(tmp_path, existing=existing)
+    result = out_json(capsys)
+    data = load(status_file)
+    assert data["development_status"]["1-2-account-management"] == "awaiting-operator"
+    assert result["illegal"] == []
 
 
 def test_validate_reports_problems_without_crashing(tmp_path, capsys):
