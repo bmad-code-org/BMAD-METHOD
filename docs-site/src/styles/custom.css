@@ -60,8 +60,14 @@
   --sl-nav-height: 4rem;
   --sl-nav-pad-x: 1.5rem;
 
-  /* an article measure: ~72 characters of 17px Archivo */
-  --sl-content-width: 46rem;
+  /* An article measure. Measured against the rendered body - Archivo at 17px,
+     ~10.7px an average character - this runs 84 characters, against 69 at the
+     46rem it started from, and is the same measure react.dev sets. Past the
+     classic 75 and near the 90 where the eye starts losing its place tracking
+     back to the next line, so this is the end of the road at a 17px body: any
+     wider wants a larger body size to hold the character count down, not just
+     more pixels. */
+  --sl-content-width: 56rem;
 
   --sl-font: var(--bmad-sans);
   --sl-font-mono: var(--bmad-mono);
@@ -878,6 +884,40 @@ starlight-toc a[aria-current='true'] {
 /* ---------------------------------------------------------------
    Layout and page meta
    --------------------------------------------------------------- */
+
+/* Past this width the layout stops spreading unevenly. Starlight's own rule is
+   `--sl-content-margin-inline: auto 0` on a page with both a sidebar and a TOC
+   at >=72rem, which pins the prose against the contents list and piles every
+   spare pixel on its left: on a 1920 screen, a 268px hole to the left of the
+   text and 24px to its right. Astro's own docs read the same way.
+
+   The chrome keeps the edges - full-width header, sidebar hard left, contents
+   list hard right - and only the prose is centred, between them and on the
+   middle of the screen. Three things have to change for that: the contents list
+   reserves a sidebar's width instead of a share of the row, it is pinned to the
+   right edge rather than left-aligned in a column far wider than its text, and
+   the pane is allowed to grow into what is left so its middle is the middle of
+   the gap. */
+@media (min-width: 100rem) {
+  .right-sidebar-container {
+    width: var(--sl-sidebar-width);
+  }
+
+  .right-sidebar {
+    inset-inline: auto 0;
+    width: var(--sl-sidebar-width);
+  }
+
+  .main-pane {
+    flex: 1 1 auto;
+    width: auto;
+  }
+
+  [data-has-sidebar][data-has-toc] .main-pane {
+    --sl-content-margin-inline: auto;
+  }
+}
+
 .content-panel {
   padding-block: 2.4rem;
 }
