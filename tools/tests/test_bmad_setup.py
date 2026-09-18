@@ -1171,6 +1171,16 @@ class BmadSetupTests(unittest.TestCase):
                 dump_manifest_toml({**base, "module": "ScRiPtS"}).encode(),
                 "unsafe",
             ),
+            (
+                "reserved-module-render",
+                dump_manifest_toml({**base, "module": "render"}).encode(),
+                "unsafe",
+            ),
+            (
+                "case-insensitive-reserved-module-render",
+                dump_manifest_toml({**base, "module": "ReNdEr"}).encode(),
+                "unsafe",
+            ),
         )
 
         with tempfile.TemporaryDirectory() as temp_dir:

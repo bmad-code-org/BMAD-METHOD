@@ -27,7 +27,7 @@ MANIFEST_NAME = "module-manifest.toml"
 QUESTION_KEYS = frozenset({"key", "prompt", "default"})
 UPDATE_SOURCE_PREFIXES = ("github:", "https://", "file:", "plugin:")
 MODULE_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]*\Z")
-RESERVED_MODULE_DIRS = frozenset({"_config", "custom", "modules", "scripts"})
+RESERVED_MODULE_DIRS = frozenset({"_config", "custom", "modules", "render", "scripts"})
 
 # Traces the classic installer leaves under _bmad. Doctor reports them
 # read-only and never touches them; they belong to the old-installer world.
