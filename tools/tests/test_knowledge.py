@@ -26,8 +26,7 @@ def make_skill(root: Path, skill: str, module: str, docs: dict[str, str]) -> Non
     entries = ", ".join(f'"{name}"' for name in docs)
     write(
         root / skill / "module-manifest.toml",
-        f'module = "{module}"\nversion = "1.0.0"\n'
-        f'update_source = "file:skills"\nknowledge = [{entries}]\n',
+        f'module = "{module}"\nversion = "1.0.0"\nupdate_source = "file:skills"\nknowledge = [{entries}]\n',
     )
     for name, content in docs.items():
         write(root / skill / name, content)
@@ -105,8 +104,7 @@ class KnowledgeCollectionTests(unittest.TestCase):
     def test_traversal_is_refused(self):
         write(
             self.root / "a-1" / "module-manifest.toml",
-            'module = "alpha"\nversion = "1.0.0"\n'
-            'update_source = "file:skills"\nknowledge = ["../escape.md"]\n',
+            'module = "alpha"\nversion = "1.0.0"\nupdate_source = "file:skills"\nknowledge = ["../escape.md"]\n',
         )
         write(self.root / "escape.md", "# escaped\n")
 
@@ -118,8 +116,7 @@ class KnowledgeCollectionTests(unittest.TestCase):
     def test_a_named_document_that_is_absent_is_a_problem(self):
         write(
             self.root / "a-1" / "module-manifest.toml",
-            'module = "alpha"\nversion = "1.0.0"\n'
-            'update_source = "file:skills"\nknowledge = ["absent.md"]\n',
+            'module = "alpha"\nversion = "1.0.0"\nupdate_source = "file:skills"\nknowledge = ["absent.md"]\n',
         )
 
         report = self.knowledge.collect([self.root])

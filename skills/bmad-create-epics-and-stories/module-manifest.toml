@@ -1,4 +1,4 @@
 module = "method"
 version = "6.13.0-next"
 update_source = "github:bmad-code-org/BMAD-METHOD/skills"
-knowledge = ["references/method-help.md", "references/planning-help.md"]
+knowledge = ["bmad-meta/method-help.md", "bmad-meta/planning-help.md"]
