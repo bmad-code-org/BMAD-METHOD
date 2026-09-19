@@ -11,8 +11,13 @@ writes the rest.
 
 Nothing here decides which skill gets which document: each manifest's
 `knowledge` list already says so, and a path in that list is where the copy
-lands inside the skill. A document a skill no longer names is deleted, so
-moving a skill between groups is one manifest edit and a sync.
+lands inside the skill. A shared document a skill no longer names is deleted,
+so moving a skill between groups is one manifest edit and a sync.
+
+Only documents that exist in bmad-meta/ are managed. A skill may carry a
+document of its own that no other skill has, and anything else the skill puts
+in bmad-meta/ is its own business — this script leaves both alone. That a
+declared document actually exists is tools/validate_manifests.py's job.
 
 Usage:
   uv run tools/sync_knowledge.py            # report drift, change nothing
@@ -45,9 +50,9 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     stale: list[str] = []
-    missing: list[str] = []
     orphans: list[str] = []
     written = 0
+    shared = {path.relative_to(SOURCE) for path in SOURCE.rglob("*") if path.is_file()}
 
     for folder in sorted(path for path in SKILLS.iterdir() if path.is_dir()):
         manifest = folder / "module-manifest.toml"
@@ -62,36 +67,30 @@ def main(argv: list[str] | None = None) -> int:
             if not isinstance(entry, str):
                 continue
             relative = PurePosixPath(entry)
-            source = SOURCE / Path(*relative.parts[1:]) if relative.parts[0] == CARRIED_DIR else SOURCE / relative.name
-            target = folder.joinpath(*relative.parts)
-            rel = target.relative_to(ROOT).as_posix()
-            if not source.is_file():
-                missing.append(f"{rel}: no source at {source.relative_to(ROOT).as_posix()}")
+            inside = Path(*relative.parts[1:]) if relative.parts[0] == CARRIED_DIR else Path(relative.name)
+            # A document with no copy in bmad-meta/ belongs to this skill alone.
+            if inside not in shared:
                 continue
+            source = SOURCE / inside
+            target = folder.joinpath(*relative.parts)
             wanted.add(target)
             if target.is_file() and target.read_bytes() == source.read_bytes():
                 continue
-            stale.append(rel)
+            stale.append(target.relative_to(ROOT).as_posix())
             if args.write:
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(source, target)
                 written += 1
 
-        # A document the skill stopped naming has no business staying behind.
+        # A shared document the skill stopped naming has no business staying
+        # behind. Anything not in bmad-meta/ is the skill's own and is left.
         carried = folder / CARRIED_DIR
         if carried.is_dir():
             for present in sorted(carried.rglob("*")):
-                if present.is_file() and present not in wanted:
-                    rel = present.relative_to(ROOT).as_posix()
-                    orphans.append(rel)
+                if present.is_file() and present.relative_to(carried) in shared and present not in wanted:
+                    orphans.append(present.relative_to(ROOT).as_posix())
                     if args.write:
                         present.unlink()
-
-    if missing:
-        print("Knowledge documents named by a manifest with no source:", file=sys.stderr)
-        for item in missing:
-            print(f"  {item}", file=sys.stderr)
-        return 1
 
     if args.write:
         print(f"Synced {written} copies, removed {len(orphans)} orphans.")
