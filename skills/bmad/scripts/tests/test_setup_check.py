@@ -50,6 +50,16 @@ class OwedSetupTests(unittest.TestCase):
         self.assertIn("`bmad` 6.13.0 or later", note)
         self.assertIn("6.12.0 is installed", note)
 
+    def test_the_next_build_of_the_required_version_meets_it(self):
+        write_manifest(self.skills / "bmad", module="bmad", version="6.13.0-next")
+        folder = self.skill('\n[requires]\nbmad = { version = "6.13.0" }\n')
+        self.assertEqual(setup_check.owed(folder, self.project), [])
+
+    def test_the_next_build_of_an_earlier_version_does_not(self):
+        write_manifest(self.skills / "bmad", module="bmad", version="6.12.0-next")
+        folder = self.skill('\n[requires]\nbmad = { version = "6.13.0" }\n')
+        self.assertEqual(len(setup_check.owed(folder, self.project)), 1)
+
     def test_a_missing_required_skill_names_its_install_command(self):
         folder = self.skill('\n[requires]\nother-skill = { version = "2.0.0", source = "github:acme/tools/skills" }\n')
         (note,) = setup_check.owed(folder, self.project)

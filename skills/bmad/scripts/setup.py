@@ -379,13 +379,8 @@ def unmet_entries(skill_root: Path, table: str) -> list[dict[str, object]]:
     for copy_item in copies:
         for requirement in getattr(copy_item.parsed, table):
             present = installed.get(requirement.skill)
-            if present is None:
-                state = "missing"
-            elif compare_semver(present, requirement.version) is None:
-                state = "unorderable"
-            elif compare_semver(present, requirement.version) < 0:
-                state = "outdated"
-            else:
+            state = requirement_state(present, requirement.version)
+            if state is None:
                 continue
             source = requirement.source
             if source is None:
@@ -403,6 +398,27 @@ def unmet_entries(skill_root: Path, table: str) -> list[dict[str, object]]:
                 }
             )
     return unmet
+
+
+def requirement_state(installed: str | None, minimum: str) -> str | None:
+    """Why an installed version fails a minimum, or None when it meets it.
+
+    The development branch carries `X-next` until `X` is released, and that
+    build already holds everything `X` will. SemVer orders it below `X`, which
+    would report every skill on a development install as outdated.
+    """
+    if installed is None:
+        return "missing"
+    comparison = compare_semver(installed, minimum)
+    if comparison is None:
+        return "unorderable"
+    if comparison >= 0:
+        return None
+    have = parse_orderable_semver(installed)
+    want = parse_orderable_semver(minimum)
+    if have is not None and want is not None and have[0] == want[0] and want[1] is None and have[1] == ("next",):
+        return None
+    return "outdated"
 
 
 def requirement_channel(source: str) -> str:

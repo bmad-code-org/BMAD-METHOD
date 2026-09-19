@@ -54,8 +54,7 @@ def owed(skill_dir: Path, project_root: Path | None) -> list[str]:
             )
             continue
         installed = hub.parse_packaged_manifest(other, other.read_bytes()).version
-        comparison = hub.compare_semver(installed, requirement.version)
-        if comparison is not None and comparison < 0:
+        if hub.requirement_state(installed, requirement.version) == "outdated":
             notes.append(
                 f"needs `{requirement.skill}` {requirement.version} or later, and {installed} is installed. "
                 "Offer to run `npx skills update`."
