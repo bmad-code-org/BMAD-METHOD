@@ -85,6 +85,7 @@ class ParsedManifest(NamedTuple):
     questions: tuple[ConfigQuestion, ...]
     scripts: tuple[PurePosixPath, ...]
     requires: tuple[Requirement, ...]
+    recommends: tuple[Requirement, ...] = ()
 
 
 class InstalledCopy(NamedTuple):
@@ -351,6 +352,7 @@ def doctor(
         "version_spreads": spreads,
         "remaining_staleness": blocked,
         "unmet_requirements": unmet,
+        "unmet_recommendations": unmet_recommendations(skill_root),
         "legacy_leftovers": [
             relative
             for relative in LEGACY_LEFTOVERS
@@ -362,11 +364,20 @@ def doctor(
 
 def unmet_requirements(skill_root: Path) -> list[dict[str, object]]:
     """Requirements a module declares that the current install does not satisfy."""
+    return unmet_entries(skill_root, "requires")
+
+
+def unmet_recommendations(skill_root: Path) -> list[dict[str, object]]:
+    """Skills a manifest recommends that are absent or too old. Worth offering, never a fault."""
+    return unmet_entries(skill_root, "recommends")
+
+
+def unmet_entries(skill_root: Path, table: str) -> list[dict[str, object]]:
     copies = discover_installed_copies(skill_root)
     installed = {copy_item.skill: copy_item.parsed.version for copy_item in copies}
     unmet: list[dict[str, object]] = []
     for copy_item in copies:
-        for requirement in copy_item.parsed.requires:
+        for requirement in getattr(copy_item.parsed, table):
             present = installed.get(requirement.skill)
             if present is None:
                 state = "missing"
@@ -528,7 +539,8 @@ def parse_packaged_manifest(path: Path, raw: bytes) -> ParsedManifest:
     questions = parse_manifest_questions(data.get("config_questions"), module, path)
     scripts = parse_manifest_scripts(data.get("scripts"), path)
     requires = parse_manifest_requires(data.get("requires"), path)
-    return ParsedManifest(module, version, update_source, knowledge, questions, scripts, requires)
+    recommends = parse_manifest_requires(data.get("recommends"), path, table="recommends")
+    return ParsedManifest(module, version, update_source, knowledge, questions, scripts, requires, recommends)
 
 
 def validate_source(value: str, field: str, path: Path) -> None:
@@ -591,16 +603,16 @@ def safe_skill_relative(entry: str) -> PurePosixPath | None:
     return relative
 
 
-def parse_manifest_requires(value: object, path: Path) -> tuple[Requirement, ...]:
+def parse_manifest_requires(value: object, path: Path, *, table: str = "requires") -> tuple[Requirement, ...]:
     if value is None:
         return ()
     if not isinstance(value, dict):
-        raise Exception(f"packaged manifest {path} field 'requires' must be a table of skill ids to requirements")
+        raise Exception(f"packaged manifest {path} field {table!r} must be a table of skill ids to requirements")
     requires: list[Requirement] = []
     for skill, entry in value.items():
-        field = f"requires.{skill}"
+        field = f"{table}.{skill}"
         if SKILL_NAME.fullmatch(skill) is None:
-            raise Exception(f"packaged manifest {path} field 'requires' has unsafe skill id {skill!r}")
+            raise Exception(f"packaged manifest {path} field {table!r} has unsafe skill id {skill!r}")
         if not isinstance(entry, dict):
             raise Exception(f"packaged manifest {path} field {field!r} must be a table")
         keys = set(entry)
@@ -1039,7 +1051,7 @@ def select_doctor_modules(
 def module_identity(parsed: ParsedManifest) -> tuple[object, ...]:
     """The manifest facts that belong to the module rather than to one skill.
 
-    `knowledge` and `requires` are per-skill, so raw bytes no longer settle
+    `knowledge`, `requires` and `recommends` are per-skill, so raw bytes no longer settle
     whether two copies of a module agree. Everything else still has to match,
     because it decides what gets written to `_bmad`.
     """

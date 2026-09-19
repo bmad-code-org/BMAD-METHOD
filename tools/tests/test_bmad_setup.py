@@ -2268,6 +2268,29 @@ class BmadUpdateDoctorTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, msg=result.stderr)
         return json.loads(result.stdout)
 
+    def test_doctor_lists_a_missing_recommended_skill_without_calling_it_a_fault(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "bmad", "core", version="6.13.0")
+            write_module_skill(
+                root,
+                "alpha-skill",
+                "alpha",
+                extra_fields={"recommends": {"absent-skill": {"version": "1.0.0"}}},
+            )
+            write(project / "_bmad" / "config.toml", "[core]\nkeep = true\n")
+
+            report = self.doctor_report(root, project, skill)
+            self.assertTrue(report["current"])
+            self.assertEqual(report["unmet_requirements"], [])
+            (entry,) = report["unmet_recommendations"]
+            self.assertEqual(
+                (entry["skill"], entry["requires"], entry["state"]), ("alpha-skill", "absent-skill", "missing")
+            )
+
     def test_doctor_reports_a_missing_required_skill(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)

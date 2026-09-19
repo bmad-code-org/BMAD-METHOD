@@ -173,6 +173,29 @@ class StampReleaseTests(unittest.TestCase):
         self.assertIn('requires = { bmad = { version = "6.13.0" } }', build)
         self.assertNotIn("requires", spec)
 
+    def test_recommends_accepted_and_preserved(self):
+        make_tree(self.root)
+        write(
+            self.root / "skills" / "bmad-build" / "module-manifest.toml",
+            MANIFEST.format(module="method", version="6.11.0-next")
+            + 'recommends = { bmad-spec = { version = "6.13.0" } }\n',
+        )
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 0, err)
+        stamped = (self.root / "skills" / "bmad-build" / "module-manifest.toml").read_text(encoding="utf-8")
+        self.assertIn('recommends = { bmad-spec = { version = "6.13.0" } }', stamped)
+
+    def test_recommends_naming_an_unshipped_skill_without_a_source_is_rejected(self):
+        make_tree(self.root)
+        write(
+            self.root / "skills" / "bmad-build" / "module-manifest.toml",
+            MANIFEST.format(module="method", version="6.11.0-next")
+            + 'recommends = { bmad-typo = { version = "6.13.0" } }\n',
+        )
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 1)
+        self.assertIn("recommends.bmad-typo names no skill in this repository", err)
+
     def test_requires_naming_an_unshipped_skill_without_a_source_is_rejected(self):
         make_tree(self.root)
         write(

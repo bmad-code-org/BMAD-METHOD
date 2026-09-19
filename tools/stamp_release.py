@@ -12,10 +12,10 @@ bmad-code-org/bmad-plugins.
 
 Before writing anything it validates every manifest: the runtime parser in
 skills/bmad/scripts/setup.py must accept it, the keys are module, version,
-update_source and knowledge plus an optional requires table, module is a known
+update_source and knowledge plus optional requires and recommends tables, module is a known
 module, update_source carries its one known value, and every knowledge entry
-names a plain file the skill ships. knowledge and requires belong to the
-skill; every other field belongs to the module and must agree across it, which
+names a plain file the skill ships. knowledge, requires and recommends belong
+to the skill; every other field belongs to the module and must agree across it, which
 is the same rule setup.py's module_identity applies at install time. A
 document named by several skills must be byte-identical in each of them.
 
@@ -60,7 +60,7 @@ MANIFEST_NAME = "module-manifest.toml"
 MODULES = frozenset({"method", "core-tools"})
 UPDATE_SOURCE = "github:bmad-code-org/BMAD-METHOD/skills"
 MANIFEST_KEYS = frozenset({"module", "version", "update_source", "knowledge"})
-OPTIONAL_MANIFEST_KEYS = frozenset({"requires"})
+OPTIONAL_MANIFEST_KEYS = frozenset({"requires", "recommends"})
 REQUIREMENT_KEYS = frozenset({"version"})
 OPTIONAL_REQUIREMENT_KEYS = frozenset({"source"})
 # Mirrors UPDATE_SOURCE_PREFIXES in skills/bmad/scripts/setup.py.
@@ -114,7 +114,7 @@ def validate_version(version: str) -> None:
         )
 
 
-def validate_manifest_requires(value: object, rel: str, modules: dict[str, str]) -> None:
+def validate_manifest_requires(value: object, rel: str, modules: dict[str, str], table: str = "requires") -> None:
     """Shape is the runtime parser's job; this adds only the release-time rules."""
     if value is None:
         return
@@ -124,14 +124,14 @@ def validate_manifest_requires(value: object, rel: str, modules: dict[str, str])
         # equal to "1.2.0" and such a requirement could never be met.
         if "+" in minimum:
             raise StampError(
-                f"{rel}: requires.{skill}.version {minimum!r} carries build metadata, which setup.py ignores "
+                f"{rel}: {table}.{skill}.version {minimum!r} carries build metadata, which setup.py ignores "
                 f"when ordering; it would compare equal to {minimum.split('+', 1)[0]!r}"
             )
         # An explicit source means the skill lives elsewhere; without one the
         # requirement resolves against this repository, so a typo is catchable.
         if entry.get("source") is None and skill not in modules:
             raise StampError(
-                f"{rel}: requires.{skill} names no skill in this repository and gives no source to fetch it from"
+                f"{rel}: {table}.{skill} names no skill in this repository and gives no source to fetch it from"
             )
 
 
@@ -204,13 +204,14 @@ def collect_skills(project_root: Path) -> tuple[list[Path], dict[str, str]]:
         rel = manifest.relative_to(project_root).as_posix()
         data = tomllib.loads(manifest.read_text(encoding="utf-8"))
         validate_manifest_requires(data.get("requires"), rel, modules)
+        validate_manifest_requires(data.get("recommends"), rel, modules, "recommends")
     check_module_fields_agree(project_root, manifests, modules)
     check_knowledge_copies_agree(project_root, manifests)
     return manifests, modules
 
 
 def check_module_fields_agree(project_root: Path, manifests: list[Path], modules: dict[str, str]) -> None:
-    """Every module-level field must match across a module; knowledge and requires are per skill.
+    """Every module-level field must match across a module; knowledge, requires and recommends are per skill.
 
     Mirrors module_identity in skills/bmad/scripts/setup.py, which decides the
     same question at install time.
@@ -292,15 +293,15 @@ def verify_stamp(root: Path, manifests: list[Path], modules: dict[str, str], ver
             "update_source": UPDATE_SOURCE,
             "knowledge": data.get("knowledge"),
         }
-        requires = data.get("requires")
-        if requires is not None:
-            expected["requires"] = requires
+        for table in OPTIONAL_MANIFEST_KEYS:
+            if data.get(table) is not None:
+                expected[table] = data[table]
         if data != expected:
             raise StampError(
                 f"{rel}: after stamping, manifest must be exactly "
                 f"module={module!r}, version={version!r}, "
                 f"update_source={UPDATE_SOURCE!r}, a 'knowledge' list, "
-                "plus an optional 'requires' table"
+                "plus optional 'requires' and 'recommends' tables"
             )
         fields = setup.module_identity(setup.parse_packaged_manifest(manifest, manifest.read_bytes()))
         if module not in reference_fields:

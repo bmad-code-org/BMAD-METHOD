@@ -63,14 +63,19 @@ uv run --no-cache "{skill-root}/scripts/setup.py" --project-root "{project-root}
 
 On success, delete only the temporary answer file created for this doctor run.
 Report the top-level `status` — `current` (nothing needed repair), `repaired`,
-or `reconciled-with-warnings` (some module is still spread or blocked) — plus
+or `reconciled-with-warnings` (some module is still spread or blocked, or a
+required skill is missing or too old) — plus
 the shared-script result, added answers, every module's selected or blocked
 state, exact module-script repair result, remaining version spreads or
 staleness, and the bmad copy/version used. When `legacy_leftovers` is
 non-empty, mention that files from a classic BMad installer are present and
 were left untouched. A successful local repair does not
 mean project-scoped skill copies were updated; never call the whole installation
-current while `version_spreads` or `remaining_staleness` is non-empty. Tell the
+current while `version_spreads`, `remaining_staleness`, or `unmet_requirements`
+is non-empty. For each `unmet_requirements` entry, name the skill that needs it,
+what it needs, and what is installed, and offer to install or update it from
+its `source`. `unmet_recommendations` has the same shape but is never a fault:
+mention those skills once as optional additions and offer to install them. Tell the
 user that reconciling the installed copies of a blocked or spread module is the
 responsibility of `npx skills update`.
 
