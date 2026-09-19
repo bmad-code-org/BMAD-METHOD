@@ -37,10 +37,17 @@ step without assuming that every module or skill is installed.
 4. Group installed skills by `module`. Membership is the `module` key on
    disk. Continue with unaffected modules when a folder's manifest is
    skipped.
-5. Read every sound manifest's `knowledge` value: free-form text saying where
-   that module's knowledge lives or what it is. For the module or modules the
-   question concerns, follow that text to the document it names and route
-   from it. Those documents are the only routing guides; treat no other
+5. Collect the knowledge documents. From this skill's own directory run
+   `uv run scripts/knowledge.py --content` with one `--root` per active root,
+   repeating the flag: `--root <first> --root <second>`. It reports each
+   distinct document once, with the skills carrying it and any copies that
+   disagree. If it cannot run, read the documents yourself: each `knowledge`
+   entry is a path inside the folder whose manifest named it, the same
+   document may be carried by many skills, and the order of the entries means
+   nothing.
+6. Follow those documents for every installed module, not only the ones the
+   question appears to concern; a module the user did not ask about may still
+   constrain the answer. They are the only routing guides; treat no other
    manifest key as routing, and if none can be followed, say so rather than
    inventing routes.
 
@@ -59,6 +66,9 @@ and help must not report uninstalled skills as missing members of a set.
   invoked, and do not treat it as a gap in the install.
 
 If something could not be read, say so and do not guess.
+
+A document speaks for the skills that carry it. If two documents disagree
+about a skill, say so rather than silently choosing a side.
 
 ## Reason About State and Next Steps
 
@@ -93,7 +103,7 @@ If something could not be read, say so and do not guess.
 Answer the user's actual question first, then include only the orientation that
 helps with it:
 
-- the relevant module and current state, including uncertainty;
+- the relevant module or modules and current state, including uncertainty;
 - installed skills that matter for the question, by canonical id with
   host-listed descriptions;
 - a skill that is not installed only when a knowledge document states a
@@ -118,4 +128,8 @@ For an ordinary help request:
 - do not write files, cache discovery, repair manifests, or create a legacy
   installed-module cache beneath `_bmad`; and
 - from sibling skill folders, read only `module-manifest.toml` and the
-  document a module's `knowledge` names; never open a sibling `SKILL.md`.
+  documents that folder's `knowledge` names; never open a sibling `SKILL.md`.
+
+This skill's own `scripts/knowledge.py` is permitted here: it only reads those
+same files and writes nothing. It needs no `{project-root}/_bmad`, so a
+project without one is still an ordinary help request.
