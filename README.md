@@ -39,7 +39,7 @@ codex plugin marketplace add bmad-code-org/bmad-plugins
 ```
 
 For either marketplace, install `bmad-method` for the delivery workflows and
-`bmad-toolbox` for standalone skills, including the `bmad` hub.
+`bmad-core-tools` for standalone skills, including the `bmad` hub.
 
 Open your coding tool in the project and ask the `bmad` skill to run
 `bmad setup`. Then invoke `bmad-build` with what you want to change. Ask

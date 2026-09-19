@@ -22,7 +22,9 @@ description: 'Assess the impact of a significant change during sprint execution 
 
 Run: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow`
 
-**If the script fails**, resolve the `workflow` block yourself by reading these three files in base → team → user order and applying the same structural merge rules as the resolver:
+**If the script is not found**, BMad is not set up here. Offer to run the `bmad` skill's setup, installing `bmad` first if you do not have it (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run the command again.
+
+**If it fails for any other reason**, resolve the `workflow` block yourself by reading these three files in base → team → user order and applying the same structural merge rules as the resolver:
 
 1. `{skill-root}/customize.toml` — defaults
 2. `{project-root}/_bmad/custom/{skill-name}.toml` — team overrides

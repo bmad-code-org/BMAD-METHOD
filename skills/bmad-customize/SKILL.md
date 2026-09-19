@@ -13,7 +13,7 @@ When the target's `customize.toml` doesn't expose what the user wants, say so pl
 
 ## Preflight
 
-- No `{project-root}/_bmad/` → BMad isn't installed. Say so, stop.
+- No `{project-root}/_bmad/` → BMad is not set up here. Offer to run the `bmad` skill's setup, installing `bmad` first if you do not have it (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`). Stop if the user declines.
 - `{project-root}/_bmad/scripts/resolve_customization.py` missing → continue, but Step 6 verify falls back to manual merge.
 - Both present → proceed.
 

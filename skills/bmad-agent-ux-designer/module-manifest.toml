@@ -1,4 +1,10 @@
 module = "method"
 version = "6.13.0-next"
 update_source = "github:bmad-code-org/BMAD-METHOD/skills"
-knowledge = "`references/help.md` in the `bmad` skill"
+knowledge = ["bmad-meta/method-help.md", "bmad-meta/agents-help.md"]
+
+[requires]
+bmad = { version = "6.13.0" }
+
+[recommends]
+bmad-ux = { version = "6.13.0" }

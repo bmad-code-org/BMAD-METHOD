@@ -10,12 +10,19 @@ tools/release.md to stamp releases and the next placeholder on `dev`.
 The Claude and Codex plugins are built from the stamped manifests by
 bmad-code-org/bmad-plugins.
 
-Before writing anything it validates every manifest's exact schema: exactly
-the keys module, version, update_source, and knowledge; module is a known
-module, and update_source and knowledge each carry their one known value.
-The `version = "..."` line is rewritten
-textually, so manifests of the same module stay byte-identical (setup.py's
-module discovery compares raw manifest bytes).
+Before writing anything it validates every manifest: the runtime parser in
+skills/bmad/scripts/setup.py must accept it, the keys module, version,
+update_source and knowledge are present, module is a known module,
+update_source carries its one known value, and every knowledge entry names a
+plain file the skill ships. The fields setup.py's module_identity names belong
+to the module and must agree across it; everything else belongs to the skill. A
+document named by several skills must be byte-identical in each of them.
+
+A manifest may carry keys this script does not know. The runtime ignores them,
+so a release must not refuse them; they are left exactly as written.
+
+The top-level `version = "..."` line is rewritten textually, so nothing else
+in a manifest moves.
 
 Nothing is written unless every file passes validation first. After writing,
 the script re-reads every file and fails naming the offending path if
@@ -28,21 +35,37 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import re
 import sys
 import tomllib
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 sys.dont_write_bytecode = True
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
+
+def load_setup():
+    """The runtime parser, so the stamper can never accept a manifest it rejects."""
+    path = PROJECT_ROOT / "skills" / "bmad" / "scripts" / "setup.py"
+    spec = importlib.util.spec_from_file_location("bmad_setup_for_stamp", path)
+    if spec is None or spec.loader is None:
+        raise StampError(f"cannot load the runtime manifest parser at {path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 MANIFEST_NAME = "module-manifest.toml"
 
-MODULES = frozenset({"method", "toolbox"})
+MODULES = frozenset({"method", "core-tools"})
 UPDATE_SOURCE = "github:bmad-code-org/BMAD-METHOD/skills"
-KNOWLEDGE = "`references/help.md` in the `bmad` skill"
 MANIFEST_KEYS = frozenset({"module", "version", "update_source", "knowledge"})
+REQUIREMENT_KEYS = frozenset({"version"})
+OPTIONAL_REQUIREMENT_KEYS = frozenset({"source"})
+# Mirrors UPDATE_SOURCE_PREFIXES in skills/bmad/scripts/setup.py.
+SOURCE_PREFIXES = ("github:", "https://", "file:", "plugin:")
 
 VERSION_LINE = re.compile(r'^version\s*=\s*".*"\s*$')
 
@@ -67,6 +90,9 @@ class StampError(Exception):
     pass
 
 
+setup = load_setup()
+
+
 def validate_version(version: str) -> None:
     match = SEMVER.fullmatch(version)
     if match is None:
@@ -89,17 +115,62 @@ def validate_version(version: str) -> None:
         )
 
 
+def validate_manifest_requires(value: object, rel: str, modules: dict[str, str], table: str = "requires") -> None:
+    """Shape is the runtime parser's job; this adds only the release-time rules."""
+    if value is None:
+        return
+    for skill, entry in value.items():
+        minimum = entry["version"]
+        # setup.py drops build metadata when ordering, so "1.2.0+x" compares
+        # equal to "1.2.0" and such a requirement could never be met.
+        if "+" in minimum:
+            raise StampError(
+                f"{rel}: {table}.{skill}.version {minimum!r} carries build metadata, which setup.py ignores "
+                f"when ordering; it would compare equal to {minimum.split('+', 1)[0]!r}"
+            )
+        # An explicit source means the skill lives elsewhere; without one the
+        # requirement resolves against this repository, so a typo is catchable.
+        if entry.get("source") is None and skill not in modules:
+            raise StampError(
+                f"{rel}: {table}.{skill} names no skill in this repository and gives no source to fetch it from"
+            )
+
+
+def validate_manifest_knowledge(value: object, skill_dir: Path, rel: str) -> list[PurePosixPath]:
+    """Knowledge is a list of documents inside the skill that carries it."""
+    if not isinstance(value, list) or not value:
+        raise StampError(f"{rel}: knowledge must be a non-empty list of paths inside the skill")
+    seen: list[PurePosixPath] = []
+    for entry in value:
+        if not isinstance(entry, str) or not entry:
+            raise StampError(f"{rel}: knowledge has invalid value {entry!r}")
+        relative = setup.safe_skill_relative(entry)
+        if relative is None:
+            raise StampError(f"{rel}: knowledge has unsafe value {entry!r}")
+        if relative in seen:
+            raise StampError(f"{rel}: knowledge repeats {entry!r}")
+        seen.append(relative)
+        document = skill_dir / Path(*relative.parts)
+        if not document.is_file() or document.is_symlink():
+            raise StampError(f"{rel}: knowledge names {entry!r}, which the skill does not ship as a plain file")
+    return seen
+
+
 def read_manifest_module(path: Path, rel: str) -> str:
     """Validate a skill manifest's exact schema and return its module."""
     try:
-        data = tomllib.loads(path.read_text(encoding="utf-8"))
+        raw = path.read_bytes()
+        data = tomllib.loads(raw.decode("utf-8"))
     except (OSError, UnicodeError, tomllib.TOMLDecodeError) as error:
         raise StampError(f"{rel}: cannot read manifest: {error}") from error
-    if set(data) != MANIFEST_KEYS:
-        raise StampError(
-            f"{rel}: manifest keys must be exactly "
-            f"{', '.join(sorted(MANIFEST_KEYS))}; found {', '.join(sorted(data)) or 'none'}"
-        )
+    # Anything the runtime refuses to parse must never reach a release.
+    try:
+        setup.parse_packaged_manifest(path, raw)
+    except Exception as error:
+        raise StampError(f"{rel}: the runtime parser rejects this manifest: {error}") from error
+    missing = MANIFEST_KEYS - set(data)
+    if missing:
+        raise StampError(f"{rel}: manifest is missing {', '.join(sorted(missing))}")
     module = data["module"]
     if module not in MODULES:
         raise StampError(f"{rel}: unknown module {module!r} (expected one of {', '.join(sorted(MODULES))})")
@@ -107,8 +178,7 @@ def read_manifest_module(path: Path, rel: str) -> str:
         raise StampError(f"{rel}: version must be a string")
     if data["update_source"] != UPDATE_SOURCE:
         raise StampError(f"{rel}: update_source must be exactly {UPDATE_SOURCE!r}; found {data['update_source']!r}")
-    if data["knowledge"] != KNOWLEDGE:
-        raise StampError(f"{rel}: knowledge must be exactly {KNOWLEDGE!r}; found {data['knowledge']!r}")
+    validate_manifest_knowledge(data["knowledge"], path.parent, rel)
     return module
 
 
@@ -126,7 +196,66 @@ def collect_skills(project_root: Path) -> tuple[list[Path], dict[str, str]]:
             raise StampError(f"{skill_dir.relative_to(project_root).as_posix()}: missing {MANIFEST_NAME}")
         modules[skill_dir.name] = read_manifest_module(manifest, rel)
         manifests.append(manifest)
+    # Needs the full skill list, so it runs once every manifest has been read.
+    for manifest in manifests:
+        rel = manifest.relative_to(project_root).as_posix()
+        data = tomllib.loads(manifest.read_text(encoding="utf-8"))
+        validate_manifest_requires(data.get("requires"), rel, modules)
+        validate_manifest_requires(data.get("recommends"), rel, modules, "recommends")
+    check_module_fields_agree(project_root, manifests, modules)
+    check_knowledge_copies_agree(project_root, manifests)
     return manifests, modules
+
+
+def check_module_fields_agree(project_root: Path, manifests: list[Path], modules: dict[str, str]) -> None:
+    """Every module-level field must match across a module; knowledge, requires and recommends are per skill.
+
+    Mirrors module_identity in skills/bmad/scripts/setup.py, which decides the
+    same question at install time.
+    """
+    seen: dict[str, tuple[tuple[object, ...], str]] = {}
+    for manifest in manifests:
+        rel = manifest.relative_to(project_root).as_posix()
+        try:
+            fields = setup.module_identity(setup.parse_packaged_manifest(manifest, manifest.read_bytes()))
+        except (OSError, Exception) as error:
+            raise StampError(f"{rel}: cannot read manifest: {error}") from error
+        module = modules[manifest.parent.name]
+        first = seen.get(module)
+        if first is None:
+            seen[module] = (fields, rel)
+        elif first[0] != fields:
+            raise StampError(
+                f"{rel}: module fields must match every manifest in module {module!r}; differs from {first[1]}"
+            )
+
+
+def check_knowledge_copies_agree(project_root: Path, manifests: list[Path]) -> None:
+    """A document named by several skills is one document, so every copy must be identical."""
+    seen: dict[tuple[str, str], tuple[bytes, str]] = {}
+    for manifest in manifests:
+        skill_dir = manifest.parent
+        try:
+            data = tomllib.loads(manifest.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, tomllib.TOMLDecodeError) as error:
+            raise StampError(
+                f"{manifest.relative_to(project_root).as_posix()}: cannot read manifest: {error}"
+            ) from error
+        for relative in validate_manifest_knowledge(data["knowledge"], skill_dir, manifest.parent.name):
+            path = skill_dir / Path(*relative.parts)
+            rel = path.relative_to(project_root).as_posix()
+            try:
+                content = path.read_bytes()
+            except OSError as error:
+                raise StampError(f"{rel}: cannot read knowledge document: {error}") from error
+            # Keyed on the module too: two modules may ship the same filename
+            # with different content, and those are separate documents.
+            key = (data["module"], relative.as_posix())
+            first = seen.get(key)
+            if first is None:
+                seen[key] = (content, rel)
+            elif first[0] != content:
+                raise StampError(f"{rel}: knowledge document differs from {first[1]}; every copy must be identical")
 
 
 def stamped_manifest_content(path: Path, rel: str, version: str) -> str:
@@ -135,43 +264,42 @@ def stamped_manifest_content(path: Path, rel: str, version: str) -> str:
     except (OSError, UnicodeError) as error:
         raise StampError(f"{rel}: cannot read manifest: {error}") from error
     lines = original.splitlines(keepends=True)
-    matches = [index for index, line in enumerate(lines) if VERSION_LINE.match(line.rstrip("\n"))]
+    # Only the top level: a table further down may have a `version` of its own.
+    first_table = next((index for index, line in enumerate(lines) if line.lstrip().startswith("[")), len(lines))
+    matches = [index for index in range(first_table) if VERSION_LINE.match(lines[index].rstrip("\n"))]
     if len(matches) != 1:
-        raise StampError(f"{rel}: expected exactly one 'version = \"...\"' line, found {len(matches)}")
+        raise StampError(f"{rel}: expected exactly one top-level 'version = \"...\"' line, found {len(matches)}")
     lines[matches[0]] = f'version = "{version}"\n'
     return "".join(lines)
 
 
-def verify_stamp(root: Path, manifests: list[Path], modules: dict[str, str], version: str) -> None:
-    # Manifests: exact expected content, and byte-identical within each module
-    # (setup.py's module discovery compares raw manifest bytes).
-    reference_bytes: dict[str, bytes] = {}
+def verify_stamp(
+    root: Path,
+    manifests: list[Path],
+    modules: dict[str, str],
+    version: str,
+    before: dict[str, dict[str, object]],
+) -> None:
+    # Each manifest is what it was with only the version changed, and the
+    # skills of a module still agree on the fields setup.py's module_identity names.
+    reference_fields: dict[str, tuple[object, ...]] = {}
     reference_rel: dict[str, str] = {}
     for manifest in manifests:
         rel = manifest.relative_to(root).as_posix()
         module = modules[manifest.parent.name]
         try:
-            raw = manifest.read_bytes()
-            data = tomllib.loads(raw.decode("utf-8"))
+            data = tomllib.loads(manifest.read_bytes().decode("utf-8"))
         except (OSError, UnicodeError, tomllib.TOMLDecodeError) as error:
             raise StampError(f"{rel}: cannot read manifest after stamping: {error}") from error
-        expected = {
-            "module": module,
-            "version": version,
-            "update_source": UPDATE_SOURCE,
-            "knowledge": KNOWLEDGE,
-        }
-        if data != expected:
-            raise StampError(
-                f"{rel}: after stamping, manifest must be exactly "
-                f"module={module!r}, version={version!r}, "
-                f"update_source={UPDATE_SOURCE!r}, knowledge={KNOWLEDGE!r}"
-            )
-        if module not in reference_bytes:
-            reference_bytes[module] = raw
+        if data != {**before[rel], "version": version}:
+            raise StampError(f"{rel}: stamping changed something other than the version")
+        fields = setup.module_identity(setup.parse_packaged_manifest(manifest, manifest.read_bytes()))
+        if module not in reference_fields:
+            reference_fields[module] = fields
             reference_rel[module] = rel
-        elif raw != reference_bytes[module]:
-            raise StampError(f"{rel}: manifest is not byte-identical to {reference_rel[module]} after stamping")
+        elif fields != reference_fields[module]:
+            raise StampError(f"{rel}: module fields disagree with {reference_rel[module]} after stamping")
+    check_knowledge_copies_agree(root, manifests)
 
 
 def run(project_root: Path, version: str) -> int:
@@ -181,8 +309,10 @@ def run(project_root: Path, version: str) -> int:
 
         # Phase 1: compute every new file content; nothing is written if any file fails.
         planned: list[tuple[Path, str]] = []
+        before: dict[str, dict[str, object]] = {}
         for manifest in manifests:
             rel = manifest.relative_to(project_root).as_posix()
+            before[rel] = tomllib.loads(manifest.read_text(encoding="utf-8"))
             planned.append((manifest, stamped_manifest_content(manifest, rel, version)))
 
         # Phase 2: write, then verify from disk.
@@ -191,7 +321,7 @@ def run(project_root: Path, version: str) -> int:
                 path.write_text(content, encoding="utf-8")
             except OSError as error:
                 raise StampError(f"{path.relative_to(project_root).as_posix()}: cannot write: {error}") from error
-        verify_stamp(project_root, manifests, modules, version)
+        verify_stamp(project_root, manifests, modules, version, before)
     except StampError as error:
         print(f"Error: {error}", file=sys.stderr)
         return 1
