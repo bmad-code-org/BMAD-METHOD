@@ -2291,6 +2291,33 @@ class BmadUpdateDoctorTests(unittest.TestCase):
                 (entry["skill"], entry["requires"], entry["state"]), ("alpha-skill", "absent-skill", "missing")
             )
 
+    def test_doctor_ignores_manifest_keys_and_bmad_meta_files_it_does_not_know(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "bmad", "core", version="6.13.0")
+            write_module_skill(root, "alpha-plain", "alpha")
+            extended = write_module_skill(
+                root,
+                "alpha-skill",
+                "alpha",
+                extra_fields={
+                    "roster": ["bmad-meta/roster.toml"],
+                    "builder_note": "anything",
+                    "builder": {"version": "9.9.9", "nested": {"deep": "value"}},
+                },
+            )
+            write(extended / "bmad-meta" / "roster.toml", '[[members]]\ncode = "x"\n')
+            (extended / "bmad-meta" / "notes").mkdir()
+            (extended / "bmad-meta" / "notes" / "blob.bin").write_bytes(b"\x00\xff")
+            write(project / "_bmad" / "config.toml", "[core]\nkeep = true\n")
+
+            report = self.doctor_report(root, project, skill)
+            self.assertTrue(report["current"])
+            self.assertEqual(report["unmet_requirements"], [])
+
     def test_doctor_reports_a_missing_required_skill(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)

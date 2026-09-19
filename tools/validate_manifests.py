@@ -59,6 +59,15 @@ def main() -> int:
             if not document.is_file():
                 problems.append(f"{rel}: knowledge names {relative.as_posix()!r}, which the skill does not ship")
 
+    # The stamper's own rules (known module, canonical update_source, plain-file
+    # documents, well-formed requires and recommends), run here rather than
+    # restated so the two can never disagree.
+    stamper = load("bmad_stamper_validate", ROOT / "tools" / "stamp_release.py")
+    try:
+        stamper.collect_skills(ROOT)
+    except stamper.StampError as error:
+        problems.append(str(error))
+
     # Every skill of a module must be interchangeable, or `bmad setup` refuses
     # the install. This is the check that the branch itself must pass.
     try:

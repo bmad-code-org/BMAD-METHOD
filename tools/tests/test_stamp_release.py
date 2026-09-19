@@ -135,16 +135,16 @@ class StampReleaseTests(unittest.TestCase):
         self.assertIn("skills/bmad-build/module-manifest.toml", err)
         self.assertEqual(snapshot(self.root), before)
 
-    def test_manifest_extra_key_rejected(self):
+    def test_keys_the_stamper_does_not_know_are_accepted_and_left_alone(self):
         make_tree(self.root)
-        broken = self.root / "skills" / "bmad-build" / "module-manifest.toml"
-        write(broken, MANIFEST.format(module="method", version="6.11.0-next") + 'extra = "no"\n')
-        before = snapshot(self.root)
+        manifest = self.root / "skills" / "bmad-build" / "module-manifest.toml"
+        extra = 'roster = ["bmad-meta/roster.toml"]\n\n[builder]\nversion = "9.9.9"\nnote = "anything"\n'
+        write(manifest, MANIFEST.format(module="method", version="6.11.0-next") + extra)
         code, _, err = run_stamper(self.root, "1.2.0")
-        self.assertEqual(code, 1)
-        self.assertIn("manifest keys must be", err)
-        self.assertIn("skills/bmad-build", err)
-        self.assertEqual(snapshot(self.root), before)
+        self.assertEqual(code, 0, err)
+        stamped = manifest.read_text(encoding="utf-8")
+        self.assertIn('version = "1.2.0"\n', stamped)
+        self.assertTrue(stamped.endswith(extra))
 
     def test_requires_accepted_and_preserved(self):
         make_tree(self.root)

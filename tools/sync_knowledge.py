@@ -2,16 +2,17 @@
 # /// script
 # requires-python = ">=3.11"
 # ///
-"""Fan the knowledge documents out from bmad-meta/ into the skills that carry them.
+"""Fan the shared bmad-meta/ files out into the skills that carry them.
 
 A skill must be self-contained once installed, so every skill that names a
 document ships its own copy. Editing 22 copies by hand is how they drift, so
 bmad-meta/ at the repo root is the only copy anyone edits and this script
 writes the rest.
 
-Nothing here decides which skill gets which document: each manifest's
-`knowledge` list already says so, and a path in that list is where the copy
-lands inside the skill. A shared document a skill no longer names is deleted,
+Nothing here decides which skill gets which file: the manifest does. Any string
+anywhere in a manifest that is a path under bmad-meta/ names a file the skill
+carries, whatever key holds it, so a new kind of shared file needs no change
+here. A shared document a skill no longer names is deleted,
 so moving a skill between groups is one manifest edit and a sync.
 
 Only documents that exist in bmad-meta/ are managed. A skill may carry a
@@ -40,6 +41,36 @@ SKILLS = ROOT / "skills"
 CARRIED_DIR = "bmad-meta"
 
 
+def carried_paths(value: object, key: str | None = None) -> list[tuple[str | None, PurePosixPath]]:
+    """Every bmad-meta/ path a manifest mentions, with the top-level key that holds it."""
+    if isinstance(value, str):
+        relative = PurePosixPath(value)
+        inside = len(relative.parts) > 1 and relative.parts[0] == CARRIED_DIR and ".." not in relative.parts
+        return [(key, relative)] if inside else []
+    if isinstance(value, list):
+        return [found for item in value for found in carried_paths(item, key)]
+    if isinstance(value, dict):
+        return [found for name, item in value.items() for found in carried_paths(item, key or name)]
+    return []
+
+
+def roster_problems(party: dict) -> list[str]:
+    """A group naming a member nobody defines, or a member naming a skill this repo lacks, is a typo."""
+    problems: list[str] = []
+    members = party.get("members", [])
+    codes = [member.get("code") for member in members]
+    problems += [f"member code {code!r} is defined twice" for code in sorted({c for c in codes if codes.count(c) > 1})]
+    for member in members:
+        skill = member.get("skill")
+        if skill is not None and not (SKILLS / skill / "SKILL.md").is_file():
+            problems.append(f"member {member.get('code')!r} names skill {skill!r}, which this repository does not ship")
+    for group in party.get("groups", []):
+        for code in group.get("members", []):
+            if code not in codes:
+                problems.append(f"group {group.get('id')!r} lists {code!r}, which no member defines")
+    return problems
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Sync knowledge documents from bmad-meta/ into the skills.")
     parser.add_argument("--write", action="store_true", help="write the copies instead of reporting drift")
@@ -53,26 +84,30 @@ def main(argv: list[str] | None = None) -> int:
     orphans: list[str] = []
     written = 0
     shared = {path.relative_to(SOURCE) for path in SOURCE.rglob("*") if path.is_file()}
+    checked: set[Path] = set()
 
     for folder in sorted(path for path in SKILLS.iterdir() if path.is_dir()):
         manifest = folder / "module-manifest.toml"
         if not manifest.is_file():
             continue
-        declared = tomllib.loads(manifest.read_text(encoding="utf-8")).get("knowledge")
-        if not isinstance(declared, list):
-            continue
-
-        wanted: set[Path] = set()
-        for entry in declared:
-            if not isinstance(entry, str):
-                continue
-            relative = PurePosixPath(entry)
-            inside = Path(*relative.parts[1:]) if relative.parts[0] == CARRIED_DIR else Path(relative.name)
-            # A document with no copy in bmad-meta/ belongs to this skill alone.
+        data = tomllib.loads(manifest.read_text(encoding="utf-8"))
+        copies: list[tuple[Path, Path]] = []
+        for key, relative in carried_paths(data):
+            inside = Path(*relative.parts[1:])
+            # A file with no copy in bmad-meta/ belongs to this skill alone.
             if inside not in shared:
                 continue
-            source = SOURCE / inside
-            target = folder.joinpath(*relative.parts)
+            copies.append((SOURCE / inside, folder.joinpath(*relative.parts)))
+            if key == "roster" and inside not in checked:
+                checked.add(inside)
+                problems = roster_problems(tomllib.loads((SOURCE / inside).read_text(encoding="utf-8")))
+                if problems:
+                    for problem in problems:
+                        print(f"bmad-meta/{inside.as_posix()}: {problem}", file=sys.stderr)
+                    return 1
+
+        wanted: set[Path] = set()
+        for source, target in copies:
             wanted.add(target)
             if target.is_file() and target.read_bytes() == source.read_bytes():
                 continue

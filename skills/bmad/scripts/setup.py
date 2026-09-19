@@ -540,6 +540,11 @@ def read_copy_scripts(
 
 
 def parse_packaged_manifest(path: Path, raw: bytes) -> ParsedManifest:
+    """Read the fields BMad uses and ignore every other key.
+
+    A module builder may add keys of their own, and a newer manifest may carry
+    keys this version predates. Neither may stop a skill from installing.
+    """
     try:
         source = raw.decode("utf-8")
     except UnicodeError as error:
