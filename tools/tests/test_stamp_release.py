@@ -138,13 +138,25 @@ class StampReleaseTests(unittest.TestCase):
     def test_keys_the_stamper_does_not_know_are_accepted_and_left_alone(self):
         make_tree(self.root)
         manifest = self.root / "skills" / "bmad-build" / "module-manifest.toml"
-        extra = 'roster = ["bmad-meta/roster.toml"]\n\n[builder]\nversion = "9.9.9"\nnote = "anything"\n'
+        extra = 'future_field = ["bmad-meta/anything.toml"]\n\n[builder]\nversion = "9.9.9"\nnote = "anything"\n'
         write(manifest, MANIFEST.format(module="method", version="6.11.0-next") + extra)
         code, _, err = run_stamper(self.root, "1.2.0")
         self.assertEqual(code, 0, err)
         stamped = manifest.read_text(encoding="utf-8")
         self.assertIn('version = "1.2.0"\n', stamped)
         self.assertTrue(stamped.endswith(extra))
+
+    def test_roster_naming_a_file_the_skill_does_not_ship_is_rejected(self):
+        make_tree(self.root)
+        write(
+            self.root / "skills" / "bmad-build" / "module-manifest.toml",
+            MANIFEST.format(module="method", version="6.11.0-next") + 'roster = ["bmad-meta/roster.toml"]\n',
+        )
+        before = snapshot(self.root)
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 1)
+        self.assertIn("roster names 'bmad-meta/roster.toml'", err)
+        self.assertEqual(snapshot(self.root), before)
 
     def test_requires_accepted_and_preserved(self):
         make_tree(self.root)

@@ -13,8 +13,8 @@ bmad-code-org/bmad-plugins.
 Before writing anything it validates every manifest: the runtime parser in
 skills/bmad/scripts/setup.py must accept it, the keys module, version,
 update_source and knowledge are present, module is a known module,
-update_source carries its one known value, and every knowledge entry names a
-plain file the skill ships. The fields setup.py's module_identity names belong
+update_source carries its one known value, and every knowledge and roster
+entry names a plain file the skill ships. The fields setup.py's module_identity names belong
 to the module and must agree across it; everything else belongs to the skill. A
 document named by several skills must be byte-identical in each of them.
 
@@ -136,23 +136,25 @@ def validate_manifest_requires(value: object, rel: str, modules: dict[str, str],
             )
 
 
-def validate_manifest_knowledge(value: object, skill_dir: Path, rel: str) -> list[PurePosixPath]:
-    """Knowledge is a list of documents inside the skill that carries it."""
+def validate_manifest_knowledge(
+    value: object, skill_dir: Path, rel: str, key: str = "knowledge"
+) -> list[PurePosixPath]:
+    """Knowledge and roster are lists of files inside the skill that carries them."""
     if not isinstance(value, list) or not value:
-        raise StampError(f"{rel}: knowledge must be a non-empty list of paths inside the skill")
+        raise StampError(f"{rel}: {key} must be a non-empty list of paths inside the skill")
     seen: list[PurePosixPath] = []
     for entry in value:
         if not isinstance(entry, str) or not entry:
-            raise StampError(f"{rel}: knowledge has invalid value {entry!r}")
+            raise StampError(f"{rel}: {key} has invalid value {entry!r}")
         relative = setup.safe_skill_relative(entry)
         if relative is None:
-            raise StampError(f"{rel}: knowledge has unsafe value {entry!r}")
+            raise StampError(f"{rel}: {key} has unsafe value {entry!r}")
         if relative in seen:
-            raise StampError(f"{rel}: knowledge repeats {entry!r}")
+            raise StampError(f"{rel}: {key} repeats {entry!r}")
         seen.append(relative)
         document = skill_dir / Path(*relative.parts)
         if not document.is_file() or document.is_symlink():
-            raise StampError(f"{rel}: knowledge names {entry!r}, which the skill does not ship as a plain file")
+            raise StampError(f"{rel}: {key} names {entry!r}, which the skill does not ship as a plain file")
     return seen
 
 
@@ -179,6 +181,8 @@ def read_manifest_module(path: Path, rel: str) -> str:
     if data["update_source"] != UPDATE_SOURCE:
         raise StampError(f"{rel}: update_source must be exactly {UPDATE_SOURCE!r}; found {data['update_source']!r}")
     validate_manifest_knowledge(data["knowledge"], path.parent, rel)
+    if "roster" in data:
+        validate_manifest_knowledge(data["roster"], path.parent, rel, "roster")
     return module
 
 
@@ -241,13 +245,16 @@ def check_knowledge_copies_agree(project_root: Path, manifests: list[Path]) -> N
             raise StampError(
                 f"{manifest.relative_to(project_root).as_posix()}: cannot read manifest: {error}"
             ) from error
-        for relative in validate_manifest_knowledge(data["knowledge"], skill_dir, manifest.parent.name):
+        carried = validate_manifest_knowledge(data["knowledge"], skill_dir, manifest.parent.name)
+        if "roster" in data:
+            carried += validate_manifest_knowledge(data["roster"], skill_dir, manifest.parent.name, "roster")
+        for relative in carried:
             path = skill_dir / Path(*relative.parts)
             rel = path.relative_to(project_root).as_posix()
             try:
                 content = path.read_bytes()
             except OSError as error:
-                raise StampError(f"{rel}: cannot read knowledge document: {error}") from error
+                raise StampError(f"{rel}: cannot read {relative.as_posix()}: {error}") from error
             # Keyed on the module too: two modules may ship the same filename
             # with different content, and those are separate documents.
             key = (data["module"], relative.as_posix())
@@ -255,7 +262,7 @@ def check_knowledge_copies_agree(project_root: Path, manifests: list[Path]) -> N
             if first is None:
                 seen[key] = (content, rel)
             elif first[0] != content:
-                raise StampError(f"{rel}: knowledge document differs from {first[1]}; every copy must be identical")
+                raise StampError(f"{rel}: differs from {first[1]}; every copy must be identical")
 
 
 def stamped_manifest_content(path: Path, rel: str, version: str) -> str:
