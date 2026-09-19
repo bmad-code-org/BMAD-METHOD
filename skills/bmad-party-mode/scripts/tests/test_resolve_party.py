@@ -177,6 +177,30 @@ class TestRoster(unittest.TestCase):
         self.assertEqual([m["name"] for m in detail["members"]], ["Mary", "Pip", "Amelia"])
         self.assertEqual(detail["unresolved"], [])
 
+    def test_a_short_alias_two_codes_claim_resolves_to_neither(self):
+        agents = {"bmad-agent-dev": {"name": "Amelia"}, "bmad-cis-agent-dev": {"name": "Devi"}}
+        col, idx, _ = rp.build_collective(agents, [])
+        members, unresolved = rp.resolve_members(["dev", "bmad-cis-agent-dev", "amelia"], col, idx)
+        self.assertEqual([m["name"] for m in members], ["Devi", "Amelia"])
+        self.assertEqual(unresolved, ["dev"])
+
+    def test_what_the_roster_could_not_use_is_passed_on(self):
+        report = {
+            "agents": {},
+            "problems": [{"kind": "member", "problem": "demo: member 'x' is already defined by other"}],
+            "rosters": [{"module": "demo", "path": "bmad-meta/r.toml", "drift": ["demo-two"]}],
+        }
+        original = rp._run_json
+        rp._run_json = lambda cmd: report
+        try:
+            problems = rp.load_roster(Path("project"), Path("skill"))[4]
+        finally:
+            rp._run_json = original
+        self.assertEqual(
+            problems,
+            ["demo: member 'x' is already defined by other", "demo bmad-meta/r.toml: copies disagree in demo-two"],
+        )
+
     def test_a_custom_group_replaces_a_roster_group_with_its_id(self):
         groups = rp.merge_groups(
             [{"id": "room", "name": "Shipped"}, {"id": "other", "name": "Other"}], [{"id": "room", "name": "Mine"}]

@@ -60,10 +60,11 @@ def _run_json(cmd):
 
 
 def load_roster(project_root: Path, skill_root: Path):
-    """(agents, guests, groups, resolved) from the skills installed beside this one.
+    """(agents, guests, groups, resolved, problems) from the skills installed beside this one.
 
     agents are {code: entry} for the default room; guests are roster members
-    that are not installed agents, available to groups only.
+    that are not installed agents, available to groups only. problems are what
+    roster.py could not use, so a missing agent or room is explained.
     """
     scripts = project_root / "_bmad" / "scripts"
     data = _run_json(
@@ -72,13 +73,19 @@ def load_roster(project_root: Path, skill_root: Path):
     if data is not None:
         agents = data.get("agents", {}) or {}
         guests = {code: m for code, m in (data.get("members", {}) or {}).items() if code not in agents}
-        return agents, guests, data.get("groups", []) or [], True
+        problems = [p.get("problem", "") for p in data.get("problems", []) or [] if isinstance(p, dict)]
+        for found in data.get("rosters", []) or []:
+            if found.get("drift"):
+                problems.append(
+                    f"{found.get('module')} {found.get('path')}: copies disagree in {', '.join(found['drift'])}"
+                )
+        return agents, guests, data.get("groups", []) or [], True, [p for p in problems if p]
     data = _run_json(
         [sys.executable, str(scripts / "resolve_config.py"), "--project-root", str(project_root), "--key", "agents"]
     )
     if data is None:
-        return {}, {}, [], False
-    return data.get("agents", {}) or {}, {}, [], True
+        return {}, {}, [], False, []
+    return data.get("agents", {}) or {}, {}, [], True, []
 
 
 def merge_groups(roster_groups: list, custom_groups: list) -> list:
@@ -149,12 +156,21 @@ def build_collective(agents: dict, party_members: list, guests: dict | None = No
     collective = {}
     index = {}
     installed_codes = []
+    alias_owner = {}
 
     def register(code, entry):
         collective[code] = entry
         index[code] = code
         index[code.lower()] = code
-        index[_alias(code).lower()] = code
+        # A short alias two codes claim resolves to neither; the full code still works.
+        alias = _alias(code).lower()
+        owner = alias_owner.setdefault(alias, code)
+        if owner == code:
+            index.setdefault(alias, code)
+        elif owner is not None:
+            alias_owner[alias] = None
+            if index.get(alias) == owner and alias != owner.lower():
+                del index[alias]
         name = entry.get("name")
         if name:
             index[name.lower()] = code
@@ -286,7 +302,7 @@ def main():
     skill_root = Path(args.skill).resolve()
 
     workflow = load_workflow(project_root, skill_root)
-    agents, guests, roster_groups, agents_ok = load_roster(project_root, skill_root)
+    agents, guests, roster_groups, agents_ok, roster_problems = load_roster(project_root, skill_root)
     groups = merge_groups(roster_groups, workflow.get("party_groups", []) or [])
     default_party = workflow.get("default_party", "") or ""
     party_mode = workflow.get("party_mode", "session") or "session"
@@ -311,11 +327,16 @@ def main():
         if g is None:
             _emit({"error": "unknown_group", "requested": args.party, "available": group_menu(groups)})
             return
-        _emit({**group_detail(g, collective, index), "party_mode": party_mode})
+        detail = {**group_detail(g, collective, index), "party_mode": party_mode}
+        if roster_problems:
+            detail["roster_problems"] = roster_problems
+        _emit(detail)
         return
 
     # Default: the active roster to load on entry.
     result = {"party_mode": party_mode, "groups": group_menu(groups), "installed_agents_resolved": agents_ok}
+    if roster_problems:
+        result["roster_problems"] = roster_problems
     g = find_group(groups, default_party) if default_party else None
     if g is not None:
         result.update(group_detail(g, collective, index))

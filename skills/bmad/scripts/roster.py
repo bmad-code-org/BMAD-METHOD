@@ -101,7 +101,7 @@ def collect(roots: list[Path], project_root: Path | None = None) -> dict[str, ob
             add_group(groups, problems, group, module, path)
 
     agents = {code: member for code, member in members.items() if member.get("installed")}
-    apply_central_agents(agents, problems, project_root)
+    apply_central_agents(agents, members, problems, project_root)
 
     return {
         "agents": agents,
@@ -225,12 +225,17 @@ def add_group(
 
 
 def apply_central_agents(
-    agents: dict[str, dict[str, object]], problems: list[dict[str, str]], project_root: Path | None
+    agents: dict[str, dict[str, object]],
+    members: dict[str, dict[str, object]],
+    problems: list[dict[str, str]],
+    project_root: Path | None,
 ) -> None:
     """Lay the central config's [agents.<code>] tables over the scan.
 
     This is how a user adds an agent of their own or overrides one, and how an
-    install made before rosters existed keeps the agents it recorded.
+    install made before rosters existed keeps the agents it recorded. An entry
+    for a roster agent whose skill is gone is skipped: the old installer
+    recorded it and nothing removed it when the skill went.
     """
     if project_root is None or not (project_root / "_bmad").is_dir():
         return
@@ -242,7 +247,7 @@ def apply_central_agents(
     if not isinstance(configured, dict):
         return
     for code, info in configured.items():
-        if not isinstance(info, dict):
+        if not isinstance(info, dict) or members.get(code, {}).get("installed") is False:
             continue
         entry = agents.setdefault(code, {"code": code, "source": "config"})
         for field, value in info.items():

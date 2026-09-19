@@ -98,7 +98,9 @@ class RosterTests(unittest.TestCase):
         write_skill(self.skills, "other-one", module="other")
         report = roster.collect([self.skills])
         self.assertEqual(report["members"]["guest"]["module"], "demo")
-        self.assertEqual(sorted(problem["kind"] for problem in report["problems"]), ["group", "member", "member", "member"])
+        self.assertEqual(
+            sorted(problem["kind"] for problem in report["problems"]), ["group", "member", "member", "member"]
+        )
 
     def test_central_config_agents_are_laid_over_the_scan(self):
         write_skill(self.skills, "demo-workflow")
@@ -108,6 +110,16 @@ class RosterTests(unittest.TestCase):
         )
         agent = roster.collect([self.skills], self.project)["agents"]["my-agent"]
         self.assertEqual((agent["name"], agent["persona"], agent["source"]), ("Mine", "From before rosters.", "config"))
+
+    def test_a_recorded_agent_whose_skill_was_removed_stays_out_of_the_default_room(self):
+        write_skill(self.skills, "demo-agent-ann")
+        (self.project / "_bmad").mkdir()
+        (self.project / "_bmad" / "config.toml").write_text(
+            '[agents.demo-agent-ann]\ntitle = "Lead"\n\n[agents.demo-agent-bob]\nname = "Bob"\n', encoding="utf-8"
+        )
+        agents = roster.collect([self.skills], self.project)["agents"]
+        self.assertEqual(sorted(agents), ["demo-agent-ann"])
+        self.assertEqual(agents["demo-agent-ann"]["title"], "Lead")
 
     def test_a_roster_path_outside_the_skill_is_refused(self):
         folder = write_skill(self.skills, "demo-one", roster_text=None)
