@@ -1744,12 +1744,9 @@ def replace_dir(src: Path, dest: Path) -> None:
     if not dest.exists():
         src.rename(dest)
         return
-    backup = Path(tempfile.mkdtemp(prefix="_bmad.old-", dir=dest.parent))
-    try:
-        dest.rename(backup)
-    except Exception:
-        shutil.rmtree(backup, ignore_errors=True)
-        raise
+    # Not mkdtemp: Windows refuses a rename onto an existing directory.
+    backup = dest.with_name(f"_bmad.old-{datetime.datetime.now():%Y%m%d-%H%M%S}")
+    dest.rename(backup)
     try:
         src.rename(dest)
     except Exception:
