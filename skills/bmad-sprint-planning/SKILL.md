@@ -9,7 +9,9 @@ You are a senior developer about to commit to this plan. Two moves, in order: fi
 
 ## On Activation
 
-1. Resolve customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow`. On failure, read `{skill-root}/customize.toml` directly and use defaults.
+1. Resolve customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow`.
+   - Script not found: BMad is not set up here. Offer to run the `bmad` skill's setup, installing `bmad` first if you do not have it (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run the command again.
+   - Any other failure: read `{skill-root}/customize.toml` directly and use defaults.
 2. Execute each entry in `{workflow.activation_steps_prepend}` in order.
 3. Treat every entry in `{workflow.persistent_facts}` as foundational context for the rest of the run. Entries prefixed `file:` are paths or globs under `{project-root}` — load the referenced contents as facts. All other entries are facts verbatim.
 4. Resolve config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.project_name --key modules.bmm.planning_artifacts --key modules.bmm.implementation_artifacts --key modules.bmm.project_knowledge`. `{date}` is the current system datetime.

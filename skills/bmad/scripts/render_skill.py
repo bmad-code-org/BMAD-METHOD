@@ -613,6 +613,16 @@ def render(
     return destination / "workflow.md"
 
 
+def report_owed_setup(skill_dir: Path, project_root: Path) -> None:
+    # Runs before rendering so the note lands ahead of the instruction to follow,
+    # and still shows when rendering halts. It must never fail the render.
+    try:
+        import setup_check
+    except Exception:
+        return
+    setup_check.report(skill_dir, project_root)
+
+
 def main() -> int:
     parser = _ArgumentParser(description=__doc__)
     parser.add_argument("--project-root", required=True)
@@ -624,6 +634,7 @@ def main() -> int:
         reconfigure(encoding="utf-8")
     try:
         args = parser.parse_args()
+        report_owed_setup(Path(args.skill).resolve(), Path(args.project_root).resolve())
         entry = render(
             Path(args.project_root), Path(args.skill), overrides=args.overrides, assignments=args.assignments
         )

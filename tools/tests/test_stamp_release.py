@@ -15,11 +15,11 @@ MANIFEST = (
     'module = "{module}"\n'
     'version = "{version}"\n'
     'update_source = "github:bmad-code-org/BMAD-METHOD/skills"\n'
-    'knowledge = "`references/help.md` in the `bmad` skill"\n'
+    'knowledge = ["references/help.md"]\n'
 )
 
 METHOD_SKILLS = ("bmad", "bmad-build", "bmad-spec")
-TOOLBOX_SKILLS = ("bmad-flow",)
+CORE_TOOLS_SKILLS = ("bmad-flow",)
 
 
 def load_module(name: str, path: Path):
@@ -46,11 +46,13 @@ def make_tree(root: Path, version: str = "6.11.0-next") -> None:
             root / "skills" / skill / "module-manifest.toml",
             MANIFEST.format(module="method", version=version),
         )
-    for skill in TOOLBOX_SKILLS:
+    for skill in CORE_TOOLS_SKILLS:
         write(
             root / "skills" / skill / "module-manifest.toml",
-            MANIFEST.format(module="toolbox", version=version),
+            MANIFEST.format(module="core-tools", version=version),
         )
+    for skill in (*METHOD_SKILLS, *CORE_TOOLS_SKILLS):
+        write(root / "skills" / skill / "references" / "help.md", "# help\n")
 
 
 def snapshot(root: Path) -> dict[str, bytes]:
@@ -77,9 +79,9 @@ class StampReleaseTests(unittest.TestCase):
         method = {(self.root / "skills" / s / "module-manifest.toml").read_bytes() for s in METHOD_SKILLS}
         self.assertEqual(len(method), 1)  # byte-identical within the module
         self.assertIn(b'version = "1.2.0"\n', method.pop())
-        toolbox = (self.root / "skills" / "bmad-flow" / "module-manifest.toml").read_text(encoding="utf-8")
-        self.assertIn('module = "toolbox"', toolbox)
-        self.assertIn('version = "1.2.0"', toolbox)
+        core_tools = (self.root / "skills" / "bmad-flow" / "module-manifest.toml").read_text(encoding="utf-8")
+        self.assertIn('module = "core-tools"', core_tools)
+        self.assertIn('version = "1.2.0"', core_tools)
         self.assertIn("Stamped version 1.2.0 into 4 files", out)
         self.assertIn("skills/bmad/module-manifest.toml", out)
         self.assertIn("skills/bmad-flow/module-manifest.toml", out)
@@ -125,7 +127,7 @@ class StampReleaseTests(unittest.TestCase):
             broken,
             'module = "method"\n'
             'update_source = "github:bmad-code-org/BMAD-METHOD/skills"\n'
-            'knowledge = "`references/help.md` in the `bmad` skill"\n',
+            'knowledge = ["references/help.md"]\n',
         )
         before = snapshot(self.root)
         code, _, err = run_stamper(self.root, "1.2.0")
@@ -133,15 +135,126 @@ class StampReleaseTests(unittest.TestCase):
         self.assertIn("skills/bmad-build/module-manifest.toml", err)
         self.assertEqual(snapshot(self.root), before)
 
-    def test_manifest_extra_key_rejected(self):
+    def test_keys_the_stamper_does_not_know_are_accepted_and_left_alone(self):
         make_tree(self.root)
-        broken = self.root / "skills" / "bmad-build" / "module-manifest.toml"
-        write(broken, MANIFEST.format(module="method", version="6.11.0-next") + 'extra = "no"\n')
+        manifest = self.root / "skills" / "bmad-build" / "module-manifest.toml"
+        extra = 'future_field = ["bmad-meta/anything.toml"]\n\n[builder]\nversion = "9.9.9"\nnote = "anything"\n'
+        write(manifest, MANIFEST.format(module="method", version="6.11.0-next") + extra)
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 0, err)
+        stamped = manifest.read_text(encoding="utf-8")
+        self.assertIn('version = "1.2.0"\n', stamped)
+        self.assertTrue(stamped.endswith(extra))
+
+    def test_roster_naming_a_file_the_skill_does_not_ship_is_rejected(self):
+        make_tree(self.root)
+        write(
+            self.root / "skills" / "bmad-build" / "module-manifest.toml",
+            MANIFEST.format(module="method", version="6.11.0-next") + 'roster = ["bmad-meta/roster.toml"]\n',
+        )
         before = snapshot(self.root)
         code, _, err = run_stamper(self.root, "1.2.0")
         self.assertEqual(code, 1)
-        self.assertIn("keys must be exactly", err)
-        self.assertIn("skills/bmad-build", err)
+        self.assertIn("roster names 'bmad-meta/roster.toml'", err)
+        self.assertEqual(snapshot(self.root), before)
+
+    def test_requires_accepted_and_preserved(self):
+        make_tree(self.root)
+        for skill in METHOD_SKILLS:
+            write(
+                self.root / "skills" / skill / "module-manifest.toml",
+                MANIFEST.format(module="method", version="6.11.0-next")
+                + 'requires = { bmad = { version = "6.13.0" } }\n',
+            )
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 0, err)
+        stamped = (self.root / "skills" / "bmad-build" / "module-manifest.toml").read_text(encoding="utf-8")
+        self.assertIn('requires = { bmad = { version = "6.13.0" } }', stamped)
+        self.assertIn('version = "1.2.0"', stamped)
+
+    def test_requires_is_per_skill_and_need_not_match_across_a_module(self):
+        make_tree(self.root)
+        write(
+            self.root / "skills" / "bmad-build" / "module-manifest.toml",
+            MANIFEST.format(module="method", version="6.11.0-next") + 'requires = { bmad = { version = "6.13.0" } }\n',
+        )
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 0, err)
+        build = (self.root / "skills" / "bmad-build" / "module-manifest.toml").read_text(encoding="utf-8")
+        spec = (self.root / "skills" / "bmad-spec" / "module-manifest.toml").read_text(encoding="utf-8")
+        self.assertIn('requires = { bmad = { version = "6.13.0" } }', build)
+        self.assertNotIn("requires", spec)
+
+    def test_recommends_accepted_and_preserved(self):
+        make_tree(self.root)
+        write(
+            self.root / "skills" / "bmad-build" / "module-manifest.toml",
+            MANIFEST.format(module="method", version="6.11.0-next")
+            + 'recommends = { bmad-spec = { version = "6.13.0" } }\n',
+        )
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 0, err)
+        stamped = (self.root / "skills" / "bmad-build" / "module-manifest.toml").read_text(encoding="utf-8")
+        self.assertIn('recommends = { bmad-spec = { version = "6.13.0" } }', stamped)
+
+    def test_recommends_naming_an_unshipped_skill_without_a_source_is_rejected(self):
+        make_tree(self.root)
+        write(
+            self.root / "skills" / "bmad-build" / "module-manifest.toml",
+            MANIFEST.format(module="method", version="6.11.0-next")
+            + 'recommends = { bmad-typo = { version = "6.13.0" } }\n',
+        )
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 1)
+        self.assertIn("recommends.bmad-typo names no skill in this repository", err)
+
+    def test_requires_naming_an_unshipped_skill_without_a_source_is_rejected(self):
+        make_tree(self.root)
+        write(
+            self.root / "skills" / "bmad-build" / "module-manifest.toml",
+            MANIFEST.format(module="method", version="6.11.0-next")
+            + 'requires = { bmad-typo = { version = "6.13.0" } }\n',
+        )
+        before = snapshot(self.root)
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 1)
+        self.assertIn("names no skill in this repository", err)
+        self.assertEqual(snapshot(self.root), before)
+
+    def test_requires_naming_another_repository_with_a_source_is_accepted(self):
+        make_tree(self.root)
+        write(
+            self.root / "skills" / "bmad-build" / "module-manifest.toml",
+            MANIFEST.format(module="method", version="6.11.0-next")
+            + 'requires = { elsewhere = { version = "1.0.0", source = "github:o/r/skills" } }\n',
+        )
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 0, err)
+
+    def test_requires_build_metadata_rejected(self):
+        make_tree(self.root)
+        write(
+            self.root / "skills" / "bmad-build" / "module-manifest.toml",
+            MANIFEST.format(module="method", version="6.11.0-next")
+            + 'requires = { bmad = { version = "6.13.0+x" } }\n',
+        )
+        before = snapshot(self.root)
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 1)
+        self.assertIn("build metadata", err)
+        self.assertEqual(snapshot(self.root), before)
+
+    def test_requires_unorderable_version_rejected(self):
+        make_tree(self.root)
+        broken = self.root / "skills" / "bmad-build" / "module-manifest.toml"
+        write(
+            broken,
+            MANIFEST.format(module="method", version="6.11.0-next") + 'requires = { bmad = { version = "6.13" } }\n',
+        )
+        before = snapshot(self.root)
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 1)
+        self.assertIn("requires.bmad.version", err)
         self.assertEqual(snapshot(self.root), before)
 
     def test_unknown_module_rejected(self):
@@ -162,7 +275,7 @@ class StampReleaseTests(unittest.TestCase):
             'module = "method"\n'
             'version = "6.11.0-next"\n'
             'update_source = "github:o/r/skills"\n'
-            'knowledge = "`references/help.md` in the `bmad` skill"\n',
+            'knowledge = ["references/help.md"]\n',
         )
         before = snapshot(self.root)
         code, _, err = run_stamper(self.root, "1.2.0")
@@ -170,7 +283,7 @@ class StampReleaseTests(unittest.TestCase):
         self.assertIn("update_source must be exactly", err)
         self.assertEqual(snapshot(self.root), before)
 
-    def test_wrong_knowledge_rejected(self):
+    def test_knowledge_string_rejected(self):
         make_tree(self.root)
         broken = self.root / "skills" / "bmad-spec" / "module-manifest.toml"
         write(
@@ -178,13 +291,70 @@ class StampReleaseTests(unittest.TestCase):
             'module = "method"\n'
             'version = "6.11.0-next"\n'
             'update_source = "github:bmad-code-org/BMAD-METHOD/skills"\n'
-            'knowledge = "elsewhere.md"\n',
+            'knowledge = "references/help.md"\n',
         )
         before = snapshot(self.root)
         code, _, err = run_stamper(self.root, "1.2.0")
         self.assertEqual(code, 1)
-        self.assertIn("knowledge must be exactly", err)
+        self.assertIn("knowledge must be a non-empty list", err)
         self.assertEqual(snapshot(self.root), before)
+
+    def test_knowledge_url_rejected(self):
+        make_tree(self.root)
+        broken = self.root / "skills" / "bmad-spec" / "module-manifest.toml"
+        write(
+            broken,
+            'module = "method"\n'
+            'version = "6.11.0-next"\n'
+            'update_source = "github:bmad-code-org/BMAD-METHOD/skills"\n'
+            'knowledge = ["https://docs.example.com/help.md"]\n',
+        )
+        before = snapshot(self.root)
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 1)
+        self.assertIn("unsafe value", err)
+        self.assertEqual(snapshot(self.root), before)
+
+    def test_knowledge_naming_an_unshipped_file_rejected(self):
+        make_tree(self.root)
+        broken = self.root / "skills" / "bmad-spec" / "module-manifest.toml"
+        write(
+            broken,
+            'module = "method"\n'
+            'version = "6.11.0-next"\n'
+            'update_source = "github:bmad-code-org/BMAD-METHOD/skills"\n'
+            'knowledge = ["references/absent.md"]\n',
+        )
+        before = snapshot(self.root)
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 1)
+        self.assertIn("which the skill does not ship", err)
+        self.assertEqual(snapshot(self.root), before)
+
+    def test_knowledge_copies_must_be_identical(self):
+        make_tree(self.root)
+        write(self.root / "skills" / "bmad-spec" / "references" / "help.md", "# different\n")
+        before = snapshot(self.root)
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 1)
+        self.assertIn("every copy must be identical", err)
+        self.assertEqual(snapshot(self.root), before)
+
+    def test_skills_of_one_module_may_carry_different_knowledge(self):
+        make_tree(self.root)
+        write(self.root / "skills" / "bmad-spec" / "references" / "extra.md", "# extra\n")
+        write(
+            self.root / "skills" / "bmad-spec" / "module-manifest.toml",
+            'module = "method"\n'
+            'version = "6.11.0-next"\n'
+            'update_source = "github:bmad-code-org/BMAD-METHOD/skills"\n'
+            'knowledge = ["references/help.md", "references/extra.md"]\n',
+        )
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 0, err)
+        stamped = (self.root / "skills" / "bmad-spec" / "module-manifest.toml").read_text(encoding="utf-8")
+        self.assertIn('knowledge = ["references/help.md", "references/extra.md"]', stamped)
+        self.assertIn('version = "1.2.0"', stamped)
 
     def test_skill_directory_without_manifest_fails_and_touches_nothing(self):
         make_tree(self.root)
@@ -196,7 +366,9 @@ class StampReleaseTests(unittest.TestCase):
         self.assertIn("module-manifest.toml", err)
         self.assertEqual(snapshot(self.root), before)
 
-    def test_formatting_drift_within_module_trips_byte_identity_after_stamp(self):
+    def test_formatting_drift_within_module_is_tolerated(self):
+        # Module copies are compared on parsed fields, not bytes, so that skills
+        # of one module can carry different knowledge documents.
         make_tree(self.root)
         drifted = self.root / "skills" / "bmad-spec" / "module-manifest.toml"
         write(
@@ -204,14 +376,24 @@ class StampReleaseTests(unittest.TestCase):
             'module = "method"\n'
             'version = "6.11.0-next"\n'
             'update_source   =   "github:bmad-code-org/BMAD-METHOD/skills"\n'
-            'knowledge = "`references/help.md` in the `bmad` skill"\n',
+            'knowledge = ["references/help.md"]\n',
         )
         code, _, err = run_stamper(self.root, "1.2.0")
-        self.assertEqual(code, 1)
-        self.assertIn("byte-identical", err)
-        self.assertIn("module-manifest.toml", err)
-        # The stamp itself was applied before the byte-identity assert tripped.
+        self.assertEqual(code, 0, err)
         self.assertIn('version = "1.2.0"', drifted.read_text(encoding="utf-8"))
+
+    def test_differing_module_field_within_module_is_rejected(self):
+        # config_questions is module-level, so it must agree across the module.
+        make_tree(self.root)
+        write(
+            self.root / "skills" / "bmad-spec" / "module-manifest.toml",
+            MANIFEST.format(module="method", version="6.11.0-next")
+            + '\n[[config_questions]]\nkey = "out"\nprompt = "Where?"\ndefault = "x"\n',
+        )
+        before = snapshot(self.root)
+        code, _, err = run_stamper(self.root, "1.2.0")
+        self.assertEqual(code, 1)
+        self.assertEqual(snapshot(self.root), before)
 
     def test_empty_skills_tree_reports_error(self):
         code, _, err = run_stamper(self.root, "1.2.0")

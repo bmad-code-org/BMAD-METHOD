@@ -25,8 +25,11 @@ sys.dont_write_bytecode = True
 
 MANIFEST_NAME = "module-manifest.toml"
 QUESTION_KEYS = frozenset({"key", "prompt", "default"})
+REQUIREMENT_KEYS = frozenset({"version"})
+OPTIONAL_REQUIREMENT_KEYS = frozenset({"source"})
 UPDATE_SOURCE_PREFIXES = ("github:", "https://", "file:", "plugin:")
 MODULE_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]*\Z")
+SKILL_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]*\Z")
 RESERVED_MODULE_DIRS = frozenset({"_config", "custom", "modules", "scripts"})
 
 # Traces the classic installer leaves under _bmad. Doctor reports them
@@ -68,12 +71,21 @@ class InstalledModule(NamedTuple):
     scripts: tuple[tuple[PurePosixPath, bytes], ...]
 
 
+class Requirement(NamedTuple):
+    skill: str
+    version: str
+    source: str | None
+
+
 class ParsedManifest(NamedTuple):
     module: str
     version: str
     update_source: str
+    knowledge: tuple[PurePosixPath, ...]
     questions: tuple[ConfigQuestion, ...]
     scripts: tuple[PurePosixPath, ...]
+    requires: tuple[Requirement, ...]
+    recommends: tuple[Requirement, ...] = ()
 
 
 class InstalledCopy(NamedTuple):
@@ -314,7 +326,8 @@ def doctor(
         )
     spreads = [str(selection["module"]) for selection in selections if selection["version_spread"]]
     blocked = [str(selection["module"]) for selection in selections if selection["state"] == "blocked"]
-    if blocked or spreads:
+    unmet = unmet_requirements(skill_root)
+    if blocked or spreads or unmet:
         status = "reconciled-with-warnings"
     elif changed:
         status = "repaired"
@@ -338,13 +351,83 @@ def doctor(
         ],
         "version_spreads": spreads,
         "remaining_staleness": blocked,
+        "unmet_requirements": unmet,
+        "unmet_recommendations": unmet_recommendations(skill_root),
         "legacy_leftovers": [
             relative
             for relative in LEGACY_LEFTOVERS
             if (project_root / "_bmad").joinpath(*PurePosixPath(relative).parts).exists()
         ],
-        "current": not blocked and not spreads,
+        "current": not blocked and not spreads and not unmet,
     }
+
+
+def unmet_requirements(skill_root: Path) -> list[dict[str, object]]:
+    """Requirements a module declares that the current install does not satisfy."""
+    return unmet_entries(skill_root, "requires")
+
+
+def unmet_recommendations(skill_root: Path) -> list[dict[str, object]]:
+    """Skills a manifest recommends that are absent or too old. Worth offering, never a fault."""
+    return unmet_entries(skill_root, "recommends")
+
+
+def unmet_entries(skill_root: Path, table: str) -> list[dict[str, object]]:
+    copies = discover_installed_copies(skill_root)
+    installed = {copy_item.skill: copy_item.parsed.version for copy_item in copies}
+    unmet: list[dict[str, object]] = []
+    for copy_item in copies:
+        for requirement in getattr(copy_item.parsed, table):
+            present = installed.get(requirement.skill)
+            state = requirement_state(present, requirement.version)
+            if state is None:
+                continue
+            source = requirement.source
+            if source is None:
+                source = copy_item.parsed.update_source
+            unmet.append(
+                {
+                    "skill": copy_item.skill,
+                    "module": copy_item.parsed.module,
+                    "requires": requirement.skill,
+                    "minimum": requirement.version,
+                    "installed": present,
+                    "state": state,
+                    "source": source,
+                    "channel": requirement_channel(source),
+                }
+            )
+    return unmet
+
+
+def requirement_state(installed: str | None, minimum: str) -> str | None:
+    """Why an installed version fails a minimum, or None when it meets it.
+
+    The development branch carries `X-next` until `X` is released, and that
+    build already holds everything `X` will. SemVer orders it below `X`, which
+    would report every skill on a development install as outdated.
+    """
+    if installed is None:
+        return "missing"
+    comparison = compare_semver(installed, minimum)
+    if comparison is None:
+        return "unorderable"
+    if comparison >= 0:
+        return None
+    have = parse_orderable_semver(installed)
+    want = parse_orderable_semver(minimum)
+    if have is not None and want is not None and have[0] == want[0] and want[1] is None and have[1] == ("next",):
+        return None
+    return "outdated"
+
+
+def requirement_channel(source: str) -> str:
+    """How a missing or stale requirement is installed, so help offers the right command."""
+    if source.startswith("plugin:"):
+        return "plugin"
+    if source.startswith("file:"):
+        return "local"
+    return "skills-cli"
 
 
 def existing_team_config(project_root: Path) -> tuple[str | None, dict]:
@@ -374,7 +457,7 @@ def discover_installed_modules(skill_root: Path) -> tuple[InstalledModule, ...]:
         copies = grouped[module]
         first = copies[0]
         for copy_item in copies[1:]:
-            if copy_item.raw != first.raw:
+            if module_identity(copy_item.parsed) != module_identity(first.parsed):
                 raise Exception(
                     f"conflicting installed manifests for module {module!r}: {first.manifest} and {copy_item.manifest}"
                 )
@@ -457,6 +540,11 @@ def read_copy_scripts(
 
 
 def parse_packaged_manifest(path: Path, raw: bytes) -> ParsedManifest:
+    """Read the fields BMad uses and ignore every other key.
+
+    A module builder may add keys of their own, and a newer manifest may carry
+    keys this version predates. Neither may stop a skill from installing.
+    """
     try:
         source = raw.decode("utf-8")
     except UnicodeError as error:
@@ -467,22 +555,108 @@ def parse_packaged_manifest(path: Path, raw: bytes) -> ParsedManifest:
         raise Exception(f"packaged manifest {path} field 'module' has unsafe value {module!r}")
     version = manifest_string(data, "version", path)
     update_source = manifest_string(data, "update_source", path)
-    prefix = next(
-        (candidate for candidate in UPDATE_SOURCE_PREFIXES if update_source.startswith(candidate)),
-        None,
-    )
-    if prefix is None or not update_source.removeprefix(prefix):
-        raise Exception(f"packaged manifest {path} field 'update_source' must name a source")
-    if prefix == "github:":
-        github_parts = update_source.removeprefix(prefix).split("/")
-        if len(github_parts) < 3 or any(not part for part in github_parts):
-            raise Exception(f"packaged manifest {path} field 'update_source' github source must name owner/repo/path")
-    if prefix == "https://" and any(character.isspace() for character in update_source):
-        raise Exception(f"packaged manifest {path} field 'update_source' must be a valid HTTPS URL")
-    manifest_string(data, "knowledge", path)
+    validate_source(update_source, "update_source", path)
+    knowledge = parse_manifest_knowledge(data.get("knowledge"), path)
     questions = parse_manifest_questions(data.get("config_questions"), module, path)
     scripts = parse_manifest_scripts(data.get("scripts"), path)
-    return ParsedManifest(module, version, update_source, questions, scripts)
+    requires = parse_manifest_requires(data.get("requires"), path)
+    recommends = parse_manifest_requires(data.get("recommends"), path, table="recommends")
+    return ParsedManifest(module, version, update_source, knowledge, questions, scripts, requires, recommends)
+
+
+def validate_source(value: str, field: str, path: Path) -> None:
+    prefix = next(
+        (candidate for candidate in UPDATE_SOURCE_PREFIXES if value.startswith(candidate)),
+        None,
+    )
+    if prefix is None or not value.removeprefix(prefix):
+        raise Exception(f"packaged manifest {path} field {field!r} must name a source")
+    if prefix == "github:":
+        github_parts = value.removeprefix(prefix).split("/")
+        if len(github_parts) < 3 or any(not part for part in github_parts):
+            raise Exception(f"packaged manifest {path} field {field!r} github source must name owner/repo/path")
+    if prefix == "https://" and any(character.isspace() for character in value):
+        raise Exception(f"packaged manifest {path} field {field!r} must be a valid HTTPS URL")
+
+
+def parse_manifest_knowledge(value: object, path: Path) -> tuple[PurePosixPath, ...]:
+    """The module knowledge documents this skill carries, as paths inside it.
+
+    Skills of one module may name different documents, and a document named by
+    several skills is what makes them a group. Order carries no meaning.
+
+    Releases before the list format wrote a sentence here naming a document in
+    another skill. Such a copy carries no document of its own, so it yields no
+    paths rather than failing: `update` exists to report a copy like that as
+    stale, and it cannot do that if reading it raises.
+    """
+    if isinstance(value, str):
+        return ()
+    if not isinstance(value, list) or not value:
+        raise Exception(f"packaged manifest {path} field 'knowledge' must be a non-empty list of paths")
+    knowledge: list[PurePosixPath] = []
+    for entry in value:
+        if not isinstance(entry, str) or not entry:
+            raise Exception(f"packaged manifest {path} field 'knowledge' has invalid value {entry!r}")
+        relative = safe_skill_relative(entry)
+        if relative is None:
+            raise Exception(f"packaged manifest {path} field 'knowledge' has unsafe value {entry!r}")
+        if relative in knowledge:
+            raise Exception(f"packaged manifest {path} field 'knowledge' repeats {entry!r}")
+        knowledge.append(relative)
+    return tuple(knowledge)
+
+
+def safe_skill_relative(entry: str) -> PurePosixPath | None:
+    """A manifest path that cannot escape the skill folder, or None if it can.
+
+    Shared with tools/stamp_release.py and knowledge.py so one rule decides
+    this everywhere. A URL parses as an ordinary relative path and a Windows
+    drive prefix makes a later join discard the skill folder, so both are
+    refused by name. pathlib drops "." components itself, so only ".." and an
+    empty final component need checking.
+    """
+    if not entry or "://" in entry or "\\" in entry or ":" in entry:
+        return None
+    relative = PurePosixPath(entry)
+    if relative.is_absolute() or ".." in relative.parts or not relative.name:
+        return None
+    return relative
+
+
+def parse_manifest_requires(value: object, path: Path, *, table: str = "requires") -> tuple[Requirement, ...]:
+    if value is None:
+        return ()
+    if not isinstance(value, dict):
+        raise Exception(f"packaged manifest {path} field {table!r} must be a table of skill ids to requirements")
+    requires: list[Requirement] = []
+    for skill, entry in value.items():
+        field = f"{table}.{skill}"
+        if SKILL_NAME.fullmatch(skill) is None:
+            raise Exception(f"packaged manifest {path} field {table!r} has unsafe skill id {skill!r}")
+        if not isinstance(entry, dict):
+            raise Exception(f"packaged manifest {path} field {field!r} must be a table")
+        keys = set(entry)
+        if not REQUIREMENT_KEYS <= keys or not keys <= REQUIREMENT_KEYS | OPTIONAL_REQUIREMENT_KEYS:
+            raise Exception(
+                f"packaged manifest {path} field {field!r} keys must be "
+                f"{', '.join(sorted(REQUIREMENT_KEYS))} plus optionally "
+                f"{', '.join(sorted(OPTIONAL_REQUIREMENT_KEYS))}"
+            )
+        minimum = entry["version"]
+        if not isinstance(minimum, str):
+            raise Exception(f"packaged manifest {path} field '{field}.version' must be a string")
+        if parse_orderable_semver(minimum) is None:
+            raise Exception(
+                f"packaged manifest {path} field '{field}.version' must be an orderable version; found {minimum!r}"
+            )
+        source = entry.get("source")
+        if source is not None:
+            if not isinstance(source, str):
+                raise Exception(f"packaged manifest {path} field '{field}.source' must be a string")
+            validate_source(source, f"{field}.source", path)
+        requires.append(Requirement(skill, minimum, source))
+    return tuple(sorted(requires))
 
 
 def manifest_string(data: dict, field: str, path: Path) -> str:
@@ -816,7 +990,9 @@ def select_doctor_modules(
             first = copies[0]
             first_scripts = read_copy_scripts(first)
             copies_agree = all(
-                candidate.raw == first.raw and read_copy_scripts(candidate) == first_scripts for candidate in copies[1:]
+                module_identity(candidate.parsed) == module_identity(first.parsed)
+                and read_copy_scripts(candidate) == first_scripts
+                for candidate in copies[1:]
             )
             if copies_agree:
                 installed.append(
@@ -852,7 +1028,7 @@ def select_doctor_modules(
                 tied = [candidate]
             elif comparison == 0:
                 tied.append(candidate)
-        if any(candidate.raw != highest.raw for candidate in tied[1:]):
+        if any(module_identity(candidate.parsed) != module_identity(highest.parsed) for candidate in tied[1:]):
             selections.append(
                 {
                     **base,
@@ -891,6 +1067,21 @@ def select_doctor_modules(
                 }
             )
     return tuple(installed), selections
+
+
+def module_identity(parsed: ParsedManifest) -> tuple[object, ...]:
+    """The manifest facts that belong to the module rather than to one skill.
+
+    `knowledge`, `requires` and `recommends` are per-skill, so raw bytes no longer settle
+    whether two copies of a module agree. Everything else still has to match,
+    because it decides what gets written to `_bmad`.
+    """
+    return (
+        parsed.version,
+        parsed.update_source,
+        parsed.questions,
+        parsed.scripts,
+    )
 
 
 def used_skill_copy_report(skill_root: Path, copies: tuple[InstalledCopy, ...]) -> dict[str, object]:

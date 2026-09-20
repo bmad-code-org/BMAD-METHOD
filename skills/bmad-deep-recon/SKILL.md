@@ -37,7 +37,11 @@ Three services, freely combined — each detailed in its reference: **Draft** a 
 
 **Forwarded activation:** if a caller invoked you with a stated intent, research type, or pre-resolved customization fields (the legacy research shims and Mary's menu do), honor them verbatim — skip your own inference for those values and resolve only the rest.
 
-1. Resolve customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow` (on failure read `{skill-root}/customize.toml`, use defaults). Run `{workflow.activation_steps_prepend}`, then `{workflow.activation_steps_append}`.
+1. Resolve customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow`.
+   - Script not found: BMad is not set up here. Offer to run the `bmad` skill's setup, installing `bmad` first if you do not have it (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run the command again.
+   - Any other failure: read `{skill-root}/customize.toml` and use defaults.
+
+   Run `{workflow.activation_steps_prepend}`, then `{workflow.activation_steps_append}`.
 2. Resolve config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}`. From the merged JSON resolve `{project_name}`, `{output_folder}` (under `core`), `{planning_artifacts}` (under `modules.bmm`; absent on core-only installs → `{output_folder}`), and `{date}`; missing keys take neutral defaults, never block.
 3. Headless (no interactive user) → see `## Headless Mode`. Otherwise greet the user.
 4. Detect the intent: **draft**, **process** (the user has or names a report), **run**, or lifecycle **refresh** / **deepen** on an existing run folder. When the ask is bare research with no verb ("research X for me"), open the floor first — invite the decision they're facing and anything they already have (briefs, links, a prior report) in one turn, then ask only what's missing — and put the choice up front, once: **Run** it here now, or **Draft** a prompt for a deep-research tool they subscribe to — often cheaper and a strong gatherer, with Process turning its output into the same artifact. State the trade honestly (tokens and minutes here vs. one manual round-trip there); their call, remembered for the session.

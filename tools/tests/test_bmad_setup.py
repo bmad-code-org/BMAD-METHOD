@@ -98,6 +98,8 @@ def toml_inline(value: object) -> str:
         return json.dumps(value, ensure_ascii=False)
     if isinstance(value, list) and all(isinstance(item, str) for item in value):
         return "[" + ", ".join(toml_inline(item) for item in value) + "]"
+    if isinstance(value, dict):
+        return "{" + ", ".join(f"{key} = {toml_inline(item)}" for key, item in value.items()) + "}"
     raise TypeError(f"unsupported TOML fixture value: {value!r}")
 
 
@@ -138,7 +140,8 @@ def write_module_skill(
     scripts: dict[str, bytes] | None = None,
     script_entries: tuple[str, ...] | None = None,
     update_source: str = "file:skills",
-    knowledge: str = "`references/help.md` in the `bmad` skill",
+    knowledge: tuple[str, ...] = ("references/help.md",),
+    knowledge_text: str = "# help\n",
     version: str = "1.2.3",
     extra_fields: dict[str, object] | None = None,
 ) -> Path:
@@ -148,8 +151,10 @@ def write_module_skill(
         "version": version,
         "module": module,
         "update_source": update_source,
-        "knowledge": knowledge,
+        "knowledge": list(knowledge),
     }
+    for relative in knowledge:
+        write(skill / relative, knowledge_text)
     if questions:
         manifest["config_questions"] = list(questions)
     entries = tuple(scripts) if script_entries is None else script_entries
@@ -1087,7 +1092,7 @@ class BmadSetupTests(unittest.TestCase):
                 manifest,
                 'version = "1.2.3"\n'
                 'module = "alpha"\n'
-                'update_source = "file:skills"\nknowledge = "`references/help.md` in the `bmad` skill"\n'
+                'update_source = "file:skills"\nknowledge = ["references/help.md"]\n'
                 'config_questions = "invalid"\n',
             )
             before = {path.relative_to(bmad): path.read_bytes() for path in bmad.rglob("*") if path.is_file()}
@@ -1109,7 +1114,7 @@ class BmadSetupTests(unittest.TestCase):
             "version": "1.2.3",
             "module": "alpha",
             "update_source": "file:skills",
-            "knowledge": "`references/help.md` in the `bmad` skill",
+            "knowledge": ["references/help.md"],
         }
         cases: tuple[tuple[str, bytes, str], ...] = (
             ("malformed-toml", b"version = [\n", "TOML"),
@@ -1119,7 +1124,7 @@ class BmadSetupTests(unittest.TestCase):
                     b'version = "1.2.3"\n'
                     b'module = "alpha"\n'
                     b'module = "beta"\n'
-                    b'update_source = "file:skills"\nknowledge = "`references/help.md` in the `bmad` skill"\n'
+                    b'update_source = "file:skills"\nknowledge = ["references/help.md"]\n'
                 ),
                 "overwrite",
             ),
@@ -2258,10 +2263,327 @@ class BmadUpdateDoctorTests(unittest.TestCase):
                     self.assertEqual(result.returncode, 2, msg=result.stdout)
                     self.assertFalse((project / "_bmad").exists())
 
+    def doctor_report(self, root: Path, project: Path, skill: Path) -> dict:
+        result = run_setup_python(project, skill, "--doctor")
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        return json.loads(result.stdout)
+
+    def test_doctor_lists_a_missing_recommended_skill_without_calling_it_a_fault(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "bmad", "core", version="6.13.0")
+            write_module_skill(
+                root,
+                "alpha-skill",
+                "alpha",
+                extra_fields={"recommends": {"absent-skill": {"version": "1.0.0"}}},
+            )
+            write(project / "_bmad" / "config.toml", "[core]\nkeep = true\n")
+
+            report = self.doctor_report(root, project, skill)
+            self.assertTrue(report["current"])
+            self.assertEqual(report["unmet_requirements"], [])
+            (entry,) = report["unmet_recommendations"]
+            self.assertEqual(
+                (entry["skill"], entry["requires"], entry["state"]), ("alpha-skill", "absent-skill", "missing")
+            )
+
+    def test_doctor_ignores_manifest_keys_and_bmad_meta_files_it_does_not_know(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "bmad", "core", version="6.13.0")
+            write_module_skill(root, "alpha-plain", "alpha")
+            extended = write_module_skill(
+                root,
+                "alpha-skill",
+                "alpha",
+                extra_fields={
+                    "roster": ["bmad-meta/roster.toml"],
+                    "builder_note": "anything",
+                    "builder": {"version": "9.9.9", "nested": {"deep": "value"}},
+                },
+            )
+            write(extended / "bmad-meta" / "roster.toml", '[[members]]\ncode = "x"\n')
+            (extended / "bmad-meta" / "notes").mkdir()
+            (extended / "bmad-meta" / "notes" / "blob.bin").write_bytes(b"\x00\xff")
+            write(project / "_bmad" / "config.toml", "[core]\nkeep = true\n")
+
+            report = self.doctor_report(root, project, skill)
+            self.assertTrue(report["current"])
+            self.assertEqual(report["unmet_requirements"], [])
+
+    def test_doctor_reports_a_missing_required_skill(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "bmad", "core", version="6.13.0")
+            write_module_skill(
+                root,
+                "alpha-skill",
+                "alpha",
+                extra_fields={
+                    "requires": {"absent-skill": {"version": "1.0.0", "source": "github:acme/other-repo/skills"}}
+                },
+            )
+            write(project / "_bmad" / "config.toml", "[core]\nkeep = true\n")
+
+            report = self.doctor_report(root, project, skill)
+            self.assertEqual(report["status"], "reconciled-with-warnings")
+            self.assertFalse(report["current"])
+            self.assertEqual(
+                report["unmet_requirements"],
+                [
+                    {
+                        "skill": "alpha-skill",
+                        "module": "alpha",
+                        "requires": "absent-skill",
+                        "minimum": "1.0.0",
+                        "installed": None,
+                        "state": "missing",
+                        "source": "github:acme/other-repo/skills",
+                        "channel": "skills-cli",
+                    }
+                ],
+            )
+
+    def test_doctor_reports_a_required_skill_below_its_minimum(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "bmad", "core", version="6.12.0")
+            write_module_skill(
+                root,
+                "alpha-skill",
+                "alpha",
+                extra_fields={"requires": {"bmad": {"version": "6.13.0"}}},
+            )
+            write(project / "_bmad" / "config.toml", "[core]\nkeep = true\n")
+
+            report = self.doctor_report(root, project, skill)
+            self.assertFalse(report["current"])
+            unmet = report["unmet_requirements"]
+            self.assertEqual(len(unmet), 1)
+            self.assertEqual(unmet[0]["state"], "outdated")
+            self.assertEqual(unmet[0]["installed"], "6.12.0")
+            self.assertEqual(unmet[0]["minimum"], "6.13.0")
+
+    def test_doctor_accepts_a_satisfied_requirement(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "bmad", "core", version="6.13.0")
+            write_module_skill(
+                root,
+                "alpha-skill",
+                "alpha",
+                extra_fields={"requires": {"bmad": {"version": "6.13.0"}}},
+            )
+            write(project / "_bmad" / "config.toml", "[core]\nkeep = true\n")
+
+            self.doctor_report(root, project, skill)
+            report = self.doctor_report(root, project, skill)
+            self.assertEqual(report["status"], "current")
+            self.assertEqual(report["unmet_requirements"], [])
+            self.assertTrue(report["current"])
+
+    def test_doctor_defaults_a_requirement_source_to_the_requiring_manifest(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "bmad", "core")
+            write_module_skill(
+                root,
+                "alpha-skill",
+                "alpha",
+                update_source="plugin:alpha-plugin",
+                extra_fields={"requires": {"absent-skill": {"version": "1.0.0"}}},
+            )
+            write(project / "_bmad" / "config.toml", "[core]\nkeep = true\n")
+
+            unmet = self.doctor_report(root, project, skill)["unmet_requirements"]
+            self.assertEqual(len(unmet), 1)
+            self.assertEqual(unmet[0]["source"], "plugin:alpha-plugin")
+            self.assertEqual(unmet[0]["channel"], "plugin")
+
+    def test_doctor_rejects_an_unorderable_requirement_minimum(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "bmad", "core")
+            write_module_skill(
+                root,
+                "alpha-skill",
+                "alpha",
+                extra_fields={"requires": {"bmad": {"version": "6.13"}}},
+            )
+            write(project / "_bmad" / "config.toml", "[core]\nkeep = true\n")
+
+            result = run_setup_python(project, skill, "--doctor")
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("requires.bmad.version", result.stderr)
+
     def run_update(self, project: Path, skill: Path) -> str:
         result = run_setup_python(project, skill, "--update")
         self.assertEqual(result.returncode, 0, msg=result.stderr)
         return result.stdout
+
+
+class BmadKnowledgeManifestTests(unittest.TestCase):
+    def parse(self, body: str):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "module-manifest.toml"
+            path.write_text(body, encoding="utf-8")
+            return setup.parse_packaged_manifest(path, path.read_bytes())
+
+    def base(self, knowledge: str) -> str:
+        return f'module = "alpha"\nversion = "1.2.3"\nupdate_source = "file:skills"\nknowledge = {knowledge}\n'
+
+    def test_knowledge_is_parsed_as_a_list_of_paths(self):
+        parsed = self.parse(self.base('["references/help.md", "notes.md"]'))
+        self.assertEqual([path.as_posix() for path in parsed.knowledge], ["references/help.md", "notes.md"])
+
+    def test_a_bare_string_is_the_old_format_and_yields_no_documents(self):
+        # update must still be able to report such a copy as stale.
+        parsed = self.parse(self.base('"`references/help.md` in the `bmad` skill"'))
+        self.assertEqual(parsed.knowledge, ())
+
+    def test_an_empty_list_is_rejected(self):
+        with self.assertRaises(Exception) as caught:
+            self.parse(self.base("[]"))
+        self.assertIn("non-empty list", str(caught.exception))
+
+    def test_a_url_is_rejected_rather_than_read_as_a_relative_path(self):
+        with self.assertRaises(Exception) as caught:
+            self.parse(self.base('["https://docs.example.com/help.md"]'))
+        self.assertIn("unsafe value", str(caught.exception))
+
+    def test_a_windows_drive_prefix_is_rejected(self):
+        with self.assertRaises(Exception) as caught:
+            self.parse(self.base('["C:help.md"]'))
+        self.assertIn("unsafe value", str(caught.exception))
+
+    def test_a_backslash_path_is_rejected(self):
+        with self.assertRaises(Exception) as caught:
+            self.parse(self.base('["references\\\\help.md"]'))
+        self.assertIn("unsafe value", str(caught.exception))
+
+    def test_a_dot_prefixed_duplicate_is_rejected(self):
+        with self.assertRaises(Exception) as caught:
+            self.parse(self.base('["help.md", "./help.md"]'))
+        self.assertIn("repeats", str(caught.exception))
+
+    def test_traversal_is_rejected(self):
+        with self.assertRaises(Exception) as caught:
+            self.parse(self.base('["../escape.md"]'))
+        self.assertIn("unsafe value", str(caught.exception))
+
+    def test_an_absolute_path_is_rejected(self):
+        with self.assertRaises(Exception) as caught:
+            self.parse(self.base('["/etc/passwd"]'))
+        self.assertIn("unsafe value", str(caught.exception))
+
+    def test_a_repeated_entry_is_rejected(self):
+        with self.assertRaises(Exception) as caught:
+            self.parse(self.base('["help.md", "help.md"]'))
+        self.assertIn("repeats", str(caught.exception))
+
+
+class BmadModuleIdentityTests(unittest.TestCase):
+    def test_skills_of_one_module_may_carry_different_knowledge(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "alpha-one", "alpha", knowledge=("shared.md",))
+            write_module_skill(root, "alpha-two", "alpha", knowledge=("shared.md", "extra.md"))
+
+            _modules, selections = setup.select_doctor_modules(skill)
+
+            alpha = next(item for item in selections if item["module"] == "alpha")
+            self.assertEqual(alpha["state"], "selected")
+
+    def test_setup_accepts_one_module_whose_skills_carry_different_knowledge(self):
+        # The install path compares the same projection as doctor; if it does
+        # not, the first command a user runs fails on the shipped skills.
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "alpha-one", "alpha", knowledge=("shared.md",))
+            write_module_skill(root, "alpha-two", "alpha", knowledge=("shared.md", "extra.md"))
+
+            modules = setup.discover_installed_modules(skill)
+
+            self.assertIn("alpha", {module.module for module in modules})
+
+    def test_setup_rejects_one_module_whose_skills_disagree_on_a_module_field(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "alpha-one", "alpha", update_source="file:skills")
+            write_module_skill(root, "alpha-two", "alpha", update_source="file:elsewhere")
+
+            with self.assertRaises(Exception) as caught:
+                setup.discover_installed_modules(skill)
+            self.assertIn("conflicting installed manifests", str(caught.exception))
+
+    def test_a_differing_module_field_still_blocks(self):
+        setup = load_setup()
+        # A differing version is a spread, not a conflict — doctor takes the
+        # highest — so these are the fields that must agree at one version.
+        for label, kwargs in (
+            ("update_source", {"update_source": "file:elsewhere"}),
+            ("questions", {"questions": ({"key": "out", "prompt": "Where?", "default": "x"},)}),
+            ("scripts", {"scripts": {"scripts/extra.py": b"extra\n"}}),
+        ):
+            with self.subTest(field=label), tempfile.TemporaryDirectory() as temp_dir:
+                root = Path(temp_dir)
+                skill = write_dest_bmad(root)
+                write_module_skill(root, "alpha-one", "alpha")
+                write_module_skill(root, "alpha-two", "alpha", **kwargs)
+
+                _modules, selections = setup.select_doctor_modules(skill)
+
+                alpha = next(item for item in selections if item["module"] == "alpha")
+                self.assertEqual(alpha["state"], "blocked", msg=f"{label} must be a module-level field")
+
+    def test_requires_is_per_skill_and_does_not_block_a_module(self):
+        setup = load_setup()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "alpha-one", "alpha")
+            write_module_skill(
+                root,
+                "alpha-two",
+                "alpha",
+                extra_fields={"requires": {"bmad": {"version": "1.0.0"}}},
+            )
+
+            _modules, selections = setup.select_doctor_modules(skill)
+
+            alpha = next(item for item in selections if item["module"] == "alpha")
+            self.assertEqual(alpha["state"], "selected")
 
 
 if __name__ == "__main__":
