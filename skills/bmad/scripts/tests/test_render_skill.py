@@ -391,12 +391,12 @@ class RenderSkillTests(unittest.TestCase):
         left = rs.render(ws.project, skill)
         before = _files(left.parent)
         # Standalone tag lines leave no blank lines behind.
-        self.assertEqual(left.read_text(), f"Left {left.parent / 'left.md'}\nEnabled\n")
+        self.assertEqual(left.read_text(), f"Left {(left.parent / 'left.md').as_posix()}\nEnabled\n")
         self.assertEqual((left.parent / "left.md").read_text(), "Left detail\n")
         self.assertFalse((left.parent / "right.md").exists())
         right = rs.render(ws.project, skill, assignments=["workflow.choice=right"])
         self.assertNotEqual(left, right)
-        self.assertEqual(right.read_text(), f"Right {right.parent / 'right.md'}\n")
+        self.assertEqual(right.read_text(), f"Right {(right.parent / 'right.md').as_posix()}\n")
         self.assertFalse((right.parent / "left.md").exists())
         self.assertTrue((right.parent / "right.md").exists())
         self.assertEqual(before, _files(left.parent))
@@ -449,7 +449,7 @@ class RenderSkillTests(unittest.TestCase):
         snap = entry.parent
         self.assertEqual(
             entry.read_text(),
-            f"* one\n* two\n- one\n- two\na: Read {snap}/a.md\n#### A (`a`)\n\nRead {snap}/a.md\n",
+            f"* one\n* two\n- one\n- two\na: Read {snap.as_posix()}/a.md\n#### A (`a`)\n\nRead {snap.as_posix()}/a.md\n",
         )
         manifest = json.loads((snap / "manifest.json").read_text())
         self.assertEqual(
