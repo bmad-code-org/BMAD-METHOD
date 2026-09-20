@@ -113,10 +113,10 @@ def _frontmatter_block(content: str) -> str | None:
     if not trimmed.startswith("---"):
         return None
 
-    end_index = trimmed.find("\n---\n", 3)
+    end_index = trimmed.find(f"{os.linesep}---{os.linesep}", 3)
     if end_index == -1:
-        if trimmed.endswith("\n---"):
-            end_index = len(trimmed) - 4
+        if trimmed.endswith(f"{os.linesep}---"):
+            end_index = len(trimmed) - len(os.linesep) - 3
         else:
             return None
 
@@ -137,7 +137,7 @@ def parse_frontmatter(content: str) -> dict[str, str] | None:
         return {}
 
     result: dict[str, str] = {}
-    for line in fm_block.split("\n"):
+    for line in fm_block.split(os.linesep):
         colon_index = line.find(":")
         if colon_index == -1:
             continue
@@ -161,7 +161,7 @@ def parse_frontmatter_multiline(content: str) -> dict[str, str] | None:
     current_key: str | None = None
     current_value = ""
 
-    for line in fm_block.split("\n"):
+    for line in fm_block.split(os.linesep):
         colon_index = line.find(":")
         # New key: column 0 (no leading whitespace) and colon not at index 0
         if colon_index > 0 and line[:1] not in (" ", "\t"):
@@ -204,7 +204,7 @@ def safe_read_file(file_path: str, findings: list[dict], rel_file: str | None) -
 
 
 def _blank(match: re.Match[str]) -> str:
-    return re.sub(r"[^\n]", "", match.group(0))
+    return re.sub(r"[^\r\n]", "", match.group(0))
 
 
 def strip_code_blocks(content: str) -> str:
@@ -428,10 +428,10 @@ def validate_skill(skill_dir: str) -> list[dict]:
     trimmed = skill_content.lstrip()
     body_start = -1
     if trimmed.startswith("---"):
-        end_idx = trimmed.find("\n---\n", 3)
+        end_idx = trimmed.find(f"{os.linesep}---{os.linesep}", 3)
         if end_idx != -1:
-            body_start = end_idx + 4
-        elif trimmed.endswith("\n---"):
+            body_start = end_idx + len(os.linesep) + 3
+        elif trimmed.endswith(f"{os.linesep}---"):
             body_start = len(trimmed)
     else:
         body_start = 0
@@ -472,7 +472,7 @@ def validate_skill(skill_dir: str) -> list[dict]:
             )
 
         stripped = strip_code_blocks(content)
-        for i, line in enumerate(stripped.split("\n")):
+        for i, line in enumerate(stripped.split(os.linesep)):
             if INSTALLED_PATH_RE.search(line):
                 findings.append(
                     _finding(
@@ -497,7 +497,7 @@ def validate_skill(skill_dir: str) -> list[dict]:
             continue
         stripped = strip_code_blocks(content)
 
-        for i, line in enumerate(stripped.split("\n")):
+        for i, line in enumerate(stripped.split(os.linesep)):
             for pattern in TIME_ESTIMATE_PATTERNS:
                 if pattern.search(line):
                     findings.append(
@@ -525,7 +525,7 @@ def validate_skill(skill_dir: str) -> list[dict]:
         if content is None:
             continue
 
-        for i, line in enumerate(content.split("\n")):
+        for i, line in enumerate(content.split(os.linesep)):
             match = COMPILE_TIME_SUB_REGEX.search(line)
             if match:
                 findings.append(
