@@ -202,7 +202,7 @@ def _resolve_config_value(value: Any, label: str, project_root: Path) -> str:
     text = _require_string(value, label)
     if "{project-root}" not in text:
         return text
-    resolved = text.replace("{project-root}", str(project_root))
+    resolved = text.replace("{project-root}", project_root.as_posix())
     if not Path(resolved).is_absolute():
         raise RenderError(f"{label} must resolve to an absolute path: {resolved}")
     return resolved
@@ -300,7 +300,7 @@ class _LayerList(list):
 
 def _bind_customization(value: Any, label: str, destination: Path) -> Any:
     """Bind `{skill-root}` in customization prose to the generation and wrap lists for insertion."""
-    root = str(destination)
+    root = destination.as_posix()
     if isinstance(value, str):
         return _Text(value.replace("{skill-root}", root), label)
     if isinstance(value, list):
@@ -431,7 +431,7 @@ class _RenderContext:
         if not isinstance(target, str) or target not in self._source_names:
             raise RenderError(f"rendered() targets undeclared source: {target}")
         self.links.setdefault(context.name or "", set()).add(target)
-        return str(self.destination / target)
+        return (self.destination / target).as_posix()
 
 
 class _SourceLoader(jinja2.BaseLoader):
@@ -463,7 +463,7 @@ def _render_sources(sources: dict[str, str], skill_dir: Path, context: _RenderCo
     """Render every source as a Jinja2 template against the context; return the non-empty outputs."""
     # Skill sources name their bundled non-Markdown files (scripts, assets)
     # through {skill-root}; those stay in the installed skill directory.
-    bound = {name: content.replace("{skill-root}", str(skill_dir)) for name, content in sources.items()}
+    bound = {name: content.replace("{skill-root}", skill_dir.as_posix()) for name, content in sources.items()}
     environment = jinja2.Environment(
         loader=_SourceLoader(bound),
         undefined=jinja2.StrictUndefined,
