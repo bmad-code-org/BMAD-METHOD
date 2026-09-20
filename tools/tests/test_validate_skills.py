@@ -258,6 +258,27 @@ class TestRules(ProjectCase):
         )
         self.assertEqual(findings_by_rule(self.findings_for(use_if), "SKILL-06"), [])
 
+    def test_module_record_takes_a_bmod_name_and_the_fixed_description(self):
+        record = {"bmod.toml": '[bmod]\ncode = "cis"\n'}
+        clean = self.add_skill("bmod-cis", skill_md("bmod-cis", vs.RECORD_DESCRIPTION), record)
+        self.assertEqual(self.findings_for(clean), [])
+
+        named = self.add_skill("bmad-cis", skill_md("bmad-cis", vs.RECORD_DESCRIPTION), record)
+        name = findings_by_rule(self.findings_for(named), "SKILL-04")
+        self.assertEqual(len(name), 1)
+        self.assertEqual(name[0]["detail"], 'name "bmad-cis" does not match pattern: /^bmod-[a-z0-9]+(?:-[a-z0-9]+)*$/')
+
+        worded = self.add_skill("bmod-gds", skill_md("bmod-gds", "Game dev module. Use when making games."), record)
+        description = findings_by_rule(self.findings_for(worded), "SKILL-06")
+        self.assertEqual(len(description), 1)
+        self.assertIn("must be exactly", description[0]["detail"])
+
+    def test_bmod_name_is_refused_outside_a_module_record(self):
+        for files in (None, {"bmod.toml": '[skill]\nbmod = "bmod-x"\n'}, {"bmod.toml": "[bmod]\n\n[skill]\n"}):
+            skill = self.add_skill("bmod-thing", skill_md("bmod-thing", vs.RECORD_DESCRIPTION), files)
+            rules = {finding["rule"] for finding in self.findings_for(skill)}
+            self.assertEqual(rules, {"SKILL-04", "SKILL-06"}, files)
+
     def test_skill_07_empty_body_and_unclosed_frontmatter(self):
         empty = self.add_skill(
             "bmad-nobody",

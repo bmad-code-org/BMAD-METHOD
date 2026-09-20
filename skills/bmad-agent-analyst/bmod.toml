@@ -1,0 +1,10 @@
+[skill]
+bmod = "bmod-method"
+source = "github:bmad-code-org/BMAD-METHOD/skills"
+recommended_skills = [
+  "bmad-brainstorming",
+  "bmad-deep-recon",
+  "bmad-prfaq",
+  "bmad-product-brief",
+  "bmad-project-context",
+]

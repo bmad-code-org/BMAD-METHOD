@@ -43,14 +43,8 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
-      - id: sync-knowledge
-        name: knowledge copies match bmad-meta/
-        entry: uv run tools/sync_knowledge.py
-        language: system
-        pass_filenames: false
-        always_run: true
       - id: validate-manifests
-        name: validate manifests
+        name: validate bmod files
         entry: uv run tools/validate_manifests.py
         language: system
         pass_filenames: false

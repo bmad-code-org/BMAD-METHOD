@@ -127,6 +127,7 @@ Every value reached during the render is part of the generation's identity. Cust
 - **Rule:** The `name` value must be the canonical root skill `bmad`, or start with `bmad-` and use only lowercase letters, numbers, and single hyphens between segments.
 - **Detection:** Regex test: `^(?:bmad|bmad-[a-z0-9]+(?:-[a-z0-9]+)*)$`.
 - **Fix:** Rename to comply with the format (e.g., `bmad-my-skill`).
+- **Module record:** A folder whose `bmod.toml` has a `[bmod]` table and no `[skill]` table is a module record, which nobody runs. Its `name` must start with `bmod-` instead: `^bmod-[a-z0-9]+(?:-[a-z0-9]+)*$`. That the rest of the name is the module code is checked by `tools/validate_manifests.py`.
 
 ### SKILL-05 — `name` Must Match Directory Name
 
@@ -143,6 +144,7 @@ Every value reached during the render is part of the generation's identity. Cust
 - **Rule:** The `description` must state both what the skill does AND when to use it. Max 1024 characters.
 - **Detection:** Check length. Look for trigger phrases like "Use when" or "Use if" — their absence suggests the description only says _what_ but not _when_.
 - **Fix:** Append a "Use when..." clause to the description.
+- **Module record:** A module record (see SKILL-04) needs no trigger phrase. Its `description` must be exactly `Required bmod metadata. Never invoke this skill.`, so a request for BMad or for the module matches the `bmad` skill and not the record.
 
 ### SKILL-07 — SKILL.md Must Have Body Content
 

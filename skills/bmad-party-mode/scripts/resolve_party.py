@@ -29,7 +29,7 @@ missing customization resolver falls back to reading customize.toml directly.
 
   resolve_party.py --project-root P --skill S
   resolve_party.py --project-root P --skill S --list-groups
-  resolve_party.py --project-root P --skill S --party writers-room
+  resolve_party.py --project-root P --skill S --party writers-room   (alias: --group)
 """
 
 import argparse
@@ -74,11 +74,6 @@ def load_roster(project_root: Path, skill_root: Path):
         agents = data.get("agents", {}) or {}
         guests = {code: m for code, m in (data.get("members", {}) or {}).items() if code not in agents}
         problems = [p.get("problem", "") for p in data.get("problems", []) or [] if isinstance(p, dict)]
-        for found in data.get("rosters", []) or []:
-            if found.get("drift"):
-                problems.append(
-                    f"{found.get('module')} {found.get('path')}: copies disagree in {', '.join(found['drift'])}"
-                )
         return agents, guests, data.get("groups", []) or [], True, [p for p in problems if p]
     data = _run_json(
         [sys.executable, str(scripts / "resolve_config.py"), "--project-root", str(project_root), "--key", "agents"]
@@ -290,13 +285,17 @@ def group_detail(g, collective, index):
     return detail
 
 
-def main():
+def build_parser():
     ap = argparse.ArgumentParser(description="Resolve the party-mode roster, lazily.")
     ap.add_argument("--project-root", required=True)
     ap.add_argument("--skill", required=True, help="Path to the bmad-party-mode skill dir")
-    ap.add_argument("--party", help="Resolve full detail for this group id")
+    ap.add_argument("--party", "--group", dest="party", help="Resolve full detail for this group id")
     ap.add_argument("--list-groups", action="store_true", help="Group names only")
-    args = ap.parse_args()
+    return ap
+
+
+def main():
+    args = build_parser().parse_args()
 
     project_root = Path(args.project_root).resolve()
     skill_root = Path(args.skill).resolve()
