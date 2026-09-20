@@ -11,9 +11,9 @@ What it checks:
 - SKILL-01: SKILL.md exists
 - SKILL-02: SKILL.md frontmatter has name
 - SKILL-03: SKILL.md frontmatter has description
-- SKILL-04: name format (lowercase, hyphens, no forbidden substrings)
+- SKILL-04: name format (lowercase, hyphens, no forbidden substrings; `bmod-` for a module record)
 - SKILL-05: name matches directory basename
-- SKILL-06: description quality (length, "Use when"/"Use if")
+- SKILL-06: description quality (length, "Use when"/"Use if"; the fixed text for a module record)
 - SKILL-07: SKILL.md has body content after frontmatter
 - PATH-02: no installed_path variable
 - SEQ-02: no time estimates
@@ -33,6 +33,7 @@ import json
 import os
 import re
 import sys
+import tomllib
 
 sys.dont_write_bytecode = True
 
@@ -43,6 +44,10 @@ SRC_DIR = os.path.join(PROJECT_ROOT, "skills")
 NAME_REGEX_DISPLAY = r"/^(?:bmad|bmad-[a-z0-9]+(?:-[a-z0-9]+)*)$/"
 
 NAME_REGEX = re.compile(r"^(?:bmad|bmad-[a-z0-9]+(?:-[a-z0-9]+)*)$")
+# A module record: a folder whose bmod.toml has [bmod] and no [skill]. Nobody runs it.
+RECORD_NAME_REGEX_DISPLAY = r"/^bmod-[a-z0-9]+(?:-[a-z0-9]+)*$/"
+RECORD_NAME_REGEX = re.compile(r"^bmod-[a-z0-9]+(?:-[a-z0-9]+)*$")
+RECORD_DESCRIPTION = "Required bmod metadata. Never invoke this skill."
 TIME_ESTIMATE_PATTERNS = [
     re.compile(r"takes?\s+\d+\s*min", re.I),
     re.compile(r"~\s*\d+\s*min", re.I),
@@ -271,6 +276,15 @@ def collect_skill_files(skill_dir: str, findings: list[dict]) -> list[str]:
 # --- Rule Checks ---
 
 
+def is_module_record(skill_dir: str) -> bool:
+    try:
+        with open(os.path.join(skill_dir, "bmod.toml"), "rb") as handle:
+            data = tomllib.load(handle)
+    except (OSError, UnicodeError, tomllib.TOMLDecodeError):
+        return False
+    return "bmod" in data and "skill" not in data
+
+
 def validate_skill(skill_dir: str) -> list[dict]:
     findings: list[dict] = []
     dir_name = os.path.basename(skill_dir)
@@ -346,15 +360,18 @@ def validate_skill(skill_dir: str) -> list[dict]:
     description = skill_fm.get("description") if skill_fm else None
 
     is_deprecated = isinstance(description, str) and bool(DEPRECATED_RE.search(description))
+    is_record = is_module_record(skill_dir)
+    name_regex = RECORD_NAME_REGEX if is_record else NAME_REGEX
+    name_display = RECORD_NAME_REGEX_DISPLAY if is_record else NAME_REGEX_DISPLAY
 
-    if name and not NAME_REGEX.search(name):
+    if name and not name_regex.search(name):
         findings.append(
             _finding(
                 "SKILL-04",
                 "name Format",
                 "HIGH",
                 "SKILL.md",
-                f'name "{name}" does not match pattern: {NAME_REGEX_DISPLAY}',
+                f'name "{name}" does not match pattern: {name_display}',
                 "Rename to comply with lowercase letters, numbers, and hyphens only (max 64 chars).",
             )
         )
@@ -384,7 +401,19 @@ def validate_skill(skill_dir: str) -> list[dict]:
                 )
             )
 
-        if not is_deprecated and not USE_WHEN_RE.search(description) and not USE_IF_RE.search(description):
+        if is_record:
+            if description != RECORD_DESCRIPTION:
+                findings.append(
+                    _finding(
+                        "SKILL-06",
+                        "description Quality",
+                        "MEDIUM",
+                        "SKILL.md",
+                        f'a module record\'s description must be exactly "{RECORD_DESCRIPTION}"',
+                        "Replace the description with the fixed text.",
+                    )
+                )
+        elif not is_deprecated and not USE_WHEN_RE.search(description) and not USE_IF_RE.search(description):
             findings.append(
                 _finding(
                     "SKILL-06",

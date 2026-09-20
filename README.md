@@ -24,7 +24,7 @@ Choose one install route. You need an AI coding tool that supports skills and
 npx skills add bmad-code-org/BMAD-METHOD
 ```
 
-Select the skills and coding tool you want; include `bmad` for setup and help.
+Select the skills and coding tool you want. Include `bmad` for setup and help, and the module record for each module you pick skills from: `bmod-method` and `bmod-core-tools`. To install by name instead, list them together: `npx skills add bmad-code-org/BMAD-METHOD --skill bmad --skill bmod-core-tools --skill bmod-method --skill bmad-build`.
 
 **Claude Code plugin** — add the marketplace inside Claude Code:
 
@@ -50,9 +50,7 @@ Open your coding tool in the project and ask the `bmad` skill to run
 **[Add BMad to an existing codebase →](https://docs.bmad-method.org/existing-codebases/start-in-an-existing-codebase/)**
 
 BMad is free and open source, with no paywalled workflows or gated community.
-Use `bmad update` to check versions; install updates with `npx skills update`
-or your plugin marketplace. After updating, ask for `bmad doctor` to repair
-the project's existing runtime.
+Ask for `bmad status` to check versions and see what to run next. Install updates with `npx skills update` or your plugin marketplace, then ask for `bmad setup` again to refresh the project's runtime.
 
 ## Why BMad?
 

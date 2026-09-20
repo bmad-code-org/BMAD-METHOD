@@ -1,0 +1,29 @@
+[bmod]
+code = "method"
+version = "6.13.0-next"
+update_source = "github:bmad-code-org/BMAD-METHOD/skills"
+skills = [
+  "bmad-agent-analyst",
+  "bmad-agent-architect",
+  "bmad-agent-dev",
+  "bmad-agent-pm",
+  "bmad-agent-ux-designer",
+  "bmad-architecture",
+  "bmad-build",
+  "bmad-build-auto",
+  "bmad-code-review",
+  "bmad-correct-course",
+  "bmad-create-epics-and-stories",
+  "bmad-prd",
+  "bmad-preview-ticketing",
+  "bmad-prfaq",
+  "bmad-product-brief",
+  "bmad-project-context",
+  "bmad-qa-generate-e2e-tests",
+  "bmad-retrospective",
+  "bmad-spec",
+  "bmad-sprint-planning",
+  "bmad-ux",
+  "bmad-walkthrough",
+]
+required_skills = [{ skill = "bmad", version = "6.13.0", source = "github:bmad-code-org/BMAD-METHOD/skills" }]

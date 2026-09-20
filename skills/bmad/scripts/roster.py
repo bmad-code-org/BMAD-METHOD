@@ -2,22 +2,18 @@
 # /// script
 # requires-python = ">=3.11"
 # ///
-"""Report the people and groups the installed skills offer.
+"""Report the people and groups the installed modules offer.
 
-A skill names roster files under `roster` in its manifest. Each file lists
-members and the groups they form. Nothing is recorded under `_bmad`: the roster
-is whatever the installed skills carry right now, so adding or removing a skill
-changes it with no setup step.
+A module's roster is `roster.toml` beside its `bmod.toml`, in the module
+record's folder. It lists members and the groups they form. Nothing is
+recorded under `_bmad`: the roster is whatever the installed modules offer
+right now, so adding or removing a skill changes it with no setup step.
 
 A member with `skill` is an agent, present only while that skill is installed;
 its name, title and icon follow the skill's customization. A member without
 `skill` is a guest, available to groups and never part of the default room.
 `[agents.<code>]` tables in the central config still apply on top, so a user's
 own agents and overrides keep working.
-
-A module replicates one roster file across its skills, so the same file is
-usually present many times. Copies that disagree are reported, never resolved
-by picking one.
 
 Usage:
   uv run roster.py --skill <any installed skill> [--project-root P] [--root R ...]
@@ -26,7 +22,6 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import sys
 import tomllib
@@ -35,9 +30,8 @@ from pathlib import Path
 sys.dont_write_bytecode = True
 
 from config_utils import ConfigError, load_central_config, load_customization  # noqa: E402
-from knowledge import read_document, safe_skill_relative  # noqa: E402
+from knowledge import ROSTER_NAME, Module, install_command, read_document, scan  # noqa: E402
 
-MANIFEST_NAME = "module-manifest.toml"
 MEMBER_FIELDS = ("name", "icon", "title", "persona", "capabilities", "model")
 AGENT_FIELDS = ("name", "icon", "title")
 
@@ -60,45 +54,23 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def collect(roots: list[Path], project_root: Path | None = None) -> dict[str, object]:
-    problems: list[dict[str, str]] = []
-    skills: dict[str, Path] = {}
+    found = scan(roots)
+    problems = found.problems
+    skills = found.folders
     files: dict[tuple[str, str], dict[str, object]] = {}
 
-    for root in roots:
-        try:
-            folders = sorted(path for path in root.iterdir() if path.is_dir())
-        except OSError as error:
-            problems.append({"kind": "root", "problem": f"cannot read root {root}: {error}"})
-            continue
-        for folder in folders:
-            # The first root wins a skill name, as it does for knowledge.
-            if folder.name in skills:
-                continue
-            skills[folder.name] = folder
-            manifest = folder / MANIFEST_NAME
-            if not manifest.is_file():
-                continue
-            try:
-                data = tomllib.loads(manifest.read_text(encoding="utf-8"))
-            except (OSError, UnicodeError, tomllib.TOMLDecodeError) as error:
-                problems.append(
-                    {"kind": "manifest", "skill": folder.name, "problem": f"cannot use {manifest}: {error}"}
-                )
-                continue
-            module = data.get("module")
-            entries = data.get("roster")
-            if not isinstance(module, str) or not isinstance(entries, list):
-                continue
-            for entry in entries:
-                record_file(files, problems, folder, module, data.get("update_source"), entry)
+    for module in found.modules:
+        if (module.folder / ROSTER_NAME).exists():
+            record_file(files, problems, module)
 
     members: dict[str, dict[str, object]] = {}
     groups: dict[str, dict[str, object]] = {}
-    for (module, path), found in sorted(files.items()):
-        for member in found["data"].get("members", []):
-            add_member(members, problems, member, module, path, found["source"], skills, project_root)
-        for group in found["data"].get("groups", []):
-            add_group(groups, problems, group, module, path)
+    for (code, path), file in sorted(files.items()):
+        source = file["module"].table.get("update_source")
+        for member in listed(file["data"], "members", problems, code, path):
+            add_member(members, problems, member, code, path, source, skills, project_root)
+        for group in listed(file["data"], "groups", problems, code, path):
+            add_group(groups, problems, group, code, path)
 
     agents = {code: member for code, member in members.items() if member.get("installed")}
     apply_central_agents(agents, members, problems, project_root)
@@ -108,47 +80,37 @@ def collect(roots: list[Path], project_root: Path | None = None) -> dict[str, ob
         "members": members,
         "groups": list(groups.values()),
         "rosters": [
-            {"module": module, "path": path, "skills": sorted(found["skills"]), "drift": sorted(found["drift"])}
-            for (module, path), found in sorted(files.items())
+            {"module": code, "path": path, "skills": [name for name in file["module"].skills if name in skills]}
+            for (code, path), file in sorted(files.items())
         ],
         "problems": problems,
     }
 
 
+def listed(data: dict[str, object], key: str, problems: list[dict[str, object]], module: str, path: str) -> list:
+    found = data.get(key, [])
+    if isinstance(found, list):
+        return found
+    problems.append({"kind": "roster", "problem": f"{module} {path}: '{key}' is not a list"})
+    return []
+
+
 def record_file(
-    files: dict[tuple[str, str], dict[str, object]],
-    problems: list[dict[str, str]],
-    folder: Path,
-    module: str,
-    source: object,
-    entry: object,
+    files: dict[tuple[str, str], dict[str, object]], problems: list[dict[str, object]], module: Module
 ) -> None:
-    relative = safe_skill_relative(entry) if isinstance(entry, str) else None
-    if relative is None:
-        problems.append({"kind": "roster", "skill": folder.name, "problem": f"roster names unusable path {entry!r}"})
-        return
-    path = folder.joinpath(*relative.parts)
+    folder = module.folder
+    path = folder / ROSTER_NAME
     try:
-        raw = read_document(path, folder)
-        data = tomllib.loads(raw.decode("utf-8"))
+        data = tomllib.loads(read_document(path, folder).decode("utf-8"))
     except (OSError, ValueError, UnicodeError, tomllib.TOMLDecodeError) as error:
         problems.append({"kind": "roster", "skill": folder.name, "problem": f"{path}: {error}"})
         return
-
-    digest = hashlib.sha256(raw).hexdigest()
-    key = (module, relative.as_posix())
-    found = files.get(key)
-    if found is None:
-        found = files[key] = {"sha256": digest, "data": data, "source": source, "skills": set(), "drift": set()}
-    if digest != found["sha256"]:
-        found["drift"].add(folder.name)
-        return
-    found["skills"].add(folder.name)
+    files.setdefault((module.code, ROSTER_NAME), {"module": module, "data": data})
 
 
 def add_member(
     members: dict[str, dict[str, object]],
-    problems: list[dict[str, str]],
+    problems: list[dict[str, object]],
     member: object,
     module: str,
     path: str,
@@ -197,17 +159,8 @@ def agent_identity(skill_dir: Path, project_root: Path | None) -> dict[str, str]
     return {field: agent[field] for field in AGENT_FIELDS if isinstance(agent.get(field), str) and agent[field]}
 
 
-def install_command(source: object, skill: str) -> str | None:
-    if not isinstance(source, str) or not source.startswith("github:"):
-        return None
-    parts = source.removeprefix("github:").split("/")
-    if len(parts) < 2 or not all(parts[:2]):
-        return None
-    return f"npx skills add {parts[0]}/{parts[1]} --skill {skill}"
-
-
 def add_group(
-    groups: dict[str, dict[str, object]], problems: list[dict[str, str]], group: object, module: str, path: str
+    groups: dict[str, dict[str, object]], problems: list[dict[str, object]], group: object, module: str, path: str
 ) -> None:
     group_id = group.get("id") if isinstance(group, dict) else None
     if not isinstance(group_id, str) or not group_id:
@@ -227,21 +180,23 @@ def add_group(
 def apply_central_agents(
     agents: dict[str, dict[str, object]],
     members: dict[str, dict[str, object]],
-    problems: list[dict[str, str]],
+    problems: list[dict[str, object]],
     project_root: Path | None,
 ) -> None:
     """Lay the central config's [agents.<code>] tables over the scan.
 
-    This is how a user adds an agent of their own or overrides one, and how an
-    install made before rosters existed keeps the agents it recorded. An entry
-    for a roster agent whose skill is gone is skipped: the old installer
-    recorded it and nothing removed it when the skill went.
+    This is how a user adds an agent of their own or describes one further, and
+    how an install made before rosters existed keeps the agents it recorded.
+    An entry for a roster agent whose skill is gone is skipped: the old
+    installer recorded it and nothing removed it when the skill went. For a
+    roster agent the roster and the skill's customization decide name, title,
+    icon and module, so a recorded default never undoes a customized name.
     """
     if project_root is None or not (project_root / "_bmad").is_dir():
         return
     try:
         configured = load_central_config(project_root).get("agents", {})
-    except ConfigError as error:
+    except (ConfigError, OSError) as error:
         problems.append({"kind": "config", "problem": str(error)})
         return
     if not isinstance(configured, dict):
@@ -250,7 +205,12 @@ def apply_central_agents(
         if not isinstance(info, dict) or members.get(code, {}).get("installed") is False:
             continue
         entry = agents.setdefault(code, {"code": code, "source": "config"})
+        settled = (
+            {"module", *(field for field in AGENT_FIELDS if field in entry)} if entry["source"] == "roster" else set()
+        )
         for field, value in info.items():
+            if field in settled:
+                continue
             # Older installs recorded the persona paragraph as `description`.
             target = "persona" if field == "description" and "persona" not in info else field
             entry[target] = value

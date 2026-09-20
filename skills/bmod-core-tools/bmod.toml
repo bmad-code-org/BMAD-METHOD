@@ -1,0 +1,15 @@
+[bmod]
+code = "core-tools"
+version = "6.13.0-next"
+update_source = "github:bmad-code-org/BMAD-METHOD/skills"
+skills = [
+  "bmad",
+  "bmad-advanced-elicitation",
+  "bmad-brainstorming",
+  "bmad-customize",
+  "bmad-deep-recon",
+  "bmad-forge-idea",
+  "bmad-party-mode",
+  "bmad-review",
+]
+required_skills = ["bmad"]
