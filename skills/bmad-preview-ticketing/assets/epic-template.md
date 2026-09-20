@@ -35,7 +35,7 @@ estimate_basis: ""   # envelope | spec | drafts | stories
 
 ## Breakdown
 
-[At inception: every agreed entry in build order, one line each, exactly `- nn type — title; blocked_by: nn, nn; covers: ids`. tickets.py reads these lines; a table or any other shape is invisible to it. Anything more about an entry goes in Notes or waits for its file. An entry becomes a file with the same nn when pulled; its line stays. Status lives on the files, never here. Cut at initiative slicing.]
+[At inception: every agreed entry in build order, one line each, exactly `- nn type - title; blocked_by: nn, nn; covers: ids`. tickets.py reads these lines; a table or any other shape is invisible to it. Anything more about an entry goes in Notes or waits for its file. An entry becomes a file with the same nn when pulled; its line stays. Status lives on the files, never here. Cut at initiative slicing.]
 
 ## Boundaries
 
@@ -103,11 +103,11 @@ Shoppers who reach the cart continue to payment more often because the total nev
 
 ## Breakdown
 
-- 01 story — Cart service scaffold; covers: R1
-- 02 story — Cart UI shell; blocked_by: 01; covers: R1
-- 03 spike — Can the discount engine validate within R4?; blocked_by: 01; covers: R4
-- 04 story — Apply and refuse discount codes; blocked_by: 02, 03; covers: R2, R3
-- 05 story — Total shown equals total charged, end to end; blocked_by: 04; covers: R3
+- 01 story - Cart service scaffold; covers: R1
+- 02 story - Cart UI shell; blocked_by: 01; covers: R1
+- 03 spike - Can the discount engine validate within R4?; blocked_by: 01; covers: R4
+- 04 story - Apply and refuse discount codes; blocked_by: 02, 03; covers: R2, R3
+- 05 story - Total shown equals total charged, end to end; blocked_by: 04; covers: R3
 
 ## Boundaries
 

@@ -125,11 +125,21 @@ class TicketsTests(unittest.TestCase):
         (self.epic / "epic-cart.md").write_text(
             "---\ntype: epic\nstatus: backlog\n---\n# Cart\n\n## Done when\n\n1. x\n\n## Breakdown\n\n"
             "[placeholder line that must not parse]\n"
-            "- 01 story — Scaffold; covers: R1\n"
-            "- 02 story — UI shell; blocked_by: 01; covers: R1\n"
-            "- 03 spike — Tax engine?; blocked_by: 01; covers: R4\n"
-            "- 04 story — Codes; blocked_by: 02, 03; covers: R2, R3\n\n## Notes\n\n- Decision: none\n"
+            "- 01 story - Scaffold; covers: R1\n"
+            "- 02 story - UI shell; blocked_by: 01; covers: R1\n"
+            "- 03 spike - Tax engine?; blocked_by: 01; covers: R4\n"
+            "- 04 story - Codes; blocked_by: 02, 03; covers: R2, R3\n\n## Notes\n\n- Decision: none\n"
         )
+
+    def test_text_outside_ascii_is_read_and_written_as_utf8(self):
+        (self.epic / "epic-cart.md").write_text(
+            "---\ntype: epic\nstatus: backlog\n---\n# Cart\n\n## Breakdown\n\n- 01 story - Café ✓ menu\n",
+            encoding="utf-8",
+        )
+        r = subprocess.run([sys.executable, str(SCRIPT), "next", str(self.epic)], capture_output=True, check=False)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        out = json.loads(r.stdout.decode("utf-8"))
+        self.assertEqual([e["title"] for e in out["to_create"]], ["Café ✓ menu"])
 
     def test_breakdown_entries_without_files_surface_when_unblocked(self):
         self.breakdown_epic()
@@ -159,7 +169,7 @@ class TicketsTests(unittest.TestCase):
             (self.epic / "epic-cart.md")
             .read_text()
             .replace(
-                "- 02 story — UI shell; blocked_by: 01; covers: R1", "- 02 story — UI shell; covers: R1; blocked_by: 01"
+                "- 02 story - UI shell; blocked_by: 01; covers: R1", "- 02 story - UI shell; covers: R1; blocked_by: 01"
             )
         )
         (self.epic / "epic-cart.md").write_text(text)
@@ -167,14 +177,14 @@ class TicketsTests(unittest.TestCase):
         self.assertEqual([e["n"] for e in out["to_create"]], [1])
         (self.epic / "epic-cart.md").write_text(
             text.replace(
-                "- 03 spike — Tax engine?; blocked_by: 01; covers: R4", "- 03 spike — Tax engine?; blocks: none"
+                "- 03 spike - Tax engine?; blocked_by: 01; covers: R4", "- 03 spike - Tax engine?; blocks: none"
             )
         )
         r = run("next", str(self.epic))
         self.assertEqual(r.returncode, 1)
         self.assertIn("unknown field `blocks`", json.loads(r.stderr)["error"])
         (self.epic / "epic-cart.md").write_text(
-            text.replace("- 03 spike — Tax engine?; blocked_by: 01; covers: R4", "- 03 Tax engine?")
+            text.replace("- 03 spike - Tax engine?; blocked_by: 01; covers: R4", "- 03 Tax engine?")
         )
         r = run("next", str(self.epic))
         self.assertEqual(r.returncode, 1)
