@@ -2972,7 +2972,10 @@ class BmadStatusTests(unittest.TestCase):
             for module, _installed, _source, state in cases:
                 self.assertEqual(by_module[module]["update"]["state"], state)
             self.assertEqual(by_module["unreachable"]["update"]["state"], "could-not-check")
-            self.assertIn("bmod-unreachable/bmod.toml", by_module["unreachable"]["update"]["reason"])
+            self.assertIn(
+                str(project / "sources" / "bmod-unreachable" / "bmod.toml"),
+                by_module["unreachable"]["update"]["reason"],
+            )
             self.assertEqual(by_module["broken"]["update"]["state"], "could-not-check")
             self.assertIn("'bmod.version'", by_module["broken"]["update"]["reason"])
             self.assertEqual(report["bmad"]["version"], "1.2.3")

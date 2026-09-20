@@ -79,7 +79,8 @@ def escape_table_cell(s: str) -> str:
 
 
 def _relpath(to_path: str, start: str) -> str:
-    rel = os.path.relpath(to_path, start)
+    # A reported path is a repo path: "/" on every platform.
+    rel = os.path.relpath(to_path, start).replace(os.sep, "/")
     return "" if rel == "." else rel
 
 

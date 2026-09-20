@@ -138,7 +138,9 @@ class TestYamlExtraction(unittest.TestCase):
 
 class TestMapping(unittest.TestCase):
     def map(self, ref):
-        return vfr.map_installed_to_source(ref, "/repo/skills")
+        # The mapped path is a filesystem path and has the platform's separators.
+        mapped = vfr.map_installed_to_source(ref, "/repo/skills")
+        return mapped and Path(mapped).as_posix()
 
     def test_mappings(self):
         self.assertEqual(self.map("{project-root}/_bmad/scripts/memlog.py"), "/repo/skills/bmad/scripts/memlog.py")
