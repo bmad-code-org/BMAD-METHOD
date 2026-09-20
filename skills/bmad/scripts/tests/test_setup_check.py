@@ -96,6 +96,13 @@ class OwedSetupTests(unittest.TestCase):
         folder = self.skill(module_extra=REQUIRES_BMAD)
         self.assertEqual(setup_check.owed(folder, self.project), [])
 
+    def test_a_required_skill_with_no_bmod_file_is_reported_with_an_unreadable_version(self):
+        (self.skills / "bmad").mkdir(parents=True)
+        folder = self.skill(module_extra=REQUIRES_BMAD)
+        (note,) = setup_check.owed(folder, self.project)
+        self.assertIn("version cannot be read", note)
+        self.assertIn("npx skills update", note)
+
     def test_a_requirement_may_carry_no_version(self):
         (self.skills / "other-skill").mkdir(parents=True)
         folder = self.skill(skill_extra='required_skills = ["other-skill"]\n')

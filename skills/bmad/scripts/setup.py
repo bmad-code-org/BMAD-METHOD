@@ -290,7 +290,7 @@ def setup(
         "missing_module_records": list(installation.missing_records),
         "problems": problems,
         "legacy_leftovers": legacy_leftovers(project_root),
-        "current": next_command is None and not unmet and not problems,
+        "current": next_command is None and not unmet and not problems and not installation.missing_records,
         "next": next_command,
     }
 
@@ -615,8 +615,21 @@ def requirement_check(skills_dir: Path, requirement: Requirement) -> tuple[str |
         return None, None
     installed = skill_module_version(skills_dir, requirement.skill)
     if installed is None:
-        return None, None
+        if names_a_module_record(skills_dir, requirement.skill):
+            # Its record is absent, which is reported as a missing module record.
+            return None, None
+        # A copy from before module records has no version to read, and that
+        # copy is what a minimum version exists to catch.
+        return "unknown-version", None
     return requirement_state(installed, requirement.version), installed
+
+
+def names_a_module_record(skills_dir: Path, skill: str) -> bool:
+    try:
+        parsed = read_bmod_file(skills_dir / skill / MANIFEST_NAME)
+    except Exception:
+        return False
+    return parsed is not None and parsed.skill is not None and parsed.skill.bmod is not None
 
 
 def skill_module_version(skills_dir: Path, skill: str) -> str | None:
@@ -689,11 +702,14 @@ def install_command(source: str, skill: str) -> str | None:
     return f"npx skills add {owner}/{repository} --skill {skill}"
 
 
+UPDATE_FIXES = ("outdated", "unknown-version")
+
+
 def fix_command(state: str, source: str, skill: str) -> str | None:
     """Adding a skill does not raise its module's version, so an outdated one is updated instead."""
     if state == "missing":
         return install_command(source, skill)
-    if state == "outdated" and requirement_channel(source) == "skills-cli":
+    if state in UPDATE_FIXES and requirement_channel(source) == "skills-cli":
         return "npx skills update"
     return None
 
@@ -713,7 +729,7 @@ def next_step(
     for entry in unmet:
         if entry["state"] == "missing" and entry["install"] is not None:
             return str(entry["install"])
-    outdated = any(entry["state"] == "outdated" and entry["channel"] == "skills-cli" for entry in unmet)
+    outdated = any(entry["state"] in UPDATE_FIXES and entry["channel"] == "skills-cli" for entry in unmet)
     if outdated or update_available:
         return "npx skills update"
     if setup_owed:
@@ -1263,7 +1279,11 @@ def status_report(project_root: Path, skill_root: Path, *, module: str | None = 
         "problems": problems,
         "legacy_leftovers": legacy_leftovers(project_root),
         "current": (
-            next_command is None and not unmet and not problems and all(state in settled for state in update_states)
+            next_command is None
+            and not unmet
+            and not problems
+            and not installation.missing_records
+            and all(state in settled for state in update_states)
         ),
         "next": next_command,
     }

@@ -80,6 +80,11 @@ def owed(skill_dir: Path, project_root: Path | None) -> list[str]:
                 f"needs `{requirement.skill}` {requirement.version} or later, and {installed} is installed. "
                 "Offer to run `npx skills update`."
             )
+        elif state == "unknown-version":
+            notes.append(
+                f"needs `{requirement.skill}` {requirement.version} or later, and the installed copy's version "
+                "cannot be read. Offer to run `npx skills update`."
+            )
 
     if record is None or project_root is None or not (project_root / "_bmad").is_dir():
         return notes

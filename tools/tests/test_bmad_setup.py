@@ -2034,6 +2034,38 @@ class BmadRequirementVersionTests(unittest.TestCase):
             (unmet,) = setup_report(self, project, skill)["unmet_requirements"]
             self.assertEqual((unmet["requires"], unmet["state"], unmet["installed"]), ("solo", "outdated", "1.0.0"))
 
+    def test_a_required_skill_with_no_bmod_file_has_an_unknown_version(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project, skill = self.fixture(root, core_version="6.13.0")
+            write_bmod(
+                root,
+                "bmod-beta",
+                "beta",
+                skills=(),
+                extra_fields={"required_skills": [{"skill": "old-skill", "version": "2.0.0", "source": BMAD_SOURCE}]},
+            )
+            (root / "old-skill").mkdir()
+            (root / "old-skill" / "SKILL.md").write_text("# from before module records\n", encoding="utf-8")
+
+            report = status_report(self, project, skill)
+
+            (unmet,) = report["unmet_requirements"]
+            self.assertEqual(
+                (unmet["requires"], unmet["state"], unmet["installed"]), ("old-skill", "unknown-version", None)
+            )
+            self.assertEqual(unmet["install"], "npx skills update")
+            self.assertFalse(report["current"])
+            self.assertEqual(report["next"], "npx skills update")
+
+    def test_a_missing_module_record_with_no_install_command_is_not_current(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project, skill = self.fixture(Path(temp_dir), core_version="6.13.0", record=False)
+
+            for report in (status_report(self, project, skill), setup_report(self, project, skill)):
+                self.assertEqual([entry["install"] for entry in report["missing_module_records"]], [None])
+                self.assertFalse(report["current"])
+
     def test_a_skill_without_its_module_record_is_not_called_outdated(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             project, skill = self.fixture(Path(temp_dir), core_version="6.12.0", record=False)
