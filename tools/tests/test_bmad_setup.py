@@ -865,8 +865,8 @@ class BmadSetupTests(unittest.TestCase):
                 (module_skill / script_path).read_bytes(),
             )
             self.assertFalse((bmad / "scripts" / "tools" / "check.py").exists())
-            self.assertEqual((bmad / "custom" / "keep.txt").read_bytes(), b"custom\n")
-            self.assertEqual((bmad / "config.user.toml").read_bytes(), b"# user\n")
+            self.assertEqual((bmad / "custom" / "keep.txt").read_text(), "custom\n")
+            self.assertEqual((bmad / "config.user.toml").read_text(), "# user\n")
 
             expanded_questions = questions + (
                 {
