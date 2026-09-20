@@ -4,7 +4,7 @@
 # `npx skills add bmad-code-org/BMAD-METHOD` and the plugin marketplaces
 # install, and each shipped script under skills/*/scripts declares its own
 # dependencies inline (PEP 723) so `uv run` works without this file.
-# The release version lives in skills/*/module-manifest.toml, not here.
+# The release version lives in [bmod] of each skills/bmod-*/bmod.toml, not here.
 
 [project]
 name = "bmad-method"

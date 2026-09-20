@@ -12,15 +12,18 @@ any persona the user names on the fly.
 
 What it returns (JSON, stdout):
   * agents   — the installed BMAD roster: the default room, always present.
-  * members  — extra custom personas in the pool (party_members the user
-               defined that aren't already an installed slot).
-  * parties  — the user's named party groups, members resolved to brief
-               entries; open-cast groups (scene names a pool, no roster)
-               are flagged.
+  * members  — extra personas in the pool: guests an installed module's
+               roster offers, and party_members the user defined that
+               aren't already an installed slot.
+  * parties  — the named party groups, an installed module's first and then
+               the user's, members resolved to brief entries; open-cast
+               groups (scene names a pool, no roster) are flagged.
   * default_party — the group id pinned as party-mode's default, if any.
 
 Discovery is best-effort and never blocks the forge. The installed roster
-comes from the core resolver; custom personas/parties come from
+comes from `_bmad/scripts/roster.py`, the same source `bmad-party-mode` uses,
+so both skills see the same room; the `[agents]` table of the central config
+is the fallback for a project set up before rosters existed. Custom personas/parties come from
 `bmad-party-mode`'s resolved customization when that skill is found beside
 this one, else from the user's override TOMLs read directly. Anything that
 can't be resolved is simply omitted and flagged, never fatal.
@@ -70,8 +73,33 @@ def _load_toml(path: Path):
         return {}
 
 
-def load_agents(project_root: Path):
-    """Installed BMAD agents as {code: entry}. (dict, resolved_ok).
+def load_roster(project_root: Path, skill_root: Path):
+    """(agents, guests, groups, resolved_ok) from the skills installed beside this one.
+
+    agents are {code: entry} for the default room. guests are the other
+    roster members, available by name or through a group, as in party mode.
+    """
+    scripts = project_root / "_bmad" / "scripts"
+    data = _run_json(
+        [sys.executable, str(scripts / "roster.py"), "--skill", str(skill_root), "--project-root", str(project_root)]
+    )
+    if data is not None:
+        agents = data.get("agents", {})
+        members = data.get("members", {})
+        groups = data.get("groups", [])
+        agents = agents if isinstance(agents, dict) else {}
+        guests = {
+            code: member
+            for code, member in (members if isinstance(members, dict) else {}).items()
+            if code not in agents and isinstance(member, dict)
+        }
+        return agents, guests, groups if isinstance(groups, list) else [], True
+    agents, resolved = load_config_agents(project_root)
+    return agents, {}, [], resolved
+
+
+def load_config_agents(project_root: Path):
+    """The central config's [agents] table as {code: entry}. (dict, resolved_ok).
 
     The core resolver may emit agents as a dict keyed by code or as an array
     of tables (depending on how the layers merged); normalize both to a dict.
@@ -86,6 +114,15 @@ def load_agents(project_root: Path):
     elif not isinstance(agents, dict):
         agents = {}
     return agents, True
+
+
+def merge_groups(roster_groups: list, custom_groups: list) -> list:
+    """Roster groups first, then the user's; a custom group replaces a roster group with its id."""
+    merged = {g["id"]: g for g in roster_groups if isinstance(g, dict) and g.get("id")}
+    for g in custom_groups if isinstance(custom_groups, list) else []:
+        if isinstance(g, dict) and g.get("id"):
+            merged[g["id"]] = g
+    return list(merged.values())
 
 
 def find_party_skill(project_root: Path, skill_root: Path):
@@ -155,7 +192,7 @@ def _alias(code: str) -> str:
     return code
 
 
-def build_pool(agents: dict, party_members: list):
+def build_pool(agents: dict, party_members: list, guests: dict | None = None):
     """One pool keyed by code; custom members override matching installed slots.
 
     Returns (pool, index, installed_codes, custom_codes):
@@ -187,10 +224,20 @@ def build_pool(agents: dict, party_members: list):
                 "icon": info.get("icon", ""),
                 "title": info.get("title", ""),
                 "description": info.get("description", ""),
+                "persona": info.get("persona", ""),
                 "source": "installed",
             },
         )
         installed_codes.append(code)
+
+    for code, info in (guests or {}).items():
+        entry = {"code": code, "source": "roster"}
+        for field in ("name", "icon", "title", "persona", "capabilities", "model"):
+            if info.get(field):
+                entry[field] = info[field]
+        entry.setdefault("name", code)
+        register(code, entry)
+        custom_codes.append(code)
 
     for m in party_members if isinstance(party_members, list) else []:
         if not isinstance(m, dict):
@@ -254,7 +301,7 @@ def main():
     project_root = Path(args.project_root).resolve()
     skill_root = Path(args.skill).resolve()
 
-    agents, agents_ok = load_agents(project_root)
+    agents, guests, roster_groups, agents_ok = load_roster(project_root, skill_root)
 
     party_skill = find_party_skill(project_root, skill_root)
     if party_skill is not None:
@@ -262,8 +309,8 @@ def main():
     else:
         workflow = load_party_overrides(project_root)
 
-    pool, index, installed_codes, custom_codes = build_pool(agents, workflow.get("party_members", []))
-    parties = resolve_parties(workflow.get("party_groups", []), pool, index)
+    pool, index, installed_codes, custom_codes = build_pool(agents, workflow.get("party_members", []), guests)
+    parties = resolve_parties(merge_groups(roster_groups, workflow.get("party_groups", [])), pool, index)
 
     _emit(
         {

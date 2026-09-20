@@ -151,5 +151,59 @@ class TestResolverInvocation(unittest.TestCase):
             self.assertEqual(cmd[cmd.index("--project-root") + 1], str(Path(tmp) / "project"))
 
 
+class TestLoadRoster(unittest.TestCase):
+    def _load(self, replies):
+        calls = []
+        original = rp._run_json
+
+        def fake(cmd):
+            calls.append(Path(cmd[1]).name)
+            return replies.get(Path(cmd[1]).name)
+
+        rp._run_json = fake
+        try:
+            return rp.load_roster(Path("/project"), Path("/skills/bmad-forge-idea")), calls
+        finally:
+            rp._run_json = original
+
+    def test_reads_agents_guests_and_groups_from_the_roster(self):
+        roster = {
+            "agents": {"bmad-agent-pm": {"name": "John"}},
+            "members": {
+                "bmad-agent-pm": {"name": "John", "skill": "bmad-agent-pm", "installed": True},
+                "skeptic": {"name": "The Skeptic", "persona": "Doubts everything."},
+            },
+            "groups": [{"id": "product-team", "members": ["bmad-agent-pm", "skeptic"]}],
+        }
+        (agents, guests, groups, resolved), calls = self._load({"roster.py": roster})
+        self.assertEqual((sorted(agents), sorted(guests), resolved), (["bmad-agent-pm"], ["skeptic"], True))
+        self.assertEqual(groups[0]["id"], "product-team")
+        self.assertEqual(calls, ["roster.py"])
+
+    def test_falls_back_to_the_config_agents_when_the_roster_script_is_absent(self):
+        (agents, guests, groups, resolved), calls = self._load({"resolve_config.py": {"agents": AGENTS}})
+        self.assertEqual((sorted(agents), guests, groups, resolved), (sorted(AGENTS), {}, [], True))
+        self.assertEqual(calls, ["roster.py", "resolve_config.py"])
+
+    def test_nothing_resolves_when_both_scripts_fail(self):
+        (agents, _, _, resolved), _ = self._load({})
+        self.assertEqual((agents, resolved), ({}, False))
+
+
+class TestRosterInThePool(unittest.TestCase):
+    def test_a_guest_joins_the_pool_but_not_the_default_room_and_a_roster_group_resolves(self):
+        guests = {"skeptic": {"name": "The Skeptic", "persona": "Doubts everything."}}
+        pool, index, installed, extra = rp.build_pool(AGENTS, [], guests)
+        self.assertEqual((installed, extra), (list(AGENTS), ["skeptic"]))
+        self.assertEqual(pool["skeptic"]["source"], "roster")
+        groups = rp.merge_groups([{"id": "team", "members": ["pm", "skeptic"]}], [])
+        (party,) = rp.resolve_parties(groups, pool, index)
+        self.assertEqual([member["code"] for member in party["members"]], ["bmad-agent-pm", "skeptic"])
+
+    def test_a_custom_group_replaces_a_roster_group_with_its_id(self):
+        merged = rp.merge_groups([{"id": "team", "name": "Shipped"}], [{"id": "team", "name": "Mine"}, {"id": "x"}])
+        self.assertEqual([(group["id"], group.get("name")) for group in merged], [("team", "Mine"), ("x", None)])
+
+
 if __name__ == "__main__":
     unittest.main()

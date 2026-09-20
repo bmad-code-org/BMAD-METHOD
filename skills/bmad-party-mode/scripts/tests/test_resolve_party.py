@@ -185,10 +185,18 @@ class TestRoster(unittest.TestCase):
         self.assertEqual(unresolved, ["dev"])
 
     def test_what_the_roster_could_not_use_is_passed_on(self):
+        absent = "module record bmod-demo is not installed; it is named by demo-one; install it with `npx skills add acme/tools --skill bmod-demo`"
         report = {
             "agents": {},
-            "problems": [{"kind": "member", "problem": "demo: member 'x' is already defined by other"}],
-            "rosters": [{"module": "demo", "path": "bmad-meta/r.toml", "drift": ["demo-two"]}],
+            "problems": [
+                {"kind": "member", "problem": "demo: member 'x' is already defined by other"},
+                {
+                    "kind": "module",
+                    "bmod": "bmod-demo",
+                    "install": "npx skills add acme/tools --skill bmod-demo",
+                    "problem": absent,
+                },
+            ],
         }
         original = rp._run_json
         rp._run_json = lambda cmd: report
@@ -196,10 +204,7 @@ class TestRoster(unittest.TestCase):
             problems = rp.load_roster(Path("project"), Path("skill"))[4]
         finally:
             rp._run_json = original
-        self.assertEqual(
-            problems,
-            ["demo: member 'x' is already defined by other", "demo bmad-meta/r.toml: copies disagree in demo-two"],
-        )
+        self.assertEqual(problems, ["demo: member 'x' is already defined by other", absent])
 
     def test_a_custom_group_replaces_a_roster_group_with_its_id(self):
         groups = rp.merge_groups(
@@ -231,6 +236,13 @@ class TestResolverInvocation(unittest.TestCase):
             cmd = self._captured_command(tmp)
             self.assertIn("--project-root", cmd)
             self.assertEqual(cmd[cmd.index("--project-root") + 1], str(Path(tmp) / "project"))
+
+
+class TestArguments(unittest.TestCase):
+    def test_group_is_an_alias_of_party(self):
+        for flag in ("--party", "--group"):
+            args = rp.build_parser().parse_args(["--project-root", "p", "--skill", "s", flag, "writers-room"])
+            self.assertEqual(args.party, "writers-room")
 
 
 if __name__ == "__main__":

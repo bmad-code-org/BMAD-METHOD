@@ -2,14 +2,21 @@
 # /// script
 # requires-python = ">=3.11"
 # ///
-"""Report the knowledge documents an install carries, each one once.
+"""Report the knowledge documents the installed modules offer.
 
-A module replicates a document across its skills and its skills may carry
-different documents, so the same document is usually present many times over.
-Two entries are the same document only when they share a module, a path, and
-their bytes; the skills carrying one document are what make those skills a
-group. Copies that disagree are reported as drift, never resolved by picking
-one.
+A folder whose `bmod.toml` has a `[bmod]` table is a module record, whatever
+the folder is called. The record names the module's skills and holds each
+knowledge document once. `help/help.md` in the record's folder covers every
+skill of the module and needs no entry. A `[[bmod.knowledge]]` entry adds a further document
+and says which of the module's skills it covers: `"*"` or no `skills` key means
+all of them, a list means the named ones.
+
+Every other `help/*.md` is a topic: detail that `help/help.md` points to and a
+reader opens only when a question needs it. Topics are listed with their
+file path and never with their text.
+
+A file this script cannot use becomes an entry in `problems`, never an
+exception.
 
 Usage:
   uv run knowledge.py --root .claude/skills [--root ...] [--content]
@@ -18,21 +25,38 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import stat
 import sys
 import tomllib
 from pathlib import Path, PurePosixPath
+from typing import NamedTuple
 
 sys.dont_write_bytecode = True
 
-MANIFEST_NAME = "module-manifest.toml"
+MANIFEST_NAME = "bmod.toml"
+TOPICS_DIR = "help"
+HELP_NAME = f"{TOPICS_DIR}/help.md"
+ROSTER_NAME = "roster.toml"
 READ_LIMIT = 1024 * 1024
 
 
+class Module(NamedTuple):
+    code: str
+    folder: Path
+    table: dict[str, object]
+    skills: list[str]
+
+
+class Scan(NamedTuple):
+    folders: dict[str, Path]
+    modules: list[Module]
+    skills: list[dict[str, object]]
+    problems: list[dict[str, object]]
+
+
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Report the distinct knowledge documents an install carries.")
+    parser = argparse.ArgumentParser(description="Report the knowledge documents the installed modules offer.")
     parser.add_argument("--root", type=Path, action="append", required=True, help="a skills root to scan")
     parser.add_argument("--content", action="store_true", help="include each document's text")
     args = parser.parse_args(argv)
@@ -41,100 +65,222 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def collect(roots: list[Path], *, include_content: bool = False) -> dict[str, object]:
+    found = scan(roots)
+    problems = found.problems
     documents: dict[tuple[str, str], dict[str, object]] = {}
-    problems: list[dict[str, str]] = []
-    skills: list[dict[str, object]] = []
-    seen_skills: set[str] = set()
+
+    for module in found.modules:
+        entries = module.table.get("knowledge", [])
+        if not isinstance(entries, list):
+            problems.append(
+                {"kind": "knowledge", "skill": module.folder.name, "problem": "[bmod] 'knowledge' is not a list"}
+            )
+            continue
+        if (module.folder / HELP_NAME).exists():
+            entries = [{"path": HELP_NAME}, *entries]
+        for entry in entries:
+            record_document(documents, problems, found.folders, module, entry, include_content=include_content)
+
+    topics = [
+        topic
+        for module in found.modules
+        for topic in module_topics(module, problems)
+        if (topic["module"], topic["path"]) not in documents
+    ]
+
+    return {
+        "roots": [str(root) for root in roots],
+        "skills": sorted(found.skills, key=lambda item: str(item["skill"])),
+        "documents": sorted(documents.values(), key=lambda item: (str(item["module"]), str(item["path"]))),
+        "topics": sorted(topics, key=lambda item: (str(item["module"]), str(item["path"]))),
+        "problems": problems,
+    }
+
+
+def scan(roots: list[Path]) -> Scan:
+    """Find every module record and every module skill in the roots."""
+    folders: dict[str, Path] = {}
+    modules: list[Module] = []
+    problems: list[dict[str, object]] = []
+    record_codes: dict[str, str] = {}
+    pending: list[tuple[Path, Path, dict[str, object], bool]] = []
 
     for root in roots:
         try:
-            folders = sorted(path for path in root.iterdir() if path.is_dir())
+            found = sorted(path for path in root.iterdir() if path.is_dir())
         except OSError as error:
             problems.append({"kind": "root", "root": str(root), "problem": f"cannot read root {root}: {error}"})
             continue
-        for folder in folders:
-            # The first root wins a skill name outright: a project copy shadows a
-            # user copy even when the project copy carries no manifest.
-            if folder.name in seen_skills:
+        for folder in found:
+            # The first root wins a folder name outright: a project copy shadows a
+            # user copy even when the project copy carries no bmod.toml.
+            if folder.name in folders:
                 continue
-            seen_skills.add(folder.name)
+            folders[folder.name] = folder
             manifest = folder / MANIFEST_NAME
             try:
                 if not manifest.is_file():
                     continue
                 data = tomllib.loads(manifest.read_text(encoding="utf-8"))
-                module = data["module"]
-                entries = data["knowledge"]
-                if not isinstance(module, str) or not module:
-                    raise ValueError("manifest has no usable 'module'")
-            except OSError as error:
-                problems.append(
-                    {
-                        "kind": "manifest",
-                        "skill": folder.name,
-                        "manifest": str(manifest),
-                        "problem": f"cannot read manifest {manifest}: {error}",
-                    }
-                )
+            except (OSError, UnicodeError, tomllib.TOMLDecodeError) as error:
+                problems.append(manifest_problem(folder, f"cannot use {manifest}: {error}"))
                 continue
-            except (UnicodeError, tomllib.TOMLDecodeError, KeyError, ValueError) as error:
-                problems.append(
-                    {
-                        "kind": "manifest",
-                        "skill": folder.name,
-                        "manifest": str(manifest),
-                        "problem": f"cannot use manifest {manifest}: {error}",
-                    }
-                )
+            if "bmod" not in data and "skill" not in data:
+                problems.append(manifest_problem(folder, f"{manifest} has neither a [bmod] nor a [skill] table"))
                 continue
 
-            skills.append({"skill": folder.name, "module": module, "root": str(root)})
-            if isinstance(entries, str):
-                problems.append(
-                    {
-                        "kind": "knowledge",
-                        "skill": folder.name,
-                        "problem": "manifest predates the knowledge list format and carries no document of its own",
-                    }
-                )
-                continue
-            if not isinstance(entries, list):
-                problems.append(
-                    {"kind": "knowledge", "skill": folder.name, "problem": "manifest 'knowledge' is not a list"}
-                )
-                continue
-            for entry in entries:
-                record_document(documents, problems, folder, module, entry, include_content=include_content)
+            skill = data.get("skill")
+            if "skill" in data and not isinstance(skill, dict):
+                problems.append(manifest_problem(folder, f"{manifest}: 'skill' is not a table"))
+                skill = None
+            if "bmod" in data:
+                module = read_record(folder, data["bmod"], skill is not None, problems)
+                if module is not None:
+                    record_codes[folder.name] = module.code
+                    first = next((other for other in modules if other.code.casefold() == module.code.casefold()), None)
+                    if first is None:
+                        modules.append(module)
+                    else:
+                        problems.append(
+                            {
+                                "kind": "module",
+                                "skill": folder.name,
+                                "problem": f"{folder.name}: module {module.code!r} is already recorded by "
+                                f"{first.folder.name}; {first.folder.name} is used",
+                            }
+                        )
+            if skill is not None:
+                pending.append((root, folder, skill, "bmod" in data))
 
-    ordered = sorted(documents.values(), key=lambda item: (str(item["module"]), str(item["path"])))
-    for document in ordered:
-        document["skills"] = sorted(document["skills"])
-        document["drift"] = sorted(document["drift"], key=lambda item: str(item["skill"]))
+    skills = [
+        resolve_skill(root, folder, table, own_record, record_codes) for root, folder, table, own_record in pending
+    ]
+    problems.extend(absent_records(skills, folders))
+    for entry in skills:
+        entry.pop("source")
+    return Scan(folders, modules, skills, problems)
+
+
+def manifest_problem(folder: Path, problem: str) -> dict[str, object]:
+    return {"kind": "manifest", "skill": folder.name, "manifest": str(folder / MANIFEST_NAME), "problem": problem}
+
+
+def read_record(folder: Path, table: object, has_skill: bool, problems: list[dict[str, object]]) -> Module | None:
+    manifest = folder / MANIFEST_NAME
+    if not isinstance(table, dict):
+        problems.append(manifest_problem(folder, f"{manifest}: 'bmod' is not a table"))
+        return None
+    code = table.get("code")
+    if not isinstance(code, str) or not code:
+        problems.append(manifest_problem(folder, f"{manifest}: [bmod] has no usable 'code'"))
+        return None
+    listed = table.get("skills")
+    if listed is None:
+        # A record that is also a skill, with no list, is its own one member.
+        members = [folder.name] if has_skill else []
+    elif isinstance(listed, list) and all(isinstance(name, str) and name for name in listed):
+        members = list(dict.fromkeys(listed))
+    else:
+        problems.append(manifest_problem(folder, f"{manifest}: [bmod] 'skills' is not a list of skill names"))
+        members = []
+    return Module(code, folder, table, members)
+
+
+def resolve_skill(
+    root: Path, folder: Path, table: dict[str, object], own_record: bool, record_codes: dict[str, str]
+) -> dict[str, object]:
+    bmod = folder.name if own_record else table.get("bmod")
+    if not isinstance(bmod, str) or not bmod:
+        bmod = None
     return {
-        "roots": [str(root) for root in roots],
-        "skills": sorted(skills, key=lambda item: str(item["skill"])),
-        "documents": ordered,
-        "problems": problems,
+        "skill": folder.name,
+        "module": record_codes.get(bmod) if bmod else None,
+        "bmod": bmod,
+        "root": str(root),
+        "source": table.get("source"),
     }
+
+
+def absent_records(skills: list[dict[str, object]], folders: dict[str, Path]) -> list[dict[str, object]]:
+    """One problem per module record that skills name and no root holds."""
+    problems: list[dict[str, object]] = []
+    by_bmod: dict[str, list[dict[str, object]]] = {}
+    for entry in skills:
+        if entry["module"] is not None:
+            continue
+        if entry["bmod"] is None:
+            problems.append(
+                {
+                    "kind": "manifest",
+                    "skill": entry["skill"],
+                    "problem": f"{entry['skill']}: [skill] does not name its module record under 'bmod'",
+                }
+            )
+            continue
+        by_bmod.setdefault(str(entry["bmod"]), []).append(entry)
+    for bmod, entries in sorted(by_bmod.items()):
+        names = sorted(str(entry["skill"]) for entry in entries)
+        state = "has no usable module record" if bmod in folders else "is not installed"
+        problem: dict[str, object] = {
+            "kind": "module",
+            "bmod": bmod,
+            "skills": names,
+            "problem": f"module record {bmod} {state}; it is named by {', '.join(names)}",
+        }
+        command = None if bmod in folders else install_command(entries[0]["source"], bmod)
+        if command:
+            problem["install"] = command
+            problem["problem"] = f"{problem['problem']}; install it with `{command}`"
+        problems.append(problem)
+    return problems
+
+
+def install_command(source: object, skill: str) -> str | None:
+    if not isinstance(source, str) or not source.startswith("github:"):
+        return None
+    parts = source.removeprefix("github:").split("/")
+    if len(parts) < 2 or not all(parts[:2]):
+        return None
+    return f"npx skills add {parts[0]}/{parts[1]} --skill {skill}"
 
 
 def record_document(
     documents: dict[tuple[str, str], dict[str, object]],
-    problems: list[dict[str, str]],
-    folder: Path,
-    module: str,
+    problems: list[dict[str, object]],
+    folders: dict[str, Path],
+    module: Module,
     entry: object,
     *,
     include_content: bool,
 ) -> None:
-    if not isinstance(entry, str):
-        problems.append({"kind": "knowledge", "skill": folder.name, "problem": f"knowledge names {entry!r}"})
-        return
-    relative = safe_skill_relative(entry)
-    if relative is None:
+    folder = module.folder
+    name = entry.get("path") if isinstance(entry, dict) else None
+    if not isinstance(name, str):
         problems.append(
-            {"kind": "knowledge", "skill": folder.name, "problem": f"knowledge names unsafe path {entry!r}"}
+            {"kind": "knowledge", "skill": folder.name, "problem": f"knowledge entry {entry!r} has no path"}
         )
+        return
+    relative = safe_skill_relative(name)
+    if relative is None:
+        problems.append({"kind": "knowledge", "skill": folder.name, "problem": f"knowledge names unsafe path {name!r}"})
+        return
+    covered = entry.get("skills", "*")
+    if covered == "*":
+        skills = list(module.skills)
+    elif isinstance(covered, list) and all(isinstance(skill, str) and skill for skill in covered):
+        skills = list(dict.fromkeys(covered))
+    else:
+        problems.append(
+            {
+                "kind": "knowledge",
+                "skill": folder.name,
+                "problem": f"knowledge entry {name!r}: 'skills' is neither \"*\" nor a list of skill names",
+            }
+        )
+        return
+    key = (module.code, relative.as_posix())
+    if key in documents:
+        problems.append({"kind": "knowledge", "skill": folder.name, "problem": f"knowledge names {name!r} twice"})
         return
 
     path = folder.joinpath(*relative.parts)
@@ -158,34 +304,41 @@ def record_document(
         )
         return
 
-    digest = hashlib.sha256(raw).hexdigest()
-    # Identity is (module, normalized path) plus matching bytes: two modules may
-    # ship the same filename with different content, and must stay separate.
-    key = (module, relative.as_posix())
-    document = documents.get(key)
-    if document is None:
-        document = {
-            "module": module,
-            "path": relative.as_posix(),
-            "sha256": digest,
-            "reported_from": folder.name,
-            "skills": set(),
-            "drift": [],
-        }
-        if include_content:
-            document["content"] = text
-        documents[key] = document
-    if digest != document["sha256"]:
-        drift: dict[str, object] = {"skill": folder.name, "sha256": digest}
-        if include_content:
-            drift["content"] = text
-        document["drift"].append(drift)
-        return
-    document["skills"].add(folder.name)
+    document: dict[str, object] = {
+        "module": module.code,
+        "path": relative.as_posix(),
+        "skills": skills,
+        "installed_skills": [skill for skill in skills if skill in folders],
+        "reported_from": folder.name,
+    }
+    if include_content:
+        document["content"] = text
+    documents[key] = document
+
+
+def module_topics(module: Module, problems: list[dict[str, object]]) -> list[dict[str, object]]:
+    folder = module.folder
+    try:
+        found = sorted(path for path in (folder / TOPICS_DIR).glob("*.md") if path != folder / HELP_NAME)
+    except OSError:
+        return []
+    topics: list[dict[str, object]] = []
+    for path in found:
+        try:
+            read_document(path, folder).decode("utf-8")
+        except (OSError, ValueError) as error:
+            problems.append(
+                {"kind": "document", "skill": folder.name, "document": str(path), "problem": f"{path}: {error}"}
+            )
+            continue
+        topics.append(
+            {"module": module.code, "topic": path.stem, "path": f"{TOPICS_DIR}/{path.name}", "file": str(path)}
+        )
+    return topics
 
 
 def read_document(path: Path, folder: Path) -> bytes:
-    """Read a knowledge document, refusing anything that is not a plain file inside the skill."""
+    """Read a knowledge document, refusing anything that is not a plain file inside the folder."""
     resolved = path.resolve()
     if not resolved.is_relative_to(folder.resolve()):
         raise ValueError("resolves outside the skill folder")
@@ -200,7 +353,7 @@ def read_document(path: Path, folder: Path) -> bytes:
 
 
 def safe_skill_relative(entry: str) -> PurePosixPath | None:
-    """A manifest path that cannot escape the skill folder, or None if it can.
+    """A bmod.toml path that cannot escape the skill folder, or None if it can.
 
     Mirrors safe_skill_relative in setup.py. A URL parses as an ordinary
     relative path and a Windows drive prefix makes a later join discard the
