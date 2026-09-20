@@ -155,6 +155,14 @@ class ProjectCase(unittest.TestCase):
 
 
 class TestRules(ProjectCase):
+    def test_line_endings_of_another_platform_are_refused(self):
+        other = "\n" if os.linesep == "\r\n" else "\r\n"
+        skill = self.skills / "bmad-foreign"
+        skill.mkdir()
+        content = skill_md("bmad-foreign", "Helps with line endings. Use when the file came from elsewhere.")
+        (skill / "SKILL.md").write_bytes(content.replace("\n", other).encode())
+        self.assertTrue(findings_by_rule(self.findings_for(skill), "SKILL-02"))
+
     def test_skill_01_missing_skill_md(self):
         skill = self.skills / "bmad-empty"
         skill.mkdir()
@@ -481,12 +489,14 @@ class TestCliAndOutput(ProjectCase):
 class TestParsers(unittest.TestCase):
     def test_parse_frontmatter_null_and_empty(self):
         self.assertIsNone(vs.parse_frontmatter("no fence\n"))
-        self.assertEqual(vs.parse_frontmatter("---\n---\nbody\n"), {})
-        self.assertEqual(vs.parse_frontmatter("---\nname: 'quoted'\n---\n"), {"name": "quoted"})
+        self.assertEqual(vs.parse_frontmatter("---\n---\nbody\n".replace("\n", os.linesep)), {})
+        self.assertEqual(
+            vs.parse_frontmatter("---\nname: 'quoted'\n---\n".replace("\n", os.linesep)), {"name": "quoted"}
+        )
 
     def test_parse_frontmatter_multiline_continuation_and_comments(self):
         content = "---\nname: bmad-x\ndescription: line1\n  line2\n# ignored\n  line3\n---\n\nBody\n"
-        fm = vs.parse_frontmatter_multiline(content)
+        fm = vs.parse_frontmatter_multiline(content.replace("\n", os.linesep))
         self.assertEqual(fm["name"], "bmad-x")
         self.assertEqual(fm["description"], "line1\n  line2\n  line3")
 
