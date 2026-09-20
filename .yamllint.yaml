@@ -1,2 +1,7 @@
 extends: relaxed
 ignore: [node_modules/, docs-site/, _bmad*/]
+
+rules:
+  # A Windows checkout has CRLF; expect the line ending of the platform.
+  new-lines:
+    type: platform
