@@ -113,6 +113,11 @@ def escape_table_cell(s: str) -> str:
     return str(s).replace("|", "\\|")
 
 
+def repo_path(path: str, project_root: str) -> str:
+    # A reported path is a repo path: "/" on every platform.
+    return os.path.relpath(path, project_root).replace(os.sep, "/")
+
+
 # --- File Discovery ---
 
 
@@ -345,16 +350,16 @@ def run(project_root: str, strict: bool = False, verbose: bool = False) -> int:
         stray_files = sorted(entry.name for entry in it if entry.is_file(follow_symlinks=False))
     if stray_files:
         files_with_issues += 1
-        print(os.path.relpath(skills_dir, project_root))
+        print(repo_path(skills_dir, project_root))
         for name in stray_files:
-            rel = os.path.relpath(os.path.join(skills_dir, name), project_root)
+            rel = repo_path(os.path.join(skills_dir, name), project_root)
             print(f"  [STRAY] {name}: files may not sit directly under skills/")
             all_issues.append({"file": rel, "line": 1, "ref": name, "issue": "stray file"})
             if github_actions:
                 print(f"::warning file={rel},line=1::{escape_annotation('Stray file directly under skills/')}")
 
     for file_path in files:
-        relative_path = os.path.relpath(file_path, project_root)
+        relative_path = repo_path(file_path, project_root)
         with open(file_path, encoding="utf-8", errors="replace") as f:
             content = f.read()
         ext = os.path.splitext(file_path)[1]
@@ -374,7 +379,7 @@ def run(project_root: str, strict: bool = False, verbose: bool = False) -> int:
             resolved = resolve_ref(ref, skills_dir)
 
             if resolved and not os.path.exists(resolved):
-                rel_resolved = os.path.relpath(resolved, project_root)
+                rel_resolved = repo_path(resolved, project_root)
                 # Extensionless paths may be directory references or partial templates.
                 # Nothing exists at all — likely a real broken reference. UNRESOLVED is
                 # distinct from BROKEN, which means "file with extension not found".
@@ -484,4 +489,8 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
+    if sys.platform == "win32":
+        # Piped output on Windows defaults to a legacy code page, not UTF-8.
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
     sys.exit(main())

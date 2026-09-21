@@ -165,4 +165,8 @@ def report_owed_setup(skill_dir: Path, project_root: Path | None) -> None:
 
 
 if __name__ == "__main__":
+    if sys.platform == "win32":
+        # Piped output on Windows defaults to a legacy code page, not UTF-8.
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
     raise SystemExit(main())

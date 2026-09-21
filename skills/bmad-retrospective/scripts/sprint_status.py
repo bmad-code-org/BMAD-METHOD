@@ -18,7 +18,6 @@ import os
 import re
 import stat
 import sys
-import tempfile
 from collections import Counter
 from collections.abc import Mapping
 from datetime import datetime
@@ -203,7 +202,7 @@ def _atomic_write(path, payload, mode=None):
     """Replace ``path``'s contents with ``payload`` atomically.
 
     The bytes land in a temp file alongside the target, are fsynced, take the
-    target's permission bits (mkstemp creates 0600, which would silently narrow
+    target's permission bits (the temp file is created 0600, which would silently narrow
     the file), and only then rename over it -- so a kill or a full disk leaves
     the original file intact rather than truncated. ``path`` is resolved through
     symlinks first: renaming onto a symlink would detach the link and leave the
@@ -213,7 +212,11 @@ def _atomic_write(path, payload, mode=None):
     """
     path = os.path.realpath(path)
     directory = os.path.dirname(path) or "."
-    fd, tmp_path = tempfile.mkstemp(prefix=".sprint-status-", suffix=".tmp", dir=directory)
+    # One attempt, not mkstemp: on Windows, older Pythons' mkstemp takes "access denied"
+    # for a name collision and tries the next name, some two billion times. The script
+    # would hang in a folder it cannot write to instead of reporting the failure.
+    tmp_path = os.path.join(directory, f".sprint-status-{os.urandom(8).hex()}.tmp")
+    fd = os.open(tmp_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_BINARY", 0), 0o600)
     try:
         with os.fdopen(fd, "wb") as fh:
             fh.write(payload)
@@ -417,7 +420,7 @@ def cmd_update(args):
 
     # 1. Keep original bytes for restore-on-failure, and the mode to write back
     #    with -- taken from the open handle so an unlink mid-run cannot leave the
-    #    replacement silently narrowed to mkstemp's 0600.
+    #    replacement silently narrowed to the temp file's 0600.
     try:
         with open(args.file, "rb") as fh:
             original_bytes = fh.read()
@@ -715,4 +718,8 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
+    if sys.platform == "win32":
+        # Piped output on Windows defaults to a legacy code page, not UTF-8.
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
     main()

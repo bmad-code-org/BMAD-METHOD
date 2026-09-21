@@ -30,6 +30,8 @@ package = false
 [tool.pytest.ini_options]
 addopts = "-q -ra --tb=short -n auto -p no:cacheprovider"
 testpaths = ["tools/tests", "skills"]
+# tools/tests/helpers.py, for the tests under skills/ as well.
+pythonpath = ["tools/tests"]
 
 [tool.ruff]
 # Every shipped script declares the same floor inline (PEP 723) as

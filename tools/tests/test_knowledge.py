@@ -1,5 +1,6 @@
 import importlib.util
 import json
+import os
 import sys
 import tempfile
 import unittest
@@ -199,7 +200,7 @@ class KnowledgeCollectionTests(unittest.TestCase):
         documents = self.documents(report)
         self.assertEqual(sorted(documents), [("alpha", "extra.md"), ("alpha", "help/help.md")])
         self.assertEqual(documents[("alpha", "help/help.md")]["skills"], ["a-1", "a-2"])
-        self.assertEqual(documents[("alpha", "help/help.md")]["content"], "# alpha help\n")
+        self.assertEqual(documents[("alpha", "help/help.md")]["content"], "# alpha help" + os.linesep)
         self.assertEqual(report["problems"], [])
 
     def test_a_module_without_help_md_offers_no_document_and_no_problem(self):
@@ -347,7 +348,7 @@ class KnowledgeCollectionTests(unittest.TestCase):
 
         self.assertEqual(len(report["skills"]), 1)
         self.assertEqual(report["skills"][0]["root"], str(self.root))
-        self.assertEqual(report["documents"][0]["content"], "# alpha module-help.md\n")
+        self.assertEqual(report["documents"][0]["content"], "# alpha module-help.md" + os.linesep)
         self.assertEqual(report["problems"], [])
 
     def test_a_record_in_one_root_covers_its_skills_in_another(self):
@@ -368,7 +369,7 @@ class KnowledgeCollectionTests(unittest.TestCase):
         self.assertNotIn("content", self.knowledge.collect([self.root])["documents"][0])
         report = self.knowledge.collect([self.root], include_content=True)
 
-        self.assertEqual(report["documents"][0]["content"], "# alpha module-help.md\n")
+        self.assertEqual(report["documents"][0]["content"], "# alpha module-help.md" + os.linesep)
 
 
 if __name__ == "__main__":

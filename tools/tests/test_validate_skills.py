@@ -10,6 +10,8 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
+from helpers import chmod
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 VALIDATOR = REPO_ROOT / "tools" / "validate_skills.py"
 FIXTURES = REPO_ROOT / "tools" / "tests" / "fixtures" / "validate-skills"
@@ -155,6 +157,14 @@ class ProjectCase(unittest.TestCase):
 
 
 class TestRules(ProjectCase):
+    def test_line_endings_of_another_platform_are_refused(self):
+        other = "\n" if os.linesep == "\r\n" else "\r\n"
+        skill = self.skills / "bmad-foreign"
+        skill.mkdir()
+        content = skill_md("bmad-foreign", "Helps with line endings. Use when the file came from elsewhere.")
+        (skill / "SKILL.md").write_bytes(content.replace("\n", other).encode())
+        self.assertTrue(findings_by_rule(self.findings_for(skill), "SKILL-02"))
+
     def test_skill_01_missing_skill_md(self):
         skill = self.skills / "bmad-empty"
         skill.mkdir()
@@ -353,8 +363,8 @@ class TestRules(ProjectCase):
     def test_read_err_on_unreadable_file_continues(self):
         skill = self.valid("bmad-perm", {"secret.md": "ok\n"})
         target = skill / "secret.md"
-        os.chmod(target, 0)
-        self.addCleanup(os.chmod, target, 0o644)
+        chmod(target, 0, deny="RD")
+        self.addCleanup(chmod, target, 0o644)
         findings = findings_by_rule(self.findings_for(skill), "READ-ERR")
         self.assertGreaterEqual(len(findings), 1)
         self.assertEqual(findings[0]["severity"], "MEDIUM")
@@ -481,12 +491,14 @@ class TestCliAndOutput(ProjectCase):
 class TestParsers(unittest.TestCase):
     def test_parse_frontmatter_null_and_empty(self):
         self.assertIsNone(vs.parse_frontmatter("no fence\n"))
-        self.assertEqual(vs.parse_frontmatter("---\n---\nbody\n"), {})
-        self.assertEqual(vs.parse_frontmatter("---\nname: 'quoted'\n---\n"), {"name": "quoted"})
+        self.assertEqual(vs.parse_frontmatter("---\n---\nbody\n".replace("\n", os.linesep)), {})
+        self.assertEqual(
+            vs.parse_frontmatter("---\nname: 'quoted'\n---\n".replace("\n", os.linesep)), {"name": "quoted"}
+        )
 
     def test_parse_frontmatter_multiline_continuation_and_comments(self):
         content = "---\nname: bmad-x\ndescription: line1\n  line2\n# ignored\n  line3\n---\n\nBody\n"
-        fm = vs.parse_frontmatter_multiline(content)
+        fm = vs.parse_frontmatter_multiline(content.replace("\n", os.linesep))
         self.assertEqual(fm["name"], "bmad-x")
         self.assertEqual(fm["description"], "line1\n  line2\n  line3")
 

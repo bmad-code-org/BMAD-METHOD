@@ -10,10 +10,10 @@ import argparse
 import copy
 import datetime
 import json
+import os
 import re
 import shutil
 import sys
-import tempfile
 import tomllib
 import urllib.error
 import urllib.parse
@@ -1708,7 +1708,11 @@ def materialize_bmad(
 ) -> None:
     bmad = project_root / "_bmad"
     project_root.mkdir(parents=True, exist_ok=True)
-    staging = Path(tempfile.mkdtemp(prefix="_bmad.setup-", dir=project_root))
+    # One attempt, not mkdtemp: on Windows, older Pythons' mkdtemp takes "access denied"
+    # for a name collision and tries the next name, some two billion times. Setup
+    # would hang in a folder it cannot write to instead of reporting the failure.
+    staging = project_root / f"_bmad.setup-{os.urandom(8).hex()}"
+    staging.mkdir(mode=0o700)
     try:
         # Seed staging so custom/, extra *.user.toml, and leftovers
         # survive replace_dir.
@@ -1744,12 +1748,9 @@ def replace_dir(src: Path, dest: Path) -> None:
     if not dest.exists():
         src.rename(dest)
         return
-    backup = Path(tempfile.mkdtemp(prefix="_bmad.old-", dir=dest.parent))
-    try:
-        dest.rename(backup)
-    except Exception:
-        shutil.rmtree(backup, ignore_errors=True)
-        raise
+    # Not mkdtemp: Windows refuses a rename onto an existing directory.
+    backup = dest.with_name(f"_bmad.old-{datetime.datetime.now():%Y%m%d-%H%M%S}")
+    dest.rename(backup)
     try:
         src.rename(dest)
     except Exception:
@@ -1952,4 +1953,8 @@ def cli() -> int:
 
 
 if __name__ == "__main__":
+    if sys.platform == "win32":
+        # Piped output on Windows defaults to a legacy code page, not UTF-8.
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
     raise SystemExit(cli())

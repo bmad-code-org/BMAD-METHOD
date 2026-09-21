@@ -8,7 +8,7 @@ A container folder holds its own ticket file, its spec, and flat leaf files name
 `<type>-<nn>-<slug>.md`. Each leaf's frontmatter is the record: `status` (mirrored from the
 tracker when one is configured), `blocked_by` (numbers, file names, or ids of sibling
 tickets; a dropped blocker still blocks until the dependency is removed or repointed), `refined`, `hitl`, `covers`, `estimate`. The container's `## Breakdown` section lists
-the agreed entries, `- nn type — title; blocked_by: nn, nn; covers: ids`; an entry with no leaf file
+the agreed entries, `- nn type - title; blocked_by: nn, nn; covers: ids`; an entry with no leaf file
 yet is reported under `to_create` once its blockers are done. Nothing else indexes them; this
 script derives the view at read time.
 
@@ -170,7 +170,7 @@ def load_breakdown(folder: Path) -> list[dict]:
             if not m:
                 if BREAKDOWN_ENTRY_RE.match(line):
                     raise TicketError(
-                        f"{path.name}: Breakdown line does not match `- nn type — title; blocked_by: nn; covers: ids`: {line}"
+                        f"{path.name}: Breakdown line does not match `- nn type - title; blocked_by: nn; covers: ids`: {line}"
                     )
                 continue
             title, *fields = [part.strip() for part in m.group(3).split(";")]
@@ -392,4 +392,8 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    if sys.platform == "win32":
+        # Piped output on Windows defaults to a legacy code page, not UTF-8.
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
     raise SystemExit(main())
