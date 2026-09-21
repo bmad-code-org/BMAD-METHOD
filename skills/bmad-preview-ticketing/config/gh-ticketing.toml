@@ -72,7 +72,7 @@ Type, hitl, risk, severity, and status are labels — except done and dropped, t
 --json subIssues`. Words: `gh issue list --search "<words>" --state all`, narrowed by
 --label. The local file: `grep -rl "^id: <n>" root` or the filename.
 A child the tracker holds with no file in the tree gets an `[[entry]]` with the next unused `n` in its parent's `tickets.toml`, then its file.
-Candidates to start (refine any with `refined: false` before starting): open (in the initiative's milestone, or with no milestone for a standalone ticket), backlog label and no other status label, every
+Candidates to start (one that `tickets.py next` lists under `ready_to_refine` gets its criteria first): open (in the initiative's milestone, or with no milestone for a standalone ticket), backlog label and no other status label, every
 blockedBy closed as completed, no assignee, no blocked_at in the ticket file. Offer all ready tickets; when one must be chosen, the
 one that unblocks the most work behind it.
 """

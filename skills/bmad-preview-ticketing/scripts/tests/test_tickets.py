@@ -231,8 +231,14 @@ covers = ["R2", "R3"]
         )
         self.assertEqual(run("pull", str(self.epic), "1").returncode, 0)
         text = (self.epic / "story-01-scaffold.md").read_text(encoding="utf-8")
-        self.assertIn("## References\n\n- parent — epic-cart/epic-cart.md\n- SPINE.md#ad-8\n", text)
+        parent = (self.epic / "epic-cart.md").resolve().relative_to(self.root.resolve()).as_posix()
+        self.assertIn(f"## References\n\n- parent — {parent}\n- SPINE.md#ad-8\n", text)
         self.assertIn("## Notes\n\n- Open question: Which host?\n- Reuse the mailer.\n", text)
+
+    def test_a_quoted_title_survives_the_pull(self):
+        self.breakdown_epic(self.BREAKDOWN.replace('title = "Scaffold"', "title = 'Say \"hi\"'"))
+        self.assertEqual(run("pull", str(self.epic), "1").returncode, 0)
+        self.assertEqual(self.next()["ready_to_start"][0]["title"], 'Say "hi"')
 
     def test_references_must_be_a_list(self):
         self.breakdown_epic(self.BREAKDOWN.replace('title = "Scaffold"', 'title = "Scaffold"\nreferences = "SPINE.md"'))

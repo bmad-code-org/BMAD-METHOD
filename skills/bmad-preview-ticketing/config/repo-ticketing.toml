@@ -58,7 +58,7 @@ By id: `grep -rl "^id: <id>" root`; by title, the filename; by words, `grep -rli
 parent. A container's children are the ticket files and container folders in its folder; planned children with no file are the entries in its `tickets.toml`. Frontmatter holds id,
 remote, type, title, parent, covers (the source requirement ids), blocked_by, blocked_at and
 blocked_reason when blocked, assignee, status, refined, hitl, risk, estimate, and severity on bugs.
-Candidates to start (refine any with `refined: false` before starting): status draft or backlog, blocked_at empty, every blocked_by done, unassigned. Several ready tickets are parallel work;
+Candidates to start (one that `tickets.py next` lists under `ready_to_refine` gets its criteria first): status draft or backlog, blocked_at empty, every blocked_by done, unassigned. Several ready tickets are parallel work;
 offer them all. When one must be chosen, take the one that unblocks the most work behind it.
 """
 

@@ -75,7 +75,7 @@ project, relations, description; blocked_by is the "blocked by" relations, and t
 covers holds the source requirement ids. Many: `list_issues` by project, parent, label, state, or
 query words. The local file: `grep -rl "^id: <identifier>" root` or the filename.
 A child the tracker holds with no file in the tree gets an `[[entry]]` with the next unused `n` in its parent's `tickets.toml`, then its file.
-Candidates to start (refine any with `refined: false` before starting): state [tickets.status].backlog, every "blocked by" relation done, unassigned, no blocked_at in the ticket file. Offer all
+Candidates to start (one that `tickets.py next` lists under `ready_to_refine` gets its criteria first): state [tickets.status].backlog, every "blocked by" relation done, unassigned, no blocked_at in the ticket file. Offer all
 ready tickets; when one must be chosen, the one that unblocks the most work behind it.
 """
 

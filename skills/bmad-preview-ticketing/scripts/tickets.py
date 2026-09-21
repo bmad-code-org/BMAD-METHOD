@@ -31,6 +31,7 @@ the store forbids the operation.
 
 import argparse
 import json
+import os
 import re
 import sys
 import tomllib
@@ -79,6 +80,11 @@ def _scalar(value: str):
         inner = value[1:-1].strip()
         return [] if not inner else [_scalar(v.strip()) for v in inner.split(",")]
     if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+        if value[0] == '"':
+            try:
+                return str(json.loads(value))
+            except ValueError:
+                pass
         return value[1:-1]
     if value in ("true", "false"):
         return value == "true"
@@ -569,7 +575,7 @@ Verify: {verify}
 
 ## References
 
-- parent — {epic}/{epic}.md
+- parent — {parent}
 {references}{notes}"""
 
 
@@ -585,12 +591,19 @@ def cmd_pull(args) -> dict:
     path = folder / f"{t['type']}-{t['n']:02d}-{slug}.md"
     prefix = f"{t['epic']}/"
     blockers = [b[len(prefix) :] if b.startswith(prefix) else b for b in t["blocked_by"]]
+    root = project_root_for(args, folder)
+    epic_file = folder / f"{folder.name}.md"
+    try:
+        parent = Path(os.path.relpath(epic_file, root)).as_posix() if root else epic_file.as_posix()
+    except ValueError:  # another drive on Windows
+        parent = epic_file.as_posix()
     notes = ([f"Open question: {t['unknown']}"] if t["unknown"] else []) + t["notes"]
     path.write_text(
         PULLED.format(
             type=t["type"],
             title=json.dumps(t["title"], ensure_ascii=False),
             heading=t["title"],
+            parent=parent,
             epic=t["epic"],
             covers=", ".join(t["covers"]),
             blocked_by=", ".join(blockers),
