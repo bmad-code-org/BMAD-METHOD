@@ -1,6 +1,6 @@
 # Validating tickets
 
-Run `{workflow.checks}` through agents that were not in this conversation; each gets only its scope's arrays. `tickets.py` reads only the blockers that were written; a blocker that is missing is for these agents to find.
+Run `{workflow.checks}` through agents that were not in this conversation; each gets only its scope's arrays. When `checks.dependencies` resolves empty, stop and tell the user: an override file sets `checks` as one string, which replaces every shipped check; it must be rewritten as `checks.<scope>` arrays. `tickets.py` reads only the blockers that were written; a blocker that is missing is for these agents to find.
 
 - **A proposed set of epics, a proposed epic breakdown, or a re-slice:** on the draft, before the user is asked to approve it. This always runs; no path, mode, or setting skips it. First walk the draft through each of `checks.dependencies` yourself and fix what that finds, then give the agent the corrected draft as text. Present the draft with what the check changed and what it confirmed. Run it again when the user's changes add, remove, merge, or reorder items. At initiative slicing, check the tree's scope ownership without requiring stories or full detail in future epics.
 - **A refined ticket:** before execution.

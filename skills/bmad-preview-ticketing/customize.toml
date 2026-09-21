@@ -91,7 +91,8 @@ prose = """
 """
 
 # Validation checks, one array per scope, beyond the standards above (those are re-checked from their own keys).
-# Arrays append: a team's override file adds checks to any scope and cannot remove these. How they run is
+# Arrays append: a team's override file adds checks to any scope and cannot remove these. An override that sets
+# `checks` as one string replaces the whole table; write `checks.<scope> = [...]` instead. How they run is
 # references/validate.md.
 checks.ticket = [
   "Every file or link referenced exists and opens; no unfilled placeholder; every assumption is marked.",
