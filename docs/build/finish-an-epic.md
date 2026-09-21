@@ -61,6 +61,11 @@ In the spec-backed path, `stories.yaml` defines the epic inventory and each
 story record defines its completion state. Retrospective uses the same rule
 whether Build or Build Auto produced a record.
 
+`bmad-spec` no longer writes `stories.yaml`; it hands story breakdown to
+`bmad-preview-ticketing`. Retrospective still reads an existing
+`stories.yaml`. It does not read `tickets.toml` yet, so an epic planned in the
+ticketing preview has no retrospective path today.
+
 ## What You Get
 
 - **A retrospective document** with the evidence inventory, findings grouped

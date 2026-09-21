@@ -1,6 +1,7 @@
 ---
 id: ""   # set at publish
 remote: ""   # the store url, for a tracker
+key: ""   # tracker project or team for everything under this, when it differs from the store's
 type: epic
 title: "[The outcome this container exists to reach]"
 parent: [folder name of the initiative]
@@ -10,10 +11,10 @@ assignee: ""
 status: draft
 risk: [low|medium|high — the highest expected among its children]
 estimate: ""   # t-shirt, when estimation is on
-estimate_basis: ""   # envelope | spec | drafts | stories
+estimate_basis: ""   # envelope | spec | entries | stories
 ---
 
-<!-- At initiative slicing, the envelope: frontmatter, Description, Outcome, Done when, Boundaries, References, and known Notes. Requirements and Breakdown are completed at this epic's inception. -->
+<!-- At initiative slicing, the envelope: frontmatter, Description, Outcome, Done when, Boundaries, References, and known Notes. Requirements are completed at this epic's inception, and its children are planned in `tickets.toml` beside this file. -->
 
 # [Title]
 
@@ -32,10 +33,6 @@ estimate_basis: ""   # envelope | spec | drafts | stories
 ## Done when
 
 [Three to six checks a person can run without opening a child — the measures, limits, and behaviors from the source. Each fails today. Closing every child is not one.]
-
-## Breakdown
-
-[At inception: every agreed entry in build order, one line each, exactly `- nn type - title; blocked_by: nn, nn; covers: ids`. tickets.py reads these lines; a table or any other shape is invisible to it. Anything more about an entry goes in Notes or waits for its file. An entry becomes a file with the same nn when pulled; its line stays. Status lives on the files, never here. Cut at initiative slicing.]
 
 ## Boundaries
 
@@ -56,12 +53,13 @@ estimate_basis: ""   # envelope | spec | drafts | stories
 
 - Assumption: [a choice made while slicing that the user has not confirmed]
 - Open question: [what the source does not settle and which children wait on it]
-- Unknown: [what will likely need a spike, known now so it is not found late]
+- Unknown: [what is not yet known and which entries wait on it, recorded now so it is not found late]
 - Parked: [a requirement id not placed on any child, and why, with the user's knowledge]
 - Decision: [a choice the user made, dated, so it is not asked again — a declined suggestion belongs here too]
+- Source conflict: [id or section — what the source says vs what the code or another source shows]
 - Blocked by [id] because: [the one-line reason for each entry in blocked_by]
 
-<!-- Example, not part of the ticket: an incepted epic with no spec of its own. The parent assigned R1–R4 to this epic from an unnumbered PRD; Requirements records those lines using the same ids. Done when holds deliverable checks. Breakdown holds the agreed entries; the files exist only for those pulled. Notes holds decisions and unknowns. -->
+<!-- Example, not part of the ticket: an incepted epic with no spec of its own. The parent assigned R1–R4 to this epic from an unnumbered PRD; Requirements records those lines using the same ids. Done when holds deliverable checks. Notes holds decisions and unknowns. -->
 
 ```markdown
 ---
@@ -101,14 +99,6 @@ Shoppers who reach the cart continue to payment more often because the total nev
 3. R4 holds on the slowest supported device under the load test.
 4. A shopper with no code applied sees no change from today's cart.
 
-## Breakdown
-
-- 01 story - Cart service scaffold; covers: R1
-- 02 story - Cart UI shell; blocked_by: 01; covers: R1
-- 03 spike - Can the discount engine validate within R4?; blocked_by: 01; covers: R4
-- 04 story - Apply and refuse discount codes; blocked_by: 02, 03; covers: R2, R3
-- 05 story - Total shown equals total charged, end to end; blocked_by: 04; covers: R3
-
 ## Boundaries
 
 The cart UI. Not the pricing service (epic Pricing rules), not tax (epic Tax and payment).
@@ -121,5 +111,5 @@ The cart UI. Not the pricing service (epic Pricing rules), not tax (epic Tax and
 ## Notes
 
 - Decision: codes are case-insensitive (user's decision, 2026-08-12).
-- Unknown: whether the discount engine can validate a code within R4; a spike if not.
+- Unknown: whether the discount engine can validate a code within R4; entry 04 waits on it.
 ```

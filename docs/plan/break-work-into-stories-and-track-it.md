@@ -6,25 +6,38 @@ sidebar:
 ---
 
 Use this page to turn a plan into stories you can build in one session and
-keep track of them. The path depends on the plan: a spec-backed epic gets
-Story Breakdown; a project with a PRD gets epics and stories, then
+keep track of them. The path depends on the plan: a spec-backed epic goes to
+`bmad-preview-ticketing`; a project with a PRD gets epics and stories, then
 `bmad-sprint-planning`.
 
 :::note[v7 preview]
-A ticket-based alternative to this path is in preview. See [Help Test v7 Previews](./help-test-v7-previews.md).
+`bmad-preview-ticketing` is a preview skill. It breaks a spec-backed epic into stories, and it can stand in for the project path on this page. See [Help Test v7 Previews](./help-test-v7-previews.md).
 :::
 
 ## Prepare the Units
 
-| Plan                                          | Do this                                                          | Tracking artifact                       |
-| --------------------------------------------- | ---------------------------------------------------------------- | --------------------------------------- |
-| One epic backed by `SPEC.md`                  | Ask `bmad-spec` for Story Breakdown                              | Ordered `stories.yaml` beside `SPEC.md` |
-| A project with a PRD (and UX or architecture) | Run `bmad-create-epics-and-stories`, then `bmad-sprint-planning` | Epic files plus `sprint-status.yaml`    |
+| Plan                                          | Do this                                                          | Tracking artifact                            |
+| --------------------------------------------- | ---------------------------------------------------------------- | -------------------------------------------- |
+| One epic backed by `SPEC.md`                  | Run `bmad-preview-ticketing` with the spec folder                | Epic `tickets.toml` plus story tickets     |
+| A project with a PRD (and UX or architecture) | Run `bmad-create-epics-and-stories`, then `bmad-sprint-planning` | Epic files plus `sprint-status.yaml`         |
 
-For a spec-backed epic, `stories.yaml` is the whole tracking file. Build
-creates each story's implementation record under the spec folder, and
-[Finish an Epic](../build/finish-an-epic.md) reads `stories.yaml` as the inventory.
-No sprint-status file is involved.
+For a spec-backed epic, give `bmad-preview-ticketing` the spec folder. It
+plans one epic with you and records each planned story as an entry in
+`tickets.toml` beside the epic's ticket file. Each story cites the spec's
+`CAP-N` ids. A story gets its file when you pull it, and the pulled file goes
+to `bmad-build`, which refines it as part of the build. Before an
+unattended run, review the entries with the skill first. Full acceptance
+criteria are written in ticketing only for a bug, a ticket with no epic, or
+when you ask. "What's next?" lists what is ready to pull, refine, or start. See
+[Help Test v7 Previews](./help-test-v7-previews.md) for setup and use. No
+sprint-status file is involved.
+
+To run the stories unattended, give
+[`bmad-build-auto`](../build/autonomous-development-loops.md) the pulled story
+file as its intent, one run per story. Dispatch straight from `tickets.toml`
+is not available yet. For a spec folder that already has `stories.yaml`,
+`bmad-build-auto` and loop runners dispatch by spec folder and story id, and
+[Finish an Epic](../build/finish-an-epic.md) reads that file as the inventory.
 
 For a project, `bmad-create-epics-and-stories` works with you as a product
 partner to turn the PRD's requirements and the architecture's decisions into
@@ -95,8 +108,8 @@ a dependency changed. It reads the PRD, epics, architecture, and UX documents,
 assesses the impact, and produces a sprint change proposal — what changes,
 what stays, and in what order. Once you approve it, it updates
 `sprint-status.yaml` and hands the document edits off. Apply them, then create
-the new or changed stories. For a large restructure, re-run Story Breakdown or
-`bmad-sprint-planning` for the affected epics instead. Finished work stays
+the new or changed stories. For a large restructure, re-run `bmad-preview-ticketing`
+or `bmad-sprint-planning` for the affected epics instead. Finished work stays
 finished.
 
 ## What Comes Next

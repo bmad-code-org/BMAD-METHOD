@@ -93,6 +93,12 @@ The shared spec-backed epic layout is:
     └── ...
 ```
 
+`bmad-spec` no longer writes `stories.yaml`; it hands story breakdown to
+`bmad-preview-ticketing`, whose `tickets.toml` Build Auto and bmad-loop do not
+read yet. This layout applies to an existing `stories.yaml` or one you write
+yourself. For work planned in ticketing, run Build Auto once per pulled ticket
+file.
+
 `stories.yaml` is the ordered inventory. Build and Build Auto create or resume
 the Markdown records under `stories/`, and each record carries its lifecycle
 status in frontmatter. Downstream consumers use the location and status rather

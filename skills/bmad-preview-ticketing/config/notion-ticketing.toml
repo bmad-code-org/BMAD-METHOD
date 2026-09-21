@@ -68,6 +68,7 @@ build notes belong in <ticket filename>-plan.md beside it, posted with
 After a write, mirror id (the ID property when `key` is set, else the page id), remote (the page
 url), status, assignee, and blocked_by in the local file; commit local files on the current branch
 when root is in a git repo, never push.
+A `blocked_by` naming `epic-<slug>/<nn>` is that entry's item, published first when it is still local; `epic-<slug>` is the epic's item.
 """
 
 query = """
@@ -75,8 +76,8 @@ One page: `notion-fetch` — Title, Type, Status, Assignee, Parent, Blocked by, 
 Severity, hitl, and the content. Many: `notion-query-data-sources` on `database` filtered by any
 property; `notion-search` scoped to `database` for a looser match. The local file: `grep -rl
 "^id: <id>" root` or the filename.
-A child the tracker holds with no file in the tree gets one, numbered after the last.
-Candidates to pull (refine thin tickets before starting): Status [tickets.status].backlog, every page in Blocked by done, Assignee empty, no blocked_at in the ticket file. Offer all
+A child the tracker holds with no file in the tree gets an `[[entry]]` with the next unused `n` in its parent's `tickets.toml`, then its file.
+Candidates to start (one that `tickets.py next` lists under `ready_to_refine` gets its criteria first): Status [tickets.status].backlog, every page in Blocked by done, Assignee empty, no blocked_at in the ticket file. Offer all
 ready tickets; when one must be chosen, the one that unblocks the most work behind it.
 """
 

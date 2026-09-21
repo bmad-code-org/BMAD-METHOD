@@ -8,7 +8,9 @@ sidebar:
 Use this page to try proposed v7 planning changes before they replace anything, and to tell us what works and what does not. Previews ship beside the current skills. Nothing on this page changes how the existing planning path behaves.
 
 :::caution[Not wired into the current flow yet]
-Stories written by the ticketing preview are not read by `bmad-sprint-planning`, do not appear in `sprint-status.yaml`, and the current `bmad-build` does not move their status (YET). You can still hand any story file to `bmad-build` to implement it. Until the integration lands, you move the ticket's status yourself through the ticketing skill.
+Stories written by the ticketing preview are not read by `bmad-sprint-planning`, do not appear in `sprint-status.yaml`, and the current `bmad-build` does not move their status (YET). You can still hand any story file to `bmad-build` to implement it. Until the integration lands, you move the ticket's status yourself through the ticketing skill. `bmad-retrospective` and unattended loops such as bmad-loop do not read `tickets.toml` yet.
+
+While ticketing is in preview, `bmad-create-epics-and-stories` with `bmad-sprint-planning` remains the supported path and works as before. Use it when you need sprint status, the retrospective, or an unattended loop today.
 :::
 
 ## What Is in Preview
@@ -21,10 +23,16 @@ A preview skill is an alternative to the skills it stands in for, not a companio
 
 ## Get the Preview
 
-Preview skills ship in the prerelease. Follow [Install the prerelease](../start/install-bmad.md#install-the-prerelease), then check that your AI tool lists `bmad-preview-ticketing`.
+Preview skills install with the skills CLI. `npx bmad-method install`, with or without `@next`, does not install them. Run this in your project:
+
+```bash
+npx skills add bmad-code-org/BMAD-METHOD --skill bmad --skill bmod-method --skill bmad-preview-ticketing
+```
+
+Add `--skill bmad-build` and any other skill you want in the same command. Then open your AI tool in the project, ask the `bmad` skill to run `bmad setup`, and check that the tool lists `bmad-preview-ticketing`. Update later with `npx skills update`.
 
 :::note[Prerequisites]
-The ticketing preview runs its scripts through `uv`. The installer warns when `uv` is missing.
+You need Node.js with npm, Git, and [uv](https://docs.astral.sh/uv/). BMad setup and the ticketing scripts run through `uv`.
 :::
 
 ## Create an Initiative Store
@@ -43,10 +51,12 @@ shop-workspace/                          # start your AI tool here; not a repo i
 ├── _bmad-initiative-store/              # the store — its own git repo
 │   ├── initiative-checkout/
 │   │   ├── initiative-checkout.md
+│   │   ├── tickets.toml               # the epics in build order
 │   │   ├── prd-checkout/
 │   │   │   └── prd-checkout.md
 │   │   └── epic-cart-rules/
 │   │       ├── epic-cart-rules.md
+│   │       ├── tickets.toml           # every planned story, pulled or not
 │   │       ├── story-01-cart-service-scaffold.md
 │   │       └── story-02-cart-ui-shell.md
 │   ├── initiative-loyalty-program/
@@ -136,30 +146,38 @@ Hooks are not integrated yet, so nothing syncs on its own: a tracker and the tic
 
 The skill turns intent into tickets a coding agent can build from, at three levels. An initiative holds epics. An epic holds stories, spikes, and bugs. An initiative or an epic is itself the specification at its level: it holds the requirements, and its children are cut from them.
 
-It takes almost any input. The best input is a `bmad-spec` output together with the documents that produced it. A PRD alone, meeting notes, or a one-paragraph idea also work.
+It takes almost any input. The best input is a `bmad-spec` output together with the documents that produced it. Give it the spec folder and it plans one epic whose stories cite the spec's `CAP-N` ids. A PRD alone, meeting notes, or a one-paragraph idea also work.
 
 | Say                                      | What happens                                                                                |
 | ---------------------------------------- | ------------------------------------------------------------------------------------------- |
-| "Split this initiative into epics"       | Proposes epic boundaries from your source and records the agreed order in the initiative.   |
-| "Incept the first epic"                  | Plans the whole epic with you into an ordered breakdown of stories and spikes.              |
-| "What's next?"                           | Lists what is ready to refine, ready to start, in progress, and blocked.                    |
-| "Refine story 02"                        | Writes the full acceptance criteria for a story you are about to build.                     |
+| "Split this initiative into epics"       | Proposes epic boundaries from your source and records the agreed order in `tickets.toml`.   |
+| "Incept the first epic"                  | Plans the whole epic with you into an ordered breakdown of stories.                         |
+| "What's next?"                           | Lists what is ready to pull, refine, or start, in progress, and blocked.                    |
+| "Pull the next story"                    | Writes the story's file from its entry in the breakdown.                                    |
+| "Review the stories"                     | Reviews and improves the entries with you: descriptions, checks, order, and blockers.       |
 | "File a bug: checkout ignores discounts" | Writes one ticket straight into `backlog/`, with no epic needed.                            |
 
-Planning an epic lists every story, but only the stories that can start now become files. Those files begin thin: what the story contributes and how it will be verified. Full acceptance criteria are written when you pull a story to work on it, so detail is not written months before it is used.
+Each initiative and epic keeps its plan in a `tickets.toml` file beside its ticket file. The initiative's file lists the epics in build order. An epic's file lists every planned story and bug as an entry: what it delivers, how it will be verified, what blocks it, and what is still uncertain. When something must be settled before implementation, the skill asks you to answer it or records it as the entry's `unknown`. It adds a spike when you ask for one. By default the last entry is a "Refactor sweep" story for cleanup found during the epic.
+
+An entry has no file until you pull it. Pulling writes the story file, marked `refined: false`. `bmad-build` plans the story's acceptance criteria when it builds, from the epic and the entry, so detail is not written months before it is used.
+
+A story can be blocked by a story in another epic, or by a whole epic. Ask "what's next?" about the initiative to see every epic at once.
+
+### How epics are cut
+
+An epic is one capability that one owner delivers to production. A module, service, or bounded context can be an epic when it is also the ownership or deployment boundary. A unit the work only consumes or configures gets no epic. It is a touch point, named in the initiative's Boundaries with the epic that owns the work there. If your team cuts epics by its own rule, tell the skill and it offers to save the rule to `_bmad/custom/bmad-preview-ticketing.toml`.
+
+After the epics are agreed, the skill lists the decisions that more than one epic must adopt, such as a contract, a data format, or a shared value list. It offers `bmad-architecture` to settle them in the architecture spine. If you decline, each becomes a story in the opening epic that the other epics wait on. Work in one repo or one unit needs no architecture pass. It is needed from the second unit that must adopt a decision.
+
+When your source contradicts the code, the skill records a `Source conflict:` line in the Notes of the initiative or epic and tells you. When the source is a BMad spec, it offers to pass the correction to `bmad-spec`.
 
 ## Hand a Story to Build
 
-:::caution[Refine the story before you build it]
-A new story file is thin on purpose. It has no full acceptance criteria yet, so it is not ready for `bmad-build`. You must refine it with the ticketing skill first:
+Give the pulled story file to `bmad-build` with its epic, for example "build story-02-cart-ui-shell.md". Build treats the file as its work item. It plans the story's acceptance criteria from the epic's Requirements and Done when, the entry's description, and its `Verify:` check.
 
-- `/bmad-preview-ticketing refine story 02`
-- `/bmad-preview-ticketing refine the next unrefined story`
-
-A refined story has `refined: true` at the top of its file. In the future `bmad-build` will offer to refine a thin story itself. During this preview it does not, and building from a thin story gives it too little to work from.
+:::note[Refining is optional]
+A story needs no refining before `bmad-build`. Build refines it as part of the build: it questions you and writes the acceptance criteria into its plan. If you will build unattended, with `bmad-build-auto`, a loop, or a factory, nobody answers questions during the build, so review the sequence and each entry with the ticketing skill first. The ticketing skill writes full acceptance criteria only for a bug, a ticket with no epic, or when you ask.
 :::
-
-Once the story is refined, give its file to `bmad-build`, for example "build story-02-cart-ui-shell.md". Build treats the file as its work item.
 
 Build does not update the ticket. Before you start, say "start story 02" to the ticketing skill, and when the work is finished say "mark story 02 done". On the repo store those are edits to the story file that you commit with your work.
 

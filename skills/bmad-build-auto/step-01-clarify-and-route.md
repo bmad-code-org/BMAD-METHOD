@@ -16,6 +16,8 @@ followup_pass: '' # set at runtime when a `done` spec is re-dispatched for a fol
 
 Use the invocation prompt as the intent.
 
+A file whose frontmatter `type` is `story`, `spike`, or `bug` is a ticket, not a spec, whatever its `status`: ingest it as the intent together with its parent container's file and what its References name, never set `spec_file` to it, and never write to it.
+
 If the invocation prompt explicitly points to an existing spec file with recognized `status` frontmatter, set `spec_file`, then **EARLY EXIT** to the appropriate step:
 - `draft` → `{{ rendered("step-02-plan.md") }}`
 - `ready-for-dev` or `in-progress` → `{{ rendered("step-03-implement.md") }}`

@@ -19,7 +19,7 @@ description = "Linear through its MCP server: projects, parent issues, relations
 store = "linear"
 root = "{output_folder}"
 key = ""    # Linear team key, e.g. "SHOP"; Linear assigns the number
-team = ""   # team key or name
+team = ""   # the default team, key or name. A container's own `key` overrides it for everything under it
 access = """
 Use the Linear MCP (create_issue, update_issue, create_project, update_project, get_issue,
 list_issues, list_issue_statuses, create_issue_label, create_comment) against `team`. Confirm from the tool schema whether parent
@@ -52,6 +52,7 @@ also expect an In Review state in the Started group. Offer this at first publish
 """
 
 write = """
+The team is the ticket's own `key`, else that of the nearest container above it, else `team` here.
 `create_issue` creates, `update_issue` changes — title, description, state, assignee, parent,
 blockedBy, labels, priority, project; confirm the exact tool names against the server's list at
 first use. Labels carry type, hitl, and
@@ -65,6 +66,7 @@ notes belong in <ticket filename>-plan.md beside it, posted with `create_comment
 to review (or done when there is no review).
 After a write, mirror id (the identifier), remote (the url), status, assignee, and blocked_by in
 the local file; commit local files on the current branch when root is in a git repo, never push.
+A `blocked_by` naming `epic-<slug>/<nn>` is that entry's item, published first when it is still local; `epic-<slug>` is the epic's item.
 """
 
 query = """
@@ -72,8 +74,8 @@ One issue: `get_issue` with includeRelations — labels, priority, state, assign
 project, relations, description; blocked_by is the "blocked by" relations, and the description's
 covers holds the source requirement ids. Many: `list_issues` by project, parent, label, state, or
 query words. The local file: `grep -rl "^id: <identifier>" root` or the filename.
-A child the tracker holds with no file in the tree gets one, numbered after the last.
-Candidates to pull (refine thin tickets before starting): state [tickets.status].backlog, every "blocked by" relation done, unassigned, no blocked_at in the ticket file. Offer all
+A child the tracker holds with no file in the tree gets an `[[entry]]` with the next unused `n` in its parent's `tickets.toml`, then its file.
+Candidates to start (one that `tickets.py next` lists under `ready_to_refine` gets its criteria first): state [tickets.status].backlog, every "blocked by" relation done, unassigned, no blocked_at in the ticket file. Offer all
 ready tickets; when one must be chosen, the one that unblocks the most work behind it.
 """
 
