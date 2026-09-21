@@ -60,8 +60,9 @@
   --sl-nav-height: 4rem;
   --sl-nav-pad-x: 1.5rem;
 
-  /* an article measure: ~72 characters of 17px Archivo */
-  --sl-content-width: 46rem;
+  /* 84 characters of 17px Archivo. Starlight clamps this to the pane, so it is
+     a ceiling, not a width: 792px at 1440, the full 896px only from 1599. */
+  --sl-content-width: 56rem;
 
   --sl-font: var(--bmad-sans);
   --sl-font-mono: var(--bmad-mono);
@@ -878,6 +879,33 @@ starlight-toc a[aria-current='true'] {
 /* ---------------------------------------------------------------
    Layout and page meta
    --------------------------------------------------------------- */
+
+/* Starlight sets `--sl-content-margin-inline: auto 0` on a page with both a
+   sidebar and a TOC, which pins the prose to the contents list and piles the
+   slack on its left - 268px against 24px at 1920. Keep the chrome on the edges
+   and centre the prose instead: the contents list takes a sidebar's width
+   rather than a share of the row and is pinned right, and the pane grows into
+   what that frees. */
+@media (min-width: 100rem) {
+  .right-sidebar-container {
+    width: var(--sl-sidebar-width);
+  }
+
+  .right-sidebar {
+    inset-inline: auto 0;
+    width: var(--sl-sidebar-width);
+  }
+
+  .main-pane {
+    flex: 1 1 auto;
+    width: auto;
+  }
+
+  [data-has-sidebar][data-has-toc] .main-pane {
+    --sl-content-margin-inline: auto;
+  }
+}
+
 .content-panel {
   padding-block: 2.4rem;
 }
