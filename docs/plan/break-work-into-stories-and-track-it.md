@@ -25,9 +25,10 @@ For a spec-backed epic, give `bmad-preview-ticketing` the spec folder. It
 plans one epic with you and records each planned story as an entry in
 `tickets.toml` beside the epic's ticket file. Each story cites the spec's
 `CAP-N` ids. A story gets its file when you pull it, and the pulled file goes
-to `bmad-build`. You refine it first only when its entry says
-`refine = true`, the ticket has no epic, or you ask. "What's next?" lists
-what is ready to pull, refine, or start. See
+to `bmad-build`, which refines it as part of the build. Before an
+unattended run, review the entries with the skill first. Full acceptance
+criteria are written in ticketing only for a bug, a ticket with no epic, or
+when you ask. "What's next?" lists what is ready to pull, refine, or start. See
 [Help Test v7 Previews](./help-test-v7-previews.md) for setup and use. No
 sprint-status file is involved.
 

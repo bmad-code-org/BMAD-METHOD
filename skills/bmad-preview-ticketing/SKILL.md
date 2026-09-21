@@ -18,7 +18,7 @@ At every altitude above the leaf the ideal shape is: intent (an idea, brief, PRD
 - Breakdown: `tickets.toml` beside a container's ticket file — its agreed children in build order, with the blockers `tickets.py` reads
 - Entry: one planned leaf in a breakdown: description, requirement references, blockers, verification approach, and known uncertainty. It has no file and no status until it is pulled
 - Pull: write an entry's leaf file with `tickets.py pull`; the ticket can then start
-- Refine: expand a ticket to full acceptance criteria before it starts. Done on request, for an entry marked `refine = true`, and for every ticket with no epic; otherwise the builder plans story criteria from the epic's requirements, the entry's description, and its `verify` check
+- Refine: for an epic's stories, review and improve their entries with the user. Full acceptance criteria are written here only for a ticket with no epic, a bug, or on request (`refine = true`); otherwise the builder plans story criteria from the epic's requirements, the entry's description, and its `verify` check
 - Opening epic: the first `[[epic]]` in the initiative's breakdown
 - Inception: plan the whole selected epic with the user and record it in the epic's breakdown
 - hitl: boolean frontmatter field on a leaf; at least part needs a person
@@ -73,7 +73,7 @@ Load each of the following when a step names it; resolve keys by script rather t
 | `estimation` | on/off, the point scale, rubric, and t-shirt map |
 | `prose` | how ticket prose reads |
 | `checks` | the validation checks, one array per scope: `checks.ticket`, `.set`, `.tree`, `.dependencies` (missing blockers), `.closure` |
-| `refinement` | which entries are refined before they start |
+| `refinement` | what refining means, and where full acceptance criteria are written |
 | `publication` | when tickets publish: as each is pulled, or the whole breakdown at inception (the default on a tracker) |
 | `initiative_template`, `epic_template`, `story_template`, `spike_template`, `bug_template` | the template file per type |
 

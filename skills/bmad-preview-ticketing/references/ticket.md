@@ -6,11 +6,11 @@ A ticket starts from what is known: what exists when it is done, how it will be 
 
 The input (PRD, brief, notes) owns the product argument. The requirement source at a level is the container's own Requirements section, an existing numbered source, or a separate spec when the source outgrows the section. Reference that source rather than duplicating it. The container owns Description, Outcome, Done when, Boundaries, References, Notes. An epic's `covers` records the parent requirement ids it owns, and every id it assigns locally — in Requirements or its own spec — maps to one of them. An initiative's `covers` records its source ids. Adding a local spec does not replace upstream coverage; update affected references and child mappings with it.
 
-A story under an epic is one slice of its build order: `covers` cites ids from the epic's requirement source, and its description says what it delivers toward them. Several stories can cover one requirement. On refinement, add criteria for what changes and for the failure paths, boundaries, and binding decisions; point at the source for the rest.
+A story under an epic is one slice of its build order: `covers` cites ids from the epic's requirement source, and its description says what it delivers toward them. Several stories can cover one requirement. Where full criteria are written (`{workflow.refinement}` says when), add criteria for what changes and for the failure paths, boundaries, and binding decisions; point at the source for the rest.
 
 ## Rules the template cannot carry
 
-- Acceptance criteria follow `{workflow.acceptance_criteria}`; every sentence follows `{workflow.prose}`. When the user's text misses either, offer the rewrite with the reason; show what is missing, not only what is written.
+- Acceptance criteria, where `{workflow.refinement}` calls for them, follow `{workflow.acceptance_criteria}`; every sentence follows `{workflow.prose}`. When the user's text misses either, offer the rewrite with the reason; show what is missing, not only what is written.
 - References name the nearest document, not the documents behind it. Attach per the store's `reference` global.
 - No source-code paths or snippets; the builder reads the repo. A snippet stays only when it is the decision itself, not an illustration of it. A path the user wants recorded goes in Notes.
 - A UI ticket links its design in References; criteria stay functional, layout lives in the design. No design and user-facing: offer `bmad-ux` first; declined, say the builder will guess the layout unless they add details in Notes.
@@ -22,7 +22,7 @@ A story under an epic is one slice of its build order: `covers` cites ids from t
 
 ## Refining an existing ticket
 
-Read the local ticket and open what it references; query its remote state if already published to a tracker. With the user: confirm they still agree with it; check its description against the current requirement source, criteria and references; find what is missing, unclear, or wrong; settle questions that prevent implementation. Save unpublished changes locally; published changes go through `write`. Preserve identity and the existing status and assignee. A ticket keeps `refined: false` until it passes self-review in full and the user approves it. A container may end in a re-slice per `slice.md`.
+A story under an epic is refined as its entry, per `slice.md`. For a ticket that carries full criteria: read the local ticket and open what it references; query its remote state if already published to a tracker. With the user: confirm they still agree with it; check its description against the current requirement source, criteria and references; find what is missing, unclear, or wrong; settle questions that prevent implementation. Save unpublished changes locally; published changes go through `write`. Preserve identity and the existing status and assignee. A ticket keeps `refined: false` until it passes self-review in full and the user approves it. A container may end in a re-slice per `slice.md`.
 
 ## Self-review before the user sees it
 

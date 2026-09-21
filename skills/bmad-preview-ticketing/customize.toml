@@ -12,10 +12,11 @@ activation_steps_append = []
 persistent_facts = []   # `file:` entries are paths or globs under {project-root}; anything else is a fact verbatim
 on_complete = ""
 
-# Which entries get `refine = true`: refined to full acceptance criteria before they start. The rest go to
-# the builder as pulled, and it plans story criteria from the epic and the entry. A ticket with no epic is always refined.
+# What refining means. An epic's stories are not expanded to full acceptance criteria here: the builder
+# questions the user and writes the criteria into its plan.
 refinement = """
-Propose `refine = true` only for a high-risk entry, or one whose check cannot be stated in a sentence. The user can ask for any entry, or every entry.
+- Refining an epic's stories is a review of their entries with the user: description, `verify`, references, notes, order, and blockers, improved in `tickets.toml`. It writes no Given/When/Then.
+- Full acceptance criteria are written here only for a ticket with no epic, for a bug, and for an entry the user asks it for. That entry carries `refine = true`; a bug entry always does. Never propose it for a story.
 """
 
 # When tickets publish. auto: each ticket when pulled on the repo store; the whole agreed breakdown at inception on a
@@ -95,7 +96,7 @@ prose = """
 checks.ticket = [
   "Every file or link referenced exists and opens; no unfilled placeholder; every assumption is marked.",
   "Nothing contradicts the requirement source, its companions, the architecture, or a recorded decision.",
-  "An entry has a description, known uncertainty, and a `verify` check someone other than the builder can run. Full criteria are required before execution only for an entry with `refine = true` and a ticket with no epic.",
+  "An entry has a description, known uncertainty, and a `verify` check someone other than the builder can run. Full criteria are required before execution only for a bug, an entry with `refine = true`, and a ticket with no epic.",
   "A ticket whose `covers` includes an id named in a `Source conflict:` line with no later `Decision:` settling it has `refined: false`.",
 ]
 
@@ -104,6 +105,7 @@ checks.set = [
   "Together the tickets account for every requirement in the epic's spec, referenced numbered source, or Requirements, except scope deferred with the user. Each covers id exists there; several tickets may cover one id, each description saying which part it delivers.",
   "UX, architecture, constraints, and integration work are accounted for even when they lack ids. The combined results must satisfy the epic's Done when; citing an id alone is not coverage.",
   "Every blocker is real, those in other epics included. Once `tickets.toml` exists, `tickets.py status` on the epic runs clean: no cycle, no `drift`, no `unpinned_after`; the tracer bullet and sequencing decisions are in the epic's Notes.",
+  "A builder holding only the epic, an entry, and its references could write that story's acceptance criteria without asking a question. Where it could not, the gap is fixed in the epic or the entry now.",
   "An epic of more than three entries has the refactor sweep after all other work, or a `Decision:` line says why not.",
 ]
 
@@ -130,7 +132,8 @@ checks.closure = [
   "Verify the container's Done when against implementation evidence and its requirements, including constraints and companions. All known children done is evidence, not proof the parent is complete; explain any dropped work and confirm remaining scope with the user.",
 ]
 
-# Ticket templates, one per type. Swap a template to change the criteria format (the shipped one is
+# Ticket templates, one per type. They apply to tickets the agent writes; `tickets.py pull` writes a fixed layout.
+# Swap a template to change the criteria format (the shipped one is
 # numbered Given/When/Then; a table, a checklist) or add your own sections.
 # Keep a home, under any name, for each section references/ticket.md refers to: Description,
 # Acceptance Criteria, Boundaries (stories), References, and Notes; for containers also Outcome,

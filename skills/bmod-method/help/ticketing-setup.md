@@ -14,7 +14,7 @@ Install BMad in the workspace folder that holds the repos, put the store there, 
 
 ## Existing planning documents
 
-Copy a brief, PRD, UX design, or architecture into the initiative folder as `<type>-<slug>/<type>-<slug>.md`, for example `initiative-checkout/prd-checkout/prd-checkout.md`. The UX files keep their names, `DESIGN.md` and `EXPERIENCE.md`, inside `ux-<slug>/`. Copy, do not move, so other skills still find their files. The best input is a `bmad-spec` output with its source documents. `bmad-spec` story breakdown hands its spec folder over directly, and the stories cite the spec's `CAP-N` ids.
+Copy a brief, PRD, UX design, or architecture into the initiative folder as `<type>-<slug>/<type>-<slug>.md`, for example `initiative-checkout/prd-checkout/prd-checkout.md`. The UX files keep their names, `DESIGN.md` and `EXPERIENCE.md`, inside `ux-<slug>/`. Copy, do not move, so other skills still find their files. The best input is a `bmad-spec` output with its source documents. `bmad-spec` offers to hand its spec folder to this skill, which does the story breakdown; the stories cite the spec's `CAP-N` ids.
 
 ## Trackers
 
@@ -30,7 +30,7 @@ Copy a brief, PRD, UX design, or architecture into the initiative folder as `<ty
 | "Split this initiative into epics" | Proposes epic boundaries and records the agreed order in the initiative's `tickets.toml`. |
 | "Incept the first epic" | Plans the whole epic into ordered entries in the epic's `tickets.toml`. No story file is written yet. |
 | "Pull the next story" | Writes the story file from its entry. A script does it, with no conversation. |
-| "Refine story 02" | Writes the full acceptance criteria with the user. Needed only when the entry says `refine = true`, the ticket has no epic, or the user asks. |
+| "Refine story 02", "review the stories" | Reviews and improves the entries with the user. Full acceptance criteria are written only for a bug, a ticket with no epic, or when the user asks. |
 | "File a bug: ..." | One ticket straight into `backlog/`, with no epic. |
 | "What's ready?", "what's next?" | Lists what is ready to pull, ready to refine, ready to start, in progress, and blocked, for one epic or the whole initiative. |
 | "Start story 02", "mark story 02 done" | Moves status. |
@@ -40,7 +40,7 @@ Copy a brief, PRD, UX design, or architecture into the initiative folder as `<ty
 
 - A planned story has no file until it is pulled. A pulled story starts `refined: false`.
 - Give the pulled file to `bmad-build` with its epic: "build story-02-cart-ui-shell.md". The builder plans the story's acceptance criteria from the epic's Requirements and Done when, the entry's description, and its `Verify:` check.
-- Refine first only when the entry says `refine = true`, the ticket has no epic (a backlog bug or story), or the user asks. Inception proposes `refine = true` only for a high-risk entry or one whose check cannot be stated in a sentence. "What's next?" lists these under ready to refine.
+- A story needs no refining before `bmad-build`; the build refines it. Before an unattended run, review the entries with this skill. A bug, a ticket with no epic, and an entry the user marked `refine = true` get full criteria first; "what's next?" lists these under ready to refine.
 - `bmad-build` does not move ticket status. The user says "start story 02" before and "mark story 02 done" after.
 - `bmad-sprint-planning` does not read these stories.
 
