@@ -68,6 +68,20 @@ def _markdown(directory: Path) -> str:
     return "\n".join(content.decode("utf-8") for name, content in _files(directory).items() if name.endswith(".md"))
 
 
+def _chmod(path: Path, mode: int, deny: str | None = None) -> None:
+    """``os.chmod``, or on Windows its nearest equivalent.
+
+    Windows has no permission bits. ``deny`` names the rights to take away from the
+    current user in the path's access list; without it, the denial is removed.
+    """
+    if os.name != "nt":
+        os.chmod(path, mode)
+        return
+    user = os.environ["USERNAME"]
+    change = ["/deny", f"{user}:({deny})"] if deny else ["/remove:d", user]
+    subprocess.run(["icacls", str(path), *change], check=True, capture_output=True)
+
+
 def _namespace_dir(project: Path, skill_name: str) -> Path:
     root = str(project.resolve())
     slug = re.sub(r"[^a-z0-9]+", "-", project.name.lower()).strip("-") or "project"
@@ -142,7 +156,13 @@ class RenderSkillTests(unittest.TestCase):
         return _copy_skill(ws.outer / "skills" / name, name)
 
     def _cli(
-        self, project: Path, skill: Path, *, cwd: Path | None = None, args: tuple[str, ...] = ()
+        self,
+        project: Path,
+        skill: Path,
+        *,
+        cwd: Path | None = None,
+        args: tuple[str, ...] = (),
+        timeout: float | None = None,
     ) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
             [
@@ -158,6 +178,7 @@ class RenderSkillTests(unittest.TestCase):
             text=True,
             capture_output=True,
             check=False,
+            timeout=timeout,
         )
 
     def _entry(self, result: subprocess.CompletedProcess[str]) -> Path:
@@ -339,6 +360,25 @@ class RenderSkillTests(unittest.TestCase):
                     rs.render(ws.project, skill)
                 self.assertEqual(set((ws.bmad / "render" / skill.name).rglob("manifest.json")), generations)
                 layer.unlink()
+
+    @unittest.skipIf(hasattr(os, "geteuid") and os.geteuid() == 0, "root bypasses file permission bits")
+    def test_render_folder_that_refuses_new_files_halts(self):
+        ws = self._workspace()
+        skill = self._fixture_skill(ws, '[workflow]\nmessage = "shipped"\n', "{{ workflow.message }}\n")
+        namespace = _namespace_dir(ws.project, "fixture")
+        namespace.mkdir(parents=True)
+        _chmod(namespace, 0o555, deny="WD,AD")
+        self.addCleanup(_chmod, namespace, 0o755)
+
+        # The timeout: on Windows, older Pythons' mkdtemp retried here some two
+        # billion times, and a hang must fail this test, not the job.
+        result = self._cli(ws.project, skill, timeout=60)
+
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertTrue(result.stdout.startswith("HALT:"), result.stdout)
+        self.assertIn("denied", result.stdout.lower())
+        self.assertNotIn("Traceback", result.stdout + result.stderr)
+        self.assertEqual(list(namespace.iterdir()), [])
 
     def test_invalid_invocation_halts_before_publication(self):
         invalid = (

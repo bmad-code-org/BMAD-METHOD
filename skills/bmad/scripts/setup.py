@@ -10,10 +10,10 @@ import argparse
 import copy
 import datetime
 import json
+import os
 import re
 import shutil
 import sys
-import tempfile
 import tomllib
 import urllib.error
 import urllib.parse
@@ -1708,7 +1708,11 @@ def materialize_bmad(
 ) -> None:
     bmad = project_root / "_bmad"
     project_root.mkdir(parents=True, exist_ok=True)
-    staging = Path(tempfile.mkdtemp(prefix="_bmad.setup-", dir=project_root))
+    # One attempt, not mkdtemp: on Windows, older Pythons' mkdtemp takes "access denied"
+    # for a name collision and tries the next name, some two billion times. Setup
+    # would hang in a folder it cannot write to instead of reporting the failure.
+    staging = project_root / f"_bmad.setup-{os.urandom(8).hex()}"
+    staging.mkdir(mode=0o700)
     try:
         # Seed staging so custom/, extra *.user.toml, and leftovers
         # survive replace_dir.
