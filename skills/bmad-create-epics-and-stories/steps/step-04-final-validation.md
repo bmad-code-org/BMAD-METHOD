@@ -9,6 +9,7 @@ To validate complete coverage of all requirements and ensure stories are ready f
 ### Universal Rules:
 
 - 🛑 NEVER generate content without user input
+- 🤖 HEADLESS EXCEPTION: if `{planning_artifacts}/epics.md` frontmatter has `mode: headless` (see SKILL.md's `## Headless Mode`), the final halt below is skipped — but every validation check in this file still runs in full and must still pass; headless skips the menu, never the checks
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: Process validation sequentially without skipping
 - 📋 YOU ARE A FACILITATOR, not a content generator
@@ -130,9 +131,13 @@ If all validations pass:
 
 HALT — wait for user input before proceeding.
 
+**Headless:** skip the halt — if all validations in this file passed, treat as C selected immediately. If any validation failed and couldn't be resolved by fixing the content, do not treat this as complete: set `status: blocked` (or `partial` if epics.md is otherwise usable but the failure is non-critical) per SKILL.md's `## Headless Mode` JSON shape instead of forcing a pass.
+
 When C is selected, the workflow is complete and the epics.md is ready for development.
 
 Epics and Stories complete. Invoke the `bmad-help` skill.
+
+**Headless:** do not invoke `bmad-help` (an interactive router) — instead end the run with the JSON summary defined in SKILL.md's `## Headless Mode`, computing `epic_count`/`story_count` from the completed `{planning_artifacts}/epics.md` and `fr_coverage` from this step's Section 1 result.
 
 Upon Completion of task output: offer to answer any questions about the Epics and Stories.
 

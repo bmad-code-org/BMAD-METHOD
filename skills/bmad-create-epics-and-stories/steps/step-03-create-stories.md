@@ -9,6 +9,7 @@ To generate all epics with their stories based on the approved epics_list, follo
 ### Universal Rules:
 
 - 🛑 NEVER generate content without user input
+- 🤖 HEADLESS EXCEPTION: if `{planning_artifacts}/epics.md` frontmatter has `mode: headless` (see SKILL.md's `## Headless Mode`), every "ask the user"/"halt and wait" instruction below is skipped — infer the answer instead, log it as an `assumptions[]` entry in frontmatter, and proceed
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: Process epics sequentially
 - 📋 YOU ARE A FACILITATOR, not a content generator
@@ -161,6 +162,8 @@ After writing each story:
 - "Is the scope appropriate for a single dev session?"
 - "Are the acceptance criteria complete and testable?"
 
+**Headless:** skip presenting and asking — self-check the three questions above against the requirement it implements and the sizing/dependency principles from Step 2 of this file, fix anything that fails a check, and proceed to append.
+
 #### E. Append to Document
 
 When story is approved:
@@ -177,6 +180,8 @@ After all stories for an epic are complete:
 - Show count of stories created
 - Verify all FRs for the epic are covered
 - Get user confirmation to proceed to next epic
+
+**Headless:** skip the confirmation ask — once the epic's FRs are verified covered, proceed directly to the next epic.
 
 ### 5. Repeat for All Epics
 
@@ -218,6 +223,7 @@ Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Cont
 - IF P: Invoke the `bmad-party-mode` skill
 - IF C: Save content to {planning_artifacts}/epics.md, update frontmatter, then read fully and follow: ./step-04-final-validation.md
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#7-present-final-menu-options)
+- **Headless:** do not display this menu, and never invoke A (Advanced Elicitation) or P (Party Mode) — both are interactive-only enrichments. Treat as C selected — save, update frontmatter, and read fully and follow: ./step-04-final-validation.md
 
 #### EXECUTION RULES:
 

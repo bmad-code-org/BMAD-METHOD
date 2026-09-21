@@ -78,13 +78,42 @@ Run: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {proj
 
 ### Step 5: Greet the User
 
-Greet the user.
+Headless (no interactive user) → see `## Headless Mode` below, and skip this step. Otherwise greet the user.
 
 ### Step 6: Execute Append Steps
 
 Execute each entry in `{workflow.activation_steps_append}` in order.
 
 Activation is complete. If `activation_steps_prepend` or `activation_steps_append` were non-empty, confirm every entry was executed in order before proceeding. Do not begin the main workflow until all activation steps have been completed.
+
+## Headless Mode
+
+No interactive user: infer everything, ask nothing, but never invent — record every inferred choice as an `assumptions[]` entry in `{planning_artifacts}/epics.md`'s frontmatter, and anything that genuinely needs a human as `open_questions[]`. Detect headless the same way as this project's other envelopes: a `headless: true` flag, a non-interactive / no-TTY invocation, an activation hook that declares it, or a first message that pre-supplies all inputs and asks for an artifact path back; when ambiguous, default to interactive.
+
+The moment headless is detected — before Step 1's template initialization — set `mode: headless` in `{planning_artifacts}/epics.md`'s frontmatter. Every step file (`steps/step-01` through `steps/step-04`) is loaded Just-In-Time in its own turn per this skill's **Just-In-Time Loading** principle, so this frontmatter flag — not conversational memory — is what each step checks to know it's headless; each step file's own "Headless:" note tells it exactly what that means for its own menu/halt points.
+
+**What headless skips:** every `[C] Continue` halt, every `[A] Advanced Elicitation` / `[P] Party Mode` offer (interactive-only enrichments, not required functionality — never invoked headless), and every "ask the user" / "get confirmation" checkpoint across all four steps. Infer the best answer from the extracted requirements and the step's own written guidelines instead of asking, and log the judgment call as an assumption.
+
+**What headless does NOT skip:** the actual validation work. Step 4's full validation process — FR coverage, architecture/starter-template compliance, story quality, epic independence, and the within-epic dependency check — still runs in full and must still pass before the document is considered complete. Headless skips only the human picking from a menu, never the checks themselves; a validation failure still means fixing the content, not lowering the bar.
+
+**Hard blockers, unchanged from interactive mode:** PRD.md and Architecture.md are still required inputs (Step 1) — if neither can be found under `{planning_artifacts}`, halt `blocked` rather than inventing requirements from nothing. The UX design contract remains optional; its absence is never blocking, headless or not.
+
+End with JSON only, omitting keys for artifacts not produced:
+
+```json
+{
+  "status": "complete | partial | blocked",
+  "epics_file": "{planning_artifacts}/epics.md",
+  "epic_count": 0,
+  "story_count": 0,
+  "fr_coverage": "complete | incomplete",
+  "assumptions": [],
+  "open_questions": [],
+  "reason": "<one line, only when blocked>"
+}
+```
+
+`complete` stands alone · `partial` (epics.md produced, but `open_questions[]` non-empty or a critical input like Architecture was inferred/absent) means review before downstream use · `blocked` means no epics.md produced — return only `status`, `reason`, and `epics_file` if a template was at least initialized, omitting the count/coverage/assumption fields that don't apply.
 
 ## Execution
 

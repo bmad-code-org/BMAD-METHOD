@@ -9,6 +9,7 @@ To validate that all required input documents exist and extract all requirements
 ### Universal Rules:
 
 - 🛑 NEVER generate content without user input
+- 🤖 HEADLESS EXCEPTION: if `{planning_artifacts}/epics.md` frontmatter has `mode: headless` (see SKILL.md's `## Headless Mode`), every "ask the user"/"halt and wait" instruction below is skipped — infer the answer instead, log it as an `assumptions[]` entry in frontmatter, and proceed
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: When loading next step with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
@@ -77,7 +78,7 @@ For each matching bmad-ux run folder, treat `DESIGN.md` and `EXPERIENCE.md` as o
 - If only one spine exists, report the incomplete pair and ask whether the user wants to include the partial UX handoff.
 - If multiple run folders match, show each run folder with the spine frontmatter `status` and `updated` values when available, then ask the user which UX design contract to include.
 
-Before proceeding, Ask the user if there are any other documents to include for analysis, and if anything found should be excluded. Wait for user confirmation. Once confirmed, create the {planning_artifacts}/epics.md from the ../templates/epics-template.md and in the front matter list the files in the array of `inputDocuments: []`.
+Before proceeding, Ask the user if there are any other documents to include for analysis, and if anything found should be excluded. Wait for user confirmation. **Headless:** use exactly the documents found by the search patterns above, log the set as an assumption, and proceed without asking. Once confirmed (or, headless, once the document set is logged), create the {planning_artifacts}/epics.md from the ../templates/epics-template.md and in the front matter list the files in the array of `inputDocuments: []`.
 
 ### 3. Extract Functional Requirements (FRs)
 
@@ -212,6 +213,8 @@ Ask: "Do these extracted requirements accurately represent what needs to be buil
 
 Update the requirements based on user feedback until confirmation is received.
 
+**Headless:** skip this ask. Self-review the extraction against the source documents once, log any low-confidence extraction (ambiguous requirement wording, a section that might have been missed) as an `open_questions[]` entry rather than guessing further, and proceed.
+
 ## CONTENT TO SAVE TO DOCUMENT:
 
 After extraction and confirmation, update {planning_artifacts}/epics.md with:
@@ -235,6 +238,7 @@ Display: `**Confirm the Requirements are complete and correct to [C] continue:**
 
 - IF C: Save all to {planning_artifacts}/epics.md, update frontmatter, then read fully and follow: ./step-02-design-epics.md
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#10-present-menu-options)
+- **Headless:** do not display this menu. Treat as C selected — save, update frontmatter, and read fully and follow: ./step-02-design-epics.md
 
 ## CRITICAL STEP COMPLETION NOTE
 

@@ -9,6 +9,7 @@ To design and get approval for the epics_list that will organize all requirement
 ### Universal Rules:
 
 - 🛑 NEVER generate content without user input
+- 🤖 HEADLESS EXCEPTION: if `{planning_artifacts}/epics.md` frontmatter has `mode: headless` (see SKILL.md's `## Headless Mode`), every "ask the user"/"halt and wait" instruction below is skipped — infer the answer instead, log it as an `assumptions[]` entry in frontmatter, and proceed
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: When loading next step with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
@@ -177,6 +178,8 @@ Ask user:
 - "Should we adjust any epic groupings?"
 - "Are there natural dependencies we've missed?"
 
+**Headless:** skip this ask — self-check the four questions above against the Epic Design Principles (Step 2) and the extracted requirements, fix anything that fails a check, and proceed.
+
 ### 7. Get Final Approval
 
 **CRITICAL:** Must get explicit user approval:
@@ -188,6 +191,8 @@ If user wants changes:
 - Update the epics_list
 - Re-present for approval
 - Repeat until approval is received
+
+**Headless:** skip the approval ask. Treat the self-checked structure from Step 6 as approved; log any epic grouping you were genuinely uncertain about as an `open_questions[]` entry rather than silently picking one.
 
 ## CONTENT TO UPDATE IN DOCUMENT:
 
@@ -207,6 +212,7 @@ Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Cont
 - IF P: Invoke the `bmad-party-mode` skill
 - IF C: Save approved epics_list to {planning_artifacts}/epics.md, update frontmatter, then read fully and follow: ./step-03-create-stories.md
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#8-present-menu-options)
+- **Headless:** do not display this menu, and never invoke A (Advanced Elicitation) or P (Party Mode) — both are interactive-only enrichments. Treat as C selected — save, update frontmatter, and read fully and follow: ./step-03-create-stories.md
 
 #### EXECUTION RULES:
 
