@@ -10,10 +10,13 @@ Run: uv run scripts/tests/test_sprint_plan.py
 
 import importlib.util
 import json
+import os
+import subprocess
 import sys
 from pathlib import Path
 
 import pytest
+from helpers import chmod
 from ruamel.yaml import YAML
 
 SCRIPT = Path(__file__).resolve().parents[1] / "sprint_plan.py"
@@ -358,6 +361,48 @@ def test_no_epics_fails_with_json(tmp_path, capsys):
         )
     assert excinfo.value.code == 1
     assert out_json(capsys)["ok"] is False
+
+
+@pytest.mark.skipif(
+    hasattr(os, "geteuid") and os.geteuid() == 0,
+    reason="root bypasses file permission bits",
+)
+def test_status_folder_that_refuses_new_files_fails_with_json(tmp_path):
+    # A child process with a timeout: on Windows, older Pythons' mkstemp retried
+    # here some two billion times, and a hang must fail this test, not the job.
+    epic_file = tmp_path / "epics.md"
+    epic_file.write_text(EPICS_FIXTURE, encoding="utf-8")
+    impl = tmp_path / "impl"
+    impl.mkdir()
+    chmod(impl, 0o555, deny="WD,AD")
+    try:
+        proc = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPT),
+                "generate",
+                "--epic-file",
+                str(epic_file),
+                "--status-file",
+                str(impl / "sprint-status.yaml"),
+                "--stories-dir",
+                str(impl),
+                "--project",
+                "My Project",
+                "--date",
+                DATE,
+            ],
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+    finally:
+        chmod(impl, 0o755)
+    assert proc.returncode == 1
+    out = json.loads(proc.stdout)
+    assert out["ok"] is False
+    assert "denied" in out["error"].lower()
+    assert list(impl.iterdir()) == []
 
 
 def test_non_mapping_yaml_fails_with_json(tmp_path, capsys):

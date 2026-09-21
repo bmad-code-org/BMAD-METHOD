@@ -35,7 +35,6 @@ import json
 import os
 import re
 import sys
-import tempfile
 from pathlib import Path
 
 from ruamel.yaml import YAML
@@ -326,14 +325,18 @@ def _atomic_write(path, payload, mode=None):
     """Replace ``path``'s contents with ``payload`` atomically.
 
     Temp file alongside the target, fsynced, taking the target's permission
-    bits (mkstemp creates 0600, which would silently narrow the file), then
+    bits (it is created 0600, which would silently narrow the file), then
     renamed over it. ``path`` is resolved through symlinks first: renaming onto
     a symlink would detach the link and leave the real file stale.
     """
     path = os.path.realpath(path)
     directory = os.path.dirname(path) or "."
     os.makedirs(directory, exist_ok=True)
-    fd, tmp = tempfile.mkstemp(prefix=".sprint-status-", suffix=".tmp", dir=directory)
+    # One attempt, not mkstemp: on Windows, older Pythons' mkstemp takes "access denied"
+    # for a name collision and tries the next name, some two billion times. The script
+    # would hang in a folder it cannot write to instead of reporting the failure.
+    tmp = os.path.join(directory, f".sprint-status-{os.urandom(8).hex()}.tmp")
+    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_BINARY", 0), 0o600)
     try:
         with os.fdopen(fd, "wb") as fh:
             fh.write(payload)
@@ -743,4 +746,8 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
+    if sys.platform == "win32":
+        # Piped output on Windows defaults to a legacy code page, not UTF-8.
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
     main()

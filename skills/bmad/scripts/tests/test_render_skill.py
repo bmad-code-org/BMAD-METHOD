@@ -24,6 +24,8 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest import mock
 
+from helpers import chmod
+
 SCRIPTS_SRC = Path(__file__).resolve().parents[1]
 REPO = SCRIPTS_SRC.parents[2]
 SKILLS_SRC = REPO / "skills"
@@ -142,7 +144,13 @@ class RenderSkillTests(unittest.TestCase):
         return _copy_skill(ws.outer / "skills" / name, name)
 
     def _cli(
-        self, project: Path, skill: Path, *, cwd: Path | None = None, args: tuple[str, ...] = ()
+        self,
+        project: Path,
+        skill: Path,
+        *,
+        cwd: Path | None = None,
+        args: tuple[str, ...] = (),
+        timeout: float | None = None,
     ) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
             [
@@ -158,6 +166,7 @@ class RenderSkillTests(unittest.TestCase):
             text=True,
             capture_output=True,
             check=False,
+            timeout=timeout,
         )
 
     def _entry(self, result: subprocess.CompletedProcess[str]) -> Path:
@@ -185,7 +194,7 @@ class RenderSkillTests(unittest.TestCase):
         markdown = _markdown(snap)
         self.assertIsNone(COMPILE_TOKEN.search(markdown), markdown)
         self.assertNotIn("{skill-root}", markdown)
-        artifacts = str(project.resolve() / "_bmad-output" / "implementation-artifacts")
+        artifacts = (project.resolve() / "_bmad-output" / "implementation-artifacts").as_posix()
         self.assertIn(artifacts, markdown)
         return snap
 
@@ -340,6 +349,25 @@ class RenderSkillTests(unittest.TestCase):
                 self.assertEqual(set((ws.bmad / "render" / skill.name).rglob("manifest.json")), generations)
                 layer.unlink()
 
+    @unittest.skipIf(hasattr(os, "geteuid") and os.geteuid() == 0, "root bypasses file permission bits")
+    def test_render_folder_that_refuses_new_files_halts(self):
+        ws = self._workspace()
+        skill = self._fixture_skill(ws, '[workflow]\nmessage = "shipped"\n', "{{ workflow.message }}\n")
+        namespace = _namespace_dir(ws.project, "fixture")
+        namespace.mkdir(parents=True)
+        chmod(namespace, 0o555, deny="WD,AD")
+        self.addCleanup(chmod, namespace, 0o755)
+
+        # The timeout: on Windows, older Pythons' mkdtemp retried here some two
+        # billion times, and a hang must fail this test, not the job.
+        result = self._cli(ws.project, skill, timeout=60)
+
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertTrue(result.stdout.startswith("HALT:"), result.stdout)
+        self.assertIn("denied", result.stdout.lower())
+        self.assertNotIn("Traceback", result.stdout + result.stderr)
+        self.assertEqual(list(namespace.iterdir()), [])
+
     def test_invalid_invocation_halts_before_publication(self):
         invalid = (
             ("--set", "workflow.message"),
@@ -391,12 +419,12 @@ class RenderSkillTests(unittest.TestCase):
         left = rs.render(ws.project, skill)
         before = _files(left.parent)
         # Standalone tag lines leave no blank lines behind.
-        self.assertEqual(left.read_text(), f"Left {left.parent / 'left.md'}\nEnabled\n")
+        self.assertEqual(left.read_text(), f"Left {(left.parent / 'left.md').as_posix()}\nEnabled\n")
         self.assertEqual((left.parent / "left.md").read_text(), "Left detail\n")
         self.assertFalse((left.parent / "right.md").exists())
         right = rs.render(ws.project, skill, assignments=["workflow.choice=right"])
         self.assertNotEqual(left, right)
-        self.assertEqual(right.read_text(), f"Right {right.parent / 'right.md'}\n")
+        self.assertEqual(right.read_text(), f"Right {(right.parent / 'right.md').as_posix()}\n")
         self.assertFalse((right.parent / "left.md").exists())
         self.assertTrue((right.parent / "right.md").exists())
         self.assertEqual(before, _files(left.parent))
@@ -449,7 +477,7 @@ class RenderSkillTests(unittest.TestCase):
         snap = entry.parent
         self.assertEqual(
             entry.read_text(),
-            f"* one\n* two\n- one\n- two\na: Read {snap}/a.md\n#### A (`a`)\n\nRead {snap}/a.md\n",
+            f"* one\n* two\n- one\n- two\na: Read {snap.as_posix()}/a.md\n#### A (`a`)\n\nRead {snap.as_posix()}/a.md\n",
         )
         manifest = json.loads((snap / "manifest.json").read_text())
         self.assertEqual(
@@ -539,7 +567,7 @@ class RenderSkillTests(unittest.TestCase):
         literal = "{% if workflow.missing %}\n{{ workflow.missing }} {{ config.missing }} {# note #}\n{% endif %}"
         literal += '\n{{ rendered("missing.md") }} {skill-root}/detail.md'
         entry = rs.render(ws.project, skill, assignments=[f"workflow.message={literal}"])
-        self.assertEqual(entry.read_text(), literal.replace("{skill-root}", str(entry.parent)) + "\n")
+        self.assertEqual(entry.read_text(), literal.replace("{skill-root}", entry.parent.as_posix()) + "\n")
 
     def test_jinja2_version_is_part_of_the_generation_identity(self):
         ws = self._workspace()
@@ -563,7 +591,7 @@ class RenderSkillTests(unittest.TestCase):
                 self.assertIn("{spec_file}", _markdown(snap))
                 hunter = snap / "review-prompts" / "edge-case-hunter.md"
                 self.assertTrue(hunter.is_file())
-                self.assertIn(str(hunter), _markdown(snap))
+                self.assertIn(hunter.as_posix(), _markdown(snap))
 
     def test_rendered_skills_publish_snapshots_without_skill_root(self):
         for name in RENDERED_SKILLS:
@@ -578,16 +606,16 @@ class RenderSkillTests(unittest.TestCase):
         skill = self._skill(ws, "bmad-retrospective")
         snap = self._assert_rendered(rs.render(ws.project, skill), ws.project, "bmad-retrospective")
         markdown = _markdown(snap)
-        self.assertIn(str(skill / "scripts" / "sprint_status.py"), markdown)
+        self.assertIn((skill / "scripts" / "sprint_status.py").as_posix(), markdown)
         self.assertIn("epic: {{epic_number}}\n", markdown)
         self.assertIn("epic-{{prev}}-retro-*.md", markdown)
-        self.assertIn(str(skill / "scripts" / "git_evidence.py"), markdown)
+        self.assertIn((skill / "scripts" / "git_evidence.py").as_posix(), markdown)
         manifest = json.loads((snap / "manifest.json").read_text(encoding="utf-8"))
         self.assertEqual(manifest["inputs"]["skill_root"], str(skill.resolve()))
         elsewhere = _copy_skill(ws.outer / "elsewhere" / "bmad-retrospective", "bmad-retrospective")
         other = rs.render(ws.project, elsewhere)
         self.assertNotEqual(other.parent, snap)
-        self.assertIn(str(elsewhere / "scripts" / "sprint_status.py"), _markdown(other.parent))
+        self.assertIn((elsewhere / "scripts" / "sprint_status.py").as_posix(), _markdown(other.parent))
 
     def test_cli_from_nested_cwd_dispatches_one_absolute_workflow(self):
         ws = self._workspace()
@@ -641,8 +669,8 @@ class RenderSkillTests(unittest.TestCase):
         one = rs.render(first.project, skill)
         two = rs.render(second.project, skill)
         self.assertNotEqual(one, two)
-        self.assertIn(str(first.project.resolve()), one.read_text(encoding="utf-8"))
-        self.assertIn(str(second.project.resolve()), two.read_text(encoding="utf-8"))
+        self.assertIn(first.project.resolve().as_posix(), one.read_text(encoding="utf-8"))
+        self.assertIn(second.project.resolve().as_posix(), two.read_text(encoding="utf-8"))
 
     def test_concurrent_cli_renderers_reuse_one_complete_generation(self):
         ws = self._workspace()
@@ -772,7 +800,7 @@ class RenderSkillTests(unittest.TestCase):
         workflow = rs.render(ws.project, skill)
         self.assertIn(f"{os.sep}render{os.sep}plain-workflow{os.sep}", str(workflow))
         self.assertTrue((workflow.parent / "step.md").is_file())
-        self.assertIn(str(workflow.parent / "step.md"), workflow.read_text(encoding="utf-8"))
+        self.assertIn((workflow.parent / "step.md").as_posix(), workflow.read_text(encoding="utf-8"))
 
     def test_ambiguous_shorthand_and_source_symlink_escape_halt(self):
         config = _team_config(Path("project")).replace(
@@ -807,7 +835,7 @@ class RenderSkillTests(unittest.TestCase):
         text = workflow.read_text(encoding="utf-8")
         match = re.search(r"`([^`]*step-01-clarify-and-route\.md)`", text)
         self.assertIsNotNone(match, text)
-        self.assertTrue(match.group(1).startswith(str(ws.project.resolve())))
+        self.assertTrue(match.group(1).startswith(ws.project.resolve().as_posix()))
         self.assertTrue(Path(match.group(1)).is_file())
 
     def test_publication_failure_does_not_dispatch_or_alter_another_root(self):

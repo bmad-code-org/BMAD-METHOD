@@ -14,7 +14,6 @@ import os
 import re
 import shutil
 import sys
-import tempfile
 import tomllib
 from datetime import date, time
 from pathlib import Path
@@ -202,7 +201,7 @@ def _resolve_config_value(value: Any, label: str, project_root: Path) -> str:
     text = _require_string(value, label)
     if "{project-root}" not in text:
         return text
-    resolved = text.replace("{project-root}", str(project_root))
+    resolved = text.replace("{project-root}", project_root.as_posix())
     if not Path(resolved).is_absolute():
         raise RenderError(f"{label} must resolve to an absolute path: {resolved}")
     return resolved
@@ -300,7 +299,7 @@ class _LayerList(list):
 
 def _bind_customization(value: Any, label: str, destination: Path) -> Any:
     """Bind `{skill-root}` in customization prose to the generation and wrap lists for insertion."""
-    root = str(destination)
+    root = destination.as_posix()
     if isinstance(value, str):
         return _Text(value.replace("{skill-root}", root), label)
     if isinstance(value, list):
@@ -431,7 +430,7 @@ class _RenderContext:
         if not isinstance(target, str) or target not in self._source_names:
             raise RenderError(f"rendered() targets undeclared source: {target}")
         self.links.setdefault(context.name or "", set()).add(target)
-        return str(self.destination / target)
+        return (self.destination / target).as_posix()
 
 
 class _SourceLoader(jinja2.BaseLoader):
@@ -463,7 +462,7 @@ def _render_sources(sources: dict[str, str], skill_dir: Path, context: _RenderCo
     """Render every source as a Jinja2 template against the context; return the non-empty outputs."""
     # Skill sources name their bundled non-Markdown files (scripts, assets)
     # through {skill-root}; those stay in the installed skill directory.
-    bound = {name: content.replace("{skill-root}", str(skill_dir)) for name, content in sources.items()}
+    bound = {name: content.replace("{skill-root}", skill_dir.as_posix()) for name, content in sources.items()}
     environment = jinja2.Environment(
         loader=_SourceLoader(bound),
         undefined=jinja2.StrictUndefined,
@@ -516,7 +515,11 @@ def _publish(destination: Path, outputs: dict[str, bytes], manifest: dict[str, A
     if destination.exists():
         _verify_existing(destination, manifest)
         return
-    staging = Path(tempfile.mkdtemp(prefix=".staging-", dir=destination.parent))
+    # One attempt, not mkdtemp: on Windows, older Pythons' mkdtemp takes "access denied"
+    # for a name collision and tries the next name, some two billion times. The render
+    # would hang in a folder it cannot write to instead of halting.
+    staging = destination.parent / f".staging-{os.urandom(8).hex()}"
+    staging.mkdir(mode=0o700)
     try:
         for name, content in outputs.items():
             path = staging / name
@@ -646,4 +649,8 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    if sys.platform == "win32":
+        # Piped output on Windows defaults to a legacy code page, not UTF-8.
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
     raise SystemExit(main())

@@ -15,7 +15,12 @@ on:
 jobs:
   python:
     if: github.event.action != 'edited' || github.event.changes.base != null
-    runs-on: ubuntu-latest
+    strategy:
+      # Each platform reports its own result; one failing does not cancel the other.
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

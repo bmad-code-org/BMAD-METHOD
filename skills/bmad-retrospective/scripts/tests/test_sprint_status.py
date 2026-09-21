@@ -22,6 +22,7 @@ import sys
 from pathlib import Path
 
 import pytest
+from helpers import chmod
 from ruamel.yaml import YAML
 
 SCRIPT = Path(__file__).resolve().parents[1] / "sprint_status.py"
@@ -548,16 +549,16 @@ def test_write_failure_reports_restore_status(tmp_path):
     # The write is atomic (temp file + os.replace), and os.replace needs write
     # permission on the *directory*, not on the target — a read-only target is
     # now replaceable. Making the containing directory read-only is what blocks
-    # the write: mkstemp fails, while the restore write to the still-writable
-    # target succeeds.
+    # the write: the temp file cannot be created, while the restore write to
+    # the still-writable target succeeds.
     holder = tmp_path / "holder"
     holder.mkdir()
     target = _write_fixture(holder)
-    os.chmod(holder, 0o555)
+    chmod(holder, 0o555, deny="WD,AD")
     try:
         proc = _run(["update", "--file", str(target), "--epic", "1", "--set-retro-done"])
     finally:
-        os.chmod(holder, 0o755)
+        chmod(holder, 0o755)
     assert proc.returncode == 1
     out = _json(proc)
     assert out["ok"] is False
@@ -759,12 +760,12 @@ def test_unreadable_target_is_json_error(tmp_path, command):
     # The other half of the OSError widening: PermissionError, not just
     # IsADirectoryError, has to stay on the JSON contract.
     target = _write_fixture(tmp_path)
-    os.chmod(target, 0o000)
+    chmod(target, 0o000, deny="RD")
     args = ["--file", str(target)] + (["--epic", "1"] if command == "update" else [])
     try:
         proc = _run([command, *args])
     finally:
-        os.chmod(target, 0o644)
+        chmod(target, 0o644)
     assert proc.returncode == 1
     out = _json(proc)
     assert out["ok"] is False
@@ -790,7 +791,7 @@ def test_atomic_write_failure_leaves_target_byte_identical(tmp_path, monkeypatch
     # The failure the atomic write exists for: something goes wrong after the
     # temp file has been written. Nothing may reach the target and no temp file
     # may survive. No CLI path reaches here -- a read-only directory fails at
-    # mkstemp instead -- so this drives the helper directly.
+    # creating the temp file instead -- so this drives the helper directly.
     mod = _module()
     target = _write_fixture(tmp_path)
 
@@ -857,8 +858,9 @@ def test_symlinked_target_is_written_through(tmp_path):
     assert _load(real)["development_status"]["epic-1-retrospective"] == "done"
 
 
+@pytest.mark.skipif(os.name == "nt", reason="Windows has no file permission bits to preserve")
 def test_atomic_write_preserves_mode_and_leaves_no_temp_file(tmp_path):
-    # mkstemp creates 0600; without carrying the target's mode over, every
+    # The temp file is created 0600; without carrying the target's mode over, every
     # update would silently narrow the file.
     holder = tmp_path / "holder"
     holder.mkdir()
