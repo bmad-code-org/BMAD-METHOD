@@ -273,12 +273,20 @@ def _rev(repo, ref):
 def _fake_git(tmp_path, body):
     """Write a `git` shim and return the PATH overlay that puts it ahead of the
     real binary for the script's own subprocesses (never for the fixtures,
-    which build their repos through `_git`'s own environment)."""
+    which build their repos through `_git`'s own environment).
+
+    `body` is Python, run by the tests' own interpreter, so one shim serves
+    every platform. Only its launcher differs: Windows runs a `git.cmd`."""
     bindir = tmp_path / "fakebin"
     bindir.mkdir()
-    shim = bindir / "git"
-    shim.write_text(body)
-    os.chmod(shim, 0o755)
+    script = bindir / "fake_git.py"
+    script.write_text(body)
+    if os.name == "nt":
+        (bindir / "git.cmd").write_text(f'@"{sys.executable}" "{script}" %*\n')
+    else:
+        shim = bindir / "git"
+        shim.write_text(f'#!/bin/sh\nexec "{sys.executable}" "{script}" "$@"\n')
+        os.chmod(shim, 0o755)
     return {"PATH": f"{bindir}{os.pathsep}{os.environ['PATH']}"}
 
 
@@ -475,7 +483,8 @@ def test_distinct_non_utf8_paths_stay_distinct(tmp_path):
     # measurement corruption with nothing in the output admitting to it.
     overlay = _fake_git(
         tmp_path,
-        "#!/bin/sh\nprintf 'aaaa\\037\\037subj\\n\\n1\\t0\\tsrc/caf\\351.py\\n2\\t0\\tsrc/caf\\377.py\\n'\n",
+        "import sys\n"
+        "sys.stdout.buffer.write(b'aaaa\\x1f\\x1fsubj\\n\\n1\\t0\\tsrc/caf\\xe9.py\\n2\\t0\\tsrc/caf\\xff.py\\n')\n",
     )
     out = _json(_proc("--repo", str(tmp_path), "--range", "a..b", env=overlay))
     files = {f["path"]: f for f in out["files"]}
@@ -495,15 +504,12 @@ def test_repeated_merge_headers_are_counted_once(tmp_path):
     repo, base = _merge_repo(tmp_path)
     overlay = _fake_git(
         tmp_path,
-        "#!/bin/sh\n"
-        'for a in "$@"; do\n'
-        '  if [ "$a" = "--min-parents=2" ]; then\n'
-        "    printf 'aaaa\\037p1 p2\\037merge story 1-3\\n\\n2\\t1\\ts.py\\n"
-        "aaaa\\037p1 p2\\037merge story 1-3\\n\\n5\\t4\\ts.py\\n'\n"
-        "    exit 0\n"
-        "  fi\n"
-        "done\n"
-        f'exec "{real_git}" "$@"\n',
+        "import subprocess, sys\n"
+        "if '--min-parents=2' in sys.argv:\n"
+        "    sys.stdout.buffer.write(b'aaaa\\x1fp1 p2\\x1fmerge story 1-3\\n\\n2\\t1\\ts.py\\n'\n"
+        "                            b'aaaa\\x1fp1 p2\\x1fmerge story 1-3\\n\\n5\\t4\\ts.py\\n')\n"
+        "    sys.exit(0)\n"
+        f"sys.exit(subprocess.run([{real_git!r}, *sys.argv[1:]]).returncode)\n",
     )
     out = _json(_proc("--repo", str(repo), "--range", f"{base}..HEAD", env=overlay))
     # One merge sha, however many blocks git printed for it.
@@ -556,7 +562,10 @@ def _recording_git(tmp_path, calls):
     assert real_git, "git must be on PATH"
     return _fake_git(
         tmp_path,
-        f'#!/bin/sh\n( printf \'%s\\037\' "$@"; printf \'\\n\' ) >> "{calls}"\nexec "{real_git}" "$@"\n',
+        "import subprocess, sys\n"
+        f"with open({str(calls)!r}, 'a') as log:\n"
+        "    log.write(''.join(a + '\\x1f' for a in sys.argv[1:]) + '\\n')\n"
+        f"sys.exit(subprocess.run([{real_git!r}, *sys.argv[1:]]).returncode)\n",
     )
 
 
@@ -636,7 +645,7 @@ def test_subject_naming_no_story_gets_an_empty_list(tmp_path):
 def test_git_failure_with_empty_stderr_reports_the_exit_code(tmp_path):
     # A quiet git failure (signal kill, empty stderr) must not leave the caller
     # with `"error": ""` and nothing to report.
-    overlay = _fake_git(tmp_path, "#!/bin/sh\nexit 3\n")
+    overlay = _fake_git(tmp_path, "import sys\nsys.exit(3)\n")
     proc = _proc("--repo", str(tmp_path), "--range", "HEAD~1..HEAD", env=overlay)
     out = _json(proc)
     assert proc.returncode == 1
