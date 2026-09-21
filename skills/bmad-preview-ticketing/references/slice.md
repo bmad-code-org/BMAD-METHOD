@@ -52,7 +52,7 @@ Record the breakdown's decisions in the epic's Notes as dated `Decision:` lines 
 
 ## Pulling and refining a ticket
 
-Pull with `uv run {skill-root}/scripts/tickets.py --project-root {project-root} pull <epic folder> <n>`: it writes `<type>-<nn>-<slug>.md` from the entry, `status: draft`, `refined: false`. A later change to `blocked_by` or `covers` goes to the entry and the file together; where their `blocked_by` differ, the script uses the file's and `status` marks the row `drift`.
+Pull with `uv run {skill-root}/scripts/tickets.py --project-root {project-root} pull <epic folder> <n>`: it writes `<type>-<nn>-<slug>.md` from the entry, `status: draft`, `refined: false`. A later change to anything the entry holds goes to the entry and the file together, and through the store once published; where their `blocked_by` differ, the script uses the file's and `status` marks the row `drift`.
 
 A pulled ticket goes to the builder as it is, with its epic: the builder plans story criteria from the epic's Requirements and Done when, the entry's description, and its `Verify:` check, which it may extend and never weaken. Refine first only when `pull` returns `refine: true`, the ticket has no epic, or the user asks.
 
