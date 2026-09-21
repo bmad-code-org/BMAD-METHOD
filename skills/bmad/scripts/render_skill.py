@@ -14,7 +14,6 @@ import os
 import re
 import shutil
 import sys
-import tempfile
 import tomllib
 from datetime import date, time
 from pathlib import Path
@@ -516,7 +515,11 @@ def _publish(destination: Path, outputs: dict[str, bytes], manifest: dict[str, A
     if destination.exists():
         _verify_existing(destination, manifest)
         return
-    staging = Path(tempfile.mkdtemp(prefix=".staging-", dir=destination.parent))
+    # One attempt, not mkdtemp: on Windows, older Pythons' mkdtemp takes "access denied"
+    # for a name collision and tries the next name, some two billion times. The render
+    # would hang in a folder it cannot write to instead of halting.
+    staging = destination.parent / f".staging-{os.urandom(8).hex()}"
+    staging.mkdir(mode=0o700)
     try:
         for name, content in outputs.items():
             path = staging / name

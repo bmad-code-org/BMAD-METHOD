@@ -42,6 +42,20 @@ description = "Drives Jobs-to-be-Done."
 ARRAYS_OF_TABLES = ("config_questions", "knowledge")
 
 
+def _chmod(path: Path, mode: int, deny: str | None = None) -> None:
+    """``os.chmod``, or on Windows its nearest equivalent.
+
+    Windows has no permission bits. ``deny`` names the rights to take away from the
+    current user in the path's access list; without it, the denial is removed.
+    """
+    if os.name != "nt":
+        os.chmod(path, mode)
+        return
+    user = os.environ["USERNAME"]
+    change = ["/deny", f"{user}:({deny})"] if deny else ["/remove:d", user]
+    subprocess.run(["icacls", str(path), *change], check=True, capture_output=True)
+
+
 def load_setup():
     sys.dont_write_bytecode = True
     spec = importlib.util.spec_from_file_location("bmad_setup", SETUP_PY)
@@ -241,7 +255,9 @@ def run_setup(project: Path, skill: Path, *extra: str) -> subprocess.CompletedPr
     )
 
 
-def run_setup_python(project: Path, skill: Path, *extra: str) -> subprocess.CompletedProcess[str]:
+def run_setup_python(
+    project: Path, skill: Path, *extra: str, timeout: float | None = None
+) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [
             sys.executable,
@@ -255,6 +271,7 @@ def run_setup_python(project: Path, skill: Path, *extra: str) -> subprocess.Comp
         text=True,
         capture_output=True,
         check=False,
+        timeout=timeout,
     )
 
 
@@ -1449,6 +1466,27 @@ class BmadSetupTests(unittest.TestCase):
                     self.assertIn(diagnostic, result.stderr)
                     self.assertFalse((project / "_bmad").exists())
                     self.assertEqual(list(project.glob("_bmad.setup-*")), [])
+
+    @unittest.skipIf(hasattr(os, "geteuid") and os.geteuid() == 0, "root bypasses file permission bits")
+    def test_project_root_that_refuses_new_files_is_one_error_line(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "proj"
+            skill = write_dest_bmad(root)
+            project.mkdir()
+            _chmod(project, 0o555, deny="WD,AD")
+            try:
+                # The timeout: on Windows, older Pythons' mkdtemp retried here some two
+                # billion times, and a hang must fail this test, not the job.
+                result = run_setup_python(project, skill, timeout=60)
+            finally:
+                _chmod(project, 0o755)
+
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            self.assertTrue(result.stderr.startswith("error: "), result.stderr)
+            self.assertIn("denied", result.stderr.lower())
+            self.assertEqual(len(result.stderr.splitlines()), 1, result.stderr)
+            self.assertEqual(list(project.iterdir()), [])
 
     def test_unparseable_team_toml_is_hard_error_and_tree_is_unchanged(self):
         with tempfile.TemporaryDirectory() as temp_dir:
