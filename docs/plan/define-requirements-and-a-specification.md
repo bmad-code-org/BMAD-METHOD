@@ -115,20 +115,26 @@ capability IDs stable. The PRD, UX, and architecture skills can run in any
 order and feed the same spec. After every run it reports assumptions it made
 and open questions it could not answer, for you to resolve.
 
-On request, **Story Breakdown** turns one spec into an epic. It walks the
-capabilities and constraints with you, proposes a story per independently
-reviewable slice, and asks for each one whether you want a checkpoint before or
-after implementation. The result is the ordered `stories.yaml` beside
-`SPEC.md`. That is the whole planning set for a spec-backed epic; see
+`bmad-spec` does not split a spec into stories. When a spec it writes reads as
+several slices, it offers once to hand off to `bmad-preview-ticketing`. To
+split a spec at any time, run `bmad-preview-ticketing` with the spec folder.
+It plans one epic with you in build order and records the stories in the
+epic's `tickets.toml`. Each story cites the spec's capability IDs. A constraint or design decision that comes up while slicing
+goes back into the spec as an update. See
 [Choose a Planning Path](./choose-a-planning-path.md#1-start-epic-sized-work)
 for how the epic then runs.
+
+`bmad-spec` does not split work into stories or write `stories.yaml`. To run
+the planned stories unattended, give
+[`bmad-build-auto`](../build/autonomous-development-loops.md) each pulled
+story file as its intent, one run per story.
 
 :::note[What each skill produces]
 `bmad-product-brief`: `brief.md` and `addendum.md`. `bmad-prfaq`: a PRFAQ
 document with a short summary for the PRD or spec. `bmad-prd`: `prd.md` and
 `addendum.md`, or a validation report. `bmad-spec`: `SPEC.md` plus supporting
-files under `specs/spec-<slug>/`, and `stories.yaml` on request. Exact paths
-and options belong to each skill; see
+files under `specs/spec-<slug>/`. Exact paths and options belong to each
+skill; see
 [Planning Skills and What They Produce](./choose-a-planning-path.md#planning-skills-and-what-they-produce).
 :::
 
@@ -136,5 +142,6 @@ and options belong to each skill; see
 
 With a PRD in hand for multi-epic work, decide whether the work needs shared
 design decisions: [Design UX and Architecture](./design-ux-and-architecture.md).
-With a spec in hand for one epic, ask for Story Breakdown and go to
+With a spec in hand for one epic, run `bmad-preview-ticketing` with the spec
+folder and go to
 [Break Work into Stories and Track It](./break-work-into-stories-and-track-it.md).

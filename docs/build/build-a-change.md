@@ -180,11 +180,11 @@ decisions may set patterns for later work. Once those patterns are stable,
 | `bmad-retrospective`  | Review a completed epic against the evidence it left behind ([Finish an Epic](./finish-an-epic.md))                                                           | Retro document, action items, acceptance verdict |
 
 Clear one-session work enters `bmad-build` directly. A spec-backed epic uses
-Story Breakdown to create several units under one `SPEC.md`; a project adds a
-PRD, UX, architecture, epics, readiness results, and sprint tracking before
-selecting each unit. `bmad-build-auto` does not orchestrate those units: an AI
-coding session or another orchestrator, such as bmad-loop, dispatches one
-worker per unit. See
+`bmad-preview-ticketing` to create several units under one `SPEC.md`; a
+project adds a PRD, UX, architecture, epics, readiness results, and sprint
+tracking before selecting each unit. `bmad-build-auto` does not orchestrate
+those units: an AI coding session or another orchestrator, such as bmad-loop,
+dispatches one worker per unit. See
 [Autonomous Development Loops](./autonomous-development-loops.md) for the
 worker and orchestration contracts.
 

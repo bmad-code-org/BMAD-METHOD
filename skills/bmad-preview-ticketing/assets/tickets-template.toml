@@ -1,0 +1,48 @@
+# tickets.toml — a container's agreed children in build order. tickets.py reads it.
+# An epic's file holds [[entry]] tables. An initiative's holds [[epic]] tables; with no epics it holds [[entry]] tables.
+# Keys tickets.py does not know are ignored, so a team may add its own.
+# Status never lives here: an entry with no leaf file is planned, and the leaf file carries status once it exists.
+
+# ---- In an epic folder: one table per planned story, spike, or bug ----
+
+[[entry]]
+n = 1                       # order among siblings; assigned once, never reused; the leaf file is <type>-<nn>-<slug>.md
+type = "story"              # story | spike | bug
+title = "Cart service scaffold"
+description = "Stands up the cart service with one add-item path through UI, API, and store."
+verify = "A shopper adds one item on the deployed site and sees it in the cart."
+covers = ["R1"]             # ids from the epic's requirement source
+blocked_by = []
+hitl = true                 # a person runs the starter
+risk = "low"                # low | medium | high
+# estimate = 2              # points, when estimation is on
+# unknown = "..."           # known uncertainty, one sentence
+# references = ["ARCHITECTURE-SPINE.md#ad-8"]   # what this entry needs beyond the epic's own References; pull writes them to the ticket
+# notes = ["..."]           # the user's words only, never filled by the agent; pull writes them to the ticket's Notes
+# refine = true            # refine to full acceptance criteria before it starts
+# spec_checkpoint = true    # a person reviews the ticket, or the builder's plan, before work starts
+# done_checkpoint = true    # work pauses after this ticket until a person says continue
+
+[[entry]]
+n = 2
+type = "story"
+title = "Apply and refuse discount codes"
+description = "Adds code validation to the pricing call and shows the refusal reason."
+verify = "A valid code lowers the total; an expired one is refused with its reason."
+covers = ["R2", "R3"]
+blocked_by = [1, "epic-pricing-rules/03"]   # a sibling's n; "epic-<slug>/<nn>" for an entry in another epic; "epic-<slug>" for that whole epic
+hitl = false
+risk = "medium"
+
+# ---- In an initiative folder: one table per epic, in build order ----
+
+[[epic]]
+slug = "epic-pricing-rules"                 # the epic's folder name
+title = "Pricing rules"
+covers = ["P1", "P2"]
+
+[[epic]]
+slug = "epic-cart-rules"
+title = "Shoppers manage their cart"
+covers = ["C1", "C2", "C3"]
+after = [{ epic = "epic-pricing-rules", needs = "the one-function pricing contract" }]   # a partial dependency; the entries that wait on it carry the blocked_by

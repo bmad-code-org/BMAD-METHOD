@@ -3,11 +3,11 @@
 Read this when the question is about `bmad-spec`, `bmad-prd`, `bmad-ux`, `bmad-architecture`, or the skills that slice and track work: what each gives, when to pick it, when not to, and what it writes.
 
 **`bmad-spec`** — the hub. Condenses any input into the contract builds read.
-- Gives: a spec folder with `SPEC.md` (why, capabilities with stable ids, constraints, non-goals, success signal) and companions. It adopts UX files and an architecture spine as companions and absorbs a PRD or brief as a source. On request it breaks the spec into an ordered `stories.yaml`. It also updates and validates an existing spec.
-- Pick when: the user has anything to distill, or can explain the idea in detail; after any other analysis or planning skill finishes; when requirements change on the spec route (it appends to its log, re-derives the spec, and says which stories went stale).
+- Gives: a spec folder with `SPEC.md` (why, capabilities with stable ids, constraints, non-goals, success signal) and companions. It adopts UX files and an architecture spine as companions and absorbs a PRD or brief as a source. On request it hands the spec folder to `bmad-preview-ticketing` to be planned into stories. It also updates and validates an existing spec.
+- Pick when: the user has anything to distill, or can explain the idea in detail; after any other analysis or planning skill finishes; when requirements change on the spec route (it appends to its log, re-derives the spec, and names the tickets that no longer match).
 - Not when: the input is a bare idea. It distills and does not coach → `bmad-product-brief` first, or `bmad-prd` when full requirements are needed.
-- Story breakdown: interactive only. A flat ordered list with no epics, no acceptance criteria, and no status. Enough when the user wants to build now.
-- Writes: `{output_folder}/specs/spec-{slug}/` holding `SPEC.md`, companions, and `stories.yaml` once stories are broken out.
+- Splitting into stories is not this skill: send the user to `bmad-preview-ticketing` with the spec folder, which plans one epic whose stories cite the spec's `CAP-N` ids. After writing a spec that reads as several slices, `bmad-spec` offers that hand-off once.
+- Writes: `{output_folder}/specs/spec-{slug}/` holding `SPEC.md` and companions.
 
 **`bmad-prd`** — coaches detailed requirements out of the user.
 - Gives: a PRD sized to the stakes (about 2 pages for a hobby project, longer for a launch): features, requirements with stable ids, user journeys, non-goals, MVP scope, metrics. Fast path or coaching path. Also updates and validates an existing PRD.
@@ -26,28 +26,28 @@ Read this when the question is about `bmad-spec`, `bmad-prd`, `bmad-ux`, `bmad-a
 **`bmad-architecture`** — fixes only the decisions that keep separately built parts consistent.
 - For a user new to architecture: it coaches by default, so the user needs no architecture knowledge to start. When the stack is open it recommends a well-known current starter, checked on the web first, because a good starter settles a coherent set of decisions for free. For each big call (paradigm, stack or starter, major boundaries, and where and how it is deployed and hosted) it lays out the realistic options and why it leans one way, then the user chooses. Its fast path drafts everything with `[ASSUMPTION]` tags to correct.
 - Gives: a terse `ARCHITECTURE-SPINE.md` of decisions with stable ids, plus a list of what it deliberately leaves open. Not a full architecture document unless the user asks for one. Works at initiative, feature, or epic altitude, and can start from a spec, a raw idea, an existing codebase, or a sprawling document to distill.
-- Pick when: two units built independently could choose incompatibly; the stack is open; the user does not know what stack, starter, or hosting to choose; a brownfield codebase has conventions worth ratifying; a feature touches an existing system.
+- Pick when: two units built independently could choose incompatibly; an initiative has been cut into epics and more than one epic must adopt the same contract, format, or value list; the stack is open; the user does not know what stack, starter, or hosting to choose; a brownfield codebase has conventions worth ratifying; a feature touches an existing system.
 - Not when: the input is too thin → `bmad-spec` first. One session builds all of it → skip.
 - Next: it offers to have `bmad-spec` adopt the spine as a companion. Recommend that first.
 - Writes: `{planning_artifacts}/architecture/architecture-{project_name}-{date}/ARCHITECTURE-SPINE.md`.
 
 ## Slicing and tracking the work
 
-Three ways. Use one per piece of work, never two for the same work.
+Two ways. Use one per piece of work, never both for the same work. A request to split or break up work goes to the second, also when it starts from a spec.
 
-| | `bmad-spec` story breakdown | `bmad-create-epics-and-stories` + `bmad-sprint-planning` | `bmad-preview-ticketing` |
-|---|---|---|---|
-| Needs | A spec folder | A PRD and an architecture | Any intent; best with a spec |
-| Gives | Ordered story list | Epics, stories with acceptance criteria, a readiness verdict, a status file | A ticket tree used as a board; optional tracker publishing |
-| Status | None | `bmad-build` updates it | Moved by hand through the skill |
-| Effort | Low | High: every story approved one at a time | Sized at intake; a single bug or story is quick |
+| | `bmad-create-epics-and-stories` + `bmad-sprint-planning` | `bmad-preview-ticketing` |
+|---|---|---|
+| Needs | A PRD and an architecture | Any intent; best with a spec |
+| Gives | Epics, stories with acceptance criteria, a readiness verdict, a status file | A ticket tree used as a board; optional tracker publishing |
+| Status | `bmad-build` updates it | Moved by hand through the skill |
+| Effort | High: every story approved one at a time | Sized at intake; a single bug or story is quick |
 
 For how the ticketing route works and why, see `help/ticketing-and-epics.md`. For setting it up and driving it, see `help/ticketing-setup.md`.
 
 **`bmad-create-epics-and-stories`** — breaks a PRD and architecture into user-value epics and stories.
 - Gives: `epics.md` with a requirements inventory, a map proving every requirement is covered, and Given/When/Then criteria per story.
 - Pick when: a PRD and architecture exist, the work spans several epics, and the user wants traceability and criteria up front.
-- Not when: there is only a spec, or the user wants to build now → spec story breakdown. It needs a PRD to extract requirements from.
+- Not when: there is only a spec, or the user wants to build now → `bmad-spec`, then `bmad-preview-ticketing` with the spec folder. It needs a PRD to extract requirements from.
 - Writes: one file, `{planning_artifacts}/epics.md`. A spec can be added as extra input when it asks, but a PRD and an architecture are still required.
 
 **`bmad-sprint-planning`** — judges whether the plan is buildable, then tracks it.
@@ -57,7 +57,7 @@ For how the ticketing route works and why, see `help/ticketing-and-epics.md`. Fo
 - Writes: `{implementation_artifacts}/sprint-status.yaml`.
 
 **`bmad-preview-ticketing`** — preview of the ticket tree that will replace the two skills above.
-- Gives: an initiative sliced into epics, each broken into stories, spikes, and bugs as ticket files with blockers and a verify line, refined when pulled, run as a board, optionally published to a tracker.
+- Gives: an initiative sliced into epics, each planned into stories and bugs as entries in `tickets.toml` with blockers and a verify line; a spike is added when the user asks for one. An entry becomes a ticket file when pulled. Run as a board, optionally published to a tracker.
 - Pick when: tickets or a tracker are the record; one-off bugs and stories with no PRD; work across repos; the user accepts a prerelease skill.
-- Tell the user: `bmad-build` does not move ticket status yet. They hand a refined ticket file to `bmad-build`, then tell this skill to start or close it. Trackers other than the repo store are lightly tested.
-- Writes: ticket files under `{output_folder}/{active_initiative}/` and `{output_folder}/backlog/`, named `epic-*`, `story-NN-*`, `spike-NN-*`, `bug-NN-*`.
+- Tell the user: `bmad-build` does not move ticket status yet. They hand the pulled ticket file to `bmad-build` with its epic, and tell this skill to start and close it. A ticket is refined first only when its entry says `refine = true`, it has no epic, or the user asks. Trackers other than the repo store are lightly tested.
+- Writes: ticket files under `{output_folder}/{active_initiative}/` and `{output_folder}/backlog/`, named `epic-*`, `story-NN-*`, `spike-NN-*`, `bug-NN-*`, and a `tickets.toml` beside each initiative and epic file.

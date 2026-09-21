@@ -88,7 +88,7 @@ regenerated from it.
 | Product manager          | Brainstorming, Forge Idea, Deep Recon, then `bmad-product-brief` or `bmad-prfaq`, then `bmad-prd` | `prd.md` and its update cycle; the one-pager the steering committee reads |
 | Designer                 | `bmad-ux`                                                                                         | `DESIGN.md`, `EXPERIENCE.md`                                              |
 | Tech lead or architect   | `bmad-architecture`                                                                               | The architecture spine                                                    |
-| One engineer, per epic   | `bmad-spec`, Build per story, `bmad-retrospective`                                                | That epic: `SPEC.md`, `stories.yaml`, its verdict                         |
+| One engineer, per epic   | `bmad-spec`, `bmad-preview-ticketing`, Build per story, `bmad-retrospective`                      | That epic: `SPEC.md`, its `tickets.toml`, its verdict                     |
 | Whoever tracks the whole | `bmad-sprint-planning`                                                                            | `sprint-status.yaml`, open action items                                   |
 
 The rows are roles, not headcount. One person can hold several; what matters
@@ -146,8 +146,9 @@ They will. The path for a change is the same as the path for the original:
 3. Re-run `bmad-spec` for each affected epic. It updates `SPEC.md` in place
    and keeps capability IDs stable, so stories that are unaffected stay
    unaffected.
-4. Re-run Story Breakdown or `bmad-sprint-planning` for the affected epics.
-   Regenerating tracking is safe; finished work stays finished.
+4. For the affected epics, re-slice the stories `bmad-spec` names as no longer
+   matching, or re-run `bmad-sprint-planning`. Regenerating tracking is safe;
+   finished work stays finished.
 
 For a change large enough to threaten the plan itself, run
 `bmad-correct-course` before touching documents.

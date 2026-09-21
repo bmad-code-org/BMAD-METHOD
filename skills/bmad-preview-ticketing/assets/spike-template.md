@@ -20,7 +20,7 @@ estimate: ""   # points, when estimation is on
 
 ## Description
 
-[Thin: one sentence, the question. Refined: the unknown this resolves — usually a placeholder left at design time — and which tickets wait on the answer, 2–4 sentences.]
+[Unrefined: one sentence, the question. Refined: the unknown this resolves — usually a placeholder left at design time — and which tickets wait on the answer, 2–4 sentences.]
 
 ## Approach
 

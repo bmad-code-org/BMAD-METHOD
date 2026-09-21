@@ -12,7 +12,8 @@ Use this when the user asks about `bmad-build-auto`, building stories with no hu
 
 - Free text, a ticket or story id, or a path to an intent file.
 - A story record an earlier run wrote.
-- A spec folder plus a story id. The folder needs `stories.yaml` and `SPEC.md`. The record lands at `stories/<id>-<slug>.md`.
+- A pulled ticket file, for work planned with `bmad-preview-ticketing`: one run per ticket, with the file as the intent. Dispatch straight from `tickets.toml` is not available yet.
+- A spec folder that already has `stories.yaml`, plus a story id. The folder also needs `SPEC.md`. The record lands at `stories/<id>-<slug>.md`.
 - "Halt after planning" stops the run at `ready-for-dev`. The next dispatch implements it.
 
 ## Resume follows the record's status

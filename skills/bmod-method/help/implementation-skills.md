@@ -11,7 +11,7 @@ Read this when the question is about `bmad-build`, `bmad-build-auto`, or `bmad-c
 - Writes: `{implementation_artifacts}/spec-{slug}.md` with a `status` line, or `stories/{story_id}-{slug}.md` inside the spec folder; deferred goals in `{implementation_artifacts}/deferred-work.md`.
 
 **`bmad-build-auto`** — one unattended build of one story, for a loop or script that dispatches it.
-- Do not offer it for attended work. It never asks: anything unclear halts it as `blocked` with a named reason written into the story file. It needs subagents and, for spec-folder work, `SPEC.md` and `stories.yaml`. Where version control is present it also needs a clean working tree on a branch that fits the work.
+- Do not offer it for attended work. It never asks: anything unclear halts it as `blocked` with a named reason written into the story file. It needs subagents. For work planned with `bmad-preview-ticketing`, its input is the pulled ticket file, one run per ticket. For a spec folder that already has `stories.yaml`, its input is the folder plus a story id, and the folder also needs `SPEC.md`. Where version control is present it also needs a clean working tree on a branch that fits the work.
 - Fits when: decisions and patterns are stable and the stories are well specified.
 - Writes: the same story files as `bmad-build`.
 

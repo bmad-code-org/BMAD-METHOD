@@ -4,8 +4,8 @@ remote: ""   # the store url, for a tracker
 type: story
 title: "[What exists or works when this is done]"
 parent: [folder name of the epic, or of the initiative when there are no epics; none for a standalone ticket in backlog/]
-covers: [ids from the epic's spec, referenced numbered source, or Requirements; this ticket's contribution]
-blocked_by: []   # sibling numbers, file names, or ids
+covers: [ids from the epic's spec, referenced numbered source, or Requirements; the ones this ticket delivers toward]
+blocked_by: []   # a sibling's number; epic-<slug>/<nn> or epic-<slug> for another epic
 blocked_at: ""   # date, when waiting on a person or an answer
 blocked_reason: ""
 assignee: ""
@@ -16,17 +16,17 @@ risk: [low|medium|high]
 estimate: ""   # points, when estimation is on
 ---
 
-<!-- Thin: Description as the contribution, Acceptance Criteria as one Verify: line, References, local Notes. Refined: full criteria and Boundaries. -->
+<!-- Unrefined: a one-sentence Description, Acceptance Criteria as one Verify: line, References, local Notes. Refined: full criteria and Boundaries. -->
 
 # [Title]
 
 ## Description
 
-[Thin: one sentence, the contribution. Refined: what exists or works when this is done and how it advances the epic, 2–4 sentences; the criteria below carry the proof, do not restate them.]
+[Unrefined: one sentence, what this delivers. Refined: what exists or works when this is done and how it advances the epic, 2–4 sentences; the criteria below carry the proof, do not restate them.]
 
 ## Acceptance Criteria
 
-[Thin: one line, `Verify: how the contribution will be checked`, nothing else. Refined: the numbered criteria below.]
+[Unrefined: one line, `Verify: how it will be checked`, nothing else. Refined: the numbered criteria below.]
 
 1. **[Short name of the behavior]**
    **Given** [the state before: data, user, config]
@@ -67,7 +67,7 @@ type: story
 title: "A shopper applies a discount code and sees the new total"
 parent: epic-cart-rules
 covers: [R2, R3]
-blocked_by: [spike-03-discount-engine-latency]
+blocked_by: [3]
 blocked_at: ""
 blocked_reason: ""
 assignee: ""

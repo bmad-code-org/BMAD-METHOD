@@ -29,8 +29,8 @@ it silently loses the parts that mattered; condense them first. If the spec
 says the input is too thin, you are not done on this chapter yet.
 
 - **Well-defined intent**: run `bmad-spec` with it. A spec that fits one Build
-  session goes straight to `bmad-build`; an epic-sized one gets Story Breakdown
-  and a Build per story. See
+  session goes straight to `bmad-build`; an epic-sized one goes to
+  `bmad-preview-ticketing` for stories, then a Build per story. See
   [Define Requirements and a Specification](./define-requirements-and-a-specification.md).
 - **Anything else**: the intent is not ready yet. Use the pages below until it
   is, then run `bmad-spec`. The spec skill writes the contract; it does not
@@ -80,7 +80,7 @@ installed project, `bmad-help` recommends the next one.
 | `bmad-prfaq`                    | Stress-test a product concept customer-first, working backwards from the press release                                                         | `prfaq-<project>.md`                                                                |
 | `bmad-prd`                      | Create, update, or validate a PRD                                                                                                              | Create/update: `prd.md`, `addendum.md`, `.memlog.md`; validate: HTML + `.md` report |
 | `bmad-ux`                       | Record how the product looks and behaves ([Design UX and Architecture](./design-ux-and-architecture.md))                                       | `DESIGN.md`, `EXPERIENCE.md`, `.memlog.md`                                          |
-| `bmad-spec`                     | Condense any intent into a short contract; break it into stories on request                                                                    | `SPEC.md` + companions under `specs/spec-<slug>/`; optional `stories.yaml`          |
+| `bmad-spec`                     | Condense any intent into a short contract; hand it to `bmad-preview-ticketing` for stories on request                                          | `SPEC.md` + companions in `specs/spec-<slug>/`                                      |
 | `bmad-architecture`             | Make the technical decisions that keep separately built parts consistent                                                                       | `ARCHITECTURE-SPINE.md` by default                                                  |
 | `bmad-create-epics-and-stories` | Break requirements into epics and stories ([Break Work into Stories and Track It](./break-work-into-stories-and-track-it.md))                  | Epic files with stories                                                             |
 | `bmad-sprint-planning`          | Check readiness before implementation, then track story status                                                                                 | PASS/CONCERNS/FAIL + `sprint-status.yaml`                                           |
@@ -118,13 +118,16 @@ coherent outcome.
 1. Run `bmad-spec` with the epic intent. See
    [Define Requirements and a Specification](./define-requirements-and-a-specification.md)
    for what a spec contains and when it is enough on its own.
-2. Ask for Story Breakdown. This creates the ordered `stories.yaml` beside
-   `SPEC.md`.
+2. Run `bmad-preview-ticketing` with the spec folder. It plans the epic with
+   you and records the stories in build order in the epic's `tickets.toml`.
 3. Review the proposed order and decide which stories need a checkpoint.
+4. Pull each story when you are ready to work on it. Pulling writes the story
+   file. Refine it first only when its entry says `refine = true`, the ticket
+   has no epic, or you want the acceptance criteria written before build.
 
-The story list is an execution plan, not a promise that nothing will change.
-Update the spec and re-run Story Breakdown when earlier work reveals a missing
-constraint, a better division, or a conflict between stories.
+The breakdown is an execution plan, not a promise that nothing will change.
+Update the spec and re-slice the remaining stories when earlier work reveals a
+missing constraint, a better division, or a conflict between stories.
 
 **Establish the implementation pattern**
 
@@ -133,14 +136,17 @@ stories often settle the architecture, initial project structure, and repeated
 patterns that later stories will follow. Give those decisions human attention
 before automating repetitions of them.
 
-Run Build once per story. Build creates or resumes that story's implementation
-record under the spec folder and keeps it linked to the parent spec.
+Run Build once per story, giving it the pulled story file. To run stories
+unattended instead, give `bmad-build-auto` the pulled story file as its
+intent, one run per story; see
+[Autonomous Development Loops](../build/autonomous-development-loops.md).
 
 **Finish the epic**
 
-Verify the stories together, not only one at a time. Then run
-`bmad-retrospective` with the spec folder. Retrospective reads `stories.yaml`
-as the epic inventory and judges the combined result against the parent spec.
+Verify the stories together, not only one at a time. When the spec folder
+already has a `stories.yaml`, run `bmad-retrospective` with the spec folder.
+Retrospective reads `stories.yaml` as the epic inventory and judges the
+combined result against the parent spec.
 See [Finish an Epic](../build/finish-an-epic.md).
 
 ### 2. Start Project-Sized Work
