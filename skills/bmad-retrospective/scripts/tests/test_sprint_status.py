@@ -22,6 +22,7 @@ import sys
 from pathlib import Path
 
 import pytest
+from helpers import chmod
 from ruamel.yaml import YAML
 
 SCRIPT = Path(__file__).resolve().parents[1] / "sprint_status.py"
@@ -137,20 +138,6 @@ def _write_action_fixture(tmp_path):
     target = tmp_path / "sprint-status.yaml"
     target.write_text(ACTION_FIXTURE, encoding="utf-8")
     return target
-
-
-def _chmod(path, mode, deny=None):
-    """``os.chmod``, or on Windows its nearest equivalent.
-
-    Windows has no permission bits. ``deny`` names the rights to take away from the
-    current user in the path's access list; without it, the denial is removed.
-    """
-    if os.name != "nt":
-        os.chmod(path, mode)
-        return
-    user = os.environ["USERNAME"]
-    change = ["/deny", f"{user}:({deny})"] if deny else ["/remove:d", user]
-    subprocess.run(["icacls", str(path), *change], check=True, capture_output=True)
 
 
 def _load(path):
@@ -567,11 +554,11 @@ def test_write_failure_reports_restore_status(tmp_path):
     holder = tmp_path / "holder"
     holder.mkdir()
     target = _write_fixture(holder)
-    _chmod(holder, 0o555, deny="WD,AD")
+    chmod(holder, 0o555, deny="WD,AD")
     try:
         proc = _run(["update", "--file", str(target), "--epic", "1", "--set-retro-done"])
     finally:
-        _chmod(holder, 0o755)
+        chmod(holder, 0o755)
     assert proc.returncode == 1
     out = _json(proc)
     assert out["ok"] is False
@@ -773,12 +760,12 @@ def test_unreadable_target_is_json_error(tmp_path, command):
     # The other half of the OSError widening: PermissionError, not just
     # IsADirectoryError, has to stay on the JSON contract.
     target = _write_fixture(tmp_path)
-    _chmod(target, 0o000, deny="RD")
+    chmod(target, 0o000, deny="RD")
     args = ["--file", str(target)] + (["--epic", "1"] if command == "update" else [])
     try:
         proc = _run([command, *args])
     finally:
-        _chmod(target, 0o644)
+        chmod(target, 0o644)
     assert proc.returncode == 1
     out = _json(proc)
     assert out["ok"] is False

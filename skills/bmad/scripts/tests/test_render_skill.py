@@ -24,6 +24,8 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest import mock
 
+from helpers import chmod
+
 SCRIPTS_SRC = Path(__file__).resolve().parents[1]
 REPO = SCRIPTS_SRC.parents[2]
 SKILLS_SRC = REPO / "skills"
@@ -66,20 +68,6 @@ def _files(directory: Path) -> dict[str, bytes]:
 
 def _markdown(directory: Path) -> str:
     return "\n".join(content.decode("utf-8") for name, content in _files(directory).items() if name.endswith(".md"))
-
-
-def _chmod(path: Path, mode: int, deny: str | None = None) -> None:
-    """``os.chmod``, or on Windows its nearest equivalent.
-
-    Windows has no permission bits. ``deny`` names the rights to take away from the
-    current user in the path's access list; without it, the denial is removed.
-    """
-    if os.name != "nt":
-        os.chmod(path, mode)
-        return
-    user = os.environ["USERNAME"]
-    change = ["/deny", f"{user}:({deny})"] if deny else ["/remove:d", user]
-    subprocess.run(["icacls", str(path), *change], check=True, capture_output=True)
 
 
 def _namespace_dir(project: Path, skill_name: str) -> Path:
@@ -367,8 +355,8 @@ class RenderSkillTests(unittest.TestCase):
         skill = self._fixture_skill(ws, '[workflow]\nmessage = "shipped"\n', "{{ workflow.message }}\n")
         namespace = _namespace_dir(ws.project, "fixture")
         namespace.mkdir(parents=True)
-        _chmod(namespace, 0o555, deny="WD,AD")
-        self.addCleanup(_chmod, namespace, 0o755)
+        chmod(namespace, 0o555, deny="WD,AD")
+        self.addCleanup(chmod, namespace, 0o755)
 
         # The timeout: on Windows, older Pythons' mkdtemp retried here some two
         # billion times, and a hang must fail this test, not the job.

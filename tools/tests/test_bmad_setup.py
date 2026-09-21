@@ -11,6 +11,8 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
+from helpers import chmod
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SETUP_PY = REPO_ROOT / "skills" / "bmad" / "scripts" / "setup.py"
 BMAD_SOURCE = "github:bmad-code-org/BMAD-METHOD/skills"
@@ -40,20 +42,6 @@ icon = "📋"
 description = "Drives Jobs-to-be-Done."
 """
 ARRAYS_OF_TABLES = ("config_questions", "knowledge")
-
-
-def _chmod(path: Path, mode: int, deny: str | None = None) -> None:
-    """``os.chmod``, or on Windows its nearest equivalent.
-
-    Windows has no permission bits. ``deny`` names the rights to take away from the
-    current user in the path's access list; without it, the denial is removed.
-    """
-    if os.name != "nt":
-        os.chmod(path, mode)
-        return
-    user = os.environ["USERNAME"]
-    change = ["/deny", f"{user}:({deny})"] if deny else ["/remove:d", user]
-    subprocess.run(["icacls", str(path), *change], check=True, capture_output=True)
 
 
 def load_setup():
@@ -1474,13 +1462,13 @@ class BmadSetupTests(unittest.TestCase):
             project = root / "proj"
             skill = write_dest_bmad(root)
             project.mkdir()
-            _chmod(project, 0o555, deny="WD,AD")
+            chmod(project, 0o555, deny="WD,AD")
             try:
                 # The timeout: on Windows, older Pythons' mkdtemp retried here some two
                 # billion times, and a hang must fail this test, not the job.
                 result = run_setup_python(project, skill, timeout=60)
             finally:
-                _chmod(project, 0o755)
+                chmod(project, 0o755)
 
             self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
             self.assertTrue(result.stderr.startswith("error: "), result.stderr)

@@ -16,6 +16,7 @@ import sys
 from pathlib import Path
 
 import pytest
+from helpers import chmod
 from ruamel.yaml import YAML
 
 SCRIPT = Path(__file__).resolve().parents[1] / "sprint_plan.py"
@@ -42,20 +43,6 @@ Acceptance criteria...
 """
 
 DATE = "08-01-2026 14:30"
-
-
-def _chmod(path, mode, deny=None):
-    """``os.chmod``, or on Windows its nearest equivalent.
-
-    Windows has no permission bits. ``deny`` names the rights to take away from the
-    current user in the path's access list; without it, the denial is removed.
-    """
-    if os.name != "nt":
-        os.chmod(path, mode)
-        return
-    user = os.environ["USERNAME"]
-    change = ["/deny", f"{user}:({deny})"] if deny else ["/remove:d", user]
-    subprocess.run(["icacls", str(path), *change], check=True, capture_output=True)
 
 
 def run_generate(tmp_path, epics_text=EPICS_FIXTURE, existing=None, stories=(), extra=()):
@@ -387,7 +374,7 @@ def test_status_folder_that_refuses_new_files_fails_with_json(tmp_path):
     epic_file.write_text(EPICS_FIXTURE, encoding="utf-8")
     impl = tmp_path / "impl"
     impl.mkdir()
-    _chmod(impl, 0o555, deny="WD,AD")
+    chmod(impl, 0o555, deny="WD,AD")
     try:
         proc = subprocess.run(
             [
@@ -410,7 +397,7 @@ def test_status_folder_that_refuses_new_files_fails_with_json(tmp_path):
             timeout=60,
         )
     finally:
-        _chmod(impl, 0o755)
+        chmod(impl, 0o755)
     assert proc.returncode == 1
     out = json.loads(proc.stdout)
     assert out["ok"] is False
