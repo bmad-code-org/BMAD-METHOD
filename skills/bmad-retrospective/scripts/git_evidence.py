@@ -20,7 +20,6 @@ import argparse
 import json
 import os
 import re
-import shutil
 import subprocess
 import sys
 
@@ -76,9 +75,7 @@ def _git_log(repo, extra_args, rng):
     `merges_measured` and read as "the merges changed nothing".
     """
     cmd = [
-        # Resolved here, not left to the OS: on Windows a bare "git" finds only
-        # git.exe, never a git.cmd or git.bat ahead of it on PATH.
-        shutil.which("git") or "git",
+        "git",
         "-c",
         "core.quotePath=false",
         "-c",
