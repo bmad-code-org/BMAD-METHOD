@@ -1,6 +1,7 @@
 ---
 id: ""   # set at publish
 remote: ""   # the store url, for a tracker
+key: ""   # tracker project or team for everything under this, when it differs from the store's
 type: epic
 title: "[The outcome this container exists to reach]"
 parent: [folder name of the initiative]

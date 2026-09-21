@@ -19,7 +19,7 @@ description = "Jira Cloud through acli: work types, transitions, links, JQL. For
 [tickets]
 store = "jira"
 root = "{output_folder}"
-key = ""    # Jira project key, e.g. "SHOP"; Jira assigns the number
+key = ""    # the default Jira project key, e.g. "SHOP"; Jira assigns the number. A container's own `key` overrides it for everything under it
 site = ""   # https://yourorg.atlassian.net
 access = """
 Use acli against `site`. Custom fields go through `--from-json`; check a subcommand's spelling
@@ -55,6 +55,7 @@ Project settings, Board; a company-managed project needs a Jira admin to add it 
 """
 
 write = """
+The project is the ticket's own `key`, else that of the nearest container above it, else `key` here.
 Create, parents before children, blockers first:
 `acli jira workitem create --project <key> --type <per [tickets.types]> --summary <t>
 --description-file <b> --parent <key> --label <type>[,hitl,risk-<risk>]`, priority per `fields` on

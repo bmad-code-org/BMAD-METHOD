@@ -19,7 +19,7 @@ description = "Linear through its MCP server: projects, parent issues, relations
 store = "linear"
 root = "{output_folder}"
 key = ""    # Linear team key, e.g. "SHOP"; Linear assigns the number
-team = ""   # team key or name
+team = ""   # the default team, key or name. A container's own `key` overrides it for everything under it
 access = """
 Use the Linear MCP (create_issue, update_issue, create_project, update_project, get_issue,
 list_issues, list_issue_statuses, create_issue_label, create_comment) against `team`. Confirm from the tool schema whether parent
@@ -52,6 +52,7 @@ also expect an In Review state in the Started group. Offer this at first publish
 """
 
 write = """
+The team is the ticket's own `key`, else that of the nearest container above it, else `team` here.
 `create_issue` creates, `update_issue` changes — title, description, state, assignee, parent,
 blockedBy, labels, priority, project; confirm the exact tool names against the server's list at
 first use. Labels carry type, hitl, and
