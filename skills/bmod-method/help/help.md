@@ -70,6 +70,7 @@ Situations the tree above does not settle.
 | "Can BMad build my stories by itself?" | `bmad-build-auto`, dispatched per story by a loop | It suits settled decisions and well specified stories, with someone reading the results. For work planned with `bmad-preview-ticketing`, give it the pulled ticket file, one run per ticket (`help/unattended-builds.md`). |
 | Wants tickets or a tracker (Jira, Linear, GitHub) as the record | `bmad-preview-ticketing` | Tickets are the board. It is a preview; a ticket's `status` belongs to the build, and until `bmad-build` writes it the user marks tickets by hand. |
 | "Where are we?" with a `sprint-status.yaml` | `bmad-sprint-planning` status | It reads the file and names the next story. |
+| A v6 project (`epics.md`, `sprint-status.yaml`, dated folders under the planning folder) that wants the v7 layout | `bmad migrate method` | The module ships `v6-v7-migration.toml`: the rules for moving every artifact into one initiative folder and turning epics and sprint status into a ticket tree. The `bmad` skill plans it with the user, then performs it. |
 | A PR, a branch, or code `bmad-build` did not write | `bmad-code-review` | Agent lenses over any diff. |
 | "Walk me through what changed" | `bmad-walkthrough` | The human is the reviewer. |
 | All stories of an epic or spec folder are done | `bmad-retrospective` | It judges the whole against the spec. |
