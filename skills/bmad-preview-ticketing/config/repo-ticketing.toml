@@ -19,7 +19,6 @@ description = "Quick setup, and the default when nothing else is chosen. Tickets
 [tickets]
 store = "repo"
 root = "{output_folder}"
-key = ""   # ticket id prefix, e.g. "SHOP" -> SHOP-12. Empty = ask at first publish.
 
 access = """
 Read and write the files under root. If root is missing, tell the user what is blocking and confirm the setup with them.
@@ -45,20 +44,19 @@ create root/backlog/ and the active initiative's folder when they do not exist.
 """
 
 write = """
-No id yet: assign the next KEY-n (ids in use: `grep -rh "^id: " root`). Every change — body, status, assignee, parent (move the file, or the container folder, into the new
-parent's folder), blocked_by — is an edit to the file. Build records never go in the
-body; bmad-build writes them beside the ticket file (`<name>-plan.md`,
-`<name>-session-<date>.jsonl`, `<name>-results.md`).
+No entry yet: add an `[[entry]]` with the next unused `id` to the parent's `tickets.toml`; the file carries that `id`. Every change — body, assignee, parent (move the file, or the container folder, into the new
+parent's folder), after — is an edit to the file. A leaf's `status` is the build's: it writes draft, ready-for-dev, in-progress, in-review, done, and blocked as it works, and a pulled file has none. Ticketing edits it only when the user says to — `dropped`, or a person working the ticket by hand who asks for it. A container's `status` is ticketing's: absent until work under it starts, then in-progress, done, or dropped. Build records: the plan is in the
+file under `## Plan`, the coding agent's section.
 Commit only the files you wrote on the current branch. Root not in a git repo: skip the commit and say so.
 """
 
 query = """
-By id: `grep -rl "^id: <id>" root`; by title, the filename; by words, `grep -rli "<words>" root
---include=*.md`; by a frontmatter field, `grep -rl "^type: bug" root` — same for status, assignee,
+A ticket is named by its path and its `id` under its epic. `tickets.py find <folder> <ref>` resolves an id, `"2.3"`, a file name, or title words to the one file; by a frontmatter field, `grep -rl "^type: bug" root` — same for status, assignee,
 parent. A container's children are the ticket files and container folders in its folder; planned children with no file are the entries in its `tickets.toml`. Frontmatter holds id,
-remote, type, title, parent, covers (the source requirement ids), blocked_by, blocked_at and
-blocked_reason when blocked, assignee, status, refined, hitl, risk, estimate, and severity on bugs.
-Candidates to start (one that `tickets.py next` lists under `ready_to_refine` gets its criteria first): status draft or backlog, blocked_at empty, every blocked_by done, unassigned. Several ready tickets are parallel work;
+type, title, parent, covers (the source requirement ids), after, blocked_at and
+blocked_reason when blocked, status (the build's; absent until a build starts), refined, hitl, risk, estimate, and severity on bugs; a
+pulled file carries only the ones its entry sets, and an absent field reads as empty.
+Candidates to start (one that `tickets.py next` lists under `ready_to_refine` gets its criteria first): no status, or draft or ready-for-dev; blocked_at empty; everything in after done; unassigned. Several ready tickets are parallel work;
 offer them all. When one must be chosen, take the one that unblocks the most work behind it.
 """
 
@@ -70,9 +68,8 @@ story = "story"
 spike = "spike"
 bug = "bug"
 
-# BMad status -> this store's status. The file is the store here, so draft is a real status.
+# BMad state -> this store's status. The file is the store: the build's own words in `status` read as these states (none, draft, ready-for-dev -> backlog; blocked -> in-progress; in-review -> review).
 [tickets.status]
-draft = "draft"
 backlog = "backlog"
 in-progress = "in-progress"
 review = "review"

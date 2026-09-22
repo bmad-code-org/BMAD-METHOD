@@ -57,11 +57,11 @@ shop-workspace/                          # start your AI tool here; not a repo i
 │   │   └── epic-cart-rules/
 │   │       ├── epic-cart-rules.md
 │   │       ├── tickets.toml           # every planned story, pulled or not
-│   │       ├── story-01-cart-service-scaffold.md
-│   │       └── story-02-cart-ui-shell.md
+│   │       ├── story-cart-service-scaffold.md
+│   │       └── story-cart-ui-shell.md
 │   ├── initiative-loyalty-program/
 │   └── backlog/
-│       └── bug-01-checkout-total-ignores-discount-codes.md
+│       └── bug-checkout-total-ignores-discount-codes.md
 ├── shop-api/                            # code repo
 ├── shop-web/                            # code repo
 └── shop-mobile/                         # code repo
@@ -154,14 +154,14 @@ It takes almost any input. The best input is a `bmad-spec` output together with 
 | "Incept the first epic"                  | Plans the whole epic with you into an ordered breakdown of stories.                         |
 | "What's next?"                           | Lists what is ready to pull, refine, or start, in progress, and blocked.                    |
 | "Pull the next story"                    | Writes the story's file from its entry in the breakdown.                                    |
-| "Review the stories"                     | Reviews and improves the entries with you: descriptions, checks, order, and blockers.       |
+| "Review the stories"                     | Pulls each story's file if needed, then reviews and improves it with you: description, check, references, order, and prerequisites. |
 | "File a bug: checkout ignores discounts" | Writes one ticket straight into `backlog/`, with no epic needed.                            |
 
-Each initiative and epic keeps its plan in a `tickets.toml` file beside its ticket file. The initiative's file lists the epics in build order. An epic's file lists every planned story and bug as an entry: what it delivers, how it will be verified, what blocks it, and what is still uncertain. When something must be settled before implementation, the skill asks you to answer it or records it as the entry's `unknown`. It adds a spike when you ask for one. By default the last entry is a "Refactor sweep" story for cleanup found during the epic.
+Each initiative and epic keeps its plan in a `tickets.toml` file beside its ticket file. The initiative's file lists the epics in build order. An epic's file lists every planned story and bug as an entry, in build order, each with an `id` that names it under the epic: what it delivers, how it will be verified, what it waits on (`after`), and what is still uncertain. When something must be settled before implementation, the skill asks you to answer it or records it as the entry's `unknown`. It adds a spike when you ask for one. By default the last entry is a "Refactor sweep" story for cleanup found during the epic.
 
-An entry has no file until you pull it. Pulling writes the story file, marked `refined: false`. `bmad-build` plans the story's acceptance criteria when it builds, from the epic and the entry, so detail is not written months before it is used.
+An entry has no file until you pull it. Pulling writes the story file, and from then on the file is truth: refining edits the file, and the entry keeps only the story's `id`, `type`, `title`, prerequisites (`after`, edited in both places), and `hitl`. The file ends with an empty `## Plan` section. It belongs to the coding agent and is never sent to a tracker; it is where the builder's plan will live once `bmad-build` reads ticket files as its spec. Today it does not, so the section stays empty. `bmad-build` plans the story's acceptance criteria when it builds, from the epic and the entry, so detail is not written months before it is used.
 
-A story can be blocked by a story in another epic, or by a whole epic. Ask "what's next?" about the initiative to see every epic at once.
+A story's `after` can name a story in another epic, or a whole epic. Ask "what's next?" about the initiative to see every epic at once.
 
 ### How epics are cut
 
@@ -173,13 +173,13 @@ When your source contradicts the code, the skill records a `Source conflict:` li
 
 ## Hand a Story to Build
 
-Give the pulled story file to `bmad-build` with its epic, for example "build story-02-cart-ui-shell.md". Build treats the file as its work item. It plans the story's acceptance criteria from the epic's Requirements and Done when, the entry's description, and its `Verify:` check.
+Give the pulled story file to `bmad-build` with its epic, for example "build story-cart-ui-shell.md". Build treats the file as its work item. It plans the story's acceptance criteria from the epic's Requirements and Done when, the entry's description, and its `Verify:` check.
 
 :::note[Refining is optional]
-A story needs no refining before `bmad-build`. Build refines it as part of the build: it questions you and writes the acceptance criteria into its plan. If you will build unattended, with `bmad-build-auto`, a loop, or a factory, nobody answers questions during the build, so review the sequence and each entry with the ticketing skill first. The ticketing skill writes full acceptance criteria only for a bug, a ticket with no epic, or when you ask.
+A story needs no refining before `bmad-build`. Build refines it as part of the build: it questions you and writes the acceptance criteria itself. If you will build unattended, with `bmad-build-auto`, a loop, or a factory, nobody answers questions during the build, so review the sequence and each story with the ticketing skill first. The ticketing skill writes full acceptance criteria only for a bug, a ticket with no epic, or when you ask.
 :::
 
-Build does not update the ticket. Before you start, say "start story 02" to the ticketing skill, and when the work is finished say "mark story 02 done". On the repo store those are edits to the story file that you commit with your work.
+The ticket file's `status` belongs to build, but build does not write it yet. Until it does, say "start story 2" to the ticketing skill before you start, and "mark story 2 done" when the work is finished. On the repo store those are edits to the story file that you commit with your work. With a tracker, the tracker's status is read into the file as `tracker_status` beside `status`, so moving a card on the board never makes build skip planning.
 
 ## Tell Us What You Find
 

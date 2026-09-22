@@ -1,17 +1,13 @@
 ---
-id: ""   # set at publish
-remote: ""   # the store url, for a tracker
+id: [the entry's id in tickets.toml; the next unused one for a ticket with no entry]   # tracker_id and remote are written at publish on a tracker
 type: spike
 title: "[The question this answers]"
 parent: [folder name of the epic, or of the initiative when there are no epics; none for a standalone ticket in backlog/]
 covers: []
-blocked_by: []
-blocked_at: ""   # date, when waiting on a person or an answer
-blocked_reason: ""
-assignee: ""
-status: draft
+after: []   # prerequisites only: a sibling's id; "<epic id>.<entry id>" in another epic; epic-<slug> for that whole epic
+assignee: ""   # blocked_at (date) and blocked_reason are added when waiting on a person or an answer
 refined: false   # true once refined and approved
-hitl: true
+hitl: true   # status is written by the build (draft | ready-for-dev | in-progress | in-review | done | blocked); tracker_status by a tracker sync
 risk: [low|medium|high]
 estimate: ""   # points, when estimation is on
 ---
@@ -20,7 +16,7 @@ estimate: ""   # points, when estimation is on
 
 ## Description
 
-[Unrefined: one sentence, the question. Refined: the unknown this resolves — usually a placeholder left at design time — and which tickets wait on the answer, 2–4 sentences.]
+[One sentence, the question; reviewed with the user at refine. Approach below says how it is answered and which tickets wait on it.]
 
 ## Approach
 
@@ -46,21 +42,19 @@ estimate: ""   # points, when estimation is on
 
 [Assumptions and open questions about the spike itself, each marked. Cut if empty.]
 
+## Plan
+
+<!-- Filled in by the coding agent; never sent to a tracker. -->
+
 <!-- Example, not part of the ticket: match its level of detail. What is good here: the unknown was a placeholder in the architecture; the spike names who waits, runs research, design, prototype, and sign-off in a time box, says what good enough is, and records the answer where the stories will find it. hitl because people accept the finding. -->
 
 ```markdown
 ---
-id: ""
-remote: ""
+id: 2
 type: spike
 title: "How do field devices merge conflicting observations after days offline?"
 parent: epic-field-sync
 covers: []
-blocked_by: []
-blocked_at: ""
-blocked_reason: ""
-assignee: ""
-status: draft
 refined: true
 hitl: true
 risk: low
@@ -104,4 +98,8 @@ Good enough: all six cases merge as the field team expects, or the exceptions ar
 
 - Assumption: the satellite link is never better than 2 kbps up; confirm with the operations lead.
 - Open question: is the conflict log kept forever, or pruned after the lead resolves it? The field science lead answers.
+
+## Plan
+
+<!-- Filled in by the coding agent; never sent to a tracker. -->
 ```

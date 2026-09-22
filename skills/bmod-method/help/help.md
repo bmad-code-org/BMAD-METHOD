@@ -68,7 +68,7 @@ Situations the tree above does not settle.
 | A PRD and architecture, several epics, wants tracking | `bmad-create-epics-and-stories` → `bmad-sprint-planning` | The only route with acceptance criteria up front and a status file `bmad-build` keeps current. |
 | A team with an existing PRD, a tracker, approvals, or several engineers | The full path only when approvers, parallel teams, or required documents call for it | The existing PRD is input, each document has one owner, and sign-off attaches to skill results (`help/working-in-an-organization.md`). |
 | "Can BMad build my stories by itself?" | `bmad-build-auto`, dispatched per story by a loop | It suits settled decisions and well specified stories, with someone reading the results. For work planned with `bmad-preview-ticketing`, give it the pulled ticket file, one run per ticket (`help/unattended-builds.md`). |
-| Wants tickets or a tracker (Jira, Linear, GitHub) as the record | `bmad-preview-ticketing` | Tickets are the board. It is a preview; status is moved by hand. |
+| Wants tickets or a tracker (Jira, Linear, GitHub) as the record | `bmad-preview-ticketing` | Tickets are the board. It is a preview; a ticket's `status` belongs to the build, and until `bmad-build` writes it the user marks tickets by hand. |
 | "Where are we?" with a `sprint-status.yaml` | `bmad-sprint-planning` status | It reads the file and names the next story. |
 | A PR, a branch, or code `bmad-build` did not write | `bmad-code-review` | Agent lenses over any diff. |
 | "Walk me through what changed" | `bmad-walkthrough` | The human is the reviewer. |
