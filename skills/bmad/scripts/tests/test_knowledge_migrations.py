@@ -14,6 +14,7 @@ module = "demo"
 from = "1"
 to = "2"
 title = "Move demo artifacts to the v2 layout"
+summary = "v1 to v2"
 detect = "a v1 folder"
 guide = "move it"
 checklist = ["it moved"]
@@ -60,7 +61,7 @@ class MigrationTests(unittest.TestCase):
 
     def test_other_toml_files_beside_the_record_are_not_migrations_and_a_bad_key_is_named(self):
         record = write_module(self.skills)
-        (record / "roster.toml").write_text('[[members]]\ncode = "guest"\nname = "Guest"\n', encoding="utf-8")
+        (record / "roster.toml").write_text("[[members]\nnot even toml\n", encoding="utf-8")
         (record / "notes.toml").write_text('migration = "not a table"\n', encoding="utf-8")
         report = knowledge.collect([self.skills])
         self.assertEqual(report["migrations"], [])
@@ -69,19 +70,39 @@ class MigrationTests(unittest.TestCase):
 
     def test_a_migration_without_its_fields_is_a_problem_not_a_listing(self):
         record = write_module(self.skills)
-        (record / "bad-migration.toml").write_text('[migration]\nfrom = "1"\n', encoding="utf-8")
+        (record / "bad-migration.toml").write_text(
+            '[migration]\nmodule = "demo"\nfrom = 1\nto = "2"\n', encoding="utf-8"
+        )
         report = knowledge.collect([self.skills])
         self.assertEqual(report["migrations"], [])
         self.assertEqual(len(report["problems"]), 1)
         self.assertEqual(report["problems"][0]["kind"], "migration")
-        self.assertIn("lacks to, title", report["problems"][0]["problem"])
+        self.assertIn(
+            "needs non-empty from, title, summary, detect, guide, checklist", report["problems"][0]["problem"]
+        )
+
+    def test_a_migration_for_another_module_is_a_problem(self):
+        record = write_module(self.skills)
+        text = MIGRATION.replace('module = "demo"', 'module = "other"')
+        (record / "other-migration.toml").write_text(text, encoding="utf-8")
+        report = knowledge.collect([self.skills])
+        self.assertEqual(report["migrations"], [])
+        self.assertIn("is not this record's 'demo'", report["problems"][0]["problem"])
+
+    def test_migrations_are_listed_in_path_order(self):
+        record = write_module(self.skills)
+        later = MIGRATION.replace('from = "1"', 'from = "2"').replace('to = "2"', 'to = "3"')
+        (record / "v2-v3-migration.toml").write_text(later, encoding="utf-8")
+        (record / "v1-v2-migration.toml").write_text(MIGRATION, encoding="utf-8")
+        report = knowledge.collect([self.skills])
+        self.assertEqual([(m["from"], m["to"]) for m in report["migrations"]], [("1", "2"), ("2", "3")])
 
     def test_a_migration_that_is_not_toml_is_a_problem(self):
         record = write_module(self.skills)
         (record / "broken-migration.toml").write_text('[migration\nfrom = "1"\n', encoding="utf-8")
         report = knowledge.collect([self.skills])
         self.assertEqual(report["migrations"], [])
-        self.assertEqual([problem["kind"] for problem in report["problems"]], ["document"])
+        self.assertEqual([problem["kind"] for problem in report["problems"]], ["migration"])
 
 
 if __name__ == "__main__":
