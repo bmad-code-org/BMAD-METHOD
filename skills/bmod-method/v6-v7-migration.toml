@@ -51,7 +51,7 @@ target = """
     brainstorming-<slug>/           # a new artifact folder, in the usual shape
     brainstorming/                  # an unrelated v6 folder moved here as it was; the user tidies it if they care
     archive-v6/                     # dead scraps with nothing beside them: a half-run, a stray memlog
-Every entry at the root says what it is: an `initiative-` or `epic-` folder, `backlog/` (or `backlog-<slug>/` when there are several), or a space with its identity file. Anything else at the root is unrecognized: the plan offers it inbox, and declined it is left alone, never broken. Inside a folder the migration creates, every folder holds a file with exactly its name, the main file or a router naming the files beside it, with `type`, `title`, `created`, and `status` where the ticketing rules give one (a container has none until work starts) in frontmatter. No file or folder name the migration writes carries a number or a date; a date lives in `created`. A ticket's identity is its `id` in frontmatter and its entry in the parent's `tickets.toml`.
+Every entry at the root says what it is: an `initiative-` or `epic-` folder, `backlog/` (or `backlog-<slug>/` when there are several), or a space with its identity file. Anything else at the root is unrecognized: the plan offers it inbox, and declined it is left alone, never broken. Inside a folder the migration creates, every folder holds a file with exactly its name, the main file or a router naming the files beside it, with `type`, `title`, `created`, and `status` where the ticketing rules give one (a container has none until work starts) in frontmatter. No file or folder name the migration writes carries a number or a date, apart from its own two: `migration-v6-v7/` and `archive-v6/`, which name the versions and are not artifact folders; a date lives in `created`. A ticket's identity is its `id` in frontmatter and its entry in the parent's `tickets.toml`.
 """
 
 # Asked together at the plan step, after the inventory and before anything is written. Only a question the
@@ -113,7 +113,7 @@ A document that belongs to one epic (a retrospective, a spec that only that epic
 
 Read `epics.md`, `sprint-status.yaml`, and every story file in the implementation folder before writing anything. The ticketing skill's templates (`bmad-preview-ticketing/assets/`) are the shapes to write; open them.
 
-Initiative envelope: `initiative-<slug>/initiative-<slug>.md` from the initiative template. Title from the project name; Description and Outcome from the PRD's summary; Done when from the PRD's goals; References naming the moved PRD, architecture, and UX; `covers` the PRD's requirement ids. The initiative's `tickets.toml` gets one `[[epic]]` per `## Epic N:` in `epics.md`, in that order, `id = N`, `slug = "epic-<slug>"`, `title`, `covers` the FR ids the coverage map assigns to that epic. `after = [{ epic = <id>, needs = "..." }]` only where `epics.md` states what one epic needs from another.
+Initiative envelope: `initiative-<slug>/initiative-<slug>.md` from the initiative template. Title from the project name; Description and Outcome from the PRD's summary; Done when from the PRD's goals; References naming the moved PRD, architecture, and UX; `covers` the PRD's requirement ids. The initiative's `tickets.toml` gets one `[[epic]]` per `## Epic N:` in `epics.md`, in that order, `id = N`, `slug = "epic-<slug>"`, `title`, `covers` the FR ids the coverage map assigns to that epic. `after = [{ epic = <id>, needs = "..." }]` only where `epics.md` states what one epic needs from another; that line records the need, and the gate is `after: [epic-<slug>]` in the dependent epic's own file, which holds every ticket under it until the named epic is done. Write both.
 
 Each epic: `epic-<slug>/epic-<slug>.md` from the epic template. The slug is the epic title, kebab-case, without its number. Description and Outcome from the epic goal; Requirements from the FR lines the coverage map assigns to it, each keeping its id; Done when written from those requirements and confirmed with the user; `parent` the initiative folder; `status` from `sprint-status.yaml`: `in-progress` and `done` as they are, and `backlog` means no `status` line at all, since a container carries none until work starts. An `epic-N-retrospective: done` line becomes a `Retrospective:` line in the epic's Notes naming the moved retro file.
 
@@ -125,7 +125,7 @@ Stories that had a file in v6 (`<N>-<M>-<slug>.md` or `spec-<N>-<M>-<slug>.md` i
 
 | v6 (`sprint-status.yaml`, story file) | v7 |
 |---|---|
-| `backlog` | no file; entry only |
+| `backlog` | no file; entry only. A story file exists anyway: `draft`, and the file is kept |
 | `ready-for-dev` | `ready-for-dev` |
 | `in-progress` | `in-progress` |
 | `review`, `in-review` | `in-review` |
@@ -168,7 +168,7 @@ The store as its own repository, inside this project: `git init` in the output f
 
 The store beside the project, in a workspace: create the workspace folder, move the project checkout into it as `<project>/`, move `_bmad/` and the output folder up to the workspace root, and `git init` the output folder. Then `bmad setup` at the workspace root, which is where every session starts from now on: one `_bmad`, one store, every repo reachable. A second project joining later brings its own v6 artifacts through this migration into the same store as its own initiative; its own `_bmad/` is left for `bmad setup` to report.
 
-Bare repository plus worktrees, per project: no re-clone. Commit or stash uncommitted work first, then `git clone --bare <project> <project>/.bare` from the existing checkout, write `<project>/.git` as `gitdir: ./.bare`, and `git worktree add <project>/main main`; the old checkout is removed only after `git -C <project>/main status` is clean and `git worktree list` shows it. Work happens in a worktree per branch beside `main/`; flat branch names. Sessions run from the workspace root, and paths include the worktree (`<project>/main/src/...`).
+Bare repository plus worktrees, per project: no re-clone, and the old checkout stays whole until the new layout is proven. Commit or stash uncommitted work first and note the checked-out branch, `<base>` (`main`, `master`, `dev`, whatever the project uses). Then, beside the checkout: `git clone --bare <project> <project>.new/.bare`, write `<project>.new/.git` as the one line `gitdir: ./.bare`, `git -C <project>.new worktree add <base> <base>`, and check that `git -C <project>.new/<base> status` is clean and `git -C <project>.new/<base> log -1` matches the old checkout. Only then move the old checkout aside as `<project>.old`, rename `<project>.new` to `<project>`, set the bare repository's `remote.origin.fetch` to `+refs/heads/*:refs/remotes/origin/*` so fetches work, and remove `<project>.old` once the user confirms nothing uncommitted was in it. Work happens in a worktree per branch beside `<base>/`; flat branch names. Sessions run from the workspace root, and paths include the worktree (`<project>/<base>/src/...`).
 
 The root `AGENTS.md` for any of these is step 8's `bmad-project-context` run. The rules and the reasons are in `help/monorepo-and-polyrepo.md`.
 """
@@ -176,7 +176,7 @@ The root `AGENTS.md` for any of these is step 8's `bmad-project-context` run. Th
 # Verification. Every item is checked and its result recorded; an item that cannot be checked is reported as such.
 checklist = [
   "Every file that was under the v6 planning and implementation folders is now under an initiative, `backlog/`, `inbox/`, or `archive-v6/`, or is listed in the plan as left in place.",
-  "Every folder the migration created holds a file named exactly after it, with `type`, `title`, `created`, and `status` where the ticketing rules give one, in frontmatter, and no name it wrote carries a number or a date.",
+  "Every folder the migration created, apart from `archive-v6/`, holds a file named exactly after it, with `type`, `title`, `created`, and `status` where the ticketing rules give one, in frontmatter; and no name it wrote carries a number or a date, apart from `migration-v6-v7/` and `archive-v6/`.",
   "Every entry at the store root is an `initiative-` or `epic-` folder, `backlog/` or `backlog-<slug>/`, a space with its identity file, or a remnant the plan lists as left alone.",
   "`uv run <ticketing skill>/scripts/tickets.py --project-root <project-root> status <initiative folder>` exits 0 for every initiative, and its story counts, grouped the way `status` groups them, equal the story counts in the archived `sprint-status.yaml` after mapping, with the `epic-N` and `epic-N-retrospective` keys left out.",
   "Every `### Story N.M` in the archived `epics.md` is one `[[entry]]` with `id = M` under the epic with `id = N`, and every v6 story file is one `story-<slug>-plan.md` beside a `story-<slug>.md`.",

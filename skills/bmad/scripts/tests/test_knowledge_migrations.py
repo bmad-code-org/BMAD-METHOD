@@ -81,6 +81,16 @@ class MigrationTests(unittest.TestCase):
             "needs non-empty from, title, summary, detect, guide, checklist", report["problems"][0]["problem"]
         )
 
+    def test_whitespace_only_fields_and_blank_checklist_items_are_missing(self):
+        record = write_module(self.skills)
+        text = MIGRATION.replace('guide = "move it"', 'guide = "  "').replace(
+            'checklist = ["it moved"]', 'checklist = [" "]'
+        )
+        (record / "blank-migration.toml").write_text(text, encoding="utf-8")
+        report = knowledge.collect([self.skills])
+        self.assertEqual(report["migrations"], [])
+        self.assertIn("needs non-empty guide, checklist", report["problems"][0]["problem"])
+
     def test_a_migration_for_another_module_is_a_problem(self):
         record = write_module(self.skills)
         text = MIGRATION.replace('module = "demo"', 'module = "other"')

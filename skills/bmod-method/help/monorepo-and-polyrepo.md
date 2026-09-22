@@ -19,4 +19,4 @@ Work from a workspace folder that holds every project checked out side by side.
 
 ## Coming in v7
 
-A setting will name the active initiative, and all planning and implementation artifacts will be grouped under it. `bmad-preview-ticketing` already works this way (`help/ticketing-setup.md`). Until then the output folder is shared by everything in the workspace, so clear names for spec folders matter. A v6 project moves to that layout with `bmad migrate method`; the workspace layout above is offered as a separate step after it.
+A setting will name the active initiative, and all planning and implementation artifacts will be grouped under it. `bmad-preview-ticketing` already works this way (`help/ticketing-setup.md`). Until then the output folder is shared by everything in the workspace, so clear names for spec folders matter. A v6 project moves to that layout with `bmad migrate method`, which asks at plan time whether the store should be its own repository, sit in a workspace, and use worktrees, and makes those repository changes before it moves any artifact.

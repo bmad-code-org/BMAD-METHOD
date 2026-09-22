@@ -370,9 +370,13 @@ def module_migrations(module: Module, problems: list[dict[str, object]]) -> list
             problems.append(migration_problem(folder, path, "'migration' is not a table"))
             continue
         fields = {name: table.get(name) for name in MIGRATION_FIELDS}
-        missing = [name for name, value in fields.items() if not isinstance(value, str) or not value]
+        missing = [name for name, value in fields.items() if not isinstance(value, str) or not value.strip()]
         checklist = table.get("checklist")
-        if not isinstance(checklist, list) or not checklist or not all(isinstance(item, str) for item in checklist):
+        if (
+            not isinstance(checklist, list)
+            or not checklist
+            or not all(isinstance(item, str) and item.strip() for item in checklist)
+        ):
             missing.append("checklist")
         if missing:
             problems.append(migration_problem(folder, path, f"[migration] needs non-empty {', '.join(missing)}"))
