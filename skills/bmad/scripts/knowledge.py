@@ -15,6 +15,13 @@ Every other `help/*.md` is a topic: detail that `help/help.md` points to and a
 reader opens only when a question needs it. Topics are listed with their
 file path and never with their text.
 
+A `*.toml` file in the record's folder with a `[migration]` table is a
+migration the module ships: the rules for moving a project from one major
+version of the module to the next. One is listed only when its table names
+the record's `module` and has `from`, `to`, `title`, `summary`, `detect`,
+`guide`, and a `checklist`; the listing carries `from`, `to`, `title` and the
+file path, never the text. `bmad migrate` reads the file.
+
 A file this script cannot use becomes an entry in `problems`, never an
 exception.
 
@@ -38,6 +45,8 @@ MANIFEST_NAME = "bmod.toml"
 TOPICS_DIR = "help"
 HELP_NAME = f"{TOPICS_DIR}/help.md"
 ROSTER_NAME = "roster.toml"
+MIGRATION_TABLE = "migration"
+MIGRATION_FIELDS = ("module", "from", "to", "title", "summary", "detect", "guide")
 READ_LIMIT = 1024 * 1024
 
 
@@ -88,11 +97,14 @@ def collect(roots: list[Path], *, include_content: bool = False) -> dict[str, ob
         if (topic["module"], topic["path"]) not in documents
     ]
 
+    migrations = [migration for module in found.modules for migration in module_migrations(module, problems)]
+
     return {
         "roots": [str(root) for root in roots],
         "skills": sorted(found.skills, key=lambda item: str(item["skill"])),
         "documents": sorted(documents.values(), key=lambda item: (str(item["module"]), str(item["path"]))),
         "topics": sorted(topics, key=lambda item: (str(item["module"]), str(item["path"]))),
+        "migrations": sorted(migrations, key=lambda item: (str(item["module"]), str(item["path"]))),
         "problems": problems,
     }
 
@@ -335,6 +347,54 @@ def module_topics(module: Module, problems: list[dict[str, object]]) -> list[dic
             {"module": module.code, "topic": path.stem, "path": f"{TOPICS_DIR}/{path.name}", "file": str(path)}
         )
     return topics
+
+
+def module_migrations(module: Module, problems: list[dict[str, object]]) -> list[dict[str, object]]:
+    """The migrations a record ships: every `*.toml` beside `bmod.toml` with a `[migration]` table."""
+    folder = module.folder
+    try:
+        found = sorted(path for path in folder.glob("*.toml") if path.name not in (MANIFEST_NAME, ROSTER_NAME))
+    except OSError:
+        return []
+    migrations: list[dict[str, object]] = []
+    for path in found:
+        try:
+            data = tomllib.loads(read_document(path, folder).decode("utf-8"))
+        except (OSError, ValueError) as error:
+            problems.append(migration_problem(folder, path, str(error)))
+            continue
+        if MIGRATION_TABLE not in data:
+            continue
+        table = data[MIGRATION_TABLE]
+        if not isinstance(table, dict):
+            problems.append(migration_problem(folder, path, "'migration' is not a table"))
+            continue
+        fields = {name: table.get(name) for name in MIGRATION_FIELDS}
+        missing = [name for name, value in fields.items() if not isinstance(value, str) or not value.strip()]
+        checklist = table.get("checklist")
+        if (
+            not isinstance(checklist, list)
+            or not checklist
+            or not all(isinstance(item, str) and item.strip() for item in checklist)
+        ):
+            missing.append("checklist")
+        if missing:
+            problems.append(migration_problem(folder, path, f"[migration] needs non-empty {', '.join(missing)}"))
+            continue
+        if fields["module"] != module.code:
+            problems.append(
+                migration_problem(
+                    folder, path, f"[migration] module {fields['module']!r} is not this record's {module.code!r}"
+                )
+            )
+            continue
+        listed = {name: fields[name] for name in ("from", "to", "title")}
+        migrations.append({"module": module.code, "path": path.name, "file": str(path), **listed})
+    return migrations
+
+
+def migration_problem(folder: Path, path: Path, problem: str) -> dict[str, object]:
+    return {"kind": "migration", "skill": folder.name, "document": str(path), "problem": f"{path}: {problem}"}
 
 
 def read_document(path: Path, folder: Path) -> bytes:
