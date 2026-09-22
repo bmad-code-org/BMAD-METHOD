@@ -15,7 +15,7 @@ on_complete = ""
 # What refining means. An epic's stories are not expanded to full acceptance criteria here: the builder
 # questions the user and writes the criteria into its plan.
 refinement = """
-- Refining an epic's stories pulls the file when the entry has none, then reviews the file with the user: description, `Verify:`, references, notes, order, and prerequisites. Edits go to the file; order and prerequisites to `tickets.toml`. It writes no Given/When/Then.
+- Refining an epic's stories pulls the file when the entry has none, then reviews the file with the user: description, `Verify:`, references, notes, order, and prerequisites. Edits go to the file; order to `tickets.toml`; `after` to both, since the file's wins once it exists. It writes no Given/When/Then.
 - Full acceptance criteria are written here only for a ticket with no epic, for a bug, and for an entry the user asks it for. That entry carries `refine = true`; a bug entry always does. Never propose it for a story.
 """
 

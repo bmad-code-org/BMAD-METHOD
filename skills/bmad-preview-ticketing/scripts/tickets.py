@@ -20,10 +20,10 @@ tracker's word (backlog, in-progress, review, done, dropped). A ticket's `state`
 no file, else `tracker_status`, else derived from `status`: absent, draft, ready-for-dev -> backlog;
 in-progress, blocked -> in-progress; in-review -> review; done; dropped.
 
-`after` lists real prerequisites: a sibling's id, `<epic id>.<entry id>` for an entry in another
-epic of the same initiative, `epic-<slug>` for that whole epic, or a tracker id. An epic file's
-own `after` names epics and holds every ticket under it; rows show it as `gated_by`. A dropped
-prerequisite still blocks.
+`after` lists real prerequisites: a sibling's id as a bare integer, or a quoted string that is
+`<epic id>.<entry id>` for an entry in another epic of the same initiative, `epic-<slug>` for that
+whole epic, a file name, or a tracker id. An epic file's own `after` names epics and holds every
+ticket under it; rows show it as `gated_by`. A dropped prerequisite still blocks.
 
   next   <dir>                   tickets whose prerequisites are done, grouped by state, in build order
   status <dir>                   every ticket in build order, what it blocks, counts by state, longest chain
@@ -164,10 +164,16 @@ def load_breakdown(folder: Path) -> dict:
             for key in ("covers", "after", "references", "notes"):
                 if not isinstance(r.get(key, []), list):
                     raise TicketError(f"{where}: `{key}` must be a list")
-            if table == "epic" and not all(isinstance(a, dict) for a in r.get("after", [])):
-                raise TicketError(f'{where}: an epic\'s `after` takes tables: [{{ epic = <id>, needs = "..." }}]')
-            if "id" in r and (not isinstance(r["id"], int) or isinstance(r["id"], bool)):
+            if _id(r.get("id")) is None:
                 raise TicketError(f"{where}: every {table} needs an integer `id`")
+            if table == "epic":
+                if not isinstance(r.get("slug"), str) or not r["slug"]:
+                    raise TicketError(f"{where}: epic {r['id']} needs a `slug`")
+                for a in r.get("after", []):
+                    if not isinstance(a, dict) or (_id(a.get("epic")) is None and not isinstance(a.get("epic"), str)):
+                        raise TicketError(
+                            f'{where}: an epic\'s `after` takes tables: [{{ epic = <id or slug>, needs = "..." }}]'
+                        )
     return data
 
 
@@ -317,10 +323,11 @@ def load_tree(folder: Path) -> dict:
         folders = [*epics, folder]
     epic_ids = {}
     for e in listed:
-        if _id(e.get("id")) is not None:
-            if e["id"] in epic_ids.values():
-                raise TicketError(f"{initiative.name}/{BREAKDOWN}: two epics with id {e['id']}")
-            epic_ids[e.get("slug")] = e["id"]
+        if e["id"] in epic_ids.values():
+            raise TicketError(f"{initiative.name}/{BREAKDOWN}: two epics with id {e['id']}")
+        if e["slug"] in epic_ids:
+            raise TicketError(f"{initiative.name}/{BREAKDOWN}: two epics with slug {e['slug']}")
+        epic_ids[e["slug"]] = e["id"]
     tickets = [t for f in folders for t in load_folder(f)]
     for t in tickets:
         t["key"] = f"{t['epic']}/{t['id']}" if t["id"] is not None else f"{t['epic']}/{t['file']}"
@@ -344,15 +351,16 @@ def _resolve(tree: dict) -> None:
     ids = {c["tracker_id"]: slug for slug, c in containers.items() if c["tracker_id"]}
     ids.update({t["tracker_id"]: t["key"] for t in tickets if t["tracker_id"]})
 
-    def sibling(t, ref):
+    def sibling(t, ref, where):
+        """An integer is always a sibling's id; a string is never one."""
         mates = [o for o in tickets if o["epic"] == t["epic"]]
-        text = str(ref)
-        if re.fullmatch(r"\d+", text):
-            hit = next((o for o in mates if o["id"] == int(text)), None)
-            if hit:
-                return hit["key"]
+        if _id(ref) is not None:
+            hit = next((o for o in mates if o["id"] == ref), None)
+            if hit is None:
+                raise TicketError(f"{where}: after {ref!r} names no entry in {t['epic']}")
+            return hit["key"]
         for o in mates:
-            if o["file"] and text in (o["file"], o["file"][:-3]) or o["tracker_id"] and text == o["tracker_id"]:
+            if o["file"] and ref in (o["file"], o["file"][:-3]):
                 return o["key"]
         return None
 
@@ -360,7 +368,7 @@ def _resolve(tree: dict) -> None:
         keys = []
         for ref in refs:
             text = str(ref)
-            key = sibling(t, ref) if "id" in t else None
+            key = sibling(t, ref, where) if "id" in t else None
             m = CROSS_RE.match(text)
             if key is None and m:
                 slug = slugs.get(int(m.group(1)))
@@ -663,8 +671,9 @@ def cmd_find(args) -> dict:
         hits = [t for t in tickets if slug and t["epic"] == slug and t["id"] == int(m.group(2))]
     elif ref.isdigit() and tree["scope"]:
         hits = [t for t in tickets if t["epic"] == tree["scope"] and t["id"] == int(ref)]
-    if not hits:
-        hits = [t for t in tickets if t["file"] and low in (t["file"].lower(), t["file"][:-3].lower())]
+    for pool in (in_scope(tree), tickets):
+        if not hits:
+            hits = [t for t in pool if t["file"] and low in (t["file"].lower(), t["file"][:-3].lower())]
     if not hits:
         hits = [t for t in tickets if t["tracker_id"] and low == t["tracker_id"].lower()]
     if not hits:

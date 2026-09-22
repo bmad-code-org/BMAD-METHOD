@@ -69,7 +69,7 @@ number,title,labels,assignees,state,stateReason,milestone,parent,blockedBy,subIs
 Type, hitl, risk, severity, and status are labels — except done and dropped, the closed states per
 [tickets.status]; the body's covers holds the source requirement ids. Children: `gh issue view <n>
 --json subIssues`. Words: `gh issue list --search "<words>" --state all`, narrowed by
---label. The local file: `grep -rl "^tracker_id: <n>" root` or the filename.
+--label. The local file: `tickets.py find <folder> <n>`.
 A child the tracker holds with no file in the tree gets an `[[entry]]` with the next unused `id` in its parent's `tickets.toml`, then its file.
 Mirror the issue's status label or closed state into the local file as tracker_status, the BMad word per [tickets.status], beside tracker_id and remote — never into status, which is the build's.
 Candidates to start (one that `tickets.py next` lists under `ready_to_refine` gets its criteria first): open (in the initiative's milestone, or with no milestone for a standalone ticket), tracker_status backlog (the backlog label and no other status label), every

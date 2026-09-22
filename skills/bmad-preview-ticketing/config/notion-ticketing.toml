@@ -73,8 +73,7 @@ An `after` naming a sibling's id or `<epic id>.<entry id>` is that entry's item,
 query = """
 One page: `notion-fetch` — Title, Type, Status, Assignee, Parent, Blocked by, Covers, Risk,
 Severity, hitl, and the content. Many: `notion-query-data-sources` on `database` filtered by any
-property; `notion-search` scoped to `database` for a looser match. The local file: `grep -rl
-"^tracker_id: <id>" root` or the filename.
+property; `notion-search` scoped to `database` for a looser match. The local file: `tickets.py find <folder> <id>`.
 A child the tracker holds with no file in the tree gets an `[[entry]]` with the next unused `id` in its parent's `tickets.toml`, then its file.
 Mirror the page's Status into the local file as tracker_status, the BMad word per [tickets.status], beside tracker_id and remote — never into status, which is the build's.
 Candidates to start (one that `tickets.py next` lists under `ready_to_refine` gets its criteria first): tracker_status backlog (Status [tickets.status].backlog on the tracker), every page in Blocked by done, Assignee empty, no blocked_at in the ticket file. Offer all

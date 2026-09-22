@@ -51,8 +51,7 @@ Commit only the files you wrote on the current branch. Root not in a git repo: s
 """
 
 query = """
-A ticket is named by its path and its `id` under its epic. By id: `grep -rl "^id: 3" <epic folder>`, or for `"2.3"` the epic ids in the initiative's `tickets.toml` give the folder; by title, the filename; by words, `grep -rli "<words>" root
---include=*.md`; by a frontmatter field, `grep -rl "^type: bug" root` — same for status, assignee,
+A ticket is named by its path and its `id` under its epic. `tickets.py find <folder> <ref>` resolves an id, `"2.3"`, a file name, or title words to the one file; by a frontmatter field, `grep -rl "^type: bug" root` — same for status, assignee,
 parent. A container's children are the ticket files and container folders in its folder; planned children with no file are the entries in its `tickets.toml`. Frontmatter holds id,
 type, title, parent, covers (the source requirement ids), after, blocked_at and
 blocked_reason when blocked, status (the build's; absent until a build starts), refined, hitl, risk, estimate, and severity on bugs; a

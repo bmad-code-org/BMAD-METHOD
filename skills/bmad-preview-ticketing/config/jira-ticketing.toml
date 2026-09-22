@@ -78,8 +78,7 @@ One work item: `acli jira workitem view <key> --json --fields
 key,issuetype,summary,status,assignee,parent,labels,issuelinks,resolution,description`. after is the
 "is blocked by" links; Done with resolution Won't Do is dropped; the description's covers holds the source requirement ids. Children:
 `search --jql "parent = <key>"`. Words: `search --jql 'project = <key> AND text ~ "<words>"'`,
-narrowed by issuetype or status per the maps. The local file: `grep -rl "^tracker_id: <key>" root` or the
-filename.
+narrowed by issuetype or status per the maps. The local file: `tickets.py find <folder> <key>`.
 A child the tracker holds with no file in the tree gets an `[[entry]]` with the next unused `id` in its parent's `tickets.toml`, then its file.
 Mirror the item's status into the local file as tracker_status, the BMad word per [tickets.status], beside tracker_id and remote — never into status, which is the build's.
 Candidates to start (one that `tickets.py next` lists under `ready_to_refine` gets its criteria first): tracker_status backlog ([tickets.status].backlog on the tracker), every "is blocked by" link done, unassigned, no blocked_at in the ticket file. Offer all

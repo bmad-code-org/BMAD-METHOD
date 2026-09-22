@@ -176,7 +176,7 @@ covers = ["R1"]
 id = 3
 type = "spike"
 title = "Tax engine?"
-after = ["1"]
+after = [1]
 covers = ["R4"]
 hitl = true
 
@@ -361,7 +361,7 @@ covers = ["R2", "R3"]
     def test_malformed_breakdown_errors(self):
         for text, message in (
             (self.BREAKDOWN.replace("id = 3", "id = 2"), "two entries with id 2"),
-            (self.BREAKDOWN.replace("after = [2, 3]", "after = [2, 9]"), "matches no ticket"),
+            (self.BREAKDOWN.replace("after = [2, 3]", "after = [2, 9]"), "names no entry in epic-cart"),
             (self.BREAKDOWN.replace('type = "spike"', 'type = "task"'), "is not one of"),
             (self.BREAKDOWN.replace("id = 4", 'id = "4"'), "integer `id`"),
             (self.BREAKDOWN.replace("id = 4\n", ""), "integer `id`"),
@@ -387,7 +387,9 @@ covers = ["R2", "R3"]
 
     def test_ticket_waits_on_an_entry_in_another_epic(self):
         pricing = self.pricing()
-        self.breakdown_epic(self.BREAKDOWN.replace("after = [1]", 'after = [1, "1.1"]'))
+        self.breakdown_epic(
+            self.BREAKDOWN.replace('title = "UI shell"\nafter = [1]', 'title = "UI shell"\nafter = [1, "1.1"]')
+        )
         self.add("story-scaffold.md", ticket("done", 1))
         out = self.next()
         self.assertEqual([e["id"] for e in out["to_pull"]], [3])
@@ -461,7 +463,9 @@ covers = ["R2", "R3"]
         self.assertEqual(
             out["unpinned_after"], [{"epic": "epic-cart", "after": "epic-pricing", "needs": "the pricing contract"}]
         )
-        self.breakdown_epic(self.BREAKDOWN.replace("after = [1]", 'after = [1, "1.1"]'))
+        self.breakdown_epic(
+            self.BREAKDOWN.replace('title = "UI shell"\nafter = [1]', 'title = "UI shell"\nafter = [1, "1.1"]')
+        )
         status = json.loads(run("status", str(self.initiative)).stdout)
         self.assertEqual(status["unpinned_after"], [])
         self.assertEqual(status["counts"], {"total": 6, "planned": 6})
@@ -479,10 +483,45 @@ covers = ["R2", "R3"]
         )
         self.assertIn("two epics with id 2", run("status", str(self.initiative)).stderr)
 
-    def test_numeric_prerequisite_falls_back_to_tracker_id(self):
+    def test_epics_need_an_id_a_slug_and_a_valid_after(self):
+        self.pricing()
+        toml = self.initiative / "tickets.toml"
+        good = toml.read_text(encoding="utf-8")
+        for bad, message in (
+            (good.replace("id = 2\n", ""), "integer `id`"),
+            (good.replace('slug = "epic-cart"', 'slug = "epic-pricing"'), "two epics with slug"),
+            (good.replace('slug = "epic-cart"\n', ""), "needs a `slug`"),
+            (good + "after = [{ epic = true }]\n", "epic = <id or slug>"),
+        ):
+            toml.write_text(bad, encoding="utf-8")
+            r = run("status", str(self.initiative))
+            self.assertEqual(r.returncode, 1, r.stdout)
+            self.assertIn(message, r.stderr)
+
+    def test_find_prefers_the_folder_asked_about_for_a_file_name(self):
+        pricing = self.pricing()
+        self.add("story-scaffold.md", ticket("", 1), pricing)
+        self.breakdown_epic()
+        run("pull", str(self.epic), "1")
+        r = run("find", str(pricing), "story-scaffold")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual(json.loads(r.stdout)["folder"], "epic-pricing")
+        r = run("find", str(self.initiative), "story-scaffold")
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("more than one", r.stderr)
+
+    def test_a_numeric_tracker_id_is_never_a_sibling_id(self):
+        self.seed(s1="done")
+        self.add("story-ui-shell.md", ticket("done", 2, tracker_id='"47"'))
+        self.add("story-tracer.md", ticket("", 3, after='["47"]'))
+        self.assertIn("story-tracer.md", self.files(self.next()["ready_to_refine"]))
+
+    def test_a_quoted_number_is_a_tracker_id_and_a_bare_one_a_sibling(self):
         self.add("story-scaffold.md", ticket("done", 1, tracker_id="101"))
-        self.add("story-ui-shell.md", ticket("draft", 2, after="[101]"))
+        self.add("story-ui-shell.md", ticket("draft", 2, after='["101"]'))
         self.assertEqual(self.files(self.next()["ready_to_refine"]), ["story-ui-shell.md"])
+        self.add("story-ui-shell.md", ticket("draft", 2, after="[101]"))
+        self.assertIn("names no entry", run("next", str(self.epic)).stderr)
 
     def test_two_files_sharing_an_id_error(self):
         self.add("story-a.md", ticket("done", 1))
@@ -583,6 +622,10 @@ covers = ["R2", "R3"]
         self.assertEqual(r.returncode, 1)
         self.assertIn("cycle", r.stderr)
         self.add("story-scaffold.md", ticket("draft", 1, after="[9]"))
+        r = run("next", str(self.epic))
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("names no entry in epic-cart", r.stderr)
+        self.add("story-scaffold.md", ticket("draft", 1, after='["9"]'))
         r = run("next", str(self.epic))
         self.assertEqual(r.returncode, 1)
         self.assertIn("matches no ticket", r.stderr)
