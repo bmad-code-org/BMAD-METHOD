@@ -1,14 +1,11 @@
 ---
-id: ""   # set at publish
-remote: ""   # the store url, for a tracker
+id: [the entry's id in tickets.toml; the next unused one for a ticket with no entry]   # tracker_id and remote are written at publish on a tracker
 type: bug
 title: "[What is wrong, from the user's view]"
 parent: [folder name of the epic, or of the initiative when there are no epics; none for a standalone bug in backlog/]
 covers: []
-blocked_by: []
-blocked_at: ""   # date, when waiting on a person or an answer
-blocked_reason: ""
-assignee: ""
+after: []   # prerequisites only: a sibling's id; "<epic id>.<entry id>" in another epic; epic-<slug> for that whole epic
+assignee: ""   # blocked_at (date) and blocked_reason are added when waiting on a person or an answer
 status: draft
 refined: false   # true once refined and approved
 hitl: false
@@ -64,16 +61,11 @@ estimate: ""   # points, when estimation is on
 
 ```markdown
 ---
-id: ""
-remote: ""
+id: 7
 type: bug
 title: "Checkout total ignores an applied discount code after the shopper changes quantity"
 parent: none
 covers: []
-blocked_by: []
-blocked_at: ""
-blocked_reason: ""
-assignee: ""
 status: draft
 refined: true
 hitl: false

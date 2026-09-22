@@ -1,12 +1,11 @@
 ---
-id: ""   # set at publish
-remote: ""   # the store url, for a tracker
+tracker_id: ""   # with remote (the url), written at publish on a tracker; cut on the repo store
 key: ""   # tracker project or team for everything under this, when it differs from the store's
 type: initiative
 title: "[The outcome this container exists to reach]"
 parent: none
 covers: [ids from the spec at this level, or from Requirements below when the source has none]
-blocked_by: []
+after: []   # epics this whole container waits on; the order of epics is in the initiative's tickets.toml
 assignee: ""
 status: draft
 risk: [low|medium|high — the highest expected among its children]
@@ -56,20 +55,17 @@ estimate_basis: ""   # envelope | spec | entries | stories
 - Parked: [a requirement id not placed on any child, and why, with the user's knowledge]
 - Decision: [a choice the user made, dated, so it is not asked again — a declined suggestion belongs here too]
 - Source conflict: [id or section — what the source says vs what the code or another source shows]
-- Blocked by [id] because: [the one-line reason for each entry in blocked_by]
+- Waits on [epic] because: [the one-line reason for each entry in after]
 
 <!-- An initiative is the business outcome its epics serve, tied to a company goal, usually spanning quarters and more than one boundary. For a solo developer or small team with no larger goal above it, a whole product is a fine initiative.
 Example, not part of the ticket: match its level of detail. This one keeps a separate spec because its source outgrew the section: Description points at it, covers cites its ids, Requirements is cut, Outcome names its signal. Done when reads as business outcomes a product owner checks at the end, not deliverables. The epic order, with what each needs from the one before, is in `tickets.toml` beside this file. -->
 
 ```markdown
 ---
-id: ""
-remote: ""
 type: initiative
 title: "Checkout that shoppers finish"
 parent: none
 covers: [C1, C2, C3, C4, C5, C6, P1, P2, T1]
-blocked_by: []
 assignee: ""
 status: draft
 risk: high

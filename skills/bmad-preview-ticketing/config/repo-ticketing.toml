@@ -19,7 +19,6 @@ description = "Quick setup, and the default when nothing else is chosen. Tickets
 [tickets]
 store = "repo"
 root = "{output_folder}"
-key = ""   # ticket id prefix, e.g. "SHOP" -> SHOP-12. Empty = ask at first publish.
 
 access = """
 Read and write the files under root. If root is missing, tell the user what is blocking and confirm the setup with them.
@@ -45,20 +44,21 @@ create root/backlog/ and the active initiative's folder when they do not exist.
 """
 
 write = """
-No id yet: assign the next KEY-n (ids in use: `grep -rh "^id: " root`). Every change — body, status, assignee, parent (move the file, or the container folder, into the new
-parent's folder), blocked_by — is an edit to the file. Build records never go in the
+No entry yet: add an `[[entry]]` with the next unused `id` to the parent's `tickets.toml`; the file carries that `id`. Every change — body, status, assignee, parent (move the file, or the container folder, into the new
+parent's folder), after — is an edit to the file. Build records never go in the
 body; bmad-build writes them beside the ticket file (`<name>-plan.md`,
 `<name>-session-<date>.jsonl`, `<name>-results.md`).
 Commit only the files you wrote on the current branch. Root not in a git repo: skip the commit and say so.
 """
 
 query = """
-By id: `grep -rl "^id: <id>" root`; by title, the filename; by words, `grep -rli "<words>" root
+A ticket is named by its path and its `id` under its epic. By id: `grep -rl "^id: 3" <epic folder>`, or for `"2.3"` the epic ids in the initiative's `tickets.toml` give the folder; by title, the filename; by words, `grep -rli "<words>" root
 --include=*.md`; by a frontmatter field, `grep -rl "^type: bug" root` — same for status, assignee,
 parent. A container's children are the ticket files and container folders in its folder; planned children with no file are the entries in its `tickets.toml`. Frontmatter holds id,
-remote, type, title, parent, covers (the source requirement ids), blocked_by, blocked_at and
-blocked_reason when blocked, assignee, status, refined, hitl, risk, estimate, and severity on bugs.
-Candidates to start (one that `tickets.py next` lists under `ready_to_refine` gets its criteria first): status draft or backlog, blocked_at empty, every blocked_by done, unassigned. Several ready tickets are parallel work;
+type, title, parent, covers (the source requirement ids), after, blocked_at and
+blocked_reason when blocked, assignee, status, refined, hitl, risk, estimate, and severity on bugs; a
+pulled file carries only the ones its entry sets, and an absent field reads as empty.
+Candidates to start (one that `tickets.py next` lists under `ready_to_refine` gets its criteria first): status draft or backlog, blocked_at empty, everything in after done, unassigned. Several ready tickets are parallel work;
 offer them all. When one must be chosen, take the one that unblocks the most work behind it.
 """
 

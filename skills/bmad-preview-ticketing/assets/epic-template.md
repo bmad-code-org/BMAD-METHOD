@@ -1,12 +1,11 @@
 ---
-id: ""   # set at publish
-remote: ""   # the store url, for a tracker
+tracker_id: ""   # with remote (the url), written at publish on a tracker; cut on the repo store
 key: ""   # tracker project or team for everything under this, when it differs from the store's
 type: epic
 title: "[The outcome this container exists to reach]"
 parent: [folder name of the initiative]
 covers: [parent requirement ids this epic owns; keep these when adding an epic-local spec]
-blocked_by: []
+after: []   # epics this whole container waits on; the order of epics is in the initiative's tickets.toml
 assignee: ""
 status: draft
 risk: [low|medium|high — the highest expected among its children]
@@ -57,19 +56,16 @@ estimate_basis: ""   # envelope | spec | entries | stories
 - Parked: [a requirement id not placed on any child, and why, with the user's knowledge]
 - Decision: [a choice the user made, dated, so it is not asked again — a declined suggestion belongs here too]
 - Source conflict: [id or section — what the source says vs what the code or another source shows]
-- Blocked by [id] because: [the one-line reason for each entry in blocked_by]
+- Waits on [epic] because: [the one-line reason for each entry in after]
 
 <!-- Example, not part of the ticket: an incepted epic with no spec of its own. The parent assigned R1–R4 to this epic from an unnumbered PRD; Requirements records those lines using the same ids. Done when holds deliverable checks. Notes holds decisions and unknowns. -->
 
 ```markdown
 ---
-id: ""
-remote: ""
 type: epic
 title: "Shoppers manage their cart"
 parent: initiative-checkout
 covers: [R1, R2, R3, R4]
-blocked_by: []
 assignee: ""
 status: draft
 risk: medium

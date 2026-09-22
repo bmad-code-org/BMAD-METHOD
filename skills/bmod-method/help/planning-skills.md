@@ -57,7 +57,7 @@ For how the ticketing route works and why, see `help/ticketing-and-epics.md`. Fo
 - Writes: `{implementation_artifacts}/sprint-status.yaml`.
 
 **`bmad-preview-ticketing`** — preview of the ticket tree that will replace the two skills above.
-- Gives: an initiative sliced into epics, each planned into stories and bugs as entries in `tickets.toml` with blockers and a verify line; a spike is added when the user asks for one. An entry becomes a ticket file when pulled. Run as a board, optionally published to a tracker.
+- Gives: an initiative sliced into epics, each planned into stories and bugs as entries in `tickets.toml`, in build order, each with an `id`, its prerequisites (`after`), and a verify line; a spike is added when the user asks for one. An entry becomes a ticket file when pulled. Run as a board, optionally published to a tracker.
 - Pick when: tickets or a tracker are the record; one-off bugs and stories with no PRD; work across repos; the user accepts a prerelease skill.
 - Tell the user: `bmad-build` does not move ticket status yet. They hand the pulled ticket file to `bmad-build` with its epic, and tell this skill to start and close it. A story needs no refining first; a bug, a ticket with no epic, or an entry the user marked `refine = true` gets full criteria first. Before an unattended run, recommend a review of the entries. Trackers other than the repo store are lightly tested.
-- Writes: ticket files under `{output_folder}/{active_initiative}/` and `{output_folder}/backlog/`, named `epic-*`, `story-NN-*`, `spike-NN-*`, `bug-NN-*`, and a `tickets.toml` beside each initiative and epic file.
+- Writes: ticket files under `{output_folder}/{active_initiative}/` and `{output_folder}/backlog/`, named `epic-<slug>/`, `story-<slug>.md`, `spike-<slug>.md`, `bug-<slug>.md`, and a `tickets.toml` beside each initiative and epic file.

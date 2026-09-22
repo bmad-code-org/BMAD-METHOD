@@ -1,14 +1,11 @@
 ---
-id: ""   # set at publish
-remote: ""   # the store url, for a tracker
+id: [the entry's id in tickets.toml; the next unused one for a ticket with no entry]   # tracker_id and remote are written at publish on a tracker
 type: story
 title: "[What exists or works when this is done]"
 parent: [folder name of the epic, or of the initiative when there are no epics; none for a standalone ticket in backlog/]
 covers: [ids from the epic's spec, referenced numbered source, or Requirements; the ones this ticket delivers toward]
-blocked_by: []   # a sibling's number; epic-<slug>/<nn> or epic-<slug> for another epic
-blocked_at: ""   # date, when waiting on a person or an answer
-blocked_reason: ""
-assignee: ""
+after: []   # prerequisites only: a sibling's id; "<epic id>.<entry id>" in another epic; epic-<slug> for that whole epic
+assignee: ""   # blocked_at (date) and blocked_reason are added when waiting on a person or an answer
 status: draft
 refined: false   # true once refined and approved
 hitl: false
@@ -61,16 +58,12 @@ estimate: ""   # points, when estimation is on
 
 ```markdown
 ---
-id: ""
-remote: ""
+id: 4
 type: story
 title: "A shopper applies a discount code and sees the new total"
 parent: epic-cart-rules
 covers: [R2, R3]
-blocked_by: [3]
-blocked_at: ""
-blocked_reason: ""
-assignee: ""
+after: [3]
 status: draft
 refined: true
 hitl: false

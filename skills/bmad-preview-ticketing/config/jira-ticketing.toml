@@ -56,7 +56,7 @@ Project settings, Board; a company-managed project needs a Jira admin to add it 
 
 write = """
 The project is the ticket's own `key`, else that of the nearest container above it, else `key` here.
-Create, parents before children, blockers first:
+Create, parents before children, prerequisites first:
 `acli jira workitem create --project <key> --type <per [tickets.types]> --summary <t>
 --description-file <b> --parent <key> --label <type>[,hitl,risk-<risk>]`, priority per `fields` on
 a bug. Changes: `edit` (body, labels), `assign`, `transition --status <per [tickets.status]>` —
@@ -66,22 +66,22 @@ set the resolution the same way so the two stay distinct.
 Initiative: with [tickets.types].initiative empty, the default, it is never sent — everything below
 it publishes, the initiative stays local, and epics sit loose in the project. Set that type only when the
 project has a level above Epic; then epics take it as --parent.
-The body sent is the local file without the frontmatter lines id, remote, status, assignee; build
+The body sent is the local file without the frontmatter lines tracker_id, remote, status, assignee; build
 notes belong in <ticket filename>-plan.md beside it, added as a comment on the move to review
 (or done when there is no review) — acli has no attachment upload.
-After a write, mirror id (the key), remote (the url), status, assignee, and blocked_by in the
+After a write, mirror tracker_id (the key), remote (the url), status, assignee, and after in the
 local file; commit local files on the current branch when root is in a git repo, never push.
-A `blocked_by` naming `epic-<slug>/<nn>` is that entry's item, published first when it is still local; `epic-<slug>` is the epic's item.
+An `after` naming a sibling's id or `<epic id>.<entry id>` is that entry's item, published first when it is still local; `epic-<slug>` is the epic's item.
 """
 
 query = """
 One work item: `acli jira workitem view <key> --json --fields
-key,issuetype,summary,status,assignee,parent,labels,issuelinks,resolution,description`. blocked_by is the
+key,issuetype,summary,status,assignee,parent,labels,issuelinks,resolution,description`. after is the
 "is blocked by" links; Done with resolution Won't Do is dropped; the description's covers holds the source requirement ids. Children:
 `search --jql "parent = <key>"`. Words: `search --jql 'project = <key> AND text ~ "<words>"'`,
-narrowed by issuetype or status per the maps. The local file: `grep -rl "^id: <key>" root` or the
+narrowed by issuetype or status per the maps. The local file: `grep -rl "^tracker_id: <key>" root` or the
 filename.
-A child the tracker holds with no file in the tree gets an `[[entry]]` with the next unused `n` in its parent's `tickets.toml`, then its file.
+A child the tracker holds with no file in the tree gets an `[[entry]]` with the next unused `id` in its parent's `tickets.toml`, then its file.
 Candidates to start (one that `tickets.py next` lists under `ready_to_refine` gets its criteria first): status [tickets.status].backlog, every "is blocked by" link done, unassigned, no blocked_at in the ticket file. Offer all
 ready tickets; when one must be chosen, the one that unblocks the most work behind it.
 """

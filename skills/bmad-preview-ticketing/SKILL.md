@@ -15,8 +15,8 @@ At every altitude above the leaf the ideal shape is: intent (an idea, brief, PRD
 
 - Container: an initiative or an epic — holds other tickets
 - Leaf: a story, spike, or bug handed to an agent to implement. Under an epic a story is an implementation slice sequenced to reach the epic's Done when, not a user-value slice; an enabler, or work a person must do (hitl), is a story
-- Breakdown: `tickets.toml` beside a container's ticket file — its agreed children in build order, with the blockers `tickets.py` reads
-- Entry: one planned leaf in a breakdown: description, requirement references, blockers, verification approach, and known uncertainty. It has no file and no status until it is pulled
+- Breakdown: `tickets.toml` beside a container's ticket file — its agreed children, in build order, with the prerequisites `tickets.py` reads
+- Entry: one planned leaf in a breakdown, with a stable `id`: description, requirement references, prerequisites (`after`), verification approach, and known uncertainty. It has no file and no status until it is pulled
 - Pull: write an entry's leaf file with `tickets.py pull`; the ticket can then start
 - Refine: for an epic's stories, review and improve their entries with the user. Full acceptance criteria are written here only for a ticket with no epic, a bug, or on request (`refine = true`); otherwise the builder plans story criteria from the epic's requirements, the entry's description, and its `verify` check
 - Opening epic: the first `[[epic]]` in the initiative's breakdown
@@ -72,7 +72,7 @@ Load each of the following when a step names it; resolve keys by script rather t
 | `scoring` | the risk and severity scales |
 | `estimation` | on/off, the point scale, rubric, and t-shirt map |
 | `prose` | how ticket prose reads |
-| `checks` | the validation checks, one array per scope: `checks.ticket`, `.set`, `.tree`, `.dependencies` (missing blockers), `.closure` |
+| `checks` | the validation checks, one array per scope: `checks.ticket`, `.set`, `.tree`, `.dependencies` (missing prerequisites), `.closure` |
 | `refinement` | what refining means, and where full acceptance criteria are written |
 | `publication` | when tickets publish: as each is pulled, or the whole breakdown at inception (the default on a tracker) |
 | `initiative_template`, `epic_template`, `story_template`, `spike_template`, `bug_template` | the template file per type |
@@ -91,6 +91,6 @@ How a ticket cites a document is the `reference` global, read at activation. A f
 
 Tickets live as markdown files under `tickets.root`; every ticket is drafted, refined, planned against, and implemented from its file there. By default the tree is the store (git-backed, the repo starter). A tracker, when configured, is a remote: `write` pushes a ticket to it, `query` reads it back, and a ticket the tracker knows but the tree does not gets its file at first `query`.
 
-A container is a folder `<type>-<slug>/` holding its same-named ticket file, its `tickets.toml`, its spec, and its children. A leaf is a file `<type>-<nn>-<slug>.md` in its parent's folder, written when its entry is pulled, or in `backlog/` with no parent, numbered with the next unused number there; `nn` is its entry's `n`, assigned once and never reused. When an initiative has epics, every leaf is under one. A new ticket starts from its type's template, `status: draft`, no id; the id lives only in frontmatter (`id`, plus `remote` for a tracker). Build records and other skills' artifacts sit beside the ticket, named after it.
+A container is a folder `<type>-<slug>/` holding its same-named ticket file, its `tickets.toml`, its spec, and its children. A leaf is a file `<type>-<slug>.md` in its parent's folder, written when its entry is pulled, or in `backlog/` with no parent. Its frontmatter `id` is its entry's `id`, an integer assigned once and never reused, and the only name it has on the repo store: `3` inside its epic, `2.3` from another epic (the epic's `id` is in the initiative's `tickets.toml`). No file or folder name carries a number; a title change renames the file. A tracker adds `tracker_id` and `remote` at publish. The order of tables in `tickets.toml` is the build order; `id` is not. When an initiative has epics, every leaf is under one. A new ticket starts from its type's template, `status: draft`. Build records and other skills' artifacts sit beside the ticket, named after it.
 
 Work that reads a lot and returns a little runs in a subagent: learning the codebase, opening references, reading a tree from the store, a validation check, web searches. If the harness blocks subagents, say so and continue inline.

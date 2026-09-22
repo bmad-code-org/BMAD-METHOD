@@ -5,21 +5,22 @@
 """tickets — read a ticket tree and answer what is next.
 
 A container folder holds its ticket file, `tickets.toml`, and flat leaf files named
-`<type>-<nn>-<slug>.md`. An epic's `tickets.toml` lists its planned leaves as `[[entry]]`
-tables (`n`, `type`, `title`, `blocked_by`, and whatever else the plan records); an
-initiative's lists its epics as `[[epic]]` tables (`slug`, `after = [{epic, needs}]`).
-An entry with no leaf file is `planned`. A ticket needs refining before it starts only when its
-entry says `refine = true` or it has no entry. Once the file exists its frontmatter is the
-record: `status`, `assignee`, `refined`, `blocked_at`, and `blocked_by` when present.
+`<type>-<slug>.md`. An epic's `tickets.toml` lists its planned leaves as `[[entry]]` tables
+(`id`, `type`, `title`, `after`, and whatever else the plan records); an initiative's lists its
+epics as `[[epic]]` tables (`id`, `slug`, `after = [{epic, needs}]`). Tables are in build order.
+`id` names an entry for good and is never reused; a leaf file carries it in frontmatter, which is
+how the file joins its entry. An entry with no leaf file is `planned`. A ticket needs refining
+before it starts only when its entry says `refine = true` or it has no entry. Once the file exists
+its frontmatter is the record: `status`, `assignee`, `refined`, `blocked_at`, and `after` when present.
 
-`blocked_by` takes a sibling's number or file name, a ticket or epic id, `epic-<slug>/<nn>` for
-an entry in another epic of the same initiative, or `epic-<slug>` for that whole epic. An epic
-file's own `blocked_by` names epics and holds every ticket under it; rows show it as `gated_by`.
-A dropped blocker still blocks.
+`after` lists real prerequisites: a sibling's id, `<epic id>.<entry id>` for an entry in another
+epic of the same initiative, `epic-<slug>` for that whole epic, or a tracker id. An epic file's
+own `after` names epics and holds every ticket under it; rows show it as `gated_by`. A dropped
+prerequisite still blocks.
 
-  next   <dir>                   tickets whose blockers are done, grouped by state
+  next   <dir>                   tickets whose prerequisites are done, grouped by state, in build order
   status <dir>                   every ticket in build order, what it blocks, counts, longest chain
-  pull   <dir> <n>               write entry n's leaf file: status draft, refined false
+  pull   <dir> <id>              write entry id's leaf file: status draft, only the fields the entry sets
   mark   <ticket-file> <status>  set a leaf's status and clear its blocked_at (repo store only)
 
 `<dir>` is an epic folder, a backlog folder, or an initiative folder (all its epics).
@@ -42,8 +43,9 @@ sys.dont_write_bytecode = True
 STATUSES = ("draft", "backlog", "in-progress", "review", "done", "dropped")
 LEAF_TYPES = ("story", "spike", "bug")
 CONTAINER_TYPES = ("initiative", "epic")
-NAME_RE = re.compile(r"^(story|spike|bug)-(\d+)-(.+)\.md$")
-CROSS_RE = re.compile(r"^(epic-[^/]+)(?:/(\d+))?$")
+NAME_RE = re.compile(r"^(story|spike|bug)-(.+)\.md$")
+CROSS_RE = re.compile(r"^(\d+)\.(\d+)$")
+EPIC_RE = re.compile(r"^epic-[^/]+$")
 BREAKDOWN = "tickets.toml"
 
 
@@ -98,17 +100,21 @@ def set_frontmatter_value(text: str, key: str, value: str) -> str:
     if not m:
         raise TicketError("ticket has no frontmatter")
     block = m.group(1)
-    pattern = re.compile(rf"^{re.escape(key)}:.*$", re.M)
-    if not pattern.search(block):
-        raise TicketError(f"frontmatter has no `{key}`")
-    return text[: m.start(1)] + pattern.sub(lambda _: f"{key}: {value}", block, count=1) + text[m.end(1) :]
+    pattern = re.compile(rf"^{re.escape(key)}:.*$\n?", re.M)
+    if value == "":
+        block = pattern.sub("", block).rstrip("\n")
+    elif pattern.search(block):
+        block = pattern.sub(lambda _: f"{key}: {value}\n", block, count=1).rstrip("\n")
+    else:
+        block = f"{block}\n{key}: {value}"
+    return text[: m.start(1)] + block + text[m.end(1) :]
 
 
 def _list(value, where: str) -> list:
     if value in (None, ""):
         return []
     if not isinstance(value, list):
-        raise TicketError(f"{where}: blocked_by must be a list")
+        raise TicketError(f"{where}: after must be a list")
     return value
 
 
@@ -133,12 +139,18 @@ def load_breakdown(folder: Path) -> dict:
         if not isinstance(rows, list) or not all(isinstance(r, dict) for r in rows):
             raise TicketError(f"{where}: write `[[{table}]]` tables, one per {table}")
         for r in rows:
-            for key in ("covers", "after", "blocked_by", "references", "notes"):
+            for key in ("covers", "after", "references", "notes"):
                 if not isinstance(r.get(key, []), list):
                     raise TicketError(f"{where}: `{key}` must be a list")
-            if not all(isinstance(a, dict) for a in r.get("after", [])):
-                raise TicketError(f'{where}: `after` takes tables: [{{ epic = "epic-<slug>", needs = "..." }}]')
+            if table == "epic" and not all(isinstance(a, dict) for a in r.get("after", [])):
+                raise TicketError(f'{where}: an epic\'s `after` takes tables: [{{ epic = <id>, needs = "..." }}]')
+            if "id" in r and (not isinstance(r["id"], int) or isinstance(r["id"], bool)):
+                raise TicketError(f"{where}: every {table} needs an integer `id`")
     return data
+
+
+def _id(value):
+    return value if isinstance(value, int) and not isinstance(value, bool) else None
 
 
 def load_container(folder: Path) -> dict:
@@ -154,31 +166,31 @@ def load_container(folder: Path) -> dict:
         raise TicketError(f"{folder.name}/{path.name}: status {fm['status']!r} is not one of {', '.join(STATUSES)}")
     return {
         "slug": folder.name,
-        "id": str(fm.get("id", "") or ""),
+        "tracker_id": str(fm.get("tracker_id", "") or ""),
         "status": fm.get("status", ""),
-        "raw_blocked_by": _list(fm.get("blocked_by"), f"{folder.name}.md"),
+        "raw_after": _list(fm.get("after"), f"{folder.name}.md"),
     }
 
 
 def load_folder(folder: Path) -> list[dict]:
-    """One row per ticket in a folder: every breakdown entry, joined to its leaf file when
-    one exists, plus leaf files the breakdown does not list."""
+    """One row per ticket in a folder, in build order: every breakdown entry, joined to its
+    leaf file when one exists, then leaf files the breakdown does not list."""
     where = folder.name
     rows = {}
     for e in load_breakdown(folder).get("entry", []):
-        n, kind = e.get("n"), e.get("type")
-        if not isinstance(n, int) or isinstance(n, bool):
-            raise TicketError(f"{where}/{BREAKDOWN}: every entry needs an integer `n`")
+        n, kind = _id(e.get("id")), e.get("type")
+        if n is None:
+            raise TicketError(f"{where}/{BREAKDOWN}: every entry needs an integer `id`")
         if kind not in LEAF_TYPES:
-            raise TicketError(f"{where}/{BREAKDOWN}: entry {n:02d} type {kind!r} is not one of {', '.join(LEAF_TYPES)}")
+            raise TicketError(f"{where}/{BREAKDOWN}: entry {n} type {kind!r} is not one of {', '.join(LEAF_TYPES)}")
         if n in rows:
-            raise TicketError(f"{where}/{BREAKDOWN}: two entries numbered {n:02d}")
+            raise TicketError(f"{where}/{BREAKDOWN}: two entries with id {n}")
         rows[n] = {
             "epic": where,
-            "n": n,
+            "id": n,
             "file": None,
             "type": kind,
-            "id": "",
+            "tracker_id": "",
             "title": str(e.get("title", "")),
             "status": "planned",
             "assignee": "",
@@ -194,10 +206,10 @@ def load_folder(folder: Path) -> list[dict]:
             "covers": [str(c) for c in e.get("covers", [])],
             "estimate": e.get("estimate", ""),
             "blocked_at": "",
-            "raw_blocked_by": _list(e.get("blocked_by"), f"{where}/{BREAKDOWN} entry {n:02d}"),
-            "entry_blocked_by": None,
+            "raw_after": _list(e.get("after"), f"{where}/{BREAKDOWN} entry {n}"),
+            "entry_after": None,
         }
-    stray = []
+    unlisted, stray = {}, []
     seen = {}
     for path in sorted(folder.glob("*.md")):
         text = path.read_text(encoding="utf-8")
@@ -212,27 +224,26 @@ def load_folder(folder: Path) -> list[dict]:
         status = fm.get("status", "")
         if status not in STATUSES:
             raise TicketError(f"{where}/{path.name}: status {status!r} is not one of {', '.join(STATUSES)}")
-        m = NAME_RE.match(path.name)
-        n = int(m.group(2)) if m else None
+        n = _id(fm.get("id"))
         if n is not None:
             if n in seen:
-                raise TicketError(f"{seen[n]} and {path.name} share the number {n:02d}")
+                raise TicketError(f"{seen[n]} and {path.name} share the id {n}")
             seen[n] = path.name
         row = rows.get(n) if n is not None else None
         if row is None:
-            row = {"epic": where, "n": n, "raw_blocked_by": [], "entry_blocked_by": None, "covers": [], "title": ""}
+            row = {"epic": where, "id": n, "raw_after": [], "entry_after": None, "covers": [], "title": ""}
             row["refine"] = True
             if n is None:
                 stray.append(row)
             else:
-                rows[n] = row
-        elif "blocked_by" in fm:
-            row["entry_blocked_by"] = row["raw_blocked_by"]
+                unlisted[n] = row
+        elif "after" in fm:
+            row["entry_after"] = row["raw_after"]
         row.update(
             {
                 "file": path.name,
                 "type": fm.get("type"),
-                "id": str(fm.get("id", "") or ""),
+                "tracker_id": str(fm.get("tracker_id", "") or ""),
                 "title": str(fm.get("title", "") or row["title"]),
                 "status": status,
                 "assignee": str(fm.get("assignee", "") or ""),
@@ -243,9 +254,9 @@ def load_folder(folder: Path) -> list[dict]:
                 "blocked_at": fm.get("blocked_at", ""),
             }
         )
-        if "blocked_by" in fm:
-            row["raw_blocked_by"] = _list(fm["blocked_by"], f"{where}/{path.name}")
-    return [rows[n] for n in sorted(rows)] + stray
+        if "after" in fm:
+            row["raw_after"] = _list(fm["after"], f"{where}/{path.name}")
+    return list(rows.values()) + [unlisted[n] for n in sorted(unlisted)] + stray
 
 
 def epic_folders(initiative: Path) -> list[Path]:
@@ -260,20 +271,30 @@ def load_tree(folder: Path) -> dict:
     """The folder asked about plus every epic its tickets can name."""
     epics = epic_folders(folder)
     if epics or "epic" in load_breakdown(folder):
-        order = [e.get("slug") for e in load_breakdown(folder).get("epic", [])]
-        epics.sort(key=lambda d: (order.index(d.name) if d.name in order else len(order), d.name))
-        scope, initiative, folders = None, folder, [*epics, folder]
+        scope, initiative, folders = None, folder, None
     elif folder in epic_folders(folder.parent):
         scope, initiative, folders = folder.name, folder.parent, epic_folders(folder.parent)
         epics = folders
     else:
         scope, initiative, folders = folder.name, None, [folder]
+    listed = load_breakdown(initiative).get("epic", []) if initiative else []
+    order = [e.get("slug") for e in listed]
+    epics.sort(key=lambda d: (order.index(d.name) if d.name in order else len(order), d.name))
+    if folders is None:
+        folders = [*epics, folder]
+    epic_ids = {}
+    for e in listed:
+        if _id(e.get("id")) is not None:
+            if e["id"] in epic_ids.values():
+                raise TicketError(f"{initiative.name}/{BREAKDOWN}: two epics with id {e['id']}")
+            epic_ids[e.get("slug")] = e["id"]
     tickets = [t for f in folders for t in load_folder(f)]
     for t in tickets:
-        t["key"] = f"{t['epic']}/{t['n']:02d}" if t["n"] is not None else f"{t['epic']}/{t['file']}"
+        t["key"] = f"{t['epic']}/{t['id']}" if t["id"] is not None else f"{t['epic']}/{t['file']}"
     tree = {
         "scope": scope,
         "initiative": initiative,
+        "epic_ids": epic_ids,
         "containers": {f.name: load_container(f) for f in epics},
         "tickets": tickets,
     }
@@ -285,50 +306,56 @@ def load_tree(folder: Path) -> dict:
 def _resolve(tree: dict) -> None:
     tickets, containers = tree["tickets"], tree["containers"]
     by_key = {t["key"]: t for t in tickets}
-    ids = {c["id"]: slug for slug, c in containers.items() if c["id"]}
-    ids.update({t["id"]: t["key"] for t in tickets if t["id"]})
+    slugs = {i: slug for slug, i in tree["epic_ids"].items()}
+    ids = {c["tracker_id"]: slug for slug, c in containers.items() if c["tracker_id"]}
+    ids.update({t["tracker_id"]: t["key"] for t in tickets if t["tracker_id"]})
 
     def sibling(t, ref):
         mates = [o for o in tickets if o["epic"] == t["epic"]]
         text = str(ref)
         if re.fullmatch(r"\d+", text):
-            hit = next((o for o in mates if o["n"] == int(text)), None)
+            hit = next((o for o in mates if o["id"] == int(text)), None)
             if hit:
                 return hit["key"]
         for o in mates:
-            if o["file"] and text in (o["file"], o["file"][:-3]) or o["id"] and text == o["id"]:
+            if o["file"] and text in (o["file"], o["file"][:-3]) or o["tracker_id"] and text == o["tracker_id"]:
                 return o["key"]
         return None
 
     def resolve(t, refs, where):
         keys = []
         for ref in refs:
-            key = sibling(t, ref) if "n" in t else None
-            m = CROSS_RE.match(str(ref))
+            text = str(ref)
+            key = sibling(t, ref) if "id" in t else None
+            m = CROSS_RE.match(text)
             if key is None and m:
-                slug, nn = m.group(1), m.group(2)
-                if slug not in containers:
-                    raise TicketError(f"{where}: blocked_by {ref!r} names no epic in this initiative")
-                key = slug if nn is None else f"{slug}/{int(nn):02d}"
-                if nn is not None and key not in by_key:
-                    raise TicketError(f"{where}: blocked_by {ref!r} names no entry in {slug}")
+                slug = slugs.get(int(m.group(1)))
+                if slug is None:
+                    raise TicketError(f"{where}: after {ref!r} names no epic id in this initiative's {BREAKDOWN}")
+                key = f"{slug}/{int(m.group(2))}"
+                if key not in by_key:
+                    raise TicketError(f"{where}: after {ref!r} names no entry in {slug}")
+            if key is None and EPIC_RE.match(text):
+                if text not in containers:
+                    raise TicketError(f"{where}: after {ref!r} names no epic in this initiative")
+                key = text
             if key is None:
-                key = ids.get(str(ref))
+                key = ids.get(text)
             if key is None:
-                raise TicketError(f"{where}: blocked_by {ref!r} matches no ticket")
+                raise TicketError(f"{where}: after {ref!r} matches no ticket")
             if key not in keys:
                 keys.append(key)
         return keys
 
     for t in tickets:
-        where = f"{t['epic']}/{t['file']}" if t["file"] else f"{t['epic']}/{BREAKDOWN} entry {t['n']:02d}"
-        t["blocked_by"] = resolve(t, t.pop("raw_blocked_by"), where)
-        planned = t.pop("entry_blocked_by")
+        where = f"{t['epic']}/{t['file']}" if t["file"] else f"{t['epic']}/{BREAKDOWN} entry {t['id']}"
+        t["after"] = resolve(t, t.pop("raw_after"), where)
+        planned = t.pop("entry_after")
         t["gated_by"] = []
-        t["drift"] = planned is not None and sorted(resolve(t, planned, where)) != sorted(t["blocked_by"])
+        t["drift"] = planned is not None and sorted(resolve(t, planned, where)) != sorted(t["after"])
     for slug, c in containers.items():
-        gates = resolve({"epic": slug}, c.pop("raw_blocked_by"), f"{slug}.md")
-        c["blocked_by"] = gates
+        gates = resolve({"epic": slug}, c.pop("raw_after"), f"{slug}.md")
+        c["after"] = gates
         for t in tickets:
             if t["epic"] == slug:
                 t["gated_by"] = gates
@@ -336,12 +363,12 @@ def _resolve(tree: dict) -> None:
 
 def _check_cycles(tickets: list[dict], containers: dict) -> None:
     sys.setrecursionlimit(max(1000, 3 * len(tickets) + 100))
-    graph = {t["key"]: t["blocked_by"] + t["gated_by"] for t in tickets}
+    graph = {t["key"]: t["after"] + t["gated_by"] for t in tickets}
     members = {}
     for t in tickets:
         members.setdefault(t["epic"], []).append(t["key"])
     for slug, c in containers.items():
-        members.setdefault(slug, []).extend(c["blocked_by"])
+        members.setdefault(slug, []).extend(c["after"])
     state = {}
 
     def visit(node, path):
@@ -377,7 +404,7 @@ def classify(tree: dict) -> dict:
         s = t["status"]
         if s in ("done", "dropped"):
             continue
-        unblocked = all(b in done for b in t["blocked_by"] + t["gated_by"]) and not t["blocked_at"]
+        unblocked = all(b in done for b in t["after"] + t["gated_by"]) and not t["blocked_at"]
         if s in ("in-progress", "review"):
             groups["in_progress"].append(t)
         elif not unblocked:
@@ -399,7 +426,7 @@ def longest_remaining_chain(tree: dict) -> list[str]:
         if k in memo:
             return memo[k]
         best = []
-        for b in remaining[k]["blocked_by"] + remaining[k]["gated_by"]:
+        for b in remaining[k]["after"] + remaining[k]["gated_by"]:
             if b in remaining:
                 c = chain(b)
                 if len(c) > len(best):
@@ -413,27 +440,38 @@ def longest_remaining_chain(tree: dict) -> list[str]:
             c = chain(t["key"])
             if len(c) > len(longest):
                 longest = c
-    return longest
+    return [ref(k, None, tree) for k in longest]
+
+
+def ref(key: str, epic: str | None, tree: dict) -> str | int:
+    """A key as the plan writes it: a sibling's id, `<epic id>.<id>` elsewhere, an epic's slug."""
+    slug, _, n = key.partition("/")
+    if not n:
+        return slug
+    if slug == epic and n.isdigit():
+        return int(n)
+    if n.isdigit() and slug in tree["epic_ids"]:
+        return f"{tree['epic_ids'][slug]}.{n}"
+    return key
 
 
 def unpinned_after(tree: dict) -> list[dict]:
-    """`after` lines of the initiative whose waiting epic has tickets but none blocked by the named epic."""
+    """`after` lines of the initiative whose waiting epic has tickets but none waiting on the named epic."""
     if not tree["initiative"]:
         return []
     out = []
     listed = load_breakdown(tree["initiative"]).get("epic", [])
     slugs = [e.get("slug") for e in listed]
+    by_id = {i: slug for slug, i in tree["epic_ids"].items()}
     for e in listed:
         mine = [t for t in tree["tickets"] if t["epic"] == e.get("slug")]
         for a in e.get("after", []):
-            needed = a.get("epic")
+            needed = by_id.get(a.get("epic"), a.get("epic"))
             if needed not in slugs:
                 raise TicketError(
-                    f"{tree['initiative'].name}/{BREAKDOWN}: {e.get('slug')} is after {needed!r}, which is no epic listed"
+                    f"{tree['initiative'].name}/{BREAKDOWN}: {e.get('slug')} is after {a.get('epic')!r}, which is no epic listed"
                 )
-            pinned = any(
-                b == needed or b.startswith(f"{needed}/") for t in mine for b in t["blocked_by"] + t["gated_by"]
-            )
+            pinned = any(b == needed or b.startswith(f"{needed}/") for t in mine for b in t["after"] + t["gated_by"])
             if mine and not pinned and tree["scope"] in (None, e.get("slug")):
                 out.append({"epic": e.get("slug"), "after": needed, "needs": a.get("needs", "")})
     return out
@@ -444,10 +482,10 @@ def public(t: dict, tree: dict, blocks: dict | None = None) -> dict:
         k: t[k]
         for k in (
             "epic",
-            "n",
+            "id",
             "file",
             "type",
-            "id",
+            "tracker_id",
             "title",
             "status",
             "assignee",
@@ -459,12 +497,11 @@ def public(t: dict, tree: dict, blocks: dict | None = None) -> dict:
             "blocked_at",
         )
     }
-    prefix = f"{t['epic']}/"
-    row["blocked_by"] = [b[len(prefix) :] if b.startswith(prefix) else b for b in t["blocked_by"]]
+    row["after"] = [ref(b, t["epic"], tree) for b in t["after"]]
     if t["gated_by"]:
         row["gated_by"] = t["gated_by"]
     if blocks is not None:
-        row["blocks"] = blocks.get(t["key"], [])
+        row["blocks"] = [ref(b, t["epic"], tree) for b in blocks.get(t["key"], [])]
         if t["drift"]:
             row["drift"] = True
     return row
@@ -527,7 +564,7 @@ def cmd_status(args) -> dict:
         counts[t["status"]] = counts.get(t["status"], 0) + 1
     blocks = {}
     for t in tree["tickets"]:
-        for b in t["blocked_by"]:
+        for b in t["after"]:
             blocks.setdefault(b, []).append(t["key"])
     out = {
         "folder": folder.name,
@@ -539,28 +576,20 @@ def cmd_status(args) -> dict:
     }
     if tree["scope"] is None:
         out["epics"] = [
-            {"slug": slug, "status": c["status"], "blocked_by": c["blocked_by"], "blocks": blocks.get(slug, [])}
+            {
+                "slug": slug,
+                "id": tree["epic_ids"].get(slug),
+                "status": c["status"],
+                "after": c["after"],
+                "blocks": [ref(b, None, tree) for b in blocks.get(slug, [])],
+            }
             for slug, c in tree["containers"].items()
         ]
     return out
 
 
 PULLED = """---
-id: ""
-remote: ""
-type: {type}
-title: {title}
-parent: {epic}
-covers: [{covers}]
-blocked_by: [{blocked_by}]
-blocked_at: ""
-blocked_reason: ""
-assignee: ""
-status: draft
-refined: false
-hitl: {hitl}
-risk: {risk}
-estimate: {estimate}
+{frontmatter}
 ---
 
 # {heading}
@@ -582,15 +611,16 @@ Verify: {verify}
 def cmd_pull(args) -> dict:
     folder = _folder(args)
     tree = load_tree(folder)
-    t = next((t for t in in_scope(tree) if t["epic"] == folder.name and t["n"] == args.n), None)
+    t = next((t for t in in_scope(tree) if t["epic"] == folder.name and t["id"] == args.id), None)
     if t is None:
-        raise TicketError(f"{folder.name}/{BREAKDOWN} has no entry {args.n:02d}")
+        raise TicketError(f"{folder.name}/{BREAKDOWN} has no entry {args.id}")
     if t["file"]:
-        raise TicketError(f"entry {args.n:02d} is already pulled: {t['file']}")
+        raise TicketError(f"entry {args.id} is already pulled: {t['file']}")
     slug = re.sub(r"[^a-z0-9]+", "-", t["title"].lower()).strip("-")[:60].rstrip("-") or "untitled"
-    path = folder / f"{t['type']}-{t['n']:02d}-{slug}.md"
-    prefix = f"{t['epic']}/"
-    blockers = [b[len(prefix) :] if b.startswith(prefix) else b for b in t["blocked_by"]]
+    path = folder / f"{t['type']}-{slug}.md"
+    if path.exists():
+        raise TicketError(f"{path.name} exists already; change entry {args.id}'s title")
+    after = [str(ref(b, t["epic"], tree)) for b in t["after"]]
     root = project_root_for(args, folder)
     epic_file = folder / f"{folder.name}.md"
     try:
@@ -598,18 +628,25 @@ def cmd_pull(args) -> dict:
     except ValueError:  # another drive on Windows
         parent = epic_file.as_posix()
     notes = ([f"Open question: {t['unknown']}"] if t["unknown"] else []) + t["notes"]
+    # Empty and false fields are left out; absent reads the same and the file stays short.
+    fields = [
+        ("id", str(t["id"])),
+        ("type", t["type"]),
+        ("title", json.dumps(t["title"], ensure_ascii=False)),
+        ("parent", t["epic"]),
+        ("covers", f"[{', '.join(t['covers'])}]" if t["covers"] else ""),
+        ("after", f"[{', '.join(after)}]" if after else ""),
+        ("status", "draft"),
+        ("refined", "false" if t["refine"] else ""),
+        ("hitl", "true" if t["hitl"] else ""),
+        ("risk", t["risk"]),
+        ("estimate", json.dumps(str(t["estimate"])) if t["estimate"] != "" else ""),
+    ]
     path.write_text(
         PULLED.format(
-            type=t["type"],
-            title=json.dumps(t["title"], ensure_ascii=False),
+            frontmatter="\n".join(f"{k}: {v}" for k, v in fields if v != ""),
             heading=t["title"],
             parent=parent,
-            epic=t["epic"],
-            covers=", ".join(t["covers"]),
-            blocked_by=", ".join(blockers),
-            hitl=str(t["hitl"]).lower(),
-            risk=t["risk"],
-            estimate=json.dumps(str(t["estimate"])),
             description=t["description"],
             verify=t["verify"],
             references="".join(f"- {r}\n" for r in t["references"]),
@@ -632,8 +669,7 @@ def cmd_mark(args) -> dict:
         )
     text = set_frontmatter_value(text, "status", args.status)
     for key in ("blocked_at", "blocked_reason"):
-        if parse_frontmatter(text).get(key):
-            text = set_frontmatter_value(text, key, '""')
+        text = set_frontmatter_value(text, key, "")
     if args.assignee is not None:
         text = set_frontmatter_value(text, "assignee", f'"{args.assignee}"')
     path.write_text(text, encoding="utf-8")
@@ -645,7 +681,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Read a ticket tree and answer what is next.")
     parser.add_argument("--project-root", help="project holding _bmad/; default: walk up from the ticket folder")
     sub = parser.add_subparsers(dest="command", required=True)
-    p = sub.add_parser("next", help="tickets whose blockers are done, by state")
+    p = sub.add_parser("next", help="tickets whose prerequisites are done, by state")
     p.add_argument("dir")
     p.add_argument("--synced", action="store_true", help="tracker status was mirrored just now")
     p.set_defaults(func=cmd_next)
@@ -654,7 +690,7 @@ def main() -> int:
     p.set_defaults(func=cmd_status)
     p = sub.add_parser("pull", help="write an entry's leaf file")
     p.add_argument("dir")
-    p.add_argument("n", type=int)
+    p.add_argument("id", type=int)
     p.set_defaults(func=cmd_pull)
     p = sub.add_parser("mark", help="set a ticket's status (repo store only)")
     p.add_argument("ticket_file")
