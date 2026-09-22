@@ -14,7 +14,8 @@ Before starting a candidate, read it and its source. One in `next`'s `ready_to_r
 
 ## Progress and closure
 
-- Progress lives on tickets, not in a separate sprint/status file. `uv run {skill-root}/scripts/tickets.py --project-root {project-root} next <folder>` proposes candidates grouped by state; `status <folder>` reports every ticket with its `status`, `tracker_status`, and state, what it blocks, counts by state, and the remaining chain; a row's `gated_by` is its epic file's `after`. `<folder>` is an epic, `backlog/`, or the initiative for all its epics at once. With a tracker, query before either view and pass `--synced` to `next`. `next`'s `to_pull` group is the entries with no file yet whose prerequisites are done, in build order; offer the first and pull it per `slice.md`.
+- A ticket the user names — "refine 1.2", "start ABCD-13", "build the cart scaffold" — resolves through `uv run {skill-root}/scripts/tickets.py --project-root {project-root} find <folder> <ref>` before you pull, refine, start, or mark it: one ticket with its row, `path` (null until pulled), and `folder`. Words that match more than one ticket: ask.
+- Progress lives on tickets, not in a separate sprint/status file. `tickets.py next <folder>` (same `--project-root`) proposes candidates grouped by state; `status <folder>` reports every ticket with its `status`, `tracker_status`, and state, what it blocks, counts by state, and the remaining chain; a row's `gated_by` is its epic file's `after`. `<folder>` is an epic, `backlog/`, or the initiative for all its epics at once. With a tracker, query before either view and pass `--synced` to `next`. `next`'s `to_pull` group is the entries with no file yet whose prerequisites are done, in build order; offer the first and pull it per `slice.md`.
 - `unpinned_after` lists an epic that has tickets but none waiting on the epic its `after` names: add the prerequisite with the user. `drift: true` on a `status` row: show the file's and the entry's `after` to the user and make them equal.
 - Offer all unblocked, unassigned candidates when work can run in parallel.
 - The build writes a leaf's `status` as it works; ticketing does not move it. Assignee changes, and a `status` the user asks for — `dropped`, or a person working the ticket by hand — go through `write`; on the repo store, for a leaf, that is `tickets.py --project-root {project-root} mark <ticket> <status> [--assignee <who>]` followed by the commit its verb describes. `mark` writes what it is told; the checks above are yours. On a tracker, `write` transitions the item to `[tickets.status].<state>` and never sends `status` as a word; the tracker's status comes back as `tracker_status` on `query`. A container's `status` is ticketing's, an edit to its file: absent until work under it starts, then `in-progress`, `done`, or `dropped`; containers never take review. On done with estimation on, ask for the actual (`estimate.md`).
@@ -35,8 +36,7 @@ Before starting a candidate, read it and its source. One in `next`'s `ready_to_r
       epic-cart-rules.md
       tickets.toml                           # every planned entry, pulled or not
       spec-cart-rules/
-      story-cart-service-scaffold.md           # pulled; its id is in its frontmatter
-      story-cart-service-scaffold-plan.md      # written by bmad-build
+      story-cart-service-scaffold.md           # pulled; its id is in its frontmatter, its plan under `## Plan`
       spike-discount-engine-latency.md
   backlog/
     bug-checkout-total-ignores-discount-codes.md

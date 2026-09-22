@@ -27,10 +27,13 @@ prerequisite still blocks.
 
   next   <dir>                   tickets whose prerequisites are done, grouped by state, in build order
   status <dir>                   every ticket in build order, what it blocks, counts by state, longest chain
+  find   <dir> <ref>             the one ticket a reference names, with its path (null until pulled)
   pull   <dir> <id>              write entry id's leaf file with only the fields the entry sets; no status
   mark   <ticket-file> <status>  set a leaf's status and clear its blocked_at (repo store only)
 
-`<dir>` is an epic folder, a backlog folder, or an initiative folder (all its epics).
+`<dir>` is an epic folder, a backlog folder, or an initiative folder (all its epics). `<ref>` is
+`<epic id>.<entry id>`, an entry id inside an epic folder, a tracker id, a file name, or words
+from the title that match one ticket.
 `--project-root` names the project holding `_bmad/` when the tickets live outside it.
 
 Output is one JSON object on stdout. Exit 0 on success, 1 on a malformed tree, 2 when
@@ -324,6 +327,7 @@ def load_tree(folder: Path) -> dict:
     tree = {
         "scope": scope,
         "initiative": initiative,
+        "folders": {f.name: f for f in folders},
         "epic_ids": epic_ids,
         "containers": {f.name: load_container(f) for f in epics},
         "tickets": tickets,
@@ -639,7 +643,44 @@ Verify: {verify}
 ## References
 
 - parent — {parent}
-{references}{notes}"""
+{references}{notes}
+## Plan
+
+<!-- Filled in by the coding agent; never sent to a tracker. -->
+"""
+
+
+def cmd_find(args) -> dict:
+    folder = _folder(args)
+    tree = load_tree(folder)
+    tickets = tree["tickets"]
+    ref = args.ref.strip()
+    low = ref.lower()
+    hits = []
+    m = CROSS_RE.match(ref)
+    if m:
+        slug = {i: s for s, i in tree["epic_ids"].items()}.get(int(m.group(1)))
+        hits = [t for t in tickets if slug and t["epic"] == slug and t["id"] == int(m.group(2))]
+    elif ref.isdigit() and tree["scope"]:
+        hits = [t for t in tickets if t["epic"] == tree["scope"] and t["id"] == int(ref)]
+    if not hits:
+        hits = [t for t in tickets if t["file"] and low in (t["file"].lower(), t["file"][:-3].lower())]
+    if not hits:
+        hits = [t for t in tickets if t["tracker_id"] and low == t["tracker_id"].lower()]
+    if not hits:
+        hits = [t for t in in_scope(tree) if low in t["title"].lower()]
+    if not hits:
+        raise TicketError(f"no ticket matches {ref!r}")
+    if len(hits) > 1:
+        names = ", ".join(ref_name(t, tree) for t in hits)
+        raise TicketError(f"{ref!r} matches more than one ticket: {names}")
+    t = hits[0]
+    path = tree["folders"][t["epic"]] / t["file"] if t["file"] else None
+    return {**public(t, tree), "folder": tree["folders"][t["epic"]].name, "path": str(path) if path else None}
+
+
+def ref_name(t: dict, tree: dict) -> str:
+    return f"{t['file'] or t['id']} in {t['epic']}"
 
 
 def cmd_pull(args) -> dict:
@@ -722,6 +763,10 @@ def main() -> int:
     p = sub.add_parser("status", help="every ticket resolved")
     p.add_argument("dir")
     p.set_defaults(func=cmd_status)
+    p = sub.add_parser("find", help="the one ticket a reference names")
+    p.add_argument("dir")
+    p.add_argument("ref")
+    p.set_defaults(func=cmd_find)
     p = sub.add_parser("pull", help="write an entry's leaf file")
     p.add_argument("dir")
     p.add_argument("id", type=int)

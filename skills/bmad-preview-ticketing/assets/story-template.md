@@ -12,17 +12,17 @@ risk: [low|medium|high]
 estimate: ""   # points, when estimation is on
 ---
 
-<!-- Unrefined: a one-sentence Description, Acceptance Criteria as one Verify: line, References, local Notes. Refined: full criteria and Boundaries. -->
+<!-- Pulled: a one-sentence Description, Acceptance Criteria as one Verify: line, References, local Notes. Refined: the same, reviewed with the user. Numbered criteria and Boundaries only for a ticket with no epic, an entry with `refine = true`, or on request. -->
 
 # [Title]
 
 ## Description
 
-[Unrefined: one sentence, what this delivers. Refined: what exists or works when this is done and how it advances the epic, 2–4 sentences; the criteria below carry the proof, do not restate them.]
+[One sentence, what this delivers; reviewed with the user at refine. With numbered criteria: what exists or works when this is done and how it advances the epic, 2–4 sentences; the criteria carry the proof, do not restate them.]
 
 ## Acceptance Criteria
 
-[Unrefined: one line, `Verify: how it will be checked`, nothing else. Refined: the numbered criteria below.]
+[One line, `Verify: how it will be checked`, nothing else. No epic, `refine = true`, or on request: the numbered criteria below instead.]
 
 1. **[Short name of the behavior]**
    **Given** [the state before: data, user, config]
@@ -53,7 +53,11 @@ estimate: ""   # points, when estimation is on
 - Assumption: [a choice made while drafting that the user has not confirmed; confirmed, it becomes a Decision line]
 - Open question: [what only this ticket waits on. Touches siblings: the parent's Notes. Gates work: a spike.]
 
-<!-- Example, not part of the ticket: match its level of detail. What is good here: the Description is what the shopper can do, end to end; every criterion states a rule, not an instance, with its failure path, fails today and passes only through this work; Boundaries names behavior, not files; References points at the nearest document; Notes holds only what is not in the repo or the source, plus one assumption for the user to confirm. -->
+## Plan
+
+<!-- Filled in by the coding agent; never sent to a tracker. -->
+
+<!-- Example, not part of the ticket: match its level of detail. What is good here: the Description is what the shopper can do, end to end; every criterion states a rule, not an instance, with its failure path, fails today and passes only through this work; Boundaries names behavior, not files; References points at the nearest document; Notes holds only what is not in the repo or the source, plus one assumption for the user to confirm. Numbered criteria because its entry says `refine = true`. -->
 
 ```markdown
 ---
@@ -110,4 +114,8 @@ A shopper with items in the cart enters a discount code, and the cart total upda
 
 - Decision: the discount engine's `validate(code, cart) -> {amount, reason}` interface is frozen (2026-08-12).
 - Assumption: the refusal messages above are final copy; no design text exists for them.
+
+## Plan
+
+<!-- Filled in by the coding agent; never sent to a tracker. -->
 ```

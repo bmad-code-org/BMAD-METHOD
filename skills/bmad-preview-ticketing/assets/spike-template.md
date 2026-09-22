@@ -16,7 +16,7 @@ estimate: ""   # points, when estimation is on
 
 ## Description
 
-[Unrefined: one sentence, the question. Refined: the unknown this resolves — usually a placeholder left at design time — and which tickets wait on the answer, 2–4 sentences.]
+[One sentence, the question; reviewed with the user at refine. Approach below says how it is answered and which tickets wait on it.]
 
 ## Approach
 
@@ -41,6 +41,10 @@ estimate: ""   # points, when estimation is on
 ## Notes
 
 [Assumptions and open questions about the spike itself, each marked. Cut if empty.]
+
+## Plan
+
+<!-- Filled in by the coding agent; never sent to a tracker. -->
 
 <!-- Example, not part of the ticket: match its level of detail. What is good here: the unknown was a placeholder in the architecture; the spike names who waits, runs research, design, prototype, and sign-off in a time box, says what good enough is, and records the answer where the stories will find it. hitl because people accept the finding. -->
 
@@ -94,4 +98,8 @@ Good enough: all six cases merge as the field team expects, or the exceptions ar
 
 - Assumption: the satellite link is never better than 2 kbps up; confirm with the operations lead.
 - Open question: is the conflict log kept forever, or pruned after the lead resolves it? The field science lead answers.
+
+## Plan
+
+<!-- Filled in by the coding agent; never sent to a tracker. -->
 ```

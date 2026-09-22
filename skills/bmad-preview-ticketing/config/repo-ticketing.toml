@@ -45,9 +45,8 @@ create root/backlog/ and the active initiative's folder when they do not exist.
 
 write = """
 No entry yet: add an `[[entry]]` with the next unused `id` to the parent's `tickets.toml`; the file carries that `id`. Every change — body, assignee, parent (move the file, or the container folder, into the new
-parent's folder), after — is an edit to the file. A leaf's `status` is the build's: it writes draft, ready-for-dev, in-progress, in-review, done, and blocked as it works, and a pulled file has none. Ticketing edits it only when the user says to — `dropped`, or a person working the ticket by hand who asks for it. A container's `status` is ticketing's: absent until work under it starts, then in-progress, done, or dropped. Build records never go in the
-body; bmad-build writes them beside the ticket file (`<name>-plan.md`,
-`<name>-session-<date>.jsonl`, `<name>-results.md`).
+parent's folder), after — is an edit to the file. A leaf's `status` is the build's: it writes draft, ready-for-dev, in-progress, in-review, done, and blocked as it works, and a pulled file has none. Ticketing edits it only when the user says to — `dropped`, or a person working the ticket by hand who asks for it. A container's `status` is ticketing's: absent until work under it starts, then in-progress, done, or dropped. Build records: the plan is in the
+file under `## Plan`, the coding agent's section.
 Commit only the files you wrote on the current branch. Root not in a git repo: skip the commit and say so.
 """
 

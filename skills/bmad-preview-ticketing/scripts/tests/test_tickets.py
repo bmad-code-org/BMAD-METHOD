@@ -278,6 +278,45 @@ covers = ["R2", "R3"]
         self.assertIn("\nhitl: true\n", head)
         self.assertNotIn("refined", head)
 
+    def test_pull_ends_with_an_empty_plan_section(self):
+        self.breakdown_epic()
+        run("pull", str(self.epic), "1")
+        text = (self.epic / "story-scaffold.md").read_text(encoding="utf-8")
+        self.assertTrue(
+            text.endswith(
+                "- parent — out/initiative-checkout/epic-cart/epic-cart.md\n\n## Plan\n\n<!-- Filled in by the coding agent; never sent to a tracker. -->\n"
+            ),
+            text,
+        )
+
+    def test_find_by_cross_ref_id_file_tracker_id_and_title(self):
+        pricing = self.pricing()
+        self.breakdown_epic()
+        self.add("story-contract.md", ticket("done", 1, tracker_id='"PRICE-1"'), pricing)
+        run("pull", str(self.epic), "1")
+
+        def find(folder, ref):
+            r = run("find", str(folder), ref)
+            self.assertEqual(r.returncode, 0, r.stderr)
+            return json.loads(r.stdout)
+
+        hit = find(self.initiative, "2.1")
+        self.assertEqual((hit["folder"], hit["id"], hit["file"]), ("epic-cart", 1, "story-scaffold.md"))
+        self.assertEqual(hit["path"], str((self.epic / "story-scaffold.md").resolve()))
+        self.assertEqual(find(self.epic, "3")["title"], "Tax engine?")
+        self.assertIsNone(find(self.epic, "3")["path"])
+        self.assertEqual(find(self.epic, "1.1")["file"], "story-contract.md")
+        self.assertEqual(find(self.epic, "price-1")["file"], "story-contract.md")
+        self.assertEqual(find(self.initiative, "story-scaffold")["folder"], "epic-cart")
+        self.assertEqual(find(self.initiative, "ui shell")["id"], 2)
+        self.assertEqual(find(self.epic, "codes")["id"], 4)
+        r = run("find", str(self.initiative), "in")
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("more than one", r.stderr)
+        r = run("find", str(self.initiative), "9.1")
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("no ticket matches", r.stderr)
+
     def test_pull_refuses_a_file_name_already_taken(self):
         self.breakdown_epic(self.BREAKDOWN.replace('title = "UI shell"', 'title = "Scaffold"'))
         self.assertEqual(run("pull", str(self.epic), "1").returncode, 0)

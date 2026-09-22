@@ -56,6 +56,10 @@ estimate: ""   # points, when estimation is on
 - Assumption: [a choice made while drafting that the user has not confirmed]
 - Open question: [what is not settled; answering it is part of the ticket's work]
 
+## Plan
+
+<!-- Filled in by the coding agent; never sent to a tracker. -->
+
 <!-- Example, not part of the ticket: match its level of detail. What is good here: a reproduction someone else can follow, with the actual and expected values; a cause hypothesis that is not a fix; one criterion for the behavior, one for the tests that cover the condition found and fixed, and one that supersedes both when the reproduction shows no change is needed. -->
 
 ```markdown
@@ -109,4 +113,8 @@ The quantity-change path recomputes the total without passing the applied code, 
 
 - parent — none
 - logs — support ticket #4471, attachment pricing.log
+
+## Plan
+
+<!-- Filled in by the coding agent; never sent to a tracker. -->
 ```
