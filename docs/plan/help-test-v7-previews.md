@@ -179,7 +179,7 @@ Give the pulled story file to `bmad-build` with its epic, for example "build sto
 A story needs no refining before `bmad-build`. Build refines it as part of the build: it questions you and writes the acceptance criteria into its plan. If you will build unattended, with `bmad-build-auto`, a loop, or a factory, nobody answers questions during the build, so review the sequence and each entry with the ticketing skill first. The ticketing skill writes full acceptance criteria only for a bug, a ticket with no epic, or when you ask.
 :::
 
-Build does not update the ticket. Before you start, say "start story 2" to the ticketing skill, and when the work is finished say "mark story 2 done". On the repo store those are edits to the story file that you commit with your work.
+The ticket file's `status` belongs to build, but build does not write it yet. Until it does, say "start story 2" to the ticketing skill before you start, and "mark story 2 done" when the work is finished. On the repo store those are edits to the story file that you commit with your work. With a tracker, the tracker's status is read into the file as `tracker_status` beside `status`, so moving a card on the board never makes build skip planning.
 
 ## Tell Us What You Find
 

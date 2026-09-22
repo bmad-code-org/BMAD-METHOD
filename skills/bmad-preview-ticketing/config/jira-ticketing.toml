@@ -59,18 +59,18 @@ The project is the ticket's own `key`, else that of the nearest container above 
 Create, parents before children, prerequisites first:
 `acli jira workitem create --project <key> --type <per [tickets.types]> --summary <t>
 --description-file <b> --parent <key> --label <type>[,hitl,risk-<risk>]`, priority per `fields` on
-a bug. Changes: `edit` (body, labels), `assign`, `transition --status <per [tickets.status]>` —
+a bug. Changes: `edit` (body, labels), `assign`, `transition --status <[tickets.status].<state>>` (the ticket's state, `state` in `tickets.py` rows) —
 status never moves by edit — `link create --out <blocker> --in <blocked> --type "Blocks"`,
 `comment create`. No parent: omit --parent — the item sits loose in the project. Custom fields go through --from-json; when dropped shares a status with done,
 set the resolution the same way so the two stay distinct.
 Initiative: with [tickets.types].initiative empty, the default, it is never sent — everything below
 it publishes, the initiative stays local, and epics sit loose in the project. Set that type only when the
 project has a level above Epic; then epics take it as --parent.
-The body sent is the local file without the frontmatter lines tracker_id, remote, status, assignee; build
+The body sent is the local file without the frontmatter lines tracker_id, remote, tracker_status, status, assignee; build
 notes belong in <ticket filename>-plan.md beside it, added as a comment on the move to review
 (or done when there is no review) — acli has no attachment upload.
-After a write, mirror tracker_id (the key), remote (the url), status, assignee, and after in the
-local file; commit local files on the current branch when root is in a git repo, never push.
+After a write, mirror tracker_id (the key), remote (the url), tracker_status, assignee, and after in the
+local file — never status, which is the build's; commit local files on the current branch when root is in a git repo, never push.
 An `after` naming a sibling's id or `<epic id>.<entry id>` is that entry's item, published first when it is still local; `epic-<slug>` is the epic's item.
 """
 
@@ -82,7 +82,8 @@ key,issuetype,summary,status,assignee,parent,labels,issuelinks,resolution,descri
 narrowed by issuetype or status per the maps. The local file: `grep -rl "^tracker_id: <key>" root` or the
 filename.
 A child the tracker holds with no file in the tree gets an `[[entry]]` with the next unused `id` in its parent's `tickets.toml`, then its file.
-Candidates to start (one that `tickets.py next` lists under `ready_to_refine` gets its criteria first): status [tickets.status].backlog, every "is blocked by" link done, unassigned, no blocked_at in the ticket file. Offer all
+Mirror the item's status into the local file as tracker_status, the BMad word per [tickets.status], beside tracker_id and remote — never into status, which is the build's.
+Candidates to start (one that `tickets.py next` lists under `ready_to_refine` gets its criteria first): tracker_status backlog ([tickets.status].backlog on the tracker), every "is blocked by" link done, unassigned, no blocked_at in the ticket file. Offer all
 ready tickets; when one must be chosen, the one that unblocks the most work behind it.
 """
 
@@ -94,7 +95,7 @@ story = "Story"
 spike = "Task"   # plus label spike
 bug = "Bug"
 
-# BMad status -> this store's status. draft is local only and never sent to the store.
+# BMad state -> this store's status; `query` reads it back the other way into tracker_status. The file's `status` is the build's and is never sent.
 [tickets.status]
 backlog = "To Do"
 in-progress = "In Progress"

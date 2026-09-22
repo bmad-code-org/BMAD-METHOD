@@ -6,8 +6,7 @@ title: "[The outcome this container exists to reach]"
 parent: none
 covers: [ids from the spec at this level, or from Requirements below when the source has none]
 after: []   # epics this whole container waits on; the order of epics is in the initiative's tickets.toml
-assignee: ""
-status: draft
+assignee: ""   # status is added when work starts (in-progress | done | dropped)
 risk: [low|medium|high — the highest expected among its children]
 estimate: ""   # t-shirt, when estimation is on
 estimate_basis: ""   # envelope | spec | entries | stories
@@ -67,7 +66,6 @@ title: "Checkout that shoppers finish"
 parent: none
 covers: [C1, C2, C3, C4, C5, C6, P1, P2, T1]
 assignee: ""
-status: draft
 risk: high
 ---
 

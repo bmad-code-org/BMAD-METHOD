@@ -13,6 +13,7 @@
 - **Refining is optional.** With `bmad-build`, a story is refined during the build: the builder questions the user and writes the criteria into its plan. Refining in ticketing is a review of the entries with the user — description, check, references, notes, order, prerequisites — and writes no Given/When/Then. Recommend that review when the epic will run unattended (`bmad-build-auto`, a loop, a factory), because nobody answers questions during the build. Full acceptance criteria are written in ticketing only for a ticket with no epic, a bug, or when the user asks.
 - **Source conflicts.** When the source contradicts the code, the skill records a `Source conflict:` line in the container's Notes and tells the user. When the source is a BMad spec, it offers to pass the correction to `bmad-spec`.
 - **The board.** "What's next?" shows what is ready to pull, ready to refine (only the tickets that need it), ready to start, in progress, or blocked (waiting on a person or an answer). Asked about the initiative, it covers every epic. A prerequisite in `after` can be a story in the same epic, a story in another epic, or a whole epic.
+- **Status.** A ticket file's `status` belongs to the build, not to ticketing. On a tracker store the tracker's status sits beside it as `tracker_status`, so a card moved on the board never makes the build skip planning. Ticketing writes `status` only when the user asks: a dropped ticket, or one a person is working by hand.
 - **Other abilities.** A one-off bug or story goes straight into `backlog/` with no epic. Tickets can be published to a tracker such as Jira, Linear, or GitHub; the markdown file stays the working copy.
 
 ## Why it is designed this way
@@ -27,7 +28,7 @@
 
 While ticketing is in preview, `bmad-create-epics-and-stories` with `bmad-sprint-planning` remains the supported route and works as before.
 
-- **Automatic status.** `bmad-build` keeps `sprint-status.yaml` current. It does not move ticket status yet: the user starts and closes tickets through the ticketing skill.
+- **Automatic status.** `bmad-build` keeps `sprint-status.yaml` current. It does not write a ticket file's `status` yet: the user tells the ticketing skill to mark a ticket started or done.
 - **The retrospective and unattended loops.** `bmad-retrospective` and bmad-loop read `sprint-status.yaml` or an existing `stories.yaml`. Neither reads `tickets.toml` yet.
 - **A readiness verdict.** `bmad-sprint-planning` gives PASS / CONCERNS / FAIL before building starts.
 - **Requirement coverage up front.** `epics.md` carries a map proving every PRD requirement is covered by a story.

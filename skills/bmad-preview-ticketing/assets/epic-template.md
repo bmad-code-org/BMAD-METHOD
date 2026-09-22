@@ -6,8 +6,7 @@ title: "[The outcome this container exists to reach]"
 parent: [folder name of the initiative]
 covers: [parent requirement ids this epic owns; keep these when adding an epic-local spec]
 after: []   # epics this whole container waits on; the order of epics is in the initiative's tickets.toml
-assignee: ""
-status: draft
+assignee: ""   # status is added when work starts (in-progress | done | dropped)
 risk: [low|medium|high — the highest expected among its children]
 estimate: ""   # t-shirt, when estimation is on
 estimate_basis: ""   # envelope | spec | entries | stories
@@ -67,7 +66,6 @@ title: "Shoppers manage their cart"
 parent: initiative-checkout
 covers: [R1, R2, R3, R4]
 assignee: ""
-status: draft
 risk: medium
 ---
 

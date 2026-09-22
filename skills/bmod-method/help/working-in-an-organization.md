@@ -61,4 +61,4 @@ For a change that threatens the plan itself, run `bmad-correct-course` first. It
 
 - Nothing syncs with Jira or any tracker automatically, in either direction.
 - The epics route reads and writes only `sprint-status.yaml`. The user updates it when the tracker changes.
-- `bmad-preview-ticketing` can publish tickets to Jira, Linear, or GitHub. It is a preview, and status is moved by hand (`help/ticketing-and-epics.md`).
+- `bmad-preview-ticketing` can publish tickets to Jira, Linear, or GitHub. It is a preview. When the skill runs, the tracker's status is read into the ticket file as `tracker_status`, beside the build's own `status`, and never drives the build (`help/ticketing-and-epics.md`).

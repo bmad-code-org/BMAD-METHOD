@@ -16,13 +16,14 @@ At every altitude above the leaf the ideal shape is: intent (an idea, brief, PRD
 - Container: an initiative or an epic — holds other tickets
 - Leaf: a story, spike, or bug handed to an agent to implement. Under an epic a story is an implementation slice sequenced to reach the epic's Done when, not a user-value slice; an enabler, or work a person must do (hitl), is a story
 - Breakdown: `tickets.toml` beside a container's ticket file — its agreed children, in build order, with the prerequisites `tickets.py` reads
-- Entry: one planned leaf in a breakdown, with a stable `id`: description, requirement references, prerequisites (`after`), verification approach, and known uncertainty. It has no file and no status until it is pulled
+- Entry: one planned leaf in a breakdown, with a stable `id`: description, requirement references, prerequisites (`after`), verification approach, and known uncertainty. It has no file until it is pulled; its state is `planned`
 - Pull: write an entry's leaf file with `tickets.py pull`; the ticket can then start
 - Refine: for an epic's stories, review and improve their entries with the user. Full acceptance criteria are written here only for a ticket with no epic, a bug, or on request (`refine = true`); otherwise the builder plans story criteria from the epic's requirements, the entry's description, and its `verify` check
 - Opening epic: the first `[[epic]]` in the initiative's breakdown
 - Inception: plan the whole selected epic with the user and record it in the epic's breakdown
 - hitl: boolean frontmatter field on a leaf; at least part needs a person
 - store: the ticketing system of record — git-backed, a tracker, or both
+- State: `planned`, `backlog`, `in-progress`, `review`, `done`, or `dropped` — what the board groups by and what a tracker sees; derived from a ticket's status fields as described under The ticket tree
 
 ## On activation
 
@@ -82,7 +83,7 @@ Load each of the following when a step names it; resolve keys by script rather t
 | Verb | For |
 |---|---|
 | `setup` | connect the tool; create what the maps name |
-| `write` | create or change a ticket — body, status, assignee, parent, blocking, fields |
+| `write` | create or change a ticket — body, state, assignee, parent, blocking, fields |
 | `query` | one ticket, a container's children, a search, what is ready |
 
 How a ticket cites a document is the `reference` global, read at activation. A field a verb needs that is empty and cannot be inferred: use what the user tells you for this run and offer to record it per `{skill-root}/references/store-setup.md`.
@@ -91,6 +92,8 @@ How a ticket cites a document is the `reference` global, read at activation. A f
 
 Tickets live as markdown files under `tickets.root`; every ticket is drafted, refined, planned against, and implemented from its file there. By default the tree is the store (git-backed, the repo starter). A tracker, when configured, is a remote: `write` pushes a ticket to it, `query` reads it back, and a ticket the tracker knows but the tree does not gets its file at first `query`.
 
-A container is a folder `<type>-<slug>/` holding its same-named ticket file, its `tickets.toml`, its spec, and its children. A leaf is a file `<type>-<slug>.md` in its parent's folder, written when its entry is pulled, or in `backlog/` with no parent. Its frontmatter `id` is its entry's `id`, an integer assigned once and never reused, and the only name it has on the repo store: `3` inside its epic, `2.3` from another epic (the epic's `id` is in the initiative's `tickets.toml`). No file or folder name carries a number; a title change renames the file. A tracker adds `tracker_id` and `remote` at publish. The order of tables in `tickets.toml` is the build order; `id` is not. When an initiative has epics, every leaf is under one. A new ticket starts from its type's template, `status: draft`. Build records and other skills' artifacts sit beside the ticket, named after it.
+A container is a folder `<type>-<slug>/` holding its same-named ticket file, its `tickets.toml`, its spec, and its children. A leaf is a file `<type>-<slug>.md` in its parent's folder, written when its entry is pulled, or in `backlog/` with no parent. Its frontmatter `id` is its entry's `id`, an integer assigned once and never reused, and the only name it has on the repo store: `3` inside its epic, `2.3` from another epic (the epic's `id` is in the initiative's `tickets.toml`). No file or folder name carries a number; a title change renames the file. A tracker adds `tracker_id` and `remote` at publish. The order of tables in `tickets.toml` is the build order; `id` is not. When an initiative has epics, every leaf is under one. A new ticket starts from its type's template. Build records and other skills' artifacts sit beside the ticket, named after it.
+
+A leaf carries up to two status fields. `status` belongs to the build: bmad-build and bmad-build-auto write `draft`, `ready-for-dev`, `in-progress`, `in-review`, `done`, or `blocked` as they work, and a file with no `status` has had no build started. Ticketing writes it only when the user says to: `dropped`, or a person working the ticket by hand who asks for it. `tracker_status` exists only on a tracker store: the BMad word for the tracker's current status (`backlog`, `in-progress`, `review`, `done`, `dropped`), written by `query` next to `tracker_id` and `remote`, never sent. A ticket's state, which `next` and `status` group by and which `write` sends to a tracker as `[tickets.status].<state>`, is `planned` for an entry with no file; else `tracker_status` when present; else from `status`: none, `draft`, or `ready-for-dev` is `backlog`; `in-progress` or `blocked` is `in-progress`; `in-review` is `review`; `done` and `dropped` are themselves. A tracker's status must never drive build routing (a card moved to In Progress on the board, then pulled, still gets planned), and the build's own steps never need to reach the tracker. A container's `status` is ticketing's: absent until work under it starts, then `in-progress`, `done`, or `dropped`.
 
 Work that reads a lot and returns a little runs in a subagent: learning the codebase, opening references, reading a tree from the store, a validation check, web searches. If the harness blocks subagents, say so and continue inline.

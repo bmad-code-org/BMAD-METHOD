@@ -11,7 +11,14 @@ epics as `[[epic]]` tables (`id`, `slug`, `after = [{epic, needs}]`). Tables are
 `id` names an entry for good and is never reused; a leaf file carries it in frontmatter, which is
 how the file joins its entry. An entry with no leaf file is `planned`. A ticket needs refining
 before it starts only when its entry says `refine = true` or it has no entry. Once the file exists
-its frontmatter is the record: `status`, `assignee`, `refined`, `blocked_at`, and `after` when present.
+its frontmatter is the record: `status`, `tracker_status`, `assignee`, `refined`, `blocked_at`, and
+`after` when present.
+
+A leaf's `status` is the build's (draft, ready-for-dev, in-progress, in-review, done, blocked) or
+dropped; absent means no build has started. On a tracker store `tracker_status` mirrors the
+tracker's word (backlog, in-progress, review, done, dropped). A ticket's `state` is `planned` with
+no file, else `tracker_status`, else derived from `status`: absent, draft, ready-for-dev -> backlog;
+in-progress, blocked -> in-progress; in-review -> review; done; dropped.
 
 `after` lists real prerequisites: a sibling's id, `<epic id>.<entry id>` for an entry in another
 epic of the same initiative, `epic-<slug>` for that whole epic, or a tracker id. An epic file's
@@ -19,8 +26,8 @@ own `after` names epics and holds every ticket under it; rows show it as `gated_
 prerequisite still blocks.
 
   next   <dir>                   tickets whose prerequisites are done, grouped by state, in build order
-  status <dir>                   every ticket in build order, what it blocks, counts, longest chain
-  pull   <dir> <id>              write entry id's leaf file: status draft, only the fields the entry sets
+  status <dir>                   every ticket in build order, what it blocks, counts by state, longest chain
+  pull   <dir> <id>              write entry id's leaf file with only the fields the entry sets; no status
   mark   <ticket-file> <status>  set a leaf's status and clear its blocked_at (repo store only)
 
 `<dir>` is an epic folder, a backlog folder, or an initiative folder (all its epics).
@@ -40,7 +47,19 @@ from pathlib import Path
 
 sys.dont_write_bytecode = True
 
-STATUSES = ("draft", "backlog", "in-progress", "review", "done", "dropped")
+STATUSES = ("draft", "ready-for-dev", "in-progress", "in-review", "done", "blocked", "dropped")
+STATES = ("backlog", "in-progress", "review", "done", "dropped")
+CONTAINER_STATUSES = ("in-progress", "done", "dropped")
+STATE_OF = {
+    "": "backlog",
+    "draft": "backlog",
+    "ready-for-dev": "backlog",
+    "in-progress": "in-progress",
+    "blocked": "in-progress",
+    "in-review": "review",
+    "done": "done",
+    "dropped": "dropped",
+}
 LEAF_TYPES = ("story", "spike", "bug")
 CONTAINER_TYPES = ("initiative", "epic")
 NAME_RE = re.compile(r"^(story|spike|bug)-(.+)\.md$")
@@ -162,8 +181,10 @@ def load_container(folder: Path) -> dict:
         raise TicketError(
             f"{folder.name}/{path.name}: type {fm.get('type')!r} is not one of {', '.join(CONTAINER_TYPES)}"
         )
-    if fm.get("status", "") not in ("", *STATUSES):
-        raise TicketError(f"{folder.name}/{path.name}: status {fm['status']!r} is not one of {', '.join(STATUSES)}")
+    if fm.get("status", "") not in ("", *CONTAINER_STATUSES):
+        raise TicketError(
+            f"{folder.name}/{path.name}: status {fm['status']!r} is not one of {', '.join(CONTAINER_STATUSES)}"
+        )
     return {
         "slug": folder.name,
         "tracker_id": str(fm.get("tracker_id", "") or ""),
@@ -192,7 +213,9 @@ def load_folder(folder: Path) -> list[dict]:
             "type": kind,
             "tracker_id": "",
             "title": str(e.get("title", "")),
-            "status": "planned",
+            "status": "",
+            "tracker_status": "",
+            "state": "planned",
             "assignee": "",
             "refined": False,
             "refine": _flag(e.get("refine", False)),
@@ -222,8 +245,13 @@ def load_folder(folder: Path) -> list[dict]:
         if fm.get("type") not in LEAF_TYPES:
             continue
         status = fm.get("status", "")
-        if status not in STATUSES:
+        if status not in ("", *STATUSES):
             raise TicketError(f"{where}/{path.name}: status {status!r} is not one of {', '.join(STATUSES)}")
+        tracker_status = fm.get("tracker_status", "")
+        if tracker_status not in ("", *STATES):
+            raise TicketError(
+                f"{where}/{path.name}: tracker_status {tracker_status!r} is not one of {', '.join(STATES)}"
+            )
         n = _id(fm.get("id"))
         if n is not None:
             if n in seen:
@@ -246,6 +274,8 @@ def load_folder(folder: Path) -> list[dict]:
                 "tracker_id": str(fm.get("tracker_id", "") or ""),
                 "title": str(fm.get("title", "") or row["title"]),
                 "status": status,
+                "tracker_status": tracker_status,
+                "state": tracker_status or STATE_OF[status],
                 "assignee": str(fm.get("assignee", "") or ""),
                 "refined": _flag(fm.get("refined", False)),
                 "hitl": _flag(fm.get("hitl", row.get("hitl", False))),
@@ -389,7 +419,7 @@ def _check_cycles(tickets: list[dict], containers: dict) -> None:
 
 
 def done_keys(tree: dict) -> set:
-    done = {t["key"] for t in tree["tickets"] if t["status"] == "done"}
+    done = {t["key"] for t in tree["tickets"] if t["state"] == "done"}
     return done | {slug for slug, c in tree["containers"].items() if c["status"] == "done"}
 
 
@@ -401,11 +431,13 @@ def classify(tree: dict) -> dict:
     done = done_keys(tree)
     groups = {"ready_to_refine": [], "ready_to_start": [], "in_progress": [], "blocked": [], "to_pull": []}
     for t in in_scope(tree):
-        s = t["status"]
+        s = t["state"]
         if s in ("done", "dropped"):
             continue
         unblocked = all(b in done for b in t["after"] + t["gated_by"]) and not t["blocked_at"]
-        if s in ("in-progress", "review"):
+        if t["status"] == "blocked":
+            groups["blocked"].append(t)
+        elif s in ("in-progress", "review"):
             groups["in_progress"].append(t)
         elif not unblocked:
             groups["blocked"].append(t)
@@ -419,7 +451,7 @@ def classify(tree: dict) -> dict:
 
 
 def longest_remaining_chain(tree: dict) -> list[str]:
-    remaining = {t["key"]: t for t in tree["tickets"] if t["status"] not in ("done", "dropped")}
+    remaining = {t["key"]: t for t in tree["tickets"] if t["state"] not in ("done", "dropped")}
     memo = {}
 
     def chain(k):
@@ -488,6 +520,8 @@ def public(t: dict, tree: dict, blocks: dict | None = None) -> dict:
             "tracker_id",
             "title",
             "status",
+            "tracker_status",
+            "state",
             "assignee",
             "hitl",
             "covers",
@@ -561,7 +595,7 @@ def cmd_status(args) -> dict:
     tickets = in_scope(tree)
     counts = {}
     for t in tickets:
-        counts[t["status"]] = counts.get(t["status"], 0) + 1
+        counts[t["state"]] = counts.get(t["state"], 0) + 1
     blocks = {}
     for t in tree["tickets"]:
         for b in t["after"]:
@@ -629,6 +663,7 @@ def cmd_pull(args) -> dict:
         parent = epic_file.as_posix()
     notes = ([f"Open question: {t['unknown']}"] if t["unknown"] else []) + t["notes"]
     # Empty and false fields are left out; absent reads the same and the file stays short.
+    # No status: the build writes it when it starts.
     fields = [
         ("id", str(t["id"])),
         ("type", t["type"]),
@@ -636,7 +671,6 @@ def cmd_pull(args) -> dict:
         ("parent", t["epic"]),
         ("covers", f"[{', '.join(t['covers'])}]" if t["covers"] else ""),
         ("after", f"[{', '.join(after)}]" if after else ""),
-        ("status", "draft"),
         ("refined", "false" if t["refine"] else ""),
         ("hitl", "true" if t["hitl"] else ""),
         ("risk", t["risk"]),

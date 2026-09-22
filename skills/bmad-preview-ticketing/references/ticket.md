@@ -22,7 +22,7 @@ A story under an epic is one slice of its build order: `covers` cites ids from t
 
 ## Refining an existing ticket
 
-A story under an epic is refined as its entry, per `slice.md`. For a ticket that carries full criteria: read the local ticket and open what it references; query its remote state if already published to a tracker. With the user: confirm they still agree with it; check its description against the current requirement source, criteria and references; find what is missing, unclear, or wrong; settle questions that prevent implementation. Save unpublished changes locally; published changes go through `write`. Preserve identity and the existing status and assignee. A ticket keeps `refined: false` until it passes self-review in full and the user approves it. A container may end in a re-slice per `slice.md`.
+A story under an epic is refined as its entry, per `slice.md`. For a ticket that carries full criteria: read the local ticket and open what it references; query its remote state if already published to a tracker. With the user: confirm they still agree with it; check its description against the current requirement source, criteria and references; find what is missing, unclear, or wrong; settle questions that prevent implementation. Save unpublished changes locally; published changes go through `write`. Preserve identity and any existing `status`, `tracker_status`, and assignee. A ticket keeps `refined: false` until it passes self-review in full and the user approves it. A container may end in a re-slice per `slice.md`.
 
 ## Self-review before the user sees it
 

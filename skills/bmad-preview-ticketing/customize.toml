@@ -106,7 +106,7 @@ checks.set = [
   "Together the tickets account for every requirement in the epic's spec, referenced numbered source, or Requirements, except scope deferred with the user. Each covers id exists there; several tickets may cover one id, each description saying which part it delivers.",
   "UX, architecture, constraints, and integration work are accounted for even when they lack ids. The combined results must satisfy the epic's Done when; citing an id alone is not coverage.",
   "Every `after` is a real prerequisite, those in other epics included, and none restates the order. Once `tickets.toml` exists, `tickets.py status` on the epic runs clean: no cycle, no `drift`, no `unpinned_after`; the tracer bullet and sequencing decisions are in the epic's Notes.",
-  "A builder holding only the epic, an entry, and its references could write that story's acceptance criteria without asking a question. Where it could not, the gap is fixed in the epic or the entry now.",
+  "Given the epic, an entry, and its references, a builder could write that story's acceptance criteria if it had to. If it could not, fix the epic's requirements or the references; the entry stays one sentence each for `description` and `verify`.",
   "An epic of more than three entries has the refactor sweep after all other work, or a `Decision:` line says why not.",
 ]
 

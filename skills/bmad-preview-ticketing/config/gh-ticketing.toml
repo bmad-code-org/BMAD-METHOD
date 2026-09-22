@@ -48,19 +48,19 @@ whenever a label is missing.
 
 write = """
 One issue per new ticket, created in tree and prerequisite order so every relation has a number to point at.
-Create: `gh issue create --title <t> --body-file <b> --label <type>,<[tickets.status].backlog>[,hitl,risk:<r>,P<n>]
+Create: `gh issue create --title <t> --body-file <b> --label <type>,<[tickets.status].<state>>[,hitl,risk:<r>,P<n>]
 --parent <n> --blocked-by <n,n> [--milestone <initiative>]`. Changes go through `gh issue edit <n>`
 (--body-file, --add-assignee, --add-blocked-by, label swaps; --add-sub-issue on the parent). No
 parent: omit --parent; no initiative: omit --milestone. Needs
 gh 2.94+; check `--help` when a flag is doubted.
-Status is a label swap on an open issue. done: remove the status label and `gh issue close <n>`;
+Status is [tickets.status].<state>, the ticket's state (`state` in `tickets.py` rows), as a label swap on an open issue. done: remove the status label and `gh issue close <n>`;
 dropped: the same with `--reason "not planned"`. An initiative is a
 milestone (`gh api repos/{owner}/{repo}/milestones -f title=<name>`) holding its tree's issues.
-The body sent is the local file without the frontmatter lines tracker_id, remote, status, assignee; build
+The body sent is the local file without the frontmatter lines tracker_id, remote, tracker_status, status, assignee; build
 notes belong in <ticket filename>-plan.md beside it, posted as a comment on the move to
 review (or done when there is no review).
-After a write, mirror tracker_id (the number), remote (the url), status, assignee, and after in the
-local file; commit local files on the current branch when root is in a git repo, never push.
+After a write, mirror tracker_id (the number), remote (the url), tracker_status, assignee, and after in the
+local file — never status, which is the build's; commit local files on the current branch when root is in a git repo, never push.
 An `after` naming a sibling's id or `<epic id>.<entry id>` is that entry's item, published first when it is still local; `epic-<slug>` is the epic's item.
 """
 
@@ -72,7 +72,8 @@ Type, hitl, risk, severity, and status are labels — except done and dropped, t
 --json subIssues`. Words: `gh issue list --search "<words>" --state all`, narrowed by
 --label. The local file: `grep -rl "^tracker_id: <n>" root` or the filename.
 A child the tracker holds with no file in the tree gets an `[[entry]]` with the next unused `id` in its parent's `tickets.toml`, then its file.
-Candidates to start (one that `tickets.py next` lists under `ready_to_refine` gets its criteria first): open (in the initiative's milestone, or with no milestone for a standalone ticket), backlog label and no other status label, every
+Mirror the issue's status label or closed state into the local file as tracker_status, the BMad word per [tickets.status], beside tracker_id and remote — never into status, which is the build's.
+Candidates to start (one that `tickets.py next` lists under `ready_to_refine` gets its criteria first): open (in the initiative's milestone, or with no milestone for a standalone ticket), tracker_status backlog (the backlog label and no other status label), every
 blockedBy closed as completed, no assignee, no blocked_at in the ticket file. Offer all ready tickets; when one must be chosen, the
 one that unblocks the most work behind it.
 """
@@ -85,7 +86,7 @@ story = "story"
 spike = "spike"
 bug = "bug"
 
-# BMad status -> this store's status. draft is local only and never sent to the store.
+# BMad state -> this store's status; `query` reads it back the other way into tracker_status. The file's `status` is the build's and is never sent.
 [tickets.status]
 backlog = "backlog"
 in-progress = "in-progress"

@@ -54,7 +54,7 @@ Then tell the user the entries are ready to build, and what that means for how t
 
 ## Pulling and refining a ticket
 
-Pull with `uv run {skill-root}/scripts/tickets.py --project-root {project-root} pull <epic folder> <id>`: it writes `<type>-<slug>.md` from the entry in a fixed layout, `status: draft` and only the fields the entry sets (`refined: false` when it asks for refinement); an absent field reads as empty. The templates apply only to tickets you write. A later change to anything the entry holds goes to the entry and the file together, and through the store once published; where their `after` differ, the script uses the file's and `status` marks the row `drift`.
+Pull with `uv run {skill-root}/scripts/tickets.py --project-root {project-root} pull <epic folder> <id>`: it writes `<type>-<slug>.md` from the entry in a fixed layout, no `status` line and only the fields the entry sets (`refined: false` when it asks for refinement); an absent field reads as empty. The templates apply only to tickets you write. A later change to anything the entry holds goes to the entry and the file together, and through the store once published; where their `after` differ, the script uses the file's and `tickets.py status` marks the row `drift`.
 
 A pulled ticket goes to the builder as it is, with its epic: the builder plans story criteria from the epic's Requirements and Done when, the entry's description, and its `Verify:` check, which it may extend and never weaken.
 

@@ -59,14 +59,14 @@ schema needs a person to change. Offer this at first publish.
 write = """
 `notion-create-pages` into `database` creates; `notion-update-page` changes any property or the
 content — Status, Assignee, Parent, Blocked by, Covers, Risk, Severity, hitl. The tool schema says
-how relation and person properties are passed; `notion-get-users` resolves a name. No parent: leave the Parent relation empty. An initiative
+how relation and person properties are passed; `notion-get-users` resolves a name. Status is [tickets.status].<state>, the ticket's state (`state` in `tickets.py` rows). No parent: leave the Parent relation empty. An initiative
 is a page of Type initiative with no Parent. Create parents before
 children, prerequisites first.
-The body is the page content, sent without the frontmatter lines tracker_id, remote, status, assignee;
+The body is the page content, sent without the frontmatter lines tracker_id, remote, tracker_status, status, assignee;
 build notes belong in <ticket filename>-plan.md beside it, posted with
 `notion-create-comment` on the move to review (or done when there is no review).
 After a write, mirror tracker_id (the ID property when `key` is set, else the page id), remote (the page
-url), status, assignee, and after in the local file; commit local files on the current branch
+url), tracker_status, assignee, and after in the local file — never status, which is the build's; commit local files on the current branch
 when root is in a git repo, never push.
 An `after` naming a sibling's id or `<epic id>.<entry id>` is that entry's item, published first when it is still local; `epic-<slug>` is the epic's item.
 """
@@ -77,7 +77,8 @@ Severity, hitl, and the content. Many: `notion-query-data-sources` on `database`
 property; `notion-search` scoped to `database` for a looser match. The local file: `grep -rl
 "^tracker_id: <id>" root` or the filename.
 A child the tracker holds with no file in the tree gets an `[[entry]]` with the next unused `id` in its parent's `tickets.toml`, then its file.
-Candidates to start (one that `tickets.py next` lists under `ready_to_refine` gets its criteria first): Status [tickets.status].backlog, every page in Blocked by done, Assignee empty, no blocked_at in the ticket file. Offer all
+Mirror the page's Status into the local file as tracker_status, the BMad word per [tickets.status], beside tracker_id and remote — never into status, which is the build's.
+Candidates to start (one that `tickets.py next` lists under `ready_to_refine` gets its criteria first): tracker_status backlog (Status [tickets.status].backlog on the tracker), every page in Blocked by done, Assignee empty, no blocked_at in the ticket file. Offer all
 ready tickets; when one must be chosen, the one that unblocks the most work behind it.
 """
 
@@ -89,8 +90,8 @@ story = "story"
 spike = "spike"
 bug = "bug"
 
-# BMad status -> this store's status (Status property options; `setup` creates them).
-# draft is local only and never sent to the store.
+# BMad state -> this store's status (Status property options; `setup` creates them); `query` reads it back the other way into tracker_status.
+# The file's `status` is the build's and is never sent.
 [tickets.status]
 backlog = "Backlog"
 in-progress = "In Progress"

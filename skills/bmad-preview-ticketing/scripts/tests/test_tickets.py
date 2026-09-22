@@ -18,6 +18,7 @@ def ticket(
     blocked_at=None,
     kind="story",
     refined="false",
+    tracker_status=None,
 ):
     lines = ["---"]
     if ticket_id is not None:
@@ -31,7 +32,12 @@ def ticket(
         "covers: [R1]",
         f"after: {after}",
         f"assignee: {assignee}",
-        f"status: {status}",
+    ]
+    if status:
+        lines.append(f"status: {status}")
+    if tracker_status:
+        lines.append(f"tracker_status: {tracker_status}")
+    lines += [
         f"refined: {refined}",
         f"hitl: {hitl}",
         "risk: low",
@@ -61,21 +67,22 @@ class TicketsTests(unittest.TestCase):
     def write_store(self, name):
         (self.root / "_bmad" / "custom" / "ticketing-store-config.toml").write_text(f'[tickets]\nstore = "{name}"\n')
 
-    def add_epic(self, slug, status="backlog", after="[]"):
+    def add_epic(self, slug, status="", after="[]"):
         folder = self.initiative / slug
         folder.mkdir(parents=True)
-        (folder / f"{slug}.md").write_text(f"---\ntype: epic\nstatus: {status}\nafter: {after}\n---\n# {slug}\n")
+        line = f"status: {status}\n" if status else ""
+        (folder / f"{slug}.md").write_text(f"---\ntype: epic\n{line}after: {after}\n---\n# {slug}\n")
         return folder
 
     def add(self, name, text, folder=None):
         ((folder or self.epic) / name).write_text(text)
 
-    def seed(self, s1="draft", s2="draft", s3="draft"):
+    def seed(self, s1="", s2="", s3=""):
         self.add("story-scaffold.md", ticket(s1, 1, hitl="true"))
         self.add("story-ui-shell.md", ticket(s2, 2))
         self.add("story-tracer.md", ticket(s3, 3, after="[1, 2]"))
-        self.add("story-codes.md", ticket("draft", 4, after="[story-tracer]"))
-        self.add("spike-tax.md", ticket("draft", 5, after="[3]", kind="spike"))
+        self.add("story-codes.md", ticket("", 4, after="[story-tracer]"))
+        self.add("spike-tax.md", ticket("", 5, after="[3]", kind="spike"))
 
     def next(self, *extra):
         r = run("next", str(self.epic), *extra)
@@ -85,7 +92,7 @@ class TicketsTests(unittest.TestCase):
     def files(self, rows):
         return [r["file"] for r in rows]
 
-    def test_drafts_with_no_prerequisites_are_ready_to_refine(self):
+    def test_unstarted_tickets_with_no_prerequisites_are_ready_to_refine(self):
         self.seed()
         out = self.next()
         self.assertEqual(self.files(out["ready_to_refine"]), ["story-scaffold.md", "story-ui-shell.md"])
@@ -93,15 +100,15 @@ class TicketsTests(unittest.TestCase):
         self.assertEqual(self.files(out["blocked"]), ["story-tracer.md", "story-codes.md", "spike-tax.md"])
         self.assertTrue(out["ready_to_refine"][0]["hitl"])
 
-    def test_unrefined_backlog_ticket_is_never_ready_to_start(self):
-        self.seed(s1="done", s2="backlog")
+    def test_unrefined_ticket_is_never_ready_to_start(self):
+        self.seed(s1="done", s2="draft")
         out = self.next()
         self.assertEqual(out["ready_to_start"], [])
         self.assertIn("story-ui-shell.md", self.files(out["ready_to_refine"]))
 
-    def test_backlog_is_ready_to_start_and_ready_set_moves_when_prerequisites_done(self):
-        self.seed(s1="done", s2="backlog")
-        self.add("story-ui-shell.md", ticket("backlog", 2, refined="true"))
+    def test_refined_is_ready_to_start_and_ready_set_moves_when_prerequisites_done(self):
+        self.seed(s1="done")
+        self.add("story-ui-shell.md", ticket("ready-for-dev", 2, refined="true"))
         out = self.next()
         self.assertEqual(self.files(out["ready_to_start"]), ["story-ui-shell.md"])
         self.assertIn("story-tracer.md", self.files(out["blocked"]))
@@ -111,18 +118,35 @@ class TicketsTests(unittest.TestCase):
 
     def test_prerequisites_resolve_by_id_stem_and_tracker_id(self):
         self.seed(s1="done", s2="done", s3="done")
-        self.add("story-by-id.md", ticket("draft", 6, after="[CART-4]"))
+        self.add("story-by-id.md", ticket("", 6, after="[CART-4]"))
         self.add("story-codes.md", ticket("done", 4, after="[story-tracer]", tracker_id='"CART-4"'))
         out = self.next()
         self.assertIn("story-by-id.md", self.files(out["ready_to_refine"]))
         self.assertIn("spike-tax.md", self.files(out["ready_to_refine"]))
 
-    def test_in_progress_review_and_blocked_at(self):
-        self.seed(s1="in-progress", s2="review")
-        self.add("story-ui-shell.md", ticket("backlog", 2, blocked_at="2026-09-05"))
+    def test_in_progress_review_blocked_build_and_blocked_at(self):
+        self.seed(s1="in-progress", s2="in-review")
+        self.add("story-ui-shell.md", ticket("", 2, blocked_at="2026-09-05"))
+        self.add("story-codes.md", ticket("blocked", 4))
         out = self.next()
         self.assertEqual(self.files(out["in_progress"]), ["story-scaffold.md"])
-        self.assertIn("story-ui-shell.md", self.files(out["blocked"]))
+        self.assertEqual(
+            self.files(out["blocked"]), ["story-ui-shell.md", "story-tracer.md", "story-codes.md", "spike-tax.md"]
+        )
+        self.assertEqual([r["state"] for r in out["blocked"]], ["backlog", "backlog", "in-progress", "backlog"])
+
+    def test_tracker_status_wins_over_the_build_status_for_state(self):
+        self.seed(s1="in-progress", s2="ready-for-dev")
+        self.add("story-scaffold.md", ticket("in-progress", 1, tracker_status="done"))
+        self.add("story-ui-shell.md", ticket("", 2, tracker_status="in-progress"))
+        out = self.next()
+        self.assertEqual(self.files(out["in_progress"]), ["story-ui-shell.md"])
+        self.assertEqual(out["in_progress"][0]["status"], "")
+        self.assertEqual(self.files(out["blocked"]), ["story-tracer.md", "story-codes.md", "spike-tax.md"])
+        self.add("story-ui-shell.md", ticket("", 2, tracker_status="done"))
+        self.assertEqual(self.files(self.next()["ready_to_refine"]), ["story-tracer.md"])
+        self.add("story-ui-shell.md", ticket("", 2, tracker_status="todo"))
+        self.assertIn("tracker_status", run("next", str(self.epic)).stderr)
 
     def test_status_counts_order_and_chain(self):
         self.seed(s1="done")
@@ -130,7 +154,7 @@ class TicketsTests(unittest.TestCase):
         self.assertEqual(r.returncode, 0, r.stderr)
         out = json.loads(r.stdout)
         self.assertEqual([t["id"] for t in out["tickets"]], [1, 2, 3, 4, 5])
-        self.assertEqual(out["counts"], {"total": 5, "done": 1, "draft": 4})
+        self.assertEqual(out["counts"], {"total": 5, "done": 1, "backlog": 4})
         self.assertEqual(out["longest_remaining_chain"], ["epic-cart/2", "epic-cart/3", "epic-cart/4"])
         self.assertEqual(out["tickets"][2]["blocks"], [4, 5])
 
@@ -189,12 +213,12 @@ covers = ["R2", "R3"]
         self.assertEqual(out["to_pull"][1]["after"], [1])
         self.assertTrue(out["to_pull"][1]["hitl"])
         self.assertEqual([e["id"] for e in out["blocked"]], [4])
-        self.add("story-ui-shell.md", ticket("draft", 2, after="[1]"))
+        self.add("story-ui-shell.md", ticket("", 2, after="[1]"))
         out = self.next()
         self.assertEqual([e["id"] for e in out["to_pull"]], [3])
         self.assertIn("story-ui-shell.md", self.files(out["ready_to_start"]))
         status = json.loads(run("status", str(self.epic)).stdout)
-        self.assertEqual(status["counts"], {"total": 4, "done": 1, "draft": 1, "planned": 2})
+        self.assertEqual(status["counts"], {"total": 4, "done": 1, "backlog": 1, "planned": 2})
         self.assertEqual(status["tickets"][0]["blocks"], [2, 3])
 
     def test_table_order_is_build_order_not_id(self):
@@ -246,9 +270,8 @@ covers = ["R2", "R3"]
         self.breakdown_epic()
         run("pull", str(self.epic), "1")
         head = (self.epic / "story-scaffold.md").read_text(encoding="utf-8").split("---")[1]
-        self.assertEqual(
-            head, '\nid: 1\ntype: story\ntitle: "Scaffold"\nparent: epic-cart\ncovers: [R1]\nstatus: draft\n'
-        )
+        self.assertEqual(head, '\nid: 1\ntype: story\ntitle: "Scaffold"\nparent: epic-cart\ncovers: [R1]\n')
+        self.assertEqual(self.next()["ready_to_start"][0]["state"], "backlog")
         run("pull", str(self.epic), "3")
         head = (self.epic / "spike-tax-engine.md").read_text(encoding="utf-8").split("---")[1]
         self.assertIn("\nafter: [1]\n", head)
@@ -290,7 +313,7 @@ covers = ["R2", "R3"]
     def test_dropped_prerequisite_still_blocks(self):
         self.breakdown_epic()
         self.add("story-scaffold.md", ticket("dropped", 1))
-        self.add("story-ui-shell.md", ticket("draft", 2, after="[1]"))
+        self.add("story-ui-shell.md", ticket("", 2, after="[1]"))
         out = self.next()
         self.assertEqual(self.files(out["blocked"])[0], "story-ui-shell.md")
         self.assertEqual(out["ready_to_refine"], [])
@@ -443,7 +466,7 @@ covers = ["R2", "R3"]
 
     def test_leaf_without_id_sorts_last_and_container_file_is_ignored(self):
         self.seed()
-        self.add("bug-stray.md", ticket("backlog", kind="bug"))
+        self.add("bug-stray.md", ticket("", kind="bug"))
         out = json.loads(run("status", str(self.epic)).stdout)
         self.assertEqual(out["tickets"][-1]["file"], "bug-stray.md")
         self.assertIsNone(out["tickets"][-1]["id"])
@@ -464,9 +487,9 @@ covers = ["R2", "R3"]
     def test_mark_clears_blocking_fields_and_takes_a_literal_assignee(self):
         path = self.epic / "story-scaffold.md"
         path.write_text(
-            ticket("backlog", 1, blocked_at="2026-09-05").replace("---\n\n# x", 'blocked_reason: "legal"\n---\n\n# x')
+            ticket("", 1, blocked_at="2026-09-05").replace("---\n\n# x", 'blocked_reason: "legal"\n---\n\n# x')
         )
-        r = run("mark", str(path), "backlog", "--assignee", "\\1")
+        r = run("mark", str(path), "draft", "--assignee", "\\1")
         self.assertEqual(r.returncode, 0, r.stderr)
         text = path.read_text(encoding="utf-8")
         self.assertNotIn("blocked_at", text)
@@ -478,10 +501,10 @@ covers = ["R2", "R3"]
         self.breakdown_epic()
         run("pull", str(self.epic), "1")
         path = self.epic / "story-scaffold.md"
-        r = run("mark", str(path), "backlog", "--assignee", "ann")
+        r = run("mark", str(path), "ready-for-dev", "--assignee", "ann")
         self.assertEqual(r.returncode, 0, r.stderr)
         text = path.read_text(encoding="utf-8")
-        self.assertIn("status: backlog\n", text)
+        self.assertIn("status: ready-for-dev\n", text)
         self.assertTrue(text.startswith("---\nid: 1\ntype: story\n"), text)
         self.assertIn('\nassignee: "ann"\n---\n', text)
         self.assertEqual(self.files(self.next()["ready_to_start"]), ["story-scaffold.md"])
@@ -492,7 +515,7 @@ covers = ["R2", "R3"]
         self.addCleanup(outside.cleanup)
         folder = Path(outside.name) / "epic-cart"
         folder.mkdir()
-        (folder / "story-scaffold.md").write_text(ticket("draft", 1))
+        (folder / "story-scaffold.md").write_text(ticket("", 1))
         self.assertEqual(json.loads(run("next", str(folder)).stdout)["store"], "repo")
         r = run("--project-root", str(self.root), "next", str(folder))
         self.assertEqual(r.returncode, 2)
@@ -524,10 +547,15 @@ covers = ["R2", "R3"]
         r = run("next", str(self.epic))
         self.assertEqual(r.returncode, 1)
         self.assertIn("matches no ticket", r.stderr)
-        self.add("story-scaffold.md", ticket("todo", 1))
+        self.add("story-scaffold.md", ticket("backlog", 1))
         r = run("next", str(self.epic))
         self.assertEqual(r.returncode, 1)
-        self.assertIn("status", r.stderr)
+        self.assertIn("status 'backlog'", r.stderr)
+        self.add("story-scaffold.md", ticket("", 1))
+        (self.epic / "epic-cart.md").write_text("---\ntype: epic\nstatus: backlog\n---\n")
+        r = run("next", str(self.epic))
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("in-progress, done, dropped", r.stderr)
 
 
 if __name__ == "__main__":
