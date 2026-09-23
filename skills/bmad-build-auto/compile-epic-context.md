@@ -50,7 +50,7 @@ Use these headings:
 - **Scope aggressively.** Include only what a developer working on any story in this epic actually needs. When in doubt, leave it out — the developer can always read the full planning doc.
 - **Describe by purpose, not by source.** Write "API responses must include pagination metadata" not "Per PRD section 3.2.1, pagination is required." Planning doc internals will change; the constraint won't.
 - **No full copies.** Never quote source documents, section numbers, or paste large blocks verbatim. Always distill.
-- **No story-level details.** The story list is for orientation only. Individual story specs handle the details.
+- **No story-level details.** The story list is for orientation only. Individual story plans handle the details.
 - **Nothing derivable from the codebase.** Don't document what a developer can learn by reading the code.
 - **Be concise and actionable.** Target 800–1500 tokens total. This file loads into bmad-build-auto's context alongside other material.
 - **Never hallucinate content.** If source material doesn't say something, don't invent it.

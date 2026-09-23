@@ -258,7 +258,7 @@ def _format_review_layers(layers: list[dict[str, str]]) -> str:
 def _resolve_customization_value(value: Any, default: Any, label: str) -> Any:
     """Validate an effective customization leaf against the shape of its shipped default."""
     if isinstance(default, str):
-        allow_empty = not default.strip() or label == "customization.workflow.open_spec"
+        allow_empty = not default.strip() or label == "customization.workflow.open_plan"
         return _require_string(value, label, allow_empty=allow_empty)
     if isinstance(default, list):
         if default and all(isinstance(item, dict) for item in default):

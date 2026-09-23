@@ -2,26 +2,22 @@
 title: '{title}'
 type: 'feature' # feature | bugfix | refactor | chore
 created: '{date}'
-status: 'draft' # draft | ready-for-dev | in-progress | in-review | done | blocked
+status: 'draft' # draft | ready-for-dev | in-progress | in-review | done
 route: '' # oneshot | full — set by step-02
 route_source: '' # pinned | auto — set with route by step-02
 review: '' # none | quick | thorough — set by step-04
 review_source: '' # pinned | auto — set with review by step-04
 lenses_ran: [] # ids of the lenses launched, set by step-04
 review_loop_iteration: 0 # incremented by step-04 before each review loopback
-followup_review_recommended: false # set by step-04 on status: done — true if the LLM decided another review pass is worthwhile
-context: [] # optional: `{project-root}/`-prefixed paths to project-wide standards/docs the implementation agent should load. Keep short — only what isn't already distilled into the spec body.
-warnings: [] # optional: machine-readable warnings for orchestration, e.g. oversized, multiple-goals
-deferred: [] # append-only machine-readable deferred review findings; each item carries summary/evidence and optional location/severity
+context: [] # optional: `{project-root}/`-prefixed paths to project-wide standards/docs the implementation agent should load. Keep short — only what isn't already distilled into the plan body.
 ---
 
-<!-- Target: 900–1300 tokens (less if route is oneshot). Above 1600 = high risk of context rot;
-     add `oversized` to frontmatter `warnings` and continue.
+<!-- Target: 900–1300 tokens (less if route is oneshot). Above 1600 = high risk of context rot.
      Never over-specify "how" — use boundaries + examples instead.
      Cohesive cross-layer stories (DB+BE+UI) stay in ONE file.
      IMPORTANT: Remove all HTML comments when filling this template. -->
 
-<intent-contract>
+<frozen-after-approval reason="human-owned intent — do not modify unless human renegotiates">
 
 ## Intent
 
@@ -50,7 +46,7 @@ deferred: [] # append-only machine-readable deferred review findings; each item 
 | HAPPY_PATH | INPUT | OUTCOME | No error expected |
 | ERROR_CASE | INPUT | OUTCOME | ERROR_HANDLING |
 
-</intent-contract>
+</frozen-after-approval>
 
 ## Code Map
 
@@ -79,12 +75,12 @@ deferred: [] # append-only machine-readable deferred review findings; each item 
      encountered. Never delete this section. Leave empty at planning time, except on the
      oneshot route: start with a short explanation of why. -->
 
-## Spec Change Log
+## Plan Change Log
 
 <!-- Append-only. Populated by step-04 during review loops. Do not modify or delete existing entries.
      Each entry records: what finding triggered the change, what was amended, what known-bad state
      the amendment avoids, and any KEEP instructions (what worked well and must survive re-derivation).
-     Empty until the first bad_spec loopback. -->
+     Empty until the first bad_plan loopback. -->
 
 ## Review Triage Log
 
