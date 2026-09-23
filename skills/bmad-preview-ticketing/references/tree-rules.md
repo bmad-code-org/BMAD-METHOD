@@ -18,8 +18,8 @@ Every skill that takes work from the tree, builds it, reviews it, or looks back 
 
 ## Status
 
-- On the repo store, a leaf's status lives in its plan's `status`. A leaf file written before this change can still carry `status`; `tickets.py` reads it only when there is no plan. A leaf with no plan is `planned`, and it is ready to start once its prerequisites are done. No pull is needed.
-- The board state comes from `status` as before: none, `draft`, `ready-for-dev` → `backlog`; `in-progress`, `blocked` → `in-progress`; `in-review` → `review`; `done` and `dropped` are themselves.
+- On the repo store, a leaf's status lives in its plan's `status`. An older leaf file can still carry `status`; `tickets.py` reads it only when there is no plan. An entry with no file and no plan is `planned`, and it is ready to start once its prerequisites are done. No pull is needed.
+- The board state comes from `status`: none, `draft`, `ready-for-dev` → `backlog`; `in-progress`, `blocked` → `in-progress`; `in-review` → `review`; `done` and `dropped` are themselves.
 - `assignee`, `blocked_at`, and `blocked_reason` also sit in the plan's frontmatter. `tickets.py mark` writes them. Given a leaf with no plan, it creates the plan with only its frontmatter.
 
 | Status | Written by |

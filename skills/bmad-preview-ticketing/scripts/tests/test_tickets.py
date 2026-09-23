@@ -20,6 +20,7 @@ def ticket(
     tracker_id='""',
     assignee='""',
     blocked_at=None,
+    blocked_reason=None,
     kind="story",
     refined="false",
     tracker_status=None,
@@ -48,6 +49,8 @@ def ticket(
     ]
     if blocked_at:
         lines.append(f'blocked_at: "{blocked_at}"')
+    if blocked_reason:
+        lines.append(f'blocked_reason: "{blocked_reason}"')
     lines += ["---", "", "# x", ""]
     return "\n".join(lines)
 
@@ -82,8 +85,11 @@ class TreeCase(unittest.TestCase):
     def tearDown(self):
         self.tmp.cleanup()
 
-    def write_store(self, name):
-        (self.root / "_bmad" / "custom" / "ticketing-store-config.toml").write_text(f'[tickets]\nstore = "{name}"\n')
+    def write_store(self, name="repo", root=None):
+        line = f'root = "{root}"\n' if root is not None else ""
+        (self.root / "_bmad" / "custom" / "ticketing-store-config.toml").write_text(
+            f'[tickets]\nstore = "{name}"\n{line}'
+        )
 
     def add_epic(self, slug, status="", after="[]"):
         folder = self.initiative / slug
@@ -91,6 +97,14 @@ class TreeCase(unittest.TestCase):
         line = f"status: {status}\n" if status else ""
         (folder / f"{slug}.md").write_text(f"---\ntype: epic\n{line}after: {after}\n---\n# {slug}\n")
         return folder
+
+    def add_backlog(self):
+        backlog = self.root / "out" / "backlog"
+        backlog.mkdir()
+        return backlog
+
+    def status_rows(self, folder):
+        return json.loads(run("status", str(folder)).stdout)["tickets"]
 
     def add(self, name, text, folder=None):
         ((folder or self.epic) / name).write_text(text)
@@ -259,7 +273,7 @@ covers = ["R2", "R3"]
         )
         self.assertEqual([e["id"] for e in self.next()["ready_to_start"]], [2, 1])
         self.add("story-first-second.md", ticket("draft", 1))
-        rows = json.loads(run("status", str(self.epic)).stdout)["tickets"]
+        rows = self.status_rows(self.epic)
         self.assertEqual([r["id"] for r in rows], [2, 1, 3])
 
     def test_entry_waiting_on_unwritten_entry_stays_blocked(self):
@@ -273,7 +287,7 @@ covers = ["R2", "R3"]
         self.add("story-scaffold.md", ticket("draft", 1))
         self.add("story-ui-shell.md", ticket("draft", 2, after="[]"))
         self.assertIn("story-ui-shell.md", self.files(self.next()["ready_to_start"]))
-        rows = json.loads(run("status", str(self.epic)).stdout)["tickets"]
+        rows = self.status_rows(self.epic)
         self.assertTrue(rows[1]["drift"])
         self.assertNotIn("drift", rows[0])
 
@@ -598,9 +612,7 @@ covers = ["R2", "R3"]
 
     def test_mark_clears_the_leafs_blocking_fields_and_takes_a_literal_assignee(self):
         path = self.epic / "story-scaffold.md"
-        path.write_text(
-            ticket("", 1, blocked_at="2026-09-05").replace("---\n\n# x", 'blocked_reason: "legal"\n---\n\n# x')
-        )
+        path.write_text(ticket("", 1, blocked_at="2026-09-05", blocked_reason="legal"))
         out = self.mark(str(self.epic), "1", "draft", "--assignee", "\\1")
         self.assertEqual(out["assignee"], "\\1")
         text = (self.epic / "story-scaffold-plan.md").read_text(encoding="utf-8")
@@ -667,8 +679,7 @@ covers = ["R2", "R3"]
         self.assertEqual(hit["plan"], str(self.epic.resolve() / "story-scaffold-plan.md"))
 
     def test_find_and_mark_in_a_backlog(self):
-        backlog = self.root / "out" / "backlog"
-        backlog.mkdir()
+        backlog = self.add_backlog()
         self.add("bug-x.md", ticket("draft", kind="bug"), backlog)
         r = run("find", str(backlog), "bug-x")
         self.assertEqual(r.returncode, 0, r.stderr)
@@ -680,7 +691,7 @@ covers = ["R2", "R3"]
         self.assertEqual(hit["plan"], str(backlog.resolve() / "bug-x-plan.md"))
         self.mark(str(backlog), "bug-x", "in-review")
         self.assertIn('\nticket: "bug-x"\n', (backlog / "bug-x-plan.md").read_text(encoding="utf-8"))
-        rows = json.loads(run("status", str(backlog)).stdout)["tickets"]
+        rows = self.status_rows(backlog)
         self.assertEqual([(t["file"], t["state"]) for t in rows], [("bug-x.md", "review")])
 
     def test_mark_done_on_a_plan_only_entry_clears_blocking_and_keeps_the_plan(self):
@@ -697,7 +708,7 @@ covers = ["R2", "R3"]
             line for line in before.splitlines() if not line.startswith(("status:", "blocked_at:", "blocked_reason:"))
         ]
         self.assertEqual([line for line in text.splitlines() if not line.startswith("status:")], expected)
-        rows = json.loads(run("status", str(self.epic)).stdout)["tickets"]
+        rows = self.status_rows(self.epic)
         self.assertEqual(rows[1]["state"], "done")
         out = self.next()
         self.assertNotIn(2, [e["id"] for group in ("ready_to_start", "in_progress", "blocked") for e in out[group]])
@@ -852,7 +863,7 @@ covers = ["R2", "R3"]
             out = self.next()
             self.assertEqual([(e["id"], e["state"], e["assignee"]) for e in out["in_progress"]], [(2, "review", "ann")])
             self.assertEqual([e["id"] for e in out["ready_to_start"]], [3])
-            rows = json.loads(run("status", str(self.epic)).stdout)["tickets"]
+            rows = self.status_rows(self.epic)
             self.assertEqual([r["state"] for r in rows], ["done", "review", "planned", "planned"])
             self.add("story-ui-shell.md", ticket("draft", 2, after="[1]", refined="true", assignee='"bob"'))
         self.assertEqual(out["in_progress"][0]["file"], "story-ui-shell.md")
@@ -870,9 +881,7 @@ covers = ["R2", "R3"]
     def test_a_leaf_with_blocked_at_and_no_plan_is_blocked_with_its_reason(self):
         self.add(
             "story-scaffold.md",
-            ticket("in-progress", 1, blocked_at="2026-09-05").replace(
-                "---\n\n# x", 'blocked_reason: "legal"\n---\n\n# x'
-            ),
+            ticket("in-progress", 1, blocked_at="2026-09-05", blocked_reason="legal"),
         )
         out = self.next()
         self.assertEqual([(e["file"], e["blocked_reason"]) for e in out["blocked"]], [("story-scaffold.md", "legal")])
@@ -883,13 +892,11 @@ covers = ["R2", "R3"]
         self.add("story-scaffold-plan.md", plan(1, "done"))
         self.add(
             "story-ui-shell.md",
-            ticket("in-review", 2, after="[1]", blocked_at="2026-09-05").replace(
-                "---\n\n# x", 'blocked_reason: "legal"\n---\n\n# x'
-            ),
+            ticket("in-review", 2, after="[1]", blocked_at="2026-09-05", blocked_reason="legal"),
         )
         self.add("story-ui-shell-plan.md", plan(2))
         self.assertNotIn(2, [e["id"] for e in self.next()["blocked"]])
-        row = json.loads(run("status", str(self.epic)).stdout)["tickets"][1]
+        row = self.status_rows(self.epic)[1]
         self.assertEqual((row["status"], row["state"], row["blocked_reason"]), ("", "backlog", ""))
 
     def test_a_quoted_numeric_ticket_joins_its_entry_and_a_doubled_quote_reads_as_one(self):
@@ -899,12 +906,11 @@ covers = ["R2", "R3"]
         self.assertEqual([(e["id"], e["status"], e["blocked_reason"]) for e in blocked][0], (2, "blocked", "can't"))
 
     def test_a_backlog_plan_joins_its_leaf_by_stem_and_a_leaf_without_a_plan_keeps_its_status(self):
-        backlog = self.root / "out" / "backlog"
-        backlog.mkdir()
+        backlog = self.add_backlog()
         self.add("bug-x.md", ticket("draft", kind="bug"), backlog)
         self.add("bug-x-plan.md", plan("bug-x", "in-progress"), backlog)
         self.add("bug-y.md", ticket("in-review", kind="bug"), backlog)
-        rows = json.loads(run("status", str(backlog)).stdout)["tickets"]
+        rows = self.status_rows(backlog)
         self.assertEqual([(r["file"], r["state"]) for r in rows], [("bug-x.md", "in-progress"), ("bug-y.md", "review")])
 
     def test_orphan_duplicate_and_malformed_plans_error(self):
@@ -959,14 +965,14 @@ class ActiveInitiativeTests(TreeCase):
         self.assertEqual(expected["folder"], "initiative-checkout")
 
     def test_project_root_flag_names_the_project_from_anywhere(self):
-        (self.root / "_bmad" / "custom" / "ticketing-store-config.toml").write_text('[tickets]\nroot = "out"\n')
+        self.write_store(root="out")
         out = self.ok(run("--project-root", str(self.root), "status", cwd=self.elsewhere()))
         self.assertEqual(out["folder"], "initiative-checkout")
         self.assertEqual(out["counts"]["total"], 5)
 
     def test_root_substitutes_project_root_and_output_folder(self):
         for root in ("{project-root}/out", "{output_folder}"):
-            (self.root / "_bmad" / "custom" / "ticketing-store-config.toml").write_text(f'[tickets]\nroot = "{root}"\n')
+            self.write_store(root=root)
             self.assertEqual(self.ok(run("status", cwd=self.root))["folder"], "initiative-checkout", root)
 
     def test_find_by_ref_only(self):
@@ -995,9 +1001,7 @@ class ActiveInitiativeTests(TreeCase):
     def test_store_is_read_from_the_project_found_when_root_lies_outside_it(self):
         outside = Path(self.elsewhere())
         shutil.copytree(self.initiative, outside / "initiative-checkout")
-        (self.root / "_bmad" / "custom" / "ticketing-store-config.toml").write_text(
-            f'[tickets]\nstore = "linear"\nroot = "{outside.as_posix()}"\n'
-        )
+        self.write_store("linear", outside.as_posix())
         r = run("next", cwd=self.root)
         self.assertEqual(r.returncode, 2, r.stderr)
         self.assertIn("sync ticket status", r.stderr)

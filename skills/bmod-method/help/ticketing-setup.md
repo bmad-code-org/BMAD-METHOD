@@ -29,7 +29,7 @@ Copy a brief, PRD, UX design, or architecture into the initiative folder as `<ty
 |---|---|
 | "Split this initiative into epics" | Proposes epic boundaries and records the agreed order in the initiative's `tickets.toml`. |
 | "Incept the first epic" | Plans the whole epic into entries in the epic's `tickets.toml`, in build order, each with an `id` that names it under the epic. No story file is written. |
-| "Refine story 2", "review the stories" | Pulls the story's file from its entry if it has none, then reviews and improves it with the user. Full acceptance criteria are written only for a bug, a ticket with no epic, or when the user asks. |
+| "Refine story 1.2", "review the stories" | Pulls the story's file from its entry if it has none, then reviews and improves it with the user. Full acceptance criteria are written only for a bug, a ticket with no epic, or when the user asks. |
 | "File a bug: ..." | One ticket straight into `backlog/`, with no epic. |
 | "What's ready?", "what's next?" | Lists what is ready to refine, ready to start, in progress, and blocked, for one epic or the whole initiative. |
 | "Start story 1.2" | Checks it is ready to start. On a tracker, publishes it if it is not yet published and moves it to in progress. On the repo store there is nothing to write: run `bmad-build` on it. |
