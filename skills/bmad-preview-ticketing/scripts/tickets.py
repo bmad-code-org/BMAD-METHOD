@@ -19,11 +19,12 @@ with that stem (a backlog leaf). A plan is never a row of its own. It holds the 
 `assignee`, `blocked_at`, and `blocked_reason`; a leaf file's own fields are read only when the
 ticket has no plan.
 
-`status` is the build's (draft, ready-for-dev, in-progress, in-review, done, blocked) or dropped;
-absent means no build has started. On a tracker store `tracker_status` mirrors the tracker's word
-(backlog, in-progress, review, done, dropped). A ticket's `state` is `planned` with no file and no
-plan, else `tracker_status`, else derived from `status`: absent, draft, ready-for-dev -> backlog;
-in-progress, blocked -> in-progress; in-review -> review; done; dropped.
+`status` is draft, ready-for-dev, in-progress, or in-review from the builds, blocked from build-auto,
+done from the user or an orchestrator through mark, or dropped; absent means no build has started.
+On a tracker store `tracker_status` mirrors the tracker's word (backlog, in-progress, review, done,
+dropped). A ticket's `state` is `planned` with no file and no plan, else `tracker_status`, else
+derived from `status`: absent, draft, ready-for-dev -> backlog; in-progress, blocked -> in-progress;
+in-review -> review; done; dropped.
 
 `after` lists real prerequisites: a sibling's id as a bare integer, or a quoted string that is
 `<epic id>.<entry id>` for an entry in another epic of the same initiative, `epic-<slug>` for that
