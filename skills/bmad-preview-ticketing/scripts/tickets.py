@@ -90,6 +90,8 @@ CROSS_RE = re.compile(r"^(\d+)\.(\d+)$")
 EPIC_RE = re.compile(r"^epic-[^/]+$")
 BREAKDOWN = "tickets.toml"
 QUOTED_COMMENT_RE = re.compile(r"""^("(?:[^"\\]|\\.)*"|'(?:[^']|'')*')\s+#.*$""")
+FRONTMATTER_RE = re.compile(r"\A---\n(.*?)\n---(?:\n|\Z)", re.S)
+PLAN_FIELDS = ("status", "assignee", "blocked_at", "blocked_reason")
 
 
 class TicketError(Exception):
@@ -106,7 +108,7 @@ class StoreRefusal(Exception):
 def parse_frontmatter(text: str, lenient: bool = False) -> dict:
     """Minimal YAML subset: `key: value`, lists as `[a, b]`, quoted or bare scalars. Lenient
     skips block lists instead of refusing them, for plans written from the build's template."""
-    m = re.match(r"\A---\n(.*?)\n---(?:\n|\Z)", text, re.S)
+    m = FRONTMATTER_RE.match(text)
     if not m:
         return {}
     data = {}
@@ -143,7 +145,7 @@ def _scalar(value: str):
 
 
 def set_frontmatter_value(text: str, key: str, value: str) -> str:
-    m = re.match(r"\A---\n(.*?)\n---(?:\n|\Z)", text, re.S)
+    m = FRONTMATTER_RE.match(text)
     if not m:
         raise TicketError("ticket has no frontmatter")
     block = m.group(1)
@@ -167,6 +169,13 @@ def _list(value, where: str) -> list:
 
 def _flag(value) -> bool:
     return str(value).lower() == "true"
+
+
+def _one_of(value, allowed: tuple, where: str, field: str):
+    """`value` when it is absent (`""`) or one of `allowed`; else the error naming them."""
+    if value not in ("", *allowed):
+        raise TicketError(f"{where}: {field} {value!r} is not one of {', '.join(allowed)}")
+    return value
 
 
 # ---------------------------------------------------------------- loading
@@ -215,14 +224,11 @@ def load_container(folder: Path) -> dict:
         raise TicketError(
             f"{folder.name}/{path.name}: type {fm.get('type')!r} is not one of {', '.join(CONTAINER_TYPES)}"
         )
-    if fm.get("status", "") not in ("", *CONTAINER_STATUSES):
-        raise TicketError(
-            f"{folder.name}/{path.name}: status {fm['status']!r} is not one of {', '.join(CONTAINER_STATUSES)}"
-        )
+    status = _one_of(fm.get("status", ""), CONTAINER_STATUSES, f"{folder.name}/{path.name}", "status")
     return {
         "slug": folder.name,
         "tracker_id": str(fm.get("tracker_id", "") or ""),
-        "status": fm.get("status", ""),
+        "status": status,
         "raw_after": _list(fm.get("after"), f"{folder.name}.md"),
     }
 
@@ -283,14 +289,8 @@ def load_folder(folder: Path) -> list[dict]:
             fm = parse_frontmatter(text)
         except TicketError as e:
             raise TicketError(f"{where}/{path.name}: {e}") from e
-        status = fm.get("status", "")
-        if status not in ("", *STATUSES):
-            raise TicketError(f"{where}/{path.name}: status {status!r} is not one of {', '.join(STATUSES)}")
-        tracker_status = fm.get("tracker_status", "")
-        if tracker_status not in ("", *STATES):
-            raise TicketError(
-                f"{where}/{path.name}: tracker_status {tracker_status!r} is not one of {', '.join(STATES)}"
-            )
+        status = _one_of(fm.get("status", ""), STATUSES, f"{where}/{path.name}", "status")
+        tracker_status = _one_of(fm.get("tracker_status", ""), STATES, f"{where}/{path.name}", "tracker_status")
         n = _id(fm.get("id"))
         if n is not None:
             if n in seen:
@@ -327,17 +327,21 @@ def load_folder(folder: Path) -> list[dict]:
         if "after" in fm:
             row["raw_after"] = _list(fm["after"], f"{where}/{path.name}")
     out = list(rows.values()) + [unlisted[n] for n in sorted(unlisted)] + stray
+    join_plans(out, plans, where)
+    return out
+
+
+def join_plans(rows: list[dict], plans: list[tuple[str, dict]], where: str) -> None:
+    """Set each plan's status fields on the one row its `ticket` names."""
     for name, fm in plans:
-        status = fm.get("status", "")
-        if status not in ("", *STATUSES):
-            raise TicketError(f"{where}/{name}: status {status!r} is not one of {', '.join(STATUSES)}")
+        status = _one_of(fm.get("status", ""), STATUSES, f"{where}/{name}", "status")
         ticket = fm["ticket"]
         if isinstance(ticket, str) and ticket.isascii() and ticket.isdigit():
             ticket = int(ticket)
         if _id(ticket) is not None:
-            row = next((r for r in out if r["id"] == ticket), None)
+            row = next((r for r in rows if r["id"] == ticket), None)
         elif isinstance(ticket, str) and ticket:
-            row = next((r for r in out if r["file"] == f"{ticket}.md"), None)
+            row = next((r for r in rows if r["file"] == f"{ticket}.md"), None)
         else:
             row = None
         if row is None:
@@ -347,12 +351,10 @@ def load_folder(folder: Path) -> list[dict]:
         row.update(
             {
                 "plan": name,
-                "status": status,
                 "state": row["tracker_status"] or STATE_OF[status],
-                **{k: str(fm.get(k, "") or "") for k in ("assignee", "blocked_at", "blocked_reason")},
+                **{k: str(fm.get(k, "") or "") for k in PLAN_FIELDS},
             }
         )
-    return out
 
 
 def epic_folders(initiative: Path) -> list[Path]:
@@ -916,7 +918,7 @@ def cmd_mark(args) -> dict:
     return {
         "plan": str(path),
         "created": created,
-        **{k: fm.get(k, "") for k in ("status", "assignee", "blocked_at", "blocked_reason")},
+        **{k: fm.get(k, "") for k in PLAN_FIELDS},
     }
 
 
