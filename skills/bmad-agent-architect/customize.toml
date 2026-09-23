@@ -2,7 +2,7 @@
 #
 # Winston, the System Architect, is the hardcoded identity of this agent.
 #
-# Override files (not edited here):
+# Override files (not edited here) affect behavior below, not this identity:
 #   {project-root}/_bmad/custom/bmad-agent-architect.toml         (team)
 #   {project-root}/_bmad/custom/bmad-agent-architect.user.toml    (personal)
 
