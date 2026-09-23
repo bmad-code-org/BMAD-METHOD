@@ -30,9 +30,9 @@ in-progress, blocked -> in-progress; in-review -> review; done; dropped.
 whole epic, a file name, or a tracker id. An epic file's own `after` names epics and holds every
 ticket under it; rows show it as `gated_by`. A dropped prerequisite still blocks.
 
-  next   <dir>                   tickets whose prerequisites are done, grouped by state, in build order
-  status <dir>                   every ticket in build order, what it blocks, counts by state, longest chain
-  find   <dir> <ref>             the one ticket a reference names, with its path (null until pulled)
+  next   [<dir>]                 tickets whose prerequisites are done, grouped by state, in build order
+  status [<dir>]                 every ticket in build order, what it blocks, counts by state, longest chain
+  find   [<dir>] <ref>           the one ticket a reference names, with its path (null until pulled)
   pull   <dir> <id>              write entry id's leaf file with only the fields the entry sets; no status
   mark   <ticket-file> <status>  set a leaf's status and clear its blocked_at (repo store only)
 
@@ -41,11 +41,19 @@ ticket under it; rows show it as `gated_by`. A dropped prerequisite still blocks
 from the title that match one ticket.
 `--project-root` names the project holding `_bmad/` when the tickets live outside it.
 
+With no `<dir>`, next, status, and find run on the active initiative, `{tickets.root}/{active_initiative}`.
+The project root is `--project-root`, else the first folder at or above the working directory that
+holds `_bmad/`. `active_initiative` (`[modules.bmm]`) and `output_folder` (`[core]`) come from the
+BMad config, merged by the project's `_bmad/scripts/config_utils.py`; `root` comes from `[tickets]`
+in `_bmad/custom/ticketing-store-config.toml` and defaults to `{output_folder}`. `{project-root}`
+and `{output_folder}` are substituted, and a relative path is taken from the project root.
+
 Output is one JSON object on stdout. Exit 0 on success, 1 on a malformed tree, 2 when
 the store forbids the operation.
 """
 
 import argparse
+import importlib.util
 import json
 import os
 import re
@@ -607,20 +615,66 @@ def project_root_for(args, start: Path) -> Path | None:
     return Path(args.project_root).resolve() if args.project_root else find_project_root(start)
 
 
-def store_name(project_root: Path | None) -> str:
+def store_config(project_root: Path | None) -> dict:
+    """The `[tickets]` table of the project's store config, empty when there is none."""
     if not project_root:
-        return "repo"
+        return {}
     cfg = project_root / "_bmad" / "custom" / "ticketing-store-config.toml"
     if not cfg.is_file():
-        return "repo"
+        return {}
     tickets = tomllib.loads(cfg.read_text(encoding="utf-8")).get("tickets", {})
-    return tickets.get("store", "repo") if isinstance(tickets, dict) else "repo"
+    return tickets if isinstance(tickets, dict) else {}
+
+
+def store_name(project_root: Path | None) -> str:
+    return store_config(project_root).get("store", "repo")
+
+
+def central_config(project_root: Path) -> dict:
+    """The BMad config with its layers merged by the project's own `config_utils.py`."""
+    path = project_root / "_bmad" / "scripts" / "config_utils.py"
+    if not path.is_file():
+        raise TicketError(f"cannot read the BMad config: {path} is missing")
+    spec = importlib.util.spec_from_file_location("bmad_config_utils", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    try:
+        return module.load_central_config(project_root)
+    except module.ConfigError as e:
+        raise TicketError(str(e)) from e
+
+
+def active_initiative(project_root: Path) -> Path:
+    """`{tickets.root}/{active_initiative}` for the project."""
+    config = central_config(project_root)
+    bmm = config.get("modules", {}).get("bmm", {})
+    name = bmm.get("active_initiative") if isinstance(bmm, dict) else None
+    if not isinstance(name, str) or not name.strip():
+        raise TicketError(
+            "no active initiative: set modules.bmm.active_initiative in _bmad/custom/config.user.toml, or pass a folder"
+        )
+    core = config.get("core", {})
+    output = str(core.get("output_folder", "") if isinstance(core, dict) else "")
+    output = output.replace("{project-root}", str(project_root))
+    root = str(store_config(project_root).get("root", "") or "{output_folder}")
+    root = root.replace("{project-root}", str(project_root)).replace("{output_folder}", output)
+    folder = (project_root / root / name.strip()).resolve()
+    if not folder.is_dir():
+        raise TicketError(f"active initiative folder not found: {folder}")
+    return folder
 
 
 # ---------------------------------------------------------------- commands
 
 
 def _folder(args) -> Path:
+    if args.dir is None:
+        root = project_root_for(args, Path.cwd())
+        if root is None:
+            raise TicketError("no project root found: no _bmad/ at or above the working directory; pass --project-root")
+        # The store is then read from this project even when tickets.root lies outside it.
+        args.project_root = str(root)
+        return active_initiative(root)
     folder = Path(args.dir).resolve()
     if not folder.is_dir():
         raise TicketError(f"not a folder: {folder}")
@@ -799,17 +853,20 @@ def cmd_mark(args) -> dict:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Read a ticket tree and answer what is next.")
-    parser.add_argument("--project-root", help="project holding _bmad/; default: walk up from the ticket folder")
+    parser.add_argument(
+        "--project-root",
+        help="project holding _bmad/; default: walk up from the ticket folder, or the working directory with no folder",
+    )
     sub = parser.add_subparsers(dest="command", required=True)
     p = sub.add_parser("next", help="tickets whose prerequisites are done, by state")
-    p.add_argument("dir")
+    p.add_argument("dir", nargs="?", help="default: the active initiative")
     p.add_argument("--synced", action="store_true", help="tracker status was mirrored just now")
     p.set_defaults(func=cmd_next)
     p = sub.add_parser("status", help="every ticket resolved")
-    p.add_argument("dir")
+    p.add_argument("dir", nargs="?", help="default: the active initiative")
     p.set_defaults(func=cmd_status)
     p = sub.add_parser("find", help="the one ticket a reference names")
-    p.add_argument("dir")
+    p.add_argument("dir", nargs="?", help="default: the active initiative")
     p.add_argument("ref")
     p.set_defaults(func=cmd_find)
     p = sub.add_parser("pull", help="write an entry's leaf file")
