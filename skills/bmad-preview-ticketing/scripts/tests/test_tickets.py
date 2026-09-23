@@ -1,11 +1,14 @@
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
+import tomllib
 import unittest
 from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parents[1] / "tickets.py"
+CONFIG_UTILS = SCRIPT.parents[2] / "bmad" / "scripts" / "config_utils.py"
 
 
 def ticket(
@@ -60,11 +63,13 @@ def plan(ticket_id, status=None, assignee=None, blocked_at=None, blocked_reason=
     return "\n".join(lines)
 
 
-def run(*args):
-    return subprocess.run([sys.executable, str(SCRIPT), *args], text=True, capture_output=True, check=False)
+def run(*args, cwd=None):
+    return subprocess.run([sys.executable, str(SCRIPT), *args], text=True, capture_output=True, check=False, cwd=cwd)
 
 
-class TicketsTests(unittest.TestCase):
+class TreeCase(unittest.TestCase):
+    """A temp project with `_bmad/custom/` and the epic `out/initiative-checkout/epic-cart`."""
+
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = Path(self.tmp.name)
@@ -96,6 +101,19 @@ class TicketsTests(unittest.TestCase):
         self.add("story-codes.md", ticket("", 4, after="[story-tracer]"))
         self.add("spike-tax.md", ticket("", 5, after="[3]", kind="spike"))
 
+    def pricing(self):
+        pricing = self.add_epic("epic-pricing")
+        (pricing / "tickets.toml").write_text(
+            '[[entry]]\nid = 1\ntype = "story"\ntitle = "Pricing contract"\n\n'
+            '[[entry]]\nid = 2\ntype = "story"\ntitle = "Pricing rules"\nafter = [1]\n'
+        )
+        (self.initiative / "tickets.toml").write_text(
+            '[[epic]]\nid = 1\nslug = "epic-pricing"\n\n[[epic]]\nid = 2\nslug = "epic-cart"\n'
+        )
+        return pricing
+
+
+class TicketsTests(TreeCase):
     def next(self, *extra):
         r = run("next", str(self.epic), *extra)
         self.assertEqual(r.returncode, 0, r.stderr)
@@ -382,17 +400,6 @@ covers = ["R2", "R3"]
             r = run("next", str(self.epic))
             self.assertEqual(r.returncode, 1, text)
             self.assertIn(message, json.loads(r.stderr)["error"])
-
-    def pricing(self):
-        pricing = self.add_epic("epic-pricing")
-        (pricing / "tickets.toml").write_text(
-            '[[entry]]\nid = 1\ntype = "story"\ntitle = "Pricing contract"\n\n'
-            '[[entry]]\nid = 2\ntype = "story"\ntitle = "Pricing rules"\nafter = [1]\n'
-        )
-        (self.initiative / "tickets.toml").write_text(
-            '[[epic]]\nid = 1\nslug = "epic-pricing"\n\n[[epic]]\nid = 2\nslug = "epic-cart"\n'
-        )
-        return pricing
 
     def test_ticket_waits_on_an_entry_in_another_epic(self):
         pricing = self.pricing()
@@ -738,6 +745,105 @@ covers = ["R2", "R3"]
             self.assertEqual(r.returncode, 1, r.stdout)
             for name in names:
                 self.assertIn(name, json.loads(r.stderr)["error"])
+
+
+class ActiveInitiativeTests(TreeCase):
+    """With no folder, next, status, and find run on `{tickets.root}/{active_initiative}`."""
+
+    def setUp(self):
+        super().setUp()
+        (self.root / "_bmad" / "scripts").mkdir()
+        shutil.copy(CONFIG_UTILS, self.root / "_bmad" / "scripts" / "config_utils.py")
+        self.configure("initiative-checkout")
+        self.seed()
+
+    def configure(self, initiative, layer="config.toml"):
+        line = f'active_initiative = "{initiative}"\n' if initiative is not None else ""
+        path = self.root / "_bmad" / ("custom" if layer != "config.toml" else "") / layer
+        path.write_text(f'[core]\noutput_folder = "{{project-root}}/out"\n\n[modules.bmm]\n{line}')
+
+    def elsewhere(self):
+        other = tempfile.TemporaryDirectory()
+        self.addCleanup(other.cleanup)
+        return other.name
+
+    def ok(self, r):
+        self.assertEqual(r.returncode, 0, r.stderr)
+        return json.loads(r.stdout)
+
+    def fails(self, r, message):
+        self.assertEqual(r.returncode, 1, r.stdout)
+        self.assertIn(message, json.loads(r.stderr)["error"])
+
+    def test_next_with_no_folder_runs_on_the_active_initiative(self):
+        expected = self.ok(run("next", str(self.initiative)))
+        self.assertEqual(self.ok(run("next", cwd=self.epic)), expected)
+        self.assertEqual(expected["folder"], "initiative-checkout")
+
+    def test_project_root_flag_names_the_project_from_anywhere(self):
+        (self.root / "_bmad" / "custom" / "ticketing-store-config.toml").write_text('[tickets]\nroot = "out"\n')
+        out = self.ok(run("--project-root", str(self.root), "status", cwd=self.elsewhere()))
+        self.assertEqual(out["folder"], "initiative-checkout")
+        self.assertEqual(out["counts"]["total"], 5)
+
+    def test_root_substitutes_project_root_and_output_folder(self):
+        for root in ("{project-root}/out", "{output_folder}"):
+            (self.root / "_bmad" / "custom" / "ticketing-store-config.toml").write_text(f'[tickets]\nroot = "{root}"\n')
+            self.assertEqual(self.ok(run("status", cwd=self.root))["folder"], "initiative-checkout", root)
+
+    def test_find_by_ref_only(self):
+        self.pricing()
+        expected = self.ok(run("find", str(self.initiative), "1.2"))
+        self.assertEqual(self.ok(run("find", "1.2", cwd=self.root)), expected)
+        self.assertEqual(expected["title"], "Pricing rules")
+
+    def test_a_given_folder_never_reads_the_config(self):
+        (self.root / "_bmad" / "config.toml").write_text("not toml [")
+        self.assertEqual(self.ok(run("next", str(self.epic), cwd=self.root))["folder"], "epic-cart")
+        self.fails(run("next", cwd=self.root), "config.toml")
+
+    def test_unset_active_initiative_names_the_key(self):
+        for value in (None, ""):
+            self.configure(value)
+            self.fails(run("next", cwd=self.root), "modules.bmm.active_initiative")
+
+    def test_no_project_root_found(self):
+        self.fails(run("status", cwd=self.elsewhere()), "no project root")
+
+    def test_missing_initiative_folder_names_the_resolved_path(self):
+        self.configure("initiative-gone")
+        self.fails(run("next", cwd=self.root), str((self.root / "out" / "initiative-gone").resolve()))
+
+    def test_store_is_read_from_the_project_found_when_root_lies_outside_it(self):
+        outside = Path(self.elsewhere())
+        shutil.copytree(self.initiative, outside / "initiative-checkout")
+        (self.root / "_bmad" / "custom" / "ticketing-store-config.toml").write_text(
+            f'[tickets]\nstore = "linear"\nroot = "{outside.as_posix()}"\n'
+        )
+        r = run("next", cwd=self.root)
+        self.assertEqual(r.returncode, 2, r.stderr)
+        self.assertIn("sync ticket status", r.stderr)
+        self.assertEqual(self.ok(run("status", cwd=self.root))["store"], "linear")
+
+    def test_the_skill_installs_the_script_and_a_lone_copy_runs(self):
+        bmod = tomllib.loads((SCRIPT.parents[1] / "bmod.toml").read_text(encoding="utf-8"))
+        self.assertIn("scripts/tickets.py", bmod["skill"]["scripts"])
+        installed = self.root / "_bmad" / "method" / "scripts"
+        installed.mkdir(parents=True)
+        shutil.copy(SCRIPT, installed)
+        r = subprocess.run(
+            [sys.executable, str(installed / "tickets.py"), "next"],
+            text=True,
+            capture_output=True,
+            check=False,
+            cwd=self.root,
+        )
+        self.assertEqual(self.ok(r)["folder"], "initiative-checkout")
+
+    def test_user_layer_overrides_the_base_config(self):
+        self.configure("initiative-gone")
+        self.configure("initiative-checkout", layer="config.user.toml")
+        self.assertEqual(self.ok(run("next", cwd=self.root))["folder"], "initiative-checkout")
 
 
 if __name__ == "__main__":
