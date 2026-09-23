@@ -66,7 +66,7 @@ ABS_PATH_LEAK = re.compile(r"/Users/|/home/|\b[A-Za-z]:[\\/]")
 PROJECT_ROOT_IN_VALUE = re.compile(r"\{project-root\}/_bmad/[^\s'\"<>})\]`]+")
 
 # Path prefixes/patterns that only exist in installed structure, not in source
-INSTALL_ONLY_PATHS = ["_config/", "custom/", "render/bmad-build/", "render/bmad-build-auto/"]
+INSTALL_ONLY_PATHS = ["_config/", "custom/", "render/bmad-build/", "render/bmad-build-auto/", "method/scripts/"]
 
 # Files that are generated at install time and don't exist in the source tree
 INSTALL_GENERATED_FILES = ["config.yaml", "config.user.yaml"]
