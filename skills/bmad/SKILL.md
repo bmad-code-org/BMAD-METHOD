@@ -75,7 +75,10 @@ runtime and are not private to this skill: `resolve_config.py`,
 `resolve_customization.py`, `render_skill.py`, and `memlog.py` are each
 called from a wide and changing set of skills — grep the repo for the
 script name to find the current callers rather than trusting a fixed list
-here, since it would go stale. `config_utils.py` and `setup.py` have no
-consumers outside this skill folder today. Treat the four externally-called
-scripts' interfaces as a contract: a change to one can break skills that
-live outside this folder.
+here, since it would go stale. `config_utils.py` has no consumers outside
+this skill folder. `setup.py` has one, but not another skill:
+`tools/validate_manifests.py` imports it directly (`ParsedFile`,
+`parse_bmod_file`, `discover_installation`, `MANIFEST_NAME`) to validate
+module manifests repo-wide. Treat all five — the four called by other
+skills, plus `setup.py`'s exported names for the validator — as a contract:
+a change here can break something outside this skill folder.
