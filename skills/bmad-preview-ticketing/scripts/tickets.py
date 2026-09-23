@@ -4,20 +4,25 @@
 # ///
 """tickets — read a ticket tree and answer what is next.
 
-A container folder holds its ticket file, `tickets.toml`, and flat leaf files named
-`<type>-<slug>.md`. An epic's `tickets.toml` lists its planned leaves as `[[entry]]` tables
+A container folder holds its ticket file, `tickets.toml`, flat leaf files named `<type>-<slug>.md`,
+and the builds' plan files. An epic's `tickets.toml` lists its planned leaves as `[[entry]]` tables
 (`id`, `type`, `title`, `after`, and whatever else the plan records); an initiative's lists its
 epics as `[[epic]]` tables (`id`, `slug`, `after = [{epic, needs}]`). Tables are in build order.
 `id` names an entry for good and is never reused; a leaf file carries it in frontmatter, which is
-how the file joins its entry. An entry with no leaf file is `planned`. A ticket needs refining
-before it starts only when its entry says `refine = true` or it has no entry. Once the file exists
-its frontmatter is the record: `status`, `tracker_status`, `assignee`, `refined`, `blocked_at`, and
-`after` when present.
+how the file joins its entry. An entry needs no leaf file to start. A ticket needs refining before
+it starts only when its entry says `refine = true` or it has no entry. A leaf file's frontmatter
+adds `tracker_status`, `refined`, and `after` when present.
 
-A leaf's `status` is the build's (draft, ready-for-dev, in-progress, in-review, done, blocked) or
-dropped; absent means no build has started. On a tracker store `tracker_status` mirrors the
-tracker's word (backlog, in-progress, review, done, dropped). A ticket's `state` is `planned` with
-no file, else `tracker_status`, else derived from `status`: absent, draft, ready-for-dev -> backlog;
+A plan is any other `.md` whose frontmatter has `ticket` and whose `type` is not a leaf type. An
+integer `ticket` joins the entry with that id in the plan's folder; a string joins the leaf file
+with that stem (a backlog leaf). A plan is never a row of its own. It holds the ticket's `status`,
+`assignee`, `blocked_at`, and `blocked_reason`; a leaf file's own fields are read only when the
+ticket has no plan.
+
+`status` is the build's (draft, ready-for-dev, in-progress, in-review, done, blocked) or dropped;
+absent means no build has started. On a tracker store `tracker_status` mirrors the tracker's word
+(backlog, in-progress, review, done, dropped). A ticket's `state` is `planned` with no file and no
+plan, else `tracker_status`, else derived from `status`: absent, draft, ready-for-dev -> backlog;
 in-progress, blocked -> in-progress; in-review -> review; done; dropped.
 
 `after` lists real prerequisites: a sibling's id as a bare integer, or a quoted string that is
@@ -69,6 +74,7 @@ NAME_RE = re.compile(r"^(story|spike|bug)-(.+)\.md$")
 CROSS_RE = re.compile(r"^(\d+)\.(\d+)$")
 EPIC_RE = re.compile(r"^epic-[^/]+$")
 BREAKDOWN = "tickets.toml"
+QUOTED_COMMENT_RE = re.compile(r"""^("(?:[^"\\]|\\.)*"|'(?:[^']|'')*')\s+#.*$""")
 
 
 class TicketError(Exception):
@@ -82,20 +88,24 @@ class StoreRefusal(Exception):
 # ---------------------------------------------------------------- frontmatter
 
 
-def parse_frontmatter(text: str) -> dict:
-    """Minimal YAML subset: `key: value`, lists as `[a, b]`, quoted or bare scalars."""
+def parse_frontmatter(text: str, lenient: bool = False) -> dict:
+    """Minimal YAML subset: `key: value`, lists as `[a, b]`, quoted or bare scalars. Lenient
+    skips block lists instead of refusing them, for plans written from the build's template."""
     m = re.match(r"\A---\n(.*?)\n---(?:\n|\Z)", text, re.S)
     if not m:
         return {}
     data = {}
     for line in m.group(1).splitlines():
+        if lenient and (line[:1].isspace() or line.startswith("- ")):
+            continue
         if line.lstrip().startswith("- "):
             raise TicketError("frontmatter lists must be inline: `key: [a, b]`")
         if not line.strip() or line.lstrip().startswith("#") or ":" not in line:
             continue
         key, _, value = line.partition(":")
         value = value.split("   #")[0].strip()
-        data[key.strip()] = _scalar(value)
+        quoted = QUOTED_COMMENT_RE.match(value)
+        data[key.strip()] = _scalar(quoted.group(1) if quoted else value)
     return data
 
 
@@ -109,7 +119,7 @@ def _scalar(value: str):
                 return str(json.loads(value))
             except ValueError:
                 pass
-        return value[1:-1]
+        return value[1:-1] if value[0] == '"' else value[1:-1].replace("''", "'")
     if value in ("true", "false"):
         return value == "true"
     if re.fullmatch(r"-?\d+", value):
@@ -204,7 +214,8 @@ def load_container(folder: Path) -> dict:
 
 def load_folder(folder: Path) -> list[dict]:
     """One row per ticket in a folder, in build order: every breakdown entry, joined to its
-    leaf file when one exists, then leaf files the breakdown does not list."""
+    leaf file when one exists, then leaf files the breakdown does not list. Plans then set
+    the status fields of the rows they join."""
     where = folder.name
     rows = {}
     for e in load_breakdown(folder).get("entry", []):
@@ -238,21 +249,25 @@ def load_folder(folder: Path) -> list[dict]:
             "covers": [str(c) for c in e.get("covers", [])],
             "estimate": e.get("estimate", ""),
             "blocked_at": "",
+            "blocked_reason": "",
             "raw_after": _list(e.get("after"), f"{where}/{BREAKDOWN} entry {n}"),
             "entry_after": None,
         }
-    unlisted, stray = {}, []
+    unlisted, stray, plans = {}, [], []
     seen = {}
     for path in sorted(folder.glob("*.md")):
         text = path.read_text(encoding="utf-8")
+        fm = parse_frontmatter(text, lenient=True)
+        if not fm and text.startswith("---") and NAME_RE.match(path.name):
+            raise TicketError(f"{where}/{path.name}: frontmatter does not close")
+        if fm.get("type") not in LEAF_TYPES:
+            if "ticket" in fm:
+                plans.append((path.name, fm))
+            continue
         try:
             fm = parse_frontmatter(text)
         except TicketError as e:
             raise TicketError(f"{where}/{path.name}: {e}") from e
-        if not fm and text.startswith("---") and NAME_RE.match(path.name):
-            raise TicketError(f"{where}/{path.name}: frontmatter does not close")
-        if fm.get("type") not in LEAF_TYPES:
-            continue
         status = fm.get("status", "")
         if status not in ("", *STATUSES):
             raise TicketError(f"{where}/{path.name}: status {status!r} is not one of {', '.join(STATUSES)}")
@@ -291,11 +306,38 @@ def load_folder(folder: Path) -> list[dict]:
                 "covers": [str(c) for c in fm["covers"]] if isinstance(fm.get("covers"), list) else row["covers"],
                 "estimate": fm.get("estimate", row.get("estimate", "")),
                 "blocked_at": fm.get("blocked_at", ""),
+                "blocked_reason": str(fm.get("blocked_reason", "") or ""),
             }
         )
         if "after" in fm:
             row["raw_after"] = _list(fm["after"], f"{where}/{path.name}")
-    return list(rows.values()) + [unlisted[n] for n in sorted(unlisted)] + stray
+    out = list(rows.values()) + [unlisted[n] for n in sorted(unlisted)] + stray
+    for name, fm in plans:
+        status = fm.get("status", "")
+        if status not in ("", *STATUSES):
+            raise TicketError(f"{where}/{name}: status {status!r} is not one of {', '.join(STATUSES)}")
+        ticket = fm["ticket"]
+        if isinstance(ticket, str) and ticket.isascii() and ticket.isdigit():
+            ticket = int(ticket)
+        if _id(ticket) is not None:
+            row = next((r for r in out if r["id"] == ticket), None)
+        elif isinstance(ticket, str) and ticket:
+            row = next((r for r in out if r["file"] == f"{ticket}.md"), None)
+        else:
+            row = None
+        if row is None:
+            raise TicketError(f"{where}/{name}: ticket {ticket!r} names no entry or leaf file in {where}")
+        if "plan" in row:
+            raise TicketError(f"{where}/{row['plan']} and {name} are both plans for ticket {ticket!r}")
+        row.update(
+            {
+                "plan": name,
+                "status": status,
+                "state": row["tracker_status"] or STATE_OF[status],
+                **{k: str(fm.get(k, "") or "") for k in ("assignee", "blocked_at", "blocked_reason")},
+            }
+        )
+    return out
 
 
 def epic_folders(initiative: Path) -> list[Path]:
@@ -441,20 +483,17 @@ def in_scope(tree: dict) -> list[dict]:
 
 def classify(tree: dict) -> dict:
     done = done_keys(tree)
-    groups = {"ready_to_refine": [], "ready_to_start": [], "in_progress": [], "blocked": [], "to_pull": []}
+    groups = {"ready_to_refine": [], "ready_to_start": [], "in_progress": [], "blocked": []}
     for t in in_scope(tree):
         s = t["state"]
         if s in ("done", "dropped"):
             continue
-        unblocked = all(b in done for b in t["after"] + t["gated_by"]) and not t["blocked_at"]
-        if t["status"] == "blocked":
+        if t["status"] == "blocked" or t["blocked_at"]:
             groups["blocked"].append(t)
         elif s in ("in-progress", "review"):
             groups["in_progress"].append(t)
-        elif not unblocked:
+        elif not all(b in done for b in t["after"] + t["gated_by"]):
             groups["blocked"].append(t)
-        elif s == "planned":
-            groups["to_pull"].append(t)
         elif t["refine"] and not t["refined"]:
             groups["ready_to_refine"].append(t)
         else:
@@ -541,6 +580,7 @@ def public(t: dict, tree: dict, blocks: dict | None = None) -> dict:
             "refine",
             "refined",
             "blocked_at",
+            "blocked_reason",
         )
     }
     row["after"] = [ref(b, t["epic"], tree) for b in t["after"]]
@@ -651,11 +691,7 @@ Verify: {verify}
 ## References
 
 - parent — {parent}
-{references}{notes}
-## Plan
-
-<!-- Filled in by the coding agent; never sent to a tracker. -->
-"""
+{references}{notes}"""
 
 
 def cmd_find(args) -> dict:
