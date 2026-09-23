@@ -48,6 +48,18 @@ def ticket(
     return "\n".join(lines)
 
 
+def plan(ticket_id, status=None, assignee=None, blocked_at=None, blocked_reason=None):
+    """A plan as the build's template writes it: quoted values, trailing comments, block lists."""
+    lines = ["---", "title: 'x'", "type: 'feature' # feature | bugfix | refactor | chore", f"ticket: {ticket_id}"]
+    if status:
+        lines.append(f"status: '{status}' # draft | ready-for-dev | in-progress | in-review | done")
+    for key, value in (("assignee", assignee), ("blocked_at", blocked_at), ("blocked_reason", blocked_reason)):
+        if value:
+            lines.append(f"{key}: '{value}'")
+    lines += ["lenses_ran: []", "deferred:", "  - summary: a", "    evidence: b", "---", "", "# x", ""]
+    return "\n".join(lines)
+
+
 def run(*args):
     return subprocess.run([sys.executable, str(SCRIPT), *args], text=True, capture_output=True, check=False)
 
@@ -196,7 +208,7 @@ covers = ["R2", "R3"]
         r = subprocess.run([sys.executable, str(SCRIPT), "next", str(self.epic)], capture_output=True, check=False)
         self.assertEqual(r.returncode, 0, r.stderr)
         out = json.loads(r.stdout.decode("utf-8"))
-        self.assertEqual(out["to_pull"][0]["title"], "Café ✓ menu")
+        self.assertEqual(out["ready_to_start"][0]["title"], "Café ✓ menu")
         r = subprocess.run([sys.executable, str(SCRIPT), "pull", str(self.epic), "1"], capture_output=True, check=False)
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertIn("# Café ✓ menu", (self.epic / "story-caf-menu.md").read_text(encoding="utf-8"))
@@ -206,17 +218,16 @@ covers = ["R2", "R3"]
         self.add("story-scaffold.md", ticket("done", 1))
         out = self.next()
         self.assertEqual(
-            [(e["id"], e["type"], e["title"]) for e in out["to_pull"]],
+            [(e["id"], e["type"], e["title"]) for e in out["ready_to_start"]],
             [(2, "story", "UI shell"), (3, "spike", "Tax engine?")],
         )
-        self.assertEqual(out["to_pull"][1]["covers"], ["R4"])
-        self.assertEqual(out["to_pull"][1]["after"], [1])
-        self.assertTrue(out["to_pull"][1]["hitl"])
+        self.assertEqual(out["ready_to_start"][1]["covers"], ["R4"])
+        self.assertEqual(out["ready_to_start"][1]["after"], [1])
+        self.assertTrue(out["ready_to_start"][1]["hitl"])
         self.assertEqual([e["id"] for e in out["blocked"]], [4])
         self.add("story-ui-shell.md", ticket("", 2, after="[1]"))
         out = self.next()
-        self.assertEqual([e["id"] for e in out["to_pull"]], [3])
-        self.assertIn("story-ui-shell.md", self.files(out["ready_to_start"]))
+        self.assertEqual(self.files(out["ready_to_start"]), ["story-ui-shell.md", None])
         status = json.loads(run("status", str(self.epic)).stdout)
         self.assertEqual(status["counts"], {"total": 4, "done": 1, "backlog": 1, "planned": 2})
         self.assertEqual(status["tickets"][0]["blocks"], [2, 3])
@@ -227,7 +238,7 @@ covers = ["R2", "R3"]
             '[[entry]]\nid = 1\ntype = "story"\ntitle = "First second"\n\n'
             '[[entry]]\nid = 3\ntype = "story"\ntitle = "Third"\nafter = [1, 2]\n'
         )
-        self.assertEqual([e["id"] for e in self.next()["to_pull"]], [2, 1])
+        self.assertEqual([e["id"] for e in self.next()["ready_to_start"]], [2, 1])
         self.add("story-first-second.md", ticket("draft", 1))
         rows = json.loads(run("status", str(self.epic)).stdout)["tickets"]
         self.assertEqual([r["id"] for r in rows], [2, 1, 3])
@@ -235,7 +246,8 @@ covers = ["R2", "R3"]
     def test_entry_waiting_on_unwritten_entry_stays_blocked(self):
         self.breakdown_epic()
         out = self.next()
-        self.assertEqual([e["id"] for e in out["to_pull"]], [1])
+        self.assertEqual([e["id"] for e in out["ready_to_start"]], [1])
+        self.assertEqual([e["id"] for e in out["blocked"]], [2, 3, 4])
 
     def test_file_prerequisites_win_over_the_entry_and_status_flags_the_drift(self):
         self.breakdown_epic()
@@ -263,7 +275,7 @@ covers = ["R2", "R3"]
         run("mark", str(self.epic / "story-scaffold-the-cart.md"), "done")
         run("pull", str(self.epic), "2")
         out = self.next()
-        self.assertEqual(self.files(out["ready_to_start"]), ["story-ui-shell.md"])
+        self.assertEqual(self.files(out["ready_to_start"]), ["story-ui-shell.md", None])
         self.assertEqual(out["ready_to_start"][0]["after"], [1])
 
     def test_pull_leaves_out_empty_fields_and_keeps_set_ones(self):
@@ -278,15 +290,12 @@ covers = ["R2", "R3"]
         self.assertIn("\nhitl: true\n", head)
         self.assertNotIn("refined", head)
 
-    def test_pull_ends_with_an_empty_plan_section(self):
+    def test_pull_ends_after_the_references(self):
         self.breakdown_epic()
         run("pull", str(self.epic), "1")
         text = (self.epic / "story-scaffold.md").read_text(encoding="utf-8")
         self.assertTrue(
-            text.endswith(
-                "- parent — out/initiative-checkout/epic-cart/epic-cart.md\n\n## Plan\n\n<!-- Filled in by the coding agent; never sent to a tracker. -->\n"
-            ),
-            text,
+            text.endswith("## References\n\n- parent — out/initiative-checkout/epic-cart/epic-cart.md\n"), text
         )
 
     def test_find_by_cross_ref_id_file_tracker_id_and_title(self):
@@ -356,7 +365,7 @@ covers = ["R2", "R3"]
         out = self.next()
         self.assertEqual(self.files(out["blocked"])[0], "story-ui-shell.md")
         self.assertEqual(out["ready_to_refine"], [])
-        self.assertEqual(out["to_pull"], [])
+        self.assertEqual(out["ready_to_start"], [])
 
     def test_malformed_breakdown_errors(self):
         for text, message in (
@@ -392,10 +401,10 @@ covers = ["R2", "R3"]
         )
         self.add("story-scaffold.md", ticket("done", 1))
         out = self.next()
-        self.assertEqual([e["id"] for e in out["to_pull"]], [3])
+        self.assertEqual([e["id"] for e in out["ready_to_start"]], [3])
         self.assertEqual(out["blocked"][0]["after"], [1, "1.1"])
         self.add("story-contract.md", ticket("done", 1), pricing)
-        self.assertEqual([e["id"] for e in self.next()["to_pull"]], [2, 3])
+        self.assertEqual([e["id"] for e in self.next()["ready_to_start"]], [2, 3])
 
     def test_whole_epic_prerequisite_and_epic_gate(self):
         pricing = self.pricing()
@@ -459,7 +468,7 @@ covers = ["R2", "R3"]
             '[[epic]]\nid = 2\nslug = "epic-cart"\nafter = [{ epic = 1, needs = "the pricing contract" }]\n'
         )
         out = json.loads(run("next", str(self.initiative)).stdout)
-        self.assertEqual([(e["epic"], e["id"]) for e in out["to_pull"]], [("epic-pricing", 1), ("epic-cart", 1)])
+        self.assertEqual([(e["epic"], e["id"]) for e in out["ready_to_start"]], [("epic-pricing", 1), ("epic-cart", 1)])
         self.assertEqual(
             out["unpinned_after"], [{"epic": "epic-cart", "after": "epic-pricing", "needs": "the pricing contract"}]
         )
@@ -638,6 +647,97 @@ covers = ["R2", "R3"]
         r = run("next", str(self.epic))
         self.assertEqual(r.returncode, 1)
         self.assertIn("in-progress, done, dropped", r.stderr)
+
+    def test_entries_with_no_files_start_without_a_pull(self):
+        self.breakdown_epic()
+        self.add("old-spec.md", "---\ntype: 'feature'\nstatus: 'done'\nsteps:\n  - a\n---\n")
+        out = self.next()
+        self.assertNotIn("to_pull", out)
+        self.assertEqual([(e["id"], e["state"], e["file"]) for e in out["ready_to_start"]], [(1, "planned", None)])
+        self.breakdown_epic(self.BREAKDOWN.replace('title = "Scaffold"', 'title = "Scaffold"\nrefine = true'))
+        out = self.next()
+        self.assertEqual([e["id"] for e in out["ready_to_refine"]], [1])
+        self.assertEqual(out["ready_to_start"], [])
+
+    def test_a_plan_sets_the_state_with_or_without_a_story_file(self):
+        self.breakdown_epic()
+        self.add("story-scaffold-plan.md", plan(1, "done"))
+        self.add("story-ui-shell-plan.md", plan(2, "in-review", assignee="ann"))
+        for _ in range(2):
+            out = self.next()
+            self.assertEqual([(e["id"], e["state"], e["assignee"]) for e in out["in_progress"]], [(2, "review", "ann")])
+            self.assertEqual([e["id"] for e in out["ready_to_start"]], [3])
+            rows = json.loads(run("status", str(self.epic)).stdout)["tickets"]
+            self.assertEqual([r["state"] for r in rows], ["done", "review", "planned", "planned"])
+            self.add("story-ui-shell.md", ticket("draft", 2, after="[1]", refined="true", assignee='"bob"'))
+        self.assertEqual(out["in_progress"][0]["file"], "story-ui-shell.md")
+        self.assertEqual(out["in_progress"][0]["status"], "in-review")
+        self.add("story-ui-shell.md", ticket("draft", 2, after="[1]", tracker_status="done"))
+        self.assertEqual(json.loads(run("status", str(self.epic)).stdout)["tickets"][1]["state"], "done")
+
+    def test_a_plan_with_blocked_at_blocks_its_entry(self):
+        self.breakdown_epic()
+        self.add("story-scaffold-plan.md", plan(1, "in-progress", blocked_at="2026-09-05", blocked_reason="legal"))
+        out = self.next()
+        self.assertEqual([(e["id"], e["blocked_reason"]) for e in out["blocked"]][0], (1, "legal"))
+        self.assertEqual(out["in_progress"], [])
+
+    def test_a_leaf_with_blocked_at_and_no_plan_is_blocked_with_its_reason(self):
+        self.add(
+            "story-scaffold.md",
+            ticket("in-progress", 1, blocked_at="2026-09-05").replace(
+                "---\n\n# x", 'blocked_reason: "legal"\n---\n\n# x'
+            ),
+        )
+        out = self.next()
+        self.assertEqual([(e["file"], e["blocked_reason"]) for e in out["blocked"]], [("story-scaffold.md", "legal")])
+        self.assertEqual(out["in_progress"], [])
+
+    def test_a_plan_leaving_out_a_field_blanks_the_leafs_value(self):
+        self.breakdown_epic()
+        self.add("story-scaffold-plan.md", plan(1, "done"))
+        self.add(
+            "story-ui-shell.md",
+            ticket("in-review", 2, after="[1]", blocked_at="2026-09-05").replace(
+                "---\n\n# x", 'blocked_reason: "legal"\n---\n\n# x'
+            ),
+        )
+        self.add("story-ui-shell-plan.md", plan(2))
+        self.assertNotIn(2, [e["id"] for e in self.next()["blocked"]])
+        row = json.loads(run("status", str(self.epic)).stdout)["tickets"][1]
+        self.assertEqual((row["status"], row["state"], row["blocked_reason"]), ("", "backlog", ""))
+
+    def test_a_quoted_numeric_ticket_joins_its_entry_and_a_doubled_quote_reads_as_one(self):
+        self.breakdown_epic()
+        self.add("story-ui-shell-plan.md", plan("'2'", "blocked", blocked_reason="can''t"))
+        blocked = self.next()["blocked"]
+        self.assertEqual([(e["id"], e["status"], e["blocked_reason"]) for e in blocked][0], (2, "blocked", "can't"))
+
+    def test_a_backlog_plan_joins_its_leaf_by_stem_and_a_leaf_without_a_plan_keeps_its_status(self):
+        backlog = self.root / "out" / "backlog"
+        backlog.mkdir()
+        self.add("bug-x.md", ticket("draft", kind="bug"), backlog)
+        self.add("bug-x-plan.md", plan("bug-x", "in-progress"), backlog)
+        self.add("bug-y.md", ticket("in-review", kind="bug"), backlog)
+        rows = json.loads(run("status", str(backlog)).stdout)["tickets"]
+        self.assertEqual([(r["file"], r["state"]) for r in rows], [("bug-x.md", "in-progress"), ("bug-y.md", "review")])
+
+    def test_orphan_duplicate_and_malformed_plans_error(self):
+        self.breakdown_epic()
+        for files, names in (
+            ({"story-a-plan.md": plan(9)}, ["story-a-plan.md"]),
+            ({"story-a-plan.md": plan("story-nothing")}, ["story-a-plan.md"]),
+            ({"story-a-plan.md": plan(1), "story-b-plan.md": plan(1)}, ["story-a-plan.md", "story-b-plan.md"]),
+            ({"story-a-plan.md": plan(1, "backlog")}, ["story-a-plan.md", "status 'backlog'"]),
+        ):
+            for path in self.epic.glob("*-plan.md"):
+                path.unlink()
+            for name, text in files.items():
+                self.add(name, text)
+            r = run("next", str(self.epic))
+            self.assertEqual(r.returncode, 1, r.stdout)
+            for name in names:
+                self.assertIn(name, json.loads(r.stderr)["error"])
 
 
 if __name__ == "__main__":
