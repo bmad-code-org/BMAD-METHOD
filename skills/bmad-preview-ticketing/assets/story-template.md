@@ -7,7 +7,7 @@ covers: [ids from the epic's spec, referenced numbered source, or Requirements; 
 after: []   # prerequisites only: a sibling's id; "<epic id>.<entry id>" in another epic; epic-<slug> for that whole epic
 assignee: ""   # blocked_at (date) and blocked_reason are added when waiting on a person or an answer
 refined: false   # true once refined and approved
-hitl: false   # status is written by the build (draft | ready-for-dev | in-progress | in-review | done | blocked); tracker_status by a tracker sync
+hitl: false   # status lives in the plan beside this file, not here; tracker_status by a tracker sync
 risk: [low|medium|high]
 estimate: ""   # points, when estimation is on
 ---
