@@ -1386,6 +1386,10 @@ def version_state(installed: str, source: str) -> str:
     if comparison == 0:
         return "current"
     if comparison < 0:
+        have = parse_orderable_semver(installed)
+        want = parse_orderable_semver(source)
+        if have is not None and want is not None and have[0] == want[0] and want[1] is None and have[1] == ("next",):
+            return "current"
         return "newer-available"
     return "ahead"
 
@@ -1409,8 +1413,6 @@ def parse_orderable_semver(
     if match is None or "-dev" in value.casefold():
         return None
     prerelease = match.group("prerelease")
-    if prerelease is not None and prerelease.casefold() == "next":
-        return None
     return (
         (
             int(match.group("major")),
