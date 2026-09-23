@@ -68,7 +68,10 @@ def plan(ticket_id, status=None, assignee=None, blocked_at=None, blocked_reason=
 
 
 def run(*args, cwd=None):
-    return subprocess.run([sys.executable, str(SCRIPT), *args], text=True, capture_output=True, check=False, cwd=cwd)
+    # tickets.py writes UTF-8; text=True alone would decode with the locale's code page on Windows.
+    return subprocess.run(
+        [sys.executable, str(SCRIPT), *args], encoding="utf-8", capture_output=True, check=False, cwd=cwd
+    )
 
 
 class TreeCase(unittest.TestCase):
@@ -770,6 +773,7 @@ covers = ["R2", "R3"]
             self.assertIn("empty", r.stderr)
         self.assertEqual(sorted(p.name for p in self.initiative.rglob("*-plan.md")), [])
 
+    @unittest.skipIf(sys.platform == "win32", "Windows passes arguments as Unicode, so none is undecodable")
     def test_mark_with_an_undecodable_value_leaves_the_plan_unchanged(self):
         self.breakdown_epic()
         path = self.epic / "story-scaffold-plan.md"
