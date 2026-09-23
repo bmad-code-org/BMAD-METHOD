@@ -66,7 +66,7 @@ set the resolution the same way so the two stay distinct.
 Initiative: with [tickets.types].initiative empty, the default, it is never sent — everything below
 it publishes, the initiative stays local, and epics sit loose in the project. Set that type only when the
 project has a level above Epic; then epics take it as --parent.
-The body sent is the local file up to `## Plan`, not including it, without the frontmatter lines tracker_id,
+The body sent is the whole local file, without the frontmatter lines tracker_id,
 remote, tracker_status, status, assignee.
 After a write, mirror tracker_id (the key), remote (the url), tracker_status, assignee, and after in the
 local file — never status, which is the build's; commit local files on the current branch when root is in a git repo, never push.
