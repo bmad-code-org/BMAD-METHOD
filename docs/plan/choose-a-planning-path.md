@@ -121,9 +121,10 @@ coherent outcome.
 2. Run `bmad-preview-ticketing` with the spec folder. It plans the epic with
    you and records the stories in build order in the epic's `tickets.toml`.
 3. Review the proposed order and decide which stories need a checkpoint.
-4. Pull each story when you are ready to work on it. Pulling writes the story
-   file. Refine it first only when its entry says `refine = true`, the ticket
-   has no epic, or you want the acceptance criteria written before build.
+4. Build each story from its entry when you are ready; no story file is
+   needed. Refine a story first only when its entry says `refine = true`, the
+   ticket has no epic, or you want the acceptance criteria written before
+   build.
 
 The breakdown is an execution plan, not a promise that nothing will change.
 Update the spec and re-slice the remaining stories when earlier work reveals a
@@ -136,9 +137,10 @@ stories often settle the architecture, initial project structure, and repeated
 patterns that later stories will follow. Give those decisions human attention
 before automating repetitions of them.
 
-Run Build once per story, giving it the pulled story file. To run stories
-unattended instead, give `bmad-build-auto` the pulled story file as its
-intent, one run per story; see
+Run Build once per story, naming the story. Build writes its plan beside the
+epic's `tickets.toml` and leaves the story in review until you mark it done
+through the ticketing skill. To run stories unattended instead, give
+`bmad-build-auto` the story as its intent, one run per story; see
 [Autonomous Development Loops](../build/autonomous-development-loops.md).
 
 **Finish the epic**
