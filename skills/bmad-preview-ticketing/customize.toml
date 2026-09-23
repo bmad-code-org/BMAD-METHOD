@@ -19,9 +19,9 @@ refinement = """
 - Full acceptance criteria are written here only for a ticket with no epic, for a bug, and for an entry the user asks it for. That entry carries `refine = true`; a bug entry always does. Never propose it for a story.
 """
 
-# When tickets publish. auto: each ticket when pulled on the repo store; the whole agreed breakdown at inception on a
-# tracker, so the team sees the plan there. The user can override.
-publication = "auto" # auto | on_pull | at_inception
+# When tickets publish to a tracker; on the repo store, committing the approved tickets.toml is the publish. auto: the whole
+# agreed breakdown at inception, so the team sees the plan there; on_start: each ticket when it starts. The user can override.
+publication = "auto" # auto | on_start | at_inception
 
 # How to propose epic boundaries, offered while slicing an initiative. A team replaces this with its
 # own rule, or points at where its boundaries are recorded — a url, AGENTS.md, a team map, anything
@@ -62,7 +62,7 @@ A slice is one implementation step toward the epic's Done when, small enough tha
 ordering = """
 - Put setup and each hitl step on the first ticket it blocks; with epics, that ticket is under the relevant epic, never loose under the initiative. Initiative-wide setup belongs to the opening epic.
 - Offer an opening refactor when poor code quality or missing standards would make the epic's tickets hard.
-- An epic of more than three entries gets a closing story "Refactor sweep", blocked by every other entry except a closing end-to-end suite. Its scope is set when it is pulled, from the build records and the review findings deferred during the epic. It takes cleanup only; scope pushed out of another story is a new story. Propose it by default; when the user declines, record a `Decision:` line in the epic's Notes.
+- An epic of more than three entries gets a closing story "Refactor sweep", blocked by every other entry except a closing end-to-end suite. Its scope is set when it starts, from the build records and the review findings deferred during the epic. It takes cleanup only; scope pushed out of another story is a new story. Propose it by default; when the user declines, record a `Decision:` line in the epic's Notes.
 - Tests are part of every ticket, never a ticket of their own — except one closing end-to-end suite across the epic, after the sweep, offered when the source has a test plan or the user wants one.
 """
 

@@ -62,7 +62,7 @@ content — Status, Assignee, Parent, Blocked by, Covers, Risk, Severity, hitl. 
 how relation and person properties are passed; `notion-get-users` resolves a name. Status is [tickets.status].<state>, the ticket's state (`state` in `tickets.py` rows). No parent: leave the Parent relation empty. An initiative
 is a page of Type initiative with no Parent. Create parents before
 children, prerequisites first.
-The body is the page content: the local file up to `## Plan`, not including it, without the frontmatter lines
+The body is the page content: the whole local file, without the frontmatter lines
 tracker_id, remote, tracker_status, status, assignee.
 After a write, mirror tracker_id (the ID property when `key` is set, else the page id), remote (the page
 url), tracker_status, assignee, and after in the local file — never status, which is the build's; commit local files on the current branch

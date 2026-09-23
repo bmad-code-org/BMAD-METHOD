@@ -21,7 +21,7 @@ risk = "low"                # low | medium | high
 # references = ["ARCHITECTURE-SPINE.md#ad-8"]   # what this entry needs beyond the epic's own References; pull writes them to the ticket
 # notes = ["..."]           # the user's words only, never filled by the agent; pull writes them to the ticket's Notes
 # refine = true            # refine to full acceptance criteria before it starts
-# spec_checkpoint = true    # a person reviews the ticket, or the builder's plan, before work starts
+# plan_checkpoint = true    # a person reviews the ticket, or the builder's plan, before work starts
 # done_checkpoint = true    # work pauses after this ticket until a person says continue
 
 [[entry]]
