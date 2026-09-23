@@ -24,9 +24,10 @@ cases — the model usually handles them from context, and the reviewing human c
 `bmad-build`, `bmad-build-auto`, `bmad-code-review`, `bmad-retrospective`, and `bmad-walkthrough` activate through
 the shared `_bmad/scripts/render_skill.py`, which publishes an immutable, content-addressed snapshot of the merged
 config under `_bmad/render/` with a `manifest.json` of renderer and source hashes instead of re-resolving
-customization on every read (#2601, #2657). `bmad-correct-course`, `bmad-review`, and `bmad-deep-recon` still call
-`resolve_customization.py` and `resolve_config.py` directly — an older two-step path kept for now and pending
-migration to `render_skill.py`. New skills should default to `render_skill.py`.
+customization on every read (#2601, #2657). `bmad-correct-course` and `bmad-deep-recon` still call
+`resolve_customization.py` and `resolve_config.py` directly, while `bmad-review` calls `resolve_customization.py`
+and falls back to `customize.toml` — an older path kept for now and pending migration to `render_skill.py`. New
+skills should default to `render_skill.py`.
 
 ## Testing
 
