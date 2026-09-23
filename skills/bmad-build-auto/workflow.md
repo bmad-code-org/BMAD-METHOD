@@ -10,13 +10,13 @@
 
 To HALT with a final status and optional blocking condition:
 
-1. **Folder+id dispatch** (`{spec_folder}` and `{story_id}` are set): the write-back always lands at the id-keyed story spec. The `{{ config.implementation_artifacts }}` fallback in step 2 below is never used in this mode, even for halts before planning starts.
-   - If `{spec_file}` is still empty, resolve it now:
-     - **Entry not resolved** (`stories.yaml` is missing/unparseable, or `{story_id}` has no matching entry): use the fixed slug segment `unresolved`: `{spec_file}` = `{spec_folder}/stories/{story_id}-unresolved.md`.
-     - **Ambiguous on-disk match** (the halt is `ambiguous story file match` — more than one file already matches `{spec_folder}/stories/{story_id}-*.md`): use the fixed slug segment `ambiguous` instead of deriving from the title, so the write-back neither creates a third title-derived candidate nor risks silently landing on one of the existing ambiguous files: `{spec_file}` = `{spec_folder}/stories/{story_id}-ambiguous.md`.
-     - **Otherwise** (the entry was resolved and no ambiguous on-disk match exists): derive `{spec_file}` = `{spec_folder}/stories/{story_id}-{slug}.md`, where `{slug}` is a kebab-case slug from `title` (and `description` if needed) with no `{story_id}` prefix — the same derivation step-01's Route uses.
-   - If `{spec_file}` exists on disk, update `status` in frontmatter and append missing result details under `## Auto Run Result`.
-   - If it does not exist, create it as a skeletal story spec:
+1. **Folder+id dispatch** (`{spec_folder}` and `{story_id}` are set): the write-back always lands at the id-keyed story plan. The `{{ config.implementation_artifacts }}` fallback in step 2 below is never used in this mode, even for halts before planning starts.
+   - If `{plan_file}` is still empty, resolve it now:
+     - **Entry not resolved** (`stories.yaml` is missing/unparseable, or `{story_id}` has no matching entry): use the fixed slug segment `unresolved`: `{plan_file}` = `{spec_folder}/stories/{story_id}-unresolved.md`.
+     - **Ambiguous on-disk match** (the halt is `ambiguous story file match` — more than one file already matches `{spec_folder}/stories/{story_id}-*.md`): use the fixed slug segment `ambiguous` instead of deriving from the title, so the write-back neither creates a third title-derived candidate nor risks silently landing on one of the existing ambiguous files: `{plan_file}` = `{spec_folder}/stories/{story_id}-ambiguous.md`.
+     - **Otherwise** (the entry was resolved and no ambiguous on-disk match exists): derive `{plan_file}` = `{spec_folder}/stories/{story_id}-{slug}.md`, where `{slug}` is a kebab-case slug from `title` (and `description` if needed) with no `{story_id}` prefix — the same derivation step-01's Route uses.
+   - If `{plan_file}` exists on disk, update `status` in frontmatter and append missing result details under `## Auto Run Result`.
+   - If it does not exist, create it as a skeletal story plan:
      ```markdown
      ---
      status: <final status>
@@ -30,8 +30,8 @@ To HALT with a final status and optional blocking condition:
      Blocking condition: <blocking condition, if any>
      ```
 2. **Otherwise:**
-   - If `{spec_file}` is known and exists, update `status` in frontmatter and append missing result details under `## Auto Run Result`.
-   - If `{spec_file}` is unknown or missing, create `{{ config.implementation_artifacts }}/bmad-build-auto-result-<slug-or-timestamp>.md` with:
+   - If `{plan_file}` is known and exists, update `status` in frontmatter and append missing result details under `## Auto Run Result`.
+   - If `{plan_file}` is unknown or missing, create `{{ config.implementation_artifacts }}/bmad-build-auto-result-<slug-or-timestamp>.md` with:
      ```markdown
      ---
      status: <final status>
@@ -60,7 +60,7 @@ Launch all the subagents a step calls for in **one message** — several **block
 
 A oneshot story is "Ready for Development" when its intent is clear, complete, coherent, and sufficient to implement and verify, its route choice and reason are recorded, and all template frontmatter fields are preserved.
 
-A full specification is "Ready for Development" when:
+A full plan is "Ready for Development" when:
 
 - **Actionable**: Every task has a file path and specific action.
 - **Logical**: Tasks ordered by dependency.

@@ -588,7 +588,8 @@ class RenderSkillTests(unittest.TestCase):
                 skill = self._skill(ws, name)
                 workflow = rs.render(ws.project, skill)
                 snap = self._assert_rendered(workflow, ws.project, name)
-                self.assertIn("{spec_file}", _markdown(snap))
+                placeholder = "{spec_file}" if name == "bmad-code-review" else "{plan_file}"
+                self.assertIn(placeholder, _markdown(snap))
                 hunter = snap / "review-prompts" / "edge-case-hunter.md"
                 self.assertTrue(hunter.is_file())
                 self.assertIn(hunter.as_posix(), _markdown(snap))
@@ -600,6 +601,15 @@ class RenderSkillTests(unittest.TestCase):
                 skill = self._skill(ws, name)
                 workflow = rs.render(ws.project, skill)
                 self._assert_rendered(workflow, ws.project, name)
+
+    def test_build_skills_render_each_pinned_route(self):
+        for name in ("bmad-build", "bmad-build-auto"):
+            for route in ("oneshot", "full"):
+                with self.subTest(name=name, route=route):
+                    ws = self._workspace()
+                    skill = self._skill(ws, name)
+                    workflow = rs.render(ws.project, skill, assignments=[f"workflow.route={route}"])
+                    self._assert_rendered(workflow, ws.project, name)
 
     def test_skill_root_binds_bundled_scripts_to_the_installed_skill(self):
         ws = self._workspace()
@@ -769,17 +779,17 @@ class RenderSkillTests(unittest.TestCase):
         review = (rs.render(ws.project, skill).parent / "step-04-review.md").read_text(encoding="utf-8")
         self.assertIn("No active review layers. HALT", review)
 
-    def test_non_empty_open_spec_override_reaches_both_terminal_routes(self):
+    def test_non_empty_open_plan_override_reaches_both_terminal_routes(self):
         ws = self._workspace()
         skill = self._skill(ws, "bmad-build")
         (ws.bmad / "custom" / f"{skill.name}.user.toml").write_text(
-            '[workflow]\nopen_spec = "OPEN-SPEC-SENTINEL {project-root} {spec_file}"\n',
+            '[workflow]\nopen_plan = "OPEN-PLAN-SENTINEL {project-root} {plan_file}"\n',
             encoding="utf-8",
         )
         snap = rs.render(ws.project, skill).parent
         for name in ("step-05-present.md", "step-oneshot.md"):
             rendered = (snap / name).read_text(encoding="utf-8")
-            self.assertIn("OPEN-SPEC-SENTINEL {project-root} {spec_file}", rendered)
+            self.assertIn("OPEN-PLAN-SENTINEL {project-root} {plan_file}", rendered)
 
     def test_installed_renderer_identity_change_publishes_a_new_generation(self):
         ws = self._workspace()
