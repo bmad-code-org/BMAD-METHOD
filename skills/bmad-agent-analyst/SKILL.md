@@ -53,7 +53,7 @@ Run: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {proj
 - Use `{planning_artifacts}` for output location and artifact scanning
 - Use `{project_knowledge}` for additional context scanning
 
-**If the script fails**, read `_bmad/config.toml`, `_bmad/custom/config.toml`, and `_bmad/custom/config.user.toml`, in that order, to resolve `planning_artifacts` and `project_knowledge`.
+**If the script fails**, read `{project-root}/_bmad/config.toml`, `{project-root}/_bmad/custom/config.toml`, and `{project-root}/_bmad/custom/config.user.toml`, in that order, to resolve `planning_artifacts` and `project_knowledge`.
 
 ### Step 6: Greet the User
 
