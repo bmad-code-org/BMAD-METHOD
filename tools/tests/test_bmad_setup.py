@@ -1256,12 +1256,12 @@ class BmadSetupTests(unittest.TestCase):
             ),
             (
                 "reserved-module-render",
-                dump_manifest_toml({**base, "module": "render"}).encode(),
+                dump_bmod_toml(bmod={**base, "code": "render"}).encode(),
                 "unsafe",
             ),
             (
                 "case-insensitive-reserved-module-render",
-                dump_manifest_toml({**base, "module": "ReNdEr"}).encode(),
+                dump_bmod_toml(bmod={**base, "code": "ReNdEr"}).encode(),
                 "unsafe",
             ),
         )
