@@ -12,13 +12,13 @@ Every skill that takes work from the tree, builds it, reviews it, or looks back 
 ## The plan file
 
 - One plan per leaf, written by `bmad-build` or `bmad-build-auto`. It sits in the leaf's folder (the epic folder, or `backlog/`) and is named `<type>-<slug>-plan.md`, where `<type>-<slug>` is the name the leaf's file would have. `find` returns this path.
-- Its frontmatter carries `ticket: <entry id>`. That field joins the plan to its entry, so a title change that renames the plan never breaks the link. Its `type` is the build's (`feature`, `bugfix`, `refactor`, `chore`), never a ticket type.
+- Its frontmatter carries `ticket: <entry id>`. That field joins the plan to its entry, so a title change that renames the plan never breaks the link. A backlog leaf has a file and no entry, so its plan carries `ticket: <file stem>` instead. Its `type` is the build's (`feature`, `bugfix`, `refactor`, `chore`), never a ticket type.
 - It stays local on every store. A tracker never receives it.
 - On a tracker store, publishing writes the leaf's file, because that file is the body the tracker receives. `tracker_id`, `remote`, and `tracker_status` stay in that file. The plan is still a separate file beside it.
 
 ## Status
 
-- On the repo store, a leaf's status lives only in its plan's `status`. A leaf with no plan is `planned`, and it is ready to start once its prerequisites are done. No pull is needed.
+- On the repo store, a leaf's status lives in its plan's `status`. A leaf file written before this change can still carry `status`; `tickets.py` reads it only when there is no plan. A leaf with no plan is `planned`, and it is ready to start once its prerequisites are done. No pull is needed.
 - The board state comes from `status` as before: none, `draft`, `ready-for-dev` → `backlog`; `in-progress`, `blocked` → `in-progress`; `in-review` → `review`; `done` and `dropped` are themselves.
 - `assignee`, `blocked_at`, and `blocked_reason` also sit in the plan's frontmatter. `tickets.py mark` writes them. Given a leaf with no plan, it creates the plan with only its frontmatter.
 
