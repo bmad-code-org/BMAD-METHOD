@@ -1,8 +1,8 @@
 ---
 diff_file: '' # set at runtime: path to the diff file
 claims_file: '' # set at runtime (path or empty)
-spec_file: '' # set at runtime (path or empty)
-review_mode: '' # set at runtime: full or no-spec
+plan_file: '' # set at runtime (path or empty)
+review_mode: '' # set at runtime: full or no-plan
 ---
 
 # Step 1: Gather Context
@@ -17,10 +17,10 @@ review_mode: '' # set at runtime: full or no-spec
 1. **Find the review target.** The conversation context before this skill was triggered IS your starting point — not a blank slate. Check in this order — stop as soon as the review target is identified:
 
    **Tier 1 — Explicit argument.**
-   Did the user pass a PR, commit SHA, branch, spec file, or diff source this message?
+   Did the user pass a PR, commit SHA, branch, plan file, or diff source this message?
    - PR reference → resolve to branch/commit via `gh pr view`. If resolution fails, ask for a SHA or branch.
    - Commit or branch → use directly.
-   - Spec or plan file → set `spec_file` to the provided path. Check its frontmatter for `baseline_revision`. If found and not `NO_VCS`, the diff source is **plan baseline**. Otherwise continue the cascade (a spec alone does not identify a diff source).
+   - Plan file → set `plan_file` to the provided path. Check its frontmatter for `baseline_revision`. If found and not `NO_VCS`, the diff source is **plan baseline**. Otherwise continue the cascade (a plan alone does not identify a diff source).
    - Also scan the argument for diff-mode keywords that narrow the scope:
      - "staged" / "staged changes" → Staged changes only
      - "uncommitted" / "working tree" / "all changes" → Uncommitted changes (staged + unstaged)
@@ -30,7 +30,7 @@ review_mode: '' # set at runtime: full or no-spec
    - When multiple keywords match, prefer the most specific (e.g., "branch diff" over bare "diff").
 
    **Tier 2 — Recent conversation.**
-   Do the last few messages reveal what the user wants to be reviewed? Look for spec paths, commit refs, branches, PRs, or descriptions of a change. Apply the same diff-mode keyword scan and routing as Tier 1.
+   Do the last few messages reveal what the user wants to be reviewed? Look for plan paths, commit refs, branches, PRs, or descriptions of a change. Apply the same diff-mode keyword scan and routing as Tier 1.
 
    **Tier 3 — The ticket tree.**
    Run `uv run {project-root}/_bmad/method/scripts/tickets.py --project-root {project-root} status` with no folder. A non-zero exit means there is no tree here; fall through. Otherwise keep the `tickets` rows whose `state` is `review`:
@@ -39,7 +39,7 @@ review_mode: '' # set at runtime: full or no-spec
      - **Choose another target** — pick a different review target.
    - **Several:** Present them as numbered options, `<ref>` and `<title>` each, alongside a manual choice option. Wait for user selection.
    - **None:** Fall through.
-   When the user picks a ticket, run `tickets.py find <ref>` (same command form) and set `spec_file` to its `plan`. Read `baseline_revision` from the plan's frontmatter; the diff source is **plan baseline**. If the field is missing or `NO_VCS`, tell the user and fall through. If the user chooses another target, fall through.
+   When the user picks a ticket, run `tickets.py find <ref>` (same command form) and set `plan_file` to its `plan`. Read `baseline_revision` from the plan's frontmatter; the diff source is **plan baseline**. If the field is missing or `NO_VCS`, tell the user and fall through. If the user chooses another target, fall through.
 
    **Tier 4 — Current git state.**
    If version control is unavailable, skip to Tier 5. Otherwise, check the current branch and HEAD. If the branch is not `main` (or the default branch), confirm: "I see HEAD is `<short-sha>` on `<branch>` — do you want to review this branch's changes?" If confirmed, treat as a branch diff against `main`. If declined, fall through.
@@ -69,16 +69,16 @@ review_mode: '' # set at runtime: full or no-spec
 
 4. **Stage the claims file.** Collect the change's own narrative: for a plan baseline, branch diff, or commit range, the commit messages it covers (`git log <base>..<head>`, where a plan baseline's head is `HEAD`); for other sources, whatever description of the change the user or conversation supplied. Write it verbatim to a uniquely-named file in the system temp directory and set `claims_file` to its path. If there is no narrative, set `claims_file` = `''`. Do not analyze or summarize the narrative — it is input for one review layer, staged as a file precisely so the other layers never see it.
 
-5. **Set the spec context.**
-   - If the triggering request or recent conversation **explicitly** states there is no spec (e.g. "no spec", "without a spec", "no-spec"): set `review_mode` = `no-spec` and clear `spec_file` (set it to `''`). Do **not** ask for a spec. Do **not** infer no-spec mode merely because the invocation omitted a spec path.
-   - Else if `spec_file` is already set (from Tier 1, 2, or 3): verify the file exists and is readable, then set `review_mode` = `full`.
-   - Else (neither a spec path nor an explicit no-spec declaration is present): ask the user to choose:
-     1. Provide a spec or story file path for context; or
-     2. Continue without a spec.
-     - If the user provides a path: set `spec_file` to that path, verify the file exists and is readable, then set `review_mode` = `full`.
-     - If the user explicitly chooses to continue without a spec: set `review_mode` = `no-spec`.
+5. **Set the plan context.**
+   - If the triggering request or recent conversation **explicitly** states there is no plan (e.g. "no plan", "without a plan", "no-plan"): set `review_mode` = `no-plan` and clear `plan_file` (set it to `''`). Do **not** ask for a plan. Do **not** infer no-plan mode merely because the invocation omitted a plan path.
+   - Else if `plan_file` is already set (from Tier 1, 2, or 3): verify the file exists and is readable, then set `review_mode` = `full`.
+   - Else (neither a plan path nor an explicit no-plan declaration is present): ask the user to choose:
+     1. Provide a plan file path for context; or
+     2. Continue without a plan.
+     - If the user provides a path: set `plan_file` to that path, verify the file exists and is readable, then set `review_mode` = `full`.
+     - If the user explicitly chooses to continue without a plan: set `review_mode` = `no-plan`.
 
-6. If `review_mode` = `full` and the file at `{spec_file}` has a `context` field in its frontmatter listing additional docs, load each referenced document. Warn the user about any docs that cannot be found.
+6. If `review_mode` = `full` and the file at `{plan_file}` has a `context` field in its frontmatter listing additional docs, load each referenced document. Warn the user about any docs that cannot be found.
 
 7. Sanity check: if `wc -l {diff_file}` exceeds approximately 3000 lines, warn the user and offer to chunk the review by file group.
    - If the user opts to chunk: agree on the first group, rebuild `{diff_file}` narrowed to that group, and list the remaining groups for the user to note for follow-up runs.
@@ -86,7 +86,7 @@ review_mode: '' # set at runtime: full or no-spec
 
 ### CHECKPOINT
 
-Present a summary before proceeding: diff stats (files changed, lines added/removed), `{review_mode}`, and loaded spec/context docs (if any). HALT and wait for user confirmation to proceed.
+Present a summary before proceeding: diff stats (files changed, lines added/removed), `{review_mode}`, and loaded plan/context docs (if any). HALT and wait for user confirmation to proceed.
 
 ## NEXT
 

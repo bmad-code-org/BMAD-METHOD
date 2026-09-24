@@ -588,8 +588,7 @@ class RenderSkillTests(unittest.TestCase):
                 skill = self._skill(ws, name)
                 workflow = rs.render(ws.project, skill)
                 snap = self._assert_rendered(workflow, ws.project, name)
-                placeholder = "{spec_file}" if name == "bmad-code-review" else "{plan_file}"
-                self.assertIn(placeholder, _markdown(snap))
+                self.assertIn("{plan_file}", _markdown(snap))
                 hunter = snap / "review-prompts" / "edge-case-hunter.md"
                 self.assertTrue(hunter.is_file())
                 self.assertIn(hunter.as_posix(), _markdown(snap))
