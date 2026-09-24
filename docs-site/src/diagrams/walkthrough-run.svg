@@ -1,12 +1,12 @@
 <svg class="bmad-diagram" viewBox="0 0 920 726" role="img" xmlns="http://www.w3.org/2000/svg" aria-labelledby="wt-title">
-<title id="wt-title" data-i18n="title">The bmad-walkthrough run: it reads the build spec or a pull request, then moves through orientation, the walkthrough itself, a detail pass and testing before wrapping up, where you approve, ask for rework, or open a discussion.</title>
+<title id="wt-title" data-i18n="title">The bmad-walkthrough run: it reads the build plan or a pull request, then moves through orientation, the walkthrough itself, a detail pass and testing before wrapping up, where you approve, ask for rework, or open a discussion.</title>
 <defs>
 <marker id="wt-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker>
 <marker id="wt-arrow-soft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="head soft" d="M0 0 L10 5 L0 10 z"/></marker>
 </defs>
 <rect class="node" x="30" y="36" width="200" height="52" rx="2"/>
-<text class="n" x="130" y="58" data-i18n="input-spec">bmad-build</text>
-<text class="n" x="130" y="76" data-i18n="input-spec-2">spec file</text>
+<text class="n" x="130" y="58" data-i18n="input-build">bmad-build</text>
+<text class="n" x="130" y="76" data-i18n="input-plan">plan file</text>
 <path class="edge" d="M230 62 C 300 62 320 90 368.0 90" marker-end="url(#wt-arrow)"/>
 <rect class="node" x="30" y="110" width="200" height="52" rx="2"/>
 <text class="n" x="130" y="132" data-i18n="input-pr">PR / commit</text>

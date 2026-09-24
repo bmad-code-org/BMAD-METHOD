@@ -50,7 +50,7 @@ opening fence); a VS Code `#file:path`; or a CWD-relative
 # Block shapes
 
 **Intent** (block 1). What the change is for and why it exists now.
-If you found a target spec/plan file with an intent section, paste it
+If you found a target plan file with an intent section, paste it
 verbatim. Otherwise generate from what you know about the target, no
 more than 300 tokens. Include a short note on where you got it from.
 
