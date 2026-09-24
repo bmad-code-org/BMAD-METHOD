@@ -65,7 +65,7 @@ Write `lenses_ran` — the ids launched, in launch order — to `{plan_file}` fr
 
 1. Once every lens has reported — and not before — render a verdict on each finding, ahead of any deduplication or grouping. Disregard any severity a reviewing subagent assigned — they lack the context to grade.
 
-   If `## Review Triage Log` already has rows — a loopback, a resumed review, or a follow-up pass on a `done` plan — check each finding against them first. Same location and same claim as a logged row, and the code there still reads as the row describes: keep the row's verdict and route, write the row again with `carried` in front of the evidence, skip verification, and never patch or defer it again. Verify everything else as below.
+   If `## Review Triage Log` already has rows — a loopback, a resumed review, or a follow-up pass on a `built` or `done` plan — check each finding against them first. Same location and same claim as a logged row, and the code there still reads as the row describes: keep the row's verdict and route, write the row again with `carried` in front of the evidence, skip verification, and never patch or defer it again. Verify everything else as below.
 
    For each finding:
    - A gap finding from the verification-gap lens arrives pre-verified — that lens's evidence rules made it read the tests and run the searches it cites, and triage trusts the claim as filed. Skip verification, render the verdict from the filed evidence, and weigh its filed disposition when routing. Its `Other findings` are verified like everything else.
@@ -164,11 +164,13 @@ Set `{plan_file}` frontmatter `followup_review_recommended` from the computation
 Set `{plan_file}` frontmatter `followup_review_recommended: false`.
 {% endif %}
 
-If version control is unavailable, set `{plan_file}` frontmatter `status: done`, then proceed to HALT.
+The final status is `built`, or `done` on a follow-up pass of a plan that was `done`.
 
-If version control is available, write `status: done` into `{plan_file}` frontmatter, then:
+If version control is unavailable, set `{plan_file}` frontmatter `status` to the final status, then proceed to HALT.
+
+If version control is available, write the final status into `{plan_file}` frontmatter `status`, then:
 
 1. Commit any reviewed-diff files that remain uncommitted, including `{plan_file}` when it is tracked in that working copy. Keep commits already created during this run. Verify every reviewed-diff file appears in the change set after `{baseline_revision}` and none remains uncommitted. Do not push.
 2. Verify the version-controlled working copy is clean. Otherwise HALT with status `blocked` and blocking condition `finalization left repository dirty`.
 
-HALT with status `done`.
+HALT with the final status.
