@@ -33,7 +33,7 @@ activation_steps_append = []
 persistent_facts = []
 
 # Scalar: executed when the workflow reaches its final step,
-# after review findings are presented and sprint status is synced. Override wins.
+# after review findings are presented and recorded. Override wins.
 # Leave empty for no custom post-completion behavior.
 
 on_complete = ""

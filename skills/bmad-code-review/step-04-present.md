@@ -1,24 +1,24 @@
 ---
 deferred_work_file: '{{ config.implementation_artifacts }}/deferred-work.md'
-sprint_status: '{{ config.implementation_artifacts }}/sprint-status.yaml'
 ---
 
 # Step 4: Present and Act
 
 ## RULES
 
-- When `{spec_file}` is set, always write findings to the story file before offering action choices.
+- When `{spec_file}` is set, always write findings to it before offering action choices.
 - `decision-needed` findings must be resolved before handling `patch` findings.
+- Never change a plan's `status`. Only the user marks a ticket done.
 
 ## INSTRUCTIONS
 
 ### 1. Clean review shortcut
 
-If zero findings remain after triage (all rejected or none raised): state that and proceed to section 6 (Sprint Status Update).
+If zero findings remain after triage (all rejected or none raised): state that. When `{spec_file}` is set, still write section 2's block, with the summary line and the `Rejected` appendix, so the run is recorded. Then proceed to section 6 (Next steps).
 
-### 2. Write findings to the story file
+### 2. Write findings to the plan or story file
 
-If `{spec_file}` exists and contains a Tasks/Subtasks section, append a `### Review Findings` subsection. Write all findings in this order:
+If `{spec_file}` is a plan — its frontmatter carries `baseline_revision` — append a block to its `## Code Review` section, creating that section at the end of the file when it is absent. The block opens with `### {date}` and the summary line from section 3, then the findings below, then the `Rejected` appendix. Otherwise, if `{spec_file}` exists and contains a Tasks/Subtasks section, append a `### Review Findings` subsection there. Write all findings in this order:
 
 1. **`decision-needed`** findings (unchecked):
    `- [ ] [Review][Decision] <Title> — <Detail>`
@@ -37,16 +37,16 @@ Announce what was written:
 
 > **Code review complete.** <D> `decision-needed`, <P> `patch`, <W> `defer`, <R> rejected.
 
-The findings report ends with a `Rejected` appendix — one line per rejected finding: `false` with its refutation, `low` with why it was not worth fixing — in the story file's `### Review Findings` section when `spec_file` is set, at the tail of the chat listing otherwise.
+The findings report ends with a `Rejected` appendix — one line per rejected finding: `false` with its refutation, `low` with why it was not worth fixing — in the block section 2 wrote when `spec_file` is set, at the tail of the chat listing otherwise.
 
-If `spec_file` is set, add: `Findings written to the review findings section in {spec_file}.`
-Otherwise add: `Findings are listed above. No story file was provided, so nothing was persisted.`
+If `spec_file` is set, add: `Findings written to {spec_file}.`, naming the section they went to (`## Code Review` or `### Review Findings`).
+Otherwise add: `Findings are listed above. No plan or story file was provided, so nothing was persisted.`
 
 ### 4. Resolve decision-needed findings
 
 If `decision_needed` findings exist, present each one with its detail and the options available. The user must decide — the correct fix is ambiguous without their input. Walk through each finding (or batch related ones) and get the user's call. Once resolved, each becomes a `patch`, `defer`, or is rejected.
 
-If the user chooses to defer, ask: Quick one-line reason for deferring this item? (helps future reviews): — then append that reason to both the story file bullet and the `{deferred_work_file}` entry.
+If the user chooses to defer, ask: Quick one-line reason for deferring this item? (helps future reviews): — then append that reason to both the finding's bullet in `{spec_file}` and the `{deferred_work_file}` entry.
 
 **HALT** — I am waiting for your numbered choice. Reply with only the number. Do not proceed until you select an option.
 
@@ -58,7 +58,7 @@ If `spec_file` is set, present all three options:
 
 > **How would you like to handle the `<P>` `patch` findings?**
 > 1. **Apply every patch** — fix all of them now, no per-finding confirmation. Defer and decision-needed items are not touched.
-> 2. **Leave as action items** — they are already in the story file
+> 2. **Leave as action items** — they are already in `{spec_file}`
 > 3. **Walk through each patch** — show details for each before deciding
 
 If `spec_file` is **not** set, present only options 1 and 2 (omit "Leave as action items" — findings were not written to a file):
@@ -69,8 +69,8 @@ If `spec_file` is **not** set, present only options 1 and 2 (omit "Leave as acti
 
 **HALT** — I am waiting for your numbered choice. Reply with only the number. Do not proceed until you select an option.
 
-- **Apply every patch**: Apply every patch finding without per-finding confirmation. Do not modify defer or decision-needed items. After all patches are applied, present a summary of changes made. If `spec_file` is set, check off the patch items in the story file (leave defer items as-is).
-- **Leave as action items** (only when `spec_file` is set): Done — findings are already written to the story.
+- **Apply every patch**: Apply every patch finding without per-finding confirmation. Do not modify defer or decision-needed items. After all patches are applied, present a summary of changes made. If `spec_file` is set, check off the patch items in it (leave defer items as-is).
+- **Leave as action items** (only when `spec_file` is set): Done — findings are already written to `{spec_file}`.
 - **Walk through each patch**: Present each finding with full detail, diff context, and suggested fix. After walkthrough, re-offer the applicable options above.
 
   **HALT** — I am waiting for your numbered choice. Do not proceed until you select an option.
@@ -82,46 +82,12 @@ If `spec_file` is **not** set, present only options 1 and 2 (omit "Leave as acti
 - Deferred: <W>
 - Rejected: <R>
 
-### 6. Update story status and sync sprint tracking
-
-Skip this section if `spec_file` is not set.
-
-#### Determine new status based on review outcome
-
-- If all `decision-needed` and `patch` findings were resolved (fixed or rejected) AND no unresolved `high`/`medium` findings remain: set `new_status` = `done`. Update the story file Status section to `done`.
-- If `patch` findings were left as action items, or unresolved issues remain: set `new_status` = `in-progress`. Update the story file Status section to `in-progress`.
-
-Save the story file.
-
-#### Sync sprint-status.yaml
-
-If `story_key` is not set, skip this subsection and note that sprint status was not synced because no story key was available.
-
-If `{sprint_status}` file exists:
-
-1. Load the FULL `{sprint_status}` file.
-2. Find the `development_status` entry matching `{story_key}`.
-3. If found: update `development_status[{story_key}]` to `{new_status}`. Update `last_updated` to current date. Save the file, preserving ALL comments and structure including STATUS DEFINITIONS.
-4. If `{story_key}` not found in sprint status: warn the user that the story file was updated but sprint-status sync failed.
-
-If `{sprint_status}` file does not exist, note that story status was updated in the story file only.
-
-#### Completion summary
-
-> **Review Complete!**
->
-> **Story Status:** `{new_status}`
-> **Issues Fixed:** <fixed_count>
-> **Action Items Created:** <action_count>
-> **Deferred:** <W>
-> **Rejected:** <R>
-
-### 7. Next steps
+### 6. Next steps
 
 Present the user with follow-up options:
 
 > **What would you like to do next?**
-> 1. **Start the next story** — run `bmad-build` to pick up the next `ready-for-dev` story
+> 1. **Build the next ticket** — run `bmad-build` to pick up the next ready ticket
 > 2. **Re-run code review** — address findings and review again
 > 3. **Done** — end the workflow
 
