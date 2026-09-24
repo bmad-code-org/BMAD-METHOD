@@ -336,7 +336,7 @@ covers = ["R2", "R3"]
         text = (self.epic / "story-scaffold.md").read_text(encoding="utf-8")
         parent = (self.epic / "epic-cart.md").resolve().relative_to(self.root.resolve()).as_posix()
         self.assertIn(f"## References\n\n- parent — {parent}\n- SPINE.md#ad-8\n", text)
-        self.assertIn("## Notes\n\n- Open question: Which host?\n- Reuse the mailer.\n", text)
+        self.assertIn("## Notes\n\n- Unknown: Which host?\n- Reuse the mailer.\n", text)
 
     def test_a_quoted_title_survives_the_pull(self):
         self.breakdown_epic(self.BREAKDOWN.replace('title = "Scaffold"', "title = 'Say \"hi\"'"))

@@ -711,7 +711,7 @@ def cmd_pull(args) -> dict:
         parent = Path(os.path.relpath(epic_file, root)).as_posix() if root else epic_file.as_posix()
     except ValueError:  # another drive on Windows
         parent = epic_file.as_posix()
-    notes = ([f"Open question: {t['unknown']}"] if t["unknown"] else []) + t["notes"]
+    notes = ([f"Unknown: {t['unknown']}"] if t["unknown"] else []) + t["notes"]
     # Empty and false fields are left out; absent reads the same and the file stays short.
     # No status: the build writes it when it starts.
     fields = [
