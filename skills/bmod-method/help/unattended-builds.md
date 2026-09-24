@@ -10,7 +10,7 @@ Use this when the user asks about `bmad-build-auto`, building tickets with no hu
 
 ## Accepted inputs
 
-- A ticket from the tree: a ref such as `1.2`, a ticket file, or a ticket's title. It builds from the entry, its epic file, and the entry's story file when it has one, and never writes a ticket file.
+- A ticket from the tree, named as a ticket (`ticket 1.2`, or a ticket's title), or a ticket file. A bare ref or title is not taken as a ticket. It builds from the entry, its epic file, and the entry's story file when it has one, and never writes a ticket file.
 - Free text or a path to an intent file.
 - A plan an earlier run wrote.
 - "Halt after planning" stops the run at `ready-for-dev`. The next dispatch implements it. An orchestrator uses this for the `plan_checkpoint` of an entry that is not refined; the run itself never reads `plan_checkpoint` or `done_checkpoint`.
