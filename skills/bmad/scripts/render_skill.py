@@ -497,10 +497,14 @@ def _verify_existing(destination: Path, manifest: dict[str, Any]) -> None:
         raise RenderError(f"corrupt existing generation {destination}: {error}") from error
     if existing != manifest:
         raise RenderError(f"generation collision or corruption at {destination}")
-    expected_files = set(manifest["outputs"]) | {"manifest.json"}
-    actual_files = {path.relative_to(destination).as_posix() for path in destination.rglob("*") if path.is_file()}
-    if actual_files != expected_files:
-        raise RenderError(f"generation contains unexpected or missing files: {destination}")
+    # Only the manifest's own files are verified. Anything else in the folder (Thumbs.db,
+    # editor swap files, sync conflict copies) is read by nobody and is left alone.
+    missing = sorted(name for name in manifest["outputs"] if not (destination / name).is_file())
+    if missing:
+        raise RenderError(
+            f"generation is missing rendered files: {', '.join(missing)} in {destination}; "
+            "deleting that folder is safe because the next run renders it again"
+        )
     for name, expected_hash in manifest["outputs"].items():
         try:
             actual_hash = _hash_bytes((destination / name).read_bytes())
