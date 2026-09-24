@@ -43,8 +43,9 @@ Connect: `gh auth login`.
 Labels must exist before they are used. List the repo's labels (`gh label list --limit 1000 --json name`)
 and run `gh label create <name>` for each of these it lacks, comparing names ignoring case: the
 [tickets.types] values except initiative (a milestone), the [tickets.status] values except done and
-dropped (closed states), `hitl`, risk:low, risk:medium, risk:high, and P0-P3. Never `--force`: it
-recolours a label the repo already has. Offer this at first publish, or whenever a label is missing.
+dropped (closed states), `hitl`, risk:low, risk:medium, risk:high, and P0-P3. A create that fails with
+"already exists" found the label after all: leave it. Never `--force`: it recolours a label the repo
+already has. Offer this at first publish, or whenever a label is missing.
 """
 
 write = """
