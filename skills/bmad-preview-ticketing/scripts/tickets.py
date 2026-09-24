@@ -10,9 +10,9 @@ A container folder holds its ticket file, `tickets.toml`, and flat leaf files na
 epics as `[[epic]]` tables (`id`, `slug`, `after = [{epic, needs}]`). Tables are in build order.
 `id` names an entry for good and is never reused; a leaf file carries it in frontmatter, which is
 how the file joins its entry. An entry with no leaf file is `planned`. A ticket needs refining
-before it starts only when its entry says `refine = true` or it has no entry. Once the file exists
-its frontmatter is the record: `status`, `tracker_status`, `assignee`, `refined`, `blocked_at`, and
-`after` when present.
+before it starts when it is a bug, its entry says `refine = true`, or it has no entry. Once the file
+exists its frontmatter is the record: `status`, `tracker_status`, `assignee`, `refined`, `blocked_at`,
+and `after` when present.
 
 A leaf's `status` is the build's (draft, ready-for-dev, in-progress, in-review, done, blocked) or
 dropped; absent means no build has started. On a tracker store `tracker_status` mirrors the
@@ -227,7 +227,7 @@ def load_folder(folder: Path) -> list[dict]:
             "state": "planned",
             "assignee": "",
             "refined": False,
-            "refine": _flag(e.get("refine", False)),
+            "refine": kind == "bug" or _flag(e.get("refine", False)),
             "description": str(e.get("description", "")),
             "verify": str(e.get("verify", "")),
             "unknown": str(e.get("unknown", "")),

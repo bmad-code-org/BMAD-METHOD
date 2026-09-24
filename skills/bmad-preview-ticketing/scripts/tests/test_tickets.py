@@ -266,6 +266,31 @@ covers = ["R2", "R3"]
         self.assertEqual(self.files(out["ready_to_start"]), ["story-ui-shell.md"])
         self.assertEqual(out["ready_to_start"][0]["after"], [1])
 
+    def test_bug_without_refine_waits_for_refinement(self):
+        self.breakdown_epic('[[entry]]\nid = 1\ntype = "bug"\ntitle = "Missing criteria"\n')
+        r = run("pull", str(self.epic), "1")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual(json.loads(r.stdout), {"file": "bug-missing-criteria.md", "refine": True})
+        pulled = self.epic / "bug-missing-criteria.md"
+        self.assertIn("refined: false", pulled.read_text(encoding="utf-8"))
+        out = self.next()
+        self.assertEqual(self.files(out["ready_to_refine"]), [pulled.name])
+        self.assertEqual(out["ready_to_start"], [])
+
+    def test_refined_bug_keeps_ready_to_start_behavior(self):
+        self.breakdown_epic('[[entry]]\nid = 1\ntype = "bug"\ntitle = "Refined bug"\nrefine = true\n')
+        self.add("bug-refined-bug.md", ticket("ready-for-dev", 1, kind="bug", refined="true"))
+        out = self.next()
+        self.assertEqual(self.files(out["ready_to_start"]), ["bug-refined-bug.md"])
+        self.assertEqual(out["ready_to_refine"], [])
+
+    def test_existing_unrefined_bug_without_refine_waits_for_refinement(self):
+        self.breakdown_epic('[[entry]]\nid = 1\ntype = "bug"\ntitle = "Existing bug"\n')
+        self.add("bug-existing-bug.md", ticket("ready-for-dev", 1, kind="bug"))
+        out = self.next()
+        self.assertEqual(self.files(out["ready_to_refine"]), ["bug-existing-bug.md"])
+        self.assertEqual(out["ready_to_start"], [])
+
     def test_pull_leaves_out_empty_fields_and_keeps_set_ones(self):
         self.breakdown_epic()
         run("pull", str(self.epic), "1")
