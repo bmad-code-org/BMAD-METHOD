@@ -96,10 +96,15 @@ class PublishInternalsTests(unittest.TestCase):
             with self.assertRaisesRegex(rs.RenderError, "collision or corruption"):
                 rs._publish(dest, outputs, {**manifest, "extra": True})
 
-            (dest / "extra.md").write_text("stray\n", encoding="utf-8")
-            with self.assertRaisesRegex(rs.RenderError, "unexpected or missing"):
+            (dest / "Thumbs.db").write_bytes(b"stray")
+            rs._publish(dest, outputs, manifest)
+            self.assertEqual((dest / "Thumbs.db").read_bytes(), b"stray")
+
+            (dest / "workflow.md").unlink()
+            with self.assertRaisesRegex(
+                rs.RenderError, rf"missing rendered files: workflow\.md in {re.escape(str(dest))}"
+            ):
                 rs._publish(dest, outputs, manifest)
-            (dest / "extra.md").unlink()
 
             (dest / "workflow.md").write_bytes(b"hello\ncorrupt")
             with self.assertRaisesRegex(rs.RenderError, "hash mismatch"):
@@ -864,6 +869,26 @@ class RenderSkillTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("hash mismatch", result.stdout)
         self.assertTrue(workflow.read_text(encoding="utf-8").endswith("corrupt"))
+
+    def test_stray_file_in_generation_is_ignored_and_missing_output_is_named(self):
+        ws = self._workspace()
+        skill = self._skill(ws, "bmad-build")
+        workflow = rs.render(ws.project, skill)
+        stray = workflow.parent / "Thumbs.db"
+        stray.write_bytes(b"explorer")
+        result = self._cli(ws.project, skill)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(result.stdout, f"{DISPATCH_PREFIX}{workflow}\n")
+        self.assertEqual(stray.read_bytes(), b"explorer")
+
+        workflow.unlink()
+        result = self._cli(ws.project, skill)
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertEqual(len(result.stdout.splitlines()), 1, result.stdout)
+        self.assertNotIn("Traceback", result.stdout + result.stderr)
+        self.assertIn(f"missing rendered files: workflow.md in {workflow.parent}", result.stdout)
+        self.assertIn("deleting that folder is safe", result.stdout)
+        self.assertFalse(workflow.exists())
 
     def test_skill_md_command_dispatches_for_every_rendered_skill(self):
         for name in RENDERED_SKILLS:
