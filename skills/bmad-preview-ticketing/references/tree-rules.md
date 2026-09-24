@@ -18,18 +18,18 @@ Every skill that takes work from the tree, builds it, reviews it, or looks back 
 
 ## Status
 
-- On the repo store, a leaf's status lives in its plan's `status`. An older leaf file can still carry `status`; `tickets.py` reads it only when there is no plan. An entry with no file and no plan is `planned`, and it is ready to start once its prerequisites are done. No pull is needed.
-- The board state comes from `status`: none, `draft`, `ready-for-dev` → `backlog`; `in-progress`, `blocked` → `in-progress`; `in-review` → `review`; `done` and `dropped` are themselves.
+- On the repo store, a leaf's status lives in its plan's `status`. An older leaf file can still carry `status`; `tickets.py` reads it only when there is no plan. An entry with no file and no plan is `planned`, and it is ready to start once its prerequisites are done or in review; an epic file's `after` still waits for that epic to be done. No pull is needed.
+- The board state comes from `status`: none, `draft`, `ready-for-dev` → `backlog`; `in-progress`, `blocked` → `in-progress`; `in-review`, `built` → `review`; `done` and `dropped` are themselves.
 - `assignee`, `blocked_at`, and `blocked_reason` also sit in the plan's frontmatter. `tickets.py mark` writes them. Given a leaf with no plan, it creates the plan with only its frontmatter.
 
 | Status | Written by |
 |---|---|
-| `draft`, `ready-for-dev`, `in-progress`, `in-review` | `bmad-build`, `bmad-build-auto` as they work |
+| `draft`, `ready-for-dev`, `in-progress`, `in-review`, `built` | `bmad-build`, `bmad-build-auto` as they work |
 | `blocked` | `bmad-build-auto` when it halts, with the reason in the plan |
 | `done` | the user, or an orchestrator, through `tickets.py mark` |
 | `dropped` | the ticketing skill, when the user says so |
 
-- No skill moves a ticket past `in-review`. When the user tells a skill that a ticket is done, the skill runs `mark` for them. `bmad-code-review` never changes `status`.
+- No skill moves a ticket past `built`: the build's last status, meaning the build finished and nobody has called it done. When the user tells a skill that a ticket is done, the skill runs `mark` for them. `bmad-code-review` never changes `status`.
 
 ## Baseline
 

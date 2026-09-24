@@ -1,8 +1,9 @@
 ---
 title: '{title}'
 type: 'feature' # feature | bugfix | refactor | chore
+ticket: '' # the entry id from the ticket tree, or the story file's stem when the entry has no id; empty outside it
 created: '{date}'
-status: 'draft' # draft | ready-for-dev | in-progress | in-review | done
+status: 'draft' # draft | ready-for-dev | in-progress | in-review | built | done
 route: '' # oneshot | full — set by step-02
 route_source: '' # pinned | auto — set with route by step-02
 review: '' # none | quick | thorough — set by step-04
