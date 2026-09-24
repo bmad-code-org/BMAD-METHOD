@@ -274,7 +274,7 @@ def load_folder(folder: Path) -> list[dict]:
                 stray.append(row)
             else:
                 unlisted[n] = row
-        elif "after" in fm:
+        elif row is not None:
             row["entry_after"] = row["raw_after"]
         row.update(
             {
@@ -287,14 +287,13 @@ def load_folder(folder: Path) -> list[dict]:
                 "state": tracker_status or STATE_OF[status],
                 "assignee": str(fm.get("assignee", "") or ""),
                 "refined": _flag(fm.get("refined", False)),
-                "hitl": _flag(fm.get("hitl", row.get("hitl", False))),
-                "covers": [str(c) for c in fm["covers"]] if isinstance(fm.get("covers"), list) else row["covers"],
-                "estimate": fm.get("estimate", row.get("estimate", "")),
+                "hitl": _flag(fm.get("hitl", False)),
+                "covers": [str(c) for c in fm["covers"]] if isinstance(fm.get("covers"), list) else [],
+                "estimate": fm.get("estimate", ""),
                 "blocked_at": fm.get("blocked_at", ""),
             }
         )
-        if "after" in fm:
-            row["raw_after"] = _list(fm["after"], f"{where}/{path.name}")
+        row["raw_after"] = _list(fm.get("after", []), f"{where}/{path.name}")
     return list(rows.values()) + [unlisted[n] for n in sorted(unlisted)] + stray
 
 

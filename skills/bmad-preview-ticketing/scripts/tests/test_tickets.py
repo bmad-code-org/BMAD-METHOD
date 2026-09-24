@@ -246,6 +246,35 @@ covers = ["R2", "R3"]
         self.assertTrue(rows[1]["drift"])
         self.assertNotIn("drift", rows[0])
 
+    def test_missing_file_fields_are_empty_and_flag_drift(self):
+        self.breakdown_epic(
+            self.BREAKDOWN.replace(
+                'title = "UI shell"\nafter = [1]\ncovers = ["R1"]',
+                'title = "UI shell"\nafter = [1]\ncovers = ["R1"]\nhitl = true\nestimate = 3',
+            )
+        )
+        self.add("story-scaffold.md", ticket("draft", 1))
+        self.add(
+            "story-ui-shell.md",
+            '---\nid: 2\ntype: story\ntitle: "UI shell"\n---\n\n# UI shell\n',
+        )
+
+        out = self.next()
+        row = next(
+            ticket
+            for tickets in out.values()
+            if isinstance(tickets, list)
+            for ticket in tickets
+            if ticket.get("file") == "story-ui-shell.md"
+        )
+        self.assertEqual(row["after"], [])
+        self.assertFalse(row["hitl"])
+        self.assertEqual(row["covers"], [])
+        self.assertEqual(row["estimate"], "")
+
+        status = json.loads(run("status", str(self.epic)).stdout)["tickets"]
+        self.assertTrue(next(ticket for ticket in status if ticket["id"] == 2)["drift"])
+
     def test_pull_writes_the_leaf_and_only_a_refine_entry_waits_for_refinement(self):
         self.breakdown_epic(
             self.BREAKDOWN.replace(
