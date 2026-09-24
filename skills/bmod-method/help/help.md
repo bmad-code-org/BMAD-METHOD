@@ -96,8 +96,8 @@ One line per skill: what it is for and what it writes. The files it writes are h
 | `bmad-sprint-planning` | A readiness verdict, then a status file. Answers "where are we" on the epics route. | `{implementation_artifacts}/sprint-status.yaml` |
 | `bmad-preview-ticketing` | Preview. A ticket tree run as a board: initiatives, epics, stories planned as entries in `tickets.toml`, a file only when refined or published, one-off bugs, optional tracker. | Ticket files under `{output_folder}/{active_initiative}/` and `{output_folder}/backlog/` |
 | **Implementation** (`help/implementation-skills.md`) | | |
-| `bmad-build` | One session of delivery: clarifies intent, plans, implements, reviews, commits. The default for any real change. Takes free text, a spec folder plus story id, or any file as intent. | `{implementation_artifacts}/spec-{slug}.md`, or `stories/{story_id}-{slug}.md` in the spec folder; `deferred-work.md` |
-| `bmad-build-auto` | One unattended build of one story, dispatched by a loop or script. Never for attended work. | The same story files as `bmad-build` |
+| `bmad-build` | One session of delivery: clarifies intent, plans, implements, reviews, commits. The default for any real change. Takes free text, a ticket from the tree (nothing means the next ready one), or any file as intent. | A ticket's plan beside `tickets.toml`, or `{implementation_artifacts}/plan-{slug}.md`; `deferred-work.md` |
+| `bmad-build-auto` | One unattended build of one ticket, dispatched by a loop or script. Never for attended work. | The same plans as `bmad-build` |
 | `bmad-correct-course` | Assesses a significant midstream change on the epics route. Needs a PRD and epics. | `{planning_artifacts}/sprint-change-proposal-{date}.md` |
 | **Validation** (`help/validation-skills.md`) | | |
 | `bmad-code-review` | Agent review of any diff, PR, or branch, with triaged findings. Redundant right after a full `bmad-build` review of the same change. | A `Review Findings` section in the story file, or chat |
@@ -152,7 +152,7 @@ An agent and its skills are two ways into the same work: a skill run directly do
 | `bmad-spec` | Its open questions and assumptions, if any. Then `bmad-preview-ticketing` with the spec folder to plan the stories, and `bmad-build` per story, or straight to `bmad-build` when one session can do it. |
 | `bmad-create-epics-and-stories` | `bmad-sprint-planning`. |
 | `bmad-sprint-planning` | `bmad-build` on the story its status view names. On FAIL, the skill that owns the gap. |
-| `bmad-build` | Open a PR, or `bmad-walkthrough` when a person wants to understand the change, then the next story. `bmad-qa-generate-e2e-tests` when end-to-end coverage is wanted. |
+| `bmad-build` | Open a PR, or `bmad-walkthrough` when a person wants to understand the change. Once the user marks the ticket done, the next ticket. `bmad-qa-generate-e2e-tests` when end-to-end coverage is wanted. |
 | The last story of an epic or spec folder | `bmad-retrospective`, then a refactoring pass over the whole changeset, which is commonly skipped (`help/preparing-a-repo-for-agents.md`). Then close the epic out and archive its story files (`help/artifact-lifetime.md`). |
 
 ## Answering "what's next?"
