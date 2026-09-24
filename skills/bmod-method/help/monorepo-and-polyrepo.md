@@ -17,6 +17,6 @@ Work from a workspace folder that holds every project checked out side by side.
 - A spec or story names the projects it touches. `bmad-build` runs from the workspace root and works in the project, or the worktree, the story belongs to.
 - `bmad-project-context` rules belong to each project's own `AGENTS.md`, because each repository has its own conventions. Rules that hold across all of them go in an `AGENTS.md` at the workspace root.
 
-## Coming in v7
+## The active initiative
 
-A setting will name the active initiative, and all planning and implementation artifacts will be grouped under it. `bmad-preview-ticketing` already works this way (`help/ticketing-setup.md`). Until then the output folder is shared by everything in the workspace, so clear names for spec folders matter. A v6 project moves to that layout with `bmad migrate method`, which asks at plan time whether the store should be its own repository, sit in a workspace, and use worktrees, and makes those repository changes before it moves any artifact.
+`active_initiative` names the current initiative in the ticket store. Its planning documents, epics, entries, and joined plans stay together; standalone tickets live in a backlog. See `help/ticketing-setup.md`. A v6 project moves to that layout with `bmad migrate method`, which asks at plan time whether the store should be its own repository, sit in a workspace, and use worktrees, and makes those repository changes before it moves any artifact.

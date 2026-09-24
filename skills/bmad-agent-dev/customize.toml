@@ -71,11 +71,11 @@ description = "Initiate a comprehensive code review across multiple quality face
 skill = "bmad-code-review"
 
 [[agent.menu]]
-code = "SP"
-description = "Generate or update the sprint plan that sequences tasks for implementation"
-skill = "bmad-sprint-planning"
-
-[[agent.menu]]
 code = "ER"
 description = "Evidence-based review of a completed epic against its acceptance criteria"
 skill = "bmad-retrospective"
+
+[[agent.menu]]
+code = "TK"
+description = "Plan and track work through the ticket tree"
+skill = "bmad-preview-ticketing"
