@@ -31,7 +31,6 @@ output_folder = "{project-root}/_bmad-output"
 [modules.bmm]
 planning_artifacts = "{project-root}/_bmad-output/planning-artifacts"
 implementation_artifacts = "{project-root}/_bmad-output/implementation-artifacts"
-project_knowledge = "{project-root}/docs"
 
 [agents.bmad-agent-pm]
 module = "bmm"
@@ -1627,7 +1626,6 @@ class BmadSetupTests(unittest.TestCase):
             parsed["modules"]["bmm"]["implementation_artifacts"],
             "{project-root}/_bmad-output/implementation-artifacts",
         )
-        self.assertEqual(parsed["modules"]["bmm"]["project_knowledge"], "{project-root}/docs")
         self.assertEqual(set(parsed["agents"]), set(expected["agents"]))
         for code, expected_agent in expected["agents"].items():
             got = parsed["agents"][code]

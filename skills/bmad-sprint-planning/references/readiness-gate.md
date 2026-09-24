@@ -2,7 +2,7 @@
 
 Before generating any tracking, judge whether the plan can actually be built. If the user only asked to check readiness, this gate is the deliverable — report the verdict and stop.
 
-Inventory what planning actually exists: scan `{planning_artifacts}` and `{project_knowledge}` for intent and planning artifacts — briefs, PRFAQs, PRDs, specs, UX outputs, architecture, epics and stories. Identify documents by reading what they are, not by filename patterns; projects arrive with different artifact mixes and naming.
+Inventory what planning actually exists: scan `{planning_artifacts}`, and any other folders the user names, for intent and planning artifacts — briefs, PRFAQs, PRDs, specs, UX outputs, architecture, epics and stories. Identify documents by reading what they are, not by filename patterns; projects arrive with different artifact mixes and naming.
 
 Assess the plan as a whole against one question: **could a developer implement these epics without inventing decisions nothing records?**
 
