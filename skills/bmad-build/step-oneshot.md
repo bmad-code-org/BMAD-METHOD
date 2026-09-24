@@ -19,8 +19,6 @@ You reach this step from step 2, or from step 1 when resuming a plan whose `rout
 
 ### Implement
 
-If `{story_key}` is not empty and `{{ config.implementation_artifacts }}/sprint-status.yaml` exists, read `{{ rendered("sync-sprint-status.md") }}` with `{target_status}` = `in-progress`.
-
 If intent gaps remain, present each as a numbered question with its options and what each option means, HALT for the human's answers, and fold the answers into the Intent.
 
 Capture `baseline_revision` (current HEAD, or `NO_VCS` if version control is unavailable) into `{plan_file}` frontmatter before making any changes. If the frontmatter already contains `baseline_revision` (resumed run), preserve the existing value.
@@ -102,8 +100,6 @@ Update `{plan_file}`:
 
 1. Set `status: 'built'` in the frontmatter.
 2. If review found anything, add `## Review Triage Log` with one line per finding: verdict and evidence. For `false`, the disproof. For `maybe-false`, what would settle it. For rejected `low`, why it was not worth fixing.
-
-If `{story_key}` is not empty and `{{ config.implementation_artifacts }}/sprint-status.yaml` exists, read `{{ rendered("sync-sprint-status.md") }}` with `{target_status}` = `review`.
 
 ### Commit
 

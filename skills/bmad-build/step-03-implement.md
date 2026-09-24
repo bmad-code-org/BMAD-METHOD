@@ -24,8 +24,6 @@ Capture `baseline_revision` (current HEAD, or `NO_VCS` if version control is una
 
 Change `{plan_file}` status to `in-progress` in the frontmatter before starting implementation.
 
-If `{story_key}` is not empty and `{{ config.implementation_artifacts }}/sprint-status.yaml` exists, read `{{ rendered("sync-sprint-status.md") }}` with `{target_status}` = `in-progress`.
-
 Execute the implementation handoff below: substitute the runtime placeholders (e.g. `{plan_file}`) into it, then follow it verbatim.
 
 {{ workflow.implementation_handoff }}
