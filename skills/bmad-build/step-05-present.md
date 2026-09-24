@@ -10,9 +10,9 @@
 
 ## INSTRUCTIONS
 
-### Mark Plan Done
+### Mark Plan Built
 
-Change `{plan_file}` status to `done` in the frontmatter.
+Change `{plan_file}` status to `built` in the frontmatter.
 
 If `{story_key}` is not empty and `{{ config.implementation_artifacts }}/sprint-status.yaml` exists, read `{{ rendered("sync-sprint-status.md") }}` with `{target_status}` = `review`.
 

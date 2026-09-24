@@ -19,19 +19,21 @@ with that stem (a backlog leaf). A plan is never a row of its own. It holds the 
 `assignee`, `blocked_at`, and `blocked_reason`; a leaf file's own fields are read only when the
 ticket has no plan.
 
-`status` is draft, ready-for-dev, in-progress, or in-review from the builds, blocked from build-auto,
-done from the user or an orchestrator through mark, or dropped; absent means no build has started.
+`status` is draft, ready-for-dev, in-progress, in-review, or built from the builds (built is their
+last: the build finished and nobody has called it done), blocked from build-auto, done from the
+user or an orchestrator through mark, or dropped; absent means no build has started.
 On a tracker store `tracker_status` mirrors the tracker's word (backlog, in-progress, review, done,
 dropped). A ticket's `state` is `planned` with no file and no plan, else `tracker_status`, else
 derived from `status`: absent, draft, ready-for-dev -> backlog; in-progress, blocked -> in-progress;
-in-review -> review; done; dropped.
+in-review, built -> review; done; dropped.
 
 `after` lists real prerequisites: a sibling's id as a bare integer, or a quoted string that is
 `<epic id>.<entry id>` for an entry in another epic of the same initiative, `epic-<slug>` for that
 whole epic, a file name, or a tracker id. An epic file's own `after` names epics and holds every
 ticket under it; rows show it as `gated_by`. A dropped prerequisite still blocks.
 
-  next   [<dir>]                 tickets whose prerequisites are done, grouped by state, in build order
+  next   [<dir>]                 tickets whose prerequisites are done or in review, grouped by state, in
+                                 build order; an epic's own `after` waits for that epic to be done
   status [<dir>]                 every ticket in build order, what it blocks, counts by state, longest chain
   find   [<dir>] <ref>           the one ticket a reference names, with its entry's text fields and the
                                  absolute paths `epic_file`, `story_file` (null until pulled), and `plan`
@@ -44,7 +46,8 @@ ticket under it; rows show it as `gated_by`. A dropped prerequisite still blocks
 
 `<dir>` is an epic folder, a backlog folder, or an initiative folder (all its epics). `<ref>` is
 `<epic id>.<entry id>`, an entry id inside an epic folder, a tracker id, a file name, or words
-from the title that match one ticket.
+from the title that match one ticket. Each row of next, status, and find carries `ref`, a reference
+find resolves in the folder the command ran on.
 `--project-root` names the project holding `_bmad/` when the tickets live outside it.
 
 With no `<dir>`, next, status, find, and mark run on the active initiative, `{tickets.root}/{active_initiative}`.
@@ -70,7 +73,7 @@ from pathlib import Path
 
 sys.dont_write_bytecode = True
 
-STATUSES = ("draft", "ready-for-dev", "in-progress", "in-review", "done", "blocked", "dropped")
+STATUSES = ("draft", "ready-for-dev", "in-progress", "in-review", "built", "done", "blocked", "dropped")
 STATES = ("backlog", "in-progress", "review", "done", "dropped")
 CONTAINER_STATUSES = ("in-progress", "done", "dropped")
 STATE_OF = {
@@ -80,6 +83,7 @@ STATE_OF = {
     "in-progress": "in-progress",
     "blocked": "in-progress",
     "in-review": "review",
+    "built": "review",
     "done": "done",
     "dropped": "dropped",
 }
@@ -500,6 +504,8 @@ def in_scope(tree: dict) -> list[dict]:
 
 def classify(tree: dict) -> dict:
     done = done_keys(tree)
+    # A ticket in review meets an `after`; an epic gate still waits for the epic to be done.
+    met = done | {t["key"] for t in tree["tickets"] if t["state"] == "review"}
     groups = {"ready_to_refine": [], "ready_to_start": [], "in_progress": [], "blocked": []}
     for t in in_scope(tree):
         s = t["state"]
@@ -509,7 +515,7 @@ def classify(tree: dict) -> dict:
             groups["blocked"].append(t)
         elif s in ("in-progress", "review"):
             groups["in_progress"].append(t)
-        elif not all(b in done for b in t["after"] + t["gated_by"]):
+        elif not (all(b in met for b in t["after"]) and all(b in done for b in t["gated_by"])):
             groups["blocked"].append(t)
         elif t["refine"] and not t["refined"]:
             groups["ready_to_refine"].append(t)
@@ -577,6 +583,16 @@ def unpinned_after(tree: dict) -> list[dict]:
     return out
 
 
+def row_ref(t: dict, tree: dict) -> str | None:
+    """What `find` resolves to this ticket in the folder the command ran on; never the title,
+    which can repeat across epics."""
+    if t["id"] is not None and t["epic"] in tree["epic_ids"]:
+        return f"{tree['epic_ids'][t['epic']]}.{t['id']}"
+    if t["id"] is not None and t["epic"] == tree["scope"]:
+        return str(t["id"])
+    return t["file"]
+
+
 def public(t: dict, tree: dict, blocks: dict | None = None) -> dict:
     row = {
         k: t[k]
@@ -600,6 +616,7 @@ def public(t: dict, tree: dict, blocks: dict | None = None) -> dict:
             "blocked_reason",
         )
     }
+    row["ref"] = row_ref(t, tree)
     row["after"] = [ref(b, t["epic"], tree) for b in t["after"]]
     if t["gated_by"]:
         row["gated_by"] = t["gated_by"]
@@ -929,7 +946,7 @@ def main() -> int:
         help="project holding _bmad/; default: walk up from the ticket folder, or the working directory with no folder",
     )
     sub = parser.add_subparsers(dest="command", required=True)
-    p = sub.add_parser("next", help="tickets whose prerequisites are done, by state")
+    p = sub.add_parser("next", help="tickets whose prerequisites are done or in review, by state")
     p.add_argument("dir", nargs="?", help="default: the active initiative")
     p.add_argument("--synced", action="store_true", help="tracker status was mirrored just now")
     p.set_defaults(func=cmd_next)

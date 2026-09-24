@@ -57,9 +57,14 @@ def ticket(
 
 def plan(ticket_id, status=None, assignee=None, blocked_at=None, blocked_reason=None):
     """A plan as the build's template writes it: quoted values, trailing comments, block lists."""
-    lines = ["---", "title: 'x'", "type: 'feature' # feature | bugfix | refactor | chore", f"ticket: {ticket_id}"]
+    lines = [
+        "---",
+        "title: 'x'",
+        "type: 'feature' # feature | bugfix | refactor | chore",
+        f"ticket: '{ticket_id}' # the entry id from the ticket tree, or the story file's stem when the entry has no id; empty outside it",
+    ]
     if status:
-        lines.append(f"status: '{status}' # draft | ready-for-dev | in-progress | in-review | done")
+        lines.append(f"status: '{status}' # draft | ready-for-dev | in-progress | in-review | built | done")
     for key, value in (("assignee", assignee), ("blocked_at", blocked_at), ("blocked_reason", blocked_reason)):
         if value:
             lines.append(f"{key}: '{value}'")
@@ -284,6 +289,59 @@ covers = ["R2", "R3"]
         out = self.next()
         self.assertEqual([e["id"] for e in out["ready_to_start"]], [1])
         self.assertEqual([e["id"] for e in out["blocked"]], [2, 3, 4])
+
+    def test_a_prerequisite_in_review_is_met_and_one_in_progress_is_not(self):
+        self.breakdown_epic()
+        self.add("story-scaffold-plan.md", plan(1, "in-review"))
+        out = self.next()
+        self.assertEqual([e["id"] for e in out["ready_to_start"]], [2, 3])
+        self.assertEqual([e["id"] for e in out["in_progress"]], [1])
+        self.add("story-scaffold-plan.md", plan(1, "in-progress"))
+        out = self.next()
+        self.assertEqual(out["ready_to_start"], [])
+        self.assertEqual([e["id"] for e in out["blocked"]], [2, 3, 4])
+
+    def test_an_epic_gate_waits_for_the_epic_to_be_done_even_with_its_tickets_in_review(self):
+        pricing = self.pricing()
+        self.breakdown_epic('[[entry]]\nid = 1\ntype = "story"\ntitle = "Cart"\nafter = ["1.2"]\n')
+        self.add("story-pricing-contract-plan.md", plan(1, "in-review"), pricing)
+        self.add("story-pricing-rules-plan.md", plan(2, "in-review"), pricing)
+        self.assertEqual([e["id"] for e in self.next()["ready_to_start"]], [1])
+        (self.epic / "epic-cart.md").write_text("---\ntype: epic\nafter: [epic-pricing]\n---\n# epic-cart\n")
+        out = self.next()
+        self.assertEqual(out["ready_to_start"], [])
+        self.assertEqual(out["blocked"][0]["gated_by"], ["epic-pricing"])
+        (pricing / "epic-pricing.md").write_text("---\ntype: epic\nstatus: done\n---\n# epic-pricing\n")
+        self.assertEqual([e["id"] for e in self.next()["ready_to_start"]], [1])
+
+    def test_every_row_carries_a_ref_that_find_resolves_to_the_same_row(self):
+        self.pricing()
+        self.breakdown_epic()
+        backlog = self.add_backlog()
+        self.add("bug-x.md", ticket("draft", kind="bug"), backlog)
+        cases = (
+            (self.initiative, ["1.1", "1.2", "2.1", "2.2", "2.3", "2.4"]),
+            (self.epic, ["2.1", "2.2", "2.3", "2.4"]),
+            (backlog, ["bug-x.md"]),
+        )
+        for folder, refs in cases:
+            rows = self.status_rows(folder)
+            self.assertEqual([r["ref"] for r in rows], refs, folder.name)
+            for row in rows:
+                r = run("find", str(folder), row["ref"])
+                self.assertEqual(r.returncode, 0, r.stderr)
+                found = json.loads(r.stdout)
+                self.assertEqual(
+                    [found[k] for k in ("epic", "id", "file", "ref")], [row[k] for k in ("epic", "id", "file", "ref")]
+                )
+            for group in ("ready_to_start", "blocked"):
+                for row in json.loads(run("next", str(folder)).stdout)[group]:
+                    self.assertIn(row["ref"], refs)
+
+    def test_a_ref_is_the_bare_id_in_an_epic_the_initiative_does_not_number(self):
+        self.breakdown_epic()
+        self.assertEqual([r["ref"] for r in self.next()["ready_to_start"]], ["1"])
+        self.assertEqual(json.loads(run("find", str(self.epic), "1").stdout)["title"], "Scaffold")
 
     def test_file_prerequisites_win_over_the_entry_and_status_flags_the_drift(self):
         self.breakdown_epic()
@@ -726,7 +784,7 @@ covers = ["R2", "R3"]
         self.assertEqual(
             after,
             text.replace(
-                "status: 'in-progress' # draft | ready-for-dev | in-progress | in-review | done",
+                "status: 'in-progress' # draft | ready-for-dev | in-progress | in-review | built | done",
                 "status: in-review",
             ).replace("\n---\n\n# x", '\nassignee: "ann"\n---\n\n# x'),
         )
@@ -875,6 +933,15 @@ covers = ["R2", "R3"]
         self.add("story-ui-shell.md", ticket("draft", 2, after="[1]", tracker_status="done"))
         self.assertEqual(json.loads(run("status", str(self.epic)).stdout)["tickets"][1]["state"], "done")
 
+    def test_a_built_plan_reads_as_review_and_mark_accepts_built(self):
+        self.breakdown_epic()
+        self.add("story-scaffold-plan.md", plan(1, "built"))
+        out = self.next()
+        self.assertEqual([(e["id"], e["status"], e["state"]) for e in out["in_progress"]], [(1, "built", "review")])
+        self.assertEqual([e["id"] for e in out["ready_to_start"]], [2, 3])
+        self.assertEqual(self.mark(str(self.epic), "2", "built")["status"], "built")
+        self.assertEqual(self.status_rows(self.epic)[1]["state"], "review")
+
     def test_a_plan_with_blocked_at_blocks_its_entry(self):
         self.breakdown_epic()
         self.add("story-scaffold-plan.md", plan(1, "in-progress", blocked_at="2026-09-05", blocked_reason="legal"))
@@ -905,7 +972,7 @@ covers = ["R2", "R3"]
 
     def test_a_quoted_numeric_ticket_joins_its_entry_and_a_doubled_quote_reads_as_one(self):
         self.breakdown_epic()
-        self.add("story-ui-shell-plan.md", plan("'2'", "blocked", blocked_reason="can''t"))
+        self.add("story-ui-shell-plan.md", plan(2, "blocked", blocked_reason="can''t"))
         blocked = self.next()["blocked"]
         self.assertEqual([(e["id"], e["status"], e["blocked_reason"]) for e in blocked][0], (2, "blocked", "can't"))
 
