@@ -35,7 +35,7 @@ target = """
     brief-<slug>/brief-<slug>.md
     ux-<slug>/ux-<slug>.md          # a router: what DESIGN.md and EXPERIENCE.md beside it are
     architecture-<slug>/architecture-<slug>.md
-    spec-<slug>/spec-<slug>.md      # plus its companions, unchanged
+    spec-<slug>/SPEC.md             # plus its companions, unchanged
     epic-<slug>/
       epic-<slug>.md                # the epic envelope
       tickets.toml                  # one [[entry]] per story, in build order

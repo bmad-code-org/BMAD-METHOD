@@ -32,10 +32,12 @@ Before starting a candidate, read it and its source. One in `next`'s `ready_to_r
     initiative-checkout.md
     tickets.toml                             # the epics in build order
     spec-checkout/
+      SPEC.md
     epic-cart-rules/
       epic-cart-rules.md
       tickets.toml                           # every planned entry, pulled or not
       spec-cart-rules/
+        SPEC.md
       story-cart-service-scaffold.md           # pulled; its id is in its frontmatter, its plan under `## Plan`
       spike-discount-engine-latency.md
   backlog/

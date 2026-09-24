@@ -7,7 +7,7 @@ Read this when the question is about `bmad-spec`, `bmad-prd`, `bmad-ux`, `bmad-a
 - Pick when: the user has anything to distill, or can explain the idea in detail; after any other analysis or planning skill finishes; when requirements change on the spec route (it appends to its log, re-derives the spec, and names the tickets that no longer match).
 - Not when: the input is a bare idea. It distills and does not coach → `bmad-product-brief` first, or `bmad-prd` when full requirements are needed.
 - Splitting into stories is not this skill: send the user to `bmad-preview-ticketing` with the spec folder, which plans one epic whose stories cite the spec's `CAP-N` ids. After writing a spec that reads as several slices, `bmad-spec` offers that hand-off once.
-- Writes: `{output_folder}/specs/spec-{slug}/` holding `SPEC.md` and companions.
+- Writes: `{output_folder}/specs/spec-{slug}/` holding `SPEC.md` and companions when used standalone. When handed to `bmad-preview-ticketing`, invoke it with the container-local output folder so the same spec folder is placed beside that container.
 
 **`bmad-prd`** — coaches detailed requirements out of the user.
 - Gives: a PRD sized to the stakes (about 2 pages for a hobby project, longer for a launch): features, requirements with stable ids, user journeys, non-goals, MVP scope, metrics. Fast path or coaching path. Also updates and validates an existing PRD.

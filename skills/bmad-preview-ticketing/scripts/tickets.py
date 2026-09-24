@@ -194,11 +194,19 @@ def load_container(folder: Path) -> dict:
         raise TicketError(
             f"{folder.name}/{path.name}: status {fm['status']!r} is not one of {', '.join(CONTAINER_STATUSES)}"
         )
+    specs = sorted(
+        path.parent / name
+        for name in path.parent.iterdir()
+        if name.is_dir() and name.name.startswith("spec-") and (name / "SPEC.md").is_file()
+    )
+    if len(specs) > 1:
+        raise TicketError(f"{folder.name}: more than one local spec folder")
     return {
         "slug": folder.name,
         "tracker_id": str(fm.get("tracker_id", "") or ""),
         "status": fm.get("status", ""),
         "raw_after": _list(fm.get("after"), f"{folder.name}.md"),
+        "spec": specs[0].relative_to(path.parent).as_posix() if specs else "",
     }
 
 
@@ -627,6 +635,7 @@ def cmd_status(args) -> dict:
                 "id": tree["epic_ids"].get(slug),
                 "status": c["status"],
                 "after": c["after"],
+                "spec": c["spec"],
                 "blocks": [ref(b, None, tree) for b in blocks.get(slug, [])],
             }
             for slug, c in tree["containers"].items()

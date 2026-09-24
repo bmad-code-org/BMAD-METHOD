@@ -158,6 +158,17 @@ class TicketsTests(unittest.TestCase):
         self.assertEqual(out["longest_remaining_chain"], ["epic-cart/2", "epic-cart/3", "epic-cart/4"])
         self.assertEqual(out["tickets"][2]["blocks"], [4, 5])
 
+    def test_status_discovers_container_local_spec(self):
+        spec = self.epic / "spec-cart-rules"
+        spec.mkdir()
+        (spec / "SPEC.md").write_text("# Cart rules\n")
+
+        r = run("status", str(self.initiative))
+
+        self.assertEqual(r.returncode, 0, r.stderr)
+        out = json.loads(r.stdout)
+        self.assertEqual(out["epics"][0]["spec"], "spec-cart-rules")
+
     BREAKDOWN = """
 [[entry]]
 id = 1

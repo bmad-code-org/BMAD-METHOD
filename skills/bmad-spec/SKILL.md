@@ -31,7 +31,7 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
 
 ## Workspace
 
-The spec is **always a folder** named `{workflow.spec_output_path}/{workflow.run_folder_pattern}`, resolving by default to `{output_folder}/specs/spec-{slug}/`.
+The spec is **always a folder** named `{workflow.spec_output_path}/{workflow.run_folder_pattern}`, resolving by default to `{output_folder}/specs/spec-{slug}/`. When `bmad-preview-ticketing` hands you a container-local output folder, use that folder as `workflow.spec_output_path` for this run so `SPEC.md` and its companions land beside the container; standalone runs keep the default.
 
 `{slug}` describes the thing being specced, not the input shape:
 
