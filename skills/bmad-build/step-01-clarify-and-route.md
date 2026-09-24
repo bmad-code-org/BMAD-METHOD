@@ -19,7 +19,7 @@ Before listing artifacts, resolve existing workflow state in this order. Skip th
    Did the user pass a specific file path, plan name, or clear instruction this message?
    - If the user explicitly supplied a spec folder and a story id, with no specific plan file path, set `spec_folder` and `story_id`. Read `{spec_folder}/stories.yaml`; if it is missing or fails to parse, HALT rather than falling back to `{{ config.implementation_artifacts }}`. Find the one entry whose string `id` exactly equals `story_id`; if none exists, HALT rather than falling back. Use that entry's `title` and `description` as the starting intent.
      - Look for files matching `{spec_folder}/stories/{story_id}-*.md`. More than one match → HALT rather than choosing one. Exactly one match → set `plan_file` to that path and process it exactly as if the user had supplied that specific file path, including **Story-key resolution** and the existing status route below. No matches → derive a valid kebab-case slug from the entry's `title` (and `description` if needed), then set `plan_file` = `{spec_folder}/stories/{story_id}-{slug}.md` and proceed to INSTRUCTIONS.
-   - If it points to a file whose frontmatter `type` is `story`, `spike`, or `bug`, it is a ticket, not a plan, whatever its `status`: ingest it as starting intent together with its parent container's file and what its References name, and proceed to INSTRUCTIONS. Never set `plan_file` to it and never write to it.
+   - If it names a ticket from the tree — a ref such as `1.2`, a ticket file (frontmatter `type` `story`, `spike`, or `bug`, whatever its `status`) by path or name, or words the user offers as a ticket's title — run `uv run {project-root}/_bmad/method/scripts/tickets.py --project-root {project-root} find <ref>`. For a ticket file, pass its folder before its file name. Non-zero exit → show its error and HALT. Otherwise follow **Ticket resolution** (below).
    - If it points to a file that matches the plan template (has `status` frontmatter with a recognized value: draft, ready-for-dev, in-progress, in-review, built, or done) → set `plan_file`. Before exiting, run **Story-key resolution** (below). Then **EARLY EXIT** to the appropriate step: `draft` → `{{ rendered("step-02-plan.md") }}`, {% if workflow.route == "oneshot" %}`ready-for-dev`/`in-progress` → `{{ rendered("step-oneshot.md") }}`{% elif workflow.route == "full" %}`ready-for-dev`/`in-progress` → `{{ rendered("step-03-implement.md") }}`, `in-review`/`built` → `{{ rendered("step-04-review.md") }}`{% else %}`ready-for-dev`/`in-progress` → `{{ rendered("step-03-implement.md") }}` (or `{{ rendered("step-oneshot.md") }}` when `route` is `oneshot`), `in-review`/`built` → `{{ rendered("step-04-review.md") }}`{% endif %}. For `done`, ingest as context and proceed to INSTRUCTIONS — do not resume.
    - Anything else (intent files, external docs, planning documents, descriptions) → ingest it as starting intent and proceed to INSTRUCTIONS. Do not attempt to infer a workflow state from it.
 
@@ -27,17 +27,17 @@ Before listing artifacts, resolve existing workflow state in this order. Skip th
    Do the last few human messages clearly show what the user intends to work on?
    Use the same routing as above.
 
-3. Next ready entry in the ticket tree
-   With no argument and no intent from the conversation, first check `{{ config.implementation_artifacts }}` for `draft`, `ready-for-dev`, `in-progress`, or `in-review` plans. Any → go to 4. Otherwise run `uv run {project-root}/_bmad/method/scripts/tickets.py --project-root {project-root} next`.
+3. The ticket tree
+   With no argument and no intent from the conversation, run `uv run {project-root}/_bmad/method/scripts/tickets.py --project-root {project-root} next`.
    - Non-zero exit (no active initiative, a store refusal, a malformed tree) → say in one line that the ticket tree is unavailable and why, then go to 4.
-   - Empty `ready_to_start` → say in one line that nothing in the tree is ready, naming what is ready to refine, in progress, or blocked, then go to 4.
-   - Otherwise take the first row of `ready_to_start` and run the same command with `find <ref>`, passing that row's `ref`. Find's `description`, `verify`, `references`, `notes`, and `unknown` are the starting intent, together with `epic_file` and what that file's References name, and `story_file` when it is not null. Never write to a ticket file, and never run `pull` or `mark`. Tell the user in one line which entry you are building.
-   - When the file at find's `plan` exists on disk, treat it as a plan file the user named and follow branch 1's plan-file rule (set `plan_file`, **Story-key resolution**, **EARLY EXIT** by its status).
-   - Otherwise set `plan_file` to find's `plan`; the plan's frontmatter carries `ticket` set to find's `id`, or to the stem of find's `story_file` when `id` is null, never its `ref`. Proceed to INSTRUCTIONS, skipping steps 1 and 5.
+   - A row in any group whose `status` is `draft`, `ready-for-dev`, `in-progress`, or `in-review` has a started plan when the file at `find <ref>`'s `plan` exists. When there are any, or `{{ config.implementation_artifacts }}` holds a plan with one of those statuses, go to 4.
+   - No `ready_to_start` row → say in one line that nothing in the tree is ready, naming what is ready to refine, in progress, or blocked, then go to 4.
+   - Otherwise run `find <ref>` with the first `ready_to_start` row's `ref`, tell the user in one line which entry you are building, and follow **Ticket resolution**.
 
 4. Otherwise — scan artifacts and ask
-   - Active plans (`draft`, `ready-for-dev`, `in-progress`, `in-review`) in `{{ config.implementation_artifacts }}`? → List them and HALT. Give the user a choice:
+   - Active plans (`draft`, `ready-for-dev`, `in-progress`, `in-review`) in `{{ config.implementation_artifacts }}`, or started plans in the tree from branch 3? → List them all and HALT. Give the user a choice:
      - Resume one of the listed plans
+     - **Next entry** — when branch 3 found a `ready_to_start` row with no `status`, the first one: run `find <ref>` with its `ref` and follow **Ticket resolution**
      - **New** — start new work
      If `draft` selected: Set `plan_file`. Run **Story-key resolution** (below). **EARLY EXIT** → `{{ rendered("step-02-plan.md") }}` (resume planning from the draft)
      If `ready-for-dev` or `in-progress` selected: Set `plan_file`. Run **Story-key resolution** (below). **EARLY EXIT** → {% if workflow.route == "oneshot" %}`{{ rendered("step-oneshot.md") }}`{% elif workflow.route == "full" %}`{{ rendered("step-03-implement.md") }}`{% else %}`{{ rendered("step-03-implement.md") }}` (or `{{ rendered("step-oneshot.md") }}` when `route` is `oneshot`){% endif +%}
@@ -46,6 +46,13 @@ Before listing artifacts, resolve existing workflow state in this order. Skip th
 {% endif %}
      If the user chooses **New**: proceed to INSTRUCTIONS
    - Unformatted plan or intent file lacking `status` frontmatter? → Suggest treating its contents as the starting intent. Do NOT attempt to infer a state and resume it.
+
+### Ticket resolution
+
+This runs on the output of `tickets.py find` for one ticket. Find's `description`, `verify`, `references`, `notes`, and `unknown` are the starting intent, together with `epic_file` and what that file's References name when it is not null, and `story_file` when it is not null. Never write to a ticket file, and never run `pull` or `mark`.
+
+- When the file at find's `plan` exists on disk, treat it as a plan file the user named and follow branch 1's plan-file rule (set `plan_file`, **Story-key resolution**, **EARLY EXIT** by its status).
+- Otherwise set `plan_file` to find's `plan`; the plan's frontmatter carries `ticket` set to find's `id`, or to the stem of find's `story_file` when `id` is null, never its `ref`. Proceed to INSTRUCTIONS, skipping steps 1 and 5.
 
 ### Story-key resolution
 
