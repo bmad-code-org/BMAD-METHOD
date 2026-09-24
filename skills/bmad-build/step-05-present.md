@@ -14,8 +14,6 @@
 
 Change `{plan_file}` status to `built` in the frontmatter.
 
-If `{story_key}` is not empty and `{{ config.implementation_artifacts }}/sprint-status.yaml` exists, read `{{ rendered("sync-sprint-status.md") }}` with `{target_status}` = `review`.
-
 ### Commit and Complete
 
 If version control is available and the tree is dirty, create a local commit with a conventional message derived from the plan title.
