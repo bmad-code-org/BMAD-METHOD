@@ -1,8 +1,8 @@
 # Step 1: Orientation
 
 Understand what the target is and what it is for. Use the target's
-spec, PR description, and commit messages when they exist. Ask the
-user questions until you know both.
+plan or spec, PR description, and commit messages when they exist.
+Ask the user questions until you know both.
 
 ## CHECKPOINT
 

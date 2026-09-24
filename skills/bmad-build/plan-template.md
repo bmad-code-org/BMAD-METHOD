@@ -3,7 +3,7 @@ title: '{title}'
 type: 'feature' # feature | bugfix | refactor | chore
 ticket: '' # the entry id from the ticket tree, or the story file's stem when the entry has no id; empty outside it
 created: '{date}'
-status: 'draft' # draft | ready-for-dev | in-progress | in-review | built | done
+status: 'draft' # draft | ready-for-dev | in-progress | in-review | built | done | blocked
 route: '' # oneshot | full — set by step-02
 route_source: '' # pinned | auto — set with route by step-02
 review: '' # none | quick | thorough — set by step-04
@@ -15,7 +15,7 @@ context: [] # optional: `{project-root}/`-prefixed paths to project-wide standar
 
 <!-- Target: 900–1300 tokens (less if route is oneshot). Above 1600 = high risk of context rot.
      Never over-specify "how" — use boundaries + examples instead.
-     Cohesive cross-layer stories (DB+BE+UI) stay in ONE file.
+     Cohesive cross-layer changes (DB+BE+UI) stay in ONE file.
      IMPORTANT: Remove all HTML comments when filling this template. -->
 
 <frozen-after-approval reason="human-owned intent — do not modify unless human renegotiates">
