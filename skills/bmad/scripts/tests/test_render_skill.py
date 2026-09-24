@@ -662,8 +662,8 @@ class RenderSkillTests(unittest.TestCase):
         self.assertIn("/impl-v2/", after_config.read_text(encoding="utf-8"))
         self.assertTrue(before.exists())
 
-        (skill / "compile-epic-context.md").write_text(
-            (skill / "compile-epic-context.md").read_text(encoding="utf-8") + "\n<!-- effective change -->\n",
+        (skill / "plan-template.md").write_text(
+            (skill / "plan-template.md").read_text(encoding="utf-8") + "\n<!-- effective change -->\n",
             encoding="utf-8",
         )
         after_source = rs.render(ws.project, skill)
