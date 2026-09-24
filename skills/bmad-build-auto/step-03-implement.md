@@ -25,7 +25,7 @@ Change `{plan_file}` status to `in-progress` in the frontmatter before starting 
 {% if workflow.route != "full" %}
 #### Oneshot (`route: oneshot`)
 
-Implement in this main session from the story's Intent and working notes. Do not launch an implementing subagent or execute the full-route handoff. Append decisions, files touched, and surprises to `## Implementation Notes`.
+Implement in this main session from the plan's Intent and working notes. Do not launch an implementing subagent or execute the full-route handoff. Append decisions, files touched, and surprises to `## Implementation Notes`.
 
 Stop if the intent left out something the user would notice in the result. Record the gap in `## Implementation Notes`, then HALT with status `blocked` and blocking condition `intent gap` — do not guess.
 
