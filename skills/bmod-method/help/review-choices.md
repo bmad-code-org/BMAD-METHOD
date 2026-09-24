@@ -12,8 +12,8 @@ Use this when the user asks how much review to run, how to get another pass, whe
 
 ## Another pass, and when to stop
 
-- After `bmad-build`: run `bmad-code-review` with the story file. Handing `bmad-build` a `done` story file does not repeat the review.
-- After `bmad-build-auto`: dispatch the `done` record again.
+- After `bmad-build`: run `bmad-code-review` with the story file. Handing `bmad-build` its `built` plan runs another review; a `done` plan does not.
+- After `bmad-build-auto`: dispatch its `built` plan again.
 - Worth it when review was skipped or `quick`, after material fixes, or when an unattended run set `followup_review_recommended`. After a `thorough` build review it only repeats the same lenses.
 - Stop when findings are mostly minor notes about unlikely corner cases.
 - Real findings on a third pass point outside the change: a weak spec or unclear repo rules. Tell the user to fix that.

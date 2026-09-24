@@ -27,7 +27,7 @@ Before listing artifacts, resolve existing workflow state in this order. Skip th
 3. The ticket tree
    With no argument and no intent from the conversation, run `uv run {project-root}/_bmad/method/scripts/tickets.py --project-root {project-root} next`.
    - Non-zero exit (no active initiative, a store refusal, a malformed tree) → say in one line that the ticket tree is unavailable and why, then go to 4.
-   - A row in any group whose `status` is `draft`, `ready-for-dev`, `in-progress`, or `in-review` has a started plan when the file at `find <ref>`'s `plan` exists. When there are any, or `{{ config.implementation_artifacts }}` holds a plan with one of those statuses, go to 4.
+   - A row in any group whose `status` is `draft`, `ready-for-dev`, `in-progress`, or `in-review` has a started plan when the file at `find <ref>`'s `plan` exists. When any row has one, or `{{ config.implementation_artifacts }}` holds a plan with one of those statuses, go to 4.
    - No `ready_to_start` row → say in one line that nothing in the tree is ready, naming what is ready to refine, in progress, or blocked, then go to 4.
    - Otherwise run `find <ref>` with the first `ready_to_start` row's `ref`, tell the user in one line which entry you are building, and follow **Ticket resolution**.
 

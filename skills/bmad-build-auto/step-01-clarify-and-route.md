@@ -24,12 +24,12 @@ If the invocation prompt explicitly points to an existing plan file with recogni
 - `ready-for-dev` or `in-progress` → `{{ rendered("step-03-implement.md") }}`
 - `in-review` → `{{ rendered("step-04-review.md") }}`
 - `blocked` → HALT with status `blocked` and blocking condition `blocked plan supplied`.
-- `built` or `done` → set `review_loop_iteration` to `0` in the frontmatter and set `followup_pass` to `true`, then **EARLY EXIT** to `{{ rendered("step-04-review.md") }}` for a fresh review pass. (A `built` or `done` plan is a completed run, so this starts a follow-up review, not a resumption.)
-
-One ticket per invocation: never read another entry, and never advance to a different ticket regardless of outcome.
+- `built` or `done` → set `review_loop_iteration` to `0` in the frontmatter and set `followup_pass` to `true`, then **EARLY EXIT** to `{{ rendered("step-04-review.md") }}` for a fresh review pass.
 
 Otherwise, treat the invocation prompt as starting intent. This may be a story ID, ticket ID, file path, short description, or longer free-form intent. Do not infer workflow state from non-plan files.
 If the invocation prompt does not contain enough intent to identify what to implement, HALT with status `blocked` and blocking condition `unclear intent`.
+
+One ticket per invocation: never read another entry, and never advance to a different ticket regardless of outcome.
 
 ### Ticket resolution
 
@@ -54,7 +54,7 @@ This runs on the output of `tickets.py find` for one ticket. Set `ticket_args` t
 2. Resolve intent from the invocation prompt and loaded artifacts. Do not fantasize or leave open questions. If the intent cannot be resolved, HALT with status `blocked` and the unresolved questions as blocking condition.
 3. Version control sanity check. If version control is unavailable, skip this check. Otherwise require a clean working tree, a branch that fits the intent, and writable repository metadata. For Git, run `git add --refresh -- .`, then confirm the tree is still clean; on failure or change, HALT with status `blocked` and blocking condition `version-control metadata not writable`. For a ticket from the tree, judge the branch against the epic, not the story. HALT on a dirty tree or obvious branch mismatch.
 4. Multi-goal warning. If the intent appears to contain multiple independently shippable goals, carry `multiple-goals` forward so step-02 can add it to `{plan_file}` frontmatter `warnings`. Do not split or block.
-5. Route:
+5. Set the plan file.
 
    Derive a valid kebab-case slug from the clarified intent. If the intent references a tracking identifier (story number, issue number, ticket ID), lead the slug with it (e.g. `3-2-digest-delivery`, `gh-47-fix-auth`). If `{{ config.implementation_artifacts }}/plan-{slug}.md` already exists: if its status is `draft`, treat it as the same work and resume it (set `plan_file` to that path, **EARLY EXIT** → `{{ rendered("step-02-plan.md") }}`); otherwise append `-2`, `-3`, etc. Set `plan_file` = `{{ config.implementation_artifacts }}/plan-{slug}.md`.
 
