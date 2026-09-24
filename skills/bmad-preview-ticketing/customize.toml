@@ -139,7 +139,7 @@ checks.closure = [
 # Keep a home, under any name, for each section references/ticket.md refers to: Description,
 # Acceptance Criteria, Boundaries (stories), References, and Notes; for containers also Outcome,
 # Requirements, and Done when; Reproduction and Cause Hypothesis for bugs, Approach for spikes. `Decision:`, `Dropped:`, and `Estimate:` lines live in Notes.
-# Spikes use "Verify:" lines instead of Given/When/Then, and a pulled story carries one Verify: line until it is refined; both deliberate.
+# Spikes use "Verify:" lines instead of Given/When/Then, and a pulled story carries one Verify: line until it is refined when its entry sets `refine = true`; ordinary stories keep that line for the builder and record approval in dated `Decision:` notes.
 initiative_template = "{skill-root}/assets/initiative-template.md"
 epic_template = "{skill-root}/assets/epic-template.md"
 story_template = "{skill-root}/assets/story-template.md"

@@ -9,7 +9,7 @@ Run `{workflow.checks}` through agents that were not in this conversation; each 
 How:
 
 - One subagent per epic: its container, the draft breakdown or `tickets.toml`, every child ticket including completed work, requirement source and companions, and `checks.ticket`, `checks.set`, `checks.dependencies`. One subagent for the tree: the initiative, the draft or written epic envelopes, source, and `checks.tree`, `checks.dependencies`. A single ticket: one subagent with its source and `checks.ticket`. Closure: `checks.closure`.
-- Give each agent the other `{workflow}` keys its checks rest on and say which tickets are refined; once `tickets.toml` exists, give the full `tickets.py status` command for the folder.
+- Give each agent the other `{workflow}` keys its checks rest on and say which `refine = true` tickets are refined, plus which ordinary stories have reviewed files; once `tickets.toml` exists, give the full `tickets.py status` command for the folder.
 - Merge findings into fix (mechanical), suggest (a guideline, with its reason), or ask (needs the user). Resolve coverage gaps, missing prerequisites, and contradictions before proceeding; the user decides suggestions and scope changes.
 - A declined suggestion recorded as a `Decision:` line is not raised again unless new evidence changes its basis.
 

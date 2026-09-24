@@ -266,6 +266,26 @@ covers = ["R2", "R3"]
         self.assertEqual(self.files(out["ready_to_start"]), ["story-ui-shell.md"])
         self.assertEqual(out["ready_to_start"][0]["after"], [1])
 
+    def test_ordinary_story_does_not_use_refined_as_an_approval_gate(self):
+        self.breakdown_epic()
+        run("pull", str(self.epic), "1")
+        path = self.epic / "story-scaffold.md"
+        text = path.read_text(encoding="utf-8")
+        self.assertNotIn("refined:", text)
+        row = self.next()["ready_to_start"][0]
+        self.assertEqual(row["file"], path.name)
+        self.assertFalse(row["refine"])
+        self.assertFalse(row["refined"])
+
+    def test_refine_entry_persists_approval_before_starting(self):
+        self.breakdown_epic(self.BREAKDOWN.replace('title = "Scaffold"', 'title = "Scaffold"\nrefine = true'))
+        run("pull", str(self.epic), "1")
+        path = self.epic / "story-scaffold.md"
+        self.assertIn("refined: false", path.read_text(encoding="utf-8"))
+        self.assertIn(path.name, self.files(self.next()["ready_to_refine"]))
+        path.write_text(path.read_text(encoding="utf-8").replace("refined: false", "refined: true"), encoding="utf-8")
+        self.assertIn(path.name, self.files(self.next()["ready_to_start"]))
+
     def test_pull_leaves_out_empty_fields_and_keeps_set_ones(self):
         self.breakdown_epic()
         run("pull", str(self.epic), "1")

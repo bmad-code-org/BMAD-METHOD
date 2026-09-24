@@ -10,7 +10,7 @@ Only when `{workflow.estimation}` has `enabled = true`; otherwise never raise it
 
 - Epic definition complete, before the story breakdown: an imagined split. Name the probable stories, point each per the rubric, sum, map to the t-shirt. The reasoning goes in the epic's Notes, marked as imagined; inception replaces it. Basis `spec`, or `envelope` when there is none.
 - Whole epic breakdown approved: point every breakdown entry, pulled or not, and re-estimate the epic from the sum. Basis `entries`; refinement can change the estimate.
-- Story refined: point it from its criteria and re-sum the whole ticket set if it moved. Basis `stories` once every ticket is refined; publication does not change the basis.
+- Story reviewed or explicitly refined: point it from its available criteria and re-sum the whole ticket set if it moved. Basis `stories` once every ticket has a reviewed file; `refined` marks approval only when the entry sets `refine = true`, and publication does not change the basis.
 - Story closed: ask whether the actual matched. A miss is a Notes line on the story; a 1-2 that needed a person is the miss that matters most.
 
 ## What the size says
