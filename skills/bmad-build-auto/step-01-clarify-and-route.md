@@ -17,8 +17,6 @@ Use the invocation prompt as the intent.
 
 If the invocation prompt names a ticket from the tree — a ref such as `1.2`, a ticket file (frontmatter `type` `story`, `spike`, or `bug`, whatever its `status`) by path or name, or text it offers as a ticket's title — run `uv run {project-root}/_bmad/method/scripts/tickets.py --project-root {project-root} find <ref>`. For a ticket file, pass its folder before its file name. Non-zero exit → HALT with status `blocked` and blocking condition `ticket not resolved`, with find's error. Otherwise follow **Ticket resolution** (below).
 
-If the invocation prompt names no work — it is empty, or holds only route, review, or halt-after-planning directives — run `uv run {project-root}/_bmad/method/scripts/tickets.py --project-root {project-root} next`. Non-zero exit → HALT with status `blocked` and blocking condition `ticket tree unavailable`, with its error. No `ready_to_start` row → HALT with status `blocked` and blocking condition `no ready ticket`. Otherwise run `find <ref>` with the first `ready_to_start` row's `ref` and follow **Ticket resolution**.
-
 If the invocation prompt explicitly points to an existing plan file with recognized `status` frontmatter, set `plan_file`, then **EARLY EXIT** to the appropriate step:
 - `draft` → `{{ rendered("step-02-plan.md") }}`
 - `ready-for-dev` or `in-progress` → `{{ rendered("step-03-implement.md") }}`

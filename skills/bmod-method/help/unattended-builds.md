@@ -5,12 +5,11 @@ Use this when the user asks about `bmad-build-auto`, building tickets with no hu
 ## What one run does
 
 - One invocation plans, implements, and reviews one ticket, then writes a final status to its plan. It never asks a question.
-- Given no work, it builds the next ready ticket of the active initiative, the first in `tickets.py next`'s `ready_to_start`. It never moves on to a second ticket. Something else runs the loop: the user, a script, an AI coding session starting one worker per ticket, or an orchestrator such as bmad-loop, which does not dispatch from the ticket tree yet.
+- It builds only what the invocation names and never picks work itself; given nothing, it halts `unclear intent`. It never moves on to a second ticket. Something else chooses each ticket and runs the loop: the user, a script, an AI coding session starting one worker per ticket, or an orchestrator such as bmad-loop, which does not dispatch from the ticket tree yet.
 - It needs subagents and, under version control, a clean working tree on a branch that fits the ticket's epic.
 
 ## Accepted inputs
 
-- Nothing: the next ready ticket.
 - A ticket from the tree: a ref such as `1.2`, a ticket file, or a ticket's title. It builds from the entry, its epic file, and the entry's story file when it has one, and never writes a ticket file.
 - Free text or a path to an intent file.
 - A plan an earlier run wrote.
@@ -32,11 +31,11 @@ Use this when the user asks about `bmad-build-auto`, building tickets with no hu
 
 ## Blocked runs
 
-`blocked` means continuing without a human was unsafe. For a ticket named by ref, file, or title, or taken as next, the run records it with `tickets.py mark`, so `blocked_at` and `blocked_reason` sit in the plan, which is created if the run halted before planning; details are under `Auto Run Result`. Other halts set `status` in the plan and put the reason under `Auto Run Result`, or write a `bmad-build-auto-result-*.md` file under `{implementation_artifacts}` when there is no plan yet. `tickets.py status` shows each blocked ticket with its reason. Common reasons:
+`blocked` means continuing without a human was unsafe. For a ticket named by ref, file, or title, the run records it with `tickets.py mark`, so `blocked_at` and `blocked_reason` sit in the plan, which is created if the run halted before planning; details are under `Auto Run Result`. Other halts set `status` in the plan and put the reason under `Auto Run Result`, or write a `bmad-build-auto-result-*.md` file under `{implementation_artifacts}` when there is no plan yet. `tickets.py status` shows each blocked ticket with its reason. Common reasons:
 
 - `unclear intent`, `intent gap`: the input cannot answer a question the run hit.
 - `no subagents`.
-- `no ready ticket`, `ticket tree unavailable`, `ticket not resolved`: nothing ready, no active initiative or a broken tree, or `find` failing on the reference.
+- `ticket not resolved`: `find` failing on the reference.
 - `implementation verification failed`.
 - `review repair loop exceeded 5 iterations`: review kept sending the work back.
 - `blocked plan supplied`: the plan is still marked blocked.

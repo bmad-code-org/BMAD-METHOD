@@ -10,8 +10,8 @@ canonical [Build a Change](./build-a-change.md) implementation model. One invoca
 clarifies, plans, implements, and reviews one intent or ticket, then exposes a
 terminal status that a human or orchestrator can act on.
 
-Given no work, Build Auto takes the next ready ticket from the active
-initiative's ticket tree. It does not repeat across a backlog, coordinate epics,
+Build Auto builds only what its invocation names; it never picks the next
+ticket itself. It does not repeat across a backlog, coordinate epics,
 or run a retrospective. It owns only its implementation run and the plan it
 creates or resumes. A human or an orchestrator, such as an AI coding session or
 bmad-loop, owns backlog policy and dispatch.
@@ -43,7 +43,6 @@ The main input is the invocation prompt. `bmad-build-auto` treats that prompt as
 
 Supported intent shapes include:
 
-- Nothing, or only route, review, or halt-after-planning directives: the next ready ticket from the tree
 - A ticket from the tree: a ref such as `1.2`, a ticket file by path or name, or a ticket's title
 - A short free-form change request
 - A path to an intent file
@@ -54,10 +53,9 @@ Supported intent shapes include:
 Build Auto reads the tree through `{project-root}/_bmad/method/scripts/tickets.py`,
 the script the [ticketing skill](../plan/break-work-into-stories-and-track-it.md) installs.
 This page describes the repo store, where a ticket's status lives in its plan.
-On a tracker store, `tickets.py next` and `mark` refuse to run, so name the
-ticket to build, and move it on the tracker through the ticketing skill.
+On a tracker store, `tickets.py mark` refuses to run, so move the ticket on
+the tracker through the ticketing skill.
 
-- With no work named, it runs `tickets.py next` and takes the first row in `ready_to_start`. None ready halts `blocked` with `no ready ticket`; a missing or broken tree halts with `ticket tree unavailable`.
 - A named ticket goes through `tickets.py find`. When `find` fails, for example on a reference that matches no ticket or more than one, the run halts with `ticket not resolved`.
 - It builds from the entry in `tickets.toml`, its epic file and what that file's References name, and the entry's story file when it has one. It never writes a ticket file and never runs `tickets.py pull`.
 - For continuity, planning reads the plans of the ticket's prerequisites in the same epic.
@@ -92,7 +90,7 @@ starts one worker, reads its result, and decides what happens next.
 ### Dispatch from the ticket tree
 
 An orchestrator runs `tickets.py next`, dispatches one worker per ticket in
-`ready_to_start` by its ref, or with no ref for the first one, and reads
+`ready_to_start` by its ref, and reads
 `tickets.py status` or the plan afterwards. Tickets in `ready_to_start` have
 their prerequisites done or in review, so the tree's `after` fields set the
 order.
@@ -186,7 +184,7 @@ The workflow commits but does not push. The working copy is clean at exit.
 
 On blocked completion, the workflow records the final status and a blocking condition:
 
-- For a ticket named by its ref, file, or title, or taken from `next`, it runs `tickets.py mark <ref> blocked --blocked <blocking condition>`. That writes `status: blocked`, `blocked_at` (the date), and `blocked_reason` to the plan, creating the plan with only that frontmatter when the run halted before planning.
+- For a ticket named by its ref, file, or title, it runs `tickets.py mark <ref> blocked --blocked <blocking condition>`. That writes `status: blocked`, `blocked_at` (the date), and `blocked_reason` to the plan, creating the plan with only that frontmatter when the run halted before planning.
 - Details go under the plan's `## Auto Run Result`. On such a ticket, `blocked plan supplied` writes nothing, so the plan keeps its first reason.
 - If `mark` fails, or the run was given a plan path or work outside the tree, the workflow sets `status` in an existing plan or writes the fallback result artifact. The blocking condition is then only in `## Auto Run Result` or that file, not in `blocked_reason`.
 
@@ -195,8 +193,6 @@ Typical blocking conditions include:
 - `unclear intent`
 - `intent gap`
 - `no subagents`
-- `no ready ticket`
-- `ticket tree unavailable`
 - `ticket not resolved`
 - `version-control metadata not writable`
 - `plan failed ready-for-development standard`
@@ -253,7 +249,7 @@ When the review step halts on `intent gap`, the workflow also writes a patch fil
 
 An orchestrator integrating `bmad-build-auto` should:
 
-- Pass one ticket ref, or none for the next ready ticket, or one coherent intent at a time
+- Pass one ticket ref, or one coherent intent, per invocation
 - Pass the same ticket ref when resuming a ticket, so a halt records `blocked_reason`, or the plan path for work outside the tree
 - Monitor the plan file or fallback result file for terminal state
 - Read `status`, the blocking condition (`blocked_reason`, or `## Auto Run Result`), and `followup_review_recommended` rather than inferring success from chat output alone
