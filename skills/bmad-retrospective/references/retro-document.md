@@ -1,16 +1,16 @@
-# Finalize: Retrospective Document and Sprint Status
+# Finalize: Retrospective Document
 
-Phase 5. Finalize the retrospective and update sprint tracking. Two writes: the retrospective document, and the `sprint-status.yaml` update. Stories mode makes only the first.
+Phase 5. Finalize the retrospective document. It is the run's one write, at `<epic folder>/epic-<slug>-retrospective.md` — the folder's name plus `-retrospective.md`.
 
 ## The retrospective document
 
-This document is the run's working artifact: it is created as a skeleton once the epic is fixed and filled as each phase completes, so Phase 5 finalizes rather than writes it from scratch. It lives at `{{ config.implementation_artifacts }}/epic-{% raw %}{{epic_number}}{% endraw %}-retro-{date}.md`, as readable markdown; ensure `{{ config.implementation_artifacts }}` exists. In stories mode it lives at `{spec-folder}/RETROSPECTIVE.md` instead — a fixed name, so a resumed run finds it — and carries the same frontmatter without `epic`, which the folder already names.
+This document is the run's working artifact: it is created as a skeleton once the epic is fixed and filled as each phase completes, so Phase 5 finalizes rather than writes it from scratch. It lives at `<epic folder>/epic-<slug>-retrospective.md`, as readable markdown — a fixed name, so a resumed run finds it.
 
 Open the document with YAML frontmatter a machine can read without parsing the prose — an epic gate or orchestrator keys off `verdict` to decide whether to hold the next epic:
 
 ```
 ---
-epic: {% raw %}{{epic_number}}{% endraw +%}
+epic: epic-<slug>
 date: {date}
 verdict: accepted | accepted-with-open-items | rejected
 criteria: declared | profiled
@@ -18,24 +18,24 @@ headless: true | false
 ---
 ```
 
-Keep `verdict` in sync with the Acceptance verdict section below. Do not encode the verdict in the sprint-status retro key — that key's value stays `done` so the existing lifecycle consumers (sprint planning's `optional ↔ done` transition, status TUIs) keep working unchanged.
-
-That holds for a **rejected** epic too: the update below marks the retro key `done` whichever way the verdict went, because `done` there means *the retrospective ran*, not *the epic passed*. The script writes no verdict of any kind into `sprint-status.yaml` — there is no `retro_verdict` key and `--verdict` is only echoed back in the result JSON — so a gate or orchestrator that acts on the verdict **must** read this document's frontmatter. Reading sprint-status alone cannot tell a rejected epic from an accepted one.
+`epic` is the folder's name, as `tickets.py` spells the epic. Keep `verdict` in sync with the Acceptance verdict section below. Never write a `type` or `ticket` field into this frontmatter: `tickets.py` reads a markdown file in the epic folder as a ticket when `type` is a ticket type and as a plan when `ticket` is present. This frontmatter is the only machine-readable verdict; nothing in the tree records it, so a gate or orchestrator that acts on the verdict **must** read this file.
 
 Sections:
 
-- **Epic summary** — which epic, the diff range, stories completed, any stories still unfinished (`pending_stories`) that the user accepted retro-ing over, the evidence inventory (what was available, what was missing). Unfinished stories force the machine acceptance verdict to **rejected** (see `{{ rendered("references/acceptance-verdict.md") }}`).
+- **Epic summary** — which epic, its tickets with their statuses, the tickets still at `built`, any tickets still unfinished (`pending_tickets`) that the user accepted retro-ing over, each plan's range, the evidence inventory (what was available, what was missing). Unfinished tickets force the machine acceptance verdict to **rejected** (see `{{ rendered("references/acceptance-verdict.md") }}`).
 - **Findings** — grouped by aggregate view and by lens, each with its source reference and disposition (fix now / defer / accept). This is the record; do not summarize away the provenance.
 - **Behavior verification** — what was exercised end to end and what was observed, or an explicit note that runtime behavior was not exercised.
-- **Previous-retro follow-through** — if a prior retro exists, whether its action items landed, with evidence, and the selector Phase 5 would need to act on each (`{{ rendered("references/acceptance-verdict.md") }}` specifies what to record).
+- **Previous-retro follow-through** — if a prior retro exists, whether its action items landed, with evidence (`{{ rendered("references/acceptance-verdict.md") }}` specifies what to record).
 - **Action items** — the routed fix-now items and process lessons, each with an owner. Note which are proposed remediation or spec reconciliations awaiting human application.
 - **Acceptance verdict** — accepted / accepted-with-open-items / rejected, whether the criteria were declared or profiled, and the evidence behind the call.
 - **Open questions** — what a human answer would materially change, and anything the analyses could not resolve.
-- **Assumptions** — in headless runs, every choice made without the user: which epic was selected (invocation or auto-detect), the `detect-epic --epic <N>` (or unflagged) result including any non-empty `pending_stories`, a machine **rejected** verdict forced by unfinished stories or rendered with no human decision, each proposed item. Omit in interactive runs — an interactive run records the same facts where the user confirmed them, in Epic summary.
+- **Assumptions** — in headless runs, every choice made without the user: how the epic reference resolved to its folder, any non-empty `pending_tickets`, a machine **rejected** verdict forced by unfinished tickets or rendered with no human decision, each proposed item. Omit in interactive runs — an interactive run records the same facts where the user confirmed them, in Epic summary.
 
 Do not state time estimates anywhere in the document.
 
 ## Sprint-status update
+
+No route enters this section. Its text stays until the sprint-status route is removed.
 
 Do not hand-edit `sprint-status.yaml` — its comment blocks and quoting are exactly the write that most often corrupts the file. Use the bundled script, which round-trips through a comment-preserving YAML parser, force-quotes values so punctuation (a leading `#`, a colon) cannot break parsing, and validates the result — restoring the original file untouched if the write does not verify:
 
@@ -81,7 +81,7 @@ Only ever apply a status the user confirmed: the evidence justifies proposing a 
 
 ## Finish
 
-Report where the document was saved, the verdict, and the action-item count.
+Report the document's path, the verdict, and the action-item count. Nothing else was written: no status changed, and no tree file was edited.
 
 ## On Complete
 

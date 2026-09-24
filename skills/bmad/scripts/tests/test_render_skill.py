@@ -615,16 +615,13 @@ class RenderSkillTests(unittest.TestCase):
         skill = self._skill(ws, "bmad-retrospective")
         snap = self._assert_rendered(rs.render(ws.project, skill), ws.project, "bmad-retrospective")
         markdown = _markdown(snap)
-        self.assertIn((skill / "scripts" / "sprint_status.py").as_posix(), markdown)
-        self.assertIn("epic: {{epic_number}}\n", markdown)
-        self.assertIn("epic-{{prev}}-retro-*.md", markdown)
         self.assertIn((skill / "scripts" / "git_evidence.py").as_posix(), markdown)
         manifest = json.loads((snap / "manifest.json").read_text(encoding="utf-8"))
         self.assertEqual(manifest["inputs"]["skill_root"], str(skill.resolve()))
         elsewhere = _copy_skill(ws.outer / "elsewhere" / "bmad-retrospective", "bmad-retrospective")
         other = rs.render(ws.project, elsewhere)
         self.assertNotEqual(other.parent, snap)
-        self.assertIn((elsewhere / "scripts" / "sprint_status.py").as_posix(), _markdown(other.parent))
+        self.assertIn((elsewhere / "scripts" / "git_evidence.py").as_posix(), _markdown(other.parent))
 
     def test_cli_from_nested_cwd_dispatches_one_absolute_workflow(self):
         ws = self._workspace()

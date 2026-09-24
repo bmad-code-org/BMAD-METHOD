@@ -33,7 +33,7 @@ activation_steps_append = []
 persistent_facts = []
 
 # Scalar: executed at the end of Phase 5 (Close), after the retrospective
-# document is saved and sprint-status is updated. Override wins.
+# document is saved. Override wins.
 # Leave empty for no custom post-completion behavior.
 
 on_complete = ""
