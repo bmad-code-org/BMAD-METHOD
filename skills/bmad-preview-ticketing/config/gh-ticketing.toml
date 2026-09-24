@@ -48,11 +48,16 @@ whenever a label is missing.
 
 write = """
 One issue per new ticket, created in tree and prerequisite order so every relation has a number to point at.
-Create: `gh issue create --title <t> --body-file <b> --label <type>,<[tickets.status].<state>>[,hitl,risk:<r>,P<n>]
---parent <n> --blocked-by <n,n> [--milestone <initiative>]`. Changes go through `gh issue edit <n>`
-(--body-file, --add-assignee, --add-blocked-by, label swaps; --add-sub-issue on the parent). No
-parent: omit --parent; no initiative: omit --milestone. Needs
-gh 2.94+; check `--help` when a flag is doubted.
+Create with content only: `gh issue create --title <t> --body-file <b> --label <type>,<[tickets.status].<state>>[,hitl,risk:<r>,P<n>]
+[--milestone <initiative>]`, and write tracker_id and remote from the url it prints before anything else. Then add the
+relations with `gh issue edit <n> --parent <n> --add-blocked-by <n,n>`, leaving out any that `gh issue view <n> --json
+parent,blockedBy` already shows, since adding one twice fails. Keep --parent and --blocked-by off the create: gh adds them
+after the issue exists, and when that step fails it exits non-zero without printing the url, so a rerun files the ticket
+twice. A create that fails with no url may still have made the issue: before creating again, look for it among the newest
+issues (`gh issue list --state all --limit 20 --json number,body`, matching the body's id and parent lines), twice a few
+seconds apart, since the list can trail a create. Changes go through `gh issue edit <n>` (--body-file, --add-assignee,
+--add-blocked-by, label swaps; --add-sub-issue on the parent). No parent: omit --parent; no initiative: omit --milestone.
+Needs gh 2.94+; check `--help` when a flag is doubted.
 Status is [tickets.status].<state>, the ticket's state (`state` in `tickets.py` rows), as a label swap on an open issue. done: remove the status label and `gh issue close <n>`;
 dropped: the same with `--reason "not planned"`. An initiative is a
 milestone (`gh api repos/{owner}/{repo}/milestones -f title=<name>`) holding its tree's issues.
