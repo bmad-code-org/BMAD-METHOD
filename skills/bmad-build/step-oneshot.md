@@ -100,7 +100,7 @@ For each group:
 
 Update `{plan_file}`:
 
-1. Set `status: 'done'` in the frontmatter.
+1. Set `status: 'built'` in the frontmatter.
 2. If review found anything, add `## Review Triage Log` with one line per finding: verdict and evidence. For `false`, the disproof. For `maybe-false`, what would settle it. For rejected `low`, why it was not worth fixing.
 
 If `{story_key}` is not empty and `{{ config.implementation_artifacts }}/sprint-status.yaml` exists, read `{{ rendered("sync-sprint-status.md") }}` with `{target_status}` = `review`.
