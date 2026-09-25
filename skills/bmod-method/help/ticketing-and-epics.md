@@ -26,9 +26,9 @@
 
 ## What the epics route still does better today
 
-While ticketing is in preview, `bmad-create-epics-and-stories` with `bmad-sprint-planning` remains the supported route and works as before.
+While ticketing is in preview, `bmad-create-epics-and-stories` with `bmad-sprint-planning` remains the supported route for planning and building. The retrospective reads only the ticket tree, so an epics-route project has none until `bmad migrate method` moves it onto the tree.
 
-- **The retrospective and unattended loops.** `bmad-retrospective` and bmad-loop read `sprint-status.yaml` or an existing `stories.yaml`. Neither reads `tickets.toml` yet.
+- **Unattended loops.** bmad-loop reads `sprint-status.yaml` or an existing `stories.yaml`. It does not read `tickets.toml` yet.
 - **A readiness verdict.** `bmad-sprint-planning` gives PASS / CONCERNS / FAIL before building starts.
 - **Requirement coverage up front.** `epics.md` carries a map proving every PRD requirement is covered by a story.
 - **Maturity.** Ticketing is a prerelease. Trackers other than the repo store are lightly tested, and nothing syncs on its own.

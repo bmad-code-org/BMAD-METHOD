@@ -10,9 +10,9 @@ So: archive finished planning and implementation artifacts, and keep only the sm
 
 ## Stories and the end of an epic
 
-- Keep every completed story file in the folder of the epic being worked on. Later stories and the retrospective read them.
+- Keep every ticket's plan and story file in the epic's folder while the epic is in progress. Later tickets and the retrospective read them.
 - Before closing the epic, run `bmad-retrospective`, decide what to do about its findings, then close the epic out.
-- After that, it is a good idea not to keep the story files in the repository or locally. They are already in git history.
+- After that, it is a good idea not to keep the plans and story files in the repository or locally. They are already in git history. Keep the epic's `epic-<slug>-retrospective.md` until the next epic's retrospective has checked its action items.
 
 ## If the user prefers to keep everything
 

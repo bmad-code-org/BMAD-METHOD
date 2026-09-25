@@ -71,10 +71,10 @@ Situations the tree above does not settle.
 | Wants tickets or a tracker (Jira, Linear, GitHub) as the record | `bmad-preview-ticketing` | Tickets are the board. It is a preview; the build moves a ticket's `status` in its plan as far as review, and the user marks it done. |
 | "Where are we?" with a `sprint-status.yaml` | `bmad-sprint-planning` status | It reads the file and names the next story. |
 | A v6 project (`epics.md`, `sprint-status.yaml`, dated folders under the planning folder) that wants the v7 layout | `bmad migrate method` | The module ships `v6-v7-migration.toml`: the rules for moving the project's artifacts into initiative folders, turning epics and sprint status into a ticket tree, and putting loose work in `inbox/`. The `bmad` skill plans it with the user, then performs it. |
-| A PR, a branch, or code `bmad-build` did not write | `bmad-code-review` | Agent lenses over any diff. |
+| A PR, a branch, a ticket in review, or code `bmad-build` did not write | `bmad-code-review` | Agent lenses over any diff. With no argument it offers the tickets in review. |
 | "Walk me through what changed" | `bmad-walkthrough` | The human is the reviewer. |
-| All stories of an epic or spec folder are done | `bmad-retrospective` | It judges the whole against the spec. |
-| A big change surfaced mid-build | Spec route: update through `bmad-spec`. Epics route: `bmad-correct-course`. | Correct course needs a PRD and epics and halts without them. |
+| Every ticket of an epic is built, done, or dropped | `bmad-retrospective` | It judges the whole against the epic's Done when and the initiative's requirements. |
+| A big change surfaced mid-build | A spec-only change: update through `bmad-spec`. Otherwise `bmad-correct-course`. | Correct course needs a PRD or a spec and halts when it has neither. The user describes the affected epics and stories. |
 | Wants an expert to think a phase through with, or is unsure where to begin in it | The agent for that phase (see "The agents") | It guides across turns and runs the phase's skills from its menu. |
 | Agents keep making the same mistake in this repo | `bmad-project-context` | It records the rule in `AGENTS.md`. |
 
@@ -98,12 +98,12 @@ One line per skill: what it is for and what it writes. The files it writes are h
 | **Implementation** (`help/implementation-skills.md`) | | |
 | `bmad-build` | One session of delivery: clarifies intent, plans, implements, reviews, commits. The default for any real change. Takes free text, a ticket from the tree (nothing means the next ready one), or any file as intent. | A ticket's plan beside `tickets.toml`, or `{implementation_artifacts}/plan-{slug}.md`; `deferred-work.md` |
 | `bmad-build-auto` | One unattended build of one ticket, dispatched by a loop or script. Never for attended work. | The same plans as `bmad-build` |
-| `bmad-correct-course` | Assesses a significant midstream change on the epics route. Needs a PRD and epics. | `{planning_artifacts}/sprint-change-proposal-{date}.md` |
+| `bmad-correct-course` | Assesses a significant midstream change. Needs a PRD or a spec; lists epic and story changes for the ticketing skill. | `{planning_artifacts}/sprint-change-proposal-{date}.md` |
 | **Validation** (`help/validation-skills.md`) | | |
-| `bmad-code-review` | Agent review of any diff, PR, or branch, with triaged findings. Redundant right after a full `bmad-build` review of the same change. | A `Review Findings` section in the story file, or chat |
+| `bmad-code-review` | Agent review of any diff, PR, or branch, with triaged findings. Redundant right after a full `bmad-build` review of the same change. | A dated block in the plan's `## Code Review` section, or chat |
 | `bmad-walkthrough` | The human reviews a change block by block, guided. Also a way to learn unfamiliar code. | A review narrative and log under `{implementation_artifacts}` |
 | `bmad-qa-generate-e2e-tests` | API and end-to-end tests for features that already exist. | `{project-root}/tests`, `{implementation_artifacts}/tests/test-summary.md` |
-| `bmad-retrospective` | Judges a finished epic or spec folder as a whole against its spec. | `epic-{n}-retro-{date}.md`, or `RETROSPECTIVE.md` in the spec folder |
+| `bmad-retrospective` | Judges a finished epic folder in the ticket tree as a whole against its Done when. | `epic-<slug>-retrospective.md` in the epic folder |
 | **Any time** (`help/project-context.md`) | | |
 | `bmad-project-context` | Keeps a small, verified block of rules for agents. Use it when an agent got something wrong in this repo, a repo has no usable `AGENTS.md`, or the stack was just decided. It gives no repo overview. | `{project-root}/AGENTS.md` |
 
@@ -125,7 +125,7 @@ Two ways. Use one per piece of work, never both for the same work. A request to 
 | Review inside `bmad-build` | Agents | The change just built | Clear findings, itself |
 | `bmad-code-review` | Agents | Any diff, PR, branch, or commit | What the human chooses |
 | `bmad-walkthrough` | The human, guided | A commit, PR, file, or directory | Nothing unless asked |
-| `bmad-retrospective` | Agents, across stories | A whole epic or spec folder | Nothing; proposes action items |
+| `bmad-retrospective` | Agents, across tickets | A whole epic folder | Nothing; proposes action items |
 
 ## The agents
 
@@ -153,11 +153,11 @@ An agent and its skills are two ways into the same work: a skill run directly do
 | `bmad-create-epics-and-stories` | `bmad-sprint-planning`. |
 | `bmad-sprint-planning` | `bmad-build` on the story its status view names. On FAIL, the skill that owns the gap. |
 | `bmad-build` | Open a PR, or `bmad-walkthrough` when a person wants to understand the change. Once the user marks the ticket done, the next ticket. `bmad-qa-generate-e2e-tests` when end-to-end coverage is wanted. |
-| The last story of an epic or spec folder | `bmad-retrospective`, then a refactoring pass over the whole changeset, which is commonly skipped (`help/preparing-a-repo-for-agents.md`). Then close the epic out and archive its story files (`help/artifact-lifetime.md`). |
+| The last ticket of an epic | `bmad-retrospective`, then a refactoring pass over the whole changeset, which is commonly skipped (`help/preparing-a-repo-for-agents.md`). Then close the epic out and archive its plans and story files (`help/artifact-lifetime.md`). |
 
 ## Answering "what's next?"
 
-Read the state before recommending: which of the outputs named above exist, and what the codebase, git history, and the user say is done. A file's presence, or a story file with `status: done`, is evidence the skill ran, not proof the work is finished or current.
+Read the state before recommending: which of the outputs named above exist, and what the codebase, git history, and the user say is done. A file's presence, or a plan with `status: done`, is evidence the skill ran, not proof the work is finished or current.
 
 - Mid-path, recommend the next unfinished step of the route the user is on, not a restart, and do not move them to a different slicing route mid-work.
 - When a significant change surfaces, route it as the table in "Match the situation" says, then resume at the earliest affected step. Do not replay unaffected work.
