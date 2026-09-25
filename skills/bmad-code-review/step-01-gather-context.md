@@ -20,7 +20,7 @@ review_mode: '' # set at runtime: full or no-plan
    Did the user pass a PR, commit SHA, branch, plan file, or diff source this message?
    - PR reference → resolve to branch/commit via `gh pr view`. If resolution fails, ask for a SHA or branch.
    - Commit or branch → use directly.
-   - Plan file → set `plan_file` to the provided path. Check its frontmatter for `baseline_revision`. If found and not `NO_VCS`, the diff source is **plan baseline**. Otherwise continue the cascade (a plan alone does not identify a diff source).
+   - Plan file → set `plan_file` to it. A frontmatter `baseline_revision` other than `NO_VCS` makes the diff source **plan baseline**; otherwise say so and continue the cascade.
    - Also scan the argument for diff-mode keywords that narrow the scope:
      - "staged" / "staged changes" → Staged changes only
      - "uncommitted" / "working tree" / "all changes" → Uncommitted changes (staged + unstaged)
@@ -33,13 +33,7 @@ review_mode: '' # set at runtime: full or no-plan
    Do the last few messages reveal what the user wants to be reviewed? Look for plan paths, commit refs, branches, PRs, or descriptions of a change. Apply the same diff-mode keyword scan and routing as Tier 1.
 
    **Tier 3 — The ticket tree.**
-   Run `uv run {project-root}/_bmad/method/scripts/tickets.py --project-root {project-root} status` with no folder. A non-zero exit means there is no tree here; fall through. Otherwise keep the `tickets` rows whose `state` is `review`:
-   - **Exactly one:** HALT and give the user a choice:
-     - **Review this ticket** — review `<ref>` `<title>` (status `<status>`).
-     - **Choose another target** — pick a different review target.
-   - **Several:** Present them as numbered options, `<ref>` and `<title>` each, alongside a manual choice option. Wait for user selection.
-   - **None:** Fall through.
-   When the user picks a ticket, run `tickets.py find <ref>` (same command form) and set `plan_file` to its `plan`. Read `baseline_revision` from the plan's frontmatter; the diff source is **plan baseline**. If the field is missing or `NO_VCS`, tell the user and fall through. If the user chooses another target, fall through.
+   Run `uv run {project-root}/_bmad/method/scripts/tickets.py --project-root {project-root} status`. On a non-zero exit, fall through. Otherwise offer the `tickets` rows whose `state` is `review`, `<ref>` and `<title>` each, alongside choosing another target, and HALT for the user's pick. With none, or another target chosen, fall through. For a picked ticket, run `tickets.py find <ref>` (same command form) and treat its `plan` as a Tier 1 plan file.
 
    **Tier 4 — Current git state.**
    If version control is unavailable, skip to Tier 5. Otherwise, check the current branch and HEAD. If the branch is not `main` (or the default branch), confirm: "I see HEAD is `<short-sha>` on `<branch>` — do you want to review this branch's changes?" If confirmed, treat as a branch diff against `main`. If declined, fall through.
