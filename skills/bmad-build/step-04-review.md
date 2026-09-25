@@ -13,28 +13,28 @@
 
 ## INSTRUCTIONS
 
-Change `{spec_file}` status to `in-review` in the frontmatter before continuing.
+Change `{plan_file}` status to `in-review` in the frontmatter before continuing.
 
 {% if workflow.review == "none" %}
-Write `review: 'none'`, `review_source: 'pinned'`, and `lenses_ran: []` to `{spec_file}` frontmatter.
+Write `review: 'none'`, `review_source: 'pinned'`, and `lenses_ran: []` to `{plan_file}` frontmatter.
 {% elif workflow.review == "auto" %}
-Write `review: 'thorough'` and `review_source: 'auto'` to `{spec_file}` frontmatter.
+Write `review: 'thorough'` and `review_source: 'auto'` to `{plan_file}` frontmatter.
 {% else %}
-Write `review: '{{ workflow.review }}'` and `review_source: 'pinned'` to `{spec_file}` frontmatter.
+Write `review: '{{ workflow.review }}'` and `review_source: 'pinned'` to `{plan_file}` frontmatter.
 {% endif %}
 {% if review != "none" %}
 
 ### Stage the Diff
 
-Read `{baseline_commit}` from `{spec_file}` frontmatter. If `{baseline_commit}` is missing or `NO_VCS`, use best effort to determine what changed. Otherwise use the repository's version-control tooling to rewrite `{diff_file}` — the temp file staged in step-03, or a uniquely-named file in the system temp directory when this run has none — with a unified diff of all changes since `{baseline_commit}`, untracked files included. The review lenses read that file; the diff text is never pasted into their prompts.
+Read `{baseline_revision}` from `{plan_file}` frontmatter. If `{baseline_revision}` is missing or `NO_VCS`, use best effort to determine what changed. Otherwise use the repository's version-control tooling to rewrite `{diff_file}` — the temp file staged in step-03, or a uniquely-named file in the system temp directory when this run has none — with a unified diff of all changes since `{baseline_revision}`, untracked files included. The review lenses read that file; the diff text is never pasted into their prompts.
 
-Set `{claims_file}` = `{spec_file}`. The spec is the change's own account of itself. It goes to the edge-case lens as a path, read only after its own tracing, and to the Quick lens for its acceptance criteria; no other lens sees it.
+Set `{claims_file}` = `{plan_file}`. The plan is the change's own account of itself. It goes to the edge-case lens as a path, read only after its own tracing, and to the Quick lens for its acceptance criteria; no other lens sees it.
 
 Writing `{diff_file}` is the only change this section makes. Do NOT `git add` anything.
 
 ### Review
 
-Runtime placeholders: `{diff_file}` is the diff staged above, `{claims_file}` the narrative staged with it, and `{spec_file}` the story file — all paths, substituted absolute so a lens can read them; a launch prompt never carries diff text. `{verbatim_intent}` is the `## Intent` section of `{spec_file}` (inside `<frozen-after-approval>`), substituted inline as text. Before launching a lens, expand its skill-root placeholder to this skill's absolute installed directory; never leave that placeholder unresolved in a child prompt.
+Runtime placeholders: `{diff_file}` is the diff staged above, `{claims_file}` the narrative staged with it, and `{plan_file}` the plan — all paths, substituted absolute so a lens can read them; a launch prompt never carries diff text. `{verbatim_intent}` is the `## Intent` section of `{plan_file}` (inside `<frozen-after-approval>`), substituted inline as text. Before launching a lens, expand its skill-root placeholder to this skill's absolute installed directory; never leave that placeholder unresolved in a child prompt.
 
 Announce skipped lenses first, then launch every active lens before handling any lens's result. Try running all active lenses simultaneously: substitute the runtime placeholders (e.g. `{diff_file}`) into each lens's instruction. When an instruction launches a reviewer subagent, launch that child with the prompt text after placeholder substitution; do not load the reviewer instruction file yourself. For any other customized instruction, execute it as written. Parallel means several blocking calls awaited together in this turn — never backgrounded or detached, never ending the turn to await results. When running lenses as subagents, spawn every reviewer before reading or reacting to any of their output; begin collection and triage only once all are launched.
 
@@ -46,7 +46,7 @@ Announce skipped lenses first, then launch every active lens before handling any
 
 If a lens's instruction requires subagents and none are available, for each such lens write under `{{ config.implementation_artifacts }}` that lens's child prompt with every file it points to — the diff, the claims, the reviewer instruction file — replaced inline by that file's contents, and every other line left exactly as written. That session shares no filesystem with this one, so its prompt has to stand alone; this is the only place you read a reviewer instruction file yourself. Then HALT. Ask the human to run each in a separate session (ideally a different LLM) and paste back the findings.
 
-Write `lenses_ran` — the ids launched, in launch order — to `{spec_file}` frontmatter.
+Write `lenses_ran` — the ids launched, in launch order — to `{plan_file}` frontmatter.
 
 ### Classify
 
@@ -62,28 +62,28 @@ Write `lenses_ran` — the ids launched, in launch order — to `{spec_file}` fr
      - `false` — you checked, and the bad outcome does not happen at the cited location. Write what disproves this specific claim. A true fact about nearby code that does not disprove the claim does not count.
      - `maybe-false` — you could not tell whether the bad outcome happens. Write what you would need to check to find out. Use this only when the diff and surrounding code leave the question open; when they are enough to decide, pick `high`, `medium`, `low`, or `false`.
 
-   - Every finding gets one row in the `## Review Triage Log` section of `{spec_file}` — verdict plus its evidence in a sentence or two; never drop, merge, or silently skip one.
+   - Every finding gets one row in the `## Review Triage Log` section of `{plan_file}` — verdict plus its evidence in a sentence or two; never drop, merge, or silently skip one.
 
    Reject `false` findings on their refutation.
 
    Reject `low` findings when it is unlikely that users or developers would meet the defect in everyday use (judged plainly — no proof needed) and the fix is more than a direct correction or deletion — adding guards, branches, parameters, or other complexity.
 
-   Out of scope: reject or defer a finding as out of scope only when the intent itself excludes it — not because the spec's scope section, the plan, or the shape of the diff says so. If only those would exclude it, keep the finding: the spec or plan drew the line somewhere the intent did not, so it routes to intent_gap or bad_spec, never to patch or defer.
+   Out of scope: reject or defer a finding as out of scope only when the intent itself excludes it — not because the plan's scope section or the shape of the diff says so. If only those would exclude it, keep the finding: the plan drew the line somewhere the intent did not, so it routes to intent_gap or bad_plan, never to patch or defer.
 
-   Reject any finding whose fix is to edit this build's spec.
+   Reject any finding whose fix is to edit this build's plan.
 
    All remaining findings continue to grouping.
 
 2. Group the survivors by shared root cause — two findings belong in one entry only when the same defect produced both. Same location alone is not a shared root cause, and neither is a shared fix. An entry carries every member's verified bad outcome and the highest verdict among them (`high` > `medium` > `low` > `maybe-false`).
-3. Route each entry into exactly one triage category. A group that includes verified `high`, `medium`, or `low` members routes by its highest such verdict — not to defer just because a member is `maybe-false`. The first three are **this story's problem** — caused or exposed by the current change. The last is **not this story's problem**.
-   - **intent_gap** — caused by the change; cannot be resolved from the spec because the captured intent is incomplete. Do not infer intent unless there is exactly one possible reading.
-   - **bad_spec** — caused by the change, including direct deviations from spec. The spec should have been clear enough to prevent it. When in doubt between bad_spec and patch, prefer bad_spec — a spec-level fix is more likely to produce coherent code.
-   - **patch** — caused by the change; its smallest fix is trivial, adds no public surface, and guards no state you did not demonstrate. Just part of the diff. A finding whose smallest fix fails any of those conditions routes to intent_gap when the spec does not settle that fix, otherwise to bad_spec.
-   - **defer** — pre-existing issue not caused by this story; or an entry whose members are all `maybe-false` and the claim, if true, would be `medium` or `high` — record that severity marked unverified, plus what would settle it (if it would only be `low`, reject it with the same note); or any entry whose fix edits agent-context files (CLAUDE.md, AGENTS.md, rules, etc).
+3. Route each entry into exactly one triage category. A group that includes verified `high`, `medium`, or `low` members routes by its highest such verdict — not to defer just because a member is `maybe-false`. The first three are **this change's problem** — caused or exposed by the current change. The last is **not this change's problem**.
+   - **intent_gap** — caused by the change; cannot be resolved from the plan because the captured intent is incomplete. Do not infer intent unless there is exactly one possible reading.
+   - **bad_plan** — caused by the change, including direct deviations from the plan. The plan should have been clear enough to prevent it. When in doubt between bad_plan and patch, prefer bad_plan — a plan-level fix is more likely to produce coherent code.
+   - **patch** — caused by the change; its smallest fix is trivial, adds no public surface, and guards no state you did not demonstrate. Just part of the diff. A finding whose smallest fix fails any of those conditions routes to intent_gap when the plan does not settle that fix, otherwise to bad_plan.
+   - **defer** — pre-existing issue not caused by this change; or an entry whose members are all `maybe-false` and the claim, if true, would be `medium` or `high` — record that severity marked unverified, plus what would settle it (if it would only be `low`, reject it with the same note); or any entry whose fix edits agent-context files (CLAUDE.md, AGENTS.md, rules, etc).
 
-4. Process entries in cascading order. If intent_gap or bad_spec entries exist, they trigger a loopback — lower entries are moot since code will be re-derived. If neither exists, process patch and defer normally. Before each loopback, read `{spec_file}` frontmatter `review_loop_iteration` (missing means `0`), increment it by 1, and write it back. If it exceeds 5, HALT and escalate to the human.
+4. Process entries in cascading order. If intent_gap or bad_plan entries exist, they trigger a loopback — lower entries are moot since code will be re-derived. If neither exists, process patch and defer normally. Before each loopback, read `{plan_file}` frontmatter `review_loop_iteration` (missing means `0`), increment it by 1, and write it back. If it exceeds 5, HALT and escalate to the human.
    - **intent_gap** — Root cause is inside `<frozen-after-approval>`. Revert code changes. Loop back to the human to resolve. Once resolved, read fully and follow `{{ rendered("step-02-plan.md") }}` to re-run steps 2–4.
-   - **bad_spec** — Root cause is outside `<frozen-after-approval>`. Before reverting code: extract KEEP instructions for positive preservation (what worked well and must survive re-derivation). Revert code changes. Read the `## Spec Change Log` in `{spec_file}` and strictly respect all logged constraints when amending the non-frozen sections that contain the root cause. Append a new change-log entry recording: the triggering finding, what was amended, the known-bad state avoided, and the KEEP instructions. Read fully and follow `{{ rendered("step-03-implement.md") }}` to re-derive the code, then this step will run again.
+   - **bad_plan** — Root cause is outside `<frozen-after-approval>`. Before reverting code: extract KEEP instructions for positive preservation (what worked well and must survive re-derivation). Revert code changes. Read the `## Plan Change Log` in `{plan_file}` and strictly respect all logged constraints when amending the non-frozen sections that contain the root cause. Append a new change-log entry recording: the triggering finding, what was amended, the known-bad state avoided, and the KEEP instructions. Read fully and follow `{{ rendered("step-03-implement.md") }}` to re-derive the code, then this step will run again.
    - **patch** — Auto-fix. These are the only findings that survive loopbacks. Re-engage the step-03 implementation subagent — the same one, addressed by the name or id its launch returned; a fresh launch is not re-engagement. Send it one message, exactly this, with the findings filled in:
 
      ```text
@@ -94,10 +94,10 @@ Write `lenses_ran` — the ids launched, in launch order — to `{spec_file}` fr
      - <file> — <what is wrong> — <what the smallest fix must do>
      ```
 
-     If it cannot be continued, apply the patches yourself. Then re-run the checks in `{spec_file}`'s `## Verification` section, if present — the patches changed code after the implementer's verification; if verification fails and the failure cannot be fixed, HALT and escalate to the human. Rewrite `{diff_file}` so it reflects the patched tree.
+     If it cannot be continued, apply the patches yourself. Then re-run the checks in `{plan_file}`'s `## Verification` section, if present — the patches changed code after the implementer's verification; if verification fails and the failure cannot be fixed, HALT and escalate to the human. Rewrite `{diff_file}` so it reflects the patched tree.
    - **defer** — Append one new entry to `{{ config.implementation_artifacts }}/deferred-work.md` using this format. Do not modify existing entries or look for duplicates.
      ```markdown
-     - source_spec: `{spec_file}`
+     - source_plan: `{plan_file}`
        summary: <one sentence>
        evidence: <why this is real; for a maybe-false finding, what evidence would settle it>
      ```

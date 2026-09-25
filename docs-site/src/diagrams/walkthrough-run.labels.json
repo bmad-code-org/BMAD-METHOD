@@ -1,8 +1,8 @@
 {
   "en": {
-    "title": "The bmad-walkthrough run: it reads the build spec or a pull request, then moves through orientation, the walkthrough itself, a detail pass and testing before wrapping up, where you approve, ask for rework, or open a discussion.",
-    "input-spec": "bmad-build",
-    "input-spec-2": "spec file",
+    "title": "The bmad-walkthrough run: it reads the build plan or a pull request, then moves through orientation, the walkthrough itself, a detail pass and testing before wrapping up, where you approve, ask for rework, or open a discussion.",
+    "input-build": "bmad-build",
+    "input-plan": "plan file",
     "input-pr": "PR / commit",
     "input-pr-2": "branch",
     "orientation": "Orientation",
@@ -24,9 +24,9 @@
     "discuss": "Discuss"
   },
   "ko-KR": {
-    "title": "bmad-build 사양 파일, PR, 커밋 또는 브랜치에서 시작해 방향 잡기, 둘러보기, 상세 검토, 테스트, 마무리를 차례로 진행한 뒤 승인, 재작업 또는 논의를 선택합니다.",
-    "input-spec": "bmad-build",
-    "input-spec-2": "사양 파일",
+    "title": "bmad-build 계획 파일, PR, 커밋 또는 브랜치에서 시작해 방향 잡기, 둘러보기, 상세 검토, 테스트, 마무리를 차례로 진행한 뒤 승인, 재작업 또는 논의를 선택합니다.",
+    "input-build": "bmad-build",
+    "input-plan": "계획 파일",
     "input-pr": "PR / 커밋",
     "input-pr-2": "브랜치",
     "orientation": "방향 잡기",
@@ -48,9 +48,9 @@
     "discuss": "논의"
   },
   "fr-FR": {
-    "title": "Le déroulé de bmad-walkthrough : il lit la spécification de build ou une pull request, puis passe par l'orientation, la visite guidée, une passe de détail et les tests avant la conclusion, où vous approuvez, demandez une reprise ou ouvrez une discussion.",
-    "input-spec": "bmad-build",
-    "input-spec-2": "fichier de spéc",
+    "title": "Le déroulé de bmad-walkthrough : il lit le plan de build ou une pull request, puis passe par l'orientation, la visite guidée, une passe de détail et les tests avant la conclusion, où vous approuvez, demandez une reprise ou ouvrez une discussion.",
+    "input-build": "bmad-build",
+    "input-plan": "fichier de plan",
     "input-pr": "PR / commit",
     "input-pr-2": "branche",
     "orientation": "Orientation",

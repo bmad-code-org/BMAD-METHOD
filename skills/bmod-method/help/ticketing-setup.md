@@ -1,10 +1,10 @@
 # Setting up and using the ticketing preview
 
-Use this when a user asks how to set up or drive `bmad-preview-ticketing`. For the design and the comparison with the epics route, see `help/ticketing-and-epics.md`.
+Use this when a user asks how to set up or drive `bmad-preview-ticketing`. For the shared ticket-tree design, see `help/ticketing-and-epics.md`.
 
 ## Where the store lives
 
-- Tickets are markdown files under `root` in `_bmad/custom/ticketing-store-config.toml`. `root` defaults to `{output_folder}`, which is `_bmad-output` unless changed.
+- Tickets live under `root`. An epic's tickets are entries in its `tickets.toml`, and one gets a markdown file only when it is refined or published. Backlog tickets are markdown files. `root` is set in `_bmad/custom/ticketing-store-config.toml`. `root` defaults to `{output_folder}`, which is `_bmad-output` unless changed.
 - To move the store, set `output_folder` under `[core]` in `_bmad/custom/config.toml` (committed, applies to the team), or edit `root` in the store config.
 - `active_initiative` under `[modules.bmm]` in `_bmad/custom/config.user.toml` (personal, not committed) names the initiative folder in use. Unset, the skill offers to create and record it. Change it to switch initiatives.
 
@@ -28,21 +28,19 @@ Copy a brief, PRD, UX design, or architecture into the initiative folder as `<ty
 | Say | Result |
 |---|---|
 | "Split this initiative into epics" | Proposes epic boundaries and records the agreed order in the initiative's `tickets.toml`. |
-| "Incept the first epic" | Plans the whole epic into entries in the epic's `tickets.toml`, in build order, each with an `id` that names it under the epic. No story file is written yet. |
-| "Pull the next story" | Writes the story file from its entry, ending with an empty `## Plan` for the coding agent. A script does it, with no conversation. |
-| "Refine story 2", "review the stories" | Pulls the story's file if it has none, then reviews and improves it with the user. Full acceptance criteria are written only for a bug, a ticket with no epic, or when the user asks. |
+| "Incept the first epic" | Plans the whole epic into entries in the epic's `tickets.toml`, in build order, each with an `id` that names it under the epic. No story file is written. |
+| "Refine story 1.2", "review the stories" | Pulls the story's file from its entry if it has none, then reviews and improves it with the user. Full acceptance criteria are written only for a bug, a ticket with no epic, or when the user asks. |
 | "File a bug: ..." | One ticket straight into `backlog/`, with no epic. |
-| "What's ready?", "what's next?" | Lists what is ready to pull, ready to refine, ready to start, in progress, and blocked, for one epic or the whole initiative. |
-| "Start story 2", "mark story 2 done" | Writes the ticket file's `status` by hand, for a ticket a person works or until `bmad-build` writes it. |
-| "Publish the tickets" | Sends tickets to the tracker. By default, with a tracker the whole breakdown publishes at inception; on the repo store each ticket publishes when pulled. |
+| "What's ready?", "what's next?" | Lists what is ready to refine, ready to start, in progress, and blocked, for one epic or the whole initiative. |
+| "Start story 1.2" | Checks it is ready to start. On a tracker, publishes it if it is not yet published and moves it to in progress. On the repo store there is nothing to write: run `bmad-build` on it. |
+| "Mark story 1.2 done", "I'm working story 1.2" | Writes `status` in the story's plan through `tickets.py mark`, creating the plan when there is none. Done is only ever the user's, or an orchestrator's, to mark. |
+| "Publish the tickets" | Sends tickets to the tracker, writing each ticket's file first. By default the whole breakdown publishes at inception; with `publication = "on_start"`, each ticket publishes when it starts. On the repo store, committing the approved `tickets.toml` is the publish. |
 
 ## Hand-off to bmad-build
 
-- A planned story has no file until it is pulled.
-- Give the pulled file to `bmad-build` with its epic: "build story-cart-ui-shell.md". The builder plans the story's acceptance criteria from the epic's Requirements and Done when, the entry's description, and its `Verify:` check.
+- A planned story needs no file. Run `bmad-build` on it: "build story 1.2", naming the epic's id and the story's. The builder reads the entry and its epic, plus the story file when one was refined, and plans the story's acceptance criteria from the epic's Requirements and Done when, the entry's description, and its `Verify:` check.
 - A story needs no refining before `bmad-build`; the build refines it. Before an unattended run, review the stories with this skill. A bug, a ticket with no epic, and an entry the user marked `refine = true` get full criteria first; "what's next?" lists these under ready to refine.
-- A ticket file's `status` belongs to the build, and `bmad-build` does not write it yet. Until it does, the user says "start story 2" before and "mark story 2 done" after.
-- `bmad-sprint-planning` does not read these stories.
+- The build writes its plan, `<type>-<slug>-plan.md`, beside `tickets.toml`. The plan carries the ticket's `status`, which the build moves as far as `built`. After reviewing the work, the user says "mark story 1.2 done".
 
 ## Feedback
 

@@ -33,31 +33,6 @@ Read this when the question is about `bmad-spec`, `bmad-prd`, `bmad-ux`, `bmad-a
 
 ## Slicing and tracking the work
 
-Two ways. Use one per piece of work, never both for the same work. A request to split or break up work goes to the second, also when it starts from a spec.
+`bmad-preview-ticketing` plans and tracks work in one ticket tree. An initiative holds epics; each epic's `tickets.toml` holds ordered entries. Build an entry directly without making a story file. Standalone stories and bugs can be direct intent or backlog leaves. Plans own status and remain live after completion. Builds stop at `built`; the user or orchestrator marks `done`. See `help/ticketing-setup.md`.
 
-| | `bmad-create-epics-and-stories` + `bmad-sprint-planning` | `bmad-preview-ticketing` |
-|---|---|---|
-| Needs | A PRD and an architecture | Any intent; best with a spec |
-| Gives | Epics, stories with acceptance criteria, a readiness verdict, a status file | A ticket tree used as a board; optional tracker publishing |
-| Status | `bmad-build` updates it | Moved by hand through the skill |
-| Effort | High: every story approved one at a time | Sized at intake; a single bug or story is quick |
-
-For how the ticketing route works and why, see `help/ticketing-and-epics.md`. For setting it up and driving it, see `help/ticketing-setup.md`.
-
-**`bmad-create-epics-and-stories`** — breaks a PRD and architecture into user-value epics and stories.
-- Gives: `epics.md` with a requirements inventory, a map proving every requirement is covered, and Given/When/Then criteria per story.
-- Pick when: a PRD and architecture exist, the work spans several epics, and the user wants traceability and criteria up front.
-- Not when: there is only a spec, or the user wants to build now → `bmad-spec`, then `bmad-preview-ticketing` with the spec folder. It needs a PRD to extract requirements from.
-- Writes: one file, `{planning_artifacts}/epics.md`. A spec can be added as extra input when it asks, but a PRD and an architecture are still required.
-
-**`bmad-sprint-planning`** — judges whether the plan is buildable, then tracks it.
-- Gives: a PASS / CONCERNS / FAIL readiness verdict and `sprint-status.yaml` covering every epic, story, and retrospective. Its status action answers "where are we" and names the next story. It can also validate or repair the file.
-- Pick when: `epics.md` exists and building is about to start; any time the user asks where things stand; after epics change (refresh never downgrades a status).
-- Not when: the work is on the spec route or the ticketing route. It reads only `epics.md` headings, never `stories.yaml` or tickets.
-- Writes: `{implementation_artifacts}/sprint-status.yaml`.
-
-**`bmad-preview-ticketing`** — preview of the ticket tree that will replace the two skills above.
-- Gives: an initiative sliced into epics, each planned into stories and bugs as entries in `tickets.toml`, in build order, each with an `id`, its prerequisites (`after`), and a verify line; a spike is added when the user asks for one. An entry becomes a ticket file when pulled. Run as a board, optionally published to a tracker.
-- Pick when: tickets or a tracker are the record; one-off bugs and stories with no PRD; work across repos; the user accepts a prerelease skill.
-- Tell the user: a ticket file's `status` belongs to the build, and `bmad-build` does not write it yet, so they tell this skill to start and close a ticket by hand. They hand the pulled ticket file to `bmad-build` with its epic. A story needs no refining first; a bug, a ticket with no epic, or an entry the user marked `refine = true` gets full criteria first. Before an unattended run, recommend a review of the stories. Trackers other than the repo store are lightly tested.
-- Writes: ticket files under `{output_folder}/{active_initiative}/` and `{output_folder}/backlog/`, named `epic-<slug>/`, `story-<slug>.md`, `spike-<slug>.md`, `bug-<slug>.md`, and a `tickets.toml` beside each initiative and epic file.
+**`bmad-preview-ticketing`** — slices initiatives into epics, incepts each epic into entries, refines when needed, and manages the board and optional tracker publishing. A spec, PRD, or described intent is valid input. Requirements stay in the epic and entries cite them with `covers`. A file is needed for refinement or tracker publishing, not to start a build. Tracker stores are lightly tested.
