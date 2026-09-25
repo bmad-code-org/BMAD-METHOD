@@ -156,10 +156,7 @@ documentation. Do not add another Django documentation file or an external
 service. Use diffsettings-audit as the spec folder slug.
 ```
 
-BMad Spec writes one spec in
-`_bmad-output/specs/spec-diffsettings-audit/` and the three ordered stories in
-its `stories.yaml`. Read the spec and stories, and answer any questions BMad
-Spec asks. Continue when they match the requirements above.
+BMad Spec writes `_bmad-output/specs/spec-diffsettings-audit/`. Hand it to `bmad-preview-ticketing` to create `epic-diffsettings-audit` and its three ordered entries in `tickets.toml`. Read the spec and entries and answer any questions. Continue when they match the requirements above; note the epic folder the skill creates.
 
 ## 9. Build the Three Stories
 
@@ -173,7 +170,7 @@ candidates for automation.
 
 ```text
 /bmad-build Implement story 1, filters, from
-_bmad-output/specs/spec-diffsettings-audit/stories.yaml.
+the epic-diffsettings-audit ticket tree.
 ```
 
 After Build finishes, observe the result:
@@ -192,7 +189,7 @@ The output has `DEBUG` and `SECRET_KEY`, but no `DATABASES`, followed by
 
 ```text
 /bmad-build Implement story 2, redaction, from
-_bmad-output/specs/spec-diffsettings-audit/stories.yaml.
+the epic-diffsettings-audit ticket tree.
 ```
 
 Observe the unified output:
@@ -215,7 +212,7 @@ exit: 0
 
 ```text
 /bmad-build Implement story 3, CI status, from
-_bmad-output/specs/spec-diffsettings-audit/stories.yaml.
+the epic-diffsettings-audit ticket tree.
 ```
 
 Observe a difference that remains after filtering:
@@ -254,16 +251,13 @@ optional final step. You do not need it to finish this tutorial.
 
 ## 11. Review the Epic
 
-Run Retrospective against the spec folder:
+Run Retrospective against the epic:
 
 ```text
-/bmad-retrospective _bmad-output/specs/spec-diffsettings-audit/
+/bmad-retrospective epic-diffsettings-audit
 ```
 
-Retrospective treats `stories.yaml` as the epic inventory, reads each story's
-implementation record, and checks the integrated result against `SPEC.md`. It
-writes `RETROSPECTIVE.md` in the same spec folder. Review its evidence,
-acceptance verdict, and any proposed follow-up work.
+Retrospective reads the epic's `tickets.toml` and joined plans, then checks the integrated result against its requirements and source spec. It writes `epic-diffsettings-audit-retrospective.md` directly in the epic folder. Review its evidence, acceptance verdict, and proposed follow-up work. Keep the plans: they own status and historical evidence.
 
 ## 12. Keep Building
 

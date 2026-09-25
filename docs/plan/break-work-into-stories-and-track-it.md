@@ -1,122 +1,38 @@
 ---
 title: 'Break Work into Stories and Track It'
-description: Turn a spec or PRD into implementable stories, gate readiness, generate sprint tracking, view status, and repair the tracking file when it drifts.
+description: Turn intent, a spec, or a PRD into ticket entries, build them directly, and track progress in joined plans.
 sidebar:
   order: 7
 ---
 
-Use this page to turn a plan into stories you can build in one session and
-keep track of them. The path depends on the plan: a spec-backed epic goes to
-`bmad-preview-ticketing`; a project with a PRD gets epics and stories, then
-`bmad-sprint-planning`.
+Use `bmad-preview-ticketing` to split and track work. It accepts described intent, a spec, or a PRD. One small story or bug can go straight to [Build](../build/build-a-change.md) without ticketing.
 
-:::note[v7 preview]
-`bmad-preview-ticketing` is a preview skill. It breaks a spec-backed epic into stories, and it can stand in for the project path on this page. See [Help Test v7 Previews](./help-test-v7-previews.md).
-:::
+## Plan the Work
 
-## Prepare the Units
+For several epics, create an initiative and ask the skill to slice it. Each epic gets an envelope with requirements and done-when checks. Incept one epic to propose its stories and bugs in build order, with requirement coverage, dependencies, and verification. Review the breakdown before accepting it.
 
-| Plan                                          | Do this                                                          | Tracking artifact                            |
-| --------------------------------------------- | ---------------------------------------------------------------- | -------------------------------------------- |
-| One epic backed by `SPEC.md`                  | Run `bmad-preview-ticketing` with the spec folder                | Epic `tickets.toml` plus story tickets     |
-| A project with a PRD (and UX or architecture) | Run `bmad-create-epics-and-stories`, then `bmad-sprint-planning` | Epic files plus `sprint-status.yaml`         |
+The initiative's `tickets.toml` lists epics. Each epic's `tickets.toml` lists entries with stable numeric ids. A planned entry needs no story file. Standalone tracked stories and bugs have files in `backlog/`; they do not need an invented epic.
 
-For a spec-backed epic, give `bmad-preview-ticketing` the spec folder. It
-plans one epic with you and records each planned story as an entry in
-`tickets.toml` beside the epic's ticket file. Each story cites the spec's
-`CAP-N` ids. A story gets its file when you pull it, and the pulled file goes
-to `bmad-build`, which refines it as part of the build. The file ends with an
-empty `## Plan` section for the coding agent; it fills once `bmad-build` reads
-ticket files as its spec, which it does not yet. Before an
-unattended run, review the stories with the skill first. Full acceptance
-criteria are written in ticketing only for a bug, a ticket with no epic, or
-when you ask. "What's next?" lists what is ready to pull, refine, or start. See
-[Help Test v7 Previews](./help-test-v7-previews.md) for setup and use. No
-sprint-status file is involved.
+See [Set Up the Ticket Tree](./help-test-v7-previews.md) for store and tracker configuration.
 
-To run the stories unattended, give
-[`bmad-build-auto`](../build/autonomous-development-loops.md) the pulled story
-file as its intent, one run per story. Dispatch straight from `tickets.toml`
-is not available yet. For a spec folder that already has `stories.yaml`,
-`bmad-build-auto` and loop runners dispatch by spec folder and story id, and
-[Finish an Epic](../build/finish-an-epic.md) reads that file as the inventory.
+## Build an Entry
 
-For a project, `bmad-create-epics-and-stories` works with you as a product
-partner to turn the PRD's requirements and the architecture's decisions into
-epic files organized by user value, each story carrying acceptance criteria a
-developer can implement against. Everything from here on is about that path.
+Say “build story 1.2” to `bmad-build`. It reads the entry and epic, plus an existing refined leaf file, and writes acceptance criteria into its plan. Refinement before building is optional unless the work needs it.
 
-## Gate Readiness
+The plan sits beside `tickets.toml` as `story-<slug>-plan.md`. Its numeric `ticket` joins the entry. A backlog plan uses its leaf file stem instead. The plan owns status and records the baseline before changes.
 
-Run `bmad-sprint-planning` at the boundary between planning and
-implementation. Before any tracking exists, it judges the plan like a
-skeptical senior developer reading a handoff. It inventories whatever planning
-documents the project actually has — briefs, PRFAQs, PRDs, specs, UX output,
-architecture, epics — by reading them, not by filename. Then it asks one
-question: could a developer implement these epics without inventing decisions
-nothing records?
+For unattended work, explicitly dispatch a ticket to `bmad-build-auto`, one invocation per ticket. It does not select the next ticket itself. Read [Autonomous Development Loops](../build/autonomous-development-loops.md) before wiring a runner.
 
-The verdict is `PASS`, `CONCERNS`, or `FAIL`. Concerns are listed and you
-choose whether to proceed. A fail stops with findings ordered by severity,
-each naming the skill that fixes it. A missing document type is only a finding
-if stories depend on it; a project with no UX document and no UI stories is
-fine.
+## Track Progress
 
-Say "check implementation readiness" to run only the gate. The `IR` trigger on
-the Product Manager's and Architect's menus does the same.
+Ask ticketing “what's next?” or “show status.” Plans carry build progress. A build finishes at `built`, shown in the review column; the user or orchestrator decides when to mark it `done`. A tracker card's status remains separate from build status.
 
-## Generate Tracking
+Keep completed plans. Deleting one removes the state and evidence later builds, review, and retrospective read.
 
-After the gate passes, the same skill generates `sprint-status.yaml`. Build
-syncs story statuses into it, code review moves stories through review, and
-the retrospective appends action items to it.
+## Review and Close
 
-Re-running generation is safe: finished work stays finished, action items and
-hand-written comments pass through, and a dry run reports drift without
-writing.
-
-## View Status
-
-Say "show sprint status" to skip the gate and see where you are: counts by
-status, risk flags (a stale file, orphaned stories, stories waiting in review),
-open action items from retrospectives, and one recommended next action with
-its story key. There are no time estimates: status, risks, and next steps
-only.
-
-The next action follows a fixed priority: resume in-progress work, review what
-is waiting, start the next ready story, start the first backlog story, run an
-open retrospective, or report done.
-
-## Repair the Tracking File
-
-Say "validate sprint status" to check the file's format without changing it.
-Say "fix sprint status" when the file is broken or has drifted from reality.
-The skill infers the true state first — from epic files, story files, and git
-history — and shows you one proposed state table. Nothing is written until you
-confirm it. Then it regenerates a clean file and validates it. Repair is the
-only path that can mark a story as less complete than it was, because it
-reflects confirmed reality.
-
-Old names still work: `bmad-check-implementation-readiness` and
-`bmad-sprint-status` forward here. Move any
-`_bmad/custom/bmad-sprint-status.toml` overrides to
-`bmad-sprint-planning.toml`.
+`bmad-code-review` reads a ticket's plan and baseline and appends a dated `Code Review` block. It never changes ticket status. When the epic is finished, run [Retrospective](../build/finish-an-epic.md) with its folder, id, or slug. Retrospective writes its evidence and verdict directly in the epic folder; ticketing handles confirmed closure.
 
 ## Correct Course
 
-Run `bmad-correct-course` when a change is too big for one story to absorb: a
-requirement turned out to be wrong, an architecture decision has to change, or
-a dependency changed. It reads the PRD, epics, architecture, and UX documents,
-assesses the impact, and produces a sprint change proposal — what changes,
-what stays, and in what order. Once you approve it, it updates
-`sprint-status.yaml` and hands the document edits off. Apply them, then create
-the new or changed stories. For a large restructure, re-run `bmad-preview-ticketing`
-or `bmad-sprint-planning` for the affected epics instead. Finished work stays
-finished.
-
-## What Comes Next
-
-Implement each story with [`bmad-build`](../build/build-a-change.md), or with
-[`bmad-build-auto`](../build/autonomous-development-loops.md) once the decisions are stable.
-When the epic's stories are done, close it with
-[Finish an Epic](../build/finish-an-epic.md).
+Run `bmad-correct-course` when a requirement, architecture choice, or dependency changes significantly. It requires a PRD and your description of the affected work and dependencies. For standalone spec work without a PRD, update the spec with `bmad-spec` instead. Correct-course assesses the available planning documents and proposes edits and a ticketing handoff. It does not read or edit the ticket tree. Apply the approved changes through the owning skills, then use ticketing to revise the remaining breakdown.

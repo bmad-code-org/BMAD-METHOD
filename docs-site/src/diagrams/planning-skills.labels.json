@@ -23,21 +23,18 @@
     "design-md-experience-md": "DESIGN.md, EXPERIENCE.md",
     "bmad-spec": "bmad-spec",
     "spec-md-companions": "SPEC.md + companions",
-    "optional-stories-yaml": "optional stories.yaml",
-    "every-path-runs-bmad-spec": "Every path runs bmad-spec.",
+    "ticketing-handoff": "ticketing handoff",
+    "spec-when-needed": "Use a spec when needed.",
     "one-session-of-work-goes": "One session of work goes",
     "straight-from-the-spec-to-build": "straight from the spec to Build.",
     "solutioning": "SOLUTIONING",
     "decide-how-divide-the-work": "decide how, divide the work",
     "bmad-architecture": "bmad-architecture",
     "architecture-spine-md": "ARCHITECTURE-SPINE.md",
-    "bmad-create-epics": "bmad-create-epics-",
-    "and-stories": "and-stories",
-    "epic-files-with-stories": "epic files with stories",
-    "bmad-sprint-planning": "bmad-sprint-planning",
-    "pass-concerns-fail": "PASS / CONCERNS / FAIL",
-    "sprint-status-yaml": "sprint-status.yaml",
+    "bmad-preview": "bmad-preview-",
+    "ticketing": "ticketing",
+    "ordered-entries": "ordered tickets.toml entries",
     "bmad-build": "bmad-build",
-    "one-session-per-unit": "one session per unit"
+    "build-output": "one session per unit · built → user marks done · keep plans"
   }
 }

@@ -1,32 +1,18 @@
 ---
-title: 'Help Test v7 Previews'
+title: 'Set Up the Ticket Tree'
 description: Try proposed BMad v7 planning changes as they arrive — set up an initiative store, configure it, and use the ticketing preview skill.
 sidebar:
   order: 8
 ---
 
-Use this page to try proposed v7 planning changes before they replace anything, and to tell us what works and what does not. Previews ship beside the current skills. Nothing on this page changes how the existing planning path behaves.
+Use `bmad-preview-ticketing` to plan and track work in the shared ticket tree. Build, Build Auto, code review, and retrospective consume that tree. The skill keeps its preview name while tracker integrations continue to mature.
 
-:::caution[Not wired into the current flow yet]
-Stories written by the ticketing preview are not read by `bmad-sprint-planning` and do not appear in `sprint-status.yaml`. `bmad-build` builds a story from its entry and moves its status as far as review; you mark it done through the ticketing skill. `bmad-retrospective` and unattended loops such as bmad-loop do not read `tickets.toml` yet.
-
-While ticketing is in preview, `bmad-create-epics-and-stories` with `bmad-sprint-planning` remains the supported path and works as before. Use it when you need sprint status, the retrospective, or an unattended loop today.
-:::
-
-## What Is in Preview
-
-| Skill                    | Purpose                                                                                  | Stands in for                                                  |
-| ------------------------ | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| `bmad-preview-ticketing` | Slices an initiative into epics, plans an epic into stories, refines tickets, runs a board | `bmad-create-epics-and-stories` plus `bmad-sprint-planning` |
-
-A preview skill is an alternative to the skills it stands in for, not a companion. Use one path or the other for a given piece of work. This table grows as more v7 previews arrive.
-
-## Get the Preview
+## Install the Skills
 
 Preview skills install with the skills CLI. `npx bmad-method install`, with or without `@next`, does not install them. Run this in your project:
 
 ```bash
-npx skills add bmad-code-org/BMAD-METHOD --skill bmad --skill bmod-method --skill bmad-preview-ticketing
+npx skills add bmad-code-org/BMAD-METHOD --skill bmad --skill bmod-core-tools --skill bmod-method --skill bmad-preview-ticketing
 ```
 
 Add `--skill bmad-build` and any other skill you want in the same command. Then open your AI tool in the project, ask the `bmad` skill to run `bmad setup`, and check that the tool lists `bmad-preview-ticketing`. Update later with `npx skills update`.
@@ -119,7 +105,7 @@ _bmad-output/planning-artifacts/EXPERIENCE.md    → initiative-checkout/ux-chec
 _bmad-output/planning-artifacts/architecture.md  → initiative-checkout/architecture-checkout/architecture-checkout.md
 ```
 
-UX is the exception to the naming: `bmad-ux` writes two peer documents, `DESIGN.md` and `EXPERIENCE.md`, and both keep their names inside the `ux-<slug>` folder. Your source paths will differ. Copy rather than move, so the current skills still find their files.
+UX is the exception to the naming: `bmad-ux` writes two peer documents, `DESIGN.md` and `EXPERIENCE.md`, and both keep their names inside the `ux-<slug>` folder. Your source paths will differ.
 
 ## Configure Where Tickets Are Tracked
 
@@ -178,8 +164,8 @@ Name the story to `bmad-build`, for example "build story 1.2" for the second sto
 A story needs no refining before `bmad-build`. Build refines it as part of the build: it questions you and writes the acceptance criteria itself. If you will build unattended, with `bmad-build-auto`, a loop, or a factory, nobody answers questions during the build, so review the sequence and each story with the ticketing skill first. The ticketing skill writes full acceptance criteria only for a bug, a ticket with no epic, or when you ask.
 :::
 
-The story's `status` lives in the build's plan. Build moves it as it works and stops at review; only you, or an orchestrator, mark a story done. When you have checked the work, say "mark story 1.2 done" to the ticketing skill. On the repo store that is an edit to the plan that you commit with your work. With a tracker, say "start story 1.2" before you build, so the ticket publishes if it has not and its card moves to in progress. The tracker's status is read into the story's file as `tracker_status`, so moving a card on the board never makes build skip planning.
+The story's `status` lives in the build's plan. Build moves it as it works and stops at `built`; only you, or an orchestrator, mark a story done. When you have checked the work, say "mark story 1.2 done" to the ticketing skill. On the repo store that is an edit to the plan that you commit with your work. With a tracker, say "start story 1.2" before you build, so the ticket publishes if it has not and its card moves to in progress. The tracker's status is read into the story's file as `tracker_status`, so moving a card on the board never makes build skip planning.
 
 ## Tell Us What You Find
 
-Preview feedback decides what ships in v7. The most useful reports say what you gave the skill, what you asked for, what it produced, and what you expected instead. Open a [GitHub issue](https://github.com/bmad-code-org/BMAD-METHOD/issues) with "v7 preview" in the title, or post in [Discord](https://discord.gg/gk8jAdXWmj).
+Feedback helps improve the ticketing integrations. The most useful reports say what you gave the skill, what you asked for, what it produced, and what you expected instead. Open a [GitHub issue](https://github.com/bmad-code-org/BMAD-METHOD/issues) with "v7 preview" in the title, or post in [Discord](https://discord.gg/gk8jAdXWmj).

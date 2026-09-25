@@ -40,7 +40,7 @@ One file applies to every workflow the agent runs — build, code review,
 test generation — and every engineer who pulls the repo inherits it.
 
 **Example:** Amelia always uses Context7 for library docs and falls back to
-Linear when a story is not in the epics list.
+Linear when a ticket is not in the ticket tree.
 
 ```toml
 # _bmad/custom/bmad-agent-dev.toml
@@ -49,7 +49,7 @@ Linear when a story is not in the epics list.
 
 persistent_facts = [
   "For any library documentation lookup (React, TypeScript, Zod, Prisma, etc.), call the context7 MCP tool (`mcp__context7__resolve_library_id` then `mcp__context7__get_library_docs`) before relying on training-data knowledge. Up-to-date docs trump memorized APIs.",
-  "When a story reference isn't found in {planning_artifacts}/epics.md, search Linear via `mcp__linear__search_issues` using the story ID or title before asking the user to clarify. If Linear returns a match, treat it as the authoritative story source.",
+  "When a ticket reference cannot be resolved in the ticket tree, search Linear via `mcp__linear__search_issues` using the story ID or title before asking the user to clarify. If Linear returns a match, treat it as the authoritative story source.",
 ]
 ```
 

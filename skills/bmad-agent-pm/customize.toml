@@ -58,16 +58,11 @@ description = "Create, update, or validate a PRD — state your intent or the sk
 skill = "bmad-prd"
 
 [[agent.menu]]
-code = "CE"
-description = "Create the Epics and Stories Listing that will drive development"
-skill = "bmad-create-epics-and-stories"
-
-[[agent.menu]]
-code = "IR"
-description = "Check implementation readiness — verify the planning artifacts are complete and aligned (opens sprint planning; stop after the gate or continue into tracking)"
-skill = "bmad-sprint-planning"
-
-[[agent.menu]]
 code = "CC"
 description = "Determine how to proceed if major need for change is discovered mid implementation"
 skill = "bmad-correct-course"
+
+[[agent.menu]]
+code = "TK"
+description = "Slice initiatives, plan epics, and manage tickets"
+skill = "bmad-preview-ticketing"

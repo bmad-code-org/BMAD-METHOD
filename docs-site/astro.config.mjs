@@ -60,6 +60,7 @@ export default defineConfig({
     '/explanation/why-solutioning-matters': `${basePath}plan/design-ux-and-architecture/`,
     '/explanation/preventing-agent-conflicts': `${basePath}plan/design-ux-and-architecture/`,
     '/explanation/sprint-planning': `${basePath}plan/break-work-into-stories-and-track-it/`,
+    '/ko-kr/explanation/sprint-planning': `${basePath}ko-kr/plan/break-work-into-stories-and-track-it/`,
     '/explanation/retrospective': `${basePath}build/finish-an-epic/`,
     '/how-to/established-projects': `${basePath}existing-codebases/start-in-an-existing-codebase/`,
     '/explanation/established-projects-faq': `${basePath}existing-codebases/start-in-an-existing-codebase/`,

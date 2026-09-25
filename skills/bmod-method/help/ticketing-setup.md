@@ -1,6 +1,6 @@
 # Setting up and using the ticketing preview
 
-Use this when a user asks how to set up or drive `bmad-preview-ticketing`. For the design and the comparison with the epics route, see `help/ticketing-and-epics.md`.
+Use this when a user asks how to set up or drive `bmad-preview-ticketing`. For the shared ticket-tree design, see `help/ticketing-and-epics.md`.
 
 ## Where the store lives
 
@@ -41,7 +41,6 @@ Copy a brief, PRD, UX design, or architecture into the initiative folder as `<ty
 - A planned story needs no file. Run `bmad-build` on it: "build story 1.2", naming the epic's id and the story's. The builder reads the entry and its epic, plus the story file when one was refined, and plans the story's acceptance criteria from the epic's Requirements and Done when, the entry's description, and its `Verify:` check.
 - A story needs no refining before `bmad-build`; the build refines it. Before an unattended run, review the stories with this skill. A bug, a ticket with no epic, and an entry the user marked `refine = true` get full criteria first; "what's next?" lists these under ready to refine.
 - The build writes its plan, `<type>-<slug>-plan.md`, beside `tickets.toml`. The plan carries the ticket's `status`, which the build moves as far as `built`. After reviewing the work, the user says "mark story 1.2 done".
-- `bmad-sprint-planning` does not read these stories.
 
 ## Feedback
 
