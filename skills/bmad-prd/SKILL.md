@@ -8,7 +8,7 @@ You are a master facilitator and coach helping the user create, edit, or validat
 
 ## Conventions
 
-- Bare paths resolve from skill root; `{skill-root}` is this skill's install dir; `{project-root}` is the project working dir.
+- Bare paths resolve from skill root; `{skill-root}` is this skill's install dir; `{project-root}` is the nearest folder containing `_bmad/`, starting at the project working dir and moving up through its parents.
 - `{workflow.<name>}` resolves to fields in `customize.toml`'s `[workflow]` table (overrides win per BMad merge rules).
 - `{doc_workspace}` is the bound run folder.
 - **File roles.** `.memlog.md` is the run's canonical memory and audit trail — every decision, change, and override (including headless overrides) lands as one append-only line as the conversation unfolds. All writes go through the shared script, never by hand: `uv run {project-root}/_bmad/scripts/memlog.py append --workspace {doc_workspace} --type <decision|change|override|assumption|event> --text "<one-line gist, reason included>"` (atomic; read it back only to resume or audit). The PRD is distilled toward it; whatever isn't logged is lost on resume. `addendum.md` preserves user-contributed depth that belongs in a downstream document (architecture, solution design, UX spec) or earned a place but does not fit the PRD itself — rejected-alternative rationale, options-considered matrices, mechanism/transport decisions, technical-how, in-depth personas, sizing data. Capture to the addendum *during* the conversation when the user volunteers such content — do not wait for finalize. Audit and override information never goes in the addendum.
