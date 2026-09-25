@@ -57,10 +57,6 @@ npx skills update
 
 For plugins, use your marketplace's update flow instead. Then run `bmad setup` again to refresh the project's runtime and `bmad status` to verify it. Restart your coding tool when its skill catalog needs refreshing.
 
-## Upgrade Older Projects
-
-The npm v6 installer is a separate distribution. To adopt the current ticket-tree route, follow [Upgrade to the Ticket Tree](./upgrade-to-ticket-tree.md). It covers removal of obsolete installed skills, backup and migration of historical work, renamed customizations, and runner changes.
-
 ## What You Get
 
 Your coding tool discovers the installed skills. The project's `_bmad/` holds shared configuration and supporting scripts. Team and personal customizations live under `_bmad/custom/` and survive setup refreshes.

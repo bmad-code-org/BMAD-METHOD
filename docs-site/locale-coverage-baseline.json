@@ -21,8 +21,7 @@
     "plan/plan-inside-an-organization",
     "plan/research-a-decision",
     "reference/skills-and-agents",
-    "start/get-answers-about-bmad",
-    "start/upgrade-to-ticket-tree"
+    "start/get-answers-about-bmad"
   ],
   "vi-vn": [
     "build/autonomous-development-loops",
@@ -50,8 +49,7 @@
     "reference/skills-and-agents",
     "start/build-your-first-change",
     "start/get-answers-about-bmad",
-    "start/install-bmad",
-    "start/upgrade-to-ticket-tree"
+    "start/install-bmad"
   ],
   "zh-cn": [
     "build/autonomous-development-loops",
@@ -79,8 +77,7 @@
     "reference/skills-and-agents",
     "start/build-your-first-change",
     "start/get-answers-about-bmad",
-    "start/install-bmad",
-    "start/upgrade-to-ticket-tree"
+    "start/install-bmad"
   ],
   "fr": [
     "build/autonomous-development-loops",
@@ -108,8 +105,7 @@
     "reference/skills-and-agents",
     "start/build-your-first-change",
     "start/get-answers-about-bmad",
-    "start/install-bmad",
-    "start/upgrade-to-ticket-tree"
+    "start/install-bmad"
   ],
   "cs": [
     "build/autonomous-development-loops",
@@ -138,7 +134,6 @@
     "reference/skills-and-agents",
     "start/build-your-first-change",
     "start/get-answers-about-bmad",
-    "start/install-bmad",
-    "start/upgrade-to-ticket-tree"
+    "start/install-bmad"
   ]
 }

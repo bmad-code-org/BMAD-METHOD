@@ -105,7 +105,7 @@ _bmad-output/planning-artifacts/EXPERIENCE.md    → initiative-checkout/ux-chec
 _bmad-output/planning-artifacts/architecture.md  → initiative-checkout/architecture-checkout/architecture-checkout.md
 ```
 
-UX is the exception to the naming: `bmad-ux` writes two peer documents, `DESIGN.md` and `EXPERIENCE.md`, and both keep their names inside the `ux-<slug>` folder. Your source paths will differ. For existing v6 work, use [the migration guide](../start/upgrade-to-ticket-tree.md) so historical status, criteria, and evidence are preserved.
+UX is the exception to the naming: `bmad-ux` writes two peer documents, `DESIGN.md` and `EXPERIENCE.md`, and both keep their names inside the `ux-<slug>` folder. Your source paths will differ.
 
 ## Configure Where Tickets Are Tracked
 

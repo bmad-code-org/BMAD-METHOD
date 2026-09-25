@@ -36,5 +36,3 @@ Keep completed plans. Deleting one removes the state and evidence later builds, 
 ## Correct Course
 
 Run `bmad-correct-course` when a requirement, architecture choice, or dependency changes significantly. It requires a PRD and your description of the affected work and dependencies. For standalone spec work without a PRD, update the spec with `bmad-spec` instead. Correct-course assesses the available planning documents and proposes edits and a ticketing handoff. It does not read or edit the ticket tree. Apply the approved changes through the owning skills, then use ticketing to revise the remaining breakdown.
-
-Existing projects can [upgrade and migrate](../start/upgrade-to-ticket-tree.md) their historical work.

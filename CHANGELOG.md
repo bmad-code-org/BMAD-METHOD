@@ -1,16 +1,5 @@
 # Changelog
 
-## Unreleased
-
-### Ticket-tree integration
-
-- `bmad-preview-ticketing` replaces `bmad-create-epics-and-stories` and `bmad-sprint-planning`. Build entries directly without manufacturing story files. Standalone stories and bugs remain valid direct intent or backlog leaves.
-- Build and Build Auto store status and `baseline_revision` in joined plans and stop at `built`; only the user or orchestrator marks work `done`. Keep completed plans as live ticket state. Build Auto requires an explicit dispatched ticket or intent; it does not select the next ticket.
-- Code review appends dated findings to the plan without changing status. Retrospective reads the epic's preserved evidence and writes `epic-<slug>-retrospective.md` directly in its folder, without creating tickets or closing the epic.
-- `bmad migrate method` converts classic v6 and spec-folder tracking into entries and joined plans, preserving criteria, history, and completed states. Missing historical baselines are disclosed, never invented.
-- Breaking customization names: Build's `open_spec` is now `open_plan`; Build and code-review `{spec_file}` is now `{plan_file}`. There are no compatibility aliases. Update custom overrides.
-- Existing installations must explicitly remove the two obsolete installed skills; `removals.txt` is an inventory, not an installer cleanup hook. See [Upgrade to the Ticket Tree](docs/start/upgrade-to-ticket-tree.md) for Skills CLI, plugin, and manual-install instructions.
-
 ## v6.12.0 - 2026-09-03
 
 **Build decides how much ceremony a change needs after investigating it, not before.** Simple changes now get a two-section spec and finish in one session.
