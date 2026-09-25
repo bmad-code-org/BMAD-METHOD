@@ -1,20 +1,20 @@
 ---
 title: 'Finish an Epic'
-description: Close out a finished epic by reading the evidence it left — the diff, the commits, the specs — and judging the result instead of trusting memory.
+description: Close out a finished epic by reading the evidence it left — the diff, the commits, the plans — and judging the result instead of trusting memory.
 sidebar:
   order: 5
 ---
 
-Run `bmad-retrospective` when an epic is done. It reads what the epic
-produced — the specs, story records, full diff, commits, and tracking
-files — and uses that evidence instead of anyone's recollection. It
-produces a written review, proposed action items, and a verdict on whether the
-epic met its acceptance criteria.
+Run `bmad-retrospective` when every ticket of an epic is finished. It reads
+what the epic left in the ticket tree — the epic file, each ticket's plan,
+the diff, and the commits — and uses that evidence instead of anyone's
+recollection. It produces a written review, proposed action items, and a
+verdict on whether the epic met its acceptance criteria.
 
 ## Why Run It After an Epic
 
-An epic ships as a stack of stories, each built and reviewed on its own. Each
-story passed its own review in isolation, so the bugs that survive to this
+An epic ships as a stack of tickets, each built and reviewed on its own. Each
+ticket passed its own review in isolation, so the bugs that survive to this
 point are the ones isolation hides. Nine sessions each add a little to the
 same file, and none of them ever sees the oversized module they built
 together. No session judged the epic as a whole against what it set out to
@@ -27,9 +27,9 @@ is fresh and the session logs have not been cleared.
   twice, the file that grew a little in every session.
 - **Diff-scope review**: it hands the epic's diff to
   [`bmad-review`](../reference/skills-and-agents.md#bmad-review), weighting the seams between
-  stories where no single session saw both sides.
+  tickets where no single session saw both sides.
 - **Spec reconciliation**: where the built code diverged from what the epic
-  and PRD described.
+  and the initiative's requirements described.
 - **A behavior check**: when the epic changed runtime behavior, it exercises
   the changed flows end to end. Passing tests do not substitute for running
   the system.
@@ -42,44 +42,44 @@ Every finding carries a source reference: a file, a line, a commit, a log. A
 claim it can't point at doesn't make the report.
 
 :::note[It reads evidence, it doesn't invent it]
-The retrospective reports what the diff, the commits, and the specs actually
+The retrospective reports what the diff, the commits, and the plans actually
 show. It won't invent a root cause or a pattern the code doesn't back up.
 :::
 
-## Two Epic Inputs
+## What It Reads
 
-Retrospective accepts either sprint tracking from the project path or the
-spec folder from the epic path in
-[Choose a Planning Path](../plan/choose-a-planning-path.md).
+The retrospective works on one epic folder in the ticket tree that
+`bmad-preview-ticketing` keeps (see
+[Break Work into Stories](../plan/break-work-into-stories-and-track-it.md)):
 
-| Epic input          | Inventory and completion state                                     | Retrospective output                                                               |
-| ------------------- | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| Sprint-tracked epic | The selected epic in `sprint-status.yaml` and its story artifacts  | A dated document in the implementation artifacts; sprint status is updated         |
-| Spec-backed epic    | `SPEC.md`, ordered `stories.yaml`, and `stories/<id>-*.md` records | `RETROSPECTIVE.md` in the spec folder; no sprint-status file is created or changed |
+- **`tickets.toml`**: the epic's tickets, in build order.
+- **The epic file**: its Done when checks, the criteria the verdict judges.
+- **The initiative's requirements**: what each ticket's `covers` points at.
+- **Each ticket's plan and story file**: the plan's triage log,
+  verification, plan changes, and any `## Code Review` blocks; the story
+  file only when the ticket was refined.
+- **The git history**: each plan's diff and commits, from its
+  `baseline_revision` to the next plan's.
+- **The previous epic's retrospective**: its action items, to check whether
+  they landed.
 
-In the spec-backed path, `stories.yaml` defines the epic inventory and each
-story record defines its completion state. Retrospective uses the same rule
-whether Build or Build Auto produced a record.
-
-`bmad-spec` no longer writes `stories.yaml`; it hands story breakdown to
-`bmad-preview-ticketing`. Retrospective still reads an existing
-`stories.yaml`. It does not read `tickets.toml` yet, so an epic planned in the
-ticketing preview has no retrospective path today.
+A ticket counts as finished when it is `built`, `done`, or `dropped`. Builds
+stop at `built`, and only you mark a ticket done, so the retrospective lists
+the tickets still at `built` for you to close.
 
 ## What You Get
 
-- **A retrospective document** with the evidence inventory, findings grouped
-  with their sources, the verdict, and proposed action items.
-- **In sprint mode, an updated sprint status** marks the retrospective as done
-  and links action items to their findings. Spec-backed mode does not use
-  sprint status.
+- **A retrospective document**, `epic-<slug>-retrospective.md` in the epic
+  folder, with the evidence inventory, findings grouped with their sources,
+  the verdict, and proposed action items. It is the only file the skill
+  writes. It does not mark the epic or any ticket done.
 - **A verdict** of `accepted`, `accepted-with-open-items`, or `rejected`,
-  which tells you whether to start the next epic or hold and fix first.
-  Unfinished stories for that epic make the skill's verdict `rejected`; a
-  human can still override.
+  recorded in the document's frontmatter, which tells you whether to start
+  the next epic or hold and fix first. Unfinished tickets make the skill's
+  verdict `rejected`; a human can still override.
 
 A failing epic never closes as quietly accepted. If the criteria aren't met,
-or any of the epic's stories are still unfinished, and no one overrides the
+or any of the epic's tickets are still unfinished, and no one overrides the
 call, it closes as not accepted.
 
 ## What to Do with the Output
@@ -87,7 +87,7 @@ call, it closes as not accepted.
 The skill proposes; you decide what runs. Nothing touches your code or your
 specs automatically.
 
-- **Action items** feed the normal dev loop as fix-now work or fresh stories.
+- **Action items** feed the normal dev loop as fix-now work or fresh tickets.
   The retrospective writes them up; it doesn't execute them.
 - **Spec reconciliations** arrive with the evidence attached, for you to apply
   to the project contract by hand. An uncertain interpretation never gets
@@ -97,14 +97,13 @@ specs automatically.
 
 ## Running It
 
-Invoke `bmad-retrospective` with the epic number or spec folder. With no input,
-it finds the completed epic from sprint status. By default, it stops at the
-written report and verdict.
+Invoke `bmad-retrospective` with the epic folder, or the epic's id or slug in
+the active initiative. With no input, it offers the epics whose tickets are
+all finished. By default, it stops at the written report and verdict.
 
 | You want                 | Do this                                                                                                                      |
 | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
 | A standard review        | `/bmad-retrospective`                                                                                                        |
-| A specific epic          | `/bmad-retrospective 3`                                                                                                      |
-| A spec-backed epic       | `/bmad-retrospective _bmad-output/specs/spec-<slug>/`                                                                        |
+| A specific epic          | `/bmad-retrospective 3`, or the epic's slug or folder                                                                        |
 | The team to talk it over | Ask to "discuss it as a team"; it convenes [party mode](../customize/run-multi-agent-discussions.md) over the real findings, off by default |
 | An unattended run        | `-H <epic>`: verdict on the evidence alone                                                                                   |
