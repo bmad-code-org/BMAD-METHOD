@@ -65,7 +65,7 @@ Then check the epic is actually finished before Phase 1. When `pending_tickets` 
 
 The retrospective document is the working artifact, not only the final output. Once the epic is fixed, create it as a skeleton (`{{ rendered("references/retro-document.md") }}` names the sections) and write each phase's result into it as you finish — inventory, then findings with sources, then dispositions and verdict. Continuity is re-reading the file.
 
-The document is `<epic folder>/epic-<slug>-retrospective.md`, a fixed name so a resumed run finds it. If it already exists, load it, reconcile its recorded state against the current evidence — the current evidence wins, since commits may have landed and questions may have been answered since — and resume at the first incomplete phase instead of redoing finished ones.
+The document is the retrospective file named above, a fixed name so a resumed run finds it. If it already exists, load it, reconcile its recorded state against the current evidence — the current evidence wins, since commits may have landed and questions may have been answered since — and resume at the first incomplete phase instead of redoing finished ones.
 
 ## Flow
 

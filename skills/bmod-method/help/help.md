@@ -157,7 +157,7 @@ An agent and its skills are two ways into the same work: a skill run directly do
 
 ## Answering "what's next?"
 
-Read the state before recommending: which of the outputs named above exist, and what the codebase, git history, and the user say is done. A file's presence, or a story file with `status: done`, is evidence the skill ran, not proof the work is finished or current.
+Read the state before recommending: which of the outputs named above exist, and what the codebase, git history, and the user say is done. A file's presence, or a plan with `status: done`, is evidence the skill ran, not proof the work is finished or current.
 
 - Mid-path, recommend the next unfinished step of the route the user is on, not a restart, and do not move them to a different slicing route mid-work.
 - When a significant change surfaces, route it as the table in "Match the situation" says, then resume at the earliest affected step. Do not replay unaffected work.

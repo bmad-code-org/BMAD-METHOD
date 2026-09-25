@@ -43,7 +43,7 @@
 
 5. If `failed_layers` is non-empty, report which layers failed before announcing results. If zero entries remain after rejections AND `failed_layers` is non-empty, warn the user that the review may be incomplete rather than announcing a clean review.
 
-6. If zero entries remain after triage (all rejected or none raised): state "✅ Clean review — all layers passed." (Step 3 already warned if any review layers failed via `failed_layers`.)
+6. If zero entries remain after triage (all rejected or none raised): state "✅ Clean review — all layers passed." (Item 5 already warned if any review layers failed via `failed_layers`.)
 
 ## NEXT
 

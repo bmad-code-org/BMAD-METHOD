@@ -96,7 +96,7 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
 
 **Fuzzy matching**: Be flexible with document names — users may use variations like `prd.md`, `bmm-prd.md`, `product-requirements.md`, etc.
 
-**Missing documents**: Not all documents may exist. A PRD or a spec is essential; Architecture, UX Design, and Document Project are loaded if available. HALT if neither a PRD nor a spec can be found.
+**Missing documents**: Not all documents may exist. A PRD or a spec is essential; Architecture, UX Design, and Project Context are loaded if available. HALT if neither a PRD nor a spec can be found.
 
 <workflow>
 

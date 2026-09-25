@@ -1,6 +1,6 @@
 # Finalize: Retrospective Document
 
-Phase 5. Finalize the retrospective document. It is the run's one write, at `<epic folder>/epic-<slug>-retrospective.md` — the folder's name plus `-retrospective.md`.
+Phase 5. Finalize the retrospective document.
 
 ## The retrospective document
 

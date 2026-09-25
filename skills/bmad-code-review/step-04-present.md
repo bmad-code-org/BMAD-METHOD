@@ -37,7 +37,7 @@ Announce what was written:
 
 > **Code review complete.** <D> `decision-needed`, <P> `patch`, <W> `defer`, <R> rejected.
 
-The findings report ends with a `Rejected` appendix — one line per rejected finding: `false` with its refutation, `low` with why it was not worth fixing — in the block section 2 wrote when `plan_file` is set, at the tail of the chat listing otherwise.
+The `Rejected` appendix is one line per rejected finding: `false` with its refutation, `low` with why it was not worth fixing. Without `plan_file`, it ends the chat listing.
 
 If `plan_file` is set, add: `Findings written to {plan_file}.`
 Otherwise add: `Findings are listed above. No plan was provided, so nothing was persisted.`
@@ -52,7 +52,7 @@ If the user chooses to defer, ask: Quick one-line reason for deferring this item
 
 ### 5. Handle `patch` findings
 
-If `patch` findings exist (including any resolved from step 4), HALT. Ask the user:
+If `patch` findings exist (including any resolved from section 4), HALT. Ask the user:
 
 If `plan_file` is set, present all three options:
 

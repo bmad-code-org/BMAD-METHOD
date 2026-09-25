@@ -5,7 +5,7 @@ sidebar:
   order: 5
 ---
 
-Run `bmad-retrospective` when every ticket of an epic is built. It reads
+Run `bmad-retrospective` when every ticket of an epic is finished. It reads
 what the epic left in the ticket tree — the epic file, each ticket's plan,
 the diff, and the commits — and uses that evidence instead of anyone's
 recollection. It produces a written review, proposed action items, and a
@@ -55,8 +55,9 @@ The retrospective works on one epic folder in the ticket tree that
 - **`tickets.toml`**: the epic's tickets, in build order.
 - **The epic file**: its Done when checks, the criteria the verdict judges.
 - **The initiative's requirements**: what each ticket's `covers` points at.
-- **Each ticket's plan and story file**: the build's triage log,
-  verification, plan changes, and any `## Code Review` blocks.
+- **Each ticket's plan and story file**: the plan's triage log,
+  verification, plan changes, and any `## Code Review` blocks; the story
+  file only when the ticket was refined.
 - **The git history**: each plan's diff and commits, from its
   `baseline_revision` to the next plan's.
 - **The previous epic's retrospective**: its action items, to check whether

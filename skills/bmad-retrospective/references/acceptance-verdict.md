@@ -40,8 +40,6 @@ Judge the final state against the epic file's Done when. If the epic file has no
 `pending_tickets` is authoritative for this epic's incomplete work: the `ref`s of the `tickets.py status <folder>` rows that are unfinished — `status` not `built` and `state` not `done` or `dropped` — in build order. When that list is non-empty:
 
 - The **machine** verdict is **rejected**. Name every unfinished ticket in the Acceptance verdict section as the evidence. Do not soften this to accepted-with-open-items: unfinished delivery is not an open finding about a finished epic — the epic itself is incomplete.
-- Record the unfinished refs in Epic summary (interactive) or Assumptions (headless) as the Inputs section already requires.
-- Headless runs have no human at the console: the document's verdict is **rejected** when `pending_tickets` was non-empty. Interactive runs may still let a human override (rule 1 below) after seeing the list.
 
 If the completeness check did not run (`tickets.py status` failed), do **not** render a rejected or accepted verdict from the absence of data — say the check was unavailable and weigh only the criteria and findings you have.
 
