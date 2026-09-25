@@ -116,6 +116,7 @@ Do not invoke any skill, and do not spawn subagents of your own — you are the 
 [[workflow.thorough_lenses]]
 id = "intent-alignment"
 name = "Intent Alignment Auditor"
+when = "an intent is available: the spec's intent section, or the user's or conversation's own words on what the change is for"
 instruction = """
 Launch a subagent with this prompt:
 
