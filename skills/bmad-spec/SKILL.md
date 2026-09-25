@@ -13,7 +13,7 @@ Multiple skills may call to update the same spec over time.
 ## Conventions
 
 - Bare paths (e.g. `assets/spec-template.md`) resolve from the skill root.
-- `{skill-root}` is this skill's install dir; `{project-root}` is the working dir.
+- `{skill-root}` is this skill's install dir; `{project-root}` is the nearest folder containing `_bmad/`, starting at the working dir and moving up through its parents.
 - `{workflow.<name>}` resolves to fields in `customize.toml`.
 
 ## On Activation

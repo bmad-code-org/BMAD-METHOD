@@ -9,7 +9,7 @@ Every finding you report carries a source reference (file, line, commit, or log)
 ## Conventions
 
 - Every operational cross-file reference in this workflow is an absolute snapshot path. Open it directly; do not resolve it relative to a skill directory.
-- `{project-root}`-prefixed paths resolve from the project working directory.
+- `{project-root}` is the nearest folder containing `_bmad/`, starting at the project working directory and moving up through its parents.
 - `{date}` is the current system datetime. Never state time estimates — AI has changed development speed, so hour/day/week predictions are noise.
 
 ## Modes
