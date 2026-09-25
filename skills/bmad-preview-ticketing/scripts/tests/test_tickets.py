@@ -115,7 +115,7 @@ class TreeCase(unittest.TestCase):
         return json.loads(run("status", str(folder)).stdout)["tickets"]
 
     def add(self, name, text, folder=None):
-        ((folder or self.epic) / name).write_text(text)
+        ((folder or self.epic) / name).write_text(text, encoding="utf-8")
 
     def seed(self, s1="", s2="", s3=""):
         self.add("story-scaffold.md", ticket(s1, 1, hitl="true"))

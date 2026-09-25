@@ -4,7 +4,7 @@ Use this when a user asks how to set up or drive `bmad-preview-ticketing`. For t
 
 ## Where the store lives
 
-- Tickets are markdown files under `root` in `_bmad/custom/ticketing-store-config.toml`. `root` defaults to `{output_folder}`, which is `_bmad-output` unless changed.
+- Tickets live under `root`. An epic's tickets are entries in its `tickets.toml`, and one gets a markdown file only when it is refined or published. Backlog tickets are markdown files. `root` is set in `_bmad/custom/ticketing-store-config.toml`. `root` defaults to `{output_folder}`, which is `_bmad-output` unless changed.
 - To move the store, set `output_folder` under `[core]` in `_bmad/custom/config.toml` (committed, applies to the team), or edit `root` in the store config.
 - `active_initiative` under `[modules.bmm]` in `_bmad/custom/config.user.toml` (personal, not committed) names the initiative folder in use. Unset, the skill offers to create and record it. Change it to switch initiatives.
 
