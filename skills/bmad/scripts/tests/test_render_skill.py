@@ -194,8 +194,9 @@ class RenderSkillTests(unittest.TestCase):
         markdown = _markdown(snap)
         self.assertIsNone(COMPILE_TOKEN.search(markdown), markdown)
         self.assertNotIn("{skill-root}", markdown)
-        artifacts = (project.resolve() / "_bmad-output" / "implementation-artifacts").as_posix()
-        self.assertIn(artifacts, markdown)
+        if skill_name != "bmad-retrospective":
+            artifacts = (project.resolve() / "_bmad-output" / "implementation-artifacts").as_posix()
+            self.assertIn(artifacts, markdown)
         return snap
 
     def _fixture_skill(self, ws: SimpleNamespace, defaults: str, workflow: str, **sources: str) -> Path:

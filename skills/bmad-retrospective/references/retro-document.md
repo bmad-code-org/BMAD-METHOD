@@ -33,52 +33,6 @@ Sections:
 
 Do not state time estimates anywhere in the document.
 
-## Sprint-status update
-
-No route enters this section. Its text stays until the sprint-status route is removed.
-
-Do not hand-edit `sprint-status.yaml` — its comment blocks and quoting are exactly the write that most often corrupts the file. Use the bundled script, which round-trips through a comment-preserving YAML parser, force-quotes values so punctuation (a leading `#`, a colon) cannot break parsing, and validates the result — restoring the original file untouched if the write does not verify:
-
-```
-uv run --no-cache {skill-root}/scripts/sprint_status.py update \
-  --file "{{ config.implementation_artifacts }}/sprint-status.yaml" \
-  --epic {% raw %}{{epic_number}}{% endraw %} --set-retro-done \
-  --add-action '[{"action":"...","owner":"..."}, ...]' \
-  --ref "{{ config.implementation_artifacts }}/epic-{% raw %}{{epic_number}}{% endraw %}-retro-{date}.md" \
-  --verdict "<accepted | accepted-with-open-items | rejected>" \
-  --date "{date}"
-```
-
-Keep every value quoted. `--date` is parsed as `MM-DD-YYYY HH:MM` and nothing else — unpadded spellings like `1-2-2026 9:05` are accepted and normalized to the padded form, but a value that does not parse is rejected with `ok: false`, `restored: true` and exit 1, before the file is touched, and the whole update is a no-op. So pass `{date}` only if it is already in that form; otherwise reformat it, or omit the flag entirely and let the script stamp the current time itself. That format carries a space, which is why the flag must be quoted: unquoted, `--date 07-28-2026 14:23` splits into two argv words and dies at argparse (`{"ok": false, "error": "argument error: unrecognized arguments: 14:23"}`, exit 2). `--file` and `--ref` are quoted for the same reason — an `{{ config.implementation_artifacts }}` path containing a space breaks them exactly the same way.
-
-It sets `development_status["epic-{% raw %}{{epic_number}}{% endraw %}-retrospective"]` to `done`, appends one `action_items` entry per proposed item, and bumps `last_updated`. Each appended item carries `status: open`, a stable `id` (`epic-<N>-retro-item-<n>-<slug>` derived from the action text, or the `id` you supply in the JSON), and a `ref` back to this retro document (from `--ref`, or a per-item `ref` in the JSON) — so an orchestrator can dedupe items across re-runs and dispatch each one to its full, sourced finding. `--verdict` is not written into the file; it is echoed back in the result JSON as a signal for consumers. It accepts exactly the frontmatter vocabulary — `accepted`, `accepted-with-open-items`, `rejected` — and any other spelling is rejected (`ok: false`, `restored: true`, exit 1) before the file is touched. Read the JSON it returns:
-
-- `ok: true` → report the retro-key transition, `action_items_added`, `action_items_updated`, and the echoed `verdict`.
-- `ok: false` → the file was left untouched (`restored: true`); surface the error, do not hand-edit. `restored: false` means the rollback write also failed and the file may be incomplete — warn the user explicitly.
-- `restored` speaks only for a command that may have written. Every `update` failure carries it; `detect-epic` never emits it, because it never writes; and an invocation the parser itself rejects (`argument error: ...`, exit 2) carries neither the key nor a file to speak about. Read a missing `restored` as "nothing was at risk", never as `false`.
-- `retro_key_found: false` → the retro key was absent, so nothing was marked done; the document still saved, but tell the user sprint-status needs a manual retro entry.
-- `retro_key_found: null` → `--set-retro-done` was not passed, so the key was never looked for. Distinct from `false`, which is a real absence the user needs to be told about.
-
-Moving a *previous* epic's action items off `open` is recorded in the retro document either way. When the Phase 4 follow-through has evidence an item landed, or the user says one did, offer to update the sprint-status entries too and run `--set-action-status` with exactly what the user confirms — that flag is the only supported way to change a status; hand-editing never is. It can be passed in the same invocation as the update above, or run on its own:
-
-```
-uv run --no-cache {skill-root}/scripts/sprint_status.py update \
-  --file "{{ config.implementation_artifacts }}/sprint-status.yaml" \
-  --epic {% raw %}{{epic_number}}{% endraw %} \
-  --set-action-status '[{"id":"epic-1-retro-item-1-add-error-handling","status":"done"},{"epic":1,"action":"Exact action text","status":"in-progress"}]'
-```
-
-Rules:
-
-- Select an item by its `id`, or — for legacy entries written before ids existed — by `epic` plus the item's exact `action` text. An entry carrying both uses the `id`. Matching is exact: no trimming, no case folding, and `epic` must be a JSON integer. The `--epic` flag does not scope selectors; it only names the retro key and the epic recorded on appended items, so items from any epic are addressable in one call.
-- The only statuses are `open`, `in-progress`, and `done`. `bmad-sprint-planning`'s status view counts both `open` and `in-progress` as open action items, so only `done` retires an item from the surfaced list — moving something to `in-progress` records progress, it does not quiet the dashboard.
-- Every selector must resolve to exactly one item already in the file. Matching nothing, matching more than one, or colliding with another entry in the same array aborts the whole invocation — `ok: false`, `restored: true`, the file byte-identical and nothing partially applied. "Whole invocation" includes any `--set-retro-done` and `--add-action` passed in the same call: one mistyped selector drops the entire update, so re-run the full command after fixing it rather than assuming the retro key was set.
-- Items appended by `--add-action` in the same run are not addressable in that run; they are always written as `open`.
-- Only ever apply a status the user confirmed, and in a headless run do not pass this flag at all.
-- Success reports `action_items_updated`.
-
-Only ever apply a status the user confirmed: the evidence justifies proposing a transition, and only the user's confirmation justifies writing it. In a headless run do not use this flag at all — record the transitions you would have proposed in the Previous-retro follow-through section and leave the prior items' statuses alone.
-
 ## Finish
 
 Report the document's path, the verdict, and the action-item count. Nothing else was written: no status changed, and no tree file was edited.

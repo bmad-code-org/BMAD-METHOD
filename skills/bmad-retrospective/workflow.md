@@ -61,19 +61,6 @@ The epic is a folder in the ticket tree, named `epic-<slug>`; the retrospective 
 
 Then check the epic is actually finished before Phase 1. When `pending_tickets` is non-empty, interactively list those tickets and ask whether to retro an unfinished epic: if the user declines, stop and report — do not enter Phase 1; if they accept, record the tickets they accepted proceeding over in the document's Epic summary. Headless, proceed and record the same list in the Assumptions section — do not invent a confirmation. Either way the list sits in the document, and Phase 4's machine verdict is **rejected** when any ticket remained unfinished (see `{{ rendered("references/acceptance-verdict.md") }}`); a human may override interactively. Tickets still at `built` — finished by the build, not yet called done — are listed in Epic summary too. Then go to Phase 1.
 
-### Sprint mode
-
-No route enters this section. Its text stays until the sprint-status route is removed.
-
-Determine the epic and its unfinished-story list from `sprint_status.py detect-epic` whenever `{{ config.implementation_artifacts }}/sprint-status.yaml` is available:
-
-- **Epic supplied** (including the stable `-H <epic>` orchestrator path): run `uv run --no-cache {skill-root}/scripts/sprint_status.py detect-epic --file {{ config.implementation_artifacts }}/sprint-status.yaml --epic <N>`. The script scopes `pending_stories` to that number even when auto-detect would have picked a different epic, and even when the epic has no `done` story yet. `story_count` is that same scoped count of the epic's story keys: `0` means the file has no such epic at all — a nonexistent epic returns the same empty `pending_stories` as a finished one, so treat `story_count: 0` as a likely mistyped epic number, confirm with the user, and headless, stop and report rather than proceeding.
-- **No epic supplied**: run the same command without `--epic` (returns the highest epic with a `done` story). Confirm the detected epic with the user and let them override; in headless mode accept it and record the assumption. If detection returns none, ask the user — or, headless, stop and report.
-
-If the script exits non-zero it emits `{"ok": false, "error": ...}` instead of a detection — the normal path for a stories-mode project with no `sprint-status.yaml`, and for a file that does not parse: surface that error verbatim — or, if the script produced no JSON at all, whatever it wrote to stderr — and ask the user which epic to retro; headless, stop and report. Without a readable sprint-status file there is no `pending_stories` list; record that the completeness check did not run and continue only if the user (or headless Assumptions trail) accepts proceeding without it.
-
-Then check the epic is actually finished. A successful detect carries `pending_stories` — the selected epic's story keys whose status is not `done`, in file order, scoped to that epic alone (an unfinished story in some *other* epic is out of scope for this retrospective). When the list is non-empty, interactively list those stories and ask whether to retro an unfinished epic: if the user declines, stop and report — do not enter Phase 1; if they accept, record the stories they accepted proceeding over in the document's Epic summary. Headless, proceed and record the same list in the Assumptions section — do not invent a confirmation. Either way the list sits in the document, and Phase 4's machine verdict is **rejected** when any story remained unfinished (see `{{ rendered("references/acceptance-verdict.md") }}`); a human may override interactively.
-
 ## Working state and resumption
 
 The retrospective document is the working artifact, not only the final output. Once the epic is fixed, create it as a skeleton (`{{ rendered("references/retro-document.md") }}` names the sections) and write each phase's result into it as you finish — inventory, then findings with sources, then dispositions and verdict. Continuity is re-reading the file.
@@ -111,4 +98,4 @@ Skip by default; never runs headless. When the user asks to "discuss it as a tea
 
 ### Phase 5 — Finalize
 
-Finalize the retrospective document and stop. Read fully and follow `{{ rendered("references/retro-document.md") }}` for the document's location, frontmatter, and sections, and the terminal instruction that ends the run. The document is the run's only write: no `sprint_status.py` call, no status change, no `tickets.py mark`, and no edit to the epic file, any plan, or any story file. Closing the epic is the ticketing skill's, confirmed by the user.
+Finalize the retrospective document and stop. Read fully and follow `{{ rendered("references/retro-document.md") }}` for the document's location, frontmatter, and sections, and the terminal instruction that ends the run. The document is the run's only write: no status change, no `tickets.py mark`, and no edit to the epic file, any plan, or any story file. Closing the epic is the ticketing skill's, confirmed by the user.
