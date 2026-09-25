@@ -55,7 +55,7 @@ Reviewers ask for changes in whichever document they are reading. Apply the chan
 3. `bmad-spec` for each affected epic. Capability ids stay stable, and it says which stories no longer match.
 4. Story breakdown or `bmad-sprint-planning` again. A refresh never downgrades a status.
 
-For a change that threatens the plan itself, run `bmad-correct-course` first. It needs a PRD and epics.
+For a change that threatens the plan itself, run `bmad-correct-course` first. It needs a PRD or a spec.
 
 ## Tracker integration
 

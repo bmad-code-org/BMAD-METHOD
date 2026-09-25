@@ -17,12 +17,14 @@ By the time it finishes, a round of review and fixing has already
 happened.
 
 If you still suspect there is more to find, run `bmad-build` again and
-hand it the spec from that run — the one already marked `status: done`.
+hand it the plan from that run — the one it left at `status: built`.
 That skips straight to review and triage, and you can repeat it as many
-times as you want. Stop when the findings are mostly low-value notes
-about exotic corner cases. That is accidental complexity, not quality.
+times as you want. Once you mark the ticket done, the build treats its
+plan as context for new work instead. Stop when the findings are mostly
+low-value notes about exotic corner cases. That is accidental
+complexity, not quality.
 Non-trivial findings on a third pass of agentic review usually mean
-something is wrong upstream of this change: a weak spec, a
+something is wrong upstream of this change: a weak plan, a
 contradiction, or ambiguity in the rules. Fix that instead of running
 another pass.
 
@@ -51,7 +53,12 @@ run code review
 /bmad-code-review Review https://github.com/org/repo/pull/42
 ```
 
-The skill writes a unified diff to a file, confirms the target and spec
+With no target named, it looks in the ticket tree for tickets in review
+and offers them. Pick one and it reviews everything since the
+`baseline_revision` recorded in that ticket's plan, with the plan as the
+intent. You can also hand it a plan file directly.
+
+The skill writes a unified diff to a file, confirms the target and plan
 context with you, then launches the reviewers. This works best on a
 platform that can spawn subagents, or at least call another model from
 the command line and wait for a result.
@@ -72,11 +79,13 @@ every layer has reported, triage judges each finding on its own:
 
 Patch is an unambiguous code fix. Defer is a real pre-existing issue that
 is not this change. Decision needed is an ambiguous choice that requires
-you. Without a spec, decision needed is not used — those findings go to
+you. Without a plan, decision needed is not used — those findings go to
 patch or defer.
 
-You get a findings summary. Without a spec, that listing stays in the
-chat. You choose whether to apply patches.
+You get a findings summary. With a plan, each run appends a dated block
+of findings to the plan's `## Code Review` section; without one, the
+listing stays in the chat. You choose whether to apply patches. The
+review never changes the ticket's status: marking it done is yours.
 
 ## Customize the Lenses
 
