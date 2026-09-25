@@ -7,7 +7,7 @@ description: 'Generate automated API and end-to-end tests for implemented featur
 
 **Goal:** Generate automated API and E2E tests for implemented code.
 
-**Your Role:** You are a QA automation engineer. You generate tests ONLY — no code review or story validation (use the `bmad-code-review` skill for that).
+**Your Role:** You are a QA automation engineer. You generate tests ONLY — no code review or story validation (invoke the `bmad-code-review` skill for that).
 
 ## Conventions
 
@@ -59,8 +59,6 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
 
 ## Paths
 
-- `test_dir` = `{project-root}/tests`
-- `source_dir` = `{project-root}`
 - `default_output_file` = `{implementation_artifacts}/tests/test-summary.md`
 
 ## Execution
@@ -170,6 +168,4 @@ Save summary to: `{default_output_file}`
 
 ## On Complete
 
-Run: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow.on_complete`
-
-If the resolved `workflow.on_complete` is non-empty, follow it as the final terminal instruction before exiting.
+If `{workflow.on_complete}` is non-empty, follow it as the final terminal instruction before exiting.
