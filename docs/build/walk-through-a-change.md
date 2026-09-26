@@ -33,7 +33,8 @@ Typical moments:
 2. **Create review narrative.** A file organized in blocks: intent, broad
    strokes, slices by concern (not by file), then periphery. An append-only
    review log sits beside it in a `walkthrough-<slug>/` folder in the
-   active initiative's folder.
+   active initiative's folder, or in the output folder when no initiative
+   is active.
 3. **Walkthrough.** Each block is presented in the session with a clickable
    link into the narrative and one to three moves that fit. Stay on the
    block until you say it is done.

@@ -125,7 +125,7 @@ On activation, the workflow resolves:
 It may also look at:
 
 - For a ticket from the tree: its entry, its epic file and that file's References, its story file when there is one, and the plans of its prerequisites in the same epic
-- For other work: the planning documents in the active initiative's folder
+- For other work: the planning documents in the active initiative's folder, or in the output folder when no initiative is active
 
 ## Plan Status
 

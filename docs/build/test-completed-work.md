@@ -70,7 +70,8 @@ cases, no hardcoded waits, descriptions that read as feature documentation.
 
 - Test files under the project's `tests/` directory
 - A test summary at `test-summary-<slug>/test-summary-<slug>.md` in the
-  active initiative's folder
+  active initiative's folder, or in the output folder when no initiative is
+  active
 - Tests that were run once in this session and made to pass
 
 ## Limits

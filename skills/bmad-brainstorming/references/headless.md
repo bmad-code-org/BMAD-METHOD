@@ -47,7 +47,7 @@ End with a JSON status block. Use `complete` when the artifacts stand on their o
   "intent": "brainstorm",
   "memlog": "{doc_workspace}/.memlog.md",
   "html": "{doc_workspace}/brainstorm.html",
-  "intent_doc": "{doc_workspace}/brainstorm-{topic_slug}.md",
+  "intent_doc": "{doc_workspace}/{workflow.output_folder_name}.md",
   "assumptions": [],
   "external_handoffs": []
 }
