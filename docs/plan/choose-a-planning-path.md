@@ -82,14 +82,13 @@ installed project, `bmad-help` recommends the next one.
 | `bmad-ux`                       | Record how the product looks and behaves ([Design UX and Architecture](./design-ux-and-architecture.md))                                       | `DESIGN.md`, `EXPERIENCE.md`, `.memlog.md`                                          |
 | `bmad-spec`                     | Condense any intent into a short contract; hand it to `bmad-preview-ticketing` for stories on request                                          | `SPEC.md` + companions in `specs/spec-<slug>/`                                      |
 | `bmad-architecture`             | Make the technical decisions that keep separately built parts consistent                                                                       | `ARCHITECTURE-SPINE.md` by default                                                  |
-| `bmad-create-epics-and-stories` | Break requirements into epics and stories ([Break Work into Stories and Track It](./break-work-into-stories-and-track-it.md))                  | Epic files with stories                                                             |
-| `bmad-sprint-planning`          | Check readiness before implementation, then track story status                                                                                 | PASS/CONCERNS/FAIL + `sprint-status.yaml`                                           |
+| `bmad-preview-ticketing` | [Plan and track entries](./break-work-into-stories-and-track-it.md) | Epic envelopes, ordered `tickets.toml`, and optional leaf files |
 
 `bmad-prd` has three intents, create, update, and validate; say which one you
 want when you invoke it, or it will ask. `bmad-product-brief` feeds `bmad-prd`,
 which reads the brief during discovery, but neither requires the other.
 
-![Three columns of planning skills and the files each writes: analysis (brainstorming, forge idea, deep recon, product brief, PRFAQ), planning (PRD, UX, spec), and solutioning (architecture, epics and stories, sprint planning), all handing off to bmad-build, one session per unit](/diagrams/planning-skills.svg)
+![Three columns of planning skills and the files each writes: analysis (brainstorming, forge idea, deep recon, product brief, PRFAQ), planning (PRD, UX, spec), and solutioning (architecture and ticketing), all handing off to bmad-build, one session per unit](/diagrams/planning-skills.svg)
 
 ## Size Follows the Intent
 
@@ -121,9 +120,10 @@ coherent outcome.
 2. Run `bmad-preview-ticketing` with the spec folder. It plans the epic with
    you and records the stories in build order in the epic's `tickets.toml`.
 3. Review the proposed order and decide which stories need a checkpoint.
-4. Pull each story when you are ready to work on it. Pulling writes the story
-   file. Refine it first only when its entry says `refine = true`, the ticket
-   has no epic, or you want the acceptance criteria written before build.
+4. Build each story from its entry when you are ready; no story file is
+   needed. Refine a story first only when its entry says `refine = true`, the
+   ticket has no epic, or you want the acceptance criteria written before
+   build.
 
 The breakdown is an execution plan, not a promise that nothing will change.
 Update the spec and re-slice the remaining stories when earlier work reveals a
@@ -136,17 +136,15 @@ stories often settle the architecture, initial project structure, and repeated
 patterns that later stories will follow. Give those decisions human attention
 before automating repetitions of them.
 
-Run Build once per story, giving it the pulled story file. To run stories
-unattended instead, give `bmad-build-auto` the pulled story file as its
-intent, one run per story; see
+Run Build once per story, naming the story. Build writes its plan beside the
+epic's `tickets.toml` and leaves the plan at `built` until you mark it done
+through the ticketing skill. To run stories unattended instead, give
+`bmad-build-auto` the story as its intent, one run per story; see
 [Autonomous Development Loops](../build/autonomous-development-loops.md).
 
 **Finish the epic**
 
-Verify the stories together, not only one at a time. When the spec folder
-already has a `stories.yaml`, run `bmad-retrospective` with the spec folder.
-Retrospective reads `stories.yaml` as the epic inventory and judges the
-combined result against the parent spec.
+Verify the stories together, then run `bmad-retrospective` with the epic folder, id, or slug. It reads entries and joined plans and judges the combined result against the epic's requirements. Keep those plans after closure.
 See [Finish an Epic](../build/finish-an-epic.md).
 
 ### 2. Start Project-Sized Work

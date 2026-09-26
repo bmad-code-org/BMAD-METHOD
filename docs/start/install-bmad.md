@@ -1,119 +1,62 @@
 ---
 title: 'How to Install BMad'
-description: Install, verify, update, and reconfigure BMad in your project
+description: Install the current BMad skills, set up the project runtime, and verify or update it.
 ---
 
-Use `npx bmad-method install` to install BMad in a project, connect it to your
-AI coding tool, and update it later.
+Install BMad through the Skills CLI or your coding tool's plugin marketplace, then run `bmad setup` in the project.
 
-## When to Use This
+## Prerequisites
 
-- Install BMad in a new or existing project.
-- Connect BMad skills to a supported AI coding tool.
-- Update an existing BMad installation.
-- Add or remove modules, change tools, or reconfigure an installation.
+You need an AI coding tool that supports skills and [uv](https://docs.astral.sh/uv/) for setup and Python scripts. The Skills CLI also needs Node.js, npm, and Git.
 
-:::note[Prerequisites]
+## Install the Skills
 
-- **Node.js 20.12 or later** is required to run the installer.
-- **A supported AI coding tool** is required to use the installed skills. The
-  installer can show the current list with `npx bmad-method install --list-tools`.
-- **uv** is required by skills that render or run Python through `uv`, including
-  `bmad-build` and `bmad-build-auto`. If `uv` is missing, the installer warns
-  you but still completes the installation.
-- **Git** is required only when you install external modules or custom modules
-  from Git.
-
-:::
-
-## Install and verify BMad
-
-### 1. Open the target project
-
-In a terminal, go to the project where you want to install BMad. The installer
-uses the current directory unless you choose a different destination.
-
-### 2. Run the installer
+From your project directory, run:
 
 ```bash
-npx bmad-method install
+npx skills add bmad-code-org/BMAD-METHOD
 ```
 
-Follow the prompts. The choices can change as modules and tool integrations
-change, but the installer guides you through the available modules,
-configuration, and supported AI coding tools.
-
-If the installer reports an error or warning, follow the action it gives you.
-A missing-`uv` warning does not stop the installation, but skills that require
-`uv` will not work until you install it.
-
-### 3. Check the success summary
-
-When the installation finishes, the installer displays **BMAD is ready to
-use!** and the path where it installed BMad. It also reports any warnings that
-still need attention.
-
-### 4. Verify the tool integration
-
-Open your selected AI coding tool from the project directory and invoke the
-`bmad-help` skill. Ask it what to do next. If the tool recognizes and runs the
-skill, the integration is ready.
-
-## Update or reconfigure BMad
-
-### 1. Rerun the installer
-
-From the project that contains the `_bmad` directory, run:
+Select your coding tool and skills. Include `bmad` for setup and help, and the module records `bmod-core-tools` and `bmod-method` for the modules you use. To install a small set by name:
 
 ```bash
-npx bmad-method install
+npx skills add bmad-code-org/BMAD-METHOD --skill bmad --skill bmod-core-tools --skill bmod-method --skill bmad-build --skill bmad-preview-ticketing
 ```
 
-### 2. Choose the detected path
+Add review, retrospective, or other skills as needed. Keep project and global installation scopes consistent.
 
-The installer detects the existing installation and offers the update or
-modification paths that apply to it. Choose an update to refresh the existing
-setup, or choose modification when you need to change modules, tools, or
-configuration. Follow any additional prompts the installer displays. Coming
-from an earlier BMad version, the installer also warns about stale `bmad-*`
-entries left in legacy command directories; remove them so your tool does not
-show duplicate commands.
+## Install through a Plugin Marketplace
 
-### 3. Verify the updated integration
+As an alternative, add the marketplace inside Claude Code:
 
-Review the success summary, reopen your AI coding tool if needed, and invoke
-`bmad-help` again.
+```text
+/plugin marketplace add bmad-code-org/bmad-plugins
+```
 
-## Install the prerelease
-
-To install prerelease core and BMM and apply prerelease selection to external
-modules chosen in that run, use:
+Or add it from your terminal for Codex:
 
 ```bash
-npx bmad-method@next install
+codex plugin marketplace add bmad-code-org/bmad-plugins
 ```
 
-To update a prerelease installation, rerun the same command. Prerelease builds
-change more frequently and can include unfinished changes, so use the stable
-command for ordinary project work.
+Install `bmad-method` for delivery workflows and `bmad-core-tools` for standalone skills, including the `bmad` hub. Use one installation method for a given skill to avoid duplicate commands.
 
-## Headless CI installs
+## Set Up and Verify
 
-For a typical fresh headless install of BMM configured for Claude Code, run:
+Open the coding tool from the project folder and ask the `bmad` skill to run `bmad setup`. Setup installs the shared runtime and module scripts under `_bmad/`. Ask for `bmad status` to verify the installation and versions.
+
+Invoke `bmad-build` with the change you want, or ask `bmad` for guidance. For work spanning repositories, set up at the workspace root so skills can reach both the planning store and code repositories.
+
+## Update an Installation
+
+Update through the same installation method:
 
 ```bash
-npx bmad-method install --yes --modules bmm --tools claude-code
+npx skills update
 ```
 
-Use `npx bmad-method install --help` to see the current automation flags and
-`npx bmad-method install --list-tools` to find valid tool IDs. If your
-automation uses `@next` or an explicit package version, use that same tag or
-version when checking the help and running the installer.
+For plugins, use your marketplace's update flow instead. Then run `bmad setup` again to refresh the project's runtime and `bmad status` to verify it. Restart your coding tool when its skill catalog needs refreshing.
 
 ## What You Get
 
-BMad's skills are installed in the skill directories used by each AI tool you
-selected. The project's `_bmad` directory contains shared configuration and
-supporting scripts used by those skills. When installation finishes, the
-installer reports the configured tools and any warnings that still need
-attention.
+Your coding tool discovers the installed skills. The project's `_bmad/` holds shared configuration and supporting scripts. Team and personal customizations live under `_bmad/custom/` and survive setup refreshes.

@@ -1,5 +1,6 @@
 # BMad Method - Skill Removal List
-# Entries listed here will be removed from IDE skill directories during install/update.
+# Historical removal inventory. The v7 installer does not read this file;
+# existing installations must follow the upgrade guide's explicit cleanup steps.
 # One entry per line. Lines starting with # are comments.
 # Each entry is a skill directory name (canonicalId) that was removed or renamed.
 
@@ -85,3 +86,7 @@ bmad-agent-tech-writer
 # which now opens with a readiness gate (PASS/CONCERNS/FAIL) before
 # generating tracking. The IR agent menu trigger dispatches sprint-planning.
 bmad-check-implementation-readiness
+
+# Removed planning route: replaced by bmad-preview-ticketing.
+bmad-create-epics-and-stories
+bmad-sprint-planning

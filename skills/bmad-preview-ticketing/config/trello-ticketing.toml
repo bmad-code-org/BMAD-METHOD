@@ -60,7 +60,7 @@ hitl, risk, severity. Trello has no fields for the rest — conventions in the d
 `parent: <card url>` as its first line, an `assignee:` line (no member tools yet), after as
 card urls; the parent card keeps a checklist with each child's url. A standalone ticket: no parent line. Create parents before
 children, prerequisites first.
-The body is the description: the local file up to `## Plan`, not including it, without the frontmatter lines
+The body is the description: the whole local file, without the frontmatter lines
 tracker_id, remote, tracker_status, status (assignee stays, as the `assignee:` line above).
 After a write, mirror tracker_id (the card short link), remote (the card url), tracker_status, assignee, and
 after in the local file — never status, which is the build's; commit local files on the current branch when root is in a git repo,
@@ -75,7 +75,7 @@ covers, after live there), checklists; a container's children are its checklist 
 A child the tracker holds with no file in the tree gets an `[[entry]]` with the next unused `id` in its parent's `tickets.toml`, then its file.
 Mirror the card's list into the local file as tracker_status, the BMad word per [tickets.status], beside tracker_id and remote — never into status, which is the build's.
 Candidates to start (one that `tickets.py next` lists under `ready_to_refine` gets its criteria first): tracker_status backlog (the [tickets.status].backlog list), every after card in the Done list, assignee line
-empty, no blocked_at in the ticket file. Offer all ready tickets; when one must be chosen, the one that unblocks the most work
+empty, no blocked_at. Offer all ready tickets; when one must be chosen, the one that unblocks the most work
 behind it.
 """
 

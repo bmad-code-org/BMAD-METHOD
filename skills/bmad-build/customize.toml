@@ -26,7 +26,7 @@ activation_steps_append = []
 
 persistent_facts = []
 
-# Execution route: "oneshot" implements in this session, "full" writes a spec
+# Execution route: "oneshot" implements in this session, "full" writes a plan
 # and hands implementation to a subagent, "auto" applies route_selection after
 # planning.
 
@@ -48,44 +48,44 @@ consider upgrading to full.
 
 on_complete = ""
 
-# Optional instructions for opening a completed spec. The empty default leaves
-# the spec closed. Override this with the application and behavior you prefer.
-# Example requests for bmad-customize: "Open completed specs in Cursor and
-# reuse the project window" or "Do not open completed specs automatically."
+# Optional instructions for opening a completed plan. The empty default leaves
+# the plan closed. Override this with the application and behavior you prefer.
+# Example requests for bmad-customize: "Open completed plans in Cursor and
+# reuse the project window" or "Do not open completed plans automatically."
 #
-# Example `open_spec` override instructions for bmad-build.user.toml:
-# {project-root} and {spec_file} are substituted at run time.
+# Example `open_plan` override instructions for bmad-build.user.toml:
+# {project-root} and {plan_file} are substituted at run time.
 #
 # VS Code and compatible GUI editors — a custom override can use `code`; Cursor,
 # Windsurf, Antigravity, Zed, and similar editors can use their own launcher.
 # Preserve reuse-window behavior when the launcher supports it, and always pass
-# the repository root first and the spec second:
-#   Run `code -r "{project-root}" "{spec_file}"`, root first.
-#   Run `cursor -r "{project-root}" "{spec_file}"`, root first.
-#   Run `windsurf -r "{project-root}" "{spec_file}"`, root first.
-#   Run `zed "{project-root}" "{spec_file}"`, root first.
+# the repository root first and the plan second:
+#   Run `code -r "{project-root}" "{plan_file}"`, root first.
+#   Run `cursor -r "{project-root}" "{plan_file}"`, root first.
+#   Run `windsurf -r "{project-root}" "{plan_file}"`, root first.
+#   Run `zed "{project-root}" "{plan_file}"`, root first.
 #
 # IntelliJ IDEA — its CLI accepts one path per invocation:
 #   Run `idea "{project-root}"` to open the project, then
-#   `idea "{spec_file}"` to open the spec in that project.
+#   `idea "{plan_file}"` to open the plan in that project.
 #
 # Vim — keep repository context as the working directory:
-#   Run `cd "{project-root}" && vim "{spec_file}"`.
+#   Run `cd "{project-root}" && vim "{plan_file}"`.
 #
 # Emacs — reuse an Emacs server without waiting for the buffer to close:
-#   Run `cd "{project-root}" && emacsclient -n "{spec_file}"`.
+#   Run `cd "{project-root}" && emacsclient -n "{plan_file}"`.
 #
-open_spec = ""
+open_plan = ""
 
 # Handoff for the implementation subagent in step 03. The whole execution
 # recipe — a subagent by default, but an override may run it any other way
-# (a different model, an external coding tool via bash). {spec_file} is
+# (a different model, an external coding tool via bash). {plan_file} is
 # substituted at run time.
 
 implementation_handoff = """
 Launch a subagent with no prior conversation context, with this prompt:
 
-> Read {spec_file} fully and implement it — the spec is the sole source of truth. Load every file listed in its frontmatter `context:` before you start.
+> Read {plan_file} fully and implement it — the plan is the sole source of truth. Load every file listed in its frontmatter `context:` before you start.
 >
 > When done, report what you changed, how you verified it, and anything left incomplete or risky.
 """
@@ -99,7 +99,7 @@ review = "auto"
 # Review lenses for the review step, in two sets the review selection picks
 # between. `instruction` is the lens's whole execution recipe — subagents by
 # default, but an override may run anything (e.g. an external reviewer via
-# bash). {diff_file}, {claims_file}, {spec_file}, and {verbatim_intent} are
+# bash). {diff_file}, {claims_file}, {plan_file}, and {verbatim_intent} are
 # substituted at run time; the first three are paths, and {diff_file} is the
 # unified diff file the lens reads. `when` (optional) gates a lens; empty
 # `instruction` disables it.
@@ -110,7 +110,7 @@ name = "Quick"
 instruction = """
 Launch a context-free subagent with this prompt:
 
-Read `{spec_file}` — the story or spec holding the acceptance criteria and intent; it is empty when there is none — and the files its frontmatter `context:` lists. Read the agent instruction files (`AGENTS.md`, `CLAUDE.md`, or equivalents) at the repository root and in the directories the diff touches; those are the rules. Then read the unified diff at `{diff_file}` — it is the change under review.
+Read `{plan_file}` — the plan holding the acceptance criteria and intent — and the files its frontmatter `context:` lists. Read the agent instruction files (`AGENTS.md`, `CLAUDE.md`, or equivalents) at the repository root and in the directories the diff touches; those are the rules. Then read the unified diff at `{diff_file}` — it is the change under review.
 
 Report unmet acceptance criteria, broken rules, and bugs. Each finding: the location, what goes wrong, and evidence checked against the surrounding code. Output a Markdown list of findings only — no severity, priority, or ranking.
 

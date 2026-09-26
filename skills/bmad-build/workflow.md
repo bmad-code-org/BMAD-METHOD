@@ -11,7 +11,7 @@ If you need an explicit user instruction to run them, ask once now for the whole
 
 ## READY FOR DEVELOPMENT STANDARD
 
-A specification is "Ready for Development" when:
+A plan is "Ready for Development" when:
 
 - **Actionable**: Every task has a file path and specific action.
 - **Logical**: Tasks ordered by dependency.
@@ -22,7 +22,7 @@ A specification is "Ready for Development" when:
 
 ## SCOPE STANDARD
 
-A specification should target a **single user-facing goal** within **900–1600 tokens**:
+A plan should target a **single user-facing goal** within **900–1600 tokens**:
 
 - **Single goal**: One cohesive feature, even if it spans multiple layers/files. Multi-goal means >=2 **top-level independent shippable deliverables** — each could be reviewed, tested, and merged as a separate PR without breaking the others. Never count surface verbs, "and" conjunctions, or noun phrases. Never split cross-layer implementation details inside one user goal.
   - Split: "add dark mode toggle AND refactor auth to JWT AND build admin dashboard"
@@ -33,7 +33,7 @@ A specification should target a **single user-facing goal** within **900–1600 
 ## Conventions
 
 - Every operational cross-file reference in this workflow is an absolute snapshot path. Open it directly; do not resolve it relative to a skill directory.
-- `{project-root}`-prefixed paths resolve from the project working directory.
+- `{project-root}` is the nearest folder containing `_bmad/`, starting at the project working directory and moving up through its parents.
 - Whenever this workflow captures or records a version-control revision, obtain the full canonical identifier directly from version control and preserve it verbatim.
 
 ## On Activation
@@ -63,7 +63,7 @@ This uses **step-file architecture** for disciplined execution:
 - **Micro-file Design**: Each step is self-contained and followed exactly
 - **Just-In-Time Loading**: Only load the current step file
 - **Sequential Enforcement**: Complete steps in order, no skipping
-- **State Tracking**: Persist progress via spec frontmatter and in-memory variables
+- **State Tracking**: Persist progress via plan frontmatter and in-memory variables
 - **Append-Only Building**: Build artifacts incrementally
 
 ### Step Processing Rules

@@ -58,6 +58,6 @@ description = "Produce the architecture spine: the invariants that keep independ
 skill = "bmad-architecture"
 
 [[agent.menu]]
-code = "IR"
-description = "Check implementation readiness — verify the planning artifacts are complete and aligned (opens sprint planning; stop after the gate or continue into tracking)"
-skill = "bmad-sprint-planning"
+code = "TK"
+description = "Plan work and dependencies through the ticket tree"
+skill = "bmad-preview-ticketing"

@@ -5,9 +5,10 @@ title: "[What is wrong, from the user's view]"
 parent: [folder name of the epic, or of the initiative when there are no epics; none for a standalone bug in backlog/]
 covers: []
 after: []   # prerequisites only: a sibling's id; "<epic id>.<entry id>" in another epic; epic-<slug> for that whole epic
-assignee: ""   # blocked_at (date) and blocked_reason are added when waiting on a person or an answer
+assignee: ""   # a tracker's assignee, mirrored by query; otherwise assignee, blocked_at, and blocked_reason live in the plan
+# status lives in the plan beside this file, not here; tracker_status by a tracker sync
 refined: false   # true once refined and approved
-hitl: false   # status is written by the build (draft | ready-for-dev | in-progress | in-review | done | blocked); tracker_status by a tracker sync
+hitl: false
 risk: [low|medium|high]
 severity: [P0|P1|P2|P3]
 estimate: ""   # points, when estimation is on
@@ -55,10 +56,6 @@ estimate: ""   # points, when estimation is on
 - Decision: [a choice the user made, dated]
 - Assumption: [a choice made while drafting that the user has not confirmed]
 - Open question: [what is not settled; answering it is part of the ticket's work]
-
-## Plan
-
-<!-- Filled in by the coding agent; never sent to a tracker. -->
 
 <!-- Example, not part of the ticket: match its level of detail. What is good here: a reproduction someone else can follow, with the actual and expected values; a cause hypothesis that is not a fix; one criterion for the behavior, one for the tests that cover the condition found and fixed, and one that supersedes both when the reproduction shows no change is needed. -->
 
@@ -113,8 +110,4 @@ The quantity-change path recomputes the total without passing the applied code, 
 
 - parent — none
 - logs — support ticket #4471, attachment pricing.log
-
-## Plan
-
-<!-- Filled in by the coding agent; never sent to a tracker. -->
 ```

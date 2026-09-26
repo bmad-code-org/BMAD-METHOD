@@ -11,7 +11,7 @@ If you need an explicit user instruction to run them, ask once now for the whole
 ## Conventions
 
 - Every operational cross-file reference in this workflow is an absolute snapshot path. Open it directly; do not resolve it relative to a skill directory.
-- `{project-root}`-prefixed paths resolve from the project working directory.
+- `{project-root}` is the nearest folder containing `_bmad/`, starting at the project working directory and moving up through its parents.
 - `{date}` is the current system datetime.
 
 ## On Activation

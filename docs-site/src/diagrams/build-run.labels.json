@@ -1,10 +1,10 @@
 {
   "en": {
-    "title": "The bmad-build run: intent is clarified, planned, specified, implemented, then reviewed. Review can patch the work, send it back to plan or clarification, void it, or defer it, before the result is presented to you.",
+    "title": "The bmad-build run: intent is clarified, planned, implemented, then reviewed. Review can patch the work, send it back to plan or clarification, void it, or defer it, before the result is presented to you.",
     "initial-intent": "Initial intent",
     "clarify": "Clarify and route",
     "plan": "Plan",
-    "spec": "Spec",
+    "approved-plan": "Approved plan",
     "implement": "Implement",
     "gate": "Fits AC?",
     "review": "Review",
@@ -17,10 +17,10 @@
     "edge-reject": "reject",
     "void": "Void",
     "edge-defer": "defer",
-    "edge-bad-spec": "bad_spec",
+    "edge-bad-plan": "bad_plan",
     "edge-intent-gap": "intent_gap",
     "actor-interview": "interview",
-    "actor-spec-review": "spec review",
+    "actor-plan-review": "plan review",
     "actor-review": "you review the result",
     "lenses": "Review lenses",
     "lens-blind": "Blind Hunter",
@@ -29,14 +29,14 @@
     "lens-edges-sub": "find forgotten corner cases",
     "lens-gaps": "Verification Gap Finder",
     "lens-gaps-sub": "is this covered by tests?",
-    "actor-spec-review-2": "optional"
+    "actor-plan-review-2": "optional"
   },
   "fr-FR": {
-    "title": "Le déroulé de bmad-build : l'intention est clarifiée, planifiée, spécifiée, implémentée, puis passée en revue. La revue peut corriger le travail, le renvoyer à la planification ou à la clarification, l'abandonner ou le reporter, avant que le résultat ne vous soit présenté.",
+    "title": "Le déroulé de bmad-build : l'intention est clarifiée, planifiée, implémentée, puis passée en revue. La revue peut corriger le travail, le renvoyer à la planification ou à la clarification, l'abandonner ou le reporter, avant que le résultat ne vous soit présenté.",
     "initial-intent": "Intention initiale",
     "clarify": "Clarifier et router",
     "plan": "Planifier",
-    "spec": "Spécification",
+    "approved-plan": "Plan approuvé",
     "implement": "Implémenter",
     "gate": "Conforme aux CA ?",
     "review": "Revue",
@@ -49,10 +49,10 @@
     "edge-reject": "REJECT",
     "void": "Abandon",
     "edge-defer": "DEFER",
-    "edge-bad-spec": "BAD_SPEC",
+    "edge-bad-plan": "BAD_PLAN",
     "edge-intent-gap": "INTENT_GAP",
     "actor-interview": "entretien",
-    "actor-spec-review": "revue de spéc",
+    "actor-plan-review": "revue du plan",
     "actor-review": "vous examinez le résultat",
     "lenses": "Angles de revue",
     "lens-blind": "Blind Hunter",
@@ -61,14 +61,14 @@
     "lens-edges-sub": "trouver les cas limites oubliés",
     "lens-gaps": "Verification Gap Finder",
     "lens-gaps-sub": "est-ce couvert par des tests ?",
-    "actor-spec-review-2": "optionnelle"
+    "actor-plan-review-2": "optionnelle"
   },
   "ko-KR": {
-    "title": "bmad-build 실행 흐름: 의도를 구체화하고, 계획과 사양을 거쳐 구현한 뒤 검토합니다. 검토는 작업을 수정하거나, 계획 또는 구체화 단계로 되돌리거나, 폐기하거나, 보류할 수 있으며 그 뒤 결과를 제시합니다.",
+    "title": "bmad-build 실행 흐름: 의도를 구체화하고, 계획을 거쳐 구현한 뒤 검토합니다. 검토는 작업을 수정하거나, 계획 또는 구체화 단계로 되돌리거나, 폐기하거나, 보류할 수 있으며 그 뒤 결과를 제시합니다.",
     "initial-intent": "초기 의도",
     "clarify": "구체화 및 라우팅",
     "plan": "계획",
-    "spec": "사양",
+    "approved-plan": "승인된 계획",
     "implement": "구현",
     "gate": "AC 충족?",
     "review": "검토",
@@ -81,10 +81,10 @@
     "edge-reject": "REJECT",
     "void": "폐기",
     "edge-defer": "DEFER",
-    "edge-bad-spec": "BAD_SPEC",
+    "edge-bad-plan": "BAD_PLAN",
     "edge-intent-gap": "INTENT_GAP",
     "actor-interview": "인터뷰",
-    "actor-spec-review": "사양 검토",
+    "actor-plan-review": "계획 검토",
     "actor-review": "결과 검토",
     "lenses": "검토 관점",
     "lens-blind": "Blind Hunter",
@@ -93,6 +93,6 @@
     "lens-edges-sub": "놓친 예외 상황 찾기",
     "lens-gaps": "Verification Gap Finder",
     "lens-gaps-sub": "테스트로 검증되는가?",
-    "actor-spec-review-2": "선택 사항"
+    "actor-plan-review-2": "선택 사항"
   }
 }

@@ -2,7 +2,7 @@
 # The order of the tables is the build order: move a table to reorder. `id` names a child for good and is never reused; it is not an order.
 # An epic's file holds [[entry]] tables. An initiative's holds [[epic]] tables; with no epics it holds [[entry]] tables.
 # Keys tickets.py does not know are ignored, so a team may add its own.
-# Status never lives here: an entry with no leaf file is planned; once the file exists, the build writes `status` in it, and on a tracker `query` writes `tracker_status`.
+# Status never lives here: an entry with no plan and no leaf file is planned; its plan beside it carries `status`, and on a tracker `query` writes `tracker_status` in the leaf file.
 
 # ---- In an epic folder: one table per planned story, spike, or bug ----
 
@@ -21,7 +21,7 @@ risk = "low"                # low | medium | high
 # references = ["ARCHITECTURE-SPINE.md#ad-8"]   # what this entry needs beyond the epic's own References; pull writes them to the ticket
 # notes = ["..."]           # the user's words only, never filled by the agent; pull writes them to the ticket's Notes
 # refine = true            # refine to full acceptance criteria before it starts
-# spec_checkpoint = true    # a person reviews the ticket, or the builder's plan, before work starts
+# plan_checkpoint = true    # a person reviews the ticket, or the builder's plan, before work starts
 # done_checkpoint = true    # work pauses after this ticket until a person says continue
 
 [[entry]]

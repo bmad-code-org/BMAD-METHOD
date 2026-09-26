@@ -61,7 +61,7 @@ blockedBy take identifiers or ids. A standalone ticket: omit parent and project.
 the initiative is never sent and everything below it publishes, epics as parent issues; set it to
 map onto a Linear Initiative only when the server exposes initiative tools, otherwise it stays
 local. Create parents before children, prerequisites first.
-The body sent is the local file up to `## Plan`, not including it, without the frontmatter lines tracker_id,
+The body sent is the whole local file, without the frontmatter lines tracker_id,
 remote, tracker_status, status, assignee.
 After a write, mirror tracker_id (the identifier), remote (the url), tracker_status, assignee, and after in
 the local file — never status, which is the build's; commit local files on the current branch when root is in a git repo, never push.
@@ -75,7 +75,7 @@ covers holds the source requirement ids. Many: `list_issues` by project, parent,
 query words. The local file: `tickets.py find <folder> <identifier>`.
 A child the tracker holds with no file in the tree gets an `[[entry]]` with the next unused `id` in its parent's `tickets.toml`, then its file.
 Mirror the issue's state into the local file as tracker_status, the BMad word per [tickets.status], beside tracker_id and remote — never into status, which is the build's.
-Candidates to start (one that `tickets.py next` lists under `ready_to_refine` gets its criteria first): tracker_status backlog ([tickets.status].backlog on the tracker), every "blocked by" relation done, unassigned, no blocked_at in the ticket file. Offer all
+Candidates to start (one that `tickets.py next` lists under `ready_to_refine` gets its criteria first): tracker_status backlog ([tickets.status].backlog on the tracker), every "blocked by" relation done, unassigned, no blocked_at. Offer all
 ready tickets; when one must be chosen, the one that unblocks the most work behind it.
 """
 

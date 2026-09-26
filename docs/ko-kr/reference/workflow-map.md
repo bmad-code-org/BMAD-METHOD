@@ -65,7 +65,7 @@ Deep Recon의 세 가지 모드와 리서치 실행 내부 동작은 [Deep Recon
 | `bmad-create-epics-and-stories` | 요구사항을 구현 가능한 작업으로 나눕니다 | 스토리가 있는 에픽 파일 |
 | `bmad-sprint-planning` | 구현 전 준비도 게이트를 거친 뒤 스토리 추적과 상태 보기를 제공합니다 | PASS/CONCERNS/FAIL + `sprint-status.yaml` |
 
-준비도 게이트, 결정론적 추적, 상태 보기가 함께 작동하는 방식은 [스프린트 계획](../explanation/sprint-planning.md)을 참고하세요.
+준비도 게이트, 결정론적 추적, 상태 보기가 함께 작동하는 방식은 [스프린트 계획](../../plan/break-work-into-stories-and-track-it.md)을 참고하세요.
 
 ## 단계 4: 구현
 

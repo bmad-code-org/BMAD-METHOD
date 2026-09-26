@@ -5,9 +5,10 @@ title: "[What exists or works when this is done]"
 parent: [folder name of the epic, or of the initiative when there are no epics; none for a standalone ticket in backlog/]
 covers: [ids from the epic's spec, referenced numbered source, or Requirements; the ones this ticket delivers toward]
 after: []   # prerequisites only: a sibling's id; "<epic id>.<entry id>" in another epic; epic-<slug> for that whole epic
-assignee: ""   # blocked_at (date) and blocked_reason are added when waiting on a person or an answer
+assignee: ""   # a tracker's assignee, mirrored by query; otherwise assignee, blocked_at, and blocked_reason live in the plan
+# status lives in the plan beside this file, not here; tracker_status by a tracker sync
 refined: false   # true once refined and approved
-hitl: false   # status is written by the build (draft | ready-for-dev | in-progress | in-review | done | blocked); tracker_status by a tracker sync
+hitl: false
 risk: [low|medium|high]
 estimate: ""   # points, when estimation is on
 ---
@@ -52,10 +53,6 @@ estimate: ""   # points, when estimation is on
 - Decision: [a choice the user made, dated]
 - Assumption: [a choice made while drafting that the user has not confirmed; confirmed, it becomes a Decision line]
 - Open question: [what only this ticket waits on. Touches siblings: the parent's Notes. Gates work: a spike.]
-
-## Plan
-
-<!-- Filled in by the coding agent; never sent to a tracker. -->
 
 <!-- Example, not part of the ticket: match its level of detail. What is good here: the Description is what the shopper can do, end to end; every criterion states a rule, not an instance, with its failure path, fails today and passes only through this work; Boundaries names behavior, not files; References points at the nearest document; Notes holds only what is not in the repo or the source, plus one assumption for the user to confirm. Numbered criteria because its entry says `refine = true`. -->
 
@@ -114,8 +111,4 @@ A shopper with items in the cart enters a discount code, and the cart total upda
 
 - Decision: the discount engine's `validate(code, cart) -> {amount, reason}` interface is frozen (2026-08-12).
 - Assumption: the refusal messages above are final copy; no design text exists for them.
-
-## Plan
-
-<!-- Filled in by the coding agent; never sent to a tracker. -->
 ```

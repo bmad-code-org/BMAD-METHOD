@@ -26,7 +26,7 @@ activation_steps_append = []
 
 persistent_facts = []
 
-# Execution route: "oneshot" implements in this session, "full" writes a spec
+# Execution route: "oneshot" implements in this session, "full" writes a plan
 # and hands implementation to a subagent, "auto" applies route_selection after
 # planning.
 
@@ -50,13 +50,13 @@ on_complete = ""
 
 # Handoff for the implementation subagent in step 03. The whole execution
 # recipe — a subagent by default, but an override may run it any other way
-# (a different model, an external coding tool via bash). {spec_file} is
+# (a different model, an external coding tool via bash). {plan_file} is
 # substituted at run time.
 
 implementation_handoff = """
 Launch a subagent with no prior conversation context, with this prompt:
 
-> Read {spec_file} fully and implement it — the spec is the sole source of truth. Load every file listed in its frontmatter `context:` before you start.
+> Read {plan_file} fully and implement it — the plan is the sole source of truth. Load every file listed in its frontmatter `context:` before you start.
 >
 > When done, report what you changed, how you verified it, and anything left incomplete or risky.
 """
@@ -70,7 +70,7 @@ review = "auto"
 # Review lenses for the review step, in two sets the review selection picks
 # between. `instruction` is the lens's whole execution recipe — subagents by
 # default, but an override may run anything (e.g. an external reviewer via
-# bash). {diff_file}, {claims_file}, {spec_file}, and {verbatim_intent} are
+# bash). {diff_file}, {claims_file}, {plan_file}, and {verbatim_intent} are
 # substituted at run time; the first three are paths, and {diff_file} is the
 # unified diff file the lens reads. `when` (optional) gates a lens; empty
 # `instruction` disables it.
@@ -81,7 +81,7 @@ name = "Quick"
 instruction = """
 Launch a context-free subagent with this prompt:
 
-Read `{spec_file}` — the story or spec holding the acceptance criteria and intent; it is empty when there is none — and the files its frontmatter `context:` lists. Read the agent instruction files (`AGENTS.md`, `CLAUDE.md`, or equivalents) at the repository root and in the directories the diff touches; those are the rules. Then read the unified diff at `{diff_file}` — it is the change under review.
+Read `{plan_file}` — the plan holding the acceptance criteria and intent — and the files its frontmatter `context:` lists. Read the agent instruction files (`AGENTS.md`, `CLAUDE.md`, or equivalents) at the repository root and in the directories the diff touches; those are the rules. Then read the unified diff at `{diff_file}` — it is the change under review.
 
 Report unmet acceptance criteria, broken rules, and bugs. Each finding: the location, what goes wrong, and evidence checked against the surrounding code. Output a Markdown list of findings only — no severity, priority, or ranking.
 

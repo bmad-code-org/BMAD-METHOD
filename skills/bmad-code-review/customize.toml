@@ -33,7 +33,7 @@ activation_steps_append = []
 persistent_facts = []
 
 # Scalar: executed when the workflow reaches its final step,
-# after review findings are presented and sprint status is synced. Override wins.
+# after review findings are presented and recorded. Override wins.
 # Leave empty for no custom post-completion behavior.
 
 on_complete = ""
@@ -45,7 +45,7 @@ review = "thorough"
 # Review lenses for the review step, in two sets the review selection picks
 # between. `instruction` is the lens's whole execution recipe — subagents by
 # default, but an override may run anything (e.g. an external reviewer via
-# bash). {diff_file}, {claims_file}, {spec_file}, and {verbatim_intent} are
+# bash). {diff_file}, {claims_file}, {plan_file}, and {verbatim_intent} are
 # substituted at run time; the first three are paths, and {diff_file} is the
 # unified diff file the lens reads. `when` (optional) gates a lens; empty
 # `instruction` disables it.
@@ -56,7 +56,7 @@ name = "Quick"
 instruction = """
 Launch a context-free subagent with this prompt:
 
-Read `{spec_file}` — the story or spec holding the acceptance criteria and intent; it is empty when there is none — and the files its frontmatter `context:` lists. Read the agent instruction files (`AGENTS.md`, `CLAUDE.md`, or equivalents) at the repository root and in the directories the diff touches; those are the rules. Then read the unified diff at `{diff_file}` — it is the change under review.
+Read `{plan_file}` — the plan holding the acceptance criteria and intent; it is empty when there is none — and the files its frontmatter `context:` lists. Read the agent instruction files (`AGENTS.md`, `CLAUDE.md`, or equivalents) at the repository root and in the directories the diff touches; those are the rules. Then read the unified diff at `{diff_file}` — it is the change under review.
 
 Report unmet acceptance criteria, broken rules, and bugs. Each finding: the location, what goes wrong, and evidence checked against the surrounding code. Output a Markdown list of findings only — no severity, priority, or ranking.
 
@@ -116,6 +116,7 @@ Do not invoke any skill, and do not spawn subagents of your own — you are the 
 [[workflow.thorough_lenses]]
 id = "intent-alignment"
 name = "Intent Alignment Auditor"
+when = "an intent is available: the spec's intent section, or the user's or conversation's own words on what the change is for"
 instruction = """
 Launch a subagent with this prompt:
 

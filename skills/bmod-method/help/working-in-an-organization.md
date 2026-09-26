@@ -28,7 +28,7 @@ Each document has one skill that writes it, so give it one owner. One person can
 | Designer | `bmad-ux` | `DESIGN.md`, `EXPERIENCE.md` |
 | Tech lead | `bmad-architecture` | The architecture spine |
 | One engineer per epic | `bmad-spec`, `bmad-build`, `bmad-retrospective` | That epic's spec, stories, verdict |
-| Whoever tracks the whole | `bmad-sprint-planning` | `sprint-status.yaml` |
+| Whoever tracks the whole | `bmad-preview-ticketing` | the ticket tree |
 
 Several engineers can each take an epic at once. An epic-level spine inherits the parent spine's decisions as binding.
 
@@ -41,7 +41,7 @@ Each moment produces a written result an approval can attach to. Advise placing 
 | `bmad-prfaq` verdict | Writing the PRD |
 | `bmad-prd` validate | Design and architecture work |
 | Architecture spine review | Writing epic specs |
-| `bmad-sprint-planning` readiness gate | Generating tracking; a FAIL stops it |
+| `bmad-preview-ticketing` planning approval | Accepting the breakdown and its dependencies |
 | `bmad-retrospective` verdict | Starting the next epic |
 
 `bmad-prfaq` and `bmad-retrospective` accept `-H` to run without a conversation.
@@ -53,12 +53,12 @@ Reviewers ask for changes in whichever document they are reading. Apply the chan
 1. `bmad-prd` update. It surfaces conflicts with earlier decisions before applying anything.
 2. `bmad-architecture` update when a decision shared across epics changes.
 3. `bmad-spec` for each affected epic. Capability ids stay stable, and it says which stories no longer match.
-4. Story breakdown or `bmad-sprint-planning` again. A refresh never downgrades a status.
+4. Story breakdown or `bmad-preview-ticketing` again. Existing plans retain status.
 
-For a change that threatens the plan itself, run `bmad-correct-course` first. It needs a PRD and epics.
+For a change that threatens the plan itself, run `bmad-correct-course` first. It needs a PRD or a spec.
 
 ## Tracker integration
 
 - Nothing syncs with Jira or any tracker automatically, in either direction.
-- The epics route reads and writes only `sprint-status.yaml`. The user updates it when the tracker changes.
-- `bmad-preview-ticketing` can publish tickets to Jira, Linear, or GitHub. It is a preview. When the skill runs, the tracker's status is read into the ticket file as `tracker_status`, beside the build's own `status`, and never drives the build (`help/ticketing-and-epics.md`).
+- Repo-store status lives in each joined plan. Builds stop at `built`; the user or orchestrator marks `done`.
+- `bmad-preview-ticketing` can publish tickets to Jira, Linear, or GitHub. When the skill runs, the tracker's status is read into the leaf file as `tracker_status`. The build's own `status` stays in its separate joined plan; tracker status never drives the build (`help/ticketing-and-epics.md`).
