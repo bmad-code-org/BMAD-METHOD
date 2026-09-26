@@ -4,15 +4,14 @@
 # rules; the agent reading it plans the conversion for the project in front of it, gets the plan
 # approved, and then moves and converts the user's artifacts. It never edits `_bmad/` beyond the
 # `_bmad/custom/` overrides named under Configuration and the move of `_bmad/` whole to a workspace
-# root under `workspace`: the rest is `bmad setup`. It removes files only in the per-epic archive of
-# step 7, under version control and at the user's choice. It never pushes.
+# root under `workspace`: the rest is `bmad setup`. Completed plans remain live state. It never pushes.
 
 [migration]
 module = "method"
 from = "6"
 to = "7"
 title = "Move v6 planning and implementation artifacts into the v7 initiative layout"
-summary = "v6 kept planning documents in one folder and build records in another, with the plan in epics.md and progress in sprint-status.yaml. v7 keeps everything for one body of work in one initiative folder, as a ticket tree the ticketing skill and the builder read, with an inbox for work that has no home yet. This migration moves the project's artifacts into that layout, turns epics and sprint status into tickets.toml and ticket files, sets the config that names the active initiative, and, when the user wants it, puts the store in its own repository or a workspace."
+summary = "v6 kept planning documents in one folder and build records in another, with the plan in epics.md and progress in sprint-status.yaml. v7 keeps everything for one body of work in one initiative folder, as a ticket tree the ticketing skill and the builder read, with an inbox for work that has no home yet. This migration moves the project's artifacts into that layout, turns epics and sprint status into tickets.toml and joined plans, sets the config that names the active initiative, and, when the user wants it, puts the store in its own repository or a workspace."
 
 # Read-only signals. Any one of them makes this migration worth offering; the first two are v6 for certain.
 detect = """
@@ -39,9 +38,8 @@ target = """
     epic-<slug>/
       epic-<slug>.md                # the epic envelope
       tickets.toml                  # one [[entry]] per story, in build order
-      story-<slug>.md               # only for a story that had a file in v6, or that the user asked to keep with its criteria
-      story-<slug>-plan.md          # the v6 story file, which was the build record
-      retro-<slug>/retro-<slug>.md  # the epic's retrospective, when one was written
+      story-<slug>-plan.md          # the v6 build record, joined by numeric ticket id; owns status
+      epic-<slug>-retrospective.md # historical retrospective, directly in the epic
     archive-v6/                     # epics.md, sprint-status.yaml, and epic-N-context.md caches, unchanged
     migration-v6-v7/migration-v6-v7.md  # the plan, its answers, and the verification record
   backlog/                          # loose tickets with no epic, flat: story-, spike-, bug-<slug>.md
@@ -51,7 +49,7 @@ target = """
     brainstorming-<slug>/           # a new artifact folder, in the usual shape
     brainstorming/                  # an unrelated v6 folder moved here as it was; the user tidies it if they care
     archive-v6/                     # dead scraps with nothing beside them: a half-run, a stray memlog
-Every entry at the root says what it is: an `initiative-` or `epic-` folder, `backlog/` (or `backlog-<slug>/` when there are several), or a space with its identity file. Anything else at the root is unrecognized: the plan offers it inbox, and declined it is left alone, never broken. Inside a folder the migration creates, every folder holds a file with exactly its name, the main file or a router naming the files beside it, with `type`, `title`, `created`, and `status` where the ticketing rules give one (a container has none until work starts) in frontmatter. No file or folder name the migration writes carries a number or a date, apart from its own two: `migration-v6-v7/` and `archive-v6/`, which name the versions and are not artifact folders; a date lives in `created`. A ticket's identity is its `id` in frontmatter and its entry in the parent's `tickets.toml`.
+Every entry at the root says what it is: an `initiative-` or `epic-` folder, `backlog/` (or `backlog-<slug>/` when there are several), or a space with its identity file. Anything else at the root is unrecognized: the plan offers it inbox, and declined it is left alone, never broken. Inside a folder the migration creates, every folder holds a file with exactly its name, the main file or a router naming the files beside it, with `type`, `title`, `created`, and `status` where the ticketing rules give one (a container has none until work starts) in frontmatter. No file or folder name the migration writes carries a number or a date, apart from its own two: `migration-v6-v7/` and `archive-v6/`, which name the versions and are not artifact folders; a date lives in `created`. An epic leaf's identity is its entry id, joined by numeric `ticket` in its plan; a backlog plan joins its leaf file stem.
 """
 
 # Asked together at the plan step, after the inventory and before anything is written. Only a question the
@@ -66,7 +64,6 @@ questions = """
 | Do you want the plan's history apart from the code, so the store is its own git repository? Default yes | The output folder is already its own repository | `git init` and untracking from the project repo, or leaving it tracked where it is (`workspace`) |
 | Do you want to work several branches of a project at once, agents in parallel? Default no | The project is already a bare repository with worktrees | Whether the checkout becomes bare plus worktrees (`workspace`) |
 | Is the work here one initiative, or several, and what are they called? Default one, named after `core.project_name` | The folder holds one PRD or one epics file | The initiative split; what joins each |
-| Keep the v6 acceptance criteria as refined story files, or let the builder write criteria at build time from the entry? Default the builder | Every story in `epics.md` already has a file | Entries only, or entries plus files |
 | Finish, pause, or migrate through the builds in flight? Default finish first | No story is in-progress or in-review | Whether the migration waits |
 """
 
@@ -74,10 +71,10 @@ questions = """
 precautions = """
 - Read `_bmad/config.toml` and the `_bmad/custom/` overrides for `core.output_folder`, `modules.bmm.planning_artifacts`, `modules.bmm.implementation_artifacts`. Those are the source folders; a user may have renamed any of them.
 - Inventory every file under the source folders, recursively, before planning. The plan accounts for each one in four lists: joins an initiative, with the evidence; moves to inbox; stays where it is; archived. Nothing is deleted.
-- Read only what the migration rewrites: `epics.md`, `sprint-status.yaml`, and the story files, in full. Everything else is classified from its path, its frontmatter, and its first heading, and moved unchanged; a PRD, a brief, a design, a brainstorm is not read through. Rewriting paths is a search for the old paths across the store, not a read of every document. A file or folder that path, frontmatter, and first heading do not explain: ask the user what it is, in the plan, with the others.
+- Read only what the migration rewrites: `epics.md`, `sprint-status.yaml`, `stories.yaml`, story files, and historical retrospectives, in full. Everything else is classified from its path, its frontmatter, and its first heading, and moved unchanged; a PRD, a brief, a design, a brainstorm is not read through. Rewriting paths is a search for the old paths across the store, not a read of every document. A file or folder that path, frontmatter, and first heading do not explain: ask the user what it is, in the plan, with the others.
 - Nothing changes before the plan is approved. The inventory and the questions are read-only; the only writes before approval are the plan file itself and the backup, and the first move comes after approval.
 - Commit before moving. The output folder under git: commit its current state first, and do every move with `git mv` so history follows the file. Tracked by the project repo: same, in that repo. Under no git at all: the backup and git questions in `questions` decide what comes first.
-- Skills that still read the v6 paths after the move: `bmad-sprint-planning`, `bmad-correct-course`, `bmad-retrospective` in sprint mode. Say once that those stop finding the moved files and that the ticketing skill and `bmad-build` take over; do not offer to keep both layouts.
+- The removed `bmad-sprint-planning` and `bmad-create-epics-and-stories` route is replaced by `bmad-preview-ticketing`. Build, review, and retrospective consume the joined plans; correct-course proposes changes from the affected work the user describes.
 """
 
 # The conversion rules. Each names the v6 source, the v7 destination, and what changes on the way.
@@ -107,7 +104,7 @@ For documents that join the initiative. Move, never copy: v6 skills that wrote t
 | Any other file a skill wrote | `<type>-<slug>/<type>-<slug>.md`, the type from its frontmatter or its name; when neither says, ask |
 | A sharded document (`<name>/index.md` plus sections) | `<type>-<name>/<type>-<name>.md` is the old `index.md`, sections unchanged beside it |
 
-A document that belongs to one epic (a retrospective, a spec that only that epic used) goes in that epic's folder under the same rule. Rewrite every path that pointed at a moved file: `companions:`, References sections, `inputDocuments:` frontmatter, links in prose.
+A document that belongs to one epic goes in that epic's folder. Retrospectives are the exception to the document-folder rule: combine every historical report for that epic into `epic-<slug>-retrospective.md` directly in the epic, retaining each report's full content and source filename in its own dated section. Use recorded dates; label an unknown date as unknown. Frontmatter carries `epic: epic-<slug>` and the latest report's verdict only when that report supplies a supported verdict. If the latest report has no verdict, or chronology is unknown, leave the verdict absent and report the gap; older verdicts stay only in their historical sections. It has no `ticket` and no leaf `type`. Never overwrite an earlier report or invent a verdict. Rewrite live references that pointed at a moved file (archived source files remain unchanged): `companions:`, References sections, `inputDocuments:` frontmatter, links in prose.
 
 ## epics.md and sprint-status.yaml become the ticket tree
 
@@ -119,13 +116,13 @@ Each epic: `epic-<slug>/epic-<slug>.md` from the epic template. The slug is the 
 
 Each `### Story N.M:` becomes an `[[entry]]` in that epic's `tickets.toml`, in the order written: `id = M`, `type = "story"`, `title`, `description` (the "I want" sentence, restated as what exists when it is done), `verify` (one line distilled from its acceptance criteria), `covers` (the FR ids its criteria trace to, from the coverage map), `after = []` unless `epics.md` states that the story needs another, `hitl = false`, `risk = "low"` unless the text says otherwise, and `v6_key = "N-M-<slug>"`, the v6 sprint-status key, which the script ignores and the user can search.
 
-Stories that had no file in v6 (`backlog` in `sprint-status.yaml`) stay entries: an entry with no file is the planned state, and the builder writes each story's criteria at build time from the epic's Requirements and the entry. When the criteria question in `questions` was answered keep, every such story is also pulled to `story-<slug>.md` with `status: draft`, `refined: true`, and its criteria copied into Acceptance Criteria.
+Untouched backlog stories with no build record stay entries, with no plan or status. If tracking records a later status but its build record is missing, write a minimal joined plan with that mapped status and explicitly record the missing historical evidence; never erase completed or review state. Preserve their full original acceptance criteria in the entry's description alongside its intent, retaining the archived source. The builder uses the entry and epic directly; migration does not manufacture epic story files.
 
-Stories that had a file in v6 (`<N>-<M>-<slug>.md` or `spec-<N>-<M>-<slug>.md` in the implementation folder): the v6 story file is the build record, so it moves beside its ticket as `epic-<slug>/story-<slug>-plan.md`, content unchanged. A new `story-<slug>.md` is written from the story template with the entry's fields, `parent` the epic folder, `refined: true`, and the acceptance criteria from `epics.md`. Its `status` is the v6 status mapped:
+Stories that had a file in v6 (`<N>-<M>-<slug>.md` or `spec-<N>-<M>-<slug>.md` in the implementation folder): move the build record to `epic-<slug>/story-<slug>-plan.md`, preserving all criteria, implementation history, and review findings. Merge criteria from `epics.md` without losing either source. Its frontmatter carries numeric `ticket: M`, the mapped `status`, and a build `type` (`feature`, `bugfix`, `refactor`, or `chore`), never `story`. Preserve a trustworthy existing `baseline_revision` or explicitly recorded equivalent; when absent, leave it absent and record the evidence gap in the migration report. Never infer a historical baseline from today's HEAD. Its status is mapped:
 
 | v6 (`sprint-status.yaml`, story file) | v7 |
 |---|---|
-| `backlog` | no file; entry only. A story file exists anyway: `draft`, and the file is kept |
+| `backlog` | entry only without a build record; an existing build record becomes a `draft` plan |
 | `ready-for-dev` | `ready-for-dev` |
 | `in-progress` | `in-progress` |
 | `review`, `in-review` | `in-review` |
@@ -138,11 +135,11 @@ When the story file and `sprint-status.yaml` disagree, the more advanced status 
 
 ## A spec folder with stories.yaml
 
-A `spec-<slug>/` that holds `stories.yaml` and `stories/` was an epic in all but name. When its work is the initiative's: create `epic-<slug>/` with the spec folder inside it as its requirement source (`spec-<slug>/spec-<slug>.md`); the epic's `covers` and each entry's `covers` cite the spec's `CAP-N` ids. Each `stories.yaml` entry becomes an `[[entry]]` in list order with its `id`, `title`, `description`; each `stories/<id>-<slug>.md` moves as `story-<slug>-plan.md` beside a new `story-<slug>.md`, status mapped as above. `RETROSPECTIVE.md` in the folder becomes `retro-<slug>/retro-<slug>.md` in the epic. Add the epic to the initiative's `tickets.toml`; the epic's `status` is `done` when every story is. A spec folder with no stories that the initiative cites moves as a planning document; one nothing cites goes to inbox with the other remnants.
+A `spec-<slug>/` that holds `stories.yaml` and `stories/` represents a planned body of work. When its work is the initiative's: create `epic-<slug>/` with the spec folder inside it as its requirement source (`spec-<slug>/spec-<slug>.md`); the epic's `covers` and each entry's `covers` cite the spec's `CAP-N` ids. Each `stories.yaml` entry becomes an `[[entry]]` in list order with its numeric `id`, `title`, `description`, original criteria, and verification. Preserve every declared prerequisite from the tracking source or story record as an entry `after` relationship, translating its reference to the migrated sibling id, cross-epic entry reference, or epic slug. Report unresolved prerequisites for correction; do not discard them or infer dependencies merely from list order. Each existing `stories/<id>-<slug>.md` moves as `story-<slug>-plan.md`, with numeric `ticket`, mapped status, build type, and baseline handling as above. Untouched backlog entries with no build record need no plan; a later tracked status without its record requires a minimal joined plan and an explicit evidence gap. Archive `stories.yaml` unchanged. `RETROSPECTIVE.md` becomes `epic-<slug>-retrospective.md` directly in the epic under the retrospective rule. Add the epic to the initiative's `tickets.toml`; its `status` is `done` when every story is. A spec with no story breakdown stays a planning document or standalone intent; never invent an epic for standalone work.
 
 ## Loose implementation files
 
-`spec-<slug>.md` files in the implementation folder with no epic and no story number were single `bmad-build` runs. Each becomes `backlog/story-<slug>.md` with `status` mapped and the v6 file beside it as `story-<slug>-plan.md`, or, when the user says it belonged to an epic, goes into that epic as above. `deferred-work.md` moves to the initiative folder as `deferred-work/deferred-work.md`. Walkthrough logs, test summaries, and anything else that the initiative's work produced follow the planning-document rule: `<type>-<slug>/<type>-<slug>.md` in the epic they concern, else the initiative.
+`spec-<slug>.md` files in the implementation folder with no epic and no story number were single `bmad-build` runs. For tracked standalone work, write `backlog/story-<slug>.md` (or `bug-<slug>.md` for a bug) with its original intent and criteria. Move the build record beside it as `<type>-<slug>-plan.md`; its `ticket` is the leaf file stem, its status is mapped, and its build type and baseline follow the rules above. Keep status in the plan. A standalone intent can also remain direct build input without entering the tree; do not create an epic for it. When the user identifies an existing epic, use that epic's numeric entry join instead. `deferred-work.md` moves to the initiative folder as `deferred-work/deferred-work.md`. Walkthrough logs, test summaries, and other evidence follow the planning-document rule in the epic they concern, else the initiative.
 
 ## Configuration
 
@@ -156,8 +153,8 @@ Record `active_initiative = "initiative-<slug>"` under `[modules.bmm]` in `_bmad
 4. In a repository that existed before the migration, commit the current state first. Then execute in this order: repository changes from `workspace`, when any; initiative folder and envelope; planning documents; epics, entries, tickets, plans; loose files and inbox; archive of `epics.md` and `sprint-status.yaml`; path rewrites; config; store setup. In a repository that existed before the migration, commit after each group, one commit each, messages naming the group. In a repository the migration created, commit nothing yet.
 5. Verify with `checklist`. Record each item's result in the plan file. A failed item is fixed and rechecked, or reported with what is wrong; it is never skipped.
 6. When the migration created the store's repository, offer its initial commit now, after verification, with everything the migration wrote and the plan file in it. Declined, say the tree is uncommitted and stop there; never push either way.
-7. Once the tree is committed, for each epic whose status is `done`, a converted spec-epic included, offer to archive its story files: the `story-<slug>.md` and `story-<slug>-plan.md` files are removed in one commit per epic, and git keeps them; the epic envelope, its `tickets.toml`, and its retrospective stay. The user chooses per epic, default keep; the reasons are in `help/artifact-lifetime.md`. Nothing is archived in a tree that is not under version control.
-8. Report: the tree as it now stands (`tickets.py status <initiative folder>`), what was archived, including any done epics' story files, what was left in place, and what the user does next: `bmad-preview-ticketing` to pull a story, `bmad-build` on a pulled ticket, and `bmad-project-context` for a root `AGENTS.md` that says where the plan lives, which initiative is active, that agents read only the active initiative, and, in a workspace, how worktrees are made.
+7. Keep completed plans and any existing leaf files in the live tree: plans own status, baseline evidence, and review history. Only the unchanged legacy tracking sources and caches are archived.
+8. Report the tree with `uv run <project-root>/_bmad/method/scripts/tickets.py --project-root <project-root> status <initiative folder>`, the archived sources, files left in place, and missing historical baselines. Next: `bmad-build` on the next entry without pulling a story file; `bmad-code-review` on a historical plan without changing its status; `bmad-retrospective` on the epic; and `bmad-project-context` for a root `AGENTS.md` naming the active initiative and workspace conventions. Standalone intent remains valid build input.
 """
 
 # What the repository answers in `questions` mean in files. Each is shown as a target tree in the plan and done
@@ -176,13 +173,13 @@ The root `AGENTS.md` for any of these is step 8's `bmad-project-context` run. Th
 # Verification. Every item is checked and its result recorded; an item that cannot be checked is reported as such.
 checklist = [
   "Every file that was under the v6 planning and implementation folders is now under an initiative, `backlog/`, `inbox/`, or `archive-v6/`, or is listed in the plan as left in place.",
-  "Every folder the migration created, apart from `archive-v6/`, holds a file named exactly after it, with `type`, `title`, `created`, and `status` where the ticketing rules give one, in frontmatter; and no name it wrote carries a number or a date, apart from `migration-v6-v7/` and `archive-v6/`.",
+  "Every created artifact folder holds a same-named main file; `backlog/`, spaces, and `archive-v6/` follow their own tree rules. Retrospectives are directly in their epic, carry `epic` and only an evidenced verdict, and have no ticket or leaf type.",
   "Every entry at the store root is an `initiative-` or `epic-` folder, `backlog/` or `backlog-<slug>/`, a space with its identity file, or a remnant the plan lists as left alone.",
-  "`uv run <ticketing skill>/scripts/tickets.py --project-root <project-root> status <initiative folder>` exits 0 for every initiative, and its story counts, grouped the way `status` groups them, equal the story counts in the archived `sprint-status.yaml` after mapping, with the `epic-N` and `epic-N-retrospective` keys left out.",
-  "Every `### Story N.M` in the archived `epics.md` is one `[[entry]]` with `id = M` under the epic with `id = N`, and every v6 story file is one `story-<slug>-plan.md` beside a `story-<slug>.md`.",
-  "Every ticket file's `status` is one of draft, ready-for-dev, in-progress, in-review, done.",
+  "`uv run <project-root>/_bmad/method/scripts/tickets.py --project-root <project-root> status <initiative folder>` exits 0 for every initiative; mapped counts match archived classic and spec tracking sources, excluding epic and retrospective keys. Verify standalone backlog counts separately.",
+  "Every classic or spec story is one entry, every build record is one joined plan, and no epic story files were manufactured. `find` returns each expected plan; epic joins are numeric and backlog joins are file stems.",
+  "Every migrated plan has a build type and mapped status; completed plans stay done, review stays in-review, and no historical record is relabeled built. Baselines are preserved when supported and missing ones are disclosed.",
   "Every `covers` id on an epic exists in the initiative's requirement source, every `covers` id on an entry exists in its epic's Requirements, and every requirement in the PRD's coverage map is covered by at least one entry.",
-  "Every path in `companions:`, `inputDocuments:`, References sections, and prose links resolves to a file.",
+  "Every live path in `companions:`, `inputDocuments:`, References sections, and prose links resolves to a file; archived sources retain their original historical paths unchanged.",
   "`_bmad/custom/config.user.toml` names the active initiative under `[modules.bmm]`, `core.output_folder` resolves to the store, and `_bmad/custom/ticketing-store-config.toml` exists.",
   "The store is under git as the user answered, no file is tracked by two repositories, and when a workspace was made `bmad status` at its root reports the installation current.",
   "The plan file records every question asked, the answer, the backup made or the reason none was, every file the user was asked to identify, and the result of each item above.",

@@ -44,18 +44,17 @@ create root/backlog/ and the active initiative's folder when they do not exist.
 """
 
 write = """
-No entry yet: add an `[[entry]]` with the next unused `id` to the parent's `tickets.toml`; the file carries that `id`. Every change — body, assignee, parent (move the file, or the container folder, into the new
-parent's folder), after — is an edit to the file. A leaf's `status` is the build's: it writes draft, ready-for-dev, in-progress, in-review, done, and blocked as it works, and a pulled file has none. Ticketing edits it only when the user says to — `dropped`, or a person working the ticket by hand who asks for it. A container's `status` is ticketing's: absent until work under it starts, then in-progress, done, or dropped. Build records: the plan is in the
-file under `## Plan`, the coding agent's section.
+No entry yet: add an `[[entry]]` with the next unused `id` to the parent's `tickets.toml`; the file carries that `id`. Every change — body, parent (move the file and its plan, or the container folder, into the new
+parent's folder, and set the plan's `ticket` to the leaf's id there), after — is an edit to the file. A leaf's `status`, `assignee`, `blocked_at`, and `blocked_reason` live in its plan beside it, and a pulled file has none: the build writes draft, ready-for-dev, in-progress, in-review, and built as it works, and build-auto writes blocked; done is the user's or an orchestrator's, and dropped is ticketing's when the user says so. No skill moves a leaf past built. Ticketing sets a leaf's status or assignee only with `tickets.py mark [<folder>] <ref> <status> [--assignee <who>] [--blocked <reason>]`, which writes the plan and creates it when there is none. A container's `status` is ticketing's: absent until work under it starts, then in-progress, done, or dropped. Build records: the plan, `<type>-<slug>-plan.md`
+beside the leaf, whether or not the leaf has a file.
 Commit only the files you wrote on the current branch. Root not in a git repo: skip the commit and say so.
 """
 
 query = """
-A ticket is named by its path and its `id` under its epic. `tickets.py find <folder> <ref>` resolves an id, `"2.3"`, a file name, or title words to the one file; by a frontmatter field, `grep -rl "^type: bug" root` — same for status, assignee,
-parent. A container's children are the ticket files and container folders in its folder; planned children with no file are the entries in its `tickets.toml`. Frontmatter holds id,
-type, title, parent, covers (the source requirement ids), after, blocked_at and
-blocked_reason when blocked, status (the build's; absent until a build starts), refined, hitl, risk, estimate, and severity on bugs; a
-pulled file carries only the ones its entry sets, and an absent field reads as empty.
+A ticket is named by its path and its `id` under its epic. `tickets.py find <folder> <ref>` resolves an id, `"2.3"`, a file name, or title words to the one ticket: its row, its entry's text fields, and the paths `epic_file`, `story_file`, and `plan`; by a frontmatter field, `grep -rl "^type: bug" root` — same for parent; status and assignee come from `tickets.py status`, which reads the plans. A container's children are the ticket files and container folders in its folder; planned children with no file are the entries in its `tickets.toml`. Frontmatter holds id,
+type, title, parent, covers (the source requirement ids), after, refined, hitl, risk, estimate, and severity on bugs; a
+pulled file carries only the ones its entry sets, and an absent field reads as empty. The plan's frontmatter holds status (absent until a build starts),
+assignee, and blocked_at and blocked_reason when blocked; `tickets.py` reads a leaf file's own status only when there is no plan.
 Candidates to start (one that `tickets.py next` lists under `ready_to_refine` gets its criteria first): no status, or draft or ready-for-dev; blocked_at empty; everything in after done; unassigned. Several ready tickets are parallel work;
 offer them all. When one must be chosen, take the one that unblocks the most work behind it.
 """
@@ -68,7 +67,7 @@ story = "story"
 spike = "spike"
 bug = "bug"
 
-# BMad state -> this store's status. The file is the store: the build's own words in `status` read as these states (none, draft, ready-for-dev -> backlog; blocked -> in-progress; in-review -> review).
+# BMad state -> this store's status. The files are the store: the words in a plan's `status` read as these states (none, draft, ready-for-dev -> backlog; blocked -> in-progress; in-review, built -> review).
 [tickets.status]
 backlog = "backlog"
 in-progress = "in-progress"

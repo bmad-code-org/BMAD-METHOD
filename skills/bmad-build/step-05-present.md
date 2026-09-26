@@ -10,17 +10,15 @@
 
 ## INSTRUCTIONS
 
-### Mark Spec Done
+### Mark Plan Built
 
-Change `{spec_file}` status to `done` in the frontmatter.
-
-If `{story_key}` is not empty and `{{ config.implementation_artifacts }}/sprint-status.yaml` exists, read `{{ rendered("sync-sprint-status.md") }}` with `{target_status}` = `review`.
+Change `{plan_file}` status to `built` in the frontmatter.
 
 ### Commit and Complete
 
-If version control is available and the tree is dirty, create a local commit with a conventional message derived from the spec title.
+If version control is available and the tree is dirty, create a local commit with a conventional message derived from the plan title.
 
-{{ workflow.open_spec }}
+{{ workflow.open_plan }}
 
 ### Display Summary
 
@@ -30,7 +28,7 @@ Display a very short completion summary — one or two sentences — including:
 - The verification and review result, including whether anything was deferred.
 - The commit hash, if one was created.
 
-Do not list changed files, repeat details from the spec, or narrate the process unless the user asks.
+Do not list changed files, repeat details from the plan, or narrate the process unless the user asks.
 
 Offer applicable next actions in one short line: when version control and a remote are available, create a pull request (and push first if needed); use `bmad-walkthrough`; or make another change.
 

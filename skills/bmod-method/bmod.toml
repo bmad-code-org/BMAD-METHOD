@@ -13,7 +13,6 @@ skills = [
   "bmad-build-auto",
   "bmad-code-review",
   "bmad-correct-course",
-  "bmad-create-epics-and-stories",
   "bmad-prd",
   "bmad-preview-ticketing",
   "bmad-prfaq",
@@ -22,7 +21,6 @@ skills = [
   "bmad-qa-generate-e2e-tests",
   "bmad-retrospective",
   "bmad-spec",
-  "bmad-sprint-planning",
   "bmad-ux",
   "bmad-walkthrough",
 ]

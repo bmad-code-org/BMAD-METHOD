@@ -124,10 +124,10 @@ goes back into the spec as an update. See
 [Choose a Planning Path](./choose-a-planning-path.md#1-start-epic-sized-work)
 for how the epic then runs.
 
-`bmad-spec` does not split work into stories or write `stories.yaml`. To run
-the planned stories unattended, give
-[`bmad-build-auto`](../build/autonomous-development-loops.md) each pulled
-story file as its intent, one run per story.
+`bmad-spec` delegates story breakdown to ticketing. To run
+the planned stories unattended, explicitly dispatch each ticket to
+[`bmad-build-auto`](../build/autonomous-development-loops.md) as `ticket <ref>`,
+one run per ticket. No leaf file needs to be pulled first.
 
 :::note[What each skill produces]
 `bmad-product-brief`: `brief.md` and `addendum.md`. `bmad-prfaq`: a PRFAQ

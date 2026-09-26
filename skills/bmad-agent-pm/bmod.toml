@@ -3,7 +3,6 @@ bmod = "bmod-method"
 source = "github:bmad-code-org/BMAD-METHOD/skills"
 recommended_skills = [
   "bmad-correct-course",
-  "bmad-create-epics-and-stories",
+  "bmad-preview-ticketing",
   "bmad-prd",
-  "bmad-sprint-planning",
 ]

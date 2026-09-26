@@ -19,7 +19,7 @@ The lens set is whatever `{workflow.lenses}` resolves to, not a fixed list — o
 
 ## Conventions
 
-- Bare paths (e.g. `references/lens-edge-case-hunter.md`) resolve from `{skill-root}` — this skill's installed directory, where `customize.toml` lives. `{project-root}` resolves to the project working directory.
+- Bare paths (e.g. `references/lens-edge-case-hunter.md`) resolve from `{skill-root}` — this skill's installed directory, where `customize.toml` lives. `{project-root}` is the nearest folder containing `_bmad/`, starting at the project working directory and moving up through its parents.
 - `{workflow.<name>}` resolves to fields in `customize.toml`'s `[workflow]` table (overrides win per BMad merge rules).
 - In `style_guide`, `review_guidance`, and `persistent_facts`, a value prefixed `file:` is a path or glob — load that file's contents. If a `file:` value cannot be read, name the failed file in the output header and continue: the shipped baseline for `style_guide`, the remaining entries otherwise.
 

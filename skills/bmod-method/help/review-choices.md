@@ -12,8 +12,8 @@ Use this when the user asks how much review to run, how to get another pass, whe
 
 ## Another pass, and when to stop
 
-- After `bmad-build`: run `bmad-code-review` with the story file. Handing `bmad-build` a `done` story file does not repeat the review.
-- After `bmad-build-auto`: dispatch the `done` record again.
+- After `bmad-build`: run `bmad-code-review` with no argument when the build was of a ticket; it offers the tickets in review. Otherwise hand it the plan file. Handing `bmad-build` its `built` plan also runs another review; a `done` plan does not.
+- After `bmad-build-auto`: dispatch its `built` plan again.
 - Worth it when review was skipped or `quick`, after material fixes, or when an unattended run set `followup_review_recommended`. After a `thorough` build review it only repeats the same lenses.
 - Stop when findings are mostly minor notes about unlikely corner cases.
 - Real findings on a third pass point outside the change: a weak spec or unclear repo rules. Tell the user to fix that.
@@ -21,11 +21,11 @@ Use this when the user asks how much review to run, how to get another pass, whe
 ## `bmad-code-review`
 
 - Target: a PR, commit, branch, commit range, uncommitted changes, a pasted diff, or files.
-- Tell the user to supply the intent: a spec, story file, or plain description. Without it the reviewers can only judge the diff against itself.
+- Tell the user to supply the intent: a plan, a spec, or a plain description. A ticket in review brings its plan. Without it the reviewers can only judge the diff against itself.
 - Defaults to `thorough`; "quick" uses one reviewer. Above about 3000 diff lines it offers to review in file groups.
 - Triage checks every finding against the code and rejects disproved ones, plus low ones whose fix would add complexity.
-- Survivors become patch (a clear fix), defer (pre-existing or unverified), or decision needed (only when a spec was given).
-- The user chooses: apply all patches, walk through each, or leave them as action items in the story file.
+- Survivors become patch (a clear fix), defer (pre-existing or unverified), or decision needed (only when a plan was given).
+- The user chooses: apply all patches, walk through each, or leave them as action items in the plan's `## Code Review` section.
 
 ## Why review is slow
 

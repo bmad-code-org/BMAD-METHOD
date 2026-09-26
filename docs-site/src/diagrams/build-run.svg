@@ -1,5 +1,5 @@
 <svg class="bmad-diagram" viewBox="0 0 940 762" role="img" xmlns="http://www.w3.org/2000/svg" aria-labelledby="bd-title">
-<title id="bd-title" data-i18n="title">The bmad-build run: intent is clarified, planned, specified, implemented, then reviewed. Review can patch the work, send it back to plan or clarification, void it, or defer it, before the result is presented to you.</title>
+<title id="bd-title" data-i18n="title">The bmad-build run: intent is clarified, planned, implemented, then reviewed. Review can patch the work, send it back to plan or clarification, void it, or defer it, before the result is presented to you.</title>
 <defs>
 <marker id="bd-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker>
 <marker id="bd-arrow-soft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="head soft" d="M0 0 L10 5 L0 10 z"/></marker>
@@ -12,7 +12,7 @@
 <rect class="node" x="300.0" y="184.0" width="200" height="40" rx="2"/>
 <text class="n" x="400" y="209" data-i18n="plan">Plan</text>
 <rect class="node cap" x="322.0" y="266.0" width="156" height="40" rx="20"/>
-<text class="n" x="400" y="291" data-i18n="spec">Spec</text>
+<text class="n" x="400" y="291" data-i18n="approved-plan">Approved plan</text>
 <rect class="node" x="300.0" y="348.0" width="200" height="40" rx="2"/>
 <text class="n" x="400" y="373" data-i18n="implement">Implement</text>
 <path class="node gate" d="M400 424 L482 450 L400 476 L318 450 z"/>
@@ -46,7 +46,7 @@
 <g class="glyph" transform="translate(614 632)"><path d="M0 0h20l10 10v30H0z"/><path class="fold" d="M20 0v10h10z"/></g>
 <text class="sub" x="600" y="694">deferred_work.md</text>
 <path class="edge" d="M500.0 524 H540 Q552 524 552 512 V216 Q552 204 540 204 H502.0" marker-end="url(#bd-arrow)"/>
-<text class="k" x="546" y="368" data-i18n="edge-bad-spec" transform="rotate(-90 546 368)">bad_spec</text>
+<text class="k" x="546" y="368" data-i18n="edge-bad-plan" transform="rotate(-90 546 368)">bad_plan</text>
 <path class="edge" d="M500.0 540 H592 Q604 540 604 528 V134 Q604 122 592 122 H502.0" marker-end="url(#bd-arrow)"/>
 <text class="k" x="598" y="330" data-i18n="edge-intent-gap" transform="rotate(-90 598 330)">intent_gap</text>
 <use href="#bd-person" class="glyph" transform="translate(96 118)"/>
@@ -54,8 +54,8 @@
 <text class="k" x="150" y="112" data-i18n="actor-interview">interview</text>
 <use href="#bd-person" class="glyph" transform="translate(96 282)"/>
 <path class="edge soft" d="M128 286 H320.0" marker-end="url(#bd-arrow-soft)"/>
-<text class="k" x="150" y="266" data-i18n="actor-spec-review">spec review</text>
-<text class="k" x="150" y="278" data-i18n="actor-spec-review-2">optional</text>
+<text class="k" x="150" y="266" data-i18n="actor-plan-review">plan review</text>
+<text class="k" x="150" y="278" data-i18n="actor-plan-review-2">optional</text>
 <use href="#bd-person" class="glyph" transform="translate(96 692)"/>
 <path class="edge soft" d="M322.0 696 H111" marker-end="url(#bd-arrow-soft)"/>
 <text class="k" x="150" y="686" data-i18n="actor-review">you review the result</text>

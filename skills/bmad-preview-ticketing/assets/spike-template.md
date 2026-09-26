@@ -5,9 +5,10 @@ title: "[The question this answers]"
 parent: [folder name of the epic, or of the initiative when there are no epics; none for a standalone ticket in backlog/]
 covers: []
 after: []   # prerequisites only: a sibling's id; "<epic id>.<entry id>" in another epic; epic-<slug> for that whole epic
-assignee: ""   # blocked_at (date) and blocked_reason are added when waiting on a person or an answer
+assignee: ""   # a tracker's assignee, mirrored by query; otherwise assignee, blocked_at, and blocked_reason live in the plan
+# status lives in the plan beside this file, not here; tracker_status by a tracker sync
 refined: false   # true once refined and approved
-hitl: true   # status is written by the build (draft | ready-for-dev | in-progress | in-review | done | blocked); tracker_status by a tracker sync
+hitl: true
 risk: [low|medium|high]
 estimate: ""   # points, when estimation is on
 ---
@@ -41,10 +42,6 @@ estimate: ""   # points, when estimation is on
 ## Notes
 
 [Assumptions and open questions about the spike itself, each marked. Cut if empty.]
-
-## Plan
-
-<!-- Filled in by the coding agent; never sent to a tracker. -->
 
 <!-- Example, not part of the ticket: match its level of detail. What is good here: the unknown was a placeholder in the architecture; the spike names who waits, runs research, design, prototype, and sign-off in a time box, says what good enough is, and records the answer where the stories will find it. hitl because people accept the finding. -->
 
@@ -98,8 +95,4 @@ Good enough: all six cases merge as the field team expects, or the exceptions ar
 
 - Assumption: the satellite link is never better than 2 kbps up; confirm with the operations lead.
 - Open question: is the conflict log kept forever, or pruned after the lead resolves it? The field science lead answers.
-
-## Plan
-
-<!-- Filled in by the coding agent; never sent to a tracker. -->
 ```

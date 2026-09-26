@@ -28,8 +28,8 @@ Typical moments:
 
 ## How it runs
 
-1. **Orientation.** What the target is and what it is for, from a spec, PR
-   description, and commit messages when they exist.
+1. **Orientation.** What the target is and what it is for, from a plan or
+   spec, PR description, and commit messages when they exist.
 2. **Create review narrative.** A file organized in blocks: intent, broad
    strokes, slices by concern (not by file), then periphery. An append-only
    review log sits beside it in your implementation artifacts.

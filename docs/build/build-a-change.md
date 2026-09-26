@@ -1,14 +1,14 @@
 ---
 title: 'Build a Change'
-description: Use bmad-build to turn a request, issue, spec, or story into implemented and reviewed code.
+description: Use bmad-build to turn a request, issue, spec, or ticket into implemented and reviewed code.
 sidebar:
   order: 1
 ---
 
 The core implementation skill is `bmad-build`. It takes any expression of
-what you want — a sentence, an issue, a spec, or a planned story — investigates
-the codebase and upstream context, then plans the change, implements it,
-reviews the result, and fixes the bugs it finds. See
+what you want — a sentence, an issue, a spec, or a ticket from the tree —
+investigates the codebase and upstream context, then plans the change,
+implements it, reviews the result, and fixes the bugs it finds. See
 [how a run works](#run-bmad-build).
 
 ## Size the Work
@@ -37,8 +37,8 @@ can mix contexts and confuse the run.
 
 You can describe the change before, with, or after the command. It does not
 have to be tidy. A ramble, a voice dump, a half-formed thought, an issue
-link, a file, or a planned story all work — anything the model can turn into
-a concrete goal.
+link, a file, or a ticket from the tree all work — anything the model can turn
+into a concrete goal.
 
 ```text
 /bmad-build Fix the login validation bug that allows empty passwords.
@@ -58,6 +58,20 @@ I think the problem is in the auth middleware, it's not checking token expiry.
 Let me look at it... yeah, src/auth/middleware.ts line 47 skips
 the exp check entirely. /bmad-build
 ```
+
+```text
+/bmad-build 2.3
+```
+
+Name a ticket by its ref (entry 3 of epic 2), its file, or its title.
+
+```text
+/bmad-build
+```
+
+With nothing else, it offers any plan you left unfinished, then takes the next
+ready ticket of the active initiative. When nothing is ready, it asks what you
+want to do:
 
 ```text
 /bmad-build
@@ -82,7 +96,7 @@ expensive kind of mistake to find later.
 After investigation, `bmad-build` routes to the smallest safe path. It reports
 three facts about the settled design: intent gaps (things you did not say that you
 would notice in the result), irreversible actions, and footprint. A design
-clean on all three takes the light path — a minimal spec and implementation in
+clean on all three takes the light path — a minimal plan and implementation in
 the same session, reviewed afterwards. Anything flagged gets a full written
 plan first, with each intent gap recorded as an open question you answer
 before approval.
@@ -130,8 +144,10 @@ different approach.
 - Modified source files with the change applied
 - Passing tests (if your project has a test suite)
 - A ready-to-push commit with a conventional commit message
-- An implementation record for the run, kept beside the parent spec or story
-  when there is one
+- A plan recording the run: beside the epic's `tickets.toml` for a ticket,
+  otherwise `plan-<slug>.md` in your implementation artifacts directory. It
+  carries the ticket's status, which the build leaves at `built` until you mark
+  the ticket done
 
 For generated API and end-to-end coverage of the finished work, see
 [Test Completed Work](test-completed-work.md).
@@ -159,10 +175,11 @@ Add a spec, or PRD, UX, architecture, and story planning, before running
   resolve
 
 Larger work becomes a sequence of one-session changes. That sequence can change
-as implementation teaches you more. Parent specs keep the shared goal; story
-records carry decisions and completion state; integration checks and
-retrospectives cover the combined result. `bmad-build` handles one unit. It does
-not own the backlog, pick the next story, or replace those later checks.
+as implementation teaches you more. The ticket tree keeps the shared goal and
+the order; each ticket's plan carries its decisions and status; integration
+checks and retrospectives cover the combined result. `bmad-build` builds one
+ticket per run and can take the next ready one, but it never marks a ticket
+done or replaces those later checks.
 
 Use `bmad-build` for foundational, risky, or important stories where your
 decisions may set patterns for later work. Once those patterns are stable,
@@ -173,18 +190,17 @@ decisions may set patterns for later work. Once those patterns are stable,
 
 | Skill                 | Purpose                                                                                                                                                       | Produces                                         |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| `bmad-build`          | Implement and review one direct intent or planned story with human checkpoints (this page)                                                                    | Implementation record + code                     |
-| `bmad-build-auto`     | Implement and review one unit unattended for a caller or orchestrator ([Autonomous Development Loops](./autonomous-development-loops.md))                     | Implementation record + code + terminal status   |
+| `bmad-build`          | Implement and review one direct intent or ticket with human checkpoints (this page)                                                                           | Plan + code                                      |
+| `bmad-build-auto`     | Implement and review one ticket unattended for a caller or orchestrator ([Autonomous Development Loops](./autonomous-development-loops.md))                   | Plan + code + terminal status                    |
 | `bmad-code-review`    | Review any code change with several independent reviewers ([Review a Change](./review-a-change.md))                                                           | Findings + applied patches                       |
 | `bmad-correct-course` | Assess the impact of a significant mid-sprint change ([Break Work into Stories and Track It](../plan/break-work-into-stories-and-track-it.md#correct-course)) | Updated plan or re-routing                       |
 | `bmad-retrospective`  | Review a completed epic against the evidence it left behind ([Finish an Epic](./finish-an-epic.md))                                                           | Retro document, action items, acceptance verdict |
 
-Clear one-session work enters `bmad-build` directly. A spec-backed epic uses
-`bmad-preview-ticketing` to create several units under one `SPEC.md`; a
-project adds a PRD, UX, architecture, epics, readiness results, and sprint
-tracking before selecting each unit. `bmad-build-auto` does not orchestrate
-those units: an AI coding session or another orchestrator, such as bmad-loop,
-dispatches one worker per unit. See
+Clear one-session work enters `bmad-build` directly. Larger work is sliced
+into a ticket tree with `bmad-preview-ticketing`, from a spec or any other
+intent, and each build takes one ticket. `bmad-build-auto` does not orchestrate
+those tickets: an AI coding session or another orchestrator, such as bmad-loop,
+dispatches one worker per ticket. See
 [Autonomous Development Loops](./autonomous-development-loops.md) for the
 worker and orchestration contracts.
 

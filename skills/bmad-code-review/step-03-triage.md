@@ -28,7 +28,7 @@
 
    Reject `low` findings when it is unlikely that users or developers would meet the defect in everyday use (judged plainly -- no proof needed) and the fix is more than a direct correction or deletion -- adding guards, branches, parameters, or other complexity.
 
-   Reject any finding whose fix is to edit the spec under review.
+   Reject any finding whose fix is to edit the plan under review.
 
    All remaining findings continue to grouping.
 
@@ -39,11 +39,11 @@
    - **patch** -- Code issue that is fixable without human input. The correct fix is unambiguous, adds no public surface, and guards no state you did not demonstrate; otherwise `decision_needed`.
    - **defer** -- Pre-existing issue not caused by the current change, real but not actionable now; or an entry whose members are all `maybe-false` and the claim, if true, would be `medium` or `high` -- record that severity marked unverified, plus what would settle it (if it would only be `low`, reject it with the same note); or any entry whose fix edits agent-context files (CLAUDE.md, AGENTS.md, rules, other specs).
 
-   If `review_mode` = `no-spec` and an entry would otherwise be `decision_needed`, reclassify it as `patch` (if the fix is unambiguous) or `defer` (if not).
+   If `review_mode` = `no-plan` and an entry would otherwise be `decision_needed`, reclassify it as `patch` (if the fix is unambiguous) or `defer` (if not).
 
 5. If `failed_layers` is non-empty, report which layers failed before announcing results. If zero entries remain after rejections AND `failed_layers` is non-empty, warn the user that the review may be incomplete rather than announcing a clean review.
 
-6. If zero entries remain after triage (all rejected or none raised): state "✅ Clean review — all layers passed." (Step 3 already warned if any review layers failed via `failed_layers`.)
+6. If zero entries remain after triage (all rejected or none raised): state "✅ Clean review — all layers passed." (Item 5 already warned if any review layers failed via `failed_layers`.)
 
 ## NEXT
 
