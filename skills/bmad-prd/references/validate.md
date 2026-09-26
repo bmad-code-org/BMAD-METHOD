@@ -8,15 +8,15 @@ Source-extract against `.memlog.md`, any original inputs, and the PRD/addendum t
 
 ## Run the Reviewer Gate
 
-Run the Reviewer Gate (see SKILL.md) against `prd.md` (and `addendum.md` if present). The rubric walker is the default entry in the gate menu; under Validate intent it additionally runs the synthesis pipeline below. The Finalize discipline pass during Create/Update does NOT render a report — findings stay in-conversation.
+Run the Reviewer Gate (see SKILL.md) against the PRD, the main file `<folder name>.md` (and `addendum.md` if present). The rubric walker is the default entry in the gate menu; under Validate intent it additionally runs the synthesis pipeline below. The Finalize discipline pass during Create/Update does NOT render a report — findings stay in-conversation.
 
 ## Rubric-walker pipeline
 
 The rubric walker is the primary review entry. Spawn it as a subagent with this prompt:
 
-> You are validating a PRD against the quality rubric at `{workflow.validation_checklist_template}`. Read the full rubric first, then read `prd.md` (and `addendum.md` if present). Form a judgment per dimension — *strong / adequate / thin / broken* — and write findings only where they add information. Cite specific PRD locations and quote phrases. Severity ranks impact on the PRD's usefulness, not how easy the fix is. Write your review to `{doc_workspace}/review-rubric.md` in the format the rubric specifies. Return ONLY a compact summary (overall verdict, dimension verdicts, finding counts by severity, file path).
+> You are validating a PRD against the quality rubric at `{workflow.validation_checklist_template}`. Read the full rubric first, then read the PRD, the main file `{doc_workspace}/<folder name>.md` (and `addendum.md` if present). Form a judgment per dimension — *strong / adequate / thin / broken* — and write findings only where they add information. Cite specific PRD locations and quote phrases. Severity ranks impact on the PRD's usefulness, not how easy the fix is. Write your review to `{doc_workspace}/review-rubric.md` in the format the rubric specifies. Return ONLY a compact summary (overall verdict, dimension verdicts, finding counts by severity, file path).
 
-The Reviewer Gate may also dispatch additional reviewers from `{workflow.finalize_reviewers}` (adversarial-general by default) and any ad-hoc reviewers the parent judges warranted. Each writes its review to `{doc_workspace}/review-{slug}.md` and returns a compact summary. Run in parallel.
+The Reviewer Gate may also dispatch additional reviewers from `{workflow.finalize_reviewers}` (adversarial-general by default) and any ad-hoc reviewers the parent judges warranted. Each writes its review to `{doc_workspace}/review-{lens}.md` and returns a compact summary. Run in parallel.
 
 ## Synthesis pipeline
 
@@ -25,7 +25,7 @@ Once every selected reviewer has returned, the parent synthesizes one consolidat
 ### Inputs
 
 - `{doc_workspace}/review-rubric.md` — primary, structured by the seven dimensions
-- Zero or more `{doc_workspace}/review-{slug}.md` files — extra reviewers (adversarial, etc.)
+- Zero or more `{doc_workspace}/review-{lens}.md` files — extra reviewers (adversarial, etc.)
 - `{workflow.validation_report_template}` — the HTML skeleton
 
 ### What the synthesis pass does

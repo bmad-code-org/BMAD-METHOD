@@ -79,7 +79,7 @@ UNRESOLVABLE_VARS = [
     "{config_source}:",
     "{installed_path}",
     "{shared_path}",
-    "{planning_artifacts}",
+    "{active_initiative}",
     "{research_topic}",
     "{user_name}",
     "{communication_language}",

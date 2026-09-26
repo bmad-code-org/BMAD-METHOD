@@ -13,6 +13,7 @@ If you need an explicit user instruction to run them, ask once now for the whole
 - Every operational cross-file reference in this workflow is an absolute snapshot path. Open it directly; do not resolve it relative to a skill directory.
 - `{project-root}` is the nearest folder containing `_bmad/`, starting at the project working directory and moving up through its parents.
 - `{date}` is the current system datetime.
+- `{active_initiative}` is the value printed by `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key modules.bmm.active_initiative`, read once before step 1. When it is unset, drop `/{active_initiative}` from every path.
 
 ## On Activation
 

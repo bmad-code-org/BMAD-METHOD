@@ -17,12 +17,12 @@ Read this when the question is about `bmad-code-review`, `bmad-walkthrough`, `bm
 **`bmad-walkthrough`** — the human reviews a change block by block, at their own pace, with the agent as guide.
 - Pick when: a person needs to understand and accept a change, after a build or for someone else's PR. It orders attention: intent first, then the broad strokes, then details.
 - Not when: the user wants an automated bug hunt → `bmad-code-review`.
-- Writes: a review narrative and a review log under `{implementation_artifacts}`.
+- Writes: `{output_folder}/{active_initiative}/walkthrough-<slug>/` holding `walkthrough-<slug>.md` and `walkthrough-<slug>-log.md`.
 
 **`bmad-qa-generate-e2e-tests`** — generates API and end-to-end tests for features that already exist.
 - Pick when: the project has a UI or API with little end-to-end coverage. It covers the happy path plus one or two error cases and runs the tests until they pass.
 - Not when: the user wants unit tests for work in flight (`bmad-build` writes and runs tests for the edge cases its plan lists; ask for more in the build request), a review, or a test strategy (the Test Architect module covers that).
-- Writes: tests under `{project-root}/tests`, summary at `{implementation_artifacts}/tests/test-summary.md`.
+- Writes: tests under `{project-root}/tests`, summary at `{output_folder}/{active_initiative}/test-summary-<slug>/test-summary-<slug>.md`. With no initiative active, this and the walkthrough folder go in `{output_folder}/`.
 
 **`bmad-retrospective`** — judges a finished epic folder in the ticket tree as a whole against the epic's Done when and the initiative's requirements.
 - Gives: sourced findings no single session could see (architecture drift, duplication, spec versus built), owned action items, and a verdict: accepted, accepted with open items, or rejected.

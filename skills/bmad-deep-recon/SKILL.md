@@ -42,7 +42,9 @@ Three services, freely combined — each detailed in its reference: **Draft** a 
    - Any other failure: read `{skill-root}/customize.toml` and use defaults.
 
    Run `{workflow.activation_steps_prepend}`, then `{workflow.activation_steps_append}`.
-2. Resolve config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}`. From the merged JSON resolve `{project_name}`, `{output_folder}` (under `core`), `{planning_artifacts}` (under `modules.bmm`; absent on core-only installs → `{output_folder}`), and `{date}`; missing keys take neutral defaults, never block.
+2. Resolve config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder --key modules.bmm.active_initiative`. `{date}` is the current system datetime.
+   - Script not found, or no `output_folder`: BMad is not set up here. Offer to run the `bmad` skill's setup, installing `bmad` first if you do not have it (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run the command again.
+   - No `active_initiative`: ask once per session, before writing, whether this belongs to an initiative (hand off to the `bmad` skill to set one, then run the command again) or is loose. Loose work drops `/{active_initiative}` from every path.
 3. Headless (no interactive user) → see `## Headless Mode`. Otherwise greet the user.
 4. Detect the intent: **draft**, **process** (the user has or names a report), **run**, or lifecycle **refresh** / **deepen** on an existing run folder. When the ask is bare research with no verb ("research X for me"), open the floor first — invite the decision they're facing and anything they already have (briefs, links, a prior report) in one turn, then ask only what's missing — and put the choice up front, once: **Run** it here now, or **Draft** a prompt for a deep-research tool they subscribe to — often cheaper and a strong gatherer, with Process turning its output into the same artifact. State the trade honestly (tokens and minutes here vs. one manual round-trip there); their call, remembered for the session.
 5. If a run folder for this topic already exists under `{workflow.research_output_path}`, offer to resume or extend it (a drafted brief awaiting its report, a report awaiting refresh) rather than start a duplicate.
@@ -57,7 +59,7 @@ Orthogonal to type is the **decision shape**: **explore** (the default — under
 
 ## Intents
 
-Route on the detected intent and load only what it names. Every intent shares the run-folder workspace shape — `brief.md`, `imports/`, `digests/`, `research.md`, `.memlog.md` — and ends per `references/finalize.md`.
+Route on the detected intent and load only what it names. Every intent shares the run-folder workspace shape — `brief.md`, `imports/`, `digests/`, the main file, `<folder name>.md`, `.memlog.md` — and ends per `references/finalize.md`.
 
 | Intent | What it does | Load |
 | --- | --- | --- |
@@ -75,7 +77,7 @@ When invoked headless, do not ask. Bare research defaults to **run**; a named re
   "status": "complete",
   "intent": "run",
   "type": "market",
-  "report": "{doc_workspace}/research.md",
+  "report": "{doc_workspace}/<folder name>.md",
   "memlog": "{doc_workspace}/.memlog.md",
   "claims": {"verified": 12, "unverified": 3, "overturned": 0},
   "open_questions": [],

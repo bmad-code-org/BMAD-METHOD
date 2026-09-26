@@ -43,13 +43,14 @@ target = """
     archive-v6/                     # epics.md, sprint-status.yaml, and epic-N-context.md caches, unchanged
     migration-v6-v7/migration-v6-v7.md  # the plan, its answers, and the verification record
   backlog/                          # loose tickets with no epic, flat: story-, spike-, bug-<slug>.md
-  inbox/                            # work with no home yet: the default space when no initiative is active
+  <type>-<slug>/                    # loose work written with no initiative active: a brainstorm, research, a forged idea
+  inbox/                            # v6 work with no home yet
     space.md                        # its identity; nothing else is required
     intent-<slug>.md                # a loose intent, until it becomes a ticket, an epic, or an initiative
-    brainstorming-<slug>/           # a new artifact folder, in the usual shape
+    brainstorm-<slug>/              # a new artifact folder, in the usual shape
     brainstorming/                  # an unrelated v6 folder moved here as it was; the user tidies it if they care
     archive-v6/                     # dead scraps with nothing beside them: a half-run, a stray memlog
-Every entry at the root says what it is: an `initiative-` or `epic-` folder, `backlog/` (or `backlog-<slug>/` when there are several), or a space with its identity file. Anything else at the root is unrecognized: the plan offers it inbox, and declined it is left alone, never broken. Inside a folder the migration creates, every folder holds a file with exactly its name, the main file or a router naming the files beside it, with `type`, `title`, `created`, and `status` where the ticketing rules give one (a container has none until work starts) in frontmatter. No file or folder name the migration writes carries a number or a date, apart from its own two: `migration-v6-v7/` and `archive-v6/`, which name the versions and are not artifact folders; a date lives in `created`. An epic leaf's identity is its entry id, joined by numeric `ticket` in its plan; a backlog plan joins its leaf file stem.
+Every entry at the root says what it is: an `initiative-` or `epic-` folder, `backlog/` (or `backlog-<slug>/` when there are several), a space with its identity file, or a loose `<type>-<slug>/` folder holding its same-named file. Anything else at the root is unrecognized: the plan offers it inbox, and declined it is left alone, never broken. Inside a folder the migration creates, every folder holds a file with exactly its name, the main file or a router naming the files beside it, with `type`, `title`, `created`, and `status` where the ticketing rules give one (a container has none until work starts) in frontmatter. No file or folder name the migration writes carries a number or a date, apart from its own two: `migration-v6-v7/` and `archive-v6/`, which name the versions and are not artifact folders; a date lives in `created`. An epic leaf's identity is its entry id, joined by numeric `ticket` in its plan; a backlog plan joins its leaf file stem.
 """
 
 # Asked together at the plan step, after the inventory and before anything is written. Only a question the
@@ -99,7 +100,7 @@ For documents that join the initiative. Move, never copy: v6 skills that wrote t
 | `ux-designs/ux-<name>-<date>/DESIGN.md`, `EXPERIENCE.md`, mocks | `ux-<name>/` keeps every file as is, plus `ux-<name>.md`: frontmatter and a short list saying what each file is |
 | `architecture/architecture-<name>-<date>/ARCHITECTURE-SPINE.md` and siblings | `architecture-<name>/architecture-<name>.md`; siblings keep their names, the main file lists them |
 | `specs/spec-<slug>/SPEC.md` and companions | `spec-<slug>/spec-<slug>.md`; companions unchanged; every `companions:` path and every cross-reference rewritten to the new locations |
-| `brainstorming/brainstorming-<topic>-<date>.md` the PRD or brief names as input | `brainstorming-<topic>/brainstorming-<topic>.md` |
+| `brainstorming/brainstorming-<topic>-<date>.md` the PRD or brief names as input | `brainstorm-<topic>/brainstorm-<topic>.md` |
 | `sprint-change-proposal-<date>.md` | `change-<slug>/change-<slug>.md`, slug from its title |
 | Any other file a skill wrote | `<type>-<slug>/<type>-<slug>.md`, the type from its frontmatter or its name; when neither says, ask |
 | A sharded document (`<name>/index.md` plus sections) | `<type>-<name>/<type>-<name>.md` is the old `index.md`, sections unchanged beside it |
@@ -142,7 +143,7 @@ A `spec-<slug>/` that holds `stories.yaml` and `stories/` represents a planned b
 
 ## Loose implementation files
 
-`spec-<slug>.md` files in the implementation folder with no epic and no story number were single `bmad-build` runs. For tracked standalone work, write `backlog/story-<slug>.md` (or `bug-<slug>.md` for a bug) with its original intent and criteria. Move the build record beside it as `<type>-<slug>-plan.md`; its `ticket` is the leaf file stem, its status is mapped, and its build type and baseline follow the rules above. Keep status in the plan. A standalone intent can also remain direct build input without entering the tree; do not create an epic for it. When the user identifies an existing epic, use that epic's numeric entry join instead. `deferred-work.md` moves to the initiative folder as `deferred-work/deferred-work.md`. Walkthrough logs, test summaries, and other evidence follow the planning-document rule in the epic they concern, else the initiative.
+`spec-<slug>.md` files in the implementation folder with no epic and no story number were single `bmad-build` runs. For tracked standalone work, write `backlog/story-<slug>.md` (or `bug-<slug>.md` for a bug) with its original intent and criteria. Move the build record beside it as `<type>-<slug>-plan.md`; its `ticket` is the leaf file stem, its status is mapped, and its build type and baseline follow the rules above. Keep status in the plan. A standalone intent can also remain direct build input without entering the tree; do not create an epic for it. When the user identifies an existing epic, use that epic's numeric entry join instead. `deferred-work.md` moves to the initiative folder unchanged, where the build and code review append to it. Walkthrough logs, test summaries, and other evidence follow the planning-document rule in the epic they concern, else the initiative.
 
 ## Configuration
 
@@ -177,7 +178,7 @@ The root `AGENTS.md` for any of these is step 8's `bmad-project-context` run. Th
 checklist = [
   "Every file that was under the v6 planning and implementation folders is now under an initiative, `backlog/`, `inbox/`, or `archive-v6/`, or is listed in the plan as left in place.",
   "Every created artifact folder holds a same-named main file; `backlog/`, spaces, and `archive-v6/` follow their own tree rules. Retrospectives are directly in their epic, carry `epic` and only an evidenced verdict, and have no ticket or leaf type.",
-  "Every entry at the store root is an `initiative-` or `epic-` folder, `backlog/` or `backlog-<slug>/`, a space with its identity file, or a remnant the plan lists as left alone.",
+  "Every entry at the store root is an `initiative-` or `epic-` folder, `backlog/` or `backlog-<slug>/`, a space with its identity file, a loose `<type>-<slug>/` folder with its same-named file, or a remnant the plan lists as left alone.",
   "`uv run <project-root>/_bmad/method/scripts/tickets.py --project-root <project-root> status <initiative folder>` exits 0 for every initiative; mapped counts match archived classic and spec tracking sources, excluding epic and retrospective keys. Verify standalone backlog counts separately.",
   "Every classic or spec story is one entry, every build record is one joined plan, and no epic story files were manufactured. `find` returns each expected plan; epic joins are numeric and backlog joins are file stems.",
   "Every migrated plan has a build type and mapped status; completed plans stay done, review stays in-review, and no historical record is relabeled built. Baselines are preserved when supported and missing ones are disclosed.",

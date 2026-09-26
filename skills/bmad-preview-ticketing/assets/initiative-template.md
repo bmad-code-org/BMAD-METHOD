@@ -96,7 +96,7 @@ The web store's checkout flow, the payment-provider integration, and guest check
 
 - spec — _bmad-output/initiative-checkout/spec-checkout/spec-checkout.md
 - constraint — the same spec, section Constraints, PCI scope and response time
-- prd — _bmad-output/initiative-checkout/prd-checkout-2026-07-02/prd.md, for history only
+- prd — _bmad-output/initiative-checkout/prd-checkout/prd-checkout.md, for history only
 
 ## Notes
 

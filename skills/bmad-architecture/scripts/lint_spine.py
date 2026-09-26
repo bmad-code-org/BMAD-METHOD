@@ -8,7 +8,7 @@ LLMs miscount IDs and miss literal placeholders; a grep does not. This linter ow
 checks a script does better than a prompt, and leaves the semantic half (is each Rule
 actually enforceable? does the boundary make sense?) to the rubric walker.
 
-It reads ARCHITECTURE-SPINE.md from a workspace and reports, as compact JSON on stdout:
+It reads the spine, `<folder name>.md`, from a workspace and reports, as compact JSON on stdout:
 
   - placeholder    literal TBD / TODO / "similar to AD-n" / unfilled {template-token}
   - ad_id          duplicate or non-monotonic AD-n identifiers
@@ -29,8 +29,6 @@ import json
 import re
 import sys
 from pathlib import Path
-
-SPINE = "ARCHITECTURE-SPINE.md"
 
 AD_HEADING = re.compile(r"^#{2,4}\s*AD-(\d+)\b(.*)$", re.MULTILINE)
 HEADING = re.compile(r"^#{1,6}\s", re.MULTILINE)
@@ -68,7 +66,7 @@ def line_of(text: str, idx: int) -> int:
     return text.count("\n", 0, idx) + 1
 
 
-def find_placeholders(body: str, offset: int) -> list[dict]:
+def find_placeholders(body: str, offset: int, name: str) -> list[dict]:
     findings: list[dict] = []
     scan = blank_fences(body)
     # (regex, label, severity) — TBD/TODO and dangling cross-refs are unambiguous; a bare
@@ -85,13 +83,13 @@ def find_placeholders(body: str, offset: int) -> list[dict]:
                     "category": "placeholder",
                     "severity": severity,
                     "detail": f"{label}: {m.group(0)!r}",
-                    "location": f"{SPINE} (line {offset + line_of(scan, m.start())})",
+                    "location": f"{name} (line {offset + line_of(scan, m.start())})",
                 }
             )
     return findings
 
 
-def find_frontmatter_placeholders(frontmatter: str) -> list[dict]:
+def find_frontmatter_placeholders(frontmatter: str, name: str) -> list[dict]:
     """Catch unfilled tokens left in frontmatter (e.g. paradigm/scope/date) — part of the
     spine contract, but outside the body that find_placeholders scans."""
     findings: list[dict] = []
@@ -105,13 +103,13 @@ def find_frontmatter_placeholders(frontmatter: str) -> list[dict]:
                     "category": "placeholder",
                     "severity": severity,
                     "detail": f"frontmatter {label}: {m.group(0)!r}",
-                    "location": f"{SPINE} frontmatter (line {1 + line_of(frontmatter, m.start())})",
+                    "location": f"{name} frontmatter (line {1 + line_of(frontmatter, m.start())})",
                 }
             )
     return findings
 
 
-def find_ad_issues(body: str, offset: int) -> list[dict]:
+def find_ad_issues(body: str, offset: int, name: str) -> list[dict]:
     findings: list[dict] = []
     scan = blank_fences(body)  # AD headings shown inside a code fence are not live ADs
     matches = list(AD_HEADING.finditer(scan))
@@ -120,7 +118,7 @@ def find_ad_issues(body: str, offset: int) -> list[dict]:
     for m in matches:
         num = int(m.group(1))
         file_line = offset + line_of(scan, m.start())
-        loc = f"{SPINE} AD-{num} (line {file_line})"
+        loc = f"{name} AD-{num} (line {file_line})"
         if num in seen:
             findings.append(
                 {
@@ -161,7 +159,7 @@ def find_ad_issues(body: str, offset: int) -> list[dict]:
     return findings
 
 
-def find_unpinned_stack(body: str, offset: int) -> list[dict]:
+def find_unpinned_stack(body: str, offset: int, name: str) -> list[dict]:
     """Flag a `## Stack` table row that names something but leaves its version blank or a
     placeholder. Pinning lives in the body table now, not frontmatter. A row whose name is
     still a `{token}` skeleton is left to the placeholder pass, not double-reported here.
@@ -205,7 +203,7 @@ def find_unpinned_stack(body: str, offset: int) -> list[dict]:
                     "category": "version_pin",
                     "severity": "medium",
                     "detail": f"Stack entry {name!r} has no version",
-                    "location": f"{SPINE} (line {offset + i + 1})",
+                    "location": f"{name} (line {offset + i + 1})",
                 }
             )
     return findings
@@ -221,19 +219,19 @@ def _table_cells(row: str) -> list[str]:
     return [c.strip() for c in s.split("|")]
 
 
-def lint(text: str) -> dict:
+def lint(text: str, name: str = "spine") -> dict:
     frontmatter, body, offset = split_frontmatter(text)
     findings: list[dict] = []
-    findings += find_frontmatter_placeholders(frontmatter)
-    findings += find_placeholders(body, offset)
-    findings += find_ad_issues(body, offset)
-    findings += find_unpinned_stack(body, offset)
+    findings += find_frontmatter_placeholders(frontmatter, name)
+    findings += find_placeholders(body, offset, name)
+    findings += find_ad_issues(body, offset, name)
+    findings += find_unpinned_stack(body, offset, name)
     counts: dict[str, int] = {}
     for f in findings:
         counts[f["severity"]] = counts.get(f["severity"], 0) + 1
     return {
         "ok": len(findings) == 0,
-        "spine": SPINE,
+        "spine": name,
         "total_findings": len(findings),
         "by_severity": counts,
         "findings": findings,
@@ -242,11 +240,12 @@ def lint(text: str) -> dict:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Lint an architecture spine for mechanical integrity.")
-    ap.add_argument("--workspace", required=True, help="run folder containing ARCHITECTURE-SPINE.md")
+    ap.add_argument("--workspace", required=True, help="run folder containing the spine, named after the folder")
     ap.add_argument("-o", "--output", help="write JSON here instead of stdout")
     args = ap.parse_args(argv)
 
-    spine_path = Path(args.workspace) / SPINE
+    workspace = Path(args.workspace).resolve()
+    spine_path = workspace / f"{workspace.name}.md"
     if not spine_path.exists():
         result = {"ok": False, "error": f"{spine_path} not found", "findings": [], "total_findings": 0}
     else:
@@ -256,7 +255,7 @@ def main(argv: list[str] | None = None) -> int:
             # honor the "exit code is always 0" contract: a read/decode failure travels in JSON
             result = {"ok": False, "error": f"could not read {spine_path}: {e}", "findings": [], "total_findings": 0}
         else:
-            result = lint(text)
+            result = lint(text, spine_path.name)
 
     out = json.dumps(result, indent=2)
     if args.output:

@@ -254,9 +254,17 @@ def test_frontmatter_tbd_caught():
     )
 
 
+def test_findings_name_the_folder_named_spine(tmp_path, capsys):
+    (tmp_path / f"{tmp_path.name}.md").write_text("---\nname: 'x'\n---\n\nTBD here\n", encoding="utf-8")
+    rc = lint_spine.main(["--workspace", str(tmp_path)])
+    out = json.loads(capsys.readouterr().out)
+    assert rc == 0 and out["spine"] == f"{tmp_path.name}.md"
+    assert out["findings"][0]["location"].startswith(f"{tmp_path.name}.md ")
+
+
 def test_unreadable_spine_returns_error_not_crash(tmp_path, capsys):
     # a spine that exists but can't be UTF-8 decoded must yield error JSON + exit 0, not a traceback
-    (tmp_path / lint_spine.SPINE).write_bytes(b"\xff\xfe bad bytes not utf-8")
+    (tmp_path / f"{tmp_path.name}.md").write_bytes(b"\xff\xfe bad bytes not utf-8")
     rc = lint_spine.main(["--workspace", str(tmp_path)])
     out = json.loads(capsys.readouterr().out)
     assert rc == 0 and out["ok"] is False and "could not read" in out["error"]

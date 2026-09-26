@@ -99,7 +99,7 @@ The cart UI. Not the pricing service (epic Pricing rules), not tax (epic Tax and
 
 ## References
 
-- prd — _bmad-output/initiative-checkout/prd-checkout-2026-07-02/prd.md, sections Capabilities and Constraints
+- prd — _bmad-output/initiative-checkout/prd-checkout/prd-checkout.md, sections Capabilities and Constraints
 - design — https://figma.com/design/ab12cd/checkout, frame Cart
 
 ## Notes

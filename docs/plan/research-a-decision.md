@@ -18,7 +18,7 @@ recommends. It is not only for software. Any decision that should rest on
 evidence is in scope.
 
 Completed research, whether Deep Recon ran it or processed a report from
-elsewhere, ends as a cited `research.md` that a PRD or product brief can read
+elsewhere, ends as a cited `research-<topic>.md` that a PRD or product brief can read
 without reprocessing the original. Draft mode produces only a research prompt
 for you to run in another tool; the report comes when you bring the result
 back through Process. See
@@ -92,8 +92,8 @@ freshness window is reported as history, not fact.
 
 ## Keep Research Current
 
-Each run gets a folder under your planning artifacts: the original imports,
-the extracted notes, and `research.md`. The report names which claims age
+Each run gets a `research-<topic>/` folder in the active initiative's folder:
+the original imports, the extracted notes, and `research-<topic>.md`. The report names which claims age
 fastest. **Refresh** re-checks only those claims and records what changed.
 **Deepen** drills into one area without re-running the rest.
 

@@ -1,6 +1,6 @@
 # Headless JSON Response
 
-The default invocation is headless: input goes in, JSON comes out. The contract is intentionally tiny — return the outcome and the files touched. Anything else a caller needs is inside those files (SPEC.md, companions, `.memlog.md`).
+The default invocation is headless: input goes in, JSON comes out. The contract is intentionally tiny — return the outcome and the files touched. Anything else a caller needs is inside those files (spec-{slug}.md, companions, `.memlog.md`).
 
 ## Success
 
@@ -8,9 +8,9 @@ The default invocation is headless: input goes in, JSON comes out. The contract 
 {
   "status": "complete",
   "files": [
-    "_bmad-output/specs/spec-quarter-drop/SPEC.md",
-    "_bmad-output/specs/spec-quarter-drop/glossary.md",
-    "_bmad-output/specs/spec-quarter-drop/.memlog.md"
+    "_bmad-output/initiative-quarter-drop/spec-quarter-drop/spec-quarter-drop.md",
+    "_bmad-output/initiative-quarter-drop/spec-quarter-drop/glossary.md",
+    "_bmad-output/initiative-quarter-drop/spec-quarter-drop/.memlog.md"
   ]
 }
 ```

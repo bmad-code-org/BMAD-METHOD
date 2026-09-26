@@ -169,7 +169,7 @@ code = "RC"
 description = "Run compliance pre-check"
 prompt = """
 Read {project-root}/_bmad/custom/compliance-checklist.md
-and scan all documents in {planning_artifacts} against it.
+and scan all documents in {output_folder}/{active_initiative} against it.
 """
 ```
 
@@ -331,14 +331,14 @@ icon = "🖖"
 description = "Bold, rule-bending commander. Speaks in dramatic pauses."
 ```
 
-**Override a module install setting.** The override wins over whatever
-each developer answered at install:
+**Override an install setting.** The override wins over whatever each
+developer has in their own config:
 
 ```toml
 # _bmad/custom/config.toml
 
-[modules.bmm]
-planning_artifacts = "/shared/org-planning-artifacts"
+[core]
+output_folder = "/shared/org-bmad-output"
 ```
 
 **Which surface to use:**

@@ -47,7 +47,7 @@ Activation is complete after all activation steps have run.
 | epic | invocation argument — an epic folder, or an epic id or slug in the active initiative — or chosen from the offer below | which epic to retro |
 | epic folder | `tickets.toml`, the epic file `epic-<slug>.md` (the folder's name plus `.md`), one `<type>-<slug>-plan.md` per ticket, and a story file where a ticket was refined | the record the epic left |
 | initiative file | the epic folder's parent's same-named file, section Requirements | what each ticket's `covers` points at |
-| architecture / prd | `{{ config.planning_artifacts }}/*architecture*`, `*prd*` | context for judging as-built vs intended |
+| architecture / prd | `architecture-*/architecture-*.md` and `prd-*/prd-*.md` in the initiative folder (the epic folder's parent) | context for judging as-built vs intended |
 | previous retro (optional) | `<folder name>-retrospective.md` in the previous epic's folder: run `status` with no folder for the `epics` order; the previous epic's folder is the sibling folder of that name | check whether last epic's actions landed |
 | session logs (optional) | conversation/session records for the epic's tickets | process lessons; record the gap when absent |
 

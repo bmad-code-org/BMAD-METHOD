@@ -15,7 +15,7 @@
         "create-prd"
       ],
       "is-required": false,
-      "output-location": "{planning_artifacts}"
+      "output-location": "{output_folder}/{active_initiative}"
     }
   ]
 }

@@ -120,7 +120,13 @@ class StalenessTest(unittest.TestCase):
 class SlugTest(unittest.TestCase):
     def test_deterministic_folder(self):
         self.assertEqual(slugify("Créme Brûlée: AI Tools!"), "creme-brulee-ai-tools")
-        code, result = run(["slug", "SMB Accounting SaaS", "--type", "market", "--date", "2026-07-22"])
+        code, result = run(["slug", "SMB Accounting SaaS", "--type", "market"])
+        self.assertEqual(result["folder"], "research-smb-accounting-saas")
+        self.assertEqual(code, 0)
+        pattern = "{research_type}-{topic_slug}-{date}"
+        code, result = run(
+            ["slug", "SMB Accounting SaaS", "--type", "market", "--date", "2026-07-22", "--pattern", pattern]
+        )
         self.assertEqual(result["folder"], "market-smb-accounting-saas-2026-07-22")
         self.assertEqual(code, 0)
 

@@ -43,7 +43,7 @@ on_complete = ""
 prd_template = "assets/prd-template.md"
 
 # PRD quality rubric used at the Validate intent and at Finalize step 3.
-# A subagent walks the rubric against prd.md and writes a substantive review
+# A subagent walks the rubric against the PRD and writes a substantive review
 # organized by quality dimensions (decision-readiness, substance, strategic
 # coherence, etc.). Override the path in team/user TOML to enforce an
 # org-specific rubric (regulated-industry compliance, investor-pitch standards,
@@ -59,11 +59,11 @@ validation_checklist_template = "assets/prd-validation-checklist.md"
 # collapse — no JS.
 validation_report_template = "assets/validation-report-template.html"
 
-# Run folder location. The PRD, optional addendum, memlog, and optional
+# Run folder location. The PRD (`{run_folder_pattern}.md`), optional addendum, memlog, and optional
 # validation report all land inside `{prd_output_path}/{run_folder_pattern}/`.
 # Resume-check scans `{prd_output_path}` for prior unfinished runs.
-prd_output_path = "{planning_artifacts}/prds"
-run_folder_pattern = "prd-{project_name}-{date}"
+prd_output_path = "{output_folder}/{active_initiative}"
+run_folder_pattern = "prd-{slug}"
 
 # Document standards applied to human-consumed docs at finalize. Each entry is
 # a `skill:`, `file:`, or plain-text directive; the parent LLM applies the
@@ -121,7 +121,7 @@ external_sources = []
 # Fired once at Finalize step 6, never during Discovery or drafting.
 #
 # Examples (set in team/user override TOML):
-#   "After finalize, upload prd.md and addendum.md to Confluence via corp:confluence_upload (space_key='PROD', parent_page='PRDs', label='prd')."
+#   "After finalize, upload the PRD and addendum.md to Confluence via corp:confluence_upload (space_key='PROD', parent_page='PRDs', label='prd')."
 #   "Mirror the PRD to Notion via notion:create_page (database_id='abc123', title='PRD: '+{project_name})."
 #   "When the PRD references a parent initiative, link via corp:jira_link on the epic key in frontmatter."
 external_handoffs = []
@@ -136,9 +136,9 @@ external_handoffs = []
 #
 # Entries follow the standard prefix convention (same as persistent_facts and
 # doc_standards):
-#   "skill:NAME"   invoke the named review skill as a subagent against prd.md
+#   "skill:NAME"   invoke the named review skill as a subagent against the PRD
 #   "file:PATH"    load the file as a review prompt; spawn an adversarial
-#                  subagent applying that prompt to prd.md
+#                  subagent applying that prompt to the PRD
 #   plain text     use the text directly as the subagent's review prompt
 #
 # Override TOML may append additional reviewers. Arrays append per BMad rules.

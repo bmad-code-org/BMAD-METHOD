@@ -28,10 +28,6 @@ MINIMAL_CONFIG = """\
 project_name = "{directory_name}"
 output_folder = "{project-root}/_bmad-output"
 
-[modules.bmm]
-planning_artifacts = "{project-root}/_bmad-output/planning-artifacts"
-implementation_artifacts = "{project-root}/_bmad-output/implementation-artifacts"
-
 [agents.bmad-agent-pm]
 module = "bmm"
 team = "software-development"
@@ -1618,14 +1614,7 @@ class BmadSetupTests(unittest.TestCase):
             .read_text(encoding="utf-8")
             .replace("{directory_name}", project_name)
         )
-        self.assertEqual(
-            parsed["modules"]["bmm"]["planning_artifacts"],
-            "{project-root}/_bmad-output/planning-artifacts",
-        )
-        self.assertEqual(
-            parsed["modules"]["bmm"]["implementation_artifacts"],
-            "{project-root}/_bmad-output/implementation-artifacts",
-        )
+        self.assertEqual(parsed["core"]["output_folder"], expected["core"]["output_folder"])
         self.assertEqual(set(parsed["agents"]), set(expected["agents"]))
         for code, expected_agent in expected["agents"].items():
             got = parsed["agents"][code]
@@ -1649,7 +1638,7 @@ class BmadSetupTests(unittest.TestCase):
         self.assertEqual(parsed["core"]["output_folder"], "{project-root}/_bmad-output")
         self.assertNotIn("user_name", parsed["core"])
         self.assertNotIn("communication_language", parsed["core"])
-        self.assertNotIn("user_skill_level", parsed["modules"]["bmm"])
+        self.assertNotIn("user_skill_level", parsed.get("modules", {}).get("bmm", {}))
         self._assert_team_tables_match_template(parsed, skill, project_name)
 
         self.assertFalse((bmad / "core" / "config.yaml").exists())
@@ -2937,7 +2926,9 @@ class BmadStatusTests(unittest.TestCase):
 
             write(
                 skill / "assets" / "config.template.toml",
-                MINIMAL_CONFIG.replace("[modules.bmm]", 'review_language = "English"\n\n[modules.bmm]'),
+                MINIMAL_CONFIG.replace(
+                    "[agents.bmad-agent-pm]", 'review_language = "English"\n\n[agents.bmad-agent-pm]'
+                ),
             )
             owed = status_report(self, project, skill)
             self.assertEqual(owed["next"], "bmad setup")

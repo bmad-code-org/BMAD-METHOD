@@ -69,8 +69,8 @@ cases, no hardcoded waits, descriptions that read as feature documentation.
 ## What You Get
 
 - Test files under the project's `tests/` directory
-- A test summary at `tests/test-summary.md` in your implementation artifacts
-  directory
+- A test summary at `test-summary-<slug>/test-summary-<slug>.md` in the
+  active initiative's folder
 - Tests that were run once in this session and made to pass
 
 ## Limits

@@ -50,7 +50,7 @@ into a concrete goal.
 
 ```text
 /bmad-build Implement the intent in
-_bmad-output/implementation-artifacts/my-intent.md.
+_bmad-output/initiative-checkout/my-intent.md.
 ```
 
 ```text
@@ -82,7 +82,7 @@ Refactor UserService to use async/await instead of callbacks.
 ### 3. Resolve Intent from Evidence
 
 `bmad-build` starts from your request and investigates the codebase and any
-upstream planning artifacts before deciding whether anything material is still
+upstream planning documents before deciding whether anything material is still
 missing. The input can start rough; clear, evidence-supported requests proceed
 without a clarification turn. When something is unclear, it looks for evidence
 first — only what the repository and planning context cannot settle becomes an
@@ -145,7 +145,7 @@ different approach.
 - Passing tests (if your project has a test suite)
 - A ready-to-push commit with a conventional commit message
 - A plan recording the run: beside the epic's `tickets.toml` for a ticket,
-  otherwise `plan-<slug>.md` in your implementation artifacts directory. It
+  otherwise `plan-<slug>.md` in the active initiative's folder. It
   carries the ticket's status, which the build leaves at `built` until you mark
   the ticket done
 
@@ -156,8 +156,8 @@ For generated API and end-to-end coverage of the finished work, see
 
 Each run stays focused on one goal. If your request contains several independent
 goals, or review finds pre-existing issues unrelated to your change,
-`bmad-build` writes them to `deferred-work.md` in your implementation artifacts
-directory instead of trying to do everything at once.
+`bmad-build` writes them to `deferred-work.md` in the active initiative's
+folder instead of trying to do everything at once.
 
 Check that file after a run — it is a backlog of follow-ups. You can feed each
 item into a fresh `bmad-build` run later.

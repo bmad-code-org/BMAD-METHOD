@@ -95,7 +95,7 @@ The agent then stays out of repos that have nothing to do with the current work,
 
 ## Bring Existing Planning Documents
 
-If you already have a brief, PRD, UX design, or architecture, copy them into the initiative folder. The current skills each write to their own folder. The store keeps everything for one initiative together, each document as `<type>-<slug>/<type>-<slug>.md`:
+The planning skills write into the active initiative's folder, each document as `<type>-<slug>/<type>-<slug>.md`. If you already have a brief, PRD, UX design, or architecture from v6's planning folder, copy them in the same way:
 
 ```
 _bmad-output/planning-artifacts/brief.md         → initiative-checkout/brief-checkout/brief-checkout.md
@@ -105,7 +105,7 @@ _bmad-output/planning-artifacts/EXPERIENCE.md    → initiative-checkout/ux-chec
 _bmad-output/planning-artifacts/architecture.md  → initiative-checkout/architecture-checkout/architecture-checkout.md
 ```
 
-UX is the exception to the naming: `bmad-ux` writes two peer documents, `DESIGN.md` and `EXPERIENCE.md`, and both keep their names inside the `ux-<slug>` folder. Your source paths will differ.
+UX is the exception to the naming: `bmad-ux` writes two peer documents, `DESIGN.md` and `EXPERIENCE.md`, which keep their names inside the `ux-<slug>` folder beside a short `ux-<slug>.md` that names them. Your source paths will differ.
 
 ## Configure Where Tickets Are Tracked
 

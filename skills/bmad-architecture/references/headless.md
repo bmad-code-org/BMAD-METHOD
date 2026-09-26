@@ -13,7 +13,7 @@ End with JSON only, omitting keys for artifacts not produced — the shape below
   "altitude": "initiative | feature | epic",
   "purpose": "build-substrate | discussion",
   "doc_workspace": "<resolved run folder>",
-  "spine": "{doc_workspace}/ARCHITECTURE-SPINE.md",
+  "spine": "{doc_workspace}/<folder name>.md",
   "memlog": "{doc_workspace}/.memlog.md",
   "companions": [],
   "assumptions": [],

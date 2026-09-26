@@ -34,6 +34,7 @@ A plan should target a **single user-facing goal** within **900–1600 tokens**:
 
 - Every operational cross-file reference in this workflow is an absolute snapshot path. Open it directly; do not resolve it relative to a skill directory.
 - `{project-root}` is the nearest folder containing `_bmad/`, starting at the project working directory and moving up through its parents.
+- `{active_initiative}` is the value printed by `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key modules.bmm.active_initiative`, read once before step 1. When it is unset, drop `/{active_initiative}` from every path.
 - Whenever this workflow captures or records a version-control revision, obtain the full canonical identifier directly from version control and preserve it verbatim.
 
 ## On Activation

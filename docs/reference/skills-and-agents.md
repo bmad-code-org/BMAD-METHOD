@@ -130,19 +130,19 @@ Writes and verifies customization overrides for installed skills, so you can cha
 
 Facilitates a brainstorming session using proven creative techniques, guiding you toward 100 or more ideas before organizing them. It shifts creative domain periodically to prevent clustering.
 
-**Input:** a topic or problem statement, plus optional context. **Output:** a self-contained `brainstorm.html` keepsake and an optional `brainstorm-intent.md` for downstream skills. See [Explore and Validate an Idea](../plan/explore-and-validate-an-idea.md).
+**Input:** a topic or problem statement, plus optional context. **Output:** a self-contained `brainstorm.html` keepsake and an optional `brainstorm-<topic>.md` for downstream skills. See [Explore and Validate an Idea](../plan/explore-and-validate-an-idea.md).
 
 ### bmad-deep-recon
 
 Researches a topic to support a decision, three ways: drafts a research prompt for the tool you already use, turns a finished report into a cited summary other skills consume, or runs the research here with parallel web searches. Built-in types cover market, domain, technical, competitive, user-voice, and academic literature research, plus choosing between candidates.
 
-**Output:** a cited `research.md` and an optional HTML briefing. See [Research a Decision](../plan/research-a-decision.md).
+**Output:** a cited `research-<topic>.md` and an optional HTML briefing. See [Research a Decision](../plan/research-a-decision.md).
 
 ### bmad-forge-idea
 
 Pressure-tests a half-formed idea in a questioning conversation, one question at a time, with different personas probing its weak points, until you can act on it or drop it with confidence.
 
-**Output:** a `forge-report.html` keepsake every run, plus a `forged-idea.md` brief when the idea hardens. See [Explore and Validate an Idea](../plan/explore-and-validate-an-idea.md#pressure-test-an-idea-with-forge-idea).
+**Output:** a `forge-report.html` keepsake every run, plus a `forge-<slug>.md` brief when the idea hardens. See [Explore and Validate an Idea](../plan/explore-and-validate-an-idea.md#pressure-test-an-idea-with-forge-idea).
 
 ### bmad-party-mode
 

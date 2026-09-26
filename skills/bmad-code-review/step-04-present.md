@@ -1,5 +1,5 @@
 ---
-deferred_work_file: '{{ config.implementation_artifacts }}/deferred-work.md'
+deferred_work_file: '{{ config.output_folder }}/{active_initiative}/deferred-work.md'
 ---
 
 # Step 4: Present and Act
