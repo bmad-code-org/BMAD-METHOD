@@ -10,14 +10,16 @@ and the builds' plan files. An epic's `tickets.toml` lists its planned leaves as
 epics as `[[epic]]` tables (`id`, `slug`, `after = [{epic, needs}]`). Tables are in build order.
 `id` names an entry for good and is never reused; a leaf file carries it in frontmatter, which is
 how the file joins its entry. An entry needs no leaf file to start. A ticket needs refining before
-it starts only when its entry says `refine = true` or it has no entry. A leaf file's frontmatter
-adds `tracker_status`, `refined`, and `after` when present.
+it starts when it is a bug, its entry says `refine = true`, or it has no entry. A leaf file's frontmatter
+adds `tracker_status` and `refined`; its `after` and `hitl` replace the entry's, absent reading as empty,
+and a difference from the entry is `drift`.
 
 A plan is any other `.md` whose frontmatter has `ticket` and whose `type` is not a leaf type. An
 integer `ticket` joins the entry with that id in the plan's folder; a string joins the leaf file
 with that stem (a backlog leaf). A plan is never a row of its own. It holds the ticket's `status`,
 `assignee`, `blocked_at`, and `blocked_reason`; a leaf file's own fields are read only when the
-ticket has no plan.
+ticket has no plan. A plan whose `ticket` names nothing is skipped, and one whose `status` is unknown
+blocks its ticket; next and status list both under `problems`.
 
 `status` is draft, ready-for-dev, in-progress, in-review, or built from the builds (built is their
 last: the build finished and nobody has called it done), blocked from build-auto, done from the
@@ -38,7 +40,8 @@ ticket under it; rows show it as `gated_by`. A dropped prerequisite still blocks
   find   [<dir>] <ref>           the one ticket a reference names, with its entry's text fields and the
                                  absolute paths `epic_file`, `story_file` (null until pulled), and `plan`
                                  (where its plan is or goes)
-  pull   <dir> <id>              write entry id's leaf file with only the fields the entry sets; no status
+  pull   <dir> <id>              write entry id's leaf file: `after` and `hitl` always, other fields only
+                                 when the entry sets them; no status
   mark   [<dir>] <ref> <status> [--assignee <who>] [--blocked <reason>]
                                  set a ticket's status in its plan, creating a frontmatter-only plan when
                                  there is none; --blocked sets blocked_at and blocked_reason, else both are
@@ -48,7 +51,9 @@ ticket under it; rows show it as `gated_by`. A dropped prerequisite still blocks
 `<epic id>.<entry id>`, an entry id inside an epic folder, a tracker id, a file name, or words
 from the title that match one ticket. Each row of next, status, and find carries `ref`, a reference
 find resolves in the folder the command ran on.
-`--project-root` names the project holding `_bmad/` when the tickets live outside it.
+`--project-root` names the project holding `_bmad/` when the tickets live outside it. A relative
+`<dir>` that is not a folder under the working directory is looked up under `{tickets.root}`, then
+the project root.
 
 With no `<dir>`, next, status, find, and mark run on the active initiative, `{tickets.root}/{active_initiative}`.
 The project root is `--project-root`, else the first folder at or above the working directory that
@@ -237,7 +242,7 @@ def load_container(folder: Path) -> dict:
     }
 
 
-def load_folder(folder: Path) -> list[dict]:
+def load_folder(folder: Path, problems: list[str]) -> list[dict]:
     """One row per ticket in a folder, in build order: every breakdown entry, joined to its
     leaf file when one exists, then leaf files the breakdown does not list. Plans then set
     the status fields of the rows they join."""
@@ -263,7 +268,7 @@ def load_folder(folder: Path) -> list[dict]:
             "state": "planned",
             "assignee": "",
             "refined": False,
-            "refine": _flag(e.get("refine", False)),
+            "refine": kind == "bug" or _flag(e.get("refine", False)),
             "description": str(e.get("description", "")),
             "verify": str(e.get("verify", "")),
             "unknown": str(e.get("unknown", "")),
@@ -308,8 +313,9 @@ def load_folder(folder: Path) -> list[dict]:
                 stray.append(row)
             else:
                 unlisted[n] = row
-        elif "after" in fm:
+        else:
             row["entry_after"] = row["raw_after"]
+            row["entry_hitl"] = row["hitl"]
         row.update(
             {
                 "file": path.name,
@@ -321,24 +327,23 @@ def load_folder(folder: Path) -> list[dict]:
                 "state": tracker_status or STATE_OF[status],
                 "assignee": str(fm.get("assignee", "") or ""),
                 "refined": _flag(fm.get("refined", False)),
-                "hitl": _flag(fm.get("hitl", row.get("hitl", False))),
+                "refine": row["refine"] or fm.get("type") == "bug",
+                "hitl": _flag(fm.get("hitl", False)),
                 "covers": [str(c) for c in fm["covers"]] if isinstance(fm.get("covers"), list) else row["covers"],
                 "estimate": fm.get("estimate", row.get("estimate", "")),
                 "blocked_at": fm.get("blocked_at", ""),
                 "blocked_reason": str(fm.get("blocked_reason", "") or ""),
             }
         )
-        if "after" in fm:
-            row["raw_after"] = _list(fm["after"], f"{where}/{path.name}")
+        row["raw_after"] = _list(fm.get("after", []), f"{where}/{path.name}")
     out = list(rows.values()) + [unlisted[n] for n in sorted(unlisted)] + stray
-    join_plans(out, plans, where)
+    join_plans(out, plans, where, problems)
     return out
 
 
-def join_plans(rows: list[dict], plans: list[tuple[str, dict]], where: str) -> None:
-    """Set each plan's status fields on the one row its `ticket` names."""
+def join_plans(rows: list[dict], plans: list[tuple[str, dict]], where: str, problems: list[str]) -> None:
+    """Set each plan's status fields on the one row its `ticket` names; a bad plan is a problem, not an error."""
     for name, fm in plans:
-        status = _one_of(fm.get("status", ""), STATUSES, f"{where}/{name}", "status")
         ticket = fm["ticket"]
         if isinstance(ticket, str) and ticket.isascii() and ticket.isdigit():
             ticket = int(ticket)
@@ -349,16 +354,17 @@ def join_plans(rows: list[dict], plans: list[tuple[str, dict]], where: str) -> N
         else:
             row = None
         if row is None:
-            raise TicketError(f"{where}/{name}: ticket {ticket!r} names no entry or leaf file in {where}")
+            problems.append(f"{where}/{name}: ticket {ticket!r} names no entry or leaf file in {where}; skipped")
+            continue
         if "plan" in row:
             raise TicketError(f"{where}/{row['plan']} and {name} are both plans for ticket {ticket!r}")
-        row.update(
-            {
-                "plan": name,
-                "state": row["tracker_status"] or STATE_OF[status],
-                **{k: str(fm.get(k, "") or "") for k in PLAN_FIELDS},
-            }
-        )
+        fields = {k: str(fm.get(k, "") or "") for k in PLAN_FIELDS}
+        try:
+            _one_of(fields["status"], STATUSES, f"{where}/{name}", "status")
+        except TicketError as e:
+            problems.append(f"{e}; the ticket reads as blocked until the plan is fixed")
+            fields.update(status="blocked", blocked_reason=f"{name} has an unknown status {fields['status']!r}")
+        row.update({"plan": name, "state": row["tracker_status"] or STATE_OF[fields["status"]], **fields})
 
 
 def epic_folders(initiative: Path) -> list[Path]:
@@ -391,7 +397,8 @@ def load_tree(folder: Path) -> dict:
         if e["slug"] in epic_ids:
             raise TicketError(f"{initiative.name}/{BREAKDOWN}: two epics with slug {e['slug']}")
         epic_ids[e["slug"]] = e["id"]
-    tickets = [t for f in folders for t in load_folder(f)]
+    problems = []
+    tickets = [t for f in folders for t in load_folder(f, problems)]
     for t in tickets:
         t["key"] = f"{t['epic']}/{t['id']}" if t["id"] is not None else f"{t['epic']}/{t['file']}"
     tree = {
@@ -401,6 +408,7 @@ def load_tree(folder: Path) -> dict:
         "epic_ids": epic_ids,
         "containers": {f.name: load_container(f) for f in epics},
         "tickets": tickets,
+        "problems": problems,
     }
     _resolve(tree)
     _check_cycles(tickets, tree["containers"])
@@ -457,7 +465,10 @@ def _resolve(tree: dict) -> None:
         t["after"] = resolve(t, t.pop("raw_after"), where)
         planned = t.pop("entry_after")
         t["gated_by"] = []
-        t["drift"] = planned is not None and sorted(resolve(t, planned, where)) != sorted(t["after"])
+        entry_hitl = t.pop("entry_hitl", None)
+        t["drift"] = planned is not None and (
+            sorted(resolve(t, planned, where)) != sorted(t["after"]) or entry_hitl != t["hitl"]
+        )
     for slug, c in containers.items():
         gates = resolve({"epic": slug}, c.pop("raw_after"), f"{slug}.md")
         c["after"] = gates
@@ -670,6 +681,17 @@ def central_config(project_root: Path) -> dict:
         raise TicketError(str(e)) from e
 
 
+def tickets_root(project_root: Path, config: dict | None = None) -> Path:
+    """`{tickets.root}` for the project."""
+    config = central_config(project_root) if config is None else config
+    core = config.get("core", {})
+    output = str(core.get("output_folder", "") if isinstance(core, dict) else "")
+    output = output.replace("{project-root}", str(project_root))
+    root = str(store_config(project_root).get("root", "") or "{output_folder}")
+    root = root.replace("{project-root}", str(project_root)).replace("{output_folder}", output)
+    return project_root / root
+
+
 def active_initiative(project_root: Path) -> Path:
     """`{tickets.root}/{active_initiative}` for the project."""
     config = central_config(project_root)
@@ -679,12 +701,7 @@ def active_initiative(project_root: Path) -> Path:
         raise TicketError(
             "no active initiative: set modules.bmm.active_initiative in _bmad/custom/config.user.toml, or pass a folder"
         )
-    core = config.get("core", {})
-    output = str(core.get("output_folder", "") if isinstance(core, dict) else "")
-    output = output.replace("{project-root}", str(project_root))
-    root = str(store_config(project_root).get("root", "") or "{output_folder}")
-    root = root.replace("{project-root}", str(project_root)).replace("{output_folder}", output)
-    folder = (project_root / root / name.strip()).resolve()
+    folder = (tickets_root(project_root, config) / name.strip()).resolve()
     if not folder.is_dir():
         raise TicketError(f"active initiative folder not found: {folder}")
     return folder
@@ -702,6 +719,15 @@ def _folder(args) -> Path:
         args.project_root = str(root)
         return active_initiative(root)
     folder = Path(args.dir).resolve()
+    root = None if folder.is_dir() or Path(args.dir).is_absolute() else project_root_for(args, Path.cwd())
+    if root is not None:
+        try:
+            bases = [tickets_root(root), root]
+        except TicketError:  # no BMad config to name the store: the project root alone
+            bases = [root]
+        for base in bases:
+            if (base / args.dir).is_dir():
+                return (base / args.dir).resolve()
     if not folder.is_dir():
         raise TicketError(f"not a folder: {folder}")
     return folder
@@ -718,6 +744,7 @@ def cmd_next(args) -> dict:
         "store": store,
         **{k: [public(t, tree) for t in v] for k, v in classify(tree).items()},
         "unpinned_after": unpinned_after(tree),
+        **({"problems": tree["problems"]} if tree["problems"] else {}),
     }
 
 
@@ -739,6 +766,7 @@ def cmd_status(args) -> dict:
         "counts": {"total": len(tickets), **counts},
         "longest_remaining_chain": longest_remaining_chain(tree),
         "unpinned_after": unpinned_after(tree),
+        **({"problems": tree["problems"]} if tree["problems"] else {}),
     }
     if tree["scope"] is None:
         out["epics"] = [
@@ -859,8 +887,8 @@ def cmd_pull(args) -> dict:
         parent = Path(os.path.relpath(epic_file, root)).as_posix() if root else epic_file.as_posix()
     except ValueError:  # another drive on Windows
         parent = epic_file.as_posix()
-    notes = ([f"Open question: {t['unknown']}"] if t["unknown"] else []) + t["notes"]
-    # Empty and false fields are left out; absent reads the same and the file stays short.
+    notes = ([f"Unknown: {t['unknown']}"] if t["unknown"] else []) + t["notes"]
+    # Other empty fields are left out; `after` and `hitl` stay because `status` compares them with the entry.
     # No status: the build writes it when it starts.
     fields = [
         ("id", str(t["id"])),
@@ -868,9 +896,9 @@ def cmd_pull(args) -> dict:
         ("title", json.dumps(t["title"], ensure_ascii=False)),
         ("parent", t["epic"]),
         ("covers", f"[{', '.join(t['covers'])}]" if t["covers"] else ""),
-        ("after", f"[{', '.join(after)}]" if after else ""),
+        ("after", f"[{', '.join(after)}]"),
         ("refined", "false" if t["refine"] else ""),
-        ("hitl", "true" if t["hitl"] else ""),
+        ("hitl", "true" if t["hitl"] else "false"),
         ("risk", t["risk"]),
         ("estimate", json.dumps(str(t["estimate"])) if t["estimate"] != "" else ""),
     ]

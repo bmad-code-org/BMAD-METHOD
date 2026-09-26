@@ -352,6 +352,25 @@ covers = ["R2", "R3"]
         self.assertTrue(rows[1]["drift"])
         self.assertNotIn("drift", rows[0])
 
+    def test_a_leaf_file_without_after_or_hitl_reads_them_as_empty_and_flags_the_drift(self):
+        self.breakdown_epic()
+        self.add("story-ui-shell.md", '---\nid: 2\ntype: story\ntitle: "UI shell"\n---\n# UI shell\n')
+        self.add("spike-tax-engine.md", '---\nid: 3\ntype: spike\ntitle: "Tax engine?"\nafter: [1]\n---\n# Tax\n')
+        rows = {r["id"]: r for r in self.status_rows(self.epic)}
+        self.assertEqual((rows[2]["after"], rows[2]["drift"]), ([], True))
+        self.assertEqual((rows[3]["hitl"], rows[3]["drift"]), (False, True))
+        self.assertNotIn("drift", rows[1])
+
+    def test_a_pulled_leaf_matches_its_entry_until_the_entry_changes(self):
+        self.breakdown_epic()
+        for n in ("2", "3"):
+            self.assertEqual(run("pull", str(self.epic), n).returncode, 0)
+        self.assertFalse(any("drift" in r for r in self.status_rows(self.epic)))
+        self.breakdown_epic(self.BREAKDOWN.replace("hitl = true", "hitl = false"))
+        rows = {r["id"]: r for r in self.status_rows(self.epic)}
+        self.assertTrue(rows[3]["drift"])
+        self.assertTrue(rows[3]["hitl"])
+
     def test_pull_writes_the_leaf_and_only_a_refine_entry_waits_for_refinement(self):
         self.breakdown_epic(
             self.BREAKDOWN.replace(
@@ -372,11 +391,35 @@ covers = ["R2", "R3"]
         self.assertEqual(self.files(out["ready_to_start"]), ["story-ui-shell.md", None])
         self.assertEqual(out["ready_to_start"][0]["after"], [1])
 
-    def test_pull_leaves_out_empty_fields_and_keeps_set_ones(self):
+    def test_a_bug_waits_for_refinement_without_refine_set(self):
+        self.breakdown_epic('[[entry]]\nid = 1\ntype = "bug"\ntitle = "Missing criteria"\n')
+        out = self.next()
+        self.assertEqual([t["id"] for t in out["ready_to_refine"]], [1])
+        self.assertEqual(out["ready_to_start"], [])
+        r = run("pull", str(self.epic), "1")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual(json.loads(r.stdout), {"file": "bug-missing-criteria.md", "refine": True})
+        self.assertEqual(self.files(self.next()["ready_to_refine"]), ["bug-missing-criteria.md"])
+
+    def test_a_leaf_file_that_says_bug_waits_for_refinement(self):
+        self.breakdown_epic('[[entry]]\nid = 1\ntype = "story"\ntitle = "Was a story"\n')
+        self.add("bug-was-a-story.md", ticket("ready-for-dev", 1, kind="bug"))
+        self.assertEqual(self.files(self.next()["ready_to_refine"]), ["bug-was-a-story.md"])
+
+    def test_a_refined_bug_is_ready_to_start(self):
+        self.breakdown_epic('[[entry]]\nid = 1\ntype = "bug"\ntitle = "Refined bug"\n')
+        self.add("bug-refined-bug.md", ticket("ready-for-dev", 1, kind="bug", refined="true"))
+        out = self.next()
+        self.assertEqual(self.files(out["ready_to_start"]), ["bug-refined-bug.md"])
+        self.assertEqual(out["ready_to_refine"], [])
+
+    def test_pull_leaves_out_empty_fields_but_always_writes_after_and_hitl(self):
         self.breakdown_epic()
         run("pull", str(self.epic), "1")
         head = (self.epic / "story-scaffold.md").read_text(encoding="utf-8").split("---")[1]
-        self.assertEqual(head, '\nid: 1\ntype: story\ntitle: "Scaffold"\nparent: epic-cart\ncovers: [R1]\n')
+        self.assertEqual(
+            head, '\nid: 1\ntype: story\ntitle: "Scaffold"\nparent: epic-cart\ncovers: [R1]\nafter: []\nhitl: false\n'
+        )
         self.assertEqual(self.next()["ready_to_start"][0]["state"], "backlog")
         run("pull", str(self.epic), "3")
         head = (self.epic / "spike-tax-engine.md").read_text(encoding="utf-8").split("---")[1]
@@ -440,7 +483,7 @@ covers = ["R2", "R3"]
         text = (self.epic / "story-scaffold.md").read_text(encoding="utf-8")
         parent = (self.epic / "epic-cart.md").resolve().relative_to(self.root.resolve()).as_posix()
         self.assertIn(f"## References\n\n- parent — {parent}\n- SPINE.md#ad-8\n", text)
-        self.assertIn("## Notes\n\n- Open question: Which host?\n- Reuse the mailer.\n", text)
+        self.assertIn("## Notes\n\n- Unknown: Which host?\n- Reuse the mailer.\n", text)
 
     def test_a_quoted_title_survives_the_pull(self):
         self.breakdown_epic(self.BREAKDOWN.replace('title = "Scaffold"', "title = 'Say \"hi\"'"))
@@ -984,22 +1027,39 @@ covers = ["R2", "R3"]
         rows = self.status_rows(backlog)
         self.assertEqual([(r["file"], r["state"]) for r in rows], [("bug-x.md", "in-progress"), ("bug-y.md", "review")])
 
-    def test_orphan_duplicate_and_malformed_plans_error(self):
+    def test_two_plans_for_one_ticket_error(self):
         self.breakdown_epic()
-        for files, names in (
-            ({"story-a-plan.md": plan(9)}, ["story-a-plan.md"]),
-            ({"story-a-plan.md": plan("story-nothing")}, ["story-a-plan.md"]),
-            ({"story-a-plan.md": plan(1), "story-b-plan.md": plan(1)}, ["story-a-plan.md", "story-b-plan.md"]),
-            ({"story-a-plan.md": plan(1, "backlog")}, ["story-a-plan.md", "status 'backlog'"]),
-        ):
-            for path in self.epic.glob("*-plan.md"):
-                path.unlink()
-            for name, text in files.items():
-                self.add(name, text)
-            r = run("next", str(self.epic))
-            self.assertEqual(r.returncode, 1, r.stdout)
-            for name in names:
-                self.assertIn(name, json.loads(r.stderr)["error"])
+        self.add("story-a-plan.md", plan(1))
+        self.add("story-b-plan.md", plan(1))
+        r = run("next", str(self.epic))
+        self.assertEqual(r.returncode, 1, r.stdout)
+        for name in ("story-a-plan.md", "story-b-plan.md"):
+            self.assertIn(name, json.loads(r.stderr)["error"])
+
+    def test_an_orphan_plan_is_a_problem_and_the_rest_of_the_tree_still_reads(self):
+        self.breakdown_epic()
+        for ref in (9, "story-nothing"):
+            self.add("story-a-plan.md", plan(ref))
+            for command in ("next", "status"):
+                r = run(command, str(self.epic))
+                self.assertEqual(r.returncode, 0, r.stderr)
+                out = json.loads(r.stdout)
+                self.assertEqual(len(out["problems"]), 1)
+                self.assertIn("story-a-plan.md", out["problems"][0])
+            self.assertEqual(self.files(self.next()["ready_to_start"]), [None])
+
+    def test_a_plan_with_an_unknown_status_blocks_its_ticket_until_mark_fixes_it(self):
+        self.breakdown_epic()
+        self.add("story-scaffold-plan.md", plan(1, "already-satisfied"))
+        out = self.next()
+        self.assertEqual(out["ready_to_start"], [])
+        blocked = {t["id"]: t for t in out["blocked"]}
+        self.assertIn("already-satisfied", blocked[1]["blocked_reason"])
+        self.assertIn("status 'already-satisfied'", out["problems"][0])
+        self.assertEqual(run("mark", str(self.epic), "1", "done").returncode, 0)
+        out = self.next()
+        self.assertNotIn("problems", out)
+        self.assertEqual([t["id"] for t in out["ready_to_start"]], [2, 3])
 
 
 class ActiveInitiativeTests(TreeCase):
@@ -1040,6 +1100,17 @@ class ActiveInitiativeTests(TreeCase):
         out = self.ok(run("--project-root", str(self.root), "status", cwd=self.elsewhere()))
         self.assertEqual(out["folder"], "initiative-checkout")
         self.assertEqual(out["counts"]["total"], 5)
+
+    def test_a_relative_folder_is_found_under_the_store_from_anywhere(self):
+        out = self.ok(run("--project-root", str(self.root), "status", "initiative-checkout", cwd=self.elsewhere()))
+        self.assertEqual(out["folder"], "initiative-checkout")
+        out = self.ok(
+            run("--project-root", str(self.root), "next", "out/initiative-checkout/epic-cart", cwd=self.elsewhere())
+        )
+        self.assertEqual(out["folder"], "epic-cart")
+        self.fails(
+            run("--project-root", str(self.root), "status", "initiative-gone", cwd=self.elsewhere()), "not a folder"
+        )
 
     def test_root_substitutes_project_root_and_output_folder(self):
         for root in ("{project-root}/out", "{output_folder}"):
