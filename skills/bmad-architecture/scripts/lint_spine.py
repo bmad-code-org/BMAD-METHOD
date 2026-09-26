@@ -193,16 +193,16 @@ def find_unpinned_stack(body: str, offset: int, name: str) -> list[dict]:
                 elif c.lower() == "version":
                     ver_idx = j
             continue
-        name = cells[name_idx] if len(cells) > name_idx else ""
+        dep = cells[name_idx] if len(cells) > name_idx else ""
         version = cells[ver_idx] if len(cells) > ver_idx else ""
-        if not name or TEMPLATE_TOKEN.search(name):
+        if not dep or TEMPLATE_TOKEN.search(dep):
             continue
         if not version or TEMPLATE_TOKEN.search(version):
             findings.append(
                 {
                     "category": "version_pin",
                     "severity": "medium",
-                    "detail": f"Stack entry {name!r} has no version",
+                    "detail": f"Stack entry {dep!r} has no version",
                     "location": f"{name} (line {offset + i + 1})",
                 }
             )

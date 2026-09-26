@@ -115,6 +115,13 @@ def test_unpinned_dep_caught():
     assert "version_pin" in cats(result)
 
 
+def test_unpinned_dep_location_names_the_spine_not_the_dep():
+    text = CLEAN.replace("| fastapi | 0.115 |", "| fastapi |  |")
+    result = lint_spine.lint(text, name="architecture-shop.md")
+    pin = next(f for f in result["findings"] if f["category"] == "version_pin")
+    assert pin["location"].startswith("architecture-shop.md (line ")
+
+
 def test_placeholder_version_caught():
     text = CLEAN.replace("| fastapi | 0.115 |", "| fastapi | {pin} |")
     result = lint_spine.lint(text)

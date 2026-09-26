@@ -6,7 +6,7 @@
 # Every ticketing config has the same fields; only the prose and the maps differ. `description` sits
 # outside [tickets] so it is never loaded; it is for choosing a config.
 #
-# Tickets and artifacts live together as markdown files under root (layout in references/board.md,
+# Tickets and artifacts live together as markdown files under `output_folder` (layout in references/board.md,
 # Layout), committed in the monorepo or in a repo of their own. Status and assignee change by commit, and the skill never pushes,
 # so others see them only after a push and pull.
 #
@@ -18,10 +18,9 @@ description = "Quick setup, and the default when nothing else is chosen. Tickets
 
 [tickets]
 store = "repo"
-root = "{output_folder}"
 
 access = """
-Read and write the files under root. If root is missing, tell the user what is blocking and confirm the setup with them.
+Read and write the files under `output_folder`. If it is missing, tell the user what is blocking and confirm the setup with them.
 """
 
 fields = """
@@ -37,10 +36,11 @@ path from {project-root} or a url for a remote source, opened before it is cited
 # Verb prose lives in its own table so a skill can load one verb at a time.
 [verbs]
 setup = """
-Recommend a root outside the project: a new folder beside it — the session then launches one level
+Tickets live in `output_folder` beside the documents. To keep them outside the project, set `output_folder`
+under `[core]` in `_bmad/custom/config.toml` to a folder beside it — the session then launches one level
 up — or in the workspace that already holds the repos. `git init` a new folder so tickets have
 history; skip that when the user picks a folder already under git, the monorepo included. Then
-create root/backlog/ and the active initiative's folder when they do not exist.
+create `backlog/` and the active initiative's folder there when they do not exist.
 """
 
 write = """

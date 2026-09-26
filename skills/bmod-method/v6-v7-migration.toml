@@ -22,8 +22,8 @@ detect = """
 It applies only while there is no `active_initiative` under `[modules.bmm]` in `_bmad/custom/config.user.toml` and no `initiative-*/` folder holding a same-named file under the output folder. A project that already has those, with `tickets.toml` and a ticketing store config, is on v7; say so and stop unless the user names v6 leftovers to bring in.
 """
 
-# The layout every rule below moves toward. `<root>` is `tickets.root` from the ticketing store config,
-# `{output_folder}` by default. Nothing below names a fixed folder; read the config.
+# The layout every rule below moves toward. `<root>` is `{output_folder}` from the BMad config.
+# Nothing below names a fixed folder; read the config.
 target = """
 <root>/
   initiative-<slug>/

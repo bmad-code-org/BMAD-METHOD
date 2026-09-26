@@ -9,7 +9,7 @@
 # sub-issues carry hierarchy, blocked-by relations carry blocking, milestones put initiatives on the roadmap.
 # Using the defaults below: the repo needs the type, status, and hitl labels; `setup` creates them.
 #
-# The active initiative is `modules.bmm.active_initiative` in _bmad/custom/config.user.toml, read at activation. The ticket tree under root
+# The active initiative is `modules.bmm.active_initiative` in _bmad/custom/config.user.toml, read at activation. The ticket tree under `output_folder`
 # has the same layout for every store (layout in references/board.md, Layout); write pushes it to this tracker.
 # An empty field below that an operation needs, and that cannot be inferred from what the user gave:
 # use what they tell you for this run and offer to record it in this file (references/store-setup.md).
@@ -18,7 +18,6 @@ description = "GitHub Issues through the gh CLI: labels, sub-issues, blocked-by,
 
 [tickets]
 store = "github"
-root = "{output_folder}"
 key = ""    # ids are the repo's issue numbers; leave empty
 repo = ""   # OWNER/REPO; empty = the repo of the current checkout (origin)
 access = """
@@ -67,7 +66,7 @@ milestone (`gh api repos/{owner}/{repo}/milestones -f title=<name>`) holding its
 The body sent is the whole local file, without the frontmatter lines tracker_id,
 remote, tracker_status, status, assignee.
 After a write, mirror tracker_id (the number), remote (the url), tracker_status, assignee, and after in the
-local file — never status, which is the build's; commit local files on the current branch when root is in a git repo, never push.
+local file — never status, which is the build's; commit local files on the current branch when `output_folder` is in a git repo, never push.
 An `after` naming a sibling's id or `<epic id>.<entry id>` is that entry's item, published first when it is still local; `epic-<slug>` is the epic's item.
 """
 
