@@ -128,6 +128,9 @@ Stories that had a file in v6 (`<N>-<M>-<slug>.md` or `spec-<N>-<M>-<slug>.md` i
 | `review`, `in-review` | `in-review` |
 | `done` | `done` |
 | `drafted`, `contexted` (older v6) | `ready-for-dev` |
+| `blocked` | `blocked` |
+
+Any other value (bmad-loop's `awaiting-operator`, or a free-form one such as `already-satisfied`) is a question in the plan with a proposed v7 status (`draft`, `ready-for-dev`, `in-progress`, `in-review`, `done`, `blocked`, or `dropped`); never write an unmapped value.
 
 When the story file and `sprint-status.yaml` disagree, the more advanced status wins and the plan says so. A story file with no matching `### Story` in `epics.md` gets an entry written from the file's own intent, with the next unused `id`, and the plan flags it.
 

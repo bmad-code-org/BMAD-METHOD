@@ -53,7 +53,7 @@ Commit only the files you wrote on the current branch. Root not in a git repo: s
 query = """
 A ticket is named by its path and its `id` under its epic. `tickets.py find <folder> <ref>` resolves an id, `"2.3"`, a file name, or title words to the one ticket: its row, its entry's text fields, and the paths `epic_file`, `story_file`, and `plan`; by a frontmatter field, `grep -rl "^type: bug" root` — same for parent; status and assignee come from `tickets.py status`, which reads the plans. A container's children are the ticket files and container folders in its folder; planned children with no file are the entries in its `tickets.toml`. Frontmatter holds id,
 type, title, parent, covers (the source requirement ids), after, refined, hitl, risk, estimate, and severity on bugs; a
-pulled file carries only the ones its entry sets, and an absent field reads as empty. The plan's frontmatter holds status (absent until a build starts),
+pulled file always carries after and hitl and the rest only when its entry sets them. An absent after or hitl reads as empty; an absent covers or estimate reads the entry's. The plan's frontmatter holds status (absent until a build starts),
 assignee, and blocked_at and blocked_reason when blocked; `tickets.py` reads a leaf file's own status only when there is no plan.
 Candidates to start (one that `tickets.py next` lists under `ready_to_refine` gets its criteria first): no status, or draft or ready-for-dev; blocked_at empty; everything in after done; unassigned. Several ready tickets are parallel work;
 offer them all. When one must be chosen, take the one that unblocks the most work behind it.
