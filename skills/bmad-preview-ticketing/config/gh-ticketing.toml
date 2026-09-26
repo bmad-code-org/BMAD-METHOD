@@ -40,10 +40,12 @@ path from {project-root} or a url for a remote source, opened before it is cited
 [verbs]
 setup = """
 Connect: `gh auth login`.
-Labels must exist before they are used. Run `gh label create <name> --force` for every value in
-[tickets.types], the label values in [tickets.status], `hitl`, risk:low, risk:medium, risk:high,
-and P0-P3. Offer this at first publish, or
-whenever a label is missing.
+Labels must exist before they are used. List the repo's labels (`gh label list --limit 1000 --json name`)
+and run `gh label create <name>` for each of these it lacks, comparing names ignoring case: the
+[tickets.types] values except initiative (a milestone), the [tickets.status] values except done and
+dropped (closed states), `hitl`, risk:low, risk:medium, risk:high, and P0-P3. A create that fails with
+"already exists" found the label after all: leave it. Never `--force`: it recolours a label the repo
+already has. Offer this at first publish, or whenever a label is missing.
 """
 
 write = """
