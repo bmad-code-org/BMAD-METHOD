@@ -41,17 +41,17 @@ on_complete = ""
 # need. Override the path in team/user TOML to enforce a different spine shape.
 spine_template = "assets/spine-template.md"
 
-# Run folder location. ARCHITECTURE-SPINE.md, its .memlog.md, and any fuller rendering the run
+# Run folder location. The spine (`{run_folder_pattern}.md`), its .memlog.md, and any fuller rendering the run
 # produces all land inside `{spine_output_path}/{run_folder_pattern}/`. Resume-check scans
 # `{spine_output_path}` for prior unfinished runs.
 #
-# The default pattern fits the common case (one spine per project, at the altitude above epics).
+# The default pattern fits the common case (one spine per initiative, at the altitude above epics).
 # At EPIC altitude, override run_folder_pattern to carry the epic identity so per-epic runs don't
-# collide on the same day — e.g. set it (team/user TOML) to "architecture-epic-{epic_id}", binding
+# collide — e.g. set it (team/user TOML) to "architecture-epic-{epic_id}", binding
 # {epic_id} from the driving spec / the activating payload. Headless callers may instead pass an
 # explicit doc_workspace and bypass the pattern entirely.
-spine_output_path = "{planning_artifacts}/architecture"
-run_folder_pattern = "architecture-{project_name}-{date}"
+spine_output_path = "{output_folder}/{active_initiative}"
+run_folder_pattern = "architecture-{slug}"
 
 # Prose-editorial standards applied at finalize ONLY to a fuller prose document the run produces
 # (a discussion report, full architecture doc, or design addendum) — never to the spine or other
@@ -90,7 +90,7 @@ external_handoffs = []
 # picked); only ad-hoc lenses are optional, and headless never skips the gate.
 #
 # Entries follow the standard prefix convention:
-#   "skill:NAME"   invoke the named review skill as a subagent against ARCHITECTURE-SPINE.md
+#   "skill:NAME"   invoke the named review skill as a subagent against the spine
 #   "file:PATH"    load the file as a review prompt; spawn an adversarial subagent applying it
 #   plain text     use the text directly as the subagent's review prompt
 #

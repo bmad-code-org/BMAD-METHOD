@@ -125,7 +125,7 @@ On activation, the workflow resolves:
 It may also look at:
 
 - For a ticket from the tree: its entry, its epic file and that file's References, its story file when there is one, and the plans of its prerequisites in the same epic
-- For other work: BMAD planning artifacts
+- For other work: the planning documents in the active initiative's folder, or in the output folder when no initiative is active
 
 ## Plan Status
 
@@ -206,7 +206,7 @@ cause, then run `tickets.py mark <ref> <status>` with the status to resume from,
 which clears `blocked_at` and `blocked_reason`. When the plan holds only
 frontmatter, delete it instead, and the next dispatch starts fresh.
 
-An `intent gap` means the captured intent cannot answer a question the run hit — it can halt the planning step (before any code exists) or the review step. When review halts on it, the working tree is reverted as usual, but the attempted change is first saved as a patch file in `{implementation_artifacts}`, referenced from the plan's triage log and the halt output. The patch shows which reading of the intent the run implemented — concrete evidence for repairing the intent. If the attempted reading turns out to be correct, `git apply` the patch and set the plan status to `in-review` to resume review on it instead of re-running from scratch.
+An `intent gap` means the captured intent cannot answer a question the run hit — it can halt the planning step (before any code exists) or the review step. When review halts on it, the working tree is reverted as usual, but the attempted change is first saved as a patch file beside the plan, referenced from the plan's triage log and the halt output. The patch shows which reading of the intent the run implemented — concrete evidence for repairing the intent. If the attempted reading turns out to be correct, `git apply` the patch and set the plan status to `in-review` to resume review on it instead of re-running from scratch.
 
 ## Output Artifacts
 
@@ -220,7 +220,7 @@ For a ticket from the tree, the plan is the path `tickets.py find` returns:
 ticket file's stem for a backlog ticket; that field is how `tickets.py` joins
 the plan to its ticket. For other work, the workflow creates:
 
-`{implementation_artifacts}/plan-<slug>.md`
+`{output_folder}/{active_initiative}/plan-<slug>.md`, or `{output_folder}/plan-<slug>.md` when no initiative is active
 
 That plan is the contract between planning, implementation, and review. It contains:
 
@@ -237,7 +237,7 @@ That plan is the contract between planning, implementation, and review. It conta
 
 If the workflow halts before it has a valid `plan_file` and no ticket was resolved, or when `mark` fails and no plan exists, it writes:
 
-`{implementation_artifacts}/bmad-build-auto-result-<slug-or-timestamp>.md`
+`{output_folder}/{active_initiative}/bmad-build-auto-result-<slug-or-timestamp>.md`, or the same file in `{output_folder}/` when no initiative is active
 
 This records the terminal status and blocking condition.
 

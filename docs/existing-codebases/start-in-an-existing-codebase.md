@@ -21,7 +21,7 @@ For one that needs several coding sessions, run `bmad-spec`, plan its entries wi
 
 Too little planning costs one Build run: Build looks at the code
 first, and stops to ask when it cannot settle the intent. Too much
-planning costs documents nobody reads. When unsure, ask `bmad-help`
+planning costs documents nobody reads. When unsure, ask `bmad`
 rather than deciding alone. It inspects the project and answers
 questions like "I have an existing Rails app, where should I start?"
 It also runs at the end of every workflow to say what comes next.

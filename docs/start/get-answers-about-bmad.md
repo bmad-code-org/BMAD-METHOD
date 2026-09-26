@@ -5,23 +5,23 @@ description: Use an LLM to quickly answer your own BMad questions
 
 Use BMad's built-in help, source docs, or the community to get answers — from quickest to most thorough.
 
-## 1. Ask BMad-Help
+## 1. Ask BMad
 
-The fastest way to get answers. The `bmad-help` skill is available directly in your AI session and handles over 80% of questions — it inspects your project, sees what you've completed, and tells you what to do next.
+The fastest way to get answers. The `bmad` skill is available directly in your AI session and handles over 80% of questions — it reads your active initiative, sees which `<type>-<slug>/` documents are already written, and tells you what to do next.
 
 ```
-bmad-help I have a SaaS idea and know all the features. Where do I start?
-bmad-help What are my options for UX design?
-bmad-help I'm stuck on the PRD workflow
+bmad I have a SaaS idea and know all the features. Where do I start?
+bmad What are my options for UX design?
+bmad I'm stuck on the PRD workflow
 ```
 
 :::tip
-You can also use `/bmad-help` or `$bmad-help` depending on your platform, but just `bmad-help` should work everywhere.
+You can also use `/bmad` or `$bmad` depending on your platform, but just `bmad` should work everywhere. The same skill runs `bmad setup`, `bmad status`, and `bmad migrate method`, and switches the active initiative.
 :::
 
 ## 2. Go Deeper with Source
 
-BMad-Help draws on your installed configuration. For questions about BMad's internals, history, or architecture — or if you're researching BMad before installing — point your AI at the source directly.
+The `bmad` skill draws on your installed configuration. For questions about BMad's internals, history, or architecture — or if you're researching BMad before installing — point your AI at the source directly.
 
 Clone or open the [BMAD-METHOD repo](https://github.com/bmad-code-org/BMAD-METHOD) and ask your AI about it. Any agent-capable tool (Claude Code, Cursor, Windsurf, etc.) can read the source and answer questions directly.
 
@@ -42,7 +42,7 @@ If your AI can't read local files (ChatGPT, Claude.ai, etc.), open [the BMad doc
 
 ## 3. Ask Someone
 
-If neither BMad-Help nor the source answered your question, you now have a much better question to ask.
+If neither the `bmad` skill nor the source answered your question, you now have a much better question to ask.
 
 | Channel                 | Use For                    |
 | ----------------------- | -------------------------- |

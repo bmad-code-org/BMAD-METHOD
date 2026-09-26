@@ -1,9 +1,11 @@
 # Step 2: Create review narrative
 
-Write the review narrative and the review log under
-`{{ config.implementation_artifacts }}`. Prefix both files with a
-shared short review slug and check that their names are unused
-before creating them.
+Write the review narrative and the review log in a new folder
+`walkthrough-<slug>/` under
+`{{ config.output_folder }}/{active_initiative}/`: the narrative as
+`walkthrough-<slug>.md`, the log as `walkthrough-<slug>-log.md`.
+`<slug>` is a short review slug; check that the folder name is
+unused before creating it.
 
 - **Review narrative:** Write blocks in the Block shapes. Use
   unchecked boxes for unvisited, in-progress, or reopened blocks,

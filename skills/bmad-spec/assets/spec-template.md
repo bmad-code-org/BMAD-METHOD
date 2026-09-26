@@ -1,6 +1,6 @@
 ---
 id: SPEC-{slug}
-companions: []     # files downstream MUST read alongside SPEC.md. Paths may point inside the spec folder (spec-authored) or outside it (adopted from an upstream skill).
+companions: []     # files downstream MUST read alongside spec-{slug}.md. Paths may point inside the spec folder (spec-authored) or outside it (adopted from an upstream skill).
 sources: []        # files fully absorbed into the SPEC (audit only; downstream does NOT read these). Never the memlog.
 ---
 

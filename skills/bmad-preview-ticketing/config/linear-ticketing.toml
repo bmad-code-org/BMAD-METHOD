@@ -8,7 +8,7 @@
 # One tool: Linear's official MCP server. Initiatives hold projects, parent issues are epics, labels carry
 # type, relations carry blocking. Linear ships no CLI; community CLIs are not used here.
 #
-# The active initiative is `modules.bmm.active_initiative` in _bmad/custom/config.user.toml, read at activation. The ticket tree under root
+# The active initiative is `modules.bmm.active_initiative` in _bmad/custom/config.user.toml, read at activation. The ticket tree under `output_folder`
 # has the same layout for every store (layout in references/board.md, Layout); write pushes it to this tracker.
 # An empty field below that an operation needs, and that cannot be inferred from what the user gave:
 # use what they tell you for this run and offer to record it in this file (references/store-setup.md).
@@ -17,7 +17,6 @@ description = "Linear through its MCP server: projects, parent issues, relations
 
 [tickets]
 store = "linear"
-root = "{output_folder}"
 key = ""    # Linear team key, e.g. "SHOP"; Linear assigns the number
 team = ""   # the default team, key or name. A container's own `key` overrides it for everything under it
 access = """
@@ -64,7 +63,7 @@ local. Create parents before children, prerequisites first.
 The body sent is the whole local file, without the frontmatter lines tracker_id,
 remote, tracker_status, status, assignee.
 After a write, mirror tracker_id (the identifier), remote (the url), tracker_status, assignee, and after in
-the local file — never status, which is the build's; commit local files on the current branch when root is in a git repo, never push.
+the local file — never status, which is the build's; commit local files on the current branch when `output_folder` is in a git repo, never push.
 An `after` naming a sibling's id or `<epic id>.<entry id>` is that entry's item, published first when it is still local; `epic-<slug>` is the epic's item.
 """
 

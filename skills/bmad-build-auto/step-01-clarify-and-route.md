@@ -41,20 +41,21 @@ This runs on the output of `tickets.py find` for one ticket. Set `ticket_args` t
 1. Load context.
    - **A ticket from the tree** — when **Ticket resolution** set `plan_file`: the entry, its epic file and what that file's References name, and the story file when there is one are already the intent. For continuity, read the plans beside `plan_file` whose `ticket` is one of find's `after` ids that is a plain number (an entry of the same epic; a ref such as `1.5` is another epic's). Carry forward each one's **Code Map**, **Design Notes**, **Implementation Notes**, **Plan Change Log**, and **Tasks & Acceptance**, where present, as continuity context for step-02.
    - **Anything else:**
-     - List files in `{{ config.planning_artifacts }}` and `{{ config.implementation_artifacts }}`.
+     - List `{{ config.output_folder }}/{active_initiative}/`, then `{{ config.output_folder }}/`.
      - If the invocation prompt points to an unformatted plan or intent file, ingest that file. Do not scan for unrelated intent files.
-     - Planning artifacts are the output of BMAD phases 1-3. Typical files include:
-       - **PRD** (`*prd*`) — product requirements and success criteria
-       - **Architecture** (`*architecture*`) — technical design decisions and constraints
-       - **UX/Design** (`*ux*`) — user experience and interaction design
-       - **Product Brief** (`*brief*`) — project vision and scope
-     - Scan the listing for files matching these patterns. If any look relevant to the current intent, load them selectively — you don't need all of them, but you need the right constraints and requirements rather than guessing from code alone.
+     - Planning documents sit in folders by type, main file named after the folder. Typical ones:
+       - **PRD** (`prd-*/prd-*.md`) — product requirements and success criteria
+       - **Architecture** (`architecture-*/architecture-*.md`) — technical design decisions and constraints
+       - **UX/Design** (`ux-*/`, with `DESIGN.md` and `EXPERIENCE.md`) — user experience and interaction design
+       - **Product Brief** (`brief-*/brief-*.md`) — project vision and scope
+       - **Spec** (`spec-*/spec-*.md`) — the capability contract
+     - Scan the listing for folders matching these patterns. If any look relevant to the current intent, load them selectively — you don't need all of them, but you need the right constraints and requirements rather than guessing from code alone.
 2. Resolve intent from the invocation prompt and loaded artifacts. Do not fantasize or leave open questions. If the intent cannot be resolved, HALT with status `blocked` and the unresolved questions as blocking condition.
 3. Version control sanity check. If version control is unavailable, skip this check. Otherwise require a clean working tree, a branch that fits the intent, and writable repository metadata. For Git, run `git add --refresh -- .`, then confirm the tree is still clean; on failure or change, HALT with status `blocked` and blocking condition `version-control metadata not writable`. For a ticket from the tree, judge the branch against the epic, not the story. HALT on a dirty tree or obvious branch mismatch.
 4. Multi-goal warning. If the intent appears to contain multiple independently shippable goals, carry `multiple-goals` forward so step-02 can add it to `{plan_file}` frontmatter `warnings`. Do not split or block.
 5. Set the plan file.
 
-   Derive a valid kebab-case slug from the clarified intent. If the intent references a tracking identifier (story number, issue number, ticket ID), lead the slug with it (e.g. `3-2-digest-delivery`, `gh-47-fix-auth`). If `{{ config.implementation_artifacts }}/plan-{slug}.md` already exists: if its status is `draft`, treat it as the same work and resume it (set `plan_file` to that path, **EARLY EXIT** → `{{ rendered("step-02-plan.md") }}`); otherwise append `-2`, `-3`, etc. Set `plan_file` = `{{ config.implementation_artifacts }}/plan-{slug}.md`.
+   Derive a valid kebab-case slug from the clarified intent. If the intent references a tracking identifier (story number, issue number, ticket ID), lead the slug with it (e.g. `3-2-digest-delivery`, `gh-47-fix-auth`). If `{{ config.output_folder }}/{active_initiative}/plan-{slug}.md` already exists: if its status is `draft`, treat it as the same work and resume it (set `plan_file` to that path, **EARLY EXIT** → `{{ rendered("step-02-plan.md") }}`); otherwise append `-2`, `-3`, etc. Set `plan_file` = `{{ config.output_folder }}/{active_initiative}/plan-{slug}.md`.
 
 ## NEXT
 

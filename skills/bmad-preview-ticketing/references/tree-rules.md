@@ -4,7 +4,7 @@ Every skill that takes work from the tree, builds it, reviews it, or looks back 
 
 ## Finding the tree
 
-- The tree is `{tickets.root}/{active_initiative}`: `root` from `[tickets]` in `_bmad/custom/ticketing-store-config.toml` with `{output_folder}` substituted, and `active_initiative` from `[modules.bmm]` in the BMad config.
+- The tree is `{output_folder}/{active_initiative}`: `output_folder` from `[core]` and `active_initiative` from `[modules.bmm]`, both in the merged BMad config.
 - `tickets.py` is installed at `{project-root}/_bmad/method/scripts/tickets.py`. The ticketing skill declares it in its `bmod.toml`. Other skills run it from there and never open the ticketing skill's folder.
 - Called with no folder, `tickets.py next`, `status`, and `find` resolve the active initiative themselves. When no initiative is set, they exit with an error that names the missing key, and the calling skill works without the tree.
 - A ticket is read through `tickets.py find`: its entry's fields, its epic file, its story file when one was refined, and its plan path, whether or not the plan exists yet. The build's input is the entry and its epic, plus the story file when there is one. No skill writes a ticket file to start work.

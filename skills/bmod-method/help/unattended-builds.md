@@ -17,7 +17,7 @@ Use this when the user asks about `bmad-build-auto`, building tickets with no hu
 
 ## Where the plan goes
 
-- A ticket's plan sits beside `tickets.toml`, or in `backlog/` for a backlog ticket, at the path `tickets.py find` returns, with `ticket` and `baseline_revision` in its frontmatter. Other work gets `{implementation_artifacts}/plan-<slug>.md`.
+- A ticket's plan sits beside `tickets.toml`, or in `backlog/` for a backlog ticket, at the path `tickets.py find` returns, with `ticket` and `baseline_revision` in its frontmatter. Other work gets `{output_folder}/{active_initiative}/plan-<slug>.md`, or `{output_folder}/plan-<slug>.md` with no initiative active.
 - A successful run ends at `built`, which the board shows as review. Only the user or an orchestrator marks the ticket done, with `tickets.py mark <ref> done`.
 - This is the repo store. On a tracker store, `next` and `mark` refuse, so name the ticket and move it through the ticketing skill.
 
@@ -31,7 +31,7 @@ Use this when the user asks about `bmad-build-auto`, building tickets with no hu
 
 ## Blocked runs
 
-`blocked` means continuing without a human was unsafe. For a ticket named by ref, file, or title, the run records it with `tickets.py mark`, so `blocked_at` and `blocked_reason` sit in the plan, which is created if the run halted before planning; details are under `Auto Run Result`. Other halts set `status` in the plan and put the reason under `Auto Run Result`, or write a `bmad-build-auto-result-*.md` file under `{implementation_artifacts}` when there is no plan yet. `tickets.py status` shows each blocked ticket with its reason. Common reasons:
+`blocked` means continuing without a human was unsafe. For a ticket named by ref, file, or title, the run records it with `tickets.py mark`, so `blocked_at` and `blocked_reason` sit in the plan, which is created if the run halted before planning; details are under `Auto Run Result`. Other halts set `status` in the plan and put the reason under `Auto Run Result`, or write a `bmad-build-auto-result-*.md` file in `{output_folder}/{active_initiative}/` (or `{output_folder}/` with no initiative active) when there is no plan yet. `tickets.py status` shows each blocked ticket with its reason. Common reasons:
 
 - `unclear intent`, `intent gap`: the input cannot answer a question the run hit.
 - `no subagents`.
@@ -45,7 +45,7 @@ A blocked plan halts every later dispatch of its ticket and keeps its first reas
 
 ## The saved patch on an intent-gap halt
 
-When review halts on `intent gap`, the run saves the attempted change as a patch file in `{implementation_artifacts}`, names the path in the plan, and reverts the code. If the patch reads the intent correctly, the user runs `git apply` on it, sets the plan's status to `in-review`, and dispatches again. If it was wrong, they fix the intent and start fresh.
+When review halts on `intent gap`, the run saves the attempted change as a patch file beside the plan, names the path in the plan, and reverts the code. If the patch reads the intent correctly, the user runs `git apply` on it, sets the plan's status to `in-review`, and dispatches again. If it was wrong, they fix the intent and start fresh.
 
 ## What to read afterwards
 

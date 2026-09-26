@@ -89,9 +89,9 @@ Show in "What You've Accomplished" sections:
 your-project/
 ├── _bmad/                                   # BMad configuration
 ├── _bmad-output/
-│   ├── planning-artifacts/
-│   │   └── PRD.md                           # Your requirements document
-│   └── implementation-artifacts/
+│   └── initiative-checkout/                 # the active initiative
+│       └── prd-checkout/
+│           └── prd-checkout.md              # Your requirements document
 ├── AGENTS.md                                # agent instructions (optional, via bmad-project-context)
 └── ...
 ```

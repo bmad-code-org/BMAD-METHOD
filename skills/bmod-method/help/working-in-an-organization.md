@@ -15,7 +15,7 @@ Before any of this, a product manager, designer, or analyst can prototype the id
 ## An existing PRD is input
 
 - Point `bmad-prd` at the existing PRD. Validate gives a findings report and changes nothing. Create rewrites the same requirements in the shape later skills read, with `[ASSUMPTION]` tags on what it filled in.
-- When the source PRD changes, run `bmad-prd` update. Tell the user never to hand-edit `prd.md`.
+- When the source PRD changes, run `bmad-prd` update. Tell the user never to hand-edit `prd-<slug>.md`.
 - `bmad-ux` and `bmad-architecture` start from the existing design system, architecture document, or codebase.
 
 ## One owner per document
@@ -24,7 +24,7 @@ Each document has one skill that writes it, so give it one owner. One person can
 
 | Role | Runs | Owns |
 |---|---|---|
-| Product manager | `bmad-prd` | `prd.md` and its updates |
+| Product manager | `bmad-prd` | `prd-<slug>.md` and its updates |
 | Designer | `bmad-ux` | `DESIGN.md`, `EXPERIENCE.md` |
 | Tech lead | `bmad-architecture` | The architecture spine |
 | One engineer per epic | `bmad-spec`, `bmad-build`, `bmad-retrospective` | That epic's spec, stories, verdict |

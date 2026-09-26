@@ -36,7 +36,7 @@ say what the product is. Brainstorming, Forge Idea, Deep Recon, a product
 brief, and a PRFAQ exist to get the PRD written well. Everything after the PRD
 is derived from it:
 
-- `bmad-ux` writes `DESIGN.md` and `EXPERIENCE.md` alongside the PRD.
+- `bmad-ux` writes `DESIGN.md` and `EXPERIENCE.md` in its own `ux-<slug>/` folder, as input beside the PRD.
 - `bmad-architecture` writes a short architecture document (the spine): the
   decisions that keep independently built epics compatible.
 - `bmad-spec` writes one spec per epic from the PRD, pointing at the spine and
@@ -59,8 +59,8 @@ Linear, and a review cadence, and all of it stays.
   same requirements in the shape the later skills read, with `[ASSUMPTION]`
   tags on anything it had to fill in. After that, the copy your reviewers
   already edit is the source. When it changes, re-run `bmad-prd` in
-  **Update** mode pointing at it and let the skill bring `prd.md` in line;
-  never edit `prd.md` by hand to catch up.
+  **Update** mode pointing at it and let the skill bring the PRD in line;
+  never edit the PRD by hand to catch up.
 - **The same holds for design and architecture.** A design system, an
   existing architecture document, or a live codebase is what `bmad-ux` and
   `bmad-architecture` start from. On an existing system the architecture
@@ -81,10 +81,10 @@ regenerated from it.
 
 | Role                     | Runs                                                                                              | Owns                                                                      |
 | ------------------------ | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Product manager          | Brainstorming, Forge Idea, Deep Recon, then `bmad-product-brief` or `bmad-prfaq`, then `bmad-prd` | `prd.md` and its update cycle; the one-pager the steering committee reads |
+| Product manager          | Brainstorming, Forge Idea, Deep Recon, then `bmad-product-brief` or `bmad-prfaq`, then `bmad-prd` | The PRD and its update cycle; the one-pager the steering committee reads  |
 | Designer                 | `bmad-ux`                                                                                         | `DESIGN.md`, `EXPERIENCE.md`                                              |
 | Tech lead or architect   | `bmad-architecture`                                                                               | The architecture spine                                                    |
-| One engineer, per epic   | `bmad-spec`, `bmad-preview-ticketing`, Build per story, `bmad-retrospective`                      | That epic: `SPEC.md`, its `tickets.toml`, its verdict                     |
+| One engineer, per epic   | `bmad-spec`, `bmad-preview-ticketing`, Build per story, `bmad-retrospective`                      | That epic: its spec, its `tickets.toml`, its verdict                      |
 | Whoever tracks the whole | `bmad-preview-ticketing`                                                                            | The ticket tree and plan statuses                                   |
 
 The rows are roles, not headcount. One person can hold several; what matters
@@ -139,7 +139,7 @@ They will. The path for a change is the same as the path for the original:
 1. Run `bmad-prd` in **Update** mode with the change signal. It surfaces
    conflicts with earlier decisions before applying anything.
 2. If the change touches a cross-epic decision, update the spine.
-3. Re-run `bmad-spec` for each affected epic. It updates `SPEC.md` in place
+3. Re-run `bmad-spec` for each affected epic. It updates the spec in place
    and keeps capability IDs stable, so stories that are unaffected stay
    unaffected.
 4. For the affected epics, re-slice the stories `bmad-spec` names as no longer

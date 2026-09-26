@@ -47,9 +47,9 @@ default_party = ""
 party_mode = "session"
 
 # Where the optional end-of-session keepsake is written. The self-contained HTML
-# document lands in `{output_dir}/`. `{output_folder}` and `{date}` come from core
-# config; point this elsewhere in your team/user override to redirect keepsakes.
-output_dir = "{output_folder}/party-mode"
+# document lands in `{output_dir}/party-<slug>/`. Point this elsewhere in your
+# team/user override to redirect keepsakes.
+output_dir = "{output_folder}/{active_initiative}"
 
 # Memory for the DEFAULT room (the installed-agent party). When on, the room
 # keeps a succinct, append-only memlog (the memlog standard) that it reads on

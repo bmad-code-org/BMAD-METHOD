@@ -9,7 +9,7 @@
 # links, comments, assign, JQL. The Atlassian Rovo MCP server (https://mcp.atlassian.com/v1/mcp/authv2)
 # is the alternative for an org that prefers MCP; it has no link-creation tool.
 #
-# The active initiative is `modules.bmm.active_initiative` in _bmad/custom/config.user.toml, read at activation. The ticket tree under root
+# The active initiative is `modules.bmm.active_initiative` in _bmad/custom/config.user.toml, read at activation. The ticket tree under `output_folder`
 # has the same layout for every store (layout in references/board.md, Layout); write pushes it to this tracker.
 # An empty field below that an operation needs, and that cannot be inferred from what the user gave:
 # use what they tell you for this run and offer to record it in this file (references/store-setup.md).
@@ -18,7 +18,6 @@ description = "Jira Cloud through acli: work types, transitions, links, JQL. For
 
 [tickets]
 store = "jira"
-root = "{output_folder}"
 key = ""    # the default Jira project key, e.g. "SHOP"; Jira assigns the number. A container's own `key` overrides it for everything under it
 site = ""   # https://yourorg.atlassian.net
 access = """
@@ -69,7 +68,7 @@ project has a level above Epic; then epics take it as --parent.
 The body sent is the whole local file, without the frontmatter lines tracker_id,
 remote, tracker_status, status, assignee.
 After a write, mirror tracker_id (the key), remote (the url), tracker_status, assignee, and after in the
-local file — never status, which is the build's; commit local files on the current branch when root is in a git repo, never push.
+local file — never status, which is the build's; commit local files on the current branch when `output_folder` is in a git repo, never push.
 An `after` naming a sibling's id or `<epic id>.<entry id>` is that entry's item, published first when it is still local; `epic-<slug>` is the epic's item.
 """
 

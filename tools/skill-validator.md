@@ -32,7 +32,7 @@ If no findings are generated (from either pass), the skill passes validation.
 - **Internal reference**: a file path from one file in the skill to another file in the same skill.
 - **External reference**: a file path from a skill file to a file outside the skill directory.
 - **Originating file**: the file that contains the reference (path resolution is relative to this file's location).
-- **Config value**: a key declared with a `prompt:` in `src/core-skills/module.yaml` or `src/bmm-skills/module.yaml`. The installer writes these to `{project-root}/_bmad/config.toml` (team scope) and `config.user.toml` (user scope); `_bmad/custom/` may override either. Examples: `project_name`, `output_folder`, `communication_language`, `planning_artifacts`.
+- **Config value**: a key declared with a `prompt:` in `src/core-skills/module.yaml` or `src/bmm-skills/module.yaml`. The installer writes these to `{project-root}/_bmad/config.toml` (team scope) and `config.user.toml` (user scope); `_bmad/custom/` may override either. Examples: `project_name`, `output_folder`, `communication_language`.
 - **Customization value**: a key from the skill's own `customize.toml`, in its `[workflow]` table (most skills) or `[agent]` table (agent skills), layered with `_bmad/custom/<skill-name>.toml` and `.user.toml`.
 - **Runtime variable**: a name-value pair whose value is set during workflow execution (e.g., `plan_file`, `date`, `status`).
 - **Intra-skill path variable**: a variable whose value is a path to another file within the same skill — this is an anti-pattern.
@@ -188,7 +188,7 @@ Every value reached during the render is part of the generation's identity. Cust
 
 - **Severity:** HIGH
 - **Applies to:** all files in the skill
-- **Rule:** References to files outside the skill directory must use `{project-root}/...` or a config-derived path (e.g., `{planning_artifacts}/...`, `{implementation_artifacts}/...`).
+- **Rule:** References to files outside the skill directory must use `{project-root}/...` or a config-derived path (e.g., `{output_folder}/...`).
 - **Detection:** Identify file references that point outside the skill. Verify they start with `{project-root}` or a known config key. Flag absolute paths, home-relative paths (`~/`), or bare paths that resolve outside the skill.
 - **Fix:** Replace with `{project-root}/...` or the appropriate config value.
 
@@ -197,7 +197,7 @@ Every value reached during the render is part of the generation's identity. Cust
 - **Severity:** MEDIUM
 - **Applies to:** all files (frontmatter AND body content)
 - **Rule:** Variables must not store paths to files within the same skill. These paths should be hardcoded as relative paths inline where used. This applies to YAML frontmatter variables AND markdown body variable assignments (e.g., `` `template` = `./template.md` `` under a `### Paths` section).
-- **Detection:** For each variable with a path-like value — whether defined in frontmatter or in body text — determine if the target is inside the skill directory. Indicators: value starts with `./`, `../`, or is a bare filename of a file that exists in the skill. Exclude variables whose values are prefixed with a config key like `{planning_artifacts}`, `{implementation_artifacts}`, or `{project-root}` — these are external references and are legitimate.
+- **Detection:** For each variable with a path-like value — whether defined in frontmatter or in body text — determine if the target is inside the skill directory. Indicators: value starts with `./`, `../`, or is a bare filename of a file that exists in the skill. Exclude variables whose values are prefixed with a config key like `{output_folder}` or `{project-root}` — these are external references and are legitimate.
 - **Fix:** Remove the variable. Replace each `{variable_name}` usage with the direct relative path.
 - **Exception:** If a path variable is used in 4+ locations across multiple files and the path is non-trivial, a variable MAY be acceptable. Flag it as LOW instead and note the exception.
 
@@ -213,7 +213,7 @@ Every value reached during the render is part of the generation's identity. Cust
   - References to pre-conversion locations that were skill directories, where the skill has since moved
 - **Fix:**
   - If the intent is to invoke the other skill: use invoke language in prose — ``Invoke the `skill-name` skill`` (see REF-03).
-  - If the intent is to use a shared resource (template, data file): extract it to a location outside both skills — a config-referenced path such as `{planning_artifacts}/...`, or a `file:`-prefixed entry in `customize.toml` — rather than reaching across a skill boundary.
+  - If the intent is to use a shared resource (template, data file): extract it to a location outside both skills — a config-referenced path such as `{output_folder}/...`, or a `file:`-prefixed entry in `customize.toml` — rather than reaching across a skill boundary.
 
 ---
 
@@ -283,7 +283,7 @@ Every value reached during the render is part of the generation's identity. Cust
 - **Severity:** HIGH
 - **Applies to:** all files
 - **Rule:** All file path references within the skill (markdown links, backtick paths, frontmatter values) should point to files that plausibly exist.
-- **Detection:** For internal references, verify the target file exists in the skill directory. For external references using config keys, verify the path structure is plausible (you cannot resolve config keys, but you can check that the path after the key looks reasonable — e.g., `{planning_artifacts}/*.md` is plausible, `{planning_artifacts}/../../etc/passwd` is not).
+- **Detection:** For internal references, verify the target file exists in the skill directory. For external references using config keys, verify the path structure is plausible (you cannot resolve config keys, but you can check that the path after the key looks reasonable — e.g., `{output_folder}/*.md` is plausible, `{output_folder}/../../etc/passwd` is not).
 - **Fix:** Correct the path or remove the dead reference.
 
 ### REF-03 — Skill Invocation Must Use "Invoke" Language

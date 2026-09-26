@@ -42,10 +42,10 @@ on_complete = ""
 # to enforce a different structure (e.g. regulated-industry, investor-deck).
 brief_template = "assets/brief-template.md"
 
-# Run folder location. The brief and optional addendum land inside `{brief_output_path}/{run_folder_pattern}/`.
-# Resume-check scans `{brief_output_path}` for prior unfinished runs.
-brief_output_path = "{planning_artifacts}/briefs"
-run_folder_pattern = "brief-{project_name}-{date}"
+# Run folder location. The brief (`{run_folder_pattern}.md`) and optional addendum land inside
+# `{brief_output_path}/{run_folder_pattern}/`. Resume-check scans `{brief_output_path}` for prior unfinished runs.
+brief_output_path = "{output_folder}/{active_initiative}"
+run_folder_pattern = "brief-{slug}"
 
 # Document standards applied to human-consumed docs at finalize. Each entry is
 # a `skill:`, `file:`, or plain-text directive; the parent LLM applies the
@@ -95,6 +95,6 @@ external_sources = []
 # can opt out in their prompt for a specific run. Empty by default.
 #
 # Examples (set in team/user override TOML):
-#   "After finalize, upload brief.md and addendum.md to Confluence via corp:confluence_upload (space_key='PROD', parent_page='Product Briefs', label='brief')."
+#   "After finalize, upload the brief and addendum.md to Confluence via corp:confluence_upload (space_key='PROD', parent_page='Product Briefs', label='brief')."
 #   "Post a ready-for-review ping to Slack via corp:slack_post (channel='#product', text='New brief: '+{confluence_url})."
 external_handoffs = []

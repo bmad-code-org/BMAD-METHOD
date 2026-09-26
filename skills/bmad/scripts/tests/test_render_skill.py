@@ -200,7 +200,7 @@ class RenderSkillTests(unittest.TestCase):
         self.assertIsNone(COMPILE_TOKEN.search(markdown), markdown)
         self.assertNotIn("{skill-root}", markdown)
         if skill_name != "bmad-retrospective":
-            artifacts = (project.resolve() / "_bmad-output" / "implementation-artifacts").as_posix()
+            artifacts = (project.resolve() / "_bmad-output").as_posix()
             self.assertIn(artifacts, markdown)
         return snap
 
@@ -656,7 +656,7 @@ class RenderSkillTests(unittest.TestCase):
         before = rs.render(ws.project, skill)
         before_files = _files(before.parent)
         (ws.bmad / "custom" / "config.toml").write_text(
-            '[modules.bmm]\nimplementation_artifacts = "{project-root}/impl-v2"\n',
+            '[core]\noutput_folder = "{project-root}/impl-v2"\n',
             encoding="utf-8",
         )
         after_config = rs.render(ws.project, skill)
@@ -712,7 +712,7 @@ class RenderSkillTests(unittest.TestCase):
     def test_missing_wrong_type_and_non_string_layer_id_halt(self):
         template = _team_config(Path("project"))
         missing = template.replace(
-            'implementation_artifacts = "{project-root}/_bmad-output/implementation-artifacts"\n',
+            'output_folder = "{project-root}/_bmad-output"\n',
             "",
         )
         ws = self._workspace(config=missing)
@@ -721,8 +721,8 @@ class RenderSkillTests(unittest.TestCase):
         self.assertIn("missing config value", result.stdout)
 
         wrong = template.replace(
-            'implementation_artifacts = "{project-root}/_bmad-output/implementation-artifacts"',
-            "implementation_artifacts = 42",
+            'output_folder = "{project-root}/_bmad-output"',
+            "output_folder = 42",
         )
         ws = self._workspace(config=wrong)
         skill = self._skill(ws, "bmad-build")
@@ -815,11 +815,7 @@ class RenderSkillTests(unittest.TestCase):
         self.assertIn((workflow.parent / "step.md").as_posix(), workflow.read_text(encoding="utf-8"))
 
     def test_ambiguous_shorthand_and_source_symlink_escape_halt(self):
-        config = _team_config(Path("project")).replace(
-            "[core]\n",
-            '[core]\nimplementation_artifacts = "{project-root}/dup"\n',
-            1,
-        )
+        config = _team_config(Path("project")) + '\n[modules.bmm]\noutput_folder = "{project-root}/dup"\n'
         ws = self._workspace(config=config)
         skill = self._skill(ws, "bmad-build")
         result = self._cli(ws.project, skill)
@@ -841,7 +837,7 @@ class RenderSkillTests(unittest.TestCase):
         self.assertLessEqual(len(workflow.parent.parent.name), 93)
 
     def test_snapshot_paths_stay_opaque_when_the_project_name_looks_like_tokens(self):
-        ws = self._workspace(name="{{ workflow.on_complete }}-{{ config.planning_artifacts }}")
+        ws = self._workspace(name="{{ workflow.on_complete }}-{{ config.output_folder }}")
         skill = self._skill(ws, "bmad-build")
         workflow = rs.render(ws.project, skill)
         text = workflow.read_text(encoding="utf-8")

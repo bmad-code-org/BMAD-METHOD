@@ -44,7 +44,7 @@ Announce skipped lenses first, then launch every active lens before handling any
 {{ workflow.thorough_lenses }}
 {% endif %}
 
-If a lens's instruction requires subagents and none are available, for each such lens write under `{{ config.implementation_artifacts }}` that lens's child prompt with every file it points to — the diff, the claims, the reviewer instruction file — replaced inline by that file's contents, and every other line left exactly as written. That session shares no filesystem with this one, so its prompt has to stand alone; this is the only place you read a reviewer instruction file yourself. Then HALT. Ask the human to run each in a separate session (ideally a different LLM) and paste back the findings.
+If a lens's instruction requires subagents and none are available, for each such lens write beside `{plan_file}`, named after it with the lens id appended, that lens's child prompt with every file it points to — the diff, the claims, the reviewer instruction file — replaced inline by that file's contents, and every other line left exactly as written. That session shares no filesystem with this one, so its prompt has to stand alone; this is the only place you read a reviewer instruction file yourself. Then HALT. Ask the human to run each in a separate session (ideally a different LLM) and paste back the findings.
 
 Write `lenses_ran` — the ids launched, in launch order — to `{plan_file}` frontmatter.
 
@@ -95,7 +95,7 @@ Write `lenses_ran` — the ids launched, in launch order — to `{plan_file}` fr
      ```
 
      If it cannot be continued, apply the patches yourself. Then re-run the checks in `{plan_file}`'s `## Verification` section, if present — the patches changed code after the implementer's verification; if verification fails and the failure cannot be fixed, HALT and escalate to the human. Rewrite `{diff_file}` so it reflects the patched tree.
-   - **defer** — Append one new entry to `{{ config.implementation_artifacts }}/deferred-work.md` using this format. Do not modify existing entries or look for duplicates.
+   - **defer** — Append one new entry to `{{ config.output_folder }}/{active_initiative}/deferred-work.md` using this format. Do not modify existing entries or look for duplicates.
      ```markdown
      - source_plan: `{plan_file}`
        summary: <one sentence>

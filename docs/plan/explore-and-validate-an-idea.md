@@ -27,7 +27,7 @@ None of these are stages. Run whichever fit, in any order, and condense what
 comes out before the next step.
 
 :::tip[Not Sure?]
-Run `bmad-help` and describe your situation. It recommends a starting point
+Run `bmad` and describe your situation. It recommends a starting point
 based on what you have already produced.
 :::
 
@@ -47,7 +47,7 @@ until it stops producing, aiming well past a hundred ideas before it lets you
 wrap. Say when you want to narrow and it switches to prioritizing and
 deciding. Sessions can be paused and resumed.
 
-You get an HTML record of the session, and a short `brainstorm-intent.md`
+You get an HTML record of the session, and a short `brainstorm-<topic>.md`
 holding only the chosen discoveries, shaped to feed `bmad-spec`,
 `bmad-product-brief`, or `bmad-prd`.
 
@@ -94,11 +94,11 @@ and each is a valid result:
 
 | Outcome      | What it means                                                                                                                                |
 | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Hardened** | The idea is specific enough to use. A short `forged-idea.md` records the decisions, the rejected options, and the reasons later skills need. |
+| **Hardened** | The idea is specific enough to use. A short `forge-<slug>.md` records the decisions, the rejected options, and the reasons later skills need. |
 | **Killed**   | The idea does not hold up. The report records why.                                                                                           |
 | **Clearer**  | You understand the idea better, but there is nothing to hand off. The session log is the record.                                             |
 
-`forged-idea.md` should be short enough to feed `bmad-spec`, `bmad-prd`, or
+`forge-<slug>.md` should be short enough to feed `bmad-spec`, `bmad-prd`, or
 `bmad-prfaq`. If it reads like a document, it is too long.
 
 :::note[Example]
@@ -127,7 +127,7 @@ spec skills offer it at their own pauses. See
 
 ## What Comes Next
 
-Idea work leaves a brainstorm intent, a `forged-idea.md`, a session log, or a
+Idea work leaves a brainstorm intent, a forged idea, a session log, or a
 clearer decision. When the next question is "what is true out there," go to
 [Research a Decision](./research-a-decision.md). When it is "what exactly are
 we building," go to

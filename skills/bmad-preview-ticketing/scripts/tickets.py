@@ -52,15 +52,14 @@ ticket under it; rows show it as `gated_by`. A dropped prerequisite still blocks
 from the title that match one ticket. Each row of next, status, and find carries `ref`, a reference
 find resolves in the folder the command ran on.
 `--project-root` names the project holding `_bmad/` when the tickets live outside it. A relative
-`<dir>` that is not a folder under the working directory is looked up under `{tickets.root}`, then
+`<dir>` that is not a folder under the working directory is looked up under `{output_folder}`, then
 the project root.
 
-With no `<dir>`, next, status, find, and mark run on the active initiative, `{tickets.root}/{active_initiative}`.
+With no `<dir>`, next, status, find, and mark run on the active initiative, `{output_folder}/{active_initiative}`.
 The project root is `--project-root`, else the first folder at or above the working directory that
 holds `_bmad/`. `active_initiative` (`[modules.bmm]`) and `output_folder` (`[core]`) come from the
-BMad config, merged by the project's `_bmad/scripts/config_utils.py`; `root` comes from `[tickets]`
-in `_bmad/custom/ticketing-store-config.toml` and defaults to `{output_folder}`. `{project-root}`
-and `{output_folder}` are substituted, and a relative path is taken from the project root.
+BMad config, merged by the project's `_bmad/scripts/config_utils.py`. `{project-root}` is
+substituted, and a relative path is taken from the project root.
 
 Output is one JSON object on stdout. Exit 0 on success, 1 on a malformed tree, 2 when
 the store forbids the operation.
@@ -682,18 +681,16 @@ def central_config(project_root: Path) -> dict:
 
 
 def tickets_root(project_root: Path, config: dict | None = None) -> Path:
-    """`{tickets.root}` for the project."""
+    """`{output_folder}` for the project: the ticket tree lives beside the documents."""
     config = central_config(project_root) if config is None else config
     core = config.get("core", {})
     output = str(core.get("output_folder", "") if isinstance(core, dict) else "")
     output = output.replace("{project-root}", str(project_root))
-    root = str(store_config(project_root).get("root", "") or "{output_folder}")
-    root = root.replace("{project-root}", str(project_root)).replace("{output_folder}", output)
-    return project_root / root
+    return project_root / output
 
 
 def active_initiative(project_root: Path) -> Path:
-    """`{tickets.root}/{active_initiative}` for the project."""
+    """`{output_folder}/{active_initiative}` for the project."""
     config = central_config(project_root)
     bmm = config.get("modules", {}).get("bmm", {})
     name = bmm.get("active_initiative") if isinstance(bmm, dict) else None
@@ -715,7 +712,7 @@ def _folder(args) -> Path:
         root = project_root_for(args, Path.cwd())
         if root is None:
             raise TicketError("no project root found: no _bmad/ at or above the working directory; pass --project-root")
-        # The store is then read from this project even when tickets.root lies outside it.
+        # The store is then read from this project even when output_folder lies outside it.
         args.project_root = str(root)
         return active_initiative(root)
     folder = Path(args.dir).resolve()

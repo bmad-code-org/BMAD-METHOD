@@ -16,7 +16,7 @@ Every headless run ends with one of these payloads. Omit keys for artifacts not 
 {
   "status": "complete",
   "intent": "create",
-  "prd": "{doc_workspace}/prd.md",
+  "prd": "{doc_workspace}/<folder name>.md",
   "addendum": "{doc_workspace}/addendum.md",
   "memlog": "{doc_workspace}/.memlog.md",
   "open_questions": [],
@@ -33,7 +33,7 @@ Every headless run ends with one of these payloads. Omit keys for artifacts not 
 {
   "status": "complete",
   "intent": "update",
-  "prd": "{doc_workspace}/prd.md",
+  "prd": "{doc_workspace}/<folder name>.md",
   "memlog": "{doc_workspace}/.memlog.md",
   "changes_summary": "1-3 sentences describing what changed and why",
   "conflicts_with_prior_decisions": [],

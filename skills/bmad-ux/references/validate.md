@@ -59,7 +59,7 @@ Rubric walker prompt:
 >
 > Return ONLY a compact summary: overall verdict, per-section verdicts, finding counts by severity, file path.
 
-The gate may dispatch `{workflow.finalize_reviewers}` and ad-hoc reviewers (accessibility for consumer / regulated). Each writes `review-{slug}.md` and returns a compact summary. Parallel.
+The gate may dispatch `{workflow.finalize_reviewers}` and ad-hoc reviewers (accessibility for consumer / regulated). Each writes `review-{lens}.md` and returns a compact summary. Parallel.
 
 ## Synthesis pipeline
 

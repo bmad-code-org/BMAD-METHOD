@@ -21,4 +21,4 @@ Every run serves a decision: enter a market, pick a library, scope a product. Ha
 - Research types cover market, domain, technical, competitive, user voice, and academic literature. A team can add its own through `bmad-customize`.
 - Conclusions come only from sources retrieved during the run, with citations. The model's memory and the project's files only shape the questions. Thin evidence is reported as thin.
 - A report ages. An existing run can be refreshed, which re-checks only the claims most likely to be stale, or deepened in one area. When a run on the topic already exists, recommend resuming it.
-- The result is `research.md`, a cited summary other skills can take as input without reprocessing.
+- The result is `research-<topic>.md`, a cited summary other skills can take as input without reprocessing.

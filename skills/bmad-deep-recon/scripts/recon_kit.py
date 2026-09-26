@@ -301,7 +301,7 @@ def main(argv: list[str] | None = None) -> int:
     sub = p.add_subparsers(dest="cmd", required=True)
 
     pc = sub.add_parser("citations", help="cross-check [n] markers vs the source appendix")
-    pc.add_argument("file", help="path to research.md (or - for stdin)")
+    pc.add_argument("file", help="path to the research report (or - for stdin)")
     pc.set_defaults(func=cmd_citations)
 
     pt = sub.add_parser("tally", help="count memlog entries by type and claims by status")
@@ -319,14 +319,14 @@ def main(argv: list[str] | None = None) -> int:
     pg.add_argument("--type", required=True, help="research type code (e.g. market)")
     pg.add_argument(
         "--pattern",
-        default="{research_type}-{topic_slug}-{date}",
-        help="folder pattern (default: {research_type}-{topic_slug}-{date})",
+        default="research-{topic_slug}",
+        help="folder pattern (default: research-{topic_slug})",
     )
     pg.add_argument("--date", help="override date (YYYY-MM-DD; default today)")
     pg.set_defaults(func=cmd_slug)
 
     pe = sub.add_parser("escape-sources", help="source appendix as escaped HTML with validated links")
-    pe.add_argument("file", help="path to research.md (or - for stdin)")
+    pe.add_argument("file", help="path to the research report (or - for stdin)")
     pe.set_defaults(func=cmd_escape_sources)
 
     args = p.parse_args(argv)

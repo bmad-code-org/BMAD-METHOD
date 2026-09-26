@@ -1,4 +1,4 @@
-**Output Location:** `{planning_artifacts}`
+**Output Location:** `{doc_workspace}`
 **Coaching stance:** Be direct, challenge vague thinking, but offer concrete alternatives when the user is stuck — tough love, not tough silence.
 **Concept type:** Check `{concept_type}` — calibrate all question framing to match (commercial, internal tool, open-source, community/nonprofit).
 

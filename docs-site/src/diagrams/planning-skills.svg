@@ -9,7 +9,7 @@
 
   <g fill="var(--dg-ink)">
     <text x="450" y="40" font-size="20" font-weight="700" text-anchor="middle" letter-spacing="1" data-i18n="planning-skills-and-what-they-prod">PLANNING SKILLS AND WHAT THEY PRODUCE</text>
-    <text x="450" y="64" font-size="14" text-anchor="middle" fill="var(--dg-ink)" data-i18n="pick-the-ones-the-gap-calls-for-in">Pick the ones the gap calls for, in any order. Condense the results and hand them to bmad-spec.</text>
+    <text x="450" y="64" font-size="14" text-anchor="middle" fill="var(--dg-ink)" data-i18n="pick-the-ones-the-gap-calls-for-in">Pick the ones the gap calls for, in any order. Each lands in its own &lt;type&gt;-&lt;slug&gt;/ folder in the active initiative. Hand the results to bmad-spec.</text>
 
     <!-- Analysis column -->
     <g transform="translate(20 90)">
@@ -20,27 +20,27 @@
       <g transform="translate(15 66)">
         <rect class="node" width="240" height="58" rx="2"/>
         <text x="12" y="23" font-size="14" font-weight="700" class="mono" data-i18n="bmad-brainstorming">bmad-brainstorming</text>
-        <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="brainstorm-html-brainstorm-intent-">brainstorm.html, brainstorm-intent.md</text>
+        <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="brainstorm-html-brainstorm-intent-">brainstorm-&lt;slug&gt;.md, brainstorm.html</text>
       </g>
       <g transform="translate(15 134)">
         <rect class="node" width="240" height="58" rx="2"/>
         <text x="12" y="23" font-size="14" font-weight="700" class="mono" data-i18n="bmad-forge-idea">bmad-forge-idea</text>
-        <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="forge-report-html-forged-idea-md">forge-report.html, forged-idea.md</text>
+        <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="forge-report-html-forged-idea-md">forge-&lt;slug&gt;.md, forge-report.html</text>
       </g>
       <g transform="translate(15 202)">
         <rect class="node" width="240" height="58" rx="2"/>
         <text x="12" y="23" font-size="14" font-weight="700" class="mono" data-i18n="bmad-deep-recon">bmad-deep-recon</text>
-        <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="research-md-optional-html-briefing">research.md, optional HTML briefing</text>
+        <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="research-md-optional-html-briefing">research-&lt;slug&gt;.md, optional HTML briefing</text>
       </g>
       <g transform="translate(15 270)">
         <rect class="node" width="240" height="58" rx="2"/>
         <text x="12" y="23" font-size="14" font-weight="700" class="mono" data-i18n="bmad-product-brief">bmad-product-brief</text>
-        <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="brief-md-addendum-md">brief.md, addendum.md</text>
+        <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="brief-md-addendum-md">brief-&lt;slug&gt;.md, addendum.md</text>
       </g>
       <g transform="translate(15 338)">
         <rect class="node" width="240" height="58" rx="2"/>
         <text x="12" y="23" font-size="14" font-weight="700" class="mono" data-i18n="bmad-prfaq">bmad-prfaq</text>
-        <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="prfaq-document">PRFAQ document</text>
+        <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="prfaq-document">prfaq-&lt;slug&gt;/</text>
       </g>
     </g>
 
@@ -53,18 +53,18 @@
       <g transform="translate(15 66)">
         <rect class="node" width="240" height="74" rx="2"/>
         <text x="12" y="23" font-size="14" font-weight="700" class="mono" data-i18n="bmad-prd">bmad-prd</text>
-        <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="prd-md-addendum-md-memlog-md">prd.md, addendum.md, .memlog.md</text>
+        <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="prd-md-addendum-md-memlog-md">prd-&lt;slug&gt;.md, addendum.md, .memlog.md</text>
         <text x="12" y="62" font-size="12" fill="var(--dg-ink)" data-i18n="validate-html-md-report">validate: HTML + .md report</text>
       </g>
       <g transform="translate(15 150)">
         <rect class="node" width="240" height="58" rx="2"/>
         <text x="12" y="23" font-size="14" font-weight="700" class="mono" data-i18n="bmad-ux">bmad-ux</text>
-        <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="design-md-experience-md">DESIGN.md, EXPERIENCE.md</text>
+        <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="design-md-experience-md">ux-&lt;slug&gt;.md, DESIGN.md, EXPERIENCE.md</text>
       </g>
       <g transform="translate(15 218)">
         <rect class="node" width="240" height="74" rx="2"/>
         <text x="12" y="23" font-size="14" font-weight="700" class="mono" data-i18n="bmad-spec">bmad-spec</text>
-        <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="spec-md-companions">SPEC.md + companions</text>
+        <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="spec-md-companions">spec-&lt;slug&gt;.md + companions</text>
         <text x="12" y="62" font-size="12" fill="var(--dg-ink)" data-i18n="ticketing-handoff">ticketing handoff</text>
       </g>
       <text x="135" y="330" font-size="12" text-anchor="middle" fill="var(--dg-ink)" data-i18n="spec-when-needed">Use a spec when needed.</text>
@@ -81,7 +81,7 @@
       <g transform="translate(15 66)">
         <rect class="node" width="240" height="58" rx="2"/>
         <text x="12" y="23" font-size="14" font-weight="700" class="mono" data-i18n="bmad-architecture">bmad-architecture</text>
-        <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="architecture-spine-md">ARCHITECTURE-SPINE.md</text>
+        <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="architecture-spine-md">architecture-&lt;slug&gt;.md</text>
       </g>
       <g transform="translate(15 134)">
         <rect class="node" width="240" height="74" rx="2"/>

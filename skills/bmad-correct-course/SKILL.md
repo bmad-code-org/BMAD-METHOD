@@ -42,7 +42,10 @@ Treat every entry in `{workflow.persistent_facts}` as foundational context you c
 
 ### Step 4: Load Config
 
-Run: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.project_name --key modules.bmm.planning_artifacts`
+Run: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder --key modules.bmm.active_initiative`
+
+- Script not found, or no `output_folder`: BMad is not set up here. Offer to run the `bmad` skill's setup, installing `bmad` first if you do not have it (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run the command again.
+- No `active_initiative`: hand off to the `bmad` skill to set or create one, then run the command again and continue.
 
 - `date` as system-generated current datetime
 - YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style
@@ -60,16 +63,18 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
 
 ## Paths
 
-- `default_output_file` = `{planning_artifacts}/sprint-change-proposal-{date}.md`
+- `default_output_file` = `{output_folder}/{active_initiative}/change-{slug}/change-{slug}.md`, `{slug}` the change's title in kebab-case
 
 ## Input Files
 
+Look in `{output_folder}/{active_initiative}/` first, then `{output_folder}/`.
+
 | Input | Path | Load Strategy |
 |-------|------|---------------|
-| PRD | `{planning_artifacts}/*prd*.md` (whole) or `{planning_artifacts}/*prd*/*.md` (sharded) | FULL_LOAD |
-| Architecture | `{planning_artifacts}/*architecture*.md` (whole) or `{planning_artifacts}/*architecture*/*.md` (sharded) | FULL_LOAD |
-| UX Design | `{planning_artifacts}/*ux*.md` (whole) or `{planning_artifacts}/*ux*/*.md` (sharded) | FULL_LOAD |
-| Spec | `{planning_artifacts}/*spec-*.md` (whole) | FULL_LOAD |
+| PRD | `prd-*/prd-*.md` | FULL_LOAD |
+| Architecture | `architecture-*/architecture-*.md` | FULL_LOAD |
+| UX Design | `ux-*/`: `DESIGN.md` and `EXPERIENCE.md` | FULL_LOAD |
+| Spec | `spec-*/spec-*.md` and the companions it lists | FULL_LOAD |
 | Project Context | `AGENTS.md` in the affected repo (the `bmad:context` block) | FULL_LOAD |
 
 ## Execution
@@ -80,13 +85,10 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
 
 **Discovery Process for FULL_LOAD documents (PRD, Architecture, UX Design, Spec):**
 
-1. **Search for whole document first** - Look for files matching the whole-document pattern (e.g., `*prd*.md`, `*architecture*.md`, `*ux*.md`, `*spec-*.md`)
-2. **Check for sharded version** - If whole document not found, look for a directory with `index.md` (e.g., `prd/index.md`)
-3. **If sharded version found**:
-   - Read `index.md` to understand the document structure
+1. **Find each document by type** - the folder and main file patterns in Input Files
+2. **If the main file is an index of section files beside it**:
    - Read ALL section files listed in the index
    - Process the combined content as a single document
-4. **Priority**: If both whole and sharded versions exist, use the whole document
 
 **Discovery Process for Project Context:**
 

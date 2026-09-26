@@ -9,7 +9,7 @@
 # status, assignee, and hitl; two self-relations carry hierarchy (Parent) and blocking (Blocked by);
 # a board view grouped by Status is the kanban. `setup` creates all of it.
 #
-# The active initiative is `modules.bmm.active_initiative` in _bmad/custom/config.user.toml, read at activation. The ticket tree under root
+# The active initiative is `modules.bmm.active_initiative` in _bmad/custom/config.user.toml, read at activation. The ticket tree under `output_folder`
 # has the same layout for every store (layout in references/board.md, Layout); write pushes it to this tracker.
 # An empty field below that an operation needs, and that cannot be inferred from what the user gave:
 # use what they tell you for this run and offer to record it in this file (references/store-setup.md).
@@ -18,7 +18,6 @@ description = "Notion through its MCP server: one tickets database with a board 
 
 [tickets]
 store = "notion"
-root = "{output_folder}"
 key = ""        # prefix of the database's ID property, e.g. "SHOP" gives SHOP-12; empty = page ids only
 database = ""   # url or id of the tickets database; empty = `setup` creates it
 access = """
@@ -66,7 +65,7 @@ The body is the page content: the whole local file, without the frontmatter line
 tracker_id, remote, tracker_status, status, assignee.
 After a write, mirror tracker_id (the ID property when `key` is set, else the page id), remote (the page
 url), tracker_status, assignee, and after in the local file — never status, which is the build's; commit local files on the current branch
-when root is in a git repo, never push.
+when `output_folder` is in a git repo, never push.
 An `after` naming a sibling's id or `<epic id>.<entry id>` is that entry's item, published first when it is still local; `epic-<slug>` is the epic's item.
 """
 

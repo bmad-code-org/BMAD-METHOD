@@ -90,6 +90,11 @@ every match. Other entries are facts.
 {% endif %}
 # Workflow
 
+`{active_initiative}` is the value printed by
+`uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key modules.bmm.active_initiative`,
+read once before step 1. When it is unset, drop `/{active_initiative}`
+from every path.
+
 Follow the step files in order. Read one step fully, execute it, then
 load the next step only when directed. Do not skip, reorder, or
 pre-load steps.

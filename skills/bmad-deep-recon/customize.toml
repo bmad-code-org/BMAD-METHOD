@@ -29,9 +29,9 @@ persistent_facts = []
 # Where research runs live and how each run folder is named. Draft, Process,
 # and Run all use the same folder shape: brief.md (drafted prompts),
 # imports/ (originals, full fidelity), digests/ (extracted claims),
-# research.md (the canonical summary/report), .memlog.md.
-research_output_path = "{planning_artifacts}/research"
-run_folder_pattern = "{research_type}-{topic_slug}-{date}"
+# {run_folder_pattern}.md (the canonical summary/report), .memlog.md.
+research_output_path = "{output_folder}/{active_initiative}"
+run_folder_pattern = "research-{topic_slug}"
 
 # Seed document for a new run.
 research_template = "assets/research.template.md"
@@ -104,7 +104,7 @@ subagent_models = []
 preferred_sources = []
 banned_sources = []
 
-# What is presented and handed off — never what exists: research.md (the
+# What is presented and handed off — never what exists: the report (the
 # canonical machine-readable summary/report) always lives in the workspace.
 #   "auto"  html briefing on interactive runs; md only on headless or
 #           skill-invoked runs (the caller reads the md; render later at will)
@@ -138,7 +138,7 @@ audience = ""
 #   ]
 external_sources = []
 
-# Polish passes applied to research.md at finalize. Entries are `skill:NAME`
+# Polish passes applied to the report at finalize. Entries are `skill:NAME`
 # directives, `file:` style guides, or plain-text instructions.
 doc_standards = ["skill:bmad-review lenses=structure,prose"]
 
@@ -147,8 +147,8 @@ doc_standards = ["skill:bmad-review lenses=structure,prose"]
 # flagged.
 #
 # Examples:
-#   "NotebookLM (notebooklm-mcp): create a notebook from research.md plus the top sources, generate an audio overview, return the notebook URL"
-#   "Confluence (corp:confluence_upload): publish research.md to the RESEARCH space, return the page URL"
+#   "NotebookLM (notebooklm-mcp): create a notebook from the report plus the top sources, generate an audio overview, return the notebook URL"
+#   "Confluence (corp:confluence_upload): publish the report to the RESEARCH space, return the page URL"
 external_handoffs = []
 
 # Executed after finalize. A string scalar is one instruction; an array is a

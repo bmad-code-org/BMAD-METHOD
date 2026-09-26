@@ -6,7 +6,7 @@ This document covers the skills of the `method` module: what each one gives the 
 
 The method turns an intent of any size into working software. Recommend the smallest path that safely fits the work; never march the user through every skill. A project may hold only some of these skills: recommend from what is installed, and say plainly when a step has no installed skill rather than inventing a substitute.
 
-**`bmad-spec` is the hub.** It condenses any input, at any altitude, into a spec folder: `SPEC.md` plus companion files, the contract every build reads. A user can talk to it directly. Every analysis and planning skill exists to give the user better material to feed into a spec, and they can run in any order, before or after the spec exists, because the spec is re-derived from a running log and never hand-merged. After any of them finishes, the usual next step is to fold its result into the spec with `bmad-spec`.
+**`bmad-spec` is the hub.** It condenses any input, at any altitude, into a spec folder: `spec-<slug>.md` plus companion files, the contract every build reads. A user can talk to it directly. Every analysis and planning skill exists to give the user better material to feed into a spec, and they can run in any order, before or after the spec exists, because the spec is re-derived from a running log and never hand-merged. After any of them finishes, the usual next step is to fold its result into the spec with `bmad-spec`.
 
 The four phases are analysis (ideation, research, is it worth building), planning (what exactly, and in what slices), implementation (build it), and validation (is it right). They describe what kind of help a skill gives. They are not a mandatory sequence to complete.
 
@@ -80,27 +80,27 @@ Situations the tree above does not settle.
 
 ## The skills
 
-One line per skill: what it is for and what it writes. The files it writes are how to tell what is already done. Open the phase file for the full picture of a skill: what it gives, when to pick it, when not to.
+One line per skill: what it is for and what it writes. The files it writes are how to tell what is already done. Paths are in the active initiative's folder, `{output_folder}/{active_initiative}/`, or in `{output_folder}/` when none is active; each document is a `<type>-<slug>/` folder holding `<type>-<slug>.md`. When none is active, `bmad-product-brief`, `bmad-prd`, `bmad-ux`, `bmad-architecture`, `bmad-spec`, and `bmad-correct-course` hand off to the `bmad` skill to set one; `bmad-brainstorming`, `bmad-deep-recon`, `bmad-forge-idea`, `bmad-prfaq`, `bmad-party-mode`, and `bmad-build` ask once per session whether the work belongs to one; the rest write to `{output_folder}/`. Showing, switching, creating, or clearing the active initiative is a `bmad` request. `planning_artifacts` and `implementation_artifacts` are no longer read; a v6 project moves its files with `bmad migrate method`. Open the phase file for the full picture of a skill: what it gives, when to pick it, when not to.
 
 | Skill | For | Writes |
 |---|---|---|
 | **Analysis** (`help/analysis-skills.md`) | | |
-| `bmad-product-brief` | A 1-2 page brief of a product the user believes in. Lighter than a PRD, sharper than a hand-written intent file. It does not judge the idea. | `{planning_artifacts}/briefs/brief-{project_name}-{date}/brief.md` |
-| `bmad-prfaq` | Tests whether a concept survives scrutiny: press release, hard FAQs, researched claims, a verdict. | `{planning_artifacts}/prfaq-{project_name}.md` |
+| `bmad-product-brief` | A 1-2 page brief of a product the user believes in. Lighter than a PRD, sharper than a hand-written intent file. It does not judge the idea. | `brief-<slug>/brief-<slug>.md` |
+| `bmad-prfaq` | Tests whether a concept survives scrutiny: press release, hard FAQs, researched claims, a verdict. | `prfaq-<slug>/prfaq-<slug>.md`, plus `-distillate.md` beside it |
 | **Planning** (`help/planning-skills.md`) | | |
-| `bmad-spec` | The hub. Distills any input into the contract builds read, and updates it. It does not slice or coach; splitting work into stories is `bmad-preview-ticketing`. | `{output_folder}/specs/spec-{slug}/` with `SPEC.md` and companions |
-| `bmad-prd` | Coaches detailed requirements out of the user, sized to the stakes. Also updates and validates a PRD. | `{planning_artifacts}/prds/prd-{project_name}-{date}/prd.md` |
-| `bmad-ux` | How the product looks and works. May lead, follow, or stand alone. Can produce mocks and wireframes. | `{planning_artifacts}/ux-designs/ux-{project_name}-{date}/` with `DESIGN.md`, `EXPERIENCE.md` |
-| `bmad-architecture` | Settles only the decisions that keep separately built parts consistent. Coaches a user with no architecture knowledge, recommends a current starter, and covers hosting and deployment. | `{planning_artifacts}/architecture/architecture-{project_name}-{date}/ARCHITECTURE-SPINE.md` |
+| `bmad-spec` | The hub. Distills any input into the contract builds read, and updates it. It does not slice or coach; splitting work into stories is `bmad-preview-ticketing`. | `spec-<slug>/spec-<slug>.md` and companions |
+| `bmad-prd` | Coaches detailed requirements out of the user, sized to the stakes. Also updates and validates a PRD. | `prd-<slug>/prd-<slug>.md` |
+| `bmad-ux` | How the product looks and works. May lead, follow, or stand alone. Can produce mocks and wireframes. | `ux-<slug>/` with `DESIGN.md`, `EXPERIENCE.md`, and `ux-<slug>.md` naming them |
+| `bmad-architecture` | Settles only the decisions that keep separately built parts consistent. Coaches a user with no architecture knowledge, recommends a current starter, and covers hosting and deployment. | `architecture-<slug>/architecture-<slug>.md` |
 | `bmad-preview-ticketing` | A ticket tree run as a board: initiatives, epics, stories planned as entries in `tickets.toml`, a file only when refined or published, one-off bugs, optional tracker. | Ticket files under `{output_folder}/{active_initiative}/` and `{output_folder}/backlog/` |
 | **Implementation** (`help/implementation-skills.md`) | | |
-| `bmad-build` | One session of delivery: clarifies intent, plans, implements, reviews, commits. The default for any real change. Takes free text, a ticket from the tree (nothing means the next ready one), or any file as intent. | A ticket's plan beside `tickets.toml`, or `{implementation_artifacts}/plan-{slug}.md`; `deferred-work.md` |
+| `bmad-build` | One session of delivery: clarifies intent, plans, implements, reviews, commits. The default for any real change. Takes free text, a ticket from the tree (nothing means the next ready one), or any file as intent. | A ticket's plan beside `tickets.toml`, or `plan-<slug>.md`; `deferred-work.md` |
 | `bmad-build-auto` | One unattended build of one ticket, dispatched by a loop or script. Never for attended work. | The same plans as `bmad-build` |
-| `bmad-correct-course` | Assesses a significant midstream change. Needs a PRD or a spec; lists epic and story changes for the ticketing skill. | `{planning_artifacts}/sprint-change-proposal-{date}.md` |
+| `bmad-correct-course` | Assesses a significant midstream change. Needs a PRD or a spec; lists epic and story changes for the ticketing skill. | `change-<slug>/change-<slug>.md` |
 | **Validation** (`help/validation-skills.md`) | | |
 | `bmad-code-review` | Agent review of any diff, PR, or branch, with triaged findings. Redundant right after a full `bmad-build` review of the same change. | A dated block in the plan's `## Code Review` section, or chat |
-| `bmad-walkthrough` | The human reviews a change block by block, guided. Also a way to learn unfamiliar code. | A review narrative and log under `{implementation_artifacts}` |
-| `bmad-qa-generate-e2e-tests` | API and end-to-end tests for features that already exist. | `{project-root}/tests`, `{implementation_artifacts}/tests/test-summary.md` |
+| `bmad-walkthrough` | The human reviews a change block by block, guided. Also a way to learn unfamiliar code. | `walkthrough-<slug>/` with the narrative and a `-log.md` |
+| `bmad-qa-generate-e2e-tests` | API and end-to-end tests for features that already exist. | `{project-root}/tests`, `test-summary-<slug>/test-summary-<slug>.md` |
 | `bmad-retrospective` | Judges a finished epic folder in the ticket tree as a whole against its Done when. | `epic-<slug>-retrospective.md` in the epic folder |
 | **Any time** (`help/project-context.md`) | | |
 | `bmad-project-context` | Keeps a small, verified block of rules for agents. Use it when an agent got something wrong in this repo, a repo has no usable `AGENTS.md`, or the stack was just decided. It gives no repo overview. | `{project-root}/AGENTS.md` |

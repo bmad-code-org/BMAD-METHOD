@@ -169,7 +169,7 @@ code = "RC"
 description = "Run compliance pre-check"
 prompt = """
 Read {project-root}/_bmad/custom/compliance-checklist.md
-and scan all documents in {planning_artifacts} against it.
+and scan all documents in {output_folder}/{active_initiative} against it.
 """
 ```
 
@@ -278,7 +278,7 @@ roster live in four TOML files:
 _bmad/config.toml               (installer-owned)  team scope: install answers + agent roster
 _bmad/config.user.toml          (installer-owned)  user scope: user_name, language, skill level
 _bmad/custom/config.toml        (human-authored)   team overrides (committed)
-_bmad/custom/config.user.toml   (human-authored)   personal overrides (gitignored)
+_bmad/custom/config.user.toml   (human-authored)   personal overrides (gitignored), including `[modules.bmm] active_initiative`
 ```
 
 **Four layers**, merged with the same shape rules:
@@ -331,14 +331,14 @@ icon = "🖖"
 description = "Bold, rule-bending commander. Speaks in dramatic pauses."
 ```
 
-**Override a module install setting.** The override wins over whatever
-each developer answered at install:
+**Override an install setting.** The override wins over whatever each
+developer has in their own config:
 
 ```toml
 # _bmad/custom/config.toml
 
-[modules.bmm]
-planning_artifacts = "/shared/org-planning-artifacts"
+[core]
+output_folder = "/shared/org-bmad-output"
 ```
 
 **Which surface to use:**
@@ -351,6 +351,7 @@ planning_artifacts = "/shared/org-planning-artifacts"
 | Rebrand an agent's public descriptor | Central: `_bmad/custom/config.toml` `[agents.<code>]` |
 | Add a custom or fictional agent to the roster | Central: `_bmad/custom/config.*.toml` new `[agents.<code>]` |
 | Pin team-enforced install settings | Central: `_bmad/custom/config.toml` `[modules.<code>]` or `[core]` |
+| Choose which initiative your documents and tickets go to | Central: `_bmad/custom/config.user.toml` `[modules.bmm] active_initiative`, or ask the `bmad` skill to switch it |
 
 ## Check what resolved
 
