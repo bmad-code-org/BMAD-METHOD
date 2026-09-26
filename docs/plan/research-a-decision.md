@@ -92,7 +92,7 @@ freshness window is reported as history, not fact.
 
 ## Keep Research Current
 
-Each run gets a `research-<topic>/` folder in the active initiative's folder:
+Each run gets a `research-<topic>/` folder in the active initiative's folder, or in the output folder when no initiative is active:
 the original imports, the extracted notes, and `research-<topic>.md`. The report names which claims age
 fastest. **Refresh** re-checks only those claims and records what changed.
 **Deepen** drills into one area without re-running the rest.

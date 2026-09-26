@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+**Every document lands in the active initiative.** Skills write `<type>-<slug>/<type>-<slug>.md` under `output_folder`, inside `initiative-<slug>/` when one is active. The `bmad` skill shows, switches, creates, and clears the active initiative, and `bmad migrate method` moves a v6 project onto the layout.
+
+### 💥 Breaking
+
+* `planning_artifacts` and `implementation_artifacts` are no longer read or seeded. Run `bmad migrate method` on a v6 project.
+* The ticketing store's `root` key is gone; the ticket tree is `{output_folder}/{active_initiative}`. To move the store, set `core.output_folder` in `_bmad/custom/config.toml`.
+
 ## v6.12.0 - 2026-09-03
 
 **Build decides how much ceremony a change needs after investigating it, not before.** Simple changes now get a two-section spec and finish in one session.

@@ -9,7 +9,7 @@ Use this page to find out what skills and agents a BMad install gives you and ho
 
 ## What a Skill Is
 
-A skill is a named command the installer places in your AI tool. Type its name — `bmad-help`, for example — and the tool loads it. On some platforms the name takes a `/` or `$` prefix.
+A skill is a named command the installer places in your AI tool. Type its name — `bmad`, for example — and the tool loads it. On some platforms the name takes a `/` or `$` prefix.
 
 A skill does one of three things: loads an agent persona, runs a multi-step workflow, or runs a single task.
 
@@ -19,7 +19,7 @@ BMad offers two ways to start work.
 
 | Mechanism              | How you invoke it                                       | What happens                                                      |
 | ---------------------- | ------------------------------------------------------- | ----------------------------------------------------------------- |
-| **Skill**              | Type the skill name (e.g. `bmad-help`) in your AI tool  | Directly loads an agent, runs a workflow, or runs a task          |
+| **Skill**              | Type the skill name (e.g. `bmad`) in your AI tool  | Directly loads an agent, runs a workflow, or runs a task          |
 | **Agent menu trigger** | Load an agent first, then type a short code (e.g. `BD`) | The agent starts the matching workflow while staying in character |
 
 Use a skill when you know which workflow you want. Use a trigger when you are already working with an agent and want to switch tasks without leaving the conversation.
@@ -40,7 +40,7 @@ The installer writes one directory per skill, each holding a `SKILL.md`, into a 
 Some other tools also use their own directory, and a global install goes to a per-user directory instead. The installer output names the exact path for the tool you chose. The directory name is the skill name: `bmad-agent-dev/` registers `bmad-agent-dev`.
 
 :::tip[The installed directories are the canonical list]
-Open your skills directory to see every installed skill with its description. Run `bmad-help` for guidance on which to use next.
+Open your skills directory to see every installed skill with its description. Run `bmad` for guidance on which to use next.
 :::
 
 ## Agents
@@ -67,14 +67,14 @@ Each agent is an identity plus a customizable layer. See [Customize BMad](../cus
 
 Every installation includes the core module: eight skills that work in any project, any module, any phase. No agent session is required.
 
-### bmad-help
+### bmad
 
-Answers BMad questions and recommends the next skill. It inspects your project for existing artifacts, detects the installed modules, and lists next steps in priority order, each with its skill command.
+The BMad hub. Ask it a question and it answers from the installed modules and recommends the next skill: it reads the active initiative, lists the `<type>-<slug>/` folders already written there, and puts the next steps in priority order with their skill commands. It also runs `bmad setup` and `bmad status` for the project's runtime, `bmad migrate method` to move a v6 project onto the current layout, and shows, switches, creates, or clears the active initiative.
 
-**Input:** an optional question in plain language. **Output:** a prioritized list of next steps.
+**Input:** a question in plain language, or one of the commands above. **Output:** an answer with the prioritized next steps, or the command's result.
 
 :::note[Example]
-`bmad-help I have a SaaS idea and know all the features. Where do I start?`
+`bmad I have a SaaS idea and know all the features. Where do I start?`
 :::
 
 ### bmad-advanced-elicitation
@@ -176,12 +176,12 @@ Earlier skill IDs, such as `bmad-create-prd`, `bmad-edit-prd`, `bmad-market-rese
 
 ## Naming and Modules
 
-Every skill uses the `bmad-` prefix followed by a descriptive name: `bmad-agent-dev`, `bmad-prd`, `bmad-help`. Modules add their own skills under the same prefix; see [Add Modules](../customize/add-modules.md).
+Every skill uses the `bmad-` prefix followed by a descriptive name: `bmad-agent-dev`, `bmad-prd`, `bmad-build`. Modules add their own skills under the same prefix; see [Add Modules](../customize/add-modules.md).
 
 ## Troubleshooting
 
 **Skills not appearing after install.** Some platforms require skills to be enabled in settings. Check your tool's documentation, then restart it or reload the window.
 
-**Expected skills are missing.** The installer only writes skills for modules you selected. Run `npx bmad-method install` again and verify your module selection, then check that the skill directories exist.
+**Expected skills are missing.** The skills CLI installs only the skills you named. Run `npx skills add bmad-code-org/BMAD-METHOD` again with the missing `--skill` entries, then `bmad setup`, and check that the skill directories exist.
 
 **Skills from a removed module still appear.** The installer does not delete old skill directories. Remove the stale directories, or delete the whole skills directory and re-run the installer for a clean set.

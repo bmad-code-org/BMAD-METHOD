@@ -69,8 +69,10 @@ epic with those documents as sources.
 Every skill in this chapter writes a document you can hand on. The table runs
 from analysis through planning to solutioning; each chapter page is linked
 from the first skill it covers and explains when its skills fit. In an
-installed project, `bmad-help` recommends the next one. Each document lands in
-its own `<type>-<slug>/` folder inside the active initiative's folder.
+installed project, `bmad` recommends the next one. Each document lands in
+its own `<type>-<slug>/` folder inside the active initiative's folder, or
+directly in the output folder (`_bmad-output` by default) when no initiative
+is active.
 
 | Skill                           | Purpose                                                                                                                                        | Produces                                                                            |
 | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |

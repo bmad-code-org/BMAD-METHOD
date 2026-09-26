@@ -177,4 +177,6 @@ and choose memory to give it one.
 ## A keepsake of the session
 
 When you wrap up, the party offers a keepsake: one self-contained HTML
-document of the session, laid out by persona. Decline it and the party ends.
+document of the session, laid out by persona, written as
+`party-<slug>/party-<slug>.html` in the active initiative's folder, or in the
+output folder when none is active. Decline it and the party ends.

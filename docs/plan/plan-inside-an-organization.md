@@ -36,7 +36,7 @@ say what the product is. Brainstorming, Forge Idea, Deep Recon, a product
 brief, and a PRFAQ exist to get the PRD written well. Everything after the PRD
 is derived from it:
 
-- `bmad-ux` writes `DESIGN.md` and `EXPERIENCE.md` alongside the PRD.
+- `bmad-ux` writes `DESIGN.md` and `EXPERIENCE.md` in its own `ux-<slug>/` folder, as input beside the PRD.
 - `bmad-architecture` writes a short architecture document (the spine): the
   decisions that keep independently built epics compatible.
 - `bmad-spec` writes one spec per epic from the PRD, pointing at the spine and

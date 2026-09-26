@@ -30,11 +30,11 @@ mkdir bmad-first-project
 cd bmad-first-project
 ```
 
-Install the current stable version of BMad Method. This command sets it up for
-Claude Code:
+Install BMad Method with the skills CLI, then let the `bmad` skill set up the
+project:
 
 ```bash
-npx bmad-method install --directory . --modules bmm --tools claude-code --yes
+npx skills add bmad-code-org/BMAD-METHOD
 ```
 
 Open your coding tool in this directory. For Claude Code, run:
@@ -42,6 +42,8 @@ Open your coding tool in this directory. For Claude Code, run:
 ```bash
 claude
 ```
+
+Then ask the `bmad` skill to run `bmad setup`.
 
 ## Build a Mars Rover
 
@@ -97,13 +99,13 @@ rover> Mission control signing off.
 
 Open the files listed in the final message to look at your finished program.
 
-## Ask BMad Help
+## Ask BMad
 
-The `bmad-help` skill answers questions about BMad. Use it to understand what
+The `bmad` skill answers questions about BMad. Use it to understand what
 happened, decide what to do next, or solve a problem. Try it now:
 
 ```text
-/bmad-help Explain what bmad-build just did.
+/bmad Explain what bmad-build just did.
 ```
 
 ## You Built It

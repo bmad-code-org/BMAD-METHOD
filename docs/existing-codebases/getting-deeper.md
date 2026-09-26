@@ -65,12 +65,14 @@ manage.py diffsettings: error: argument --output: invalid choice: 'json' (choose
 
 ## 4. Install BMad
 
-Install BMad Method from the stable release channel. This exact command sets it
-up for Claude Code:
+Install BMad Method with the skills CLI, then let the `bmad` skill set up the
+project:
 
 ```bash
-npx bmad-method install --directory . --modules bmm --tools claude-code --yes
+npx skills add bmad-code-org/BMAD-METHOD
 ```
+
+Open Claude Code in this directory and ask the `bmad` skill to run `bmad setup`. Restart Claude Code once the skills are installed.
 
 Tell Git to ignore the BMad files and uv lockfile created for this tutorial:
 
@@ -156,7 +158,7 @@ documentation. Do not add another Django documentation file or an external
 service. Use diffsettings-audit as the spec folder slug.
 ```
 
-BMad Spec first has you pick or create an initiative, then writes `_bmad-output/initiative-<name>/spec-diffsettings-audit/`. Hand it to `bmad-preview-ticketing` to create `epic-diffsettings-audit` and its three ordered entries in `tickets.toml`. Read the spec and entries and answer any questions. Continue when they match the requirements above; note the epic folder the skill creates.
+BMad Spec first has you pick or create an initiative, then writes `_bmad-output/initiative-<slug>/spec-diffsettings-audit/spec-diffsettings-audit.md`. Hand it to `bmad-preview-ticketing` to create `epic-diffsettings-audit` and its three ordered entries in `tickets.toml`. Read the spec and entries and answer any questions. Continue when they match the requirements above; note the epic folder the skill creates.
 
 ## 9. Build the Three Stories
 

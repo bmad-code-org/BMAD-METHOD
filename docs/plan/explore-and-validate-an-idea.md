@@ -27,7 +27,7 @@ None of these are stages. Run whichever fit, in any order, and condense what
 comes out before the next step.
 
 :::tip[Not Sure?]
-Run `bmad-help` and describe your situation. It recommends a starting point
+Run `bmad` and describe your situation. It recommends a starting point
 based on what you have already produced.
 :::
 

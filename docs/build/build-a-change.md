@@ -18,7 +18,7 @@ session is one goal: about 500 lines of code added or changed (not counting
 tests) in a small handful of files. If it fits, give it to `bmad-build`. If it
 doesn't, plan that bigger piece of work first — see
 [Choose a Planning Path](../plan/choose-a-planning-path.md). You
-often cannot tell until you try; if you aren't sure, ask `bmad-help`.
+often cannot tell until you try; if you aren't sure, ask `bmad`.
 
 For a trivial edit you are willing to review yourself, skip the process
 and ask the agent to make it directly. But if a bug could escape into
@@ -50,7 +50,7 @@ into a concrete goal.
 
 ```text
 /bmad-build Implement the intent in
-_bmad-output/initiative-checkout/my-intent.md.
+_bmad-output/initiative-checkout/intent-checkout/intent-checkout.md.
 ```
 
 ```text

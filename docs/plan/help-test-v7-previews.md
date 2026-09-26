@@ -73,7 +73,7 @@ Set the initiative you are working on in `_bmad/custom/config.user.toml`, which 
 active_initiative = "initiative-checkout"
 ```
 
-The value is the initiative's folder name in the store. When it is unset, the ticketing skill offers to create the folder and record the setting for you. Setting it first avoids the question. Change it whenever you switch initiatives.
+The value is the initiative's folder name in the store. When it is unset, the ticketing skill offers to create the folder and record the setting for you. You can also ask the `bmad` skill to show, switch, create, or clear the active initiative at any time.
 
 :::tip[One workspace, many projects]
 If one workspace holds unrelated projects, tell your coding agent to follow the active initiative. Put a short rule in `AGENTS.md`, or whatever instruction file your tool reads, that names the setting and says which folders belong to which initiative:
@@ -95,7 +95,7 @@ The agent then stays out of repos that have nothing to do with the current work,
 
 ## Bring Existing Planning Documents
 
-The planning skills write into the active initiative's folder, each document as `<type>-<slug>/<type>-<slug>.md`. If you already have a brief, PRD, UX design, or architecture from v6's planning folder, copy them in the same way:
+The planning skills write into the active initiative's folder, each document as `<type>-<slug>/<type>-<slug>.md`. If you have a v6 project, ask the `bmad` skill to run `bmad migrate method`: it plans the move for the planning documents, `epics.md`, `sprint-status.yaml`, and the stories, shows you the plan, and applies it. To move only a few planning documents by hand, copy them in the same way:
 
 ```
 _bmad-output/planning-artifacts/brief.md         → initiative-checkout/brief-checkout/brief-checkout.md

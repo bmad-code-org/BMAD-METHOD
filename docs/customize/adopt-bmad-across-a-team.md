@@ -212,7 +212,8 @@ BMad agents in the same party.
 
 When the team needs one answer for a setting such as where BMad writes its
 output, pin it here; it overrides whatever a developer has in their own
-config.
+config. `output_folder` holds every initiative folder, the ticket tree, and
+`backlog/`, so pinning it moves all of them together.
 
 ```toml
 # _bmad/custom/config.toml

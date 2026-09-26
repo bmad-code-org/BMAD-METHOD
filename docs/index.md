@@ -59,6 +59,6 @@ See [Customize BMad](./customize/customize-bmad.md) and
 [Adopt BMad Across a Team](./customize/adopt-bmad-across-a-team.md).
 
 :::tip[Unsure where to start?]
-Run `bmad-help`. If that is not enough, see
+Run `bmad`. If that is not enough, see
 [Get Answers About BMad](./start/get-answers-about-bmad.md).
 :::
