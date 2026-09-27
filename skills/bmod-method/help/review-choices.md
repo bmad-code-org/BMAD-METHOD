@@ -7,7 +7,7 @@ Use this when the user asks how much review to run, how to get another pass, whe
 - `none`: no reviewers. Reasonable for a throwaway prototype.
 - `quick`: one reviewer checks acceptance criteria, the repo's agent rules, and bugs.
 - `thorough`: four independent lenses covering the bare diff, edge cases, test gaps, and intent alignment.
-- Default: a change of about 100 lines or fewer gets `quick`, a larger one `thorough`. The user picks by saying "quick", "thorough", or "skip review" when invoking.
+- Default: `quick`. `auto` follows the route: `quick` for `oneshot`, `thorough` for `full`. The user picks by saying "quick", "thorough", or "skip review" when invoking.
 - It fixes clear findings itself, asks the user when the intent cannot settle one, and logs pre-existing issues to `deferred-work.md`.
 
 ## Another pass, and when to stop
