@@ -592,7 +592,7 @@ class RenderSkillTests(unittest.TestCase):
             with self.subTest(name):
                 ws = self._workspace()
                 skill = self._skill(ws, name)
-                workflow = rs.render(ws.project, skill)
+                workflow = rs.render(ws.project, skill, assignments=["workflow.review=thorough"])
                 snap = self._assert_rendered(workflow, ws.project, name)
                 self.assertIn("{plan_file}", _markdown(snap))
                 hunter = snap / "review-prompts" / "edge-case-hunter.md"
@@ -615,6 +615,17 @@ class RenderSkillTests(unittest.TestCase):
                     skill = self._skill(ws, name)
                     workflow = rs.render(ws.project, skill, assignments=[f"workflow.route={route}"])
                     self._assert_rendered(workflow, ws.project, name)
+
+    def test_build_skills_default_to_quick_review(self):
+        for name in ("bmad-build", "bmad-build-auto"):
+            with self.subTest(name):
+                ws = self._workspace()
+                skill = self._skill(ws, name)
+                snap = rs.render(ws.project, skill).parent
+                markdown = _markdown(snap)
+                self.assertIn("Write `review: 'quick'` and `review_source: 'pinned'`", markdown)
+                self.assertIn("Quick (`quick`)", markdown)
+                self.assertNotIn((snap / "review-prompts" / "edge-case-hunter.md").as_posix(), markdown)
 
     def test_skill_root_binds_bundled_scripts_to_the_installed_skill(self):
         ws = self._workspace()
@@ -757,6 +768,8 @@ class RenderSkillTests(unittest.TestCase):
         (ws.bmad / "custom" / f"{skill.name}.toml").write_text(
             "\n".join(
                 [
+                    "[workflow]",
+                    'review = "thorough"',
                     "[[workflow.thorough_lenses]]",
                     'id = "blind-hunter"',
                     'name = "Replacement"',
@@ -773,7 +786,7 @@ class RenderSkillTests(unittest.TestCase):
         self.assertIn("Run replacement review.", review)
 
         defaults = tomllib.loads((skill / "customize.toml").read_text(encoding="utf-8"))
-        disabled = "\n".join(
+        disabled = '[workflow]\nreview = "thorough"\n' + "\n".join(
             f'[[workflow.thorough_lenses]]\nid = "{layer["id"]}"\nname = "disabled"\ninstruction = ""\n'
             for layer in defaults["workflow"]["thorough_lenses"]
         )

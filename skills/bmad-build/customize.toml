@@ -94,7 +94,7 @@ Launch a subagent with no prior conversation context, with this prompt:
 # quick_lenses, "thorough" runs thorough_lenses, "auto" follows the resolved
 # route — oneshot selects quick, full selects thorough.
 
-review = "auto"
+review = "quick"
 
 # Review lenses for the review step, in two sets the review selection picks
 # between. `instruction` is the lens's whole execution recipe — subagents by
