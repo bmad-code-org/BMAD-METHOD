@@ -219,13 +219,15 @@ on_complete = "Summarize the brief in three bullets and offer to email it via th
 ```
 
 Individual workflows add fields on top — output paths, templates, toggles —
-and each follows the shape rules above. For example, `bmad-code-review`
-exposes `review`, the default review depth:
+and each follows the shape rules above. For example, `bmad-build`,
+`bmad-build-auto`, and `bmad-code-review` each expose `review`, the default
+review depth. The build skills default to `quick` and code review to
+`thorough`; this raises every build's review to four lenses:
 
 ```toml
-# _bmad/custom/bmad-code-review.toml
+# _bmad/custom/bmad-build.toml
 [workflow]
-review = "quick"
+review = "thorough"
 ```
 
 Read a workflow's `customize.toml` to see the fields it exposes. If the

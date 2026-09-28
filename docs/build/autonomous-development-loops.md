@@ -26,6 +26,11 @@ bmad-loop, owns backlog policy and dispatch.
 4. Review the result
 5. Finish by writing a terminal status to the plan file or fallback result artifact
 
+The review runs one `quick` lens by default. Pass `thorough` in the
+invocation, or pin it in `_bmad/custom/bmad-build-auto.toml`.
+Quick is fine inside the loop, but something should probably run a thorough review on  
+every change; see [Review a Change](review-a-change.md#choose-the-depth).
+
 ## Prerequisites
 
 This skill relies on an ability to run subagents. If subagents are unavailable,

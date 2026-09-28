@@ -210,10 +210,10 @@ worker and orchestration contracts.
 
 You can. The plan-and-implement half of `bmad-build` usually takes about as
 long, and it usually needs a couple fewer turns from you. It then reviews
-the result thoroughly, triages the findings, and automatically fixes the
-ones worth fixing. "Plan mode and code" does none of this. You have to
-invoke a review by hand, then spend time disposing of every finding —
-including the noisy and unrelated ones. See
+the result, triages the findings, and automatically fixes the ones worth
+fixing. "Plan mode and code" does none of this. You have to invoke a
+review by hand, then spend time disposing of every finding — including
+the noisy and unrelated ones. See
 [Review a Change](review-a-change.md).
 
 Human attention is by far the most expensive resource, and the
@@ -221,7 +221,7 @@ productivity bottleneck in AI-backed software development.
 
 For a throwaway prototype, or a trivial change you will review yourself,
 skip the process; see [Size the Work](#size-the-work). Or tell
-`bmad-build` to take the one-shot route, or to skip review. But if you are
+`bmad-build` to take the one-shot route, and/or to skip review. But if you are
 serious about the quality of the product, just let the process run and spend
 your attention where it is irreplaceable. That extra time and inference
 is worth it.
