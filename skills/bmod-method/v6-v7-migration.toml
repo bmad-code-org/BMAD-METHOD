@@ -19,7 +19,7 @@ detect = """
 - Story files in the implementation folder named `<epic>-<story>-<slug>.md` or `spec-<epic>-<story>-<slug>.md` whose frontmatter has `route:` and `status:` (the v6 build spec shape).
 - Dated artifact folders under the planning folder: `prds/prd-<name>-<date>/prd.md`, `briefs/brief-<name>-<date>/brief.md`, `ux-designs/ux-<name>-<date>/DESIGN.md`, `architecture/architecture-<name>-<date>/ARCHITECTURE-SPINE.md`.
 - `specs/spec-<slug>/SPEC.md` under `core.output_folder`, with or without `stories.yaml` and a `stories/` folder.
-It applies only while there is no `active_initiative` under `[modules.bmm]` in `_bmad/custom/config.user.toml` and no `initiative-*/` folder holding a same-named file under the output folder. A project that already has those, with `tickets.toml` and a ticketing store config, is on v7; say so and stop unless the user names v6 leftovers to bring in.
+It applies only while there is no `active_initiative` under `[core]` in `_bmad/custom/config.user.toml` and no `initiative-*/` folder holding a same-named file under the output folder. A project that already has those, with `tickets.toml` and a ticketing store config, is on v7; say so and stop unless the user names v6 leftovers to bring in.
 """
 
 # The layout every rule below moves toward. `<root>` is `{output_folder}` from the BMad config.
@@ -147,7 +147,7 @@ A `spec-<slug>/` that holds `stories.yaml` and `stories/` represents a planned b
 
 ## Configuration
 
-Record `active_initiative = "initiative-<slug>"` under `[modules.bmm]` in `_bmad/custom/config.user.toml`, creating the file if needed. When the store moved (`workspace`), set `output_folder` under `[core]` in `_bmad/custom/config.toml`, the committed team override, never in the installer-managed `_bmad/config.toml`. Leave `planning_artifacts` and `implementation_artifacts` alone; `bmad setup` owns the rest of `_bmad/`. Then run `bmad-ticket`'s store setup (`bmad-ticket/references/store-setup.md`) so `_bmad/custom/ticketing-store-config.toml` exists; the repo store is the match for a migrated tree, and its root is the one the plan already settled, not a new recommendation. Empty v6 folders left behind are removed; git never held them.
+Record `active_initiative = "initiative-<slug>"` under `[core]` in `_bmad/custom/config.user.toml`, creating the file if needed. When the store moved (`workspace`), set `output_folder` under `[core]` in `_bmad/custom/config.toml`, the committed team override, never in the installer-managed `_bmad/config.toml`. Leave `planning_artifacts` and `implementation_artifacts` alone; `bmad setup` owns the rest of `_bmad/`. Then run `bmad-ticket`'s store setup (`bmad-ticket/references/store-setup.md`) so `_bmad/custom/ticketing-store-config.toml` exists; the repo store is the match for a migrated tree, and its root is the one the plan already settled, not a new recommendation. Empty v6 folders left behind are removed; git never held them.
 
 ## Order of work
 
@@ -184,7 +184,7 @@ checklist = [
   "Every migrated plan has a build type and mapped status; completed plans stay done, review stays in-review, and no historical record is relabeled built. Baselines are preserved when supported and missing ones are disclosed.",
   "Every `covers` id on an epic exists in the initiative's requirement source, every `covers` id on an entry exists in its epic's Requirements, and every requirement in the PRD's coverage map is covered by at least one entry.",
   "Every live path in `companions:`, `inputDocuments:`, References sections, and prose links resolves to a file; archived sources retain their original historical paths unchanged.",
-  "`_bmad/custom/config.user.toml` names the active initiative under `[modules.bmm]`, `core.output_folder` resolves to the store, and `_bmad/custom/ticketing-store-config.toml` exists.",
+  "`_bmad/custom/config.user.toml` names the active initiative under `[core]`, `core.output_folder` resolves to the store, and `_bmad/custom/ticketing-store-config.toml` exists.",
   "The store is under git as the user answered, no file is tracked by two repositories, and when a workspace was made `bmad status` at its root reports the installation current.",
   "The plan file records every question asked, the answer, the backup made or the reason none was, every file the user was asked to identify, and the result of each item above.",
 ]

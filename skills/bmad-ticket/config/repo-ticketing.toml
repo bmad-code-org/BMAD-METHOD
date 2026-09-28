@@ -10,7 +10,7 @@
 # Layout), committed in the monorepo or in a repo of their own. Status and assignee change by commit, and the skill never pushes,
 # so others see them only after a push and pull.
 #
-# The active initiative is `modules.bmm.active_initiative` in _bmad/custom/config.user.toml, read at activation.
+# The active initiative is `core.active_initiative` in _bmad/custom/config.user.toml, read at activation.
 # An empty field below that an operation needs, and that cannot be inferred from what the user gave:
 # use what they tell you for this run and offer to record it in this file (references/store-setup.md).
 

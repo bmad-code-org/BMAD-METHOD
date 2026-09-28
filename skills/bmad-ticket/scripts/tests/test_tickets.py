@@ -1075,7 +1075,7 @@ class ActiveInitiativeTests(TreeCase):
     def configure(self, initiative, layer="config.toml"):
         line = f'active_initiative = "{initiative}"\n' if initiative is not None else ""
         path = self.root / "_bmad" / ("custom" if layer != "config.toml" else "") / layer
-        path.write_text(f'[core]\noutput_folder = "{{project-root}}/out"\n\n[modules.bmm]\n{line}')
+        path.write_text(f'[core]\noutput_folder = "{{project-root}}/out"\n{line}')
 
     def elsewhere(self):
         other = tempfile.TemporaryDirectory()
@@ -1131,7 +1131,7 @@ class ActiveInitiativeTests(TreeCase):
     def test_unset_active_initiative_names_the_key(self):
         for value in (None, ""):
             self.configure(value)
-            self.fails(run("next", cwd=self.root), "modules.bmm.active_initiative")
+            self.fails(run("next", cwd=self.root), "core.active_initiative")
 
     def test_no_project_root_found(self):
         self.fails(run("status", cwd=self.elsewhere()), "no project root")

@@ -48,7 +48,7 @@ Treat every entry in `{agent.persistent_facts}` as foundational context you carr
 
 ### Step 5: Load Config
 
-Run: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder --key modules.bmm.active_initiative`
+Run: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder --key core.active_initiative`
 
 - Find existing documents by type, `<type>-*/<type>-*.md` (`brief`, `prd`, `ux`, `architecture`, `spec`, `research`), in `{output_folder}/{active_initiative}/`, then `{output_folder}/`. The skills you invoke choose where they write.
 

@@ -2320,6 +2320,26 @@ class BmadDiscoveryTests(unittest.TestCase):
 
             self.assertEqual(module["skills"], ["alpha-skill"])
             self.assertEqual(module["absent_skills"], ["not-installed"])
+            self.assertIsNone(module["absent_install"])
+
+    def test_skills_the_user_did_not_install_get_one_install_command(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir).resolve()
+            project = root / "project"
+            installed = project / ".agents" / "skills"
+            installed.mkdir(parents=True)
+            skill = write_dest_bmad(installed)
+            write_bmod(
+                installed, "bmod-alpha", "alpha", skills=("alpha-skill", "one", "two"), update_source=BMAD_SOURCE
+            )
+            write_skill(installed, "alpha-skill", "bmod-alpha", source=BMAD_SOURCE)
+
+            (module,) = setup_report(self, project, skill)["modules"]
+            self.assertEqual(module["absent_skills"], ["one", "two"])
+            self.assertEqual(module["absent_install"], "npx skills add bmad-code-org/BMAD-METHOD --skill one two")
+
+            (global_module,) = setup_report(self, root / "other", skill)["modules"]
+            self.assertTrue(global_module["absent_install"].endswith(" -g"))
 
     def test_bmad_runs_with_no_core_tools_record(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -3139,6 +3159,453 @@ class BmadStatusTests(unittest.TestCase):
                     result = run_setup_python(project, skill, *extra)
                     self.assertEqual(result.returncode, 2, msg=result.stdout)
                     self.assertFalse((project / "_bmad").exists())
+
+
+def retired_toml(renamed, removed) -> str:
+    lines = [f"renamed = {toml_inline([{'from': old, 'to': new} for old, new in renamed])}"]
+    lines.append(f"removed = {toml_inline(list(removed))}")
+    return "\n".join(lines) + "\n"
+
+
+class BmadRetiredSkillTests(unittest.TestCase):
+    def setUp(self):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        self.root = Path(temp.name).resolve()
+        self.project = self.root / "project"
+        self.installed = self.project / ".agents" / "skills"
+        self.installed.mkdir(parents=True)
+        self.skill = write_dest_bmad(self.installed)
+        write_core(self.installed)
+        self.tool_skills = self.project / ".claude" / "skills"
+
+    def method(
+        self, *, renamed=(), removed=(), skills=("bmad-ticket", "bmad-code-review"), update_source=BMAD_SOURCE
+    ) -> None:
+        write_bmod(self.installed, "bmod-method", "method", skills=skills, update_source=update_source)
+        write(self.installed / "bmod-method" / "retired.toml", retired_toml(renamed, removed))
+
+    def tool_skill(self, name: str) -> Path:
+        write(self.tool_skills / name / "SKILL.md", f"---\nname: {name}\n---\n")
+        return self.tool_skills / name
+
+    def test_a_renamed_skill_is_offered_for_removal_and_its_customization_moves(self):
+        self.method(renamed=(("bmad-preview-ticketing", "bmad-ticket"),))
+        self.tool_skill("bmad-preview-ticketing")
+        custom = self.project / "_bmad" / "custom"
+        write(custom / "bmad-preview-ticketing.toml", "[workflow]\nkeep = true\n")
+        write(
+            self.project / "skills-lock.json",
+            json.dumps({"version": 1, "skills": {"bmad-preview-ticketing": {"source": "x"}, "bmad": {"source": "x"}}}),
+        )
+
+        report = setup_report(self, self.project, self.skill)
+        self.assertEqual(
+            report["retired_skills"],
+            [
+                {
+                    "skill": "bmad-preview-ticketing",
+                    "module": "method",
+                    "renamed_to": "bmad-ticket",
+                    "paths": [".claude/skills/bmad-preview-ticketing"],
+                    "global": False,
+                }
+            ],
+        )
+        self.assertEqual(
+            report["custom_renames"],
+            [{"from": "_bmad/custom/bmad-preview-ticketing.toml", "to": "_bmad/custom/bmad-ticket.toml"}],
+        )
+        self.assertEqual((custom / "bmad-ticket.toml").read_text(), "[workflow]\nkeep = true\n")
+        self.assertFalse((custom / "bmad-preview-ticketing.toml").exists())
+        self.assertEqual(
+            report["install_offers"],
+            [
+                {
+                    "skill": "bmad-ticket",
+                    "replaces": "bmad-preview-ticketing",
+                    "module": "method",
+                    "install": "npx skills add bmad-code-org/BMAD-METHOD --skill bmad-ticket",
+                }
+            ],
+        )
+        self.assertTrue(report["current"], msg="a user may keep what setup offers to clean up")
+
+        removal = setup_report(
+            self, self.project, self.skill, "--remove-retired", "bmad-preview-ticketing", "bmad-preview-ticketing"
+        )
+        self.assertEqual(removal["removed"], [".claude/skills/bmad-preview-ticketing"])
+        self.assertEqual(
+            removal["locks"], [{"file": "skills-lock.json", "entries_removed": ["bmad-preview-ticketing"]}]
+        )
+        self.assertFalse((self.tool_skills / "bmad-preview-ticketing").exists())
+        lock = json.loads((self.project / "skills-lock.json").read_text())
+        self.assertEqual(lock, {"version": 1, "skills": {"bmad": {"source": "x"}}})
+
+        again = setup_report(self, self.project, self.skill)
+        self.assertFalse(again["changed"])
+        for key in ("retired_skills", "custom_renames", "custom_not_renamed", "custom_unused", "install_offers"):
+            self.assertEqual(again[key], [], msg=key)
+
+    def test_a_v6_skill_left_behind_is_offered_and_a_current_name_is_left_alone(self):
+        self.method(removed=("bmad-sprint-planning",))
+        self.tool_skill("bmad-sprint-planning")
+        self.tool_skill("bmad-code-review")
+
+        report = setup_report(self, self.project, self.skill)
+        self.assertEqual([entry["skill"] for entry in report["retired_skills"]], ["bmad-sprint-planning"])
+        self.assertEqual(report["install_offers"], [])
+
+        setup_report(self, self.project, self.skill, "--remove-retired", "bmad-sprint-planning")
+        self.assertFalse((self.tool_skills / "bmad-sprint-planning").exists())
+        self.assertTrue((self.tool_skills / "bmad-code-review" / "SKILL.md").is_file())
+
+    def test_a_removed_skills_customization_is_reported_and_kept(self):
+        self.method(removed=("bmad-gone",))
+        custom = self.project / "_bmad" / "custom"
+        write(custom / "bmad-gone.toml", "x = 1\n")
+        write(custom / "bmad-gone.user.toml", "y = 1\n")
+
+        report = setup_report(self, self.project, self.skill)
+        self.assertEqual(
+            report["custom_unused"],
+            [
+                {"skill": "bmad-gone", "file": "_bmad/custom/bmad-gone.toml"},
+                {"skill": "bmad-gone", "file": "_bmad/custom/bmad-gone.user.toml"},
+            ],
+        )
+        self.assertTrue((custom / "bmad-gone.toml").is_file())
+
+    def test_an_existing_new_customization_is_never_overwritten(self):
+        self.method(renamed=(("bmad-old", "bmad-ticket"),))
+        custom = self.project / "_bmad" / "custom"
+        write(custom / "bmad-old.user.toml", "old = 1\n")
+        write(custom / "bmad-ticket.user.toml", "new = 1\n")
+
+        report = setup_report(self, self.project, self.skill)
+        self.assertEqual(report["custom_renames"], [])
+        self.assertEqual(
+            report["custom_not_renamed"],
+            [{"from": "_bmad/custom/bmad-old.user.toml", "to": "_bmad/custom/bmad-ticket.user.toml"}],
+        )
+        self.assertEqual((custom / "bmad-old.user.toml").read_text(), "old = 1\n")
+        self.assertEqual((custom / "bmad-ticket.user.toml").read_text(), "new = 1\n")
+
+    def test_two_renames_to_one_name_never_overwrite_a_customization(self):
+        self.method(renamed=(("bmad-a", "bmad-ticket"), ("bmad-b", "bmad-ticket")))
+        custom = self.project / "_bmad" / "custom"
+        write(custom / "bmad-a.user.toml", "a = 1\n")
+        write(custom / "bmad-b.user.toml", "b = 1\n")
+
+        report = setup_report(self, self.project, self.skill)
+        self.assertEqual(
+            report["custom_renames"],
+            [{"from": "_bmad/custom/bmad-a.user.toml", "to": "_bmad/custom/bmad-ticket.user.toml"}],
+        )
+        self.assertEqual(
+            report["custom_not_renamed"],
+            [{"from": "_bmad/custom/bmad-b.user.toml", "to": "_bmad/custom/bmad-ticket.user.toml"}],
+        )
+        self.assertEqual((custom / "bmad-ticket.user.toml").read_text(), "a = 1\n")
+        self.assertEqual((custom / "bmad-b.user.toml").read_text(), "b = 1\n")
+
+    def test_no_install_is_offered_when_the_new_name_is_in_another_active_root(self):
+        self.method(renamed=(("bmad-old", "bmad-ticket"),))
+        self.tool_skill("bmad-old")
+        self.tool_skill("bmad-ticket")
+        report = setup_report(self, self.project, self.skill, "--root", str(self.tool_skills))
+        self.assertEqual(report["install_offers"], [])
+
+    def test_removal_modes_cannot_be_combined_with_other_modes(self):
+        self.method(removed=("bmad-old",))
+        for extra in (("--status",), ("--list-config-questions",), ("--remove-copies", "x")):
+            with self.subTest(extra=extra):
+                result = run_setup_python(self.project, self.skill, "--remove-retired", "bmad-old", *extra)
+                self.assertEqual(result.returncode, 2)
+
+    def test_status_reports_the_same_and_changes_nothing(self):
+        self.method(renamed=(("bmad-old", "bmad-ticket"),), update_source="file:skills")
+        self.tool_skill("bmad-old")
+        write(self.project / "_bmad" / "custom" / "bmad-old.toml", "x = 1\n")
+        before = snapshot(self.project)
+
+        report = status_report(self, self.project, self.skill)
+        self.assertEqual(snapshot(self.project), before)
+        self.assertEqual([entry["skill"] for entry in report["retired_skills"]], ["bmad-old"])
+        self.assertEqual(len(report["custom_renames"]), 1)
+        self.assertEqual(report["next"], "bmad setup")
+        self.assertFalse(report["current"])
+
+    def test_a_retired_skill_alone_does_not_owe_setup(self):
+        self.method(removed=("bmad-old",), update_source="file:skills")
+        self.tool_skill("bmad-old")
+        setup_report(self, self.project, self.skill)
+        report = status_report(self, self.project, self.skill)
+        self.assertEqual([entry["skill"] for entry in report["retired_skills"]], ["bmad-old"])
+        self.assertIsNone(report["next"])
+        self.assertTrue(report["current"])
+
+    @unittest.skipUnless(symlink_to_temp_dir_succeeds(), "symlinks unavailable")
+    def test_a_linked_skill_is_removed_as_a_link_and_its_target_is_kept(self):
+        self.method(removed=("bmad-old",))
+        target = self.root / "elsewhere" / "bmad-old"
+        write(target / "SKILL.md", "keep\n")
+        self.tool_skills.mkdir(parents=True)
+        os.symlink(target, self.tool_skills / "bmad-old", target_is_directory=True)
+
+        removal = setup_report(self, self.project, self.skill, "--remove-retired", "bmad-old")
+        self.assertEqual(removal["removed"], [".claude/skills/bmad-old"])
+        self.assertFalse((self.tool_skills / "bmad-old").is_symlink())
+        self.assertEqual((target / "SKILL.md").read_text(), "keep\n")
+
+    @unittest.skipUnless(symlink_to_temp_dir_succeeds(), "symlinks unavailable")
+    def test_a_tool_folder_linked_outside_the_project_is_not_cleaned(self):
+        self.method(removed=("bmad-old",))
+        outside = self.root / "shared-skills"
+        write(outside / "bmad-old" / "SKILL.md", "keep\n")
+        self.tool_skills.parent.mkdir(parents=True)
+        os.symlink(outside, self.tool_skills, target_is_directory=True)
+
+        report = setup_report(self, self.project, self.skill)
+        self.assertEqual(report["retired_skills"], [])
+        self.assertEqual((outside / "bmad-old" / "SKILL.md").read_text(), "keep\n")
+
+    def test_every_tool_folder_in_the_project_is_cleaned(self):
+        self.method(removed=("bmad-old",))
+        self.tool_skill("bmad-old")
+        write(self.project / ".agents" / "skills" / "bmad-old" / "SKILL.md", "x\n")
+        write(self.project / "skills" / "bmad-old" / "SKILL.md", "not a tool folder\n")
+
+        report = setup_report(self, self.project, self.skill)
+        (entry,) = report["retired_skills"]
+        self.assertEqual(entry["paths"], [".agents/skills/bmad-old", ".claude/skills/bmad-old"])
+        setup_report(self, self.project, self.skill, "--remove-retired", "bmad-old")
+        self.assertFalse((self.project / ".agents" / "skills" / "bmad-old").exists())
+        self.assertTrue((self.project / "skills" / "bmad-old" / "SKILL.md").is_file())
+
+    def test_a_global_install_cleans_its_own_folder_and_the_global_lock(self):
+        home = self.root / "home"
+        installed = home / ".claude" / "skills"
+        skill = write_dest_bmad(installed)
+        write_core(installed)
+        write_bmod(
+            installed,
+            "bmod-method",
+            "method",
+            skills=("bmad-ticket",),
+            update_source=BMAD_SOURCE,
+        )
+        write(installed / "bmod-method" / "retired.toml", retired_toml((("bmad-old", "bmad-ticket"),), ()))
+        write(installed / "bmad-old" / "SKILL.md", "x\n")
+        lock = home / ".agents" / ".skill-lock.json"
+        write(lock, json.dumps({"version": 3, "skills": {"bmad-old": {}, "bmad": {}}}, indent=2))
+        env = {key: value for key, value in os.environ.items() if key != "XDG_STATE_HOME"} | {
+            "HOME": str(home),
+            "USERPROFILE": str(home),
+        }
+
+        def run(*extra: str) -> dict:
+            command = [sys.executable, str(skill / "scripts" / "setup.py"), "--project-root", str(self.project)]
+            result = subprocess.run(
+                [*command, "--skill", str(skill), *extra], env=env, text=True, capture_output=True, check=False
+            )
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            return json.loads(result.stdout)
+
+        report = run()
+        (entry,) = report["retired_skills"]
+        self.assertEqual(entry["paths"], ["~/.claude/skills/bmad-old"])
+        self.assertTrue(entry["global"])
+        (offer,) = report["install_offers"]
+        self.assertEqual(offer["install"], "npx skills add bmad-code-org/BMAD-METHOD --skill bmad-ticket -g")
+
+        removal = run("--remove-retired", "bmad-old")
+        self.assertEqual(removal["removed"], ["~/.claude/skills/bmad-old"])
+        self.assertEqual(removal["locks"], [{"file": "~/.agents/.skill-lock.json", "entries_removed": ["bmad-old"]}])
+        self.assertEqual(json.loads(lock.read_text()), {"version": 3, "skills": {"bmad": {}}})
+        self.assertFalse(lock.read_text().endswith("\n"))
+        self.assertFalse((installed / "bmad-old").exists())
+
+    def test_only_retired_names_can_be_removed(self):
+        self.method(removed=("bmad-old",), skills=("bmad-ticket", "bmad-code-review"))
+        self.tool_skill("bmad-code-review")
+        self.tool_skill("bmad-old")
+        write(self.project / "skills-lock.json", "{ not json")
+        for names in (("bmad-code-review",), ("bmad-old",)):
+            with self.subTest(names=names):
+                result = run_setup_python(self.project, self.skill, "--remove-retired", *names)
+                self.assertEqual(result.returncode, 1)
+                self.assertTrue(result.stderr.startswith("error: "), msg=result.stderr)
+        self.assertTrue((self.tool_skills / "bmad-code-review").is_dir())
+        self.assertTrue((self.tool_skills / "bmad-old").is_dir(), msg="a bad lock stops the run before any delete")
+
+    def test_a_name_a_module_still_lists_is_not_retired(self):
+        self.method(removed=("bmad-code-review",))
+        self.tool_skill("bmad-code-review")
+        self.assertEqual(setup_report(self, self.project, self.skill)["retired_skills"], [])
+
+    def test_an_unusable_retired_file_is_a_problem_and_setup_carries_on(self):
+        self.method()
+        write(self.installed / "bmod-method" / "retired.toml", "removed = [\n")
+        report = setup_report(self, self.project, self.skill)
+        self.assertEqual([problem["kind"] for problem in report["problems"]], ["retired-file"])
+        self.assertEqual(report["retired_skills"], [])
+
+    def test_bad_retired_lists_are_rejected(self):
+        setup = load_setup()
+        for extra, message in (
+            ('renamed = [{ from = "a", to = "a" }]\n', "to itself"),
+            ('renamed = [{ from = "a" }]\n', "must be a skill name"),
+            ('renamed = ["a"]\n', "must be a table"),
+            ('removed = ["a", "a"]\n', "repeats 'a'"),
+            ('removed = ["a"]\nrenamed = [{ from = "a", to = "b" }]\n', "retires 'a' more than once"),
+            ('removed = ["../a"]\n', "unsafe skill name"),
+        ):
+            with self.subTest(extra=extra), self.assertRaisesRegex(Exception, message):
+                write(self.root / "retired.toml", extra)
+                setup.read_retired_file(self.root)
+
+
+class BmadRootTests(unittest.TestCase):
+    def setUp(self):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        root = Path(temp.name).resolve()
+        self.project = root / "project"
+        self.global_skills = root / "home" / ".claude" / "skills"
+        self.project_skills = self.project / ".claude" / "skills"
+        self.project_skills.mkdir(parents=True)
+        self.skill = write_dest_bmad(self.global_skills)
+        write_core(self.global_skills)
+
+    def test_a_module_in_another_active_root_is_set_up(self):
+        write_module_skill(self.project_skills, "extra-skill", "extra", scripts={"scripts/tool.py": b"extra\n"})
+        without = setup_report(self, self.project, self.skill, "--status")
+        self.assertNotIn("extra", [module["module"] for module in without["modules"]])
+
+        report = setup_report(self, self.project, self.skill, "--root", str(self.project_skills))
+        self.assertIn("extra", [module["module"] for module in report["modules"]])
+        self.assertEqual((self.project / "_bmad" / "extra" / "scripts" / "tool.py").read_bytes(), b"extra\n")
+        self.assertEqual(report["duplicate_skills"], [])
+
+    def test_a_skill_in_two_roots_is_a_duplicate_and_the_first_root_wins(self):
+        write_bmod(self.global_skills, "bmod-alpha", "alpha", skills=("alpha-skill",), version="1.0.0")
+        write_skill(self.global_skills, "alpha-skill", "bmod-alpha")
+        write_bmod(self.project_skills, "bmod-alpha", "alpha", skills=("alpha-skill",), version="2.0.0")
+        write_skill(self.project_skills, "alpha-skill", "bmod-alpha")
+
+        report = status_report(self, self.project, self.skill, "--root", str(self.project_skills))
+        alpha = next(module for module in report["modules"] if module["module"] == "alpha")
+        self.assertEqual(alpha["version"], "2.0.0")
+        self.assertEqual(
+            [(entry["skill"], entry["used"]) for entry in report["duplicate_skills"]],
+            [("alpha-skill", ".claude/skills/alpha-skill"), ("bmod-alpha", ".claude/skills/bmod-alpha")],
+        )
+        (first, _record) = report["duplicate_skills"]
+        self.assertEqual(
+            [(copy["version"], copy["global"]) for copy in first["copies"]], [("2.0.0", False), ("1.0.0", True)]
+        )
+        self.assertFalse(first["newer_copy_unused"])
+
+    def test_an_older_copy_in_use_is_flagged_and_either_copy_can_go_but_not_both(self):
+        write_bmod(self.global_skills, "bmod-alpha", "alpha", skills=("alpha-skill",), version="7.0.0")
+        write_skill(self.global_skills, "alpha-skill", "bmod-alpha")
+        write(self.project_skills / "alpha-skill" / "bmod.toml", '[skill]\nbmod = "bmod-alpha"\nsource = "file:x"\n')
+        write_bmod(self.project_skills, "bmod-alpha", "alpha", skills=("alpha-skill",), version="6.0.0")
+        write(self.project / "skills-lock.json", json.dumps({"version": 1, "skills": {"alpha-skill": {}}}) + "\n")
+        roots = ("--root", str(self.project_skills))
+
+        report = status_report(self, self.project, self.skill, *roots)
+        skill_entry = next(entry for entry in report["duplicate_skills"] if entry["skill"] == "alpha-skill")
+        self.assertTrue(skill_entry["newer_copy_unused"])
+
+        paths = [copy["path"] for copy in skill_entry["copies"]]
+        refused = run_setup_python(self.project, self.skill, *roots, "--remove-copies", *paths)
+        self.assertEqual(refused.returncode, 1)
+        self.assertIn("every copy", refused.stderr)
+        self.assertTrue((self.project_skills / "alpha-skill").is_dir())
+
+        removal = setup_report(self, self.project, self.skill, *roots, "--remove-copies", ".claude/skills/alpha-skill")
+        self.assertEqual(removal["removed"], [".claude/skills/alpha-skill"])
+        self.assertEqual(removal["locks"], [{"file": "skills-lock.json", "entries_removed": ["alpha-skill"]}])
+        self.assertTrue((self.global_skills / "alpha-skill").is_dir())
+
+    def test_a_copy_not_listed_as_a_duplicate_cannot_be_removed(self):
+        write_module_skill(self.project_skills, "extra-skill", "extra")
+        result = run_setup_python(
+            self.project,
+            self.skill,
+            "--root",
+            str(self.project_skills),
+            "--remove-copies",
+            ".claude/skills/extra-skill",
+        )
+        self.assertEqual(result.returncode, 1)
+        self.assertTrue((self.project_skills / "extra-skill").is_dir())
+
+    def test_an_unreadable_extra_root_is_skipped_even_when_the_bmad_folder_is_passed_first(self):
+        result = run_setup_python(
+            self.project,
+            self.skill,
+            "--status",
+            "--root",
+            str(self.global_skills),
+            "--root",
+            str(self.project / "missing" / "skills"),
+        )
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+
+    def test_install_commands_follow_each_modules_own_scope(self):
+        write_bmod(
+            self.project_skills, "bmod-extra", "extra", skills=("extra-skill", "extra-more"), update_source=BMAD_SOURCE
+        )
+        write_skill(self.project_skills, "extra-skill", "bmod-extra", source=BMAD_SOURCE)
+        write(
+            self.project_skills / "bmod-extra" / "retired.toml",
+            'renamed = [{ from = "extra-old", to = "extra-new" }]\n',
+        )
+        write(self.project_skills / "extra-old" / "SKILL.md", "x\n")
+
+        report = setup_report(self, self.project, self.skill, "--root", str(self.project_skills))
+        extra = next(module for module in report["modules"] if module["module"] == "extra")
+        self.assertEqual(extra["scope"], "project")
+        self.assertEqual(extra["absent_install"], "npx skills add bmad-code-org/BMAD-METHOD --skill extra-more")
+        (offer,) = report["install_offers"]
+        self.assertEqual(offer["install"], "npx skills add bmad-code-org/BMAD-METHOD --skill extra-new")
+        core = next(module for module in report["modules"] if module["module"] == "core-tools")
+        self.assertEqual(core["scope"], "global")
+
+    def test_a_lock_entry_is_dropped_only_from_the_scope_the_copy_was_in(self):
+        write_bmod(self.global_skills, "bmod-method", "method", skills=())
+        write(self.global_skills / "bmod-method" / "retired.toml", 'removed = ["bmad-old"]\n')
+        write(self.project_skills / "bmad-old" / "SKILL.md", "x\n")
+        write(self.project / "skills-lock.json", json.dumps({"version": 1, "skills": {"bmad-old": {}}}) + "\n")
+        home = self.global_skills.parent.parent
+        global_lock = home / ".agents" / ".skill-lock.json"
+        write(global_lock, json.dumps({"version": 3, "skills": {"bmad-old": {}}}))
+        env = {key: value for key, value in os.environ.items() if key != "XDG_STATE_HOME"} | {"HOME": str(home)}
+        command = [sys.executable, str(self.skill / "scripts" / "setup.py"), "--project-root", str(self.project)]
+        result = subprocess.run(
+            [*command, "--skill", str(self.skill), "--remove-retired", "bmad-old"],
+            env=env,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        self.assertEqual(
+            json.loads(result.stdout)["locks"], [{"file": "skills-lock.json", "entries_removed": ["bmad-old"]}]
+        )
+        self.assertIn("bmad-old", json.loads(global_lock.read_text())["skills"])
+
+    @unittest.skipUnless(symlink_to_temp_dir_succeeds(), "symlinks unavailable")
+    def test_a_linked_copy_of_the_same_folder_is_not_a_duplicate(self):
+        write_module_skill(self.global_skills, "alpha-skill", "alpha")
+        linked = self.project / ".agents" / "skills"
+        linked.parent.mkdir(parents=True)
+        os.symlink(self.global_skills, linked, target_is_directory=True)
+        report = status_report(self, self.project, self.skill, "--root", str(linked))
+        self.assertEqual(report["duplicate_skills"], [])
 
 
 class BmadKnowledgeEntryTests(unittest.TestCase):
