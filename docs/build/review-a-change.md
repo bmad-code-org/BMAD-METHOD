@@ -58,6 +58,17 @@ and offers them. Pick one and it reviews everything since the
 `baseline_revision` recorded in that ticket's plan, with the plan as the
 intent. You can also hand it a plan file directly.
 
+Without a plan, the review runs in **no-plan mode**. The reviewers judge
+the diff against itself and the commit messages, and triage cannot tell
+a deliberate choice from a mistake, so a finding that needs your
+decision is patched or deferred instead. A generic "review this PR" bot
+is the usual way to end up here. It still finds real bugs, but it is
+much more useful when it knows the intent: a whole review pass exists to
+check whether the change does what it claims, and it can only run if it
+is told what the claims are. So make sure the bot always knows where the
+claims are. Have it pass the PR description to the review every time,
+and the ticket's plan when possible.
+
 The skill writes a unified diff to a file, confirms the target and plan
 context with you, then launches the reviewers. This works best on a
 platform that can spawn subagents, or at least call another model from
