@@ -91,7 +91,7 @@ every match. Other entries are facts.
 # Workflow
 
 `{active_initiative}` is the value printed by
-`uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key modules.bmm.active_initiative`,
+`uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.active_initiative`,
 read once before step 1. When it is unset, drop `/{active_initiative}`
 from every path.
 

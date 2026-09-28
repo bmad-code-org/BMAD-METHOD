@@ -57,7 +57,7 @@ the project root.
 
 With no `<dir>`, next, status, find, and mark run on the active initiative, `{output_folder}/{active_initiative}`.
 The project root is `--project-root`, else the first folder at or above the working directory that
-holds `_bmad/`. `active_initiative` (`[modules.bmm]`) and `output_folder` (`[core]`) come from the
+holds `_bmad/`. `active_initiative` and `output_folder` (`[core]`) come from the
 BMad config, merged by the project's `_bmad/scripts/config_utils.py`. `{project-root}` is
 substituted, and a relative path is taken from the project root.
 
@@ -692,11 +692,11 @@ def tickets_root(project_root: Path, config: dict | None = None) -> Path:
 def active_initiative(project_root: Path) -> Path:
     """`{output_folder}/{active_initiative}` for the project."""
     config = central_config(project_root)
-    bmm = config.get("modules", {}).get("bmm", {})
-    name = bmm.get("active_initiative") if isinstance(bmm, dict) else None
+    core = config.get("core", {})
+    name = core.get("active_initiative") if isinstance(core, dict) else None
     if not isinstance(name, str) or not name.strip():
         raise TicketError(
-            "no active initiative: set modules.bmm.active_initiative in _bmad/custom/config.user.toml, or pass a folder"
+            "no active initiative: set core.active_initiative in _bmad/custom/config.user.toml, or pass a folder"
         )
     folder = (tickets_root(project_root, config) / name.strip()).resolve()
     if not folder.is_dir():

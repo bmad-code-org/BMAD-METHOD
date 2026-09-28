@@ -69,7 +69,7 @@ output_folder = "{project-root}/_bmad-initiative-store"
 Set the initiative you are working on in `_bmad/custom/config.user.toml`, which is personal and not committed:
 
 ```toml
-[modules.bmm]
+[core]
 active_initiative = "initiative-checkout"
 ```
 

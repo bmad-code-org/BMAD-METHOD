@@ -8,6 +8,7 @@
 
 * `planning_artifacts` and `implementation_artifacts` are no longer read or seeded. Run `bmad migrate method` on a v6 project.
 * The ticketing store's `root` key is gone; the ticket tree is `{output_folder}/{active_initiative}`. To move the store, set `core.output_folder` in `_bmad/custom/config.toml`.
+* `active_initiative` is now a core setting: it moved from `[modules.bmm]` to `[core]` in `_bmad/custom/config.user.toml`, since core skills such as brainstorming and research also write into the initiative folder. If you set it on a preview build, move the line.
 * `bmad-preview-ticketing` is now `bmad-ticket`, and the forwarder under the old name is gone. Run `bmad setup`: it updates the skills, moves `_bmad/custom/bmad-preview-ticketing.toml` to `bmad-ticket.toml`, offers to delete the old skill, and offers to install `bmad-ticket`.
 
 ### ✨ Features
