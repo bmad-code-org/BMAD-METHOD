@@ -50,6 +50,6 @@ Then run with no mode flag, adding `--module-answers <file>` when you wrote one,
 - Duplicates: `--remove-copies <path>...`, paths exactly as listed. Keep the copy in use, or the newer one when `newer_copy_unused`.
 - Run the `install` commands the user accepts from `install_offers`, `absent_install`, `unmet_requirements` and `missing_module_records`.
 
-**Migrations.** Do steps 1 and 2 of `references/migrate.md`, Find and Match. Name each that applies with its `title`, `from` and `to`, and ask; on yes, continue with its step 3.
+**Migrations.** Do steps 1 and 2 of `references/migrate.md`, Find and Match. Name each that applies with its `title`, `from` and `to`, and ask; on yes, continue with its steps 3 and 4.
 
 **Answers.** On a first install, or when the user asks to change an answer, show the `answers` from the setup run, each key with its value and file, and offer to change any. A change is your edit to `modules.<code>.<key>` in that file.

@@ -3358,6 +3358,18 @@ class BmadRetiredSkillTests(unittest.TestCase):
         self.assertFalse((self.tool_skills / "bmad-old").is_symlink())
         self.assertEqual((target / "SKILL.md").read_text(), "keep\n")
 
+    @unittest.skipUnless(symlink_to_temp_dir_succeeds(), "symlinks unavailable")
+    def test_a_tool_folder_linked_outside_the_project_is_not_cleaned(self):
+        self.method(removed=("bmad-old",))
+        outside = self.root / "shared-skills"
+        write(outside / "bmad-old" / "SKILL.md", "keep\n")
+        self.tool_skills.parent.mkdir(parents=True)
+        os.symlink(outside, self.tool_skills, target_is_directory=True)
+
+        report = setup_report(self, self.project, self.skill)
+        self.assertEqual(report["retired_skills"], [])
+        self.assertEqual((outside / "bmad-old" / "SKILL.md").read_text(), "keep\n")
+
     def test_every_tool_folder_in_the_project_is_cleaned(self):
         self.method(removed=("bmad-old",))
         self.tool_skill("bmad-old")

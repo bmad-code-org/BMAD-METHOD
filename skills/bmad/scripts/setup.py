@@ -589,7 +589,15 @@ def skill_folders(project_root: Path, installation: Installation) -> tuple[Path,
         entries = sorted(project_root.iterdir(), key=lambda path: path.name)
     except OSError:
         entries = []
-    candidates += [entry / "skills" for entry in entries if entry.name.startswith(".") and (entry / "skills").is_dir()]
+    inside = project_root.resolve()
+    active = {root.resolve() for root in installation.roots}
+    # A tool folder linked outside the project is not a project copy; deleting through it would hit the target.
+    candidates += [
+        folder
+        for entry in entries
+        if entry.name.startswith(".") and (folder := entry / "skills").is_dir()
+        if folder.resolve().is_relative_to(inside) or folder.resolve() in active
+    ]
     folders: list[Path] = []
     seen: set[Path] = set()
     for folder in candidates:
