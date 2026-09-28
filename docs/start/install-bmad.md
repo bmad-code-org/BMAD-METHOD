@@ -49,13 +49,9 @@ Invoke `bmad-build` with the change you want, or ask `bmad` for guidance. For wo
 
 ## Update an Installation
 
-Update through the same installation method:
+Ask the `bmad` skill to run `bmad setup` again. It checks each module's version and runs `npx skills update` for you when there is a newer one. Then it asks any new config questions, moves your `_bmad/custom/` files when a skill was renamed, and offers to delete skills a module renamed or removed. Last, it checks whether a migration applies and asks whether to run it.
 
-```bash
-npx skills update
-```
-
-For plugins, use your marketplace's update flow instead. Then run `bmad setup` again to refresh the project's runtime and `bmad status` to verify it. Restart your coding tool when its skill catalog needs refreshing.
+If you update by hand with `npx skills update`, run `bmad setup` afterwards. For plugins, use your marketplace's update flow, then `bmad setup`. Restart your coding tool when its skill catalog needs refreshing.
 
 ## What You Get
 

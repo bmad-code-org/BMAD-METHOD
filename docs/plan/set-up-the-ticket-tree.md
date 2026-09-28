@@ -15,7 +15,7 @@ Install with the skills CLI. Run this in your project:
 npx skills add bmad-code-org/BMAD-METHOD --skill bmad --skill bmod-core-tools --skill bmod-method --skill bmad-ticket
 ```
 
-Add `--skill bmad-build` and any other skill you want in the same command. Then open your AI tool in the project, ask the `bmad` skill to run `bmad setup`, and check that the tool lists `bmad-ticket`. Update later with `npx skills update`.
+Add `--skill bmad-build` and any other skill you want in the same command. Then open your AI tool in the project, ask the `bmad` skill to run `bmad setup`, and check that the tool lists `bmad-ticket`. Update later by asking `bmad` to run `bmad setup` again.
 
 :::note[Prerequisites]
 You need Node.js with npm, Git, and [uv](https://docs.astral.sh/uv/). BMad setup and the ticketing scripts run through `uv`.

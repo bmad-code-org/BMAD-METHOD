@@ -45,6 +45,7 @@ MANIFEST_NAME = "bmod.toml"
 TOPICS_DIR = "help"
 HELP_NAME = f"{TOPICS_DIR}/help.md"
 ROSTER_NAME = "roster.toml"
+RETIRED_NAME = "retired.toml"
 MIGRATION_TABLE = "migration"
 MIGRATION_FIELDS = ("module", "from", "to", "title", "summary", "detect", "guide")
 READ_LIMIT = 1024 * 1024
@@ -353,7 +354,9 @@ def module_migrations(module: Module, problems: list[dict[str, object]]) -> list
     """The migrations a record ships: every `*.toml` beside `bmod.toml` with a `[migration]` table."""
     folder = module.folder
     try:
-        found = sorted(path for path in folder.glob("*.toml") if path.name not in (MANIFEST_NAME, ROSTER_NAME))
+        found = sorted(
+            path for path in folder.glob("*.toml") if path.name not in (MANIFEST_NAME, ROSTER_NAME, RETIRED_NAME)
+        )
     except OSError:
         return []
     migrations: list[dict[str, object]] = []

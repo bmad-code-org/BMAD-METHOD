@@ -78,6 +78,13 @@ def check_repo(project_root: Path) -> RepoReport:
 
     problems += record_problems(files, records)
     problems += membership_problems(files, records, members, shipped)
+    retired: dict[str, setup.ParsedRetired] = {}
+    for name in records:
+        try:
+            retired[name] = setup.read_retired_file(skills_dir / name)
+        except Exception as error:
+            problems.append(f"skills/{name}/{setup.RETIRED_NAME}: the runtime parser rejects this file: {error}")
+    problems += retired_problems(retired, shipped)
     for name, parsed in files.items():
         for table, source in (("bmod", parsed.bmod), ("skill", parsed.skill)):
             if source is not None:
@@ -203,6 +210,38 @@ def membership_problems(
                     f"{rel(name)}: lists the skill {member!r}, but {rel(member)} names {parsed.skill.bmod!r} as its bmod"
                 )
     return problems
+
+
+def retired_problems(records: dict[str, setup.ParsedRetired], shipped: set[str]) -> list[str]:
+    """A retired name is never shipped again, and a rename points at a skill this repository ships."""
+    problems: list[str] = []
+    retired_by: dict[str, str] = {}
+    for name, record in records.items():
+        retired = [*(rename.old for rename in record.renamed), *record.removed]
+        for old in retired:
+            if old in shipped:
+                problems.append(
+                    f"{retired_rel(name)}: retires {old!r}, but skills/{old} still ships; a retired name is never reused"
+                )
+            first = retired_by.setdefault(old, name)
+            if first != name:
+                problems.append(f"{retired_rel(name)}: retires {old!r}, which {retired_rel(first)} already retires")
+        targets = [rename.new for rename in record.renamed]
+        for new in dict.fromkeys(target for target in targets if targets.count(target) > 1):
+            problems.append(
+                f"{retired_rel(name)}: renames more than one skill to {new!r}; "
+                "their customizations would collide, so list the extras under removed"
+            )
+        for rename in record.renamed:
+            if rename.new not in shipped:
+                problems.append(
+                    f"{retired_rel(name)}: renames {rename.old!r} to {rename.new!r}, which this repository does not ship"
+                )
+    return problems
+
+
+def retired_rel(folder: str) -> str:
+    return f"skills/{folder}/{setup.RETIRED_NAME}"
 
 
 def requirement_problems(

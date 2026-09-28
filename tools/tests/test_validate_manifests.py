@@ -221,6 +221,41 @@ class RecordRuleTests(ValidatorCase):
         self.assertIn("bmod-method has '6.12.0'", problems)
 
 
+class RetiredRuleTests(ValidatorCase):
+    def retire(self, record: str, lines: str) -> None:
+        write(self.skills / record / "retired.toml", lines)
+
+    def test_retired_names_that_no_longer_ship_are_valid(self):
+        self.retire(
+            "bmod-method", 'renamed = [{ from = "bmad-old-build", to = "bmad-build" }]\nremoved = ["bmad-gone"]\n'
+        )
+        self.assertEqual(self.problems(), "")
+
+    def test_a_retired_name_that_still_ships_is_a_problem(self):
+        self.retire("bmod-method", 'removed = ["bmad-spec"]\n')
+        self.assertIn("retires 'bmad-spec', but skills/bmad-spec still ships", self.problems())
+
+    def test_a_rename_to_a_skill_the_repository_does_not_ship_is_a_problem(self):
+        self.retire("bmod-method", 'renamed = [{ from = "bmad-old", to = "bmad-missing" }]\n')
+        self.assertIn("renames 'bmad-old' to 'bmad-missing', which this repository does not ship", self.problems())
+
+    def test_a_name_retired_by_two_records_is_a_problem(self):
+        self.retire("bmod-method", 'removed = ["bmad-gone"]\n')
+        self.retire("bmod-core-tools", 'removed = ["bmad-gone"]\n')
+        self.assertIn("retires 'bmad-gone', which skills/bmod-", self.problems())
+
+    def test_two_renames_to_one_skill_are_a_problem(self):
+        self.retire(
+            "bmod-method",
+            'renamed = [{ from = "bmad-a", to = "bmad-build" }, { from = "bmad-b", to = "bmad-build" }]\n',
+        )
+        self.assertIn("renames more than one skill to 'bmad-build'", self.problems())
+
+    def test_a_retired_file_the_runtime_rejects_is_a_problem(self):
+        self.retire("bmod-method", 'removed = ["bmad-gone", "bmad-gone"]\n')
+        self.assertIn("skills/bmod-method/retired.toml: the runtime parser rejects this file", self.problems())
+
+
 class StampRuleTests(ValidatorCase):
     def test_record_the_stamper_cannot_stamp(self):
         self.method_record('version = "6.11.0-next"', "version = '6.11.0-next'")

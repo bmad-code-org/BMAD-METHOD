@@ -8,7 +8,15 @@
 
 * `planning_artifacts` and `implementation_artifacts` are no longer read or seeded. Run `bmad migrate method` on a v6 project.
 * The ticketing store's `root` key is gone; the ticket tree is `{output_folder}/{active_initiative}`. To move the store, set `core.output_folder` in `_bmad/custom/config.toml`.
-* `bmad-preview-ticketing` is now `bmad-ticket`. `npx skills update` does not install the new name: run `npx skills add bmad-code-org/BMAD-METHOD --skill bmad-ticket`, and rename `_bmad/custom/bmad-preview-ticketing.toml` to `bmad-ticket.toml` if you have one. Until the v7 release, the old name is a forwarder that says this.
+* `bmad-preview-ticketing` is now `bmad-ticket`, and the forwarder under the old name is gone. Run `bmad setup`: it updates the skills, moves `_bmad/custom/bmad-preview-ticketing.toml` to `bmad-ticket.toml`, offers to delete the old skill, and offers to install `bmad-ticket`.
+
+### ✨ Features
+
+* `bmad setup` cleans up renamed and removed skills. Each module lists them in a `retired.toml` beside its `bmod.toml`; setup offers to delete any still in the project's skills folders, including skills a v6 installer left behind, moves `_bmad/custom/` files to the new name, and says when a customization no longer applies. `removals.txt` is gone.
+* `bmad setup` now moves `_bmad/custom/<old>.toml` and `<old>.user.toml` to a renamed skill's new name without asking, when the new file does not exist yet. It still never changes a value inside a file.
+* `bmad setup` and `bmad status` name the skills of each module you did not install and give one command that installs them.
+* `bmad setup` and `bmad status` cover every skills folder your tool loads, so a module installed in the project is set up while `bmad` is global, and a skill installed twice is reported with an offer to delete the extra copy.
+* `bmad setup` is one flow that also updates and migrates: when a module has a newer version it runs `npx skills update`, and it ends by checking whether any migration applies and asking whether to run it. Asking for status runs only the check.
 
 ## v6.12.0 - 2026-09-03
 

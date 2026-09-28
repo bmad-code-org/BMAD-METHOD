@@ -17,6 +17,7 @@ One skill folder named `bmod-<code>`, for example `bmod-method`. Nobody runs it;
 | `help/help.md` | What `bmad` reads to guide users: what each skill is for, when to recommend it, what comes next. Written for an agent, short. |
 | `help/<topic>.md` | Optional deeper files on one subject each. `help.md` says what each covers, and `bmad` opens one only when a question needs it. |
 | `roster.toml` | Optional. The personas the module offers and the parties they form, for `bmad-party-mode` and any skill that casts personas. |
+| `retired.toml` | Optional. Skills the module no longer ships: `renamed` as `{ from, to }` pairs and `removed` as names. After an update, `bmad setup` offers to delete old copies still installed and moves a renamed skill's `_bmad/custom/` files to the new name. A retired name is never reused. |
 
 ## Each skill in the module
 

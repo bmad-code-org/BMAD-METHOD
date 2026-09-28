@@ -50,7 +50,7 @@ Open your coding tool in the project and ask the `bmad` skill to run
 **[Add BMad to an existing codebase →](https://docs.bmad-method.org/existing-codebases/start-in-an-existing-codebase/)**
 
 BMad is free and open source, with no paywalled workflows or gated community.
-Ask for `bmad status` to check versions and see what to run next. Install updates with `npx skills update` or your plugin marketplace, then ask for `bmad setup` again to refresh the project's runtime.
+Ask for `bmad status` to check versions and see what to run next. Ask for `bmad setup` to install updates: it runs `npx skills update`, then refreshes the project and cleans up renamed and removed skills. With a plugin marketplace, update there, then ask for `bmad setup`.
 
 ## Why BMad?
 
