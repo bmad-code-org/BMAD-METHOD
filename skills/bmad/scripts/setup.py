@@ -24,6 +24,7 @@ from typing import NamedTuple
 sys.dont_write_bytecode = True
 
 MANIFEST_NAME = "bmod.toml"
+RETIRED_NAME = "retired.toml"
 QUESTION_KEYS = frozenset({"key", "prompt", "default"})
 OPTIONAL_QUESTION_KEYS = frozenset({"scope"})
 QUESTION_SCOPES = ("team", "user")
@@ -73,6 +74,11 @@ class KnowledgeEntry(NamedTuple):
     skills: tuple[str, ...] | None
 
 
+class Rename(NamedTuple):
+    old: str
+    new: str
+
+
 class ConfigQuestion(NamedTuple):
     module: str
     key: str
@@ -90,6 +96,11 @@ class ParsedBmod(NamedTuple):
     questions: tuple[ConfigQuestion, ...]
     required_skills: tuple[Requirement, ...]
     recommended_skills: tuple[Requirement, ...]
+
+
+class ParsedRetired(NamedTuple):
+    renamed: tuple[Rename, ...] = ()
+    removed: tuple[str, ...] = ()
 
 
 class ParsedSkill(NamedTuple):
@@ -122,6 +133,23 @@ class InstalledModule(NamedTuple):
     absent_skills: tuple[str, ...]
     members: tuple[InstalledFile, ...]
     questions: tuple[ConfigQuestion, ...]
+    retired: ParsedRetired = ParsedRetired()
+
+
+class Retired(NamedTuple):
+    name: str
+    module: str
+    renamed_to: str | None
+    update_source: str
+    record_folder: Path
+
+
+class Retirement(NamedTuple):
+    in_use: tuple[dict[str, object], ...]
+    renames: tuple[tuple[str, str], ...]
+    unmoved: tuple[tuple[str, str], ...]
+    unused: tuple[tuple[str, str], ...]
+    install_offers: tuple[dict[str, object], ...]
 
 
 class Installation(NamedTuple):
@@ -129,6 +157,9 @@ class Installation(NamedTuple):
     modules: tuple[InstalledModule, ...]
     missing_records: tuple[dict[str, object], ...]
     problems: tuple[dict[str, object], ...]
+    roots: tuple[Path, ...] = ()
+    folders: dict[str, Path] = {}
+    duplicates: tuple[dict[str, object], ...] = ()
 
 
 class PlainTree(NamedTuple):
@@ -143,6 +174,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--project-root", type=Path, required=True)
     parser.add_argument("--skill", type=Path, required=True)
     parser.add_argument("--module", help="limit the run to one module, by code or by bmod-<code>")
+    parser.add_argument(
+        "--root",
+        type=Path,
+        action="append",
+        default=[],
+        help="an active skills folder, repeated; the first holding a skill wins",
+    )
     parser.add_argument("--module-answers", type=Path)
     parser.add_argument(
         "--list-config-questions",
@@ -154,24 +192,51 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="report on the installation without changing files",
     )
+    parser.add_argument(
+        "--remove-retired",
+        nargs="+",
+        metavar="SKILL",
+        help="delete these renamed or removed skills from the project's skills folders",
+    )
+    parser.add_argument(
+        "--remove-copies",
+        nargs="+",
+        metavar="PATH",
+        help="delete these copies of duplicated skills, as duplicate_skills lists them",
+    )
     args = parser.parse_args(argv)
     project_root = args.project_root.resolve()
     skill_root = args.skill.resolve()
+    roots = tuple(root.resolve() for root in args.root)
+    if args.remove_retired is not None or args.remove_copies is not None:
+        if (
+            args.status
+            or args.list_config_questions
+            or args.module_answers is not None
+            or (args.remove_retired is not None and args.remove_copies is not None)
+        ):
+            parser.error("--remove-retired and --remove-copies cannot be combined with other modes")
+        if args.remove_copies is not None:
+            print_json(remove_copies(project_root, skill_root, args.remove_copies, roots=roots))
+        else:
+            print_json(remove_retired(project_root, skill_root, args.remove_retired, module=args.module, roots=roots))
+        return 0
     if args.status:
         if args.list_config_questions or args.module_answers is not None:
             parser.error("--status cannot be combined with questions or answers")
-        print_json(status_report(project_root, skill_root, module=args.module))
+        print_json(status_report(project_root, skill_root, module=args.module, roots=roots))
         return 0
     if args.list_config_questions:
         if args.module_answers is not None:
             parser.error("--list-config-questions cannot be combined with answer files")
-        listing = list_config_questions(project_root, skill_root, module=args.module)
+        listing = list_config_questions(project_root, skill_root, module=args.module, roots=roots)
         print_json(listing)
         return 0
     report = setup(
         project_root,
         skill_root,
         module=args.module,
+        roots=roots,
         module_answers=(load_module_answers(args.module_answers) if args.module_answers is not None else None),
         module_answers_source=args.module_answers,
     )
@@ -190,12 +255,13 @@ def setup(
     module: str | None = None,
     module_answers: dict[tuple[str, str], str] | None = None,
     module_answers_source: Path | None = None,
+    roots: tuple[Path, ...] = (),
 ) -> dict[str, object]:
     """Create what is missing, repair what is stale, add new answers, and report what was done."""
     bmad = project_root / "_bmad"
     reject_unusable_bmad(project_root)
     scripts_src, config_src = payload(skill_root)
-    installation = discover_installation(skill_root)
+    installation = discover_installation(skill_root, roots)
     selected, unknown = select_module(installation, module, mode="setup")
     if unknown is not None:
         return unknown
@@ -225,6 +291,8 @@ def setup(
     if user_added:
         reject_unwritable_user_config(project_root)
 
+    retirement = retirement_report(project_root, skill_root, installation, retired_skills(scoped, installation.modules))
+
     module_trees: dict[str, PlainTree] = {}
     for installed in scoped:
         reject_unusable_module_root(bmad / installed.module)
@@ -245,6 +313,7 @@ def setup(
         or gitignore_state == "missing"
         or not (custom.exists() or custom.is_symlink())
         or any(state != "current" for state in module_states.values())
+        or bool(retirement.renames)
     )
     if changed:
         materialize_bmad(
@@ -253,6 +322,7 @@ def setup(
             config_text,
             module_trees,
             user_config_text=user_text,
+            custom_renames=retirement.renames,
         )
     output = project_root / output_folder(config_text)
     if not output.exists() and not output.is_symlink():
@@ -273,7 +343,13 @@ def setup(
         "shared_scripts": shared_state,
         "config": config_state,
         "custom_gitignore": "created" if gitignore_state == "missing" else gitignore_state,
-        "modules": [{**module_summary(installed), "scripts": module_states[installed.module]} for installed in scoped],
+        "modules": [
+            {
+                **module_summary(installed, project_root),
+                "scripts": module_states[installed.module],
+            }
+            for installed in scoped
+        ],
         "answers_added": [
             {
                 "module": question.module,
@@ -288,9 +364,11 @@ def setup(
         "unmet_requirements": unmet,
         "unmet_recommendations": recommended,
         "missing_module_records": list(installation.missing_records),
+        "duplicate_skills": duplicates_json(installation.duplicates, project_root),
         "problems": problems,
         "legacy_leftovers": legacy_leftovers(project_root),
-        "current": next_command is None and not unmet and not problems and not installation.missing_records,
+        **retirement_json(retirement),
+        "current": (next_command is None and not unmet and not problems and not installation.missing_records),
         "next": next_command,
     }
 
@@ -346,10 +424,12 @@ def pending_config_questions(
     return find_pending_questions(modules, merged, user_config, project_root)
 
 
-def list_config_questions(project_root: Path, skill_root: Path, *, module: str | None = None) -> object:
+def list_config_questions(
+    project_root: Path, skill_root: Path, *, module: str | None = None, roots: tuple[Path, ...] = ()
+) -> object:
     """The pending questions as a JSON list, or the unknown-module report."""
     reject_unusable_bmad(project_root)
-    installation = discover_installation(skill_root)
+    installation = discover_installation(skill_root, roots)
     selected, unknown = select_module(installation, module, mode="list-config-questions")
     if unknown is not None:
         return unknown
@@ -482,6 +562,260 @@ def legacy_leftovers(project_root: Path) -> list[str]:
     ]
 
 
+def retired_skills(
+    scoped: tuple[InstalledModule, ...],
+    installed: tuple[InstalledModule, ...],
+) -> tuple[Retired, ...]:
+    """Old names the modules renamed or removed. A name an installed module still lists is not retired."""
+    current = {name for module in installed for name in (*module.skills, *module.absent_skills)}
+    retired: list[Retired] = []
+    for module in scoped:
+        entries = [(rename.old, rename.new) for rename in module.retired.renamed]
+        entries += [(name, None) for name in module.retired.removed]
+        retired.extend(
+            Retired(name, module.module, new, module.parsed.update_source, module.source)
+            for name, new in entries
+            if name not in current
+        )
+    return tuple(retired)
+
+
+def skill_folders(project_root: Path, installation: Installation) -> tuple[Path, ...]:
+    """Where retired skills are looked for: the active roots, which may be global, and every `.<tool>/skills`
+    in the project, where a classic installer may have left copies for tools this host does not load.
+    """
+    candidates: list[Path] = list(installation.roots)
+    try:
+        entries = sorted(project_root.iterdir(), key=lambda path: path.name)
+    except OSError:
+        entries = []
+    inside = project_root.resolve()
+    active = {root.resolve() for root in installation.roots}
+    # A tool folder linked outside the project is not a project copy; deleting through it would hit the target.
+    candidates += [
+        folder
+        for entry in entries
+        if entry.name.startswith(".") and (folder := entry / "skills").is_dir()
+        if folder.resolve().is_relative_to(inside) or folder.resolve() in active
+    ]
+    folders: list[Path] = []
+    seen: set[Path] = set()
+    for folder in candidates:
+        resolved = folder.resolve()
+        if resolved not in seen:
+            seen.add(resolved)
+            folders.append(folder)
+    return tuple(folders)
+
+
+def is_global(path: Path, project_root: Path) -> bool:
+    """A skill or skills folder outside the project belongs to the skills CLI's global scope."""
+    return not path.is_relative_to(project_root)
+
+
+def shown_path(path: Path, project_root: Path) -> str:
+    """Relative inside the project, `~/`-based under the home folder, absolute otherwise."""
+    if path.is_relative_to(project_root):
+        return path.relative_to(project_root).as_posix()
+    home = Path.home()
+    if path.is_relative_to(home):
+        return "~/" + path.relative_to(home).as_posix()
+    return path.as_posix()
+
+
+def lock_path(project_root: Path, path: Path) -> Path:
+    """The skills CLI lock of the scope a skill folder is in: the project's, or the global one."""
+    if not is_global(path, project_root):
+        return project_root / "skills-lock.json"
+    state = os.environ.get("XDG_STATE_HOME")
+    if state:
+        return Path(state) / "skills" / ".skill-lock.json"
+    return Path.home() / ".agents" / ".skill-lock.json"
+
+
+def present(path: Path) -> bool:
+    return path.exists() or path.is_symlink()
+
+
+def retirement_report(
+    project_root: Path, skill_root: Path, installation: Installation, retired: tuple[Retired, ...]
+) -> Retirement:
+    """Where the retired skills are still installed or customized, and what setup does about it."""
+    folders = skill_folders(project_root, installation)
+    custom = project_root / "_bmad" / "custom"
+    plain_custom = custom.is_dir() and not custom.is_symlink()
+    in_use: list[dict[str, object]] = []
+    renames: list[tuple[str, str]] = []
+    unmoved: list[tuple[str, str]] = []
+    unused: list[tuple[str, str]] = []
+    used: set[str] = set()
+    for skill in retired:
+        paths = [folder / skill.name for folder in folders if present(folder / skill.name)]
+        if paths:
+            used.add(skill.name)
+            in_use.append(
+                {
+                    "skill": skill.name,
+                    "module": skill.module,
+                    "renamed_to": skill.renamed_to,
+                    "paths": [shown_path(path, project_root) for path in paths],
+                    "global": any(is_global(path, project_root) for path in paths),
+                }
+            )
+        if not plain_custom:
+            continue
+        for suffix in (".toml", ".user.toml"):
+            old = f"{skill.name}{suffix}"
+            if not present(custom / old):
+                continue
+            used.add(skill.name)
+            if skill.renamed_to is None:
+                unused.append((skill.name, old))
+                continue
+            new = f"{skill.renamed_to}{suffix}"
+            taken = present(custom / new) or any(target == new for _old, target in renames)
+            (unmoved if taken else renames).append((old, new))
+    offers: dict[str, dict[str, object]] = {}
+    for skill in retired:
+        new = skill.renamed_to
+        if new is None or skill.name not in used or new in offers or new in installation.folders:
+            continue
+        offers[new] = {
+            "skill": new,
+            "replaces": skill.name,
+            "module": skill.module,
+            "install": install_command(
+                skill.update_source, new, global_install=is_global(skill.record_folder, project_root)
+            ),
+        }
+    return Retirement(tuple(in_use), tuple(renames), tuple(unmoved), tuple(unused), tuple(offers.values()))
+
+
+def retirement_json(retirement: Retirement) -> dict[str, object]:
+    def custom(name: str) -> str:
+        return f"_bmad/custom/{name}"
+
+    return {
+        "retired_skills": list(retirement.in_use),
+        "custom_renames": [{"from": custom(old), "to": custom(new)} for old, new in retirement.renames],
+        "custom_not_renamed": [{"from": custom(old), "to": custom(new)} for old, new in retirement.unmoved],
+        "custom_unused": [{"skill": skill, "file": custom(name)} for skill, name in retirement.unused],
+        "install_offers": list(retirement.install_offers),
+    }
+
+
+def remove_retired(
+    project_root: Path,
+    skill_root: Path,
+    names: list[str],
+    *,
+    module: str | None = None,
+    roots: tuple[Path, ...] = (),
+) -> dict[str, object]:
+    """Delete retired skills from the skills folders and drop them from the skills CLI locks."""
+    installation = discover_installation(skill_root, roots)
+    selected, unknown = select_module(installation, module, mode="remove-retired")
+    if unknown is not None:
+        return unknown
+    scoped = installation.modules if selected is None else (selected,)
+    retired = {skill.name for skill in retired_skills(scoped, installation.modules)}
+    names = list(dict.fromkeys(names))
+    for name in names:
+        if name not in retired:
+            raise Exception(f"{name!r} is not a renamed or removed skill of an installed module")
+    folders = skill_folders(project_root, installation)
+    targets = [(name, folder / name) for folder in folders for name in names if present(folder / name)]
+    return {"mode": "remove-retired", **remove_skill_paths(project_root, folders, targets)}
+
+
+def remove_copies(
+    project_root: Path,
+    skill_root: Path,
+    paths: list[str],
+    *,
+    roots: tuple[Path, ...] = (),
+) -> dict[str, object]:
+    """Delete copies of duplicated skills, keeping at least one copy of each."""
+    installation = discover_installation(skill_root, roots)
+    copies: dict[str, tuple[str, Path]] = {}
+    listed: list[tuple[str, list[str]]] = []
+    for duplicate in installation.duplicates:
+        skill = str(duplicate["skill"])
+        shown = []
+        for folder in duplicate["folders"]:  # type: ignore[attr-defined]
+            copies[shown_path(folder, project_root)] = (skill, folder)
+            shown.append(shown_path(folder, project_root))
+        listed.append((skill, shown))
+    paths = list(dict.fromkeys(paths))
+    for path in paths:
+        if path not in copies:
+            raise Exception(f"{path!r} is not a copy listed in duplicate_skills")
+    for skill, shown in listed:
+        if all(path in paths for path in shown):
+            raise Exception(f"removing every copy of {skill!r} is not a duplicate cleanup")
+    targets = [copies[path] for path in paths]
+    return {
+        "mode": "remove-copies",
+        **remove_skill_paths(project_root, skill_folders(project_root, installation), targets),
+    }
+
+
+def remove_skill_paths(
+    project_root: Path,
+    folders: tuple[Path, ...],
+    targets: list[tuple[str, Path]],
+) -> dict[str, object]:
+    """Delete skill folders, then drop each name from the lock of its scope once no copy is left there.
+
+    Every affected lock is read before anything is deleted, so a bad lock stops the run first.
+    """
+    locks: dict[Path, dict | None] = {}
+    for _name, path in targets:
+        lock_file = lock_path(project_root, path)
+        if lock_file not in locks:
+            locks[lock_file] = read_skills_lock(lock_file)
+    removed: list[str] = []
+    for _name, path in targets:
+        if path.is_symlink() or path.is_file():
+            path.unlink()
+        elif path.is_dir():
+            shutil.rmtree(path)
+        else:
+            continue
+        removed.append(shown_path(path, project_root))
+    changed: list[dict[str, object]] = []
+    for lock_file, lock in locks.items():
+        if lock is None:
+            continue
+        scope_folders = [folder for folder in folders if lock_path(project_root, folder) == lock_file]
+        dropped = [
+            name
+            for name in dict.fromkeys(name for name, path in targets if lock_path(project_root, path) == lock_file)
+            if name in lock["skills"] and not any(present(folder / name) for folder in scope_folders)
+        ]
+        if not dropped:
+            continue
+        for name in dropped:
+            del lock["skills"][name]
+        ending = "\n" if lock_file.read_text(encoding="utf-8").endswith("\n") else ""
+        lock_file.write_text(json.dumps(lock, indent=2, ensure_ascii=False) + ending, encoding="utf-8")
+        changed.append({"file": shown_path(lock_file, project_root), "entries_removed": dropped})
+    return {"removed": removed, "locks": changed}
+
+
+def read_skills_lock(path: Path) -> dict | None:
+    """The skills CLI's lock, read before anything is deleted so a bad file stops the run."""
+    if not path.is_file():
+        return None
+    try:
+        lock = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as error:
+        raise Exception(f"cannot read {path}: {error}") from error
+    if not isinstance(lock, dict) or not isinstance(lock.get("skills"), dict):
+        raise Exception(f"{path} has no skills table")
+    return lock
+
+
 def select_module(
     installation: Installation,
     name: str | None,
@@ -510,14 +844,19 @@ def select_module(
     }
 
 
-def module_summary(installed: InstalledModule) -> dict[str, object]:
+def module_summary(installed: InstalledModule, project_root: Path) -> dict[str, object]:
+    global_install = is_global(installed.source, project_root)
     return {
         "module": installed.module,
         "folder": installed.folder,
         "version": installed.parsed.version,
         "update_source": installed.parsed.update_source,
         "skills": list(installed.skills),
+        "scope": "global" if global_install else "project",
         "absent_skills": list(installed.absent_skills),
+        "absent_install": install_command(
+            installed.parsed.update_source, *installed.absent_skills, global_install=global_install
+        ),
     }
 
 
@@ -566,7 +905,6 @@ def unmet_entries(
     module: str | None,
 ) -> list[dict[str, object]]:
     """A module's list is checked once for the module, a skill's own list once for the skill."""
-    skills_dir = skill_root.parent
     by_folder = {installed.folder: installed for installed in installation.files}
     declared: list[tuple[str, str | None, str, Requirement]] = []
     for installed in installation.modules:
@@ -587,7 +925,7 @@ def unmet_entries(
     for folder, code, default_source, requirement in declared:
         if requirement.skill == folder or (module is not None and code != module):
             continue
-        state, present = requirement_check(skills_dir, requirement)
+        state, present = requirement_check(installation.folders, requirement)
         if state is None:
             continue
         source = requirement.source if requirement.source is not None else default_source
@@ -607,15 +945,23 @@ def unmet_entries(
     return unmet
 
 
-def requirement_check(skills_dir: Path, requirement: Requirement) -> tuple[str | None, str | None]:
+def skill_path(skills: Path | dict[str, Path], name: str) -> Path | None:
+    """An installed skill's folder: from one skills folder, or from the folders found across the roots."""
+    if isinstance(skills, dict):
+        return skills.get(name)
+    path = skills / name
+    return path if path.is_dir() else None
+
+
+def requirement_check(skills: Path | dict[str, Path], requirement: Requirement) -> tuple[str | None, str | None]:
     """Why a requirement is unmet, with the version found. The state is None when it is met."""
-    if not (skills_dir / requirement.skill).is_dir():
+    if skill_path(skills, requirement.skill) is None:
         return "missing", None
     if requirement.version is None:
         return None, None
-    installed = skill_module_version(skills_dir, requirement.skill)
+    installed = skill_module_version(skills, requirement.skill)
     if installed is None:
-        if names_a_module_record(skills_dir, requirement.skill):
+        if names_a_module_record(skills, requirement.skill):
             # Its record is absent, which is reported as a missing module record.
             return None, None
         # A copy from before module records has no version to read, and that
@@ -624,29 +970,34 @@ def requirement_check(skills_dir: Path, requirement: Requirement) -> tuple[str |
     return requirement_state(installed, requirement.version), installed
 
 
-def names_a_module_record(skills_dir: Path, skill: str) -> bool:
+def names_a_module_record(skills: Path | dict[str, Path], skill: str) -> bool:
+    folder = skill_path(skills, skill)
     try:
-        parsed = read_bmod_file(skills_dir / skill / MANIFEST_NAME)
+        parsed = read_bmod_file(folder / MANIFEST_NAME) if folder is not None else None
     except Exception:
         return False
     return parsed is not None and parsed.skill is not None and parsed.skill.bmod is not None
 
 
-def skill_module_version(skills_dir: Path, skill: str) -> str | None:
+def skill_module_version(skills: Path | dict[str, Path], skill: str) -> str | None:
     """The version of the module an installed skill belongs to.
 
     Skills carry no version. None means the skill has no bmod.toml or its
     module record is absent, so there is nothing to compare.
     """
     try:
-        parsed = read_bmod_file(skills_dir / skill / MANIFEST_NAME)
+        folder = skill_path(skills, skill)
+        parsed = read_bmod_file(folder / MANIFEST_NAME) if folder is not None else None
         if parsed is None:
             return None
         if parsed.bmod is not None:
             return parsed.bmod.version
         if parsed.skill is None or parsed.skill.bmod is None:
             return None
-        record = read_bmod_file(skills_dir / parsed.skill.bmod / MANIFEST_NAME)
+        record_folder = skill_path(skills, parsed.skill.bmod)
+        if record_folder is None:
+            return None
+        record = read_bmod_file(record_folder / MANIFEST_NAME)
     except Exception:
         return None
     if record is None or record.bmod is None:
@@ -694,12 +1045,12 @@ def requirement_channel(source: str) -> str:
     return "skills-cli"
 
 
-def install_command(source: str, skill: str) -> str | None:
-    """The `npx skills` command that installs one skill, or None when the source has no such command."""
-    if not source.startswith("github:"):
+def install_command(source: str, *skills: str, global_install: bool = False) -> str | None:
+    """The `npx skills` command that installs these skills, or None when the source has no such command."""
+    if not skills or not source.startswith("github:"):
         return None
     owner, repository, *_tree = source.removeprefix("github:").split("/")
-    return f"npx skills add {owner}/{repository} --skill {skill}"
+    return f"npx skills add {owner}/{repository} --skill {' '.join(skills)}" + (" -g" if global_install else "")
 
 
 UPDATE_FIXES = ("outdated", "unknown-version")
@@ -757,10 +1108,16 @@ def parse_toml(text: str, source: Path | str) -> dict:
         raise Exception(f"cannot parse TOML {source}: {error}") from error
 
 
-def discover_installation(skill_root: Path) -> Installation:
-    """Every bmod.toml beside the bmad skill, sorted into module records, their skills, and problems."""
+def discover_installation(skill_root: Path, roots: tuple[Path, ...] = ()) -> Installation:
+    """Every bmod.toml in the active roots, sorted into module records, their skills, and problems.
+
+    The folder the bmad skill runs from is always a root. The first root holding a skill wins it, so a
+    project copy shadows a global one; the other copies are reported as duplicates.
+    """
     problems: list[dict[str, object]] = []
-    files = discover_installed_files(skill_root, problems)
+    roots = unique_folders((*roots, skill_root.parent))
+    folders, duplicates = locate_skills(roots, skill_root.parent)
+    files = discover_installed_files(folders, problems)
     by_folder = {installed.folder: installed for installed in files}
     winners = select_module_records(files, problems)
 
@@ -770,7 +1127,7 @@ def discover_installation(skill_root: Path) -> Installation:
         record = record_file.parsed.bmod
         assert record is not None
         listed = member_names(record_file)
-        present = tuple(name for name in listed if (skill_root.parent / name).is_dir())
+        present = tuple(name for name in listed if name in folders)
         members: list[InstalledFile] = []
         for name in present:
             member = by_folder.get(name)
@@ -792,6 +1149,11 @@ def discover_installation(skill_root: Path) -> Installation:
                     "message": f"{record_file.file} lists the skill {name!r}, but {member.file} {detail}",
                 }
             )
+        try:
+            retired = read_retired_file(record_file.source)
+        except Exception as error:
+            problems.append({"kind": "retired-file", "folder": record_file.folder, "message": str(error)})
+            retired = ParsedRetired()
         modules.append(
             InstalledModule(
                 code,
@@ -803,6 +1165,7 @@ def discover_installation(skill_root: Path) -> Installation:
                 tuple(name for name in listed if name not in present),
                 tuple(members),
                 record.questions,
+                retired,
             )
         )
 
@@ -844,19 +1207,97 @@ def discover_installation(skill_root: Path) -> Installation:
                     ),
                 }
             )
-    return Installation(files, tuple(modules), tuple(missing_records), tuple(problems))
+    return Installation(files, tuple(modules), tuple(missing_records), tuple(problems), roots, folders, duplicates)
 
 
-def discover_installed_files(skill_root: Path, problems: list[dict[str, object]]) -> tuple[InstalledFile, ...]:
+def unique_folders(folders: tuple[Path, ...]) -> tuple[Path, ...]:
+    """The folders in order, each once, however it is reached."""
+    unique: list[Path] = []
+    seen: set[Path] = set()
+    for folder in folders:
+        resolved = folder.resolve()
+        if resolved not in seen:
+            seen.add(resolved)
+            unique.append(folder)
+    return tuple(unique)
+
+
+def locate_skills(roots: tuple[Path, ...], own_folder: Path) -> tuple[dict[str, Path], tuple[dict[str, object], ...]]:
+    """Each skill's folder in the first root that holds it, and the BMad skills installed in more than one.
+
+    The bmad skill's own folder must be readable; an unreadable extra root is skipped.
+    """
+    copies: dict[str, list[Path]] = {}
+    for root in roots:
+        try:
+            entries = sorted(root.iterdir(), key=lambda path: path.name)
+        except OSError as error:
+            if root.resolve() == own_folder.resolve():
+                raise Exception(f"cannot inspect installed skills {root}: {error}") from error
+            continue
+        for entry in entries:
+            if entry.is_dir():
+                copies.setdefault(entry.name, []).append(entry)
+    folders = {name: paths[0] for name, paths in copies.items()}
+    duplicates: list[dict[str, object]] = []
+    for name, paths in sorted(copies.items()):
+        distinct = unique_folders(tuple(paths))
+        if len(distinct) > 1 and any((path / MANIFEST_NAME).is_file() for path in distinct):
+            duplicates.append({"skill": name, "folders": distinct})
+    return folders, tuple(duplicates)
+
+
+def copy_version(folder: Path) -> str | None:
+    """The module version of one installed copy, read through the record beside it."""
+    try:
+        parsed = read_bmod_file(folder / MANIFEST_NAME)
+        if parsed is None:
+            return None
+        if parsed.bmod is not None:
+            return parsed.bmod.version
+        if parsed.skill is None or parsed.skill.bmod is None:
+            return None
+        record = read_bmod_file(folder.parent / parsed.skill.bmod / MANIFEST_NAME)
+    except Exception:
+        return None
+    return record.bmod.version if record is not None and record.bmod is not None else None
+
+
+def duplicates_json(duplicates: tuple[dict[str, object], ...], project_root: Path) -> list[dict[str, object]]:
+    """Each duplicate with the copy in use first, and whether a copy not in use is newer."""
+    report: list[dict[str, object]] = []
+    for duplicate in duplicates:
+        folders: tuple[Path, ...] = duplicate["folders"]  # type: ignore[assignment]
+        copies = [
+            {
+                "path": shown_path(folder, project_root),
+                "global": is_global(folder, project_root),
+                "version": copy_version(folder),
+            }
+            for folder in folders
+        ]
+        used = copies[0]["version"]
+        newer_elsewhere = any(
+            (compare_semver(str(copy["version"]), str(used)) or 0) > 0
+            for copy in copies[1:]
+            if copy["version"] is not None and used is not None
+        )
+        report.append(
+            {
+                "skill": duplicate["skill"],
+                "used": copies[0]["path"],
+                "newer_copy_unused": newer_elsewhere,
+                "copies": copies,
+            }
+        )
+    return report
+
+
+def discover_installed_files(folders: dict[str, Path], problems: list[dict[str, object]]) -> tuple[InstalledFile, ...]:
     """One unusable file must not stop the install: it becomes a problem and its folder is skipped."""
     files: list[InstalledFile] = []
-    try:
-        siblings = sorted(skill_root.parent.iterdir(), key=lambda path: path.name)
-    except OSError as error:
-        raise Exception(f"cannot inspect installed skills {skill_root.parent}: {error}") from error
-    for sibling in siblings:
-        if not sibling.is_dir():
-            continue
+    for name in sorted(folders):
+        sibling = folders[name]
         path = sibling / MANIFEST_NAME
         try:
             parsed = read_bmod_file(path)
@@ -976,6 +1417,47 @@ def parse_bmod_table(table: dict, path: Path) -> ParsedBmod:
         parse_requirements(table.get("required_skills"), "bmod.required_skills", path),
         parse_requirements(table.get("recommended_skills"), "bmod.recommended_skills", path),
     )
+
+
+def read_retired_file(folder: Path) -> ParsedRetired:
+    """The skills a module renamed or removed, from the `retired.toml` beside its record."""
+    path = folder / RETIRED_NAME
+    if not path.is_file():
+        return ParsedRetired()
+    try:
+        data = parse_toml(path.read_bytes().decode("utf-8"), path)
+    except (OSError, UnicodeError) as error:
+        raise Exception(f"cannot read {path}: {error}") from error
+    renamed = parse_renamed(data.get("renamed"), path)
+    removed = parse_skill_names(data.get("removed", []), "removed", path)
+    retired = [rename.old for rename in renamed] + list(removed)
+    repeated = next((name for name in retired if retired.count(name) > 1), None)
+    if repeated is not None:
+        raise Exception(f"bmod file {path} retires {repeated!r} more than once in renamed and removed")
+    return ParsedRetired(renamed, removed)
+
+
+def parse_renamed(value: object, path: Path) -> tuple[Rename, ...]:
+    """Skills the module renamed, as `{ from, to }` tables."""
+    if value is None:
+        return ()
+    if not isinstance(value, list):
+        raise Exception(f"bmod file {path} field 'renamed' must be a list of tables")
+    renamed: list[Rename] = []
+    for index, entry in enumerate(value):
+        field = f"renamed[{index}]"
+        if not isinstance(entry, dict):
+            raise Exception(f"bmod file {path} field {field} must be a table")
+        names: list[str] = []
+        for key in ("from", "to"):
+            name = entry.get(key)
+            if not isinstance(name, str) or SKILL_NAME.fullmatch(name) is None:
+                raise Exception(f"bmod file {path} field '{field}.{key}' must be a skill name; found {name!r}")
+            names.append(name)
+        if names[0] == names[1]:
+            raise Exception(f"bmod file {path} field {field} renames {names[0]!r} to itself")
+        renamed.append(Rename(*names))
+    return tuple(renamed)
 
 
 def parse_skill_table(table: dict, path: Path, *, standalone: bool) -> ParsedSkill:
@@ -1204,11 +1686,13 @@ def read_declared_script(skill_root: Path, relative: PurePosixPath, file: Path) 
         raise Exception(f"cannot read script {resolved} declared by {file}: {error}") from error
 
 
-def status_report(project_root: Path, skill_root: Path, *, module: str | None = None) -> dict[str, object]:
+def status_report(
+    project_root: Path, skill_root: Path, *, module: str | None = None, roots: tuple[Path, ...] = ()
+) -> dict[str, object]:
     """Everything `bmad status` says. Reads only; nothing under the project is written."""
     reject_unusable_bmad(project_root)
     bmad = project_root / "_bmad"
-    installation = discover_installation(skill_root)
+    installation = discover_installation(skill_root, roots)
     selected, unknown = select_module(installation, module, mode="status")
     if unknown is not None:
         return unknown
@@ -1231,7 +1715,7 @@ def status_report(project_root: Path, skill_root: Path, *, module: str | None = 
             problems.append({"kind": "scripts", "module": installed.module, "message": str(error)})
         modules.append(
             {
-                **module_summary(installed),
+                **module_summary(installed, project_root),
                 "scripts": scripts,
                 "update": update,
             }
@@ -1246,6 +1730,7 @@ def status_report(project_root: Path, skill_root: Path, *, module: str | None = 
     unmet = unmet_requirements(installation, skill_root, module=code)
     gitignore_state = custom_gitignore_state(project_root)
     problems.extend(custom_gitignore_problems(gitignore_state))
+    retirement = retirement_report(project_root, skill_root, installation, retired_skills(scoped, installation.modules))
     setup_owed = (
         not bmad.is_dir()
         or shared_state != "current"
@@ -1255,6 +1740,7 @@ def status_report(project_root: Path, skill_root: Path, *, module: str | None = 
         or bool(pending)
         or gitignore_state == "missing"
         or any(item["scripts"] in ("missing", "stale") for item in modules)
+        or bool(retirement.renames)
     )
     next_command = next_step(
         installation.missing_records,
@@ -1273,11 +1759,13 @@ def status_report(project_root: Path, skill_root: Path, *, module: str | None = 
         "custom_gitignore": gitignore_state,
         "modules": modules,
         "missing_module_records": list(installation.missing_records),
+        "duplicate_skills": duplicates_json(installation.duplicates, project_root),
         "pending_questions": [question_json(question) for question in pending],
         "unmet_requirements": unmet,
         "unmet_recommendations": unmet_recommendations(installation, skill_root, module=code),
         "problems": problems,
         "legacy_leftovers": legacy_leftovers(project_root),
+        **retirement_json(retirement),
         "current": (
             next_command is None
             and not unmet
@@ -1705,6 +2193,7 @@ def materialize_bmad(
     module_trees: dict[str, PlainTree],
     *,
     user_config_text: str | None = None,
+    custom_renames: tuple[tuple[str, str], ...] = (),
 ) -> None:
     bmad = project_root / "_bmad"
     project_root.mkdir(parents=True, exist_ok=True)
@@ -1737,6 +2226,7 @@ def materialize_bmad(
             config_text=config_text,
             module_trees=module_trees,
             user_config_text=user_config_text,
+            custom_renames=custom_renames,
         )
         replace_dir(staging, bmad)
     except Exception:
@@ -1766,6 +2256,7 @@ def stage_bmad(
     config_text: str,
     module_trees: dict[str, PlainTree],
     user_config_text: str | None,
+    custom_renames: tuple[tuple[str, str], ...] = (),
 ) -> None:
     ensure_scripts(staging / "scripts", scripts_src)
     ensure_file(staging / "config.toml", config_text)
@@ -1782,6 +2273,8 @@ def stage_bmad(
         write_text(gitignore, CUSTOM_GITIGNORE)
     if user_config_text is not None:
         write_text(custom / "config.user.toml", user_config_text)
+    for old, new in custom_renames:
+        (custom / old).rename(custom / new)
 
 
 def ensure_scripts(dest: Path, src: Path) -> None:

@@ -6,6 +6,10 @@ This document covers the skills of the `core-tools` module: what each one is for
 
 The core tools belong to no phase and no path. Each stands alone and works with or without any other module. Suggest one whenever it would help: before, during, after, or entirely outside another module's flow. Never present one as a required step. A project may hold only some of these skills: recommend from what is installed.
 
+## Initiatives
+
+An initiative is one body of work of any kind: a product, a feature, a book, a set of art assets. Its folder under `output_folder` holds what every module's skills write for that work. `active_initiative` under `[core]` in `_bmad/custom/config.user.toml` names the folder in use; the file is personal, so each person can work on a different one. With none active, work is written loose to `{output_folder}/`, and some skills first ask whether it belongs to an initiative. The `bmad` skill shows, switches, creates, or clears the active initiative. What goes inside the folder is up to each module: its help says.
+
 ## Start here
 
 - No idea yet, or wants more and better ideas on a topic → `bmad-brainstorming`.

@@ -42,7 +42,7 @@ Three services, freely combined — each detailed in its reference: **Draft** a 
    - Any other failure: read `{skill-root}/customize.toml` and use defaults.
 
    Run `{workflow.activation_steps_prepend}`, then `{workflow.activation_steps_append}`.
-2. Resolve config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder --key modules.bmm.active_initiative`. `{date}` is the current system datetime.
+2. Resolve config: `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder --key core.active_initiative`. `{date}` is the current system datetime.
    - Script not found, or no `output_folder`: BMad is not set up here. Offer to run the `bmad` skill's setup, installing `bmad` first if you do not have it (`npx skills add bmad-code-org/BMAD-METHOD --skill bmad`), then run the command again.
    - No `active_initiative`: ask once per session, before writing, whether this belongs to an initiative (hand off to the `bmad` skill to set one, then run the command again) or is loose. Loose work drops `/{active_initiative}` from every path.
 3. Headless (no interactive user) → see `## Headless Mode`. Otherwise greet the user.

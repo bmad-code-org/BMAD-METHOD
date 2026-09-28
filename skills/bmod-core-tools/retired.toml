@@ -1,0 +1,3 @@
+# Skills this module no longer ships. `bmad setup` offers to delete any still installed and moves a renamed
+# skill's `_bmad/custom/` files to the new name. A retired name is never reused.
+removed = ["bmad-distillator", "bmad-index-docs", "bmad-init", "bmad-shard-doc"]

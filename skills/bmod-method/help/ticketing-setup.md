@@ -6,7 +6,7 @@ Use this when a user asks how to set up or drive `bmad-ticket`. For the shared t
 
 - Tickets live under `output_folder`, beside the documents. An epic's tickets are entries in its `tickets.toml`, and one gets a markdown file only when it is refined or published. Backlog tickets are markdown files. `output_folder` is `_bmad-output` unless changed.
 - To move the store, set `output_folder` under `[core]` in `_bmad/custom/config.toml` (committed, applies to the team).
-- `active_initiative` under `[modules.bmm]` in `_bmad/custom/config.user.toml` (personal, not committed) names the initiative folder in use. Unset, the skill offers to create and record it. The `bmad` skill also shows, switches, creates, or clears it.
+- The ticket tree of an initiative lives in the active initiative's folder, `{output_folder}/{active_initiative}`. With none active, the skill offers to create one and record it.
 
 ## Several repos
 

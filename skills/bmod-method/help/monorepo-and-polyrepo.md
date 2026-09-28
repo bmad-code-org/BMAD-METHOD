@@ -19,4 +19,4 @@ Work from a workspace folder that holds every project checked out side by side.
 
 ## The active initiative
 
-`active_initiative` names the current initiative in the ticket store. Its planning documents, epics, entries, and joined plans stay together; standalone tickets live in a backlog. See `help/ticketing-setup.md`. A v6 project moves to that layout with `bmad migrate method`, which asks at plan time whether the store should be its own repository, sit in a workspace, and use worktrees, and makes those repository changes before it moves any artifact.
+In the method, the active initiative's folder is its part of the ticket store: its planning documents, epics, entries, and joined plans stay together; standalone tickets live in a backlog. See `help/ticketing-setup.md`. A v6 project moves to that layout with `bmad migrate method`, which asks at plan time whether the store should be its own repository, sit in a workspace, and use worktrees, and makes those repository changes before it moves any artifact.
