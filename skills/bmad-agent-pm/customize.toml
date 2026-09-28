@@ -65,4 +65,4 @@ skill = "bmad-correct-course"
 [[agent.menu]]
 code = "TK"
 description = "Slice initiatives, plan epics, and manage tickets"
-skill = "bmad-preview-ticketing"
+skill = "bmad-ticket"

@@ -31,6 +31,7 @@ export default defineConfig({
     '/how-to/quick-fixes': `${basePath}build/build-a-change/`,
     '/explanation/build': `${basePath}build/build-a-change/`,
     '/explanation/checkpoint-preview': `${basePath}build/walk-through-a-change/`,
+    '/plan/help-test-v7-previews': `${basePath}plan/set-up-the-ticket-tree/`,
     '/build/review-a-completed-change': `${basePath}build/walk-through-a-change/`,
     '/build/checkpoint-a-change': `${basePath}build/walk-through-a-change/`,
     '/fr/explanation/checkpoint-preview': `${basePath}fr/build/walk-through-a-change/`,
@@ -352,8 +353,8 @@ export default defineConfig({
               slug: 'plan/break-work-into-stories-and-track-it',
             },
             {
-              label: 'Help Test v7 Previews',
-              slug: 'plan/help-test-v7-previews',
+              label: 'Set Up the Ticket Tree',
+              slug: 'plan/set-up-the-ticket-tree',
             },
           ],
         },

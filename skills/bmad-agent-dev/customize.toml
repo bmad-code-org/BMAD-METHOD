@@ -78,4 +78,4 @@ skill = "bmad-retrospective"
 [[agent.menu]]
 code = "TK"
 description = "Plan and track work through the ticket tree"
-skill = "bmad-preview-ticketing"
+skill = "bmad-ticket"

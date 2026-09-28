@@ -1,8 +1,8 @@
 # DO NOT EDIT -- overwritten on every update.
 #
-# Workflow customization surface for bmad-preview-ticketing.
-# Team overrides:     {project-root}/_bmad/custom/bmad-preview-ticketing.toml
-# Personal overrides: {project-root}/_bmad/custom/bmad-preview-ticketing.user.toml
+# Workflow customization surface for bmad-ticket.
+# Team overrides:     {project-root}/_bmad/custom/bmad-ticket.toml
+# Personal overrides: {project-root}/_bmad/custom/bmad-ticket.user.toml
 
 [workflow]
 

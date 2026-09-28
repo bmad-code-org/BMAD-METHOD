@@ -98,4 +98,4 @@ Skip by default; never runs headless. When the user asks to "discuss it as a tea
 
 ### Phase 5 — Finalize
 
-Finalize the retrospective document and stop. Read fully and follow `{{ rendered("references/retro-document.md") }}` for the document's location, frontmatter, and sections, and the terminal instruction that ends the run. The document is the run's only write: no status change, no `tickets.py mark`, and no edit to the epic file, any plan, or any story file. Closing the epic is the ticketing skill's, confirmed by the user.
+Finalize the retrospective document and stop. Read fully and follow `{{ rendered("references/retro-document.md") }}` for the document's location, frontmatter, and sections, and the terminal instruction that ends the run. The document is the run's only write: no status change, no `tickets.py mark`, and no edit to the epic file, any plan, or any story file. Closing the epic is `bmad-ticket`'s, confirmed by the user.

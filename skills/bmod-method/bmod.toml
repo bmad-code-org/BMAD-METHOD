@@ -21,6 +21,7 @@ skills = [
   "bmad-qa-generate-e2e-tests",
   "bmad-retrospective",
   "bmad-spec",
+  "bmad-ticket",
   "bmad-ux",
   "bmad-walkthrough",
 ]

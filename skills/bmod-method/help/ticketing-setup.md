@@ -1,6 +1,6 @@
-# Setting up and using the ticketing preview
+# Setting up and using bmad-ticket
 
-Use this when a user asks how to set up or drive `bmad-preview-ticketing`. For the shared ticket-tree design, see `help/ticketing-and-epics.md`.
+Use this when a user asks how to set up or drive `bmad-ticket`. For the shared ticket-tree design, see `help/ticketing-and-epics.md`.
 
 ## Where the store lives
 
@@ -44,4 +44,4 @@ Copy a brief, PRD, UX design, or architecture into the initiative folder as `<ty
 
 ## Feedback
 
-Open an issue at github.com/bmad-code-org/BMAD-METHOD with "v7 preview" in the title, or post in the BMad Discord. Useful reports say what was given, asked, produced, and expected.
+Open an issue at github.com/bmad-code-org/BMAD-METHOD with "bmad-ticket" in the title, or post in the BMad Discord. Useful reports say what was given, asked, produced, and expected.

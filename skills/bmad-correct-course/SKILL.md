@@ -226,7 +226,7 @@ Look in `{output_folder}/{active_initiative}/` first, then `{output_folder}/`.
   - Minor: Direct implementation by Developer agent
   - Moderate: Backlog reorganization needed (PO/DEV)
   - Major: Fundamental replan required (PM/Architect)
-- List the epic and story changes (added, removed, resequenced, or rescoped) for the user to apply with the ticketing skill
+- List the epic and story changes (added, removed, resequenced, or rescoped) for the user to apply with `bmad-ticket`
 - Specify handoff recipients and their responsibilities
 - Define success criteria for implementation
 

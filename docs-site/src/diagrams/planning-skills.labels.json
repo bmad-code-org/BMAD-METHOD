@@ -23,7 +23,7 @@
     "design-md-experience-md": "ux-<slug>.md, DESIGN.md, EXPERIENCE.md",
     "bmad-spec": "bmad-spec",
     "spec-md-companions": "spec-<slug>.md + companions",
-    "ticketing-handoff": "ticketing handoff",
+    "ticketing-handoff": "bmad-ticket handoff",
     "spec-when-needed": "Use a spec when needed.",
     "one-session-of-work-goes": "One session of work goes",
     "straight-from-the-spec-to-build": "straight from the spec to Build.",
@@ -31,8 +31,7 @@
     "decide-how-divide-the-work": "decide how, divide the work",
     "bmad-architecture": "bmad-architecture",
     "architecture-spine-md": "architecture-<slug>.md",
-    "bmad-preview": "bmad-preview-",
-    "ticketing": "ticketing",
+    "bmad-ticket": "bmad-ticket",
     "ordered-entries": "ordered tickets.toml entries",
     "bmad-build": "bmad-build",
     "build-output": "one session per unit · built → user marks done · keep plans"

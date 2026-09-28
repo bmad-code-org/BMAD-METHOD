@@ -158,7 +158,7 @@ documentation. Do not add another Django documentation file or an external
 service. Use diffsettings-audit as the spec folder slug.
 ```
 
-BMad Spec first has you pick or create an initiative, then writes `_bmad-output/initiative-<slug>/spec-diffsettings-audit/spec-diffsettings-audit.md`. Hand it to `bmad-preview-ticketing` to create `epic-diffsettings-audit` and its three ordered entries in `tickets.toml`. Read the spec and entries and answer any questions. Continue when they match the requirements above; note the epic folder the skill creates.
+BMad Spec first has you pick or create an initiative, then writes `_bmad-output/initiative-<slug>/spec-diffsettings-audit/spec-diffsettings-audit.md`. Hand it to `bmad-ticket` to create `epic-diffsettings-audit` and its three ordered entries in `tickets.toml`. Read the spec and entries and answer any questions. Continue when they match the requirements above; note the epic folder the skill creates.
 
 ## 9. Build the Three Stories
 

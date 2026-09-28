@@ -8,6 +8,7 @@
 
 * `planning_artifacts` and `implementation_artifacts` are no longer read or seeded. Run `bmad migrate method` on a v6 project.
 * The ticketing store's `root` key is gone; the ticket tree is `{output_folder}/{active_initiative}`. To move the store, set `core.output_folder` in `_bmad/custom/config.toml`.
+* `bmad-preview-ticketing` is now `bmad-ticket`. `npx skills update` does not install the new name: run `npx skills add bmad-code-org/BMAD-METHOD --skill bmad-ticket`, and rename `_bmad/custom/bmad-preview-ticketing.toml` to `bmad-ticket.toml` if you have one. Until the v7 release, the old name is a forwarder that says this.
 
 ## v6.12.0 - 2026-09-03
 

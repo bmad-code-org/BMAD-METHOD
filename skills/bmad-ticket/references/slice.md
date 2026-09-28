@@ -24,7 +24,7 @@ Where the source contradicts the code or another source, add `Source conflict: <
 
 Use what is already known. Ask the remaining questions that change the split: what is first worth demoing; what is least certain; what will the first piece teach about the rest; whether the user has a split in mind; how the team defines epics. Group related questions and say which answer you would pick and why.
 
-When the user states how their team cuts epics, offer to save it as `slice_to_epics` under `[workflow]` in `{project-root}/_bmad/custom/bmad-preview-ticketing.toml`. It replaces the default, so keep the default lines the team still wants.
+When the user states how their team cuts epics, offer to save it as `slice_to_epics` under `[workflow]` in `{project-root}/_bmad/custom/bmad-ticket.toml`. It replaces the default, so keep the default lines the team still wants.
 
 ## Initiative into epics
 

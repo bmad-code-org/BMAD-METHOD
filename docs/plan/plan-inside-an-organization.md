@@ -41,7 +41,7 @@ is derived from it:
   decisions that keep independently built epics compatible.
 - `bmad-spec` writes one spec per epic from the PRD, pointing at the spine and
   the UX documents rather than copying them.
-- `bmad-preview-ticketing` turns the specs into ordered entries and tracks their joined plans.
+- `bmad-ticket` turns the specs into ordered entries and tracks their joined plans.
 
 Nothing downstream reinterprets the PRD. If a spec needs an answer the PRD
 does not give, the answer goes into the PRD first; the spec is re-run after.
@@ -67,7 +67,7 @@ Linear, and a review cadence, and all of it stays.
   skill reads the code and records the conventions already there rather than
   proposing new ones.
 - **Your tracker stays your tracker.** Jira remains where the organization
-  plans, reports, and reviews. Ticketing publishes leaf files when needed; build status lives in local joined plans. Tracker status is mirrored separately and never makes a build skip work.
+  plans, reports, and reviews. `bmad-ticket` publishes leaf files when needed; build status lives in local joined plans. Tracker status is mirrored separately and never makes a build skip work.
 - **Your reviews stay your reviews.** The five sign-off moments below are
   where the skills produce something reviewable. Put your existing approvals
   at those points and the documents the skills write become the material
@@ -84,8 +84,8 @@ regenerated from it.
 | Product manager          | Brainstorming, Forge Idea, Deep Recon, then `bmad-product-brief` or `bmad-prfaq`, then `bmad-prd` | The PRD and its update cycle; the one-pager the steering committee reads  |
 | Designer                 | `bmad-ux`                                                                                         | `DESIGN.md`, `EXPERIENCE.md`                                              |
 | Tech lead or architect   | `bmad-architecture`                                                                               | The architecture spine                                                    |
-| One engineer, per epic   | `bmad-spec`, `bmad-preview-ticketing`, Build per story, `bmad-retrospective`                      | That epic: its spec, its `tickets.toml`, its verdict                      |
-| Whoever tracks the whole | `bmad-preview-ticketing`                                                                            | The ticket tree and plan statuses                                   |
+| One engineer, per epic   | `bmad-spec`, `bmad-ticket`, Build per story, `bmad-retrospective`                      | That epic: its spec, its `tickets.toml`, its verdict                      |
+| Whoever tracks the whole | `bmad-ticket`                                                                            | The ticket tree and plan statuses                                   |
 
 The rows are roles, not headcount. One person can hold several; what matters
 is that each document has exactly one owner, because each has exactly one
@@ -143,7 +143,7 @@ They will. The path for a change is the same as the path for the original:
    and keeps capability IDs stable, so stories that are unaffected stay
    unaffected.
 4. For the affected epics, re-slice the stories `bmad-spec` names as no longer
-   matching, then revise the remaining breakdown with `bmad-preview-ticketing`. Keep historical plans and completed states.
+   matching, then revise the remaining breakdown with `bmad-ticket`. Keep historical plans and completed states.
 
 For a change large enough to threaten the plan itself, run
 `bmad-correct-course` before touching documents.

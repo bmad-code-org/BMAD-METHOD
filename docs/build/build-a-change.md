@@ -199,7 +199,7 @@ decisions may set patterns for later work. Once those patterns are stable,
 | `bmad-retrospective`  | Review a completed epic against the evidence it left behind ([Finish an Epic](./finish-an-epic.md))                                                           | Retro document, action items, acceptance verdict |
 
 Clear one-session work enters `bmad-build` directly. Larger work is sliced
-into a ticket tree with `bmad-preview-ticketing`, from a spec or any other
+into a ticket tree with `bmad-ticket`, from a spec or any other
 intent, and each build takes one ticket. `bmad-build-auto` does not orchestrate
 those tickets: an AI coding session or another orchestrator, such as bmad-loop,
 dispatches one worker per ticket. See

@@ -3,10 +3,10 @@
 Read this when the question is about `bmad-spec`, `bmad-prd`, `bmad-ux`, `bmad-architecture`, or the skills that slice and track work: what each gives, when to pick it, when not to, and what it writes.
 
 **`bmad-spec`** — the hub. Condenses any input into the contract builds read.
-- Gives: a spec folder with `spec-<slug>.md` (why, capabilities with stable ids, constraints, non-goals, success signal) and companions. It adopts UX files and an architecture spine as companions and absorbs a PRD or brief as a source. On request it hands the spec folder to `bmad-preview-ticketing` to be planned into stories. It also updates and validates an existing spec.
+- Gives: a spec folder with `spec-<slug>.md` (why, capabilities with stable ids, constraints, non-goals, success signal) and companions. It adopts UX files and an architecture spine as companions and absorbs a PRD or brief as a source. On request it hands the spec folder to `bmad-ticket` to be planned into stories. It also updates and validates an existing spec.
 - Pick when: the user has anything to distill, or can explain the idea in detail; after any other analysis or planning skill finishes; when requirements change on the spec route (it appends to its log, re-derives the spec, and names the tickets that no longer match).
 - Not when: the input is a bare idea. It distills and does not coach → `bmad-product-brief` first, or `bmad-prd` when full requirements are needed.
-- Splitting into stories is not this skill: send the user to `bmad-preview-ticketing` with the spec folder, which plans one epic whose stories cite the spec's `CAP-N` ids. After writing a spec that reads as several slices, `bmad-spec` offers that hand-off once.
+- Splitting into stories is not this skill: send the user to `bmad-ticket` with the spec folder, which plans one epic whose stories cite the spec's `CAP-N` ids. After writing a spec that reads as several slices, `bmad-spec` offers that hand-off once.
 - Writes: `{output_folder}/{active_initiative}/spec-<slug>/` holding `spec-<slug>.md` and companions.
 
 **`bmad-prd`** — coaches detailed requirements out of the user.
@@ -33,6 +33,6 @@ Read this when the question is about `bmad-spec`, `bmad-prd`, `bmad-ux`, `bmad-a
 
 ## Slicing and tracking the work
 
-`bmad-preview-ticketing` plans and tracks work in one ticket tree. An initiative holds epics; each epic's `tickets.toml` holds ordered entries. Build an entry directly without making a story file. Standalone stories and bugs can be direct intent or backlog leaves. Plans own status and remain live after completion. Builds stop at `built`; the user or orchestrator marks `done`. See `help/ticketing-setup.md`.
+`bmad-ticket` plans and tracks work in one ticket tree. An initiative holds epics; each epic's `tickets.toml` holds ordered entries. Build an entry directly without making a story file. Standalone stories and bugs can be direct intent or backlog leaves. Plans own status and remain live after completion. Builds stop at `built`; the user or orchestrator marks `done`. See `help/ticketing-setup.md`.
 
-**`bmad-preview-ticketing`** — slices initiatives into epics, incepts each epic into entries, refines when needed, and manages the board and optional tracker publishing. A spec, PRD, or described intent is valid input. Requirements stay in the epic and entries cite them with `covers`. A file is needed for refinement or tracker publishing, not to start a build. Tracker stores are lightly tested.
+**`bmad-ticket`** — slices initiatives into epics, incepts each epic into entries, refines when needed, and manages the board and optional tracker publishing. A spec, PRD, or described intent is valid input. Requirements stay in the epic and entries cite them with `covers`. A file is needed for refinement or tracker publishing, not to start a build. Tracker stores are lightly tested.

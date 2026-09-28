@@ -51,10 +51,10 @@ Supported intent shapes include:
 ### Tickets from the Tree
 
 Build Auto reads the tree through `{project-root}/_bmad/method/scripts/tickets.py`,
-the script the [ticketing skill](../plan/break-work-into-stories-and-track-it.md) installs.
+the script [`bmad-ticket`](../plan/break-work-into-stories-and-track-it.md) installs.
 This page describes the repo store, where a ticket's status lives in its plan.
 On a tracker store, `tickets.py mark` refuses to run, so move the ticket on
-the tracker through the ticketing skill.
+the tracker through `bmad-ticket`.
 
 - A named ticket goes through `tickets.py find`. When `find` fails, for example on a reference that matches no ticket or more than one, the run halts with `ticket not resolved`.
 - It builds from the entry in `tickets.toml`, its epic file and what that file's References name, and the entry's story file when it has one. It never writes a ticket file and never runs `tickets.py pull`.
@@ -140,7 +140,7 @@ The plan frontmatter `status` is the main machine-readable state for orchestrati
 | `built`         | The run finished; nobody has called the ticket done yet  | `review`      |
 | `done`          | The user or an orchestrator called the ticket done       | `done`        |
 | `blocked`       | The run cannot safely continue unattended                | `in-progress` |
-| `dropped`       | The ticketing skill dropped the ticket, on the user's word | `dropped`     |
+| `dropped`       | `bmad-ticket` dropped the ticket, on the user's word | `dropped`     |
 
 Build Auto never moves a ticket to `done`. The user or an orchestrator
 marks a ticket done with `tickets.py mark <ref> done`. A follow-up pass on a

@@ -16,8 +16,8 @@ Read this when the question is about `bmad-build`, `bmad-build-auto`, or `bmad-c
 - Writes: the same plans as `bmad-build`.
 
 **`bmad-correct-course`** — assesses a significant midstream change.
-- Gives: a change proposal covering impact across PRD, epics, architecture, and UX; a recommended path (adjust, roll back, or cut scope); and proposed edits. It drafts the edits to the PRD, architecture, UX, and stories and does not apply them: the user applies those through the owning skills. Its handoff lists the added, removed, resequenced, or rescoped epics and stories for the user to apply with the ticketing skill.
+- Gives: a change proposal covering impact across PRD, epics, architecture, and UX; a recommended path (adjust, roll back, or cut scope); and proposed edits. It drafts the edits to the PRD, architecture, UX, and stories and does not apply them: the user applies those through the owning skills. Its handoff lists the added, removed, resequenced, or rescoped epics and stories for the user to apply with `bmad-ticket`.
 - Pick when: a ticket exposes something that reaches across artifacts, such as a technical limit, a new or misread requirement, a pivot, or a failed approach.
-- Not when: there is neither a PRD nor a spec (it halts). A change that touches only the spec → update it with `bmad-spec`. A change that only re-slices tickets → `bmad-preview-ticketing`.
+- Not when: there is neither a PRD nor a spec (it halts). A change that touches only the spec → update it with `bmad-spec`. A change that only re-slices tickets → `bmad-ticket`.
 - Reads: the PRD or spec, plus architecture and UX when present. It reads no epics file or ticket tree; the user describes the affected epics and stories.
 - Writes: `{output_folder}/{active_initiative}/change-<slug>/change-<slug>.md`.

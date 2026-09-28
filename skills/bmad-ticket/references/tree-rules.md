@@ -1,11 +1,11 @@
 # Rules for skills that use the ticket tree
 
-Every skill that takes work from the tree, builds it, reviews it, or looks back on it follows these rules: the ticketing skill, `bmad-build`, `bmad-build-auto`, `bmad-code-review`, `bmad-retrospective`, and `bmad migrate`.
+Every skill that takes work from the tree, builds it, reviews it, or looks back on it follows these rules: `bmad-ticket`, `bmad-build`, `bmad-build-auto`, `bmad-code-review`, `bmad-retrospective`, and `bmad migrate`.
 
 ## Finding the tree
 
 - The tree is `{output_folder}/{active_initiative}`: `output_folder` from `[core]` and `active_initiative` from `[modules.bmm]`, both in the merged BMad config.
-- `tickets.py` is installed at `{project-root}/_bmad/method/scripts/tickets.py`. The ticketing skill declares it in its `bmod.toml`. Other skills run it from there and never open the ticketing skill's folder.
+- `tickets.py` is installed at `{project-root}/_bmad/method/scripts/tickets.py`. `bmad-ticket` declares it in its `bmod.toml`. Other skills run it from there and never open `bmad-ticket`'s folder.
 - Called with no folder, `tickets.py next`, `status`, and `find` resolve the active initiative themselves. When no initiative is set, they exit with an error that names the missing key, and the calling skill works without the tree.
 - A ticket is read through `tickets.py find`: its entry's fields, its epic file, its story file when one was refined, and its plan path, whether or not the plan exists yet. The build's input is the entry and its epic, plus the story file when there is one. No skill writes a ticket file to start work.
 
@@ -27,7 +27,7 @@ Every skill that takes work from the tree, builds it, reviews it, or looks back 
 | `draft`, `ready-for-dev`, `in-progress`, `in-review`, `built` | `bmad-build`, `bmad-build-auto` as they work |
 | `blocked` | `bmad-build-auto` when it halts, with the reason in the plan |
 | `done` | the user, or an orchestrator, through `tickets.py mark` |
-| `dropped` | the ticketing skill, when the user says so |
+| `dropped` | `bmad-ticket`, when the user says so |
 
 - No skill moves a ticket past `built`: the build's last status, meaning the build finished and nobody has called it done. When the user tells a skill that a ticket is done, the skill runs `mark` for them. `bmad-code-review` never changes `status`.
 
@@ -39,4 +39,4 @@ Every skill that takes work from the tree, builds it, reviews it, or looks back 
 ## Where review and retrospective write
 
 - `bmad-code-review` appends a `## Code Review` section to the reviewed ticket's plan. Each run adds a dated block with that run's findings. Deferred findings go into the same block.
-- `bmad-retrospective` writes `epic-<slug>-retrospective.md` in the epic folder, with `verdict` in its frontmatter. It does not edit the epic file. Closing the epic is still the ticketing skill's closure check, confirmed by the user.
+- `bmad-retrospective` writes `epic-<slug>-retrospective.md` in the epic folder, with `verdict` in its frontmatter. It does not edit the epic file. Closing the epic is still `bmad-ticket`'s closure check, confirmed by the user.
