@@ -3399,7 +3399,10 @@ class BmadRetiredSkillTests(unittest.TestCase):
         write(installed / "bmad-old" / "SKILL.md", "x\n")
         lock = home / ".agents" / ".skill-lock.json"
         write(lock, json.dumps({"version": 3, "skills": {"bmad-old": {}, "bmad": {}}}, indent=2))
-        env = {key: value for key, value in os.environ.items() if key != "XDG_STATE_HOME"} | {"HOME": str(home)}
+        env = {key: value for key, value in os.environ.items() if key != "XDG_STATE_HOME"} | {
+            "HOME": str(home),
+            "USERPROFILE": str(home),
+        }
 
         def run(*extra: str) -> dict:
             command = [sys.executable, str(skill / "scripts" / "setup.py"), "--project-root", str(self.project)]
