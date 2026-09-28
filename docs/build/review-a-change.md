@@ -24,7 +24,7 @@ plan as context for new work instead. Stop when the findings are mostly
 low-value notes about exotic corner cases. That is accidental
 complexity, not quality.
 Non-trivial findings on a third pass of agentic review usually mean
-something is wrong upstream of this change: a weak plan, a
+something is wrong upstream of this change: weak internal design, a
 contradiction, or ambiguity in the rules. Fix that instead of running
 another pass.
 
@@ -87,20 +87,35 @@ of findings to the plan's `## Code Review` section; without one, the
 listing stays in the chat. You choose whether to apply patches. The
 review never changes the ticket's status: marking it done is yours.
 
+## Choose the Depth
+
+Out of the box, you get two review depths to choose from: `quick` and
+`thorough`.
+
+`bmad-build` and `bmad-build-auto` default to **quick**: one reviewer,
+several times cheaper and somewhat faster than thorough.
+`bmad-code-review` defaults to **thorough**: several reviewers, each
+with a different lens. Slow, expensive, tuned to find as many problems
+as possible.
+
+Quick is good enough for small simple changes or throwaway prototypes.
+Thorough is highly recommended for any serious work with production
+consequences. In the latter situation, a good compromise is to default
+to quick reviews inside the personal development cycle (selectively
+bumping up to `thorough` on high risk changes), but to make sure that
+every commit or pull request is passing through `bmad-code-review` on
+`thorough` setting eventually. E.g., by a PR review bot.
+
+Say `thorough` or `quick` when you invoke a skill to override its
+default for one run. To permanently change a skill's default, start
+`bmad-customize` and ask.
+
 ## Customize the Lenses
 
-You can choose review depth: `thorough` or `quick`.
-
-**Thorough** is the default: several reviewers, each with a different
-lens. Slow, expensive, tuned to find as many problems as possible.
-
-**Quick** is a single reviewer, several times cheaper and somewhat
-faster. Say `/bmad-code-review quick` to use it for a run.
-
-Different situations call for different review breadth, depth and cost.
-You can change the default from thorough to quick, add your own
-reviewers, replace or turn off the ones you get out of the box, run
-some on another model. Start `bmad-customize` and ask what is possible.
+Next level of customizing reviews is to change the lenses themselves.
+You can add your own reviewers, replace or turn off the ones you get out
+of the box, run some on another model. Start `bmad-customize` and ask
+what is possible.
 
 ## Why Does Review Take Forever?
 
@@ -112,25 +127,19 @@ Three explanations:
 
 ### Exhaustive on purpose
 
-The default assumes an average bug escaping into production is worth
-more than an hour of inference. You can turn that down — see
-[Customize the Lenses](#customize-the-lenses). Skipping review in
-`bmad-build` is reasonable for a throwaway prototype. A long review can
-also run offline.
+Thorough review assumes an average bug escaping into production is worth
+more than an hour of inference. You can turn that down — see [Choose the
+Depth](#choose-the-depth) - or even skip review altogether. A long
+review can also run offline.
 
-It is a bad idea to let teammates look at unreviewed LLM-generated
-code. It is a worse idea to put that code into production without the
-full battery of review lenses. If you care about the quality of the
-product, think about more lenses, not fewer.
+It is a bad idea to let teammates look at unreviewed LLM-generated code.
+It is a worse idea to put that code into production. If you care about
+the quality of the product, think about more lenses, not fewer.
 
 Do not take anyone's word for it. Pick a handful of interesting
 changes, run the full battery, look at one or two of the most
 interesting findings, and ask which is better: extra token burn, or
 living with those issues in production.
-
-Your custom lenses can run on other models. That is worth doing. Run
-several `blind-hunter` lenses with the same prompt, one on every LLM
-you have access to.
 
 ### Too many rules, or huge files
 
@@ -143,7 +152,7 @@ review quality.
 ### Your platform
 
 Some runtimes have no subagents. Vendors, including Anthropic and
-OpenAI, have also shipped changes that alter how subagents run. Until
+OpenAI, sometimes ship changes that alter how subagents run. Until
 BMad catches up, the lenses execute one after another instead of in
 parallel — or they fall back to the main session, which is far worse
 for review quality than it sounds.
