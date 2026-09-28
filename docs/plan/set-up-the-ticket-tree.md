@@ -1,21 +1,21 @@
 ---
 title: 'Set Up the Ticket Tree'
-description: Try proposed BMad v7 planning changes as they arrive — set up an initiative store, configure it, and use the ticketing preview skill.
+description: Set up an initiative store, choose where tickets are tracked, and plan and track work with bmad-ticket.
 sidebar:
   order: 8
 ---
 
-Use `bmad-preview-ticketing` to plan and track work in the shared ticket tree. Build, Build Auto, code review, and retrospective consume that tree. The skill keeps its preview name while tracker integrations continue to mature.
+`bmad-ticket` is how BMad plans and tracks work: it breaks work into epics and stories in the shared ticket tree. Build, Build Auto, code review, and retrospective consume that tree.
 
 ## Install the Skills
 
-Preview skills install with the skills CLI. `npx bmad-method install`, with or without `@next`, does not install them. Run this in your project:
+Install with the skills CLI. Run this in your project:
 
 ```bash
-npx skills add bmad-code-org/BMAD-METHOD --skill bmad --skill bmod-core-tools --skill bmod-method --skill bmad-preview-ticketing
+npx skills add bmad-code-org/BMAD-METHOD --skill bmad --skill bmod-core-tools --skill bmod-method --skill bmad-ticket
 ```
 
-Add `--skill bmad-build` and any other skill you want in the same command. Then open your AI tool in the project, ask the `bmad` skill to run `bmad setup`, and check that the tool lists `bmad-preview-ticketing`. Update later with `npx skills update`.
+Add `--skill bmad-build` and any other skill you want in the same command. Then open your AI tool in the project, ask the `bmad` skill to run `bmad setup`, and check that the tool lists `bmad-ticket`. Update later with `npx skills update`.
 
 :::note[Prerequisites]
 You need Node.js with npm, Git, and [uv](https://docs.astral.sh/uv/). BMad setup and the ticketing scripts run through `uv`.
@@ -73,7 +73,7 @@ Set the initiative you are working on in `_bmad/custom/config.user.toml`, which 
 active_initiative = "initiative-checkout"
 ```
 
-The value is the initiative's folder name in the store. When it is unset, the ticketing skill offers to create the folder and record the setting for you. You can also ask the `bmad` skill to show, switch, create, or clear the active initiative at any time.
+The value is the initiative's folder name in the store. When it is unset, `bmad-ticket` offers to create the folder and record the setting for you. You can also ask the `bmad` skill to show, switch, create, or clear the active initiative at any time.
 
 :::tip[One workspace, many projects]
 If one workspace holds unrelated projects, tell your coding agent to follow the active initiative. Put a short rule in `AGENTS.md`, or whatever instruction file your tool reads, that names the setting and says which folders belong to which initiative:
@@ -109,7 +109,7 @@ UX is the exception to the naming: `bmad-ux` writes two peer documents, `DESIGN.
 
 ## Configure Where Tickets Are Tracked
 
-The first time you use the ticketing skill, it asks where tickets are tracked and writes your choice to `_bmad/custom/ticketing-store-config.toml`. That file is yours to edit, and edits survive skill updates.
+The first time you use `bmad-ticket`, it asks where tickets are tracked and writes your choice to `_bmad/custom/ticketing-store-config.toml`. That file is yours to edit, and edits survive skill updates.
 
 | Choice        | What it means                                                                        |
 | ------------- | ------------------------------------------------------------------------------------ |
@@ -128,7 +128,7 @@ Repo is the default and the choice that has been tested most. The tracker option
 Hooks are not integrated yet, so nothing syncs on its own: a tracker and the ticket files are brought in line only when you run the skill. Hooks may be added later.
 :::
 
-## Use the Ticketing Skill
+## Use `bmad-ticket`
 
 The skill turns intent into tickets a coding agent can build from, at three levels. An initiative holds epics. An epic holds stories, spikes, and bugs. An initiative or an epic is itself the specification at its level: it holds the requirements, and its children are cut from them.
 
@@ -150,7 +150,7 @@ A story's `after` can name a story in another epic, or a whole epic. Ask "what's
 
 ### How epics are cut
 
-An epic is one capability that one owner delivers to production. A module, service, or bounded context can be an epic when it is also the ownership or deployment boundary. A unit the work only consumes or configures gets no epic. It is a touch point, named in the initiative's Boundaries with the epic that owns the work there. If your team cuts epics by its own rule, tell the skill and it offers to save the rule to `_bmad/custom/bmad-preview-ticketing.toml`.
+An epic is one capability that one owner delivers to production. A module, service, or bounded context can be an epic when it is also the ownership or deployment boundary. A unit the work only consumes or configures gets no epic. It is a touch point, named in the initiative's Boundaries with the epic that owns the work there. If your team cuts epics by its own rule, tell the skill and it offers to save the rule to `_bmad/custom/bmad-ticket.toml`.
 
 After the epics are agreed, the skill lists the decisions that more than one epic must adopt, such as a contract, a data format, or a shared value list. It offers `bmad-architecture` to settle them in the architecture spine. If you decline, each becomes a story in the opening epic that the other epics wait on. Work in one repo or one unit needs no architecture pass. It is needed from the second unit that must adopt a decision.
 
@@ -161,11 +161,11 @@ When your source contradicts the code, the skill records a `Source conflict:` li
 Name the story to `bmad-build`, for example "build story 1.2" for the second story of the first epic. There is no file to write first. Build reads the story's entry and its epic, plus the story file when you refined one. It plans the story's acceptance criteria from the epic's Requirements and Done when, the entry's description, and its `Verify:` check.
 
 :::note[Refining is optional]
-A story needs no refining before `bmad-build`. Build refines it as part of the build: it questions you and writes the acceptance criteria itself. If you will build unattended, with `bmad-build-auto`, a loop, or a factory, nobody answers questions during the build, so review the sequence and each story with the ticketing skill first. The ticketing skill writes full acceptance criteria only for a bug, a ticket with no epic, or when you ask.
+A story needs no refining before `bmad-build`. Build refines it as part of the build: it questions you and writes the acceptance criteria itself. If you will build unattended, with `bmad-build-auto`, a loop, or a factory, nobody answers questions during the build, so review the sequence and each story with `bmad-ticket` first. `bmad-ticket` writes full acceptance criteria only for a bug, a ticket with no epic, or when you ask.
 :::
 
-The story's `status` lives in the build's plan. Build moves it as it works and stops at `built`; only you, or an orchestrator, mark a story done. When you have checked the work, say "mark story 1.2 done" to the ticketing skill. On the repo store that is an edit to the plan that you commit with your work. With a tracker, say "start story 1.2" before you build, so the ticket publishes if it has not and its card moves to in progress. The tracker's status is read into the story's file as `tracker_status`, so moving a card on the board never makes build skip planning.
+The story's `status` lives in the build's plan. Build moves it as it works and stops at `built`; only you, or an orchestrator, mark a story done. When you have checked the work, say "mark story 1.2 done" to `bmad-ticket`. On the repo store that is an edit to the plan that you commit with your work. With a tracker, say "start story 1.2" before you build, so the ticket publishes if it has not and its card moves to in progress. The tracker's status is read into the story's file as `tracker_status`, so moving a card on the board never makes build skip planning.
 
 ## Tell Us What You Find
 
-Feedback helps improve the ticketing integrations. The most useful reports say what you gave the skill, what you asked for, what it produced, and what you expected instead. Open a [GitHub issue](https://github.com/bmad-code-org/BMAD-METHOD/issues) with "v7 preview" in the title, or post in [Discord](https://discord.gg/gk8jAdXWmj).
+Feedback helps improve `bmad-ticket` and its tracker integrations. The most useful reports say what you gave the skill, what you asked for, what it produced, and what you expected instead. Open a [GitHub issue](https://github.com/bmad-code-org/BMAD-METHOD/issues) with "bmad-ticket" in the title, or post in [Discord](https://discord.gg/gk8jAdXWmj).

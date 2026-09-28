@@ -60,4 +60,4 @@ skill = "bmad-architecture"
 [[agent.menu]]
 code = "TK"
 description = "Plan work and dependencies through the ticket tree"
-skill = "bmad-preview-ticketing"
+skill = "bmad-ticket"

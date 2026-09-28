@@ -116,15 +116,15 @@ order and feed the same spec. After every run it reports assumptions it made
 and open questions it could not answer, for you to resolve.
 
 `bmad-spec` does not split a spec into stories. When a spec it writes reads as
-several slices, it offers once to hand off to `bmad-preview-ticketing`. To
-split a spec at any time, run `bmad-preview-ticketing` with the spec folder.
+several slices, it offers once to hand off to `bmad-ticket`. To
+split a spec at any time, run `bmad-ticket` with the spec folder.
 It plans one epic with you in build order and records the stories in the
 epic's `tickets.toml`. Each story cites the spec's capability IDs. A constraint or design decision that comes up while slicing
 goes back into the spec as an update. See
 [Choose a Planning Path](./choose-a-planning-path.md#1-start-epic-sized-work)
 for how the epic then runs.
 
-`bmad-spec` delegates story breakdown to ticketing. To run
+`bmad-spec` delegates story breakdown to `bmad-ticket`. To run
 the planned stories unattended, explicitly dispatch each ticket to
 [`bmad-build-auto`](../build/autonomous-development-loops.md) as `ticket <ref>`,
 one run per ticket. No leaf file needs to be pulled first.
@@ -144,6 +144,6 @@ skill; see
 
 With a PRD in hand for multi-epic work, decide whether the work needs shared
 design decisions: [Design UX and Architecture](./design-ux-and-architecture.md).
-With a spec in hand for one epic, run `bmad-preview-ticketing` with the spec
+With a spec in hand for one epic, run `bmad-ticket` with the spec
 folder and go to
 [Break Work into Stories and Track It](./break-work-into-stories-and-track-it.md).

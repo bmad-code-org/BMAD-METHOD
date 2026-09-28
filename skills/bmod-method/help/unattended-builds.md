@@ -19,7 +19,7 @@ Use this when the user asks about `bmad-build-auto`, building tickets with no hu
 
 - A ticket's plan sits beside `tickets.toml`, or in `backlog/` for a backlog ticket, at the path `tickets.py find` returns, with `ticket` and `baseline_revision` in its frontmatter. Other work gets `{output_folder}/{active_initiative}/plan-<slug>.md`, or `{output_folder}/plan-<slug>.md` with no initiative active.
 - A successful run ends at `built`, which the board shows as review. Only the user or an orchestrator marks the ticket done, with `tickets.py mark <ref> done`.
-- This is the repo store. On a tracker store, `next` and `mark` refuse, so name the ticket and move it through the ticketing skill.
+- This is the repo store. On a tracker store, `next` and `mark` refuse, so name the ticket and move it through `bmad-ticket`.
 
 ## Resume follows the plan's status
 

@@ -20,7 +20,7 @@ npx skills add bmad-code-org/BMAD-METHOD
 Select your coding tool and skills. Include `bmad` for setup and help, and the module records `bmod-core-tools` and `bmod-method` for the modules you use. To install a small set by name:
 
 ```bash
-npx skills add bmad-code-org/BMAD-METHOD --skill bmad --skill bmod-core-tools --skill bmod-method --skill bmad-build --skill bmad-preview-ticketing
+npx skills add bmad-code-org/BMAD-METHOD --skill bmad --skill bmod-core-tools --skill bmod-method --skill bmad-build --skill bmad-ticket
 ```
 
 Add review, retrospective, or other skills as needed. Keep project and global installation scopes consistent.

@@ -130,13 +130,13 @@ Record the verdict for each pass to `.memlog.md` (`append --type event`). In int
 
 When the user points the skill at an existing spec folder (or its spec-{slug}.md) with no change signal, offer to review assumptions or open questions, or determine what they want to do.
 
-## Handing off to ticketing (optional, interactive-only)
+## Handing off to `bmad-ticket` (optional, interactive-only)
 
 Requires `spec-{slug}.md` on disk — run the normal Operation first if it doesn't exist yet. Headless runs never do this, even when the invocation text asks for it: if mode detection (On Activation, step 4) resolved headless, skip this section entirely and proceed with the normal headless response. In interactive mode, offer the handoff at most once per run when the input reads as multiple independently shippable slices; a decline ends the offer for this run, not forever.
 
-Hand the spec folder to `bmad-preview-ticketing` as the requirement source: it plans the work with the user as an epic whose `tickets.toml` entries cite this spec's `CAP-N` ids, and it runs the board from there. Load-bearing detail the slicing conversation surfaces (a constraint, a design decision) comes back here as a spec update, never into a ticket alone.
+Hand the spec folder to `bmad-ticket` as the requirement source: it plans the work with the user as an epic whose `tickets.toml` entries cite this spec's `CAP-N` ids, and it runs the board from there. Load-bearing detail the slicing conversation surfaces (a constraint, a design decision) comes back here as a spec update, never into a ticket alone.
 
-When a spec update runs, search the ticket root for this spec folder's path in References; where tickets cite it, name the entries and tickets whose description no longer matches and offer to re-slice them with `bmad-preview-ticketing`. The update itself never edits a ticket.
+When a spec update runs, search the ticket root for this spec folder's path in References; where tickets cite it, name the entries and tickets whose description no longer matches and offer to re-slice them with `bmad-ticket`. The update itself never edits a ticket.
 
 ## Output
 

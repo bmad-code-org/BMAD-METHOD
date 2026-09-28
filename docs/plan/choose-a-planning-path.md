@@ -30,7 +30,7 @@ says the input is too thin, you are not done on this chapter yet.
 
 - **Well-defined intent**: run `bmad-spec` with it. A spec that fits one Build
   session goes straight to `bmad-build`; an epic-sized one goes to
-  `bmad-preview-ticketing` for stories, then a Build per story. See
+  `bmad-ticket` for stories, then a Build per story. See
   [Define Requirements and a Specification](./define-requirements-and-a-specification.md).
 - **Anything else**: the intent is not ready yet. Use the pages below until it
   is, then run `bmad-spec`. The spec skill writes the contract; it does not
@@ -83,15 +83,15 @@ is active.
 | `bmad-prfaq`                    | Stress-test a product concept customer-first, working backwards from the press release                                                         | `prfaq-<slug>.md` + a distillate                                                    |
 | `bmad-prd`                      | Create, update, or validate a PRD                                                                                                              | Create/update: `prd-<slug>.md`, `addendum.md`, `.memlog.md`; validate: HTML + `.md` report |
 | `bmad-ux`                       | Record how the product looks and behaves ([Design UX and Architecture](./design-ux-and-architecture.md))                                       | `DESIGN.md`, `EXPERIENCE.md`, `ux-<slug>.md`, `.memlog.md`                          |
-| `bmad-spec`                     | Condense any intent into a short contract; hand it to `bmad-preview-ticketing` for stories on request                                          | `spec-<slug>.md` + companions                                                       |
+| `bmad-spec`                     | Condense any intent into a short contract; hand it to `bmad-ticket` for stories on request                                          | `spec-<slug>.md` + companions                                                       |
 | `bmad-architecture`             | Make the technical decisions that keep separately built parts consistent                                                                       | `architecture-<slug>.md` by default                                                 |
-| `bmad-preview-ticketing` | [Plan and track entries](./break-work-into-stories-and-track-it.md) | Epic envelopes, ordered `tickets.toml`, and optional leaf files |
+| `bmad-ticket` | [Plan and track entries](./break-work-into-stories-and-track-it.md) | Epic envelopes, ordered `tickets.toml`, and optional leaf files |
 
 `bmad-prd` has three intents, create, update, and validate; say which one you
 want when you invoke it, or it will ask. `bmad-product-brief` feeds `bmad-prd`,
 which reads the brief during discovery, but neither requires the other.
 
-![Three columns of planning skills and the files each writes: analysis (brainstorming, forge idea, deep recon, product brief, PRFAQ), planning (PRD, UX, spec), and solutioning (architecture and ticketing), all handing off to bmad-build, one session per unit](/diagrams/planning-skills.svg)
+![Three columns of planning skills and the files each writes: analysis (brainstorming, forge idea, deep recon, product brief, PRFAQ), planning (PRD, UX, spec), and solutioning (architecture and ticket), all handing off to bmad-build, one session per unit](/diagrams/planning-skills.svg)
 
 ## Size Follows the Intent
 
@@ -120,7 +120,7 @@ coherent outcome.
 1. Run `bmad-spec` with the epic intent. See
    [Define Requirements and a Specification](./define-requirements-and-a-specification.md)
    for what a spec contains and when it is enough on its own.
-2. Run `bmad-preview-ticketing` with the spec folder. It plans the epic with
+2. Run `bmad-ticket` with the spec folder. It plans the epic with
    you and records the stories in build order in the epic's `tickets.toml`.
 3. Review the proposed order and decide which stories need a checkpoint.
 4. Build each story from its entry when you are ready; no story file is
@@ -141,7 +141,7 @@ before automating repetitions of them.
 
 Run Build once per story, naming the story. Build writes its plan beside the
 epic's `tickets.toml` and leaves the plan at `built` until you mark it done
-through the ticketing skill. To run stories unattended instead, give
+through `bmad-ticket`. To run stories unattended instead, give
 `bmad-build-auto` the story as its intent, one run per story; see
 [Autonomous Development Loops](../build/autonomous-development-loops.md).
 

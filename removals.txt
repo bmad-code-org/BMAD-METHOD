@@ -87,6 +87,9 @@ bmad-agent-tech-writer
 # generating tracking. The IR agent menu trigger dispatches sprint-planning.
 bmad-check-implementation-readiness
 
-# Removed planning route: replaced by bmad-preview-ticketing.
+# Removed planning route: replaced by bmad-ticket.
 bmad-create-epics-and-stories
 bmad-sprint-planning
+
+# Renamed: bmad-preview-ticketing is now bmad-ticket.
+bmad-preview-ticketing

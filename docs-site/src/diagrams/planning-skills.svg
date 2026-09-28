@@ -1,6 +1,6 @@
 <svg class="bmad-diagram" xmlns="http://www.w3.org/2000/svg" width="900" height="620" viewBox="0 0 900 620" role="img" aria-labelledby="title description">
   <title id="title">Planning skills and what they produce</title>
-  <desc id="description">Three columns of skills and their artifacts. Analysis: bmad-brainstorming, bmad-forge-idea, bmad-deep-recon, bmad-product-brief, bmad-prfaq. Planning: bmad-prd, bmad-ux, bmad-spec. Solutioning: bmad-architecture and bmad-preview-ticketing. The columns flow left to right and hand off to bmad-build, one session per unit. Build finishes at built; the user marks done and retains the plan.</desc>
+  <desc id="description">Three columns of skills and their artifacts. Analysis: bmad-brainstorming, bmad-forge-idea, bmad-deep-recon, bmad-product-brief, bmad-prfaq. Planning: bmad-prd, bmad-ux, bmad-spec. Solutioning: bmad-architecture and bmad-ticket. The columns flow left to right and hand off to bmad-build, one session per unit. Build finishes at built; the user marks done and retains the plan.</desc>
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path class="head" d="M 0 0 L 10 5 L 0 10 z"/>
@@ -65,7 +65,7 @@
         <rect class="node" width="240" height="74" rx="2"/>
         <text x="12" y="23" font-size="14" font-weight="700" class="mono" data-i18n="bmad-spec">bmad-spec</text>
         <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="spec-md-companions">spec-&lt;slug&gt;.md + companions</text>
-        <text x="12" y="62" font-size="12" fill="var(--dg-ink)" data-i18n="ticketing-handoff">ticketing handoff</text>
+        <text x="12" y="62" font-size="12" fill="var(--dg-ink)" data-i18n="ticketing-handoff">bmad-ticket handoff</text>
       </g>
       <text x="135" y="330" font-size="12" text-anchor="middle" fill="var(--dg-ink)" data-i18n="spec-when-needed">Use a spec when needed.</text>
       <text x="135" y="348" font-size="12" text-anchor="middle" fill="var(--dg-ink)" data-i18n="one-session-of-work-goes">One session of work goes</text>
@@ -84,10 +84,9 @@
         <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="architecture-spine-md">architecture-&lt;slug&gt;.md</text>
       </g>
       <g transform="translate(15 134)">
-        <rect class="node" width="240" height="74" rx="2"/>
-        <text x="12" y="23" font-size="13" font-weight="700" class="mono" data-i18n="bmad-preview">bmad-preview-</text>
-        <text x="12" y="40" font-size="13" font-weight="700" class="mono" data-i18n="ticketing">ticketing</text>
-        <text x="12" y="62" font-size="12" fill="var(--dg-ink)" data-i18n="ordered-entries">ordered tickets.toml entries</text>
+        <rect class="node" width="240" height="58" rx="2"/>
+        <text x="12" y="23" font-size="14" font-weight="700" class="mono" data-i18n="bmad-ticket">bmad-ticket</text>
+        <text x="12" y="45" font-size="12" fill="var(--dg-ink)" data-i18n="ordered-entries">ordered tickets.toml entries</text>
       </g>
     </g>
 

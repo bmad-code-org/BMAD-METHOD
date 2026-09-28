@@ -19,7 +19,7 @@ This document should be enough to route the user and say what to do next. Each t
 | Topic file | Read when the user asks about |
 |---|---|
 | `help/analysis-skills.md` | `bmad-product-brief` or `bmad-prfaq` in depth: what each gives, when to pick it, when not to, how they relate. |
-| `help/planning-skills.md` | `bmad-spec`, `bmad-prd`, `bmad-ux`, `bmad-architecture`, `bmad-preview-ticketing` in depth. |
+| `help/planning-skills.md` | `bmad-spec`, `bmad-prd`, `bmad-ux`, `bmad-architecture`, `bmad-ticket` in depth. |
 | `help/implementation-skills.md` | `bmad-build`, `bmad-build-auto`, or `bmad-correct-course` in depth. |
 | `help/validation-skills.md` | `bmad-code-review`, `bmad-walkthrough`, `bmad-qa-generate-e2e-tests`, or `bmad-retrospective` in depth. |
 | `help/prototyping.md` | Prototyping or vibe coding first, what a prototype is good for (worth doing, feasibility, complexity, unknowns), non-engineers prototyping, what to do with a prototype afterwards, whether planning still matters after a good first version. |
@@ -28,8 +28,8 @@ This document should be enough to route the user and say what to do next. Each t
 | `help/artifact-lifetime.md` | Whether to keep PRDs, specs, stories, and build records after the work is done, archiving, closing out an epic, keeping old plans from misleading agents. |
 | `help/monorepo-and-polyrepo.md` | Where to install BMad and keep planning when work spans one repository or several; the workspace layout for a poly repo. |
 | `help/working-in-an-organization.md` | A team or enterprise: an existing PRD, Jira or another tracker, approvals and sign-off, document owners, several engineers in parallel, requirements changing mid-flight. |
-| `help/ticketing-and-epics.md` | How `bmad-preview-ticketing` works (initiatives, epic inception, the breakdown, building from an entry, refining), plan status, review, and retrospective. |
-| `help/ticketing-setup.md` | Setting up and driving `bmad-preview-ticketing`: the store, several repos, trackers, the phrases to say, the hand-off to `bmad-build`. |
+| `help/ticketing-and-epics.md` | How `bmad-ticket` works (initiatives, epic inception, the breakdown, building from an entry, refining), plan status, review, and retrospective. |
+| `help/ticketing-setup.md` | Setting up and driving `bmad-ticket`: the store, several repos, trackers, the phrases to say, the hand-off to `bmad-build`. |
 | `help/unattended-builds.md` | `bmad-build-auto`, building stories with no human present, a blocked run and how to retry, what to check after a run. |
 | `help/review-choices.md` | Review depth, skipping review, another review pass, when to stop, slow reviews, customizing review. |
 | `help/project-context.md` | `bmad-project-context` in depth: what belongs in `AGENTS.md`, why the block is small, its intents, removing a rule. |
@@ -40,7 +40,7 @@ This document should be enough to route the user and say what to do next. Each t
   - Obvious and low-risk (typo, formatting, config): just make the edit. No skill.
   - Yes → `bmad-build`. No planning skill first.
 - Bigger than one session: does the user already have enough to say or paste (an idea they can explain in detail, notes, intent.md, single ticket, a transcript, a brief, a PRD)?
-  - Yes → `bmad-spec`, then `bmad-preview-ticketing` with the spec folder to plan the stories. Then one `bmad-build` per story.
+  - Yes → `bmad-spec`, then `bmad-ticket` with the spec folder to plan the stories. Then one `bmad-build` per story.
   - No → find what is missing, run the skill that supplies it, then `bmad-spec`:
     - They cannot name a customer or a problem → `bmad-forge-idea` or `bmad-brainstorming` (core tools), if installed.
     - Unsure the idea is worth building → `bmad-prfaq`.
@@ -65,11 +65,11 @@ Situations the tree above does not settle.
 | An inherited or brownfield codebase | A small `bmad-build` change first; `bmad-project-context` and `bmad-walkthrough` as needed | No up-front documentation pass is required (`help/existing-codebase.md`). |
 | "I don't know architecture, stacks, or hosting" | `bmad-architecture`, or the architect agent to talk it through | It coaches, recommends a current starter, and lays out options with reasons for the user to choose. Technical knowledge is not needed to start. |
 | "An app for X" and nothing more | `bmad-product-brief`, or `bmad-prd` when the stakes call for full requirements | `bmad-spec` distills and will not coach; the input is too thin for it. The brief is the lighter of the two. |
-| A PRD and architecture, several epics, wants tracking | `bmad-preview-ticketing` | One tree of epics, entries, and joined plans. |
+| A PRD and architecture, several epics, wants tracking | `bmad-ticket` | One tree of epics, entries, and joined plans. |
 | A team with an existing PRD, a tracker, approvals, or several engineers | The full path only when approvers, parallel teams, or required documents call for it | The existing PRD is input, each document has one owner, and sign-off attaches to skill results (`help/working-in-an-organization.md`). |
-| "Can BMad build my stories by itself?" | `bmad-build-auto`, dispatched per story by a loop | It suits settled decisions and well specified stories, with someone reading the results. For work planned with `bmad-preview-ticketing`, give it the ticket, one run per ticket (`help/unattended-builds.md`). |
-| Wants tickets or a tracker (Jira, Linear, GitHub) as the record | `bmad-preview-ticketing` | Tickets are the board. The build moves a ticket's `status` in its plan as far as `built`, and the user marks it done. |
-| "Where are we?" | `bmad-preview-ticketing` status | Reads the ticket tree and joined plan statuses. |
+| "Can BMad build my stories by itself?" | `bmad-build-auto`, dispatched per story by a loop | It suits settled decisions and well specified stories, with someone reading the results. For work planned with `bmad-ticket`, give it the ticket, one run per ticket (`help/unattended-builds.md`). |
+| Wants tickets or a tracker (Jira, Linear, GitHub) as the record | `bmad-ticket` | Tickets are the board. The build moves a ticket's `status` in its plan as far as `built`, and the user marks it done. |
+| "Where are we?" | `bmad-ticket` status | Reads the ticket tree and joined plan statuses. |
 | A v6 project (`epics.md`, `sprint-status.yaml`, dated folders under the planning folder) that wants the v7 layout | `bmad migrate method` | The module ships `v6-v7-migration.toml`: the rules for moving the project's artifacts into initiative folders, turning epics and sprint status into a ticket tree, and putting loose work in `inbox/`. The `bmad` skill plans it with the user, then performs it. |
 | A PR, a branch, a ticket in review, or code `bmad-build` did not write | `bmad-code-review` | Agent lenses over any diff. With no argument it offers the tickets in review. |
 | "Walk me through what changed" | `bmad-walkthrough` | The human is the reviewer. |
@@ -88,15 +88,15 @@ One line per skill: what it is for and what it writes. The files it writes are h
 | `bmad-product-brief` | A 1-2 page brief of a product the user believes in. Lighter than a PRD, sharper than a hand-written intent file. It does not judge the idea. | `brief-<slug>/brief-<slug>.md` |
 | `bmad-prfaq` | Tests whether a concept survives scrutiny: press release, hard FAQs, researched claims, a verdict. | `prfaq-<slug>/prfaq-<slug>.md`, plus `-distillate.md` beside it |
 | **Planning** (`help/planning-skills.md`) | | |
-| `bmad-spec` | The hub. Distills any input into the contract builds read, and updates it. It does not slice or coach; splitting work into stories is `bmad-preview-ticketing`. | `spec-<slug>/spec-<slug>.md` and companions |
+| `bmad-spec` | The hub. Distills any input into the contract builds read, and updates it. It does not slice or coach; splitting work into stories is `bmad-ticket`. | `spec-<slug>/spec-<slug>.md` and companions |
 | `bmad-prd` | Coaches detailed requirements out of the user, sized to the stakes. Also updates and validates a PRD. | `prd-<slug>/prd-<slug>.md` |
 | `bmad-ux` | How the product looks and works. May lead, follow, or stand alone. Can produce mocks and wireframes. | `ux-<slug>/` with `DESIGN.md`, `EXPERIENCE.md`, and `ux-<slug>.md` naming them |
 | `bmad-architecture` | Settles only the decisions that keep separately built parts consistent. Coaches a user with no architecture knowledge, recommends a current starter, and covers hosting and deployment. | `architecture-<slug>/architecture-<slug>.md` |
-| `bmad-preview-ticketing` | A ticket tree run as a board: initiatives, epics, stories planned as entries in `tickets.toml`, a file only when refined or published, one-off bugs, optional tracker. | Ticket files under `{output_folder}/{active_initiative}/` and `{output_folder}/backlog/` |
+| `bmad-ticket` | A ticket tree run as a board: initiatives, epics, stories planned as entries in `tickets.toml`, a file only when refined or published, one-off bugs, optional tracker. | Ticket files under `{output_folder}/{active_initiative}/` and `{output_folder}/backlog/` |
 | **Implementation** (`help/implementation-skills.md`) | | |
 | `bmad-build` | One session of delivery: clarifies intent, plans, implements, reviews, commits. The default for any real change. Takes free text, a ticket from the tree (nothing means the next ready one), or any file as intent. | A ticket's plan beside `tickets.toml`, or `plan-<slug>.md`; `deferred-work.md` |
 | `bmad-build-auto` | One unattended build of one ticket, dispatched by a loop or script. Never for attended work. | The same plans as `bmad-build` |
-| `bmad-correct-course` | Assesses a significant midstream change. Needs a PRD or a spec; lists epic and story changes for the ticketing skill. | `change-<slug>/change-<slug>.md` |
+| `bmad-correct-course` | Assesses a significant midstream change. Needs a PRD or a spec; lists epic and story changes for `bmad-ticket`. | `change-<slug>/change-<slug>.md` |
 | **Validation** (`help/validation-skills.md`) | | |
 | `bmad-code-review` | Agent review of any diff, PR, or branch, with triaged findings. Redundant right after a full `bmad-build` review of the same change. | A dated block in the plan's `## Code Review` section, or chat |
 | `bmad-walkthrough` | The human reviews a change block by block, guided. Also a way to learn unfamiliar code. | `walkthrough-<slug>/` with the narrative and a `-log.md` |
@@ -107,7 +107,7 @@ One line per skill: what it is for and what it writes. The files it writes are h
 
 ### Slicing and tracking the work
 
-`bmad-preview-ticketing` plans and tracks work in one ticket tree. An initiative holds epics; each epic's `tickets.toml` holds ordered entries. Build an entry directly without making a story file. Standalone stories and bugs can be direct intent or backlog leaves. Plans own status and remain live after completion. Builds stop at `built`; the user or orchestrator marks `done`. See `help/ticketing-setup.md`.
+`bmad-ticket` plans and tracks work in one ticket tree. An initiative holds epics; each epic's `tickets.toml` holds ordered entries. Build an entry directly without making a story file. Standalone stories and bugs can be direct intent or backlog leaves. Plans own status and remain live after completion. Builds stop at `built`; the user or orchestrator marks `done`. See `help/ticketing-setup.md`.
 
 ### Who reviews what
 
@@ -140,9 +140,9 @@ An agent and its skills are two ways into the same work: a skill run directly do
 | `bmad-prd` | `bmad-spec` to absorb it. `bmad-ux` when the UI matters; `bmad-architecture` when parts must fit together. |
 | `bmad-ux` | `bmad-spec` to adopt the files as companions. When UX came first and requirements are still thin, `bmad-prd` or the lighter `bmad-product-brief` with the UX files as input. |
 | `bmad-architecture` | `bmad-spec` to adopt the spine as a companion. |
-| `bmad-spec` | Its open questions and assumptions, if any. Then `bmad-preview-ticketing` with the spec folder to plan the stories, and `bmad-build` per story, or straight to `bmad-build` when one session can do it. |
+| `bmad-spec` | Its open questions and assumptions, if any. Then `bmad-ticket` with the spec folder to plan the stories, and `bmad-build` per story, or straight to `bmad-build` when one session can do it. |
 | `bmad-build` | Open a PR, or `bmad-walkthrough` when a person wants to understand the change. Once the user marks the ticket done, the next ticket. `bmad-qa-generate-e2e-tests` when end-to-end coverage is wanted. |
-| The last ticket of an epic | `bmad-retrospective`, then a refactoring pass over the whole changeset, which is commonly skipped (`help/preparing-a-repo-for-agents.md`). Then close the epic through ticketing and retain its plans (`help/artifact-lifetime.md`). |
+| The last ticket of an epic | `bmad-retrospective`, then a refactoring pass over the whole changeset, which is commonly skipped (`help/preparing-a-repo-for-agents.md`). Then close the epic through `bmad-ticket` and retain its plans (`help/artifact-lifetime.md`). |
 
 ## Answering "what's next?"
 

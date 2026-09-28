@@ -11,7 +11,7 @@ module = "method"
 from = "6"
 to = "7"
 title = "Move v6 planning and implementation artifacts into the v7 initiative layout"
-summary = "v6 kept planning documents in one folder and build records in another, with the plan in epics.md and progress in sprint-status.yaml. v7 keeps everything for one body of work in one initiative folder, as a ticket tree the ticketing skill and the builder read, with an inbox for work that has no home yet. This migration moves the project's artifacts into that layout, turns epics and sprint status into tickets.toml and joined plans, sets the config that names the active initiative, and, when the user wants it, puts the store in its own repository or a workspace."
+summary = "v6 kept planning documents in one folder and build records in another, with the plan in epics.md and progress in sprint-status.yaml. v7 keeps everything for one body of work in one initiative folder, as a ticket tree `bmad-ticket` and the builder read, with an inbox for work that has no home yet. This migration moves the project's artifacts into that layout, turns epics and sprint status into tickets.toml and joined plans, sets the config that names the active initiative, and, when the user wants it, puts the store in its own repository or a workspace."
 
 # Read-only signals. Any one of them makes this migration worth offering; the first two are v6 for certain.
 detect = """
@@ -75,7 +75,7 @@ precautions = """
 - Read only what the migration rewrites: `epics.md`, `sprint-status.yaml`, `stories.yaml`, story files, and historical retrospectives, in full. Everything else is classified from its path, its frontmatter, and its first heading, and moved unchanged; a PRD, a brief, a design, a brainstorm is not read through. Rewriting paths is a search for the old paths across the store, not a read of every document. A file or folder that path, frontmatter, and first heading do not explain: ask the user what it is, in the plan, with the others.
 - Nothing changes before the plan is approved. The inventory and the questions are read-only; the only writes before approval are the plan file itself and the backup, and the first move comes after approval.
 - Commit before moving. The output folder under git: commit its current state first, and do every move with `git mv` so history follows the file. Tracked by the project repo: same, in that repo. Under no git at all: the backup and git questions in `questions` decide what comes first.
-- The removed `bmad-sprint-planning` and `bmad-create-epics-and-stories` route is replaced by `bmad-preview-ticketing`. Build, review, and retrospective consume the joined plans; correct-course proposes changes from the affected work the user describes.
+- The removed `bmad-sprint-planning` and `bmad-create-epics-and-stories` route is replaced by `bmad-ticket`. Build, review, and retrospective consume the joined plans; correct-course proposes changes from the affected work the user describes.
 """
 
 # The conversion rules. Each names the v6 source, the v7 destination, and what changes on the way.
@@ -86,7 +86,7 @@ A file joins an initiative only on evidence: it is named in the PRD's or `epics.
 
 Unattributed remnants go to `inbox/`, default yes, asked once in the plan: a `brainstorming/` folder of unrelated sessions, a `specs/` folder of specs nothing consumed, a loose idea file. Each moves as it is, folder and contents unchanged, not renamed and not given frontmatter; inbox is the pile, and its shape is the user's to tidy. Declined, they stay where they are: at the root they are unrecognized and left alone. A half-run or a stray memlog with nothing else beside it goes to `inbox/archive-v6/`. The user can move anything anywhere later, including out of the store.
 
-An idea or intent file the initiative grew from becomes `initiative-<slug>/intent.md` when it is the one intent, else `idea-<slug>/idea-<slug>.md` inside the initiative. An intent for work not started, and any idea with no initiative, becomes `inbox/intent-<slug>.md`, flat, where the ticketing skill later turns it into a ticket, an epic, or an initiative. `inbox/` is created with its `space.md` the first time something goes there, and not otherwise.
+An idea or intent file the initiative grew from becomes `initiative-<slug>/intent.md` when it is the one intent, else `idea-<slug>/idea-<slug>.md` inside the initiative. An intent for work not started, and any idea with no initiative, becomes `inbox/intent-<slug>.md`, flat, where `bmad-ticket` later turns it into a ticket, an epic, or an initiative. `inbox/` is created with its `space.md` the first time something goes there, and not otherwise.
 
 ## Planning documents
 
@@ -109,7 +109,7 @@ A document that belongs to one epic goes in that epic's folder. Retrospectives a
 
 ## epics.md and sprint-status.yaml become the ticket tree
 
-Read `epics.md`, `sprint-status.yaml`, and every story file in the implementation folder before writing anything. The ticketing skill's templates (`bmad-preview-ticketing/assets/`) are the shapes to write; open them.
+Read `epics.md`, `sprint-status.yaml`, and every story file in the implementation folder before writing anything. `bmad-ticket`'s templates (`bmad-ticket/assets/`) are the shapes to write; open them.
 
 Initiative envelope: `initiative-<slug>/initiative-<slug>.md` from the initiative template. Title from the project name; Description and Outcome from the PRD's summary; Done when from the PRD's goals; References naming the moved PRD, architecture, and UX; `covers` the PRD's requirement ids. The initiative's `tickets.toml` gets one `[[epic]]` per `## Epic N:` in `epics.md`, in that order, `id = N`, `slug = "epic-<slug>"`, `title`, `covers` the FR ids the coverage map assigns to that epic. `after = [{ epic = <id>, needs = "..." }]` only where `epics.md` states what one epic needs from another; that line records the need, and the gate is `after: [epic-<slug>]` in the dependent epic's own file, which holds every ticket under it until the named epic is done. Write both.
 
@@ -147,7 +147,7 @@ A `spec-<slug>/` that holds `stories.yaml` and `stories/` represents a planned b
 
 ## Configuration
 
-Record `active_initiative = "initiative-<slug>"` under `[modules.bmm]` in `_bmad/custom/config.user.toml`, creating the file if needed. When the store moved (`workspace`), set `output_folder` under `[core]` in `_bmad/custom/config.toml`, the committed team override, never in the installer-managed `_bmad/config.toml`. Leave `planning_artifacts` and `implementation_artifacts` alone; `bmad setup` owns the rest of `_bmad/`. Then run the ticketing skill's store setup (`bmad-preview-ticketing/references/store-setup.md`) so `_bmad/custom/ticketing-store-config.toml` exists; the repo store is the match for a migrated tree, and its root is the one the plan already settled, not a new recommendation. Empty v6 folders left behind are removed; git never held them.
+Record `active_initiative = "initiative-<slug>"` under `[modules.bmm]` in `_bmad/custom/config.user.toml`, creating the file if needed. When the store moved (`workspace`), set `output_folder` under `[core]` in `_bmad/custom/config.toml`, the committed team override, never in the installer-managed `_bmad/config.toml`. Leave `planning_artifacts` and `implementation_artifacts` alone; `bmad setup` owns the rest of `_bmad/`. Then run `bmad-ticket`'s store setup (`bmad-ticket/references/store-setup.md`) so `_bmad/custom/ticketing-store-config.toml` exists; the repo store is the match for a migrated tree, and its root is the one the plan already settled, not a new recommendation. Empty v6 folders left behind are removed; git never held them.
 
 ## Order of work
 

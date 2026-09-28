@@ -49,7 +49,7 @@ show. It won't invent a root cause or a pattern the code doesn't back up.
 ## What It Reads
 
 The retrospective works on one epic folder in the ticket tree that
-`bmad-preview-ticketing` keeps (see
+`bmad-ticket` keeps (see
 [Break Work into Stories](../plan/break-work-into-stories-and-track-it.md)):
 
 - **`tickets.toml`**: the epic's tickets, in build order.
