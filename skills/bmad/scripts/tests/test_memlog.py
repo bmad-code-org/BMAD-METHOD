@@ -10,12 +10,14 @@ lifecycle status the log would have to mutate.
 """
 
 import json
+import subprocess
 import sys
 from pathlib import Path
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+SCRIPT = Path(__file__).resolve().parent.parent / "memlog.py"
+sys.path.insert(0, str(SCRIPT.parent))
 import memlog  # noqa: E402
 
 MEMLOG = ".memlog.md"
@@ -262,9 +264,8 @@ def test_updated_stays_last(ws):
 def test_roundtrip_render_is_stable(ws):
     init(ws)
     append(ws, "one", entry_type="idea")
-    first = read(ws)
-    meta, body = memlog.split(first)
-    assert memlog.render(meta, body) == first
+    meta, body = memlog.split(read(ws))
+    assert memlog.split(memlog.render(meta, body)) == (meta, body)
 
 
 def test_commas_in_field_survive(ws):
@@ -310,3 +311,55 @@ def test_ack_entry_count_climbs(ws, capsys):
     append(ws, "b")
     out = json.loads(capsys.readouterr().out.strip().splitlines()[-1])
     assert out["entries"] == 2
+
+
+# --- append writes only its own line ------------------------------------
+
+
+def test_first_entry_after_init(ws):
+    init(ws)
+    append(ws, "first", entry_type="idea")
+    meta, _ = memlog.split(read(ws))
+    assert meta["topic"] == "Reinvent the lunchbox"
+    assert entries(ws) == ["- (idea) first"]
+
+
+def test_append_does_not_restamp_updated(ws):
+    init(ws)
+    path = Path(ws) / MEMLOG
+    path.write_text(read(ws).replace(memlog.split(read(ws))[0]["updated"], "2000-01-01T00:00"), encoding="utf-8")
+    append(ws, "a")
+    append(ws, "b")
+    assert memlog.split(read(ws))[0]["updated"] == "2000-01-01T00:00"
+    assert entries(ws) == ["- a", "- b"]
+
+
+def test_append_to_missing_log_fails_and_creates_nothing(ws):
+    with pytest.raises(FileNotFoundError):
+        memlog.main(["append", "--workspace", ws, "--text", "orphan"])
+    assert not (Path(ws) / MEMLOG).exists()
+
+
+def test_append_after_missing_trailing_newline_starts_new_line(ws):
+    init(ws)
+    append(ws, "first")
+    path = Path(ws) / MEMLOG
+    path.write_text(read(ws).rstrip("\n"), encoding="utf-8")
+    append(ws, "second")
+    assert entries(ws) == ["- first", "- second"]
+
+
+def test_parallel_appends_all_land(ws):
+    init(ws)
+    n = 40
+    procs = [
+        subprocess.Popen(
+            [sys.executable, str(SCRIPT), "append", "--workspace", ws, "--text", f"entry {i}"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+        )
+        for i in range(n)
+    ]
+    failures = [p.stderr.read().decode() for p in procs if p.wait() != 0]
+    assert failures == []
+    assert sorted(entries(ws)) == sorted(f"- entry {i}" for i in range(n))
