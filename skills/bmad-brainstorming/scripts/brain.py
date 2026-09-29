@@ -6,7 +6,7 @@
 
 The library is a CSV (category, technique_name, description, detail). `description`
 is a short gist — enough to propose and run most techniques. `detail` is optional:
-a path (relative to the CSV's directory) to a fuller instruction file for a technique
+a path (relative to the CSV's directory, and inside it) to a fuller instruction file for a technique
 complex enough to warrant one. Only `show` resolves detail files, and only for the
 technique asked for — so the heavy material never enters context until it is run.
 
@@ -125,10 +125,17 @@ def find(rows: list[dict], names: list[str]) -> tuple[list[dict], list[str]]:
 
 def resolve_detail(row: dict, csv_dir: Path) -> str | None:
     """Return the contents of a row's detail file, or None if there is no detail
-    (or the file is missing — a missing file is reported to stderr, not fatal)."""
+    (or the file is missing or outside csv_dir — reported to stderr, not fatal)."""
     if not row.get("detail"):
         return None
-    path = (csv_dir / row["detail"]).resolve()
+    base = csv_dir.resolve()
+    path = (base / row["detail"]).resolve()
+    if not path.is_relative_to(base):
+        print(
+            f"# detail path outside the catalog folder, refused for {row['technique_name']}: {row['detail']}",
+            file=sys.stderr,
+        )
+        return None
     if not path.is_file():
         print(f"# detail file not found for {row['technique_name']}: {row['detail']}", file=sys.stderr)
         return None
