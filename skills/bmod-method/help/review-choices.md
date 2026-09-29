@@ -2,19 +2,22 @@
 
 Use this when the user asks how much review to run, how to get another pass, when to stop, why review is slow, or how to change review.
 
-## Review depth in `bmad-build`
+## Review depth in `bmad-build` and `bmad-build-auto`
 
 - `none`: no reviewers. Reasonable for a throwaway prototype.
 - `quick`: one reviewer checks acceptance criteria, the repo's agent rules, and bugs.
 - `thorough`: four independent lenses covering the bare diff, edge cases, test gaps, and intent alignment.
 - Default: `quick`. `auto` follows the route: `quick` for `oneshot`, `thorough` for `full`. The user picks by saying "quick", "thorough", or "skip review" when invoking.
+- `thorough` suits a change that is unusually risky or makes many design decisions.
 - It fixes clear findings itself, asks the user when the intent cannot settle one, and logs pre-existing issues to `deferred-work.md`.
 
 ## Another pass, and when to stop
 
-- After `bmad-build`: run `bmad-code-review` with no argument when the build was of a ticket; it offers the tickets in review. Otherwise hand it the plan file. Handing `bmad-build` its `built` plan also runs another review; a `done` plan does not.
+- After `bmad-build`: hand `bmad-build` the plan it left at `built`. It goes straight to review and triage, at the depth named in the request, and can be repeated. `bmad-build` does not resume a `done` plan; hand that one to `bmad-code-review`.
 - After `bmad-build-auto`: dispatch its `built` plan again.
-- Worth it when review was skipped or `quick`, after material fixes, or when an unattended run set `followup_review_recommended`. After a `thorough` build review it only repeats the same lenses.
+- Worth it after material fixes, or when an unattended run set `followup_review_recommended`. After a `thorough` build review it only repeats the same lenses.
+- The depth a build ran at, skipped included, is the user's choice and no reason for another pass.
+- At the end of an epic, `bmad-retrospective` is the thorough pass: it runs the review lenses over the epic's diff and proposes fixes as action items.
 - Stop when findings are mostly minor notes about unlikely corner cases.
 - Real findings on a third pass point outside the change: a weak spec or unclear repo rules. Tell the user to fix that.
 
