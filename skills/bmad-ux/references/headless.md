@@ -28,7 +28,7 @@ Do not ask. Do not greet. Complete the intent from what's provided, what exists 
 - `"partial"` — artifact produced but `open_questions[]` non-empty or critical inputs inferred.
 - `"blocked"` — no artifact produced.
 
-End with JSON matching `assets/headless-schemas.md`. `intent` reflects detected intent. Omit keys for artifacts not produced.
+End with the JSON response (an example of each payload is in `assets/headless-schemas.md`). `intent` reflects detected intent. Omit keys for artifacts not produced.
 
 ## Mode-specific overrides
 

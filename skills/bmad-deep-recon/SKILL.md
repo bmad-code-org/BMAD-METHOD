@@ -85,4 +85,4 @@ When invoked headless, do not ask. Bare research defaults to **run**; a named re
 }
 ```
 
-Omit keys for artifacts not produced; the `claims` counts come from `uv run scripts/recon_kit.py tally {doc_workspace}/.memlog.md`, never hand-counted. Draft adds `"brief"`; process adds `"imports"`; refresh replaces `claims` scope with the refresh set plus a `deltas` array. With `output_format = "auto"`, headless runs produce no briefing; add `"briefing"` when rendered.
+Omit keys for artifacts not produced; the `claims` counts come from `uv run {skill-root}/scripts/recon_kit.py tally {doc_workspace}/.memlog.md`, never hand-counted. Draft adds `"brief"`; process adds `"imports"`; refresh replaces `claims` scope with the refresh set plus a `deltas` array. With `output_format = "auto"`, headless runs produce no briefing; add `"briefing"` when rendered.

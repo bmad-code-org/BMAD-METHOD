@@ -10,7 +10,7 @@ Before running inference-based validation, run the deterministic validator:
 uv run --python 3.11 tools/validate_skills.py --json path/to/skill-dir
 ```
 
-This checks 10 rules deterministically: SKILL-01, SKILL-02, SKILL-03, SKILL-04, SKILL-05, SKILL-06, SKILL-07, PATH-02, SEQ-02, TPL-01.
+This checks 11 rules deterministically: SKILL-01, SKILL-02, SKILL-03, SKILL-04, SKILL-05, SKILL-06, SKILL-07, PATH-02, PATH-06, SEQ-02, TPL-01.
 
 Review its JSON output. Skip any rule that produced zero findings — it is already verified. A rule that produced findings still gets reviewed (SKILL-06's what-and-when check benefits from judgment). The 10 rules that need judgment are PATH-01, PATH-03, PATH-04, PATH-05, STEP-04, STEP-05, SEQ-01, REF-01, REF-02, REF-03.
 
@@ -214,6 +214,14 @@ Every value reached during the render is part of the generation's identity. Cust
 - **Fix:**
   - If the intent is to invoke the other skill: use invoke language in prose — ``Invoke the `skill-name` skill`` (see REF-03).
   - If the intent is to use a shared resource (template, data file): extract it to a location outside both skills — a config-referenced path such as `{output_folder}/...`, or a `file:`-prefixed entry in `customize.toml` — rather than reaching across a skill boundary.
+
+### PATH-06 — Script Calls Must Use `{skill-root}`
+
+- **Severity:** HIGH
+- **Applies to:** all scanned files, code blocks included
+- **Rule:** A skill runs its own scripts through `{skill-root}`. The agent's working directory is the project, so `uv run scripts/tool.py` does not find the script.
+- **Detection:** Deterministic. Flags `uv run scripts/` and `uv run ./scripts/`, with or without flags before the path.
+- **Fix:** `uv run {skill-root}/scripts/tool.py`.
 
 ---
 
