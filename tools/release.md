@@ -31,7 +31,7 @@ Choose the versions explicitly. The release must differ from what `main` serves 
 ## 2. Stamp and push dev
 
 ```bash
-uv run --python 3.11 tools/stamp_release.py "$bmad_release_version"
+uv run --python 3.11 skills/bmad/scripts/stamp_release.py "$bmad_release_version"
 git diff
 git add skills/*/bmod.toml
 git commit -m "chore(release): v$bmad_release_version"
@@ -40,7 +40,7 @@ uv sync --frozen && (cd docs-site && npm ci) && uv run --frozen tools/quality.py
 git push origin dev
 ```
 
-Before it writes, the stamper runs the repository checks in `tools/validate_manifests.py`, the same ones the commit hook runs, and writes nothing if any of them fails. Review before committing: only the `[bmod]` version line in the two module records should change. Run the quality gate on committed `HEAD` in this checkout before pushing; keep that tested commit checked out through promotion/tagging. Wait for its required GitHub status checks to pass before promoting it.
+Before it writes, the stamper runs the repository checks in `skills/bmad/scripts/validate_manifests.py`, the same ones the commit hook runs, and writes nothing if any of them fails. Review before committing: only the `[bmod]` version line in the two module records should change. Run the quality gate on committed `HEAD` in this checkout before pushing; keep that tested commit checked out through promotion/tagging. Wait for its required GitHub status checks to pass before promoting it.
 
 ## 3. Fast-forward main and tag
 
@@ -63,7 +63,7 @@ The tag identifies the same stamped commit on `dev` and `main`. Never force a pu
 ```bash
 git fetch origin
 test "$(git rev-parse origin/dev)" = "$bmad_release_commit"
-uv run --python 3.11 tools/stamp_release.py "$bmad_next_version"
+uv run --python 3.11 skills/bmad/scripts/stamp_release.py "$bmad_next_version"
 git diff
 git add skills/*/bmod.toml
 git commit -m "chore: bump placeholder version to $bmad_next_version"
@@ -78,3 +78,26 @@ Review the same version-only changes before committing. `main` and the tag retai
 In the `bmad-code-org/bmad-plugins` checkout, confirm its release script sources `bmad-code-org/BMAD-METHOD` `main`, then run `python3 release.py`. Follow that repository's instructions to review, validate, commit, and push the plugins. Verify the release through `npx skills add bmad-code-org/BMAD-METHOD` and both the Claude and Codex marketplaces.
 
 An installed module checks `main` through `raw.githubusercontent.com`, which caches files for around five minutes. Verify the release through Git first, or wait before trusting an update check that still reports the previous version.
+
+## Module repositories
+
+The stamper and validator ship with the `bmad` skill in `skills/bmad/scripts/`, so a module repository keeps no copy. Both take `--project-root` and default to the current directory.
+
+A module repository validates its `skills/*/bmod.toml` in CI with the Action at the root of this repository, pinned to a full commit SHA:
+
+```yaml
+jobs:
+  bmod:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: bmad-code-org/BMAD-METHOD@<commit-sha>
+```
+
+To stamp a release, run the stamper from a BMAD-METHOD checkout at that same SHA against the module repository:
+
+```bash
+uv run --python 3.11 <bmad-method>/skills/bmad/scripts/stamp_release.py "$version" --project-root .
+```
+
+`--check` in place of a version runs the same checks and writes nothing.

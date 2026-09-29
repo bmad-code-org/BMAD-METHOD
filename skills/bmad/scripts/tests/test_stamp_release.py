@@ -1,15 +1,16 @@
 import contextlib
 import importlib.util
 import io
+import subprocess
 import sys
 import tempfile
 import tomllib
 import unittest
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-STAMPER = REPO_ROOT / "tools" / "stamp_release.py"
-SETUP_PY = REPO_ROOT / "skills" / "bmad" / "scripts" / "setup.py"
+SCRIPTS = Path(__file__).resolve().parents[1]
+STAMPER = SCRIPTS / "stamp_release.py"
+SETUP_PY = SCRIPTS / "setup.py"
 
 SOURCE = "github:bmad-code-org/BMAD-METHOD/skills"
 
@@ -60,6 +61,7 @@ def make_tree(root: Path, version: str = "6.11.0-next") -> None:
         write(folder / "bmod.toml", record_text(code, version))
         write(folder / "help" / "help.md", "# help\n")
         write(folder / "extra.md", "# extra\n")
+        write(folder / "SKILL.md", "# record\n")
         for skill in members:
             write(root / "skills" / skill / "bmod.toml", SKILL.format(bmod=f"bmod-{code}"))
 
@@ -113,6 +115,7 @@ class StampReleaseTests(unittest.TestCase):
             'pre_install_message = ""\npost_install_message = ""\n\n'
             f'[skill]\nrequired_skills = [{{ skill = "x", version = "1.0.0", source = "{SOURCE}" }}]\n',
         )
+        write(notes.parent / "SKILL.md", "# notes\n")
         code, out, err = run_stamper(self.root, "1.2.0")
         self.assertEqual(code, 0, err)
         data = tomllib.loads(notes.read_text(encoding="utf-8"))
@@ -241,6 +244,52 @@ class StampReleaseTests(unittest.TestCase):
             (self.root / "skills" / skill / "bmod.toml").unlink()
             (self.root / "skills" / skill).rmdir()
         self.assert_refused("1.2.0", "skills/bmod-method/bmod.toml", "expected exactly one '[bmod]' table header")
+
+
+class CheckModeTests(unittest.TestCase):
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.root = Path(self._tmp.name).resolve()
+        make_tree(self.root)
+
+    def check(self, *argv: str) -> tuple[int, str, str]:
+        out, err = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            code = sr.main([*argv, "--project-root", str(self.root)])
+        return code, out.getvalue(), err.getvalue()
+
+    def test_check_validates_and_writes_nothing(self):
+        before = snapshot(self.root)
+        code, out, err = self.check("--check")
+        self.assertEqual(code, 0, err)
+        self.assertIn("bmod files valid:", out)
+        self.assertEqual(snapshot(self.root), before)
+
+    def test_check_fails_on_a_broken_tree(self):
+        (self.root / "skills" / "bmod-method" / "SKILL.md").unlink()
+        before = snapshot(self.root)
+        code, _, err = self.check("--check")
+        self.assertEqual(code, 1)
+        self.assertIn("skills/bmod-method: a module record folder must ship SKILL.md", err)
+        self.assertEqual(snapshot(self.root), before)
+
+    def test_version_and_check_together_is_a_usage_error(self):
+        with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as raised:
+            sr.main(["1.2.0", "--check"])
+        self.assertEqual(raised.exception.code, 2)
+
+    def test_neither_version_nor_check_is_a_usage_error(self):
+        with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as raised:
+            sr.main([])
+        self.assertEqual(raised.exception.code, 2)
+
+    def test_run_from_the_repository_root_checks_the_current_directory(self):
+        result = subprocess.run(
+            [sys.executable, "-B", str(STAMPER), "--check"], cwd=self.root, capture_output=True, text=True, check=False
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("bmod files valid:", result.stdout)
 
 
 class StampedContentTests(unittest.TestCase):
