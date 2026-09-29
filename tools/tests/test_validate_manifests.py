@@ -10,6 +10,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 VALIDATOR = REPO_ROOT / "tools" / "validate_manifests.py"
 
 SOURCE = "github:bmad-code-org/BMAD-METHOD/skills"
+MESSAGES = 'pre_install_message = ""\npost_install_message = ""\n'
 
 METHOD_RECORD = (
     "[bmod]\n"
@@ -18,6 +19,7 @@ METHOD_RECORD = (
     f'update_source = "{SOURCE}"\n'
     'skills = ["bmad-build", "bmad-spec"]\n'
     'required_skills = ["bmad"]\n'
+    f"{MESSAGES}"
     "\n"
     "[[bmod.knowledge]]\n"
     'path = "delivery-help.md"\n'
@@ -30,6 +32,7 @@ CORE_TOOLS_RECORD = (
     'version = "{version}"\n'
     f'update_source = "{SOURCE}"\n'
     'skills = ["bmad", "bmad-flow"]\n'
+    f"{MESSAGES}"
 )
 
 SKILL = f'[skill]\nbmod = "{{bmod}}"\nsource = "{SOURCE}"\n'
@@ -125,7 +128,8 @@ class CleanTreeTests(ValidatorCase):
     def test_single_skill_module_is_valid_under_any_folder_name(self):
         write(
             self.skills / "release-notes" / "bmod.toml",
-            '[bmod]\ncode = "notes"\nversion = "6.11.0-next"\nupdate_source = "github:acme/notes"\n\n[skill]\n',
+            '[bmod]\ncode = "notes"\nversion = "6.11.0-next"\nupdate_source = "github:acme/notes"\n'
+            f"{MESSAGES}\n[skill]\n",
         )
         write(self.skills / "release-notes" / "help" / "help.md", "# help\n")
         self.assertEqual(self.problems(), "")
@@ -133,7 +137,7 @@ class CleanTreeTests(ValidatorCase):
     def test_module_with_no_skills_is_valid(self):
         write(
             self.skills / "bmod-rooms" / "bmod.toml",
-            f'[bmod]\ncode = "rooms"\nversion = "6.11.0-next"\nupdate_source = "{SOURCE}"\n',
+            f'[bmod]\ncode = "rooms"\nversion = "6.11.0-next"\nupdate_source = "{SOURCE}"\n{MESSAGES}',
         )
         write(self.skills / "bmod-rooms" / "help" / "help.md", "# help\n")
         self.assertEqual(self.problems(), "")
@@ -172,6 +176,19 @@ class FileRuleTests(ValidatorCase):
         problems = self.problems()
         self.assertIn("skills/bmod-method/bmod.toml", problems)
         self.assertIn("'bmod.version'", problems)
+
+    def test_record_missing_an_install_message_key(self):
+        for key in ("pre_install_message", "post_install_message"):
+            with self.subTest(key=key):
+                make_tree(self.root)
+                self.method_record(f'{key} = ""\n', "")
+                self.assertIn(f"skills/bmod-method/bmod.toml: [bmod] is missing {key!r}", self.problems())
+
+    def test_install_message_that_is_not_a_string(self):
+        self.method_record('pre_install_message = ""\n', "pre_install_message = 3\n")
+        problems = self.problems()
+        self.assertIn("skills/bmod-method/bmod.toml: the runtime parser rejects this file", problems)
+        self.assertIn("'bmod.pre_install_message' must be a string", problems)
 
     def test_skill_missing_a_required_key(self):
         write(self.skills / "bmad-spec" / "bmod.toml", '[skill]\nbmod = "bmod-method"\n')
@@ -381,7 +398,7 @@ class PathRuleTests(ValidatorCase):
     def test_help_file_is_optional_outside_a_bmod_folder(self):
         write(
             self.skills / "solo" / "bmod.toml",
-            f'[bmod]\ncode = "solo"\nversion = "6.11.0-next"\nupdate_source = "{SOURCE}"\n\n[skill]\n',
+            f'[bmod]\ncode = "solo"\nversion = "6.11.0-next"\nupdate_source = "{SOURCE}"\n{MESSAGES}\n[skill]\n',
         )
         write(self.skills / "solo" / "SKILL.md", "# skill\n")
         self.assertEqual(self.problems(), "")

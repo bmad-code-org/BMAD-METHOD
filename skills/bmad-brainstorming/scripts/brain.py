@@ -49,6 +49,7 @@ FIELDS = ("category", "technique_name", "description", "detail", "provenance", "
 # list of goal tags) drives the browse page's goal filter; `audience` (solo|group|either)
 # is advisory.
 OPTIONAL_FIELDS = ("detail", "provenance", "good_for", "audience")
+REQUIRED_FIELDS = ("category", "technique_name", "description")
 
 
 def load(file: Path) -> list[dict]:
@@ -72,20 +73,14 @@ def load_extra(file: Path) -> list[dict]:
     if not isinstance(data, list):
         raise ValueError("--extra must be a JSON array of objects")
     rows = []
-    for item in data:
+    for n, item in enumerate(data, 1):
         if not isinstance(item, dict):
             raise ValueError(f"each --extra entry must be a JSON object, got: {item!r}")
-        rows.append(
-            {
-                "category": str(item.get("category", "")).strip(),
-                "technique_name": str(item.get("technique_name", "")).strip(),
-                "description": str(item.get("description", "")).strip(),
-                "detail": str(item.get("detail") or "").strip(),
-                "provenance": str(item.get("provenance") or "").strip(),
-                "good_for": str(item.get("good_for") or "").strip(),
-                "audience": str(item.get("audience") or "").strip(),
-            }
-        )
+        row = {k: str(item.get(k) or "").strip() for k in FIELDS}
+        for field in REQUIRED_FIELDS:
+            if not row[field]:
+                raise ValueError(f"--extra entry {n} ({row['technique_name'] or 'unnamed'}) is missing {field}")
+        rows.append(row)
     return rows
 
 

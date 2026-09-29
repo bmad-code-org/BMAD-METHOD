@@ -10,8 +10,9 @@ percentages in real numbers instead of guessing. Sections are delimited by
 markdown headings (# through ######); heading markers inside fenced code
 blocks are ignored (fences pair CommonMark-style: a fence closes only on a
 run of the same character at least as long, so ```` fences may embed ```
-examples). A word is any whitespace-separated token, plus one word per CJK
-character since those scripts do not space-delimit words. For non-markdown
+examples). A word is any whitespace-separated token, plus one word per
+Chinese or Japanese character since those scripts do not space-delimit words.
+Korean spaces its words, so Hangul counts per token. For non-markdown
 input the result is a single section holding the full text.
 """
 
@@ -23,7 +24,7 @@ from pathlib import Path
 
 HEADING = re.compile(r"^(#{1,6})\s+(\S.*)$")
 FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
-CJK = re.compile(r"[぀-ヿ㐀-䶿一-鿿豈-﫿가-힯ｦ-ﾟ]")
+CJK = re.compile(r"[぀-ヿ㐀-䶿一-鿿豈-﫿ｦ-ﾟ]")
 
 
 def word_count(text: str) -> int:

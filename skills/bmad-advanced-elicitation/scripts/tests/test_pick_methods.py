@@ -209,6 +209,20 @@ def test_cli_bad_extra_and_missing_file(tmp_path, lib, capsys):
     assert code == 2
 
 
+def test_cli_extra_row_missing_a_required_field_exits_2(lib, capsys):
+    partial = [{"category": "risk", "method_name": "Pre-mortem Analysis", "description": "No pattern."}]
+    code, out, err = run(["--extra", json.dumps(partial), "list", "--all"], lib, capsys)
+    assert code == 2 and out == ""
+    assert "Pre-mortem Analysis" in err and "output_pattern" in err
+
+
+def test_cli_extra_duplicate_num_exits_2_naming_the_num(lib, capsys):
+    clash = [{**EXTRA[0], "num": "3"}]
+    code, out, err = run(["--extra", json.dumps(clash), "list", "--all"], lib, capsys)
+    assert code == 2 and out == ""
+    assert "num 3" in err
+
+
 def test_cli_json_output(lib, capsys):
     code, out, _ = run(["--json", "show", "1"], lib, capsys)
     assert code == 0

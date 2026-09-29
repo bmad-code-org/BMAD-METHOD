@@ -19,6 +19,13 @@ One skill folder named `bmod-<code>`, for example `bmod-method`. Nobody runs it;
 | `roster.toml` | Optional. The personas the module offers and the parties they form, for `bmad-party-mode` and any skill that casts personas. |
 | `retired.toml` | Optional. Skills the module no longer ships: `renamed` as `{ from, to }` pairs and `removed` as names. After an update, `bmad setup` offers to delete old copies still installed and moves a renamed skill's `_bmad/custom/` files to the new name. A retired name is never reused. |
 
+## Install messages
+
+A module record can carry two messages in `[bmod]`, shown each time the module is installed or updated through `bmad`. An empty or missing message is not shown.
+
+- `pre_install_message`: shown before the install or update, read from the module's source. Use it for what the module needs, such as a tool to install first.
+- `post_install_message`: shown after the install or update, once setup has run. Use it for where to start.
+
 ## Each skill in the module
 
 Every member skill carries its own small `bmod.toml` with a `[skill]` table naming its module folder and source. It can also list skills that this one skill requires or recommends. A skill belongs to one module. Depending on a skill from another module is fine.

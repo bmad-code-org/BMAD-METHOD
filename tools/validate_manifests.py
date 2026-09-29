@@ -27,6 +27,7 @@ sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parent.parent
 RECORD_PREFIX = "bmod-"
 STAMP_PROBE = "0.0.0-stamp-check"
+MESSAGE_KEYS = ("pre_install_message", "post_install_message")
 
 TABLE_HEADER = re.compile(r"[ \t]*\[\[?[^\[\]\n]+\]\]?[ \t]*(?:#[^\n]*)?\r?\n?")
 BMOD_HEADER = re.compile(r"[ \t]*\[[ \t]*bmod[ \t]*\][ \t]*(?:#[^\n]*)?\r?\n?")
@@ -97,6 +98,7 @@ def check_repo(project_root: Path) -> RepoReport:
         problems += topic_problems(name, folder)
         problems += roster_file_problems(name, record, folder, skills_dir)
         problems += stamp_problems(name, folder / setup.MANIFEST_NAME)
+        problems += message_problems(name, folder / setup.MANIFEST_NAME)
 
     if not problems:
         problems += runtime_problems(skills_dir)
@@ -131,6 +133,16 @@ def with_version(data: dict, version: str) -> dict:
     expected = copy.deepcopy(data)
     expected["bmod"]["version"] = version
     return expected
+
+
+def message_problems(name: str, manifest: Path) -> list[str]:
+    """Records in this repo carry both install messages, empty or not, so authors see the fields exist."""
+    table = tomllib.loads(manifest.read_text(encoding="utf-8"))["bmod"]
+    return [
+        f"{rel(name)}: [bmod] is missing {key!r}; add it, empty if the module has no message"
+        for key in MESSAGE_KEYS
+        if key not in table
+    ]
 
 
 def stamp_problems(name: str, manifest: Path) -> list[str]:
