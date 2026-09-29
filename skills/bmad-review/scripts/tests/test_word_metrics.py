@@ -38,6 +38,13 @@ class WordMetricsTest(unittest.TestCase):
         self.assertEqual(word_count("one two  three\nfour"), 4)
         self.assertEqual(word_count(""), 0)
 
+    def test_korean_counts_per_spaced_word(self):
+        self.assertEqual(word_count("나는 학교에 갑니다"), 3)
+
+    def test_chinese_and_japanese_count_per_character(self):
+        self.assertEqual(word_count("我去学校"), 4)
+        self.assertEqual(word_count("私は学校に行きます"), 9)
+
     def test_sections_split_on_headings(self):
         sections = section_metrics(DOC)
         headings = [s["heading"] for s in sections]

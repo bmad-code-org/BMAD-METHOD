@@ -9,7 +9,7 @@ import json
 import sys
 import tempfile
 import unittest
-from contextlib import redirect_stdout
+from contextlib import redirect_stderr, redirect_stdout
 from datetime import date
 from pathlib import Path
 
@@ -73,6 +73,44 @@ class CitationsTest(unittest.TestCase):
         self.assertEqual(code, 1)
 
 
+def run_text(argv, text, name="report.md"):
+    with tempfile.TemporaryDirectory() as tmp:
+        f = Path(tmp) / name
+        f.write_text(text, encoding="utf-8")
+        return run([argv[0], str(f), *argv[1:]])
+
+
+class CitationsEdgeTest(unittest.TestCase):
+    def test_a_bare_number_table_is_not_the_source_appendix(self):
+        text = (
+            "Growth is fast [1].\n\n| Rank | Vendor |\n| --- | --- |\n| 1 | Acme |\n| 2 | Beta |\n| 3 | Gamma |\n\n"
+            "| [n] | Supports |\n| --- | --- |\n| [1] | growth |\n"
+        )
+        code, result = run_text(["citations"], text)
+        self.assertEqual(result["appendix_rows"], [1])
+        self.assertTrue(result["ok"])
+        self.assertEqual(code, 0)
+
+    def test_tilde_and_long_backtick_fences(self):
+        text = (
+            "~~~\n[7] tilde fenced\n~~~\n\n"
+            "````\n```\n[8] still fenced after an inner three-backtick line\n```\n````\n\n"
+            "Read after the close [1].\n\n| [n] | Supports |\n| --- | --- |\n| [1] | x |\n"
+        )
+        code, result = run_text(["citations"], text)
+        self.assertEqual(result["markers"], [1])
+        self.assertTrue(result["ok"])
+
+    def test_a_fence_nested_in_a_list_item_hides_its_markers(self):
+        text = (
+            "- Example:\n\n    ```\n    [5] inside a list-nested fence\n    ```\n\n"
+            "Cited [1].\n\n| [n] | Supports |\n| --- | --- |\n| [1] | x |\n"
+        )
+        code, result = run_text(["citations"], text)
+        self.assertEqual(result["markers"], [1])
+        self.assertTrue(result["ok"])
+
+
 class TallyTest(unittest.TestCase):
     def test_last_status_wins_per_ref(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -116,6 +154,29 @@ class StalenessTest(unittest.TestCase):
         self.assertEqual(result["no_window_classes"], ["unmapped"])
         self.assertEqual(code, 1)
 
+    def test_malformed_claims_exit_2(self):
+        for payload in ('{"x": 1}', '{"claims": [5]}'):
+            err = io.StringIO()
+            with tempfile.TemporaryDirectory() as tmp:
+                f = Path(tmp) / "claims.json"
+                f.write_text(payload, encoding="utf-8")
+                with redirect_stderr(err), redirect_stdout(io.StringIO()):
+                    code = main(["staleness", str(f), "--windows", '{"pricing": 3}'])
+            self.assertEqual(code, 2, payload)
+            self.assertTrue(err.getvalue().startswith("error: "), payload)
+
+    def test_stdin_is_read_as_utf8_whatever_the_locale(self):
+        claims = json.dumps([{"claim": "café prices", "class": "pricing", "pub_date": "2026-06"}], ensure_ascii=False)
+        stdin = io.TextIOWrapper(io.BytesIO(claims.encode("utf-8")), encoding="latin-1")
+        original = sys.stdin
+        sys.stdin = stdin
+        try:
+            code, result = run(["staleness", "-", "--windows", '{"pricing": 3}', "--today", "2026-07-01"])
+        finally:
+            sys.stdin = original
+        self.assertEqual(result["claims"][0]["claim"], "café prices")
+        self.assertEqual(code, 0)
+
 
 class SlugTest(unittest.TestCase):
     def test_deterministic_folder(self):
@@ -143,6 +204,18 @@ class EscapeSourcesTest(unittest.TestCase):
         self.assertIn('href="https://example.com/g"', result["html"])
         self.assertIn('id="src-1"', result["html"])
         self.assertEqual(code, 1)
+
+    def test_urls_keep_balanced_parentheses(self):
+        text = (
+            "| [n] | Supports | Publisher |\n| --- | --- | --- |\n"
+            "| [1] | a | [Rust](https://en.wikipedia.org/wiki/Rust_(programming_language)) |\n"
+            "| [2] | b | https://en.wikipedia.org/wiki/Go_(programming_language) |\n"
+        )
+        code, result = run_text(["escape-sources"], text)
+        self.assertIn('href="https://en.wikipedia.org/wiki/Rust_(programming_language)"', result["html"])
+        self.assertIn('href="https://en.wikipedia.org/wiki/Go_(programming_language)"', result["html"])
+        self.assertEqual(result["invalid_urls"], [])
+        self.assertEqual(code, 0)
 
 
 if __name__ == "__main__":
