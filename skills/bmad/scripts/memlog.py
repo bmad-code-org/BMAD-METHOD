@@ -134,12 +134,14 @@ def write_atomic(path: Path, text: str) -> None:
 
 
 def append_line(path: Path, text: str) -> None:
-    """Add text at end of file in one OS append write. Never creates the file."""
+    """Add text at end of file in one OS append write, then sync it to disk. Never creates the file."""
     data = text.replace("\n", os.linesep).encode("utf-8")  # match text-mode line endings
     if sys.platform != "win32":
         fd = os.open(path, os.O_WRONLY | os.O_APPEND)
         try:
-            os.write(fd, data)
+            if os.write(fd, data) != len(data):
+                raise OSError(f"short write appending to {path}")
+            os.fsync(fd)
         finally:
             os.close(fd)
         return
@@ -167,6 +169,8 @@ def append_line(path: Path, text: str) -> None:
         ctypes.c_void_p,
     ]
     k32.WriteFile.restype = wintypes.BOOL
+    k32.FlushFileBuffers.argtypes = [wintypes.HANDLE]
+    k32.FlushFileBuffers.restype = wintypes.BOOL
     k32.CloseHandle.argtypes = [wintypes.HANDLE]
     file_append_data, share_all, open_existing, normal = 0x4, 0x7, 3, 0x80
     handle = k32.CreateFileW(str(path), file_append_data, share_all, None, open_existing, normal, None)
@@ -175,6 +179,10 @@ def append_line(path: Path, text: str) -> None:
     try:
         written = wintypes.DWORD()
         if not k32.WriteFile(handle, data, len(data), ctypes.byref(written), None):
+            raise ctypes.WinError(ctypes.get_last_error())
+        if written.value != len(data):
+            raise OSError(f"short write appending to {path}")
+        if not k32.FlushFileBuffers(handle):
             raise ctypes.WinError(ctypes.get_last_error())
     finally:
         k32.CloseHandle(handle)
