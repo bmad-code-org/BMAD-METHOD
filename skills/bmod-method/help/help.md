@@ -98,7 +98,7 @@ One line per skill: what it is for and what it writes. The files it writes are h
 | `bmad-build-auto` | One unattended build of one ticket, dispatched by a loop or script. Never for attended work. | The same plans as `bmad-build` |
 | `bmad-correct-course` | Assesses a significant midstream change. Needs a PRD or a spec; lists epic and story changes for `bmad-ticket`. | `change-<slug>/change-<slug>.md` |
 | **Validation** (`help/validation-skills.md`) | | |
-| `bmad-code-review` | Agent review of any diff, PR, or branch, with triaged findings. Redundant right after a full `bmad-build` review of the same change. | A dated block in the plan's `## Code Review` section, or chat |
+| `bmad-code-review` | Agent review of any diff, PR, or branch, with triaged findings. Redundant right after a thorough `bmad-build` review of the same change. | A dated block in the plan's `## Code Review` section, or chat |
 | `bmad-walkthrough` | The human reviews a change block by block, guided. Also a way to learn unfamiliar code. | `walkthrough-<slug>/` with the narrative and a `-log.md` |
 | `bmad-qa-generate-e2e-tests` | API and end-to-end tests for features that already exist. | `{project-root}/tests`, `test-summary-<slug>/test-summary-<slug>.md` |
 | `bmad-retrospective` | Judges a finished epic folder in the ticket tree as a whole against its Done when. | `epic-<slug>-retrospective.md` in the epic folder |
