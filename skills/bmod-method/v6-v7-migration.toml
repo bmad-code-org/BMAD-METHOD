@@ -85,7 +85,7 @@ An idea or intent file the initiative grew from becomes `initiative-<slug>/inten
 
 ## Planning documents
 
-Move each document gets its own folder, `<type>-<slug>/<type>-<slug>.md` (assuming its just a stand alone file), in the initiative, or in its epic folder when it belongs to one epic. The slug is the v6 name without the date and the type prefix: `prds/prd-<name>-<date>/prd.md` becomes `prd-<name>/prd-<name>.md`, and briefs, `prfaq-<name>.md`, and any other file a skill wrote follow the same rule, the type from its frontmatter or its name, asked when neither says. Frontmatter gains `type`, `title`, `status` (its own, else `done`), `created` (the old folders date, else the first commit date, else today), and `skill` (the v6 skill that wrote it). The exceptions:
+Move each document, never copy. A standalone file gets its own folder, `<type>-<slug>/<type>-<slug>.md`, in the initiative, or in its epic's folder when it belongs to one epic. The slug is the v6 name without the date and the type prefix: `prds/prd-<name>-<date>/prd.md` becomes `prd-<name>/prd-<name>.md`, and briefs, `prfaq-<name>.md`, and any other file a skill wrote follow the same rule, the type from its frontmatter or its name, asked when neither says. Frontmatter gains `type`, `title`, `status` (its own, else `done`), `created` (the old folder's date, else the first commit date, else today), and `skill` (the v6 skill that wrote it). The exceptions:
 
 | v6 | v7 |
 |---|---|
