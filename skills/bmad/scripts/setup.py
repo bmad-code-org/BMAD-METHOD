@@ -96,6 +96,8 @@ class ParsedBmod(NamedTuple):
     questions: tuple[ConfigQuestion, ...]
     required_skills: tuple[Requirement, ...]
     recommended_skills: tuple[Requirement, ...]
+    pre_install_message: str = ""
+    post_install_message: str = ""
 
 
 class ParsedRetired(NamedTuple):
@@ -204,10 +206,28 @@ def main(argv: list[str] | None = None) -> int:
         metavar="PATH",
         help="delete these copies of duplicated skills, as duplicate_skills lists them",
     )
+    parser.add_argument(
+        "--source-record",
+        nargs=2,
+        metavar=("SOURCE", "FOLDER"),
+        help="print the version and pre-install message of the module record FOLDER at SOURCE",
+    )
     args = parser.parse_args(argv)
     project_root = args.project_root.resolve()
     skill_root = args.skill.resolve()
     roots = tuple(root.resolve() for root in args.root)
+    if args.source_record is not None:
+        if (
+            args.status
+            or args.list_config_questions
+            or args.module_answers is not None
+            or args.remove_retired is not None
+            or args.remove_copies is not None
+        ):
+            parser.error("--source-record cannot be combined with other modes")
+        # setup.md adds --module to every call when the user names a module; it does not apply here.
+        print_json(source_record_report(project_root, *args.source_record))
+        return 0
     if args.remove_retired is not None or args.remove_copies is not None:
         if (
             args.status
@@ -347,6 +367,7 @@ def setup(
             {
                 **module_summary(installed, project_root),
                 "scripts": module_states[installed.module],
+                **message_json("post_install_message", installed.parsed.post_install_message),
             }
             for installed in scoped
         ],
@@ -1416,6 +1437,8 @@ def parse_bmod_table(table: dict, path: Path) -> ParsedBmod:
         parse_questions(table.get("config_questions"), code, path),
         parse_requirements(table.get("required_skills"), "bmod.required_skills", path),
         parse_requirements(table.get("recommended_skills"), "bmod.recommended_skills", path),
+        optional_string(table, "bmod", "pre_install_message", path),
+        optional_string(table, "bmod", "post_install_message", path),
     )
 
 
@@ -1598,6 +1621,13 @@ def required_string(table: dict, name: str, field: str, path: Path) -> str:
     value = table.get(field)
     if not isinstance(value, str) or not value.strip():
         raise Exception(f"bmod file {path} field '{name}.{field}' must be a non-empty string")
+    return value
+
+
+def optional_string(table: dict, name: str, field: str, path: Path | str) -> str:
+    value = table.get(field, "")
+    if not isinstance(value, str):
+        raise Exception(f"bmod file {path} field '{name}.{field}' must be a string")
     return value
 
 
@@ -1792,39 +1822,62 @@ def module_update_report(project_root: Path, installed: InstalledModule) -> dict
         }
     source = update_source
     try:
-        source = source_file_location(project_root, installed)
-        source_version = parse_source_version(source, read_source_file(source, installed))
+        source = source_file_location(project_root, update_source, installed.folder)
+        source_version, pre_message = parse_source_record(source, read_source_file(source, update_source))
     except Exception as error:
         return {"state": "could-not-check", "source": source, "reason": str(error)}
+    state = version_state(installed.parsed.version, source_version)
     return {
-        "state": version_state(installed.parsed.version, source_version),
+        "state": state,
         "source": source,
         "source_version": source_version,
+        **(message_json("pre_install_message", pre_message) if state == "newer-available" else {}),
     }
 
 
-def source_file_location(project_root: Path, installed: InstalledModule) -> str:
-    update_source = installed.parsed.update_source
-    quoted_folder = urllib.parse.quote(installed.folder, safe="")
+def source_record_report(project_root: Path, update_source: str, folder: str) -> dict[str, object]:
+    """The version and pre-install message of a module record at its source, before the module is added."""
+    report: dict[str, object] = {"mode": "source-record", "folder": folder, "source": update_source}
+    try:
+        if SKILL_NAME.fullmatch(folder) is None:
+            raise Exception(f"unsafe module record folder {folder!r}")
+        validate_source(update_source, "source", Path("--source-record"))
+        if update_source.startswith("plugin:"):
+            raise Exception("a plugin source has no module record to read")
+        source = source_file_location(project_root, update_source, folder)
+        report["source"] = source
+        version, pre_message = parse_source_record(source, read_source_file(source, update_source))
+    except Exception as error:
+        return {**report, "state": "could-not-check", "reason": str(error)}
+    return {**report, "state": "read", "version": version, **message_json("pre_install_message", pre_message)}
+
+
+def message_json(key: str, message: str) -> dict[str, str]:
+    """An install message for a report; an empty one is left out, so it is never shown."""
+    return {key: message} if message.strip() else {}
+
+
+def source_file_location(project_root: Path, update_source: str, folder: str) -> str:
+    quoted_folder = urllib.parse.quote(folder, safe="")
     quoted_name = urllib.parse.quote(MANIFEST_NAME, safe="")
     if update_source.startswith("file:"):
         root_text = update_source.removeprefix("file:")
         root = Path(root_text)
         if not root.is_absolute():
             root = project_root / root
-        return str((root / installed.folder / MANIFEST_NAME).resolve())
+        return str((root / folder / MANIFEST_NAME).resolve())
     if update_source.startswith("https://"):
         try:
             parsed = urllib.parse.urlsplit(update_source)
         except ValueError as error:
-            raise Exception(f"invalid update_source {update_source!r} in {installed.file}: {error}") from error
+            raise Exception(f"invalid update_source {update_source!r}: {error}") from error
         return urllib.parse.urlunsplit(
             parsed._replace(path=(parsed.path.rstrip("/") + f"/{quoted_folder}/{quoted_name}"))
         )
     github = update_source.removeprefix("github:")
     owner, repository, *tree = github.split("/")
     # With no path the repo root is the skill, so its bmod.toml sits at the root.
-    parts = (*tree, installed.folder, MANIFEST_NAME) if tree else (MANIFEST_NAME,)
+    parts = (*tree, folder, MANIFEST_NAME) if tree else (MANIFEST_NAME,)
     path = "/".join(urllib.parse.quote(part, safe="") for part in parts)
     return (
         "https://raw.githubusercontent.com/"
@@ -1833,8 +1886,8 @@ def source_file_location(project_root: Path, installed: InstalledModule) -> str:
     )
 
 
-def read_source_file(source: str, installed: InstalledModule) -> bytes:
-    if installed.parsed.update_source.startswith("file:"):
+def read_source_file(source: str, update_source: str) -> bytes:
+    if update_source.startswith("file:"):
         path = Path(source)
         try:
             raw = path.read_bytes()
@@ -1855,7 +1908,8 @@ def read_source_file(source: str, installed: InstalledModule) -> bytes:
     return raw
 
 
-def parse_source_version(source: str, raw: bytes) -> str:
+def parse_source_record(source: str, raw: bytes) -> tuple[str, str]:
+    """The `[bmod]` version and pre-install message of a source record, from the one fetch status makes."""
     try:
         text = raw.decode("utf-8")
     except UnicodeError as error:
@@ -1864,7 +1918,9 @@ def parse_source_version(source: str, raw: bytes) -> str:
     version = table.get("version") if isinstance(table, dict) else None
     if not isinstance(version, str) or not version.strip():
         raise Exception(f"source bmod file {source} field 'bmod.version' must be a non-empty string")
-    return version
+    # Lenient: a bad message at the source must not hide a newer version.
+    message = table.get("pre_install_message", "")
+    return version, message if isinstance(message, str) else ""
 
 
 def version_state(installed: str, source: str) -> str:
