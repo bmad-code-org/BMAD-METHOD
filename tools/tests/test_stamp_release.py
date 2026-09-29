@@ -19,6 +19,8 @@ RECORD = (
     'version = "{version}"\n'
     f'update_source = "{SOURCE}"\n'
     "skills = [{skills}]\n"
+    'pre_install_message = ""\n'
+    'post_install_message = ""\n'
     "\n"
     "[[bmod.knowledge]]\n"
     'path = "extra.md"\n'
@@ -107,7 +109,8 @@ class StampReleaseTests(unittest.TestCase):
         notes = self.root / "skills" / "release-notes" / "bmod.toml"
         write(
             notes,
-            f'[bmod]\ncode = "notes"\nversion = "6.11.0-next"\nupdate_source = "{SOURCE}"\n\n'
+            f'[bmod]\ncode = "notes"\nversion = "6.11.0-next"\nupdate_source = "{SOURCE}"\n'
+            'pre_install_message = ""\npost_install_message = ""\n\n'
             f'[skill]\nrequired_skills = [{{ skill = "x", version = "1.0.0", source = "{SOURCE}" }}]\n',
         )
         code, out, err = run_stamper(self.root, "1.2.0")

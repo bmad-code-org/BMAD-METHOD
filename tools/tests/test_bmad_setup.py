@@ -3053,7 +3053,7 @@ class BmadStatusTests(unittest.TestCase):
             (module,) = setup.discover_installation(skill).modules
 
             self.assertEqual(
-                setup.source_file_location(root, module),
+                setup.source_file_location(root, module.parsed.update_source, module.folder),
                 "https://raw.githubusercontent.com/acme/release-notes-skill/main/bmod.toml",
             )
             for bad in ("github:acme", "github:acme/", "github:/repo"):
@@ -3159,6 +3159,135 @@ class BmadStatusTests(unittest.TestCase):
                     result = run_setup_python(project, skill, *extra)
                     self.assertEqual(result.returncode, 2, msg=result.stdout)
                     self.assertFalse((project / "_bmad").exists())
+
+
+class BmadInstallMessageTests(unittest.TestCase):
+    def test_messages_are_optional_strings(self):
+        setup = load_setup()
+        path = Path("bmod.toml")
+        table = {"code": "alpha", "version": "1.0.0", "update_source": "file:skills"}
+        parsed = setup.parse_bmod_table(table, path)
+        self.assertEqual((parsed.pre_install_message, parsed.post_install_message), ("", ""))
+        parsed = setup.parse_bmod_table({**table, "pre_install_message": "hi", "post_install_message": ""}, path)
+        self.assertEqual((parsed.pre_install_message, parsed.post_install_message), ("hi", ""))
+        for key in ("pre_install_message", "post_install_message"):
+            with self.subTest(key=key), self.assertRaisesRegex(Exception, f"'bmod.{key}' must be a string"):
+                setup.parse_bmod_table({**table, key: 3}, path)
+
+    def test_status_carries_the_source_pre_message_only_when_an_update_is_available(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_core(root, version="1.0.0", update_source="file:sources")
+            write_bmod(
+                project / "sources",
+                "bmod-core-tools",
+                "core-tools",
+                version="1.1.0",
+                extra_fields={"pre_install_message": "Core 1.1 needs uv."},
+            )
+            for module, source_version in (("current", "1.0.0"), ("quiet", "1.1.0")):
+                write_module_skill(root, f"{module}-skill", module, version="1.0.0", update_source="file:sources")
+                write_bmod(
+                    project / "sources",
+                    f"bmod-{module}",
+                    module,
+                    version=source_version,
+                    extra_fields={"pre_install_message": "" if module == "quiet" else "Not shown."},
+                )
+
+            report = status_report(self, project, skill)
+
+            by_module = {item["module"]: item["update"] for item in report["modules"]}
+            self.assertEqual(by_module["core-tools"]["state"], "newer-available")
+            self.assertEqual(by_module["core-tools"]["pre_install_message"], "Core 1.1 needs uv.")
+            self.assertEqual(by_module["current"]["state"], "current")
+            self.assertNotIn("pre_install_message", by_module["current"])
+            self.assertEqual(by_module["quiet"]["state"], "newer-available")
+            self.assertNotIn("pre_install_message", by_module["quiet"])
+
+    def test_a_source_pre_message_that_is_not_a_string_is_no_message(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_module_skill(root, "alpha-skill", "alpha", version="1.0.0", update_source="file:sources")
+            write_bmod(
+                project / "sources", "bmod-alpha", "alpha", version="1.1.0", extra_fields={"pre_install_message": 3}
+            )
+
+            (alpha,) = status_report(self, project, skill)["modules"]
+
+            self.assertEqual(alpha["update"]["state"], "newer-available")
+            self.assertNotIn("pre_install_message", alpha["update"])
+
+    def test_setup_reports_post_messages_and_whether_a_module_is_new(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_module_skill(
+                root, "alpha-skill", "alpha", extra_fields={"post_install_message": "Run alpha-skill to start."}
+            )
+            write_module_skill(root, "quiet-skill", "quiet", extra_fields={"post_install_message": ""})
+            write_module_skill(root, "blank-skill", "blank", extra_fields={"post_install_message": "\n  "})
+
+            first = {item["module"]: item for item in setup_report(self, project, skill)["modules"]}
+            second = {item["module"]: item for item in setup_report(self, project, skill)["modules"]}
+
+            self.assertEqual(first["alpha"]["scripts"], "created")
+            self.assertEqual(first["alpha"]["post_install_message"], "Run alpha-skill to start.")
+            self.assertEqual(first["quiet"]["scripts"], "created")
+            self.assertNotIn("post_install_message", first["quiet"])
+            self.assertNotIn("post_install_message", first["blank"])
+            self.assertEqual(second["alpha"]["scripts"], "current")
+            self.assertEqual(second["alpha"]["post_install_message"], "Run alpha-skill to start.")
+            self.assertEqual(second["quiet"]["scripts"], "current")
+
+    def test_source_record_reads_the_version_and_pre_message_of_a_module_to_add(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_bmod(
+                project / "sources", "bmod-alpha", "alpha", version="2.0.0", extra_fields={"pre_install_message": "Hi."}
+            )
+            write_bmod(project / "sources", "bmod-quiet", "quiet", version="1.0.0")
+            before = snapshot(root)
+
+            alpha = setup_report(self, project, skill, "--source-record", "file:sources", "bmod-alpha")
+            quiet = setup_report(self, project, skill, "--source-record", "file:sources", "bmod-quiet")
+            missing = setup_report(self, project, skill, "--source-record", "file:sources", "bmod-missing")
+
+            self.assertEqual(snapshot(root), before)
+            self.assertEqual((alpha["state"], alpha["version"], alpha["pre_install_message"]), ("read", "2.0.0", "Hi."))
+            self.assertEqual(alpha["source"], str((project / "sources" / "bmod-alpha" / "bmod.toml").resolve()))
+            self.assertEqual((quiet["state"], quiet["version"]), ("read", "1.0.0"))
+            self.assertNotIn("pre_install_message", quiet)
+            self.assertEqual(missing["state"], "could-not-check")
+            self.assertIn("bmod-missing", missing["reason"])
+            self.assertNotIn("pre_install_message", missing)
+            for folder, source in (("../bmod-alpha", "file:sources"), ("bmod-alpha", "plugin:alpha")):
+                with self.subTest(folder=folder, source=source):
+                    bad = setup_report(self, project, skill, "--source-record", source, folder)
+                    self.assertEqual(bad["state"], "could-not-check")
+
+    def test_source_record_cannot_be_combined_with_other_modes(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            for mode in (("--status",), ("--module", "alpha")):
+                with self.subTest(mode=mode):
+                    result = run_setup_python(project, skill, *mode, "--source-record", "file:sources", "bmod-alpha")
+                    self.assertEqual(result.returncode, 2)
+                    self.assertIn("--source-record cannot be combined", result.stderr)
 
 
 def retired_toml(renamed, removed) -> str:
