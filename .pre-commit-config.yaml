@@ -45,7 +45,7 @@ repos:
         always_run: true
       - id: validate-manifests
         name: validate bmod files
-        entry: uv run tools/validate_manifests.py
+        entry: uv run skills/bmad/scripts/validate_manifests.py
         language: system
         pass_filenames: false
         always_run: true

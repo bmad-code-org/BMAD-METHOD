@@ -1565,7 +1565,7 @@ def parse_knowledge(value: object, path: Path) -> tuple[KnowledgeEntry, ...]:
 def safe_skill_relative(entry: str) -> PurePosixPath | None:
     """A bmod.toml path that cannot escape the skill folder, or None if it can.
 
-    Shared with tools/validate_manifests.py and knowledge.py so one rule decides
+    Shared with validate_manifests.py and knowledge.py so one rule decides
     this everywhere. A URL parses as an ordinary relative path and a Windows
     drive prefix makes a later join discard the skill folder, so both are
     refused by name. pathlib drops "." components itself, so only ".." and an

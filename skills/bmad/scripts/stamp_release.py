@@ -2,17 +2,17 @@
 # /// script
 # requires-python = ">=3.11"
 # ///
-"""Release version stamper for BMAD-METHOD.
+"""Release version stamper for module repositories.
 
 Writes a human-supplied SemVer version into every module record: the
 `version` line inside the `[bmod]` table of each skills/*/bmod.toml that has
-one. Member skills carry no version and are not written. Used by
-tools/release.md to stamp releases and the next placeholder on `dev`.
-The Claude and Codex plugins are built from the stamped tree by
-bmad-code-org/bmad-plugins.
+one. Member skills carry no version and are not written. Each module
+repository's release runbook uses it to stamp releases and the next
+placeholder on `dev`.
 
 Before writing anything it runs the repository checks in
-tools/validate_manifests.py, the same ones pre-commit and CI run.
+validate_manifests.py beside it, the same ones pre-commit and CI run.
+`--check` runs only those checks and writes nothing.
 
 A file may carry keys and tables this script does not know. The runtime
 ignores them, so a release must not refuse them; they are left exactly as
@@ -23,7 +23,8 @@ After writing, the script re-reads every file and fails naming the offending
 path if anything is off.
 
 Usage:
-  uv run --python 3.11 tools/stamp_release.py 1.2.0
+  uv run --python 3.11 skills/bmad/scripts/stamp_release.py 1.2.0 [--project-root <path>]
+  uv run --python 3.11 skills/bmad/scripts/stamp_release.py --check [--project-root <path>]
 """
 
 from __future__ import annotations
@@ -35,8 +36,6 @@ import tomllib
 from pathlib import Path
 
 sys.dont_write_bytecode = True
-
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 
 class StampError(Exception):
@@ -141,11 +140,16 @@ def run(project_root: Path, version: str) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Stamp a version into every module record.")
-    parser.add_argument("version", help='SemVer release version, e.g. "6.12.0"')
+    parser.add_argument("version", nargs="?", help='SemVer release version, e.g. "6.12.0"')
+    parser.add_argument("--check", action="store_true", help="run the repository checks and write nothing")
     parser.add_argument(
-        "--project-root", type=Path, default=PROJECT_ROOT, help="repository to stamp (default: this one)"
+        "--project-root", type=Path, default=Path.cwd(), help="repository to stamp (default: the current directory)"
     )
     args = parser.parse_args(argv)
+    if args.check == (args.version is not None):
+        parser.error("give a version to stamp, or --check, but not both")
+    if args.check:
+        return validator.main(["--project-root", str(args.project_root)])
     return run(args.project_root.resolve(), args.version)
 
 

@@ -4,11 +4,12 @@
 # ///
 """Check every skills/*/bmod.toml against the runtime that has to read it.
 
-This file owns the repository checks: pre-commit and CI run it, and tools/stamp_release.py imports
+This file owns the repository checks: pre-commit and CI run it, and stamp_release.py beside it imports
 `check_repo` and `stamp_text` from it. Keys and tables the runtime does not know are left alone.
+It ships with the `bmad` skill, so any module repository can run it against its own tree.
 
 Usage:
-  uv run tools/validate_manifests.py [--project-root <path>]
+  uv run skills/bmad/scripts/validate_manifests.py [--project-root <path>]
 """
 
 from __future__ import annotations
@@ -24,7 +25,7 @@ from typing import NamedTuple
 
 sys.dont_write_bytecode = True
 
-ROOT = Path(__file__).resolve().parent.parent
+SCRIPTS = Path(__file__).resolve().parent
 RECORD_PREFIX = "bmod-"
 STAMP_PROBE = "0.0.0-stamp-check"
 MESSAGE_KEYS = ("pre_install_message", "post_install_message")
@@ -43,8 +44,8 @@ def load(name: str, path: Path):
     return module
 
 
-setup = load("bmad_setup_validate", ROOT / "skills" / "bmad" / "scripts" / "setup.py")
-knowledge = load("bmad_knowledge_validate", ROOT / "skills" / "bmad" / "scripts" / "knowledge.py")
+setup = load("bmad_setup_validate", SCRIPTS / "setup.py")
+knowledge = load("bmad_knowledge_validate", SCRIPTS / "knowledge.py")
 
 
 class RepoReport(NamedTuple):
@@ -58,7 +59,7 @@ def check_repo(project_root: Path) -> RepoReport:
     skills_dir = project_root / "skills"
     folders = sorted(path for path in skills_dir.glob("*") if path.is_dir())
     if not folders:
-        problem = f"no skills/*/{setup.MANIFEST_NAME} found under {project_root}: run from a BMAD-METHOD checkout"
+        problem = f"no skills/*/{setup.MANIFEST_NAME} found under {project_root}: pass the repository root with --project-root"
         return RepoReport((), 0, 0, (problem,))
 
     problems: list[str] = []
@@ -77,7 +78,7 @@ def check_repo(project_root: Path) -> RepoReport:
     records = {name: parsed.bmod for name, parsed in files.items() if parsed.bmod is not None}
     members = {name: member_names(name, files[name]) for name in records}
 
-    problems += record_problems(files, records)
+    problems += record_problems(files, records, skills_dir)
     problems += membership_problems(files, records, members, shipped)
     retired: dict[str, setup.ParsedRetired] = {}
     for name in records:
@@ -150,7 +151,7 @@ def stamp_problems(name: str, manifest: Path) -> list[str]:
     try:
         stamp_text(manifest.read_bytes().decode("utf-8"), STAMP_PROBE)
     except (OSError, ValueError) as error:
-        return [f"{rel(name)}: tools/stamp_release.py cannot stamp this file: {error}"]
+        return [f"{rel(name)}: stamp_release.py cannot stamp this file: {error}"]
     return []
 
 
@@ -164,10 +165,22 @@ def member_names(folder: str, parsed: setup.ParsedFile) -> tuple[str, ...]:
     return (folder,) if parsed.skill is not None else ()
 
 
-def record_problems(files: dict[str, setup.ParsedFile], records: dict[str, setup.ParsedBmod]) -> list[str]:
+def record_problems(
+    files: dict[str, setup.ParsedFile], records: dict[str, setup.ParsedBmod], skills_dir: Path
+) -> list[str]:
     problems: list[str] = []
+    for name, parsed in files.items():
+        if name.startswith(RECORD_PREFIX) and parsed.bmod is None:
+            problems.append(
+                f"{rel(name)}: a {RECORD_PREFIX}* folder holds a module record, but this file has no [bmod]"
+            )
     first_by_code: dict[str, str] = {}
     for name, record in records.items():
+        if setup.SEMVER.fullmatch(record.version) is None:
+            problems.append(f"{rel(name)}: [bmod] version {record.version!r} is not SemVer (MAJOR.MINOR.PATCH)")
+        skill_md = skills_dir / name / "SKILL.md"
+        if skill_md.is_symlink() or not skill_md.is_file():
+            problems.append(f"skills/{name}: a module record folder must ship SKILL.md as a plain file")
         if files[name].skill is None and name != RECORD_PREFIX + record.code:
             problems.append(
                 f"{rel(name)}: a module record folder is named {RECORD_PREFIX + record.code!r} "
@@ -200,6 +213,11 @@ def membership_problems(
                 problems.append(f"{rel(name)}: holds [skill], but its own [bmod] skills list leaves {name!r} out")
             continue
         bmod = parsed.skill.bmod
+        if bmod in records and parsed.skill.source != records[bmod].update_source:
+            problems.append(
+                f"{rel(name)}: [skill] source {parsed.skill.source!r} differs from {rel(bmod)} "
+                f"update_source {records[bmod].update_source!r}"
+            )
         if bmod not in records:
             problems.append(
                 f"{rel(name)}: [skill] bmod names {bmod!r}, which is not a module record in this repository"
@@ -403,7 +421,9 @@ def runtime_problems(skills_dir: Path) -> list[str]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Check every skills/*/bmod.toml in a repository.")
-    parser.add_argument("--project-root", type=Path, default=ROOT, help="repository to check (default: this one)")
+    parser.add_argument(
+        "--project-root", type=Path, default=Path.cwd(), help="repository to check (default: the current directory)"
+    )
     args = parser.parse_args(argv)
 
     report = check_repo(args.project_root.resolve())

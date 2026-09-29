@@ -1,0 +1,14 @@
+name: Validate bmod files
+description: Check every skills/*/bmod.toml in the calling repository against the
+  BMad runtime that reads them.
+
+runs:
+  using: composite
+  steps:
+    - name: Setup uv
+      uses: astral-sh/setup-uv@v7
+
+    - name: Validate bmod files
+      shell: bash
+      run: uv run --python 3.11 "$GITHUB_ACTION_PATH/skills/bmad/scripts/validate_manifests.py"
+        --project-root "$GITHUB_WORKSPACE"
