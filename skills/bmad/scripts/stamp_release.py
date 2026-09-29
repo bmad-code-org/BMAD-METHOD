@@ -58,27 +58,9 @@ setup = validator.setup
 
 
 def validate_version(version: str) -> None:
-    match = setup.SEMVER.fullmatch(version)
-    if match is None:
-        raise StampError(
-            f"invalid version {version!r}: must be SemVer (MAJOR.MINOR.PATCH, optional prerelease), e.g. 6.12.0"
-        )
-    # setup.py refuses to order any version containing "-dev".
-    if "-dev" in version.casefold():
-        raise StampError(
-            f'invalid version {version!r}: setup.py cannot order "-dev" '
-            "versions, so an installed module would never compare as current — "
-            "pick a different prerelease label"
-        )
-    # setup.py drops build metadata when ordering, so "1.2.0+x" compares equal to "1.2.0".
-    if match.group("build") is not None:
-        base = version.split("+", 1)[0]
-        raise StampError(
-            f"invalid version {version!r}: setup.py ignores build metadata when "
-            f"ordering, so this compares equal to {base!r} and an installed module "
-            "would never see the release — change the major, minor, patch, or "
-            "prerelease part"
-        )
+    problem = validator.version_problem(version)
+    if problem is not None:
+        raise StampError(problem)
 
 
 def collect_records(project_root: Path) -> list[Path]:

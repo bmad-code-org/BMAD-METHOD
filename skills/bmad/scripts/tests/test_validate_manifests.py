@@ -260,7 +260,14 @@ class RecordRuleTests(ValidatorCase):
 
     def test_record_version_that_is_not_semver(self):
         self.method_record('version = "6.11.0-next"', 'version = "1.0"')
-        self.assertIn("skills/bmod-method/bmod.toml: [bmod] version '1.0' is not SemVer", self.problems())
+        self.assertIn("skills/bmod-method/bmod.toml: [bmod] invalid version '1.0': must be SemVer", self.problems())
+
+    def test_record_version_the_runtime_cannot_order(self):
+        for version in ("6.11.0-dev", "6.11.0+build.1"):
+            with self.subTest(version=version):
+                self.method_record('version = "6.11.0-next"', f'version = "{version}"')
+                self.assertIn(f"skills/bmod-method/bmod.toml: [bmod] invalid version {version!r}", self.problems())
+                self.method_record(f'version = "{version}"', 'version = "6.11.0-next"')
 
     def test_record_without_skill_md(self):
         (self.skills / "bmod-method" / "SKILL.md").unlink()

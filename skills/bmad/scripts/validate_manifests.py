@@ -109,6 +109,30 @@ def check_repo(project_root: Path) -> RepoReport:
     return RepoReport(record_files, skill_count, documents, tuple(problems))
 
 
+def version_problem(version: str) -> str | None:
+    """Why an installed module could not use this record version, or None. The stamper applies the same rule."""
+    match = setup.SEMVER.fullmatch(version)
+    if match is None:
+        return f"invalid version {version!r}: must be SemVer (MAJOR.MINOR.PATCH, optional prerelease), e.g. 6.12.0"
+    # setup.py refuses to order any version containing "-dev".
+    if "-dev" in version.casefold():
+        return (
+            f'invalid version {version!r}: setup.py cannot order "-dev" '
+            "versions, so an installed module would never compare as current — "
+            "pick a different prerelease label"
+        )
+    # setup.py drops build metadata when ordering, so "1.2.0+x" compares equal to "1.2.0".
+    if match.group("build") is not None:
+        base = version.split("+", 1)[0]
+        return (
+            f"invalid version {version!r}: setup.py ignores build metadata when "
+            f"ordering, so this compares equal to {base!r} and an installed module "
+            "would never see the release — change the major, minor, patch, or "
+            "prerelease part"
+        )
+    return None
+
+
 def stamp_text(original: str, version: str) -> str:
     """The file with only the `version` line inside [bmod] rewritten. Raises ValueError when that cannot be done."""
     lines = original.splitlines(keepends=True)
@@ -176,8 +200,9 @@ def record_problems(
             )
     first_by_code: dict[str, str] = {}
     for name, record in records.items():
-        if setup.SEMVER.fullmatch(record.version) is None:
-            problems.append(f"{rel(name)}: [bmod] version {record.version!r} is not SemVer (MAJOR.MINOR.PATCH)")
+        problem = version_problem(record.version)
+        if problem is not None:
+            problems.append(f"{rel(name)}: [bmod] {problem}")
         skill_md = skills_dir / name / "SKILL.md"
         if skill_md.is_symlink() or not skill_md.is_file():
             problems.append(f"skills/{name}: a module record folder must ship SKILL.md as a plain file")
