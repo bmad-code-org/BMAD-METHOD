@@ -252,7 +252,36 @@ covers = ["R2", "R3"]
         self.assertEqual(out["ready_to_start"][0]["title"], "Café ✓ menu")
         r = subprocess.run([sys.executable, str(SCRIPT), "pull", str(self.epic), "1"], capture_output=True, check=False)
         self.assertEqual(r.returncode, 0, r.stderr)
-        self.assertIn("# Café ✓ menu", (self.epic / "story-caf-menu.md").read_text(encoding="utf-8"))
+        self.assertIn("# Café ✓ menu", (self.epic / "story-cafe-menu.md").read_text(encoding="utf-8"))
+
+    def test_titles_that_slug_alike_get_their_own_file_and_plan(self):
+        self.breakdown_epic(
+            '[[entry]]\nid = 1\ntype = "story"\ntitle = "Café menu"\n\n'
+            '[[entry]]\nid = 2\ntype = "story"\ntitle = "Cafe menu"\n'
+        )
+        plans = [Path(json.loads(run("find", str(self.epic), n).stdout)["plan"]).name for n in ("1", "2")]
+        self.assertEqual(plans, ["story-cafe-menu-plan.md", "story-cafe-menu-2-plan.md"])
+        self.assertEqual(json.loads(run("pull", str(self.epic), "2").stdout)["file"], "story-cafe-menu-2.md")
+        self.assertEqual(json.loads(run("pull", str(self.epic), "1").stdout)["file"], "story-cafe-menu.md")
+        plans = [Path(json.loads(run("find", str(self.epic), n).stdout)["plan"]).name for n in ("1", "2")]
+        self.assertEqual(plans, ["story-cafe-menu-plan.md", "story-cafe-menu-2-plan.md"])
+
+    def test_a_leaf_file_with_a_byte_order_mark_is_read(self):
+        (self.epic / "story-scaffold.md").write_bytes(b"\xef\xbb\xbf" + ticket("done", 1).encode("utf-8"))
+        rows = self.status_rows(self.epic)
+        self.assertEqual([(r["file"], r["state"]) for r in rows], [("story-scaffold.md", "done")])
+
+    def test_mark_keeps_a_plans_crlf_line_endings_and_byte_order_mark(self):
+        self.breakdown_epic()
+        path = self.epic / "story-scaffold-plan.md"
+        text = plan(1, "in-progress").replace("\n", "\r\n")
+        path.write_bytes(b"\xef\xbb\xbf" + text.encode("utf-8"))
+        self.mark(str(self.epic), "1", "done")
+        data = path.read_bytes()
+        self.assertTrue(data.startswith(b"\xef\xbb\xbf"))
+        self.assertNotIn(b"\n", data.replace(b"\r\n", b""))
+        self.assertIn(b"\r\nstatus: done\r\n", data)
+        self.assertEqual(self.status_rows(self.epic)[0]["status"], "done")
 
     def test_planned_entries_surface_when_unblocked(self):
         self.breakdown_epic()
@@ -465,9 +494,8 @@ covers = ["R2", "R3"]
         self.assertIn("no ticket matches", r.stderr)
 
     def test_pull_refuses_a_file_name_already_taken(self):
-        self.breakdown_epic(self.BREAKDOWN.replace('title = "UI shell"', 'title = "Scaffold"'))
-        self.assertEqual(run("pull", str(self.epic), "1").returncode, 0)
-        self.add("story-scaffold.md", ticket("done", 1))
+        self.breakdown_epic()
+        self.add("story-ui-shell.md", "notes, not a ticket\n")
         r = run("pull", str(self.epic), "2")
         self.assertEqual(r.returncode, 1)
         self.assertIn("exists already", r.stderr)
@@ -618,6 +646,79 @@ covers = ["R2", "R3"]
             '[[epic]]\nid = 2\nslug = "epic-cart"\n\n[[epic]]\nid = 2\nslug = "epic-pricing"\n'
         )
         self.assertIn("two epics with id 2", run("status", str(self.initiative)).stderr)
+
+    def test_status_shows_the_declared_epic_graph_before_and_after_inception(self):
+        self.pricing()
+        (self.initiative / "tickets.toml").write_text(
+            '[[epic]]\nid = 1\nslug = "epic-pricing"\n\n'
+            '[[epic]]\nid = 2\nslug = "epic-cart"\nafter = [{ epic = 1, needs = "the pricing contract" }]\n'
+        )
+        for _ in range(2):
+            status = json.loads(run("status", str(self.initiative)).stdout)
+            self.assertEqual(
+                [(e["slug"], e["after"], e["gated_by"]) for e in status["epics"]],
+                [
+                    ("epic-pricing", [], []),
+                    ("epic-cart", [{"epic": "epic-pricing", "needs": "the pricing contract"}], []),
+                ],
+            )
+            self.breakdown_epic()
+
+    def test_an_undeclared_or_backward_cross_epic_after_is_reported(self):
+        self.pricing()
+        self.breakdown_epic()
+        (self.initiative / "tickets.toml").write_text(
+            '[[epic]]\nid = 1\nslug = "epic-pricing"\n\n[[epic]]\nid = 2\nslug = "epic-cart"\n'
+        )
+        (self.initiative / "epic-pricing" / "tickets.toml").write_text(
+            '[[entry]]\nid = 1\ntype = "story"\ntitle = "Pricing contract"\nafter = ["2.1"]\n'
+        )
+        for command, folder in (("status", self.initiative), ("next", self.initiative), ("status", self.epic)):
+            out = json.loads(run(command, str(folder)).stdout)
+            if folder == self.epic:
+                self.assertEqual((out["undeclared_after"], out["order_conflict"]), ([], []))
+                continue
+            self.assertEqual(
+                out["undeclared_after"], [{"epic": "epic-pricing", "after": "epic-cart", "ref": "1.1", "names": "2.1"}]
+            )
+            self.assertEqual(out["order_conflict"], [{"epic": "epic-pricing", "after": "epic-cart"}])
+        (self.initiative / "tickets.toml").write_text(
+            '[[epic]]\nid = 1\nslug = "epic-pricing"\nafter = [{ epic = 2, needs = "the cart" }]\n\n'
+            '[[epic]]\nid = 2\nslug = "epic-cart"\n'
+        )
+        out = json.loads(run("status", str(self.initiative)).stdout)
+        self.assertEqual(out["undeclared_after"], [])
+        self.assertEqual(out["order_conflict"], [{"epic": "epic-pricing", "after": "epic-cart"}])
+
+    def test_after_naming_a_backlog_file_says_to_move_it_into_the_epic(self):
+        self.add("story-thing.md", ticket("", kind="story"), self.add_backlog())
+        self.add("story-scaffold.md", ticket("draft", 1, after="[story-thing]"))
+        r = run("next", str(self.epic))
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("move a backlog ticket into the epic as an entry", json.loads(r.stderr)["error"])
+        self.breakdown_epic()
+        self.add("story-scaffold.md", ticket("draft", 1, after="[story-ui-shell]"))
+        r = run("next", str(self.epic))
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("use the entry's id", json.loads(r.stderr)["error"])
+
+    def test_an_epic_gate_counts_once_and_its_order_before_inception(self):
+        self.pricing()
+        (self.initiative / "tickets.toml").write_text(
+            '[[epic]]\nid = 1\nslug = "epic-cart"\n\n[[epic]]\nid = 2\nslug = "epic-pricing"\n'
+        )
+        (self.epic / "epic-cart.md").write_text("---\ntype: epic\nafter: [epic-pricing]\n---\n# epic-cart\n")
+        out = json.loads(run("status", str(self.initiative)).stdout)
+        self.assertEqual(
+            (out["undeclared_after"], out["order_conflict"]), ([], [{"epic": "epic-cart", "after": "epic-pricing"}])
+        )
+        self.breakdown_epic('[[entry]]\nid = 1\ntype = "story"\ntitle = "Scaffold"\nafter = ["epic-pricing"]\n')
+        out = json.loads(run("status", str(self.initiative)).stdout)
+        self.assertEqual(
+            out["undeclared_after"],
+            [{"epic": "epic-cart", "after": "epic-pricing", "ref": "1.1", "names": "epic-pricing"}],
+        )
+        self.assertEqual(out["order_conflict"], [{"epic": "epic-cart", "after": "epic-pricing"}])
 
     def test_epics_need_an_id_a_slug_and_a_valid_after(self):
         self.pricing()

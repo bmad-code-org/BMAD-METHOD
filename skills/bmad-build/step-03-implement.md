@@ -18,7 +18,7 @@ Verify `{plan_file}` resolves to a non-empty path and the file exists on disk. I
 
 ### Baseline
 
-Capture `baseline_revision` (current HEAD, or `NO_VCS` if version control is unavailable) into `{plan_file}` frontmatter before making any changes. If the frontmatter already contains `baseline_revision` (resumed run), preserve the existing value — never overwrite it.
+Capture `baseline_revision` (current HEAD, or `NO_VCS` if version control is unavailable) into `{plan_file}` frontmatter before making any changes. If `baseline_revision` already holds a value (resumed run), preserve it — never overwrite it.
 
 ### Implement
 

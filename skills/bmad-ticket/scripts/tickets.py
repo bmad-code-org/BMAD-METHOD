@@ -31,8 +31,14 @@ in-review, built -> review; done; dropped.
 
 `after` lists real prerequisites: a sibling's id as a bare integer, or a quoted string that is
 `<epic id>.<entry id>` for an entry in another epic of the same initiative, `epic-<slug>` for that
-whole epic, a file name, or a tracker id. An epic file's own `after` names epics and holds every
+whole epic, a sibling's file name, or a tracker id. An epic file's own `after` names epics and holds every
 ticket under it; rows show it as `gated_by`. A dropped prerequisite still blocks.
+
+On an initiative, or an epic it lists, next and status report `unpinned_after` (a declared epic
+`after` no entry of the waiting epic pins), `undeclared_after` (an entry's `after` into an epic its
+own epic does not declare), and `order_conflict` (an epic that waits on one later in build order).
+status's `epics` rows carry the declared `after` with its `needs`, and the epic file's own gate as
+`gated_by`.
 
   next   [<dir>]                 tickets whose prerequisites are done or in review, grouped by state, in
                                  build order; an epic's own `after` waits for that epic to be done
@@ -66,12 +72,14 @@ the store forbids the operation.
 """
 
 import argparse
+import codecs
 import importlib.util
 import json
 import os
 import re
 import sys
 import tomllib
+import unicodedata
 from datetime import date
 from pathlib import Path
 
@@ -189,13 +197,18 @@ def _one_of(value, allowed: tuple, where: str, field: str):
 # ---------------------------------------------------------------- loading
 
 
+def read_text(path: Path) -> str:
+    # utf-8-sig: Windows editors can save a byte-order mark, which would hide the frontmatter.
+    return path.read_text(encoding="utf-8-sig")
+
+
 def load_breakdown(folder: Path) -> dict:
     path = folder / BREAKDOWN
     if not path.is_file():
         return {}
     where = f"{folder.name}/{BREAKDOWN}"
     try:
-        data = tomllib.loads(path.read_text(encoding="utf-8"))
+        data = tomllib.loads(read_text(path))
     except tomllib.TOMLDecodeError as e:
         raise TicketError(f"{where}: {e}") from e
     for table in ("entry", "epic"):
@@ -227,7 +240,7 @@ def load_container(folder: Path) -> dict:
     path = folder / f"{folder.name}.md"
     if not path.is_file():
         raise TicketError(f"{folder.name}: no {path.name}")
-    fm = parse_frontmatter(path.read_text(encoding="utf-8"))
+    fm = parse_frontmatter(read_text(path))
     if fm.get("type") not in CONTAINER_TYPES:
         raise TicketError(
             f"{folder.name}/{path.name}: type {fm.get('type')!r} is not one of {', '.join(CONTAINER_TYPES)}"
@@ -285,7 +298,7 @@ def load_folder(folder: Path, problems: list[str]) -> list[dict]:
     unlisted, stray, plans = {}, [], []
     seen = {}
     for path in sorted(folder.glob("*.md")):
-        text = path.read_text(encoding="utf-8")
+        text = read_text(path)
         fm = parse_frontmatter(text, lenient=True)
         if not fm and text.startswith("---") and NAME_RE.match(path.name):
             raise TicketError(f"{where}/{path.name}: frontmatter does not close")
@@ -453,6 +466,11 @@ def _resolve(tree: dict) -> None:
                 key = text
             if key is None:
                 key = ids.get(text)
+            if key is None and NAME_RE.match(text if text.endswith(".md") else f"{text}.md"):
+                raise TicketError(
+                    f"{where}: after {ref!r} matches no ticket in {t['epic']}; a file name names a pulled ticket in the "
+                    "same folder only: use the entry's id, or move a backlog ticket into the epic as an entry"
+                )
             if key is None:
                 raise TicketError(f"{where}: after {ref!r} matches no ticket")
             if key not in keys:
@@ -571,26 +589,71 @@ def ref(key: str, epic: str | None, tree: dict) -> str | int:
     return key
 
 
-def unpinned_after(tree: dict) -> list[dict]:
-    """`after` lines of the initiative whose waiting epic has tickets but none waiting on the named epic."""
+def declared_after(tree: dict) -> dict:
+    """Each epic the initiative's `tickets.toml` lists, in build order, with its `after` as `[{epic, needs}]`."""
     if not tree["initiative"]:
-        return []
-    out = []
+        return {}
     listed = load_breakdown(tree["initiative"]).get("epic", [])
-    slugs = [e.get("slug") for e in listed]
+    slugs = [e["slug"] for e in listed]
     by_id = {i: slug for slug, i in tree["epic_ids"].items()}
+    out = {}
     for e in listed:
-        mine = [t for t in tree["tickets"] if t["epic"] == e.get("slug")]
+        out[e["slug"]] = []
         for a in e.get("after", []):
             needed = by_id.get(a.get("epic"), a.get("epic"))
             if needed not in slugs:
                 raise TicketError(
-                    f"{tree['initiative'].name}/{BREAKDOWN}: {e.get('slug')} is after {a.get('epic')!r}, which is no epic listed"
+                    f"{tree['initiative'].name}/{BREAKDOWN}: {e['slug']} is after {a.get('epic')!r}, which is no epic listed"
                 )
-            pinned = any(b == needed or b.startswith(f"{needed}/") for t in mine for b in t["after"] + t["gated_by"])
-            if mine and not pinned and tree["scope"] in (None, e.get("slug")):
-                out.append({"epic": e.get("slug"), "after": needed, "needs": a.get("needs", "")})
+            out[e["slug"]].append({"epic": needed, "needs": a.get("needs", "")})
     return out
+
+
+def unpinned_after(tree: dict, declared: dict) -> list[dict]:
+    """Declared `after` lines whose waiting epic has tickets but none waiting on the named epic."""
+    out = []
+    for slug, edges in declared.items():
+        mine = [t for t in tree["tickets"] if t["epic"] == slug]
+        for a in edges:
+            needed = a["epic"]
+            pinned = any(b == needed or b.startswith(f"{needed}/") for t in mine for b in t["after"] + t["gated_by"])
+            if mine and not pinned and tree["scope"] in (None, slug):
+                out.append({"epic": slug, "after": needed, "needs": a["needs"]})
+    return out
+
+
+def cross_epic_after(tree: dict, declared: dict) -> dict:
+    """`undeclared_after`: an entry's `after` into an epic its epic does not declare. `order_conflict`: an epic
+    that waits, declared or through its tickets, on an epic later in the initiative's build order."""
+    order = list(declared)
+    undeclared, conflicts = [], []
+
+    def conflict(epic, needed):
+        pair = {"epic": epic, "after": needed}
+        if order.index(needed) > order.index(epic) and pair not in conflicts and tree["scope"] in (None, epic):
+            conflicts.append(pair)
+
+    for slug, edges in declared.items():
+        for a in edges:
+            conflict(slug, a["epic"])
+    for slug, c in tree["containers"].items():
+        for b in c["after"]:
+            if slug in declared and b.partition("/")[0] in declared:
+                conflict(slug, b.partition("/")[0])
+    for t in tree["tickets"]:
+        if t["epic"] not in declared:
+            continue
+        allowed = {a["epic"] for a in declared[t["epic"]]}
+        for b in t["after"]:
+            needed = b.partition("/")[0]
+            if needed == t["epic"] or needed not in declared:
+                continue
+            conflict(t["epic"], needed)
+            if needed not in allowed and tree["scope"] in (None, t["epic"]):
+                undeclared.append(
+                    {"epic": t["epic"], "after": needed, "ref": row_ref(t, tree), "names": ref(b, t["epic"], tree)}
+                )
+    return {"undeclared_after": undeclared, "order_conflict": conflicts}
 
 
 def row_ref(t: dict, tree: dict) -> str | None:
@@ -658,7 +721,7 @@ def store_config(project_root: Path | None) -> dict:
     cfg = project_root / "_bmad" / "custom" / "ticketing-store-config.toml"
     if not cfg.is_file():
         return {}
-    tickets = tomllib.loads(cfg.read_text(encoding="utf-8")).get("tickets", {})
+    tickets = tomllib.loads(read_text(cfg)).get("tickets", {})
     return tickets if isinstance(tickets, dict) else {}
 
 
@@ -736,11 +799,13 @@ def cmd_next(args) -> dict:
     if store != "repo" and not args.synced:
         raise StoreRefusal(f"store is {store}: sync ticket status from the tracker first, then rerun with --synced")
     tree = load_tree(folder)
+    declared = declared_after(tree)
     return {
         "folder": folder.name,
         "store": store,
         **{k: [public(t, tree) for t in v] for k, v in classify(tree).items()},
-        "unpinned_after": unpinned_after(tree),
+        "unpinned_after": unpinned_after(tree, declared),
+        **cross_epic_after(tree, declared),
         **({"problems": tree["problems"]} if tree["problems"] else {}),
     }
 
@@ -748,6 +813,7 @@ def cmd_next(args) -> dict:
 def cmd_status(args) -> dict:
     folder = _folder(args)
     tree = load_tree(folder)
+    declared = declared_after(tree)
     tickets = in_scope(tree)
     counts = {}
     for t in tickets:
@@ -762,7 +828,8 @@ def cmd_status(args) -> dict:
         "tickets": [public(t, tree, blocks) for t in tickets],
         "counts": {"total": len(tickets), **counts},
         "longest_remaining_chain": longest_remaining_chain(tree),
-        "unpinned_after": unpinned_after(tree),
+        "unpinned_after": unpinned_after(tree, declared),
+        **cross_epic_after(tree, declared),
         **({"problems": tree["problems"]} if tree["problems"] else {}),
     }
     if tree["scope"] is None:
@@ -771,7 +838,8 @@ def cmd_status(args) -> dict:
                 "slug": slug,
                 "id": tree["epic_ids"].get(slug),
                 "status": c["status"],
-                "after": c["after"],
+                "after": declared.get(slug, []),
+                "gated_by": c["after"],
                 "blocks": [ref(b, None, tree) for b in blocks.get(slug, [])],
             }
             for slug, c in tree["containers"].items()
@@ -800,6 +868,7 @@ Verify: {verify}
 
 
 def title_slug(title: str) -> str:
+    title = unicodedata.normalize("NFKD", title).encode("ascii", "ignore").decode("ascii")
     return re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")[:60].rstrip("-") or "untitled"
 
 
@@ -832,14 +901,28 @@ def resolve_ticket(tree: dict, text: str) -> dict:
     return hits[0]
 
 
+def leaf_stem(t: dict, tree: dict) -> str:
+    """The leaf file's stem, or the one `pull` gives it: `<type>-<slug of the title>`, with `-<id>` added when a
+    file or an earlier entry in the folder already has that name."""
+    if t["file"]:
+        return t["file"][:-3]
+    stem = f"{t['type']}-{title_slug(t['title'])}"
+    taken = set()
+    for o in tree["tickets"]:
+        if o is t:
+            break
+        if o["epic"] == t["epic"] and not o["file"]:
+            taken.add(f"{o['type']}-{title_slug(o['title'])}")
+    taken |= {o["file"][:-3] for o in tree["tickets"] if o["epic"] == t["epic"] and o["file"]}
+    return f"{stem}-{t['id']}" if stem in taken else stem
+
+
 def plan_path(t: dict, tree: dict) -> Path:
-    """The joined plan, else `<leaf file stem>-plan.md`, else `<type>-<slug of the title>-plan.md`."""
+    """The joined plan, else `<leaf stem>-plan.md`."""
     folder = tree["folders"][t["epic"]]
     if t.get("plan"):
         return folder / t["plan"]
-    if t["file"]:
-        return folder / f"{t['file'][:-3]}-plan.md"
-    return folder / f"{t['type']}-{title_slug(t['title'])}-plan.md"
+    return folder / f"{leaf_stem(t, tree)}-plan.md"
 
 
 def cmd_find(args) -> dict:
@@ -874,7 +957,7 @@ def cmd_pull(args) -> dict:
         raise TicketError(f"{folder.name}/{BREAKDOWN} has no entry {args.id}")
     if t["file"]:
         raise TicketError(f"entry {args.id} is already pulled: {t['file']}")
-    path = folder / f"{t['type']}-{title_slug(t['title'])}.md"
+    path = folder / f"{leaf_stem(t, tree)}.md"
     if path.exists():
         raise TicketError(f"{path.name} exists already; change entry {args.id}'s title")
     after = [str(ref(b, t["epic"], tree)) for b in t["after"]]
@@ -945,12 +1028,19 @@ def cmd_mark(args) -> dict:
         ]
         text = "---\n" + "".join(f"{k}: {v}\n" for k, v in fields if v != "") + "---\n"
     else:
-        text = set_frontmatter_value(path.read_text(encoding="utf-8"), "status", args.status)
+        raw = path.read_bytes()
+        text = set_frontmatter_value(raw.decode("utf-8-sig").replace("\r\n", "\n"), "status", args.status)
         for key, value in blocked.items():
             text = set_frontmatter_value(text, key, value)
         if args.assignee is not None:
             text = set_frontmatter_value(text, "assignee", quoted(args.assignee))
     data = text.encode("utf-8")  # before the file is opened, so a failure leaves the plan as it was
+    if not created:
+        # Write the plan back with its own line endings and byte-order mark.
+        if b"\r\n" in raw:
+            data = data.replace(b"\n", b"\r\n")
+        if raw.startswith(codecs.BOM_UTF8):
+            data = codecs.BOM_UTF8 + data
     try:
         with path.open("xb" if created else "wb") as f:
             f.write(data)

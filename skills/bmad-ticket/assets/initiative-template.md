@@ -4,7 +4,7 @@ key: ""   # tracker project or team for everything under this, when it differs f
 type: initiative
 title: "[The outcome this container exists to reach]"
 parent: none
-covers: [ids from the spec at this level, or from Requirements below when the source has none]
+covers: [capability ids from the spec at this level, or from Requirements below when the source has none; a constraint is cited in References, not covered]
 after: []   # epics this whole container waits on; the order of epics is in the initiative's tickets.toml
 assignee: ""   # status is added when work starts (in-progress | done | dropped)
 risk: [low|medium|high — the highest expected among its children]

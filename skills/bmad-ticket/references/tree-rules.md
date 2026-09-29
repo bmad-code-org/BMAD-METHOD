@@ -29,6 +29,7 @@ Every skill that takes work from the tree, builds it, reviews it, or looks back 
 | `done` | the user, or an orchestrator, through `tickets.py mark` |
 | `dropped` | `bmad-ticket`, when the user says so |
 
+- An open ticket follows its type's template. A done or dropped ticket and its plan are the record: no skill reshapes them to a newer template.
 - No skill moves a ticket past `built`: the build's last status, meaning the build finished and nobody has called it done. When the user tells a skill that a ticket is done, the skill runs `mark` for them. `bmad-code-review` never changes `status`.
 
 ## Baseline

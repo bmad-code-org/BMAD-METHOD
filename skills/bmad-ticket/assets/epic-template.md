@@ -4,7 +4,7 @@ key: ""   # tracker project or team for everything under this, when it differs f
 type: epic
 title: "[The outcome this container exists to reach]"
 parent: [folder name of the initiative]
-covers: [parent requirement ids this epic owns; keep these when adding an epic-local spec]
+covers: [parent capability ids this epic owns; keep these when adding an epic-local spec; a constraint is cited in References, not covered]
 after: []   # epics this whole container waits on; the order of epics is in the initiative's tickets.toml
 assignee: ""   # status is added when work starts (in-progress | done | dropped)
 risk: [low|medium|high — the highest expected among its children]

@@ -15,7 +15,7 @@ review_mode: '' # set at runtime: full or no-plan
 ## INSTRUCTIONS
 
 1. **Find the review target.** Check in this order and stop at the first that identifies it:
-   - **Request or recent conversation.** A PR (resolve via `gh pr view`; if that fails, ask for a SHA or branch), commit, branch, commit range, staged or uncommitted changes, a provided diff or file list, or a plan file. A plan sets `plan_file`; a frontmatter `baseline_revision` other than `NO_VCS` makes the diff source the **plan baseline** — otherwise say so and continue, since a plan without one does not identify the diff.
+   - **Request or recent conversation.** A PR (resolve via `gh pr view`; if that fails, ask for a SHA or branch), commit, branch, commit range, staged or uncommitted changes, a provided diff or file list, or a plan file. A plan sets `plan_file`; a non-empty frontmatter `baseline_revision` other than `NO_VCS` makes the diff source the **plan baseline** — otherwise say so and continue, since a plan without one does not identify the diff.
    - **The ticket tree.** Run `uv run {project-root}/_bmad/method/scripts/tickets.py --project-root {project-root} status`. On a non-zero exit, continue. Otherwise offer the `tickets` rows whose `state` is `review`, `<ref>` and `<title>` each, plus a choice of another target, and HALT for the user's pick. With none, or another target chosen, continue. For a picked ticket, run `tickets.py find <ref>` (same command form) and treat its `plan` as a plan file from the request.
    - **Current git state.** If HEAD is not on the default branch, confirm: "I see HEAD is `<short-sha>` on `<branch>` — do you want to review this branch's changes?" If confirmed, it is a branch diff against the default branch.
    - **Ask.** Go to instruction 2.

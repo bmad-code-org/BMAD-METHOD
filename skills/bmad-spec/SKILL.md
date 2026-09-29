@@ -33,7 +33,7 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
 
 ## Workspace
 
-The spec is **always a folder** named `{workflow.spec_output_path}/{workflow.run_folder_pattern}`, resolving by default to `{output_folder}/{active_initiative}/spec-{slug}/`.
+The spec is **always a folder** named `{workflow.spec_output_path}/{workflow.run_folder_pattern}`, resolving by default to `{output_folder}/{active_initiative}/spec-{slug}/`. A spec goes inside what it specifies: when the caller names an epic or initiative folder the spec is for, as `bmad-ticket` does, the spec folder is `<that folder>/{workflow.run_folder_pattern}` instead.
 
 `{slug}` describes the thing being specced, not the input shape:
 
