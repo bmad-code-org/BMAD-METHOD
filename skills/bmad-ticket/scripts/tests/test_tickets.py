@@ -684,7 +684,30 @@ covers = ["R2", "R3"]
         self.add("story-scaffold.md", ticket("draft", 1, after="[story-thing]"))
         r = run("next", str(self.epic))
         self.assertEqual(r.returncode, 1)
-        self.assertIn("move it into this epic as an entry", json.loads(r.stderr)["error"])
+        self.assertIn("move a backlog ticket into the epic as an entry", json.loads(r.stderr)["error"])
+        self.breakdown_epic()
+        self.add("story-scaffold.md", ticket("draft", 1, after="[story-ui-shell]"))
+        r = run("next", str(self.epic))
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("use the entry's id", json.loads(r.stderr)["error"])
+
+    def test_an_epic_gate_counts_once_and_its_order_before_inception(self):
+        self.pricing()
+        (self.initiative / "tickets.toml").write_text(
+            '[[epic]]\nid = 1\nslug = "epic-cart"\n\n[[epic]]\nid = 2\nslug = "epic-pricing"\n'
+        )
+        (self.epic / "epic-cart.md").write_text("---\ntype: epic\nafter: [epic-pricing]\n---\n# epic-cart\n")
+        out = json.loads(run("status", str(self.initiative)).stdout)
+        self.assertEqual(
+            (out["undeclared_after"], out["order_conflict"]), ([], [{"epic": "epic-cart", "after": "epic-pricing"}])
+        )
+        self.breakdown_epic('[[entry]]\nid = 1\ntype = "story"\ntitle = "Scaffold"\nafter = ["epic-pricing"]\n')
+        out = json.loads(run("status", str(self.initiative)).stdout)
+        self.assertEqual(
+            out["undeclared_after"],
+            [{"epic": "epic-cart", "after": "epic-pricing", "ref": "1.1", "names": "epic-pricing"}],
+        )
+        self.assertEqual(out["order_conflict"], [{"epic": "epic-cart", "after": "epic-pricing"}])
 
     def test_epics_need_an_id_a_slug_and_a_valid_after(self):
         self.pricing()

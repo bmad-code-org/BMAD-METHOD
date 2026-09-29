@@ -468,8 +468,8 @@ def _resolve(tree: dict) -> None:
                 key = ids.get(text)
             if key is None and NAME_RE.match(text if text.endswith(".md") else f"{text}.md"):
                 raise TicketError(
-                    f"{where}: after {ref!r} matches no ticket in {t['epic']}; a file name names a ticket in the "
-                    "same folder only, so to wait on a backlog ticket, move it into this epic as an entry"
+                    f"{where}: after {ref!r} matches no ticket in {t['epic']}; a file name names a pulled ticket in the "
+                    "same folder only: use the entry's id, or move a backlog ticket into the epic as an entry"
                 )
             if key is None:
                 raise TicketError(f"{where}: after {ref!r} matches no ticket")
@@ -636,16 +636,20 @@ def cross_epic_after(tree: dict, declared: dict) -> dict:
     for slug, edges in declared.items():
         for a in edges:
             conflict(slug, a["epic"])
+    for slug, c in tree["containers"].items():
+        for b in c["after"]:
+            if slug in declared and b.partition("/")[0] in declared:
+                conflict(slug, b.partition("/")[0])
     for t in tree["tickets"]:
         if t["epic"] not in declared:
             continue
         allowed = {a["epic"] for a in declared[t["epic"]]}
-        for b in t["after"] + t["gated_by"]:
+        for b in t["after"]:
             needed = b.partition("/")[0]
             if needed == t["epic"] or needed not in declared:
                 continue
             conflict(t["epic"], needed)
-            if b in t["after"] and needed not in allowed and tree["scope"] in (None, t["epic"]):
+            if needed not in allowed and tree["scope"] in (None, t["epic"]):
                 undeclared.append(
                     {"epic": t["epic"], "after": needed, "ref": row_ref(t, tree), "names": ref(b, t["epic"], tree)}
                 )
