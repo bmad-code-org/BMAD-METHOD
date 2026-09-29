@@ -1,4 +1,4 @@
-# The method module's v6 to v7 migration, found by the `bmad` skill (`bmad migrate`) through its `[migration]` table.
+# The method module's first migration, v6 to v7. `bmad migrate` runs a module's `migration-<n>.toml` files in `<n>` order.
 
 [migration]
 module = "method"

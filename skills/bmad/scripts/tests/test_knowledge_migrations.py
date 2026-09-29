@@ -42,15 +42,15 @@ class MigrationTests(unittest.TestCase):
 
     def test_a_migration_file_is_listed_by_its_table_without_its_text(self):
         record = write_module(self.skills, ("demo-one",))
-        (record / "v1-v2-migration.toml").write_text(MIGRATION, encoding="utf-8")
+        (record / "migration-1.toml").write_text(MIGRATION, encoding="utf-8")
         report = knowledge.collect([self.skills])
         self.assertEqual(
             report["migrations"],
             [
                 {
                     "module": "demo",
-                    "path": "v1-v2-migration.toml",
-                    "file": str(record / "v1-v2-migration.toml"),
+                    "path": "migration-1.toml",
+                    "file": str(record / "migration-1.toml"),
                     "from": "1",
                     "to": "2",
                     "title": "Move demo artifacts to the v2 layout",
@@ -70,9 +70,7 @@ class MigrationTests(unittest.TestCase):
 
     def test_a_migration_without_its_fields_is_a_problem_not_a_listing(self):
         record = write_module(self.skills)
-        (record / "bad-migration.toml").write_text(
-            '[migration]\nmodule = "demo"\nfrom = 1\nto = "2"\n', encoding="utf-8"
-        )
+        (record / "migration-2.toml").write_text('[migration]\nmodule = "demo"\nfrom = 1\nto = "2"\n', encoding="utf-8")
         report = knowledge.collect([self.skills])
         self.assertEqual(report["migrations"], [])
         self.assertEqual(len(report["problems"]), 1)
@@ -86,7 +84,7 @@ class MigrationTests(unittest.TestCase):
         text = MIGRATION.replace('guide = "move it"', 'guide = "  "').replace(
             'checklist = ["it moved"]', 'checklist = [" "]'
         )
-        (record / "blank-migration.toml").write_text(text, encoding="utf-8")
+        (record / "migration-3.toml").write_text(text, encoding="utf-8")
         report = knowledge.collect([self.skills])
         self.assertEqual(report["migrations"], [])
         self.assertIn("needs non-empty guide, checklist", report["problems"][0]["problem"])
@@ -94,22 +92,56 @@ class MigrationTests(unittest.TestCase):
     def test_a_migration_for_another_module_is_a_problem(self):
         record = write_module(self.skills)
         text = MIGRATION.replace('module = "demo"', 'module = "other"')
-        (record / "other-migration.toml").write_text(text, encoding="utf-8")
+        (record / "migration-4.toml").write_text(text, encoding="utf-8")
         report = knowledge.collect([self.skills])
         self.assertEqual(report["migrations"], [])
         self.assertIn("is not this record's 'demo'", report["problems"][0]["problem"])
 
-    def test_migrations_are_listed_in_path_order(self):
+    def test_migrations_are_listed_by_number_not_by_text(self):
         record = write_module(self.skills)
-        later = MIGRATION.replace('from = "1"', 'from = "2"').replace('to = "2"', 'to = "3"')
-        (record / "v2-v3-migration.toml").write_text(later, encoding="utf-8")
-        (record / "v1-v2-migration.toml").write_text(MIGRATION, encoding="utf-8")
+        for number in (10, 2, 1):
+            text = MIGRATION.replace('from = "1"', f'from = "{number}"').replace('to = "2"', f'to = "{number + 1}"')
+            (record / f"migration-{number}.toml").write_text(text, encoding="utf-8")
         report = knowledge.collect([self.skills])
-        self.assertEqual([(m["from"], m["to"]) for m in report["migrations"]], [("1", "2"), ("2", "3")])
+        self.assertEqual(
+            [m["path"] for m in report["migrations"]], ["migration-1.toml", "migration-2.toml", "migration-10.toml"]
+        )
+        self.assertEqual(report["problems"], [])
+
+    def test_a_migration_outside_the_naming_rule_is_a_problem(self):
+        record = write_module(self.skills)
+        for name in ("v1-v2-migration.toml", "migration-one.toml", "migration-1-2.toml"):
+            (record / name).write_text(MIGRATION, encoding="utf-8")
+        report = knowledge.collect([self.skills])
+        self.assertEqual(report["migrations"], [])
+        self.assertEqual(len(report["problems"]), 3)
+        for problem in report["problems"]:
+            self.assertIn("must be named migration-<n>.toml", problem["problem"])
+
+    def test_two_migrations_of_one_module_with_the_same_number_are_problems(self):
+        record = write_module(self.skills)
+        other = write_module(self.skills, code="other")
+        (record / "migration-1.toml").write_text(MIGRATION, encoding="utf-8")
+        (record / "migration-01.toml").write_text(MIGRATION, encoding="utf-8")
+        (record / "migration-2.toml").write_text(MIGRATION, encoding="utf-8")
+        (other / "migration-1.toml").write_text(
+            MIGRATION.replace('module = "demo"', 'module = "other"'), encoding="utf-8"
+        )
+        report = knowledge.collect([self.skills])
+        self.assertEqual(
+            [(m["module"], m["path"]) for m in report["migrations"]],
+            [("demo", "migration-2.toml"), ("other", "migration-1.toml")],
+        )
+        self.assertEqual(
+            sorted(Path(problem["document"]).name for problem in report["problems"]),
+            ["migration-01.toml", "migration-1.toml"],
+        )
+        for problem in report["problems"]:
+            self.assertIn("same number", problem["problem"])
 
     def test_a_migration_that_is_not_toml_is_a_problem(self):
         record = write_module(self.skills)
-        (record / "broken-migration.toml").write_text('[migration\nfrom = "1"\n', encoding="utf-8")
+        (record / "migration-5.toml").write_text('[migration\nfrom = "1"\n', encoding="utf-8")
         report = knowledge.collect([self.skills])
         self.assertEqual(report["migrations"], [])
         self.assertEqual([problem["kind"] for problem in report["problems"]], ["migration"])

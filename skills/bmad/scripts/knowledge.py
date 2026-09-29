@@ -15,12 +15,15 @@ Every other `help/*.md` is a topic: detail that `help/help.md` points to and a
 reader opens only when a question needs it. Topics are listed with their
 file path and never with their text.
 
-A `*.toml` file in the record's folder with a `[migration]` table is a
-migration the module ships: the rules for moving a project from one major
-version of the module to the next. One is listed only when its table names
-the record's `module` and has `from`, `to`, `title`, `summary`, `detect`,
-`guide`, and a `checklist`; the listing carries `from`, `to`, `title` and the
-file path, never the text. `bmad migrate` reads the file.
+A `migration-<n>.toml` file in the record's folder is a migration the
+module ships: the rules for moving a project from one major version of the
+module to the next. `<n>` is a whole number that sets the order in which a
+module's migrations are listed, checked and run. One is listed only when its
+`[migration]` table names the record's `module` and has `from`, `to`,
+`title`, `summary`, `detect`, `guide`, and a `checklist`; the listing carries
+`from`, `to`, `title` and the file path, never the text. A `[migration]`
+table in a file with any other name, and two files of one module with the
+same number, are problems. `bmad migrate` reads the file.
 
 A file this script cannot use becomes an entry in `problems`, never an
 exception.
@@ -33,6 +36,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import stat
 import sys
 import tomllib
@@ -48,6 +52,7 @@ ROSTER_NAME = "roster.toml"
 RETIRED_NAME = "retired.toml"
 MIGRATION_TABLE = "migration"
 MIGRATION_FIELDS = ("module", "from", "to", "title", "summary", "detect", "guide")
+MIGRATION_NAME = re.compile(r"migration-([0-9]+)\.toml")
 READ_LIMIT = 1024 * 1024
 
 
@@ -105,7 +110,7 @@ def collect(roots: list[Path], *, include_content: bool = False) -> dict[str, ob
         "skills": sorted(found.skills, key=lambda item: str(item["skill"])),
         "documents": sorted(documents.values(), key=lambda item: (str(item["module"]), str(item["path"]))),
         "topics": sorted(topics, key=lambda item: (str(item["module"]), str(item["path"]))),
-        "migrations": sorted(migrations, key=lambda item: (str(item["module"]), str(item["path"]))),
+        "migrations": sorted(migrations, key=lambda item: (str(item["module"]), migration_number(str(item["path"])))),
         "problems": problems,
     }
 
@@ -351,7 +356,7 @@ def module_topics(module: Module, problems: list[dict[str, object]]) -> list[dic
 
 
 def module_migrations(module: Module, problems: list[dict[str, object]]) -> list[dict[str, object]]:
-    """The migrations a record ships: every `*.toml` beside `bmod.toml` with a `[migration]` table."""
+    """The migrations a record ships: its `migration-<n>.toml` files, in number order."""
     folder = module.folder
     try:
         found = sorted(
@@ -391,9 +396,27 @@ def module_migrations(module: Module, problems: list[dict[str, object]]) -> list
                 )
             )
             continue
+        if migration_number(path.name) is None:
+            problems.append(migration_problem(folder, path, "a migration file must be named migration-<n>.toml"))
+            continue
         listed = {name: fields[name] for name in ("from", "to", "title")}
         migrations.append({"module": module.code, "path": path.name, "file": str(path), **listed})
-    return migrations
+    numbers = [migration_number(str(item["path"])) for item in migrations]
+    duplicated = {number for number in numbers if numbers.count(number) > 1}
+    for item in migrations:
+        if migration_number(str(item["path"])) in duplicated:
+            problems.append(
+                migration_problem(
+                    folder, Path(str(item["file"])), "another migration of this module has the same number"
+                )
+            )
+    kept = [item for item in migrations if migration_number(str(item["path"])) not in duplicated]
+    return sorted(kept, key=lambda item: migration_number(str(item["path"])))
+
+
+def migration_number(name: str) -> int | None:
+    match = MIGRATION_NAME.fullmatch(name)
+    return int(match.group(1)) if match else None
 
 
 def migration_problem(folder: Path, path: Path, problem: str) -> dict[str, object]:
