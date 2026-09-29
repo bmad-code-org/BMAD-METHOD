@@ -7,13 +7,13 @@ covers: [ids from the epic's spec, referenced numbered source, or Requirements; 
 after: []   # prerequisites only: a sibling's id; "<epic id>.<entry id>" in another epic; epic-<slug> for that whole epic
 assignee: ""   # a tracker's assignee, mirrored by query; otherwise assignee, blocked_at, and blocked_reason live in the plan
 # status lives in the plan beside this file, not here; tracker_status by a tracker sync
-refined: false   # true once refined and approved
+refined: false   # true once the user approves its full criteria; a pulled story has this line only when its entry says `refine = true`
 hitl: false
 risk: [low|medium|high]
 estimate: ""   # points, when estimation is on
 ---
 
-<!-- Pulled: a one-sentence Description, Acceptance Criteria as one Verify: line, References, local Notes. Refined: the same, reviewed with the user. Numbered criteria and Boundaries only for a ticket with no epic, an entry with `refine = true`, or on request. -->
+<!-- Pulled: a one-sentence Description, Acceptance Criteria as one Verify: line, References, local Notes. Refined: the same, reviewed with the user. Numbered criteria and Boundaries only for a ticket with no epic, an entry with `refine = true`, or on request. A done or dropped ticket stays as it was written. -->
 
 # [Title]
 

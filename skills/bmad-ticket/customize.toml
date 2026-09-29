@@ -98,14 +98,14 @@ checks.ticket = [
   "Every file or link referenced exists and opens; no unfilled placeholder; every assumption is marked.",
   "Nothing contradicts the requirement source, its companions, the architecture, or a recorded decision.",
   "An entry has a description, known uncertainty, and a `verify` check someone other than the builder can run. Full criteria are required before execution only for a bug, an entry with `refine = true`, and a ticket with no epic.",
-  "A ticket whose `covers` includes an id named in a `Source conflict:` line with no later `Decision:` settling it has `refined: false`.",
+  "A ticket that needs full criteria and whose `covers` includes an id named in a `Source conflict:` line with no later `Decision:` settling it has `refined: false`.",
 ]
 
 # The set: every entry in the epic's `tickets.toml` or draft breakdown, pulled or not.
 checks.set = [
   "Together the tickets account for every requirement in the epic's spec, referenced numbered source, or Requirements, except scope deferred with the user. Each covers id exists there; several tickets may cover one id, each description saying which part it delivers.",
   "UX, architecture, constraints, and integration work are accounted for even when they lack ids. The combined results must satisfy the epic's Done when; citing an id alone is not coverage.",
-  "Every `after` is a real prerequisite, those in other epics included, and none restates the order. Once `tickets.toml` exists, `tickets.py status` on the epic runs clean: no cycle, no `drift`, no `unpinned_after`; the tracer bullet and sequencing decisions are in the epic's Notes.",
+  "Every `after` is a real prerequisite, those in other epics included, and none restates the order. Once `tickets.toml` exists, `tickets.py status` on the epic runs clean: no cycle, no `drift`, no `unpinned_after`, `undeclared_after`, or `order_conflict`; the tracer bullet and sequencing decisions are in the epic's Notes.",
   "Given the epic, an entry, and its references, a builder could write that story's acceptance criteria if it had to. If it could not, fix the epic's requirements or the references; the entry stays one sentence each for `description` and `verify`.",
   "An epic of more than three entries has the refactor sweep after all other work, or a `Decision:` line says why not.",
 ]
@@ -139,7 +139,7 @@ checks.closure = [
 # Keep a home, under any name, for each section references/ticket.md refers to: Description,
 # Acceptance Criteria, Boundaries (stories), References, and Notes; for containers also Outcome,
 # Requirements, and Done when; Reproduction and Cause Hypothesis for bugs, Approach for spikes. `Decision:`, `Dropped:`, and `Estimate:` lines live in Notes.
-# Spikes use "Verify:" lines instead of Given/When/Then, and a pulled story carries one Verify: line until it is refined; both deliberate.
+# Spikes use "Verify:" lines instead of Given/When/Then, and a pulled story carries one Verify: line unless its entry has `refine = true`; both deliberate.
 initiative_template = "{skill-root}/assets/initiative-template.md"
 epic_template = "{skill-root}/assets/epic-template.md"
 story_template = "{skill-root}/assets/story-template.md"

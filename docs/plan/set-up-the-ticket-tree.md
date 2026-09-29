@@ -130,7 +130,7 @@ Hooks are not integrated yet, so nothing syncs on its own: a tracker and the tic
 
 ## Use `bmad-ticket`
 
-The skill turns intent into tickets a coding agent can build from, at three levels. An initiative holds epics. An epic holds stories, spikes, and bugs. An initiative or an epic is itself the specification at its level: it holds the requirements, and its children are cut from them.
+The skill turns intent into tickets a coding agent can build from, at three levels. An initiative holds epics. An epic holds stories, spikes, and bugs. An initiative or an epic is itself the specification at its level: it holds the requirements, and its children are cut from them. When the requirements outgrow the ticket, `bmad-spec` writes a spec folder inside that initiative or epic folder.
 
 It takes almost any input. The best input is a `bmad-spec` output together with the documents that produced it. Give it the spec folder and it plans one epic whose stories cite the spec's `CAP-N` ids. A PRD alone, meeting notes, or a one-paragraph idea also work.
 

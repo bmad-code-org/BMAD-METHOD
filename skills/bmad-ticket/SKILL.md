@@ -52,6 +52,8 @@ Before routing, size the ask from what the user said and what is in context, and
 | the store set up, reconfigured, or switched | `{skill-root}/references/store-setup.md` |
 | the rules every skill that uses the tree follows: finding it, the plan file, who writes each status, the baseline, where review and retrospective write | `{skill-root}/references/tree-rules.md` |
 
+Recommend refining only a ticket in `tickets.py next`'s `ready_to_refine`; one in `ready_to_start` goes to the build as it is.
+
 Save agreed work into the ticket tree. Future epics stay as envelopes until selected for inception.
 
 ### Autonomous mode
