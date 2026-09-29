@@ -220,7 +220,7 @@ Every value reached during the render is part of the generation's identity. Cust
 - **Severity:** HIGH
 - **Applies to:** all scanned files, code blocks included
 - **Rule:** A skill runs its own scripts through `{skill-root}`. The agent's working directory is the project, so `uv run scripts/tool.py` does not find the script.
-- **Detection:** Deterministic. Flags `uv run scripts/` and `uv run ./scripts/`, with or without flags before the path.
+- **Detection:** Deterministic. Flags `scripts/` or `./scripts/` as a separate argument after `uv run`, whatever options come before it.
 - **Fix:** `uv run {skill-root}/scripts/tool.py`.
 
 ---

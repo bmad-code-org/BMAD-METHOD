@@ -327,11 +327,11 @@ class TestRules(ProjectCase):
         skill = self.valid(
             "bmad-script",
             {
-                "notes.md": "Run `uv run scripts/tool.py`.\n\n```bash\nuv run ./scripts/tool.py\nuv run --frozen scripts/tool.py\n```\n"
+                "notes.md": "Run `uv run scripts/tool.py`.\n\n```bash\nuv run ./scripts/tool.py\nuv run --frozen scripts/tool.py\nuv run --python 3.11 scripts/tool.py\n```\n"
             },
         )
         findings = findings_by_rule(self.findings_for(skill), "PATH-06")
-        self.assertEqual([f["line"] for f in findings], [1, 4, 5])
+        self.assertEqual([f["line"] for f in findings], [1, 4, 5, 6])
         self.assertTrue(all(f["severity"] == "HIGH" for f in findings))
 
     def test_path_06_anchored_script_calls_pass(self):
