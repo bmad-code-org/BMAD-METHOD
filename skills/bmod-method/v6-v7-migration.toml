@@ -96,7 +96,7 @@ Move each document gets its own folder, `<type>-<slug>/<type>-<slug>.md` (assumi
 | `sprint-change-proposal-<date>.md` | `change-<slug>/change-<slug>.md`, slug from its title |
 | A sharded document (`<name>/index.md` plus sections) | `<type>-<name>/<type>-<name>.md` is the old `index.md`, sections unchanged beside it |
 
-Retrospectives are not given a folder to house the retro - but the file should be in the epic folder being retro reviewed.
+Retrospectives get no folder: an epic's v6 retro reports combine into `epic-<slug>-retrospective.md` in that epic's folder, the name `bmad-retrospective` reads.
 
 ## The ticket tree
 
@@ -110,7 +110,7 @@ Each `### Story N.M:` becomes an `[[entry]]` in that epic's `tickets.toml`, in t
 
 ### Build records
 
-A v6 story file (`<N>-<M>-<slug>.md` or `spec-<N>-<M>-<slug>.md` in the implementation folder) is a build record. When the user agreed to fold unstarted stories, a file whose status is `backlog`, `ready-for-dev`, `drafted`, or `contexted` gets no plan: its intent, criteria, and verification go into its entry, and the file moves to `archive-v6/` unchanged. Any other build record moves beside its entry as `story-<slug>-plan.md`, keeping all criteria, implementation history, and review findings, with the criteria from `epics.md` merged in. Frontmatter: `ticket`, the entry's numeric id (a backlog plan uses its leaf file stem); `status`, mapped below; a build `type` (`feature`, `bugfix`, `refactor`, or `chore`), never `story`; and `baseline_revision` only when the record holds a trustworthy one or a recorded equivalent. Never infer a baseline from today's HEAD; list each missing one in the report.
+A v6 story file (`<N>-<M>-<slug>.md` or `spec-<N>-<M>-<slug>.md` in the implementation folder) is a build record. When the user agreed to fold unstarted stories, a story whose status, after the file and `sprint-status.yaml` are reconciled, is `backlog`, `ready-for-dev`, `drafted`, or `contexted` gets no plan: its file's intent, criteria, and verification go into its entry, and the file moves to `archive-v6/` unchanged. Any other build record moves beside its entry as `story-<slug>-plan.md`, keeping all criteria, implementation history, and review findings, with the criteria from `epics.md` merged in. Frontmatter: `ticket`, the entry's numeric id (a backlog plan uses its leaf file stem); `status`, mapped below; a build `type` (`feature`, `bugfix`, `refactor`, or `chore`), never `story`; and `baseline_revision` only when the record holds a trustworthy one or a recorded equivalent. Never infer a baseline from today's HEAD; list each missing one in the report.
 
 A story with no build record stays an entry with no plan, its full original criteria kept in the entry's description beside its intent. When tracking shows a status past `backlog` but the record is missing, write a minimal plan with that mapped status, saying the record is missing. Never write epic story files; the builder reads the entry and its epic. Plans and any existing leaf files stay in the live tree: plans own status, baseline evidence, and review history. Only the tracking sources, caches, and folded story files are archived.
 
