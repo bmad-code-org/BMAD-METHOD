@@ -221,11 +221,11 @@ def main(argv: list[str] | None = None) -> int:
             args.status
             or args.list_config_questions
             or args.module_answers is not None
-            or args.module is not None
             or args.remove_retired is not None
             or args.remove_copies is not None
         ):
             parser.error("--source-record cannot be combined with other modes")
+        # setup.md adds --module to every call when the user names a module; it does not apply here.
         print_json(source_record_report(project_root, *args.source_record))
         return 0
     if args.remove_retired is not None or args.remove_copies is not None:

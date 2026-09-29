@@ -3283,11 +3283,24 @@ class BmadInstallMessageTests(unittest.TestCase):
             project = root / "project"
             project.mkdir()
             skill = write_dest_bmad(root)
-            for mode in (("--status",), ("--module", "alpha")):
-                with self.subTest(mode=mode):
-                    result = run_setup_python(project, skill, *mode, "--source-record", "file:sources", "bmod-alpha")
-                    self.assertEqual(result.returncode, 2)
-                    self.assertIn("--source-record cannot be combined", result.stderr)
+            result = run_setup_python(project, skill, "--status", "--source-record", "file:sources", "bmod-alpha")
+            self.assertEqual(result.returncode, 2)
+            self.assertIn("--source-record cannot be combined", result.stderr)
+
+    def test_source_record_ignores_a_named_module(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "project"
+            project.mkdir()
+            skill = write_dest_bmad(root)
+            write_bmod(project / "sources", "bmod-alpha", "alpha", version="2.0.0")
+
+            report = setup_report(
+                self, project, skill, "--module", "alpha", "--source-record", "file:sources", "bmod-alpha"
+            )
+
+            self.assertEqual(report["state"], "read")
+            self.assertEqual(report["version"], "2.0.0")
 
 
 def retired_toml(renamed, removed) -> str:
