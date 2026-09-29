@@ -901,14 +901,28 @@ def resolve_ticket(tree: dict, text: str) -> dict:
     return hits[0]
 
 
+def leaf_stem(t: dict, tree: dict) -> str:
+    """The leaf file's stem, or the one `pull` gives it: `<type>-<slug of the title>`, with `-<id>` added when a
+    file or an earlier entry in the folder already has that name."""
+    if t["file"]:
+        return t["file"][:-3]
+    stem = f"{t['type']}-{title_slug(t['title'])}"
+    taken = set()
+    for o in tree["tickets"]:
+        if o is t:
+            break
+        if o["epic"] == t["epic"] and not o["file"]:
+            taken.add(f"{o['type']}-{title_slug(o['title'])}")
+    taken |= {o["file"][:-3] for o in tree["tickets"] if o["epic"] == t["epic"] and o["file"]}
+    return f"{stem}-{t['id']}" if stem in taken else stem
+
+
 def plan_path(t: dict, tree: dict) -> Path:
-    """The joined plan, else `<leaf file stem>-plan.md`, else `<type>-<slug of the title>-plan.md`."""
+    """The joined plan, else `<leaf stem>-plan.md`."""
     folder = tree["folders"][t["epic"]]
     if t.get("plan"):
         return folder / t["plan"]
-    if t["file"]:
-        return folder / f"{t['file'][:-3]}-plan.md"
-    return folder / f"{t['type']}-{title_slug(t['title'])}-plan.md"
+    return folder / f"{leaf_stem(t, tree)}-plan.md"
 
 
 def cmd_find(args) -> dict:
@@ -943,7 +957,7 @@ def cmd_pull(args) -> dict:
         raise TicketError(f"{folder.name}/{BREAKDOWN} has no entry {args.id}")
     if t["file"]:
         raise TicketError(f"entry {args.id} is already pulled: {t['file']}")
-    path = folder / f"{t['type']}-{title_slug(t['title'])}.md"
+    path = folder / f"{leaf_stem(t, tree)}.md"
     if path.exists():
         raise TicketError(f"{path.name} exists already; change entry {args.id}'s title")
     after = [str(ref(b, t["epic"], tree)) for b in t["after"]]

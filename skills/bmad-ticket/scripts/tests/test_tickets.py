@@ -254,6 +254,18 @@ covers = ["R2", "R3"]
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertIn("# Café ✓ menu", (self.epic / "story-cafe-menu.md").read_text(encoding="utf-8"))
 
+    def test_titles_that_slug_alike_get_their_own_file_and_plan(self):
+        self.breakdown_epic(
+            '[[entry]]\nid = 1\ntype = "story"\ntitle = "Café menu"\n\n'
+            '[[entry]]\nid = 2\ntype = "story"\ntitle = "Cafe menu"\n'
+        )
+        plans = [Path(json.loads(run("find", str(self.epic), n).stdout)["plan"]).name for n in ("1", "2")]
+        self.assertEqual(plans, ["story-cafe-menu-plan.md", "story-cafe-menu-2-plan.md"])
+        self.assertEqual(json.loads(run("pull", str(self.epic), "2").stdout)["file"], "story-cafe-menu-2.md")
+        self.assertEqual(json.loads(run("pull", str(self.epic), "1").stdout)["file"], "story-cafe-menu.md")
+        plans = [Path(json.loads(run("find", str(self.epic), n).stdout)["plan"]).name for n in ("1", "2")]
+        self.assertEqual(plans, ["story-cafe-menu-plan.md", "story-cafe-menu-2-plan.md"])
+
     def test_a_leaf_file_with_a_byte_order_mark_is_read(self):
         (self.epic / "story-scaffold.md").write_bytes(b"\xef\xbb\xbf" + ticket("done", 1).encode("utf-8"))
         rows = self.status_rows(self.epic)
@@ -482,9 +494,8 @@ covers = ["R2", "R3"]
         self.assertIn("no ticket matches", r.stderr)
 
     def test_pull_refuses_a_file_name_already_taken(self):
-        self.breakdown_epic(self.BREAKDOWN.replace('title = "UI shell"', 'title = "Scaffold"'))
-        self.assertEqual(run("pull", str(self.epic), "1").returncode, 0)
-        self.add("story-scaffold.md", ticket("done", 1))
+        self.breakdown_epic()
+        self.add("story-ui-shell.md", "notes, not a ticket\n")
         r = run("pull", str(self.epic), "2")
         self.assertEqual(r.returncode, 1)
         self.assertIn("exists already", r.stderr)
