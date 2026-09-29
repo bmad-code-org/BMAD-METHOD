@@ -22,5 +22,5 @@ Skip this section while the request is only a setup, migrate or initiative actio
 
 Everything else is help: a question, a discussion, what to do next, where to start, how to use the installed modules, or running a sequence of skills. Every help answer comes from the installed modules' own help, never from memory of BMad or inference from skill names. Before answering:
 
-1. From `{skill-root}` run `uv run scripts/knowledge.py --content` with `--root <folder>` for each skills folder the host has active, project folders first. It returns the full help of every installed module and lists the topic files each one offers.
+1. Run `uv run {skill-root}/scripts/knowledge.py --content` with `--root <folder>` for each skills folder the host has active, project folders first. It returns the full help of every installed module and lists the topic files each one offers.
 2. Read `references/help.md` and follow it.

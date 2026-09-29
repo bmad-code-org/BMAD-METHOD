@@ -30,7 +30,7 @@ Do not ask. Complete the intent using what is provided, what exists in `{doc_wor
 
 Populate `assumptions[]` with every value you inferred without direct caller confirmation; populate `open_questions[]` with every gap that needs a human decision. Use `status: "partial"` when the artifact was produced but `open_questions[]` is non-empty or critical inputs were inferred (Create with no brief; Update with a vague signal acted on best-effort; Validate that could not load the checklist). `complete` = stands on its own; `partial` = caller should review before downstream use; `blocked` = no artifact produced.
 
-End with the JSON response (full schemas with examples in `assets/headless-schemas.md`). The `intent` field must match the detected intent. Omit keys for artifacts not produced.
+End with the JSON response (an example of each payload is in `assets/headless-schemas.md`). The `intent` field must match the detected intent. Omit keys for artifacts not produced.
 
 ## Mode-specific overrides
 

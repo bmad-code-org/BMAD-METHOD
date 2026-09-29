@@ -323,6 +323,27 @@ class TestRules(ProjectCase):
         )
         self.assertEqual(findings_by_rule(self.findings_for(skill), "PATH-02"), [])
 
+    def test_path_06_bare_script_call(self):
+        skill = self.valid(
+            "bmad-script",
+            {
+                "notes.md": "Run `uv run scripts/tool.py`.\n\n```bash\nuv run ./scripts/tool.py\nuv run --frozen scripts/tool.py\nuv run --python 3.11 scripts/tool.py\n```\n"
+            },
+        )
+        findings = findings_by_rule(self.findings_for(skill), "PATH-06")
+        self.assertEqual([f["line"] for f in findings], [1, 4, 5, 6])
+        self.assertTrue(all(f["severity"] == "HIGH" for f in findings))
+
+    def test_path_06_anchored_script_calls_pass(self):
+        skill = self.valid(
+            "bmad-script-ok",
+            {
+                "notes.md": "Run `uv run {skill-root}/scripts/tool.py` "
+                "and `uv run {project-root}/_bmad/scripts/memlog.py`.\n"
+            },
+        )
+        self.assertEqual(findings_by_rule(self.findings_for(skill), "PATH-06"), [])
+
     def test_seq_02_patterns_one_per_line_and_eta_case(self):
         skill = self.valid(
             "bmad-seq",

@@ -4,7 +4,7 @@
 # ///
 """Deterministic Skill Validator
 
-Validates 10 deterministic rules across skill directories.
+Validates 11 deterministic rules across skill directories.
 Acts as a fast first-pass complement to the inference-based skill validator.
 
 What it checks:
@@ -16,6 +16,7 @@ What it checks:
 - SKILL-06: description quality (length, "Use when"/"Use if"; the fixed text for a module record)
 - SKILL-07: SKILL.md has body content after frontmatter
 - PATH-02: no installed_path variable
+- PATH-06: script calls use {skill-root}, not a bare scripts/ path
 - SEQ-02: no time estimates
 - TPL-01: template files must not contain render-time {{ config.* }} / {{ workflow.* }} expressions
 
@@ -57,6 +58,7 @@ TIME_ESTIMATE_PATTERNS = [
 TEMPLATE_FILENAME_REGEX = re.compile(r"template", re.I)
 COMPILE_TIME_SUB_REGEX = re.compile(r"\{\{-?\s*(?:config|workflow)\.[^}]*\}\}")
 INSTALLED_PATH_RE = re.compile(r"installed_path", re.I)
+BARE_SCRIPT_RE = re.compile(r"\buv\s+run\b[^`]*?\s(?:\./)?scripts/")
 USE_WHEN_RE = re.compile(r"use\s+when\b", re.I)
 USE_IF_RE = re.compile(r"use\s+if\b", re.I)
 DEPRECATED_RE = re.compile(r"^\s*deprecated\b", re.I)
@@ -483,6 +485,21 @@ def validate_skill(skill_dir: str) -> list[dict]:
                         rel_file,
                         "`installed_path` reference found in content.",
                         "Remove all installed_path usage. Use relative paths (`./path` or `../path`) instead.",
+                        line=i + 1,
+                    )
+                )
+
+        # Unstripped: script calls usually sit in code blocks.
+        for i, line in enumerate(content.split(os.linesep)):
+            if BARE_SCRIPT_RE.search(line):
+                findings.append(
+                    _finding(
+                        "PATH-06",
+                        "Script Calls Must Use {skill-root}",
+                        "HIGH",
+                        rel_file,
+                        "`uv run scripts/...` resolves from the working directory, not the skill.",
+                        "Call the script as `uv run {skill-root}/scripts/...`.",
                         line=i + 1,
                     )
                 )
