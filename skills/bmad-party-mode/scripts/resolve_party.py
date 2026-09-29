@@ -45,17 +45,26 @@ except ImportError:  # pragma: no cover - guarded for <3.11
     sys.exit(3)
 
 
+# Why the last _run_json call failed; tests stub _run_json with one argument.
+_last_error = ""
+
+
 def _run_json(cmd):
     """Run a resolver script and parse its JSON stdout. None on any failure."""
+    global _last_error
+    _last_error = ""
     try:
         out = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", timeout=60)
-    except (OSError, subprocess.SubprocessError):
+    except (OSError, subprocess.SubprocessError) as exc:
+        _last_error = str(exc)
         return None
     if out.returncode != 0 or not out.stdout.strip():
+        _last_error = out.stderr.strip() or f"exit {out.returncode}, no output"
         return None
     try:
         return json.loads(out.stdout)
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as exc:
+        _last_error = f"resolver printed invalid JSON: {exc}"
         return None
 
 
@@ -109,6 +118,7 @@ def load_workflow(project_root: Path, skill_root: Path):
     )
     if data is not None and "workflow" in data:
         return data["workflow"]
+    _warn(f"party customization override not applied, using the shipped party: {_last_error or 'no workflow table'}")
     # Fallback: read the skill's base customize.toml directly (no override merge).
     toml_path = skill_root / "customize.toml"
     if toml_path.exists():
@@ -118,6 +128,18 @@ def load_workflow(project_root: Path, skill_root: Path):
         except (OSError, tomllib.TOMLDecodeError):
             pass
     return {}
+
+
+def _warn(message: str):
+    sys.stderr.write(f"warning: {message}\n")
+
+
+def _bad_member(code, name) -> bool:
+    """True, with a warning, when a member's code or name is not a string."""
+    if isinstance(code, str) and (name is None or isinstance(name, str)):
+        return False
+    _warn(f"party member {code!r} left out: code and name must be strings")
+    return True
 
 
 def _alias(code: str) -> str:
@@ -171,6 +193,8 @@ def build_collective(agents: dict, party_members: list, guests: dict | None = No
             index[name.lower()] = code
 
     for code, info in agents.items():
+        if _bad_member(code, info.get("name")):
+            continue
         entry = {
             "code": code,
             "name": info.get("name", code),
@@ -190,6 +214,8 @@ def build_collective(agents: dict, party_members: list, guests: dict | None = No
         installed_codes.append(code)
 
     for code, info in (guests or {}).items():
+        if _bad_member(code, info.get("name")):
+            continue
         entry = {"code": code, "source": "roster"}
         for field in ("name", "icon", "title", "persona", "capabilities", "model", "module", "skill", "install"):
             if info.get(field):
@@ -203,7 +229,7 @@ def build_collective(agents: dict, party_members: list, guests: dict | None = No
         if not isinstance(m, dict):
             continue
         code = m.get("code")
-        if not code:
+        if code is None or code == "" or _bad_member(code, m.get("name")):
             continue
         # A custom member overrides an installed agent it matches by code/alias/name.
         canonical = index.get(code) or index.get(code.lower()) or code

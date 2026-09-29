@@ -41,6 +41,7 @@ from pathlib import Path
 
 DEFAULT_FILE = Path(__file__).resolve().parent.parent / "assets" / "methods.csv"
 FIELDS = ("num", "category", "method_name", "description", "output_pattern")
+REQUIRED_FIELDS = ("category", "method_name", "description", "output_pattern")
 
 
 def load(file: Path) -> list[dict]:
@@ -61,11 +62,15 @@ def load_extra(spec: str) -> list[dict]:
     if not isinstance(data, list):
         raise ValueError("--extra must be a JSON array of objects")
     rows = []
-    for item in data:
+    for n, item in enumerate(data, 1):
         if not isinstance(item, dict):
             raise ValueError(f"each --extra entry must be a JSON object, got: {item!r}")
         row = {k: str(item.get(k) or "").strip() for k in FIELDS}
         row["code"] = str(item.get("code") or "").strip()  # kept for traceability
+        for field in REQUIRED_FIELDS:
+            if not row[field]:
+                name = row["method_name"] or row["code"] or "unnamed"
+                raise ValueError(f"--extra entry {n} ({name}) is missing {field}")
         rows.append(row)
     return rows
 
@@ -87,10 +92,14 @@ def merge_extra(rows: list[dict], extras: list[dict]) -> list[dict]:
             index[key] = len(merged)
             merged.append(dict(e))
     next_num = max((int(r["num"]) for r in merged if r["num"].isdigit()), default=0) + 1
+    seen = {}
     for r in merged:
         if not r["num"]:
             r["num"] = str(next_num)
             next_num += 1
+        if r["num"] in seen:
+            raise ValueError(f"num {r['num']} is used by both {seen[r['num']]} and {r['method_name']}")
+        seen[r["num"]] = r["method_name"]
     return merged
 
 
