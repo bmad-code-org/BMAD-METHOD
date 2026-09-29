@@ -48,17 +48,26 @@ except ImportError:  # pragma: no cover - guarded for <3.11
 PARTY_SKILL = "bmad-party-mode"
 
 
+# Why the last _run_json call failed; tests stub _run_json with one argument.
+_last_error = ""
+
+
 def _run_json(cmd):
     """Run a resolver script and parse its JSON stdout. None on any failure."""
+    global _last_error
+    _last_error = ""
     try:
         out = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", timeout=60)
-    except (OSError, subprocess.SubprocessError):
+    except (OSError, subprocess.SubprocessError) as exc:
+        _last_error = str(exc)
         return None
     if out.returncode != 0 or not out.stdout.strip():
+        _last_error = out.stderr.strip() or f"exit {out.returncode}, no output"
         return None
     try:
         return json.loads(out.stdout)
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as exc:
+        _last_error = f"resolver printed invalid JSON: {exc}"
         return None
 
 
@@ -159,6 +168,7 @@ def load_party_workflow(project_root: Path, party_skill: Path):
     )
     if data is not None and isinstance(data.get("workflow"), dict):
         return data["workflow"]
+    _warn(f"party customization override not applied, using the shipped party: {_last_error or 'no workflow table'}")
     # Fallback: base customize.toml directly, no override merge.
     wf = _load_toml(party_skill / "customize.toml").get("workflow", {})
     return wf if isinstance(wf, dict) else {}
@@ -182,6 +192,18 @@ def load_party_overrides(project_root: Path):
         else:
             merged[key] = val
     return merged
+
+
+def _warn(message: str):
+    sys.stderr.write(f"warning: {message}\n")
+
+
+def _bad_member(code, name) -> bool:
+    """True, with a warning, when a member's code or name is not a string."""
+    if isinstance(code, str) and (name is None or isinstance(name, str)):
+        return False
+    _warn(f"persona {code!r} left out: code and name must be strings")
+    return True
 
 
 def _alias(code: str) -> str:
@@ -216,6 +238,8 @@ def build_pool(agents: dict, party_members: list, guests: dict | None = None):
                 index[key] = code
 
     for code, info in (agents or {}).items():
+        if _bad_member(code, info.get("name")):
+            continue
         register(
             code,
             {
@@ -231,6 +255,8 @@ def build_pool(agents: dict, party_members: list, guests: dict | None = None):
         installed_codes.append(code)
 
     for code, info in (guests or {}).items():
+        if _bad_member(code, info.get("name")):
+            continue
         entry = {"code": code, "source": "roster"}
         for field in ("name", "icon", "title", "persona", "capabilities", "model"):
             if info.get(field):
@@ -243,7 +269,7 @@ def build_pool(agents: dict, party_members: list, guests: dict | None = None):
         if not isinstance(m, dict):
             continue
         code = m.get("code")
-        if not code:
+        if code is None or code == "" or _bad_member(code, m.get("name")):
             continue
         canonical = index.get(code) or index.get(code.lower()) or code
         was_installed = canonical in pool

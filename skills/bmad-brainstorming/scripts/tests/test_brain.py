@@ -214,6 +214,15 @@ def test_extra_malformed_exits_cleanly(lib, tmp_path, capsys):
         assert "could not read --extra" in capsys.readouterr().err
 
 
+def test_extra_row_missing_a_required_field_exits_2_naming_row_and_field(lib, tmp_path, capsys):
+    overlay = tmp_path / "partial.json"
+    overlay.write_text(json.dumps([{"technique_name": "Half Done", "description": "No category."}]), encoding="utf-8")
+    assert brain.main(["--file", str(lib), "--extra", str(overlay), "list", "--all"]) == 2
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "Half Done" in captured.err and "category" in captured.err
+
+
 def test_extra_is_first_class_in_html(lib, extra, tmp_path):
     out = tmp_path / "sel.html"
     assert brain.main(["--file", str(lib), "--extra", str(extra), "html", "--out", str(out)]) == 0

@@ -43,8 +43,11 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 MARKER_RE = re.compile(r"\[(\d+)\](?!\()")  # [3] but not a [3](url) link
-MD_LINK_RE = re.compile(r"\[([^\]]*)\]\((\S+?)\)")
-BARE_URL_RE = re.compile(r"https?://[^\s|)\]]+")
+# URLs may hold one level of balanced parentheses, as Wikipedia's often do.
+MD_LINK_RE = re.compile(r"\[([^\]]*)\]\(((?:[^\s()]|\([^\s()]*\))+)\)")
+BARE_URL_RE = re.compile(r"https?://(?:[^\s()|\]]|\([^\s()]*\))+")
+ROW_ID_RE = re.compile(r"\[(\d+)\]")  # appendix row id: [n], never a bare number
+FENCE_RE = re.compile(r"^\s*(`{3,}|~{3,})")  # any indent: fences nest in list items
 
 
 def out(payload: dict, exit_code: int) -> int:
@@ -54,19 +57,30 @@ def out(payload: dict, exit_code: int) -> int:
 
 def read_text(path_arg: str) -> str:
     if path_arg == "-":
-        return sys.stdin.read()
+        # Decode the bytes ourselves: the locale's encoding may not be UTF-8.
+        buffer = getattr(sys.stdin, "buffer", None)
+        return buffer.read().decode("utf-8") if buffer is not None else sys.stdin.read()
     return Path(path_arg).read_text(encoding="utf-8")
 
 
 def strip_fences(text: str) -> str:
-    """Blank out fenced code blocks so their contents never count as markers or rows."""
-    lines, fenced = [], False
+    """Blank out fenced code blocks so their contents never count as markers or rows.
+
+    Fences pair CommonMark-style: a block closes only on a line of the opener's
+    character, at least as long, with nothing after it.
+    """
+    lines, open_fence = [], None  # (char, length) while inside a fenced block
     for ln in text.splitlines():
-        if ln.lstrip().startswith("```"):
-            fenced = not fenced
-            lines.append("")
+        fence = FENCE_RE.match(ln)
+        if open_fence is None:
+            if fence:
+                open_fence = (fence.group(1)[0], len(fence.group(1)))
+            lines.append("" if fence else ln)
             continue
-        lines.append("" if fenced else ln)
+        marker = fence.group(1) if fence else ""
+        if marker[:1] == open_fence[0] and len(marker) >= open_fence[1] and ln.strip() == marker:
+            open_fence = None
+        lines.append("")
     return "\n".join(lines)
 
 
@@ -75,7 +89,7 @@ def table_cells(line: str) -> list[str]:
 
 
 def appendix_rows(text: str) -> dict[int, list[str]]:
-    """Source-appendix rows: markdown table rows whose first cell is a bare [n] / n."""
+    """Source-appendix rows: markdown table rows whose first cell is [n]."""
     rows: dict[int, list[str]] = {}
     for ln in text.splitlines():
         stripped = ln.strip()
@@ -84,7 +98,7 @@ def appendix_rows(text: str) -> dict[int, list[str]]:
         cells = table_cells(stripped)
         if not cells or len(cells) < 2:
             continue
-        m = re.fullmatch(r"\[?(\d+)\]?", cells[0])
+        m = ROW_ID_RE.fullmatch(cells[0])
         if m:
             rows[int(m.group(1))] = cells
     return rows
@@ -101,7 +115,7 @@ def cmd_citations(args) -> int:
         stripped = ln.strip()
         if stripped.startswith("|"):
             cells = table_cells(stripped)
-            if cells and re.fullmatch(r"\[?(\d+)\]?", cells[0]):
+            if cells and ROW_ID_RE.fullmatch(cells[0]):
                 continue  # an appendix row is not a citation of itself
         markers.update(int(n) for n in MARKER_RE.findall(ln))
     dangling = sorted(markers - set(rows))
@@ -182,12 +196,18 @@ def add_months(d: date, months: int) -> date:
 def cmd_staleness(args) -> int:
     try:
         payload = json.loads(read_text(args.file))
-        windows = {k.lower(): int(v) for k, v in json.loads(args.windows).items()}
+        raw_windows = json.loads(args.windows)
+        if not isinstance(raw_windows, dict):
+            raise ValueError("--windows must be a JSON object of class -> months")
+        windows = {k.lower(): int(v) for k, v in raw_windows.items()}
         today = parse_date(args.today) if args.today else date.today()
-    except (ValueError, json.JSONDecodeError) as e:
+    except (TypeError, ValueError) as e:
         print(f"error: {e}", file=sys.stderr)
         return 2
-    claims = payload["claims"] if isinstance(payload, dict) else payload
+    claims = payload.get("claims") if isinstance(payload, dict) else payload
+    if not isinstance(claims, list) or not all(isinstance(c, dict) for c in claims):
+        print('error: claims must be a JSON array of objects, or {"claims": [...]}', file=sys.stderr)
+        return 2
     results, no_window, stale_count = [], set(), 0
     earliest: date | None = None
     for c in claims:
