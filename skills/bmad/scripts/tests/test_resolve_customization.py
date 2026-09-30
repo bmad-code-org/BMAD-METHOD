@@ -171,20 +171,23 @@ class ProjectRootResolutionTests(unittest.TestCase):
             self.assertNotIn("note:", result.stderr)
 
 
+def resolve_with_overrides(layers: dict[str, str], defaults: str = facts("shipped default")):
+    with tempfile.TemporaryDirectory() as temp_dir:
+        project = Path(temp_dir) / "project"
+        skill = project / ".claude" / "skills" / "demo-skill"
+        write(skill / "customize.toml", defaults)
+        (project / "_bmad" / "custom").mkdir(parents=True)
+        for name, body in layers.items():
+            write(project / "_bmad" / "custom" / name, body)
+
+        return resolve(skill, project, "--project-root", str(project))
+
+
 class OverrideAnnouncementTests(unittest.TestCase):
     def announce(self, *layers: str) -> str:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            project = Path(temp_dir) / "project"
-            skill = project / ".claude" / "skills" / "demo-skill"
-            write(skill / "customize.toml", facts("shipped default"))
-            (project / "_bmad" / "custom").mkdir(parents=True)
-            for layer in layers:
-                write(project / "_bmad" / "custom" / layer, facts(layer))
-
-            result = resolve(skill, project, "--project-root", str(project))
-
-            self.assertEqual(result.returncode, 0, msg=result.stderr)
-            return result.stderr
+        result = resolve_with_overrides({layer: facts(layer) for layer in layers})
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        return result.stderr
 
     def test_names_each_override_file_the_skill_runs_with(self):
         self.assertEqual(
@@ -202,6 +205,71 @@ class OverrideAnnouncementTests(unittest.TestCase):
 
     def test_stays_quiet_without_an_override_of_this_skill(self):
         self.assertEqual(self.announce("config.user.toml", "other-skill.toml"), "")
+
+
+class UndeclaredKeyNoteTests(unittest.TestCase):
+    DEFAULTS = '[workflow]\nmessage = "shipped"\npersistent_facts = ["shipped default"]\n'
+
+    def resolve(self, layers: dict[str, str]):
+        result = resolve_with_overrides(layers, self.DEFAULTS)
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        return result
+
+    def note(self, result) -> list[str]:
+        return [line for line in result.stderr.splitlines() if "does not declare" in line]
+
+    def test_names_a_misspelled_key_and_keeps_the_merged_values(self):
+        result = self.resolve({"demo-skill.toml": '[workflow]\nmesage = "typo"\n'})
+
+        self.assertEqual(
+            self.note(result),
+            [
+                "customization: before continuing, tell the user in one line that `_bmad/custom/demo-skill.toml` sets "
+                "`workflow.mesage`, which `demo-skill` does not declare, so it may ignore it."
+            ],
+        )
+        self.assertEqual(
+            json.loads(result.stdout)["workflow"],
+            {"message": "shipped", "persistent_facts": ["shipped default"], "mesage": "typo"},
+        )
+
+    def test_names_each_file_with_its_own_keys_in_one_line(self):
+        result = self.resolve(
+            {
+                "demo-skill.toml": "[a]\nx = 1\nz = 2\n",
+                "demo-skill.user.toml": "[b]\ny = 3\n",
+            }
+        )
+
+        self.assertEqual(
+            self.note(result),
+            [
+                "customization: before continuing, tell the user in one line that `_bmad/custom/demo-skill.toml` sets "
+                "`a.x`, `a.z` and `_bmad/custom/demo-skill.user.toml` sets `b.y`, which `demo-skill` "
+                "does not declare, so it may ignore them."
+            ],
+        )
+
+    def test_checks_the_whole_file_not_only_the_requested_keys(self):
+        result = self.resolve({"demo-skill.toml": '[agent]\nname = "stray"\n'})
+
+        self.assertEqual(list(json.loads(result.stdout)), ["workflow"])
+        self.assertEqual(len(self.note(result)), 1)
+        self.assertIn("`agent.name`", self.note(result)[0])
+
+    def test_items_added_to_a_declared_array_are_not_reported(self):
+        result = self.resolve({"demo-skill.toml": facts("team fact")})
+
+        self.assertEqual(self.note(result), [])
+
+    def test_a_key_under_a_declared_scalar_is_reported(self):
+        result = self.resolve({"demo-skill.toml": '[workflow.message]\nnested = "deep"\n'})
+
+        self.assertEqual(len(self.note(result)), 1)
+        self.assertIn("`workflow.message.nested`", self.note(result)[0])
+
+    def test_stays_quiet_without_an_override(self):
+        self.assertEqual(self.resolve({}).stderr, "")
 
 
 if __name__ == "__main__":

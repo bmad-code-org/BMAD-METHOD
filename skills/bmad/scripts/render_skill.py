@@ -26,12 +26,14 @@ sys.dont_write_bytecode = True
 
 from config_utils import (  # noqa: E402
     ConfigError,
+    leaf_paths,
     load_central_config,
     load_customization,
     load_toml,
     override_layers,
     report_overrides,
     structural_merge,
+    undeclared_keys,
 )
 
 
@@ -100,30 +102,10 @@ def _invocation_customization(
     return file_layer, command_layer
 
 
-def _leaf_paths(table: dict[str, Any], prefix: str = "") -> set[str]:
-    leaves: set[str] = set()
-    for key, value in table.items():
-        path = f"{prefix}{key}"
-        if isinstance(value, dict):
-            leaves |= _leaf_paths(value, f"{path}.")
-        else:
-            leaves.add(path)
-    return leaves
-
-
-def _declares(defaults: dict[str, Any], path: str) -> bool:
-    node: Any = defaults
-    for part in path.split("."):
-        if not isinstance(node, dict) or part not in node:
-            return False
-        node = node[part]
-    return True
-
-
 def _check_persistent_layers(project_root: Path, skill_dir: Path, defaults: dict[str, Any] | None) -> None:
     """A persistent override may only set keys the skill declares; a stale or misspelled key halts."""
     for layer in override_layers(project_root, skill_dir.name):
-        undeclared = sorted(path for path in _leaf_paths(load_toml(layer)) if not _declares(defaults or {}, path))
+        undeclared = undeclared_keys(defaults or {}, load_toml(layer))
         if undeclared:
             raise RenderError(f"{layer} sets keys {skill_dir.name} does not declare: {', '.join(undeclared)}")
 
@@ -564,7 +546,7 @@ def render(
     if defaults is not None:
         file_layer, command_layer = _invocation_customization(defaults, overrides, assignments or [])
         customization = structural_merge(structural_merge(customization, file_layer), command_layer)
-        supplied = _leaf_paths(file_layer) | _leaf_paths(command_layer)
+        supplied = leaf_paths(file_layer) | leaf_paths(command_layer)
 
     source_hashes = {name: _hash_bytes(content.encode("utf-8")) for name, content in sources.items()}
     root_hash = _hash_bytes(str(project_root).encode("utf-8"))[:12]

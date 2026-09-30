@@ -13,7 +13,15 @@ from pathlib import Path
 sys.dont_write_bytecode = True
 
 try:
-    from config_utils import ConfigError, load_customization, override_layers, report_overrides
+    from config_utils import (
+        ConfigError,
+        customization_layers,
+        merge_customization,
+        override_layers,
+        report_overrides,
+        report_undeclared,
+        undeclared_keys,
+    )
 except ModuleNotFoundError as error:
     if error.name != "tomllib":
         raise
@@ -136,7 +144,9 @@ def main() -> int:
             warn_on_masked_override(project_root, candidates[1:], skill_dir.name)
 
     try:
-        merged = load_customization(project_root, skill_dir)
+        defaults, layers = customization_layers(project_root, skill_dir)
+        merged = merge_customization(defaults, layers)
+        undeclared = {layer: undeclared_keys(defaults, data) for layer, data in layers.items()}
     except ConfigError as error:
         sys.stderr.write(f"error: {error}\n")
         return 1
@@ -151,6 +161,7 @@ def main() -> int:
     write_json_stdout(output)
     report_owed_setup(skill_dir, project_root)
     report_overrides(project_root, skill_dir.name)
+    report_undeclared(skill_dir.name, undeclared)
     return 0
 
 

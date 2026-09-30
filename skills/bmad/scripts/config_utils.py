@@ -113,13 +113,45 @@ def override_layers(project_root: Path | None, skill_name: str) -> tuple[Path, .
     return (custom_dir / f"{skill_name}.toml", custom_dir / f"{skill_name}.user.toml")
 
 
+def leaf_paths(table: dict[str, Any], prefix: str = "") -> set[str]:
+    """Dotted paths to every non-table value; an array is one leaf."""
+    leaves: set[str] = set()
+    for key, value in table.items():
+        path = f"{prefix}{key}"
+        if isinstance(value, dict):
+            leaves |= leaf_paths(value, f"{path}.")
+        else:
+            leaves.add(path)
+    return leaves
+
+
+def declares(defaults: dict[str, Any], path: str) -> bool:
+    node: Any = defaults
+    for part in path.split("."):
+        if not isinstance(node, dict) or part not in node:
+            return False
+        node = node[part]
+    return True
+
+
+def undeclared_keys(defaults: dict[str, Any], layer: dict[str, Any]) -> list[str]:
+    return sorted(path for path in leaf_paths(layer) if not declares(defaults, path))
+
+
+def customization_layers(
+    project_root: Path | None, skill_dir: Path
+) -> tuple[dict[str, Any], dict[Path, dict[str, Any]]]:
+    """A skill's parsed defaults, then each override file parsed, in merge order."""
+    defaults = load_toml(skill_dir / "customize.toml", required=True)
+    return defaults, {layer: load_toml(layer) for layer in override_layers(project_root, skill_dir.name)}
+
+
+def merge_customization(defaults: dict[str, Any], layers: dict[Path, dict[str, Any]]) -> dict[str, Any]:
+    return merge_layers((defaults, *layers.values()))
+
+
 def load_customization(project_root: Path | None, skill_dir: Path) -> dict[str, Any]:
-    return merge_layers(
-        (
-            load_toml(skill_dir / "customize.toml", required=True),
-            *(load_toml(layer) for layer in override_layers(project_root, skill_dir.name)),
-        )
-    )
+    return merge_customization(*customization_layers(project_root, skill_dir))
 
 
 def report_overrides(project_root: Path | None, skill_name: str) -> None:
@@ -138,3 +170,23 @@ def report_overrides(project_root: Path | None, skill_name: str) -> None:
             f"customization: before continuing, tell the user in one line that `{skill_name}` runs with overrides from "
             f"{' and '.join(present)}.\n"
         )
+
+
+def report_undeclared(skill_name: str, undeclared: dict[Path, list[str]]) -> None:
+    """Tell the agent, on stderr, which override files set keys the skill does not declare.
+
+    Says the skill may ignore them, not that they have no effect: an entry added
+    to a declared map still reaches the skill through the merge.
+    """
+    undeclared = {layer: keys for layer, keys in undeclared.items() if keys}
+    if not undeclared:
+        return
+    sets = " and ".join(
+        f"`_bmad/custom/{layer.name}` sets {', '.join(f'`{key}`' for key in keys)}"
+        for layer, keys in undeclared.items()
+    )
+    pronoun = "it" if sum(len(keys) for keys in undeclared.values()) == 1 else "them"
+    sys.stderr.write(
+        f"customization: before continuing, tell the user in one line that {sets}, which `{skill_name}` does not declare, "
+        f"so it may ignore {pronoun}.\n"
+    )

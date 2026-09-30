@@ -11,6 +11,7 @@ from config_utils import (  # noqa: E402
     load_customization,
     load_toml,
     structural_merge,
+    undeclared_keys,
 )
 
 
@@ -84,6 +85,29 @@ class ConfigUtilsTests(unittest.TestCase):
             # LEGACY_LEFTOVERS), not a layer. Nothing writes it; nothing reads it.
             self.assertNotIn("stray", merged["value"])
             self.assertEqual(load_customization(root, skill)["value"]["order"], "user")
+
+
+class UndeclaredKeysTests(unittest.TestCase):
+    DEFAULTS = {"workflow": {"message": "shipped", "persistent_facts": ["shipped"], "sizes": {"s": 1}}}
+
+    def test_names_keys_the_defaults_do_not_declare_sorted(self):
+        layer = {"workflow": {"mesage": "typo", "message": "ok"}, "agent": {"name": "stray"}}
+
+        self.assertEqual(undeclared_keys(self.DEFAULTS, layer), ["agent.name", "workflow.mesage"])
+
+    def test_an_array_is_one_leaf(self):
+        layer = {"workflow": {"persistent_facts": ["added", {"id": "x"}]}}
+
+        self.assertEqual(undeclared_keys(self.DEFAULTS, layer), [])
+
+    def test_a_key_under_a_declared_scalar_is_undeclared(self):
+        self.assertEqual(
+            undeclared_keys(self.DEFAULTS, {"workflow": {"message": {"nested": "deep"}}}),
+            ["workflow.message.nested"],
+        )
+
+    def test_an_entry_added_to_a_declared_map_is_undeclared(self):
+        self.assertEqual(undeclared_keys(self.DEFAULTS, {"workflow": {"sizes": {"xl": 8}}}), ["workflow.sizes.xl"])
 
 
 if __name__ == "__main__":

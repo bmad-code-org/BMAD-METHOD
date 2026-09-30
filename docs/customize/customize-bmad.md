@@ -361,7 +361,9 @@ A personal override never shows up in a diff, and a team one is easy to
 forget, so BMad tells you what is in force.
 
 **At skill start.** Each skill names, in one line, the override files it
-runs with.
+runs with. If an override sets a key the skill does not declare — a typo,
+or a field the skill has since retired — the skill names that key too.
+Most skills start anyway and may ignore it; a few stop until you fix it.
 
 **In the `bmad` skill.** Its first help answer and its status report list
 the TOML files in `_bmad/custom/`, team files apart from personal ones.
