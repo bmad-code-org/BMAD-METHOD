@@ -725,6 +725,16 @@ def retirement_json(retirement: Retirement) -> dict[str, object]:
     }
 
 
+def custom_files(project_root: Path) -> dict[str, list[str]]:
+    """The TOML files in `_bmad/custom/`, team apart from personal, read through a linked folder as skills read it."""
+    custom = project_root / "_bmad" / "custom"
+    names = sorted(path.name for path in custom.glob("*.toml") if path.is_file()) if custom.is_dir() else []
+    return {
+        "team": [f"_bmad/custom/{name}" for name in names if not name.endswith(".user.toml")],
+        "personal": [f"_bmad/custom/{name}" for name in names if name.endswith(".user.toml")],
+    }
+
+
 def remove_retired(
     project_root: Path,
     skill_root: Path,
@@ -1796,6 +1806,7 @@ def status_report(
         "problems": problems,
         "legacy_leftovers": legacy_leftovers(project_root),
         **retirement_json(retirement),
+        "custom_files": custom_files(project_root),
         "current": (
             next_command is None
             and not unmet

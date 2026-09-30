@@ -48,7 +48,7 @@ All three may be hand-edited. `bmad setup` never changes an existing value, so t
 
 ## See what is customized
 
-A skill names its override files in one line when it starts. `bmad` names every file in `_bmad/custom/` in its first help answer.
+A skill names its override files in one line when it starts. `bmad` lists the TOML files in `_bmad/custom/`, team apart from personal, in its first help answer and in `bmad status`.
 
 ## Check the merged result
 

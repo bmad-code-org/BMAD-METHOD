@@ -357,10 +357,14 @@ output_folder = "/shared/org-bmad-output"
 
 ## See what is customized
 
-A personal override is in no diff, and a team one is easy to forget. So
-each skill says in one line, when it starts, which override files it runs
-with. The `bmad` skill lists every file in `_bmad/custom/` in its first
-help answer, team files apart from personal ones.
+A personal override never shows up in a diff, and a team one is easy to
+forget, so BMad tells you what is in force.
+
+**At skill start.** Each skill names, in one line, the override files it
+runs with.
+
+**In the `bmad` skill.** Its first help answer and its status report list
+the TOML files in `_bmad/custom/`, team files apart from personal ones.
 
 ## Check what resolved
 

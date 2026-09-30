@@ -3161,6 +3161,58 @@ class BmadStatusTests(unittest.TestCase):
                     self.assertFalse((project / "_bmad").exists())
 
 
+class BmadCustomFilesStatusTests(unittest.TestCase):
+    def setUp(self):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        self.root = Path(temp.name).resolve()
+        self.project = self.root / "project"
+        self.project.mkdir()
+        self.skill = write_dest_bmad(self.root)
+        write_core(self.root, update_source="file:skills")
+
+    def custom_files(self) -> dict:
+        return status_report(self, self.project, self.skill)["custom_files"]
+
+    def fill(self, folder: Path) -> None:
+        for name in ("config.toml", "a.user.toml", "a.toml"):
+            write(folder / name, "x = 1\n")
+        write(folder / ".gitignore", "*.user.toml\n")
+        write(folder / "nested" / "b.toml", "x = 1\n")
+
+    def test_lists_team_and_personal_toml_files_sorted(self):
+        self.fill(self.project / "_bmad" / "custom")
+
+        self.assertEqual(
+            self.custom_files(),
+            {
+                "team": ["_bmad/custom/a.toml", "_bmad/custom/config.toml"],
+                "personal": ["_bmad/custom/a.user.toml"],
+            },
+        )
+
+    @unittest.skipUnless(symlink_to_temp_dir_succeeds(), "symlinks unavailable")
+    def test_lists_through_a_symlinked_folder(self):
+        target = self.root / "shared-custom"
+        self.fill(target)
+        (self.project / "_bmad").mkdir()
+        os.symlink(target, self.project / "_bmad" / "custom", target_is_directory=True)
+
+        self.assertEqual(
+            self.custom_files(),
+            {
+                "team": ["_bmad/custom/a.toml", "_bmad/custom/config.toml"],
+                "personal": ["_bmad/custom/a.user.toml"],
+            },
+        )
+
+    def test_an_empty_or_missing_folder_gives_empty_lists(self):
+        empty = {"team": [], "personal": []}
+        self.assertEqual(self.custom_files(), empty)
+        (self.project / "_bmad" / "custom").mkdir(parents=True)
+        self.assertEqual(self.custom_files(), empty)
+
+
 class BmadInstallMessageTests(unittest.TestCase):
     def test_messages_are_optional_strings(self):
         setup = load_setup()

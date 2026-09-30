@@ -24,6 +24,7 @@ Run with `--status`; it writes nothing. On a first install (`bmad_exists` false)
 - `unknown-version`: the installed copy predates module records; `npx skills update` fixes it.
 - `custom_gitignore` `unprotected`: personal answers may be committed. Only the user edits that `.gitignore`.
 - `legacy_leftovers`: files from the classic installer, left untouched.
+- `custom_files`: name them in one line, team apart from personal; say nothing when both lists are empty.
 - `newer_copy_unused`: the duplicate in use is older than another copy.
 
 Then list what can be done and ask which to do, unless the request already said. End with `next` when it is not null.
