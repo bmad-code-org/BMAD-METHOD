@@ -13,7 +13,7 @@ from pathlib import Path
 sys.dont_write_bytecode = True
 
 try:
-    from config_utils import ConfigError, load_customization
+    from config_utils import ConfigError, load_customization, override_layers, report_overrides
 except ModuleNotFoundError as error:
     if error.name != "tomllib":
         raise
@@ -75,8 +75,7 @@ def candidate_project_roots(skill_dir: Path) -> list[Path]:
 
 
 def has_override(root: Path, skill_name: str) -> bool:
-    custom_dir = root / "_bmad" / "custom"
-    return any((custom_dir / name).is_file() for name in (f"{skill_name}.toml", f"{skill_name}.user.toml"))
+    return any(layer.is_file() for layer in override_layers(root, skill_name))
 
 
 def warn_on_masked_override(chosen: Path, rejected: list[Path], skill_name: str) -> None:
@@ -151,6 +150,7 @@ def main() -> int:
                 output[key] = value
     write_json_stdout(output)
     report_owed_setup(skill_dir, project_root)
+    report_overrides(project_root, skill_dir.name)
     return 0
 
 

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sys
 import tomllib
 from collections.abc import Iterable
 from pathlib import Path
@@ -104,13 +105,36 @@ def load_central_config(project_root: Path) -> dict[str, Any]:
     )
 
 
+def override_layers(project_root: Path | None, skill_name: str) -> tuple[Path, ...]:
+    """A skill's team then personal override files, whether or not they exist."""
+    if project_root is None:
+        return ()
+    custom_dir = project_root / "_bmad" / "custom"
+    return (custom_dir / f"{skill_name}.toml", custom_dir / f"{skill_name}.user.toml")
+
+
 def load_customization(project_root: Path | None, skill_dir: Path) -> dict[str, Any]:
-    skill_name = skill_dir.name
-    custom_dir = project_root / "_bmad" / "custom" if project_root else None
     return merge_layers(
         (
             load_toml(skill_dir / "customize.toml", required=True),
-            load_toml(custom_dir / f"{skill_name}.toml") if custom_dir else {},
-            load_toml(custom_dir / f"{skill_name}.user.toml") if custom_dir else {},
+            *(load_toml(layer) for layer in override_layers(project_root, skill_dir.name)),
         )
     )
+
+
+def report_overrides(project_root: Path | None, skill_name: str) -> None:
+    """Tell the agent, on stderr, to name the override files a starting skill runs with.
+
+    People forget an override they wrote long ago, and a personal one is in no
+    diff, so every run says which ones apply.
+    """
+    present = [
+        f"`_bmad/custom/{layer.name}` ({'personal' if layer.name.endswith('.user.toml') else 'team'})"
+        for layer in override_layers(project_root, skill_name)
+        if layer.is_file()
+    ]
+    if present:
+        sys.stderr.write(
+            f"customization: before continuing, tell the user in one line that `{skill_name}` runs with overrides from "
+            f"{' and '.join(present)}.\n"
+        )

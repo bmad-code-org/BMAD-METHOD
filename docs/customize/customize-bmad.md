@@ -355,6 +355,13 @@ output_folder = "/shared/org-bmad-output"
 | Pin team-enforced install settings | Central: `_bmad/custom/config.toml` `[modules.<code>]` or `[core]` |
 | Choose which initiative your documents and tickets go to | Central: `_bmad/custom/config.user.toml` `[core] active_initiative`, or ask the `bmad` skill to switch it |
 
+## See what is customized
+
+A personal override is in no diff, and a team one is easy to forget. So
+each skill says in one line, when it starts, which override files it runs
+with. The `bmad` skill lists every file in `_bmad/custom/` in its first
+help answer, team files apart from personal ones.
+
 ## Check what resolved
 
 On activation, a shared Python script merges the files and returns the

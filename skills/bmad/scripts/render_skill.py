@@ -29,6 +29,8 @@ from config_utils import (  # noqa: E402
     load_central_config,
     load_customization,
     load_toml,
+    override_layers,
+    report_overrides,
     structural_merge,
 )
 
@@ -120,8 +122,7 @@ def _declares(defaults: dict[str, Any], path: str) -> bool:
 
 def _check_persistent_layers(project_root: Path, skill_dir: Path, defaults: dict[str, Any] | None) -> None:
     """A persistent override may only set keys the skill declares; a stale or misspelled key halts."""
-    custom_dir = project_root / "_bmad" / "custom"
-    for layer in (custom_dir / f"{skill_dir.name}.toml", custom_dir / f"{skill_dir.name}.user.toml"):
+    for layer in override_layers(project_root, skill_dir.name):
         undeclared = sorted(path for path in _leaf_paths(load_toml(layer)) if not _declares(defaults or {}, path))
         if undeclared:
             raise RenderError(f"{layer} sets keys {skill_dir.name} does not declare: {', '.join(undeclared)}")
@@ -642,6 +643,7 @@ def main() -> int:
     try:
         args = parser.parse_args()
         report_owed_setup(Path(args.skill).resolve(), Path(args.project_root).resolve())
+        report_overrides(Path(args.project_root).resolve(), Path(args.skill).resolve().name)
         entry = render(
             Path(args.project_root), Path(args.skill), overrides=args.overrides, assignments=args.assignments
         )

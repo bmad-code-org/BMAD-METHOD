@@ -648,6 +648,21 @@ class RenderSkillTests(unittest.TestCase):
         self.assertFalse((ws.bmad / "scripts" / "__pycache__").exists())
         self.assertFalse((skill / "__pycache__").exists())
 
+    def test_cli_names_the_override_files_the_skill_runs_with(self):
+        ws = self._workspace()
+        skill = self._fixture_skill(ws, '[workflow]\nmessage = "shipped"\n', "{{ workflow.message }}\n")
+        self.assertEqual(self._cli(ws.project, skill).stderr, "")
+        (ws.bmad / "custom" / "fixture.toml").write_text('[workflow]\nmessage = "team"\n', encoding="utf-8")
+
+        result = self._cli(ws.project, skill)
+
+        self._entry(result)
+        self.assertEqual(
+            result.stderr,
+            "customization: before continuing, tell the user in one line that `fixture` runs with overrides from "
+            "`_bmad/custom/fixture.toml` (team).\n",
+        )
+
     def test_identical_input_and_unreferenced_config_reuse_bytes(self):
         ws = self._workspace()
         skill = self._skill(ws, "bmad-build")

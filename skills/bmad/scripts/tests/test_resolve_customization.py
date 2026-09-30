@@ -168,7 +168,40 @@ class ProjectRootResolutionTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, msg=result.stderr)
             resolved = json.loads(result.stdout)["workflow"]["persistent_facts"]
             self.assertEqual(resolved, ["shipped default", "home override"])
-            self.assertEqual(result.stderr, "")
+            self.assertNotIn("note:", result.stderr)
+
+
+class OverrideAnnouncementTests(unittest.TestCase):
+    def announce(self, *layers: str) -> str:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project = Path(temp_dir) / "project"
+            skill = project / ".claude" / "skills" / "demo-skill"
+            write(skill / "customize.toml", facts("shipped default"))
+            (project / "_bmad" / "custom").mkdir(parents=True)
+            for layer in layers:
+                write(project / "_bmad" / "custom" / layer, facts(layer))
+
+            result = resolve(skill, project, "--project-root", str(project))
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            return result.stderr
+
+    def test_names_each_override_file_the_skill_runs_with(self):
+        self.assertEqual(
+            self.announce("demo-skill.toml", "demo-skill.user.toml"),
+            "customization: before continuing, tell the user in one line that `demo-skill` runs with overrides from "
+            "`_bmad/custom/demo-skill.toml` (team) and `_bmad/custom/demo-skill.user.toml` (personal).\n",
+        )
+
+    def test_names_a_lone_personal_override(self):
+        self.assertEqual(
+            self.announce("demo-skill.user.toml"),
+            "customization: before continuing, tell the user in one line that `demo-skill` runs with overrides from "
+            "`_bmad/custom/demo-skill.user.toml` (personal).\n",
+        )
+
+    def test_stays_quiet_without_an_override_of_this_skill(self):
+        self.assertEqual(self.announce("config.user.toml", "other-skill.toml"), "")
 
 
 if __name__ == "__main__":

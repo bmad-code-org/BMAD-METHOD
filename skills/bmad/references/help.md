@@ -6,6 +6,8 @@ The output of `knowledge.py` is your source for every answer. Its `documents` ho
 
 When the project's `_bmad/config.toml` exists, run `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder --key core.active_initiative`, then list the `<type>-<slug>/` folders in the active initiative's folder and at the root of `output_folder`, and match them against the outputs the module help names. A match shows a skill ran, not that its work is finished; ask when it matters.
 
+Then list the `.toml` files in `{project-root}/_bmad/custom/`. If there are any, open your first answer with one line naming them, team files apart from personal `*.user.toml` ones.
+
 ## 2. Answer
 
 Answer the question first. Recommend only installed skills, with the reason the module help gives; take routes and order only from the module help. When the user wants to think through an approach, discuss the trade-offs across everything they have.

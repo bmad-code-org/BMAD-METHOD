@@ -46,6 +46,10 @@ It holds `[core]` values such as `output_folder`, module answers under `[modules
 
 All three may be hand-edited. `bmad setup` never changes an existing value, so to change an answer, edit its key in the file `bmad setup` reports for it. `bmad-customize` does not write central config: help the user edit the TOML.
 
+## See what is customized
+
+A skill names its override files in one line when it starts. `bmad` names every file in `_bmad/custom/` in its first help answer.
+
 ## Check the merged result
 
 `bmad-customize` shows the merged result after it writes. `_bmad/scripts/resolve_customization.py` (one skill) and `resolve_config.py` (central config) print the merged values as JSON. If a script is missing, recommend `bmad setup`.
