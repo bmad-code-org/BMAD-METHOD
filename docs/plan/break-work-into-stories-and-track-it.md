@@ -11,7 +11,7 @@ Use `bmad-ticket` to split and track work. It accepts described intent, a spec, 
 
 For several epics, create an initiative and ask the skill to slice it. Each epic gets an envelope with requirements and done-when checks. Incept one epic to propose its stories and bugs in build order, with requirement coverage, dependencies, and verification. Review the breakdown before accepting it.
 
-The initiative's `tickets.toml` lists epics. Each epic's `tickets.toml` lists entries with stable numeric ids. A planned entry needs no story file. Standalone tracked stories and bugs have files in `backlog/`; they do not need an invented epic.
+The initiative's `tickets.toml` lists epics. Each epic's `tickets.toml` lists entries with stable ids. A planned entry needs no story file. Standalone tracked stories and bugs have files in `backlog/`; they do not need an invented epic.
 
 See [Set Up the Ticket Tree](./set-up-the-ticket-tree.md) for store and tracker configuration.
 

@@ -8,17 +8,18 @@ A container folder holds its ticket file, `tickets.toml`, flat leaf files named 
 and the builds' plan files. An epic's `tickets.toml` lists its planned leaves as `[[entry]]` tables
 (`id`, `type`, `title`, `after`, and whatever else the plan records); an initiative's lists its
 epics as `[[epic]]` tables (`id`, `slug`, `after = [{epic, needs}]`). Tables are in build order.
-`id` names an entry for good and is never reused; a leaf file carries it in frontmatter, which is
-how the file joins its entry. An entry needs no leaf file to start. A ticket needs refining before
-it starts when it is a bug, its entry says `refine = true`, or it has no entry. A leaf file's frontmatter
-adds `tracker_status` and `refined`; its `after` and `hitl` replace the entry's, absent reading as empty,
+`id` names an entry for good and is never reused: a number, or letters and digits such as `6a`, and
+`6` and `"6"` are one id. A leaf file carries it in frontmatter, which is how the file joins its
+entry. An entry needs no leaf file to start. A ticket needs refining before it starts when it is a
+bug, its entry says `refine = true`, or it has no entry. A leaf file's frontmatter adds
+`tracker_status` and `refined`; its `after` and `hitl` replace the entry's, absent reading as empty,
 and a difference from the entry is `drift`.
 
-A plan is any other `.md` whose frontmatter has `ticket` and whose `type` is not a leaf type. An
-integer `ticket` joins the entry with that id in the plan's folder; a string joins the leaf file
-with that stem (a backlog leaf). A plan is never a row of its own. It holds the ticket's `status`,
-`assignee`, `blocked_at`, and `blocked_reason`; a leaf file's own fields are read only when the
-ticket has no plan. A plan whose `ticket` names nothing is skipped, and one whose `status` is unknown
+A plan is any other `.md` whose frontmatter has `ticket` and whose `type` is not a leaf type. A
+`ticket` that is an id joins the entry with that id in the plan's folder; any other string joins the
+leaf file with that stem (a backlog leaf). A plan is never a row of its own. It holds the ticket's
+`status`, `assignee`, `blocked_at`, and `blocked_reason`; a leaf file's own fields are read only when
+the ticket has no plan. A plan whose `ticket` names nothing is skipped, and one whose `status` is unknown
 blocks its ticket; next and status list both under `problems`.
 
 `status` is draft, ready-for-dev, in-progress, in-review, or built from the builds (built is their
@@ -29,10 +30,10 @@ dropped). A ticket's `state` is `planned` with no file and no plan, else `tracke
 derived from `status`: absent, draft, ready-for-dev -> backlog; in-progress, blocked -> in-progress;
 in-review, built -> review; done; dropped.
 
-`after` lists real prerequisites: a sibling's id as a bare integer, or a quoted string that is
-`<epic id>.<entry id>` for an entry in another epic of the same initiative, `epic-<slug>` for that
-whole epic, a sibling's file name, or a tracker id. An epic file's own `after` names epics and holds every
-ticket under it; rows show it as `gated_by`. A dropped prerequisite still blocks.
+`after` lists real prerequisites: a sibling's id (a number bare, since a quoted number is a tracker
+id; an id with a letter quoted), or a quoted string that is `<epic id>.<entry id>` for an entry in
+another epic of the same initiative, `epic-<slug>` for that whole epic, a sibling's file name, or a
+tracker id. An epic file's own `after` names epics and holds every ticket under it; rows show it as `gated_by`. A dropped prerequisite still blocks.
 
 On an initiative, or an epic it lists, next and status report `unpinned_after` (a declared epic
 `after` no entry of the waiting epic pins), `undeclared_after` (an entry's `after` into an epic its
@@ -54,8 +55,8 @@ status's `epics` rows carry the declared `after` with its `needs`, and the epic 
                                  cleared (repo store only)
 
 `<dir>` is an epic folder, a backlog folder, or an initiative folder (all its epics). `<ref>` is
-`<epic id>.<entry id>`, an entry id inside an epic folder, a tracker id, a file name, or words
-from the title that match one ticket. Each row of next, status, and find carries `ref`, a reference
+`<epic id>.<entry id>`, an entry id inside an epic folder (one with a letter, from any folder), a
+tracker id, a file name, or words from the title that match one ticket. Each row of next, status, and find carries `ref`, a reference
 find resolves in the folder the command ran on.
 `--project-root` names the project holding `_bmad/` when the tickets live outside it. A relative
 `<dir>` that is not a folder under the working directory is looked up under `{output_folder}`, then
@@ -102,7 +103,8 @@ STATE_OF = {
 LEAF_TYPES = ("story", "spike", "bug")
 CONTAINER_TYPES = ("initiative", "epic")
 NAME_RE = re.compile(r"^(story|spike|bug)-(.+)\.md$")
-CROSS_RE = re.compile(r"^(\d+)\.(\d+)$")
+ID_RE = re.compile(r"^[0-9A-Za-z]+$")
+CROSS_RE = re.compile(r"^([0-9A-Za-z]+)\.([0-9A-Za-z]+)$")
 EPIC_RE = re.compile(r"^epic-[^/]+$")
 BREAKDOWN = "tickets.toml"
 QUOTED_COMMENT_RE = re.compile(r"""^("(?:[^"\\]|\\.)*"|'(?:[^']|'')*')\s+#.*$""")
@@ -219,8 +221,9 @@ def load_breakdown(folder: Path) -> dict:
             for key in ("covers", "after", "references", "notes"):
                 if not isinstance(r.get(key, []), list):
                     raise TicketError(f"{where}: `{key}` must be a list")
-            if _id(r.get("id")) is None:
-                raise TicketError(f"{where}: every {table} needs an integer `id`")
+            r["id"] = _id(r.get("id"))
+            if r["id"] is None:
+                raise TicketError(f"{where}: every {table} needs an `id`: a number, or letters and digits")
             if table == "epic":
                 if not isinstance(r.get("slug"), str) or not r["slug"]:
                     raise TicketError(f"{where}: epic {r['id']} needs a `slug`")
@@ -233,7 +236,15 @@ def load_breakdown(folder: Path) -> dict:
 
 
 def _id(value):
-    return value if isinstance(value, int) and not isinstance(value, bool) else None
+    """An id as the tree compares it, else None: a number, or letters and digits; digits alone are the number."""
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, int):
+        return value
+    # A frontmatter value of true or false is read as a boolean, so neither can be an id.
+    if isinstance(value, str) and ID_RE.match(value) and value not in ("true", "false"):
+        return int(value) if value.isdigit() else value
+    return None
 
 
 def load_container(folder: Path) -> dict:
@@ -261,9 +272,7 @@ def load_folder(folder: Path, problems: list[str]) -> list[dict]:
     where = folder.name
     rows = {}
     for e in load_breakdown(folder).get("entry", []):
-        n, kind = _id(e.get("id")), e.get("type")
-        if n is None:
-            raise TicketError(f"{where}/{BREAKDOWN}: every entry needs an integer `id`")
+        n, kind = e["id"], e.get("type")
         if kind not in LEAF_TYPES:
             raise TicketError(f"{where}/{BREAKDOWN}: entry {n} type {kind!r} is not one of {', '.join(LEAF_TYPES)}")
         if n in rows:
@@ -348,7 +357,7 @@ def load_folder(folder: Path, problems: list[str]) -> list[dict]:
             }
         )
         row["raw_after"] = _list(fm.get("after", []), f"{where}/{path.name}")
-    out = list(rows.values()) + [unlisted[n] for n in sorted(unlisted)] + stray
+    out = list(rows.values()) + [unlisted[n] for n in sorted(unlisted, key=lambda n: (isinstance(n, str), n))] + stray
     join_plans(out, plans, where, problems)
     return out
 
@@ -357,14 +366,12 @@ def join_plans(rows: list[dict], plans: list[tuple[str, dict]], where: str, prob
     """Set each plan's status fields on the one row its `ticket` names; a bad plan is a problem, not an error."""
     for name, fm in plans:
         ticket = fm["ticket"]
-        if isinstance(ticket, str) and ticket.isascii() and ticket.isdigit():
-            ticket = int(ticket)
+        row = None
         if _id(ticket) is not None:
+            ticket = _id(ticket)
             row = next((r for r in rows if r["id"] == ticket), None)
-        elif isinstance(ticket, str) and ticket:
+        if row is None and isinstance(ticket, str) and ticket:
             row = next((r for r in rows if r["file"] == f"{ticket}.md"), None)
-        else:
-            row = None
         if row is None:
             problems.append(f"{where}/{name}: ticket {ticket!r} names no entry or leaf file in {where}; skipped")
             continue
@@ -435,13 +442,17 @@ def _resolve(tree: dict) -> None:
     ids.update({t["tracker_id"]: t["key"] for t in tickets if t["tracker_id"]})
 
     def sibling(t, ref, where):
-        """An integer is always a sibling's id; a string is never one."""
+        """A bare number is always a sibling's id and a quoted one never is; an id with a letter is one when a
+        sibling has it."""
         mates = [o for o in tickets if o["epic"] == t["epic"]]
-        if _id(ref) is not None:
+        if isinstance(ref, int) and not isinstance(ref, bool):
             hit = next((o for o in mates if o["id"] == ref), None)
             if hit is None:
                 raise TicketError(f"{where}: after {ref!r} names no entry in {t['epic']}")
             return hit["key"]
+        for o in mates:
+            if isinstance(o["id"], str) and o["id"] == ref:
+                return o["key"]
         for o in mates:
             if o["file"] and ref in (o["file"], o["file"][:-3]):
                 return o["key"]
@@ -453,11 +464,9 @@ def _resolve(tree: dict) -> None:
             text = str(ref)
             key = sibling(t, ref, where) if "id" in t else None
             m = CROSS_RE.match(text)
-            if key is None and m:
-                slug = slugs.get(int(m.group(1)))
-                if slug is None:
-                    raise TicketError(f"{where}: after {ref!r} names no epic id in this initiative's {BREAKDOWN}")
-                key = f"{slug}/{int(m.group(2))}"
+            slug = slugs.get(_id(m.group(1))) if m else None
+            if key is None and slug:
+                key = f"{slug}/{_id(m.group(2))}"
                 if key not in by_key:
                     raise TicketError(f"{where}: after {ref!r} names no entry in {slug}")
             if key is None and EPIC_RE.match(text):
@@ -466,6 +475,8 @@ def _resolve(tree: dict) -> None:
                 key = text
             if key is None:
                 key = ids.get(text)
+            if key is None and m:
+                raise TicketError(f"{where}: after {ref!r} names no epic id in this initiative's {BREAKDOWN}")
             if key is None and NAME_RE.match(text if text.endswith(".md") else f"{text}.md"):
                 raise TicketError(
                     f"{where}: after {ref!r} matches no ticket in {t['epic']}; a file name names a pulled ticket in the "
@@ -582,9 +593,11 @@ def ref(key: str, epic: str | None, tree: dict) -> str | int:
     slug, _, n = key.partition("/")
     if not n:
         return slug
-    if slug == epic and n.isdigit():
-        return int(n)
-    if n.isdigit() and slug in tree["epic_ids"]:
+    if _id(n) is None:
+        return key
+    if slug == epic:
+        return _id(n)
+    if slug in tree["epic_ids"]:
         return f"{tree['epic_ids'][slug]}.{n}"
     return key
 
@@ -600,7 +613,7 @@ def declared_after(tree: dict) -> dict:
     for e in listed:
         out[e["slug"]] = []
         for a in e.get("after", []):
-            needed = by_id.get(a.get("epic"), a.get("epic"))
+            needed = by_id.get(_id(a.get("epic")), a.get("epic"))
             if needed not in slugs:
                 raise TicketError(
                     f"{tree['initiative'].name}/{BREAKDOWN}: {e['slug']} is after {a.get('epic')!r}, which is no epic listed"
@@ -882,10 +895,13 @@ def resolve_ticket(tree: dict, text: str) -> dict:
     hits = []
     m = CROSS_RE.match(ref)
     if m:
-        slug = {i: s for s, i in tree["epic_ids"].items()}.get(int(m.group(1)))
-        hits = [t for t in tickets if slug and t["epic"] == slug and t["id"] == int(m.group(2))]
-    elif ref.isdigit() and tree["scope"]:
-        hits = [t for t in tickets if t["epic"] == tree["scope"] and t["id"] == int(ref)]
+        slug = {i: s for s, i in tree["epic_ids"].items()}.get(_id(m.group(1)))
+        hits = [t for t in tickets if slug and t["epic"] == slug and t["id"] == _id(m.group(2))]
+    elif _id(ref) is not None and tree["scope"]:
+        hits = [t for t in tickets if t["epic"] == tree["scope"] and t["id"] == _id(ref)]
+    if not hits and isinstance(_id(ref), str):
+        # An id with a letter names its ticket in any epic before the words of a title can match it.
+        hits = [t for t in tickets if t["id"] == _id(ref)]
     for pool in (in_scope(tree), tickets):
         if not hits:
             hits = [t for t in pool if t["file"] and low in (t["file"].lower(), t["file"][:-3].lower())]
@@ -952,8 +968,9 @@ def ref_name(t: dict, tree: dict) -> str:
 def cmd_pull(args) -> dict:
     folder = _folder(args)
     tree = load_tree(folder)
-    t = next((t for t in in_scope(tree) if t["epic"] == folder.name and t["id"] == args.id), None)
-    if t is None:
+    n = _id(args.id)
+    t = next((t for t in in_scope(tree) if t["epic"] == folder.name and t["id"] == n), None)
+    if n is None or t is None:
         raise TicketError(f"{folder.name}/{BREAKDOWN} has no entry {args.id}")
     if t["file"]:
         raise TicketError(f"entry {args.id} is already pulled: {t['file']}")
@@ -1074,7 +1091,7 @@ def main() -> int:
     p.set_defaults(func=cmd_find)
     p = sub.add_parser("pull", help="write an entry's leaf file")
     p.add_argument("dir")
-    p.add_argument("id", type=int)
+    p.add_argument("id")
     p.set_defaults(func=cmd_pull)
     p = sub.add_parser("mark", help="set a ticket's status in its plan (repo store only)")
     p.add_argument("dir", nargs="?", help="default: the active initiative")

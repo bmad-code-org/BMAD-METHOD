@@ -538,8 +538,10 @@ covers = ["R2", "R3"]
             (self.BREAKDOWN.replace("id = 3", "id = 2"), "two entries with id 2"),
             (self.BREAKDOWN.replace("after = [2, 3]", "after = [2, 9]"), "names no entry in epic-cart"),
             (self.BREAKDOWN.replace('type = "spike"', 'type = "task"'), "is not one of"),
-            (self.BREAKDOWN.replace("id = 4", 'id = "4"'), "integer `id`"),
-            (self.BREAKDOWN.replace("id = 4\n", ""), "integer `id`"),
+            (self.BREAKDOWN.replace("id = 4", 'id = "3"'), "two entries with id 3"),
+            (self.BREAKDOWN.replace("id = 4", 'id = "4-b"'), "needs an `id`"),
+            (self.BREAKDOWN.replace("id = 4", 'id = "true"'), "needs an `id`"),
+            (self.BREAKDOWN.replace("id = 4\n", ""), "needs an `id`"),
             ("[[entry]\nid = ", "tickets.toml"),
             ('[entry]\nid = 1\ntype = "story"\n', "[[entry]]"),
             (self.BREAKDOWN.replace('covers = ["R4"]', "covers = 1"), "must be a list"),
@@ -725,7 +727,7 @@ covers = ["R2", "R3"]
         toml = self.initiative / "tickets.toml"
         good = toml.read_text(encoding="utf-8")
         for bad, message in (
-            (good.replace("id = 2\n", ""), "integer `id`"),
+            (good.replace("id = 2\n", ""), "needs an `id`"),
             (good.replace('slug = "epic-cart"', 'slug = "epic-pricing"'), "two epics with slug"),
             (good.replace('slug = "epic-cart"\n', ""), "needs a `slug`"),
             (good + "after = [{ epic = true }]\n", "epic = <id or slug>"),
@@ -759,6 +761,41 @@ covers = ["R2", "R3"]
         self.assertEqual(self.files(self.next()["ready_to_refine"]), ["story-ui-shell.md"])
         self.add("story-ui-shell.md", ticket("draft", 2, after="[101]"))
         self.assertIn("names no entry", run("next", str(self.epic)).stderr)
+
+    def test_an_id_takes_letters_and_digits_wherever_a_number_goes(self):
+        pricing = self.add_epic("epic-pricing")
+        (pricing / "tickets.toml").write_text(
+            '[[entry]]\nid = "6a"\ntype = "story"\ntitle = "Pricing contract"\n\n'
+            '[[entry]]\nid = 7\ntype = "story"\ntitle = "Pricing rules"\nafter = ["6a"]\n'
+        )
+        (self.initiative / "tickets.toml").write_text(
+            '[[epic]]\nid = "1b"\nslug = "epic-pricing"\n\n'
+            '[[epic]]\nid = 2\nslug = "epic-cart"\nafter = [{ epic = "1b", needs = "prices" }]\n'
+        )
+        self.breakdown_epic('[[entry]]\nid = "2a"\ntype = "story"\ntitle = "Totals for 6a"\nafter = ["1b.6a"]\n')
+        status = json.loads(run("status", str(self.initiative)).stdout)
+        rows = {r["ref"]: r for r in status["tickets"]}
+        self.assertEqual(list(rows), ["1b.6a", "1b.7", "2.2a"])
+        self.assertEqual((rows["1b.7"]["after"], rows["2.2a"]["after"]), (["6a"], ["1b.6a"]))
+        self.assertEqual(status["unpinned_after"] + status["undeclared_after"], [])
+
+        self.assertEqual(run("pull", str(pricing), "7").returncode, 0)
+        self.assertIn("id: 7\n", (pricing / "story-pricing-rules.md").read_text(encoding="utf-8"))
+        self.assertIn("after: [6a]\n", (pricing / "story-pricing-rules.md").read_text(encoding="utf-8"))
+        self.assertEqual(run("pull", str(pricing), "6a").returncode, 0)
+        self.assertIn("id: 6a\n", (pricing / "story-pricing-contract.md").read_text(encoding="utf-8"))
+        self.assertNotIn("drift", json.dumps(self.status_rows(pricing)))
+
+        self.assertEqual([e["id"] for e in self.next()["blocked"]], ["2a"])
+        self.add("story-pricing-contract-plan.md", plan("6a", "done"), pricing)
+        self.assertEqual([e["id"] for e in self.next()["ready_to_start"]], ["2a"])
+        # A bare lettered id names its ticket from any folder, before the title that contains it.
+        for folder, ref in ((self.initiative, "1b.6a"), (pricing, "6a"), (self.initiative, "6a"), (self.epic, "6a")):
+            found = json.loads(run("find", str(folder), ref).stdout)
+            self.assertEqual((found["id"], found["state"]), ("6a", "done"))
+        self.assertEqual(run("mark", str(self.epic), "2a", "in-review").returncode, 0)
+        self.assertIn("ticket: 2a\n", (self.epic / "story-totals-for-6a-plan.md").read_text(encoding="utf-8"))
+        self.assertEqual(self.status_rows(self.epic)[0]["state"], "review")
 
     def test_two_files_sharing_an_id_error(self):
         self.add("story-a.md", ticket("done", 1))
