@@ -22,6 +22,7 @@ If the invocation prompt explicitly points to an existing plan file with recogni
 - `ready-for-dev` or `in-progress` → `{{ rendered("step-03-implement.md") }}`
 - `in-review` → `{{ rendered("step-04-review.md") }}`
 - `blocked` → HALT with status `blocked` and blocking condition `blocked plan supplied`.
+- `dropped` → HALT with status `blocked` and blocking condition `dropped plan supplied`.
 - `built` or `done` → set `review_loop_iteration` to `0` in the frontmatter and set `followup_pass` to `true`, then **EARLY EXIT** to `{{ rendered("step-04-review.md") }}` for a fresh review pass.
 
 Otherwise, treat the invocation prompt as starting intent. This may be a story ID, ticket ID, file path, short description, or longer free-form intent. Do not infer workflow state from non-plan files.

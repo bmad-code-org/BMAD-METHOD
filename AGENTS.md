@@ -10,6 +10,7 @@ Open source framework for structured, agent-assisted software delivery.
 - Run `uv run pre-commit install` once per clone; the commit hook runs the Python-side lint and validation from the quality script.
 
 - Skill validation rules are in `tools/skill-validator.md`.
+- The rules shared by every skill that reads or writes the ticket tree are in `tools/ticket-tree-rules.md`.
 - Deterministic skill checks run via `uv run tools/validate_skills.py --strict` (included in the quality script).
 - Documentation conventions are in `docs/_STYLE_GUIDE.md`.
 

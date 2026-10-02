@@ -148,7 +148,7 @@ Then search the rest of the project, outside the store and `_bmad/`, for the old
 
 ## Configuration
 
-Record `active_initiative = "initiative-<slug>"` under `[core]` in `_bmad/custom/config.user.toml`, creating the file if needed. When the store moved (`workspace`), set `output_folder` under `[core]` in `_bmad/custom/config.toml`, the committed team override, never in the installer-managed `_bmad/config.toml`. A `_bmad/custom/` override that names a moved path, such as a `persistent_facts` line, is shown in the plan with its new path and rewritten on approval. Leave `planning_artifacts` and `implementation_artifacts` alone; `bmad setup` owns the rest of `_bmad/`. Then run `bmad-ticket`'s store setup (`bmad-ticket/references/store-setup.md`) so `_bmad/custom/ticketing-store-config.toml` exists: the repo store, rooted where the plan settled. Remove empty v6 folders left behind.
+Record `active_initiative = "initiative-<slug>"` under `[core]` in `_bmad/custom/config.user.toml`, creating the file if needed. When the store moved (`workspace`), set `output_folder` under `[core]` in `_bmad/custom/config.toml`, the committed team override, never in the installer-managed `_bmad/config.toml`. A `_bmad/custom/` override that names a moved path, such as a `persistent_facts` line, is shown in the plan with its new path and rewritten on approval. Leave `planning_artifacts` and `implementation_artifacts` alone; `bmad setup` owns the rest of `_bmad/`. The repo store needs no store config. Remove empty v6 folders left behind.
 """
 
 # What the repository answers in `questions` mean in files. Each is shown as a target tree in the plan and done
@@ -171,7 +171,7 @@ checklist = [
   "Every plan has a build type and a mapped status; done stays done, review stays in-review, nothing is relabeled built, supported baselines are kept, and missing ones are disclosed.",
   "Every epic `covers` id exists in the initiative's requirement source, every entry `covers` id in its epic's Requirements, and every requirement in the PRD's coverage map has at least one entry.",
   "Every live path in `companions:`, `inputDocuments:`, References sections, and prose links resolves to a file from the folder that holds it now; inbox and archived files keep their original paths. A path already dead in v6 is listed apart and does not fail the item; one the migration broke does.",
-  "`_bmad/custom/config.user.toml` names the active initiative under `[core]`, `core.output_folder` resolves to the store, and `_bmad/custom/ticketing-store-config.toml` exists.",
+  "`_bmad/custom/config.user.toml` names the active initiative under `[core]`, and `core.output_folder` resolves to the store.",
   "The store is under git as the user answered, no file is tracked by two repositories, and in a new workspace `bmad status` at its root reports the installation current.",
   "The plan records every question, its answer and reason, the backup or why there is none, every file the user identified, and each item's result.",
 ]

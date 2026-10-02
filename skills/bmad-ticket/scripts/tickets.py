@@ -13,14 +13,16 @@ epics as `[[epic]]` tables (`id`, `slug`, `after = [{epic, needs}]`). Tables are
 entry. An entry needs no leaf file to start. A ticket needs refining before it starts when it is a
 bug, its entry says `refine = true`, or it has no entry. A leaf file's frontmatter adds
 `tracker_status` and `refined`; its `after` and `hitl` replace the entry's, absent reading as empty,
-and a difference from the entry is `drift`.
+and a difference from the entry is `drift` on the status row, which gives the file's and the entry's
+value of each field that differs.
 
 A plan is any other `.md` whose frontmatter has `ticket` and whose `type` is not a leaf type. A
 `ticket` that is an id joins the entry with that id in the plan's folder; any other string joins the
 leaf file with that stem (a backlog leaf). A plan is never a row of its own. It holds the ticket's
 `status`, `assignee`, `blocked_at`, and `blocked_reason`; a leaf file's own fields are read only when
-the ticket has no plan. A plan whose `ticket` names nothing is skipped, and one whose `status` is unknown
-blocks its ticket; next and status list both under `problems`.
+the ticket has no plan, and a plan with no `assignee` key leaves the leaf file's. A plan whose `ticket`
+names nothing is skipped, and one whose `status` is unknown blocks its ticket; next and status list both
+under `problems`.
 
 `status` is draft, ready-for-dev, in-progress, in-review, or built from the builds (built is their
 last: the build finished and nobody has called it done), blocked from build-auto, done from the
@@ -42,8 +44,11 @@ status's `epics` rows carry the declared `after` with its `needs`, and the epic 
 `gated_by`.
 
   next   [<dir>]                 tickets whose prerequisites are done or in review, grouped by state, in
-                                 build order; an epic's own `after` waits for that epic to be done
-  status [<dir>]                 every ticket in build order, what it blocks, counts by state, longest chain
+                                 build order; an epic's own `after` waits for that epic to be done. A
+                                 `blocked` row's `waiting_on` lists its unmet prerequisites
+  status [<dir>]                 every ticket in build order, what it blocks, counts by state, longest chain,
+                                 `next_id` (the id a new ticket in the folder takes), and `estimate` totals
+                                 when tickets carry points
   find   [<dir>] <ref>           the one ticket a reference names, with its entry's text fields and the
                                  absolute paths `epic_file`, `story_file` (null until pulled), and `plan`
                                  (where its plan is or goes)
@@ -53,16 +58,24 @@ status's `epics` rows carry the declared `after` with its `needs`, and the epic 
                                  set a ticket's status in its plan, creating a frontmatter-only plan when
                                  there is none; --blocked sets blocked_at and blocked_reason, else both are
                                  cleared (repo store only)
+  mirror [<dir>]                 write what a tracker returned into leaf files, pulling a file when the
+                                 entry has none. Stdin is a JSON array, one object per ticket: `ref` (or
+                                 `tracker_id` alone, for a ticket that already carries it) and any of
+                                 `tracker_id`, `remote`, `tracker_status`, `assignee`, `after`. Only the
+                                 keys given are written, and never `status` (tracker stores only)
 
 `<dir>` is an epic folder, a backlog folder, or an initiative folder (all its epics). `<ref>` is
 `<epic id>.<entry id>`, an entry id inside an epic folder (one with a letter, from any folder), a
-tracker id, a file name, or words from the title that match one ticket. Each row of next, status, and find carries `ref`, a reference
-find resolves in the folder the command ran on.
+tracker id, a file name, or an unbroken phrase from the title that matches one ticket. Each row of
+next, status, and find carries `ref`, a reference find resolves in the folder the command ran on.
 `--project-root` names the project holding `_bmad/` when the tickets live outside it. A relative
 `<dir>` that is not a folder under the working directory is looked up under `{output_folder}`, then
-the project root.
+the active initiative, then the project root, so an epic's folder name alone finds it.
 
-With no `<dir>`, next, status, find, and mark run on the active initiative, `{output_folder}/{active_initiative}`.
+With no `<dir>`, next, status, find, mark, and mirror run on the active initiative,
+`{output_folder}/{active_initiative}`. next and status then also report `backlog`, the same view of
+`{output_folder}/backlog` when that folder exists, each row's `ref` its file name; find, mark, and mirror
+look there for a ticket the initiative does not hold.
 The project root is `--project-root`, else the first folder at or above the working directory that
 holds `_bmad/`. `active_initiative` and `output_folder` (`[core]`) come from the
 BMad config, merged by the project's `_bmad/scripts/config_utils.py`. `{project-root}` is
@@ -113,6 +126,10 @@ PLAN_FIELDS = ("status", "assignee", "blocked_at", "blocked_reason")
 
 
 class TicketError(Exception):
+    pass
+
+
+class NoMatch(TicketError):
     pass
 
 
@@ -378,6 +395,9 @@ def join_plans(rows: list[dict], plans: list[tuple[str, dict]], where: str, prob
         if "plan" in row:
             raise TicketError(f"{where}/{row['plan']} and {name} are both plans for ticket {ticket!r}")
         fields = {k: str(fm.get(k, "") or "") for k in PLAN_FIELDS}
+        if "assignee" not in fm:
+            # A tracker's assignee is mirrored into the leaf file; the builds' plans carry no assignee.
+            fields["assignee"] = row.get("assignee", "")
         try:
             _one_of(fields["status"], STATUSES, f"{where}/{name}", "status")
         except TicketError as e:
@@ -494,9 +514,13 @@ def _resolve(tree: dict) -> None:
         planned = t.pop("entry_after")
         t["gated_by"] = []
         entry_hitl = t.pop("entry_hitl", None)
-        t["drift"] = planned is not None and (
-            sorted(resolve(t, planned, where)) != sorted(t["after"]) or entry_hitl != t["hitl"]
-        )
+        t["drift"] = {}
+        if planned is not None:
+            entry_after = resolve(t, planned, where)
+            if sorted(entry_after) != sorted(t["after"]):
+                t["drift"]["after"] = {"file": t["after"], "entry": entry_after}
+            if entry_hitl != t["hitl"]:
+                t["drift"]["hitl"] = {"file": t["hitl"], "entry": entry_hitl}
     for slug, c in containers.items():
         gates = resolve({"epic": slug}, c.pop("raw_after"), f"{slug}.md")
         c["after"] = gates
@@ -550,11 +574,14 @@ def classify(tree: dict) -> dict:
         s = t["state"]
         if s in ("done", "dropped"):
             continue
+        unmet = [b for b in t["after"] if b not in met] + [b for b in t["gated_by"] if b not in done]
         if t["status"] == "blocked" or t["blocked_at"]:
+            t["waiting_on"] = unmet
             groups["blocked"].append(t)
         elif s in ("in-progress", "review"):
             groups["in_progress"].append(t)
-        elif not (all(b in met for b in t["after"]) and all(b in done for b in t["gated_by"])):
+        elif unmet:
+            t["waiting_on"] = unmet
             groups["blocked"].append(t)
         elif t["refine"] and not t["refined"]:
             groups["ready_to_refine"].append(t)
@@ -709,7 +736,13 @@ def public(t: dict, tree: dict, blocks: dict | None = None) -> dict:
     if blocks is not None:
         row["blocks"] = [ref(b, t["epic"], tree) for b in blocks.get(t["key"], [])]
         if t["drift"]:
-            row["drift"] = True
+            row["drift"] = dict(t["drift"])
+            if "after" in row["drift"]:
+                row["drift"]["after"] = {
+                    k: [ref(b, t["epic"], tree) for b in v] for k, v in t["drift"]["after"].items()
+                }
+    if t.get("waiting_on"):
+        row["waiting_on"] = [ref(b, t["epic"], tree) for b in t["waiting_on"]]
     return row
 
 
@@ -739,7 +772,8 @@ def store_config(project_root: Path | None) -> dict:
 
 
 def store_name(project_root: Path | None) -> str:
-    return store_config(project_root).get("store", "repo")
+    store = store_config(project_root).get("store", "repo")
+    return store if isinstance(store, str) and store else "repo"
 
 
 def central_config(project_root: Path) -> dict:
@@ -790,7 +824,10 @@ def _folder(args) -> Path:
             raise TicketError("no project root found: no _bmad/ at or above the working directory; pass --project-root")
         # The store is then read from this project even when output_folder lies outside it.
         args.project_root = str(root)
-        return active_initiative(root)
+        folder = active_initiative(root)
+        backlog = (tickets_root(root) / "backlog").resolve()
+        args.backlog = backlog if backlog.is_dir() and backlog != folder else None
+        return folder
     folder = Path(args.dir).resolve()
     root = None if folder.is_dir() or Path(args.dir).is_absolute() else project_root_for(args, Path.cwd())
     if root is not None:
@@ -798,6 +835,11 @@ def _folder(args) -> Path:
             bases = [tickets_root(root), root]
         except TicketError:  # no BMad config to name the store: the project root alone
             bases = [root]
+        else:
+            try:
+                bases.insert(1, active_initiative(root))
+            except TicketError:  # none set: the store and the project root
+                pass
         for base in bases:
             if (base / args.dir).is_dir():
                 return (base / args.dir).resolve()
@@ -806,16 +848,43 @@ def _folder(args) -> Path:
     return folder
 
 
-def cmd_next(args) -> dict:
-    folder = _folder(args)
-    store = store_name(project_root_for(args, folder))
-    if store != "repo" and not args.synced:
-        raise StoreRefusal(f"store is {store}: sync ticket status from the tracker first, then rerun with --synced")
+def with_backlog(args, out: dict, view) -> dict:
+    """Add the backlog's view to a command that ran on the active initiative."""
+    backlog = getattr(args, "backlog", None)
+    if backlog is not None:
+        try:
+            out["backlog"] = view(backlog)
+        except (TicketError, OSError, ValueError) as e:
+            out["backlog"] = {"folder": backlog.name, "error": str(e)}
+        for group in ("ready_to_refine", "ready_to_start", "in_progress", "blocked", "tickets"):
+            for row in out["backlog"].get(group, []):
+                # An id here could also name a ticket in the initiative; the file name cannot.
+                row["ref"] = row["file"] or row["ref"]
+    return out
+
+
+def locate(args, folder: Path, text: str) -> tuple[dict, dict]:
+    """The ticket a reference names and the tree holding it: the folder's, else, with no `<dir>`, the backlog's."""
+    tree = load_tree(folder)
+    try:
+        return resolve_ticket(tree, text), tree
+    except NoMatch as miss:
+        backlog = getattr(args, "backlog", None)
+        if backlog is None:
+            raise
+        try:
+            other = load_tree(backlog)
+            other["fallback"] = True
+            return resolve_ticket(other, text), other
+        except (NoMatch, OSError, ValueError):  # not there, or a backlog that cannot be read
+            raise miss from None
+
+
+def next_view(folder: Path) -> dict:
     tree = load_tree(folder)
     declared = declared_after(tree)
     return {
         "folder": folder.name,
-        "store": store,
         **{k: [public(t, tree) for t in v] for k, v in classify(tree).items()},
         "unpinned_after": unpinned_after(tree, declared),
         **cross_epic_after(tree, declared),
@@ -823,8 +892,40 @@ def cmd_next(args) -> dict:
     }
 
 
-def cmd_status(args) -> dict:
+def cmd_next(args) -> dict:
     folder = _folder(args)
+    store = store_name(project_root_for(args, folder))
+    if store != "repo" and not args.synced:
+        raise StoreRefusal(f"store is {store}: sync ticket status from the tracker first, then rerun with --synced")
+    return with_backlog(args, {"store": store, **next_view(folder)}, next_view)
+
+
+def next_id(tree: dict, folder: str) -> int:
+    """The id a new ticket in the folder takes: one past the highest number its entries and leaf files use."""
+    # `6a` uses up 6: a lettered id is a split of that number.
+    used = [re.match(r"\d+", str(t["id"])) for t in tree["tickets"] if t["epic"] == folder]
+    return max((int(m.group()) for m in used if m), default=0) + 1
+
+
+def _points(value) -> int | None:
+    if isinstance(value, int) and not isinstance(value, bool):
+        return value
+    return int(value) if isinstance(value, str) and value.isascii() and value.isdigit() else None
+
+
+def estimate_totals(tickets: list[dict]) -> dict | None:
+    """Summed points, dropped tickets left out; None when no ticket carries points."""
+    live = [(t, _points(t["estimate"])) for t in tickets if t["state"] != "dropped"]
+    if all(p is None for _, p in live):
+        return None
+    return {
+        "total": sum(p for _, p in live if p is not None),
+        "remaining": sum(p for t, p in live if p is not None and t["state"] != "done"),
+        "unestimated": sum(1 for _, p in live if p is None),
+    }
+
+
+def status_view(folder: Path) -> dict:
     tree = load_tree(folder)
     declared = declared_after(tree)
     tickets = in_scope(tree)
@@ -835,11 +936,12 @@ def cmd_status(args) -> dict:
     for t in tree["tickets"]:
         for b in t["after"]:
             blocks.setdefault(b, []).append(t["key"])
+    estimate = estimate_totals(tickets)
     out = {
         "folder": folder.name,
-        "store": store_name(project_root_for(args, folder)),
         "tickets": [public(t, tree, blocks) for t in tickets],
         "counts": {"total": len(tickets), **counts},
+        **({"estimate": estimate} if estimate else {}),
         "longest_remaining_chain": longest_remaining_chain(tree),
         "unpinned_after": unpinned_after(tree, declared),
         **cross_epic_after(tree, declared),
@@ -854,10 +956,19 @@ def cmd_status(args) -> dict:
                 "after": declared.get(slug, []),
                 "gated_by": c["after"],
                 "blocks": [ref(b, None, tree) for b in blocks.get(slug, [])],
+                "next_id": next_id(tree, slug),
             }
             for slug, c in tree["containers"].items()
         ]
+    else:
+        out["next_id"] = next_id(tree, tree["scope"])
     return out
+
+
+def cmd_status(args) -> dict:
+    folder = _folder(args)
+    store = store_name(project_root_for(args, folder))
+    return with_backlog(args, {"store": store, **status_view(folder)}, status_view)
 
 
 PULLED = """---
@@ -910,7 +1021,7 @@ def resolve_ticket(tree: dict, text: str) -> dict:
     if not hits and not ref.isdigit():
         hits = [t for t in in_scope(tree) if low in t["title"].lower()]
     if not hits:
-        raise TicketError(f"no ticket matches {ref!r}")
+        raise NoMatch(f"no ticket matches {ref!r}")
     if len(hits) > 1:
         names = ", ".join(ref_name(t, tree) for t in hits)
         raise TicketError(f"{ref!r} matches more than one ticket: {names}")
@@ -943,11 +1054,13 @@ def plan_path(t: dict, tree: dict) -> Path:
 
 def cmd_find(args) -> dict:
     folder = _folder(args)
-    tree = load_tree(folder)
-    t = resolve_ticket(tree, args.ref)
+    t, tree = locate(args, folder, args.ref)
     home = tree["folders"][t["epic"]]
+    row = public(t, tree)
+    if tree.get("fallback") and t["file"]:
+        row["ref"] = t["file"]  # as the backlog view names it: an id could name a ticket in the initiative
     return {
-        **public(t, tree),
+        **row,
         "folder": home.name,
         # Unlisted and stray leaves have no entry, so no entry text.
         "description": t.get("description", ""),
@@ -974,11 +1087,17 @@ def cmd_pull(args) -> dict:
         raise TicketError(f"{folder.name}/{BREAKDOWN} has no entry {args.id}")
     if t["file"]:
         raise TicketError(f"entry {args.id} is already pulled: {t['file']}")
+    path = write_leaf(t, tree, project_root_for(args, folder))
+    return {"file": path.name, "refine": t["refine"]}
+
+
+def write_leaf(t: dict, tree: dict, root: Path | None) -> Path:
+    """Write an entry's leaf file from the entry and name it on the row."""
+    folder = tree["folders"][t["epic"]]
     path = folder / f"{leaf_stem(t, tree)}.md"
     if path.exists():
-        raise TicketError(f"{path.name} exists already; change entry {args.id}'s title")
+        raise TicketError(f"{path.name} exists already; change entry {t['id']}'s title")
     after = [str(ref(b, t["epic"], tree)) for b in t["after"]]
-    root = project_root_for(args, folder)
     epic_file = folder / f"{folder.name}.md"
     try:
         parent = Path(os.path.relpath(epic_file, root)).as_posix() if root else epic_file.as_posix()
@@ -1011,7 +1130,8 @@ def cmd_pull(args) -> dict:
         ),
         encoding="utf-8",
     )
-    return {"file": path.name, "refine": t["refine"]}
+    t["file"] = path.name
+    return path
 
 
 def quoted(value: str) -> str:
@@ -1021,14 +1141,29 @@ def quoted(value: str) -> str:
     return text.translate({c: f"\\u{c:04x}" for c in (0x85, 0x2028, 0x2029)})
 
 
+def edit_frontmatter(path: Path, values: dict[str, str]) -> str:
+    """Set frontmatter values in a file, keeping its line endings and byte-order mark; an empty value removes
+    the line. Returns the new text."""
+    raw = path.read_bytes()
+    text = raw.decode("utf-8-sig").replace("\r\n", "\n")
+    for key, value in values.items():
+        text = set_frontmatter_value(text, key, value)
+    data = text.encode("utf-8")  # before the file is opened, so a failure leaves the file as it was
+    if b"\r\n" in raw:
+        data = data.replace(b"\n", b"\r\n")
+    if raw.startswith(codecs.BOM_UTF8):
+        data = codecs.BOM_UTF8 + data
+    path.write_bytes(data)
+    return text
+
+
 def cmd_mark(args) -> dict:
     """Write status, assignee, and the blocked fields to the ticket's plan; never to its leaf file."""
     folder = _folder(args)
     store = store_name(project_root_for(args, folder))
     if store != "repo":
         raise StoreRefusal(f"store is {store}: change status through the store's write verb, not this script")
-    tree = load_tree(folder)
-    t = resolve_ticket(tree, args.ref)
+    t, tree = locate(args, folder, args.ref)
     path = plan_path(t, tree)
     blocked = {"blocked_at": "", "blocked_reason": ""}
     if args.blocked is not None:
@@ -1044,25 +1179,17 @@ def cmd_mark(args) -> dict:
             *blocked.items(),
         ]
         text = "---\n" + "".join(f"{k}: {v}\n" for k, v in fields if v != "") + "---\n"
+        data = text.encode("utf-8")  # before the file is opened, so a failure leaves no empty plan
+        try:
+            with path.open("xb") as f:
+                f.write(data)
+        except FileExistsError:
+            raise TicketError(f"{path.name} exists already and is not the plan for {ref_name(t, tree)}") from None
     else:
-        raw = path.read_bytes()
-        text = set_frontmatter_value(raw.decode("utf-8-sig").replace("\r\n", "\n"), "status", args.status)
-        for key, value in blocked.items():
-            text = set_frontmatter_value(text, key, value)
+        values = {"status": args.status, **blocked}
         if args.assignee is not None:
-            text = set_frontmatter_value(text, "assignee", quoted(args.assignee))
-    data = text.encode("utf-8")  # before the file is opened, so a failure leaves the plan as it was
-    if not created:
-        # Write the plan back with its own line endings and byte-order mark.
-        if b"\r\n" in raw:
-            data = data.replace(b"\n", b"\r\n")
-        if raw.startswith(codecs.BOM_UTF8):
-            data = codecs.BOM_UTF8 + data
-    try:
-        with path.open("xb" if created else "wb") as f:
-            f.write(data)
-    except FileExistsError:
-        raise TicketError(f"{path.name} exists already and is not the plan for {ref_name(t, tree)}") from None
+            values["assignee"] = quoted(args.assignee)
+        text = edit_frontmatter(path, values)
     fm = parse_frontmatter(text, lenient=True)
     return {
         "plan": str(path),
@@ -1071,29 +1198,215 @@ def cmd_mark(args) -> dict:
     }
 
 
+MIRROR_KEYS = ("ref", "tracker_id", "remote", "tracker_status", "assignee", "after")
+
+
+def _mirror_values(item: dict, where: str) -> dict[str, str]:
+    """The frontmatter lines one mirrored ticket sets, each validated."""
+    values = {}
+    for key in ("tracker_id", "remote", "assignee"):
+        if key in item:
+            value = item[key]
+            if key == "tracker_id" and isinstance(value, int) and not isinstance(value, bool):
+                value = str(value)  # a tracker that numbers its items returns a number
+            if not isinstance(value, str):
+                raise TicketError(f"{where}: {key} must be a string")
+            values[key] = quoted(value) if value else ""
+    if "tracker_status" in item:
+        values["tracker_status"] = _one_of(item["tracker_status"], STATES, where, "tracker_status")
+    if "after" in item:
+        if not isinstance(item["after"], list):
+            raise TicketError(f"{where}: after must be a list")
+        parts = []
+        for b in item["after"]:
+            if isinstance(b, bool) or not isinstance(b, (int, str)) or (isinstance(b, str) and ("," in b or not b)):
+                raise TicketError(f"{where}: after takes ids and names without commas, not {b!r}")
+            # A number stays bare, a sibling's id; a string is quoted, so a tracker id of digits stays one.
+            parts.append(str(b) if isinstance(b, int) else quoted(b))
+        values["after"] = f"[{', '.join(parts)}]"
+    return values
+
+
+def by_tracker_id(tree: dict, tracker_id: str) -> dict:
+    """The one ticket that already carries a tracker id; nothing else about it is matched."""
+    hits = [t for t in tree["tickets"] if t["tracker_id"] and t["tracker_id"].lower() == tracker_id.lower()]
+    if not hits:
+        raise NoMatch(f"no ticket carries tracker_id {tracker_id!r}")
+    if len(hits) > 1:
+        raise TicketError(f"tracker_id {tracker_id!r} is on more than one ticket")
+    return hits[0]
+
+
+def cmd_mirror(args) -> dict:
+    """Write what the tracker returned into each ticket's leaf file; never `status`, which is the build's."""
+    folder = _folder(args)
+    root = project_root_for(args, folder)
+    store = store_name(root)
+    if store == "repo":
+        raise StoreRefusal("store is repo: there is no tracker to mirror")
+    items = json.load(sys.stdin)
+    if not isinstance(items, list) or not all(isinstance(i, dict) for i in items):
+        raise TicketError("mirror reads a JSON array of objects on stdin")
+    folders, trees = [folder], [load_tree(folder)]
+    if getattr(args, "backlog", None):
+        try:
+            trees.append(load_tree(args.backlog))
+            folders.append(args.backlog)
+        except (TicketError, OSError, ValueError):  # a backlog that cannot be read holds no match
+            pass
+    work, unmatched, seen = [], [], set()
+    for n, item in enumerate(items, 1):
+        name = item.get("ref", item.get("tracker_id"))
+        where = f"item {n} ({name!r})"
+        unknown = [k for k in item if k not in MIRROR_KEYS]
+        if unknown:
+            hint = "; status is the build's and is never mirrored" if "status" in unknown else ""
+            raise TicketError(f"{where}: unknown key {unknown[0]!r}{hint}")
+        if isinstance(name, bool) or not isinstance(name, (int, str)) or name == "":
+            raise TicketError(f"item {n}: give a ref, or the tracker_id of a ticket that already carries it")
+        values = _mirror_values(item, where)
+        hit = miss = None
+        for tree in trees:
+            try:
+                # A tracker id alone never falls back to an entry id or a title that happens to match it.
+                t = resolve_ticket(tree, str(name)) if "ref" in item else by_tracker_id(tree, str(name))
+            except NoMatch as e:
+                miss = miss or e
+                continue
+            hit = (t, tree)
+            break
+        if hit is None:
+            unmatched.append({"ref": name, "error": str(miss)})
+            continue
+        if id(hit[0]) in seen:
+            raise TicketError(f"{where}: {ref_name(*hit)} is named twice")
+        seen.add(id(hit[0]))
+        work.append((*hit, values))
+    undo, mirrored = [], []
+    try:
+        for t, tree, values in work:
+            pulled = not t["file"]
+            if pulled:
+                path = write_leaf(t, tree, root)
+                undo.append((path, None))
+            else:
+                path = tree["folders"][t["epic"]] / t["file"]
+                undo.append((path, path.read_bytes()))
+            edit_frontmatter(path, values)
+            ref_out = row_ref(t, tree) if tree is trees[0] else path.name
+            mirrored.append({"ref": ref_out, "file": path.name, "pulled": pulled, "set": sorted(values)})
+        for f in folders:
+            load_tree(f)
+    except (TicketError, OSError, ValueError) as e:
+        for path, raw in undo:
+            try:
+                if raw is None:
+                    path.unlink(missing_ok=True)
+                else:
+                    path.write_bytes(raw)
+            except OSError:  # keep restoring the rest; the first failure is the one reported
+                pass
+        raise TicketError(f"nothing was mirrored: {e}") from e
+    return {"folder": folder.name, "store": store, "mirrored": mirrored, "unmatched": unmatched}
+
+
+REF_HELP = """<ref> is `<epic id>.<entry id>`, an entry id inside an epic folder (one with a letter, from any
+folder), a tracker id, a file name, or an unbroken phrase from the title that matches one ticket."""
+
+DIR_HELP = """<dir> is an epic folder, a backlog folder, or an initiative folder (all its epics): a path, or a
+folder's name under the store or the active initiative. Left out, it is the active initiative."""
+
+BACKLOG_HELP = "With no <dir>, a ticket the initiative does not hold is looked for in the backlog folder."
+
+HELP = {
+    "next": f"""Tickets grouped by what can happen next, in build order.
+
+{DIR_HELP} With no <dir>, `backlog` holds the same view of the backlog folder, each row's `ref`
+its file name.
+
+Output: `ready_to_refine` (needs full criteria first), `ready_to_start`, `in_progress`, and `blocked`; a
+`blocked` row has `waiting_on`, its unmet prerequisites, or `blocked_reason`. A prerequisite is met when it
+is done or in review; an epic's own gate (`gated_by`) waits for that epic to be done. `unpinned_after`,
+`undeclared_after`, `order_conflict`, and `problems` report a tree that needs fixing. Every row carries
+`ref`, which find resolves, and `state`.""",
+    "status": f"""Every ticket in build order.
+
+{DIR_HELP} With no <dir>, `backlog` holds the same view of the backlog folder, each row's `ref`
+its file name.
+
+Output: `tickets` (each with `status`, `tracker_status`, `state`, `blocks`, and `drift` when the leaf file's
+`after` or `hitl` differs from the entry's, with both values), `counts` by state, `next_id` (the id a new
+ticket in the folder takes, one past the highest number used; on an initiative, in each `epics` row), `estimate` totals when tickets carry
+points, `longest_remaining_chain`, and on an initiative `epics` with each epic's declared `after`.""",
+    "find": f"""The one ticket a reference names.
+
+{DIR_HELP}
+{BACKLOG_HELP}
+{REF_HELP}
+
+Output: the ticket's row, its entry's `description`, `verify`, `references`, `notes`, and `unknown`, its
+`folder`, and the absolute paths `epic_file`, `story_file` (null until the entry is pulled), and `plan`
+(where its plan is or goes; it may not exist yet).""",
+    "pull": """Write an entry's leaf file from its entry.
+
+<dir> is the epic folder and <id> the entry's id. The file is `<type>-<slug of the title>.md`: `after` and
+`hitl` always, other fields only when the entry sets them, no status.""",
+    "mark": f"""Set a ticket's status in its plan; never in its leaf file. Repo store only.
+
+{DIR_HELP}
+{BACKLOG_HELP}
+{REF_HELP}
+
+A ticket with no plan gets one holding only frontmatter. `--blocked` sets `blocked_at` (today) and
+`blocked_reason`; without it both are cleared.""",
+    "mirror": f"""Write what a tracker returned into leaf files. Tracker stores only.
+
+{DIR_HELP}
+{BACKLOG_HELP}
+
+Stdin is a JSON array, one object per ticket: `ref` (or `tracker_id` alone, which matches only a ticket
+that already carries that id) and any of `tracker_id`, `remote`, `tracker_status` ({", ".join(STATES)}),
+`assignee`, and `after` (a list: a number is a sibling's id, a string any other prerequisite form, a
+tracker id included). Only the keys given are written, an empty string removes the line, and `status` is
+never written. An entry with no leaf file is pulled first. A ticket the tree does not hold is listed under
+`unmatched` and the rest are written; values that would leave the tree unreadable write nothing.""",
+}
+
+
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Read a ticket tree and answer what is next.")
+    raw = argparse.RawDescriptionHelpFormatter
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=raw)
     parser.add_argument(
         "--project-root",
         help="project holding _bmad/; default: walk up from the ticket folder, or the working directory with no folder",
     )
     sub = parser.add_subparsers(dest="command", required=True)
-    p = sub.add_parser("next", help="tickets whose prerequisites are done or in review, by state")
+    p = sub.add_parser(
+        "next",
+        help="tickets whose prerequisites are done or in review, by state",
+        description=HELP["next"],
+        formatter_class=raw,
+    )
     p.add_argument("dir", nargs="?", help="default: the active initiative")
     p.add_argument("--synced", action="store_true", help="tracker status was mirrored just now")
     p.set_defaults(func=cmd_next)
-    p = sub.add_parser("status", help="every ticket resolved")
+    p = sub.add_parser("status", help="every ticket resolved", description=HELP["status"], formatter_class=raw)
     p.add_argument("dir", nargs="?", help="default: the active initiative")
     p.set_defaults(func=cmd_status)
-    p = sub.add_parser("find", help="the one ticket a reference names")
+    p = sub.add_parser("find", help="the one ticket a reference names", description=HELP["find"], formatter_class=raw)
     p.add_argument("dir", nargs="?", help="default: the active initiative")
     p.add_argument("ref")
     p.set_defaults(func=cmd_find)
-    p = sub.add_parser("pull", help="write an entry's leaf file")
+    p = sub.add_parser("pull", help="write an entry's leaf file", description=HELP["pull"], formatter_class=raw)
     p.add_argument("dir")
     p.add_argument("id")
     p.set_defaults(func=cmd_pull)
-    p = sub.add_parser("mark", help="set a ticket's status in its plan (repo store only)")
+    p = sub.add_parser(
+        "mark",
+        help="set a ticket's status in its plan (repo store only)",
+        description=HELP["mark"],
+        formatter_class=raw,
+    )
     p.add_argument("dir", nargs="?", help="default: the active initiative")
     p.add_argument("ref")
     p.add_argument("status", choices=STATUSES)
@@ -1102,6 +1415,14 @@ def main() -> int:
         "--blocked", metavar="REASON", help="set blocked_at to today and blocked_reason; else both are cleared"
     )
     p.set_defaults(func=cmd_mark)
+    p = sub.add_parser(
+        "mirror",
+        help="write what a tracker returned into leaf files (tracker stores only)",
+        description=HELP["mirror"],
+        formatter_class=raw,
+    )
+    p.add_argument("dir", nargs="?", help="default: the active initiative")
+    p.set_defaults(func=cmd_mirror)
     args = parser.parse_args()
     try:
         print(json.dumps(args.func(args), ensure_ascii=False, default=str))

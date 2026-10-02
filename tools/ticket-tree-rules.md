@@ -2,25 +2,27 @@
 
 Every skill that takes work from the tree, builds it, reviews it, or looks back on it follows these rules: `bmad-ticket`, `bmad-build`, `bmad-build-auto`, `bmad-code-review`, `bmad-retrospective`, and `bmad migrate`.
 
+This page is for people and agents who change those skills. No skill loads it: each one states the rules it acts on in its own files. When a rule changes here, change it in every skill that states it.
+
 ## Finding the tree
 
 - The tree is `{output_folder}/{active_initiative}`: `output_folder` and `active_initiative` from `[core]` in the merged BMad config.
 - `tickets.py` is installed at `{project-root}/_bmad/method/scripts/tickets.py`. `bmad-ticket` declares it in its `bmod.toml`. Other skills run it from there and never open `bmad-ticket`'s folder.
-- Called with no folder, `tickets.py next`, `status`, and `find` resolve the active initiative themselves. When no initiative is set, they exit with an error that names the missing key, and the calling skill works without the tree.
-- A ticket is read through `tickets.py find`: its entry's fields, its epic file, its story file when one was refined, and its plan path, whether or not the plan exists yet. The build's input is the entry and its epic, plus the story file when there is one. No skill writes a ticket file to start work.
+- Called with no folder, `tickets.py next`, `status`, `find`, `mark`, and `mirror` resolve the active initiative themselves; `next` and `status` then also report `backlog/`. When no initiative is set, they exit with an error that names the missing key, and the calling skill works without the tree.
+- A ticket is read through `tickets.py find`: its entry's fields, its epic file, its story file when one was pulled, and its plan path, whether or not the plan exists yet. The build's input is the entry and its epic, plus the story file when there is one. No skill writes a ticket file to start work.
 
 ## The plan file
 
 - One plan per leaf, written by `bmad-build` or `bmad-build-auto`. It sits in the leaf's folder (the epic folder, or `backlog/`) and is named `<type>-<slug>-plan.md`, where `<type>-<slug>` is the name the leaf's file would have. `find` returns this path.
 - Its frontmatter carries `ticket: <entry id>`. That field joins the plan to its entry, so a title change that renames the plan never breaks the link. A backlog leaf has a file and no entry, so its plan carries `ticket: <file stem>` instead. Its `type` is the build's (`feature`, `bugfix`, `refactor`, `chore`), never a ticket type.
 - It stays local on every store. A tracker never receives it.
-- On a tracker store, publishing writes the leaf's file, because that file is the body the tracker receives. `tracker_id`, `remote`, and `tracker_status` stay in that file. The plan is still a separate file beside it.
+- On a tracker store, publishing writes the leaf's file, because that file is the body the tracker receives. `tracker_id`, `remote`, and `tracker_status` stay in that file, written by `tickets.py mirror`. The plan is still a separate file beside it.
 
 ## Status
 
 - On the repo store, a leaf's status lives in its plan's `status`. An older leaf file can still carry `status`; `tickets.py` reads it only when there is no plan. An entry with no file and no plan is `planned`, and it is ready to start once its prerequisites are done or in review; an epic file's `after` still waits for that epic to be done. No pull is needed.
 - The board state comes from `status`: none, `draft`, `ready-for-dev` → `backlog`; `in-progress`, `blocked` → `in-progress`; `in-review`, `built` → `review`; `done` and `dropped` are themselves.
-- `assignee`, `blocked_at`, and `blocked_reason` also sit in the plan's frontmatter. `tickets.py mark` writes them. Given a leaf with no plan, it creates the plan with only its frontmatter.
+- `assignee`, `blocked_at`, and `blocked_reason` also sit in the plan's frontmatter. `tickets.py mark` writes them. Given a leaf with no plan, it creates the plan with only its frontmatter. On a tracker store the assignee is the tracker's: `tickets.py mirror` writes it into the leaf file, and a plan with no `assignee` key leaves it there.
 
 | Status | Written by |
 |---|---|

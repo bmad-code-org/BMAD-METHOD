@@ -9,13 +9,13 @@ Only when `{workflow.estimation}` has `enabled = true`; otherwise never raise it
 ## When to offer one
 
 - Epic definition complete, before the story breakdown: an imagined split. Name the probable stories, point each per the rubric, sum, map to the t-shirt. The reasoning goes in the epic's Notes, marked as imagined; inception replaces it. Basis `spec`, or `envelope` when there is none.
-- Whole epic breakdown approved: point every breakdown entry, pulled or not, and re-estimate the epic from the sum. Basis `entries`; refinement can change the estimate.
-- Story refined: point it from its criteria and re-sum the whole ticket set if it moved. Basis `stories` once every ticket has a reviewed file; publication does not change the basis.
+- Whole epic breakdown approved: point every breakdown entry, pulled or not, and re-estimate the epic from the sum. Basis `entries`; a review or refinement can change the estimate.
+- Story reviewed or refined: point it from its file and re-sum the whole ticket set if it moved. Basis `stories` once every ticket has a reviewed file; publication does not change the basis.
 - Story closed: ask whether the actual matched. A miss is a Notes line on the story; a 1-2 that needed a person is the miss that matters most.
 
 ## What the size says
 
-XL, or a sum above the map's top range, is the signal to offer splitting the epic before it is sliced: say which imagined stories cluster into what, per `{workflow.slice_to_epics}`. S or below at the envelope is the signal for the Small epic path (SKILL.md, Intake). The user overrides either way; an override is a `Decision:` line.
+XL, or a sum above the map's top range, is the signal to offer splitting the epic before it is sliced: say which imagined stories cluster into what, per `{workflow.slice_to_epics}`. S or below at the envelope is the signal for a small epic: two to six entries, and no subagents to learn the codebase. The user overrides either way; an override is a `Decision:` line.
 
 ## Calibration
 

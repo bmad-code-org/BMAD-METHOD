@@ -1,11 +1,11 @@
 ---
-id: [the entry's id in tickets.toml; the next unused one for a ticket with no entry]   # tracker_id and remote are written at publish on a tracker
+id: [the entry's id in tickets.toml; the folder's `next_id` for a ticket with no entry]   # tracker_id and remote are written at publish on a tracker
 type: spike
 title: "[The question this answers]"
 parent: [folder name of the epic, or of the initiative when there are no epics; none for a standalone ticket in backlog/]
 covers: []
 after: []   # prerequisites only: a sibling's id; "<epic id>.<entry id>" in another epic; epic-<slug> for that whole epic
-assignee: ""   # a tracker's assignee, mirrored by query; otherwise assignee, blocked_at, and blocked_reason live in the plan
+assignee: ""   # a tracker's assignee, written by `tickets.py mirror`; otherwise assignee, blocked_at, and blocked_reason live in the plan
 # status lives in the plan beside this file, not here; tracker_status by a tracker sync
 refined: false   # true once the user approves its full criteria; a pulled spike has this line only when its entry says `refine = true`
 hitl: true
@@ -19,7 +19,7 @@ estimate: ""   # points, when estimation is on
 
 ## Description
 
-[One sentence, the question; reviewed with the user at refine. Approach below says how it is answered and which tickets wait on it.]
+[One sentence, the question; gone over with the user at review. Approach below says how it is answered and which tickets wait on it.]
 
 ## Approach
 

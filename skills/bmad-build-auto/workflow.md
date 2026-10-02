@@ -10,9 +10,9 @@
 
 To HALT with a final status and optional blocking condition:
 
-1. **A ticket from the tree** (`{ticket_args}` is set) with final status `blocked`: run `uv run {project-root}/_bmad/method/scripts/tickets.py --project-root {project-root} mark {ticket_args} blocked --blocked <blocking condition>`, with each argument quoted for the shell, which writes `status`, `blocked_at`, and `blocked_reason` to `{plan_file}` and creates it when there is none. Then append missing result details under `## Auto Run Result` in `{plan_file}`. If `mark` fails, follow 2 instead. The halt `blocked plan supplied` writes nothing, so the plan keeps its first reason; go to 3.
+1. **A ticket from the tree** (`{ticket_args}` is set) with final status `blocked`: run `uv run {project-root}/_bmad/method/scripts/tickets.py --project-root {project-root} mark {ticket_args} blocked --blocked <blocking condition>`, with each argument quoted for the shell, which writes `status`, `blocked_at`, and `blocked_reason` to `{plan_file}` and creates it when there is none. Then append missing result details under `## Auto Run Result` in `{plan_file}`. If `mark` fails, follow 2 instead. The halts `blocked plan supplied` and `dropped plan supplied` write nothing, so the plan keeps its first reason or its `dropped` status; go to 3.
 2. **Otherwise:**
-   - If `{plan_file}` is known and exists, update `status` in frontmatter and append missing result details under `## Auto Run Result`.
+   - If `{plan_file}` is known and exists, update `status` in frontmatter and append missing result details under `## Auto Run Result`. The halt `dropped plan supplied` writes nothing here either.
    - If `{plan_file}` is unknown or missing, create `{{ config.output_folder }}/{active_initiative}/bmad-build-auto-result-<slug-or-timestamp>.md` with:
      ```markdown
      ---
