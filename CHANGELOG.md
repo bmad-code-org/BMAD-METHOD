@@ -14,6 +14,7 @@
 
 ### ✨ Features
 
+* A ticket or epic `id` can be letters and digits, such as `6a`, as well as a number. `tickets.py` accepts it in `tickets.toml`, in a leaf file, in a plan's `ticket`, in `after` (`"6a"`, `"2.6a"`), and in `find`, `pull` and `mark`. A quoted number in `after` is still a tracker id.
 * `bmad setup` cleans up renamed and removed skills. Each module lists them in a `retired.toml` beside its `bmod.toml`; setup offers to delete any still in the project's skills folders, including skills a v6 installer left behind, moves `_bmad/custom/` files to the new name, and says when a customization no longer applies. `removals.txt` is gone.
 * `bmad setup` now moves `_bmad/custom/<old>.toml` and `<old>.user.toml` to a renamed skill's new name without asking, when the new file does not exist yet. It still never changes a value inside a file.
 * `bmad setup` and `bmad status` name the skills of each module you did not install and give one command that installs them.
