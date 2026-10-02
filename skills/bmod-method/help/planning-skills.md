@@ -2,24 +2,25 @@
 
 Read this when the question is about `bmad-spec`, `bmad-prd`, `bmad-ux`, `bmad-architecture`, or the skills that slice and track work: what each gives, when to pick it, when not to, and what it writes.
 
-**`bmad-spec`** — the hub. Condenses any input into the contract builds read.
+**`bmad-spec`** — writes a separate requirements contract for a build or ticket tree.
 - Gives: a spec folder with `spec-<slug>.md` (why, capabilities with stable ids, constraints, non-goals, success signal) and companions. It adopts UX files and an architecture spine as companions and absorbs a PRD or brief as a source. On request it hands the spec folder to `bmad-ticket` to be planned into stories. It also updates and validates an existing spec.
-- Pick when: the user has anything to distill, or can explain the idea in detail; after any other analysis or planning skill finishes; when requirements change on the spec route (it appends to its log, re-derives the spec, and names the tickets that no longer match).
+- Pick when: the user wants a standalone contract, the source outgrows a ticket's Requirements section, or requirements change on the spec route (it appends to its log, re-derives the spec, and names the tickets that no longer match).
 - Not when: the input is a bare idea. It distills and does not coach → `bmad-product-brief` first, or `bmad-prd` when full requirements are needed.
-- Splitting into stories is not this skill: send the user to `bmad-ticket` with the spec folder, which plans one epic whose stories cite the spec's `CAP-N` ids. After writing a spec that reads as several slices, `bmad-spec` offers that hand-off once.
+- For a ticket tree: `bmad-ticket` accepts described intent, briefs, and PRDs directly. The initiative or epic Requirements hold the source at that altitude; use a spec folder as the source only when needed or requested. Incept a selected epic with `bmad-ticket` to plan stories from its Requirements.
+- Splitting into stories is not this skill: when a separate spec exists, send its folder to `bmad-ticket`; stories cite the spec's `CAP-N` ids. After writing a spec that reads as several slices, `bmad-spec` offers that hand-off once.
 - Writes: `{output_folder}/{active_initiative}/spec-<slug>/` holding `spec-<slug>.md` and companions, or `spec-<slug>/` inside the epic folder when the spec is for an epic.
 
 **`bmad-prd`** — coaches detailed requirements out of the user.
 - Gives: a PRD sized to the stakes (about 2 pages for a hobby project, longer for a launch): features, requirements with stable ids, user journeys, non-goals, MVP scope, metrics. Fast path or coaching path. Also updates and validates an existing PRD.
 - Pick when: the idea is too thin for `bmad-spec`; a consumer or multi-stakeholder product; compliance, integration, or SLA concerns; an existing PRD needs editing or critique.
-- Not when: scope is one or two stories → `bmad-build`. A lighter document will do → `bmad-product-brief`, then `bmad-spec`. A brief is an optional input, never a prerequisite.
+- Not when: scope is one or two stories → `bmad-build`. A lighter document will do → `bmad-product-brief`, then `bmad-ticket` for a ticket tree or `bmad-spec` for a standalone contract. A brief is an optional input, never a prerequisite.
 - Writes: `{output_folder}/{active_initiative}/prd-<slug>/prd-<slug>.md`.
 
 **`bmad-ux`** — captures how the product looks and how it works. It may lead, follow, or stand alone.
 - Gives: `DESIGN.md` (visual tokens and rules) and `EXPERIENCE.md` (structure, states, interactions, accessibility, key flows), optionally mockups and wireframes. It captures the user's vision and never imposes one. A design-handoff mode builds a prompt for an external design tool.
 - Pick when: the UI is a significant part of the work; the user wants to design first and derive requirements from the design; the user has design assets to fold in; design will happen in an outside tool but a contract is still needed.
 - Not when: there is no meaningful UI.
-- UX first: its files are good input to `bmad-prd` when requirements still need drawing out, to `bmad-product-brief` when a lighter write-up will do, or straight to `bmad-spec` when the design already says enough.
+- UX first: its files are good input to `bmad-prd` when requirements still need drawing out, to `bmad-product-brief` when a lighter write-up will do, or to `bmad-ticket` for a ticket tree. Use `bmad-spec` when a standalone contract is wanted.
 - In the spec: both files are adopted as companions. Change them with `bmad-ux` update, not through the spec.
 - Writes: `{output_folder}/{active_initiative}/ux-<slug>/`: `DESIGN.md`, `EXPERIENCE.md`, and `ux-<slug>.md` naming them.
 
@@ -27,8 +28,8 @@ Read this when the question is about `bmad-spec`, `bmad-prd`, `bmad-ux`, `bmad-a
 - For a user new to architecture: it coaches by default, so the user needs no architecture knowledge to start. When the stack is open it recommends a well-known current starter, checked on the web first, because a good starter settles a coherent set of decisions for free. For each big call (paradigm, stack or starter, major boundaries, and where and how it is deployed and hosted) it lays out the realistic options and why it leans one way, then the user chooses. Its fast path drafts everything with `[ASSUMPTION]` tags to correct.
 - Gives: a terse spine of decisions with stable ids, plus a list of what it deliberately leaves open. Not a full architecture document unless the user asks for one. Works at initiative, feature, or epic altitude, and can start from a spec, a raw idea, an existing codebase, or a sprawling document to distill.
 - Pick when: two units built independently could choose incompatibly; an initiative has been cut into epics and more than one epic must adopt the same contract, format, or value list; the stack is open; the user does not know what stack, starter, or hosting to choose; a brownfield codebase has conventions worth ratifying; a feature touches an existing system.
-- Not when: the input is too thin → `bmad-spec` first. One session builds all of it → skip.
-- Next: it offers to have `bmad-spec` adopt the spine as a companion. Recommend that first.
+- Not when: one session builds all of it → skip. When the idea or problem is still unclear, explore it with `bmad-brainstorming` or shape it with `bmad-product-brief` or `bmad-prfaq` before settling architecture decisions.
+- Next: it offers to have `bmad-spec` adopt the spine as a companion for a standalone contract. For a ticket tree, give the spine to `bmad-ticket` as initiative or epic context.
 - Writes: `{output_folder}/{active_initiative}/architecture-<slug>/architecture-<slug>.md`.
 
 ## Slicing and tracking the work

@@ -6,7 +6,7 @@ This document covers the skills of the `method` module: what each one gives the 
 
 The method turns an intent of any size into working software. Recommend the smallest path that safely fits the work; never march the user through every skill. A project may hold only some of these skills: recommend from what is installed, and say plainly when a step has no installed skill rather than inventing a substitute.
 
-**`bmad-spec` is the hub.** It condenses any input, at any altitude, into a spec folder: `spec-<slug>.md` plus companion files, the contract every build reads. A user can talk to it directly. Every analysis and planning skill exists to give the user better material to feed into a spec, and they can run in any order, before or after the spec exists, because the spec is re-derived from a running log and never hand-merged. After any of them finishes, the usual next step is to fold its result into the spec with `bmad-spec`.
+**`bmad-spec` writes a separate requirements contract.** It condenses input into a spec folder: `spec-<slug>.md` plus companion files. For a ticket tree, `bmad-ticket` can take the intent directly: an initiative or epic's Requirements are the source at that altitude. Use `bmad-spec` when the source outgrows that section or the user wants a standalone contract. Analysis and planning can inform either path; put requirements in the spec or ticket Requirements, and keep supporting architecture, UX, or research as context and references.
 
 The four phases are analysis (ideation, research, is it worth building), planning (what exactly, and in what slices), implementation (build it), and validation (is it right). They describe what kind of help a skill gives. They are not a mandatory sequence to complete.
 
@@ -40,15 +40,15 @@ This document should be enough to route the user and say what to do next. Each t
   - Obvious and low-risk (typo, formatting, config): just make the edit. No skill.
   - Yes → `bmad-build`. No planning skill first.
 - Bigger than one session: does the user already have enough to say or paste (an idea they can explain in detail, notes, intent.md, single ticket, a transcript, a brief, a PRD)?
-  - Yes → `bmad-spec`, then `bmad-ticket` with the spec folder to plan the stories. Then one `bmad-build` per story.
-  - No → find what is missing, run the skill that supplies it, then `bmad-spec`:
+  - Yes → Give the intent to `bmad-ticket` to create the initiative and its epic envelopes. The initiative's Requirements hold the source at that altitude. Incept each selected epic into stories before building them. Use `bmad-spec` when the source outgrows a Requirements section or the user wants a standalone contract.
+  - No → find what is missing, run the skill that supplies it, then continue with `bmad-ticket` for a ticket tree or `bmad-spec` for a standalone contract:
     - They cannot name a customer or a problem → `bmad-forge-idea` or `bmad-brainstorming` (core tools), if installed.
     - Unsure the idea is worth building → `bmad-prfaq`.
     - Sure of the idea, but it is not written down or not shareable → `bmad-product-brief`. It is also the lighter choice when a full PRD is more than the work needs.
     - Requirements need real detail, or many stakeholders, compliance, or integrations are involved → `bmad-prd`.
     - The look and feel matter, or the user thinks best in screens and flows → `bmad-ux`. Starting with UX is a normal way in.
     - Separate people, agents, or sessions could build parts that do not fit together → `bmad-architecture`.
-- Wants to prototype first, or is unsure the work is worth doing, feasible, or how complex it is → encourage a prototype. It suits enterprise work as much as hobby work, greenfield or existing code, and non-engineers can build one. A throwaway needs no skill. Afterwards the user decides to throw it away or keep it, and either way what it taught them goes into `bmad-spec` (`help/prototyping.md`).
+- Wants to prototype first, or is unsure the work is worth doing, feasible, or how complex it is → encourage a prototype. It suits enterprise work as much as hobby work, greenfield or existing code, and non-engineers can build one. A throwaway needs no skill. Afterwards the user decides to throw it away or keep it, then uses `bmad-ticket` for a ticket tree or `bmad-spec` for a standalone contract (`help/prototyping.md`).
 - Risk, unclear requirements, architectural reach, or coordination between people push work up a tier even when it is small.
 
 ## Match the situation
@@ -57,8 +57,8 @@ Situations the tree above does not settle.
 
 | The user says or has | Recommend | Because |
 |---|---|---|
-| "I want to start from the design" | `bmad-ux` | UX may lead. Feed its files to `bmad-prd` when requirements still need drawing out, to `bmad-product-brief` for a lighter write-up, or straight to `bmad-spec` when they say enough. |
-| A prototype, and asks what now | Decide: throw away or keep | Thrown away, the notes go to `bmad-spec`. Kept, treat it as an existing codebase (`help/prototyping.md`). |
+| "I want to start from the design" | `bmad-ux` | UX may lead. Feed its files to `bmad-prd` when requirements still need drawing out, to `bmad-product-brief` for a lighter write-up, to `bmad-ticket` for a ticket tree, or to `bmad-spec` for a standalone contract. |
+| A prototype, and asks what now | Decide: throw away or keep | Use `bmad-ticket` for a ticket tree or `bmad-spec` for a standalone contract; kept, treat it as an existing codebase (`help/prototyping.md`). |
 | Work spans several repositories | Install BMad at a workspace root that holds them all, with planning kept there | One session then reaches the plan and every project (`help/monorepo-and-polyrepo.md`). |
 | "How do I get my repo ready for AI agents?", or agents keep producing inconsistent work | Consistent patterns, a good initial `AGENTS.md`, end-to-end tests, and cleanup first when quality is low | Agents copy what they find (`help/preparing-a-repo-for-agents.md`). |
 | "Do I keep the PRD, spec, and stories once it is built?" | Keep joined plans and their evidence | Plans own live ticket state; scope routine reads to the active initiative (`help/artifact-lifetime.md`). |
@@ -88,7 +88,7 @@ One line per skill: what it is for and what it writes. The files it writes are h
 | `bmad-product-brief` | A 1-2 page brief of a product the user believes in. Lighter than a PRD, sharper than a hand-written intent file. It does not judge the idea. | `brief-<slug>/brief-<slug>.md` |
 | `bmad-prfaq` | Tests whether a concept survives scrutiny: press release, hard FAQs, researched claims, a verdict. | `prfaq-<slug>/prfaq-<slug>.md`, plus `-distillate.md` beside it |
 | **Planning** (`help/planning-skills.md`) | | |
-| `bmad-spec` | The hub. Distills any input into the contract builds read, and updates it. It does not slice or coach; splitting work into stories is `bmad-ticket`. | `spec-<slug>/spec-<slug>.md` and companions |
+| `bmad-spec` | Writes and updates a standalone requirements contract. It does not slice or coach; splitting work into stories is `bmad-ticket`. | `spec-<slug>/spec-<slug>.md` and companions |
 | `bmad-prd` | Coaches detailed requirements out of the user, sized to the stakes. Also updates and validates a PRD. | `prd-<slug>/prd-<slug>.md` |
 | `bmad-ux` | How the product looks and works. May lead, follow, or stand alone. Can produce mocks and wireframes. | `ux-<slug>/` with `DESIGN.md`, `EXPERIENCE.md`, and `ux-<slug>.md` naming them |
 | `bmad-architecture` | Settles only the decisions that keep separately built parts consistent. Coaches a user with no architecture knowledge, recommends a current starter, and covers hosting and deployment. | `architecture-<slug>/architecture-<slug>.md` |
@@ -134,12 +134,14 @@ An agent and its skills are two ways into the same work: a skill run directly do
 
 ## After a skill finishes
 
+For a ticket tree, give the result to `bmad-ticket`; use `bmad-spec` when a separate contract is needed or the ticket's Requirements are outgrown.
+
 | Just finished | Offer next |
 |---|---|
-| `bmad-product-brief`, `bmad-prfaq` | `bmad-spec` with the result as input. `bmad-prd` first when the requirements still need drawing out. After a PRFAQ verdict with serious gaps, address those before anything else. |
-| `bmad-prd` | `bmad-spec` to absorb it. `bmad-ux` when the UI matters; `bmad-architecture` when parts must fit together. |
-| `bmad-ux` | `bmad-spec` to adopt the files as companions. When UX came first and requirements are still thin, `bmad-prd` or the lighter `bmad-product-brief` with the UX files as input. |
-| `bmad-architecture` | `bmad-spec` to adopt the spine as a companion. |
+| `bmad-product-brief`, `bmad-prfaq` | Give the result to `bmad-ticket` for a ticket tree, or `bmad-spec` for a standalone contract. `bmad-prd` first when the requirements still need drawing out. After a PRFAQ verdict with serious gaps, address those before anything else. |
+| `bmad-prd` | Give it to `bmad-ticket` for a ticket tree, or `bmad-spec` to make a standalone contract. `bmad-ux` when the UI matters; `bmad-architecture` when parts must fit together. |
+| `bmad-ux` | Give the files to `bmad-ticket` for a ticket tree, or `bmad-spec` to adopt them as companions in a standalone contract. When UX came first and requirements are still thin, `bmad-prd` or the lighter `bmad-product-brief` with the UX files as input. |
+| `bmad-architecture` | Give the spine to `bmad-ticket` for a ticket tree, or `bmad-spec` to adopt it as a companion in a standalone contract. |
 | `bmad-spec` | Its open questions and assumptions, if any. Then `bmad-ticket` with the spec folder to plan the stories, and `bmad-build` per story, or straight to `bmad-build` when one session can do it. |
 | `bmad-build` | Open a PR, or `bmad-walkthrough` when a person wants to understand the change. Once the user marks the ticket done, the next ticket. `bmad-qa-generate-e2e-tests` when end-to-end coverage is wanted. |
 | The last ticket of an epic | `bmad-retrospective`, then a refactoring pass over the whole changeset, which is commonly skipped (`help/preparing-a-repo-for-agents.md`). Then close the epic through `bmad-ticket` and retain its plans (`help/artifact-lifetime.md`). |

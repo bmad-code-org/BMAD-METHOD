@@ -14,7 +14,7 @@ Install BMad in the workspace folder that holds the repos, put the store there, 
 
 ## Existing planning documents
 
-Copy a brief, PRD, UX design, or architecture into the initiative folder as `<type>-<slug>/<type>-<slug>.md`, for example `initiative-checkout/prd-checkout/prd-checkout.md`. The UX files keep their names, `DESIGN.md` and `EXPERIENCE.md`, inside `ux-<slug>/`. Copy, do not move, so other skills still find their files. The best input is a `bmad-spec` output with its source documents. `bmad-spec` offers to hand its spec folder to this skill, which does the story breakdown; the stories cite the spec's `CAP-N` ids.
+Copy a brief, PRD, UX design, or architecture into the initiative folder as `<type>-<slug>/<type>-<slug>.md`, for example `initiative-checkout/prd-checkout/prd-checkout.md`. The UX files keep their names, `DESIGN.md` and `EXPERIENCE.md`, inside `ux-<slug>/`. Copy, do not move, so other skills still find their files. Give these documents directly to `bmad-ticket`: the initiative's Requirements hold the source at that altitude. Each epic maps the requirement ids it owns through `covers`; its stories are then planned from that epic's Requirements. Use a `bmad-spec` output when the source outgrows the Requirements section or a standalone contract is wanted; `bmad-ticket` can then plan from the spec's `CAP-N` ids.
 
 ## Trackers
 

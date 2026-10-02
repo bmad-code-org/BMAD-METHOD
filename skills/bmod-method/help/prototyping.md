@@ -1,6 +1,6 @@
 # Prototyping with the method
 
-Prototypes are underused, in hobby work and in the enterprise alike. Recommend one readily. The method has no prototype phase and needs none: a prototype is a fast, cheap way to learn, and what it teaches is some of the best input `bmad-spec` can get. Current models can produce an impressive first version from one prompt.
+Prototypes are underused, in hobby work and in the enterprise alike. Recommend one readily. The method has no prototype phase and needs none: a prototype is a fast, cheap way to learn. Its findings can go straight into `bmad-ticket` for a ticket tree, or into `bmad-spec` for a standalone contract. Current models can produce an impressive first version from one prompt.
 
 ## What a prototype is good for
 
@@ -29,15 +29,15 @@ Both work. In an existing codebase, a prototype on a branch shows how a change s
 
 ## After the prototype: throw it away or keep it
 
-Ask the user to decide this on purpose. The outcome to avoid is a prototype that becomes the real product with nobody deciding it should, and with no spec.
+Ask the user to decide this on purpose. The outcome to avoid is a prototype that becomes the real product with nobody deciding it should or where its requirements live.
 
-- **Throw it away.** The prototype was research. Have the user note what it taught them: what worked, what surprised them, what users said, what they would do differently. Feed those notes, and the prototype itself if useful, to `bmad-spec`, or to `bmad-product-brief` first when the picture is still loose. Then build cleanly, one story at a time. This is the usual choice in an enterprise codebase and whenever a non-engineer built the prototype.
-- **Keep it.** Treat it as an existing codebase (see `help/existing-codebase.md`): `bmad-project-context` to record the rules agents must follow, `bmad-architecture` to ratify the decisions worth keeping and name what is still open, then `bmad-spec` for the rest of the work.
+- **Throw it away.** The prototype was research. Have the user note what it taught them: what worked, what surprised them, what users said, what they would do differently. For a ticket tree, take those notes and the prototype itself, if useful, into `bmad-ticket`; use `bmad-spec` when a standalone contract is wanted or the Requirements section is outgrown. Use `bmad-product-brief` first when the picture is still loose. Incept each selected epic before building its stories. This is the usual choice in an enterprise codebase and whenever a non-engineer built the prototype.
+- **Keep it.** Treat it as an existing codebase (see `help/existing-codebase.md`): `bmad-project-context` to record the rules agents must follow, and `bmad-architecture` to ratify the decisions worth keeping and name what is still open. Then use `bmad-ticket` for a ticket tree or `bmad-spec` for a standalone contract or requirements that outgrow the container.
 - **Drop the idea.** The prototype showed it is not worth doing. Nothing more is needed.
 
 ## Why plan at all after a good prototype
 
-A first version is rarely where a project goes wrong. Trouble starts several sessions later, when each new session does not know why earlier choices were made and the parts stop fitting together. The spec and the architecture decisions exist to prevent that. For work that one or two sessions will finish, the prototype may be all the user needs.
+A first version is rarely where a project goes wrong. Trouble starts several sessions later, when each new session does not know why earlier choices were made and the parts stop fitting together. Decide whether the requirements live in ticket Requirements or a standalone spec, and preserve them alongside architecture decisions. For work that one or two sessions will finish, the prototype may be all the user needs.
 
 ## A prototype and the analysis skills
 
