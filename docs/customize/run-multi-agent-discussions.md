@@ -2,7 +2,7 @@
 title: 'Run Multi-Agent Discussions'
 description: Put your BMad agents in one conversation, choose how independently they think, build a custom cast, and use the two shipped parties.
 sidebar:
-  order: 5
+  order: 4
 ---
 
 `bmad-party-mode` puts your installed BMad agents in one conversation, in

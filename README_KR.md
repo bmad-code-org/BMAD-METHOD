@@ -56,10 +56,6 @@ BMad는 무료 오픈 소스이며 유료 전용 워크플로나 가입이 제�
 | **[BMad Loop](https://github.com/bmad-code-org/bmad-loop)** | 에픽 전체를 사람의 개입 없이 구현하고 검증한 뒤 회고합니다. |
 | **[BMad Game Dev Studio](https://github.com/bmad-code-org/bmad-module-game-dev-studio)** | Unity, Unreal, Godot, Phaser를 비롯한 모든 프레임워크에서 게임을 구상하고 설계해 구현합니다. |
 
-## 웹에서 계획하기
-
-[Web bundle](https://bmadcode.com/web-bundles/)은 일부 BMad 워크플로를 Google Gemini Gem과 ChatGPT Custom GPT로 패키징한 것입니다. 기존 웹 구독 환경에서 계획을 세운 뒤, 그 결과물을 AI 코딩 도구로 가져와 구현에 사용하세요.
-
 ## 문서
 
 - **[첫 변경 사항 구현하기](https://docs.bmad-method.org/ko-kr/start/build-your-first-change/)** — BMad를 설치하고 작은 프로젝트를 만듭니다.
