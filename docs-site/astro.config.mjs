@@ -74,8 +74,6 @@ export default defineConfig({
     '/how-to/expand-bmad-for-your-org': `${basePath}customize/adopt-bmad-across-a-team/`,
     '/how-to/install-custom-modules': `${basePath}customize/add-modules/`,
     '/reference/modules': `${basePath}customize/add-modules/`,
-    '/how-to/use-web-bundles': `${basePath}customize/use-web-bundles/`,
-    '/explanation/web-bundles': `${basePath}customize/use-web-bundles/`,
     '/explanation/party-mode': `${basePath}customize/run-multi-agent-discussions/`,
     '/cs/explanation/named-agents': `${basePath}cs/customize/customize-bmad/`,
     '/fr/how-to/non-interactive-installation': `${basePath}fr/how-to/install-bmad/`,
@@ -458,17 +456,6 @@ export default defineConfig({
                 'cs-CZ': 'Přidat moduly',
               },
               slug: 'customize/add-modules',
-            },
-            {
-              label: 'Use Web Bundles',
-              translations: {
-                'ko-KR': '웹 번들 사용하기',
-                'vi-VN': 'Sử dụng gói web',
-                'zh-CN': '使用 Web 捆绑包',
-                'fr-FR': 'Utiliser les bundles web',
-                'cs-CZ': 'Používat webové balíčky',
-              },
-              slug: 'customize/use-web-bundles',
             },
             {
               label: 'Run Multi-Agent Discussions',

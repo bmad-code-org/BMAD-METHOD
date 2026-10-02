@@ -88,8 +88,5 @@ docs-site/.astro/
 docs-site/dist/
 /build/
 
-# Web bundle release artifacts
-dist/web-bundles/
-
 # Skill installer lock file (per-machine)
 skills-lock.json
