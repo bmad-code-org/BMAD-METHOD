@@ -1758,8 +1758,9 @@ class BmadSetupRepairTests(unittest.TestCase):
             self.assertEqual(first["config"], "created")
             self.assertEqual(first["custom_gitignore"], "created")
             bmad = project / "_bmad"
-            self.assertTrue((bmad / "core-tools" / "scripts").is_dir())
+            self.assertEqual([item.name for item in (bmad / "core-tools" / "scripts").iterdir()], [".gitkeep"])
             self.assertTrue((bmad / "alpha" / "scripts" / "tool.py").is_file())
+            self.assertFalse((bmad / "alpha" / "scripts" / ".gitkeep").exists())
             before = snapshot(project)
             inode = bmad.stat().st_ino
 
