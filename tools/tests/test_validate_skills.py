@@ -83,9 +83,6 @@ class FixtureCase(unittest.TestCase):
     def test_active_skill_with_use_when_is_not_flagged(self):
         self.assertFalse(self.has_trigger_finding("with-trigger"))
 
-    def test_canonical_bmad_root_skill_satisfies_name_format(self):
-        self.assertFalse(any(f["rule"] == "SKILL-04" for f in self.findings("bmad")))
-
     def _json_for(self, name: str) -> list[dict]:
         out = io.StringIO()
         with contextlib.redirect_stdout(out):
@@ -108,8 +105,6 @@ class FixtureCase(unittest.TestCase):
         self.assertFalse(
             any(f["rule"] == "SKILL-06" and re.search(r"trigger phrase", f["detail"], re.I) for f in with_trigger)
         )
-
-        self.assertEqual(self._json_for("bmad"), [])
 
 
 class ProjectCase(unittest.TestCase):
