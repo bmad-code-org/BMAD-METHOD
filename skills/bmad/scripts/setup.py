@@ -1985,6 +1985,9 @@ def compare_prerelease(left: tuple[str, ...] | None, right: tuple[str, ...] | No
 
 def declared_scripts_tree(scripts: tuple[tuple[PurePosixPath, bytes], ...]) -> PlainTree:
     by_path = {PurePosixPath(*relative.parts[1:]): content for relative, content in scripts}
+    if not by_path:
+        # Git drops an empty directory, and a clone without it would report the module's scripts as missing.
+        by_path = {PurePosixPath(".gitkeep"): b""}
     files = tuple(sorted(by_path.items(), key=lambda item: item[0].as_posix()))
     directories = {
         PurePosixPath(*relative.parts[:index])
