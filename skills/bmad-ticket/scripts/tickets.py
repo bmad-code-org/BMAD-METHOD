@@ -55,8 +55,8 @@ status's `epics` rows carry the declared `after` with its `needs`, and the epic 
                                  cleared (repo store only)
 
 `<dir>` is an epic folder, a backlog folder, or an initiative folder (all its epics). `<ref>` is
-`<epic id>.<entry id>`, an entry id inside an epic folder, a tracker id, a file name, or words
-from the title that match one ticket. Each row of next, status, and find carries `ref`, a reference
+`<epic id>.<entry id>`, an entry id inside an epic folder (one with a letter, from any folder), a
+tracker id, a file name, or words from the title that match one ticket. Each row of next, status, and find carries `ref`, a reference
 find resolves in the folder the command ran on.
 `--project-root` names the project holding `_bmad/` when the tickets live outside it. A relative
 `<dir>` that is not a folder under the working directory is looked up under `{output_folder}`, then
@@ -241,7 +241,8 @@ def _id(value):
         return None
     if isinstance(value, int):
         return value
-    if isinstance(value, str) and ID_RE.match(value):
+    # A frontmatter value of true or false is read as a boolean, so neither can be an id.
+    if isinstance(value, str) and ID_RE.match(value) and value not in ("true", "false"):
         return int(value) if value.isdigit() else value
     return None
 
@@ -898,6 +899,9 @@ def resolve_ticket(tree: dict, text: str) -> dict:
         hits = [t for t in tickets if slug and t["epic"] == slug and t["id"] == _id(m.group(2))]
     elif _id(ref) is not None and tree["scope"]:
         hits = [t for t in tickets if t["epic"] == tree["scope"] and t["id"] == _id(ref)]
+    if not hits and isinstance(_id(ref), str):
+        # An id with a letter names its ticket in any epic before the words of a title can match it.
+        hits = [t for t in tickets if t["id"] == _id(ref)]
     for pool in (in_scope(tree), tickets):
         if not hits:
             hits = [t for t in pool if t["file"] and low in (t["file"].lower(), t["file"][:-3].lower())]
