@@ -10,7 +10,7 @@ BMad is installed per project. The existing repository needs its own install and
 2. **`bmad-walkthrough`**, when the user does not know the code. It guides them through a file, directory, commit, or PR at their own pace: intent first, then broad strokes, then detail.
 3. **`bmad-architecture`**, only when needed. It can start from the codebase and ratify the conventions worth keeping in a short decisions list. Skip it when the codebase is well documented or the changes are small.
 4. **`bmad-build`** for the first change. Pick something one session can finish. A change that follows established patterns, such as a new route in a layered API, needs no planning skill: a short intent file or a few sentences is enough input.
-5. **`bmad-spec`**, then one `bmad-build` per story, when a change is bigger than one session.
+5. When a change is bigger than one session, use `bmad-ticket` for a ticket tree or `bmad-spec` for a standalone contract or requirements that outgrow the container. Incept each selected epic into stories before building them.
 6. **`bmad-qa-generate-e2e-tests`**, when the inherited app has little test coverage. It generates API and end-to-end tests for features that already exist.
 
 If the codebase is inconsistent or has few tests, cleanup first pays back in every later session (`help/preparing-a-repo-for-agents.md`).

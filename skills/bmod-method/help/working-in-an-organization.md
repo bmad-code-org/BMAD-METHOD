@@ -4,7 +4,7 @@ Use this when the work belongs to a team or enterprise: a PRD already exists, a 
 
 ## When the full path is warranted
 
-A single builder, or a small team that already agrees, goes straight to `bmad-spec` and needs no PRD. Recommend the full path (PRD, architecture, one spec per epic, tracking) only when one of these is true:
+A single builder or a small team that already agrees may use `bmad-ticket` directly for a ticket tree, or `bmad-spec` for a standalone contract; neither path requires a PRD by default. Recommend the full path (PRD, architecture, ticket-tree planning, and any separate specs the requirements need) only when one of these is true:
 
 - People who did not do the thinking must approve what the product is.
 - Several epics, teams, or agents build against the same decisions and must not diverge.
@@ -27,7 +27,7 @@ Each document has one skill that writes it, so give it one owner. One person can
 | Product manager | `bmad-prd` | `prd-<slug>.md` and its updates |
 | Designer | `bmad-ux` | `DESIGN.md`, `EXPERIENCE.md` |
 | Tech lead | `bmad-architecture` | The architecture spine |
-| One engineer per epic | `bmad-spec`, `bmad-build`, `bmad-retrospective` | That epic's spec, stories, verdict |
+| One engineer per epic | `bmad-ticket`, `bmad-build`, `bmad-retrospective` | That epic's Requirements and stories, verdict; use `bmad-spec` for a separate contract when needed |
 | Whoever tracks the whole | `bmad-ticket` | the ticket tree |
 
 Several engineers can each take an epic at once. An epic-level spine inherits the parent spine's decisions as binding.
@@ -40,7 +40,7 @@ Each moment produces a written result an approval can attach to. Advise placing 
 |---|---|
 | `bmad-prfaq` verdict | Writing the PRD |
 | `bmad-prd` validate | Design and architecture work |
-| Architecture spine review | Writing epic specs |
+| Architecture spine review | Incepting epics and writing any separate specs |
 | `bmad-ticket` planning approval | Accepting the breakdown and its dependencies |
 | `bmad-retrospective` verdict | Starting the next epic |
 
@@ -52,8 +52,8 @@ Reviewers ask for changes in whichever document they are reading. Apply the chan
 
 1. `bmad-prd` update. It surfaces conflicts with earlier decisions before applying anything.
 2. `bmad-architecture` update when a decision shared across epics changes.
-3. `bmad-spec` for each affected epic. Capability ids stay stable, and it says which stories no longer match.
-4. Story breakdown or `bmad-ticket` again. Existing plans retain status.
+3. Update each affected epic's Requirements with `bmad-ticket`, or update its separate spec with `bmad-spec`. Keep ids stable and identify which stories no longer match.
+4. Revisit the story breakdown with `bmad-ticket`. Existing plans retain status.
 
 For a change that threatens the plan itself, run `bmad-correct-course` first. It needs a PRD or a spec.
 

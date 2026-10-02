@@ -1,8 +1,8 @@
 # Analysis skills in detail
 
-Read this when the question is about `bmad-product-brief` or `bmad-prfaq`: what each gives, when to pick it, when not to, and how the two relate. Both exist to give `bmad-spec` better input.
+Read this when the question is about `bmad-product-brief` or `bmad-prfaq`: what each gives, when to pick it, when not to, and how the two relate. Their results can inform `bmad-ticket` Requirements for a ticket tree or a standalone contract from `bmad-spec`.
 
-**`bmad-product-brief`** — describes a product the user already believes in. The light way to give `bmad-spec` good input: more than a hand-written intent file, much less than a full PRD.
+**`bmad-product-brief`** — describes a product the user already believes in. It is more than a hand-written intent file and much lighter than a full PRD; use its requirements in a ticket tree or as input to a standalone spec.
 - Gives: a 1-2 page brief (problem, solution, who it serves, what is different, success criteria, scope, vision) that is the user's own, plus an addendum holding detail meant for later documents.
 - Pick when: the user knows what they want and needs it written down, would otherwise hand-write an intent file and wants it sharper, does not need the rigor of a PRD, needs a pitch or alignment document, has material to distill, is short on time (its fast path drafts everything with `[ASSUMPTION]` tags), or has a brief to update or pressure-test.
 - Not when: the user doubts the idea itself → `bmad-prfaq`. The brief never asks whether the product should exist. Requirements need ids, journeys, and metrics, or compliance and many stakeholders are involved → `bmad-prd`.
