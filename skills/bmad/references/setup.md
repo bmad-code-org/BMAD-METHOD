@@ -26,6 +26,8 @@ Run with `--status`; it writes nothing. On a first install (`bmad_exists` false)
 - `legacy_leftovers`: files from the classic installer, left untouched.
 - `newer_copy_unused`: the duplicate in use is older than another copy.
 
+When `{project-root}/_bmad/custom/` holds `.toml` files other than `config.user.toml`, say how many overrides that makes, team and personal (`*.user.toml`) apart.
+
 Then list what can be done and ask which to do, unless the request already said. End with `next` when it is not null.
 
 ## 2. Fix
