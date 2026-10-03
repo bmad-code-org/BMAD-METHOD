@@ -10,24 +10,13 @@ A story under an epic is one slice of its build order: `covers` cites ids from t
 
 ## Rules the template cannot carry
 
-- Acceptance criteria, where they are written, in the template's format:
-  - Each criterion is one behavior someone can observe and check without having written the code.
-  - Each is false before this ticket and true after it, through this ticket's work alone. Behavior that must stay as it is goes under Boundaries, not in a criterion; the one exception is a bug's "no change is needed, with proof".
-  - Behavior, not mechanics: "Given a signed-in user with an empty cart", never "click login, then click cart". What must be true, never how to build it; a criterion that names a function, file, or library is an implementation step.
-  - The rule, not an example: "rejects any quantity over stock on hand", not "rejects quantity 999". A literal only when the value is the requirement — a limit, a rounding rule, exact text.
-  - Cover the happy path, the boundaries, and the failure cases that matter. One criterion per rule, not per test case.
-  - Enough that building the wrong thing cannot pass, no more: usually three to eight. More means split, or the criteria became a test plan.
+- Acceptance criteria, where they are written, in the template's format: each is a check the implementer can prove it met without pointing at code, and together they are enough that building the wrong thing cannot pass. Behavior that must stay as it is goes under Boundaries.
 - Every sentence is short and declarative, in common words and the project's own vocabulary: the reader has only the ticket. Say each thing once, with no invented term, filler, or metaphor. When the user's text misses this or the criteria rules, offer the rewrite with the reason and let the user decide; show what is missing, not only what is written.
 - A reference is a line in References, `type — location, section`: location is a path from `{project-root}`, or a url for a remote source, and is opened before it is cited. Name the nearest document, not the documents behind it. `reference` in the store's `tickets` table, read at activation, says what else that store needs; the repo store has none.
 - No source-code paths or snippets; the builder reads the repo. A snippet stays only when it is the decision itself, not an illustration of it. A path the user wants recorded goes in Notes.
 - A UI ticket links its design in References; criteria stay functional, layout lives in the design. No design and user-facing: offer `bmad-ux` first; declined, say the builder will guess the layout unless they add details in Notes.
 - `hitl: true` only when a person must do part of the work; say which step in the Description, and spell known steps out in the criteria or Notes.
-- Risk on every ticket: `low`, `medium`, or `high`, proposed with a one-line reason; the user's value wins. Score what a mistake would cost and how easily one gets past review, and take the higher.
-  - `low`: a mistake shows at once and a revert is clean; the change is contained and well understood.
-  - `medium`: a mistake can slip past review or is costly to unwind — shared code, caching, background jobs, per-environment config, a change across many files, requirements still unclear.
-  - `high`: a revert cannot undo it — schema migrations, data deletion or transformation, auth, payments — or the change is complex enough that review alone will not catch a mistake. A high-risk ticket names one check outside its own criteria in Notes: a person who confirms, a suite beyond the ticket's tests, a monitor.
-
-  The build confirms or raises the risk in its plan, which is where a CI process reads it to decide how much review a change gets.
+- Risk on every ticket: `low`, `medium`, or `high`, the business impact if this change is wrong, proposed with a one-line reason; the user's value wins. A high-risk ticket names one check outside its own criteria in Notes: a person who confirms, a suite beyond the ticket's tests, a monitor. The build confirms or raises the risk in its plan, which is where a CI process reads it to decide how much review a change gets.
 - Severity on a bug, as the bug template defines it. An `estimate` is recorded only when the user gives one: on the entry or in the ticket's frontmatter, carried to a tracker as the store's `fields` says. Never propose one.
 - A bug carries a reproduction and a cause hypothesis, never a fix. Missing steps: ask; unclear: tighten until someone else could follow them. Run them when cheap; if the behavior already holds, say so with evidence and create nothing. Criteria include tests for the condition found and fixed, and name the other valid outcome: proof no change is needed.
 - A spike names the question, who waits on the answer, and where it is recorded. A spike is `hitl`. When tickets in more than one epic wait on the answer, it is a decision several epics adopt: handle it per `slice.md`, not as a spike inside one of them.

@@ -8,11 +8,11 @@
 
 ## HALT
 
-To HALT with a final status and optional blocking condition:
+To HALT with a final status and optional blocking condition. The halts `blocked plan supplied` and `dropped plan supplied` write nothing, so the plan keeps its first reason or its `dropped` status: go straight to 3.
 
-1. **A ticket from the tree** (`{ticket_args}` is set) with final status `blocked`: run `uv run {project-root}/_bmad/method/scripts/tickets.py --project-root {project-root} mark {ticket_args} blocked --blocked <blocking condition>`, with each argument quoted for the shell, which writes `status`, `blocked_at`, and `blocked_reason` to `{plan_file}` and creates it when there is none. Then append missing result details under `## Auto Run Result` in `{plan_file}`. If `mark` fails, follow 2 instead. The halts `blocked plan supplied` and `dropped plan supplied` write nothing, so the plan keeps its first reason or its `dropped` status; go to 3.
+1. **A ticket from the tree** (`{ticket_args}` is set) with final status `blocked`: run `uv run {project-root}/_bmad/method/scripts/tickets.py --project-root {project-root} mark {ticket_args} blocked --blocked <blocking condition>`, with each argument quoted for the shell, which writes `status`, `blocked_at`, and `blocked_reason` to `{plan_file}` and creates it when there is none. Then append missing result details under `## Auto Run Result` in `{plan_file}`. If `mark` fails, follow 2 instead.
 2. **Otherwise:**
-   - If `{plan_file}` is known and exists, update `status` in frontmatter and append missing result details under `## Auto Run Result`. The halt `dropped plan supplied` writes nothing here either.
+   - If `{plan_file}` is known and exists, update `status` in frontmatter and append missing result details under `## Auto Run Result`.
    - If `{plan_file}` is unknown or missing, create `{{ config.output_folder }}/{active_initiative}/bmad-build-auto-result-<slug-or-timestamp>.md` with:
      ```markdown
      ---
@@ -46,13 +46,7 @@ A full plan is "Ready for Development" when:
 
 - **Actionable**: Every task has a file path and specific action.
 - **Logical**: Tasks ordered by dependency.
-- **Testable**: All ACs use Given/When/Then, and each one:
-  - states one behavior someone can observe and check without having written the code;
-  - is false before this work and true after it, through this work alone. Behavior that must stay as it is is a boundary, not a criterion; the one exception is a bug's "no change is needed, with proof";
-  - says what must be true, never how to build it. One that names a function, file, or library is an implementation step;
-  - states the rule, not an example: "rejects any quantity over stock on hand", not "rejects quantity 999". A literal only when the value is the requirement.
-
-  Together they cover the happy path, the boundaries, and the failure cases that matter, one per rule, not per test case. Three to eight is usual; more means split, or they became a test plan.
+- **Testable**: All ACs use Given/When/Then, and each is a check the implementer can prove it met without pointing at code.
 - **Surface-anchored**: ACs observe the outermost surface the intent references — never a more internal proxy for it.
 - **Complete**: No placeholders or TBDs.
 - **Sufficient**: No known requirement, acceptance, dependency, or implementation gaps remain unresolved.

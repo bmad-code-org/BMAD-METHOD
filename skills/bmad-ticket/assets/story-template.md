@@ -51,9 +51,9 @@ risk: [low|medium|high]
 - [A frozen interface, a declined option]
 - Decision: [a choice the user made, dated]
 - Assumption: [a choice made while drafting that the user has not confirmed; confirmed, it becomes a Decision line]
-- Open question: [what only this ticket waits on, answered as part of its work. Touches siblings: the parent's Notes. Gates the start: an `Unknown:` line, settled with the user; a spike only when they ask for one.]
+- Open question: [what only this ticket waits on, answered as part of its work; one that touches siblings goes in the parent's Notes]
 
-<!-- Example, not part of the ticket: match its level of detail. What is good here: the Description is what the shopper can do, end to end; every criterion states a rule, not an instance, with its failure path, fails today and passes only through this work; Boundaries names behavior, not files; References points at the nearest document; Notes holds only what is not in the repo or the source, plus one assumption for the user to confirm. Numbered criteria because its entry says `refine = true`. -->
+<!-- Example, not part of the ticket: match its level of detail. What is good here: the Description is what the shopper can do, end to end; every criterion states a rule, not an instance, with its failure path; Boundaries names behavior, not files; References points at the nearest document; Notes holds only what is not in the repo or the source, plus one assumption for the user to confirm. Numbered criteria because its entry says `refine = true`. -->
 
 ```markdown
 ---

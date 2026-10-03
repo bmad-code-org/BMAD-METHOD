@@ -12,12 +12,7 @@
 
    Do not ask the human during investigation. When something is unclear, look in the repository, planning artifacts, or history first. Keep looking until you know, or until those sources have nothing more to say. Leave any remaining choice for the next step.
 
-   Then score the change's `risk` for `{plan_file}` frontmatter: `low`, `medium`, or `high`. Score what a mistake would cost and how easily one gets past review, and take the higher.
-   - `low`: a mistake shows at once and a revert is clean; the change is contained and well understood.
-   - `medium`: a mistake can slip past review or is costly to unwind — shared code, caching, background jobs, per-environment config, a change across many files, requirements still unclear.
-   - `high`: a revert cannot undo it — schema migrations, data deletion or transformation, auth, payments — or the change is complex enough that review alone will not catch a mistake.
-
-   For a ticket from the tree, start from `risk` in `tickets.py find`'s output and raise it when the investigation shows more; go below it only when the user says so. Write `risk` wherever this step writes `{plan_file}`.
+   Then score the change's `risk` for `{plan_file}` frontmatter: `low`, `medium`, or `high`, the business impact if this change is wrong. For a ticket from the tree, start from `risk` in `tickets.py find`'s output and raise it when the investigation shows more; go below it only when the user says so. Write `risk` wherever this step writes `{plan_file}`.
 {% if workflow.route == "oneshot" %}
 3. Read `{{ rendered("plan-template.md") }}` fully and write `{plan_file}`.
    Set `route: 'oneshot'`, `route_source: 'pinned'`, and `status: 'in-progress'`, resolving `date` to the current system date.

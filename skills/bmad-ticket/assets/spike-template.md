@@ -18,7 +18,7 @@ risk: [low|medium|high]
 
 ## Description
 
-[One sentence, the question; gone over with the user at review. Approach below says how it is answered and which tickets wait on it.]
+[The question, why it is open, and which tickets wait on the answer.]
 
 ## Approach
 

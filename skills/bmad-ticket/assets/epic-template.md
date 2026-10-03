@@ -28,7 +28,7 @@ risk: [low|medium|high — the highest expected among its children]
 
 ## Done when
 
-[Three to six checks a person can run without opening a child — the measures, limits, and behaviors from the source. Each fails today, except one that guards what must stay as it is. Closing every child is not one.]
+[Three to six checks the owner runs at the end, taken from the source's measures and limits. Closing every child is not one.]
 
 ## Boundaries
 

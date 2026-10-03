@@ -486,6 +486,14 @@ def _resolve(tree: dict) -> None:
     slugs = {i: slug for slug, i in tree["epic_ids"].items()}
     ids = {c["tracker_id"]: slug for slug, c in containers.items() if c["tracker_id"]}
     ids.update({t["tracker_id"]: t["key"] for t in tickets if t["tracker_id"]})
+    owners: dict[str, list[str]] = {}
+    carriers = [(s, c["tracker_id"]) for s, c in containers.items()] + [(t["key"], t["tracker_id"]) for t in tickets]
+    for key, tid in carriers:
+        if tid:
+            owners.setdefault(tid.lower(), []).append(key)
+    for tid, keys in owners.items():
+        if len(keys) > 1:
+            raise TicketError(f"tracker_id {tid!r} is on more than one ticket: {', '.join(keys)}")
 
     def sibling(t, ref, where):
         """A bare number is always a sibling's id and a quoted one never is; an id with a letter is one when a

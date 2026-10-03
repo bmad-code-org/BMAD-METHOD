@@ -597,6 +597,22 @@ covers = ["R2", "R3"]
         self.assertEqual([u["ref"] for u in err["unmatched"]], ["SHOP-2"])
         self.assertEqual((self.epic / "story-scaffold.md").read_bytes(), before)
 
+    def test_a_tracker_id_on_two_tickets_is_refused_and_a_mirror_that_makes_one_rolls_back(self):
+        self.write_store("linear")
+        self.breakdown_epic()
+        self.add("story-scaffold.md", ticket("", 1, tracker_id='"SHOP-1"'))
+        before = (self.epic / "story-scaffold.md").read_bytes()
+        # The same id again, in another case, would make `after = ["SHOP-1"]` point at whichever was read last.
+        r = self.mirror([{"ref": 2, "tracker_id": "shop-1"}])
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("more than one ticket", json.loads(r.stderr)["error"])
+        self.assertEqual((self.epic / "story-scaffold.md").read_bytes(), before)
+        self.assertFalse((self.epic / "story-ui-shell.md").exists())
+        self.add("story-ui-shell.md", ticket("", 2, after="[1]", tracker_id='"SHOP-1"'))
+        r = run("status", str(self.epic))
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("tracker_id 'shop-1' is on more than one ticket", json.loads(r.stderr)["error"])
+
     def test_mirror_writes_nothing_when_a_value_is_refused_or_breaks_the_tree(self):
         self.write_store("jira")
         self.breakdown_epic()
