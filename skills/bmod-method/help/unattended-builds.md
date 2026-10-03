@@ -56,7 +56,7 @@ When review halts on `intent gap`, the run saves the attempted change as a patch
 - `risk` in the frontmatter: `low`, `medium`, or `high`, the ticket's risk confirmed or raised at planning. `bmad-build` writes it too. A CI process can read it to decide how much review a change gets; BMad ships no such process.
 - `deferred` in the frontmatter: real findings that were not this ticket's problem. Nothing files them; the user decides whether to make tickets.
 - `Auto Run Result`: summary, review findings, verification, residual risks.
-- The run commits locally and never pushes.
+- `workflow.commit` defaults to `auto`, which commits locally and never pushes. `stage` leaves the reviewed diff staged and does not advance `HEAD`; the caller should commit before the next run, or the clean-tree check halts. `handoff` commits through `workflow.commit_handoff`.
 - After the epic's last ticket, recommend `bmad-retrospective`.
 
 ## When it fits

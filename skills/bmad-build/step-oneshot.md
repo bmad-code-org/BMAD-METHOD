@@ -103,7 +103,17 @@ Update `{plan_file}`:
 
 ### Commit
 
+{% if workflow.commit == "auto" %}
 If git is available and there are uncommitted changes, commit with a conventional message based on the Intent. If git is not available, skip.
+{% elif workflow.commit == "stage" %}
+If git is unavailable, HALT with status `blocked` and record that staging requires version control. Otherwise, stage every file in the reviewed diff since `{baseline_revision}`, including untracked files. Verify no reviewed change remains unstaged or untracked. Do not commit automatically. Run `git write-tree` and include its tree id in the summary. After `workflow.open_plan` and `workflow.on_complete`, run `git write-tree` again and offer the commit only if it still matches. The caller must repeat that check immediately before committing; if the id differs, do not offer or commit, and require the changed index to be reviewed again.
+{% else %}
+If git is unavailable, HALT with status `blocked` and record that the handoff recipe requires version control. Otherwise, follow this recipe to create a local commit before continuing:
+
+{{ workflow.commit_handoff }}
+
+Verify the local commit exists before continuing.
+{% endif %}
 
 ### Present
 

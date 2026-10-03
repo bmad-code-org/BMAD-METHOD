@@ -166,11 +166,25 @@ Set `{plan_file}` frontmatter `followup_review_recommended: false`.
 
 The final status is `built`, or `done` on a follow-up pass of a plan that was `done`.
 
+{% if workflow.commit == "auto" %}
 If version control is unavailable, set `{plan_file}` frontmatter `status` to the final status, then proceed to HALT.
 
 If version control is available, write the final status into `{plan_file}` frontmatter `status`, then:
 
 1. Commit any reviewed-diff files that remain uncommitted, including `{plan_file}` when it is tracked in that working copy. Keep commits already created during this run. Verify every reviewed-diff file appears in the change set after `{baseline_revision}` and none remains uncommitted. Do not push.
 2. Verify the version-controlled working copy is clean. Otherwise HALT with status `blocked` and blocking condition `finalization left repository dirty`.
+{% elif workflow.commit == "stage" %}
+If version control is unavailable, HALT with status `blocked` and record that staging requires version control.
+
+Write the final status into `{plan_file}` frontmatter `status`, then stage every file in the reviewed diff since `{baseline_revision}`, including untracked files and `{plan_file}` if finalization changed it after review. Verify no reviewed change remains unstaged or untracked. Do not commit. HALT with the final status.
+{% else %}
+If version control is unavailable, HALT with status `blocked` and record that the handoff recipe requires version control.
+
+Write the final status into `{plan_file}` frontmatter `status`, then follow this recipe to create a local commit before continuing:
+
+{{ workflow.commit_handoff }}
+
+Verify every reviewed-diff file appears in the change set after `{baseline_revision}`, no reviewed change remains uncommitted, and the working copy is clean. Otherwise HALT with status `blocked` and blocking condition `finalization left repository dirty`. Do not push.
+{% endif %}
 
 HALT with the final status.

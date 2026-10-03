@@ -12,6 +12,10 @@
 
 [workflow]
 
+# End-of-run commit behavior. `auto` preserves the default local commit.
+commit = "auto"
+commit_handoff = ""
+
 # Extra instructions to run before config is loaded.
 
 activation_steps_prepend = []
