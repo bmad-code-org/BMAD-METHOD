@@ -1,6 +1,6 @@
 ---
 name: bmad-ticket
-description: Create and manage tickets — initiatives, epics, stories, bugs. Use when the user says "create a new initiative", "slice this initiative", "split this epic up", "break this into stories", "incept this epic", "make a ticket", "refine this ticket", "what's ready", "status of a story", "publish ticket changes", "validate these tickets", "size this epic", "set up the ticket store".
+description: Create and manage tickets — initiatives, epics, stories, bugs. Use when the user says "create a new initiative", "slice this initiative", "split this epic up", "break this into stories", "incept this epic", "make a ticket", "refine this ticket", "what's ready", "status of a story", "publish ticket changes", "validate these tickets", "set up the ticket store".
 ---
 
 # BMad Ticket
@@ -32,7 +32,7 @@ When the user asks you to do the thinking without the conversation, the same gui
 
    Tickets are drafted under `{output_folder}/{active_initiative}/` — an initiative folder, or a backlog folder scoped however the user wants. Unset: offer to create the initiative folder, or a backlog folder, and record it as `active_initiative` under `[core]` in `{project-root}/_bmad/custom/config.user.toml`.
 2. Read the store config: `uv run {skill-root}/scripts/read_store.py --project-root {project-root} -k tickets` — the store, how to reach it, and its type and status maps. A project that has set up no store uses the repo store, and this still answers.
-3. Resolve `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} -k workflow.activation_steps_prepend -k workflow.activation_steps_append -k workflow.persistent_facts -k workflow.on_complete`.
+3. Resolve the customization: `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} -k workflow`. A `{workflow.<key>}` in a reference is that key's value in this result.
 4. Run `{workflow.activation_steps_prepend}`. Treat `{workflow.persistent_facts}` as foundational context for the session: entries prefixed `file:` are paths or globs under `{project-root}` to load, the rest are facts verbatim.
 5. Run `{workflow.activation_steps_append}`. When the requested operation ends, run `{workflow.on_complete}`.
 
@@ -41,9 +41,8 @@ When the user asks you to do the thinking without the conversation, the same gui
 For a request that creates work, size it from what the user said and what is in context, and say which path you are taking and why; the user overrides, and an override is a `Decision:` line.
 
 - **Standalone** — one bug or story: `references/ticket.md`; a file in `backlog/`, or an entry in the epic the user names; no spec offered, the single-ticket check.
-- **Small epic** — two to six entries: the epic path in `references/slice.md` with an epic envelope under the initiative, a spec (`bmad-spec`) offered once and easy to decline, and no subagents to learn the codebase; the check on the draft in `references/validate.md` still runs.
-- **Full inception** — the epic path in `references/slice.md`.
-- **Initiative** — authored and split into epics per `references/slice.md`.
+- **Epic** — more than one ticket, all of which one epic holds: the epic path in `references/slice.md`.
+- **Initiative** — work that needs more than one epic: authored and split into epics per `references/slice.md`.
 
 A spec folder handed over by `bmad-spec` is the epic's requirement source: `covers` cites its `CAP-N` ids and no spec is offered.
 
@@ -55,16 +54,13 @@ A spec folder handed over by `bmad-spec` is the epic's requirement source: `cove
 | one ticket written, reviewed, or refined | `{skill-root}/references/ticket.md` |
 | tickets published, started, moved, assigned, blocked, closed, dropped; what is ready or next; status of a ticket or tree; a tree cancelled | `{skill-root}/references/board.md` |
 | a ticket, a set, or a tree validated | `{skill-root}/references/validate.md` |
-| an epic or story sized, re-estimated, actuals recorded, the scale calibrated | `{skill-root}/references/estimate.md` |
 | a tracker connected; the store reconfigured or switched | `{skill-root}/references/store-setup.md` |
 
 `tickets.py` in this skill is `uv run {skill-root}/scripts/tickets.py --project-root {project-root}`. On the repo store, for "what is ready" or "what is the status", run `tickets.py next` or `tickets.py status` first and answer from it: it covers the active initiative and `backlog/`. Open `references/board.md` to act on a row, or when `problems`, `drift`, `unpinned_after`, `undeclared_after`, or `order_conflict` comes back with something in it. On a tracker, open `references/board.md` first.
 
-## Loaded on demand
+## Store operations
 
-**Customization** — a `{workflow.<key>}` in a reference means: resolve it with `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} -k workflow.<key>` (repeat `-k`) rather than opening `customize.toml`. Keys: `slice_to_epics`, `slice_to_tickets`, `ordering`, `acceptance_criteria`, `scoring`, `estimation`, `publication`, `checks` (`.ticket`, `.set`, `.tree`, `.dependencies`, `.closure`), and `<type>_template` (a file path; open the file directly).
-
-**Store operations** — `uv run {skill-root}/scripts/read_store.py --project-root {project-root} -k verbs.<name>` (repeat `-k`), then follow the verb as written. A verb holds the store's own commands; the rules every store shares are in `references/board.md`.
+`uv run {skill-root}/scripts/read_store.py --project-root {project-root} -k verbs.<name>` (repeat `-k`), then follow the verb as written. A verb holds the store's own commands; the rules every store shares are in `references/board.md`.
 
 | Verb | For |
 |---|---|

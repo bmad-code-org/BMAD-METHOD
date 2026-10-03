@@ -1,6 +1,6 @@
 # Slicing
 
-An initiative is sliced into epics: containers the product owner and developer own and complete. Inception plans the whole selected epic so AI agents can build it. The user's preference for a split comes first. Three keys hold the team's own rules: `{workflow.slice_to_epics}` for epic boundaries, `{workflow.slice_to_tickets}` for the size of a breakdown, and `{workflow.ordering}` for what opens and closes one.
+An initiative is sliced into epics: containers the product owner and developer own and complete. Inception plans the whole selected epic so AI agents can build it. The user's preference for a split comes first.
 
 When an initiative has epics, every story is under an epic. Work that fits one epic is proposed as one epic; say so. Never offer an initiative without epics: it happens only at the user's request, is planned like an epic with stories directly underneath, and you say once that the initiative folder fills with ticket files.
 
@@ -10,7 +10,7 @@ Apply this when authoring the initiative or incepting the selected epic.
 
 1. **Envelope.** A document in the folder is an input, not the container. When the container file is missing, offer to create it from its template: title, a paragraph of intent, Outcome, Done when, boundaries, known decisions, and references. An epic also records its parent and the parent requirement ids it owns in `covers`. Done when is three to six checks at the altitude of the source's ids; it is the definition of the container and is never deferred.
 2. **The requirement source at this altitude.** The template's Requirements placeholder says what the section holds. A numbered spec anywhere in the container's folder is the source instead. Offer `bmad-spec` only when the source outgrows the section or the user asks, and pass it the container's folder: its `spec-<slug>/` goes inside that folder, owns the ids, and `covers` still maps them upward. The architecture spine, UX design, and research inform everything below either way.
-3. **Complete the container** per `ticket.md`: the requirement source, constraints as References, known unknowns in Notes, and a re-read of Outcome and Done when against the source. The product owner and developer agree on its scope: propose the fields together with reasons, discuss what is unsettled rather than repeating decisions already made, and confirm before slicing. With estimation on (`{workflow.estimation}`), offer an imagined-split size per `estimate.md`; XL is the cue to offer splitting the epic first.
+3. **Complete the container** per `ticket.md`: the requirement source, constraints as References, known unknowns in Notes, and a re-read of Outcome and Done when against the source. The product owner and developer agree on its scope: propose the fields together with reasons, discuss what is unsettled rather than repeating decisions already made, and confirm before slicing.
 
 ## Learn the codebase and team first
 
@@ -28,8 +28,16 @@ Record each choice the user makes while slicing — a boundary, the tracer bulle
 
 ## Initiative into epics
 
-Existing epics are the working set: read them first and revise them in place, or drop one per `board.md` when it no longer fits; add only after the user confirms the set is insufficient. Propose the boundaries per `{workflow.slice_to_epics}`, within these rules:
+Existing epics are the working set: read them first and revise them in place, or drop one per `board.md` when it no longer fits; add only after the user confirms the set is insufficient. Draw the boundaries by the team's own rule, `{workflow.slice_to_epics}`, when it is set. Otherwise:
 
+- An epic is one capability from the source, or a tightly coupled pair, delivered to production by one owner: a dev or pair with agent lanes.
+- Propose epics along the source's capabilities. Merge two when one owner and one module deliver both. Two epics need at most a contract between them; say what each needs from the ones before it.
+- A unit (module, service, or bounded context) is an epic boundary when it is also the ownership or deployment boundary and its Done when still reads as something a product owner can check. A module that is only a code folder is not.
+- An epic whose boundary names more than one outcome or owner is two epics.
+
+Under either rule:
+
+- No boundary applies: one epic. Split only for a distinct outcome, owner, or a part the user wants usable early, never for a ticket count.
 - A unit the work only consumes or configures gets no epic: it is a touch point, named in the initiative's Boundaries with the epic that owns the work there.
 - The platform baseline (scaffold, environments, CI, deployment, operations) is the opening epic, the first `[[epic]]` in the initiative's breakdown, or the first stories of the first epic.
 - Every epic delivers to production; its Done when includes the integrated verification for what it delivers.
@@ -59,8 +67,14 @@ What makes a good story:
 - A lane is a run of stories that touch the same code, in order; stories in different lanes never touch the same code. Two that would are one story, or one waits on the other. A boundary two lanes share gets its interface and a stub as its own early story, so both lanes open at once.
 - Done is one runnable check. A story whose check needs another story's work goes after it.
 - Split, never shrink: "for now", "placeholder", "simplified", "wired later" is a second story.
-- Setup and each hitl step go on the first story that needs them, under the relevant epic and never loose under the initiative; initiative-wide setup belongs to the opening epic. Tests are part of every story, never a story of their own.
-- `{workflow.ordering}` says what opens and closes the breakdown, and `{workflow.slice_to_tickets}` how many stories is typical; past that size, offer a split first.
+- Setup and each hitl step go on the first story that needs them, under the relevant epic and never loose under the initiative; initiative-wide setup belongs to the opening epic. Tests are part of every story; the one test story is the closing end-to-end suite below.
+- Eight to twelve stories is typical, not a limit. Fifteen can be right when they are one lane with one owner; six can be too many when two owners are inside. Past the typical range, say so and offer a split first; the user decides.
+
+What opens and closes the breakdown:
+
+- Offer an opening refactor when poor code quality or missing standards would make the epic's tickets hard.
+- An epic of more than three entries gets a closing story "Refactor sweep" that waits on every other entry except a closing end-to-end suite. Its scope is set when it starts, from the plans and the review findings deferred during the epic. It takes cleanup only; scope pushed out of another story is a new story. Propose it by default; when the user declines, record a `Decision:` line in the epic's Notes.
+- One closing end-to-end suite across the epic, after the sweep, is offered when the source has a test plan or the user wants one.
 
 Draft one breakdown in build order, run the set check in `validate.md` on the draft, then present it, and adjust size, order, and prerequisites with the user until they approve the set. Each entry follows `{skill-root}/assets/tickets-template.toml` and has an `id` it keeps for good; the order of the tables is the build order. What the template does not say:
 
@@ -68,14 +82,14 @@ Draft one breakdown in build order, run the set check in `validate.md` on the dr
 - `after` holds real prerequisites only, never the sequence. For each `after` on this epic in the initiative's breakdown, put the provider in `after` of every entry that needs it: `<epic id>.<entry id>` when the providing entry exists, `epic-<slug>` until it does.
 - `refine = true` only where the user asks for full criteria on that entry; a bug gets them without it.
 - `references` holds only what the entry needs beyond the epic's own References: a spine section, a design screen, a document. `notes` holds only what the user said, in their words.
-- When the epic will run unattended, ask for `plan_checkpoint` and `done_checkpoint` per entry.
+- When the epic will run unattended, ask for `plan_checkpoint` and `done_checkpoint` per entry, proposing `plan_checkpoint` on a high-risk one.
 - Each touch point this epic owns is an entry or part of one.
 
 With the draft, name the tracer bullet, what can run in parallel, and any deferred scope. With the approval question, ask once whether the user wants to change a description or add a note or reference to any entry.
 
 A split at inception is a second epic folder and envelope, a new `[[epic]]` in the initiative's breakdown with its `after`, the covers ids moved, and the agreed entries placed under the right epic; no file is renamed.
 
-On approval, write the whole set into the epic's `tickets.toml`. No leaf file is written until its entry is pulled. With estimation on, each entry carries its points.
+On approval, write the whole set into the epic's `tickets.toml`. No leaf file is written until its entry is pulled.
 
 Then run `uv run {skill-root}/scripts/tickets.py --project-root {project-root} status <initiative folder>`. In `epics`, this epic's `blocks` lists the tickets in other epics whose `after` names the whole epic; replace each with the entry that delivers what it waits for. Clear any `unpinned_after`, `undeclared_after`, or `order_conflict` it reports as `board.md` says. Publication follows `board.md`.
 

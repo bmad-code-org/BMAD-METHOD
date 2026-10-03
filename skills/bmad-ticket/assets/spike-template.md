@@ -10,7 +10,6 @@ assignee: ""   # a tracker's assignee, written by `tickets.py mirror`; otherwise
 refined: false   # true once the user approves its full criteria; a pulled spike has this line only when its entry says `refine = true`
 hitl: true
 risk: [low|medium|high]
-estimate: ""   # points, when estimation is on
 ---
 
 <!-- The refined shape. A done or dropped ticket stays as it was written. -->

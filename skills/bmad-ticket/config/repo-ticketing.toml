@@ -19,7 +19,7 @@ Read and write the files under `output_folder`.
 
 fields = """
 risk and severity live in the frontmatter (risk: low|medium|high on any ticket; severity: P0-P3
-on bugs); estimate and estimate_basis the same way. Nothing else carries them.
+on bugs); estimate the same way. Nothing else carries them.
 """
 
 [verbs]

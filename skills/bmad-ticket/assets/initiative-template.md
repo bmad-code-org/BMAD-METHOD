@@ -8,8 +8,6 @@ covers: [capability ids from the spec at this level, or from Requirements below 
 after: []   # epics this whole container waits on; the order of epics is in the initiative's tickets.toml
 assignee: ""   # status is added when work starts (in-progress | done | dropped)
 risk: [low|medium|high — the highest expected among its children]
-estimate: ""   # t-shirt, when estimation is on
-estimate_basis: ""   # envelope | spec | entries | stories
 ---
 
 # [Title]

@@ -13,8 +13,13 @@ epics as `[[epic]]` tables (`id`, `slug`, `after = [{epic, needs}]`). Tables are
 entry. An entry needs no leaf file to start. A ticket needs refining before it starts when it is a
 bug, its entry says `refine = true`, or it has no entry. A leaf file's frontmatter adds
 `tracker_status` and `refined`; its `after` and `hitl` replace the entry's, absent reading as empty,
-and a difference from the entry is `drift` on the status row, which gives the file's and the entry's
-value of each field that differs.
+and a difference from the entry is `drift` on the row, which gives the file's and the entry's
+value of each field that differs. An entry's `unknown` is a question to settle before the ticket starts;
+once the entry is pulled it is the `Unknown:` lines of the file's Notes. A row carries it, and next holds
+the ticket under `blocked` until it is gone. A row also carries `plan_checkpoint` and `done_checkpoint`
+when the entry sets them: the orchestrator of an unattended run reads them, and no build does. `risk`
+(low, medium, high) is the ticket's proposed risk, the leaf file's once it is pulled; the build settles it
+in its plan.
 
 A plan is any other `.md` whose frontmatter has `ticket` and whose `type` is not a leaf type. A
 `ticket` that is an id joins the entry with that id in the plan's folder; any other string joins the
@@ -47,11 +52,13 @@ status's `epics` rows carry the declared `after` with its `needs`, and the epic 
                                  build order; an epic's own `after` waits for that epic to be done. A
                                  `blocked` row's `waiting_on` lists its unmet prerequisites
   status [<dir>]                 every ticket in build order, what it blocks, counts by state, longest chain,
-                                 `next_id` (the id a new ticket in the folder takes), and `estimate` totals
-                                 when tickets carry points
-  find   [<dir>] <ref>           the one ticket a reference names, with its entry's text fields and the
-                                 absolute paths `epic_file`, `story_file` (null until pulled), and `plan`
-                                 (where its plan is or goes)
+                                 `next_id` (the id a new ticket in the folder takes: one past the highest
+                                 number used, or `next_id` at the top of its `tickets.toml` when that is
+                                 higher)
+  find   [<dir>] <ref>           the one ticket a reference names, with its entry's text fields (empty once
+                                 the entry is pulled: the file holds them) and the absolute paths
+                                 `epic_file` (its container's file), `story_file` (null until pulled), and
+                                 `plan` (where its plan is or goes)
   pull   <dir> <id>              write entry id's leaf file: `after` and `hitl` always, other fields only
                                  when the entry sets them; no status
   mark   [<dir>] <ref> <status> [--assignee <who>] [--blocked <reason>]
@@ -123,6 +130,8 @@ BREAKDOWN = "tickets.toml"
 QUOTED_COMMENT_RE = re.compile(r"""^("(?:[^"\\]|\\.)*"|'(?:[^']|'')*')\s+#.*$""")
 FRONTMATTER_RE = re.compile(r"\A---\n(.*?)\n---(?:\n|\Z)", re.S)
 PLAN_FIELDS = ("status", "assignee", "blocked_at", "blocked_reason")
+COMMENT_RE = re.compile(r"<!--.*?-->", re.S)  # a template's example sits in one
+UNKNOWN_RE = re.compile(r"^[ \t]*(?:[-*][ \t]+)?Unknown:[ \t]*(\S.*)$", re.M)
 
 
 class TicketError(Exception):
@@ -230,6 +239,9 @@ def load_breakdown(folder: Path) -> dict:
         data = tomllib.loads(read_text(path))
     except tomllib.TOMLDecodeError as e:
         raise TicketError(f"{where}: {e}") from e
+    floor = data.get("next_id", 0)
+    if isinstance(floor, bool) or not isinstance(floor, int):
+        raise TicketError(f"{where}: `next_id` must be a whole number")
     for table in ("entry", "epic"):
         rows = data.get(table, [])
         if not isinstance(rows, list) or not all(isinstance(r, dict) for r in rows):
@@ -282,6 +294,12 @@ def load_container(folder: Path) -> dict:
     }
 
 
+def file_unknown(text: str) -> str:
+    """The `Unknown:` lines of a leaf file's body, as `pull` writes an entry's `unknown` into Notes."""
+    body = COMMENT_RE.sub("", FRONTMATTER_RE.sub("", text, count=1))
+    return "; ".join(m.group(1).strip() for m in UNKNOWN_RE.finditer(body))
+
+
 def load_folder(folder: Path, problems: list[str]) -> list[dict]:
     """One row per ticket in a folder, in build order: every breakdown entry, joined to its
     leaf file when one exists, then leaf files the breakdown does not list. Plans then set
@@ -314,6 +332,8 @@ def load_folder(folder: Path, problems: list[str]) -> list[dict]:
             "notes": [str(v) for v in e.get("notes", [])],
             "risk": str(e.get("risk", "")),
             "hitl": _flag(e.get("hitl", False)),
+            "plan_checkpoint": _flag(e.get("plan_checkpoint", False)),
+            "done_checkpoint": _flag(e.get("done_checkpoint", False)),
             "covers": [str(c) for c in e.get("covers", [])],
             "estimate": e.get("estimate", ""),
             "blocked_at": "",
@@ -369,8 +389,10 @@ def load_folder(folder: Path, problems: list[str]) -> list[dict]:
                 "hitl": _flag(fm.get("hitl", False)),
                 "covers": [str(c) for c in fm["covers"]] if isinstance(fm.get("covers"), list) else row["covers"],
                 "estimate": fm.get("estimate", row.get("estimate", "")),
+                "risk": fm["risk"] if isinstance(fm.get("risk"), str) else row.get("risk", ""),
                 "blocked_at": fm.get("blocked_at", ""),
                 "blocked_reason": str(fm.get("blocked_reason", "") or ""),
+                "unknown": file_unknown(text),
             }
         )
         row["raw_after"] = _list(fm.get("after", []), f"{where}/{path.name}")
@@ -584,7 +606,9 @@ def classify(tree: dict) -> dict:
             t["waiting_on"] = unmet
             groups["blocked"].append(t)
         elif t["refine"] and not t["refined"]:
-            groups["ready_to_refine"].append(t)
+            groups["ready_to_refine"].append(t)  # refining is where its unknown gets settled
+        elif t.get("unknown"):
+            groups["blocked"].append(t)
         else:
             groups["ready_to_start"].append(t)
     return groups
@@ -721,6 +745,7 @@ def public(t: dict, tree: dict, blocks: dict | None = None) -> dict:
             "state",
             "assignee",
             "hitl",
+            "risk",
             "covers",
             "estimate",
             "refine",
@@ -735,14 +760,15 @@ def public(t: dict, tree: dict, blocks: dict | None = None) -> dict:
         row["gated_by"] = t["gated_by"]
     if blocks is not None:
         row["blocks"] = [ref(b, t["epic"], tree) for b in blocks.get(t["key"], [])]
-        if t["drift"]:
-            row["drift"] = dict(t["drift"])
-            if "after" in row["drift"]:
-                row["drift"]["after"] = {
-                    k: [ref(b, t["epic"], tree) for b in v] for k, v in t["drift"]["after"].items()
-                }
+    if t["drift"]:
+        row["drift"] = dict(t["drift"])
+        if "after" in row["drift"]:
+            row["drift"]["after"] = {k: [ref(b, t["epic"], tree) for b in v] for k, v in t["drift"]["after"].items()}
     if t.get("waiting_on"):
         row["waiting_on"] = [ref(b, t["epic"], tree) for b in t["waiting_on"]]
+    for key in ("unknown", "plan_checkpoint", "done_checkpoint"):
+        if t.get(key):
+            row[key] = t[key]
     return row
 
 
@@ -901,28 +927,13 @@ def cmd_next(args) -> dict:
 
 
 def next_id(tree: dict, folder: str) -> int:
-    """The id a new ticket in the folder takes: one past the highest number its entries and leaf files use."""
+    """The id a new ticket in the folder takes: one past the highest number its entries and leaf files use, or
+    `next_id` at the top of its `tickets.toml` when that is higher."""
     # `6a` uses up 6: a lettered id is a split of that number.
     used = [re.match(r"\d+", str(t["id"])) for t in tree["tickets"] if t["epic"] == folder]
-    return max((int(m.group()) for m in used if m), default=0) + 1
-
-
-def _points(value) -> int | None:
-    if isinstance(value, int) and not isinstance(value, bool):
-        return value
-    return int(value) if isinstance(value, str) and value.isascii() and value.isdigit() else None
-
-
-def estimate_totals(tickets: list[dict]) -> dict | None:
-    """Summed points, dropped tickets left out; None when no ticket carries points."""
-    live = [(t, _points(t["estimate"])) for t in tickets if t["state"] != "dropped"]
-    if all(p is None for _, p in live):
-        return None
-    return {
-        "total": sum(p for _, p in live if p is not None),
-        "remaining": sum(p for t, p in live if p is not None and t["state"] != "done"),
-        "unestimated": sum(1 for _, p in live if p is None),
-    }
+    # An entry moved to another folder took its id along; the counter it left keeps that id from coming back.
+    floor = load_breakdown(tree["folders"][folder]).get("next_id", 0)
+    return max(max((int(m.group()) for m in used if m), default=0) + 1, floor)
 
 
 def status_view(folder: Path) -> dict:
@@ -936,12 +947,10 @@ def status_view(folder: Path) -> dict:
     for t in tree["tickets"]:
         for b in t["after"]:
             blocks.setdefault(b, []).append(t["key"])
-    estimate = estimate_totals(tickets)
     out = {
         "folder": folder.name,
         "tickets": [public(t, tree, blocks) for t in tickets],
         "counts": {"total": len(tickets), **counts},
-        **({"estimate": estimate} if estimate else {}),
         "longest_remaining_chain": longest_remaining_chain(tree),
         "unpinned_after": unpinned_after(tree, declared),
         **cross_epic_after(tree, declared),
@@ -1059,16 +1068,19 @@ def cmd_find(args) -> dict:
     row = public(t, tree)
     if tree.get("fallback") and t["file"]:
         row["ref"] = t["file"]  # as the backlog view names it: an id could name a ticket in the initiative
+    # Once a leaf file exists it holds the text and the entry's copy is no longer kept up. Unlisted and stray
+    # leaves have no entry.
+    entry = {} if t["file"] else t
+    container = home / f"{home.name}.md"  # an epic's file, or the initiative's for a leaf directly under one
     return {
         **row,
         "folder": home.name,
-        # Unlisted and stray leaves have no entry, so no entry text.
-        "description": t.get("description", ""),
-        "verify": t.get("verify", ""),
-        "references": t.get("references", []),
-        "notes": t.get("notes", []),
+        "description": entry.get("description", ""),
+        "verify": entry.get("verify", ""),
+        "references": entry.get("references", []),
+        "notes": entry.get("notes", []),
         "unknown": t.get("unknown", ""),
-        "epic_file": str(home / f"{t['epic']}.md") if t["epic"] in tree["containers"] else None,
+        "epic_file": str(container) if container.is_file() else None,
         "story_file": str(home / t["file"]) if t["file"] else None,
         "plan": str(plan_path(t, tree)),
     }
@@ -1325,10 +1337,12 @@ HELP = {
 its file name.
 
 Output: `ready_to_refine` (needs full criteria first), `ready_to_start`, `in_progress`, and `blocked`; a
-`blocked` row has `waiting_on`, its unmet prerequisites, or `blocked_reason`. A prerequisite is met when it
-is done or in review; an epic's own gate (`gated_by`) waits for that epic to be done. `unpinned_after`,
-`undeclared_after`, `order_conflict`, and `problems` report a tree that needs fixing. Every row carries
-`ref`, which find resolves, and `state`.""",
+`blocked` row has `waiting_on`, its unmet prerequisites, `blocked_reason`, or `unknown`, a question to
+settle before it starts. A prerequisite is met when it is done or in review; an epic's own gate
+(`gated_by`) waits for that epic to be done. `unpinned_after`, `undeclared_after`, `order_conflict`, and
+`problems` report a tree that needs fixing. Every row carries `ref`, which find resolves, `state`, and
+`risk`; a row has `drift` when the leaf file's `after` or `hitl` differs from the entry's, and `plan_checkpoint` or
+`done_checkpoint` when the entry sets it.""",
     "status": f"""Every ticket in build order.
 
 {DIR_HELP} With no <dir>, `backlog` holds the same view of the backlog folder, each row's `ref`
@@ -1336,17 +1350,19 @@ its file name.
 
 Output: `tickets` (each with `status`, `tracker_status`, `state`, `blocks`, and `drift` when the leaf file's
 `after` or `hitl` differs from the entry's, with both values), `counts` by state, `next_id` (the id a new
-ticket in the folder takes, one past the highest number used; on an initiative, in each `epics` row), `estimate` totals when tickets carry
-points, `longest_remaining_chain`, and on an initiative `epics` with each epic's declared `after`.""",
+ticket in the folder takes: one past the highest number used, or `next_id` at the top of the folder's
+`tickets.toml` when that is higher; on an initiative, in each `epics` row), `longest_remaining_chain`, and
+on an initiative `epics` with each epic's declared `after`.""",
     "find": f"""The one ticket a reference names.
 
 {DIR_HELP}
 {BACKLOG_HELP}
 {REF_HELP}
 
-Output: the ticket's row, its entry's `description`, `verify`, `references`, `notes`, and `unknown`, its
-`folder`, and the absolute paths `epic_file`, `story_file` (null until the entry is pulled), and `plan`
-(where its plan is or goes; it may not exist yet).""",
+Output: the ticket's row; its entry's `description`, `verify`, `references`, and `notes`, all empty once
+the entry is pulled, when `story_file` holds them; `unknown`; its `folder`; and the absolute paths
+`epic_file` (the file of the container it is under, null in a backlog folder), `story_file` (null until
+the entry is pulled), and `plan` (where its plan is or goes; it may not exist yet).""",
     "pull": """Write an entry's leaf file from its entry.
 
 <dir> is the epic folder and <id> the entry's id. The file is `<type>-<slug of the title>.md`: `after` and

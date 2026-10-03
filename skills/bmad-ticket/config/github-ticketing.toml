@@ -29,7 +29,7 @@ GitHub renders urls as links; nothing more to do.
 
 [verbs]
 setup = """
-Connect: `gh auth login`.
+Connect, unless `gh auth status` already shows a login: `gh auth login`.
 Labels must exist before they are used. List the repo's labels (`gh label list --limit 1000 --json name`)
 and run `gh label create <name>` for each of these it lacks, comparing names ignoring case: the
 [tickets.types] values except initiative (a milestone), the [tickets.status] values except done and

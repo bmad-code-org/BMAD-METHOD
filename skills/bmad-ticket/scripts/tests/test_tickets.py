@@ -423,20 +423,70 @@ covers = ["R2", "R3"]
         self.add("bug-x.md", ticket("draft", 7, kind="bug"), backlog)
         self.assertEqual(json.loads(run("status", str(backlog)).stdout)["next_id"], 8)
 
-    def test_status_sums_points_and_leaves_dropped_tickets_out(self):
+    def test_a_folders_own_next_id_keeps_a_moved_entrys_id_from_coming_back(self):
+        self.breakdown_epic("next_id = 9\n" + self.BREAKDOWN)
+        self.assertEqual(json.loads(run("status", str(self.epic)).stdout)["next_id"], 9)
+        self.breakdown_epic("next_id = 3\n" + self.BREAKDOWN)
+        self.assertEqual(json.loads(run("status", str(self.epic)).stdout)["next_id"], 5)
+        self.breakdown_epic('next_id = "9"\n' + self.BREAKDOWN)
+        r = run("status", str(self.epic))
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("`next_id` must be a whole number", r.stderr)
+
+    def test_next_and_find_carry_the_drift_too(self):
         self.breakdown_epic()
-        self.assertNotIn("estimate", json.loads(run("status", str(self.epic)).stdout))
-        text = self.BREAKDOWN
-        for title, points in (("Scaffold", "2"), ("UI shell", '"3"'), ("Codes", "5")):
-            text = text.replace(f'title = "{title}"', f'title = "{title}"\nestimate = {points}')
-        self.breakdown_epic(text)
-        self.add("story-scaffold-plan.md", plan(1, "done"))
-        self.add("story-codes-plan.md", plan(4, "dropped"))
-        out = json.loads(run("status", str(self.epic)).stdout)
-        self.assertEqual(out["estimate"], {"total": 5, "remaining": 3, "unestimated": 1})
-        self.breakdown_epic(text.replace('estimate = "3"', 'estimate = "²"'))
-        out = json.loads(run("status", str(self.epic)).stdout)
-        self.assertEqual(out["estimate"], {"total": 2, "remaining": 0, "unestimated": 2})
+        self.add("story-scaffold.md", ticket("draft", 1))
+        self.add("story-ui-shell.md", ticket("draft", 2, after="[]"))
+        drift = {"after": {"file": [], "entry": [1]}}
+        ready = {r["id"]: r for r in self.next()["ready_to_start"]}
+        self.assertEqual(ready[2]["drift"], drift)
+        self.assertNotIn("drift", ready[1])
+        self.assertEqual(json.loads(run("find", str(self.epic), "2").stdout)["drift"], drift)
+
+    def test_an_unknown_holds_a_ticket_until_it_is_settled(self):
+        self.breakdown_epic(self.BREAKDOWN.replace('title = "Scaffold"', 'title = "Scaffold"\nunknown = "Which host?"'))
+        out = self.next()
+        self.assertEqual(out["ready_to_start"], [])
+        row = {e["id"]: e for e in out["blocked"]}[1]
+        self.assertEqual(row["unknown"], "Which host?")
+        self.assertNotIn("waiting_on", row)
+        # Pulled, the file's Notes hold it.
+        self.assertEqual(run("pull", str(self.epic), "1").returncode, 0)
+        self.assertEqual({e["id"]: e for e in self.next()["blocked"]}[1]["unknown"], "Which host?")
+        leaf = self.epic / "story-scaffold.md"
+        text = leaf.read_text(encoding="utf-8")
+        leaf.write_text(text.replace("- Unknown: Which host?", "- Decision: the EU host."), encoding="utf-8")
+        out = self.next()
+        self.assertEqual([e["id"] for e in out["ready_to_start"]], [1])
+        self.assertNotIn("unknown", out["ready_to_start"][0])
+
+    def test_an_unknown_does_not_keep_a_ticket_from_refining(self):
+        self.breakdown_epic(
+            self.BREAKDOWN.replace('title = "Scaffold"', 'title = "Scaffold"\nrefine = true\nunknown = "Which host?"')
+        )
+        self.assertEqual([e["id"] for e in self.next()["ready_to_refine"]], [1])
+        # Refined, and the only `Unknown:` left is a template's example in a comment.
+        self.add("story-scaffold.md", ticket("", 1, refined="true") + "<!-- Example:\n- Unknown: not this one\n-->\n")
+        self.assertEqual([e["id"] for e in self.next()["ready_to_start"]], [1])
+
+    def test_rows_carry_the_checkpoints_an_entry_sets(self):
+        self.breakdown_epic(
+            self.BREAKDOWN.replace(
+                'title = "Scaffold"', 'title = "Scaffold"\nplan_checkpoint = true\ndone_checkpoint = true'
+            )
+        )
+        first, second = self.next()["ready_to_start"][0], self.status_rows(self.epic)[1]
+        self.assertEqual((first["plan_checkpoint"], first["done_checkpoint"]), (True, True))
+        self.assertNotIn("plan_checkpoint", second)
+        self.assertTrue(json.loads(run("find", str(self.epic), "1").stdout)["done_checkpoint"])
+
+    def test_every_row_carries_the_tickets_risk_and_the_leaf_files_wins(self):
+        self.breakdown_epic(self.BREAKDOWN.replace('title = "Scaffold"', 'title = "Scaffold"\nrisk = "medium"'))
+        rows = {r["id"]: r for r in self.status_rows(self.epic)}
+        self.assertEqual((rows[1]["risk"], rows[2]["risk"]), ("medium", ""))
+        self.assertEqual(self.next()["ready_to_start"][0]["risk"], "medium")
+        self.add("story-scaffold.md", ticket("", 1).replace("risk: low", "risk: high"))
+        self.assertEqual(json.loads(run("find", str(self.epic), "1").stdout)["risk"], "high")
 
     def test_a_plan_without_an_assignee_keeps_the_leafs_and_one_with_it_wins(self):
         self.breakdown_epic()
@@ -1090,6 +1140,31 @@ covers = ["R2", "R3"]
         hit = json.loads(run("find", str(self.epic), "1").stdout)
         self.assertEqual(hit["story_file"], str(self.epic.resolve() / "story-scaffold.md"))
         self.assertEqual(hit["plan"], str(self.epic.resolve() / "story-scaffold-plan.md"))
+
+    def test_find_on_a_pulled_entry_leaves_the_text_to_the_file(self):
+        self.breakdown_epic(
+            self.BREAKDOWN.replace(
+                'title = "Scaffold"',
+                'title = "Scaffold"\ndescription = "The service."\nverify = "It runs."\n'
+                'unknown = "Which host?"\nreferences = ["SPINE.md#ad-8"]\nnotes = ["Reuse the mailer."]',
+            )
+        )
+        self.assertEqual(run("pull", str(self.epic), "1").returncode, 0)
+        leaf = self.epic / "story-scaffold.md"
+        leaf.write_text(leaf.read_text(encoding="utf-8").replace("Which host?", "Which region?"), encoding="utf-8")
+        hit = json.loads(run("find", str(self.epic), "1").stdout)
+        self.assertEqual([hit[k] for k in ("description", "verify", "references", "notes")], ["", "", [], []])
+        self.assertEqual(hit["unknown"], "Which region?")
+        self.assertEqual(hit["story_file"], str(self.epic.resolve() / "story-scaffold.md"))
+
+    def test_find_names_the_initiative_file_for_a_leaf_directly_under_it(self):
+        solo = self.root / "out" / "initiative-solo"
+        solo.mkdir()
+        (solo / "initiative-solo.md").write_text("---\ntype: initiative\n---\n# Solo\n")
+        (solo / "tickets.toml").write_text('[[entry]]\nid = 1\ntype = "story"\ntitle = "Only"\n')
+        hit = json.loads(run("find", str(solo), "1").stdout)
+        self.assertEqual(hit["epic_file"], str(solo.resolve() / "initiative-solo.md"))
+        self.assertIsNone(hit["story_file"])
 
     def test_find_and_mark_in_a_backlog(self):
         backlog = self.add_backlog()

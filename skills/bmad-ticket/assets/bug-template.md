@@ -10,8 +10,7 @@ assignee: ""   # a tracker's assignee, written by `tickets.py mirror`; otherwise
 refined: false   # true once the user approves its criteria
 hitl: false
 risk: [low|medium|high]
-severity: [P0|P1|P2|P3]
-estimate: ""   # points, when estimation is on
+severity: [P0|P1|P2|P3]   # P0: outage, data loss, or security exposure. P1: core function broken, no workaround. P2: impaired, a workaround exists. P3: cosmetic
 ---
 
 <!-- The refined shape. A done or dropped ticket stays as it was written. -->

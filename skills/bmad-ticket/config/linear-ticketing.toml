@@ -21,7 +21,7 @@ and blockedBy take identifiers (SHOP-12) or ids, and the exact tool names agains
 
 fields = """
 severity is Linear's priority, set on the issue: P0 = Urgent, P1 = High, P2 = Medium, P3 = Low.
-risk is a label risk:<value>; `setup` creates the three. estimate is Linear's estimate field on a story; a label est:<size> on an epic. Empty field: no priority, no label.
+risk is a label risk:<value>; `setup` creates the three. estimate is Linear's estimate field on a story; a label est:<value> on an epic. Empty field: no priority, no label.
 """
 
 reference = """
@@ -30,8 +30,9 @@ Also pass the url in the issue's links so it shows in the sidebar.
 
 [verbs]
 setup = """
-Connect: `claude mcp add --transport http linear-server https://mcp.linear.app/mcp`, then sign in
-over OAuth. Do not use the deprecated /sse endpoint.
+Connect, unless the Linear tools already answer: add the MCP server https://mcp.linear.app/mcp to
+the agent tool in use (in Claude Code, `claude mcp add --transport http linear-server https://mcp.linear.app/mcp`),
+then sign in over OAuth. Do not use the deprecated /sse endpoint.
 `create_issue_label` for every non-empty value in [tickets.types], `hitl`, and risk:low, risk:medium,
 risk:high that the team lacks. States
 cannot be created from the MCP: `list_issue_statuses`, compare with [tickets.status], and tell the

@@ -32,8 +32,9 @@ Attachments are not in the MCP yet; the description line is the reference.
 
 [verbs]
 setup = """
-Connect: `claude mcp add --transport http trello https://mcp.trello.com/v1`, then sign in over
-OAuth with write permission.
+Connect, unless the Trello tools already answer: add the MCP server https://mcp.trello.com/v1 to
+the agent tool in use (in Claude Code, `claude mcp add --transport http trello https://mcp.trello.com/v1`),
+then sign in over OAuth with write permission.
 The MCP can create a board but not lists or labels. When `board` is empty, offer to create one;
 then ask the user to add the lists in [tickets.status] (Backlog, In Progress, Review, Done) plus
 Initiatives and Epics, and labels for every value in [tickets.types] plus hitl, risk:low, risk:medium, risk:high, and

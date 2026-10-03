@@ -32,8 +32,10 @@ Notion renders urls as links; a Notion page url becomes a mention.
 
 [verbs]
 setup = """
-Connect: `claude mcp add --transport http notion https://mcp.notion.com/mcp`, then sign in over
-OAuth and share the database, or the page it will be created under, with the connection.
+Connect, unless the Notion tools already answer: add the MCP server https://mcp.notion.com/mcp to
+the agent tool in use (in Claude Code, `claude mcp add --transport http notion https://mcp.notion.com/mcp`),
+then sign in over OAuth. Either way, share the database, or the page it will be created under, with
+the connection.
 When `database` is empty: ask which page to create under, then `notion-create-database` named
 Tickets with properties Title (title), Type (select, options per [tickets.types]), Status (status,
 options per [tickets.status]), Parent (relation to this database), Blocked by (relation to this

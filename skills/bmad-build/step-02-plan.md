@@ -11,6 +11,13 @@
 2. Investigate the codebase. When you can, send deep searches to subagents and wait for them in this turn. Tell them to return short summaries only, so this session does not fill up with their notes. Keep only what the work needs: the specific files, symbols or lines, what to reuse, and what not to change. Write that into the Code Map. Do not retell the investigation when implementation starts — the plan already has it.
 
    Do not ask the human during investigation. When something is unclear, look in the repository, planning artifacts, or history first. Keep looking until you know, or until those sources have nothing more to say. Leave any remaining choice for the next step.
+
+   Then score the change's `risk` for `{plan_file}` frontmatter: `low`, `medium`, or `high`. Score what a mistake would cost and how easily one gets past review, and take the higher.
+   - `low`: a mistake shows at once and a revert is clean; the change is contained and well understood.
+   - `medium`: a mistake can slip past review or is costly to unwind — shared code, caching, background jobs, per-environment config, a change across many files, requirements still unclear.
+   - `high`: a revert cannot undo it — schema migrations, data deletion or transformation, auth, payments — or the change is complex enough that review alone will not catch a mistake.
+
+   For a ticket from the tree, start from `risk` in `tickets.py find`'s output and raise it when the investigation shows more; go below it only when the user says so. Write `risk` wherever this step writes `{plan_file}`.
 {% if workflow.route == "oneshot" %}
 3. Read `{{ rendered("plan-template.md") }}` fully and write `{plan_file}`.
    Set `route: 'oneshot'`, `route_source: 'pinned'`, and `status: 'in-progress'`, resolving `date` to the current system date.
@@ -46,7 +53,7 @@
 
 Only when Open Questions is empty.
 
-Present summary. Display the plan file path in whatever form is clickable where you are presenting it (e.g. code citation in chat, CWD-relative path with no leading `/` in terminal). If unsure, use CWD-relative path.
+Present summary, with the plan's `risk` and the reason for it. Display the plan file path in whatever form is clickable where you are presenting it (e.g. code citation in chat, CWD-relative path with no leading `/` in terminal). If unsure, use CWD-relative path.
 
 If token count exceeded 1600 and the user chose to keep the full plan, include the token count and explain why it may be a problem.
 

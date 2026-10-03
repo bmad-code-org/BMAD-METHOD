@@ -15,7 +15,13 @@ A plan is "Ready for Development" when:
 
 - **Actionable**: Every task has a file path and specific action.
 - **Logical**: Tasks ordered by dependency.
-- **Testable**: All ACs use Given/When/Then.
+- **Testable**: All ACs use Given/When/Then, and each one:
+  - states one behavior someone can observe and check without having written the code;
+  - is false before this work and true after it, through this work alone. Behavior that must stay as it is is a boundary, not a criterion; the one exception is a bug's "no change is needed, with proof";
+  - says what must be true, never how to build it. One that names a function, file, or library is an implementation step;
+  - states the rule, not an example: "rejects any quantity over stock on hand", not "rejects quantity 999". A literal only when the value is the requirement.
+
+  Together they cover the happy path, the boundaries, and the failure cases that matter, one per rule, not per test case. Three to eight is usual; more means split, or they became a test plan.
 - **Complete**: No placeholders or TBDs.
 - **Sufficient**: No known requirement, acceptance, dependency, or implementation gaps remain unresolved.
 - **Coherent**: No unresolved ambiguities or internal contradictions.

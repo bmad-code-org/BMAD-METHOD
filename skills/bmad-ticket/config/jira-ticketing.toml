@@ -22,7 +22,7 @@ with `acli jira workitem --help` before first use.
 fields = """
 severity is Jira's priority: P0 = Highest, P1 = High, P2 = Medium, P3 = Low; set it at create
 (--priority, or --from-json when the flag is absent) and change it the same way. risk is a label
-risk-low, risk-medium, or risk-high. estimate is the Story Points field (points on a story; the t-shirt as a label est:<size> on an epic), through --from-json. Empty field: default priority, no label.
+risk-low, risk-medium, or risk-high. estimate is the Story Points field on a story and a label est:<value> on an epic, through --from-json. Empty field: default priority, no label.
 """
 
 reference = """
@@ -31,8 +31,9 @@ acli creates no web links; the description line is the reference.
 
 [verbs]
 setup = """
-Connect: `brew tap atlassian/homebrew-acli && brew install acli`, then
-`acli jira auth login --web --site <site>`.
+Connect, unless acli is already installed and signed in to `site`: install acli (on macOS,
+`brew tap atlassian/homebrew-acli && brew install acli`; elsewhere, per Atlassian's acli install
+guide), then `acli jira auth login --web --site <site>`.
 acli cannot create work types or statuses; those live in the project's settings. At first publish,
 read an existing work item (`acli jira workitem view <key> --json --fields issuetype,status`) and
 the project's work types, compare with [tickets.types] and [tickets.status], and tell the user
