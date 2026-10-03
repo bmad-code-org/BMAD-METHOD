@@ -74,6 +74,7 @@ guide = """
 5. Run every `checklist` item and record its result in the plan. Fix and recheck a failure, or report it; never skip one.
 6. Set the plan's `status` to `done`. When the migration created the store's repository, offer its initial commit now; declined, say the tree is uncommitted. Never push.
 7. Report the tree with `uv run <project-root>/_bmad/method/scripts/tickets.py --project-root <project-root> status <initiative folder>`, the archived sources, files left in place, and missing baselines. Say that `bmad-ticket` replaces the removed `bmad-sprint-planning` and `bmad-create-epics-and-stories`. Next: `bmad-build` on the next entry, with no story file pulled; `bmad-code-review` on a historical plan, leaving its status; `bmad-retrospective` on the epic; `bmad-project-context` for a root `AGENTS.md` naming the active initiative and any workspace conventions. Standalone intent remains valid build input.
+   At the end of the report, output a consolidated rollup table (`v6_key` | `new_id` | `title` | `plan_file` | `status`) to provide an instant lookup map connecting historical commits and logs to the new ticket IDs.
 
 ## What joins the initiative
 
@@ -82,6 +83,8 @@ A file joins an initiative only on evidence: it is named in the PRD's or `epics.
 Unattributed remnants (a `brainstorming/` folder of unrelated sessions, specs nothing consumed, a loose idea file) go to `inbox/`, default yes, asked once in the plan. Each moves as it is, not renamed and given no frontmatter. Declined, they stay where they are. A half-run or a stray memlog with nothing beside it goes to `inbox/archive-v6/`. `inbox/` is created, with its `space.md`, only when something goes there.
 
 An idea or intent file the initiative grew from becomes `initiative-<slug>/intent.md` when it is the one intent, else `idea-<slug>/idea-<slug>.md` inside the initiative. An intent for work not started, and any idea with no initiative, becomes `inbox/intent-<slug>.md`, flat, for `bmad-ticket` to turn into a ticket, an epic, or an initiative later.
+
+A declared `preserve_roots = [...]` array in migration configuration leaves those utility roots (such as `cross-reviews/`, `qa-artifacts/`, `agent-ops/`) untouched in place without interactive prompting.
 
 ## Planning documents
 
@@ -98,6 +101,8 @@ Move each document, never copy. A standalone file gets its own folder, `<type>-<
 
 When several v6 folders or files get the same v7 name once the date or sequence number is dropped, the one with the highest date or sequence takes the name and the others move to `archive-v6/` unchanged, listed in the report. When they differ some other way, the plan asks which one to keep.
 
+ADRs (`adr-*.md`) retain their sequence number or record `supersedes` in frontmatter; superseded ADRs remain in the architecture folder rather than being archived, preserving the continuous architecture decision log.
+
 Retrospectives get no folder: an epic's v6 retro reports combine into `epic-<slug>-retrospective.md` in that epic's folder, the name `bmad-retrospective` reads.
 
 ## The ticket tree
@@ -113,6 +118,8 @@ Each `### Story N.M:` becomes an `[[entry]]` in that epic's `tickets.toml`, in t
 ### Build records
 
 A v6 story file (`<N>-<M>-<slug>.md` or `spec-<N>-<M>-<slug>.md` in the implementation folder) is a build record. When the user agreed to fold unstarted stories, a story whose status, after the file and `sprint-status.yaml` are reconciled, is `backlog`, `ready-for-dev`, `drafted`, or `contexted` gets no plan: its file's intent, criteria, and verification go into its entry, and the file moves to `archive-v6/` unchanged. Any other build record moves beside its entry as `story-<slug>-plan.md`, keeping all criteria, implementation history, and review findings, with the criteria from `epics.md` merged in. Frontmatter: `ticket`, the entry's id (a backlog plan uses its leaf file stem); `status`, mapped below; a build `type` (`feature`, `bugfix`, `refactor`, or `chore`), never `story`; and `baseline_revision` only when the record holds a trustworthy one or a recorded equivalent. Never infer a baseline from today's HEAD; list each missing one in the report.
+
+When an entry matches several build records (such as `spec-<N>-<M>-<slug>.md` and `spec-<N>-<M>-<slug>-2.md` from iterative `bmad-build` runs), the record with the highest sequence number or latest modification takes the plan name `story-<slug>-plan.md`. The earlier records move to `archive-v6/` unchanged, preserving their review and implementation history without creating duplicate plans for the ticket, and are listed in the migration report.
 
 A story with no build record stays an entry with no plan, its full original criteria kept in the entry's description beside its intent. When tracking shows a status past `backlog` but the record is missing, write a minimal plan with that mapped status, saying the record is missing. Never write epic story files; the builder reads the entry and its epic. Plans and any existing leaf files stay in the live tree: plans own status, baseline evidence, and review history. Only the tracking sources, caches, and folded story files are archived.
 
