@@ -720,6 +720,47 @@ class RenderSkillTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("failed to parse", result.stdout)
 
+    def test_missing_workflow_is_recorded_without_changing_halt_contract(self):
+        ws = self._workspace()
+        skill = self._skill(ws, "bmad-build")
+        (skill / "workflow.md").unlink()
+
+        result = self._cli(ws.project, skill)
+
+        self._assert_halt(result, ws)
+        log_path = ws.bmad / "render-errors.log"
+        self.assertIn(f"logged to {log_path}", result.stdout)
+        event = json.loads(log_path.read_text(encoding="utf-8").splitlines()[0])
+        self.assertEqual(event["event"], "render_failed")
+        self.assertEqual(event["kind"], "missing_source")
+        self.assertEqual(event["error_class"], "MissingSourceError")
+        self.assertEqual(event["project_root"], str(ws.project.resolve()))
+        self.assertEqual(event["skill"], str(skill.resolve()))
+        self.assertEqual(event["message"], f"render entry is missing: {skill / 'workflow.md'}")
+
+    def test_other_render_errors_are_appended_and_log_failure_keeps_original_halt(self):
+        ws = self._workspace()
+        skill = self._skill(ws, "bmad-build")
+        config = ws.bmad / "config.toml"
+        config.write_text("[core\\nbad", encoding="utf-8")
+
+        first = self._cli(ws.project, skill)
+        self._cli(ws.project, skill)
+
+        self.assertIn("HALT: failed to parse", first.stdout)
+        self.assertIn("logged to", first.stdout)
+        events = [json.loads(line) for line in (ws.bmad / "render-errors.log").read_text(encoding="utf-8").splitlines()]
+        self.assertEqual(len(events), 2)
+        self.assertTrue(all(event["kind"] == "render_error" for event in events))
+        self.assertTrue(all(event["error_class"] == "ConfigError" for event in events))
+
+        (ws.bmad / "render-errors.log").unlink()
+        (ws.bmad / "render-errors.log").mkdir()
+        failed_log = self._cli(ws.project, skill)
+        self.assertIn("HALT: failed to parse", failed_log.stdout)
+        self.assertNotIn("logged to", failed_log.stdout)
+        self.assertNotIn("Traceback", failed_log.stdout + failed_log.stderr)
+
     def test_missing_wrong_type_and_non_string_layer_id_halt(self):
         template = _team_config(Path("project"))
         missing = template.replace(

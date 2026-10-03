@@ -15,7 +15,7 @@ import re
 import shutil
 import sys
 import tomllib
-from datetime import date, time
+from datetime import UTC, date, datetime, time
 from pathlib import Path
 from typing import Any
 
@@ -35,6 +35,10 @@ from config_utils import (  # noqa: E402
 
 class RenderError(ValueError):
     """Raised when rendering cannot safely publish a snapshot."""
+
+
+class MissingSourceError(RenderError):
+    """Raised when a skill declares no render entry source."""
 
 
 class _ArgumentParser(argparse.ArgumentParser):
@@ -187,13 +191,13 @@ def _load_sources(skill_dir: Path) -> dict[str, str]:
         if not path.is_relative_to(skill_dir):
             raise RenderError(f"render source escapes skill directory: {name}")
         if not path.is_file():
-            raise RenderError(f"render source is missing or not a file: {path}")
+            raise MissingSourceError(f"render source is missing or not a file: {path}")
         try:
             sources[name] = path.read_text(encoding="utf-8")
         except (OSError, UnicodeError) as error:
             raise RenderError(f"failed to read render source {path}: {error}") from error
     if "workflow.md" not in sources:
-        raise RenderError(f"render entry is missing: {skill_dir / 'workflow.md'}")
+        raise MissingSourceError(f"render entry is missing: {skill_dir / 'workflow.md'}")
     return sources
 
 
@@ -630,6 +634,34 @@ def report_owed_setup(skill_dir: Path, project_root: Path) -> None:
     setup_check.report(skill_dir, project_root)
 
 
+def _record_render_error(error: Exception, args: argparse.Namespace | None) -> Path | None:
+    if args is None:
+        return None
+    project_root = Path(args.project_root).resolve()
+    bmad_dir = project_root / "_bmad"
+    if not bmad_dir.is_dir():
+        return None
+
+    log_path = bmad_dir / "render-errors.log"
+    try:
+        skill = Path(args.skill).resolve()
+        event = {
+            "event": "render_failed",
+            "kind": "missing_source" if isinstance(error, MissingSourceError) else "render_error",
+            "error_class": type(error).__name__,
+            "message": str(error),
+            "project_root": str(project_root),
+            "skill": str(skill),
+            "skill_name": skill.name,
+            "timestamp": datetime.now(UTC).isoformat(),
+        }
+        with log_path.open("a", encoding="utf-8") as stream:
+            stream.write(json.dumps(event, ensure_ascii=False) + "\n")
+    except OSError:
+        return None
+    return log_path
+
+
 def main() -> int:
     parser = _ArgumentParser(description=__doc__)
     parser.add_argument("--project-root", required=True)
@@ -639,6 +671,7 @@ def main() -> int:
     reconfigure = getattr(sys.stdout, "reconfigure", None)
     if reconfigure is not None:
         reconfigure(encoding="utf-8")
+    args = None
     try:
         args = parser.parse_args()
         report_owed_setup(Path(args.skill).resolve(), Path(args.project_root).resolve())
@@ -646,7 +679,10 @@ def main() -> int:
             Path(args.project_root), Path(args.skill), overrides=args.overrides, assignments=args.assignments
         )
     except (ConfigError, RenderError, OSError, UnicodeError, ValueError) as error:
-        sys.stdout.write(f"HALT: {' '.join(str(error).splitlines())}\n")
+        message = " ".join(str(error).splitlines())
+        log_path = _record_render_error(error, args)
+        logged = f" (logged to {log_path})" if log_path is not None else ""
+        sys.stdout.write(f"HALT: {message}{logged}\n")
         return 1
     sys.stdout.write(f"read and follow {entry}\n")
     return 0
