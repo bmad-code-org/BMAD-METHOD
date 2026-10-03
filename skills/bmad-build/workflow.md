@@ -1,3 +1,5 @@
+{% if workflow.commit not in ("auto", "stage", "handoff") %}{{ halt("workflow.commit must be auto, stage, or handoff") }}{% endif %}
+{% if workflow.commit == "handoff" and not workflow.commit_handoff %}{{ halt("workflow.commit_handoff is required when workflow.commit is handoff") }}{% endif %}
 {% if workflow.route not in ("oneshot", "full", "auto") %}{{ halt("workflow.route must be oneshot, full, or auto, not " ~ workflow.route) }}{% endif %}
 {% if workflow.review not in ("none", "quick", "thorough", "auto") %}{{ halt("workflow.review must be none, quick, thorough, or auto, not " ~ workflow.review) }}{% endif %}
 # Build New Preview Workflow

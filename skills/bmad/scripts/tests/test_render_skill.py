@@ -627,6 +627,48 @@ class RenderSkillTests(unittest.TestCase):
                 self.assertIn("Quick (`quick`)", markdown)
                 self.assertNotIn((snap / "review-prompts" / "edge-case-hunter.md").as_posix(), markdown)
 
+    def test_build_skills_render_each_commit_mode(self):
+        for name in ("bmad-build", "bmad-build-auto"):
+            with self.subTest(name=name):
+                ws = self._workspace()
+                skill = self._skill(ws, name)
+                default = rs.render(ws.project, skill).parent
+                auto = rs.render(ws.project, skill, assignments=["workflow.commit=auto"]).parent
+                self.assertEqual(_files(default), _files(auto))
+
+                staged = rs.render(ws.project, skill, assignments=["workflow.commit=stage"]).parent
+                staged_markdown = _markdown(staged)
+                self.assertIn("stage every file", staged_markdown, name)
+                self.assertNotIn("create a local commit", staged_markdown, name)
+                if name == "bmad-build":
+                    self.assertIn("git write-tree", staged_markdown, name)
+                else:
+                    self.assertNotIn("git write-tree", staged_markdown, name)
+
+                handoff = rs.render(
+                    ws.project,
+                    skill,
+                    assignments=[
+                        "workflow.commit=handoff",
+                        "workflow.commit_handoff=HANDOFF-RECIPE-SENTINEL",
+                    ],
+                ).parent
+                self.assertIn("HANDOFF-RECIPE-SENTINEL", _markdown(handoff), name)
+
+    def test_build_skills_reject_invalid_commit_settings(self):
+        for name in ("bmad-build", "bmad-build-auto"):
+            with self.subTest(name=name, setting="invalid"):
+                ws = self._workspace()
+                skill = self._skill(ws, name)
+                with self.assertRaisesRegex(rs.RenderError, "workflow.commit must be auto, stage, or handoff"):
+                    rs.render(ws.project, skill, assignments=["workflow.commit=invalid"])
+
+            with self.subTest(name=name, setting="empty handoff"):
+                ws = self._workspace()
+                skill = self._skill(ws, name)
+                with self.assertRaisesRegex(rs.RenderError, "workflow.commit_handoff is required"):
+                    rs.render(ws.project, skill, assignments=["workflow.commit=handoff"])
+
     def test_skill_root_binds_bundled_scripts_to_the_installed_skill(self):
         ws = self._workspace()
         skill = self._skill(ws, "bmad-retrospective")

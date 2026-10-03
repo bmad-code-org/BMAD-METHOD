@@ -184,7 +184,7 @@ On successful completion, the workflow writes or updates the plan with:
 - `risk` — `low`, `medium`, or `high`, the business impact if the change is wrong, scored at planning. For a ticket it starts from the ticket's risk and is never lower. A CI process can read it to decide how much review the change gets.
 - `deferred` frontmatter entries for review findings triaged `defer`. Each item records `summary`, `evidence`, and, when known, `location` plus `severity`.
 
-The workflow commits but does not push. The working copy is clean at exit.
+By default, the workflow commits locally and exits clean; `workflow.commit = "handoff"` also commits through `workflow.commit_handoff`. With `workflow.commit = "stage"`, it stages the reviewed diff and exits without a commit. The caller should commit before dispatching the next ticket, because its clean-tree check otherwise halts; `baseline_revision..HEAD` stays empty until that commit. None of these modes pushes.
 
 ### On `blocked`
 
