@@ -135,7 +135,11 @@ UNKNOWN_RE = re.compile(r"^[ \t]*(?:[-*][ \t]+)?Unknown:[ \t]*(\S.*)$", re.M)
 
 
 class TicketError(Exception):
-    pass
+    """`data` is added to the error object the command prints."""
+
+    def __init__(self, message: str, **data):
+        super().__init__(message)
+        self.data = data
 
 
 class NoMatch(TicketError):
@@ -1318,7 +1322,8 @@ def cmd_mirror(args) -> dict:
                     path.write_bytes(raw)
             except OSError:  # keep restoring the rest; the first failure is the one reported
                 pass
-        raise TicketError(f"nothing was mirrored: {e}") from e
+        # The discovery procedure needs `unmatched` even when a known ticket's `after` named one of them.
+        raise TicketError(f"nothing was mirrored: {e}", **({"unmatched": unmatched} if unmatched else {})) from e
     return {"folder": folder.name, "store": store, "mirrored": mirrored, "unmatched": unmatched}
 
 
@@ -1385,7 +1390,8 @@ that already carries that id) and any of `tracker_id`, `remote`, `tracker_status
 `assignee`, and `after` (a list: a number is a sibling's id, a string any other prerequisite form, a
 tracker id included). Only the keys given are written, an empty string removes the line, and `status` is
 never written. An entry with no leaf file is pulled first. A ticket the tree does not hold is listed under
-`unmatched` and the rest are written; values that would leave the tree unreadable write nothing.""",
+`unmatched` and the rest are written; values that would leave the tree unreadable write nothing, and the
+error then still lists `unmatched`.""",
 }
 
 
@@ -1447,7 +1453,7 @@ def main() -> int:
         print(json.dumps({"error": str(e)}), file=sys.stderr)
         return 2
     except (TicketError, OSError, ValueError) as e:
-        print(json.dumps({"error": str(e)}), file=sys.stderr)
+        print(json.dumps({"error": str(e), **getattr(e, "data", {})}, ensure_ascii=False), file=sys.stderr)
         return 1
 
 

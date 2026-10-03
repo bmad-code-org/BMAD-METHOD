@@ -582,6 +582,21 @@ covers = ["R2", "R3"]
         self.assertEqual([u["ref"] for u in out["unmatched"]], ["SHOP-99"])
         self.assertEqual(self.status_rows(self.epic)[0]["state"], "done")
 
+    def test_a_failed_mirror_still_lists_the_unmatched_tickets(self):
+        self.write_store("linear")
+        self.breakdown_epic()
+        self.add("story-scaffold.md", ticket("", 1, tracker_id='"SHOP-1"'))
+        before = (self.epic / "story-scaffold.md").read_bytes()
+        # A known ticket now waits on a tracker item the tree does not hold yet.
+        r = self.mirror(
+            [{"tracker_id": "SHOP-1", "after": ["SHOP-2"]}, {"tracker_id": "SHOP-2", "tracker_status": "backlog"}]
+        )
+        self.assertEqual(r.returncode, 1)
+        err = json.loads(r.stderr)
+        self.assertIn("nothing was mirrored", err["error"])
+        self.assertEqual([u["ref"] for u in err["unmatched"]], ["SHOP-2"])
+        self.assertEqual((self.epic / "story-scaffold.md").read_bytes(), before)
+
     def test_mirror_writes_nothing_when_a_value_is_refused_or_breaks_the_tree(self):
         self.write_store("jira")
         self.breakdown_epic()
