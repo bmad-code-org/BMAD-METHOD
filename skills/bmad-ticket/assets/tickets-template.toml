@@ -2,7 +2,7 @@
 # The order of the tables is the build order: move a table to reorder. `id` names a child for good and is never reused; it is not an order.
 # An epic's file holds [[entry]] tables. An initiative's holds [[epic]] tables; with no epics it holds [[entry]] tables.
 # Keys tickets.py does not know are ignored, so a team may add its own.
-# Status never lives here: an entry with no plan and no leaf file is planned; its plan beside it carries `status`, and on a tracker `query` writes `tracker_status` in the leaf file.
+# Status never lives here: an entry with no plan and no leaf file is planned; its plan beside it carries `status`, and on a tracker `tickets.py mirror` writes `tracker_status` in the leaf file.
 
 # ---- In an epic folder: one table per planned story, spike, or bug ----
 
@@ -16,8 +16,8 @@ covers = ["R1"]             # ids from the epic's requirement source
 after = []                  # real prerequisites only, never the sequence; empty means it can run beside anything above it. A bare number is a sibling's id; everything else is quoted
 hitl = true                 # a person runs the starter
 risk = "low"                # low | medium | high
-# estimate = 2              # points, when estimation is on
-# unknown = "..."           # known uncertainty, one sentence
+# estimate = 2              # only when the user gives one; never proposed
+# unknown = "..."           # a question to settle with the user before this entry starts, one sentence; `tickets.py next` lists the entry under blocked until it is removed
 # references = ["architecture-checkout/architecture-checkout.md#ad-8"]   # what this entry needs beyond the epic's own References; pull writes them to the ticket
 # notes = ["..."]           # the user's words only, never filled by the agent; pull writes them to the ticket's Notes
 # refine = true            # refine to full acceptance criteria before it starts

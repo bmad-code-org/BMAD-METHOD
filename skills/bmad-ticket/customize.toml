@@ -12,146 +12,39 @@ activation_steps_append = []
 persistent_facts = []   # `file:` entries are paths or globs under {project-root}; anything else is a fact verbatim
 on_complete = ""
 
-# What refining means. An epic's stories are not expanded to full acceptance criteria here: the builder
-# questions the user and writes the criteria into its plan.
-refinement = """
-- Refining an epic's stories pulls the file when the entry has none, then reviews the file with the user: description, `Verify:`, references, notes, order, and prerequisites. Edits go to the file; order to `tickets.toml`; `after` to both, since the file's wins once it exists. It writes no Given/When/Then.
-- Full acceptance criteria are written here only for a ticket with no epic, for a bug, and for an entry the user asks it for. That entry carries `refine = true`; a bug entry always does. Never propose it for a story.
-"""
+# The keys below are settings a team picks. The method — how an initiative and an epic are sliced, what a
+# good acceptance criterion is, how risk is scored, what the checks are — is in references/ and is not a
+# key. A team rule on top of the method goes in `persistent_facts`, or in the project's AGENTS.md when the
+# build skills need it too (the risk definition, the criteria rule).
 
-# When tickets publish to a tracker; on the repo store, committing the approved tickets.toml is the publish. auto: the whole
+# When tickets publish to a tracker; on the repo store, committing the approved tickets.toml is the publish. at_inception: the whole
 # agreed breakdown at inception, so the team sees the plan there; on_start: each ticket when it starts. The user can override.
-publication = "auto" # auto | on_start | at_inception
+publication = "at_inception" # at_inception | on_start
 
-# How to propose epic boundaries, offered while slicing an initiative. A team replaces this with its
-# own rule, or points at where its boundaries are recorded — a url, AGENTS.md, a team map, anything
-# the agent can read.
-slice_to_epics = """
-An epic is one capability from the source, or a tightly coupled pair, delivered to production by one owner: a dev or pair with agent lanes.
-- Work that fits one epic is proposed as one epic; say so. Never offer an initiative without epics. When the user asks for tickets with no epic, do it and say once that the initiative folder fills with ticket files.
-- Propose epics along the source's capabilities. Merge two when one owner and one module deliver both. Two epics need at most a contract between them; say what each needs from the ones before it.
-- A unit (module, service, or bounded context) is an epic boundary when it is also the ownership or deployment boundary and its Done when still reads as something a product owner can check. A module that is only a code folder is not.
-- A unit the work only consumes or configures gets no epic: it is a touch point, named in the initiative's Boundaries with the epic that owns the work there.
-- No boundary applies: one epic. Split only for a distinct outcome, owner, or a part the user wants usable early, never for a ticket count. An epic whose boundary names more than one outcome or owner is two epics.
-- The platform baseline (scaffold, environments, CI, deployment, operations) is the opening epic, or the first stories of the first epic. Every epic delivers to production; its Done when includes the integrated verification for what it delivers.
-"""
+# How this team draws epic boundaries. Empty: the rule in references/slice.md. Set, it replaces that rule:
+# the team's own text, or a pointer to where its boundaries are recorded — a url, AGENTS.md, a team map,
+# anything the agent can read.
+slice_to_epics = ""
 
-# What a container (initiative or epic) must say at its altitude, and who decides it. Offered while
-# authoring the initiative and completing the selected epic at inception. A team replaces the
-# field guidance, the counts, or the split between the product owner and inception.
-container_definition = """
-The product owner and developer agree on the container's scope from the source. Complete the initiative before splitting it, and the selected epic before inception: constraints as references, known unknowns in Notes. Discuss unsettled fields rather than repeating decisions already made.
-Inception defines the whole epic's ticket set, descriptions, verification approaches, dependencies, and integration points. A decision that binds several tickets in one epic is made at inception, or recorded as the `unknown` its entries wait on. A decision a second epic must adopt is an architecture decision: it lives in the architecture spine or the opening epic, never in a spike inside one of the epics that need it.
-"""
+# The team's own validation checks, one array per scope, run with the skill's in references/validate-checks.md.
+# Write `checks.<scope> = [...]`; an override that sets `checks` as one string replaces the whole table.
+checks.ticket = []         # one ticket
+checks.set = []            # every entry in an epic's breakdown
+checks.tree = []           # the initiative and its epic envelopes
+checks.dependencies = []   # missing prerequisites, run with the set and with the tree
+checks.closure = []        # a container before it closes
 
-# How to slice an epic into stories, at inception.
-slice_to_tickets = """
-A slice is one implementation step toward the epic's Done when, small enough that one agent session, starting from the ticket, its epic, and the source, plans and finishes it. It need not be user-visible on its own; the epic is the unit of value.
-- The first ticket is the tracer bullet: the thinnest path through every layer the epic touches, proving they connect. Whatever setup that needs, including a starter the user runs, is a hitl step on that ticket. For it, and for anything the user wants demoable, the entry says what someone can see running when it is done.
-- Contracts and stubs early: a boundary two lanes share gets its interface and a stub as its own slice, so both lanes open at once.
-- Lanes: slices in one lane touch shared code in order; slices in different lanes never touch the same code. Two slices that would: one slice, or one blocks the other.
-- Done is one runnable check. A slice whose check needs another slice's work belongs after it.
-- Too small when setup outweighs the work: merge. An epic that is itself one session's work gets one slice.
-- Eight to twelve slices is typical, not a limit. Fifteen can be right when they are one lane with one owner; six can be too many when two owners are inside. Past the typical range, say so and offer a split; the user decides.
-- Split, never shrink: "for now", "placeholder", "simplified", "wired later" is a second slice.
-- After the tracer bullet, the slice the user is least sure of.
-"""
-
-# Ordering guidance offered while slicing and writing. A team tightens or replaces any of these in
-# its override file.
-ordering = """
-- Put setup and each hitl step on the first ticket it blocks; with epics, that ticket is under the relevant epic, never loose under the initiative. Initiative-wide setup belongs to the opening epic.
-- Offer an opening refactor when poor code quality or missing standards would make the epic's tickets hard.
-- An epic of more than three entries gets a closing story "Refactor sweep", blocked by every other entry except a closing end-to-end suite. Its scope is set when it starts, from the build records and the review findings deferred during the epic. It takes cleanup only; scope pushed out of another story is a new story. Propose it by default; when the user declines, record a `Decision:` line in the epic's Notes.
-- Tests are part of every ticket, never a ticket of their own — except one closing end-to-end suite across the epic, after the sweep, offered when the source has a test plan or the user wants one.
-"""
-
-acceptance_criteria = """
-- Each criterion is one behavior someone can observe and check without having written the code.
-- Each is false before this ticket and true after it, through this ticket's work alone.
-- Given/When/Then at the level of behavior, not mechanics: "Given a signed-in user with an empty cart", never "click login, then click cart". What must be true, never how to build it; a criterion that names a function, file, or library is an implementation step.
-- The rule, not an example: "rejects any quantity over stock on hand", not "rejects quantity 999". A literal only when the value is the requirement — a limit, a rounding rule, exact text.
-- Cover the happy path, the boundaries, and the failure cases that matter. One criterion per rule, not per test case.
-- Enough that building the wrong thing cannot pass, no more: usually three to eight. More means split, or the criteria became a test plan.
-"""
-
-# The risk and severity scales. A team replaces the scale or the floors here; how each store carries
-# the fields is the `fields` global in the ticketing store config.
-scoring = """
-- Every ticket gets a risk. low: a mistake shows at once and a revert is clean. medium: a mistake can slip past review or is costly to unwind — shared code, caching, background jobs, per-environment config. high: schema migrations, data deletion or transformation, auth, payments, anything a revert cannot undo. Empty: not scored.
-- High risk names one check outside the ticket's own criteria — a person who confirms, a suite beyond the ticket's tests, a monitor; named in Notes.
-- A bug gets a severity. P0: outage, data loss, or security exposure — drop everything. P1: core function broken, no workaround. P2: impaired, a workaround exists. P3: cosmetic.
-"""
-
-
-prose = """
-- Short declarative sentences, common words, the project's own vocabulary; the reader has only the ticket.
-- Say each thing once; no invented terms, no filler, no metaphor.
-- Offer a rewrite with the reason when a sentence breaks these; the user decides.
-"""
-
-# Validation checks, one array per scope, beyond the standards above (those are re-checked from their own keys).
-# Arrays append: a team's override file adds checks to any scope and cannot remove these. An override that sets
-# `checks` as one string replaces the whole table; write `checks.<scope> = [...]` instead. How they run is
-# references/validate.md.
-checks.ticket = [
-  "Every file or link referenced exists and opens; no unfilled placeholder; every assumption is marked.",
-  "Nothing contradicts the requirement source, its companions, the architecture, or a recorded decision.",
-  "An entry has a description, known uncertainty, and a `verify` check someone other than the builder can run. Full criteria are required before execution only for a bug, an entry with `refine = true`, and a ticket with no epic.",
-  "A ticket that needs full criteria and whose `covers` includes an id named in a `Source conflict:` line with no later `Decision:` settling it has `refined: false`.",
-]
-
-# The set: every entry in the epic's `tickets.toml` or draft breakdown, pulled or not.
-checks.set = [
-  "Together the tickets account for every requirement in the epic's spec, referenced numbered source, or Requirements, except scope deferred with the user. Each covers id exists there; several tickets may cover one id, each description saying which part it delivers.",
-  "UX, architecture, constraints, and integration work are accounted for even when they lack ids. The combined results must satisfy the epic's Done when; citing an id alone is not coverage.",
-  "Every `after` is a real prerequisite, those in other epics included, and none restates the order. Once `tickets.toml` exists, `tickets.py status` on the epic runs clean: no cycle, no `drift`, no `unpinned_after`, `undeclared_after`, or `order_conflict`; the tracer bullet and sequencing decisions are in the epic's Notes.",
-  "Given the epic, an entry, and its references, a builder could write that story's acceptance criteria if it had to. If it could not, fix the epic's requirements or the references; the entry stays one sentence each for `description` and `verify`.",
-  "An epic of more than three entries has the refactor sweep after all other work, or a `Decision:` line says why not.",
-]
-
-# The tree: the initiative and its epic envelopes, drafted or written.
-checks.tree = [
-  "Every initiative requirement has an accountable epic or an agreed deferral. Shared requirements say which part each epic delivers; no unexplained overlap.",
-  "Each epic's covers cites parent ids. Every id it assigns in Requirements or a local spec maps to one of them, and a child citing a local id resolves through that map to a parent id; an epic with empty covers cites a source section on every line instead. Verify the map resolves; a non-empty covers is not coverage.",
-  "Every unit the source touches is an epic, a touch point with an owning epic, or named out of scope.",
-  "Every decision two or more epics must adopt has one home: a spine section, or an entry in the opening epic that the others are blocked by.",
-  "Every epic envelope has Outcome, Done when, boundaries, upstream coverage, and references; a future epic needs neither a breakdown nor a completed spec. The initiative's `tickets.toml` lists every epic in build order, and each `after` names what is needed and from which epic. It opens with a platform-baseline epic, or a `Decision:` line says why not. Each epic's Done when includes production delivery.",
-  "With epics, no leaf sits directly under the initiative.",
-]
-
-# Missing prerequisites, run with the set and with the tree. An item is an entry in the set and an epic in the tree;
-# a prerequisite is an `after` on either.
-checks.dependencies = [
-  "Needs: list what must exist before each item can start and before its check can run: code, schema, setup, test tooling, fixtures, an entry point, a decision, an investigation's answer. The item builds it itself, or something in its `after` delivers it.",
-  "Collisions: two items with no dependency path between them can run at the same time, so they share no code, config, schema, or setup. Where they would, one goes in the other's `after` or they merge.",
-  "Shared setup: whatever more than one item needs (test harness, scaffold, schema, a shared component or contract, an integration) has one owner, the earliest item that needs it, and the others list it in `after`.",
-  "Handoffs: where one item relies on another's output (a default, an interface, a link target), both descriptions say so, so neither builder invents its own.",
-]
-
-checks.closure = [
-  "Verify the container's Done when against implementation evidence and its requirements, including constraints and companions. All known children done is evidence, not proof the parent is complete; explain any dropped work and confirm remaining scope with the user.",
-]
-
-# Ticket templates, one per type. They apply to tickets the agent writes; `tickets.py pull` writes a fixed layout.
-# Swap a template to change the criteria format (the shipped one is
-# numbered Given/When/Then; a table, a checklist) or add your own sections.
+# Ticket templates, one per type. They apply to tickets the agent writes; `tickets.py pull` writes a fixed layout,
+# so a pulled story does not follow `story_template`.
+# Swap a template to change the criteria format (the shipped one is numbered Given/When/Then; a table, a checklist)
+# or to add your own sections. A container's envelope fields and its number of Done when checks are the container
+# templates' too.
 # Keep a home, under any name, for each section references/ticket.md refers to: Description,
 # Acceptance Criteria, Boundaries (stories), References, and Notes; for containers also Outcome,
-# Requirements, and Done when; Reproduction and Cause Hypothesis for bugs, Approach for spikes. `Decision:`, `Dropped:`, and `Estimate:` lines live in Notes.
+# Requirements, and Done when; Reproduction and Cause Hypothesis for bugs, Approach for spikes. `Decision:` and `Dropped:` lines live in Notes.
 # Spikes use "Verify:" lines instead of Given/When/Then, and a pulled story carries one Verify: line unless its entry has `refine = true`; both deliberate.
 initiative_template = "{skill-root}/assets/initiative-template.md"
 epic_template = "{skill-root}/assets/epic-template.md"
 story_template = "{skill-root}/assets/story-template.md"
 spike_template = "{skill-root}/assets/spike-template.md"
 bug_template = "{skill-root}/assets/bug-template.md"
-
-# Estimation, off by default. Points and t-shirts share one unit: a t-shirt is a range of summed
-# story points. How it is used is references/estimate.md; how a store carries the field is its
-# `fields` global. Calibration proposes changes to the rubric and map from closed tickets.
-# Must stay last: a TOML table header ends the [workflow] key list above.
-[workflow.estimation]
-enabled = false
-leaf_scale = [1, 2, 3, 5]
-rubric = "1-2: an agent can do it and it is well understood. 3-5: heavy hitl guidance, or work a person must do."
-tshirt = { XS = "1-3", S = "4-8", M = "9-20", L = "21-40", XL = "41+" }

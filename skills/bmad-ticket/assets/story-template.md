@@ -1,25 +1,24 @@
 ---
-id: [the entry's id in tickets.toml; the next unused one for a ticket with no entry]   # tracker_id and remote are written at publish on a tracker
+id: [the entry's id in tickets.toml; the folder's `next_id` for a ticket with no entry]   # tracker_id and remote are written at publish on a tracker
 type: story
 title: "[What exists or works when this is done]"
 parent: [folder name of the epic, or of the initiative when there are no epics; none for a standalone ticket in backlog/]
 covers: [ids from the epic's spec, referenced numbered source, or Requirements; the ones this ticket delivers toward]
 after: []   # prerequisites only: a sibling's id; "<epic id>.<entry id>" in another epic; epic-<slug> for that whole epic
-assignee: ""   # a tracker's assignee, mirrored by query; otherwise assignee, blocked_at, and blocked_reason live in the plan
+assignee: ""   # a tracker's assignee, written by `tickets.py mirror`; otherwise assignee, blocked_at, and blocked_reason live in the plan
 # status lives in the plan beside this file, not here; tracker_status by a tracker sync
 refined: false   # true once the user approves its full criteria; a pulled story has this line only when its entry says `refine = true`
 hitl: false
 risk: [low|medium|high]
-estimate: ""   # points, when estimation is on
 ---
 
-<!-- Pulled: a one-sentence Description, Acceptance Criteria as one Verify: line, References, local Notes. Refined: the same, reviewed with the user. Numbered criteria and Boundaries only for a ticket with no epic, an entry with `refine = true`, or on request. A done or dropped ticket stays as it was written. -->
+<!-- Pulled: a one-sentence Description, Acceptance Criteria as one Verify: line, References, local Notes. Reviewed: the same, gone over with the user. Refined, with numbered criteria and Boundaries: only a ticket with no epic, an entry with `refine = true`, or on request. A done or dropped ticket stays as it was written. -->
 
 # [Title]
 
 ## Description
 
-[One sentence, what this delivers; reviewed with the user at refine. With numbered criteria: what exists or works when this is done and how it advances the epic, 2–4 sentences; the criteria carry the proof, do not restate them.]
+[One sentence, what this delivers; gone over with the user at review. With numbered criteria: what exists or works when this is done and how it advances the epic, 2–4 sentences; the criteria carry the proof, do not restate them.]
 
 ## Acceptance Criteria
 
@@ -52,9 +51,9 @@ estimate: ""   # points, when estimation is on
 - [A frozen interface, a declined option]
 - Decision: [a choice the user made, dated]
 - Assumption: [a choice made while drafting that the user has not confirmed; confirmed, it becomes a Decision line]
-- Open question: [what only this ticket waits on. Touches siblings: the parent's Notes. Gates work: a spike.]
+- Open question: [what only this ticket waits on, answered as part of its work; one that touches siblings goes in the parent's Notes]
 
-<!-- Example, not part of the ticket: match its level of detail. What is good here: the Description is what the shopper can do, end to end; every criterion states a rule, not an instance, with its failure path, fails today and passes only through this work; Boundaries names behavior, not files; References points at the nearest document; Notes holds only what is not in the repo or the source, plus one assumption for the user to confirm. Numbered criteria because its entry says `refine = true`. -->
+<!-- Example, not part of the ticket: match its level of detail. What is good here: the Description is what the shopper can do, end to end; every criterion states a rule, not an instance, with its failure path; Boundaries names behavior, not files; References points at the nearest document; Notes holds only what is not in the repo or the source, plus one assumption for the user to confirm. Numbered criteria because its entry says `refine = true`. -->
 
 ```markdown
 ---

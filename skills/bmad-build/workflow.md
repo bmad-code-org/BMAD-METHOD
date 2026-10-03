@@ -15,7 +15,7 @@ A plan is "Ready for Development" when:
 
 - **Actionable**: Every task has a file path and specific action.
 - **Logical**: Tasks ordered by dependency.
-- **Testable**: All ACs use Given/When/Then.
+- **Testable**: All ACs use Given/When/Then, and each is a check the implementer can prove it met without pointing at code.
 - **Complete**: No placeholders or TBDs.
 - **Sufficient**: No known requirement, acceptance, dependency, or implementation gaps remain unresolved.
 - **Coherent**: No unresolved ambiguities or internal contradictions.

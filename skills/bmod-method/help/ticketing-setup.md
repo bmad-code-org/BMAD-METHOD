@@ -4,9 +4,9 @@ Use this when a user asks how to set up or drive `bmad-ticket`. For the shared t
 
 ## Where the store lives
 
-- Tickets live under `output_folder`, beside the documents. An epic's tickets are entries in its `tickets.toml`, and one gets a markdown file only when it is refined or published. Backlog tickets are markdown files. `output_folder` is `_bmad-output` unless changed.
-- To move the store, set `output_folder` under `[core]` in `_bmad/custom/config.toml` (committed, applies to the team).
-- The ticket tree of an initiative lives in the active initiative's folder, `{output_folder}/{active_initiative}`. With none active, the skill offers to create one and record it.
+- The ticket tree is the folder `active_initiative` names under `output_folder`: an initiative with its epics inside, a single epic, or a backlog folder of epics or one-off stories, as the user wants. Tickets with no epic go in `{output_folder}/backlog/`. With no active folder, the skill offers to create one and record it.
+- An epic's stories are entries in its `tickets.toml`; a story gets a markdown file only when it is reviewed, refined, or published. Tickets with no epic are markdown files.
+- `output_folder` is `_bmad-output` unless changed under `[core]` in `_bmad/custom/config.toml` (committed, applies to the team).
 
 ## Several repos
 
@@ -18,7 +18,8 @@ Copy a brief, PRD, UX design, or architecture into the initiative folder as `<ty
 
 ## Trackers
 
-- First use asks where tickets are tracked and copies a starter to the store config. "Reconfigure the ticket store" changes it later.
+- Tickets are files in the store unless the user connects a tracker: "set up the ticket store", or "reconfigure the ticket store" to change it later. Nothing needs setting up for the repo store.
+- The choice goes in `_bmad/custom/ticketing-store-config.toml`. It holds only what the project sets, such as the tracker's project key; a key added there overrides the skill's default for that tracker.
 - Choices: repo (the default; files under version control, no account), GitHub Issues, Jira, Linear, Notion, or Trello. The skill checks the needed CLI or connection at setup.
 - Repo is the most tested. The trackers are lightly tested.
 - With a tracker, the markdown files stay the working copy. Nothing syncs on its own: files and tracker line up only when the user runs the skill. The skill never pushes.
@@ -38,7 +39,7 @@ Copy a brief, PRD, UX design, or architecture into the initiative folder as `<ty
 
 ## Hand-off to bmad-build
 
-- A planned story needs no file. Run `bmad-build` on it: "build story 1.2", naming the epic's id and the story's. The builder reads the entry and its epic, plus the story file when one was refined, and plans the story's acceptance criteria from the epic's Requirements and Done when, the entry's description, and its `Verify:` check.
+- A planned story needs no file. Run `bmad-build` on it: "build story 1.2", naming the epic's id and the story's. The builder reads the entry and its epic, plus the story file when there is one, and plans the story's acceptance criteria from the epic's Requirements and Done when, the entry's description, and its `Verify:` check.
 - A story needs no refining before `bmad-build`; the build refines it. Before an unattended run, review the stories with this skill. A bug, a ticket with no epic, and an entry the user marked `refine = true` get full criteria first; "what's next?" lists these under ready to refine.
 - The build writes its plan, `<type>-<slug>-plan.md`, beside `tickets.toml`. The plan carries the ticket's `status`, which the build moves as far as `built`. After reviewing the work, the user says "mark story 1.2 done".
 

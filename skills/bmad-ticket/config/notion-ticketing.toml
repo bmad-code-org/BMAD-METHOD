@@ -1,18 +1,12 @@
-# Ticketing config: Notion. Read by every skill that creates, reads, or moves tickets.
-# A starter: at first use the skill copies the chosen one to _bmad/custom/ticketing-store-config.toml
-# (references/store-setup.md), and that copy is the one edited. An org can instead host its own starter
-# anywhere — a repo path or a url — and setup copies from it. Skills read
-# [tickets] and [verbs] through a script, so comments are never loaded.
-# Every ticketing config has the same fields; only the prose and the maps differ. `description` sits
-# outside [tickets] so it is never loaded; it is for choosing a config.
+# Store starter: Notion. `scripts/read_store.py` reads this file as the base layer; the project's
+# _bmad/custom/ticketing-store-config.toml names the store, fills the empty fields below, and replaces
+# any other key here, key by key.
+# It updates with the skill and holds only what is specific to this store: the rules every store shares
+# are in references/board.md. Comments and `description` are never loaded; `description` is for choosing a store.
+#
 # One tool: Notion's official MCP server. One database holds every ticket; properties carry type,
 # status, assignee, and hitl; two self-relations carry hierarchy (Parent) and blocking (Blocked by);
 # a board view grouped by Status is the kanban. `setup` creates all of it.
-#
-# The active initiative is `core.active_initiative` in _bmad/custom/config.user.toml, read at activation. The ticket tree under `output_folder`
-# has the same layout for every store (layout in references/board.md, Layout); write pushes it to this tracker.
-# An empty field below that an operation needs, and that cannot be inferred from what the user gave:
-# use what they tell you for this run and offer to record it in this file (references/store-setup.md).
 
 description = "Notion through its MCP server: one tickets database with a board view, relations for hierarchy and blocking. For teams that plan in Notion and want tickets beside their docs."
 
@@ -23,8 +17,8 @@ database = ""   # url or id of the tickets database; empty = `setup` creates it
 access = """
 Use the Notion MCP (notion-fetch, notion-create-pages, notion-update-page,
 notion-query-data-sources, notion-create-comment, notion-get-users) against `database`. Confirm
-from the tool schema how relation and person properties are passed. If a call fails on auth or
-`database` is empty, tell the user what is blocking, confirm the setup with them, and ask them to authenticate when that is the cause.
+from the tool schema how relation and person properties are passed; `notion-get-users` resolves a name.
+An empty `database` means `setup` has not run.
 """
 
 fields = """
@@ -33,50 +27,38 @@ creates them, publish and update set them. estimate is a text property Estimate,
 """
 
 reference = """
-A reference is a line in the ticket's References section: `type — location, section`, location a
-path from {project-root} or a url for a remote source, opened before it is cited. Notion renders urls as links; a Notion page url becomes
-a mention.
+Notion renders urls as links; a Notion page url becomes a mention.
 """
 
-# Verb prose lives in its own table so a skill can load one verb at a time.
 [verbs]
 setup = """
-Connect: `claude mcp add --transport http notion https://mcp.notion.com/mcp`, then sign in over
-OAuth and share the database, or the page it will be created under, with the connection.
+Connect, unless the Notion tools already answer: add the MCP server https://mcp.notion.com/mcp to
+the agent tool in use (in Claude Code, `claude mcp add --transport http notion https://mcp.notion.com/mcp`),
+then sign in over OAuth. Either way, share the database, or the page it will be created under, with
+the connection.
 When `database` is empty: ask which page to create under, then `notion-create-database` named
 Tickets with properties Title (title), Type (select, options per [tickets.types]), Status (status,
 options per [tickets.status]), Parent (relation to this database), Blocked by (relation to this
 database), Assignee (person), Covers (text), Risk (select: low, medium, high), Severity (select:
 P0, P1, P2, P3), Estimate (text), hitl (checkbox), and, when `key` is set, ID (unique id
 with that prefix). Then `notion-create-view`: a board grouped by Status. Give the user the url and
-put it in `database` in this file.
+put it in `database` in the project's store config.
 When `database` is set: `notion-fetch` it and compare its properties and options with the maps;
 add a missing option with `notion-update-data-source`, and tell the user about anything the
-schema needs a person to change. Offer this at first publish.
+schema needs a person to change.
 """
 
 write = """
+tracker_id is the ID property when `key` is set, else the page id; remote is the page url.
 `notion-create-pages` into `database` creates; `notion-update-page` changes any property or the
-content — Status, Assignee, Parent, Blocked by, Covers, Risk, Severity, hitl. The tool schema says
-how relation and person properties are passed; `notion-get-users` resolves a name. Status is [tickets.status].<state>, the ticket's state (`state` in `tickets.py` rows). No parent: leave the Parent relation empty. An initiative
-is a page of Type initiative with no Parent. Create parents before
-children, prerequisites first.
-The body is the page content: the whole local file, without the frontmatter lines
-tracker_id, remote, tracker_status, status, assignee.
-After a write, mirror tracker_id (the ID property when `key` is set, else the page id), remote (the page
-url), tracker_status, assignee, and after in the local file — never status, which is the build's; commit local files on the current branch
-when `output_folder` is in a git repo, never push.
-An `after` naming a sibling's id or `<epic id>.<entry id>` is that entry's item, published first when it is still local; `epic-<slug>` is the epic's item.
+content — Status, Assignee, Parent, Blocked by, Covers, Risk, Severity, hitl. Status is [tickets.status].<state>. No parent: leave the Parent relation empty. An initiative
+is a page of Type initiative with no Parent. The body is the page content.
 """
 
 query = """
 One page: `notion-fetch` — Title, Type, Status, Assignee, Parent, Blocked by, Covers, Risk,
-Severity, hitl, and the content. Many: `notion-query-data-sources` on `database` filtered by any
-property; `notion-search` scoped to `database` for a looser match. The local file: `tickets.py find <folder> <id>`.
-A child the tracker holds with no file in the tree gets an `[[entry]]` with the next unused `id` in its parent's `tickets.toml`, then its file.
-Mirror the page's Status into the local file as tracker_status, the BMad word per [tickets.status], beside tracker_id and remote — never into status, which is the build's.
-Candidates to start (one that `tickets.py next` lists under `ready_to_refine` gets its criteria first): tracker_status backlog (Status [tickets.status].backlog on the tracker), every page in Blocked by done, Assignee empty, no blocked_at. Offer all
-ready tickets; when one must be chosen, the one that unblocks the most work behind it.
+Severity, hitl, and the content; after is Blocked by. Many: `notion-query-data-sources` on `database` filtered by any
+property; `notion-search` scoped to `database` for a looser match.
 """
 
 # BMad type -> this store's type (Type select options; `setup` creates them).
@@ -87,8 +69,7 @@ story = "story"
 spike = "spike"
 bug = "bug"
 
-# BMad state -> this store's status (Status property options; `setup` creates them); `query` reads it back the other way into tracker_status.
-# The file's `status` is the build's and is never sent.
+# BMad state -> this store's status (Status property options; `setup` creates them).
 [tickets.status]
 backlog = "Backlog"
 in-progress = "In Progress"

@@ -8,8 +8,6 @@ covers: [parent capability ids this epic owns; keep these when adding an epic-lo
 after: []   # epics this whole container waits on; the order of epics is in the initiative's tickets.toml
 assignee: ""   # status is added when work starts (in-progress | done | dropped)
 risk: [low|medium|high — the highest expected among its children]
-estimate: ""   # t-shirt, when estimation is on
-estimate_basis: ""   # envelope | spec | entries | stories
 ---
 
 <!-- At initiative slicing, the envelope: frontmatter, Description, Outcome, Done when, Boundaries, References, and known Notes. Requirements are completed at this epic's inception, and its children are planned in `tickets.toml` beside this file. -->
@@ -30,7 +28,7 @@ estimate_basis: ""   # envelope | spec | entries | stories
 
 ## Done when
 
-[Three to six checks a person can run without opening a child — the measures, limits, and behaviors from the source. Each fails today. Closing every child is not one.]
+[Three to six checks the owner runs at the end, taken from the source's measures and limits. Closing every child is not one.]
 
 ## Boundaries
 

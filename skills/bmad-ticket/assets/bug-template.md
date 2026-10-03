@@ -1,17 +1,16 @@
 ---
-id: [the entry's id in tickets.toml; the next unused one for a ticket with no entry]   # tracker_id and remote are written at publish on a tracker
+id: [the entry's id in tickets.toml; the folder's `next_id` for a ticket with no entry]   # tracker_id and remote are written at publish on a tracker
 type: bug
 title: "[What is wrong, from the user's view]"
 parent: [folder name of the epic, or of the initiative when there are no epics; none for a standalone bug in backlog/]
 covers: []
 after: []   # prerequisites only: a sibling's id; "<epic id>.<entry id>" in another epic; epic-<slug> for that whole epic
-assignee: ""   # a tracker's assignee, mirrored by query; otherwise assignee, blocked_at, and blocked_reason live in the plan
+assignee: ""   # a tracker's assignee, written by `tickets.py mirror`; otherwise assignee, blocked_at, and blocked_reason live in the plan
 # status lives in the plan beside this file, not here; tracker_status by a tracker sync
 refined: false   # true once the user approves its criteria
 hitl: false
 risk: [low|medium|high]
-severity: [P0|P1|P2|P3]
-estimate: ""   # points, when estimation is on
+severity: [P0|P1|P2|P3]   # P0: outage, data loss, or security exposure. P1: core function broken, no workaround. P2: impaired, a workaround exists. P3: cosmetic
 ---
 
 <!-- The refined shape. A done or dropped ticket stays as it was written. -->

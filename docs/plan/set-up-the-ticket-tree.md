@@ -109,7 +109,7 @@ UX is the exception to the naming: `bmad-ux` writes two peer documents, `DESIGN.
 
 ## Configure Where Tickets Are Tracked
 
-The first time you use `bmad-ticket`, it asks where tickets are tracked and writes your choice to `_bmad/custom/ticketing-store-config.toml`. That file is yours to edit, and edits survive skill updates.
+Out of the box, tickets are markdown files in the store, and there is nothing to set up. To use a tracker, say "set up the ticket store": `bmad-ticket` writes your choice to `_bmad/custom/ticketing-store-config.toml`. That file holds only what your project sets, such as the tracker's project key. Anything you add to it overrides the skill's default for that tracker, and your edits survive skill updates.
 
 | Choice        | What it means                                                                        |
 | ------------- | ------------------------------------------------------------------------------------ |

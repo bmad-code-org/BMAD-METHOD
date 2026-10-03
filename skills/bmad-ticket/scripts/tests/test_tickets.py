@@ -72,10 +72,10 @@ def plan(ticket_id, status=None, assignee=None, blocked_at=None, blocked_reason=
     return "\n".join(lines)
 
 
-def run(*args, cwd=None):
+def run(*args, cwd=None, stdin=None):
     # tickets.py writes UTF-8; text=True alone would decode with the locale's code page on Windows.
     return subprocess.run(
-        [sys.executable, str(SCRIPT), *args], encoding="utf-8", capture_output=True, check=False, cwd=cwd
+        [sys.executable, str(SCRIPT), *args], encoding="utf-8", capture_output=True, check=False, cwd=cwd, input=stdin
     )
 
 
@@ -386,9 +386,261 @@ covers = ["R2", "R3"]
         self.add("story-ui-shell.md", '---\nid: 2\ntype: story\ntitle: "UI shell"\n---\n# UI shell\n')
         self.add("spike-tax-engine.md", '---\nid: 3\ntype: spike\ntitle: "Tax engine?"\nafter: [1]\n---\n# Tax\n')
         rows = {r["id"]: r for r in self.status_rows(self.epic)}
-        self.assertEqual((rows[2]["after"], rows[2]["drift"]), ([], True))
-        self.assertEqual((rows[3]["hitl"], rows[3]["drift"]), (False, True))
+        self.assertEqual((rows[2]["after"], rows[2]["drift"]), ([], {"after": {"file": [], "entry": [1]}}))
+        self.assertEqual((rows[3]["hitl"], rows[3]["drift"]), (False, {"hitl": {"file": False, "entry": True}}))
         self.assertNotIn("drift", rows[1])
+
+    def test_a_blocked_row_names_the_prerequisites_it_waits_on(self):
+        self.pricing()
+        self.breakdown_epic(self.BREAKDOWN.replace("after = [2, 3]", 'after = [2, 3, "1.2"]'))
+        self.add("story-scaffold-plan.md", plan(1, "in-progress"))
+        self.add("spike-tax-engine-plan.md", plan(3, "in-review"))
+        self.add("story-ui-shell-plan.md", plan(2, "blocked", blocked_reason="legal"))
+        out = self.next()
+        blocked = {e["id"]: e for e in out["blocked"]}
+        self.assertEqual(blocked[4]["waiting_on"], [2, "1.2"])
+        self.assertEqual(blocked[2]["waiting_on"], [1])
+        # 3 is in review with 1 still open: a ticket already under way is not waiting.
+        self.assertEqual([e["id"] for e in out["in_progress"]], [1, 3])
+        self.assertFalse(any("waiting_on" in e for e in out["in_progress"]))
+        self.add("story-scaffold-plan.md", plan(1, "done"))
+        self.assertNotIn("waiting_on", {e["id"]: e for e in self.next()["blocked"]}[2])
+
+    def test_status_gives_the_id_a_new_ticket_takes(self):
+        self.pricing()
+        self.breakdown_epic()
+        self.assertEqual(json.loads(run("status", str(self.epic)).stdout)["next_id"], 5)
+        self.breakdown_epic(self.BREAKDOWN + '\n[[entry]]\nid = "6a"\ntype = "story"\ntitle = "Lettered"\n')
+        self.assertEqual(json.loads(run("status", str(self.epic)).stdout)["next_id"], 7)
+        self.add("story-unlisted.md", ticket("", 9))
+        out = json.loads(run("status", str(self.epic)).stdout)
+        self.assertEqual(out["next_id"], 10)
+        out = json.loads(run("status", str(self.initiative)).stdout)
+        self.assertNotIn("next_id", out)
+        self.assertEqual({e["slug"]: e["next_id"] for e in out["epics"]}, {"epic-pricing": 3, "epic-cart": 10})
+        backlog = self.add_backlog()
+        self.assertEqual(json.loads(run("status", str(backlog)).stdout)["next_id"], 1)
+        self.add("bug-x.md", ticket("draft", 7, kind="bug"), backlog)
+        self.assertEqual(json.loads(run("status", str(backlog)).stdout)["next_id"], 8)
+
+    def test_a_folders_own_next_id_keeps_a_moved_entrys_id_from_coming_back(self):
+        self.breakdown_epic("next_id = 9\n" + self.BREAKDOWN)
+        self.assertEqual(json.loads(run("status", str(self.epic)).stdout)["next_id"], 9)
+        self.breakdown_epic("next_id = 3\n" + self.BREAKDOWN)
+        self.assertEqual(json.loads(run("status", str(self.epic)).stdout)["next_id"], 5)
+        self.breakdown_epic('next_id = "9"\n' + self.BREAKDOWN)
+        r = run("status", str(self.epic))
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("`next_id` must be a whole number", r.stderr)
+
+    def test_next_and_find_carry_the_drift_too(self):
+        self.breakdown_epic()
+        self.add("story-scaffold.md", ticket("draft", 1))
+        self.add("story-ui-shell.md", ticket("draft", 2, after="[]"))
+        drift = {"after": {"file": [], "entry": [1]}}
+        ready = {r["id"]: r for r in self.next()["ready_to_start"]}
+        self.assertEqual(ready[2]["drift"], drift)
+        self.assertNotIn("drift", ready[1])
+        self.assertEqual(json.loads(run("find", str(self.epic), "2").stdout)["drift"], drift)
+
+    def test_an_unknown_holds_a_ticket_until_it_is_settled(self):
+        self.breakdown_epic(self.BREAKDOWN.replace('title = "Scaffold"', 'title = "Scaffold"\nunknown = "Which host?"'))
+        out = self.next()
+        self.assertEqual(out["ready_to_start"], [])
+        row = {e["id"]: e for e in out["blocked"]}[1]
+        self.assertEqual(row["unknown"], "Which host?")
+        self.assertNotIn("waiting_on", row)
+        # Pulled, the file's Notes hold it.
+        self.assertEqual(run("pull", str(self.epic), "1").returncode, 0)
+        self.assertEqual({e["id"]: e for e in self.next()["blocked"]}[1]["unknown"], "Which host?")
+        leaf = self.epic / "story-scaffold.md"
+        text = leaf.read_text(encoding="utf-8")
+        leaf.write_text(text.replace("- Unknown: Which host?", "- Decision: the EU host."), encoding="utf-8")
+        out = self.next()
+        self.assertEqual([e["id"] for e in out["ready_to_start"]], [1])
+        self.assertNotIn("unknown", out["ready_to_start"][0])
+
+    def test_an_unknown_does_not_keep_a_ticket_from_refining(self):
+        self.breakdown_epic(
+            self.BREAKDOWN.replace('title = "Scaffold"', 'title = "Scaffold"\nrefine = true\nunknown = "Which host?"')
+        )
+        self.assertEqual([e["id"] for e in self.next()["ready_to_refine"]], [1])
+        # Refined, and the only `Unknown:` left is a template's example in a comment.
+        self.add("story-scaffold.md", ticket("", 1, refined="true") + "<!-- Example:\n- Unknown: not this one\n-->\n")
+        self.assertEqual([e["id"] for e in self.next()["ready_to_start"]], [1])
+
+    def test_rows_carry_the_checkpoints_an_entry_sets(self):
+        self.breakdown_epic(
+            self.BREAKDOWN.replace(
+                'title = "Scaffold"', 'title = "Scaffold"\nplan_checkpoint = true\ndone_checkpoint = true'
+            )
+        )
+        first, second = self.next()["ready_to_start"][0], self.status_rows(self.epic)[1]
+        self.assertEqual((first["plan_checkpoint"], first["done_checkpoint"]), (True, True))
+        self.assertNotIn("plan_checkpoint", second)
+        self.assertTrue(json.loads(run("find", str(self.epic), "1").stdout)["done_checkpoint"])
+
+    def test_every_row_carries_the_tickets_risk_and_the_leaf_files_wins(self):
+        self.breakdown_epic(self.BREAKDOWN.replace('title = "Scaffold"', 'title = "Scaffold"\nrisk = "medium"'))
+        rows = {r["id"]: r for r in self.status_rows(self.epic)}
+        self.assertEqual((rows[1]["risk"], rows[2]["risk"]), ("medium", ""))
+        self.assertEqual(self.next()["ready_to_start"][0]["risk"], "medium")
+        self.add("story-scaffold.md", ticket("", 1).replace("risk: low", "risk: high"))
+        self.assertEqual(json.loads(run("find", str(self.epic), "1").stdout)["risk"], "high")
+
+    def test_a_plan_without_an_assignee_keeps_the_leafs_and_one_with_it_wins(self):
+        self.breakdown_epic()
+        self.add("story-scaffold.md", ticket("", 1, assignee='"ann"'))
+        self.add("story-scaffold-plan.md", plan(1, "in-progress"))
+        self.assertEqual(self.status_rows(self.epic)[0]["assignee"], "ann")
+        self.add("story-scaffold-plan.md", plan(1, "in-progress", assignee="bob"))
+        self.assertEqual(self.status_rows(self.epic)[0]["assignee"], "bob")
+
+    def mirror(self, items, folder=None):
+        return run("mirror", str(folder or self.epic), stdin=json.dumps(items))
+
+    def test_mirror_refuses_the_repo_store(self):
+        self.breakdown_epic()
+        r = self.mirror([{"ref": "1", "tracker_status": "done"}])
+        self.assertEqual(r.returncode, 2)
+        self.assertIn("no tracker", r.stderr)
+        self.assertEqual(list(self.epic.glob("story-*.md")), [])
+
+    def test_mirror_pulls_a_leaf_and_writes_only_the_keys_given(self):
+        self.write_store("jira")
+        self.breakdown_epic()
+        r = self.mirror(
+            [
+                {
+                    "ref": 2,
+                    "tracker_id": "42",
+                    "remote": "https://x.test/42",
+                    "tracker_status": "in-progress",
+                    "assignee": "ann",
+                    "after": [1, "41"],
+                },
+                {"ref": "scaffold", "tracker_id": "41", "tracker_status": "done"},
+            ]
+        )
+        self.assertEqual(r.returncode, 0, r.stderr)
+        out = json.loads(r.stdout)
+        self.assertEqual(
+            [(m["ref"], m["file"], m["pulled"]) for m in out["mirrored"]],
+            [("2", "story-ui-shell.md", True), ("1", "story-scaffold.md", True)],
+        )
+        self.assertEqual(out["unmatched"], [])
+        text = (self.epic / "story-ui-shell.md").read_text(encoding="utf-8")
+        for line in (
+            'tracker_id: "42"',
+            'remote: "https://x.test/42"',
+            "tracker_status: in-progress",
+            'assignee: "ann"',
+            'after: [1, "41"]',
+        ):
+            self.assertIn(f"\n{line}\n", text)
+        self.assertNotIn("\nstatus:", text)
+        rows = {t["id"]: t for t in self.status_rows(self.epic)}
+        self.assertEqual((rows[2]["state"], rows[2]["assignee"], rows[2]["after"]), ("in-progress", "ann", [1]))
+        self.assertEqual(rows[1]["state"], "done")
+        self.assertNotIn("drift", rows[2])
+        self.assertEqual([e["id"] for e in self.next("--synced")["ready_to_start"]], [3])
+
+    def test_mirror_finds_a_ticket_by_its_tracker_id_and_an_empty_value_removes_the_line(self):
+        self.write_store("github")
+        self.breakdown_epic()
+        self.add("story-scaffold.md", ticket("", 1, tracker_id='"41"', assignee='"ann"', tracker_status="backlog"))
+        r = self.mirror([{"tracker_id": "41", "tracker_status": "review", "assignee": ""}])
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertFalse(json.loads(r.stdout)["mirrored"][0]["pulled"])
+        text = (self.epic / "story-scaffold.md").read_text(encoding="utf-8")
+        self.assertIn("\ntracker_status: review\n", text)
+        self.assertNotIn("assignee", text)
+        self.assertIn('\ntracker_id: "41"\n', text)
+
+    def test_a_tracker_id_alone_matches_only_the_ticket_that_carries_it(self):
+        self.write_store("github")
+        self.breakdown_epic(self.BREAKDOWN.replace('title = "Codes"', 'title = "Port SHOP-12 codes"'))
+        self.add("story-scaffold.md", ticket("", 1, tracker_id='"3"'))
+        r = self.mirror([{"tracker_id": 3, "tracker_status": "done"}, {"tracker_id": "SHOP-12", "assignee": "ann"}])
+        self.assertEqual(r.returncode, 0, r.stderr)
+        out = json.loads(r.stdout)
+        self.assertEqual([m["file"] for m in out["mirrored"]], ["story-scaffold.md"])
+        self.assertEqual([u["ref"] for u in out["unmatched"]], ["SHOP-12"])
+        self.assertEqual([p.name for p in self.epic.glob("s*.md")], ["story-scaffold.md"])
+        self.assertEqual(self.status_rows(self.epic)[0]["state"], "done")
+        self.add("story-ui-shell.md", ticket("", 2, tracker_id='"3"'))
+        r = self.mirror([{"tracker_id": "3", "tracker_status": "backlog"}])
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("more than one", json.loads(r.stderr)["error"])
+
+    def test_mirror_lists_a_ticket_the_tree_does_not_hold_and_writes_the_rest(self):
+        self.write_store("linear")
+        self.breakdown_epic()
+        r = self.mirror([{"ref": "SHOP-99", "tracker_status": "done"}, {"ref": 1, "tracker_status": "done"}])
+        self.assertEqual(r.returncode, 0, r.stderr)
+        out = json.loads(r.stdout)
+        self.assertEqual([u["ref"] for u in out["unmatched"]], ["SHOP-99"])
+        self.assertEqual(self.status_rows(self.epic)[0]["state"], "done")
+
+    def test_a_failed_mirror_still_lists_the_unmatched_tickets(self):
+        self.write_store("linear")
+        self.breakdown_epic()
+        self.add("story-scaffold.md", ticket("", 1, tracker_id='"SHOP-1"'))
+        before = (self.epic / "story-scaffold.md").read_bytes()
+        # A known ticket now waits on a tracker item the tree does not hold yet.
+        r = self.mirror(
+            [{"tracker_id": "SHOP-1", "after": ["SHOP-2"]}, {"tracker_id": "SHOP-2", "tracker_status": "backlog"}]
+        )
+        self.assertEqual(r.returncode, 1)
+        err = json.loads(r.stderr)
+        self.assertIn("nothing was mirrored", err["error"])
+        self.assertEqual([u["ref"] for u in err["unmatched"]], ["SHOP-2"])
+        self.assertEqual((self.epic / "story-scaffold.md").read_bytes(), before)
+
+    def test_a_tracker_id_on_two_tickets_is_refused_and_a_mirror_that_makes_one_rolls_back(self):
+        self.write_store("linear")
+        self.breakdown_epic()
+        self.add("story-scaffold.md", ticket("", 1, tracker_id='"SHOP-1"'))
+        before = (self.epic / "story-scaffold.md").read_bytes()
+        # The same id again, in another case, would make `after = ["SHOP-1"]` point at whichever was read last.
+        r = self.mirror([{"ref": 2, "tracker_id": "shop-1"}])
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("more than one ticket", json.loads(r.stderr)["error"])
+        self.assertEqual((self.epic / "story-scaffold.md").read_bytes(), before)
+        self.assertFalse((self.epic / "story-ui-shell.md").exists())
+        self.add("story-ui-shell.md", ticket("", 2, after="[1]", tracker_id='"SHOP-1"'))
+        r = run("status", str(self.epic))
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("tracker_id 'shop-1' is on more than one ticket", json.loads(r.stderr)["error"])
+
+    def test_mirror_writes_nothing_when_a_value_is_refused_or_breaks_the_tree(self):
+        self.write_store("jira")
+        self.breakdown_epic()
+        self.add("story-scaffold.md", ticket("", 1))
+        before = (self.epic / "story-scaffold.md").read_text(encoding="utf-8")
+        for items, message in (
+            ([{"ref": 1, "tracker_status": "done"}, {"ref": 2, "status": "done"}], "never mirrored"),
+            ([{"ref": 1, "tracker_status": "closed"}], "tracker_status"),
+            ([{"ref": 1, "tracker_status": "done"}, {"ref": 2, "after": ["NOPE-7"]}], "nothing was mirrored"),
+            ([{"ref": 1, "tracker_status": "done"}, {"ref": "1", "assignee": "ann"}], "named twice"),
+            ({"ref": 1}, "JSON array"),
+        ):
+            r = self.mirror(items)
+            self.assertEqual(r.returncode, 1, items)
+            self.assertIn(message, json.loads(r.stderr)["error"])
+            self.assertEqual((self.epic / "story-scaffold.md").read_text(encoding="utf-8"), before)
+            self.assertFalse((self.epic / "story-ui-shell.md").exists())
+        r = run("mirror", str(self.epic), stdin="not json")
+        self.assertEqual(r.returncode, 1)
+
+    def test_mirror_keeps_a_leafs_crlf_line_endings(self):
+        self.write_store("jira")
+        self.breakdown_epic()
+        (self.epic / "story-scaffold.md").write_bytes(ticket("", 1).replace("\n", "\r\n").encode("utf-8"))
+        self.assertEqual(self.mirror([{"ref": 1, "tracker_status": "done"}]).returncode, 0)
+        raw = (self.epic / "story-scaffold.md").read_bytes()
+        self.assertIn(b"\r\ntracker_status: done\r\n", raw)
+        self.assertNotIn(b"\n", raw.replace(b"\r\n", b""))
 
     def test_a_pulled_leaf_matches_its_entry_until_the_entry_changes(self):
         self.breakdown_epic()
@@ -920,6 +1172,31 @@ covers = ["R2", "R3"]
         self.assertEqual(hit["story_file"], str(self.epic.resolve() / "story-scaffold.md"))
         self.assertEqual(hit["plan"], str(self.epic.resolve() / "story-scaffold-plan.md"))
 
+    def test_find_on_a_pulled_entry_leaves_the_text_to_the_file(self):
+        self.breakdown_epic(
+            self.BREAKDOWN.replace(
+                'title = "Scaffold"',
+                'title = "Scaffold"\ndescription = "The service."\nverify = "It runs."\n'
+                'unknown = "Which host?"\nreferences = ["SPINE.md#ad-8"]\nnotes = ["Reuse the mailer."]',
+            )
+        )
+        self.assertEqual(run("pull", str(self.epic), "1").returncode, 0)
+        leaf = self.epic / "story-scaffold.md"
+        leaf.write_text(leaf.read_text(encoding="utf-8").replace("Which host?", "Which region?"), encoding="utf-8")
+        hit = json.loads(run("find", str(self.epic), "1").stdout)
+        self.assertEqual([hit[k] for k in ("description", "verify", "references", "notes")], ["", "", [], []])
+        self.assertEqual(hit["unknown"], "Which region?")
+        self.assertEqual(hit["story_file"], str(self.epic.resolve() / "story-scaffold.md"))
+
+    def test_find_names_the_initiative_file_for_a_leaf_directly_under_it(self):
+        solo = self.root / "out" / "initiative-solo"
+        solo.mkdir()
+        (solo / "initiative-solo.md").write_text("---\ntype: initiative\n---\n# Solo\n")
+        (solo / "tickets.toml").write_text('[[entry]]\nid = 1\ntype = "story"\ntitle = "Only"\n')
+        hit = json.loads(run("find", str(solo), "1").stdout)
+        self.assertEqual(hit["epic_file"], str(solo.resolve() / "initiative-solo.md"))
+        self.assertIsNone(hit["story_file"])
+
     def test_find_and_mark_in_a_backlog(self):
         backlog = self.add_backlog()
         self.add("bug-x.md", ticket("draft", kind="bug"), backlog)
@@ -1232,6 +1509,64 @@ class ActiveInitiativeTests(TreeCase):
         expected = self.ok(run("next", str(self.initiative)))
         self.assertEqual(self.ok(run("next", cwd=self.epic)), expected)
         self.assertEqual(expected["folder"], "initiative-checkout")
+
+    def test_with_no_folder_next_and_status_also_report_the_backlog(self):
+        self.assertNotIn("backlog", self.ok(run("next", cwd=self.root)))
+        backlog = self.add_backlog()
+        self.add("bug-x.md", ticket("ready-for-dev", kind="bug", refined="true"), backlog)
+        out = self.ok(run("next", cwd=self.root))
+        self.assertEqual(out["folder"], "initiative-checkout")
+        self.assertEqual(
+            (out["backlog"]["folder"], out["backlog"]["ready_to_start"][0]["ref"]), ("backlog", "bug-x.md")
+        )
+        self.assertEqual(self.ok(run("find", "backlog", "bug-x.md", cwd=self.root))["file"], "bug-x.md")
+        out = self.ok(run("status", cwd=self.root))
+        self.assertEqual((out["counts"]["total"], out["backlog"]["counts"]), (5, {"total": 1, "backlog": 1}))
+        self.assertNotIn("backlog", self.ok(run("next", str(self.initiative))))
+        self.add("bug-y.md", ticket("nonsense", kind="bug"), backlog)
+        out = self.ok(run("next", cwd=self.root))
+        self.assertIn("status", out["backlog"]["error"])
+        self.assertEqual(len(out["ready_to_refine"]), 2)
+
+    def test_with_no_folder_a_ticket_the_initiative_lacks_is_found_in_the_backlog(self):
+        backlog = self.add_backlog()
+        self.add("bug-x.md", ticket("draft", 7, kind="bug", tracker_id='"SHOP-7"'), backlog)
+        hit = self.ok(run("find", "bug-x.md", cwd=self.root))
+        self.assertEqual((hit["folder"], hit["plan"]), ("backlog", str(backlog.resolve() / "bug-x-plan.md")))
+        self.assertEqual(self.ok(run("find", "SHOP-7", cwd=self.root))["ref"], "bug-x.md")
+        self.fails(run("find", "bug-nope", cwd=self.root), "no ticket matches")
+        self.fails(run("find", str(self.initiative), "bug-x.md"), "no ticket matches")
+        self.ok(run("mark", "bug-x.md", "done", cwd=self.root))
+        self.assertTrue((backlog / "bug-x-plan.md").is_file())
+        self.write_store("jira")
+        r = run("mirror", cwd=self.root, stdin=json.dumps([{"tracker_id": "SHOP-7", "tracker_status": "done"}]))
+        self.assertEqual([m["ref"] for m in self.ok(r)["mirrored"]], ["bug-x.md"])
+        self.assertIn("\ntracker_status: done\n", (backlog / "bug-x.md").read_text(encoding="utf-8"))
+
+    def test_a_backlog_that_cannot_be_read_is_reported_and_the_initiative_still_answers(self):
+        backlog = self.add_backlog()
+        (backlog / "bug-x.md").write_bytes(b"---\ntype: bug\ntitle: \xff\n---\n")
+        out = self.ok(run("status", cwd=self.root))
+        self.assertEqual((out["counts"]["total"], out["backlog"]["folder"]), (5, "backlog"))
+        self.assertIn("error", out["backlog"])
+        self.fails(run("find", "bug-x.md", cwd=self.root), "no ticket matches")
+        self.write_store("jira")
+        r = run("mirror", cwd=self.root, stdin=json.dumps([{"ref": "story-scaffold", "tracker_status": "done"}]))
+        self.assertEqual([m["file"] for m in self.ok(r)["mirrored"]], ["story-scaffold.md"])
+
+    def test_an_epic_is_found_by_its_folder_name_under_the_active_initiative(self):
+        out = self.ok(run("--project-root", str(self.root), "status", "epic-cart", cwd=self.elsewhere()))
+        self.assertEqual((out["folder"], out["counts"]["total"]), ("epic-cart", 5))
+        self.configure(None)
+        self.fails(run("--project-root", str(self.root), "status", "epic-cart", cwd=self.elsewhere()), "not a folder")
+
+    def test_the_backlog_as_active_initiative_is_reported_once(self):
+        backlog = self.add_backlog()
+        self.add("bug-x.md", ticket("draft", kind="bug"), backlog)
+        self.configure("backlog")
+        out = self.ok(run("status", cwd=self.root))
+        self.assertEqual(out["folder"], "backlog")
+        self.assertNotIn("backlog", out)
 
     def test_project_root_flag_names_the_project_from_anywhere(self):
         self.write_store(root="out")

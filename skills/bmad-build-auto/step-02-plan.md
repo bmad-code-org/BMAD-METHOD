@@ -8,6 +8,8 @@
 
 1. Draft resume check. If `{plan_file}` exists with `status: draft`, read it and capture the verbatim `<intent-contract>...</intent-contract>` block as `preserved_intent_contract`. Otherwise `preserved_intent_contract` is empty.
 2. Investigate codebase. _Read the code yourself for narrow, localized tasks. Isolate deep exploration in synchronous subagents: instruct them to give you distilled summaries only, and plan from those summaries._ Decide which findings actually matter for execution — the specific files, symbols/lines, reuse points, and read-only constraints — and carry those forward for the Code Map. This is where the investigation lands: the plan preserves it so it is never re-narrated to the implementer at dispatch time.
+
+   Then score the change's `risk` for `{plan_file}` frontmatter: `low`, `medium`, or `high`, the business impact if this change is wrong. For a ticket from the tree, start from `risk` in `tickets.py find`'s output and raise it when the investigation shows more; never go below it.
 {% if workflow.route == "oneshot" or workflow.route == "full" %}
 3. The route is `{{ workflow.route }}`; `route_source` is `pinned`.
 {% else %}
@@ -19,7 +21,7 @@
    - **Oneshot:** set `route: 'oneshot'`.
    - **Full:** set `route: 'full'`. Put what you learned into `## Code Map`: paths, symbols or lines, what to reuse, and what not to change. The subagent should be able to work from the plan without being told any of it again.
 
-   Set `route_source` from step 3.
+   Set `route_source` from step 3 and `risk` from step 2.
 
    If `{preserved_intent_contract}` is non-empty, substitute it for the `<intent-contract>` block before writing `{plan_file}`. Self-check against the route's READY FOR DEVELOPMENT standard.
 5. If intent gaps exist, do not fantasize and do not leave open questions. Multiple defensible readings of the intent that lead to observably different outcomes, with nothing in the intent to select between them, are an intent gap — do not resolve one by picking a reading. HALT with status `blocked`, blocking condition `intent gap`, and include the unanswered questions and evidence gathered.
