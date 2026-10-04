@@ -63,9 +63,10 @@ def load_agents(project_root: Path):
     """Installed agents as {code: entry}. Empty dict (with a flag) on failure."""
     script = project_root / "_bmad" / "scripts" / "resolve_config.py"
     data = _run_json([sys.executable, str(script), "--project-root", str(project_root), "--key", "agents"])
-    if data is None:
+    agents = data.get("agents") if isinstance(data, dict) else None
+    if not isinstance(agents, dict) or any(not isinstance(info, dict) for info in agents.values()):
         return {}, False
-    return data.get("agents", {}) or {}, True
+    return agents, True
 
 
 def load_workflow(project_root: Path, skill_root: Path):
@@ -74,17 +75,24 @@ def load_workflow(project_root: Path, skill_root: Path):
     data = _run_json(
         [sys.executable, str(script), "--skill", str(skill_root), "--project-root", str(project_root), "--key", "workflow"]
     )
-    if data is not None and "workflow" in data:
-        return data["workflow"]
+    workflow = data.get("workflow") if isinstance(data, dict) else None
+    if isinstance(workflow, dict):
+        return workflow, True
     # Fallback: read the skill's base customize.toml directly (no override merge).
     toml_path = skill_root / "customize.toml"
+    sys.stderr.write(
+        f"warning: project workflow customization could not be resolved; falling back to {toml_path}. "
+        "Project overrides may be missing.\n"
+    )
     if toml_path.exists():
         try:
             with toml_path.open("rb") as f:
-                return tomllib.load(f).get("workflow", {})
-        except (OSError, tomllib.TOMLDecodeError):
-            pass
-    return {}
+                return tomllib.load(f).get("workflow", {}), False
+        except (OSError, tomllib.TOMLDecodeError) as exc:
+            sys.stderr.write(f"warning: could not read {toml_path}; using an empty workflow: {exc}\n")
+    else:
+        sys.stderr.write(f"warning: {toml_path} is missing; using an empty workflow\n")
+    return {}, False
 
 
 def _alias(code: str) -> str:
@@ -229,7 +237,7 @@ def main():
     project_root = Path(args.project_root).resolve()
     skill_root = Path(args.skill).resolve()
 
-    workflow = load_workflow(project_root, skill_root)
+    workflow, workflow_resolved = load_workflow(project_root, skill_root)
     groups = workflow.get("party_groups", []) or []
     default_party = workflow.get("default_party", "") or ""
     party_mode = workflow.get("party_mode", "session") or "session"
@@ -243,6 +251,7 @@ def main():
             "party_mode": party_mode,
             "default_party": default_party,
             "groups": group_menu(groups),
+            "workflow_resolved": workflow_resolved,
         })
         return
 
@@ -255,12 +264,17 @@ def main():
             _emit({"error": "unknown_group", "requested": args.party,
                    "available": group_menu(groups)})
             return
-        _emit({**group_detail(g, collective, index), "party_mode": party_mode})
+        _emit({
+            **group_detail(g, collective, index),
+            "party_mode": party_mode,
+            "workflow_resolved": workflow_resolved,
+        })
         return
 
     # Default: the active roster to load on entry.
     result = {"party_mode": party_mode, "groups": group_menu(groups),
-              "installed_agents_resolved": agents_ok}
+              "installed_agents_resolved": agents_ok,
+              "workflow_resolved": workflow_resolved}
     g = find_group(groups, default_party) if default_party else None
     if g is not None:
         result.update(group_detail(g, collective, index))
@@ -270,6 +284,7 @@ def main():
         result.update({"active": "installed",
                        "members": [collective[c] for c in installed_codes],
                        "memory_enabled": party_memory})
+    result["resolvable_tokens"] = sorted(index)
     _emit(result)
 
 

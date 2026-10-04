@@ -4,10 +4,14 @@
 # ///
 """Unit tests for resolve_party.py — merge, alias, override, group resolution."""
 
+import contextlib
+import io
+import json
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import resolve_party as rp  # noqa: E402
@@ -143,6 +147,80 @@ class TestInstalledCodesIsDefaultRoom(unittest.TestCase):
         self.assertEqual(col["bmad-agent-analyst"]["name"], "Mary-Custom")
 
 
+class TestDefaultOutput(unittest.TestCase):
+    def test_exposes_resolvable_tokens_without_loading_custom_members(self):
+        workflow = {
+            "party_members": [{"code": "morpheus", "name": "Morpheus"}],
+            "party_groups": [],
+            "default_party": "",
+        }
+        out = io.StringIO()
+        with (
+            patch.object(rp, "load_workflow", return_value=(workflow, True)),
+            patch.object(rp, "load_agents", return_value=(AGENTS, True)),
+            patch.object(sys, "argv", ["resolve_party.py", "--project-root", ".", "--skill", "skill"]),
+            contextlib.redirect_stdout(out),
+        ):
+            rp.main()
+
+        result = json.loads(out.getvalue())
+        self.assertEqual(
+            result["resolvable_tokens"],
+            ["analyst", "bmad-agent-analyst", "bmad-agent-pm", "john", "mary", "morpheus", "pm"],
+        )
+        self.assertTrue(result["workflow_resolved"])
+        self.assertTrue(result["installed_agents_resolved"])
+        self.assertEqual([member["code"] for member in result["members"]], list(AGENTS))
+
+    def test_marks_collision_tokens_incomplete_when_workflow_falls_back(self):
+        out = io.StringIO()
+        workflow = {"party_members": [], "party_groups": [], "default_party": ""}
+        with (
+            patch.object(rp, "load_workflow", return_value=(workflow, False)),
+            patch.object(rp, "load_agents", return_value=(AGENTS, True)),
+            patch.object(sys, "argv", ["resolve_party.py", "--project-root", ".", "--skill", "skill"]),
+            contextlib.redirect_stdout(out),
+        ):
+            rp.main()
+
+        result = json.loads(out.getvalue())
+        self.assertFalse(result["workflow_resolved"])
+        self.assertIn("analyst", result["resolvable_tokens"])
+
+    def test_marks_installed_tokens_incomplete_when_agent_data_is_invalid(self):
+        out = io.StringIO()
+        workflow = {"party_members": [], "party_groups": [], "default_party": ""}
+        with (
+            patch.object(rp, "load_workflow", return_value=(workflow, True)),
+            patch.object(rp, "load_agents", return_value=({}, False)),
+            patch.object(sys, "argv", ["resolve_party.py", "--project-root", ".", "--skill", "skill"]),
+            contextlib.redirect_stdout(out),
+        ):
+            rp.main()
+
+        result = json.loads(out.getvalue())
+        self.assertFalse(result["installed_agents_resolved"])
+
+    def test_exposes_tokens_when_a_default_party_is_configured(self):
+        workflow = {
+            "party_members": [{"code": "morpheus", "name": "Morpheus"}],
+            "party_groups": [{"id": "writers-room", "members": ["analyst"]}],
+            "default_party": "writers-room",
+        }
+        out = io.StringIO()
+        with (
+            patch.object(rp, "load_workflow", return_value=(workflow, True)),
+            patch.object(rp, "load_agents", return_value=(AGENTS, True)),
+            patch.object(sys, "argv", ["resolve_party.py", "--project-root", ".", "--skill", "skill"]),
+            contextlib.redirect_stdout(out),
+        ):
+            rp.main()
+
+        result = json.loads(out.getvalue())
+        self.assertEqual(result["active"], "writers-room")
+        self.assertIn("morpheus", result["resolvable_tokens"])
+
+
 class TestResolverInvocation(unittest.TestCase):
     """The wrapper knows the project root, so it must not let the resolver
     infer one from the working directory (#2796)."""
@@ -162,6 +240,73 @@ class TestResolverInvocation(unittest.TestCase):
             cmd = self._captured_command(tmp)
             self.assertIn("--project-root", cmd)
             self.assertEqual(cmd[cmd.index("--project-root") + 1], str(Path(tmp) / "project"))
+
+
+class TestWorkflowFallback(unittest.TestCase):
+    def test_uses_the_merged_project_workflow_when_resolver_succeeds(self):
+        workflow = {"party_members": [{"code": "project-custom"}]}
+        with tempfile.TemporaryDirectory() as tmp:
+            err = io.StringIO()
+            with (
+                patch.object(rp, "_run_json", return_value={"workflow": workflow}),
+                contextlib.redirect_stderr(err),
+            ):
+                resolved_workflow, resolved = rp.load_workflow(Path(tmp) / "project", Path(tmp) / "skill")
+
+        self.assertEqual(resolved_workflow, workflow)
+        self.assertTrue(resolved)
+        self.assertEqual(err.getvalue(), "")
+
+    def test_falls_back_when_workflow_response_has_the_wrong_type(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = Path(tmp) / "skill"
+            skill.mkdir()
+            (skill / "customize.toml").write_text('[workflow]\nparty_members = []\n')
+            err = io.StringIO()
+            with (
+                patch.object(rp, "_run_json", return_value={"workflow": []}),
+                contextlib.redirect_stderr(err),
+            ):
+                workflow, resolved = rp.load_workflow(Path(tmp) / "project", skill)
+
+        self.assertEqual(workflow, {"party_members": []})
+        self.assertFalse(resolved)
+        self.assertIn("Project overrides may be missing", err.getvalue())
+
+    def test_warns_when_project_overrides_cannot_be_resolved(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = Path(tmp) / "skill"
+            skill.mkdir()
+            (skill / "customize.toml").write_text('[workflow]\nparty_members = [{ code = "morpheus" }]\n')
+            err = io.StringIO()
+            with (
+                patch.object(rp, "_run_json", return_value=None),
+                contextlib.redirect_stderr(err),
+            ):
+                workflow, resolved = rp.load_workflow(Path(tmp) / "project", skill)
+
+        self.assertEqual(workflow, {"party_members": [{"code": "morpheus"}]})
+        self.assertFalse(resolved)
+        self.assertIn("Project overrides may be missing", err.getvalue())
+
+
+class TestAgentResolution(unittest.TestCase):
+    def test_distinguishes_valid_empty_roster_from_invalid_response(self):
+        with patch.object(rp, "_run_json", return_value={"agents": {}}):
+            self.assertEqual(rp.load_agents(Path("project")), ({}, True))
+        with patch.object(rp, "_run_json", return_value={"agents": AGENTS}):
+            self.assertEqual(rp.load_agents(Path("project")), (AGENTS, True))
+        for response in (
+            None,
+            False,
+            [],
+            {},
+            {"agents": None},
+            {"agents": []},
+            {"agents": {"bmad-agent-broken": False}},
+        ):
+            with self.subTest(response=response), patch.object(rp, "_run_json", return_value=response):
+                self.assertEqual(rp.load_agents(Path("project")), ({}, False))
 
 
 if __name__ == "__main__":
