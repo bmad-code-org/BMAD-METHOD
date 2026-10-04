@@ -89,9 +89,10 @@ def reset(project_root: Path, main: Path | None) -> None:
         installed = list(json.loads(lock.read_text(encoding="utf-8"))["skills"])
     except (OSError, ValueError, KeyError):
         installed = []
-    if installed:
-        run(["npx", "--yes", "skills", "remove", "-s", *installed, "-y"], project_root)
-    for path in (project_root / "_bmad", lock):
+    # `npx skills remove` also deletes from this repo's own tracked skills/ folder, so remove the
+    # installed copies (agent folders are dot-prefixed, so skills/ is never matched) ourselves.
+    copies = [path for name in installed for path in project_root.glob(f".*/skills/{name}")]
+    for path in (*copies, project_root / "_bmad", lock):
         if path.is_symlink() or path.is_file():
             path.unlink()
         elif path.exists():
