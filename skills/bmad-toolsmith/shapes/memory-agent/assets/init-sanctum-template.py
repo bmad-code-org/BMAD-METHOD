@@ -4,28 +4,30 @@
 # ///
 """First Breath: deterministic sanctum scaffolding.
 
-Runs before the conversational awakening. Creates the sanctum folder, writes
-every sanctum template in the skill's assets/ with config values filled in,
-copies the capability references and their scripts into the sanctum, and fills
+Runs before the conversational awakening. Creates the sanctum folder and its
+memory layout, writes every sanctum template in the skill's assets/, copies the
+capability references and their scripts into the sanctum, and fills
 CAPABILITIES.md from the capability files' frontmatter.
+
+Safe to rerun. A file that already exists is never rewritten, so a run that was
+cut off partway is finished by the next one, and a finished sanctum is left
+alone. The owner's name and language are not read from anywhere: the agent
+learns them in the First Breath conversation and writes them to BOND.md.
 
 After this runs the sanctum is self-contained: the agent depends on the skill
 bundle only for First Breath, wake.py and this script.
-
-Config comes from the project's resolve_config.py. This script never writes
-config or customize.toml.
 
 Usage:
     uv run {skill-root}/scripts/init-sanctum.py <project-root> <skill-path>
 
     project-root: the folder holding _bmad/
     skill-path:   the skill folder (SKILL.md, references/, assets/, scripts/)
+
+Exit 0 and a report on stdout; exit 2 on a usage error.
 """
 
-import json
 import re
 import shutil
-import subprocess
 import sys
 from datetime import date
 from pathlib import Path
@@ -39,22 +41,8 @@ SKILL_ONLY_FILES = {"first-breath.md"}
 # Bootloader-side scripts; capability scripts are everything else in scripts/.
 BOOT_SCRIPTS = {"init-sanctum.py", "wake.py"}
 
-CONFIG_KEYS = {"core.user_name": "user_name", "core.communication_language": "communication_language"}
-
-
-def load_config(project_root: Path) -> dict:
-    """Read the central config through the project's resolver; empty when absent."""
-    resolver = project_root / "_bmad" / "scripts" / "resolve_config.py"
-    if not resolver.is_file():
-        return {}
-    command = ["uv", "run", str(resolver), "--project-root", str(project_root)]
-    for key in CONFIG_KEYS:
-        command += ["--key", key]
-    result = subprocess.run(command, capture_output=True, text=True, encoding="utf-8")
-    if result.returncode != 0:
-        return {}
-    resolved = json.loads(result.stdout or "{}")
-    return {name: str(resolved[key]) for key, name in CONFIG_KEYS.items() if key in resolved}
+# The memory layout HOW-I-REMEMBER.md describes. The agent adds folders under memory/ as kinds of subject appear.
+MEMORY_DIRS = ("memory/sessions", "raw", "capabilities")
 
 
 def parse_frontmatter(file_path: Path) -> dict:
@@ -72,15 +60,20 @@ def parse_frontmatter(file_path: Path) -> dict:
 
 
 def copy_files(source_dir: Path, dest_dir: Path, skip: set[str]) -> list[str]:
-    """Copy every file in source_dir except the skipped names."""
+    """Copy every file in source_dir that the destination lacks, except the skipped names."""
     if not source_dir.is_dir():
         return []
     files = [f for f in sorted(source_dir.iterdir()) if f.is_file() and f.name not in skip]
+    copied = []
     if files:
         dest_dir.mkdir(parents=True, exist_ok=True)
     for source_file in files:
-        shutil.copy2(source_file, dest_dir / source_file.name)
-    return [f.name for f in files]
+        target = dest_dir / source_file.name
+        if target.exists():
+            continue
+        shutil.copy2(source_file, target)
+        copied.append(source_file.name)
+    return copied
 
 
 def capabilities_table(references_dir: Path) -> str:
@@ -115,38 +108,43 @@ def main() -> int:
     assets_dir = skill_path / "assets"
     references_dir = skill_path / "references"
 
-    if sanctum_path.exists():
-        print(f"Sanctum already exists at {sanctum_path}")
-        print("This agent has already been born. Skipping First Breath scaffolding.")
-        return 0
-
-    config = load_config(project_root)
+    existed = sanctum_path.is_dir()
     variables = {
-        "user_name": config.get("user_name", "friend"),
-        "communication_language": config.get("communication_language", "English"),
         "birth_date": date.today().isoformat(),
         "project_root": str(project_root),
         "sanctum_path": str(sanctum_path),
         "capabilities-table": capabilities_table(references_dir),
     }
 
-    sanctum_path.mkdir(parents=True)
-    (sanctum_path / "capabilities").mkdir()
-    (sanctum_path / "sessions").mkdir()
-    print(f"Created sanctum at {sanctum_path}")
+    sanctum_path.mkdir(parents=True, exist_ok=True)
+    for rel in MEMORY_DIRS:
+        (sanctum_path / rel).mkdir(parents=True, exist_ok=True)
 
     copied_refs = copy_files(references_dir, sanctum_path / "references", SKILL_ONLY_FILES)
-    print(f"  Copied {len(copied_refs)} reference files to references/")
     copied_scripts = copy_files(skill_path / "scripts", sanctum_path / "scripts", BOOT_SCRIPTS)
-    if copied_scripts:
-        print(f"  Copied {len(copied_scripts)} scripts to scripts/")
 
+    created = []
     for template_path in sorted(assets_dir.glob("*-template.md")):
         output_name = template_path.name.removesuffix("-template.md").upper() + ".md"
+        target = sanctum_path / output_name
+        if target.exists():
+            continue
         content = substitute_vars(template_path.read_text(encoding="utf-8"), variables)
-        (sanctum_path / output_name).write_text(content, encoding="utf-8")
-        print(f"  Created {output_name}")
+        target.write_text(content, encoding="utf-8")
+        created.append(output_name)
 
+    if existed and not created and not copied_refs and not copied_scripts:
+        print(f"Sanctum already exists at {sanctum_path}")
+        print("This agent has already been born. Nothing to scaffold.")
+        return 0
+
+    print(f"{'Finished' if existed else 'Created'} sanctum at {sanctum_path}")
+    for name in created:
+        print(f"  Created {name}")
+    if copied_refs:
+        print(f"  Copied {len(copied_refs)} reference files to references/")
+    if copied_scripts:
+        print(f"  Copied {len(copied_scripts)} scripts to scripts/")
     print()
     print("First Breath scaffolding complete. The conversational awakening can now begin.")
     print(f"Sanctum: {sanctum_path}")

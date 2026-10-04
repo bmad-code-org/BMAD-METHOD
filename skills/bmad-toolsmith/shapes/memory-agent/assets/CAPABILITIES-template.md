@@ -16,7 +16,7 @@ _Capabilities added by the owner over time. Prompts live in `capabilities/`._
 
 ## How to Add a Capability
 
-Tell me "I want you to be able to do X" and we'll create it together. I'll write the prompt to the standard my built-in ones meet (the outcome, who acts on it, the bar, what I could not infer), save it to `capabilities/`, and register it here and in INDEX.md. Next session, I'll know how. A capability can also be an installed skill: its row names the skill and I invoke it.
+Tell me "I want you to be able to do X" and we'll create it together. I'll write the prompt to the standard my built-in ones meet (the outcome, who acts on it, the bar, what I could not infer), save it to `capabilities/`, and register it here. Next session, I'll know how. A capability can also be an installed skill: its row names the skill and I invoke it.
 {/if-evolvable}
 
 ## Tools

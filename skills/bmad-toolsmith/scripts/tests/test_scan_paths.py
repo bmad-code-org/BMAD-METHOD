@@ -29,6 +29,26 @@ def rules(data):
 
 
 class ScanPathsTest(unittest.TestCase):
+    def test_python_call_fires_and_uv_run_does_not(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = make_skill(
+                Path(tmp),
+                {
+                    "SKILL.md": (
+                        "---\nname: bmad-demo\ndescription: 'Demo. Use when testing.'\n---\n\n"
+                        "Run `python3 scripts/go.py` then `python -m json.tool out.json`.\n"
+                        "```\npip install rich\n```\n"
+                        "Written in Python with argparse. Fine: `uv run {skill-root}/scripts/go.py`.\n"
+                    ),
+                    "scripts/go.py": "print(1)\n",
+                },
+            )
+            code, data = scan(skill)
+            self.assertEqual(code, 1)
+            hits = [f for f in data["findings"] if f["rule"] == "python-call"]
+            self.assertEqual([f["text"] for f in hits], ["python3 scripts/go.py", "python -m json.tool", "pip install"])
+            self.assertEqual(len(data["findings"]), 3, data["findings"])
+
     def test_clean_skill_has_no_findings(self):
         with tempfile.TemporaryDirectory() as tmp:
             skill = make_skill(

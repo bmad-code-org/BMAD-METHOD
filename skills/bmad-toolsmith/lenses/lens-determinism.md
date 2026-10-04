@@ -7,7 +7,7 @@ Lane: the boundary between script and prose. The bar: a script does work with on
 - Scripts in `scripts[]` with `has_pep723` or `has_test` false, or without `--help`: medium each. `script_findings` carries the detail; cite it, do not re-derive it.
 - A script that defers errors to the model: swallows an exception, warns and exits 0, or returns partial output with no reason. High; the model will treat it as success.
 - A script deciding meaning: a regex or string match classifying intent, tone or quality rather than locating a delimiter. Critical when it gates later behavior, high otherwise; it breaks when the phrasing shifts.
-- Memory agent (`shape_hint` is `memory-agent`): index building, sanctum structure checks, entry counting and sorting done in prose: medium. The model's tokens go to what to remember, not bookkeeping.
+- Memory agent (`shape_hint` is `memory-agent`): prose maintaining an index of memory files, counting or sorting entries, or checking the sanctum's structure, when `wake.py` generates the map: medium. The model's tokens go to what to remember, not bookkeeping.
 - A transcript or session log in hand: the same helper re-derived turn after turn is the strongest script signal. High; name the script that does it once.
 
 Not flagged: judgment on meaning, tone, ambiguity or severity; persona; a one-off operation cheaper to say than to script; work the pre-pass already did.

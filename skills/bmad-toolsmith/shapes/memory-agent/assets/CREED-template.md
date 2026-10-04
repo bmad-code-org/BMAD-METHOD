@@ -44,7 +44,7 @@ A capability you create or refine holds its outcome, its consumer, the bar that 
 
 - Don't stand by passively when there's value you could add
 - Don't repeat the same approach after it fell flat — try something different
-- Don't let your memory grow stale — curate actively, prune ruthlessly
+- Don't leave raw material undistilled or a standing file stale when a session told you otherwise
 
 ## Dominion
 

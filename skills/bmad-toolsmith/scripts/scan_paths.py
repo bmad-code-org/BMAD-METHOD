@@ -15,8 +15,10 @@ Rules, each a `rule` value in the findings:
                      folder or the skill root, when its first folder does exist (otherwise it is prose);
                      files under assets/ and files named sample-* are not checked, they describe emitted output
   old-module-format  a `module.yaml` or `module-help.csv` mention; modules are described by bmod.toml now
+  python-call        `python x.py`, `python3 -m x` or `pip install`; every script runs as `uv run <path>`,
+                     which reads the script's PEP 723 header for its dependencies
 
-Fenced code blocks are checked for bare-script-call, installed-path, absolute-path and old-module-format
+Fenced code blocks are checked for bare-script-call, installed-path, absolute-path, old-module-format and python-call
 (a wrong example teaches the wrong call) and skipped for the two reference-resolution rules.
 
 Usage:
@@ -46,10 +48,11 @@ BARE_SCRIPT_RE = re.compile(r"\buv\s+run\b[^`\n]*?\s(?:\./)?scripts/\S+")
 INSTALLED_PATH_RE = re.compile(r"\{installed_path\}|\binstalled_path\s*[:=]")
 ABS_PATH_RE = re.compile(r"(?:/Users/|/home/|\b[A-Za-z]:[\\/]|(?<![\w.])~/)\S*")
 OLD_FORMAT_RE = re.compile(r"\bmodule\.yaml\b|\bmodule-help\.csv\b")
+PYTHON_CALL_RE = re.compile(r"(?<![\w/.-])(?:python3?|pip3?)\s+(?:-m\s+\S+|\S+\.py\b|install\b)")
 BACKTICK_REF_RE = re.compile(r"`([^`\s]+/[^`\s]+\.(?:md|yaml|yml|toml|json|csv|txt|xml|py|html))`")
 SKILL_DIR_RE = re.compile(r"(?:^|/)(?:skills|\.claude/skills|\.agents/skills|_bmad)/([a-z0-9][a-z0-9-]*)/")
 # Runtime folders under _bmad that are not skills.
-RULES = {"bare-script-call", "installed-path", "absolute-path", "cross-skill-ref", "missing-file", "old-module-format"}
+RULES = {"bare-script-call", "installed-path", "absolute-path", "cross-skill-ref", "missing-file", "old-module-format", "python-call"}
 BMAD_RUNTIME_DIRS = {"scripts", "config", "custom", "memory", "render", "_config", "knowledge"}
 
 
@@ -85,6 +88,7 @@ def scan_regex_rules(content: str, rel: str) -> list[dict]:
         (INSTALLED_PATH_RE, "installed-path", "remove installed_path; use a path relative to this file"),
         (ABS_PATH_RE, "absolute-path", "use {project-root}, {skill-root} or a config value"),
         (OLD_FORMAT_RE, "old-module-format", "describe the module in bmod.toml; see the migrate mode"),
+        (PYTHON_CALL_RE, "python-call", "run it as `uv run <path>`; dependencies come from the script's PEP 723 header"),
     ):
         for match in regex.finditer(content):
             findings.append(finding(rel, line_of(content, match.start()), rule, match.group(0), fix))

@@ -21,4 +21,4 @@
 ## Evolution Log
 | Date | What Changed | Why |
 |------|-------------|-----|
-| {birth_date} | Born. First Breath. | Met {user_name} for the first time. |
+| {birth_date} | Born. First Breath. | Met my owner for the first time. |

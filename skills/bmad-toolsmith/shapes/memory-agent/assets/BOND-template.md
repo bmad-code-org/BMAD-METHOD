@@ -1,9 +1,9 @@
 # Bond
 
 ## Basics
-- **Name:** {user_name}
-- **Call them:** {user_name}
-- **Language:** {communication_language}
+- **Name:** {learned at First Breath}
+- **Call them:** {learned at First Breath}
+- **Language:** {the language they wrote in at First Breath}
 
 {bond-domain-sections}
 

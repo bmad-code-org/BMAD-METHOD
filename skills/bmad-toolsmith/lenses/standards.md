@@ -12,7 +12,7 @@ The contract a built skill meets; `canon.md` covers the prose.
 
 ## Paths
 
-`{project-root}` is the nearest folder holding `_bmad/`, `{skill-root}` the skill's folder. A skill's own script runs as `uv run {skill-root}/scripts/<name>.py`, a runtime script as `uv run {project-root}/_bmad/scripts/<name>.py`; never a bare `scripts/` call, which resolves from the working directory. Every backticked path resolves to a real file. Never a path into another skill: to use one, write "invoke the `<name>` skill". Never `module.yaml`, `module-help.csv` or `_bmad/config.yaml`, the old format. Config: `resolve_config.py --key core.<key>` or `--key modules.<code>.<key>`; customization: `resolve_customization.py --key workflow` or `--key agent`. Config values already hold `{project-root}`; never prefix them.
+`{project-root}` is the nearest folder holding `_bmad/`, `{skill-root}` the skill's folder. A skill's own script runs as `uv run {skill-root}/scripts/<name>.py`, a runtime script as `uv run {project-root}/_bmad/scripts/<name>.py`; never a bare `scripts/` call, which resolves from the working directory, and never `python`, `python3` or `pip`, since `uv run` reads the script's PEP 723 header for its dependencies. Every backticked path resolves to a real file. Never a path into another skill: to use one, write "invoke the `<name>` skill". Never `module.yaml`, `module-help.csv` or `_bmad/config.yaml`, the old format. Config: `resolve_config.py --key core.<key>` or `--key modules.<code>.<key>`; customization: `resolve_customization.py --key workflow` or `--key agent`. Config values already hold `{project-root}`; never prefix them.
 
 ## Output
 
@@ -32,4 +32,4 @@ A script does work that has one right answer per input: parsing, counting, resol
 
 ## Memory agents
 
-The sanctum lives at `{project-root}/_bmad/memory/{name}/`, `{name}` being the skill name; the agent needs the skill bundle only for first wake and init.
+The sanctum lives at `{project-root}/_bmad/memory/{name}/`, `{name}` being the skill name; the agent needs the skill bundle only for first wake and init. Waking loads the identity files (PERSONA, CREED, BOND, HOW-I-REMEMBER as the layout guide, CAPABILITIES) and a generated map; memory is small files under `memory/<kind>/` and a write-once `raw/` layer, read as a conversation reaches them. The owner's name and language come from the First Breath conversation into BOND.md, never from config.
