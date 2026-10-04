@@ -427,6 +427,8 @@ class ManifestGenerator {
   /**
    * Write central _bmad/config.toml with [core], [modules.<code>], [agents.<code>] tables.
    * Install-owned. Team-scope answers → config.toml; user-scope answers → config.user.toml.
+   * User-scope keys also get their module.yaml default in config.toml, so a
+   * clone without config.user.toml still resolves them.
    * Both files are regenerated on every install. User overrides live in
    * _bmad/custom/config.toml and _bmad/custom/config.user.toml (never touched by installer).
    * @returns {string[]} Paths to the written config files
@@ -444,6 +446,9 @@ class ManifestGenerator {
     // Maps installer moduleName (may be full display name) → module code field
     // from module.yaml, so TOML sections use [modules.<code>] not [modules.<name>].
     const codeByModuleName = {};
+    // Module.yaml defaults for user-scope keys, written to config.toml as the
+    // team fallback; config.user.toml overrides them.
+    const userDefaultsByModule = {};
     for (const moduleName of this.updatedModules) {
       const moduleYamlPath = await resolveInstalledModuleYaml(moduleName);
       if (!moduleYamlPath) {
@@ -458,9 +463,19 @@ class ManifestGenerator {
         if (!parsed || typeof parsed !== 'object') continue;
         if (parsed.code) codeByModuleName[moduleName] = parsed.code;
         scopeByModuleKey[moduleName] = {};
+        userDefaultsByModule[moduleName] = {};
         for (const [key, value] of Object.entries(parsed)) {
           if (value && typeof value === 'object' && 'prompt' in value) {
             scopeByModuleKey[moduleName][key] = value.scope === 'user' ? 'user' : 'team';
+            // Only plain defaults: no placeholders like {directory_name}, no result transform.
+            if (
+              value.scope === 'user' &&
+              value.default !== undefined &&
+              !String(value.default).includes('{') &&
+              (value.result === undefined || value.result === '{value}')
+            ) {
+              userDefaultsByModule[moduleName][key] = value.default;
+            }
           }
         }
       } catch (error) {
@@ -488,6 +503,9 @@ class ManifestGenerator {
       const user = {};
       const scopes = scopeByModuleKey[moduleName] || {};
       const isCore = moduleName === 'core';
+      for (const [key, value] of Object.entries(userDefaultsByModule[moduleName] || {})) {
+        if (isCore || !coreKeys.has(key)) team[key] = value;
+      }
       for (const [key, value] of Object.entries(cfg || {})) {
         if (!isCore && coreKeys.has(key)) continue;
         if (onlyDeclaredKeys && !(key in scopes)) continue;
