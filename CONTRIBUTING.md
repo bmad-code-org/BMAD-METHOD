@@ -137,6 +137,13 @@ Use conventional commits:
 
 Keep messages under 72 characters. Each commit = one logical change.
 
+### Checks
+
+Your PR must pass the `Quality & Validation` checks. How you get there is up to you. Two options:
+
+- Install the pre-commit hook once per clone with `uv run pre-commit install`. It runs the Python-side lint, validation, and tests on every commit.
+- Run every check CI runs, including the docs site, with `uv sync --frozen && (cd docs-site && npm ci) && uv run --frozen tools/quality.py`.
+
 ---
 
 ## What Makes a Good PR?
