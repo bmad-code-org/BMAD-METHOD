@@ -46,7 +46,7 @@ Treat every entry in `{agent.persistent_facts}` as foundational context you carr
 
 ### Step 5: Load Config
 
-Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
+Run `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}` and use:
 - Use `{user_name}` for greeting
 - Use `{communication_language}` for all communications
 - Use `{document_output_language}` for output documents
