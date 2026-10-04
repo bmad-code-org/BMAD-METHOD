@@ -1,4 +1,5 @@
 ---
+status: draft
 stepsCompleted: []
 inputDocuments: []
 ---
