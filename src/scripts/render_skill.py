@@ -31,6 +31,10 @@ _CONFIG_TOKEN = re.compile(r"\{\{config\.([A-Za-z0-9_.-]+)\}\}")
 _SHORT_CONFIG_TOKEN = re.compile(r"\{\{\.([A-Za-z0-9_]+)\}\}")
 _CUSTOM_TOKEN = re.compile(r"\{workflow\.([A-Za-z0-9_.-]+)\}")
 _SNAPSHOT_TOKEN = re.compile(r"\[\[bmad-snapshot:([A-Za-z0-9_./-]+\.md)\]\]")
+_NEUTRAL_CONFIG_DEFAULTS = {
+    "communication_language": "English",
+    "user_skill_level": "intermediate",
+}
 
 
 def _hash_bytes(content: bytes) -> str:
@@ -131,7 +135,7 @@ def _find_config_values(data: Any, key: str, prefix: str = "") -> list[tuple[str
         return matches
     for name, value in data.items():
         path = f"{prefix}.{name}" if prefix else name
-        if name == key and not isinstance(value, (dict, list)):
+        if name == key:
             matches.append((path, value))
         matches.extend(_find_config_values(value, key, path))
     return matches
@@ -139,15 +143,18 @@ def _find_config_values(data: Any, key: str, prefix: str = "") -> list[tuple[str
 
 def _resolve_short_config(
     central: dict[str, Any], key: str, project_root: Path
-) -> tuple[str, str]:
+) -> tuple[str, str, str]:
     matches = _find_config_values(central, key)
     if not matches:
+        default = _NEUTRAL_CONFIG_DEFAULTS.get(key)
+        if default is not None:
+            return "default", key, default
         raise RenderError(f"missing config value `{key}`")
     if len(matches) > 1:
         paths = ", ".join(path for path, _ in matches)
         raise RenderError(f"ambiguous config value `{key}` found at: {paths}")
     path, value = matches[0]
-    return path, _resolve_config_value(value, f"config.{path}", project_root)
+    return "config", path, _resolve_config_value(value, f"config.{path}", project_root)
 
 
 def _format_markdown_list(items: list[str]) -> str:
@@ -201,8 +208,8 @@ def _resolve_replacements(
     for content in sources.values():
         for match in _SHORT_CONFIG_TOKEN.finditer(content):
             token, key = match.group(0), match.group(1)
-            path, resolved = _resolve_short_config(central, key, project_root)
-            source = f"config.{path}"
+            layer, path, resolved = _resolve_short_config(central, key, project_root)
+            source = f"{layer}.{path}"
             replacements[token] = resolved
             input_values[source] = resolved
         for match in _CONFIG_TOKEN.finditer(content):

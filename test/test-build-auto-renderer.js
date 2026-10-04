@@ -258,9 +258,9 @@ async function main() {
     assert(result.status !== 0 && result.stdout.includes('failed to parse'), 'malformed customization did not HALT');
   });
 
-  test('missing, wrong-type, and non-string keyed values HALT cleanly', () => {
+  test('missing user skill level defaults while wrong-type and non-string keyed values HALT cleanly', () => {
     const missing = fixture({ config: baseConfig().replace('user_skill_level = "expert"\n', '') });
-    assert(run(missing).stdout.includes('missing config value'), 'missing value accepted');
+    assert(run(missing).status === 0, 'missing user skill level did not use its default');
     const wrong = fixture({ config: baseConfig().replace('user_skill_level = "expert"', 'user_skill_level = 42') });
     assert(run(wrong).stdout.includes('must be a string'), 'wrong type accepted');
     const keyed = fixture();
