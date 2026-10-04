@@ -83,7 +83,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   try {
     const count = validateRedirects(path.join(siteRoot, 'astro.config.mjs'), {
       docsDir: path.join(projectRoot, 'docs'),
-      siteDir: path.join(projectRoot, 'build', 'site'),
+      siteDir: path.join(siteRoot, 'dist'),
     });
     console.log(`All ${count} redirects valid.`);
   } catch (error) {
