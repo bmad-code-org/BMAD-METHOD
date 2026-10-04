@@ -2007,8 +2007,13 @@ async function runTests() {
       assert(teamContent.includes('document_output_language = "English"'), 'Team-scope core key lands in config.toml');
       assert(teamContent.includes('output_folder = "_bmad-output"'), 'Team-scope output_folder lands in config.toml');
       assert(teamContent.includes('project_name = "demo-project"'), 'project_name lands in [core] (core key as of #2279)');
-      assert(!teamContent.includes('user_name'), 'user_name (scope: user) is absent from config.toml');
-      assert(!teamContent.includes('communication_language'), 'communication_language (scope: user) is absent from config.toml');
+      assert(teamContent.includes('user_name = "BMad"'), 'user_name (scope: user) gets its module.yaml default in config.toml');
+      assert(
+        teamContent.includes('communication_language = "English"'),
+        'communication_language (scope: user) gets its module.yaml default in config.toml',
+      );
+      assert(!teamContent.includes('TestUser'), 'user_name answer stays out of config.toml');
+      assert(!teamContent.includes('Spanish'), 'communication_language answer stays out of config.toml');
 
       // [core] — user-scoped keys land in config.user.toml
       assert(userContent.includes('[core]'), 'config.user.toml has [core] section');
@@ -2026,7 +2031,10 @@ async function runTests() {
         assert(!bmmTeamBlock.includes('stale-bmm-copy'), 'stale bmm-copy of project_name not leaked into config.toml');
         assert(!bmmTeamBlock.includes('user_name'), 'user_name stripped from [modules.bmm] (core-key pollution)');
         assert(!bmmTeamBlock.includes('communication_language'), 'communication_language stripped from [modules.bmm]');
-        assert(!bmmTeamBlock.includes('user_skill_level'), 'user_skill_level (scope: user) absent from [modules.bmm] in config.toml');
+        assert(
+          bmmTeamBlock.includes('user_skill_level = "intermediate"'),
+          'user_skill_level (scope: user) gets its module.yaml default under [modules.bmm] in config.toml',
+        );
       }
 
       const bmmUserMatch = userContent.match(/\[modules\.bmm\][\s\S]*?(?=\n\[|$)/);
@@ -3973,6 +3981,24 @@ async function runTests() {
       'installer-produced build tree renders and dispatches end to end',
       `${render49Build.stdout}${render49Build.stderr}`,
     );
+
+    // A fresh clone has the installer's config.toml but no gitignored config.user.toml (#3016).
+    const generator49 = new ManifestGenerator();
+    generator49.updatedModules = ['core', 'bmm'];
+    await generator49.writeCentralConfig(bmadDir49, partialConfig49.moduleConfigs);
+    await fs.remove(path.join(bmadDir49, 'config.user.toml'));
+    for (const skillDir of [skill49, skill49Build]) {
+      const renderClone49 = spawnSync(
+        'uv',
+        ['run', '--python', '3.11', path.join(scripts49, 'render_skill.py'), '--project-root', root49, '--skill', skillDir],
+        renderOptions49,
+      );
+      assert(
+        renderClone49.status === 0 && !(renderClone49.stdout || '').startsWith('HALT'),
+        `${path.basename(skillDir)} renders from config.toml alone when config.user.toml is absent`,
+        `${renderClone49.stdout}${renderClone49.stderr}`,
+      );
+    }
     const resolveCustomization49 = spawnSync(
       'uv',
       [

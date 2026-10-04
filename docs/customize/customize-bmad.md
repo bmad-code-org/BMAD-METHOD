@@ -262,7 +262,7 @@ Per-skill files cover one agent or workflow. Install answers and the agent
 roster live in four TOML files:
 
 ```text
-_bmad/config.toml               (installer-owned)  team scope: install answers + agent roster
+_bmad/config.toml               (installer-owned)  team scope: install answers + agent roster + user-scope defaults
 _bmad/config.user.toml          (installer-owned)  user scope: user_name, language, skill level
 _bmad/custom/config.toml        (human-authored)   team overrides (committed)
 _bmad/custom/config.user.toml   (human-authored)   personal overrides (gitignored)
@@ -280,7 +280,9 @@ Priority 4 (base): _bmad/config.toml
 **What lives where.** The installer splits its answers by the `scope:`
 declared on each prompt in a module's `module.yaml`: `[core]` and
 `[modules.<code>]` answers with scope `team` land in `_bmad/config.toml`,
-scope `user` in `_bmad/config.user.toml`. `[agents.<code>]` holds each
+scope `user` in `_bmad/config.user.toml`. `_bmad/config.toml` also
+carries each user-scope key's `module.yaml` default, so a clone without
+`config.user.toml` still resolves it. `[agents.<code>]` holds each
 agent's descriptor — code, name, title, icon, description, team — taken
 from the module's `agents:` block, always team-scoped.
 
