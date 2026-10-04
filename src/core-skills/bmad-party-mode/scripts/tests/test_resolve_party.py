@@ -67,6 +67,21 @@ class TestResolveMembers(unittest.TestCase):
         self.assertEqual(rp.resolve_members([], self.col, self.idx), ([], []))
 
 
+class TestCodeMap(unittest.TestCase):
+    def test_maps_aliases_names_and_custom_only_codes_to_their_member(self):
+        col, idx, _ = rp.build_collective(AGENTS, [{"code": "morpheus", "name": "Morpheus"}])
+        codes = rp.code_map(col, idx)
+        self.assertEqual(codes["analyst"], {"code": "bmad-agent-analyst", "name": "Mary"})
+        self.assertEqual(codes["mary"]["code"], "bmad-agent-analyst")
+        self.assertEqual(codes["bmad-agent-pm"]["code"], "bmad-agent-pm")
+        self.assertEqual(codes["morpheus"], {"code": "morpheus", "name": "Morpheus"})
+
+    def test_override_reports_the_overriding_name(self):
+        col, idx, _ = rp.build_collective(AGENTS, [{"code": "analyst", "name": "Mary-Custom"}])
+        self.assertEqual(rp.code_map(col, idx)["analyst"],
+                         {"code": "bmad-agent-analyst", "name": "Mary-Custom"})
+
+
 class TestGroups(unittest.TestCase):
     GROUPS = [
         {"id": "wr", "name": "Writers", "members": ["analyst", "morpheus"]},
