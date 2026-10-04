@@ -109,6 +109,10 @@ class TestMarkdownExtraction(unittest.TestCase):
         content = "Mustache {project-root}/_bmad/bmm/{{name}}/file.md is skipped.\n"
         self.assertEqual(self.extract(content), [])
 
+    def test_project_root_runtime_variable_skipped(self):
+        content = "The sanctum lives at `{project-root}/_bmad/memory/{skillName}/`.\n"
+        self.assertEqual(self.extract(content), [])
+
 
 class TestYamlExtraction(unittest.TestCase):
     def test_refs_with_lines_and_keys(self):
@@ -216,6 +220,14 @@ class TestRunClassification(ProjectCase):
         # extracted (counted) but its first directory exists nowhere, so it is prose
         self.assertIn("References checked: 1", out)
         self.assertIn("Broken references: 0", out)
+
+    def test_assets_and_samples_are_not_scanned(self):
+        (self.skill / "references").mkdir()
+        write(self.skill / "assets" / "SKILL-template.md", "Load `references/guide.md` first.\n")
+        write(self.skill / "references" / "sample-prompt.md", "Load `references/techniques.md` now.\n")
+        code, out = self.run_validator(strict=True)
+        self.assertEqual(code, 0)
+        self.assertIn("References checked: 0", out)
 
     def test_stray_file_in_skills_root(self):
         write(self.skills / "loose.md", "content\n")

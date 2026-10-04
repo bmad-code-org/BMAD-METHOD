@@ -1,0 +1,19 @@
+# Both tables in one file: this folder is the {code} module and its one skill.
+
+[bmod]
+code = "{code}"
+version = "{version}"
+update_source = "{update_source}"
+required_skills = [{ skill = "bmad", version = "{bmad_version}", source = "github:bmad-code-org/BMAD-METHOD/skills" }]
+pre_install_message = ""
+post_install_message = ""
+
+# Asked by `bmad setup` in this order. The skill reads each answer as modules.{code}.<key>.
+# `scope = "user"` makes an answer personal and uncommitted; leave it out for a team answer.
+[[bmod.config_questions]]
+key = "{key}"
+prompt = "{prompt}"
+default = "{default}"
+
+# Empty on purpose: the record is in this file, so the module's one skill is this folder.
+[skill]

@@ -1,0 +1,10 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# Override files:
+#   {project-root}/_bmad/custom/bmad-eval.toml       (team)
+#   {project-root}/_bmad/custom/bmad-eval.user.toml  (personal)
+
+[workflow]
+# Where eval runs land, one timestamped folder per run. `{output_folder}` is
+# `core.output_folder`. Smithy's review reports use the same default.
+reports_folder = "{output_folder}/eval-reports"

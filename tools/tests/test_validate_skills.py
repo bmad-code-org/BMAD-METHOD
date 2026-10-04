@@ -493,6 +493,16 @@ class TestCliAndOutput(ProjectCase):
         self.assertEqual(code, 0)
         self.assertIn("Skills scanned: 2", out)
 
+    def test_skill_md_inside_a_skill_is_a_template_not_a_skill(self):
+        self.valid("bmad-z")
+        write(
+            self.skills / "bmad-z" / "assets" / "setup-skill-template" / "SKILL.md",
+            skill_md("{setup-skill-name}", "Template body. Use when scaffolded."),
+        )
+        code, out, _ = self.run_validator(strict=True)
+        self.assertEqual(code, 0)
+        self.assertIn("Skills scanned: 1", out)
+
     def test_single_skill_outside_repo(self):
         outside = Path(self._tmp.name) / "outside" / "bmad-out"
         write(

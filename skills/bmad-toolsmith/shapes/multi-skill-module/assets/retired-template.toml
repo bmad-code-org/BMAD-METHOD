@@ -1,0 +1,8 @@
+# Skills this module no longer ships. `bmad setup` offers to delete any still installed and moves a
+# renamed skill's `_bmad/custom/` files to the new name. A retired name is never reused.
+{if-renamed}
+renamed = [{renamed}]
+{/if-renamed}
+{if-removed}
+removed = [{removed}]
+{/if-removed}

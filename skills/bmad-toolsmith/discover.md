@@ -1,0 +1,29 @@
+# Discover
+
+Every new skill starts here. The outcome is a read-back the user approves before any file exists: what the skill is for, who uses it, what it produces and for whom, when it fires, what shape it takes and by which approach it gets built.
+
+## Mine before you ask
+
+Read what the user already gave you: the request, the conversation so far (tools used, the order of steps, corrections they made, inputs and outputs they showed), files or skills they pointed at. When the conversation itself is the workflow ("turn this into a skill"), most answers are in it. Ask only for the gaps.
+
+## What you need to learn
+
+One or two questions at a time, in whatever order the gaps call for, each with the answer you would infer so the user can just confirm. A user who arrives with a hardened idea or says they want to move fast gets a confirmation and a read-back, not an interview. Five things settle a skill: what it gets done and for whom (two purposes are two skills); who or what consumes the output and what must be true of it for them to act without this conversation in the room, the one line that sets every bar; the phrases a user would type to reach it and the nearby requests it must stay quiet on; what it runs on and where the know-how lives that a model would not already have (a runbook, an incident, a transcript of doing it by hand, the corrections the user keeps making); and whether the output can be checked objectively, which decides how much the build leans on evals. Ask too whether it is a BMad skill, reading BMad config or joining a module, or stands alone.
+
+The shape surfaces on its own from those answers: a persona with a menu of things it does is an agent; memory across sessions is a memory agent; teams swapping steps without forking is a rendered skill; mostly deterministic work is a script-backed utility; shipping with other skills or needing its own config questions is a module. Each `shapes/<shape>/shape.md` says how to recognise that the conversation has reached it; do not offer the list.
+
+Push back where the idea is thin: is this a skill at all or a one-off the user could ask for directly; a project convention, which belongs in the project's instructions file; a constraint a script could check, which belongs in a script; what input would break it; what it should require or recommend from the skills already installed. Ask for one real input, a request the user made by hand or a file, and run it through a subagent with no skill before the read-back. When the bare model already does the job, say so and propose no skill, or a skill for only the part it got wrong; when it fails, that trace is the first evidence of what the skill has to teach. Offer what the outcome implies but nobody named: the sibling intent (update beside create), the input nobody mentioned. One line each; the user picks, and a decline is not re-proposed.
+
+## The read-back
+
+Present, and wait for a yes or changes:
+
+- Name, kebab-case, asked rather than assumed, with a proposal. Suggest a prefix of the user's own, their org or module code (`acme-release-notes`), and say why in a line: it tells custom from core BMad at a glance in listings, logs and traces, and a module's skills then sort together. Do not propose `bmad-`; it belongs to modules shipped by the bmad-code-org, whose skills are `bmad-<code>-<skill>`, agents `bmad-<code>-agent-<name>`, the code dropped for core. A skill joining a module takes the module's prefix.
+- One line on what it is for.
+- The description draft, as it will ship, written to the canon's description rule: third person, what it does, then `Use when ...` with the phrases a user would type, then what it is not for, aiming under 500 characters. For a skill only ever called by name, a one-line description with model invocation disabled where the host supports it.
+- Shape, with one line on why the conversation landed there.
+- Approach, with one line on why: lean (default) when the user wants the skill; eval-first when the output is checkable and the user wants proof; the skill-creator loop when they want to iterate on measured results; scaffold when they will write it themselves.
+- Where it will live, proposed from what is there rather than asked: `{workflow.skills_folder}/<name>` when that is set; inside the module it joins; else `skills/<name>` at `{project-root}` when that folder holds `*/SKILL.md` (a skill repo, whose source is what to edit); else the folder the user's agent reads skills from (`.agents/skills/`, `.claude/skills/` or the like, writing at the symlink's target when one links to the other), where it is live the moment it is written; else `~/.claude/skills/<name>` or `~/.agents/skills/<name>` when the skill is for the user everywhere or there is no project.
+- The files it will have, one line each, and any script worth writing because the work is deterministic or would be rewritten every run.
+
+Approval sets `{target}` and fixes the read-back; later files work from it, not from a re-asked user. The user can change it at any point afterwards; a change redoes only what it touches. Then load `approaches/<approach>.md`: `approaches/lean.md`, `approaches/eval-first.md`, `approaches/skill-creator-loop.md` or `approaches/scaffold.md`.
