@@ -166,7 +166,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const update = process.argv.includes('--update');
 
   try {
-    const { summary } = validateLocaleCoverage(path.join(projectRoot, 'build', 'site'), {
+    const { summary } = validateLocaleCoverage(path.join(siteRoot, 'dist'), {
       baselinePath: path.join(siteRoot, 'locale-coverage-baseline.json'),
       update,
     });

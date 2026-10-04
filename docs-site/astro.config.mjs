@@ -21,7 +21,6 @@ export default defineConfig({
   compressHTML: true,
   site: `${urlParts.origin}${basePath}`,
   base: basePath,
-  outDir: '../build/site',
   redirects: {
     '/how-to/install-bmad': `${basePath}start/install-bmad/`,
     '/how-to/non-interactive-installation': `${basePath}start/install-bmad/`,
