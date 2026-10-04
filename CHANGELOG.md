@@ -1,5 +1,16 @@
 # Changelog
 
+## v6.12.1 - 2026-10-04
+
+**Every skill now reads the same merged config**, so overrides in `_bmad/custom/config.toml` and `config.user.toml` apply everywhere (#3019).
+
+### 🐛 Fixes
+
+* 23 bmm skills, including the v6 shims, load config through `resolve_config.py` instead of reading `_bmad/bmm/config.yaml` directly (#3019).
+* `config.toml` now carries the defaults for user-scope keys, so `bmad-build` and `bmad-build-auto` render on a fresh clone without `config.user.toml`. Re-run the installer to pick this up (#3016).
+* `bmad-create-epics-and-stories` writes `status: draft` and keeps it when final validation fails, listing the open checks. `status: final` is set only when every check passes (#3020).
+* Party mode's create-party collision check now sees aliases and custom-only member codes, via `resolve_party.py --list-codes` (#3015).
+
 ## v6.12.0 - 2026-09-03
 
 **Build decides how much ceremony a change needs after investigating it, not before.** Simple changes now get a two-section spec and finish in one session.
