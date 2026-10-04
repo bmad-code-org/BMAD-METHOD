@@ -16,6 +16,9 @@ into one collective, then projects only what the moment needs:
   * --party <id> — full member detail for one chosen group, on demand
     (e.g. when the user switches rooms). Unknown id returns the available
     names instead of an error wall.
+  * --list-codes — every token that resolves to a member (code, alias,
+    lower-cased name, custom-only codes) mapped to that member's code and
+    name. The collision check before adding custom members.
 
 The merge is deterministic (a keyed union; a custom member whose code
 matches an installed agent overrides it), so the orchestrator consumes a
@@ -28,6 +31,7 @@ customize.toml directly if the customization resolver is unavailable.
   resolve_party.py --project-root P --skill S
   resolve_party.py --project-root P --skill S --list-groups
   resolve_party.py --project-root P --skill S --party writers-room
+  resolve_party.py --project-root P --skill S --list-codes
 """
 
 import argparse
@@ -172,6 +176,12 @@ def resolve_members(member_tokens, collective, index):
     return resolved, unresolved
 
 
+def code_map(collective, index):
+    """Every resolvable token -> the member it resolves to (code + name)."""
+    return {token: {"code": code, "name": collective[code].get("name", code)}
+            for token, code in sorted(index.items()) if code in collective}
+
+
 def group_menu(groups):
     """Names only — the cheap menu. Open-cast groups (no roster) are flagged."""
     out = []
@@ -224,6 +234,8 @@ def main():
     ap.add_argument("--skill", required=True, help="Path to the bmad-party-mode skill dir")
     ap.add_argument("--party", help="Resolve full detail for this group id")
     ap.add_argument("--list-groups", action="store_true", help="Group names only")
+    ap.add_argument("--list-codes", action="store_true",
+                    help="Every code, alias and name in the collective, for collision checks")
     args = ap.parse_args()
 
     project_root = Path(args.project_root).resolve()
@@ -248,6 +260,10 @@ def main():
 
     agents, agents_ok = load_agents(project_root)
     collective, index, installed_codes = build_collective(agents, workflow.get("party_members", []))
+
+    if args.list_codes:
+        _emit({"installed_agents_resolved": agents_ok, "codes": code_map(collective, index)})
+        return
 
     if args.party:
         g = find_group(groups, args.party)
