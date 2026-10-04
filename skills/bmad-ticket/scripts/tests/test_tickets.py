@@ -1574,6 +1574,25 @@ class ActiveInitiativeTests(TreeCase):
         self.assertEqual(out["folder"], "initiative-checkout")
         self.assertEqual(out["counts"]["total"], 5)
 
+    def test_config_utils_flag_merges_the_config_with_the_named_script(self):
+        project_copy = self.root / "_bmad" / "scripts" / "config_utils.py"
+        marker = self.root / "project-copy-ran"
+        project_copy.write_text(
+            CONFIG_UTILS.read_text(encoding="utf-8") + f"\nPath({str(marker)!r}).touch()\n",
+            encoding="utf-8",
+        )
+        snapshot = Path(self.elsewhere()) / "config_utils.py"
+        shutil.copy(CONFIG_UTILS, snapshot)
+        flag = ("--project-root", str(self.root), "--config-utils", str(snapshot))
+        self.assertEqual(self.ok(run(*flag, "next", cwd=self.elsewhere()))["folder"], "initiative-checkout")
+        self.assertEqual(self.ok(run(*flag, "status", "epic-cart", cwd=self.elsewhere()))["folder"], "epic-cart")
+        self.ok(run(*flag, "mark", "story-scaffold.md", "done", cwd=self.elsewhere()))
+        self.assertTrue((self.epic / "story-scaffold-plan.md").is_file())
+        self.assertFalse(marker.exists())
+        self.fails(run(*flag[:3], str(snapshot.with_name("gone.py")), "next", cwd=self.root), "gone.py is missing")
+        self.ok(run("next", cwd=self.root))
+        self.assertTrue(marker.exists())
+
     def test_a_relative_folder_is_found_under_the_store_from_anywhere(self):
         out = self.ok(run("--project-root", str(self.root), "status", "initiative-checkout", cwd=self.elsewhere()))
         self.assertEqual(out["folder"], "initiative-checkout")
