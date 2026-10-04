@@ -12,6 +12,10 @@
 
 [workflow]
 
+# Review handling for findings that require changing the plan.
+
+on_bad_plan = "amend"
+
 # Extra instructions to run before config is loaded and before the user is greeted.
 
 activation_steps_prepend = []

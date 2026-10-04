@@ -1,5 +1,6 @@
 {% if workflow.route not in ("oneshot", "full", "auto") %}{{ halt("workflow.route must be oneshot, full, or auto, not " ~ workflow.route) }}{% endif %}
 {% if workflow.review not in ("none", "quick", "thorough", "auto") %}{{ halt("workflow.review must be none, quick, thorough, or auto, not " ~ workflow.review) }}{% endif %}
+{% if workflow.on_bad_plan not in ("amend", "halt") %}{{ halt("workflow.on_bad_plan must be amend or halt, not " ~ workflow.on_bad_plan) }}{% endif %}
 # Build Auto Workflow
 
 **Goal:** Turn intent into a hardened, reviewable artifact, without human interaction.

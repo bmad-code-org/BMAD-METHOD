@@ -35,6 +35,7 @@ Use this when the user asks about `bmad-build-auto`, building tickets with no hu
 `blocked` means continuing without a human was unsafe. For a ticket named by ref, file, or title, the run records it with `tickets.py mark`, so `blocked_at` and `blocked_reason` sit in the plan, which is created if the run halted before planning; details are under `Auto Run Result`. Other halts set `status` in the plan and put the reason under `Auto Run Result`, or write a `bmad-build-auto-result-*.md` file in `{output_folder}/{active_initiative}/` (or `{output_folder}/` with no initiative active) when there is no plan yet. `tickets.py status` shows each blocked ticket with its reason. Common reasons:
 
 - `unclear intent`, `intent gap`: the input cannot answer a question the run hit.
+- `plan amendment needs approval`: review found a bad plan and `on_bad_plan = "halt"` is configured.
 - `no subagents`.
 - `ticket not resolved`: `find` failing on the reference.
 - `implementation verification failed`.
@@ -48,6 +49,8 @@ A blocked plan halts every later dispatch of its ticket and keeps its first reas
 ## The saved patch on an intent-gap halt
 
 When review halts on `intent gap`, the run saves the attempted change as a patch file beside the plan, names the path in the plan, and reverts the code. If the patch reads the intent correctly, the user runs `git apply` on it, sets the plan's status to `in-review`, and dispatches again. If it was wrong, they fix the intent and start fresh.
+
+When review halts on `plan amendment needs approval`, inspect the proposed amendment and saved patch, update the plan, set its status to `ready-for-dev`, and dispatch again. The existing `baseline_revision` is preserved.
 
 ## What to read afterwards
 

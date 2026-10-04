@@ -70,7 +70,11 @@ Write `lenses_ran` — the ids launched, in launch order — to `{plan_file}` fr
 
    Out of scope: reject or defer a finding as out of scope only when the intent itself excludes it — not because the plan's scope section or the shape of the diff says so. If only those would exclude it, keep the finding: the plan drew the line somewhere the intent did not, so it routes to intent_gap or bad_plan, never to patch or defer.
 
+{% if workflow.on_bad_plan == "amend" %}
    Reject any finding whose fix is to edit this build's plan.
+{% else %}
+   Keep findings whose fix is to edit this build's plan and route them to `bad_plan` so the user can approve the amendment.
+{% endif %}
 
    All remaining findings continue to grouping.
 
@@ -83,7 +87,12 @@ Write `lenses_ran` — the ids launched, in launch order — to `{plan_file}` fr
 
 4. Process entries in cascading order. If intent_gap or bad_plan entries exist, they trigger a loopback — lower entries are moot since code will be re-derived. If neither exists, process patch and defer normally. Before each loopback, read `{plan_file}` frontmatter `review_loop_iteration` (missing means `0`), increment it by 1, and write it back. If it exceeds 5, HALT and escalate to the human.
    - **intent_gap** — Root cause is inside `<frozen-after-approval>`. Revert code changes. Loop back to the human to resolve. Once resolved, read fully and follow `{{ rendered("step-02-plan.md") }}` to re-run steps 2–4.
-   - **bad_plan** — Root cause is outside `<frozen-after-approval>`. Before reverting code: extract KEEP instructions for positive preservation (what worked well and must survive re-derivation). Revert code changes. Read the `## Plan Change Log` in `{plan_file}` and strictly respect all logged constraints when amending the non-frozen sections that contain the root cause. Append a new change-log entry recording: the triggering finding, what was amended, the known-bad state avoided, and the KEEP instructions. Read fully and follow `{{ rendered("step-03-implement.md") }}` to re-derive the code, then this step will run again.
+   - **bad_plan** — Root cause is outside `<frozen-after-approval>`.
+{% if workflow.on_bad_plan == "halt" %}
+     Do not change the plan or code. For each finding, propose an amendment to the relevant non-frozen section, preserving the `## Plan Change Log` constraints, and include the finding, the known-bad state to avoid, and KEEP instructions. HALT and ask the user to choose: **Approve** (apply and log the amendment, revert code, then follow `{{ rendered("step-03-implement.md") }}` to re-derive), **Revise** (edit the proposal), or **Stop** (leave the plan and code unchanged).
+{% else %}
+     Before reverting code: extract KEEP instructions for positive preservation (what worked well and must survive re-derivation). Revert code changes. Read the `## Plan Change Log` in `{plan_file}` and strictly respect all logged constraints when amending the non-frozen sections that contain the root cause. Append a new change-log entry recording: the triggering finding, what was amended, the known-bad state avoided, and the KEEP instructions. Read fully and follow `{{ rendered("step-03-implement.md") }}` to re-derive the code, then this step will run again.
+{% endif %}
    - **patch** — Auto-fix. These are the only findings that survive loopbacks. Re-engage the step-03 implementation subagent — the same one, addressed by the name or id its launch returned; a fresh launch is not re-engagement. Send it one message, exactly this, with the findings filled in:
 
      ```text

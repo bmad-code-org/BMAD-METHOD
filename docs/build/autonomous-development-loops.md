@@ -198,6 +198,7 @@ Typical blocking conditions include:
 
 - `unclear intent`
 - `intent gap`
+- `plan amendment needs approval`
 - `no subagents`
 - `ticket not resolved`
 - `version-control metadata not writable`
@@ -212,7 +213,9 @@ cause, then run `tickets.py mark <ref> <status>` with the status to resume from,
 which clears `blocked_at` and `blocked_reason`. When the plan holds only
 frontmatter, delete it instead, and the next dispatch starts fresh.
 
-An `intent gap` means the captured intent cannot answer a question the run hit — it can halt the planning step (before any code exists) or the review step. When review halts on it, the working tree is reverted as usual, but the attempted change is first saved as a patch file beside the plan, referenced from the plan's triage log and the halt output. The patch shows which reading of the intent the run implemented — concrete evidence for repairing the intent. If the attempted reading turns out to be correct, `git apply` the patch and set the plan status to `in-review` to resume review on it instead of re-running from scratch.
+An `intent gap` means the captured intent cannot answer a question the run hit — it can halt the planning step (before any code exists) or the review step. When review halts on it, the working tree is reverted as usual, but the attempted change is first saved as a patch file beside the plan, referenced from the plan's triage log and the halt output. The patch shows which reading of the intent the workflow implemented — concrete evidence for repairing the intent. If the attempted reading turns out to be correct, `git apply` the patch and set the plan status to `in-review` to resume review on it instead of re-running from scratch.
+
+With `on_bad_plan = "halt"` in `bmad-build-auto`, review saves the attempted change as a patch, reverts code, records the proposed plan amendment, and halts `blocked` with `plan amendment needs approval`. After a person updates the plan and sets it to `ready-for-dev`, the next run resumes implementation from the existing `baseline_revision`.
 
 ## Output Artifacts
 

@@ -83,7 +83,11 @@ Write `lenses_ran` — the ids launched, in launch order — to `{plan_file}` fr
 
    Out of scope: reject or defer a finding as out of scope only when the intent itself excludes it — not because the plan's scope section or the shape of the diff says so. If only those would exclude it, keep the finding: the plan drew the line somewhere the intent did not, so it routes to intent_gap or bad_plan, never to patch or defer.
 
+{% if workflow.on_bad_plan == "amend" %}
    Reject any finding whose fix is to edit this build's plan.
+{% else %}
+   Keep findings whose fix is to edit this build's plan and route them to `bad_plan` so the plan amendment can be approved before implementation continues.
+{% endif %}
 
    All remaining findings continue to grouping.
 
@@ -104,7 +108,12 @@ Write `lenses_ran` — the ids launched, in launch order — to `{plan_file}` fr
    Where `{date}` is the current system date. One row per finding from every lens, in the order the lenses reported them; `<total>` must equal the number of findings the lenses reported — a finding missing from the log is a triage failure. Members of a grouped entry keep their own rows and share the route.
 5. Process entries in cascading order. If intent_gap exists, lower entries are moot; follow the intent_gap branch below. If bad_plan exists, lower entries are moot since code will be re-derived. If neither exists, process patch and defer normally. Before each bad_plan loopback, read `{plan_file}` frontmatter `review_loop_iteration` (missing means `0`), increment it by 1, and write it back. If it exceeds 5, append the triage-log entry for this pass, then HALT with status `blocked` and blocking condition `review repair loop exceeded 5 iterations (non-convergence)`.
    - **intent_gap** — Root cause is inside `<intent-contract>`. Save the attempted change as a patch file beside `{plan_file}`, named after it with `.patch` for `.md`, and reference it from the triage-log entry, then revert code changes. Append the triage-log entry for this pass, then HALT with status `blocked`, blocking condition `intent gap`, and include the unresolved questions and the saved patch path.
-   - **bad_plan** — Root cause is outside `<intent-contract>`. Do not modify content inside `<intent-contract>`. Before reverting code: extract KEEP instructions for positive preservation (what worked well and must survive re-derivation). Revert code changes. Read the `## Plan Change Log` in `{plan_file}` and strictly respect all logged constraints when amending the sections outside `<intent-contract>` that contain the root cause. Append a new change-log entry recording: the triggering finding, what was amended, the known-bad state avoided, and the KEEP instructions. Append the triage-log entry for this pass, recording in each bad_plan row the amendment it triggered. Read fully and follow `{{ rendered("step-03-implement.md") }}` to re-derive the code, then this step will run again.
+   - **bad_plan** — Root cause is outside `<intent-contract>`. Do not modify content inside `<intent-contract>`.
+{% if workflow.on_bad_plan == "halt" %}
+     Read the `## Plan Change Log` and extract KEEP instructions. Save the attempted changes as a patch beside `{plan_file}` and revert the code. Do not edit the plan. Append a triage-log entry describing the finding, a proposed amendment that respects the logged constraints, the known-bad state to avoid, KEEP instructions, and patch path. HALT with status `blocked` and blocking condition `plan amendment needs approval`. After a person amends the plan and sets it to `ready-for-dev`, resume implementation; preserve `baseline_revision`.
+{% else %}
+     Before reverting code: extract KEEP instructions for positive preservation (what worked well and must survive re-derivation). Revert code changes. Read the `## Plan Change Log` in `{plan_file}` and strictly respect all logged constraints when amending the sections outside `<intent-contract>` that contain the root cause. Append a new change-log entry recording: the triggering finding, what was amended, the known-bad state avoided, and the KEEP instructions. Append the triage-log entry for this pass, recording in each bad_plan row the amendment it triggered. Read fully and follow `{{ rendered("step-03-implement.md") }}` to re-derive the code, then this step will run again.
+{% endif %}
    - **patch** — Auto-fix. These are the only findings that survive loopbacks.
 {% if workflow.route == "oneshot" %}
      Apply the patches yourself.

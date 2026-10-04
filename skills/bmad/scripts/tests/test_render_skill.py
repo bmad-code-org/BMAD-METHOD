@@ -616,6 +616,47 @@ class RenderSkillTests(unittest.TestCase):
                     workflow = rs.render(ws.project, skill, assignments=[f"workflow.route={route}"])
                     self._assert_rendered(workflow, ws.project, name)
 
+    def test_build_skills_support_bad_plan_handling_modes(self):
+        def normalize(snapshot: Path) -> str:
+            return _markdown(snapshot).replace(snapshot.as_posix(), "<snapshot>")
+
+        for name in ("bmad-build", "bmad-build-auto"):
+            for route in ("oneshot", "full", "auto"):
+                for review in ("none", "quick", "thorough", "auto"):
+                    with self.subTest(name=name, route=route, review=review):
+                        ws = self._workspace()
+                        skill = self._skill(ws, name)
+                        shared = [f"workflow.route={route}", f"workflow.review={review}"]
+
+                        default = rs.render(ws.project, skill, assignments=shared).parent
+                        amend = rs.render(
+                            ws.project,
+                            skill,
+                            assignments=[*shared, "workflow.on_bad_plan=amend"],
+                        ).parent
+                        default_markdown = normalize(default)
+                        amend_markdown = normalize(amend)
+                        self.assertEqual(default_markdown, amend_markdown)
+                        if route != "oneshot" and review != "none":
+                            self.assertIn("Reject any finding whose fix is to edit this build's plan", amend_markdown)
+
+                ws = self._workspace()
+                skill = self._skill(ws, name)
+                halt = rs.render(ws.project, skill, assignments=["workflow.on_bad_plan=halt"]).parent
+                markdown = normalize(halt)
+                if name == "bmad-build":
+                    self.assertIn("**Approve**", markdown)
+                    self.assertIn("**Revise**", markdown)
+                    self.assertIn("**Stop**", markdown)
+                else:
+                    self.assertNotIn("plan amendment needs approval", normalize(default))
+                    self.assertIn("plan amendment needs approval", markdown)
+                    self.assertIn("Plan Change Log", markdown)
+                    self.assertIn("baseline_revision", markdown)
+
+                with self.assertRaisesRegex(rs.RenderError, "workflow.on_bad_plan must be amend or halt"):
+                    rs.render(ws.project, skill, assignments=["workflow.on_bad_plan=ignore"])
+
     def test_build_skills_default_to_quick_review(self):
         for name in ("bmad-build", "bmad-build-auto"):
             with self.subTest(name):
