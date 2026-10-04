@@ -85,7 +85,7 @@ open_plan = ""
 implementation_handoff = """
 Launch a subagent with no prior conversation context, with this prompt:
 
-> Read {plan_file} fully and implement it — the plan is the sole source of truth. Load every file listed in its frontmatter `context:` before you start.
+> Read {plan_file} fully and implement it — the plan is the sole source of truth. Load every file listed in its frontmatter `context:` before you start. Own this task: do not invoke `bmad-agent-dev`, `bmad-build`, or `bmad-build-auto` for the same plan, and do not delegate that plan again. Delegate only distinct tasks with separate acceptance criteria.
 >
 > When done, report what you changed, how you verified it, and anything left incomplete or risky.
 """
