@@ -6,6 +6,27 @@
 
 Default setting can be overridden by CLI flags or an optional dogfood.toml
 Can be run by hand, or a post-checkout Git hook, to automatically apply to the new worktrees
+
+To run it automatically, save this as an executable `post-checkout` file in the shared hooks folder
+(`git rev-parse --git-common-dir`, usually `.git/hooks`; it is local, so every worktree uses it
+and nothing is committed):
+
+    #!/bin/sh
+    # Git passes <previous HEAD> <new HEAD> <branch-checkout flag>. Two shapes mean "fresh":
+    #  - an all-zero previous HEAD (git worktree add, git clone);
+    #  - previous HEAD == new HEAD in a tree with no skills-lock.json yet (tools that add a
+    #    detached worktree and then check out the branch). Ordinary branch switches are skipped.
+    [ "$3" = "1" ] || exit 0
+    case "$1" in
+    *[!0]*)
+        [ "$1" = "$2" ] && [ ! -e skills-lock.json ] || exit 0
+        ;;
+    esac
+    [ -f tools/dogfood.py ] || exit 0
+    exec uv run tools/dogfood.py
+
+Testing the all-zero check alone is not enough: some tools (Orca's UI) create the worktree with no
+checkout and then check out the branch, so the hook only ever sees previous HEAD == new HEAD.
 """
 
 from __future__ import annotations
