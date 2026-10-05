@@ -78,7 +78,7 @@ In a repository that already existed, commit the current state before step 6 and
 
 ## Source folders
 
-Read `_bmad/config.toml` and the `_bmad/custom/` overrides for `core.output_folder`, `modules.bmm.planning_artifacts`, and `modules.bmm.implementation_artifacts`. Those are the source folders; a user may have renamed any of them, and the questions confirm them. When `bmad setup` already removed these keys, read them from `_bmad/` in the newest `.v6-v7-migration-backup-*/`.
+Read `_bmad/config.toml` and the `_bmad/custom/` overrides for `core.output_folder`, `modules.bmm.planning_artifacts`, and `modules.bmm.implementation_artifacts`. Those are the source folders; a user may have renamed any of them, and the questions confirm them. When `bmad setup` already removed these keys, read them from `_bmad/` in the `.v6-v7-migration-backup-*/` folders, newest first, using the first that has them.
 
 ## Backup
 

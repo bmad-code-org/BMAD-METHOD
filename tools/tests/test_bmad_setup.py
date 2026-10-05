@@ -1772,7 +1772,6 @@ class BmadSetupRepairTests(unittest.TestCase):
             self.assertEqual(second["config"], "current")
             self.assertEqual(second["custom_gitignore"], "current")
             self.assertEqual(second["answers_added"], [])
-            self.assertEqual(second["legacy_leftovers"], [])
             self.assertEqual({module["scripts"] for module in second["modules"]}, {"current"})
             self.assertTrue(second["current"])
             self.assertIsNone(second["next"])
@@ -1858,7 +1857,7 @@ class BmadSetupRepairTests(unittest.TestCase):
 
             self.assertEqual(setup_report(self, project, skill)["status"], "current")
 
-    def test_legacy_leftovers_are_reported_and_left_alone(self):
+    def test_legacy_leftovers_are_left_alone(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             project = root / "project"
@@ -1877,17 +1876,9 @@ class BmadSetupRepairTests(unittest.TestCase):
             write(bmad / "config.toml", "[core]\nkeep = true\n")
             for relative, content in leftovers.items():
                 write(bmad / relative, content)
-            expected = [
-                "_config/manifest.yaml",
-                "_config/bmad-help.csv",
-                "config.user.toml",
-                "core/config.yaml",
-                "bmm/config.yaml",
-                "core/v6-shims",
-            ]
 
-            self.assertEqual(status_report(self, project, skill)["legacy_leftovers"], expected)
-            self.assertEqual(setup_report(self, project, skill)["legacy_leftovers"], expected)
+            status_report(self, project, skill)
+            setup_report(self, project, skill)
             for relative, content in leftovers.items():
                 self.assertEqual((bmad / relative).read_text(encoding="utf-8"), content)
 
@@ -3607,146 +3598,6 @@ class BmadRetiredSkillTests(unittest.TestCase):
             with self.subTest(extra=extra), self.assertRaisesRegex(Exception, message):
                 write(self.root / "retired.toml", extra)
                 setup.read_retired_file(self.root)
-
-
-class BmadCleanV6Tests(unittest.TestCase):
-    def setUp(self):
-        temp = tempfile.TemporaryDirectory()
-        self.addCleanup(temp.cleanup)
-        self.root = Path(temp.name).resolve()
-        self.project = self.root / "project"
-        self.installed = self.project / ".agents" / "skills"
-        self.installed.mkdir(parents=True)
-        self.skill = write_dest_bmad(self.installed)
-        write_core(self.installed)
-        write_bmod(
-            self.installed,
-            "bmod-method",
-            "method",
-            skills=("bmad-ticket",),
-            questions=({"key": "store", "prompt": "Store?", "default": "repo"},),
-        )
-        write(self.installed / "bmad-ticket" / "SKILL.md", "---\nname: bmad-ticket\n---\n")
-        setup_report(self, self.project, self.skill, *module_answers_args(self.project, {"method": {"store": "repo"}}))
-        self.bmad = self.project / "_bmad"
-
-    def write_v6_traces(self) -> None:
-        config = self.bmad / "config.toml"
-        text = config.read_text(encoding="utf-8").replace("[core]\n", '[core]\nuser_name = "Ann"\n', 1)
-        write(config, text + '\n[modules.bmm]\nplanning_artifacts = "{project-root}/_bmad-output/planning-artifacts"\n')
-        write(self.bmad / "config.user.toml", '[core]\nuser_name = "Ann"\n')
-        write(self.bmad / "_config" / "manifest.yaml", "installation: v6\n")
-        write(self.bmad / "core" / "v6-shims" / "shim.md", "shim\n")
-        write(
-            self.bmad / "custom" / "config.user.toml",
-            '# mine\n[core]\nactive_initiative = "initiative-a"\ncommunication_language = "Hungarian"\n',
-        )
-        write(self.bmad / "custom" / "bmad-ticket.toml", "[workflow]\nkeep = true\n")
-        write(self.bmad / "custom" / "bmad-sprint-planning.user.toml", "[workflow]\nold = true\n")
-        write(self.bmad / "custom" / "ticketing-store-config.toml", "kind = 'repo'\n")
-
-    def test_status_lists_v6_traces_without_changing_them(self):
-        self.write_v6_traces()
-        before = snapshot(self.project)
-
-        report = status_report(self, self.project, self.skill)
-
-        self.assertEqual(snapshot(self.project), before)
-        self.assertEqual(report["legacy_leftovers"], ["_config/manifest.yaml", "config.user.toml", "core/v6-shims"])
-        self.assertEqual(
-            report["stale_config_keys"],
-            [
-                {"file": "_bmad/config.toml", "key": "core.user_name"},
-                {"file": "_bmad/config.toml", "key": "modules.bmm.planning_artifacts"},
-                {"file": "_bmad/custom/config.user.toml", "key": "core.communication_language"},
-            ],
-        )
-        self.assertEqual(report["unused_customizations"], ["_bmad/custom/bmad-sprint-planning.user.toml"])
-
-    def test_clean_backs_up_then_removes_only_what_v7_does_not_read(self):
-        self.write_v6_traces()
-        original = snapshot(self.bmad)
-
-        report = setup_report(self, self.project, self.skill, "--clean-v6")
-
-        backup = self.project / report["backup"]
-        self.assertTrue(backup.name.startswith(".v6-v7-migration-backup-"))
-        self.assertEqual(snapshot(backup / "_bmad"), original)
-        self.assertFalse((self.bmad / "_config").exists())
-        self.assertFalse((self.bmad / "core").exists())
-        self.assertFalse((self.bmad / "config.user.toml").exists())
-        self.assertFalse((self.bmad / "custom" / "bmad-sprint-planning.user.toml").exists())
-        self.assertTrue((self.bmad / "custom" / "bmad-ticket.toml").exists())
-        self.assertTrue((self.bmad / "custom" / "ticketing-store-config.toml").exists())
-        user = (self.bmad / "custom" / "config.user.toml").read_text(encoding="utf-8")
-        self.assertEqual(user, '# mine\n[core]\nactive_initiative = "initiative-a"\n')
-        team = tomllib.loads((self.bmad / "config.toml").read_text(encoding="utf-8"))
-        self.assertNotIn("user_name", team["core"])
-        self.assertNotIn("bmm", team["modules"])
-        self.assertEqual(team["modules"]["method"], {"store": "repo"})
-        self.assertIn("bmad-agent-pm", team["agents"])
-
-        after = status_report(self, self.project, self.skill)
-        self.assertEqual(
-            (after["legacy_leftovers"], after["stale_config_keys"], after["unused_customizations"]), ([], [], [])
-        )
-
-    def test_clean_with_nothing_to_remove_writes_nothing(self):
-        before = snapshot(self.project)
-
-        report = setup_report(self, self.project, self.skill, "--clean-v6")
-
-        self.assertIsNone(report["backup"])
-        self.assertEqual(snapshot(self.project), before)
-
-    def test_the_backup_ignores_itself(self):
-        self.write_v6_traces()
-
-        report = setup_report(self, self.project, self.skill, "--clean-v6")
-
-        self.assertEqual((self.project / report["backup"] / ".gitignore").read_text(encoding="utf-8"), "*\n")
-
-    def test_a_multi_line_value_is_cut_without_losing_comments(self):
-        user = self.bmad / "custom" / "config.user.toml"
-        write(
-            user,
-            '# mine\n[core]\nactive_initiative = "initiative-a"\n'
-            'notes = """\nfirst\nsecond\n"""\n# kept\nproject_name = "p"\n',
-        )
-
-        setup_report(self, self.project, self.skill, "--clean-v6")
-
-        self.assertEqual(
-            user.read_text(encoding="utf-8"),
-            '# mine\n[core]\nactive_initiative = "initiative-a"\n# kept\nproject_name = "p"\n',
-        )
-
-    def test_clean_refuses_while_a_module_record_is_missing(self):
-        self.write_v6_traces()
-        write_skill(self.installed, "extra-skill", "bmod-extra")
-        before = snapshot(self.project)
-
-        result = run_setup_python(self.project, self.skill, "--clean-v6")
-
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn("module record is missing", result.stderr)
-        self.assertEqual(snapshot(self.project), before)
-
-    def test_a_link_out_of_bmad_is_not_cleaned(self):
-        outside = self.root / "elsewhere"
-        write(outside / "v6-shims" / "shim.md", "shim\n")
-        (self.bmad / "core").symlink_to(outside, target_is_directory=True)
-
-        report = status_report(self, self.project, self.skill)
-        setup_report(self, self.project, self.skill, "--clean-v6")
-
-        self.assertEqual(report["legacy_leftovers"], [])
-        self.assertTrue((outside / "v6-shims" / "shim.md").exists())
-
-    def test_clean_cannot_be_combined_with_other_modes(self):
-        result = run_setup_python(self.project, self.skill, "--clean-v6", "--status")
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn("--clean-v6 cannot be combined", result.stderr)
 
 
 class BmadRootTests(unittest.TestCase):
