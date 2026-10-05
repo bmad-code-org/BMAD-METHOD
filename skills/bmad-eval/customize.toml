@@ -8,3 +8,22 @@
 # Where eval runs land, one timestamped folder per run. `{output_folder}` is
 # `core.output_folder`. Smithy's review reports use the same default.
 reports_folder = "{output_folder}/eval-reports"
+
+# The harness evals run through: the agent CLI on this machine, started once per case
+# with nobody at the keyboard. Empty until the first run, when bmad-eval works these out
+# for the harness it is running in and records them through bmad-customize.
+[workflow.harness]
+# One run as argv. {prompt} is the case input, {cwd} the case's working directory.
+# Include the flag that turns off permission prompts; a run cannot answer them.
+command = []
+# Folder under the working directory this harness reads skills from.
+skill_dir = ".agents/skills"
+# Env vars the harness takes its config folder from, pointed into the run's fresh HOME
+# so no host settings, skills or memory leak in.
+home_env = []
+# Env var carrying the credential, forwarded only when the host has it set.
+auth_env = ""
+# Other host env vars to forward. Empty unless the harness cannot start without one.
+env_passthrough = []
+# Argv prefix that contains the run in a sandbox. Empty means the run has the host's file access.
+sandbox = []

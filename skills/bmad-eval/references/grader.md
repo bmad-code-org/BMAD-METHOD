@@ -11,13 +11,13 @@ The grader receives:
 - `case_id`: identifier for this case.
 - `input`: the message that was sent to the skill, including any prepended `state_prefix`.
 - `rubric`: the list of expectation strings it grades, each independently.
-- `transcript_path`: absolute path to the run's transcript, in the schema the adapter defines.
+- `transcript_path`: absolute path to the run's transcript: what the harness printed, line-delimited JSON events when it emits them, plain text otherwise.
 - `artifacts_dir`: absolute path to the directory of files the skill wrote.
 - `grading_path`: absolute path where the grader writes `grading.json`.
 
 ## Process
 
-1. Read the transcript. It is line-ordered events in the adapter's schema. Note the input that was sent, every tool call the skill made (with its name and arguments), the order those calls happened in, the final message (often a JSON status block for headless runs), and any errors.
+1. Read the transcript. When it is line-ordered JSON events, note the input that was sent, every tool call the skill made (with its name and arguments), the order those calls happened in, the final message (often a JSON status block for headless runs), and any errors. When it is plain text, it is the final output and the tool calls are not visible: grade tool-call and ordering expectations from the artifacts where they leave evidence, and otherwise mark them failed with "not observable in this transcript" as the evidence.
 
 2. List and read the artifacts. Walk `artifacts_dir` and open the files each expectation implicates. Read their contents rather than trusting filenames, and note modification times when ordering or read-only behavior is in scope.
 

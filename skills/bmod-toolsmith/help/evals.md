@@ -19,6 +19,10 @@ The description is a skill's only trigger: the router reads it and loads the ski
 
 Firing and output are probabilistic, so one run proves little. Three runs per case is the floor; more when the user wants a variance figure or a difference between two versions. A pass that holds on every run is a pass; one that holds on one run out of three is a lead to follow.
 
+## Which harness runs it
+
+An eval runs through the agent CLI the user is already working in: Claude Code, Codex or another. `bmad-eval` ships no list of harnesses. The first time it runs in a project, the agent works out three facts about its own CLI (the command for one non-interactive run, the folder it reads skills from, the env var it keeps its config in) and records them in `bmad-eval`'s customization through `bmad-customize`, where the user can read and change them. Each case then runs in a clean working directory with a copy of the skill and a fresh HOME, so the user's own skills, memory and settings do not leak into the result. The run bypasses the CLI's permission prompts, because nobody is there to answer them; the agent says so when confirming the run, and a user who wants the run contained records a sandbox prefix in the same customization.
+
 ## Where runs land
 
 Every run is a timestamped folder in an eval-reports folder inside the project's output folder (changeable in `bmad-eval`'s customization), one case per subfolder with its prompt, transcript, working directory and grades. Runs are never deleted or overwritten, so a skill's history stays comparable. `bmad-eval` tells the user where the run is when it finishes. A skill's cases live beside it, in its `evals/` folder, and a skill-creator `evals.json` can be converted into them.

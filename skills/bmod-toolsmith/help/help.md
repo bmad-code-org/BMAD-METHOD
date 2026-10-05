@@ -25,6 +25,7 @@ Smithy runs inside a project where `bmad` is set up (`_bmad/` exists); without i
 - "My skill does not trigger", "it fires on the wrong things" → `bmad-toolsmith` for the fix, or `bmad-eval` in trigger mode when the user wants the measurement first. A trigger eval, not a rewrite by feel, settles it (`help/evals.md`).
 - "Is this skill any good", "review this skill", "how could it be smaller" → `bmad-toolsmith`, review mode. Findings in chat and a markdown file; nothing fails or blocks (`help/modes.md`, `help/how-to-review.md`).
 - "Does my skill actually help", "is it worth keeping", "did my change make it better" → `bmad-eval`, baseline or variant mode (`help/evals.md`).
+- "Which agent runs the eval", "can I run evals from Codex", "is the eval sandboxed" → `help/evals.md`, the harness section.
 - "Package these", "make this a module", "ship these together" → `bmad-toolsmith`, package mode.
 - "I have an old module with `module.yaml`", a setup skill, a help CSV → `bmad-toolsmith`, migrate mode. It shows the plan and waits for approval before changing anything.
 - "Convert my Cursor rule", "turn my GPT into a skill", "port this slash command", "make this skill work with bmad" → `bmad-toolsmith`, convert mode (`help/how-to-convert-external.md`).
@@ -73,7 +74,7 @@ Each topic file below sits in this folder and goes deeper on one subject. Read o
 | `help/registration.md` | Whether a skill joins a module, gets its own record or stays outside the registry; what each gives; contributing to the BMad Method module versus extending it in a project. |
 | `help/approaches.md` | How a build runs: lean, scaffold and guide, eval-first, the skill-creator loop, from session logs; which fits the user's situation. |
 | `help/modes.md` | Working on a skill that exists: edit, convert, review, package, validate, migrate; what each does and the phrase that reaches it. |
-| `help/evals.md` | `bmad-eval` in depth: what each mode answers, what a trigger eval is, why near misses matter, how many runs, where runs land. |
+| `help/evals.md` | `bmad-eval` in depth: what each mode answers, what a trigger eval is, why near misses matter, how many runs, which harness runs it and how that is recorded, where runs land. |
 | `help/naming.md` | What to call a skill or module: why a prefix of their own, what `bmad-` means, how agents and module records are named. |
 | `help/craft-progressive-disclosure.md` | How big a skill should be, what loads when, why a complex workflow is carved into files loaded only when reached. |
 | `help/craft-description.md` | Writing the description that makes a skill fire: its three parts, the length target, near misses, hand-invoked skills. |

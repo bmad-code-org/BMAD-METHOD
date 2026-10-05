@@ -84,7 +84,7 @@ Grade a single config's output against the named rubric with the read-only grade
 
 ### Trigger and description
 
-Generate near-miss should-trigger and should-not-trigger queries that share keywords, split them, measure real firing through the adapter, and improve the description across bounded rounds with the held-out scores blinded from the improver. Trigger detection itself is "did the skill load", a tool call the adapter defines.
+Generate near-miss should-trigger and should-not-trigger queries that share keywords, split them, measure real firing through the harness, and improve the description across bounded rounds with the held-out scores blinded from the improver. Trigger detection is a canary: the staged skill asks for a token at the start of the reply, and the token in the output is the load (`references/harness.md`).
 
 ## Getting a skill to behave non-interactively
 

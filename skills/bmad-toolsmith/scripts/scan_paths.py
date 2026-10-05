@@ -119,7 +119,7 @@ def scan_references(content: str, rel: Path, skill_root: Path) -> list[dict]:
         if other and other.group(1) != skill_name and other.group(1) not in BMAD_RUNTIME_DIRS:
             findings.append(
                 finding(
-                    str(rel),
+                    rel.as_posix(),
                     line,
                     "cross-skill-ref",
                     raw,
@@ -132,7 +132,7 @@ def scan_references(content: str, rel: Path, skill_root: Path) -> list[dict]:
         if raw.startswith("../"):
             target = (file_dir / raw).resolve()
             if skill_root.resolve() not in target.parents and target != skill_root.resolve():
-                findings.append(finding(str(rel), line, "cross-skill-ref", raw, "a skill's files stay inside it"))
+                findings.append(finding(rel.as_posix(), line, "cross-skill-ref", raw, "a skill's files stay inside it"))
             continue
         if raw.startswith(("/", "./", "_bmad/", "@")) or is_example(rel):
             continue
@@ -141,7 +141,9 @@ def scan_references(content: str, rel: Path, skill_root: Path) -> list[dict]:
             continue
         first_dir = raw.split("/")[0]
         if any((root / first_dir).is_dir() for root in roots):
-            findings.append(finding(str(rel), line, "missing-file", raw, "fix the path or remove the dead reference"))
+            findings.append(
+                finding(rel.as_posix(), line, "missing-file", raw, "fix the path or remove the dead reference")
+            )
     return findings
 
 
@@ -152,7 +154,7 @@ def scan_skill(skill_root: Path, allow: tuple[str, ...] = ()) -> dict:
         count += 1
         rel = path.relative_to(skill_root)
         content = path.read_text(encoding="utf-8", errors="replace")
-        findings.extend(scan_regex_rules(content, str(rel)))
+        findings.extend(scan_regex_rules(content, rel.as_posix()))
         findings.extend(scan_references(content, rel, skill_root))
     findings = [f for f in findings if f["rule"] not in allow]
     findings.sort(key=lambda f: (f["path"], f["line"], f["rule"]))

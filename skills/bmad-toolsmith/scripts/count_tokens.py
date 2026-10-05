@@ -44,7 +44,8 @@ def count_tokens(text: str) -> tuple[int, str]:
 
 def iter_text_files(root: Path):
     """Yield text files under root, skipping noise directories and hidden files."""
-    for path in sorted(root.rglob("*")):
+    # Sorted by the posix string so the order is the same on every OS; Path sorts case-insensitively on Windows.
+    for path in sorted(root.rglob("*"), key=lambda p: p.relative_to(root).as_posix()):
         if not path.is_file():
             continue
         parts = path.relative_to(root).parts

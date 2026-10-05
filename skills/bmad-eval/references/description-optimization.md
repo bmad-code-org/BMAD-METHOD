@@ -2,7 +2,7 @@
 
 A skill's description is its only trigger. The router reads it, decides whether the user's request belongs to this skill, and either loads it or moves on. A description that is too narrow stays quiet when it should fire; one that is too broad fires on requests it cannot serve. This loop measures real firing against a held-out test set and improves the description until it triggers on what it should and stays silent on what it should not, without the improver ever overfitting to the cases it is being graded on.
 
-The whole loop runs through the adapter, so "did the skill fire" means the skill-load tool call the runtime emits.
+The whole loop runs through the harness recorded in this skill's customization, so "did the skill fire" means the staged skill's canary token appeared in the output (`references/harness.md`).
 
 ## Step 1: generate the query set
 
@@ -25,7 +25,7 @@ The split is fixed once at the start of the loop and never reshuffled between ro
 
 ## Step 3: measure real triggering
 
-Run every query through the adapter with the current description in place, several times per query because firing is probabilistic. The trigger rate for a query is the fraction of runs that produced the skill-load event. Turn each rate into a verdict against a threshold (a query "triggers" when its rate clears the bar, for example more than half its runs loaded the skill), then score against the labels:
+Run every query through the harness with the current description in place, several times per query because firing is probabilistic. The trigger rate for a query is the fraction of completed runs that loaded the skill; a query with a failed attempt is unmeasured and rerun, never scored. Turn each rate into a verdict against a threshold (a query "triggers" when its rate clears the bar, for example more than half its runs loaded the skill), then score against the labels:
 
 - a should-trigger query that triggered is a true positive,
 - a should-trigger query that stayed quiet is a false negative (the description is too narrow here),

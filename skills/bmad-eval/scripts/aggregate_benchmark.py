@@ -118,26 +118,28 @@ def delta_configs(baseline: dict, variant: dict) -> dict:
 # --- input loading ----------------------------------------------------------
 
 
-def load_records(path: Path) -> list[dict]:
-    """Load run records from a JSON file, a {'runs': [...]} file, or a dir of
-    timing.json files."""
+def load_records(path: Path) -> tuple[list[dict], int]:
+    """Run records from a JSON file, a {'runs': [...]} file, or a dir of timing.json files.
+
+    Returns (completed records, number excluded). A record whose `status` is anything but
+    "ok" did not finish, so its elapsed time would skew the mean; it is left out and counted.
+    """
     if path.is_dir():
-        records: list[dict] = []
+        data: list = []
         for f in sorted(path.rglob("timing.json")):
             try:
-                data = json.loads(f.read_text(encoding="utf-8"))
+                data.append(json.loads(f.read_text(encoding="utf-8")))
             except (OSError, json.JSONDecodeError):
                 continue
-            if isinstance(data, dict):
-                records.append(data)
-        return records
-
-    data = json.loads(path.read_text(encoding="utf-8"))
-    if isinstance(data, dict) and "runs" in data:
-        data = data["runs"]
-    if not isinstance(data, list):
-        raise ValueError(f"expected a list of run records in {path}")
-    return [r for r in data if isinstance(r, dict)]
+    else:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        if isinstance(data, dict) and "runs" in data:
+            data = data["runs"]
+        if not isinstance(data, list):
+            raise ValueError(f"expected a list of run records in {path}")
+    records = [r for r in data if isinstance(r, dict)]
+    completed = [r for r in records if r.get("status", "ok") == "ok"]
+    return completed, len(records) - len(completed)
 
 
 # --- self-test --------------------------------------------------------------
@@ -224,18 +226,23 @@ def main(argv: list[str] | None = None) -> int:
         return run_self_test()
 
     if args.baseline and args.variant:
-        b = summarize_config(load_records(args.baseline))
-        v = summarize_config(load_records(args.variant))
+        b_records, b_excluded = load_records(args.baseline)
+        v_records, v_excluded = load_records(args.variant)
+        b = summarize_config(b_records)
+        v = summarize_config(v_records)
         out = {
             "baseline": b,
             "variant": v,
             "delta": delta_configs(b, v),
+            "excluded_incomplete": {"baseline": b_excluded, "variant": v_excluded},
         }
         print(json.dumps(out, indent=2))
         return 0
 
     if args.runs:
-        out = summarize_config(load_records(args.runs))
+        records, excluded = load_records(args.runs)
+        out = summarize_config(records)
+        out["excluded_incomplete"] = excluded
         print(json.dumps(out, indent=2))
         return 0
 
