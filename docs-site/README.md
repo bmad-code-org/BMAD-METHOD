@@ -84,4 +84,4 @@ Note: If copying, remember to keep the copy in sync with changes to `docs/`.
 ## Build Output
 
 The build pipeline (`npm run build`) produces:
-- Static HTML site in `build/site/`
+- Static HTML site in `docs-site/dist/`

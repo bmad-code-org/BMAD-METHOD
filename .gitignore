@@ -1,92 +1,47 @@
-# Dependencies
+# Dependencies, caches, build output, OS and editor files
 **/node_modules/
-pnpm-lock.yaml
-bun.lock
-deno.lock
-pnpm-workspace.yaml
-
-test-output/*
-coverage/
-
-# Logs
-logs/
 *.log
-npm-debug.log*
-
-# Build output
-build/*.txt
-
-design-artifacts/
-
-# Environment variables
-.env
-
-# Python
-__pycache__/
-.pytest_cache/
-.venv/
-.ruff_cache/
-
-# BMad run artifacts (memlogs are per-run working memory, never committed)
-.memlog.md
-
-# System files
 .DS_Store
-Thumbs.db
-
-# Development tools and configs
-.prettierrc
-
-# AI assistant files
-.ai/*
-cursor
-.gemini
-.mcp.json
-CLAUDE.local.md
-.serena/
-.claude/settings.local.json
-.junie/
-.agents/*
-!.agents/plugins/
-!.agents/plugins/marketplace.json
-.analysis/
-
-
-z*/
-!docs/zh-cn/
-
-_bmad
-_bmad-output
-
-# Personal customization files (team files are committed, personal files are not)
+.idea/
+.pytest_cache/
+.ruff_cache/
+.venv/
 .vscode/
-_bmad/custom/*.user.toml
-.clinerules
-.augment
-.codebuddy
-.crush
-.cursor
-.iflow
-.opencode
-.qwen
-.rovodev
-.kilocodemodes
-.claude
-.codex
-.github/chatmodes
-.github/agents
-.agent
-.agentvibes
-.kiro
-.roo
-.trae
-.windsurf
-
-
-# Astro / Documentation Build (repo-root output only — not docs/build/)
+Thumbs.db
+__pycache__/
 docs-site/.astro/
 docs-site/dist/
-/build/
+/dogfood.toml
 
-# Skill installer lock file (per-machine)
+# AI assistant tools and BMad installs: per-machine, never committed
+.agent
+.agents
+.agentvibes
+.ai/
+.analysis/
+.augment
+.claude
+.clinerules
+.codebuddy
+.codex
+.crush
+.cursor
+.gemini
+.github/agents
+.github/chatmodes
+.iflow
+.junie
+.kilocodemodes
+.kiro
+.mcp.json
+.opencode
+.qwen
+.roo
+.rovodev
+.serena/
+.trae
+.windsurf
+CLAUDE.local.md
+_bmad
+_bmad-output
 skills-lock.json

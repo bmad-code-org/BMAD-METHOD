@@ -18,7 +18,6 @@ function test(name, run) {
 
 const CONFIG = `
 export default defineConfig({
-  outDir: '../build/site',
   redirects: {
     '/old/page': \`\${basePath}new/page/\`,
     '/fr/old/page': \`\${basePath}fr/new/page/\`,
