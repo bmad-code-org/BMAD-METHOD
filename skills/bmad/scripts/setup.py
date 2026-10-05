@@ -597,11 +597,17 @@ def custom_gitignore_problems(state: str) -> list[dict[str, object]]:
 
 
 def legacy_leftovers(project_root: Path) -> list[str]:
+    bmad = project_root / "_bmad"
     return [
         relative
         for relative in LEGACY_LEFTOVERS
-        if (project_root / "_bmad").joinpath(*PurePosixPath(relative).parts).exists()
+        if (path := bmad.joinpath(*PurePosixPath(relative).parts)).exists() and inside_bmad(path, project_root)
     ]
+
+
+def inside_bmad(path: Path, project_root: Path) -> bool:
+    """A link along the way could point a cleanup outside the project; such a path is not cleaned."""
+    return path.resolve().is_relative_to((project_root / "_bmad").resolve())
 
 
 def retired_skills(
@@ -777,7 +783,7 @@ def stale_config_keys(project_root: Path, installation: Installation) -> list[tu
     stale: list[tuple[str, tuple[str, ...]]] = []
     for relative in CENTRAL_CONFIGS:
         path = project_root / relative
-        if path.is_symlink() or not path.is_file():
+        if path.is_symlink() or not path.is_file() or not inside_bmad(path, project_root):
             continue
         try:
             data = tomllib.loads(path.read_text(encoding="utf-8"))
@@ -847,12 +853,21 @@ def clean_v6(project_root: Path, skill_root: Path, *, roots: tuple[Path, ...] = 
     reject_unusable_bmad(project_root)
     bmad = project_root / "_bmad"
     installation = discover_installation(skill_root, roots)
+    if installation.missing_records:
+        # Without every module record, a missing module's config keys would look stale.
+        raise Exception("a module record is missing; run setup to repair the installation before cleaning up")
     retirement = retirement_report(
         project_root, skill_root, installation, retired_skills(installation.modules, installation.modules)
     )
     leftovers = legacy_leftovers(project_root)
     stale = stale_config_keys(project_root, installation)
     unused = unused_customizations(project_root, installation, retirement)
+    edits = {
+        relative: text_without_keys(
+            (project_root / relative).read_text(encoding="utf-8"), [key for file, key in stale if file == relative]
+        )
+        for relative in dict.fromkeys(file for file, _path in stale)
+    }
     report: dict[str, object] = {
         "mode": "clean-v6",
         "backup": None,
@@ -871,10 +886,8 @@ def clean_v6(project_root: Path, skill_root: Path, *, roots: tuple[Path, ...] = 
         else:
             path.unlink()
         prune_empty_parents(path.parent, bmad)
-    for relative in dict.fromkeys(file for file, _path in stale):
-        path = project_root / relative
-        text = path.read_text(encoding="utf-8")
-        write_text(path, text_without_keys(text, [key for file, key in stale if file == relative]))
+    for relative, text in edits.items():
+        write_text(project_root / relative, text)
     for name in unused:
         (bmad / "custom" / name).unlink()
     report["removed_files"] = [f"_bmad/{relative}" for relative in leftovers]
@@ -884,12 +897,14 @@ def clean_v6(project_root: Path, skill_root: Path, *, roots: tuple[Path, ...] = 
 
 
 def backup_bmad(project_root: Path) -> Path:
-    """Copy `_bmad/` into a new `.v6-v7-migration-backup-<datetime>/`, which the method migration reuses."""
+    """Copy `_bmad/` into a new `.v6-v7-migration-backup-<datetime>/`, which the method migration reuses.
+    Its `.gitignore` keeps the copy, personal settings included, out of every commit."""
     now = datetime.datetime.now()
     backup = project_root / f"{BACKUP_PREFIX}{now:%Y%m%d-%H%M}"
     if present(backup):
         backup = project_root / f"{BACKUP_PREFIX}{now:%Y%m%d-%H%M%S}"
     shutil.copytree(project_root / "_bmad", backup / "_bmad", symlinks=True)
+    write_text(backup / ".gitignore", "*")
     return backup
 
 
@@ -962,8 +977,17 @@ def lines_without_key(lines: list[str], table: tuple[str, ...], leaf: str) -> li
         end = next((index for index, line in enumerate(lines) if TABLE_HEADER.match(line)), len(lines))
     key = re.compile(rf"\s*(?:{re.escape(leaf)}|\"{re.escape(leaf)}\"|'{re.escape(leaf)}')\s*=")
     for index in range(start, end):
-        if key.match(lines[index]):
-            return [*lines[:index], *lines[index + 1 :]]
+        if not key.match(lines[index]):
+            continue
+        # A multi-line value ends at the first line after which the file parses again.
+        for stop in range(index + 1, end + 1):
+            remaining = [*lines[:index], *lines[stop:]]
+            try:
+                tomllib.loads("\n".join(remaining))
+            except tomllib.TOMLDecodeError:
+                continue
+            return remaining
+        return lines
     return lines
 
 

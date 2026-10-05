@@ -82,7 +82,7 @@ Read `_bmad/config.toml` and the `_bmad/custom/` overrides for `core.output_fold
 
 ## Backup
 
-Copy the whole output folder to `<project-root>/.v6-v7-migration-backup-<datetime>/` (`<datetime>` as `YYYYMMDD-HHMM`), with the planning and implementation folders too when they sit outside it, and confirm the copy holds every file. When `bmad setup` already made one holding `_bmad/`, copy into that one.
+Copy `_bmad/` and the whole output folder to `<project-root>/.v6-v7-migration-backup-<datetime>/` (`<datetime>` as `YYYYMMDD-HHMM`), with the planning and implementation folders too when they sit outside it, write a `.gitignore` there holding `*`, and confirm the copy holds every file. When `bmad setup` already made one, copy into that one; its `_bmad/` is already there.
 
 ## Inventory
 

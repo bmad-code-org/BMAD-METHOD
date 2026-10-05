@@ -3699,6 +3699,50 @@ class BmadCleanV6Tests(unittest.TestCase):
         self.assertIsNone(report["backup"])
         self.assertEqual(snapshot(self.project), before)
 
+    def test_the_backup_ignores_itself(self):
+        self.write_v6_traces()
+
+        report = setup_report(self, self.project, self.skill, "--clean-v6")
+
+        self.assertEqual((self.project / report["backup"] / ".gitignore").read_text(encoding="utf-8"), "*\n")
+
+    def test_a_multi_line_value_is_cut_without_losing_comments(self):
+        user = self.bmad / "custom" / "config.user.toml"
+        write(
+            user,
+            '# mine\n[core]\nactive_initiative = "initiative-a"\n'
+            'notes = """\nfirst\nsecond\n"""\n# kept\nproject_name = "p"\n',
+        )
+
+        setup_report(self, self.project, self.skill, "--clean-v6")
+
+        self.assertEqual(
+            user.read_text(encoding="utf-8"),
+            '# mine\n[core]\nactive_initiative = "initiative-a"\n# kept\nproject_name = "p"\n',
+        )
+
+    def test_clean_refuses_while_a_module_record_is_missing(self):
+        self.write_v6_traces()
+        write_skill(self.installed, "extra-skill", "bmod-extra")
+        before = snapshot(self.project)
+
+        result = run_setup_python(self.project, self.skill, "--clean-v6")
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("module record is missing", result.stderr)
+        self.assertEqual(snapshot(self.project), before)
+
+    def test_a_link_out_of_bmad_is_not_cleaned(self):
+        outside = self.root / "elsewhere"
+        write(outside / "v6-shims" / "shim.md", "shim\n")
+        (self.bmad / "core").symlink_to(outside, target_is_directory=True)
+
+        report = status_report(self, self.project, self.skill)
+        setup_report(self, self.project, self.skill, "--clean-v6")
+
+        self.assertEqual(report["legacy_leftovers"], [])
+        self.assertTrue((outside / "v6-shims" / "shim.md").exists())
+
     def test_clean_cannot_be_combined_with_other_modes(self):
         result = run_setup_python(self.project, self.skill, "--clean-v6", "--status")
         self.assertNotEqual(result.returncode, 0)
