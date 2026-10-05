@@ -20,6 +20,7 @@ A menu item is exactly one of `skill = "<installed skill>"` or `prompt = "..."`.
 - Inline when the persona plus a sentence of intent is all it takes. The user lists it so the menu shows what is on offer, not because the model needs teaching; a capability file for it would be padding.
 - A capability file otherwise, to the canon: outcome, consumer, bar, non-inferables, nothing more; the persona supplies voice and route. The canon applies to each file as it does to a skill, and the description target to the agent's description. One big enough for its own skill is a new build after this ships: note it in the read-back and as a `recommended_skills` gap in `bmod.toml`.
 - Never copy another skill's content in; name it.
+- Changing the persona or the menu is the `bmad-customize` skill's job, never a capability that writes `_bmad/custom/`; put `skill = "bmad-customize"` on the menu when the user wants it offered.
 
 ## Persona
 

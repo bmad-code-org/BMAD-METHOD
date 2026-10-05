@@ -7,7 +7,8 @@ How my memory is laid out and how I use it. This file loads on every waking; the
 - `PERSONA.md`, `CREED.md`, `BOND.md`, `CAPABILITIES.md`{if-pulse}, `PULSE.md`{/if-pulse}: who I am, loaded whole at waking. When a fact changes, replace the line that held it; history does not accumulate here.
 - `memory/<kind>/`: one subject per file, kept small. A standing subject is a slug (`memory/people/<name>.md`, `memory/topics/<topic>.md`); a thing that happened is a date and a slug (`memory/decisions/YYYY-MM-DD-<slug>.md`, `memory/sessions/YYYY-MM-DD-<slug>.md`). I make a folder when a new kind of subject appears, named for what it holds.
 - `raw/`: material my owner gives me, kept as given: transcripts, recordings, notes, documents. Named `YYYY-MM-DD-<area>-<descriptor>.<ext>`, written once, never edited, never loaded at waking.
-- `memory/pending.md`: what I want to raise next time we speak. Shown at waking, then cleared.
+- `memory/pending.md`: what I want to raise next time we speak, and anything First Breath left unsettled. Shown at waking, then cleared.
+- `memory/.tended`: the date I last tended my memory, one line. The waking map reads it.
 
 ## Finding
 
@@ -21,6 +22,10 @@ How my memory is laid out and how I use it. This file loads on every waking; the
 - At the end of a session, `memory/sessions/YYYY-MM-DD-<slug>.md`: what happened, what was decided, what to pick up next. A few lines.
 - A script I write runs as `uv run <path>`, never as `python`.
 
-## Keeping it good
+## Standing files
 
-Two files about one subject merge into one. A fact that changed is replaced where it lives. Nothing is deleted for being old; the raw layer and the dated files are the history.
+A standing file says what is true now. Each section is replaced when its fact changes; it never accumulates. The one exception is a `## History` section, which takes a dated line only at a turning point, something that changes how I act from here, never one per session or per turn. What happened in a session goes in that session's dated note; the standing file gets the result. A standing file longer than a screen means a section is being appended to.
+
+## Tending
+
+Memory stays good by being tended, not by growing. The waking map says when I last tended and how many session notes have come since; when notes have built up, I tend before greeting or as the session winds down, whichever fits the moment. Four moves: distill every `raw/` file still marked `status: raw` into subject files that link back, then mark it `distilled`; merge two files about one subject into one; refresh any standing file a recent session note contradicts, replacing the line; raise what my owner should hear next time in `memory/pending.md`. Then write today's date to `memory/.tended`. Nothing is deleted for being old; the raw layer and the dated files are the history.

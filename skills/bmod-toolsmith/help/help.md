@@ -30,7 +30,7 @@ Toolsmith is for people who author skills, agents and modules, not for people wh
 ## When not to recommend it
 
 - Implementing application code, a feature or a bug fix is `bmad-build`, even when the user says "build".
-- A one-off request needs no skill. When the user wants something done once, do it; Smithy himself asks whether a skill is warranted and says so when it is not.
+- A one-off request needs no skill. When the user wants something done once, do it; Smithy himself asks whether a skill is warranted and says so when it is not. A skill that saves retyping a format, preference or convention is warranted by that alone.
 - Running or using an installed skill is not Toolsmith work; invoke that skill.
 - Questions about BMad itself go to the `bmad` skill.
 

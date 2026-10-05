@@ -14,6 +14,7 @@ OLD_FLOOR = '# /// script\n# requires-python = ">=3.9"\n# ///\nprint(1)\n'
 NO_FLOOR = "# /// script\n# dependencies = []\n# ///\nprint(1)\n"
 NO_HEADER = '#!/usr/bin/env python3\nimport requests\nMODEL = "claude-opus-4-1"\nprint(requests, MODEL)\n'
 BROKEN = '# /// script\n# requires-python = ">=3.11"\n# ///\ndef (:\n'
+CUSTOM_IO = '# /// script\n# requires-python = ">=3.11"\n# ///\nfrom pathlib import Path\np = Path("_bmad/custom") / "demo.user.toml"\nprint(p)\n'
 
 
 def make_skill(root: Path, scripts: dict[str, str], tests: tuple[str, ...] = ()) -> Path:
@@ -32,6 +33,14 @@ def scan(skill: Path):
 
 
 class ScanScriptsTest(unittest.TestCase):
+    def test_custom_io_fires_on_override_paths(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = make_skill(Path(tmp), {"formats.py": CUSTOM_IO}, ("test_formats.py",))
+            code, data = scan(skill)
+            self.assertEqual(code, 1)
+            hits = sorted((f["rule"], f["text"]) for f in data["findings"])
+            self.assertEqual(hits, [("custom-io", "_bmad/custom"), ("custom-io", "demo.user.toml")])
+
     def test_clean_script(self):
         with tempfile.TemporaryDirectory() as tmp:
             skill = make_skill(Path(tmp), {"good.py": GOOD}, ("test_good.py",))

@@ -20,7 +20,7 @@ When the user has a real input (a request they made by hand, a file, a transcrip
 - The same helper rewritten each run: bundle it as a script.
 - A line the run never needed: cut it.
 
-Fix what the trace shows, once, and record the decision. Compare against the bare run from discovery: what the skill changed is what it is for, and a line that changed nothing goes. Without a real input, ask for one; if none exists, apply the canon's tests line by line and tell the user the skill has not run.
+Fix what the trace shows, once, and record the decision. Where discovery ran the trigger phrase bare, compare against it: what the skill changed is what it is for, and a line that changed nothing goes. Otherwise judge the trace against the read-back's outcome and bar. Without a real input, ask for one; if none exists, apply the canon's tests line by line and tell the user the skill has not run.
 
 ## Then
 

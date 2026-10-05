@@ -115,6 +115,12 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         self.assertIn("memory/sessions/ (2 files)", out)
         self.assertIn("raw/ (2 files)", out)
         self.assertLess(out.index("memory/sessions/2026-10-03-pricing.md"), out.index("memory/sessions/2026-10-01-first-breath.md"))
+        self.assertIn("Never tended; session notes: 2", out)
+        (self.sanctum / "memory" / ".tended").write_text("2026-10-02\n", encoding="utf-8")
+        again = run(self.wake, self.project).stdout
+        self.assertIn("Tended: 2026-10-02; session notes since: 1", again)
+        self.assertIn("memory/sessions/ (2 files)", again)
+        self.assertNotIn(".tended", again.split("memory map")[1].split("Tended:")[0])
         self.assertIn("Undistilled raw (1):", out)
         self.assertIn("raw/2026-10-02-oss-call.md", out)
         self.assertNotIn("2026-09-30-oss-notes.md", out.split("Undistilled raw")[1])

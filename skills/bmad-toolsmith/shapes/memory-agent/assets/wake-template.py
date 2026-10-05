@@ -8,8 +8,9 @@ Run on activation. Determines the mode from the filesystem (and the --pulse
 flag) and, when the sanctum is complete, prints the identity files in a single
 read (PERSONA, CREED, BOND, HOW-I-REMEMBER, CAPABILITIES) followed by a map of the
 memory: each folder under memory/ and raw/ with its file count, the newest
-dated files, how many raw files are still undistilled, and memory/pending.md
-when it has content. The memory files themselves are not printed; the agent
+dated files, how many raw files are still undistilled, when the memory was last
+tended (memory/.tended) with the session notes written since, and
+memory/pending.md when it has content. The memory files themselves are not printed; the agent
 reads the ones a conversation reaches. In --pulse mode it also appends
 PULSE.md. When the sanctum is missing or incomplete, it prints a directive to
 run First Breath, whose script finishes an incomplete sanctum.
@@ -53,11 +54,11 @@ def folder_lines(root: Path, label: str) -> list[str]:
     if not root.is_dir():
         return []
     lines = []
-    direct = [p for p in root.iterdir() if p.is_file()]
+    direct = [p for p in root.iterdir() if p.is_file() and not p.name.startswith(".")]
     if direct:
         lines.append(f"{label}/ ({len(direct)} files)")
     for folder in sorted(p for p in root.rglob("*") if p.is_dir()):
-        count = sum(1 for p in folder.iterdir() if p.is_file())
+        count = sum(1 for p in folder.iterdir() if p.is_file() and not p.name.startswith("."))
         rel = folder.relative_to(root.parent).as_posix()
         lines.append(f"{rel}/ ({count} files)")
     return lines
@@ -88,6 +89,18 @@ def undistilled(raw: Path) -> list[str]:
     return out
 
 
+def tending_line(sanctum: Path) -> str:
+    """When memory was last tended and how many session notes came after it."""
+    stamp = sanctum / "memory" / ".tended"
+    tended = stamp.read_text(encoding="utf-8").strip()[:10] if stamp.is_file() else ""
+    sessions = sanctum / "memory" / "sessions"
+    notes = [p.name for p in sessions.iterdir() if p.is_file() and DATED_RE.match(p.name)] if sessions.is_dir() else []
+    since = [n for n in notes if DATED_RE.match(n).group(1) > tended] if tended else notes
+    if tended:
+        return f"Tended: {tended}; session notes since: {len(since)}"
+    return f"Never tended; session notes: {len(since)}"
+
+
 def emit_map(sanctum: Path) -> None:
     print("\n===== memory map =====")
     lines = folder_lines(sanctum / "memory", "memory") + folder_lines(sanctum / "raw", "raw")
@@ -96,6 +109,7 @@ def emit_map(sanctum: Path) -> None:
     if recent:
         print("\nNewest:")
         print("\n".join(f"  {r}" for r in recent))
+    print(f"\n{tending_line(sanctum)}")
     raw = undistilled(sanctum / "raw")
     if raw:
         print(f"\nUndistilled raw ({len(raw)}):")

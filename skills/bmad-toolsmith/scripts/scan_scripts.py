@@ -12,6 +12,8 @@ Rules, each a `rule` value in the findings:
                    a skill script should work offline unless its docstring says why it cannot
   model-id         a string literal naming a model id (claude-*, gpt-*, gemini-*); users run any model,
                    so a script never hardcodes or validates against one
+  custom-io        a string literal naming `_bmad/custom` or a `.user.toml` file; resolve_customization.py reads
+                   overrides and the bmad-customize skill writes them, so a skill's own script touches neither
   syntax-error     the file does not parse
 
 A shebang is optional. Files under scripts/tests/ are not linted.
@@ -38,6 +40,8 @@ FLOOR = (3, 11)
 PEP723_RE = re.compile(r"^# /// script\n(?P<body>(?:^#(?: .*)?\n)+?)^# ///$", re.MULTILINE)
 REQUIRES_RE = re.compile(r'^#\s*requires-python\s*=\s*"([^"]*)"', re.MULTILINE)
 VERSION_RE = re.compile(r">=\s*(\d+)\.(\d+)")
+# Pieces are joined so this file's own literals do not match the rule.
+CUSTOM_IO_RE = re.compile("|".join([r"_bmad/" + "custom", r"\.user\." + "toml"]))
 NETWORK_MODULES = {"urllib.request", "requests", "httpx", "socket", "http.client", "aiohttp"}
 # A model id carries a version digit; "claude-code" is a product name, not a model.
 MODEL_ID_RE = re.compile(r"\b(?:claude|gpt|gemini)-(?:[a-z]+-)*\d[a-z0-9.-]*\b", re.IGNORECASE)
@@ -63,7 +67,10 @@ def floor_ok(requires: str) -> bool:
 
 def scan_ast(tree: ast.AST, rel: str) -> list[dict]:
     findings = []
+    docstring = tree.body[0].value if tree.body and isinstance(tree.body[0], ast.Expr) else None
     for node in ast.walk(tree):
+        if node is docstring:
+            continue
         names: list[str] = []
         if isinstance(node, ast.Import):
             names = [alias.name for alias in node.names]
@@ -76,6 +83,16 @@ def scan_ast(tree: ast.AST, rel: str) -> list[dict]:
                 )
                 break
         if isinstance(node, ast.Constant) and isinstance(node.value, str):
+            if CUSTOM_IO_RE.search(node.value):
+                findings.append(
+                    finding(
+                        rel,
+                        node.lineno,
+                        "custom-io",
+                        node.value,
+                        "drop it: resolve_customization.py reads overrides and the bmad-customize skill writes them",
+                    )
+                )
             match = MODEL_ID_RE.search(node.value)
             if match:
                 findings.append(

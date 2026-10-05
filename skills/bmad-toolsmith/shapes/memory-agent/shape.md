@@ -15,7 +15,7 @@ Memory is for an agent that must accrue across sessions: a relationship, a recor
 | `references/first-breath.md` | `assets/first-breath-template.md` (deep relationship) or `assets/first-breath-config-template.md` (focused) | the birth conversation, territories for this domain |
 | `references/<capability>.md` | the agent shape's capability template with frontmatter `name`, `description`, `code`; `assets/intake-capability-template.md` when the agent takes in material | built-in capabilities, one CAPABILITIES.md row each |
 | `assets/*-template.md` | `assets/PERSONA-template.md` and its CREED, BOND, HOW-I-REMEMBER, CAPABILITIES and PULSE (Pulse only) siblings | sanctum seeds; HOW-I-REMEMBER is the short guide to the memory layout, printed at every waking |
-| `wake.py`, `init-sanctum.py` in `scripts/` | `assets/wake-template.py`, `assets/init-sanctum-template.py` | unchanged; both read the skill name from their folder. Wake prints the identity files and a generated map of `memory/` and `raw/`; init finishes a sanctum an earlier run left incomplete |
+| `wake.py`, `init-sanctum.py` in `scripts/` | `assets/wake-template.py`, `assets/init-sanctum-template.py` | unchanged; both read the skill name from their folder. Wake prints the identity files and a generated map of `memory/` and `raw/` with the last tending date and the session notes since; init finishes a sanctum an earlier run left incomplete |
 
 ## Rules
 
@@ -26,6 +26,7 @@ Memory is for an agent that must accrue across sessions: a relationship, a recor
 - The bootloader is lean by design, about 400 tokens beyond its activation steps. Style, principles and menus belong in the sanctum; judge it by what leaked in, not its weight.
 - Nothing about the owner is read from config. First Breath opens by asking what to call them; the reply sets the name and the language, and the agent writes both to BOND.md.
 - Memory is small files in folders by kind of subject, standing subjects by slug and events by date and slug, with a write-once `raw/` layer for what the owner hands over and distillations that link back to it. No index: wake generates the map, and the agent finds things with `ls` and `grep`. A single growing memory file, a token guardrail on memory, or an index the agent must maintain is the old design and a defect.
+- A standing file's sections are replaced, never appended; only a `## History` section takes dated lines, and only at turning points. A build that defines a kind of standing file (a client, a program, a project) says per section which it is, in the layout line it adds to `HOW-I-REMEMBER.md`. Tending (distill, merge, refresh, raise) belongs to every memory agent and is triggered by the waking map's staleness line, not a size; Pulse only runs it on a schedule.
 
 ## Before the first conversation
 

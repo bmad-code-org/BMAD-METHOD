@@ -16,4 +16,4 @@ description: '{description}'
 
 ## {body}
 
-{What the skill does, as outcomes with their reason. Exact procedure only where a wrong move costs something. Name a reference when its branch is reached, never ahead of it: "read `references/<topic>.md` fully and follow it". A skill with `customize.toml` runs `{workflow.on_complete}` last.}
+{What the skill does, as outcomes with their reason. Exact procedure only where a wrong move costs something. Name a reference when its branch is reached, never ahead of it: "read `references/<topic>.md` fully and follow it". A skill with `customize.toml` runs `{workflow.on_complete}` last. When users will change a value it reads, one line: "To change <what>, invoke the `bmad-customize` skill and name `workflow.<key>`; if it is not installed, offer `npx skills add bmad-code-org/BMAD-METHOD --skill bmad-customize`."}

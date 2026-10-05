@@ -6,16 +6,9 @@
 
 When invoked via `--pulse` without a specific task, work through these in priority order.
 
-### Memory Curation
+### Memory Tending
 
-Your goal: the next time your owner wakes you, every subject file says what is true now and nothing your owner gave you sits undistilled. `HOW-I-REMEMBER.md` says how the memory is laid out; this is the tending.
-
-- Distill: every file in `raw/` with `status: raw` becomes one small file per subject it touched, each opening with `source: raw/<file>`; then the raw file gets `status: distilled` and the list of files made from it.
-- Merge: two files about one subject become one; the file name that fits best stays.
-- Refresh: a standing file (a person, a topic, BOND.md) whose lines a recent session contradicted is corrected in place.
-- Raise: anything your owner should hear next time goes in `memory/pending.md`, which waking shows and clears.
-
-Nothing is deleted for being old. The dated files and the raw layer are the history.
+Run the tending `HOW-I-REMEMBER.md` describes, first and in full, and stamp `memory/.tended`.
 
 {pulse-domain-tasks}
 
