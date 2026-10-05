@@ -6,7 +6,7 @@ The tail every build and every file-writing mode ends with. Its outcome: the ski
 
 ## Manifest
 
-A skill that joins a module carries `bmod.toml` with `[skill]`, written by the scaffold; a single-skill module carries `[bmod]` and an empty `[skill]` in one file; a skill outside BMad has none. Confirm it matches the read-back; `ecosystem.md` fills its dependency lists below. Never write `module.yaml`, `module-help.csv` or a setup skill; those are the old format.
+The pre-pass reports `bmod_kind`. It must match the read-back's registration line: `skill` for a member, `record+skill` for a single-skill module, `none` for a plain skill. A mismatch is fixed here, not noted: write the missing `bmod.toml`, help and record edits from the shape the line names, `shapes/single-skill-module/shape.md` or `shapes/multi-skill-module/shape.md`. `ecosystem.md` fills the dependency lists below. Never write `module.yaml`, `module-help.csv` or a setup skill; those are the old format.
 
 ## Refine
 
@@ -39,4 +39,4 @@ Load `ecosystem.md`: it settles what the skill requires or recommends, writes th
 
 ## Handoff
 
-Tell the user: where the skill is; that it is live now when it was written where their agent reads skills (the skills CLI will not track it, so updates are theirs to make), or how to make it live otherwise (a symlink into that folder, or `npx skills add <repo> --skill <name>` once it is pushed); one request to try first. Offer, not run: a review (`modes/review.md`) and a baseline eval with the `bmad-eval` skill, which measures the skill against the bare model on the user's own cases; this is where that question is answered, with numbers rather than one run, and for a skill that will be distributed it is the only place it can be.
+Tell the user: where the skill is; that it is live now when it was written where their agent reads skills (the skills CLI will not track it, so updates are theirs to make), or how to make it live otherwise (a symlink into that folder, or `npx skills add <repo> --skill <name>` once it is pushed); one request to try first; how it is registered: for its own record, ask `bmad setup <code>`, which creates the module's scripts folder and asks its questions; for a member, the record files that changed; for a plain skill, once, that `bmad` help, setup and update checks will not see it. Offer, not run: a review (`modes/review.md`) and a baseline eval with the `bmad-eval` skill, which measures the skill against the bare model on the user's own cases; this is where that question is answered, with numbers rather than one run, and for a skill that will be distributed it is the only place it can be.

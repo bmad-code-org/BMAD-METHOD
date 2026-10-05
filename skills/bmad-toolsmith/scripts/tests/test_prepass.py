@@ -21,6 +21,7 @@ KEYS = {
     "description_chars",
     "has_use_when",
     "frontmatter_ok",
+    "bmod_kind",
     "path_findings",
     "script_findings",
 }

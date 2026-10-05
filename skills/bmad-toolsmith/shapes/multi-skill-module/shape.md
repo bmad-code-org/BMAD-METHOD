@@ -18,6 +18,10 @@ The record, `bmod-<code>/`:
 
 Each member: `bmod.toml` from `assets/member-bmod-template.toml`, with `bmod = "bmod-<code>"`, `source` equal to the record's `update_source`, and its own `required_skills`, `recommended_skills` and `scripts` (files it ships into `_bmad/scripts`) when it has them. A skill belongs to one module; a skill it uses from another module is a dependency entry, not a member.
 
+## Joining an existing record
+
+When the read-back registers one skill as a member of a record that exists, the scaffold writes the member `bmod.toml` (`--bmod bmod-<code> --source <the record's update_source>`); then change the record: add the name to `[bmod].skills`; add a row to `help/help.md`, and a `help/<topic>.md` only when the skill has depth the row cannot hold; for an agent, a `[[members]]` entry in `roster.toml`. The record's version is not yours to bump. The read-back's files list shows these edits.
+
 ## Rules
 
 - Names: members carry the code as prefix (`acme-brainstorm`, agents `acme-agent-<name>`); `bmad-` names belong to the bmad-code-org, which writes `bmad-<code>-<skill>`. The record folder is `bmod-` plus the code exactly.

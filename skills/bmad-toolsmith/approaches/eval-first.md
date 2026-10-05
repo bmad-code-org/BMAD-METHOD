@@ -8,7 +8,7 @@ From the discovery, write `{target}/evals/cases.json` (`{id, input, rubric[], st
 
 ## Smallest skill
 
-Scaffold with `uv run {skill-root}/scripts/init_skill.py --name <name> --dest <parent folder> --shape <shape> --description "<approved description>"` and load `shapes/<shape>/shape.md`. Write `SKILL.md` to `canon.md`, aimed at the cases, never to the rubric word for word, because a skill that quotes its grader passes the test and fails the user.
+Scaffold with `uv run {skill-root}/scripts/init_skill.py --name <name> --dest <parent folder> --shape <shape> --description "<approved description>"`, adding `--bmod <record> --source <update_source>` when the read-back registers it as a member, and load `shapes/<shape>/shape.md`, then the module shape the registration line names, if any. Write `SKILL.md` to `canon.md`, aimed at the cases, never to the rubric word for word, because a skill that quotes its grader passes the test and fails the user.
 
 ## Loop
 

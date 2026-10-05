@@ -4,11 +4,11 @@ One folder that is both a module record and the module's only skill. It is the d
 
 ## When the conversation is here
 
-The read-back names one skill, nothing else ships with it, and it needs at least one answer that belongs to the project rather than the session: an output folder, a file it maintains, a style. A skill with no such answer is a plain skill and needs no record. A second skill arriving later turns this into `shapes/multi-skill-module/shape.md`: the record moves to a `bmod-<code>/` folder and this `bmod.toml` keeps only `[skill]`.
+The read-back names one skill, nothing else ships with it, and either it needs an answer that belongs to the project rather than the session (an output folder, a file it maintains, a style) or the user wants `bmad` to know it: recommend it from help, set it up, check it for updates. A skill with neither, whose user wants none of that, is a plain skill and needs no record. A second skill arriving later turns this into `shapes/multi-skill-module/shape.md`: the record moves to a `bmod-<code>/` folder and this `bmod.toml` keeps only `[skill]`.
 
 ## Files
 
-- `bmod.toml` from `assets/bmod-template.toml`: `[bmod]` with `code`, `version`, `update_source`, `required_skills`, the questions, both install messages (empty when unused), and an empty `[skill]`.
+- `bmod.toml` from `assets/bmod-template.toml`: `[bmod]` with `code`, `version`, `update_source`, `required_skills`, the questions, both install messages (empty when unused), and an empty `[skill]`. A skill with nothing to ask drops the `[[bmod.config_questions]]` block rather than shipping a placeholder question.
 - `SKILL.md` and the rest of the skill from whichever skill shape the read-back chose; this shape adds only the record.
 - `help/help.md` from `assets/help-template.md`: what the skill gives the user and when to recommend it, written for the `bmad` help agent.
 

@@ -103,7 +103,9 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         (sessions / "2026-10-03-pricing.md").write_text("talked\n", encoding="utf-8")
         (self.sanctum / "memory" / "pending.md").write_text("Ask about the launch date.\n", encoding="utf-8")
         raw = self.sanctum / "raw"
-        (raw / "2026-10-02-oss-call.md").write_text("---\nstatus: raw\ndistilled_to: []\n---\nwords\n", encoding="utf-8")
+        (raw / "2026-10-02-oss-call.md").write_text(
+            "---\nstatus: raw\ndistilled_to: []\n---\nwords\n", encoding="utf-8"
+        )
         (raw / "2026-09-30-oss-notes.md").write_text("---\nstatus: distilled\n---\nwords\n", encoding="utf-8")
         res = run(self.wake, self.project)
         self.assertEqual(res.returncode, 0, res.stderr)
@@ -114,7 +116,9 @@ class MemoryAgentScriptsTest(unittest.TestCase):
         self.assertIn("memory/people/ (1 files)", out)
         self.assertIn("memory/sessions/ (2 files)", out)
         self.assertIn("raw/ (2 files)", out)
-        self.assertLess(out.index("memory/sessions/2026-10-03-pricing.md"), out.index("memory/sessions/2026-10-01-first-breath.md"))
+        self.assertLess(
+            out.index("memory/sessions/2026-10-03-pricing.md"), out.index("memory/sessions/2026-10-01-first-breath.md")
+        )
         self.assertIn("Never tended; session notes: 2", out)
         (self.sanctum / "memory" / ".tended").write_text("2026-10-02\n", encoding="utf-8")
         again = run(self.wake, self.project).stdout

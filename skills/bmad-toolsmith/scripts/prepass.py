@@ -24,8 +24,10 @@ Usage:
 Output, one JSON object on stdout:
   {"skill", "shape_hint", "files": [{"path", "tokens", "kind"}], "skill_md_tokens", "total_tokens",
    "has_customize", "has_scripts", "scripts": [{"path", "has_pep723", "has_test"}],
-   "description_chars", "has_use_when", "frontmatter_ok", "path_findings": [...], "script_findings": [...]}
+   "description_chars", "has_use_when", "frontmatter_ok", "bmod_kind", "path_findings": [...], "script_findings": [...]}
   kind is one of entry, prompt, script, test, asset, config, other.
+  bmod_kind is none (no bmod.toml), skill (a module member), record (a record folder), record+skill (a
+  single-skill module) or invalid (a file with neither table, or one that does not parse).
 """
 
 from __future__ import annotations
@@ -86,6 +88,22 @@ def shape_hint(root: Path, skill_text: str | None) -> str:
     return "plain-skill"
 
 
+def bmod_kind(root: Path) -> str:
+    manifest = root / "bmod.toml"
+    if not manifest.is_file():
+        return "none"
+    data = load_toml(manifest)
+    has_record = isinstance(data.get("bmod"), dict)
+    has_skill = isinstance(data.get("skill"), dict)
+    if has_record and has_skill:
+        return "record+skill"
+    if has_record:
+        return "record"
+    if has_skill:
+        return "skill"
+    return "invalid"
+
+
 def build(root: Path) -> dict:
     skill_path = root / "SKILL.md"
     skill_text = read_text(skill_path) if skill_path.is_file() else None
@@ -121,6 +139,7 @@ def build(root: Path) -> dict:
         "description_chars": len(description),
         "has_use_when": bool(USE_WHEN_RE.search(description)),
         "frontmatter_ok": frontmatter_ok,
+        "bmod_kind": bmod_kind(root),
         "path_findings": scan_skill(root)["findings"],
         "script_findings": scripts_result["findings"],
     }

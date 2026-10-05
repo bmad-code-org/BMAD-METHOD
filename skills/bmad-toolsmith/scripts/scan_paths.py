@@ -52,7 +52,15 @@ PYTHON_CALL_RE = re.compile(r"(?<![\w/.-])(?:python3?|pip3?)\s+(?:-m\s+\S+|\S+\.
 BACKTICK_REF_RE = re.compile(r"`([^`\s]+/[^`\s]+\.(?:md|yaml|yml|toml|json|csv|txt|xml|py|html))`")
 SKILL_DIR_RE = re.compile(r"(?:^|/)(?:skills|\.claude/skills|\.agents/skills|_bmad)/([a-z0-9][a-z0-9-]*)/")
 # Runtime folders under _bmad that are not skills.
-RULES = {"bare-script-call", "installed-path", "absolute-path", "cross-skill-ref", "missing-file", "old-module-format", "python-call"}
+RULES = {
+    "bare-script-call",
+    "installed-path",
+    "absolute-path",
+    "cross-skill-ref",
+    "missing-file",
+    "old-module-format",
+    "python-call",
+}
 BMAD_RUNTIME_DIRS = {"scripts", "config", "custom", "memory", "render", "_config", "knowledge"}
 
 
@@ -88,7 +96,11 @@ def scan_regex_rules(content: str, rel: str) -> list[dict]:
         (INSTALLED_PATH_RE, "installed-path", "remove installed_path; use a path relative to this file"),
         (ABS_PATH_RE, "absolute-path", "use {project-root}, {skill-root} or a config value"),
         (OLD_FORMAT_RE, "old-module-format", "describe the module in bmod.toml; see the migrate mode"),
-        (PYTHON_CALL_RE, "python-call", "run it as `uv run <path>`; dependencies come from the script's PEP 723 header"),
+        (
+            PYTHON_CALL_RE,
+            "python-call",
+            "run it as `uv run <path>`; dependencies come from the script's PEP 723 header",
+        ),
     ):
         for match in regex.finditer(content):
             findings.append(finding(rel, line_of(content, match.start()), rule, match.group(0), fix))

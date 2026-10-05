@@ -4,7 +4,7 @@ The default approach. Its outcome: the smallest skill that does the job, tried o
 
 ## Scaffold
 
-`uv run {skill-root}/scripts/init_skill.py --name <name> --dest <parent folder> --shape <shape> --description "<approved description>"`, with `--dirs` for only the folders the read-back listed and `--bmod <record> --source <update_source>` when the skill joins a module. Then load `shapes/<shape>/shape.md` for the files the shape emits and the rules they follow.
+`uv run {skill-root}/scripts/init_skill.py --name <name> --dest <parent folder> --shape <shape> --description "<approved description>"`, with `--dirs` for only the folders the read-back listed and `--bmod <record> --source <update_source>` when the read-back registers it as a member; a single-skill module's record and help come from `shapes/single-skill-module/shape.md` at the write step. Then load `shapes/<shape>/shape.md` for the files the shape emits and the rules they follow.
 
 ## Write the smallest version
 
