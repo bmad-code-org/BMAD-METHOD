@@ -9,7 +9,7 @@ Every finding you report carries a source reference (file, line, commit, or log)
 ## Conventions
 
 - Every operational cross-file reference in this workflow is an absolute snapshot path. Open it directly; do not resolve it relative to a skill directory.
-- `{date}` is the current system datetime. Never state time estimates — AI has changed development speed, so hour/day/week predictions are noise.
+- Never state time estimates — AI has changed development speed, so hour/day/week predictions are noise.
 
 ## Modes
 
