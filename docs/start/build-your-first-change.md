@@ -17,10 +17,11 @@ project. This tutorial follows the
 coherent request goes directly to the `bmad-build` skill.
 
 :::note[Before You Start]
-Use a macOS or Linux shell with Node.js 20.12+, Python 3, and a coding tool
-supported by BMad. The exact install and launch commands below are for Claude
-Code. If you use another supported tool, select it when installing BMad and run
-the `bmad-build` skill there instead.
+Use a macOS or Linux shell with Node.js 20.12+, Python 3,
+[uv](https://docs.astral.sh/uv/), and a coding tool supported by BMad. The
+exact install and launch commands below are for Claude Code. If you use another
+supported tool, select it when installing BMad and run the `bmad-build` skill
+there instead.
 :::
 
 ## Create an Empty Project
@@ -38,7 +39,7 @@ Install BMad Method with the skills CLI, then let the `bmad` skill set up the
 project:
 
 ```bash
-npx skills add bmad-code-org/BMAD-METHOD
+npx skills add bmad-code-org/BMAD-METHOD --skill '*'
 ```
 
 Open your coding tool in this directory. For Claude Code, run:
@@ -101,7 +102,7 @@ rover>  4  . . . . .
 rover> Mission control signing off.
 ```
 
-Open the files listed in the final message to look at your finished program.
+Open the project directory to look at your finished program.
 
 ## Ask BMad
 

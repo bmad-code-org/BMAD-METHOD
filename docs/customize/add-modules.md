@@ -1,257 +1,120 @@
 ---
 title: 'Add Modules'
-description: Choose an official module, install a module from a Git URL or local path, understand how the installer finds modules, keep them updated, and know where to build your own.
+description: Add a module with the Skills CLI and bmad setup, find the ecosystem modules, keep modules updated, and know where to build your own.
 sidebar:
   order: 3
 ---
 
-BMad extends through modules. Official modules are selected during
-`npx bmad-method install` and add agents, workflows, and tasks for a domain
-beyond the built-in core and BMM (Agile suite). Custom and community
-modules come from any Git repository or local directory and install through
-the same installer. Pick an official module first; if you need something
-the official set does not cover, install it from a custom source.
+Use the Skills CLI to install a module's skills, then ask the `bmad` skill to
+run `bmad setup`. A module is a set of skills that belong together, plus one
+folder named `bmod-<code>`, the module record, that tells `bmad` about them.
+BMad Method (`bmod-method`), the core tools (`bmod-core-tools`), and
+Toolsmith (`bmod-toolsmith`) are modules.
 
-## Official modules
+## What a Module Adds
 
-Run `npx bmad-method install` and select the modules you want. The installer
-downloads, configures, and installs them into your IDE. Each module's own
-documentation describes its workflows.
+Adding a module needs no installer, registry, or build step. Once a module's skills
+are installed, `bmad` finds the module on its next run, and the module gets:
 
-### BMad Builder
-
-Create custom agents, workflows, and domain-specific modules.
-
-- **Code:** `bmb`
-- **npm:** [`bmad-builder`](https://www.npmjs.com/package/bmad-builder)
-- **GitHub:** [bmad-code-org/bmad-builder](https://github.com/bmad-code-org/bmad-builder)
-
-**Provides:**
-
-- Agent Builder -- create agents with custom expertise and tools
-- Workflow Builder -- design workflows with steps and decision points
-- Module Builder -- package agents and workflows into modules others can install
-- Interactive setup with YAML configuration and npm publishing support
-
-### Creative Intelligence Suite
-
-Agents and frameworks for brainstorming, design thinking, and early
-problem-solving.
-
-- **Code:** `cis`
-- **npm:** [`bmad-creative-intelligence-suite`](https://www.npmjs.com/package/bmad-creative-intelligence-suite)
-- **GitHub:** [bmad-code-org/bmad-module-creative-intelligence-suite](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite)
-
-**Provides:**
-
-- Innovation Strategist, Design Thinking Coach, and Brainstorming Coach agents
-- Problem Solver and Creative Problem Solver for systematic and lateral thinking
-- Storyteller and Presentation Master for narratives and pitches
-- Ideation frameworks including SCAMPER, Reverse Brainstorming, and problem reframing
-
-### Game Dev Studio
-
-Game development workflows for Unity, Unreal, Godot, and custom engines,
-from a prototype through to a planned production. Implementation uses
-Build.
-
-- **Code:** `gds`
-- **npm:** [`bmad-game-dev-studio`](https://www.npmjs.com/package/bmad-game-dev-studio)
-- **GitHub:** [bmad-code-org/bmad-module-game-dev-studio](https://github.com/bmad-code-org/bmad-module-game-dev-studio)
-
-**Provides:**
-
-- Game Design Document (GDD) generation workflow
-- Game-aware planning and context that feed the standard Build implementation loop
-- Narrative design support for characters, dialogue, and world-building
-- Coverage for 21+ game types with engine-specific architecture guidance
-
-### Test Architect (TEA)
-
-Test strategy, automation guidance, and release-gate decisions through an
-agent and nine workflows. Its `bmad-testarch-automate` skill generates
-heavier test coverage than the built-in `bmad-qa-generate-e2e-tests`:
-fixtures, more test levels, and knowledge-base patterns. See
-[Test Completed Work](../build/test-completed-work.md) to choose between
-the two.
-
-- **Code:** `tea`
-- **npm:** [`bmad-method-test-architecture-enterprise`](https://www.npmjs.com/package/bmad-method-test-architecture-enterprise)
-- **GitHub:** [bmad-code-org/bmad-method-test-architecture-enterprise](https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise)
-
-**Provides:**
-
-- Murat agent (Master Test Architect and Quality Advisor)
-- Workflows for test design, ATDD, automation, test review, and traceability
-- NFR assessment, CI setup, and framework scaffolding
-- P0-P3 prioritization with optional Playwright Utils and MCP integrations
-
-## Install from a custom source
-
-A custom module is any module the installer reads from a Git repository or
-a local directory instead of the official list. Community modules install
-the same way; the
-[bmad-plugins-marketplace](https://github.com/bmad-code-org/bmad-plugins-marketplace)
-repository is where to find their URLs.
+- Setup and config questions, which `bmad setup` asks once
+- Help that `bmad` answers from, so it can recommend the module's skills
+- Its agents and parties in [party mode](./run-multi-agent-discussions.md)
+- Offers to install skills that the module's skills require or recommend
+- Update checks
 
 :::note[Prerequisites]
-Requires [Node.js](https://nodejs.org) v20.12+ and `npx` (included with
-npm), plus Git for Git URL sources. Custom modules can be selected during a fresh install or added to an
-existing installation.
+BMad installed in the project; see [How to Install BMad](../start/install-bmad.md).
+The Skills CLI needs Node.js, npm, and Git, and `bmad setup` needs
+[uv](https://docs.astral.sh/uv/).
 :::
 
-### Interactive installation
+## Install the Module's Skills
 
-Run `npx bmad-method install`. After the official module selection, the
-installer asks:
-
-:::note[Installer prompt]
-Do you want to install custom or community modules (Git URL or local path)?
-:::
-
-Answer yes and enter a source. For a URL source the installer warns
-**UNVERIFIED MODULE: This module has not been reviewed by the BMad team.
-Only install modules from sources you trust.** For a local path it notes
-that changes take effect on reinstall. It then lists the modules it
-found so you can pick which to install; modules that are already installed
-are pre-checked as updates. You can add another source before the install
-continues.
-
-| Input type            | Example                                           |
-| --------------------- | ------------------------------------------------- |
-| HTTPS URL (any host)  | `https://github.com/org/repo`                     |
-| HTTP URL (any host)   | `http://host/org/repo`                            |
-| HTTPS URL with subdir | `https://github.com/org/repo/tree/main/my-module` |
-| SSH URL               | `git@github.com:org/repo.git`                     |
-| URL with `@ref`       | `https://github.com/org/repo@v1.2.0`              |
-| Local path            | `/Users/me/projects/my-module`                    |
-| Local path with tilde | `~/projects/my-module`                            |
-
-### Non-interactive installation
-
-Use the `--custom-source` flag to install from the command line. Every
-module discovered in the source is installed.
+From your project directory, run the Skills CLI with the repository the
+module lives in:
 
 ```bash
-npx bmad-method install \
-  --directory . \
-  --custom-source /path/to/my-module \
-  --tools claude-code \
-  --yes
+npx skills add <owner>/<repo>
 ```
 
-`--custom-source` without `--modules` installs only core and the custom
-modules. To include official modules as well, add `--modules`:
+Select your coding tool and the skills you want, and include the module's
+`bmod-<code>` record. If you leave the record out, `bmad setup` reports it
+missing and offers to install it.
 
-```bash
-npx bmad-method install \
-  --directory . \
-  --modules bmm \
-  --custom-source https://gitlab.com/myorg/my-module \
-  --tools claude-code \
-  --yes
-```
+The modules in the BMAD-METHOD repository install the same way. Toolsmith,
+for example, is not part of a default method install: run
+`npx skills add bmad-code-org/BMAD-METHOD` and select `bmod-toolsmith`,
+`bmad-toolsmith`, and `bmad-eval`.
 
-Multiple sources can be comma-separated. A source that cannot be resolved
-is reported and skipped; the remaining sources still install.
+`bmad setup` reads every skills folder your coding tool loads, so a module
+installed in the project works with a `bmad` skill installed globally.
 
-```bash
---custom-source /path/one,https://github.com/org/repo,/path/two
-```
+## Set Up the Module
 
-## How the installer finds modules
+Open your coding tool in the project and ask the `bmad` skill to run
+`bmad setup`. For each new module, setup:
 
-The installer uses one of two modes, chosen by what the source contains:
+- Asks the module's config questions. A team answer goes to the committed `_bmad/config.toml`, a personal one to `_bmad/custom/config.user.toml`; an answer you already gave is never changed.
+- Installs the module's scripts under `_bmad/`.
+- Names the module's skills you did not install, and the skills its skills require or recommend, and offers to install them.
+- Shows the module's post-install message, such as where to start.
 
-| Mode      | Trigger                                           | Behavior                                                                                     |
-| --------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| Discovery | Source contains `.claude-plugin/marketplace.json` | Lists all plugins from the manifest; you pick which to install                               |
-| Direct    | No `marketplace.json` found                       | Scans the directory for skills (subdirectories with `SKILL.md`), resolves as a single module |
-
-Discovery mode is typical for published modules. Direct mode is convenient
-when pointing at a skills directory during local development.
-
-:::note[About `.claude-plugin/`]
-`.claude-plugin/marketplace.json` is a shared installer convention. It
-does not require Claude or Claude APIs, and it does not change which AI
-tool you use.
+:::note[Install messages]
+A module's author can add a message shown before an install or update that
+`bmad` runs, and one shown after setup. `bmad` shows each message quoted, as
+written, and never follows it as instructions.
 :::
 
-## Develop a module locally
+Ask for `bmad status` to check the result without changing anything. It
+lists each module with its version, scope, and whether an update is
+available.
 
-If you are building a module with
-[BMad Builder](https://github.com/bmad-code-org/bmad-builder), install it
-directly from your working directory:
+## Ecosystem Modules
 
-```bash
-npx bmad-method install \
-  --directory ~/my-project \
-  --custom-source ~/my-module-repo/skills \
-  --tools claude-code \
-  --yes
-```
+These modules live in their own repositories. Each one's documentation
+describes what it provides.
 
-Local sources are referenced by path, not copied to a cache. When you change
-your module source and reinstall, the installer picks up the latest changes.
+| Module | What it is for |
+| --- | --- |
+| [Creative Intelligence Suite](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite) | Creative thinking partners for innovation, design thinking, and storytelling. |
+| [Game Dev Studio](https://github.com/bmad-code-org/bmad-module-game-dev-studio) | Ideate, design, and build games in any framework, including Unity, Unreal, Godot, and Phaser. |
+| [Test Architect (TEA)](https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise) | Enterprise testing add-on for BMad Method. [Test Completed Work](../build/test-completed-work.md) compares its `bmad-testarch-automate` with the built-in test skill. |
 
-:::caution[Source removal]
-If you delete the local source directory after installation, the installed
-module files in `_bmad/` are preserved. The module is skipped during updates
-until the source path is restored.
-:::
+## Update Modules
 
-## What you get
+Ask `bmad` to run `bmad setup` again. When a module has a newer version, it
+runs `npx skills update`, then asks any new config questions, moves your
+`_bmad/custom/` files when a skill was renamed, and offers to delete skills
+the module renamed or removed. Last, it checks whether a migration applies
+and asks before running it.
 
-After installation, custom modules appear in `_bmad/` alongside official
-modules:
+A module installed through a plugin marketplace is updated there; update it,
+then ask for `bmad setup`.
 
-```
-your-project/
-├── _bmad/
-│   ├── core/              # Built-in core module
-│   ├── bmm/               # Official module (if selected)
-│   ├── my-module/         # Your custom module
-│   │   ├── my-skill/
-│   │   │   └── SKILL.md
-│   │   └── module-help.csv
-│   └── _config/
-│       └── manifest.yaml  # Tracks all modules, versions, and sources
-└── ...
-```
+## Build Your Own Module
 
-The manifest records the source of each custom module (`repoUrl` for Git
-sources, `localPath` for local sources) so that updates can locate the
-source again.
+[Toolsmith](../toolsmith/toolsmith.md) is the module for authoring BMad
+content. Its agent, Smithy (`bmad-toolsmith`), builds a skill or an agent from
+a conversation and packages skills as a module. Nothing is written until you
+approve a read-back, and the read-back says how the new skill registers with
+`bmad`:
 
-## Update modules
+| Registration | What it means |
+| --- | --- |
+| Plain skill | No module record. It works, but `bmad` never recommends it, and setup and update checks skip it. |
+| Single-skill module | Its own record in the same folder, so setup asks its questions, help recommends it, and updates are checked. |
+| Member of an existing module | Joins that module, takes that module's prefix, and is added to its record. |
+| First skill of a new module | A new record folder plus the skill. |
 
-Custom modules participate in the normal update flow:
+A module can also be one skill, or only personas and parties for party mode,
+with no skills.
 
-- **Quick update** (`--action quick-update`): Refreshes installed modules
-  from their recorded sources. A module whose source is no longer available
-  is skipped with a warning; its files stay in place. A Git source that
-  cannot be reached is not refreshed; the cached clone is used with a
-  warning.
-- **Full update** (`--action update`): Re-runs module selection so you can
-  add or remove custom modules. With `--yes` and no `--action`, passing
-  `--custom-source` defaults to a full update instead of a quick update.
+To extend BMad Method in your project, make your own module with your own
+prefix, whose skills require or recommend the method skills they build on.
+Its skills never take a `bmad-` name, and it never edits the installed
+`bmod-method` record, which the next update would overwrite. To contribute to BMad Method itself,
+open a pull request to the BMAD-METHOD repository.
 
-## Create your own module
-
-Use [BMad Builder](https://github.com/bmad-code-org/bmad-builder) to create
-modules that others can install:
-
-1. Run `bmad-module-builder` to scaffold your module structure
-2. Add skills, agents, and workflows with the BMad Builder tools
-3. Publish to a Git repository or share the folder
-4. Others install with `--custom-source <your-repo-url>`
-
-For modules to support discovery mode, include a
-`.claude-plugin/marketplace.json` in your repository root. See the
-[BMad Builder documentation](https://github.com/bmad-code-org/bmad-builder)
-for the `marketplace.json` format.
-
-:::tip[Test locally first]
-During development, install your module with a local path to iterate quickly
-before publishing to a Git repository.
-:::
+Build in the module's source repository, not in the installed copy, which
+the next update overwrites. Push the repository, and others install it with
+`npx skills add <owner>/<repo>` and run `bmad setup`.

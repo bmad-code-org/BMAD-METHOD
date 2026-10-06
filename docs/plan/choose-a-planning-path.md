@@ -60,7 +60,8 @@ Sofia the result, not the raw pile.
 | Shared decisions several epics or agents must follow             | [Design UX and Architecture](./design-ux-and-architecture.md)                                                |
 | Agreement, ownership, and sign-off among several people or teams | A PRD as the document the organization owns: [Plan Inside an Organization](./plan-inside-an-organization.md) |
 
-A short list of decisions is often enough on its own. You need a PRD when more
+A short list of decisions is often enough on its own. You need a PRD when the
+requirements need real detail, compliance or integrations are involved, more
 than one person must agree on what the product is, or more than one epic must
 not diverge; otherwise skip it. A multi-epic product gives those documents to
 Sofia once, at the initiative; each epic's requirements are cut from the
@@ -68,7 +69,7 @@ initiative's lines.
 
 ## Planning Skills and What They Produce
 
-Every skill in this chapter writes a document you can hand on. The table runs from analysis through planning to solutioning; each chapter page is linked from the first skill it covers and explains when its skills fit. In an installed project, `bmad` recommends the next one. Each document lands in its own `<type>-<slug>/` folder inside the active initiative's folder, or directly in the output folder (`_bmad-output` by default) when no initiative is active. A `bmad-prd`, `bmad-ux`, or `bmad-architecture` run on an epic lands in that epic's folder instead.
+Every skill in this chapter writes a document you can hand on. The table runs from analysis through planning; each chapter page is linked from the first skill it covers and explains when its skills fit. In an installed project, `bmad` recommends the next one. Each document lands in its own `<type>-<slug>/` folder inside the active initiative's folder. When no initiative is active, most of these skills have you set one first; `bmad-brainstorming`, `bmad-forge-idea`, `bmad-deep-recon`, and `bmad-prfaq` instead ask whether the work belongs to one, and work that does not lands directly in the output folder (`_bmad-output` by default). A `bmad-prd`, `bmad-ux`, or `bmad-architecture` run on an epic lands in that epic's folder instead.
 
 | Skill                           | Purpose                                                                                                                                        | Produces                                                                            |
 | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
@@ -86,7 +87,7 @@ Every skill in this chapter writes a document you can hand on. The table runs fr
 want when you invoke it, or it will ask. `bmad-product-brief` feeds `bmad-prd`,
 which reads the brief during discovery, but neither requires the other.
 
-![Three columns of planning skills and the files each writes: analysis (brainstorming, forge idea, deep recon, product brief, PRFAQ), planning (PRD, UX), and solutioning (architecture and Sofia, the Product Owner), all handing off to bmad-build, one session per unit](/diagrams/planning-skills.svg)
+![Three columns of planning skills and the files each writes: analysis (brainstorming, forge idea, deep recon, product brief, PRFAQ), planning what to build (PRD, UX), and planning how and in what slices (architecture and Sofia, the Product Owner), all handing off to bmad-build, one session per unit](/diagrams/planning-skills.svg)
 
 ## Size Follows the Intent
 

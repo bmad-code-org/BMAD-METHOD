@@ -17,9 +17,9 @@ See [Set Up the Ticket Tree](./set-up-the-ticket-tree.md) for store and tracker 
 
 ## Build an Entry
 
-Say “build story 1.2” to `bmad-build`. It reads the entry and epic, plus an existing refined leaf file, and writes acceptance criteria into its plan. Refinement before building is optional unless the work needs it.
+Say “build story 1.2” to `bmad-build`. It reads the entry and epic, plus the leaf file when one was pulled, and writes acceptance criteria into its plan. Refinement before building is optional unless the work needs it.
 
-The plan sits beside the epic's `tickets.toml`, in its `tickets/` folder, as `story-<slug>-plan.md`. Its numeric `ticket` joins the entry. A backlog plan uses its leaf file stem instead. The plan owns status and records the baseline before changes.
+The plan sits beside the epic's `tickets.toml`, in its `tickets/` folder, as `story-<slug>-plan.md`. Its `ticket`, the entry's id, joins the entry. A backlog plan uses its leaf file stem instead. The plan owns status and records the baseline before changes.
 
 For unattended work, explicitly dispatch a ticket to `bmad-build-auto`, one invocation per ticket. It does not select the next ticket itself. Read [Autonomous Development Loops](../build/autonomous-development-loops.md) before wiring a runner.
 
