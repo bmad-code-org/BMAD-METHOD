@@ -39,7 +39,7 @@ SHARED_SCRIPTS = (
 )
 SHIPPED_SKILLS = ("bmad-build-auto", "bmad-build", "bmad-code-review")
 RENDERED_SKILLS = (*SHIPPED_SKILLS, "bmad-walkthrough", "bmad-retrospective")
-COMPILE_TOKEN = re.compile(r"\{\{\s*(?:config|workflow)\.|\{\{\s*rendered\(|\{%")
+COMPILE_TOKEN = re.compile(r"\{\{\s*(?:config|workflow)\.|\{\{\s*(?:rendered\(|initiative_folder)|\{%")
 DISPATCH_PREFIX = "read and follow "
 
 sys.path.insert(0, str(SCRIPTS_SRC))
@@ -684,6 +684,29 @@ class RenderSkillTests(unittest.TestCase):
         current = _files(before.parent)
         for name, content in before_files.items():
             self.assertEqual(current[name], content, name)
+
+    def test_initiative_folder_follows_the_active_initiative_where_a_template_reaches_it(self):
+        ws = self._workspace()
+        skill = self._fixture_skill(ws, "[workflow]\n", "{{ initiative_folder }}\n")
+        user_config = ws.bmad / "custom" / "config.user.toml"
+        output_folder = (ws.project.resolve() / "_bmad-output").as_posix()
+        unset = rs.render(ws.project, skill)
+        self.assertEqual(unset.read_text(encoding="utf-8"), f"{output_folder}\n")
+        user_config.write_text('[core]\nactive_initiative = "initiative-checkout"\n', encoding="utf-8")
+        active = rs.render(ws.project, skill)
+        self.assertNotEqual(active, unset)
+        self.assertEqual(active.read_text(encoding="utf-8"), f"{output_folder}/initiative-checkout\n")
+        for value, message in (("42", "must be a string"), ('""', "must not be empty")):
+            with self.subTest(value=value):
+                user_config.write_text(f"[core]\nactive_initiative = {value}\n", encoding="utf-8")
+                with self.assertRaisesRegex(rs.RenderError, f"config.core.active_initiative {message}"):
+                    rs.render(ws.project, skill)
+
+        (skill / "workflow.md").write_text("plain\n", encoding="utf-8")
+        user_config.unlink()
+        unreferenced = rs.render(ws.project, skill)
+        user_config.write_text('[core]\nactive_initiative = "initiative-checkout"\n', encoding="utf-8")
+        self.assertEqual(rs.render(ws.project, skill), unreferenced)
 
     def test_shared_runtime_keeps_distinct_root_bound_snapshots(self):
         first = self._workspace()
