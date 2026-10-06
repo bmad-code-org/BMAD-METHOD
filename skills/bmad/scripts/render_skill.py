@@ -15,6 +15,7 @@ import re
 import shutil
 import sys
 import tomllib
+from collections.abc import Callable
 from datetime import date, time
 from pathlib import Path
 from typing import Any
@@ -283,6 +284,13 @@ class _Text(str):
         raise RenderError(f"`{self.label}` is a string, not a list")
 
 
+class _Derived:
+    """A name the renderer computes from the central config, when a template reaches it."""
+
+    def __init__(self, compute: Callable[[], Any]) -> None:
+        self.compute = compute
+
+
 class _MarkdownList(list):
     """A string-list customization; inserted directly it renders as the Markdown list it always did."""
 
@@ -418,7 +426,19 @@ class _RenderContext:
             ),
             "rendered": self._rendered,
             "halt": self._halt,
+            "initiative_folder": _Derived(self._initiative_folder),
         }
+        self._central = central
+
+    def _initiative_folder(self) -> _Text:
+        """`core.output_folder`, extended by `/<core.active_initiative>` when an initiative is set."""
+        folder = str(self.variables["config"].core.output_folder)
+        core = self._central.get("core")
+        initiative = core.get("active_initiative") if isinstance(core, dict) else None
+        if initiative is not None:
+            folder = f"{folder}/{_require_string(initiative, 'config.core.active_initiative')}"
+        self.inputs["initiative_folder"] = folder
+        return _Text(folder, "initiative_folder")
 
     @staticmethod
     def _halt(message: Any) -> str:
@@ -431,6 +451,14 @@ class _RenderContext:
             raise RenderError(f"rendered() targets undeclared source: {target}")
         self.links.setdefault(context.name or "", set()).add(target)
         return (self.destination / target).as_posix()
+
+
+class _Context(jinja2.runtime.Context):
+    """Reaching a derived name computes it, so only the values a template reads key its generation."""
+
+    def resolve_or_missing(self, key: str) -> Any:
+        value = super().resolve_or_missing(key)
+        return value.compute() if isinstance(value, _Derived) else value
 
 
 class _SourceLoader(jinja2.BaseLoader):
@@ -471,6 +499,7 @@ def _render_sources(sources: dict[str, str], skill_dir: Path, context: _RenderCo
         trim_blocks=True,
         lstrip_blocks=True,
     )
+    environment.context_class = _Context
     rendered: dict[str, str] = {}
     for name in sources:
         try:

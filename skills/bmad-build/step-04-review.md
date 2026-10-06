@@ -95,7 +95,7 @@ Write `lenses_ran` — the ids launched, in launch order — to `{plan_file}` fr
      ```
 
      If it cannot be continued, apply the patches yourself. Then re-run the checks in `{plan_file}`'s `## Verification` section, if present — the patches changed code after the implementer's verification; if verification fails and the failure cannot be fixed, HALT and escalate to the human. Rewrite `{diff_file}` so it reflects the patched tree.
-   - **defer** — Append one new entry to `{{ config.output_folder }}/{active_initiative}/deferred-work.md` using this format. Do not modify existing entries or look for duplicates.
+   - **defer** — Append one new entry to `{{ initiative_folder }}/deferred-work.md` using this format. Do not modify existing entries or look for duplicates.
      ```markdown
      - source_plan: `{plan_file}`
        summary: <one sentence>

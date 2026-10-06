@@ -2,7 +2,7 @@
 
 Write the review narrative and the review log in a new folder
 `walkthrough-<slug>/` under
-`{{ config.output_folder }}/{active_initiative}/`: the narrative as
+`{{ initiative_folder }}/`: the narrative as
 `walkthrough-<slug>.md`, the log as `walkthrough-<slug>-log.md`.
 `<slug>` is a short review slug; check that the folder name is
 unused before creating it.

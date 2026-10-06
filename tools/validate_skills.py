@@ -56,7 +56,7 @@ TIME_ESTIMATE_PATTERNS = [
     re.compile(r"\bETA\b"),
 ]
 TEMPLATE_FILENAME_REGEX = re.compile(r"template", re.I)
-COMPILE_TIME_SUB_REGEX = re.compile(r"\{\{-?\s*(?:config|workflow)\.[^}]*\}\}")
+COMPILE_TIME_SUB_REGEX = re.compile(r"\{\{-?\s*(?:(?:config|workflow)\.|initiative_folder\b)[^}]*\}\}")
 INSTALLED_PATH_RE = re.compile(r"installed_path", re.I)
 BARE_SCRIPT_RE = re.compile(r"\buv\s+run\b[^`]*?\s(?:\./)?scripts/")
 USE_WHEN_RE = re.compile(r"use\s+when\b", re.I)
@@ -555,7 +555,7 @@ def validate_skill(skill_dir: str) -> list[dict]:
                         "HIGH",
                         rel_file,
                         f"Template file contains render-time expression `{match.group(0)}` — this would be baked at render time and leak a machine-local value into every spec produced from the template.",
-                        "Remove the `{{ config.key }}` or `{{ workflow.key }}` expression. Use single-curly `{var}` if the value should be resolved at LLM runtime by the consumer of the generated spec.",
+                        "Remove the `{{ config.key }}`, `{{ workflow.key }}` or `{{ initiative_folder }}` expression. Use single-curly `{var}` if the value should be resolved at LLM runtime by the consumer of the generated spec.",
                         line=i + 1,
                     )
                 )
