@@ -5,8 +5,6 @@
 
 ## Conventions
 
-- Every cross-file reference in this workflow is an absolute snapshot path. Open it directly; do not resolve it relative to a skill directory.
-- `{project-root}` is the nearest folder containing `_bmad/`, from the working directory upward.
 - When a step directs you to another file, read it fully and follow it. Load one step at a time, when it is reached.
 - A step that shows a menu halts there and waits for the user.
 

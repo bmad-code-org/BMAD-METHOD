@@ -54,8 +54,6 @@ A full plan is "Ready for Development" when:
 
 ## Conventions
 
-- Every operational cross-file reference in this workflow is an absolute snapshot path. Open it directly; do not resolve it relative to a skill directory.
-- `{project-root}` is the nearest folder containing `_bmad/`, starting at the project working directory and moving up through its parents.
 - Whenever this workflow captures or records a version-control revision, obtain the full canonical identifier directly from version control and preserve it verbatim.
 
 ## On Activation
