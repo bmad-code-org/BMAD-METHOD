@@ -607,6 +607,20 @@ class RenderSkillTests(unittest.TestCase):
                 workflow = rs.render(ws.project, skill)
                 self._assert_rendered(workflow, ws.project, name)
 
+    def test_build_skills_render_the_active_initiative_branch(self):
+        for name in ("bmad-build", "bmad-build-auto"):
+            with self.subTest(name):
+                ws = self._workspace()
+                (ws.bmad / "custom" / "config.user.toml").write_text(
+                    '[core]\nactive_initiative = "initiative-checkout"\n', encoding="utf-8"
+                )
+                skill = self._skill(ws, name)
+                snap = self._assert_rendered(rs.render(ws.project, skill), ws.project, name)
+                markdown = _markdown(snap)
+                folder = (ws.project.resolve() / "_bmad-output" / "initiative-checkout").as_posix()
+                self.assertIn(f"{folder}/plan-{{slug}}.md", markdown)
+                self.assertNotIn("No initiative is active", markdown)
+
     def test_build_skills_render_each_pinned_route(self):
         for name in ("bmad-build", "bmad-build-auto"):
             for route in ("oneshot", "full"):
