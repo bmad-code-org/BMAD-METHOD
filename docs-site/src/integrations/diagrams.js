@@ -29,12 +29,12 @@ import { fileURLToPath } from 'node:url';
 const DIAGRAM_DIR = 'src/diagrams';
 const STAMP = 'bmad-diagrams';
 
-/** Absolute paths of every diagram and label file, sorted for a stable hash. */
+/** Absolute paths of every diagram file, sorted for a stable hash. */
 function diagramFiles(root) {
   const dir = fileURLToPath(new URL(`${DIAGRAM_DIR}/`, root));
   if (!existsSync(dir)) return [];
   return readdirSync(dir)
-    .filter((name) => name.endsWith('.svg') || name.endsWith('.labels.json'))
+    .filter((name) => name.endsWith('.svg'))
     .sort()
     .map((name) => dir + name);
 }

@@ -29,10 +29,7 @@ test('a diagram keeps its English text when locales are omitted', () => {
   const root = mkdtempSync(join(tmpdir(), 'bmad-en-diagram-'));
   try {
     mkdirSync(join(root, 'src', 'diagrams'), { recursive: true });
-    writeFileSync(
-      join(root, 'src', 'diagrams', 'flow.svg'),
-      '<svg class="bmad-diagram" viewBox="0 0 10 10"><text data-i18n="start">Start</text></svg>',
-    );
+    writeFileSync(join(root, 'src', 'diagrams', 'flow.svg'), '<svg class="bmad-diagram" viewBox="0 0 10 10"><text>Start</text></svg>');
     const tree = {
       type: 'root',
       children: [

@@ -8,8 +8,6 @@
  * SVG. This component is the same behaviour for anywhere that *can* take a
  * component: an `.mdx` page, or a Starlight component override.
  *
- * Both paths share the label file, so a diagram reads the same either way.
- *
  *   <Diagram name="build-run" />
  */
 import { readFileSync } from 'node:fs';
@@ -23,26 +21,9 @@ interface Props {
 }
 
 const { name, label } = Astro.props;
-const lang = Astro.locals.starlightRoute?.entryMeta?.lang;
 
 const dir = new URL('../diagrams/', import.meta.url);
 let svg = readFileSync(fileURLToPath(new URL(`${name}.svg`, dir)), 'utf8');
-
-let strings: Record<string, string> = {};
-try {
-  const labels = JSON.parse(readFileSync(fileURLToPath(new URL(`${name}.labels.json`, dir)), 'utf8'));
-  strings = (lang && labels[lang]) || {};
-} catch {
-  // A diagram without a label file is English-only, which is fine.
-}
-
-for (const [key, value] of Object.entries(strings)) {
-  // Global, and the key escaped: a diagram may use one key more than once, and
-  // a key is free to contain regex metacharacters. The rehype plugin walks the
-  // tree and has neither problem; this path has to be told.
-  const pattern = new RegExp(`(data-i18n="${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"[^>]*>)[^<]*`, 'g');
-  svg = svg.replace(pattern, (_match, open) => `${open}${value}`);
-}
 
 if (label) {
   svg = svg.replace('<svg ', `<svg aria-label="${label}" `);
