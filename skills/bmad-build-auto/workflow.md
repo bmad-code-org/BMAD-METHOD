@@ -54,7 +54,6 @@ A full plan is "Ready for Development" when:
 
 ## Conventions
 
-- Every operational cross-file reference in this workflow is an absolute snapshot path. Open it directly; do not resolve it relative to a skill directory.
 - Whenever this workflow captures or records a version-control revision, obtain the full canonical identifier directly from version control and preserve it verbatim.
 
 ## On Activation
