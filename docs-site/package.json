@@ -14,7 +14,7 @@
     "lint": "eslint scripts test --max-warnings=0",
     "lint:fix": "eslint scripts test --fix",
     "preview": "astro preview",
-    "test": "node test/test-site-url.mjs && node test/test-rehype-plugins.mjs && node test/test-validate-redirects.mjs && node test/test-english-only-site.mjs && node test/test-export-readme-diagrams.mjs",
+    "test": "node test/test-site-url.mjs && node test/test-rehype-plugins.mjs && node test/test-validate-redirects.mjs && node test/test-built-pages.mjs",
     "test:implementation-model": "node test/test-validate-published-implementation-model.mjs",
     "validate-links": "node scripts/validate-doc-links.js",
     "validate-sidebar": "node scripts/validate-sidebar-order.js"

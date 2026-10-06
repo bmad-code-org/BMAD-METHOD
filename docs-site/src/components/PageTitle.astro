@@ -3,11 +3,8 @@
  * The page masthead, in the bmadcode.com register: an accent eyebrow naming
  * the Diataxis section, then the title in Instrument Serif (the serif comes
  * from custom.css, which styles `h1#_top`).
- *
- * The eyebrow is English-only, so it is shown on the root locale only rather
- * than printing an untranslated label over a translated page.
  */
-const { entry, locale } = Astro.locals.starlightRoute;
+const { entry } = Astro.locals.starlightRoute;
 
 /* Starlight's PAGE_TITLE_ID. Its constants module is not an exported
    specifier, so the value is written out; the skip link and the "back to top"
@@ -25,7 +22,7 @@ const SECTIONS: Record<string, string> = {
   reference: 'Reference',
 };
 
-const section = locale ? undefined : SECTIONS[entry.id.split('/')[0] ?? ''];
+const section = SECTIONS[entry.id.split('/')[0] ?? ''];
 ---
 
 {section && <p class="eyebrow">{section}</p>}
