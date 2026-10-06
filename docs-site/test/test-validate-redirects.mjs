@@ -20,7 +20,6 @@ const CONFIG = `
 export default defineConfig({
   redirects: {
     '/old/page': \`\${basePath}new/page/\`,
-    '/fr/old/page': \`\${basePath}fr/new/page/\`,
   },
   integrations: [],
 });
@@ -46,10 +45,7 @@ function withFixture(files, run) {
 }
 
 test('parses redirect entries relative to the base path', () => {
-  assert.deepEqual(parseRedirects(CONFIG), [
-    { from: '/old/page', to: 'new/page/' },
-    { from: '/fr/old/page', to: 'fr/new/page/' },
-  ]);
+  assert.deepEqual(parseRedirects(CONFIG), [{ from: '/old/page', to: 'new/page/' }]);
 });
 
 test('rejects a redirect line it cannot read', () => {
@@ -61,18 +57,14 @@ test('passes when targets are built pages and sources are gone', () => {
   withFixture(
     {
       'site/new/page/index.html': '<html></html>',
-      'site/fr/new/page/index.html': '<html></html>',
     },
     (dirs) => assert.deepEqual(findRedirectProblems(parseRedirects(CONFIG), dirs), []),
   );
 });
 
 test('reports a target that was not built', () => {
-  withFixture(
-    {
-      'site/new/page/index.html': '<html></html>',
-    },
-    (dirs) => assert.deepEqual(findRedirectProblems(parseRedirects(CONFIG), dirs), ['/fr/old/page -> fr/new/page/: target was not built']),
+  withFixture({}, (dirs) =>
+    assert.deepEqual(findRedirectProblems(parseRedirects(CONFIG), dirs), ['/old/page -> new/page/: target was not built']),
   );
 });
 
@@ -80,7 +72,6 @@ test('reports a target that is itself a redirect', () => {
   withFixture(
     {
       'site/new/page/index.html': '<meta http-equiv="refresh" content="0;url=/elsewhere/">',
-      'site/fr/new/page/index.html': '<html></html>',
     },
     (dirs) => assert.deepEqual(findRedirectProblems(parseRedirects(CONFIG), dirs), ['/old/page -> new/page/: target is itself a redirect']),
   );
@@ -90,15 +81,10 @@ test('reports a source that still exists as a doc page', () => {
   withFixture(
     {
       'docs/old/page.md': '# old',
-      'docs/fr/old/page/index.md': '# old',
       'site/new/page/index.html': '<html></html>',
-      'site/fr/new/page/index.html': '<html></html>',
     },
     (dirs) =>
-      assert.deepEqual(findRedirectProblems(parseRedirects(CONFIG), dirs), [
-        '/old/page -> new/page/: source still exists as a doc page',
-        '/fr/old/page -> fr/new/page/: source still exists as a doc page',
-      ]),
+      assert.deepEqual(findRedirectProblems(parseRedirects(CONFIG), dirs), ['/old/page -> new/page/: source still exists as a doc page']),
   );
 });
 

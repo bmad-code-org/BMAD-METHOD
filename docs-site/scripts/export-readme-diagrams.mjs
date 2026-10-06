@@ -26,11 +26,8 @@ import { fileURLToPath } from 'node:url';
 const SITE_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const REPO_ROOT = join(SITE_ROOT, '..');
 
-/** Which diagram lands where, and in which language. */
-const EXPORTS = [
-  { diagram: 'bmad-delivery-loop', out: 'docs/images/bmad-delivery-loop.svg' },
-  { diagram: 'bmad-delivery-loop', out: 'docs/images/bmad-delivery-loop-ko.svg', lang: 'ko-KR' },
-];
+/** Which diagram lands where. */
+const EXPORTS = [{ diagram: 'bmad-delivery-loop', out: 'docs/images/bmad-delivery-loop.svg' }];
 
 /**
  * The dark ramp, resolved. These are the values `custom.css` gives the
@@ -98,21 +95,6 @@ const STYLE = `
   }
 `;
 
-/** Escape a translated label for use as SVG text content. */
-function escapeXml(value) {
-  return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
-}
-
-/**
- * Swap each `data-i18n` label for its translation, keeping the authored
- * English wherever one is missing — the same rule the docs site applies.
- */
-function translate(svg, strings) {
-  return svg.replaceAll(/(<text\b[^>]*\bdata-i18n="([\w-]+)"[^>]*>)([^<]*)(<\/text>)/g, (whole, open, key, text, close) =>
-    strings[key] ? `${open}${escapeXml(strings[key])}${close}` : whole,
-  );
-}
-
 /** Substitute every `var(--dg-*)` in the geometry for its literal colour. */
 function resolveTokens(svg) {
   return svg.replaceAll(/var\(--dg-([\w-]+)\)/g, (whole, token) => {
@@ -138,13 +120,10 @@ function standalone(svg) {
   return resolveTokens(svg).replace(/(<svg\b[^>]*>)/, `$1\n  <style>${STYLE}  </style>\n  ${ground}`);
 }
 
-for (const { diagram, out, lang } of EXPORTS) {
+for (const { diagram, out } of EXPORTS) {
   const source = join(SITE_ROOT, 'src', 'diagrams', `${diagram}.svg`);
-  const labelsPath = join(SITE_ROOT, 'src', 'diagrams', `${diagram}.labels.json`);
-  const labels = JSON.parse(readFileSync(labelsPath, 'utf8'));
-
-  const svg = standalone(translate(readFileSync(source, 'utf8'), (lang && labels[lang]) || {}));
+  const svg = standalone(readFileSync(source, 'utf8'));
   const target = join(REPO_ROOT, out);
   writeFileSync(target, svg);
-  console.log(`wrote ${out}${lang ? ` (${lang})` : ''}`);
+  console.log(`wrote ${out}`);
 }

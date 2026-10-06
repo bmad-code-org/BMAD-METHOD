@@ -243,11 +243,6 @@ themes every diagram in both light and dark. That means a diagram file carries
 (`node`, `edge`, `gate`, `panel`, `glyph`, and the `n` / `sub` / `k` text
 classes) and a new diagram will match the others without any styling work.
 
-Labels are translated, not redrawn. Give each `<text>` a `data-i18n` key and add
-the strings to the diagram's `<name>.labels.json`; every language then shares one
-drawing, and a translation cannot drift out of shape with the original. Anything
-missing falls back to the English in the SVG.
-
 A README is not a docs page — it loads an SVG as an `<img>`, where no stylesheet
 can reach it — so the ones the READMEs use are exports, in `docs/images/`. After
 changing a source diagram that a README shows, regenerate them:

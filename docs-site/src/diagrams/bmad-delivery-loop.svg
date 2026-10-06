@@ -27,10 +27,10 @@
        the gate's CONCERNS heading, a flagged row - so it said "this is a
        problem" about the diagram's own conclusion. -->
   <g text-anchor="middle">
-    <text class="slogan" x="560" y="27" data-i18n="start-anywhere">START ANYWHERE</text>
+    <text class="slogan" x="560" y="27">START ANYWHERE</text>
     <path class="rule" d="M60 41H1060"/>
     <path class="rule" d="M60 424H1060"/>
-    <text class="slogan alt" x="560" y="450" data-i18n="right-sized-for-the-work-in-front-">RIGHT-SIZED FOR THE WORK IN FRONT OF YOU</text>
+    <text class="slogan alt" x="560" y="450">RIGHT-SIZED FOR THE WORK IN FRONT OF YOU</text>
   </g>
 
   <!-- The field the original ruled behind the drawing, at its pitch: 70 apart
@@ -88,26 +88,26 @@
   <path d="M681.5 66.5L676.5 61.5M708.5 66.5L713.5 61.5M695 62V55" stroke="var(--dg-accent)" stroke-width="2" stroke-linecap="round"/>
 
   <g text-anchor="middle">
-    <text x="155" y="94" fill="var(--dg-muted)" font-size="32" font-weight="700" data-i18n="label">?</text>
-    <text x="155" y="128" fill="var(--dg-ink)" font-size="18" font-weight="600" data-i18n="vague-notion">Vague notion</text>
-    <text x="425" y="128" fill="var(--dg-ink)" font-size="18" font-weight="600" data-i18n="big-clear-idea">Big clear idea</text>
-    <text x="695" y="128" fill="var(--dg-ink)" font-size="18" font-weight="600" data-i18n="small-change">Small change</text>
+    <text x="155" y="94" fill="var(--dg-muted)" font-size="32" font-weight="700">?</text>
+    <text x="155" y="128" fill="var(--dg-ink)" font-size="18" font-weight="600">Vague notion</text>
+    <text x="425" y="128" fill="var(--dg-ink)" font-size="18" font-weight="600">Big clear idea</text>
+    <text x="695" y="128" fill="var(--dg-ink)" font-size="18" font-weight="600">Small change</text>
 
     <g transform="translate(60 200)">
       <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7"/>
-      <text x="95" y="51" fill="var(--dg-ink)" font-size="21" font-weight="600" data-i18n="clarify">Clarify</text>
+      <text x="95" y="51" fill="var(--dg-ink)" font-size="21" font-weight="600">Clarify</text>
     </g>
     <g transform="translate(330 200)">
       <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7"/>
-      <text x="95" y="51" fill="var(--dg-ink)" font-size="21" font-weight="600" data-i18n="plan">Plan</text>
+      <text x="95" y="51" fill="var(--dg-ink)" font-size="21" font-weight="600">Plan</text>
     </g>
     <g transform="translate(600 200)">
       <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7"/>
-      <text x="95" y="51" fill="var(--dg-ink)" font-size="21" font-weight="600" data-i18n="build-and-verify">Build and verify</text>
+      <text x="95" y="51" fill="var(--dg-ink)" font-size="21" font-weight="600">Build and verify</text>
     </g>
     <g transform="translate(870 200)">
       <rect class="node" width="190" height="88" rx="2" stroke-opacity=".7"/>
-      <text x="95" y="51" fill="var(--dg-ink)" font-size="21" font-weight="600" data-i18n="learn-and-adjust">Learn and adjust</text>
+      <text x="95" y="51" fill="var(--dg-ink)" font-size="21" font-weight="600">Learn and adjust</text>
     </g>
   </g>
   </g>
