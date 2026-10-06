@@ -16,11 +16,17 @@
     "plan/define-requirements-and-a-specification",
     "plan/design-ux-and-architecture",
     "plan/explore-and-validate-an-idea",
-    "plan/set-up-the-ticket-tree",
     "plan/plan-inside-an-organization",
     "plan/research-a-decision",
+    "plan/set-up-the-ticket-tree",
     "reference/skills-and-agents",
-    "start/get-answers-about-bmad"
+    "start/get-answers-about-bmad",
+    "toolsmith/approaches",
+    "toolsmith/bmad-eval",
+    "toolsmith/migrate-an-old-module",
+    "toolsmith/modes",
+    "toolsmith/shapes",
+    "toolsmith/toolsmith"
   ],
   "vi-vn": [
     "build/autonomous-development-loops",
@@ -41,13 +47,19 @@
     "plan/define-requirements-and-a-specification",
     "plan/design-ux-and-architecture",
     "plan/explore-and-validate-an-idea",
-    "plan/set-up-the-ticket-tree",
     "plan/plan-inside-an-organization",
     "plan/research-a-decision",
+    "plan/set-up-the-ticket-tree",
     "reference/skills-and-agents",
     "start/build-your-first-change",
     "start/get-answers-about-bmad",
-    "start/install-bmad"
+    "start/install-bmad",
+    "toolsmith/approaches",
+    "toolsmith/bmad-eval",
+    "toolsmith/migrate-an-old-module",
+    "toolsmith/modes",
+    "toolsmith/shapes",
+    "toolsmith/toolsmith"
   ],
   "zh-cn": [
     "build/autonomous-development-loops",
@@ -68,13 +80,19 @@
     "plan/define-requirements-and-a-specification",
     "plan/design-ux-and-architecture",
     "plan/explore-and-validate-an-idea",
-    "plan/set-up-the-ticket-tree",
     "plan/plan-inside-an-organization",
     "plan/research-a-decision",
+    "plan/set-up-the-ticket-tree",
     "reference/skills-and-agents",
     "start/build-your-first-change",
     "start/get-answers-about-bmad",
-    "start/install-bmad"
+    "start/install-bmad",
+    "toolsmith/approaches",
+    "toolsmith/bmad-eval",
+    "toolsmith/migrate-an-old-module",
+    "toolsmith/modes",
+    "toolsmith/shapes",
+    "toolsmith/toolsmith"
   ],
   "fr": [
     "build/autonomous-development-loops",
@@ -95,13 +113,19 @@
     "plan/define-requirements-and-a-specification",
     "plan/design-ux-and-architecture",
     "plan/explore-and-validate-an-idea",
-    "plan/set-up-the-ticket-tree",
     "plan/plan-inside-an-organization",
     "plan/research-a-decision",
+    "plan/set-up-the-ticket-tree",
     "reference/skills-and-agents",
     "start/build-your-first-change",
     "start/get-answers-about-bmad",
-    "start/install-bmad"
+    "start/install-bmad",
+    "toolsmith/approaches",
+    "toolsmith/bmad-eval",
+    "toolsmith/migrate-an-old-module",
+    "toolsmith/modes",
+    "toolsmith/shapes",
+    "toolsmith/toolsmith"
   ],
   "cs": [
     "build/autonomous-development-loops",
@@ -123,12 +147,18 @@
     "plan/define-requirements-and-a-specification",
     "plan/design-ux-and-architecture",
     "plan/explore-and-validate-an-idea",
-    "plan/set-up-the-ticket-tree",
     "plan/plan-inside-an-organization",
     "plan/research-a-decision",
+    "plan/set-up-the-ticket-tree",
     "reference/skills-and-agents",
     "start/build-your-first-change",
     "start/get-answers-about-bmad",
-    "start/install-bmad"
+    "start/install-bmad",
+    "toolsmith/approaches",
+    "toolsmith/bmad-eval",
+    "toolsmith/migrate-an-old-module",
+    "toolsmith/modes",
+    "toolsmith/shapes",
+    "toolsmith/toolsmith"
   ]
 }

@@ -1,0 +1,15 @@
+[skill]
+bmod = "bmod-{code}"
+source = "{update_source}"
+{if-needs}
+
+# This skill's own needs, on top of the module's. A plain name is a skill from this module's
+# source; a table names one from elsewhere: { skill = "...", source = "github:<owner>/<repo>/<path>" }.
+required_skills = [{required_skills}]
+recommended_skills = [{recommended_skills}]
+{/if-needs}
+{if-scripts}
+
+# Files this skill ships into _bmad/scripts, as paths under its scripts/ folder.
+scripts = [{scripts}]
+{/if-scripts}

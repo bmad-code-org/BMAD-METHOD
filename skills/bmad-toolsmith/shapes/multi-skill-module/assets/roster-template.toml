@@ -1,0 +1,20 @@
+# The people the {code} module offers and the groups they form. A member with `skill` is an agent,
+# present only while that skill is installed; its name, title and icon follow the skill's
+# customization. A member without `skill` is a guest who exists only in groups.
+
+[[members]]
+code = "{agent_skill}"
+skill = "{agent_skill}"
+name = "{agent_name}"
+icon = "{agent_icon}"
+title = "{agent_title}"
+persona = "{agent_persona}"
+{if-group}
+
+[[groups]]
+id = "{group_id}"
+name = "{group_name}"
+scene = "{group_scene}"
+members = [{group_members}]
+memory = false
+{/if-group}

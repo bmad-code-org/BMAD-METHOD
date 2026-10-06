@@ -20,6 +20,7 @@ What it checks:
 What it does NOT check (deferred):
 - Bare backticked filenames (`prd.md`) — indistinguishable from runtime-output mentions
 - {{mustache}} and {placeholder} template variables (runtime substitution)
+- Files under assets/ and sample-* files: what a skill emits or shows as an example, whose paths describe that output
 - Globs and <angle-bracket> placeholders
 
 Usage:
@@ -52,6 +53,10 @@ SCAN_EXTENSIONS = {".yaml", ".yml", ".md", ".xml"}
 
 # Skip directories
 SKIP_DIRS = {"node_modules", ".git"}
+
+# Material a skill emits or shows as an example. Its paths describe that output, not the skill holding it.
+EXAMPLE_DIRS = {"assets"}
+EXAMPLE_FILE_PREFIX = "sample-"
 
 # Pattern: {project-root}/_bmad/ references
 PROJECT_ROOT_REF = re.compile(r"\{project-root\}/_bmad/([^\s'\"<>})\]`]+)")
@@ -128,7 +133,7 @@ def get_source_files(directory: str) -> list[str]:
         with os.scandir(current_dir) as it:
             entries = sorted(it, key=lambda e: e.name)
         for entry in entries:
-            if entry.name in SKIP_DIRS:
+            if entry.name in SKIP_DIRS or entry.name in EXAMPLE_DIRS or entry.name.startswith(EXAMPLE_FILE_PREFIX):
                 continue
             if entry.is_dir(follow_symlinks=False):
                 walk(entry.path)
@@ -249,7 +254,8 @@ def extract_markdown_refs(file_path: str, content: str) -> list[Ref]:
     # {project-root}/_bmad/ refs
     for match in PROJECT_ROOT_REF.finditer(stripped):
         raw = match.group(1)
-        if not is_resolvable(raw):
+        # The match stops at a runtime variable's brace, as in memory/{skillName}/
+        if "{" in raw or not is_resolvable(raw):
             continue
         refs.append(Ref(file_path, raw, "project-root", offset_to_line(stripped, match.start())))
 

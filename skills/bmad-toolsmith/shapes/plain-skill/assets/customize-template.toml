@@ -1,0 +1,29 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# Customization surface for {name}.
+# Team overrides:     {project-root}/_bmad/custom/{name}.toml
+# Personal overrides: {project-root}/_bmad/custom/{name}.user.toml
+#
+# Merge rules: scalars override, arrays append, tables merge key by key,
+# arrays of tables merge by `code` or `id`.
+
+[workflow]
+
+# Instructions run before config is loaded.
+activation_steps_prepend = []
+
+# Instructions run after activation, before the work begins.
+activation_steps_append = []
+
+# Standing context for the whole run: literal sentences, or `file:` paths and
+# globs under {project-root} whose contents are loaded as facts.
+persistent_facts = []
+
+# Run after the output has been delivered. A string or an array of strings;
+# empty for none.
+on_complete = ""
+
+# Keep the two below only when the skill writes an artifact: where runs land,
+# and the folder and file name inside it. {slug} is set at run time.
+{type}_output_path = "{output_folder}/{active_initiative}"
+run_folder_pattern = "{type}-{slug}"

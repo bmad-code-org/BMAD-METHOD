@@ -232,7 +232,9 @@ def discover_skill_dirs(root_dirs: list[str]) -> list[str]:
                 continue
             full_path = entry.path
             if os.path.exists(os.path.join(full_path, "SKILL.md")):
+                # A SKILL.md further down is a template the skill emits, not a skill.
                 skill_dirs.append(full_path)
+                continue
             walk(full_path)
 
     for root_dir in root_dirs:

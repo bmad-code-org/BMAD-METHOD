@@ -1,0 +1,25 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# Override files:
+#   {project-root}/_bmad/custom/bmad-eval.toml       (team)
+#   {project-root}/_bmad/custom/bmad-eval.user.toml  (personal)
+
+[workflow]
+# Where eval runs land, one timestamped folder per run. `{output_folder}` is
+# `core.output_folder`. Smithy's review reports use the same default.
+reports_folder = "{output_folder}/eval-reports"
+
+# The agent CLI evals run through. Empty until the first run, when bmad-eval works these
+# out for the CLI it is running in and records them through bmad-customize.
+[workflow.harness]
+# argv for one non-interactive run: {prompt} is the case input, {cwd} the workspace. Include
+# the flag that turns off permission prompts.
+command = []
+# Folder under the workspace the CLI reads skills from.
+skill_dir = ".agents/skills"
+# Env vars for the run. A value is set as given, "~" meaning the run's fresh HOME; an empty
+# value forwards the host's. Example: { CODEX_HOME = "~/.codex", USER = "" }.
+env = {}
+# Files or folders under the host home brought into the fresh HOME at the same path, so the
+# CLI stays logged in. Examples: [".codex/auth.json"], ["Library/Keychains"].
+home_files = []

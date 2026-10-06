@@ -1,0 +1,82 @@
+[
+  {
+    "query": "run the evals for my brief-writer skill",
+    "should_trigger": true
+  },
+  {
+    "query": "does bmad-ticket still beat the bare model? run a baseline",
+    "should_trigger": true
+  },
+  {
+    "query": "benchmark the skill with 5 runs per case so I get a stable mean",
+    "should_trigger": true
+  },
+  {
+    "query": "check whether the description of skills/deploy-helper fires on the right requests",
+    "should_trigger": true
+  },
+  {
+    "query": "grade the outputs in evals/cases.json against their rubrics",
+    "should_trigger": true
+  },
+  {
+    "query": "compare the stripped version of my skill against the full one on the same cases",
+    "should_trigger": true
+  },
+  {
+    "query": "my skill keeps loading when people ask about unrelated stuff, can you measure and fix the triggers",
+    "should_trigger": true
+  },
+  {
+    "query": "I have an evals.json from skill-creator, run those cases through the skill",
+    "should_trigger": true
+  },
+  {
+    "query": "evaluate the research-brief skill before I ship it",
+    "should_trigger": true
+  },
+  {
+    "query": "is section 3 of my SKILL.md doing anything? test with and without it",
+    "should_trigger": true
+  },
+  {
+    "query": "write a skill that drafts release notes",
+    "should_trigger": false
+  },
+  {
+    "query": "run the tests",
+    "should_trigger": false
+  },
+  {
+    "query": "evaluate this PR and tell me if it is safe to merge",
+    "should_trigger": false
+  },
+  {
+    "query": "benchmark the API with 1000 requests per second",
+    "should_trigger": false
+  },
+  {
+    "query": "grade my essay on the French Revolution",
+    "should_trigger": false
+  },
+  {
+    "query": "compare the two versions of this React component and pick the cleaner one",
+    "should_trigger": false
+  },
+  {
+    "query": "fix the typo in the description of my deploy-helper skill",
+    "should_trigger": false
+  },
+  {
+    "query": "evaluate whether we should migrate from Jest to Vitest",
+    "should_trigger": false
+  },
+  {
+    "query": "pytest is failing on the trigger module, help me debug it",
+    "should_trigger": false
+  },
+  {
+    "query": "write a rubric for grading student code submissions",
+    "should_trigger": false
+  }
+]

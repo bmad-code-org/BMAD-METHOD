@@ -470,6 +470,19 @@ export default defineConfig({
           ],
         },
         {
+          label: 'Toolsmith',
+          translations: { 'ko-KR': 'Toolsmith', 'vi-VN': 'Toolsmith', 'zh-CN': 'Toolsmith', 'fr-FR': 'Toolsmith', 'cs-CZ': 'Toolsmith' },
+          collapsed: true,
+          items: [
+            { label: 'Toolsmith', slug: 'toolsmith/toolsmith' },
+            { label: 'Ways to Build a Skill', slug: 'toolsmith/approaches' },
+            { label: 'Shapes of a Skill', slug: 'toolsmith/shapes' },
+            { label: 'Work on an Existing Skill', slug: 'toolsmith/modes' },
+            { label: 'Eval Runner', slug: 'toolsmith/bmad-eval' },
+            { label: 'Migrate an Old Module', slug: 'toolsmith/migrate-an-old-module' },
+          ],
+        },
+        {
           label: 'Reference',
           translations: { 'ko-KR': '참조', 'vi-VN': 'Tham chiếu', 'zh-CN': '参考', 'fr-FR': 'Référence', 'cs-CZ': 'Reference' },
           collapsed: true,
@@ -487,18 +500,6 @@ export default defineConfig({
           },
           collapsed: false,
           items: [
-            {
-              label: 'BMad Builder',
-              translations: {
-                'ko-KR': 'BMad Builder',
-                'vi-VN': 'BMad Builder',
-                'zh-CN': 'BMad 构建器',
-                'fr-FR': 'BMad Builder',
-                'cs-CZ': 'BMad Builder',
-              },
-              link: 'https://bmad-builder-docs.bmad-method.org/',
-              attrs: { target: '_blank' },
-            },
             {
               label: 'Creative Intelligence Suite',
               translations: {

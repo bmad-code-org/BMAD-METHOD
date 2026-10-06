@@ -1,0 +1,10 @@
+[bmod]
+code = "toolsmith"
+version = "6.13.0-next"
+update_source = "github:bmad-code-org/BMAD-METHOD/skills"
+skills = ["bmad-toolsmith", "bmad-eval"]
+required_skills = [{ skill = "bmad", version = "6.13.0", source = "github:bmad-code-org/BMAD-METHOD/skills" }]
+pre_install_message = ""
+post_install_message = """Toolsmith is installed.
+Ask for Smithy to build a skill, optimize or convert a skill to bmad compliance, an agent persona with or without memory or a module; he starts by asking what it is for.
+bmad-eval measures whether a skill works: baseline, variant, quality and trigger runs."""
