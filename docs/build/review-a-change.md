@@ -84,14 +84,14 @@ every layer has reported, triage judges each finding on its own:
   occurs
 - **Assign severity** from the verified consequence (`low`, `medium`,
   `high`)
-- **Dismiss** noise, refuted claims, and unsubstantiated claims, with a
-  recorded reason — never silently
+- **Dismiss** noise, refuted claims, and unverified claims that would be
+  minor even if true, with a recorded reason — never silently
 - **Route** survivors to **patch**, **defer**, or **decision needed**
 
 Patch is an unambiguous code fix. Defer is a real pre-existing issue that
-is not this change. Decision needed is an ambiguous choice that requires
-you. Without a plan, decision needed is not used — those findings go to
-patch or defer.
+is not this change, or a serious claim triage could not verify. Decision
+needed is an ambiguous choice that requires you. Without a plan, decision
+needed is not used — those findings go to patch or defer.
 
 You get a findings summary. With a plan, each run appends a dated block
 of findings to the plan's `## Code Review` section; without one, the
@@ -165,8 +165,9 @@ review quality.
 Some runtimes have no subagents. Vendors, including Anthropic and
 OpenAI, sometimes ship changes that alter how subagents run. Until
 BMad catches up, the lenses execute one after another instead of in
-parallel — or they fall back to the main session, which is far worse
-for review quality than it sounds.
+parallel. With no subagents at all, the skill writes each lens's
+prompt to a file and asks you to run it in a separate session and
+paste back the findings.
 
 If a review that usually runs for ten minutes suddenly takes an hour,
 or becomes inexplicably stupid, resume that session and ask why.

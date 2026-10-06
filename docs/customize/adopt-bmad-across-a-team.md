@@ -155,7 +155,7 @@ teams share one repository, each can point at its own template from
 **File:** `_bmad/custom/config.toml` (team) or `_bmad/custom/config.user.toml` (personal).
 
 Use central config to change who roster-driven skills (`bmad-party-mode`,
-`bmad-retrospective`, `bmad-advanced-elicitation`) see, and to pin install
+`bmad-advanced-elicitation`, `bmad-forge-idea`) see, and to pin setup
 answers the whole team shares. Per-skill files shape how one agent behaves
 when it activates; central config shapes what other skills see when they
 look at the roster. See
@@ -173,13 +173,14 @@ file layout.
 description = "Mary the Regulatory-Aware Business Analyst — channels Porter and Minto, but lives and breathes FDA audit trails. Speaks like a forensic investigator presenting a case file."
 ```
 
-Party mode introduces Mary with the new description. It does not change
-how she works when she activates; that still comes from her `[agent]`
-override, as in recipe 1.
+Party mode and the other roster skills voice Mary with the new description
+in place of her shipped persona; her name, title, and icon stay with her
+skill. It does not change how she works when she activates; that still
+comes from her `[agent]` override, as in recipe 1.
 
 ### 5b. Add a fictional agent
 
-**Key:** `[agents.<code>]` with a `team` value.
+**Key:** `[agents.<code>]`.
 
 A full descriptor is enough for roster features; no skill folder is
 needed. Personal files suit this, since a cast is a matter of taste.
@@ -188,44 +189,43 @@ needed. Personal files suit this, since a cast is a matter of taste.
 # _bmad/custom/config.user.toml (personal — gitignored)
 
 [agents.spock]
-team = "startrek"
 name = "Commander Spock"
 title = "Science Officer"
 icon = "🖖"
 description = "Logic first, emotion suppressed. Begins observations with 'Fascinating.' Never rounds up. Counterpoint to any argument that relies on gut instinct."
 
 [agents.mccoy]
-team = "startrek"
 name = "Dr. Leonard McCoy"
 title = "Chief Medical Officer"
 icon = "⚕️"
 description = "Country doctor's warmth, short fuse. 'Dammit Jim, I'm a doctor not a ___.' Ethics-driven counterweight to Spock."
 ```
 
-Ask party mode to "invite the Enterprise crew": it filters by
-`team = "startrek"` and includes Spock and McCoy. You can include real
-BMad agents in the same party.
+Spock and McCoy join the default party room beside the installed BMad
+agents. For a crew that meets only when you call it, save them as party
+members in a party of their own instead; see
+[Run Multi-Agent Discussions](./run-multi-agent-discussions.md#build-your-own-party).
 
 ### 5c. Pin team install settings
 
-**Keys:** `[core] output_folder` and `[core] document_output_language`.
+**Key:** `[core] output_folder`.
 
 When the team needs one answer for a setting such as where BMad writes its
-output, pin it here; it overrides whatever a developer has in their own
-config. `output_folder` holds every initiative folder, the ticket tree, and
-`backlog/`, so pinning it moves all of them together.
+output, pin it here; it overrides the answer recorded in
+`_bmad/config.toml`, though a developer's own `_bmad/custom/config.user.toml`
+still wins. `output_folder` holds every initiative folder, the ticket tree,
+and `backlog/`, so pinning it moves all of them together.
 
 ```toml
 # _bmad/custom/config.toml
 
 [core]
 output_folder = "{project-root}/shared/bmad-output"
-document_output_language = "English"
 ```
 
-Personal settings such as `user_name`, `communication_language`, and
-`user_skill_level` stay in each developer's own `_bmad/config.user.toml`;
-the team file should not set them.
+Personal answers, from questions whose scope is `user`, stay in each
+developer's own `_bmad/custom/config.user.toml`; the team file should not
+set them.
 
 ## Reinforce global rules in your IDE's session file
 

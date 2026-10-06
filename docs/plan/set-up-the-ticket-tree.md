@@ -29,7 +29,7 @@ The initiative store is the folder where planning lives: one folder per initiati
 
 The store is your BMad output folder, `_bmad-output` by default. You can configure it to be any folder; the example below uses `_bmad-initiative-store` instead, and step 2 shows the setting. In a single repo, the default inside the project works fine.
 
-When the work spans several repos, install BMad in the workspace folder that holds them and put the store there too. Start your AI tool from that workspace folder, so one session can reach the plan and every repo it touches. Give the store its own `git init`, which keeps planning history apart from each repo's code history.
+When the work spans several repos, install BMad in the workspace folder that holds them and put the store there too. Start your AI tool from that workspace folder, so one session can reach the plan and every repo it touches. Give the store its own `git init`, which keeps planning history apart from each repo's code history. For each code repo, a bare clone with a worktree per branch lets several branches stay open at once, so agents working in parallel do not collide in one checkout.
 
 ```
 shop-workspace/                          # start your AI tool here; not a repo itself
@@ -44,7 +44,7 @@ shop-workspace/                          # start your AI tool here; not a repo i
 │   │       ├── epic-cart-rules.md
 │   │       ├── tickets.toml           # every planned story, in build order
 │   │       ├── story-cart-service-scaffold-plan.md  # the build's plan, with the story's status
-│   │       └── story-cart-ui-shell.md               # a story's file, only when refined or published
+│   │       └── story-cart-ui-shell.md               # a story's file, only when reviewed, refined, or published
 │   ├── initiative-loyalty-program/
 │   └── backlog/
 │       └── bug-checkout-total-ignores-discount-codes.md
@@ -142,9 +142,9 @@ It takes almost any input. The best input is a `bmad-spec` output together with 
 | "Review the stories"                     | Writes each story's file from its entry if needed, then reviews and improves it with you: description, check, references, order, and prerequisites. |
 | "File a bug: checkout ignores discounts" | Writes one ticket straight into `backlog/`, with no epic needed.                            |
 
-Each initiative and epic keeps its breakdown in a `tickets.toml` file beside its ticket file. The initiative's file lists the epics in build order. An epic's file lists every planned story and bug as an entry, in build order, each with an `id` that names it under the epic: what it delivers, how it will be verified, what it waits on (`after`), and what is still uncertain. When something must be settled before implementation, the skill asks you to answer it or records it as the entry's `unknown`. It adds a spike when you ask for one. By default the last entry is a "Refactor sweep" story for cleanup found during the epic.
+Each initiative and epic keeps its breakdown in a `tickets.toml` file beside its ticket file. The initiative's file lists the epics in build order. An epic's file lists every planned story and bug as an entry, in build order, each with an `id` that names it under the epic: what it delivers, how it will be verified, what it waits on (`after`), and what is still uncertain. When something must be settled before implementation, the skill asks you to answer it or records it as the entry's `unknown`. It adds a spike when you ask for one. By default an epic of more than three entries closes with a "Refactor sweep" story for cleanup found during the epic.
 
-An entry needs no file to be built. `bmad-build` plans the story's acceptance criteria when it builds, from the epic and the entry, so detail is not written months before it is used. It writes that plan beside `tickets.toml`, as `story-<slug>-plan.md`, and the plan is never sent to a tracker. A story gets its own file only when you refine it or publish it to a tracker. From then on the file is truth: refining edits the file, and the entry keeps only the story's `id`, `type`, `title`, prerequisites (`after`, edited in both places), and `hitl`.
+An entry needs no file to be built. `bmad-build` plans the story's acceptance criteria when it builds, from the epic and the entry, so detail is not written months before it is used. It writes that plan beside `tickets.toml`, as `story-<slug>-plan.md`, and the plan is never sent to a tracker. A story gets its own file only when you review it, refine it, or publish it to a tracker. From then on the file is truth: refining edits the file, and the entry keeps only the story's `id`, `type`, `title`, prerequisites (`after`, edited in both places), and `hitl`.
 
 A story's `after` can name a story in another epic, or a whole epic. Ask "what's next?" about the initiative to see every epic at once.
 
@@ -158,13 +158,13 @@ When your source contradicts the code, the skill records a `Source conflict:` li
 
 ## Hand a Story to Build
 
-Name the story to `bmad-build`, for example "build story 1.2" for the second story of the first epic. There is no file to write first. Build reads the story's entry and its epic, plus the story file when you refined one. It plans the story's acceptance criteria from the epic's Requirements and Done when, the entry's description, and its `Verify:` check.
+Name the story to `bmad-build`, for example "build story 1.2" for the second story of the first epic. There is no file to write first. Build reads the story's entry and its epic, plus the story file when it has one. It plans the story's acceptance criteria from the epic's Requirements and Done when, the entry's description, and its `Verify:` check.
 
 :::note[Refining is optional]
 A story needs no refining before `bmad-build`. Build refines it as part of the build: it questions you and writes the acceptance criteria itself. If you will build unattended, with `bmad-build-auto`, a loop, or a factory, nobody answers questions during the build, so review the sequence and each story with `bmad-ticket` first. `bmad-ticket` writes full acceptance criteria only for a bug, a ticket with no epic, or when you ask.
 :::
 
-The story's `status` lives in the build's plan. Build moves it as it works and stops at `built`; only you, or an orchestrator, mark a story done. When you have checked the work, say "mark story 1.2 done" to `bmad-ticket`. On the repo store that is an edit to the plan that you commit with your work. With a tracker, say "start story 1.2" before you build, so the ticket publishes if it has not and its card moves to in progress. The tracker's status is read into the story's file as `tracker_status`, so moving a card on the board never makes build skip planning.
+The story's `status` lives in the build's plan. Build moves it as it works and stops at `built`; only you, or an orchestrator, mark a story done. When you have checked the work, say "mark story 1.2 done" to `bmad-ticket`. On the repo store that is an edit to the plan, which the skill commits. With a tracker, say "start story 1.2" before you build, so the ticket publishes if it has not and its card moves to in progress. The tracker's status is read into the story's file as `tracker_status`, so moving a card on the board never makes build skip planning.
 
 ## Tell Us What You Find
 
