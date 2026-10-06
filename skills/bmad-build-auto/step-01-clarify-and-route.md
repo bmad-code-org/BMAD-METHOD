@@ -42,7 +42,11 @@ This runs on the output of `tickets.py find` for one ticket. Set `ticket_args` t
 1. Load context.
    - **A ticket from the tree** — when **Ticket resolution** set `plan_file`: the entry, its epic file and what that file's References name, and the story file when there is one are already the intent. For continuity, read the plans beside `plan_file` whose `ticket` is one of find's `after` ids that is a plain number (an entry of the same epic; a ref such as `1.5` is another epic's). Carry forward each one's **Code Map**, **Design Notes**, **Implementation Notes**, **Plan Change Log**, and **Tasks & Acceptance**, where present, as continuity context for step-02.
    - **Anything else:**
-     - List `{{ config.output_folder }}/{active_initiative}/`, then `{{ config.output_folder }}/`.
+     {% if initiative_folder == config.output_folder %}
+     - List `{{ config.output_folder }}/`.
+     {% else %}
+     - List `{{ initiative_folder }}/`, then `{{ config.output_folder }}/`.
+     {% endif %}
      - If the invocation prompt points to an unformatted plan or intent file, ingest that file. Do not scan for unrelated intent files.
      - Planning documents sit in folders by type, main file named after the folder. Typical ones:
        - **PRD** (`prd-*/prd-*.md`) — product requirements and success criteria
@@ -56,7 +60,7 @@ This runs on the output of `tickets.py find` for one ticket. Set `ticket_args` t
 4. Multi-goal warning. If the intent appears to contain multiple independently shippable goals, carry `multiple-goals` forward so step-02 can add it to `{plan_file}` frontmatter `warnings`. Do not split or block.
 5. Set the plan file.
 
-   Derive a valid kebab-case slug from the clarified intent. If the intent references a tracking identifier (story number, issue number, ticket ID), lead the slug with it (e.g. `3-2-digest-delivery`, `gh-47-fix-auth`). If `{{ config.output_folder }}/{active_initiative}/plan-{slug}.md` already exists: if its status is `draft`, treat it as the same work and resume it (set `plan_file` to that path, **EARLY EXIT** → `{{ rendered("step-02-plan.md") }}`); otherwise append `-2`, `-3`, etc. Set `plan_file` = `{{ config.output_folder }}/{active_initiative}/plan-{slug}.md`.
+   Derive a valid kebab-case slug from the clarified intent. If the intent references a tracking identifier (story number, issue number, ticket ID), lead the slug with it (e.g. `3-2-digest-delivery`, `gh-47-fix-auth`). If `{{ initiative_folder }}/plan-{slug}.md` already exists: if its status is `draft`, treat it as the same work and resume it (set `plan_file` to that path, **EARLY EXIT** → `{{ rendered("step-02-plan.md") }}`); otherwise append `-2`, `-3`, etc. Set `plan_file` = `{{ initiative_folder }}/plan-{slug}.md`.
 
 ## NEXT
 
