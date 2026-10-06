@@ -7,19 +7,20 @@
 A trigger query is a should/should-not user message that shares keywords with the skill, so
 the description has to discriminate. For each query the runner stages a synthetic skill with
 the description under test where the harness reads skills, sends the query through the
-harness, and checks whether the skill loaded. Each query runs several times
+harness in a clean room, and checks whether the skill loaded. Each query runs several times
 (--runs-per-query) so the rate is stable, not a coin flip.
 
 Detection is a canary, the same on every harness. The synthetic skill's body asks the model
-to begin its reply with a token unique to that run; the token appearing in what the harness
-printed is the load. The skill's name and description never contain the token, so a harness
-that lists its discovered skills at startup cannot fake a hit.
+to begin its reply with a token unique to that attempt; the token appearing in what the
+harness printed is the load. The skill's name and description never contain the token, so a
+harness that lists its discovered skills at startup cannot fake a hit.
 
 A query whose attempts did not all complete (command failed, timed out) is unmeasured, never
 passed: a should-not query with no completed attempts would otherwise pass at a rate of zero.
 
-Harness and isolation are as in run_evals.py: `[workflow.harness]` from customization or
-`--harness <json>`, an environment built from scratch per attempt.
+Each attempt keeps prompt.txt, transcript.jsonl (what the harness printed), stderr.txt,
+timing.json and cwd/ (the workspace after the run, staged skill included) under
+<run-dir>/queries/qNNN-rN/. Harness and clean room are as in run_evals.py.
 
 Usage:
   uv run run_triggers.py --skill-path SKILL_DIR --queries QUERIES.json --output-dir DIR
@@ -37,10 +38,7 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import re
-import shutil
-import subprocess
 import sys
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -48,13 +46,12 @@ from pathlib import Path
 
 from eval_common import (
     DEFAULT_SKILL_DIR,
-    build_argv,
-    build_case_env,
+    account_transcript,
     find_project_root,
-    make_home,
     make_run_dir,
     read_json,
     resolve_harness,
+    run_in_clean_room,
     utc_now_iso,
     write_json,
 )
@@ -62,33 +59,35 @@ from eval_common import (
 CANARY_PREFIX = "TRIGGER-LOADED-"
 
 
+def unquote_yaml(value: str) -> str:
+    """A YAML scalar's text: single quotes doubled inside, double quotes with backslash escapes."""
+    value = value.strip()
+    if len(value) >= 2 and value[0] == value[-1] == "'":
+        return value[1:-1].replace("''", "'")
+    if len(value) >= 2 and value[0] == value[-1] == '"':
+        return value[1:-1].replace('\\"', '"').replace("\\n", "\n").replace("\\\\", "\\")
+    return value
+
+
 def parse_skill_md(skill_path: Path) -> tuple[str, str]:
-    """Return (name, description) from SKILL.md frontmatter."""
+    """Return (name, description) from SKILL.md frontmatter, quotes and block indicators removed."""
     text = (skill_path / "SKILL.md").read_text(encoding="utf-8")
     m = re.match(r"^---\s*\n(.*?)\n---\s*\n", text, re.DOTALL)
     if not m:
         raise ValueError(f"SKILL.md at {skill_path} is missing frontmatter")
-    name = None
-    desc_lines: list[str] = []
-    in_desc = False
+    fields: dict[str, list[str]] = {}
+    current = None
     for line in m.group(1).splitlines():
-        if line.startswith("name:"):
-            name = line.split(":", 1)[1].strip()
-            in_desc = False
-        elif line.startswith("description:"):
-            value = line.split(":", 1)[1].strip()
-            if value in ("|", ">"):
-                in_desc = True
-            else:
-                desc_lines = [value]
-                in_desc = False
-        elif in_desc and line.startswith(("  ", "\t")):
-            desc_lines.append(line.strip())
-        elif in_desc:
-            in_desc = False
+        if line[:1] not in (" ", "\t") and ":" in line:
+            key, _, value = line.partition(":")
+            current = key.strip()
+            fields[current] = [] if value.strip() in ("|", ">", "|-", ">-") else [value.strip()]
+        elif current and line.strip():
+            fields[current].append(line.strip())
+    name = unquote_yaml(" ".join(fields.get("name", [])))
     if not name:
         raise ValueError(f"SKILL.md at {skill_path} has no name")
-    return name, " ".join(desc_lines).strip()
+    return name, unquote_yaml(" ".join(fields.get("description", [])))
 
 
 # --- synthetic skill and detection -------------------------------------------
@@ -117,20 +116,33 @@ def detect_load(output: str, token: str) -> bool:
 # --- per-attempt execution ----------------------------------------------------
 
 
-def run_query_once(query: str, skill_name: str, description: str, harness: dict, stage_dir: Path, timeout: int) -> bool:
-    """One attempt. Returns whether the skill loaded; raises when the attempt did not complete."""
-    skills_dir = stage_dir / harness.get("skill_dir", DEFAULT_SKILL_DIR)
+def run_query_once(
+    query: str, skill_name: str, description: str, harness: dict, attempt_dir: Path, timeout: int
+) -> tuple[bool | None, str]:
+    """One attempt: (loaded, "") when it completed, (None, why) when it did not."""
     token = CANARY_PREFIX + uuid.uuid4().hex[:8]
-    write_synthetic_skill(skills_dir, skill_name, description, token)
-    env = build_case_env(harness, make_home(harness, stage_dir), os.environ)
-    argv = build_argv(harness, query, str(stage_dir))
-    proc = subprocess.run(argv, capture_output=True, cwd=str(stage_dir), env=env, timeout=timeout)
-    output = (proc.stdout or b"").decode("utf-8", errors="replace")
-    (stage_dir / "output.txt").write_text(output, encoding="utf-8")
-    if proc.returncode != 0:
-        tail = (proc.stderr or b"").decode("utf-8", errors="replace")[-500:]
-        raise RuntimeError(f"harness exited {proc.returncode}: {tail}")
-    return detect_load(output, token)
+
+    def stage(cwd: Path) -> None:
+        write_synthetic_skill(cwd / harness.get("skill_dir", DEFAULT_SKILL_DIR), skill_name, description, token)
+
+    run = run_in_clean_room(harness, attempt_dir, query, timeout, stage)
+    accounting = account_transcript(run["stdout"])
+    loaded = detect_load(run["stdout"], token) if run["status"] == "ok" else None
+    write_json(
+        attempt_dir / "timing.json",
+        {
+            "status": run["status"],
+            "elapsed_s": run["elapsed_s"],
+            "return_code": run["return_code"],
+            "loaded": loaded,
+            "total_tokens": accounting["total_tokens"],
+            "tokens_reported": accounting["tokens_reported"],
+            "captured_at": utc_now_iso(),
+        },
+    )
+    if run["status"] != "ok":
+        return None, f"{run['status']}: {run['stderr'][-500:].strip()}"
+    return loaded, ""
 
 
 # --- main -------------------------------------------------------------------
@@ -147,7 +159,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--harness", type=Path, default=None, help="harness JSON for a project without BMad")
     p.add_argument("--runs-per-query", type=int, default=3)
     p.add_argument("--threshold", type=float, default=0.5)
-    p.add_argument("--timeout", type=int, default=60)
+    p.add_argument("--timeout", type=int, default=180)
     p.add_argument("--workers", type=int, default=4)
     p.add_argument("--quiet", action="store_true")
     args = p.parse_args(argv)
@@ -181,7 +193,6 @@ def main(argv: list[str] | None = None) -> int:
             "description": description,
             "harness": harness_note,
             "command": (harness or {}).get("command"),
-            "contained": bool((harness or {}).get("sandbox")),
             "started_at": utc_now_iso(),
             "query_count": len(queries),
             "runs_per_query": args.runs_per_query,
@@ -206,19 +217,13 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(output, indent=2))
         return 3
 
-    skill_top = harness.get("skill_dir", DEFAULT_SKILL_DIR).split("/")[0]
-
     def run_one(idx: int, q: dict, run_idx: int) -> tuple[int, bool | None, str]:
-        stage = run_dir / "queries" / f"q{idx:03d}-r{run_idx}"
-        stage.mkdir(parents=True, exist_ok=True)
+        attempt_dir = run_dir / "queries" / f"q{idx:03d}-r{run_idx}"
         try:
-            return idx, run_query_once(q["query"], skill_name, description, harness, stage, args.timeout), ""
-        except FileNotFoundError as e:
-            return idx, None, f"command not found: {e}"
-        except (subprocess.TimeoutExpired, RuntimeError, OSError) as e:
-            return idx, None, str(e)
-        finally:
-            shutil.rmtree(stage / skill_top, ignore_errors=True)
+            loaded, error = run_query_once(q["query"], skill_name, description, harness, attempt_dir, args.timeout)
+        except (OSError, ValueError) as e:
+            loaded, error = None, str(e)
+        return idx, loaded, error
 
     attempts: dict[int, list[bool]] = {idx: [] for idx in range(len(queries))}
     errors: dict[int, list[str]] = {idx: [] for idx in range(len(queries))}
@@ -233,13 +238,13 @@ def main(argv: list[str] | None = None) -> int:
             for run_idx in range(args.runs_per_query)
         ]
         for fut in as_completed(futures):
-            idx, triggered, error = fut.result()
-            if triggered is None:
+            idx, loaded, error = fut.result()
+            if loaded is None:
                 errors[idx].append(error)
                 if not args.quiet:
                     print(f"  attempt failed for query {idx}: {error}", file=sys.stderr)
             else:
-                attempts[idx].append(triggered)
+                attempts[idx].append(loaded)
 
     results = []
     for idx, q in enumerate(queries):

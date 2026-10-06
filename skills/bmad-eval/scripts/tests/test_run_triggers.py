@@ -10,7 +10,7 @@ from pathlib import Path
 SCRIPTS_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SCRIPTS_DIR))
 
-from run_triggers import CANARY_PREFIX, detect_load, write_synthetic_skill  # noqa: E402
+from run_triggers import CANARY_PREFIX, detect_load, parse_skill_md, write_synthetic_skill  # noqa: E402
 
 RUNNER = SCRIPTS_DIR / "run_triggers.py"
 FAKE = Path(__file__).resolve().parent / "fake_harness.py"
@@ -26,7 +26,10 @@ class TriggerRunTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             skill = root / "skills" / "greet"
-            write(skill / "SKILL.md", "---\nname: greet\ndescription: Greets. Use when greeting.\n---\nSay hi.\n")
+            write(
+                skill / "SKILL.md",
+                "---\nname: greet\ndescription: 'Greets the user''s friends. Use when greeting.'\n---\nSay hi.\n",
+            )
             queries = root / "triggers.json"
             write(
                 queries,
@@ -59,10 +62,16 @@ class TriggerRunTest(unittest.TestCase):
             self.assertEqual(crashed["runs"], 0)
             self.assertEqual(len(crashed["errors"]), 2)
             self.assertEqual(out["summary"], {"total": 4, "passed": 2, "failed": 1, "unmeasured": 1})
-            run_dir = Path(out["run_id"])
-            stage = root / "out" / run_dir / "queries" / "q000-r0"
-            self.assertTrue((stage / "output.txt").is_file(), "each attempt keeps what the harness printed")
-            self.assertFalse((stage / ".agents").exists(), "the staged skill is removed after the attempt")
+            self.assertEqual(
+                out["description"], "Greets the user's friends. Use when greeting.", "YAML quotes are removed"
+            )
+            attempt = root / "out" / out["run_id"] / "queries" / "q000-r0"
+            for name in ("prompt.txt", "transcript.jsonl", "stderr.txt", "timing.json"):
+                self.assertTrue((attempt / name).is_file(), name)
+            staged = list((attempt / "cwd" / ".agents" / "skills").glob("greet-trig-*/SKILL.md"))
+            self.assertEqual(len(staged), 1, "the workspace with the staged skill comes back")
+            self.assertIn("user's friends", staged[0].read_text())
+            self.assertEqual(json.loads((attempt / "timing.json").read_text())["loaded"], True)
 
     def test_no_harness_exits_3(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -78,6 +87,21 @@ class TriggerRunTest(unittest.TestCase):
             )  # fmt: skip
             self.assertEqual(res.returncode, 3, res.stderr)
             self.assertEqual(json.loads(res.stdout)["summary"]["unmeasured"], 1)
+
+
+class ParseSkillTest(unittest.TestCase):
+    def test_quoted_and_block_descriptions(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cases = {
+                "description: 'It''s quoted. Use when x.'\n": "It's quoted. Use when x.",
+                'description: "Say \\"hi\\". Use when x."\n': 'Say "hi". Use when x.',
+                "description: |\n  Block one.\n  Block two.\n": "Block one. Block two.",
+                "description: 'Spans\n  two lines.'\n": "Spans two lines.",
+                "description: Plain. Use when x.\n": "Plain. Use when x.",
+            }
+            for frontmatter, expected in cases.items():
+                write(Path(tmp) / "SKILL.md", f"---\nname: s\n{frontmatter}---\nBody.\n")
+                self.assertEqual(parse_skill_md(Path(tmp)), ("s", expected), frontmatter)
 
 
 class CanaryTest(unittest.TestCase):

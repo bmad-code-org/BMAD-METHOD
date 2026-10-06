@@ -45,15 +45,22 @@ def make_project(root: Path, command: list[str] | None = None) -> tuple[Path, Pa
             {
                 "command": command or [sys.executable, str(FAKE), "{prompt}", "{cwd}"],
                 "skill_dir": ".agents/skills",
-                "home_env": ["FAKE_CONFIG_DIR"],
+                "env": {"FAKE_CONFIG_DIR": "~/.fake", "FORWARDED": "", "ABSENT": ""},
+                "home_files": [".fake/auth.json"],
             }
         ),
     )
     return skill, cases, harness
 
 
-def run(*args: str, env_extra: dict | None = None) -> subprocess.CompletedProcess:
-    env = {**os.environ, "HOST_SECRET": "must-not-leak", **(env_extra or {})}
+def run(*args: str, host_home: Path | None = None) -> subprocess.CompletedProcess:
+    """Run the runner with a host secret set and, when given, a fake host home holding a login file."""
+    env = {**os.environ, "HOST_SECRET": "must-not-leak", "FORWARDED": "yes"}
+    env.pop("ABSENT", None)
+    if host_home is not None:
+        (host_home / ".fake").mkdir(parents=True, exist_ok=True)
+        (host_home / ".fake" / "auth.json").write_text("{}", encoding="utf-8")
+        env.update(HOME=str(host_home), USERPROFILE=str(host_home))
     return subprocess.run([sys.executable, str(RUNNER), *args], capture_output=True, text=True, env=env)
 
 
@@ -66,19 +73,31 @@ class RunEvalsTest(unittest.TestCase):
             res = run(
                 "--cases", str(cases), "--skill-path", str(skill), "--output-dir", str(out),
                 "--mode", "baseline", "--project-root", str(root), "--harness", str(harness), "--quiet",
+                host_home=root / "host-home",
             )  # fmt: skip
             self.assertEqual(res.returncode, 0, res.stderr)
             summary = json.loads(res.stdout)
             self.assertEqual(summary["executed"], 4)
-            self.assertFalse(summary["contained"])
             run_dir = Path(summary["run_dir"])
             staged = run_dir / "skill" / "c1" / "cwd" / ".agents" / "skills" / "greet"
             self.assertTrue(staged.is_dir() and not staged.is_symlink(), "the skill is copied, not linked")
             self.assertFalse((staged / "scripts" / "__pycache__").exists())
             self.assertFalse((run_dir / "bare" / "c1" / "cwd" / ".agents").exists(), "bare config stages nothing")
             self.assertEqual((run_dir / "skill" / "c1" / "cwd" / "fixtures" / "notes.md").read_text(), "fixture\n")
-            self.assertTrue((run_dir / "skill" / "c1" / "cwd" / "made.txt").is_file())
-            self.assertTrue((run_dir / "skill" / "c1" / ".home" / "fake_config_dir").is_dir())
+            case = run_dir / "skill" / "c1"
+            self.assertTrue((case / "cwd" / "made.txt").is_file(), "the workspace comes back as cwd/")
+            self.assertFalse((case / "cwd" / ".git").exists())
+            where = Path((case / "cwd" / "where.txt").read_text())
+            self.assertNotIn(run_dir.resolve(), where.parents, "the run happened outside the project")
+            self.assertEqual((case / "cwd" / "login.txt").read_text(), "True", "home_files brought the login over")
+            seen = json.loads((case / "cwd" / "env.json").read_text())
+            self.assertEqual(seen["FORWARDED"], "yes", "an empty value forwards the host's")
+            self.assertNotIn("ABSENT", seen, "a var the host lacks is left out")
+            self.assertTrue(
+                seen["FAKE_CONFIG_DIR"].endswith(".fake") and Path(seen["FAKE_CONFIG_DIR"]).is_absolute(), "~ expands"
+            )
+            for name in ("prompt.txt", "transcript.jsonl", "stderr.txt", "timing.json", "case.json"):
+                self.assertTrue((case / name).is_file(), name)
             # the id with `..` stays inside the run folder
             self.assertTrue((run_dir / "skill" / "_escape").is_dir())
             self.assertFalse((out / "escape").exists())

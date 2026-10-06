@@ -1,44 +1,30 @@
 # The harness
 
-The harness is the agent CLI the evals run through. This skill knows nothing about any harness; the model running the eval knows the one it is sitting in. The first run works out three facts about it and records them in this skill's customization, where the runner reads them back on every later run.
+The harness is the agent CLI the evals run through: yours, the one you are running in. The runner starts it once per case from an empty workspace in a fresh HOME, with the skill under test copied where the CLI reads skills, stdin closed and output captured. It needs four facts, recorded once per project in this skill's customization under `[workflow.harness]` through the `bmad-customize` skill:
 
-## What is recorded
-
-`[workflow.harness]` in `customize.toml`, written to `{project-root}/_bmad/custom/bmad-eval.toml` by the `bmad-customize` skill:
-
-| Key | Meaning |
+| Key | What to work out |
 |---|---|
-| `command` | argv for one non-interactive run. `{prompt}` is replaced with the case input, `{cwd}` with the case's working directory. Include the harness's flag that turns off permission prompts; nobody is there to answer them. |
-| `skill_dir` | the folder under the working directory the harness reads skills from. `.agents/skills` is the open-spec default; Claude Code reads `.claude/skills`. |
-| `home_env` | env vars the harness takes its config folder from, so the run can point them into a fresh HOME. Claude Code has `CLAUDE_CONFIG_DIR`, Codex `CODEX_HOME`. Empty when the harness only uses HOME. |
-| `auth_env` | the env var carrying the credential, forwarded only when the host has it set. Empty when the harness keeps its own login. |
-| `env_passthrough` | other host vars to forward. Empty unless the harness cannot start without one. |
-| `sandbox` | argv prefix that contains the run. Empty means the run has the host's file access. |
+| `command` | argv for one non-interactive run, `{prompt}` standing for the input, with your flag that turns off permission prompts. `--help` has it. |
+| `skill_dir` | the folder under the workspace you read skills from. |
+| `env` | env vars the run needs: a value is set as given, `~` meaning the fresh HOME; an empty value forwards the host's. Your config-folder variable, if you have one, and whatever the login needs. |
+| `home_files` | files or folders under your home that must come along for you to stay logged in, placed at the same path in the fresh HOME. Look in your config folder; on a Mac it may be the keychain. |
 
-One shape, filled for Claude Code:
+Two shapes that have run, as evidence of the form rather than a catalog:
 
 ```toml
-[workflow.harness]
-command = ["claude", "-p", "{prompt}", "--output-format", "stream-json", "--verbose", "--dangerously-skip-permissions"]
-skill_dir = ".claude/skills"
-home_env = ["CLAUDE_CONFIG_DIR"]
-auth_env = "ANTHROPIC_API_KEY"
+command = ["codex", "exec", "--json", "--ephemeral", "--skip-git-repo-check", "--dangerously-bypass-approvals-and-sandbox", "{prompt}"]
+skill_dir = ".agents/skills"
+env = { CODEX_HOME = "~/.codex" }
+home_files = [".codex/auth.json"]
 ```
 
-## Working the facts out
+```toml
+command = ["claude", "-p", "{prompt}", "--output-format", "stream-json", "--verbose", "--dangerously-skip-permissions"]
+skill_dir = ".claude/skills"
+env = { USER = "" }
+home_files = ["Library/Keychains"]
+```
 
-You know your own CLI. When unsure of a flag, read its `--help`. Then record the table by invoking the `bmad-customize` skill, team layer, naming `bmad-eval` and `workflow.harness`; a user who runs several harnesses on one project puts theirs in the user layer, which wins. Before the full set, run one case: the result says whether the skill loaded and what the harness printed, so a wrong command or folder shows on the first case, not the sixtieth. In a project without BMad, write the same keys as JSON and pass `--harness <file>`.
+Prove the facts on one case before the set; a wrong flag, folder or login shows there. A run bypasses your permission prompts and is not contained unless the command wraps it in a sandbox, so say that when confirming a run. When nobody is at the keyboard and nothing is recorded, stop and show the table to record. In a project without BMad, write the same keys as JSON and pass `--harness <file>`.
 
-## What a run does
-
-For each case the runner makes a clean working directory, copies the skill under test into `<cwd>/<skill_dir>/<name>/` (a copy, so a run that edits its skill touches nothing else), stages the fixtures inside the directory and nowhere else, runs `sandbox + command` from it, and keeps what was printed as the transcript. A baseline run issues the same command twice from the same input, once with the skill staged and once with nothing, so the bare-model floor is measured under identical conditions.
-
-The environment is built from scratch: `PATH`, a fresh empty `HOME` at `<case>/.home`, each `home_env` var pointed inside it, `auth_env` when the host has it, `env_passthrough`. Host shell config, installed skills, memory and tokens do not cross. That is isolation of inputs, not containment: the harness runs with permission prompts off and, unless `sandbox` is set, with the host's file access. Say so when confirming the run, and tell the user `sandbox` is where a container or OS sandbox goes. The run folder records the command and whether it was contained.
-
-## Trigger detection
-
-Trigger mode stages a synthetic skill carrying the description under test and one extra line in its body: begin the reply with a token unique to this attempt. The token appearing in what the harness printed is the load. Nothing in the skill's name or description contains the token, so a harness that lists its discovered skills at startup cannot produce a false hit, and no transcript format has to be known. An attempt that does not complete leaves its query unmeasured rather than counted as a quiet pass.
-
-## Transcript and cost
-
-The transcript is what the command printed. When that is line-delimited JSON with usage blocks, the runner records tokens and tool calls per case; otherwise it records elapsed time and `tokens_reported: false`, and the grader works from the final output and the artifacts.
+Trigger mode detects a load with a canary: the staged skill's body asks for a token at the start of the reply, and the token in the output is the load, on any CLI. Token counts are read when the output is line-delimited JSON with usage blocks; otherwise elapsed time is the measure.

@@ -36,6 +36,12 @@ def main() -> int:
         if "edit-me" in prompt:
             skill_md.write_text("edited by the run\n", encoding="utf-8")
     (cwd / "made.txt").write_text(prompt, encoding="utf-8")
+    (cwd / "where.txt").write_text(str(cwd.resolve()), encoding="utf-8")
+    (cwd / "env.json").write_text(
+        json.dumps({k: v for k, v in os.environ.items() if k in ("FORWARDED", "ABSENT", "FAKE_CONFIG_DIR")}),
+        encoding="utf-8",
+    )
+    (cwd / "login.txt").write_text(str((home / ".fake" / "auth.json").is_file()), encoding="utf-8")
     reply = ("yes" in prompt and tokens and tokens[0] + " ") or ""
     print(json.dumps({"type": "assistant", "message": {"content": [{"type": "text", "text": reply + "done"}]}}))
     print(json.dumps({"type": "result", "usage": {"input_tokens": 10, "output_tokens": 5}}))

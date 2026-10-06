@@ -26,13 +26,13 @@ A case is `input + rubric + optional state_prefix + optional fixture files`; the
 
 1. Read config with `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder --key core.communication_language --key core.user_name` and customization with `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow`. Absent keys are fine. `{reports_folder}` is `{workflow.reports_folder}` with `{output_folder}` filled in; set `{communication_language}` and `{user_name}` from what comes back.
 2. Verify `<skill-path>/SKILL.md` exists; halt with a clear error if not.
-3. When `workflow.harness.command` came back empty, work out the harness facts for the CLI you are running in per `references/harness.md` and record them by invoking the `bmad-customize` skill (install: `npx skills add bmad-code-org/BMAD-METHOD --skill bmad-customize`); the runner reads them from there.
+3. When `workflow.harness.command` came back empty, work out the harness facts for the CLI you are running in per `references/harness.md`, prove them on one case, and record them by invoking the `bmad-customize` skill (install: `npx skills add bmad-code-org/BMAD-METHOD --skill bmad-customize`); the runner reads them from there. When nobody is at the keyboard, stop and show the table to record instead.
 4. Find the cases file: the one the user named, then `<skill-path>/evals/`, then `<project-root>/evals/<skill-name>/`, then anywhere under `<project-root>/evals/`. If nothing is found, halt and say so; the runner does not invent cases.
-5. Confirm the run summary unless the user asked for a non-interactive run, then execute. The summary names the skill, cases, modes and output dir, shows the harness command, and says that it runs with permission prompts off and, unless `harness.sandbox` is set, with the host's file access. A non-interactive run needs the harness already recorded.
+5. Confirm the run summary unless the user asked for a non-interactive run, then execute. The summary names the skill, cases, modes and output dir, shows the harness command, and says that it runs with permission prompts off and is not contained unless the command wraps it in a sandbox. A non-interactive run needs the harness already recorded.
 
 ## Run execution
 
-The user asks for a run in `<mode>` mode on `<skill>` (the directory holding `SKILL.md`), with a variant skill for variant mode. The project root is the first ancestor of the skill holding `_bmad/` or `.git/`; the output dir is `{reports_folder}` when BMad is set up, else `~/bmad-evals/`. Every run is its own timestamped folder there, so runs never collide. Each case runs in a clean working directory with a copy of the skill staged into it and an environment built from scratch, so host config, prior runs and ancestor instruction files cannot bias the result. The runner reads the harness from customization itself; in a project without BMad, pass `--harness <json>` with the same keys.
+The user asks for a run in `<mode>` mode on `<skill>` (the directory holding `SKILL.md`), with a variant skill for variant mode. The project root is the first ancestor of the skill holding `_bmad/` or `.git/`; the output dir is `{reports_folder}` when BMad is set up, else `~/bmad-evals/`. Every run is its own timestamped folder there, so runs never collide. Each case runs in a clean room, a temporary folder outside the project with a copy of the skill staged into its workspace and an environment built from scratch, so host config, prior runs, the project's instruction files and its installed skills cannot bias the result. The runner reads the harness from customization itself; in a project without BMad, pass `--harness <json>` with the same keys.
 
 Baseline, variant and quality:
 
@@ -61,7 +61,7 @@ When a run comes back weak and the user wants the skill improved from it, follow
 
 ## Artifacts
 
-Each run is a dated folder under the output dir, with `run.json` naming the harness command and whether a sandbox contained it; each case folder holds its prompt, the transcript (what the harness printed), `cwd/`, `timing.json` (written the moment the invocation ends) and `grading.json` when quality ran. Never delete, overwrite or rotate a run folder. Tell the user where it is when you finish.
+Each run is a dated folder under the output dir, with `run.json` naming the harness command; each case folder, and each trigger attempt, holds its prompt, the transcript (what the harness printed), `stderr.txt`, `cwd/` (the workspace after the run), `timing.json` (written the moment the invocation ends) and `grading.json` when quality ran. Never delete, overwrite or rotate a run folder. Tell the user where it is when you finish.
 
 ## Outcomes
 
