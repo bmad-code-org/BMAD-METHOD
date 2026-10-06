@@ -41,11 +41,16 @@ ARRAYS_OF_TABLES = ("config_questions", "knowledge")
 
 def load_setup():
     sys.dont_write_bytecode = True
-    spec = importlib.util.spec_from_file_location("bmad_setup", SETUP_PY)
-    module = importlib.util.module_from_spec(spec)
-    assert spec.loader is not None
-    spec.loader.exec_module(module)
-    return module
+    script_dir = str(SETUP_PY.parent)
+    sys.path.insert(0, script_dir)
+    try:
+        spec = importlib.util.spec_from_file_location("bmad_setup", SETUP_PY)
+        module = importlib.util.module_from_spec(spec)
+        assert spec.loader is not None
+        spec.loader.exec_module(module)
+        return module
+    finally:
+        sys.path.remove(script_dir)
 
 
 def write(path: Path, content: str = "x\n") -> None:
@@ -2863,6 +2868,101 @@ class BmadConfigScopeTests(unittest.TestCase):
 
 
 class BmadStatusTests(unittest.TestCase):
+    def test_setup_and_status_use_effective_output_folder_for_both_custom_layers(self):
+        cases = (
+            ("config.toml", "{project-root}/team-store", "team-store"),
+            ("config.user.toml", "user-store", "user-store"),
+            ("both", "user-store", "user-store"),
+            ("config.user.toml", None, None),
+        )
+        for layer, configured_folder, expected_folder in cases:
+            with self.subTest(layer=layer, configured_folder=configured_folder):
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    root = Path(temp_dir)
+                    project = root / "project"
+                    project.mkdir()
+                    skill = write_dest_bmad(root)
+                    write_core(root)
+                    setup_report(self, project, skill)
+                    custom = project / "_bmad" / "custom"
+                    if expected_folder is None:
+                        expected_folder = str(root / "absolute-store")
+                    if layer in ("config.toml", "both"):
+                        write(custom / "config.toml", '[core]\noutput_folder = "{project-root}/team-store"\n')
+                    if layer in ("config.user.toml", "both"):
+                        value = configured_folder or expected_folder
+                        write(custom / "config.user.toml", f'[core]\noutput_folder = "{value}"\n')
+                    (project / expected_folder).mkdir()
+                    shutil.rmtree(project / "_bmad-output")
+                    before = snapshot(project)
+
+                    current = status_report(self, project, skill)
+                    self.assertTrue(current["current"], current)
+                    self.assertIsNone(current["next"])
+                    self.assertEqual(snapshot(project), before)
+
+                    report = setup_report(self, project, skill)
+                    self.assertEqual(report["status"], "current")
+                    self.assertFalse(report["changed"])
+                    self.assertTrue((project / expected_folder).is_dir())
+                    self.assertFalse((project / "_bmad-output").exists())
+                    parsed = tomllib.loads((project / "_bmad" / "config.toml").read_text(encoding="utf-8"))
+                    self.assertEqual(parsed["core"]["output_folder"], "{project-root}/_bmad-output")
+
+    def test_first_setup_uses_effective_output_folder_before_base_config_exists(self):
+        for filename, folder in (("config.toml", "team-store"), ("config.user.toml", "user-store")):
+            with self.subTest(filename=filename):
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    root = Path(temp_dir)
+                    project = root / "project"
+                    project.mkdir()
+                    skill = write_dest_bmad(root)
+                    write_core(root)
+                    custom_file = project / "_bmad" / "custom" / filename
+                    custom_text = f'[core]\noutput_folder = "{folder}"\n'
+                    write(custom_file, custom_text)
+
+                    report = setup_report(self, project, skill)
+
+                    self.assertEqual(report["status"], "repaired")
+                    self.assertTrue((project / folder).is_dir())
+                    self.assertFalse((project / "_bmad-output").exists())
+                    base = project / "_bmad" / "config.toml"
+                    parsed = tomllib.loads(base.read_text(encoding="utf-8"))
+                    self.assertEqual(parsed["core"]["output_folder"], "{project-root}/_bmad-output")
+                    self.assertEqual(custom_file.read_text(encoding="utf-8"), custom_text)
+                    current = status_report(self, project, skill)
+                    self.assertTrue(current["current"], current)
+                    self.assertIsNone(current["next"])
+
+    def test_malformed_custom_output_layers_fail_before_any_write(self):
+        for filename in ("config.toml", "config.user.toml"):
+            with self.subTest(filename=filename):
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    root = Path(temp_dir)
+                    project = root / "project"
+                    project.mkdir()
+                    skill = write_dest_bmad(root)
+                    write_core(root)
+                    setup_report(self, project, skill)
+                    shutil.rmtree(project / "_bmad-output")
+                    custom_file = project / "_bmad" / "custom" / filename
+                    write(custom_file, "[broken\n")
+                    before = snapshot(project)
+
+                    result = run_setup_python(project, skill)
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertIn(str(custom_file), result.stderr)
+                    self.assertRegex(result.stderr.lower(), r"parse|toml")
+                    self.assertEqual(snapshot(project), before)
+                    self.assertEqual(list(project.glob("_bmad.setup-*")), [])
+
+                    status = run_setup_python(project, skill, "--status")
+                    self.assertNotEqual(status.returncode, 0)
+                    self.assertIn(str(custom_file), status.stderr)
+                    self.assertRegex(status.stderr.lower(), r"parse|toml")
+                    self.assertEqual(snapshot(project), before)
+
     def test_status_changes_nothing_on_disk(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
