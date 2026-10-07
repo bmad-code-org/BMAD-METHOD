@@ -581,11 +581,14 @@ def _ignore_render_root(render_root: Path) -> None:
     so a snapshot is never meant to be committed. A `*` rule in the folder's
     own .gitignore covers everything below it, the file itself included.
     """
-    gitignore = render_root / ".gitignore"
-    if gitignore.exists() or gitignore.is_symlink():
-        return
     render_root.mkdir(parents=True, exist_ok=True)
-    gitignore.write_text("# Created by render_skill.py: snapshots are local to this machine.\n*\n", encoding="utf-8")
+    try:
+        # Exclusive create: a file that is already there, or that a concurrent
+        # render creates meanwhile, is never overwritten.
+        with (render_root / ".gitignore").open("x", encoding="utf-8") as file:
+            file.write("# Created by render_skill.py: snapshots are local to this machine.\n*\n")
+    except FileExistsError:
+        pass
 
 
 def render(
