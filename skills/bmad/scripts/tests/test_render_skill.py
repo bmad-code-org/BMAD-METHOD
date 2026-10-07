@@ -38,7 +38,7 @@ SHARED_SCRIPTS = (
     "resolve_customization.py",
 )
 SHIPPED_SKILLS = ("bmad-build-auto", "bmad-build", "bmad-code-review")
-RENDERED_SKILLS = (*SHIPPED_SKILLS, "bmad-walkthrough", "bmad-retrospective")
+RENDERED_SKILLS = (*SHIPPED_SKILLS, "bmad-walkthrough", "bmad-retrospective", "bmad-qa-generate-e2e-tests")
 COMPILE_TOKEN = re.compile(r"\{\{\s*(?:config|workflow)\.|\{\{\s*(?:rendered\(|initiative_folder)|\{%")
 DISPATCH_PREFIX = "read and follow "
 
@@ -199,7 +199,7 @@ class RenderSkillTests(unittest.TestCase):
         markdown = _markdown(snap)
         self.assertIsNone(COMPILE_TOKEN.search(markdown), markdown)
         self.assertNotIn("{skill-root}", markdown)
-        if skill_name != "bmad-retrospective":
+        if skill_name not in ("bmad-retrospective", "bmad-qa-generate-e2e-tests"):
             artifacts = (project.resolve() / "_bmad-output").as_posix()
             self.assertIn(artifacts, markdown)
         return snap
