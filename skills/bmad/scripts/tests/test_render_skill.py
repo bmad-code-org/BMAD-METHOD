@@ -219,6 +219,27 @@ class RenderSkillTests(unittest.TestCase):
         self.assertNotIn("Traceback", result.stdout + result.stderr)
         self.assertFalse((ws.bmad / "render").exists())
 
+    def test_render_folder_ignores_itself_in_git(self):
+        ws = self._workspace()
+        skill = self._fixture_skill(ws, '[workflow]\nmessage = "shipped"\n', "{{ workflow.message }}\n")
+        gitignore = ws.bmad / "render" / ".gitignore"
+        rs.render(ws.project, skill)
+        self.assertEqual(gitignore.read_text(encoding="utf-8").splitlines()[-1], "*")
+        if shutil.which("git"):
+            subprocess.run(["git", "init", "-q"], cwd=ws.project, check=True)
+            status = subprocess.run(
+                ["git", "status", "--porcelain", "--untracked-files=all"],
+                cwd=ws.project,
+                text=True,
+                capture_output=True,
+                check=True,
+            ).stdout
+            self.assertNotIn("_bmad/render", status)
+
+        gitignore.write_text("own rules\n", encoding="utf-8")
+        rs.render(ws.project, skill)
+        self.assertEqual(gitignore.read_text(encoding="utf-8"), "own rules\n")
+
     def test_invocation_precedence_flag_order_and_persistent_isolation(self):
         ws = self._workspace()
         skill = self._fixture_skill(ws, '[workflow]\nmessage = "shipped"\n', "{{ workflow.message }}\n")
