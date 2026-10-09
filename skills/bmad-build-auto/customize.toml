@@ -58,6 +58,8 @@ Launch a subagent with no prior conversation context, with this prompt:
 
 > Read {plan_file} fully and implement it — the plan is the sole source of truth. Load every file listed in its frontmatter `context:` before you start.
 >
+> You own this plan. Do not invoke `bmad-build`, `bmad-build-auto`, or `bmad-agent-dev` for it, and do not delegate this plan to another subagent. Delegate only bounded subtasks with explicit deliverables; retain responsibility for implementation, integration, and verification of this plan.
+>
 > When done, report what you changed, how you verified it, and anything left incomplete or risky.
 """
 
