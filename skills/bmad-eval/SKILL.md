@@ -24,7 +24,7 @@ A case is `input + rubric + optional state_prefix + optional fixture files`; the
 
 ## On activation
 
-1. Read config with `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder --key core.communication_language --key core.user_name` and customization with `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow`. Absent keys are fine. `{reports_folder}` is `{workflow.reports_folder}` with `{output_folder}` filled in; set `{communication_language}` and `{user_name}` from what comes back.
+1. Read config with `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key core.output_folder` and customization with `uv run {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --project-root {project-root} --key workflow`. Absent keys are fine. `{reports_folder}` is `{workflow.reports_folder}` with `{output_folder}` filled in.
 2. Verify `<skill-path>/SKILL.md` exists; halt with a clear error if not.
 3. When `workflow.harness.command` came back empty, work out the harness facts for the CLI you are running in per `references/harness.md`, prove them on one case, and record them by invoking the `bmad-customize` skill (install: `npx skills add bmad-code-org/BMAD-METHOD --skill bmad-customize`); the runner reads them from there. When nobody is at the keyboard, stop and show the table to record instead.
 4. Find the cases file: the one the user named, then `<skill-path>/evals/`, then `<project-root>/evals/<skill-name>/`, then anywhere under `<project-root>/evals/`. If nothing is found, halt and say so; the runner does not invent cases.
