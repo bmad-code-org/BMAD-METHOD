@@ -17,6 +17,7 @@
 
 ### ✨ Features
 
+* **Security Vulnerability Reviewer** (#3042). A fifth default thorough lens in `bmad-code-review` that traces untrusted input and unauthorized access across the trust boundaries a change touches: injection, broken access control and tenant isolation, secrets and sensitive data, insecure defaults, supply-chain and CI surface, resource exhaustion. Every changed file is in scope — config, CI, dependency, and test files are read for secrets and insecure defaults rather than skipped as non-code. Findings carry the entry point, path, missing guard, and harm at `file:line`, and triage grades them like any other lens. Turn it off or move it like any lens with a `customize.toml` override.
 * Toolsmith asks no setup questions. A new skill goes where the user's other skills are, named with the user's own prefix rather than `bmad-`, and the read-back says how it registers with `bmad`: its own module record, a member of an installed module, or a plain skill outside the registry.
 * Memory agents built by Toolsmith keep memory as small dated files by subject, with a write-once raw layer for material the owner hands over and distillations that link back to it. Waking loads the agent's self and a generated map, not the memory; the agent tends its memory when session notes build up, without a schedule; and First Breath opens by asking what to call the owner.
 * Review mode gives its findings in chat and in a markdown file; the HTML report is gone.
