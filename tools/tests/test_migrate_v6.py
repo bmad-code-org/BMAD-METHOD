@@ -116,6 +116,25 @@ class MigrateV6Tests(unittest.TestCase):
             (after["legacy_leftovers"], after["stale_config_keys"], after["unused_customizations"]), ([], [], [])
         )
 
+    def test_only_listed_v6_keys_are_removed(self):
+        user = self.bmad / "custom" / "config.user.toml"
+        text = '[core]\nuser_name = "Ann"\nfuture_key = "x"\n\n[modules.bmm]\nproject_knowledge = "docs"\nnew_setting = 1\n'
+        write(user, text)
+
+        report = self.migrate("--clean")
+
+        self.assertEqual(
+            report["removed_keys"],
+            [
+                {"file": "_bmad/custom/config.user.toml", "key": "core.user_name"},
+                {"file": "_bmad/custom/config.user.toml", "key": "modules.bmm.project_knowledge"},
+            ],
+        )
+        self.assertEqual(
+            tomllib.loads(user.read_text(encoding="utf-8")),
+            {"core": {"future_key": "x"}, "modules": {"bmm": {"new_setting": 1}}},
+        )
+
     def test_clean_with_nothing_to_remove_writes_nothing(self):
         before = snapshot(self.project)
 
@@ -136,7 +155,7 @@ class MigrateV6Tests(unittest.TestCase):
         write(
             user,
             '# mine\n[core]\nactive_initiative = "initiative-a"\n'
-            'notes = """\nfirst\nsecond\n"""\n# kept\nproject_name = "p"\n',
+            'user_name = """\nAnn\nB.\n"""\n# kept\nproject_name = "p"\n',
         )
 
         self.migrate("--clean")

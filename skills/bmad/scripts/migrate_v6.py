@@ -4,8 +4,8 @@
 # ///
 """Report or remove the v6 traces in `_bmad/` that v7 does not read.
 
-With no flag it lists them: the classic installer's files, central config keys no
-v7 skill reads, and customizations of skills that are not installed. With
+With no flag it lists them: the classic installer's files, the v6 install answers
+v7 has no key for, and customizations of skills that are not installed. With
 `--clean` it copies `_bmad/` to `.v6-v7-migration-backup-<datetime>/`, which the
 method migration reuses, then removes them.
 
@@ -66,8 +66,16 @@ LEGACY_LEFTOVERS = (
     "bmm/module-help.csv",
     "bmm/v6-shims",
 )
-# The [core] keys a v7 skill reads; any other [core] key is a v6 setting nothing uses.
-CORE_KEYS = frozenset({"project_name", "output_folder", "active_initiative"})
+# The v6.12 install answers v7 has no key for. Only these are removed, so a key added later is never touched.
+V6_KEYS = (
+    ("core", "user_name"),
+    ("core", "communication_language"),
+    ("core", "document_output_language"),
+    ("modules", "bmm", "user_skill_level"),
+    ("modules", "bmm", "planning_artifacts"),
+    ("modules", "bmm", "implementation_artifacts"),
+    ("modules", "bmm", "project_knowledge"),
+)
 CENTRAL_CONFIGS = (TEAM_CONFIG, "_bmad/custom/config.toml", USER_CONFIG)
 BACKUP_PREFIX = ".v6-v7-migration-backup-"
 
@@ -86,10 +94,8 @@ def inside_bmad(path: Path, project_root: Path) -> bool:
     return path.resolve().is_relative_to((project_root / "_bmad").resolve())
 
 
-def stale_config_keys(project_root: Path, installation: Installation) -> list[tuple[str, tuple[str, ...]]]:
-    """Central config keys no v7 skill reads: [core] keys outside CORE_KEYS, and [modules] keys no installed
-    module declares as a question. Other tables, such as [agents], are left to their readers."""
-    declared = {(question.module, question.key) for module in installation.modules for question in module.questions}
+def stale_config_keys(project_root: Path) -> list[tuple[str, tuple[str, ...]]]:
+    """The V6_KEYS set in the central config files."""
     stale: list[tuple[str, tuple[str, ...]]] = []
     for relative in CENTRAL_CONFIGS:
         path = project_root / relative
@@ -99,32 +105,8 @@ def stale_config_keys(project_root: Path, installation: Installation) -> list[tu
             data = tomllib.loads(path.read_text(encoding="utf-8"))
         except (OSError, UnicodeError, tomllib.TOMLDecodeError):
             continue
-        core = data.get("core")
-        if isinstance(core, dict):
-            stale += [(relative, ("core", key)) for key in core if key not in CORE_KEYS]
-        modules = data.get("modules")
-        if not isinstance(modules, dict):
-            continue
-        for code, table in modules.items():
-            if not isinstance(table, dict):
-                stale.append((relative, ("modules", code)))
-                continue
-            stale += [
-                (relative, ("modules", code, *leaf))
-                for leaf in leaf_paths(table)
-                if (code, ".".join(leaf)) not in declared
-            ]
+        stale += [(relative, key) for key in V6_KEYS if lookup(data, key) is not _MISSING]
     return stale
-
-
-def leaf_paths(table: dict, prefix: tuple[str, ...] = ()) -> list[tuple[str, ...]]:
-    paths: list[tuple[str, ...]] = []
-    for key, value in table.items():
-        if isinstance(value, dict) and value:
-            paths += leaf_paths(value, (*prefix, key))
-        else:
-            paths.append((*prefix, key))
-    return paths
 
 
 def unused_customizations(project_root: Path, installation: Installation, retirement: Retirement) -> list[str]:
@@ -148,8 +130,7 @@ def traces_json(project_root: Path, installation: Installation, retirement: Reti
     return {
         "legacy_leftovers": legacy_leftovers(project_root),
         "stale_config_keys": [
-            {"file": relative, "key": ".".join(path)}
-            for relative, path in stale_config_keys(project_root, installation)
+            {"file": relative, "key": ".".join(path)} for relative, path in stale_config_keys(project_root)
         ],
         "unused_customizations": [
             f"_bmad/custom/{name}" for name in unused_customizations(project_root, installation, retirement)
@@ -158,19 +139,19 @@ def traces_json(project_root: Path, installation: Installation, retirement: Reti
 
 
 def clean(project_root: Path, skill_root: Path, *, roots: tuple[Path, ...] = ()) -> dict[str, object]:
-    """Back up `_bmad/`, then remove the v6 traces v7 does not read: the classic installer's files, stale
+    """Back up `_bmad/`, then remove the v6 traces v7 does not read: the classic installer's files, v6
     config keys, and customizations of skills that are not installed."""
     reject_unusable_bmad(project_root)
     bmad = project_root / "_bmad"
     installation = discover_installation(skill_root, roots)
     if installation.missing_records:
-        # Without every module record, a missing module's config keys would look stale.
+        # Without every module record, a renamed skill's customizations would look unused.
         raise Exception("a module record is missing; run setup to repair the installation before cleaning up")
     retirement = retirement_report(
         project_root, skill_root, installation, retired_skills(installation.modules, installation.modules)
     )
     leftovers = legacy_leftovers(project_root)
-    stale = stale_config_keys(project_root, installation)
+    stale = stale_config_keys(project_root)
     unused = unused_customizations(project_root, installation, retirement)
     edits = {
         relative: text_without_keys(
