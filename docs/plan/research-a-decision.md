@@ -109,6 +109,7 @@ fastest. **Refresh** re-checks only those claims and records what changed.
 | Refresh an existing report   | "refresh the market research"                                                                      |
 | Customize defaults           | `/bmad-customize bmad-deep-recon`                                                                  |
 
-The v6 `bmad-market-research`, `bmad-domain-research`, and
-`bmad-technical-research` skills merged into Deep Recon as the `market`,
-`domain`, and `technical` types; the old names still forward here.
+The separate v6 market, domain, and technical research skills are now Deep
+Recon's `market`, `domain`, and `technical` types, and no skill remains under
+the old names. Name the type in your request, or pick `MR`, `DR`, or `TR` from
+the Analyst's menu (`bmad-agent-analyst`).

@@ -17,10 +17,11 @@ project. This tutorial follows the
 coherent request goes directly to the `bmad-build` skill.
 
 :::note[Before You Start]
-Use a macOS or Linux shell with Node.js 20.12+, Python 3, and a coding tool
-supported by BMad. The exact install and launch commands below are for Claude
-Code. If you use another supported tool, select it when installing BMad and run
-the `bmad-build` skill there instead.
+Use a macOS or Linux shell with Node.js 20.12+, Python 3,
+[uv](https://docs.astral.sh/uv/), and a coding tool supported by BMad. The
+exact install and launch commands below are for Claude Code. If you use another
+supported tool, select it when installing BMad and run the `bmad-build` skill
+there instead.
 :::
 
 ## Create an Empty Project

@@ -16,7 +16,7 @@ archived for the few sessions that need it, and out of reach of an
 ordinary change — an agent doing a small request should not even be
 able to find it by accident.
 
-For a small change, use `[bmad-build](../build/build-a-change.md)`.
+For a small change, use [`bmad-build`](../build/build-a-change.md).
 For one that needs several coding sessions, run `bmad-spec`, plan its entries with `bmad-ticket`, and Build each entry directly. Then run `bmad-retrospective` on the epic. Keep its joined plans as live status and evidence. If it is bigger than that, treat it as a project and follow [Choose a Planning Path](../plan/choose-a-planning-path.md).
 
 Too little planning costs one Build run: Build looks at the code
@@ -24,7 +24,7 @@ first, and stops to ask when it cannot settle the intent. Too much
 planning costs documents nobody reads. When unsure, ask `bmad`
 rather than deciding alone. It inspects the project and answers
 questions like "I have an existing Rails app, where should I start?"
-It also runs at the end of every workflow to say what comes next.
+Ask it again when a workflow ends and you want to know what comes next.
 
 Often, the codebase is all you need, but supplementing it with a
 tight project context in `AGENTS.md` and companion files really
@@ -35,7 +35,8 @@ helps.
 `bmad-project-context` writes a small verified block of agent instructions
 into your repo's `AGENTS.md`. See
 [Set and Maintain Project Context](./set-and-maintain-project-context.md) for
-how to run it. (The earlier `bmad-document-project` workflow is deprecated)
+how to run it. It replaces the earlier documentation-generating workflow, which
+v7 removed.
 
 Run it when those instructions are missing, stale, or you are not sure they
 are any good. Skip it when the repo already has an `AGENTS.md`, `CLAUDE.md`,
@@ -77,6 +78,32 @@ dislike a pattern but have no plan to change it, say nothing — it will
 match the code. Hoping it modernizes on its own continues the pattern.
 Changing one file and leaving the rest leaves two standards with no
 record of which one wins.
+
+## Keep the Repository Fit for Agents
+
+An agent copies the patterns it finds. A codebase that does one thing several
+ways, has few tests, or has very large tangled files costs every session
+accuracy. If yours is like that, cleanup first pays back in every later
+session: make each refactoring its own `bmad-build` change, with tests in
+place first. `bmad-qa-generate-e2e-tests` adds API and end-to-end tests for
+features that already exist; see [Test Completed Work](../build/test-completed-work.md).
+A codebase of decent quality needs none of this.
+
+If you do not know the code yet, `bmad-walkthrough` guides you through a file,
+directory, commit, or PR at your own pace; see
+[Walk Through a Change](../build/walk-through-a-change.md).
+
+Agent-built code drifts: duplicated helpers, near-copies, and patterns that
+diverge between sessions. After several stories, and at the end of every epic,
+run a refactoring pass as its own `bmad-build` change. `bmad-retrospective`
+reports the duplication and drift across an epic's stories, which gives you
+the list.
+
+Keep documentation small. The code is the best documentation for an agent.
+Write down only what the code cannot explain — why a decision was made, a
+constraint from outside the code, a rule that spans components — as short
+numbered decision records in the repository's `docs` folder, and let
+`AGENTS.md` say when to consult them.
 
 ## Try It on a Known Tree First
 
