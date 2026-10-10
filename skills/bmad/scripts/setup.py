@@ -37,18 +37,6 @@ USER_CONFIG = "_bmad/custom/config.user.toml"
 CUSTOM_GITIGNORE = "*.user.toml\n"
 GITIGNORE_COVERS_USER_CONFIG = frozenset({"*.user.toml", "config.user.toml", "*.toml", "*"})
 
-# Traces the classic installer leaves under _bmad. Setup and status report
-# them and never touch them; they belong to the old-installer world.
-LEGACY_LEFTOVERS = (
-    "_config/manifest.yaml",
-    "_config/files-manifest.csv",
-    "_config/skill-manifest.csv",
-    "_config/bmad-help.csv",
-    "config.user.toml",
-    "core/config.yaml",
-    "bmm/config.yaml",
-    "core/v6-shims",
-)
 SEMVER = re.compile(
     r"(?P<major>0|[1-9][0-9]*)\."
     r"(?P<minor>0|[1-9][0-9]*)\."
@@ -387,7 +375,6 @@ def setup(
         "missing_module_records": list(installation.missing_records),
         "duplicate_skills": duplicates_json(installation.duplicates, project_root),
         "problems": problems,
-        "legacy_leftovers": legacy_leftovers(project_root),
         **retirement_json(retirement),
         "current": (next_command is None and not unmet and not problems and not installation.missing_records),
         "next": next_command,
@@ -572,14 +559,6 @@ def custom_gitignore_problems(state: str) -> list[dict[str, object]]:
                 "committed; add the line *.user.toml"
             ),
         }
-    ]
-
-
-def legacy_leftovers(project_root: Path) -> list[str]:
-    return [
-        relative
-        for relative in LEGACY_LEFTOVERS
-        if (project_root / "_bmad").joinpath(*PurePosixPath(relative).parts).exists()
     ]
 
 
@@ -1794,7 +1773,6 @@ def status_report(
         "unmet_requirements": unmet,
         "unmet_recommendations": unmet_recommendations(installation, skill_root, module=code),
         "problems": problems,
-        "legacy_leftovers": legacy_leftovers(project_root),
         **retirement_json(retirement),
         "current": (
             next_command is None

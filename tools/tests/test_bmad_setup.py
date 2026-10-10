@@ -1772,7 +1772,6 @@ class BmadSetupRepairTests(unittest.TestCase):
             self.assertEqual(second["config"], "current")
             self.assertEqual(second["custom_gitignore"], "current")
             self.assertEqual(second["answers_added"], [])
-            self.assertEqual(second["legacy_leftovers"], [])
             self.assertEqual({module["scripts"] for module in second["modules"]}, {"current"})
             self.assertTrue(second["current"])
             self.assertIsNone(second["next"])
@@ -1858,7 +1857,7 @@ class BmadSetupRepairTests(unittest.TestCase):
 
             self.assertEqual(setup_report(self, project, skill)["status"], "current")
 
-    def test_legacy_leftovers_are_reported_and_left_alone(self):
+    def test_legacy_leftovers_are_left_alone(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             project = root / "project"
@@ -1877,17 +1876,9 @@ class BmadSetupRepairTests(unittest.TestCase):
             write(bmad / "config.toml", "[core]\nkeep = true\n")
             for relative, content in leftovers.items():
                 write(bmad / relative, content)
-            expected = [
-                "_config/manifest.yaml",
-                "_config/bmad-help.csv",
-                "config.user.toml",
-                "core/config.yaml",
-                "bmm/config.yaml",
-                "core/v6-shims",
-            ]
 
-            self.assertEqual(status_report(self, project, skill)["legacy_leftovers"], expected)
-            self.assertEqual(setup_report(self, project, skill)["legacy_leftovers"], expected)
+            status_report(self, project, skill)
+            setup_report(self, project, skill)
             for relative, content in leftovers.items():
                 self.assertEqual((bmad / relative).read_text(encoding="utf-8"), content)
 

@@ -18,7 +18,7 @@ Files, old to new:
 - Each skill: a `bmod.toml` with `[skill]` (`bmod`, `source`) and `scripts` when it ships any.
 - A folder with one skill: the single-skill shape, both tables in that skill's `bmod.toml` and `help/help.md` beside it, no `bmod-<code>/`.
 
-Config keys, old to new, one row per `legacy_reads` entry: every read becomes `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key ...`. `user_name`, `communication_language`, `document_output_language` and `output_folder` are `core.<key>`; a module key is `modules.<code>.<key>`. A key equal to the code or starting with `<code>.` must be renamed; offer to drop a module name repeated inside a key. Fallbacks to the legacy per-module file go.
+Config keys, old to new, one row per `legacy_reads` entry: every read becomes `uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root} --key ...`. `output_folder` is `core.output_folder`; reads of `user_name`, `communication_language` and `document_output_language` go, since v7 has no such keys; a module key is `modules.<code>.<key>`. A key equal to the code or starting with `<code>.` must be renamed; offer to drop a module name repeated inside a key. Fallbacks to the legacy per-module file go.
 
 Cannot convert, listed plainly from `unconvertible`, with what it means for the user: a select question becomes one string (put the options in the prompt and the default option in `default`, or drop it); validation, directories and post-install notes have no equivalent, so the skill handles them or they go; headless and inline-argument setup is gone because `bmad setup` has none; existing answers in `_bmad/config.yaml` are not carried, so `bmad setup <code>` will ask again.
 
