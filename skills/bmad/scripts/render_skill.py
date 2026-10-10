@@ -574,6 +574,23 @@ def _publish(destination: Path, outputs: dict[str, bytes], manifest: dict[str, A
             shutil.rmtree(staging, ignore_errors=True)
 
 
+def _ignore_render_root(render_root: Path) -> None:
+    """Keep snapshots out of git without touching the project's own .gitignore.
+
+    Generation paths and manifests carry this machine's absolute project path,
+    so a snapshot is never meant to be committed. A `*` rule in the folder's
+    own .gitignore covers everything below it, the file itself included.
+    """
+    render_root.mkdir(parents=True, exist_ok=True)
+    try:
+        # Exclusive create: a file that is already there, or that a concurrent
+        # render creates meanwhile, is never overwritten.
+        with (render_root / ".gitignore").open("x", encoding="utf-8") as file:
+            file.write("# Created by render_skill.py: snapshots are local to this machine.\n*\n")
+    except FileExistsError:
+        pass
+
+
 def render(
     project_root: Path, skill_dir: Path, *, overrides: Path | None = None, assignments: list[str] | None = None
 ) -> Path:
@@ -645,6 +662,7 @@ def render(
         "inputs": identity,
         "outputs": output_hashes,
     }
+    _ignore_render_root(project_root / "_bmad" / "render")
     _publish(destination, outputs, manifest)
     return destination / "workflow.md"
 
