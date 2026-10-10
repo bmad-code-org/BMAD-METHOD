@@ -280,7 +280,7 @@ covers = ["R2", "R3"]
         data = path.read_bytes()
         self.assertTrue(data.startswith(b"\xef\xbb\xbf"))
         self.assertNotIn(b"\n", data.replace(b"\r\n", b""))
-        self.assertIn(b"\r\nstatus: done\r\n", data)
+        self.assertIn(b"\r\nstatus: 'done'\r\n", data)
         self.assertEqual(self.status_rows(self.epic)[0]["status"], "done")
 
     def test_planned_entries_surface_when_unblocked(self):
@@ -1046,7 +1046,7 @@ covers = ["R2", "R3"]
             found = json.loads(run("find", str(folder), ref).stdout)
             self.assertEqual((found["id"], found["state"]), ("6a", "done"))
         self.assertEqual(run("mark", str(self.epic), "2a", "in-review").returncode, 0)
-        self.assertIn("ticket: 2a\n", (self.epic / "story-totals-for-6a-plan.md").read_text(encoding="utf-8"))
+        self.assertIn("ticket: '2a'\n", (self.epic / "story-totals-for-6a-plan.md").read_text(encoding="utf-8"))
         self.assertEqual(self.status_rows(self.epic)[0]["state"], "review")
 
     def test_two_files_sharing_an_id_error(self):
@@ -1100,7 +1100,7 @@ covers = ["R2", "R3"]
         self.assertEqual((self.epic / "story-scaffold.md").read_text(encoding="utf-8"), leaf)
         self.assertEqual(
             plan_file.read_text(encoding="utf-8"),
-            '---\ntitle: "x"\nticket: 1\nstatus: in-progress\nassignee: "ann"\n---\n',
+            "---\ntitle: \"x\"\nticket: '1'\nstatus: 'in-progress'\nassignee: \"ann\"\n---\n",
         )
         self.assertEqual(self.files(self.next()["in_progress"]), ["story-scaffold.md"])
 
@@ -1124,10 +1124,24 @@ covers = ["R2", "R3"]
         )
         self.mark(str(self.epic), "1", "ready-for-dev")
         text = (self.epic / "story-scaffold-plan.md").read_text(encoding="utf-8")
-        self.assertEqual(text, '---\ntitle: "Scaffold"\nticket: 1\nstatus: ready-for-dev\nassignee: "bob"\n---\n')
+        self.assertEqual(
+            text, "---\ntitle: \"Scaffold\"\nticket: '1'\nstatus: 'ready-for-dev'\nassignee: \"bob\"\n---\n"
+        )
         self.assertEqual(
             [(e["file"], e["assignee"]) for e in self.next()["ready_to_start"]], [("story-scaffold.md", "bob")]
         )
+
+    def test_mark_writes_status_and_ticket_in_the_plan_templates_quoted_form(self):
+        self.seed()
+        self.mark(str(self.epic), "1", "in-progress", "--assignee", "ann")
+        plan_file = self.epic / "story-scaffold-plan.md"
+        self.assertEqual(
+            plan_file.read_text(encoding="utf-8"),
+            "---\ntitle: \"x\"\nticket: '1'\nstatus: 'in-progress'\nassignee: \"ann\"\n---\n",
+        )
+        self.mark(str(self.epic), "1", "done")
+        self.assertIn("\nstatus: 'done'\n", plan_file.read_text(encoding="utf-8"))
+        self.assertEqual(self.status_rows(self.epic)[0]["status"], "done")
 
     def test_find_on_an_entry_with_nothing_yet(self):
         self.breakdown_epic(
@@ -1209,9 +1223,20 @@ covers = ["R2", "R3"]
         )
         self.assertEqual(hit["plan"], str(backlog.resolve() / "bug-x-plan.md"))
         self.mark(str(backlog), "bug-x", "in-review")
-        self.assertIn('\nticket: "bug-x"\n', (backlog / "bug-x-plan.md").read_text(encoding="utf-8"))
+        self.assertIn("\nticket: 'bug-x'\n", (backlog / "bug-x-plan.md").read_text(encoding="utf-8"))
         rows = self.status_rows(backlog)
         self.assertEqual([(t["file"], t["state"]) for t in rows], [("bug-x.md", "review")])
+
+    def test_mark_keeps_a_stem_the_single_quoted_form_cannot_carry_readable(self):
+        # A hand-named leaf may hold "   #", which parse_frontmatter cuts a value at; the stem keeps the
+        # escaping form so the plan still names its entry.
+        backlog = self.add_backlog()
+        self.add("bug-a   #   b.md", ticket("draft", kind="bug"), backlog)
+        self.mark(str(backlog), "bug-a   #   b", "in-review")
+        plan = (backlog / "bug-a   #   b-plan.md").read_text(encoding="utf-8")
+        self.assertIn('\nticket: "bug-a   \\u0023   b"\n', plan)
+        rows = self.status_rows(backlog)
+        self.assertEqual([(t["file"], t["state"]) for t in rows], [("bug-a   #   b.md", "review")])
 
     def test_mark_done_on_a_plan_only_entry_clears_blocking_and_keeps_the_plan(self):
         self.breakdown_epic()
@@ -1221,7 +1246,7 @@ covers = ["R2", "R3"]
         out = self.mark(str(self.epic), "2", "done")
         self.assertEqual((out["created"], out["status"], out["assignee"]), (False, "done", "ann"))
         text = path.read_text(encoding="utf-8")
-        self.assertIn("\nstatus: done\n", text)
+        self.assertIn("\nstatus: 'done'\n", text)
         self.assertNotIn("blocked_", text)
         expected = [
             line for line in before.splitlines() if not line.startswith(("status:", "blocked_at:", "blocked_reason:"))
@@ -1243,7 +1268,7 @@ covers = ["R2", "R3"]
             after,
             text.replace(
                 "status: 'in-progress' # draft | ready-for-dev | in-progress | in-review | built | done",
-                "status: in-review",
+                "status: 'in-review'",
             ).replace("\n---\n\n# x", '\nassignee: "ann"\n---\n\n# x'),
         )
 
@@ -1260,7 +1285,7 @@ covers = ["R2", "R3"]
         self.mark(str(self.epic), "2", "ready-for-dev", "--assignee", "ann")
         self.assertEqual(
             (self.epic / "story-ui-shell-plan.md").read_text(encoding="utf-8"),
-            '---\ntitle: "UI shell"\nticket: 2\nstatus: ready-for-dev\nassignee: "ann"\n---\n',
+            "---\ntitle: \"UI shell\"\nticket: '2'\nstatus: 'ready-for-dev'\nassignee: \"ann\"\n---\n",
         )
         self.assertEqual(
             [(e["id"], e["state"], e["status"], e["assignee"]) for e in self.next()["blocked"]][0],
@@ -1273,7 +1298,7 @@ covers = ["R2", "R3"]
         today = date.today().isoformat()
         self.assertEqual(
             (self.epic / "story-ui-shell-plan.md").read_text(encoding="utf-8"),
-            f'---\ntitle: "UI shell"\nticket: 2\nstatus: blocked\nblocked_at: "{today}"\n'
+            f"---\ntitle: \"UI shell\"\nticket: '2'\nstatus: 'blocked'\nblocked_at: \"{today}\"\n"
             'blocked_reason: "waiting on legal: \\"terms\\""\n---\n',
         )
 
