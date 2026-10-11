@@ -70,15 +70,17 @@ function buildModuleLabel(name, latestVersion, installedVersion = '') {
  * @param {Object} options
  * @param {string|null} [options.repoUrl] - Module repository URL for tag resolution
  * @param {string|null} [options.registryDefault] - Registry default channel
+ * @param {string|null} [options.registryPin] - Registry pinned tag
  * @param {Object|null} [options.channelOptions] - Parsed installer channel options
  * @returns {Promise<{version: string, lookupAttempted: boolean, lookupSucceeded: boolean}>}
  */
-async function getModuleVersion(moduleCode, { repoUrl = null, registryDefault = null, channelOptions = null } = {}) {
+async function getModuleVersion(moduleCode, { repoUrl = null, registryDefault = null, registryPin = null, channelOptions = null } = {}) {
   if (repoUrl) {
     const plan = decideChannelForModule({
       code: moduleCode,
       channelOptions,
       registryDefault,
+      registryPin,
     });
 
     try {
@@ -1065,10 +1067,10 @@ class UI {
     const allOptions = [];
     const initialValues = [];
 
-    const buildModuleEntry = async (code, name, description, isDefault, repoUrl = null, registryDefault = null) => {
+    const buildModuleEntry = async (code, name, description, isDefault, repoUrl = null, registryDefault = null, registryPin = null) => {
       const isInstalled = installedModuleIds.has(code);
       const installedVersion = installedModuleVersions.get(code) || '';
-      const versionState = await getModuleVersion(code, { repoUrl, registryDefault, channelOptions });
+      const versionState = await getModuleVersion(code, { repoUrl, registryDefault, registryPin, channelOptions });
       const label = buildModuleLabel(name, versionState.version, installedVersion);
       return {
         label,
@@ -1116,6 +1118,7 @@ class UI {
             mod.defaultSelected,
             mod.url || null,
             mod.defaultChannel || null,
+            mod.pin || null,
           );
           if (mod.deprecated && mod.deprecationMessage) {
             entry.hint = entry.hint ? `${entry.hint} — ${mod.deprecationMessage}` : mod.deprecationMessage;

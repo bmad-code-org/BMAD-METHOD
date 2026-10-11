@@ -104,14 +104,18 @@ function parsePinSpec(spec) {
  * @param {string} args.code
  * @param {Object} args.channelOptions - from parseChannelOptions
  * @param {string} [args.registryDefault] - module's default_channel, if any
+ * @param {string} [args.registryPin] - module's registry pin, if any
  * @returns {{channel: 'stable'|'next'|'pinned', pin?: string, source: string}}
  *   source describes where the decision came from, for logging / debugging.
  */
-function decideChannelForModule({ code, channelOptions, registryDefault }) {
+function decideChannelForModule({ code, channelOptions, registryDefault, registryPin }) {
   const { global, nextSet, pins } = channelOptions || { nextSet: new Set(), pins: new Map() };
 
   if (pins && pins.has(code)) {
     return { channel: 'pinned', pin: pins.get(code), source: 'flag:--pin' };
+  }
+  if (registryPin) {
+    return { channel: 'pinned', pin: registryPin, source: 'registry:pin' };
   }
   if (nextSet && nextSet.has(code)) {
     return { channel: 'next', source: 'flag:--next' };
@@ -144,6 +148,7 @@ function buildPlan({ modules, channelOptions }) {
         code: mod.code,
         channelOptions,
         registryDefault: mod.defaultChannel,
+        registryPin: mod.pin,
       }),
     );
   }
