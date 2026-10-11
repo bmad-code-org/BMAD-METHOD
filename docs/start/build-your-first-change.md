@@ -30,6 +30,10 @@ mkdir bmad-first-project
 cd bmad-first-project
 ```
 
+:::caution[Preview Release]
+This tutorial uses the next version of BMad, which is still in preview and changes often. For the stable v6.12 release, run `npx bmad-method install` instead and follow the [V6.12 documentation](https://github.com/bmad-code-org/BMAD-METHOD/tree/V6.12/docs/start).
+:::
+
 Install BMad Method with the skills CLI, then let the `bmad` skill set up the
 project:
 
