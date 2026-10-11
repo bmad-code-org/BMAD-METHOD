@@ -5,13 +5,13 @@ description: Install the stable BMad release or the preview skills, set up the p
 
 Install BMad through the Skills CLI or your coding tool's plugin marketplace, then run `bmad setup` in the project.
 
-:::caution[Preview Release]
-This page installs the next version of BMad, which is still in preview. Its skills, install path, and documentation change often, and updates can break an existing setup. Use it to try out or help test what is coming. For stable work, install the v6.12 release instead.
+:::caution[V7 Preview Alpha]
+This page installs v7 of BMad, which is in preview alpha. Its skills, install path, and documentation change often, and updates can break an existing setup. It is recommended for solo or small teams that can pivot as things will change before beta. The v7 release ETA is October 16, 2026, and it might be sooner. If you need stability until v7 is finalized for release, install v6.12 instead.
 :::
 
 ## Install the Stable Release
 
-The stable release is v6.12. With [Node.js](https://nodejs.org) 20.12+, [Python](https://www.python.org) 3.10+, and [uv](https://docs.astral.sh/uv/), run in your project:
+The stable release is v6.12, frozen aside from bug fixes. With [Node.js](https://nodejs.org) 20.12+, [Python](https://www.python.org) 3.10+, and [uv](https://docs.astral.sh/uv/), run in your project:
 
 ```bash
 npx bmad-method install

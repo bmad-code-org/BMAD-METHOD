@@ -15,9 +15,9 @@ _Start anywhere. Use BMad end to end, or carry its briefs, specifications, and a
 
 ## Start Building
 
-BMad ships on two lines. The stable release is **v6.12**, installed by the npm installer. The next major version is in preview on this branch: its skills, install path, and docs change often, so use it only to try out or help test what is coming. Both routes need [uv](https://docs.astral.sh/uv/) for BMad setup and Python scripts.
+BMad ships on two lines. The stable release is **v6.12**, installed by the npm installer and frozen aside from bug fixes. **V7** is in preview alpha on this branch: its skills, install path, and docs change often. The v7 release ETA is October 16, 2026, and it might be sooner. Both routes need [uv](https://docs.astral.sh/uv/) for BMad setup and Python scripts.
 
-### Stable: v6.12 (recommended)
+### Stable: v6.12 (recommended if stability is needed until v7 is finalized for release)
 
 With [Node.js](https://nodejs.org) 20.12+ and [Python](https://www.python.org) 3.10+, run in your project:
 
@@ -27,7 +27,7 @@ npx bmad-method install
 
 Open your project in your AI coding tool, invoke `bmad-build` with what you want to change, and run `bmad-help` whenever you want guidance on what comes next. The v6.12 source and documentation live on the [V6.12 branch](https://github.com/bmad-code-org/BMAD-METHOD/tree/V6.12).
 
-### Preview: the next version
+### V7 Preview Alpha (recommended for solo or small teams that can pivot as things will change before beta)
 
 Expect breaking changes between updates. You need an AI coding tool that supports skills.
 
