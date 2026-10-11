@@ -8,6 +8,9 @@
 # override with --channel/--pin/--next. Valid values: stable | next.
 # Omit to inherit the installer's hardcoded default (stable).
 #
+# pin (optional) — a git tag to install instead of the channel. Use it when
+# newer releases no longer work with this installer. Only --pin overrides it.
+#
 # deprecated (optional, default false) — when true, the module is hidden from
 # the installer picker UNLESS it is already installed (so existing users can
 # still see/manage it, but new users are not offered it).
@@ -55,6 +58,7 @@ modules:
     type: bmad-org
     npmPackage: bmad-creative-intelligence-suite
     default_channel: stable
+    pin: v0.3.2
 
   bmad-method-test-architecture-enterprise:
     url: https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise
@@ -66,6 +70,7 @@ modules:
     type: bmad-org
     npmPackage: bmad-method-test-architecture-enterprise
     default_channel: stable
+    pin: v1.27.2
 
   bmad-loop:
     url: https://github.com/bmad-code-org/bmad-loop

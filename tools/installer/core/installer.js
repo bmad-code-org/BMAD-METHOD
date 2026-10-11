@@ -1326,6 +1326,9 @@ class Installer {
       rounded: true,
       formatBorder: color.green,
     });
+
+    const { MessageLoader } = require('../message-loader');
+    await new MessageLoader().displayEndMessage();
   }
 
   /**

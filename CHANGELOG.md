@@ -1,5 +1,14 @@
 # Changelog
 
+## v6.12.2 - 2026-10-11
+
+### 🐛 Fixes
+
+* `install --yes` without `--directory` installs into the current directory instead of stopping at a prompt (#3064).
+* Helper scripts write UTF-8 on Windows (#3050).
+* CIS and TEA install at their last v6 releases (v0.3.2 and v1.27.2); newer releases target v7.
+* The installer notes that v7 is available for preview.
+
 ## v6.12.1 - 2026-10-04
 
 **Every skill now reads the same merged config**, so overrides in `_bmad/custom/config.toml` and `config.user.toml` apply everywhere (#3019).

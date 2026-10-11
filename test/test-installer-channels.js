@@ -205,6 +205,18 @@ function runTests() {
     const r = decideChannelForModule({ code: 'bmb', channelOptions: opts });
     assertEqual(r.channel, 'pinned', '--pin beats --next for same code');
   }
+  {
+    const opts = parseChannelOptions({ channel: 'next', next: ['tea'] });
+    const r = decideChannelForModule({ code: 'tea', channelOptions: opts, registryDefault: 'stable', registryPin: 'v1.27.2' });
+    assertEqual(r.channel, 'pinned', 'registry pin beats --next and --channel');
+    assertEqual(r.pin, 'v1.27.2', 'registry pin value carried through');
+    assertEqual(r.source, 'registry:pin', 'source: registry:pin');
+  }
+  {
+    const opts = parseChannelOptions({ pin: ['tea=v2.0.1'] });
+    const r = decideChannelForModule({ code: 'tea', channelOptions: opts, registryPin: 'v1.27.2' });
+    assertEqual(r.pin, 'v2.0.1', '--pin beats registry pin');
+  }
 
   // ─────────────────────────────────────────────────────────────────────────
   // channel-plan.js :: buildPlan, orphanPinWarnings, bundledTargetWarnings

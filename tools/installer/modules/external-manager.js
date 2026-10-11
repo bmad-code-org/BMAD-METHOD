@@ -130,6 +130,7 @@ class ExternalModuleManager {
       npmPackage: mod.npm_package || mod.npmPackage || null,
       pluginName: mod.plugin_name || mod.pluginName || null,
       defaultChannel: normalizeChannelName(mod.default_channel || mod.defaultChannel) || 'stable',
+      pin: mod.pin || null,
       deprecated: mod.deprecated === true,
       deprecationMessage: mod.deprecation_message || mod['deprecation-message'] || mod.deprecationMessage || null,
       marketplacePlugin: mod.marketplace_plugin === true || mod['marketplace-plugin'] === true || mod.marketplacePlugin === true,
@@ -273,6 +274,7 @@ class ExternalModuleManager {
       code: moduleCode,
       channelOptions: options.channelOptions,
       registryDefault: moduleInfo.defaultChannel,
+      registryPin: moduleInfo.pin,
     });
 
     // Same-plan short-circuit: a single install calls cloneExternalModule
