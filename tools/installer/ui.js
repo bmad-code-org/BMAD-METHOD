@@ -291,6 +291,13 @@ class UI {
       }
       confirmedDirectory = expandedDir;
       await prompts.log.info(`Using directory from command-line: ${confirmedDirectory}`);
+    } else if (options.yes) {
+      confirmedDirectory = process.cwd();
+      const validation = this.validateDirectorySync(confirmedDirectory);
+      if (validation) {
+        throw new Error(`Invalid directory: ${validation}`);
+      }
+      await prompts.log.info(`Using current directory: ${confirmedDirectory}`);
     } else {
       confirmedDirectory = await this.getConfirmedDirectory();
     }
