@@ -15,8 +15,21 @@ _Start anywhere. Use BMad end to end, or carry its briefs, specifications, and a
 
 ## Start Building
 
-Choose one install route. You need an AI coding tool that supports skills and
-[uv](https://docs.astral.sh/uv/) for BMad setup and Python scripts.
+BMad ships on two lines. The stable release is **v6.12**, installed by the npm installer. The next major version is in preview on this branch: its skills, install path, and docs change often, so use it only to try out or help test what is coming. Both routes need [uv](https://docs.astral.sh/uv/) for BMad setup and Python scripts.
+
+### Stable: v6.12 (recommended)
+
+With [Node.js](https://nodejs.org) 20.12+ and [Python](https://www.python.org) 3.10+, run in your project:
+
+```bash
+npx bmad-method install
+```
+
+Open your project in your AI coding tool, invoke `bmad-build` with what you want to change, and run `bmad-help` whenever you want guidance on what comes next. The v6.12 source and documentation live on the [V6.12 branch](https://github.com/bmad-code-org/BMAD-METHOD/tree/V6.12).
+
+### Preview: the next version
+
+Expect breaking changes between updates. You need an AI coding tool that supports skills.
 
 **Skills CLI** — with [Node.js and npm](https://nodejs.org) and Git, run in your project:
 
@@ -45,12 +58,17 @@ Open your coding tool in the project and ask the `bmad` skill to run
 `bmad setup`. Then invoke `bmad-build` with what you want to change. Ask
 `bmad` whenever you want guidance on what comes next or what is optional.
 
+Ask for `bmad status` to check versions and see what to run next. Ask for `bmad setup` to install updates: it runs `npx skills update`, then refreshes the project and cleans up renamed and removed skills. With a plugin marketplace, update there, then ask for `bmad setup`.
+
+Report preview problems in [GitHub Issues](https://github.com/bmad-code-org/BMAD-METHOD/issues) or on [Discord](https://discord.gg/gk8jAdXWmj).
+
+### Next steps
+
 **[Build your first project with BMad →](https://docs.bmad-method.org/start/build-your-first-change/)**
 
 **[Add BMad to an existing codebase →](https://docs.bmad-method.org/existing-codebases/start-in-an-existing-codebase/)**
 
 BMad is free and open source, with no paywalled workflows or gated community.
-Ask for `bmad status` to check versions and see what to run next. Ask for `bmad setup` to install updates: it runs `npx skills update`, then refreshes the project and cleans up renamed and removed skills. With a plugin marketplace, update there, then ask for `bmad setup`.
 
 ## Why BMad?
 
