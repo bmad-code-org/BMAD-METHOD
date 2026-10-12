@@ -96,6 +96,8 @@ For each group:
 
 ### Finalize Plan
 
+Before changing the status, read the plan's original `baseline_revision` and compare the complete diff since it with `## Tasks & Acceptance` and `## Implementation Notes`. If no diff is available, create one with untracked files included. Include added, modified, deleted, and renamed paths. Attribute changes to this build using the available history and implementation evidence; unrelated, concurrent, or unattributable changes cannot support a task check or note correction. Mark an execution task `[x]` only when this build's diff and applicable verification evidence support its action; leave incomplete or ambiguous tasks `[ ]` and name them in the closing summary. Do not change Acceptance Criteria. In `## Implementation Notes`, correct only explicit `Not edited` path claims contradicted by changes attributable to this build. Leave claims unchanged when attribution is uncertain. Do not change anything inside `<frozen-after-approval>`. If the baseline or diff is unavailable, state that limitation and do not infer path changes.
+
 Update `{plan_file}`:
 
 1. Set `status: 'built'` in the frontmatter.
@@ -113,6 +115,7 @@ Give the user a short summary — one or two sentences:
 
 - What changed.
 - Review result, including anything deferred.
+- Any execution tasks left incomplete or ambiguous.
 - Commit hash, if you made one.
 
 Do not list files, repeat the plan, or walk through what you did unless asked.

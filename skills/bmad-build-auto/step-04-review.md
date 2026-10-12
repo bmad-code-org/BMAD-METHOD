@@ -146,9 +146,12 @@ Write `lenses_ran` — the ids launched, in launch order — to `{plan_file}` fr
 
 ## Finalize
 
+Before writing the final status, and only on this successful finalization path, read the plan's original `baseline_revision` and compare the complete diff since it with `## Tasks & Acceptance` and `## Implementation Notes`. If no diff is available, create one with untracked files included. Include added, modified, deleted, and renamed paths. Attribute changes to this build using the available history and implementation evidence; unrelated, concurrent, or unattributable changes cannot support a task check or note correction. Mark an execution task `[x]` only when this build's diff and applicable verification evidence support its action; leave incomplete or ambiguous tasks `[ ]` and name them under `## Auto Run Result`. Do not change Acceptance Criteria. In `## Implementation Notes`, correct only explicit `Not edited` path claims contradicted by changes attributable to this build. Leave claims unchanged when attribution is uncertain. Do not change anything inside `<intent-contract>`. If the baseline or diff is unavailable, record that limitation and do not infer path changes. Do not run this audit on a `blocked` HALT.
+
 Write the following details to `{plan_file}` under `## Auto Run Result`:
 - Summary of implemented change
 - Files changed with one-line descriptions
+- Any execution tasks left incomplete or ambiguous
 {% if review != "none" %}
 - Review findings breakdown: patches applied, items deferred, and every rejected finding with its recorded reason
 - Follow-up review recommendation: default `false`. Count only this pass's entries triaged `patch`, at entry verdict — never deferred or `false` ones. On a first pass, `true` if any patched entry was `high`, or if two or more `medium` entries were patched. On a follow-up pass (`{followup_pass}` = `true`), `true` only if this pass patched a `high` — otherwise the work has converged; patch volume is never grounds. A `true` names the specific unverified risk under `## Auto Run Result`; if none can be named, it is `false`. Record the patched counts by verdict.
