@@ -4,7 +4,7 @@ The contract a built skill meets; `canon.md` covers the prose.
 
 ## Frontmatter
 
-`name` and `description` only. `name` equals the folder name, kebab-case. `bmad-` belongs to modules shipped by the bmad-code-org (`^bmad-[a-z0-9]+(?:-[a-z0-9]+)*$`); anyone else's module skills carry its own code as prefix; a lone skill is a plain name, and one with the user's prefix is better. `description`: a single-quoted YAML string, aiming under 500 characters with 1024 as the ceiling, per the canon's trigger section. `disable-model-invocation: true` is the one further key, for a skill only ever called by name, where the host honours it.
+`name` and `description` only. `name` equals the folder name, kebab-case. `bmad-` belongs to modules shipped by the bmad-code-org (`^bmad-[a-z0-9]+(?:-[a-z0-9]+)*$`); anyone else's module skills carry its own code as prefix; a lone skill is a plain name, and one with the user's prefix is better. `description`: a single-quoted YAML string in the canon's two parts, with 1024 characters as the ceiling, per the canon's trigger section. `disable-model-invocation: true` is the one further key, for a skill only ever called by name, where the host honours it.
 
 ## Layout
 
