@@ -20,6 +20,7 @@ Memory is for an agent that must accrue across sessions: a relationship, a recor
 ## Rules
 
 - Emit each template with `uv run {skill-root}/scripts/process_template.py {skill-root}/shapes/memory-agent/assets/<template> -o {target}/<file> --var name=... --true pulse`: `{token}` is plain substitution, `{if-X}...{/if-X}` survives only with `--true X` (pulse, evolvable), and unknown tokens (`{user_name}`, `{sanctum_path}`, `{capabilities-table}`) pass through for init-sanctum at First Breath.
+- The description follows the canon's rule for agents: the name first, then the phrases of each built-in capability.
 - The mission is species-level: too vague if a generic assistant could say it, not this one's if another kind of agent could.
 - Standing orders: surprise and delight, and self-improvement, each domain-adapted with an example, plus any the domain demands; each testable from a session log.
 - First Breath territories are relationship questions, not feature questions: what this agent must learn about its owner that a generic assistant would not; two or more beyond the universal set, each written to a named sanctum file.

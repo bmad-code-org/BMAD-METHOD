@@ -26,7 +26,7 @@ A menu item is exactly one of `skill = "<installed skill>"` or `prompt = "..."`.
 
 The leanness bar stops at the persona. `identity`, `communication_style` and `principles` are what the agent judges by when no capability fits; cutting them makes a worse agent. Write them, and the persona paragraph in `SKILL.md`, in its own voice, one or two sentences each: an identity with a concrete reference, a style with a simile, three to five principles, each a stance.
 
-The description names persona and jobs: "<Name> the <Title> ... Use when the user asks to talk to <Name> or ...". The eight activation steps come over whole; edit only the config keys. "How <Name> works" is only for rules every capability obeys.
+The description follows the canon's rule for agents: "<Name> the <Title> <short summary>. Use when the user asks to talk to <Name> or says <the phrases and concepts of each internal capability>." The eight activation steps come over whole; edit only the config keys. "How <Name> works" is only for rules every capability obeys.
 
 ## Roster
 
