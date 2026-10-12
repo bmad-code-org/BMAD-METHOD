@@ -35,11 +35,11 @@
 3. **Group the survivors by shared root cause** -- two findings belong in one entry only when the same defect produced both. Same location alone is not a shared root cause, and neither is a shared fix. An entry carries every member's verified bad outcome in `detail` and the highest verdict among them (`high` > `medium` > `low` > `maybe-false`); set `source` to the contributing layers joined with `+` (e.g., `blind-hunter+edge-case-hunter`).
 
 4. **Route** each entry into exactly one triage bucket. A group that includes verified `high`, `medium`, or `low` members routes by its highest such verdict -- not to defer just because a member is `maybe-false`.
-   - **decision_needed** -- There is an ambiguous choice that requires human input. The code cannot be correctly patched without knowing the user's intent. Only possible if `review_mode` = `full`.
+   - **decision_needed** -- There is an ambiguous choice that requires human input. The code cannot be correctly patched without knowing the user's intent. Applies in every mode, with or without a plan, and whether or not a human can answer during this run -- the choice then falls to whoever reads the review. Record the options (each plausible fix, one line) and the one you recommend, with the reason.
    - **patch** -- Code issue that is fixable without human input. The correct fix is unambiguous, adds no public surface, and guards no state you did not demonstrate; otherwise `decision_needed`.
    - **defer** -- Pre-existing issue not caused by the current change, real but not actionable now; or an entry whose members are all `maybe-false` and the claim, if true, would be `medium` or `high` -- record that severity marked unverified, plus what would settle it (if it would only be `low`, reject it with the same note); or any entry whose fix edits agent-context files (CLAUDE.md, AGENTS.md, rules, other specs).
 
-   If `review_mode` = `no-plan` and an entry would otherwise be `decision_needed`, reclassify it as `patch` (if the fix is unambiguous) or `defer` (if not).
+   An entry this change caused, with a verified `high`, `medium`, or `low` member, is never `defer`, whatever its fix touches: it is `patch` or `decision_needed`. defer is only for what is not this change's problem.
 
 5. If `failed_layers` is non-empty, report which layers failed before announcing results. If zero entries remain after rejections AND `failed_layers` is non-empty, warn the user that the review may be incomplete rather than announcing a clean review.
 

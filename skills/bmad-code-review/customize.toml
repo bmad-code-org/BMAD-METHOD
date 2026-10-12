@@ -42,6 +42,12 @@ on_complete = ""
 
 review = "thorough"
 
+# Whether a human can answer during the run. Set false when nobody can (a
+# review bot, a CI job, another workflow): the review then never asks or
+# halts, and ends with its report.
+
+interactive = true
+
 # Review lenses for the review step, in two sets the review selection picks
 # between. `instruction` is the lens's whole execution recipe — subagents by
 # default, but an override may run anything (e.g. an external reviewer via

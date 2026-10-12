@@ -10,6 +10,8 @@ Replace `{skill-root}` with the absolute path to this skill's directory.
 
 If the invocation specifies a `quick` or `thorough` review, append `--set workflow.review=<value>` to the command.
 
+If the invocation is clearly non-interactive -- it says not to ask questions, or a bot, a CI job or another workflow is running the review -- append `--set workflow.interactive=false`. When in doubt, don't.
+
 ```bash
 uv run --no-cache "{project-root}/_bmad/scripts/render_skill.py" --project-root "{project-root}" --skill "{skill-root}"
 ```

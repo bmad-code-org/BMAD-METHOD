@@ -9,19 +9,22 @@ deferred_work_file: '{{ initiative_folder }}/deferred-work.md'
 - When `{plan_file}` is set, always write findings to it before offering action choices.
 - `decision-needed` findings must be resolved before handling `patch` findings.
 - Never change a plan's `status`. The build leaves it at `built`; only the user marks a ticket done.
+{% if not workflow.interactive %}
+- No human can answer during this run: never ask and never HALT. Present the report and end. The report text is the deliverable -- everything a reader must act on is in it, not only in files the run writes.
+{% endif %}
 
 ## INSTRUCTIONS
 
 ### 1. Clean review shortcut
 
-If zero findings remain after triage (all rejected or none raised): state that. When `{plan_file}` is set, still write section 2's block, with the summary line and the `Rejected` appendix, so the run is recorded. Then proceed to section 6 (Next steps).
+If zero findings remain after triage (all rejected or none raised): state that. When `{plan_file}` is set, still write section 2's block, with the summary line and the `Rejected` appendix, so the run is recorded. {% if workflow.interactive %}Then proceed to section 6 (Next steps).{% else %}Then end.{% endif %}
 
 ### 2. Write findings to the plan
 
 If `{plan_file}` is set, append a block to its `## Code Review` section, creating that section at the end of the file when it is absent. The block opens with `### {date}` and the summary line from section 3, then the findings below, then the `Rejected` appendix. Write all findings in this order:
 
 1. **`decision-needed`** findings (unchecked):
-   `- [ ] [Review][Decision] <Title> — <Detail>`
+   `- [ ] [Review][Decision] <Title> — <Detail> Options: <each option, one line>. Recommended: <option> — <reason>.`
 
 2. **`patch`** findings (unchecked):
    `- [ ] [Review][Patch] <Title> [<file>:<line>]`
@@ -39,9 +42,14 @@ Announce what was written:
 
 The `Rejected` appendix is one line per rejected finding: `false` with its refutation, `low` with why it was not worth fixing. Without `plan_file`, it ends the chat listing.
 
+{% if not workflow.interactive %}
+The listing is the review itself. List `decision-needed` entries first, then `patch`, then `defer`, then the `Rejected` appendix, highest severity first within each. Each `decision-needed` entry carries its options and the recommended one and is marked open -- nothing was decided. Each `patch` entry carries its location and the fix.
+{% endif %}
+
 If `plan_file` is set, add: `Findings written to {plan_file}.`
 Otherwise add: `Findings are listed above. No plan was provided, so nothing was persisted.`
 
+{% if workflow.interactive %}
 ### 4. Resolve decision-needed findings
 
 If `decision_needed` findings exist, present each one with its detail and the options available. The user must decide — the correct fix is ambiguous without their input. Walk through each finding (or batch related ones) and get the user's call. Once resolved, each becomes a `patch`, `defer`, or is rejected.
@@ -92,6 +100,7 @@ Present the user with follow-up options:
 > 3. **Done** — end the workflow
 
 **HALT** — I am waiting for your choice. Do not proceed until the user selects an option.
+{% endif %}
 
 ## On Complete
 

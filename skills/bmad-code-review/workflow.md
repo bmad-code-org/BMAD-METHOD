@@ -1,6 +1,9 @@
 {% if workflow.review not in ("quick", "thorough") %}
   {{ halt("workflow.review must be quick or thorough, not " ~ workflow.review) }}
 {% endif %}
+{% if workflow.interactive is not boolean %}
+  {{ halt("workflow.interactive must be true or false, not " ~ workflow.interactive) }}
+{% endif %}
 
 # Code Review Workflow
 
