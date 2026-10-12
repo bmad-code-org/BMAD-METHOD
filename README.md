@@ -37,7 +37,7 @@ Expect breaking changes between updates. You need an AI coding tool that support
 npx skills add bmad-code-org/BMAD-METHOD
 ```
 
-Select the skills and coding tool you want. Include `bmad` for setup and help, and the module record for each module you pick skills from: `bmod-method` and `bmod-core-tools`. To install by name instead, list them together: `npx skills add bmad-code-org/BMAD-METHOD --skill bmad --skill bmod-core-tools --skill bmod-method --skill bmad-build`.
+Select the skills and coding tool you want. Include `bmad` for setup and help, and the module record for each module you pick skills from: `bmod-method`, `bmod-core-tools`, and `bmod-toolsmith`. To install by name instead, list them together: `npx skills add bmad-code-org/BMAD-METHOD --skill bmad --skill bmod-core-tools --skill bmod-method --skill bmad-build`.
 
 **Claude Code plugin** — add the marketplace inside Claude Code:
 
@@ -89,8 +89,7 @@ Install the core method or add official modules for specialized work.
 
 | Module | Purpose |
 | --- | --- |
-| **[BMad Method](https://github.com/bmad-code-org/BMAD-METHOD)** | Plan and deliver software, from new prototypes to established codebases |
-| **[BMad Builder](https://github.com/bmad-code-org/bmad-builder)** | Skill, workflow, and agent builder |
+| **[BMad Method](https://github.com/bmad-code-org/BMAD-METHOD)** | Plan and deliver software, from new prototypes to established codebases; includes Toolsmith for building, converting, and evaluating skills, agents, and modules |
 | **[BMad Creative Intelligence Suite](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite)** | Creative thinking partners for innovation, design thinking, and storytelling |
 | **[BMad Test Architect](https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise)** | Enterprise testing add-on for BMad Method |
 | **[BMad Loop](https://github.com/bmad-code-org/bmad-loop)** | Builds, verifies, and retros a whole epic unattended |

@@ -123,7 +123,7 @@ integration boundaries are explicit.
 
 On activation, the workflow resolves:
 
-- `_bmad/config.toml`, `_bmad/config.user.toml`, and optional team/user overrides under `_bmad/custom/`
+- `_bmad/config.toml`, with the team and user overrides `_bmad/custom/config.toml` and `_bmad/custom/config.user.toml`
 - Any configured workflow customizations from `customize.toml`, team overrides, and user overrides
 - Persistent facts listed in workflow config — empty unless you opt in, so nothing is loaded here by default
 
@@ -190,7 +190,7 @@ The workflow commits but does not push. The working copy is clean at exit.
 
 On blocked completion, the workflow records the final status and a blocking condition:
 
-- For a ticket named by its ref, file, or title, it runs `tickets.py mark <ref> blocked --blocked <blocking condition>`. That writes `status: blocked`, `blocked_at` (the date), and `blocked_reason` to the plan, creating the plan with only that frontmatter when the run halted before planning.
+- For a ticket named by its ref, file, or title, it runs `tickets.py mark <ref> blocked --blocked <blocking condition>`. That writes `status: blocked`, `blocked_at` (the date), and `blocked_reason` to the plan, creating a plan that holds only frontmatter when the run halted before planning.
 - Details go under the plan's `## Auto Run Result`. On such a ticket, `blocked plan supplied` writes nothing, so the plan keeps its first reason.
 - If `mark` fails, or the run was given a plan path or work outside the tree, the workflow sets `status` in an existing plan or writes the fallback result artifact. The blocking condition is then only in `## Auto Run Result` or that file, not in `blocked_reason`.
 
@@ -212,7 +212,7 @@ cause, then run `tickets.py mark <ref> <status>` with the status to resume from,
 which clears `blocked_at` and `blocked_reason`. When the plan holds only
 frontmatter, delete it instead, and the next dispatch starts fresh.
 
-An `intent gap` means the captured intent cannot answer a question the run hit — it can halt the planning step (before any code exists) or the review step. When review halts on it, the working tree is reverted as usual, but the attempted change is first saved as a patch file beside the plan, referenced from the plan's triage log and the halt output. The patch shows which reading of the intent the run implemented — concrete evidence for repairing the intent. If the attempted reading turns out to be correct, `git apply` the patch and set the plan status to `in-review` to resume review on it instead of re-running from scratch.
+An `intent gap` means the captured intent cannot answer a question the run hit — it can halt the planning step (before any code exists), the implement step on the oneshot route, or the review step. When the implement step halts on it, the gap is recorded in the plan's `## Implementation Notes`, and the partial change stays uncommitted in the working tree, with no patch saved. When review halts on it, the working tree is reverted as usual, but the attempted change is first saved as a patch file beside the plan, referenced from the plan's triage log and the halt output. The patch shows which reading of the intent the run implemented — concrete evidence for repairing the intent. If the attempted reading turns out to be correct, `git apply` the patch and set the plan status to `in-review` to resume review on it instead of re-running from scratch.
 
 ## Output Artifacts
 

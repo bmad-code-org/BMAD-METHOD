@@ -93,13 +93,14 @@ expensive kind of mistake to find later.
 
 ### 4. Approve a Plan When Asked
 
-After investigation, `bmad-build` routes to the smallest safe path. It reports
-three facts about the settled design: intent gaps (things you did not say that you
-would notice in the result), irreversible actions, and footprint. A design
-clean on all three takes the light path — a minimal plan and implementation in
-the same session, reviewed afterwards. Anything flagged gets a full written
-plan first, with each intent gap recorded as an open question you answer
-before approval.
+After investigation, `bmad-build` routes to the smallest safe path by the
+change's estimated size. About 100 changed lines or fewer takes the light path —
+a minimal plan and implementation in the same session, reviewed afterwards,
+with no approval stop. Anything larger gets a full written plan first. Either
+way, each intent gap (something you did not say that you would notice in the
+result) found while planning becomes an open question you answer before
+implementation starts. A gap found while coding stops the build and asks you;
+on the full path it sends the plan back to planning.
 
 Approve the plan when it describes the right thing to build. Push back if it
 does not — fixing the plan is cheaper than fixing the code.
@@ -107,15 +108,17 @@ does not — fixing the plan is cheaper than fixing the code.
 ### 5. Implementation and Review
 
 After that decision, `bmad-build` implements the change, reviews its own work
-with independent reviewers, fixes problems that belong to this change, and
-commits locally. This works best on a platform that can spawn subagents, or at
-least call another model from the command line and wait for a result.
+with one or more independent reviewers, fixes problems that belong to this
+change, and commits locally. This works best on a platform that can spawn
+subagents, or at least call another model from the command line and wait for a
+result.
 
 Review is triage, not a dump of every possible note. Issues that belong to the
 current change get fixed. Unrelated pre-existing issues get deferred. If the
 code is wrong because the plan was weak, or the plan is wrong because the goal
 was wrong, it goes back to that layer and regenerates from there instead of
-patching only the diff.
+patching only the diff. On the light path, a finding whose fix is not simple
+stops the run and asks you instead.
 
 For a standalone review — a PR, someone else's change, an extra pass, or a
 review bot — see [Review a Change](review-a-change.md).
@@ -144,9 +147,10 @@ different approach.
 - Modified source files with the change applied
 - Passing tests (if your project has a test suite)
 - A ready-to-push commit with a conventional commit message
-- A plan recording the run: beside the epic's `tickets.toml` for a ticket,
-  otherwise `plan-<slug>.md` in the active initiative's folder, or directly
-  in the output folder when no initiative is active. It
+- A plan recording the run: beside the epic's `tickets.toml` for a ticket, in
+  `backlog/` for a backlog ticket, otherwise `plan-<slug>.md` in the active
+  initiative's folder, or directly in the output folder when no initiative is
+  active. It
   carries the ticket's status, which the build leaves at `built` until you mark
   the ticket done
 
@@ -156,7 +160,8 @@ For generated API and end-to-end coverage of the finished work, see
 ## Deferred Work
 
 Each run stays focused on one goal. If your request contains several independent
-goals, or review finds pre-existing issues unrelated to your change,
+goals and you choose to split them, or review finds pre-existing issues
+unrelated to your change,
 `bmad-build` writes them to `deferred-work.md` in the active initiative's
 folder, or in the output folder when no initiative is active, instead of
 trying to do everything at once.
@@ -194,8 +199,8 @@ decisions may set patterns for later work. Once those patterns are stable,
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
 | `bmad-build`          | Implement and review one direct intent or ticket with human checkpoints (this page)                                                                           | Plan + code                                      |
 | `bmad-build-auto`     | Implement and review one ticket unattended for a caller or orchestrator ([Autonomous Development Loops](./autonomous-development-loops.md))                   | Plan + code + terminal status                    |
-| `bmad-code-review`    | Review any code change with several independent reviewers ([Review a Change](./review-a-change.md))                                                           | Findings + applied patches                       |
-| `bmad-correct-course` | Assess the impact of a significant mid-sprint change ([Break Work into Stories and Track It](../plan/break-work-into-stories-and-track-it.md#correct-course)) | Updated plan or re-routing                       |
+| `bmad-code-review`    | Review any code change with several independent reviewers ([Review a Change](./review-a-change.md))                                                           | Findings + the patches you choose to apply       |
+| `bmad-correct-course` | Assess the impact of a significant mid-sprint change ([Break Work into Stories and Track It](../plan/break-work-into-stories-and-track-it.md#correct-course)) | Change proposal with drafted edits               |
 | `bmad-retrospective`  | Review a completed epic against the evidence it left behind ([Finish an Epic](./finish-an-epic.md))                                                           | Retro document, action items, acceptance verdict |
 
 Clear one-session work enters `bmad-build` directly. Larger work is sliced

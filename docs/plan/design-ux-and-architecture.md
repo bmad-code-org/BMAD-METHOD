@@ -61,8 +61,8 @@ already decides a lot of the architecture.
 
 Point it at the whole system or at one epic; an epic spine inherits the
 parent's decisions and records only what the parent left open. When it
-finishes, it offers to attach itself to the spec, which is how Build and the
-readiness gate find it. Seed
+finishes, it offers to attach itself to the spec, which is how Build and
+`bmad-ticket` find it. Seed
 [project context](../existing-codebases/set-and-maintain-project-context.md) from it so every later skill
 reads the same rules.
 
@@ -95,5 +95,6 @@ changes to an existing UI that already has established patterns.
 
 The spine and the UX documents become input to the spec and to
 [Break Work into Stories and Track It](./break-work-into-stories-and-track-it.md),
-where the readiness gate checks that stories do not depend on decisions
-nothing records.
+where `bmad-ticket` checks each breakdown before you approve it: nothing may
+contradict the architecture, and every decision two or more epics must adopt
+needs a home.

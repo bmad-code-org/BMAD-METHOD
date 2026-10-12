@@ -100,7 +100,7 @@ documentation. Leave the implementation in the working tree for local
 inspection.
 ```
 
-Build asks any questions it needs before it writes a plan. Answer according
+Build asks any questions it needs before it presents a plan. Answer according
 to your own preferences for the new JSON output. There is no single required
 JSON design for this exercise.
 

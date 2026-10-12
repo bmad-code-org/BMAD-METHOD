@@ -57,14 +57,14 @@ The retrospective works on one epic folder in the ticket tree that
 - **The initiative's requirements**: what each ticket's `covers` points at.
 - **Each ticket's plan and story file**: the plan's triage log,
   verification, plan changes, and any `## Code Review` blocks; the story
-  file only when the ticket was refined.
+  file when the ticket has one.
 - **The git history**: each plan's diff and commits, from its
   `baseline_revision` to the next plan's.
 - **The previous epic's retrospective**: its action items, to check whether
   they landed.
 
 A ticket counts as finished when it is `built`, `done`, or `dropped`. Builds
-stop at `built`, and only you mark a ticket done, so the retrospective lists
+stop at `built`, and only you, or an orchestrator, mark a ticket done, so the retrospective lists
 the tickets still at `built` for you to close.
 
 ## What You Get

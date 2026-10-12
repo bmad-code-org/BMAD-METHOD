@@ -134,9 +134,9 @@ one run per ticket. No leaf file needs to be pulled first.
 PRFAQ document with a short summary for the PRD or spec. `bmad-prd`:
 `prd-<slug>.md` and `addendum.md`, or a validation report. `bmad-spec`:
 `spec-<slug>.md` plus supporting files. Each lands in its own `<type>-<slug>/`
-folder in the active initiative's folder, or in the output folder when no
-initiative is active. Exact paths and options belong to each
-skill; see
+folder in the active initiative's folder. With no initiative active,
+`bmad-prfaq` asks whether the work belongs to one, and the other three have you
+set one first. Exact paths and options belong to each skill; see
 [Planning Skills and What They Produce](./choose-a-planning-path.md#planning-skills-and-what-they-produce).
 :::
 

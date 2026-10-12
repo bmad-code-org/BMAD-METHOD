@@ -85,12 +85,12 @@ regenerated from it.
 | Designer                 | `bmad-ux`                                                                                         | `DESIGN.md`, `EXPERIENCE.md`                                              |
 | Tech lead or architect   | `bmad-architecture`                                                                               | The architecture spine                                                    |
 | One engineer, per epic   | `bmad-spec`, `bmad-ticket`, Build per story, `bmad-retrospective`                      | That epic: its spec, its `tickets.toml`, its verdict                      |
-| Whoever tracks the whole | `bmad-ticket`                                                                            | The ticket tree and plan statuses                                   |
+| Whoever tracks the whole | `bmad-ticket`                                                                            | The ticket tree and marking tickets done                            |
 
 The rows are roles, not headcount. One person can hold several; what matters
 is that each document has exactly one owner, because each has exactly one
-skill that writes it. An epic is a handful of Build sessions, usually a day's
-work for one person. The organization's coordination lives in the PRD and the
+skill that writes it. An epic is typically eight to twelve Build sessions, usually
+one person's work. The organization's coordination lives in the PRD and the
 spine; the epic itself never needs a committee.
 
 ## Where Sign-Off Happens

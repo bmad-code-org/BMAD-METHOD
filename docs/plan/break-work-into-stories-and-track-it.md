@@ -17,9 +17,9 @@ See [Set Up the Ticket Tree](./set-up-the-ticket-tree.md) for store and tracker 
 
 ## Build an Entry
 
-Say “build story 1.2” to `bmad-build`. It reads the entry and epic, plus an existing refined leaf file, and writes acceptance criteria into its plan. Refinement before building is optional unless the work needs it.
+Say “build story 1.2” to `bmad-build`. It reads the entry and epic, plus the leaf file when one was pulled, and writes acceptance criteria into its plan. Refinement before building is optional unless the work needs it.
 
-The plan sits beside `tickets.toml` as `story-<slug>-plan.md`. Its numeric `ticket` joins the entry. A backlog plan uses its leaf file stem instead. The plan owns status and records the baseline before changes.
+The plan sits beside `tickets.toml` as `story-<slug>-plan.md`. Its `ticket`, the entry's id, joins the entry. A backlog plan uses its leaf file stem instead. The plan owns status and records the baseline before changes.
 
 For unattended work, explicitly dispatch a ticket to `bmad-build-auto`, one invocation per ticket. It does not select the next ticket itself. Read [Autonomous Development Loops](../build/autonomous-development-loops.md) before wiring a runner.
 
@@ -35,4 +35,4 @@ Keep completed plans. Deleting one removes the state and evidence later builds, 
 
 ## Correct Course
 
-Run `bmad-correct-course` when a requirement, architecture choice, or dependency changes significantly. It requires a PRD and your description of the affected work and dependencies. For standalone spec work without a PRD, update the spec with `bmad-spec` instead. Correct-course assesses the available planning documents and writes its proposal as `change-<slug>/change-<slug>.md` in the active initiative's folder, or in the output folder when none is active, with the edits and a `bmad-ticket` handoff. It does not read or edit the ticket tree. Apply the approved changes through the owning skills, then use `bmad-ticket` to revise the remaining breakdown.
+Run `bmad-correct-course` when a requirement, architecture choice, or dependency changes significantly. It requires a PRD or a spec and your description of the affected work and dependencies. For a change that touches only the spec, update the spec with `bmad-spec` instead. Correct-course assesses the available planning documents and writes its proposal as `change-<slug>/change-<slug>.md` in the active initiative's folder, with the edits and a `bmad-ticket` handoff. With no active initiative, it hands off to `bmad` to set one first. It does not read or edit the ticket tree. Apply the approved changes through the owning skills, then use `bmad-ticket` to revise the remaining breakdown.

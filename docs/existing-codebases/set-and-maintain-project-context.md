@@ -22,8 +22,8 @@ before it writes; you approve every change.
 
 ## Step 1: Run It
 
-```bash
-bmad-project-context
+```text
+/bmad-project-context
 ```
 
 Say what you want in plain language — "set up AGENTS.md", "adopt the AGENTS.md
@@ -67,8 +67,10 @@ You see the complete block before anything is written. On approval it is
 written between the `<!-- bmad:context -->` and `<!-- /bmad:context -->`
 markers in `AGENTS.md` at the repo root. For a tool that reads a different
 file, such as Claude Code's `CLAUDE.md`, the skill proposes and verifies a
-one-line `@AGENTS.md` import for the tools you use. Everything outside those
-markers is left unchanged, and no later run touches it.
+one-line `@AGENTS.md` import for the tools you use. Writing the block touches
+nothing outside those markers. Text outside them changes only through a change
+you have seen and approved, such as moving an instruction you wrote or fixing
+a line elsewhere that contradicts the block.
 
 It never commits. Changes stay in your working tree for you to review.
 
@@ -85,9 +87,9 @@ At the end it tells you what went in, what was left out, and why.
 - **Audit** on demand. It re-checks and cuts; the block ends smaller or
   equal, never larger.
 
-A rule stays until what it is about is gone, or you retire it. "Nothing broke
-lately" is never a reason to delete one — a working rule erases the evidence
-that it is still needed.
+A rule stays until what it is about is gone, a check enforces it, or you
+retire it. "Nothing broke lately" is never a reason to delete one — a working
+rule erases the evidence that it is still needed.
 
 ## What Earns a Line
 
@@ -131,9 +133,10 @@ the block is kept this small, see
 ## Where the File Lives
 
 Monorepo components and nested repositories get their own file under the same
-rules, listed as pointers in the parent. A large rule set that only applies to
-one directory can move into an `AGENTS.md` in that directory — but only after
-checking that the tools you use actually read it there. If they do not, the
+rules when their rules are substantial and apply only there, listed as
+pointers in the parent. A large rule set that only applies to one directory
+can move into an `AGENTS.md` in that directory — but only after checking that
+the tools you use actually read it there. If they do not, the
 rules stay in the root file, each naming the directory it applies to.
 
 Commit what the skill writes. The team shares it, and it is versioned with the
@@ -149,9 +152,10 @@ tradeoffs and more than one viable shape, the skill tells you to run
 
 ## Replaces Two Earlier Skills
 
-:::note[Looking for bmad-generate-project-context or bmad-document-project?]
-Both are deprecated and forward here; their trigger phrases still work. If you
-have a `project-context.md` from `bmad-generate-project-context`, setup offers
-to absorb its content rather than ignore it. `bmad-document-project`
-generated repository documentation, which the evidence says not to do.
+:::note[Looking for the earlier project-context or documentation skill?]
+v7 removed both; this skill replaces them. If you have a `project-context.md`
+from the earlier rules-file skill, this skill reads it and offers to absorb its
+content, and does not delete the file without your agreement. The earlier
+documentation-generating skill generated repository documentation, which the
+evidence says not to do.
 :::

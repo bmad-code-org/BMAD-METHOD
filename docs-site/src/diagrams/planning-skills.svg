@@ -1,6 +1,6 @@
 <svg class="bmad-diagram" xmlns="http://www.w3.org/2000/svg" width="900" height="620" viewBox="0 0 900 620" role="img" aria-labelledby="title description">
   <title id="title">Planning skills and what they produce</title>
-  <desc id="description">Three columns of skills and their artifacts. Analysis: bmad-brainstorming, bmad-forge-idea, bmad-deep-recon, bmad-product-brief, bmad-prfaq. Planning: bmad-prd, bmad-ux, bmad-spec. Solutioning: bmad-architecture and bmad-ticket. The columns flow left to right and hand off to bmad-build, one session per unit. Build finishes at built; the user marks done and retains the plan.</desc>
+  <desc id="description">Three columns of skills and their artifacts. Analysis: bmad-brainstorming, bmad-forge-idea, bmad-deep-recon, bmad-product-brief, bmad-prfaq. Planning what to build: bmad-prd, bmad-ux, bmad-spec. Planning how and in what slices: bmad-architecture and bmad-ticket. The columns flow left to right and hand off to bmad-build, one session per unit. Build finishes at built; the user marks done and retains the plan.</desc>
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path class="head" d="M 0 0 L 10 5 L 0 10 z"/>
@@ -47,7 +47,7 @@
     <!-- Planning column -->
     <g transform="translate(315 90)">
       <rect class="node" width="270" height="420" rx="2"/>
-      <text x="135" y="30" font-size="15" font-weight="700" text-anchor="middle" letter-spacing="1">PLANNING</text>
+      <text x="135" y="30" font-size="15" font-weight="700" text-anchor="middle" letter-spacing="1">PLANNING: WHAT</text>
       <text x="135" y="50" font-size="12" text-anchor="middle" fill="var(--dg-ink)">define what to build</text>
 
       <g transform="translate(15 66)">
@@ -72,10 +72,10 @@
       <text x="135" y="366" font-size="12" text-anchor="middle" fill="var(--dg-ink)">straight from the spec to Build.</text>
     </g>
 
-    <!-- Solutioning column -->
+    <!-- Planning column: how and in what slices -->
     <g transform="translate(610 90)">
       <rect class="node" width="270" height="420" rx="2"/>
-      <text x="135" y="30" font-size="15" font-weight="700" text-anchor="middle" letter-spacing="1">SOLUTIONING</text>
+      <text x="135" y="30" font-size="15" font-weight="700" text-anchor="middle" letter-spacing="1">PLANNING: HOW</text>
       <text x="135" y="50" font-size="12" text-anchor="middle" fill="var(--dg-ink)">decide how, divide the work</text>
 
       <g transform="translate(15 66)">

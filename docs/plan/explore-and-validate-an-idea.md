@@ -43,13 +43,13 @@ obvious ideas on it. You choose the stance for the session:
 
 Tell it what you are brainstorming and why; the goal shapes which techniques
 it offers. You pick a batch of techniques, or let it choose, and it runs each
-until it stops producing, aiming well past a hundred ideas before it lets you
-wrap. Say when you want to narrow and it switches to prioritizing and
+until it stops producing, aiming past a hundred ideas and resisting an early
+wrap-up. Say when you want to narrow and it switches to prioritizing and
 deciding. Sessions can be paused and resumed.
 
-You get an HTML record of the session, and a short `brainstorm-<topic>.md`
-holding only the chosen discoveries, shaped to feed `bmad-spec`,
-`bmad-product-brief`, or `bmad-prd`.
+At wrap-up it offers an HTML record of the session (Ideate for me makes it
+without asking) and a short `brainstorm-<topic>.md` holding only the chosen
+discoveries, shaped to feed `bmad-spec`, `bmad-product-brief`, or `bmad-prd`.
 
 ## Pressure-Test an Idea with Forge Idea
 

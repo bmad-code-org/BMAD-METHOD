@@ -25,7 +25,7 @@ There are two surfaces:
 | Surface | File | Shapes |
 |---|---|---|
 | Per-skill override | `_bmad/custom/<skill>.toml` | How one agent or workflow behaves when it activates: persona, facts, hooks, menu, workflow fields |
-| Central configuration | `_bmad/custom/config.toml` | Install answers and the agent roster that other skills read |
+| Central configuration | `_bmad/custom/config.toml` | Setup answers and the agent roster that other skills read |
 
 `bmad-customize` writes per-skill overrides only. Central configuration is
 hand-authored; see [Central configuration](#central-configuration).
@@ -43,10 +43,10 @@ persistent facts, and activation hooks. The shipped agents are listed in
 [Agents](../reference/skills-and-agents.md#agents).
 
 The per-skill file controls how the agent behaves when it activates.
-Central configuration controls how `bmad-party-mode`, `bmad-retrospective`,
-and `bmad-advanced-elicitation` introduce the agent. Rewriting Mary's
-principles is per-skill; changing the one-line description a party uses
-to introduce her is central.
+Central configuration can change the persona `bmad-party-mode`,
+`bmad-advanced-elicitation`, and `bmad-forge-idea` give the agent when they
+cast it. Rewriting Mary's principles is per-skill; changing the description
+a party voices her with is central.
 
 :::note[Prerequisites]
 
@@ -157,11 +157,11 @@ matching code replaces the shipped item and a new code appends. Each item
 has exactly one of `skill` or `prompt`:
 
 ```toml
-# Replace the shipped CE item with your own skill
+# Replace the shipped TK item with your own skill
 [[agent.menu]]
-code = "CE"
-description = "Create Epics using our delivery framework"
-skill = "custom-create-epics"
+code = "TK"
+description = "Plan epics using our delivery framework"
+skill = "custom-plan-epics"
 
 # Add a new item
 [[agent.menu]]
@@ -250,7 +250,9 @@ The workflow body begins after step 6.
 
 To change a skill's customization for one run only, add `--set key=value`
 arguments or an `--overrides <file.toml>` file to the `render_skill.py`
-command in its `SKILL.md`. Persistent project and user files stay as they
+command in its `SKILL.md`. `bmad-build`, `bmad-build-auto`,
+`bmad-code-review`, `bmad-retrospective`, and `bmad-walkthrough` render this
+way. Persistent project and user files stay as they
 are.
 
 ```bash
@@ -273,68 +275,67 @@ String values can be written as plain text. Other types use TOML syntax:
 
 ## Central configuration
 
-Per-skill files cover one agent or workflow. Install answers and the agent
-roster live in four TOML files:
+Per-skill files cover one agent or workflow. Setup answers and the agent
+roster live in three TOML files:
 
 ```text
-_bmad/config.toml               (installer-owned)  team scope: install answers + agent roster
-_bmad/config.user.toml          (installer-owned)  user scope: user_name, language, skill level
-_bmad/custom/config.toml        (human-authored)   team overrides (committed)
-_bmad/custom/config.user.toml   (human-authored)   personal overrides (gitignored), including `[core] active_initiative`
+_bmad/config.toml               (written by bmad setup)  team answers (committed)
+_bmad/custom/config.toml        (hand-written)           team pins (committed)
+_bmad/custom/config.user.toml   (written by bmad setup)  personal answers and overrides (gitignored), including `[core] active_initiative`
 ```
 
-**Four layers**, merged with the same shape rules:
+**Three layers**, merged with the same shape rules:
 
 ```text
 Priority 1 (wins): _bmad/custom/config.user.toml
 Priority 2:        _bmad/custom/config.toml
-Priority 3:        _bmad/config.user.toml
-Priority 4 (base): _bmad/config.toml
+Priority 3 (base): _bmad/config.toml
 ```
 
-**What lives where.** The installer splits its answers by the `scope:`
-declared on each prompt in a module's `module.yaml`: `[core]` and
-`[modules.<code>]` answers with scope `team` land in `_bmad/config.toml`,
-scope `user` in `_bmad/config.user.toml`. `[agents.<code>]` holds each
-agent's descriptor — code, name, title, icon, description, team — taken
-from the module's `agents:` block, always team-scoped.
+**What lives where.** `bmad setup` asks the config questions each module
+declares in its `bmod-<code>` record. An answer whose question has scope
+`team` lands in `_bmad/config.toml`, scope `user` in
+`_bmad/custom/config.user.toml`. `[core]` holds values such as
+`output_folder`, and module answers sit under `[modules.<code>]`.
+`[agents.<code>]` tables are optional: they add an agent of your own to the
+roster or describe an installed one further. An installed agent's name,
+title, and icon come from its own skill and its per-skill override, not
+from here.
 
-**Editing rules.** The two installer-owned files are regenerated on every
-install; treat them as read-only output. To change an install answer so it
-survives reinstall, re-run the installer (it remembers prior answers) or
-override the value in `_bmad/custom/config.toml`. The two `_bmad/custom/`
-files are never touched by the installer; they are the place for custom
-agents, descriptor overrides, and any value you want pinned regardless of
-install answers.
+**Editing rules.** All three files may be edited by hand. `bmad setup`
+never changes an existing value, so to change an answer, edit its key in
+the file that holds it; `bmad` shows setup's answers and the file of each.
+`_bmad/custom/config.toml` is the place for any value the team wants to
+pin over the answers in `_bmad/config.toml`.
 
-**Rebrand an agent.** Party mode and other roster skills pick up the new
-description automatically:
+**Rebrand an agent.** Party mode and the other roster skills voice the
+agent with the new description in place of its shipped persona:
 
 ```toml
 # _bmad/custom/config.toml
 
 [agents.bmad-agent-pm]
 description = "Healthcare PM — regulatory-aware, stakeholder-driven, FDA-shaped questions first."
-icon = "🏥"
 ```
 
 **Add a fictional agent.** No skill folder is needed; the descriptor alone
-lets a party include Kirk, and the `team` field filters who gets invited.
-See [Run Multi-Agent Discussions](./run-multi-agent-discussions.md).
+puts Kirk in the default party room beside the installed agents. For a cast
+that meets only when you call it, define party members instead; see
+[Run Multi-Agent Discussions](./run-multi-agent-discussions.md).
 
 ```toml
 # _bmad/custom/config.user.toml
 
 [agents.kirk]
-team = "startrek"
 name = "Captain James T. Kirk"
 title = "Starship Captain"
 icon = "🖖"
 description = "Bold, rule-bending commander. Speaks in dramatic pauses."
 ```
 
-**Override an install setting.** The override wins over whatever each
-developer has in their own config:
+**Override a setup answer.** The team value wins over the answer recorded
+in `_bmad/config.toml`; a developer's own `_bmad/custom/config.user.toml`
+still wins over it:
 
 ```toml
 # _bmad/custom/config.toml
@@ -352,7 +353,7 @@ output_folder = "/shared/org-bmad-output"
 | Swap a workflow's output template | Per-skill: `_bmad/custom/<workflow>.toml` scalar override |
 | Rebrand an agent's public descriptor | Central: `_bmad/custom/config.toml` `[agents.<code>]` |
 | Add a custom or fictional agent to the roster | Central: `_bmad/custom/config.*.toml` new `[agents.<code>]` |
-| Pin team-enforced install settings | Central: `_bmad/custom/config.toml` `[modules.<code>]` or `[core]` |
+| Pin team setup answers | Central: `_bmad/custom/config.toml` `[modules.<code>]` or `[core]` |
 | Choose which initiative your documents and tickets go to | Central: `_bmad/custom/config.user.toml` `[core] active_initiative`, or ask the `bmad` skill to switch it |
 
 ## Check what resolved
@@ -379,6 +380,10 @@ uv run {project-root}/_bmad/scripts/resolve_customization.py \
 
 Replace `{project-root}` with your project root; the skill resolves it
 for you at activation, but a shell will not.
+
+To see the merged central config, run
+`uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}`,
+adding `--key core.output_folder` or another dotted key for one value.
 
 `--skill` points at the skill's installed directory; the script derives
 the skill name from that folder and finds the matching `_bmad/custom/`
