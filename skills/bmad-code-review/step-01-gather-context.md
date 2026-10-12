@@ -48,7 +48,10 @@ review_mode: '' # set at runtime: full or no-plan
 
 ### CHECKPOINT
 
-Present a summary before proceeding: diff stats (files changed, lines added/removed), `{review_mode}`, and loaded plan/context docs (if any). {% if workflow.interactive %}HALT and wait for user confirmation to proceed.{% endif %}
+Present a summary before proceeding: diff stats (files changed, lines added/removed), `{review_mode}`, and loaded plan/context docs (if any).
+{% if workflow.interactive %}
+HALT and wait for user confirmation to proceed.
+{% endif %}
 
 ## NEXT
 

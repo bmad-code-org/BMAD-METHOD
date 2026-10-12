@@ -17,7 +17,12 @@ deferred_work_file: '{{ initiative_folder }}/deferred-work.md'
 
 ### 1. Clean review shortcut
 
-If zero findings remain after triage (all rejected or none raised): state that. When `{plan_file}` is set, still write section 2's block, with the summary line and the `Rejected` appendix, so the run is recorded. {% if workflow.interactive %}Then proceed to section 6 (Next steps).{% else %}Then end.{% endif %}
+If zero findings remain after triage (all rejected or none raised): state that. When `{plan_file}` is set, still write section 2's block, with the summary line and the `Rejected` appendix, so the run is recorded.
+{% if workflow.interactive %}
+Then proceed to section 6 (Next steps).
+{% else %}
+Then end.
+{% endif %}
 
 ### 2. Write findings to the plan
 
