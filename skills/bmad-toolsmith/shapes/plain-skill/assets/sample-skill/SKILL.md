@@ -1,6 +1,6 @@
 ---
 name: decision-record
-description: 'Writes an architecture decision record (ADR) for a decision the team has already reached: the context, the options weighed, the choice and its consequences. Use when the user says "record this decision", "write an ADR", "we decided X, capture it", or asks to document a technical choice already made. Not for making the decision itself or for tracking the work it leads to.'
+description: 'Writes an architecture decision record (ADR). Use when the user says "record this decision", "write an ADR" or "we decided X, capture it".'
 ---
 # Decision record
 

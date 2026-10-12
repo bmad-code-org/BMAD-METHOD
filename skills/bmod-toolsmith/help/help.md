@@ -77,7 +77,7 @@ Each topic file below sits in this folder and goes deeper on one subject. Read o
 | `help/evals.md` | `bmad-eval` in depth: what each mode answers, what a trigger eval is, why near misses matter, how many runs, which harness runs it and how that is recorded, where runs land. |
 | `help/naming.md` | What to call a skill or module: why a prefix of their own, what `bmad-` means, how agents and module records are named. |
 | `help/craft-progressive-disclosure.md` | How big a skill should be, what loads when, why a complex workflow is carved into files loaded only when reached. |
-| `help/craft-description.md` | Writing the description that makes a skill fire: its three parts, the length target, near misses, hand-invoked skills. |
+| `help/craft-description.md` | Writing the description that makes a skill fire: its two parts, quoted trigger phrases, when to name a sibling, hand-invoked skills. |
 | `help/craft-scripts.md` | When a skill should script something instead of saying it, and how scripts are written and run. |
 | `help/craft-customization.md` | How a skill is customized without forking it: the `customize.toml` surface, the override files, who reads and who writes them. |
 | `help/how-to-personal-skill.md` | Walkthrough: a skill for the user's own use, start to live. |

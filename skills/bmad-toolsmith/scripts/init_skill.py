@@ -59,7 +59,7 @@ RECORD_DESCRIPTION = "Required bmod metadata. Never invoke this skill."
 USE_WHEN_RE = re.compile(r"\buse\s+(?:when|if)\b", re.IGNORECASE)
 TODO_RE = re.compile(r"\[TODO:")
 TEXT_SUFFIXES = {".md", ".toml", ".py", ".json", ".yaml", ".yml", ".txt", ".html", ".csv"}
-DESCRIPTION_PLACEHOLDER = "[TODO: what the skill does, one sentence. Use when <the situation that should trigger it>.]"
+DESCRIPTION_PLACEHOLDER = "[TODO: five-to-eight-word summary. Use when the user says '<phrase>' or '<phrase>'.]"
 
 
 def yaml_single_quoted(value: str) -> str:

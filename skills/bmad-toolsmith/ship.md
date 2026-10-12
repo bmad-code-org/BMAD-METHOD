@@ -12,7 +12,7 @@ The pre-pass reports `bmod_kind`. It must match the read-back's registration lin
 
 For a skill Smithy wrote or rewrote this session (a build, a conversion), not a scaffold with `[TODO:` markers and not a skill the user owns after edit, package or migrate, where the review is offered instead. Run `uv run {skill-root}/scripts/prepass.py {target}`, then one subagent per lens in parallel: `lenses/lens-architecture.md`, `lenses/lens-determinism.md`, `lenses/lens-leanness.md`, `lenses/lens-customization.md`, `lenses/lens-trigger.md`, each given the pre-pass JSON, `{target}`, its lens file, `lenses/lens-contract.md` and `lenses/standards.md`. Inline, one at a time, when subagents are unavailable; say so.
 
-Apply what is a defect against the standards or the canon's tests: a path that does not resolve, a description without its `Use when` or its exclusions, a declared customization value the body never reads, prose doing a script's work, a line a capable model follows unasked. Leave what is a judgment call: a cut whose value is uncertain, a persona line, a split into two skills; a cut is a hypothesis for a variant eval, not a verdict. Never apply a finding that undoes the approved read-back (name, purpose, shape, location) without asking. When a high or critical finding was fixed, run the lenses once more; stop after two rounds. Then say in chat what changed, by file in one line each, and what was left for the user with its why.
+Apply what is a defect against the standards or the canon's tests: a path that does not resolve, a description without its `Use when` or past its two parts, a declared customization value the body never reads, prose doing a script's work, a line a capable model follows unasked. Leave what is a judgment call: a cut whose value is uncertain, a persona line, a split into two skills; a cut is a hypothesis for a variant eval, not a verdict. Never apply a finding that undoes the approved read-back (name, purpose, shape, location) without asking. When a high or critical finding was fixed, run the lenses once more; stop after two rounds. Then say in chat what changed, by file in one line each, and what was left for the user with its why.
 
 ## Checks
 
@@ -27,7 +27,7 @@ Run and fix until clean; after three failed fixes on one finding, stop and show 
 
 ## Cost
 
-`uv run {skill-root}/scripts/count_tokens.py {target}`. Tell the user what `SKILL.md` costs per load and how long the description is; the description is paid on every session whether the skill fires or not. Over about 800 tokens in a plain skill's `SKILL.md`, or 1,200 in an agent's, name what could move to a reference; the measure is what a run loads, not the skill's total. Over 500 characters of description, name the clauses that are not anchors.
+`uv run {skill-root}/scripts/count_tokens.py {target}`. Tell the user what `SKILL.md` costs per load and how long the description is; the description is paid on every session whether the skill fires or not. Over about 800 tokens in a plain skill's `SKILL.md`, or 1,200 in an agent's, name what could move to a reference; the measure is what a run loads, not the skill's total. A description past its two parts, or with a phrase that is not an anchor, names what to cut.
 
 ## Trigger eval
 
