@@ -100,8 +100,8 @@ plan.
 The review assumes someone is there to answer its questions. When nobody
 is, such as a review bot or a CI job, say so when you invoke it ("don't
 ask questions"), or start `bmad-customize` and ask to make the review
-non-interactive. It then asks nothing and ends with the report, with the
-decisions listed first for whoever reads it to make.
+non-interactive. It then asks nothing: it fixes the `patch` findings,
+and the report lists the decisions first for whoever reads it to make.
 
 You get a findings summary. With a plan, each run appends a dated block
 of findings to the plan's `## Code Review` section; without one, the
@@ -137,6 +137,18 @@ Next level of customizing reviews is to change the lenses themselves.
 You can add your own reviewers, replace or turn off the ones you get out
 of the box, run some on another model. Start `bmad-customize` and ask
 what is possible.
+
+## Automatic Reviews
+
+As already mentioned, you may want to run `bmad-code-review` in some
+automated workflow, such as reviewing every pull request. The skill
+assumes a human can answer its questions, so first tell it that nobody
+can: say "don't ask questions" when you invoke it, or start
+`bmad-customize` and make the review non-interactive in that environment for good.
+
+You also need to decide: should this automatic reviewer build, run tests and fix the code? It does all that by default. If not, mention `no-code` when invoking the skill. This tells the review session to output the findings in a form you can pass directly to the coding agent and stop at that.
+
+What goes into this block, how it's formatted, and where it should be written is customizable via `handoff_format` and `handoff_delivery` settings. As usual, start `bmad-customize` and ask.
 
 ## Why Does Review Take Forever?
 

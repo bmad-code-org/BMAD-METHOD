@@ -44,9 +44,22 @@ review = "thorough"
 
 # Whether a human can answer during the run. Set false when nobody can (a
 # review bot, a CI job, another workflow): the review then never asks or
-# halts, and ends with its report.
+# halts, and takes the default at every choice.
 
 interactive = true
+# What to do with patch findings: "apply" fixes them in this session;
+# "handoff" (a no-code review) hands them to a coding agent instead.
+
+fixes = "apply"
+
+# What a no-code review writes for the coding agent instead of fixing the
+# patch findings. Override wins; empty uses the text in step 4.
+
+handoff_format = ""
+
+# How that reaches the caller. Override wins; empty shows it in this chat.
+
+handoff_delivery = ""
 
 # Review lenses for the review step, in two sets the review selection picks
 # between. `instruction` is the lens's whole execution recipe — subagents by
