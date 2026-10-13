@@ -23,12 +23,15 @@ Typical moments:
 
 ## How it runs
 
-1. **Gather.** Reads the diff, commits, and any plan or ticket. Uses
-   recorded check output, or runs the project's checks. Reads the
-   repo's own PR and commit rules.
+1. **Gather.** Reads the diff, commits, and any plan or ticket. A
+   `bmad-build` plan supplies the intent, scope, verification, and
+   review fixes, so checks are re-run only when no plan exists. Reads
+   the repo's own PR and commit rules.
 2. **Draft.** Fills the repo's PR template when it has one, otherwise a
    built-in skeleton for a feature, a fix with evidence, an incident,
-   or review fixes. Every body states what was not verified.
+   or review fixes. Every body states what was not verified. When the
+   change is visible to users, it adds a Before / After table and asks
+   you for the screenshots.
 3. **Publish.** Shows you the text. Pushes and opens or edits the PR
    only after you approve it.
 

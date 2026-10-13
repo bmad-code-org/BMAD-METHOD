@@ -10,6 +10,9 @@ On approval:
   `gh pr create --title "<title>" --body-file <draft>` against the
   base branch the repo's rules name. Confirm with `gh pr view`.
 - Existing PR: `gh pr edit <number> --title "<title>" --body-file <draft>`.
+- A remote that is not GitHub: use that host's CLI when it is
+  installed, otherwise give the user the draft path and the host's
+  new-PR link.
 
 Report the PR link or the commit hash in one line.
 
