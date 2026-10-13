@@ -1,6 +1,6 @@
 # Implementation skills in detail
 
-Read this when the question is about `bmad-build`, `bmad-build-auto`, or `bmad-correct-course`. For running stories without a human, see `help/unattended-builds.md`.
+Read this when the question is about `bmad-build`, `bmad-build-auto`, `bmad-pr-writer`, or `bmad-correct-course`. For running stories without a human, see `help/unattended-builds.md`.
 
 **`bmad-build`** — one session of delivery: clarifies intent, plans, implements, reviews, and presents a commit.
 - Takes: free text however brief; a ticket from the tree, named by a ref such as `1.2`, its file, or its title; nothing, for the next ready ticket of the active initiative; a plan to resume; any other file as intent; or the recent conversation.
@@ -14,6 +14,13 @@ Read this when the question is about `bmad-build`, `bmad-build-auto`, or `bmad-c
 - Do not offer it for attended work. It never asks: anything unclear halts it as `blocked` with a named reason written into the plan. It needs subagents. Its input is a ticket from the tree, one run per ticket; free text or an intent file also work. Where version control is present it also needs a clean working tree on a branch that fits the work.
 - Fits when: decisions and patterns are stable and the tickets are well specified.
 - Writes: the same plans as `bmad-build`.
+
+**`bmad-pr-writer`** — writes the PR or commit message for work that already exists.
+- Gives: a title and body that say what changed for the user, what changed in the code, how it was verified (commands and counts, plus a **Not verified** line), what is still open, and what the reviewer must do. Fills the repo's PR template when it has one.
+- Pick when: a `bmad-build` run is done and the user wants a PR, or any branch or commit needs a description.
+- Not when: the change is not built yet (`bmad-build`), or the user wants the change reviewed (`bmad-code-review`).
+- Customize: `title_style` (`plain` or `conventional`), `pr_template`, and `reviewer`.
+- Writes: `{output_folder}/pr-drafts/<branch>.md`. It pushes and opens the PR only after the user approves the text.
 
 **`bmad-correct-course`** — assesses a significant midstream change.
 - Gives: a change proposal covering impact across PRD, epics, architecture, and UX; a recommended path (adjust, roll back, or cut scope); and proposed edits. It drafts the edits to the PRD, architecture, UX, and stories and does not apply them: the user applies those through the owning skills. Its handoff lists the added, removed, resequenced, or rescoped epics and stories for the user to apply with `bmad-ticket`.

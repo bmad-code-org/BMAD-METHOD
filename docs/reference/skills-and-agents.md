@@ -167,6 +167,7 @@ The BMad Method module adds the five agents above and these workflow skills. The
 | `bmad-build-auto`               | Run one iteration of an unattended development loop                                               | [Autonomous Development Loops](../build/autonomous-development-loops.md)                               |
 | `bmad-code-review`              | Review code changes with several independent reviewers, then triage the findings                  | [Review a Change](../build/review-a-change.md)                                                         |
 | `bmad-walkthrough`              | Guide a human review of a commit, PR, file, or directory, one block at a time                      | [Walk Through a Change](../build/walk-through-a-change.md)                                             |
+| `bmad-pr-writer`                | Write the pull request or commit message for finished work                                         | [Open a Pull Request](../build/open-a-pull-request.md)                                                 |
 | `bmad-qa-generate-e2e-tests`    | Generate automated API and end-to-end tests for implemented features                              | [Test Completed Work](../build/test-completed-work.md)                                                 |
 | `bmad-retrospective`            | Review a completed epic against its evidence and decide whether to accept it                      | [Finish an Epic](../build/finish-an-epic.md)                                                           |
 

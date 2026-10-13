@@ -66,6 +66,11 @@ description = "Generate API and E2E tests for existing features"
 skill = "bmad-qa-generate-e2e-tests"
 
 [[agent.menu]]
+code = "PR"
+description = "Write the pull request or commit message for finished work"
+skill = "bmad-pr-writer"
+
+[[agent.menu]]
 code = "CR"
 description = "Initiate a comprehensive code review across multiple quality facets"
 skill = "bmad-code-review"

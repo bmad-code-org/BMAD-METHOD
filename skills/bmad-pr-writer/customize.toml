@@ -1,0 +1,37 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# Workflow customization surface for bmad-pr-writer.
+# Mirrors the agent customization shape under the [workflow] namespace.
+
+[workflow]
+
+# --- Configurable below. Overrides merge per BMad structural rules: ---
+#   strings: override wins • arrays (persistent_facts): append
+#   arrays-of-tables with `code`/`id`: replace matching items, append new ones.
+
+# "plain": one imperative sentence about what the user gets.
+# "conventional": Conventional Commits prefix (feat:, fix:, docs:, ...).
+# Applies to PR titles and commit subjects.
+title_style = "plain"
+
+# Path to a PR template to fill instead of the built-in skeletons.
+# Empty: use .github/PULL_REQUEST_TEMPLATE.md when the repo has one.
+pr_template = ""
+
+# GitHub handle of the person who merges. When set, the body ends with
+# "@<reviewer> — what you need to do"; otherwise with "Before merging".
+reviewer = ""
+
+# Executed when the workflow starts.
+on_activation = ""
+
+# Facts the workflow keeps in mind for the whole run
+# (standards, compliance constraints, stylistic guardrails).
+# Each entry is either:
+#   - a literal sentence, e.g. "Every PR links its ticket."
+#   - a file reference prefixed with `file:`, e.g. "file:{project-root}/docs/pr-rules.md"
+#     (glob patterns are supported; the file's contents are loaded and treated as facts).
+persistent_facts = []
+
+# Executed when the PR is opened or the commit is made.
+on_complete = ""
