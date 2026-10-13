@@ -1,0 +1,82 @@
+[
+  {
+    "query": "research the codebase before I start ticket 2.3",
+    "should_trigger": true
+  },
+  {
+    "query": "how does session persistence work in this repo? I want a cited write-up I can hand to the build",
+    "should_trigger": true
+  },
+  {
+    "query": "why is job eviction one-way here? dig into the git history and tell me how it got that way",
+    "should_trigger": true
+  },
+  {
+    "query": "we need to add cancellation to job runs. before we plan it, find out how job state transitions work today",
+    "should_trigger": true
+  },
+  {
+    "query": "what touches the billing ledger in this codebase? file and line references please",
+    "should_trigger": true
+  },
+  {
+    "query": "where does the retry logic live and how did it end up there",
+    "should_trigger": true
+  },
+  {
+    "query": "market research on self-hosted analytics",
+    "should_trigger": true
+  },
+  {
+    "query": "help me choose between Postgres and MySQL for this project",
+    "should_trigger": true
+  },
+  {
+    "query": "draft a deep research prompt about vector databases for Gemini",
+    "should_trigger": true
+  },
+  {
+    "query": "Perplexity's deep research gave me a long report on EU data residency rules, it's at downloads/residency-report.pdf. half of it reads like marketing. pull out what actually matters for deciding where we host, with the sources, in something short the rest of planning can use",
+    "should_trigger": true
+  },
+  {
+    "query": "what does this function do?",
+    "should_trigger": false
+  },
+  {
+    "query": "which file sets the default timeout?",
+    "should_trigger": false
+  },
+  {
+    "query": "explain this stack trace: KeyError: 'backoff' in retry_after() at jobs/retry.py line 57",
+    "should_trigger": false
+  },
+  {
+    "query": "implement ticket 2.3",
+    "should_trigger": false
+  },
+  {
+    "query": "add cancellation to job runs",
+    "should_trigger": false
+  },
+  {
+    "query": "review my diff for bugs before I open the PR",
+    "should_trigger": false
+  },
+  {
+    "query": "write the PRD for job cancellation",
+    "should_trigger": false
+  },
+  {
+    "query": "dig through the commits and diffs from epic 3 and run the retro on it",
+    "should_trigger": false
+  },
+  {
+    "query": "create the architecture for moving job runs onto a queue, working from the existing codebase",
+    "should_trigger": false
+  },
+  {
+    "query": "the market research on self-hosted analytics is done, now write the product brief from it",
+    "should_trigger": false
+  }
+]
