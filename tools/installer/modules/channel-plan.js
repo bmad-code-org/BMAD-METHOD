@@ -10,7 +10,8 @@
  *   3. Registry defaults (default_channel from bmad-modules.yaml)
  *   4. Hardcoded fallback 'stable'
  *
- * Precedence: --pin > --next=CODE > --channel (global) > registry default > 'stable'.
+ * Precedence: --pin > explicit per-module choice (--next=CODE, picker next/stable) > registry pin
+ * > --channel (global) > registry default > 'stable'.
  *
  * This module is pure. No prompts, no git, no filesystem.
  */
@@ -24,6 +25,7 @@ const VALID_CHANNELS = new Set(['stable', 'next']);
  * @returns {{
  *   global: 'stable'|'next'|null,
  *   nextSet: Set<string>,
+ *   stableSet: Set<string>,
  *   pins: Map<string, string>,
  *   warnings: string[]
  * }}
@@ -58,6 +60,9 @@ function parseChannelOptions(options = {}) {
     nextSet.add(trimmed);
   }
 
+  // Filled only by the interactive per-module picker (no CLI flag).
+  const stableSet = new Set();
+
   // --pin CODE=TAG (repeatable)
   const pins = new Map();
   for (const spec of options.pin || []) {
@@ -76,7 +81,7 @@ function parseChannelOptions(options = {}) {
   // headless installs with --next=/--pin for a community module don't hang.
   const acceptBypass = options.yes === true || options.acceptBypass === true;
 
-  return { global, nextSet, pins, warnings, acceptBypass };
+  return { global, nextSet, stableSet, pins, warnings, acceptBypass };
 }
 
 function normalizeChannel(raw, warnings, flagName) {
@@ -109,16 +114,19 @@ function parsePinSpec(spec) {
  *   source describes where the decision came from, for logging / debugging.
  */
 function decideChannelForModule({ code, channelOptions, registryDefault, registryPin }) {
-  const { global, nextSet, pins } = channelOptions || { nextSet: new Set(), pins: new Map() };
+  const { global, nextSet, stableSet, pins } = channelOptions || { nextSet: new Set(), stableSet: new Set(), pins: new Map() };
 
   if (pins && pins.has(code)) {
     return { channel: 'pinned', pin: pins.get(code), source: 'flag:--pin' };
   }
-  if (registryPin) {
-    return { channel: 'pinned', pin: registryPin, source: 'registry:pin' };
-  }
   if (nextSet && nextSet.has(code)) {
     return { channel: 'next', source: 'flag:--next' };
+  }
+  if (stableSet && stableSet.has(code)) {
+    return { channel: 'stable', source: 'picker:stable' };
+  }
+  if (registryPin) {
+    return { channel: 'pinned', pin: registryPin, source: 'registry:pin' };
   }
   if (global) {
     return { channel: global, source: 'flag:--channel' };

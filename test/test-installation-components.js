@@ -2662,6 +2662,82 @@ async function runTests() {
     }
   }
 
+  // --- Channel pickers: an explicit stable pick beats the registry pin; the all-stable fast path keeps it ---
+  {
+    const { UI } = require('../tools/installer/ui');
+    const prompts = require('../tools/installer/prompts');
+    const channelResolver = require('../tools/installer/modules/channel-resolver');
+    const { ExternalModuleManager } = require('../tools/installer/modules/external-manager');
+    const { Manifest } = require('../tools/installer/core/manifest');
+    const { parseChannelOptions, decideChannelForModule } = require('../tools/installer/modules/channel-plan');
+
+    const saved = {
+      listAvailable: ExternalModuleManager.prototype.listAvailable,
+      read: Manifest.prototype.read,
+      confirm: prompts.confirm,
+      select: prompts.select,
+      fetchStableTags: channelResolver.fetchStableTags,
+    };
+
+    ExternalModuleManager.prototype.listAvailable = async () => [
+      {
+        code: 'tea',
+        name: 'Test Architect',
+        builtIn: false,
+        url: 'https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise',
+        defaultChannel: 'stable',
+        pin: 'v1.27.2',
+      },
+    ];
+    channelResolver.fetchStableTags = async () => [{ tag: 'v3.0.0' }];
+
+    const resolveTea = (channelOptions) =>
+      decideChannelForModule({ code: 'tea', channelOptions, registryDefault: 'stable', registryPin: 'v1.27.2' });
+    const answer = ({ confirm, select }) => {
+      prompts.confirm = async () => confirm;
+      prompts.select = async () => select;
+    };
+    const installGate = async (answers) => {
+      const channelOptions = parseChannelOptions({});
+      answer(answers);
+      await new UI()._interactiveChannelGate({ options: {}, channelOptions, selectedModules: ['tea'] });
+      return resolveTea(channelOptions);
+    };
+    const updateFlow = async (module, answers) => {
+      const channelOptions = parseChannelOptions({});
+      Manifest.prototype.read = async () => ({ modulesDetailed: [module] });
+      answer(answers);
+      await new UI()._resolveUpdateChannels({ bmadDir: '/unused', selectedModules: ['tea'], channelOptions, yes: false });
+      return resolveTea(channelOptions);
+    };
+
+    try {
+      const fastPath = await installGate({ confirm: true, select: 'unused' });
+      assert(
+        fastPath.channel === 'pinned' && fastPath.pin === 'v1.27.2',
+        'install picker: accepting the all-stable fast path keeps the registry pin',
+      );
+
+      const pickedStable = await installGate({ confirm: false, select: 'stable' });
+      assert(pickedStable.channel === 'stable', 'install picker: choosing stable beats the registry pin');
+
+      const switched = await updateFlow({ name: 'tea', channel: 'pinned', version: 'v1.27.2' }, { confirm: true, select: 'stable' });
+      assert(switched.channel === 'stable', 'update picker: "Switch to stable" beats the registry pin');
+
+      const migrated = await updateFlow({ name: 'tea', channel: null, version: null }, { confirm: false, select: 'unused' });
+      assert(migrated.channel === 'stable', 'update flow: a legacy main-tracking install moves to stable and beats the registry pin');
+
+      const untouched = await updateFlow({ name: 'tea', channel: 'pinned', version: 'v1.27.2' }, { confirm: false, select: 'unused' });
+      assert(untouched.channel === 'pinned', 'update flow: declining the channel review keeps the registry pin');
+    } finally {
+      ExternalModuleManager.prototype.listAvailable = saved.listAvailable;
+      Manifest.prototype.read = saved.read;
+      prompts.confirm = saved.confirm;
+      prompts.select = saved.select;
+      channelResolver.fetchStableTags = saved.fetchStableTags;
+    }
+  }
+
   // --- Official module picker warns and falls back to cached versions when tag lookups fail ---
   {
     const { UI } = require('../tools/installer/ui');

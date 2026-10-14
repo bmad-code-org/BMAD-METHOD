@@ -206,11 +206,22 @@ function runTests() {
     assertEqual(r.channel, 'pinned', '--pin beats --next for same code');
   }
   {
-    const opts = parseChannelOptions({ channel: 'next', next: ['tea'] });
+    const opts = parseChannelOptions({ channel: 'next' });
     const r = decideChannelForModule({ code: 'tea', channelOptions: opts, registryDefault: 'stable', registryPin: 'v1.27.2' });
-    assertEqual(r.channel, 'pinned', 'registry pin beats --next and --channel');
+    assertEqual(r.channel, 'pinned', 'registry pin beats --channel');
     assertEqual(r.pin, 'v1.27.2', 'registry pin value carried through');
     assertEqual(r.source, 'registry:pin', 'source: registry:pin');
+  }
+  {
+    const opts = parseChannelOptions({ next: ['tea'] });
+    const r = decideChannelForModule({ code: 'tea', channelOptions: opts, registryPin: 'v1.27.2' });
+    assertEqual(r.channel, 'next', '--next=CODE beats registry pin');
+  }
+  {
+    const opts = parseChannelOptions({});
+    opts.stableSet.add('tea');
+    const r = decideChannelForModule({ code: 'tea', channelOptions: opts, registryPin: 'v1.27.2' });
+    assertEqual(r.channel, 'stable', 'picker stable beats registry pin');
   }
   {
     const opts = parseChannelOptions({ pin: ['tea=v2.0.1'] });
