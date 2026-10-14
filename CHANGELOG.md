@@ -1,5 +1,12 @@
 # Changelog
 
+## v6.12.3 - 2026-10-14
+
+### 🐛 Fixes
+
+* Choosing a channel for a module with a registry pin now takes effect. The TEA pin (v1.27.2) used to win over the picker with no message.
+* The channel picker offers stable and pin. `next` is gone from the install picker and the channel review, and `--next=CODE` stays for headless use.
+
 ## v6.12.2 - 2026-10-11
 
 ### 🐛 Fixes
