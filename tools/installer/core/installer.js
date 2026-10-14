@@ -1474,7 +1474,7 @@ class Installer {
     // 'pinned' would trigger a stable-channel tag lookup at config-collection
     // time, burning GitHub API quota and potentially failing.
     const manifestData = await this.manifest.read(bmadDir);
-    const channelOptions = { global: null, nextSet: new Set(), pins: new Map(), warnings: [] };
+    const channelOptions = { global: null, nextSet: new Set(), stableSet: new Set(), pins: new Map(), warnings: [] };
     if (manifestData?.modulesDetailed) {
       const { fetchStableTags, classifyUpgrade, parseGitHubRepo } = require('../modules/channel-resolver');
       for (const entry of manifestData.modulesDetailed) {

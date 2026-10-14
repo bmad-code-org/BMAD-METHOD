@@ -1998,8 +1998,9 @@ class UI {
           },
         });
         channelOptions.pins.set(code, String(pinValue).trim());
+      } else {
+        channelOptions.stableSet.add(code);
       }
-      // 'stable' is the default; nothing to record.
     }
   }
 

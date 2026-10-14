@@ -9,7 +9,9 @@
 # Omit to inherit the installer's hardcoded default (stable).
 #
 # pin (optional) — a git tag to install instead of the channel. Use it when
-# newer releases no longer work with this installer. Only --pin overrides it.
+# newer releases no longer work with this installer. The pin is the default for
+# every module that gets no explicit choice. --pin, --next=CODE and a stable or
+# next pick in the interactive picker override it; --channel and --all-* do not.
 #
 # deprecated (optional, default false) — when true, the module is hidden from
 # the installer picker UNLESS it is already installed (so existing users can
