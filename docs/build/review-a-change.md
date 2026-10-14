@@ -40,6 +40,11 @@ Start a fresh chat and name the skill. Pass the change to review: a PR,
 commit, branch, file, or the current git state. You can describe the
 target before, with, or after the command.
 
+:::tip[Fresh chat]
+A session that created or discussed the change brings its own
+assumptions and biases. You don't want those in a review session.
+:::
+
 If you have a spec, requirements, or even a stream of consciousness
 for what this change is supposed to implement, feed that in too. Review
 quality depends on it — without intent, the reviewers can only judge
@@ -78,8 +83,10 @@ the command line and wait for a result.
 
 ## What a Run Does
 
-Active layers review the same diff independently and in parallel. Once
-every layer has reported, triage judges each finding on its own:
+Active layers review the same diff independently and in parallel. The
+first runs in the main session while the rest run in subagents, so the
+session that triages has read the code closely. Once every layer has
+reported, triage judges each finding on its own:
 
 - **Verify** the claimed consequence at the named location, reading past
   the diff hunk far enough to tell whether that consequence actually
@@ -144,7 +151,7 @@ As already mentioned, you may want to run `bmad-code-review` in some
 automated workflow, such as reviewing every pull request. The skill
 assumes a human can answer its questions, so first tell it that nobody
 can: say "don't ask questions" when you invoke it, or start
-`bmad-customize` and make the review non-interactive in that environment for good.
+`bmad-customize` and tell it to customize `bmad-code-review` with `interactive=false` in that environment.
 
 You also need to decide: should this automatic reviewer build, run tests and fix the code? It does all that by default. If not, mention `no-code` when invoking the skill. This tells the review session to output the findings in a form you can pass directly to the coding agent and stop at that.
 
