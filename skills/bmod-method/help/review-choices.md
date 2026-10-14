@@ -27,7 +27,7 @@ Use this when the user asks how much review to run, how to get another pass, whe
 - Tell the user to supply the intent: a plan, a spec, or a plain description. A ticket in review brings its plan. Without it the reviewers can only judge the diff against itself.
 - Defaults to `thorough`; "quick" uses one reviewer. Above about 3000 diff lines it offers to review in file groups.
 - Triage checks every finding against the code and rejects disproved ones, plus low ones whose fix would add complexity.
-- Survivors become patch (a clear fix), defer (pre-existing or unverified), or decision needed (only when a plan was given).
+- Survivors become patch (a clear fix), defer (pre-existing or unverified), or decision needed (when the right fix depends on what you meant).
 - The user chooses: apply all patches, walk through each, or leave them as action items in the plan's `## Code Review` section.
 
 ## Why review is slow

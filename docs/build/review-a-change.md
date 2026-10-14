@@ -60,8 +60,10 @@ intent. You can also hand it a plan file directly.
 
 Without a plan, the review runs in **no-plan mode**. The reviewers judge
 the diff against itself and the commit messages, and triage cannot tell
-a deliberate choice from a mistake, so a finding that needs your
-decision is patched or deferred instead. A generic "review this PR" bot
+a deliberate choice from a mistake. When the right fix depends on what
+you meant, the review doesn't pick one for you: it lists the possible
+fixes, says which one it would choose and why, and leaves the call to
+you. A generic "review this PR" bot
 is the usual way to end up here. It still finds real bugs, but it is
 much more useful when it knows the intent: a whole review pass exists to
 check whether the change does what it claims, and it can only run if it
@@ -88,10 +90,18 @@ every layer has reported, triage judges each finding on its own:
   recorded reason — never silently
 - **Route** survivors to **patch**, **defer**, or **decision needed**
 
-Patch is an unambiguous code fix. Defer is a real pre-existing issue that
-is not this change. Decision needed is an ambiguous choice that requires
-you. Without a plan, decision needed is not used — those findings go to
-patch or defer.
+Patch is a problem with one clear fix. Defer is a real problem that was
+already there before this change; a problem this change caused is never
+deferred. Decision needed is a problem with more than one reasonable fix,
+where the right one depends on what you want. The review lists the
+fixes and says which one it recommends. This happens with or without a
+plan.
+
+The review assumes someone is there to answer its questions. When nobody
+is, such as a review bot or a CI job, say so when you invoke it ("don't
+ask questions"), or start `bmad-customize` and ask to make the review
+non-interactive. It then asks nothing: it fixes the `patch` findings,
+and the report lists the decisions first for whoever reads it to make.
 
 You get a findings summary. With a plan, each run appends a dated block
 of findings to the plan's `## Code Review` section; without one, the
@@ -127,6 +137,18 @@ Next level of customizing reviews is to change the lenses themselves.
 You can add your own reviewers, replace or turn off the ones you get out
 of the box, run some on another model. Start `bmad-customize` and ask
 what is possible.
+
+## Automatic Reviews
+
+As already mentioned, you may want to run `bmad-code-review` in some
+automated workflow, such as reviewing every pull request. The skill
+assumes a human can answer its questions, so first tell it that nobody
+can: say "don't ask questions" when you invoke it, or start
+`bmad-customize` and make the review non-interactive in that environment for good.
+
+You also need to decide: should this automatic reviewer build, run tests and fix the code? It does all that by default. If not, mention `no-code` when invoking the skill. This tells the review session to output the findings in a form you can pass directly to the coding agent and stop at that.
+
+What goes into this block, how it's formatted, and where it should be written is customizable via `handoff_format` and `handoff_delivery` settings. As usual, start `bmad-customize` and ask.
 
 ## Why Does Review Take Forever?
 

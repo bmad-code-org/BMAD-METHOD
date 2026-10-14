@@ -11,6 +11,9 @@ review_mode: '' # set at runtime: full or no-plan
 
 - The triggering prompt and the conversation before it name the review target — act on them; do not start from a blank slate.
 - Writing `{diff_file}` and the claims file is the only change this step may make. Otherwise it is read-only.
+{% if not workflow.interactive %}
+- No human can answer during this run: never ask and never HALT for input. Wherever an instruction below would ask, take the default it names instead; where it names none, stop and report what is missing.
+{% endif %}
 
 ## INSTRUCTIONS
 
@@ -19,6 +22,10 @@ review_mode: '' # set at runtime: full or no-plan
    - **The ticket tree.** Run `uv run {project-root}/_bmad/method/scripts/tickets.py --project-root {project-root} status`. On a non-zero exit, continue. Otherwise offer the `tickets` rows whose `state` is `review`, `<ref>` and `<title>` each, plus a choice of another target, and HALT for the user's pick. With none, or another target chosen, continue. For a picked ticket, run `tickets.py find <ref>` (same command form) and treat its `plan` as a plan file from the request.
    - **Current git state.** If HEAD is not on the default branch, confirm: "I see HEAD is `<short-sha>` on `<branch>` — do you want to review this branch's changes?" If confirmed, it is a branch diff against the default branch.
    - **Ask.** Go to instruction 2.
+
+{% if not workflow.interactive %}
+   Skip the ticket-tree offer, take the current branch's diff against the default branch without confirming, and if HEAD is on the default branch and nothing else identifies a target, stop and report that there is nothing identified to review.
+{% endif %}
 
 2. HALT. Ask the user what to review: uncommitted changes, staged changes, a branch diff (which base), a commit range, or a provided diff or file list.
 
@@ -29,7 +36,11 @@ review_mode: '' # set at runtime: full or no-plan
 5. **Set the plan context.**
    - The request or conversation explicitly says there is no plan → `review_mode` = `no-plan`, `plan_file` = `''`. Do not ask.
    - `plan_file` is set → verify it is readable; `review_mode` = `full`.
+{% if workflow.interactive %}
    - Otherwise, ask for a plan file path, or to continue without one, and set `plan_file` and `review_mode` accordingly. Do not assume no-plan just because none was given.
+{% else %}
+   - Otherwise → `review_mode` = `no-plan`, `plan_file` = `''`.
+{% endif %}
 
 6. If `review_mode` = `full` and `{plan_file}`'s frontmatter has a `context` list, load each referenced doc and warn about any that cannot be found.
 
@@ -37,7 +48,10 @@ review_mode: '' # set at runtime: full or no-plan
 
 ### CHECKPOINT
 
-Present a summary before proceeding: diff stats (files changed, lines added/removed), `{review_mode}`, and loaded plan/context docs (if any). HALT and wait for user confirmation to proceed.
+Present a summary before proceeding: diff stats (files changed, lines added/removed), `{review_mode}`, and loaded plan/context docs (if any).
+{% if workflow.interactive %}
+HALT and wait for user confirmation to proceed.
+{% endif %}
 
 ## NEXT
 
