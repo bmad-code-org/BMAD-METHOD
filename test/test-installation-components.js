@@ -2718,10 +2718,10 @@ async function runTests() {
     };
     const resolve = (module, channelOptions) =>
       decideChannelForModule({ code: module.code, channelOptions, registryDefault: 'stable', registryPin: module.pin });
-    const installGate = async (selectedModules, answers) => {
+    const installGate = async (selectedModules, answers, options = {}) => {
       const channelOptions = parseChannelOptions({});
       answer(answers);
-      await new UI()._interactiveChannelGate({ options: {}, channelOptions, selectedModules });
+      await new UI()._interactiveChannelGate({ options, channelOptions, selectedModules });
       return channelOptions;
     };
     const updateFlow = async (module, answers) => {
@@ -2753,6 +2753,21 @@ async function runTests() {
       const reviewSkipped = await updateFlow({ name: 'tea', channel: 'pinned', version: 'v1.27.2' }, { confirm: true, select: 'stable' });
       assert(prompted === 0, 'update flow: a registry-pinned module is left out of the channel review');
       assert(resolve(TEA, reviewSkipped).channel === 'pinned', 'update flow: a registry-pinned module stays on its pin');
+
+      const keptPin = await updateFlow({ name: 'tea', channel: 'pinned', version: 'v1.26.0' }, { confirm: true, select: 'stable' });
+      assert(resolve(TEA, keptPin).pin === 'v1.26.0', 'update flow: a version the user pinned earlier is kept');
+      assert(notices.length === 0, 'update flow: no pin notice when the user keeps their own pin');
+
+      const noticed = await updateFlow({ name: 'tea', channel: 'stable', version: 'v1.20.0' }, { confirm: true, select: 'stable' });
+      assert(resolve(TEA, noticed).pin === 'v1.27.2', 'update flow: a recorded stable install moves to the registry pin');
+      assert(
+        notices.length === 1 && notices[0].includes('tea is pinned to v1.27.2') && notices[0].includes('npx skills add'),
+        'update flow: the pin notice explains the registry pin and the v7 install command',
+      );
+
+      const headless = await installGate(['tea'], { confirm: true, select: 'stable' }, { yes: true });
+      assert(prompted === 0 && notices.length === 1, 'headless install: the pin notice prints and nothing is asked');
+      assert(resolve(TEA, headless).pin === 'v1.27.2', 'headless install: the registry-pinned module installs at its pin');
 
       const legacyPinned = await updateFlow({ name: 'tea', channel: null, version: null }, { confirm: false, select: 'unused' });
       assert(resolve(TEA, legacyPinned).channel === 'pinned', 'update flow: a legacy registry-pinned install stays on its pin');
