@@ -327,12 +327,18 @@ def cmd_escape_sources(args) -> int:
 # --- anchors -----------------------------------------------------------------
 
 # A path starts a token, so a URL is never read as one, and may hold a balanced (group) as Next.js routes do.
-CITED_PATH = r"(?<![\w./:\\)-])((?:[^\s:`'\"()<>|*]|\([^\s:`'\"()<>|*/]*\))+)"
-CODE_CLAIM_RE = re.compile(CITED_PATH + r":(\d+)(?:-(\d+))?[ \t]*\(([^()\n]*)\)[ \t]*@[ \t]*([0-9a-f]{7,40})\b")
+PATH_CHAR = r"(?:[^\s:`'\"()<>|*]|\([^\s:`'\"()<>|*/]*\))"
+CITED_PATH = rf"(?<![\w./:\\)-])({PATH_CHAR}+)"
+# A path may hold spaces, so this takes up to five words before it; spaced_path keeps those the commit's tree has.
+CODE_CLAIM_RE = re.compile(
+    rf"(?<![\w./:\\)-])({PATH_CHAR}+(?: {PATH_CHAR}+){{0,5}})"
+    + r":(\d+)(?:-(\d+))?[ \t]*\(([^()\n]*)\)[ \t]*@[ \t]*([0-9a-f]{7,40})\b"
+)
 # Not after "@ ": that sha ends a code claim, and a quote after it is not a subject.
 # A subject may hold quotes (Revert "x"): it ends at a quote not followed by a word or another quote.
 HISTORY_CLAIM_RE = re.compile(r"(?<![\w./:\\-])(?<!@ )([0-9a-f]{7,40})[ \t]+\"(.+?)\"(?![\w\"])(?:[ \t]+#(\d+))?")
 PR_SUFFIX_RE = re.compile(r"\s*\(#(\d+)\)$")
+SUBJECT_END_RE = re.compile(r"\"(?:[ \t]+#(\d+))?")
 # Citation-shaped text: what no claim consumed is reported as unparsed.
 LOOSE_CODE_RE = re.compile(
     CITED_PATH + r":\d+(?:[-:]\d+)*\b(?:[ \t]*\((?:[^()\n]|\([^()\n]*\))*\))?(?:[ \t]*@[ \t]*[0-9a-fA-F]{7,40}\b)?"
@@ -395,6 +401,46 @@ def is_commit(repo: Path, sha: str) -> bool:
     if proc.returncode:
         raise_unless_missing(proc)
     return proc.returncode == 0
+
+
+def tree_paths(repo: Path, sha: str, cache: dict[str, set[str]]) -> set[str]:
+    """Every file path at sha, or none when sha is not a commit."""
+    if sha not in cache:
+        proc = git(repo, "ls-tree", "-r", "--name-only", "-z", sha) if is_commit(repo, sha) else None
+        if proc is not None and proc.returncode:
+            raise_unless_missing(proc)
+        cache[sha] = set(proc.stdout.split("\0")) if proc is not None and not proc.returncode else set()
+    return cache[sha]
+
+
+def spaced_path(repo: Path, m: re.Match, cache: dict[str, set[str]]) -> tuple[str, int]:
+    """The cited path and where it starts: the most trailing words of the match's path the commit's tree has, else the last."""
+    words = m[1].split(" ")
+    paths = tree_paths(repo, m[5], cache) if len(words) > 1 else set()
+    for i in range(len(words) - 1):
+        if posixpath.normpath(" ".join(words[i:])) in paths:
+            break
+    else:
+        i = len(words) - 1
+    return " ".join(words[i:]), m.start(1) + len(" ".join(words[:i])) + (1 if i else 0)
+
+
+def history_claim(repo: Path, m: re.Match) -> tuple[str, str, int | None, tuple[int, int]]:
+    """sha, subject, pr and span of a history match, its subject run on to the last quote on the line that keeps it a prefix of git's own."""
+    sha, subject, pr, span = m[1], m[2], int(m[3]) if m[3] else None, m.span()
+    text = m.string
+    quotes = [m.end(2) + 1 + i for i, c in enumerate(text[m.end(2) + 1 :].split("\n", 1)[0]) if c == '"']
+    if quotes and is_commit(repo, sha):
+        log = git(repo, "log", "-1", "--no-show-signature", "--format=%s", sha, "--")
+        if log.returncode:
+            raise GitError(log)
+        actual = norm_subject(log.stdout)
+        for q in reversed(quotes):
+            if actual.startswith(norm_subject(text[m.start(2) : q])):
+                end = SUBJECT_END_RE.match(text, q)
+                subject, pr, span = text[m.start(2) : q], int(end[1]) if end[1] else None, (m.start(), end.end())
+                break
+    return sha, subject, pr, span
 
 
 def find_block(lines: list[str], block: list[str]) -> int | None:
@@ -503,10 +549,16 @@ def cmd_anchors(args) -> int:
         print(f"error: --at {args.at} does not name a commit", file=sys.stderr)
         return 2
     norm = normalize(text)
-    code_matches = list(CODE_CLAIM_RE.finditer(norm))
-    history_matches = list(HISTORY_CLAIM_RE.finditer(norm))
-    code_claims = Counter((m[1], int(m[2]), int(m[3]) if m[3] else None, m[4].strip(), m[5]) for m in code_matches)
-    history_claims = Counter((m[1], m[2], int(m[3]) if m[3] else None) for m in history_matches)
+    trees: dict[str, set[str]] = {}
+    code_matches = [(m, *spaced_path(repo, m, trees)) for m in CODE_CLAIM_RE.finditer(norm)]
+    code_claims = Counter(
+        (path, int(m[2]), int(m[3]) if m[3] else None, m[4].strip(), m[5]) for m, path, _ in code_matches
+    )
+    history_matches: list[tuple[str, str, int | None, tuple[int, int]]] = []
+    for m in HISTORY_CLAIM_RE.finditer(norm):
+        if not history_matches or m.start() >= history_matches[-1][3][1]:  # not inside a subject run on past its quote
+            history_matches.append(history_claim(repo, m))
+    history_claims = Counter((sha, subject, pr) for sha, subject, pr, _ in history_matches)
     code = [
         {
             "path": path,
@@ -523,7 +575,8 @@ def cmd_anchors(args) -> int:
         {"commit": sha, "subject": subject, "pr": pr, **check_history(repo, sha, subject, pr), "occurrences": n}
         for (sha, subject, pr), n in history_claims.items()
     ]
-    unparsed = unparsed_spans(text, norm, [m.span() for m in code_matches + history_matches])
+    consumed = [(start, m.end()) for m, _, start in code_matches] + [span for *_, span in history_matches]
+    unparsed = unparsed_spans(text, norm, consumed)
     statuses = Counter(c["status"] for c in code + history)
     failing = ("incomplete", "missing", "unknown-commit", "subject-mismatch", "pr-mismatch")
     counts = {"code": len(code), "history": len(history)}

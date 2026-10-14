@@ -73,8 +73,9 @@ the tickets still at `built` for you to close.
 - **A retrospective document**, `epic-<slug>-retrospective.md` in the epic
   folder, with the evidence inventory, findings grouped with their sources,
   the verdict, and proposed action items. Apart from the decision records
-  you approve, which go beside the code they govern, it is the only file
-  the skill writes. It does not mark the epic or any ticket done.
+  you approve, which go beside the code they govern or in the decisions
+  folder when system-wide, it is the only file the skill writes. It does not
+  mark the epic or any ticket done.
 - **A verdict** of `accepted`, `accepted-with-open-items`, or `rejected`,
   recorded in the document's frontmatter, which tells you whether to start
   the next epic or hold and fix first. Unfinished tickets make the skill's

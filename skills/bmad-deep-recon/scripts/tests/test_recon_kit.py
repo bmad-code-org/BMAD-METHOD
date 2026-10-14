@@ -474,6 +474,35 @@ class AnchorsTest(unittest.TestCase):
         self.assertEqual((result["counts"]["incomplete"], result["unparsed"]), (2, []))
         self.assertEqual([c["symbol_found"] for c in result["code"]], [False, False, None])
 
+    def test_a_path_with_spaces_parses_whole_and_words_before_it_are_left_out(self):
+        spaced = self.commit("add a spaced file", {"src/My File.java": "class A {\n  void load() {}\n}\n"})[:7]
+        old = self.old[:7]
+        code, result = self.anchors(
+            f"`src/My File.java:2 (A.load) @ {spaced}`\nThe loader in src/My File.java:2 (A.load) @ {spaced} reads it, "
+            f"as does src/session.py:2 (SessionStore.load) @ {old}. Gone: src/No File.java:1 (A) @ {spaced}."
+        )
+        self.assertEqual(
+            [(c["path"], c["status"], c["occurrences"]) for c in result["code"]],
+            [("src/My File.java", "anchored", 2), ("src/session.py", "moved", 1), ("File.java", "missing", 1)],
+        )
+        self.assertEqual((result["unparsed"], code), ([], 1))
+
+    def test_a_subject_with_a_quoted_phrase_parses_whole_with_its_pr(self):
+        quoted = self.commit('fix: handle "cached" sessions (#412)', {"README.md": "# demo 2\n"})[:7]
+        code, result = self.anchors(
+            f'`{quoted} "fix: handle "cached" sessions (#412)" #412` and then {quoted} "fix: handle "cached" sessions" #412 '
+            f'landed. Reverted in `{self.old[:7]} "add session store"`.'
+        )
+        self.assertEqual(
+            [(h["subject"], h["pr"], h["status"]) for h in result["history"]],
+            [
+                ('fix: handle "cached" sessions (#412)', 412, "anchored"),
+                ('fix: handle "cached" sessions', 412, "anchored"),
+                ("add session store", None, "anchored"),
+            ],
+        )
+        self.assertEqual((result["unparsed"], code), ([], 0))
+
     def test_a_subject_ending_in_a_pr_needs_the_citation_to_name_it(self):
         old, new = self.old[:7], self.new[:7]
         code, result = self.anchors(

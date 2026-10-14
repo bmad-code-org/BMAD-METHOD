@@ -92,7 +92,7 @@ Skip by default; never runs headless. When the user asks to "discuss it as a tea
 ### Phase 4 — Decide
 
 - **Action items** — compile fix-now findings and process lessons into specific, owned action items. Fixes and spec reconciliations are *proposed here*, not auto-applied; the human decides what to execute.
-- **Decision records** — apply the test in `{{ rendered("references/acceptance-verdict.md") }}` to each decision in the plans' `<frozen-after-approval>` blocks (`<intent-contract>` in a plan `bmad-build-auto` wrote), propose the ones that pass, and write those the user approves.
+- **Decision records** — apply the test in `{{ rendered("references/acceptance-verdict.md") }}` to each decision in the plans' `<frozen-after-approval>` blocks (`<intent-contract>` in a plan `bmad-build-auto` wrote), Design Notes and Implementation Notes, propose the ones that pass, and write those the user approves.
 - **Acceptance verdict** — judge the final state against the epic file's Done when (profile the criteria from the diff and plans if it has none): **accepted**, **accepted-with-open-items**, or **rejected** — one spelling, everywhere a machine reads it. Unfinished tickets in `pending_tickets` force the machine verdict to **rejected**. A human decision always overrides. An epic that fails its criteria with no human decision is recorded as *not accepted* — never as silently accepted. Read fully and follow `{{ rendered("references/acceptance-verdict.md") }}` for the rubric, the finding-routing dispositions, and the previous-retro follow-through record.
 
 ### Phase 5 — Finalize
