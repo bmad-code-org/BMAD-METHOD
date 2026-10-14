@@ -2089,6 +2089,7 @@ class UI {
           default: 'stable',
         });
         if (chosen === 'next') channelOptions.nextSet.add(code);
+        else channelOptions.stableSet.add(code);
         continue;
       }
 
@@ -2136,6 +2137,7 @@ class UI {
         if (choice === 'stable') {
           // Switch to stable: install at the top stable tag without an
           // upgrade-classification prompt (the user explicitly opted in).
+          channelOptions.stableSet.add(code);
           // Also warm the tag cache here so the actual clone step doesn't
           // need a second GitHub API call (can hit rate limits).
           if (parsed) {
