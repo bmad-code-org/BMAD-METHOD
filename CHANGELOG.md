@@ -1,5 +1,11 @@
 # Changelog
 
+## v6.12.4 - 2026-10-14
+
+### 🐛 Fixes
+
+* A module pinned in the registry (TEA, at v1.27.2) no longer shows the channel picker, since stable or next would pick a version this installer cannot install. The installer prints the pin and the v7 install command instead. `--pin CODE=TAG` still overrides it.
+
 ## v6.12.3 - 2026-10-14
 
 ### 🐛 Fixes

@@ -1949,6 +1949,20 @@ class UI {
     });
     if (channelSelectable.length === 0) return;
 
+    // A registry pin marks a version the installer can still install. Offering
+    // stable, next or a pin there leads to a failed install, so say what is
+    // pinned and skip the picker for those modules.
+    const { parseGitHubRepo: parseRepoForNotice } = require('./modules/channel-resolver');
+    for (const code of channelSelectable) {
+      const info = externalByCode.get(code);
+      if (!info.pin) continue;
+      const repo = info.url ? parseRepoForNotice(info.url) : null;
+      const where = repo ? ` Newer versions need the v7 installer: npx skills add ${repo.owner}/${repo.repo}` : '';
+      await prompts.log.info(`${code} is pinned to ${info.pin}.${where}`);
+    }
+    const choosable = channelSelectable.filter((code) => !externalByCode.get(code).pin);
+    if (choosable.length === 0) return;
+
     const fastPath = await prompts.confirm({
       message: `Ready to install (all stable)? Pick "n" to customize channels or pin versions.`,
       default: true,
@@ -1958,7 +1972,7 @@ class UI {
     // Customize path: per-module picker.
     const { fetchStableTags, parseGitHubRepo } = require('./modules/channel-resolver');
 
-    for (const code of channelSelectable) {
+    for (const code of choosable) {
       const info = externalByCode.get(code);
       const repoUrl = info.url;
 
@@ -2043,7 +2057,7 @@ class UI {
         const prev = existingByName.get(code);
         if (!prev) return false;
         const info = externalByCode.get(code);
-        return info && !info.builtIn;
+        return info && !info.builtIn && !info.pin;
       });
       if (existingWithChannel.length > 0) {
         reviewChannels = await prompts.confirm({
@@ -2063,6 +2077,9 @@ class UI {
       // their version is stapled to the CLI version, not a git tag. Skip
       // tag-API lookups for them; the "upgrade" mechanism is `npx bmad@X install`.
       if (info.builtIn) continue;
+      // A registry-pinned module stays on its pin; the channel logic below would
+      // move it to a version this installer cannot install.
+      if (info.pin) continue;
 
       const repoUrl = info.url;
       const parsed = repoUrl ? parseGitHubRepo(repoUrl) : null;
