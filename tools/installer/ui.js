@@ -1931,12 +1931,6 @@ class UI {
    * Mutates channelOptions.pins and channelOptions.nextSet to reflect picker choices.
    */
   async _interactiveChannelGate({ options, channelOptions, selectedModules }) {
-    if (options.yes) return;
-    // If the user already declared their channel intent via flags, trust them
-    // and skip the gate.
-    const haveFlagIntent = channelOptions.global || channelOptions.nextSet.size > 0 || channelOptions.pins.size > 0;
-    if (haveFlagIntent) return;
-
     // Figure out which selected modules actually get a channel (externals only).
     // Bundled core/bmm and custom modules skip the picker.
     const externalManager = new ExternalModuleManager();
@@ -1949,6 +1943,20 @@ class UI {
     });
     if (channelSelectable.length === 0) return;
 
+    // A registry pin marks the newest version this installer can install.
+    // Offering stable or next there leads to a failed install, so say what is
+    // pinned (headless installs included) and skip the picker for those modules.
+    await this._announcePinnedModules(channelSelectable, externalByCode, channelOptions);
+
+    if (options.yes) return;
+    // If the user already declared their channel intent via flags, trust them
+    // and skip the gate.
+    const haveFlagIntent = channelOptions.global || channelOptions.nextSet.size > 0 || channelOptions.pins.size > 0;
+    if (haveFlagIntent) return;
+
+    const choosable = channelSelectable.filter((code) => !externalByCode.get(code).pin);
+    if (choosable.length === 0) return;
+
     const fastPath = await prompts.confirm({
       message: `Ready to install (all stable)? Pick "n" to customize channels or pin versions.`,
       default: true,
@@ -1958,7 +1966,7 @@ class UI {
     // Customize path: per-module picker.
     const { fetchStableTags, parseGitHubRepo } = require('./modules/channel-resolver');
 
-    for (const code of channelSelectable) {
+    for (const code of choosable) {
       const info = externalByCode.get(code);
       const repoUrl = info.url;
 
@@ -1998,6 +2006,22 @@ class UI {
       } else {
         channelOptions.stableSet.add(code);
       }
+    }
+  }
+
+  /**
+   * Tell the user which selected modules sit on a registry pin and how to get a
+   * newer version. Skips a module whose version the user set with --pin/--next.
+   */
+  async _announcePinnedModules(codes, externalByCode, channelOptions) {
+    const { parseGitHubRepo } = require('./modules/channel-resolver');
+    for (const code of codes) {
+      const info = externalByCode.get(code);
+      if (!info || !info.pin || info.builtIn) continue;
+      if (channelOptions.pins.has(code) || channelOptions.nextSet.has(code)) continue;
+      const repo = info.url ? parseGitHubRepo(info.url) : null;
+      const where = repo ? ` Newer versions need the v7 installer: npx skills add ${repo.owner}/${repo.repo}` : '';
+      await prompts.log.info(`${code} is pinned to ${info.pin}.${where}`);
     }
   }
 
@@ -2043,7 +2067,7 @@ class UI {
         const prev = existingByName.get(code);
         if (!prev) return false;
         const info = externalByCode.get(code);
-        return info && !info.builtIn;
+        return info && !info.builtIn && !info.pin;
       });
       if (existingWithChannel.length > 0) {
         reviewChannels = await prompts.confirm({
@@ -2063,6 +2087,19 @@ class UI {
       // their version is stapled to the CLI version, not a git tag. Skip
       // tag-API lookups for them; the "upgrade" mechanism is `npx bmad@X install`.
       if (info.builtIn) continue;
+      // A registry-pinned module stays on its pin; the channel logic below would
+      // move it to a version this installer cannot install. A version the user
+      // pinned earlier is kept.
+      if (info.pin) {
+        const decided = channelOptions.global || channelOptions.nextSet.has(code) || channelOptions.pins.has(code);
+        const keepsOwnPin = !decided && prev.channel === 'pinned' && prev.version && prev.version !== info.pin;
+        if (keepsOwnPin) {
+          channelOptions.pins.set(code, prev.version);
+        } else {
+          await this._announcePinnedModules([code], externalByCode, channelOptions);
+        }
+        continue;
+      }
 
       const repoUrl = info.url;
       const parsed = repoUrl ? parseGitHubRepo(repoUrl) : null;
