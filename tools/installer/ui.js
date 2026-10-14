@@ -1980,15 +1980,12 @@ class UI {
         message: `${code}: choose a channel`,
         choices: [
           { name: stableLabel, value: 'stable' },
-          { name: 'next   (main HEAD \u2014 current development)', value: 'next' },
           { name: 'pin    (specific version)', value: 'pin' },
         ],
         default: 'stable',
       });
 
-      if (choice === 'next') {
-        channelOptions.nextSet.add(code);
-      } else if (choice === 'pin') {
+      if (choice === 'pin') {
         const pinValue = await prompts.text({
           message: `Enter a version tag for '${code}' (e.g. v1.6.0):`,
           validate: (value) => {
@@ -2015,8 +2012,7 @@ class UI {
    *     frozen unless the user also passes `--pin CODE=NEW_TAG`.
    *   - On `next`: no prompt (pull HEAD).
    *   - On `pinned`: no prompt (stays pinned).
-   *   - No channel recorded and `version: null`: one-time migration prompt
-   *     ("Switch to stable / Keep on next").
+   *   - No channel recorded and `version: null`: moves to stable, no prompt.
    *
    * Decisions that freeze the current version are applied by adding a pin to
    * `channelOptions.pins` so downstream clone logic honors them.
@@ -2051,7 +2047,7 @@ class UI {
       });
       if (existingWithChannel.length > 0) {
         reviewChannels = await prompts.confirm({
-          message: 'Review channel assignments (stable / next / pin) for your existing modules?',
+          message: 'Review channel assignments (stable / pin) for your existing modules?',
           default: false,
         });
       }
@@ -2072,7 +2068,7 @@ class UI {
       const parsed = repoUrl ? parseGitHubRepo(repoUrl) : null;
 
       // Legacy migration: manifest carries no channel and a null/empty
-      // version. Offer the one-time pick between stable and next.
+      // version. The next channel is gone from the picker, so move it to stable.
       const recordedChannel = prev.channel || null;
       const needsMigration = !recordedChannel && (prev.version == null || prev.version === '');
       if (needsMigration) {
@@ -2080,16 +2076,7 @@ class UI {
           // Conservative headless default: stable.
           continue;
         }
-        const chosen = await prompts.select({
-          message: `${code}: your existing install tracks the main branch. Switch to stable releases (recommended for production), or keep on main?`,
-          choices: [
-            { name: 'Switch to stable', value: 'stable' },
-            { name: 'Keep on main (next)', value: 'next' },
-          ],
-          default: 'stable',
-        });
-        if (chosen === 'next') channelOptions.nextSet.add(code);
-        else channelOptions.stableSet.add(code);
+        channelOptions.stableSet.add(code);
         continue;
       }
 
@@ -2107,9 +2094,6 @@ class UI {
         if (recordedChannel !== 'stable') {
           switchChoices.push({ name: 'Switch to stable (released version)', value: 'stable' });
         }
-        if (recordedChannel !== 'next') {
-          switchChoices.push({ name: 'Switch to next (main HEAD)', value: 'next' });
-        }
         switchChoices.push({ name: 'Pin to a specific version tag', value: 'pin' });
 
         const choice = await prompts.select({
@@ -2118,10 +2102,6 @@ class UI {
           default: 'keep',
         });
 
-        if (choice === 'next') {
-          channelOptions.nextSet.add(code);
-          continue;
-        }
         if (choice === 'pin') {
           const pinValue = await prompts.text({
             message: `Enter a version tag for '${code}' (e.g. v1.6.0):`,

@@ -2721,14 +2721,11 @@ async function runTests() {
       const pickedStable = await installGate({ confirm: false, select: 'stable' });
       assert(pickedStable.channel === 'stable', 'install picker: choosing stable beats the registry pin');
 
-      const pickedNext = await installGate({ confirm: false, select: 'next' });
-      assert(pickedNext.channel === 'next', 'install picker: choosing next beats the registry pin');
-
       const switched = await updateFlow({ name: 'tea', channel: 'pinned', version: 'v1.27.2' }, { confirm: true, select: 'stable' });
       assert(switched.channel === 'stable', 'update picker: "Switch to stable" beats the registry pin');
 
-      const migrated = await updateFlow({ name: 'tea', channel: null, version: null }, { confirm: false, select: 'stable' });
-      assert(migrated.channel === 'stable', 'update picker: legacy migration "Switch to stable" beats the registry pin');
+      const migrated = await updateFlow({ name: 'tea', channel: null, version: null }, { confirm: false, select: 'unused' });
+      assert(migrated.channel === 'stable', 'update flow: a legacy main-tracking install moves to stable and beats the registry pin');
 
       const untouched = await updateFlow({ name: 'tea', channel: 'pinned', version: 'v1.27.2' }, { confirm: false, select: 'unused' });
       assert(untouched.channel === 'pinned', 'update flow: declining the channel review keeps the registry pin');
