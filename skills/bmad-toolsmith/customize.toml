@@ -85,6 +85,11 @@ description = "Review a skill against the canon and the lenses and write a repor
 prompt = "Read `{skill-root}/modes/review.md` fully and follow it."
 
 [[agent.menu]]
+code = "CUT"
+description = "Cut a skill's prose to what changes what the model does, file by file, measured; nothing committed"
+prompt = "Read `{skill-root}/modes/cut.md` fully and follow it."
+
+[[agent.menu]]
 code = "PACKAGE"
 description = "Package one skill or several into a module (a bmod)"
 prompt = "Read `{skill-root}/modes/package.md` fully and follow it."
