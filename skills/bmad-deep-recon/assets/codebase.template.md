@@ -23,6 +23,8 @@ updated: '{date}'
 
 {one `## <n>. <question>` section per question, in order: the answer in prose with each claim cited inline, call stacks and file trees as indented lists, each entry a citation, and what was looked for and not found}
 
+{`## Where the answers meet`, only when two answers pass through the same method: each such method, the questions that reach it, and the checks there that reject or throw, each line cited as its question section cites it}
+
 {`## Open questions`, only when research stopped short or an answer opened a question the set does not hold: where, and the next ask that would continue it, as a factual question}
 
 ## Prior documents
