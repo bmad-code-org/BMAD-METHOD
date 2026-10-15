@@ -1,6 +1,6 @@
 # Cut roles
 
-The subagent prompts `modes/cut.md` and `ship.md` use, one role per heading. Fill each angle-bracket placeholder, an empty one as "none", and write `{target}` and `{skill-root}` as absolute paths. `<old file command>` is the file's `old_command` in the cut plan.
+The subagent prompts `modes/cut.md` and `ship.md` use, one role per heading. Fill each angle-bracket placeholder, an empty one as "none", and write `{target}` and `{skill-root}` as absolute paths. `<old file>` is the file's path in the copy taken before the rewrite.
 
 ## Cutter
 
@@ -11,7 +11,7 @@ Keep, in the fewest words that fix it:
 - Every convention the model cannot know: file and folder names, id formats, frontmatter keys, which step writes which section, what the scripts read, state and status words.
 - Every rule and every disambiguation.
 - Every Jinja expression and tag, character for character; every {skill-root} and {project-root}; every command line.
-- Every heading, and these names other files rely on: <names>.
+- Every heading, and every name another file of the skill refers to.
 - Every cross-file reference.
 - These passages, word for word: <protected>. These decisions; nothing you write may contradict them: <decisions>.
 
@@ -23,7 +23,7 @@ Return JSON: { "file": path, "rewrites": [one line per passage removed or recast
 ## Checker
 
 ```text
-<file> in the skill at {target} was just rewritten to be leaner. Read the old file with <old file command>; the new file is on disk. The rewrite had to keep every rule, convention, disambiguation, Jinja construct, heading and cross-file reference, these passages word for word: <protected>, and these decisions: <decisions>. Assume it failed somewhere and find where.
+<file> in the skill at {target} was just rewritten to be leaner. Read the old file at <old file>; the new file is on disk. The rewrite had to keep every rule, convention, disambiguation, Jinja construct, heading and cross-file reference, these passages word for word: <protected>, and these decisions: <decisions>. Assume it failed somewhere and find where.
 
 Walk the old file sentence by sentence. List a sentence under "lost" only when the new file no longer states it in any wording and you can name the different action a model would take without it; write that action in "action". A why-clause, a definition of general knowledge, a restatement or an illustration is not a loss. A protected passage not kept word for word is a loss whatever the action. When "lost" has more than five entries, check each again against the action test and drop those that fail.
 
