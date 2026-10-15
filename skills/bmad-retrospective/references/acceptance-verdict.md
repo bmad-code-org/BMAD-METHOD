@@ -18,6 +18,12 @@ Compile fix-now findings and process lessons into specific, owned action items. 
 - **Remediation** — code fixes are written up as action items (or story-shaped work) for the normal dev loop to execute later. The retrospective does not run the dev loop itself.
 - **Spec reconciliation** — where the as-built diverges from the spec, propose the reconciliation as an action item with the evidence attached. The human applies it to the project contract; an uncertain interpretation is never written into the spec automatically.
 
+## Decision records
+
+Propose a decision from a plan's `<frozen-after-approval>` block (`<intent-contract>` in a plan `bmad-build-auto` wrote), Design Notes or Implementation Notes as a decision record (ADR) when it is hard to reverse, surprising without context, and the result of a real trade-off, and no `adr-*.md` file or decisions-folder record in the repository already records it. A record is one file, `adr-<decision-slug>.md`, its name and title stating the decision, its body one paragraph (context, decision, why) naming the plan and the commit; the why comes from the plan, the commit or a session log, and when none gives it the record says so, since a reason the retrospective supplies is later read as the team's. It goes beside the code it governs, or in the repository's decisions folder (else `docs/decisions/`) when it is system-wide. Ask the user about each in interactive runs and write only the approved ones; a headless run only proposes; committing them is the user's concern. Planning documents are not ADRs.
+
+In the retrospective document's Decision records section, record each proposed decision with its plan and commit, and whether the user approved it and which file was written; when no decision passes the test, record that.
+
 ## Previous-retro follow-through
 
 When the previous epic's retrospective file exists, check whether the action items it committed to were completed. Read its Action items section, and its Previous-retro follow-through section for the items recorded there as not landed, and for every item, record one line in the retrospective document's Previous-retro follow-through section:

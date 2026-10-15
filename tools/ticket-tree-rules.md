@@ -42,4 +42,4 @@ This page is for people and agents who change those skills. No skill loads it: e
 ## Where review and retrospective write
 
 - `bmad-code-review` appends a `## Code Review` section to the reviewed ticket's plan. Each run adds a dated block with that run's findings. Deferred findings go into the same block.
-- `bmad-retrospective` writes `epic-<slug>-retrospective.md` in the epic folder, with `verdict` in its frontmatter. It does not edit the epic file. Closing the epic is still `bmad-ticket`'s closure check, confirmed by the user.
+- `bmad-retrospective` writes `epic-<slug>-retrospective.md` in the epic folder, with `verdict` in its frontmatter. Outside the tree it writes only the decision records the user approves, each beside the code it governs or in the decisions folder when system-wide, and only in interactive runs. It does not edit the epic file. Closing the epic is still `bmad-ticket`'s closure check, confirmed by the user.
