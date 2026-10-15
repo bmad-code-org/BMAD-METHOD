@@ -8,6 +8,7 @@
 - Nothing contradicts its epic file, its companions, the architecture, or a recorded decision.
 - Each entry has a description, `unknown` when one is known, and a `verify` a non-builder can run; only bugs, `refine = true` entries, and leaves with no entry need full criteria before execution.
 - A ticket needing full criteria and covering an id in a `Source conflict:` line with no later `Decision:` has `refined: false`.
+- A ticket with full criteria that crosses a trust boundary (input it does not control, who may do or see what, secrets, another tenant's data) has a criterion per boundary saying what a caller without the right gets instead.
 
 {% if workflow.checks.ticket %}
 {{ workflow.checks.ticket }}

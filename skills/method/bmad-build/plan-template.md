@@ -42,12 +42,14 @@ context: [] # optional: `{project-root}/`-prefixed paths the implementation agen
 ## I/O & Edge-Case Matrix
 
 <!-- If no meaningful I/O scenarios exist, delete this section. Do not write "N/A" or "None".
+     One ABUSE_CASE row per trust boundary the change crosses: input it does not control, a caller whose right must be checked, secrets, another tenant's data. Delete the row if it crosses none.
      Delete this section if route is oneshot. -->
 
 | Scenario | Input / State | Expected Output / Behavior | Error Handling |
 |----------|--------------|---------------------------|----------------|
 | HAPPY_PATH | INPUT | OUTCOME | No error expected |
 | ERROR_CASE | INPUT | OUTCOME | ERROR_HANDLING |
+| ABUSE_CASE | CALLER_WITHOUT_RIGHT_OR_UNTRUSTED_INPUT | WHAT_THEY_GET_INSTEAD | ERROR_HANDLING |
 
 </frozen-after-approval>
 

@@ -6,11 +6,11 @@ Ask only what is unsettled, with a default for each. Take a new ticket's `id` fr
 
 ## Each fact lives in one place
 
-Reference the Requirements of the ticket above; never copy them. Full criteria ("Reviewing or refining an existing ticket" says when) cover what changes, failure paths and binding decisions; point at the epic for the rest.
+Reference the Requirements of the ticket above; never copy them. Full criteria ("Reviewing or refining an existing ticket" says when) cover what changes, failure paths and binding decisions, and, where the ticket crosses a trust boundary (input it does not control, who may do or see what, secrets, another tenant's data), what a caller without the right gets instead; point at the epic for the rest.
 
 ## Rules the template cannot carry
 
-- Criteria use the template's format, each provable without pointing at code, together failing any wrong build. Behavior that must not change goes under Boundaries.
+- Criteria use the template's format, each provable without pointing at code, together failing any wrong build. Behavior that must not change goes under Boundaries. A trust-boundary criterion names the caller, what they attempt, and what they get instead; "is secure" or "is validated" is not a check.
 - Short plain sentences in the project's vocabulary, no invented terms. Offer the user a rewrite where their text breaks this.
 - A reference is a References line, `type — location, section`; location is a path from `{project-root}` or a url, opened before citing; cite the nearest document. Before drafting, read `tickets.reference` from the store config (`read_store.py -k tickets`; the repo store has none).
 - No source-code paths or snippets unless the snippet is the decision; a path the user wants kept goes in Notes.

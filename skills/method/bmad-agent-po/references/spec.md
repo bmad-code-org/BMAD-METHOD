@@ -30,7 +30,7 @@ Pre-sorted input (a PRD, a brief from an upstream BMad skill): keep its separati
 
 The template's comments say what Requirements and Constraints hold at this altitude. Rich input: extract directly. Sparse input: name the gaps and walk them with the user one section at a time, Requirements then Constraints; if the user would rather move on, each gap is an `Open question:` line.
 
-An unaddressed domain implication (healthcare silent on PHI) becomes an `Open question:` line; never invent the answer.
+An unaddressed domain implication (healthcare silent on PHI; anything that crosses a trust boundary — input it does not control, who may do or see what, secrets, another tenant's data — silent on what must never be allowed) becomes an `Open question:` line; never invent the answer.
 
 A later memlog entry supersedes an earlier one. A new input, or a source changed since the memlog last cited it, is read against the memlog and the other sources; each disagreement, and any either/or never resolved, is put to the user as fix (a new memlog entry, the lines re-derived) or ignore (a `Decision:` line in Notes), never settled silently.
 
