@@ -13,6 +13,9 @@
  * Precedence: --pin > explicit per-module choice (--next=CODE, picker next/stable) > registry pin
  * > --channel (global) > registry default > 'stable'.
  *
+ * Quick-update replays channels recorded in the manifest. A recorded 'next'
+ * ranks below the registry pin there; see replayRecordedChannel.
+ *
  * This module is pure. No prompts, no git, no filesystem.
  */
 
@@ -206,6 +209,37 @@ function bundledTargetWarnings(channelOptions, bundledCodes) {
   return warnings;
 }
 
+/**
+ * Decide how quick-update replays a channel recorded in the manifest.
+ *
+ * A recorded 'next' replays as if --next=CODE was passed, and --next outranks
+ * the registry pin. That is wrong once the registry pins the module: the pin
+ * exists because main no longer installs with this installer (CIS and TEA
+ * moved to v7 layouts). Replaying 'next' there fails the whole quick-update,
+ * so the registry pin wins for recorded 'next'. An explicit --next on a fresh
+ * install still beats the pin.
+ *
+ * Stable entries return null: the caller resolves them against release tags.
+ *
+ * @param {Object} args
+ * @param {string} args.channel - channel recorded in the manifest
+ * @param {string} [args.version] - version recorded in the manifest
+ * @param {string} [args.registryPin] - module's registry pin, if any
+ * @returns {{channel: 'next'} | {channel: 'pinned', pin: string, source: string} | null}
+ */
+function replayRecordedChannel({ channel, version, registryPin }) {
+  if (channel === 'pinned' && version) {
+    return { channel: 'pinned', pin: version, source: 'manifest' };
+  }
+  if (channel === 'next') {
+    if (registryPin) {
+      return { channel: 'pinned', pin: registryPin, source: 'registry:pin' };
+    }
+    return { channel: 'next' };
+  }
+  return null;
+}
+
 module.exports = {
   parseChannelOptions,
   decideChannelForModule,
@@ -213,4 +247,5 @@ module.exports = {
   orphanPinWarnings,
   bundledTargetWarnings,
   parsePinSpec,
+  replayRecordedChannel,
 };
