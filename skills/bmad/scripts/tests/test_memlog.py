@@ -377,6 +377,13 @@ def set_ending(ws, ending):
     p.write_bytes(p.read_bytes().replace(b"\r\n", b"\n").replace(b"\n", ending))
 
 
+def assert_only_ending(ws, ending):
+    raw = raw_bytes(ws)
+    unix = raw.replace(b"\r\n", b"\n")
+    assert b"\r" not in unix, "stray carriage return"
+    assert raw == unix.replace(b"\n", ending), "mixed or wrong line endings"
+
+
 def set_field(ws, key, value):
     assert memlog.main(["set", "--workspace", ws, "--key", key, "--value", value]) == 0
 
@@ -393,9 +400,8 @@ def test_append_keeps_the_files_line_ending(ws, ending):
     set_ending(ws, ending)
     append(ws, "one")
     append(ws, "two")
-    raw = raw_bytes(ws)
-    assert raw.count(b"\r\n") == (raw.count(b"\n") if ending == b"\r\n" else 0)
-    assert raw.endswith(b"- two" + ending)
+    assert_only_ending(ws, ending)
+    assert raw_bytes(ws).endswith(b"- two" + ending)
 
 
 def test_append_after_missing_trailing_newline_keeps_the_ending(ws, ending):
@@ -404,8 +410,8 @@ def test_append_after_missing_trailing_newline_keeps_the_ending(ws, ending):
     p = Path(ws) / MEMLOG
     p.write_bytes(p.read_bytes().rstrip(b"\r\n"))
     append(ws, "one")
+    assert_only_ending(ws, ending)
     assert raw_bytes(ws).endswith(ending + b"- one" + ending)
-    assert raw_bytes(ws).count(b"\r\n") in (0, raw_bytes(ws).count(b"\n"))
 
 
 def test_set_keeps_the_files_line_ending(ws, ending):
@@ -413,6 +419,5 @@ def test_set_keeps_the_files_line_ending(ws, ending):
     append(ws, "one")
     set_ending(ws, ending)
     set_field(ws, "goal", "x")
-    raw = raw_bytes(ws)
-    assert raw.count(b"\r\n") == (raw.count(b"\n") if ending == b"\r\n" else 0)
-    assert b"goal: x" in raw
+    assert_only_ending(ws, ending)
+    assert b"goal: x" in raw_bytes(ws)
