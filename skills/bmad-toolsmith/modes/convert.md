@@ -20,7 +20,7 @@ Most sources land on a plain skill. A persona with a menu of things it does land
 
 ## In place
 
-When the source is already a skill folder and the user wants it brought to BMad rather than rebuilt beside it, work in that folder. The read-back lists what will change and nothing is touched before approval: the name, kept unless the user wants their prefix on it; the description, rewritten to the canon; paths and config reads, brought to `lenses/standards.md`; `bmod.toml` with both tables when the user wants a single-skill module, from `shapes/single-skill-module/shape.md`; what is dropped, by file. Then `ship.md`, where the lenses run over the result. Discovery itself is skipped; its five questions are answered by the skill as it stands.
+When the source is already a skill folder and the user wants it brought to BMad rather than rebuilt beside it, work in that folder. The read-back lists what will change and nothing is touched before approval: the name, kept unless the user wants their prefix on it; the description, rewritten to the canon; paths and config reads, brought to `lenses/standards.md`; `bmod.toml` with both tables when the user wants a single-skill module, from `shapes/single-skill-module/shape.md`; what is dropped, by file; the passages the user wants kept word for word. Then `ship.md`, where the lenses run over the result and their leanness findings are applied. Discovery itself is skipped; its five questions are answered by the skill as it stands.
 
 ## Hand-off
 

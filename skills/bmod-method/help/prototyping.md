@@ -25,7 +25,7 @@ Both work. In an existing codebase, a prototype on a branch shows how a change s
 | Something running fast, expected to be thrown away | Prompt it directly, no skill | For a throwaway, the smallest path is no path. |
 | A fast first version with a plan to approve, a review, and a commit | `bmad-build` with a one-line prompt | It accepts free text however brief. In an existing codebase it investigates the code first, so the prototype fits what is there. |
 | To see the screens and flows before any code | `bmad-ux` | It can produce HTML mocks of key screens and Excalidraw wireframes alongside its two design files. |
-| A technical unknown answered from outside sources instead of by building | `bmad-deep-recon` (core tools), if installed | Some feasibility questions are research, not code. |
+| A technical unknown answered from outside sources, or from the existing code and its history, instead of by building | `bmad-deep-recon` (core tools), if installed | Some feasibility questions are research, not code. |
 
 ## After the prototype: throw it away or keep it
 

@@ -9,6 +9,8 @@
 1. Draft resume check. If `{plan_file}` exists with `status: draft`, read it and capture the verbatim `<intent-contract>...</intent-contract>` block as `preserved_intent_contract`. Otherwise `preserved_intent_contract` is empty.
 2. Investigate codebase. _Read the code yourself for narrow, localized tasks. Isolate deep exploration in synchronous subagents: instruct them to give you distilled summaries only, and plan from those summaries._ Decide which findings actually matter for execution — the specific files, symbols/lines, reuse points, and read-only constraints — and carry those forward for the Code Map. This is where the investigation lands: the plan preserves it so it is never re-narrated to the implementer at dispatch time.
 
+   Treat a codebase research document as evidence for this investigation, read at its `commit`. Before the plan uses a claim from it, re-check it against the current code when the plan rests on it or its cited file changed since that commit (`git diff --stat <commit> -- <path>`). Investigate afresh any claim that no longer holds.
+
    Then score the change's `risk` for `{plan_file}` frontmatter: `low`, `medium`, or `high`, the business impact if this change is wrong. For a ticket from the tree, start from `risk` in `tickets.py find`'s output and raise it when the investigation shows more; never go below it.
 {% if workflow.route == "oneshot" or workflow.route == "full" %}
 3. The route is `{{ workflow.route }}`; `route_source` is `pinned`.

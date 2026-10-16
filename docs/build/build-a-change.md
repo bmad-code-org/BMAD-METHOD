@@ -190,13 +190,13 @@ decisions may set patterns for later work. Once those patterns are stable,
 
 ## Implementation Skills
 
-| Skill                 | Purpose                                                                                                                                                       | Produces                                         |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| `bmad-build`          | Implement and review one direct intent or ticket with human checkpoints (this page)                                                                           | Plan + code                                      |
-| `bmad-build-auto`     | Implement and review one ticket unattended for a caller or orchestrator ([Autonomous Development Loops](./autonomous-development-loops.md))                   | Plan + code + terminal status                    |
-| `bmad-code-review`    | Review any code change with several independent reviewers ([Review a Change](./review-a-change.md))                                                           | Findings + applied patches                       |
-| `bmad-correct-course` | Assess the impact of a significant mid-sprint change ([Break Work into Stories and Track It](../plan/break-work-into-stories-and-track-it.md#correct-course)) | Updated plan or re-routing                       |
-| `bmad-retrospective`  | Review a completed epic against the evidence it left behind ([Finish an Epic](./finish-an-epic.md))                                                           | Retro document, action items, acceptance verdict |
+| Skill                 | Purpose                                                                                                                                                       | Produces                                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `bmad-build`          | Implement and review one direct intent or ticket with human checkpoints (this page)                                                                           | Plan + code                                                        |
+| `bmad-build-auto`     | Implement and review one ticket unattended for a caller or orchestrator ([Autonomous Development Loops](./autonomous-development-loops.md))                   | Plan + code + terminal status                                      |
+| `bmad-code-review`    | Review any code change with several independent reviewers ([Review a Change](./review-a-change.md))                                                           | Findings + applied patches                                         |
+| `bmad-correct-course` | Assess the impact of a significant mid-sprint change ([Break Work into Stories and Track It](../plan/break-work-into-stories-and-track-it.md#correct-course)) | Updated plan or re-routing                                         |
+| `bmad-retrospective`  | Review a completed epic against the evidence it left behind ([Finish an Epic](./finish-an-epic.md))                                                           | Retro document, action items, decision records, acceptance verdict |
 
 Clear one-session work enters `bmad-build` directly. Larger work is sliced
 into a ticket tree with `bmad-ticket`, from a spec or any other

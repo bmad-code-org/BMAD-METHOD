@@ -19,7 +19,7 @@ Earlier BMad guidance produced heavy documentation of a codebase. That is no lon
 
 - The code is the best documentation for an agent. During coding, an agent should need few documents.
 - Documents should hold only what the code cannot explain: why a decision was made, a constraint from outside the code, a rule that spans components.
-- Recommend small numbered decision records (ADRs), written consistently, only for what is needed, in the repository's `docs` folder or similar.
+- Recommend decision records (ADRs), one per decision, only for what is needed, named `adr-<decision-slug>.md` beside the code it governs, or in the repository's decisions folder (else `docs/decisions/`) for a system-wide one.
 - `AGENTS.md` should make agents aware the records exist and when to consult them, without copying their content.
 
 ## Refactor regularly

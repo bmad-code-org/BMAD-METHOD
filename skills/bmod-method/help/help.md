@@ -101,7 +101,7 @@ One line per skill: what it is for and what it writes. The files it writes are h
 | `bmad-code-review` | Agent review of any diff, PR, or branch, with triaged findings. Redundant right after a thorough `bmad-build` review of the same change. | A dated block in the plan's `## Code Review` section, or chat |
 | `bmad-walkthrough` | The human reviews a change block by block, guided. Also a way to learn unfamiliar code. | `walkthrough-<slug>/` with the narrative and a `-log.md` |
 | `bmad-qa-generate-e2e-tests` | API and end-to-end tests for features that already exist. | Tests where the project keeps its end-to-end tests; the report is in chat |
-| `bmad-retrospective` | Judges a finished epic folder in the ticket tree as a whole against its Done when. | `epic-<slug>-retrospective.md` in the epic folder |
+| `bmad-retrospective` | Judges a finished epic folder in the ticket tree as a whole against its Done when. | `epic-<slug>-retrospective.md` in the epic folder, plus each approved `adr-<decision-slug>.md` beside the code it governs, or in the decisions folder when system-wide |
 | **Any time** (`help/project-context.md`) | | |
 | `bmad-project-context` | Keeps a small, verified block of rules for agents. Use it when an agent got something wrong in this repo, a repo has no usable `AGENTS.md`, or the stack was just decided. It gives no repo overview. | `{project-root}/AGENTS.md` |
 
